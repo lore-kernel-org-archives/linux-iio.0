@@ -1,83 +1,1548 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58363 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752632AbcGCOGw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 10:06:52 -0400
-Subject: Re: [RFC] iio: accel: st_accel: Add lis3l02dq support
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1463945969-18866-1-git-send-email-jic23@kernel.org>
- <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Denis CIOCCA <denis.ciocca@st.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
+Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b584316d-2ac9-cb30-b7ab-6157d0dc9197@kernel.org>
-Date: Sun, 3 Jul 2016 15:06:48 +0100
-MIME-Version: 1.0
-In-Reply-To: <CACRpkdYBueNxSa60EfTWsX7Surmvee8V0Qbgn+CrsA_joMmxQg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH] staging:iio:lis3l02dq drop separate driver
+Date: Sun,  3 Jul 2016 15:07:58 +0100
+Message-Id: <20160703140758.381-1-jic23@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 23/05/16 08:43, Linus Walleij wrote:
-> On Sun, May 22, 2016 at 9:39 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> 
->> Time to finally kill off the venerable (it was one of my first drivers)
->> lis3l02dq driver in favour of adding support in the st sensors framework.
->>
->> This does loose us the event support that driver always had, but I think
->> that will reappear at some point and in the meantime the maintenance
->> advantages of dropping the 'special' driver for this one part outweigh
->> the issues.
-> 
-> Which events? Free-fall?
-> 
->> It's worth noting this part is ancient and I may well be the only person
->> who still has any on hardware running recent kernels.
-> 
-> What I learnt from my years in the kernel is that there is always
-> a bunch of silent users, also it has this nice feeling of completing
-> the ST sensor suite.
-> 
->> It has a few 'quirks'.
->>  - No WAI register so that just became optional.
-> 
-> Makes sense.
-> 
->>  - It's too quick.  Even at slowest rate (280Hz) I can't read out fast
->>    enough on my board (stargate 2) to beat new data coming in. Linus'
->>    repeat read patch doesn't help in this case. It just means I get 10
->>    readings before dying... So in reality this will get used with
->>    software triggers only unless someone has this long out of production
->>    device on a quick board.
-> 
-> What is the speed of the I2C bus on this system?
-> If it's running on the lowest speed 100kHz that may very
-> well be the cause of the problem, so check if it supports
-> high speed (400kHz) I2C.
-> 
-> The patch as such looks good.
-> 
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
-I've decided I'm not that fussed about getting the threshold events
-and calibration register access stuff in place before killing off
-the staging driver.
+Retire this venerable driver as the basic support is now in the
+generic st-sensors accelerometer driver.
 
-As such applied and also applied is a patch dropping the old lis3l02dq
-driver.  Funny how one gets mixed feelings when retiring ones own
-old code.
+There are a few missing features in the new driver:
+* Threshold events.
+* Access to the calibration adjustment registers (patch shortly)
 
-Anyhow, lots more stuff in staging that needs dealing with!!!
-Unfortunately my next target of the sca3000 is going to be a lot
-harder to bring into the modern world.
+In exchange it brings a cleaner and more maintainable code base that actually
+gets tested more than once every few years.  I'll actually be suprised
+if anyone other than me has a board with one of these on that is running
+an up to date kernel.
 
-Jonathan
-> 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/accel/Kconfig          |  14 -
+ drivers/staging/iio/accel/Makefile         |   4 -
+ drivers/staging/iio/accel/lis3l02dq.h      | 217 --------
+ drivers/staging/iio/accel/lis3l02dq_core.c | 814 -----------------------------
+ drivers/staging/iio/accel/lis3l02dq_ring.c | 428 ---------------
+ 5 files changed, 1477 deletions(-)
 
+diff --git a/drivers/staging/iio/accel/Kconfig b/drivers/staging/iio/accel/Kconfig
+index f066aa30f0ac..1c994b57c7d2 100644
+--- a/drivers/staging/iio/accel/Kconfig
++++ b/drivers/staging/iio/accel/Kconfig
+@@ -51,20 +51,6 @@ config ADIS16240
+ 	  To compile this driver as a module, say M here: the module will be
+ 	  called adis16240.
+ 
+-config LIS3L02DQ
+-	tristate "ST Microelectronics LIS3L02DQ Accelerometer Driver"
+-	depends on SPI
+-	select IIO_TRIGGER if IIO_BUFFER
+-	depends on !IIO_BUFFER || IIO_KFIFO_BUF
+-	depends on GPIOLIB || COMPILE_TEST
+-	help
+-	  Say Y here to build SPI support for the ST microelectronics
+-	  accelerometer. The driver supplies direct access via sysfs files
+-	  and an event interface via a character device.
+-
+-	  To compile this driver as a module, say M here: the module will be
+-	  called lis3l02dq.
+-
+ config SCA3000
+ 	depends on IIO_BUFFER
+ 	depends on SPI
+diff --git a/drivers/staging/iio/accel/Makefile b/drivers/staging/iio/accel/Makefile
+index 415329c96f0c..1810a434a755 100644
+--- a/drivers/staging/iio/accel/Makefile
++++ b/drivers/staging/iio/accel/Makefile
+@@ -14,9 +14,5 @@ obj-$(CONFIG_ADIS16209) += adis16209.o
+ adis16240-y             := adis16240_core.o
+ obj-$(CONFIG_ADIS16240) += adis16240.o
+ 
+-lis3l02dq-y		:= lis3l02dq_core.o
+-lis3l02dq-$(CONFIG_IIO_BUFFER) += lis3l02dq_ring.o
+-obj-$(CONFIG_LIS3L02DQ)	+= lis3l02dq.o
+-
+ sca3000-y		:= sca3000_core.o sca3000_ring.o
+ obj-$(CONFIG_SCA3000)	+= sca3000.o
+diff --git a/drivers/staging/iio/accel/lis3l02dq.h b/drivers/staging/iio/accel/lis3l02dq.h
+deleted file mode 100644
+index 6bd3d4d5bc9d..000000000000
+--- a/drivers/staging/iio/accel/lis3l02dq.h
++++ /dev/null
+@@ -1,217 +0,0 @@
+-/*
+- * LISL02DQ.h -- support STMicroelectronics LISD02DQ
+- *               3d 2g Linear Accelerometers via SPI
+- *
+- * Copyright (c) 2007 Jonathan Cameron <jic23@kernel.org>
+- *
+- * Loosely based upon tle62x0.c
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- */
+-
+-#ifndef SPI_LIS3L02DQ_H_
+-#define SPI_LIS3L02DQ_H_
+-#define LIS3L02DQ_READ_REG(a) ((a) | 0x80)
+-#define LIS3L02DQ_WRITE_REG(a) a
+-
+-/* Calibration parameters */
+-#define LIS3L02DQ_REG_OFFSET_X_ADDR		0x16
+-#define LIS3L02DQ_REG_OFFSET_Y_ADDR		0x17
+-#define LIS3L02DQ_REG_OFFSET_Z_ADDR		0x18
+-
+-#define LIS3L02DQ_REG_GAIN_X_ADDR		0x19
+-#define LIS3L02DQ_REG_GAIN_Y_ADDR		0x1A
+-#define LIS3L02DQ_REG_GAIN_Z_ADDR		0x1B
+-
+-/* Control Register (1 of 2) */
+-#define LIS3L02DQ_REG_CTRL_1_ADDR		0x20
+-/* Power ctrl - either bit set corresponds to on*/
+-#define LIS3L02DQ_REG_CTRL_1_PD_ON		0xC0
+-
+-/* Decimation Factor  */
+-#define LIS3L02DQ_DEC_MASK			0x30
+-#define LIS3L02DQ_REG_CTRL_1_DF_128		0x00
+-#define LIS3L02DQ_REG_CTRL_1_DF_64		0x10
+-#define LIS3L02DQ_REG_CTRL_1_DF_32		0x20
+-#define LIS3L02DQ_REG_CTRL_1_DF_8		(0x10 | 0x20)
+-
+-/* Self Test Enable */
+-#define LIS3L02DQ_REG_CTRL_1_SELF_TEST_ON	0x08
+-
+-/* Axes enable ctrls */
+-#define LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE	0x04
+-#define LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE	0x02
+-#define LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE	0x01
+-
+-/* Control Register (2 of 2) */
+-#define LIS3L02DQ_REG_CTRL_2_ADDR		0x21
+-
+-/* Block Data Update only after MSB and LSB read */
+-#define LIS3L02DQ_REG_CTRL_2_BLOCK_UPDATE	0x40
+-
+-/* Set to big endian output */
+-#define LIS3L02DQ_REG_CTRL_2_BIG_ENDIAN		0x20
+-
+-/* Reboot memory content */
+-#define LIS3L02DQ_REG_CTRL_2_REBOOT_MEMORY	0x10
+-
+-/* Interrupt Enable - applies data ready to the RDY pad */
+-#define LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT	0x08
+-
+-/* Enable Data Ready Generation - relationship with previous unclear in docs */
+-#define LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION 0x04
+-
+-/* SPI 3 wire mode */
+-#define LIS3L02DQ_REG_CTRL_2_THREE_WIRE_SPI_MODE	0x02
+-
+-/* Data alignment, default is 12 bit right justified
+- * - option for 16 bit left justified
+- */
+-#define LIS3L02DQ_REG_CTRL_2_DATA_ALIGNMENT_16_BIT_LEFT_JUSTIFIED	0x01
+-
+-/* Interrupt related stuff */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_ADDR			0x23
+-
+-/* Switch from or combination of conditions to and */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_BOOLEAN_AND		0x80
+-
+-/* Latch interrupt request,
+- * if on ack must be given by reading the ack register
+- */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC		0x40
+-
+-/* Z Interrupt on High (above threshold) */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_HIGH	0x20
+-/* Z Interrupt on Low */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Z_LOW	0x10
+-/* Y Interrupt on High */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Y_HIGH	0x08
+-/* Y Interrupt on Low */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_Y_LOW	0x04
+-/* X Interrupt on High */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_X_HIGH	0x02
+-/* X Interrupt on Low */
+-#define LIS3L02DQ_REG_WAKE_UP_CFG_INTERRUPT_X_LOW 0x01
+-
+-/* Register that gives description of what caused interrupt
+- * - latched if set in CFG_ADDRES
+- */
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_ADDR			0x24
+-/* top bit ignored */
+-/* Interrupt Active */
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_ACTIVATED	0x40
+-/* Interupts that have been triggered */
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH	0x20
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW	0x10
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH	0x08
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW	0x04
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH	0x02
+-#define LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW	0x01
+-
+-#define LIS3L02DQ_REG_WAKE_UP_ACK_ADDR			0x25
+-
+-/* Status register */
+-#define LIS3L02DQ_REG_STATUS_ADDR			0x27
+-/* XYZ axis data overrun - first is all overrun? */
+-#define LIS3L02DQ_REG_STATUS_XYZ_OVERRUN		0x80
+-#define LIS3L02DQ_REG_STATUS_Z_OVERRUN			0x40
+-#define LIS3L02DQ_REG_STATUS_Y_OVERRUN			0x20
+-#define LIS3L02DQ_REG_STATUS_X_OVERRUN			0x10
+-/* XYZ new data available - first is all 3 available? */
+-#define LIS3L02DQ_REG_STATUS_XYZ_NEW_DATA		0x08
+-#define LIS3L02DQ_REG_STATUS_Z_NEW_DATA			0x04
+-#define LIS3L02DQ_REG_STATUS_Y_NEW_DATA			0x02
+-#define LIS3L02DQ_REG_STATUS_X_NEW_DATA			0x01
+-
+-/* The accelerometer readings - low and high bytes.
+- * Form of high byte dependent on justification set in ctrl reg
+- */
+-#define LIS3L02DQ_REG_OUT_X_L_ADDR			0x28
+-#define LIS3L02DQ_REG_OUT_X_H_ADDR			0x29
+-#define LIS3L02DQ_REG_OUT_Y_L_ADDR			0x2A
+-#define LIS3L02DQ_REG_OUT_Y_H_ADDR			0x2B
+-#define LIS3L02DQ_REG_OUT_Z_L_ADDR			0x2C
+-#define LIS3L02DQ_REG_OUT_Z_H_ADDR			0x2D
+-
+-/* Threshold values for all axes and both above and below thresholds
+- * - i.e. there is only one value
+- */
+-#define LIS3L02DQ_REG_THS_L_ADDR			0x2E
+-#define LIS3L02DQ_REG_THS_H_ADDR			0x2F
+-
+-#define LIS3L02DQ_DEFAULT_CTRL1 (LIS3L02DQ_REG_CTRL_1_PD_ON	      \
+-				 | LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE \
+-				 | LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE \
+-				 | LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE \
+-				 | LIS3L02DQ_REG_CTRL_1_DF_128)
+-
+-#define LIS3L02DQ_DEFAULT_CTRL2	0
+-
+-#define LIS3L02DQ_MAX_TX 12
+-#define LIS3L02DQ_MAX_RX 12
+-/**
+- * struct lis3l02dq_state - device instance specific data
+- * @us:			actual spi_device
+- * @trig:		data ready trigger registered with iio
+- * @buf_lock:		mutex to protect tx and rx
+- * @tx:			transmit buffer
+- * @rx:			receive buffer
+- **/
+-struct lis3l02dq_state {
+-	struct spi_device		*us;
+-	struct iio_trigger		*trig;
+-	struct mutex			buf_lock;
+-	int				gpio;
+-	bool				trigger_on;
+-
+-	u8	tx[LIS3L02DQ_MAX_RX] ____cacheline_aligned;
+-	u8	rx[LIS3L02DQ_MAX_RX] ____cacheline_aligned;
+-};
+-
+-int lis3l02dq_spi_read_reg_8(struct iio_dev *indio_dev,
+-			     u8 reg_address,
+-			     u8 *val);
+-
+-int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
+-			      u8 reg_address,
+-			      u8 val);
+-
+-int lis3l02dq_disable_all_events(struct iio_dev *indio_dev);
+-
+-#ifdef CONFIG_IIO_BUFFER
+-/* At the moment triggers are only used for buffer
+- * filling. This may change!
+- */
+-void lis3l02dq_remove_trigger(struct iio_dev *indio_dev);
+-int lis3l02dq_probe_trigger(struct iio_dev *indio_dev);
+-
+-int lis3l02dq_configure_buffer(struct iio_dev *indio_dev);
+-void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev);
+-
+-irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private);
+-#define lis3l02dq_th lis3l02dq_data_rdy_trig_poll
+-
+-#else /* CONFIG_IIO_BUFFER */
+-#define lis3l02dq_th lis3l02dq_nobuffer
+-
+-static inline void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+-{
+-}
+-
+-static inline int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
+-{
+-	return 0;
+-}
+-
+-static int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+-{
+-	return 0;
+-}
+-
+-static inline void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev)
+-{
+-}
+-#endif /* CONFIG_IIO_BUFFER */
+-#endif /* SPI_LIS3L02DQ_H_ */
+diff --git a/drivers/staging/iio/accel/lis3l02dq_core.c b/drivers/staging/iio/accel/lis3l02dq_core.c
+deleted file mode 100644
+index 5c3410a74fdb..000000000000
+--- a/drivers/staging/iio/accel/lis3l02dq_core.c
++++ /dev/null
+@@ -1,814 +0,0 @@
+-/*
+- * lis3l02dq.c	support STMicroelectronics LISD02DQ
+- *		3d 2g Linear Accelerometers via SPI
+- *
+- * Copyright (c) 2007 Jonathan Cameron <jic23@kernel.org>
+- *
+- * This program is free software; you can redistribute it and/or modify
+- * it under the terms of the GNU General Public License version 2 as
+- * published by the Free Software Foundation.
+- *
+- * Settings:
+- * 16 bit left justified mode used.
+- */
+-
+-#include <linux/interrupt.h>
+-#include <linux/irq.h>
+-#include <linux/gpio.h>
+-#include <linux/of_gpio.h>
+-#include <linux/mutex.h>
+-#include <linux/device.h>
+-#include <linux/kernel.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/sysfs.h>
+-#include <linux/module.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/sysfs.h>
+-#include <linux/iio/events.h>
+-#include <linux/iio/buffer.h>
+-
+-#include "lis3l02dq.h"
+-
+-/* At the moment the spi framework doesn't allow global setting of cs_change.
+- * It's in the likely to be added comment at the top of spi.h.
+- * This means that use cannot be made of spi_write etc.
+- */
+-/* direct copy of the irq_default_primary_handler */
+-#ifndef CONFIG_IIO_BUFFER
+-static irqreturn_t lis3l02dq_nobuffer(int irq, void *private)
+-{
+-	return IRQ_WAKE_THREAD;
+-}
+-#endif
+-
+-/**
+- * lis3l02dq_spi_read_reg_8() - read single byte from a single register
+- * @indio_dev: iio_dev for this actual device
+- * @reg_address: the address of the register to be read
+- * @val: pass back the resulting value
+- **/
+-int lis3l02dq_spi_read_reg_8(struct iio_dev *indio_dev,
+-			     u8 reg_address, u8 *val)
+-{
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	int ret;
+-	struct spi_transfer xfer = {
+-		.tx_buf = st->tx,
+-		.rx_buf = st->rx,
+-		.bits_per_word = 8,
+-		.len = 2,
+-	};
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = LIS3L02DQ_READ_REG(reg_address);
+-	st->tx[1] = 0;
+-
+-	ret = spi_sync_transfer(st->us, &xfer, 1);
+-	*val = st->rx[1];
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+-
+-/**
+- * lis3l02dq_spi_write_reg_8() - write single byte to a register
+- * @indio_dev: iio_dev for this device
+- * @reg_address: the address of the register to be written
+- * @val: the value to write
+- **/
+-int lis3l02dq_spi_write_reg_8(struct iio_dev *indio_dev,
+-			      u8 reg_address,
+-			      u8 val)
+-{
+-	int ret;
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = LIS3L02DQ_WRITE_REG(reg_address);
+-	st->tx[1] = val;
+-	ret = spi_write(st->us, st->tx, 2);
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+-
+-/**
+- * lisl302dq_spi_write_reg_s16() - write 2 bytes to a pair of registers
+- * @indio_dev: iio_dev for this device
+- * @lower_reg_address: the address of the lower of the two registers.
+- *               Second register is assumed to have address one greater.
+- * @value: value to be written
+- **/
+-static int lis3l02dq_spi_write_reg_s16(struct iio_dev *indio_dev,
+-				       u8 lower_reg_address,
+-				       s16 value)
+-{
+-	int ret;
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	struct spi_transfer xfers[] = { {
+-			.tx_buf = st->tx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-		}, {
+-			.tx_buf = st->tx + 2,
+-			.bits_per_word = 8,
+-			.len = 2,
+-		},
+-	};
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = LIS3L02DQ_WRITE_REG(lower_reg_address);
+-	st->tx[1] = value & 0xFF;
+-	st->tx[2] = LIS3L02DQ_WRITE_REG(lower_reg_address + 1);
+-	st->tx[3] = (value >> 8) & 0xFF;
+-
+-	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
+-	mutex_unlock(&st->buf_lock);
+-
+-	return ret;
+-}
+-
+-static int lis3l02dq_read_reg_s16(struct iio_dev *indio_dev,
+-				  u8 lower_reg_address,
+-				  int *val)
+-{
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	int ret;
+-	s16 tempval;
+-	struct spi_transfer xfers[] = { {
+-			.tx_buf = st->tx,
+-			.rx_buf = st->rx,
+-			.bits_per_word = 8,
+-			.len = 2,
+-			.cs_change = 1,
+-		}, {
+-			.tx_buf = st->tx + 2,
+-			.rx_buf = st->rx + 2,
+-			.bits_per_word = 8,
+-			.len = 2,
+-		},
+-	};
+-
+-	mutex_lock(&st->buf_lock);
+-	st->tx[0] = LIS3L02DQ_READ_REG(lower_reg_address);
+-	st->tx[1] = 0;
+-	st->tx[2] = LIS3L02DQ_READ_REG(lower_reg_address + 1);
+-	st->tx[3] = 0;
+-
+-	ret = spi_sync_transfer(st->us, xfers, ARRAY_SIZE(xfers));
+-	if (ret) {
+-		dev_err(&st->us->dev, "problem when reading 16 bit register");
+-		goto error_ret;
+-	}
+-	tempval = (s16)(st->rx[1]) | ((s16)(st->rx[3]) << 8);
+-
+-	*val = tempval;
+-error_ret:
+-	mutex_unlock(&st->buf_lock);
+-	return ret;
+-}
+-
+-enum lis3l02dq_rm_ind {
+-	LIS3L02DQ_ACCEL,
+-	LIS3L02DQ_GAIN,
+-	LIS3L02DQ_BIAS,
+-};
+-
+-static u8 lis3l02dq_axis_map[3][3] = {
+-	[LIS3L02DQ_ACCEL] = { LIS3L02DQ_REG_OUT_X_L_ADDR,
+-			      LIS3L02DQ_REG_OUT_Y_L_ADDR,
+-			      LIS3L02DQ_REG_OUT_Z_L_ADDR },
+-	[LIS3L02DQ_GAIN] = { LIS3L02DQ_REG_GAIN_X_ADDR,
+-			     LIS3L02DQ_REG_GAIN_Y_ADDR,
+-			     LIS3L02DQ_REG_GAIN_Z_ADDR },
+-	[LIS3L02DQ_BIAS] = { LIS3L02DQ_REG_OFFSET_X_ADDR,
+-			     LIS3L02DQ_REG_OFFSET_Y_ADDR,
+-			     LIS3L02DQ_REG_OFFSET_Z_ADDR }
+-};
+-
+-static int lis3l02dq_read_thresh(struct iio_dev *indio_dev,
+-				 const struct iio_chan_spec *chan,
+-				 enum iio_event_type type,
+-				 enum iio_event_direction dir,
+-				 enum iio_event_info info,
+-				 int *val, int *val2)
+-{
+-	int ret;
+-
+-	ret = lis3l02dq_read_reg_s16(indio_dev, LIS3L02DQ_REG_THS_L_ADDR, val);
+-	if (ret)
+-		return ret;
+-	return IIO_VAL_INT;
+-}
+-
+-static int lis3l02dq_write_thresh(struct iio_dev *indio_dev,
+-				  const struct iio_chan_spec *chan,
+-				  enum iio_event_type type,
+-				  enum iio_event_direction dir,
+-				  enum iio_event_info info,
+-				  int val, int val2)
+-{
+-	u16 value = val;
+-
+-	return lis3l02dq_spi_write_reg_s16(indio_dev,
+-					   LIS3L02DQ_REG_THS_L_ADDR,
+-					   value);
+-}
+-
+-static int lis3l02dq_write_raw(struct iio_dev *indio_dev,
+-			       struct iio_chan_spec const *chan,
+-			       int val,
+-			       int val2,
+-			       long mask)
+-{
+-	int ret = -EINVAL, reg;
+-	u8 uval;
+-	s8 sval;
+-
+-	switch (mask) {
+-	case IIO_CHAN_INFO_CALIBBIAS:
+-		if (val > 255 || val < -256)
+-			return -EINVAL;
+-		sval = val;
+-		reg = lis3l02dq_axis_map[LIS3L02DQ_BIAS][chan->address];
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev, reg, sval);
+-		break;
+-	case IIO_CHAN_INFO_CALIBSCALE:
+-		if (val & ~0xFF)
+-			return -EINVAL;
+-		uval = val;
+-		reg = lis3l02dq_axis_map[LIS3L02DQ_GAIN][chan->address];
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev, reg, uval);
+-		break;
+-	}
+-	return ret;
+-}
+-
+-static int lis3l02dq_read_raw(struct iio_dev *indio_dev,
+-			      struct iio_chan_spec const *chan,
+-			      int *val,
+-			      int *val2,
+-			      long mask)
+-{
+-	u8 utemp;
+-	s8 stemp;
+-	ssize_t ret = 0;
+-	u8 reg;
+-
+-	switch (mask) {
+-	case IIO_CHAN_INFO_RAW:
+-		/* Take the iio_dev status lock */
+-		mutex_lock(&indio_dev->mlock);
+-		if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+-			ret = -EBUSY;
+-		} else {
+-			reg = lis3l02dq_axis_map
+-				[LIS3L02DQ_ACCEL][chan->address];
+-			ret = lis3l02dq_read_reg_s16(indio_dev, reg, val);
+-		}
+-		mutex_unlock(&indio_dev->mlock);
+-		if (ret < 0)
+-			goto error_ret;
+-		return IIO_VAL_INT;
+-	case IIO_CHAN_INFO_SCALE:
+-		*val = 0;
+-		*val2 = 9580;
+-		return IIO_VAL_INT_PLUS_MICRO;
+-	case IIO_CHAN_INFO_CALIBSCALE:
+-		reg = lis3l02dq_axis_map[LIS3L02DQ_GAIN][chan->address];
+-		ret = lis3l02dq_spi_read_reg_8(indio_dev, reg, &utemp);
+-		if (ret)
+-			goto error_ret;
+-		/* to match with what previous code does */
+-		*val = utemp;
+-		return IIO_VAL_INT;
+-
+-	case IIO_CHAN_INFO_CALIBBIAS:
+-		reg = lis3l02dq_axis_map[LIS3L02DQ_BIAS][chan->address];
+-		ret = lis3l02dq_spi_read_reg_8(indio_dev, reg, (u8 *)&stemp);
+-		/* to match with what previous code does */
+-		*val = stemp;
+-		return IIO_VAL_INT;
+-	}
+-error_ret:
+-	return ret;
+-}
+-
+-static ssize_t lis3l02dq_read_frequency(struct device *dev,
+-					struct device_attribute *attr,
+-					char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	int ret, len = 0;
+-	s8 t;
+-
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_1_ADDR,
+-				       (u8 *)&t);
+-	if (ret)
+-		return ret;
+-	t &= LIS3L02DQ_DEC_MASK;
+-	switch (t) {
+-	case LIS3L02DQ_REG_CTRL_1_DF_128:
+-		len = sprintf(buf, "280\n");
+-		break;
+-	case LIS3L02DQ_REG_CTRL_1_DF_64:
+-		len = sprintf(buf, "560\n");
+-		break;
+-	case LIS3L02DQ_REG_CTRL_1_DF_32:
+-		len = sprintf(buf, "1120\n");
+-		break;
+-	case LIS3L02DQ_REG_CTRL_1_DF_8:
+-		len = sprintf(buf, "4480\n");
+-		break;
+-	}
+-	return len;
+-}
+-
+-static ssize_t lis3l02dq_write_frequency(struct device *dev,
+-					 struct device_attribute *attr,
+-					 const char *buf,
+-					 size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	unsigned long val;
+-	int ret;
+-	u8 t;
+-
+-	ret = kstrtoul(buf, 10, &val);
+-	if (ret)
+-		return ret;
+-
+-	mutex_lock(&indio_dev->mlock);
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_1_ADDR,
+-				       &t);
+-	if (ret)
+-		goto error_ret_mutex;
+-	/* Wipe the bits clean */
+-	t &= ~LIS3L02DQ_DEC_MASK;
+-	switch (val) {
+-	case 280:
+-		t |= LIS3L02DQ_REG_CTRL_1_DF_128;
+-		break;
+-	case 560:
+-		t |= LIS3L02DQ_REG_CTRL_1_DF_64;
+-		break;
+-	case 1120:
+-		t |= LIS3L02DQ_REG_CTRL_1_DF_32;
+-		break;
+-	case 4480:
+-		t |= LIS3L02DQ_REG_CTRL_1_DF_8;
+-		break;
+-	default:
+-		ret = -EINVAL;
+-		goto error_ret_mutex;
+-	}
+-
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					t);
+-
+-error_ret_mutex:
+-	mutex_unlock(&indio_dev->mlock);
+-
+-	return ret ? ret : len;
+-}
+-
+-static int lis3l02dq_initial_setup(struct iio_dev *indio_dev)
+-{
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	int ret;
+-	u8 val, valtest;
+-
+-	st->us->mode = SPI_MODE_3;
+-
+-	spi_setup(st->us);
+-
+-	val = LIS3L02DQ_DEFAULT_CTRL1;
+-	/* Write suitable defaults to ctrl1 */
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					val);
+-	if (ret) {
+-		dev_err(&st->us->dev, "problem with setup control register 1");
+-		goto err_ret;
+-	}
+-	/* Repeat as sometimes doesn't work first time? */
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					val);
+-	if (ret) {
+-		dev_err(&st->us->dev, "problem with setup control register 1");
+-		goto err_ret;
+-	}
+-
+-	/*
+-	 * Read back to check this has worked acts as loose test of correct
+-	 * chip
+-	 */
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_1_ADDR,
+-				       &valtest);
+-	if (ret || (valtest != val)) {
+-		dev_err(&indio_dev->dev,
+-			"device not playing ball %d %d\n", valtest, val);
+-		ret = -EINVAL;
+-		goto err_ret;
+-	}
+-
+-	val = LIS3L02DQ_DEFAULT_CTRL2;
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_2_ADDR,
+-					val);
+-	if (ret) {
+-		dev_err(&st->us->dev, "problem with setup control register 2");
+-		goto err_ret;
+-	}
+-
+-	val = LIS3L02DQ_REG_WAKE_UP_CFG_LATCH_SRC;
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-					val);
+-	if (ret)
+-		dev_err(&st->us->dev, "problem with interrupt cfg register");
+-err_ret:
+-
+-	return ret;
+-}
+-
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+-			      lis3l02dq_read_frequency,
+-			      lis3l02dq_write_frequency);
+-
+-static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("280 560 1120 4480");
+-
+-static irqreturn_t lis3l02dq_event_handler(int irq, void *private)
+-{
+-	struct iio_dev *indio_dev = private;
+-	u8 t;
+-
+-	s64 timestamp = iio_get_time_ns(indio_dev);
+-
+-	lis3l02dq_spi_read_reg_8(indio_dev,
+-				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
+-				 &t);
+-
+-	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_HIGH)
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+-						  0,
+-						  IIO_MOD_Z,
+-						  IIO_EV_TYPE_THRESH,
+-						  IIO_EV_DIR_RISING),
+-			       timestamp);
+-
+-	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Z_LOW)
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+-						  0,
+-						  IIO_MOD_Z,
+-						  IIO_EV_TYPE_THRESH,
+-						  IIO_EV_DIR_FALLING),
+-			       timestamp);
+-
+-	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_HIGH)
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+-						  0,
+-						  IIO_MOD_Y,
+-						  IIO_EV_TYPE_THRESH,
+-						  IIO_EV_DIR_RISING),
+-			       timestamp);
+-
+-	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_Y_LOW)
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+-						  0,
+-						  IIO_MOD_Y,
+-						  IIO_EV_TYPE_THRESH,
+-						  IIO_EV_DIR_FALLING),
+-			       timestamp);
+-
+-	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_HIGH)
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+-						  0,
+-						  IIO_MOD_X,
+-						  IIO_EV_TYPE_THRESH,
+-						  IIO_EV_DIR_RISING),
+-			       timestamp);
+-
+-	if (t & LIS3L02DQ_REG_WAKE_UP_SRC_INTERRUPT_X_LOW)
+-		iio_push_event(indio_dev,
+-			       IIO_MOD_EVENT_CODE(IIO_ACCEL,
+-						  0,
+-						  IIO_MOD_X,
+-						  IIO_EV_TYPE_THRESH,
+-						  IIO_EV_DIR_FALLING),
+-			       timestamp);
+-
+-	/* Ack and allow for new interrupts */
+-	lis3l02dq_spi_read_reg_8(indio_dev,
+-				 LIS3L02DQ_REG_WAKE_UP_ACK_ADDR,
+-				 &t);
+-
+-	return IRQ_HANDLED;
+-}
+-
+-static const struct iio_event_spec lis3l02dq_event[] = {
+-	{
+-		.type = IIO_EV_TYPE_THRESH,
+-		.dir = IIO_EV_DIR_RISING,
+-		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+-		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
+-	}, {
+-		.type = IIO_EV_TYPE_THRESH,
+-		.dir = IIO_EV_DIR_FALLING,
+-		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+-		.mask_shared_by_type = BIT(IIO_EV_INFO_VALUE),
+-	}
+-};
+-
+-#define LIS3L02DQ_CHAN(index, mod)				\
+-	{							\
+-		.type = IIO_ACCEL,				\
+-		.modified = 1,					\
+-		.channel2 = mod,				\
+-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+-			BIT(IIO_CHAN_INFO_CALIBSCALE) |		\
+-			BIT(IIO_CHAN_INFO_CALIBBIAS),		\
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+-		.address = index,				\
+-		.scan_index = index,				\
+-		.scan_type = {					\
+-			.sign = 's',				\
+-			.realbits = 12,				\
+-			.storagebits = 16,			\
+-		},						\
+-		.event_spec = lis3l02dq_event,			\
+-		.num_event_specs = ARRAY_SIZE(lis3l02dq_event),	\
+-	 }
+-
+-static const struct iio_chan_spec lis3l02dq_channels[] = {
+-	LIS3L02DQ_CHAN(0, IIO_MOD_X),
+-	LIS3L02DQ_CHAN(1, IIO_MOD_Y),
+-	LIS3L02DQ_CHAN(2, IIO_MOD_Z),
+-	IIO_CHAN_SOFT_TIMESTAMP(3)
+-};
+-
+-static int lis3l02dq_read_event_config(struct iio_dev *indio_dev,
+-				       const struct iio_chan_spec *chan,
+-				       enum iio_event_type type,
+-				       enum iio_event_direction dir)
+-{
+-	u8 val;
+-	int ret;
+-	u8 mask = 1 << (chan->channel2 * 2 + (dir == IIO_EV_DIR_RISING));
+-
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-				       &val);
+-	if (ret < 0)
+-		return ret;
+-
+-	return !!(val & mask);
+-}
+-
+-int lis3l02dq_disable_all_events(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-	u8 control, val;
+-
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_2_ADDR,
+-				       &control);
+-
+-	control &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT;
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_2_ADDR,
+-					control);
+-	if (ret)
+-		goto error_ret;
+-	/* Also for consistency clear the mask */
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-				       &val);
+-	if (ret)
+-		goto error_ret;
+-	val &= ~0x3f;
+-
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-					val);
+-	if (ret)
+-		goto error_ret;
+-
+-	ret = control;
+-error_ret:
+-	return ret;
+-}
+-
+-static int lis3l02dq_write_event_config(struct iio_dev *indio_dev,
+-					const struct iio_chan_spec *chan,
+-					enum iio_event_type type,
+-					enum iio_event_direction dir,
+-					int state)
+-{
+-	int ret = 0;
+-	u8 val, control;
+-	u8 currentlyset;
+-	bool changed = false;
+-	u8 mask = 1 << (chan->channel2 * 2 + (dir == IIO_EV_DIR_RISING));
+-
+-	mutex_lock(&indio_dev->mlock);
+-	/* read current control */
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_2_ADDR,
+-				       &control);
+-	if (ret)
+-		goto error_ret;
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-				       &val);
+-	if (ret < 0)
+-		goto error_ret;
+-	currentlyset = val & mask;
+-
+-	if (!currentlyset && state) {
+-		changed = true;
+-		val |= mask;
+-	} else if (currentlyset && !state) {
+-		changed = true;
+-		val &= ~mask;
+-	}
+-
+-	if (changed) {
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-						LIS3L02DQ_REG_WAKE_UP_CFG_ADDR,
+-						val);
+-		if (ret)
+-			goto error_ret;
+-		control = val & 0x3f ?
+-			(control | LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT) :
+-			(control & ~LIS3L02DQ_REG_CTRL_2_ENABLE_INTERRUPT);
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						control);
+-		if (ret)
+-			goto error_ret;
+-	}
+-
+-error_ret:
+-	mutex_unlock(&indio_dev->mlock);
+-	return ret;
+-}
+-
+-static struct attribute *lis3l02dq_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+-	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+-	NULL
+-};
+-
+-static const struct attribute_group lis3l02dq_attribute_group = {
+-	.attrs = lis3l02dq_attributes,
+-};
+-
+-static const struct iio_info lis3l02dq_info = {
+-	.read_raw = &lis3l02dq_read_raw,
+-	.write_raw = &lis3l02dq_write_raw,
+-	.read_event_value = &lis3l02dq_read_thresh,
+-	.write_event_value = &lis3l02dq_write_thresh,
+-	.write_event_config = &lis3l02dq_write_event_config,
+-	.read_event_config = &lis3l02dq_read_event_config,
+-	.driver_module = THIS_MODULE,
+-	.attrs = &lis3l02dq_attribute_group,
+-};
+-
+-static int lis3l02dq_probe(struct spi_device *spi)
+-{
+-	int ret;
+-	struct lis3l02dq_state *st;
+-	struct iio_dev *indio_dev;
+-
+-	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+-	if (!indio_dev)
+-		return -ENOMEM;
+-	st = iio_priv(indio_dev);
+-	/* this is only used for removal purposes */
+-	spi_set_drvdata(spi, indio_dev);
+-
+-	st->us = spi;
+-	st->gpio = of_get_gpio(spi->dev.of_node, 0);
+-	mutex_init(&st->buf_lock);
+-	indio_dev->name = spi->dev.driver->name;
+-	indio_dev->dev.parent = &spi->dev;
+-	indio_dev->info = &lis3l02dq_info;
+-	indio_dev->channels = lis3l02dq_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(lis3l02dq_channels);
+-
+-	indio_dev->modes = INDIO_DIRECT_MODE;
+-
+-	ret = lis3l02dq_configure_buffer(indio_dev);
+-	if (ret)
+-		return ret;
+-
+-	if (spi->irq) {
+-		ret = request_threaded_irq(st->us->irq,
+-					   &lis3l02dq_th,
+-					   &lis3l02dq_event_handler,
+-					   IRQF_TRIGGER_RISING,
+-					   "lis3l02dq",
+-					   indio_dev);
+-		if (ret)
+-			goto error_unreg_buffer_funcs;
+-
+-		ret = lis3l02dq_probe_trigger(indio_dev);
+-		if (ret)
+-			goto error_free_interrupt;
+-	}
+-
+-	/* Get the device into a sane initial state */
+-	ret = lis3l02dq_initial_setup(indio_dev);
+-	if (ret)
+-		goto error_remove_trigger;
+-
+-	ret = iio_device_register(indio_dev);
+-	if (ret)
+-		goto error_remove_trigger;
+-
+-	return 0;
+-
+-error_remove_trigger:
+-	if (spi->irq)
+-		lis3l02dq_remove_trigger(indio_dev);
+-error_free_interrupt:
+-	if (spi->irq)
+-		free_irq(st->us->irq, indio_dev);
+-error_unreg_buffer_funcs:
+-	lis3l02dq_unconfigure_buffer(indio_dev);
+-	return ret;
+-}
+-
+-/* Power down the device */
+-static int lis3l02dq_stop_device(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	u8 val = 0;
+-
+-	mutex_lock(&indio_dev->mlock);
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					val);
+-	if (ret) {
+-		dev_err(&st->us->dev, "problem with turning device off: ctrl1");
+-		goto err_ret;
+-	}
+-
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_2_ADDR,
+-					val);
+-	if (ret)
+-		dev_err(&st->us->dev, "problem with turning device off: ctrl2");
+-err_ret:
+-	mutex_unlock(&indio_dev->mlock);
+-	return ret;
+-}
+-
+-/* fixme, confirm ordering in this function */
+-static int lis3l02dq_remove(struct spi_device *spi)
+-{
+-	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-
+-	iio_device_unregister(indio_dev);
+-
+-	lis3l02dq_disable_all_events(indio_dev);
+-	lis3l02dq_stop_device(indio_dev);
+-
+-	if (spi->irq)
+-		free_irq(st->us->irq, indio_dev);
+-
+-	lis3l02dq_remove_trigger(indio_dev);
+-	lis3l02dq_unconfigure_buffer(indio_dev);
+-
+-	return 0;
+-}
+-
+-static struct spi_driver lis3l02dq_driver = {
+-	.driver = {
+-		.name = "lis3l02dq",
+-	},
+-	.probe = lis3l02dq_probe,
+-	.remove = lis3l02dq_remove,
+-};
+-module_spi_driver(lis3l02dq_driver);
+-
+-MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
+-MODULE_DESCRIPTION("ST LIS3L02DQ Accelerometer SPI driver");
+-MODULE_LICENSE("GPL v2");
+-MODULE_ALIAS("spi:lis3l02dq");
+diff --git a/drivers/staging/iio/accel/lis3l02dq_ring.c b/drivers/staging/iio/accel/lis3l02dq_ring.c
+deleted file mode 100644
+index 50c162e0c31f..000000000000
+--- a/drivers/staging/iio/accel/lis3l02dq_ring.c
++++ /dev/null
+@@ -1,428 +0,0 @@
+-#include <linux/interrupt.h>
+-#include <linux/gpio.h>
+-#include <linux/mutex.h>
+-#include <linux/kernel.h>
+-#include <linux/spi/spi.h>
+-#include <linux/slab.h>
+-#include <linux/export.h>
+-
+-#include <linux/iio/iio.h>
+-#include <linux/iio/kfifo_buf.h>
+-#include <linux/iio/trigger.h>
+-#include <linux/iio/trigger_consumer.h>
+-#include "lis3l02dq.h"
+-
+-/**
+- * combine_8_to_16() utility function to munge two u8s into u16
+- **/
+-static inline u16 combine_8_to_16(u8 lower, u8 upper)
+-{
+-	u16 _lower = lower;
+-	u16 _upper = upper;
+-
+-	return _lower | (_upper << 8);
+-}
+-
+-/**
+- * lis3l02dq_data_rdy_trig_poll() the event handler for the data rdy trig
+- **/
+-irqreturn_t lis3l02dq_data_rdy_trig_poll(int irq, void *private)
+-{
+-	struct iio_dev *indio_dev = private;
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-
+-	if (st->trigger_on) {
+-		iio_trigger_poll(st->trig);
+-		return IRQ_HANDLED;
+-	}
+-
+-	return IRQ_WAKE_THREAD;
+-}
+-
+-static const u8 read_all_tx_array[] = {
+-	LIS3L02DQ_READ_REG(LIS3L02DQ_REG_OUT_X_L_ADDR), 0,
+-	LIS3L02DQ_READ_REG(LIS3L02DQ_REG_OUT_X_H_ADDR), 0,
+-	LIS3L02DQ_READ_REG(LIS3L02DQ_REG_OUT_Y_L_ADDR), 0,
+-	LIS3L02DQ_READ_REG(LIS3L02DQ_REG_OUT_Y_H_ADDR), 0,
+-	LIS3L02DQ_READ_REG(LIS3L02DQ_REG_OUT_Z_L_ADDR), 0,
+-	LIS3L02DQ_READ_REG(LIS3L02DQ_REG_OUT_Z_H_ADDR), 0,
+-};
+-
+-/**
+- * lis3l02dq_read_all() Reads all channels currently selected
+- * @indio_dev:	IIO device state
+- * @rx_array:	(dma capable) receive array, must be at least
+- *		4*number of channels
+- **/
+-static int lis3l02dq_read_all(struct iio_dev *indio_dev, u8 *rx_array)
+-{
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	struct spi_transfer *xfers;
+-	struct spi_message msg;
+-	int ret, i, j = 0;
+-
+-	xfers = kcalloc(bitmap_weight(indio_dev->active_scan_mask,
+-				      indio_dev->masklength) * 2,
+-			sizeof(*xfers), GFP_KERNEL);
+-	if (!xfers)
+-		return -ENOMEM;
+-
+-	mutex_lock(&st->buf_lock);
+-
+-	for (i = 0; i < ARRAY_SIZE(read_all_tx_array) / 4; i++)
+-		if (test_bit(i, indio_dev->active_scan_mask)) {
+-			/* lower byte */
+-			xfers[j].tx_buf = st->tx + (2 * j);
+-			st->tx[2 * j] = read_all_tx_array[i * 4];
+-			st->tx[2 * j + 1] = 0;
+-			if (rx_array)
+-				xfers[j].rx_buf = rx_array + (j * 2);
+-			xfers[j].bits_per_word = 8;
+-			xfers[j].len = 2;
+-			xfers[j].cs_change = 1;
+-			j++;
+-
+-			/* upper byte */
+-			xfers[j].tx_buf = st->tx + (2 * j);
+-			st->tx[2 * j] = read_all_tx_array[i * 4 + 2];
+-			st->tx[2 * j + 1] = 0;
+-			if (rx_array)
+-				xfers[j].rx_buf = rx_array + (j * 2);
+-			xfers[j].bits_per_word = 8;
+-			xfers[j].len = 2;
+-			xfers[j].cs_change = 1;
+-			j++;
+-		}
+-
+-	/* After these are transmitted, the rx_buff should have
+-	 * values in alternate bytes
+-	 */
+-	spi_message_init(&msg);
+-	for (j = 0; j < bitmap_weight(indio_dev->active_scan_mask,
+-				      indio_dev->masklength) * 2; j++)
+-		spi_message_add_tail(&xfers[j], &msg);
+-
+-	ret = spi_sync(st->us, &msg);
+-	mutex_unlock(&st->buf_lock);
+-	kfree(xfers);
+-
+-	return ret;
+-}
+-
+-static int lis3l02dq_get_buffer_element(struct iio_dev *indio_dev,
+-					u8 *buf)
+-{
+-	int ret, i;
+-	u8 *rx_array;
+-	s16 *data = (s16 *)buf;
+-	int scan_count = bitmap_weight(indio_dev->active_scan_mask,
+-				       indio_dev->masklength);
+-
+-	rx_array = kcalloc(4, scan_count, GFP_KERNEL);
+-	if (!rx_array)
+-		return -ENOMEM;
+-	ret = lis3l02dq_read_all(indio_dev, rx_array);
+-	if (ret < 0) {
+-		kfree(rx_array);
+-		return ret;
+-	}
+-	for (i = 0; i < scan_count; i++)
+-		data[i] = combine_8_to_16(rx_array[i * 4 + 1],
+-					rx_array[i * 4 + 3]);
+-	kfree(rx_array);
+-
+-	return i * sizeof(data[0]);
+-}
+-
+-static irqreturn_t lis3l02dq_trigger_handler(int irq, void *p)
+-{
+-	struct iio_poll_func *pf = p;
+-	struct iio_dev *indio_dev = pf->indio_dev;
+-	int len = 0;
+-	char *data;
+-
+-	data = kmalloc(indio_dev->scan_bytes, GFP_KERNEL);
+-	if (!data)
+-		goto done;
+-
+-	if (!bitmap_empty(indio_dev->active_scan_mask, indio_dev->masklength))
+-		len = lis3l02dq_get_buffer_element(indio_dev, data);
+-
+-	iio_push_to_buffers_with_timestamp(indio_dev, data, pf->timestamp);
+-
+-	kfree(data);
+-done:
+-	iio_trigger_notify_done(indio_dev->trig);
+-	return IRQ_HANDLED;
+-}
+-
+-/* Caller responsible for locking as necessary. */
+-static int
+-__lis3l02dq_write_data_ready_config(struct iio_dev *indio_dev, bool state)
+-{
+-	int ret;
+-	u8 valold;
+-	bool currentlyset;
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-
+-	/* Get the current event mask register */
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_2_ADDR,
+-				       &valold);
+-	if (ret)
+-		goto error_ret;
+-	/* Find out if data ready is already on */
+-	currentlyset
+-		= valold & LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
+-
+-	/* Disable requested */
+-	if (!state && currentlyset) {
+-		/* Disable the data ready signal */
+-		valold &= ~LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
+-
+-		/* The double write is to overcome a hardware bug? */
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						valold);
+-		if (ret)
+-			goto error_ret;
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						valold);
+-		if (ret)
+-			goto error_ret;
+-		st->trigger_on = false;
+-	/* Enable requested */
+-	} else if (state && !currentlyset) {
+-		/* If not set, enable requested
+-		 * first disable all events
+-		 */
+-		ret = lis3l02dq_disable_all_events(indio_dev);
+-		if (ret < 0)
+-			goto error_ret;
+-
+-		valold = ret |
+-			LIS3L02DQ_REG_CTRL_2_ENABLE_DATA_READY_GENERATION;
+-
+-		st->trigger_on = true;
+-		ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-						LIS3L02DQ_REG_CTRL_2_ADDR,
+-						valold);
+-		if (ret)
+-			goto error_ret;
+-	}
+-
+-	return 0;
+-error_ret:
+-	return ret;
+-}
+-
+-/**
+- * lis3l02dq_data_rdy_trigger_set_state() set datardy interrupt state
+- *
+- * If disabling the interrupt also does a final read to ensure it is clear.
+- * This is only important in some cases where the scan enable elements are
+- * switched before the buffer is reenabled.
+- **/
+-static int lis3l02dq_data_rdy_trigger_set_state(struct iio_trigger *trig,
+-						bool state)
+-{
+-	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+-	int ret = 0;
+-	u8 t;
+-
+-	__lis3l02dq_write_data_ready_config(indio_dev, state);
+-	if (!state) {
+-		/*
+-		 * A possible quirk with the handler is currently worked around
+-		 * by ensuring outstanding read events are cleared.
+-		 */
+-		ret = lis3l02dq_read_all(indio_dev, NULL);
+-	}
+-	lis3l02dq_spi_read_reg_8(indio_dev,
+-				 LIS3L02DQ_REG_WAKE_UP_SRC_ADDR,
+-				 &t);
+-	return ret;
+-}
+-
+-/**
+- * lis3l02dq_trig_try_reen() try reenabling irq for data rdy trigger
+- * @trig:	the datardy trigger
+- */
+-static int lis3l02dq_trig_try_reen(struct iio_trigger *trig)
+-{
+-	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-	int i;
+-
+-	/* If gpio still high (or high again)
+-	 * In theory possible we will need to do this several times
+-	 */
+-	for (i = 0; i < 5; i++)
+-		if (gpio_get_value(st->gpio))
+-			lis3l02dq_read_all(indio_dev, NULL);
+-		else
+-			break;
+-	if (i == 5)
+-		pr_info("Failed to clear the interrupt for lis3l02dq\n");
+-
+-	/* irq reenabled so success! */
+-	return 0;
+-}
+-
+-static const struct iio_trigger_ops lis3l02dq_trigger_ops = {
+-	.owner = THIS_MODULE,
+-	.set_trigger_state = &lis3l02dq_data_rdy_trigger_set_state,
+-	.try_reenable = &lis3l02dq_trig_try_reen,
+-};
+-
+-int lis3l02dq_probe_trigger(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-
+-	st->trig = iio_trigger_alloc("lis3l02dq-dev%d", indio_dev->id);
+-	if (!st->trig) {
+-		ret = -ENOMEM;
+-		goto error_ret;
+-	}
+-
+-	st->trig->dev.parent = &st->us->dev;
+-	st->trig->ops = &lis3l02dq_trigger_ops;
+-	iio_trigger_set_drvdata(st->trig, indio_dev);
+-	ret = iio_trigger_register(st->trig);
+-	if (ret)
+-		goto error_free_trig;
+-
+-	return 0;
+-
+-error_free_trig:
+-	iio_trigger_free(st->trig);
+-error_ret:
+-	return ret;
+-}
+-
+-void lis3l02dq_remove_trigger(struct iio_dev *indio_dev)
+-{
+-	struct lis3l02dq_state *st = iio_priv(indio_dev);
+-
+-	iio_trigger_unregister(st->trig);
+-	iio_trigger_free(st->trig);
+-}
+-
+-void lis3l02dq_unconfigure_buffer(struct iio_dev *indio_dev)
+-{
+-	iio_dealloc_pollfunc(indio_dev->pollfunc);
+-	iio_kfifo_free(indio_dev->buffer);
+-}
+-
+-static int lis3l02dq_buffer_postenable(struct iio_dev *indio_dev)
+-{
+-	/* Disable unwanted channels otherwise the interrupt will not clear */
+-	u8 t;
+-	int ret;
+-	bool oneenabled = false;
+-
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_1_ADDR,
+-				       &t);
+-	if (ret)
+-		goto error_ret;
+-
+-	if (test_bit(0, indio_dev->active_scan_mask)) {
+-		t |= LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE;
+-		oneenabled = true;
+-	} else {
+-		t &= ~LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE;
+-	}
+-	if (test_bit(1, indio_dev->active_scan_mask)) {
+-		t |= LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE;
+-		oneenabled = true;
+-	} else {
+-		t &= ~LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE;
+-	}
+-	if (test_bit(2, indio_dev->active_scan_mask)) {
+-		t |= LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
+-		oneenabled = true;
+-	} else {
+-		t &= ~LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
+-	}
+-	if (!oneenabled) /* what happens in this case is unknown */
+-		return -EINVAL;
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					t);
+-	if (ret)
+-		goto error_ret;
+-
+-	return iio_triggered_buffer_postenable(indio_dev);
+-error_ret:
+-	return ret;
+-}
+-
+-/* Turn all channels on again */
+-static int lis3l02dq_buffer_predisable(struct iio_dev *indio_dev)
+-{
+-	u8 t;
+-	int ret;
+-
+-	ret = iio_triggered_buffer_predisable(indio_dev);
+-	if (ret)
+-		goto error_ret;
+-
+-	ret = lis3l02dq_spi_read_reg_8(indio_dev,
+-				       LIS3L02DQ_REG_CTRL_1_ADDR,
+-				       &t);
+-	if (ret)
+-		goto error_ret;
+-	t |= LIS3L02DQ_REG_CTRL_1_AXES_X_ENABLE |
+-		LIS3L02DQ_REG_CTRL_1_AXES_Y_ENABLE |
+-		LIS3L02DQ_REG_CTRL_1_AXES_Z_ENABLE;
+-
+-	ret = lis3l02dq_spi_write_reg_8(indio_dev,
+-					LIS3L02DQ_REG_CTRL_1_ADDR,
+-					t);
+-
+-error_ret:
+-	return ret;
+-}
+-
+-static const struct iio_buffer_setup_ops lis3l02dq_buffer_setup_ops = {
+-	.postenable = &lis3l02dq_buffer_postenable,
+-	.predisable = &lis3l02dq_buffer_predisable,
+-};
+-
+-int lis3l02dq_configure_buffer(struct iio_dev *indio_dev)
+-{
+-	int ret;
+-	struct iio_buffer *buffer;
+-
+-	buffer = iio_kfifo_allocate();
+-	if (!buffer)
+-		return -ENOMEM;
+-
+-	iio_device_attach_buffer(indio_dev, buffer);
+-
+-	buffer->scan_timestamp = true;
+-	indio_dev->setup_ops = &lis3l02dq_buffer_setup_ops;
+-
+-	/* Functions are NULL as we set handler below */
+-	indio_dev->pollfunc = iio_alloc_pollfunc(&iio_pollfunc_store_time,
+-						 &lis3l02dq_trigger_handler,
+-						 0,
+-						 indio_dev,
+-						 "lis3l02dq_consumer%d",
+-						 indio_dev->id);
+-
+-	if (!indio_dev->pollfunc) {
+-		ret = -ENOMEM;
+-		goto error_iio_sw_rb_free;
+-	}
+-
+-	indio_dev->modes |= INDIO_BUFFER_TRIGGERED;
+-	return 0;
+-
+-error_iio_sw_rb_free:
+-	iio_kfifo_free(indio_dev->buffer);
+-	return ret;
+-}
+-- 
+2.9.0
