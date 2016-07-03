@@ -1,140 +1,226 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57548 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57567 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751378AbcGCKu7 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 06:50:59 -0400
-Subject: Re: [PATCH v1 1/1] iio:imu:mpu6050: icm20608 initial support
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <ba6883cf2e6a280d4ff924aa761d5a7cace6412e.1467305926.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	with ESMTP id S1751378AbcGCKxG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 06:53:06 -0400
+Subject: Re: [PATCH v3 1/4] iio: potentiometer: mcp4531: Add support for
+ MCP454x, MCP456x, MCP464x and MCP466x
+To: Florian Vaussard <florian.vaussard@gmail.com>,
+	devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Adriana Reus <adi.reus@gmail.com>,
-	Lucas De Marchi <lucas.demarchi@intel.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Richard Weinberger <richard@nod.at>,
+	Peter Rosin <peda@axentia.se>
+References: <1467272091-28087-1-git-send-email-florian.vaussard@heig-vd.ch>
+ <1467272091-28087-2-git-send-email-florian.vaussard@heig-vd.ch>
+Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Slawomir Stepien <sst@poczta.fm>,
+	Joachim Eastwood <manabian@gmail.com>,
 	Matt Ranostay <mranostay@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Ge Gao <ggao@invensense.com>
+	Cristina Moraru <cristina.moraru09@gmail.com>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Florian Vaussard <florian.vaussard@heig-vd.ch>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f0ada5b0-f093-fd44-0a71-0a45cc6d08f8@kernel.org>
-Date: Sun, 3 Jul 2016 11:50:55 +0100
+Message-ID: <74244eb3-92a8-5240-079e-4e5efb6990a4@kernel.org>
+Date: Sun, 3 Jul 2016 11:53:02 +0100
 MIME-Version: 1.0
-In-Reply-To: <ba6883cf2e6a280d4ff924aa761d5a7cace6412e.1467305926.git.gregor.boirie@parrot.com>
+In-Reply-To: <1467272091-28087-2-git-send-email-florian.vaussard@heig-vd.ch>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/06/16 18:06, Gregor Boirie wrote:
-> Introduce support for Invense ICM20608 IMU, a 6-axis motion tracking device
-> that combines a 3-axis gyroscope and a 3-axis accelerometer:
-> http://www.invensense.com/products/motion-tracking/6-axis/icm-20608-2
+On 30/06/16 08:34, Florian Vaussard wrote:
+> This patch adds support for MCP454x, MCP456x, MCP464x and MCP466x parts.
+> The main difference with currently supported parts (MCP453x and alike) is
+> the addition of a non-volatile memory in order to recall the wiper setting
+> at power-on. This feature is currently not supported and only the
+> volatile memory is used to set the wiper.
 > 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Straight forward enough that I'm applying now without waiting for
-acks etc.  If anyone spots anything wrong still time to shout!
-
+> Acked-by: Peter Rosin <peda@axentia.se>
+> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
 Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
-
-Note there was a fair bit of fuzz, so Gregor, please sanity check
-nothing went wrong (I doubt it did as was only a few lines on each
-block).
+testing for all the usual boring reasons (like reviewers aren't
+perfect ;)
 
 Jonathan
 > ---
->  drivers/iio/imu/inv_mpu6050/Kconfig        | 8 ++++----
->  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 6 ++++++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c  | 1 +
->  drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h  | 2 ++
->  drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c  | 1 +
->  5 files changed, 14 insertions(+), 4 deletions(-)
+>  drivers/iio/potentiometer/Kconfig   |  6 ++--
+>  drivers/iio/potentiometer/mcp4531.c | 72 +++++++++++++++++++++++++++++++++++++
+>  2 files changed, 76 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/imu/inv_mpu6050/Kconfig b/drivers/iio/imu/inv_mpu6050/Kconfig
-> index c05d474..f5189e7 100644
-> --- a/drivers/iio/imu/inv_mpu6050/Kconfig
-> +++ b/drivers/iio/imu/inv_mpu6050/Kconfig
-> @@ -14,8 +14,8 @@ config INV_MPU6050_I2C
->  	select I2C_MUX
->  	select REGMAP_I2C
+> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
+> index 0941c8d4..55c2414 100644
+> --- a/drivers/iio/potentiometer/Kconfig
+> +++ b/drivers/iio/potentiometer/Kconfig
+> @@ -49,8 +49,10 @@ config MCP4531
+>  	depends on I2C
 >  	help
-> -	  This driver supports the Invensense MPU6050/6500/9150 motion tracking
-> -	  devices over I2C.
-> +	  This driver supports the Invensense MPU6050/6500/9150 and ICM20608
-> +	  motion tracking devices over I2C.
->  	  This driver can be built as a module. The module will be called
->  	  inv-mpu6050-i2c.
+>  	  Say yes here to build support for the Microchip
+> -	  MCP4531, MCP4532, MCP4551, MCP4552,
+> -	  MCP4631, MCP4632, MCP4651, MCP4652
+> +	  MCP4531, MCP4532, MCP4541, MCP4542,
+> +	  MCP4551, MCP4552, MCP4561, MCP4562,
+> +	  MCP4631, MCP4632, MCP4641, MCP4642,
+> +	  MCP4651, MCP4652, MCP4661, MCP4662
+>  	  digital potentiomenter chips.
 >  
-> @@ -25,7 +25,7 @@ config INV_MPU6050_SPI
->  	select INV_MPU6050_IIO
->  	select REGMAP_SPI
->  	help
-> -	  This driver supports the Invensense MPU6000/6500/9150 motion tracking
-> -	  devices over SPI.
-> +	  This driver supports the Invensense MPU6050/6500/9150 and ICM20608
-> +	  motion tracking devices over SPI.
->  	  This driver can be built as a module. The module will be called
->  	  inv-mpu6050-spi.
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> index b269b37..a27b0bc 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
-> @@ -114,6 +114,12 @@ static const struct inv_mpu6050_hw hw_info[] = {
->  		.reg = &reg_set_6050,
->  		.config = &chip_config_6050,
->  	},
-> +	{
-> +		.whoami = INV_ICM20608_WHOAMI_VALUE,
-> +		.name = "ICM20608",
-> +		.reg = &reg_set_6500,
-> +		.config = &chip_config_6050,
-> +	},
+>  	  To compile this driver as a module, choose M here: the
+> diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
+> index 3b72e1a..2251173 100644
+> --- a/drivers/iio/potentiometer/mcp4531.c
+> +++ b/drivers/iio/potentiometer/mcp4531.c
+> @@ -8,12 +8,20 @@
+>   * DEVID	#Wipers	#Positions	Resistor Opts (kOhm)	i2c address
+>   * mcp4531	1	129		5, 10, 50, 100          010111x
+>   * mcp4532	1	129		5, 10, 50, 100          01011xx
+> + * mcp4541	1	129		5, 10, 50, 100          010111x
+> + * mcp4542	1	129		5, 10, 50, 100          01011xx
+>   * mcp4551	1	257		5, 10, 50, 100          010111x
+>   * mcp4552	1	257		5, 10, 50, 100          01011xx
+> + * mcp4561	1	257		5, 10, 50, 100          010111x
+> + * mcp4562	1	257		5, 10, 50, 100          01011xx
+>   * mcp4631	2	129		5, 10, 50, 100          0101xxx
+>   * mcp4632	2	129		5, 10, 50, 100          01011xx
+> + * mcp4641	2	129		5, 10, 50, 100          0101xxx
+> + * mcp4642	2	129		5, 10, 50, 100          01011xx
+>   * mcp4651	2	257		5, 10, 50, 100          0101xxx
+>   * mcp4652	2	257		5, 10, 50, 100          01011xx
+> + * mcp4661	2	257		5, 10, 50, 100          0101xxx
+> + * mcp4662	2	257		5, 10, 50, 100          01011xx
+>   *
+>   * This program is free software; you can redistribute it and/or modify it
+>   * under the terms of the GNU General Public License version 2 as published by
+> @@ -37,18 +45,34 @@ enum mcp4531_type {
+>  	MCP453x_103,
+>  	MCP453x_503,
+>  	MCP453x_104,
+> +	MCP454x_502,
+> +	MCP454x_103,
+> +	MCP454x_503,
+> +	MCP454x_104,
+>  	MCP455x_502,
+>  	MCP455x_103,
+>  	MCP455x_503,
+>  	MCP455x_104,
+> +	MCP456x_502,
+> +	MCP456x_103,
+> +	MCP456x_503,
+> +	MCP456x_104,
+>  	MCP463x_502,
+>  	MCP463x_103,
+>  	MCP463x_503,
+>  	MCP463x_104,
+> +	MCP464x_502,
+> +	MCP464x_103,
+> +	MCP464x_503,
+> +	MCP464x_104,
+>  	MCP465x_502,
+>  	MCP465x_103,
+>  	MCP465x_503,
+>  	MCP465x_104,
+> +	MCP466x_502,
+> +	MCP466x_103,
+> +	MCP466x_503,
+> +	MCP466x_104,
 >  };
 >  
->  int inv_mpu6050_switch_engine(struct inv_mpu6050_state *st, bool en, u32 mask)
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> index 1a424a6..2bb9c6e 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
-> @@ -203,6 +203,7 @@ static const struct i2c_device_id inv_mpu_id[] = {
->  	{"mpu6050", INV_MPU6050},
->  	{"mpu6500", INV_MPU6500},
->  	{"mpu9150", INV_MPU9150},
-> +	{"icm20608", INV_ICM20608},
+>  static const struct mcp4531_cfg mcp4531_cfg[] = {
+> @@ -56,18 +80,34 @@ static const struct mcp4531_cfg mcp4531_cfg[] = {
+>  	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+>  	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+>  	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+> +	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+> +	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+> +	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+> +	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+>  	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+>  	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+>  	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+>  	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+> +	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+> +	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+> +	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+> +	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+>  	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+>  	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+>  	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+>  	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+> +	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+> +	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+> +	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+> +	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+>  	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+>  	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+>  	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+>  	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+> +	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+> +	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+> +	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+> +	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+>  };
+>  
+>  #define MCP4531_WRITE (0 << 2)
+> @@ -187,6 +227,14 @@ static const struct i2c_device_id mcp4531_id[] = {
+>  	{ "mcp4532-103", MCP453x_103 },
+>  	{ "mcp4532-503", MCP453x_503 },
+>  	{ "mcp4532-104", MCP453x_104 },
+> +	{ "mcp4541-502", MCP454x_502 },
+> +	{ "mcp4541-103", MCP454x_103 },
+> +	{ "mcp4541-503", MCP454x_503 },
+> +	{ "mcp4541-104", MCP454x_104 },
+> +	{ "mcp4542-502", MCP454x_502 },
+> +	{ "mcp4542-103", MCP454x_103 },
+> +	{ "mcp4542-503", MCP454x_503 },
+> +	{ "mcp4542-104", MCP454x_104 },
+>  	{ "mcp4551-502", MCP455x_502 },
+>  	{ "mcp4551-103", MCP455x_103 },
+>  	{ "mcp4551-503", MCP455x_503 },
+> @@ -195,6 +243,14 @@ static const struct i2c_device_id mcp4531_id[] = {
+>  	{ "mcp4552-103", MCP455x_103 },
+>  	{ "mcp4552-503", MCP455x_503 },
+>  	{ "mcp4552-104", MCP455x_104 },
+> +	{ "mcp4561-502", MCP456x_502 },
+> +	{ "mcp4561-103", MCP456x_103 },
+> +	{ "mcp4561-503", MCP456x_503 },
+> +	{ "mcp4561-104", MCP456x_104 },
+> +	{ "mcp4562-502", MCP456x_502 },
+> +	{ "mcp4562-103", MCP456x_103 },
+> +	{ "mcp4562-503", MCP456x_503 },
+> +	{ "mcp4562-104", MCP456x_104 },
+>  	{ "mcp4631-502", MCP463x_502 },
+>  	{ "mcp4631-103", MCP463x_103 },
+>  	{ "mcp4631-503", MCP463x_503 },
+> @@ -203,6 +259,14 @@ static const struct i2c_device_id mcp4531_id[] = {
+>  	{ "mcp4632-103", MCP463x_103 },
+>  	{ "mcp4632-503", MCP463x_503 },
+>  	{ "mcp4632-104", MCP463x_104 },
+> +	{ "mcp4641-502", MCP464x_502 },
+> +	{ "mcp4641-103", MCP464x_103 },
+> +	{ "mcp4641-503", MCP464x_503 },
+> +	{ "mcp4641-104", MCP464x_104 },
+> +	{ "mcp4642-502", MCP464x_502 },
+> +	{ "mcp4642-103", MCP464x_103 },
+> +	{ "mcp4642-503", MCP464x_503 },
+> +	{ "mcp4642-104", MCP464x_104 },
+>  	{ "mcp4651-502", MCP465x_502 },
+>  	{ "mcp4651-103", MCP465x_103 },
+>  	{ "mcp4651-503", MCP465x_503 },
+> @@ -211,6 +275,14 @@ static const struct i2c_device_id mcp4531_id[] = {
+>  	{ "mcp4652-103", MCP465x_103 },
+>  	{ "mcp4652-503", MCP465x_503 },
+>  	{ "mcp4652-104", MCP465x_104 },
+> +	{ "mcp4661-502", MCP466x_502 },
+> +	{ "mcp4661-103", MCP466x_103 },
+> +	{ "mcp4661-503", MCP466x_503 },
+> +	{ "mcp4661-104", MCP466x_104 },
+> +	{ "mcp4662-502", MCP466x_502 },
+> +	{ "mcp4662-103", MCP466x_103 },
+> +	{ "mcp4662-503", MCP466x_503 },
+> +	{ "mcp4662-104", MCP466x_104 },
 >  	{}
 >  };
->  
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> index 47ca25b..6e7f267 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h
-> @@ -69,6 +69,7 @@ enum inv_devices {
->  	INV_MPU6500,
->  	INV_MPU6000,
->  	INV_MPU9150,
-> +	INV_ICM20608,
->  	INV_NUM_PARTS
->  };
->  
-> @@ -224,6 +225,7 @@ struct inv_mpu6050_state {
->  #define INV_MPU6050_WHOAMI_VALUE		0x68
->  #define INV_MPU6500_WHOAMI_VALUE		0x70
->  #define INV_MPU9150_WHOAMI_VALUE		0x68
-> +#define INV_ICM20608_WHOAMI_VALUE		0xAF
->  
->  /* scan element definition */
->  enum inv_mpu6050_scan {
-> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> index 190a4a5..6e6476d 100644
-> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c
-> @@ -82,6 +82,7 @@ static const struct spi_device_id inv_mpu_id[] = {
->  	{"mpu6000", INV_MPU6000},
->  	{"mpu6500", INV_MPU6500},
->  	{"mpu9150", INV_MPU9150},
-> +	{"icm20608", INV_ICM20608},
->  	{}
->  };
->  
+>  MODULE_DEVICE_TABLE(i2c, mcp4531_id);
 > 
 
