@@ -1,142 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57496 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57529 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752507AbcGCKlz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 06:41:55 -0400
-Subject: Re: [PATCH v3 2/2] iio: adc: max1363: Add device tree binding
-To: Florian Vaussard <florian.vaussard@gmail.com>,
-	devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1467272586-28761-1-git-send-email-florian.vaussard@heig-vd.ch>
- <1467272586-28761-3-git-send-email-florian.vaussard@heig-vd.ch>
-Cc: Rob Herring <robh+dt@kernel.org>, Pawel Moll <pawel.moll@arm.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	Ian Campbell <ijc+devicetree@hellion.org.uk>,
-	Kumar Gala <galak@codeaurora.org>,
-	Martin Kepplinger <martink@posteo.de>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Florian Vaussard <florian.vaussard@heig-vd.ch>
+	with ESMTP id S1751987AbcGCKrW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 06:47:22 -0400
+Subject: Re: [3/3] hwmon: iio_hwmon: defer probe when no channel is found
+To: Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+References: <1467101897-15946-4-git-send-email-quentin.schulz@free-electrons.com>
+ <20160630034725.GA26484@roeck-us.net>
+ <6FBFD60A-4D68-4B60-AB34-5077BE6BD586@jic23.retrosnub.co.uk>
+ <577531D4.1090106@roeck-us.net>
+Cc: jdelvare@suse.com, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, maxime.ripard@free-electrons.com, wens@csie.org,
+	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <aceae589-9b7c-b818-63c1-4e9f25dec913@kernel.org>
-Date: Sun, 3 Jul 2016 11:41:47 +0100
+Message-ID: <b1ebf22d-389e-5d2e-93f2-f77728d28f28@kernel.org>
+Date: Sun, 3 Jul 2016 11:47:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <1467272586-28761-3-git-send-email-florian.vaussard@heig-vd.ch>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <577531D4.1090106@roeck-us.net>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/06/16 08:43, Florian Vaussard wrote:
-> This patch adds the necessary device tree binding to allow DT probing of
-> currently supported parts.
+On 30/06/16 15:51, Guenter Roeck wrote:
+> On 06/30/2016 06:59 AM, Jonathan Cameron wrote:
+>>
+>>
+>> On 30 June 2016 04:47:25 BST, Guenter Roeck <linux@roeck-us.net> wrote:
+>>> On Tue, Jun 28, 2016 at 10:18:17AM +0200, Quentin Schulz wrote:
+>>>> iio_channel_get_all returns -ENODEV when it cannot find either
+>>> phandles and
+>>>> properties in the Device Tree or channels whose consumer_dev_name
+>>> matches
+>>>> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio
+>>> drivers
+>>>> which might be probed after iio_hwmon.
+>>>>
+>>>> It is better to defer the probe of iio_hwmon if such error is
+>>> returned by
+>>>> iio_channel_get_all in order to let a chance to iio drivers to expose
+>>>> channels in iio_map_list.
+>>>>
+>>>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>>>> ---
+>>>>   drivers/hwmon/iio_hwmon.c | 5 ++++-
+>>>>   1 file changed, 4 insertions(+), 1 deletion(-)
+>>>>
+>>>> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+>>>> index b550ba5..c0da4d9 100644
+>>>> --- a/drivers/hwmon/iio_hwmon.c
+>>>> +++ b/drivers/hwmon/iio_hwmon.c
+>>>> @@ -73,8 +73,11 @@ static int iio_hwmon_probe(struct platform_device
+>>> *pdev)
+>>>>           name = dev->of_node->name;
+>>>>
+>>>>       channels = iio_channel_get_all(dev);
+>>>> -    if (IS_ERR(channels))
+>>>> +    if (IS_ERR(channels)) {
+>>>> +        if (PTR_ERR(channels) == -ENODEV)
+>>>> +            return -EPROBE_DEFER;
+>>>
+>>> The problem, as I see it, is with iio, which should return
+>>> -EPROBE_DEFER
+>>> in this situation.
+>> Agreed. New fangled stuff this deferred probing :)
+>>>
+>>> We can not convert -ENODEV to -EPROBE_DEFER without risking that the
+>>> channels are _really_ not there, which would result in endless
+>>> "deferred"
+>>> messages.
+>> Hmm not entirely sure how we prevent that happening wherever it is done..
+>>
 > 
-> Signed-off-by: Florian Vaussard <florian.vaussard@heig-vd.ch>
-Applied.  Thanks.
+> Outch. Better at the source, though. I didn't look at the iio code recently,
+> but can you detect the defer situation at least with devicetree ?
+> 
+> For non-devicetree situations, the only option I can think of would be
+> to replace the module initcall with a later initcall. That should solve
+> the problem if both iio_hwmon and and underlying drivers are built
+> into the kernel. If iio_hwmon is modular, the only real option I can
+> see is to make sure that all drivers it needs are loaded first.
+> 
+> Does this make sense ?
+I think we need to look in a couple of directions.  Firstly, investigate doing
+something similar to gpio and basically move the setup of maps much earlier.
+This will replace drivers presenting their own maps
 
-Jonathan
-> ---
->  drivers/iio/adc/max1363.c | 61 ++++++++++++++++++++++++++++++++++++++++++++++-
->  1 file changed, 60 insertions(+), 1 deletion(-)
+The other direction is to get userspace (i.e. configfs) setup of these maps
+working so for cases where it's a bit less hardware defined (i.e. using an
+accelerometer as an input device) we can do once we know all devices relevant
+are present and instantiate new instances on the fly.
+
+Anyhow, neither is trivial unfortunately.
+
+J
 > 
-> diff --git a/drivers/iio/adc/max1363.c b/drivers/iio/adc/max1363.c
-> index b5d28c0..c3e4c3c 100644
-> --- a/drivers/iio/adc/max1363.c
-> +++ b/drivers/iio/adc/max1363.c
-> @@ -25,6 +25,8 @@
->  #include <linux/slab.h>
->  #include <linux/err.h>
->  #include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -1516,6 +1518,56 @@ done:
->  	return IRQ_HANDLED;
->  }
->  
-> +#ifdef CONFIG_OF
-> +
-> +#define MAX1363_COMPATIBLE(of_compatible, cfg) {		\
-> +			.compatible = of_compatible,		\
-> +			.data = &max1363_chip_info_tbl[cfg],	\
-> +}
-> +
-> +static const struct of_device_id max1363_of_match[] = {
-> +	MAX1363_COMPATIBLE("maxim,max1361", max1361),
-> +	MAX1363_COMPATIBLE("maxim,max1362", max1362),
-> +	MAX1363_COMPATIBLE("maxim,max1363", max1363),
-> +	MAX1363_COMPATIBLE("maxim,max1364", max1364),
-> +	MAX1363_COMPATIBLE("maxim,max1036", max1036),
-> +	MAX1363_COMPATIBLE("maxim,max1037", max1037),
-> +	MAX1363_COMPATIBLE("maxim,max1038", max1038),
-> +	MAX1363_COMPATIBLE("maxim,max1039", max1039),
-> +	MAX1363_COMPATIBLE("maxim,max1136", max1136),
-> +	MAX1363_COMPATIBLE("maxim,max1137", max1137),
-> +	MAX1363_COMPATIBLE("maxim,max1138", max1138),
-> +	MAX1363_COMPATIBLE("maxim,max1139", max1139),
-> +	MAX1363_COMPATIBLE("maxim,max1236", max1236),
-> +	MAX1363_COMPATIBLE("maxim,max1237", max1237),
-> +	MAX1363_COMPATIBLE("maxim,max1238", max1238),
-> +	MAX1363_COMPATIBLE("maxim,max1239", max1239),
-> +	MAX1363_COMPATIBLE("maxim,max11600", max11600),
-> +	MAX1363_COMPATIBLE("maxim,max11601", max11601),
-> +	MAX1363_COMPATIBLE("maxim,max11602", max11602),
-> +	MAX1363_COMPATIBLE("maxim,max11603", max11603),
-> +	MAX1363_COMPATIBLE("maxim,max11604", max11604),
-> +	MAX1363_COMPATIBLE("maxim,max11605", max11605),
-> +	MAX1363_COMPATIBLE("maxim,max11606", max11606),
-> +	MAX1363_COMPATIBLE("maxim,max11607", max11607),
-> +	MAX1363_COMPATIBLE("maxim,max11608", max11608),
-> +	MAX1363_COMPATIBLE("maxim,max11609", max11609),
-> +	MAX1363_COMPATIBLE("maxim,max11610", max11610),
-> +	MAX1363_COMPATIBLE("maxim,max11611", max11611),
-> +	MAX1363_COMPATIBLE("maxim,max11612", max11612),
-> +	MAX1363_COMPATIBLE("maxim,max11613", max11613),
-> +	MAX1363_COMPATIBLE("maxim,max11614", max11614),
-> +	MAX1363_COMPATIBLE("maxim,max11615", max11615),
-> +	MAX1363_COMPATIBLE("maxim,max11616", max11616),
-> +	MAX1363_COMPATIBLE("maxim,max11617", max11617),
-> +	MAX1363_COMPATIBLE("maxim,max11644", max11644),
-> +	MAX1363_COMPATIBLE("maxim,max11645", max11645),
-> +	MAX1363_COMPATIBLE("maxim,max11646", max11646),
-> +	MAX1363_COMPATIBLE("maxim,max11647", max11647),
-> +	{ /* sentinel */ }
-> +};
-> +#endif
-> +
->  static int max1363_probe(struct i2c_client *client,
->  			 const struct i2c_device_id *id)
->  {
-> @@ -1523,6 +1575,7 @@ static int max1363_probe(struct i2c_client *client,
->  	struct max1363_state *st;
->  	struct iio_dev *indio_dev;
->  	struct regulator *vref;
-> +	const struct of_device_id *match;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev,
->  					  sizeof(struct max1363_state));
-> @@ -1549,7 +1602,12 @@ static int max1363_probe(struct i2c_client *client,
->  	/* this is only used for device removal purposes */
->  	i2c_set_clientdata(client, indio_dev);
->  
-> -	st->chip_info = &max1363_chip_info_tbl[id->driver_data];
-> +	match = of_match_device(of_match_ptr(max1363_of_match),
-> +				&client->dev);
-> +	if (match)
-> +		st->chip_info = of_device_get_match_data(&client->dev);
-> +	else
-> +		st->chip_info = &max1363_chip_info_tbl[id->driver_data];
->  	st->client = client;
->  
->  	st->vref_uv = st->chip_info->int_vref_mv * 1000;
-> @@ -1692,6 +1750,7 @@ MODULE_DEVICE_TABLE(i2c, max1363_id);
->  static struct i2c_driver max1363_driver = {
->  	.driver = {
->  		.name = "max1363",
-> +		.of_match_table = of_match_ptr(max1363_of_match),
->  	},
->  	.probe = max1363_probe,
->  	.remove = max1363_remove,
+> Guenter
 > 
+>>>
+>>> Guenter
+>>>
+>>>>           return PTR_ERR(channels);
+>>>> +    }
+>>>>
+>>>>       st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+>>>>       if (st == NULL) {
+>>> -- 
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
