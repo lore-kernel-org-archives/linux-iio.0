@@ -1,172 +1,126 @@
-Return-Path: <mranostay@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34452 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932249AbcGDDGW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 3 Jul 2016 23:06:22 -0400
+Received: by mail-wm0-f66.google.com with SMTP id 187so18517340wmz.1
+        for <linux-iio@vger.kernel.org>; Sun, 03 Jul 2016 20:06:21 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <5e18f0c4-c761-1884-9109-b22dbf8574ff@kernel.org>
+In-Reply-To: <83382690-9dbf-5678-6598-d32a25fb803c@kernel.org>
 References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
- <1467497127-32431-3-git-send-email-mranostay@gmail.com> <5e18f0c4-c761-1884-9109-b22dbf8574ff@kernel.org>
+ <1467497127-32431-2-git-send-email-mranostay@gmail.com> <83382690-9dbf-5678-6598-d32a25fb803c@kernel.org>
 From: Matt Ranostay <mranostay@gmail.com>
-Date: Sun, 3 Jul 2016 15:48:39 -0700
-Message-ID: <CAKzfze9re2vYZ17E9YFk8+=S9Q0Jrsc+BLeqn4UuyNNhm7s63w@mail.gmail.com>
-Subject: Re: [RFC 2/2] iio: potentiostat: add LMP91000 support
+Date: Sun, 3 Jul 2016 20:05:41 -0700
+Message-ID: <CAKzfze-0rGpKvJyhT2AKY7kVWV-XWVZkrj1O3dwe8d+gq8AfuQ@mail.gmail.com>
+Subject: Re: [RFC 1/2] iio: adc: ti-adc1x1s: add support for TI 1-channel
+ differential ADCs
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+On Sun, Jul 3, 2016 at 6:04 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 > On 02/07/16 23:05, Matt Ranostay wrote:
->> Add support for the LMP91000 potentiostat which is used for chemical
->> sensing applications.
-> Step one.  I had to look up what a potentiostat was... So perhaps a brief
-> idiots guide in the intro to the patch?
-> :)
->
-> This clearly raises some interesting questions... I'll put comments on that
-> in the cover letter and more or less stick to reviewing code alone here.
->
->
+>> Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
 >>
 >> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> Few little points inline and: No wild cards in driver names!
+> (though I'm occasionally half asleep and let one in).
+>
+> Storage bits should always be a power of 2.  (I let some
+> of those slip in as well in the past... oops).
+>
+> Otherwise a few tiny corners where things could, I think,
+> be a little more readable at the cost of slightly more code.
+>
+> Basically a nice little driver.
+>
+> Jonathan
 >> ---
->>  .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
->>  drivers/iio/Kconfig                                |   1 +
->>  drivers/iio/Makefile                               |   1 +
->>  drivers/iio/potentiostat/Kconfig                   |  21 ++
->>  drivers/iio/potentiostat/Makefile                  |   6 +
->>  drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
->>  6 files changed, 360 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
->>  create mode 100644 drivers/iio/potentiostat/Kconfig
->>  create mode 100644 drivers/iio/potentiostat/Makefile
->>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
+>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
+>>  drivers/iio/adc/Kconfig                            |  12 ++
+>>  drivers/iio/adc/Makefile                           |   1 +
+>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 +++++++++++++++++++++
+>>  4 files changed, 262 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
 >>
->> diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
 >> new file mode 100644
->> index 000000000000..636c548cedee
+>> index 000000000000..9cf7db434aee
 >> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
->> @@ -0,0 +1,28 @@
->> +* Texas Instruments LMP91000 potentiostat
->> +
->> +http://www.ti.com/lit/ds/symlink/lmp91000.pdf
+>> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+> Arguably could go in spi trivial devices binding file (unless you are going
+> to suplement this soon anyway in which case it may be less churn to keep it
+> here).
+
+There doesn't seem to be a trivial-devices.txt for spi device bindings.
+
+>> @@ -0,0 +1,16 @@
+>> +* Texas Instruments' ADC141S626, and ADC161S626 chip
 >> +
 >> +Required properties:
+>> + - compatible: Should be "ti,adc141s626" or "ti,ac161s626"
+>> + - reg: spi chip select number for the device
 >> +
->> +  - compatible: should be "ti,lmp91000"
->> +  - reg: the I2C address of the device
->> +  - io-channels: the phandle and channel of the iio provider
->> +
->> +Optional properties:
->> +
->> +  - ti,tia-gain-ohm: ohm value on the feedback loop for the transimpedance
->> +    amplifier. Must be 0 (external resistor, default), 2750, 3500, 7000, 14000,
->> +    35000, 120000, or 350000 ohms.
-> Better perhaps to have an explicit entry to say use the external resistor?
-> If nothing else, it ought to be infinite resistance for that not 0.
-
-How would it be explicit? Have it check to see if it is a char array
-first and the string matches 'external'?
-Rather not make the other values have to be strings as well.
-
->
-> Also does it ever make sense to change this at runtime or is it a case of
-> being matched to a particular probe?
->> +
->> +  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
->> +    sensor. Must be 10, 33, 50, or 100 (default) ohms.
-> Again, make sense to ever change at runtime?  Guessing there is still a best
-> value for a given probe even if sometimes it might want 'tweaking'.
->
-> No idea - never even seen one of these probes that I know of ;)
+>> +Recommended properties:
+>> + - spi-max-frequency: Definition as per
+>> +             Documentation/devicetree/bindings/spi/spi-bus.txt
 >> +
 >> +Example:
->> +
->> +lmp91000@48 {
->> +     compatible = "ti,lmp91000";
->> +     reg = <0x48>;
->> +     ti,tia-gain-ohm = <7500>;
->> +     ti,rload = <100>;
->> +     io-channels = <&adc1x1s 0>;
+>> +adc@0 {
+>> +     compatible = "ti,adc161s626";
+>> +     reg = <0>;
+>> +     spi-max-frequency = <4300000>;
 >> +};
->> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
->> index 6743b18194fb..a31a8cf2c330 100644
->> --- a/drivers/iio/Kconfig
->> +++ b/drivers/iio/Kconfig
->> @@ -87,6 +87,7 @@ if IIO_TRIGGER
->>     source "drivers/iio/trigger/Kconfig"
->>  endif #IIO_TRIGGER
->>  source "drivers/iio/potentiometer/Kconfig"
->> +source "drivers/iio/potentiostat/Kconfig"
->>  source "drivers/iio/pressure/Kconfig"
->>  source "drivers/iio/proximity/Kconfig"
->>  source "drivers/iio/temperature/Kconfig"
->> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
->> index 87e4c4369e2f..2b6e2762a886 100644
->> --- a/drivers/iio/Makefile
->> +++ b/drivers/iio/Makefile
->> @@ -29,6 +29,7 @@ obj-y += light/
->>  obj-y += magnetometer/
->>  obj-y += orientation/
->>  obj-y += potentiometer/
->> +obj-y += potentiostat/
-> I wonder if grouping analog front ends in at subdirectory above this
-> might make sense?  Feels like we may get some more.  We already have
-> 'amplifiers' that could be moved into that directory as well.
->
-> Or for now we could just have both this and amplifiers in an
-> 'Analog front ends' directory and break them up into their own directories
-> if we get too many to handle in a single dir in the future?  I don't really
-> mind but would like this an amplifiers grouped together in some way.
->
->>  obj-y += pressure/
->>  obj-y += proximity/
->>  obj-y += temperature/
->> diff --git a/drivers/iio/potentiostat/Kconfig b/drivers/iio/potentiostat/Kconfig
->> new file mode 100644
->> index 000000000000..591682c05ae9
->> --- /dev/null
->> +++ b/drivers/iio/potentiostat/Kconfig
->> @@ -0,0 +1,21 @@
->> +#
->> +# Potentiostat drivers
->> +#
->> +# When adding new entries keep the list in alphabetical order
->> +
->> +menu "Digital potentiostats"
->> +
->> +config LMP91000
->> +     tristate "Texas Instruments LMP91000 potentiostat driver"
->> +     depends on I2C
->> +     select REGMAP_I2C
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 25378c5882e2..cb5e4ae3279d 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -414,6 +414,18 @@ config TI_ADC128S052
+>>         This driver can also be built as a module. If so, the module will be
+>>         called ti-adc128s052.
+>>
+>> +config TI_ADC1X1S
+>> +     tristate "Texas Instruments ADC1X1S 1-channel differential ADCs"
+>> +     depends on SPI
 >> +     select IIO_BUFFER
 >> +     select IIO_TRIGGERED_BUFFER
 >> +     help
->> +       Say yes here to build support for the Texas Instruments
->> +       LMP91000 digital potentiostat chip.
+>> +       If you say yes here you get support for Texas Instruments ADC141S626,
+>> +       and ADC161S626 chips.
 >> +
->> +       To compile this driver as a module, choose M here: the
->> +       module will be called lmp91000
+>> +       This driver can also be build as a module. If so, the module will be
+>> +       called ti-adc1x1s.
 >> +
->> +endmenu
->> diff --git a/drivers/iio/potentiostat/Makefile b/drivers/iio/potentiostat/Makefile
+>>  config TI_ADS1015
+>>       tristate "Texas Instruments ADS1015 ADC"
+>>       depends on I2C && !SENSORS_ADS1015
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 38638d46f972..855ff407fd0d 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -40,6 +40,7 @@ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+>>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>> +obj-$(CONFIG_TI_ADC1X1S) += ti-adc1x1s.o
+>>  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+>>  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
+>> diff --git a/drivers/iio/adc/ti-adc1x1s.c b/drivers/iio/adc/ti-adc1x1s.c
 >> new file mode 100644
->> index 000000000000..64d315ef4449
+>> index 000000000000..889399968694
 >> --- /dev/null
->> +++ b/drivers/iio/potentiostat/Makefile
->> @@ -0,0 +1,6 @@
->> +#
->> +# Makefile for industrial I/O potentiostat drivers
->> +#
->> +
->> +# When adding new entries keep the list in alphabetical order
->> +obj-$(CONFIG_LMP91000) += lmp91000.o
->> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
->> new file mode 100644
->> index 000000000000..fe90172eac28
->> --- /dev/null
->> +++ b/drivers/iio/potentiostat/lmp91000.c
->> @@ -0,0 +1,303 @@
+>> +++ b/drivers/iio/adc/ti-adc1x1s.c
+>> @@ -0,0 +1,233 @@
 >> +/*
->> + * lmp91000.c - Support for Texas Instruments digital potentiostats
+>> + * ti-adc1x1s.c - Support for the Texas Instruments 1-channel differential ADCs
+>> + *
+>> + * ADC Devices Supported:
+>> + *  adc141s626 - 14-bit ADC
+>> + *  adc161s626 - 16-bit ADC
 >> + *
 >> + * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
 >> + *
@@ -179,125 +133,119 @@ Rather not make the other values have to be strings as well.
 >> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
 >> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
 >> + * GNU General Public License for more details.
->> + *
->> + * TODO: bias voltage + polarity control, and multiple chip support
 >> + */
 >> +
 >> +#include <linux/module.h>
->> +#include <linux/i2c.h>
->> +#include <linux/delay.h>
->> +#include <linux/of.h>
->> +#include <linux/regmap.h>
+>> +#include <linux/init.h>
+>> +#include <linux/err.h>
+>> +#include <linux/spi/spi.h>
 >> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/trigger.h>
 >> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/consumer.h>
 >> +#include <linux/iio/trigger_consumer.h>
 >> +#include <linux/iio/triggered_buffer.h>
 >> +
->> +#define LMP91000_REG_LOCK            0x01
->> +#define LMP91000_REG_TIACN           0x10
->> +#define LMP91000_REG_TIACN_GAIN_SHIFT        2
+>> +#define TI_ADC_DRV_NAME      "adc1x1s"
+> I really dislike wild cards.... Just pick a part and name it after that.
+>
 >> +
->> +#define LMP91000_REG_REFCN           0x11
->> +#define LMP91000_REG_REFCN_EXT_REF   0x20
->> +#define LMP91000_REG_REFCN_50_ZERO   0x80
->> +
->> +#define LMP91000_REG_MODECN          0x12
->> +#define LMP91000_REG_MODECN_3LEAD    0x03
->> +#define LMP91000_REG_MODECN_TEMP     0x07
->> +
->> +#define LMP91000_DRV_NAME    "lmp91000"
->> +
->> +static const int lmp91000_tia_gain[] = { 0, 2750, 3500, 7000, 14000, 35000,
->> +                                      120000, 350000 };
->> +
->> +static const int lmp91000_rload[] = { 10, 33, 50, 100 };
->> +
->> +static const struct regmap_config lmp91000_regmap_config = {
->> +     .reg_bits = 8,
->> +     .val_bits = 8,
+>> +enum {
+>> +     TI_ADC141S626,
+>> +     TI_ADC161S626,
 >> +};
 >> +
->> +struct lmp91000_data {
->> +     struct regmap *regmap;
->> +     struct device *dev;
->> +     struct iio_channel *vout_chan;
->> +
->> +     u8 buffer[16]; /* 32-bit data + 32-bit padding + 64-bit timestamp */
->> +};
->> +
->> +static const struct iio_chan_spec lmp91000_channels[] = {
->> +     { /* chemical channel mV */
+>> +static const struct iio_chan_spec ti_adc141s626_channels[] = {
+>> +     {
 >> +             .type = IIO_VOLTAGE,
 >> +             .channel = 0,
->> +             .indexed = 1,
->> +             .address = LMP91000_REG_MODECN_3LEAD,
 >> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
 >> +             .scan_index = 0,
 >> +             .scan_type = {
 >> +                     .sign = 's',
->> +                     .realbits = 32,
->> +                     .storagebits = 32,
+>> +                     .realbits = 14,
+>> +                     .storagebits = 16,
 >> +             },
 >> +     },
 >> +     IIO_CHAN_SOFT_TIMESTAMP(1),
->> +     { /* temperature channel mV */
->> +             .type = IIO_VOLTAGE,
->> +             .channel = 1,
->> +             .indexed = 1,
->> +             .address = LMP91000_REG_MODECN_TEMP,
->> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +             .scan_index = -1,
->> +     },
 >> +};
 >> +
->> +static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
->> +{
->> +     int state, ret;
+>> +static const struct iio_chan_spec ti_adc161s626_channels[] = {
+>> +     {
+>> +             .type = IIO_VOLTAGE,
+>> +             .channel = 0,
+>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +             .scan_index = 0,
+>> +             .scan_type = {
+>> +                     .sign = 's',
+>> +                     .realbits = 16,
+>> +                     .storagebits = 24,
+> Storage bits should be a power of 2.
+>> +                     .shift = 6,
+>> +             },
+>> +     },
+>> +     IIO_CHAN_SOFT_TIMESTAMP(1),
+>> +};
 >> +
->> +     ret = regmap_read(data->regmap, LMP91000_REG_MODECN, &state);
->> +     if (ret)
->> +             return -EINVAL;
+>> +struct ti_adc_data {
+>> +     struct iio_dev *indio_dev;
+>> +     struct spi_device *spi;
+>> +     int read_size;
 >> +
->> +     ret = regmap_write(data->regmap, LMP91000_REG_MODECN, channel);
->> +     if (ret)
->> +             return -EINVAL;
+> enforce cacheline alignment or this is going to cause possible fun on
+> dma using spi devices.
+>> +     u8 buffer[16]; /* 3 byte data + 5 byte pad + 8 byte timestamp */
+>> +};
 >> +
->> +     /* delay till first temperature reading is complete */
->> +     if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
->> +             usleep_range(3000, 4000);
->> +
->> +     ret = iio_read_channel_raw(data->vout_chan, val);
->> +     if (ret < 0)
->> +             return ret;
->> +
->> +     return 0;
->> +}
->> +
->> +static irqreturn_t lmp91000_trigger_handler(int irq, void *private)
+>> +static irqreturn_t ti_adc_trigger_handler(int irq, void *private)
 >> +{
 >> +     struct iio_poll_func *pf = private;
 >> +     struct iio_dev *indio_dev = pf->indio_dev;
->> +     struct lmp91000_data *data = iio_priv(indio_dev);
->> +     int ret, val;
+>> +     struct ti_adc_data *data = iio_priv(indio_dev);
+>> +     int ret;
 >> +
->> +     ret = lmp91000_read(data, LMP91000_REG_MODECN_3LEAD, &val);
->> +     if (!ret) {
->> +             *((int *) data->buffer) = val;
+>> +     ret = spi_read(data->spi, &data->buffer, data->read_size);
+>> +     if (!ret)
 >> +             iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
 >> +                                                iio_get_time_ns());
->> +     }
 >> +
 >> +     iio_trigger_notify_done(indio_dev->trig);
 >> +
 >> +     return IRQ_HANDLED;
 >> +}
 >> +
->> +static int lmp91000_read_raw(struct iio_dev *indio_dev,
->> +                          struct iio_chan_spec const *chan,
->> +                          int *val, int *val2, long mask)
+>> +static int ti_adc_read_measurement(struct ti_adc_data *data,
+>> +                                struct iio_chan_spec const *chan, int *val)
 >> +{
->> +     struct lmp91000_data *data = iio_priv(indio_dev);
+>> +     __be32 buf;
+>> +     int ret;
+>> +
+>> +     ret = spi_read(data->spi, (void *) &buf, data->read_size);
+>> +     if (ret)
+>> +             return ret;
+>> +
+>> +     switch (data->read_size) {
+>> +     case 2:
+>> +             *val = be16_to_cpu(buf);
+> Inelegant as buf is clearly marked as 32 bit by it's type. I'd move the
+> read into the switch statement then read into the appropriate sized
+> local variable.  More code but easier to read (slightly)
+>> +             break;
+>> +     case 3:
+>> +             *val = be32_to_cpu(buf) >> 8;
+>> +             break;
+>> +     }
+>> +
+>> +     *val = sign_extend32(*val >> chan->scan_type.shift,
+>> +                          chan->scan_type.realbits - 1);
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static int ti_adc_read_raw(struct iio_dev *indio_dev,
+>> +                        struct iio_chan_spec const *chan,
+>> +                        int *val, int *val2, long mask)
+>> +{
+>> +     struct ti_adc_data *data = iio_priv(indio_dev);
 >> +     int ret;
 >> +
 >> +     if (mask != IIO_CHAN_INFO_RAW)
@@ -305,119 +253,60 @@ Rather not make the other values have to be strings as well.
 >> +
 >> +     if (iio_device_claim_direct_mode(indio_dev))
 >> +             return -EBUSY;
+> Should technically store and return the result of iio_device_claim_direct_mode.
+> It could in future return something else..
 >> +
->> +     ret = lmp91000_read(data, chan->address, val);
+>> +     ret = ti_adc_read_measurement(data, chan, val);
 >> +     if (!ret)
 >> +             ret = IIO_VAL_INT;
+> I'd make ti_adc_read_measurement return IIO_VAL_INT if successful. Then
+> the slightly odd good path handling goes away.
 >> +
 >> +     iio_device_release_direct_mode(indio_dev);
 >> +
 >> +     return ret;
 >> +}
 >> +
->> +static const struct iio_info lmp91000_info = {
+>> +static const struct iio_info ti_adc_info = {
 >> +     .driver_module = THIS_MODULE,
->> +     .read_raw = lmp91000_read_raw,
+>> +     .read_raw = ti_adc_read_raw,
 >> +};
 >> +
->> +static int lmp91000_read_config(struct lmp91000_data *data)
+>> +static int ti_adc_probe(struct spi_device *spi)
 >> +{
->> +     struct device *dev = data->dev;
->> +     struct device_node *np = dev->of_node;
->> +     int i, val1, val2, ret;
->> +
->> +     ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val1);
->> +     if (ret) {
->> +             val1 = 0;
->> +             dev_info(dev, "no ti,tia-gain-ohm defined, default to external\n");
->> +     }
->> +
->> +     ret = of_property_read_u32(np, "ti,rload-ohm", &val2);
->> +     if (ret) {
->> +             val2 = 100;
->> +             dev_info(dev, "no ti,rload-ohm defined, default to %d\n", val2);
->> +     }
->> +
-> I'd reorder this to have the property followed by it's use together.
-> Not terribly keen on variables with names as generic as val1 and val2 either.
->> +     ret = -EINVAL;
->> +     for (i = 0; i < ARRAY_SIZE(lmp91000_tia_gain); i++) {
->> +             if (lmp91000_tia_gain[i] == val1) {
->> +                     val1 = i;
->> +                     ret = 0;
->> +                     break;
->> +             }
->> +     }
->> +
->> +     if (ret) {
->> +             dev_err(dev, "invalid ti,tia-gain-ohm %d", val1);
->> +             return ret;
->> +     }
->> +
->> +     ret = -EINVAL;
->> +     for (i = 0; i < ARRAY_SIZE(lmp91000_rload); i++) {
->> +             if (lmp91000_rload[i] == val2) {
->> +                     val2 = i;
->> +                     ret = 0;
->> +                     break;
->> +             }
->> +     }
->> +
->> +     if (ret) {
->> +             dev_err(dev, "invalid ti,rload-ohm %d", val2);
->> +             return ret;
->> +     }
->> +
->> +     regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-> Error handling?
->> +     regmap_write(data->regmap, LMP91000_REG_TIACN,
->> +                             (val1 << LMP91000_REG_TIACN_GAIN_SHIFT) | val2);
->> +     regmap_write(data->regmap, LMP91000_REG_REFCN, LMP91000_REG_REFCN_EXT_REF
->> +                                     | LMP91000_REG_REFCN_50_ZERO);
->> +     regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
->> +
->> +     return 0;
->> +}
->> +
->> +static int lmp91000_probe(struct i2c_client *client,
->> +                       const struct i2c_device_id *id)
->> +{
->> +     struct device *dev = &client->dev;
->> +     struct lmp91000_data *data;
 >> +     struct iio_dev *indio_dev;
->> +     struct iio_channel *vout_chan;
+>> +     struct ti_adc_data *data;
 >> +     int ret;
 >> +
->> +     vout_chan = iio_channel_get(dev, NULL);
->> +     if (IS_ERR(vout_chan))
->> +             return -EPROBE_DEFER;
->> +
->> +     indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+>> +     indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
 >> +     if (!indio_dev)
 >> +             return -ENOMEM;
 >> +
->> +     indio_dev->info = &lmp91000_info;
->> +     indio_dev->channels = lmp91000_channels;
->> +     indio_dev->num_channels = ARRAY_SIZE(lmp91000_channels);
->> +     indio_dev->name = LMP91000_DRV_NAME;
+>> +     indio_dev->info = &ti_adc_info;
+>> +     indio_dev->dev.parent = &spi->dev;
+>> +     indio_dev->dev.of_node = spi->dev.of_node;
+>> +     indio_dev->name = TI_ADC_DRV_NAME;
 >> +     indio_dev->modes = INDIO_DIRECT_MODE;
->> +     i2c_set_clientdata(client, indio_dev);
+>> +     spi_set_drvdata(spi, indio_dev);
 >> +
 >> +     data = iio_priv(indio_dev);
->> +     data->dev = dev;
->> +     data->vout_chan = vout_chan;
->> +     data->regmap = devm_regmap_init_i2c(client, &lmp91000_regmap_config);
->> +     if (IS_ERR(data->regmap)) {
->> +             dev_err(dev, "regmap initialization failed.\n");
->> +             return PTR_ERR(data->regmap);
+>> +     data->spi = spi;
+>> +
+>> +     switch (spi_get_device_id(spi)->driver_data) {
+>> +     case TI_ADC141S626:
+>> +             indio_dev->channels = ti_adc141s626_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(ti_adc141s626_channels);
+>> +             data->read_size = 2;
+>> +             break;
+>> +     case TI_ADC161S626:
+>> +             indio_dev->channels = ti_adc161s626_channels;
+>> +             indio_dev->num_channels = ARRAY_SIZE(ti_adc161s626_channels);
+>> +             data->read_size = 3;
+>> +             break;
 >> +     }
 >> +
->> +     ret = lmp91000_read_config(data);
->> +     if (ret)
->> +             return ret;
->> +
 >> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
->> +                                      lmp91000_trigger_handler, NULL);
+>> +                                      ti_adc_trigger_handler, NULL);
 >> +     if (ret)
 >> +             return ret;
 >> +
@@ -433,43 +322,43 @@ Rather not make the other values have to be strings as well.
 >> +     return ret;
 >> +}
 >> +
->> +static int lmp91000_remove(struct i2c_client *client)
+>> +static int ti_adc_remove(struct spi_device *spi)
 >> +{
->> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +     struct lmp91000_data *data = iio_priv(indio_dev);
+>> +     struct iio_dev *indio_dev = spi_get_drvdata(spi);
 >> +
 >> +     iio_device_unregister(indio_dev);
 >> +     iio_triggered_buffer_cleanup(indio_dev);
->> +     iio_channel_release(data->vout_chan);
 >> +
 >> +     return 0;
 >> +}
 >> +
->> +static const struct of_device_id lmp91000_of_match[] = {
->> +     { .compatible = "ti,lmp91000", },
->> +     { },
->> +};
->> +MODULE_DEVICE_TABLE(of, lmp91000_of_match);
->> +
->> +static const struct i2c_device_id lmp91000_id[] = {
->> +     { "lmp91000", 0 },
+>> +static const struct of_device_id ti_adc_dt_ids[] = {
+>> +     { .compatible = "ti,adc141s626", },
+>> +     { .compatible = "ti,adc161s626", },
 >> +     {}
 >> +};
->> +MODULE_DEVICE_TABLE(i2c, lmp91000_id);
+>> +MODULE_DEVICE_TABLE(of, ti_adc_dt_ids);
 >> +
->> +static struct i2c_driver lmp91000_driver = {
->> +     .driver = {
->> +             .name = LMP91000_DRV_NAME,
->> +             .of_match_table = of_match_ptr(lmp91000_of_match),
->> +     },
->> +     .probe = lmp91000_probe,
->> +     .remove = lmp91000_remove,
->> +     .id_table = lmp91000_id,
+>> +static const struct spi_device_id ti_adc_id[] = {
+>> +     {"adc141s626", TI_ADC141S626},
+>> +     {"adc161s626", TI_ADC161S626},
+>> +     {},
 >> +};
->> +module_i2c_driver(lmp91000_driver);
+>> +MODULE_DEVICE_TABLE(spi, ti_adc_id);
+>> +
+>> +static struct spi_driver ti_adc_driver = {
+>> +     .driver = {
+>> +             .name   = TI_ADC_DRV_NAME,
+>> +             .of_match_table = of_match_ptr(ti_adc_dt_ids),
+>> +     },
+>> +     .probe          = ti_adc_probe,
+>> +     .remove         = ti_adc_remove,
+>> +     .id_table       = ti_adc_id,
+>> +};
+>> +module_spi_driver(ti_adc_driver);
 >> +
 >> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
->> +MODULE_DESCRIPTION("LMP91000 digital potentiostat");
+>> +MODULE_DESCRIPTION("Texas Instruments ADC1x1S 1-channel differential ADC");
 >> +MODULE_LICENSE("GPL");
 >>
 >
