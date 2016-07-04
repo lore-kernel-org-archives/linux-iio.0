@@ -1,58 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:49872 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1753393AbcGDQ3v (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jul 2016 12:29:51 -0400
-Date: Mon, 4 Jul 2016 18:29:49 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Maxime Ripard <maxime.ripard@free-electrons.com>,
-	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] input: adc-keys: add DT binding documentation
-Message-ID: <20160704162949.GL20045@piout.net>
-References: <1467408602-16546-1-git-send-email-alexandre.belloni@free-electrons.com>
- <5d71d3a2-4d51-8dd5-0e4a-638ec1b5035a@kernel.org>
+Received: from mail-pf0-f175.google.com ([209.85.192.175]:34083 "EHLO
+	mail-pf0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751382AbcGDRAD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jul 2016 13:00:03 -0400
+Received: by mail-pf0-f175.google.com with SMTP id h14so62706296pfe.1
+        for <linux-iio@vger.kernel.org>; Mon, 04 Jul 2016 10:00:03 -0700 (PDT)
+Subject: Re: [PATCH v4 3/3] ARM:dts-Add dt node for Broadcom iproc-static-adc
+To: Jonathan Cameron <jic23@kernel.org>,
+	Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Russell King <linux@arm.linux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org
+References: <1467099636-31855-1-git-send-email-raveendra.padasalagi@broadcom.com>
+ <1467099636-31855-4-git-send-email-raveendra.padasalagi@broadcom.com>
+ <184c47dc-6cdb-c314-9f29-7b03d5784de6@kernel.org>
+Cc: Pawel Moll <pawel.moll@arm.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Ian Campbell <ijc+devicetree@hellion.org.uk>,
+	Kumar Gala <galak@codeaurora.org>,
+	Jonathan Richardson <jonathar@broadcom.com>,
+	Jon Mason <jonmason@broadcom.com>,
+	Florian Fainelli <f.fainelli@gmail.com>,
+	Anup Patel <anup.patel@broadcom.com>,
+	Ray Jui <rjui@broadcom.com>,
+	Scott Branden <sbranden@broadcom.com>,
+	Pramod Kumar <pramod.kumar@broadcom.com>,
+	linux-kernel@vger.kernel.org, bcm-kernel-feedback-list@broadcom.com
+From: Scott Branden <scott.branden@broadcom.com>
+Message-ID: <577A9604.90702@broadcom.com>
+Date: Mon, 4 Jul 2016 09:59:48 -0700
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <5d71d3a2-4d51-8dd5-0e4a-638ec1b5035a@kernel.org>
+In-Reply-To: <184c47dc-6cdb-c314-9f29-7b03d5784de6@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/2016 at 14:43:56 +0100, Jonathan Cameron wrote :
-> On 01/07/16 22:30, Alexandre Belloni wrote:
-> > Add documentation for ADC keys
-> > 
-> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-> Clean looking binding to me - one comment inline.
-> 
+Florian,
+
+Patch to apply
+
+On 16-07-03 03:34 AM, Jonathan Cameron wrote:
+> On 28/06/16 08:40, Raveendra Padasalagi wrote:
+>> This patch adds DT node for Broadcom's iproc-static-adc
+>> controller driver.
+>>
+>> Signed-off-by: Raveendra Padasalagi <raveendra.padasalagi@broadcom.com>
+>> Reviewed-by: Ray Jui <ray.jui@broadcom.com>
+>> Reviewed-by: Scott Branden <scott.branden@broadcom.com>
+> Driver is working its way towards just making the next merge window...
+>
+> Guessing this will go through the relevant path to the arm-soc tree
+> as normal.
+Florian, can you add to next pull request?
+
+>
+> Thanks,
+>
 > Jonathan
-> > ---
-> > Cc: Rob Herring <robh+dt@kernel.org>
-> > Cc: devicetree@vger.kernel.org
-> > 
-> >  .../devicetree/bindings/input/adc-keys.txt         | 45 ++++++++++++++++++++++
-> >  1 file changed, 45 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/input/adc-keys.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Documentation/devicetree/bindings/input/adc-keys.txt
-> > new file mode 100644
-> > index 000000000000..873476bb4eab
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/input/adc-keys.txt
-> > @@ -0,0 +1,45 @@
-> > +Allwinner sun4i low res adc attached tablet keys
-> What is allwinner specific in here?  Looks pretty general purpose to me!
+>> ---
+>>   arch/arm/boot/dts/bcm-cygnus.dtsi | 11 +++++++++++
+>>   1 file changed, 11 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/bcm-cygnus.dtsi b/arch/arm/boot/dts/bcm-cygnus.dtsi
+>> index b42fe55..fabc9f3 100644
+>> --- a/arch/arm/boot/dts/bcm-cygnus.dtsi
+>> +++ b/arch/arm/boot/dts/bcm-cygnus.dtsi
+>> @@ -366,5 +366,16 @@
+>>   			interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
+>>   			status = "disabled";
+>>   		};
+>> +
+>> +		adc: adc@180a6000 {
+>> +			compatible = "brcm,iproc-static-adc";
+>> +			#io-channel-cells = <1>;
+>> +			io-channel-ranges;
+>> +			adc-syscon = <&ts_adc_syscon>;
+>> +			clocks = <&asiu_clks BCM_CYGNUS_ASIU_ADC_CLK>;
+>> +			clock-names = "tsc_clk";
+>> +			interrupts = <GIC_SPI 164 IRQ_TYPE_LEVEL_HIGH>;
+>> +			status = "disabled";
+>> +		};
 
-That's true, I forgot to change that after shamelessly copy pasting...
-
-I was planning to use something like ADC attached resistor ladder
-buttons, unless you have a better way to describe that.
-
-
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Thanks,
+  Scott
+>>   	};
+>>   };
+>>
+>
