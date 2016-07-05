@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:37779 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([84.19.176.92]:37776 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1755028AbcGEKXX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 5 Jul 2016 06:23:23 -0400
+	id S1755023AbcGEKX2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 5 Jul 2016 06:23:28 -0400
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, lars@metafoo.de, knaack.h@gmx.de,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 4/4] iio: light: vcnl4000: Add missing locking
-Date: Tue,  5 Jul 2016 12:23:21 +0200
-Message-Id: <1467714201-11429-5-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 2/4] iio: light: vcnl4000: Use BIT() macro
+Date: Tue,  5 Jul 2016 12:23:19 +0200
+Message-Id: <1467714201-11429-3-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1467714201-11429-1-git-send-email-pmeerw@pmeerw.net>
 References: <1467714201-11429-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
@@ -17,76 +17,28 @@ List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 ---
- drivers/iio/light/vcnl4000.c |   18 ++++++++++++++----
- 1 file changed, 14 insertions(+), 4 deletions(-)
+ drivers/iio/light/vcnl4000.c |    8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 9f94b6b..360b6e9 100644
+index 071ff97..7f247ed 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -48,6 +48,7 @@
+@@ -41,10 +41,10 @@
+ #define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
+ 
+ /* Bit masks for COMMAND register */
+-#define VCNL4000_AL_RDY		0x40 /* ALS data ready? */
+-#define VCNL4000_PS_RDY		0x20 /* proximity data ready? */
+-#define VCNL4000_AL_OD		0x10 /* start on-demand ALS measurement */
+-#define VCNL4000_PS_OD		0x08 /* start on-demand proximity measurement */
++#define VCNL4000_AL_RDY		BIT(6) /* ALS data ready? */
++#define VCNL4000_PS_RDY		BIT(5) /* proximity data ready? */
++#define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
++#define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
  
  struct vcnl4000_data {
  	struct i2c_client *client;
-+	struct mutex lock;
- };
- 
- static const struct i2c_device_id vcnl4000_id[] = {
-@@ -63,16 +64,18 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	__be16 buf;
- 	int ret;
- 
-+	mutex_lock(&data->lock);
-+
- 	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
- 					req_mask);
- 	if (ret < 0)
--		return ret;
-+		goto fail;
- 
- 	/* wait for data to become ready */
- 	while (tries--) {
- 		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
- 		if (ret < 0)
--			return ret;
-+			goto fail;
- 		if (ret & rdy_mask)
- 			break;
- 		msleep(20); /* measurement takes up to 100 ms */
-@@ -81,17 +84,23 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
- 	if (tries < 0) {
- 		dev_err(&data->client->dev,
- 			"vcnl4000_measure() failed, data not ready\n");
--		return -EIO;
-+		ret = -EIO;
-+		goto fail;
- 	}
- 
- 	ret = i2c_smbus_read_i2c_block_data(data->client,
- 		data_reg, sizeof(buf), (u8 *) &buf);
- 	if (ret < 0)
--		return ret;
-+		goto fail;
- 
-+	mutex_unlock(&data->lock);
- 	*val = be16_to_cpu(buf);
- 
- 	return 0;
-+
-+fail:
-+	mutex_unlock(&data->lock);
-+	return ret;
- }
- 
- static const struct iio_chan_spec vcnl4000_channels[] = {
-@@ -163,6 +172,7 @@ static int vcnl4000_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
-+	mutex_init(&data->lock);
- 
- 	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
- 	if (ret < 0)
 -- 
 1.7.10.4
 
