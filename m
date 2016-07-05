@@ -1,45 +1,63 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <6c866a82-8f54-575e-0376-fc9653078b7c@kernel.org>
-References: <1467251334-30594-1-git-send-email-linus.walleij@linaro.org>
- <1467251334-30594-11-git-send-email-linus.walleij@linaro.org> <6c866a82-8f54-575e-0376-fc9653078b7c@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 5 Jul 2016 15:37:22 +0200
-Message-ID: <CACRpkdbwh4dzFMeQq2R3TF-Grvh6GqCMaK9v640dEYFBeAnzSg@mail.gmail.com>
-Subject: Re: [PATCH 10/10 v4] iio: pressure: bmp280: read calibration data once
+Return-Path: <robherring2@gmail.com>
+Date: Tue, 5 Jul 2016 09:53:03 -0500
+From: Rob Herring <robh@kernel.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Akinobu Mita <akinobu.mita@gmail.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>, Matt Ranostay <mranostay@gmail.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Christoph Mair <christoph.mair@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
-	Marek Belisko <marek@goldelico.com>, Eric Andersson <eric.andersson@unixphere.com>,
-	Neil Brown <neilb@suse.de>
-Content-Type: text/plain; charset=UTF-8
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] input: adc-keys: add DT binding documentation
+Message-ID: <20160705145303.GA4302@rob-hp-laptop>
+References: <1467408602-16546-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <5d71d3a2-4d51-8dd5-0e4a-638ec1b5035a@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5d71d3a2-4d51-8dd5-0e4a-638ec1b5035a@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Jul 3, 2016 at 12:23 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 30/06/16 02:48, Linus Walleij wrote:
->> The calibration data is described as coming from an E2PROM and that
->> means it does not change. Just read it once at probe time and store
->> it in the device state container. Also toss the calibration data
->> into the entropy pool since it is device unique.
->>
->> Reviewed-by: Vlad Dogaru <vlad.dogaru@intel.com>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> Applied with a whole 1 line of fuzz ;)
+On Sun, Jul 03, 2016 at 02:43:56PM +0100, Jonathan Cameron wrote:
+> On 01/07/16 22:30, Alexandre Belloni wrote:
+> > Add documentation for ADC keys
+> > 
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> Clean looking binding to me - one comment inline.
+> 
+> Jonathan
+> > ---
+> > Cc: Rob Herring <robh+dt@kernel.org>
+> > Cc: devicetree@vger.kernel.org
+> > 
+> >  .../devicetree/bindings/input/adc-keys.txt         | 45 ++++++++++++++++++++++
+> >  1 file changed, 45 insertions(+)
+> >  create mode 100644 Documentation/devicetree/bindings/input/adc-keys.txt
+> > 
+> > diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Documentation/devicetree/bindings/input/adc-keys.txt
+> > new file mode 100644
+> > index 000000000000..873476bb4eab
+> > --- /dev/null
+> > +++ b/Documentation/devicetree/bindings/input/adc-keys.txt
+> > @@ -0,0 +1,45 @@
+> > +Allwinner sun4i low res adc attached tablet keys
+> What is allwinner specific in here?  Looks pretty general purpose to me!
+> > +------------------------------------------------
+> > +
+> > +Required properties:
+> > + - compatible: "adc-keys"
+> > + - io-channels: Phandle to an ADC channel
+> > + - io-channel-names = "buttons";
+> > + - voltage-keyup-mvolt: Voltage at which all the keys are considered up.
+> > +
+> > +Each key is represented as a sub-node of "adc-keys":
+> > +
+> > +Required subnode-properties:
+> > +	- label: Descriptive name of the key.
+> > +	- linux,code: Keycode to emit.
+> > +	- voltage-mvolt: Voltage adc input when this key is pressed.
 
-Thanks for applying and fixing my silly mistakes along the road.
+voltage-mcvoltface?
 
-Part of the churn comes from massaging review comments into
-the patch set, I guess I just need to be more careful to build at
-every step along the way when doing that.
+"voltage" is redundant and use standard units. How about 
+{press,up}-threshold-microvolt?
 
-But the patch splitting up the driver was driving me nuts with
-the constant rebasing and drew a lot of focus, I blame it all on
-that one.
-
-Mostly the splitting and adding SPI interface was about obsoleting
-the misc driver so it's for a higher cause....
-
-Yours,
-Linus Walleij
+Rob
