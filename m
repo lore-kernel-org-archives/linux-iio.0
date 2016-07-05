@@ -1,26 +1,26 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42524 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42526 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751525AbcGETwr (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jul 2016 15:52:47 -0400
+	with ESMTP id S1752161AbcGETxw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jul 2016 15:53:52 -0400
 Subject: Re: [RFC 1/2] iio: adc: ti-adc1x1s: add support for TI 1-channel
  differential ADCs
 To: Matt Ranostay <mranostay@gmail.com>
 References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
  <1467497127-32431-2-git-send-email-mranostay@gmail.com>
  <83382690-9dbf-5678-6598-d32a25fb803c@kernel.org>
- <CAKzfze-Wpbii==qKbKgJjor4j6Hvj2JXCbDWcB0QqbKYFmRttw@mail.gmail.com>
+ <CAKzfze-0rGpKvJyhT2AKY7kVWV-XWVZkrj1O3dwe8d+gq8AfuQ@mail.gmail.com>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <94e18c71-0c57-5675-bd48-a45b2cc0b11a@kernel.org>
-Date: Tue, 5 Jul 2016 20:52:42 +0100
+Message-ID: <1e433161-4052-fadc-c418-cd92b806dc92@kernel.org>
+Date: Tue, 5 Jul 2016 20:53:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze-Wpbii==qKbKgJjor4j6Hvj2JXCbDWcB0QqbKYFmRttw@mail.gmail.com>
+In-Reply-To: <CAKzfze-0rGpKvJyhT2AKY7kVWV-XWVZkrj1O3dwe8d+gq8AfuQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/16 22:34, Matt Ranostay wrote:
+On 04/07/16 04:05, Matt Ranostay wrote:
 > On Sun, Jul 3, 2016 at 6:04 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >> On 02/07/16 23:05, Matt Ranostay wrote:
 >>> Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
@@ -55,6 +55,10 @@ On 03/07/16 22:34, Matt Ranostay wrote:
 >> Arguably could go in spi trivial devices binding file (unless you are going
 >> to suplement this soon anyway in which case it may be less churn to keep it
 >> here).
+> 
+> There doesn't seem to be a trivial-devices.txt for spi device bindings.
+Hmm. Must have imagined it!  
+> 
 >>> @@ -0,0 +1,16 @@
 >>> +* Texas Instruments' ADC141S626, and ADC161S626 chip
 >>> +
@@ -192,12 +196,6 @@ On 03/07/16 22:34, Matt Ranostay wrote:
 >> enforce cacheline alignment or this is going to cause possible fun on
 >> dma using spi devices.
 >>> +     u8 buffer[16]; /* 3 byte data + 5 byte pad + 8 byte timestamp */
-> 
-> Thought only tx buffers need to cache aligned?
-As far as I know it's either.  Certainly fits with the explanation in:
-https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
-
-> 
 >>> +};
 >>> +
 >>> +static irqreturn_t ti_adc_trigger_handler(int irq, void *private)
@@ -233,9 +231,6 @@ https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
 >> Inelegant as buf is clearly marked as 32 bit by it's type. I'd move the
 >> read into the switch statement then read into the appropriate sized
 >> local variable.  More code but easier to read (slightly)
-> 
-> Okay.
-> 
 >>> +             break;
 >>> +     case 3:
 >>> +             *val = be32_to_cpu(buf) >> 8;
@@ -268,9 +263,6 @@ https://www.kernel.org/doc/Documentation/DMA-API-HOWTO.txt
 >>> +             ret = IIO_VAL_INT;
 >> I'd make ti_adc_read_measurement return IIO_VAL_INT if successful. Then
 >> the slightly odd good path handling goes away.
-> 
-> Okay.
-> 
 >>> +
 >>> +     iio_device_release_direct_mode(indio_dev);
 >>> +
