@@ -1,147 +1,161 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:41631 "EHLO pmeerw.net"
+Received: from ns.pmeerw.net ([84.19.176.92]:41632 "EHLO pmeerw.net"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1754964AbcGELzt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	id S1754948AbcGELzt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
 	Tue, 5 Jul 2016 07:55:49 -0400
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: linux-iio@vger.kernel.org, lars@metafoo.de, knaack.h@gmx.de,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 5/9] staging: iio: isl29018: Prefix remaining functions
-Date: Tue,  5 Jul 2016 13:55:40 +0200
-Message-Id: <1467719744-19450-6-git-send-email-pmeerw@pmeerw.net>
+Subject: [PATCH 6/9] staging: iio: isl29028: Prefix #defines
+Date: Tue,  5 Jul 2016 13:55:41 +0200
+Message-Id: <1467719744-19450-7-git-send-email-pmeerw@pmeerw.net>
 In-Reply-To: <1467719744-19450-1-git-send-email-pmeerw@pmeerw.net>
 References: <1467719744-19450-1-git-send-email-pmeerw@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+and drop unused PROX_DRIVE
+
 Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/light/isl29018.c |   34 +++++++++++++++++-----------------
- 1 file changed, 17 insertions(+), 17 deletions(-)
+ drivers/staging/iio/light/isl29028.c |   62 +++++++++++++++++-----------------
+ 1 file changed, 31 insertions(+), 31 deletions(-)
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index cafa2a7..80b6a9e 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -280,7 +280,7 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
+diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
+index 2e3b1d6..79f41ee 100644
+--- a/drivers/staging/iio/light/isl29028.c
++++ b/drivers/staging/iio/light/isl29028.c
+@@ -27,29 +27,27 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
+-#define CONVERSION_TIME_MS		100
++#define ISL29028_CONV_TIME_MS		100
+ 
+ #define ISL29028_REG_CONFIGURE		0x01
+ 
+-#define CONFIGURE_ALS_IR_MODE_ALS	0
+-#define CONFIGURE_ALS_IR_MODE_IR	BIT(0)
+-#define CONFIGURE_ALS_IR_MODE_MASK	BIT(0)
++#define ISL29028_CONF_ALS_IR_MODE_ALS	0
++#define ISL29028_CONF_ALS_IR_MODE_IR	BIT(0)
++#define ISL29028_CONF_ALS_IR_MODE_MASK	BIT(0)
+ 
+-#define CONFIGURE_ALS_RANGE_LOW_LUX	0
+-#define CONFIGURE_ALS_RANGE_HIGH_LUX	BIT(1)
+-#define CONFIGURE_ALS_RANGE_MASK	BIT(1)
++#define ISL29028_CONF_ALS_RANGE_LOW_LUX	0
++#define ISL29028_CONF_ALS_RANGE_HIGH_LUX	BIT(1)
++#define ISL29028_CONF_ALS_RANGE_MASK	BIT(1)
+ 
+-#define CONFIGURE_ALS_DIS		0
+-#define CONFIGURE_ALS_EN		BIT(2)
+-#define CONFIGURE_ALS_EN_MASK		BIT(2)
++#define ISL29028_CONF_ALS_DIS		0
++#define ISL29028_CONF_ALS_EN		BIT(2)
++#define ISL29028_CONF_ALS_EN_MASK	BIT(2)
+ 
+-#define CONFIGURE_PROX_DRIVE		BIT(3)
++#define ISL29028_CONF_PROX_SLP_SH	4
++#define ISL29028_CONF_PROX_SLP_MASK	(7 << ISL29028_CONF_PROX_SLP_SH)
+ 
+-#define CONFIGURE_PROX_SLP_SH		4
+-#define CONFIGURE_PROX_SLP_MASK		(7 << CONFIGURE_PROX_SLP_SH)
+-
+-#define CONFIGURE_PROX_EN		BIT(7)
+-#define CONFIGURE_PROX_EN_MASK		BIT(7)
++#define ISL29028_CONF_PROX_EN		BIT(7)
++#define ISL29028_CONF_PROX_EN_MASK	BIT(7)
+ 
+ #define ISL29028_REG_INTERRUPT		0x02
+ 
+@@ -91,7 +89,8 @@ static int isl29028_set_proxim_sampling(struct isl29028_chip *chip,
+ 			break;
+ 	}
+ 	return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-			CONFIGURE_PROX_SLP_MASK, sel << CONFIGURE_PROX_SLP_SH);
++				  ISL29028_CONF_PROX_SLP_MASK,
++				  sel << ISL29028_CONF_PROX_SLP_SH);
+ }
+ 
+ static int isl29028_enable_proximity(struct isl29028_chip *chip, bool enable)
+@@ -100,9 +99,9 @@ static int isl29028_enable_proximity(struct isl29028_chip *chip, bool enable)
+ 	int val = 0;
+ 
+ 	if (enable)
+-		val = CONFIGURE_PROX_EN;
++		val = ISL29028_CONF_PROX_EN;
+ 	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-				 CONFIGURE_PROX_EN_MASK, val);
++				 ISL29028_CONF_PROX_EN_MASK, val);
+ 	if (ret < 0)
+ 		return ret;
+ 
+@@ -113,11 +112,11 @@ static int isl29028_enable_proximity(struct isl29028_chip *chip, bool enable)
+ 
+ static int isl29028_set_als_scale(struct isl29028_chip *chip, int lux_scale)
+ {
+-	int val = (lux_scale == 2000) ? CONFIGURE_ALS_RANGE_HIGH_LUX :
+-					CONFIGURE_ALS_RANGE_LOW_LUX;
++	int val = (lux_scale == 2000) ? ISL29028_CONF_ALS_RANGE_HIGH_LUX :
++					ISL29028_CONF_ALS_RANGE_LOW_LUX;
+ 
+ 	return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-		CONFIGURE_ALS_RANGE_MASK, val);
++		ISL29028_CONF_ALS_RANGE_MASK, val);
+ }
+ 
+ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
+@@ -128,25 +127,25 @@ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
+ 	switch (mode) {
+ 	case MODE_ALS:
+ 		ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-					 CONFIGURE_ALS_IR_MODE_MASK,
+-					 CONFIGURE_ALS_IR_MODE_ALS);
++					 ISL29028_CONF_ALS_IR_MODE_MASK,
++					 ISL29028_CONF_ALS_IR_MODE_ALS);
+ 		if (ret < 0)
+ 			return ret;
+ 
+ 		ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-					 CONFIGURE_ALS_RANGE_MASK,
+-					 CONFIGURE_ALS_RANGE_HIGH_LUX);
++					 ISL29028_CONF_ALS_RANGE_MASK,
++					 ISL29028_CONF_ALS_RANGE_HIGH_LUX);
+ 		break;
+ 
+ 	case MODE_IR:
+ 		ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-					 CONFIGURE_ALS_IR_MODE_MASK,
+-					 CONFIGURE_ALS_IR_MODE_IR);
++					 ISL29028_CONF_ALS_IR_MODE_MASK,
++					 ISL29028_CONF_ALS_IR_MODE_IR);
+ 		break;
+ 
+ 	case MODE_NONE:
+ 		return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-			CONFIGURE_ALS_EN_MASK, CONFIGURE_ALS_DIS);
++			ISL29028_CONF_ALS_EN_MASK, ISL29028_CONF_ALS_DIS);
+ 	}
+ 
+ 	if (ret < 0)
+@@ -154,12 +153,13 @@ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
+ 
+ 	/* Enable the ALS/IR */
+ 	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-				 CONFIGURE_ALS_EN_MASK, CONFIGURE_ALS_EN);
++				 ISL29028_CONF_ALS_EN_MASK,
++				 ISL29028_CONF_ALS_EN);
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	/* Need to wait for conversion time if ALS/IR mode enabled */
+-	mdelay(CONVERSION_TIME_MS);
++	mdelay(ISL29028_CONV_TIME_MS);
  	return 0;
  }
  
--static ssize_t show_scale_available(struct device *dev,
-+static ssize_t isl29018_show_scale_available(struct device *dev,
- 				    struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-@@ -297,7 +297,7 @@ static ssize_t show_scale_available(struct device *dev,
- 	return len;
- }
- 
--static ssize_t show_int_time_available(struct device *dev,
-+static ssize_t isl29018_show_int_time_available(struct device *dev,
- 				       struct device_attribute *attr, char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-@@ -313,7 +313,7 @@ static ssize_t show_int_time_available(struct device *dev,
- 	return len;
- }
- 
--static ssize_t show_prox_infrared_suppression(struct device *dev,
-+static ssize_t isl29018_show_prox_infrared_suppression(struct device *dev,
- 					      struct device_attribute *attr,
- 					      char *buf)
- {
-@@ -327,7 +327,7 @@ static ssize_t show_prox_infrared_suppression(struct device *dev,
- 	return sprintf(buf, "%d\n", chip->prox_scheme);
- }
- 
--static ssize_t store_prox_infrared_suppression(struct device *dev,
-+static ssize_t isl29018_store_prox_infrared_suppression(struct device *dev,
- 					       struct device_attribute *attr,
- 					       const char *buf, size_t count)
- {
-@@ -487,13 +487,13 @@ static const struct iio_chan_spec isl29023_channels[] = {
- };
- 
- static IIO_DEVICE_ATTR(in_illuminance_integration_time_available, S_IRUGO,
--		       show_int_time_available, NULL, 0);
-+		       isl29018_show_int_time_available, NULL, 0);
- static IIO_DEVICE_ATTR(in_illuminance_scale_available, S_IRUGO,
--		      show_scale_available, NULL, 0);
-+		      isl29018_show_scale_available, NULL, 0);
- static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
- 					S_IRUGO | S_IWUSR,
--					show_prox_infrared_suppression,
--					store_prox_infrared_suppression, 0);
-+					isl29018_show_prox_infrared_suppression,
-+					isl29018_store_prox_infrared_suppression, 0);
- 
- #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
- 
-@@ -631,7 +631,7 @@ static const struct iio_info isl29023_info = {
- 	.write_raw = isl29018_write_raw,
- };
- 
--static bool is_volatile_reg(struct device *dev, unsigned int reg)
-+static bool isl29018_is_volatile_reg(struct device *dev, unsigned int reg)
- {
- 	switch (reg) {
- 	case ISL29018_REG_ADD_DATA_LSB:
-@@ -648,7 +648,7 @@ static bool is_volatile_reg(struct device *dev, unsigned int reg)
- static const struct regmap_config isl29018_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
--	.volatile_reg = is_volatile_reg,
-+	.volatile_reg = isl29018_is_volatile_reg,
- 	.max_register = ISL29018_REG_TEST,
- 	.num_reg_defaults_raw = ISL29018_REG_TEST + 1,
- 	.cache_type = REGCACHE_RBTREE,
-@@ -657,20 +657,20 @@ static const struct regmap_config isl29018_regmap_config = {
- static const struct regmap_config isl29035_regmap_config = {
- 	.reg_bits = 8,
- 	.val_bits = 8,
--	.volatile_reg = is_volatile_reg,
-+	.volatile_reg = isl29018_is_volatile_reg,
- 	.max_register = ISL29035_REG_DEVICE_ID,
- 	.num_reg_defaults_raw = ISL29035_REG_DEVICE_ID + 1,
- 	.cache_type = REGCACHE_RBTREE,
- };
- 
--struct chip_info {
-+struct isl29018_chip_info {
- 	const struct iio_chan_spec *channels;
- 	int num_channels;
- 	const struct iio_info *indio_info;
- 	const struct regmap_config *regmap_cfg;
- };
- 
--static const struct chip_info chip_info_tbl[] = {
-+static const struct isl29018_chip_info isl29018_chip_info_tbl[] = {
- 	[isl29018] = {
- 		.channels = isl29018_channels,
- 		.num_channels = ARRAY_SIZE(isl29018_channels),
-@@ -739,7 +739,7 @@ static int isl29018_probe(struct i2c_client *client,
- 	chip->suspended = false;
- 
- 	chip->regmap = devm_regmap_init_i2c(client,
--				chip_info_tbl[dev_id].regmap_cfg);
-+				isl29018_chip_info_tbl[dev_id].regmap_cfg);
- 	if (IS_ERR(chip->regmap)) {
- 		err = PTR_ERR(chip->regmap);
- 		dev_err(&client->dev, "regmap initialization fails: %d\n", err);
-@@ -750,9 +750,9 @@ static int isl29018_probe(struct i2c_client *client,
- 	if (err)
- 		return err;
- 
--	indio_dev->info = chip_info_tbl[dev_id].indio_info;
--	indio_dev->channels = chip_info_tbl[dev_id].channels;
--	indio_dev->num_channels = chip_info_tbl[dev_id].num_channels;
-+	indio_dev->info = isl29018_chip_info_tbl[dev_id].indio_info;
-+	indio_dev->channels = isl29018_chip_info_tbl[dev_id].channels;
-+	indio_dev->num_channels = isl29018_chip_info_tbl[dev_id].num_channels;
- 	indio_dev->name = name;
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
 -- 
 1.7.10.4
 
