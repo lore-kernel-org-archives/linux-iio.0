@@ -1,25 +1,25 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42553 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42575 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751438AbcGET57 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jul 2016 15:57:59 -0400
+	with ESMTP id S1752100AbcGET7i (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jul 2016 15:59:38 -0400
 Subject: Re: [RFC 2/2] iio: potentiostat: add LMP91000 support
 To: Matt Ranostay <mranostay@gmail.com>
 References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
  <1467497127-32431-3-git-send-email-mranostay@gmail.com>
  <5e18f0c4-c761-1884-9109-b22dbf8574ff@kernel.org>
- <CAKzfze9oskFmyNWeoU+pHhnXEx0kLfZryKKLyud-dULhoUZYeA@mail.gmail.com>
+ <CAKzfze9re2vYZ17E9YFk8+=S9Q0Jrsc+BLeqn4UuyNNhm7s63w@mail.gmail.com>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c4ace0a4-95fd-199d-3d21-f462dac6d1ea@kernel.org>
-Date: Tue, 5 Jul 2016 20:57:57 +0100
+Message-ID: <af973ea4-266f-d65b-a687-dd0c4a55d648@kernel.org>
+Date: Tue, 5 Jul 2016 20:59:36 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze9oskFmyNWeoU+pHhnXEx0kLfZryKKLyud-dULhoUZYeA@mail.gmail.com>
+In-Reply-To: <CAKzfze9re2vYZ17E9YFk8+=S9Q0Jrsc+BLeqn4UuyNNhm7s63w@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/07/16 22:59, Matt Ranostay wrote:
+On 03/07/16 23:48, Matt Ranostay wrote:
 > On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >> On 02/07/16 23:05, Matt Ranostay wrote:
 >>> Add support for the LMP91000 potentiostat which is used for chemical
@@ -70,15 +70,17 @@ On 03/07/16 22:59, Matt Ranostay wrote:
 >>> +    35000, 120000, or 350000 ohms.
 >> Better perhaps to have an explicit entry to say use the external resistor?
 >> If nothing else, it ought to be infinite resistance for that not 0.
+> 
+> How would it be explicit? Have it check to see if it is a char array
+> first and the string matches 'external'?
+> Rather not make the other values have to be strings as well.
+Ah, sorry wasn't clear.  A separate 'ti,tia-external-resistor' attribute to
+say that we have an external resistor rather than (or perhaps in parallel with?)
+the internal one.
+> 
 >>
-> 
-> 
 >> Also does it ever make sense to change this at runtime or is it a case of
 >> being matched to a particular probe?
-> 
-> I mean it doesn't in theory damage anything but probably an un-needed
-> runtime configuration complexity.
-> 
 >>> +
 >>> +  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
 >>> +    sensor. Must be 10, 33, 50, or 100 (default) ohms.
@@ -86,12 +88,6 @@ On 03/07/16 22:59, Matt Ranostay wrote:
 >> value for a given probe even if sometimes it might want 'tweaking'.
 >>
 >> No idea - never even seen one of these probes that I know of ;)
-> 
-> Actually the load resistor value is documented in the sensor
-> datasheet, and never changes.
-> An incorrect value could in theory shorter the life of the sensor.
-Cool. Perhaps expand the description to make this clear?
-> 
 >>> +
 >>> +Example:
 >>> +
