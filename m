@@ -1,407 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:35480 "EHLO
-	mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752669AbcGEByf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jul 2016 21:54:35 -0400
-Received: by mail-pf0-f195.google.com with SMTP id t190so17584812pfb.2
-        for <linux-iio@vger.kernel.org>; Mon, 04 Jul 2016 18:54:34 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: Matt Ranostay <mranostay@gmail.com>, Marek Vasut <marex@denx.de>,
-	Matt Porter <mporter@konsulko.com>
-Subject: [PATCH v6] iio: temperature: add support for Maxim thermocouple chips
-Date: Mon,  4 Jul 2016 18:54:04 -0700
-Message-Id: <1467683644-10594-1-git-send-email-mranostay@gmail.com>
+Received: from mailgw02.mediatek.com ([210.61.82.184]:51140 "EHLO
+	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1752566AbcGEDul (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 4 Jul 2016 23:50:41 -0400
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+To: <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>
+CC: <srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
+	<yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
+	<erin.lo@mediatek.com>, <dawei.chien@mediatek.com>,
+	<matthias.bgg@gmail.com>, <s.hauer@pengutronix.de>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v2 0/3] AUXADC: Mediatek auxadc driver 
+Date: Tue, 5 Jul 2016 11:50:07 +0800
+Message-ID: <1467690610-20550-1-git-send-email-zhiyong.tao@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add initial driver support for MAX6675, and MAX31855 thermocouple chips.
+This series includes three patches:
+1.Change the device tree binding documentation.
+2.Add auxadc driver based on linux iio.
+3.Add auxadc nodes in the mediatek MT2701 dtsi file.
 
-Cc: Marek Vasut <marex@denx.de>
-Cc: Matt Porter <mporter@konsulko.com>
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
+changes in patch 2:
+1).Change the file name mt65xx_auxadc.c to mt6577_auxadc.c.
+2).Add 'depends on ARCH_MEDIATEK || COMPILE_TEST and HAS_IOMEM' for MEDIATEK_MT65XX_AUXADC config.
+3).Add check case for return value of 'readl_poll_timeout'.
+4).Remove returning 1 and 0 for SCALE and OFFSET. use channel type 'IIO_CHAN_INFO_PROCESSED' instead of 'IIO_CHAN_INFO_RAW'.
+5).Remove 'IIO_CHAN_INFO_OFFSET' and 'IIO_CHAN_INFO_SCALE' in 'MT65XX_AUXADC_CHANNEL' channel type.
+6).Add check case when auxadc power on failure. if auxadc power on failure, clk_disable_unprepare should be executed.
+7).Put 'platform_set_drvdata' before 'iio_device_register'.
+8).Fix coding style and spelling error.
 
-Changes from v1:
-* switch to iio_device_*_direct_mode wrappers
-* add const to structs
-* removed useless cast
+Zhiyong Tao (3):
+  dt-bindings: auxadc: Add binding document for Mediatek auxadc.
+  auxadc: Add Mediatek auxadc driver for mt2701.
+  arm: dts: auxadc: Add auxadc node.
 
-Changes from v2:
-* mark buffer data invalid on disconnected thermocouple
-* add .address = 0 to be consistent
-* add missing scan_mask for the max31855 part
-
-Changes from v3:
-* fixed several typos of max31855 part number
-
-Changes from v4:
-* drop maxim_thermocouple_validate_buffer() due to peer review saying
-  this is an incorrect way to signal an invalid reading
-
-Changes from v5:
- * reorder struct maxim_thermocouple_chip to reduce alignment padding
- * add ____cacheline_aligned to the spi data buffer
-
-.../iio/temperature/maxim_thermocouple.txt         |  21 ++
- drivers/iio/temperature/Kconfig                    |  14 +
- drivers/iio/temperature/Makefile                   |   1 +
- drivers/iio/temperature/maxim_thermocouple.c       | 281 +++++++++++++++++++++
- 4 files changed, 317 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
- create mode 100644 drivers/iio/temperature/maxim_thermocouple.c
-
-diff --git a/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-new file mode 100644
-index 000000000000..28bc5c4d965b
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/temperature/maxim_thermocouple.txt
-@@ -0,0 +1,21 @@
-+Maxim thermocouple support
-+
-+* https://datasheets.maximintegrated.com/en/ds/MAX6675.pdf
-+* https://datasheets.maximintegrated.com/en/ds/MAX31855.pdf
-+
-+Required properties:
-+
-+	- compatible: must be "maxim,max31855" or "maxim,max6675"
-+	- reg: SPI chip select number for the device
-+	- spi-max-frequency: must be 4300000
-+	- spi-cpha: must be defined for max6675 to enable SPI mode 1
-+
-+	Refer to spi/spi-bus.txt for generic SPI slave bindings.
-+
-+Example:
-+
-+	max31855@0 {
-+		compatible = "maxim,max31855";
-+		reg = <0>;
-+		spi-max-frequency = <4300000>;
-+	};
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index c4664e5de791..1d3da05eca39 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -3,6 +3,20 @@
- #
- menu "Temperature sensors"
- 
-+config MAXIM_THERMOCOUPLE
-+	tristate "Maxim thermocouple sensors"
-+	depends on SPI
-+	help
-+	  If you say yes here you get support for the Maxim series of
-+	  thermocouple sensors connected via SPI.
-+
-+	  Supported sensors:
-+	   * MAX6675
-+	   * MAX31855
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called maxim_thermocouple.
-+
- config MLX90614
- 	tristate "MLX90614 contact-less infrared sensor"
- 	depends on I2C
-diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-index 02bc79d49b24..78c3de0dc3f0 100644
---- a/drivers/iio/temperature/Makefile
-+++ b/drivers/iio/temperature/Makefile
-@@ -2,6 +2,7 @@
- # Makefile for industrial I/O temperature drivers
- #
- 
-+obj-$(CONFIG_MAXIM_THERMOCOUPLE) += maxim_thermocouple.o
- obj-$(CONFIG_MLX90614) += mlx90614.o
- obj-$(CONFIG_TMP006) += tmp006.o
- obj-$(CONFIG_TSYS01) += tsys01.o
-diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-new file mode 100644
-index 000000000000..62ae88bcc4e7
---- /dev/null
-+++ b/drivers/iio/temperature/maxim_thermocouple.c
-@@ -0,0 +1,281 @@
-+/*
-+ * maxim_thermocouple.c  - Support for Maxim thermocouple chips
-+ *
-+ * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/init.h>
-+#include <linux/mutex.h>
-+#include <linux/err.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+
-+#define MAXIM_THERMOCOUPLE_DRV_NAME	"maxim_thermocouple"
-+
-+enum {
-+	MAX6675,
-+	MAX31855,
-+};
-+
-+const struct iio_chan_spec max6675_channels[] = {
-+	{	/* thermocouple temperature */
-+		.type = IIO_TEMP,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 13,
-+			.storagebits = 16,
-+			.shift = 3,
-+			.endianness = IIO_BE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
-+};
-+
-+const struct iio_chan_spec max31855_channels[] = {
-+	{	/* thermocouple temperature */
-+		.type = IIO_TEMP,
-+		.address = 2,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 14,
-+			.storagebits = 16,
-+			.shift = 2,
-+			.endianness = IIO_BE,
-+		},
-+	},
-+	{	/* cold junction temperature */
-+		.type = IIO_TEMP,
-+		.address = 0,
-+		.channel2 = IIO_MOD_TEMP_AMBIENT,
-+		.modified = 1,
-+		.info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 12,
-+			.storagebits = 16,
-+			.shift = 4,
-+			.endianness = IIO_BE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(2),
-+};
-+
-+static const unsigned long max31855_scan_masks[] = {0x3, 0};
-+
-+struct maxim_thermocouple_chip {
-+	const struct iio_chan_spec *channels;
-+	const unsigned long *scan_masks;
-+	u8 num_channels;
-+	u8 read_size;
-+
-+	/* bit-check for valid input */
-+	u32 status_bit;
-+};
-+
-+const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
-+	[MAX6675] = {
-+			.channels = max6675_channels,
-+			.num_channels = ARRAY_SIZE(max6675_channels),
-+			.read_size = 2,
-+			.status_bit = BIT(2),
-+		},
-+	[MAX31855] = {
-+			.channels = max31855_channels,
-+			.num_channels = ARRAY_SIZE(max31855_channels),
-+			.read_size = 4,
-+			.scan_masks = max31855_scan_masks,
-+			.status_bit = BIT(16),
-+		},
-+};
-+
-+struct maxim_thermocouple_data {
-+	struct spi_device *spi;
-+	const struct maxim_thermocouple_chip *chip;
-+
-+	u8 buffer[16] ____cacheline_aligned;
-+};
-+
-+static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
-+				   struct iio_chan_spec const *chan, int *val)
-+{
-+	unsigned int storage_bytes = data->chip->read_size;
-+	unsigned int shift = chan->scan_type.shift + (chan->address * 8);
-+	unsigned int buf;
-+	int ret;
-+
-+	ret = spi_read(data->spi, (void *) &buf, storage_bytes);
-+	if (ret)
-+		return ret;
-+
-+	switch (storage_bytes) {
-+	case 2:
-+		*val = be16_to_cpu(buf);
-+		break;
-+	case 4:
-+		*val = be32_to_cpu(buf);
-+		break;
-+	}
-+
-+	/* check to be sure this is a valid reading */
-+	if (*val & data->chip->status_bit)
-+		return -EINVAL;
-+
-+	*val = sign_extend32(*val >> shift, chan->scan_type.realbits - 1);
-+
-+	return 0;
-+}
-+
-+static irqreturn_t maxim_thermocouple_trigger_handler(int irq, void *private)
-+{
-+	struct iio_poll_func *pf = private;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct maxim_thermocouple_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = spi_read(data->spi, data->buffer, data->chip->read_size);
-+	if (!ret) {
-+		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+						   iio_get_time_ns());
-+	}
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int maxim_thermocouple_read_raw(struct iio_dev *indio_dev,
-+				       struct iio_chan_spec const *chan,
-+				       int *val, int *val2, long mask)
-+{
-+	struct maxim_thermocouple_data *data = iio_priv(indio_dev);
-+	int ret = -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
-+
-+		ret = maxim_thermocouple_read(data, chan, val);
-+		iio_device_release_direct_mode(indio_dev);
-+
-+		if (!ret)
-+			return IIO_VAL_INT;
-+
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		switch (chan->channel2) {
-+		case IIO_MOD_TEMP_AMBIENT:
-+			*val = 62;
-+			*val2 = 500000; /* 1000 * 0.0625 */
-+			ret = IIO_VAL_INT_PLUS_MICRO;
-+			break;
-+		default:
-+			*val = 250; /* 1000 * 0.25 */
-+			ret = IIO_VAL_INT;
-+		};
-+		break;
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iio_info maxim_thermocouple_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = maxim_thermocouple_read_raw,
-+};
-+
-+static int maxim_thermocouple_probe(struct spi_device *spi)
-+{
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+	struct iio_dev *indio_dev;
-+	struct maxim_thermocouple_data *data;
-+	const struct maxim_thermocouple_chip *chip =
-+			&maxim_thermocouple_chips[id->driver_data];
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	indio_dev->info = &maxim_thermocouple_info;
-+	indio_dev->name = MAXIM_THERMOCOUPLE_DRV_NAME;
-+	indio_dev->channels = chip->channels;
-+	indio_dev->available_scan_masks = chip->scan_masks;
-+	indio_dev->num_channels = chip->num_channels;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	data = iio_priv(indio_dev);
-+	data->spi = spi;
-+	data->chip = chip;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+				maxim_thermocouple_trigger_handler, NULL);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_unreg_buffer;
-+
-+	return 0;
-+
-+error_unreg_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return ret;
-+}
-+
-+static int maxim_thermocouple_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct spi_device_id maxim_thermocouple_id[] = {
-+	{"max6675", MAX6675},
-+	{"max31855", MAX31855},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(spi, maxim_thermocouple_id);
-+
-+static struct spi_driver maxim_thermocouple_driver = {
-+	.driver = {
-+		.name	= MAXIM_THERMOCOUPLE_DRV_NAME,
-+	},
-+	.probe		= maxim_thermocouple_probe,
-+	.remove		= maxim_thermocouple_remove,
-+	.id_table	= maxim_thermocouple_id,
-+};
-+module_spi_driver(maxim_thermocouple_driver);
-+
-+MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("Maxim thermocouple sensors");
-+MODULE_LICENSE("GPL");
--- 
-2.7.4
+ .../devicetree/bindings/iio/adc/mt65xx_auxadc.txt  |   27 ++
+ .../devicetree/bindings/soc/mediatek/auxadc.txt    |   21 --
+ arch/arm/boot/dts/mt2701.dtsi                      |    9 +
+ drivers/iio/adc/Kconfig                            |   13 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/mt6577_auxadc.c                    |  301 ++++++++++++++++++++
+ 6 files changed, 351 insertions(+), 21 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/mt65xx_auxadc.txt
+ delete mode 100644 Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+ create mode 100644 drivers/iio/adc/mt6577_auxadc.c
 
