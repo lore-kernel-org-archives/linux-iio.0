@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42601 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42622 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752170AbcGEUCn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jul 2016 16:02:43 -0400
-Subject: Re: [PATCH v1] drivers:iio:accel:mma8452: added cleanup provision in
- case of failure.
+	with ESMTP id S1751492AbcGEUE6 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 5 Jul 2016 16:04:58 -0400
+Subject: Re: [PATCH v1] drivers:iio:accel:mma8452: removed unwanted return
+ statements
 To: Martin Kepplinger <martink@posteo.de>,
 	Bijosh Thykkoottathil <bijosh.t@hotmail.com>,
 	"knaack.h@gmx.de" <knaack.h@gmx.de>,
@@ -12,55 +12,68 @@ To: Martin Kepplinger <martink@posteo.de>,
 	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
 	"christoph.muellner@theobroma-systems.com"
 	<christoph.muellner@theobroma-systems.com>
-References: <KL1PR04MB1205AC29D431BAF1527101F980380@KL1PR04MB1205.apcprd04.prod.outlook.com>
- <e07d6110-9df7-ace2-ebff-dd63886ab16a@posteo.de>
+References: <KL1PR04MB12050202C107FB05AAB8EAEA80380@KL1PR04MB1205.apcprd04.prod.outlook.com>
+ <c6fa0795-b316-2b65-955a-7b0acb92e027@posteo.de>
 Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
 	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d26d071a-47b2-2c69-4718-233ae0d9b13d@kernel.org>
-Date: Tue, 5 Jul 2016 21:02:41 +0100
+Message-ID: <73916037-eaba-a3b2-9445-b3fb572e97c8@kernel.org>
+Date: Tue, 5 Jul 2016 21:04:56 +0100
 MIME-Version: 1.0
-In-Reply-To: <e07d6110-9df7-ace2-ebff-dd63886ab16a@posteo.de>
+In-Reply-To: <c6fa0795-b316-2b65-955a-7b0acb92e027@posteo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/07/16 13:20, Martin Kepplinger wrote:
-> Am 2016-07-04 um 12:08 schrieb Bijosh Thykkoottathil:
->> mma8452_set_freefall_mode can return -ve value in case if
->> i2c_smbus_read_byte_data fails. This function is called from mma8452_probe,
->> and returning -ve value from probe indicates probe failure. Need to call
->> iio_triggered_buffer_cleanup & iio_trigger_cleanup in this case.
+On 04/07/16 13:23, Martin Kepplinger wrote:
+> Am 2016-07-04 um 13:15 schrieb Bijosh Thykkoottathil:
+>> Removed unwanted return statements from the function
+>> mma8452_set_freefall_mode.
 > 
-> Thanks for your review, nice catch! Looks good to me. You just could
-> have said "Don't leak allocated buffer on error during probe().", but oh
-> well :)
+> You could've said "Don't unnecessarily save a return value.", but
+> whatever :) Thanks for your review!
 > 
 >>
 >> Signed-off-by: Bijosh Thykkoottathil <bijosh.t@hotmail.com>
 > Reviewed-by: Martin Kepplinger <martink@posteo.de>
-Applied, thanks.
+Hi Martin,
+
+I've flipped that tag over to an Acked-by which is more
+appropriate in this case as an in depth review as signalled
+by Reviewed-by would be 'interesting' here ;)
+
+I'm enjoying the slightly doom laden commit messages :)
+
+Applied.
 
 Jonathan
 > 
 >> ---
->>  drivers/iio/accel/mma8452.c | 4 ++--
->>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>  drivers/iio/accel/mma8452.c | 6 +-----
+>>  1 file changed, 1 insertion(+), 5 deletions(-)
 >>
 >> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
->> index e225d3c..1bcf5c3 100644
+>> index e225d3c..d4a6d44 100644
 >> --- a/drivers/iio/accel/mma8452.c
 >> +++ b/drivers/iio/accel/mma8452.c
->> @@ -1444,8 +1444,8 @@ static int mma8452_probe(struct i2c_client *client,
->>  		goto buffer_cleanup;
+>> @@ -518,11 +518,7 @@ static int mma8452_set_freefall_mode(struct mma8452_data *data, bool state)
+>>  		val |= MMA8452_FF_MT_CFG_OAE;
+>>  	}
 >>  
->>  	ret = mma8452_set_freefall_mode(data, false);
->> -	if (ret)
->> -		return ret;
->> +	if (ret < 0)
->> +		goto buffer_cleanup;
+>> -	val = mma8452_change_config(data, chip->ev_cfg, val);
+>> -	if (val)
+>> -		return val;
+>> -
+>> -	return 0;
+>> +	return mma8452_change_config(data, chip->ev_cfg, val);
+>>  }
 >>  
->>  	return 0;
->>  
+>>  static int mma8452_set_hp_filter_frequency(struct mma8452_data *data,
 >>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
