@@ -1,168 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from plane.gmane.org ([80.91.229.3]:37073 "EHLO plane.gmane.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750720AbcGGSEf convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 7 Jul 2016 14:04:35 -0400
-Received: from list by plane.gmane.org with local (Exim 4.69)
-	(envelope-from <glki-linux-iio@m.gmane.org>)
-	id 1bLDeH-0002rj-5E
-	for linux-iio@vger.kernel.org; Thu, 07 Jul 2016 20:03:41 +0200
-Received: from 44.102-201-80.adsl-dyn.isp.belgacom.be ([80.201.102.44])
-        by main.gmane.org with esmtp (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Thu, 07 Jul 2016 20:03:41 +0200
-Received: from badshah400 by 44.102-201-80.adsl-dyn.isp.belgacom.be with local (Gmexim 0.1 (Debian))
-        id 1AlnuQ-0007hv-00
-        for <linux-iio@vger.kernel.org>; Thu, 07 Jul 2016 20:03:41 +0200
-To: linux-iio@vger.kernel.org
-From: Atri Bhattacharya <badshah400@aim.com>
-Subject: Re: [PATCH v3 0/6] Intel Integrated Sensor Hub Support (ISH)
-Date: Thu, 07 Jul 2016 20:02:22 +0200
-Message-ID: <1467914542.1847.2.camel@aim.com>
-References: <1467831078-2530-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Mime-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-In-Reply-To: <1467831078-2530-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from fw-tnat.cambridge.arm.com ([217.140.96.140]:56648 "EHLO
+	cam-smtp0.cambridge.arm.com" rhost-flags-OK-OK-OK-FAIL)
+	by vger.kernel.org with ESMTP id S1751836AbcGHJcl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jul 2016 05:32:41 -0400
+From: Punit Agrawal <punit.agrawal@arm.com>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Jean Delvare <jdelvare@suse.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Eduardo Valentin <edubezval@gmail.com>,
+	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/5] hwmon: New hwmon registration API
+References: <1466911590-26296-1-git-send-email-linux@roeck-us.net>
+Date: Fri, 08 Jul 2016 10:31:09 +0100
+In-Reply-To: <1466911590-26296-1-git-send-email-linux@roeck-us.net> (Guenter
+	Roeck's message of "Sat, 25 Jun 2016 20:26:23 -0700")
+Message-ID: <87d1mobhnm.fsf@e105922-lin.cambridge.arm.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Dear Srinivas,
-Seems like patch number 2 (of 6) is missing from this patchset.
+Hi Guenter,
 
-Cheers!
+Guenter Roeck <linux@roeck-us.net> writes:
 
-On Wed, 2016-07-06 at 11:51 -0700, Srinivas Pandruvada wrote:
-> Change log
-> v3:
-> - Rebased to linux-next as there are some new bus ids are added to
-> linux-next
-> - Documentation changes suggested by Jonathan
-> - The PCI device name for BXTP is changed to APL
-> - Added module parameter to enable DMA as some older FW
-> have issues in DMA support.
-> - On resume just restart to resume faster insted of reset for
-> S3 compliant platforms
-> 
-> Thanks to Grant Likely and Atri Bhattacharya for test. 
-> I will add Tested-by to commits for the final version of the patches.
-> 
-> v2:
-> - Overview in documentation show analogy with usbhid implementation
-> - sparse errors for statics. Also pointed by Jiri
-> - Clearly marking exported function header file. Clean up all exports
-> unused inteface functions
-> - Changed to tristate from boolean as pointed by Jiri:
-> this required remove/unload functions
-> - Prevent crash when ISH enabled on non supported platform
-> - Break client.c to smaller part by seprating buffer allocations
-> - move bus register/unregister to ishtp module
-> - There is only one config symbol INTEL_ISH_HID, removed silent
-> config for TRANSPORT and IPC
-> 
-> 
-> Starting from Cherrytrail, multiple generation of Intel processors
-> offers
-> on package sensor hub. Several recent tablets, 2-in-1 convertible
-> laptops
-> are using ISH instead of external sensor hubs. This resulted in lack
-> of
-> support of sensor function like device rotation and auto backlight
-> adjustment.
-> In addition, depending on the OEM implementation, support of ISH is
-> required
-> to support low power sleep states.
-> 
-> The support of ISH on Linux platforms is not new. Android platforms
-> with
-> Intel SoCs had this support for a while submitted by Daniel Drubin. 
-> This patcheset is reusing most of those changes with  clean up and
-> removing Android platform specific changes.
-> 
-> The user mode ABI is still same as external sensor hubs using Linux
-> IIO. So existing user mode software should still work.
-> This series primarily brings in new HID transport used in ISH.
-> 
-> Thanks to the community members who tested RFC patches and provided
-> feedback.
-> 
-> For users testing on Linux distributions using IIO sensor proxy,
-> a short term work around is required till we have debugged this
-> issue.
-> In systemd unit file iio-sensor-proxy.service
-> In the section "[Unit]" add
-> After=multi-user.target
-> 
-> Daniel Drubin (3):
->   hid: intel_ish-hid: ISH Transport layer
->   hid: intel-ish-hid: ipc layer
->   hid: intel-ish-hid: ISH HID client driver
-> 
-> Srinivas Pandruvada (3):
->   Documentation: hid: Intel ISH HID document
->   iio: hid-sensors: use asynchronous resume
->   hid: hid-sensor-hub: Add ISH quirk
-> 
->  Documentation/hid/intel-ish-hid.txt                | 454 ++++++++++
->  drivers/hid/Kconfig                                |   2 +
->  drivers/hid/Makefile                               |   2 +
->  drivers/hid/hid-sensor-hub.c                       |   4 +
->  drivers/hid/intel-ish-hid/Kconfig                  |  17 +
->  drivers/hid/intel-ish-hid/Makefile                 |  22 +
->  drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h        | 220 +++++
->  drivers/hid/intel-ish-hid/ipc/hw-ish.h             |  71 ++
->  drivers/hid/intel-ish-hid/ipc/ipc.c                | 719
-> ++++++++++++++++
->  drivers/hid/intel-ish-hid/ipc/pci-ish.c            | 332 ++++++++
->  drivers/hid/intel-ish-hid/ipc/utils.h              |  64 ++
->  drivers/hid/intel-ish-hid/ishtp-hid-client.c       | 935
-> +++++++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp-hid.c              | 234 ++++++
->  drivers/hid/intel-ish-hid/ishtp-hid.h              | 182 ++++
->  drivers/hid/intel-ish-hid/ishtp/bus.c              | 794
-> +++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp/bus.h              | 113 +++
->  drivers/hid/intel-ish-hid/ishtp/client-buffers.c   | 214 +++++
->  drivers/hid/intel-ish-hid/ishtp/client.c           | 935
-> +++++++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp/client.h           | 182 ++++
->  drivers/hid/intel-ish-hid/ishtp/dma-if.c           | 178 ++++
->  drivers/hid/intel-ish-hid/ishtp/hbm.c              | 912
-> ++++++++++++++++++++
->  drivers/hid/intel-ish-hid/ishtp/hbm.h              | 321 +++++++
->  drivers/hid/intel-ish-hid/ishtp/init.c             |  93 ++
->  drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h        | 277 ++++++
->  .../iio/common/hid-sensors/hid-sensor-trigger.c    |  21 +-
->  include/linux/hid-sensor-hub.h                     |   1 +
->  include/trace/events/intel_ish.h                   |  30 +
->  include/uapi/linux/input.h                         |   1 +
->  28 files changed, 7329 insertions(+), 1 deletion(-)
->  create mode 100644 Documentation/hid/intel-ish-hid.txt
->  create mode 100644 drivers/hid/intel-ish-hid/Kconfig
->  create mode 100644 drivers/hid/intel-ish-hid/Makefile
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
->  create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client-buffers.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
->  create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
->  create mode 100644 include/trace/events/intel_ish.h
-> 
--- 
+> Up to now, each hwmon driver has to implement its own sysfs attributes.
+> This requires a lot of template code, and distracts from the driver's
+> core function to read and write chip registers.
+>
+> To be able to reduce driver complexity, move sensor attribute handling
+> and thermal zone registration into the hwmon core. By using the new API,
+> driver size is typically reduced by 20-50% depending on driver complexity
+> and the number of sysfs attributes supported.
+>
+> The first patch of the series introduces the API as well as support
+> for temperature sensors. Subsequent patches introduce support for
+> voltage, current, power, energy, humidity, and fan speed sensors.
+>
+> The series was tested by converting several drivers (lm75, lm90, tmp102,
+> tmp421, ltc4245) to the new API. Testing was done with with real chips
+> as well as with the hwmon driver module test code available at
+> https://github.com/groeck/module-tests.
 
-Atri Bhattacharya
-Thu  7 Jul 19:59:44 CEST 2016
+I like this series - it takes all of the attributes' handling out of the
+individual driver code and moving it to hwmon core.
 
-Sent from openSUSE Tumbleweed (20160626) (x86_64) on my laptop.
+Having attempted a port of scpi-hwmon.c, I think that driver will not
+gain a big savings in line count. Though it'll help separate access to
+sensors from sysfs related code - which I think is worth the change.
 
+FWIW,
+
+        Acked-by: Punit Agrawal <punit.agrawal@arm.com>
+
+Thanks,
+Punit
+
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-pm" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
