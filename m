@@ -1,128 +1,107 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jikos@kernel.org,
-	jic23@kernel.org
-Cc: linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v3 0/6] Intel Integrated Sensor Hub Support (ISH)
-Date: Wed,  6 Jul 2016 11:51:12 -0700
-Message-Id: <1467831078-2530-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:57892 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754746AbcGHNsc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jul 2016 09:48:32 -0400
+Subject: Re: [PATCH 0/5] hwmon: New hwmon registration API
+To: Punit Agrawal <punit.agrawal@arm.com>
+References: <1466911590-26296-1-git-send-email-linux@roeck-us.net>
+ <87d1mobhnm.fsf@e105922-lin.cambridge.arm.com>
+Cc: Jean Delvare <jdelvare@suse.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Eduardo Valentin <edubezval@gmail.com>,
+	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Guenter Roeck <linux@roeck-us.net>
+Message-ID: <577FAF18.7000408@roeck-us.net>
+Date: Fri, 8 Jul 2016 06:48:08 -0700
+MIME-Version: 1.0
+In-Reply-To: <87d1mobhnm.fsf@e105922-lin.cambridge.arm.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Change log
-v3:
-- Rebased to linux-next as there are some new bus ids are added to linux-next
-- Documentation changes suggested by Jonathan
-- The PCI device name for BXTP is changed to APL
-- Added module parameter to enable DMA as some older FW
-have issues in DMA support.
-- On resume just restart to resume faster insted of reset for
-S3 compliant platforms
+Hi Punit,
 
-Thanks to Grant Likely and Atri Bhattacharya for test. 
-I will add Tested-by to commits for the final version of the patches.
+On 07/08/2016 02:31 AM, Punit Agrawal wrote:
+> Hi Guenter,
+>
+> Guenter Roeck <linux@roeck-us.net> writes:
+>
+>> Up to now, each hwmon driver has to implement its own sysfs attributes.
+>> This requires a lot of template code, and distracts from the driver's
+>> core function to read and write chip registers.
+>>
+>> To be able to reduce driver complexity, move sensor attribute handling
+>> and thermal zone registration into the hwmon core. By using the new API,
+>> driver size is typically reduced by 20-50% depending on driver complexity
+>> and the number of sysfs attributes supported.
+>>
+>> The first patch of the series introduces the API as well as support
+>> for temperature sensors. Subsequent patches introduce support for
+>> voltage, current, power, energy, humidity, and fan speed sensors.
+>>
+>> The series was tested by converting several drivers (lm75, lm90, tmp102,
+>> tmp421, ltc4245) to the new API. Testing was done with with real chips
+>> as well as with the hwmon driver module test code available at
+>> https://github.com/groeck/module-tests.
+>
+> I like this series - it takes all of the attributes' handling out of the
+> individual driver code and moving it to hwmon core.
+>
+> Having attempted a port of scpi-hwmon.c, I think that driver will not
+> gain a big savings in line count. Though it'll help separate access to
+> sensors from sysfs related code - which I think is worth the change.
+>
 
-v2:
-- Overview in documentation show analogy with usbhid implementation
-- sparse errors for statics. Also pointed by Jiri
-- Clearly marking exported function header file. Clean up all exports
-unused inteface functions
-- Changed to tristate from boolean as pointed by Jiri:
-this required remove/unload functions
-- Prevent crash when ISH enabled on non supported platform
-- Break client.c to smaller part by seprating buffer allocations
-- move bus register/unregister to ishtp module
-- There is only one config symbol INTEL_ISH_HID, removed silent
-config for TRANSPORT and IPC
+ From what I have seen, savings are for the most part on the binary image size.
+I have not seen much if any savings in terms of LOC, though that may in part
+be because of my coding style.
 
+Here is the result from the conversions I have done so far.
 
-Starting from Cherrytrail, multiple generation of Intel processors offers
-on package sensor hub. Several recent tablets, 2-in-1 convertible laptops
-are using ISH instead of external sensor hubs. This resulted in lack of
-support of sensor function like device rotation and auto backlight
-adjustment.
-In addition, depending on the OEM implementation, support of ISH is required
-to support low power sleep states.
+Old:
 
-The support of ISH on Linux platforms is not new. Android platforms with
-Intel SoCs had this support for a while submitted by Daniel Drubin. 
-This patcheset is reusing most of those changes with  clean up and
-removing Android platform specific changes.
+    text	   data	    bss	    dec	    hex	filename
+    5730	   4056	     64	   9850	   267a	drivers/hwmon/lm95245.o
+    5941	   4240	     64	  10245	   2805	drivers/hwmon/lm95241.o
+    5361	   3584	     64	   9009	   2331	drivers/hwmon/jc42.o
+    8609	  10872	     64	  19545	   4c59	drivers/hwmon/max31790.o
+    9080	  13232	     64	  22376	   5768	drivers/hwmon/nct7904.o
+    6574	   8498	     64	  15136	   3b20	drivers/hwmon/ltc4245.o
+    4516	   3464	     64	   8044	   1f6c	drivers/hwmon/tmp421.o
+    4223	   2744	     64	   7031	   1b77	drivers/hwmon/tmp102.o
+   21757	  13496	     64	  35317	   89f5	drivers/hwmon/lm90.o
+    6804	   3240	     64	  10108	   277c	drivers/hwmon/lm75.o
 
-The user mode ABI is still same as external sensor hubs using Linux
-IIO. So existing user mode software should still work.
-This series primarily brings in new HID transport used in ISH.
+New:
 
-Thanks to the community members who tested RFC patches and provided
-feedback.
+    text	   data	    bss	    dec	    hex	filename
+    5166	   1568	    128	   6862	   1ace	drivers/hwmon/lm95245.o
+    4334	   1664	     64	   6062	   17ae	drivers/hwmon/lm95241.o
+    4579	   1456	     64	   6099	   17d3	drivers/hwmon/jc42.o
+    3687	   1312	     64	   5063	   13c7	drivers/hwmon/max31790.o
+    3905	   1720	     64	   5689	   1639	drivers/hwmon/nct7904.o
+    3989	   1658	     64	   5711	   164f	drivers/hwmon/ltc4245.o
+    3557	   1408	     64	   5029	   13a5	drivers/hwmon/tmp421.o
+    4037	   2200	     64	   6301	   189d	drivers/hwmon/tmp102.o
+   16485	   4288	     64	  20837	   5165	drivers/hwmon/lm90.o
+    5762	   2128	     64	   7954	   1f12	drivers/hwmon/lm75.o
 
-For users testing on Linux distributions using IIO sensor proxy,
-a short term work around is required till we have debugged this issue.
-In systemd unit file iio-sensor-proxy.service
-In the section "[Unit]" add
-After=multi-user.target
+This is with x86_64.
 
-Daniel Drubin (3):
-  hid: intel_ish-hid: ISH Transport layer
-  hid: intel-ish-hid: ipc layer
-  hid: intel-ish-hid: ISH HID client driver
+The largest savings are in drivers with simple access methods and
+a large number of attributes. The scpi driver is somewhat of an
+exception since it creates its attribute data structures dynamically;
+I would not expect to see much savings in that driver.
 
-Srinivas Pandruvada (3):
-  Documentation: hid: Intel ISH HID document
-  iio: hid-sensors: use asynchronous resume
-  hid: hid-sensor-hub: Add ISH quirk
+> FWIW,
+>
+>          Acked-by: Punit Agrawal <punit.agrawal@arm.com>
+>
 
- Documentation/hid/intel-ish-hid.txt                | 454 ++++++++++
- drivers/hid/Kconfig                                |   2 +
- drivers/hid/Makefile                               |   2 +
- drivers/hid/hid-sensor-hub.c                       |   4 +
- drivers/hid/intel-ish-hid/Kconfig                  |  17 +
- drivers/hid/intel-ish-hid/Makefile                 |  22 +
- drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h        | 220 +++++
- drivers/hid/intel-ish-hid/ipc/hw-ish.h             |  71 ++
- drivers/hid/intel-ish-hid/ipc/ipc.c                | 719 ++++++++++++++++
- drivers/hid/intel-ish-hid/ipc/pci-ish.c            | 332 ++++++++
- drivers/hid/intel-ish-hid/ipc/utils.h              |  64 ++
- drivers/hid/intel-ish-hid/ishtp-hid-client.c       | 935 +++++++++++++++++++++
- drivers/hid/intel-ish-hid/ishtp-hid.c              | 234 ++++++
- drivers/hid/intel-ish-hid/ishtp-hid.h              | 182 ++++
- drivers/hid/intel-ish-hid/ishtp/bus.c              | 794 +++++++++++++++++
- drivers/hid/intel-ish-hid/ishtp/bus.h              | 113 +++
- drivers/hid/intel-ish-hid/ishtp/client-buffers.c   | 214 +++++
- drivers/hid/intel-ish-hid/ishtp/client.c           | 935 +++++++++++++++++++++
- drivers/hid/intel-ish-hid/ishtp/client.h           | 182 ++++
- drivers/hid/intel-ish-hid/ishtp/dma-if.c           | 178 ++++
- drivers/hid/intel-ish-hid/ishtp/hbm.c              | 912 ++++++++++++++++++++
- drivers/hid/intel-ish-hid/ishtp/hbm.h              | 321 +++++++
- drivers/hid/intel-ish-hid/ishtp/init.c             |  93 ++
- drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h        | 277 ++++++
- .../iio/common/hid-sensors/hid-sensor-trigger.c    |  21 +-
- include/linux/hid-sensor-hub.h                     |   1 +
- include/trace/events/intel_ish.h                   |  30 +
- include/uapi/linux/input.h                         |   1 +
- 28 files changed, 7329 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/hid/intel-ish-hid.txt
- create mode 100644 drivers/hid/intel-ish-hid/Kconfig
- create mode 100644 drivers/hid/intel-ish-hid/Makefile
- create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
- create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
- create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
- create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
- create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
- create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/client-buffers.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
- create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
- create mode 100644 include/trace/events/intel_ish.h
+Thanks!
 
--- 
-2.5.5
+Guenter
+
