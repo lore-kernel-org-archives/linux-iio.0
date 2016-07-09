@@ -1,64 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from fw-tnat.cambridge.arm.com ([217.140.96.140]:56648 "EHLO
-	cam-smtp0.cambridge.arm.com" rhost-flags-OK-OK-OK-FAIL)
-	by vger.kernel.org with ESMTP id S1751836AbcGHJcl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jul 2016 05:32:41 -0400
-From: Punit Agrawal <punit.agrawal@arm.com>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Jean Delvare <jdelvare@suse.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Eduardo Valentin <edubezval@gmail.com>,
-	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 0/5] hwmon: New hwmon registration API
-References: <1466911590-26296-1-git-send-email-linux@roeck-us.net>
-Date: Fri, 08 Jul 2016 10:31:09 +0100
-In-Reply-To: <1466911590-26296-1-git-send-email-linux@roeck-us.net> (Guenter
-	Roeck's message of "Sat, 25 Jun 2016 20:26:23 -0700")
-Message-ID: <87d1mobhnm.fsf@e105922-lin.cambridge.arm.com>
-MIME-Version: 1.0
-Content-Type: text/plain
+Received: from down.free-electrons.com ([37.187.137.238]:41215 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932486AbcGIBYJ (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 8 Jul 2016 21:24:09 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH v2 1/2] input: adc-keys: add DT binding documentation
+Date: Sat,  9 Jul 2016 03:24:01 +0200
+Message-Id: <1468027442-5033-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Guenter,
+Add documentation for ADC keys
 
-Guenter Roeck <linux@roeck-us.net> writes:
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+---
+Changes in v2:
+ - fix title
+ - use keyup-threshold-mvolt and press-threshold-mvolt instead of
+   voltage-keyup-mvolt and voltage-mvolt.
 
-> Up to now, each hwmon driver has to implement its own sysfs attributes.
-> This requires a lot of template code, and distracts from the driver's
-> core function to read and write chip registers.
->
-> To be able to reduce driver complexity, move sensor attribute handling
-> and thermal zone registration into the hwmon core. By using the new API,
-> driver size is typically reduced by 20-50% depending on driver complexity
-> and the number of sysfs attributes supported.
->
-> The first patch of the series introduces the API as well as support
-> for temperature sensors. Subsequent patches introduce support for
-> voltage, current, power, energy, humidity, and fan speed sensors.
->
-> The series was tested by converting several drivers (lm75, lm90, tmp102,
-> tmp421, ltc4245) to the new API. Testing was done with with real chips
-> as well as with the hwmon driver module test code available at
-> https://github.com/groeck/module-tests.
+ .../devicetree/bindings/input/adc-keys.txt         | 45 ++++++++++++++++++++++
+ 1 file changed, 45 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/input/adc-keys.txt
 
-I like this series - it takes all of the attributes' handling out of the
-individual driver code and moving it to hwmon core.
+diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Documentation/devicetree/bindings/input/adc-keys.txt
+new file mode 100644
+index 000000000000..e43b8979b85a
+--- /dev/null
++++ b/Documentation/devicetree/bindings/input/adc-keys.txt
+@@ -0,0 +1,45 @@
++ADC attached resistor ladder buttons
++------------------------------------
++
++Required properties:
++ - compatible: "adc-keys"
++ - io-channels: Phandle to an ADC channel
++ - io-channel-names = "buttons";
++ - keyup-threshold-mvolt: Voltage at which all the keys are considered up.
++
++Each key is represented as a sub-node of "adc-keys":
++
++Required subnode-properties:
++	- label: Descriptive name of the key.
++	- linux,code: Keycode to emit.
++	- press-threshold-mvolt: Voltage adc input when this key is pressed.
++
++Example:
++
++#include <dt-bindings/input/input.h>
++
++	adc-keys {
++		compatible = "adc-keys";
++		io-channels = <&lradc 0>;
++		io-channel-names = "buttons";
++		keyup-threshold-mvolt = <2000>;
++
++		button@1500 {
++			label = "Volume Up";
++			linux,code = <KEY_VOLUMEUP>;
++			press-threshold-mvolt = <1500>;
++		};
++
++		button@1000 {
++			label = "Volume Down";
++			linux,code = <KEY_VOLUMEDOWN>;
++			press-threshold-mvolt = <1000>;
++		};
++
++		button@500 {
++			label = "Enter";
++			linux,code = <KEY_ENTER>;
++			press-threshold-mvolt = <500>;
++		};
++	};
++
+-- 
+2.8.1
 
-Having attempted a port of scpi-hwmon.c, I think that driver will not
-gain a big savings in line count. Though it'll help separate access to
-sensors from sysfs related code - which I think is worth the change.
-
-FWIW,
-
-        Acked-by: Punit Agrawal <punit.agrawal@arm.com>
-
-Thanks,
-Punit
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-pm" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
