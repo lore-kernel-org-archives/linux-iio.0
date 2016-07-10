@@ -1,49 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38876 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38882 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757136AbcGJNbo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jul 2016 09:31:44 -0400
-Subject: Re: [PATCH 2/4] iio: light: vcnl4000: Use BIT() macro
+	with ESMTP id S1757138AbcGJNcl (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jul 2016 09:32:41 -0400
+Subject: Re: [PATCH 3/4] iio: light: vcnl4000: Cleanup read_raw() returns
 To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 References: <1467714201-11429-1-git-send-email-pmeerw@pmeerw.net>
- <1467714201-11429-3-git-send-email-pmeerw@pmeerw.net>
+ <1467714201-11429-4-git-send-email-pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org, lars@metafoo.de, knaack.h@gmx.de
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <30145dd6-b0f1-bd44-6969-740af643b230@kernel.org>
-Date: Sun, 10 Jul 2016 14:31:42 +0100
+Message-ID: <3d5bb0dd-7d85-b2dd-893d-b5e7a79ca8b7@kernel.org>
+Date: Sun, 10 Jul 2016 14:32:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <1467714201-11429-3-git-send-email-pmeerw@pmeerw.net>
+In-Reply-To: <1467714201-11429-4-git-send-email-pmeerw@pmeerw.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 05/07/16 11:23, Peter Meerwald-Stadler wrote:
 > Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Applied.  
+Nice little cleanup.
 
-J
+Applied. Thanks,
+
+Jonathan
 > ---
->  drivers/iio/light/vcnl4000.c |    8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
+>  drivers/iio/light/vcnl4000.c |   27 +++++++++++----------------
+>  1 file changed, 11 insertions(+), 16 deletions(-)
 > 
 > diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index 071ff97..7f247ed 100644
+> index 7f247ed..9f94b6b 100644
 > --- a/drivers/iio/light/vcnl4000.c
 > +++ b/drivers/iio/light/vcnl4000.c
-> @@ -41,10 +41,10 @@
->  #define VCNL4000_PS_MOD_ADJ	0x8a /* Proximity modulator timing adjustment */
+> @@ -109,7 +109,7 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+>  				struct iio_chan_spec const *chan,
+>  				int *val, int *val2, long mask)
+>  {
+> -	int ret = -EINVAL;
+> +	int ret;
+>  	struct vcnl4000_data *data = iio_priv(indio_dev);
 >  
->  /* Bit masks for COMMAND register */
-> -#define VCNL4000_AL_RDY		0x40 /* ALS data ready? */
-> -#define VCNL4000_PS_RDY		0x20 /* proximity data ready? */
-> -#define VCNL4000_AL_OD		0x10 /* start on-demand ALS measurement */
-> -#define VCNL4000_PS_OD		0x08 /* start on-demand proximity measurement */
-> +#define VCNL4000_AL_RDY		BIT(6) /* ALS data ready? */
-> +#define VCNL4000_PS_RDY		BIT(5) /* proximity data ready? */
-> +#define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
-> +#define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
+>  	switch (mask) {
+> @@ -121,32 +121,27 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+>  				VCNL4000_AL_RESULT_HI, val);
+>  			if (ret < 0)
+>  				return ret;
+> -			ret = IIO_VAL_INT;
+> -			break;
+> +			return IIO_VAL_INT;
+>  		case IIO_PROXIMITY:
+>  			ret = vcnl4000_measure(data,
+>  				VCNL4000_PS_OD, VCNL4000_PS_RDY,
+>  				VCNL4000_PS_RESULT_HI, val);
+>  			if (ret < 0)
+>  				return ret;
+> -			ret = IIO_VAL_INT;
+> -			break;
+> +			return IIO_VAL_INT;
+>  		default:
+> -			break;
+> +			return -EINVAL;
+>  		}
+> -		break;
+>  	case IIO_CHAN_INFO_SCALE:
+> -		if (chan->type == IIO_LIGHT) {
+> -			*val = 0;
+> -			*val2 = 250000;
+> -			ret = IIO_VAL_INT_PLUS_MICRO;
+> -		}
+> -		break;
+> +		if (chan->type != IIO_LIGHT)
+> +			return -EINVAL;
+> +
+> +		*val = 0;
+> +		*val2 = 250000;
+> +		return IIO_VAL_INT_PLUS_MICRO;
+>  	default:
+> -		break;
+> +		return -EINVAL;
+>  	}
+> -
+> -	return ret;
+>  }
 >  
->  struct vcnl4000_data {
->  	struct i2c_client *client;
+>  static const struct iio_info vcnl4000_info = {
 > 
 
