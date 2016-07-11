@@ -1,121 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:43347 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752163AbcGQFbh (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Jul 2016 01:31:37 -0400
+Return-Path: <linux@roeck-us.net>
+Subject: Re: [PATCH 0/5] hwmon: New hwmon registration API
+To: Jonathan Cameron <jic23@kernel.org>, Jean Delvare <jdelvare@suse.com>
+References: <1466911590-26296-1-git-send-email-linux@roeck-us.net>
+ <d83c43cc-dfa3-684d-9315-e1eec5cd79fe@kernel.org>
+Cc: Zhang Rui <rui.zhang@intel.com>, Eduardo Valentin <edubezval@gmail.com>,
+ linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Guenter Roeck <linux@roeck-us.net>
-To: Jean Delvare <jdelvare@suse.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Eduardo Valentin <edubezval@gmail.com>,
-	Punit Agrawal <punit.agrawal@arm.com>,
-	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 9/9] hwmon: (core) Add basic pwm attribute support to new API
-Date: Sat, 16 Jul 2016 22:30:32 -0700
-Message-Id: <1468733432-15730-10-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1468733432-15730-1-git-send-email-linux@roeck-us.net>
-References: <1468733432-15730-1-git-send-email-linux@roeck-us.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Message-ID: <5782EEBB.1040209@roeck-us.net>
+Date: Sun, 10 Jul 2016 17:56:27 -0700
+MIME-Version: 1.0
+In-Reply-To: <d83c43cc-dfa3-684d-9315-e1eec5cd79fe@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Add basic pwm attribute support (no auto attributes) to new API.
+Hi Jonathan,
 
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v2: Added patch
+On 07/10/2016 09:00 AM, Jonathan Cameron wrote:
+> On 26/06/16 04:26, Guenter Roeck wrote:
+>> Up to now, each hwmon driver has to implement its own sysfs attributes.
+>> This requires a lot of template code, and distracts from the driver's
+>> core function to read and write chip registers.
+>>
+>> To be able to reduce driver complexity, move sensor attribute handling
+>> and thermal zone registration into the hwmon core. By using the new API,
+>> driver size is typically reduced by 20-50% depending on driver complexity
+>> and the number of sysfs attributes supported.
+>>
+>> The first patch of the series introduces the API as well as support
+>> for temperature sensors. Subsequent patches introduce support for
+>> voltage, current, power, energy, humidity, and fan speed sensors.
+>>
+>> The series was tested by converting several drivers (lm75, lm90, tmp102,
+>> tmp421, ltc4245) to the new API. Testing was done with with real chips
+>> as well as with the hwmon driver module test code available at
+>> https://github.com/groeck/module-tests.
+> Some cool stuff hiding in there :)
+>
+> I've only reviewed 1 and 7 and the intermediate ones are really either
+> correct or they aren't and they look fine to me.
+>
+Thanks a lot for your feedback - it is reassuring that it looks sane to you.
 
- Documentation/hwmon/hwmon-kernel-api.txt |  2 ++
- drivers/hwmon/hwmon.c                    |  9 +++++++++
- include/linux/hwmon.h                    | 13 +++++++++++++
- 3 files changed, 24 insertions(+)
+>
+> So what's next? (beyond presumably a lot of driver conversions).
+>
+Next steps will be to address your comments, re-test, submit a new series,
+add to -next after v4.8-rc1 is out, submit the conversions I have done
+and add to -next. Then, obviously, only accept new drivers using the
+new API.
 
-diff --git a/Documentation/hwmon/hwmon-kernel-api.txt b/Documentation/hwmon/hwmon-kernel-api.txt
-index f60a29ce7592..ef9d74947f5c 100644
---- a/Documentation/hwmon/hwmon-kernel-api.txt
-+++ b/Documentation/hwmon/hwmon-kernel-api.txt
-@@ -168,6 +168,7 @@ It contains following fields:
-   * hwmon_energy	Energy sensor
-   * hwmon_humidity	Humidity sensor
-   * hwmon_fan		Fan speed sensor
-+  * hwmon_pwm		PWM control
- 
- * config: Pointer to a 0-terminated list of configuration values for each
-   sensor of the given type. Each value is a combination of bit values
-@@ -230,6 +231,7 @@ HWMON_P_xxxx	Power attributes, for use with hwmon_power.
- HWMON_E_xxxx	Energy attributes, for use with hwmon_energy.
- HWMON_H_xxxx	Humidity attributes, for use with hwmon_humidity.
- HWMON_F_xxxx	Fan speed attributes, for use with hwmon_fan.
-+HWMON_PWM_xxxx	PWM control attributes, for use with hwmon_pwm.
- 
- Driver callback functions
- -------------------------
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 38c217e64d41..bd99732e415b 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -379,6 +379,13 @@ static const char * const hwmon_fan_attr_templates[] = {
- 	[hwmon_fan_fault] = "fan%d_fault",
- };
- 
-+static const char * const hwmon_pwm_attr_templates[] = {
-+	[hwmon_pwm_input] = "pwm%d",
-+	[hwmon_pwm_enable] = "pwm%d_enable",
-+	[hwmon_pwm_mode] = "pwm%d_mode",
-+	[hwmon_pwm_freq] = "pwm%d_freq",
-+};
-+
- static const char * const *__templates[] = {
- 	[hwmon_chip] = hwmon_chip_attr_templates,
- 	[hwmon_temp] = hwmon_temp_attr_templates,
-@@ -388,6 +395,7 @@ static const char * const *__templates[] = {
- 	[hwmon_energy] = hwmon_energy_attr_templates,
- 	[hwmon_humidity] = hwmon_humidity_attr_templates,
- 	[hwmon_fan] = hwmon_fan_attr_templates,
-+	[hwmon_pwm] = hwmon_pwm_attr_templates,
- };
- 
- static const int __templates_size[] = {
-@@ -399,6 +407,7 @@ static const int __templates_size[] = {
- 	[hwmon_energy] = ARRAY_SIZE(hwmon_energy_attr_templates),
- 	[hwmon_humidity] = ARRAY_SIZE(hwmon_humidity_attr_templates),
- 	[hwmon_fan] = ARRAY_SIZE(hwmon_fan_attr_templates),
-+	[hwmon_pwm] = ARRAY_SIZE(hwmon_pwm_attr_templates),
- };
- 
- static int hwmon_num_channel_attrs(const struct hwmon_channel_info *info)
-diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-index 74e89d45ff67..9d2f8bde7d12 100644
---- a/include/linux/hwmon.h
-+++ b/include/linux/hwmon.h
-@@ -28,6 +28,7 @@ enum hwmon_sensor_types {
- 	hwmon_energy,
- 	hwmon_humidity,
- 	hwmon_fan,
-+	hwmon_pwm,
- };
- 
- enum hwmon_chip_attributes {
-@@ -272,6 +273,18 @@ enum hwmon_fan_attributes {
- #define HWMON_F_MAX_ALARM		BIT(hwmon_fan_max_alarm)
- #define HWMON_F_FAULT			BIT(hwmon_fan_fault)
- 
-+enum hwmon_pwm_attributes {
-+	hwmon_pwm_input,
-+	hwmon_pwm_enable,
-+	hwmon_pwm_mode,
-+	hwmon_pwm_freq,
-+};
-+
-+#define HWMON_PWM_INPUT			BIT(hwmon_pwm_input)
-+#define HWMON_PWM_ENABLE		BIT(hwmon_pwm_enable)
-+#define HWMON_PWM_MODE			BIT(hwmon_pwm_mode)
-+#define HWMON_PWM_FREQ			BIT(hwmon_pwm_freq)
-+
- /**
-  * struct hwmon_ops - hwmon device operations
-  * @is_visible: Callback to return attribute visibility. Mandatory.
--- 
-2.5.0
+Not sure if there is anything else we can or want to do do at this time.
+Do you have anything in mind ?
 
+Thanks,
+Guenter
