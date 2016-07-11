@@ -1,83 +1,42 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f175.google.com ([209.85.216.175]:35724 "EHLO
-	mail-qt0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753319AbcGKJLA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 11 Jul 2016 05:11:00 -0400
-MIME-Version: 1.0
-In-Reply-To: <0da0328b-c0a2-215e-64be-5c27aa58572f@kernel.org>
-References: <CAHNg1SoX_VFcKLYTmir9=Mh-UtLjGqJ_Q3xbfyxKv+HAAQGFCg@mail.gmail.com>
- <CAHNg1Sqe4FRKSzxPsXni6xYCBLQovAYvGoeNQpzi531J6V+K0A@mail.gmail.com> <0da0328b-c0a2-215e-64be-5c27aa58572f@kernel.org>
-From: Pratik Prajapati <pratik.prajapati12@gmail.com>
-Date: Mon, 11 Jul 2016 14:40:58 +0530
-Message-ID: <CAHNg1SqMRgmtcfdkRmP3abSPLcphQL7rWxO8v5JUOJS0MfAAvQ@mail.gmail.com>
-Subject: Re: How to set Current register in IIO driver from sysfs
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH] iio: sw-trigger: Fix config group initialization
+Date: Mon, 11 Jul 2016 13:55:44 +0200
+Message-Id: <1468238144-30654-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Use the IS_ENABLED() helper macro to ensure that the configfs group is
+initialized either when configfs is built-in or when configfs is built as a
+module. Otherwise software trigger creation will result in undefined
+behaviour when configfs is built as a mdoule since the configfs group for
+the trigger is not properly initialized.
 
-Thanks for the answers.
-One more question:
-What are volatile registers?
-I couldn't understood the difference between volatile and writable
-registers from max44000 driver.
+Fixes: b662f809d410 ("iio: core: Introduce IIO software triggers")
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+Appologies if you received this twice, forgot the list on the first try.
+---
+ include/linux/iio/sw_trigger.h | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Best Regards,
-Pratik
-
-On Sun, Jul 10, 2016 at 8:09 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 10/07/16 14:11, Pratik Prajapati wrote:
->> Including more members.
->>
->> On Sat, Jul 9, 2016 at 5:22 PM, Pratik Prajapati
->> <pratik.prajapati12@gmail.com> wrote:
->>> Hi,
-> hi Pratik,
->>>
->>> I am trying to add support of adjusting IR led current in vcnl4000
->>> driver (has IR led current register for doing the same).
-> This is always a bit of a 'rough' corner when it comes to what interface
-> to do it with.  Strictly speaking this is typically just a regulator that
-> happens to be used for this special purpose.  Sometimes they are tightly
-> tied together with the input and sometime (on devices with more than one)
-> there is no explicit linkage at all.
->
-> In this particular case we seem to actually have a high frequency modulated
-> LED driver so it's pretty tightly tied to this use.
->>>
->>> Below is what I have done till now:
->>>
->>> 1) Added Current channel in the vcnl4000_channels structure with
->>> separate mask IIO_CHAN_INFO_RAW
->>> 2) Reading the LED current register inside IIO_CURRENT case in vcnl4010_read_raw
->>> 3) Writing to LED current register inside IIO_CURRENT case in vcnl4010_write_raw
->>>
->>> Is this the correct way of setting Current register in IIO subsystem?
-> That's about the best option we currently have. This is exactly how it's done
-> in the max44000 driver for example.
->
-> It's not an interface anyone is terribly happy with so you are welcome to
-> suggestion alternatives (easy to add them as an additional interface to
-> existing cases - which is why we haven't been that worried about ending up
-> with the current less than ideal interface)
-> The tight coupling in this particular case might justify something more
-> explicitly linked to the proximity channel but as noted above it's not
-> always that obvious (see the health/afe parts for example which are way
-> too flexible in my view!)
->
-> Jonathan
->
->
->>>
->>> Best Regards,
->>> Pratik Prajapati
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+diff --git a/include/linux/iio/sw_trigger.h b/include/linux/iio/sw_trigger.h
+index 5198f8e..c97eab6 100644
+--- a/include/linux/iio/sw_trigger.h
++++ b/include/linux/iio/sw_trigger.h
+@@ -62,7 +62,7 @@ void iio_swt_group_init_type_name(struct iio_sw_trigger *t,
+ 				  const char *name,
+ 				  struct config_item_type *type)
+ {
+-#ifdef CONFIG_CONFIGFS_FS
++#if IS_ENABLED(CONFIG_CONFIGFS_FS)
+ 	config_group_init_type_name(&t->group, name, type);
+ #endif
+ }
+-- 
+2.1.4
