@@ -1,59 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f193.google.com ([209.85.161.193]:35844 "EHLO
-	mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1757207AbcGJVbk (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jul 2016 17:31:40 -0400
-Date: Sun, 10 Jul 2016 14:31:36 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH 2/2] iio: humidity: hdc100x: remove lock on heater
- configuration read
-Message-ID: <7509a24ed4958084737c2f7413a63c098d289879.1468180067.git.amsfield22@gmail.com>
-References: <cover.1468180067.git.amsfield22@gmail.com>
+Received: from mailgw02.mediatek.com ([210.61.82.184]:63762 "EHLO
+	mailgw02.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1757302AbcGKDKG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 10 Jul 2016 23:10:06 -0400
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+To: <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>
+CC: <srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
+	<yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
+	<erin.lo@mediatek.com>, <dawei.chien@mediatek.com>,
+	<matthias.bgg@gmail.com>, <s.hauer@pengutronix.de>,
+	<devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+	<linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v3 0/2] AUXADC: Mediatek auxadc driver 
+Date: Mon, 11 Jul 2016 11:09:54 +0800
+Message-ID: <1468206596-13792-1-git-send-email-zhiyong.tao@mediatek.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1468180067.git.amsfield22@gmail.com>
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The lock around the read (from global data) of the heater configuration
-status is not needed.  Move the lock in IIO_CHAN_INFO_RAW case to only
-protect the get measurement function.
+This series includes three patches:
+1.Change the device tree binding documentation.
+2.Add auxadc driver based on linux iio.
+3.Add auxadc nodes in the mediatek MT2701 dtsi file.
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
----
- drivers/iio/humidity/hdc100x.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+changes in patch v3:
+1).Add '#' before 'io-channel-cells' and change 'auxadc@' to 'adc@' in auxadc binding document.
+2).Fix CONFIG_MEDIATEK_MT65XX_AUXADC sequence as alphabetical order.
+3).Change the prefix 'MT65XX' to 'MT6577' to match auxadc driver name.
+4).Remove the delays stored in 'mt6577_auxadc_device' and use the defined delay directly.
+5).Use '-ETIMEDOUT' instead of '-EINVAL'.
+6).Return value directly in 'mt6577_auxadc_read_raw'.
+7).Add power off and unprepare clock if 'iio_device_register' failed.
+8).Change 'Registers' to 'Register'.
 
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index ad5a12a..8195b0c 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -193,18 +193,18 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_RAW: {
- 		int ret;
- 
--		mutex_lock(&data->lock);
- 		if (chan->type == IIO_CURRENT) {
- 			*val = hdc100x_get_heater_status(data);
- 			ret = IIO_VAL_INT;
- 		} else {
-+			mutex_lock(&data->lock);
- 			ret = hdc100x_get_measurement(data, chan);
-+			mutex_unlock(&data->lock);
- 			if (ret >= 0) {
- 				*val = ret;
- 				ret = IIO_VAL_INT;
- 			}
- 		}
--		mutex_unlock(&data->lock);
- 		return ret;
- 	}
- 	case IIO_CHAN_INFO_INT_TIME:
--- 
-2.1.4
+changes in patch v2:
+1).Change the file name mt65xx_auxadc.c to mt6577_auxadc.c.
+2).Add 'depends on ARCH_MEDIATEK || COMPILE_TEST and HAS_IOMEM' for MEDIATEK_MT65XX_AUXADC config.
+3).Add check case for return value of 'readl_poll_timeout'.
+4).Remove returning 1 and 0 for SCALE and OFFSET. use channel type 'IIO_CHAN_INFO_PROCESSED' instead of 'IIO_CHAN_INFO_RAW'.
+5).Remove 'IIO_CHAN_INFO_OFFSET' and 'IIO_CHAN_INFO_SCALE' in 'MT65XX_AUXADC_CHANNEL' channel type.
+6).Add check case when auxadc power on failure. if auxadc power on failure, clk_disable_unprepare should be executed.
+7).Put 'platform_set_drvdata' before 'iio_device_register'.
+8).Fix coding style and spelling error.
+
+Zhiyong Tao (2):
+  dt-bindings: auxadc: Add binding document for Mediatek auxadc.
+  iio: adc: mt2701: Add Mediatek auxadc driver for mt2701.
+
+ .../devicetree/bindings/iio/adc/mt65xx_auxadc.txt  |    4 +-
+ drivers/iio/adc/Kconfig                            |   26 +--
+ drivers/iio/adc/Makefile                           |    2 +-
+ drivers/iio/adc/mt6577_auxadc.c                    |  186 ++++++++++----------
+ 4 files changed, 106 insertions(+), 112 deletions(-)
 
