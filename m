@@ -1,71 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f48.google.com ([209.85.215.48]:34534 "EHLO
-	mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754589AbcGLPHS (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jul 2016 11:07:18 -0400
-Received: by mail-lf0-f48.google.com with SMTP id h129so16437701lfh.1
-        for <linux-iio@vger.kernel.org>; Tue, 12 Jul 2016 08:07:12 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org, Samu Onkalo <samu.onkalo@intel.com>
-Subject: [PATCH 1/2] iio: magn: DT bindings for AK8974
-Date: Tue, 12 Jul 2016 17:07:03 +0200
-Message-Id: <1468336024-24030-1-git-send-email-linus.walleij@linaro.org>
+Received: from down.free-electrons.com ([37.187.137.238]:51532 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750748AbcGLTEW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 12 Jul 2016 15:04:22 -0400
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Chen-Yu Tsai <wens@csie.org>, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Subject: [PATCH v2 1/2] iio: sun4i-lradc: Add binding documentation
+Date: Tue, 12 Jul 2016 21:04:11 +0200
+Message-Id: <1468350252-11405-1-git-send-email-alexandre.belloni@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds device tree bindings for the AK8974 magnetometer, similar
-to those for the AK8975.
+Document the bindings for the Allwinner LRADC.
 
-Cc: devicetree@vger.kernel.org
-Cc: Samu Onkalo <samu.onkalo@intel.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 ---
-ChangeLog v2->v3:
-- No changes, just reposting to keep together with the series
-ChangeLog v1->v2:
-- No changes, just reposting to keep together with the series
----
- .../bindings/iio/magnetometer/ak8974.txt           | 28 ++++++++++++++++++++++
- 1 file changed, 28 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
+ .../devicetree/bindings/iio/adc/sun4i-lradc.txt       | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt b/Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt
 new file mode 100644
-index 000000000000..967f8e9b9319
+index 000000000000..c75a6067b8a5
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
-@@ -0,0 +1,28 @@
-+* Asahi Kasei AK8974 magnetometer sensor
++++ b/Documentation/devicetree/bindings/iio/adc/sun4i-lradc.txt
+@@ -0,0 +1,19 @@
++Allwinner sun4i Low Resolution ADC
++----------------------------------
 +
 +Required properties:
-+
-+- compatible : should be "asahi-kasei,ak8974"
-+- reg : the I2C address of the magnetometer
-+
-+Optional properties:
-+
-+- avdd-supply: regulator supply for the analog voltage
-+  (see regulator/regulator.txt)
-+- dvdd-supply: regulator supply for the digital voltage
-+  (see regulator/regulator.txt)
-+- interrupts: data ready (DRDY) and interrupt (INT1) lines
-+  from the chip, the DRDY interrupt must be placed first.
-+  The interrupts can be triggered on rising or falling
-+  edges alike.
++ - compatible: "allwinner,sun4i-a10-lradc"
++ - reg: mmio address range of the chip
++ - interrupts: interrupt to which the chip is connected
++ - vref-supply: powersupply for the lradc reference voltage
++ - #io-channel-cells = <1>; As ADC has multiple outputs
 +
 +Example:
 +
-+ak8974@0f {
-+	compatible = "asahi-kasei,ak8974";
-+	reg = <0x0f>;
-+	avdd-supply = <&foo_reg>;
-+	dvdd-supply = <&bar_reg>;
-+	interrupts = <0 IRQ_TYPE_EDGE_RISING>,
-+		     <1 IRQ_TYPE_EDGE_RISING>;
-+};
++	lradc: lradc@01c22800 {
++		compatible = "allwinner,sun4i-a10-lradc";
++		reg = <0x01c22800 0x100>;
++		interrupts = <31>;
++		vref-supply = <&reg_vcc3v0>;
++		#io-channel-cells = <1>;
++	};
 -- 
-2.7.4
+2.8.1
 
