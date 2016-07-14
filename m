@@ -1,228 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f41.google.com ([74.125.82.41]:35871 "EHLO
-	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751210AbcGNDgv (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 13 Jul 2016 23:36:51 -0400
-Received: by mail-wm0-f41.google.com with SMTP id f126so51349319wma.1
-        for <linux-iio@vger.kernel.org>; Wed, 13 Jul 2016 20:36:50 -0700 (PDT)
+Received: from www381.your-server.de ([78.46.137.84]:38309 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751082AbcGNHzP (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jul 2016 03:55:15 -0400
+Subject: Re: [PATCH] iio: ad5380: Fix probe failure when no external reference
+ is supplied
+To: =?UTF-8?B?UGF3ZcWCIEdydWR6acWEc2tp?= <pgrudzinski@openmailbox.org>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+References: <20160713233202.812-1-pgrudzinski@openmailbox.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <db7bbbe6-9c9d-8672-4436-a19cff47525c@metafoo.de>
+Date: Thu, 14 Jul 2016 09:55:02 +0200
 MIME-Version: 1.0
-In-Reply-To: <097c4061-b41a-fa28-e85a-be42967e8740@kernel.org>
-References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
- <CAKzfze9e0=W3=XnXbOMnuW8LiaVOuohzX0TgE6D0dJyty9T8Ag@mail.gmail.com>
- <d7e6e144-739d-3447-c715-df1c0203e32e@kernel.org> <CAKzfze9kCKiKF32Yc1spowkwbkHWWHCiV2niLE2JMdpkUhABZg@mail.gmail.com>
- <e01fac4f-2283-29a7-df29-f763381ec0ab@kernel.org> <CAKzfze-D8MZJCxdbc=Ovvt8OR+Z6MiVB-OwcTRsYsRs--kPm0w@mail.gmail.com>
- <097c4061-b41a-fa28-e85a-be42967e8740@kernel.org>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Wed, 13 Jul 2016 20:36:09 -0700
-Message-ID: <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
-Subject: Re: [RFC 0/2] iio: add support for LMP91000EVM potentiostat board
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <20160713233202.812-1-pgrudzinski@openmailbox.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jul 10, 2016 at 7:20 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 05/07/16 22:27, Matt Ranostay wrote:
->> On Tue, Jul 5, 2016 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 03/07/16 23:24, Matt Ranostay wrote:
->>>> On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>>> On 02/07/16 23:13, Matt Ranostay wrote:
->>>>>> On Sat, Jul 2, 2016 at 3:05 PM, Matt Ranostay <mranostay@gmail.com> wrote:
->>>>>>> LMP91000EVM evaluation board has LMP91000 potentiostat along with an
->>>>>>> 16-bit ADC for chemical sensoring applications.
->>>>>>>
->>>>>>>  * add support for the TI LMP91000 potentiostat
->>>>>>>  * add support for ADC141S626 and ADC161S626 ADC chips
->>>>>>
->>>>>> Probably should have put what I am RFC'ing :).
->>>>>>
->>>>>> * does this belong in a new path drivers/iio/potentiostat ?
->>>>> I'm going for drivers/iio/AFE/potentiostat with drivers/iio/AFE/amplifiers
->>>>> as well to take the only similar driver we already have.
->>>>>
->>>>>> * first example of a iio consumer within drivers/iio, does it seems sane?
->>>>> It's 'interesting'.  You've worked around the whole question of how to handle
->>>>> a mux by putting a push interface equipped client on top of the polled interface
->>>>> of the ADC.  It's an elegant solution that I'd never considered.
->>>>>
->>>>> By the very nature of a mux interface, unless we are piping the mux switching
->>>>> out on the same trigger system as the read back, the actual read out must be
->>>>> polled rather than self clocked. Only the mux knows when it is ready.
->>>>> The triggered version has all sorts of additional complexity even if we had
->>>>> output buffers already to go (such as requiring the output buffering to
->>>>> 'lead' the input buffering to give the mux time to switch.
->>>>>
->>>>> Question to my mind is whether this is a generic and flexible enough approach
->>>>> to use for this sort of device in the future... I think we have two classes
->>>>> of 'analog device' that we need to support:
->>>>>
->>>>> 1) Simple all channels always there devices such as analog accelerometers
->>>>> feeding into an ADC with a sequencer (or a software based sequencer).
->>>>> In that case the data flow is clearly going to go over the buffered interface.
->>>>> The accelerometer driver is just massaging the data for types / scale adjustments.
->>>>> It has no influence on the sampling of the data.
->>>>>
->>>>> 2) The 'smart' front end with a mux.  In this case the 'when to read' question
->>>>> is driven by the front end, not the ADC.  Games could be played to push the
->>>>> sampling of data over to the ADC, but is it worth doing?
->>>>>
->>>>
->>>> Probably over-engineering unless we actually find a need to do this in
->>>> the future.
->>> I get the feeling we'll end up with a high performance system needing this
->>> at some point.
->>>>
->>>>> So if we wanted to do this, the AFE could itself export a trigger that is then
->>>>> used by the ADC which in turn pushes data back to the AFE driver via the buffered
->>>>> data interface.  The AFE driver would then have to handle the demux of this
->>>>> data stream into a coherent form to push out in it's own buffer.
->>>>> This approach gains the following:
->>>>>  - quick data transfers, particularly if we are dealing with a multiple output
->>>>>    mux.  e.g we might have a 16 to 4 mux into a 4 channel simultaneous sampling
->>>>>    (or sequenced) ADC. So in this case if the mux was set to provide all 16
->>>>>    channels in order we'd do 4 reads of the ADC getting 0 1 2 3, 4 5 6 7 etc.
->>>>>    The mux driver would then have to recombine these 16 channels before kicking
->>>>>    them out.
->>>>
->>>> Makes sense but there is a slight issue of the settling time for the
->>>> temp channel is 2-3 milliseconds. Can't assume all mux reads are going
->>>> to take the same time constant.
->>> That's down to the mux driver to handle it.  Only trigger once it's known
->>> to be stable..
->>
->> Also how would the ADC report the data back it would almost need
->> dynamically setup iio channels after mux gets setup, correct?
->>
->> 1) ADC driver probe
->> 2) MUX driver probe
->> 3) MUX registers it's data channels
->> 4) ADC driver needs to enumerate them
-> Why does the ADC driver care?
->
-> The Mux driver is the only bit that knows what the ADC is actually capturing
-> as it controls both the actual wire connections and the reporting to userspace
-> of results.
->
-> So.
-> 1) ADC driver probe
-> 2) Mux driver probe (gets provided ADC channels - however many it controls
-> the inputs for).
-> 3) ADC trigger set to trigger provided by Mux.
->
-> To give a simple example, lets consider a 2 input single channel mux going into
-> a single channel ADC. Mux trigger called (imaginatively) mux_trig0
->
-> Mux is consumer of the ADC channel.
->
-> Setup:
-> 1) Mux registers as a 'buffer' consumer of the ADC channel.
-> 2) Mux has a trigger exposed (which is how it controls the capture.)
-> 3) ADC trigger set to the mux exposed one.
->
-> A scan. (triggered say by a high resolution timer trigger).
-> 1) Mux picks channel 1 and waits for it to stabilize.
-> 2) Mux 'fires' trigger to initiate a capture and gets the resulting callback
-> call with the value.  Stashes it somewhere
-> 3) Mux selects channel 2 and waits for it to stabilize
-> 4) Mux 'fires' trigger to initiate a capture and gets the resulting callback
-> call with the value. Stashes it somewhere.
-> 5) Mux driver can then combine the two values to form the 'scan' and push
-> that to it's buffer complete with whatever timestamp makes sense.
-> This Mux driver controlled buffer is the one userspace uses to get the data.
->
+On 07/14/2016 01:32 AM, Paweł Grudziński wrote:
+> From: Pawel Grudzinski <pgrudzinski@openmailbox.org>
+> 
+> Driver fails to load when there is no external Vref regulator defined,
+> leaving no way to use internal reference. ad5380_probe function tries to
+> obtain regulator with demv_regulator_get and checks for error, in which
+> case it would use internal reference. Even without "Vref" regulator defined
+> devm_regulator_get returns dummy regulator which makes function omit use of
+> internal reference and causes failure on regulator_get_voltage.
+> 
+> Replace demv_regulator_get with demv_regulator_get_optional, which returns
+> error instead of dummy regulator if it does not find one which is specified
+> by the caller to make ad5380_probe configure internal reference when no
+> "Vref" regulator is supplied.
+> 
+> Signed-off-by: Paweł Grudziński <pgrudzinski@openmailbox.org>
 
-Only question is how does the callback come into play here with a
-trigger? Not sure I have seen this in the API so far.
+Looks good, thanks. But there is a way to improve on it even more, see
+comments inline. Up to you whether you want to do this or not.
 
-> Missing bit of all this is a consumer being able to control the providers
-> trigger.  Doubt that would be hard to add.
->
+Either way.
 
-Worse case initially it will have to be manually set.
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
 
-> I think that covers all possible circumstances where we have explicit
-> control of the mux or at least the ability to set it to a known state.
->
-> Jonathan
->
->>
->>>>
->>>>>
->>>>> To do this we'd need to add an interface to allow the AFE/mux driver to set
->>>>> the trigger for the ADC to its own.
->>>>
->>>> Of course in this case the ADC and LMP91000 device are using both the
->>>> hrtimer trigger, albeit of course you can't do it at the same time. So
->>>> it is polling no matter what.
->>> Fair point.
->>>>
->>>>>
->>>>> If we want to do this quickish I think that's about the lightest weight option
->>>>> we can do.
->>>>>
->>>>> Now, the question is, what are the disadvantages of going with what you
->>>>> have here for this driver but keeping in mind the above for when it matters?
->>>>>
->>>>> I'm guessing we never need to run this particularly driver very fast...
->>>>> I'm inclined to say yes but would like some other opinions on this one!
->>>>> (hence the expanded Cc list - please do pull in anyone else you think
->>>>> might be interested!)
->>>>
->>>> Yeah the sample response of the sensor isn't that high speed. Maybe a
->>>> few dozen hertz.
->>>>
->>>>>
->>>>>> * ADC driver has no IIO_CHAN_INFO_SCALE due to no regulators being defined
->>>>> Should be some defined. That was easy ;)
->>>>>> * Should ADC value be signed or unsigned?   -16636 is 0V, 0 is 2/VA ,
->>>>>> 16635 is ~VA. Of course true zero is defined by the VREF voltage.
->>>>> err. Odd. Go with signed I think.
->>>>>>
->>>>>>>
->>>>>>> Matt Ranostay (2):
->>>>>>>   iio: adc: ti-adc1x1s: add support for TI 1-channel differential ADCs
->>>>>>>   iio: potentiostat: add LMP91000 support
->>>>>>>
->>>>>>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
->>>>>>>  .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
->>>>>>>  drivers/iio/Kconfig                                |   1 +
->>>>>>>  drivers/iio/Makefile                               |   1 +
->>>>>>>  drivers/iio/adc/Kconfig                            |  12 +
->>>>>>>  drivers/iio/adc/Makefile                           |   1 +
->>>>>>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 ++++++++++++++++
->>>>>>>  drivers/iio/potentiostat/Kconfig                   |  21 ++
->>>>>>>  drivers/iio/potentiostat/Makefile                  |   6 +
->>>>>>>  drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
->>>>>>>  10 files changed, 622 insertions(+)
->>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
->>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
->>>>>>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
->>>>>>>  create mode 100644 drivers/iio/potentiostat/Kconfig
->>>>>>>  create mode 100644 drivers/iio/potentiostat/Makefile
->>>>>>>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
->>>>>>>
->>>>>>> --
->>>>>>> 2.7.4
->>>>>>>
->>>>>> --
->>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>>> the body of a message to majordomo@vger.kernel.org
->>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>>>
->>>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+> ---
+> There are couple more places where I suspect similar issue with devices
+> having integrated reference, but I am sending this one because I tested it
+> with hardware. If this gets accepted, I will look through other drivers
+> obtaining Vref in same manner.
+
+I believe most of those drivers predate the get_optional() API.
+
+> 
+>  drivers/iio/dac/ad5380.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+> index 97d2c51..257d455 100644
+> --- a/drivers/iio/dac/ad5380.c
+> +++ b/drivers/iio/dac/ad5380.c
+> @@ -401,7 +401,7 @@ static int ad5380_probe(struct device *dev, struct regmap *regmap,
+>  	if (st->chip_info->int_vref == 2500)
+>  		ctrl |= AD5380_CTRL_INT_VREF_2V5;
+>  
+> -	st->vref_reg = devm_regulator_get(dev, "vref");
+> +	st->vref_reg = devm_regulator_get_optional(dev, "vref");
+
+Ideally we'd do something like
+
+    st->vref_reg = devm_regulator_get_optional(&st->spi->dev, "vref");
+    if (!IS_ERR(st->vref_reg)) {
+	/* use external vref */
+    } else {
+        if (PTR_ERR(st->vref_reg) != -ENODEV) {
+            ret = PTR_ERR(st->vref_reg);
+            goto err_free_reg;
+        }
+        /* use internal vref ... */
+    }
+
+This makes sure that real errors returned by regulator_get_optional() are
+actually handled. The only error that we want to ignore is the case where no
+regulator has been specified, if a regulator has been specified but there is
+a problem with the specification we don't want to switch to internal vref
+mode, but rather propagate the error. This is especially important to make
+probe deferring work, which kicks in when the DAC is tried to be probed
+before the regulator has finished probing.
+
+
+>  	if (!IS_ERR(st->vref_reg)) {
+>  		ret = regulator_enable(st->vref_reg);
+>  		if (ret) {
+> 
+
