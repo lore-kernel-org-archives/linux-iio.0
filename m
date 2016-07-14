@@ -1,41 +1,72 @@
-Return-Path: <weiyj_lk@163.com>
-From: weiyj_lk@163.com
-To: Jonathan Cameron <jic23@kernel.org>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-out.m-online.net ([212.18.0.10]:45298 "EHLO
+	mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751384AbcGNQGV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 14 Jul 2016 12:06:21 -0400
+Subject: Re: [PATCH v3 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
+To: Lee Jones <lee.jones@linaro.org>, Harald Geyer <harald@ccbib.org>
+References: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
+ <370a02584386944b465deff5ccc48c8919b23dba.1466769907.git.ksenija.stanojevic@gmail.com>
+ <20160628162834.GF29166@dell>
+ <CAL7P5j+NYvUJfu==xQvncyCiw8JHtizOdfyeY1HL6Lb=-wsrWQ@mail.gmail.com>
+ <E1bIyD4-0000Jw-2c@stardust.g4.wien.funkfeuer.at>
+ <20160713124935.GC11154@dell>
+Cc: =?UTF-8?Q?Ksenija_Stanojevi=c4=87?= <ksenija.stanojevic@gmail.com>,
+	linux-kernel@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Linus Walleij <linus.walleij@linaro.org>
-Cc: Wei Yongjun <yongjun_wei@trendmicro.com.cn>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH -next] iio: pressure: bmp280: fix wrong pointer passed to PTR_ERR()
-Date: Thu, 14 Jul 2016 11:06:11 +0000
-Message-Id: <1468494371-23371-1-git-send-email-weiyj_lk@163.com>
-In-Reply-To: <1468487141-20016-1-git-send-email-weiyj_lk@163.com>
-References: <1468487141-20016-1-git-send-email-weiyj_lk@163.com>
+	linux-iio@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>
+From: Marek Vasut <marex@denx.de>
+Message-ID: <5bddd461-90e3-3116-8d18-fae51bf39310@denx.de>
+Date: Thu, 14 Jul 2016 17:38:36 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=ISO-8859-1
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160713124935.GC11154@dell>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
+On 07/13/2016 02:49 PM, Lee Jones wrote:
+> On Fri, 01 Jul 2016, Harald Geyer wrote:
+>
+>> Hi Ksenija!
+>>
+>> Ksenija Stanojević writes:
+>>> On Tue, Jun 28, 2016 at 6:28 PM, Lee Jones <lee.jones@linaro.org> wrote:
+>>>>> +static int mxs_lradc_add_device(struct platform_device *pdev,
+>>>>> +                             struct mxs_lradc *lradc, char *name, int i)
+>>>>> +{
+>>>>> +     struct mfd_cell *cell;
+>>>>> +
+>>>>> +     cell = &lradc->cells[i];
+>>>>> +     cell->name = name;
+>>>>> +     cell->platform_data = lradc;
+>>>>> +     cell->pdata_size = sizeof(*lradc);
+>>>>> +
+>>>>> +     return devm_mfd_add_devices(&pdev->dev, -1, cell, 1, NULL, 0, NULL);
+>>>>> +}
+>>>>
+>>>> Please don't roll your own API.
+>>>>
+>>>> Use 'struct mfd_cell' like everyone else does.
+>>>
+>>> It has been suggested in previous reviews to use separate function to
+>>> register mfd device, and to make mfd_cell allocate dynamically because
+>>> struc mxs-lradc is allocated dynamically.
+>>> But I can revrse changes and make mfd_cells allocate staticaly
+>>> wthout separate function.
+>>
+>> I think making mfd_cells members of struct mxs-lradc will address all
+>> review comments.
+>
+> No, please don't do that either.
+>
+It'd be nice if you explained in detail why not. Otherwise this is just 
+empty splat.
 
-PTR_ERR should access the value just tested by IS_ERR, otherwise
-the wrong error code will be returned.
-
-Signed-off-by: Wei Yongjun <yongjun_wei@trendmicro.com.cn>
----
- drivers/iio/pressure/bmp280-core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 6943688..94e27b2 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -970,7 +970,7 @@ int bmp280_common_probe(struct device *dev,
- 	data->vdda = devm_regulator_get(dev, "vdda");
- 	if (IS_ERR(data->vdda)) {
- 		dev_err(dev, "failed to get VDDA regulator\n");
--		ret = PTR_ERR(data->vddd);
-+		ret = PTR_ERR(data->vdda);
- 		goto out_disable_vddd;
- 	}
- 	ret = regulator_enable(data->vdda);
+-- 
+Best regards,
+Marek Vasut
