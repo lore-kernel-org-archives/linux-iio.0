@@ -1,518 +1,201 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:43824 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752930AbcGOKBU (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jul 2016 06:01:20 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+Received: from bh-25.webhostbox.net ([208.91.199.152]:44259 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752162AbcGOODk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jul 2016 10:03:40 -0400
+Subject: Re: [PATCH v2 4/4] hwmon: iio: add label for channels read by
+ iio_hwmon
+To: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	jdelvare@suse.com, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
 	maxime.ripard@free-electrons.com, wens@csie.org,
 	lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1468576754-3273-5-git-send-email-quentin.schulz@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	thomas.petazzoni@free-electrons.com,
 	antoine.tenart@free-electrons.com
-Subject: [PATCH v2 2/4] iio: adc: add support for Allwinner SoCs ADC
-Date: Fri, 15 Jul 2016 11:59:12 +0200
-Message-Id: <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
-In-Reply-To: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
-References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Message-ID: <5788ED2D.9050405@roeck-us.net>
+Date: Fri, 15 Jul 2016 07:03:25 -0700
+MIME-Version: 1.0
+In-Reply-To: <1468576754-3273-5-git-send-email-quentin.schulz@free-electrons.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen
-controller and a thermal sensor. This patch adds the ADC driver which is
-based on the MFD for the same SoCs ADC.
+On 07/15/2016 02:59 AM, Quentin Schulz wrote:
+> Currently, iio_hwmon only exposes values of the IIO channels it can read
+> but no label by channel is exposed.
+>
+> This adds exposition of sysfs files containing label for IIO channels it
+> can read based on extended_name field of the iio_chan_spec of the channel.
+> If the extended_name field is empty, the sysfs file is not created by
+> iio_hwmon.
+>
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> ---
+>
+> patch added in v2
+>
+>   drivers/hwmon/iio_hwmon.c | 77 +++++++++++++++++++++++++++++++++++++++++------
+>   1 file changed, 68 insertions(+), 9 deletions(-)
+>
+> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+> index c0da4d9..28d15b2 100644
+> --- a/drivers/hwmon/iio_hwmon.c
+> +++ b/drivers/hwmon/iio_hwmon.c
+> @@ -16,6 +16,7 @@
+>   #include <linux/of.h>
+>   #include <linux/hwmon-sysfs.h>
+>   #include <linux/iio/consumer.h>
+> +#include <linux/iio/iio.h>
+>   #include <linux/iio/types.h>
+>
+>   /**
+> @@ -57,12 +58,26 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+>   	return sprintf(buf, "%d\n", result);
+>   }
+>
+> +static ssize_t iio_hwmon_read_label(struct device *dev,
+> +				    struct device_attribute *attr,
+> +				    char *buf)
+> +{
+> +	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
+> +	struct iio_hwmon_state *state = dev_get_drvdata(dev);
+> +	const char *label = state->channels[sattr->index].channel->extend_name;
+> +
+> +	if (label)
+> +		return sprintf(buf, "%s\n", label);
+> +
+Can the name disappear on the fly, or be changed on the fly ?
+Then this is unusable. We should and can only provide labels
+if a name exists and is permanent. Otherwise all we do is
+to confuse user space.
 
-This also registers the thermal adc channel in the iio map array so
-iio_hwmon could use it without modifying the Device Tree.
+> +	return 0;
+> +}
+> +
+>   static int iio_hwmon_probe(struct platform_device *pdev)
+>   {
+>   	struct device *dev = &pdev->dev;
+>   	struct iio_hwmon_state *st;
+> -	struct sensor_device_attribute *a;
+> -	int ret, i;
+> +	struct sensor_device_attribute *a, *b;
+> +	int ret, i, j = 0;
+>   	int in_i = 1, temp_i = 1, curr_i = 1, humidity_i = 1;
+>   	enum iio_chan_type type;
+>   	struct iio_channel *channels;
+> @@ -92,7 +107,8 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>   		st->num_channels++;
+>
+>   	st->attrs = devm_kzalloc(dev,
+> -				 sizeof(*st->attrs) * (st->num_channels + 1),
+> +				 sizeof(*st->attrs) *
+> +				 (2 * st->num_channels + 1),
+>   				 GFP_KERNEL);
+>   	if (st->attrs == NULL) {
+>   		ret = -ENOMEM;
+> @@ -107,6 +123,18 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>   		}
+>
+>   		sysfs_attr_init(&a->dev_attr.attr);
+> +
+> +		b = NULL;
+> +		if (st->channels[i].channel->extend_name) {
+> +			b = devm_kzalloc(dev, sizeof(*b), GFP_KERNEL);
+> +			if (b == NULL) {
+> +				ret = -ENOMEM;
+> +				goto error_release_channels;
+> +			}
+> +
+> +			sysfs_attr_init(&b->dev_attr.attr);
 
-This driver probes on three different platform_device_id to take into
-account slight differences between Allwinner SoCs ADCs.
+Why is this initialization here and not with the rest of the initialization
+of this attribute ?
 
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
----
+> +		}
+> +
+>   		ret = iio_get_channel_type(&st->channels[i], &type);
+>   		if (ret < 0)
+>   			goto error_release_channels;
+> @@ -115,35 +143,66 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>   		case IIO_VOLTAGE:
+>   			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+>   							  "in%d_input",
+> -							  in_i++);
+> +							  in_i);
+> +			if (b)
+> +				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> +								  "in%d_label",
+> +								  in_i);
+> +			in_i++;
+>   			break;
+>   		case IIO_TEMP:
+>   			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+>   							  "temp%d_input",
+> -							  temp_i++);
+> +							  temp_i);
+> +
+> +			if (b)
+> +				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> +								  "temp%d_label",
+> +								  temp_i);
+> +			temp_i++;
+>   			break;
+>   		case IIO_CURRENT:
+>   			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+>   							  "curr%d_input",
+> -							  curr_i++);
+> +							  curr_i);
+> +
+> +			if (b)
+> +				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> +								  "curr%d_label",
+> +								  curr_i);
+> +			curr_i++;
+>   			break;
+>   		case IIO_HUMIDITYRELATIVE:
+>   			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+>   							  "humidity%d_input",
+> -							  humidity_i++);
+> +							  humidity_i);
+> +
+> +			if (b)
+> +				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+> +								  "humidity%d_label",
+> +								  humidity_i);
+> +			humidity_i++;
+>   			break;
+>   		default:
+>   			ret = -EINVAL;
+>   			goto error_release_channels;
+>   		}
+> -		if (a->dev_attr.attr.name == NULL) {
+> +		if (a->dev_attr.attr.name == NULL ||
+> +		    (b && b->dev_attr.attr.name == NULL)) {
+>   			ret = -ENOMEM;
+>   			goto error_release_channels;
+>   		}
 
-v2:
- - add SUNXI_GPADC_ prefixes for defines,
- - correct typo in Kconfig,
- - reorder alphabetically includes, makefile,
- - add license header,
- - fix architecture variations not being handled in interrupt handlers or
-   read raw functions,
- - fix unability to return negative values from thermal sensor,
- - add gotos to reduce code repetition,
- - fix irq variable being unsigned int instead of int,
- - remove useless dev_err and dev_info,
- - deactivate all interrupts if probe fails,
- - fix iio_device_register on NULL variable,
- - deactivate ADC in the IP when probe fails or when removing driver,
+Just realized that we have a memory leak here. The 'name' memory is never released.
 
- drivers/iio/adc/Kconfig           |  12 ++
- drivers/iio/adc/Makefile          |   1 +
- drivers/iio/adc/sunxi-gpadc-iio.c | 417 ++++++++++++++++++++++++++++++++++++++
- 3 files changed, 430 insertions(+)
- create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 25378c5..184856f 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -338,6 +338,18 @@ config NAU7802
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called nau7802.
- 
-+config SUNXI_ADC
-+	tristate "ADC driver for sunxi platforms"
-+	depends on IIO
-+	depends on MFD_SUNXI_ADC
-+	help
-+	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
-+	  ADC. This ADC provides 4 channels which can be used as an ADC or as a
-+	  touchscreen input and one channel for thermal sensor.
-+
-+          To compile this driver as a module, choose M here: the module will be
-+	  called sunxi-gpadc-iio.
-+
- config PALMAS_GPADC
- 	tristate "TI Palmas General Purpose ADC"
- 	depends on MFD_PALMAS
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 38638d4..3e60a1d 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -37,6 +37,7 @@ obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
- obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
- obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
-+obj-$(CONFIG_SUNXI_ADC) += sunxi-gpadc-iio.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
-diff --git a/drivers/iio/adc/sunxi-gpadc-iio.c b/drivers/iio/adc/sunxi-gpadc-iio.c
-new file mode 100644
-index 0000000..87cc913
---- /dev/null
-+++ b/drivers/iio/adc/sunxi-gpadc-iio.c
-@@ -0,0 +1,417 @@
-+/* ADC driver for sunxi platforms
-+ *
-+ * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms of the GNU General Public License version 2 as published by
-+ * the Free Software Foundation.
-+ */
-+
-+#include <linux/completion.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/regmap.h>
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/driver.h>
-+#include <linux/iio/machine.h>
-+#include <linux/mfd/sunxi-gpadc-mfd.h>
-+
-+#define SUNXI_GPADC_TP_CTRL0			0x00
-+#define SUNXI_GPADC_TP_CTRL1			0x04
-+#define SUNXI_GPADC_TP_CTRL2			0x08
-+#define SUNXI_GPADC_TP_CTRL3			0x0c
-+#define SUNXI_GPADC_TP_TPR			0x18
-+#define SUNXI_GPADC_TP_CDAT			0x1c
-+#define SUNXI_GPADC_TEMP_DATA			0x20
-+#define SUNXI_GPADC_TP_DATA			0x24
-+
-+/* TP_CTRL0 bits */
-+#define SUNXI_GPADC_ADC_FIRST_DLY(x)		((x) << 24) /* 8 bits */
-+#define SUNXI_GPADC_ADC_FIRST_DLY_MODE		BIT(23)
-+#define SUNXI_GPADC_ADC_CLK_SELECT		BIT(22)
-+#define SUNXI_GPADC_ADC_CLK_DIVIDER(x)		((x) << 20) /* 2 bits */
-+#define SUNXI_GPADC_FS_DIV(x)			((x) << 16) /* 4 bits */
-+#define SUNXI_GPADC_T_ACQ(x)			((x) << 0)  /* 16 bits */
-+
-+/* TP_CTRL1 bits */
-+#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE(x)	((x) << 12) /* 8 bits */
-+#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE_EN	BIT(9)
-+#define SUNXI_GPADC_TOUCH_PAN_CALI_EN		BIT(6)
-+#define SUNXI_GPADC_TP_DUAL_EN			BIT(5)
-+#define SUNXI_GPADC_TP_MODE_EN			BIT(4)
-+#define SUNXI_GPADC_TP_ADC_SELECT		BIT(3)
-+#define SUNXI_GPADC_ADC_CHAN_SELECT(x)		((x) << 0)  /* 3 bits */
-+
-+/* TP_CTRL1 bits for sun6i SOCs */
-+#define SUNXI_GPADC_SUN6I_TOUCH_PAN_CALI_EN	BIT(7)
-+#define SUNXI_GPADC_SUN6I_TP_DUAL_EN		BIT(6)
-+#define SUNXI_GPADC_SUN6I_TP_MODE_EN		BIT(5)
-+#define SUNXI_GPADC_SUN6I_TP_ADC_SELECT		BIT(4)
-+#define SUNXI_GPADC_SUN6I_ADC_CHAN_SELECT(x)	BIT(x)  /* 4 bits */
-+
-+/* TP_CTRL2 bits */
-+#define SUNXI_GPADC_TP_SENSITIVE_ADJUST(x)	((x) << 28) /* 4 bits */
-+#define SUNXI_GPADC_TP_MODE_SELECT(x)		((x) << 26) /* 2 bits */
-+#define SUNXI_GPADC_PRE_MEA_EN			BIT(24)
-+#define SUNXI_GPADC_PRE_MEA_THRE_CNT(x)		((x) << 0)  /* 24 bits */
-+
-+/* TP_CTRL3 bits */
-+#define SUNXI_GPADC_FILTER_EN			BIT(2)
-+#define SUNXI_GPADC_FILTER_TYPE(x)		((x) << 0)  /* 2 bits */
-+
-+/* TP_INT_FIFOC irq and fifo mask / control bits */
-+#define SUNXI_GPADC_TEMP_IRQ_EN			BIT(18)
-+#define SUNXI_GPADC_TP_OVERRUN_IRQ_EN		BIT(17)
-+#define SUNXI_GPADC_TP_DATA_IRQ_EN		BIT(16)
-+#define SUNXI_GPADC_TP_DATA_XY_CHANGE		BIT(13)
-+#define SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(x)	((x) << 8)  /* 5 bits */
-+#define SUNXI_GPADC_TP_DATA_DRQ_EN		BIT(7)
-+#define SUNXI_GPADC_TP_FIFO_FLUSH		BIT(4)
-+#define SUNXI_GPADC_TP_UP_IRQ_EN		BIT(1)
-+#define SUNXI_GPADC_TP_DOWN_IRQ_EN		BIT(0)
-+
-+/* TP_INT_FIFOS irq and fifo status bits */
-+#define SUNXI_GPADC_TEMP_DATA_PENDING		BIT(18)
-+#define SUNXI_GPADC_FIFO_OVERRUN_PENDING	BIT(17)
-+#define SUNXI_GPADC_FIFO_DATA_PENDING		BIT(16)
-+#define SUNXI_GPADC_TP_IDLE_FLG			BIT(2)
-+#define SUNXI_GPADC_TP_UP_PENDING		BIT(1)
-+#define SUNXI_GPADC_TP_DOWN_PENDING		BIT(0)
-+
-+/* TP_TPR bits */
-+#define SUNXI_GPADC_TEMP_ENABLE(x)		((x) << 16)
-+/* t = x * 256 * 16 / clkin */
-+#define SUNXI_GPADC_TEMP_PERIOD(x)		((x) << 0)
-+
-+#define SUNXI_GPADC_ARCH_SUN4I			BIT(0)
-+#define SUNXI_GPADC_ARCH_SUN5I			BIT(1)
-+#define SUNXI_GPADC_ARCH_SUN6I			BIT(2)
-+
-+struct sunxi_gpadc_dev {
-+	void __iomem			*regs;
-+	struct completion		completion;
-+	int				temp_data;
-+	u32				adc_data;
-+	struct regmap			*regmap;
-+	unsigned int			fifo_data_irq;
-+	unsigned int			temp_data_irq;
-+	unsigned int			flags;
-+};
-+
-+#define SUNXI_GPADC_ADC_CHANNEL(_channel, _name) {		\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.channel = _channel,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	.datasheet_name = _name,				\
-+}
-+
-+static struct iio_map sunxi_gpadc_hwmon_maps[] = {
-+	{
-+		.adc_channel_label = "temp_adc",
-+		.consumer_dev_name = "iio_hwmon.0",
-+	},
-+	{ /* sentinel */ },
-+};
-+
-+static const struct iio_chan_spec sunxi_gpadc_channels[] = {
-+	SUNXI_GPADC_ADC_CHANNEL(0, "adc_chan0"),
-+	SUNXI_GPADC_ADC_CHANNEL(1, "adc_chan1"),
-+	SUNXI_GPADC_ADC_CHANNEL(2, "adc_chan2"),
-+	SUNXI_GPADC_ADC_CHANNEL(3, "adc_chan3"),
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.datasheet_name = "temp_adc",
-+		.extend_name = "SoC temperature",
-+	},
-+	{ /* sentinel */ },
-+};
-+
-+static int sunxi_gpadc_adc_read(struct iio_dev *indio_dev, int channel,
-+				int *val)
-+{
-+	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
-+	int ret = 0;
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	reinit_completion(&info->completion);
-+	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-+		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-+			     SUNXI_GPADC_SUN6I_TP_MODE_EN |
-+			     SUNXI_GPADC_SUN6I_TP_ADC_SELECT |
-+			     SUNXI_GPADC_SUN6I_ADC_CHAN_SELECT(channel));
-+	else
-+		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-+			     SUNXI_GPADC_TP_MODE_EN |
-+			     SUNXI_GPADC_TP_ADC_SELECT |
-+			     SUNXI_GPADC_ADC_CHAN_SELECT(channel));
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC,
-+		     SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(1) |
-+		     SUNXI_GPADC_TP_FIFO_FLUSH);
-+	enable_irq(info->fifo_data_irq);
-+
-+	if (!wait_for_completion_timeout(&info->completion,
-+					 msecs_to_jiffies(100))) {
-+		ret = -ETIMEDOUT;
-+		goto out;
-+	}
-+
-+	*val = info->adc_data;
-+
-+out:
-+	disable_irq(info->fifo_data_irq);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+}
-+
-+static int sunxi_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
-+{
-+	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
-+	int ret = 0;
-+
-+	mutex_lock(&indio_dev->mlock);
-+
-+	reinit_completion(&info->completion);
-+
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC,
-+		     SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(1) |
-+		     SUNXI_GPADC_TP_FIFO_FLUSH);
-+	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-+		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-+			     SUNXI_GPADC_SUN6I_TP_MODE_EN);
-+	else
-+		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-+			     SUNXI_GPADC_TP_MODE_EN);
-+	enable_irq(info->temp_data_irq);
-+
-+	if (!wait_for_completion_timeout(&info->completion,
-+					 msecs_to_jiffies(100))) {
-+		ret = -ETIMEDOUT;
-+		goto out;
-+	}
-+
-+	if (info->flags & SUNXI_GPADC_ARCH_SUN4I)
-+		*val = info->temp_data * 133 - 257000;
-+	else if (info->flags & SUNXI_GPADC_ARCH_SUN5I)
-+		*val = info->temp_data * 100 - 144700;
-+	else if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-+		*val = info->temp_data * 167 - 271000;
-+
-+out:
-+	disable_irq(info->temp_data_irq);
-+	mutex_unlock(&indio_dev->mlock);
-+
-+	return ret;
-+
-+}
-+
-+static int sunxi_gpadc_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = sunxi_gpadc_temp_read(indio_dev, val);
-+		if (ret)
-+			return ret;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_RAW:
-+		ret = sunxi_gpadc_adc_read(indio_dev, chan->channel, val);
-+		if (ret)
-+			return ret;
-+
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info sunxi_gpadc_iio_info = {
-+	.read_raw = sunxi_gpadc_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static irqreturn_t sunxi_gpadc_temp_data_irq_handler(int irq, void *dev_id)
-+{
-+	struct sunxi_gpadc_dev *info = dev_id;
-+	int ret;
-+
-+	ret = regmap_read(info->regmap, SUNXI_GPADC_TEMP_DATA,
-+			  &info->temp_data);
-+	if (ret == 0)
-+		complete(&info->completion);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t sunxi_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
-+{
-+	struct sunxi_gpadc_dev *info = dev_id;
-+	int ret;
-+
-+	ret = regmap_read(info->regmap, SUNXI_GPADC_TP_DATA, &info->adc_data);
-+	if (ret == 0)
-+		complete(&info->completion);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int sunxi_gpadc_probe(struct platform_device *pdev)
-+{
-+	struct sunxi_gpadc_dev *info;
-+	struct iio_dev *indio_dev;
-+	int ret, irq;
-+	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
-+
-+	sunxi_gpadc_mfd_dev = dev_get_drvdata(pdev->dev.parent);
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	info = iio_priv(indio_dev);
-+
-+	info->regmap = sunxi_gpadc_mfd_dev->regmap;
-+	init_completion(&info->completion);
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->dev.of_node = pdev->dev.of_node;
-+	indio_dev->info = &sunxi_gpadc_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->num_channels = ARRAY_SIZE(sunxi_gpadc_channels);
-+	indio_dev->channels = sunxi_gpadc_channels;
-+
-+	info->flags = platform_get_device_id(pdev)->driver_data;
-+
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL0, SUNXI_GPADC_FS_DIV(7) |
-+		     SUNXI_GPADC_ADC_CLK_DIVIDER(2) | SUNXI_GPADC_T_ACQ(63));
-+	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-+		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-+			     SUNXI_GPADC_SUN6I_TP_MODE_EN);
-+	else
-+		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-+			     SUNXI_GPADC_TP_MODE_EN);
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL3, SUNXI_GPADC_FILTER_EN |
-+		     SUNXI_GPADC_FILTER_TYPE(1));
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR,
-+		     SUNXI_GPADC_TEMP_ENABLE(1) |
-+		     SUNXI_GPADC_TEMP_PERIOD(1953));
-+
-+	irq = platform_get_irq_byname(pdev, "TEMP_DATA_PENDING");
-+	if (irq < 0) {
-+		dev_err(&pdev->dev,
-+			"no TEMP_DATA_PENDING interrupt registered\n");
-+		ret = irq;
-+		goto err;
-+	}
-+
-+	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
-+	ret = devm_request_any_context_irq(&pdev->dev, irq,
-+					   sunxi_gpadc_temp_data_irq_handler, 0,
-+					   "temp_data", info);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev,
-+			"could not request TEMP_DATA_PENDING interrupt: %d\n",
-+			ret);
-+		goto err;
-+	}
-+
-+	info->temp_data_irq = irq;
-+	disable_irq(irq);
-+
-+	irq = platform_get_irq_byname(pdev, "FIFO_DATA_PENDING");
-+	if (irq < 0) {
-+		dev_err(&pdev->dev,
-+			"no FIFO_DATA_PENDING interrupt registered\n");
-+		ret = irq;
-+		goto err;
-+	}
-+
-+	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
-+	ret = devm_request_any_context_irq(&pdev->dev, irq,
-+					   sunxi_gpadc_fifo_data_irq_handler,
-+					   0, "fifo_data", info);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev,
-+			"could not request FIFO_DATA_PENDING interrupt: %d\n",
-+			ret);
-+		goto err;
-+	}
-+
-+	info->fifo_data_irq = irq;
-+	disable_irq(irq);
-+
-+	ret = iio_map_array_register(indio_dev, sunxi_gpadc_hwmon_maps);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to register iio map array\n");
-+		goto err;
-+	}
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "could not register the device\n");
-+		iio_map_array_unregister(indio_dev);
-+		goto err;
-+	}
-+
-+	return 0;
-+
-+err:
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1, 0);
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR, 0);
-+
-+	return ret;
-+}
-+
-+static int sunxi_gpadc_remove(struct platform_device *pdev)
-+{
-+	struct sunxi_gpadc_dev *info;
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	info = iio_priv(indio_dev);
-+	iio_device_unregister(indio_dev);
-+	iio_map_array_unregister(indio_dev);
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC, 0);
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1, 0);
-+	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR, 0);
-+
-+	return 0;
-+}
-+
-+static const struct platform_device_id sunxi_gpadc_id[] = {
-+	{ "sun4i-a10-gpadc-iio", SUNXI_GPADC_ARCH_SUN4I },
-+	{ "sun5i-a13-gpadc-iio", SUNXI_GPADC_ARCH_SUN5I },
-+	{ "sun6i-a31-gpadc-iio", SUNXI_GPADC_ARCH_SUN6I },
-+	{ /* sentinel */ },
-+};
-+
-+static struct platform_driver sunxi_gpadc_driver = {
-+	.driver = {
-+		.name = "sunxi-gpadc-iio",
-+	},
-+	.id_table = sunxi_gpadc_id,
-+	.probe = sunxi_gpadc_probe,
-+	.remove = sunxi_gpadc_remove,
-+};
-+
-+module_platform_driver(sunxi_gpadc_driver);
-+
-+MODULE_DESCRIPTION("ADC driver for sunxi platforms");
-+MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
-+MODULE_LICENSE("GPL v2");
--- 
-2.5.0
+>   		a->dev_attr.show = iio_hwmon_read_val;
+>   		a->dev_attr.attr.mode = S_IRUGO;
+>   		a->index = i;
+> -		st->attrs[i] = &a->dev_attr.attr;
+> +		st->attrs[j++] = &a->dev_attr.attr;
+> +
+> +		if (b) {
+> +			b->dev_attr.show = iio_hwmon_read_label;
+> +			b->dev_attr.attr.mode = S_IRUGO;
+> +			b->index = i;
+> +			st->attrs[j++] = &b->dev_attr.attr;
+> +		}
+>   	}
+>
+>   	st->attr_group.attrs = st->attrs;
+>
 
