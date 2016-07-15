@@ -1,75 +1,185 @@
-Return-Path: <quentin.schulz@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:43845 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S932435AbcGOKB3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jul 2016 06:01:29 -0400
 From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jdelvare@suse.com,
-	linux@roeck-us.net,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com,
-	wens@csie.org,
+To: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
 	lee.jones@linaro.org
 Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-	linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	thomas.petazzoni@free-electrons.com,
 	antoine.tenart@free-electrons.com
-Subject: [PATCH v2 0/4] add support for Allwinner SoCs ADC
-Date: Fri, 15 Jul 2016 11:59:10 +0200
-Message-Id: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+Subject: [PATCH v2 4/4] hwmon: iio: add label for channels read by iio_hwmon
+Date: Fri, 15 Jul 2016 11:59:14 +0200
+Message-Id: <1468576754-3273-5-git-send-email-quentin.schulz@free-electrons.com>
+In-Reply-To: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen
-controller and a thermal sensor. The first four channels can be used either
-for the ADC or the touchscreen and the fifth channel is used for the
-thermal sensor. We currently have a driver for the two latter functions in
-drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC
-feature at all. It is meant to replace the current driver by using MFD and
-subdrivers.
+Currently, iio_hwmon only exposes values of the IIO channels it can read
+but no label by channel is exposed.
 
-This adds initial support for Allwinner SoCs ADC with all features. Yet,
-the touchscreen is not implemented but will be added later. To switch
-between touchscreen and ADC modes, you need to poke a few bits in registers
-and (de)activate an interrupt (pen-up).
-An MFD is provided to let the input driver activate the pen-up interrupt
-through a virtual interrupt, poke a few bits via regmap and read data from
-the ADC driver while both (and iio_hwmon) are probed by the MFD.
+This adds exposition of sysfs files containing label for IIO channels it
+can read based on extended_name field of the iio_chan_spec of the channel.
+If the extended_name field is empty, the sysfs file is not created by
+iio_hwmon.
 
-There are slight variations between the different SoCs ADC like the address
-of some registers and the scale and offset to apply to raw thermal sensor
-values. These variations are handled by using different platform_device_id,
-passed to the sub-drivers when they are probed by the MFD.
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+---
 
-This also modifies iio-hwmon to allow probe deferring when no iio channel
-is found. Currently when no iio channel is found, the probing of iio-hwmon
-fails. This is problematic when iio-hwmon probes before the iio driver
-could register iio channels to share.
-It exposes labels for channels read by iio_hwmon. Until now, there were no
-way to identify what the exposed channels are representing. Now, if a
-channel has its extend_name field set, this value will be exposed in a
-sysfs file suffixed by _label. If the field is empty, no file will be
-created.
+patch added in v2
 
-Quentin Schulz (4):
-  hwmon: iio_hwmon: defer probe when no channel is found
-  iio: adc: add support for Allwinner SoCs ADC
-  mfd: add support for Allwinner SoCs ADC
-  hwmon: iio: add label for channels read by iio_hwmon
+ drivers/hwmon/iio_hwmon.c | 77 +++++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 68 insertions(+), 9 deletions(-)
 
- drivers/hwmon/iio_hwmon.c           |  82 ++++++-
- drivers/iio/adc/Kconfig             |  12 ++
- drivers/iio/adc/Makefile            |   1 +
- drivers/iio/adc/sunxi-gpadc-iio.c   | 417 ++++++++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig                 |  14 ++
- drivers/mfd/Makefile                |   2 +
- drivers/mfd/sunxi-gpadc-mfd.c       | 197 +++++++++++++++++
- include/linux/mfd/sunxi-gpadc-mfd.h |  23 ++
- 8 files changed, 738 insertions(+), 10 deletions(-)
- create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
- create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
- create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
-
+diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+index c0da4d9..28d15b2 100644
+--- a/drivers/hwmon/iio_hwmon.c
++++ b/drivers/hwmon/iio_hwmon.c
+@@ -16,6 +16,7 @@
+ #include <linux/of.h>
+ #include <linux/hwmon-sysfs.h>
+ #include <linux/iio/consumer.h>
++#include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
+ 
+ /**
+@@ -57,12 +58,26 @@ static ssize_t iio_hwmon_read_val(struct device *dev,
+ 	return sprintf(buf, "%d\n", result);
+ }
+ 
++static ssize_t iio_hwmon_read_label(struct device *dev,
++				    struct device_attribute *attr,
++				    char *buf)
++{
++	struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
++	struct iio_hwmon_state *state = dev_get_drvdata(dev);
++	const char *label = state->channels[sattr->index].channel->extend_name;
++
++	if (label)
++		return sprintf(buf, "%s\n", label);
++
++	return 0;
++}
++
+ static int iio_hwmon_probe(struct platform_device *pdev)
+ {
+ 	struct device *dev = &pdev->dev;
+ 	struct iio_hwmon_state *st;
+-	struct sensor_device_attribute *a;
+-	int ret, i;
++	struct sensor_device_attribute *a, *b;
++	int ret, i, j = 0;
+ 	int in_i = 1, temp_i = 1, curr_i = 1, humidity_i = 1;
+ 	enum iio_chan_type type;
+ 	struct iio_channel *channels;
+@@ -92,7 +107,8 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 		st->num_channels++;
+ 
+ 	st->attrs = devm_kzalloc(dev,
+-				 sizeof(*st->attrs) * (st->num_channels + 1),
++				 sizeof(*st->attrs) *
++				 (2 * st->num_channels + 1),
+ 				 GFP_KERNEL);
+ 	if (st->attrs == NULL) {
+ 		ret = -ENOMEM;
+@@ -107,6 +123,18 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 		}
+ 
+ 		sysfs_attr_init(&a->dev_attr.attr);
++
++		b = NULL;
++		if (st->channels[i].channel->extend_name) {
++			b = devm_kzalloc(dev, sizeof(*b), GFP_KERNEL);
++			if (b == NULL) {
++				ret = -ENOMEM;
++				goto error_release_channels;
++			}
++
++			sysfs_attr_init(&b->dev_attr.attr);
++		}
++
+ 		ret = iio_get_channel_type(&st->channels[i], &type);
+ 		if (ret < 0)
+ 			goto error_release_channels;
+@@ -115,35 +143,66 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+ 		case IIO_VOLTAGE:
+ 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+ 							  "in%d_input",
+-							  in_i++);
++							  in_i);
++			if (b)
++				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++								  "in%d_label",
++								  in_i);
++			in_i++;
+ 			break;
+ 		case IIO_TEMP:
+ 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+ 							  "temp%d_input",
+-							  temp_i++);
++							  temp_i);
++
++			if (b)
++				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++								  "temp%d_label",
++								  temp_i);
++			temp_i++;
+ 			break;
+ 		case IIO_CURRENT:
+ 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+ 							  "curr%d_input",
+-							  curr_i++);
++							  curr_i);
++
++			if (b)
++				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++								  "curr%d_label",
++								  curr_i);
++			curr_i++;
+ 			break;
+ 		case IIO_HUMIDITYRELATIVE:
+ 			a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
+ 							  "humidity%d_input",
+-							  humidity_i++);
++							  humidity_i);
++
++			if (b)
++				b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
++								  "humidity%d_label",
++								  humidity_i);
++			humidity_i++;
+ 			break;
+ 		default:
+ 			ret = -EINVAL;
+ 			goto error_release_channels;
+ 		}
+-		if (a->dev_attr.attr.name == NULL) {
++		if (a->dev_attr.attr.name == NULL ||
++		    (b && b->dev_attr.attr.name == NULL)) {
+ 			ret = -ENOMEM;
+ 			goto error_release_channels;
+ 		}
+ 		a->dev_attr.show = iio_hwmon_read_val;
+ 		a->dev_attr.attr.mode = S_IRUGO;
+ 		a->index = i;
+-		st->attrs[i] = &a->dev_attr.attr;
++		st->attrs[j++] = &a->dev_attr.attr;
++
++		if (b) {
++			b->dev_attr.show = iio_hwmon_read_label;
++			b->dev_attr.attr.mode = S_IRUGO;
++			b->index = i;
++			st->attrs[j++] = &b->dev_attr.attr;
++		}
+ 	}
+ 
+ 	st->attr_group.attrs = st->attrs;
 -- 
 2.5.0
+
