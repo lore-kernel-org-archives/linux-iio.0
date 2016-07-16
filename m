@@ -1,185 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:58468 "EHLO
+Received: from bh-25.webhostbox.net ([208.91.199.152]:36555 "EHLO
 	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751247AbcGPCyo (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 15 Jul 2016 22:54:44 -0400
-Subject: Re: [PATCH v2 4/4] hwmon: iio: add label for channels read by
- iio_hwmon
-To: Quentin Schulz <quentin.schulz@free-electrons.com>,
-	jdelvare@suse.com, jic23@kernel.org, knaack.h@gmx.de,
+	with ESMTP id S1751540AbcGPRAX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jul 2016 13:00:23 -0400
+Date: Sat, 16 Jul 2016 10:00:13 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, jic23@kernel.org, knaack.h@gmx.de,
 	lars@metafoo.de, pmeerw@pmeerw.net,
 	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org
-References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
- <1468576754-3273-5-git-send-email-quentin.schulz@free-electrons.com>
- <5788ED2D.9050405@roeck-us.net> <5788F506.3040809@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
 	thomas.petazzoni@free-electrons.com,
 	antoine.tenart@free-electrons.com
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <5789A1AC.1020706@roeck-us.net>
-Date: Fri, 15 Jul 2016 19:53:32 -0700
+Subject: Re: [v2,1/4] hwmon: iio_hwmon: defer probe when no channel is found
+Message-ID: <20160716170013.GA27490@roeck-us.net>
+References: <1468576754-3273-2-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <5788F506.3040809@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1468576754-3273-2-git-send-email-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/15/2016 07:36 AM, Quentin Schulz wrote:
-> On 15/07/2016 16:03, Guenter Roeck wrote:
->> On 07/15/2016 02:59 AM, Quentin Schulz wrote:
-> [...]
->>> +static ssize_t iio_hwmon_read_label(struct device *dev,
->>> +                    struct device_attribute *attr,
->>> +                    char *buf)
->>> +{
->>> +    struct sensor_device_attribute *sattr = to_sensor_dev_attr(attr);
->>> +    struct iio_hwmon_state *state = dev_get_drvdata(dev);
->>> +    const char *label =
->>> state->channels[sattr->index].channel->extend_name;
->>> +
->>> +    if (label)
->>> +        return sprintf(buf, "%s\n", label);
->>> +
->> Can the name disappear on the fly, or be changed on the fly ?
->> Then this is unusable. We should and can only provide labels
->> if a name exists and is permanent. Otherwise all we do is
->> to confuse user space.
->
-> It cannot, the extend_name field is const char* in the struct:
-> http://lxr.free-electrons.com/source/include/linux/iio/iio.h#L247
->
+On Fri, Jul 15, 2016 at 11:59:11AM +0200, Quentin Schulz wrote:
+> iio_channel_get_all returns -ENODEV when it cannot find either phandles and
+> properties in the Device Tree or channels whose consumer_dev_name matches
+> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio drivers
+> which might be probed after iio_hwmon.
+> 
+> It is better to defer the probe of iio_hwmon if such error is returned by
+> iio_channel_get_all in order to let a chance to iio drivers to expose
+> channels in iio_map_list.
+> 
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> ---
+> 
+> No modifications for this patch since we did not settled for a solution.
+> What should we do?
+> 
+AFAICS the only thing we can do is to replace module_platform_driver() with
+its explicitly coded variant, and to use use late_initcall() instead of
+module_init(). Anything else would result in endless probe deferrals if
+there are no channels.
 
-Then why "if(label)" ?
+Guenter
 
-> [...]
->>> @@ -107,6 +123,18 @@ static int iio_hwmon_probe(struct platform_device
->>> *pdev)
->>>            }
->>>
->>>            sysfs_attr_init(&a->dev_attr.attr);
->>> +
->>> +        b = NULL;
->>> +        if (st->channels[i].channel->extend_name) {
->>> +            b = devm_kzalloc(dev, sizeof(*b), GFP_KERNEL);
->>> +            if (b == NULL) {
->>> +                ret = -ENOMEM;
->>> +                goto error_release_channels;
->>> +            }
->>> +
->>> +            sysfs_attr_init(&b->dev_attr.attr);
->>
->> Why is this initialization here and not with the rest of the initialization
->> of this attribute ?
->
-> I don't get your question. I've followed the exact same pattern as for
-> "a" variable's initialization.
-> The initialization is before the switch case because the name of the
-> exposed sysfs file depends on the type of the IIO channel. If I move the
-> initialization in the switch case, I'll have duplicated code.
->
-
-Yes, but that didn't require all those if statements.
-
->>> +        }
->>> +
->>>            ret = iio_get_channel_type(&st->channels[i], &type);
->>>            if (ret < 0)
->>>                goto error_release_channels;
->>> @@ -115,35 +143,66 @@ static int iio_hwmon_probe(struct
->>> platform_device *pdev)
->>>            case IIO_VOLTAGE:
->>>                a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>>                                  "in%d_input",
->>> -                              in_i++);
->>> +                              in_i);
->>> +            if (b)
->>> +                b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>> +                                  "in%d_label",
->>> +                                  in_i);
->>> +            in_i++;
->>>                break;
->>>            case IIO_TEMP:
->>>                a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>>                                  "temp%d_input",
->>> -                              temp_i++);
->>> +                              temp_i);
->>> +
->>> +            if (b)
->>> +                b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>> +                                  "temp%d_label",
->>> +                                  temp_i);
->>> +            temp_i++;
->>>                break;
->>>            case IIO_CURRENT:
->>>                a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>>                                  "curr%d_input",
->>> -                              curr_i++);
->>> +                              curr_i);
->>> +
->>> +            if (b)
->>> +                b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>> +                                  "curr%d_label",
->>> +                                  curr_i);
->>> +            curr_i++;
->>>                break;
->>>            case IIO_HUMIDITYRELATIVE:
->>>                a->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>>                                  "humidity%d_input",
->>> -                              humidity_i++);
->>> +                              humidity_i);
->>> +
->>> +            if (b)
->>> +                b->dev_attr.attr.name = kasprintf(GFP_KERNEL,
->>> +                                  "humidity%d_label",
->>> +                                  humidity_i);
->>> +            humidity_i++;
->>>                break;
->>>            default:
->>>                ret = -EINVAL;
->>>                goto error_release_channels;
->>>            }
->>> -        if (a->dev_attr.attr.name == NULL) {
->>> +        if (a->dev_attr.attr.name == NULL ||
->>> +            (b && b->dev_attr.attr.name == NULL)) {
->>>                ret = -ENOMEM;
->>>                goto error_release_channels;
->>>            }
->>
->> Just realized that we have a memory leak here. The 'name' memory is
->> never released.
->>
->
-> I don't know if we have to do something to revert the effects of
-> sysfs_attr_init but you sure are right that the a and b's attribute's
-> name is never freed. This case would be handled with devm_kasprintf, I
-> guess? Thanks.
->
->>>            a->dev_attr.show = iio_hwmon_read_val;
->>>            a->dev_attr.attr.mode = S_IRUGO;
->>>            a->index = i;
->>> -        st->attrs[i] = &a->dev_attr.attr;
->>> +        st->attrs[j++] = &a->dev_attr.attr;
->>> +
->>> +        if (b) {
-
-sysfs_attr_init() might be better here to keep the initialization of '*b'
-as close together as possible.
-
-Guenetr
-
->>> +            b->dev_attr.show = iio_hwmon_read_label;
->>> +            b->dev_attr.attr.mode = S_IRUGO;
->>> +            b->index = i;
->>> +            st->attrs[j++] = &b->dev_attr.attr;
->>> +        }
->>>        }
->>>
->>>        st->attr_group.attrs = st->attrs;
->>>
->>
->
-> Quentin
->
-
+>  drivers/hwmon/iio_hwmon.c | 5 ++++-
+>  1 file changed, 4 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+> index b550ba5..c0da4d9 100644
+> --- a/drivers/hwmon/iio_hwmon.c
+> +++ b/drivers/hwmon/iio_hwmon.c
+> @@ -73,8 +73,11 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>  		name = dev->of_node->name;
+>  
+>  	channels = iio_channel_get_all(dev);
+> -	if (IS_ERR(channels))
+> +	if (IS_ERR(channels)) {
+> +		if (PTR_ERR(channels) == -ENODEV)
+> +			return -EPROBE_DEFER;
+>  		return PTR_ERR(channels);
+> +	}
+>  
+>  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+>  	if (st == NULL) {
