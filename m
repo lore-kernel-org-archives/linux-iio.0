@@ -1,68 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:36555 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751540AbcGPRAX (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jul 2016 13:00:23 -0400
-Date: Sat, 16 Jul 2016 10:00:13 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jdelvare@suse.com, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-Subject: Re: [v2,1/4] hwmon: iio_hwmon: defer probe when no channel is found
-Message-ID: <20160716170013.GA27490@roeck-us.net>
-References: <1468576754-3273-2-git-send-email-quentin.schulz@free-electrons.com>
+Received: from mail-oi0-f65.google.com ([209.85.218.65]:32973 "EHLO
+	mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751687AbcGPTb1 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sat, 16 Jul 2016 15:31:27 -0400
+Date: Sat, 16 Jul 2016 14:31:25 -0500
+From: Rob Herring <robh@kernel.org>
+To: zhiyong tao <zhiyong.tao@mediatek.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, srv_heupstream@mediatek.com,
+	liguo.zhang@mediatek.com, yingjoe.chen@mediatek.com,
+	eddie.huang@mediatek.com, erin.lo@mediatek.com,
+	dawei.chien@mediatek.com, matthias.bgg@gmail.com,
+	s.hauer@pengutronix.de, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-iio@vger.kernel.org, linux-mediatek@lists.infradead.org
+Subject: Re: [PATCH v4 1/3] dt-bindings: auxadc: Add binding document for
+ Mediatek auxadc.
+Message-ID: <20160716193125.GA14506@rob-hp-laptop>
+References: <1468219197-9572-1-git-send-email-zhiyong.tao@mediatek.com>
+ <1468219197-9572-2-git-send-email-zhiyong.tao@mediatek.com>
+ <1468291396.419.15.camel@mhfsdcap03>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1468576754-3273-2-git-send-email-quentin.schulz@free-electrons.com>
+In-Reply-To: <1468291396.419.15.camel@mhfsdcap03>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Jul 15, 2016 at 11:59:11AM +0200, Quentin Schulz wrote:
-> iio_channel_get_all returns -ENODEV when it cannot find either phandles and
-> properties in the Device Tree or channels whose consumer_dev_name matches
-> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio drivers
-> which might be probed after iio_hwmon.
+On Tue, Jul 12, 2016 at 10:43:16AM +0800, zhiyong tao wrote:
+> On Mon, 2016-07-11 at 14:39 +0800, Zhiyong Tao wrote:
+> > The commit adds the device tree binding documentation for the mediatek
+> > auxadc found on Mediatek MT2701.
+> > Thermal gets auxadc sample data by iio device.
+> > So the commit changes auxadc device tree binding documentation from
+> > /soc/mediatek/auxadc.txt to /iio/adc/mt6577_auxadc.txt.
+> > 
+> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > ---
 > 
-> It is better to defer the probe of iio_hwmon if such error is returned by
-> iio_channel_get_all in order to let a chance to iio drivers to expose
-> channels in iio_map_list.
+> I forgot that I should use the command 'git format-patch -M' to submit
+> this patch. The follow information is the patch after executing the
+> above command. If the patch needs to be resent, please help to notify
+> me. I will resend the patch quickly.
+> The follow information:
 > 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
+>  .../auxadc.txt => iio/adc/mt6577_auxadc.txt}       |   16
+> +++++++++++-----
+>  1 file changed, 11 insertions(+), 5 deletions(-)
+>  rename Documentation/devicetree/bindings/{soc/mediatek/auxadc.txt =>
+> iio/adc/mt6577_auxadc.txt} (50%)
 > 
-> No modifications for this patch since we did not settled for a solution.
-> What should we do?
+> diff --git a/Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+> b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> similarity index 50%
+> rename from Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+> rename to Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> index bdb7829..bc23792 100644
+> --- a/Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> @@ -1,4 +1,4 @@
+> -MediaTek AUXADC
+> +* Mediatek AUXADC - Analog to Digital Converter on Mediatek mobile soc
+> (mt65xx/mt81xx/mt27xx)
+>  ===============
 > 
-AFAICS the only thing we can do is to replace module_platform_driver() with
-its explicitly coded variant, and to use use late_initcall() instead of
-module_init(). Anything else would result in endless probe deferrals if
-there are no channels.
+>  The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
+> @@ -10,12 +10,18 @@
+> Documentation/devicetree/bindings/thermal/mediatek-thermal.txt
+>  for the Thermal Controller which holds a phandle to the AUXADC.
+> 
+>  Required properties:
+> -- compatible: Must be "mediatek,mt8173-auxadc"
+> -- reg: Address range of the AUXADC unit
+> +  - compatible: "mediatek,mt2701-auxadc" or "mediatek,mt8173-auxadc"
 
-Guenter
+It's preferred to list one per line, but this is fine unless you resend.
 
->  drivers/hwmon/iio_hwmon.c | 5 ++++-
->  1 file changed, 4 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
-> index b550ba5..c0da4d9 100644
-> --- a/drivers/hwmon/iio_hwmon.c
-> +++ b/drivers/hwmon/iio_hwmon.c
-> @@ -73,8 +73,11 @@ static int iio_hwmon_probe(struct platform_device *pdev)
->  		name = dev->of_node->name;
->  
->  	channels = iio_channel_get_all(dev);
-> -	if (IS_ERR(channels))
-> +	if (IS_ERR(channels)) {
-> +		if (PTR_ERR(channels) == -ENODEV)
-> +			return -EPROBE_DEFER;
->  		return PTR_ERR(channels);
-> +	}
->  
->  	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
->  	if (st == NULL) {
+Acked-by: Rob Herring <robh@kernel.org>
