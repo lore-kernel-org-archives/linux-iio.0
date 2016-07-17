@@ -1,570 +1,313 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57840 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752361AbcGSFgE (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:04 -0400
-Subject: Re: [PATCH v2 2/4] iio: adc: add support for Allwinner SoCs ADC
-To: Quentin Schulz <quentin.schulz@free-electrons.com>,
-	jdelvare@suse.com, linux@roeck-us.net, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org
-References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
- <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e24c8b63-7774-66d2-3317-43fd5598ecc9@kernel.org>
-Date: Mon, 18 Jul 2016 14:18:42 +0100
+Return-Path: <pmeerw@pmeerw.net>
+Date: Sun, 17 Jul 2016 18:12:15 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Jelle van der Waa <jelle@vdwaa.nl>
+cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+    Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: accel: add support for the Domintech DMARD09 3-axis
+ accelerometer
+In-Reply-To: <20160716195152.30109-2-jelle@vdwaa.nl>
+Message-ID: <alpine.DEB.2.02.1607171752470.23558@pmeerw.net>
+References: <20160716195152.30109-1-jelle@vdwaa.nl> <20160716195152.30109-2-jelle@vdwaa.nl>
 MIME-Version: 1.0
-In-Reply-To: <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 15/07/16 10:59, Quentin Schulz wrote:
-> The Allwinner SoCs all have an ADC that can also act as a touchscreen
-> controller and a thermal sensor. This patch adds the ADC driver which is
-> based on the MFD for the same SoCs ADC.
+
+> Minimal implementation of an IIO driver for the Domintech DMARD09 3-axis
+> accelerometer. Only supports reading the x,y,z axes at the moment.
+
+comments below
+
+> Implementation based on the Android driver from the Acer Liquid E2
+> kernel sources.
 > 
-> This also registers the thermal adc channel in the iio map array so
-> iio_hwmon could use it without modifying the Device Tree.
-> 
-> This driver probes on three different platform_device_id to take into
-> account slight differences between Allwinner SoCs ADCs.
-> 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-
-Hi Quentin,
-
-Various bits inline.  In particular the irq handling looks flakey / racey
-to me.  Definitely need some explanatory comments.
-
-Also another note on the craziness that using extended_name to provide
-the hwmon labels will cause :)
-
-Jonathan
+> Signed-off-by: Jelle van der Waa <jelle@vdwaa.nl>
 > ---
+>  .../devicetree/bindings/iio/accel/dmard09.txt      |  13 ++
+>  drivers/iio/accel/Kconfig                          |  10 ++
+>  drivers/iio/accel/Makefile                         |   1 +
+>  drivers/iio/accel/dmard09.c                        | 180 +++++++++++++++++++++
+>  4 files changed, 204 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard09.txt
+>  create mode 100644 drivers/iio/accel/dmard09.c
 > 
-> v2:
->  - add SUNXI_GPADC_ prefixes for defines,
->  - correct typo in Kconfig,
->  - reorder alphabetically includes, makefile,
->  - add license header,
->  - fix architecture variations not being handled in interrupt handlers or
->    read raw functions,
->  - fix unability to return negative values from thermal sensor,
->  - add gotos to reduce code repetition,
->  - fix irq variable being unsigned int instead of int,
->  - remove useless dev_err and dev_info,
->  - deactivate all interrupts if probe fails,
->  - fix iio_device_register on NULL variable,
->  - deactivate ADC in the IP when probe fails or when removing driver,
-> 
->  drivers/iio/adc/Kconfig           |  12 ++
->  drivers/iio/adc/Makefile          |   1 +
->  drivers/iio/adc/sunxi-gpadc-iio.c | 417 ++++++++++++++++++++++++++++++++++++++
->  3 files changed, 430 insertions(+)
->  create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 25378c5..184856f 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -338,6 +338,18 @@ config NAU7802
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called nau7802.
->  
-> +config SUNXI_ADC
-> +	tristate "ADC driver for sunxi platforms"
-> +	depends on IIO
-> +	depends on MFD_SUNXI_ADC
-> +	help
-> +	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
-> +	  ADC. This ADC provides 4 channels which can be used as an ADC or as a
-> +	  touchscreen input and one channel for thermal sensor.
-> +
-> +          To compile this driver as a module, choose M here: the module will be
-> +	  called sunxi-gpadc-iio.
-> +
->  config PALMAS_GPADC
->  	tristate "TI Palmas General Purpose ADC"
->  	depends on MFD_PALMAS
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 38638d4..3e60a1d 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -37,6 +37,7 @@ obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
->  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
->  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
->  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
-> +obj-$(CONFIG_SUNXI_ADC) += sunxi-gpadc-iio.o
->  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
->  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
-> diff --git a/drivers/iio/adc/sunxi-gpadc-iio.c b/drivers/iio/adc/sunxi-gpadc-iio.c
+> diff --git a/Documentation/devicetree/bindings/iio/accel/dmard09.txt b/Documentation/devicetree/bindings/iio/accel/dmard09.txt
 > new file mode 100644
-> index 0000000..87cc913
+> index 0000000..69b2a03
 > --- /dev/null
-> +++ b/drivers/iio/adc/sunxi-gpadc-iio.c
-> @@ -0,0 +1,417 @@
-> +/* ADC driver for sunxi platforms
+> +++ b/Documentation/devicetree/bindings/iio/accel/dmard09.txt
+> @@ -0,0 +1,13 @@
+> +Domintech DMARD09 accelerometer devicetree bindings
+> +
+> +Required properties:
+> +
+> +  - compatible : should be "domintech,dmard09"
+> +  - reg : the I2C address of the sensor
+> +
+> +Example:
+> +
+> +dmard09@0x1d {
+> +	compatible = "domintech,dmard09";
+> +	reg = <0x1d>;
+> +};
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index e4a758c..3fb16eb 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -40,6 +40,16 @@ config BMC150_ACCEL_SPI
+>  	tristate
+>  	select REGMAP_SPI
+>  
+> +config DMARD09
+> +	tristate "Domintech DMARD09 3-axis Accelerometer Driver"
+> +	select I2C
+> +	help
+> +	  Say yes here to get support for the Domintech DMARD09 3-axis
+> +	  accelerometer.
+> +
+> +	  Choosing M will build the driver as a module. If so, the module
+> +	  will be called dmard09.
+> +
+>  config HID_SENSOR_ACCEL_3D
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 71b6794..b1022a0 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_BMA180) += bma180.o
+>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+> +obj-$(CONFIG_DMARD09) += dmard09.o
+>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
+> new file mode 100644
+> index 0000000..8689c5a
+> --- /dev/null
+> +++ b/drivers/iio/accel/dmard09.c
+> @@ -0,0 +1,180 @@
+> +/*
+> + *  3-axis accelerometer driver for DMARD09 3-axis sensor.
+
+remove extra space at beginning of line
+3-axis mentioned twice
+
 > + *
-> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
+> + * Copyright (c) 2016, Jelle van der Waa <jelle@vdwaa.nl>
 > + *
 > + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
 > + */
 > +
-> +#include <linux/completion.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/io.h>
 > +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
+> +#include <linux/i2c.h>
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/driver.h>
-> +#include <linux/iio/machine.h>
-> +#include <linux/mfd/sunxi-gpadc-mfd.h>
 > +
-> +#define SUNXI_GPADC_TP_CTRL0			0x00
-> +#define SUNXI_GPADC_TP_CTRL1			0x04
-> +#define SUNXI_GPADC_TP_CTRL2			0x08
-> +#define SUNXI_GPADC_TP_CTRL3			0x0c
-> +#define SUNXI_GPADC_TP_TPR			0x18
-> +#define SUNXI_GPADC_TP_CDAT			0x1c
-> +#define SUNXI_GPADC_TEMP_DATA			0x20
-> +#define SUNXI_GPADC_TP_DATA			0x24
+> +#define DMARD09_DRV_NAME	"dmard09"
 > +
-> +/* TP_CTRL0 bits */
-> +#define SUNXI_GPADC_ADC_FIRST_DLY(x)		((x) << 24) /* 8 bits */
-> +#define SUNXI_GPADC_ADC_FIRST_DLY_MODE		BIT(23)
-> +#define SUNXI_GPADC_ADC_CLK_SELECT		BIT(22)
-> +#define SUNXI_GPADC_ADC_CLK_DIVIDER(x)		((x) << 20) /* 2 bits */
-> +#define SUNXI_GPADC_FS_DIV(x)			((x) << 16) /* 4 bits */
-> +#define SUNXI_GPADC_T_ACQ(x)			((x) << 0)  /* 16 bits */
+> +#define DMARD09_REG_CHIPID      0x18
+> +#define DMARD09_REG_STAT	0x0A
+> +#define DMARD09_REG_X		0x0C
+> +#define DMARD09_REG_Y		0x0E
+> +#define DMARD09_REG_Z		0x10
+> +#define DMARD09_CHIPID		0x95
 > +
-> +/* TP_CTRL1 bits */
-> +#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE(x)	((x) << 12) /* 8 bits */
-> +#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE_EN	BIT(9)
-> +#define SUNXI_GPADC_TOUCH_PAN_CALI_EN		BIT(6)
-> +#define SUNXI_GPADC_TP_DUAL_EN			BIT(5)
-> +#define SUNXI_GPADC_TP_MODE_EN			BIT(4)
-> +#define SUNXI_GPADC_TP_ADC_SELECT		BIT(3)
-> +#define SUNXI_GPADC_ADC_CHAN_SELECT(x)		((x) << 0)  /* 3 bits */
+> +#define DMARD09_BUF_LEN 8
+> +#define DMARD09_AXES_NUM        3
+> +#define DMARD09_AXIS_X 0
+> +#define DMARD09_AXIS_Y 1
+> +#define DMARD09_AXIS_Z 2
 > +
-> +/* TP_CTRL1 bits for sun6i SOCs */
-> +#define SUNXI_GPADC_SUN6I_TOUCH_PAN_CALI_EN	BIT(7)
-> +#define SUNXI_GPADC_SUN6I_TP_DUAL_EN		BIT(6)
-> +#define SUNXI_GPADC_SUN6I_TP_MODE_EN		BIT(5)
-> +#define SUNXI_GPADC_SUN6I_TP_ADC_SELECT		BIT(4)
-> +#define SUNXI_GPADC_SUN6I_ADC_CHAN_SELECT(x)	BIT(x)  /* 4 bits */
-> +
-> +/* TP_CTRL2 bits */
-> +#define SUNXI_GPADC_TP_SENSITIVE_ADJUST(x)	((x) << 28) /* 4 bits */
-> +#define SUNXI_GPADC_TP_MODE_SELECT(x)		((x) << 26) /* 2 bits */
-> +#define SUNXI_GPADC_PRE_MEA_EN			BIT(24)
-> +#define SUNXI_GPADC_PRE_MEA_THRE_CNT(x)		((x) << 0)  /* 24 bits */
-> +
-> +/* TP_CTRL3 bits */
-> +#define SUNXI_GPADC_FILTER_EN			BIT(2)
-> +#define SUNXI_GPADC_FILTER_TYPE(x)		((x) << 0)  /* 2 bits */
-> +
-> +/* TP_INT_FIFOC irq and fifo mask / control bits */
-> +#define SUNXI_GPADC_TEMP_IRQ_EN			BIT(18)
-> +#define SUNXI_GPADC_TP_OVERRUN_IRQ_EN		BIT(17)
-> +#define SUNXI_GPADC_TP_DATA_IRQ_EN		BIT(16)
-> +#define SUNXI_GPADC_TP_DATA_XY_CHANGE		BIT(13)
-> +#define SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(x)	((x) << 8)  /* 5 bits */
-> +#define SUNXI_GPADC_TP_DATA_DRQ_EN		BIT(7)
-> +#define SUNXI_GPADC_TP_FIFO_FLUSH		BIT(4)
-> +#define SUNXI_GPADC_TP_UP_IRQ_EN		BIT(1)
-> +#define SUNXI_GPADC_TP_DOWN_IRQ_EN		BIT(0)
-> +
-> +/* TP_INT_FIFOS irq and fifo status bits */
-> +#define SUNXI_GPADC_TEMP_DATA_PENDING		BIT(18)
-> +#define SUNXI_GPADC_FIFO_OVERRUN_PENDING	BIT(17)
-> +#define SUNXI_GPADC_FIFO_DATA_PENDING		BIT(16)
-> +#define SUNXI_GPADC_TP_IDLE_FLG			BIT(2)
-> +#define SUNXI_GPADC_TP_UP_PENDING		BIT(1)
-> +#define SUNXI_GPADC_TP_DOWN_PENDING		BIT(0)
-> +
-> +/* TP_TPR bits */
-> +#define SUNXI_GPADC_TEMP_ENABLE(x)		((x) << 16)
-> +/* t = x * 256 * 16 / clkin */
-> +#define SUNXI_GPADC_TEMP_PERIOD(x)		((x) << 0)
-> +
-> +#define SUNXI_GPADC_ARCH_SUN4I			BIT(0)
-> +#define SUNXI_GPADC_ARCH_SUN5I			BIT(1)
-> +#define SUNXI_GPADC_ARCH_SUN6I			BIT(2)
-> +
-> +struct sunxi_gpadc_dev {
-> +	void __iomem			*regs;
-> +	struct completion		completion;
-> +	int				temp_data;
-> +	u32				adc_data;
-> +	struct regmap			*regmap;
-> +	unsigned int			fifo_data_irq;
-> +	unsigned int			temp_data_irq;
-> +	unsigned int			flags;
-I'd prefer something more explicit than this.  Right now only one
-bit can ever be set - indicating a particular chip family.  Why not
-just have an enum instead?
+> +/* Used for dev_info() */
+> +struct dmard09_data {
+> +	struct i2c_client *client;
+> +	struct device *dev;
+what is this good for? use client->dev?
 > +};
 > +
-> +#define SUNXI_GPADC_ADC_CHANNEL(_channel, _name) {		\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = _channel,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.datasheet_name = _name,				\
-> +}
-> +
-> +static struct iio_map sunxi_gpadc_hwmon_maps[] = {
-> +	{
-> +		.adc_channel_label = "temp_adc",
-> +		.consumer_dev_name = "iio_hwmon.0",
-> +	},
-> +	{ /* sentinel */ },
-> +};
-> +
-> +static const struct iio_chan_spec sunxi_gpadc_channels[] = {
-> +	SUNXI_GPADC_ADC_CHANNEL(0, "adc_chan0"),
-> +	SUNXI_GPADC_ADC_CHANNEL(1, "adc_chan1"),
-> +	SUNXI_GPADC_ADC_CHANNEL(2, "adc_chan2"),
-> +	SUNXI_GPADC_ADC_CHANNEL(3, "adc_chan3"),
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> +		.datasheet_name = "temp_adc",
-> +		.extend_name = "SoC temperature",
-Just curious, did you look at the resultling sysfs entries?
-Going to be something like
-in_temp_SoC\ Temperature_input... Not good.
-If there is a strong enough reason (and there may be) to add a 'help string'
-type label to struct iio_chan_spec then my only real worries would be that
-we would be adding a whole pile of ABI that would be in the, near impossible
-to change in future, category...
-> +	},
-> +	{ /* sentinel */ },
-> +};
-> +
-> +static int sunxi_gpadc_adc_read(struct iio_dev *indio_dev, int channel,
-> +				int *val)
-> +{
-> +	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +
-> +	reinit_completion(&info->completion);
-> +	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-> +			     SUNXI_GPADC_SUN6I_TP_MODE_EN |
-> +			     SUNXI_GPADC_SUN6I_TP_ADC_SELECT |
-> +			     SUNXI_GPADC_SUN6I_ADC_CHAN_SELECT(channel));
-> +	else
-> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-> +			     SUNXI_GPADC_TP_MODE_EN |
-> +			     SUNXI_GPADC_TP_ADC_SELECT |
-> +			     SUNXI_GPADC_ADC_CHAN_SELECT(channel));
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC,
-> +		     SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(1) |
-> +		     SUNXI_GPADC_TP_FIFO_FLUSH);
-> +	enable_irq(info->fifo_data_irq);
-> +
-> +	if (!wait_for_completion_timeout(&info->completion,
-> +					 msecs_to_jiffies(100))) {
-> +		ret = -ETIMEDOUT;
-> +		goto out;
-> +	}
-> +
-> +	*val = info->adc_data;
-> +
-> +out:
-> +	disable_irq(info->fifo_data_irq);
-> +	mutex_unlock(&indio_dev->mlock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int sunxi_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
-> +{
-> +	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	mutex_lock(&indio_dev->mlock);
-> +
-> +	reinit_completion(&info->completion);
-> +
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC,
-> +		     SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(1) |
-> +		     SUNXI_GPADC_TP_FIFO_FLUSH);
-> +	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-> +			     SUNXI_GPADC_SUN6I_TP_MODE_EN);
-> +	else
-> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-> +			     SUNXI_GPADC_TP_MODE_EN);
-> +	enable_irq(info->temp_data_irq);
-Is this hardware spitting out extra irqs?  If not, much better to just
-leave it enabled all the time and control whether it can occur or not
-by controlling the device state..
-> +
-> +	if (!wait_for_completion_timeout(&info->completion,
-> +					 msecs_to_jiffies(100))) {
-> +		ret = -ETIMEDOUT;
-> +		goto out;
-> +	}
-> +
-> +	if (info->flags & SUNXI_GPADC_ARCH_SUN4I)
-> +		*val = info->temp_data * 133 - 257000;
-Why report as processed?  I'd just report them as raw with the scale
-and offset provided.  It's not a big thing, but if we can leave it so
-that the conversion only occurs when desired, why not?
+> +static const struct iio_chan_spec dmard09_channels[] = {
 
-For in kernel users, this all happen 'automagically' anyway ;)
+a #define would help to write this in a more concise way
 
-> +	else if (info->flags & SUNXI_GPADC_ARCH_SUN5I)
-> +		*val = info->temp_data * 100 - 144700;
-> +	else if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-> +		*val = info->temp_data * 167 - 271000;
+> +	{
+> +		.type = IIO_ACCEL,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.modified = 1,
+> +		.address = DMARD09_REG_X,
+
+I suggest to store _AXIS_N here or rather AXIS_N_OFFSET which would be 
+(AXIS+1)*2
+
+> +		.channel2 = IIO_MOD_X,
+> +	},
+> +	{
+> +		.type = IIO_ACCEL,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.modified = 1,
+> +		.address = DMARD09_REG_Y,
+> +		.channel2 = IIO_MOD_Y,
+> +	},
+> +	{
+> +		.type = IIO_ACCEL,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> +		.modified = 1,
+> +		.address = DMARD09_REG_Z,
+> +		.channel2 = IIO_MOD_Z,
+> +	}
+> +};
 > +
-> +out:
-> +	disable_irq(info->temp_data_irq);
-> +	mutex_unlock(&indio_dev->mlock);
-mlock has a very specific purpose - locking the state changes of
-between 'buffered' (push) and poll modes. Don't use it for anything else.
-In fact it's almost always a bug to access it directly at all.  We have
-nice wrappers now for checking and locking the access mode.
-Just have a local lock in your iio_priv structure.
-> +
-> +	return ret;
-> +
-> +}
-> +
-> +static int sunxi_gpadc_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
+> +static int dmard09_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
 > +{
+> +	struct dmard09_data *data = iio_priv(indio_dev);
+> +	u8 buf[DMARD09_BUF_LEN] = {0};
+
+why initialize buf?
+
 > +	int ret;
 > +
 > +	switch (mask) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		ret = sunxi_gpadc_temp_read(indio_dev, val);
-> +		if (ret)
-> +			return ret;
-> +
-> +		return IIO_VAL_INT;
 > +	case IIO_CHAN_INFO_RAW:
-> +		ret = sunxi_gpadc_adc_read(indio_dev, chan->channel, val);
-> +		if (ret)
+> +		ret = i2c_smbus_read_i2c_block_data(data->client,
+> +						    DMARD09_REG_STAT,
+> +						    DMARD09_BUF_LEN, buf);
+> +		if (ret < 0) {
+
+a comment explaining the read stragegy would be nice
+
+I guess that _STAT would have some information if the data is 
+ready/valid? why not start reading at AXIS_X?
+
+> +			dev_err(data->dev, "Error reading reg %lu\n",
+> +				chan->address);
 > +			return ret;
+> +		}
+> +
+
+check stat?
+the if block is not necessary, maybe
+*val = (s16) le16_to_cpup(&buf[chan->address])
+where chan->address is the offset into buf
+
+> +		if (chan->address == DMARD09_REG_X)
+> +			*val = (s16)((buf[(DMARD09_AXIS_X+1)*2+1] << 8)
+> +					| (buf[(DMARD09_AXIS_X+1)*2]));
+> +		if (chan->address == DMARD09_REG_Y)
+> +			*val = (s16)((buf[(DMARD09_AXIS_Y+1)*2+1] << 8)
+> +					| (buf[(DMARD09_AXIS_Y+1)*2]));
+> +		if (chan->address == DMARD09_REG_Z)
+> +			*val = (s16)((buf[(DMARD09_AXIS_Z+1)*2+1] << 8)
+> +					| (buf[(DMARD09_AXIS_Z+1)*2]));
 > +
 > +		return IIO_VAL_INT;
 > +	default:
 > +		return -EINVAL;
 > +	}
-> +
-> +	return -EINVAL;
 > +}
 > +
-> +static const struct iio_info sunxi_gpadc_iio_info = {
-> +	.read_raw = sunxi_gpadc_read_raw,
-> +	.driver_module = THIS_MODULE,
+> +static const struct iio_info dmard09_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw	= dmard09_read_raw,
 > +};
 > +
-> +static irqreturn_t sunxi_gpadc_temp_data_irq_handler(int irq, void *dev_id)
+> +static int dmard09_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
 > +{
-> +	struct sunxi_gpadc_dev *info = dev_id;
 > +	int ret;
-> +
-> +	ret = regmap_read(info->regmap, SUNXI_GPADC_TEMP_DATA,
-> +			  &info->temp_data);
-> +	if (ret == 0)
-> +		complete(&info->completion);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t sunxi_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
-> +{
-> +	struct sunxi_gpadc_dev *info = dev_id;
-> +	int ret;
-> +
-> +	ret = regmap_read(info->regmap, SUNXI_GPADC_TP_DATA, &info->adc_data);
-> +	if (ret == 0)
-> +		complete(&info->completion);
-if (!regmap_read(...))?
-
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int sunxi_gpadc_probe(struct platform_device *pdev)
-> +{
-> +	struct sunxi_gpadc_dev *info;
 > +	struct iio_dev *indio_dev;
-> +	int ret, irq;
-> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
+> +	struct dmard09_data *data;
 > +
-> +	sunxi_gpadc_mfd_dev = dev_get_drvdata(pdev->dev.parent);
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-> +	if (!indio_dev)
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev) {
+> +		dev_err(&client->dev, "iio allocation failed\n");
 > +		return -ENOMEM;
+> +	}
 > +
-> +	info = iio_priv(indio_dev);
+> +	data = iio_priv(indio_dev);
+> +	data->dev = &client->dev;
+> +	data->client = client;
 > +
-> +	info->regmap = sunxi_gpadc_mfd_dev->regmap;
-> +	init_completion(&info->completion);
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->dev.of_node = pdev->dev.of_node;
-> +	indio_dev->info = &sunxi_gpadc_iio_info;
+> +	ret = i2c_smbus_read_byte_data(data->client, DMARD09_REG_CHIPID);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "Error reading chip id %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	if (ret != DMARD09_CHIPID) {
+> +		dev_err(&client->dev, "Invalid chip id %d\n", ret);
+> +		return -ENODEV;
+> +	}
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = DMARD09_DRV_NAME;
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->num_channels = ARRAY_SIZE(sunxi_gpadc_channels);
-> +	indio_dev->channels = sunxi_gpadc_channels;
-> +
-> +	info->flags = platform_get_device_id(pdev)->driver_data;
-> +
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL0, SUNXI_GPADC_FS_DIV(7) |
-> +		     SUNXI_GPADC_ADC_CLK_DIVIDER(2) | SUNXI_GPADC_T_ACQ(63));
-> +	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
-> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-> +			     SUNXI_GPADC_SUN6I_TP_MODE_EN);
-> +	else
-> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
-> +			     SUNXI_GPADC_TP_MODE_EN);
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL3, SUNXI_GPADC_FILTER_EN |
-> +		     SUNXI_GPADC_FILTER_TYPE(1));
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR,
-> +		     SUNXI_GPADC_TEMP_ENABLE(1) |
-> +		     SUNXI_GPADC_TEMP_PERIOD(1953));
-> +
-> +	irq = platform_get_irq_byname(pdev, "TEMP_DATA_PENDING");
-> +	if (irq < 0) {
-> +		dev_err(&pdev->dev,
-> +			"no TEMP_DATA_PENDING interrupt registered\n");
-> +		ret = irq;
-> +		goto err;
-> +	}
-> +
-> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
-> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
-> +					   sunxi_gpadc_temp_data_irq_handler, 0,
-> +					   "temp_data", info);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev,
-> +			"could not request TEMP_DATA_PENDING interrupt: %d\n",
-> +			ret);
-> +		goto err;
-> +	}
-> +
-> +	info->temp_data_irq = irq;
-> +	disable_irq(irq);
-As below, I want a comment explaining why you are disabling the irq here.
-This is clearly racey..
-> +
-> +	irq = platform_get_irq_byname(pdev, "FIFO_DATA_PENDING");
-> +	if (irq < 0) {
-> +		dev_err(&pdev->dev,
-> +			"no FIFO_DATA_PENDING interrupt registered\n");
-> +		ret = irq;
-> +		goto err;
-> +	}
-> +
-> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
-> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
-> +					   sunxi_gpadc_fifo_data_irq_handler,
-> +					   0, "fifo_data", info);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev,
-> +			"could not request FIFO_DATA_PENDING interrupt: %d\n",
-> +			ret);
-> +		goto err;
-> +	}
-> +
-> +	info->fifo_data_irq = irq;
-There's a race here - this may be the only way of doing it though.
+> +	indio_dev->channels = dmard09_channels;
+> +	indio_dev->num_channels = DMARD09_AXES_NUM;
 
-However, I want a comment explaining why here... Are we looking at a hardware
-bug?
-> +	disable_irq(irq);
-> +
-> +	ret = iio_map_array_register(indio_dev, sunxi_gpadc_hwmon_maps);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to register iio map array\n");
-> +		goto err;
-> +	}
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
+I suggest ARRAY_SIZE(dmard09_channels)
+
+> +	indio_dev->info = &dmard09_info;
 > +
 > +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "could not register the device\n");
-> +		iio_map_array_unregister(indio_dev);
-Once you have an unwinding path (which is sensible here) put everything in
-that block - it makes it easier to review (initially I compared that block
-with the remove and thought you'd missed this error path).
 
-> +		goto err;
-> +	}
+
+could use devm_iio_device_register, just 
+return devm_iio_device_register(...) and drop the if
+
+> +	if (ret < 0)
+> +		return ret;
 > +
 > +	return 0;
-> +
-> +err:
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1, 0);
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR, 0);
-> +
-> +	return ret;
 > +}
 > +
-> +static int sunxi_gpadc_remove(struct platform_device *pdev)
+> +static int dmard09_remove(struct i2c_client *client)
 > +{
-> +	struct sunxi_gpadc_dev *info;
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 > +
-> +	info = iio_priv(indio_dev);
 > +	iio_device_unregister(indio_dev);
-> +	iio_map_array_unregister(indio_dev);
-Slight disrepancy here between the cleanup in the error path in
-probe vs what we have in remove (next line doesn't exist in probe cleanup)
-Perhaps a comment here would make it clear why...
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC, 0);
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1, 0);
-> +	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR, 0);
 > +
 > +	return 0;
 > +}
 > +
-> +static const struct platform_device_id sunxi_gpadc_id[] = {
-> +	{ "sun4i-a10-gpadc-iio", SUNXI_GPADC_ARCH_SUN4I },
-> +	{ "sun5i-a13-gpadc-iio", SUNXI_GPADC_ARCH_SUN5I },
-> +	{ "sun6i-a31-gpadc-iio", SUNXI_GPADC_ARCH_SUN6I },
-> +	{ /* sentinel */ },
+> +static const struct i2c_device_id dmard09_id[] = {
+> +	{ "dmard09", 0},
+> +	{ },
 > +};
 > +
-> +static struct platform_driver sunxi_gpadc_driver = {
+> +MODULE_DEVICE_TABLE(i2c, dmard09_id);
+> +
+> +static struct i2c_driver dmard09_driver = {
 > +	.driver = {
-> +		.name = "sunxi-gpadc-iio",
+> +		.name = DMARD09_DRV_NAME
 > +	},
-> +	.id_table = sunxi_gpadc_id,
-> +	.probe = sunxi_gpadc_probe,
-> +	.remove = sunxi_gpadc_remove,
+> +	.probe = dmard09_probe,
+> +	.remove = dmard09_remove,
+> +	.id_table = dmard09_id,
 > +};
 > +
-> +module_platform_driver(sunxi_gpadc_driver);
+> +module_i2c_driver(dmard09_driver);
 > +
-> +MODULE_DESCRIPTION("ADC driver for sunxi platforms");
-> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
-> +MODULE_LICENSE("GPL v2");
+> +MODULE_AUTHOR("Jelle van der Waa <jelle@vdwaa.nl>");
+> +MODULE_DESCRIPTION("DMARD09 3-axis accelerometer driver");
+> +MODULE_LICENSE("GPL");
 > 
 
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
