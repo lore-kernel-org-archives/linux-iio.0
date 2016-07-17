@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:43082 "EHLO
+Received: from bh-25.webhostbox.net ([208.91.199.152]:43075 "EHLO
 	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751941AbcGQFbI (ORCPT
+	with ESMTP id S1751956AbcGQFbI (ORCPT
 	<rfc822;linux-iio@vger.kernel.org>); Sun, 17 Jul 2016 01:31:08 -0400
 From: Guenter Roeck <linux@roeck-us.net>
 To: Jean Delvare <jdelvare@suse.com>
@@ -12,114 +12,42 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v2 6/9] hwmon: (core) Add energy and humidity attribute support to new API
-Date: Sat, 16 Jul 2016 22:30:29 -0700
-Message-Id: <1468733432-15730-7-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1468733432-15730-1-git-send-email-linux@roeck-us.net>
-References: <1468733432-15730-1-git-send-email-linux@roeck-us.net>
+Subject: [PATCH v2 0/9] hwmon: New hwmon registration API
+Date: Sat, 16 Jul 2016 22:30:23 -0700
+Message-Id: <1468733432-15730-1-git-send-email-linux@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: Punit Agrawal <punit.agrawal@arm.com>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v2: No change
+Up to now, each hwmon driver has to implement its own sysfs attributes.
+This requires a lot of template code, and distracts from the driver's
+core function to read and write chip registers.
 
- drivers/hwmon/hwmon.c | 20 ++++++++++++++++++++
- include/linux/hwmon.h | 29 +++++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+)
+To be able to reduce driver complexity, move sensor attribute handling
+and thermal zone registration into the hwmon core. By using the new API,
+driver size is typically reduced by 20-50% depending on driver complexity
+and the number of sysfs attributes supported.
 
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 7a5c8bba7dc2..f5de80a8bd1e 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -349,12 +349,30 @@ static const char * const hwmon_power_attr_templates[] = {
- 	[hwmon_power_crit_alarm] = "power%d_crit_alarm",
- };
- 
-+static const char * const hwmon_energy_attr_templates[] = {
-+	[hwmon_energy_input] = "energy%d_input",
-+	[hwmon_energy_label] = "energy%d_label",
-+};
-+
-+static const char * const hwmon_humidity_attr_templates[] = {
-+	[hwmon_humidity_input] = "humidity%d_input",
-+	[hwmon_humidity_label] = "humidity%d_label",
-+	[hwmon_humidity_min] = "humidity%d_min",
-+	[hwmon_humidity_min_hyst] = "humidity%d_min_hyst",
-+	[hwmon_humidity_max] = "humidity%d_max",
-+	[hwmon_humidity_max_hyst] = "humidity%d_max_hyst",
-+	[hwmon_humidity_alarm] = "humidity%d_alarm",
-+	[hwmon_humidity_fault] = "humidity%d_fault",
-+};
-+
- static const char * const *__templates[] = {
- 	[hwmon_chip] = hwmon_chip_attr_templates,
- 	[hwmon_temp] = hwmon_temp_attr_templates,
- 	[hwmon_in] = hwmon_in_attr_templates,
- 	[hwmon_curr] = hwmon_curr_attr_templates,
- 	[hwmon_power] = hwmon_power_attr_templates,
-+	[hwmon_energy] = hwmon_energy_attr_templates,
-+	[hwmon_humidity] = hwmon_humidity_attr_templates,
- };
- 
- static const int __templates_size[] = {
-@@ -363,6 +381,8 @@ static const int __templates_size[] = {
- 	[hwmon_in] = ARRAY_SIZE(hwmon_in_attr_templates),
- 	[hwmon_curr] = ARRAY_SIZE(hwmon_curr_attr_templates),
- 	[hwmon_power] = ARRAY_SIZE(hwmon_power_attr_templates),
-+	[hwmon_energy] = ARRAY_SIZE(hwmon_energy_attr_templates),
-+	[hwmon_humidity] = ARRAY_SIZE(hwmon_humidity_attr_templates),
- };
- 
- static int hwmon_num_channel_attrs(const struct hwmon_channel_info *info)
-diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-index d7e432ef7c2a..57d92f1d779b 100644
---- a/include/linux/hwmon.h
-+++ b/include/linux/hwmon.h
-@@ -26,6 +26,7 @@ enum hwmon_sensor_types {
- 	hwmon_curr,
- 	hwmon_power,
- 	hwmon_energy,
-+	hwmon_humidity,
- };
- 
- enum hwmon_chip_attributes {
-@@ -216,6 +217,34 @@ enum hwmon_power_attributes {
- #define HWMON_P_MAX_ALARM		BIT(hwmon_power_max_alarm)
- #define HWMON_P_CRIT_ALARM		BIT(hwmon_power_crit_alarm)
- 
-+enum hwmon_energy_attributes {
-+	hwmon_energy_input,
-+	hwmon_energy_label,
-+};
-+
-+#define HWMON_E_INPUT			BIT(hwmon_energy_input)
-+#define HWMON_E_LABEL			BIT(hwmon_energy_label)
-+
-+enum hwmon_humidity_attributes {
-+	hwmon_humidity_input,
-+	hwmon_humidity_label,
-+	hwmon_humidity_min,
-+	hwmon_humidity_min_hyst,
-+	hwmon_humidity_max,
-+	hwmon_humidity_max_hyst,
-+	hwmon_humidity_alarm,
-+	hwmon_humidity_fault,
-+};
-+
-+#define HWMON_H_INPUT			BIT(hwmon_humidity_input)
-+#define HWMON_H_LABEL			BIT(hwmon_humidity_label)
-+#define HWMON_H_MIN			BIT(hwmon_humidity_min)
-+#define HWMON_H_MIN_HYST		BIT(hwmon_humidity_min_hyst)
-+#define HWMON_H_MAX			BIT(hwmon_humidity_max)
-+#define HWMON_H_MAX_HYST		BIT(hwmon_humidity_max_hyst)
-+#define HWMON_H_ALARM			BIT(hwmon_humidity_alarm)
-+#define HWMON_H_FAULT			BIT(hwmon_humidity_fault)
-+
- /**
-  * struct hwmon_ops - hwmon device operations
-  * @is_visible: Callback to return attribute visibility. Mandatory.
--- 
-2.5.0
+The first patch of the series is preparatory; it reorders include files
+in the hwmon core to make it easier to add or remove individual include
+files.
 
+The secind patch of the series introduces the API as well as support
+for temperature sensor attributes. Subsequent patches introduce support
+for voltage, current, power, energy, humidity, fan speed, and basic pwm
+attributes.
+
+The series was tested by converting several drivers (lm75, lm90, tmp102,
+tmp421, ltc4245, nct7904, max31790) to the new API. Testing was done with
+real chips as well as with the hwmon driver module test code available
+at https://github.com/groeck/module-tests.
+
+v2:
+- Add patch 1/9 (order include files alphabetically).
+- Add patch 9/9 (pwm support).
+- Document callback function parameters of struct hwmon_ops in
+  include/linux/hwmon.h.
+- Clarify that the is_visible() callback is mandatory.
+- If an attribute has no template string, treat it as invisible, not as
+  error. Affected are virtual attributes such as HWMON_C_REGISTER_TZ.
+- Initialize device attribute read/write callback functions unconditionally.
+- Cosmetic changes, including typo fixes and added newlines for readability.
