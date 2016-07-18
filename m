@@ -1,392 +1,389 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57937 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57900 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752660AbcGSFgm (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:42 -0400
-Subject: Re: [PATCH v4 2/3] iio: adc: mt2701: Add Mediatek auxadc driver for
- mt2701.
-To: Zhiyong Tao <zhiyong.tao@mediatek.com>, robh+dt@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-References: <1468219197-9572-1-git-send-email-zhiyong.tao@mediatek.com>
- <1468219197-9572-3-git-send-email-zhiyong.tao@mediatek.com>
-Cc: srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
-	yingjoe.chen@mediatek.com, eddie.huang@mediatek.com,
-	erin.lo@mediatek.com, dawei.chien@mediatek.com,
-	matthias.bgg@gmail.com, s.hauer@pengutronix.de,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-mediatek@lists.infradead.org
+	with ESMTP id S1752631AbcGSFgg (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:36 -0400
+Subject: Re: [PATCH 07/10] iio: cros_ec_activity: add ChromeOS EC Activity
+ Sensors
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
+ <1468825370-20075-8-git-send-email-enric.balletbo@collabora.com>
+Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <82fa5ffa-52be-e1ec-83dd-dd92b3f3ef5d@kernel.org>
-Date: Mon, 18 Jul 2016 18:12:13 +0100
+Message-ID: <cefc6768-ce9f-58a7-4218-5b1ac57aaee0@kernel.org>
+Date: Mon, 18 Jul 2016 17:16:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <1468219197-9572-3-git-send-email-zhiyong.tao@mediatek.com>
+In-Reply-To: <1468825370-20075-8-git-send-email-enric.balletbo@collabora.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/07/16 07:39, Zhiyong Tao wrote:
-> Add Mediatek auxadc driver based on iio.
-> It will register a device in iio and support iio.
-> So thermal can read auxadc channel to sample data by iio device.
-> It is tested successfully on mt2701 platform.
-> Mt8173 and mt6577 platforms are not tested.
-> But the expectation is compatible.
+On 18/07/16 08:02, Enric Balletbo i Serra wrote:
+> Handle activity events detections presented by the ChromeOS
+> EC Sensor hub. Activities can be simple (low/no motion) or more complex
+> (riding train). They are being reported by physical devices or the EC
+> itself.
 > 
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-Looks good to me.  Couple of really minor points / questions inline...
+> Signed-off-by: Guenter Roeck <groeck@chromium.org>
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Interesting.  What docs exist?
 
-Just one thing to confirm... (you probably already answered this!)
-What are the units of the voltage channels?
+For now this is probably more of an RFC than a finished driver, but
+certainly interesting to know this stuff exists.
 
 Jonathan
 > ---
->  drivers/iio/adc/Kconfig         |   13 ++
->  drivers/iio/adc/Makefile        |    1 +
->  drivers/iio/adc/mt6577_auxadc.c |  294 +++++++++++++++++++++++++++++++++++++++
->  3 files changed, 308 insertions(+)
->  create mode 100644 drivers/iio/adc/mt6577_auxadc.c
+>  drivers/iio/common/cros_ec_sensors/Kconfig         |  10 +
+>  drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
+>  .../iio/common/cros_ec_sensors/cros_ec_activity.c  | 294 +++++++++++++++++++++
+>  3 files changed, 305 insertions(+)
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 25378c5..14929fc 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -305,6 +305,19 @@ config MCP3422
->  	  This driver can also be built as a module. If so, the module will be
->  	  called mcp3422.
->  
-> +config MEDIATEK_MT6577_AUXADC
-> +        tristate "MediaTek AUXADC driver"
-> +        depends on ARCH_MEDIATEK || COMPILE_TEST
-> +        depends on HAS_IOMEM
-> +        help
-> +          Say yes here to enable support for MediaTek mt65xx AUXADC.
+> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
+> index 02559d2..22b4211 100644
+> --- a/drivers/iio/common/cros_ec_sensors/Kconfig
+> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+> @@ -29,3 +29,13 @@ config IIO_CROS_EC_LIGHT_PROX
+>  	  presented by the ChromeOS EC Sensor hub.
+>  	  Creates an IIO device for each functions.
+>  	  Only one source is exposed by the EC.
 > +
-> +          The driver supports immediate mode operation to read from one of sixteen
-> +          channels (external or internal).
-> +
-> +          This driver can also be built as a module. If so, the module will be
-> +          called mt6577_auxadc.
-> +
->  config MEN_Z188_ADC
->  	tristate "MEN 16z188 ADC IP Core support"
->  	depends on MCB
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 38638d4..8306347 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -30,6 +30,7 @@ obj-$(CONFIG_MAX1027) += max1027.o
->  obj-$(CONFIG_MAX1363) += max1363.o
->  obj-$(CONFIG_MCP320X) += mcp320x.o
->  obj-$(CONFIG_MCP3422) += mcp3422.o
-> +obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
->  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
->  obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
->  obj-$(CONFIG_NAU7802) += nau7802.o
-> diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
+> +config IIO_CROS_EC_ACTIVITY
+> +	tristate "ChromeOS EC Activity Sensors"
+> +	select IIO_CROS_EC_SENSORS_CORE
+> +	help
+> +	  Module to handle activity events detections presented by the ChromeOS
+> +	  EC Sensor hub.
+> +	  Activities can be simple (low/no motion) or more complex (riding train).
+> +	  They are being reported by physical devices or the EC itself.
+> +	  Creates an IIO device to manage all activities.
+> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
+> index 7aaf2a2..8f54f1e 100644
+> --- a/drivers/iio/common/cros_ec_sensors/Makefile
+> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
+> @@ -5,3 +5,4 @@
+>  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+>  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
+>  obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
+> +obj-$(CONFIG_IIO_CROS_EC_ACTIVITY) += cros_ec_activity.o
+> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c b/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
 > new file mode 100644
-> index 0000000..c7cc901
+> index 0000000..b2e39d6
 > --- /dev/null
-> +++ b/drivers/iio/adc/mt6577_auxadc.c
+> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
 > @@ -0,0 +1,294 @@
 > +/*
-> + * Copyright (c) 2016 MediaTek Inc.
-> + * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> + * cros_ec_sensors_activity - Driver for activities/gesture recognition.
 > + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + * Copyright (C) 2015 Google, Inc
+> + *
+> + * This software is licensed under the terms of the GNU General Public
+> + * License version 2, as published by the Free Software Foundation, and
+> + * may be copied, distributed, and modified under those terms.
 > + *
 > + * This program is distributed in the hope that it will be useful,
 > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
 > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 > + * GNU General Public License for more details.
+> + *
+> + * This driver uses the cros-ec interface to communicate with the Chrome OS
+> + * EC about accelerometer data. Accelerometer access is presented through
+> + * iio sysfs.
 > + */
 > +
-> +#include <linux/clk.h>
 > +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/io.h>
+> +#include <linux/device.h>
 > +#include <linux/iio/iio.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/cros_ec.h>
+> +#include <linux/mfd/cros_ec_commands.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/sysfs.h>
+> +#include <linux/platform_device.h>
 > +
-> +/* Register definitions */
-> +#define MT6577_AUXADC_CON0                    0x00
-> +#define MT6577_AUXADC_CON1                    0x04
-> +#define MT6577_AUXADC_CON2                    0x10
-> +#define MT6577_AUXADC_STA                     BIT(0)
+> +#include "cros_ec_sensors_core.h"
 > +
-> +#define MT6577_AUXADC_DAT0                    0x14
-> +#define MT6577_AUXADC_RDY0                    BIT(12)
+> +/* st data for ec_sensors iio driver. */
+> +struct cros_ec_sensors_state {
+> +	/* Shared by all sensors */
+> +	struct cros_ec_sensors_core_state core;
 > +
-> +#define MT6577_AUXADC_MISC                    0x94
-> +#define MT6577_AUXADC_PDN_EN                  BIT(14)
-> +
-> +#define MT6577_AUXADC_DAT_MASK                0xfff
-> +#define MT6577_AUXADC_SLEEP_US                1000
-> +#define MT6577_AUXADC_TIMEOUT_US              10000
-> +#define MT6577_AUXADC_POWER_READY_MS          1
-> +#define MT6577_AUXADC_SAMPLE_READY_US         25
-> +
-> +struct mt6577_auxadc_device {
-> +	void __iomem *reg_base;
-> +	struct clk *adc_clk;
-> +	struct mutex lock;
+> +	struct iio_chan_spec *channels;
+> +	unsigned int nb_activities;
 > +};
 > +
-> +#define MT6577_AUXADC_CHANNEL(idx) {				    \
-> +		.type = IIO_VOLTAGE,				    \
-> +		.indexed = 1,					    \
-> +		.channel = (idx),				    \
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
+> +static const struct iio_event_spec cros_ec_activity_single_shot[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_CHANGE,
+> +		/* significant motion trigger when we get out of still. */
+> +		.dir = IIO_EV_DIR_FALLING,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
+> +	 },
+> +};
+> +
+> +static int ec_sensors_read(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan,
+> +			  int *val, int *val2, long mask)
+> +{
+> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
+> +		 chan->channel2);
+> +	return -EPERM;
 > +}
 > +
-> +static const struct iio_chan_spec mt6577_auxadc_iio_channels[] = {
-> +	MT6577_AUXADC_CHANNEL(0),
-> +	MT6577_AUXADC_CHANNEL(1),
-> +	MT6577_AUXADC_CHANNEL(2),
-> +	MT6577_AUXADC_CHANNEL(3),
-> +	MT6577_AUXADC_CHANNEL(4),
-> +	MT6577_AUXADC_CHANNEL(5),
-> +	MT6577_AUXADC_CHANNEL(6),
-> +	MT6577_AUXADC_CHANNEL(7),
-> +	MT6577_AUXADC_CHANNEL(8),
-> +	MT6577_AUXADC_CHANNEL(9),
-> +	MT6577_AUXADC_CHANNEL(10),
-> +	MT6577_AUXADC_CHANNEL(11),
-> +	MT6577_AUXADC_CHANNEL(12),
-> +	MT6577_AUXADC_CHANNEL(13),
-> +	MT6577_AUXADC_CHANNEL(14),
-> +	MT6577_AUXADC_CHANNEL(15),
-> +};
-> +
-> +static int mt6577_auxadc_read(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan)
+> +static int ec_sensors_write(struct iio_dev *indio_dev,
+> +			       struct iio_chan_spec const *chan,
+> +			       int val, int val2, long mask)
 > +{
-> +	u32 rawdata, val;
-> +	void __iomem *reg_channel;
+> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
+> +		 chan->channel2);
+> +	return -EPERM;
+> +}
+> +
+> +static int cros_ec_read_event_config(struct iio_dev *indio_dev,
+> +				     const struct iio_chan_spec *chan,
+> +				     enum iio_event_type type,
+> +				     enum iio_event_direction dir)
+> +{
+> +	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
 > +	int ret;
-> +	struct mt6577_auxadc_device *adc_dev = iio_priv(indio_dev);
 > +
-> +	reg_channel = adc_dev->reg_base + MT6577_AUXADC_DAT0 +
-> +		      chan->channel * 0x04;
+> +	if (chan->type != IIO_ACTIVITY)
+> +		return -EINVAL;
 > +
-> +	mutex_lock(&adc_dev->lock);
-> +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +	val &= ~(1 << chan->channel);
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +
-> +	/* read channel and make sure old ready bit == 0 */
-> +	ret = readl_poll_timeout(reg_channel, val,
-> +				 ((val & MT6577_AUXADC_RDY0) == 0),
-> +				 MT6577_AUXADC_SLEEP_US,
-> +				 MT6577_AUXADC_TIMEOUT_US);
-> +	if (ret < 0) {
-> +		dev_err(indio_dev->dev.parent,
-> +			"wait for channel[%d] ready bit clear time out\n",
-> +			chan->channel);
-> +
-> +		mutex_unlock(&adc_dev->lock);
-> +
-> +		return -ETIMEDOUT;
+> +	mutex_lock(&st->core.cmd_lock);
+> +	st->core.param.cmd = MOTIONSENSE_CMD_LIST_ACTIVITIES;
+> +	if (cros_ec_motion_send_host_cmd(&st->core, 0) == EC_RES_SUCCESS) {
+> +		switch (chan->channel2) {
+> +		case IIO_MOD_STILL:
+> +			ret = !!(st->core.resp->list_activities.enabled &
+> +				 (1 << MOTIONSENSE_ACTIVITY_SIG_MOTION));
+> +			break;
+> +		case IIO_MOD_DOUBLE_TAP:
+> +			ret = !!(st->core.resp->list_activities.enabled &
+> +				 (1 << MOTIONSENSE_ACTIVITY_DOUBLE_TAP));
+> +			break;
+> +		default:
+> +			dev_warn(&indio_dev->dev, "Unknown activity: %d\n",
+> +				 chan->channel2);
+> +			ret = -EINVAL;
+> +		}
+> +	} else {
+> +		ret = -EIO;
 > +	}
-> +
-> +	/* set bit to trigger sample */
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +	val |= 1 << chan->channel;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +
-> +	/* we must delay here for hardware sample channel data */
-> +	udelay(MT6577_AUXADC_SAMPLE_READY_US);
-> +
-> +	/* check MTK_AUXADC_CON2 if auxadc is idle */
-> +	ret = readl_poll_timeout(adc_dev->reg_base + MT6577_AUXADC_CON2, val,
-> +				 ((val & MT6577_AUXADC_STA) == 0),
-> +				 MT6577_AUXADC_SLEEP_US,
-> +				 MT6577_AUXADC_TIMEOUT_US);
-> +	if (ret < 0) {
-> +		dev_err(indio_dev->dev.parent,
-> +			"wait for auxadc idle time out\n");
-> +
-> +		mutex_unlock(&adc_dev->lock);
-> +
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	/* read channel and make sure ready bit == 1 */
-> +	ret = readl_poll_timeout(reg_channel, val,
-> +				 ((val & MT6577_AUXADC_RDY0) != 0),
-> +				 MT6577_AUXADC_SLEEP_US,
-> +				 MT6577_AUXADC_TIMEOUT_US);
-> +	if (ret < 0) {
-> +		dev_err(indio_dev->dev.parent,
-> +			"wait for channel[%d] data ready time out\n",
-> +			chan->channel);
-> +
-> +		mutex_unlock(&adc_dev->lock);
-> +
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	/* read data */
-> +	rawdata = readl(reg_channel) & MT6577_AUXADC_DAT_MASK;
-> +
-> +	mutex_unlock(&adc_dev->lock);
-> +
-> +	return rawdata;
+> +	mutex_unlock(&st->core.cmd_lock);
+> +	return ret;
 > +}
 > +
-> +static int mt6577_auxadc_read_raw(struct iio_dev *indio_dev,
-> +				  struct iio_chan_spec const *chan,
-> +				  int *val,
-> +				  int *val2,
-> +				  long info)
+> +static int cros_ec_write_event_config(struct iio_dev *indio_dev,
+> +				      const struct iio_chan_spec *chan,
+> +				      enum iio_event_type type,
+> +				      enum iio_event_direction dir, int state)
 > +{
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		*val = mt6577_auxadc_read(indio_dev, chan);
-> +		if (*val < 0) {
-> +			dev_err(indio_dev->dev.parent,
-> +				"failed to sample data on channel[%d]\n",
-> +				chan->channel);
-> +			return *val;
-> +		}
-> +		return IIO_VAL_INT;
+> +	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
+> +	int ret;
 > +
+> +	if (chan->type != IIO_ACTIVITY)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&st->core.cmd_lock);
+> +	st->core.param.cmd = MOTIONSENSE_CMD_SET_ACTIVITY;
+> +	switch (chan->channel2) {
+> +	case IIO_MOD_STILL:
+> +		st->core.param.set_activity.activity =
+> +			MOTIONSENSE_ACTIVITY_SIG_MOTION;
+> +		break;
+> +	case IIO_MOD_DOUBLE_TAP:
+> +		st->core.param.set_activity.activity =
+> +			MOTIONSENSE_ACTIVITY_DOUBLE_TAP;
+> +		break;
 > +	default:
+> +		dev_warn(&indio_dev->dev, "Unknown activity: %d\n",
+> +			 chan->channel2);
+> +	}
+> +	st->core.param.set_activity.enable = state;
+> +
+> +	ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+> +
+> +	mutex_unlock(&st->core.cmd_lock);
+> +	return ret;
+> +}
+> +
+> +/* Not implemented */
+> +static int cros_ec_read_event_value(struct iio_dev *indio_dev,
+> +				    const struct iio_chan_spec *chan,
+> +				    enum iio_event_type type,
+> +				    enum iio_event_direction dir,
+> +				    enum iio_event_info info,
+> +				    int *val, int *val2)
+> +{
+> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
+> +		 chan->channel2);
+> +	return -EPERM;
+> +}
+> +
+> +static int cros_ec_write_event_value(struct iio_dev *indio_dev,
+> +				     const struct iio_chan_spec *chan,
+> +				     enum iio_event_type type,
+> +				     enum iio_event_direction dir,
+> +				     enum iio_event_info info,
+> +				     int val, int val2)
+> +{
+> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
+> +		 chan->channel2);
+> +	return -EPERM;
+> +}
+> +
+> +static const struct iio_info ec_sensors_info = {
+> +	.read_raw = &ec_sensors_read,
+> +	.write_raw = &ec_sensors_write,
+> +	.read_event_config = cros_ec_read_event_config,
+> +	.write_event_config = cros_ec_write_event_config,
+> +	.read_event_value = cros_ec_read_event_value,
+> +	.write_event_value = cros_ec_write_event_value,
+> +};
+> +
+> +static int cros_ec_sensors_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
+> +	struct cros_ec_device *ec_device;
+> +	struct iio_dev *indio_dev;
+> +	struct cros_ec_sensors_state *st;
+> +	struct iio_chan_spec *channel;
+> +	unsigned long activities;
+> +	int i, index, ret, nb_activities;
+> +
+> +	if (!ec_dev || !ec_dev->ec_dev) {
+> +		dev_warn(&pdev->dev, "No CROS EC device found.\n");
 > +		return -EINVAL;
 > +	}
-> +}
+> +	ec_device = ec_dev->ec_dev;
 > +
-> +static const struct iio_info mt6577_auxadc_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &mt6577_auxadc_read_raw,
-> +};
-> +
-> +static int mt6577_auxadc_probe(struct platform_device *pdev)
-> +{
-> +	struct mt6577_auxadc_device *adc_dev;
-> +	unsigned long adc_clk_rate;
-> +	struct resource *res;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +	u32 val;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	adc_dev = iio_priv(indio_dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->info = &mt6577_auxadc_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mt6577_auxadc_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mt6577_auxadc_iio_channels);
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(adc_dev->reg_base)) {
-> +		dev_err(&pdev->dev, "failed to get auxadc base address.\n");
-> +		return PTR_ERR(adc_dev->reg_base);
-> +	}
-> +
-> +	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "main");
-> +	if (IS_ERR(adc_dev->adc_clk)) {
-> +		dev_err(&pdev->dev, "failed to get auxadc clock\n");
-> +		return PTR_ERR(adc_dev->adc_clk);
-> +	}
-> +
-> +	ret = clk_prepare_enable(adc_dev->adc_clk);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to enable auxadc clock\n");
+> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
+> +	if (ret)
 > +		return ret;
-> +	}
 > +
-> +	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
-> +	if (!adc_clk_rate) {
-> +		dev_err(&pdev->dev, "null clock rate!\n");
-> +		goto err_disable_clk;
-> +	}
+> +	indio_dev->info = &ec_sensors_info;
+> +	st = iio_priv(indio_dev);
+> +	st->core.type = st->core.resp->info.type;
+> +	st->core.loc = st->core.resp->info.location;
 > +
-> +	mutex_init(&adc_dev->lock);
+> +	/*
+> +	 * List all available activities
+> +	 */
+Comment syntax please.
+> +	st->core.param.cmd = MOTIONSENSE_CMD_LIST_ACTIVITIES;
+> +	ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+> +	if (ret)
+> +		return ret;
+> +	activities = st->core.resp->list_activities.enabled |
+> +		     st->core.resp->list_activities.disabled;
+> +	nb_activities = hweight_long(activities) + 1;
 > +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	val |= MT6577_AUXADC_PDN_EN;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	mdelay(MT6577_AUXADC_POWER_READY_MS);
+> +	if (!activities)
+> +		return -ENODEV;
 > +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	if ((val & MT6577_AUXADC_PDN_EN) == 0) {
-That's a high level of paranoia... Any reason to believe this might fail?
-> +		dev_err(&pdev->dev, "failed to enable auxadc power!\n");
-> +		goto err_disable_clk;
-> +	}
+> +	/* Allocate a channel per activity and one for timestamp */
+> +	st->channels = devm_kcalloc(&pdev->dev, nb_activities,
+> +				    sizeof(*st->channels), GFP_KERNEL);
+> +	if (!st->channels)
+> +		return -ENOMEM;
 > +
-> +	platform_set_drvdata(pdev, indio_dev);
+> +	channel = &st->channels[0];
+> +	index = 0;
+> +	for_each_set_bit(i, &activities, BITS_PER_LONG) {
+> +		channel->scan_index = index;
 > +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-I'd have slightly preferred that this error unwind block was also
-moved to on a goto.  Makes it easier to review as the error block then
-matches remove (with expected differences!)  Really small point however.
+> +		/* List all available activities */
+> +		channel->type = IIO_ACTIVITY;
+> +		channel->modified = 1;
+> +		channel->event_spec = cros_ec_activity_single_shot;
+> +		channel->num_event_specs =
+> +				ARRAY_SIZE(cros_ec_activity_single_shot);
+> +		switch (i) {
+> +		case MOTIONSENSE_ACTIVITY_SIG_MOTION:
+> +			channel->channel2 = IIO_MOD_STILL;
+:) The only match we currently have?  Ah well guess that set is about
+to get bigger.
+> +			break;
+> +		case MOTIONSENSE_ACTIVITY_DOUBLE_TAP:
+> +			channel->channel2 = IIO_MOD_DOUBLE_TAP;
+This particular one is an event that happens once, report it as such.
 
-> +		dev_err(&pdev->dev, "failed to register iio device!\n");
-> +		val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +		val &= ~MT6577_AUXADC_PDN_EN;
-> +		writel(val, adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +		goto err_disable_clk;
+> +			break;
+> +		default:
+> +			dev_warn(&pdev->dev, "Unknown activity: %d\n", i);
+> +			continue;
+> +		}
+> +		channel->ext_info = cros_ec_sensors_limited_info;
+> +		channel++;
+> +		index++;
 > +	}
 > +
-> +	return 0;
+> +	/* Timestamp */
+> +	channel->scan_index = index;
+> +	channel->type = IIO_TIMESTAMP;
+> +	channel->channel = -1;
+> +	channel->scan_type.sign = 's';
+> +	channel->scan_type.realbits = 64;
+> +	channel->scan_type.storagebits = 64;
 > +
-> +err_disable_clk:
-> +	clk_disable_unprepare(adc_dev->adc_clk);
-> +	return -EINVAL;
+> +	indio_dev->channels = st->channels;
+> +	indio_dev->num_channels = index + 1;
+> +
+> +	st->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+> +
+> +	/* Driver is incomplete: by itself, no way to get event directly */
+Probably going to be a case of expanding the range of activities we already
+report.  Trick has always been to assign these a percentage (likelihood).
+So far all devices have given us 100 or 0, but who knows when they will start
+being realistic about their ability to work this stuff out ;)  Just like
+old weather forecasts used to be...
+
+> +	ret = iio_device_register(indio_dev);
+> +	return ret;
+return iio_device_register(..)
 > +}
 > +
-> +static int mt6577_auxadc_remove(struct platform_device *pdev)
+> +static int cros_ec_sensors_remove(struct platform_device *pdev)
 > +{
 > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct mt6577_auxadc_device *adc_dev = iio_priv(indio_dev);
-> +	u32 val;
 > +
 > +	iio_device_unregister(indio_dev);
-> +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	val &= ~MT6577_AUXADC_PDN_EN;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +
-> +	clk_disable_unprepare(adc_dev->adc_clk);
-> +
+blank line.
 > +	return 0;
 > +}
 > +
-> +static const struct of_device_id mt6577_auxadc_of_match[] = {
-> +	{ .compatible = "mediatek,mt2701-auxadc", },
-> +	{ .compatible = "mediatek,mt8173-auxadc", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, mt6577_auxadc_of_match);
-> +
-> +static struct platform_driver mt6577_auxadc_driver = {
-> +	.driver = {
-> +		.name   = "mt6577-auxadc",
-> +		.of_match_table = mt6577_auxadc_of_match,
+> +static const struct platform_device_id cros_ec_sensors_ids[] = {
+> +	{
+> +		.name = "cros-ec-activity",
 > +	},
-> +	.probe	= mt6577_auxadc_probe,
-> +	.remove	= mt6577_auxadc_remove,
+> +	{ /* sentinel */ }
 > +};
-> +module_platform_driver(mt6577_auxadc_driver);
+> +MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
 > +
-> +MODULE_AUTHOR("Zhiyong Tao <zhiyong.tao@mediatek.com>");
-> +MODULE_DESCRIPTION("MTK AUXADC Device Driver");
+> +static struct platform_driver cros_ec_sensors_platform_driver = {
+> +	.driver = {
+> +		.name	= "cros-ec-activity",
+> +	},
+> +	.probe		= cros_ec_sensors_probe,
+> +	.remove		= cros_ec_sensors_remove,
+> +	.id_table	= cros_ec_sensors_ids,
+> +};
+> +module_platform_driver(cros_ec_sensors_platform_driver);
+> +
+> +MODULE_DESCRIPTION("ChromeOS EC activity sensors driver");
 > +MODULE_LICENSE("GPL v2");
 > 
 
