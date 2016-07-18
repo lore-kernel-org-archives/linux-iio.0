@@ -1,85 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57900 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57908 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752631AbcGSFgg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:36 -0400
-Subject: Re: [PATCH 07/10] iio: cros_ec_activity: add ChromeOS EC Activity
- Sensors
+	with ESMTP id S1752628AbcGSFgc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:32 -0400
+Subject: Re: [PATCH 08/10] iio: cros_ec_sensors_ring: add ChromeOS EC Sensors
+ Ring
 To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
- <1468825370-20075-8-git-send-email-enric.balletbo@collabora.com>
+ <1468825370-20075-9-git-send-email-enric.balletbo@collabora.com>
+From: Jonathan Cameron <jic23@kernel.org>
 Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Guenter Roeck <groeck@chromium.org>,
 	Gwendal Grignou <gwendal@chromium.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cefc6768-ce9f-58a7-4218-5b1ac57aaee0@kernel.org>
-Date: Mon, 18 Jul 2016 17:16:16 +0100
+Message-ID: <df2f8e6f-3b69-819e-5aef-5fc1165aa1e8@kernel.org>
+Date: Mon, 18 Jul 2016 17:27:37 +0100
 MIME-Version: 1.0
-In-Reply-To: <1468825370-20075-8-git-send-email-enric.balletbo@collabora.com>
+In-Reply-To: <1468825370-20075-9-git-send-email-enric.balletbo@collabora.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 18/07/16 08:02, Enric Balletbo i Serra wrote:
-> Handle activity events detections presented by the ChromeOS
-> EC Sensor hub. Activities can be simple (low/no motion) or more complex
-> (riding train). They are being reported by physical devices or the EC
-> itself.
+> Add support for handling sensor events FIFO produced by the sensor
+> hub. A single device with a buffer will collect all samples produced
+> by the sensors managed by the CrosEC sensor hub.
+So you are defining a different device to support the buffer?
+That's 'unusual'...
 > 
 > Signed-off-by: Guenter Roeck <groeck@chromium.org>
 > Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Interesting.  What docs exist?
-
-For now this is probably more of an RFC than a finished driver, but
-certainly interesting to know this stuff exists.
-
-Jonathan
 > ---
->  drivers/iio/common/cros_ec_sensors/Kconfig         |  10 +
+>  drivers/iio/common/cros_ec_sensors/Kconfig         |   9 +
 >  drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
->  .../iio/common/cros_ec_sensors/cros_ec_activity.c  | 294 +++++++++++++++++++++
->  3 files changed, 305 insertions(+)
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
+>  .../common/cros_ec_sensors/cros_ec_sensors_ring.c  | 541 +++++++++++++++++++++
+>  3 files changed, 551 insertions(+)
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c
 > 
 > diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-> index 02559d2..22b4211 100644
+> index 22b4211..778c3bf 100644
 > --- a/drivers/iio/common/cros_ec_sensors/Kconfig
 > +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-> @@ -29,3 +29,13 @@ config IIO_CROS_EC_LIGHT_PROX
->  	  presented by the ChromeOS EC Sensor hub.
->  	  Creates an IIO device for each functions.
->  	  Only one source is exposed by the EC.
+> @@ -39,3 +39,12 @@ config IIO_CROS_EC_ACTIVITY
+>  	  Activities can be simple (low/no motion) or more complex (riding train).
+>  	  They are being reported by physical devices or the EC itself.
+>  	  Creates an IIO device to manage all activities.
 > +
-> +config IIO_CROS_EC_ACTIVITY
-> +	tristate "ChromeOS EC Activity Sensors"
-> +	select IIO_CROS_EC_SENSORS_CORE
+> +config IIO_CROS_EC_SENSORS_RING
+> +	tristate "ChromeOS EC Sensors Ring"
+> +	depends on IIO_CROS_EC_SENSORS || IIO_CROS_EC_LIGHT_PROX
 > +	help
-> +	  Module to handle activity events detections presented by the ChromeOS
-> +	  EC Sensor hub.
-> +	  Activities can be simple (low/no motion) or more complex (riding train).
-> +	  They are being reported by physical devices or the EC itself.
-> +	  Creates an IIO device to manage all activities.
+> +	  Add support for handling sensor events FIFO produced by
+> +	  the sensor hub.
+> +	  A single device with a buffer will collect all samples produced
+> +	  by the sensors managed by the CrosEC sensor hub
 > diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-> index 7aaf2a2..8f54f1e 100644
+> index 8f54f1e..0eb3fc5 100644
 > --- a/drivers/iio/common/cros_ec_sensors/Makefile
 > +++ b/drivers/iio/common/cros_ec_sensors/Makefile
-> @@ -5,3 +5,4 @@
->  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+> @@ -6,3 +6,4 @@ obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
 >  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
 >  obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
-> +obj-$(CONFIG_IIO_CROS_EC_ACTIVITY) += cros_ec_activity.o
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c b/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
+>  obj-$(CONFIG_IIO_CROS_EC_ACTIVITY) += cros_ec_activity.o
+> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_RING) += cros_ec_sensors_ring.o
+> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c
 > new file mode 100644
-> index 0000000..b2e39d6
+> index 0000000..1c74df9
 > --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
-> @@ -0,0 +1,294 @@
+> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c
+> @@ -0,0 +1,541 @@
 > +/*
-> + * cros_ec_sensors_activity - Driver for activities/gesture recognition.
+> + * cros_ec_sensors_ring - Driver for Chrome OS EC Sensor hub FIFO.
 > + *
 > + * Copyright (C) 2015 Google, Inc
 > + *
@@ -99,7 +93,12 @@ Jonathan
 > +
 > +#include <linux/delay.h>
 > +#include <linux/device.h>
+> +#include <linux/iio/buffer.h>
 > +#include <linux/iio/iio.h>
+> +#include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
 > +#include <linux/kernel.h>
 > +#include <linux/mfd/cros_ec.h>
 > +#include <linux/mfd/cros_ec_commands.h>
@@ -110,155 +109,413 @@ Jonathan
 > +
 > +#include "cros_ec_sensors_core.h"
 > +
-> +/* st data for ec_sensors iio driver. */
-> +struct cros_ec_sensors_state {
+> +/* The ring is a FIFO that return sensor information from
+> + * the single EC FIFO.
+> + * There are always 5 channels returned:
+> +* | ID | FLAG | X | Y | Z | Timestamp |
+> + * ID is the EC sensor id
+> + * FLAG is for meta data, only flush bit is defined.
+> + */
+> +#define CROS_EC_FLUSH_BIT 1
+> +
+> +enum {
+> +	CHANNEL_SENSOR_ID,
+> +	CHANNEL_SENSOR_FLAG,
+Ah, I'm beginning to understand.
+
+I think you really need to demux these into the appropriate devices individual
+buffers... If these are coming in fairly randomly (guessing so?) then you'll
+want a top level mfd pushing data to each of the child devices (representing
+the different possible sensors).
+
+Simply pushing it into a buffer with metadata doesn't fit with the IIO ABI
+at all.
+
+Note that there is no obligation to have any triggers involved at all. Here I'd
+suggest you don't as it'll just make life difficult for little gain.
+
+> +	CHANNEL_X,
+> +	CHANNEL_Y,
+> +	CHANNEL_Z,
+> +	CHANNEL_TIMESTAMP,
+> +	MAX_CHANNEL,
+> +};
+> +
+> +enum {
+> +	LAST_TS,
+> +	NEW_TS,
+> +	ALL_TS
+> +};
+> +
+> +#define CROS_EC_SENSOR_MAX 16
+> +
+> +struct cros_ec_fifo_info {
+> +	struct ec_response_motion_sense_fifo_info info;
+> +	uint16_t lost[CROS_EC_SENSOR_MAX];
+> +};
+> +
+single blank line is plenty.
+> +
+> +struct cros_ec_sensors_ring_sample {
+> +	uint8_t sensor_id;
+> +	uint8_t flag;
+> +	int16_t  vector[MAX_AXIS];
+> +	s64      timestamp;
+> +} __packed;
+> +
+> +/* State data for ec_sensors iio driver. */
+> +struct cros_ec_sensors_ring_state {
 > +	/* Shared by all sensors */
 > +	struct cros_ec_sensors_core_state core;
 > +
-> +	struct iio_chan_spec *channels;
-> +	unsigned int nb_activities;
+> +	/* Notifier to kick to the interrupt */
+> +	struct notifier_block notifier;
+> +
+> +	/* Preprocessed ring to send to kfifo */
+> +	struct cros_ec_sensors_ring_sample *ring;
+> +
+> +	struct iio_trigger *trig;
+> +	s64    fifo_timestamp[ALL_TS];
+> +	struct ec_response_motion_sense_fifo_info fifo_info;
 > +};
-> +
-> +static const struct iio_event_spec cros_ec_activity_single_shot[] = {
-> +	{
-> +		.type = IIO_EV_TYPE_CHANGE,
-> +		/* significant motion trigger when we get out of still. */
-> +		.dir = IIO_EV_DIR_FALLING,
-> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-> +	 },
-> +};
-> +
-> +static int ec_sensors_read(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan,
-> +			  int *val, int *val2, long mask)
-> +{
-> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-> +		 chan->channel2);
-> +	return -EPERM;
-> +}
-> +
-> +static int ec_sensors_write(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val, int val2, long mask)
-> +{
-> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-> +		 chan->channel2);
-> +	return -EPERM;
-> +}
-> +
-> +static int cros_ec_read_event_config(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir)
-> +{
-> +	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (chan->type != IIO_ACTIVITY)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +	st->core.param.cmd = MOTIONSENSE_CMD_LIST_ACTIVITIES;
-> +	if (cros_ec_motion_send_host_cmd(&st->core, 0) == EC_RES_SUCCESS) {
-> +		switch (chan->channel2) {
-> +		case IIO_MOD_STILL:
-> +			ret = !!(st->core.resp->list_activities.enabled &
-> +				 (1 << MOTIONSENSE_ACTIVITY_SIG_MOTION));
-> +			break;
-> +		case IIO_MOD_DOUBLE_TAP:
-> +			ret = !!(st->core.resp->list_activities.enabled &
-> +				 (1 << MOTIONSENSE_ACTIVITY_DOUBLE_TAP));
-> +			break;
-> +		default:
-> +			dev_warn(&indio_dev->dev, "Unknown activity: %d\n",
-> +				 chan->channel2);
-> +			ret = -EINVAL;
-> +		}
-> +	} else {
-> +		ret = -EIO;
-> +	}
-> +	mutex_unlock(&st->core.cmd_lock);
-> +	return ret;
-> +}
-> +
-> +static int cros_ec_write_event_config(struct iio_dev *indio_dev,
-> +				      const struct iio_chan_spec *chan,
-> +				      enum iio_event_type type,
-> +				      enum iio_event_direction dir, int state)
-> +{
-> +	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (chan->type != IIO_ACTIVITY)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +	st->core.param.cmd = MOTIONSENSE_CMD_SET_ACTIVITY;
-> +	switch (chan->channel2) {
-> +	case IIO_MOD_STILL:
-> +		st->core.param.set_activity.activity =
-> +			MOTIONSENSE_ACTIVITY_SIG_MOTION;
-> +		break;
-> +	case IIO_MOD_DOUBLE_TAP:
-> +		st->core.param.set_activity.activity =
-> +			MOTIONSENSE_ACTIVITY_DOUBLE_TAP;
-> +		break;
-> +	default:
-> +		dev_warn(&indio_dev->dev, "Unknown activity: %d\n",
-> +			 chan->channel2);
-> +	}
-> +	st->core.param.set_activity.enable = state;
-> +
-> +	ret = cros_ec_motion_send_host_cmd(&st->core, 0);
-> +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +	return ret;
-> +}
-> +
-> +/* Not implemented */
-> +static int cros_ec_read_event_value(struct iio_dev *indio_dev,
-> +				    const struct iio_chan_spec *chan,
-> +				    enum iio_event_type type,
-> +				    enum iio_event_direction dir,
-> +				    enum iio_event_info info,
-> +				    int *val, int *val2)
-> +{
-> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-> +		 chan->channel2);
-> +	return -EPERM;
-> +}
-> +
-> +static int cros_ec_write_event_value(struct iio_dev *indio_dev,
-> +				     const struct iio_chan_spec *chan,
-> +				     enum iio_event_type type,
-> +				     enum iio_event_direction dir,
-> +				     enum iio_event_info info,
-> +				     int val, int val2)
-> +{
-> +	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-> +		 chan->channel2);
-> +	return -EPERM;
-> +}
 > +
 > +static const struct iio_info ec_sensors_info = {
-> +	.read_raw = &ec_sensors_read,
-> +	.write_raw = &ec_sensors_write,
-> +	.read_event_config = cros_ec_read_event_config,
-> +	.write_event_config = cros_ec_write_event_config,
-> +	.read_event_value = cros_ec_read_event_value,
-> +	.write_event_value = cros_ec_write_event_value,
+> +	.driver_module = THIS_MODULE,
 > +};
 > +
-> +static int cros_ec_sensors_probe(struct platform_device *pdev)
+> +static s64 cros_ec_get_time_ns(void)
+> +{
+> +	struct timespec ts;
+> +
+> +	get_monotonic_boottime(&ts);
+> +	return timespec_to_ns(&ts);
+Use the core IIO timestamp helper? (now supports all the different clocks...)
+> +}
+> +
+> +/*
+> + * cros_ec_ring_process_event: process one EC FIFO event
+> + *
+> + * Process one EC event, add it in the ring if necessary.
+> + *
+> + * Return true if out event has been populated.
+> + *
+> + * fifo_info: fifo information from the EC.
+> + * fifo_timestamp: timestamp at time of fifo_info collection.
+> + * current_timestamp: estimated current timestamp.
+> + * in: incoming FIFO event from EC
+> + * out: outgoing event to user space.
+> + */
+> +bool cros_ec_ring_process_event(const struct cros_ec_fifo_info *fifo_info,
+> +				const s64 fifo_timestamp,
+> +				s64 *current_timestamp,
+> +				struct ec_response_motion_sensor_data *in,
+> +				struct cros_ec_sensors_ring_sample *out)
+> +{
+> +	int axis;
+> +	s64 new_timestamp;
+> +
+> +	if (in->flags & MOTIONSENSE_SENSOR_FLAG_TIMESTAMP) {
+> +		new_timestamp = fifo_timestamp -
+> +			((s64)fifo_info->info.timestamp * 1000) +
+> +			((s64)in->timestamp * 1000);
+> +		/*
+> +		 * The timestamp can be stale if we had to use the fifo
+> +		 * info timestamp.
+> +		 */
+> +		if (new_timestamp - *current_timestamp > 0)
+> +			*current_timestamp = new_timestamp;
+> +	}
+> +
+> +	if (in->flags & MOTIONSENSE_SENSOR_FLAG_FLUSH) {
+> +		out->sensor_id = in->sensor_num;
+> +		out->timestamp = *current_timestamp;
+> +		out->flag = CROS_EC_FLUSH_BIT;
+> +		return true;
+> +	}
+> +	if (in->flags & MOTIONSENSE_SENSOR_FLAG_TIMESTAMP)
+> +		/* If we just have a timestamp, skip this entry. */
+> +		return false;
+> +
+> +	/* Regular sample */
+> +	out->sensor_id = in->sensor_num;
+> +	out->timestamp = *current_timestamp;
+> +	out->flag = 0;
+> +	for (axis = X; axis < MAX_AXIS; axis++)
+> +		out->vector[axis] = in->data[axis];
+> +	return true;
+> +}
+> +/*
+> + * cros_ec_ring_handler - the trigger handler function
+> + *
+> + * @irq: the interrupt number
+> + * @p: private data - always a pointer to the poll func.
+> + *
+> + * On a trigger event occurring, if the pollfunc is attached then this
+> + * handler is called as a threaded interrupt (and hence may sleep). It
+> + * is responsible for grabbing data from the device and pushing it into
+> + * the associated buffer.
+> + */
+> +static irqreturn_t cros_ec_ring_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct cros_ec_sensors_ring_state *state = iio_priv(indio_dev);
+> +	struct cros_ec_fifo_info fifo_info;
+> +	s64    fifo_timestamp, current_timestamp;
+> +	int    i, j, number_data, ret;
+> +	unsigned long sensor_mask = 0;
+> +	struct ec_response_motion_sensor_data *in;
+> +	struct cros_ec_sensors_ring_sample *out, *last_out;
+> +
+> +
+> +	/* Get FIFO information */
+> +	mutex_lock(&state->core.cmd_lock);
+> +	memcpy(&fifo_info, &state->fifo_info, sizeof(state->fifo_info));
+> +	fifo_timestamp = state->fifo_timestamp[NEW_TS];
+> +	mutex_unlock(&state->core.cmd_lock);
+> +
+> +	/* Copy elements in the main fifo */
+> +	if (fifo_info.info.total_lost) {
+> +		/* Need to retrieve the number of lost vectors per sensor */
+> +		state->core.param.cmd = MOTIONSENSE_CMD_FIFO_INFO;
+> +		if (cros_ec_motion_send_host_cmd(&state->core, 0))
+> +			goto ring_handler_end;
+> +		memcpy(&fifo_info, &state->core.resp->fifo_info,
+> +		       sizeof(fifo_info));
+> +		fifo_timestamp = cros_ec_get_time_ns();
+> +	}
+> +
+> +	current_timestamp = state->fifo_timestamp[LAST_TS];
+> +	out = state->ring;
+> +	for (i = 0; i < fifo_info.info.count; i += number_data) {
+> +		state->core.param.cmd = MOTIONSENSE_CMD_FIFO_READ;
+> +		state->core.param.fifo_read.max_data_vector =
+> +			fifo_info.info.count - i;
+> +		ret = cros_ec_motion_send_host_cmd(&state->core,
+> +			       sizeof(state->core.resp->fifo_read) +
+> +			       state->core.param.fifo_read.max_data_vector *
+> +			       sizeof(struct ec_response_motion_sensor_data));
+> +		if (ret != EC_RES_SUCCESS) {
+> +			dev_warn(&indio_dev->dev, "Fifo error: %d\n", ret);
+> +			break;
+> +		}
+> +		number_data =
+> +			state->core.resp->fifo_read.number_data;
+> +		if (number_data == 0) {
+> +			dev_dbg(&indio_dev->dev, "Unexpected empty FIFO\n");
+> +			break;
+> +		}
+> +
+> +		for (in = state->core.resp->fifo_read.data, j = 0;
+> +		     j < number_data; j++, in++) {
+> +			BUG_ON(out >= state->ring + fifo_info.info.size);
+> +			if (cros_ec_ring_process_event(
+> +					&fifo_info, fifo_timestamp,
+> +					&current_timestamp, in, out)) {
+> +				sensor_mask |= (1 << in->sensor_num);
+> +				out++;
+> +			}
+> +		}
+> +	}
+> +	last_out = out;
+> +
+> +	if (out == state->ring)
+> +		/* Unexpected empty FIFO. */
+> +		goto ring_handler_end;
+> +
+> +	/*
+> +	 * Check if current_timestamp is ahead of the last sample.
+> +	 * Normally, the EC appends a timestamp after the last sample, but if
+> +	 * the AP is slow to respond to the IRQ, the EC may have added new
+> +	 * samples. Use the FIFO info timestamp as last timestamp then.
+> +	 */
+> +	if ((last_out-1)->timestamp == current_timestamp)
+> +		current_timestamp = fifo_timestamp;
+> +
+> +	/* check if buffer is set properly */
+> +	if (!indio_dev->active_scan_mask ||
+> +	    (bitmap_empty(indio_dev->active_scan_mask,
+> +			  indio_dev->masklength)))
+> +		goto ring_handler_end;
+> +
+> +	/*
+> +	 * calculate proper timestamps
+> +	 *
+> +	 * If there is a sample with a proper timestamp
+> +	 *                        timestamp | count
+> +	 * older_unprocess_out --> TS1      | 1
+> +	 *                         TS1      | 2
+> +	 * out -->                 TS1      | 3
+> +	 * next_out -->            TS2      |
+> +	 * We spread time for the samples [older_unprocess_out .. out]
+> +	 * between TS1 and TS2: [TS1+1/4, TS1+2/4, TS1+3/4, TS2].
+> +	 *
+> +	 * If we reach the end of the samples, we compare with the
+> +	 * current timestamp:
+> +	 *
+> +	 * older_unprocess_out --> TS1      | 1
+> +	 *                         TS1      | 2
+> +	 * out -->                 TS1      | 3
+> +	 * We know have [TS1+1/3, TS1+2/3, current timestamp]
+> +	 */
+> +	for_each_set_bit(i, &sensor_mask, BITS_PER_LONG) {
+> +		s64 older_timestamp;
+> +		s64 timestamp;
+> +		struct cros_ec_sensors_ring_sample *older_unprocess_out =
+> +			state->ring;
+> +		struct cros_ec_sensors_ring_sample *next_out;
+> +		int count = 1;
+> +
+> +		if (fifo_info.info.total_lost) {
+> +			int lost = fifo_info.lost[i];
+> +
+> +			if (lost)
+> +				dev_warn(&indio_dev->dev,
+> +					"Sensor %d: lost: %d out of %d\n", i,
+> +					lost, fifo_info.info.total_lost);
+> +		}
+> +
+> +		for (out = state->ring; out < last_out; out = next_out) {
+> +			s64 time_period;
+> +
+> +			next_out = out + 1;
+> +			if (out->sensor_id != i)
+> +				continue;
+> +
+> +			/* Timestamp to start with */
+> +			older_timestamp = out->timestamp;
+> +
+> +			/* find next sample */
+> +			while (next_out < last_out && next_out->sensor_id != i)
+> +				next_out++;
+> +
+> +			if (next_out >= last_out) {
+> +				timestamp = current_timestamp;
+> +			} else {
+> +				timestamp = next_out->timestamp;
+> +				if (timestamp == older_timestamp) {
+> +					count++;
+> +					continue;
+> +				}
+> +			}
+> +
+> +			/* The next sample has a new timestamp,
+> +			 * spread the unprocessed samples
+> +			 */
+> +			if (next_out < last_out)
+> +				count++;
+> +			time_period = div_s64(timestamp - older_timestamp,
+> +					      count);
+> +
+> +			for (; older_unprocess_out <= out;
+> +					older_unprocess_out++) {
+> +				if (older_unprocess_out->sensor_id != i)
+> +					continue;
+> +				older_timestamp += time_period;
+> +				older_unprocess_out->timestamp =
+> +					older_timestamp;
+> +			}
+> +			count = 1;
+> +			/* The next_out sample has a valid timestamp, skip. */
+> +			next_out++;
+> +			older_unprocess_out = next_out;
+> +		}
+> +	}
+> +
+> +	/* push the event into the kfifo */
+> +	for (out = state->ring; out < last_out; out++)
+> +		iio_push_to_buffers(indio_dev, (u8 *)out);
+> +
+> +ring_handler_end:
+> +	state->fifo_timestamp[LAST_TS] = current_timestamp;
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int cros_ec_ring_event(struct notifier_block *nb,
+> +	unsigned long queued_during_suspend, void *_notify)
+> +{
+> +	struct cros_ec_sensors_ring_state *state;
+> +	struct cros_ec_device *ec;
+> +
+> +	state = container_of(nb, struct cros_ec_sensors_ring_state, notifier);
+> +	ec = state->core.ec;
+> +
+> +	if (ec->event_data.event_type != EC_MKBP_EVENT_SENSOR_FIFO)
+> +		return NOTIFY_DONE;
+> +
+> +	if (ec->event_size != sizeof(ec->event_data.data.sensor_fifo)) {
+> +		dev_warn(ec->dev, "Invalid fifo info size\n");
+> +		return NOTIFY_DONE;
+> +	}
+> +
+> +	if (queued_during_suspend)
+> +		return NOTIFY_OK;
+> +
+> +	mutex_lock(&state->core.cmd_lock);
+> +	memcpy(&state->fifo_info, &ec->event_data.data.sensor_fifo.info,
+> +			ec->event_size);
+> +	state->fifo_timestamp[NEW_TS] = cros_ec_get_time_ns();
+> +	mutex_unlock(&state->core.cmd_lock);
+> +
+> +	/*
+> +	 * We are not in a low level interrupt,
+> +	 * we can not call iio_trigger_poll().
+> +	 */
+> +	iio_trigger_poll_chained(state->trig);
+> +	return NOTIFY_OK;
+> +}
+> +
+> +#define CROS_EC_RING_ID(_id, _name)		\
+> +{						\
+> +	.type = IIO_ACCEL,			\
+> +	.modified = 1,				\
+> +	.channel2 = IIO_NO_MOD,			\
+> +	.scan_index = _id,			\
+> +	.scan_type = {				\
+> +		.sign = 'u',			\
+> +		.realbits = 8,			\
+> +		.storagebits = 8,		\
+> +	},					\
+> +	.extend_name = _name,			\
+> +}
+See comments earlier.  There is no need to have metadata here that userspace
+will have to unwind, just demux the data appropriately and push to the
+correct iio devices (one per 'scan' - set of samples acquired at approximately
+the same time - every time)
+> +
+> +#define CROS_EC_RING_AXIS(_axis)		\
+> +{						\
+> +	.type = IIO_ACCEL,			\
+> +	.modified = 1,				\
+> +	.channel2 = IIO_MOD_##_axis,		\
+> +	.scan_index = CHANNEL_##_axis,		\
+> +	.scan_type = {				\
+> +		.sign = 's',			\
+> +		.realbits = 16,			\
+> +		.storagebits = 16,		\
+> +	},					\
+> +	.extend_name = "ring",			\
+For obvious reasons given earlier comments I don't like this!
+> +}
+> +
+> +static const struct iio_chan_spec cros_ec_ring_channels[] = {
+> +	CROS_EC_RING_ID(CHANNEL_SENSOR_ID, "id"),
+> +	CROS_EC_RING_ID(CHANNEL_SENSOR_FLAG, "flag"),
+> +	CROS_EC_RING_AXIS(X),
+> +	CROS_EC_RING_AXIS(Y),
+> +	CROS_EC_RING_AXIS(Z),
+> +	IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_TIMESTAMP)
+> +};
+> +
+> +static int cros_ec_ring_probe(struct platform_device *pdev)
 > +{
 > +	struct device *dev = &pdev->dev;
 > +	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
 > +	struct cros_ec_device *ec_device;
 > +	struct iio_dev *indio_dev;
-> +	struct cros_ec_sensors_state *st;
-> +	struct iio_chan_spec *channel;
-> +	unsigned long activities;
-> +	int i, index, ret, nb_activities;
+> +	struct cros_ec_sensors_ring_state *state;
+> +	int ret;
 > +
 > +	if (!ec_dev || !ec_dev->ec_dev) {
 > +		dev_warn(&pdev->dev, "No CROS EC device found.\n");
@@ -266,124 +523,115 @@ Jonathan
 > +	}
 > +	ec_device = ec_dev->ec_dev;
 > +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
 > +	if (ret)
 > +		return ret;
 > +
-> +	indio_dev->info = &ec_sensors_info;
-> +	st = iio_priv(indio_dev);
-> +	st->core.type = st->core.resp->info.type;
-> +	st->core.loc = st->core.resp->info.location;
-> +
-> +	/*
-> +	 * List all available activities
+> +	state = iio_priv(indio_dev);
+> +	/* Retrieve FIFO information */
+> +	state->core.param.cmd = MOTIONSENSE_CMD_FIFO_INFO;
+> +	/* If it fails, just assume the FIFO is not supported.
+> +	 * For other errors, the other sensor drivers would have noticed
+> +	 * already.
 > +	 */
-Comment syntax please.
-> +	st->core.param.cmd = MOTIONSENSE_CMD_LIST_ACTIVITIES;
-> +	ret = cros_ec_motion_send_host_cmd(&st->core, 0);
-> +	if (ret)
-> +		return ret;
-> +	activities = st->core.resp->list_activities.enabled |
-> +		     st->core.resp->list_activities.disabled;
-> +	nb_activities = hweight_long(activities) + 1;
-> +
-> +	if (!activities)
+> +	if (cros_ec_motion_send_host_cmd(&state->core, 0))
 > +		return -ENODEV;
 > +
-> +	/* Allocate a channel per activity and one for timestamp */
-> +	st->channels = devm_kcalloc(&pdev->dev, nb_activities,
-> +				    sizeof(*st->channels), GFP_KERNEL);
-> +	if (!st->channels)
+> +	/* Allocate the full fifo.
+> +	 * We need to copy the whole FIFO to set timestamps properly *
+> +	 */
+> +	state->ring = devm_kcalloc(&pdev->dev,
+> +			state->core.resp->fifo_info.size,
+> +			sizeof(*state->ring), GFP_KERNEL);
+> +	if (!state->ring)
 > +		return -ENOMEM;
 > +
-> +	channel = &st->channels[0];
-> +	index = 0;
-> +	for_each_set_bit(i, &activities, BITS_PER_LONG) {
-> +		channel->scan_index = index;
+> +	state->fifo_timestamp[LAST_TS] = cros_ec_get_time_ns();
 > +
-> +		/* List all available activities */
-> +		channel->type = IIO_ACTIVITY;
-> +		channel->modified = 1;
-> +		channel->event_spec = cros_ec_activity_single_shot;
-> +		channel->num_event_specs =
-> +				ARRAY_SIZE(cros_ec_activity_single_shot);
-> +		switch (i) {
-> +		case MOTIONSENSE_ACTIVITY_SIG_MOTION:
-> +			channel->channel2 = IIO_MOD_STILL;
-:) The only match we currently have?  Ah well guess that set is about
-to get bigger.
-> +			break;
-> +		case MOTIONSENSE_ACTIVITY_DOUBLE_TAP:
-> +			channel->channel2 = IIO_MOD_DOUBLE_TAP;
-This particular one is an event that happens once, report it as such.
-
-> +			break;
-> +		default:
-> +			dev_warn(&pdev->dev, "Unknown activity: %d\n", i);
-> +			continue;
-> +		}
-> +		channel->ext_info = cros_ec_sensors_limited_info;
-> +		channel++;
-> +		index++;
-> +	}
+> +	indio_dev->channels = cros_ec_ring_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(cros_ec_ring_channels);
 > +
-> +	/* Timestamp */
-> +	channel->scan_index = index;
-> +	channel->type = IIO_TIMESTAMP;
-> +	channel->channel = -1;
-> +	channel->scan_type.sign = 's';
-> +	channel->scan_type.realbits = 64;
-> +	channel->scan_type.storagebits = 64;
+> +	indio_dev->info = &ec_sensors_info;
 > +
-> +	indio_dev->channels = st->channels;
-> +	indio_dev->num_channels = index + 1;
+> +	state->trig = devm_iio_trigger_alloc(&pdev->dev,
+> +			"%s-trigger%d", indio_dev->name, indio_dev->id);
+> +	if (!state->trig)
+> +		return -ENOMEM;
+> +	state->trig->dev.parent = &pdev->dev;
+> +	iio_trigger_set_drvdata(state->trig, indio_dev);
 > +
-> +	st->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+> +	ret = iio_trigger_register(state->trig);
+> +	if (ret)
+> +		return ret;
 > +
-> +	/* Driver is incomplete: by itself, no way to get event directly */
-Probably going to be a case of expanding the range of activities we already
-report.  Trick has always been to assign these a percentage (likelihood).
-So far all devices have given us 100 or 0, but who knows when they will start
-being realistic about their ability to work this stuff out ;)  Just like
-old weather forecasts used to be...
-
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 cros_ec_ring_handler, NULL);
+> +	if (ret < 0)
+> +		goto err_trigger_unregister;
+> +
 > +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		goto err_buffer_cleanup;
+> +
+> +	/* register the notifier that will act as a top half interrupt. */
+> +	state->notifier.notifier_call = cros_ec_ring_event;
+> +	ret = blocking_notifier_chain_register(&ec_device->event_notifier,
+> +					       &state->notifier);
+> +	if (ret < 0) {
+> +		dev_warn(&indio_dev->dev, "failed to register notifier\n");
+> +		goto err_device_unregister;
+> +	}
 > +	return ret;
-return iio_device_register(..)
+> +
+> +err_device_unregister:
+> +	iio_device_unregister(indio_dev);
+> +err_buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +err_trigger_unregister:
+> +	iio_trigger_unregister(state->trig);
+> +	return ret;
 > +}
 > +
-> +static int cros_ec_sensors_remove(struct platform_device *pdev)
+> +static int cros_ec_ring_remove(struct platform_device *pdev)
 > +{
 > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct cros_ec_sensors_ring_state *state = iio_priv(indio_dev);
+> +	struct cros_ec_device *ec = state->core.ec;
 > +
+> +	blocking_notifier_chain_unregister(&ec->event_notifier,
+> +					   &state->notifier);
 > +	iio_device_unregister(indio_dev);
-blank line.
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	iio_trigger_unregister(state->trig);
 > +	return 0;
 > +}
 > +
-> +static const struct platform_device_id cros_ec_sensors_ids[] = {
+> +static const struct platform_device_id cros_ec_ring_ids[] = {
 > +	{
-> +		.name = "cros-ec-activity",
+> +		.name = "cros-ec-ring",
 > +	},
 > +	{ /* sentinel */ }
 > +};
-> +MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
+> +MODULE_DEVICE_TABLE(platform, cros_ec_ring_ids);
 > +
-> +static struct platform_driver cros_ec_sensors_platform_driver = {
+> +static struct platform_driver cros_ec_ring_platform_driver = {
 > +	.driver = {
-> +		.name	= "cros-ec-activity",
+> +		.name	= "cros-ec-ring",
+> +		.owner	= THIS_MODULE,
 > +	},
-> +	.probe		= cros_ec_sensors_probe,
-> +	.remove		= cros_ec_sensors_remove,
-> +	.id_table	= cros_ec_sensors_ids,
+> +	.probe		= cros_ec_ring_probe,
+> +	.remove		= cros_ec_ring_remove,
+> +	.id_table	= cros_ec_ring_ids,
 > +};
-> +module_platform_driver(cros_ec_sensors_platform_driver);
+> +module_platform_driver(cros_ec_ring_platform_driver);
 > +
-> +MODULE_DESCRIPTION("ChromeOS EC activity sensors driver");
+> +MODULE_DESCRIPTION("ChromeOS EC sensor hub ring driver");
 > +MODULE_LICENSE("GPL v2");
 > 
 
