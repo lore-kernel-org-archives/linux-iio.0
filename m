@@ -1,256 +1,694 @@
-Return-Path: <jelle@vdwaa.nl>
-From: Jelle van der Waa <jelle@vdwaa.nl>
-To: linux-iio@vger.kernel.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.92]:48472 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752018AbcGRWC7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 18 Jul 2016 18:02:59 -0400
+Date: Tue, 19 Jul 2016 00:02:56 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Akinobu Mita <akinobu.mita@gmail.com>
+cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Jelle van der Waa <jelle@vdwaa.nl>
-Subject: [PATCH] iio: accel: add support for the Domintech DMARD09 3-axis accelerometer
-Date: Mon, 18 Jul 2016 22:54:23 +0200
-Message-Id: <20160718205423.13081-2-jelle@vdwaa.nl>
-In-Reply-To: <20160718205423.13081-1-jelle@vdwaa.nl>
-References: <20160716195152.30109-1-jelle@vdwaa.nl>
- <20160718205423.13081-1-jelle@vdwaa.nl>
-List-ID: <linux-iio@vger.kernel.org>
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: Re: [PATCH] iio: adc: add ADC12130/ADC12132/ADC12138 ADC driver
+In-Reply-To: <1468854029-22153-1-git-send-email-akinobu.mita@gmail.com>
+Message-ID: <alpine.DEB.2.02.1607182348340.25263@pmeerw.net>
+References: <1468854029-22153-1-git-send-email-akinobu.mita@gmail.com>
+MIME-Version: 1.0
+Content-Type: MULTIPART/MIXED; BOUNDARY="324295856-2008541008-1468879376=:25263"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Minimal implementation of an IIO driver for the Domintech DMARD09 3-axis
-accelerometer. Only supports reading the x,y,z axes at the moment.
+  This message is in MIME format.  The first part should be readable text,
+  while the remaining parts are likely unreadable without MIME-aware tools.
 
-Implementation based on the Android driver from the Acer Liquid E2
-kernel sources.
+--324295856-2008541008-1468879376=:25263
+Content-Type: TEXT/PLAIN; charset=ISO-8859-15
+Content-Transfer-Encoding: 8BIT
 
-Signed-off-by: Jelle van der Waa <jelle@vdwaa.nl>
 
----
-Changes in v2:
-  - Use ARRAY_SIZE instead of the #define DMARD09_AXES_NUM
-  - Use a function-like macro to generate the channel structs
-  - Remove duplicate 3-axis in driver description
-  - Don't initialize the u8 buf
-  - Use devm_iio_device_register and remove the now unrequired
-    dmard09_remove.
-  - Remove device from dmard09_data struct and use the client member to retrieve
-    the device.
-  - Describe the read strategy of the read_raw function
-  - Simplify reading the X, Y, Z axis, by introducing DMARD09_AXIS_N_OFFSET,
-    which removes the required if statements.
-  - Log the _STAT address in the dev_error in the dmard09_read_raw function.
----
- .../devicetree/bindings/iio/accel/dmard09.txt      |  13 ++
- drivers/iio/accel/Kconfig                          |  10 ++
- drivers/iio/accel/Makefile                         |   1 +
- drivers/iio/accel/dmard09.c                        | 149 +++++++++++++++++++++
- 4 files changed, 173 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard09.txt
- create mode 100644 drivers/iio/accel/dmard09.c
+> This adds Texas Instruments' ADC12130/ADC12132/ADC12138 12-bit plus
+> sign ADC driver.  I have tested with the ADC12138.  The ADC12130 and
+> ADC12132 are not tested but these are similar to ADC12138 except that
+> the mode programming instruction is a bit different.
 
-diff --git a/Documentation/devicetree/bindings/iio/accel/dmard09.txt b/Documentation/devicetree/bindings/iio/accel/dmard09.txt
-new file mode 100644
-index 0000000..69b2a03
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/accel/dmard09.txt
-@@ -0,0 +1,13 @@
-+Domintech DMARD09 accelerometer devicetree bindings
-+
-+Required properties:
-+
-+  - compatible : should be "domintech,dmard09"
-+  - reg : the I2C address of the sensor
-+
-+Example:
-+
-+dmard09@0x1d {
-+	compatible = "domintech,dmard09";
-+	reg = <0x1d>;
-+};
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index e4a758c..4b886fb 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -40,6 +40,16 @@ config BMC150_ACCEL_SPI
- 	tristate
- 	select REGMAP_SPI
- 
-+config DMARD09
-+	tristate "Domintech DMARD09 3-axis Accelerometer Driver"
-+	depends on I2C
-+	help
-+	  Say yes here to get support for the Domintech DMARD09 3-axis
-+	  accelerometer.
-+
-+	  Choosing M will build the driver as a module. If so, the module
-+	  will be called dmard09.
-+
- config HID_SENSOR_ACCEL_3D
- 	depends on HID_SENSOR_HUB
- 	select IIO_BUFFER
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index 71b6794..b1022a0 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -7,6 +7,7 @@ obj-$(CONFIG_BMA180) += bma180.o
- obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
- obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
- obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
-+obj-$(CONFIG_DMARD09) += dmard09.o
- obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
- obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
- obj-$(CONFIG_KXSD9)	+= kxsd9.o
-diff --git a/drivers/iio/accel/dmard09.c b/drivers/iio/accel/dmard09.c
-new file mode 100644
-index 0000000..8fba368
---- /dev/null
-+++ b/drivers/iio/accel/dmard09.c
-@@ -0,0 +1,149 @@
-+/*
-+ * IIO driver for the 3-axis accelerometer Domintech DMARD09.
-+ *
-+ * Copyright (c) 2016, Jelle van der Waa <jelle@vdwaa.nl>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+
-+#define DMARD09_DRV_NAME	"dmard09"
-+
-+#define DMARD09_REG_CHIPID      0x18
-+#define DMARD09_REG_STAT	0x0A
-+#define DMARD09_REG_X		0x0C
-+#define DMARD09_REG_Y		0x0E
-+#define DMARD09_REG_Z		0x10
-+#define DMARD09_CHIPID		0x95
-+
-+#define DMARD09_BUF_LEN 8
-+#define DMARD09_AXIS_X 0
-+#define DMARD09_AXIS_Y 1
-+#define DMARD09_AXIS_Z 2
-+#define DMARD09_AXIS_X_OFFSET ((DMARD09_AXIS_X+1)*2)
-+#define DMARD09_AXIS_Y_OFFSET ((DMARD09_AXIS_Y+1)*2)
-+#define DMARD09_AXIS_Z_OFFSET ((DMARD09_AXIS_Z+1)*2)
-+
-+struct dmard09_data {
-+	struct i2c_client *client;
-+};
-+
-+#define DMARD09_CHANNEL(_axis, offset) {			\
-+	.type = IIO_ACCEL,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	.modified = 1,						\
-+	.address = offset,					\
-+	.channel2 = IIO_MOD_##_axis,				\
-+}
-+
-+static const struct iio_chan_spec dmard09_channels[] = {
-+	DMARD09_CHANNEL(X, DMARD09_AXIS_X_OFFSET),
-+	DMARD09_CHANNEL(Y, DMARD09_AXIS_Y_OFFSET),
-+	DMARD09_CHANNEL(Z, DMARD09_AXIS_Z_OFFSET),
-+};
-+
-+static int dmard09_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int *val, int *val2, long mask)
-+{
-+	struct dmard09_data *data = iio_priv(indio_dev);
-+	u8 buf[DMARD09_BUF_LEN];
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		/*
-+		 * Read from the DMAR09_REG_STAT register, since the chip
-+		 * caches reads from the individual X, Y, Z registers.
-+		 */
-+		ret = i2c_smbus_read_i2c_block_data(data->client,
-+						    DMARD09_REG_STAT,
-+						    DMARD09_BUF_LEN, buf);
-+		if (ret < 0) {
-+			dev_err(&data->client->dev, "Error reading reg %d\n",
-+				DMARD09_REG_STAT);
-+			return ret;
-+		}
-+
-+		*val = (s16)((buf[chan->address+1] << 8) | buf[chan->address]);
-+
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info dmard09_info = {
-+	.driver_module	= THIS_MODULE,
-+	.read_raw	= dmard09_read_raw,
-+};
-+
-+static int dmard09_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev;
-+	struct dmard09_data *data;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev) {
-+		dev_err(&client->dev, "iio allocation failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+
-+	ret = i2c_smbus_read_byte_data(data->client, DMARD09_REG_CHIPID);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "Error reading chip id %d\n", ret);
-+		return ret;
-+	}
-+
-+	if (ret != DMARD09_CHIPID) {
-+		dev_err(&client->dev, "Invalid chip id %d\n", ret);
-+		return -ENODEV;
-+	}
-+
-+	i2c_set_clientdata(client, indio_dev);
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->name = DMARD09_DRV_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = dmard09_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(dmard09_channels);
-+	indio_dev->info = &dmard09_info;
-+
-+	return devm_iio_device_register(&client->dev, indio_dev);
-+}
-+
-+static const struct i2c_device_id dmard09_id[] = {
-+	{ "dmard09", 0},
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(i2c, dmard09_id);
-+
-+static struct i2c_driver dmard09_driver = {
-+	.driver = {
-+		.name = DMARD09_DRV_NAME
-+	},
-+	.probe = dmard09_probe,
-+	.id_table = dmard09_id,
-+};
-+
-+module_i2c_driver(dmard09_driver);
-+
-+MODULE_AUTHOR("Jelle van der Waa <jelle@vdwaa.nl>");
-+MODULE_DESCRIPTION("DMARD09 3-axis accelerometer driver");
-+MODULE_LICENSE("GPL");
+minor comments below
+
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> ---
+>  .../devicetree/bindings/iio/adc/ti-adc12138.txt    |  32 ++
+>  drivers/iio/adc/Kconfig                            |  12 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/ti-adc12138.c                      | 541 +++++++++++++++++++++
+>  4 files changed, 586 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
+>  create mode 100644 drivers/iio/adc/ti-adc12138.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
+> new file mode 100644
+> index 0000000..3a11d2a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
+> @@ -0,0 +1,32 @@
+> +* Texas Instruments' ADC12130/ADC12132/ADC12138
+> +
+> +Required properties:
+> + - compatible: Should be one of
+> +	* "ti,adc12130"
+> +	* "ti,adc12132"
+> +	* "ti,adc12138"
+> + - reg: SPI chip select number for the device
+> + - interrupts: Should contain interrupt for EOC (end of conversion)
+> + - clocks: phandle to conversion clock input
+> + - spi-max-frequency: Definision as per
+> +	Documentation/devicetree/bindings/spi/spi-bus.txt
+> + - vref-p-supply: The regulator supply for positive analog voltage reference
+> +
+> +Optional properties:
+> + - vref-n-supply: The regulator supply for negative analog voltage reference
+> +	If not specified, this is assumed to be analog ground.
+> + - acquisition-time: The number of conversion clock periods for the S/H's
+> +	acquisition time.  Should be one of 6, 10, 18, 34.  If not specified,
+> +	default value of 10 is used.
+> +
+> +Example:
+> +adc@0 {
+> +	compatible = "ti,adc12138";
+> +	reg = <0>;
+> +	interrupts = <28 IRQ_TYPE_EDGE_RISING>;
+> +	interrupt-parent = <&gpio1>;
+> +	clocks = <&cclk>;
+> +	vref-p-supply = <&ldo4_reg>;
+> +	spi-max-frequency = <5000000>;
+> +	acquisition-time = <6>;
+> +};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index fa0ff29..0783291 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -414,6 +414,18 @@ config TI_ADC0832
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc0832.
+>  
+> +config TI_ADC12138
+> +	tristate "Texas Instruments ADC12130/ADC12132/ADC12138"
+> +	depends on SPI
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADC12130,
+> +	  ADC12132and ADC12138 chips.
+
+space before 'and' missing
+
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-adc12138.
+> +
+>  config TI_ADC128S052
+>  	tristate "Texas Instruments ADC128S052/ADC122S021/ADC124S021"
+>  	depends on SPI
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 599714b..3ae4ae3 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -40,6 +40,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+> +obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+> diff --git a/drivers/iio/adc/ti-adc12138.c b/drivers/iio/adc/ti-adc12138.c
+> new file mode 100644
+> index 0000000..e7bd986
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-adc12138.c
+> @@ -0,0 +1,541 @@
+> +/*
+> + * ADC12130/ADC12132/ADC12138 12-bit plus sign ADC driver
+> + *
+> + * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * Datasheet: http://www.ti.com/lit/ds/symlink/adc12138.pdf
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/completion.h>
+> +#include <linux/clk.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +#define ADC12138_MODE_AUTO_CAL			0x08
+> +#define ADC12138_MODE_READ_STATUS		0x0c
+> +#define ADC12138_MODE_ACQUISITION_TIME_6	0x0e
+> +#define ADC12138_MODE_ACQUISITION_TIME_10	0x4e
+> +#define ADC12138_MODE_ACQUISITION_TIME_18	0x8e
+> +#define ADC12138_MODE_ACQUISITION_TIME_34	0xce
+> +
+> +#define ADC12138_STATUS_CAL			BIT(6)
+> +
+> +enum {
+> +	adc12130,
+> +	adc12132,
+> +	adc12138,
+> +};
+> +
+> +struct adc12138 {
+> +	struct spi_device *spi;
+> +	unsigned int id;
+> +	/* conversion clock */
+> +	struct clk *cclk;
+> +	/* positive analog voltage reference */
+> +	struct regulator *vref_p;
+> +	/* negative analog voltage reference */
+> +	struct regulator *vref_n;
+> +	struct mutex lock;
+> +	struct completion complete;
+> +	unsigned int acquisition_time;
+
+unit? ms? µs?
+
+> +
+> +	u8 tx_buf[2] ____cacheline_aligned;
+> +	u8 rx_buf[2];
+> +};
+> +
+> +#define ADC12138_VOLTAGE_CHANNEL(chan)					\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = chan,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+> +					| BIT(IIO_CHAN_INFO_OFFSET),	\
+> +		.scan_index = chan,					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 13,					\
+> +			.storagebits = 16,				\
+> +			.shift = 3,					\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
+> +
+> +#define ADC12138_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si_offset)		\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (chan1),					\
+> +		.channel2 = (chan2),					\
+> +		.differential = 1,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+> +					| BIT(IIO_CHAN_INFO_OFFSET),	\
+> +		.scan_index = (chan1) + (si_offset),			\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 13,					\
+> +			.storagebits = 16,				\
+> +			.shift = 3,					\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec adc12132_channels[] = {
+> +	ADC12138_VOLTAGE_CHANNEL(0),
+> +	ADC12138_VOLTAGE_CHANNEL(1),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 2),
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+> +static const struct iio_chan_spec adc12138_channels[] = {
+> +	ADC12138_VOLTAGE_CHANNEL(0),
+> +	ADC12138_VOLTAGE_CHANNEL(1),
+> +	ADC12138_VOLTAGE_CHANNEL(2),
+> +	ADC12138_VOLTAGE_CHANNEL(3),
+> +	ADC12138_VOLTAGE_CHANNEL(4),
+> +	ADC12138_VOLTAGE_CHANNEL(5),
+> +	ADC12138_VOLTAGE_CHANNEL(6),
+> +	ADC12138_VOLTAGE_CHANNEL(7),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(2, 3, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(3, 2, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(4, 5, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(5, 4, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(6, 7, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(7, 6, 8),
+> +	IIO_CHAN_SOFT_TIMESTAMP(16),
+> +};
+> +
+> +static int adc12138_mode_programming(struct adc12138 *adc, u8 mode,
+> +				     void *rx_buf, int len)
+> +{
+> +	struct spi_transfer xfer = {
+> +		.tx_buf = adc->tx_buf,
+> +		.rx_buf = adc->rx_buf,
+> +		.len = len,
+> +	};
+> +	int ret;
+> +
+> +	/* Skip disused bits for ADC12130 and ADC12132 */
+
+probably 'unused' instead of 'disused'
+
+> +	if (adc->id != adc12138)
+> +		mode = (mode & 0xc0) | ((mode & 0x0f) << 2);
+> +
+> +	adc->tx_buf[0] = mode;
+> +
+> +	ret = spi_sync_transfer(adc->spi, &xfer, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	memcpy(rx_buf, adc->rx_buf, len);
+> +
+> +	return 0;
+> +}
+> +
+> +static int adc12138_read_status(struct adc12138 *adc)
+> +{
+> +	u8 rx_buf[2];
+> +	int ret;
+> +
+> +	ret = adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
+> +					rx_buf, 2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return (rx_buf[0] << 1) | (rx_buf[1] >> 7);
+> +}
+> +
+> +static int __adc12138_start_conv(struct adc12138 *adc,
+> +				 struct iio_chan_spec const *channel,
+> +				 void *data, int len)
+> +
+> +{
+> +	const u8 ch_to_mux[] = { 0, 4, 1, 5, 2, 6, 3, 7 };
+> +	u8 mode = (ch_to_mux[channel->channel] << 4) |
+> +		  (channel->differential ? 0 : 0x80);
+> +
+> +	return adc12138_mode_programming(adc, mode, data, len);
+> +}
+> +
+> +static int adc12138_start_conv(struct adc12138 *adc,
+> +			       struct iio_chan_spec const *channel)
+> +{
+> +	u8 trash;
+> +
+> +	return __adc12138_start_conv(adc, channel, &trash, 1);
+> +}
+> +
+> +static int adc12138_start_and_read_conv(struct adc12138 *adc,
+> +					struct iio_chan_spec const *channel,
+> +					__be16 *data)
+> +{
+> +	return __adc12138_start_conv(adc, channel, data, 2);
+> +}
+> +
+> +static int adc12138_read_conv_data(struct adc12138 *adc, __be16 *value)
+> +{
+> +	/* Issue a read status instruction and read previous conversion data */
+> +	return adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
+> +					 value, sizeof(*value));
+> +}
+> +
+> +static int adc12138_wait_eoc(struct adc12138 *adc, unsigned long timeout)
+> +{
+> +	if (!wait_for_completion_timeout(&adc->complete, timeout))
+> +		return -ETIMEDOUT;
+> +
+> +	return 0;
+> +}
+> +
+> +static int adc12138_adc_conversion(struct adc12138 *adc,
+> +				   struct iio_chan_spec const *channel,
+> +				   __be16 *value)
+> +{
+> +	int ret;
+> +
+> +	reinit_completion(&adc->complete);
+> +
+> +	ret = adc12138_start_conv(adc, channel);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
+> +	if (ret)
+> +		return ret;
+> +
+> +	return adc12138_read_conv_data(adc, value);
+> +}
+> +
+> +static int adc12138_read_raw(struct iio_dev *iio,
+> +			     struct iio_chan_spec const *channel, int *value,
+> +			     int *shift, long mask)
+> +{
+> +	struct adc12138 *adc = iio_priv(iio);
+> +	int ret;
+> +	__be16 data;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+
+what if buffered reads have been set up? probably use 
+iio_device_claim_direct_mode()
+
+> +		mutex_lock(&adc->lock);
+> +		ret = adc12138_adc_conversion(adc, channel, &data);
+> +		mutex_unlock(&adc->lock);
+> +		if (ret)
+> +			return ret;
+> +
+> +		*value = sign_extend32(be16_to_cpu(data) >> 3, 12);
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = regulator_get_voltage(adc->vref_p);
+> +		if (ret < 0)
+> +			return ret;
+> +		*value = ret;
+> +
+> +		if (!IS_ERR(adc->vref_n)) {
+> +			ret = regulator_get_voltage(adc->vref_n);
+> +			if (ret < 0)
+> +				return ret;
+> +			*value -= ret;
+> +		}
+> +
+> +		/* convert regulator output voltage to mV */
+> +		*value /= 1000;
+> +		*shift = channel->scan_type.realbits - 1;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (!IS_ERR(adc->vref_n)) {
+> +			*value = regulator_get_voltage(adc->vref_n);
+> +			if (*value < 0)
+> +				return *value;
+> +		} else {
+> +			*value = 0;
+> +		}
+> +
+> +		/* convert regulator output voltage to mV */
+> +		*value /= 1000;
+> +
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info adc12138_info = {
+> +	.read_raw = adc12138_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int adc12138_init(struct adc12138 *adc)
+> +{
+> +	int ret;
+> +	int status;
+> +	u8 mode;
+> +	u8 trash;
+> +
+> +	reinit_completion(&adc->complete);
+> +
+> +	ret = adc12138_mode_programming(adc, ADC12138_MODE_AUTO_CAL, &trash, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* data output at this time has no significance */
+> +	status = adc12138_read_status(adc);
+> +	if (status < 0)
+> +		return status;
+> +
+> +	adc12138_wait_eoc(adc, msecs_to_jiffies(100));
+> +
+> +	status = adc12138_read_status(adc);
+> +	if (status & ADC12138_STATUS_CAL) {
+> +		dev_warn(&adc->spi->dev,
+> +			"Auto Cal sequence is still in progress: %#x\n",
+> +			status);
+> +		return -EIO;
+> +	}
+> +
+> +	switch (adc->acquisition_time) {
+> +	case 6:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_6;
+> +		break;
+> +	case 10:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_10;
+> +		break;
+> +	case 18:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_18;
+> +		break;
+> +	case 34:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_34;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return adc12138_mode_programming(adc, mode, &trash, 1);
+> +}
+> +
+> +static irqreturn_t adc12138_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct adc12138 *adc = iio_priv(indio_dev);
+> +	__be16 data[20] = { };
+
+why { } here?
+why 20?
+
+> +	__be16 trash;
+> +	int ret;
+> +	int scan_index;
+> +	int i = 0;
+> +
+> +	mutex_lock(&adc->lock);
+> +
+> +	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
+> +			 indio_dev->masklength) {
+> +		const struct iio_chan_spec *scan_chan =
+> +				&indio_dev->channels[scan_index];
+> +
+> +		reinit_completion(&adc->complete);
+> +
+> +		ret = adc12138_start_and_read_conv(adc, scan_chan,
+> +						   i ? &data[i - 1] : &trash);
+> +		if (ret) {
+> +			dev_warn(&adc->spi->dev,
+> +				 "failed to start conversion\n");
+> +			goto out;
+> +		}
+> +
+> +		ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
+> +		if (ret) {
+> +			dev_warn(&adc->spi->dev, "wait eoc timeout\n");
+> +			goto out;
+> +		}
+> +
+> +		i++;
+> +	}
+> +
+> +	if (i) {
+> +		ret = adc12138_read_conv_data(adc, &data[i - 1]);
+> +		if (ret) {
+> +			dev_warn(&adc->spi->dev,
+> +				 "failed to get conversion data\n");
+> +			goto out;
+> +		}
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
+> +out:
+> +	mutex_unlock(&adc->lock);
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t adc12138_eoc_handler(int irq, void *p)
+> +{
+> +	struct iio_dev *indio_dev = p;
+> +	struct adc12138 *adc = iio_priv(indio_dev);
+> +
+> +	complete(&adc->complete);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int adc12138_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct adc12138 *adc;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	adc = iio_priv(indio_dev);
+> +	adc->spi = spi;
+> +	adc->id = spi_get_device_id(spi)->driver_data;
+> +	mutex_init(&adc->lock);
+> +	init_completion(&adc->complete);
+> +
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->info = &adc12138_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	switch (adc->id) {
+> +	case adc12130:
+> +	case adc12132:
+> +		indio_dev->channels = adc12132_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(adc12132_channels);
+> +		break;
+> +	case adc12138:
+> +		indio_dev->channels = adc12138_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(adc12138_channels);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = of_property_read_u32(spi->dev.of_node, "acquisition-time",
+> +				   &adc->acquisition_time);
+> +	if (ret)
+> +		adc->acquisition_time = 10;
+> +
+> +	adc->cclk = devm_clk_get(&spi->dev, NULL);
+> +	if (IS_ERR(adc->cclk))
+> +		return PTR_ERR(adc->cclk);
+> +
+> +	adc->vref_p = devm_regulator_get(&spi->dev, "vref-p");
+> +	if (IS_ERR(adc->vref_p))
+> +		return PTR_ERR(adc->vref_p);
+> +
+> +	adc->vref_n = devm_regulator_get_optional(&spi->dev, "vref-n");
+> +
+> +	ret = devm_request_irq(&spi->dev, spi->irq, adc12138_eoc_handler,
+> +			       IRQF_TRIGGER_RISING, indio_dev->name, indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(adc->cclk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regulator_enable(adc->vref_p);
+> +	if (ret)
+> +		goto error1;
+> +
+> +	if (!IS_ERR(adc->vref_n)) {
+> +		ret = regulator_enable(adc->vref_n);
+> +		if (ret)
+> +			goto error2;
+> +	}
+> +
+> +	ret = adc12138_init(adc);
+> +	if (ret)
+> +		goto error3;
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 adc12138_trigger_handler, NULL);
+> +	if (ret)
+> +		goto error3;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto error4;
+> +
+> +	return 0;
+> +error4:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +error3:
+> +	if (!IS_ERR(adc->vref_n))
+> +		regulator_disable(adc->vref_n);
+> +error2:
+> +	regulator_disable(adc->vref_p);
+> +error1:
+> +	clk_disable_unprepare(adc->cclk);
+> +
+> +	return ret;
+> +}
+> +
+> +static int adc12138_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct adc12138 *adc = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	if (!IS_ERR(adc->vref_n))
+> +		regulator_disable(adc->vref_n);
+> +	regulator_disable(adc->vref_p);
+> +	clk_disable_unprepare(adc->cclk);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_OF
+> +
+> +static const struct of_device_id adc12138_dt_ids[] = {
+> +	{ .compatible = "ti,adc12130", },
+> +	{ .compatible = "ti,adc12132", },
+> +	{ .compatible = "ti,adc12138", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, adc12138_dt_ids);
+> +
+> +#endif
+> +
+> +static const struct spi_device_id adc12138_id[] = {
+> +	{ "adc12130", adc12130 },
+> +	{ "adc12132", adc12132 },
+> +	{ "adc12138", adc12138 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, adc12138_id);
+> +
+> +static struct spi_driver adc12138_driver = {
+> +	.driver = {
+> +		.name = "adc12138",
+> +		.of_match_table = of_match_ptr(adc12138_dt_ids),
+> +	},
+> +	.probe = adc12138_probe,
+> +	.remove = adc12138_remove,
+> +	.id_table = adc12138_id,
+> +};
+> +module_spi_driver(adc12138_driver);
+> +
+> +MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
+> +MODULE_DESCRIPTION("ADC12130/ADC12132/ADC12138 driver");
+> +MODULE_LICENSE("GPL v2");
+> 
+
 -- 
-2.9.0
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
+--324295856-2008541008-1468879376=:25263--
