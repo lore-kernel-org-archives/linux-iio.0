@@ -1,105 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:33379 "EHLO
-	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752180AbcGRTne (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 15:43:34 -0400
-Date: Mon, 18 Jul 2016 12:43:31 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matt Ranostay <mranostay@gmail.com>,
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:36246 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751013AbcGRUyd (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 16:54:33 -0400
+Received: by mail-wm0-f67.google.com with SMTP id x83so248421wma.3
+        for <linux-iio@vger.kernel.org>; Mon, 18 Jul 2016 13:54:31 -0700 (PDT)
+From: Jelle van der Waa <jelle@vdwaa.nl>
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] iio: humidity: hdc100x: add HDC1000 and HDC1008 product
- names
-Message-ID: <20160718194330.GA3870@d830.WORKGROUP>
-References: <20160520170500.GA2620@d830.WORKGROUP>
- <CAKzfze_7C-WWy0NUtgAEj5XYZ-qUmMWxEOVV8-F9haU=CW_tLQ@mail.gmail.com>
- <446b3713-c613-34c9-4432-1bafa8cd0579@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <446b3713-c613-34c9-4432-1bafa8cd0579@kernel.org>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Jelle van der Waa <jelle@vdwaa.nl>
+Subject: [PATCH v2] iio: accel: add support for the Domintech DMARD09 3-axis accelerometer
+Date: Mon, 18 Jul 2016 22:54:22 +0200
+Message-Id: <20160718205423.13081-1-jelle@vdwaa.nl>
+In-Reply-To: <20160716195152.30109-1-jelle@vdwaa.nl>
+References: <20160716195152.30109-1-jelle@vdwaa.nl>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, May 21, 2016 at 05:27:16PM +0100, Jonathan Cameron wrote:
-> On 20/05/16 18:34, Matt Ranostay wrote:
-> > On Fri, May 20, 2016 at 10:05 AM, Alison Schofield <amsfield22@gmail.com> wrote:
-> >> hdc100x supports Texas Instruments HDC1000 and HDC1008 relative
-> >> humidity and temperature sensors. Add these product names to
-> >> Kconfig and to the drivers device id structure to enable finding
-> >> the product by name and using it to add a device.
-> >>
-> >> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> >> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> >> ---
-> >>  drivers/iio/humidity/Kconfig   | 8 ++++----
-> >>  drivers/iio/humidity/hdc100x.c | 2 ++
-> >>  2 files changed, 6 insertions(+), 4 deletions(-)
-> >>
-> >> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> >> index 738a86d..f155386 100644
-> >> --- a/drivers/iio/humidity/Kconfig
-> >> +++ b/drivers/iio/humidity/Kconfig
-> >> @@ -26,11 +26,11 @@ config HDC100X
-> >>         tristate "TI HDC100x relative humidity and temperature sensor"
-> >>         depends on I2C
-> >>         help
-> >> -        Say yes here to build support for the TI HDC100x series of
-> >> -        relative humidity and temperature sensors.
-> >> +         Say yes here to build support for the Texas Instruments
-> >> +         HDC1000 and HDC1008 relative humidity and temperature sensors.
-> >>
-> >> -        To compile this driver as a module, choose M here: the module
-> >> -        will be called hdc100x.
-> >> +         To compile this driver as a module, choose M here: the module
-> >> +         will be called hdc100x.
-> >>
-> >>  config HTU21
-> >>         tristate "Measurement Specialties HTU21 humidity & temperature sensor"
-> >> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> >> index fa47676..0deb874 100644
-> >> --- a/drivers/iio/humidity/hdc100x.c
-> >> +++ b/drivers/iio/humidity/hdc100x.c
-> >> @@ -302,6 +302,8 @@ static int hdc100x_probe(struct i2c_client *client,
-> >>
-> >>  static const struct i2c_device_id hdc100x_id[] = {
-> >>         { "hdc100x", 0 },
-> >> +       { "hdc1000", 0 },
-> >> +       { "hdc1008", 0 },
-> > 
-> > Personally I think adding more device ids that don't add any per chip
-> > configuration is just adding clutter.
-> > There is a reason I used "hdc100x" when I wrote the driver :)
-> Hmm. I should have picked up on this in the first place. It's much preferred to
-> go with complete part names.  Avoids any possible issues with devicetrees / ACPI
-> bindings where it's kind of assumed a whole part name will be used.
-> 
-> I'd prefer to have them explicitly listed.  We will have to keep the wild card
-> form as well as by now there will be boards using that out there.
-> If it was just internal to the kernel I'd agree with the clutter argument, but
-> it isn't so let us be as explicit in the naming as possible.
-> 
-> Jonathan
+This patch adds basic read_raw support for the DMARD09 3-axis accelerometer
+which can be found in a q8 A33 Allwinner tablet. [0]
 
-Jonathan,
+The driver is based on the Android driver which can be found
+on Github. [1]
 
-It seemed like you were going to take this patch, but haven't.
-I can pull the names out of the device_id fields if wanted, but it would
-be nice to at least have them in the Kconfig so one can grep for these names.
-Let me know if it needs a v2.
+Unfortunately there is no datatsheet of the DMARD09 available online.
 
-Thanks,
-alisons
+[0] http://linux-sunxi.org/TZX-723Qa4
+[1] https://github.com/JujuXIII/android_kernel_acer_v370_KK/tree/master/mediatek/custom/common/kernel/accelerometer/dmard09
 
-> > 
-> > 
-> >>         { }
-> >>  };
-> >>  MODULE_DEVICE_TABLE(i2c, hdc100x_id);
-> >> --
-> >> 2.1.4
-> >>
-> 
+Changes in v2:
+  - Use ARRAY_SIZE instead of the #define DMARD09_AXES_NUM
+  - Use a function-like macro to generate the channel structs
+  - Remove duplicate 3-axis in driver description
+  - Don't initialize the u8 buf
+  - Use devm_iio_device_register and remove the now unrequired
+    dmard09_remove.
+  - Remove device from dmard09_data struct and use the client member to retrieve
+    the device.
+  - Describe the read strategy of the read_raw function
+  - Simplify reading the X, Y, Z axis, by introducing DMARD09_AXIS_N_OFFSET,
+        which removes the required if statements.
+  - Log the _STAT address in the dev_error in the dmard09_read_raw function.
+
+
+Jelle van der Waa (1):
+  iio: accel: add support for the Domintech DMARD09 3-axis accelerometer
+
+ .../devicetree/bindings/iio/accel/dmard09.txt      |  13 ++
+ drivers/iio/accel/Kconfig                          |  10 ++
+ drivers/iio/accel/Makefile                         |   1 +
+ drivers/iio/accel/dmard09.c                        | 149 +++++++++++++++++++++
+ 4 files changed, 173 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard09.txt
+ create mode 100644 drivers/iio/accel/dmard09.c
+
+-- 
+2.9.0
+
