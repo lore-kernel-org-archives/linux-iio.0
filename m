@@ -1,376 +1,298 @@
-Return-Path: <maxime.ripard@free-electrons.com>
-Date: Mon, 18 Jul 2016 15:02:18 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-Subject: Re: [PATCH v2 3/4] mfd: add support for Allwinner SoCs ADC
-Message-ID: <20160718130218.GG4199@lukather>
-References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
- <1468576754-3273-4-git-send-email-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="6BvahUXLYAruDZOj"
-In-Reply-To: <1468576754-3273-4-git-send-email-quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f193.google.com ([209.85.220.193]:35024 "EHLO
+	mail-qk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750732AbcGRNzn (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 09:55:43 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 1/2] iio: stx104: Add IIO support for the ADC channels
+Date: Mon, 18 Jul 2016 09:55:34 -0400
+Message-Id: <a96d214483354349996a0dc896eecea121983574.1468849832.git.vilhelm.gray@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+The Apex Embedded Systems STX104 features 16 channels of single-ended (8
+channels of true differential) 16-bit analog input. Differential input
+configuration may be selected via a physical jumper on the device.
+Similarly, input polarity (unipolar/bipolar) is configured via a
+physical jumper on the device.
 
---6BvahUXLYAruDZOj
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Input gain selection is available to the user via software, thus
+allowing eight possible input ranges: +-10V, +-5V, +-2.5V, +-1.25V,
+0 to 10V, 0 to 5V, 0 to 2.5V, and 0 to 1.25V. Four input gain
+configurations are supported: x1, x2, x4, and x8.
 
-On Fri, Jul 15, 2016 at 11:59:13AM +0200, Quentin Schulz wrote:
-> The Allwinner SoCs all have an ADC that can also act as a touchscreen
-> controller and a thermal sensor. For now, only the ADC and the thermal
-> sensor drivers are probed by the MFD, the touchscreen controller support
-> will be added later.
->=20
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
->=20
-> v2:
->  - add license headers,
->  - reorder alphabetically includes,
->  - add SUNXI_GPADC_ prefixes for defines,
->=20
->  drivers/mfd/Kconfig                 |  14 +++
->  drivers/mfd/Makefile                |   2 +
->  drivers/mfd/sunxi-gpadc-mfd.c       | 197 ++++++++++++++++++++++++++++++=
-++++++
->  include/linux/mfd/sunxi-gpadc-mfd.h |  23 +++++
->  4 files changed, 236 insertions(+)
->  create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
->  create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
->=20
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index 1bcf601..67b55d0 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -82,6 +82,20 @@ config MFD_ATMEL_FLEXCOM
->  	  by the probe function of this MFD driver according to a device tree
->  	  property.
-> =20
-> +config MFD_SUNXI_ADC
-> +	tristate "ADC MFD core driver for sunxi platforms"
-> +	select MFD_CORE
-> +	select REGMAP_MMIO
+This ADC resolution is 16-bits (1/65536 of full scale). Analog input
+samples are taken on software trigger; neither FIFO sampling nor
+interrupt triggering is supported by this driver.
 
-It should also depends on the architectures supported (and probably COMPILE=
-_TEST)
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/dac/Kconfig  |   9 ++-
+ drivers/iio/dac/stx104.c | 154 +++++++++++++++++++++++++++++++++++++++++------
+ 2 files changed, 139 insertions(+), 24 deletions(-)
 
-> +	help
-> +	  Select this to get support for Allwinner SoCs (A10, A13 and A31) ADC.
-> +	  This driver will only map the hardware interrupt and registers, you
-> +	  have to select individual drivers based on this MFD to be able to use
-> +	  the ADC or the thermal sensor. This will try to probe the ADC driver
-> +	  sunxi-gpadc-iio and the hwmon driver iio_hwmon.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called sunxi-gpadc-mfd.
-> +
->  config MFD_ATMEL_HLCDC
->  	tristate "Atmel HLCDC (High-end LCD Controller)"
->  	select MFD_CORE
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 42a66e1..dcf43cd 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -201,6 +201,8 @@ obj-$(CONFIG_MFD_DLN2)		+=3D dln2.o
->  obj-$(CONFIG_MFD_RT5033)	+=3D rt5033.o
->  obj-$(CONFIG_MFD_SKY81452)	+=3D sky81452.o
-> =20
-> +obj-$(CONFIG_MFD_SUNXI_ADC)	+=3D sunxi-gpadc-mfd.o
-> +
->  intel-soc-pmic-objs		:=3D intel_soc_pmic_core.o intel_soc_pmic_crc.o
->  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+=3D intel_soc_pmic_bxtwc.o
->  obj-$(CONFIG_INTEL_SOC_PMIC)	+=3D intel-soc-pmic.o
-> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
-> new file mode 100644
-> index 0000000..f0005a6
-> --- /dev/null
-> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
-> @@ -0,0 +1,197 @@
-> +/* ADC MFD core driver for sunxi platforms
-> + *
-> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
-> + *
-> + * This program is free software; you can redistribute it and/or modify =
-it
-> + * under the terms of the GNU General Public License version 2 as publis=
-hed by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/core.h>
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/regmap.h>
-> +
-> +#include <linux/mfd/sunxi-gpadc-mfd.h>
-> +
-> +#define SUNXI_IRQ_FIFO_DATA	0
-> +#define SUNXI_IRQ_TEMP_DATA	1
-> +
-> +static struct resource adc_resources[] =3D {
-> +	{
-> +		.name	=3D "FIFO_DATA_PENDING",
-> +		.start	=3D SUNXI_IRQ_FIFO_DATA,
-> +		.end	=3D SUNXI_IRQ_FIFO_DATA,
-> +		.flags	=3D IORESOURCE_IRQ,
-> +	}, {
-> +		.name	=3D "TEMP_DATA_PENDING",
-> +		.start	=3D SUNXI_IRQ_TEMP_DATA,
-> +		.end	=3D SUNXI_IRQ_TEMP_DATA,
-> +		.flags	=3D IORESOURCE_IRQ,
-> +	},
-> +};
-> +
-> +static const struct regmap_irq sunxi_gpadc_mfd_regmap_irq[] =3D {
-> +	REGMAP_IRQ_REG(SUNXI_IRQ_FIFO_DATA, 0, BIT(16)),
-> +	REGMAP_IRQ_REG(SUNXI_IRQ_TEMP_DATA, 0, BIT(18)),
-> +};
-> +
-> +static const struct regmap_irq_chip sunxi_gpadc_mfd_regmap_irq_chip =3D {
-> +	.name =3D "sunxi_gpadc_mfd_irq_chip",
-> +	.status_base =3D SUNXI_GPADC_TP_INT_FIFOS,
-> +	.ack_base =3D SUNXI_GPADC_TP_INT_FIFOS,
-> +	.mask_base =3D SUNXI_GPADC_TP_INT_FIFOC,
-> +	.init_ack_masked =3D true,
-> +	.mask_invert =3D true,
-> +	.irqs =3D sunxi_gpadc_mfd_regmap_irq,
-> +	.num_irqs =3D ARRAY_SIZE(sunxi_gpadc_mfd_regmap_irq),
-> +	.num_regs =3D 1,
-> +};
-> +
-> +static struct mfd_cell sun4i_gpadc_mfd_cells[] =3D {
-> +	{
-> +		.name	=3D "sun4i-a10-gpadc-iio",
-> +		.resources =3D adc_resources,
-> +		.num_resources =3D ARRAY_SIZE(adc_resources),
-> +	}, {
-> +		.name =3D "iio_hwmon",
-> +	}
-> +};
-> +
-> +static struct mfd_cell sun5i_gpadc_mfd_cells[] =3D {
-> +	{
-> +		.name	=3D "sun5i-a13-gpadc-iio",
-> +		.resources =3D adc_resources,
-> +		.num_resources =3D ARRAY_SIZE(adc_resources),
-> +	}, {
-> +		.name =3D "iio_hwmon",
-> +	},
-> +};
-> +
-> +static struct mfd_cell sun6i_gpadc_mfd_cells[] =3D {
-> +	{
-> +		.name	=3D "sun6i-a31-gpadc-iio",
-> +		.resources =3D adc_resources,
-> +		.num_resources =3D ARRAY_SIZE(adc_resources),
-> +	}, {
-> +		.name =3D "iio_hwmon",
-> +	},
-> +};
-> +
-> +static const struct regmap_config sunxi_gpadc_mfd_regmap_config =3D {
-> +	.reg_bits =3D 32,
-> +	.val_bits =3D 32,
-> +	.reg_stride =3D 4,
-> +	.fast_io =3D true,
-> +};
-> +
-> +static int sunxi_gpadc_mfd_probe(struct platform_device *pdev)
-> +{
-> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev =3D NULL;
-> +	struct resource *mem =3D NULL;
-> +	unsigned int irq;
-> +	int ret;
-> +
-> +	sunxi_gpadc_mfd_dev =3D devm_kzalloc(&pdev->dev,
-> +					   sizeof(*sunxi_gpadc_mfd_dev),
-> +					   GFP_KERNEL);
-> +	if (!sunxi_gpadc_mfd_dev)
-> +		return -ENOMEM;
-> +
-> +	mem =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	sunxi_gpadc_mfd_dev->regs =3D devm_ioremap_resource(&pdev->dev, mem);
-> +	if (IS_ERR(sunxi_gpadc_mfd_dev->regs))
-> +		return PTR_ERR(sunxi_gpadc_mfd_dev->regs);
-> +
-> +	sunxi_gpadc_mfd_dev->dev =3D &pdev->dev;
-> +	dev_set_drvdata(sunxi_gpadc_mfd_dev->dev, sunxi_gpadc_mfd_dev);
-> +
-> +	sunxi_gpadc_mfd_dev->regmap =3D
-> +		devm_regmap_init_mmio(sunxi_gpadc_mfd_dev->dev,
-> +				      sunxi_gpadc_mfd_dev->regs,
-> +				      &sunxi_gpadc_mfd_regmap_config);
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index ca81447..f7f896e 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -246,14 +246,13 @@ config MCP4922
+ 	  will be called mcp4922.
+ 
+ config STX104
+-	tristate "Apex Embedded Systems STX104 DAC driver"
++	tristate "Apex Embedded Systems STX104 driver"
+ 	depends on X86 && ISA_BUS_API
+ 	select GPIOLIB
+ 	help
+-	  Say yes here to build support for the 2-channel DAC and GPIO on the
+-	  Apex Embedded Systems STX104 integrated analog PC/104 card. The base
+-	  port addresses for the devices may be configured via the base array
+-	  module parameter.
++	  Say yes here to build support for the Apex Embedded Systems STX104
++	  integrated analog PC/104 card. The base port addresses for the devices
++	  may be configured via the base array module parameter.
+ 
+ config VF610_DAC
+ 	tristate "Vybrid vf610 DAC driver"
+diff --git a/drivers/iio/dac/stx104.c b/drivers/iio/dac/stx104.c
+index 792a971..4986e9a 100644
+--- a/drivers/iio/dac/stx104.c
++++ b/drivers/iio/dac/stx104.c
+@@ -1,5 +1,5 @@
+ /*
+- * DAC driver for the Apex Embedded Systems STX104
++ * IIO driver for the Apex Embedded Systems STX104
+  * Copyright (C) 2016 William Breathitt Gray
+  *
+  * This program is free software; you can redistribute it and/or modify
+@@ -24,17 +24,32 @@
+ #include <linux/moduleparam.h>
+ #include <linux/spinlock.h>
+ 
+-#define STX104_NUM_CHAN 2
++#define STX104_EXTENT 16
+ 
+-#define STX104_CHAN(chan) {				\
++#define STX104_OUT_CHAN(chan) {				\
+ 	.type = IIO_VOLTAGE,				\
+ 	.channel = chan,				\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+ 	.indexed = 1,					\
+ 	.output = 1					\
+ }
++#define STX104_GAIN_CHAN {					\
++	.type = IIO_VOLTAGE,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_HARDWAREGAIN),	\
++	.output = 1						\
++}
++#define STX104_IN_CHAN(chan) {				\
++	.type = IIO_VOLTAGE,				\
++	.channel = chan,				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_SCALE),	\
++	.indexed = 1					\
++}
+ 
+-#define STX104_EXTENT 16
++#define STX104_NUM_OUT_CHAN 2
++#define STX104_NUM_GAIN_CHAN 1
++#define STX104_NUM_IN_CHAN 16
++#define IN_CHAN_OFFSET (STX104_NUM_OUT_CHAN + STX104_NUM_GAIN_CHAN)
++#define STX104_MAX_NUM_CHAN (IN_CHAN_OFFSET + STX104_NUM_IN_CHAN)
+ 
+ static unsigned int base[max_num_isa_dev(STX104_EXTENT)];
+ static unsigned int num_stx104;
+@@ -47,7 +62,7 @@ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+  * @base:		base port address of the IIO device
+  */
+ struct stx104_iio {
+-	unsigned chan_out_states[STX104_NUM_CHAN];
++	unsigned int chan_out_states[STX104_NUM_OUT_CHAN];
+ 	unsigned base;
+ };
+ 
+@@ -69,26 +84,103 @@ static int stx104_read_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+ {
+ 	struct stx104_iio *const priv = iio_priv(indio_dev);
++	long adc_sample;
++	unsigned int adc_config;
++	long adbu;
++	unsigned int gain;
++
++	/* handle output channels */
++	if (chan->output) {
++		switch (mask) {
++		case IIO_CHAN_INFO_RAW:
++			*val = priv->chan_out_states[chan->channel];
++			return IIO_VAL_INT;
++		case IIO_CHAN_INFO_HARDWAREGAIN:
++			*val = 1 << (inb(priv->base + 11) & 0x3);
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	}
+ 
+-	if (mask != IIO_CHAN_INFO_RAW)
++	if (mask != IIO_CHAN_INFO_SCALE)
+ 		return -EINVAL;
+ 
+-	*val = priv->chan_out_states[chan->channel];
+-
+-	return IIO_VAL_INT;
++	/* select ADC channel */
++	outb(chan->channel | (chan->channel << 4), priv->base + 2);
++
++	/* trigger ADC sample capture and wait for completion*/
++	outb(0, priv->base);
++	while (inb(priv->base + 8) & BIT(7));
++
++	adc_sample = inw(priv->base);
++
++	/* get ADC bipolar/unipolar and gain configuration */
++	adc_config = inb(priv->base + 11);
++	adbu = !(adc_config & BIT(2));
++	gain = adc_config & 0x3;
++
++	/* Value conversion math:
++	 * ----------------------
++	 * scale = adc_sample / 65536
++	 * range = 10 / (1 << gain)
++	 * voltage = scale * (range + adbu * range) - adbu * range
++	 *
++	 * Simplified:
++	 * -----------
++	 * voltage = 5 * (adc_sample * (1 + adbu) - adbu * 65536) /
++	 *	(1 << (15 + gain))
++	 *
++	 * Portability Caution:
++	 * --------------------
++	 * *val will be set to a value between -327680 and 327675; in order to
++	 * prevent integer underflow/overflow, the int data type of the
++	 * implementation should be capable of representing this value range.
++	 */
++	*val = 5 * (adc_sample * (1 + adbu) - adbu * 65536);
++	*val2 = 15 + gain;
++
++	return IIO_VAL_FRACTIONAL_LOG2;
+ }
+ 
+ static int stx104_write_raw(struct iio_dev *indio_dev,
+ 	struct iio_chan_spec const *chan, int val, int val2, long mask)
+ {
+ 	struct stx104_iio *const priv = iio_priv(indio_dev);
+-	const unsigned chan_addr_offset = 2 * chan->channel;
+ 
+-	if (mask != IIO_CHAN_INFO_RAW)
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/* DAC can only accept up to a 16-bit value */
++		if ((unsigned int)val > 65535)
++			return -EINVAL;
++
++		priv->chan_out_states[chan->channel] = val;
++		outw(val, priv->base + 4 + 2 * chan->channel);
++
++		break;
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		/* Only four gain states (x1, x2, x4, x8) */
++		switch (val) {
++		case 1:
++			outb(0, priv->base + 11);
++			break;
++		case 2:
++			outb(1, priv->base + 11);
++			break;
++		case 4:
++			outb(2, priv->base + 11);
++			break;
++		case 8:
++			outb(3, priv->base + 11);
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		break;
++	default:
+ 		return -EINVAL;
+-
+-	priv->chan_out_states[chan->channel] = val;
+-	outw(val, priv->base + 4 + chan_addr_offset);
++	}
+ 
+ 	return 0;
+ }
+@@ -99,9 +191,15 @@ static const struct iio_info stx104_info = {
+ 	.write_raw = stx104_write_raw
+ };
+ 
+-static const struct iio_chan_spec stx104_channels[STX104_NUM_CHAN] = {
+-	STX104_CHAN(0),
+-	STX104_CHAN(1)
++static struct iio_chan_spec stx104_channels[STX104_MAX_NUM_CHAN] = {
++	STX104_OUT_CHAN(0), STX104_OUT_CHAN(1),
++	STX104_GAIN_CHAN,
++	STX104_IN_CHAN(0), STX104_IN_CHAN(1), STX104_IN_CHAN(2),
++	STX104_IN_CHAN(3), STX104_IN_CHAN(4), STX104_IN_CHAN(5),
++	STX104_IN_CHAN(6), STX104_IN_CHAN(7), STX104_IN_CHAN(8),
++	STX104_IN_CHAN(9), STX104_IN_CHAN(10), STX104_IN_CHAN(11),
++	STX104_IN_CHAN(12), STX104_IN_CHAN(13), STX104_IN_CHAN(14),
++	STX104_IN_CHAN(15)
+ };
+ 
+ static int stx104_gpio_get_direction(struct gpio_chip *chip,
+@@ -169,6 +267,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 	struct iio_dev *indio_dev;
+ 	struct stx104_iio *priv;
+ 	struct stx104_gpio *stx104gpio;
++	int i;
+ 	int err;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+@@ -188,13 +287,30 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 
+ 	indio_dev->info = &stx104_info;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = IN_CHAN_OFFSET + STX104_NUM_IN_CHAN;
++
++	/* determine if differential inputs */
++	if (inb(base[id] + 8) & BIT(5)) {
++		indio_dev->num_channels -= STX104_NUM_IN_CHAN / 2;
++
++		for (i = 0; i < STX104_NUM_IN_CHAN / 2; i++) {
++			stx104_channels[i + IN_CHAN_OFFSET].differential = 1;
++			stx104_channels[i + IN_CHAN_OFFSET].channel2 = i;
++		}
++	}
++
+ 	indio_dev->channels = stx104_channels;
+-	indio_dev->num_channels = STX104_NUM_CHAN;
+ 	indio_dev->name = dev_name(dev);
+ 
+ 	priv = iio_priv(indio_dev);
+ 	priv->base = base[id];
+ 
++	/* configure device for software trigger operation */
++	outb(0, base[id] + 9);
++
++	/* initialize gain setting to x1 */
++	outb(0, base[id] + 11);
++
+ 	/* initialize DAC output to 0V */
+ 	outw(0, base[id] + 4);
+ 	outw(0, base[id] + 6);
+@@ -251,5 +367,5 @@ static struct isa_driver stx104_driver = {
+ module_isa_driver(stx104_driver, num_stx104);
+ 
+ MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
+-MODULE_DESCRIPTION("Apex Embedded Systems STX104 DAC driver");
++MODULE_DESCRIPTION("Apex Embedded Systems STX104 IIO driver");
+ MODULE_LICENSE("GPL v2");
+-- 
+2.7.3
 
-This is usually on a single line (even if it exceeds 80 chars). Or
-maybe you can use a shorter variable name (like dev, or mfd).
-
-> +	if (IS_ERR(sunxi_gpadc_mfd_dev->regmap)) {
-> +		ret =3D PTR_ERR(sunxi_gpadc_mfd_dev->regmap);
-> +		dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	irq =3D platform_get_irq(pdev, 0);
-> +	ret =3D regmap_add_irq_chip(sunxi_gpadc_mfd_dev->regmap, irq,
-> +				  IRQF_ONESHOT, 0,
-> +				  &sunxi_gpadc_mfd_regmap_irq_chip,
-> +				  &sunxi_gpadc_mfd_dev->regmap_irqc);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to add irq chip: %d\n", ret);
-> +		return ret;
-> +	}
-
-You should probably make sure that you clear all the interrupts before
-enabling them.
-
-> +	if (of_device_is_compatible(pdev->dev.of_node,
-> +				    "allwinner,sun4i-a10-ts"))
-> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +				      sun4i_gpadc_mfd_cells,
-> +				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
-> +				      0, NULL);
-> +	else if (of_device_is_compatible(pdev->dev.of_node,
-> +					 "allwinner,sun5i-a13-ts"))
-> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +				      sun5i_gpadc_mfd_cells,
-> +				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
-> +				      0, NULL);
-> +	else if (of_device_is_compatible(pdev->dev.of_node,
-> +					 "allwinner,sun6i-a31-ts"))
-> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +				      sun6i_gpadc_mfd_cells,
-> +				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
-> +				      0, NULL);
-
-This huge if / else can be removed by putting those structures in the
-data pointer of of_device_id.
-
-> +
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
-> +		regmap_del_irq_chip(irq, sunxi_gpadc_mfd_dev->regmap_irqc);
-> +		return ret;
-> +	}
-> +
-> +	dev_info(&pdev->dev, "successfully loaded\n");
-> +
-> +	return 0;
-> +}
-> +
-> +static int sunxi_gpadc_mfd_remove(struct platform_device *pdev)
-> +{
-> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
-> +	unsigned int irq;
-> +
-> +	irq =3D platform_get_irq(pdev, 0);
-> +	mfd_remove_devices(&pdev->dev);
-> +	sunxi_gpadc_mfd_dev =3D dev_get_drvdata(&pdev->dev);
-> +	regmap_del_irq_chip(irq, sunxi_gpadc_mfd_dev->regmap_irqc);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id sunxi_gpadc_mfd_of_match[] =3D {
-> +	{ .compatible =3D "allwinner,sun4i-a10-ts" },
-> +	{ .compatible =3D "allwinner,sun5i-a13-ts" },
-> +	{ .compatible =3D "allwinner,sun6i-a31-ts" },
-> +	{ /* sentinel */ }
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, sunxi_gpadc_mfd_of_match);
-> +
-> +static struct platform_driver sunxi_gpadc_mfd_driver =3D {
-> +	.driver =3D {
-> +		.name =3D "sunxi-adc-mfd",
-> +		.of_match_table =3D of_match_ptr(sunxi_gpadc_mfd_of_match),
-> +	},
-> +	.probe =3D sunxi_gpadc_mfd_probe,
-> +	.remove =3D sunxi_gpadc_mfd_remove,
-> +};
-> +
-> +module_platform_driver(sunxi_gpadc_mfd_driver);
-> +
-> +MODULE_DESCRIPTION("ADC MFD core driver for sunxi platforms");
-> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/mfd/sunxi-gpadc-mfd.h b/include/linux/mfd/sunx=
-i-gpadc-mfd.h
-> new file mode 100644
-> index 0000000..7155845
-> --- /dev/null
-> +++ b/include/linux/mfd/sunxi-gpadc-mfd.h
-> @@ -0,0 +1,23 @@
-> +/* Header of ADC MFD core driver for sunxi platforms
-> + *
-> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
-> + *
-> + * This program is free software; you can redistribute it and/or modify =
-it
-> + * under the terms of the GNU General Public License version 2 as publis=
-hed by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#ifndef __SUNXI_GPADC_MFD__H__
-> +#define __SUNXI_GPADC_MFD__H__
-> +
-> +#define SUNXI_GPADC_TP_INT_FIFOC            0x10
-> +#define SUNXI_GPADC_TP_INT_FIFOS            0x14
-
-Why do you declare only these two registers there?
-
-> +
-> +struct sunxi_gpadc_mfd_dev {
-> +	struct device			*dev;
-> +	struct regmap			*regmap;
-> +	struct regmap_irq_chip_data	*regmap_irqc;
-> +	void __iomem			*regs;
-> +};
-> +
-> +#endif
-> --=20
-> 2.5.0
-
-Thanks,
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---6BvahUXLYAruDZOj
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXjNNaAAoJEBx+YmzsjxAghfoP+weUPXJNFARWnT4yK+/bb7SE
-clXJdyZpF64L4zAAAjzwurM2uvfZKi4HVn5ymCuOGrIpNKREpfVi2z5dRjGi+rWd
-DwBWufQW1ffc3vuM/OaHsbjWXKFvE4aSfLCMQ7SJPLudXq/z+T2BcaVFYFvGiN+u
-f/bMALppmSa+fiiS+dnOO/dyN2oNT/wOFWuugTh5djTHuKWIbLhfbYUjlwG/xZOp
-v2LqG686O1Gzb0Ea+jiM6lNSsUmC4Zl0necLo4XENmBpxjKqiEuct9A8v3hDstKv
-oUW+1k9MrYILF+qMJi9l0z1D3GmjjkAQa2nysL9JYSPac6GRJ/1rKV0RQUmUyJ63
-bJaAkFoyOjRKfX4MzZYt4A+l1cbgOAa88VZ/l1e5PQD4HPKW6NYdWwa7HP82h4cX
-iNshvZsLPgQ2/SW4KYrBrWHPSqu2n4k+KkCKM49YFkW+RZF/GObzFbsMnDCwMdMt
-+7EXtSUC7sUQnQGBUP5usK5DA3qH+54zY4pD95hGAihvrohhbYt/Ol1i1Tm5zxa5
-ed4IRqrkZze+B/g+E/7YgUQJL5/7J/sqmhCdQXSPgZJ6GCGaofyPYllmUf4l/t8H
-sbmDSusUb+JwLax8jxUhcEZpI5OjvdvqYUPK+czRp4VSctlZnX9vqBvLCi69G3ZY
-5uUtApxjkHNq4O3ZBh84
-=WJTt
------END PGP SIGNATURE-----
-
---6BvahUXLYAruDZOj--
