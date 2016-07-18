@@ -1,902 +1,471 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 18 Jul 2016 09:29:37 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-    Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
-    Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>, Guenter Roeck <groeck@chromium.org>,
-    Gwendal Grignou <gwendal@chromium.org>
-Subject: Re: [PATCH 04/10] iio: cros_ec: Add common functions for cros_ec
- sensors.
-In-Reply-To: <1468825370-20075-5-git-send-email-enric.balletbo@collabora.com>
-Message-ID: <alpine.DEB.2.02.1607180908300.9730@pmeerw.net>
-References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com> <1468825370-20075-5-git-send-email-enric.balletbo@collabora.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:34915 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1750998AbcGRIii (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 04:38:38 -0400
+Date: Mon, 18 Jul 2016 10:38:26 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v2 2/2] iio: adc: sun4i_lradc: new driver
+Message-ID: <20160718083826.GA22880@lukather>
+References: <1468350252-11405-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1468350252-11405-2-git-send-email-alexandre.belloni@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="SUOF0GtieIMvvwua"
+In-Reply-To: <1468350252-11405-2-git-send-email-alexandre.belloni@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-> Add the core functions to be able to support the sensors attached behind
-> the ChromeOS Embedded Controller and used by other IIO cros-ec sensor
-> drivers.
+--SUOF0GtieIMvvwua
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-comments below from a quick read
-there is plenty on undocumented private API
- 
-> The cros_ec_sensor_core driver matches with current driver in ChromeOS
-> 4.4 tree, so it includes all the fixes at the moment. The support for
-> this driver was made by Gwendal Grignou. The original patch and all the
-> fixes has been squashed and rebased on top of mainline.
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Guenter Roeck <groeck@chromium.org>
-> [eballetbo: split, squash and rebase on top of mainline the patches
-> found in ChromeOS tree]
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Hi Alex,
+
+On Tue, Jul 12, 2016 at 09:04:12PM +0200, Alexandre Belloni wrote:
+> Add an IIO driver for the Allwinner Low Resolution ADC. This ADC is usual=
+ly
+> used for physical buttons connected using a resistor ladder.
+>=20
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
 > ---
->  drivers/iio/common/Kconfig                         |   1 +
->  drivers/iio/common/Makefile                        |   1 +
->  drivers/iio/common/cros_ec_sensors/Kconfig         |  14 +
->  drivers/iio/common/cros_ec_sensors/Makefile        |   5 +
->  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 564 +++++++++++++++++++++
->  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 155 ++++++
->  6 files changed, 740 insertions(+)
->  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
->  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
-> 
-> diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
-> index 26a6026..e108996 100644
-> --- a/drivers/iio/common/Kconfig
-> +++ b/drivers/iio/common/Kconfig
-> @@ -2,6 +2,7 @@
->  # IIO common modules
->  #
->  
-> +source "drivers/iio/common/cros_ec_sensors/Kconfig"
->  source "drivers/iio/common/hid-sensors/Kconfig"
->  source "drivers/iio/common/ms_sensors/Kconfig"
->  source "drivers/iio/common/ssp_sensors/Kconfig"
-> diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
-> index 585da6a..6fa760e 100644
-> --- a/drivers/iio/common/Makefile
-> +++ b/drivers/iio/common/Makefile
-> @@ -7,6 +7,7 @@
->  #
->  
->  # When adding new entries keep the list in alphabetical order
-> +obj-y += cros_ec_sensors/
->  obj-y += hid-sensors/
->  obj-y += ms_sensors/
->  obj-y += ssp_sensors/
-> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-> new file mode 100644
-> index 0000000..a30f41e
-> --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-> @@ -0,0 +1,14 @@
-> +#
-> +# Chrome OS Embedded Controller managed sensors library
-> +#
-> +config IIO_CROS_EC_SENSORS_CORE
-> +	tristate "ChromeOS EC Sensors Core"
-> +	depends on SYSFS && MFD_CROS_EC
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
+> Changes in v2:
+>  - prefixed defines with SUN4I_LRADC_
+>  - removed sun4i_lradc_write_raw_get_fmt
+>  - set indio_dev->dev.of_node
+>  - pushed devm_iio_device_register() at the end of the probe function
+>  - added a remove function to call regulator_disable()
+
+I have the feeling that a description on how you plan to deprecate and
+remove the old input drivers is needed here.
+
+>=20
+>  drivers/iio/adc/Kconfig       |  10 ++
+>  drivers/iio/adc/Makefile      |   3 +-
+>  drivers/iio/adc/sun4i_lradc.c | 323 ++++++++++++++++++++++++++++++++++++=
+++++++
+>  3 files changed, 335 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/adc/sun4i_lradc.c
+>=20
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 25378c5882e2..87aaac6a5f44 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -384,6 +384,16 @@ config ROCKCHIP_SARADC
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called rockchip_saradc.
+> =20
+> +config SUN4I_LRADC
+> +	tristate "Allwinner sun4i LRADC driver"
+> +	depends on ARCH_SUNXI || COMPILE_TEST
+> +	select IIO_TRIGGER
 > +	help
-> +	  Base module for the ChromeOS EC Sensors module.
-> +	  Contains core functions used by other IIO CrosEC sensor
-> +	  driver.
-
-'drivers' probably
-
-> +	  Define common attributes and sysfs interrupt handler.
+> +	  Say yes here to build support for the LRADC found on Allwinner SoCs.
 > +
-> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-> new file mode 100644
-> index 0000000..95b6901
-> --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
-> @@ -0,0 +1,5 @@
-> +#
-> +# Makefile for sensors seen through the ChromeOS EC sensor hub.
-> +#
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called sun4i_lradc.
 > +
-> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>  config TI_ADC081C
+>  	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+>  	depends on I2C
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 38638d46f972..a3b165af6bde 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -1,4 +1,4 @@
+> -#
+> +
+
+Unneeded change?
+
+>  # Makefile for IIO ADC drivers
+>  #
+> =20
+> @@ -37,6 +37,7 @@ obj-$(CONFIG_PALMAS_GPADC) +=3D palmas_gpadc.o
+>  obj-$(CONFIG_QCOM_SPMI_IADC) +=3D qcom-spmi-iadc.o
+>  obj-$(CONFIG_QCOM_SPMI_VADC) +=3D qcom-spmi-vadc.o
+>  obj-$(CONFIG_ROCKCHIP_SARADC) +=3D rockchip_saradc.o
+> +obj-$(CONFIG_SUN4I_LRADC) +=3D sun4i_lradc.o
+>  obj-$(CONFIG_TI_ADC081C) +=3D ti-adc081c.o
+>  obj-$(CONFIG_TI_ADC0832) +=3D ti-adc0832.o
+>  obj-$(CONFIG_TI_ADC128S052) +=3D ti-adc128s052.o
+> diff --git a/drivers/iio/adc/sun4i_lradc.c b/drivers/iio/adc/sun4i_lradc.c
 > new file mode 100644
-> index 0000000..cb3de8f
+> index 000000000000..cd42e1a994b9
 > --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -0,0 +1,564 @@
+> +++ b/drivers/iio/adc/sun4i_lradc.c
+> @@ -0,0 +1,323 @@
 > +/*
-> + * cros_ec_sensors_core - Common function for Chrome OS EC sensor driver.
+> + * Driver for the LRADC present on the  Allwinner sun4i
 > + *
-> + * Copyright (C) 2015 Google, Inc
+> + * Copyright 2016 Free Electrons
 > + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
 > + *
 > + * This program is distributed in the hope that it will be useful,
 > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
 > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 > + * GNU General Public License for more details.
-> + *
-> + * This driver uses the cros-ec interface to communicate with the Chrome OS
-> + * EC about accelerometer data. Accelerometer access is presented through
-> + * iio sysfs.
 > + */
 > +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/bitops.h>
+> +#include <linux/err.h>
+> +#include <linux/io.h>
+> +#include <linux/interrupt.h>
 > +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
 > +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
 > +#include <linux/platform_device.h>
+> +#include <linux/sched.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/regulator/consumer.h>
 > +
-> +#include "cros_ec_sensors_core.h"
+> +#define SUN4I_LRADC_CTRL		0x00
+> +#define SUN4I_LRADC_INTC		0x04
+> +#define SUN4I_LRADC_INTS		0x08
+> +#define SUN4I_LRADC_DATA0		0x0c
+> +#define SUN4I_LRADC_DATA1		0x10
 > +
-> +static char *cros_ec_loc[] = {
-> +	[MOTIONSENSE_LOC_BASE] = "base",
-> +	[MOTIONSENSE_LOC_LID] = "lid",
-> +	[MOTIONSENSE_LOC_MAX] = "unknown",
+> +/* LRADC_CTRL bits */
+> +#define SUN4I_LRADC_FIRST_CONVERT_DLY(x)	((x) << 24) /* 8 bits */
+> +#define SUN4I_LRADC_CHAN_SELECT(x)		((x) << 22) /* 2 bits */
+> +#define SUN4I_LRADC_CONTINUE_TIME_SEL(x)	((x) << 16) /* 4 bits */
+> +#define SUN4I_LRADC_KEY_MODE_SEL(x)		((x) << 12) /* 2 bits */
+> +#define SUN4I_LRADC_LEVELA_B_CNT(x)		((x) << 8)  /* 4 bits */
+> +#define SUN4I_LRADC_HOLD_EN			BIT(6)
+> +#define SUN4I_LRADC_LEVELB_VOL(x)		((x) << 4)  /* 2 bits */
+> +#define SUN4I_LRADC_SAMPLE_RATE(x)		((x) << 2)  /* 2 bits */
+> +#define SUN4I_LRADC_EN				BIT(0)
+
+Usually, we place the bits define right next to their register
+definition (with a prefix that identifies which registers it belongs
+to)
+
+Something like SUN4I_LRADC_CTRL_EN for the last one.
+
+> +
+> +/* LRADC_INTC and LRADC_INTS bits */
+> +#define SUN4I_LRADC_CHAN1_KEYUP_IRQ		BIT(12)
+> +#define SUN4I_LRADC_CHAN1_ALRDY_HOLD_IRQ	BIT(11)
+> +#define SUN4I_LRADC_CHAN1_HOLD_IRQ		BIT(10)
+> +#define	SUN4I_LRADC_CHAN1_KEYDOWN_IRQ	BIT(9)
+
+This alignment looks weird compared to the others.
+
+> +#define SUN4I_LRADC_CHAN1_DATA_IRQ		BIT(8)
+> +#define SUN4I_LRADC_CHAN0_KEYUP_IRQ		BIT(4)
+> +#define SUN4I_LRADC_CHAN0_ALRDY_HOLD_IRQ	BIT(3)
+> +#define SUN4I_LRADC_CHAN0_HOLD_IRQ		BIT(2)
+> +#define	SUN4I_LRADC_CHAN0_KEYDOWN_IRQ	BIT(1)
+
+Ditto.
+
+> +#define SUN4I_LRADC_CHAN0_DATA_IRQ		BIT(0)
+> +
+> +#define NUM_SUN4I_LRADC_CHANS		2
+> +
+> +struct sun4i_lradc_state {
+> +	void __iomem *base;
+> +	struct regulator *vref_supply;
+> +	u32 vref_mv;
+> +	struct completion data_ok[NUM_SUN4I_LRADC_CHANS];
+> +	spinlock_t lock;
 > +};
 > +
-> +/*
-> + * cros_ec_sensors_core_init
-> + *
-> + * Initialize core sensor strucure, fill the response are
-> + * with the return of Sensor info.
-
-rephrase please
-
-> + *
-> + * @pdev plarform device created for the sensors
-
-platform
-
-> + * @indio_dev iio device structure of the device
-> + * @physical_device True if the device refers to a physical device.
-> + */
-> +int cros_ec_sensors_core_init(struct platform_device *pdev,
-> +			      struct iio_dev *indio_dev,
-> +			      bool physical_device)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct cros_ec_sensors_core_state *state = iio_priv(indio_dev);
-> +	struct cros_ec_dev *ec = dev_get_drvdata(pdev->dev.parent);
-> +	struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	state->ec = ec->ec_dev;
-> +	state->msg = devm_kzalloc(&pdev->dev,
-> +				max((u16)sizeof(struct ec_params_motion_sense),
-> +				state->ec->max_response), GFP_KERNEL);
-> +	if (!state->msg)
-> +		return -ENOMEM;
-> +
-> +	state->resp = (struct ec_response_motion_sense *)state->msg->data;
-> +
-> +	mutex_init(&state->cmd_lock);
-> +	/* Set up the host command structure. */
-> +	state->msg->version = 2;
-> +	state->msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
-> +	state->msg->outsize = sizeof(struct ec_params_motion_sense);
-> +
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = pdev->name;
-> +
-> +	if (physical_device) {
-> +		indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +		state->param.cmd = MOTIONSENSE_CMD_INFO;
-> +		state->param.info.sensor_num = sensor_platform->sensor_num;
-> +		if (cros_ec_motion_send_host_cmd(state, 0)) {
-> +			dev_warn(dev, "Can not access sensor info\n");
-> +			return -EIO;
-> +		}
-> +		state->type = state->resp->info.type;
-> +		state->loc = state->resp->info.location;
-> +	}
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_init);
-> +
-> +/*
-> + * cros_ec_motion_send_host_cmd - send motion sense host command
-> + *
-> + * @st Pointer to state information for device.
-
-@state
-opt_length is not documented
-
-> + * @return 0 if ok, -ve on error.
-
-what is -ve?
-
-> + *
-> + * Note, when called, the sub-command is assumed to be set in param->cmd.
-> + */
-> +int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *state,
-> +				 u16 opt_length)
-> +{
-> +	int ret;
-> +
-> +	if (opt_length)
-> +		state->msg->insize = min(opt_length, state->ec->max_response);
-> +	else
-> +		state->msg->insize = state->ec->max_response;
-> +
-> +	memcpy(state->msg->data, &state->param, sizeof(state->param));
-> +	/* Send host command. */
-
-comment needed?
-
-> +	ret = cros_ec_cmd_xfer_status(state->ec, state->msg);
-> +	if (ret < 0)
-> +		return -EIO;
-> +
-> +	if (ret &&
-> +	    state->resp != (struct ec_response_motion_sense *)state->msg->data)
-> +		memcpy(state->resp, state->msg->data, ret);
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(cros_ec_motion_send_host_cmd);
-> +
-> +static ssize_t __maybe_unused cros_ec_sensors_flush(struct iio_dev *indio_dev,
-> +		uintptr_t private, const struct iio_chan_spec *chan,
-> +		const char *buf, size_t len)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +	int ret = 0;
-
-initialization not needed
-
-> +	bool flush;
-> +
-> +	ret = strtobool(buf, &flush);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (!flush)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&st->cmd_lock);
-> +	st->param.cmd = MOTIONSENSE_CMD_FIFO_FLUSH;
-> +	ret = cros_ec_motion_send_host_cmd(st, 0);
-> +	if (ret != 0)
-> +		dev_warn(&indio_dev->dev, "Unable to flush sensor\n");
-> +	mutex_unlock(&st->cmd_lock);
-> +	return ret ? ret : len;
+> +#define SUN4I_LRADC_CHANNEL(chan) {				\
+> +	.type =3D IIO_VOLTAGE,					\
+> +	.indexed =3D 1,						\
+> +	.channel =3D (chan),					\
+> +	.scan_index =3D (chan),					\
+> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SCALE) |	\
+> +				BIT(IIO_CHAN_INFO_SAMP_FREQ)	\
 > +}
 > +
-> +static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
-> +		uintptr_t private, const struct iio_chan_spec *chan,
-> +		const char *buf, size_t len)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +	int ret, i;
-> +	bool calibrate;
-> +
-> +	ret = strtobool(buf, &calibrate);
-> +	if (ret < 0)
-> +		return ret;
-> +	if (!calibrate)
-> +		return -EINVAL;
-> +
-> +	mutex_lock(&st->cmd_lock);
-> +	st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
-> +	ret = cros_ec_motion_send_host_cmd(st, 0);
-> +	if (ret != 0) {
-> +		dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
-> +	} else {
-> +		/* Save values */
-> +		for (i = X; i < MAX_AXIS; i++)
-
-what is X here?
-
-> +			st->calib[i].offset = st->resp->perform_calib.offset[i];
-> +	}
-> +	mutex_unlock(&st->cmd_lock);
-> +	return ret ? ret : len;
-> +}
-> +
-> +static ssize_t cros_ec_sensors_id(struct iio_dev *indio_dev,
-> +		uintptr_t private, const struct iio_chan_spec *chan,
-> +		char *buf)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +
-> +	return sprintf(buf, "%d\n", st->param.info.sensor_num);
-
-can't we be a bit more careful with buffer sizes here (and below)?
-
-> +}
-> +
-> +static ssize_t cros_ec_sensors_loc(struct iio_dev *indio_dev,
-> +		uintptr_t private, const struct iio_chan_spec *chan,
-> +		char *buf)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +
-> +	return sprintf(buf, "%s\n", cros_ec_loc[st->loc]);
-> +}
-> +
-> +const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[] = {
-> +#ifdef CONFIG_IIO_CROS_EC_SENSORS_RING
-> +	{
-> +		.name = "flush",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.write = cros_ec_sensors_flush
-> +	},
-> +#endif
-> +	{
-> +		.name = "calibrate",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.write = cros_ec_sensors_calibrate
-> +	},
-> +	{
-> +		.name = "id",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.read = cros_ec_sensors_id
-> +	},
-> +	{
-> +		.name = "location",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.read = cros_ec_sensors_loc
-> +	},
-> +	{ },
+> +static const struct iio_chan_spec sun4i_lradc_chan_array[] =3D {
+> +	SUN4I_LRADC_CHANNEL(0),
+> +	SUN4I_LRADC_CHANNEL(1),
 > +};
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_ext_info);
 > +
-> +const struct iio_chan_spec_ext_info cros_ec_sensors_limited_info[] = {
-> +	{
-> +		.name = "id",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.read = cros_ec_sensors_id
-> +	},
-> +	{
-> +		.name = "location",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.read = cros_ec_sensors_loc
-> +	},
-> +	{ },
+> +static const struct {
+> +	int val;
+> +	int val2;
+> +} sun4i_lradc_sample_freq_avail[] =3D {
+> +	{250, 0},
+> +	{125, 0},
+> +	{62, 500000},
+> +	{32, 250000},
 > +};
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_limited_info);
-> +/*
-> + * idx_to_reg - convert sensor index into offset in shared memory region.
-> + *
-> + * @st: private data
-> + * @idx: sensor index (should be element of enum sensor_index)
-> + * @return address to read at.
-> + */
-> +static unsigned int idx_to_reg(struct cros_ec_sensors_core_state *st,
-
-cros_ec_ prefix please (here and below)
-
-> +			       unsigned int idx)
+> +
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("32.25 62.5 125 250");
+> +
+> +static struct attribute *sun4i_lradc_attributes[] =3D {
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group sun4i_lradc_attribute_group =3D {
+> +	.attrs =3D sun4i_lradc_attributes,
+> +};
+> +
+> +static irqreturn_t sun4i_lradc_irq(int irq, void *dev_id)
 > +{
-> +	/*
-> +	 * When using LPC interface, only space for 2 Accel and one Gyro.
-> +	 * First halfword of MOTIONSENSE_TYPE_ACCEL is used by angle.
-> +	 */
-> +	if (st->type == MOTIONSENSE_TYPE_ACCEL)
-> +		return EC_MEMMAP_ACC_DATA + sizeof(u16) *
-> +			(1 + idx + st->param.info.sensor_num *
-> +			 MAX_AXIS);
-> +	else
-> +		return EC_MEMMAP_GYRO_DATA + sizeof(u16) * idx;
-> +}
+> +	struct iio_dev *indio_dev =3D dev_id;
+> +	struct sun4i_lradc_state *st =3D iio_priv(indio_dev);
+> +	u32 ints, intc;
 > +
-> +static int ec_cmd_read_u8(struct cros_ec_device *ec, unsigned int offset,
-> +			  u8 *dest)
-> +{
-> +	return ec->cmd_readmem(ec, offset, 1, dest);
-> +}
+> +	spin_lock(&st->lock);
 > +
-> +static int ec_cmd_read_u16(struct cros_ec_device *ec, unsigned int offset,
-> +			   u16 *dest)
-> +{
-> +	u16 tmp;
-> +	int ret = ec->cmd_readmem(ec, offset, 2, &tmp);
+> +	ints =3D readl(st->base + SUN4I_LRADC_INTS);
+> +	intc =3D readl(st->base + SUN4I_LRADC_INTC);
 > +
-> +	*dest = le16_to_cpu(tmp);
+> +	if (ints & SUN4I_LRADC_CHAN0_DATA_IRQ)
+> +		complete_all(&st->data_ok[0]);
 > +
-> +	return ret;
-> +}
+> +	if (ints & SUN4I_LRADC_CHAN1_DATA_IRQ)
+> +		complete_all(&st->data_ok[1]);
 > +
-> +/*
-> + * read_ec_until_not_busy - read from EC status byte until it reads not busy.
-> + *
-> + * @st Pointer to state information for device.
-> + * @return 8-bit status if ok, -ve on error
-> + */
-> +static int read_ec_until_not_busy(struct cros_ec_sensors_core_state *st)
-> +{
-> +	struct cros_ec_device *ec = st->ec;
-> +	u8 status;
-> +	int attempts = 0;
-> +
-> +	ec_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
+> +	intc &=3D ~ints;
+> +	writel(intc, st->base + SUN4I_LRADC_INTC);
+> +	writel(ints, st->base + SUN4I_LRADC_INTS);
 
-check return value (here and below)?
-
-> +	while (status & EC_MEMMAP_ACC_STATUS_BUSY_BIT) {
-> +		/* Give up after enough attempts, return error. */
-> +		if (attempts++ >= 50)
-> +			return -EIO;
-> +
-> +		/* Small delay every so often. */
-> +		if (attempts % 5 == 0)
-> +			msleep(25);
-> +
-> +		ec_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
-> +	}
-> +
-> +	return status;
-> +}
-> +
-> +/*
-> + * read_ec_sensors_data_unsafe - read acceleration data from EC shared memory.
-> + *
-> + * @st Pointer to state information for device.
-
-@indio_dev? here and below
-
-> + * @scan_mask Bitmap of the sensor indices to scan.
-> + * @data Location to store data.
-> + *
-> + * Note this is the unsafe function for reading the EC data. It does not
-> + * guarantee that the EC will not modify the data as it is being read in.
-> + */
-> +static void read_ec_sensors_data_unsafe(struct iio_dev *indio_dev,
-> +			 unsigned long scan_mask, s16 *data)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +	struct cros_ec_device *ec = st->ec;
-> +	unsigned int i = 0;
-
-init not needed
+Why do you need to modify the interrupt enabled?
 
 > +
-> +	/*
-> +	 * Read all sensors enabled in scan_mask. Each value is 2
-> +	 * bytes.
-> +	 */
-> +	for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
-> +		ec_cmd_read_u16(ec, idx_to_reg(st, i), data);
-
-no return value?
-
-> +		data++;
-> +	}
-> +}
-> +
-> +/*
-> + * cros_ec_sensors_read_lpc - read acceleration data from EC shared memory.
-> + *
-> + * @st Pointer to state information for device.
-> + * @scan_mask Bitmap of the sensor indices to scan.
-> + * @data Location to store data.
-> + * @return 0 if ok, -ve on error
-> + *
-> + * Note: this is the safe function for reading the EC data. It guarantees
-> + * that the data sampled was not modified by the EC while being read.
-> + */
-> +int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
-> +			     unsigned long scan_mask, s16 *data)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +	struct cros_ec_device *ec = st->ec;
-> +	u8 samp_id = 0xff, status = 0;
-> +	int attempts = 0;
-> +
-> +	/*
-> +	 * Continually read all data from EC until the status byte after
-> +	 * all reads reflects that the EC is not busy and the sample id
-> +	 * matches the sample id from before all reads. This guarantees
-> +	 * that data read in was not modified by the EC while reading.
-> +	 */
-> +	while ((status & (EC_MEMMAP_ACC_STATUS_BUSY_BIT |
-> +			  EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK)) != samp_id) {
-> +		/* If we have tried to read too many times, return error. */
-> +		if (attempts++ >= 5)
-> +			return -EIO;
-> +
-> +		/* Read status byte until EC is not busy. */
-> +		status = read_ec_until_not_busy(st);
-> +		if (status < 0)
-> +			return status;
-> +
-> +		/*
-> +		 * Store the current sample id so that we can compare to the
-> +		 * sample id after reading the data.
-> +		 */
-> +		samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
-> +
-> +		/* Read all EC data, format it, and store it into data. */
-> +		read_ec_sensors_data_unsafe(indio_dev, scan_mask, data);
-> +
-> +		/* Read status byte. */
-> +		ec_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
-> +	}
-> +
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_read_lpc);
-> +
-> +int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev,
-> +			     unsigned long scan_mask, s16 *data)
-> +{
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +	unsigned int i = 0;
-> +
-> +	/*
-> +	 * read all sensor data through a command.
-
-start with uppercase as everywhere else
-
-> +	 */
-> +	st->param.cmd = MOTIONSENSE_CMD_DATA;
-> +	ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->data));
-> +	if (ret != 0) {
-> +		dev_warn(&indio_dev->dev, "Unable to read sensor data\n");
-> +		return ret;
-> +	}
-> +
-> +	for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
-> +		*data = st->resp->data.data[i];
-> +		data++;
-> +	}
-> +	return 0;
-> +}
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_read_cmd);
-> +
-> +irqreturn_t cros_ec_sensors_capture(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&st->cmd_lock);
-> +	/* Clear capture data. */
-> +	memset(st->samples, 0, indio_dev->scan_bytes);
-> +
-> +	/* Read data based on which channels are enabled in scan mask. */
-> +	st->read_ec_sensors_data(indio_dev, *(indio_dev->active_scan_mask),
-> +			   (s16 *)st->samples);
-
-no return value?
-
-> +
-> +	/* Store the timestamp last 8 bytes of data. */
-> +	if (indio_dev->scan_timestamp)
-> +		*(s64 *)&st->samples[round_down(indio_dev->scan_bytes -
-> +						sizeof(s64),
-> +				     sizeof(s64))] = iio_get_time_ns();
-> +
-> +	iio_push_to_buffers(indio_dev, st->samples);
-
-use iio_push_to_buffers_with_timestamp()
-
-> +
-> +	/*
-> +	 * Tell the core we are done with this trigger and ready for the
-> +	 * next one.
-> +	 */
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +	mutex_unlock(&st->cmd_lock);
+> +	spin_unlock(&st->lock);
 > +
 > +	return IRQ_HANDLED;
 > +}
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_capture);
 > +
-> +int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
-> +			  struct iio_chan_spec const *chan,
-> +			  int *val, int *val2, long mask)
+> +static int sun4i_lradc_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				int *val, int *val2, long mask)
 > +{
-> +	int ret = IIO_VAL_INT;
+> +	struct sun4i_lradc_state *st =3D iio_priv(indio_dev);
+> +	int ret, tmp, idx;
+> +	unsigned long flags;
 > +
 > +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		reinit_completion(&st->data_ok[chan->channel]);
+> +		spin_lock_irqsave(&st->lock, flags);
+> +		tmp =3D readl(st->base + SUN4I_LRADC_INTC);
+> +
+> +		if (chan->channel)
+> +			tmp |=3D SUN4I_LRADC_CHAN1_DATA_IRQ;
+> +		else
+> +			tmp |=3D SUN4I_LRADC_CHAN0_DATA_IRQ;
+> +
+> +		writel(tmp, st->base + SUN4I_LRADC_INTC);
+> +		spin_unlock_irqrestore(&st->lock, flags);
+> +
+> +		ret =3D wait_for_completion_interruptible_timeout(
+> +			&st->data_ok[chan->channel],
+> +			msecs_to_jiffies(1000));
+> +		if (ret =3D=3D 0)
+> +			return -ETIMEDOUT;
+> +
+> +		if (chan->channel)
+> +			*val =3D readl(st->base + SUN4I_LRADC_DATA1);
+> +		else
+> +			*val =3D readl(st->base + SUN4I_LRADC_DATA0);
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val =3D st->vref_mv;
+> +		*val2 =3D 6;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
 > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
-> +		st->param.ec_rate.data =
-> +			EC_MOTION_SENSE_NO_VALUE;
+> +		tmp =3D readl(st->base + SUN4I_LRADC_CTRL);
+> +		idx =3D (tmp >> 2) & 0x3;
+> +		*val =3D sun4i_lradc_sample_freq_avail[idx].val;
+> +		*val2 =3D sun4i_lradc_sample_freq_avail[idx].val2;
+> +		return IIO_VAL_INT_PLUS_MICRO;
 > +
-> +		if (cros_ec_motion_send_host_cmd(st, 0))
-> +			ret = -EIO;
-> +		else
-> +			*val = st->resp->ec_rate.ret;
-> +		break;
-> +	case IIO_CHAN_INFO_FREQUENCY:
-> +		st->param.cmd = MOTIONSENSE_CMD_SENSOR_ODR;
-> +		st->param.sensor_odr.data =
-> +			EC_MOTION_SENSE_NO_VALUE;
-> +
-> +		if (cros_ec_motion_send_host_cmd(st, 0))
-> +			ret = -EIO;
-> +		else
-> +			*val = st->resp->sensor_odr.ret;
-> +		break;
 > +	default:
 > +		break;
 > +	}
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_read);
 > +
-> +int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val, int val2, long mask)
+> +	return -EINVAL;
+> +}
+> +
+> +static int sun4i_lradc_write_raw(struct iio_dev *indio_dev,
+> +				 struct iio_chan_spec const *chan,
+> +				 int val, int val2, long mask)
 > +{
-> +	int ret = 0;
+> +	struct sun4i_lradc_state *st =3D iio_priv(indio_dev);
+> +	u32 ctrl;
+> +	int i;
 > +
 > +	switch (mask) {
-> +	case IIO_CHAN_INFO_FREQUENCY:
-> +		st->param.cmd = MOTIONSENSE_CMD_SENSOR_ODR;
-> +		st->param.sensor_odr.data = val;
-> +
-> +		/* Always roundup, so caller gets at least what it asks for. */
-> +		st->param.sensor_odr.roundup = 1;
-> +
-> +		if (cros_ec_motion_send_host_cmd(st, 0))
-> +			ret = -EIO;
-> +		break;
 > +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
-> +		st->param.ec_rate.data = val;
+> +		for (i =3D 0; i < ARRAY_SIZE(sun4i_lradc_sample_freq_avail); i++)
+> +			if (sun4i_lradc_sample_freq_avail[i].val =3D=3D val &&
+> +			    sun4i_lradc_sample_freq_avail[i].val2 =3D=3D val2)
+> +				break;
+> +		if (i =3D=3D ARRAY_SIZE(sun4i_lradc_sample_freq_avail))
+> +			return -EINVAL;
 > +
-> +		if (cros_ec_motion_send_host_cmd(st, 0))
-> +			ret = -EIO;
-> +		else
-> +			st->curr_sampl_freq = val;
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +		break;
-> +	}
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
+> +		ctrl =3D readl(st->base + SUN4I_LRADC_CTRL);
+> +		ctrl &=3D ~SUN4I_LRADC_SAMPLE_RATE(0x3);
+> +		writel(ctrl | SUN4I_LRADC_SAMPLE_RATE(i),
+> +		       st->base + SUN4I_LRADC_CTRL);
 > +
-> +static int __maybe_unused cros_ec_sensors_prepare(struct device *dev)
-> +{
-> +	struct platform_device *pdev = to_platform_device(dev);
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
-> +
-> +	if (st->curr_sampl_freq == 0)
 > +		return 0;
 > +
-> +	/*
-> +	 * If the sensors are sampled at high frequency, we will not be able to
-> +	 * sleep. Set to sampling to a long period if necessary.
-> +	 */
-> +	if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
-> +		mutex_lock(&st->cmd_lock);
-> +		st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
-> +		st->param.ec_rate.data = CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY;
-> +		cros_ec_motion_send_host_cmd(st, 0);
-> +		mutex_unlock(&st->cmd_lock);
+> +	default:
+> +		break;
 > +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info sun4i_lradc_info =3D {
+> +	.driver_module =3D THIS_MODULE,
+> +	.read_raw =3D sun4i_lradc_read_raw,
+> +	.write_raw =3D sun4i_lradc_write_raw,
+> +	.attrs =3D &sun4i_lradc_attribute_group,
+> +};
+> +
+> +static int sun4i_lradc_probe(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct device *dev =3D &pdev->dev;
+> +	struct sun4i_lradc_state *st;
+> +	int err;
+> +
+> +	indio_dev =3D devm_iio_device_alloc(dev, sizeof(*st));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	st =3D iio_priv(indio_dev);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	indio_dev->dev.parent =3D dev;
+> +	indio_dev->dev.of_node =3D dev->of_node;
+> +	indio_dev->name =3D dev_name(dev);
+> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
+> +	indio_dev->info =3D &sun4i_lradc_info;
+> +
+> +	st->vref_supply =3D devm_regulator_get(dev, "vref");
+> +	if (IS_ERR(st->vref_supply))
+> +		return PTR_ERR(st->vref_supply);
+> +
+> +	st->base =3D devm_ioremap_resource(dev,
+> +			platform_get_resource(pdev, IORESOURCE_MEM, 0));
+> +	if (IS_ERR(st->base))
+> +		return PTR_ERR(st->base);
+> +
+> +	/* Disable then clear all interrupts */
+> +	writel(0, st->base + SUN4I_LRADC_INTC);
+> +	writel(0xffffffff, st->base + SUN4I_LRADC_INTS);
+> +
+> +	err =3D devm_request_irq(dev, platform_get_irq(pdev, 0),
+> +			       sun4i_lradc_irq, 0,
+> +			       "sun4i-a10-lradc", indio_dev);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Setup the ADC channels available on the board */
+> +	indio_dev->num_channels =3D ARRAY_SIZE(sun4i_lradc_chan_array);
+> +	indio_dev->channels =3D sun4i_lradc_chan_array;
+> +
+> +	err =3D regulator_enable(st->vref_supply);
+> +	if (err)
+> +		return err;
+> +
+> +	/* lradc Vref internally is divided by 2/3 */
+> +	st->vref_mv =3D regulator_get_voltage(st->vref_supply) * 2 / 3000;
+> +
+> +	init_completion(&st->data_ok[0]);
+> +	init_completion(&st->data_ok[1]);
+> +	spin_lock_init(&st->lock);
+> +
+> +	/* Continuous mode on both channels */
+> +	writel(SUN4I_LRADC_CHAN_SELECT(0x3) | SUN4I_LRADC_KEY_MODE_SEL(0x2) |
+> +	       SUN4I_LRADC_SAMPLE_RATE(0x00) | SUN4I_LRADC_EN,
+> +	       st->base + SUN4I_LRADC_CTRL);
+> +
+> +	err =3D devm_iio_device_register(dev, indio_dev);
+> +	if (err < 0) {
+> +		dev_err(dev, "Couldn't register the device.\n");
+> +		return err;
+> +	}
+> +
 > +	return 0;
 > +}
 > +
-> +static void __maybe_unused cros_ec_sensors_complete(struct device *dev)
+> +static int sun4i_lradc_remove(struct platform_device *pdev)
 > +{
-> +	struct platform_device *pdev = to_platform_device(dev);
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+> +	struct iio_dev *indio_dev =3D platform_get_drvdata(pdev);
+> +	struct sun4i_lradc_state *st =3D iio_priv(indio_dev);
 > +
-> +	if (st->curr_sampl_freq == 0)
-> +		return;
+> +	regulator_disable(st->vref_supply);
 > +
-> +	if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
-> +		mutex_lock(&st->cmd_lock);
-> +		st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
-> +		st->param.ec_rate.data = st->curr_sampl_freq;
-> +		cros_ec_motion_send_host_cmd(st, 0);
-> +		mutex_unlock(&st->cmd_lock);
-> +	}
+> +	return 0;
 > +}
 > +
-> +#ifdef CONFIG_PM_SLEEP
-> +const struct dev_pm_ops cros_ec_sensors_pm_ops = {
-> +	.prepare = cros_ec_sensors_prepare,
-> +	.complete = cros_ec_sensors_complete
+> +static const struct of_device_id sun4i_lradc_of_match[] =3D {
+> +	{ .compatible =3D "allwinner,sun4i-a10-lradc", },
+> +	{ /* sentinel */ }
 > +};
-> +#else
-> +const struct dev_pm_ops cros_ec_sensors_pm_ops = { };
-> +#endif
-> +EXPORT_SYMBOL_GPL(cros_ec_sensors_pm_ops);
+> +MODULE_DEVICE_TABLE(of, sun4i_lradc_of_match);
 > +
-> +MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
-> new file mode 100644
-> index 0000000..53e09e1
-> --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
-> @@ -0,0 +1,155 @@
-> +/*
-> + * ChromeOS EC sensor hub
-> + *
-> + * Copyright (C) 2015 Google, Inc
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#ifndef __CROS_EC_SENSORS_CORE_H
-> +#define __CROS_EC_SENSORS_CORE_H
-> +
-> +#include <linux/irqreturn.h>
-> +
-> +enum {
-> +	X,
-
-such short #defines scare me :)
-
-> +	Y,
-> +	Z,
-> +	MAX_AXIS,
+> +static struct platform_driver sun4i_lradc_driver =3D {
+> +	.probe	=3D sun4i_lradc_probe,
+> +	.remove =3D sun4i_lradc_remove,
+> +	.driver =3D {
+> +		.name	=3D "sun4i-a10-lradc",
+> +		.of_match_table =3D of_match_ptr(sun4i_lradc_of_match),
+> +	},
 > +};
-> +
-> +/*
-> + * EC returns sensor values using signed 16 bit registers
-> + */
-> +#define CROS_EC_SENSOR_BITS 16
-> +
-> +/*
-> + * 4 16 bit channels are allowed.
-> + * Good enough for current sensors, thye use up to 3 16 bit vectors.
 
-they
+It would be great if you could also add some runtime_pm support. We're
+going to start working on the power management in a near future,
+having it already would save us time.
 
-> + */
-> +#define CROS_EC_SAMPLE_SIZE  (sizeof(s64) * 2)
-> +
-> +/*
-> + * minimum sampling period to use when device is suspending.
+Thanks!
+Maxime
 
-Minimum (uppercase)
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
 
-> + */
-> +#define CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY 1000  /* 1 second */
-> +
-> +/*
-> + * Function to read the sensor data.
-> + *
-> + * Data can be retrieve using the cros ec command protocol.
-> + * Some machines also allow accessing some sensor data via
-> + * IO space.
-> + */
-> +typedef int (cros_ec_sensors_read_t)(struct iio_dev *indio_dev,
-> +		unsigned long scan_mask, s16 *data);
-> +
-> +cros_ec_sensors_read_t cros_ec_sensors_read_lpc;
-> +cros_ec_sensors_read_t cros_ec_sensors_read_cmd;
-> +
-> +/* State data for ec_sensors iio driver. */
-> +struct cros_ec_sensors_core_state {
-> +	struct cros_ec_device *ec;
-> +	/*
-> +	 *  Location to store command and response to the EC.
-> +	 */
-> +	struct mutex cmd_lock;
-> +
-> +	/*
-> +	 * Statically allocated command structure that holds parameters
-> +	 * and response.
-> +	 */
-> +	struct cros_ec_command *msg;
-> +	struct ec_params_motion_sense param;
-> +	struct ec_response_motion_sense *resp;
-> +
-> +	/* Type of sensor */
-> +	enum motionsensor_type type;
-> +	enum motionsensor_location loc;
-> +
-> +	/*
-> +	 * Calibration parameters. Note that trigger captured data will always
-> +	 * provide the calibrated values.
-> +	 */
-> +	struct calib_data {
-> +		s16 offset;
-> +	} calib[MAX_AXIS];
-> +
-> +	/*
-> +	 * Static array to hold data from a single capture. For each
-> +	 * channel we need 2 bytes, except for the timestamp. The timestamp
-> +	 * is always last and is always 8-byte aligned.
-> +	 */
-> +	u8 samples[CROS_EC_SAMPLE_SIZE];
-> +
-> +	/* Pointer to function used for accessing sensors values. */
-> +	cros_ec_sensors_read_t *read_ec_sensors_data;
-> +
-> +	/* Current sampling period */
-> +	int curr_sampl_freq;
-> +};
-> +
-> +/* Basic initialization of the core structure. */
-> +int cros_ec_sensors_core_init(struct platform_device *pdev,
-> +			      struct iio_dev *indio_dev,
-> +			      bool physical_device);
-> +
-> +/*
-> + * cros_ec_sensors_capture - the trigger handler function
-> + *
-> + * @irq: the interrupt number
-> + * @p: private data - always a pointer to the poll func.
-> + *
-> + * On a trigger event occurring, if the pollfunc is attached then this
-> + * handler is called as a threaded interrupt (and hence may sleep). It
-> + * is responsible for grabbing data from the device and pushing it into
-> + * the associated buffer.
-> + */
-> +irqreturn_t cros_ec_sensors_capture(int irq, void *p);
-> +
-> +
-> +/*
-> + * cros_ec_motion_send_host_cmd - send motion sense host command
-> + *
-> + * @st Pointer to state information for device.
-> + * @opt_length: optional length: to reduce the response size,
-> + *    useful on the data path.
-> + *    Otherwise, the maximal allowed response size is used.
-> + * @return 0 if ok, -ve on error.
-> + *
-> + * Note, when called, the sub-command is assumed to be set in param->cmd.
-> + */
-> +int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *st,
-> +				 u16 opt_length);
-> +
-> +/*
-> + * cros_ec_sensors_core_read/write: handler for core attributes.
-> + *
-> + * Handler for attributes identical among sensors:
-> + * - frequency,
-> + * - sampling_frequency.
-> + *
-> + * cmd_lock lock must be held.
-> + */
-> +int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
-> +			  struct iio_chan_spec const *chan,
-> +			  int *val, int *val2, long mask);
-> +
-> +int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val, int val2, long mask);
-> +
-> +extern const struct dev_pm_ops cros_ec_sensors_pm_ops;
-> +
-> +/* List of extended channel specification for all sensors */
-> +extern const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[];
-> +extern const struct iio_chan_spec_ext_info cros_ec_sensors_limited_info[];
-> +
-> +#endif  /* __CROS_EC_SENSORS_CORE_H */
-> 
+--SUOF0GtieIMvvwua
+Content-Type: application/pgp-signature; name="signature.asc"
 
--- 
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+iQIcBAEBAgAGBQJXjJWCAAoJEBx+YmzsjxAgxh4QALUqqXl1+yqqyw8i5akoskQX
+j422zJsNgAhUCjNYTr1s160829mpV0Qn4T29tQB3Uo53d5gsdXFlC22L5Hh0f+tM
+a+8dXzCQM2qCLGg98xmhDW9+w5aQFZSbpoTiE+rU7Gdlq2D5evpViWmdrvbyKhva
+TpfAs8M6eM0jU3L3ntOFp3pQh8aGkPKsr++pdBiZaEX/B4XrDspRJEUfkiKgLcY9
+4e+gtqxOtnFvKbvuHSb1uX8c3WVr53kxkMEcd6blEtIUQ54LmL6VNWRkBVpOPMew
+Bp/Mk2Jbq0/149O/sTN1OWcOd53ynl7R2dwk4yngyPEDlP6HWsgtDJA0iJgd7DOO
+TgIXAMgt5HxfzDKWdbtJkKWsfzbih3WvTwUWh/UC205u8M9N+ayJKm7lO62CY6gU
+LO/mZRhwIMr85bMNz2QSJKdpEiS2jjIucxKwTf49/XXGUH28jDTkp9UBb95BVCfi
+WCoG4rYdE2CpyIKB2AAyhZF1SCAjtoKW/CU8V8uQACwtXQ90nHHbMC8PnB9o+aZf
++5s5L9Z32bDNfVYhRF6iBcS8grNCfEz5BO+qfKpz/TzBz4385kVAFYyYGr3oAPLu
+ggvtZeDLZfR4Chw4vjDCxM1y35yBrz2/1penSadVqf+hBQKMZ5hCYAyN0Au2lgiN
+HNdWtuuBaN8WeZYFmX1v
+=4Kvz
+-----END PGP SIGNATURE-----
+
+--SUOF0GtieIMvvwua--
