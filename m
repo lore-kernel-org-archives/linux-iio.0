@@ -1,422 +1,570 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57861 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57840 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752525AbcGSFgR (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:17 -0400
-Subject: Re: [PATCH v2 2/2] iio: adc: sun4i_lradc: new driver
-To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-References: <1468350252-11405-1-git-send-email-alexandre.belloni@free-electrons.com>
- <1468350252-11405-2-git-send-email-alexandre.belloni@free-electrons.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Chen-Yu Tsai <wens@csie.org>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1752361AbcGSFgE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:04 -0400
+Subject: Re: [PATCH v2 2/4] iio: adc: add support for Allwinner SoCs ADC
+To: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	jdelvare@suse.com, linux@roeck-us.net, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	lee.jones@linaro.org
+References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <fe1ff787-7899-b29a-a11d-9a3048ab8b55@kernel.org>
-Date: Mon, 18 Jul 2016 14:38:25 +0100
+Message-ID: <e24c8b63-7774-66d2-3317-43fd5598ecc9@kernel.org>
+Date: Mon, 18 Jul 2016 14:18:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <1468350252-11405-2-git-send-email-alexandre.belloni@free-electrons.com>
+In-Reply-To: <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/07/16 20:04, Alexandre Belloni wrote:
-> Add an IIO driver for the Allwinner Low Resolution ADC. This ADC is usually
-> used for physical buttons connected using a resistor ladder.
+On 15/07/16 10:59, Quentin Schulz wrote:
+> The Allwinner SoCs all have an ADC that can also act as a touchscreen
+> controller and a thermal sensor. This patch adds the ADC driver which is
+> based on the MFD for the same SoCs ADC.
 > 
-> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-A few small bits and pieces from me...
+> This also registers the thermal adc channel in the iio map array so
+> iio_hwmon could use it without modifying the Device Tree.
+> 
+> This driver probes on three different platform_device_id to take into
+> account slight differences between Allwinner SoCs ADCs.
+> 
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+
+Hi Quentin,
+
+Various bits inline.  In particular the irq handling looks flakey / racey
+to me.  Definitely need some explanatory comments.
+
+Also another note on the craziness that using extended_name to provide
+the hwmon labels will cause :)
 
 Jonathan
 > ---
-> Changes in v2:
->  - prefixed defines with SUN4I_LRADC_
->  - removed sun4i_lradc_write_raw_get_fmt
->  - set indio_dev->dev.of_node
->  - pushed devm_iio_device_register() at the end of the probe function
->  - added a remove function to call regulator_disable()
 > 
->  drivers/iio/adc/Kconfig       |  10 ++
->  drivers/iio/adc/Makefile      |   3 +-
->  drivers/iio/adc/sun4i_lradc.c | 323 ++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 335 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/adc/sun4i_lradc.c
+> v2:
+>  - add SUNXI_GPADC_ prefixes for defines,
+>  - correct typo in Kconfig,
+>  - reorder alphabetically includes, makefile,
+>  - add license header,
+>  - fix architecture variations not being handled in interrupt handlers or
+>    read raw functions,
+>  - fix unability to return negative values from thermal sensor,
+>  - add gotos to reduce code repetition,
+>  - fix irq variable being unsigned int instead of int,
+>  - remove useless dev_err and dev_info,
+>  - deactivate all interrupts if probe fails,
+>  - fix iio_device_register on NULL variable,
+>  - deactivate ADC in the IP when probe fails or when removing driver,
+> 
+>  drivers/iio/adc/Kconfig           |  12 ++
+>  drivers/iio/adc/Makefile          |   1 +
+>  drivers/iio/adc/sunxi-gpadc-iio.c | 417 ++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 430 insertions(+)
+>  create mode 100644 drivers/iio/adc/sunxi-gpadc-iio.c
 > 
 > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 25378c5882e2..87aaac6a5f44 100644
+> index 25378c5..184856f 100644
 > --- a/drivers/iio/adc/Kconfig
 > +++ b/drivers/iio/adc/Kconfig
-> @@ -384,6 +384,16 @@ config ROCKCHIP_SARADC
+> @@ -338,6 +338,18 @@ config NAU7802
 >  	  To compile this driver as a module, choose M here: the
->  	  module will be called rockchip_saradc.
+>  	  module will be called nau7802.
 >  
-> +config SUN4I_LRADC
-> +	tristate "Allwinner sun4i LRADC driver"
-> +	depends on ARCH_SUNXI || COMPILE_TEST
-> +	select IIO_TRIGGER
+> +config SUNXI_ADC
+> +	tristate "ADC driver for sunxi platforms"
+> +	depends on IIO
+> +	depends on MFD_SUNXI_ADC
 > +	help
-> +	  Say yes here to build support for the LRADC found on Allwinner SoCs.
+> +	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
+> +	  ADC. This ADC provides 4 channels which can be used as an ADC or as a
+> +	  touchscreen input and one channel for thermal sensor.
 > +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called sun4i_lradc.
+> +          To compile this driver as a module, choose M here: the module will be
+> +	  called sunxi-gpadc-iio.
 > +
->  config TI_ADC081C
->  	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
->  	depends on I2C
+>  config PALMAS_GPADC
+>  	tristate "TI Palmas General Purpose ADC"
+>  	depends on MFD_PALMAS
 > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 38638d46f972..a3b165af6bde 100644
+> index 38638d4..3e60a1d 100644
 > --- a/drivers/iio/adc/Makefile
 > +++ b/drivers/iio/adc/Makefile
-> @@ -1,4 +1,4 @@
-> -#
-> +
-??
->  # Makefile for IIO ADC drivers
->  #
->  
 > @@ -37,6 +37,7 @@ obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
 >  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
 >  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
 >  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
-> +obj-$(CONFIG_SUN4I_LRADC) += sun4i_lradc.o
+> +obj-$(CONFIG_SUNXI_ADC) += sunxi-gpadc-iio.o
 >  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
 >  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
 >  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
-> diff --git a/drivers/iio/adc/sun4i_lradc.c b/drivers/iio/adc/sun4i_lradc.c
+> diff --git a/drivers/iio/adc/sunxi-gpadc-iio.c b/drivers/iio/adc/sunxi-gpadc-iio.c
 > new file mode 100644
-> index 000000000000..cd42e1a994b9
+> index 0000000..87cc913
 > --- /dev/null
-> +++ b/drivers/iio/adc/sun4i_lradc.c
-> @@ -0,0 +1,323 @@
-> +/*
-> + * Driver for the LRADC present on the  Allwinner sun4i
+> +++ b/drivers/iio/adc/sunxi-gpadc-iio.c
+> @@ -0,0 +1,417 @@
+> +/* ADC driver for sunxi platforms
 > + *
-> + * Copyright 2016 Free Electrons
+> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
 > + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
 > + */
 > +
-> +#include <linux/bitops.h>
-> +#include <linux/err.h>
-> +#include <linux/io.h>
+> +#include <linux/completion.h>
 > +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
+> +#include <linux/io.h>
 > +#include <linux/module.h>
 > +#include <linux/of.h>
 > +#include <linux/of_device.h>
 > +#include <linux/platform_device.h>
-> +#include <linux/sched.h>
+> +#include <linux/regmap.h>
+> +
 > +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/regulator/consumer.h>
+> +#include <linux/iio/driver.h>
+> +#include <linux/iio/machine.h>
+> +#include <linux/mfd/sunxi-gpadc-mfd.h>
 > +
-> +#define SUN4I_LRADC_CTRL		0x00
-> +#define SUN4I_LRADC_INTC		0x04
-> +#define SUN4I_LRADC_INTS		0x08
-> +#define SUN4I_LRADC_DATA0		0x0c
-> +#define SUN4I_LRADC_DATA1		0x10
+> +#define SUNXI_GPADC_TP_CTRL0			0x00
+> +#define SUNXI_GPADC_TP_CTRL1			0x04
+> +#define SUNXI_GPADC_TP_CTRL2			0x08
+> +#define SUNXI_GPADC_TP_CTRL3			0x0c
+> +#define SUNXI_GPADC_TP_TPR			0x18
+> +#define SUNXI_GPADC_TP_CDAT			0x1c
+> +#define SUNXI_GPADC_TEMP_DATA			0x20
+> +#define SUNXI_GPADC_TP_DATA			0x24
 > +
-> +/* LRADC_CTRL bits */
-> +#define SUN4I_LRADC_FIRST_CONVERT_DLY(x)	((x) << 24) /* 8 bits */
-> +#define SUN4I_LRADC_CHAN_SELECT(x)		((x) << 22) /* 2 bits */
-> +#define SUN4I_LRADC_CONTINUE_TIME_SEL(x)	((x) << 16) /* 4 bits */
-> +#define SUN4I_LRADC_KEY_MODE_SEL(x)		((x) << 12) /* 2 bits */
-> +#define SUN4I_LRADC_LEVELA_B_CNT(x)		((x) << 8)  /* 4 bits */
-> +#define SUN4I_LRADC_HOLD_EN			BIT(6)
-> +#define SUN4I_LRADC_LEVELB_VOL(x)		((x) << 4)  /* 2 bits */
-> +#define SUN4I_LRADC_SAMPLE_RATE(x)		((x) << 2)  /* 2 bits */
-> +#define SUN4I_LRADC_EN				BIT(0)
+> +/* TP_CTRL0 bits */
+> +#define SUNXI_GPADC_ADC_FIRST_DLY(x)		((x) << 24) /* 8 bits */
+> +#define SUNXI_GPADC_ADC_FIRST_DLY_MODE		BIT(23)
+> +#define SUNXI_GPADC_ADC_CLK_SELECT		BIT(22)
+> +#define SUNXI_GPADC_ADC_CLK_DIVIDER(x)		((x) << 20) /* 2 bits */
+> +#define SUNXI_GPADC_FS_DIV(x)			((x) << 16) /* 4 bits */
+> +#define SUNXI_GPADC_T_ACQ(x)			((x) << 0)  /* 16 bits */
 > +
-> +/* LRADC_INTC and LRADC_INTS bits */
-> +#define SUN4I_LRADC_CHAN1_KEYUP_IRQ		BIT(12)
-> +#define SUN4I_LRADC_CHAN1_ALRDY_HOLD_IRQ	BIT(11)
-> +#define SUN4I_LRADC_CHAN1_HOLD_IRQ		BIT(10)
-> +#define	SUN4I_LRADC_CHAN1_KEYDOWN_IRQ	BIT(9)
-> +#define SUN4I_LRADC_CHAN1_DATA_IRQ		BIT(8)
-> +#define SUN4I_LRADC_CHAN0_KEYUP_IRQ		BIT(4)
-> +#define SUN4I_LRADC_CHAN0_ALRDY_HOLD_IRQ	BIT(3)
-> +#define SUN4I_LRADC_CHAN0_HOLD_IRQ		BIT(2)
-> +#define	SUN4I_LRADC_CHAN0_KEYDOWN_IRQ	BIT(1)
-> +#define SUN4I_LRADC_CHAN0_DATA_IRQ		BIT(0)
+> +/* TP_CTRL1 bits */
+> +#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE(x)	((x) << 12) /* 8 bits */
+> +#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE_EN	BIT(9)
+> +#define SUNXI_GPADC_TOUCH_PAN_CALI_EN		BIT(6)
+> +#define SUNXI_GPADC_TP_DUAL_EN			BIT(5)
+> +#define SUNXI_GPADC_TP_MODE_EN			BIT(4)
+> +#define SUNXI_GPADC_TP_ADC_SELECT		BIT(3)
+> +#define SUNXI_GPADC_ADC_CHAN_SELECT(x)		((x) << 0)  /* 3 bits */
 > +
-> +#define NUM_SUN4I_LRADC_CHANS		2
+> +/* TP_CTRL1 bits for sun6i SOCs */
+> +#define SUNXI_GPADC_SUN6I_TOUCH_PAN_CALI_EN	BIT(7)
+> +#define SUNXI_GPADC_SUN6I_TP_DUAL_EN		BIT(6)
+> +#define SUNXI_GPADC_SUN6I_TP_MODE_EN		BIT(5)
+> +#define SUNXI_GPADC_SUN6I_TP_ADC_SELECT		BIT(4)
+> +#define SUNXI_GPADC_SUN6I_ADC_CHAN_SELECT(x)	BIT(x)  /* 4 bits */
 > +
-> +struct sun4i_lradc_state {
-> +	void __iomem *base;
-> +	struct regulator *vref_supply;
-> +	u32 vref_mv;
-> +	struct completion data_ok[NUM_SUN4I_LRADC_CHANS];
-> +	spinlock_t lock;
+> +/* TP_CTRL2 bits */
+> +#define SUNXI_GPADC_TP_SENSITIVE_ADJUST(x)	((x) << 28) /* 4 bits */
+> +#define SUNXI_GPADC_TP_MODE_SELECT(x)		((x) << 26) /* 2 bits */
+> +#define SUNXI_GPADC_PRE_MEA_EN			BIT(24)
+> +#define SUNXI_GPADC_PRE_MEA_THRE_CNT(x)		((x) << 0)  /* 24 bits */
+> +
+> +/* TP_CTRL3 bits */
+> +#define SUNXI_GPADC_FILTER_EN			BIT(2)
+> +#define SUNXI_GPADC_FILTER_TYPE(x)		((x) << 0)  /* 2 bits */
+> +
+> +/* TP_INT_FIFOC irq and fifo mask / control bits */
+> +#define SUNXI_GPADC_TEMP_IRQ_EN			BIT(18)
+> +#define SUNXI_GPADC_TP_OVERRUN_IRQ_EN		BIT(17)
+> +#define SUNXI_GPADC_TP_DATA_IRQ_EN		BIT(16)
+> +#define SUNXI_GPADC_TP_DATA_XY_CHANGE		BIT(13)
+> +#define SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(x)	((x) << 8)  /* 5 bits */
+> +#define SUNXI_GPADC_TP_DATA_DRQ_EN		BIT(7)
+> +#define SUNXI_GPADC_TP_FIFO_FLUSH		BIT(4)
+> +#define SUNXI_GPADC_TP_UP_IRQ_EN		BIT(1)
+> +#define SUNXI_GPADC_TP_DOWN_IRQ_EN		BIT(0)
+> +
+> +/* TP_INT_FIFOS irq and fifo status bits */
+> +#define SUNXI_GPADC_TEMP_DATA_PENDING		BIT(18)
+> +#define SUNXI_GPADC_FIFO_OVERRUN_PENDING	BIT(17)
+> +#define SUNXI_GPADC_FIFO_DATA_PENDING		BIT(16)
+> +#define SUNXI_GPADC_TP_IDLE_FLG			BIT(2)
+> +#define SUNXI_GPADC_TP_UP_PENDING		BIT(1)
+> +#define SUNXI_GPADC_TP_DOWN_PENDING		BIT(0)
+> +
+> +/* TP_TPR bits */
+> +#define SUNXI_GPADC_TEMP_ENABLE(x)		((x) << 16)
+> +/* t = x * 256 * 16 / clkin */
+> +#define SUNXI_GPADC_TEMP_PERIOD(x)		((x) << 0)
+> +
+> +#define SUNXI_GPADC_ARCH_SUN4I			BIT(0)
+> +#define SUNXI_GPADC_ARCH_SUN5I			BIT(1)
+> +#define SUNXI_GPADC_ARCH_SUN6I			BIT(2)
+> +
+> +struct sunxi_gpadc_dev {
+> +	void __iomem			*regs;
+> +	struct completion		completion;
+> +	int				temp_data;
+> +	u32				adc_data;
+> +	struct regmap			*regmap;
+> +	unsigned int			fifo_data_irq;
+> +	unsigned int			temp_data_irq;
+> +	unsigned int			flags;
+I'd prefer something more explicit than this.  Right now only one
+bit can ever be set - indicating a particular chip family.  Why not
+just have an enum instead?
 > +};
 > +
-> +#define SUN4I_LRADC_CHANNEL(chan) {				\
+> +#define SUNXI_GPADC_ADC_CHANNEL(_channel, _name) {		\
 > +	.type = IIO_VOLTAGE,					\
 > +	.indexed = 1,						\
-> +	.channel = (chan),					\
-> +	.scan_index = (chan),					\
+> +	.channel = _channel,					\
 > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +				BIT(IIO_CHAN_INFO_SAMP_FREQ)	\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.datasheet_name = _name,				\
 > +}
 > +
-> +static const struct iio_chan_spec sun4i_lradc_chan_array[] = {
-> +	SUN4I_LRADC_CHANNEL(0),
-> +	SUN4I_LRADC_CHANNEL(1),
+> +static struct iio_map sunxi_gpadc_hwmon_maps[] = {
+> +	{
+> +		.adc_channel_label = "temp_adc",
+> +		.consumer_dev_name = "iio_hwmon.0",
+> +	},
+> +	{ /* sentinel */ },
 > +};
 > +
-> +static const struct {
-> +	int val;
-> +	int val2;
-> +} sun4i_lradc_sample_freq_avail[] = {
-> +	{250, 0},
-> +	{125, 0},
-> +	{62, 500000},
-> +	{32, 250000},
+> +static const struct iio_chan_spec sunxi_gpadc_channels[] = {
+> +	SUNXI_GPADC_ADC_CHANNEL(0, "adc_chan0"),
+> +	SUNXI_GPADC_ADC_CHANNEL(1, "adc_chan1"),
+> +	SUNXI_GPADC_ADC_CHANNEL(2, "adc_chan2"),
+> +	SUNXI_GPADC_ADC_CHANNEL(3, "adc_chan3"),
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
+> +		.datasheet_name = "temp_adc",
+> +		.extend_name = "SoC temperature",
+Just curious, did you look at the resultling sysfs entries?
+Going to be something like
+in_temp_SoC\ Temperature_input... Not good.
+If there is a strong enough reason (and there may be) to add a 'help string'
+type label to struct iio_chan_spec then my only real worries would be that
+we would be adding a whole pile of ABI that would be in the, near impossible
+to change in future, category...
+> +	},
+> +	{ /* sentinel */ },
 > +};
 > +
-> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("32.25 62.5 125 250");
-> +
-> +static struct attribute *sun4i_lradc_attributes[] = {
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group sun4i_lradc_attribute_group = {
-> +	.attrs = sun4i_lradc_attributes,
-> +};
-> +
-> +static irqreturn_t sun4i_lradc_irq(int irq, void *dev_id)
+> +static int sunxi_gpadc_adc_read(struct iio_dev *indio_dev, int channel,
+> +				int *val)
 > +{
-> +	struct iio_dev *indio_dev = dev_id;
-> +	struct sun4i_lradc_state *st = iio_priv(indio_dev);
-> +	u32 ints, intc;
+> +	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
+> +	int ret = 0;
 > +
-> +	spin_lock(&st->lock);
+> +	mutex_lock(&indio_dev->mlock);
 > +
-> +	ints = readl(st->base + SUN4I_LRADC_INTS);
-> +	intc = readl(st->base + SUN4I_LRADC_INTC);
+> +	reinit_completion(&info->completion);
+> +	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
+> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
+> +			     SUNXI_GPADC_SUN6I_TP_MODE_EN |
+> +			     SUNXI_GPADC_SUN6I_TP_ADC_SELECT |
+> +			     SUNXI_GPADC_SUN6I_ADC_CHAN_SELECT(channel));
+> +	else
+> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
+> +			     SUNXI_GPADC_TP_MODE_EN |
+> +			     SUNXI_GPADC_TP_ADC_SELECT |
+> +			     SUNXI_GPADC_ADC_CHAN_SELECT(channel));
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC,
+> +		     SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(1) |
+> +		     SUNXI_GPADC_TP_FIFO_FLUSH);
+> +	enable_irq(info->fifo_data_irq);
 > +
-> +	if (ints & SUN4I_LRADC_CHAN0_DATA_IRQ)
-> +		complete_all(&st->data_ok[0]);
+> +	if (!wait_for_completion_timeout(&info->completion,
+> +					 msecs_to_jiffies(100))) {
+> +		ret = -ETIMEDOUT;
+> +		goto out;
+> +	}
 > +
-> +	if (ints & SUN4I_LRADC_CHAN1_DATA_IRQ)
-> +		complete_all(&st->data_ok[1]);
+> +	*val = info->adc_data;
 > +
-> +	intc &= ~ints;
-> +	writel(intc, st->base + SUN4I_LRADC_INTC);
-> +	writel(ints, st->base + SUN4I_LRADC_INTS);
+> +out:
+> +	disable_irq(info->fifo_data_irq);
+> +	mutex_unlock(&indio_dev->mlock);
 > +
-> +	spin_unlock(&st->lock);
+> +	return ret;
+> +}
+> +
+> +static int sunxi_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
+> +{
+> +	struct sunxi_gpadc_dev *info = iio_priv(indio_dev);
+> +	int ret = 0;
+> +
+> +	mutex_lock(&indio_dev->mlock);
+> +
+> +	reinit_completion(&info->completion);
+> +
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC,
+> +		     SUNXI_GPADC_TP_FIFO_TRIG_LEVEL(1) |
+> +		     SUNXI_GPADC_TP_FIFO_FLUSH);
+> +	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
+> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
+> +			     SUNXI_GPADC_SUN6I_TP_MODE_EN);
+> +	else
+> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
+> +			     SUNXI_GPADC_TP_MODE_EN);
+> +	enable_irq(info->temp_data_irq);
+Is this hardware spitting out extra irqs?  If not, much better to just
+leave it enabled all the time and control whether it can occur or not
+by controlling the device state..
+> +
+> +	if (!wait_for_completion_timeout(&info->completion,
+> +					 msecs_to_jiffies(100))) {
+> +		ret = -ETIMEDOUT;
+> +		goto out;
+> +	}
+> +
+> +	if (info->flags & SUNXI_GPADC_ARCH_SUN4I)
+> +		*val = info->temp_data * 133 - 257000;
+Why report as processed?  I'd just report them as raw with the scale
+and offset provided.  It's not a big thing, but if we can leave it so
+that the conversion only occurs when desired, why not?
+
+For in kernel users, this all happen 'automagically' anyway ;)
+
+> +	else if (info->flags & SUNXI_GPADC_ARCH_SUN5I)
+> +		*val = info->temp_data * 100 - 144700;
+> +	else if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
+> +		*val = info->temp_data * 167 - 271000;
+> +
+> +out:
+> +	disable_irq(info->temp_data_irq);
+> +	mutex_unlock(&indio_dev->mlock);
+mlock has a very specific purpose - locking the state changes of
+between 'buffered' (push) and poll modes. Don't use it for anything else.
+In fact it's almost always a bug to access it directly at all.  We have
+nice wrappers now for checking and locking the access mode.
+Just have a local lock in your iio_priv structure.
+> +
+> +	return ret;
+> +
+> +}
+> +
+> +static int sunxi_gpadc_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_PROCESSED:
+> +		ret = sunxi_gpadc_temp_read(indio_dev, val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_RAW:
+> +		ret = sunxi_gpadc_adc_read(indio_dev, chan->channel, val);
+> +		if (ret)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info sunxi_gpadc_iio_info = {
+> +	.read_raw = sunxi_gpadc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static irqreturn_t sunxi_gpadc_temp_data_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct sunxi_gpadc_dev *info = dev_id;
+> +	int ret;
+> +
+> +	ret = regmap_read(info->regmap, SUNXI_GPADC_TEMP_DATA,
+> +			  &info->temp_data);
+> +	if (ret == 0)
+> +		complete(&info->completion);
 > +
 > +	return IRQ_HANDLED;
 > +}
 > +
-> +static int sun4i_lradc_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
+> +static irqreturn_t sunxi_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
 > +{
-> +	struct sun4i_lradc_state *st = iio_priv(indio_dev);
-> +	int ret, tmp, idx;
-> +	unsigned long flags;
+> +	struct sunxi_gpadc_dev *info = dev_id;
+> +	int ret;
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		reinit_completion(&st->data_ok[chan->channel]);
-> +		spin_lock_irqsave(&st->lock, flags);
-> +		tmp = readl(st->base + SUN4I_LRADC_INTC);
+> +	ret = regmap_read(info->regmap, SUNXI_GPADC_TP_DATA, &info->adc_data);
+> +	if (ret == 0)
+> +		complete(&info->completion);
+if (!regmap_read(...))?
+
 > +
-> +		if (chan->channel)
-> +			tmp |= SUN4I_LRADC_CHAN1_DATA_IRQ;
-> +		else
-> +			tmp |= SUN4I_LRADC_CHAN0_DATA_IRQ;
-> +
-> +		writel(tmp, st->base + SUN4I_LRADC_INTC);
-> +		spin_unlock_irqrestore(&st->lock, flags);
-> +
-> +		ret = wait_for_completion_interruptible_timeout(
-> +			&st->data_ok[chan->channel],
-> +			msecs_to_jiffies(1000));
-> +		if (ret == 0)
-> +			return -ETIMEDOUT;
-> +
-> +		if (chan->channel)
-> +			*val = readl(st->base + SUN4I_LRADC_DATA1);
-> +		else
-> +			*val = readl(st->base + SUN4I_LRADC_DATA0);
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = st->vref_mv;
-> +		*val2 = 6;
-> +
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		tmp = readl(st->base + SUN4I_LRADC_CTRL);
-> +		idx = (tmp >> 2) & 0x3;
-> +		*val = sun4i_lradc_sample_freq_avail[idx].val;
-> +		*val2 = sun4i_lradc_sample_freq_avail[idx].val2;
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
+> +	return IRQ_HANDLED;
 > +}
 > +
-> +static int sun4i_lradc_write_raw(struct iio_dev *indio_dev,
-> +				 struct iio_chan_spec const *chan,
-> +				 int val, int val2, long mask)
+> +static int sunxi_gpadc_probe(struct platform_device *pdev)
 > +{
-> +	struct sun4i_lradc_state *st = iio_priv(indio_dev);
-> +	u32 ctrl;
-> +	int i;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		for (i = 0; i < ARRAY_SIZE(sun4i_lradc_sample_freq_avail); i++)
-> +			if (sun4i_lradc_sample_freq_avail[i].val == val &&
-> +			    sun4i_lradc_sample_freq_avail[i].val2 == val2)
-> +				break;
-> +		if (i == ARRAY_SIZE(sun4i_lradc_sample_freq_avail))
-> +			return -EINVAL;
-> +
-> +		ctrl = readl(st->base + SUN4I_LRADC_CTRL);
-> +		ctrl &= ~SUN4I_LRADC_SAMPLE_RATE(0x3);
-> +		writel(ctrl | SUN4I_LRADC_SAMPLE_RATE(i),
-> +		       st->base + SUN4I_LRADC_CTRL);
-> +
-> +		return 0;
-> +
-> +	default:
-> +		break;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info sun4i_lradc_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = sun4i_lradc_read_raw,
-> +	.write_raw = sun4i_lradc_write_raw,
-> +	.attrs = &sun4i_lradc_attribute_group,
-> +};
-> +
-> +static int sun4i_lradc_probe(struct platform_device *pdev)
-> +{
+> +	struct sunxi_gpadc_dev *info;
 > +	struct iio_dev *indio_dev;
-> +	struct device *dev = &pdev->dev;
-> +	struct sun4i_lradc_state *st;
-> +	int err;
+> +	int ret, irq;
+> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
 > +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+> +	sunxi_gpadc_mfd_dev = dev_get_drvdata(pdev->dev.parent);
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +	st = iio_priv(indio_dev);
+> +	info = iio_priv(indio_dev);
+> +
+> +	info->regmap = sunxi_gpadc_mfd_dev->regmap;
+> +	init_completion(&info->completion);
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &sunxi_gpadc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->num_channels = ARRAY_SIZE(sunxi_gpadc_channels);
+> +	indio_dev->channels = sunxi_gpadc_channels;
+> +
+> +	info->flags = platform_get_device_id(pdev)->driver_data;
+> +
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL0, SUNXI_GPADC_FS_DIV(7) |
+> +		     SUNXI_GPADC_ADC_CLK_DIVIDER(2) | SUNXI_GPADC_T_ACQ(63));
+> +	if (info->flags & SUNXI_GPADC_ARCH_SUN6I)
+> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
+> +			     SUNXI_GPADC_SUN6I_TP_MODE_EN);
+> +	else
+> +		regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1,
+> +			     SUNXI_GPADC_TP_MODE_EN);
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL3, SUNXI_GPADC_FILTER_EN |
+> +		     SUNXI_GPADC_FILTER_TYPE(1));
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR,
+> +		     SUNXI_GPADC_TEMP_ENABLE(1) |
+> +		     SUNXI_GPADC_TEMP_PERIOD(1953));
+> +
+> +	irq = platform_get_irq_byname(pdev, "TEMP_DATA_PENDING");
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev,
+> +			"no TEMP_DATA_PENDING interrupt registered\n");
+> +		ret = irq;
+> +		goto err;
+> +	}
+> +
+> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
+> +					   sunxi_gpadc_temp_data_irq_handler, 0,
+> +					   "temp_data", info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev,
+> +			"could not request TEMP_DATA_PENDING interrupt: %d\n",
+> +			ret);
+> +		goto err;
+> +	}
+> +
+> +	info->temp_data_irq = irq;
+> +	disable_irq(irq);
+As below, I want a comment explaining why you are disabling the irq here.
+This is clearly racey..
+> +
+> +	irq = platform_get_irq_byname(pdev, "FIFO_DATA_PENDING");
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev,
+> +			"no FIFO_DATA_PENDING interrupt registered\n");
+> +		ret = irq;
+> +		goto err;
+> +	}
+> +
+> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
+> +					   sunxi_gpadc_fifo_data_irq_handler,
+> +					   0, "fifo_data", info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev,
+> +			"could not request FIFO_DATA_PENDING interrupt: %d\n",
+> +			ret);
+> +		goto err;
+> +	}
+> +
+> +	info->fifo_data_irq = irq;
+There's a race here - this may be the only way of doing it though.
+
+However, I want a comment explaining why here... Are we looking at a hardware
+bug?
+> +	disable_irq(irq);
+> +
+> +	ret = iio_map_array_register(indio_dev, sunxi_gpadc_hwmon_maps);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to register iio map array\n");
+> +		goto err;
+> +	}
 > +
 > +	platform_set_drvdata(pdev, indio_dev);
 > +
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->dev.of_node = dev->of_node;
-> +	indio_dev->name = dev_name(dev);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &sun4i_lradc_info;
-> +
-> +	st->vref_supply = devm_regulator_get(dev, "vref");
-> +	if (IS_ERR(st->vref_supply))
-> +		return PTR_ERR(st->vref_supply);
-> +
-> +	st->base = devm_ioremap_resource(dev,
-> +			platform_get_resource(pdev, IORESOURCE_MEM, 0));
-> +	if (IS_ERR(st->base))
-> +		return PTR_ERR(st->base);
-> +
-> +	/* Disable then clear all interrupts */
-> +	writel(0, st->base + SUN4I_LRADC_INTC);
-> +	writel(0xffffffff, st->base + SUN4I_LRADC_INTS);
-> +
-> +	err = devm_request_irq(dev, platform_get_irq(pdev, 0),
-> +			       sun4i_lradc_irq, 0,
-> +			       "sun4i-a10-lradc", indio_dev);
-> +	if (err)
-> +		return err;
-> +
-> +	/* Setup the ADC channels available on the board */
-> +	indio_dev->num_channels = ARRAY_SIZE(sun4i_lradc_chan_array);
-> +	indio_dev->channels = sun4i_lradc_chan_array;
-> +
-> +	err = regulator_enable(st->vref_supply);
-> +	if (err)
-> +		return err;
-> +
-> +	/* lradc Vref internally is divided by 2/3 */
-> +	st->vref_mv = regulator_get_voltage(st->vref_supply) * 2 / 3000;
-> +
-> +	init_completion(&st->data_ok[0]);
-> +	init_completion(&st->data_ok[1]);
-> +	spin_lock_init(&st->lock);
-> +
-> +	/* Continuous mode on both channels */
-> +	writel(SUN4I_LRADC_CHAN_SELECT(0x3) | SUN4I_LRADC_KEY_MODE_SEL(0x2) |
-> +	       SUN4I_LRADC_SAMPLE_RATE(0x00) | SUN4I_LRADC_EN,
-> +	       st->base + SUN4I_LRADC_CTRL);
-> +
-> +	err = devm_iio_device_register(dev, indio_dev);
-> +	if (err < 0) {
-> +		dev_err(dev, "Couldn't register the device.\n");
-> +		return err;
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "could not register the device\n");
+> +		iio_map_array_unregister(indio_dev);
+Once you have an unwinding path (which is sensible here) put everything in
+that block - it makes it easier to review (initially I compared that block
+with the remove and thought you'd missed this error path).
+
+> +		goto err;
 > +	}
 > +
 > +	return 0;
+> +
+> +err:
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1, 0);
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR, 0);
+> +
+> +	return ret;
 > +}
 > +
-> +static int sun4i_lradc_remove(struct platform_device *pdev)
+> +static int sunxi_gpadc_remove(struct platform_device *pdev)
 > +{
+> +	struct sunxi_gpadc_dev *info;
 > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct sun4i_lradc_state *st = iio_priv(indio_dev);
 > +
-Race condition here.  The interfaces this driver provides (both in
-kernel and sysfs etc) are visible until iio_device_unregister occurs.
-As you are using the devm_iio_device_register call it'll happen after
-you've turned the power off.  Probably not the best plan ;)
-
-Yeah, it's a small race, but lets get it right.  Just don't use
-the devm_ version and do an explicit unregister before calling
-the next line.
-> +	regulator_disable(st->vref_supply);
+> +	info = iio_priv(indio_dev);
+> +	iio_device_unregister(indio_dev);
+> +	iio_map_array_unregister(indio_dev);
+Slight disrepancy here between the cleanup in the error path in
+probe vs what we have in remove (next line doesn't exist in probe cleanup)
+Perhaps a comment here would make it clear why...
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_INT_FIFOC, 0);
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_CTRL1, 0);
+> +	regmap_write(info->regmap, SUNXI_GPADC_TP_TPR, 0);
 > +
 > +	return 0;
 > +}
 > +
-> +static const struct of_device_id sun4i_lradc_of_match[] = {
-> +	{ .compatible = "allwinner,sun4i-a10-lradc", },
-> +	{ /* sentinel */ }
+> +static const struct platform_device_id sunxi_gpadc_id[] = {
+> +	{ "sun4i-a10-gpadc-iio", SUNXI_GPADC_ARCH_SUN4I },
+> +	{ "sun5i-a13-gpadc-iio", SUNXI_GPADC_ARCH_SUN5I },
+> +	{ "sun6i-a31-gpadc-iio", SUNXI_GPADC_ARCH_SUN6I },
+> +	{ /* sentinel */ },
 > +};
-> +MODULE_DEVICE_TABLE(of, sun4i_lradc_of_match);
 > +
-> +static struct platform_driver sun4i_lradc_driver = {
-> +	.probe	= sun4i_lradc_probe,
-> +	.remove = sun4i_lradc_remove,
+> +static struct platform_driver sunxi_gpadc_driver = {
 > +	.driver = {
-> +		.name	= "sun4i-a10-lradc",
-> +		.of_match_table = of_match_ptr(sun4i_lradc_of_match),
+> +		.name = "sunxi-gpadc-iio",
 > +	},
+> +	.id_table = sunxi_gpadc_id,
+> +	.probe = sunxi_gpadc_probe,
+> +	.remove = sunxi_gpadc_remove,
 > +};
 > +
-> +module_platform_driver(sun4i_lradc_driver);
+> +module_platform_driver(sunxi_gpadc_driver);
 > +
-> +MODULE_LICENSE("GPL");
-> +MODULE_DESCRIPTION("Allwinner sun4i low resolution ADC driver");
-> +MODULE_AUTHOR("Alexandre Belloni <alexandre.belloni@free-electrons.com>");
+> +MODULE_DESCRIPTION("ADC driver for sunxi platforms");
+> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
+> +MODULE_LICENSE("GPL v2");
 > 
 
