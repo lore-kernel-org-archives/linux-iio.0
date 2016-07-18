@@ -1,14 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57908 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57900 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752611AbcGSFga (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:30 -0400
-Subject: Re: [PATCH 06/10] iio: cros_ec_light_prox: add ChromeOS EC Light and
- Proximity Sensors
+	with ESMTP id S1752589AbcGSFg2 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 01:36:28 -0400
+Subject: Re: [PATCH 05/10] iio: cros_ec_sensors: add ChromeOS EC Contiguous
+ Sensors driver
 To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
 	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
- <1468825370-20075-7-git-send-email-enric.balletbo@collabora.com>
+ <1468825370-20075-6-git-send-email-enric.balletbo@collabora.com>
 Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
@@ -16,64 +16,63 @@ Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
 	Guenter Roeck <groeck@chromium.org>,
 	Gwendal Grignou <gwendal@chromium.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8440ec2e-0020-f4fa-c316-a325df4b3871@kernel.org>
-Date: Mon, 18 Jul 2016 17:11:27 +0100
+Message-ID: <718bfe03-4c8e-6436-9d31-958dad3d3ce1@kernel.org>
+Date: Mon, 18 Jul 2016 17:09:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <1468825370-20075-7-git-send-email-enric.balletbo@collabora.com>
+In-Reply-To: <1468825370-20075-6-git-send-email-enric.balletbo@collabora.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 18/07/16 08:02, Enric Balletbo i Serra wrote:
-> Handle Light and Proximity sensors presented by the ChromeOS EC Sensor hub.
-> Creates an IIO device for each functions.
+> Handle 3d contiguous sensors like Accelerometers, Gyroscope and
+> Magnetometer that are presented by the ChromeOS EC Sensor hub.
 > 
 > Signed-off-by: Guenter Roeck <groeck@chromium.org>
 > Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Few more nitpicks, but basically the same as the previous..
+Various nitpicks inline.
 
 Jonathan
 > ---
->  drivers/iio/common/cros_ec_sensors/Kconfig         |   9 +
+>  drivers/iio/common/cros_ec_sensors/Kconfig         |   8 +
 >  drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
->  .../common/cros_ec_sensors/cros_ec_light_prox.c    | 288 +++++++++++++++++++++
->  3 files changed, 298 insertions(+)
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
+>  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++++++++
+>  3 files changed, 331 insertions(+)
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
 > 
 > diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-> index 18002d6..02559d2 100644
+> index a30f41e..18002d6 100644
 > --- a/drivers/iio/common/cros_ec_sensors/Kconfig
 > +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-> @@ -20,3 +20,12 @@ config IIO_CROS_EC_SENSORS
->  	  Accelerometers, Gyroscope and Magnetometer that are
->  	  presented by the ChromeOS EC Sensor hub.
->  	  Creates an IIO device for each functions.
-> +
-> +config IIO_CROS_EC_LIGHT_PROX
-> +	tristate "ChromeOS EC Light and Proximity Sensors"
+> @@ -12,3 +12,11 @@ config IIO_CROS_EC_SENSORS_CORE
+>  	  driver.
+>  	  Define common attributes and sysfs interrupt handler.
+>  
+> +config IIO_CROS_EC_SENSORS
+> +	tristate "ChromeOS EC Contiguous Sensors"
 > +	select IIO_CROS_EC_SENSORS_CORE
 > +	help
-> +	  Module to handle Light and Proximity sensors
+> +	  Module to handle 3d contiguous sensors like
+> +	  Accelerometers, Gyroscope and Magnetometer that are
 > +	  presented by the ChromeOS EC Sensor hub.
 > +	  Creates an IIO device for each functions.
-> +	  Only one source is exposed by the EC.
 > diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-> index ec716ff..7aaf2a2 100644
+> index 95b6901..ec716ff 100644
 > --- a/drivers/iio/common/cros_ec_sensors/Makefile
 > +++ b/drivers/iio/common/cros_ec_sensors/Makefile
-> @@ -4,3 +4,4 @@
+> @@ -3,3 +3,4 @@
+>  #
 >  
 >  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
->  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
-> +obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c b/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
+> +obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
+> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
 > new file mode 100644
-> index 0000000..333e927
+> index 0000000..4741118
 > --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
-> @@ -0,0 +1,288 @@
+> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+> @@ -0,0 +1,322 @@
 > +/*
-> + * cros_ec_light_proxmity - Driver for light and prox sensors behing CrOS EC.
+> + * cros_ec_sensors - Driver for Chrome OS Embedded Controller sensors.
 > + *
 > + * Copyright (C) 2015 Google, Inc
 > + *
@@ -89,7 +88,6 @@ Jonathan
 > + * This driver uses the cros-ec interface to communicate with the Chrome OS
 > + * EC about accelerometer data. Accelerometer access is presented through
 > + * iio sysfs.
-Fix this comment as I doubt this driver does that ;)
 > + */
 > +
 > +#include <linux/delay.h>
@@ -97,9 +95,8 @@ Fix this comment as I doubt this driver does that ;)
 > +#include <linux/iio/buffer.h>
 > +#include <linux/iio/iio.h>
 > +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
 > +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
 > +#include <linux/kernel.h>
 > +#include <linux/mfd/cros_ec.h>
 > +#include <linux/mfd/cros_ec_commands.h>
@@ -110,13 +107,11 @@ Fix this comment as I doubt this driver does that ;)
 > +
 > +#include "cros_ec_sensors_core.h"
 > +
-> +/*
-> + * We only represent one entry for light or proximity.
-> + * EC is merging different light sensors to return the
-> + * what the eye would see.
-> + * For proximity, we currently support only one light source.
-> + */
-> +#define MAX_CHANNELS (1 + 1)
+> +#define MAX_CHANNELS (MAX_AXIS + 1)
+Really needs a prefix - chances of another define for MAX_CHANNELS in an
+included header is way too high!
+Same for MAX_AXIS etc...  Basically prefix everything and you'll have it
+about right...
 > +
 > +/* State data for ec_sensors iio driver. */
 > +struct cros_ec_sensors_state {
@@ -126,13 +121,14 @@ Fix this comment as I doubt this driver does that ;)
 > +	struct iio_chan_spec channels[MAX_CHANNELS];
 > +};
 > +
-> +static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
+> +static int cros_ec_sensors_read(struct iio_dev *indio_dev,
 > +			  struct iio_chan_spec const *chan,
 > +			  int *val, int *val2, long mask)
 > +{
 > +	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-> +	u16 data = 0;
+> +	s16 data = 0;
 > +	s64 val64;
+> +	int i;
 > +	int ret = IIO_VAL_INT;
 > +	int idx = chan->scan_index;
 > +
@@ -140,9 +136,11 @@ Fix this comment as I doubt this driver does that ;)
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
-> +					(s16 *)&data) < 0)
+> +		if (st->core.read_ec_sensors_data(indio_dev,
+> +						  1 << idx, &data) < 0)
 > +			ret = -EIO;
+Never get any useful errors in from the function?  Seems like you are eating
+it if there is.
 > +		*val = data;
 > +		break;
 > +	case IIO_CHAN_INFO_CALIBBIAS:
@@ -150,22 +148,19 @@ Fix this comment as I doubt this driver does that ;)
 > +		st->core.param.sensor_offset.flags = 0;
 > +
 > +		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
+< 0 for consistency?
 > +			ret = -EIO;
 > +			break;
 > +		}
 > +
 > +		/* Save values */
-> +		st->core.calib[0].offset =
-> +			st->core.resp->sensor_offset.offset[0];
+> +		for (i = X; i < MAX_AXIS; i++)
+> +			st->core.calib[i].offset =
+> +				st->core.resp->sensor_offset.offset[i];
 > +
 > +		*val = st->core.calib[idx].offset;
 > +		break;
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		/*
-> +		 * RANGE is used for calibration
-> +		 * scalse is a number x.y, where x is coded on 16bits,
-> +		 * y coded on 16 bits, between 0 and 9999.
-> +		 */
+> +	case IIO_CHAN_INFO_SCALE:
 > +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
 > +		st->core.param.sensor_range.data =
 > +			EC_MOTION_SENSE_NO_VALUE;
@@ -175,15 +170,38 @@ Fix this comment as I doubt this driver does that ;)
 > +			break;
 > +		}
 > +		val64 = st->core.resp->sensor_range.ret;
-> +		*val = val64 >> 16;
-> +		*val2 = (val64 & 0xffff) * 100;
-> +		ret = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/* Light: Result in Lux, using calibration multiplier */
-> +		/* Prox: Result in cm. */
-> +		*val = 1;
-> +		ret = IIO_VAL_INT;
+> +		switch (st->core.type) {
+> +		case MOTIONSENSE_TYPE_ACCEL:
+> +			/*
+> +			 * EC returns data in g, iio exepects m/s^2.
+> +			 * Do not use IIO_G_TO_M_S_2 to avoid precision loss.
+> +			 */
+> +			*val = div_s64(val64 * 980665, 10);
+> +			*val2 = 10000 << (CROS_EC_SENSOR_BITS - 1);
+> +			ret = IIO_VAL_FRACTIONAL;
+> +			break;
+> +		case MOTIONSENSE_TYPE_GYRO:
+> +			/* EC returns date in dps, iio expects rad/s.
+Fixup any multiline comment syntax issues please.
+> +			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
+> +			 * loss. Round to the nearest integer.
+> +			 */
+> +			*val = div_s64(val64 * 314159 + 9000000ULL, 1000);
+> +			*val2 = 18000 << (CROS_EC_SENSOR_BITS - 1);
+> +			ret = IIO_VAL_FRACTIONAL;
+> +			break;
+> +		case MOTIONSENSE_TYPE_MAG:
+> +			/*
+> +			 * EC returns date in 16LSB / uT,
+> +			 * iio expects Gauss
+> +			 */
+> +			*val = val64;
+> +			*val2 = 100 << (CROS_EC_SENSOR_BITS - 1);
+> +			ret = IIO_VAL_FRACTIONAL;
+> +			break;
+> +		default:
+> +			ret = -EINVAL;
+> +		}
 > +		break;
 > +	default:
 > +		ret = cros_ec_sensors_core_read(
@@ -194,11 +212,12 @@ Fix this comment as I doubt this driver does that ;)
 > +	return ret;
 > +}
 > +
-> +static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
+> +static int cros_ec_sensors_write(struct iio_dev *indio_dev,
 > +			       struct iio_chan_spec const *chan,
 > +			       int val, int val2, long mask)
 > +{
 > +	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
+> +	int i;
 > +	int ret = 0;
 > +	int idx = chan->scan_index;
 > +
@@ -207,22 +226,34 @@ Fix this comment as I doubt this driver does that ;)
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_CALIBBIAS:
 > +		st->core.calib[idx].offset = val;
+Spacing wise I'd expect a blank line here as I think this refers to the
+stuff below.
+
 > +		/* Send to EC for each axis, even if not complete */
 > +
 > +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
 > +		st->core.param.sensor_offset.flags =
 > +			MOTION_SENSE_SET_OFFSET;
-> +		st->core.param.sensor_offset.offset[0] =
-> +			st->core.calib[0].offset;
+> +		for (i = X; i < MAX_AXIS; i++)
+> +			st->core.param.sensor_offset.offset[i] =
+> +				st->core.calib[i].offset;
 > +		st->core.param.sensor_offset.temp =
 > +			EC_MOTION_SENSE_INVALID_CALIB_TEMP;
 > +
 > +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
 > +			ret = -EIO;
 > +		break;
-> +	case IIO_CHAN_INFO_CALIBSCALE:
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (st->core.type == MOTIONSENSE_TYPE_MAG) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
 > +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = (val << 16) | (val2 / 100);
+> +		st->core.param.sensor_range.data = val;
+> +
+> +		/* Always roundup, so caller gets at least what it asks for. */
+> +		st->core.param.sensor_range.roundup = 1;
+> +
 > +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
 > +			ret = -EIO;
 > +		break;
@@ -237,8 +268,8 @@ Fix this comment as I doubt this driver does that ;)
 > +}
 > +
 > +static const struct iio_info ec_sensors_info = {
-> +	.read_raw = &cros_ec_light_prox_read,
-> +	.write_raw = &cros_ec_light_prox_write,
+> +	.read_raw = &cros_ec_sensors_read,
+> +	.write_raw = &cros_ec_sensors_write,
 > +	.driver_module = THIS_MODULE,
 > +};
 > +
@@ -250,7 +281,7 @@ Fix this comment as I doubt this driver does that ;)
 > +	struct iio_dev *indio_dev;
 > +	struct cros_ec_sensors_state *state;
 > +	struct iio_chan_spec *channel;
-> +	int ret;
+> +	int ret, i;
 > +
 > +	if (!ec_dev || !ec_dev->ec_dev) {
 > +		dev_warn(&pdev->dev, "No CROS EC device found.\n");
@@ -262,70 +293,82 @@ Fix this comment as I doubt this driver does that ;)
 > +	if (!indio_dev)
 > +		return -ENOMEM;
 > +
-> +
 > +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
 > +	if (ret)
 > +		return ret;
 > +
 > +	indio_dev->info = &ec_sensors_info;
 > +	state = iio_priv(indio_dev);
-> +	state->core.type = state->core.resp->info.type;
-> +	state->core.loc = state->core.resp->info.location;
-> +	channel = state->channels;
-perhaps a blank line here for readability?
-> +	/* common part */
-> +	channel->info_mask_separate =
-> +		BIT(IIO_CHAN_INFO_RAW) |
-> +		BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> +		BIT(IIO_CHAN_INFO_CALIBSCALE);
-> +	channel->info_mask_shared_by_all =
-> +		BIT(IIO_CHAN_INFO_SCALE) |
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +		BIT(IIO_CHAN_INFO_FREQUENCY);
-> +	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.shift = 0;
-> +	channel->scan_index = 0;
-> +	channel->ext_info = cros_ec_sensors_ext_info;
-> +	channel->scan_type.sign = 'u';
+> +	for (channel = state->channels, i = X; i < MAX_AXIS; i++, channel++) {
+> +		/* common part */
+> +		channel->info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW) |
+> +			BIT(IIO_CHAN_INFO_CALIBBIAS);
+> +		channel->info_mask_shared_by_all =
+> +			BIT(IIO_CHAN_INFO_SCALE) |
+> +			BIT(IIO_CHAN_INFO_FREQUENCY) |
+> +			BIT(IIO_CHAN_INFO_SAMP_FREQ);
+> +		channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
+> +		channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
+> +		channel->scan_type.shift = 0;
+> +		channel->scan_index = i;
+> +		channel->ext_info = cros_ec_sensors_ext_info;
+> +		channel->modified = 1;
+> +		channel->channel2 = IIO_MOD_X + i;
+> +		channel->scan_type.sign = 's';
 > +
-> +	state->core.calib[0].offset = 0;
+> +		state->core.calib[i].offset = 0;
 > +
-> +	/* sensor specific */
-> +	switch (state->core.type) {
-> +	case MOTIONSENSE_TYPE_LIGHT:
-> +		channel->type = IIO_LIGHT;
-> +		break;
-> +	case MOTIONSENSE_TYPE_PROX:
-> +		channel->type = IIO_PROXIMITY;
-> +		break;
-> +	default:
-> +		dev_warn(&pdev->dev, "unknown\n");
-> +		return -EINVAL;
+> +		/* sensor specific */
+> +		switch (state->core.type) {
+> +		case MOTIONSENSE_TYPE_ACCEL:
+> +			channel->type = IIO_ACCEL;
+> +			break;
+> +		case MOTIONSENSE_TYPE_GYRO:
+> +			channel->type = IIO_ANGL_VEL;
+> +			break;
+> +		case MOTIONSENSE_TYPE_MAG:
+> +			channel->type = IIO_MAGN;
+> +			break;
+> +		default:
+> +			dev_warn(&pdev->dev, "unknown\n");
+> +		}
 > +	}
 > +
 > +	/* Timestamp */
-> +	channel++;
 > +	channel->type = IIO_TIMESTAMP;
 > +	channel->channel = -1;
-> +	channel->scan_index = 1;
+> +	channel->scan_index = MAX_AXIS;
 > +	channel->scan_type.sign = 's';
 > +	channel->scan_type.realbits = 64;
 > +	channel->scan_type.storagebits = 64;
 > +
 > +	indio_dev->channels = state->channels;
 > +	indio_dev->num_channels = MAX_CHANNELS;
+This needs to be precisely the number of channels, so a generic value called
+MAX_CHANNELS seems a little wrong.  If it's always 4, then just put a 4 here
+(guessing!)
 > +
-> +	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+> +	/* There is only enough room for accel and gyro in the io space */
+*laughs* - genious ;)
+> +	if ((state->core.ec->cmd_readmem != NULL) &&
+> +	    (state->core.type != MOTIONSENSE_TYPE_MAG))
+> +		state->core.read_ec_sensors_data = cros_ec_sensors_read_lpc;
+> +	else
+> +		state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
 > +
 > +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +			cros_ec_sensors_capture, NULL);
+> +					 cros_ec_sensors_capture, NULL);
 > +	if (ret)
 > +		return ret;
 > +
 > +	ret = iio_device_register(indio_dev);
 > +	if (ret)
-> +		iio_triggered_buffer_cleanup(indio_dev);
+> +		goto error_uninit_buffer;
+> +	return 0;
+> +
+> +error_uninit_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
 > +	return ret;
 > +}
 > +
@@ -335,16 +378,20 @@ perhaps a blank line here for readability?
 > +
 > +	iio_device_unregister(indio_dev);
 > +	iio_triggered_buffer_cleanup(indio_dev);
-blank line here please + similar locations.
+blank line here preferred (and in similar locations).
+
 > +	return 0;
 > +}
 > +
 > +static const struct platform_device_id cros_ec_sensors_ids[] = {
 > +	{
-> +		.name = "cros-ec-prox",
+> +		.name = "cros-ec-accel",
 > +	},
 > +	{
-> +		.name = "cros-ec-light",
+> +		.name = "cros-ec-gyro",
+> +	},
+> +	{
+> +		.name = "cros-ec-mag",
 > +	},
 > +	{ /* sentinel */ }
 > +};
@@ -352,7 +399,7 @@ blank line here please + similar locations.
 > +
 > +static struct platform_driver cros_ec_sensors_platform_driver = {
 > +	.driver = {
-> +		.name	= "cros-ec-light-prox",
+> +		.name	= "cros-ec-sensors",
 > +		.pm	= &cros_ec_sensors_pm_ops,
 > +	},
 > +	.probe		= cros_ec_sensors_probe,
@@ -361,7 +408,7 @@ blank line here please + similar locations.
 > +};
 > +module_platform_driver(cros_ec_sensors_platform_driver);
 > +
-> +MODULE_DESCRIPTION("ChromeOS EC light/proximity sensors driver");
+> +MODULE_DESCRIPTION("ChromeOS EC 3-axis sensors driver");
 > +MODULE_LICENSE("GPL v2");
 > 
 
