@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:48179 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:48173 "EHLO
 	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751016AbcGRHDP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 03:03:15 -0400
+	with ESMTP id S1751791AbcGRHDR (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 03:03:17 -0400
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
@@ -12,355 +12,171 @@ Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Guenter Roeck <groeck@chromium.org>,
 	Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 07/10] iio: cros_ec_activity: add ChromeOS EC Activity Sensors
-Date: Mon, 18 Jul 2016 09:02:47 +0200
-Message-Id: <1468825370-20075-8-git-send-email-enric.balletbo@collabora.com>
+Subject: [PATCH 10/10] platform/chrome: cros_ec_dev - Register cros-ec sensors
+Date: Mon, 18 Jul 2016 09:02:50 +0200
+Message-Id: <1468825370-20075-11-git-send-email-enric.balletbo@collabora.com>
 In-Reply-To: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
 References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Handle activity events detections presented by the ChromeOS
-EC Sensor hub. Activities can be simple (low/no motion) or more complex
-(riding train). They are being reported by physical devices or the EC
-itself.
+Check whether the ChromeOS Embedded Controller is a sensor hub and in
+such case issue a command to get the number of sensors and register them
+all.
 
-Signed-off-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
- drivers/iio/common/cros_ec_sensors/Kconfig         |  10 +
- drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
- .../iio/common/cros_ec_sensors/cros_ec_activity.c  | 294 +++++++++++++++++++++
- 3 files changed, 305 insertions(+)
- create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
+ drivers/platform/chrome/cros_ec_dev.c | 122 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-index 02559d2..22b4211 100644
---- a/drivers/iio/common/cros_ec_sensors/Kconfig
-+++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-@@ -29,3 +29,13 @@ config IIO_CROS_EC_LIGHT_PROX
- 	  presented by the ChromeOS EC Sensor hub.
- 	  Creates an IIO device for each functions.
- 	  Only one source is exposed by the EC.
-+
-+config IIO_CROS_EC_ACTIVITY
-+	tristate "ChromeOS EC Activity Sensors"
-+	select IIO_CROS_EC_SENSORS_CORE
-+	help
-+	  Module to handle activity events detections presented by the ChromeOS
-+	  EC Sensor hub.
-+	  Activities can be simple (low/no motion) or more complex (riding train).
-+	  They are being reported by physical devices or the EC itself.
-+	  Creates an IIO device to manage all activities.
-diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-index 7aaf2a2..8f54f1e 100644
---- a/drivers/iio/common/cros_ec_sensors/Makefile
-+++ b/drivers/iio/common/cros_ec_sensors/Makefile
-@@ -5,3 +5,4 @@
- obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
- obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
- obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
-+obj-$(CONFIG_IIO_CROS_EC_ACTIVITY) += cros_ec_activity.o
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c b/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
-new file mode 100644
-index 0000000..b2e39d6
---- /dev/null
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_activity.c
-@@ -0,0 +1,294 @@
-+/*
-+ * cros_ec_sensors_activity - Driver for activities/gesture recognition.
-+ *
-+ * Copyright (C) 2015 Google, Inc
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * This driver uses the cros-ec interface to communicate with the Chrome OS
-+ * EC about accelerometer data. Accelerometer access is presented through
-+ * iio sysfs.
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/kernel.h>
-+#include <linux/mfd/cros_ec.h>
-+#include <linux/mfd/cros_ec_commands.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/platform_device.h>
-+
-+#include "cros_ec_sensors_core.h"
-+
-+/* st data for ec_sensors iio driver. */
-+struct cros_ec_sensors_state {
-+	/* Shared by all sensors */
-+	struct cros_ec_sensors_core_state core;
-+
-+	struct iio_chan_spec *channels;
-+	unsigned int nb_activities;
-+};
-+
-+static const struct iio_event_spec cros_ec_activity_single_shot[] = {
-+	{
-+		.type = IIO_EV_TYPE_CHANGE,
-+		/* significant motion trigger when we get out of still. */
-+		.dir = IIO_EV_DIR_FALLING,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
-+	 },
-+};
-+
-+static int ec_sensors_read(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val, int *val2, long mask)
+diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
+index fa5f060..0bec60e 100644
+--- a/drivers/platform/chrome/cros_ec_dev.c
++++ b/drivers/platform/chrome/cros_ec_dev.c
+@@ -18,6 +18,7 @@
+  */
+ 
+ #include <linux/fs.h>
++#include <linux/mfd/core.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+@@ -265,6 +266,123 @@ static void __remove(struct device *dev)
+ 	kfree(ec);
+ }
+ 
++static void cros_ec_sensors_register(struct cros_ec_dev *ec)
 +{
-+	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-+		 chan->channel2);
-+	return -EPERM;
-+}
-+
-+static int ec_sensors_write(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val, int val2, long mask)
-+{
-+	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-+		 chan->channel2);
-+	return -EPERM;
-+}
-+
-+static int cros_ec_read_event_config(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir)
-+{
-+	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (chan->type != IIO_ACTIVITY)
-+		return -EINVAL;
-+
-+	mutex_lock(&st->core.cmd_lock);
-+	st->core.param.cmd = MOTIONSENSE_CMD_LIST_ACTIVITIES;
-+	if (cros_ec_motion_send_host_cmd(&st->core, 0) == EC_RES_SUCCESS) {
-+		switch (chan->channel2) {
-+		case IIO_MOD_STILL:
-+			ret = !!(st->core.resp->list_activities.enabled &
-+				 (1 << MOTIONSENSE_ACTIVITY_SIG_MOTION));
-+			break;
-+		case IIO_MOD_DOUBLE_TAP:
-+			ret = !!(st->core.resp->list_activities.enabled &
-+				 (1 << MOTIONSENSE_ACTIVITY_DOUBLE_TAP));
-+			break;
-+		default:
-+			dev_warn(&indio_dev->dev, "Unknown activity: %d\n",
-+				 chan->channel2);
-+			ret = -EINVAL;
-+		}
-+	} else {
-+		ret = -EIO;
-+	}
-+	mutex_unlock(&st->core.cmd_lock);
-+	return ret;
-+}
-+
-+static int cros_ec_write_event_config(struct iio_dev *indio_dev,
-+				      const struct iio_chan_spec *chan,
-+				      enum iio_event_type type,
-+				      enum iio_event_direction dir, int state)
-+{
-+	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (chan->type != IIO_ACTIVITY)
-+		return -EINVAL;
-+
-+	mutex_lock(&st->core.cmd_lock);
-+	st->core.param.cmd = MOTIONSENSE_CMD_SET_ACTIVITY;
-+	switch (chan->channel2) {
-+	case IIO_MOD_STILL:
-+		st->core.param.set_activity.activity =
-+			MOTIONSENSE_ACTIVITY_SIG_MOTION;
-+		break;
-+	case IIO_MOD_DOUBLE_TAP:
-+		st->core.param.set_activity.activity =
-+			MOTIONSENSE_ACTIVITY_DOUBLE_TAP;
-+		break;
-+	default:
-+		dev_warn(&indio_dev->dev, "Unknown activity: %d\n",
-+			 chan->channel2);
-+	}
-+	st->core.param.set_activity.enable = state;
-+
-+	ret = cros_ec_motion_send_host_cmd(&st->core, 0);
-+
-+	mutex_unlock(&st->core.cmd_lock);
-+	return ret;
-+}
-+
-+/* Not implemented */
-+static int cros_ec_read_event_value(struct iio_dev *indio_dev,
-+				    const struct iio_chan_spec *chan,
-+				    enum iio_event_type type,
-+				    enum iio_event_direction dir,
-+				    enum iio_event_info info,
-+				    int *val, int *val2)
-+{
-+	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-+		 chan->channel2);
-+	return -EPERM;
-+}
-+
-+static int cros_ec_write_event_value(struct iio_dev *indio_dev,
-+				     const struct iio_chan_spec *chan,
-+				     enum iio_event_type type,
-+				     enum iio_event_direction dir,
-+				     enum iio_event_info info,
-+				     int val, int val2)
-+{
-+	dev_warn(&indio_dev->dev, "%s: Not Expected: %d\n", __func__,
-+		 chan->channel2);
-+	return -EPERM;
-+}
-+
-+static const struct iio_info ec_sensors_info = {
-+	.read_raw = &ec_sensors_read,
-+	.write_raw = &ec_sensors_write,
-+	.read_event_config = cros_ec_read_event_config,
-+	.write_event_config = cros_ec_write_event_config,
-+	.read_event_value = cros_ec_read_event_value,
-+	.write_event_value = cros_ec_write_event_value,
-+};
-+
-+static int cros_ec_sensors_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-+	struct cros_ec_device *ec_device;
-+	struct iio_dev *indio_dev;
-+	struct cros_ec_sensors_state *st;
-+	struct iio_chan_spec *channel;
-+	unsigned long activities;
-+	int i, index, ret, nb_activities;
-+
-+	if (!ec_dev || !ec_dev->ec_dev) {
-+		dev_warn(&pdev->dev, "No CROS EC device found.\n");
-+		return -EINVAL;
-+	}
-+	ec_device = ec_dev->ec_dev;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->info = &ec_sensors_info;
-+	st = iio_priv(indio_dev);
-+	st->core.type = st->core.resp->info.type;
-+	st->core.loc = st->core.resp->info.location;
-+
 +	/*
-+	 * List all available activities
++	 * Issue a command to get the number of sensor reported.
++	 * Build an array of sensors driver and register them all.
 +	 */
-+	st->core.param.cmd = MOTIONSENSE_CMD_LIST_ACTIVITIES;
-+	ret = cros_ec_motion_send_host_cmd(&st->core, 0);
-+	if (ret)
-+		return ret;
-+	activities = st->core.resp->list_activities.enabled |
-+		     st->core.resp->list_activities.disabled;
-+	nb_activities = hweight_long(activities) + 1;
++	int ret, i, id, sensor_num;
++	struct mfd_cell *sensor_cells;
++	struct cros_ec_sensor_platform *sensor_platforms;
++	int sensor_type[MOTIONSENSE_TYPE_MAX];
++	struct ec_params_motion_sense *params;
++	struct ec_response_motion_sense *resp;
++	struct cros_ec_command *msg;
 +
-+	if (!activities)
-+		return -ENODEV;
++	msg = kzalloc(sizeof(struct cros_ec_command) +
++		      max(sizeof(*params), sizeof(*resp)), GFP_KERNEL);
++	if (msg == NULL)
++		return;
 +
-+	/* Allocate a channel per activity and one for timestamp */
-+	st->channels = devm_kcalloc(&pdev->dev, nb_activities,
-+				    sizeof(*st->channels), GFP_KERNEL);
-+	if (!st->channels)
-+		return -ENOMEM;
++	msg->version = 2;
++	msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
++	msg->outsize = sizeof(*params);
++	msg->insize = sizeof(*resp);
 +
-+	channel = &st->channels[0];
-+	index = 0;
-+	for_each_set_bit(i, &activities, BITS_PER_LONG) {
-+		channel->scan_index = index;
++	params = (struct ec_params_motion_sense *)msg->data;
++	params->cmd = MOTIONSENSE_CMD_DUMP;
 +
-+		/* List all available activities */
-+		channel->type = IIO_ACTIVITY;
-+		channel->modified = 1;
-+		channel->event_spec = cros_ec_activity_single_shot;
-+		channel->num_event_specs =
-+				ARRAY_SIZE(cros_ec_activity_single_shot);
-+		switch (i) {
-+		case MOTIONSENSE_ACTIVITY_SIG_MOTION:
-+			channel->channel2 = IIO_MOD_STILL;
-+			break;
-+		case MOTIONSENSE_ACTIVITY_DOUBLE_TAP:
-+			channel->channel2 = IIO_MOD_DOUBLE_TAP;
-+			break;
-+		default:
-+			dev_warn(&pdev->dev, "Unknown activity: %d\n", i);
++	ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
++	if (ret < 0 || msg->result != EC_RES_SUCCESS) {
++		dev_warn(ec->dev, "cannot get EC sensor information: %d/%d\n",
++			 ret, msg->result);
++		goto error;
++	}
++
++	resp = (struct ec_response_motion_sense *)msg->data;
++	sensor_num = resp->dump.sensor_count;
++	/* Allocate 2 extra sensors in case lid angle or FIFO are needed */
++	sensor_cells = kzalloc(sizeof(struct mfd_cell) * (sensor_num + 2),
++			       GFP_KERNEL);
++	if (sensor_cells == NULL)
++		goto error;
++
++	sensor_platforms = kzalloc(sizeof(struct cros_ec_sensor_platform) *
++		  (sensor_num + 1), GFP_KERNEL);
++	if (sensor_platforms == NULL)
++		goto error_platforms;
++
++	memset(sensor_type, 0, sizeof(sensor_type));
++	id = 0;
++	for (i = 0; i < sensor_num; i++) {
++		params->cmd = MOTIONSENSE_CMD_INFO;
++		params->info.sensor_num = i;
++		ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
++		if ((ret < 0) || msg->result != EC_RES_SUCCESS) {
++			dev_warn(ec->dev, "no info for EC sensor %d : %d/%d\n",
++				 i, ret, msg->result);
 +			continue;
 +		}
-+		channel->ext_info = cros_ec_sensors_limited_info;
-+		channel++;
-+		index++;
++		switch (resp->info.type) {
++		case MOTIONSENSE_TYPE_ACCEL:
++			sensor_cells[id].name = "cros-ec-accel";
++			break;
++		case MOTIONSENSE_TYPE_GYRO:
++			sensor_cells[id].name = "cros-ec-gyro";
++			break;
++		case MOTIONSENSE_TYPE_MAG:
++			sensor_cells[id].name = "cros-ec-mag";
++			break;
++		case MOTIONSENSE_TYPE_PROX:
++			sensor_cells[id].name = "cros-ec-prox";
++			break;
++		case MOTIONSENSE_TYPE_LIGHT:
++			sensor_cells[id].name = "cros-ec-light";
++			break;
++		case MOTIONSENSE_TYPE_ACTIVITY:
++			sensor_cells[id].name = "cros-ec-activity";
++			break;
++		default:
++			dev_warn(ec->dev, "unknown type %d\n", resp->info.type);
++			continue;
++		}
++		sensor_platforms[id].sensor_num = i;
++		sensor_cells[id].id = sensor_type[resp->info.type];
++		sensor_cells[id].platform_data = &sensor_platforms[id];
++		sensor_cells[id].pdata_size =
++			sizeof(struct cros_ec_sensor_platform);
++
++		sensor_type[resp->info.type]++;
++		id++;
++	}
++	if (sensor_type[MOTIONSENSE_TYPE_ACCEL] >= 2) {
++		sensor_platforms[id].sensor_num = sensor_num;
++
++		sensor_cells[id].name = "cros-ec-angle";
++		sensor_cells[id].id = 0;
++		sensor_cells[id].platform_data = &sensor_platforms[id];
++		sensor_cells[id].pdata_size =
++			sizeof(struct cros_ec_sensor_platform);
++		id++;
++	}
++	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO)) {
++		sensor_cells[id].name = "cros-ec-ring";
++		id++;
 +	}
 +
-+	/* Timestamp */
-+	channel->scan_index = index;
-+	channel->type = IIO_TIMESTAMP;
-+	channel->channel = -1;
-+	channel->scan_type.sign = 's';
-+	channel->scan_type.realbits = 64;
-+	channel->scan_type.storagebits = 64;
++	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
++			      NULL, 0, NULL);
++	if (ret)
++		dev_err(ec->dev, "failed to add EC sensors\n");
 +
-+	indio_dev->channels = st->channels;
-+	indio_dev->num_channels = index + 1;
-+
-+	st->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
-+
-+	/* Driver is incomplete: by itself, no way to get event directly */
-+	ret = iio_device_register(indio_dev);
-+	return ret;
++	kfree(sensor_platforms);
++error_platforms:
++	kfree(sensor_cells);
++error:
++	kfree(msg);
 +}
 +
-+static int cros_ec_sensors_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ static int ec_device_probe(struct platform_device *pdev)
+ {
+ 	int retval = -ENOMEM;
+@@ -319,6 +437,10 @@ static int ec_device_probe(struct platform_device *pdev)
+ 		goto dev_reg_failed;
+ 	}
+ 
++	/* check whether this EC is a sensor hub. */
++	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
++		cros_ec_sensors_register(ec);
 +
-+	iio_device_unregister(indio_dev);
-+	return 0;
-+}
-+
-+static const struct platform_device_id cros_ec_sensors_ids[] = {
-+	{
-+		.name = "cros-ec-activity",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
-+
-+static struct platform_driver cros_ec_sensors_platform_driver = {
-+	.driver = {
-+		.name	= "cros-ec-activity",
-+	},
-+	.probe		= cros_ec_sensors_probe,
-+	.remove		= cros_ec_sensors_remove,
-+	.id_table	= cros_ec_sensors_ids,
-+};
-+module_platform_driver(cros_ec_sensors_platform_driver);
-+
-+MODULE_DESCRIPTION("ChromeOS EC activity sensors driver");
-+MODULE_LICENSE("GPL v2");
+ 	return 0;
+ 
+ dev_reg_failed:
 -- 
 2.1.0
 
