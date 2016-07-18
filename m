@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:48167 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:48146 "EHLO
 	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751663AbcGRHDN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 03:03:13 -0400
+	with ESMTP id S1751306AbcGRHDL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 18 Jul 2016 03:03:11 -0400
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
@@ -12,379 +12,391 @@ Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Guenter Roeck <groeck@chromium.org>,
 	Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH 05/10] iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
-Date: Mon, 18 Jul 2016 09:02:45 +0200
-Message-Id: <1468825370-20075-6-git-send-email-enric.balletbo@collabora.com>
+Subject: [PATCH 02/10] mfd: cros_ec: update MOTIONSENSE definitions and commands.
+Date: Mon, 18 Jul 2016 09:02:42 +0200
+Message-Id: <1468825370-20075-3-git-send-email-enric.balletbo@collabora.com>
 In-Reply-To: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
 References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Handle 3d contiguous sensors like Accelerometers, Gyroscope and
-Magnetometer that are presented by the ChromeOS EC Sensor hub.
+Let's update the command header to include the definitions related to
+the sensors attached behind the ChromeOS Embedded Controller. The new
+commands and definitions allow us to get information from these sensors.
 
-Signed-off-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
- drivers/iio/common/cros_ec_sensors/Kconfig         |   8 +
- drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
- .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++++++++
- 3 files changed, 331 insertions(+)
- create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+ include/linux/mfd/cros_ec_commands.h | 260 +++++++++++++++++++++++++++++++----
+ 1 file changed, 231 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-index a30f41e..18002d6 100644
---- a/drivers/iio/common/cros_ec_sensors/Kconfig
-+++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-@@ -12,3 +12,11 @@ config IIO_CROS_EC_SENSORS_CORE
- 	  driver.
- 	  Define common attributes and sysfs interrupt handler.
+diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+index 76728ff..f26a806 100644
+--- a/include/linux/mfd/cros_ec_commands.h
++++ b/include/linux/mfd/cros_ec_commands.h
+@@ -1290,7 +1290,13 @@ enum motionsense_command {
  
-+config IIO_CROS_EC_SENSORS
-+	tristate "ChromeOS EC Contiguous Sensors"
-+	select IIO_CROS_EC_SENSORS_CORE
-+	help
-+	  Module to handle 3d contiguous sensors like
-+	  Accelerometers, Gyroscope and Magnetometer that are
-+	  presented by the ChromeOS EC Sensor hub.
-+	  Creates an IIO device for each functions.
-diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-index 95b6901..ec716ff 100644
---- a/drivers/iio/common/cros_ec_sensors/Makefile
-+++ b/drivers/iio/common/cros_ec_sensors/Makefile
-@@ -3,3 +3,4 @@
- #
+ 	/*
+ 	 * EC Rate command is a setter/getter command for the EC sampling rate
+-	 * of all motion sensors in milliseconds.
++	 * in milliseconds.
++	 * It is per sensor, the EC run sample task  at the minimum of all
++	 * sensors EC_RATE.
++	 * For sensors without hardware FIFO, EC_RATE should be equals to 1/ODR
++	 * to collect all the sensor samples.
++	 * For sensor with hardware FIFO, EC_RATE is used as the maximal delay
++	 * to process of all motion sensors in milliseconds.
+ 	 */
+ 	MOTIONSENSE_CMD_EC_RATE = 2,
  
- obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
-+obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-new file mode 100644
-index 0000000..4741118
---- /dev/null
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -0,0 +1,322 @@
-+/*
-+ * cros_ec_sensors - Driver for Chrome OS Embedded Controller sensors.
-+ *
-+ * Copyright (C) 2015 Google, Inc
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * This driver uses the cros-ec interface to communicate with the Chrome OS
-+ * EC about accelerometer data. Accelerometer access is presented through
-+ * iio sysfs.
+@@ -1315,37 +1321,138 @@ enum motionsense_command {
+ 	 */
+ 	MOTIONSENSE_CMD_KB_WAKE_ANGLE = 5,
+ 
+-	/* Number of motionsense sub-commands. */
+-	MOTIONSENSE_NUM_CMDS
+-};
++	/*
++	 * Returns a single sensor data.
++	 */
++	MOTIONSENSE_CMD_DATA = 6,
++
++	/*
++	 * Return sensor fifo info.
++	 */
++	MOTIONSENSE_CMD_FIFO_INFO = 7,
++
++	/*
++	 * Insert a flush element in the fifo and return sensor fifo info.
++	 * The host can use that element to synchronize its operation.
++	 */
++	MOTIONSENSE_CMD_FIFO_FLUSH = 8,
+ 
+-enum motionsensor_id {
+-	EC_MOTION_SENSOR_ACCEL_BASE = 0,
+-	EC_MOTION_SENSOR_ACCEL_LID = 1,
+-	EC_MOTION_SENSOR_GYRO = 2,
++	/*
++	 * Return a portion of the fifo.
++	 */
++	MOTIONSENSE_CMD_FIFO_READ = 9,
++
++	/*
++	 * Perform low level calibration.
++	 * On sensors that support it, ask to do offset calibration.
++	 */
++	MOTIONSENSE_CMD_PERFORM_CALIB = 10,
++
++	/*
++	 * Sensor Offset command is a setter/getter command for the offset
++	 * used for calibration.
++	 * The offsets can be calculated by the host, or via
++	 * PERFORM_CALIB command.
++	 */
++	MOTIONSENSE_CMD_SENSOR_OFFSET = 11,
++
++	/*
++	 * List available activities for a MOTION sensor.
++	 * Indicates if they are enabled or disabled.
++	 */
++	MOTIONSENSE_CMD_LIST_ACTIVITIES = 12,
+ 
+ 	/*
+-	 * Note, if more sensors are added and this count changes, the padding
+-	 * in ec_response_motion_sense dump command must be modified.
++	 * Activity management
++	 * Enable/Disable activity recognition.
+ 	 */
+-	EC_MOTION_SENSOR_COUNT = 3
++	MOTIONSENSE_CMD_SET_ACTIVITY = 13,
++
++	/* Number of motionsense sub-commands. */
++	MOTIONSENSE_NUM_CMDS
+ };
+ 
+ /* List of motion sensor types. */
+ enum motionsensor_type {
+ 	MOTIONSENSE_TYPE_ACCEL = 0,
+ 	MOTIONSENSE_TYPE_GYRO = 1,
++	MOTIONSENSE_TYPE_MAG = 2,
++	MOTIONSENSE_TYPE_PROX = 3,
++	MOTIONSENSE_TYPE_LIGHT = 4,
++	MOTIONSENSE_TYPE_ACTIVITY = 5,
++	MOTIONSENSE_TYPE_MAX,
+ };
+ 
+ /* List of motion sensor locations. */
+ enum motionsensor_location {
+ 	MOTIONSENSE_LOC_BASE = 0,
+ 	MOTIONSENSE_LOC_LID = 1,
++	MOTIONSENSE_LOC_MAX,
+ };
+ 
+ /* List of motion sensor chips. */
+ enum motionsensor_chip {
+ 	MOTIONSENSE_CHIP_KXCJ9 = 0,
++	MOTIONSENSE_CHIP_LSM6DS0 = 1,
++	MOTIONSENSE_CHIP_BMI160 = 2,
++	MOTIONSENSE_CHIP_SI1141 = 3,
++	MOTIONSENSE_CHIP_SI1142 = 4,
++	MOTIONSENSE_CHIP_SI1143 = 5,
++	MOTIONSENSE_CHIP_KX022 = 6,
++	MOTIONSENSE_CHIP_L3GD20H = 7,
++};
++
++struct ec_response_motion_sensor_data {
++	/* Flags for each sensor. */
++	uint8_t flags;
++	/* sensor number the data comes from */
++	uint8_t sensor_num;
++	/* Each sensor is up to 3-axis. */
++	union {
++		int16_t             data[3];
++		struct {
++			uint16_t    rsvd;
++			uint32_t    timestamp;
++		} __packed;
++		struct {
++			uint8_t     activity; /* motionsensor_activity */
++			uint8_t     state;
++			int16_t     add_info[2];
++		};
++	};
++} __packed;
++
++struct ec_response_motion_sense_fifo_info {
++	/* Size of the fifo */
++	uint16_t size;
++	/* Amount of space used in the fifo */
++	uint16_t count;
++	/* TImestamp recorded in us */
++	uint32_t timestamp;
++	/* Total amount of vector lost */
++	uint16_t total_lost;
++	/* Lost events since the last fifo_info, per sensors */
++	uint16_t lost[0];
++} __packed;
++
++struct ec_response_motion_sense_fifo_data {
++	uint32_t number_data;
++	struct ec_response_motion_sensor_data data[0];
++} __packed;
++
++/* List supported activity recognition */
++enum motionsensor_activity {
++	MOTIONSENSE_ACTIVITY_RESERVED = 0,
++	MOTIONSENSE_ACTIVITY_SIG_MOTION = 1,
++	MOTIONSENSE_ACTIVITY_DOUBLE_TAP = 2,
++};
++
++struct ec_motion_sense_activity {
++	uint8_t sensor_num;
++	uint8_t activity; /* one of enum motionsensor_activity */
++	uint8_t enable;   /* 1: enable, 0: disable */
++	uint8_t reserved;
++	uint16_t parameters[3]; /* activity dependent parameters */
+ };
+ 
+ /* Module flag masks used for the dump sub-command. */
+@@ -1355,41 +1462,61 @@ enum motionsensor_chip {
+ #define MOTIONSENSE_SENSOR_FLAG_PRESENT (1<<0)
+ 
+ /*
++ * Flush entry for synchronisation.
++ * data contains time stamp
 + */
++#define MOTIONSENSE_SENSOR_FLAG_FLUSH (1<<0)
++#define MOTIONSENSE_SENSOR_FLAG_TIMESTAMP (1<<1)
++#define MOTIONSENSE_SENSOR_FLAG_WAKEUP (1<<2)
 +
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/kernel.h>
-+#include <linux/mfd/cros_ec.h>
-+#include <linux/mfd/cros_ec_commands.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/platform_device.h>
++/*
+  * Send this value for the data element to only perform a read. If you
+  * send any other value, the EC will interpret it as data to set and will
+  * return the actual value set.
+  */
+ #define EC_MOTION_SENSE_NO_VALUE -1
+ 
++#define EC_MOTION_SENSE_INVALID_CALIB_TEMP 0x8000
 +
-+#include "cros_ec_sensors_core.h"
++/* MOTIONSENSE_CMD_SENSOR_OFFSET subcommand flag */
++/* Set Calibration information */
++#define MOTION_SENSE_SET_OFFSET 1
 +
-+#define MAX_CHANNELS (MAX_AXIS + 1)
-+
-+/* State data for ec_sensors iio driver. */
-+struct cros_ec_sensors_state {
-+	/* Shared by all sensors */
-+	struct cros_ec_sensors_core_state core;
-+
-+	struct iio_chan_spec channels[MAX_CHANNELS];
-+};
-+
-+static int cros_ec_sensors_read(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val, int *val2, long mask)
-+{
-+	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-+	s16 data = 0;
-+	s64 val64;
-+	int i;
-+	int ret = IIO_VAL_INT;
-+	int idx = chan->scan_index;
-+
-+	mutex_lock(&st->core.cmd_lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (st->core.read_ec_sensors_data(indio_dev,
-+						  1 << idx, &data) < 0)
-+			ret = -EIO;
-+		*val = data;
-+		break;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
-+		st->core.param.sensor_offset.flags = 0;
-+
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
-+			ret = -EIO;
-+			break;
-+		}
-+
-+		/* Save values */
-+		for (i = X; i < MAX_AXIS; i++)
-+			st->core.calib[i].offset =
-+				st->core.resp->sensor_offset.offset[i];
-+
-+		*val = st->core.calib[idx].offset;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-+		st->core.param.sensor_range.data =
-+			EC_MOTION_SENSE_NO_VALUE;
-+
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
-+			ret = -EIO;
-+			break;
-+		}
-+		val64 = st->core.resp->sensor_range.ret;
-+		switch (st->core.type) {
-+		case MOTIONSENSE_TYPE_ACCEL:
+ struct ec_params_motion_sense {
+ 	uint8_t cmd;
+ 	union {
+-		/* Used for MOTIONSENSE_CMD_DUMP. */
++		/* Used for MOTIONSENSE_CMD_DUMP */
+ 		struct {
+-			/* no args */
 +			/*
-+			 * EC returns data in g, iio exepects m/s^2.
-+			 * Do not use IIO_G_TO_M_S_2 to avoid precision loss.
++			 * Maximal number of sensor the host is expecting.
++			 * 0 means the host is only interested in the number
++			 * of sensors controlled by the EC.
 +			 */
-+			*val = div_s64(val64 * 980665, 10);
-+			*val2 = 10000 << (CROS_EC_SENSOR_BITS - 1);
-+			ret = IIO_VAL_FRACTIONAL;
-+			break;
-+		case MOTIONSENSE_TYPE_GYRO:
-+			/* EC returns date in dps, iio expects rad/s.
-+			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
-+			 * loss. Round to the nearest integer.
++			uint8_t max_sensor_count;
+ 		} dump;
+ 
+ 		/*
+-		 * Used for MOTIONSENSE_CMD_EC_RATE and
+-		 * MOTIONSENSE_CMD_KB_WAKE_ANGLE.
++		 * Used for MOTIONSENSE_CMD_KB_WAKE_ANGLE.
+ 		 */
+ 		struct {
+-			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read. */
++			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read.
++			 * kb_wake_angle: angle to wakup AP.
 +			 */
-+			*val = div_s64(val64 * 314159 + 9000000ULL, 1000);
-+			*val2 = 18000 << (CROS_EC_SENSOR_BITS - 1);
-+			ret = IIO_VAL_FRACTIONAL;
-+			break;
-+		case MOTIONSENSE_TYPE_MAG:
+ 			int16_t data;
+-		} ec_rate, kb_wake_angle;
++		} kb_wake_angle;
+ 
+-		/* Used for MOTIONSENSE_CMD_INFO. */
++		/* Used for MOTIONSENSE_CMD_INFO, MOTIONSENSE_CMD_DATA
++		 * and MOTIONSENSE_CMD_PERFORM_CALIB.
++		 */
+ 		struct {
+-			/* Should be element of enum motionsensor_id. */
+ 			uint8_t sensor_num;
+-		} info;
++		} info, data, fifo_flush, perform_calib, list_activities;
+ 
+ 		/*
+-		 * Used for MOTIONSENSE_CMD_SENSOR_ODR and
+-		 * MOTIONSENSE_CMD_SENSOR_RANGE.
++		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
++		 * and MOTIONSENSE_CMD_SENSOR_RANGE.
+ 		 */
+ 		struct {
+-			/* Should be element of enum motionsensor_id. */
+ 			uint8_t sensor_num;
+ 
+ 			/* Rounding flag, true for round-up, false for down. */
+@@ -1399,22 +1526,69 @@ struct ec_params_motion_sense {
+ 
+ 			/* Data to set or EC_MOTION_SENSE_NO_VALUE to read. */
+ 			int32_t data;
+-		} sensor_odr, sensor_range;
++		} ec_rate, sensor_odr, sensor_range;
++
++		/* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
++		struct {
++			uint8_t sensor_num;
++
 +			/*
-+			 * EC returns date in 16LSB / uT,
-+			 * iio expects Gauss
++			 * bit 0: If set (MOTION_SENSE_SET_OFFSET), set
++			 * the calibration information in the EC.
++			 * If unset, just retrieve calibration information.
 +			 */
-+			*val = val64;
-+			*val2 = 100 << (CROS_EC_SENSOR_BITS - 1);
-+			ret = IIO_VAL_FRACTIONAL;
-+			break;
-+		default:
-+			ret = -EINVAL;
-+		}
-+		break;
-+	default:
-+		ret = cros_ec_sensors_core_read(
-+				&st->core, chan, val, val2, mask);
-+		break;
-+	}
-+	mutex_unlock(&st->core.cmd_lock);
-+	return ret;
-+}
++			uint16_t flags;
 +
-+static int cros_ec_sensors_write(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val, int val2, long mask)
-+{
-+	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-+	int i;
-+	int ret = 0;
-+	int idx = chan->scan_index;
++			/*
++			 * Temperature at calibration, in units of 0.01 C
++			 * 0x8000: invalid / unknown.
++			 * 0x0: 0C
++			 * 0x7fff: +327.67C
++			 */
++			int16_t temp;
 +
-+	mutex_lock(&st->core.cmd_lock);
++			/*
++			 * Offset for calibration.
++			 * Unit:
++			 * Accelerometer: 1/1024 g
++			 * Gyro:          1/1024 deg/s
++			 * Compass:       1/16 uT
++			 */
++			int16_t offset[3];
++		} __packed sensor_offset;
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		st->core.calib[idx].offset = val;
-+		/* Send to EC for each axis, even if not complete */
++		/* Used for MOTIONSENSE_CMD_FIFO_INFO */
++		struct {
++		} fifo_info;
 +
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
-+		st->core.param.sensor_offset.flags =
-+			MOTION_SENSE_SET_OFFSET;
-+		for (i = X; i < MAX_AXIS; i++)
-+			st->core.param.sensor_offset.offset[i] =
-+				st->core.calib[i].offset;
-+		st->core.param.sensor_offset.temp =
-+			EC_MOTION_SENSE_INVALID_CALIB_TEMP;
++		/* Used for MOTIONSENSE_CMD_FIFO_READ */
++		struct {
++			/*
++			 * Number of expected vector to return.
++			 * EC may return less or 0 if none available.
++			 */
++			uint32_t max_data_vector;
++		} fifo_read;
 +
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0))
-+			ret = -EIO;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (st->core.type == MOTIONSENSE_TYPE_MAG) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-+		st->core.param.sensor_range.data = val;
++		struct ec_motion_sense_activity set_activity;
+ 	};
+ } __packed;
+ 
+ struct ec_response_motion_sense {
+ 	union {
+-		/* Used for MOTIONSENSE_CMD_DUMP. */
++		/* Used for MOTIONSENSE_CMD_DUMP */
+ 		struct {
+ 			/* Flags representing the motion sensor module. */
+ 			uint8_t module_flags;
+ 
+-			/* Flags for each sensor in enum motionsensor_id. */
+-			uint8_t sensor_flags[EC_MOTION_SENSOR_COUNT];
++			/* Number of sensors managed directly by the EC */
++			uint8_t sensor_count;
+ 
+-			/* Array of all sensor data. Each sensor is 3-axis. */
+-			int16_t data[3*EC_MOTION_SENSOR_COUNT];
++			/*
++			 * sensor data is truncated if response_max is too small
++			 * for holding all the data.
++			 */
++			struct ec_response_motion_sensor_data sensor[0];
+ 		} dump;
+ 
+ 		/* Used for MOTIONSENSE_CMD_INFO. */
+@@ -1429,6 +1603,9 @@ struct ec_response_motion_sense {
+ 			uint8_t chip;
+ 		} info;
+ 
++		/* Used for MOTIONSENSE_CMD_DATA */
++		struct ec_response_motion_sensor_data data;
 +
-+		/* Always roundup, so caller gets at least what it asks for. */
-+		st->core.param.sensor_range.roundup = 1;
+ 		/*
+ 		 * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR,
+ 		 * MOTIONSENSE_CMD_SENSOR_RANGE, and
+@@ -1438,6 +1615,25 @@ struct ec_response_motion_sense {
+ 			/* Current value of the parameter queried. */
+ 			int32_t ret;
+ 		} ec_rate, sensor_odr, sensor_range, kb_wake_angle;
 +
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0))
-+			ret = -EIO;
-+		break;
-+	default:
-+		ret = cros_ec_sensors_core_write(
-+				&st->core, chan, val, val2, mask);
-+		break;
-+	}
++		/* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
++		struct {
++			int16_t temp;
++			int16_t offset[3];
++		} sensor_offset, perform_calib;
 +
-+	mutex_unlock(&st->core.cmd_lock);
-+	return ret;
-+}
++		struct ec_response_motion_sense_fifo_info fifo_info, fifo_flush;
 +
-+static const struct iio_info ec_sensors_info = {
-+	.read_raw = &cros_ec_sensors_read,
-+	.write_raw = &cros_ec_sensors_write,
-+	.driver_module = THIS_MODULE,
-+};
++		struct ec_response_motion_sense_fifo_data fifo_read;
 +
-+static int cros_ec_sensors_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-+	struct cros_ec_device *ec_device;
-+	struct iio_dev *indio_dev;
-+	struct cros_ec_sensors_state *state;
-+	struct iio_chan_spec *channel;
-+	int ret, i;
++		struct {
++			uint16_t reserved;
++			uint32_t enabled;
++			uint32_t disabled;
++		} __packed list_activities;
 +
-+	if (!ec_dev || !ec_dev->ec_dev) {
-+		dev_warn(&pdev->dev, "No CROS EC device found.\n");
-+		return -EINVAL;
-+	}
-+	ec_device = ec_dev->ec_dev;
++		struct {
++		} set_activity;
+ 	};
+ } __packed;
+ 
+@@ -1819,6 +2015,12 @@ union ec_response_get_next_data {
+ 
+ 	/* Unaligned */
+ 	uint32_t  host_event;
 +
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->info = &ec_sensors_info;
-+	state = iio_priv(indio_dev);
-+	for (channel = state->channels, i = X; i < MAX_AXIS; i++, channel++) {
-+		/* common part */
-+		channel->info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_CALIBBIAS);
-+		channel->info_mask_shared_by_all =
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_FREQUENCY) |
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ);
-+		channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
-+		channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
-+		channel->scan_type.shift = 0;
-+		channel->scan_index = i;
-+		channel->ext_info = cros_ec_sensors_ext_info;
-+		channel->modified = 1;
-+		channel->channel2 = IIO_MOD_X + i;
-+		channel->scan_type.sign = 's';
-+
-+		state->core.calib[i].offset = 0;
-+
-+		/* sensor specific */
-+		switch (state->core.type) {
-+		case MOTIONSENSE_TYPE_ACCEL:
-+			channel->type = IIO_ACCEL;
-+			break;
-+		case MOTIONSENSE_TYPE_GYRO:
-+			channel->type = IIO_ANGL_VEL;
-+			break;
-+		case MOTIONSENSE_TYPE_MAG:
-+			channel->type = IIO_MAGN;
-+			break;
-+		default:
-+			dev_warn(&pdev->dev, "unknown\n");
-+		}
-+	}
-+
-+	/* Timestamp */
-+	channel->type = IIO_TIMESTAMP;
-+	channel->channel = -1;
-+	channel->scan_index = MAX_AXIS;
-+	channel->scan_type.sign = 's';
-+	channel->scan_type.realbits = 64;
-+	channel->scan_type.storagebits = 64;
-+
-+	indio_dev->channels = state->channels;
-+	indio_dev->num_channels = MAX_CHANNELS;
-+
-+	/* There is only enough room for accel and gyro in the io space */
-+	if ((state->core.ec->cmd_readmem != NULL) &&
-+	    (state->core.type != MOTIONSENSE_TYPE_MAG))
-+		state->core.read_ec_sensors_data = cros_ec_sensors_read_lpc;
-+	else
-+		state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 cros_ec_sensors_capture, NULL);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_uninit_buffer;
-+	return 0;
-+
-+error_uninit_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	return ret;
-+}
-+
-+static int cros_ec_sensors_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	return 0;
-+}
-+
-+static const struct platform_device_id cros_ec_sensors_ids[] = {
-+	{
-+		.name = "cros-ec-accel",
-+	},
-+	{
-+		.name = "cros-ec-gyro",
-+	},
-+	{
-+		.name = "cros-ec-mag",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
-+
-+static struct platform_driver cros_ec_sensors_platform_driver = {
-+	.driver = {
-+		.name	= "cros-ec-sensors",
-+		.pm	= &cros_ec_sensors_pm_ops,
-+	},
-+	.probe		= cros_ec_sensors_probe,
-+	.remove		= cros_ec_sensors_remove,
-+	.id_table	= cros_ec_sensors_ids,
-+};
-+module_platform_driver(cros_ec_sensors_platform_driver);
-+
-+MODULE_DESCRIPTION("ChromeOS EC 3-axis sensors driver");
-+MODULE_LICENSE("GPL v2");
++	struct {
++		/* For aligning the fifo_info */
++		uint8_t rsvd[3];
++		struct ec_response_motion_sense_fifo_info info;
++	}        sensor_fifo;
+ } __packed;
+ 
+ struct ec_response_get_next_event {
 -- 
 2.1.0
 
