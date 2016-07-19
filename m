@@ -1,75 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from sauhun.de ([89.238.76.85]:56828 "EHLO pokefinder.org"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752690AbcGSHOF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 19 Jul 2016 03:14:05 -0400
-Date: Tue, 19 Jul 2016 09:13:51 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:37324 "EHLO
+	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752606AbcGSHaB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 03:30:01 -0400
+Received: by mail-wm0-f41.google.com with SMTP id i5so15077109wmg.0
+        for <linux-iio@vger.kernel.org>; Tue, 19 Jul 2016 00:30:01 -0700 (PDT)
+Date: Tue, 19 Jul 2016 08:31:09 +0100
+From: Lee Jones <lee.jones@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Laxman Dewangan <ldewangan@nvidia.com>,
-	Alison Schofield <amsfield22@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, Linux I2C <linux-i2c@vger.kernel.org>
-Subject: Re: [PATCH] staging: iio: light: isl29018/28: remove I2C_CLASS_HWMON
- .class setting
-Message-ID: <20160719071343.GA2086@tetsubishi>
-References: <20160716022831.GA7636@d830.WORKGROUP>
- <578C9843.10408@nvidia.com>
- <dff1e871-de49-654f-5e9b-c9b230a35b0a@kernel.org>
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	jdelvare@suse.com, linux@roeck-us.net, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Subject: Re: [PATCH v2 3/4] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160719073109.GD17074@dell>
+References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1468576754-3273-4-git-send-email-quentin.schulz@free-electrons.com>
+ <de8ebab2-cde9-d209-3c9a-e1868fafb84b@kernel.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="s2ZSL+KKDSLx8OML"
-In-Reply-To: <dff1e871-de49-654f-5e9b-c9b230a35b0a@kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <de8ebab2-cde9-d209-3c9a-e1868fafb84b@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, 18 Jul 2016, Jonathan Cameron wrote:
 
---s2ZSL+KKDSLx8OML
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> On 15/07/16 10:59, Quentin Schulz wrote:
+> > The Allwinner SoCs all have an ADC that can also act as a touchscreen
+> > controller and a thermal sensor. For now, only the ADC and the thermal
+> > sensor drivers are probed by the MFD, the touchscreen controller support
+> > will be added later.
+> > 
+> > Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> Hmm. Previous patch includes the header this one creates.  Ordering issue?
+> The depends kind of prevents build failures by ensuring that can't be built
+> until this one is in place, but it is certainly an ugly way to do it.
+> 
+> Few little bits innline.
+> > ---
+> > 
+> > v2:
+> >  - add license headers,
+> >  - reorder alphabetically includes,
+> >  - add SUNXI_GPADC_ prefixes for defines,
+> > 
+> >  drivers/mfd/Kconfig                 |  14 +++
+> >  drivers/mfd/Makefile                |   2 +
+> >  drivers/mfd/sunxi-gpadc-mfd.c       | 197 ++++++++++++++++++++++++++++++++++++
+> >  include/linux/mfd/sunxi-gpadc-mfd.h |  23 +++++
+> >  4 files changed, 236 insertions(+)
+> >  create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
+> >  create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
 
-On Mon, Jul 18, 2016 at 02:30:46PM +0100, Jonathan Cameron wrote:
-> On 18/07/16 09:50, Laxman Dewangan wrote:
-> >=20
-> > On Saturday 16 July 2016 07:58 AM, Alison Schofield wrote:
-> >> I2C_CLASS_HWMON is for a hardware monitoring chip wanting
-> >> auto-detection.  IIO drivers don't typically use .class.
-> >> Remove it.
-> >>
-> >> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> >> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> >>
-> >=20
-> > Agree.
-> > Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
-> Any resulting ABI change from dropping it?
+[...]
 
-What do you mean with ABI? This is only relevant for "automatic"
-instantiation. From me:
+> > +static struct mfd_cell sun6i_gpadc_mfd_cells[] = {
+> > +	{
+> > +		.name	= "sun6i-a31-gpadc-iio",
+> > +		.resources = adc_resources,
+> > +		.num_resources = ARRAY_SIZE(adc_resources),
+> > +	}, {
+> > +		.name = "iio_hwmon",
+> I still really dislike using this to force the probe of that driver but
+> kind of up to the hwmon / mfd guys on this.
 
-Acked-by: Wolfram Sang <wsa@the-dreams.de>
+Can you at least say *why* you don't like it?
 
+How else would it get probed?
 
---s2ZSL+KKDSLx8OML
-Content-Type: application/pgp-signature; name="signature.asc"
+> I don't have any better suggestions though..
+> > +	},
+> > +};
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+[...]
 
-iQIcBAEBAgAGBQJXjdMuAAoJEBQN5MwUoCm2TGsQALDVdnG4ebAv1h4u01UDFIrP
-XOX7DMa3vznfDCi+FDQ7kBGI0kt2q/rwNKkVe468mtyFQHfzfVeHsgaEQ1XCoIkZ
-e8U7nOhxLwgkSPy81jy0gij//gik5cw7AyMa3rNMxtNoWf0m+26Fk11L7WgcGbYP
-s4qrZLRVdR/6VEXAI3vu7PBFXVI+Lf7dyA3gOMjUpo2lTv6caeUORhiTUjGbS/1g
-moe01F0YXPaU+OMoiPHQ6t7y/AWpngGWn2aHWhERDjoMoe59GriMp9ExDIP5cJeo
-jybS55IPmZwmciDfvJ105yFRtgN6xaAsuX50MbwCae9jFSZfwLYcUk6iKmulhZtm
-ouG7vp3tnkn4P2GZNpTX0ZtaFSLc6OfLarANhyUmR/oInyZh0EOxZ2lgMfYkWnvK
-XAsE0Gs17h2c9cws9yZJppzlWtdsoxP7wlEndmYdC5li90RiWHfeaZGQ2jaX7rCb
-96pK7y1CTP7A6CIxs+LuIb0rcUredk+Q8ypswnn1HTyb1wj/YvUkih0sBPuS/XCC
-WLu/Hc1ZQG0/PXj2gbwM4bfGwDbpQwpoaiIhwhGDwNoza7mV+1mj5SaTGUzNo4NS
-2E1P2nxUOHFJpFp6u08wv4PDvDpD6orljpPXTTb/BVBn2OlTGS7BuY5gfOCpLzuY
-2RySVuv5usvfTO80Jkm6
-=WEHl
------END PGP SIGNATURE-----
+> > +	if (ret) {
+> > +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
+> > +		regmap_del_irq_chip(irq, sunxi_gpadc_mfd_dev->regmap_irqc);
+> > +		return ret;
+> > +	}
+> > +
+> > +	dev_info(&pdev->dev, "successfully loaded\n");
+> Seems like noise to me, but not my subsystem :)
 
---s2ZSL+KKDSLx8OML--
+Agreed, I don't allow this either.
+
+[...]
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
