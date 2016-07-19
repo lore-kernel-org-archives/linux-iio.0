@@ -1,189 +1,152 @@
-Return-Path: <quentin.schulz@free-electrons.com>
-Subject: Re: [PATCH v2 3/4] mfd: add support for Allwinner SoCs ADC
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:43440 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1753014AbcGSMlE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 19 Jul 2016 08:41:04 -0400
+Date: Tue, 19 Jul 2016 14:40:51 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
+	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Subject: Re: [PATCH v2 2/4] iio: adc: add support for Allwinner SoCs ADC
+Message-ID: <20160719124051.GB4107@lukather>
 References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
- <1468576754-3273-4-git-send-email-quentin.schulz@free-electrons.com>
- <20160718130218.GG4199@lukather>
-Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org, knaack.h@gmx.de,
- lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org, lee.jones@linaro.org,
- linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- thomas.petazzoni@free-electrons.com, antoine.tenart@free-electrons.com
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <578E1736.20209@free-electrons.com>
-Date: Tue, 19 Jul 2016 14:04:06 +0200
+ <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
+ <20160718125753.GF4199@lukather>
+ <578DED17.7040309@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <20160718130218.GG4199@lukather>
-Content-Type: multipart/signed; micalg=pgp-sha256;
- protocol="application/pgp-signature";
- boundary="sjaw9J6jcX7sqNgobBSR8tm1OtqtK3hMp"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="Pk6IbRAofICFmK5e"
+In-Reply-To: <578DED17.7040309@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---sjaw9J6jcX7sqNgobBSR8tm1OtqtK3hMp
-Content-Type: multipart/mixed; boundary="h10aX1CHHEHmwQ5GJhJtah2rG2p64tK3o"
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org, knaack.h@gmx.de,
- lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org, lee.jones@linaro.org,
- linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
- thomas.petazzoni@free-electrons.com, antoine.tenart@free-electrons.com
-Message-ID: <578E1736.20209@free-electrons.com>
-Subject: Re: [PATCH v2 3/4] mfd: add support for Allwinner SoCs ADC
-References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
- <1468576754-3273-4-git-send-email-quentin.schulz@free-electrons.com>
- <20160718130218.GG4199@lukather>
-In-Reply-To: <20160718130218.GG4199@lukather>
 
---h10aX1CHHEHmwQ5GJhJtah2rG2p64tK3o
-Content-Type: text/plain; charset=windows-1252
+--Pk6IbRAofICFmK5e
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On 18/07/2016 15:02, Maxime Ripard wrote:
-> On Fri, Jul 15, 2016 at 11:59:13AM +0200, Quentin Schulz wrote:
->> The Allwinner SoCs all have an ADC that can also act as a touchscreen
->> controller and a thermal sensor. For now, only the ADC and the thermal=
-
->> sensor drivers are probed by the MFD, the touchscreen controller suppo=
-rt
->> will be added later.
->>
->> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
->> ---
-[...]
->> +config MFD_SUNXI_ADC
->> +	tristate "ADC MFD core driver for sunxi platforms"
->> +	select MFD_CORE
->> +	select REGMAP_MMIO
+On Tue, Jul 19, 2016 at 11:04:23AM +0200, Quentin Schulz wrote:
+> >> +/* TP_CTRL1 bits */
+> >> +#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE(x)	((x) << 12) /* 8 bits */
+> >> +#define SUNXI_GPADC_STYLUS_UP_DEBOUNCE_EN	BIT(9)
+> >> +#define SUNXI_GPADC_TOUCH_PAN_CALI_EN		BIT(6)
+> >> +#define SUNXI_GPADC_TP_DUAL_EN			BIT(5)
+> >> +#define SUNXI_GPADC_TP_MODE_EN			BIT(4)
+> >> +#define SUNXI_GPADC_TP_ADC_SELECT		BIT(3)
+> >> +#define SUNXI_GPADC_ADC_CHAN_SELECT(x)		((x) << 0)  /* 3 bits */
+> >=20
+> > Usually the comments are on the line above. However, if you really
+> > want to enforce something, you should rather mask the
+> > value. Otherwise, that comment is pretty useless.
+> >=20
 >=20
-> It should also depends on the architectures supported (and probably COM=
-PILE_TEST)
+> Do you mean something like that:
+> #define SUNXI_GPADC_ADC_CHAN_SELECT(x)		(GENMASK(2,0) & x) ?
+
+Yes.
+
+> >> +/* TP_CTRL1 bits for sun6i SOCs */
+> >> +#define SUNXI_GPADC_SUN6I_TOUCH_PAN_CALI_EN	BIT(7)
+> >> +#define SUNXI_GPADC_SUN6I_TP_DUAL_EN		BIT(6)
+> >> +#define SUNXI_GPADC_SUN6I_TP_MODE_EN		BIT(5)
+> >> +#define SUNXI_GPADC_SUN6I_TP_ADC_SELECT		BIT(4)
+> >=20
+> > Shouldn't that go in either a common define or the touchscreen driver?
+> >=20
 >=20
+> Then shouldn't I put all defines in a common header? (sunxi-gpadc-mfd.h)
 
-ACK.
+You should :)
 
-[...]
->> +
->> +	sunxi_gpadc_mfd_dev->regmap =3D
->> +		devm_regmap_init_mmio(sunxi_gpadc_mfd_dev->dev,
->> +				      sunxi_gpadc_mfd_dev->regs,
->> +				      &sunxi_gpadc_mfd_regmap_config);
+> >> +	irq =3D regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> >> +	ret =3D devm_request_any_context_irq(&pdev->dev, irq,
+> >> +					   sunxi_gpadc_fifo_data_irq_handler,
+> >> +					   0, "fifo_data", info);
+> >> +	if (ret < 0) {
+> >> +		dev_err(&pdev->dev,
+> >> +			"could not request FIFO_DATA_PENDING interrupt: %d\n",
+> >> +			ret);
+> >> +		goto err;
+> >> +	}
+> >> +
+> >> +	info->fifo_data_irq =3D irq;
+> >> +	disable_irq(irq);
+> >=20
+> > request_irq starts with irq enabled, which means that you can have an
+> > interrupt showing up between your call to request_irq and the
+> > disable_irq.=20
+> >=20
+> > How would that work?
+> >=20
 >=20
-> This is usually on a single line (even if it exceeds 80 chars). Or
-> maybe you can use a shorter variable name (like dev, or mfd).
+> Same as what I answered in Jonathan's mail:
 >=20
+> "Once the interrupt is activated, the IP performs continuous conversions
+> (temp_data_irq only periodically). I want these interrupts to be enabled
+> only when I read the sysfs file or we get useless interrupts.
+> In the current state of this driver's irq handlers, I only set values in
+> structures and all the needed structures are already initialized before
+> requesting irqs. So it does not look like a race. I can prevent races in
+> future versions by adding an atomic flag if wanted."
 
-I'll go with a shorter name.
+Then please have a nice comment explaining that.
 
->> +	if (IS_ERR(sunxi_gpadc_mfd_dev->regmap)) {
->> +		ret =3D PTR_ERR(sunxi_gpadc_mfd_dev->regmap);
->> +		dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
->> +		return ret;
->> +	}
->> +
->> +	irq =3D platform_get_irq(pdev, 0);
->> +	ret =3D regmap_add_irq_chip(sunxi_gpadc_mfd_dev->regmap, irq,
->> +				  IRQF_ONESHOT, 0,
->> +				  &sunxi_gpadc_mfd_regmap_irq_chip,
->> +				  &sunxi_gpadc_mfd_dev->regmap_irqc);
->> +	if (ret) {
->> +		dev_err(&pdev->dev, "failed to add irq chip: %d\n", ret);
->> +		return ret;
->> +	}
+> >> +static struct platform_driver sunxi_gpadc_driver =3D {
+> >> +	.driver =3D {
+> >> +		.name =3D "sunxi-gpadc-iio",
+> >> +	},
+> >> +	.id_table =3D sunxi_gpadc_id,
+> >> +	.probe =3D sunxi_gpadc_probe,
+> >> +	.remove =3D sunxi_gpadc_remove,
+> >> +};
+> >=20
+> > Having some runtime_pm support for this would be great too.
+> >=20
 >=20
-> You should probably make sure that you clear all the interrupts before
-> enabling them.
->=20
+> Basically disabling the ADC and interrupts (as in the remove) in
+> _suspend and _idle and reenabling everything in "before _suspend"-state
+> in _resume I guess?
 
-ACK. Thanks, didn't think of that.
+Well, yes and no. Your probe would not do any hardware
+initialisation. You can pm_runtime_get_sync before using it, which
+will call the suspend hook.
 
->> +	if (of_device_is_compatible(pdev->dev.of_node,
->> +				    "allwinner,sun4i-a10-ts"))
->> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +				      sun4i_gpadc_mfd_cells,
->> +				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
->> +				      0, NULL);
->> +	else if (of_device_is_compatible(pdev->dev.of_node,
->> +					 "allwinner,sun5i-a13-ts"))
->> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +				      sun5i_gpadc_mfd_cells,
->> +				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
->> +				      0, NULL);
->> +	else if (of_device_is_compatible(pdev->dev.of_node,
->> +					 "allwinner,sun6i-a31-ts"))
->> +		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +				      sun6i_gpadc_mfd_cells,
->> +				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
->> +				      0, NULL);
->=20
-> This huge if / else can be removed by putting those structures in the
-> data pointer of of_device_id.
->=20
+Once you're done, call pm_runtime_put, and that will disable the
+hardware.
 
-Indeed. It is what I am using for the ADC driver, don't know why I
-didn't think of this for the MFD as well.
+Maxime
 
-[...]
->> diff --git a/include/linux/mfd/sunxi-gpadc-mfd.h b/include/linux/mfd/s=
-unxi-gpadc-mfd.h
->> new file mode 100644
->> index 0000000..7155845
->> --- /dev/null
->> +++ b/include/linux/mfd/sunxi-gpadc-mfd.h
->> @@ -0,0 +1,23 @@
->> +/* Header of ADC MFD core driver for sunxi platforms
->> + *
->> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
->> + *
->> + * This program is free software; you can redistribute it and/or modi=
-fy it
->> + * under the terms of the GNU General Public License version 2 as pub=
-lished by
->> + * the Free Software Foundation.
->> + */
->> +
->> +#ifndef __SUNXI_GPADC_MFD__H__
->> +#define __SUNXI_GPADC_MFD__H__
->> +
->> +#define SUNXI_GPADC_TP_INT_FIFOC            0x10
->> +#define SUNXI_GPADC_TP_INT_FIFOS            0x14
->=20
-> Why do you declare only these two registers there?
->=20
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
 
-Because these are used by the MFD while the others not. Maybe it's
-better to put all register and bit defines in sunxi-gpadc-mfd.h? Anyway,
-just found out it would be clearer to use the defines for the interrupts
-rather than directly "BIT(x)". So that makes two more defines here.
-Should we put everything in sunxi-gpadc-mfd.h since the MFD is needed
-for the ADC, (future) touchscreen and iio_hwmon drivers?
-
-
-
---h10aX1CHHEHmwQ5GJhJtah2rG2p64tK3o--
-
---sjaw9J6jcX7sqNgobBSR8tm1OtqtK3hMp
+--Pk6IbRAofICFmK5e
 Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
+Version: GnuPG v1
 
-iQIcBAEBCAAGBQJXjhc6AAoJEIS4mnU+4PGjleQP/0o6DNBD7hLPolo0dq9XmX5S
-ViAsDZGlbzYwTcw47DV24z3IUUGX9A2pXxleCl2YK9KLfNfBNbxiC6iRC+m26LNF
-iUwK8VaGuQN0VhuZzCJdiMxFbZ/tbByYIGlli4CbLcMfFviARQYBKNeAQcKCmxh1
-wa7J9wg0VC8t4pj9LHXyPLki6XwwNeVlNZIF9lQWGp2q/+pYNy3SpJP6fUmRUiA9
-iqUv6dScX6LT+Z32pFYqWgjcjwgZQLBNuDyD3XQNjjN5hKd8kXM6Lw1zM1x8zDYw
-rK0MND6Rlg+YHzoRMaF0aRIqWEXBgqg+NA349Lr1Auzkumb+iU4fl15cIDMpw7ZW
-u3YtSudwRoIgO4WItHyaCX3f3Kuww//6T229yAlPZUh4RpXDz+y199JTuhLLPGaj
-feie6aC82ejLIMoHi/NJTJT/2vuURNvo5FC8+s7JsSYdKgo2NSPiqVW5nqLgbrGS
-k02/mn7TIThMRfkjBU0gFDCYCMs/jXo7KEs4IfVR5K0hnN6Q84bcGu/FOtVeIwCB
-TVZeLtbKJzmQ04guecBsgvFNNXiIaz9HwlpWrcjLIe8+5JRIN5UPSqONvvDmc+1k
-i+3Smqy+92dXPk/I3LXpSVBo9lQzGrS0BjAnFdp2aVrcSVe48vWdqnUl1kaQrfIt
-HWuw7c0CrwJfRXq+wxCj
-=RrKG
+iQIcBAEBAgAGBQJXjh/TAAoJEBx+YmzsjxAg/AMP/AsUHN5QCY7KKED59C4A+Mum
+O7VCTwHr7lGwcmbMYZ1k76GlwJMYDi/u3F1Or+iRYBefptmDsSH1Mxob/18lsmtS
+BqMyhkID6raPrj/xof7I4dEsMP6uELPAdPdcK9GwftCnnm/YluTAAwbYH/vCNDx+
+FeDaFS3OkvSwP+TwcyYywFX4oRoGNjPCq6l4OeZkYfBWJHIf3nVqfxRIO9wDHiWf
+lsG4CLokcw4AmTLSxVRm6MbdsEWP7cM70wrhzbx56mjXrQt8inaokhmKqIJC3mkL
+sBVyrcL79CPpAQ6RZkSBDdNESCaAtX8JvwkVybRO3hn0RRqPZP7cM0Hhv2pVJiBF
+0uOQZAQcFdxcG1aMxbxJEc1BbjS0/t/lCOJ5La3RsI4ObNHY/koOV5ds1JfKmDMv
+jL+BKX+uyVC6stsMIDN8A4fDf+WrKSC6rsMe/s+HKY3QK2+CK9/pKKryEwBzx9Xw
+Qdh8FfKJ7ME285S0vEOP9UJDR4vJV4yrLvVoPzAA0dD4brqbpLK2FKNboJVs8H9S
+VgjNwgAKyKKveccofx8QgCk80qVUpxlXfHnkYobC1nejP8G9f2yteGh2vzBvasdt
+rx4sS3/RUENTrh85YpmBlh3lcfQ+SCgl1tstfdgPf3/+KPXhBslcAFWKagWdejlh
+Kdj0+5rBhSzhZw4jtV64
+=N6AD
 -----END PGP SIGNATURE-----
 
---sjaw9J6jcX7sqNgobBSR8tm1OtqtK3hMp--
+--Pk6IbRAofICFmK5e--
