@@ -1,230 +1,317 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:38293 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1750955AbcGUGIP (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2016 02:08:15 -0400
-Date: Thu, 21 Jul 2016 08:08:12 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
+Return-Path: <dmitry.torokhov@gmail.com>
+Date: Wed, 20 Jul 2016 10:25:32 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
 To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, wens@csie.org, dmitry.torokhov@gmail.com,
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
 	lee.jones@linaro.org, antoine.tenart@free-electrons.com,
 	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	linux-input@vger.kernel.org
-Subject: Re: [PATCH 5/5] mfd: sunxi-gpadc-mfd: probe sunxi-gpadc-ts driver
-Message-ID: <20160721060812.GA5993@lukather>
+Subject: Re: [PATCH 4/5] input: touchscreen: support Allwinner SoCs'
+ touchscreen
+Message-ID: <20160720172532.GE25655@dtor-ws>
 References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469003351-15263-6-git-send-email-quentin.schulz@free-electrons.com>
+ <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="VS++wcV0S1rZb1Fb"
-In-Reply-To: <1469003351-15263-6-git-send-email-quentin.schulz@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
-
-
---VS++wcV0S1rZb1Fb
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
 Hi Quentin,
 
-On Wed, Jul 20, 2016 at 10:29:11AM +0200, Quentin Schulz wrote:
-> This probes the touchscreen driver for Allwinner SoCs (A10, A13 and A31)
-> when the property "allwinner,ts-attached" is set in the GPADC (rtp) node =
-of
-> the DT.
->=20
-> Some comestic modifications done to shorten and increase readability of t=
-he
-> code.
->=20
+On Wed, Jul 20, 2016 at 10:29:10AM +0200, Quentin Schulz wrote:
+> This adds support for Allwinner SoCs' (A10, A13 and A31) resistive
+> touchscreen. This driver is probed by the MFD sunxi-gpadc-mfd.
+> 
+> This driver uses ADC channels exposed through the IIO framework by
+> sunxi-gpadc-iio to get its data. When opening this input device, it will
+> start buffering in the ADC driver and enable a TP_UP_PENDING irq. The ADC
+> driver will fill in a buffer with all data and call the callback the input
+> device associated with this buffer. The input device will then read the
+> buffer two by two and send X and Y coordinates to the input framework based
+> on what it received from the ADC's buffer. When closing this input device,
+> the buffering is stopped.
+> 
+> Note that locations in the first received buffer after an TP_UP_PENDING irq
+> occurred are unreliable, thus dropped.
+> 
 > Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 > ---
->  drivers/mfd/sunxi-gpadc-mfd.c | 115 ++++++++++++++++++++++++++++--------=
-------
->  1 file changed, 77 insertions(+), 38 deletions(-)
->=20
-> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
-> index 05a000b..9b9ed0b 100644
-> --- a/drivers/mfd/sunxi-gpadc-mfd.c
-> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
-> @@ -21,6 +21,11 @@
->  #define SUNXI_IRQ_TEMP_DATA	1
->  #define SUNXI_IRQ_TP_UP		2
-> =20
-> +#define SUNXI_GPADC_MFD_CELL(_name, _resources, _num_resources) {	\
-> +	.name =3D _name,							\
-> +	.resources =3D _resources,					\
-> +	.num_resources =3D _num_resources					\
-> +}
-> =20
->  static struct resource adc_resources[] =3D {
->  	{
-> @@ -64,33 +69,45 @@ static const struct regmap_irq_chip sunxi_gpadc_mfd_r=
-egmap_irq_chip =3D {
->  };
-> =20
->  static struct mfd_cell sun4i_gpadc_mfd_cells[] =3D {
-> -	{
-> -		.name	=3D "sun4i-a10-gpadc-iio",
-> -		.resources =3D adc_resources,
-> -		.num_resources =3D ARRAY_SIZE(adc_resources),
-> -	}, {
-> -		.name =3D "iio_hwmon",
-> -	}
-> +	SUNXI_GPADC_MFD_CELL("sun4i-a10-gpadc-iio", adc_resources,
-> +			     ARRAY_SIZE(adc_resources)),
-> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->  };
-> =20
->  static struct mfd_cell sun5i_gpadc_mfd_cells[] =3D {
-> -	{
-> -		.name	=3D "sun5i-a13-gpadc-iio",
-> -		.resources =3D adc_resources,
-> -		.num_resources =3D ARRAY_SIZE(adc_resources),
-> -	}, {
-> -		.name =3D "iio_hwmon",
-> -	},
-> +	SUNXI_GPADC_MFD_CELL("sun5i-a13-gpadc-iio", adc_resources,
-> +			     ARRAY_SIZE(adc_resources)),
-> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->  };
-> =20
->  static struct mfd_cell sun6i_gpadc_mfd_cells[] =3D {
-> -	{
-> -		.name	=3D "sun6i-a31-gpadc-iio",
-> -		.resources =3D adc_resources,
-> -		.num_resources =3D ARRAY_SIZE(adc_resources),
-> -	}, {
-> -		.name =3D "iio_hwmon",
-> -	},
-> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
-> +			     ARRAY_SIZE(adc_resources)),
-> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> +};
-
-This should be part of a separate patch.
-
+>  drivers/input/touchscreen/Kconfig          |  11 +-
+>  drivers/input/touchscreen/Makefile         |   2 +-
+>  drivers/input/touchscreen/sun4i-ts.c       | 419 -----------------------------
+>  drivers/input/touchscreen/sunxi-gpadc-ts.c | 195 ++++++++++++++
+>  4 files changed, 201 insertions(+), 426 deletions(-)
+>  delete mode 100644 drivers/input/touchscreen/sun4i-ts.c
+>  create mode 100644 drivers/input/touchscreen/sunxi-gpadc-ts.c
+> 
+> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+> index 8ecdc38..f16ce36 100644
+> --- a/drivers/input/touchscreen/Kconfig
+> +++ b/drivers/input/touchscreen/Kconfig
+> @@ -1072,14 +1072,13 @@ config TOUCHSCREEN_STMPE
+>  config TOUCHSCREEN_SUN4I
+>  	tristate "Allwinner sun4i resistive touchscreen controller support"
+>  	depends on ARCH_SUNXI || COMPILE_TEST
+> -	depends on HWMON
+> -	depends on THERMAL || !THERMAL_OF
+> +	depends on SUNXI_ADC
+>  	help
+> -	  This selects support for the resistive touchscreen controller
+> -	  found on Allwinner sunxi SoCs.
+> +	  This selects support for the resistive touchscreen controller found
+> +	  on Allwinner SoCs (A10, A13, A31).
+>  
+> -	  To compile this driver as a module, choose M here: the
+> -	  module will be called sun4i-ts.
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called sunxi-gpadc-ts.
+>  
+>  config TOUCHSCREEN_SUR40
+>  	tristate "Samsung SUR40 (Surface 2.0/PixelSense) touchscreen"
+> diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
+> index f42975e..bdc1889 100644
+> --- a/drivers/input/touchscreen/Makefile
+> +++ b/drivers/input/touchscreen/Makefile
+> @@ -65,7 +65,7 @@ obj-$(CONFIG_TOUCHSCREEN_PIXCIR)	+= pixcir_i2c_ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_S3C2410)	+= s3c2410_ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
+>  obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
+> -obj-$(CONFIG_TOUCHSCREEN_SUN4I)		+= sun4i-ts.o
+> +obj-$(CONFIG_TOUCHSCREEN_SUN4I)		+= sunxi-gpadc-ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_SUR40)		+= sur40.o
+>  obj-$(CONFIG_TOUCHSCREEN_TI_AM335X_TSC)	+= ti_am335x_tsc.o
+>  obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
+> diff --git a/drivers/input/touchscreen/sun4i-ts.c b/drivers/input/touchscreen/sun4i-ts.c
+> deleted file mode 100644
+> index d07dd29..0000000
+...
+> diff --git a/drivers/input/touchscreen/sunxi-gpadc-ts.c b/drivers/input/touchscreen/sunxi-gpadc-ts.c
+> new file mode 100644
+> index 0000000..410d14f
+> --- /dev/null
+> +++ b/drivers/input/touchscreen/sunxi-gpadc-ts.c
+> @@ -0,0 +1,195 @@
+> +/* Touchscreen driver for Allwinner SoCs (A10, A13, A31) GPADC
+> + *
+> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it under
+> + * the terms of the GNU General Public License version 2 as published by the
+> + * Free Software Foundation.
+> + */
 > +
-> +static struct mfd_cell sun4i_gpadc_mfd_cells_ts[] =3D {
-> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
-> +			     ARRAY_SIZE(adc_resources)),
-> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
-> +			     ARRAY_SIZE(ts_resources)),
+> +#include <linux/init.h>
+> +#include <linux/input.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/regmap.h>
+> +
+> +#include <linux/iio/consumer.h>
+> +#include <linux/mfd/sunxi-gpadc-mfd.h>
+> +
+> +struct sunxi_gpadc_ts {
+> +	struct iio_cb_buffer	*buffer;
+> +	struct input_dev	*input;
+> +	struct platform_device	*pdev;
+> +	unsigned int		tp_up_irq;
+> +	bool			ignore_fifo_data;
 > +};
 > +
-> +static struct mfd_cell sun5i_gpadc_mfd_cells_ts[] =3D {
-> +	SUNXI_GPADC_MFD_CELL("sun5i-a13-gpadc-iio", adc_resources,
-> +			     ARRAY_SIZE(adc_resources)),
-> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
-> +			     ARRAY_SIZE(ts_resources)),
-> +};
+> +static int sunxi_gpadc_ts_open(struct input_dev *dev)
+> +{
+> +	struct sunxi_gpadc_ts *info = input_get_drvdata(dev);
+> +	int ret;
 > +
-> +static struct mfd_cell sun6i_gpadc_mfd_cells_ts[] =3D {
-> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
-> +			     ARRAY_SIZE(adc_resources)),
-> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
-> +			     ARRAY_SIZE(ts_resources)),
->  };
-> =20
->  static const struct regmap_config sunxi_gpadc_mfd_regmap_config =3D {
-> @@ -142,23 +159,45 @@ static int sunxi_gpadc_mfd_probe(struct platform_de=
-vice *pdev)
->  	}
-> =20
->  	if (of_device_is_compatible(pdev->dev.of_node,
-> -				    "allwinner,sun4i-a10-ts"))
-> -		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> -				      sun4i_gpadc_mfd_cells,
-> -				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
-> -				      0, NULL);
-> -	else if (of_device_is_compatible(pdev->dev.of_node,
-> -					 "allwinner,sun5i-a13-ts"))
-> -		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> -				      sun5i_gpadc_mfd_cells,
-> -				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
-> -				      0, NULL);
-> -	else if (of_device_is_compatible(pdev->dev.of_node,
-> -					 "allwinner,sun6i-a31-ts"))
-> -		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> -				      sun6i_gpadc_mfd_cells,
-> -				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
-> -				      0, NULL);
-> +				    "allwinner,sun4i-a10-ts")) {
-> +		if (of_property_read_bool(pdev->dev.of_node,
-> +					  "allwinner,ts-attached"))
-> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +					      sun4i_gpadc_mfd_cells_ts,
-> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells_ts),
-> +					      NULL, 0, NULL);
-> +		else
-> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +					      sun4i_gpadc_mfd_cells,
-> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells),
-> +					      NULL, 0, NULL);
-> +	} else if (of_device_is_compatible(pdev->dev.of_node,
-> +					 "allwinner,sun5i-a13-ts")) {
-> +		if (of_property_read_bool(pdev->dev.of_node,
-> +					  "allwinner,ts-attached"))
-> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +					      sun5i_gpadc_mfd_cells_ts,
-> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells_ts),
-> +					      NULL, 0, NULL);
-> +		else
-> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +					      sun5i_gpadc_mfd_cells,
-> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells),
-> +					      NULL, 0, NULL);
-> +	} else if (of_device_is_compatible(pdev->dev.of_node,
-> +					 "allwinner,sun6i-a31-ts")) {
-> +		if (of_property_read_bool(pdev->dev.of_node,
-> +					  "allwinner,ts-attached"))
-> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +					      sun6i_gpadc_mfd_cells_ts,
-> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells_ts),
-> +					      NULL, 0, NULL);
-> +		else
-> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> +					      sun6i_gpadc_mfd_cells,
-> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells),
-> +					      NULL, 0, NULL);
+> +	ret = iio_channel_start_all_cb(info->buffer);
+> +	if (ret) {
+> +		dev_err(dev->dev.parent,
+> +			"failed to start iio channels with callback\n");
+> +		return ret;
 > +	}
+> +
+> +	enable_irq(info->tp_up_irq);
+> +
+> +	return 0;
+> +}
+> +
+> +static void sunxi_gpadc_ts_close(struct input_dev *dev)
+> +{
+> +	struct sunxi_gpadc_ts *info = input_get_drvdata(dev);
+> +
+> +	iio_channel_stop_all_cb(info->buffer);
+> +
+> +	disable_irq(info->tp_up_irq);
+> +}
+> +
+> +/*
+> + * This function will be called by iio_push_to_buffers from another driver
+> + * (namely sunxi-gpadc-iio). It will be passed the buffer filled with input
+> + * values (X value then Y value) and the sunxi_gpadc_ts structure representing
+> + * the device.
+> + */
+> +static int sunxi_gpadc_ts_callback(const void *data, void *private)
+> +{
+> +	const struct sunxi_gpadc_buffer *buffer = data;
+> +	struct sunxi_gpadc_ts *info = private;
+> +	int i = 0;
+> +
+> +	/* Locations in the first buffer after an up event are unreliable */
+> +	if (info->ignore_fifo_data) {
+> +		info->ignore_fifo_data = false;
+> +		return 0;
+> +	}
+> +
+> +	while (i + 1 < buffer->buff_size) {
+> +		input_event(info->input, EV_ABS, ABS_X, buffer->buffer[i++]);
+> +		input_event(info->input, EV_ABS, ABS_Y, buffer->buffer[i++]);
+> +		input_event(info->input, EV_KEY, BTN_TOUCH, 1);
+> +		input_sync(info->input);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t sunxi_gpadc_tp_up_irq_handler(int irq, void *dev_id)
+> +{
+> +	struct sunxi_gpadc_ts *info = dev_id;
+> +
+> +	info->ignore_fifo_data = true;
+> +
+> +	input_event(info->input, EV_KEY, BTN_TOUCH, 0);
+> +	input_sync(info->input);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int sunxi_gpadc_ts_probe(struct platform_device *pdev)
+> +{
+> +	struct input_dev *input;
+> +	struct sunxi_gpadc_ts *info;
+> +	int ret, irq;
+> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
+> +
+> +	input = devm_input_allocate_device(&pdev->dev);
+> +	if (!input)
+> +		return -ENOMEM;
+> +
+> +	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
+> +	if (!info)
+> +		return -ENOMEM;
+> +
+> +	info->buffer = iio_channel_get_all_cb(&pdev->dev,
+> +					      &sunxi_gpadc_ts_callback,
+> +					      (void *)info);
 
-Please don't use any of_device_is_compatible.
+Any chance we could introduce devm-variant here? If you do not want to
+wait for IIO to add it you can temporarily add call
+devm_add_action_or_reset() after getting channels and remove it when IIO
+API catches up.
 
-Thanks,
-Maxime
+> +	if (IS_ERR(info->buffer)) {
+> +		if (PTR_ERR(info->buffer) == -ENODEV)
+> +			return -EPROBE_DEFER;
+> +		return PTR_ERR(info->buffer);
+> +	}
+> +
+> +	info->pdev = pdev;
+> +	info->input = input;
+> +	info->ignore_fifo_data = false;
+> +	platform_set_drvdata(pdev, info);
+> +
+> +	input->dev.parent = &pdev->dev;
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Not needed for input devices allocated with devm.
 
---VS++wcV0S1rZb1Fb
-Content-Type: application/pgp-signature; name="signature.asc"
+> +	input->name = "sunxi-gpadc-ts";
+> +	input->id.bustype = BUS_HOST;
+> +	input->open = sunxi_gpadc_ts_open;
+> +	input->close = sunxi_gpadc_ts_close;
+> +	__set_bit(EV_SYN, input->evbit);
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+This not needed.
 
-iQIcBAEBAgAGBQJXkGbMAAoJEBx+YmzsjxAgCLMP/199eYL/z9vd78mnDMOJMyKp
-nhfL69OivB/oZAanEylqV0VY2U48jFGvJM3247z4M0YALd0BMO7OsrV/Qk67Ji7k
-DF0PlLnpWdoZvyDaNqInKSq95dXRh6hv/PULwuiKLbxfiXjotsOtJGq16tp6kuGZ
-8Su4Mlr5IV2i5sJjrA2nCwMwIgARLfKdwiAFByy8ISmL1xBvRchUc0fONg41TM7G
-7z77U0oIsu39x7v08pmGA06ihiWK96yJF+/+rLPd+bVGMmGORQAIaOfOxvs5shFP
-1CfEraJH7s/PJQD3z9hLURTaORj5QO1VRuuhu9GPs3j14TsK7wYiFEoBM70NT2e1
-Fw+BvPN+AETPK2KZQ2fuPowpyuBg7NokUv5c1FnKL2xF7FV9UM0m75sSem+x4B5P
-jNYKEqPFgboASNZ1PQ8vCXV6wvQxoClPBf9CxRI8sBn5IQqF3q732J3/7z0yw3Ma
-8jcHMkhlK7+t64OCPQtf7w6l+WHsw4FyprLN0Dtx1YdMrxEtmCICHlBkU33oj0cL
-GLFSEI6PdjKx9V+N/6GB66z2gzHCO1uqj/NaZfN+SFtu9qVE7z2k7Hn5J4fP7apL
-eXRehjepDjff9U31IdJ6iZg6dvYQrALirI16oi3brIvv6YiH8rpAbbal0NLx2Ue9
-zFKcxKIR+9gtf1c4mSmm
-=enbF
------END PGP SIGNATURE-----
+> +	input_set_capability(input, EV_KEY, BTN_TOUCH);
+> +	input_set_abs_params(input, ABS_X, 0, 4095, 0, 0);
+> +	input_set_abs_params(input, ABS_Y, 0, 4095, 0, 0);
+> +	input_set_drvdata(input, info);
+> +
+> +	irq = platform_get_irq_byname(pdev, "TP_UP_PENDING");
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "no TP_UP_PENDING interrupt registered\n");
+> +		ret = irq;
+> +		goto err;
+> +	}
+> +
+> +	sunxi_gpadc_mfd_dev = dev_get_drvdata(pdev->dev.parent);
+> +
+> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
+> +					   sunxi_gpadc_tp_up_irq_handler, 0,
+> +					   "tp_up", info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev,
+> +			"could not request TP_UP_PENDING interrupt: %d\n", ret);
+> +		goto err;
+> +	}
+> +
+> +	info->tp_up_irq = irq;
+> +	disable_irq(irq);
+> +
+> +	ret = input_register_device(input);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to register input device\n");
+> +		goto err;
+> +	}
+> +
+> +	return 0;
+> +
+> +err:
+> +	iio_channel_release_all_cb(info->buffer);
+> +
+> +	return ret;
+> +}
+> +
+> +static int sunxi_gpadc_ts_remove(struct platform_device *pdev)
+> +{
+> +	struct sunxi_gpadc_ts *info = platform_get_drvdata(pdev);
+> +
+> +	iio_channel_stop_all_cb(info->buffer);
+> +	iio_channel_release_all_cb(info->buffer);
+> +
+> +	disable_irq(info->tp_up_irq);
 
---VS++wcV0S1rZb1Fb--
+You are mixing devm and non-devm so your unwind order is completely out
+of wack. If input device is opened while you are unloading (or
+unbinding) the dirver, then you'll release channels, then input device's
+close() will be called, which will try to stop the IIO channels again
+and disable IRQ yet again.
+
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver sunxi_gpadc_ts_driver = {
+> +	.driver = {
+> +		.name = "sunxi-gpadc-ts",
+> +	},
+> +	.probe = sunxi_gpadc_ts_probe,
+> +	.remove = sunxi_gpadc_ts_remove,
+> +};
+> +
+> +module_platform_driver(sunxi_gpadc_ts_driver);
+> +
+> +MODULE_DESCRIPTION("Touchscreen driver for Allwinner SoCs (A10, A13, A31) GPADC");
+> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
+> +MODULE_LICENSE("GPL v2");
+> -- 
+> 2.5.0
+> 
+
+Thanks.
+
+-- 
+Dmitry
