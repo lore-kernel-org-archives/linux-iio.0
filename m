@@ -1,79 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37788 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37815 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752526AbcGTO7X (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jul 2016 10:59:23 -0400
-Subject: Re: [PATCH v2 2/4] iio: adc: add support for Allwinner SoCs ADC
-To: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	with ESMTP id S1754422AbcGTPBI (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jul 2016 11:01:08 -0400
+Subject: Re: [PATCH v2 3/4] mfd: add support for Allwinner SoCs ADC
+To: Lee Jones <lee.jones@linaro.org>
+References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1468576754-3273-4-git-send-email-quentin.schulz@free-electrons.com>
+ <de8ebab2-cde9-d209-3c9a-e1868fafb84b@kernel.org>
+ <20160719073109.GD17074@dell>
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
 	jdelvare@suse.com, linux@roeck-us.net, knaack.h@gmx.de,
 	lars@metafoo.de, pmeerw@pmeerw.net,
 	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org
-References: <1468576754-3273-1-git-send-email-quentin.schulz@free-electrons.com>
- <1468576754-3273-3-git-send-email-quentin.schulz@free-electrons.com>
- <e24c8b63-7774-66d2-3317-43fd5598ecc9@kernel.org>
- <f6e32bf0-f043-0d34-5190-18b89920bbfd@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
 	thomas.petazzoni@free-electrons.com,
 	antoine.tenart@free-electrons.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <583cc331-69f9-bea4-486b-323c10c65447@kernel.org>
-Date: Wed, 20 Jul 2016 15:59:20 +0100
+Message-ID: <d64cf632-41a4-3e23-6239-7f854cbb0293@kernel.org>
+Date: Wed, 20 Jul 2016 16:01:05 +0100
 MIME-Version: 1.0
-In-Reply-To: <f6e32bf0-f043-0d34-5190-18b89920bbfd@free-electrons.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160719073109.GD17074@dell>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/07/16 13:37, Quentin Schulz wrote:
-> On 18/07/2016 15:18, Jonathan Cameron wrote:
+On 19/07/16 08:31, Lee Jones wrote:
+> On Mon, 18 Jul 2016, Jonathan Cameron wrote:
+> 
+>> On 15/07/16 10:59, Quentin Schulz wrote:
+>>> The Allwinner SoCs all have an ADC that can also act as a touchscreen
+>>> controller and a thermal sensor. For now, only the ADC and the thermal
+>>> sensor drivers are probed by the MFD, the touchscreen controller support
+>>> will be added later.
+>>>
+>>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>> Hmm. Previous patch includes the header this one creates.  Ordering issue?
+>> The depends kind of prevents build failures by ensuring that can't be built
+>> until this one is in place, but it is certainly an ugly way to do it.
+>>
+>> Few little bits innline.
+>>> ---
+>>>
+>>> v2:
+>>>  - add license headers,
+>>>  - reorder alphabetically includes,
+>>>  - add SUNXI_GPADC_ prefixes for defines,
+>>>
+>>>  drivers/mfd/Kconfig                 |  14 +++
+>>>  drivers/mfd/Makefile                |   2 +
+>>>  drivers/mfd/sunxi-gpadc-mfd.c       | 197 ++++++++++++++++++++++++++++++++++++
+>>>  include/linux/mfd/sunxi-gpadc-mfd.h |  23 +++++
+>>>  4 files changed, 236 insertions(+)
+>>>  create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
+>>>  create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
+> 
 > [...]
->>> +
->>> +	if (!wait_for_completion_timeout(&info->completion,
->>> +					 msecs_to_jiffies(100))) {
->>> +		ret = -ETIMEDOUT;
->>> +		goto out;
+> 
+>>> +static struct mfd_cell sun6i_gpadc_mfd_cells[] = {
+>>> +	{
+>>> +		.name	= "sun6i-a31-gpadc-iio",
+>>> +		.resources = adc_resources,
+>>> +		.num_resources = ARRAY_SIZE(adc_resources),
+>>> +	}, {
+>>> +		.name = "iio_hwmon",
+>> I still really dislike using this to force the probe of that driver but
+>> kind of up to the hwmon / mfd guys on this.
+> 
+> Can you at least say *why* you don't like it?
+It just feels odd to have an mfd child that isn't really dependent
+on the mfd hardware itself.
+
+Still if you are happy, mfd is your domain and my objections were
+as you probably noticed not that strong - or well described!)
+
+So I'm fine with this.
+> 
+> How else would it get probed?
+> 
+>> I don't have any better suggestions though..
+>>> +	},
+>>> +};
+> 
+> [...]
+> 
+>>> +	if (ret) {
+>>> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
+>>> +		regmap_del_irq_chip(irq, sunxi_gpadc_mfd_dev->regmap_irqc);
+>>> +		return ret;
 >>> +	}
 >>> +
->>> +	if (info->flags & SUNXI_GPADC_ARCH_SUN4I)
->>> +		*val = info->temp_data * 133 - 257000;
->> Why report as processed?  I'd just report them as raw with the scale
->> and offset provided.  It's not a big thing, but if we can leave it so
->> that the conversion only occurs when desired, why not?
->>
->> For in kernel users, this all happen 'automagically' anyway ;)
->>
+>>> +	dev_info(&pdev->dev, "successfully loaded\n");
+>> Seems like noise to me, but not my subsystem :)
 > 
-> Mmmmh, in the code above we apply the scale on the raw value and then
-> the offset. While in iio_convert_raw_to_processed
-> (http://lxr.free-electrons.com/source/drivers/iio/inkern.c#L507), the
-> offset is applied before the scale.
-> 
-> The way would be to factorize the computation by scale:
-> Now: *val = raw * scale + offset
-> Then: *val = (raw + offset/scale) * scale
-> 
-> But the offset is an integer and offset/scale is therefore rounded.
-> Currently, we have the following values:
-> sun4i: -257000/133 = -1932.3308270676691
-> sun5i: -144700/100 = -1447
-> sun6i: -271000/167 = -1622.754491017964
-> 
-> Do we accept such rounding?
-Yes - how accurate do you think a temp sensor is - really not a problem.
-> 
-> If not, we either stay with the processed value in read_raw or patch
-> inkern to add an offset to apply after having applied the scale to the
-> raw value (val2 from iio_channel_read is yet unused with
-> IIO_CHAN_INFO_OFFSET for example, we could use that to specify an
-> offset2 to apply after the switch(scale_type)-case).
-I don't really care that much if you just want to keep them as
-processed values.
-
-J
+> Agreed, I don't allow this either.
 > 
 > [...]
-> Quentin
 > 
 
