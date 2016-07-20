@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:53477 "EHLO
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:53493 "EHLO
 	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751648AbcGTJW5 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jul 2016 05:22:57 -0400
+	with ESMTP id S1752376AbcGTJW7 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 20 Jul 2016 05:22:59 -0400
 From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
 Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
@@ -12,391 +12,171 @@ Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
 	Guenter Roeck <groeck@chromium.org>,
 	Gwendal Grignou <gwendal@chromium.org>
-Subject: [PATCH v2 2/4] iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
-Date: Wed, 20 Jul 2016 11:22:40 +0200
-Message-Id: <1469006562-29277-3-git-send-email-enric.balletbo@collabora.com>
+Subject: [PATCH v2 4/4] platform/chrome: cros_ec_dev - Register cros-ec sensors
+Date: Wed, 20 Jul 2016 11:22:42 +0200
+Message-Id: <1469006562-29277-5-git-send-email-enric.balletbo@collabora.com>
 In-Reply-To: <1469006562-29277-1-git-send-email-enric.balletbo@collabora.com>
 References: <1469006562-29277-1-git-send-email-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Handle 3d contiguous sensors like Accelerometers, Gyroscope and
-Magnetometer that are presented by the ChromeOS EC Sensor hub.
+Check whether the ChromeOS Embedded Controller is a sensor hub and in
+such case issue a command to get the number of sensors and register them
+all.
 
-Signed-off-by: Guenter Roeck <groeck@chromium.org>
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
 Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 ---
+ drivers/platform/chrome/cros_ec_dev.c | 122 ++++++++++++++++++++++++++++++++++
+ 1 file changed, 122 insertions(+)
 
-Changes since v1:
-  - Fixup multiline comments.
-  - Fix some spelling mistakes.
-  - Blank line before return statements.
-  - Add CROS_EC_SENSORS_ prefix.
-
- drivers/iio/common/cros_ec_sensors/Kconfig         |   8 +
- drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
- .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 327 +++++++++++++++++++++
- 3 files changed, 336 insertions(+)
- create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-
-diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-index 24743be..980bea2 100644
---- a/drivers/iio/common/cros_ec_sensors/Kconfig
-+++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-@@ -12,3 +12,11 @@ config IIO_CROS_EC_SENSORS_CORE
- 	  drivers.
- 	  Define common attributes and sysfs interrupt handler.
+diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
+index fa5f060..0bec60e 100644
+--- a/drivers/platform/chrome/cros_ec_dev.c
++++ b/drivers/platform/chrome/cros_ec_dev.c
+@@ -18,6 +18,7 @@
+  */
  
-+config IIO_CROS_EC_SENSORS
-+	tristate "ChromeOS EC Contiguous Sensors"
-+	select IIO_CROS_EC_SENSORS_CORE
-+	help
-+	  Module to handle 3d contiguous sensors like
-+	  Accelerometers, Gyroscope and Magnetometer that are
-+	  presented by the ChromeOS EC Sensor hub.
-+	  Creates an IIO device for each functions.
-diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-index 95b6901..ec716ff 100644
---- a/drivers/iio/common/cros_ec_sensors/Makefile
-+++ b/drivers/iio/common/cros_ec_sensors/Makefile
-@@ -3,3 +3,4 @@
- #
+ #include <linux/fs.h>
++#include <linux/mfd/core.h>
+ #include <linux/module.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+@@ -265,6 +266,123 @@ static void __remove(struct device *dev)
+ 	kfree(ec);
+ }
  
- obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
-+obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-new file mode 100644
-index 0000000..b363321
---- /dev/null
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-@@ -0,0 +1,327 @@
-+/*
-+ * cros_ec_sensors - Driver for Chrome OS Embedded Controller sensors.
-+ *
-+ * Copyright (C) 2016 Google, Inc
-+ *
-+ * This software is licensed under the terms of the GNU General Public
-+ * License version 2, as published by the Free Software Foundation, and
-+ * may be copied, distributed, and modified under those terms.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * This driver uses the cros-ec interface to communicate with the Chrome OS
-+ * EC about sensors data. Data access is presented through iio sysfs.
-+ */
-+
-+#include <linux/delay.h>
-+#include <linux/device.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/kfifo_buf.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/kernel.h>
-+#include <linux/mfd/cros_ec.h>
-+#include <linux/mfd/cros_ec_commands.h>
-+#include <linux/module.h>
-+#include <linux/slab.h>
-+#include <linux/sysfs.h>
-+#include <linux/platform_device.h>
-+
-+#include "cros_ec_sensors_core.h"
-+
-+#define CROS_EC_SENSORS_MAX_CHANNELS 4
-+
-+/* State data for ec_sensors iio driver. */
-+struct cros_ec_sensors_state {
-+	/* Shared by all sensors */
-+	struct cros_ec_sensors_core_state core;
-+
-+	struct iio_chan_spec channels[CROS_EC_SENSORS_MAX_CHANNELS];
-+};
-+
-+static int cros_ec_sensors_read(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  int *val, int *val2, long mask)
++static void cros_ec_sensors_register(struct cros_ec_dev *ec)
 +{
-+	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-+	s16 data = 0;
-+	s64 val64;
-+	int i;
-+	int ret = IIO_VAL_INT;
-+	int idx = chan->scan_index;
++	/*
++	 * Issue a command to get the number of sensor reported.
++	 * Build an array of sensors driver and register them all.
++	 */
++	int ret, i, id, sensor_num;
++	struct mfd_cell *sensor_cells;
++	struct cros_ec_sensor_platform *sensor_platforms;
++	int sensor_type[MOTIONSENSE_TYPE_MAX];
++	struct ec_params_motion_sense *params;
++	struct ec_response_motion_sense *resp;
++	struct cros_ec_command *msg;
 +
-+	mutex_lock(&st->core.cmd_lock);
++	msg = kzalloc(sizeof(struct cros_ec_command) +
++		      max(sizeof(*params), sizeof(*resp)), GFP_KERNEL);
++	if (msg == NULL)
++		return;
 +
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (st->core.read_ec_sensors_data(indio_dev,
-+						  1 << idx, &data) < 0)
-+			ret = -EIO;
-+		*val = data;
-+		break;
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
-+		st->core.param.sensor_offset.flags = 0;
++	msg->version = 2;
++	msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
++	msg->outsize = sizeof(*params);
++	msg->insize = sizeof(*resp);
 +
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0) < 0) {
-+			ret = -EIO;
-+			break;
++	params = (struct ec_params_motion_sense *)msg->data;
++	params->cmd = MOTIONSENSE_CMD_DUMP;
++
++	ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
++	if (ret < 0 || msg->result != EC_RES_SUCCESS) {
++		dev_warn(ec->dev, "cannot get EC sensor information: %d/%d\n",
++			 ret, msg->result);
++		goto error;
++	}
++
++	resp = (struct ec_response_motion_sense *)msg->data;
++	sensor_num = resp->dump.sensor_count;
++	/* Allocate 2 extra sensors in case lid angle or FIFO are needed */
++	sensor_cells = kzalloc(sizeof(struct mfd_cell) * (sensor_num + 2),
++			       GFP_KERNEL);
++	if (sensor_cells == NULL)
++		goto error;
++
++	sensor_platforms = kzalloc(sizeof(struct cros_ec_sensor_platform) *
++		  (sensor_num + 1), GFP_KERNEL);
++	if (sensor_platforms == NULL)
++		goto error_platforms;
++
++	memset(sensor_type, 0, sizeof(sensor_type));
++	id = 0;
++	for (i = 0; i < sensor_num; i++) {
++		params->cmd = MOTIONSENSE_CMD_INFO;
++		params->info.sensor_num = i;
++		ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
++		if ((ret < 0) || msg->result != EC_RES_SUCCESS) {
++			dev_warn(ec->dev, "no info for EC sensor %d : %d/%d\n",
++				 i, ret, msg->result);
++			continue;
 +		}
-+
-+		/* Save values */
-+		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
-+			st->core.calib[i].offset =
-+				st->core.resp->sensor_offset.offset[i];
-+
-+		*val = st->core.calib[idx].offset;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-+		st->core.param.sensor_range.data =
-+			EC_MOTION_SENSE_NO_VALUE;
-+
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0) < 0) {
-+			ret = -EIO;
-+			break;
-+		}
-+		val64 = st->core.resp->sensor_range.ret;
-+		switch (st->core.type) {
++		switch (resp->info.type) {
 +		case MOTIONSENSE_TYPE_ACCEL:
-+			/*
-+			 * EC returns data in g, iio exepects m/s^2.
-+			 * Do not use IIO_G_TO_M_S_2 to avoid precision loss.
-+			 */
-+			*val = div_s64(val64 * 980665, 10);
-+			*val2 = 10000 << (CROS_EC_SENSOR_BITS - 1);
-+			ret = IIO_VAL_FRACTIONAL;
++			sensor_cells[id].name = "cros-ec-accel";
 +			break;
 +		case MOTIONSENSE_TYPE_GYRO:
-+			/*
-+			 * EC returns date in dps, iio expects rad/s.
-+			 * Do not use IIO_DEGREE_TO_RAD to avoid precision
-+			 * loss. Round to the nearest integer.
-+			 */
-+			*val = div_s64(val64 * 314159 + 9000000ULL, 1000);
-+			*val2 = 18000 << (CROS_EC_SENSOR_BITS - 1);
-+			ret = IIO_VAL_FRACTIONAL;
++			sensor_cells[id].name = "cros-ec-gyro";
 +			break;
 +		case MOTIONSENSE_TYPE_MAG:
-+			/*
-+			 * EC returns date in 16LSB / uT,
-+			 * iio expects Gauss
-+			 */
-+			*val = val64;
-+			*val2 = 100 << (CROS_EC_SENSOR_BITS - 1);
-+			ret = IIO_VAL_FRACTIONAL;
++			sensor_cells[id].name = "cros-ec-mag";
++			break;
++		case MOTIONSENSE_TYPE_PROX:
++			sensor_cells[id].name = "cros-ec-prox";
++			break;
++		case MOTIONSENSE_TYPE_LIGHT:
++			sensor_cells[id].name = "cros-ec-light";
++			break;
++		case MOTIONSENSE_TYPE_ACTIVITY:
++			sensor_cells[id].name = "cros-ec-activity";
 +			break;
 +		default:
-+			ret = -EINVAL;
++			dev_warn(ec->dev, "unknown type %d\n", resp->info.type);
++			continue;
 +		}
-+		break;
-+	default:
-+		ret = cros_ec_sensors_core_read(
-+				&st->core, chan, val, val2, mask);
-+		break;
++		sensor_platforms[id].sensor_num = i;
++		sensor_cells[id].id = sensor_type[resp->info.type];
++		sensor_cells[id].platform_data = &sensor_platforms[id];
++		sensor_cells[id].pdata_size =
++			sizeof(struct cros_ec_sensor_platform);
++
++		sensor_type[resp->info.type]++;
++		id++;
 +	}
-+	mutex_unlock(&st->core.cmd_lock);
++	if (sensor_type[MOTIONSENSE_TYPE_ACCEL] >= 2) {
++		sensor_platforms[id].sensor_num = sensor_num;
 +
-+	return ret;
-+}
-+
-+static int cros_ec_sensors_write(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int val, int val2, long mask)
-+{
-+	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
-+	int i;
-+	int ret = 0;
-+	int idx = chan->scan_index;
-+
-+	mutex_lock(&st->core.cmd_lock);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_CALIBBIAS:
-+		st->core.calib[idx].offset = val;
-+
-+		/* Send to EC for each axis, even if not complete */
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
-+		st->core.param.sensor_offset.flags =
-+			MOTION_SENSE_SET_OFFSET;
-+		for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
-+			st->core.param.sensor_offset.offset[i] =
-+				st->core.calib[i].offset;
-+		st->core.param.sensor_offset.temp =
-+			EC_MOTION_SENSE_INVALID_CALIB_TEMP;
-+
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0) < 0)
-+			ret = -EIO;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (st->core.type == MOTIONSENSE_TYPE_MAG) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-+		st->core.param.sensor_range.data = val;
-+
-+		/* Always roundup, so caller gets at least what it asks for. */
-+		st->core.param.sensor_range.roundup = 1;
-+
-+		if (cros_ec_motion_send_host_cmd(&st->core, 0) < 0)
-+			ret = -EIO;
-+		break;
-+	default:
-+		ret = cros_ec_sensors_core_write(
-+				&st->core, chan, val, val2, mask);
-+		break;
++		sensor_cells[id].name = "cros-ec-angle";
++		sensor_cells[id].id = 0;
++		sensor_cells[id].platform_data = &sensor_platforms[id];
++		sensor_cells[id].pdata_size =
++			sizeof(struct cros_ec_sensor_platform);
++		id++;
++	}
++	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO)) {
++		sensor_cells[id].name = "cros-ec-ring";
++		id++;
 +	}
 +
-+	mutex_unlock(&st->core.cmd_lock);
-+
-+	return ret;
-+}
-+
-+static const struct iio_info ec_sensors_info = {
-+	.read_raw = &cros_ec_sensors_read,
-+	.write_raw = &cros_ec_sensors_write,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int cros_ec_sensors_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-+	struct cros_ec_device *ec_device;
-+	struct iio_dev *indio_dev;
-+	struct cros_ec_sensors_state *state;
-+	struct iio_chan_spec *channel;
-+	int ret, i;
-+
-+	if (!ec_dev || !ec_dev->ec_dev) {
-+		dev_warn(&pdev->dev, "No CROS EC device found.\n");
-+		return -EINVAL;
-+	}
-+	ec_device = ec_dev->ec_dev;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
++	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
++			      NULL, 0, NULL);
 +	if (ret)
-+		return ret;
++		dev_err(ec->dev, "failed to add EC sensors\n");
 +
-+	indio_dev->info = &ec_sensors_info;
-+	state = iio_priv(indio_dev);
-+	for (channel = state->channels, i = CROS_EC_SENSOR_X;
-+	     i < CROS_EC_SENSOR_MAX_AXIS; i++, channel++) {
-+		/* Common part */
-+		channel->info_mask_separate =
-+			BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_CALIBBIAS);
-+		channel->info_mask_shared_by_all =
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_FREQUENCY) |
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ);
-+		channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
-+		channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
-+		channel->scan_type.shift = 0;
-+		channel->scan_index = i;
-+		channel->ext_info = cros_ec_sensors_ext_info;
-+		channel->modified = 1;
-+		channel->channel2 = IIO_MOD_X + i;
-+		channel->scan_type.sign = 's';
-+
-+		state->core.calib[i].offset = 0;
-+
-+		/* Sensor specific */
-+		switch (state->core.type) {
-+		case MOTIONSENSE_TYPE_ACCEL:
-+			channel->type = IIO_ACCEL;
-+			break;
-+		case MOTIONSENSE_TYPE_GYRO:
-+			channel->type = IIO_ANGL_VEL;
-+			break;
-+		case MOTIONSENSE_TYPE_MAG:
-+			channel->type = IIO_MAGN;
-+			break;
-+		default:
-+			dev_warn(&pdev->dev, "unknown\n");
-+		}
-+	}
-+
-+	/* Timestamp */
-+	channel->type = IIO_TIMESTAMP;
-+	channel->channel = -1;
-+	channel->scan_index = CROS_EC_SENSOR_MAX_AXIS;
-+	channel->scan_type.sign = 's';
-+	channel->scan_type.realbits = 64;
-+	channel->scan_type.storagebits = 64;
-+
-+	indio_dev->channels = state->channels;
-+	indio_dev->num_channels = 4;
-+
-+	/* There is only enough room for accel and gyro in the io space */
-+	if ((state->core.ec->cmd_readmem != NULL) &&
-+	    (state->core.type != MOTIONSENSE_TYPE_MAG))
-+		state->core.read_ec_sensors_data = cros_ec_sensors_read_lpc;
-+	else
-+		state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 cros_ec_sensors_capture, NULL);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_uninit_buffer;
-+
-+	return 0;
-+
-+error_uninit_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return ret;
++	kfree(sensor_platforms);
++error_platforms:
++	kfree(sensor_cells);
++error:
++	kfree(msg);
 +}
 +
-+static int cros_ec_sensors_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ static int ec_device_probe(struct platform_device *pdev)
+ {
+ 	int retval = -ENOMEM;
+@@ -319,6 +437,10 @@ static int ec_device_probe(struct platform_device *pdev)
+ 		goto dev_reg_failed;
+ 	}
+ 
++	/* check whether this EC is a sensor hub. */
++	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
++		cros_ec_sensors_register(ec);
 +
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct platform_device_id cros_ec_sensors_ids[] = {
-+	{
-+		.name = "cros-ec-accel",
-+	},
-+	{
-+		.name = "cros-ec-gyro",
-+	},
-+	{
-+		.name = "cros-ec-mag",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
-+
-+static struct platform_driver cros_ec_sensors_platform_driver = {
-+	.driver = {
-+		.name	= "cros-ec-sensors",
-+	},
-+	.probe		= cros_ec_sensors_probe,
-+	.remove		= cros_ec_sensors_remove,
-+	.id_table	= cros_ec_sensors_ids,
-+};
-+module_platform_driver(cros_ec_sensors_platform_driver);
-+
-+MODULE_DESCRIPTION("ChromeOS EC 3-axis sensors driver");
-+MODULE_LICENSE("GPL v2");
+ 	return 0;
+ 
+ dev_reg_failed:
 -- 
 2.1.0
 
