@@ -1,402 +1,233 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:46401 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751302AbcGUIFJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Thu, 21 Jul 2016 04:05:09 -0400
-Date: Thu, 21 Jul 2016 10:05:05 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Zhiyong Tao <zhiyong.tao@mediatek.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	srv_heupstream@mediatek.com, linux-iio@vger.kernel.org,
-	erin.lo@mediatek.com, dawei.chien@mediatek.com,
-	liguo.zhang@mediatek.com, linux-mediatek@lists.infradead.org,
-	matthias.bgg@gmail.com, yingjoe.chen@mediatek.com,
-	eddie.huang@mediatek.com, linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 2/3] iio: adc: mt2701: Add Mediatek auxadc driver for
- mt2701.
-In-Reply-To: <1469085449-22679-3-git-send-email-zhiyong.tao@mediatek.com>
-Message-ID: <alpine.DEB.2.02.1607210956290.30580@pmeerw.net>
-References: <1469085449-22679-1-git-send-email-zhiyong.tao@mediatek.com> <1469085449-22679-3-git-send-email-zhiyong.tao@mediatek.com>
+Return-Path: <pgrudzinski@openmailbox.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <db7bbbe6-9c9d-8672-4436-a19cff47525c@metafoo.de>
+References: <20160713233202.812-1-pgrudzinski@openmailbox.org> <db7bbbe6-9c9d-8672-4436-a19cff47525c@metafoo.de>
+From: =?UTF-8?B?UGF3ZcWCIEdydWR6acWEc2tp?= <pgrudzinski@openmailbox.org>
+Date: Thu, 21 Jul 2016 12:05:52 +0200
+Message-ID: <CA+XhPW_nRTkGe115wGMO+DKY-UQCuztTgvZh6naZ2wQ0=KHMEA@mail.gmail.com>
+Subject: Re: [PATCH] iio: ad5380: Fix probe failure when no external reference
+ is supplied
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Content-Type: multipart/alternative; boundary=94eb2c0d789c93309e05382276fd
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 21 Jul 2016, Zhiyong Tao wrote:
+--94eb2c0d789c93309e05382276fd
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-> Add Mediatek auxadc driver based on iio.
-> It will register a device in iio and support iio.
-> So thermal can read auxadc channel to sample data by iio device.
-> It is tested successfully on mt2701 platform.
-> Mt8173 and mt6577 platforms are not tested.
-> But the expectation is compatible.
+Thanks for comment. I have posted patch with corrections as you suggested.
 
-minor comments below, consider if you do another respin
- 
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> ---
->  drivers/iio/adc/Kconfig         |   13 ++
->  drivers/iio/adc/Makefile        |    1 +
->  drivers/iio/adc/mt6577_auxadc.c |  289 +++++++++++++++++++++++++++++++++++++++
->  3 files changed, 303 insertions(+)
->  create mode 100644 drivers/iio/adc/mt6577_auxadc.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 25378c5..14929fc 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -305,6 +305,19 @@ config MCP3422
->  	  This driver can also be built as a module. If so, the module will be
->  	  called mcp3422.
->  
-> +config MEDIATEK_MT6577_AUXADC
-> +        tristate "MediaTek AUXADC driver"
-> +        depends on ARCH_MEDIATEK || COMPILE_TEST
-> +        depends on HAS_IOMEM
-> +        help
-> +          Say yes here to enable support for MediaTek mt65xx AUXADC.
-> +
-> +          The driver supports immediate mode operation to read from one of sixteen
-> +          channels (external or internal).
-> +
-> +          This driver can also be built as a module. If so, the module will be
-> +          called mt6577_auxadc.
-> +
->  config MEN_Z188_ADC
->  	tristate "MEN 16z188 ADC IP Core support"
->  	depends on MCB
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 38638d4..8306347 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -30,6 +30,7 @@ obj-$(CONFIG_MAX1027) += max1027.o
->  obj-$(CONFIG_MAX1363) += max1363.o
->  obj-$(CONFIG_MCP320X) += mcp320x.o
->  obj-$(CONFIG_MCP3422) += mcp3422.o
-> +obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
->  obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
->  obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
->  obj-$(CONFIG_NAU7802) += nau7802.o
-> diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
-> new file mode 100644
-> index 0000000..6240236
-> --- /dev/null
-> +++ b/drivers/iio/adc/mt6577_auxadc.c
-> @@ -0,0 +1,289 @@
-> +/*
-> + * Copyright (c) 2016 MediaTek Inc.
-> + * Author: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/iopoll.h>
-> +#include <linux/io.h>
-> +#include <linux/iio/iio.h>
-> +
-> +/* Register definitions */
-> +#define MT6577_AUXADC_CON0                    0x00
-> +#define MT6577_AUXADC_CON1                    0x04
-> +#define MT6577_AUXADC_CON2                    0x10
-> +#define MT6577_AUXADC_STA                     BIT(0)
-> +
-> +#define MT6577_AUXADC_DAT0                    0x14
-> +#define MT6577_AUXADC_RDY0                    BIT(12)
-> +
-> +#define MT6577_AUXADC_MISC                    0x94
-> +#define MT6577_AUXADC_PDN_EN                  BIT(14)
-> +
-> +#define MT6577_AUXADC_DAT_MASK                0xfff
-> +#define MT6577_AUXADC_SLEEP_US                1000
-> +#define MT6577_AUXADC_TIMEOUT_US              10000
-> +#define MT6577_AUXADC_POWER_READY_MS          1
-> +#define MT6577_AUXADC_SAMPLE_READY_US         25
-> +
-> +struct mt6577_auxadc_device {
-> +	void __iomem *reg_base;
-> +	struct clk *adc_clk;
-> +	struct mutex lock;
-> +};
-> +
-> +#define MT6577_AUXADC_CHANNEL(idx) {				    \
-> +		.type = IIO_VOLTAGE,				    \
-> +		.indexed = 1,					    \
-> +		.channel = (idx),				    \
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED), \
-> +}
-> +
-> +static const struct iio_chan_spec mt6577_auxadc_iio_channels[] = {
-> +	MT6577_AUXADC_CHANNEL(0),
-> +	MT6577_AUXADC_CHANNEL(1),
-> +	MT6577_AUXADC_CHANNEL(2),
-> +	MT6577_AUXADC_CHANNEL(3),
-> +	MT6577_AUXADC_CHANNEL(4),
-> +	MT6577_AUXADC_CHANNEL(5),
-> +	MT6577_AUXADC_CHANNEL(6),
-> +	MT6577_AUXADC_CHANNEL(7),
-> +	MT6577_AUXADC_CHANNEL(8),
-> +	MT6577_AUXADC_CHANNEL(9),
-> +	MT6577_AUXADC_CHANNEL(10),
-> +	MT6577_AUXADC_CHANNEL(11),
-> +	MT6577_AUXADC_CHANNEL(12),
-> +	MT6577_AUXADC_CHANNEL(13),
-> +	MT6577_AUXADC_CHANNEL(14),
-> +	MT6577_AUXADC_CHANNEL(15),
-> +};
-> +
-> +static int mt6577_auxadc_read(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan)
-> +{
-> +	u32 rawdata, val;
+Best regards,
 
-could drop rawdata variable and use val instead
+Pawe=C5=82 Grudzi=C5=84ski
 
-> +	void __iomem *reg_channel;
-> +	int ret;
-> +	struct mt6577_auxadc_device *adc_dev = iio_priv(indio_dev);
-> +
-> +	reg_channel = adc_dev->reg_base + MT6577_AUXADC_DAT0 +
-> +		      chan->channel * 0x04;
-> +
-> +	mutex_lock(&adc_dev->lock);
-> +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +	val &= ~(1 << chan->channel);
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +
-> +	/* read channel and make sure old ready bit == 0 */
-> +	ret = readl_poll_timeout(reg_channel, val,
-> +				 ((val & MT6577_AUXADC_RDY0) == 0),
-> +				 MT6577_AUXADC_SLEEP_US,
-> +				 MT6577_AUXADC_TIMEOUT_US);
-> +	if (ret < 0) {
-> +		dev_err(indio_dev->dev.parent,
-> +			"wait for channel[%d] ready bit clear time out\n",
-> +			chan->channel);
-> +
-> +		mutex_unlock(&adc_dev->lock);
-> +
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	/* set bit to trigger sample */
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +	val |= 1 << chan->channel;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_CON1);
-> +
-> +	/* we must delay here for hardware sample channel data */
-> +	udelay(MT6577_AUXADC_SAMPLE_READY_US);
-> +
-> +	/* check MTK_AUXADC_CON2 if auxadc is idle */
-> +	ret = readl_poll_timeout(adc_dev->reg_base + MT6577_AUXADC_CON2, val,
-> +				 ((val & MT6577_AUXADC_STA) == 0),
-> +				 MT6577_AUXADC_SLEEP_US,
-> +				 MT6577_AUXADC_TIMEOUT_US);
-> +	if (ret < 0) {
-> +		dev_err(indio_dev->dev.parent,
-> +			"wait for auxadc idle time out\n");
-> +
-> +		mutex_unlock(&adc_dev->lock);
-> +
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	/* read channel and make sure ready bit == 1 */
-> +	ret = readl_poll_timeout(reg_channel, val,
-> +				 ((val & MT6577_AUXADC_RDY0) != 0),
-> +				 MT6577_AUXADC_SLEEP_US,
-> +				 MT6577_AUXADC_TIMEOUT_US);
-> +	if (ret < 0) {
-> +		dev_err(indio_dev->dev.parent,
-> +			"wait for channel[%d] data ready time out\n",
-> +			chan->channel);
-> +
-> +		mutex_unlock(&adc_dev->lock);
-> +
-> +		return -ETIMEDOUT;
-> +	}
-> +
-> +	/* read data */
-> +	rawdata = readl(reg_channel) & MT6577_AUXADC_DAT_MASK;
-> +
-> +	mutex_unlock(&adc_dev->lock);
-> +
-> +	return rawdata;
-> +}
-> +
-> +static int mt6577_auxadc_read_raw(struct iio_dev *indio_dev,
-> +				  struct iio_chan_spec const *chan,
-> +				  int *val,
-> +				  int *val2,
-> +				  long info)
-> +{
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		*val = mt6577_auxadc_read(indio_dev, chan);
-> +		if (*val < 0) {
-> +			dev_err(indio_dev->dev.parent,
-> +				"failed to sample data on channel[%d]\n",
-> +				chan->channel);
-> +			return *val;
-> +		}
-> +		return IIO_VAL_INT;
-> +
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info mt6577_auxadc_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &mt6577_auxadc_read_raw,
-> +};
-> +
-> +static int mt6577_auxadc_probe(struct platform_device *pdev)
-> +{
-> +	struct mt6577_auxadc_device *adc_dev;
-> +	unsigned long adc_clk_rate;
-> +	struct resource *res;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +	u32 val;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*adc_dev));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	adc_dev = iio_priv(indio_dev);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->name = dev_name(&pdev->dev);
-> +	indio_dev->info = &mt6577_auxadc_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mt6577_auxadc_iio_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mt6577_auxadc_iio_channels);
-> +
-> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
-> +	if (IS_ERR(adc_dev->reg_base)) {
-> +		dev_err(&pdev->dev, "failed to get auxadc base address.\n");
+On Thu, Jul 14, 2016 at 9:55 AM, Lars-Peter Clausen <lars@metafoo.de> wrote=
+:
 
-this is the only error msg ending with a '.'
+> On 07/14/2016 01:32 AM, Pawe=C5=82 Grudzi=C5=84ski wrote:
+> > From: Pawel Grudzinski <pgrudzinski@openmailbox.org>
+> >
+> > Driver fails to load when there is no external Vref regulator defined,
+> > leaving no way to use internal reference. ad5380_probe function tries t=
+o
+> > obtain regulator with demv_regulator_get and checks for error, in which
+> > case it would use internal reference. Even without "Vref" regulator
+> defined
+> > devm_regulator_get returns dummy regulator which makes function omit us=
+e
+> of
+> > internal reference and causes failure on regulator_get_voltage.
+> >
+> > Replace demv_regulator_get with demv_regulator_get_optional, which
+> returns
+> > error instead of dummy regulator if it does not find one which is
+> specified
+> > by the caller to make ad5380_probe configure internal reference when no
+> > "Vref" regulator is supplied.
+> >
+> > Signed-off-by: Pawe=C5=82 Grudzi=C5=84ski <pgrudzinski@openmailbox.org>
+>
+> Looks good, thanks. But there is a way to improve on it even more, see
+> comments inline. Up to you whether you want to do this or not.
+>
+> Either way.
+>
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+>
+> > ---
+> > There are couple more places where I suspect similar issue with devices
+> > having integrated reference, but I am sending this one because I tested
+> it
+> > with hardware. If this gets accepted, I will look through other drivers
+> > obtaining Vref in same manner.
+>
+> I believe most of those drivers predate the get_optional() API.
+>
+> >
+> >  drivers/iio/dac/ad5380.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c
+> > index 97d2c51..257d455 100644
+> > --- a/drivers/iio/dac/ad5380.c
+> > +++ b/drivers/iio/dac/ad5380.c
+> > @@ -401,7 +401,7 @@ static int ad5380_probe(struct device *dev, struct
+> regmap *regmap,
+> >       if (st->chip_info->int_vref =3D=3D 2500)
+> >               ctrl |=3D AD5380_CTRL_INT_VREF_2V5;
+> >
+> > -     st->vref_reg =3D devm_regulator_get(dev, "vref");
+> > +     st->vref_reg =3D devm_regulator_get_optional(dev, "vref");
+>
+> Ideally we'd do something like
+>
+>     st->vref_reg =3D devm_regulator_get_optional(&st->spi->dev, "vref");
+>     if (!IS_ERR(st->vref_reg)) {
+>         /* use external vref */
+>     } else {
+>         if (PTR_ERR(st->vref_reg) !=3D -ENODEV) {
+>             ret =3D PTR_ERR(st->vref_reg);
+>             goto err_free_reg;
+>         }
+>         /* use internal vref ... */
+>     }
+>
+> This makes sure that real errors returned by regulator_get_optional() are
+> actually handled. The only error that we want to ignore is the case where
+> no
+> regulator has been specified, if a regulator has been specified but there
+> is
+> a problem with the specification we don't want to switch to internal vref
+> mode, but rather propagate the error. This is especially important to mak=
+e
+> probe deferring work, which kicks in when the DAC is tried to be probed
+> before the regulator has finished probing.
+>
+>
+> >       if (!IS_ERR(st->vref_reg)) {
+> >               ret =3D regulator_enable(st->vref_reg);
+> >               if (ret) {
+> >
+>
+>
 
-> +		return PTR_ERR(adc_dev->reg_base);
-> +	}
-> +
-> +	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "main");
-> +	if (IS_ERR(adc_dev->adc_clk)) {
-> +		dev_err(&pdev->dev, "failed to get auxadc clock\n");
-> +		return PTR_ERR(adc_dev->adc_clk);
-> +	}
-> +
-> +	ret = clk_prepare_enable(adc_dev->adc_clk);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to enable auxadc clock\n");
-> +		return ret;
-> +	}
-> +
-> +	adc_clk_rate = clk_get_rate(adc_dev->adc_clk);
-> +	if (!adc_clk_rate) {
-> +		dev_err(&pdev->dev, "null clock rate!\n");
-> +		goto err_disable_clk;
-> +	}
-> +
-> +	mutex_init(&adc_dev->lock);
-> +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	val |= MT6577_AUXADC_PDN_EN;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	mdelay(MT6577_AUXADC_POWER_READY_MS);
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev, "failed to register iio device!\n");
-> +		goto err_power_off;
-> +	}
-> +
-> +	return 0;
-> +
-> +err_power_off:
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	val &= ~MT6577_AUXADC_PDN_EN;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +err_disable_clk:
-> +	clk_disable_unprepare(adc_dev->adc_clk);
-> +	return -EINVAL;
+--94eb2c0d789c93309e05382276fd
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
 
-not happy with inventing error codes; IMHO you should return the ret given 
-e.g. by iio_device_register()
+<div dir=3D"ltr"><div><div>Thanks for comment. I have posted patch with cor=
+rections as you suggested. <br><br></div>Best regards,<br><br></div>Pawe=C5=
+=82 Grudzi=C5=84ski<br></div><div class=3D"gmail_extra"><br><div class=3D"g=
+mail_quote">On Thu, Jul 14, 2016 at 9:55 AM, Lars-Peter Clausen <span dir=
+=3D"ltr">&lt;<a href=3D"mailto:lars@metafoo.de" target=3D"_blank">lars@meta=
+foo.de</a>&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"=
+margin:0 0 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=
+=3D"">On 07/14/2016 01:32 AM, Pawe=C5=82 Grudzi=C5=84ski wrote:<br>
+&gt; From: Pawel Grudzinski &lt;<a href=3D"mailto:pgrudzinski@openmailbox.o=
+rg">pgrudzinski@openmailbox.org</a>&gt;<br>
+&gt;<br>
+&gt; Driver fails to load when there is no external Vref regulator defined,=
+<br>
+&gt; leaving no way to use internal reference. ad5380_probe function tries =
+to<br>
+&gt; obtain regulator with demv_regulator_get and checks for error, in whic=
+h<br>
+&gt; case it would use internal reference. Even without &quot;Vref&quot; re=
+gulator defined<br>
+&gt; devm_regulator_get returns dummy regulator which makes function omit u=
+se of<br>
+&gt; internal reference and causes failure on regulator_get_voltage.<br>
+&gt;<br>
+&gt; Replace demv_regulator_get with demv_regulator_get_optional, which ret=
+urns<br>
+&gt; error instead of dummy regulator if it does not find one which is spec=
+ified<br>
+&gt; by the caller to make ad5380_probe configure internal reference when n=
+o<br>
+&gt; &quot;Vref&quot; regulator is supplied.<br>
+&gt;<br>
+&gt; Signed-off-by: Pawe=C5=82 Grudzi=C5=84ski &lt;<a href=3D"mailto:pgrudz=
+inski@openmailbox.org">pgrudzinski@openmailbox.org</a>&gt;<br>
+<br>
+</span>Looks good, thanks. But there is a way to improve on it even more, s=
+ee<br>
+comments inline. Up to you whether you want to do this or not.<br>
+<br>
+Either way.<br>
+<br>
+Acked-by: Lars-Peter Clausen &lt;<a href=3D"mailto:lars@metafoo.de">lars@me=
+tafoo.de</a>&gt;<br>
+<span class=3D""><br>
+&gt; ---<br>
+&gt; There are couple more places where I suspect similar issue with device=
+s<br>
+&gt; having integrated reference, but I am sending this one because I teste=
+d it<br>
+&gt; with hardware. If this gets accepted, I will look through other driver=
+s<br>
+&gt; obtaining Vref in same manner.<br>
+<br>
+</span>I believe most of those drivers predate the get_optional() API.<br>
+<span class=3D""><br>
+&gt;<br>
+&gt;=C2=A0 drivers/iio/dac/ad5380.c | 2 +-<br>
+&gt;=C2=A0 1 file changed, 1 insertion(+), 1 deletion(-)<br>
+&gt;<br>
+&gt; diff --git a/drivers/iio/dac/ad5380.c b/drivers/iio/dac/ad5380.c<br>
+&gt; index 97d2c51..257d455 100644<br>
+&gt; --- a/drivers/iio/dac/ad5380.c<br>
+&gt; +++ b/drivers/iio/dac/ad5380.c<br>
+&gt; @@ -401,7 +401,7 @@ static int ad5380_probe(struct device *dev, struct=
+ regmap *regmap,<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0if (st-&gt;chip_info-&gt;int_vref =3D=3D 250=
+0)<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ctrl |=3D AD5380=
+_CTRL_INT_VREF_2V5;<br>
+&gt;<br>
+&gt; -=C2=A0 =C2=A0 =C2=A0st-&gt;vref_reg =3D devm_regulator_get(dev, &quot=
+;vref&quot;);<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0st-&gt;vref_reg =3D devm_regulator_get_optional(d=
+ev, &quot;vref&quot;);<br>
+<br>
+</span>Ideally we&#39;d do something like<br>
+<br>
+=C2=A0 =C2=A0 st-&gt;vref_reg =3D devm_regulator_get_optional(&amp;st-&gt;s=
+pi-&gt;dev, &quot;vref&quot;);<br>
+=C2=A0 =C2=A0 if (!IS_ERR(st-&gt;vref_reg)) {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* use external vref */<br>
+=C2=A0 =C2=A0 } else {<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 if (PTR_ERR(st-&gt;vref_reg) !=3D -ENODEV) {<br=
+>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 ret =3D PTR_ERR(st-&gt;vref_reg);=
+<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 goto err_free_reg;<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 }<br>
+=C2=A0 =C2=A0 =C2=A0 =C2=A0 /* use internal vref ... */<br>
+=C2=A0 =C2=A0 }<br>
+<br>
+This makes sure that real errors returned by regulator_get_optional() are<b=
+r>
+actually handled. The only error that we want to ignore is the case where n=
+o<br>
+regulator has been specified, if a regulator has been specified but there i=
+s<br>
+a problem with the specification we don&#39;t want to switch to internal vr=
+ef<br>
+mode, but rather propagate the error. This is especially important to make<=
+br>
+probe deferring work, which kicks in when the DAC is tried to be probed<br>
+before the regulator has finished probing.<br>
+<div class=3D"HOEnZb"><div class=3D"h5"><br>
+<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0if (!IS_ERR(st-&gt;vref_reg)) {<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0ret =3D regulato=
+r_enable(st-&gt;vref_reg);<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0if (ret) {<br>
+&gt;<br>
+<br>
+</div></div></blockquote></div><br></div>
 
-> +}
-> +
-> +static int mt6577_auxadc_remove(struct platform_device *pdev)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct mt6577_auxadc_device *adc_dev = iio_priv(indio_dev);
-> +	u32 val;
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	val = readl(adc_dev->reg_base + MT6577_AUXADC_MISC);
-> +	val &= ~MT6577_AUXADC_PDN_EN;
-> +	writel(val, adc_dev->reg_base + MT6577_AUXADC_MISC);
-
-maybe the read/modify/write code sequence could be put into a function to 
-save some lines
-
-something like 
-mt6577_auxadc_mod_reg(reg, or_mask, and_mask) {
-val = readl(reg)
-val |= or_mask;
-val &= ~and_mask;
-writel(val, reg)
-}
-
-> +
-> +	clk_disable_unprepare(adc_dev->adc_clk);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id mt6577_auxadc_of_match[] = {
-> +	{ .compatible = "mediatek,mt2701-auxadc", },
-> +	{ .compatible = "mediatek,mt8173-auxadc", },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, mt6577_auxadc_of_match);
-> +
-> +static struct platform_driver mt6577_auxadc_driver = {
-> +	.driver = {
-> +		.name   = "mt6577-auxadc",
-> +		.of_match_table = mt6577_auxadc_of_match,
-> +	},
-> +	.probe	= mt6577_auxadc_probe,
-> +	.remove	= mt6577_auxadc_remove,
-> +};
-> +module_platform_driver(mt6577_auxadc_driver);
-> +
-> +MODULE_AUTHOR("Zhiyong Tao <zhiyong.tao@mediatek.com>");
-> +MODULE_DESCRIPTION("MTK AUXADC Device Driver");
-> +MODULE_LICENSE("GPL v2");
-> 
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+--94eb2c0d789c93309e05382276fd--
