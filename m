@@ -1,289 +1,353 @@
 Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 22 Jul 2016 00:10:04 +0200 (CEST)
+Date: Fri, 22 Jul 2016 00:41:39 +0200 (CEST)
 From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Alison Schofield <amsfield22@gmail.com>
-cc: jic23@kernel.org, mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: humidity: hdc100x: add triggered buffer support
- for HDC100X
-In-Reply-To: <20160721184058.GA7278@d830.WORKGROUP>
-Message-ID: <alpine.DEB.2.02.1607220000210.6041@pmeerw.net>
-References: <20160721184058.GA7278@d830.WORKGROUP>
+To: Aleksei Mamlin <mamlinav@gmail.com>
+cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+    Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
+    devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+    linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/2] iio: accel: Add support for Domintech DMARD06
+ accelerometer
+In-Reply-To: <1469133191-14812-1-git-send-email-mamlinav@gmail.com>
+Message-ID: <alpine.DEB.2.02.1607220015530.6041@pmeerw.net>
+References: <1469133140-14722-1-git-send-email-mamlinav@gmail.com> <1469133191-14812-1-git-send-email-mamlinav@gmail.com>
 MIME-Version: 1.0
 Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
 
-> Triggered buffer support uses the HDC100X's dual acquisition mode
-> to read both humidity and temperature in one shot.
+> This patch add support for Domintech DMARD06 accelerometer.
 
 comments below
  
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> ---
->  drivers/iio/humidity/Kconfig   |   2 +
->  drivers/iio/humidity/hdc100x.c | 144 +++++++++++++++++++++++++++++++++++++++--
->  2 files changed, 140 insertions(+), 6 deletions(-)
+> Domintech DMARD06 is a low-g tri-axial digital accelerometer for
+> cost-sensitive consumer application.
 > 
-> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> index 738a86d..4883ce1 100644
-> --- a/drivers/iio/humidity/Kconfig
-> +++ b/drivers/iio/humidity/Kconfig
-> @@ -25,6 +25,8 @@ config DHT11
->  config HDC100X
->  	tristate "TI HDC100x relative humidity and temperature sensor"
->  	depends on I2C
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	 Say yes here to build support for the TI HDC100x series of
->  	 relative humidity and temperature sensors.
-> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> index a03832a..85325d4 100644
-> --- a/drivers/iio/humidity/hdc100x.c
-> +++ b/drivers/iio/humidity/hdc100x.c
-> @@ -22,13 +22,19 @@
->  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
->  
->  #define HDC100X_REG_TEMP			0x00
->  #define HDC100X_REG_HUMIDITY			0x01
->  
->  #define HDC100X_REG_CONFIG			0x02
-> +#define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
->  #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
->  
-> +#define HDC100X_ALL_CHANNEL_MASK		GENMASK(1, 0)
-> +
->  struct hdc100x_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
-> @@ -87,20 +93,36 @@ static const struct iio_chan_spec hdc100x_channels[] = {
->  			BIT(IIO_CHAN_INFO_SCALE) |
->  			BIT(IIO_CHAN_INFO_INT_TIME) |
->  			BIT(IIO_CHAN_INFO_OFFSET),
-> +		.scan_index = 0,
-> +		.scan_type = {
-> +			.sign = 's',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
+> Signed-off-by: Aleksei Mamlin <mamlinav@gmail.com>
+> ---
+>  .../devicetree/bindings/iio/accel/dmard06.txt      |  17 ++
+>  drivers/iio/accel/Kconfig                          |  11 ++
+>  drivers/iio/accel/Makefile                         |   1 +
+>  drivers/iio/accel/dmard06.c                        | 219 +++++++++++++++++++++
+>  4 files changed, 248 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard06.txt
+>  create mode 100644 drivers/iio/accel/dmard06.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/accel/dmard06.txt b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
+> new file mode 100644
+> index 0000000..cc2231a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
+> @@ -0,0 +1,17 @@
+> +Device tree bindings for Domintech DMARD06 acceletometer
 
-why not use IIO_BE? this avoids the ugly, open-coded endianness conversion 
-in trigger_handler()
+typo: accelerometer
 
-> +		},
->  	},
->  	{
->  		.type = IIO_HUMIDITYRELATIVE,
->  		.address = HDC100X_REG_HUMIDITY,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->  			BIT(IIO_CHAN_INFO_SCALE) |
-> -			BIT(IIO_CHAN_INFO_INT_TIME)
-> +			BIT(IIO_CHAN_INFO_INT_TIME),
-> +		.scan_index = 1,
-> +		.scan_type = {
-> +			.sign = 'u',
-> +			.realbits = 16,
-> +			.storagebits = 16,
-> +			.endianness = IIO_CPU,
-> +		},
->  	},
->  	{
->  		.type = IIO_CURRENT,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->  		.extend_name = "heater",
->  		.output = 1,
-> +		.scan_index = -1,
->  	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(3),
->  };
+> +
+> +Required properties:
+> + - compatible		: Should be "domintech,dmard06"
+> + - reg			: I2C address of the chip. Should be 0x1c
+> +
+> +Example:
+> +	&i2c1 {
+> +		/* ... */
+> +
+> +		accelerometer@1c {
+> +			compatible = "domintech,dmard06";
+> +			reg = <0x1c>;
+> +		};
+> +
+> +		/* ... */
+> +	};
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index e4a758c..abc8536 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -40,6 +40,17 @@ config BMC150_ACCEL_SPI
+>  	tristate
+>  	select REGMAP_SPI
 >  
->  static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
-> @@ -191,18 +213,21 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_RAW: {
->  		int ret;
->  
-> -		mutex_lock(&data->lock);
->  		if (chan->type == IIO_CURRENT) {
->  			*val = hdc100x_get_heater_status(data);
->  			ret = IIO_VAL_INT;
->  		} else {
-> +			ret = iio_device_claim_direct_mode(indio_dev);
-> +			if (ret)
-> +				return ret;
+> +config DMARD06
+> +	tristate "Domintech DMARD06 Digital Accelerometer Driver"
+> +	depends on OF || COMPILE_TEST
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for the Domintech DMARD06 low-g
+> +	  tri-axial digital accelerometer connected via an I2C bus.
 > +
->  			ret = hdc100x_get_measurement(data, chan);
-> +			iio_device_release_direct_mode(indio_dev);
->  			if (ret >= 0) {
->  				*val = ret;
->  				ret = IIO_VAL_INT;
->  			}
->  		}
-> -		mutex_unlock(&data->lock);
->  		return ret;
->  	}
->  	case IIO_CHAN_INFO_INT_TIME:
-> @@ -259,6 +284,89 @@ static int hdc100x_write_raw(struct iio_dev *indio_dev,
->  	}
->  }
->  
-> +static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct hdc100x_data *data = iio_priv(indio_dev);
-> +	int ret;
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called dmard06.
 > +
-> +	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
-> +	mutex_lock(&data->lock);
-> +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
-> +				    HDC100X_REG_CONFIG_ACQ_MODE);
-> +	mutex_unlock(&data->lock);
-> +	if (ret)
-> +		return ret;
+>  config HID_SENSOR_ACCEL_3D
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 71b6794..a96b269 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -7,6 +7,7 @@ obj-$(CONFIG_BMA180) += bma180.o
+>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+> +obj-$(CONFIG_DMARD06)	+= dmard06.o
+>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> diff --git a/drivers/iio/accel/dmard06.c b/drivers/iio/accel/dmard06.c
+> new file mode 100644
+> index 0000000..433e430
+> --- /dev/null
+> +++ b/drivers/iio/accel/dmard06.c
+> @@ -0,0 +1,219 @@
+> +/*
+> + * IIO driver for Domintech DMARD06 accelerometer
+> + *
+> + * Copyright (C) 2016 Aleksei Mamlin <mamlinav@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + */
 > +
-> +	return iio_triggered_buffer_postenable(indio_dev);
-> +}
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
 > +
-> +static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	struct hdc100x_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
-> +	ret = iio_triggered_buffer_predisable(indio_dev);
-> +	if (ret)
-> +		return ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
-> +	mutex_unlock(&data->lock);
-> +	return ret;
-> +}
-> +
-> +static const struct iio_buffer_setup_ops hdc_buffer_setup_ops = {
-> +	.preenable   = NULL,
-> +	.postenable  = hdc100x_buffer_postenable,
-> +	.predisable  = hdc100x_buffer_predisable,
-> +	.postdisable = NULL,
+> +struct dmard06_data {
+> +	struct i2c_client *client;
 > +};
 > +
-> +static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
+> +#define DMARD06_DRV_NAME		"dmard06"
+> +
+> +/* Device data registers */
+> +#define DMARD06_CHIP_ID_REG		0x0f
+> +#define DMARD06_TOUT_REG		0x40
+> +#define DMARD06_XOUT_REG		0x41
+> +#define DMARD06_YOUT_REG		0x42
+> +#define DMARD06_ZOUT_REG		0x43
+> +
+> +/* Device ID value */
+> +#define DMARD06_CHIP_ID			0x06
+> +
+> +/* Device values */
+> +#define DMARD06_AXIS_MAX_VAL		64
+> +#define DMARD06_AXIS_SCALE_VAL		31250
+> +#define DMARD06_TEMP_CENTER_VAL		25
+> +
+> +static int dmard06_i2c_read(struct i2c_client *client, u8 reg, u8 *buf)
 > +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct hdc100x_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int delay = data->adc_int_us[0] + data->adc_int_us[1];
-> +	int ret, i, bit;
-> +	u8 recv_buf[4];
-> +	s16 push_buf[8];  /* 2x s16 + padding + 8 byte timestamp */
+> +	int error;
 
-two different buffers really needed?
-for ALL_CHANNEL_MASK can read directly to push_buf; why is this a special 
-case anyway?
-if only first channel set, can read directly to push_buf
-if only second channel set, have to move data within push_buf
-
-don't do endianness conversion if not strictly needed
+'error' is a bit pessimistic, how about 'ret'? :-)
 
 > +
-> +	/* dual read starts at temp register */
-> +	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "cannot start measurement\n");
-> +		goto err;
-> +	}
-> +	usleep_range(delay, delay + 1000);
-> +
-> +	ret = i2c_master_recv(client, recv_buf, sizeof(recv_buf));
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "cannot read sensor data\n");
-> +		goto err;
-> +	}
-> +	if (*indio_dev->active_scan_mask == HDC100X_ALL_CHANNEL_MASK) {
-> +		push_buf[0] = recv_buf[0] << 8 | recv_buf[1];
-> +		push_buf[1] = recv_buf[2] << 8 | recv_buf[3];
-> +	} else {
-> +		i = 0;
-> +		for_each_set_bit(bit, indio_dev->active_scan_mask,
 
-loop probably overkill for exactly two channels
+can't use i2c_smbus_read_byte_data()?
 
-> +				 indio_dev->masklength) {
-> +			push_buf[i] = bit ? (recv_buf[2] << 8 | recv_buf[3])
-> +					  : (recv_buf[0] << 8 | recv_buf[1]);
-> +			i++;
-> +		}
-> +	}
-> +	iio_push_to_buffers_with_timestamp(indio_dev, push_buf,
-> +					   iio_get_time_ns(indio_dev));
-> +err:
-> +	iio_trigger_notify_done(indio_dev->trig);
+> +	error = i2c_master_send(client, &reg, 1);
+> +	if (unlikely(error < 0))
+> +		return error;
 > +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static const struct iio_info hdc100x_info = {
->  	.read_raw = hdc100x_read_raw,
->  	.write_raw = hdc100x_write_raw,
-> @@ -271,9 +379,10 @@ static int hdc100x_probe(struct i2c_client *client,
->  {
->  	struct iio_dev *indio_dev;
->  	struct hdc100x_data *data;
-> +	int ret;
->  
-> -	if (!i2c_check_functionality(client->adapter,
-> -				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
-> +				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
->  		return -EOPNOTSUPP;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> @@ -296,8 +405,30 @@ static int hdc100x_probe(struct i2c_client *client,
->  	/* be sure we are in a known state */
->  	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
->  	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
-> +	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 hdc100x_trigger_handler,
-> +					 &hdc_buffer_setup_ops);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-> +		return ret;
-> +	}
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0)
-> +		iio_triggered_buffer_cleanup(indio_dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int hdc100x_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  
-> -	return devm_iio_device_register(&client->dev, indio_dev);
+> +	error = i2c_master_recv(client, buf, 1);
+> +	if (unlikely(error < 0))
+> +		return error;
+
+not sure if it is worth to annotate unlikely() here -- i2c is slooow
+locking is needed if you really need two i2c_master calls
+
 > +	return 0;
->  }
->  
->  static const struct i2c_device_id hdc100x_id[] = {
-> @@ -311,6 +442,7 @@ static struct i2c_driver hdc100x_driver = {
->  		.name	= "hdc100x",
->  	},
->  	.probe = hdc100x_probe,
-> +	.remove = hdc100x_remove,
->  	.id_table = hdc100x_id,
->  };
->  module_i2c_driver(hdc100x_driver);
+> +}
+> +
+> +static int dmard06_read_chip_id(struct dmard06_data *dmard06)
+> +{
+> +	u8 buf;
+> +	u8 chip_id;
+> +	int error;
+> +
+> +	error = dmard06_i2c_read(dmard06->client, DMARD06_CHIP_ID_REG, &buf);
+> +	if (error) {
+> +		dev_err(&dmard06->client->dev, "Failed to read chip id: %d\n",
+> +			error);
+> +		return error;
+> +	}
+> +
+> +	chip_id = (buf & 0x00ff);
+
+why? buf is u8 anyways
+
+> +	if (chip_id != DMARD06_CHIP_ID) {
+> +		dev_err(&dmard06->client->dev, "Invalid chip id: %02x\n",
+> +			chip_id);
+> +		return -EINVAL;
+
+often ENODEV is used for this case
+
+> +	}
+> +
+> +	dev_info(&dmard06->client->dev, "Found DMARD%02x chip\n", chip_id);
+
+we prefer silent probing of the driver, please don't clutter the log
+
+> +
+> +	return 0;
+> +}
+> +
+> +static int dmard06_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct dmard06_data *dmard06 = iio_priv(indio_dev);
+> +	u8 buf;
+> +	bool reversed;
+> +	int error;
+> +	int tmp;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		error = dmard06_i2c_read(dmard06->client, chan->address, &buf);
+> +		if (error) {
+> +			dev_err(&dmard06->client->dev,
+> +				"Failed to read data %d\n", error);
+> +			return error;
+> +		}
+> +
+> +		reversed = (buf >> 7) & 1;
+> +		tmp = (int)((buf & 0x7f) >> 1);
+
+
+> +
+> +		switch (chan->type) {
+> +		case IIO_ACCEL:
+
+wouldn't sign_extend32(buf >> 1, 6) do the job?
+
+> +			*val = reversed ? (tmp - DMARD06_AXIS_MAX_VAL) : tmp;
+> +			return IIO_VAL_INT;
+> +		case IIO_TEMP:
+> +			*val = reversed ? -tmp : tmp;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			*val = DMARD06_TEMP_CENTER_VAL;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_ACCEL:
+> +			*val = 0;
+> +			*val2 = DMARD06_AXIS_SCALE_VAL;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info dmard06_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw	= dmard06_read_raw,
+> +};
+> +
+> +#define DMARD06_ACCEL_CHANNEL(_axis, reg) {			\
+
+maybe rename reg to _reg
+
+> +	.type = IIO_ACCEL,					\
+> +	.address = reg,						\
+> +	.channel2 = IIO_MOD_##_axis,				\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +	.modified = 1,						\
+> +}
+> +
+> +#define DMARD06_TEMP_CHANNEL(reg) {				\
+> +	.type = IIO_TEMP,					\
+> +	.address = reg,						\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +			      BIT(IIO_CHAN_INFO_OFFSET),	\
+> +}
+> +
+> +static const struct iio_chan_spec dmard06_channels[] = {
+> +	DMARD06_ACCEL_CHANNEL(X, DMARD06_XOUT_REG),
+> +	DMARD06_ACCEL_CHANNEL(Y, DMARD06_YOUT_REG),
+> +	DMARD06_ACCEL_CHANNEL(Z, DMARD06_ZOUT_REG),
+> +	DMARD06_TEMP_CHANNEL(DMARD06_TOUT_REG),
+> +};
+> +
+> +static int dmard06_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	int error;
+> +	struct iio_dev *indio_dev;
+> +	struct dmard06_data *dmard06;
+> +
+> +	dev_dbg(&client->dev, "I2C Address: 0x%02x\n", client->addr);
+
+not needed
+
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
+> +		dev_err(&client->dev, "I2C check functionality failed\n");
+> +		return -ENXIO;
+> +	}
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dmard06));
+> +	if (!indio_dev) {
+> +		dev_err(&client->dev, "Failed to allocate iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	dmard06 = iio_priv(indio_dev);
+> +	dmard06->client = client;
+> +
+> +	error = dmard06_read_chip_id(dmard06);
+> +	if (error)
+> +		return error;
+> +
+> +	i2c_set_clientdata(client, indio_dev);
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = DMARD06_DRV_NAME;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = dmard06_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(dmard06_channels);
+> +	indio_dev->info = &dmard06_info;
+> +
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id dmard06_id[] = {
+> +	{ "dmard06", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, dmard06_id);
+> +
+> +static const struct of_device_id dmard06_of_match[] = {
+> +	{ .compatible = "domintech,dmard06" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, dmard06_of_match);
+> +
+> +static struct i2c_driver dmard06_driver = {
+> +	.probe = dmard06_probe,
+> +	.id_table = dmard06_id,
+> +	.driver = {
+> +		.name = DMARD06_DRV_NAME,
+> +		.of_match_table = of_match_ptr(dmard06_of_match),
+> +	},
+> +};
+> +module_i2c_driver(dmard06_driver);
+> +
+> +MODULE_AUTHOR("Aleksei Mamlin <mamlinav@gmail.com>");
+> +MODULE_DESCRIPTION("Domintech DMARD06 accelerometer driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
 -- 
