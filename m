@@ -1,56 +1,292 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:33395 "EHLO
-	mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754174AbcGUWUA (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2016 18:20:00 -0400
-Date: Thu, 21 Jul 2016 17:19:59 -0500
-From: Rob Herring <robh@kernel.org>
-To: Aleksei Mamlin <mamlinav@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: accel: Add support for Domintech DMARD06
- accelerometer
-Message-ID: <20160721221959.GA25742@rob-hp-laptop>
-References: <1469133140-14722-1-git-send-email-mamlinav@gmail.com>
- <1469133191-14812-1-git-send-email-mamlinav@gmail.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Fri, 22 Jul 2016 00:10:04 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Alison Schofield <amsfield22@gmail.com>
+cc: jic23@kernel.org, mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+    linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: humidity: hdc100x: add triggered buffer support
+ for HDC100X
+In-Reply-To: <20160721184058.GA7278@d830.WORKGROUP>
+Message-ID: <alpine.DEB.2.02.1607220000210.6041@pmeerw.net>
+References: <20160721184058.GA7278@d830.WORKGROUP>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1469133191-14812-1-git-send-email-mamlinav@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Jul 21, 2016 at 11:33:11PM +0300, Aleksei Mamlin wrote:
-> This patch add support for Domintech DMARD06 accelerometer.
-> 
-> Domintech DMARD06 is a low-g tri-axial digital accelerometer for
-> cost-sensitive consumer application.
-> 
-> Signed-off-by: Aleksei Mamlin <mamlinav@gmail.com>
+
+> Triggered buffer support uses the HDC100X's dual acquisition mode
+> to read both humidity and temperature in one shot.
+
+comments below
+ 
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> Cc: Daniel Baluta <daniel.baluta@gmail.com>
 > ---
->  .../devicetree/bindings/iio/accel/dmard06.txt      |  17 ++
->  drivers/iio/accel/Kconfig                          |  11 ++
->  drivers/iio/accel/Makefile                         |   1 +
->  drivers/iio/accel/dmard06.c                        | 219 +++++++++++++++++++++
->  4 files changed, 248 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard06.txt
->  create mode 100644 drivers/iio/accel/dmard06.c
+>  drivers/iio/humidity/Kconfig   |   2 +
+>  drivers/iio/humidity/hdc100x.c | 144 +++++++++++++++++++++++++++++++++++++++--
+>  2 files changed, 140 insertions(+), 6 deletions(-)
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/accel/dmard06.txt b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> new file mode 100644
-> index 0000000..cc2231a
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> @@ -0,0 +1,17 @@
-> +Device tree bindings for Domintech DMARD06 acceletometer
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index 738a86d..4883ce1 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -25,6 +25,8 @@ config DHT11
+>  config HDC100X
+>  	tristate "TI HDC100x relative humidity and temperature sensor"
+>  	depends on I2C
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	 Say yes here to build support for the TI HDC100x series of
+>  	 relative humidity and temperature sensors.
+> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+> index a03832a..85325d4 100644
+> --- a/drivers/iio/humidity/hdc100x.c
+> +++ b/drivers/iio/humidity/hdc100x.c
+> @@ -22,13 +22,19 @@
+>  
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+>  
+>  #define HDC100X_REG_TEMP			0x00
+>  #define HDC100X_REG_HUMIDITY			0x01
+>  
+>  #define HDC100X_REG_CONFIG			0x02
+> +#define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
+>  #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
+>  
+> +#define HDC100X_ALL_CHANNEL_MASK		GENMASK(1, 0)
 > +
-> +Required properties:
-> + - compatible		: Should be "domintech,dmard06"
-> + - reg			: I2C address of the chip. Should be 0x1c
+>  struct hdc100x_data {
+>  	struct i2c_client *client;
+>  	struct mutex lock;
+> @@ -87,20 +93,36 @@ static const struct iio_chan_spec hdc100x_channels[] = {
+>  			BIT(IIO_CHAN_INFO_SCALE) |
+>  			BIT(IIO_CHAN_INFO_INT_TIME) |
+>  			BIT(IIO_CHAN_INFO_OFFSET),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 16,
+> +			.storagebits = 16,
+> +			.endianness = IIO_CPU,
 
-No interrupt? If not, for the binding:
+why not use IIO_BE? this avoids the ugly, open-coded endianness conversion 
+in trigger_handler()
 
-Acked-by: Rob Herring <robh@kernel.org>
+> +		},
+>  	},
+>  	{
+>  		.type = IIO_HUMIDITYRELATIVE,
+>  		.address = HDC100X_REG_HUMIDITY,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>  			BIT(IIO_CHAN_INFO_SCALE) |
+> -			BIT(IIO_CHAN_INFO_INT_TIME)
+> +			BIT(IIO_CHAN_INFO_INT_TIME),
+> +		.scan_index = 1,
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 16,
+> +			.storagebits = 16,
+> +			.endianness = IIO_CPU,
+> +		},
+>  	},
+>  	{
+>  		.type = IIO_CURRENT,
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>  		.extend_name = "heater",
+>  		.output = 1,
+> +		.scan_index = -1,
+>  	},
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+>  };
+>  
+>  static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
+> @@ -191,18 +213,21 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_RAW: {
+>  		int ret;
+>  
+> -		mutex_lock(&data->lock);
+>  		if (chan->type == IIO_CURRENT) {
+>  			*val = hdc100x_get_heater_status(data);
+>  			ret = IIO_VAL_INT;
+>  		} else {
+> +			ret = iio_device_claim_direct_mode(indio_dev);
+> +			if (ret)
+> +				return ret;
+> +
+>  			ret = hdc100x_get_measurement(data, chan);
+> +			iio_device_release_direct_mode(indio_dev);
+>  			if (ret >= 0) {
+>  				*val = ret;
+>  				ret = IIO_VAL_INT;
+>  			}
+>  		}
+> -		mutex_unlock(&data->lock);
+>  		return ret;
+>  	}
+>  	case IIO_CHAN_INFO_INT_TIME:
+> @@ -259,6 +284,89 @@ static int hdc100x_write_raw(struct iio_dev *indio_dev,
+>  	}
+>  }
+>  
+> +static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
+> +{
+> +	struct hdc100x_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
+> +	mutex_lock(&data->lock);
+> +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
+> +				    HDC100X_REG_CONFIG_ACQ_MODE);
+> +	mutex_unlock(&data->lock);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return iio_triggered_buffer_postenable(indio_dev);
+> +}
+> +
+> +static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
+> +{
+> +	struct hdc100x_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
+> +	ret = iio_triggered_buffer_predisable(indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mutex_lock(&data->lock);
+> +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
+> +	mutex_unlock(&data->lock);
+> +	return ret;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops hdc_buffer_setup_ops = {
+> +	.preenable   = NULL,
+> +	.postenable  = hdc100x_buffer_postenable,
+> +	.predisable  = hdc100x_buffer_predisable,
+> +	.postdisable = NULL,
+> +};
+> +
+> +static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct hdc100x_data *data = iio_priv(indio_dev);
+> +	struct i2c_client *client = data->client;
+> +	int delay = data->adc_int_us[0] + data->adc_int_us[1];
+> +	int ret, i, bit;
+> +	u8 recv_buf[4];
+> +	s16 push_buf[8];  /* 2x s16 + padding + 8 byte timestamp */
+
+two different buffers really needed?
+for ALL_CHANNEL_MASK can read directly to push_buf; why is this a special 
+case anyway?
+if only first channel set, can read directly to push_buf
+if only second channel set, have to move data within push_buf
+
+don't do endianness conversion if not strictly needed
+
+> +
+> +	/* dual read starts at temp register */
+> +	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot start measurement\n");
+> +		goto err;
+> +	}
+> +	usleep_range(delay, delay + 1000);
+> +
+> +	ret = i2c_master_recv(client, recv_buf, sizeof(recv_buf));
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "cannot read sensor data\n");
+> +		goto err;
+> +	}
+> +	if (*indio_dev->active_scan_mask == HDC100X_ALL_CHANNEL_MASK) {
+> +		push_buf[0] = recv_buf[0] << 8 | recv_buf[1];
+> +		push_buf[1] = recv_buf[2] << 8 | recv_buf[3];
+> +	} else {
+> +		i = 0;
+> +		for_each_set_bit(bit, indio_dev->active_scan_mask,
+
+loop probably overkill for exactly two channels
+
+> +				 indio_dev->masklength) {
+> +			push_buf[i] = bit ? (recv_buf[2] << 8 | recv_buf[3])
+> +					  : (recv_buf[0] << 8 | recv_buf[1]);
+> +			i++;
+> +		}
+> +	}
+> +	iio_push_to_buffers_with_timestamp(indio_dev, push_buf,
+> +					   iio_get_time_ns(indio_dev));
+> +err:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+>  static const struct iio_info hdc100x_info = {
+>  	.read_raw = hdc100x_read_raw,
+>  	.write_raw = hdc100x_write_raw,
+> @@ -271,9 +379,10 @@ static int hdc100x_probe(struct i2c_client *client,
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct hdc100x_data *data;
+> +	int ret;
+>  
+> -	if (!i2c_check_functionality(client->adapter,
+> -				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+> +				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+>  		return -EOPNOTSUPP;
+>  
+>  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> @@ -296,8 +405,30 @@ static int hdc100x_probe(struct i2c_client *client,
+>  	/* be sure we are in a known state */
+>  	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
+>  	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
+> +	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 hdc100x_trigger_handler,
+> +					 &hdc_buffer_setup_ops);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> +		return ret;
+> +	}
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0)
+> +		iio_triggered_buffer_cleanup(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int hdc100x_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+>  
+> -	return devm_iio_device_register(&client->dev, indio_dev);
+> +	return 0;
+>  }
+>  
+>  static const struct i2c_device_id hdc100x_id[] = {
+> @@ -311,6 +442,7 @@ static struct i2c_driver hdc100x_driver = {
+>  		.name	= "hdc100x",
+>  	},
+>  	.probe = hdc100x_probe,
+> +	.remove = hdc100x_remove,
+>  	.id_table = hdc100x_id,
+>  };
+>  module_i2c_driver(hdc100x_driver);
+> 
+
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
