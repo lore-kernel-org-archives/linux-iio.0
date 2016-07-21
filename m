@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f67.google.com ([74.125.82.67]:36778 "EHLO
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:34673 "EHLO
 	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751429AbcGUOlz (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2016 10:41:55 -0400
+	with ESMTP id S1751429AbcGUOmM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2016 10:42:12 -0400
 From: Pratik Prajapati <pratik.prajapati12@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
@@ -10,141 +10,196 @@ To: Jonathan Cameron <jic23@kernel.org>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Pratik Prajapati <pratik.prajapati12@gmail.com>
-Subject: [PATCH 1/2] staging: iio: vcnl4000: Add IR current adjust support
-Date: Thu, 21 Jul 2016 20:11:36 +0530
-Message-Id: <1469112097-6806-1-git-send-email-pratik.prajapati12@gmail.com>
+Subject: [PATCH 2/2] staging: iio: vcnl4000: Replace i2c api's with regmap
+Date: Thu, 21 Jul 2016 20:11:37 +0530
+Message-Id: <1469112097-6806-2-git-send-email-pratik.prajapati12@gmail.com>
+In-Reply-To: <1469112097-6806-1-git-send-email-pratik.prajapati12@gmail.com>
+References: <1469112097-6806-1-git-send-email-pratik.prajapati12@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: Pratik Prajapati <pratik.prajapati12@gmail.com>
 ---
- drivers/iio/light/vcnl4000.c | 78 ++++++++++++++++++++++++++++++++++++++++----
- 1 file changed, 72 insertions(+), 6 deletions(-)
+ drivers/iio/light/vcnl4000.c | 91 +++++++++++++++++++++++++++++++++++++-------
+ 1 file changed, 78 insertions(+), 13 deletions(-)
 
 diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-index 360b6e9..1378175 100644
+index 1378175..61e48f8 100644
 --- a/drivers/iio/light/vcnl4000.c
 +++ b/drivers/iio/light/vcnl4000.c
-@@ -11,7 +11,6 @@
-  * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
-  *
-  * TODO:
-- *   allow to adjust IR current
-  *   proximity threshold and event handling
-  *   periodic ALS/proximity measurement (VCNL4010/20)
-  *   interrupts (VCNL4010/20)
-@@ -46,6 +45,10 @@
- #define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
- #define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
+@@ -20,6 +20,7 @@
+ #include <linux/i2c.h>
+ #include <linux/err.h>
+ #include <linux/delay.h>
++#include <linux/regmap.h>
  
-+/* Bit mask for LED_CURRENT register */
-+#define VCNL4000_LED_CURRENT_MASK	0x3F
-+#define VCNL4000_LED_CURRENT_MAX	20
-+
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -52,6 +53,7 @@
  struct vcnl4000_data {
  	struct i2c_client *client;
  	struct mutex lock;
-@@ -111,9 +114,42 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
- 	}, {
- 		.type = IIO_PROXIMITY,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
--	}
-+	}, {
-+		.type = IIO_CURRENT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_SCALE),
-+		.extend_name = "led",
-+		.output = 1,
-+		.scan_index = -1,
-+	},
++	struct regmap *regmap;
  };
  
-+static int vcnl4000_write_led_current_raw(struct vcnl4000_data *data, int val)
-+{
-+	int ret;
-+
-+	if (val < 0 || val > VCNL4000_LED_CURRENT_MAX)
-+		return -ERANGE;
-+	mutex_lock(&data->lock);
-+	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_LED_CURRENT,
-+			val);
-+	mutex_unlock(&data->lock);
-+	return ret;
-+}
-+
-+static int vcnl4000_read_led_current_raw(struct vcnl4000_data *data)
-+{
-+	int ret;
-+
-+	mutex_lock(&data->lock);
-+	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_LED_CURRENT);
-+	mutex_unlock(&data->lock);
-+	if (ret < 0)
-+		return ret;
-+	ret &= VCNL4000_LED_CURRENT_MASK;
-+	return ret;
-+}
-+
- static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 				struct iio_chan_spec const *chan,
- 				int *val, int *val2, long mask)
-@@ -138,23 +174,53 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
- 			if (ret < 0)
- 				return ret;
- 			return IIO_VAL_INT;
-+		case IIO_CURRENT:
-+			ret = vcnl4000_read_led_current_raw(data);
-+			if (ret < 0)
-+				return ret;
-+			*val = ret;
-+			return IIO_VAL_INT;
- 		default:
- 			return -EINVAL;
- 		}
-+
- 	case IIO_CHAN_INFO_SCALE:
--		if (chan->type != IIO_LIGHT)
-+		switch (chan->type) {
-+		case IIO_LIGHT:
-+			*val = 0;
-+			*val2 = 250000;
-+			return IIO_VAL_INT_PLUS_MICRO;
-+		case IIO_CURRENT:
-+			/* Output register is in 10s of milliamps */
-+			*val = 10;
-+			return IIO_VAL_INT;
-+		default:
- 			return -EINVAL;
-+		}
+ static const struct i2c_device_id vcnl4000_id[] = {
+@@ -66,20 +68,20 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
+ 	int tries = 20;
+ 	__be16 buf;
+ 	int ret;
++	unsigned int regval;
  
--		*val = 0;
--		*val2 = 250000;
--		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		return -EINVAL;
+ 	mutex_lock(&data->lock);
+ 
+-	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
+-					req_mask);
++	ret = regmap_write(data->regmap, VCNL4000_COMMAND, req_mask);
+ 	if (ret < 0)
+ 		goto fail;
+ 
+ 	/* wait for data to become ready */
+ 	while (tries--) {
+-		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
++		ret = regmap_read(data->regmap, VCNL4000_COMMAND, &regval);
+ 		if (ret < 0)
+ 			goto fail;
+-		if (ret & rdy_mask)
++		if (regval & rdy_mask)
+ 			break;
+ 		msleep(20); /* measurement takes up to 100 ms */
  	}
-+	return -EINVAL;
-+}
-+
-+static int vcnl4000_write_raw(struct iio_dev *indio_dev,
-+					struct iio_chan_spec const *chan,
-+					int val, int val2, long mask)
-+{
-+	struct vcnl4000_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT) {
-+		ret = vcnl4000_write_led_current_raw(data, val);
-+		return ret;
-+	}
-+	return -EINVAL;
+@@ -91,8 +93,8 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
+ 		goto fail;
+ 	}
+ 
+-	ret = i2c_smbus_read_i2c_block_data(data->client,
+-		data_reg, sizeof(buf), (u8 *) &buf);
++	ret = regmap_bulk_read(data->regmap, data_reg, (u8 *) &buf,
++			sizeof(buf));
+ 	if (ret < 0)
+ 		goto fail;
+ 
+@@ -131,23 +133,24 @@ static int vcnl4000_write_led_current_raw(struct vcnl4000_data *data, int val)
+ 	if (val < 0 || val > VCNL4000_LED_CURRENT_MAX)
+ 		return -ERANGE;
+ 	mutex_lock(&data->lock);
+-	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_LED_CURRENT,
+-			val);
++	ret = regmap_write_bits(data->regmap, VCNL4000_LED_CURRENT,
++		VCNL4000_LED_CURRENT_MASK, val);
+ 	mutex_unlock(&data->lock);
+ 	return ret;
  }
  
- static const struct iio_info vcnl4000_info = {
- 	.read_raw = vcnl4000_read_raw,
-+	.write_raw = vcnl4000_write_raw,
+ static int vcnl4000_read_led_current_raw(struct vcnl4000_data *data)
+ {
++	unsigned int regval;
+ 	int ret;
+ 
+ 	mutex_lock(&data->lock);
+-	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_LED_CURRENT);
++	ret = regmap_read(data->regmap, VCNL4000_LED_CURRENT, &regval);
+ 	mutex_unlock(&data->lock);
+ 	if (ret < 0)
+ 		return ret;
+-	ret &= VCNL4000_LED_CURRENT_MASK;
+-	return ret;
++	regval &= VCNL4000_LED_CURRENT_MASK;
++	return regval;
+ }
+ 
+ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+@@ -224,27 +227,89 @@ static const struct iio_info vcnl4000_info = {
  	.driver_module = THIS_MODULE,
  };
+ 
++static bool vcnl4000_readable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case VCNL4000_COMMAND:
++	case VCNL4000_PROD_REV:
++	case VCNL4000_LED_CURRENT:
++	case VCNL4000_AL_PARAM:
++	case VCNL4000_AL_RESULT_HI:
++	case VCNL4000_AL_RESULT_LO:
++	case VCNL4000_PS_RESULT_HI:
++	case VCNL4000_PS_RESULT_LO:
++	case VCNL4000_PS_MEAS_FREQ:
++	case VCNL4000_PS_MOD_ADJ:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool vcnl4000_writeable_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case VCNL4000_COMMAND:
++	case VCNL4000_LED_CURRENT:
++	case VCNL4000_AL_PARAM:
++	case VCNL4000_PS_MEAS_FREQ:
++	case VCNL4000_PS_MOD_ADJ:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static bool vcnl4000_volatile_reg(struct device *dev, unsigned int reg)
++{
++	switch (reg) {
++	case VCNL4000_COMMAND:
++	case VCNL4000_AL_RESULT_HI:
++	case VCNL4000_AL_RESULT_LO:
++	case VCNL4000_PS_RESULT_HI:
++	case VCNL4000_PS_RESULT_LO:
++		return true;
++	default:
++		return false;
++	}
++}
++
++static const struct regmap_config vcnl4000_regmap_config = {
++	.reg_bits	= 8,
++	.val_bits	= 8,
++	.max_register	= VCNL4000_PS_MOD_ADJ,
++	.readable_reg	= vcnl4000_readable_reg,
++	.writeable_reg	= vcnl4000_writeable_reg,
++	.volatile_reg	= vcnl4000_volatile_reg,
++};
++
+ static int vcnl4000_probe(struct i2c_client *client,
+ 			  const struct i2c_device_id *id)
+ {
+ 	struct vcnl4000_data *data;
+ 	struct iio_dev *indio_dev;
+ 	int ret, prod_id;
++	unsigned int regval;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
+ 
+ 	data = iio_priv(indio_dev);
++	data->regmap = devm_regmap_init_i2c(client, &vcnl4000_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(&client->dev, "regmap_init failed!\n");
++		return PTR_ERR(data->regmap);
++	}
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	mutex_init(&data->lock);
+ 
+-	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
++	ret = regmap_read(data->regmap, VCNL4000_PROD_REV, &regval);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	prod_id = ret >> 4;
++	prod_id = regval >> 4;
+ 	if (prod_id != VCNL4010_ID && prod_id != VCNL4000_ID)
+ 		return -ENODEV;
  
 -- 
 2.6.2
