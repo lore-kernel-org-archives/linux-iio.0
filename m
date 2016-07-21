@@ -1,317 +1,458 @@
-Return-Path: <dmitry.torokhov@gmail.com>
-Date: Wed, 20 Jul 2016 10:25:32 -0700
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org, antoine.tenart@free-electrons.com,
-	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 4/5] input: touchscreen: support Allwinner SoCs'
- touchscreen
-Message-ID: <20160720172532.GE25655@dtor-ws>
-References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41622 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750995AbcGUGTK (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 21 Jul 2016 02:19:10 -0400
+Subject: Re: [PATCH 02/10] mfd: cros_ec: update MOTIONSENSE definitions and
+ commands.
+To: Enric Balletbo Serra <eballetbo@gmail.com>
+References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com>
+ <1468825370-20075-3-git-send-email-enric.balletbo@collabora.com>
+ <efb67c38-f5d5-a3b3-a3fd-1caf13fb9302@kernel.org>
+ <CAFqH_51++20mDsv77hDt3tYzKpwLrGowGwS3-rC6SU5LoLCQhw@mail.gmail.com>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Olof Johansson <olof@lixom.net>,
+	Lee Jones <lee.jones@linaro.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <9754cefe-ef69-5211-d62d-fcc0cacbe860@kernel.org>
+Date: Thu, 21 Jul 2016 07:18:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CAFqH_51++20mDsv77hDt3tYzKpwLrGowGwS3-rC6SU5LoLCQhw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Quentin,
-
-On Wed, Jul 20, 2016 at 10:29:10AM +0200, Quentin Schulz wrote:
-> This adds support for Allwinner SoCs' (A10, A13 and A31) resistive
-> touchscreen. This driver is probed by the MFD sunxi-gpadc-mfd.
+On 19/07/16 19:00, Enric Balletbo Serra wrote:
+> Hi Jonathan,
 > 
-> This driver uses ADC channels exposed through the IIO framework by
-> sunxi-gpadc-iio to get its data. When opening this input device, it will
-> start buffering in the ADC driver and enable a TP_UP_PENDING irq. The ADC
-> driver will fill in a buffer with all data and call the callback the input
-> device associated with this buffer. The input device will then read the
-> buffer two by two and send X and Y coordinates to the input framework based
-> on what it received from the ADC's buffer. When closing this input device,
-> the buffering is stopped.
+> Many thanks for your comments.
 > 
-> Note that locations in the first received buffer after an TP_UP_PENDING irq
-> occurred are unreliable, thus dropped.
+> 2016-07-18 15:49 GMT+02:00 Jonathan Cameron <jic23@kernel.org>:
+>> On 18/07/16 08:02, Enric Balletbo i Serra wrote:
+>>> Let's update the command header to include the definitions related to
+>>> the sensors attached behind the ChromeOS Embedded Controller. The new
+>>> commands and definitions allow us to get information from these sensors.
+>>>
+>>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+>> Again, I'd be happier seeing this stuff introduced as and when it
+>> is needed rather than in a magic patch. It's hard to review stuff
+>> if it's broken up across multiple patches like this.
+>>
+>> A few other bits and pieces inline.
+>>
+>> Jonathan
+>>> ---
+>>>  include/linux/mfd/cros_ec_commands.h | 260 +++++++++++++++++++++++++++++++----
+>>>  1 file changed, 231 insertions(+), 29 deletions(-)
+>>>
+>>> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+>>> index 76728ff..f26a806 100644
+>>> --- a/include/linux/mfd/cros_ec_commands.h
+>>> +++ b/include/linux/mfd/cros_ec_commands.h
+>>> @@ -1290,7 +1290,13 @@ enum motionsense_command {
+>>>
+>>>       /*
+>>>        * EC Rate command is a setter/getter command for the EC sampling rate
+>>> -      * of all motion sensors in milliseconds.
+>>> +      * in milliseconds.
+>>> +      * It is per sensor, the EC run sample task  at the minimum of all
+>>> +      * sensors EC_RATE.
+>>> +      * For sensors without hardware FIFO, EC_RATE should be equals to 1/ODR
+>>> +      * to collect all the sensor samples.
+>>> +      * For sensor with hardware FIFO, EC_RATE is used as the maximal delay
+>>> +      * to process of all motion sensors in milliseconds.
+>>>        */
+>>>       MOTIONSENSE_CMD_EC_RATE = 2,
+>>>
+>>> @@ -1315,37 +1321,138 @@ enum motionsense_command {
+>>>        */
+>>>       MOTIONSENSE_CMD_KB_WAKE_ANGLE = 5,
+>>>
+>>> -     /* Number of motionsense sub-commands. */
+>>> -     MOTIONSENSE_NUM_CMDS
+>>> -};
+>>> +     /*
+>>> +      * Returns a single sensor data.
+>>> +      */
+>> Please use standard kernel documentation formats throughout.
+>> If not you may face a Linus rant ;)
 > 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
->  drivers/input/touchscreen/Kconfig          |  11 +-
->  drivers/input/touchscreen/Makefile         |   2 +-
->  drivers/input/touchscreen/sun4i-ts.c       | 419 -----------------------------
->  drivers/input/touchscreen/sunxi-gpadc-ts.c | 195 ++++++++++++++
->  4 files changed, 201 insertions(+), 426 deletions(-)
->  delete mode 100644 drivers/input/touchscreen/sun4i-ts.c
->  create mode 100644 drivers/input/touchscreen/sunxi-gpadc-ts.c
+> Seems that this specific file does not follow the kernel-doc format
+> strictly [1], should I add the new entries in kernel-doc format or
+> follow the file style?
 > 
-> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-> index 8ecdc38..f16ce36 100644
-> --- a/drivers/input/touchscreen/Kconfig
-> +++ b/drivers/input/touchscreen/Kconfig
-> @@ -1072,14 +1072,13 @@ config TOUCHSCREEN_STMPE
->  config TOUCHSCREEN_SUN4I
->  	tristate "Allwinner sun4i resistive touchscreen controller support"
->  	depends on ARCH_SUNXI || COMPILE_TEST
-> -	depends on HWMON
-> -	depends on THERMAL || !THERMAL_OF
-> +	depends on SUNXI_ADC
->  	help
-> -	  This selects support for the resistive touchscreen controller
-> -	  found on Allwinner sunxi SoCs.
-> +	  This selects support for the resistive touchscreen controller found
-> +	  on Allwinner SoCs (A10, A13, A31).
->  
-> -	  To compile this driver as a module, choose M here: the
-> -	  module will be called sun4i-ts.
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called sunxi-gpadc-ts.
->  
->  config TOUCHSCREEN_SUR40
->  	tristate "Samsung SUR40 (Surface 2.0/PixelSense) touchscreen"
-> diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-> index f42975e..bdc1889 100644
-> --- a/drivers/input/touchscreen/Makefile
-> +++ b/drivers/input/touchscreen/Makefile
-> @@ -65,7 +65,7 @@ obj-$(CONFIG_TOUCHSCREEN_PIXCIR)	+= pixcir_i2c_ts.o
->  obj-$(CONFIG_TOUCHSCREEN_S3C2410)	+= s3c2410_ts.o
->  obj-$(CONFIG_TOUCHSCREEN_ST1232)	+= st1232.o
->  obj-$(CONFIG_TOUCHSCREEN_STMPE)		+= stmpe-ts.o
-> -obj-$(CONFIG_TOUCHSCREEN_SUN4I)		+= sun4i-ts.o
-> +obj-$(CONFIG_TOUCHSCREEN_SUN4I)		+= sunxi-gpadc-ts.o
->  obj-$(CONFIG_TOUCHSCREEN_SUR40)		+= sur40.o
->  obj-$(CONFIG_TOUCHSCREEN_TI_AM335X_TSC)	+= ti_am335x_tsc.o
->  obj-$(CONFIG_TOUCHSCREEN_TOUCHIT213)	+= touchit213.o
-> diff --git a/drivers/input/touchscreen/sun4i-ts.c b/drivers/input/touchscreen/sun4i-ts.c
-> deleted file mode 100644
-> index d07dd29..0000000
-...
-> diff --git a/drivers/input/touchscreen/sunxi-gpadc-ts.c b/drivers/input/touchscreen/sunxi-gpadc-ts.c
-> new file mode 100644
-> index 0000000..410d14f
-> --- /dev/null
-> +++ b/drivers/input/touchscreen/sunxi-gpadc-ts.c
-> @@ -0,0 +1,195 @@
-> +/* Touchscreen driver for Allwinner SoCs (A10, A13, A31) GPADC
-> + *
-> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it under
-> + * the terms of the GNU General Public License version 2 as published by the
-> + * Free Software Foundation.
-> + */
-> +
-> +#include <linux/init.h>
-> +#include <linux/input.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/regmap.h>
-> +
-> +#include <linux/iio/consumer.h>
-> +#include <linux/mfd/sunxi-gpadc-mfd.h>
-> +
-> +struct sunxi_gpadc_ts {
-> +	struct iio_cb_buffer	*buffer;
-> +	struct input_dev	*input;
-> +	struct platform_device	*pdev;
-> +	unsigned int		tp_up_irq;
-> +	bool			ignore_fifo_data;
-> +};
-> +
-> +static int sunxi_gpadc_ts_open(struct input_dev *dev)
-> +{
-> +	struct sunxi_gpadc_ts *info = input_get_drvdata(dev);
-> +	int ret;
-> +
-> +	ret = iio_channel_start_all_cb(info->buffer);
-> +	if (ret) {
-> +		dev_err(dev->dev.parent,
-> +			"failed to start iio channels with callback\n");
-> +		return ret;
-> +	}
-> +
-> +	enable_irq(info->tp_up_irq);
-> +
-> +	return 0;
-> +}
-> +
-> +static void sunxi_gpadc_ts_close(struct input_dev *dev)
-> +{
-> +	struct sunxi_gpadc_ts *info = input_get_drvdata(dev);
-> +
-> +	iio_channel_stop_all_cb(info->buffer);
-> +
-> +	disable_irq(info->tp_up_irq);
-> +}
-> +
-> +/*
-> + * This function will be called by iio_push_to_buffers from another driver
-> + * (namely sunxi-gpadc-iio). It will be passed the buffer filled with input
-> + * values (X value then Y value) and the sunxi_gpadc_ts structure representing
-> + * the device.
-> + */
-> +static int sunxi_gpadc_ts_callback(const void *data, void *private)
-> +{
-> +	const struct sunxi_gpadc_buffer *buffer = data;
-> +	struct sunxi_gpadc_ts *info = private;
-> +	int i = 0;
-> +
-> +	/* Locations in the first buffer after an up event are unreliable */
-> +	if (info->ignore_fifo_data) {
-> +		info->ignore_fifo_data = false;
-> +		return 0;
-> +	}
-> +
-> +	while (i + 1 < buffer->buff_size) {
-> +		input_event(info->input, EV_ABS, ABS_X, buffer->buffer[i++]);
-> +		input_event(info->input, EV_ABS, ABS_Y, buffer->buffer[i++]);
-> +		input_event(info->input, EV_KEY, BTN_TOUCH, 1);
-> +		input_sync(info->input);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static irqreturn_t sunxi_gpadc_tp_up_irq_handler(int irq, void *dev_id)
-> +{
-> +	struct sunxi_gpadc_ts *info = dev_id;
-> +
-> +	info->ignore_fifo_data = true;
-> +
-> +	input_event(info->input, EV_KEY, BTN_TOUCH, 0);
-> +	input_sync(info->input);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int sunxi_gpadc_ts_probe(struct platform_device *pdev)
-> +{
-> +	struct input_dev *input;
-> +	struct sunxi_gpadc_ts *info;
-> +	int ret, irq;
-> +	struct sunxi_gpadc_mfd_dev *sunxi_gpadc_mfd_dev;
-> +
-> +	input = devm_input_allocate_device(&pdev->dev);
-> +	if (!input)
-> +		return -ENOMEM;
-> +
-> +	info = devm_kzalloc(&pdev->dev, sizeof(*info), GFP_KERNEL);
-> +	if (!info)
-> +		return -ENOMEM;
-> +
-> +	info->buffer = iio_channel_get_all_cb(&pdev->dev,
-> +					      &sunxi_gpadc_ts_callback,
-> +					      (void *)info);
-
-Any chance we could introduce devm-variant here? If you do not want to
-wait for IIO to add it you can temporarily add call
-devm_add_action_or_reset() after getting channels and remove it when IIO
-API catches up.
-
-> +	if (IS_ERR(info->buffer)) {
-> +		if (PTR_ERR(info->buffer) == -ENODEV)
-> +			return -EPROBE_DEFER;
-> +		return PTR_ERR(info->buffer);
-> +	}
-> +
-> +	info->pdev = pdev;
-> +	info->input = input;
-> +	info->ignore_fifo_data = false;
-> +	platform_set_drvdata(pdev, info);
-> +
-> +	input->dev.parent = &pdev->dev;
-
-Not needed for input devices allocated with devm.
-
-> +	input->name = "sunxi-gpadc-ts";
-> +	input->id.bustype = BUS_HOST;
-> +	input->open = sunxi_gpadc_ts_open;
-> +	input->close = sunxi_gpadc_ts_close;
-> +	__set_bit(EV_SYN, input->evbit);
-
-This not needed.
-
-> +	input_set_capability(input, EV_KEY, BTN_TOUCH);
-> +	input_set_abs_params(input, ABS_X, 0, 4095, 0, 0);
-> +	input_set_abs_params(input, ABS_Y, 0, 4095, 0, 0);
-> +	input_set_drvdata(input, info);
-> +
-> +	irq = platform_get_irq_byname(pdev, "TP_UP_PENDING");
-> +	if (irq < 0) {
-> +		dev_err(&pdev->dev, "no TP_UP_PENDING interrupt registered\n");
-> +		ret = irq;
-> +		goto err;
-> +	}
-> +
-> +	sunxi_gpadc_mfd_dev = dev_get_drvdata(pdev->dev.parent);
-> +
-> +	irq = regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
-> +	ret = devm_request_any_context_irq(&pdev->dev, irq,
-> +					   sunxi_gpadc_tp_up_irq_handler, 0,
-> +					   "tp_up", info);
-> +	if (ret < 0) {
-> +		dev_err(&pdev->dev,
-> +			"could not request TP_UP_PENDING interrupt: %d\n", ret);
-> +		goto err;
-> +	}
-> +
-> +	info->tp_up_irq = irq;
-> +	disable_irq(irq);
-> +
-> +	ret = input_register_device(input);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to register input device\n");
-> +		goto err;
-> +	}
-> +
-> +	return 0;
-> +
-> +err:
-> +	iio_channel_release_all_cb(info->buffer);
-> +
-> +	return ret;
-> +}
-> +
-> +static int sunxi_gpadc_ts_remove(struct platform_device *pdev)
-> +{
-> +	struct sunxi_gpadc_ts *info = platform_get_drvdata(pdev);
-> +
-> +	iio_channel_stop_all_cb(info->buffer);
-> +	iio_channel_release_all_cb(info->buffer);
-> +
-> +	disable_irq(info->tp_up_irq);
-
-You are mixing devm and non-devm so your unwind order is completely out
-of wack. If input device is opened while you are unloading (or
-unbinding) the dirver, then you'll release channels, then input device's
-close() will be called, which will try to stop the IIO channels again
-and disable IRQ yet again.
-
-> +
-> +	return 0;
-> +}
-> +
-> +static struct platform_driver sunxi_gpadc_ts_driver = {
-> +	.driver = {
-> +		.name = "sunxi-gpadc-ts",
-> +	},
-> +	.probe = sunxi_gpadc_ts_probe,
-> +	.remove = sunxi_gpadc_ts_remove,
-> +};
-> +
-> +module_platform_driver(sunxi_gpadc_ts_driver);
-> +
-> +MODULE_DESCRIPTION("Touchscreen driver for Allwinner SoCs (A10, A13, A31) GPADC");
-> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
-> +MODULE_LICENSE("GPL v2");
-> -- 
-> 2.5.0
+> Or maybe I should first do a patch to change all the file to the
+> kernel-doc format?
+It would be a nice tidy up to fix the file.  Good to get any
+new comments in the right style though - fixing old ones can
+happen any time.
+> 
+> Or you meant only replace  the
+> 
+> /*
+>  * one line
+>  */
+> 
+> for
+> 
+> /* one line */
+Definitely do that one.
+> 
+> [1] https://www.kernel.org/doc/Documentation/kernel-doc-nano-HOWTO.txt
+> 
+>>> +     MOTIONSENSE_CMD_DATA = 6,
+>>> +
+>>> +     /*
+>>> +      * Return sensor fifo info.
+>>> +      */
+>>> +     MOTIONSENSE_CMD_FIFO_INFO = 7,
+>>> +
+>>> +     /*
+>>> +      * Insert a flush element in the fifo and return sensor fifo info.
+>>> +      * The host can use that element to synchronize its operation.
+>>> +      */
+>>> +     MOTIONSENSE_CMD_FIFO_FLUSH = 8,
+>>>
+>>> -enum motionsensor_id {
+>>> -     EC_MOTION_SENSOR_ACCEL_BASE = 0,
+>>> -     EC_MOTION_SENSOR_ACCEL_LID = 1,
+>>> -     EC_MOTION_SENSOR_GYRO = 2,
+>>> +     /*
+>>> +      * Return a portion of the fifo.
+>>> +      */
+>>> +     MOTIONSENSE_CMD_FIFO_READ = 9,
+>>> +
+>>> +     /*
+>>> +      * Perform low level calibration.
+>>> +      * On sensors that support it, ask to do offset calibration.
+>>> +      */
+>>> +     MOTIONSENSE_CMD_PERFORM_CALIB = 10,
+>>> +
+>>> +     /*
+>>> +      * Sensor Offset command is a setter/getter command for the offset
+>>> +      * used for calibration.
+>>> +      * The offsets can be calculated by the host, or via
+>>> +      * PERFORM_CALIB command.
+>>> +      */
+>>> +     MOTIONSENSE_CMD_SENSOR_OFFSET = 11,
+>>> +
+>>> +     /*
+>>> +      * List available activities for a MOTION sensor.
+>>> +      * Indicates if they are enabled or disabled.
+>>> +      */
+>>> +     MOTIONSENSE_CMD_LIST_ACTIVITIES = 12,
+>>>
+>>>       /*
+>>> -      * Note, if more sensors are added and this count changes, the padding
+>>> -      * in ec_response_motion_sense dump command must be modified.
+>>> +      * Activity management
+>>> +      * Enable/Disable activity recognition.
+>>>        */
+>>> -     EC_MOTION_SENSOR_COUNT = 3
+>>> +     MOTIONSENSE_CMD_SET_ACTIVITY = 13,
+>>> +
+>>> +     /* Number of motionsense sub-commands. */
+>>> +     MOTIONSENSE_NUM_CMDS
+>>>  };
+>>>
+>>>  /* List of motion sensor types. */
+>>>  enum motionsensor_type {
+>>>       MOTIONSENSE_TYPE_ACCEL = 0,
+>>>       MOTIONSENSE_TYPE_GYRO = 1,
+>>> +     MOTIONSENSE_TYPE_MAG = 2,
+>>> +     MOTIONSENSE_TYPE_PROX = 3,
+>>> +     MOTIONSENSE_TYPE_LIGHT = 4,
+>>> +     MOTIONSENSE_TYPE_ACTIVITY = 5,
+>>> +     MOTIONSENSE_TYPE_MAX,
+>>>  };
+>>>
+>>>  /* List of motion sensor locations. */
+>>>  enum motionsensor_location {
+>>>       MOTIONSENSE_LOC_BASE = 0,
+>>>       MOTIONSENSE_LOC_LID = 1,
+>>> +     MOTIONSENSE_LOC_MAX,
+>>>  };
+>>>
+>>>  /* List of motion sensor chips. */
+>>>  enum motionsensor_chip {
+>>>       MOTIONSENSE_CHIP_KXCJ9 = 0,
+>>> +     MOTIONSENSE_CHIP_LSM6DS0 = 1,
+>>> +     MOTIONSENSE_CHIP_BMI160 = 2,
+>>> +     MOTIONSENSE_CHIP_SI1141 = 3,
+>>> +     MOTIONSENSE_CHIP_SI1142 = 4,
+>>> +     MOTIONSENSE_CHIP_SI1143 = 5,
+>>> +     MOTIONSENSE_CHIP_KX022 = 6,
+>>> +     MOTIONSENSE_CHIP_L3GD20H = 7,
+>> Interesting.  So the driver needs some knowledge of what
+>> is behind it.  I'll read on with interest ;)
+>>> +};
+>>> +
+>>> +struct ec_response_motion_sensor_data {
+>>> +     /* Flags for each sensor. */
+>>> +     uint8_t flags;
+>>> +     /* sensor number the data comes from */
+>>> +     uint8_t sensor_num;
+>>> +     /* Each sensor is up to 3-axis. */
+>>> +     union {
+>>> +             int16_t             data[3];
+>>> +             struct {
+>>> +                     uint16_t    rsvd;
+>>> +                     uint32_t    timestamp;
+>>> +             } __packed;
+>>> +             struct {
+>>> +                     uint8_t     activity; /* motionsensor_activity */
+>>> +                     uint8_t     state;
+>>> +                     int16_t     add_info[2];
+>>> +             };
+>>> +     };
+>>> +} __packed;
+>>> +
+>>> +struct ec_response_motion_sense_fifo_info {
+>>> +     /* Size of the fifo */
+>>> +     uint16_t size;
+>>> +     /* Amount of space used in the fifo */
+>>> +     uint16_t count;
+>>> +     /* TImestamp recorded in us */
+>> Timestamp
+>>> +     uint32_t timestamp;
+>>> +     /* Total amount of vector lost */
+>>> +     uint16_t total_lost;
+>>> +     /* Lost events since the last fifo_info, per sensors */
+>>> +     uint16_t lost[0];
+>>> +} __packed;
+>>> +
+>>> +struct ec_response_motion_sense_fifo_data {
+>>> +     uint32_t number_data;
+>>> +     struct ec_response_motion_sensor_data data[0];
+>>> +} __packed;
+>>> +
+>>> +/* List supported activity recognition */
+>>> +enum motionsensor_activity {
+>>> +     MOTIONSENSE_ACTIVITY_RESERVED = 0,
+>>> +     MOTIONSENSE_ACTIVITY_SIG_MOTION = 1,
+>>> +     MOTIONSENSE_ACTIVITY_DOUBLE_TAP = 2,
+>>> +};
+>>> +
+>>> +struct ec_motion_sense_activity {
+>>> +     uint8_t sensor_num;
+>>> +     uint8_t activity; /* one of enum motionsensor_activity */
+>>> +     uint8_t enable;   /* 1: enable, 0: disable */
+>>> +     uint8_t reserved;
+>>> +     uint16_t parameters[3]; /* activity dependent parameters */
+>>>  };
+>>>
+>>>  /* Module flag masks used for the dump sub-command. */
+>>> @@ -1355,41 +1462,61 @@ enum motionsensor_chip {
+>>>  #define MOTIONSENSE_SENSOR_FLAG_PRESENT (1<<0)
+>>>
+>>>  /*
+>>> + * Flush entry for synchronisation.
+>>> + * data contains time stamp
+>>> + */
+>>> +#define MOTIONSENSE_SENSOR_FLAG_FLUSH (1<<0)
+>>> +#define MOTIONSENSE_SENSOR_FLAG_TIMESTAMP (1<<1)
+>>> +#define MOTIONSENSE_SENSOR_FLAG_WAKEUP (1<<2)
+>>> +
+>>> +/*
+>>>   * Send this value for the data element to only perform a read. If you
+>>>   * send any other value, the EC will interpret it as data to set and will
+>>>   * return the actual value set.
+>>>   */
+>>>  #define EC_MOTION_SENSE_NO_VALUE -1
+>>>
+>>> +#define EC_MOTION_SENSE_INVALID_CALIB_TEMP 0x8000
+>>> +
+>>> +/* MOTIONSENSE_CMD_SENSOR_OFFSET subcommand flag */
+>>> +/* Set Calibration information */
+>>> +#define MOTION_SENSE_SET_OFFSET 1
+>>> +
+>>>  struct ec_params_motion_sense {
+>>>       uint8_t cmd;
+>>>       union {
+>>> -             /* Used for MOTIONSENSE_CMD_DUMP. */
+>>> +             /* Used for MOTIONSENSE_CMD_DUMP */
+>>>               struct {
+>>> -                     /* no args */
+>>> +                     /*
+>>> +                      * Maximal number of sensor the host is expecting.
+>>> +                      * 0 means the host is only interested in the number
+>>> +                      * of sensors controlled by the EC.
+>>> +                      */
+>>> +                     uint8_t max_sensor_count;
+>>>               } dump;
+>>>
+>>>               /*
+>>> -              * Used for MOTIONSENSE_CMD_EC_RATE and
+>>> -              * MOTIONSENSE_CMD_KB_WAKE_ANGLE.
+>>> +              * Used for MOTIONSENSE_CMD_KB_WAKE_ANGLE.
+>>>                */
+>>>               struct {
+>>> -                     /* Data to set or EC_MOTION_SENSE_NO_VALUE to read. */
+>>> +                     /* Data to set or EC_MOTION_SENSE_NO_VALUE to read.
+>>> +                      * kb_wake_angle: angle to wakup AP.
+>>> +                      */
+>>>                       int16_t data;
+>>> -             } ec_rate, kb_wake_angle;
+>>> +             } kb_wake_angle;
+>>>
+>>> -             /* Used for MOTIONSENSE_CMD_INFO. */
+>>> +             /* Used for MOTIONSENSE_CMD_INFO, MOTIONSENSE_CMD_DATA
+>>> +              * and MOTIONSENSE_CMD_PERFORM_CALIB.
+>>> +              */
+>>>               struct {
+>>> -                     /* Should be element of enum motionsensor_id. */
+>>>                       uint8_t sensor_num;
+>>> -             } info;
+>>> +             } info, data, fifo_flush, perform_calib, list_activities;
+>>>
+>>>               /*
+>>> -              * Used for MOTIONSENSE_CMD_SENSOR_ODR and
+>>> -              * MOTIONSENSE_CMD_SENSOR_RANGE.
+>>> +              * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR
+>>> +              * and MOTIONSENSE_CMD_SENSOR_RANGE.
+>>>                */
+>>>               struct {
+>>> -                     /* Should be element of enum motionsensor_id. */
+>>>                       uint8_t sensor_num;
+>>>
+>>>                       /* Rounding flag, true for round-up, false for down. */
+>>> @@ -1399,22 +1526,69 @@ struct ec_params_motion_sense {
+>>>
+>>>                       /* Data to set or EC_MOTION_SENSE_NO_VALUE to read. */
+>>>                       int32_t data;
+>>> -             } sensor_odr, sensor_range;
+>>> +             } ec_rate, sensor_odr, sensor_range;
+>>> +
+>>> +             /* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
+>>> +             struct {
+>>> +                     uint8_t sensor_num;
+>>> +
+>>> +                     /*
+>>> +                      * bit 0: If set (MOTION_SENSE_SET_OFFSET), set
+>>> +                      * the calibration information in the EC.
+>>> +                      * If unset, just retrieve calibration information.
+>>> +                      */
+>>> +                     uint16_t flags;
+>>> +
+>>> +                     /*
+>>> +                      * Temperature at calibration, in units of 0.01 C
+>>> +                      * 0x8000: invalid / unknown.
+>>> +                      * 0x0: 0C
+>>> +                      * 0x7fff: +327.67C
+>>> +                      */
+>>> +                     int16_t temp;
+>>> +
+>>> +                     /*
+>>> +                      * Offset for calibration.
+>>> +                      * Unit:
+>>> +                      * Accelerometer: 1/1024 g
+>>> +                      * Gyro:          1/1024 deg/s
+>>> +                      * Compass:       1/16 uT
+>>> +                      */
+>>> +                     int16_t offset[3];
+>>> +             } __packed sensor_offset;
+>>> +
+>>> +             /* Used for MOTIONSENSE_CMD_FIFO_INFO */
+>>> +             struct {
+>>> +             } fifo_info;
+>>> +
+>>> +             /* Used for MOTIONSENSE_CMD_FIFO_READ */
+>>> +             struct {
+>>> +                     /*
+>>> +                      * Number of expected vector to return.
+>>> +                      * EC may return less or 0 if none available.
+>>> +                      */
+>>> +                     uint32_t max_data_vector;
+>>> +             } fifo_read;
+>>> +
+>>> +             struct ec_motion_sense_activity set_activity;
+>>>       };
+>>>  } __packed;
+>>>
+>>>  struct ec_response_motion_sense {
+>>>       union {
+>>> -             /* Used for MOTIONSENSE_CMD_DUMP. */
+>>> +             /* Used for MOTIONSENSE_CMD_DUMP */
+>>>               struct {
+>>>                       /* Flags representing the motion sensor module. */
+>>>                       uint8_t module_flags;
+>>>
+>>> -                     /* Flags for each sensor in enum motionsensor_id. */
+>>> -                     uint8_t sensor_flags[EC_MOTION_SENSOR_COUNT];
+>>> +                     /* Number of sensors managed directly by the EC */
+>>> +                     uint8_t sensor_count;
+>>>
+>>> -                     /* Array of all sensor data. Each sensor is 3-axis. */
+>>> -                     int16_t data[3*EC_MOTION_SENSOR_COUNT];
+>>> +                     /*
+>>> +                      * sensor data is truncated if response_max is too small
+>>> +                      * for holding all the data.
+>>> +                      */
+>>> +                     struct ec_response_motion_sensor_data sensor[0];
+>>>               } dump;
+>>>
+>>>               /* Used for MOTIONSENSE_CMD_INFO. */
+>>> @@ -1429,6 +1603,9 @@ struct ec_response_motion_sense {
+>>>                       uint8_t chip;
+>>>               } info;
+>>>
+>>> +             /* Used for MOTIONSENSE_CMD_DATA */
+>>> +             struct ec_response_motion_sensor_data data;
+>>> +
+>>>               /*
+>>>                * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR,
+>>>                * MOTIONSENSE_CMD_SENSOR_RANGE, and
+>>> @@ -1438,6 +1615,25 @@ struct ec_response_motion_sense {
+>>>                       /* Current value of the parameter queried. */
+>>>                       int32_t ret;
+>>>               } ec_rate, sensor_odr, sensor_range, kb_wake_angle;
+>>> +
+>>> +             /* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
+>>> +             struct {
+>>> +                     int16_t temp;
+>>> +                     int16_t offset[3];
+>>> +             } sensor_offset, perform_calib;
+>>> +
+>>> +             struct ec_response_motion_sense_fifo_info fifo_info, fifo_flush;
+>>> +
+>>> +             struct ec_response_motion_sense_fifo_data fifo_read;
+>>> +
+>>> +             struct {
+>>> +                     uint16_t reserved;
+>>> +                     uint32_t enabled;
+>>> +                     uint32_t disabled;
+>>> +             } __packed list_activities;
+>>> +
+>>> +             struct {
+>>> +             } set_activity;
+>>>       };
+>>>  } __packed;
+>>>
+>>> @@ -1819,6 +2015,12 @@ union ec_response_get_next_data {
+>>>
+>>>       /* Unaligned */
+>>>       uint32_t  host_event;
+>>> +
+>>> +     struct {
+>>> +             /* For aligning the fifo_info */
+>>> +             uint8_t rsvd[3];
+>>> +             struct ec_response_motion_sense_fifo_info info;
+>>> +     }        sensor_fifo;
+>>>  } __packed;
+>>>
+>>>  struct ec_response_get_next_event {
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
-Thanks.
-
--- 
-Dmitry
