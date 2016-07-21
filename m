@@ -1,38 +1,30 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 22 Jul 2016 00:14:45 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Pratik Prajapati <pratik.prajapati12@gmail.com>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-    linux-kernel@vger.kernel.org
-Subject: Re: [PATCH 1/1] iio: vcnl4000: Add IR current adjust support
-In-Reply-To: <CAHNg1SoH-vVD9e62aEyN1J+_RDDjS5_zoO8hXLytAitWxkGAgA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1607220013240.6041@pmeerw.net>
-References: <1468850968-19523-1-git-send-email-pratik.prajapati12@gmail.com> <alpine.DEB.2.02.1607190016030.25263@pmeerw.net> <CAHNg1SoUfZvit9DCU8jt2=V4H7JgbAbBbPEAPyUV30_xXH-k4w@mail.gmail.com> <alpine.DEB.2.02.1607190820560.762@pmeerw.net>
- <CAHNg1SoH-vVD9e62aEyN1J+_RDDjS5_zoO8hXLytAitWxkGAgA@mail.gmail.com>
+Return-Path: <robherring2@gmail.com>
+Date: Thu, 21 Jul 2016 17:16:58 -0500
+From: Rob Herring <robh@kernel.org>
+To: Aleksei Mamlin <mamlinav@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH 1/2] devicetree: bindings: Add vendor prefix for
+ Domintech Co., Ltd.
+Message-ID: <20160721221658.GA24738@rob-hp-laptop>
+References: <1469133140-14722-1-git-send-email-mamlinav@gmail.com>
+ <1469133178-14765-1-git-send-email-mamlinav@gmail.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1469133178-14765-1-git-send-email-mamlinav@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-
-> > > > comments below; nice addition
-> > > >
-> > > > it seems this patch clashes with the recent changes to this driver in
-> > > > iio-testing; can you rebase on top please?
-> > >
-> > > Where is iio-testing? I couldn't found it in linux.
-> >
-> > https://git.kernel.org/cgit/linux/kernel/git/jic23/iio.git/log/?h=testing
+On Thu, Jul 21, 2016 at 11:32:58PM +0300, Aleksei Mamlin wrote:
+> Add vendor-prefix for Domintech Co., Ltd.
 > 
-> Means we have to do development here and this testing branch will get
-> merged to main branch later.
+> Signed-off-by: Aleksei Mamlin <mamlinav@gmail.com>
+> ---
+>  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+>  1 file changed, 1 insertion(+)
 
-yes, Jonathan will queue up stuff in testing, then send to GregHK, and 
-then to mainline
+Please add acks when posting new versions.
 
-p.
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+Rob
