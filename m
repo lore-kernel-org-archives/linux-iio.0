@@ -1,55 +1,58 @@
-Return-Path: <zhiyong.tao@mediatek.com>
-Message-ID: <1469161161.419.48.camel@mhfsdcap03>
-Subject: Re: [PATCH v5 3/3] arm: dts: mt2701: Add auxadc node.
-From: zhiyong tao <zhiyong.tao@mediatek.com>
-To: kbuild test robot <lkp@intel.com>
-CC: <kbuild-all@01.org>, <robh+dt@kernel.org>, <jic23@kernel.org>,
-	<knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-	<srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
-	<yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
-	<erin.lo@mediatek.com>, <dawei.chien@mediatek.com>, <matthias.bgg@gmail.com>,
-	<s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-	<linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>,
-	<robh@kernel.org>
-Date: Fri, 22 Jul 2016 12:19:21 +0800
-In-Reply-To: <201607220639.0tIT3cRj%fengguang.wu@intel.com>
-References: <201607220639.0tIT3cRj%fengguang.wu@intel.com>
-Content-Type: text/plain; charset="UTF-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:48372 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750786AbcGWBUa (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 22 Jul 2016 21:20:30 -0400
+Subject: ADS1118: hwmon or iio ? [was: Re: [RCF 1/3] hwmon: Add ads1118
+ driver]
+To: Joshua Clayton <stillcompiling@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Shawn Guo <shawnguo@kernel.org>,
+	Sascha Hauer <kernel@pengutronix.de>,
+	Fabio Estevam <fabio.estevam@nxp.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Jean Delvare <jdelvare@suse.com>, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-hwmon@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <cover.1468626668.git.stillcompiling@gmail.com>
+ <0294fbcb211e8f14f4e68fed4d9375cf23c6a70e.1468626668.git.stillcompiling@gmail.com>
+ <578990A1.6020300@roeck-us.net> <5792301A.6030206@gmail.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Message-ID: <5792C64A.3090600@roeck-us.net>
+Date: Fri, 22 Jul 2016 18:20:10 -0700
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5792301A.6030206@gmail.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, 2016-07-22 at 06:08 +0800, kbuild test robot wrote:
+On 07/22/2016 07:39 AM, Joshua Clayton wrote:
+> Greetings Guenter,
+>
+> Thank you for reviewing my submission.
+>
+> On 07/15/2016 06:40 PM, Guenter Roeck wrote:
+>> On 07/15/2016 05:18 PM, Joshua Clayton wrote:
+>>> Add new driver for Texas Instruments ADS1118 and and ADS1018.
+>>> This driver works with ADS1018, because of code borrowed
+>>> from asd1015, which is similar, but I can only test ADS1118
+>>>
+>>
+>> Browsing through the datasheet, I think this should probably be implemented
+>> as iio driver (and iio already has a driver for ads1015).
+>>
+>> Jonathan, what do you think ?
+>>
+>> Thanks,
+>> Guenter
+>>
+> No response from Jonathan as yet, but I am willing to rework the driver when I
+> have some time. It might be weeks before I can start, though.
+>
 
-sorry, I forget to add this information:
----
-This patch dependents on "Add clock support for Mediatek MT2701"[1].
-Please accept this patch together with [1].
-[1]http://lists.infradead.org/pipermail/linux-mediatek/2016-June/005969.html
----
-I will add this information in next version commit message.
+Changing the subject - maybe it helps to get Jonathan's attention.
 
-> Hi,
-> 
-> [auto build test ERROR on robh/for-next]
-> [also build test ERROR on v4.7-rc7 next-20160721]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Zhiyong-Tao/AUXADC-Mediatek-auxadc-driver/20160722-041141
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-> config: arm-at91_dt_defconfig (attached as .config)
-> compiler: arm-linux-gnueabi-gcc (Debian 5.4.0-6) 5.4.0 20160609
-> reproduce:
->         wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
->         chmod +x ~/bin/make.cross
->         # save the attached .config to linux build tree
->         make.cross ARCH=arm 
-> 
-> All errors (new ones prefixed by >>):
-> 
-> >> Error: arch/arm/boot/dts/mt2701.dtsi:145.22-23 syntax error
->    FATAL ERROR: Unable to parse input tree
-> 
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+Guenter
+
