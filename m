@@ -1,380 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f65.google.com ([209.85.215.65]:35984 "EHLO
-	mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751271AbcGWVtN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sat, 23 Jul 2016 17:49:13 -0400
-Date: Sun, 24 Jul 2016 00:49:08 +0300
-From: Aleksei Mamlin <mamlinav@gmail.com>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: accel: Add support for Domintech DMARD06
- accelerometer
-Message-Id: <20160724004908.ae42c96c2411c61a330ce22c@gmail.com>
-In-Reply-To: <alpine.DEB.2.02.1607220015530.6041@pmeerw.net>
-References: <1469133140-14722-1-git-send-email-mamlinav@gmail.com>
-	<1469133191-14812-1-git-send-email-mamlinav@gmail.com>
-	<alpine.DEB.2.02.1607220015530.6041@pmeerw.net>
-Mime-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mga14.intel.com ([192.55.52.115]:9575 "EHLO mga14.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751359AbcGWXB3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Sat, 23 Jul 2016 19:01:29 -0400
+Date: Sun, 24 Jul 2016 07:00:53 +0800
+From: kbuild test robot <lkp@intel.com>
+To: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Cc: kbuild-all@01.org, robh+dt@kernel.org, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
+	yingjoe.chen@mediatek.com, eddie.huang@mediatek.com,
+	erin.lo@mediatek.com, dawei.chien@mediatek.com,
+	matthias.bgg@gmail.com, s.hauer@pengutronix.de,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+	linux-mediatek@lists.infradead.org, robh@kernel.org,
+	Zhiyong Tao <zhiyong.tao@mediatek.com>
+Subject: Re: [PATCH v5 3/3] arm: dts: mt2701: Add auxadc node.
+Message-ID: <201607240649.gukdrhZS%fengguang.wu@intel.com>
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="OXfL5xGRrasGEqWY"
+In-Reply-To: <1469085449-22679-4-git-send-email-zhiyong.tao@mediatek.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 22 Jul 2016 00:41:39 +0200 (CEST)
-Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
 
-> 
-> > This patch add support for Domintech DMARD06 accelerometer.
-> 
-> comments below
->  
-> > Domintech DMARD06 is a low-g tri-axial digital accelerometer for
-> > cost-sensitive consumer application.
-> > 
-> > Signed-off-by: Aleksei Mamlin <mamlinav@gmail.com>
-> > ---
-> >  .../devicetree/bindings/iio/accel/dmard06.txt      |  17 ++
-> >  drivers/iio/accel/Kconfig                          |  11 ++
-> >  drivers/iio/accel/Makefile                         |   1 +
-> >  drivers/iio/accel/dmard06.c                        | 219 +++++++++++++++++++++
-> >  4 files changed, 248 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> >  create mode 100644 drivers/iio/accel/dmard06.c
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/accel/dmard06.txt b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> > new file mode 100644
-> > index 0000000..cc2231a
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> > @@ -0,0 +1,17 @@
-> > +Device tree bindings for Domintech DMARD06 acceletometer
-> 
-> typo: accelerometer
-> 
-> > +
-> > +Required properties:
-> > + - compatible		: Should be "domintech,dmard06"
-> > + - reg			: I2C address of the chip. Should be 0x1c
-> > +
-> > +Example:
-> > +	&i2c1 {
-> > +		/* ... */
-> > +
-> > +		accelerometer@1c {
-> > +			compatible = "domintech,dmard06";
-> > +			reg = <0x1c>;
-> > +		};
-> > +
-> > +		/* ... */
-> > +	};
-> > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> > index e4a758c..abc8536 100644
-> > --- a/drivers/iio/accel/Kconfig
-> > +++ b/drivers/iio/accel/Kconfig
-> > @@ -40,6 +40,17 @@ config BMC150_ACCEL_SPI
-> >  	tristate
-> >  	select REGMAP_SPI
-> >  
-> > +config DMARD06
-> > +	tristate "Domintech DMARD06 Digital Accelerometer Driver"
-> > +	depends on OF || COMPILE_TEST
-> > +	depends on I2C
-> > +	help
-> > +	  Say yes here to build support for the Domintech DMARD06 low-g
-> > +	  tri-axial digital accelerometer connected via an I2C bus.
-> > +
-> > +	  To compile this driver as a module, choose M here: the
-> > +	  module will be called dmard06.
-> > +
-> >  config HID_SENSOR_ACCEL_3D
-> >  	depends on HID_SENSOR_HUB
-> >  	select IIO_BUFFER
-> > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> > index 71b6794..a96b269 100644
-> > --- a/drivers/iio/accel/Makefile
-> > +++ b/drivers/iio/accel/Makefile
-> > @@ -7,6 +7,7 @@ obj-$(CONFIG_BMA180) += bma180.o
-> >  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
-> >  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
-> >  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
-> > +obj-$(CONFIG_DMARD06)	+= dmard06.o
-> >  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
-> >  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
-> >  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> > diff --git a/drivers/iio/accel/dmard06.c b/drivers/iio/accel/dmard06.c
-> > new file mode 100644
-> > index 0000000..433e430
-> > --- /dev/null
-> > +++ b/drivers/iio/accel/dmard06.c
-> > @@ -0,0 +1,219 @@
-> > +/*
-> > + * IIO driver for Domintech DMARD06 accelerometer
-> > + *
-> > + * Copyright (C) 2016 Aleksei Mamlin <mamlinav@gmail.com>
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify it
-> > + * under the terms and conditions of the GNU General Public License,
-> > + * version 2, as published by the Free Software Foundation.
-> > + */
-> > +
-> > +#include <linux/module.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/iio/iio.h>
-> > +
-> > +struct dmard06_data {
-> > +	struct i2c_client *client;
-> > +};
-> > +
-> > +#define DMARD06_DRV_NAME		"dmard06"
-> > +
-> > +/* Device data registers */
-> > +#define DMARD06_CHIP_ID_REG		0x0f
-> > +#define DMARD06_TOUT_REG		0x40
-> > +#define DMARD06_XOUT_REG		0x41
-> > +#define DMARD06_YOUT_REG		0x42
-> > +#define DMARD06_ZOUT_REG		0x43
-> > +
-> > +/* Device ID value */
-> > +#define DMARD06_CHIP_ID			0x06
-> > +
-> > +/* Device values */
-> > +#define DMARD06_AXIS_MAX_VAL		64
-> > +#define DMARD06_AXIS_SCALE_VAL		31250
-> > +#define DMARD06_TEMP_CENTER_VAL		25
-> > +
-> > +static int dmard06_i2c_read(struct i2c_client *client, u8 reg, u8 *buf)
-> > +{
-> > +	int error;
-> 
-> 'error' is a bit pessimistic, how about 'ret'? :-)
-> 
-> > +
-> 
-> can't use i2c_smbus_read_byte_data()?
-> 
+--OXfL5xGRrasGEqWY
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-I'll use it in next patch version
+Hi,
 
-> 
-> > +	error = i2c_master_send(client, &reg, 1);
-> > +	if (unlikely(error < 0))
-> > +		return error;
-> > +
-> > +	error = i2c_master_recv(client, buf, 1);
-> > +	if (unlikely(error < 0))
-> > +		return error;
-> 
-> not sure if it is worth to annotate unlikely() here -- i2c is slooow
-> locking is needed if you really need two i2c_master calls
-> 
-> > +	return 0;
-> > +}
-> > +
-> > +static int dmard06_read_chip_id(struct dmard06_data *dmard06)
-> > +{
-> > +	u8 buf;
-> > +	u8 chip_id;
-> > +	int error;
-> > +
-> > +	error = dmard06_i2c_read(dmard06->client, DMARD06_CHIP_ID_REG, &buf);
-> > +	if (error) {
-> > +		dev_err(&dmard06->client->dev, "Failed to read chip id: %d\n",
-> > +			error);
-> > +		return error;
-> > +	}
-> > +
-> > +	chip_id = (buf & 0x00ff);
-> 
-> why? buf is u8 anyways
-> 
-> > +	if (chip_id != DMARD06_CHIP_ID) {
-> > +		dev_err(&dmard06->client->dev, "Invalid chip id: %02x\n",
-> > +			chip_id);
-> > +		return -EINVAL;
-> 
-> often ENODEV is used for this case
-> 
-> > +	}
-> > +
-> > +	dev_info(&dmard06->client->dev, "Found DMARD%02x chip\n", chip_id);
-> 
-> we prefer silent probing of the driver, please don't clutter the log
-> 
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static int dmard06_read_raw(struct iio_dev *indio_dev,
-> > +			    struct iio_chan_spec const *chan,
-> > +			    int *val, int *val2, long mask)
-> > +{
-> > +	struct dmard06_data *dmard06 = iio_priv(indio_dev);
-> > +	u8 buf;
-> > +	bool reversed;
-> > +	int error;
-> > +	int tmp;
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_RAW:
-> > +		error = dmard06_i2c_read(dmard06->client, chan->address, &buf);
-> > +		if (error) {
-> > +			dev_err(&dmard06->client->dev,
-> > +				"Failed to read data %d\n", error);
-> > +			return error;
-> > +		}
-> > +
-> > +		reversed = (buf >> 7) & 1;
-> > +		tmp = (int)((buf & 0x7f) >> 1);
-> 
-> 
-> > +
-> > +		switch (chan->type) {
-> > +		case IIO_ACCEL:
-> 
-> wouldn't sign_extend32(buf >> 1, 6) do the job?
-> 
+[auto build test ERROR on robh/for-next]
+[also build test ERROR on v4.7-rc7 next-20160722]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
 
-You are right, this do the job for axis and temperature. Thanks
+url:    https://github.com/0day-ci/linux/commits/Zhiyong-Tao/AUXADC-Mediatek-auxadc-driver/20160724-043228
+base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
+config: arm-allnoconfig (attached as .config)
+compiler: arm-linux-gnueabi-gcc (Debian 5.4.0-6) 5.4.0 20160609
+reproduce:
+        wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
+        chmod +x ~/bin/make.cross
+        # save the attached .config to linux build tree
+        make.cross ARCH=arm 
 
-> 
-> > +			*val = reversed ? (tmp - DMARD06_AXIS_MAX_VAL) : tmp;
-> > +			return IIO_VAL_INT;
-> > +		case IIO_TEMP:
-> > +			*val = reversed ? -tmp : tmp;
-> > +			return IIO_VAL_INT;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	case IIO_CHAN_INFO_OFFSET:
-> > +		switch (chan->type) {
-> > +		case IIO_TEMP:
-> > +			*val = DMARD06_TEMP_CENTER_VAL;
-> > +			return IIO_VAL_INT;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		switch (chan->type) {
-> > +		case IIO_ACCEL:
-> > +			*val = 0;
-> > +			*val2 = DMARD06_AXIS_SCALE_VAL;
-> > +			return IIO_VAL_INT_PLUS_MICRO;
-> > +		default:
-> > +			return -EINVAL;
-> > +		}
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static const struct iio_info dmard06_info = {
-> > +	.driver_module	= THIS_MODULE,
-> > +	.read_raw	= dmard06_read_raw,
-> > +};
-> > +
-> > +#define DMARD06_ACCEL_CHANNEL(_axis, reg) {			\
-> 
-> maybe rename reg to _reg
-> 
-> > +	.type = IIO_ACCEL,					\
-> > +	.address = reg,						\
-> > +	.channel2 = IIO_MOD_##_axis,				\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> > +	.modified = 1,						\
-> > +}
-> > +
-> > +#define DMARD06_TEMP_CHANNEL(reg) {				\
-> > +	.type = IIO_TEMP,					\
-> > +	.address = reg,						\
-> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> > +			      BIT(IIO_CHAN_INFO_OFFSET),	\
-> > +}
-> > +
-> > +static const struct iio_chan_spec dmard06_channels[] = {
-> > +	DMARD06_ACCEL_CHANNEL(X, DMARD06_XOUT_REG),
-> > +	DMARD06_ACCEL_CHANNEL(Y, DMARD06_YOUT_REG),
-> > +	DMARD06_ACCEL_CHANNEL(Z, DMARD06_ZOUT_REG),
-> > +	DMARD06_TEMP_CHANNEL(DMARD06_TOUT_REG),
-> > +};
-> > +
-> > +static int dmard06_probe(struct i2c_client *client,
-> > +			const struct i2c_device_id *id)
-> > +{
-> > +	int error;
-> > +	struct iio_dev *indio_dev;
-> > +	struct dmard06_data *dmard06;
-> > +
-> > +	dev_dbg(&client->dev, "I2C Address: 0x%02x\n", client->addr);
-> 
-> not needed
-> 
-> > +
-> > +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-> > +		dev_err(&client->dev, "I2C check functionality failed\n");
-> > +		return -ENXIO;
-> > +	}
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dmard06));
-> > +	if (!indio_dev) {
-> > +		dev_err(&client->dev, "Failed to allocate iio device\n");
-> > +		return -ENOMEM;
-> > +	}
-> > +
-> > +	dmard06 = iio_priv(indio_dev);
-> > +	dmard06->client = client;
-> > +
-> > +	error = dmard06_read_chip_id(dmard06);
-> > +	if (error)
-> > +		return error;
-> > +
-> > +	i2c_set_clientdata(client, indio_dev);
-> > +	indio_dev->dev.parent = &client->dev;
-> > +	indio_dev->name = DMARD06_DRV_NAME;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->channels = dmard06_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(dmard06_channels);
-> > +	indio_dev->info = &dmard06_info;
-> > +
-> > +	return devm_iio_device_register(&client->dev, indio_dev);
-> > +}
-> > +
-> > +static const struct i2c_device_id dmard06_id[] = {
-> > +	{ "dmard06", 0 },
-> > +	{ }
-> > +};
-> > +MODULE_DEVICE_TABLE(i2c, dmard06_id);
-> > +
-> > +static const struct of_device_id dmard06_of_match[] = {
-> > +	{ .compatible = "domintech,dmard06" },
-> > +	{ }
-> > +};
-> > +MODULE_DEVICE_TABLE(of, dmard06_of_match);
-> > +
-> > +static struct i2c_driver dmard06_driver = {
-> > +	.probe = dmard06_probe,
-> > +	.id_table = dmard06_id,
-> > +	.driver = {
-> > +		.name = DMARD06_DRV_NAME,
-> > +		.of_match_table = of_match_ptr(dmard06_of_match),
-> > +	},
-> > +};
-> > +module_i2c_driver(dmard06_driver);
-> > +
-> > +MODULE_AUTHOR("Aleksei Mamlin <mamlinav@gmail.com>");
-> > +MODULE_DESCRIPTION("Domintech DMARD06 accelerometer driver");
-> > +MODULE_LICENSE("GPL v2");
-> > 
-> 
-> -- 
-> 
-> Peter Meerwald-Stadler
-> +43-664-2444418 (mobile)
+All errors (new ones prefixed by >>):
 
+   Error: arch/arm/boot/dts/mt2701.dtsi:145.22-23 syntax error
+>> FATAL ERROR: Unable to parse input tree
 
--- 
-Thanks and regards,
-Aleksei Mamlin
+---
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+
+--OXfL5xGRrasGEqWY
+Content-Type: application/octet-stream
+Content-Disposition: attachment; filename=".config.gz"
+Content-Transfer-Encoding: base64
+
+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
+cRUaL7KYpEETXrEV+F5+UKD8/8EhZSe7SwAA
+
+--OXfL5xGRrasGEqWY--
