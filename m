@@ -1,256 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f49.google.com ([74.125.82.49]:37529 "EHLO
-	mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752585AbcGXWWB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 18:22:01 -0400
-Received: by mail-wm0-f49.google.com with SMTP id i5so132411058wmg.0
-        for <linux-iio@vger.kernel.org>; Sun, 24 Jul 2016 15:22:00 -0700 (PDT)
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:34012 "EHLO
+	mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752233AbcGXXvU (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 19:51:20 -0400
 MIME-Version: 1.0
-In-Reply-To: <525b949c-c8ad-ec4a-7a3f-41c783b3a26e@kernel.org>
-References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
- <CAKzfze9e0=W3=XnXbOMnuW8LiaVOuohzX0TgE6D0dJyty9T8Ag@mail.gmail.com>
- <d7e6e144-739d-3447-c715-df1c0203e32e@kernel.org> <CAKzfze9kCKiKF32Yc1spowkwbkHWWHCiV2niLE2JMdpkUhABZg@mail.gmail.com>
- <e01fac4f-2283-29a7-df29-f763381ec0ab@kernel.org> <CAKzfze-D8MZJCxdbc=Ovvt8OR+Z6MiVB-OwcTRsYsRs--kPm0w@mail.gmail.com>
- <097c4061-b41a-fa28-e85a-be42967e8740@kernel.org> <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
- <525b949c-c8ad-ec4a-7a3f-41c783b3a26e@kernel.org>
+In-Reply-To: <20160721081046.0f658c18@endymion>
+References: <1467945971-23798-1-git-send-email-mranostay@gmail.com>
+ <1467964564.3225.12.camel@chaos.suse> <CAKzfze82xFRU6A09rXS3OhtLU99cZt_2waRcFGvTgWbx9huZLA@mail.gmail.com>
+ <20160721081046.0f658c18@endymion>
 From: Matt Ranostay <mranostay@gmail.com>
-Date: Sun, 24 Jul 2016 15:21:20 -0700
-Message-ID: <CAKzfze_Kh82zeUB=PRbemCV9NHCwFssqPoxn7Z=pZP7VVTZL0g@mail.gmail.com>
-Subject: Re: [RFC 0/2] iio: add support for LMP91000EVM potentiostat board
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+Date: Sun, 24 Jul 2016 16:50:39 -0700
+Message-ID: <CAKzfze8Uc3FGG2+d-H3-=md_J2nwDdG6Tp=5KSTad6Pv+0iXeg@mail.gmail.com>
+Subject: Re: [PATCH] hwmon: sht3x: set initial jiffies to last_update
+To: Jean Delvare <jdelvare@suse.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
+	David Frey <david.frey@sensirion.com>
 Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jul 24, 2016 at 5:25 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 14/07/16 04:36, Matt Ranostay wrote:
->> On Sun, Jul 10, 2016 at 7:20 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>> On 05/07/16 22:27, Matt Ranostay wrote:
->>>> On Tue, Jul 5, 2016 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>>> On 03/07/16 23:24, Matt Ranostay wrote:
->>>>>> On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>>>>> On 02/07/16 23:13, Matt Ranostay wrote:
->>>>>>>> On Sat, Jul 2, 2016 at 3:05 PM, Matt Ranostay <mranostay@gmail.com> wrote:
->>>>>>>>> LMP91000EVM evaluation board has LMP91000 potentiostat along with an
->>>>>>>>> 16-bit ADC for chemical sensoring applications.
->>>>>>>>>
->>>>>>>>>  * add support for the TI LMP91000 potentiostat
->>>>>>>>>  * add support for ADC141S626 and ADC161S626 ADC chips
->>>>>>>>
->>>>>>>> Probably should have put what I am RFC'ing :).
->>>>>>>>
->>>>>>>> * does this belong in a new path drivers/iio/potentiostat ?
->>>>>>> I'm going for drivers/iio/AFE/potentiostat with drivers/iio/AFE/amplifiers
->>>>>>> as well to take the only similar driver we already have.
->>>>>>>
->>>>>>>> * first example of a iio consumer within drivers/iio, does it seems sane?
->>>>>>> It's 'interesting'.  You've worked around the whole question of how to handle
->>>>>>> a mux by putting a push interface equipped client on top of the polled interface
->>>>>>> of the ADC.  It's an elegant solution that I'd never considered.
->>>>>>>
->>>>>>> By the very nature of a mux interface, unless we are piping the mux switching
->>>>>>> out on the same trigger system as the read back, the actual read out must be
->>>>>>> polled rather than self clocked. Only the mux knows when it is ready.
->>>>>>> The triggered version has all sorts of additional complexity even if we had
->>>>>>> output buffers already to go (such as requiring the output buffering to
->>>>>>> 'lead' the input buffering to give the mux time to switch.
->>>>>>>
->>>>>>> Question to my mind is whether this is a generic and flexible enough approach
->>>>>>> to use for this sort of device in the future... I think we have two classes
->>>>>>> of 'analog device' that we need to support:
->>>>>>>
->>>>>>> 1) Simple all channels always there devices such as analog accelerometers
->>>>>>> feeding into an ADC with a sequencer (or a software based sequencer).
->>>>>>> In that case the data flow is clearly going to go over the buffered interface.
->>>>>>> The accelerometer driver is just massaging the data for types / scale adjustments.
->>>>>>> It has no influence on the sampling of the data.
->>>>>>>
->>>>>>> 2) The 'smart' front end with a mux.  In this case the 'when to read' question
->>>>>>> is driven by the front end, not the ADC.  Games could be played to push the
->>>>>>> sampling of data over to the ADC, but is it worth doing?
->>>>>>>
->>>>>>
->>>>>> Probably over-engineering unless we actually find a need to do this in
->>>>>> the future.
->>>>> I get the feeling we'll end up with a high performance system needing this
->>>>> at some point.
->>>>>>
->>>>>>> So if we wanted to do this, the AFE could itself export a trigger that is then
->>>>>>> used by the ADC which in turn pushes data back to the AFE driver via the buffered
->>>>>>> data interface.  The AFE driver would then have to handle the demux of this
->>>>>>> data stream into a coherent form to push out in it's own buffer.
->>>>>>> This approach gains the following:
->>>>>>>  - quick data transfers, particularly if we are dealing with a multiple output
->>>>>>>    mux.  e.g we might have a 16 to 4 mux into a 4 channel simultaneous sampling
->>>>>>>    (or sequenced) ADC. So in this case if the mux was set to provide all 16
->>>>>>>    channels in order we'd do 4 reads of the ADC getting 0 1 2 3, 4 5 6 7 etc.
->>>>>>>    The mux driver would then have to recombine these 16 channels before kicking
->>>>>>>    them out.
->>>>>>
->>>>>> Makes sense but there is a slight issue of the settling time for the
->>>>>> temp channel is 2-3 milliseconds. Can't assume all mux reads are going
->>>>>> to take the same time constant.
->>>>> That's down to the mux driver to handle it.  Only trigger once it's known
->>>>> to be stable..
->>>>
->>>> Also how would the ADC report the data back it would almost need
->>>> dynamically setup iio channels after mux gets setup, correct?
->>>>
->>>> 1) ADC driver probe
->>>> 2) MUX driver probe
->>>> 3) MUX registers it's data channels
->>>> 4) ADC driver needs to enumerate them
->>> Why does the ADC driver care?
->>>
->>> The Mux driver is the only bit that knows what the ADC is actually capturing
->>> as it controls both the actual wire connections and the reporting to userspace
->>> of results.
->>>
->>> So.
->>> 1) ADC driver probe
->>> 2) Mux driver probe (gets provided ADC channels - however many it controls
->>> the inputs for).
->>> 3) ADC trigger set to trigger provided by Mux.
->>>
->>> To give a simple example, lets consider a 2 input single channel mux going into
->>> a single channel ADC. Mux trigger called (imaginatively) mux_trig0
->>>
->>> Mux is consumer of the ADC channel.
->>>
->>> Setup:
->>> 1) Mux registers as a 'buffer' consumer of the ADC channel.
->>> 2) Mux has a trigger exposed (which is how it controls the capture.)
->>> 3) ADC trigger set to the mux exposed one.
->>>
->>> A scan. (triggered say by a high resolution timer trigger).
->>> 1) Mux picks channel 1 and waits for it to stabilize.
->>> 2) Mux 'fires' trigger to initiate a capture and gets the resulting callback
->>> call with the value.  Stashes it somewhere
->>> 3) Mux selects channel 2 and waits for it to stabilize
->>> 4) Mux 'fires' trigger to initiate a capture and gets the resulting callback
->>> call with the value. Stashes it somewhere.
->>> 5) Mux driver can then combine the two values to form the 'scan' and push
->>> that to it's buffer complete with whatever timestamp makes sense.
->>> This Mux driver controlled buffer is the one userspace uses to get the data.
->>>
+On Wed, Jul 20, 2016 at 11:10 PM, Jean Delvare <jdelvare@suse.de> wrote:
+> Hi Matt,
+>
+> On Fri, 8 Jul 2016 17:22:10 -0700, Matt Ranostay wrote:
+>> On Fri, Jul 8, 2016 at 12:56 AM, Jean Delvare <jdelvare@suse.de> wrote:
+>> > On jeu., 2016-07-07 at 19:46 -0700, Matt Ranostay wrote:
+>> >> Handling the wraparound requires the data->last_update to be set to an
+>> >> initial jiffies value. Otherwise you can start in a state where the
+>> >> sensor will never request a reading.
+>> >
+>> > I can't see how. As I read the code, in the worst case, readings can be
+>> > blocked for interval_ms (2 seconds maximum.)
 >>
->> Only question is how does the callback come into play here with a
->> trigger? Not sure I have seen this in the API so far.
-> The ABI has been there a long time - just not much used :)
-> See buffers\industrialio-buffer-cb.c
+>> On 64-bit systems this is never an issue because the jiffies counter
+>> will never wrap around.
+>>
+>> But my system is a 32-bit ARM core, so the the kernel sets the initial
+>> value to 0xfffb6c20 so it will wrap around in 5 minutes to find buggy
+>> code.
+>>
+>> So looking at time_after(0xfffb6c20, 0) will return false always till
+>> it finally rolls over.
+>
+> I've always been confused by how jiffies wrapping is handled. So I
+> tested it, and you are correct.
+>
 
-Gah right after I came up with a hackish way to do the same thing :)
-Ah not ideally documented I see :)
+Yeah but of course on 64-bit systems most just use the lower 32-bits
+of the jiffies counter.
+
+But since that could rollover, and the unlikely event no sensor data
+was read for ~57 days you could be in the same state that couldn't get
+a data sample ....
+
+Not sure if we want to check this edge case.. and also this effects a
+few iio drivers (mostly mine :)) if we really care about this.
+
+
+>> >> Cc: Guenter Roeck <linux@roeck-us.net>
+>> >> Cc: David Frey <david.frey@sensirion.com>
+>> >> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+>> >> ---
+>> >>  drivers/hwmon/sht3x.c | 2 +-
+>> >>  1 file changed, 1 insertion(+), 1 deletion(-)
+>> >>
+>> >> diff --git a/drivers/hwmon/sht3x.c b/drivers/hwmon/sht3x.c
+>> >> index 450645b6053d..05a925257938 100644
+>> >> --- a/drivers/hwmon/sht3x.c
+>> >> +++ b/drivers/hwmon/sht3x.c
+>> >> @@ -722,7 +722,7 @@ static int sht3x_probe(struct i2c_client *client,
+>> >>       data->setup.blocking_io = false;
+>> >>       data->setup.high_precision = true;
+>> >>       data->mode = 0;
+>> >> -     data->last_update = 0;
+>> >> +     data->last_update = jiffies;
+>> >>       data->client = client;
+>> >>       crc8_populate_msb(sht3x_crc8_table, SHT3X_CRC8_POLYNOMIAL);
+>> >>
+>> >
+>> > Both look equally wrong to me. With your proposal, accessing the sysfs
+>> > attributes right after loading the driver will not trigger a reading.
+>> >
+>> > In order to guarantee that the first access will trigger a reading,
+>> > data->last_update should be initialized to jiffies -
+>> > msecs_to_jiffies(2000) (the maximum interval value.)
+>>
+>> Ok that is fine.  Rather do  jiffies + (2 * HZ)
+>
+> 2 * HZ is fine. But it's minus, not plus. You want to initialize the
+> last update time to 2 seconds BEFORE the driver is being loaded, so
+> that the current time is at least 2 seconds AFTER the (fake) last
+> update at first access. And you should subtract another jiffy to be on
+> the safe side.
+>
+> Can you please send an updated patch?
+
+Sure will do.
 
 >
-> Was original written to support pushing data out to the iio-input
-> bridge driver (which was last posted in 2012)...
->
-> Just got used (slightly wrongly) in the sunxi touchscreen driver
-> as well.
->>
->>> Missing bit of all this is a consumer being able to control the providers
->>> trigger.  Doubt that would be hard to add.
->>>
->>
->> Worse case initially it will have to be manually set.
-> I think we'd have to automate it or this would all be really clunky
-> to use from userspace.
-
-Yeah but one issue is it possible the ADC may wanted to be used for
-another application (has more than a few channels hooked into another
-device for instance).
-
->>
->>> I think that covers all possible circumstances where we have explicit
->>> control of the mux or at least the ability to set it to a known state.
->>>
->>> Jonathan
->>>
->>>>
->>>>>>
->>>>>>>
->>>>>>> To do this we'd need to add an interface to allow the AFE/mux driver to set
->>>>>>> the trigger for the ADC to its own.
->>>>>>
->>>>>> Of course in this case the ADC and LMP91000 device are using both the
->>>>>> hrtimer trigger, albeit of course you can't do it at the same time. So
->>>>>> it is polling no matter what.
->>>>> Fair point.
->>>>>>
->>>>>>>
->>>>>>> If we want to do this quickish I think that's about the lightest weight option
->>>>>>> we can do.
->>>>>>>
->>>>>>> Now, the question is, what are the disadvantages of going with what you
->>>>>>> have here for this driver but keeping in mind the above for when it matters?
->>>>>>>
->>>>>>> I'm guessing we never need to run this particularly driver very fast...
->>>>>>> I'm inclined to say yes but would like some other opinions on this one!
->>>>>>> (hence the expanded Cc list - please do pull in anyone else you think
->>>>>>> might be interested!)
->>>>>>
->>>>>> Yeah the sample response of the sensor isn't that high speed. Maybe a
->>>>>> few dozen hertz.
->>>>>>
->>>>>>>
->>>>>>>> * ADC driver has no IIO_CHAN_INFO_SCALE due to no regulators being defined
->>>>>>> Should be some defined. That was easy ;)
->>>>>>>> * Should ADC value be signed or unsigned?   -16636 is 0V, 0 is 2/VA ,
->>>>>>>> 16635 is ~VA. Of course true zero is defined by the VREF voltage.
->>>>>>> err. Odd. Go with signed I think.
->>>>>>>>
->>>>>>>>>
->>>>>>>>> Matt Ranostay (2):
->>>>>>>>>   iio: adc: ti-adc1x1s: add support for TI 1-channel differential ADCs
->>>>>>>>>   iio: potentiostat: add LMP91000 support
->>>>>>>>>
->>>>>>>>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
->>>>>>>>>  .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
->>>>>>>>>  drivers/iio/Kconfig                                |   1 +
->>>>>>>>>  drivers/iio/Makefile                               |   1 +
->>>>>>>>>  drivers/iio/adc/Kconfig                            |  12 +
->>>>>>>>>  drivers/iio/adc/Makefile                           |   1 +
->>>>>>>>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 ++++++++++++++++
->>>>>>>>>  drivers/iio/potentiostat/Kconfig                   |  21 ++
->>>>>>>>>  drivers/iio/potentiostat/Makefile                  |   6 +
->>>>>>>>>  drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
->>>>>>>>>  10 files changed, 622 insertions(+)
->>>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
->>>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
->>>>>>>>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
->>>>>>>>>  create mode 100644 drivers/iio/potentiostat/Kconfig
->>>>>>>>>  create mode 100644 drivers/iio/potentiostat/Makefile
->>>>>>>>>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
->>>>>>>>>
->>>>>>>>> --
->>>>>>>>> 2.7.4
->>>>>>>>>
->>>>>>>> --
->>>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>>>>> the body of a message to majordomo@vger.kernel.org
->>>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>>>>>
->>>>>>>
->>>>>> --
->>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>>> the body of a message to majordomo@vger.kernel.org
->>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>>>
->>>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
->
+> --
+> Jean Delvare
+> SUSE L3 Support
