@@ -1,91 +1,256 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from regular1.263xmail.com ([211.150.99.140]:35930 "EHLO
-	regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752630AbcGZCwG (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 22:52:06 -0400
-Message-ID: <5796D036.1060101@rock-chips.com>
-Date: Tue, 26 Jul 2016 10:51:34 +0800
-From: Caesar Wang <wxt@rock-chips.com>
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:37529 "EHLO
+	mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752585AbcGXWWB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 18:22:01 -0400
+Received: by mail-wm0-f49.google.com with SMTP id i5so132411058wmg.0
+        for <linux-iio@vger.kernel.org>; Sun, 24 Jul 2016 15:22:00 -0700 (PDT)
 MIME-Version: 1.0
-To: Guenter Roeck <linux@roeck-us.net>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Heiko Stuebner <heiko@sntech.de>
-CC: linux-iio@vger.kernel.org, dianders@chromium.org,
-	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
-	Caesar Wang <wxt@rock-chips.com>
-Subject: Re: [PATCH] iio: adc: rockchip_saradc: Explicitly disable ADC on
- probe
-References: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+In-Reply-To: <525b949c-c8ad-ec4a-7a3f-41c783b3a26e@kernel.org>
+References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
+ <CAKzfze9e0=W3=XnXbOMnuW8LiaVOuohzX0TgE6D0dJyty9T8Ag@mail.gmail.com>
+ <d7e6e144-739d-3447-c715-df1c0203e32e@kernel.org> <CAKzfze9kCKiKF32Yc1spowkwbkHWWHCiV2niLE2JMdpkUhABZg@mail.gmail.com>
+ <e01fac4f-2283-29a7-df29-f763381ec0ab@kernel.org> <CAKzfze-D8MZJCxdbc=Ovvt8OR+Z6MiVB-OwcTRsYsRs--kPm0w@mail.gmail.com>
+ <097c4061-b41a-fa28-e85a-be42967e8740@kernel.org> <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
+ <525b949c-c8ad-ec4a-7a3f-41c783b3a26e@kernel.org>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Sun, 24 Jul 2016 15:21:20 -0700
+Message-ID: <CAKzfze_Kh82zeUB=PRbemCV9NHCwFssqPoxn7Z=pZP7VVTZL0g@mail.gmail.com>
+Subject: Re: [RFC 0/2] iio: add support for LMP91000EVM potentiostat board
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Guenter,
+On Sun, Jul 24, 2016 at 5:25 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 14/07/16 04:36, Matt Ranostay wrote:
+>> On Sun, Jul 10, 2016 at 7:20 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>> On 05/07/16 22:27, Matt Ranostay wrote:
+>>>> On Tue, Jul 5, 2016 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>>> On 03/07/16 23:24, Matt Ranostay wrote:
+>>>>>> On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>>>>> On 02/07/16 23:13, Matt Ranostay wrote:
+>>>>>>>> On Sat, Jul 2, 2016 at 3:05 PM, Matt Ranostay <mranostay@gmail.com> wrote:
+>>>>>>>>> LMP91000EVM evaluation board has LMP91000 potentiostat along with an
+>>>>>>>>> 16-bit ADC for chemical sensoring applications.
+>>>>>>>>>
+>>>>>>>>>  * add support for the TI LMP91000 potentiostat
+>>>>>>>>>  * add support for ADC141S626 and ADC161S626 ADC chips
+>>>>>>>>
+>>>>>>>> Probably should have put what I am RFC'ing :).
+>>>>>>>>
+>>>>>>>> * does this belong in a new path drivers/iio/potentiostat ?
+>>>>>>> I'm going for drivers/iio/AFE/potentiostat with drivers/iio/AFE/amplifiers
+>>>>>>> as well to take the only similar driver we already have.
+>>>>>>>
+>>>>>>>> * first example of a iio consumer within drivers/iio, does it seems sane?
+>>>>>>> It's 'interesting'.  You've worked around the whole question of how to handle
+>>>>>>> a mux by putting a push interface equipped client on top of the polled interface
+>>>>>>> of the ADC.  It's an elegant solution that I'd never considered.
+>>>>>>>
+>>>>>>> By the very nature of a mux interface, unless we are piping the mux switching
+>>>>>>> out on the same trigger system as the read back, the actual read out must be
+>>>>>>> polled rather than self clocked. Only the mux knows when it is ready.
+>>>>>>> The triggered version has all sorts of additional complexity even if we had
+>>>>>>> output buffers already to go (such as requiring the output buffering to
+>>>>>>> 'lead' the input buffering to give the mux time to switch.
+>>>>>>>
+>>>>>>> Question to my mind is whether this is a generic and flexible enough approach
+>>>>>>> to use for this sort of device in the future... I think we have two classes
+>>>>>>> of 'analog device' that we need to support:
+>>>>>>>
+>>>>>>> 1) Simple all channels always there devices such as analog accelerometers
+>>>>>>> feeding into an ADC with a sequencer (or a software based sequencer).
+>>>>>>> In that case the data flow is clearly going to go over the buffered interface.
+>>>>>>> The accelerometer driver is just massaging the data for types / scale adjustments.
+>>>>>>> It has no influence on the sampling of the data.
+>>>>>>>
+>>>>>>> 2) The 'smart' front end with a mux.  In this case the 'when to read' question
+>>>>>>> is driven by the front end, not the ADC.  Games could be played to push the
+>>>>>>> sampling of data over to the ADC, but is it worth doing?
+>>>>>>>
+>>>>>>
+>>>>>> Probably over-engineering unless we actually find a need to do this in
+>>>>>> the future.
+>>>>> I get the feeling we'll end up with a high performance system needing this
+>>>>> at some point.
+>>>>>>
+>>>>>>> So if we wanted to do this, the AFE could itself export a trigger that is then
+>>>>>>> used by the ADC which in turn pushes data back to the AFE driver via the buffered
+>>>>>>> data interface.  The AFE driver would then have to handle the demux of this
+>>>>>>> data stream into a coherent form to push out in it's own buffer.
+>>>>>>> This approach gains the following:
+>>>>>>>  - quick data transfers, particularly if we are dealing with a multiple output
+>>>>>>>    mux.  e.g we might have a 16 to 4 mux into a 4 channel simultaneous sampling
+>>>>>>>    (or sequenced) ADC. So in this case if the mux was set to provide all 16
+>>>>>>>    channels in order we'd do 4 reads of the ADC getting 0 1 2 3, 4 5 6 7 etc.
+>>>>>>>    The mux driver would then have to recombine these 16 channels before kicking
+>>>>>>>    them out.
+>>>>>>
+>>>>>> Makes sense but there is a slight issue of the settling time for the
+>>>>>> temp channel is 2-3 milliseconds. Can't assume all mux reads are going
+>>>>>> to take the same time constant.
+>>>>> That's down to the mux driver to handle it.  Only trigger once it's known
+>>>>> to be stable..
+>>>>
+>>>> Also how would the ADC report the data back it would almost need
+>>>> dynamically setup iio channels after mux gets setup, correct?
+>>>>
+>>>> 1) ADC driver probe
+>>>> 2) MUX driver probe
+>>>> 3) MUX registers it's data channels
+>>>> 4) ADC driver needs to enumerate them
+>>> Why does the ADC driver care?
+>>>
+>>> The Mux driver is the only bit that knows what the ADC is actually capturing
+>>> as it controls both the actual wire connections and the reporting to userspace
+>>> of results.
+>>>
+>>> So.
+>>> 1) ADC driver probe
+>>> 2) Mux driver probe (gets provided ADC channels - however many it controls
+>>> the inputs for).
+>>> 3) ADC trigger set to trigger provided by Mux.
+>>>
+>>> To give a simple example, lets consider a 2 input single channel mux going into
+>>> a single channel ADC. Mux trigger called (imaginatively) mux_trig0
+>>>
+>>> Mux is consumer of the ADC channel.
+>>>
+>>> Setup:
+>>> 1) Mux registers as a 'buffer' consumer of the ADC channel.
+>>> 2) Mux has a trigger exposed (which is how it controls the capture.)
+>>> 3) ADC trigger set to the mux exposed one.
+>>>
+>>> A scan. (triggered say by a high resolution timer trigger).
+>>> 1) Mux picks channel 1 and waits for it to stabilize.
+>>> 2) Mux 'fires' trigger to initiate a capture and gets the resulting callback
+>>> call with the value.  Stashes it somewhere
+>>> 3) Mux selects channel 2 and waits for it to stabilize
+>>> 4) Mux 'fires' trigger to initiate a capture and gets the resulting callback
+>>> call with the value. Stashes it somewhere.
+>>> 5) Mux driver can then combine the two values to form the 'scan' and push
+>>> that to it's buffer complete with whatever timestamp makes sense.
+>>> This Mux driver controlled buffer is the one userspace uses to get the data.
+>>>
+>>
+>> Only question is how does the callback come into play here with a
+>> trigger? Not sure I have seen this in the API so far.
+> The ABI has been there a long time - just not much used :)
+> See buffers\industrialio-buffer-cb.c
 
-Thanks for fixing it.
+Gah right after I came up with a hackish way to do the same thing :)
+Ah not ideally documented I see :)
 
-On 2016年07月26日 03:39, Guenter Roeck wrote:
-> If the ADC is read for the first time, the caller gets a timeout error,
-> and the kernel log shows
 >
-> read channel() error: -110
+> Was original written to support pushing data out to the iio-input
+> bridge driver (which was last posted in 2012)...
 >
-> The ADC may be enabled on boot, and needs to be explicitly disabled
-> for a read sequence to work (otherwise there is no completion interrupt).
-> Disaple it explicitly in the probe function.
+> Just got used (slightly wrongly) in the sunxi touchscreen driver
+> as well.
+>>
+>>> Missing bit of all this is a consumer being able to control the providers
+>>> trigger.  Doubt that would be hard to add.
+>>>
+>>
+>> Worse case initially it will have to be manually set.
+> I think we'd have to automate it or this would all be really clunky
+> to use from userspace.
+
+Yeah but one issue is it possible the ADC may wanted to be used for
+another application (has more than a few channels hooked into another
+device for instance).
+
+>>
+>>> I think that covers all possible circumstances where we have explicit
+>>> control of the mux or at least the ability to set it to a known state.
+>>>
+>>> Jonathan
+>>>
+>>>>
+>>>>>>
+>>>>>>>
+>>>>>>> To do this we'd need to add an interface to allow the AFE/mux driver to set
+>>>>>>> the trigger for the ADC to its own.
+>>>>>>
+>>>>>> Of course in this case the ADC and LMP91000 device are using both the
+>>>>>> hrtimer trigger, albeit of course you can't do it at the same time. So
+>>>>>> it is polling no matter what.
+>>>>> Fair point.
+>>>>>>
+>>>>>>>
+>>>>>>> If we want to do this quickish I think that's about the lightest weight option
+>>>>>>> we can do.
+>>>>>>>
+>>>>>>> Now, the question is, what are the disadvantages of going with what you
+>>>>>>> have here for this driver but keeping in mind the above for when it matters?
+>>>>>>>
+>>>>>>> I'm guessing we never need to run this particularly driver very fast...
+>>>>>>> I'm inclined to say yes but would like some other opinions on this one!
+>>>>>>> (hence the expanded Cc list - please do pull in anyone else you think
+>>>>>>> might be interested!)
+>>>>>>
+>>>>>> Yeah the sample response of the sensor isn't that high speed. Maybe a
+>>>>>> few dozen hertz.
+>>>>>>
+>>>>>>>
+>>>>>>>> * ADC driver has no IIO_CHAN_INFO_SCALE due to no regulators being defined
+>>>>>>> Should be some defined. That was easy ;)
+>>>>>>>> * Should ADC value be signed or unsigned?   -16636 is 0V, 0 is 2/VA ,
+>>>>>>>> 16635 is ~VA. Of course true zero is defined by the VREF voltage.
+>>>>>>> err. Odd. Go with signed I think.
+>>>>>>>>
+>>>>>>>>>
+>>>>>>>>> Matt Ranostay (2):
+>>>>>>>>>   iio: adc: ti-adc1x1s: add support for TI 1-channel differential ADCs
+>>>>>>>>>   iio: potentiostat: add LMP91000 support
+>>>>>>>>>
+>>>>>>>>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
+>>>>>>>>>  .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
+>>>>>>>>>  drivers/iio/Kconfig                                |   1 +
+>>>>>>>>>  drivers/iio/Makefile                               |   1 +
+>>>>>>>>>  drivers/iio/adc/Kconfig                            |  12 +
+>>>>>>>>>  drivers/iio/adc/Makefile                           |   1 +
+>>>>>>>>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 ++++++++++++++++
+>>>>>>>>>  drivers/iio/potentiostat/Kconfig                   |  21 ++
+>>>>>>>>>  drivers/iio/potentiostat/Makefile                  |   6 +
+>>>>>>>>>  drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
+>>>>>>>>>  10 files changed, 622 insertions(+)
+>>>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+>>>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+>>>>>>>>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
+>>>>>>>>>  create mode 100644 drivers/iio/potentiostat/Kconfig
+>>>>>>>>>  create mode 100644 drivers/iio/potentiostat/Makefile
+>>>>>>>>>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
+>>>>>>>>>
+>>>>>>>>> --
+>>>>>>>>> 2.7.4
+>>>>>>>>>
+>>>>>>>> --
+>>>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>>>>>
+>>>>>>>
+>>>>>> --
+>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>>>
+>>>>>
+>>>> --
+>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>> the body of a message to majordomo@vger.kernel.org
+>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>
+>>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>
 >
-> Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> ---
->   drivers/iio/adc/rockchip_saradc.c | 3 +++
->   1 file changed, 3 insertions(+)
->
-> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-> index f9ad6c2d6821..6aa3271d86b5 100644
-> --- a/drivers/iio/adc/rockchip_saradc.c
-> +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -280,6 +280,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->   		goto err_pclk;
->   	}
->   
-> +	/* Make sure ADC is disabled */
-> +	writel_relaxed(0, info->regs + SARADC_CTRL);
-
-I think we should reset the saradc controller.
-Since make sure the reset value is 0 and loader-->kernel may even cause 
-harm, as my experience on tsadc. (drivers/thermal/rockchip_thermal.c)
-
-
-e.g.:
-/**
-* Reset SARADC Controller, reset all saradc registers.
-*/
-static void rockchip_saradc_reset_controller(struct reset_control *reset)
-{
-reset_control_assert(reset);
-usleep_range(10, 20);
-reset_control_deassert(reset);
-}
-
-..probe()
-{
-...
-rockchip_saradc_reset_controller();
-...
-}
-
-
--
-Caesar
-
-> +
->   	platform_set_drvdata(pdev, indio_dev);
->   
->   	indio_dev->name = dev_name(&pdev->dev);
-
-
--- 
-caesar wang | software engineer | wxt@rock-chip.com
-
-
