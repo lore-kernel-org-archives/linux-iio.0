@@ -1,167 +1,70 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga14.intel.com ([192.55.52.115]:9575 "EHLO mga14.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751359AbcGWXB3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Sat, 23 Jul 2016 19:01:29 -0400
-Date: Sun, 24 Jul 2016 07:00:53 +0800
-From: kbuild test robot <lkp@intel.com>
-To: Zhiyong Tao <zhiyong.tao@mediatek.com>
-Cc: kbuild-all@01.org, robh+dt@kernel.org, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
-	yingjoe.chen@mediatek.com, eddie.huang@mediatek.com,
-	erin.lo@mediatek.com, dawei.chien@mediatek.com,
-	matthias.bgg@gmail.com, s.hauer@pengutronix.de,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-mediatek@lists.infradead.org, robh@kernel.org,
-	Zhiyong Tao <zhiyong.tao@mediatek.com>
-Subject: Re: [PATCH v5 3/3] arm: dts: mt2701: Add auxadc node.
-Message-ID: <201607240649.gukdrhZS%fengguang.wu@intel.com>
-MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="OXfL5xGRrasGEqWY"
-In-Reply-To: <1469085449-22679-4-git-send-email-zhiyong.tao@mediatek.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	devicetree@vger.kernel.org,
+	Samu Onkalo <samu.onkalo@intel.com>,
+	Sebastian Reichel <sre@kernel.org>
+Subject: [PATCH 1/2] iio: magn: DT bindings for AK8974
+Date: Sun, 24 Jul 2016 09:51:35 +0200
+Message-Id: <1469346695-15302-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
+This adds device tree bindings for the AK8974 magnetometer, similar
+to those for the AK8975.
 
---OXfL5xGRrasGEqWY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-
-Hi,
-
-[auto build test ERROR on robh/for-next]
-[also build test ERROR on v4.7-rc7 next-20160722]
-[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-
-url:    https://github.com/0day-ci/linux/commits/Zhiyong-Tao/AUXADC-Mediatek-auxadc-driver/20160724-043228
-base:   https://git.kernel.org/pub/scm/linux/kernel/git/robh/linux.git for-next
-config: arm-allnoconfig (attached as .config)
-compiler: arm-linux-gnueabi-gcc (Debian 5.4.0-6) 5.4.0 20160609
-reproduce:
-        wget https://git.kernel.org/cgit/linux/kernel/git/wfg/lkp-tests.git/plain/sbin/make.cross -O ~/bin/make.cross
-        chmod +x ~/bin/make.cross
-        # save the attached .config to linux build tree
-        make.cross ARCH=arm 
-
-All errors (new ones prefixed by >>):
-
-   Error: arch/arm/boot/dts/mt2701.dtsi:145.22-23 syntax error
->> FATAL ERROR: Unable to parse input tree
-
+Cc: devicetree@vger.kernel.org
+Cc: Samu Onkalo <samu.onkalo@intel.com>
+Cc: Sebastian Reichel <sre@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
-0-DAY kernel test infrastructure                Open Source Technology Center
-https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+ChangeLog v3->v4:
+- Add support for an optional mounting matrix
+ChangeLog v2->v3:
+- No changes, just reposting to keep together with the series
+ChangeLog v1->v2:
+- No changes, just reposting to keep together with the series
+---
+ .../bindings/iio/magnetometer/ak8974.txt           | 29 ++++++++++++++++++++++
+ 1 file changed, 29 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
 
---OXfL5xGRrasGEqWY
-Content-Type: application/octet-stream
-Content-Disposition: attachment; filename=".config.gz"
-Content-Transfer-Encoding: base64
-
-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
-cRUaL7KYpEETXrEV+F5+UKD8/8EhZSe7SwAA
-
---OXfL5xGRrasGEqWY--
+diff --git a/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt b/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
+new file mode 100644
+index 000000000000..77d5aba1bd8c
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/magnetometer/ak8974.txt
+@@ -0,0 +1,29 @@
++* Asahi Kasei AK8974 magnetometer sensor
++
++Required properties:
++
++- compatible : should be "asahi-kasei,ak8974"
++- reg : the I2C address of the magnetometer
++
++Optional properties:
++
++- avdd-supply: regulator supply for the analog voltage
++  (see regulator/regulator.txt)
++- dvdd-supply: regulator supply for the digital voltage
++  (see regulator/regulator.txt)
++- interrupts: data ready (DRDY) and interrupt (INT1) lines
++  from the chip, the DRDY interrupt must be placed first.
++  The interrupts can be triggered on rising or falling
++  edges alike.
++- mount-matrix: an optional 3x3 mounting rotation matrix
++
++Example:
++
++ak8974@0f {
++	compatible = "asahi-kasei,ak8974";
++	reg = <0x0f>;
++	avdd-supply = <&foo_reg>;
++	dvdd-supply = <&bar_reg>;
++	interrupts = <0 IRQ_TYPE_EDGE_RISING>,
++		     <1 IRQ_TYPE_EDGE_RISING>;
++};
+-- 
+2.7.4
