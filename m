@@ -1,188 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58455 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752074AbcGXKRT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 06:17:19 -0400
-Subject: Re: [PATCH 1/2] staging: iio: vcnl4000: Add IR current adjust support
-To: Pratik Prajapati <pratik.prajapati12@gmail.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1469112097-6806-1-git-send-email-pratik.prajapati12@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d785baed-5688-c5ff-8217-2a5516954a88@kernel.org>
-Date: Sun, 24 Jul 2016 11:17:17 +0100
-MIME-Version: 1.0
-In-Reply-To: <1469112097-6806-1-git-send-email-pratik.prajapati12@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-lf0-f49.google.com ([209.85.215.49]:36063 "EHLO
+	mail-lf0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752074AbcGXKRh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 06:17:37 -0400
+Received: by mail-lf0-f49.google.com with SMTP id g62so111170772lfe.3
+        for <linux-iio@vger.kernel.org>; Sun, 24 Jul 2016 03:17:36 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Samu Onkalo <samu.onkalo@intel.com>, devicetree@vger.kernel.org
+Subject: [PATCH] iio: document bindings for mounting matrixes
+Date: Sun, 24 Jul 2016 12:17:14 +0200
+Message-Id: <1469355434-17043-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/07/16 15:41, Pratik Prajapati wrote:
-> Signed-off-by: Pratik Prajapati <pratik.prajapati12@gmail.com>
-Various bits and pieces in line.  Mostly little tidy ups.
+The mounting matrix for sensors was introduced in
+commit dfc57732ad38 ("iio:core: mounting matrix support")
 
-Also, please always check that an ABI is in the Documentation
-of the ABI.  This can even include standard combinations we simply
-have seen before.  Here the LED stuff needs to be in there.
+However the device tree bindings are very terse and since this is
+a widely applicable property, we need a proper binding for it
+that the other bindings can reference. This will also be useful
+for other operating systems and sensor engineering at large.
 
-As there are wild cards, it's not trivial to grep those files, but
-people do...
+I think all 3D sensors should support it, the current situation
+is probably that the mounting information is confined in magic
+userspace components rather than using the mounting matrix, which
+is not good for portability and reuse.
 
-Also they are used as the basis for userspace libraries as they
-can't be expected to track every new bit of ABI we sneak in somewhere
-deep in a driver :)
+Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Sebastian Reichel <sre@kernel.org>
+Cc: Samu Onkalo <samu.onkalo@intel.com>
+Cc: devicetree@vger.kernel.org
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+Please help out to get this right, I think this could be confusing
+to users unless documented properly. I think the doc has some rough
+edges since I'm not the smartest in physics nor english at all times.
+---
+ .../devicetree/bindings/iio/mount-matrix.txt       | 104 +++++++++++++++++++++
+ 1 file changed, 104 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/mount-matrix.txt
 
-Jonathan
-> ---
->  drivers/iio/light/vcnl4000.c | 78 ++++++++++++++++++++++++++++++++++++++++----
->  1 file changed, 72 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index 360b6e9..1378175 100644
-> --- a/drivers/iio/light/vcnl4000.c
-> +++ b/drivers/iio/light/vcnl4000.c
-> @@ -11,7 +11,6 @@
->   * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
->   *
->   * TODO:
-> - *   allow to adjust IR current
->   *   proximity threshold and event handling
->   *   periodic ALS/proximity measurement (VCNL4010/20)
->   *   interrupts (VCNL4010/20)
-> @@ -46,6 +45,10 @@
->  #define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
->  #define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
->  
-> +/* Bit mask for LED_CURRENT register */
-> +#define VCNL4000_LED_CURRENT_MASK	0x3F
-> +#define VCNL4000_LED_CURRENT_MAX	20
-> +
->  struct vcnl4000_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
-> @@ -111,9 +114,42 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
->  	}, {
->  		.type = IIO_PROXIMITY,
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> -	}
-> +	}, {
-> +		.type = IIO_CURRENT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +		.extend_name = "led",
-Please sanity check this extended form (which is fine I think)
-is in the ABI docs.
-Documentation/ABI/testing/sysfs-bus-iio
-
-People need to be able to grep that document to find all forms of
-the ABI so you'll need both an entry for raw and scale (just
-add them to the relevant long lists.  Maybe a foot note
-in the description to state the obvious that this controls
-the current to an LED :)
-> +		.output = 1,
-> +		.scan_index = -1,
-> +	},
->  };
->  
-> +static int vcnl4000_write_led_current_raw(struct vcnl4000_data *data, int val)
-> +{
-> +	int ret;
-> +
-> +	if (val < 0 || val > VCNL4000_LED_CURRENT_MAX)
-> +		return -ERANGE;
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_LED_CURRENT,
-> +			val);
-> +	mutex_unlock(&data->lock);
-blank line before simple returns is pretty much standard kernel syntax.
-Hence a blank line here and in similar places ideally.
-> +	return ret;
-> +}
-> +
-> +static int vcnl4000_read_led_current_raw(struct vcnl4000_data *data)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->lock);
-> +	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_LED_CURRENT);
-> +	mutex_unlock(&data->lock);
-> +	if (ret < 0)
-> +		return ret;
-> +	ret &= VCNL4000_LED_CURRENT_MASK;
-> +	return ret;
-Maybe roll these last two lines together? 
-return ret & VCNL4000_LED_CURRENT_MASK;
-
-Doesn't really effect readability so might as well shorten the code
-a touch!
-> +}
-> +
->  static int vcnl4000_read_raw(struct iio_dev *indio_dev,
->  				struct iio_chan_spec const *chan,
->  				int *val, int *val2, long mask)
-> @@ -138,23 +174,53 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
->  			if (ret < 0)
->  				return ret;
->  			return IIO_VAL_INT;
-> +		case IIO_CURRENT:
-> +			ret = vcnl4000_read_led_current_raw(data);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = ret;
-> +			return IIO_VAL_INT;
->  		default:
->  			return -EINVAL;
->  		}
-> +
->  	case IIO_CHAN_INFO_SCALE:
-> -		if (chan->type != IIO_LIGHT)
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			*val = 0;
-> +			*val2 = 250000;
-> +			return IIO_VAL_INT_PLUS_MICRO;
-> +		case IIO_CURRENT:
-> +			/* Output register is in 10s of milliamps */
-> +			*val = 10;
-> +			return IIO_VAL_INT;
-> +		default:
->  			return -EINVAL;
-> +		}
->  
-> -		*val = 0;
-> -		*val2 = 250000;
-> -		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		return -EINVAL;
->  	}
-Can't get here...  So drop this return.
-> +	return -EINVAL;
-> +}
-> +
-> +static int vcnl4000_write_raw(struct iio_dev *indio_dev,
-> +					struct iio_chan_spec const *chan,
-> +					int val, int val2, long mask)
-> +{
-> +	struct vcnl4000_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT) {
-> +		ret = vcnl4000_write_led_current_raw(data, val);
-> +		return ret;
-Drop the local variable and have
-return vcnl4000...
-
-> +	}
-> +	return -EINVAL;
->  }
->  
->  static const struct iio_info vcnl4000_info = {
->  	.read_raw = vcnl4000_read_raw,
-> +	.write_raw = vcnl4000_write_raw,
->  	.driver_module = THIS_MODULE,
->  };
->  
-> 
+diff --git a/Documentation/devicetree/bindings/iio/mount-matrix.txt b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+new file mode 100644
+index 000000000000..3e72c92c5689
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/mount-matrix.txt
+@@ -0,0 +1,104 @@
++Mounting matrix
++
++The mounting matrix is a device tree property used to orient any IIO device
++that produce three-dimensional data.
++
++The typical usecase is that where a component has an internal representation
++of the (x,y,z) triplets, such as different registers to read these coordinates,
++and thus implying that the component should be mounted in a certain orientation
++relative to some specific point of reference.
++
++For example a device with some kind of screen, where the user is supposed to
++interact with the environment using a accelerometer, gyroscope or magnetometer
++mounted on the same chassis as this screen, will likely take the screen as
++reference to (x,y,z) orientation, with (x,y) corresponding to these axes on the
++screen and (z) being depth, the axis perpendicular to the screen.
++
++The axes may also be flipped: for a screen you probably want (x) coordinates to
++go from negative on the left to positive on the right and (z) depth to be
++negative under the screen and positive in front of it, toward the face of the
++user.
++
++Apart from flipping, a sensor can of course also be mounted in any angle along
++the axes relative to the point of reference. This means that the axes may be
++not only flipped, but tilted.
++
++Examples for some three-dimensional sensor types:
++
++- Accelerometers have their frame of reference is toward the center of gravity,
++  usually to the core of the planet, and users would likely expect a value of
++  9.81N upwards along the (z) axis when the device is held with its screen
++  perpendicular to the planets surface and 0 on the other axes. A reading of
++  the (x,y,z) values will give the orientation of the device relative to the
++  center of the planet, i.e. relative to its surface at this point. Up and down
++  relative to the point of reference can thus be determined.
++
++- Magnetometers (compasses) have their frame of reference relative to the
++  geomagnetic field. In a mounting matrix for a magnetometer sensor the main
++  hardware orientation is defined with respect to the local earth geomagnetic
++  reference frame where (y) is in the ground plane and positive towards
++  magnetic North, (x) is in the ground plane, perpendicular to the North axis
++  and positive towards the East and (z) is perpendicular to the ground plane
++  and positive upwards.
++
++- Gyroscopes detects the movement relative the device itself, and has no other
++  frame of reference than the mounting chassis itself. The angular momentum is
++  defined as orthogonal to the plane of rotation, so if you put the device on a
++  flat surface and spin it around the z axis (such as rotating a device lying
++  flat on a table), you should get a negative value along the (z) axis if
++  rotated clockwise, and a positive value if rotated counter-clockwise
++  according to the right-hand rule.
++
++So unless the sensor is ideally mounted, we need a means to indicate the
++relative orientation of any given sensor of this type.
++
++To achieve this, use the device tree property "mount-matrix" for the sensor.
++This supplies a 3x3 transformation matrix in the strict linear algebraic sense,
++to orient the senor axes relative to a desired point of reference. This means
++the resulting values from the sensor, after scaling to proper units, should be
++multiplied by this matrix to give the proper coordinates in three-dimensional
++space, relative to some relevant point of reference.
++
++The mounting matrix has the layout:
++
++ (x0, y0, z0)
++ (x1, y1, z1)
++ (x2, y2, z3)
++
++And it is represented as an array of strings containing the real values for
++producing the transformation matrix. The real values use a decimal point and
++a minus (-) to indicate a negative value.
++
++Examples:
++
++Identity matrix (nothing happens to the coordinates, which means the device was
++mechanically mounted in an ideal way and we need no transformation):
++
++mount-matrix = "1", "0", "0",
++               "0", "1", "0",
++               "0", "0", "1";
++
++Flipped X axis (negative values means positive):
++
++mount-matrix = "-1", "0", "0",
++               "0", "1", "0",
++               "0", "0", "1";
++
++X and Y flipped (X values are for Y and Y values are for X):
++
++mount-matrix = "0", "1", "0",
++               "1", "0", "0",
++               "0", "0", "1";
++
++Complex angular mounting with X and Z in a certain tilted orienation and
++Y flipped:
++
++mount-matrix = "-0.984807753012208",  /* x0 */
++               "0",                   /* y0 */
++               "-0.173648177666930",  /* z0 */
++               "0",                   /* x1 */
++               "-1",                  /* y1 */
++               "0",                   /* z1 */
++               "-0.173648177666930",  /* x2 */
++               "0",                   /* y2 */
++               "0.984807753012208";   /* z2 */
+-- 
+2.7.4
 
