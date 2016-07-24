@@ -1,257 +1,246 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59064 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59094 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752160AbcGXMUD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 08:20:03 -0400
-Subject: Re: [PATCH v2] iio: Add IIO support for the Measurement Computing
- CIO-DAC family
-To: William Breathitt Gray <vilhelm.gray@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net
-References: <20160712133314.GA12420@sophia>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1752160AbcGXMZ3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 08:25:29 -0400
+Subject: Re: [RFC 0/2] iio: add support for LMP91000EVM potentiostat board
+To: Matt Ranostay <mranostay@gmail.com>
+References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
+ <CAKzfze9e0=W3=XnXbOMnuW8LiaVOuohzX0TgE6D0dJyty9T8Ag@mail.gmail.com>
+ <d7e6e144-739d-3447-c715-df1c0203e32e@kernel.org>
+ <CAKzfze9kCKiKF32Yc1spowkwbkHWWHCiV2niLE2JMdpkUhABZg@mail.gmail.com>
+ <e01fac4f-2283-29a7-df29-f763381ec0ab@kernel.org>
+ <CAKzfze-D8MZJCxdbc=Ovvt8OR+Z6MiVB-OwcTRsYsRs--kPm0w@mail.gmail.com>
+ <097c4061-b41a-fa28-e85a-be42967e8740@kernel.org>
+ <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <51df4147-20e6-5fa4-c890-8b671c755cc3@kernel.org>
-Date: Sun, 24 Jul 2016 13:19:59 +0100
+Message-ID: <525b949c-c8ad-ec4a-7a3f-41c783b3a26e@kernel.org>
+Date: Sun, 24 Jul 2016 13:25:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160712133314.GA12420@sophia>
+In-Reply-To: <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/07/16 14:33, William Breathitt Gray wrote:
-> The Measurement Computing CIO-DAC is a family of 16-bit and 12-bit
-> analog output devices. The analog outputs are from AD660BN/AD7237
-> converters with each output buffered by an OP-27. Voltage ranges are
-> configured via physical jumpers on the device.
+On 14/07/16 04:36, Matt Ranostay wrote:
+> On Sun, Jul 10, 2016 at 7:20 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 05/07/16 22:27, Matt Ranostay wrote:
+>>> On Tue, Jul 5, 2016 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>> On 03/07/16 23:24, Matt Ranostay wrote:
+>>>>> On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>>>>>> On 02/07/16 23:13, Matt Ranostay wrote:
+>>>>>>> On Sat, Jul 2, 2016 at 3:05 PM, Matt Ranostay <mranostay@gmail.com> wrote:
+>>>>>>>> LMP91000EVM evaluation board has LMP91000 potentiostat along with an
+>>>>>>>> 16-bit ADC for chemical sensoring applications.
+>>>>>>>>
+>>>>>>>>  * add support for the TI LMP91000 potentiostat
+>>>>>>>>  * add support for ADC141S626 and ADC161S626 ADC chips
+>>>>>>>
+>>>>>>> Probably should have put what I am RFC'ing :).
+>>>>>>>
+>>>>>>> * does this belong in a new path drivers/iio/potentiostat ?
+>>>>>> I'm going for drivers/iio/AFE/potentiostat with drivers/iio/AFE/amplifiers
+>>>>>> as well to take the only similar driver we already have.
+>>>>>>
+>>>>>>> * first example of a iio consumer within drivers/iio, does it seems sane?
+>>>>>> It's 'interesting'.  You've worked around the whole question of how to handle
+>>>>>> a mux by putting a push interface equipped client on top of the polled interface
+>>>>>> of the ADC.  It's an elegant solution that I'd never considered.
+>>>>>>
+>>>>>> By the very nature of a mux interface, unless we are piping the mux switching
+>>>>>> out on the same trigger system as the read back, the actual read out must be
+>>>>>> polled rather than self clocked. Only the mux knows when it is ready.
+>>>>>> The triggered version has all sorts of additional complexity even if we had
+>>>>>> output buffers already to go (such as requiring the output buffering to
+>>>>>> 'lead' the input buffering to give the mux time to switch.
+>>>>>>
+>>>>>> Question to my mind is whether this is a generic and flexible enough approach
+>>>>>> to use for this sort of device in the future... I think we have two classes
+>>>>>> of 'analog device' that we need to support:
+>>>>>>
+>>>>>> 1) Simple all channels always there devices such as analog accelerometers
+>>>>>> feeding into an ADC with a sequencer (or a software based sequencer).
+>>>>>> In that case the data flow is clearly going to go over the buffered interface.
+>>>>>> The accelerometer driver is just massaging the data for types / scale adjustments.
+>>>>>> It has no influence on the sampling of the data.
+>>>>>>
+>>>>>> 2) The 'smart' front end with a mux.  In this case the 'when to read' question
+>>>>>> is driven by the front end, not the ADC.  Games could be played to push the
+>>>>>> sampling of data over to the ADC, but is it worth doing?
+>>>>>>
+>>>>>
+>>>>> Probably over-engineering unless we actually find a need to do this in
+>>>>> the future.
+>>>> I get the feeling we'll end up with a high performance system needing this
+>>>> at some point.
+>>>>>
+>>>>>> So if we wanted to do this, the AFE could itself export a trigger that is then
+>>>>>> used by the ADC which in turn pushes data back to the AFE driver via the buffered
+>>>>>> data interface.  The AFE driver would then have to handle the demux of this
+>>>>>> data stream into a coherent form to push out in it's own buffer.
+>>>>>> This approach gains the following:
+>>>>>>  - quick data transfers, particularly if we are dealing with a multiple output
+>>>>>>    mux.  e.g we might have a 16 to 4 mux into a 4 channel simultaneous sampling
+>>>>>>    (or sequenced) ADC. So in this case if the mux was set to provide all 16
+>>>>>>    channels in order we'd do 4 reads of the ADC getting 0 1 2 3, 4 5 6 7 etc.
+>>>>>>    The mux driver would then have to recombine these 16 channels before kicking
+>>>>>>    them out.
+>>>>>
+>>>>> Makes sense but there is a slight issue of the settling time for the
+>>>>> temp channel is 2-3 milliseconds. Can't assume all mux reads are going
+>>>>> to take the same time constant.
+>>>> That's down to the mux driver to handle it.  Only trigger once it's known
+>>>> to be stable..
+>>>
+>>> Also how would the ADC report the data back it would almost need
+>>> dynamically setup iio channels after mux gets setup, correct?
+>>>
+>>> 1) ADC driver probe
+>>> 2) MUX driver probe
+>>> 3) MUX registers it's data channels
+>>> 4) ADC driver needs to enumerate them
+>> Why does the ADC driver care?
+>>
+>> The Mux driver is the only bit that knows what the ADC is actually capturing
+>> as it controls both the actual wire connections and the reporting to userspace
+>> of results.
+>>
+>> So.
+>> 1) ADC driver probe
+>> 2) Mux driver probe (gets provided ADC channels - however many it controls
+>> the inputs for).
+>> 3) ADC trigger set to trigger provided by Mux.
+>>
+>> To give a simple example, lets consider a 2 input single channel mux going into
+>> a single channel ADC. Mux trigger called (imaginatively) mux_trig0
+>>
+>> Mux is consumer of the ADC channel.
+>>
+>> Setup:
+>> 1) Mux registers as a 'buffer' consumer of the ADC channel.
+>> 2) Mux has a trigger exposed (which is how it controls the capture.)
+>> 3) ADC trigger set to the mux exposed one.
+>>
+>> A scan. (triggered say by a high resolution timer trigger).
+>> 1) Mux picks channel 1 and waits for it to stabilize.
+>> 2) Mux 'fires' trigger to initiate a capture and gets the resulting callback
+>> call with the value.  Stashes it somewhere
+>> 3) Mux selects channel 2 and waits for it to stabilize
+>> 4) Mux 'fires' trigger to initiate a capture and gets the resulting callback
+>> call with the value. Stashes it somewhere.
+>> 5) Mux driver can then combine the two values to form the 'scan' and push
+>> that to it's buffer complete with whatever timestamp makes sense.
+>> This Mux driver controlled buffer is the one userspace uses to get the data.
+>>
 > 
-> This driver does not support the devices' simulataneous update mode; the
-> XFER jumper option should be deselected for all analog output channels.
-> 
-> This driver provides IIO support for the Measurement Computing CIO-DAC
-> family: CIO-DAC16, CIO-DAC08, and PC104-DAC06. The base port addresses
-> for the devices may be configured via the base array module parameter.
-> 
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-Looks good to me.
+> Only question is how does the callback come into play here with a
+> trigger? Not sure I have seen this in the API so far.
+The ABI has been there a long time - just not much used :)
+See buffers\industrialio-buffer-cb.c
 
-Applied to the togreg branch of iio.git - will be initially pushed out
-as testing for the autobuilders to play with it.
+Was original written to support pushing data out to the iio-input
+bridge driver (which was last posted in 2012)...
 
-Thanks,
-
-Jonathan
-> ---
-> Changes in v2:
->   - Change description from "DAC driver" to the more apt "IIO driver"
->   - Update message body to reflect 16-bit DAC resolution
->   - Change chan_out_states to hold ints in order to match val data type
->   - Verify val is within appropriate DAC value range before accepting
+Just got used (slightly wrongly) in the sunxi touchscreen driver
+as well.
 > 
->  MAINTAINERS               |   6 ++
->  drivers/iio/dac/Kconfig   |   9 +++
->  drivers/iio/dac/Makefile  |   1 +
->  drivers/iio/dac/cio-dac.c | 144 ++++++++++++++++++++++++++++++++++++++++++++++
->  4 files changed, 160 insertions(+)
->  create mode 100644 drivers/iio/dac/cio-dac.c
+>> Missing bit of all this is a consumer being able to control the providers
+>> trigger.  Doubt that would be hard to add.
+>>
 > 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 345e757..b5c802d 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -7318,6 +7318,12 @@ L:	linux-iio@vger.kernel.org
->  S:	Maintained
->  F:	drivers/iio/potentiometer/mcp4531.c
->  
-> +MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
-> +M:	William Breathitt Gray <vilhelm.gray@gmail.com>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	drivers/iio/dac/cio-dac.c
-> +
->  MEDIA DRIVERS FOR RENESAS - VSP1
->  M:	Laurent Pinchart <laurent.pinchart@ideasonboard.com>
->  L:	linux-media@vger.kernel.org
-> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-> index ca81447..b9f0442 100644
-> --- a/drivers/iio/dac/Kconfig
-> +++ b/drivers/iio/dac/Kconfig
-> @@ -181,6 +181,15 @@ config AD7303
->  	  To compile this driver as module choose M here: the module will be called
->  	  ad7303.
->  
-> +config CIO_DAC
-> +	tristate "Measurement Computing CIO-DAC IIO driver"
-> +	depends on X86 && ISA_BUS_API
-> +	help
-> +	  Say yes here to build support for the Measurement Computing CIO-DAC
-> +	  analog output device family (CIO-DAC16, CIO-DAC08, PC104-DAC06). The
-> +	  base port addresses for the devices may be configured via the base
-> +	  array module parameter.
-> +
->  config LPC18XX_DAC
->  	tristate "NXP LPC18xx DAC driver"
->  	depends on ARCH_LPC18XX || COMPILE_TEST
-> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
-> index 8b78d5c..b1a1206 100644
-> --- a/drivers/iio/dac/Makefile
-> +++ b/drivers/iio/dac/Makefile
-> @@ -20,6 +20,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
->  obj-$(CONFIG_AD5791) += ad5791.o
->  obj-$(CONFIG_AD5686) += ad5686.o
->  obj-$(CONFIG_AD7303) += ad7303.o
-> +obj-$(CONFIG_CIO_DAC) += cio-dac.o
->  obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
->  obj-$(CONFIG_M62332) += m62332.o
->  obj-$(CONFIG_MAX517) += max517.o
-> diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
-> new file mode 100644
-> index 0000000..5a743e2
-> --- /dev/null
-> +++ b/drivers/iio/dac/cio-dac.c
-> @@ -0,0 +1,144 @@
-> +/*
-> + * IIO driver for the Measurement Computing CIO-DAC
-> + * Copyright (C) 2016 William Breathitt Gray
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License, version 2, as
-> + * published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope that it will be useful, but
-> + * WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
-> + * General Public License for more details.
-> + *
-> + * This driver supports the following Measurement Computing devices: CIO-DAC16,
-> + * CIO-DAC06, and PC104-DAC06.
-> + */
-> +#include <linux/bitops.h>
-> +#include <linux/device.h>
-> +#include <linux/errno.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/types.h>
-> +#include <linux/io.h>
-> +#include <linux/ioport.h>
-> +#include <linux/isa.h>
-> +#include <linux/module.h>
-> +#include <linux/moduleparam.h>
-> +
-> +#define CIO_DAC_NUM_CHAN 16
-> +
-> +#define CIO_DAC_CHAN(chan) {				\
-> +	.type = IIO_VOLTAGE,				\
-> +	.channel = chan,				\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.indexed = 1,					\
-> +	.output = 1					\
-> +}
-> +
-> +#define CIO_DAC_EXTENT 32
-> +
-> +static unsigned int base[max_num_isa_dev(CIO_DAC_EXTENT)];
-> +static unsigned int num_cio_dac;
-> +module_param_array(base, uint, &num_cio_dac, 0);
-> +MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
-> +
-> +/**
-> + * struct cio_dac_iio - IIO device private data structure
-> + * @chan_out_states:	channels' output states
-> + * @base:		base port address of the IIO device
-> + */
-> +struct cio_dac_iio {
-> +	int chan_out_states[CIO_DAC_NUM_CHAN];
-> +	unsigned int base;
-> +};
-> +
-> +static int cio_dac_read_raw(struct iio_dev *indio_dev,
-> +	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
-> +{
-> +	struct cio_dac_iio *const priv = iio_priv(indio_dev);
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	*val = priv->chan_out_states[chan->channel];
-> +
-> +	return IIO_VAL_INT;
-> +}
-> +
-> +static int cio_dac_write_raw(struct iio_dev *indio_dev,
-> +	struct iio_chan_spec const *chan, int val, int val2, long mask)
-> +{
-> +	struct cio_dac_iio *const priv = iio_priv(indio_dev);
-> +	const unsigned int chan_addr_offset = 2 * chan->channel;
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	/* DAC can only accept up to a 16-bit value */
-> +	if ((unsigned int)val > 65535)
-> +		return -EINVAL;
-> +
-> +	priv->chan_out_states[chan->channel] = val;
-> +	outw(val, priv->base + chan_addr_offset);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info cio_dac_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = cio_dac_read_raw,
-> +	.write_raw = cio_dac_write_raw
-> +};
-> +
-> +static const struct iio_chan_spec cio_dac_channels[CIO_DAC_NUM_CHAN] = {
-> +	CIO_DAC_CHAN(0), CIO_DAC_CHAN(1), CIO_DAC_CHAN(2), CIO_DAC_CHAN(3),
-> +	CIO_DAC_CHAN(4), CIO_DAC_CHAN(5), CIO_DAC_CHAN(6), CIO_DAC_CHAN(7),
-> +	CIO_DAC_CHAN(8), CIO_DAC_CHAN(9), CIO_DAC_CHAN(10), CIO_DAC_CHAN(11),
-> +	CIO_DAC_CHAN(12), CIO_DAC_CHAN(13), CIO_DAC_CHAN(14), CIO_DAC_CHAN(15)
-> +};
-> +
-> +static int cio_dac_probe(struct device *dev, unsigned int id)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct cio_dac_iio *priv;
-> +	unsigned int i;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	if (!devm_request_region(dev, base[id], CIO_DAC_EXTENT,
-> +		dev_name(dev))) {
-> +		dev_err(dev, "Unable to request port addresses (0x%X-0x%X)\n",
-> +			base[id], base[id] + CIO_DAC_EXTENT);
-> +		return -EBUSY;
-> +	}
-> +
-> +	indio_dev->info = &cio_dac_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = cio_dac_channels;
-> +	indio_dev->num_channels = CIO_DAC_NUM_CHAN;
-> +	indio_dev->name = dev_name(dev);
-> +
-> +	priv = iio_priv(indio_dev);
-> +	priv->base = base[id];
-> +
-> +	/* initialize DAC outputs to 0V */
-> +	for (i = 0; i < 32; i += 2)
-> +		outw(0, base[id] + i);
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static struct isa_driver cio_dac_driver = {
-> +	.probe = cio_dac_probe,
-> +	.driver = {
-> +		.name = "cio-dac"
-> +	}
-> +};
-> +
-> +module_isa_driver(cio_dac_driver, num_cio_dac);
-> +
-> +MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
-> +MODULE_DESCRIPTION("Measurement Computing CIO-DAC IIO driver");
-> +MODULE_LICENSE("GPL v2");
+> Worse case initially it will have to be manually set.
+I think we'd have to automate it or this would all be really clunky
+to use from userspace.
+> 
+>> I think that covers all possible circumstances where we have explicit
+>> control of the mux or at least the ability to set it to a known state.
+>>
+>> Jonathan
+>>
+>>>
+>>>>>
+>>>>>>
+>>>>>> To do this we'd need to add an interface to allow the AFE/mux driver to set
+>>>>>> the trigger for the ADC to its own.
+>>>>>
+>>>>> Of course in this case the ADC and LMP91000 device are using both the
+>>>>> hrtimer trigger, albeit of course you can't do it at the same time. So
+>>>>> it is polling no matter what.
+>>>> Fair point.
+>>>>>
+>>>>>>
+>>>>>> If we want to do this quickish I think that's about the lightest weight option
+>>>>>> we can do.
+>>>>>>
+>>>>>> Now, the question is, what are the disadvantages of going with what you
+>>>>>> have here for this driver but keeping in mind the above for when it matters?
+>>>>>>
+>>>>>> I'm guessing we never need to run this particularly driver very fast...
+>>>>>> I'm inclined to say yes but would like some other opinions on this one!
+>>>>>> (hence the expanded Cc list - please do pull in anyone else you think
+>>>>>> might be interested!)
+>>>>>
+>>>>> Yeah the sample response of the sensor isn't that high speed. Maybe a
+>>>>> few dozen hertz.
+>>>>>
+>>>>>>
+>>>>>>> * ADC driver has no IIO_CHAN_INFO_SCALE due to no regulators being defined
+>>>>>> Should be some defined. That was easy ;)
+>>>>>>> * Should ADC value be signed or unsigned?   -16636 is 0V, 0 is 2/VA ,
+>>>>>>> 16635 is ~VA. Of course true zero is defined by the VREF voltage.
+>>>>>> err. Odd. Go with signed I think.
+>>>>>>>
+>>>>>>>>
+>>>>>>>> Matt Ranostay (2):
+>>>>>>>>   iio: adc: ti-adc1x1s: add support for TI 1-channel differential ADCs
+>>>>>>>>   iio: potentiostat: add LMP91000 support
+>>>>>>>>
+>>>>>>>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
+>>>>>>>>  .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
+>>>>>>>>  drivers/iio/Kconfig                                |   1 +
+>>>>>>>>  drivers/iio/Makefile                               |   1 +
+>>>>>>>>  drivers/iio/adc/Kconfig                            |  12 +
+>>>>>>>>  drivers/iio/adc/Makefile                           |   1 +
+>>>>>>>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 ++++++++++++++++
+>>>>>>>>  drivers/iio/potentiostat/Kconfig                   |  21 ++
+>>>>>>>>  drivers/iio/potentiostat/Makefile                  |   6 +
+>>>>>>>>  drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
+>>>>>>>>  10 files changed, 622 insertions(+)
+>>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
+>>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+>>>>>>>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
+>>>>>>>>  create mode 100644 drivers/iio/potentiostat/Kconfig
+>>>>>>>>  create mode 100644 drivers/iio/potentiostat/Makefile
+>>>>>>>>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
+>>>>>>>>
+>>>>>>>> --
+>>>>>>>> 2.7.4
+>>>>>>>>
+>>>>>>> --
+>>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>>>>
+>>>>>>
+>>>>> --
+>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>>
+>>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
