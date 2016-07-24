@@ -1,200 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58767 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58788 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752094AbcGXL07 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 07:26:59 -0400
-Subject: Re: [PATCH 5/5] mfd: sunxi-gpadc-mfd: probe sunxi-gpadc-ts driver
-To: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Quentin Schulz <quentin.schulz@free-electrons.com>
-References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469003351-15263-6-git-send-email-quentin.schulz@free-electrons.com>
- <20160721060812.GA5993@lukather>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	dmitry.torokhov@gmail.com, lee.jones@linaro.org,
-	antoine.tenart@free-electrons.com,
-	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-input@vger.kernel.org
+	with ESMTP id S1752188AbcGXLaL (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 07:30:11 -0400
+Subject: Re: [PATCH] staging: iio: light: isl29018/28: remove I2C_CLASS_HWMON
+ .class setting
+To: Wolfram Sang <wsa@the-dreams.de>
+References: <20160716022831.GA7636@d830.WORKGROUP> <578C9843.10408@nvidia.com>
+ <dff1e871-de49-654f-5e9b-c9b230a35b0a@kernel.org>
+ <20160719071343.GA2086@tetsubishi>
+ <0d515ff9-252a-a8f9-49c1-89ef0b1e9887@kernel.org>
+Cc: Laxman Dewangan <ldewangan@nvidia.com>,
+	Alison Schofield <amsfield22@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Linux I2C <linux-i2c@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <11247e4f-d04d-d5bc-6ebf-a637820c011d@kernel.org>
-Date: Sun, 24 Jul 2016 12:26:56 +0100
+Message-ID: <6c46ec72-3cf2-0b8a-9a1f-38341573ccef@kernel.org>
+Date: Sun, 24 Jul 2016 12:30:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160721060812.GA5993@lukather>
+In-Reply-To: <0d515ff9-252a-a8f9-49c1-89ef0b1e9887@kernel.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/07/16 07:08, Maxime Ripard wrote:
-> Hi Quentin,
-> 
-> On Wed, Jul 20, 2016 at 10:29:11AM +0200, Quentin Schulz wrote:
->> This probes the touchscreen driver for Allwinner SoCs (A10, A13 and A31)
->> when the property "allwinner,ts-attached" is set in the GPADC (rtp) node of
->> the DT.
+On 20/07/16 16:08, Jonathan Cameron wrote:
+> On 19/07/16 08:13, Wolfram Sang wrote:
+>> On Mon, Jul 18, 2016 at 02:30:46PM +0100, Jonathan Cameron wrote:
+>>> On 18/07/16 09:50, Laxman Dewangan wrote:
+>>>>
+>>>> On Saturday 16 July 2016 07:58 AM, Alison Schofield wrote:
+>>>>> I2C_CLASS_HWMON is for a hardware monitoring chip wanting
+>>>>> auto-detection.  IIO drivers don't typically use .class.
+>>>>> Remove it.
+>>>>>
+>>>>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>>>>> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+>>>>>
+>>>>
+>>>> Agree.
+>>>> Acked-by: Laxman Dewangan <ldewangan@nvidia.com>
+>>> Any resulting ABI change from dropping it?
 >>
->> Some comestic modifications done to shorten and increase readability of the
->> code.
->>
->> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
->> ---
->>  drivers/mfd/sunxi-gpadc-mfd.c | 115 ++++++++++++++++++++++++++++--------------
->>  1 file changed, 77 insertions(+), 38 deletions(-)
->>
->> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
->> index 05a000b..9b9ed0b 100644
->> --- a/drivers/mfd/sunxi-gpadc-mfd.c
->> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
->> @@ -21,6 +21,11 @@
->>  #define SUNXI_IRQ_TEMP_DATA	1
->>  #define SUNXI_IRQ_TP_UP		2
->>  
->> +#define SUNXI_GPADC_MFD_CELL(_name, _resources, _num_resources) {	\
->> +	.name = _name,							\
->> +	.resources = _resources,					\
->> +	.num_resources = _num_resources					\
->> +}
->>  
->>  static struct resource adc_resources[] = {
->>  	{
->> @@ -64,33 +69,45 @@ static const struct regmap_irq_chip sunxi_gpadc_mfd_regmap_irq_chip = {
->>  };
->>  
->>  static struct mfd_cell sun4i_gpadc_mfd_cells[] = {
->> -	{
->> -		.name	= "sun4i-a10-gpadc-iio",
->> -		.resources = adc_resources,
->> -		.num_resources = ARRAY_SIZE(adc_resources),
->> -	}, {
->> -		.name = "iio_hwmon",
->> -	}
->> +	SUNXI_GPADC_MFD_CELL("sun4i-a10-gpadc-iio", adc_resources,
->> +			     ARRAY_SIZE(adc_resources)),
->> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->>  };
->>  
->>  static struct mfd_cell sun5i_gpadc_mfd_cells[] = {
->> -	{
->> -		.name	= "sun5i-a13-gpadc-iio",
->> -		.resources = adc_resources,
->> -		.num_resources = ARRAY_SIZE(adc_resources),
->> -	}, {
->> -		.name = "iio_hwmon",
->> -	},
->> +	SUNXI_GPADC_MFD_CELL("sun5i-a13-gpadc-iio", adc_resources,
->> +			     ARRAY_SIZE(adc_resources)),
->> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->>  };
->>  
->>  static struct mfd_cell sun6i_gpadc_mfd_cells[] = {
->> -	{
->> -		.name	= "sun6i-a31-gpadc-iio",
->> -		.resources = adc_resources,
->> -		.num_resources = ARRAY_SIZE(adc_resources),
->> -	}, {
->> -		.name = "iio_hwmon",
->> -	},
->> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
->> +			     ARRAY_SIZE(adc_resources)),
->> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->> +};
-> 
-> This should be part of a separate patch.
-> 
->> +
->> +static struct mfd_cell sun4i_gpadc_mfd_cells_ts[] = {
->> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
->> +			     ARRAY_SIZE(adc_resources)),
->> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
->> +			     ARRAY_SIZE(ts_resources)),
->> +};
->> +
->> +static struct mfd_cell sun5i_gpadc_mfd_cells_ts[] = {
->> +	SUNXI_GPADC_MFD_CELL("sun5i-a13-gpadc-iio", adc_resources,
->> +			     ARRAY_SIZE(adc_resources)),
->> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
->> +			     ARRAY_SIZE(ts_resources)),
->> +};
->> +
->> +static struct mfd_cell sun6i_gpadc_mfd_cells_ts[] = {
->> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
->> +			     ARRAY_SIZE(adc_resources)),
->> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
->> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
->> +			     ARRAY_SIZE(ts_resources)),
->>  };
->>  
->>  static const struct regmap_config sunxi_gpadc_mfd_regmap_config = {
->> @@ -142,23 +159,45 @@ static int sunxi_gpadc_mfd_probe(struct platform_device *pdev)
->>  	}
->>  
->>  	if (of_device_is_compatible(pdev->dev.of_node,
->> -				    "allwinner,sun4i-a10-ts"))
->> -		ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> -				      sun4i_gpadc_mfd_cells,
->> -				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
->> -				      0, NULL);
->> -	else if (of_device_is_compatible(pdev->dev.of_node,
->> -					 "allwinner,sun5i-a13-ts"))
->> -		ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> -				      sun5i_gpadc_mfd_cells,
->> -				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
->> -				      0, NULL);
->> -	else if (of_device_is_compatible(pdev->dev.of_node,
->> -					 "allwinner,sun6i-a31-ts"))
->> -		ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> -				      sun6i_gpadc_mfd_cells,
->> -				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
->> -				      0, NULL);
->> +				    "allwinner,sun4i-a10-ts")) {
->> +		if (of_property_read_bool(pdev->dev.of_node,
->> +					  "allwinner,ts-attached"))
->> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +					      sun4i_gpadc_mfd_cells_ts,
->> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells_ts),
->> +					      NULL, 0, NULL);
->> +		else
->> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +					      sun4i_gpadc_mfd_cells,
->> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells),
->> +					      NULL, 0, NULL);
->> +	} else if (of_device_is_compatible(pdev->dev.of_node,
->> +					 "allwinner,sun5i-a13-ts")) {
->> +		if (of_property_read_bool(pdev->dev.of_node,
->> +					  "allwinner,ts-attached"))
->> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +					      sun5i_gpadc_mfd_cells_ts,
->> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells_ts),
->> +					      NULL, 0, NULL);
->> +		else
->> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +					      sun5i_gpadc_mfd_cells,
->> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells),
->> +					      NULL, 0, NULL);
->> +	} else if (of_device_is_compatible(pdev->dev.of_node,
->> +					 "allwinner,sun6i-a31-ts")) {
->> +		if (of_property_read_bool(pdev->dev.of_node,
->> +					  "allwinner,ts-attached"))
->> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +					      sun6i_gpadc_mfd_cells_ts,
->> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells_ts),
->> +					      NULL, 0, NULL);
->> +		else
->> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
->> +					      sun6i_gpadc_mfd_cells,
->> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells),
->> +					      NULL, 0, NULL);
->> +	}
-> 
-> Please don't use any of_device_is_compatible.
-Hi Maxime,
-
-Why?  (Just curious...)
-
-Jonathan
+>> What do you mean with ABI? This is only relevant for "automatic"
+>> instantiation.
+> Cool, I was just being paranoid and didn't have time to check!
 > 
 > Thanks,
-> Maxime
+> 
+> Jonathan
+>> From me:
+>>
+>> Acked-by: Wolfram Sang <wsa@the-dreams.de>
+>>
+>
+Applied to the togreg branch of iio.git - initially pushed out
+as testing for the autoubuilders to play with it.
+
+thanks,
+
+Jonathan
+ 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
