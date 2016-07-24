@@ -1,661 +1,1076 @@
-Return-Path: <akinobu.mita@gmail.com>
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v2] iio: adc: add ADC12130/ADC12132/ADC12138 ADC driver
-Date: Mon, 25 Jul 2016 01:08:52 +0900
-Message-Id: <1469376532-6516-1-git-send-email-akinobu.mita@gmail.com>
+Return-Path: <pmeerw@pmeerw.net>
+Date: Sun, 24 Jul 2016 19:45:30 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Linus Walleij <linus.walleij@linaro.org>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+    Samu Onkalo <samu.onkalo@intel.com>, Sebastian Reichel <sre@kernel.org>
+Subject: Re: [PATCH 2/2 v4] iio: magn: add a driver for AK8974
+In-Reply-To: <1469346724-15373-1-git-send-email-linus.walleij@linaro.org>
+Message-ID: <alpine.DEB.2.02.1607241933090.15690@pmeerw.net>
+References: <1469346724-15373-1-git-send-email-linus.walleij@linaro.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-This adds Texas Instruments' ADC12130/ADC12132/ADC12138 12-bit plus
-sign ADC driver.  I have tested with the ADC12138.  The ADC12130 and
-ADC12132 are not tested but these are similar to ADC12138 except that
-the mode programming instruction is a bit different.
 
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
----
-* Changes from v1
-- fix typo in Kconfig help text
-- improve code comments
+> This adds a driver for the Asahi Kasei AK8975 and its sibling
+> AMI305 magnetometers. It was deployed on scale in 2009 on a
+> multitude of devices. It is distincly different from AK8973
+> and AK8975 and needs its own driver.
 
- .../devicetree/bindings/iio/adc/ti-adc12138.txt    |  32 ++
- drivers/iio/adc/Kconfig                            |  12 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ti-adc12138.c                      | 542 +++++++++++++++++++++
- 4 files changed, 587 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
- create mode 100644 drivers/iio/adc/ti-adc12138.c
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
-new file mode 100644
-index 0000000..3a11d2a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
-@@ -0,0 +1,32 @@
-+* Texas Instruments' ADC12130/ADC12132/ADC12138
-+
-+Required properties:
-+ - compatible: Should be one of
-+	* "ti,adc12130"
-+	* "ti,adc12132"
-+	* "ti,adc12138"
-+ - reg: SPI chip select number for the device
-+ - interrupts: Should contain interrupt for EOC (end of conversion)
-+ - clocks: phandle to conversion clock input
-+ - spi-max-frequency: Definision as per
-+	Documentation/devicetree/bindings/spi/spi-bus.txt
-+ - vref-p-supply: The regulator supply for positive analog voltage reference
-+
-+Optional properties:
-+ - vref-n-supply: The regulator supply for negative analog voltage reference
-+	If not specified, this is assumed to be analog ground.
-+ - acquisition-time: The number of conversion clock periods for the S/H's
-+	acquisition time.  Should be one of 6, 10, 18, 34.  If not specified,
-+	default value of 10 is used.
-+
-+Example:
-+adc@0 {
-+	compatible = "ti,adc12138";
-+	reg = <0>;
-+	interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-+	interrupt-parent = <&gpio1>;
-+	clocks = <&cclk>;
-+	vref-p-supply = <&ldo4_reg>;
-+	spi-max-frequency = <5000000>;
-+	acquisition-time = <6>;
-+};
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index fa0ff29..87ed82d 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -414,6 +414,18 @@ config TI_ADC0832
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-adc0832.
+comments below
  
-+config TI_ADC12138
-+	tristate "Texas Instruments ADC12130/ADC12132/ADC12138"
-+	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  If you say yes here you get support for Texas Instruments ADC12130,
-+	  ADC12132 and ADC12138 chips.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-adc12138.
-+
- config TI_ADC128S052
- 	tristate "Texas Instruments ADC128S052/ADC122S021/ADC124S021"
- 	depends on SPI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 599714b..3ae4ae3 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
-+obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
- obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
- obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
-diff --git a/drivers/iio/adc/ti-adc12138.c b/drivers/iio/adc/ti-adc12138.c
-new file mode 100644
-index 0000000..80374d7
---- /dev/null
-+++ b/drivers/iio/adc/ti-adc12138.c
-@@ -0,0 +1,542 @@
-+/*
-+ * ADC12130/ADC12132/ADC12138 12-bit plus sign ADC driver
-+ *
-+ * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * Datasheet: http://www.ti.com/lit/ds/symlink/adc12138.pdf
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/completion.h>
-+#include <linux/clk.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/regulator/consumer.h>
-+
-+#define ADC12138_MODE_AUTO_CAL			0x08
-+#define ADC12138_MODE_READ_STATUS		0x0c
-+#define ADC12138_MODE_ACQUISITION_TIME_6	0x0e
-+#define ADC12138_MODE_ACQUISITION_TIME_10	0x4e
-+#define ADC12138_MODE_ACQUISITION_TIME_18	0x8e
-+#define ADC12138_MODE_ACQUISITION_TIME_34	0xce
-+
-+#define ADC12138_STATUS_CAL			BIT(6)
-+
-+enum {
-+	adc12130,
-+	adc12132,
-+	adc12138,
-+};
-+
-+struct adc12138 {
-+	struct spi_device *spi;
-+	unsigned int id;
-+	/* conversion clock */
-+	struct clk *cclk;
-+	/* positive analog voltage reference */
-+	struct regulator *vref_p;
-+	/* negative analog voltage reference */
-+	struct regulator *vref_n;
-+	struct mutex lock;
-+	struct completion complete;
-+	/* The number of cclk periods for the S/H's acquisition time */
-+	unsigned int acquisition_time;
-+
-+	u8 tx_buf[2] ____cacheline_aligned;
-+	u8 rx_buf[2];
-+};
-+
-+#define ADC12138_VOLTAGE_CHANNEL(chan)					\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = chan,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-+					| BIT(IIO_CHAN_INFO_OFFSET),	\
-+		.scan_index = chan,					\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 13,					\
-+			.storagebits = 16,				\
-+			.shift = 3,					\
-+			.endianness = IIO_BE,				\
-+		},							\
-+	}
-+
-+#define ADC12138_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si_offset)		\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = (chan1),					\
-+		.channel2 = (chan2),					\
-+		.differential = 1,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-+					| BIT(IIO_CHAN_INFO_OFFSET),	\
-+		.scan_index = (chan1) + (si_offset),			\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 13,					\
-+			.storagebits = 16,				\
-+			.shift = 3,					\
-+			.endianness = IIO_BE,				\
-+		},							\
-+	}
-+
-+static const struct iio_chan_spec adc12132_channels[] = {
-+	ADC12138_VOLTAGE_CHANNEL(0),
-+	ADC12138_VOLTAGE_CHANNEL(1),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 2),
-+	IIO_CHAN_SOFT_TIMESTAMP(4),
-+};
-+
-+static const struct iio_chan_spec adc12138_channels[] = {
-+	ADC12138_VOLTAGE_CHANNEL(0),
-+	ADC12138_VOLTAGE_CHANNEL(1),
-+	ADC12138_VOLTAGE_CHANNEL(2),
-+	ADC12138_VOLTAGE_CHANNEL(3),
-+	ADC12138_VOLTAGE_CHANNEL(4),
-+	ADC12138_VOLTAGE_CHANNEL(5),
-+	ADC12138_VOLTAGE_CHANNEL(6),
-+	ADC12138_VOLTAGE_CHANNEL(7),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(2, 3, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(3, 2, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(4, 5, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(5, 4, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(6, 7, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(7, 6, 8),
-+	IIO_CHAN_SOFT_TIMESTAMP(16),
-+};
-+
-+static int adc12138_mode_programming(struct adc12138 *adc, u8 mode,
-+				     void *rx_buf, int len)
-+{
-+	struct spi_transfer xfer = {
-+		.tx_buf = adc->tx_buf,
-+		.rx_buf = adc->rx_buf,
-+		.len = len,
-+	};
-+	int ret;
-+
-+	/* Skip unused bits for ADC12130 and ADC12132 */
-+	if (adc->id != adc12138)
-+		mode = (mode & 0xc0) | ((mode & 0x0f) << 2);
-+
-+	adc->tx_buf[0] = mode;
-+
-+	ret = spi_sync_transfer(adc->spi, &xfer, 1);
-+	if (ret)
-+		return ret;
-+
-+	memcpy(rx_buf, adc->rx_buf, len);
-+
-+	return 0;
-+}
-+
-+static int adc12138_read_status(struct adc12138 *adc)
-+{
-+	u8 rx_buf[2];
-+	int ret;
-+
-+	ret = adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
-+					rx_buf, 2);
-+	if (ret)
-+		return ret;
-+
-+	return (rx_buf[0] << 1) | (rx_buf[1] >> 7);
-+}
-+
-+static int __adc12138_start_conv(struct adc12138 *adc,
-+				 struct iio_chan_spec const *channel,
-+				 void *data, int len)
-+
-+{
-+	const u8 ch_to_mux[] = { 0, 4, 1, 5, 2, 6, 3, 7 };
-+	u8 mode = (ch_to_mux[channel->channel] << 4) |
-+		  (channel->differential ? 0 : 0x80);
-+
-+	return adc12138_mode_programming(adc, mode, data, len);
-+}
-+
-+static int adc12138_start_conv(struct adc12138 *adc,
-+			       struct iio_chan_spec const *channel)
-+{
-+	u8 trash;
-+
-+	return __adc12138_start_conv(adc, channel, &trash, 1);
-+}
-+
-+static int adc12138_start_and_read_conv(struct adc12138 *adc,
-+					struct iio_chan_spec const *channel,
-+					__be16 *data)
-+{
-+	return __adc12138_start_conv(adc, channel, data, 2);
-+}
-+
-+static int adc12138_read_conv_data(struct adc12138 *adc, __be16 *value)
-+{
-+	/* Issue a read status instruction and read previous conversion data */
-+	return adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
-+					 value, sizeof(*value));
-+}
-+
-+static int adc12138_wait_eoc(struct adc12138 *adc, unsigned long timeout)
-+{
-+	if (!wait_for_completion_timeout(&adc->complete, timeout))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int adc12138_adc_conversion(struct adc12138 *adc,
-+				   struct iio_chan_spec const *channel,
-+				   __be16 *value)
-+{
-+	int ret;
-+
-+	reinit_completion(&adc->complete);
-+
-+	ret = adc12138_start_conv(adc, channel);
-+	if (ret)
-+		return ret;
-+
-+	ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
-+	if (ret)
-+		return ret;
-+
-+	return adc12138_read_conv_data(adc, value);
-+}
-+
-+static int adc12138_read_raw(struct iio_dev *iio,
-+			     struct iio_chan_spec const *channel, int *value,
-+			     int *shift, long mask)
-+{
-+	struct adc12138 *adc = iio_priv(iio);
-+	int ret;
-+	__be16 data;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&adc->lock);
-+		ret = adc12138_adc_conversion(adc, channel, &data);
-+		mutex_unlock(&adc->lock);
-+		if (ret)
-+			return ret;
-+
-+		*value = sign_extend32(be16_to_cpu(data) >> 3, 12);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regulator_get_voltage(adc->vref_p);
-+		if (ret < 0)
-+			return ret;
-+		*value = ret;
-+
-+		if (!IS_ERR(adc->vref_n)) {
-+			ret = regulator_get_voltage(adc->vref_n);
-+			if (ret < 0)
-+				return ret;
-+			*value -= ret;
-+		}
-+
-+		/* convert regulator output voltage to mV */
-+		*value /= 1000;
-+		*shift = channel->scan_type.realbits - 1;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (!IS_ERR(adc->vref_n)) {
-+			*value = regulator_get_voltage(adc->vref_n);
-+			if (*value < 0)
-+				return *value;
-+		} else {
-+			*value = 0;
-+		}
-+
-+		/* convert regulator output voltage to mV */
-+		*value /= 1000;
-+
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info adc12138_info = {
-+	.read_raw = adc12138_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int adc12138_init(struct adc12138 *adc)
-+{
-+	int ret;
-+	int status;
-+	u8 mode;
-+	u8 trash;
-+
-+	reinit_completion(&adc->complete);
-+
-+	ret = adc12138_mode_programming(adc, ADC12138_MODE_AUTO_CAL, &trash, 1);
-+	if (ret)
-+		return ret;
-+
-+	/* data output at this time has no significance */
-+	status = adc12138_read_status(adc);
-+	if (status < 0)
-+		return status;
-+
-+	adc12138_wait_eoc(adc, msecs_to_jiffies(100));
-+
-+	status = adc12138_read_status(adc);
-+	if (status & ADC12138_STATUS_CAL) {
-+		dev_warn(&adc->spi->dev,
-+			"Auto Cal sequence is still in progress: %#x\n",
-+			status);
-+		return -EIO;
-+	}
-+
-+	switch (adc->acquisition_time) {
-+	case 6:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_6;
-+		break;
-+	case 10:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_10;
-+		break;
-+	case 18:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_18;
-+		break;
-+	case 34:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_34;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return adc12138_mode_programming(adc, mode, &trash, 1);
-+}
-+
-+static irqreturn_t adc12138_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct adc12138 *adc = iio_priv(indio_dev);
-+	__be16 data[20] = { }; /* 16x 2 bytes ADC data + 8 bytes timestamp */
-+	__be16 trash;
-+	int ret;
-+	int scan_index;
-+	int i = 0;
-+
-+	mutex_lock(&adc->lock);
-+
-+	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
-+			 indio_dev->masklength) {
-+		const struct iio_chan_spec *scan_chan =
-+				&indio_dev->channels[scan_index];
-+
-+		reinit_completion(&adc->complete);
-+
-+		ret = adc12138_start_and_read_conv(adc, scan_chan,
-+						   i ? &data[i - 1] : &trash);
-+		if (ret) {
-+			dev_warn(&adc->spi->dev,
-+				 "failed to start conversion\n");
-+			goto out;
-+		}
-+
-+		ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
-+		if (ret) {
-+			dev_warn(&adc->spi->dev, "wait eoc timeout\n");
-+			goto out;
-+		}
-+
-+		i++;
-+	}
-+
-+	if (i) {
-+		ret = adc12138_read_conv_data(adc, &data[i - 1]);
-+		if (ret) {
-+			dev_warn(&adc->spi->dev,
-+				 "failed to get conversion data\n");
-+			goto out;
-+		}
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
-+out:
-+	mutex_unlock(&adc->lock);
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t adc12138_eoc_handler(int irq, void *p)
-+{
-+	struct iio_dev *indio_dev = p;
-+	struct adc12138 *adc = iio_priv(indio_dev);
-+
-+	complete(&adc->complete);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int adc12138_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct adc12138 *adc;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(indio_dev);
-+	adc->spi = spi;
-+	adc->id = spi_get_device_id(spi)->driver_data;
-+	mutex_init(&adc->lock);
-+	init_completion(&adc->complete);
-+
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->info = &adc12138_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	switch (adc->id) {
-+	case adc12130:
-+	case adc12132:
-+		indio_dev->channels = adc12132_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc12132_channels);
-+		break;
-+	case adc12138:
-+		indio_dev->channels = adc12138_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc12138_channels);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = of_property_read_u32(spi->dev.of_node, "acquisition-time",
-+				   &adc->acquisition_time);
-+	if (ret)
-+		adc->acquisition_time = 10;
-+
-+	adc->cclk = devm_clk_get(&spi->dev, NULL);
-+	if (IS_ERR(adc->cclk))
-+		return PTR_ERR(adc->cclk);
-+
-+	adc->vref_p = devm_regulator_get(&spi->dev, "vref-p");
-+	if (IS_ERR(adc->vref_p))
-+		return PTR_ERR(adc->vref_p);
-+
-+	adc->vref_n = devm_regulator_get_optional(&spi->dev, "vref-n");
-+
-+	ret = devm_request_irq(&spi->dev, spi->irq, adc12138_eoc_handler,
-+			       IRQF_TRIGGER_RISING, indio_dev->name, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_prepare_enable(adc->cclk);
-+	if (ret)
-+		return ret;
-+
-+	ret = regulator_enable(adc->vref_p);
-+	if (ret)
-+		goto error1;
-+
-+	if (!IS_ERR(adc->vref_n)) {
-+		ret = regulator_enable(adc->vref_n);
-+		if (ret)
-+			goto error2;
-+	}
-+
-+	ret = adc12138_init(adc);
-+	if (ret)
-+		goto error3;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 adc12138_trigger_handler, NULL);
-+	if (ret)
-+		goto error3;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error4;
-+
-+	return 0;
-+error4:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+error3:
-+	if (!IS_ERR(adc->vref_n))
-+		regulator_disable(adc->vref_n);
-+error2:
-+	regulator_disable(adc->vref_p);
-+error1:
-+	clk_disable_unprepare(adc->cclk);
-+
-+	return ret;
-+}
-+
-+static int adc12138_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct adc12138 *adc = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	if (!IS_ERR(adc->vref_n))
-+		regulator_disable(adc->vref_n);
-+	regulator_disable(adc->vref_p);
-+	clk_disable_unprepare(adc->cclk);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_OF
-+
-+static const struct of_device_id adc12138_dt_ids[] = {
-+	{ .compatible = "ti,adc12130", },
-+	{ .compatible = "ti,adc12132", },
-+	{ .compatible = "ti,adc12138", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, adc12138_dt_ids);
-+
-+#endif
-+
-+static const struct spi_device_id adc12138_id[] = {
-+	{ "adc12130", adc12130 },
-+	{ "adc12132", adc12132 },
-+	{ "adc12138", adc12138 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, adc12138_id);
-+
-+static struct spi_driver adc12138_driver = {
-+	.driver = {
-+		.name = "adc12138",
-+		.of_match_table = of_match_ptr(adc12138_dt_ids),
-+	},
-+	.probe = adc12138_probe,
-+	.remove = adc12138_remove,
-+	.id_table = adc12138_id,
-+};
-+module_spi_driver(adc12138_driver);
-+
-+MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
-+MODULE_DESCRIPTION("ADC12130/ADC12132/ADC12138 driver");
-+MODULE_LICENSE("GPL v2");
+> This patch is based on the long lost work of Samu Onkalo at Nokia,
+> who made a misc character device driver for the Maemo/MeeGo Nokia
+> devices, before the time of the IIO subsystem. It was mounted in e.g.
+> the Nokia N950, N8, N86, N97 etc. It is also mounted on the
+> ST-Ericsson HREF reference designs.
+> 
+> It works nicely in sysfs:
+> 
+> $ cat in_magn_x_raw && cat in_magn_y_raw && cat in_magn_z_raw
+> -55
+> -101
+> 161
+> 
+> And with buffered reads using a simple HRTimer trigger:
+> $ generic_buffer -c10 -a -n ak8974 -t foo
+> iio device number being used is 3
+> iio trigger number being used is 2
+> No channels are enabled, enabling all channels
+> Enabling: in_magn_x_en
+> Enabling: in_magn_y_en
+> Enabling: in_magn_z_en
+> Enabling: in_timestamp_en
+> /sys/bus/iio/devices/iio:device3 foo
+> -58.000000 -102.000000 157.000000 946684970985321044
+> -60.000000 -98.000000 159.000000 946684971012237548
+> -60.000000 -106.000000 163.000000 946684971032257080
+> -62.000000 -94.000000 169.000000 946684971052185058
+> -58.000000 -98.000000 163.000000 946684971072204589
+> -54.000000 -100.000000 163.000000 946684971092224121
+> -53.000000 -103.000000 164.000000 946684971112731933
+> -50.000000 -102.000000 165.000000 946684971132232666
+> -61.000000 -101.000000 164.000000 946684971152191162
+> -57.000000 -99.000000 168.000000 946684971172210693
+> Disabling: in_magn_x_en
+> Disabling: in_magn_y_en
+> Disabling: in_magn_z_en
+> Disabling: in_timestamp_en
+> 
+> I cannot currently scale these raw values to gauss. This is
+> because of lack of documentation. I have sent a request for
+> a datasheet to Asahi Kasei.
+> 
+> The driver can optionally use a DRDY line IRQ to capture data,
+> else it will sleep and poll.
+> 
+> Cc: Samu Onkalo <samu.onkalo@intel.com>
+> Cc: Sebastian Reichel <sre@kernel.org>
+> Tested-By: Sebastian Reichel <sre@kernel.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v3->v4:
+> - Add support for an optional mounting matrix
+> ChangeLog v2->v3:
+> - Employ the blankline-before-return-if-last-statement-in-a-function
+>   syntax design pattern.
+> - Join dereferencing of state container struct into a single line
+>   in runtime suspend/resume
+> - Fix some missing prefixes for ak8974_avdd_reg; etc
+> - Use GOTO try/catch construction in ak8974_runtime_resume()
+> - Fix locking issues found by coccinelle
+> - Speling
+> ChangeLog v1->v2:
+> - Drop pointless dependency on GPIOLIB in Kconfig
+> - Drop the "clever" ret |= returncode code and bail out directly
+>   on any regmap errors
+> - Add a mutex around measurements so we don't collide, this
+>   could happen atleast in theory
+> - Inline the read_axes() function into the *read_raw() function
+>   and avoid a pointless helper function
+> - Augment HW value buffer to be 8*16 bits = 2*64 bits so that it
+>   is aligned to 64bit boundary for the triggered buffer
+> - Fix a pair of missing if () {} brackets in the runtime resume
+>   function
+> - Drop erroneous AK8974/5 claim in module description
+> - Various whitespace fixes
+> ---
+>  MAINTAINERS                       |   7 +
+>  drivers/iio/magnetometer/Kconfig  |  16 +-
+>  drivers/iio/magnetometer/Makefile |   1 +
+>  drivers/iio/magnetometer/ak8974.c | 871 ++++++++++++++++++++++++++++++++++++++
+>  4 files changed, 894 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/magnetometer/ak8974.c
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index e1b090f86e0d..ab042b142cef 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -1930,6 +1930,13 @@ S:	Maintained
+>  F:	drivers/media/i2c/as3645a.c
+>  F:	include/media/i2c/as3645a.h
+>  
+> +ASAHI KASEI AK8974 DRIVER
+> +M:	Linus Walleij <linus.walleij@linaro.org>
+> +L:	linux-iio@vger.kernel.org
+> +W:	http://www.akm.com/
+> +S:	Supported
+> +F:	drivers/iio/magnetometer/ak8974.c
+> +
+>  ASC7621 HARDWARE MONITOR DRIVER
+>  M:	George Joseph <george.joseph@fairview5.com>
+>  L:	linux-hwmon@vger.kernel.org
+> diff --git a/drivers/iio/magnetometer/Kconfig b/drivers/iio/magnetometer/Kconfig
+> index 84e6559ccc65..76fcb7b51b45 100644
+> --- a/drivers/iio/magnetometer/Kconfig
+> +++ b/drivers/iio/magnetometer/Kconfig
+> @@ -5,8 +5,22 @@
+>  
+>  menu "Magnetometer sensors"
+>  
+> +config AK8974
+> +	tristate "Asahi Kasei AK8974 3-Axis Magnetometer"
+> +	depends on I2C
+> +	depends on OF
+> +	select REGMAP_I2C
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  Say yes here to build support for Asahi Kasei AK8974 or
+> +	  AMI305 I2C-based 3-axis magnetometer chips.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called ak8974.
+> +
+>  config AK8975
+> -	tristate "Asahi Kasei AK 3-Axis Magnetometer"
+> +	tristate "Asahi Kasei AK8975 3-Axis Magnetometer"
+>  	depends on I2C
+>  	depends on GPIOLIB || COMPILE_TEST
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/magnetometer/Makefile b/drivers/iio/magnetometer/Makefile
+> index 92a745c9a6e8..b86d6cb7f285 100644
+> --- a/drivers/iio/magnetometer/Makefile
+> +++ b/drivers/iio/magnetometer/Makefile
+> @@ -3,6 +3,7 @@
+>  #
+>  
+>  # When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_AK8974)	+= ak8974.o
+>  obj-$(CONFIG_AK8975)	+= ak8975.o
+>  obj-$(CONFIG_BMC150_MAGN) += bmc150_magn.o
+>  obj-$(CONFIG_BMC150_MAGN_I2C) += bmc150_magn_i2c.o
+> diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+> new file mode 100644
+> index 000000000000..e2d66b2f7afe
+> --- /dev/null
+> +++ b/drivers/iio/magnetometer/ak8974.c
+> @@ -0,0 +1,871 @@
+> +/*
+> + * Driver for the Asahi Kasei EMD Corporation AK8974
+> + * and Aichi Steel AMI305 magnetometer chips.
+> + * Based on a patch from Samu Onkalo and the AK8975 IIO driver.
+> + *
+> + * Copyright (C) 2010 Nokia Corporation and/or its subsidiary(-ies).
+> + * Copyright (c) 2010 NVIDIA Corporation.
+> + * Copyright (C) 2016 Linaro Ltd.
+> + *
+> + * Author: Samu Onkalo <samu.p.onkalo@nokia.com>
+> + * Author: Linus Walleij <linus.walleij@linaro.org>
+> + */
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irq.h> /* For irq_get_irq_data() */
+> +#include <linux/completion.h>
+> +#include <linux/err.h>
+> +#include <linux/mutex.h>
+> +#include <linux/delay.h>
+> +#include <linux/bitops.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/pm_runtime.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +/*
+> + * 16-bit registers are little-endian. LSB is at the address defined below
+> + * and MSB is at the next higher address.
+> + */
+> +
+> +/* These registers are common for AK8974 and AMI305 */
+> +#define AK8974_SELFTEST		0x0C
+> +#define AK8974_SELFTEST_IDLE	0x55
+> +#define AK8974_SELFTEST_OK	0xAA
+> +
+> +#define AK8974_INFO		0x0D
+> +
+> +#define AK8974_WHOAMI		0x0F
+> +#define AK8974_WHOAMI_VALUE_AMI305 0x47
+> +#define AK8974_WHOAMI_VALUE_AK8974 0x48
+> +
+> +#define AK8974_DATA_X		0x10
+> +#define AK8974_DATA_Y		0x12
+> +#define AK8974_DATA_Z		0x14
+> +#define AK8974_INT_SRC		0x16
+> +#define AK8974_STATUS		0x18
+> +#define AK8974_INT_CLEAR	0x1A
+> +#define AK8974_CTRL1		0x1B
+> +#define AK8974_CTRL2		0x1C
+> +#define AK8974_CTRL3		0x1D
+> +#define AK8974_INT_CTRL		0x1E
+> +#define AK8974_INT_THRES	0x26  /* Absolute any axis value threshold */
+> +#define AK8974_PRESET		0x30
+> +
+> +/* AK8974-specific offsets */
+> +#define AK8974_OFFSET_X		0x20
+> +#define AK8974_OFFSET_Y		0x22
+> +#define AK8974_OFFSET_Z		0x24
+> +/* AMI305-specific offsets */
+> +#define AMI305_OFFSET_X		0x6C
+> +#define AMI305_OFFSET_Y		0x72
+> +#define AMI305_OFFSET_Z		0x78
+> +
+> +/* Different temperature registers */
+> +#define AK8974_TEMP		0x31
+> +#define AMI305_TEMP		0x60
+> +
+> +#define AK8974_INT_X_HIGH	BIT(7) /* Axis over +threshold  */
+> +#define AK8974_INT_Y_HIGH	BIT(6)
+> +#define AK8974_INT_Z_HIGH	BIT(5)
+> +#define AK8974_INT_X_LOW	BIT(4) /* Axis below -threshold	*/
+> +#define AK8974_INT_Y_LOW	BIT(3)
+> +#define AK8974_INT_Z_LOW	BIT(2)
+> +#define AK8974_INT_RANGE	BIT(1) /* Range overflow (any axis) */
+> +
+> +#define AK8974_STATUS_DRDY	BIT(6) /* Data ready */
+> +#define AK8974_STATUS_OVERRUN	BIT(5) /* Data overrun */
+> +#define AK8974_STATUS_INT	BIT(4) /* Interrupt occurred */
+> +
+> +#define AK8974_CTRL1_POWER	BIT(7) /* 0 = standby; 1 = active */
+> +#define AK8974_CTRL1_RATE	BIT(4) /* 0 = 10 Hz; 1 = 20 Hz	 */
+> +#define AK8974_CTRL1_FORCE_EN	BIT(1) /* 0 = normal; 1 = force	 */
+> +#define AK8974_CTRL1_MODE2	BIT(0) /* 0 */
+> +
+> +#define AK8974_CTRL2_INT_EN	BIT(4)  /* 1 = enable interrupts	      */
+> +#define AK8974_CTRL2_DRDY_EN	BIT(3)  /* 1 = enable data ready signal */
+> +#define AK8974_CTRL2_DRDY_POL	BIT(2)  /* 1 = data ready active high   */
+> +#define AK8974_CTRL2_RESDEF	(AK8974_CTRL2_DRDY_POL)
+> +
+> +#define AK8974_CTRL3_RESET	BIT(7) /* Software reset		  */
+> +#define AK8974_CTRL3_FORCE	BIT(6) /* Start forced measurement */
+> +#define AK8974_CTRL3_SELFTEST	BIT(4) /* Set selftest register	  */
+> +#define AK8974_CTRL3_RESDEF	0x00
+> +
+> +#define AK8974_INT_CTRL_XEN	BIT(7) /* Enable interrupt for this axis */
+> +#define AK8974_INT_CTRL_YEN	BIT(6)
+> +#define AK8974_INT_CTRL_ZEN	BIT(5)
+> +#define AK8974_INT_CTRL_XYZEN	(BIT(7)|BIT(6)|BIT(5))
+> +#define AK8974_INT_CTRL_POL	BIT(3) /* 0 = active low; 1 = active high */
+> +#define AK8974_INT_CTRL_PULSE	BIT(1) /* 0 = latched; 1 = pulse (50 usec) */
+> +#define AK8974_INT_CTRL_RESDEF	(AK8974_INT_CTRL_XYZEN | AK8974_INT_CTRL_POL)
+> +
+> +/* The AMI305 has elaborate FW version and serial number registers */
+> +#define AMI305_VER		0xE8
+> +#define AMI305_SN		0xEA
+> +
+> +#define AK8974_MAX_RANGE	2048
+> +
+> +#define AK8974_POWERON_DELAY	50
+> +#define AK8974_ACTIVATE_DELAY	1
+> +#define AK8974_SELFTEST_DELAY	1
+> +/*
+> + * Set the autosuspend to two orders of magnitude larger than the poweron
+> + * delay to make sake reasonable power tradeoff savings (5 seconds in
+
+sake?
+
+> + * this case).
+> + */
+> +#define AK8974_AUTOSUSPEND_DELAY 5000
+> +
+> +#define AK8974_MEASTIME		3
+> +
+> +#define AK8974_PWR_ON		1
+> +#define AK8974_PWR_OFF		0
+> +
+> +/**
+> + * struct ak8974 - state container for the AK8974 driver
+> + * @i2c: parent I2C client
+> + * @orientation: mounting matrix, flipped axis etc
+> + * @map: regmap to access the AK8974 registers over I2C
+> + * @regs: the avdd and dvdd power regulators
+> + * @name: the name of the part
+> + * @variant: the whoami ID value (for selecting code paths)
+> + * @lock: locks the magnetometer for exclusive use during a measurement
+> + * @drdy_irq: uses the DRDY IRQ line
+> + * @drdy_complete: completion for DRDY
+> + * @drdy_active_low: the DRDY IRQ is active low
+> + */
+> +struct ak8974 {
+> +	struct i2c_client *i2c;
+> +	struct iio_mount_matrix orientation;
+> +	struct regmap *map;
+> +	struct regulator_bulk_data regs[2];
+> +	const char *name;
+> +	u8 variant;
+> +	struct mutex lock;
+> +	bool drdy_irq;
+> +	struct completion drdy_complete;
+> +	bool drdy_active_low;
+> +};
+> +
+> +static const char ak8974_reg_avdd[] = "avdd";
+> +static const char ak8974_reg_dvdd[] = "dvdd";
+> +
+> +static int ak8974_set_power(struct ak8974 *ak8974, bool mode)
+> +{
+> +	int ret;
+> +	u8 val;
+> +
+> +	val = mode ? AK8974_CTRL1_POWER : 0;
+> +	val |= AK8974_CTRL1_FORCE_EN;
+> +	ret = regmap_write(ak8974->map, AK8974_CTRL1, val);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	if (mode)
+> +		msleep(AK8974_ACTIVATE_DELAY);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ak8974_reset(struct ak8974 *ak8974)
+> +{
+> +	int ret;
+> +
+> +	/* Power on to get register access. Sets CTRL1 reg to reset state */
+> +	ret = ak8974_set_power(ak8974, AK8974_PWR_ON);
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_write(ak8974->map, AK8974_CTRL2, AK8974_CTRL2_RESDEF);
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_write(ak8974->map, AK8974_CTRL3, AK8974_CTRL3_RESDEF);
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_write(ak8974->map, AK8974_INT_CTRL,
+> +			   AK8974_INT_CTRL_RESDEF);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* After reset, power off is default state */
+> +	return ak8974_set_power(ak8974, AK8974_PWR_OFF);
+> +}
+> +
+> +static int ak8974_configure(struct ak8974 *ak8974)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_write(ak8974->map, AK8974_CTRL2, AK8974_CTRL2_DRDY_EN |
+> +			   AK8974_CTRL2_INT_EN);
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_write(ak8974->map, AK8974_CTRL3, 0);
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_write(ak8974->map, AK8974_INT_CTRL, AK8974_INT_CTRL_POL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_write(ak8974->map, AK8974_PRESET, 0);
+> +}
+> +
+> +static int ak8974_trigmeas(struct ak8974 *ak8974)
+> +{
+> +	unsigned int clear;
+> +	u8 mask;
+> +	u8 val;
+> +	int ret;
+> +
+> +	/* Clear any previous measurement overflow status */
+> +	ret = regmap_read(ak8974->map, AK8974_INT_CLEAR, &clear);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* If we have a DRDY IRQ line, use it */
+> +	if (ak8974->drdy_irq) {
+> +		mask = AK8974_CTRL2_INT_EN |
+> +			AK8974_CTRL2_DRDY_EN |
+> +			AK8974_CTRL2_DRDY_POL;
+> +		val = AK8974_CTRL2_DRDY_EN;
+> +
+> +		if (!ak8974->drdy_active_low)
+> +			val |= AK8974_CTRL2_DRDY_POL;
+> +
+> +		init_completion(&ak8974->drdy_complete);
+> +		ret = regmap_update_bits(ak8974->map, AK8974_CTRL2,
+> +					 mask, val);
+> +		if (ret)
+> +			return ret;
+> +	}
+> +
+> +	/* Force a measurement */
+> +	return regmap_update_bits(ak8974->map,
+> +				  AK8974_CTRL3,
+> +				  AK8974_CTRL3_FORCE,
+> +				  AK8974_CTRL3_FORCE);
+> +}
+> +
+> +static int ak8974_await_drdy(struct ak8974 *ak8974)
+> +{
+> +	int timeout = 2;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	if (ak8974->drdy_irq) {
+> +		ret = wait_for_completion_timeout(&ak8974->drdy_complete,
+> +					1 + msecs_to_jiffies(1000));
+> +		if (!ret) {
+> +			dev_err(&ak8974->i2c->dev,
+> +				"timeout waiting for DRDY IRQ\n");
+> +			return -ETIMEDOUT;
+> +		}
+> +		return 0;
+> +	}
+> +
+> +	/* Default delay-based poll loop */
+> +	do {
+> +		msleep(AK8974_MEASTIME);
+> +		ret = regmap_read(ak8974->map, AK8974_STATUS, &val);
+> +		if (ret < 0)
+> +			return ret;
+> +		if (val & AK8974_STATUS_DRDY)
+> +			return 0;
+> +	} while (--timeout);
+> +	if (!timeout) {
+> +		dev_err(&ak8974->i2c->dev,
+> +			"timeout waiting for DRDY\n");
+> +		return -ETIMEDOUT;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int ak8974_getresult(struct ak8974 *ak8974, s16 *result)
+> +{
+> +	unsigned int src;
+> +	int ret;
+> +	int i;
+> +
+> +	ret = ak8974_await_drdy(ak8974);
+> +	if (ret)
+> +		return ret;
+> +	ret = regmap_read(ak8974->map, AK8974_INT_SRC, &src);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Out of range overflow! Strong magnet close? */
+> +	if (src & AK8974_INT_RANGE) {
+> +		dev_err(&ak8974->i2c->dev,
+
+should this really be reported as an error?
+
+> +			"range overflow in sensor\n");
+> +		return -ERANGE;
+> +	}
+> +
+> +	ret = regmap_bulk_read(ak8974->map, AK8974_DATA_X, result, 6);
+> +	if (ret)
+> +		return ret;
+> +	for (i = 0; i < 3; i++)
+> +		result[i] = le16_to_cpu(result[i]);
+
+I would rather NOT do endianness conversion in buffered mode and instead 
+set IIO_LE in scan_type
+
+can do endianness conversion for ONE channel below in read_raw()
+
+> +
+> +	return ret;
+> +}
+> +
+> +static irqreturn_t ak8974_drdy_irq(int irq, void *d)
+> +{
+> +	struct ak8974 *ak8974 = d;
+> +
+> +	if (!ak8974->drdy_irq)
+> +		return IRQ_NONE;
+> +
+> +	/* TODO: timestamp here to get good measurement stamps */
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+> +static irqreturn_t ak8974_drdy_irq_thread(int irq, void *d)
+> +{
+> +	struct ak8974 *ak8974 = d;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	/* Check if this was a DRDY from us */
+> +	ret = regmap_read(ak8974->map, AK8974_STATUS, &val);
+> +	if (ret < 0) {
+> +		dev_err(&ak8974->i2c->dev, "error reading DRDY status\n");
+> +		return IRQ_HANDLED;
+> +	}
+> +	if (val & AK8974_STATUS_DRDY) {
+> +		/* Yes this was our IRQ */
+> +		complete(&ak8974->drdy_complete);
+> +		return IRQ_HANDLED;
+> +	}
+> +
+> +	/* We may be on a shared IRQ, let the next client check */
+> +	return IRQ_NONE;
+> +}
+> +
+> +static int ak8974_selftest(struct ak8974 *ak8974)
+> +{
+> +	struct device *dev = &ak8974->i2c->dev;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = regmap_read(ak8974->map, AK8974_SELFTEST, &val);
+> +	if (ret)
+> +		return ret;
+> +	if (val != AK8974_SELFTEST_IDLE) {
+> +		dev_err(dev, "selftest not idle before test\n");
+> +		return -EIO;
+> +	}
+> +
+> +	/* Trigger self-test */
+> +	ret = regmap_update_bits(ak8974->map,
+> +			AK8974_CTRL3,
+> +			AK8974_CTRL3_SELFTEST,
+> +			AK8974_CTRL3_SELFTEST);
+> +	if (ret) {
+> +		dev_err(dev, "could not write CTRL3\n");
+> +		return ret;
+> +	}
+> +
+> +	msleep(AK8974_SELFTEST_DELAY);
+> +
+> +	ret = regmap_read(ak8974->map, AK8974_SELFTEST, &val);
+> +	if (ret)
+> +		return ret;
+> +	if (val != AK8974_SELFTEST_OK) {
+> +		dev_err(dev, "selftest result NOT OK (%02x)\n", val);
+> +		return -EIO;
+> +	}
+> +
+> +	ret = regmap_read(ak8974->map, AK8974_SELFTEST, &val);
+> +	if (ret)
+> +		return ret;
+> +	if (val != AK8974_SELFTEST_IDLE) {
+> +		dev_err(dev, "selftest not idle after test (%02x)\n", val);
+> +		return -EIO;
+> +	}
+> +	dev_dbg(dev, "passed self-test\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static int ak8974_get_u16_val(struct ak8974 *ak8974, u8 reg, u16 *val)
+> +{
+> +	int ret;
+> +	u16 bulk;
+> +
+> +	ret = regmap_bulk_read(ak8974->map, reg, &bulk, 2);
+> +	if (ret)
+> +		return ret;
+> +	*val = le16_to_cpu(bulk);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ak8974_detect(struct ak8974 *ak8974)
+> +{
+> +	unsigned int whoami;
+> +	const char *name;
+> +	int ret;
+> +	unsigned int fw;
+> +	u16 sn;
+> +
+> +	ret = regmap_read(ak8974->map, AK8974_WHOAMI, &whoami);
+> +	if (ret)
+> +		return ret;
+> +
+> +	switch (whoami) {
+> +	case AK8974_WHOAMI_VALUE_AMI305:
+> +		name = "ami305";
+> +		ret = regmap_read(ak8974->map, AMI305_VER, &fw);
+> +		if (ret)
+> +			return ret;
+> +		fw &= 0x7f; /* only bits 0 thru 6 valid */
+> +		ret = ak8974_get_u16_val(ak8974, AMI305_SN, &sn);
+> +		if (ret)
+> +			return ret;
+> +		dev_info(&ak8974->i2c->dev,
+> +			 "detected %s, FW ver %02x, S/N: %04x\n",
+> +			 name, fw, sn);
+> +		break;
+> +	case AK8974_WHOAMI_VALUE_AK8974:
+> +		name = "ak8974";
+> +		dev_info(&ak8974->i2c->dev, "detected AK8974\n");
+> +		break;
+> +	default:
+> +		dev_err(&ak8974->i2c->dev, "unsupported device (%02x) ",
+> +			whoami);
+> +		return -ENODEV;
+> +	}
+> +
+> +	ak8974->name = name;
+> +	ak8974->variant = whoami;
+> +
+> +	return 0;
+> +}
+> +
+> +static int ak8974_read_raw(struct iio_dev *indio_dev,
+> +			   struct iio_chan_spec const *chan,
+> +			   int *val, int *val2,
+> +			   long mask)
+> +{
+> +	struct ak8974 *ak8974 = iio_priv(indio_dev);
+> +	s16 hw_values[3];
+> +	int ret = -EINVAL;
+> +
+> +	pm_runtime_get_sync(&ak8974->i2c->dev);
+> +	mutex_lock(&ak8974->lock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (chan->address > 2) {
+> +			dev_err(&ak8974->i2c->dev, "faulty channel address\n");
+> +			ret = -EIO;
+> +			goto out_unlock;
+> +		}
+> +		ret = ak8974_trigmeas(ak8974);
+> +		if (ret) {
+> +			return ret;
+> +			goto out_unlock;
+
+this doesn't look right, the 'goto' is dead code
+
+> +		}
+> +		ret = ak8974_getresult(ak8974, hw_values);
+> +		if (ret) {
+> +			return ret;
+> +			goto out_unlock;
+> +		}
+> +
+> +		/*
+> +		 * We read all axes and discard all but one, for optimized
+> +		 * reading, use the triggered buffer.
+> +		 */
+> +		*val = hw_values[chan->address];
+
+do endianness conversion for one channel here
+
+> +
+> +		ret = IIO_VAL_INT;
+> +	}
+> +
+> + out_unlock:
+> +	mutex_unlock(&ak8974->lock);
+> +	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
+> +	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static void ak8974_fill_buffer(struct iio_dev *indio_dev)
+> +{
+> +	struct ak8974 *ak8974 = iio_priv(indio_dev);
+> +	int ret;
+> +	s16 hw_values[8]; /* Three axes + 64bit padding */
+> +
+> +	pm_runtime_get_sync(&ak8974->i2c->dev);
+> +	mutex_lock(&ak8974->lock);
+> +
+> +	ret = ak8974_trigmeas(ak8974);
+> +	if (ret) {
+> +		dev_err(&ak8974->i2c->dev, "error triggering measure\n");
+> +		goto out_unlock;
+> +	}
+> +	ret = ak8974_getresult(ak8974, hw_values);
+> +	if (ret) {
+> +		dev_err(&ak8974->i2c->dev, "error getting measures\n");
+> +		goto out_unlock;
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, hw_values,
+> +					   iio_get_time_ns());
+> +
+> + out_unlock:
+> +	mutex_unlock(&ak8974->lock);
+> +	pm_runtime_mark_last_busy(&ak8974->i2c->dev);
+> +	pm_runtime_put_autosuspend(&ak8974->i2c->dev);
+> +}
+> +
+> +static irqreturn_t ak8974_handle_trigger(int irq, void *p)
+> +{
+> +	const struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +
+> +	ak8974_fill_buffer(indio_dev);
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_mount_matrix *
+> +ak8974_get_mount_matrix(const struct iio_dev *indio_dev,
+> +			const struct iio_chan_spec *chan)
+> +{
+> +	struct ak8974 *ak8974 = iio_priv(indio_dev);
+> +
+> +	return &ak8974->orientation;
+> +}
+> +
+> +static const struct iio_chan_spec_ext_info ak8974_ext_info[] = {
+> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_DIR, ak8974_get_mount_matrix),
+> +	{ },
+> +};
+> +
+> +#define AK8974_AXIS_CHANNEL(axis, index)				\
+> +	{								\
+> +		.type = IIO_MAGN,					\
+> +		.modified = 1,						\
+> +		.channel2 = IIO_MOD_##axis,				\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.ext_info = ak8974_ext_info,				\
+> +		.address = index,					\
+> +		.scan_index = index,					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 16,					\
+> +			.storagebits = 16,				\
+> +			.endianness = IIO_CPU				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec ak8974_channels[] = {
+> +	AK8974_AXIS_CHANNEL(X, 0),
+> +	AK8974_AXIS_CHANNEL(Y, 1),
+> +	AK8974_AXIS_CHANNEL(Z, 2),
+> +	IIO_CHAN_SOFT_TIMESTAMP(3),
+> +};
+> +
+> +static const unsigned long ak8974_scan_masks[] = { 0x7, 0 };
+> +
+> +static const struct iio_info ak8974_info = {
+> +	.read_raw = &ak8974_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static bool ak8974_writeable_reg(struct device *dev, unsigned int reg)
+> +{
+> +	struct i2c_client *i2c = to_i2c_client(dev);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(i2c);
+> +	struct ak8974 *ak8974 = iio_priv(indio_dev);
+> +
+> +	switch (reg) {
+> +	case AK8974_CTRL1:
+> +	case AK8974_CTRL2:
+> +	case AK8974_CTRL3:
+> +	case AK8974_INT_CTRL:
+> +	case AK8974_INT_THRES:
+> +	case AK8974_INT_THRES + 1:
+> +	case AK8974_PRESET:
+> +	case AK8974_PRESET + 1:
+> +		return true;
+> +	case AK8974_OFFSET_X:
+> +	case AK8974_OFFSET_X + 1:
+> +	case AK8974_OFFSET_Y:
+> +	case AK8974_OFFSET_Y + 1:
+> +	case AK8974_OFFSET_Z:
+> +	case AK8974_OFFSET_Z + 1:
+> +		if (ak8974->variant == AK8974_WHOAMI_VALUE_AK8974)
+> +			return true;
+> +		return false;
+> +	case AMI305_OFFSET_X:
+> +	case AMI305_OFFSET_X + 1:
+> +	case AMI305_OFFSET_Y:
+> +	case AMI305_OFFSET_Y + 1:
+> +	case AMI305_OFFSET_Z:
+> +	case AMI305_OFFSET_Z + 1:
+> +		if (ak8974->variant == AK8974_WHOAMI_VALUE_AMI305)
+> +			return true;
+> +		return false;
+> +	default:
+
+maybe return false here?
+
+> +		break;
+> +	}
+> +	return false;
+
+and delete the return
+
+> +}
+> +
+> +static const struct regmap_config ak8974_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +	.max_register = 0xff,
+> +	.writeable_reg = ak8974_writeable_reg,
+> +};
+> +
+> +static int ak8974_probe(struct i2c_client *i2c,
+> +			const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct ak8974 *ak8974;
+> +	unsigned long irq_trig;
+> +	int irq = i2c->irq;
+> +	int ret;
+> +
+> +	/* Register with IIO */
+> +	indio_dev = devm_iio_device_alloc(&i2c->dev, sizeof(*ak8974));
+> +	if (indio_dev == NULL)
+> +		return -ENOMEM;
+> +
+> +	ak8974 = iio_priv(indio_dev);
+> +	i2c_set_clientdata(i2c, indio_dev);
+> +	ak8974->i2c = i2c;
+> +	mutex_init(&ak8974->lock);
+> +
+> +	ret = of_iio_read_mount_matrix(&i2c->dev,
+> +				       "mount-matrix",
+> +				       &ak8974->orientation);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ak8974->regs[0].supply = ak8974_reg_avdd;
+> +	ak8974->regs[1].supply = ak8974_reg_dvdd;
+> +
+> +	ret = devm_regulator_bulk_get(&i2c->dev,
+> +				      ARRAY_SIZE(ak8974->regs),
+> +				      ak8974->regs);
+> +	if (ret < 0) {
+> +		dev_err(&i2c->dev, "Cannot get regulators\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = regulator_bulk_enable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+> +	if (ret < 0) {
+> +		dev_err(&i2c->dev, "Cannot enable regulators\n");
+> +		return ret;
+> +	}
+
+mixed upper/lower-case error messages...
+
+> +
+> +	/* Take runtime PM online */
+> +	pm_runtime_get_noresume(&i2c->dev);
+> +	pm_runtime_set_active(&i2c->dev);
+> +	pm_runtime_enable(&i2c->dev);
+> +
+> +	ak8974->map = devm_regmap_init_i2c(i2c, &ak8974_regmap_config);
+> +	if (IS_ERR(ak8974->map)) {
+> +		dev_err(&i2c->dev, "failed to allocate register map\n");
+> +		return PTR_ERR(ak8974->map);
+> +	}
+> +
+> +	ret = ak8974_set_power(ak8974, AK8974_PWR_ON);
+> +	if (ret) {
+> +		dev_err(&i2c->dev, "could not power on\n");
+> +		goto power_off;
+> +	}
+> +
+> +	ret = ak8974_detect(ak8974);
+> +	if (ret) {
+> +		dev_err(&i2c->dev, "neither AK8974 nor AMI305 found\n");
+> +		goto power_off;
+> +	}
+> +
+> +	ret = ak8974_selftest(ak8974);
+> +	if (ret)
+> +		dev_err(&i2c->dev, "selftest failed (continuing anyway)\n");
+> +
+> +	ret = ak8974_reset(ak8974);
+> +	if (ret) {
+> +		dev_err(&i2c->dev, "AK8974 reset failed");
+
+missing \n here
+
+> +		goto power_off;
+> +	}
+> +
+> +	pm_runtime_set_autosuspend_delay(&i2c->dev,
+> +					 AK8974_AUTOSUSPEND_DELAY);
+> +	pm_runtime_use_autosuspend(&i2c->dev);
+> +	pm_runtime_put(&i2c->dev);
+> +
+> +	indio_dev->dev.parent = &i2c->dev;
+> +	indio_dev->channels = ak8974_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(ak8974_channels);
+> +	indio_dev->info = &ak8974_info;
+> +	indio_dev->available_scan_masks = ak8974_scan_masks;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->name = ak8974->name;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 ak8974_handle_trigger,
+> +					 NULL);
+> +	if (ret) {
+> +		dev_err(&i2c->dev, "triggered buffer setup failed\n");
+> +		goto disable_pm;
+> +	}
+> +
+> +	/* If we have a valid DRDY IRQ, make use of it */
+> +	if (irq > 0) {
+> +		irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
+> +		if (irq_trig == IRQF_TRIGGER_RISING) {
+> +			dev_info(&i2c->dev, "enable rising edge DRDY IRQ\n");
+> +		} else if (irq_trig == IRQF_TRIGGER_FALLING) {
+> +			ak8974->drdy_active_low = true;
+> +			dev_info(&i2c->dev, "enable falling edge DRDY IRQ\n");
+> +		} else {
+> +			irq_trig = IRQF_TRIGGER_RISING;
+> +		}
+> +		irq_trig |= IRQF_ONESHOT;
+> +		irq_trig |= IRQF_SHARED;
+> +
+> +		ret = devm_request_threaded_irq(&i2c->dev,
+> +						irq,
+> +						ak8974_drdy_irq,
+> +						ak8974_drdy_irq_thread,
+> +						irq_trig,
+> +						ak8974->name,
+> +						ak8974);
+> +		if (ret) {
+> +			dev_err(&i2c->dev, "unable to request DRDY IRQ "
+> +				"- proceeding without IRQ\n");
+> +			goto no_irq;
+> +		}
+> +		ak8974->drdy_irq = true;
+> +	}
+> +
+> +no_irq:
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(&i2c->dev, "device register failed\n");
+> +		goto cleanup_buffer;
+> +	}
+> +
+> +	return 0;
+> +
+> +cleanup_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +disable_pm:
+> +	pm_runtime_put_noidle(&i2c->dev);
+> +	pm_runtime_disable(&i2c->dev);
+> +	ak8974_set_power(ak8974, AK8974_PWR_OFF);
+> +power_off:
+> +	regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __exit ak8974_remove(struct i2c_client *i2c)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(i2c);
+> +	struct ak8974 *ak8974 = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	pm_runtime_get_sync(&i2c->dev);
+> +	pm_runtime_put_noidle(&i2c->dev);
+> +	pm_runtime_disable(&i2c->dev);
+> +	ak8974_set_power(ak8974, AK8974_PWR_OFF);
+> +	regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int ak8974_runtime_suspend(struct device *dev)
+> +{
+> +	struct ak8974 *ak8974 =
+> +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +
+> +	ak8974_set_power(ak8974, AK8974_PWR_OFF);
+> +	regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+> +
+> +	return 0;
+> +}
+> +
+> +static int ak8974_runtime_resume(struct device *dev)
+> +{
+> +	struct ak8974 *ak8974 =
+> +		iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
+> +	int ret;
+> +
+> +	ret = regulator_bulk_enable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+> +	if (ret)
+> +		return ret;
+> +	msleep(AK8974_POWERON_DELAY);
+> +	ret = ak8974_set_power(ak8974, AK8974_PWR_ON);
+> +	if (ret)
+> +		goto out_regulator_disable;
+> +
+> +	ret = ak8974_configure(ak8974);
+> +	if (ret)
+> +		goto out_disable_power;
+> +
+> +	return 0;
+> +
+> +out_disable_power:
+> +	ak8974_set_power(ak8974, AK8974_PWR_OFF);
+> +out_regulator_disable:
+> +	regulator_bulk_disable(ARRAY_SIZE(ak8974->regs), ak8974->regs);
+> +
+> +	return ret;
+> +}
+> +#endif /* CONFIG_PM */
+> +
+> +static const struct dev_pm_ops ak8974_dev_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> +				pm_runtime_force_resume)
+> +	SET_RUNTIME_PM_OPS(ak8974_runtime_suspend,
+> +			   ak8974_runtime_resume, NULL)
+> +};
+> +
+> +static const struct i2c_device_id ak8974_id[] = {
+> +	{"ami305", 0 },
+> +	{"ak8974", 0 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ak8974_id);
+> +
+> +static const struct of_device_id ak8974_of_match[] = {
+> +	{ .compatible = "asahi-kasei,ak8974", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, ak8974_of_match);
+> +
+> +static struct i2c_driver ak8974_driver = {
+> +	.driver	 = {
+> +		.name	= "ak8974",
+> +		.owner	= THIS_MODULE,
+> +		.pm = &ak8974_dev_pm_ops,
+> +		.of_match_table = of_match_ptr(ak8974_of_match),
+> +	},
+> +	.probe	  = ak8974_probe,
+> +	.remove	  = __exit_p(ak8974_remove),
+> +	.id_table = ak8974_id,
+> +};
+> +module_i2c_driver(ak8974_driver);
+> +
+> +MODULE_DESCRIPTION("AK8974 and AMI305 3-axis magnetometer driver");
+> +MODULE_AUTHOR("Samu Onkalo");
+> +MODULE_AUTHOR("Linus Walleij");
+> +MODULE_LICENSE("GPL v2");
+> 
+
 -- 
-2.7.4
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
