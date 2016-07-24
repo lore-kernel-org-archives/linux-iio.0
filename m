@@ -1,246 +1,211 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59094 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59142 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752160AbcGXMZ3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 08:25:29 -0400
-Subject: Re: [RFC 0/2] iio: add support for LMP91000EVM potentiostat board
-To: Matt Ranostay <mranostay@gmail.com>
-References: <1467497127-32431-1-git-send-email-mranostay@gmail.com>
- <CAKzfze9e0=W3=XnXbOMnuW8LiaVOuohzX0TgE6D0dJyty9T8Ag@mail.gmail.com>
- <d7e6e144-739d-3447-c715-df1c0203e32e@kernel.org>
- <CAKzfze9kCKiKF32Yc1spowkwbkHWWHCiV2niLE2JMdpkUhABZg@mail.gmail.com>
- <e01fac4f-2283-29a7-df29-f763381ec0ab@kernel.org>
- <CAKzfze-D8MZJCxdbc=Ovvt8OR+Z6MiVB-OwcTRsYsRs--kPm0w@mail.gmail.com>
- <097c4061-b41a-fa28-e85a-be42967e8740@kernel.org>
- <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Peter Meerwald <pmeerw@pmeerw.net>
+	with ESMTP id S1751891AbcGXMgT (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 08:36:19 -0400
+Subject: Re: Some advice required for IIO driver (cm3218)
+To: Leigh Brown <leigh@solinno.co.uk>
+References: <dc764217a7c6265d30a588e966f4b133@doppler.thel33t.co.uk>
+ <c0d19ba9-4c6f-5728-7528-75c27f2f8047@kernel.org>
+ <aa60431d268e961e1d0eb6cb589cf443@doppler.thel33t.co.uk>
+Cc: Kevin Tsai <ktsai@capellamicro.com>,
+	Linux Iio <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <525b949c-c8ad-ec4a-7a3f-41c783b3a26e@kernel.org>
-Date: Sun, 24 Jul 2016 13:25:26 +0100
+Message-ID: <841b6394-210d-2481-13b1-6e80f02abfc1@kernel.org>
+Date: Sun, 24 Jul 2016 13:36:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze_Ps2qAhKDQ7j_nfGGf4vHqpcAoYNrf3b-F4a8gDVCzOQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <aa60431d268e961e1d0eb6cb589cf443@doppler.thel33t.co.uk>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/07/16 04:36, Matt Ranostay wrote:
-> On Sun, Jul 10, 2016 at 7:20 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 05/07/16 22:27, Matt Ranostay wrote:
->>> On Tue, Jul 5, 2016 at 12:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>> On 03/07/16 23:24, Matt Ranostay wrote:
->>>>> On Sun, Jul 3, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>>>> On 02/07/16 23:13, Matt Ranostay wrote:
->>>>>>> On Sat, Jul 2, 2016 at 3:05 PM, Matt Ranostay <mranostay@gmail.com> wrote:
->>>>>>>> LMP91000EVM evaluation board has LMP91000 potentiostat along with an
->>>>>>>> 16-bit ADC for chemical sensoring applications.
->>>>>>>>
->>>>>>>>  * add support for the TI LMP91000 potentiostat
->>>>>>>>  * add support for ADC141S626 and ADC161S626 ADC chips
->>>>>>>
->>>>>>> Probably should have put what I am RFC'ing :).
->>>>>>>
->>>>>>> * does this belong in a new path drivers/iio/potentiostat ?
->>>>>> I'm going for drivers/iio/AFE/potentiostat with drivers/iio/AFE/amplifiers
->>>>>> as well to take the only similar driver we already have.
->>>>>>
->>>>>>> * first example of a iio consumer within drivers/iio, does it seems sane?
->>>>>> It's 'interesting'.  You've worked around the whole question of how to handle
->>>>>> a mux by putting a push interface equipped client on top of the polled interface
->>>>>> of the ADC.  It's an elegant solution that I'd never considered.
->>>>>>
->>>>>> By the very nature of a mux interface, unless we are piping the mux switching
->>>>>> out on the same trigger system as the read back, the actual read out must be
->>>>>> polled rather than self clocked. Only the mux knows when it is ready.
->>>>>> The triggered version has all sorts of additional complexity even if we had
->>>>>> output buffers already to go (such as requiring the output buffering to
->>>>>> 'lead' the input buffering to give the mux time to switch.
->>>>>>
->>>>>> Question to my mind is whether this is a generic and flexible enough approach
->>>>>> to use for this sort of device in the future... I think we have two classes
->>>>>> of 'analog device' that we need to support:
->>>>>>
->>>>>> 1) Simple all channels always there devices such as analog accelerometers
->>>>>> feeding into an ADC with a sequencer (or a software based sequencer).
->>>>>> In that case the data flow is clearly going to go over the buffered interface.
->>>>>> The accelerometer driver is just massaging the data for types / scale adjustments.
->>>>>> It has no influence on the sampling of the data.
->>>>>>
->>>>>> 2) The 'smart' front end with a mux.  In this case the 'when to read' question
->>>>>> is driven by the front end, not the ADC.  Games could be played to push the
->>>>>> sampling of data over to the ADC, but is it worth doing?
->>>>>>
->>>>>
->>>>> Probably over-engineering unless we actually find a need to do this in
->>>>> the future.
->>>> I get the feeling we'll end up with a high performance system needing this
->>>> at some point.
->>>>>
->>>>>> So if we wanted to do this, the AFE could itself export a trigger that is then
->>>>>> used by the ADC which in turn pushes data back to the AFE driver via the buffered
->>>>>> data interface.  The AFE driver would then have to handle the demux of this
->>>>>> data stream into a coherent form to push out in it's own buffer.
->>>>>> This approach gains the following:
->>>>>>  - quick data transfers, particularly if we are dealing with a multiple output
->>>>>>    mux.  e.g we might have a 16 to 4 mux into a 4 channel simultaneous sampling
->>>>>>    (or sequenced) ADC. So in this case if the mux was set to provide all 16
->>>>>>    channels in order we'd do 4 reads of the ADC getting 0 1 2 3, 4 5 6 7 etc.
->>>>>>    The mux driver would then have to recombine these 16 channels before kicking
->>>>>>    them out.
->>>>>
->>>>> Makes sense but there is a slight issue of the settling time for the
->>>>> temp channel is 2-3 milliseconds. Can't assume all mux reads are going
->>>>> to take the same time constant.
->>>> That's down to the mux driver to handle it.  Only trigger once it's known
->>>> to be stable..
->>>
->>> Also how would the ADC report the data back it would almost need
->>> dynamically setup iio channels after mux gets setup, correct?
->>>
->>> 1) ADC driver probe
->>> 2) MUX driver probe
->>> 3) MUX registers it's data channels
->>> 4) ADC driver needs to enumerate them
->> Why does the ADC driver care?
->>
->> The Mux driver is the only bit that knows what the ADC is actually capturing
->> as it controls both the actual wire connections and the reporting to userspace
->> of results.
->>
->> So.
->> 1) ADC driver probe
->> 2) Mux driver probe (gets provided ADC channels - however many it controls
->> the inputs for).
->> 3) ADC trigger set to trigger provided by Mux.
->>
->> To give a simple example, lets consider a 2 input single channel mux going into
->> a single channel ADC. Mux trigger called (imaginatively) mux_trig0
->>
->> Mux is consumer of the ADC channel.
->>
->> Setup:
->> 1) Mux registers as a 'buffer' consumer of the ADC channel.
->> 2) Mux has a trigger exposed (which is how it controls the capture.)
->> 3) ADC trigger set to the mux exposed one.
->>
->> A scan. (triggered say by a high resolution timer trigger).
->> 1) Mux picks channel 1 and waits for it to stabilize.
->> 2) Mux 'fires' trigger to initiate a capture and gets the resulting callback
->> call with the value.  Stashes it somewhere
->> 3) Mux selects channel 2 and waits for it to stabilize
->> 4) Mux 'fires' trigger to initiate a capture and gets the resulting callback
->> call with the value. Stashes it somewhere.
->> 5) Mux driver can then combine the two values to form the 'scan' and push
->> that to it's buffer complete with whatever timestamp makes sense.
->> This Mux driver controlled buffer is the one userspace uses to get the data.
->>
+On 11/07/16 09:17, Leigh Brown wrote:
+> Hi Jonathan,
 > 
-> Only question is how does the callback come into play here with a
-> trigger? Not sure I have seen this in the API so far.
-The ABI has been there a long time - just not much used :)
-See buffers\industrialio-buffer-cb.c
+> Thanks very much for replying to my email, I appreciate it is probably annoying having to
+> repeat yourself to every newcomer.
+Don't worry - always feels more productive than almost anything else :)
+> 
+> On 2016-07-10 16:17, Jonathan Cameron wrote:
+>> On 05/07/16 22:23, Leigh Brown wrote:
+>>> Hi Guys,
+>>>
+>>> I just bought an Asus T100 transformer which has a cm3218 ALS and I'm keen to get it working.
+>> Cool.
+>>> I've seen two drivers hanging around:
+>>>
+>>> 1. https://github.com/jfwells/linux-asus-t100ta/blob/master/cm3218_ambient_light_sensor_driver/cm3218.c
+>>>
+>>> 2. http://marc.info/?l=linux-iio&m=146038141909068&w=2
+>> Would be interesting if you could provide a few details on where these
+>> two drivers are less than ideal.  Useful info to have when considering a 3rd option ;)
+>>
+>> Also, ideally talk to Kevin to find out what the status of updates to the above so you
+>> can both avoid duplicating effort.
+> 
+> Thanks, I will (Hi Kevin :-) )  My main problem with Kevin's driver is there is a whole load of
+> IRQ handling and threshold maintenance that doesn't actually do anything.  Plus, the processed
+> value is wrong (certainly when I have compared output with my android phone).
+> 
+>>> Neither worked really well so in the spirit of things I've created a third driver which I'm
+>>> hoping to get into a state worth submitting (famous last words).  It's not ready for review
+>>> yet (I've pasted it below for anyone who is interested) but I have a couple of questions  and
+>>> I would be really grateful if someone could assist.
+>>>
+>>> Q1. What do IIO_CHAN_INFO_SCALE and IIO_CHAN_INFO_CALIBSCALE mean?
+>>>
+>>> This is slightly embarrassing, but I can't really figure out what they mean. I'd appreciate it
+>>> if someone could supply a simple definition in relation to this driver.
+>> IIO_CHAN_INFO_SCALE is a scaling factor that is applied to IIO_CHAN_INFO_RAW
+>> output data in userspace as a linear scaling.  Basic rule of thumb is that if
+>> we can describe the conversion from raw data to our 'base units', here
+>> illuminance
+>> we leave it up to userspace to do the maths rather than doing it in kernel.
+>> If writable it is controlling the scaling of data coming of the ADC. Clearly
+>> we have no way of knowing if this is due to changes in say the ADC reference
+>> or due to analog front end changes.
+> 
+> Just to clarify, in this case the relationship between the raw sensor value and the result in
+> Lux *is* linear, so the driver should *not* provide the processed output, but instead provide
+> the raw output and the scale?  Even though providing the processed output is pretty simple?
+Yes. This is mostly a legacy of how we cross over between sysfs accesses
+and buffered access (chardev).  By keeping it in raw for for the buffered
+case we ensure it'll fit in a sensible sized binary element. To keep
+things simple, we tend to try to ensure the values coming directly
+out of the buffer are the same as the sysfs ones.
+> 
+> Conversely, if it were *not* linear then you would not provide a scale attribute and instead
+> just provide processed output?
+There would be little choice unfortunately. Thankfully we haven't yet had a device
+where we need to do buffered output for that fell in this category.
+> 
+>> IIO_CHAN_INFO_CALIBSCALE is a scaling typically applied as an electrical gain
+>> inside the device as a form of 'trim'. It's about calibrating out part to
+>> part variation.
+>>
+>> The key thing is that it needs to look like this is hardware trim to userspace,
+>> but it isn't necessarily an actual hardware applied gain.  In the
+>> case of light sensors, the conversion from the raw ADC value to illuminance in lux
+>> is often non linear (and can involve several input sensors).  Thus we often have
+>> to provide an IIO_CHAN_INFO_PROCESSED output where the maths has
+>> already been done
+>> (it's too complex to sensibly describe to userspace).  In this circumstance if
+>> the device has registers to tell the software what it's calibration gain is
+>> (from factory calibration) but that is not applied in hardware
+>> IIO_CHAN_INFO_CALIBSCALE may be used to control a scaling value
+>> which might as well be implemented in hardware as it is always applied before
+>> userspace sees it.
+>>
+>> So as you may have noticed there is sometimes a bit of a gray area when the
+>> calibscale is being used for things that aren't actually controlling hardware
+>> amplifiers.
+>>
+>>> Q2. What's the best unit to return the processed ambient light sensor value?
+>>>
+>>> My first choice would be in milliLux,
+>> lux as per Documentation/ABI/testing/sysfs-bus-iio
+>> is where you need to end up, but it is up to you whether you output in
+>> millilux as IIO_CHAN_INFO_RAW and provide a scale of 0.001 or output
+>> as IIO_CHAN_INFO_PROCESSED directly in lux.
+>>
+>>> my second would be in Lux using IIO_VAL_INT_PLUS_MICRO.
+>>> The first requires less calculation in the driver, but I'm easy either way, as long as the
+>>> value returned has all the significant bits in it.
+>>>
+>>> Q3. The device has a high sensitivity mode (either x1 or x2 sensitivity).  I'd like to expose
+>>> that feature in sysfs.  What would be the best description of it?
+>>>
+>>> I would suggest something on the lines of IIO_CHAN_INFO_SENSITIVITY.  If so, would the best
+>>> thing to do be to submit a patch adding that to include/linux/iio/iio.h ?
+>> What does it really correspond to?  I'm guessing integration time...  There
+>> are various ways of getting sensitivity and they have direct effects on
+>> the noise characteristics, so we really want to know what is going on.
+>>
+>> (looking below I see there is a separate integration time control, so we
+>> are talking either an electrical gain (amplifier) or something more
+>> closely related to the diode itself.)
+>> Could do it via scale.
+>>
+>>>
+>>> Q4. Similarly, the device has the ability to specify how many samples are outside of the
+>>> configured threshold before raising an interrupt.  What would be the best description of
+>>> this?
+>>>
+>>> I'm thinking something on the lines of IIO_EV_INFO_CYCLE_DELAY or some such?  I'm not sure.
+>>
+>> period.  See the ABI docs.  You'll need to provide it in seconds however rather
+>> than samples.
+> 
+> Okay.  I have a question on this.  If you change the integration time, for example, then the
+> period would change (as it is expressed in number of cycles, 1, 2, 4 or 8).  So if you started
+> with an integration time of 0.2s, and set period to 0.4s (2 cycles), that would be fine.  Then,
+> if you change the integration time to 0.4s, then without changing anything else the period
+> would jump to 0.8s.  In addition, the periods available would be different depending on the
+> integration time.
+> 
+> Is that the behaviour you would expect to see if the period is configured in seconds?
+Yes - it is often the case that changing one sysfs value effects others.  Almost
+impossible to have a generic interface where this sort of thing doesn't occur so
+we decided long ago to declare that userspace should recheck everything whenever
+a change is made.
 
-Was original written to support pushing data out to the iio-input
-bridge driver (which was last posted in 2012)...
+Ideally though, you'd try to hid this from userspace if you can.  So if it is possible to
+modify the number of cycles to keep the period the same that would be the ideal (probably
+not here).
+> 
+>>> Q5. The device is very simple and will continue to raise an interrupt every sample that is
+>>> outside of the threshold.  To deal with this I have written code to change the range to not
+>>> interrupt until the reading returns to within the defined threshold.  I was thinking of
+>>> adding a hysteresis value to this.  What would be the preferred unit of this?  MilliLux/Lux
+>>> or percent or something else?
+>> Match units with the channel.  Also we already have hysteresis defined for
+>> events so use that.
+> 
+> Based on your feedback that the driver should not perform the calculation (and rely on the
+> scale attribute to allow userspace to perform the calculation), then it would follow that the
+> upper and lower thresholds would also be exposed in raw values.  Again, the issue with that is
+> that the scaling factor changes depending on the configuration (integration time and hardware
+> sensitivity).
+yes.
+> 
+> Does that sound reasonable to you?  It would mean that user space would have to recalculate the
+> thresholds after every change to the integration time or hardware sensitivity.  Currently my
+> driver is doing that but I suppose the idea is to minimise that kind of thing in the driver?
+It al gets a bit ugly when so many things are tied together unfortunately.
 
-Just got used (slightly wrongly) in the sunxi touchscreen driver
-as well.
+If it's really nasty you can propose just doing processed output (so thresholds are also
+in that scale etc) and see what people think.  The gain needs to be significant though and
+clearly expressed in the introduction to the patch + comments inline.
+
+Ultimately some of our light sensor drivers do autotuning of ranges etc and hide everything
+from userspace - which is a valid solution (some sensors do it in hardware anyway).
+
+The trick is to get this write on the first submission of the driver, as we can't guarantee
+everyone will fully support the IIO sysfs ABI so any changes later can introduce ABI
+breakage which is unacceptable from a kernel driver.
+
 > 
->> Missing bit of all this is a consumer being able to control the providers
->> trigger.  Doubt that would be hard to add.
+>> Sometimes it gets fiddlier on light sensors (though I don't think so
+>> here). Events can
+>> be based on the outputs of one of the multiple diodes whose values are
+>> combined to
+>> calculate an illuminance value.  In those cases we have the unitless 'intensity'
+>> channel types so that the underlying ADC values can be exposed + the
+>> events that operate
+>> on them.  It's a pain for userspace to interpret this but we haven't yet come
+>> up with a better way to describe it.
 >>
-> 
-> Worse case initially it will have to be manually set.
-I think we'd have to automate it or this would all be really clunky
-to use from userspace.
-> 
->> I think that covers all possible circumstances where we have explicit
->> control of the mux or at least the ability to set it to a known state.
->>
->> Jonathan
 >>
 >>>
->>>>>
->>>>>>
->>>>>> To do this we'd need to add an interface to allow the AFE/mux driver to set
->>>>>> the trigger for the ADC to its own.
->>>>>
->>>>> Of course in this case the ADC and LMP91000 device are using both the
->>>>> hrtimer trigger, albeit of course you can't do it at the same time. So
->>>>> it is polling no matter what.
->>>> Fair point.
->>>>>
->>>>>>
->>>>>> If we want to do this quickish I think that's about the lightest weight option
->>>>>> we can do.
->>>>>>
->>>>>> Now, the question is, what are the disadvantages of going with what you
->>>>>> have here for this driver but keeping in mind the above for when it matters?
->>>>>>
->>>>>> I'm guessing we never need to run this particularly driver very fast...
->>>>>> I'm inclined to say yes but would like some other opinions on this one!
->>>>>> (hence the expanded Cc list - please do pull in anyone else you think
->>>>>> might be interested!)
->>>>>
->>>>> Yeah the sample response of the sensor isn't that high speed. Maybe a
->>>>> few dozen hertz.
->>>>>
->>>>>>
->>>>>>> * ADC driver has no IIO_CHAN_INFO_SCALE due to no regulators being defined
->>>>>> Should be some defined. That was easy ;)
->>>>>>> * Should ADC value be signed or unsigned?   -16636 is 0V, 0 is 2/VA ,
->>>>>>> 16635 is ~VA. Of course true zero is defined by the VREF voltage.
->>>>>> err. Odd. Go with signed I think.
->>>>>>>
->>>>>>>>
->>>>>>>> Matt Ranostay (2):
->>>>>>>>   iio: adc: ti-adc1x1s: add support for TI 1-channel differential ADCs
->>>>>>>>   iio: potentiostat: add LMP91000 support
->>>>>>>>
->>>>>>>>  .../devicetree/bindings/iio/adc/ti-adc1x1s.txt     |  16 ++
->>>>>>>>  .../bindings/iio/potentiostat/lmp91000.txt         |  28 ++
->>>>>>>>  drivers/iio/Kconfig                                |   1 +
->>>>>>>>  drivers/iio/Makefile                               |   1 +
->>>>>>>>  drivers/iio/adc/Kconfig                            |  12 +
->>>>>>>>  drivers/iio/adc/Makefile                           |   1 +
->>>>>>>>  drivers/iio/adc/ti-adc1x1s.c                       | 233 ++++++++++++++++
->>>>>>>>  drivers/iio/potentiostat/Kconfig                   |  21 ++
->>>>>>>>  drivers/iio/potentiostat/Makefile                  |   6 +
->>>>>>>>  drivers/iio/potentiostat/lmp91000.c                | 303 +++++++++++++++++++++
->>>>>>>>  10 files changed, 622 insertions(+)
->>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc1x1s.txt
->>>>>>>>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
->>>>>>>>  create mode 100644 drivers/iio/adc/ti-adc1x1s.c
->>>>>>>>  create mode 100644 drivers/iio/potentiostat/Kconfig
->>>>>>>>  create mode 100644 drivers/iio/potentiostat/Makefile
->>>>>>>>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
->>>>>>>>
->>>>>>>> --
->>>>>>>> 2.7.4
->>>>>>>>
->>>>>>> --
->>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>>>> the body of a message to majordomo@vger.kernel.org
->>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>>>>
->>>>>>
->>>>> --
->>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>>> the body of a message to majordomo@vger.kernel.org
->>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>>
->>>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>> Apologies for the dumb questions, but if someone can point me in the right direction I'll
+>>> try and get the driver into a good shape over the next week or so.
 >>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>> Regards,
+>>>
+>>> Leigh.
+> [snip driver]
 > 
+> Regards,
+> 
+> Leigh.
 
