@@ -1,175 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:54238 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752735AbcGYDdD (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 23:33:03 -0400
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jean Delvare <jdelvare@suse.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Eduardo Valentin <edubezval@gmail.com>,
-	Punit Agrawal <punit.agrawal@arm.com>,
-	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v3 5/9] hwmon: (core) Add power attribute support to new API
-Date: Sun, 24 Jul 2016 20:32:28 -0700
-Message-Id: <1469417552-9749-6-git-send-email-linux@roeck-us.net>
-In-Reply-To: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
-References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <pratik.prajapati12@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <bb12cea3-487d-b1ec-cadc-4ca582082517@kernel.org>
+References: <1469112097-6806-1-git-send-email-pratik.prajapati12@gmail.com>
+ <1469112097-6806-2-git-send-email-pratik.prajapati12@gmail.com> <bb12cea3-487d-b1ec-cadc-4ca582082517@kernel.org>
+From: Pratik Prajapati <pratik.prajapati12@gmail.com>
+Date: Mon, 25 Jul 2016 11:50:37 +0530
+Message-ID: <CAHNg1SpeevfyAeo+reNF2CsHzMpZhSLrEwRGeLQxUYd0xi7J+Q@mail.gmail.com>
+Subject: Re: [PATCH 2/2] staging: iio: vcnl4000: Replace i2c api's with regmap
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Acked-by: Punit Agrawal <punit.agrawal@arm.com>
-Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Guenter Roeck <linux@roeck-us.net>
----
-v3: No change
-v2: No change
+On Sun, Jul 24, 2016 at 3:56 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 21/07/16 15:41, Pratik Prajapati wrote:
+>> Signed-off-by: Pratik Prajapati <pratik.prajapati12@gmail.com>
+>> ---
+>>  drivers/iio/light/vcnl4000.c | 91 +++++++++++++++++++++++++++++++++++++-------
+>>  1 file changed, 78 insertions(+), 13 deletions(-)
+>>
+>> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+>> index 1378175..61e48f8 100644
+>> --- a/drivers/iio/light/vcnl4000.c
+>> +++ b/drivers/iio/light/vcnl4000.c
+>> @@ -20,6 +20,7 @@
+>>  #include <linux/i2c.h>
+>>  #include <linux/err.h>
+>>  #include <linux/delay.h>
+>> +#include <linux/regmap.h>
+>>
+>>  #include <linux/iio/iio.h>
+>>  #include <linux/iio/sysfs.h>
+>> @@ -52,6 +53,7 @@
+>>  struct vcnl4000_data {
+>>       struct i2c_client *client;
+>>       struct mutex lock;
+>> +     struct regmap *regmap;
+> You can use the regmap_get_device to avoid having to carry the client through the whole
+> driver. I haven't checked the result of applying this patch but I'm not entirely sure
+> you use client at all.
+I have used client for devm_regmap_init_i2c() and i2c_set_clientdata()
 
- drivers/hwmon/hwmon.c | 30 ++++++++++++++++++++++++++++
- include/linux/hwmon.h | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++
- 2 files changed, 84 insertions(+)
-
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 9229229a99a5..85f4e27548cb 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -261,6 +261,7 @@ static const char * const hwmon_chip_attr_templates[] = {
- 	[hwmon_chip_temp_reset_history] = "temp_reset_history",
- 	[hwmon_chip_in_reset_history] = "in_reset_history",
- 	[hwmon_chip_curr_reset_history] = "curr_reset_history",
-+	[hwmon_chip_power_reset_history] = "power_reset_history",
- 	[hwmon_chip_update_interval] = "update_interval",
- 	[hwmon_chip_alarms] = "alarms",
- };
-@@ -328,11 +329,39 @@ static const char * const hwmon_curr_attr_templates[] = {
- 	[hwmon_curr_crit_alarm] = "curr%d_crit_alarm",
- };
- 
-+static const char * const hwmon_power_attr_templates[] = {
-+	[hwmon_power_average] = "power%d_average",
-+	[hwmon_power_average_interval] = "power%d_average_interval",
-+	[hwmon_power_average_interval_max] = "power%d_interval_max",
-+	[hwmon_power_average_interval_min] = "power%d_interval_min",
-+	[hwmon_power_average_highest] = "power%d_average_highest",
-+	[hwmon_power_average_lowest] = "power%d_average_lowest",
-+	[hwmon_power_average_max] = "power%d_average_max",
-+	[hwmon_power_average_min] = "power%d_average_min",
-+	[hwmon_power_input] = "power%d_input",
-+	[hwmon_power_input_highest] = "power%d_input_highest",
-+	[hwmon_power_input_lowest] = "power%d_input_lowest",
-+	[hwmon_power_reset_history] = "power%d_reset_history",
-+	[hwmon_power_accuracy] = "power%d_accuracy",
-+	[hwmon_power_cap] = "power%d_cap",
-+	[hwmon_power_cap_hyst] = "power%d_cap_hyst",
-+	[hwmon_power_cap_max] = "power%d_cap_max",
-+	[hwmon_power_cap_min] = "power%d_cap_min",
-+	[hwmon_power_max] = "power%d_max",
-+	[hwmon_power_crit] = "power%d_crit",
-+	[hwmon_power_label] = "power%d_label",
-+	[hwmon_power_alarm] = "power%d_alarm",
-+	[hwmon_power_cap_alarm] = "power%d_cap_alarm",
-+	[hwmon_power_max_alarm] = "power%d_max_alarm",
-+	[hwmon_power_crit_alarm] = "power%d_crit_alarm",
-+};
-+
- static const char * const *__templates[] = {
- 	[hwmon_chip] = hwmon_chip_attr_templates,
- 	[hwmon_temp] = hwmon_temp_attr_templates,
- 	[hwmon_in] = hwmon_in_attr_templates,
- 	[hwmon_curr] = hwmon_curr_attr_templates,
-+	[hwmon_power] = hwmon_power_attr_templates,
- };
- 
- static const int __templates_size[] = {
-@@ -340,6 +369,7 @@ static const int __templates_size[] = {
- 	[hwmon_temp] = ARRAY_SIZE(hwmon_temp_attr_templates),
- 	[hwmon_in] = ARRAY_SIZE(hwmon_in_attr_templates),
- 	[hwmon_curr] = ARRAY_SIZE(hwmon_curr_attr_templates),
-+	[hwmon_power] = ARRAY_SIZE(hwmon_power_attr_templates),
- };
- 
- static int hwmon_num_channel_attrs(const struct hwmon_channel_info *info)
-diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-index 8781c2253b1d..d7e432ef7c2a 100644
---- a/include/linux/hwmon.h
-+++ b/include/linux/hwmon.h
-@@ -32,6 +32,7 @@ enum hwmon_chip_attributes {
- 	hwmon_chip_temp_reset_history,
- 	hwmon_chip_in_reset_history,
- 	hwmon_chip_curr_reset_history,
-+	hwmon_chip_power_reset_history,
- 	hwmon_chip_register_tz,
- 	hwmon_chip_update_interval,
- 	hwmon_chip_alarms,
-@@ -40,6 +41,7 @@ enum hwmon_chip_attributes {
- #define HWMON_C_TEMP_RESET_HISTORY	BIT(hwmon_chip_temp_reset_history)
- #define HWMON_C_IN_RESET_HISTORY	BIT(hwmon_chip_in_reset_history)
- #define HWMON_C_CURR_RESET_HISTORY	BIT(hwmon_chip_curr_reset_history)
-+#define HWMON_C_POWER_RESET_HISTORY	BIT(hwmon_chip_power_reset_history)
- #define HWMON_C_REGISTER_TZ		BIT(hwmon_chip_register_tz)
- #define HWMON_C_UPDATE_INTERVAL		BIT(hwmon_chip_update_interval)
- #define HWMON_C_ALARMS			BIT(hwmon_chip_alarms)
-@@ -162,6 +164,58 @@ enum hwmon_curr_attributes {
- #define HWMON_C_LCRIT_ALARM	BIT(hwmon_curr_lcrit_alarm)
- #define HWMON_C_CRIT_ALARM	BIT(hwmon_curr_crit_alarm)
- 
-+enum hwmon_power_attributes {
-+	hwmon_power_average,
-+	hwmon_power_average_interval,
-+	hwmon_power_average_interval_max,
-+	hwmon_power_average_interval_min,
-+	hwmon_power_average_highest,
-+	hwmon_power_average_lowest,
-+	hwmon_power_average_max,
-+	hwmon_power_average_min,
-+	hwmon_power_input,
-+	hwmon_power_input_highest,
-+	hwmon_power_input_lowest,
-+	hwmon_power_reset_history,
-+	hwmon_power_accuracy,
-+	hwmon_power_cap,
-+	hwmon_power_cap_hyst,
-+	hwmon_power_cap_max,
-+	hwmon_power_cap_min,
-+	hwmon_power_max,
-+	hwmon_power_crit,
-+	hwmon_power_label,
-+	hwmon_power_alarm,
-+	hwmon_power_cap_alarm,
-+	hwmon_power_max_alarm,
-+	hwmon_power_crit_alarm,
-+};
-+
-+#define HWMON_P_AVERAGE			BIT(hwmon_power_average)
-+#define HWMON_P_AVERAGE_INTERVAL	BIT(hwmon_power_average_interval)
-+#define HWMON_P_AVERAGE_INTERVAL_MAX	BIT(hwmon_power_average_interval_max)
-+#define HWMON_P_AVERAGE_INTERVAL_MIN	BIT(hwmon_power_average_interval_min)
-+#define HWMON_P_AVERAGE_HIGHEST		BIT(hwmon_power_average_highest)
-+#define HWMON_P_AVERAGE_LOWEST		BIT(hwmon_power_average_lowest)
-+#define HWMON_P_AVERAGE_MAX		BIT(hwmon_power_average_max)
-+#define HWMON_P_AVERAGE_MIN		BIT(hwmon_power_average_min)
-+#define HWMON_P_INPUT			BIT(hwmon_power_input)
-+#define HWMON_P_INPUT_HIGHEST		BIT(hwmon_power_input_highest)
-+#define HWMON_P_INPUT_LOWEST		BIT(hwmon_power_input_lowest)
-+#define HWMON_P_RESET_HISTORY		BIT(hwmon_power_reset_history)
-+#define HWMON_P_ACCURACY		BIT(hwmon_power_accuracy)
-+#define HWMON_P_CAP			BIT(hwmon_power_cap)
-+#define HWMON_P_CAP_HYST		BIT(hwmon_power_cap_hyst)
-+#define HWMON_P_CAP_MAX			BIT(hwmon_power_cap_max)
-+#define HWMON_P_CAP_MIN			BIT(hwmon_power_cap_min)
-+#define HWMON_P_MAX			BIT(hwmon_power_max)
-+#define HWMON_P_CRIT			BIT(hwmon_power_crit)
-+#define HWMON_P_LABEL			BIT(hwmon_power_label)
-+#define HWMON_P_ALARM			BIT(hwmon_power_alarm)
-+#define HWMON_P_CAP_ALARM		BIT(hwmon_power_cap_alarm)
-+#define HWMON_P_MAX_ALARM		BIT(hwmon_power_max_alarm)
-+#define HWMON_P_CRIT_ALARM		BIT(hwmon_power_crit_alarm)
-+
- /**
-  * struct hwmon_ops - hwmon device operations
-  * @is_visible: Callback to return attribute visibility. Mandatory.
--- 
-2.5.0
-
+>>  };
+>>
+>>  static const struct i2c_device_id vcnl4000_id[] = {
+>> @@ -66,20 +68,20 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
+>>       int tries = 20;
+>>       __be16 buf;
+>>       int ret;
+>> +     unsigned int regval;
+>>
+>>       mutex_lock(&data->lock);
+>>
+>> -     ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
+>> -                                     req_mask);
+>> +     ret = regmap_write(data->regmap, VCNL4000_COMMAND, req_mask);
+>>       if (ret < 0)
+>>               goto fail;
+>>
+>>       /* wait for data to become ready */
+>>       while (tries--) {
+>> -             ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
+>> +             ret = regmap_read(data->regmap, VCNL4000_COMMAND, &regval);
+>>               if (ret < 0)
+>>                       goto fail;
+>> -             if (ret & rdy_mask)
+>> +             if (regval & rdy_mask)
+>>                       break;
+>>               msleep(20); /* measurement takes up to 100 ms */
+>>       }
+>> @@ -91,8 +93,8 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
+>>               goto fail;
+>>       }
+>>
+>> -     ret = i2c_smbus_read_i2c_block_data(data->client,
+>> -             data_reg, sizeof(buf), (u8 *) &buf);
+>> +     ret = regmap_bulk_read(data->regmap, data_reg, (u8 *) &buf,
+>> +                     sizeof(buf));
+>>       if (ret < 0)
+>>               goto fail;
+>>
+>> @@ -131,23 +133,24 @@ static int vcnl4000_write_led_current_raw(struct vcnl4000_data *data, int val)
+>>       if (val < 0 || val > VCNL4000_LED_CURRENT_MAX)
+>>               return -ERANGE;
+>>       mutex_lock(&data->lock);
+>> -     ret = i2c_smbus_write_byte_data(data->client, VCNL4000_LED_CURRENT,
+>> -                     val);
+> Just noticed this.  You didn't do a masked write in the previous patch.
+> Are you sure that wasn't overwriting something it shouldn't have been?
+No.
+Its overwriting, I will correct that.
