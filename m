@@ -1,72 +1,111 @@
-Return-Path: <jdelvare@suse.de>
-Date: Mon, 25 Jul 2016 10:42:01 +0200
-From: Jean Delvare <jdelvare@suse.de>
-To: Matt Ranostay <mranostay@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
- linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, David Frey
- <david.frey@sensirion.com>
-Subject: Re: [PATCH] hwmon: sht3x: set initial jiffies to last_update
-Message-ID: <20160725104201.3b0430f1@endymion>
-In-Reply-To: <CAKzfze8Uc3FGG2+d-H3-=md_J2nwDdG6Tp=5KSTad6Pv+0iXeg@mail.gmail.com>
-References: <1467945971-23798-1-git-send-email-mranostay@gmail.com>
-	<1467964564.3225.12.camel@chaos.suse>
-	<CAKzfze82xFRU6A09rXS3OhtLU99cZt_2waRcFGvTgWbx9huZLA@mail.gmail.com>
-	<20160721081046.0f658c18@endymion>
-	<CAKzfze8Uc3FGG2+d-H3-=md_J2nwDdG6Tp=5KSTad6Pv+0iXeg@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:56787 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751127AbcGYJpp (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 05:45:45 -0400
+From: maxime.ripard@free-electrons.com
+Date: Mon, 25 Jul 2016 11:45:42 +0200
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, wens@csie.org, lee.jones@linaro.org,
+	antoine.tenart@free-electrons.com,
+	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	linux-input@vger.kernel.org
+Subject: Re: [PATCH 4/5] input: touchscreen: support Allwinner SoCs'
+ touchscreen
+Message-ID: <20160725094542.GI7419@lukather>
+References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
+ <20160721062950.GB5993@lukather>
+ <20160721064140.GA17658@dtor-ws>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="U3s59FfKcByyGl+j"
+In-Reply-To: <20160721064140.GA17658@dtor-ws>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Matt,
 
-On Sun, 24 Jul 2016 16:50:39 -0700, Matt Ranostay wrote:
-> On Wed, Jul 20, 2016 at 11:10 PM, Jean Delvare <jdelvare@suse.de> wrote:
-> > On Fri, 8 Jul 2016 17:22:10 -0700, Matt Ranostay wrote:
-> >> On Fri, Jul 8, 2016 at 12:56 AM, Jean Delvare <jdelvare@suse.de> wrote:
-> >> > On jeu., 2016-07-07 at 19:46 -0700, Matt Ranostay wrote:
-> >> >> Handling the wraparound requires the data->last_update to be set to an
-> >> >> initial jiffies value. Otherwise you can start in a state where the
-> >> >> sensor will never request a reading.
-> >> >
-> >> > I can't see how. As I read the code, in the worst case, readings can be
-> >> > blocked for interval_ms (2 seconds maximum.)
-> >>
-> >> On 64-bit systems this is never an issue because the jiffies counter
-> >> will never wrap around.
-> >>
-> >> But my system is a 32-bit ARM core, so the the kernel sets the initial
-> >> value to 0xfffb6c20 so it will wrap around in 5 minutes to find buggy
-> >> code.
-> >>
-> >> So looking at time_after(0xfffb6c20, 0) will return false always till
-> >> it finally rolls over.
-> >
-> > I've always been confused by how jiffies wrapping is handled. So I
-> > tested it, and you are correct.
-> 
-> Yeah but of course on 64-bit systems most just use the lower 32-bits
-> of the jiffies counter.
+--U3s59FfKcByyGl+j
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Actually it seems the jiffies are initialized the same on 32-bit and
-64-bit systems, so on 64-bit systems you'll get 33-bit values after 5
-minutes, and 34-bit values after about 100 days (if HZ=1000.) But
-you'll never realistically wrap, you are right.
+Hi Dmitry,
 
-> But since that could rollover, and the unlikely event no sensor data
-> was read for ~57 days you could be in the same state that couldn't get
-> a data sample ....
+On Wed, Jul 20, 2016 at 11:41:40PM -0700, Dmitry Torokhov wrote:
+> On Thu, Jul 21, 2016 at 08:29:50AM +0200, Maxime Ripard wrote:
+> > On Wed, Jul 20, 2016 at 10:29:10AM +0200, Quentin Schulz wrote:
+> > > +	irq =3D regmap_irq_get_virq(sunxi_gpadc_mfd_dev->regmap_irqc, irq);
+> > > +	ret =3D devm_request_any_context_irq(&pdev->dev, irq,
+> > > +					   sunxi_gpadc_tp_up_irq_handler, 0,
+> > > +					   "tp_up", info);
+> > > +	if (ret < 0) {
+> > > +		dev_err(&pdev->dev,
+> > > +			"could not request TP_UP_PENDING interrupt: %d\n", ret);
+> > > +		goto err;
+> > > +	}
+> >=20
+> > You enable the interrupts...
+> >=20
+> > > +	info->tp_up_irq =3D irq;
+> > > +	disable_irq(irq);
+> > > +
+> > > +	ret =3D input_register_device(input);
+> > > +	if (ret) {
+> > > +		dev_err(&pdev->dev, "failed to register input device\n");
+> > > +		goto err;
+> > > +	}
+> >=20
+> > ... but your driver isn't registered yet. How does input_report and
+> > input_sync behave in such a case?
+>=20
+> This is explicitly allowed:
+>=20
+> "
+> ...
+>  * NOTE: input_event() may be safely used right after input device was
+>  * allocated with input_allocate_device(), even before it is registered
+>  * with input_register_device(), but the event will not reach any of the
+>  * input handlers. Such early invocation of input_event() may be used
+>  * to 'seed' initial state of a switch or initial position of absolute
+>  * axis, etc.
+>  */
+> "
 
-At HZ=1000 the jiffies wrap after 49 days, IIRC, not 57. Not that it
-matters ;-)
+Good to know. Still, it feels like it should be handled explicitly,
+instead of relying on the fact that we only call input_event in our
+handler and that it works that way.
 
-> Not sure if we want to check this edge case.. and also this effects a
-> few iio drivers (mostly mine :)) if we really care about this.
+Thanks,
+Maxime
 
-All other hwmon drivers have the same problem. I can't think of a cheap
-way to solve this problem, nor do I think we need to. If you monitor
-your system, you are supposed to poll the device on a regular basis,
-not once every 49 days.
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
 
--- 
-Jean Delvare
-SUSE L3 Support
+--U3s59FfKcByyGl+j
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXld/GAAoJEBx+YmzsjxAgoDkQAK/0llggCKpX/rro04nf3efp
+fQfNUf1Pf2xs2AR7HDDBs6XySakrVZtUR1hgSRg5+MfM/dMFmG40sQ/m+RX9me0I
+B76ksA8pNR/FszHQuphOYWCg2uulvDgjv1dSeYP2uvP1ilCb8fBxt/yFrJGEJ5H1
+VoGRQtrr/waet5VOaZCCh4rt+w7jCeIvqGO/Ly+OHWPWRIFUXyVoC/Eu9fOKAGu3
+erQ81mTW7WbTp6eL6LMZ846AiYeqMWHjHOyBJhDygsIoJWcMD7SaQSfJKo8LZTAY
++ZZscTHKnfnUqk+eKCBA+Gd+5alk9JlRB2LbeLzGFV9E6Uld3HxptADjt2Yb30A+
+A6oYdLvK3k2f+eoRXVMRgxE1DyBajijXmw/YFvj43I4HThwbcOwYXMBkkJWCJsFz
+TS0EvFm7494jURoUgE9NXbPTVim5nb58tsAYO2iIoJILVuBGscUbfyXgGQt7XldN
+h8XO5+Mui/58NJWjkzwg58D6x9vDFy0lifQqfujl7R5qH0mNWU8ZTS87s5CHnRIZ
+wc7DWur8YhS7fgieA2Yqc5osx3R2R+vVdk3SIwLW0JLNJitlWKQKvLjxNoh4q/zo
+R+T+KUZ9oLhzf2sMNXdx3QxkZMSjq1D9xmVgM4O+rlOOCrItQIPwzgap9qSKzOm/
+I3uwwIWB93aq6S6AVyQK
+=RIpj
+-----END PGP SIGNATURE-----
+
+--U3s59FfKcByyGl+j--
