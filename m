@@ -1,56 +1,46 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f193.google.com ([209.85.161.193]:34241 "EHLO
-	mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753345AbcGYTLW (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 15:11:22 -0400
-Date: Mon, 25 Jul 2016 12:11:20 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: accel: bma180: use iio helper function to guarantee
- direct mode
-Message-ID: <20160725191109.GA10048@d830.WORKGROUP>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linux@roeck-us.net>
+From: Guenter Roeck <linux@roeck-us.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Heiko Stuebner <heiko@sntech.de>,
+	linux-iio@vger.kernel.org,
+	linux-rockchip@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	Caesar Wang <wxt@rock-chips.com>,
+	dianders@chromium.org,
+	Guenter Roeck <linux@roeck-us.net>
+Subject: [PATCH] iio: adc: rockchip_saradc: Explicitly disable ADC on probe
+Date: Mon, 25 Jul 2016 12:39:00 -0700
+Message-Id: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
+List-ID: <linux-iio@vger.kernel.org>
 
-Replace the code that guarantees the device stays in direct mode
-with iio_device_claim_direct_mode() which does same.
+If the ADC is read for the first time, the caller gets a timeout error,
+and the kernel log shows
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
+read channel() error: -110
+
+The ADC may be enabled on boot, and needs to be explicitly disabled
+for a read sequence to work (otherwise there is no completion interrupt).
+Disaple it explicitly in the probe function.
+
+Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
+Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
-Changes in v2:
- - put back private data lock I had removed in v1.
+ drivers/iio/adc/rockchip_saradc.c | 3 +++
+ 1 file changed, 3 insertions(+)
 
- drivers/iio/accel/bma180.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
-
-diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-index e3f88ba..0890934 100644
---- a/drivers/iio/accel/bma180.c
-+++ b/drivers/iio/accel/bma180.c
-@@ -469,13 +469,14 @@ static int bma180_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+index f9ad6c2d6821..6aa3271d86b5 100644
+--- a/drivers/iio/adc/rockchip_saradc.c
++++ b/drivers/iio/adc/rockchip_saradc.c
+@@ -280,6 +280,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+ 		goto err_pclk;
+ 	}
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
++	/* Make sure ADC is disabled */
++	writel_relaxed(0, info->regs + SARADC_CTRL);
 +
- 		mutex_lock(&data->mutex);
--		if (iio_buffer_enabled(indio_dev)) {
--			mutex_unlock(&data->mutex);
--			return -EBUSY;
--		}
- 		ret = bma180_get_data_reg(data, chan->scan_index);
- 		mutex_unlock(&data->mutex);
-+		iio_device_release_direct_mode(indio_dev);
- 		if (ret < 0)
- 			return ret;
- 		*val = sign_extend32(ret >> chan->scan_type.shift,
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	indio_dev->name = dev_name(&pdev->dev);
 -- 
-2.1.4
-
+2.5.0
