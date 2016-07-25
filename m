@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:54655 "EHLO
+Received: from bh-25.webhostbox.net ([208.91.199.152]:54238 "EHLO
 	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752805AbcGYDd1 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 23:33:27 -0400
+	with ESMTP id S1752735AbcGYDdD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 23:33:03 -0400
 From: Guenter Roeck <linux@roeck-us.net>
 To: Jean Delvare <jdelvare@suse.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -12,108 +12,160 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v3 9/9] hwmon: (core) Add basic pwm attribute support to new API
-Date: Sun, 24 Jul 2016 20:32:32 -0700
-Message-Id: <1469417552-9749-10-git-send-email-linux@roeck-us.net>
+Subject: [PATCH v3 5/9] hwmon: (core) Add power attribute support to new API
+Date: Sun, 24 Jul 2016 20:32:28 -0700
+Message-Id: <1469417552-9749-6-git-send-email-linux@roeck-us.net>
 In-Reply-To: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
 References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add basic pwm attribute support (no auto attributes) to new API.
-
+Acked-by: Punit Agrawal <punit.agrawal@arm.com>
 Reviewed-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
+v3: No change
 v2: No change
-v2: Added patch
 
- Documentation/hwmon/hwmon-kernel-api.txt |  2 ++
- drivers/hwmon/hwmon.c                    |  9 +++++++++
- include/linux/hwmon.h                    | 13 +++++++++++++
- 3 files changed, 24 insertions(+)
+ drivers/hwmon/hwmon.c | 30 ++++++++++++++++++++++++++++
+ include/linux/hwmon.h | 54 +++++++++++++++++++++++++++++++++++++++++++++++++++
+ 2 files changed, 84 insertions(+)
 
-diff --git a/Documentation/hwmon/hwmon-kernel-api.txt b/Documentation/hwmon/hwmon-kernel-api.txt
-index f60a29ce7592..ef9d74947f5c 100644
---- a/Documentation/hwmon/hwmon-kernel-api.txt
-+++ b/Documentation/hwmon/hwmon-kernel-api.txt
-@@ -168,6 +168,7 @@ It contains following fields:
-   * hwmon_energy	Energy sensor
-   * hwmon_humidity	Humidity sensor
-   * hwmon_fan		Fan speed sensor
-+  * hwmon_pwm		PWM control
- 
- * config: Pointer to a 0-terminated list of configuration values for each
-   sensor of the given type. Each value is a combination of bit values
-@@ -230,6 +231,7 @@ HWMON_P_xxxx	Power attributes, for use with hwmon_power.
- HWMON_E_xxxx	Energy attributes, for use with hwmon_energy.
- HWMON_H_xxxx	Humidity attributes, for use with hwmon_humidity.
- HWMON_F_xxxx	Fan speed attributes, for use with hwmon_fan.
-+HWMON_PWM_xxxx	PWM control attributes, for use with hwmon_pwm.
- 
- Driver callback functions
- -------------------------
 diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 4729d4742ab7..fade170977e8 100644
+index 9229229a99a5..85f4e27548cb 100644
 --- a/drivers/hwmon/hwmon.c
 +++ b/drivers/hwmon/hwmon.c
-@@ -386,6 +386,13 @@ static const char * const hwmon_fan_attr_templates[] = {
- 	[hwmon_fan_fault] = "fan%d_fault",
+@@ -261,6 +261,7 @@ static const char * const hwmon_chip_attr_templates[] = {
+ 	[hwmon_chip_temp_reset_history] = "temp_reset_history",
+ 	[hwmon_chip_in_reset_history] = "in_reset_history",
+ 	[hwmon_chip_curr_reset_history] = "curr_reset_history",
++	[hwmon_chip_power_reset_history] = "power_reset_history",
+ 	[hwmon_chip_update_interval] = "update_interval",
+ 	[hwmon_chip_alarms] = "alarms",
+ };
+@@ -328,11 +329,39 @@ static const char * const hwmon_curr_attr_templates[] = {
+ 	[hwmon_curr_crit_alarm] = "curr%d_crit_alarm",
  };
  
-+static const char * const hwmon_pwm_attr_templates[] = {
-+	[hwmon_pwm_input] = "pwm%d",
-+	[hwmon_pwm_enable] = "pwm%d_enable",
-+	[hwmon_pwm_mode] = "pwm%d_mode",
-+	[hwmon_pwm_freq] = "pwm%d_freq",
++static const char * const hwmon_power_attr_templates[] = {
++	[hwmon_power_average] = "power%d_average",
++	[hwmon_power_average_interval] = "power%d_average_interval",
++	[hwmon_power_average_interval_max] = "power%d_interval_max",
++	[hwmon_power_average_interval_min] = "power%d_interval_min",
++	[hwmon_power_average_highest] = "power%d_average_highest",
++	[hwmon_power_average_lowest] = "power%d_average_lowest",
++	[hwmon_power_average_max] = "power%d_average_max",
++	[hwmon_power_average_min] = "power%d_average_min",
++	[hwmon_power_input] = "power%d_input",
++	[hwmon_power_input_highest] = "power%d_input_highest",
++	[hwmon_power_input_lowest] = "power%d_input_lowest",
++	[hwmon_power_reset_history] = "power%d_reset_history",
++	[hwmon_power_accuracy] = "power%d_accuracy",
++	[hwmon_power_cap] = "power%d_cap",
++	[hwmon_power_cap_hyst] = "power%d_cap_hyst",
++	[hwmon_power_cap_max] = "power%d_cap_max",
++	[hwmon_power_cap_min] = "power%d_cap_min",
++	[hwmon_power_max] = "power%d_max",
++	[hwmon_power_crit] = "power%d_crit",
++	[hwmon_power_label] = "power%d_label",
++	[hwmon_power_alarm] = "power%d_alarm",
++	[hwmon_power_cap_alarm] = "power%d_cap_alarm",
++	[hwmon_power_max_alarm] = "power%d_max_alarm",
++	[hwmon_power_crit_alarm] = "power%d_crit_alarm",
 +};
 +
  static const char * const *__templates[] = {
  	[hwmon_chip] = hwmon_chip_attr_templates,
  	[hwmon_temp] = hwmon_temp_attr_templates,
-@@ -395,6 +402,7 @@ static const char * const *__templates[] = {
- 	[hwmon_energy] = hwmon_energy_attr_templates,
- 	[hwmon_humidity] = hwmon_humidity_attr_templates,
- 	[hwmon_fan] = hwmon_fan_attr_templates,
-+	[hwmon_pwm] = hwmon_pwm_attr_templates,
+ 	[hwmon_in] = hwmon_in_attr_templates,
+ 	[hwmon_curr] = hwmon_curr_attr_templates,
++	[hwmon_power] = hwmon_power_attr_templates,
  };
  
  static const int __templates_size[] = {
-@@ -406,6 +414,7 @@ static const int __templates_size[] = {
- 	[hwmon_energy] = ARRAY_SIZE(hwmon_energy_attr_templates),
- 	[hwmon_humidity] = ARRAY_SIZE(hwmon_humidity_attr_templates),
- 	[hwmon_fan] = ARRAY_SIZE(hwmon_fan_attr_templates),
-+	[hwmon_pwm] = ARRAY_SIZE(hwmon_pwm_attr_templates),
+@@ -340,6 +369,7 @@ static const int __templates_size[] = {
+ 	[hwmon_temp] = ARRAY_SIZE(hwmon_temp_attr_templates),
+ 	[hwmon_in] = ARRAY_SIZE(hwmon_in_attr_templates),
+ 	[hwmon_curr] = ARRAY_SIZE(hwmon_curr_attr_templates),
++	[hwmon_power] = ARRAY_SIZE(hwmon_power_attr_templates),
  };
  
  static int hwmon_num_channel_attrs(const struct hwmon_channel_info *info)
 diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-index 74e89d45ff67..9d2f8bde7d12 100644
+index 8781c2253b1d..d7e432ef7c2a 100644
 --- a/include/linux/hwmon.h
 +++ b/include/linux/hwmon.h
-@@ -28,6 +28,7 @@ enum hwmon_sensor_types {
- 	hwmon_energy,
- 	hwmon_humidity,
- 	hwmon_fan,
-+	hwmon_pwm,
- };
+@@ -32,6 +32,7 @@ enum hwmon_chip_attributes {
+ 	hwmon_chip_temp_reset_history,
+ 	hwmon_chip_in_reset_history,
+ 	hwmon_chip_curr_reset_history,
++	hwmon_chip_power_reset_history,
+ 	hwmon_chip_register_tz,
+ 	hwmon_chip_update_interval,
+ 	hwmon_chip_alarms,
+@@ -40,6 +41,7 @@ enum hwmon_chip_attributes {
+ #define HWMON_C_TEMP_RESET_HISTORY	BIT(hwmon_chip_temp_reset_history)
+ #define HWMON_C_IN_RESET_HISTORY	BIT(hwmon_chip_in_reset_history)
+ #define HWMON_C_CURR_RESET_HISTORY	BIT(hwmon_chip_curr_reset_history)
++#define HWMON_C_POWER_RESET_HISTORY	BIT(hwmon_chip_power_reset_history)
+ #define HWMON_C_REGISTER_TZ		BIT(hwmon_chip_register_tz)
+ #define HWMON_C_UPDATE_INTERVAL		BIT(hwmon_chip_update_interval)
+ #define HWMON_C_ALARMS			BIT(hwmon_chip_alarms)
+@@ -162,6 +164,58 @@ enum hwmon_curr_attributes {
+ #define HWMON_C_LCRIT_ALARM	BIT(hwmon_curr_lcrit_alarm)
+ #define HWMON_C_CRIT_ALARM	BIT(hwmon_curr_crit_alarm)
  
- enum hwmon_chip_attributes {
-@@ -272,6 +273,18 @@ enum hwmon_fan_attributes {
- #define HWMON_F_MAX_ALARM		BIT(hwmon_fan_max_alarm)
- #define HWMON_F_FAULT			BIT(hwmon_fan_fault)
- 
-+enum hwmon_pwm_attributes {
-+	hwmon_pwm_input,
-+	hwmon_pwm_enable,
-+	hwmon_pwm_mode,
-+	hwmon_pwm_freq,
++enum hwmon_power_attributes {
++	hwmon_power_average,
++	hwmon_power_average_interval,
++	hwmon_power_average_interval_max,
++	hwmon_power_average_interval_min,
++	hwmon_power_average_highest,
++	hwmon_power_average_lowest,
++	hwmon_power_average_max,
++	hwmon_power_average_min,
++	hwmon_power_input,
++	hwmon_power_input_highest,
++	hwmon_power_input_lowest,
++	hwmon_power_reset_history,
++	hwmon_power_accuracy,
++	hwmon_power_cap,
++	hwmon_power_cap_hyst,
++	hwmon_power_cap_max,
++	hwmon_power_cap_min,
++	hwmon_power_max,
++	hwmon_power_crit,
++	hwmon_power_label,
++	hwmon_power_alarm,
++	hwmon_power_cap_alarm,
++	hwmon_power_max_alarm,
++	hwmon_power_crit_alarm,
 +};
 +
-+#define HWMON_PWM_INPUT			BIT(hwmon_pwm_input)
-+#define HWMON_PWM_ENABLE		BIT(hwmon_pwm_enable)
-+#define HWMON_PWM_MODE			BIT(hwmon_pwm_mode)
-+#define HWMON_PWM_FREQ			BIT(hwmon_pwm_freq)
++#define HWMON_P_AVERAGE			BIT(hwmon_power_average)
++#define HWMON_P_AVERAGE_INTERVAL	BIT(hwmon_power_average_interval)
++#define HWMON_P_AVERAGE_INTERVAL_MAX	BIT(hwmon_power_average_interval_max)
++#define HWMON_P_AVERAGE_INTERVAL_MIN	BIT(hwmon_power_average_interval_min)
++#define HWMON_P_AVERAGE_HIGHEST		BIT(hwmon_power_average_highest)
++#define HWMON_P_AVERAGE_LOWEST		BIT(hwmon_power_average_lowest)
++#define HWMON_P_AVERAGE_MAX		BIT(hwmon_power_average_max)
++#define HWMON_P_AVERAGE_MIN		BIT(hwmon_power_average_min)
++#define HWMON_P_INPUT			BIT(hwmon_power_input)
++#define HWMON_P_INPUT_HIGHEST		BIT(hwmon_power_input_highest)
++#define HWMON_P_INPUT_LOWEST		BIT(hwmon_power_input_lowest)
++#define HWMON_P_RESET_HISTORY		BIT(hwmon_power_reset_history)
++#define HWMON_P_ACCURACY		BIT(hwmon_power_accuracy)
++#define HWMON_P_CAP			BIT(hwmon_power_cap)
++#define HWMON_P_CAP_HYST		BIT(hwmon_power_cap_hyst)
++#define HWMON_P_CAP_MAX			BIT(hwmon_power_cap_max)
++#define HWMON_P_CAP_MIN			BIT(hwmon_power_cap_min)
++#define HWMON_P_MAX			BIT(hwmon_power_max)
++#define HWMON_P_CRIT			BIT(hwmon_power_crit)
++#define HWMON_P_LABEL			BIT(hwmon_power_label)
++#define HWMON_P_ALARM			BIT(hwmon_power_alarm)
++#define HWMON_P_CAP_ALARM		BIT(hwmon_power_cap_alarm)
++#define HWMON_P_MAX_ALARM		BIT(hwmon_power_max_alarm)
++#define HWMON_P_CRIT_ALARM		BIT(hwmon_power_crit_alarm)
 +
  /**
   * struct hwmon_ops - hwmon device operations
