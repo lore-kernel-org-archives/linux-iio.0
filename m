@@ -1,140 +1,33 @@
-Return-Path: <maxime.ripard@free-electrons.com>
-Date: Mon, 25 Jul 2016 11:51:13 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	dmitry.torokhov@gmail.com, lee.jones@linaro.org,
-	antoine.tenart@free-electrons.com,
-	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 5/5] mfd: sunxi-gpadc-mfd: probe sunxi-gpadc-ts driver
-Message-ID: <20160725095113.GJ7419@lukather>
-References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469003351-15263-6-git-send-email-quentin.schulz@free-electrons.com>
- <20160721060812.GA5993@lukather>
- <11247e4f-d04d-d5bc-6ebf-a637820c011d@kernel.org>
+Return-Path: <linus.walleij@linaro.org>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="utPK4TBebyzZxMrE"
-In-Reply-To: <11247e4f-d04d-d5bc-6ebf-a637820c011d@kernel.org>
+In-Reply-To: <57960AAF.1060103@parrot.com>
+References: <1469355434-17043-1-git-send-email-linus.walleij@linaro.org>
+ <06168d06-b609-a0ec-945e-aa36a4dbe795@kernel.org> <57960AAF.1060103@parrot.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 25 Jul 2016 15:57:24 +0200
+Message-ID: <CACRpkdbUorArtpy5KH46TmaLHphj3EerQ6cJDfDu5YWZkGFi=w@mail.gmail.com>
+Subject: Re: [PATCH] iio: document bindings for mounting matrixes
+To: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	Samu Onkalo <samu.onkalo@intel.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
+On Mon, Jul 25, 2016 at 2:48 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
 
---utPK4TBebyzZxMrE
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> I'm wondering how to ensure consistent documentation between sysfs
+> iio ABI and DT binding since there will be duplicates at some point.
+> Cross-refering Documentation/devicetree/bindings/iio/mount-matrix.txt within
+> Documentation/ABI/testing/sysfs-bus-iio might be an option since "DT
+> bindings
+> are (in theory, mind you) a standards document used by other" as Linus said.
 
-Hi Jonathan,
+That's my position on the issue, if the documents should refer each other
+in any direction the sysfs should reference the DT bindings.
 
-On Sun, Jul 24, 2016 at 12:26:56PM +0100, Jonathan Cameron wrote:
-> >> @@ -142,23 +159,45 @@ static int sunxi_gpadc_mfd_probe(struct platform=
-_device *pdev)
-> >>  	}
-> >> =20
-> >>  	if (of_device_is_compatible(pdev->dev.of_node,
-> >> -				    "allwinner,sun4i-a10-ts"))
-> >> -		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> -				      sun4i_gpadc_mfd_cells,
-> >> -				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
-> >> -				      0, NULL);
-> >> -	else if (of_device_is_compatible(pdev->dev.of_node,
-> >> -					 "allwinner,sun5i-a13-ts"))
-> >> -		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> -				      sun5i_gpadc_mfd_cells,
-> >> -				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
-> >> -				      0, NULL);
-> >> -	else if (of_device_is_compatible(pdev->dev.of_node,
-> >> -					 "allwinner,sun6i-a31-ts"))
-> >> -		ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> -				      sun6i_gpadc_mfd_cells,
-> >> -				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
-> >> -				      0, NULL);
-> >> +				    "allwinner,sun4i-a10-ts")) {
-> >> +		if (of_property_read_bool(pdev->dev.of_node,
-> >> +					  "allwinner,ts-attached"))
-> >> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun4i_gpadc_mfd_cells_ts,
-> >> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells_ts),
-> >> +					      NULL, 0, NULL);
-> >> +		else
-> >> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun4i_gpadc_mfd_cells,
-> >> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells),
-> >> +					      NULL, 0, NULL);
-> >> +	} else if (of_device_is_compatible(pdev->dev.of_node,
-> >> +					 "allwinner,sun5i-a13-ts")) {
-> >> +		if (of_property_read_bool(pdev->dev.of_node,
-> >> +					  "allwinner,ts-attached"))
-> >> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun5i_gpadc_mfd_cells_ts,
-> >> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells_ts),
-> >> +					      NULL, 0, NULL);
-> >> +		else
-> >> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun5i_gpadc_mfd_cells,
-> >> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells),
-> >> +					      NULL, 0, NULL);
-> >> +	} else if (of_device_is_compatible(pdev->dev.of_node,
-> >> +					 "allwinner,sun6i-a31-ts")) {
-> >> +		if (of_property_read_bool(pdev->dev.of_node,
-> >> +					  "allwinner,ts-attached"))
-> >> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun6i_gpadc_mfd_cells_ts,
-> >> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells_ts),
-> >> +					      NULL, 0, NULL);
-> >> +		else
-> >> +			ret =3D mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun6i_gpadc_mfd_cells,
-> >> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells),
-> >> +					      NULL, 0, NULL);
-> >> +	}
-> >=20
-> > Please don't use any of_device_is_compatible.
-> Hi Maxime,
->=20
-> Why?  (Just curious...)
+(Maybe someone will slap me for this...)
 
-This is completely redundant. The compatible has already been looked
-up once to match the driver, and you can associate a void * pointer to
-any compatible you register in the of_device_id array.
-
-So you can just retrieve the compatible that probed you in the first
-place, and use it's private data pointer to store whatever you want,
-without the numerous (and expensive) calls to of_device_is_compatible.
-
-It's also easier to maintain in the long term, since you can simply
-add a new field to the structure you would register there, instead of
-keeping adding more conditions.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---utPK4TBebyzZxMrE
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXleERAAoJEBx+YmzsjxAgX7kQAJoEupOox4ImwUSSmWxDYYJy
-qHR7T+BXL8+5J9VoqPRvNgbq5DeF0boxFk8OO22VQsrUtLf73GWh6RzSGTqSOMuF
-zd1VXivDVR/sYz3otsfmex+KBF+mN7dk423BzRRg5PaHOJxYpoyO5KOnWIedwwA0
-51Ar0+IfKI+s7i2PXKJNvjklP7/r/kE6SyaL8i7UK/gLk4mmCwxP/E4qj1bO8+LW
-aUXsuxMw755uwp7CLz0tble3qsgoov3d6pSBXJs/Mh1fCemWUey4m2lOjhs0zLyr
-8QiadVTHbITF1YR6K6Av9eqt2RLx9cXpsBdGbVZl6VDZqBSRdmEqaALx6LIdUHx6
-4f/9M+xm9VLU9lftj2F8U2dPhoOsmdHLU9Qwa4MS0ClrBJ+GzBneNlkNGQXa0sWO
-AG9OTp8Fap/AnxCJh7ZQNSnF5J/KVXr/y+dYrStFMmfnvIZpwuQ/djuN0mv+0d/z
-XJchrjJfMs6nH/cVkNXYoOfrpRrJUzGjzChz6DMb6YhnYNDxMi0N3/VUcV13f0DR
-iAU57+Nq9Oasv7qVbbm7LUF4eyhUXzIPaUpkkra0SJHtk8TmESF1GUSjZlhwzHNG
-lX9+Zedi/53j6YdB0xDF+nXCslRwQwDmyWodCv1pMc4vy4LQi6qti1THPwawQ8e1
-GEPnyECFdqb25aeFy2Oy
-=OLBG
------END PGP SIGNATURE-----
-
---utPK4TBebyzZxMrE--
+Yours.
+Linus Walleij
