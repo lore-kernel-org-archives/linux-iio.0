@@ -1,176 +1,72 @@
-Return-Path: <cmo@melexis.com>
+Return-Path: <jdelvare@suse.de>
+Date: Mon, 25 Jul 2016 10:42:01 +0200
+From: Jean Delvare <jdelvare@suse.de>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+ linux-hwmon@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>, David Frey
+ <david.frey@sensirion.com>
+Subject: Re: [PATCH] hwmon: sht3x: set initial jiffies to last_update
+Message-ID: <20160725104201.3b0430f1@endymion>
+In-Reply-To: <CAKzfze8Uc3FGG2+d-H3-=md_J2nwDdG6Tp=5KSTad6Pv+0iXeg@mail.gmail.com>
+References: <1467945971-23798-1-git-send-email-mranostay@gmail.com>
+	<1467964564.3225.12.camel@chaos.suse>
+	<CAKzfze82xFRU6A09rXS3OhtLU99cZt_2waRcFGvTgWbx9huZLA@mail.gmail.com>
+	<20160721081046.0f658c18@endymion>
+	<CAKzfze8Uc3FGG2+d-H3-=md_J2nwDdG6Tp=5KSTad6Pv+0iXeg@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <c64a366156bd450cae2419890e2ec06b0b09e93b.1469026858.git.leonard.crestez@intel.com>
-References: <c64a366156bd450cae2419890e2ec06b0b09e93b.1469026858.git.leonard.crestez@intel.com>
-From: Crt Mori <cmo@melexis.com>
-Date: Mon, 25 Jul 2016 09:28:42 +0200
-Message-ID: <CAKv63uufrAKU5M7bwzYT5Pfi+KOC=VhFE8Z1Br9kUVeagi3h=Q@mail.gmail.com>
-Subject: Re: [RFC v2] regmap: Add regmap_pipe_read API
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Mark Brown <broonie@kernel.org>, linux-spi@vger.kernel.org,
-	Wolfram Sang <wsa@the-dreams.de>, linux-i2c@vger.kernel.org,
-	Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org,
-	Laurentiu Palcu <laurentiu.palcu@intel.com>, Linux Iio <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=US-ASCII
 List-ID: <linux-iio@vger.kernel.org>
 
-Adding linux-iio list to this - especially since there are IIO
-drivers which work because of some special case...
+Hi Matt,
 
-Otherwise nice series.
-Crt
-On 20 July 2016 at 17:08, Crestez Dan Leonard <leonard.crestez@intel.com> wrote:
-> The regmap API usually assumes that bulk read operations will read a
-> range of registers but some I2C/SPI devices have certain registers for
-> which a such a read operation will return data from an internal FIFO or
-> some other kind of buffer. Add an explicit API to support bulk read with
-> "output pipe" rather than range semantics.
->
-> Some linux drivers use regmap_bulk_read or regmap_raw_read for such
-> registers, for example mpu6050 or bmi150 from IIO. This only happens to
-> work because when caching is disabled a single short regmap read op will
-> map to a single bus read op and behave as intended. This breaks if
-> caching is enabled and reg+1 happens to be a cacheable register.
->
-> Without regmap support refactoring a driver to enable regmap caching
-> requires separate i2c and spi paths. This is exactly what regmap is
-> supposed to help avoid.
->
-> Suggested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Crestez Dan Leonard <leonard.crestez@intel.com>
->
-> ---
-> Changes since V1:
-> * Improve comments. I think "pipe" is the correct word here.
-> * Rely on void* pointer arithmetic instead of casting to u8*
->
-> The SPMI implementations of regmap_bus have read functions which
-> auto-increment internally and this will not work correctly with
-> regmap_pipe_read. I think the correct fix would be for regmap-spmi to
-> only implement reg_read. This can be considered an acceptable limitation
-> because in order to run into this somebody would have to write new code
-> to call this new API with an SPMI device.
->
-> I attempted to also support this when the underlying bus only supports
-> reg_read (for example an adapter with only I2C_FUNC_SMBUS_BYTE_DATA) but
-> it's not clear how to do this on top of _regmap_read. Apparently this
-> returns the value as an "unsigned int" which needs to be formatted
-> according to val_bytes. Unfortunately map->format.format_val is not
-> always available. Presumably the code dealing with this from regmap_bulk_read
-> should be refactored into a separate function?
->
-> It's not clear why regmap doesn't just always initialize format_val.
->
->  drivers/base/regmap/regmap.c | 64 ++++++++++++++++++++++++++++++++++++++++++++
->  include/linux/regmap.h       |  9 +++++++
->  2 files changed, 73 insertions(+)
->
-> diff --git a/drivers/base/regmap/regmap.c b/drivers/base/regmap/regmap.c
-> index df2d2ef..55c3090 100644
-> --- a/drivers/base/regmap/regmap.c
-> +++ b/drivers/base/regmap/regmap.c
-> @@ -2408,6 +2408,70 @@ int regmap_raw_read(struct regmap *map, unsigned int reg, void *val,
->  EXPORT_SYMBOL_GPL(regmap_raw_read);
->
->  /**
-> + * regmap_pipe_read(): Read data from a register with pipe semantics
-> + *
-> + * @map: Register map to read from
-> + * @reg: Register to read from
-> + * @val: Pointer to data buffer
-> + * @val_len: Length of output buffer in bytes.
-> + *
-> + * The regmap API usually assumes that bulk bus read operations will read a
-> + * range of registers. Some devices have certain registers for which a read
-> + * operation will read a block of data from an internal buffer.
-> + *
-> + * The target register must be volatile but registers after it can be
-> + * completely unrelated cacheable registers.
-> + *
-> + * This will attempt multiple reads as required to read val_len bytes.
-> + *
-> + * This function is not supported over SPMI.
-> + *
-> + * A value of zero will be returned on success, a negative errno will be
-> + * returned in error cases.
-> + */
-> +int regmap_pipe_read(struct regmap *map, unsigned int reg,
-> +                    void *val, size_t val_len)
-> +{
-> +       size_t read_len;
-> +       int ret;
-> +
-> +       if (!map->bus)
-> +               return -EINVAL;
-> +       if (!map->bus->read)
-> +               return -ENOTSUPP;
-> +       if (val_len % map->format.val_bytes)
-> +               return -EINVAL;
-> +       if (!IS_ALIGNED(reg, map->reg_stride))
-> +               return -EINVAL;
-> +       if (val_len == 0)
-> +               return -EINVAL;
-> +
-> +       map->lock(map->lock_arg);
-> +
-> +       if (!regmap_volatile(map, reg)) {
-> +               ret = -EINVAL;
-> +               goto out_unlock;
-> +       }
-> +
-> +       while (val_len) {
-> +               if (map->max_raw_read && map->max_raw_read < val_len)
-> +                       read_len = map->max_raw_read;
-> +               else
-> +                       read_len = val_len;
-> +               ret = _regmap_raw_read(map, reg, val, read_len);
-> +               if (ret)
-> +                       goto out_unlock;
-> +               val += read_len;
-> +               val_len -= read_len;
-> +       }
-> +
-> +out_unlock:
-> +       map->unlock(map->lock_arg);
-> +       return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(regmap_pipe_read);
-> +
-> +/**
->   * regmap_field_read(): Read a value to a single register field
->   *
->   * @field: Register field to read from
-> diff --git a/include/linux/regmap.h b/include/linux/regmap.h
-> index 3dc08ce..18ee90e 100644
-> --- a/include/linux/regmap.h
-> +++ b/include/linux/regmap.h
-> @@ -719,6 +719,8 @@ int regmap_raw_write_async(struct regmap *map, unsigned int reg,
->  int regmap_read(struct regmap *map, unsigned int reg, unsigned int *val);
->  int regmap_raw_read(struct regmap *map, unsigned int reg,
->                     void *val, size_t val_len);
-> +int regmap_pipe_read(struct regmap *map, unsigned int reg,
-> +                    void *val, size_t val_len);
->  int regmap_bulk_read(struct regmap *map, unsigned int reg, void *val,
->                      size_t val_count);
->  int regmap_update_bits_base(struct regmap *map, unsigned int reg,
-> @@ -955,6 +957,13 @@ static inline int regmap_raw_read(struct regmap *map, unsigned int reg,
->         return -EINVAL;
->  }
->
-> +static inline int regmap_pipe_read(struct regmap *map, unsigned int reg,
-> +                                  void *val, size_t val_len)
-> +{
-> +       WARN_ONCE(1, "regmap API is disabled");
-> +       return -EINVAL;
-> +}
-> +
->  static inline int regmap_bulk_read(struct regmap *map, unsigned int reg,
->                                    void *val, size_t val_count)
->  {
-> --
-> 2.7.4
->
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-i2c" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+On Sun, 24 Jul 2016 16:50:39 -0700, Matt Ranostay wrote:
+> On Wed, Jul 20, 2016 at 11:10 PM, Jean Delvare <jdelvare@suse.de> wrote:
+> > On Fri, 8 Jul 2016 17:22:10 -0700, Matt Ranostay wrote:
+> >> On Fri, Jul 8, 2016 at 12:56 AM, Jean Delvare <jdelvare@suse.de> wrote:
+> >> > On jeu., 2016-07-07 at 19:46 -0700, Matt Ranostay wrote:
+> >> >> Handling the wraparound requires the data->last_update to be set to an
+> >> >> initial jiffies value. Otherwise you can start in a state where the
+> >> >> sensor will never request a reading.
+> >> >
+> >> > I can't see how. As I read the code, in the worst case, readings can be
+> >> > blocked for interval_ms (2 seconds maximum.)
+> >>
+> >> On 64-bit systems this is never an issue because the jiffies counter
+> >> will never wrap around.
+> >>
+> >> But my system is a 32-bit ARM core, so the the kernel sets the initial
+> >> value to 0xfffb6c20 so it will wrap around in 5 minutes to find buggy
+> >> code.
+> >>
+> >> So looking at time_after(0xfffb6c20, 0) will return false always till
+> >> it finally rolls over.
+> >
+> > I've always been confused by how jiffies wrapping is handled. So I
+> > tested it, and you are correct.
+> 
+> Yeah but of course on 64-bit systems most just use the lower 32-bits
+> of the jiffies counter.
+
+Actually it seems the jiffies are initialized the same on 32-bit and
+64-bit systems, so on 64-bit systems you'll get 33-bit values after 5
+minutes, and 34-bit values after about 100 days (if HZ=1000.) But
+you'll never realistically wrap, you are right.
+
+> But since that could rollover, and the unlikely event no sensor data
+> was read for ~57 days you could be in the same state that couldn't get
+> a data sample ....
+
+At HZ=1000 the jiffies wrap after 49 days, IIRC, not 57. Not that it
+matters ;-)
+
+> Not sure if we want to check this edge case.. and also this effects a
+> few iio drivers (mostly mine :)) if we really care about this.
+
+All other hwmon drivers have the same problem. I can't think of a cheap
+way to solve this problem, nor do I think we need to. If you monitor
+your system, you are supposed to poll the device on a regular basis,
+not once every 49 days.
+
+-- 
+Jean Delvare
+SUSE L3 Support
