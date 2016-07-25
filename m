@@ -1,201 +1,185 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 25 Jul 2016 11:21:58 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
-	Quentin Schulz <quentin.schulz@free-electrons.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	dmitry.torokhov@gmail.com, antoine.tenart@free-electrons.com,
-	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 5/5] mfd: sunxi-gpadc-mfd: probe sunxi-gpadc-ts driver
-Message-ID: <20160725102158.GJ14925@dell>
-References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469003351-15263-6-git-send-email-quentin.schulz@free-electrons.com>
- <20160721060812.GA5993@lukather>
- <11247e4f-d04d-d5bc-6ebf-a637820c011d@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <11247e4f-d04d-d5bc-6ebf-a637820c011d@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:33255 "EHLO
+	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751145AbcGYK6D (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 06:58:03 -0400
+From: Pratik Prajapati <pratik.prajapati12@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Pratik Prajapati <pratik.prajapati12@gmail.com>
+Subject: [PATCH v2 1/2] staging: iio: vcnl4000: Add IR current adjust support
+Date: Mon, 25 Jul 2016 16:27:28 +0530
+Message-Id: <1469444249-2124-1-git-send-email-pratik.prajapati12@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 24 Jul 2016, Jonathan Cameron wrote:
+Signed-off-by: Pratik Prajapati <pratik.prajapati12@gmail.com>
+---
+Changes v1 -> v2:
+  - documented current_led files in ABI 
+  - masked value while writing to led register
+  - added blank line before last return
+  - removed redundant return
 
-> On 21/07/16 07:08, Maxime Ripard wrote:
-> > Hi Quentin,
-> > 
-> > On Wed, Jul 20, 2016 at 10:29:11AM +0200, Quentin Schulz wrote:
-> >> This probes the touchscreen driver for Allwinner SoCs (A10, A13 and A31)
-> >> when the property "allwinner,ts-attached" is set in the GPADC (rtp) node of
-> >> the DT.
-> >>
-> >> Some comestic modifications done to shorten and increase readability of the
-> >> code.
-> >>
-> >> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> >> ---
-> >>  drivers/mfd/sunxi-gpadc-mfd.c | 115 ++++++++++++++++++++++++++++--------------
-> >>  1 file changed, 77 insertions(+), 38 deletions(-)
-> >>
-> >> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
-> >> index 05a000b..9b9ed0b 100644
-> >> --- a/drivers/mfd/sunxi-gpadc-mfd.c
-> >> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
-> >> @@ -21,6 +21,11 @@
-> >>  #define SUNXI_IRQ_TEMP_DATA	1
-> >>  #define SUNXI_IRQ_TP_UP		2
-> >>  
-> >> +#define SUNXI_GPADC_MFD_CELL(_name, _resources, _num_resources) {	\
-> >> +	.name = _name,							\
-> >> +	.resources = _resources,					\
-> >> +	.num_resources = _num_resources					\
-> >> +}
-> >>  
-> >>  static struct resource adc_resources[] = {
-> >>  	{
-> >> @@ -64,33 +69,45 @@ static const struct regmap_irq_chip sunxi_gpadc_mfd_regmap_irq_chip = {
-> >>  };
-> >>  
-> >>  static struct mfd_cell sun4i_gpadc_mfd_cells[] = {
-> >> -	{
-> >> -		.name	= "sun4i-a10-gpadc-iio",
-> >> -		.resources = adc_resources,
-> >> -		.num_resources = ARRAY_SIZE(adc_resources),
-> >> -	}, {
-> >> -		.name = "iio_hwmon",
-> >> -	}
-> >> +	SUNXI_GPADC_MFD_CELL("sun4i-a10-gpadc-iio", adc_resources,
-> >> +			     ARRAY_SIZE(adc_resources)),
-> >> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> >>  };
-> >>  
-> >>  static struct mfd_cell sun5i_gpadc_mfd_cells[] = {
-> >> -	{
-> >> -		.name	= "sun5i-a13-gpadc-iio",
-> >> -		.resources = adc_resources,
-> >> -		.num_resources = ARRAY_SIZE(adc_resources),
-> >> -	}, {
-> >> -		.name = "iio_hwmon",
-> >> -	},
-> >> +	SUNXI_GPADC_MFD_CELL("sun5i-a13-gpadc-iio", adc_resources,
-> >> +			     ARRAY_SIZE(adc_resources)),
-> >> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> >>  };
-> >>  
-> >>  static struct mfd_cell sun6i_gpadc_mfd_cells[] = {
-> >> -	{
-> >> -		.name	= "sun6i-a31-gpadc-iio",
-> >> -		.resources = adc_resources,
-> >> -		.num_resources = ARRAY_SIZE(adc_resources),
-> >> -	}, {
-> >> -		.name = "iio_hwmon",
-> >> -	},
-> >> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
-> >> +			     ARRAY_SIZE(adc_resources)),
-> >> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> >> +};
-> > 
-> > This should be part of a separate patch.
-> > 
-> >> +
-> >> +static struct mfd_cell sun4i_gpadc_mfd_cells_ts[] = {
-> >> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
-> >> +			     ARRAY_SIZE(adc_resources)),
-> >> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> >> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
-> >> +			     ARRAY_SIZE(ts_resources)),
-> >> +};
-> >> +
-> >> +static struct mfd_cell sun5i_gpadc_mfd_cells_ts[] = {
-> >> +	SUNXI_GPADC_MFD_CELL("sun5i-a13-gpadc-iio", adc_resources,
-> >> +			     ARRAY_SIZE(adc_resources)),
-> >> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> >> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
-> >> +			     ARRAY_SIZE(ts_resources)),
-> >> +};
-> >> +
-> >> +static struct mfd_cell sun6i_gpadc_mfd_cells_ts[] = {
-> >> +	SUNXI_GPADC_MFD_CELL("sun6i-a31-gpadc-iio", adc_resources,
-> >> +			     ARRAY_SIZE(adc_resources)),
-> >> +	SUNXI_GPADC_MFD_CELL("iio_hwmon", NULL, 0),
-> >> +	SUNXI_GPADC_MFD_CELL("sunxi-gpadc-ts", ts_resources,
-> >> +			     ARRAY_SIZE(ts_resources)),
-> >>  };
-> >>  
-> >>  static const struct regmap_config sunxi_gpadc_mfd_regmap_config = {
-> >> @@ -142,23 +159,45 @@ static int sunxi_gpadc_mfd_probe(struct platform_device *pdev)
-> >>  	}
-> >>  
-> >>  	if (of_device_is_compatible(pdev->dev.of_node,
-> >> -				    "allwinner,sun4i-a10-ts"))
-> >> -		ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> -				      sun4i_gpadc_mfd_cells,
-> >> -				      ARRAY_SIZE(sun4i_gpadc_mfd_cells), NULL,
-> >> -				      0, NULL);
-> >> -	else if (of_device_is_compatible(pdev->dev.of_node,
-> >> -					 "allwinner,sun5i-a13-ts"))
-> >> -		ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> -				      sun5i_gpadc_mfd_cells,
-> >> -				      ARRAY_SIZE(sun5i_gpadc_mfd_cells), NULL,
-> >> -				      0, NULL);
-> >> -	else if (of_device_is_compatible(pdev->dev.of_node,
-> >> -					 "allwinner,sun6i-a31-ts"))
-> >> -		ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> -				      sun6i_gpadc_mfd_cells,
-> >> -				      ARRAY_SIZE(sun6i_gpadc_mfd_cells), NULL,
-> >> -				      0, NULL);
-> >> +				    "allwinner,sun4i-a10-ts")) {
-> >> +		if (of_property_read_bool(pdev->dev.of_node,
-> >> +					  "allwinner,ts-attached"))
-> >> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun4i_gpadc_mfd_cells_ts,
-> >> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells_ts),
-> >> +					      NULL, 0, NULL);
-> >> +		else
-> >> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun4i_gpadc_mfd_cells,
-> >> +					      ARRAY_SIZE(sun4i_gpadc_mfd_cells),
-> >> +					      NULL, 0, NULL);
-> >> +	} else if (of_device_is_compatible(pdev->dev.of_node,
-> >> +					 "allwinner,sun5i-a13-ts")) {
-> >> +		if (of_property_read_bool(pdev->dev.of_node,
-> >> +					  "allwinner,ts-attached"))
-> >> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun5i_gpadc_mfd_cells_ts,
-> >> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells_ts),
-> >> +					      NULL, 0, NULL);
-> >> +		else
-> >> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun5i_gpadc_mfd_cells,
-> >> +					      ARRAY_SIZE(sun5i_gpadc_mfd_cells),
-> >> +					      NULL, 0, NULL);
-> >> +	} else if (of_device_is_compatible(pdev->dev.of_node,
-> >> +					 "allwinner,sun6i-a31-ts")) {
-> >> +		if (of_property_read_bool(pdev->dev.of_node,
-> >> +					  "allwinner,ts-attached"))
-> >> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun6i_gpadc_mfd_cells_ts,
-> >> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells_ts),
-> >> +					      NULL, 0, NULL);
-> >> +		else
-> >> +			ret = mfd_add_devices(sunxi_gpadc_mfd_dev->dev, 0,
-> >> +					      sun6i_gpadc_mfd_cells,
-> >> +					      ARRAY_SIZE(sun6i_gpadc_mfd_cells),
-> >> +					      NULL, 0, NULL);
-> >> +	}
-> > 
-> > Please don't use any of_device_is_compatible.
-> Hi Maxime,
-> 
-> Why?  (Just curious...)
+ Documentation/ABI/testing/sysfs-bus-iio | 13 ++++++
+ drivers/iio/light/vcnl4000.c            | 77 ++++++++++++++++++++++++++++++---
+ 2 files changed, 84 insertions(+), 6 deletions(-)
 
-'cos they make for ugly code.
-
-Use of_match_device() instead.
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index fee35c0..7129be6 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1579,3 +1579,16 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled no offset etc.) electric conductivity reading that
+ 		can be processed to siemens per meter.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_current_led_raw
++KernelVersion:	4.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This controls the current to an IR LED.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_current_led_scale
++KernelVersion:	4.8
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Specifies the conversion factor from the standard unit
++		to device specific unit.
+diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
+index 360b6e9..dcf7a6f 100644
+--- a/drivers/iio/light/vcnl4000.c
++++ b/drivers/iio/light/vcnl4000.c
+@@ -3,6 +3,7 @@
+  * light and proximity sensor
+  *
+  * Copyright 2012 Peter Meerwald <pmeerw@pmeerw.net>
++ * Copyright (C) 2016 Pratik Prajapati <pratik.prajapati12@gmail.com>
+  *
+  * This file is subject to the terms and conditions of version 2 of
+  * the GNU General Public License.  See the file COPYING in the main
+@@ -11,7 +12,6 @@
+  * IIO driver for VCNL4000 (7-bit I2C slave address 0x13)
+  *
+  * TODO:
+- *   allow to adjust IR current
+  *   proximity threshold and event handling
+  *   periodic ALS/proximity measurement (VCNL4010/20)
+  *   interrupts (VCNL4010/20)
+@@ -46,6 +46,10 @@
+ #define VCNL4000_AL_OD		BIT(4) /* start on-demand ALS measurement */
+ #define VCNL4000_PS_OD		BIT(3) /* start on-demand proximity measurement */
+ 
++/* Bit mask for LED_CURRENT register */
++#define VCNL4000_LED_CURRENT_MASK	0x3F
++#define VCNL4000_LED_CURRENT_MAX	20
++
+ struct vcnl4000_data {
+ 	struct i2c_client *client;
+ 	struct mutex lock;
+@@ -111,9 +115,43 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
+ 	}, {
+ 		.type = IIO_PROXIMITY,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+-	}
++	}, {
++		.type = IIO_CURRENT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++		.extend_name = "led",
++		.output = 1,
++		.scan_index = -1,
++	},
+ };
+ 
++static int vcnl4000_write_led_current_raw(struct vcnl4000_data *data, int val)
++{
++	int ret;
++
++	if (val < 0 || val > VCNL4000_LED_CURRENT_MAX)
++		return -ERANGE;
++	mutex_lock(&data->lock);
++	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_LED_CURRENT,
++			VCNL4000_LED_CURRENT_MASK & val);
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static int vcnl4000_read_led_current_raw(struct vcnl4000_data *data)
++{
++	int ret;
++
++	mutex_lock(&data->lock);
++	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_LED_CURRENT);
++	mutex_unlock(&data->lock);
++	if (ret < 0)
++		return ret;
++
++	return ret &= VCNL4000_LED_CURRENT_MASK;
++}
++
+ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+ 				struct iio_chan_spec const *chan,
+ 				int *val, int *val2, long mask)
+@@ -138,23 +176,50 @@ static int vcnl4000_read_raw(struct iio_dev *indio_dev,
+ 			if (ret < 0)
+ 				return ret;
+ 			return IIO_VAL_INT;
++		case IIO_CURRENT:
++			ret = vcnl4000_read_led_current_raw(data);
++			if (ret < 0)
++				return ret;
++			*val = ret;
++			return IIO_VAL_INT;
+ 		default:
+ 			return -EINVAL;
+ 		}
++
+ 	case IIO_CHAN_INFO_SCALE:
+-		if (chan->type != IIO_LIGHT)
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*val = 0;
++			*val2 = 250000;
++			return IIO_VAL_INT_PLUS_MICRO;
++		case IIO_CURRENT:
++			/* Output register is in 10s of milliamps */
++			*val = 10;
++			return IIO_VAL_INT;
++		default:
+ 			return -EINVAL;
++		}
+ 
+-		*val = 0;
+-		*val2 = 250000;
+-		return IIO_VAL_INT_PLUS_MICRO;
+ 	default:
+ 		return -EINVAL;
+ 	}
+ }
+ 
++static int vcnl4000_write_raw(struct iio_dev *indio_dev,
++					struct iio_chan_spec const *chan,
++					int val, int val2, long mask)
++{
++	struct vcnl4000_data *data = iio_priv(indio_dev);
++
++	if (mask == IIO_CHAN_INFO_RAW && chan->type == IIO_CURRENT)
++		return vcnl4000_write_led_current_raw(data, val);
++
++	return -EINVAL;
++}
++
+ static const struct iio_info vcnl4000_info = {
+ 	.read_raw = vcnl4000_read_raw,
++	.write_raw = vcnl4000_write_raw,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.6.2
+
