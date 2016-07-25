@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:54425 "EHLO
+Received: from bh-25.webhostbox.net ([208.91.199.152]:54719 "EHLO
 	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752746AbcGYDdN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 23:33:13 -0400
+	with ESMTP id S1752736AbcGYDdb (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 24 Jul 2016 23:33:31 -0400
 From: Guenter Roeck <linux@roeck-us.net>
 To: Jean Delvare <jdelvare@suse.com>
 Cc: Jonathan Cameron <jic23@kernel.org>,
@@ -12,115 +12,281 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
 	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
 	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
 	Guenter Roeck <linux@roeck-us.net>
-Subject: [PATCH v3 6/9] hwmon: (core) Add energy and humidity attribute support to new API
-Date: Sun, 24 Jul 2016 20:32:29 -0700
-Message-Id: <1469417552-9749-7-git-send-email-linux@roeck-us.net>
+Subject: [PATCH v3 8/9] hwmon: (core) Document new kernel API
+Date: Sun, 24 Jul 2016 20:32:31 -0700
+Message-Id: <1469417552-9749-9-git-send-email-linux@roeck-us.net>
 In-Reply-To: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
 References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
+
+Describe the new registration API function as well as the data
+structures it requires.
 
 Acked-by: Punit Agrawal <punit.agrawal@arm.com>
 Reviewed-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Guenter Roeck <linux@roeck-us.net>
 ---
 v3: No change
+v2: Fixed typos
 
- drivers/hwmon/hwmon.c | 20 ++++++++++++++++++++
- include/linux/hwmon.h | 29 +++++++++++++++++++++++++++++
- 2 files changed, 49 insertions(+)
+ Documentation/hwmon/hwmon-kernel-api.txt | 229 ++++++++++++++++++++++++++++++-
+ 1 file changed, 227 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-index 85f4e27548cb..2dd4e0acfe12 100644
---- a/drivers/hwmon/hwmon.c
-+++ b/drivers/hwmon/hwmon.c
-@@ -356,12 +356,30 @@ static const char * const hwmon_power_attr_templates[] = {
- 	[hwmon_power_crit_alarm] = "power%d_crit_alarm",
- };
+diff --git a/Documentation/hwmon/hwmon-kernel-api.txt b/Documentation/hwmon/hwmon-kernel-api.txt
+index 2ecdbfc85ecf..f60a29ce7592 100644
+--- a/Documentation/hwmon/hwmon-kernel-api.txt
++++ b/Documentation/hwmon/hwmon-kernel-api.txt
+@@ -34,6 +34,19 @@ devm_hwmon_device_register_with_groups(struct device *dev,
+ 				       const char *name, void *drvdata,
+ 				       const struct attribute_group **groups);
  
-+static const char * const hwmon_energy_attr_templates[] = {
-+	[hwmon_energy_input] = "energy%d_input",
-+	[hwmon_energy_label] = "energy%d_label",
++struct device *
++hwmon_device_register_with_info(struct device *dev,
++				const char *name, void *drvdata,
++				const struct hwmon_chip_info *info,
++				const struct attribute_group **groups);
++
++struct device *
++devm_hwmon_device_register_with_info(struct device *dev,
++				     const char *name,
++				     void *drvdata,
++				     const struct hwmon_chip_info *info,
++				     const struct attribute_group **groups);
++
+ void hwmon_device_unregister(struct device *dev);
+ void devm_hwmon_device_unregister(struct device *dev);
+ 
+@@ -60,15 +73,227 @@ devm_hwmon_device_register_with_groups is similar to
+ hwmon_device_register_with_groups. However, it is device managed, meaning the
+ hwmon device does not have to be removed explicitly by the removal function.
+ 
++hwmon_device_register_with_info is the most comprehensive and preferred means
++to register a hardware monitoring device. It creates the standard sysfs
++attributes in the hardware monitoring core, letting the driver focus on reading
++from and writing to the chip instead of having to bother with sysfs attributes.
++Its parameters are described in more detail below.
++
++devm_hwmon_device_register_with_info is similar to
++hwmon_device_register_with_info. However, it is device managed, meaning the
++hwmon device does not have to be removed explicitly by the removal function.
++
+ hwmon_device_unregister deregisters a registered hardware monitoring device.
+ The parameter of this function is the pointer to the registered hardware
+ monitoring device structure. This function must be called from the driver
+ remove function if the hardware monitoring device was registered with
+-hwmon_device_register or with hwmon_device_register_with_groups.
++hwmon_device_register, hwmon_device_register_with_groups, or
++hwmon_device_register_with_info.
+ 
+ devm_hwmon_device_unregister does not normally have to be called. It is only
+ needed for error handling, and only needed if the driver probe fails after
+-the call to devm_hwmon_device_register_with_groups.
++the call to devm_hwmon_device_register_with_groups and if the automatic
++(device managed) removal would be too late.
++
++Using devm_hwmon_device_register_with_info()
++--------------------------------------------
++
++hwmon_device_register_with_info() registers a hardware monitoring device.
++The parameters to this function are
++
++struct device *dev	Pointer to parent device
++const char *name	Device name
++void *drvdata		Driver private data
++const struct hwmon_chip_info *info
++			Pointer to chip description.
++const struct attribute_group **groups
++			Null-terminated list of additional sysfs attribute
++			groups.
++
++This function returns a pointer to the created hardware monitoring device
++on success and a negative error code for failure.
++
++The hwmon_chip_info structure looks as follows.
++
++struct hwmon_chip_info {
++	const struct hwmon_ops *ops;
++	const struct hwmon_channel_info **info;
 +};
 +
-+static const char * const hwmon_humidity_attr_templates[] = {
-+	[hwmon_humidity_input] = "humidity%d_input",
-+	[hwmon_humidity_label] = "humidity%d_label",
-+	[hwmon_humidity_min] = "humidity%d_min",
-+	[hwmon_humidity_min_hyst] = "humidity%d_min_hyst",
-+	[hwmon_humidity_max] = "humidity%d_max",
-+	[hwmon_humidity_max_hyst] = "humidity%d_max_hyst",
-+	[hwmon_humidity_alarm] = "humidity%d_alarm",
-+	[hwmon_humidity_fault] = "humidity%d_fault",
++It contains the following fields:
++
++* ops:	Pointer to device operations.
++* info: NULL-terminated list of device channel descriptors.
++
++The list of hwmon operations is defined as:
++
++struct hwmon_ops {
++	umode_t (*is_visible)(const void *, enum hwmon_sensor_types type,
++			      u32 attr, int);
++	int (*read)(struct device *, enum hwmon_sensor_types type,
++		    u32 attr, int, long *);
++	int (*write)(struct device *, enum hwmon_sensor_types type,
++		     u32 attr, int, long);
 +};
 +
- static const char * const *__templates[] = {
- 	[hwmon_chip] = hwmon_chip_attr_templates,
- 	[hwmon_temp] = hwmon_temp_attr_templates,
- 	[hwmon_in] = hwmon_in_attr_templates,
- 	[hwmon_curr] = hwmon_curr_attr_templates,
- 	[hwmon_power] = hwmon_power_attr_templates,
-+	[hwmon_energy] = hwmon_energy_attr_templates,
-+	[hwmon_humidity] = hwmon_humidity_attr_templates,
- };
- 
- static const int __templates_size[] = {
-@@ -370,6 +388,8 @@ static const int __templates_size[] = {
- 	[hwmon_in] = ARRAY_SIZE(hwmon_in_attr_templates),
- 	[hwmon_curr] = ARRAY_SIZE(hwmon_curr_attr_templates),
- 	[hwmon_power] = ARRAY_SIZE(hwmon_power_attr_templates),
-+	[hwmon_energy] = ARRAY_SIZE(hwmon_energy_attr_templates),
-+	[hwmon_humidity] = ARRAY_SIZE(hwmon_humidity_attr_templates),
- };
- 
- static int hwmon_num_channel_attrs(const struct hwmon_channel_info *info)
-diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-index d7e432ef7c2a..57d92f1d779b 100644
---- a/include/linux/hwmon.h
-+++ b/include/linux/hwmon.h
-@@ -26,6 +26,7 @@ enum hwmon_sensor_types {
- 	hwmon_curr,
- 	hwmon_power,
- 	hwmon_energy,
-+	hwmon_humidity,
- };
- 
- enum hwmon_chip_attributes {
-@@ -216,6 +217,34 @@ enum hwmon_power_attributes {
- #define HWMON_P_MAX_ALARM		BIT(hwmon_power_max_alarm)
- #define HWMON_P_CRIT_ALARM		BIT(hwmon_power_crit_alarm)
- 
-+enum hwmon_energy_attributes {
-+	hwmon_energy_input,
-+	hwmon_energy_label,
++It defines the following operations.
++
++* is_visible: Pointer to a function to return the file mode for each supported
++  attribute. This function is mandatory.
++
++* read: Pointer to a function for reading a value from the chip. This function
++  is optional, but must be provided if any readable attributes exist.
++
++* write: Pointer to a function for writing a value to the chip. This function is
++  optional, but must be provided if any writeable attributes exist.
++
++Each sensor channel is described with struct hwmon_channel_info, which is
++defined as follows.
++
++struct hwmon_channel_info {
++	enum hwmon_sensor_types type;
++	u32 *config;
 +};
 +
-+#define HWMON_E_INPUT			BIT(hwmon_energy_input)
-+#define HWMON_E_LABEL			BIT(hwmon_energy_label)
++It contains following fields:
 +
-+enum hwmon_humidity_attributes {
-+	hwmon_humidity_input,
-+	hwmon_humidity_label,
-+	hwmon_humidity_min,
-+	hwmon_humidity_min_hyst,
-+	hwmon_humidity_max,
-+	hwmon_humidity_max_hyst,
-+	hwmon_humidity_alarm,
-+	hwmon_humidity_fault,
++* type: The hardware monitoring sensor type.
++  Supported sensor types are
++  * hwmon_chip		A virtual sensor type, used to describe attributes
++			which apply to the entire chip.
++  * hwmon_temp		Temperature sensor
++  * hwmon_in		Voltage sensor
++  * hwmon_curr		Current sensor
++  * hwmon_power		Power sensor
++  * hwmon_energy	Energy sensor
++  * hwmon_humidity	Humidity sensor
++  * hwmon_fan		Fan speed sensor
++
++* config: Pointer to a 0-terminated list of configuration values for each
++  sensor of the given type. Each value is a combination of bit values
++  describing the attributes supposed by a single sensor.
++
++As an example, here is the complete description file for a LM75 compatible
++sensor chip. The chip has a single temperature sensor. The driver wants to
++register with the thermal subsystem (HWMON_C_REGISTER_TZ), and it supports
++the update_interval attribute (HWMON_C_UPDATE_INTERVAL). The chip supports
++reading the temperature (HWMON_T_INPUT), it has a maximum temperature
++register (HWMON_T_MAX) as well as a maximum temperature hysteresis register
++(HWMON_T_MAX_HYST).
++
++static const u32 lm75_chip_config[] = {
++	HWMON_C_REGISTER_TZ | HWMON_C_UPDATE_INTERVAL,
++	0
 +};
 +
-+#define HWMON_H_INPUT			BIT(hwmon_humidity_input)
-+#define HWMON_H_LABEL			BIT(hwmon_humidity_label)
-+#define HWMON_H_MIN			BIT(hwmon_humidity_min)
-+#define HWMON_H_MIN_HYST		BIT(hwmon_humidity_min_hyst)
-+#define HWMON_H_MAX			BIT(hwmon_humidity_max)
-+#define HWMON_H_MAX_HYST		BIT(hwmon_humidity_max_hyst)
-+#define HWMON_H_ALARM			BIT(hwmon_humidity_alarm)
-+#define HWMON_H_FAULT			BIT(hwmon_humidity_fault)
++static const struct hwmon_channel_info lm75_chip = {
++	.type = hwmon_chip,
++	.config = lm75_chip_config,
++};
 +
- /**
-  * struct hwmon_ops - hwmon device operations
-  * @is_visible: Callback to return attribute visibility. Mandatory.
++static const u32 lm75_temp_config[] = {
++	HWMON_T_INPUT | HWMON_T_MAX | HWMON_T_MAX_HYST,
++	0
++};
++
++static const struct hwmon_channel_info lm75_temp = {
++	.type = hwmon_temp,
++	.config = lm75_temp_config,
++};
++
++static const struct hwmon_channel_info *lm75_info[] = {
++	&lm75_chip,
++	&lm75_temp,
++	NULL
++};
++
++static const struct hwmon_ops lm75_hwmon_ops = {
++	.is_visible = lm75_is_visible,
++	.read = lm75_read,
++	.write = lm75_write,
++};
++
++static const struct hwmon_chip_info lm75_chip_info = {
++	.ops = &lm75_hwmon_ops,
++	.info = lm75_info,
++};
++
++A complete list of bit values indicating individual attribute support
++is defined in include/linux/hwmon.h. Definition prefixes are as follows.
++
++HWMON_C_xxxx	Chip attributes, for use with hwmon_chip.
++HWMON_T_xxxx	Temperature attributes, for use with hwmon_temp.
++HWMON_I_xxxx	Voltage attributes, for use with hwmon_in.
++HWMON_C_xxxx	Current attributes, for use with hwmon_curr.
++		Notice the prefix overlap with chip attributes.
++HWMON_P_xxxx	Power attributes, for use with hwmon_power.
++HWMON_E_xxxx	Energy attributes, for use with hwmon_energy.
++HWMON_H_xxxx	Humidity attributes, for use with hwmon_humidity.
++HWMON_F_xxxx	Fan speed attributes, for use with hwmon_fan.
++
++Driver callback functions
++-------------------------
++
++Each driver provides is_visible, read, and write functions. Parameters
++and return values for those functions are as follows.
++
++umode_t is_visible_func(const void *data, enum hwmon_sensor_types type,
++			u32 attr, int channel)
++
++Parameters:
++	data:	Pointer to device private data structure.
++	type:	The sensor type.
++	attr:	Attribute identifier associated with a specific attribute.
++		For example, the attribute value for HWMON_T_INPUT would be
++		hwmon_temp_input. For complete mappings of bit fields to
++		attribute values please see include/linux/hwmon.h.
++	channel:The sensor channel number.
++
++Return value:
++	The file mode for this attribute. Typically, this will be 0 (the
++	attribute will not be created), S_IRUGO, or 'S_IRUGO | S_IWUSR'.
++
++int read_func(struct device *dev, enum hwmon_sensor_types type,
++	      u32 attr, int channel, long *val)
++
++Parameters:
++	dev:	Pointer to the hardware monitoring device.
++	type:	The sensor type.
++	attr:	Attribute identifier associated with a specific attribute.
++		For example, the attribute value for HWMON_T_INPUT would be
++		hwmon_temp_input. For complete mappings please see
++		include/linux/hwmon.h.
++	channel:The sensor channel number.
++	val:	Pointer to attribute value.
++
++Return value:
++	0 on success, a negative error number otherwise.
++
++int write_func(struct device *dev, enum hwmon_sensor_types type,
++	       u32 attr, int channel, long val)
++
++Parameters:
++	dev:	Pointer to the hardware monitoring device.
++	type:	The sensor type.
++	attr:	Attribute identifier associated with a specific attribute.
++		For example, the attribute value for HWMON_T_INPUT would be
++		hwmon_temp_input. For complete mappings please see
++		include/linux/hwmon.h.
++	channel:The sensor channel number.
++	val:	The value to write to the chip.
++
++Return value:
++	0 on success, a negative error number otherwise.
++
++
++Driver-provided sysfs attributes
++--------------------------------
++
++If the hardware monitoring device is registered with
++hwmon_device_register_with_info or devm_hwmon_device_register_with_info,
++it is most likely not necessary to provide sysfs attributes. Only non-standard
++sysfs attributes need to be provided when one of those registration functions
++is used.
+ 
+ The header file linux/hwmon-sysfs.h provides a number of useful macros to
+ declare and use hardware monitoring sysfs attributes.
 -- 
 2.5.0
 
