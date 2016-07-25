@@ -1,386 +1,1083 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:35704 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751700AbcGYIgd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 25 Jul 2016 04:36:33 -0400
-Date: Mon, 25 Jul 2016 10:36:28 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Aleksei Mamlin <mamlinav@gmail.com>
-cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from mail-it0-f66.google.com ([209.85.214.66]:34785 "EHLO
+	mail-it0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752928AbcGYIiG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 04:38:06 -0400
+MIME-Version: 1.0
+In-Reply-To: <17d7dc13-93fc-6a26-15cf-ca90d1d3a722@kernel.org>
+References: <1469006562-29277-1-git-send-email-enric.balletbo@collabora.com>
+ <1469006562-29277-2-git-send-email-enric.balletbo@collabora.com> <17d7dc13-93fc-6a26-15cf-ca90d1d3a722@kernel.org>
+From: Enric Balletbo Serra <eballetbo@gmail.com>
+Date: Mon, 25 Jul 2016 10:38:02 +0200
+Message-ID: <CAFqH_52yve7Z_S9npiDYs_YAkCSB3RnAE42ddxUMV06oNxKgfg@mail.gmail.com>
+Subject: Re: [PATCH v2 1/4] iio: cros_ec_sensors_core: Add common functions
+ for the ChromeOS EC Sensor Hub.
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Olof Johansson <olof@lixom.net>,
+	Lee Jones <lee.jones@linaro.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
-	Rob Herring <robh+dt@kernel.org>, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: accel: Add support for Domintech DMARD06
- accelerometer
-In-Reply-To: <20160725105011.eb22fefcdd394186b35a4c84@gmail.com>
-Message-ID: <alpine.DEB.2.02.1607251033460.23105@pmeerw.net>
-References: <1469133140-14722-1-git-send-email-mamlinav@gmail.com> <1469133191-14812-1-git-send-email-mamlinav@gmail.com> <alpine.DEB.2.02.1607220015530.6041@pmeerw.net> <6007da6c-910d-1091-ce83-72a86cf22100@kernel.org>
- <20160725105011.eb22fefcdd394186b35a4c84@gmail.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi Jonathan,
 
-> > >> This patch add support for Domintech DMARD06 accelerometer.
-> > > 
-> > > comments below
-> > >  
-> > >> Domintech DMARD06 is a low-g tri-axial digital accelerometer for
-> > >> cost-sensitive consumer application.
-> > >>
-> > >> Signed-off-by: Aleksei Mamlin <mamlinav@gmail.com>
-> > I don't have anything to add here. Nice fairly clean first version.
-> 
-> Jonathan, I found that dmard05, dmard06 and dmard07 chips are very similar
-> and have the same registers. There is not so many difference between chips,
-> dmard05 and dmard07 have 8 bit adc and dmard06 only 7 bit adc.
-> 
-> I want to add support of those chips in driver, but there is the question:
-> should driver be renamed to something like dmard050607 or just dmard05
-> as first chip in this series?
+Many thanks for the review, some answers below.
 
-just pick one name, e.g. dmard06; the file name should NOT contain things 
-such as dmard0x or 050607 -- marketing is just too creative :) and 
-remember: 
-"There are two hard things in computer science: cache invalidation, naming 
-things, and off-by-one errors."
+2016-07-24 15:51 GMT+02:00 Jonathan Cameron <jic23@kernel.org>:
+> On 20/07/16 10:22, Enric Balletbo i Serra wrote:
+>> Add the core functions to be able to support the sensors attached behind
+>> the ChromeOS Embedded Controller and used by other IIO cros-ec sensor
+>> drivers.
+>>
+>> The cros_ec_sensor_core driver matches with current driver in ChromeOS
+>> 4.4 tree, so it includes all the fixes at the moment. The support for
+>> this driver was made by Gwendal Grignou. The original patch and all the
+>> fixes has been squashed and rebased on top of mainline.
+>>
+>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>> Signed-off-by: Guenter Roeck <groeck@chromium.org>
+>> [eballetbo: split, squash and rebase on top of mainline the patches
+>> found in ChromeOS tree]
+>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Few minor bits inline.  I'm happy enough with the ABI (except that I would
+> like a justification for why userspace needs the id one)
+> We should see if anyone else has comments on that.
+>
+> The location one may well become more general in future (to cover other
+> devices).
+>
+> Jonathan
+>> ---
+>>
+>> Changes since v1:
+>>   - Check kernel-doc documentation.
+>>   - Bring this in as an when you need it in the rest of the series.
+>>   - Fix some spelling mistakes.
+>>   - Include ABI documentation.
+>>   - Be more careful with buffer sizes (sprintf -> snprintf)
+>>   - Add cros_ec_sensors prefix to all function.
+>>   - Check return values on some functions.
+>>
+>>  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  25 +
+>>  drivers/iio/common/Kconfig                         |   1 +
+>>  drivers/iio/common/Makefile                        |   1 +
+>>  drivers/iio/common/cros_ec_sensors/Kconfig         |  14 +
+>>  drivers/iio/common/cros_ec_sensors/Makefile        |   5 +
+>>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 505 +++++++++++++++++++++
+>>  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 177 ++++++++
+>>  include/linux/mfd/cros_ec.h                        |   9 +
+>>  include/linux/mfd/cros_ec_commands.h               |  99 +++-
+>>  9 files changed, 831 insertions(+), 5 deletions(-)
+>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>> new file mode 100644
+>> index 0000000..3e626b6
+>> --- /dev/null
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>> @@ -0,0 +1,25 @@
+>> +What:                /sys/bus/iio/devices/iio:deviceX/calibrate
+>> +Date:                July 2015
+>> +KernelVersion:       4.7
+>> +Contact:     linux-iio@vger.kernel.org
+>> +Description:
+>> +             Writing '1' will perform a FOC (Fast Online Calibration). The
+>> +                corresponding calibration offsets can be read from *_calibbias
+>> +                entries.
+> This one is fine as far as I'm concerned.
+>> +
+>> +What:                /sys/bus/iio/devices/iio:deviceX/id
+>> +Date:                July 2015
+>> +KernelVersion:       4.7
+>> +Contact:     linux-iio@vger.kernel.org
+>> +Description:
+>> +                The id attribute holds an unique number for the motion sensor
+>> +                identification, as reported by the ChromeOS Embedded Controller.
+> Mostly with these, we've just spat the out to the kernel logs as dev_info
+> during startup.
+>
+> Any reason this needs to be more explictly exposed to userspace?
 
-p.
+After think a bit more about this, and to be honest, I'm not sure if
+this is really useful to be exposed to userspace. The only use case
+that I'm thinking is that some userspace app uses it to uniquely
+identify the sensors that hang from the ChromeOS Embedded Controller,
+but I'm not sure about this exist. I'll investigate a bit more for if
+I find a good justification, otherwise I'll remove this.
 
-> > >> ---
-> > >>  .../devicetree/bindings/iio/accel/dmard06.txt      |  17 ++
-> > >>  drivers/iio/accel/Kconfig                          |  11 ++
-> > >>  drivers/iio/accel/Makefile                         |   1 +
-> > >>  drivers/iio/accel/dmard06.c                        | 219 +++++++++++++++++++++
-> > >>  4 files changed, 248 insertions(+)
-> > >>  create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> > >>  create mode 100644 drivers/iio/accel/dmard06.c
-> > >>
-> > >> diff --git a/Documentation/devicetree/bindings/iio/accel/dmard06.txt b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> > >> new file mode 100644
-> > >> index 0000000..cc2231a
-> > >> --- /dev/null
-> > >> +++ b/Documentation/devicetree/bindings/iio/accel/dmard06.txt
-> > >> @@ -0,0 +1,17 @@
-> > >> +Device tree bindings for Domintech DMARD06 acceletometer
-> > > 
-> > > typo: accelerometer
-> > > 
-> > >> +
-> > >> +Required properties:
-> > >> + - compatible		: Should be "domintech,dmard06"
-> > >> + - reg			: I2C address of the chip. Should be 0x1c
-> > >> +
-> > >> +Example:
-> > >> +	&i2c1 {
-> > >> +		/* ... */
-> > >> +
-> > >> +		accelerometer@1c {
-> > >> +			compatible = "domintech,dmard06";
-> > >> +			reg = <0x1c>;
-> > >> +		};
-> > >> +
-> > >> +		/* ... */
-> > >> +	};
-> > >> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> > >> index e4a758c..abc8536 100644
-> > >> --- a/drivers/iio/accel/Kconfig
-> > >> +++ b/drivers/iio/accel/Kconfig
-> > >> @@ -40,6 +40,17 @@ config BMC150_ACCEL_SPI
-> > >>  	tristate
-> > >>  	select REGMAP_SPI
-> > >>  
-> > >> +config DMARD06
-> > >> +	tristate "Domintech DMARD06 Digital Accelerometer Driver"
-> > >> +	depends on OF || COMPILE_TEST
-> > >> +	depends on I2C
-> > >> +	help
-> > >> +	  Say yes here to build support for the Domintech DMARD06 low-g
-> > >> +	  tri-axial digital accelerometer connected via an I2C bus.
-> > >> +
-> > >> +	  To compile this driver as a module, choose M here: the
-> > >> +	  module will be called dmard06.
-> > >> +
-> > >>  config HID_SENSOR_ACCEL_3D
-> > >>  	depends on HID_SENSOR_HUB
-> > >>  	select IIO_BUFFER
-> > >> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> > >> index 71b6794..a96b269 100644
-> > >> --- a/drivers/iio/accel/Makefile
-> > >> +++ b/drivers/iio/accel/Makefile
-> > >> @@ -7,6 +7,7 @@ obj-$(CONFIG_BMA180) += bma180.o
-> > >>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
-> > >>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
-> > >>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
-> > >> +obj-$(CONFIG_DMARD06)	+= dmard06.o
-> > >>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
-> > >>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
-> > >>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> > >> diff --git a/drivers/iio/accel/dmard06.c b/drivers/iio/accel/dmard06.c
-> > >> new file mode 100644
-> > >> index 0000000..433e430
-> > >> --- /dev/null
-> > >> +++ b/drivers/iio/accel/dmard06.c
-> > >> @@ -0,0 +1,219 @@
-> > >> +/*
-> > >> + * IIO driver for Domintech DMARD06 accelerometer
-> > >> + *
-> > >> + * Copyright (C) 2016 Aleksei Mamlin <mamlinav@gmail.com>
-> > >> + *
-> > >> + * This program is free software; you can redistribute it and/or modify it
-> > >> + * under the terms and conditions of the GNU General Public License,
-> > >> + * version 2, as published by the Free Software Foundation.
-> > >> + */
-> > >> +
-> > >> +#include <linux/module.h>
-> > >> +#include <linux/i2c.h>
-> > >> +#include <linux/iio/iio.h>
-> > >> +
-> > >> +struct dmard06_data {
-> > >> +	struct i2c_client *client;
-> > >> +};
-> > >> +
-> > >> +#define DMARD06_DRV_NAME		"dmard06"
-> > >> +
-> > >> +/* Device data registers */
-> > >> +#define DMARD06_CHIP_ID_REG		0x0f
-> > >> +#define DMARD06_TOUT_REG		0x40
-> > >> +#define DMARD06_XOUT_REG		0x41
-> > >> +#define DMARD06_YOUT_REG		0x42
-> > >> +#define DMARD06_ZOUT_REG		0x43
-> > >> +
-> > >> +/* Device ID value */
-> > >> +#define DMARD06_CHIP_ID			0x06
-> > >> +
-> > >> +/* Device values */
-> > >> +#define DMARD06_AXIS_MAX_VAL		64
-> > >> +#define DMARD06_AXIS_SCALE_VAL		31250
-> > >> +#define DMARD06_TEMP_CENTER_VAL		25
-> > >> +
-> > >> +static int dmard06_i2c_read(struct i2c_client *client, u8 reg, u8 *buf)
-> > >> +{
-> > >> +	int error;
-> > > 
-> > > 'error' is a bit pessimistic, how about 'ret'? :-)
-> > > 
-> > >> +
-> > > 
-> > > can't use i2c_smbus_read_byte_data()?
-> > > 
-> > >> +	error = i2c_master_send(client, &reg, 1);
-> > >> +	if (unlikely(error < 0))
-> > >> +		return error;
-> > >> +
-> > >> +	error = i2c_master_recv(client, buf, 1);
-> > >> +	if (unlikely(error < 0))
-> > >> +		return error;
-> > > 
-> > > not sure if it is worth to annotate unlikely() here -- i2c is slooow
-> > > locking is needed if you really need two i2c_master calls
-> > > 
-> > >> +	return 0;
-> > >> +}
-> > >> +
-> > >> +static int dmard06_read_chip_id(struct dmard06_data *dmard06)
-> > >> +{
-> > >> +	u8 buf;
-> > >> +	u8 chip_id;
-> > >> +	int error;
-> > >> +
-> > >> +	error = dmard06_i2c_read(dmard06->client, DMARD06_CHIP_ID_REG, &buf);
-> > >> +	if (error) {
-> > >> +		dev_err(&dmard06->client->dev, "Failed to read chip id: %d\n",
-> > >> +			error);
-> > >> +		return error;
-> > >> +	}
-> > >> +
-> > >> +	chip_id = (buf & 0x00ff);
-> > > 
-> > > why? buf is u8 anyways
-> > > 
-> > >> +	if (chip_id != DMARD06_CHIP_ID) {
-> > >> +		dev_err(&dmard06->client->dev, "Invalid chip id: %02x\n",
-> > >> +			chip_id);
-> > >> +		return -EINVAL;
-> > > 
-> > > often ENODEV is used for this case
-> > > 
-> > >> +	}
-> > >> +
-> > >> +	dev_info(&dmard06->client->dev, "Found DMARD%02x chip\n", chip_id);
-> > > 
-> > > we prefer silent probing of the driver, please don't clutter the log
-> > > 
-> > >> +
-> > >> +	return 0;
-> > >> +}
-> > >> +
-> > >> +static int dmard06_read_raw(struct iio_dev *indio_dev,
-> > >> +			    struct iio_chan_spec const *chan,
-> > >> +			    int *val, int *val2, long mask)
-> > >> +{
-> > >> +	struct dmard06_data *dmard06 = iio_priv(indio_dev);
-> > >> +	u8 buf;
-> > >> +	bool reversed;
-> > >> +	int error;
-> > >> +	int tmp;
-> > >> +
-> > >> +	switch (mask) {
-> > >> +	case IIO_CHAN_INFO_RAW:
-> > >> +		error = dmard06_i2c_read(dmard06->client, chan->address, &buf);
-> > >> +		if (error) {
-> > >> +			dev_err(&dmard06->client->dev,
-> > >> +				"Failed to read data %d\n", error);
-> > >> +			return error;
-> > >> +		}
-> > >> +
-> > >> +		reversed = (buf >> 7) & 1;
-> > >> +		tmp = (int)((buf & 0x7f) >> 1);
-> > > 
-> > > 
-> > >> +
-> > >> +		switch (chan->type) {
-> > >> +		case IIO_ACCEL:
-> > > 
-> > > wouldn't sign_extend32(buf >> 1, 6) do the job?
-> > > 
-> > >> +			*val = reversed ? (tmp - DMARD06_AXIS_MAX_VAL) : tmp;
-> > >> +			return IIO_VAL_INT;
-> > >> +		case IIO_TEMP:
-> > >> +			*val = reversed ? -tmp : tmp;
-> > >> +			return IIO_VAL_INT;
-> > >> +		default:
-> > >> +			return -EINVAL;
-> > >> +		}
-> > >> +	case IIO_CHAN_INFO_OFFSET:
-> > >> +		switch (chan->type) {
-> > >> +		case IIO_TEMP:
-> > >> +			*val = DMARD06_TEMP_CENTER_VAL;
-> > >> +			return IIO_VAL_INT;
-> > >> +		default:
-> > >> +			return -EINVAL;
-> > >> +		}
-> > >> +	case IIO_CHAN_INFO_SCALE:
-> > >> +		switch (chan->type) {
-> > >> +		case IIO_ACCEL:
-> > >> +			*val = 0;
-> > >> +			*val2 = DMARD06_AXIS_SCALE_VAL;
-> > >> +			return IIO_VAL_INT_PLUS_MICRO;
-> > >> +		default:
-> > >> +			return -EINVAL;
-> > >> +		}
-> > >> +	default:
-> > >> +		return -EINVAL;
-> > >> +	}
-> > >> +}
-> > >> +
-> > >> +static const struct iio_info dmard06_info = {
-> > >> +	.driver_module	= THIS_MODULE,
-> > >> +	.read_raw	= dmard06_read_raw,
-> > >> +};
-> > >> +
-> > >> +#define DMARD06_ACCEL_CHANNEL(_axis, reg) {			\
-> > > 
-> > > maybe rename reg to _reg
-> > > 
-> > >> +	.type = IIO_ACCEL,					\
-> > >> +	.address = reg,						\
-> > >> +	.channel2 = IIO_MOD_##_axis,				\
-> > >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> > >> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> > >> +	.modified = 1,						\
-> > >> +}
-> > >> +
-> > >> +#define DMARD06_TEMP_CHANNEL(reg) {				\
-> > >> +	.type = IIO_TEMP,					\
-> > >> +	.address = reg,						\
-> > >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
-> > >> +			      BIT(IIO_CHAN_INFO_OFFSET),	\
-> > >> +}
-> > >> +
-> > >> +static const struct iio_chan_spec dmard06_channels[] = {
-> > >> +	DMARD06_ACCEL_CHANNEL(X, DMARD06_XOUT_REG),
-> > >> +	DMARD06_ACCEL_CHANNEL(Y, DMARD06_YOUT_REG),
-> > >> +	DMARD06_ACCEL_CHANNEL(Z, DMARD06_ZOUT_REG),
-> > >> +	DMARD06_TEMP_CHANNEL(DMARD06_TOUT_REG),
-> > >> +};
-> > >> +
-> > >> +static int dmard06_probe(struct i2c_client *client,
-> > >> +			const struct i2c_device_id *id)
-> > >> +{
-> > >> +	int error;
-> > >> +	struct iio_dev *indio_dev;
-> > >> +	struct dmard06_data *dmard06;
-> > >> +
-> > >> +	dev_dbg(&client->dev, "I2C Address: 0x%02x\n", client->addr);
-> > > 
-> > > not needed
-> > > 
-> > >> +
-> > >> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C)) {
-> > >> +		dev_err(&client->dev, "I2C check functionality failed\n");
-> > >> +		return -ENXIO;
-> > >> +	}
-> > >> +
-> > >> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dmard06));
-> > >> +	if (!indio_dev) {
-> > >> +		dev_err(&client->dev, "Failed to allocate iio device\n");
-> > >> +		return -ENOMEM;
-> > >> +	}
-> > >> +
-> > >> +	dmard06 = iio_priv(indio_dev);
-> > >> +	dmard06->client = client;
-> > >> +
-> > >> +	error = dmard06_read_chip_id(dmard06);
-> > >> +	if (error)
-> > >> +		return error;
-> > >> +
-> > >> +	i2c_set_clientdata(client, indio_dev);
-> > >> +	indio_dev->dev.parent = &client->dev;
-> > >> +	indio_dev->name = DMARD06_DRV_NAME;
-> > >> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > >> +	indio_dev->channels = dmard06_channels;
-> > >> +	indio_dev->num_channels = ARRAY_SIZE(dmard06_channels);
-> > >> +	indio_dev->info = &dmard06_info;
-> > >> +
-> > >> +	return devm_iio_device_register(&client->dev, indio_dev);
-> > >> +}
-> > >> +
-> > >> +static const struct i2c_device_id dmard06_id[] = {
-> > >> +	{ "dmard06", 0 },
-> > >> +	{ }
-> > >> +};
-> > >> +MODULE_DEVICE_TABLE(i2c, dmard06_id);
-> > >> +
-> > >> +static const struct of_device_id dmard06_of_match[] = {
-> > >> +	{ .compatible = "domintech,dmard06" },
-> > >> +	{ }
-> > >> +};
-> > >> +MODULE_DEVICE_TABLE(of, dmard06_of_match);
-> > >> +
-> > >> +static struct i2c_driver dmard06_driver = {
-> > >> +	.probe = dmard06_probe,
-> > >> +	.id_table = dmard06_id,
-> > >> +	.driver = {
-> > >> +		.name = DMARD06_DRV_NAME,
-> > >> +		.of_match_table = of_match_ptr(dmard06_of_match),
-> > >> +	},
-> > >> +};
-> > >> +module_i2c_driver(dmard06_driver);
-> > >> +
-> > >> +MODULE_AUTHOR("Aleksei Mamlin <mamlinav@gmail.com>");
-> > >> +MODULE_DESCRIPTION("Domintech DMARD06 accelerometer driver");
-> > >> +MODULE_LICENSE("GPL v2");
-> > >>
-> > > 
-> > 
-> 
-> 
-> 
+Maybe someone from chromium can give us more opinions?
 
--- 
+>> +
+>> +What:                /sys/bus/iio/devices/iio:deviceX/location
+>> +Date:                July 2015
+>> +KernelVersion:       4.7
+>> +Contact:     linux-iio@vger.kernel.org
+>> +Description:
+>> +             This attribute returns a string with the physical location where
+>> +                the motion sensor is placed. For example, in a laptop a motion
+>> +                sensor can be located on the base or on the lid.
+> Interesting...
+>
+> We'll probably want to ultimately use this one more generally.  This probably
+> won't be the last sensor where we have some means of finding this out!
+>
+Ok, I will rewrite the sentence to be more generic
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+> Please include a list of possible values in the description.
+
+For now lid and base are the values used, is that ok?
+
+>> \ No newline at end of file
+> Fix that ;)
+
+Yep, sorry my bad.
+
+>> diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
+>> index 26a6026..e108996 100644
+>> --- a/drivers/iio/common/Kconfig
+>> +++ b/drivers/iio/common/Kconfig
+>> @@ -2,6 +2,7 @@
+>>  # IIO common modules
+>>  #
+>>
+>> +source "drivers/iio/common/cros_ec_sensors/Kconfig"
+>>  source "drivers/iio/common/hid-sensors/Kconfig"
+>>  source "drivers/iio/common/ms_sensors/Kconfig"
+>>  source "drivers/iio/common/ssp_sensors/Kconfig"
+>> diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
+>> index 585da6a..6fa760e 100644
+>> --- a/drivers/iio/common/Makefile
+>> +++ b/drivers/iio/common/Makefile
+>> @@ -7,6 +7,7 @@
+>>  #
+>>
+>>  # When adding new entries keep the list in alphabetical order
+>> +obj-y += cros_ec_sensors/
+>>  obj-y += hid-sensors/
+>>  obj-y += ms_sensors/
+>>  obj-y += ssp_sensors/
+>> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
+>> new file mode 100644
+>> index 0000000..24743be
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+>> @@ -0,0 +1,14 @@
+>> +#
+>> +# Chrome OS Embedded Controller managed sensors library
+>> +#
+>> +config IIO_CROS_EC_SENSORS_CORE
+>> +     tristate "ChromeOS EC Sensors Core"
+>> +     depends on SYSFS && MFD_CROS_EC
+>> +     select IIO_BUFFER
+>> +     select IIO_TRIGGERED_BUFFER
+>> +     help
+>> +       Base module for the ChromeOS EC Sensors module.
+>> +       Contains core functions used by other IIO CrosEC sensor
+>> +       drivers.
+>> +       Define common attributes and sysfs interrupt handler.
+>> +
+>> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
+>> new file mode 100644
+>> index 0000000..95b6901
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
+>> @@ -0,0 +1,5 @@
+>> +#
+>> +# Makefile for sensors seen through the ChromeOS EC sensor hub.
+>> +#
+>> +
+>> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> new file mode 100644
+>> index 0000000..70e3c17
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> @@ -0,0 +1,505 @@
+>> +/*
+>> + * cros_ec_sensors_core - Common function for Chrome OS EC sensor driver.
+>> + *
+>> + * Copyright (C) 2016 Google, Inc
+>> + *
+>> + * This software is licensed under the terms of the GNU General Public
+>> + * License version 2, as published by the Free Software Foundation, and
+>> + * may be copied, distributed, and modified under those terms.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#include <linux/delay.h>
+>> +#include <linux/device.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/kfifo_buf.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/mfd/cros_ec.h>
+>> +#include <linux/mfd/cros_ec_commands.h>
+>> +#include <linux/module.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/sysfs.h>
+>> +#include <linux/platform_device.h>
+>> +
+>> +#include "cros_ec_sensors_core.h"
+>> +
+>> +static char *cros_ec_loc[] = {
+>> +     [MOTIONSENSE_LOC_BASE] = "base",
+>> +     [MOTIONSENSE_LOC_LID] = "lid",
+>> +     [MOTIONSENSE_LOC_MAX] = "unknown",
+>> +};
+>> +
+>> +int cros_ec_sensors_core_init(struct platform_device *pdev,
+>> +                           struct iio_dev *indio_dev,
+>> +                           bool physical_device)
+>> +{
+>> +     struct device *dev = &pdev->dev;
+>> +     struct cros_ec_sensors_core_state *state = iio_priv(indio_dev);
+>> +     struct cros_ec_dev *ec = dev_get_drvdata(pdev->dev.parent);
+>> +     struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
+>> +
+>> +     platform_set_drvdata(pdev, indio_dev);
+>> +
+>> +     state->ec = ec->ec_dev;
+>> +     state->msg = devm_kzalloc(&pdev->dev,
+>> +                             max((u16)sizeof(struct ec_params_motion_sense),
+>> +                             state->ec->max_response), GFP_KERNEL);
+>> +     if (!state->msg)
+>> +             return -ENOMEM;
+>> +
+>> +     state->resp = (struct ec_response_motion_sense *)state->msg->data;
+>> +
+>> +     mutex_init(&state->cmd_lock);
+>> +
+>> +     /* Set up the host command structure. */
+>> +     state->msg->version = 2;
+>> +     state->msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
+>> +     state->msg->outsize = sizeof(struct ec_params_motion_sense);
+>> +
+>> +     indio_dev->dev.parent = &pdev->dev;
+>> +     indio_dev->name = pdev->name;
+>> +
+>> +     if (physical_device) {
+>> +             indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +             state->param.cmd = MOTIONSENSE_CMD_INFO;
+>> +             state->param.info.sensor_num = sensor_platform->sensor_num;
+>> +             if (cros_ec_motion_send_host_cmd(state, 0)) {
+>> +                     dev_warn(dev, "Can not access sensor info\n");
+>> +                     return -EIO;
+>> +             }
+>> +             state->type = state->resp->info.type;
+>> +             state->loc = state->resp->info.location;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_init);
+>> +
+>> +int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *state,
+>> +                              u16 opt_length)
+>> +{
+>> +     int ret;
+>> +
+>> +     if (opt_length)
+>> +             state->msg->insize = min(opt_length, state->ec->max_response);
+>> +     else
+>> +             state->msg->insize = state->ec->max_response;
+>> +
+>> +     memcpy(state->msg->data, &state->param, sizeof(state->param));
+>> +
+>> +     ret = cros_ec_cmd_xfer_status(state->ec, state->msg);
+>> +     if (ret < 0)
+>> +             return -EIO;
+>> +
+>> +     if (ret &&
+>> +         state->resp != (struct ec_response_motion_sense *)state->msg->data)
+>> +             memcpy(state->resp, state->msg->data, ret);
+>> +
+>> +     return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_motion_send_host_cmd);
+>> +
+>> +static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
+>> +             uintptr_t private, const struct iio_chan_spec *chan,
+>> +             const char *buf, size_t len)
+>> +{
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +     int ret, i;
+>> +     bool calibrate;
+>> +
+>> +     ret = strtobool(buf, &calibrate);
+>> +     if (ret < 0)
+>> +             return ret;
+>> +     if (!calibrate)
+>> +             return -EINVAL;
+>> +
+>> +     mutex_lock(&st->cmd_lock);
+>> +     st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
+>> +     ret = cros_ec_motion_send_host_cmd(st, 0);
+>> +     if (ret != 0) {
+>> +             dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
+>> +     } else {
+>> +             /* Save values */
+>> +             for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
+>> +                     st->calib[i].offset = st->resp->perform_calib.offset[i];
+>> +     }
+>> +     mutex_unlock(&st->cmd_lock);
+>> +
+>> +     return ret ? ret : len;
+>> +}
+>> +
+>> +static ssize_t cros_ec_sensors_id(struct iio_dev *indio_dev,
+>> +             uintptr_t private, const struct iio_chan_spec *chan,
+>> +             char *buf)
+>> +{
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +     return snprintf(buf, PAGE_SIZE, "%d\n", st->param.info.sensor_num);
+>> +}
+>> +
+>> +static ssize_t cros_ec_sensors_loc(struct iio_dev *indio_dev,
+>> +             uintptr_t private, const struct iio_chan_spec *chan,
+>> +             char *buf)
+>> +{
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +     return snprintf(buf, PAGE_SIZE, "%s\n", cros_ec_loc[st->loc]);
+>> +}
+>> +
+>> +const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[] = {
+>> +     {
+>> +             .name = "calibrate",
+>> +             .shared = IIO_SHARED_BY_ALL,
+>> +             .write = cros_ec_sensors_calibrate
+>> +     },
+>> +     {
+>> +             .name = "id",
+>> +             .shared = IIO_SHARED_BY_ALL,
+>> +             .read = cros_ec_sensors_id
+>> +     },
+>> +     {
+>> +             .name = "location",
+>> +             .shared = IIO_SHARED_BY_ALL,
+>> +             .read = cros_ec_sensors_loc
+>> +     },
+>> +     { },
+>> +};
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_ext_info);
+>> +
+>> +/**
+>> + * cros_ec_sensors_idx_to_reg - convert index into offset in shared memory
+>> + * @st:              pointer to state information for device
+>> + * @idx:     sensor index (should be element of enum sensor_index)
+>> + *
+>> + * Return:   address to read at
+>> + */
+>> +static unsigned int cros_ec_sensors_idx_to_reg(
+>> +                                     struct cros_ec_sensors_core_state *st,
+>> +                                     unsigned int idx)
+>> +{
+>> +     /*
+>> +      * When using LPC interface, only space for 2 Accel and one Gyro.
+>> +      * First halfword of MOTIONSENSE_TYPE_ACCEL is used by angle.
+>> +      */
+>> +     if (st->type == MOTIONSENSE_TYPE_ACCEL)
+>> +             return EC_MEMMAP_ACC_DATA + sizeof(u16) *
+>> +                     (1 + idx + st->param.info.sensor_num *
+>> +                      CROS_EC_SENSOR_MAX_AXIS);
+>> +     else
+>> +             return EC_MEMMAP_GYRO_DATA + sizeof(u16) * idx;
+>> +}
+>> +
+>> +static int cros_ec_sensors_cmd_read_u8(struct cros_ec_device *ec,
+>> +                                    unsigned int offset, u8 *dest)
+>> +{
+>> +     return ec->cmd_readmem(ec, offset, 1, dest);
+>> +}
+>> +
+>> +static int cros_ec_sensors_cmd_read_u16(struct cros_ec_device *ec,
+>> +                                      unsigned int offset, u16 *dest)
+>> +{
+>> +     __le16 tmp;
+>> +     int ret = ec->cmd_readmem(ec, offset, 2, &tmp);
+>> +
+>> +     *dest = le16_to_cpu(tmp);
+>> +
+>> +     return ret;
+>> +}
+>> +
+>> +/**
+>> + * cros_ec_sensors_read_until_not_busy() - read until is not busy
+>> + *
+>> + * @st:      pointer to state information for device
+>> + *
+>> + * Read from EC status byte until it reads not busy.
+>> + * Return: 8-bit status if ok, -errno on failure.
+>> + */
+>> +static int cros_ec_sensors_read_until_not_busy(
+>> +                                     struct cros_ec_sensors_core_state *st)
+>> +{
+>> +     struct cros_ec_device *ec = st->ec;
+>> +     u8 status;
+>> +     int ret, attempts = 0;
+>> +
+>> +     ret = cros_ec_sensors_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
+>> +     if (ret < 0)
+>> +             return ret;
+>> +
+>> +     while (status & EC_MEMMAP_ACC_STATUS_BUSY_BIT) {
+>> +             /* Give up after enough attempts, return error. */
+>> +             if (attempts++ >= 50)
+>> +                     return -EIO;
+>> +
+>> +             /* Small delay every so often. */
+>> +             if (attempts % 5 == 0)
+>> +                     msleep(25);
+>> +
+>> +             ret = cros_ec_sensors_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS,
+>> +                                               &status);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +     }
+>> +
+>> +     return status;
+>> +}
+>> +
+>> +/**
+>> + * read_ec_sensors_data_unsafe() - read acceleration data from EC shared memory
+>> + * @indio_dev:       pointer to IIO device
+>> + * @scan_mask:       bitmap of the sensor indices to scan
+>> + * @data:    location to store data
+>> + *
+>> + * This is the unsafe function for reading the EC data. It does not guarantee
+>> + * that the EC will not modify the data as it is being read in.
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +static int cros_ec_sensors_read_data_unsafe(struct iio_dev *indio_dev,
+>> +                      unsigned long scan_mask, s16 *data)
+>> +{
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +     struct cros_ec_device *ec = st->ec;
+>> +     unsigned int i;
+>> +     int ret;
+>> +
+>> +     /* Read all sensors enabled in scan_mask. Each value is 2 bytes. */
+>> +     for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
+>> +             ret = cros_ec_sensors_cmd_read_u16(ec,
+>> +                                          cros_ec_sensors_idx_to_reg(st, i),
+>> +                                          data);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +
+>> +             data++;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+>> +                          unsigned long scan_mask, s16 *data)
+>> +{
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +     struct cros_ec_device *ec = st->ec;
+>> +     u8 samp_id = 0xff, status = 0;
+>> +     int ret, attempts = 0;
+>> +
+>> +     /*
+>> +      * Continually read all data from EC until the status byte after
+>> +      * all reads reflects that the EC is not busy and the sample id
+>> +      * matches the sample id from before all reads. This guarantees
+>> +      * that data read in was not modified by the EC while reading.
+>> +      */
+>> +     while ((status & (EC_MEMMAP_ACC_STATUS_BUSY_BIT |
+>> +                       EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK)) != samp_id) {
+>> +             /* If we have tried to read too many times, return error. */
+>> +             if (attempts++ >= 5)
+>> +                     return -EIO;
+>> +
+>> +             /* Read status byte until EC is not busy. */
+>> +             status = cros_ec_sensors_read_until_not_busy(st);
+>> +             if (status < 0)
+>> +                     return status;
+>> +
+>> +             /*
+>> +              * Store the current sample id so that we can compare to the
+>> +              * sample id after reading the data.
+>> +              */
+>> +             samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+>> +
+>> +             /* Read all EC data, format it, and store it into data. */
+>> +             ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
+>> +                                                    data);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +
+>> +             /* Read status byte. */
+>> +             ret = cros_ec_sensors_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS,
+>> +                                               &status);
+>> +             if (ret < 0)
+>> +                     return ret;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_read_lpc);
+>> +
+>> +int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev,
+>> +                          unsigned long scan_mask, s16 *data)
+>> +{
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +     int ret;
+>> +     unsigned int i = 0;
+>> +
+>> +     /* Read all sensor data through a command. */
+>> +     st->param.cmd = MOTIONSENSE_CMD_DATA;
+>> +     ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->data));
+>> +     if (ret != 0) {
+>> +             dev_warn(&indio_dev->dev, "Unable to read sensor data\n");
+>> +             return ret;
+>> +     }
+>> +
+>> +     for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
+>> +             *data = st->resp->data.data[i];
+>> +             data++;
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_read_cmd);
+>> +
+>> +irqreturn_t cros_ec_sensors_capture(int irq, void *p)
+>> +{
+>> +     struct iio_poll_func *pf = p;
+>> +     struct iio_dev *indio_dev = pf->indio_dev;
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +     int ret;
+>> +
+>> +     mutex_lock(&st->cmd_lock);
+>> +
+>> +     /* Clear capture data. */
+>> +     memset(st->samples, 0, indio_dev->scan_bytes);
+>> +
+>> +     /* Read data based on which channels are enabled in scan mask. */
+>> +     ret = st->read_ec_sensors_data(indio_dev,
+>> +                                    *(indio_dev->active_scan_mask),
+>> +                                    (s16 *)st->samples);
+>> +     if (ret < 0)
+>> +             goto done;
+>> +
+>> +     iio_push_to_buffers_with_timestamp(indio_dev, st->samples,
+>> +                                        iio_get_time_ns());
+> The iio_get_time_ns now takes an indio_dev (as we support clock type
+> selection now).
+
+Just found it, fixed in next v3.
+
+>> +
+>> +done:
+>> +     /*
+>> +      * Tell the core we are done with this trigger and ready for the
+>> +      * next one.
+>> +      */
+>> +     iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +     mutex_unlock(&st->cmd_lock);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_capture);
+>> +
+>> +int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+>> +                       struct iio_chan_spec const *chan,
+>> +                       int *val, int *val2, long mask)
+>> +{
+>> +     int ret = IIO_VAL_INT;
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_SAMP_FREQ:
+>> +             st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +             st->param.ec_rate.data =
+>> +                     EC_MOTION_SENSE_NO_VALUE;
+>> +
+>> +             if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                     ret = -EIO;
+>> +             else
+>> +                     *val = st->resp->ec_rate.ret;
+>> +             break;
+>> +     case IIO_CHAN_INFO_FREQUENCY:
+>> +             st->param.cmd = MOTIONSENSE_CMD_SENSOR_ODR;
+>> +             st->param.sensor_odr.data =
+>> +                     EC_MOTION_SENSE_NO_VALUE;
+>> +
+>> +             if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                     ret = -EIO;
+>> +             else
+>> +                     *val = st->resp->sensor_odr.ret;
+>> +             break;
+>> +     default:
+>> +             break;
+>> +     }
+>> +
+>> +     return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_read);
+>> +
+>> +int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+>> +                            struct iio_chan_spec const *chan,
+>> +                            int val, int val2, long mask)
+>> +{
+>> +     int ret = 0;
+>> +
+>> +     switch (mask) {
+>> +     case IIO_CHAN_INFO_FREQUENCY:
+>> +             st->param.cmd = MOTIONSENSE_CMD_SENSOR_ODR;
+>> +             st->param.sensor_odr.data = val;
+>> +
+>> +             /* Always roundup, so caller gets at least what it asks for. */
+>> +             st->param.sensor_odr.roundup = 1;
+>> +
+>> +             if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                     ret = -EIO;
+>> +             break;
+>> +     case IIO_CHAN_INFO_SAMP_FREQ:
+>> +             st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +             st->param.ec_rate.data = val;
+>> +
+>> +             if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                     ret = -EIO;
+>> +             else
+>> +                     st->curr_sampl_freq = val;
+>> +             break;
+>> +     default:
+>> +             ret = -EINVAL;
+>> +             break;
+>> +     }
+>> +     return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
+>> +
+>> +static int __maybe_unused cros_ec_sensors_prepare(struct device *dev)
+>> +{
+>> +     struct platform_device *pdev = to_platform_device(dev);
+>> +     struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +     if (st->curr_sampl_freq == 0)
+>> +             return 0;
+>> +
+>> +     /*
+>> +      * If the sensors are sampled at high frequency, we will not be able to
+>> +      * sleep. Set to sampling to a long period if necessary.
+>> +      */
+>> +     if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
+>> +             mutex_lock(&st->cmd_lock);
+>> +             st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +             st->param.ec_rate.data = CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY;
+>> +             cros_ec_motion_send_host_cmd(st, 0);
+>> +             mutex_unlock(&st->cmd_lock);
+>> +     }
+>> +
+>> +     return 0;
+>> +}
+>> +
+>> +static void __maybe_unused cros_ec_sensors_complete(struct device *dev)
+>> +{
+>> +     struct platform_device *pdev = to_platform_device(dev);
+>> +     struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>> +     struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +     if (st->curr_sampl_freq == 0)
+>> +             return;
+>> +
+>> +     if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
+>> +             mutex_lock(&st->cmd_lock);
+>> +             st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +             st->param.ec_rate.data = st->curr_sampl_freq;
+>> +             cros_ec_motion_send_host_cmd(st, 0);
+>> +             mutex_unlock(&st->cmd_lock);
+>> +     }
+>> +}
+>> +
+>> +MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
+>> +MODULE_LICENSE("GPL v2");
+>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>> new file mode 100644
+>> index 0000000..69e09dc
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>> @@ -0,0 +1,177 @@
+>> +/*
+>> + * ChromeOS EC sensor hub
+>> + *
+>> + * Copyright (C) 2016 Google, Inc
+>> + *
+>> + * This software is licensed under the terms of the GNU General Public
+>> + * License version 2, as published by the Free Software Foundation, and
+>> + * may be copied, distributed, and modified under those terms.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#ifndef __CROS_EC_SENSORS_CORE_H
+>> +#define __CROS_EC_SENSORS_CORE_H
+>> +
+>> +#include <linux/irqreturn.h>
+>> +
+>> +enum {
+>> +     CROS_EC_SENSOR_X,
+>> +     CROS_EC_SENSOR_Y,
+>> +     CROS_EC_SENSOR_Z,
+>> +     CROS_EC_SENSOR_MAX_AXIS,
+>> +};
+>> +
+>> +/* EC returns sensor values using signed 16 bit registers */
+>> +#define CROS_EC_SENSOR_BITS 16
+>> +
+>> +/*
+>> + * 4 16 bit channels are allowed.
+>> + * Good enough for current sensors, they use up to 3 16 bit vectors.
+>> + */
+>> +#define CROS_EC_SAMPLE_SIZE  (sizeof(s64) * 2)
+>> +
+>> +/* Minimum sampling period to use when device is suspending */
+>> +#define CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY 1000  /* 1 second */
+>> +
+>> +/**
+>> + * struct cros_ec_sensors_core_state - state data for EC sensors IIO driver
+>> + * @ec:                              cros EC device structure
+>> + * @cmd_lock:                        lock used to prevent simultaneous access to the
+>> + *                           commands.
+>> + * @msg:                     cros EC command structure
+>> + * @param:                   motion sensor parameters structure
+>> + * @resp:                    motion sensor response structure
+>> + * @type:                    type of motion sensor
+>> + * @loc:                     location where the motion sensor is placed
+>> + * @calib:                   calibration parameters. Nothe that trigger
+>> + *                           captured data will always provide the calibrated
+>> + *                           data
+>> + * @samples:                 static array to hold data from a single capture.
+>> + *                           For each channel we need 2 bytees, except for
+> typo : bytes
+>> + *                           the timestamp. The timestamp is always last and
+>> + *                           is always 8-byte aligned.
+>> + * @read_ec_sensors_data:    function used for accessing sensors values
+>> + * @cuur_sampl_freq:         current sampling period
+>> + */
+>> +struct cros_ec_sensors_core_state {
+>> +     struct cros_ec_device *ec;
+>> +     struct mutex cmd_lock;
+>> +
+>> +     struct cros_ec_command *msg;
+>> +     struct ec_params_motion_sense param;
+>> +     struct ec_response_motion_sense *resp;
+>> +
+>> +     enum motionsensor_type type;
+>> +     enum motionsensor_location loc;
+>> +
+>> +     struct calib_data {
+>> +             s16 offset;
+>> +     } calib[CROS_EC_SENSOR_MAX_AXIS];
+>> +
+>> +     u8 samples[CROS_EC_SAMPLE_SIZE];
+>> +
+>> +     int (*read_ec_sensors_data)(struct iio_dev *indio_dev,
+>> +                                 unsigned long scan_mask, s16 *data);
+>> +
+>> +     int curr_sampl_freq;
+>> +};
+>> +
+>> +/**
+>> + * cros_ec_sensors_read_lpc() - retrieve data from EC shared memory
+>> + * @indio_dev:       pointer to IIO device
+>> + * @scan_mask:       bitmap of the sensor indices to scan
+>> + * @data:    location to store data
+>> + *
+>> + * This is the safe function for reading the EC data. It guarantees that the
+>> + * data sampled was not modified by the EC while being read.
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev, unsigned long scan_mask,
+>> +                          s16 *data);
+>> +
+>> +/**
+>> + * cros_ec_sensors_read_cmd() - retrieve data using the EC command protocol
+>> + * @indio_dev:       pointer to IIO device
+>> + * @scan_mask:       bitmap of the sensor indices to scan
+>> + * @data:    location to store data
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev, unsigned long scan_mask,
+>> +                          s16 *data);
+>> +
+>> +/**
+>> + * cros_ec_sensors_core_init() - basic initialization of the core structure
+>> + * @pdev:            platform device created for the sensors
+>> + * @indio_dev:               iio device structure of the device
+>> + * @physical_device: true if the device refers to a physical device
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_sensors_core_init(struct platform_device *pdev,
+>> +                           struct iio_dev *indio_dev, bool physical_device);
+>> +
+>> +/**
+>> + * cros_ec_sensors_capture() - the trigger handler function
+>> + * @irq:     the interrupt number.
+>> + * @p:               a pointer to the poll function.
+>> + *
+>> + * On a trigger event occurring, if the pollfunc is attached then this
+>> + * handler is called as a threaded interrupt (and hence may sleep). It
+>> + * is responsible for grabbing data from the device and pushing it into
+>> + * the associated buffer.
+>> + *
+>> + * Return: IRQ_HANDLED
+>> + */
+>> +irqreturn_t cros_ec_sensors_capture(int irq, void *p);
+>> +
+>> +/**
+>> + * cros_ec_motion_send_host_cmd() - send motion sense host command
+>> + * @st:              pointer to state information for device
+>> + * @opt_length:      optional length to reduce the response size, useful on the data
+>> + *           path. Otherwise, the maximal allowed response size is used
+>> + *
+>> + * When called, the sub-command is assumed to be set in param->cmd.
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *st,
+>> +                              u16 opt_length);
+>> +
+>> +/**
+>> + * cros_ec_sensors_core_read() - function to request a value from the sensor
+>> + * @st:              pointer to state information for device
+>> + * @chan:    channel specification structure table
+>> + * @val:     will contain one element making up the returned value
+>> + * @val2:    will contain another element making up the returned value
+>> + * @mask:    specifies which values to be requested
+>> + *
+>> + * Return:   the type of value returned by the device
+>> + */
+>> +int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+>> +                           struct iio_chan_spec const *chan,
+>> +                           int *val, int *val2, long mask);
+>> +
+>> +/**
+>> + * cros_ec_sensors_core_write() - function to write a value to the sensor
+>> + * @st:              pointer to state information for device
+>> + * @chan:    channel specification structure table
+>> + * @val:     first part of value to write
+>> + * @val2:    second part of value to write
+>> + * @mask:    specifies which values to write
+>> + *
+>> + * Return:   the type of value returned by the device
+>> + */
+>> +int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+>> +                            struct iio_chan_spec const *chan,
+>> +                            int val, int val2, long mask);
+>> +
+>> +/* List of extended channel specification for all sensors */
+>> +extern const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[];
+>> +
+>> +#endif  /* __CROS_EC_SENSORS_CORE_H */
+>> diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
+>> index d6539c1..7769ea6 100644
+>> --- a/include/linux/mfd/cros_ec.h
+>> +++ b/include/linux/mfd/cros_ec.h
+>> @@ -151,6 +151,15 @@ struct cros_ec_device {
+>>       int event_size;
+>>  };
+>>
+>> +/**
+>> + * struct cros_ec_sensor_platform - ChromeOS EC sensor platform information
+>> + *
+>> + * @sensor_num: Id of the sensor, as reported by the EC.
+>> + */
+>> +struct cros_ec_sensor_platform {
+>> +     u8 sensor_num;
+>> +};
+>> +
+>>  /* struct cros_ec_platform - ChromeOS EC platform information
+>>   *
+>>   * @ec_name: name of EC device (e.g. 'cros-ec', 'cros-pd', ...)
+>> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+>> index 76728ff..8826e0f 100644
+>> --- a/include/linux/mfd/cros_ec_commands.h
+>> +++ b/include/linux/mfd/cros_ec_commands.h
+>> @@ -1315,6 +1315,24 @@ enum motionsense_command {
+>>        */
+>>       MOTIONSENSE_CMD_KB_WAKE_ANGLE = 5,
+>>
+>> +     /*
+>> +      * Returns a single sensor data.
+>> +      */
+>> +     MOTIONSENSE_CMD_DATA = 6,
+>> +
+>> +     /*
+>> +      * Perform low level calibration.. On sensors that support it, ask to
+>> +      * do offset calibration.
+>> +      */
+>> +     MOTIONSENSE_CMD_PERFORM_CALIB = 10,
+>> +
+>> +     /*
+>> +      * Sensor Offset command is a setter/getter command for the offset used
+>> +      * for calibration. The offsets can be calculated by the host, or via
+>> +      * PERFORM_CALIB command.
+>> +      */
+>> +     MOTIONSENSE_CMD_SENSOR_OFFSET = 11,
+>> +
+>>       /* Number of motionsense sub-commands. */
+>>       MOTIONSENSE_NUM_CMDS
+>>  };
+>> @@ -1335,12 +1353,18 @@ enum motionsensor_id {
+>>  enum motionsensor_type {
+>>       MOTIONSENSE_TYPE_ACCEL = 0,
+>>       MOTIONSENSE_TYPE_GYRO = 1,
+>> +     MOTIONSENSE_TYPE_MAG = 2,
+>> +     MOTIONSENSE_TYPE_PROX = 3,
+>> +     MOTIONSENSE_TYPE_LIGHT = 4,
+>> +     MOTIONSENSE_TYPE_ACTIVITY = 5,
+>> +     MOTIONSENSE_TYPE_MAX
+>>  };
+>>
+>>  /* List of motion sensor locations. */
+>>  enum motionsensor_location {
+>>       MOTIONSENSE_LOC_BASE = 0,
+>>       MOTIONSENSE_LOC_LID = 1,
+>> +     MOTIONSENSE_LOC_MAX,
+>>  };
+>>
+>>  /* List of motion sensor chips. */
+>> @@ -1361,6 +1385,31 @@ enum motionsensor_chip {
+>>   */
+>>  #define EC_MOTION_SENSE_NO_VALUE -1
+>>
+>> +#define EC_MOTION_SENSE_INVALID_CALIB_TEMP 0x8000
+>> +
+>> +/* Set Calibration information */
+>> +#define MOTION_SENSE_SET_OFFSET      1
+>> +
+>> +struct ec_response_motion_sensor_data {
+>> +     /* Flags for each sensor. */
+>> +     uint8_t flags;
+>> +     /* Sensor number the data comes from */
+>> +     uint8_t sensor_num;
+>> +     /* Each sensor is up to 3-axis. */
+>> +     union {
+>> +             int16_t             data[3];
+>> +             struct {
+>> +                     uint16_t    rsvd;
+>> +                     uint32_t    timestamp;
+>> +             } __packed;
+>> +             struct {
+>> +                     uint8_t     activity; /* motionsensor_activity */
+>> +                     uint8_t     state;
+>> +                     int16_t     add_info[2];
+>> +             };
+>> +     };
+>> +} __packed;
+>> +
+>>  struct ec_params_motion_sense {
+>>       uint8_t cmd;
+>>       union {
+>> @@ -1378,9 +1427,37 @@ struct ec_params_motion_sense {
+>>                       int16_t data;
+>>               } ec_rate, kb_wake_angle;
+>>
+>> +             /* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
+>> +             struct {
+>> +                     uint8_t sensor_num;
+>> +
+>> +                     /*
+>> +                      * bit 0: If set (MOTION_SENSE_SET_OFFSET), set
+>> +                      * the calibration information in the EC.
+>> +                      * If unset, just retrieve calibration information.
+>> +                      */
+>> +                     uint16_t flags;
+>> +
+>> +                     /*
+>> +                      * Temperature at calibration, in units of 0.01 C
+>> +                      * 0x8000: invalid / unknown.
+>> +                      * 0x0: 0C
+>> +                      * 0x7fff: +327.67C
+>> +                      */
+>> +                     int16_t temp;
+>> +
+>> +                     /*
+>> +                      * Offset for calibration.
+>> +                      * Unit:
+>> +                      * Accelerometer: 1/1024 g
+>> +                      * Gyro:          1/1024 deg/s
+>> +                      * Compass:       1/16 uT
+>> +                      */
+>> +                     int16_t offset[3];
+>> +             } __packed sensor_offset;
+>> +
+>>               /* Used for MOTIONSENSE_CMD_INFO. */
+>>               struct {
+>> -                     /* Should be element of enum motionsensor_id. */
+>>                       uint8_t sensor_num;
+>>               } info;
+>>
+>> @@ -1410,11 +1487,14 @@ struct ec_response_motion_sense {
+>>                       /* Flags representing the motion sensor module. */
+>>                       uint8_t module_flags;
+>>
+>> -                     /* Flags for each sensor in enum motionsensor_id. */
+>> -                     uint8_t sensor_flags[EC_MOTION_SENSOR_COUNT];
+>> +                     /* Number of sensors managed directly by the EC. */
+>> +                     uint8_t sensor_count;
+>>
+>> -                     /* Array of all sensor data. Each sensor is 3-axis. */
+>> -                     int16_t data[3*EC_MOTION_SENSOR_COUNT];
+>> +                     /*
+>> +                      * Sensor data is truncated if response_max is too small
+>> +                      * for holding all the data.
+>> +                      */
+>> +                     struct ec_response_motion_sensor_data sensor[0];
+>>               } dump;
+>>
+>>               /* Used for MOTIONSENSE_CMD_INFO. */
+>> @@ -1429,6 +1509,9 @@ struct ec_response_motion_sense {
+>>                       uint8_t chip;
+>>               } info;
+>>
+>> +             /* Used for MOTIONSENSE_CMD_DATA */
+>> +             struct ec_response_motion_sensor_data data;
+>> +
+>>               /*
+>>                * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR,
+>>                * MOTIONSENSE_CMD_SENSOR_RANGE, and
+>> @@ -1438,6 +1521,12 @@ struct ec_response_motion_sense {
+>>                       /* Current value of the parameter queried. */
+>>                       int32_t ret;
+>>               } ec_rate, sensor_odr, sensor_range, kb_wake_angle;
+>> +
+>> +             /* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
+>> +             struct {
+>> +                     int16_t temp;
+>> +                     int16_t offset[3];
+>> +             } sensor_offset, perform_calib;
+>>       };
+>>  } __packed;
+>>
+>>
+>
