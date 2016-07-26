@@ -1,100 +1,116 @@
-Return-Path: <maxime.ripard@free-electrons.com>
-Date: Tue, 26 Jul 2016 17:13:11 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	lee.jones@linaro.org, antoine.tenart@free-electrons.com,
-	thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:55474 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754393AbcGZQE5 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 12:04:57 -0400
+Date: Tue, 26 Jul 2016 09:04:10 -0700
+From: Guenter Roeck <linux@roeck-us.net>
+To: Alexander Stein <alexander.stein@systec-electronic.com>
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	linux-kernel@vger.kernel.org, jdelvare@suse.com, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	lee.jones@linaro.org, linux-hwmon@vger.kernel.org,
 	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-input@vger.kernel.org
-Subject: Re: [PATCH 4/5] input: touchscreen: support Allwinner SoCs'
- touchscreen
-Message-ID: <20160726151311.GG7190@lukather>
-References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
- <20160721062950.GB5993@lukather>
- <20160721064140.GA17658@dtor-ws>
- <20160725094542.GI7419@lukather>
- <20160725170839.GA27415@dtor-ws>
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Subject: Re: [PATCH v3 1/4] hwmon: iio_hwmon: delay probing with late_initcall
+Message-ID: <20160726160410.GE30628@roeck-us.net>
+References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com>
+ <5277864.qlyRKbC1Zy@ws-stein>
+ <ed5c1761-bdc7-df9c-96c8-998e83c49c4c@free-electrons.com>
+ <2324970.FJcTUYNoO2@ws-stein>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="+sHJum3is6Tsg7/J"
-In-Reply-To: <20160725170839.GA27415@dtor-ws>
-List-ID: <linux-iio@vger.kernel.org>
-
-
---+sHJum3is6Tsg7/J
 Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+In-Reply-To: <2324970.FJcTUYNoO2@ws-stein>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On Tue, Jul 26, 2016 at 12:00:33PM +0200, Alexander Stein wrote:
+> On Tuesday 26 July 2016 11:33:59, Quentin Schulz wrote:
+> > On 26/07/2016 11:05, Alexander Stein wrote:
+> > > On Tuesday 26 July 2016 10:24:48, Quentin Schulz wrote:
+> > >> On 26/07/2016 10:21, Alexander Stein wrote:
+> > >>> On Tuesday 26 July 2016 09:43:44, Quentin Schulz wrote:
+> > >>>> iio_channel_get_all returns -ENODEV when it cannot find either phandles
+> > >>>> and
+> > >>>> properties in the Device Tree or channels whose consumer_dev_name
+> > >>>> matches
+> > >>>> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio drivers
+> > >>>> which might be probed after iio_hwmon.
+> > >>> 
+> > >>> Would it work if iio_channel_get_all returning ENODEV is used for
+> > >>> returning
+> > >>> EPROBE_DEFER in iio_channel_get_all? Using late initcalls for
+> > >>> driver/device
+> > >>> dependencies seems not right for me at this place.
+> > >> 
+> > >> Then what if the iio_channel_get_all is called outside of the probe of a
+> > >> driver? We'll have to change the error code, things we are apparently
+> > >> trying to avoid (see v2 patches' discussions).
+> > > 
+> > > Maybe I didn't express my idea enough. I don't want to change the behavior
+> > > of iio_channel_get_all at all. Just the result evaluation of
+> > > iio_channel_get_all in iio_hwmon_probe. I have something link the patch
+> > > below in mind.
+> > > 
+> > > Best regards,
+> > > Alexander
+> > > ---
+> > > diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+> > > index b550ba5..e32d150 100644
+> > > --- a/drivers/hwmon/iio_hwmon.c
+> > > +++ b/drivers/hwmon/iio_hwmon.c
+> > > @@ -73,8 +73,12 @@ static int iio_hwmon_probe(struct platform_device
+> > > *pdev)
+> > > 
+> > >                 name = dev->of_node->name;
+> > >         
+> > >         channels = iio_channel_get_all(dev);
+> > > 
+> > > -       if (IS_ERR(channels))
+> > > -               return PTR_ERR(channels);
+> > > +       if (IS_ERR(channels)) {
+> > > +               if (PTR_ERR(channels) == -ENODEV)
+> > > +                       return -EPROBE_DEFER;
+> > > +               else
+> > > +                       return PTR_ERR(channels);
+> > > +       }
+> > > 
+> > >         st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> > >         if (st == NULL) {
+> > 
+> > Indeed, I misunderstood what you told me.
+> > 
+> > Actually, the patch you proposed is part of my v1
+> > (https://lkml.org/lkml/2016/6/28/203) and v2
+> > (https://lkml.org/lkml/2016/7/15/215).
+> > Jonathan and Guenter didn't really like the idea of changing the -ENODEV
+> > in -EPROBE_DEFER.
+> 
+> Thanks for the links.
+> 
+> > What I thought you were proposing was to change the -ENODEV return code
+> > inside iio_channel_get_all. This cannot be an option since the function
+> > might be called outside of a probe (it is not yet, but might be in the
+> > future?).
+> 
+> AFAICS this is a helper function not knowing about device probing itself. And 
+> it should stay at that.
+> 
+> > Of what I understood, two possibilities are then possible (proposed
+> > either by Guenter or Jonathan): either rework the iio framework to
+> > register iio map array earlier or to use late_initcall instead of init
+> > for the driver consuming the iio channels.
+> 
+> Interestingly using this problem would not arise due to module dependencies. 
+> But using late_initcall would mean this needs to be done on any driver using 
+> iio channels? I would rather keep those consumers simple.
+> 
+Me too, but that would imply a solution in iio. The change you propose above
+isn't exactly simple either, and would also be needed in each consumer driver.
 
-On Mon, Jul 25, 2016 at 10:08:39AM -0700, Dmitry Torokhov wrote:
-> > > > ... but your driver isn't registered yet. How does input_report and
-> > > > input_sync behave in such a case?
-> > >=20
-> > > This is explicitly allowed:
-> > >=20
-> > > "
-> > > ...
-> > >  * NOTE: input_event() may be safely used right after input device was
-> > >  * allocated with input_allocate_device(), even before it is register=
-ed
-> > >  * with input_register_device(), but the event will not reach any of =
-the
-> > >  * input handlers. Such early invocation of input_event() may be used
-> > >  * to 'seed' initial state of a switch or initial position of absolute
-> > >  * axis, etc.
-> > >  */
-> > > "
-> >=20
-> > Good to know. Still, it feels like it should be handled explicitly,
-> > instead of relying on the fact that we only call input_event in our
-> > handler and that it works that way.
->=20
-> Why? It is the documented property of input API and it is done so
-> precisely so that you can register interrupt before registering input
-> device. That is done because once registered input device is supposed to
-> be fully-functional.  It does not matter for this driver but there are
-> drivers out there that require interrupt handling as part of their
-> "open" method.
+Just for the record, I dislike the late_initcall solution as well, but I prefer
+it over blindly converting ENODEV to EPROBE_DEFER.
 
-I'm not questionning the input framework itself, and it works right
-now because we all looked at that issue and found that it would work
-even in the event of an early interrupt.
-
-What I'm afraid of is that in a few weeks /monthes / years / decades,
-someone will add something new in the driver without taking care of
-that, and we will miss it because we won't have enough context.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---+sHJum3is6Tsg7/J
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXl34HAAoJEBx+YmzsjxAgNwoP/2eKDNzG8g6xMquD9F2QrOVv
-ztykgMy8qd9KO9zy5/jC30OtHFfGjr4nwOPQqO8C+3QqBe5245u4KonQMPurQm38
-wKgH91qpiLZapCjTlJpjDMFJe1gqzxZCclQlHHFn78TdfQJeO0RIaMpOIMFm4MSF
-d7TzWQymK2S2pGj9XZCaDJucorXn+yAmJkS3BWqwMpHUVQ8RKJyrEX263vZnRzbf
-u11e2XKTKpKNhlImT0mGPastvZjC6qR2lpwQTHWHkntr9FXjVhbbdqPh4BqjL/tZ
-spuE2dBlM9i2R9YsSzrrPLoDlgKZ2AgjaQ7jI0BTJEqZcZcDL1rRtSZWygJQCtrK
-BPu2qe5XUP5uPTBnliB80UUvvcO6KU+w0Piwdt4dkK/nH6H7ei/YkItpcb5/ImX1
-J+C6eCRnIdz+18Mq42nOGs9b4/t1XnLrsE/0rLlvdWdYCvC8+lrzpTZuEjmufHm6
-u6zSAd7JKYwViTud1RFHMp6ljMIOwqqtT8ZJPQr9NBH67Ea8+vISooam96dlF9wx
-GT5h2eLuzrfxn68RPuZ8dqo8w4v0gzjc8lgUjkuMWJzFW9PCzfFTQi/PG48UCQ5k
-R1e0ZKUZN/l3LzyyVRf4GZfQpSENUjcvN4iLxGYjKrU45lEIFB4sXhnzS29/dORl
-98ISILG3nafEZZ6K7uFU
-=NQCK
------END PGP SIGNATURE-----
-
---+sHJum3is6Tsg7/J--
+Guenter
