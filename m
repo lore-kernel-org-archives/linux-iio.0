@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f65.google.com ([209.85.220.65]:35210 "EHLO
-	mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751041AbcGZMN2 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 08:13:28 -0400
+Received: from mail-pa0-f66.google.com ([209.85.220.66]:32923 "EHLO
+	mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751041AbcGZMNj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 08:13:39 -0400
 From: Caesar Wang <wxt@rock-chips.com>
 To: jic23@kernel.org, heiko@sntech.de
 Cc: devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
@@ -10,9 +10,11 @@ Cc: devicetree@vger.kernel.org, linux-rockchip@lists.infradead.org,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
 	john@metanate.com, dianders@chromium.org, linux@roeck-us.net,
 	Caesar Wang <wxt@rock-chips.com>
-Subject: [PATCH v2 1/4] iio: adc: rockchip_saradc: reset saradc controller before programming it
-Date: Tue, 26 Jul 2016 20:13:12 +0800
-Message-Id: <1469535195-5227-1-git-send-email-wxt@rock-chips.com>
+Subject: [PATCH v2 4/4] arm: dts: rockchip: add reset node for the exist saradc SoCs
+Date: Tue, 26 Jul 2016 20:13:15 +0800
+Message-Id: <1469535195-5227-4-git-send-email-wxt@rock-chips.com>
+In-Reply-To: <1469535195-5227-1-git-send-email-wxt@rock-chips.com>
+References: <1469535195-5227-1-git-send-email-wxt@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
@@ -20,130 +22,54 @@ SARADC controller needs to be reset before programming it, otherwise
 it will not function properly.
 
 Signed-off-by: Caesar Wang <wxt@rock-chips.com>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Heiko Stuebner <heiko@sntech.de>
-Cc: Rob Herring <robh+dt@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Cc: linux-rockchip@lists.infradead.org
-
 ---
 
-Changes in v2:
-- Make the reset as an optional property, since it should work
-with old devicetrees as well.
+Changes in v2: None
 
- .../bindings/iio/adc/rockchip-saradc.txt           |  7 +++++
- drivers/iio/adc/Kconfig                            |  1 +
- drivers/iio/adc/rockchip_saradc.c                  | 31 ++++++++++++++++++++++
- 3 files changed, 39 insertions(+)
+ arch/arm/boot/dts/rk3066a.dtsi | 2 ++
+ arch/arm/boot/dts/rk3288.dtsi  | 2 ++
+ arch/arm/boot/dts/rk3xxx.dtsi  | 2 ++
+ 3 files changed, 6 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-index bf99e2f..205593f 100644
---- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-@@ -16,6 +16,11 @@ Required properties:
- - vref-supply: The regulator supply ADC reference voltage.
- - #io-channel-cells: Should be 1, see ../iio-bindings.txt
+diff --git a/arch/arm/boot/dts/rk3066a.dtsi b/arch/arm/boot/dts/rk3066a.dtsi
+index c0ba86c..0d0dae3 100644
+--- a/arch/arm/boot/dts/rk3066a.dtsi
++++ b/arch/arm/boot/dts/rk3066a.dtsi
+@@ -197,6 +197,8 @@
+ 		clock-names = "saradc", "apb_pclk";
+ 		interrupts = <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
+ 		#io-channel-cells = <1>;
++		resets = <&cru SRST_SARADC>;
++		reset-names = "saradc-apb";
+ 		status = "disabled";
+ 	};
  
-+Optional properties:
-+- resets: Must contain an entry for each entry in reset-names if need support
-+	  this option. See ../reset/reset.txt for details.
-+- reset-names: Must include the name "saradc-apb".
-+
- Example:
- 	saradc: saradc@2006c000 {
- 		compatible = "rockchip,saradc";
-@@ -23,6 +28,8 @@ Example:
- 		interrupts = <GIC_SPI 26 IRQ_TYPE_LEVEL_HIGH>;
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index cd33f01..91c4b3c 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -279,6 +279,8 @@
+ 		#io-channel-cells = <1>;
  		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
  		clock-names = "saradc", "apb_pclk";
 +		resets = <&cru SRST_SARADC>;
 +		reset-names = "saradc-apb";
- 		#io-channel-cells = <1>;
- 		vref-supply = <&vcc18>;
+ 		status = "disabled";
  	};
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 1de31bd..7675772 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -389,6 +389,7 @@ config QCOM_SPMI_VADC
- config ROCKCHIP_SARADC
- 	tristate "Rockchip SARADC driver"
- 	depends on ARCH_ROCKCHIP || (ARM && COMPILE_TEST)
-+	depends on RESET_CONTROLLER
- 	help
- 	  Say yes here to build support for the SARADC found in SoCs from
- 	  Rockchip.
-diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-index f9ad6c2..dc1379f 100644
---- a/drivers/iio/adc/rockchip_saradc.c
-+++ b/drivers/iio/adc/rockchip_saradc.c
-@@ -21,6 +21,8 @@
- #include <linux/of_device.h>
- #include <linux/clk.h>
- #include <linux/completion.h>
-+#include <linux/delay.h>
-+#include <linux/reset.h>
- #include <linux/regulator/consumer.h>
- #include <linux/iio/iio.h>
  
-@@ -53,6 +55,7 @@ struct rockchip_saradc {
- 	struct clk		*clk;
- 	struct completion	completion;
- 	struct regulator	*vref;
-+	struct reset_control	*reset;
- 	const struct rockchip_saradc_data *data;
- 	u16			last_val;
- };
-@@ -190,6 +193,16 @@ static const struct of_device_id rockchip_saradc_match[] = {
- };
- MODULE_DEVICE_TABLE(of, rockchip_saradc_match);
+diff --git a/arch/arm/boot/dts/rk3xxx.dtsi b/arch/arm/boot/dts/rk3xxx.dtsi
+index 99bbcc2..e2cd683 100644
+--- a/arch/arm/boot/dts/rk3xxx.dtsi
++++ b/arch/arm/boot/dts/rk3xxx.dtsi
+@@ -399,6 +399,8 @@
+ 		#io-channel-cells = <1>;
+ 		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
+ 		clock-names = "saradc", "apb_pclk";
++		resets = <&cru SRST_SARADC>;
++		reset-names = "saradc-apb";
+ 		status = "disabled";
+ 	};
  
-+/**
-+ * Reset SARADC Controller.
-+ */
-+static void rockchip_saradc_reset_controller(struct reset_control *reset)
-+{
-+	reset_control_assert(reset);
-+	usleep_range(10, 20);
-+	reset_control_deassert(reset);
-+}
-+
- static int rockchip_saradc_probe(struct platform_device *pdev)
- {
- 	struct rockchip_saradc *info = NULL;
-@@ -218,6 +231,21 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 	if (IS_ERR(info->regs))
- 		return PTR_ERR(info->regs);
- 
-+	/*
-+	 * The reset should be an optional property, as it should work
-+	 * with old devicetrees as well
-+	 */
-+	info->reset = devm_reset_control_get_optional(&pdev->dev,
-+			"saradc-apb");
-+	if (IS_ERR(info->reset)) {
-+		ret = PTR_ERR(info->reset);
-+		if (ret != -ENOENT)
-+			return ret;
-+
-+		dev_dbg(&pdev->dev, "no reset control found\n");
-+		info->reset = NULL;
-+	}
-+
- 	init_completion(&info->completion);
- 
- 	irq = platform_get_irq(pdev, 0);
-@@ -252,6 +280,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
- 		return PTR_ERR(info->vref);
- 	}
- 
-+	if (info->reset)
-+		rockchip_saradc_reset_controller(info->reset);
-+
- 	/*
- 	 * Use a default value for the converter clock.
- 	 * This may become user-configurable in the future.
 -- 
 1.9.1
 
