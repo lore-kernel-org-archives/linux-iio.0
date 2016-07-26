@@ -1,48 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from youngberry.canonical.com ([91.189.89.112]:56572 "EHLO
-	youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754728AbcGYWlI (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 18:41:08 -0400
-From: Colin King <colin.king@canonical.com>
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
+Received: from regular1.263xmail.com ([211.150.99.140]:35930 "EHLO
+	regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752630AbcGZCwG (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 25 Jul 2016 22:52:06 -0400
+Message-ID: <5796D036.1060101@rock-chips.com>
+Date: Tue, 26 Jul 2016 10:51:34 +0800
+From: Caesar Wang <wxt@rock-chips.com>
+MIME-Version: 1.0
+To: Guenter Roeck <linux@roeck-us.net>,
 	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: ad5755: fix off-by-one on devnr limit check
-Date: Mon, 25 Jul 2016 23:40:01 +0100
-Message-Id: <1469486401-17839-1-git-send-email-colin.king@canonical.com>
+	Heiko Stuebner <heiko@sntech.de>
+CC: linux-iio@vger.kernel.org, dianders@chromium.org,
+	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org,
+	Caesar Wang <wxt@rock-chips.com>
+Subject: Re: [PATCH] iio: adc: rockchip_saradc: Explicitly disable ADC on
+ probe
+References: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
+In-Reply-To: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Colin Ian King <colin.king@canonical.com>
+Hi Guenter,
 
-The comparison for devnr limits is off-by-one, the current check
-allows 0 to AD5755_NUM_CHANNELS and the limit should be in fact
-0 to AD5755_NUM_CHANNELS - 1.  This can lead to an out of bounds
-write to pdata->dac[devnr]. Fix this by replacing > with >= on the
-comparison.
+Thanks for fixing it.
 
-Signed-off-by: Colin Ian King <colin.king@canonical.com>
----
- drivers/iio/dac/ad5755.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+On 2016年07月26日 03:39, Guenter Roeck wrote:
+> If the ADC is read for the first time, the caller gets a timeout error,
+> and the kernel log shows
+>
+> read channel() error: -110
+>
+> The ADC may be enabled on boot, and needs to be explicitly disabled
+> for a read sequence to work (otherwise there is no completion interrupt).
+> Disaple it explicitly in the probe function.
+>
+> Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
+> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+> ---
+>   drivers/iio/adc/rockchip_saradc.c | 3 +++
+>   1 file changed, 3 insertions(+)
+>
+> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+> index f9ad6c2d6821..6aa3271d86b5 100644
+> --- a/drivers/iio/adc/rockchip_saradc.c
+> +++ b/drivers/iio/adc/rockchip_saradc.c
+> @@ -280,6 +280,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>   		goto err_pclk;
+>   	}
+>   
+> +	/* Make sure ADC is disabled */
+> +	writel_relaxed(0, info->regs + SARADC_CTRL);
 
-diff --git a/drivers/iio/dac/ad5755.c b/drivers/iio/dac/ad5755.c
-index 0fde593..5f79682 100644
---- a/drivers/iio/dac/ad5755.c
-+++ b/drivers/iio/dac/ad5755.c
-@@ -655,7 +655,7 @@ static struct ad5755_platform_data *ad5755_parse_dt(struct device *dev)
- 
- 	devnr = 0;
- 	for_each_child_of_node(np, pp) {
--		if (devnr > AD5755_NUM_CHANNELS) {
-+		if (devnr >= AD5755_NUM_CHANNELS) {
- 			dev_err(dev,
- 				"There is to many channels defined in DT\n");
- 			goto error_out;
+I think we should reset the saradc controller.
+Since make sure the reset value is 0 and loader-->kernel may even cause 
+harm, as my experience on tsadc. (drivers/thermal/rockchip_thermal.c)
+
+
+e.g.:
+/**
+* Reset SARADC Controller, reset all saradc registers.
+*/
+static void rockchip_saradc_reset_controller(struct reset_control *reset)
+{
+reset_control_assert(reset);
+usleep_range(10, 20);
+reset_control_deassert(reset);
+}
+
+..probe()
+{
+...
+rockchip_saradc_reset_controller();
+...
+}
+
+
+-
+Caesar
+
+> +
+>   	platform_set_drvdata(pdev, indio_dev);
+>   
+>   	indio_dev->name = dev_name(&pdev->dev);
+
+
 -- 
-2.8.1
+caesar wang | software engineer | wxt@rock-chip.com
+
 
