@@ -1,44 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:33080 "EHLO
-	mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1755118AbcGZGMe (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 02:12:34 -0400
+Received: from regular1.263xmail.com ([211.150.99.130]:33114 "EHLO
+	regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751692AbcGZGyM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 02:54:12 -0400
+Message-ID: <579707BD.8060800@rock-chips.com>
+Date: Tue, 26 Jul 2016 14:48:29 +0800
 From: Caesar Wang <wxt@rock-chips.com>
-To: jic23@kernel.org
-Cc: heiko@sntech.de, robh+dt@kernel.org, linux-iio@vger.kernel.org,
-	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	devicetree@vger.kernel.org, linux@roeck-us.net,
-	dianders@chromium.org, Caesar Wang <wxt@rock-chips.com>
-Subject: [PATCH 3/4] arm64: dts: rockchip: add reset saradc node for rk3368 SoCs
-Date: Tue, 26 Jul 2016 14:11:49 +0800
-Message-Id: <1469513510-1516-3-git-send-email-wxt@rock-chips.com>
-In-Reply-To: <1469513510-1516-1-git-send-email-wxt@rock-chips.com>
-References: <1469513510-1516-1-git-send-email-wxt@rock-chips.com>
+MIME-Version: 1.0
+To: Guenter Roeck <linux@roeck-us.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Heiko Stuebner <heiko@sntech.de>
+CC: Caesar Wang <wxt@rock-chips.com>, linux-iio@vger.kernel.org,
+	linux-rockchip@lists.infradead.org, dianders@chromium.org,
+	linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: rockchip_saradc: Explicitly disable ADC on
+ probe
+References: <1469475540-26855-1-git-send-email-linux@roeck-us.net> <5796D036.1060101@rock-chips.com> <5796D792.4080407@roeck-us.net>
+In-Reply-To: <5796D792.4080407@roeck-us.net>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SARADC controller needs to be reset before programming it, otherwise
-it will not function properly.
 
-Signed-off-by: Caesar Wang <wxt@rock-chips.com>
----
+On 2016年07月26日 11:22, Guenter Roeck wrote:
+> On 07/25/2016 07:51 PM, Caesar Wang wrote:
+>> Hi Guenter,
+>>
+>> Thanks for fixing it.
+>>
+>> On 2016年07月26日 03:39, Guenter Roeck wrote:
+>>> If the ADC is read for the first time, the caller gets a timeout error,
+>>> and the kernel log shows
+>>>
+>>> read channel() error: -110
+>>>
+>>> The ADC may be enabled on boot, and needs to be explicitly disabled
+>>> for a read sequence to work (otherwise there is no completion 
+>>> interrupt).
+>>> Disaple it explicitly in the probe function.
+>>>
+>>> Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
+>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>>> ---
+>>>   drivers/iio/adc/rockchip_saradc.c | 3 +++
+>>>   1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/adc/rockchip_saradc.c 
+>>> b/drivers/iio/adc/rockchip_saradc.c
+>>> index f9ad6c2d6821..6aa3271d86b5 100644
+>>> --- a/drivers/iio/adc/rockchip_saradc.c
+>>> +++ b/drivers/iio/adc/rockchip_saradc.c
+>>> @@ -280,6 +280,9 @@ static int rockchip_saradc_probe(struct 
+>>> platform_device *pdev)
+>>>           goto err_pclk;
+>>>       }
+>>> +    /* Make sure ADC is disabled */
+>>> +    writel_relaxed(0, info->regs + SARADC_CTRL);
+>>
+>> I think we should reset the saradc controller.
+>> Since make sure the reset value is 0 and loader-->kernel may even 
+>> cause harm, as my experience on tsadc. 
+>> (drivers/thermal/rockchip_thermal.c)
+>>
+>>
+>> e.g.:
+>> /**
+>> * Reset SARADC Controller, reset all saradc registers.
+>> */
+>> static void rockchip_saradc_reset_controller(struct reset_control 
+>> *reset)
+>> {
+>> reset_control_assert(reset);
+>> usleep_range(10, 20);
+>> reset_control_deassert(reset);
+>> }
+>>
+>> ..probe()
+>> {
+>> ...
+>> rockchip_saradc_reset_controller();
+>> ...
+>> }
+>>
+>
+> Ok, I'll give it a try.
+>
 
- arch/arm64/boot/dts/rockchip/rk3368.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+I posted it on https://patchwork.kernel.org/patch/9247661/
 
-diff --git a/arch/arm64/boot/dts/rockchip/rk3368.dtsi b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
-index d02a9003..4f44d11 100644
---- a/arch/arm64/boot/dts/rockchip/rk3368.dtsi
-+++ b/arch/arm64/boot/dts/rockchip/rk3368.dtsi
-@@ -270,6 +270,8 @@
- 		#io-channel-cells = <1>;
- 		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
- 		clock-names = "saradc", "apb_pclk";
-+		resets = <&cru SRST_SARADC>;
-+		reset-names = "saradc-apb";
- 		status = "disabled";
- 	};
- 
+
+> Guenter
+>
+>>
+>> -
+>> Caesar
+>>
+>>> +
+>>>       platform_set_drvdata(pdev, indio_dev);
+>>>       indio_dev->name = dev_name(&pdev->dev);
+>>
+>>
+>
+>
+> _______________________________________________
+> Linux-rockchip mailing list
+> Linux-rockchip@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-rockchip
+
+
 -- 
-1.9.1
+caesar wang | software engineer | wxt@rock-chip.com
+
 
