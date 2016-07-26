@@ -1,38 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:36899 "EHLO gloria.sntech.de"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752463AbcGYTmP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 25 Jul 2016 15:42:15 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:35746 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755259AbcGZGMh (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 02:12:37 -0400
+From: Caesar Wang <wxt@rock-chips.com>
+To: jic23@kernel.org
+Cc: heiko@sntech.de, robh+dt@kernel.org, linux-iio@vger.kernel.org,
 	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-	Caesar Wang <wxt@rock-chips.com>, dianders@chromium.org
-Subject: Re: [PATCH] iio: adc: rockchip_saradc: Explicitly disable ADC on probe
-Date: Mon, 25 Jul 2016 21:41:41 +0200
-Message-ID: <2966977.qtjPvpdIFp@diego>
-In-Reply-To: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
-References: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+	devicetree@vger.kernel.org, linux@roeck-us.net,
+	dianders@chromium.org, Caesar Wang <wxt@rock-chips.com>
+Subject: [PATCH 4/4] arm: dts: rockchip: add reset node for the exist saradc SoCs
+Date: Tue, 26 Jul 2016 14:11:50 +0800
+Message-Id: <1469513510-1516-4-git-send-email-wxt@rock-chips.com>
+In-Reply-To: <1469513510-1516-1-git-send-email-wxt@rock-chips.com>
+References: <1469513510-1516-1-git-send-email-wxt@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am Montag, 25. Juli 2016, 12:39:00 schrieb Guenter Roeck:
-> If the ADC is read for the first time, the caller gets a timeout error,
-> and the kernel log shows
-> 
-> read channel() error: -110
-> 
-> The ADC may be enabled on boot, and needs to be explicitly disabled
-> for a read sequence to work (otherwise there is no completion interrupt).
-> Disaple it explicitly in the probe function.
-> 
-> Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
-> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+SARADC controller needs to be reset before programming it, otherwise
+it will not function properly.
 
-in my tests I hadn't notices that issue before, but that is likely because the 
-bootloaders I had didn't enable the saradc. Anyway, that looks definitly sane, 
-so
+Signed-off-by: Caesar Wang <wxt@rock-chips.com>
+---
 
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+ arch/arm/boot/dts/rk3066a.dtsi | 2 ++
+ arch/arm/boot/dts/rk3288.dtsi  | 2 ++
+ arch/arm/boot/dts/rk3xxx.dtsi  | 2 ++
+ 3 files changed, 6 insertions(+)
+
+diff --git a/arch/arm/boot/dts/rk3066a.dtsi b/arch/arm/boot/dts/rk3066a.dtsi
+index c0ba86c..0d0dae3 100644
+--- a/arch/arm/boot/dts/rk3066a.dtsi
++++ b/arch/arm/boot/dts/rk3066a.dtsi
+@@ -197,6 +197,8 @@
+ 		clock-names = "saradc", "apb_pclk";
+ 		interrupts = <GIC_SPI 21 IRQ_TYPE_LEVEL_HIGH>;
+ 		#io-channel-cells = <1>;
++		resets = <&cru SRST_SARADC>;
++		reset-names = "saradc-apb";
+ 		status = "disabled";
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/rk3288.dtsi b/arch/arm/boot/dts/rk3288.dtsi
+index cd33f01..91c4b3c 100644
+--- a/arch/arm/boot/dts/rk3288.dtsi
++++ b/arch/arm/boot/dts/rk3288.dtsi
+@@ -279,6 +279,8 @@
+ 		#io-channel-cells = <1>;
+ 		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
+ 		clock-names = "saradc", "apb_pclk";
++		resets = <&cru SRST_SARADC>;
++		reset-names = "saradc-apb";
+ 		status = "disabled";
+ 	};
+ 
+diff --git a/arch/arm/boot/dts/rk3xxx.dtsi b/arch/arm/boot/dts/rk3xxx.dtsi
+index 99bbcc2..e2cd683 100644
+--- a/arch/arm/boot/dts/rk3xxx.dtsi
++++ b/arch/arm/boot/dts/rk3xxx.dtsi
+@@ -399,6 +399,8 @@
+ 		#io-channel-cells = <1>;
+ 		clocks = <&cru SCLK_SARADC>, <&cru PCLK_SARADC>;
+ 		clock-names = "saradc", "apb_pclk";
++		resets = <&cru SRST_SARADC>;
++		reset-names = "saradc-apb";
+ 		status = "disabled";
+ 	};
+ 
+-- 
+1.9.1
+
