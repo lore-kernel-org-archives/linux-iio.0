@@ -1,71 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from webbox1416.server-home.net ([77.236.96.61]:54075 "EHLO
-	webbox1416.server-home.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1751560AbcGZJF6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 05:05:58 -0400
-From: Alexander Stein <alexander.stein@systec-electronic.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: linux-kernel@vger.kernel.org, jdelvare@suse.com,
-	linux@roeck-us.net, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	lee.jones@linaro.org, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-Subject: Re: [PATCH v3 1/4] hwmon: iio_hwmon: delay probing with late_initcall
-Date: Tue, 26 Jul 2016 11:05:49 +0200
-Message-ID: <5277864.qlyRKbC1Zy@ws-stein>
-In-Reply-To: <10d14cc4-26f1-8f2d-2997-3b2bc323c40e@free-electrons.com>
-References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com> <209942367.uny0GxrY2s@ws-stein> <10d14cc4-26f1-8f2d-2997-3b2bc323c40e@free-electrons.com>
+Received: from gloria.sntech.de ([95.129.55.99]:39592 "EHLO gloria.sntech.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751692AbcGZJRu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 26 Jul 2016 05:17:50 -0400
+From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
+To: Caesar Wang <wxt@rock-chips.com>
+Cc: jic23@kernel.org, robh+dt@kernel.org, linux-iio@vger.kernel.org,
+	linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, linux@roeck-us.net,
+	dianders@chromium.org
+Subject: Re: [PATCH 1/4] iio: adc: rockchip_saradc: reset saradc controller before programming it
+Date: Tue, 26 Jul 2016 11:17:34 +0200
+Message-ID: <12149198.2BnIdx96cc@diego>
+In-Reply-To: <1469513510-1516-1-git-send-email-wxt@rock-chips.com>
+References: <1469513510-1516-1-git-send-email-wxt@rock-chips.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tuesday 26 July 2016 10:24:48, Quentin Schulz wrote:
-> On 26/07/2016 10:21, Alexander Stein wrote:
-> > On Tuesday 26 July 2016 09:43:44, Quentin Schulz wrote:
-> >> iio_channel_get_all returns -ENODEV when it cannot find either phandles
-> >> and
-> >> properties in the Device Tree or channels whose consumer_dev_name matches
-> >> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio drivers
-> >> which might be probed after iio_hwmon.
-> > 
-> > Would it work if iio_channel_get_all returning ENODEV is used for
-> > returning
-> > EPROBE_DEFER in iio_channel_get_all? Using late initcalls for
-> > driver/device
-> > dependencies seems not right for me at this place.
+Am Dienstag, 26. Juli 2016, 14:11:47 schrieb Caesar Wang:
+> SARADC controller needs to be reset before programming it, otherwise
+> it will not function properly.
 > 
-> Then what if the iio_channel_get_all is called outside of the probe of a
-> driver? We'll have to change the error code, things we are apparently
-> trying to avoid (see v2 patches' discussions).
+> Signed-off-by: Caesar Wang <wxt@rock-chips.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Heiko Stuebner <heiko@sntech.de>
+> Cc: Rob Herring <robh+dt@kernel.org>
+> Cc: linux-iio@vger.kernel.org
+> Cc: linux-rockchip@lists.infradead.org
+> ---
+> 
+>  .../bindings/iio/adc/rockchip-saradc.txt           |  5 +++++
+>  drivers/iio/adc/Kconfig                            |  1 +
+>  drivers/iio/adc/rockchip_saradc.c                  | 22
+> ++++++++++++++++++++++ 3 files changed, 28 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt index
+> bf99e2f..d2258be 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+> @@ -13,6 +13,9 @@ Required properties:
+>  - clocks: Must contain an entry for each entry in clock-names.
+>  - clock-names: Shall be "saradc" for the converter-clock, and "apb_pclk"
+> for the peripheral clock.
+> +- resets: Must contain an entry for each entry in reset-names.
+> +	  See ../reset/reset.txt for details.
+> +- reset-names: Must include the name "saradc-apb".
 
-Maybe I didn't express my idea enough. I don't want to change the behavior of  
-iio_channel_get_all at all. Just the result evaluation of iio_channel_get_all 
-in iio_hwmon_probe. I have something link the patch below in mind.
-
-Best regards,
-Alexander
----
-diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
-index b550ba5..e32d150 100644
---- a/drivers/hwmon/iio_hwmon.c
-+++ b/drivers/hwmon/iio_hwmon.c
-@@ -73,8 +73,12 @@ static int iio_hwmon_probe(struct platform_device *pdev)
-                name = dev->of_node->name;
- 
-        channels = iio_channel_get_all(dev);
--       if (IS_ERR(channels))
--               return PTR_ERR(channels);
-+       if (IS_ERR(channels)) {
-+               if (PTR_ERR(channels) == -ENODEV)
-+                       return -EPROBE_DEFER;
-+               else
-+                       return PTR_ERR(channels);
-+       }
- 
-        st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
-        if (st == NULL) {
+as pointed out by John, this should be an optional property, as it should work 
+with old devicetrees as well.
 
