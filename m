@@ -1,198 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f170.google.com ([209.85.220.170]:34541 "EHLO
-	mail-qk0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753205AbcG2R5f (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 29 Jul 2016 13:57:35 -0400
-Received: by mail-qk0-f170.google.com with SMTP id o67so97601554qke.1
-        for <linux-iio@vger.kernel.org>; Fri, 29 Jul 2016 10:57:34 -0700 (PDT)
+Received: from mail-in-08.arcor-online.net ([151.189.21.48]:37987 "EHLO
+	mail-in-08.arcor-online.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1757485AbcG0U3f (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2016 16:29:35 -0400
+Received: from mail-in-02-z2.arcor-online.net (mail-in-02-z2.arcor-online.net [151.189.8.14])
+	by mx.arcor.de (Postfix) with ESMTP id 3s066P1ZFFzwTJ5
+	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 22:29:33 +0200 (CEST)
+Received: from mail-in-12.arcor-online.net (mail-in-12.arcor-online.net [151.189.21.52])
+	by mail-in-02-z2.arcor-online.net (Postfix) with ESMTP id 2BC25538D35
+	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 22:29:33 +0200 (CEST)
+Received: from [192.168.178.23] (p549AC00E.dip0.t-ipconnect.de [84.154.192.14])
+	(Authenticated sender: giorgio.nicole@arcor.de)
+	by mail-in-12.arcor-online.net (Postfix) with ESMTPA id 3s066N6ylKzXfn9
+	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 22:29:32 +0200 (CEST)
+To: linux-iio@vger.kernel.org
+From: Giorgio <giorgio.nicole@arcor.de>
+Subject: trivial error in ti-ads1015.c
+Message-ID: <b6dd0816-074c-a2a7-4e2c-55e417dfcf77@arcor.de>
+Date: Wed, 27 Jul 2016 22:29:28 +0200
 MIME-Version: 1.0
-In-Reply-To: <1469713776-5062-5-git-send-email-enric.balletbo@collabora.com>
-References: <1469713776-5062-1-git-send-email-enric.balletbo@collabora.com> <1469713776-5062-5-git-send-email-enric.balletbo@collabora.com>
-From: Guenter Roeck <groeck@google.com>
-Date: Fri, 29 Jul 2016 10:57:33 -0700
-Message-ID: <CABXOdTeogjV+Bc9oJ=iwaEkP9uE5GDvuKstf5pzPpKUVWNRQHw@mail.gmail.com>
-Subject: Re: [PATCH v3 4/4] platform/chrome: cros_ec_dev - Register cros-ec sensors
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org, Olof Johansson <olof@lixom.net>,
-	Lee Jones <lee.jones@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Guenter Roeck <groeck@chromium.org>,
-	Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha1;
+ protocol="application/pgp-signature";
+ boundary="ErcqfowDRU0022CC9tdb5VKWf90h1sMaO"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Jul 28, 2016 at 6:49 AM, Enric Balletbo i Serra
-<enric.balletbo@collabora.com> wrote:
-> Check whether the ChromeOS Embedded Controller is a sensor hub and in
-> such case issue a command to get the number of sensors and register them
-> all.
->
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
+--ErcqfowDRU0022CC9tdb5VKWf90h1sMaO
+Content-Type: multipart/mixed; boundary="uog79T0pF4H4OirGMD2gs5k0aSgcpQLSB"
+From: Giorgio <giorgio.nicole@arcor.de>
+To: linux-iio@vger.kernel.org
+Message-ID: <b6dd0816-074c-a2a7-4e2c-55e417dfcf77@arcor.de>
+Subject: trivial error in ti-ads1015.c
 
-With one nitpick (see below):
+--uog79T0pF4H4OirGMD2gs5k0aSgcpQLSB
+Content-Type: text/plain; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Hi,
 
-> ---
->  drivers/platform/chrome/cros_ec_dev.c | 122 ++++++++++++++++++++++++++++++++++
->  1 file changed, 122 insertions(+)
->
-> diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
-> index fa5f060..0bec60e 100644
-> --- a/drivers/platform/chrome/cros_ec_dev.c
-> +++ b/drivers/platform/chrome/cros_ec_dev.c
-> @@ -18,6 +18,7 @@
->   */
->
->  #include <linux/fs.h>
-> +#include <linux/mfd/core.h>
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/slab.h>
-> @@ -265,6 +266,123 @@ static void __remove(struct device *dev)
->         kfree(ec);
->  }
->
-> +static void cros_ec_sensors_register(struct cros_ec_dev *ec)
-> +{
-> +       /*
-> +        * Issue a command to get the number of sensor reported.
-> +        * Build an array of sensors driver and register them all.
-> +        */
-> +       int ret, i, id, sensor_num;
-> +       struct mfd_cell *sensor_cells;
-> +       struct cros_ec_sensor_platform *sensor_platforms;
-> +       int sensor_type[MOTIONSENSE_TYPE_MAX];
-> +       struct ec_params_motion_sense *params;
-> +       struct ec_response_motion_sense *resp;
-> +       struct cros_ec_command *msg;
-> +
-> +       msg = kzalloc(sizeof(struct cros_ec_command) +
-> +                     max(sizeof(*params), sizeof(*resp)), GFP_KERNEL);
-> +       if (msg == NULL)
-> +               return;
-> +
-> +       msg->version = 2;
-> +       msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
-> +       msg->outsize = sizeof(*params);
-> +       msg->insize = sizeof(*resp);
-> +
-> +       params = (struct ec_params_motion_sense *)msg->data;
-> +       params->cmd = MOTIONSENSE_CMD_DUMP;
-> +
-> +       ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
-> +       if (ret < 0 || msg->result != EC_RES_SUCCESS) {
-> +               dev_warn(ec->dev, "cannot get EC sensor information: %d/%d\n",
-> +                        ret, msg->result);
-> +               goto error;
-> +       }
-> +
-> +       resp = (struct ec_response_motion_sense *)msg->data;
-> +       sensor_num = resp->dump.sensor_count;
-> +       /* Allocate 2 extra sensors in case lid angle or FIFO are needed */
-> +       sensor_cells = kzalloc(sizeof(struct mfd_cell) * (sensor_num + 2),
-> +                              GFP_KERNEL);
-> +       if (sensor_cells == NULL)
-> +               goto error;
-> +
-> +       sensor_platforms = kzalloc(sizeof(struct cros_ec_sensor_platform) *
-> +                 (sensor_num + 1), GFP_KERNEL);
-> +       if (sensor_platforms == NULL)
-> +               goto error_platforms;
-> +
-> +       memset(sensor_type, 0, sizeof(sensor_type));
-> +       id = 0;
-> +       for (i = 0; i < sensor_num; i++) {
-> +               params->cmd = MOTIONSENSE_CMD_INFO;
-> +               params->info.sensor_num = i;
-> +               ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
-> +               if ((ret < 0) || msg->result != EC_RES_SUCCESS) {
+I noticed a trivial bug in the file 'drivers/iio/adc/ti-ads1015.c', in
+the function:
 
-Unnecessary ( ) around 'ret < 0'.
+static int ads1015_get_channels_config_of(struct i2c_client *client)
+{
+	struct ads1015_data *data =3D i2c_get_clientdata(client);
+	struct device_node *node;
+=2E..
 
-> +                       dev_warn(ec->dev, "no info for EC sensor %d : %d/%d\n",
-> +                                i, ret, msg->result);
-> +                       continue;
-> +               }
-> +               switch (resp->info.type) {
-> +               case MOTIONSENSE_TYPE_ACCEL:
-> +                       sensor_cells[id].name = "cros-ec-accel";
-> +                       break;
-> +               case MOTIONSENSE_TYPE_GYRO:
-> +                       sensor_cells[id].name = "cros-ec-gyro";
-> +                       break;
-> +               case MOTIONSENSE_TYPE_MAG:
-> +                       sensor_cells[id].name = "cros-ec-mag";
-> +                       break;
-> +               case MOTIONSENSE_TYPE_PROX:
-> +                       sensor_cells[id].name = "cros-ec-prox";
-> +                       break;
-> +               case MOTIONSENSE_TYPE_LIGHT:
-> +                       sensor_cells[id].name = "cros-ec-light";
-> +                       break;
-> +               case MOTIONSENSE_TYPE_ACTIVITY:
-> +                       sensor_cells[id].name = "cros-ec-activity";
-> +                       break;
-> +               default:
-> +                       dev_warn(ec->dev, "unknown type %d\n", resp->info.type);
-> +                       continue;
-> +               }
-> +               sensor_platforms[id].sensor_num = i;
-> +               sensor_cells[id].id = sensor_type[resp->info.type];
-> +               sensor_cells[id].platform_data = &sensor_platforms[id];
-> +               sensor_cells[id].pdata_size =
-> +                       sizeof(struct cros_ec_sensor_platform);
-> +
-> +               sensor_type[resp->info.type]++;
-> +               id++;
-> +       }
-> +       if (sensor_type[MOTIONSENSE_TYPE_ACCEL] >= 2) {
-> +               sensor_platforms[id].sensor_num = sensor_num;
-> +
-> +               sensor_cells[id].name = "cros-ec-angle";
-> +               sensor_cells[id].id = 0;
-> +               sensor_cells[id].platform_data = &sensor_platforms[id];
-> +               sensor_cells[id].pdata_size =
-> +                       sizeof(struct cros_ec_sensor_platform);
-> +               id++;
-> +       }
-> +       if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO)) {
-> +               sensor_cells[id].name = "cros-ec-ring";
-> +               id++;
-> +       }
-> +
-> +       ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
-> +                             NULL, 0, NULL);
-> +       if (ret)
-> +               dev_err(ec->dev, "failed to add EC sensors\n");
-> +
-> +       kfree(sensor_platforms);
-> +error_platforms:
-> +       kfree(sensor_cells);
-> +error:
-> +       kfree(msg);
-> +}
-> +
->  static int ec_device_probe(struct platform_device *pdev)
->  {
->         int retval = -ENOMEM;
-> @@ -319,6 +437,10 @@ static int ec_device_probe(struct platform_device *pdev)
->                 goto dev_reg_failed;
->         }
->
-> +       /* check whether this EC is a sensor hub. */
-> +       if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
-> +               cros_ec_sensors_register(ec);
-> +
->         return 0;
->
->  dev_reg_failed:
-> --
-> 2.1.0
->
+The pointer 'data' is not correctly assigned; its definition should look
+like:
+
+	struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
+	struct ads1015_data *data =3D iio_priv(indio_dev);
+
+as is the case in:
+
+static void ads1015_get_channels_config(struct i2c_client *client)
+{
+=2E.
+
+giorgio
+
+
+--uog79T0pF4H4OirGMD2gs5k0aSgcpQLSB--
+
+--ErcqfowDRU0022CC9tdb5VKWf90h1sMaO
+Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: OpenPGP digital signature
+Content-Disposition: attachment; filename="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
+
+iF8EARECAB8FAleZGagYHGdpb3JnaW8ubmljb2xlQGFyY29yLmRlAAoJEGKm3Nod
+0+VQK+MAnjJBpZGJrzmrg8T/Gl1JdvfPhXj0AKCnGEC0t407U6my15IJoTxm6Vou
+pg==
+=bZTb
+-----END PGP SIGNATURE-----
+
+--ErcqfowDRU0022CC9tdb5VKWf90h1sMaO--
