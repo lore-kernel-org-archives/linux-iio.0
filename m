@@ -1,75 +1,41 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Akinobu Mita <akinobu.mita@gmail.com>,
-	"H . Nikolaus Schaller" <hns@goldelico.com>,
-	Matt Ranostay <mranostay@gmail.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: Christoph Mair <christoph.mair@gmail.com>,
-	Vlad Dogaru <vlad.dogaru@intel.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Marek Belisko <marek@goldelico.com>,
-	Eric Andersson <eric.andersson@unixphere.com>,
-	Neil Brown <neilb@suse.de>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH] iio: pressure: bmp280: fix runtime suspend/resume crash
-Date: Wed, 27 Jul 2016 22:32:58 +0200
-Message-Id: <1469651578-6085-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-in-17.arcor-online.net ([151.189.21.57]:49383 "EHLO
+	mail-in-17.arcor-online.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1758590AbcG0V17 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2016 17:27:59 -0400
+Received: from mail-in-05-z2.arcor-online.net (mail-in-05-z2.arcor-online.net [151.189.8.17])
+	by mx.arcor.de (Postfix) with ESMTP id 3s07Pn22wZz4T4Q
+	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 23:27:57 +0200 (CEST)
+From: Giorgio <giorgio.nicole@arcor.de>
+To: linux-iio@vger.kernel.org
+Cc: Giorgio <giorgio.nicole@arcor.de>
+Subject: [PATCH 1/1] iio:ti-ads1015: fix a wrong pointer definition.
+Date: Wed, 27 Jul 2016 23:27:49 +0200
+Message-Id: <20160727212749.21573-1-giorgio.nicole@arcor.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In commit 3d838118c6aa ("iio: pressure: bmp280: add power management")
-
-For some reason the code in the runtime suspend/resume hooks
-got wrong (I suspect in the ambition to cut down boilerplate)
-and it seems it was tested without CONFIG_PM and crashes like
-so for me:
-
-Unable to handle kernel NULL pointer dereference at virtual address 0000000c
-pgd = c0204000
-[0000000c] *pgd=00000000
-Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-Modules linked in:
-CPU: 1 PID: 89 Comm: kworker/1:2 Not tainted
-  4.7.0-03348-g90dc3680458a-dirty #99
-Hardware name: Generic DT based system
-Workqueue: pm pm_runtime_work
-task: df3c6300 ti: dec8a000 task.ti: dec8a000
-PC is at regulator_disable+0x0/0x6c
-LR is at bmp280_runtime_suspend+0x3c/0xa4
-
-Dereferencing the BMP280 state container properly fixes the problem,
-sorry for screwing up.
-
-Fixes: 3d838118c6aa ("iio: pressure: bmp280: add power management")
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+The call to i2c_get_clientdata(client) returns a struct iio_dev*, not
+the needed struct ads1015_data*. We need here an intermediate step as
+in the function: void ads1015_get_channels_config(struct i2c_client *client).
 ---
- drivers/iio/pressure/bmp280-core.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/iio/adc/ti-ads1015.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
-index 6943688e66df..724fefd4af00 100644
---- a/drivers/iio/pressure/bmp280-core.c
-+++ b/drivers/iio/pressure/bmp280-core.c
-@@ -1079,7 +1079,8 @@ EXPORT_SYMBOL(bmp280_common_remove);
- #ifdef CONFIG_PM
- static int bmp280_runtime_suspend(struct device *dev)
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 73cbf0b..fe96af6 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -403,7 +403,8 @@ static const struct iio_info ads1015_info = {
+ #ifdef CONFIG_OF
+ static int ads1015_get_channels_config_of(struct i2c_client *client)
  {
--	struct bmp280_data *data = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct bmp280_data *data = iio_priv(indio_dev);
- 	int ret;
+-	struct ads1015_data *data = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ads1015_data *data = iio_priv(indio_dev);
+ 	struct device_node *node;
  
- 	ret = regulator_disable(data->vdda);
-@@ -1090,7 +1091,8 @@ static int bmp280_runtime_suspend(struct device *dev)
- 
- static int bmp280_runtime_resume(struct device *dev)
- {
--	struct bmp280_data *data = dev_get_drvdata(dev);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
-+	struct bmp280_data *data = iio_priv(indio_dev);
- 	int ret;
- 
- 	ret = regulator_enable(data->vddd);
+ 	if (!client->dev.of_node ||
 -- 
-2.7.4
+2.9.2
+
