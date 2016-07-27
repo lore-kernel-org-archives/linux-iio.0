@@ -1,49 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:17613 "EHLO mail.aswsp.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753937AbcG0IJD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 27 Jul 2016 04:09:03 -0400
-Message-ID: <57986CF3.4070602@parrot.com>
-Date: Wed, 27 Jul 2016 10:12:35 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:36087 "EHLO
+	mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754885AbcG0J3N (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2016 05:29:13 -0400
 MIME-Version: 1.0
-To: Alison Schofield <amsfield22@gmail.com>, <jic23@kernel.org>
-CC: <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
-	<linux-iio@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-Subject: Re: [PATCH] tools: iio: iio_generic_buffer: initialize channel array
- pointer
-References: <20160727031734.GA31933@d830.WORKGROUP>
-In-Reply-To: <20160727031734.GA31933@d830.WORKGROUP>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+In-Reply-To: <1469484416-17305-1-git-send-email-colin.king@canonical.com>
+References: <1469484416-17305-1-git-send-email-colin.king@canonical.com>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Wed, 27 Jul 2016 02:28:26 -0700
+Message-ID: <CAKzfze97P6yJEMAeg6Wv5UMDV4iuqBSQOdeLjG1Ctf_xywQxSg@mail.gmail.com>
+Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: fix typo in val assignment
+To: Colin King <colin.king@canonical.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Sanchayan Maity <maitysanchayan@gmail.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-On 07/27/2016 05:17 AM, Alison Schofield wrote:
-> Uninitialized channel pointer causes segmentation fault when we
-> call free(channel) during cleanup() with no channels initialized.
-> This happens when you exit early for usage errors.  Initialize
-> the pointer to NULL when it is declared.
+On Mon, Jul 25, 2016 at 3:06 PM, Colin King <colin.king@canonical.com> wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 >
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> Fix an incorrect assignment due to a typo on a variable name. The
+> variable val2 should be assigned 100000 and not val.
+
+Yikes! Good catch..
+
+Reviewed-By: Matt Ranostay <mranostay@gmail.com>
+
+>
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > ---
->   tools/iio/iio_generic_buffer.c | 2 +-
->   1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/chemical/atlas-ph-sensor.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 >
-> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-> index 0e8a1f7..ae68bf0 100644
-> --- a/tools/iio/iio_generic_buffer.c
-> +++ b/tools/iio/iio_generic_buffer.c
-> @@ -348,7 +348,7 @@ int main(int argc, char **argv)
->   	int notrigger = 0;
->   	char *dummy;
->   
-> -	struct iio_channel_info *channels;
-> +	struct iio_channel_info *channels = NULL;
->   
->   	register_cleanup();
->   
-Tested-by: Gregor Boirie <gregor.boirie@parrot.com>
-
-greg.
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> index ae038a5..407f141 100644
+> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -434,7 +434,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>                         break;
+>                 case IIO_ELECTRICALCONDUCTIVITY:
+>                         *val = 1; /* 0.00001 */
+> -                       *val = 100000;
+> +                       *val2 = 100000;
+>                         break;
+>                 case IIO_CONCENTRATION:
+>                         *val = 0; /* 0.000000001 */
+> --
+> 2.8.1
+>
