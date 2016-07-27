@@ -1,50 +1,75 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48573 "EHLO
-	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754303AbcG0R4p (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2016 13:56:45 -0400
-Subject: Re: Away until 15th August
-To: Lars-Peter Clausen <lars@metafoo.de>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>,
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	"H . Nikolaus Schaller" <hns@goldelico.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Christoph Mair <christoph.mair@gmail.com>,
+	Vlad Dogaru <vlad.dogaru@intel.com>,
 	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-References: <1f66d62f-426d-e96f-ab20-5246dd939944@kernel.org>
- <8e34fbda-b323-50c5-759d-1c413b807c3d@metafoo.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ffa1101f-0d2f-0742-87e3-620301433ec7@kernel.org>
-Date: Wed, 27 Jul 2016 18:56:41 +0100
-MIME-Version: 1.0
-In-Reply-To: <8e34fbda-b323-50c5-759d-1c413b807c3d@metafoo.de>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	Marek Belisko <marek@goldelico.com>,
+	Eric Andersson <eric.andersson@unixphere.com>,
+	Neil Brown <neilb@suse.de>,
+	Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] iio: pressure: bmp280: fix runtime suspend/resume crash
+Date: Wed, 27 Jul 2016 22:32:58 +0200
+Message-Id: <1469651578-6085-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 27/07/16 13:40, Lars-Peter Clausen wrote:
-> On 07/26/2016 07:58 PM, Jonathan Cameron wrote:
->> Hi All,
->>
->> I'm going to be in only limited contact from the end of this week
->> until the 15th.  I doubt I'll get time to look at much before then
->> and it may take me a little while to catch up after that.
-> 
-> Let me take that as an opportunity to say thanks for the hard, non-stop and
-> excellent work you've done as the IIO maintainer. Always pushing for
-> excellence in driver quality, but never too hard to scare new contributors
-> away. Always taking the time to properly answer all sorts of questions and
-> give feedback on patches. A break is well deserved. Thanks again.
-Hi Lars,
+In commit 3d838118c6aa ("iio: pressure: bmp280: add power management")
 
-Thanks for your kind words.  I'd just like to add that I'd have
-burnt out long ago if it wasn't for the excellent community that has
-built up around IIO and the dedicated team of reviewers (though more
-are always welcome!) Thanks all.  This stuff is fun ;)
-> 
-> It's merge window so nobody should be sending patches anyway.
-Yeah right... :)
+For some reason the code in the runtime suspend/resume hooks
+got wrong (I suspect in the ambition to cut down boilerplate)
+and it seems it was tested without CONFIG_PM and crashes like
+so for me:
 
-Jonathan
-> 
-> - Lars
-> 
+Unable to handle kernel NULL pointer dereference at virtual address 0000000c
+pgd = c0204000
+[0000000c] *pgd=00000000
+Internal error: Oops: 5 [#1] PREEMPT SMP ARM
+Modules linked in:
+CPU: 1 PID: 89 Comm: kworker/1:2 Not tainted
+  4.7.0-03348-g90dc3680458a-dirty #99
+Hardware name: Generic DT based system
+Workqueue: pm pm_runtime_work
+task: df3c6300 ti: dec8a000 task.ti: dec8a000
+PC is at regulator_disable+0x0/0x6c
+LR is at bmp280_runtime_suspend+0x3c/0xa4
 
+Dereferencing the BMP280 state container properly fixes the problem,
+sorry for screwing up.
+
+Fixes: 3d838118c6aa ("iio: pressure: bmp280: add power management")
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/pressure/bmp280-core.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/pressure/bmp280-core.c b/drivers/iio/pressure/bmp280-core.c
+index 6943688e66df..724fefd4af00 100644
+--- a/drivers/iio/pressure/bmp280-core.c
++++ b/drivers/iio/pressure/bmp280-core.c
+@@ -1079,7 +1079,8 @@ EXPORT_SYMBOL(bmp280_common_remove);
+ #ifdef CONFIG_PM
+ static int bmp280_runtime_suspend(struct device *dev)
+ {
+-	struct bmp280_data *data = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct bmp280_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	ret = regulator_disable(data->vdda);
+@@ -1090,7 +1091,8 @@ static int bmp280_runtime_suspend(struct device *dev)
+ 
+ static int bmp280_runtime_resume(struct device *dev)
+ {
+-	struct bmp280_data *data = dev_get_drvdata(dev);
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct bmp280_data *data = iio_priv(indio_dev);
+ 	int ret;
+ 
+ 	ret = regulator_enable(data->vddd);
+-- 
+2.7.4
