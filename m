@@ -1,625 +1,628 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f180.google.com ([209.85.220.180]:34380 "EHLO
-	mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758314AbcG0ARn (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 26 Jul 2016 20:17:43 -0400
-Received: by mail-qk0-f180.google.com with SMTP id o67so21161785qke.1
-        for <linux-iio@vger.kernel.org>; Tue, 26 Jul 2016 17:17:43 -0700 (PDT)
+Return-Path: <navin.patidar@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1468825370-20075-9-git-send-email-enric.balletbo@collabora.com>
-References: <1468825370-20075-1-git-send-email-enric.balletbo@collabora.com> <1468825370-20075-9-git-send-email-enric.balletbo@collabora.com>
-From: Guenter Roeck <groeck@google.com>
-Date: Tue, 26 Jul 2016 17:17:41 -0700
-Message-ID: <CABXOdTc6p3XOXmDmoTX57iU1qxPNoANH9ZT7XmuL0n0Xq6jKNw@mail.gmail.com>
-Subject: Re: [PATCH 08/10] iio: cros_ec_sensors_ring: add ChromeOS EC Sensors Ring
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org, Olof Johansson <olof@lixom.net>,
-	Lee Jones <lee.jones@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Guenter Roeck <groeck@chromium.org>,
-	Gwendal Grignou <gwendal@chromium.org>
+In-Reply-To: <alpine.DEB.2.02.1607262043110.12598@pmeerw.net>
+References: <1469488695-32050-1-git-send-email-navin.patidar@gmail.com>
+ <alpine.DEB.2.02.1607260946460.6854@pmeerw.net> <CAPV97yfCHWp=+-QT1snUTJKD9rs-uhQTiQs1cwvhhdR2qOkwZA@mail.gmail.com>
+ <alpine.DEB.2.02.1607262043110.12598@pmeerw.net>
+From: navin patidar <navin.patidar@gmail.com>
+Date: Tue, 26 Jul 2016 17:22:36 -0700
+Message-ID: <CAPV97ydLjdGoNYVO+Rmh-whvBE1k7U=dVOuWWni4jnZfXUgBPw@mail.gmail.com>
+Subject: Re: [PATCH] iio: orientation: Add BNO055 9-axis Absolute Orientation
+ Sensor driver
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, linux-kernel@vger.kernel.org,
+	Vlad Dogaru <vlad.dogaru@intel.com>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Jul 18, 2016 at 12:02 AM, Enric Balletbo i Serra
-<enric.balletbo@collabora.com> wrote:
-> Add support for handling sensor events FIFO produced by the sensor
-> hub. A single device with a buffer will collect all samples produced
-> by the sensors managed by the CrosEC sensor hub.
+Oh, I didn't know that Vlad already have submitted a patch for BNO055.
+My patch doesn't do any thing new so please drop my patch.
+
+regards,
+--navin-patidar
+
+On Tue, Jul 26, 2016 at 11:46 AM, Peter Meerwald-Stadler
+<pmeerw@pmeerw.net> wrote:
+> Hallo Navin,
 >
-> Signed-off-by: Guenter Roeck <groeck@chromium.org>
-
-It would probably be better to have Gwendal's Signed-off here.
-All I did was to port the code to chromeos-4.4
-
-Guenter
-
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> ---
->  drivers/iio/common/cros_ec_sensors/Kconfig         |   9 +
->  drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
->  .../common/cros_ec_sensors/cros_ec_sensors_ring.c  | 541 +++++++++++++++++++++
->  3 files changed, 551 insertions(+)
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c
+>> Thanks for reviewing the patch. I will send the updated patch.
 >
-> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
-> index 22b4211..778c3bf 100644
-> --- a/drivers/iio/common/cros_ec_sensors/Kconfig
-> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
-> @@ -39,3 +39,12 @@ config IIO_CROS_EC_ACTIVITY
->           Activities can be simple (low/no motion) or more complex (riding train).
->           They are being reported by physical devices or the EC itself.
->           Creates an IIO device to manage all activities.
-> +
-> +config IIO_CROS_EC_SENSORS_RING
-> +       tristate "ChromeOS EC Sensors Ring"
-> +       depends on IIO_CROS_EC_SENSORS || IIO_CROS_EC_LIGHT_PROX
-> +       help
-> +         Add support for handling sensor events FIFO produced by
-> +         the sensor hub.
-> +         A single device with a buffer will collect all samples produced
-> +         by the sensors managed by the CrosEC sensor hub
-> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
-> index 8f54f1e..0eb3fc5 100644
-> --- a/drivers/iio/common/cros_ec_sensors/Makefile
-> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
-> @@ -6,3 +6,4 @@ obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
->  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
->  obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
->  obj-$(CONFIG_IIO_CROS_EC_ACTIVITY) += cros_ec_activity.o
-> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_RING) += cros_ec_sensors_ring.o
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c
-> new file mode 100644
-> index 0000000..1c74df9
-> --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_ring.c
-> @@ -0,0 +1,541 @@
-> +/*
-> + * cros_ec_sensors_ring - Driver for Chrome OS EC Sensor hub FIFO.
-> + *
-> + * Copyright (C) 2015 Google, Inc
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + *
-> + * This driver uses the cros-ec interface to communicate with the Chrome OS
-> + * EC about accelerometer data. Accelerometer access is presented through
-> + * iio sysfs.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include "cros_ec_sensors_core.h"
-> +
-> +/* The ring is a FIFO that return sensor information from
-> + * the single EC FIFO.
-> + * There are always 5 channels returned:
-> +* | ID | FLAG | X | Y | Z | Timestamp |
-> + * ID is the EC sensor id
-> + * FLAG is for meta data, only flush bit is defined.
-> + */
-> +#define CROS_EC_FLUSH_BIT 1
-> +
-> +enum {
-> +       CHANNEL_SENSOR_ID,
-> +       CHANNEL_SENSOR_FLAG,
-> +       CHANNEL_X,
-> +       CHANNEL_Y,
-> +       CHANNEL_Z,
-> +       CHANNEL_TIMESTAMP,
-> +       MAX_CHANNEL,
-> +};
-> +
-> +enum {
-> +       LAST_TS,
-> +       NEW_TS,
-> +       ALL_TS
-> +};
-> +
-> +#define CROS_EC_SENSOR_MAX 16
-> +
-> +struct cros_ec_fifo_info {
-> +       struct ec_response_motion_sense_fifo_info info;
-> +       uint16_t lost[CROS_EC_SENSOR_MAX];
-> +};
-> +
-> +
-> +struct cros_ec_sensors_ring_sample {
-> +       uint8_t sensor_id;
-> +       uint8_t flag;
-> +       int16_t  vector[MAX_AXIS];
-> +       s64      timestamp;
-> +} __packed;
-> +
-> +/* State data for ec_sensors iio driver. */
-> +struct cros_ec_sensors_ring_state {
-> +       /* Shared by all sensors */
-> +       struct cros_ec_sensors_core_state core;
-> +
-> +       /* Notifier to kick to the interrupt */
-> +       struct notifier_block notifier;
-> +
-> +       /* Preprocessed ring to send to kfifo */
-> +       struct cros_ec_sensors_ring_sample *ring;
-> +
-> +       struct iio_trigger *trig;
-> +       s64    fifo_timestamp[ALL_TS];
-> +       struct ec_response_motion_sense_fifo_info fifo_info;
-> +};
-> +
-> +static const struct iio_info ec_sensors_info = {
-> +       .driver_module = THIS_MODULE,
-> +};
-> +
-> +static s64 cros_ec_get_time_ns(void)
-> +{
-> +       struct timespec ts;
-> +
-> +       get_monotonic_boottime(&ts);
-> +       return timespec_to_ns(&ts);
-> +}
-> +
-> +/*
-> + * cros_ec_ring_process_event: process one EC FIFO event
-> + *
-> + * Process one EC event, add it in the ring if necessary.
-> + *
-> + * Return true if out event has been populated.
-> + *
-> + * fifo_info: fifo information from the EC.
-> + * fifo_timestamp: timestamp at time of fifo_info collection.
-> + * current_timestamp: estimated current timestamp.
-> + * in: incoming FIFO event from EC
-> + * out: outgoing event to user space.
-> + */
-> +bool cros_ec_ring_process_event(const struct cros_ec_fifo_info *fifo_info,
-> +                               const s64 fifo_timestamp,
-> +                               s64 *current_timestamp,
-> +                               struct ec_response_motion_sensor_data *in,
-> +                               struct cros_ec_sensors_ring_sample *out)
-> +{
-> +       int axis;
-> +       s64 new_timestamp;
-> +
-> +       if (in->flags & MOTIONSENSE_SENSOR_FLAG_TIMESTAMP) {
-> +               new_timestamp = fifo_timestamp -
-> +                       ((s64)fifo_info->info.timestamp * 1000) +
-> +                       ((s64)in->timestamp * 1000);
-> +               /*
-> +                * The timestamp can be stale if we had to use the fifo
-> +                * info timestamp.
-> +                */
-> +               if (new_timestamp - *current_timestamp > 0)
-> +                       *current_timestamp = new_timestamp;
-> +       }
-> +
-> +       if (in->flags & MOTIONSENSE_SENSOR_FLAG_FLUSH) {
-> +               out->sensor_id = in->sensor_num;
-> +               out->timestamp = *current_timestamp;
-> +               out->flag = CROS_EC_FLUSH_BIT;
-> +               return true;
-> +       }
-> +       if (in->flags & MOTIONSENSE_SENSOR_FLAG_TIMESTAMP)
-> +               /* If we just have a timestamp, skip this entry. */
-> +               return false;
-> +
-> +       /* Regular sample */
-> +       out->sensor_id = in->sensor_num;
-> +       out->timestamp = *current_timestamp;
-> +       out->flag = 0;
-> +       for (axis = X; axis < MAX_AXIS; axis++)
-> +               out->vector[axis] = in->data[axis];
-> +       return true;
-> +}
-> +/*
-> + * cros_ec_ring_handler - the trigger handler function
-> + *
-> + * @irq: the interrupt number
-> + * @p: private data - always a pointer to the poll func.
-> + *
-> + * On a trigger event occurring, if the pollfunc is attached then this
-> + * handler is called as a threaded interrupt (and hence may sleep). It
-> + * is responsible for grabbing data from the device and pushing it into
-> + * the associated buffer.
-> + */
-> +static irqreturn_t cros_ec_ring_handler(int irq, void *p)
-> +{
-> +       struct iio_poll_func *pf = p;
-> +       struct iio_dev *indio_dev = pf->indio_dev;
-> +       struct cros_ec_sensors_ring_state *state = iio_priv(indio_dev);
-> +       struct cros_ec_fifo_info fifo_info;
-> +       s64    fifo_timestamp, current_timestamp;
-> +       int    i, j, number_data, ret;
-> +       unsigned long sensor_mask = 0;
-> +       struct ec_response_motion_sensor_data *in;
-> +       struct cros_ec_sensors_ring_sample *out, *last_out;
-> +
-> +
-> +       /* Get FIFO information */
-> +       mutex_lock(&state->core.cmd_lock);
-> +       memcpy(&fifo_info, &state->fifo_info, sizeof(state->fifo_info));
-> +       fifo_timestamp = state->fifo_timestamp[NEW_TS];
-> +       mutex_unlock(&state->core.cmd_lock);
-> +
-> +       /* Copy elements in the main fifo */
-> +       if (fifo_info.info.total_lost) {
-> +               /* Need to retrieve the number of lost vectors per sensor */
-> +               state->core.param.cmd = MOTIONSENSE_CMD_FIFO_INFO;
-> +               if (cros_ec_motion_send_host_cmd(&state->core, 0))
-> +                       goto ring_handler_end;
-> +               memcpy(&fifo_info, &state->core.resp->fifo_info,
-> +                      sizeof(fifo_info));
-> +               fifo_timestamp = cros_ec_get_time_ns();
-> +       }
-> +
-> +       current_timestamp = state->fifo_timestamp[LAST_TS];
-> +       out = state->ring;
-> +       for (i = 0; i < fifo_info.info.count; i += number_data) {
-> +               state->core.param.cmd = MOTIONSENSE_CMD_FIFO_READ;
-> +               state->core.param.fifo_read.max_data_vector =
-> +                       fifo_info.info.count - i;
-> +               ret = cros_ec_motion_send_host_cmd(&state->core,
-> +                              sizeof(state->core.resp->fifo_read) +
-> +                              state->core.param.fifo_read.max_data_vector *
-> +                              sizeof(struct ec_response_motion_sensor_data));
-> +               if (ret != EC_RES_SUCCESS) {
-> +                       dev_warn(&indio_dev->dev, "Fifo error: %d\n", ret);
-> +                       break;
-> +               }
-> +               number_data =
-> +                       state->core.resp->fifo_read.number_data;
-> +               if (number_data == 0) {
-> +                       dev_dbg(&indio_dev->dev, "Unexpected empty FIFO\n");
-> +                       break;
-> +               }
-> +
-> +               for (in = state->core.resp->fifo_read.data, j = 0;
-> +                    j < number_data; j++, in++) {
-> +                       BUG_ON(out >= state->ring + fifo_info.info.size);
-> +                       if (cros_ec_ring_process_event(
-> +                                       &fifo_info, fifo_timestamp,
-> +                                       &current_timestamp, in, out)) {
-> +                               sensor_mask |= (1 << in->sensor_num);
-> +                               out++;
-> +                       }
-> +               }
-> +       }
-> +       last_out = out;
-> +
-> +       if (out == state->ring)
-> +               /* Unexpected empty FIFO. */
-> +               goto ring_handler_end;
-> +
-> +       /*
-> +        * Check if current_timestamp is ahead of the last sample.
-> +        * Normally, the EC appends a timestamp after the last sample, but if
-> +        * the AP is slow to respond to the IRQ, the EC may have added new
-> +        * samples. Use the FIFO info timestamp as last timestamp then.
-> +        */
-> +       if ((last_out-1)->timestamp == current_timestamp)
-> +               current_timestamp = fifo_timestamp;
-> +
-> +       /* check if buffer is set properly */
-> +       if (!indio_dev->active_scan_mask ||
-> +           (bitmap_empty(indio_dev->active_scan_mask,
-> +                         indio_dev->masklength)))
-> +               goto ring_handler_end;
-> +
-> +       /*
-> +        * calculate proper timestamps
-> +        *
-> +        * If there is a sample with a proper timestamp
-> +        *                        timestamp | count
-> +        * older_unprocess_out --> TS1      | 1
-> +        *                         TS1      | 2
-> +        * out -->                 TS1      | 3
-> +        * next_out -->            TS2      |
-> +        * We spread time for the samples [older_unprocess_out .. out]
-> +        * between TS1 and TS2: [TS1+1/4, TS1+2/4, TS1+3/4, TS2].
-> +        *
-> +        * If we reach the end of the samples, we compare with the
-> +        * current timestamp:
-> +        *
-> +        * older_unprocess_out --> TS1      | 1
-> +        *                         TS1      | 2
-> +        * out -->                 TS1      | 3
-> +        * We know have [TS1+1/3, TS1+2/3, current timestamp]
-> +        */
-> +       for_each_set_bit(i, &sensor_mask, BITS_PER_LONG) {
-> +               s64 older_timestamp;
-> +               s64 timestamp;
-> +               struct cros_ec_sensors_ring_sample *older_unprocess_out =
-> +                       state->ring;
-> +               struct cros_ec_sensors_ring_sample *next_out;
-> +               int count = 1;
-> +
-> +               if (fifo_info.info.total_lost) {
-> +                       int lost = fifo_info.lost[i];
-> +
-> +                       if (lost)
-> +                               dev_warn(&indio_dev->dev,
-> +                                       "Sensor %d: lost: %d out of %d\n", i,
-> +                                       lost, fifo_info.info.total_lost);
-> +               }
-> +
-> +               for (out = state->ring; out < last_out; out = next_out) {
-> +                       s64 time_period;
-> +
-> +                       next_out = out + 1;
-> +                       if (out->sensor_id != i)
-> +                               continue;
-> +
-> +                       /* Timestamp to start with */
-> +                       older_timestamp = out->timestamp;
-> +
-> +                       /* find next sample */
-> +                       while (next_out < last_out && next_out->sensor_id != i)
-> +                               next_out++;
-> +
-> +                       if (next_out >= last_out) {
-> +                               timestamp = current_timestamp;
-> +                       } else {
-> +                               timestamp = next_out->timestamp;
-> +                               if (timestamp == older_timestamp) {
-> +                                       count++;
-> +                                       continue;
-> +                               }
-> +                       }
-> +
-> +                       /* The next sample has a new timestamp,
-> +                        * spread the unprocessed samples
-> +                        */
-> +                       if (next_out < last_out)
-> +                               count++;
-> +                       time_period = div_s64(timestamp - older_timestamp,
-> +                                             count);
-> +
-> +                       for (; older_unprocess_out <= out;
-> +                                       older_unprocess_out++) {
-> +                               if (older_unprocess_out->sensor_id != i)
-> +                                       continue;
-> +                               older_timestamp += time_period;
-> +                               older_unprocess_out->timestamp =
-> +                                       older_timestamp;
-> +                       }
-> +                       count = 1;
-> +                       /* The next_out sample has a valid timestamp, skip. */
-> +                       next_out++;
-> +                       older_unprocess_out = next_out;
-> +               }
-> +       }
-> +
-> +       /* push the event into the kfifo */
-> +       for (out = state->ring; out < last_out; out++)
-> +               iio_push_to_buffers(indio_dev, (u8 *)out);
-> +
-> +ring_handler_end:
-> +       state->fifo_timestamp[LAST_TS] = current_timestamp;
-> +       iio_trigger_notify_done(indio_dev->trig);
-> +       return IRQ_HANDLED;
-> +}
-> +
-> +static int cros_ec_ring_event(struct notifier_block *nb,
-> +       unsigned long queued_during_suspend, void *_notify)
-> +{
-> +       struct cros_ec_sensors_ring_state *state;
-> +       struct cros_ec_device *ec;
-> +
-> +       state = container_of(nb, struct cros_ec_sensors_ring_state, notifier);
-> +       ec = state->core.ec;
-> +
-> +       if (ec->event_data.event_type != EC_MKBP_EVENT_SENSOR_FIFO)
-> +               return NOTIFY_DONE;
-> +
-> +       if (ec->event_size != sizeof(ec->event_data.data.sensor_fifo)) {
-> +               dev_warn(ec->dev, "Invalid fifo info size\n");
-> +               return NOTIFY_DONE;
-> +       }
-> +
-> +       if (queued_during_suspend)
-> +               return NOTIFY_OK;
-> +
-> +       mutex_lock(&state->core.cmd_lock);
-> +       memcpy(&state->fifo_info, &ec->event_data.data.sensor_fifo.info,
-> +                       ec->event_size);
-> +       state->fifo_timestamp[NEW_TS] = cros_ec_get_time_ns();
-> +       mutex_unlock(&state->core.cmd_lock);
-> +
-> +       /*
-> +        * We are not in a low level interrupt,
-> +        * we can not call iio_trigger_poll().
-> +        */
-> +       iio_trigger_poll_chained(state->trig);
-> +       return NOTIFY_OK;
-> +}
-> +
-> +#define CROS_EC_RING_ID(_id, _name)            \
-> +{                                              \
-> +       .type = IIO_ACCEL,                      \
-> +       .modified = 1,                          \
-> +       .channel2 = IIO_NO_MOD,                 \
-> +       .scan_index = _id,                      \
-> +       .scan_type = {                          \
-> +               .sign = 'u',                    \
-> +               .realbits = 8,                  \
-> +               .storagebits = 8,               \
-> +       },                                      \
-> +       .extend_name = _name,                   \
-> +}
-> +
-> +#define CROS_EC_RING_AXIS(_axis)               \
-> +{                                              \
-> +       .type = IIO_ACCEL,                      \
-> +       .modified = 1,                          \
-> +       .channel2 = IIO_MOD_##_axis,            \
-> +       .scan_index = CHANNEL_##_axis,          \
-> +       .scan_type = {                          \
-> +               .sign = 's',                    \
-> +               .realbits = 16,                 \
-> +               .storagebits = 16,              \
-> +       },                                      \
-> +       .extend_name = "ring",                  \
-> +}
-> +
-> +static const struct iio_chan_spec cros_ec_ring_channels[] = {
-> +       CROS_EC_RING_ID(CHANNEL_SENSOR_ID, "id"),
-> +       CROS_EC_RING_ID(CHANNEL_SENSOR_FLAG, "flag"),
-> +       CROS_EC_RING_AXIS(X),
-> +       CROS_EC_RING_AXIS(Y),
-> +       CROS_EC_RING_AXIS(Z),
-> +       IIO_CHAN_SOFT_TIMESTAMP(CHANNEL_TIMESTAMP)
-> +};
-> +
-> +static int cros_ec_ring_probe(struct platform_device *pdev)
-> +{
-> +       struct device *dev = &pdev->dev;
-> +       struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-> +       struct cros_ec_device *ec_device;
-> +       struct iio_dev *indio_dev;
-> +       struct cros_ec_sensors_ring_state *state;
-> +       int ret;
-> +
-> +       if (!ec_dev || !ec_dev->ec_dev) {
-> +               dev_warn(&pdev->dev, "No CROS EC device found.\n");
-> +               return -EINVAL;
-> +       }
-> +       ec_device = ec_dev->ec_dev;
-> +
-> +       indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
-> +       if (!indio_dev)
-> +               return -ENOMEM;
-> +
-> +       platform_set_drvdata(pdev, indio_dev);
-> +
-> +       ret = cros_ec_sensors_core_init(pdev, indio_dev, false);
-> +       if (ret)
-> +               return ret;
-> +
-> +       state = iio_priv(indio_dev);
-> +       /* Retrieve FIFO information */
-> +       state->core.param.cmd = MOTIONSENSE_CMD_FIFO_INFO;
-> +       /* If it fails, just assume the FIFO is not supported.
-> +        * For other errors, the other sensor drivers would have noticed
-> +        * already.
-> +        */
-> +       if (cros_ec_motion_send_host_cmd(&state->core, 0))
-> +               return -ENODEV;
-> +
-> +       /* Allocate the full fifo.
-> +        * We need to copy the whole FIFO to set timestamps properly *
-> +        */
-> +       state->ring = devm_kcalloc(&pdev->dev,
-> +                       state->core.resp->fifo_info.size,
-> +                       sizeof(*state->ring), GFP_KERNEL);
-> +       if (!state->ring)
-> +               return -ENOMEM;
-> +
-> +       state->fifo_timestamp[LAST_TS] = cros_ec_get_time_ns();
-> +
-> +       indio_dev->channels = cros_ec_ring_channels;
-> +       indio_dev->num_channels = ARRAY_SIZE(cros_ec_ring_channels);
-> +
-> +       indio_dev->info = &ec_sensors_info;
-> +
-> +       state->trig = devm_iio_trigger_alloc(&pdev->dev,
-> +                       "%s-trigger%d", indio_dev->name, indio_dev->id);
-> +       if (!state->trig)
-> +               return -ENOMEM;
-> +       state->trig->dev.parent = &pdev->dev;
-> +       iio_trigger_set_drvdata(state->trig, indio_dev);
-> +
-> +       ret = iio_trigger_register(state->trig);
-> +       if (ret)
-> +               return ret;
-> +
-> +       ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +                                        cros_ec_ring_handler, NULL);
-> +       if (ret < 0)
-> +               goto err_trigger_unregister;
-> +
-> +       ret = iio_device_register(indio_dev);
-> +       if (ret < 0)
-> +               goto err_buffer_cleanup;
-> +
-> +       /* register the notifier that will act as a top half interrupt. */
-> +       state->notifier.notifier_call = cros_ec_ring_event;
-> +       ret = blocking_notifier_chain_register(&ec_device->event_notifier,
-> +                                              &state->notifier);
-> +       if (ret < 0) {
-> +               dev_warn(&indio_dev->dev, "failed to register notifier\n");
-> +               goto err_device_unregister;
-> +       }
-> +       return ret;
-> +
-> +err_device_unregister:
-> +       iio_device_unregister(indio_dev);
-> +err_buffer_cleanup:
-> +       iio_triggered_buffer_cleanup(indio_dev);
-> +err_trigger_unregister:
-> +       iio_trigger_unregister(state->trig);
-> +       return ret;
-> +}
-> +
-> +static int cros_ec_ring_remove(struct platform_device *pdev)
-> +{
-> +       struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +       struct cros_ec_sensors_ring_state *state = iio_priv(indio_dev);
-> +       struct cros_ec_device *ec = state->core.ec;
-> +
-> +       blocking_notifier_chain_unregister(&ec->event_notifier,
-> +                                          &state->notifier);
-> +       iio_device_unregister(indio_dev);
-> +       iio_triggered_buffer_cleanup(indio_dev);
-> +       iio_trigger_unregister(state->trig);
-> +       return 0;
-> +}
-> +
-> +static const struct platform_device_id cros_ec_ring_ids[] = {
-> +       {
-> +               .name = "cros-ec-ring",
-> +       },
-> +       { /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, cros_ec_ring_ids);
-> +
-> +static struct platform_driver cros_ec_ring_platform_driver = {
-> +       .driver = {
-> +               .name   = "cros-ec-ring",
-> +               .owner  = THIS_MODULE,
-> +       },
-> +       .probe          = cros_ec_ring_probe,
-> +       .remove         = cros_ec_ring_remove,
-> +       .id_table       = cros_ec_ring_ids,
-> +};
-> +module_platform_driver(cros_ec_ring_platform_driver);
-> +
-> +MODULE_DESCRIPTION("ChromeOS EC sensor hub ring driver");
-> +MODULE_LICENSE("GPL v2");
+> I am sorry to have overlooked a previous patch by Vlad Dogaru, see
+> http://comments.gmane.org/gmane.linux.kernel.iio/24643, for the BNO055
+>
+> there have been a number of issues, it has not been accepted yet
+>
+> I think our policy is first come, first served; I have compared the two
+> patches, maybe you can collaborate on a common proposal?
+>
+> regards, p.
+>
+>> regards,
+>> --navin-patidar
+>>
+>> On Tue, Jul 26, 2016 at 1:07 AM, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+>> wrote:
+>>
+>> >
+>> > > BNO055 provides the following motion sensors data:
+>> > >
+>> > >  * Gyroscope
+>> > >  * Accelerometer
+>> > >  * Magnetometer
+>> > >  * Absolute Orientation (Quaternion)
+>> >
+>> > comments below
+>> >
+>> > > Signed-off-by: navin patidar <navin.patidar@gmail.com>
+>> > > ---
+>> > >  drivers/iio/orientation/Kconfig  |  10 +
+>> > >  drivers/iio/orientation/Makefile |   1 +
+>> > >  drivers/iio/orientation/bno055.c | 422
+>> > +++++++++++++++++++++++++++++++++++++++
+>> > >  3 files changed, 433 insertions(+)
+>> > >  create mode 100644 drivers/iio/orientation/bno055.c
+>> > >
+>> > > diff --git a/drivers/iio/orientation/Kconfig
+>> > b/drivers/iio/orientation/Kconfig
+>> > > index e3aa1e5..9ac21ee 100644
+>> > > --- a/drivers/iio/orientation/Kconfig
+>> > > +++ b/drivers/iio/orientation/Kconfig
+>> > > @@ -28,4 +28,14 @@ config HID_SENSOR_DEVICE_ROTATION
+>> > >         device rotation. The output of a device rotation sensor
+>> > >         is presented using quaternion format.
+>> > >
+>> > > +config BNO055
+>> > > +     tristate "BOSCH BNO055 Absolute Orientation"
+>> > > +     depends on I2C
+>> > > +     select REGMAP_I2C
+>> > > +     help
+>> > > +       Say yes here to build support for BOSCH BNO55 9-axis absolute
+>> > orientation sensor
+>> > > +       driver connected via I2C.
+>> > > +       This driver can also be built as a module. If so, the module
+>> > > +       will be called bno055.
+>> > > +
+>> > >  endmenu
+>> > > diff --git a/drivers/iio/orientation/Makefile
+>> > b/drivers/iio/orientation/Makefile
+>> > > index 4734dab..7d00037 100644
+>> > > --- a/drivers/iio/orientation/Makefile
+>> > > +++ b/drivers/iio/orientation/Makefile
+>> > > @@ -5,3 +5,4 @@
+>> > >  # When adding new entries keep the list in alphabetical order
+>> > >  obj-$(CONFIG_HID_SENSOR_INCLINOMETER_3D) += hid-sensor-incl-3d.o
+>> > >  obj-$(CONFIG_HID_SENSOR_DEVICE_ROTATION) += hid-sensor-rotation.o
+>> > > +obj-$(CONFIG_BNO055) += bno055.o
+>> > > diff --git a/drivers/iio/orientation/bno055.c
+>> > b/drivers/iio/orientation/bno055.c
+>> > > new file mode 100644
+>> > > index 0000000..48b9e93
+>> > > --- /dev/null
+>> > > +++ b/drivers/iio/orientation/bno055.c
+>> > > @@ -0,0 +1,422 @@
+>> > > +/*
+>> > > + * Copyright (c) 2016 Intel Corporation
+>> > > + *
+>> > > + * Driver for Bosch Sensortec BNO055 digital motion sensor.
+>> > > + *
+>> > > + * This program is free software; you can redistribute it and/or modify
+>> > > + * it under the terms of the GNU General Public License version 2 as
+>> > > + * published by the Free Software Foundation.
+>> > > + *
+>> >
+>> > I find it useful to state the 7-bit i2c chip address here
+>> >
+>> > > + */
+>> > > +
+>> > > +#define pr_fmt(fmt) "bno055: " fmt
+>> > > +
+>> > > +#include <linux/module.h>
+>> > > +#include <linux/i2c.h>
+>> > > +#include <linux/acpi.h>
+>> > > +#include <linux/regmap.h>
+>> > > +#include <linux/iio/iio.h>
+>> > > +#include <linux/iio/sysfs.h>
+>> > > +
+>> >
+>> > drop one newline
+>> >
+>> > > +
+>> > > +#define BNO055_CHIP_ID               0xA0
+>> > > +#define REG_MAG_RADIUS_MSB   0x6A
+>> >
+>> > please consistently prefix with BNO055_
+>> >
+>> > > +
+>> > > +/* BNO055 configuration registers */
+>> > > +#define REG_PWR_MODE         0x3E
+>> > > +#define REG_OPR_MODE         0x3D
+>> > > +#define REG_UNIT_SEL         0x3B
+>> > > +#define REG_AXIS_MAP_SIGN    0x42
+>> > > +#define REG_AXIS_MAP_CONFIG  0x41
+>> > > +#define REG_UNIT_SEL         0x3B
+>> > > +#define REG_SYS_TRIGGER              0x3F
+>> > > +#define BNO055_REG_PAGE_ID   0x07
+>> > > +#define BNO055_REG_ID                0x00
+>> > > +
+>> > > +/* BNO055 status registers */
+>> > > +#define SYS_STATUS           0x39
+>> > > +#define INT_STATUS           0x37
+>> > > +#define CALIB_STATUS 0x35
+>> > > +
+>> > > +/* BNO055 data registers */
+>> >
+>> > drop newline
+>> >
+>> > > +
+>> > > +#define GRV_DATA_Z_MSB 0x33
+>> > > +#define GRV_DATA_Z_LSB 0x32
+>> > > +#define GRV_DATA_Y_MSB 0x31
+>> > > +#define GRV_DATA_Y_LSB 0x30
+>> > > +#define GRV_DATA_X_MSB 0x2F
+>> > > +#define GRV_DATA_X_LSB 0x2E
+>> >
+>> > do we really need all those register #defines?
+>> > they are not used and noone wants to read just the LSB...
+>> >
+>> > > +
+>> > > +#define LIA_DATA_Z_MSB 0x2D
+>> > > +#define LIA_DATA_Z_LSB 0x2C
+>> > > +#define LIA_DATA_Y_MSB 0x2B
+>> > > +#define LIA_DATA_Y_LSB 0x2A
+>> > > +#define LIA_DATA_X_MSB 0x29
+>> > > +#define LIA_DATA_X_LSB 0x28
+>> > > +
+>> > > +#define QUA_DATA_Z_MSB 0x27
+>> > > +#define QUA_DATA_Z_LSB 0x26
+>> > > +#define QUA_DATA_Y_MSB 0x25
+>> > > +#define QUA_DATA_Y_LSB 0x24
+>> > > +#define QUA_DATA_X_MSB 0x23
+>> > > +#define QUA_DATA_X_LSB 0x22
+>> > > +#define QUA_DATA_W_MSB 0x21
+>> > > +#define QUA_DATA_W_LSB 0x20
+>> > > +
+>> > > +#define EUL_PITCH_MSB 0x1F
+>> > > +#define EUL_PITCH_LSB 0x1E
+>> > > +#define EUL_ROLL_MSB 0x1D
+>> > > +#define EUL_ROLL_LSB 0x1C
+>> > > +#define EUL_HEADING_MSB 0x1B
+>> > > +#define EUL_HEADING_LSB 0x1A
+>> > > +
+>> > > +#define GYR_DATA_Z_MSB 0x19
+>> > > +#define GYR_DATA_Z_LSB 0x18
+>> > > +#define GYR_DATA_Y_MSB 0x17
+>> > > +#define GYR_DATA_Y_LSB 0x16
+>> > > +#define GYR_DATA_X_MSB 0x15
+>> > > +#define GYR_DATA_X_LSB 0x14
+>> > > +
+>> > > +#define MAG_DATA_Z_MSB 0x13
+>> > > +#define MAG_DATA_Z_LSB 0x12
+>> > > +#define MAG_DATA_Y_MSB 0x11
+>> > > +#define MAG_DATA_Y_LSB 0x10
+>> > > +#define MAG_DATA_X_MSB 0x0F
+>> > > +#define MAG_DATA_X_LSB 0x0E
+>> > > +
+>> > > +#define ACC_DATA_Z_MSB 0x0D
+>> > > +#define ACC_DATA_Z_LSB 0x0C
+>> > > +#define ACC_DATA_Y_MSB 0x0B
+>> > > +#define ACC_DATA_Y_LSB 0x0A
+>> > > +#define ACC_DATA_X_MSB 0x09
+>> > > +#define ACC_DATA_X_LSB 0x08
+>> > > +
+>> > > +/* operation modes */
+>> > > +#define FUSION_NDOF_MODE 0x0C
+>> > > +
+>> > > +/* power modes */
+>> > > +#define NORMAL_MODE 0x00
+>> > > +#define LOW_POWER_MODE BIT(0)
+>> > > +#define SUSPEND_MODE BIT(1)
+>> > > +
+>> > > +#define PROPER_CALIBRATION 0xFF
+>> > > +
+>> > > +#define BASE_REG  0x08
+>> > > +#define SENSOR_AXIS_TO_REG(sensor,axis)      (BASE_REG + (sensor * 6) +
+>> > (axis * 2))
+>> > > +
+>> > > +#define BNO055_CHANNEL(_type, _axis) {
+>> >      \
+>> > > +     .type = IIO_##_type,                                            \
+>> > > +     .modified = 1,                                                  \
+>> > > +     .channel2 = IIO_MOD_##_axis,                                    \
+>> > > +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),                   \
+>> >
+>> > in what unit is the data returned; please check with IIO ABI documentation
+>> > I think you will likely need _SCALE for some channels
+>> >
+>> > > +     .scan_index = AXIS_##_axis,                                     \
+>> >
+>> > .scan_index is a continuous counter over ALL channels, not just for one
+>> > channel type
+>> >
+>> > the driver does not support buffered reads, so not scan_type/scan_index is
+>> > needed anyway
+>> >
+>> > > +     .scan_type = {                                                  \
+>> > > +             .sign = 's',                                            \
+>> > > +             .realbits = 16,                                 \
+>> > > +             .storagebits = 16,                                      \
+>> > > +             .endianness = IIO_LE,                                   \
+>> > > +     },                                                              \
+>> > > +}
+>> > > +
+>> > > +struct bno055_data {
+>> > > +     struct i2c_client *client;
+>> > > +     struct mutex lock;
+>> > > +     struct regmap *regmap;
+>> > > +};
+>> > > +
+>> > > +enum bno055_axis {
+>> > > +     AXIS_X,
+>> > > +     AXIS_Y,
+>> > > +     AXIS_Z,
+>> > > +};
+>> > > +
+>> > > +enum {ACC=0, MAG=1, GYR=2, EUL=3, QUA=4};
+>> >
+>> > prefix!
+>> >
+>> > > +
+>> > > +static const struct iio_chan_spec bno055_channels[] = {
+>> > > +     BNO055_CHANNEL(ANGL_VEL, X),
+>> > > +     BNO055_CHANNEL(ANGL_VEL, Y),
+>> > > +     BNO055_CHANNEL(ANGL_VEL, Z),
+>> > > +     BNO055_CHANNEL(MAGN, X),
+>> > > +     BNO055_CHANNEL(MAGN, Y),
+>> > > +     BNO055_CHANNEL(MAGN, Z),
+>> > > +     BNO055_CHANNEL(ACCEL, X),
+>> > > +     BNO055_CHANNEL(ACCEL, Y),
+>> > > +     BNO055_CHANNEL(ACCEL, Z),
+>> > > +     {
+>> > > +             .type = IIO_ROT,
+>> > > +             .modified = 1,
+>> > > +             .channel2 = IIO_MOD_QUATERNION,
+>> > > +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> > > +     }
+>> > > +};
+>> > > +
+>> > > +static bool bno055_is_writeable_reg(struct device *dev, unsigned int
+>> > reg)
+>> > > +{
+>> > > +     switch (reg) {
+>> > > +     case REG_PWR_MODE:
+>> > > +     case REG_OPR_MODE:
+>> > > +     case REG_UNIT_SEL:
+>> > > +     case REG_AXIS_MAP_SIGN:
+>> > > +     case REG_AXIS_MAP_CONFIG:
+>> > > +     case REG_SYS_TRIGGER:
+>> > > +             return true;
+>> > > +     default:
+>> > > +             return false;
+>> > > +     };
+>> > > +}
+>> > > +
+>> > > +static bool bno055_is_volatile_reg(struct device *dev, unsigned int reg)
+>> > > +{
+>> > > +     if ((reg >= ACC_DATA_X_LSB) && (reg <= QUA_DATA_Z_MSB))
+>> > > +             return true;
+>> > > +     else
+>> > > +             return false;
+>> > > +}
+>> > > +
+>> > > +static const struct regmap_config bno055_regmap_config = {
+>> > > +     .reg_bits = 8,
+>> > > +     .val_bits = 8,
+>> > > +
+>> > > +     .max_register = REG_MAG_RADIUS_MSB,
+>> > > +     .cache_type = REGCACHE_RBTREE,
+>> > > +
+>> > > +     .writeable_reg = bno055_is_writeable_reg,
+>> > > +     .volatile_reg = bno055_is_volatile_reg,
+>> > > +};
+>> > > +
+>> >
+>> > drop newline
+>> >
+>> > > +
+>> > > +static int read_bno055(struct bno055_data *data, int sensor, int axis,
+>> > int *val)
+>> >
+>> > bno055 prefix please
+>> >
+>> > > +{
+>> > > +     int ret;
+>> > > +     __le16 raw_val;
+>> > > +     int reg;
+>> > > +
+>> > > +     reg = SENSOR_AXIS_TO_REG(sensor, axis);
+>> >
+>> > you can use .address in channel spec for that
+>> >
+>> > > +
+>> > > +     ret = regmap_bulk_read(data->regmap, reg, &raw_val,
+>> > > +                            sizeof(raw_val));
+>> > > +     if (ret < 0) {
+>> > > +             dev_err(&data->client->dev, "Error reading axis %d\n",
+>> > axis);
+>> > > +             return ret;
+>> > > +     }
+>> > > +
+>> > > +     *val = sign_extend32(le16_to_cpu(raw_val), 15);
+>> > > +     return IIO_VAL_INT;
+>> > > +}
+>> > > +
+>> > > +/* Read raw quaternion values W,X,Y and Z.
+>> > > + * Raw values needs to be divied by the 16384 to get the exact
+>> > quaternion values.
+>> > > + */
+>> > > +
+>> > > +static int read_rot(struct bno055_data *data, int *vals, int *val_len)
+>> > > +{
+>> > > +     int ret, i;
+>> > > +     __le16 raw_val[4];
+>> > > +
+>> > > +     ret = regmap_bulk_read(data->regmap, QUA_DATA_W_LSB, &raw_val,
+>> > > +                            sizeof(raw_val));
+>> > > +     if (ret < 0) {
+>> > > +             dev_err(&data->client->dev, "Error reading Orientation
+>> > \n");
+>> >
+>> > lowercase orientation
+>> > delete space before \n
+>> >
+>> > > +             return ret;
+>> > > +     }
+>> > > +
+>> > > +     for (i = 0; i < 4; ++i)
+>> > > +             vals[i] = sign_extend32(le16_to_cpu(raw_val[i]), 15);
+>> > > +
+>> > > +     *val_len =  4;
+>> > > +     return IIO_VAL_INT_MULTIPLE;
+>> > > +}
+>> > > +
+>> > > +static int bno055_read_raw_multi(struct iio_dev *indio_dev,
+>> > > +                        struct iio_chan_spec const *chan, int size,
+>> > > +                        int *val, int *val2, long mask)
+>> > > +{
+>> > > +     int ret = -EINVAL;
+>> > > +     struct bno055_data *data = iio_priv(indio_dev);
+>> > > +
+>> > > +     mutex_lock(&data->lock);
+>> > > +
+>> > > +     switch (mask) {
+>> > > +     case IIO_CHAN_INFO_RAW:
+>> > > +             switch (chan->type) {
+>> > > +             case IIO_ROT:
+>> > > +                     ret = read_rot(data, val, val2);
+>> > > +                     break;
+>> > > +             case IIO_ANGL_VEL:
+>> > > +                     /* Gyroscope unit degrees per second */
+>> > > +                     /* Raw value needs to be divied by the 16 to get
+>> > the exact value.*/
+>> >
+>> > comment style, not a proper multi-line comment
+>> > use _SCALE, it is not about 'exact' but correct scaling/unit
+>> > typo: divided
+>> > wording: divided by 16
+>> >
+>> > > +                     ret = read_bno055(data, GYR, chan->scan_index,
+>> > val);
+>> > > +                     break;
+>> > > +             case IIO_ACCEL:
+>> > > +                     /* Accelerometer Unit m/s2 */
+>> > > +                     /* Raw value needs to be divied by the 100 to get
+>> > the exact value.*/
+>> > > +                     ret = read_bno055(data, ACC, chan->scan_index,
+>> > val);
+>> > > +                     break;
+>> > > +             case IIO_MAGN:
+>> > > +                     /* Magnetometer Unit microTesla */
+>> > > +                     /* Raw value needs to be divied by the 16 to get
+>> > the exact value. */
+>> > > +                     ret = read_bno055(data, MAG, chan->scan_index,
+>> > val);
+>> > > +                     break;
+>> > > +             default:
+>> > > +                     ret = -EINVAL;
+>> > > +                     break;
+>> > > +             }
+>> > > +             break;
+>> > > +
+>> > > +     default:
+>> > > +             ret = -EINVAL;
+>> > > +             break;
+>> > > +     }
+>> > > +
+>> > > +     mutex_unlock(&data->lock);
+>> > > +
+>> > > +     return ret;
+>> > > +}
+>> > > +
+>> > > +static const struct iio_info bno055_info = {
+>> > > +     .driver_module = THIS_MODULE,
+>> > > +     .read_raw_multi = &bno055_read_raw_multi,
+>> > > +};
+>> > > +
+>> >
+>> > drop newline
+>> >
+>> > > +
+>> > > +static int bno055_chip_init(struct bno055_data *data)
+>> > > +{
+>> > > +     int ret;
+>> > > +
+>> > > +     ret = regmap_write(data->regmap, REG_PWR_MODE,
+>> > > +                              NORMAL_MODE);
+>> > > +     if (ret < 0) {
+>> > > +             dev_err(&data->client->dev,
+>> > > +                     "failed to write power mode register\n");
+>> > > +             return ret;
+>> > > +     }
+>> > > +
+>> > > +     ret = regmap_write(data->regmap, REG_OPR_MODE,
+>> > > +                              FUSION_NDOF_MODE);
+>> > > +     if (ret < 0)
+>> > > +             dev_err(&data->client->dev,
+>> > > +                     "failed to write operation mode register\n");
+>> > > +
+>> > > +     return ret;
+>> > > +}
+>> > > +
+>> > > +static ssize_t show_calibration_status(struct device *dev, struct
+>> > device_attribute *attr,
+>> > > +                char *buf){
+>> >
+>> > this is private API which needs to be documented
+>> >
+>> > > +     struct bno055_data *data;
+>> > > +     int ret;
+>> > > +     unsigned int calib_stat;
+>> > > +
+>> > > +     data = dev->driver_data;
+>> > > +
+>> > > +     ret = regmap_read(data->regmap, CALIB_STATUS, &calib_stat);
+>> > > +
+>> > > +     if (ret){
+>> >
+>> > space before {
+>> >
+>> > > +             dev_err(dev, "Failed to read calibration status.\n");
+>> > > +             return ret;
+>> > > +     }
+>> > > +
+>> > > +     if (calib_stat != PROPER_CALIBRATION)
+>> > > +             dev_info(dev, "bad calibration.  expected %x got %x\n",
+>> >
+>> > two spaces before 'expected'
+>> >
+>> > > +                     PROPER_CALIBRATION, calib_stat);
+>> > > +
+>> > > +     return scnprintf(buf, PAGE_SIZE, "0x%x\n", calib_stat);
+>> > > +}
+>> > > +
+>> > > +static DEVICE_ATTR(calib_status, 0444, show_calibration_status, NULL);
+>> > > +
+>> > > +static int bno055_probe(struct i2c_client *client,
+>> > > +                     const struct i2c_device_id *id)
+>> > > +{
+>> > > +     int ret;
+>> > > +     struct iio_dev *indio_dev;
+>> > > +     struct bno055_data *data;
+>> > > +     unsigned int chip_id;
+>> > > +
+>> > > +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> > > +     if (!indio_dev)
+>> > > +             return -ENOMEM;
+>> > > +
+>> > > +     data = iio_priv(indio_dev);
+>> > > +     mutex_init(&data->lock);
+>> > > +     data->client = client;
+>> > > +
+>> > > +     indio_dev->dev.parent = &client->dev;
+>> > > +     indio_dev->name = id->name;
+>> > > +     indio_dev->channels = bno055_channels;
+>> > > +     indio_dev->num_channels = ARRAY_SIZE(bno055_channels);
+>> > > +     indio_dev->info = &bno055_info;
+>> > > +     indio_dev->modes = INDIO_DIRECT_MODE;
+>> > > +
+>> > > +     data->regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
+>> > > +     if (IS_ERR(data->regmap)) {
+>> > > +             dev_err(&client->dev, "Failed to allocate register
+>> > map.\n");
+>> > > +             return PTR_ERR(data->regmap);
+>> > > +     }
+>> > > +
+>> > > +     indio_dev->dev.driver_data = data;
+>> > > +     i2c_set_clientdata(client, indio_dev);
+>> > > +
+>> > > +     ret = regmap_read(data->regmap, BNO055_REG_ID, &chip_id);
+>> > > +     if (ret < 0)
+>> > > +             return ret;
+>> > > +     if (chip_id != BNO055_CHIP_ID) {
+>> > > +             dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
+>> > > +                     BNO055_CHIP_ID, chip_id);
+>> > > +             return -EINVAL;
+>> > > +     }
+>> > > +
+>> > > +     ret = bno055_chip_init(data);
+>> > > +     if (ret < 0)
+>> > > +             return ret;
+>> > > +
+>> > > +     ret = devm_iio_device_register(&client->dev, indio_dev);
+>> > > +     if (ret){
+>> >
+>> > space before {
+>> >
+>> > > +             dev_err(&client->dev, "failed to register IIO device.\n");
+>> > > +             return ret;
+>> > > +     }
+>> > > +
+>> > > +     ret = device_create_file(&indio_dev->dev, &dev_attr_calib_status);
+>> >
+>> > needs to be done BEFORE devm_iio_device_register()
+>> > IIO has specific mechanisms to create custom sysfs entries...
+>> >
+>> > > +     if (ret){
+>> >
+>> > space before {
+>> >
+>> > > +             dev_err(&client->dev, "failed to create sysfs entry.\n");
+>> > > +             devm_iio_device_unregister(&client->dev, indio_dev);
+>> >
+>> > no need to call devm_iio_device_unregister
+>> >
+>> > > +             return ret;
+>> > > +     }
+>> > > +
+>> > > +   return ret;
+>> > > +}
+>> > > +
+>> > > +static int bno055_remove(struct i2c_client *client)
+>> > > +{
+>> > > +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> > > +
+>> > > +     device_remove_file(&indio_dev->dev, &dev_attr_calib_status);
+>> > > +     devm_iio_device_unregister(&client->dev, indio_dev);
+>> > > +     return 0;
+>> > > +}
+>> > > +
+>> > > +static const struct acpi_device_id bno055_acpi_match[] = {
+>> > > +     {"bno055", 0},
+>> > > +     { },
+>> > > +};
+>> > > +MODULE_DEVICE_TABLE(acpi, bno055_acpi_match);
+>> > > +
+>> > > +static const struct i2c_device_id bno055_id[] = {
+>> > > +     {"bno055", 0},
+>> > > +     { },
+>> > > +};
+>> > > +MODULE_DEVICE_TABLE(i2c, bno055_id);
+>> > > +
+>> > > +static struct i2c_driver bno055_driver = {
+>> > > +     .driver = {
+>> > > +             .name   = "bno055",
+>> > > +             .acpi_match_table = ACPI_PTR(bno055_acpi_match),
+>> > > +     },
+>> > > +     .probe          = bno055_probe,
+>> > > +     .remove         = bno055_remove,
+>> > > +     .id_table       = bno055_id,
+>> > > +};
+>> > > +module_i2c_driver(bno055_driver);
+>> > > +
+>> > > +MODULE_AUTHOR("navin patidar <navin.patidar@gmail.com>");
+>> > > +MODULE_DESCRIPTION("Driver for Bosch Sensortec BNO055 orientation
+>> > sensor");
+>> > > +MODULE_LICENSE("GPL v2");
+>> > >
+>> >
+>> > --
+>> >
+>> > Peter Meerwald-Stadler
+>> > +43-664-2444418 (mobile)
+>> >
+>>
+>
 > --
-> 2.1.0
 >
+> Peter Meerwald-Stadler
+> +43-664-2444418 (mobile)
