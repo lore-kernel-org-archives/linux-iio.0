@@ -1,83 +1,529 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-in-08.arcor-online.net ([151.189.21.48]:37987 "EHLO
-	mail-in-08.arcor-online.net" rhost-flags-OK-OK-OK-OK)
-	by vger.kernel.org with ESMTP id S1757485AbcG0U3f (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 27 Jul 2016 16:29:35 -0400
-Received: from mail-in-02-z2.arcor-online.net (mail-in-02-z2.arcor-online.net [151.189.8.14])
-	by mx.arcor.de (Postfix) with ESMTP id 3s066P1ZFFzwTJ5
-	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 22:29:33 +0200 (CEST)
-Received: from mail-in-12.arcor-online.net (mail-in-12.arcor-online.net [151.189.21.52])
-	by mail-in-02-z2.arcor-online.net (Postfix) with ESMTP id 2BC25538D35
-	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 22:29:33 +0200 (CEST)
-Received: from [192.168.178.23] (p549AC00E.dip0.t-ipconnect.de [84.154.192.14])
-	(Authenticated sender: giorgio.nicole@arcor.de)
-	by mail-in-12.arcor-online.net (Postfix) with ESMTPA id 3s066N6ylKzXfn9
-	for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 22:29:32 +0200 (CEST)
-To: linux-iio@vger.kernel.org
-From: Giorgio <giorgio.nicole@arcor.de>
-Subject: trivial error in ti-ads1015.c
-Message-ID: <b6dd0816-074c-a2a7-4e2c-55e417dfcf77@arcor.de>
-Date: Wed, 27 Jul 2016 22:29:28 +0200
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:33272 "EHLO
+	mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752636AbcG1GQ4 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jul 2016 02:16:56 -0400
+Received: by mail-wm0-f66.google.com with SMTP id o80so9550825wme.0
+        for <linux-iio@vger.kernel.org>; Wed, 27 Jul 2016 23:16:55 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
- protocol="application/pgp-signature";
- boundary="ErcqfowDRU0022CC9tdb5VKWf90h1sMaO"
+In-Reply-To: <1469514491-6638-4-git-send-email-mranostay@gmail.com>
+References: <1469514491-6638-1-git-send-email-mranostay@gmail.com> <1469514491-6638-4-git-send-email-mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Wed, 27 Jul 2016 23:16:14 -0700
+Message-ID: <CAKzfze_g5N=3bqTQTTZrcr7y9haLosP01G_9o3Vjyv4Rc4f+KA@mail.gmail.com>
+Subject: Re: [RFC v2 3/3] iio: potentiostat: add LMP91000 support
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Matt Ranostay <mranostay@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is an OpenPGP/MIME signed message (RFC 4880 and 3156)
---ErcqfowDRU0022CC9tdb5VKWf90h1sMaO
-Content-Type: multipart/mixed; boundary="uog79T0pF4H4OirGMD2gs5k0aSgcpQLSB"
-From: Giorgio <giorgio.nicole@arcor.de>
-To: linux-iio@vger.kernel.org
-Message-ID: <b6dd0816-074c-a2a7-4e2c-55e417dfcf77@arcor.de>
-Subject: trivial error in ti-ads1015.c
+On Mon, Jul 25, 2016 at 11:28 PM, Matt Ranostay <mranostay@gmail.com> wrote:
+> Add support for the LMP91000 potentiostat which is used for chemical
+> sensing applications.
+>
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+> ---
+>  .../bindings/iio/potentiostat/lmp91000.txt         |  30 ++
+>  drivers/iio/Kconfig                                |   1 +
+>  drivers/iio/Makefile                               |   1 +
+>  drivers/iio/potentiostat/Kconfig                   |  22 ++
+>  drivers/iio/potentiostat/Makefile                  |   6 +
+>  drivers/iio/potentiostat/lmp91000.c                | 376 +++++++++++++++++++++
+>  6 files changed, 436 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+>  create mode 100644 drivers/iio/potentiostat/Kconfig
+>  create mode 100644 drivers/iio/potentiostat/Makefile
+>  create mode 100644 drivers/iio/potentiostat/lmp91000.c
+>
+> diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+> new file mode 100644
+> index 000000000000..b9b621e94cd7
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+> @@ -0,0 +1,30 @@
+> +* Texas Instruments LMP91000 potentiostat
+> +
+> +http://www.ti.com/lit/ds/symlink/lmp91000.pdf
+> +
+> +Required properties:
+> +
+> +  - compatible: should be "ti,lmp91000"
+> +  - reg: the I2C address of the device
+> +  - io-channels: the phandle of the iio provider
+> +
+> +  - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not defined this
+> +    needs to be set to signal that an external resistor value is being used.
+> +
+> +Optional properties:
+> +
+> +  - ti,tia-gain-ohm: ohm value of the internal resistor for the transimpedance
+> +    amplifier. Must be 2750, 3500, 7000, 14000, 35000, 120000, or 350000 ohms.
+> +
+> +  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
+> +    sensor. Must be 10, 33, 50, or 100 (default) ohms.
+> +
+> +Example:
+> +
+> +lmp91000@48 {
+> +       compatible = "ti,lmp91000";
+> +       reg = <0x48>;
+> +       ti,tia-gain-ohm = <7500>;
+> +       ti,rload = <100>;
+> +       io-channels = <&adc>;
+> +};
+> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+> index 6743b18194fb..a31a8cf2c330 100644
+> --- a/drivers/iio/Kconfig
+> +++ b/drivers/iio/Kconfig
+> @@ -87,6 +87,7 @@ if IIO_TRIGGER
+>     source "drivers/iio/trigger/Kconfig"
+>  endif #IIO_TRIGGER
+>  source "drivers/iio/potentiometer/Kconfig"
+> +source "drivers/iio/potentiostat/Kconfig"
+>  source "drivers/iio/pressure/Kconfig"
+>  source "drivers/iio/proximity/Kconfig"
+>  source "drivers/iio/temperature/Kconfig"
+> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+> index 87e4c4369e2f..2b6e2762a886 100644
+> --- a/drivers/iio/Makefile
+> +++ b/drivers/iio/Makefile
+> @@ -29,6 +29,7 @@ obj-y += light/
+>  obj-y += magnetometer/
+>  obj-y += orientation/
+>  obj-y += potentiometer/
+> +obj-y += potentiostat/
+>  obj-y += pressure/
+>  obj-y += proximity/
+>  obj-y += temperature/
+> diff --git a/drivers/iio/potentiostat/Kconfig b/drivers/iio/potentiostat/Kconfig
+> new file mode 100644
+> index 000000000000..1e3baf2cc97d
+> --- /dev/null
+> +++ b/drivers/iio/potentiostat/Kconfig
+> @@ -0,0 +1,22 @@
+> +#
+> +# Potentiostat drivers
+> +#
+> +# When adding new entries keep the list in alphabetical order
+> +
+> +menu "Digital potentiostats"
+> +
+> +config LMP91000
+> +       tristate "Texas Instruments LMP91000 potentiostat driver"
+> +       depends on I2C
+> +       select REGMAP_I2C
+> +       select IIO_BUFFER
+> +       select IIO_BUFFER_CB
+> +       select IIO_TRIGGERED_BUFFER
+> +       help
+> +         Say yes here to build support for the Texas Instruments
+> +         LMP91000 digital potentiostat chip.
+> +
+> +         To compile this driver as a module, choose M here: the
+> +         module will be called lmp91000
+> +
+> +endmenu
+> diff --git a/drivers/iio/potentiostat/Makefile b/drivers/iio/potentiostat/Makefile
+> new file mode 100644
+> index 000000000000..64d315ef4449
+> --- /dev/null
+> +++ b/drivers/iio/potentiostat/Makefile
+> @@ -0,0 +1,6 @@
+> +#
+> +# Makefile for industrial I/O potentiostat drivers
+> +#
+> +
+> +# When adding new entries keep the list in alphabetical order
+> +obj-$(CONFIG_LMP91000) += lmp91000.o
+> diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+> new file mode 100644
+> index 000000000000..95c7187572cf
+> --- /dev/null
+> +++ b/drivers/iio/potentiostat/lmp91000.c
+> @@ -0,0 +1,376 @@
+> +/*
+> + * lmp91000.c - Support for Texas Instruments digital potentiostats
+> + *
+> + * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + *
+> + * TODO: bias voltage + polarity control, and multiple chip support
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/delay.h>
+> +#include <linux/of.h>
+> +#include <linux/regmap.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/consumer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +
+> +#define LMP91000_REG_LOCK              0x01
+> +#define LMP91000_REG_TIACN             0x10
+> +#define LMP91000_REG_TIACN_GAIN_SHIFT  2
+> +
+> +#define LMP91000_REG_REFCN             0x11
+> +#define LMP91000_REG_REFCN_EXT_REF     0x20
+> +#define LMP91000_REG_REFCN_50_ZERO     0x80
+> +
+> +#define LMP91000_REG_MODECN            0x12
+> +#define LMP91000_REG_MODECN_3LEAD      0x03
+> +#define LMP91000_REG_MODECN_TEMP       0x07
+> +
+> +#define LMP91000_DRV_NAME      "lmp91000"
+> +
+> +static const int lmp91000_tia_gain[] = { 0, 2750, 3500, 7000, 14000, 35000,
+> +                                        120000, 350000 };
+> +
+> +static const int lmp91000_rload[] = { 10, 33, 50, 100 };
+> +
+> +static const struct regmap_config lmp91000_regmap_config = {
+> +       .reg_bits = 8,
+> +       .val_bits = 8,
+> +};
+> +
+> +struct lmp91000_data {
+> +       struct regmap *regmap;
+> +       struct device *dev;
+> +
+> +       struct iio_trigger *trig;
+> +       struct iio_cb_buffer *cb_buffer;
+> +
+> +       struct completion completion;
+> +       u8 chan_select;
+> +
+> +       u32 buffer[4]; /* 64-bit data + 64-bit timestamp */
+> +};
+> +
+> +static const struct iio_chan_spec lmp91000_channels[] = {
+> +       { /* chemical channel mV */
+> +               .type = IIO_VOLTAGE,
+> +               .channel = 0,
+> +               .indexed = 1,
+> +               .address = LMP91000_REG_MODECN_3LEAD,
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +               .scan_index = 0,
+> +               .scan_type = {
+> +                       .sign = 's',
+> +                       .realbits = 32,
+> +                       .storagebits = 32,
+> +               },
+> +       },
+> +       IIO_CHAN_SOFT_TIMESTAMP(1),
+> +       { /* temperature channel mV */
+> +               .type = IIO_VOLTAGE,
+> +               .channel = 1,
+> +               .indexed = 1,
+> +               .address = LMP91000_REG_MODECN_TEMP,
+> +               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +               .scan_index = -1,
+> +       },
+> +};
+> +
+> +static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
+> +{
+> +       int state, ret;
+> +
+> +       ret = regmap_read(data->regmap, LMP91000_REG_MODECN, &state);
+> +       if (ret)
+> +               return -EINVAL;
+> +
+> +       ret = regmap_write(data->regmap, LMP91000_REG_MODECN, channel);
+> +       if (ret)
+> +               return -EINVAL;
+> +
+> +       /* delay till first temperature reading is complete */
+> +       if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
+> +               usleep_range(3000, 4000);
+> +
+> +       data->chan_select = channel != LMP91000_REG_MODECN_3LEAD;
+> +
+> +       iio_trigger_poll_chained(data->trig);
+> +
+> +       ret = wait_for_completion_interruptible(&data->completion);
 
---uog79T0pF4H4OirGMD2gs5k0aSgcpQLSB
-Content-Type: text/plain; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
+Seems the interruptible option doesn't work on the latest kernel..
+must have just gotten lucky before in my setup..
+Will replace with wait_for_completion_timeout in rev 3.
 
-Hi,
-
-I noticed a trivial bug in the file 'drivers/iio/adc/ti-ads1015.c', in
-the function:
-
-static int ads1015_get_channels_config_of(struct i2c_client *client)
-{
-	struct ads1015_data *data =3D i2c_get_clientdata(client);
-	struct device_node *node;
-=2E..
-
-The pointer 'data' is not correctly assigned; its definition should look
-like:
-
-	struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
-	struct ads1015_data *data =3D iio_priv(indio_dev);
-
-as is the case in:
-
-static void ads1015_get_channels_config(struct i2c_client *client)
-{
-=2E.
-
-giorgio
-
-
---uog79T0pF4H4OirGMD2gs5k0aSgcpQLSB--
-
---ErcqfowDRU0022CC9tdb5VKWf90h1sMaO
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: OpenPGP digital signature
-Content-Disposition: attachment; filename="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v2
-Comment: Using GnuPG with Thunderbird - http://www.enigmail.net/
-
-iF8EARECAB8FAleZGagYHGdpb3JnaW8ubmljb2xlQGFyY29yLmRlAAoJEGKm3Nod
-0+VQK+MAnjJBpZGJrzmrg8T/Gl1JdvfPhXj0AKCnGEC0t407U6my15IJoTxm6Vou
-pg==
-=bZTb
------END PGP SIGNATURE-----
-
---ErcqfowDRU0022CC9tdb5VKWf90h1sMaO--
+> +       reinit_completion(&data->completion);
+> +
+> +       if (!ret)
+> +               return -ETIMEDOUT;
+> +
+> +       *val = data->buffer[data->chan_select];
+> +
+> +       return 0;
+> +}
+> +
+> +static irqreturn_t lmp91000_buffer_handler(int irq, void *private)
+> +{
+> +       struct iio_poll_func *pf = private;
+> +       struct iio_dev *indio_dev = pf->indio_dev;
+> +       struct lmp91000_data *data = iio_priv(indio_dev);
+> +       int ret, val;
+> +
+> +       memset(data->buffer, 0, sizeof(data->buffer));
+> +
+> +       ret = iio_channel_start_all_cb(data->cb_buffer);
+> +       if (ret)
+> +               goto error_out;
+> +
+> +       ret = lmp91000_read(data, LMP91000_REG_MODECN_3LEAD, &val);
+> +       iio_channel_stop_all_cb(data->cb_buffer);
+> +
+> +       if (!ret) {
+> +               data->buffer[0] = val;
+> +               iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
+> +                                                  iio_get_time_ns(indio_dev));
+> +       }
+> +
+> +error_out:
+> +       iio_trigger_notify_done(indio_dev->trig);
+> +
+> +       return IRQ_HANDLED;
+> +}
+> +
+> +static int lmp91000_read_raw(struct iio_dev *indio_dev,
+> +                            struct iio_chan_spec const *chan,
+> +                            int *val, int *val2, long mask)
+> +{
+> +       struct lmp91000_data *data = iio_priv(indio_dev);
+> +       int ret;
+> +
+> +       if (mask != IIO_CHAN_INFO_RAW)
+> +               return -EINVAL;
+> +
+> +       ret = iio_channel_start_all_cb(data->cb_buffer);
+> +       if (ret)
+> +               return ret;
+> +
+> +       ret = lmp91000_read(data, chan->address, val);
+> +
+> +       iio_channel_stop_all_cb(data->cb_buffer);
+> +
+> +       if (!ret)
+> +               return IIO_VAL_INT;
+> +
+> +       return ret;
+> +}
+> +
+> +static const struct iio_info lmp91000_info = {
+> +       .driver_module = THIS_MODULE,
+> +       .read_raw = lmp91000_read_raw,
+> +};
+> +
+> +static int lmp91000_read_config(struct lmp91000_data *data)
+> +{
+> +       struct device *dev = data->dev;
+> +       struct device_node *np = dev->of_node;
+> +       unsigned int reg, val;
+> +       int i, ret;
+> +
+> +       ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
+> +       if (ret) {
+> +               if (of_property_read_bool(np, "ti,external-tia-resistor"))
+> +                       val = 0;
+> +               else {
+> +                       dev_err(dev, "no ti,tia-gain-ohm defined");
+> +                       return ret;
+> +               }
+> +       }
+> +
+> +       ret = -EINVAL;
+> +       for (i = 0; i < ARRAY_SIZE(lmp91000_tia_gain); i++) {
+> +               if (lmp91000_tia_gain[i] == val) {
+> +                       reg = val << LMP91000_REG_TIACN_GAIN_SHIFT;
+> +                       ret = 0;
+> +                       break;
+> +               }
+> +       }
+> +
+> +       if (ret) {
+> +               dev_err(dev, "invalid ti,tia-gain-ohm %d\n", val);
+> +               return ret;
+> +       }
+> +
+> +       ret = of_property_read_u32(np, "ti,rload-ohm", &val);
+> +       if (ret) {
+> +               val = 100;
+> +               dev_info(dev, "no ti,rload-ohm defined, default to %d\n", val);
+> +       }
+> +
+> +       ret = -EINVAL;
+> +       for (i = 0; i < ARRAY_SIZE(lmp91000_rload); i++) {
+> +               if (lmp91000_rload[i] == val) {
+> +                       reg |= val;
+> +                       ret = 0;
+> +                       break;
+> +               }
+> +       }
+> +
+> +       if (ret) {
+> +               dev_err(dev, "invalid ti,rload-ohm %d\n", val);
+> +               return ret;
+> +       }
+> +
+> +       regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
+> +       regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
+> +       regmap_write(data->regmap, LMP91000_REG_REFCN, LMP91000_REG_REFCN_EXT_REF
+> +                                       | LMP91000_REG_REFCN_50_ZERO);
+> +       regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
+> +
+> +       return 0;
+> +}
+> +
+> +static int lmp91000_buffer_cb(const void *val, void *private)
+> +{
+> +       struct iio_dev *indio_dev = private;
+> +       struct lmp91000_data *data = iio_priv(indio_dev);
+> +
+> +       data->buffer[data->chan_select] = *((int *)val);
+> +       complete_all(&data->completion);
+> +
+> +       return 0;
+> +}
+> +
+> +static const struct iio_trigger_ops lmp91000_trigger_ops = {
+> +       .owner = THIS_MODULE,
+> +};
+> +
+> +static int lmp91000_probe(struct i2c_client *client,
+> +                         const struct i2c_device_id *id)
+> +{
+> +       struct device *dev = &client->dev;
+> +       struct lmp91000_data *data;
+> +       struct iio_dev *indio_dev;
+> +       int ret;
+> +
+> +       indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
+> +       if (!indio_dev)
+> +               return -ENOMEM;
+> +
+> +       indio_dev->info = &lmp91000_info;
+> +       indio_dev->channels = lmp91000_channels;
+> +       indio_dev->num_channels = ARRAY_SIZE(lmp91000_channels);
+> +       indio_dev->name = LMP91000_DRV_NAME;
+> +       indio_dev->modes = INDIO_DIRECT_MODE;
+> +       i2c_set_clientdata(client, indio_dev);
+> +
+> +       data = iio_priv(indio_dev);
+> +       data->dev = dev;
+> +       data->regmap = devm_regmap_init_i2c(client, &lmp91000_regmap_config);
+> +       if (IS_ERR(data->regmap)) {
+> +               dev_err(dev, "regmap initialization failed.\n");
+> +               return PTR_ERR(data->regmap);
+> +       }
+> +
+> +       data->trig = devm_iio_trigger_alloc(data->dev, "%s-mux%d",
+> +                                           indio_dev->name, indio_dev->id);
+> +       if (!data->trig) {
+> +               dev_err(dev, "cannot allocate iio trigger.\n");
+> +               return -ENOMEM;
+> +       }
+> +
+> +       data->trig->ops = &lmp91000_trigger_ops;
+> +       data->trig->dev.parent = dev;
+> +       init_completion(&data->completion);
+> +
+> +       ret = iio_trigger_register(data->trig);
+> +       if (ret) {
+> +               dev_err(dev, "cannot register iio trigger.\n");
+> +               return ret;
+> +       }
+> +
+> +       ret = lmp91000_read_config(data);
+> +       if (ret)
+> +               return ret;
+> +
+> +       data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
+> +                                                indio_dev);
+> +       if (IS_ERR(data->cb_buffer)) {
+> +               if (PTR_ERR(data->cb_buffer) == -ENODEV)
+> +                       return -EPROBE_DEFER;
+> +               return PTR_ERR(data->cb_buffer);
+> +       }
+> +       iio_channel_cb_get_iio_dev(data->cb_buffer)->trig =
+> +                                       iio_trigger_get(data->trig);
+> +
+> +       ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +                                        &lmp91000_buffer_handler, NULL);
+> +       if (ret)
+> +               goto error_unreg_cb_buffer;
+> +
+> +       ret = iio_device_register(indio_dev);
+> +       if (ret)
+> +               goto error_unreg_buffer;
+> +
+> +       return 0;
+> +
+> +error_unreg_buffer:
+> +       iio_triggered_buffer_cleanup(indio_dev);
+> +       iio_trigger_unregister(data->trig);
+> +
+> +error_unreg_cb_buffer:
+> +       iio_channel_release_all_cb(data->cb_buffer);
+> +
+> +       return ret;
+> +}
+> +
+> +static int lmp91000_remove(struct i2c_client *client)
+> +{
+> +       struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +       struct lmp91000_data *data = iio_priv(indio_dev);
+> +
+> +       iio_device_unregister(indio_dev);
+> +
+> +       iio_channel_stop_all_cb(data->cb_buffer);
+> +       iio_channel_release_all_cb(data->cb_buffer);
+> +
+> +       iio_triggered_buffer_cleanup(indio_dev);
+> +       iio_trigger_unregister(data->trig);
+> +
+> +       return 0;
+> +}
+> +
+> +static const struct of_device_id lmp91000_of_match[] = {
+> +       { .compatible = "ti,lmp91000", },
+> +       { },
+> +};
+> +MODULE_DEVICE_TABLE(of, lmp91000_of_match);
+> +
+> +static const struct i2c_device_id lmp91000_id[] = {
+> +       { "lmp91000", 0 },
+> +       {}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, lmp91000_id);
+> +
+> +static struct i2c_driver lmp91000_driver = {
+> +       .driver = {
+> +               .name = LMP91000_DRV_NAME,
+> +               .of_match_table = of_match_ptr(lmp91000_of_match),
+> +       },
+> +       .probe = lmp91000_probe,
+> +       .remove = lmp91000_remove,
+> +       .id_table = lmp91000_id,
+> +};
+> +module_i2c_driver(lmp91000_driver);
+> +
+> +MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
+> +MODULE_DESCRIPTION("LMP91000 digital potentiostat");
+> +MODULE_LICENSE("GPL");
+> --
+> 2.7.4
+>
