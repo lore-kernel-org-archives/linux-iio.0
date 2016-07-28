@@ -1,41 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f68.google.com ([209.85.220.68]:33888 "EHLO
-	mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751147AbcG1Wkl (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jul 2016 18:40:41 -0400
-Received: by mail-pa0-f68.google.com with SMTP id hh10so4185255pac.1
-        for <linux-iio@vger.kernel.org>; Thu, 28 Jul 2016 15:40:41 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: giorgio.nicole@arcor.de, Matt Ranostay <mranostay@gmail.com>,
-	Daniel Baluta <daniel.baluta@intel.com>
-Subject: [PATCH] iio: adc: ti-ads1015: fix incorrect referencing of ads1015_data pointer
-Date: Thu, 28 Jul 2016 15:40:37 -0700
-Message-Id: <1469745637-998-1-git-send-email-mranostay@gmail.com>
+Received: from down.free-electrons.com ([37.187.137.238]:35103 "EHLO
+	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+	with ESMTP id S1751377AbcG1WtX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jul 2016 18:49:23 -0400
+Date: Fri, 29 Jul 2016 00:49:21 +0200
+From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] input: add ADC resistor ladder driver
+Message-ID: <20160728224921.GF1494@piout.net>
+References: <1468352186-14190-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1468352186-14190-2-git-send-email-alexandre.belloni@free-electrons.com>
+ <20160713004150.GB24789@dtor-ws>
+ <20160728220918.GA25461@dtor-ws>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20160728220918.GA25461@dtor-ws>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Reported-by: Giorgio <giorgio.nicole@arcor.de>
-Cc: Daniel Baluta <daniel.baluta@intel.com>
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/adc/ti-ads1015.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+On 28/07/2016 at 15:09:18 -0700, Dmitry Torokhov wrote :
+> On Tue, Jul 12, 2016 at 05:41:50PM -0700, Dmitry Torokhov wrote:
+> > Hi Alexandre,
+> > 
+> > On Tue, Jul 12, 2016 at 09:36:26PM +0200, Alexandre Belloni wrote:
+> > > A common way of multiplexing buttons on a single input in cheap devices is
+> > > to use a resistor ladder on an ADC. This driver supports that configuration
+> > > by polling an ADC channel provided by IIO.
+> > 
+> > This looks quite reasonable, just a few small comments.
+> 
+> Ping.
+> 
+> Did the version below work for you? I am trying sweep in the brand new
+> drivers before we close merge window.
+> 
 
-diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
-index 73cbf0b54e54..fe96af6059d5 100644
---- a/drivers/iio/adc/ti-ads1015.c
-+++ b/drivers/iio/adc/ti-ads1015.c
-@@ -403,7 +403,8 @@ static const struct iio_info ads1015_info = {
- #ifdef CONFIG_OF
- static int ads1015_get_channels_config_of(struct i2c_client *client)
- {
--	struct ads1015_data *data = i2c_get_clientdata(client);
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct ads1015_data *data = iio_priv(indio_dev);
- 	struct device_node *node;
- 
- 	if (!client->dev.of_node ||
+I was thinking it was too late for 4.8. I've juste tested and it works
+fine. However, I just sent v5 including the exact same changes but
+changing mvolt to millivolt as that seemed preferred by Rob. Both
+versions haver been tested and are fine for me.
+
 -- 
-2.7.4
-
+Alexandre Belloni, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
