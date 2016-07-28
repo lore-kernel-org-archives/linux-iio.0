@@ -1,205 +1,667 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:47806 "EHLO
-	bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932080AbcG1Ntu (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jul 2016 09:49:50 -0400
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Guenter Roeck <groeck@chromium.org>,
-	Gwendal Grignou <gwendal@chromium.org>,
-	Vincent Palatin <vpalatin@chromium.org>,
-	Tomeu Vizoso <tomeu.vizoso@collabora.com>
-Subject: [PATCH v3 3/4] platform/chrome: Introduce a new function to check EC features.
-Date: Thu, 28 Jul 2016 15:49:35 +0200
-Message-Id: <1469713776-5062-4-git-send-email-enric.balletbo@collabora.com>
-In-Reply-To: <1469713776-5062-1-git-send-email-enric.balletbo@collabora.com>
-References: <1469713776-5062-1-git-send-email-enric.balletbo@collabora.com>
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:34211 "EHLO
+	mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751375AbcG1WJW (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 28 Jul 2016 18:09:22 -0400
+Date: Thu, 28 Jul 2016 15:09:18 -0700
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4 2/2] input: add ADC resistor ladder driver
+Message-ID: <20160728220918.GA25461@dtor-ws>
+References: <1468352186-14190-1-git-send-email-alexandre.belloni@free-electrons.com>
+ <1468352186-14190-2-git-send-email-alexandre.belloni@free-electrons.com>
+ <20160713004150.GB24789@dtor-ws>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20160713004150.GB24789@dtor-ws>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Vincent Palatin <vpalatin@chromium.org>
+On Tue, Jul 12, 2016 at 05:41:50PM -0700, Dmitry Torokhov wrote:
+> Hi Alexandre,
+> 
+> On Tue, Jul 12, 2016 at 09:36:26PM +0200, Alexandre Belloni wrote:
+> > A common way of multiplexing buttons on a single input in cheap devices is
+> > to use a resistor ladder on an ADC. This driver supports that configuration
+> > by polling an ADC channel provided by IIO.
+> 
+> This looks quite reasonable, just a few small comments.
 
-Use the EC_CMD_GET_FEATURES message to check the supported features for
-each MCU.
+Ping.
 
-Signed-off-by: Vincent Palatin <vpalatin@chromium.org>
-[tomeu: adapted to changes in mainline]
-Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
-[enric: remove references to USB PD feature and do it more generic]
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
- drivers/platform/chrome/cros_ec_dev.c | 37 +++++++++++++++
- include/linux/mfd/cros_ec.h           |  1 +
- include/linux/mfd/cros_ec_commands.h  | 84 +++++++++++++++++++++++++++++++++++
- 3 files changed, 122 insertions(+)
+Did the version below work for you? I am trying sweep in the brand new
+drivers before we close merge window.
 
-diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
-index 8abd80d..fa5f060 100644
---- a/drivers/platform/chrome/cros_ec_dev.c
-+++ b/drivers/platform/chrome/cros_ec_dev.c
-@@ -87,6 +87,41 @@ exit:
- 	return ret;
- }
- 
-+static int cros_ec_check_features(struct cros_ec_dev *ec, int feature)
-+{
-+	struct cros_ec_command *msg;
-+	int ret;
-+
-+	if (ec->features[0] == -1U && ec->features[1] == -1U) {
-+		/* features bitmap not read yet */
-+
-+		msg = kmalloc(sizeof(*msg) + sizeof(ec->features), GFP_KERNEL);
-+		if (!msg)
-+			return -ENOMEM;
-+
-+		msg->version = 0;
-+		msg->command = EC_CMD_GET_FEATURES + ec->cmd_offset;
-+		msg->insize = sizeof(ec->features);
-+		msg->outsize = 0;
-+
-+		ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
-+		if ((ret < 0) || msg->result != EC_RES_SUCCESS) {
-+			dev_warn(ec->dev, "cannot get EC features: %d/%d\n",
-+				 ret, msg->result);
-+			memset(ec->features, 0, sizeof(ec->features));
-+		}
-+
-+		memcpy(ec->features, msg->data, sizeof(ec->features));
-+
-+		dev_dbg(ec->dev, "EC features %08x %08x\n",
-+			ec->features[0], ec->features[1]);
-+
-+		kfree(msg);
-+	}
-+
-+	return ec->features[feature / 32] & EC_FEATURE_MASK_0(feature);
-+}
-+
- /* Device file ops */
- static int ec_device_open(struct inode *inode, struct file *filp)
- {
-@@ -245,6 +280,8 @@ static int ec_device_probe(struct platform_device *pdev)
- 	ec->ec_dev = dev_get_drvdata(dev->parent);
- 	ec->dev = dev;
- 	ec->cmd_offset = ec_platform->cmd_offset;
-+	ec->features[0] = -1U; /* Not cached yet */
-+	ec->features[1] = -1U; /* Not cached yet */
- 	device_initialize(&ec->class_dev);
- 	cdev_init(&ec->cdev, &fops);
- 
-diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
-index 7769ea6..7f039b2 100644
---- a/include/linux/mfd/cros_ec.h
-+++ b/include/linux/mfd/cros_ec.h
-@@ -187,6 +187,7 @@ struct cros_ec_dev {
- 	struct cros_ec_device *ec_dev;
- 	struct device *dev;
- 	u16 cmd_offset;
-+	u32 features[2];
- };
- 
- /**
-diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-index 8826e0f..1683003 100644
---- a/include/linux/mfd/cros_ec_commands.h
-+++ b/include/linux/mfd/cros_ec_commands.h
-@@ -713,6 +713,90 @@ struct ec_response_get_set_value {
- /* More than one command can use these structs to get/set paramters. */
- #define EC_CMD_GSV_PAUSE_IN_S5	0x0c
- 
-+/*****************************************************************************/
-+/* List the features supported by the firmware */
-+#define EC_CMD_GET_FEATURES  0x0d
-+
-+/* Supported features */
-+enum ec_feature_code {
-+	/*
-+	 * This image contains a limited set of features. Another image
-+	 * in RW partition may support more features.
-+	 */
-+	EC_FEATURE_LIMITED = 0,
-+	/*
-+	 * Commands for probing/reading/writing/erasing the flash in the
-+	 * EC are present.
-+	 */
-+	EC_FEATURE_FLASH = 1,
-+	/*
-+	 * Can control the fan speed directly.
-+	 */
-+	EC_FEATURE_PWM_FAN = 2,
-+	/*
-+	 * Can control the intensity of the keyboard backlight.
-+	 */
-+	EC_FEATURE_PWM_KEYB = 3,
-+	/*
-+	 * Support Google lightbar, introduced on Pixel.
-+	 */
-+	EC_FEATURE_LIGHTBAR = 4,
-+	/* Control of LEDs  */
-+	EC_FEATURE_LED = 5,
-+	/* Exposes an interface to control gyro and sensors.
-+	 * The host goes through the EC to access these sensors.
-+	 * In addition, the EC may provide composite sensors, like lid angle.
-+	 */
-+	EC_FEATURE_MOTION_SENSE = 6,
-+	/* The keyboard is controlled by the EC */
-+	EC_FEATURE_KEYB = 7,
-+	/* The AP can use part of the EC flash as persistent storage. */
-+	EC_FEATURE_PSTORE = 8,
-+	/* The EC monitors BIOS port 80h, and can return POST codes. */
-+	EC_FEATURE_PORT80 = 9,
-+	/*
-+	 * Thermal management: include TMP specific commands.
-+	 * Higher level than direct fan control.
-+	 */
-+	EC_FEATURE_THERMAL = 10,
-+	/* Can switch the screen backlight on/off */
-+	EC_FEATURE_BKLIGHT_SWITCH = 11,
-+	/* Can switch the wifi module on/off */
-+	EC_FEATURE_WIFI_SWITCH = 12,
-+	/* Monitor host events, through for example SMI or SCI */
-+	EC_FEATURE_HOST_EVENTS = 13,
-+	/* The EC exposes GPIO commands to control/monitor connected devices. */
-+	EC_FEATURE_GPIO = 14,
-+	/* The EC can send i2c messages to downstream devices. */
-+	EC_FEATURE_I2C = 15,
-+	/* Command to control charger are included */
-+	EC_FEATURE_CHARGER = 16,
-+	/* Simple battery support. */
-+	EC_FEATURE_BATTERY = 17,
-+	/*
-+	 * Support Smart battery protocol
-+	 * (Common Smart Battery System Interface Specification)
-+	 */
-+	EC_FEATURE_SMART_BATTERY = 18,
-+	/* EC can dectect when the host hangs. */
-+	EC_FEATURE_HANG_DETECT = 19,
-+	/* Report power information, for pit only */
-+	EC_FEATURE_PMU = 20,
-+	/* Another Cros EC device is present downstream of this one */
-+	EC_FEATURE_SUB_MCU = 21,
-+	/* Support USB Power delivery (PD) commands */
-+	EC_FEATURE_USB_PD = 22,
-+	/* Control USB multiplexer, for audio through USB port for instance. */
-+	EC_FEATURE_USB_MUX = 23,
-+	/* Motion Sensor code has an internal software FIFO */
-+	EC_FEATURE_MOTION_SENSE_FIFO = 24,
-+};
-+
-+#define EC_FEATURE_MASK_0(event_code) (1UL << (event_code % 32))
-+#define EC_FEATURE_MASK_1(event_code) (1UL << (event_code - 32))
-+struct ec_response_get_features {
-+	uint32_t flags[2];
-+} __packed;
- 
- /*****************************************************************************/
- /* Flash commands */
+Thanks!
+
+> 
+> > 
+> > Acked-by: Jonathan Cameron <jic23@kernel.org>
+> > Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> > ---
+> >  drivers/input/keyboard/Kconfig    |  15 +++
+> >  drivers/input/keyboard/Makefile   |   1 +
+> >  drivers/input/keyboard/adc-keys.c | 210 ++++++++++++++++++++++++++++++++++++++
+> >  3 files changed, 226 insertions(+)
+> >  create mode 100644 drivers/input/keyboard/adc-keys.c
+> > 
+> > diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
+> > index 509608c95994..4cf042cc5e63 100644
+> > --- a/drivers/input/keyboard/Kconfig
+> > +++ b/drivers/input/keyboard/Kconfig
+> > @@ -12,6 +12,21 @@ menuconfig INPUT_KEYBOARD
+> >  
+> >  if INPUT_KEYBOARD
+> >  
+> > +config KEYBOARD_ADC
+> > +	tristate "ADC ladder Buttons"
+> > +	depends on IIO
+> > +	select INPUT_POLLDEV
+> > +	help
+> > +	  This driver implements support for buttons connected
+> > +	  to an ADC using a resistor ladder.
+> > +
+> > +	  Say Y here if your device has such buttons connected to an ADC.  Your
+> > +	  board-specific setup logic must also provide a configuration data
+> > +	  saying mapping voltages to buttons.
+> > +
+> > +	  To compile this driver as a module, choose M here: the
+> > +	  module will be called adc_keys.
+> > +
+> >  config KEYBOARD_ADP5520
+> >  	tristate "Keypad Support for ADP5520 PMIC"
+> >  	depends on PMIC_ADP5520
+> > diff --git a/drivers/input/keyboard/Makefile b/drivers/input/keyboard/Makefile
+> > index 1d416ddf84e4..d9f4cfcf3410 100644
+> > --- a/drivers/input/keyboard/Makefile
+> > +++ b/drivers/input/keyboard/Makefile
+> > @@ -4,6 +4,7 @@
+> >  
+> >  # Each configuration option enables a list of files.
+> >  
+> > +obj-$(CONFIG_KEYBOARD_ADC)		+= adc-keys.o
+> >  obj-$(CONFIG_KEYBOARD_ADP5520)		+= adp5520-keys.o
+> >  obj-$(CONFIG_KEYBOARD_ADP5588)		+= adp5588-keys.o
+> >  obj-$(CONFIG_KEYBOARD_ADP5589)		+= adp5589-keys.o
+> > diff --git a/drivers/input/keyboard/adc-keys.c b/drivers/input/keyboard/adc-keys.c
+> > new file mode 100644
+> > index 000000000000..cf299ff517a0
+> > --- /dev/null
+> > +++ b/drivers/input/keyboard/adc-keys.c
+> > @@ -0,0 +1,210 @@
+> > +/* Input driver for resistor ladder connected on ADC
+> > + *
+> > + * Copyright (c) 2016 Alexandre Belloni
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify it
+> > + * under the terms of the GNU General Public License version 2 as published by
+> > + * the Free Software Foundation.
+> > + */
+> > +
+> > +#include <linux/kernel.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/module.h>
+> > +#include <linux/err.h>
+> > +#include <linux/input.h>
+> > +#include <linux/input-polldev.h>
+> > +#include <linux/iio/consumer.h>
+> > +#include <linux/iio/types.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/of.h>
+> > +
+> > +struct adc_keys_button {
+> > +	u32 voltage;
+> > +	u32 keycode;
+> > +};
+> > +
+> > +struct adc_keys_state {
+> > +	struct iio_channel *channel;
+> > +	u32 num_keys;
+> > +	u32 last_key;
+> > +	u32 keyup_voltage;
+> > +	struct adc_keys_button *map;
+> 
+> const
+> 
+> > +};
+> > +
+> > +static void adc_keys_poll(struct input_polled_dev *dev)
+> > +{
+> > +	struct adc_keys_state *st = dev->private;
+> > +	int i, value, ret;
+> > +	u32 diff, closest = 0xffffffff;
+> > +	int keycode = 0;
+> > +
+> > +	ret = iio_read_channel_processed(st->channel, &value);
+> > +	if (ret < 0) {
+> 
+> > +		if (st->last_key) {
+> > +			input_report_key(dev->input, st->last_key, 0);
+> > +			input_sync(dev->input);
+> > +			st->last_key = 0;
+> > +		}
+> > +		return;
+> > +	}
+> > +
+> > +	for (i = 0; i < st->num_keys; i++) {
+> > +		diff = abs(st->map[i].voltage - value);
+> > +		if (diff < closest) {
+> > +			closest = diff;
+> > +			keycode = st->map[i].keycode;
+> > +		}
+> > +	}
+> > +
+> > +	if (abs(st->keyup_voltage - value) < closest) {
+> > +		input_report_key(dev->input, st->last_key, 0);
+> > +		st->last_key = 0;
+> > +	} else {
+> > +		if (st->last_key && st->last_key != keycode)
+> > +			input_report_key(dev->input, st->last_key, 0);
+> > +		input_report_key(dev->input, keycode, 1);
+> > +		st->last_key = keycode;
+> > +	}
+> 
+> I think this can be simplified a bit, see version below.
+> 
+> > +
+> > +	input_sync(dev->input);
+> > +}
+> > +
+> > +static int adc_keys_load_dt_keymap(struct device *dev,
+> > +				   struct adc_keys_state *st)
+> > +{
+> > +	struct device_node *pp, *np = dev->of_node;
+> > +	int i;
+> > +
+> > +	st->num_keys = of_get_child_count(np);
+> > +	if (st->num_keys == 0) {
+> > +		dev_err(dev, "keymap is missing\n");
+> > +		return -EINVAL;
+> > +	}
+> 
+> There is no need to limit this driver to OF, generic device properties
+> will allow us to use it on DT, ACPI and legacy boards.
+> 
+> > +
+> > +	st->map = devm_kmalloc_array(dev, st->num_keys, sizeof(*st->map),
+> > +				     GFP_KERNEL);
+> > +	if (!st->map)
+> > +		return -ENOMEM;
+> > +
+> > +	i = 0;
+> > +	for_each_child_of_node(np, pp) {
+> > +		struct adc_keys_button *map = &st->map[i];
+> > +
+> > +		if (of_property_read_u32(pp, "press-threshold-mvolt",
+> > +					 &map->voltage)) {
+> > +			dev_err(dev, "%s: Invalid or missing voltage\n",
+> > +				pp->name);
+> 
+> You have to remember to drop node reference if you return early from
+> for_each_child_of_node().
+> 
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		if (of_property_read_u32(pp, "linux,code", &map->keycode)) {
+> > +			dev_err(dev, "%s: Invalid or missing linux,code\n",
+> > +				pp->name);
+> > +			return -EINVAL;
+> > +		}
+> > +
+> > +		i++;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static int adc_keys_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *dev = &pdev->dev;
+> > +	struct device_node *node = dev->of_node;
+> > +	struct adc_keys_state *st;
+> > +	struct input_polled_dev *poll_dev = NULL;
+> > +	struct input_dev *input;
+> > +	enum iio_chan_type type;
+> > +	int i, value, ret;
+> > +
+> > +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> > +	if (!st)
+> > +		return -ENOMEM;
+> > +
+> > +	st->channel = devm_iio_channel_get(dev, "buttons");
+> > +	if (IS_ERR(st->channel))
+> > +		return PTR_ERR(st->channel);
+> > +
+> > +	if (!st->channel->indio_dev)
+> > +		return -ENODEV;
+> > +
+> > +	ret = iio_get_channel_type(st->channel, &type);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	if (type != IIO_VOLTAGE) {
+> > +		dev_err(dev, "Incompatible channel type %d\n", type);
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	if (of_property_read_u32(node, "keyup-threshold-mvolt",
+> > +				 &st->keyup_voltage)) {
+> > +		dev_err(dev, "Invalid or missing keyup voltage\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	ret = adc_keys_load_dt_keymap(dev, st);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	platform_set_drvdata(pdev, st);
+> > +
+> > +	poll_dev = devm_input_allocate_polled_device(dev);
+> > +	if (!poll_dev) {
+> > +		dev_err(dev, "failed to allocate input device\n");
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	if (!of_property_read_u32(node, "poll-interval", &value))
+> > +		poll_dev->poll_interval = value;
+> > +	poll_dev->poll = adc_keys_poll;
+> > +	poll_dev->private = st;
+> > +
+> > +	input = poll_dev->input;
+> > +
+> > +	input->name = pdev->name;
+> > +	input->phys = "adc-keys/input0";
+> > +	input->dev.parent = &pdev->dev;
+> 
+> No need to do that for devm input devices - it is done for you.
+> 
+> > +
+> > +	input->id.bustype = BUS_HOST;
+> > +	input->id.vendor = 0x0001;
+> > +	input->id.product = 0x0001;
+> > +	input->id.version = 0x0100;
+> > +
+> > +	__set_bit(EV_KEY, input->evbit);
+> > +	for (i = 0; i < st->num_keys; i++)
+> > +		__set_bit(st->map[i].keycode, input->keybit);
+> > +
+> > +	if (!!of_get_property(node, "autorepeat", NULL))
+> > +		__set_bit(EV_REP, input->evbit);
+> > +
+> > +	ret = input_register_polled_device(poll_dev);
+> > +	if (ret) {
+> > +		dev_err(dev, "Unable to register input device\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct of_device_id adc_keys_of_match[] = {
+> > +	{ .compatible = "adc-keys", },
+> > +	{ }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, adc_keys_of_match);
+> 
+> Needs #ifdef CONFIG_OF.
+> 
+> > +
+> > +static struct platform_driver __refdata adc_keys_driver = {
+> > +	.driver = {
+> > +		.name = "adc_keys",
+> > +		.of_match_table = adc_keys_of_match,
+> 
+> of_match_ptr().
+> 
+> > +	},
+> > +	.probe = adc_keys_probe,
+> > +};
+> > +
+> > +module_platform_driver(adc_keys_driver);
+> > +
+> > +MODULE_AUTHOR("Alexandre Belloni <alexandre.belloni@free-electrons.com>");
+> > +MODULE_DESCRIPTION("Input driver for resistor ladder connected on ADC");
+> > +MODULE_LICENSE("GPL v2");
+> > -- 
+> > 2.8.1
+> > 
+> 
+> Thanks.
+> 
+> -- 
+> Dmitry
+> 
+> 
+> Input: add ADC resistor ladder driver
+> 
+> From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> 
+> A common way of multiplexing buttons on a single input in cheap devices is
+> to use a resistor ladder on an ADC. This driver supports that configuration
+> by polling an ADC channel provided by IIO.
+> 
+> Acked-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+> Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> ---
+>  .../devicetree/bindings/input/adc-keys.txt         |   49 +++++
+>  drivers/input/keyboard/Kconfig                     |   15 +
+>  drivers/input/keyboard/Makefile                    |    1 
+>  drivers/input/keyboard/adc-keys.c                  |  208 ++++++++++++++++++++
+>  4 files changed, 273 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/input/adc-keys.txt
+>  create mode 100644 drivers/input/keyboard/adc-keys.c
+> 
+> diff --git a/Documentation/devicetree/bindings/input/adc-keys.txt b/Documentation/devicetree/bindings/input/adc-keys.txt
+> new file mode 100644
+> index 0000000..feab05a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/input/adc-keys.txt
+> @@ -0,0 +1,49 @@
+> +ADC attached resistor ladder buttons
+> +------------------------------------
+> +
+> +Required properties:
+> + - compatible: "adc-keys"
+> + - io-channels: Phandle to an ADC channel
+> + - io-channel-names = "buttons";
+> + - keyup-threshold-mvolt: Voltage at which all the keys are considered up.
+> +
+> +Optional properties:
+> +	- poll-interval: Poll interval time in milliseconds
+> +	- autorepeat: Boolean, Enable auto repeat feature of Linux input
+> +	  subsystem.
+> +
+> +Each button (key) is represented as a sub-node of "adc-keys":
+> +
+> +Required subnode-properties:
+> +	- label: Descriptive name of the key.
+> +	- linux,code: Keycode to emit.
+> +	- press-threshold-mvolt: Voltage adc input when this key is pressed.
+> +
+> +Example:
+> +
+> +#include <dt-bindings/input/input.h>
+> +
+> +	adc-keys {
+> +		compatible = "adc-keys";
+> +		io-channels = <&lradc 0>;
+> +		io-channel-names = "buttons";
+> +		keyup-threshold-mvolt = <2000>;
+> +
+> +		button@1500 {
+> +			label = "Volume Up";
+> +			linux,code = <KEY_VOLUMEUP>;
+> +			press-threshold-mvolt = <1500>;
+> +		};
+> +
+> +		button@1000 {
+> +			label = "Volume Down";
+> +			linux,code = <KEY_VOLUMEDOWN>;
+> +			press-threshold-mvolt = <1000>;
+> +		};
+> +
+> +		button@500 {
+> +			label = "Enter";
+> +			linux,code = <KEY_ENTER>;
+> +			press-threshold-mvolt = <500>;
+> +		};
+> +	};
+> diff --git a/drivers/input/keyboard/Kconfig b/drivers/input/keyboard/Kconfig
+> index 509608c..cbd75cf 100644
+> --- a/drivers/input/keyboard/Kconfig
+> +++ b/drivers/input/keyboard/Kconfig
+> @@ -12,6 +12,21 @@ menuconfig INPUT_KEYBOARD
+>  
+>  if INPUT_KEYBOARD
+>  
+> +config KEYBOARD_ADC
+> +	tristate "ADC Ladder Buttons"
+> +	depends on IIO
+> +	select INPUT_POLLDEV
+> +	help
+> +	  This driver implements support for buttons connected
+> +	  to an ADC using a resistor ladder.
+> +
+> +	  Say Y here if your device has such buttons connected to an ADC.  Your
+> +	  board-specific setup logic must also provide a configuration data
+> +	  for mapping voltages to buttons.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called adc_keys.
+> +
+>  config KEYBOARD_ADP5520
+>  	tristate "Keypad Support for ADP5520 PMIC"
+>  	depends on PMIC_ADP5520
+> diff --git a/drivers/input/keyboard/Makefile b/drivers/input/keyboard/Makefile
+> index 1d416dd..d9f4cfc 100644
+> --- a/drivers/input/keyboard/Makefile
+> +++ b/drivers/input/keyboard/Makefile
+> @@ -4,6 +4,7 @@
+>  
+>  # Each configuration option enables a list of files.
+>  
+> +obj-$(CONFIG_KEYBOARD_ADC)		+= adc-keys.o
+>  obj-$(CONFIG_KEYBOARD_ADP5520)		+= adp5520-keys.o
+>  obj-$(CONFIG_KEYBOARD_ADP5588)		+= adp5588-keys.o
+>  obj-$(CONFIG_KEYBOARD_ADP5589)		+= adp5589-keys.o
+> diff --git a/drivers/input/keyboard/adc-keys.c b/drivers/input/keyboard/adc-keys.c
+> new file mode 100644
+> index 0000000..f91eec5
+> --- /dev/null
+> +++ b/drivers/input/keyboard/adc-keys.c
+> @@ -0,0 +1,208 @@
+> +/*
+> + * Input driver for resistor ladder connected on ADC
+> + *
+> + * Copyright (c) 2016 Alexandre Belloni
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + */
+> +
+> +#include <linux/err.h>
+> +#include <linux/iio/consumer.h>
+> +#include <linux/iio/types.h>
+> +#include <linux/input.h>
+> +#include <linux/input-polldev.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/property.h>
+> +#include <linux/slab.h>
+> +
+> +struct adc_keys_button {
+> +	u32 voltage;
+> +	u32 keycode;
+> +};
+> +
+> +struct adc_keys_state {
+> +	struct iio_channel *channel;
+> +	u32 num_keys;
+> +	u32 last_key;
+> +	u32 keyup_voltage;
+> +	const struct adc_keys_button *map;
+> +};
+> +
+> +static void adc_keys_poll(struct input_polled_dev *dev)
+> +{
+> +	struct adc_keys_state *st = dev->private;
+> +	int i, value, ret;
+> +	u32 diff, closest = 0xffffffff;
+> +	int keycode = 0;
+> +
+> +	ret = iio_read_channel_processed(st->channel, &value);
+> +	if (unlikely(ret < 0)) {
+> +		/* Forcibly release key if any was pressed */
+> +		value = st->keyup_voltage;
+> +	} else {
+> +		for (i = 0; i < st->num_keys; i++) {
+> +			diff = abs(st->map[i].voltage - value);
+> +			if (diff < closest) {
+> +				closest = diff;
+> +				keycode = st->map[i].keycode;
+> +			}
+> +		}
+> +	}
+> +
+> +	if (abs(st->keyup_voltage - value) < closest)
+> +		keycode = 0;
+> +
+> +	if (st->last_key && st->last_key != keycode)
+> +		input_report_key(dev->input, st->last_key, 0);
+> +
+> +	if (keycode)
+> +		input_report_key(dev->input, keycode, 1);
+> +
+> +	input_sync(dev->input);
+> +	st->last_key = keycode;
+> +}
+> +
+> +static int adc_keys_load_keymap(struct device *dev, struct adc_keys_state *st)
+> +{
+> +	struct adc_keys_button *map;
+> +	struct fwnode_handle *child;
+> +	int i;
+> +
+> +	st->num_keys = device_get_child_node_count(dev);
+> +	if (st->num_keys == 0) {
+> +		dev_err(dev, "keymap is missing\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	map = devm_kmalloc_array(dev, st->num_keys, sizeof(*map), GFP_KERNEL);
+> +	if (!map)
+> +		return -ENOMEM;
+> +
+> +	i = 0;
+> +	device_for_each_child_node(dev, child) {
+> +		if (fwnode_property_read_u32(child, "press-threshold-mvolt",
+> +					     &map[i].voltage)) {
+> +			dev_err(dev, "Key with invalid or missing voltage\n");
+> +			fwnode_handle_put(child);
+> +			return -EINVAL;
+> +		}
+> +
+> +		if (fwnode_property_read_u32(child, "linux,code",
+> +					     &map[i].keycode)) {
+> +			dev_err(dev, "Key with invalid or missing linux,code\n");
+> +			fwnode_handle_put(child);
+> +			return -EINVAL;
+> +		}
+> +
+> +		i++;
+> +	}
+> +
+> +	st->map = map;
+> +	return 0;
+> +}
+> +
+> +static int adc_keys_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct adc_keys_state *st;
+> +	struct input_polled_dev *poll_dev;
+> +	struct input_dev *input;
+> +	enum iio_chan_type type;
+> +	int i, value;
+> +	int error;
+> +
+> +	st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+> +	if (!st)
+> +		return -ENOMEM;
+> +
+> +	st->channel = devm_iio_channel_get(dev, "buttons");
+> +	if (IS_ERR(st->channel))
+> +		return PTR_ERR(st->channel);
+> +
+> +	if (!st->channel->indio_dev)
+> +		return -ENXIO;
+> +
+> +	error = iio_get_channel_type(st->channel, &type);
+> +	if (error < 0)
+> +		return error;
+> +
+> +	if (type != IIO_VOLTAGE) {
+> +		dev_err(dev, "Incompatible channel type %d\n", type);
+> +		return -EINVAL;
+> +	}
+> +
+> +	if (device_property_read_u32(dev, "keyup-threshold-mvolt",
+> +				     &st->keyup_voltage)) {
+> +		dev_err(dev, "Invalid or missing keyup voltage\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	error = adc_keys_load_keymap(dev, st);
+> +	if (error)
+> +		return error;
+> +
+> +	platform_set_drvdata(pdev, st);
+> +
+> +	poll_dev = devm_input_allocate_polled_device(dev);
+> +	if (!poll_dev) {
+> +		dev_err(dev, "failed to allocate input device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	if (!device_property_read_u32(dev, "poll-interval", &value))
+> +		poll_dev->poll_interval = value;
+> +
+> +	poll_dev->poll = adc_keys_poll;
+> +	poll_dev->private = st;
+> +
+> +	input = poll_dev->input;
+> +
+> +	input->name = pdev->name;
+> +	input->phys = "adc-keys/input0";
+> +
+> +	input->id.bustype = BUS_HOST;
+> +	input->id.vendor = 0x0001;
+> +	input->id.product = 0x0001;
+> +	input->id.version = 0x0100;
+> +
+> +	__set_bit(EV_KEY, input->evbit);
+> +	for (i = 0; i < st->num_keys; i++)
+> +		__set_bit(st->map[i].keycode, input->keybit);
+> +
+> +	if (device_property_read_bool(dev, "autorepeat"))
+> +		__set_bit(EV_REP, input->evbit);
+> +
+> +	error = input_register_polled_device(poll_dev);
+> +	if (error) {
+> +		dev_err(dev, "Unable to register input device: %d\n", error);
+> +		return error;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_OF
+> +static const struct of_device_id adc_keys_of_match[] = {
+> +	{ .compatible = "adc-keys", },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, adc_keys_of_match);
+> +#endif
+> +
+> +static struct platform_driver __refdata adc_keys_driver = {
+> +	.driver = {
+> +		.name = "adc_keys",
+> +		.of_match_table = of_match_ptr(adc_keys_of_match),
+> +	},
+> +	.probe = adc_keys_probe,
+> +};
+> +module_platform_driver(adc_keys_driver);
+> +
+> +MODULE_AUTHOR("Alexandre Belloni <alexandre.belloni@free-electrons.com>");
+> +MODULE_DESCRIPTION("Input driver for resistor ladder connected on ADC");
+> +MODULE_LICENSE("GPL v2");
+
 -- 
-2.1.0
-
+Dmitry
