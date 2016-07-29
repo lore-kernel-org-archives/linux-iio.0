@@ -1,1845 +1,456 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Fri, 29 Jul 2016 08:42:21 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Florian Lobmaier <Florian.Lobmaier@ams.com>
-cc: "jic23@kernel.org" <jic23@kernel.org>,
-    Elitsa Polizoeva <Elitsa.Polizoeva@ams.com>,
-    "knaack.h@gmx.de" <knaack.h@gmx.de>,
-    "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-    "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-    Lars-Peter Clausen <lars@metafoo.de>
-Subject: RE: [PATCH V2 1/1] iio: as6200: add AS6200 temperature sensor driver
- from ams AG
-In-Reply-To: <c337fefe2fed420590d7ab849f6a3033@SUX5076.office.amsiag.com>
-Message-ID: <alpine.DEB.2.02.1607290802590.7650@pmeerw.net>
-References: <c337fefe2fed420590d7ab849f6a3033@SUX5076.office.amsiag.com>
+Return-Path: <maxime.ripard@free-electrons.com>
+Date: Fri, 29 Jul 2016 08:49:51 +0200
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
+	lee.jones@linaro.org, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Subject: Re: [PATCH v3 2/4] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160729064951.GA6215@lukather>
+References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1469519027-11387-3-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="324295856-1419068016-1469772425=:7650"
+Content-Type: multipart/signed; micalg=pgp-sha1;
+	protocol="application/pgp-signature"; boundary="CE+1k2dSO48ffgeK"
+In-Reply-To: <1469519027-11387-3-git-send-email-quentin.schulz@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
 
---324295856-1419068016-1469772425=:7650
-Content-Type: TEXT/PLAIN; CHARSET=ISO-8859-15
-Content-Transfer-Encoding: 8BIT
-Content-ID: <alpine.DEB.2.02.1607290807121.7650@pmeerw.net>
+--CE+1k2dSO48ffgeK
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Hello Florian,
+Hi Quentin,
 
-> As requested we can also provide a link to the datasheet of the chip: 
-> http://ams.com/eng/Products/Environmental-Sensors/Temperature-Sensors
-> We also tried to cover all points (removed all debug msgs, simpler IRQ 
-> pin config, etc.). Still all the show/store functions for each 
-> configuration bit of the sensor are in. This was a request by our product 
-> management. If you suggest to take the show/store functions out 
-> completely for the driver version in the kernel, we would also be fine 
-> with that. We will give them out on request for customers then.
-
-looks a lot better; GPL copyright header missing and private API needs to 
-be documented (or removed, but it really is just for debug?)
-
-more comments below
-
-regards, p.
-
-> Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-> Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
+On Tue, Jul 26, 2016 at 09:43:45AM +0200, Quentin Schulz wrote:
+> The Allwinner SoCs all have an ADC that can also act as a touchscreen
+> controller and a thermal sensor. For now, only the ADC and the thermal
+> sensor drivers are probed by the MFD, the touchscreen controller support
+> will be added later.
+>=20
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 > ---
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index 21feaa4..d82e80f 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -3,6 +3,17 @@
->  #
->  menu "Temperature sensors"
->  
-> +config AS6200
-> +	tristate "ams AG AS6200 temperature sensor"
-> +	depends on I2C
-> +	select REGMAP_I2C
+>=20
+> v3:
+>  - use defines in regmap_irq instead of hard coded BITs,
+>  - use of_device_id data field to chose which MFD cells to add considering
+>    the compatible responsible of the MFD probe,
+>  - remove useless initializations,
+>  - disable all interrupts before adding them to regmap_irqchip,
+>  - add goto error label in probe,
+>  - correct wrapping in header license,
+>  - move defines from IIO driver to header,
+>  - use GENMASK to limit the size of the variable passed to a macro,
+>  - prefix register BIT defines with the name of the register,
+>  - reorder defines,
+>=20
+> v2:
+>  - add license headers,
+>  - reorder alphabetically includes,
+>  - add SUNXI_GPADC_ prefixes for defines,
+>=20
+>  drivers/mfd/Kconfig                 |  15 +++
+>  drivers/mfd/Makefile                |   2 +
+>  drivers/mfd/sunxi-gpadc-mfd.c       | 189 ++++++++++++++++++++++++++++++=
+++++++
+>  include/linux/mfd/sunxi-gpadc-mfd.h |  94 ++++++++++++++++++
+
+Renaming the driver would be nice too.
+
+>  4 files changed, 300 insertions(+)
+>  create mode 100644 drivers/mfd/sunxi-gpadc-mfd.c
+>  create mode 100644 include/linux/mfd/sunxi-gpadc-mfd.h
+>=20
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 1bcf601..6180c2d 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -29,6 +29,21 @@ config MFD_ACT8945A
+>  	  linear regulators, along with a complete ActivePath battery
+>  	  charger.
+> =20
+> +config MFD_SUN4I_GPADC
+> +	tristate "Allwinner sunxi platforms' GPADC MFD driver"
+> +	select MFD_CORE
+> +	select REGMAP_MMIO
+> +	depends on ARCH_SUNXI || COMPILE_TEST
 > +	help
-> +	  If you say yes here you get support for the AS6200 temperature
-> +	  sensor from ams AG.
+> +	  Select this to get support for Allwinner SoCs (A10, A13 and A31) ADC.
+> +	  This driver will only map the hardware interrupt and registers, you
+> +	  have to select individual drivers based on this MFD to be able to use
+> +	  the ADC or the thermal sensor. This will try to probe the ADC driver
+> +	  sunxi-gpadc-iio and the hwmon driver iio_hwmon.
 > +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called as6200.
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called sunxi-gpadc-mfd.
 > +
->  config MLX90614
->  	tristate "MLX90614 contact-less infrared sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 40710a8..c0c9a9a 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -2,5 +2,6 @@
->  # Makefile for industrial I/O temperature drivers
->  #
->  
-> +obj-$(CONFIG_AS6200) += as6200.o
->  obj-$(CONFIG_MLX90614) += mlx90614.o
->  obj-$(CONFIG_TMP006) += tmp006.o
-> diff --git a/drivers/iio/temperature/as6200.c b/drivers/iio/temperature/as6200.c
+>  config MFD_AS3711
+>  	bool "AMS AS3711"
+>  	select MFD_CORE
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 42a66e1..9dfd033 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -205,3 +205,5 @@ intel-soc-pmic-objs		:=3D intel_soc_pmic_core.o intel=
+_soc_pmic_crc.o
+>  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+=3D intel_soc_pmic_bxtwc.o
+>  obj-$(CONFIG_INTEL_SOC_PMIC)	+=3D intel-soc-pmic.o
+>  obj-$(CONFIG_MFD_MT6397)	+=3D mt6397-core.o
+> +
+> +obj-$(CONFIG_MFD_SUN4I_GPADC)	+=3D sunxi-gpadc-mfd.o
+> diff --git a/drivers/mfd/sunxi-gpadc-mfd.c b/drivers/mfd/sunxi-gpadc-mfd.c
 > new file mode 100644
-> index 0000000..289e950
+> index 0000000..3d70af0
 > --- /dev/null
-> +++ b/drivers/iio/temperature/as6200.c
-> @@ -0,0 +1,789 @@
-
-there needs to be a GPL copyright header, not sure if MODULE_LICENSE() 
-below is enough
-
-I find it useful to state the I2C 7-bit chip address here as well
-
-> +#include <linux/module.h>
-> +#include <linux/device.h>
-> +#include <linux/init.h>
-> +#include <linux/slab.h>
-> +#include <linux/i2c.h>
-> +#include <linux/err.h>
-> +#include <linux/types.h>
-> +#include <linux/irq.h>
+> +++ b/drivers/mfd/sunxi-gpadc-mfd.c
+> @@ -0,0 +1,189 @@
+> +/* ADC MFD core driver for sunxi platforms
+> + *
+> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
+> + *
+> + * This program is free software; you can redistribute it and/or modify =
+it
+> + * under the terms of the GNU General Public License version 2 as publis=
+hed by
+> + * the Free Software Foundation.
+> + */
+> +
 > +#include <linux/interrupt.h>
-> +#include <linux/gpio.h>
-> +#include <linux/of_gpio.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/events.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_irq.h>
 > +#include <linux/regmap.h>
 > +
-> +static const int as6200_conv_rates[4][2] = { {4, 0}, {1, 0},
-> +					{0, 250000}, {0, 125000} };
+> +#include <linux/mfd/sunxi-gpadc-mfd.h>
 > +
-> +static const char * const as6200_consec_faults[] = { "1", "2", "4", "6" };
-> +
-> +/* AS6200 registers */
-> +#define AS6200_REG_TVAL		0x00
-> +#define AS6200_REG_CONFIG	0x01
-> +#define AS6200_REG_TLOW		0x02
-> +#define AS6200_REG_THIGH	0x03
-> +#define AS6200_MAX_REGISTER	0x03
-> +
-> +#define AS6200_CONFIG_DW_MASK	BIT(4)
-> +#define AS6200_CONFIG_DW_SHIFT	4
-> +#define AS6200_CONFIG_AL_MASK	BIT(5)
-> +#define AS6200_CONFIG_AL_SHIFT	5
-> +#define AS6200_CONFIG_CR_MASK	GENMASK(7, 6)
-> +#define AS6200_CONFIG_CR_SHIFT	6
-> +#define AS6200_CONFIG_SM_MASK	BIT(8)
-> +#define AS6200_CONFIG_SM_SHIFT	8
-> +#define AS6200_CONFIG_IM_MASK	BIT(9)
-> +#define AS6200_CONFIG_IM_SHIFT	9
-> +#define AS6200_CONFIG_POL_MASK	BIT(10)
-> +#define AS6200_CONFIG_POL_SHIFT	10
-> +#define AS6200_CONFIG_CF_MASK	GENMASK(12, 11)
-> +#define AS6200_CONFIG_CF_SHIFT	11
-> +#define AS6200_CONFIG_SS_MASK	BIT(15)
-> +#define AS6200_CONFIG_SS_SHIFT	15
-> +
-> +struct as6200_data {
-> +	struct i2c_client *client;
-> +	struct regmap *regmap;
-> +};
-> +
-> +static const struct regmap_range as6200_readable_ranges[] = {
-> +	regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_THIGH),
-> +};
-> +
-> +static const struct regmap_access_table as6200_readable_table = {
-> +	.yes_ranges = as6200_readable_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(as6200_readable_ranges),
-> +};
-> +
-> +static const struct regmap_range as6200_writable_ranges[] = {
-> +	regmap_reg_range(AS6200_REG_CONFIG, AS6200_REG_THIGH),
-> +};
-> +
-> +static const struct regmap_access_table as6200_writable_table = {
-> +	.yes_ranges = as6200_writable_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(as6200_writable_ranges),
-> +};
-> +
-> +static const struct regmap_range as6200_volatile_ranges[] = {
-> +	regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_TVAL),
-> +};
-> +
-> +static const struct regmap_access_table as6200_volatile_table = {
-> +	.yes_ranges = as6200_volatile_ranges,
-> +	.n_yes_ranges = ARRAY_SIZE(as6200_volatile_ranges),
-> +};
-> +
-> +static const struct regmap_config as6200_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 16,
-> +	.max_register = AS6200_MAX_REGISTER,
-> +	.cache_type = REGCACHE_RBTREE,
-> +	.rd_table = &as6200_readable_table,
-> +	.wr_table = &as6200_writable_table,
-> +	.volatile_table = &as6200_volatile_table,
-> +};
-> +
-> +static int as6200_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *channel, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	int cr;
-> +	s32 ret;
-> +	int err = 0;
-
-err initialization not needed
-
-> +	unsigned int reg_val = 0;
-
-reg_val initialization not needed
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_PROCESSED:
-
-I'd suggest the following to save some lines and simplity control flow
-
-if (channel->type != IIO_TEMP)
-   return -EINVAL
-
-err = regmap_read(data->regmap, AS6200_REG_TVAL, ...
-return IIO_VAL_INT;
-
-(and similar below)
-
-> +		if (channel->type == IIO_TEMP) {
-> +			err = regmap_read(data->regmap, AS6200_REG_TVAL,
-> +						&reg_val);
-> +			if (err < 0)
-> +				return err;
-> +			ret = reg_val;
-
-why this assignment? could do 
-ret = sign_extend32(reg_val, 15) >> 4; 
-
-> +			ret = sign_extend32(ret, 15) >> 4;
-> +			if (mask == IIO_CHAN_INFO_PROCESSED)
-> +				*val = (ret * 625) / 10000;
-> +			else
-> +				*val = ret;
-> +		} else {
-> +			break;
-> +		}
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (channel->type == IIO_TEMP) {
-> +			*val = 62;
-> +			*val2 = 500000;
-> +		} else {
-> +			break;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (channel->type == IIO_TEMP) {
-> +			err = regmap_read(data->regmap, AS6200_REG_CONFIG,
-> +						&reg_val);
-> +			if (err < 0)
-> +				return err;
-> +			cr = (reg_val & AS6200_CONFIG_CR_MASK)
-> +				>> AS6200_CONFIG_CR_SHIFT;
-> +			*val = as6200_conv_rates[cr][0];
-> +			*val2 = as6200_conv_rates[cr][1];
-> +		} else {
-> +			break;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		break;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int as6200_write_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int val,
-> +			int val2,
-> +			long mask)
-> +{
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	int i;
-> +	unsigned int config_val;
-> +	int err = 0;
-> +
-> +	if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-> +		return -EINVAL;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(as6200_conv_rates); i++) {
-> +		if ((val == as6200_conv_rates[i][0]) &&
-> +			(val2 == as6200_conv_rates[i][1])) {
-
-parenthesis not needed
-
-> +			err = regmap_read(data->regmap,
-> +				AS6200_REG_CONFIG, &config_val);
-> +			if (err < 0)
-> +				return err;
-> +			config_val &= ~AS6200_CONFIG_CR_MASK;
-> +			config_val |= i << AS6200_CONFIG_CR_SHIFT;
-> +
-> +			return regmap_write(data->regmap, AS6200_REG_CONFIG,
-> +							config_val);
-> +		}
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static irqreturn_t as6200_alert_isr(int irq, void *dev_id)
-> +{
-> +	struct iio_dev *indio_dev = dev_id;
-> +
-> +	iio_push_event(indio_dev,
-> +		IIO_UNMOD_EVENT_CODE(IIO_TEMP,
-> +					0,
-> +					IIO_EV_TYPE_THRESH,
-> +					IIO_EV_DIR_EITHER),
-> +					iio_get_time_ns());
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int as6200_setup_irq(struct iio_dev *indio_dev, bool set_gpio, u8 pol)
-> +{
-> +	int err;
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct device *dev = &data->client->dev;
-> +	int irq_trig;
-> +
-
-set_gpio not used?
-pol could be bool?
-
-> +	if (pol == 1)
-> +		irq_trig = IRQF_TRIGGER_RISING;
-> +	else
-> +		irq_trig = IRQF_TRIGGER_FALLING;
-> +
-> +	err = request_irq(data->client->irq, as6200_alert_isr, irq_trig,
-> +			"as6200", dev);
-> +	if (err) {
-> +		dev_err(dev, "error requesting irq %d\n", err);
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static ssize_t as6200_show_thigh(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-
-maybe common code could be split out
-
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0;
-> +	int err = 0;
-
-init not needed
-
-> +	int val;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	reg_val = reg_val >> 4;
-> +	val = (625 * reg_val) / 10000;
-> +	return sprintf(buf, "%d%cC\n", val, (unsigned char)(248));
-
-this tries to outputs the extended ASCII ° character (degree), this makes 
-little sense, most terminals are utf-8 and I'm not sure what the policy is 
-WRT non-ASCII
-
-> +}
-> +
-> +static ssize_t as6200_show_tlow(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +	int val;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	reg_val = reg_val >> 4;
-> +	val = (625 * reg_val) / 10000;
-> +	return sprintf(buf, "%d%cC\n", val, (unsigned char)(248));
-> +}
-> +
-> +static ssize_t as6200_show_thigh_reg(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", reg_val);
-> +}
-> +
-> +static ssize_t as6200_show_tlow_reg(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", reg_val);
-> +}
-> +
-> +static ssize_t as6200_show_config(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", reg_val);
-> +}
-> +
-> +static ssize_t as6200_show_al(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +	u16 pol = 0;
-
-init not needed
-
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	pol = (reg_val & AS6200_CONFIG_POL_MASK) >> AS6200_CONFIG_POL_SHIFT;
-> +	reg_val = (reg_val & AS6200_CONFIG_AL_MASK) >> AS6200_CONFIG_AL_SHIFT;
-> +	if (pol == 1) {
-> +		if (reg_val == 0)
-> +			return sprintf(buf, "off\n");
-> +		else if (reg_val == 1)
-> +			return sprintf(buf, "on\n");
-
-AL_MASK is a bit, I don't see how reg_val can end up different from 0/1
-
-maybe use a bool for pol?
-
-
-
-> +		else
-> +			return sprintf(buf, "invalid\n");
-> +	} else if (pol == 0) {
-> +		if (reg_val == 0)
-> +			return sprintf(buf, "on\n");
-> +		else if (reg_val == 1)
-> +			return sprintf(buf, "off\n");
-> +		else
-> +			return sprintf(buf, "invalid\n");
-> +	} else
-> +		return sprintf(buf, "invalid\n");
-> +}
-> +
-> +static ssize_t as6200_show_sm(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SM_MASK)
-> +					>> AS6200_CONFIG_SM_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_show_im(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_IM_MASK)
-> +					>> AS6200_CONFIG_IM_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_show_pol(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_POL_MASK)
-> +					 >> AS6200_CONFIG_POL_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_show_cf(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	reg_val = (reg_val & AS6200_CONFIG_CF_MASK) >> AS6200_CONFIG_CF_SHIFT;
-
-could index into consec_faults array of strings to avoid the switch 
-statement?
-
-> +	switch (reg_val) {
-> +	case 0:
-> +		return sprintf(buf, "1\n");
-> +	case 1:
-> +		return sprintf(buf, "2\n");
-> +	case 2:
-> +		return sprintf(buf, "4\n");
-> +	case 3:
-> +		return sprintf(buf, "6\n");
-> +	}
-> +	return sprintf(buf, "invalid\n");
-> +}
-> +
-> +static ssize_t as6200_show_ss(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	unsigned int reg_val = 0x00;
-> +	int err = 0;
-> +
-> +	err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SS_MASK)
-> +					>> AS6200_CONFIG_SS_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_set_thigh(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	int err = 0;
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	s16 reg_val;
-> +	int val;
-> +
-> +	err = kstrtoint(buf, 0, &val);
-> +	if (err == 0) {
-> +		if ((val < -40) | (val > 150))
-
-should be ||
-
-> +			return count;
-> +		val = (val * 10000) / 625;
-> +		reg_val = val << 4;
-> +		err = regmap_write(data->regmap, AS6200_REG_THIGH, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-
-use dev_err if it is an error
-
-> +			"Converting value for THIGH failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_tlow(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err = 0;
-> +	s16 reg_val;
-> +	int val;
-> +
-> +	err = kstrtoint(buf, 0, &val);
-> +	if (err == 0) {
-> +		if ((val < -40) | (val > 150)) {
-> +			dev_info(&client->dev,
-> +				"Value for THIGH is invalid min = -40%cC, max = 150°C, val = %d°C",
-> +				(unsigned char)(248), val);
-
-this should return an error code I think, not count
-
-> +			return count;
-> +		}
-> +		val = (val * 10000) / 625;
-> +		reg_val = val << 4;
-> +		err = regmap_write(data->regmap, AS6200_REG_TLOW, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for TLOW failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_thigh_reg(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	int err = 0;
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	u16 reg_val;
-> +
-> +	err = kstrtou16(buf, 0, &reg_val);
-> +	if (err == 0) {
-> +		err = regmap_write(data->regmap, AS6200_REG_THIGH, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for THIGH failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_tlow_reg(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err = 0;
-> +	u16 reg_val;
-> +
-> +	err = kstrtou16(buf, 0, &reg_val);
-> +	if (err == 0) {
-> +		err = regmap_write(data->regmap, AS6200_REG_TLOW, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for TLOW failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_configreg(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err = 0;
-> +	u16 reg_val;
-
-what sense makes a driver abstraction if you allow to set any value 
-imaginable anyways?
-
-try to reduce code by splitting out common functions
-
-> +
-> +	err = kstrtou16(buf, 0, &reg_val);
-> +	if (err == 0) {
-> +		err = regmap_write(data->regmap, AS6200_REG_CONFIG, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for CONFIG failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-
-drop newline
-
-> +
-> +static ssize_t as6200_set_sm(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err = kstrtou16(buf, 0, &val);
-> +	if (err == 0) {
-> +		err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_SM_MASK, val << AS6200_CONFIG_SM_SHIFT);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for SM field failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_im(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err = kstrtou16(buf, 0, &val);
-> +	if (err == 0) {
-> +		err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_IM_MASK, val << AS6200_CONFIG_IM_SHIFT);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for IM field failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_pol(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err = kstrtou16(buf, 0, &val);
-> +	if (err == 0) {
-> +		free_irq(client->irq, dev);
-> +		err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_POL_MASK,
-> +			val << AS6200_CONFIG_POL_SHIFT);
-> +		if (err < 0)
-
-so irq is invalid here, but remove() would free it again?
-
-> +			return err;
-> +		as6200_setup_irq(indio_dev, false, val);
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for POL field failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_cf(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err = kstrtou16(buf, 0, &val);
-> +	if (err == 0) {
-> +		switch (val) {
-> +		case 1:
-> +		case 2:
-> +		case 4:
-> +		case 6:
-> +			err = regmap_update_bits(data->regmap,
-> +				AS6200_REG_CONFIG, AS6200_CONFIG_CF_MASK,
-> +				val << AS6200_CONFIG_CF_SHIFT);
-> +			if (err < 0)
-> +				return err;
-> +			break;
-> +		default:
-> +			dev_info(&client->dev,
-> +				"Value for CF field invalid, val = %hx", val);
-> +			return count;
-> +		}
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for CF field failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_ss(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct as6200_data *data = iio_priv(indio_dev);
-> +	struct i2c_client *client = data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err = kstrtou16(buf, 0, &val);
-> +	if (err == 0) {
-> +		err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_SS_MASK, val << AS6200_CONFIG_SS_SHIFT);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for SS field failed, err = %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(thigh, S_IWUSR | S_IRUGO, as6200_show_thigh,
-> +	as6200_set_thigh, 0);
-> +static IIO_DEVICE_ATTR(tlow, S_IWUSR | S_IRUGO, as6200_show_tlow,
-> +	as6200_set_tlow, 0);
-> +static IIO_DEVICE_ATTR(thigh_reg, S_IWUSR | S_IRUGO, as6200_show_thigh_reg,
-> +	as6200_set_thigh_reg, 0);
-> +static IIO_DEVICE_ATTR(tlow_reg, S_IWUSR | S_IRUGO, as6200_show_tlow_reg,
-> +	as6200_set_tlow_reg, 0);
-> +static IIO_DEVICE_ATTR(config, S_IWUSR | S_IRUGO, as6200_show_config,
-> +	as6200_set_configreg, 0);
-> +static IIO_DEVICE_ATTR(al, S_IRUGO, as6200_show_al, NULL, 0);
-> +static IIO_DEVICE_ATTR(sm, S_IWUSR | S_IRUGO, as6200_show_sm,
-> +	as6200_set_sm, 0);
-> +static IIO_DEVICE_ATTR(im, S_IWUSR | S_IRUGO, as6200_show_im,
-> +	as6200_set_im, 0);
-> +static IIO_DEVICE_ATTR(pol, S_IWUSR | S_IRUGO, as6200_show_pol,
-> +	as6200_set_pol, 0);
-> +static IIO_DEVICE_ATTR(cf, S_IWUSR | S_IRUGO, as6200_show_cf,
-> +	as6200_set_cf, 0);
-> +static IIO_DEVICE_ATTR(ss, S_IWUSR | S_IRUGO, as6200_show_ss,
-> +	as6200_set_ss, 0);
-> +
-> +static IIO_CONST_ATTR(sampling_frequency_available, "4 1 0.25 0.125");
-> +
-> +static struct attribute *as6200_attrs[] = {
-> +	&iio_dev_attr_thigh.dev_attr.attr,
-> +	&iio_dev_attr_tlow.dev_attr.attr,
-> +	&iio_dev_attr_thigh_reg.dev_attr.attr,
-> +	&iio_dev_attr_tlow_reg.dev_attr.attr,
-> +	&iio_dev_attr_config.dev_attr.attr,
-> +	&iio_dev_attr_al.dev_attr.attr,
-> +	&iio_dev_attr_sm.dev_attr.attr,
-> +	&iio_dev_attr_im.dev_attr.attr,
-> +	&iio_dev_attr_pol.dev_attr.attr,
-> +	&iio_dev_attr_cf.dev_attr.attr,
-> +	&iio_dev_attr_ss.dev_attr.attr,
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static struct attribute_group as6200_attr_group = {
-> +	.attrs = as6200_attrs,
-> +};
-> +
-> +static const struct iio_chan_spec as6200_channels[] = {
+> +static struct resource adc_resources[] =3D {
 > +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_PROCESSED) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +		.name	=3D "FIFO_DATA_PENDING",
+> +		.start	=3D SUNXI_IRQ_FIFO_DATA,
+> +		.end	=3D SUNXI_IRQ_FIFO_DATA,
+> +		.flags	=3D IORESOURCE_IRQ,
+> +	}, {
+> +		.name	=3D "TEMP_DATA_PENDING",
+> +		.start	=3D SUNXI_IRQ_TEMP_DATA,
+> +		.end	=3D SUNXI_IRQ_TEMP_DATA,
+> +		.flags	=3D IORESOURCE_IRQ,
+> +	},
+> +};
+> +
+> +static const struct regmap_irq sunxi_gpadc_mfd_regmap_irq[] =3D {
+> +	REGMAP_IRQ_REG(SUNXI_IRQ_FIFO_DATA, 0,
+> +		       SUNXI_GPADC_TP_INT_FIFOC_TP_DATA_IRQ_EN),
+> +	REGMAP_IRQ_REG(SUNXI_IRQ_TEMP_DATA, 0,
+> +		       SUNXI_GPADC_TP_INT_FIFOC_TEMP_IRQ_EN),
+> +};
+> +
+> +static const struct regmap_irq_chip sunxi_gpadc_mfd_regmap_irq_chip =3D {
+> +	.name =3D "sunxi_gpadc_mfd_irq_chip",
+> +	.status_base =3D SUNXI_GPADC_TP_INT_FIFOS,
+> +	.ack_base =3D SUNXI_GPADC_TP_INT_FIFOS,
+> +	.mask_base =3D SUNXI_GPADC_TP_INT_FIFOC,
+> +	.init_ack_masked =3D true,
+> +	.mask_invert =3D true,
+> +	.irqs =3D sunxi_gpadc_mfd_regmap_irq,
+> +	.num_irqs =3D ARRAY_SIZE(sunxi_gpadc_mfd_regmap_irq),
+> +	.num_regs =3D 1,
+> +};
+> +
+> +static struct mfd_cell sun4i_gpadc_mfd_cells[] =3D {
+> +	{
+> +		.name	=3D "sun4i-a10-gpadc-iio",
+> +		.resources =3D adc_resources,
+> +		.num_resources =3D ARRAY_SIZE(adc_resources),
+> +	}, {
+> +		.name =3D "iio_hwmon",
 > +	}
 > +};
 > +
-> +static const struct iio_info as6200_info = {
-> +	.read_raw = as6200_read_raw,
-> +	.write_raw = as6200_write_raw,
-> +	.attrs = &as6200_attr_group,
-> +	.driver_module = THIS_MODULE,
+> +static struct mfd_cell sun5i_gpadc_mfd_cells[] =3D {
+> +	{
+> +		.name	=3D "sun5i-a13-gpadc-iio",
+> +		.resources =3D adc_resources,
+> +		.num_resources =3D ARRAY_SIZE(adc_resources),
+> +	}, {
+> +		.name =3D "iio_hwmon",
+> +	},
 > +};
 > +
-> +static int as6200_i2c_probe(struct i2c_client *client,
-> +	const struct i2c_device_id *id)
+> +static struct mfd_cell sun6i_gpadc_mfd_cells[] =3D {
+> +	{
+> +		.name	=3D "sun6i-a31-gpadc-iio",
+> +		.resources =3D adc_resources,
+> +		.num_resources =3D ARRAY_SIZE(adc_resources),
+> +	}, {
+> +		.name =3D "iio_hwmon",
+> +	},
+> +};
+> +
+> +static const struct regmap_config sunxi_gpadc_mfd_regmap_config =3D {
+> +	.reg_bits =3D 32,
+> +	.val_bits =3D 32,
+> +	.reg_stride =3D 4,
+> +	.fast_io =3D true,
+> +};
+> +
+> +static const struct of_device_id sunxi_gpadc_mfd_of_match[] =3D {
+> +	{
+> +		.compatible =3D "allwinner,sun4i-a10-ts",
+> +		.data =3D &sun4i_gpadc_mfd_cells,
+> +	}, {
+> +		.compatible =3D "allwinner,sun5i-a13-ts",
+> +		.data =3D &sun5i_gpadc_mfd_cells,
+> +	}, {
+> +		.compatible =3D "allwinner,sun6i-a31-ts",
+> +		.data =3D &sun6i_gpadc_mfd_cells,
+> +	}, { /* sentinel */ }
+> +};
+> +
+> +static int sunxi_gpadc_mfd_probe(struct platform_device *pdev)
 > +{
-> +	struct iio_dev *indio_dev;
-> +	struct as6200_data *data;
+> +	struct sunxi_gpadc_mfd_dev *mfd_dev;
+> +	struct resource *mem;
+> +	const struct of_device_id *of_id;
+> +	const struct mfd_cell *mfd_cells;
+> +	unsigned int irq;
 > +	int ret;
 > +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
+> +	of_id =3D of_match_node(sunxi_gpadc_mfd_of_match, pdev->dev.of_node);
+> +	if (!of_id)
+> +		return -EINVAL;
+> +
+> +	mfd_dev =3D devm_kzalloc(&pdev->dev, sizeof(*mfd_dev), GFP_KERNEL);
+> +	if (!mfd_dev)
 > +		return -ENOMEM;
 > +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
+> +	mem =3D platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	mfd_dev->regs =3D devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(mfd_dev->regs))
+> +		return PTR_ERR(mfd_dev->regs);
 > +
-> +	data->regmap = devm_regmap_init_i2c(client, &as6200_regmap_config);
-> +	if (IS_ERR(data->regmap)) {
-> +		ret = PTR_ERR(data->regmap);
-> +		dev_err(&client->dev, "regmap init failed: %d\n", ret);
+> +	mfd_dev->dev =3D &pdev->dev;
+> +	dev_set_drvdata(mfd_dev->dev, mfd_dev);
+> +
+> +	mfd_dev->regmap =3D devm_regmap_init_mmio(mfd_dev->dev, mfd_dev->regs,
+> +						&sunxi_gpadc_mfd_regmap_config);
+> +	if (IS_ERR(mfd_dev->regmap)) {
+> +		ret =3D PTR_ERR(mfd_dev->regmap);
+> +		dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
 > +		return ret;
 > +	}
 > +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = id->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &as6200_info;
+> +	/* Disable all interrupts */
+> +	regmap_write(mfd_dev->regmap, SUNXI_GPADC_TP_INT_FIFOC, 0);
 > +
-> +	indio_dev->channels = as6200_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(as6200_channels);
+> +	irq =3D platform_get_irq(pdev, 0);
+> +	ret =3D regmap_add_irq_chip(mfd_dev->regmap, irq, IRQF_ONESHOT, 0,
+> +				  &sunxi_gpadc_mfd_regmap_irq_chip,
+> +				  &mfd_dev->regmap_irqc);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to add irq chip: %d\n", ret);
+> +		return ret;
+> +	}
 > +
-> +	ret = as6200_setup_irq(indio_dev, true, 0);
-> +	if (ret < 0)
-
-if setup_irq() fails, irq has not been requested and no cleanup is needed
-
-> +		goto cleanup_irq;
+> +	mfd_cells =3D of_id->data;
+> +	ret =3D mfd_add_devices(mfd_dev->dev, 0, mfd_cells, 2, NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
+> +		goto err;
+> +	}
 > +
-> +	return iio_device_register(indio_dev);
-
-however, if iio_device_register() fails, the irq needs to be freed
-
-> +
-> +cleanup_irq:
-> +	free_irq(client->irq, &client->dev);
-> +
+> +	return 0;
+> +err:
+> +	regmap_del_irq_chip(irq, mfd_dev->regmap_irqc);
 > +	return ret;
 > +}
 > +
-> +static int as6200_i2c_remove(struct i2c_client *client)
+> +static int sunxi_gpadc_mfd_remove(struct platform_device *pdev)
 > +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct sunxi_gpadc_mfd_dev *mfd_dev;
+> +	unsigned int irq;
 > +
-> +	iio_device_unregister(indio_dev);
-> +	free_irq(client->irq, &client->dev);
+> +	irq =3D platform_get_irq(pdev, 0);
+
+You can store the irq number instead of looking it up twice.
+
+> +	mfd_remove_devices(&pdev->dev);
+> +	mfd_dev =3D dev_get_drvdata(&pdev->dev);
+> +	regmap_del_irq_chip(irq, mfd_dev->regmap_irqc);
+> +
 > +	return 0;
 > +}
 > +
-> +static const struct of_device_id as6200_of_match[] = {
-> +	{ .compatible = "ams,as6200", },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, as6200_of_match);
+> +MODULE_DEVICE_TABLE(of, sunxi_gpadc_mfd_of_match);
 > +
-> +
-> +static const struct i2c_device_id as6200_i2c_id[] = {
-> +	{ "as6200", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, as6200_id);
-> +
-> +static struct i2c_driver as6200_i2c_driver = {
-> +	.driver = {
-> +		.name = "as6200",
-> +		.owner = THIS_MODULE,
-> +		.of_match_table = as6200_of_match,
+> +static struct platform_driver sunxi_gpadc_mfd_driver =3D {
+> +	.driver =3D {
+> +		.name =3D "sunxi-adc-mfd",
+> +		.of_match_table =3D of_match_ptr(sunxi_gpadc_mfd_of_match),
 > +	},
-> +	.probe = as6200_i2c_probe,
-> +	.remove = as6200_i2c_remove,
-> +	.id_table = as6200_i2c_id,
+> +	.probe =3D sunxi_gpadc_mfd_probe,
+> +	.remove =3D sunxi_gpadc_mfd_remove,
 > +};
 > +
-> +module_i2c_driver(as6200_i2c_driver);
+> +module_platform_driver(sunxi_gpadc_mfd_driver);
 > +
-> +MODULE_DESCRIPTION("ams AS6200 temperature sensor");
-> +MODULE_AUTHOR("Elitsa Polizoeva <elitsa.polizoeva@ams.com>");
-> +MODULE_AUTHOR("Florian Lobmaier <florian.lobmaier@ams.com>");
-> +MODULE_LICENSE("GPL");
-> 
-> -----Original Message-----
-> From: Peter Meerwald-Stadler [mailto:pmeerw@pmeerw.net] 
-> Sent: Dienstag, 21. Juni 2016 15:12
-> To: Florian Lobmaier <Florian.Lobmaier@ams.com>
-> Cc: jic23@kernel.org; Elitsa Polizoeva <Elitsa.Polizoeva@ams.com>; knaack.h@gmx.de; linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org; Lars-Peter Clausen <lars@metafoo.de>
-> Subject: RE: [PATCH V1 1/1] iio: as6200: add AS6200 temperature sensor driver from ams AG
-> 
-> 
-> > Finally we got a Datasheet which we can release and share with you. 
-> > Thanks for the feedback, we tried to integrate most of the feedback in 
-> > the driver. Some proprietary API is still present as all features of 
-> > the chip should be reachable. If there are any features we could use 
-> > from the iio framework we overlooked, please let us know.
-> 
-> can you provide a link to the datasheet? I almost missed the attached document...
-> 
-> more comments below, there still seems to be many issues; I stopped reviewing at some point where I noticed that previous comments have not beed addressed
-> 
-> thanks, regards, p.
-> 
-> > Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-> > Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
-> > ---
-> > diff --git a/drivers/iio/temperature/Kconfig 
-> > b/drivers/iio/temperature/Kconfig index 21feaa4..d82e80f 100644
-> > --- a/drivers/iio/temperature/Kconfig
-> > +++ b/drivers/iio/temperature/Kconfig
-> > @@ -3,6 +3,17 @@
-> >  #
-> >  menu "Temperature sensors"
-> >  
-> > +config AS6200
-> > +tristate "ams AG AS6200 temperature sensor"
-> > +depends on I2C
-> > +select REGMAP_I2C
-> > +help
-> > +  If you say yes here you get support for the AS6200 temperature
-> > +  sensor from ams AG.
-> > +
-> > +  This driver can also be built as a module. If so, the module will  
-> > + be called as6200.
-> > +
-> >  config MLX90614
-> >  tristate "MLX90614 contact-less infrared sensor"
-> >  depends on I2C
-> > diff --git a/drivers/iio/temperature/Makefile 
-> > b/drivers/iio/temperature/Makefile
-> > index 40710a8..c0c9a9a 100644
-> > --- a/drivers/iio/temperature/Makefile
-> > +++ b/drivers/iio/temperature/Makefile
-> > @@ -2,5 +2,6 @@
-> >  # Makefile for industrial I/O temperature drivers  #
-> >  
-> > +obj-$(CONFIG_AS6200) += as6200.o
-> >  obj-$(CONFIG_MLX90614) += mlx90614.o
-> >  obj-$(CONFIG_TMP006) += tmp006.o
-> > diff --git a/drivers/iio/temperature/as6200.c 
-> > b/drivers/iio/temperature/as6200.c
-> > new file mode 100644
-> > index 0000000..5e37227
-> > --- /dev/null
-> > +++ b/drivers/iio/temperature/as6200.c
-> > @@ -0,0 +1,808 @@
-> 
-> it is customary to put the GPL license statement here
-> 
-> > +#include <linux/module.h>
-> > +#include <linux/device.h>
-> > +#include <linux/init.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/err.h>
-> > +#include <linux/types.h>
-> > +#include <linux/irq.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/gpio.h>
-> > +#include <linux/of_gpio.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/iio/events.h>
-> > +#include <linux/regmap.h>
-> > +
-> > +/* to support regmap define in version 3.12 */
-> > +/* supported officially in kernel 3.13 and later */
-> 
-> please remove these comments, not relevant for mainline and not a proper multi-line comment
-> 
-> > +#define regmap_reg_range(low, high) { .range_min = low, .range_max = 
-> > +high, }
-> 
-> as6200_ prefix needed
-> 
-> > +
-> > +static const int as6200_conv_rates[4][2] = { {4, 0}, {1, 0}, {0, 
-> > +250000}, {0, 125000} };
-> > +
-> > +static const char * const as6200_consec_faults[] = { "1", "2", "4", 
-> > +"6" };
-> > +
-> > +/* AS6200 registers */
-> > +#define AS6200_REG_TVAL0x00
-> > +#define AS6200_REG_CONFIG0x01
-> > +#define AS6200_REG_TLOW0x02
-> > +#define AS6200_REG_THIGH0x03
-> > +#define AS6200_MAX_REGISTER0x03
-> > +
-> > +#define AS6200_CONFIG_DW_MASK0x0010
-> 
-> could use GENMASK() or BIT() macros to make it clearer which bits are relevant
-> 
-> > +#define AS6200_CONFIG_DW_SHIFT4
-> > +#define AS6200_CONFIG_AL_MASK0x0020
-> > +#define AS6200_CONFIG_AL_SHIFT5
-> > +#define AS6200_CONFIG_CR_MASK0x00C0
-> > +#define AS6200_CONFIG_CR_SHIFT6
-> > +#define AS6200_CONFIG_SM_MASK0x0100
-> > +#define AS6200_CONFIG_SM_SHIFT8
-> > +#define AS6200_CONFIG_IM_MASK0x0200
-> > +#define AS6200_CONFIG_IM_SHIFT9
-> > +#define AS6200_CONFIG_POL_MASK0x0400
-> > +#define AS6200_CONFIG_POL_SHIFT10
-> > +#define AS6200_CONFIG_CF_MASK0x1800
-> > +#define AS6200_CONFIG_CF_SHIFT11
-> > +#define AS6200_CONFIG_SS_MASK0x8000
-> > +#define AS6200_CONFIG_SS_SHIFT15
-> > +
-> > +struct as6200_data {
-> > +struct mutex update_lock;
-> 
-> mutex used anywhere?
-> 
-> > +struct i2c_client *client;
-> > +int irqn;
-> > +unsigned long irq_flags;
-> 
-> irq_flags not used
-> 
-> > +int gpio;
-> > +char valid; /* !=0 if following fields are valid */ struct regmap 
-> > +*regmap; };
-> > +
-> 
-> drop newline
-> 
-> > +
-> > +static const struct regmap_range as6200_readable_ranges[] = { 
-> > +regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_THIGH), };
-> 
-> add newline (here and below: one newline please)
-> 
-> > +static const struct regmap_access_table as6200_readable_table = { 
-> > +.yes_ranges = as6200_readable_ranges, .n_yes_ranges = 
-> > +ARRAY_SIZE(as6200_readable_ranges),
-> > +};
-> > +
-> > +static const struct regmap_range as6200_writable_ranges[] = { 
-> > +regmap_reg_range(AS6200_REG_CONFIG, AS6200_REG_THIGH), }; static 
-> > +const struct regmap_access_table as6200_writable_table = { 
-> > +.yes_ranges = as6200_writable_ranges, .n_yes_ranges = 
-> > +ARRAY_SIZE(as6200_writable_ranges),
-> > +};
-> > +
-> > +static const struct regmap_range as6200_volatile_ranges[] = { 
-> > +regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_TVAL), }; static const 
-> > +struct regmap_access_table as6200_volatile_table = { .yes_ranges = 
-> > +as6200_volatile_ranges, .n_yes_ranges = 
-> > +ARRAY_SIZE(as6200_volatile_ranges),
-> > +};
-> > +static const struct regmap_config as6200_regmap_config = { .reg_bits 
-> > += 8, .val_bits = 16, .max_register = AS6200_MAX_REGISTER, .cache_type 
-> > += REGCACHE_RBTREE, .rd_table = &as6200_readable_table, .wr_table = 
-> > +&as6200_writable_table, .volatile_table = &as6200_volatile_table, };
-> > +
-> > +
-> > +static int as6200_read_raw(struct iio_dev *indio_dev,
-> > +    struct iio_chan_spec const *channel, int *val,
-> > +    int *val2, long mask)
-> > +{
-> > +struct as6200_data *data = iio_priv(indio_dev); struct i2c_client 
-> > +*client = data->client; int err = 0; unsigned int reg_val = 0; int cr 
-> > += 0;
-> > +s32 ret = 0;
-> 
-> try to avoid unnecessary initialization
-> 
-> > +
-> > +switch (mask) {
-> > +case IIO_CHAN_INFO_RAW:
-> > +if (channel->type == IIO_TEMP) {
-> > +err = regmap_read(data->regmap, AS6200_REG_TVAL, &reg_val);
-> 
-> error checking?
-> 
-> > +ret = reg_val;
-> > +*val = sign_extend32(ret, 15) >> 4;
-> > +} else {
-> > +break;
-> > +}
-> > +return IIO_VAL_INT;
-> > +case IIO_CHAN_INFO_PROCESSED:
-> > +if (channel->type == IIO_TEMP) {
-> > +err = regmap_read(data->regmap, AS6200_REG_TVAL, &reg_val); ret = 
-> > +sign_extend32(ret, 15) >> 4; *val = (ret * 625) / 10000; } else { 
-> > +break; } return IIO_VAL_INT;
-> 
-> I suggest to drop _INFO_PROCESSED as _RAW + _SCALE offers equivalent information; _PROCESSED is not in the chan_spec?!
-> 
-> otherwise, the code path are rather similar and could be combined
-> 
-> > +case IIO_CHAN_INFO_SCALE:
-> > +if (channel->type == IIO_TEMP) {
-> > +*val = 62;
-> > +*val2 = 500000;
-> > +} else {
-> > +break;
-> > +}
-> > +return IIO_VAL_INT_PLUS_MICRO;
-> > +case IIO_CHAN_INFO_SAMP_FREQ:
-> > +if (channel->type == IIO_TEMP) {
-> > +dev_info(&client->dev, "get CR from reg");
-> 
-> debug message, please remove
-> 
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); cr = 
-> > +(reg_val & AS6200_CONFIG_CR_MASK)
-> > +>> AS6200_CONFIG_CR_SHIFT;
-> > +*val = as6200_conv_rates[cr][0];
-> > +*val2 = as6200_conv_rates[cr][1];
-> > +} else {
-> > +break;
-> > +}
-> > +return IIO_VAL_INT_PLUS_MICRO;
-> > +default:
-> > +break;
-> > +}
-> > +return -EINVAL;
-> > +}
-> > +
-> > +static int as6200_write_raw(struct iio_dev *indio_dev, struct 
-> > +iio_chan_spec const *chan, int val, int val2, long mask) { struct 
-> > +as6200_data *data = iio_priv(indio_dev); int i; unsigned int 
-> > +config_val;
-> > +
-> > +if (mask != IIO_CHAN_INFO_SAMP_FREQ)
-> > +return -EINVAL;
-> > +
-> > +for (i = 0; i < ARRAY_SIZE(as6200_conv_rates); i++) { if ((val == 
-> > +as6200_conv_rates[i][0]) &&
-> > +(val2 == as6200_conv_rates[i][1])) {
-> > +regmap_read(data->regmap,
-> > +AS6200_REG_CONFIG, &config_val);
-> > +config_val &= ~AS6200_CONFIG_CR_MASK; config_val |= i << 
-> > +AS6200_CONFIG_CR_SHIFT;
-> > +
-> > +return regmap_write(data->regmap, AS6200_REG_CONFIG, config_val); } } 
-> > +return -EINVAL; }
-> > +
-> > +static irqreturn_t as6200_alert_isr(int irq, void *dev_id) { struct 
-> > +iio_dev *indio_dev = dev_id;
-> > +
-> > +iio_push_event(indio_dev,
-> > +IIO_UNMOD_EVENT_CODE(IIO_TEMP,
-> > +0,
-> > +IIO_EV_TYPE_THRESH,
-> > +IIO_EV_DIR_EITHER),
-> > +iio_get_time_ns());
-> > +return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int as6200_setup_irq(struct iio_dev *indio_dev, bool set_gpio, 
-> > +u8 pol) { int err; struct as6200_data *data = iio_priv(indio_dev); 
-> > +struct device *dev = &data->client->dev; int gpio = -1; int irq_num; 
-> > +int irq_trig;
-> > +
-> > +if (pol == 1)
-> > +irq_trig = IRQF_TRIGGER_RISING;
-> > +else
-> > +irq_trig = IRQF_TRIGGER_FALLING;
-> > +
-> > +if (set_gpio) {
-> > +gpio = of_get_named_gpio_flags(dev->of_node,
-> > +"as6200,irq-gpio", 0, 0);
-> > +err = gpio_request(gpio, "as6200_irq"); if (err) { dev_err(dev, 
-> > +"requesting gpio %d failed\n", gpio); return err; } err = 
-> > +gpio_direction_input(gpio); if (err) { dev_err(dev, "gpio %d cannot 
-> > +apply direction\n", gpio); return err; } }
-> > +data->gpio = gpio;
-> > +irq_num = gpio_to_irq(gpio);
-> > +err = request_irq(irq_num, as6200_alert_isr, irq_trig, "as6200", 
-> > +dev); if (err) { dev_err(dev, "error requesting irq %d\n", err); 
-> > +return err; }
-> > +data->irqn = irq_num;
-> > +
-> > +return 0;
-> > +}
-> > +
-> > +static ssize_t as6200_show_thigh(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0; int err = 0; int val;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val); reg_val 
-> > += reg_val >> 4; val = (625 * reg_val) / 10000; return sprintf(buf, 
-> > +"%d%cC\n", val, (unsigned char)(248)); }
-> > +
-> > +static ssize_t as6200_show_tlow(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0; int val;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val); reg_val = 
-> > +reg_val >> 4; val = (625 * reg_val) / 10000; return sprintf(buf, 
-> > +"%d%cC\n", val, (unsigned char)(248)); }
-> > +
-> > +static ssize_t as6200_show_thigh_reg(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val); return 
-> > +sprintf(buf, "%hX\n", reg_val); }
-> > +
-> > +static ssize_t as6200_show_tlow_reg(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val); return 
-> > +sprintf(buf, "%hX\n", reg_val); }
-> > +
-> > +static ssize_t as6200_show_config(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return 
-> > +sprintf(buf, "%hX\n", reg_val); }
-> > +
-> > +static ssize_t as6200_show_al(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +u16 pol = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); pol = 
-> > +(reg_val & AS6200_CONFIG_POL_MASK) >> AS6200_CONFIG_POL_SHIFT; 
-> > +reg_val = (reg_val & AS6200_CONFIG_AL_MASK) >> 
-> > +AS6200_CONFIG_AL_SHIFT; if (pol == 1) { if (reg_val == 0) return 
-> > +sprintf(buf, "off\n"); else if (reg_val == 1) return sprintf(buf, 
-> > +"on\n"); else return sprintf(buf, "invalid\n"); } else if (pol == 0) 
-> > +{ if (reg_val == 0) return sprintf(buf, "on\n"); else if (reg_val == 
-> > +1) return sprintf(buf, "off\n"); else return sprintf(buf, 
-> > +"invalid\n"); } else return sprintf(buf, "invalid\n"); }
-> > +
-> > +static ssize_t as6200_show_sm(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return 
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SM_MASK)
-> > +>> AS6200_CONFIG_SM_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_show_im(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return 
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_IM_MASK)
-> > +>> AS6200_CONFIG_IM_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_show_pol(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return 
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_POL_MASK)
-> > + >> AS6200_CONFIG_POL_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_show_cf(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); reg_val 
-> > += (reg_val & AS6200_CONFIG_CF_MASK) >> AS6200_CONFIG_CF_SHIFT; switch 
-> > +(reg_val) { case 0:
-> > +return sprintf(buf, "1\n");
-> > +case 1:
-> > +return sprintf(buf, "2\n");
-> > +case 2:
-> > +return sprintf(buf, "4\n");
-> > +case 3:
-> > +return sprintf(buf, "6\n");
-> > +}
-> > +return sprintf(buf, "invalid\n");
-> > +}
-> > +
-> > +static ssize_t as6200_show_ss(struct device *dev, struct 
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev = 
-> > +dev_to_iio_dev(dev); struct as6200_data *data = iio_priv(indio_dev); 
-> > +unsigned int reg_val = 0x00; int err = 0;
-> > +
-> > +err = regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return 
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SS_MASK)
-> > +>> AS6200_CONFIG_SS_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_set_thigh(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { int err = 0; 
-> > +struct iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data 
-> > +*data = iio_priv(indio_dev); struct i2c_client *client = 
-> > +data->client;
-> > +s16 reg_val;
-> > +int val;
-> > +
-> > +err = kstrtoint(buf, 0, &val);
-> > +if (err == 0) {
-> > +if ((val < -40) | (val > 150))
-> > +return count;
-> > +val = (val * 10000) / 625;
-> > +reg_val = val << 4;
-> > +err = regmap_write(data->regmap, AS6200_REG_THIGH, reg_val); } else 
-> > +dev_info(&client->dev, "Converting value for THIGH failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_tlow(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err = 0;
-> > +s16 reg_val;
-> > +int val;
-> > +
-> > +err = kstrtoint(buf, 0, &val);
-> > +if (err == 0) {
-> > +if ((val < -40) | (val > 150)) {
-> > +dev_info(&client->dev,
-> > +"Value for THIGH is invalid min = -40%cC, max = 150°C, val = %d°C", 
-> > +(unsigned char)(248), val); return count; } val = (val * 10000) / 
-> > +625; reg_val = val << 4; err = regmap_write(data->regmap, 
-> > +AS6200_REG_TLOW, reg_val); } else dev_info(&client->dev, "Converting 
-> > +value for TLOW failed, err = %hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_thigh_reg(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { int err = 0; 
-> > +struct iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data 
-> > +*data = iio_priv(indio_dev); struct i2c_client *client = 
-> > +data->client;
-> > +u16 reg_val;
-> > +
-> > +err = kstrtou16(buf, 0, &reg_val);
-> > +if (err == 0)
-> > +err = regmap_write(data->regmap, AS6200_REG_THIGH, reg_val); else 
-> > +dev_info(&client->dev, "Converting value for THIGH failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_tlow_reg(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err = 0;
-> > +u16 reg_val;
-> > +
-> > +err = kstrtou16(buf, 0, &reg_val);
-> > +if (err == 0)
-> > +err = regmap_write(data->regmap, AS6200_REG_TLOW, reg_val); else 
-> > +dev_info(&client->dev, "Converting value for TLOW failed, err = %hx", 
-> > +err); return count; }
-> > +
-> > +static ssize_t as6200_set_configreg(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err = 0;
-> > +u16 reg_val;
-> > +
-> > +err = kstrtou16(buf, 0, &reg_val);
-> > +if (err == 0)
-> > +err = regmap_write(data->regmap, AS6200_REG_CONFIG, reg_val); else 
-> > +dev_info(&client->dev, "Converting value for CONFIG failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +
-> > +static ssize_t as6200_set_sm(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err;
-> > +u16 val;
-> > +
-> > +err = kstrtou16(buf, 0, &val);
-> > +if (err == 0) {
-> > +err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG, 
-> > +AS6200_CONFIG_SM_MASK, val << AS6200_CONFIG_SM_SHIFT); } else 
-> > +dev_info(&client->dev, "Converting value for SM field failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_im(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err;
-> > +u16 val;
-> > +
-> > +err = kstrtou16(buf, 0, &val);
-> > +if (err == 0) {
-> > +err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG, 
-> > +AS6200_CONFIG_IM_MASK, val << AS6200_CONFIG_IM_SHIFT); } else 
-> > +dev_info(&client->dev, "Converting value for IM field failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_pol(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err; int irq_num = data->irqn;
-> > +u16 val;
-> > +
-> > +err = kstrtou16(buf, 0, &val);
-> > +if (err == 0) {
-> > +free_irq(irq_num, dev);
-> > +err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG, 
-> > +AS6200_CONFIG_POL_MASK, val << AS6200_CONFIG_POL_SHIFT); 
-> > +as6200_setup_irq(indio_dev, false, val); } else 
-> > +dev_info(&client->dev, "Converting value for POL field failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_cf(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err;
-> > +u16 val;
-> > +
-> > +err = kstrtou16(buf, 0, &val);
-> > +if (err == 0) {
-> > +switch (val) {
-> > +case 1:
-> > +case 2:
-> > +case 4:
-> > +case 6:
-> > +err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG, 
-> > +AS6200_CONFIG_CF_MASK, val << AS6200_CONFIG_CF_SHIFT); break;
-> > +default:
-> > +dev_info(&client->dev,
-> > +"Value for CF field invalid, val = %hx", val); return count; } } else 
-> > +dev_info(&client->dev, "Converting value for CF field failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_ss(struct device *dev, struct 
-> > +device_attribute *attr, const char *buf, size_t count) { struct 
-> > +iio_dev *indio_dev = dev_to_iio_dev(dev); struct as6200_data *data = 
-> > +iio_priv(indio_dev); struct i2c_client *client = data->client; int 
-> > +err;
-> > +u16 val;
-> > +
-> > +err = kstrtou16(buf, 0, &val);
-> > +if (err == 0) {
-> > +err = regmap_update_bits(data->regmap, AS6200_REG_CONFIG, 
-> > +AS6200_CONFIG_SS_MASK, val << AS6200_CONFIG_SS_SHIFT); } else 
-> > +dev_info(&client->dev, "Converting value for SS field failed, err = 
-> > +%hx", err); return count; }
-> > +
-> > +static IIO_DEVICE_ATTR(thigh, S_IWUSR | S_IRUGO, as6200_show_thigh, 
-> > +as6200_set_thigh, 0); static IIO_DEVICE_ATTR(tlow, S_IWUSR | S_IRUGO, 
-> > +as6200_show_tlow, as6200_set_tlow, 0); static 
-> > +IIO_DEVICE_ATTR(thigh_reg, S_IWUSR | S_IRUGO, as6200_show_thigh_reg, 
-> > +as6200_set_thigh_reg, 0); static IIO_DEVICE_ATTR(tlow_reg, S_IWUSR | 
-> > +S_IRUGO, as6200_show_tlow_reg, as6200_set_tlow_reg, 0); static 
-> > +IIO_DEVICE_ATTR(config, S_IWUSR | S_IRUGO, as6200_show_config, 
-> > +as6200_set_configreg, 0); static IIO_DEVICE_ATTR(al, S_IRUGO, 
-> > +as6200_show_al, NULL, 0); static IIO_DEVICE_ATTR(sm, S_IWUSR | 
-> > +S_IRUGO, as6200_show_sm, as6200_set_sm, 0); static 
-> > +IIO_DEVICE_ATTR(im, S_IWUSR | S_IRUGO, as6200_show_im, as6200_set_im, 
-> > +0); static IIO_DEVICE_ATTR(pol, S_IWUSR | S_IRUGO, as6200_show_pol, 
-> > +as6200_set_pol, 0); static IIO_DEVICE_ATTR(cf, S_IWUSR | S_IRUGO, 
-> > +as6200_show_cf, as6200_set_cf, 0); static IIO_DEVICE_ATTR(ss, S_IWUSR 
-> > +| S_IRUGO, as6200_show_ss, as6200_set_ss, 0);
-> > +
-> > +static IIO_CONST_ATTR(sampling_frequency_available, "4 1 0.25 
-> > +0.125");
-> > +
-> > +static struct attribute *as6200_attrs[] = { 
-> > +&iio_dev_attr_thigh.dev_attr.attr,
-> > +&iio_dev_attr_tlow.dev_attr.attr,
-> > +&iio_dev_attr_thigh_reg.dev_attr.attr,
-> > +&iio_dev_attr_tlow_reg.dev_attr.attr,
-> > +&iio_dev_attr_config.dev_attr.attr,
-> > +&iio_dev_attr_al.dev_attr.attr,
-> > +&iio_dev_attr_sm.dev_attr.attr,
-> > +&iio_dev_attr_im.dev_attr.attr,
-> > +&iio_dev_attr_pol.dev_attr.attr,
-> > +&iio_dev_attr_cf.dev_attr.attr,
-> > +&iio_dev_attr_ss.dev_attr.attr,
-> > +&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> > +NULL,
-> > +};
-> > +
-> > +static struct attribute_group as6200_attr_group = { .attrs = 
-> > +as6200_attrs, };
-> > +
-> > +static const struct iio_chan_spec as6200_channels[] = { { .type = 
-> > +IIO_TEMP, .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | 
-> > +BIT(IIO_CHAN_INFO_SCALE), .info_mask_shared_by_type = 
-> > +BIT(IIO_CHAN_INFO_SAMP_FREQ), } };
-> > +
-> > +static const struct iio_info as6200_info = { .read_raw = 
-> > +as6200_read_raw, .write_raw = as6200_write_raw, .attrs = 
-> > +&as6200_attr_group, .driver_module = THIS_MODULE, };
-> > +
-> > +static int as6200_i2c_of_probe(struct i2c_client *i2c, struct 
-> > +as6200_data *as6200) { struct device_node *np = i2c->dev.of_node; 
-> > +struct irq_data *irq_data;
-> > +
-> > +if (!np) {
-> > +dev_err(&i2c->dev, "Device Tree not found\n"); return -EINVAL; }
-> > +
-> > +irq_data = irq_get_irq_data(i2c->irq);
-> 
-> what is this good for?
-> 
-> > +if (!irq_data) {
-> > +dev_err(&i2c->dev, "Invalid IRQ: %d\n", i2c->irq); return -EINVAL; }
-> > +
-> > +as6200->irq_flags = irqd_get_trigger_type(irq_data);
-> > +dev_dbg(&i2c->dev, "IRQ flags are 0x%08lx\n", as6200->irq_flags); 
-> > +return 0; }
-> > +
-> > +static int as6200_i2c_probe(struct i2c_client *client, const struct 
-> > +i2c_device_id *id) { struct iio_dev *indio_dev; struct as6200_data 
-> > +*data; int ret;
-> > +
-> > +indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data)); if 
-> > +(!indio_dev) return -ENOMEM;
-> > +
-> > +data = iio_priv(indio_dev);
-> > +i2c_set_clientdata(client, indio_dev);
-> > +data->client = client;
-> > +
-> > +ret = as6200_i2c_of_probe(client, data); if (ret < 0) return ret;
-> > +
-> > +data->regmap = devm_regmap_init_i2c(client, &as6200_regmap_config);
-> > +if (IS_ERR(data->regmap)) {
-> > +ret = PTR_ERR(data->regmap);
-> > +dev_err(&client->dev, "regmap init failed: %d\n", ret); return ret; }
-> > +
-> > +indio_dev->dev.parent = &client->dev; indio_dev->name = id->name; 
-> > +indio_dev->modes = INDIO_DIRECT_MODE; indio_dev->info = &as6200_info;
-> > +
-> > +indio_dev->channels = as6200_channels; indio_dev->num_channels = 
-> > +ARRAY_SIZE(as6200_channels);
-> > +
-> > +mutex_init(&data->update_lock);
-> > +ret = as6200_setup_irq(indio_dev, true, 0);
-> > +
-> 
-> no newline here
-> 
-> > +if (ret < 0)
-> > +goto cleanup_gpio_irq;
-> > +
-> > +return iio_device_register(indio_dev);
-> > +
-> > +cleanup_gpio_irq:
-> > +free_irq(data->irqn, &client->dev);
-> > +gpio_free(data->gpio);
-> > +
-> > +return ret;
-> > +}
-> > +
-> > +static int as6200_i2c_remove(struct i2c_client *client) { struct 
-> > +iio_dev *indio_dev; struct as6200_data *data;
-> > +
-> > +indio_dev = i2c_get_clientdata(client); data = iio_priv(indio_dev);
-> 
-> most drivers do that via initialization, not assignment for conciseness
-> 
-> > +
-> > +iio_device_unregister(indio_dev);
-> > +free_irq(data->irqn, &client->dev);
-> > +gpio_free(data->gpio);
-> > +return 0;
-> > +}
-> > +
-> > +static const struct of_device_id as6200_of_match[] = { { .compatible 
-> > += "ams,as6200", }, {}, }; MODULE_DEVICE_TABLE(of, as6200_of_match);
-> > +
-> > +
-> > +static const struct i2c_device_id as6200_i2c_id[] = { { "as6200", 0 
-> > +}, { } }; MODULE_DEVICE_TABLE(i2c, as6200_id);
-> > +
-> > +static struct i2c_driver as6200_i2c_driver = { .driver = { .name = 
-> > +"as6200", .owner = THIS_MODULE, .of_match_table = as6200_of_match, }, 
-> > +.probe = as6200_i2c_probe, .remove = as6200_i2c_remove, .id_table = 
-> > +as6200_i2c_id, };
-> > +
-> > +module_i2c_driver(as6200_i2c_driver);
-> > +
-> > +MODULE_DESCRIPTION("ams AS6200 temperature sensor"); 
-> > +MODULE_AUTHOR("Elitsa Polizoeva <elitsa.polizoeva@ams.com>"); 
-> > +MODULE_AUTHOR("Florian Lobmaier <florian.lobmaier@ams.com>"); 
-> > +MODULE_LICENSE("GPL");
-> > 
-> > -----Original Message-----
-> > From: Lars-Peter Clausen [mailto:lars@metafoo.de]
-> > Sent: Dienstag, 10. November 2015 12:52
-> > To: Florian Lobmaier <Florian.Lobmaier@ams.com>; jic23@kernel.org
-> > Cc: Elitsa Polizoeva <Elitsa.Polizoeva@ams.com>; knaack.h@gmx.de; 
-> > pmeerw@pmeerw.net; linux-kernel@vger.kernel.org; 
-> > linux-iio@vger.kernel.org
-> > Subject: Re: [PATCH V1 1/1] iio: as6200: add AS6200 temperature sensor 
-> > driver from ams AG
-> > 
-> > On 11/10/2015 10:38 AM, Florian Lobmaier wrote:
-> > > The AS6200 is a compact temperature sensor chip with I2C interface.
-> > > 
-> > > Add a driver to support the AS6200 temperature sensor.
-> > > 
-> > > Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-> > > Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
-> > 
-> > Hi,
-> > 
-> > Thanks for the patch.
-> > 
-> > As Peter already said this patch introduces a lot of custom ABI, none of which is documented and most of which is probably not acceptable since. The whole idea of a framework is that you expose the capabilities of a device through a standard device independent ABI, this allows to write generic applications and libraries that can manage the devices through this ABI.
-> > This allows to leverage existing developments rather than starting from scratch each time. If your device uses a complete custom ABI there is not much point of having a driver in the first place since any application needs device specific knowledge anyway to talk to the driver, in this case you could just directly implement the I2C communication in the application.
-> > 
-> > Please also consider reading and following Documentation/CodingStyle
-> > 
-> > [...]
-> > > +static int as6200_read_reg(struct i2c_client *client,
-> > > +u8 reg_num, u16 *reg_val)
-> > > +{
-> > > +int err = 0;
-> > > +char tx_buf[1];
-> > > +char rx_buf[2];
-> > > +
-> > > +if ((reg_num >= 0) & (reg_num <= 3)) { tx_buf[0] = reg_num; err = 
-> > > +i2c_master_send(client, tx_buf, 1); if (err == 1) err = 
-> > > +i2c_master_recv(client, rx_buf, 2);
-> > 
-> > This is not thread safe. Another thread could interrupt between
-> > i2c_master_send() and i2c_master_recv() and cause undefined behavior. 
-> > Use
-> > i2c_smbus_read_word_swapped() which makes sure that the I2C communication happens atomically.
-> > 
-> > > +if (err == 2) {
-> > > +*reg_val = rx_buf[0];
-> > > +*reg_val = *reg_val << 8;
-> > > +*reg_val = *reg_val | rx_buf[1];
-> > > +}
-> > > +return err;
-> > > +} else {
-> > > +return -EINVAL;
-> > > +}
-> > > +}
-> > [...]
-> > > +
-> > > +static irqreturn_t alert_isr(int irq, void *dev_id) { 
-> > > +dev_warn(dev_id, "Temperature outside of limits!");
-> > 
-> > Please use IIO threshold events for this. Such out-of-band communication is really not acceptable.
-> > 
-> > > +return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +static int setupIRQ(struct iio_dev *indio_dev, bool set_gpio, u8 
-> > > +pol) { int err; struct as6200_data *data = iio_priv(indio_dev); 
-> > > +struct device *dev = &data->client->dev; int gpio = -1; int 
-> > > +irq_num; int irq_trig;
-> > > +
-> > > +if (pol == 1)
-> > > +irq_trig = IRQF_TRIGGER_RISING;
-> > > +else
-> > > +irq_trig = IRQF_TRIGGER_FALLING;
-> > > +
-> > > +if (set_gpio) {
-> > > +gpio = of_get_named_gpio_flags(dev->of_node,
-> > > +"as6200,irq-gpio", 0, 0);
-> > > +err = gpio_request(gpio, "as6200_irq"); if (err) { dev_info(dev, "%s: 
-> > > +requesting gpio %d failed\n", as6200_id[0].name, gpio); return err; 
-> > > +} err = gpio_direction_input(gpio); if (err) { dev_info(dev, "%s: 
-> > > +gpio %d cannot apply direction\n", as6200_id[0].name, gpio); return 
-> > > +err; } } irq_num = gpio_to_irq(gpio); dev_info(dev, "%s: 
-> > > +registering for IRQ %d\n", as6200_id[0].name, irq_num);
-> > 
-> > Please drop all these dev_info(). That's just noise in the boot log, imagine every driver did this you wouldn't be able to spot the critical information.
-> > 
-> > > +err = request_irq(irq_num, alert_isr, irq_trig, as6200_id[0].name, 
-> > > +dev);
-> > 
-> > Don't do all the GPIO translation. This pin is only used as a interrupt, so specify it directly as an interrupt and use it that way as well.
-> > 
-> > > +if (err) {
-> > > +dev_info(dev, "%s: error requesting irq %d\n", as6200_id[0].name, 
-> > > +err);
-> > 
-> > For errors use dev_err. Also the as6200_id[0].name is redundant since dev_info/dev_err already prefixes the message with the device name.
-> > 
-> > > +return err;
-> > > +}
-> > > +dev_info(dev, "%s: registered for IRQ %d\n", as6200_id[0].name, 
-> > > +irq_num); mutex_lock(&data->update_lock);
-> > > +data->irqn = irq_num;
-> > > +mutex_unlock(&data->update_lock);
-> > 
-> > What exactly is protect by that mutex here?
-> > 
-> > > +
-> > > +return 0;
-> > > +}
-> > > +
-> > [...]
-> > > +if (err == 0) {
-> > > +if ((val < -40) | (val > 150)) {
-> > > +dev_info(&client->dev,
-> > > +"Value for THIGH is invalid min = -40%cC, max = 150°C, val = %d°C", 
-> > > +(unsigned char)(248), val);
-> > 
-> > Please no out-of-band error reporting.
-> > 
-> > > +return count;
-> > > +}
-> > > +val = (val * 10000) / 625;
-> > > +reg_val = val << 4;
-> > [...]
-> > > +static int as6200_probe(struct i2c_client *client, const struct 
-> > > +i2c_device_id *id) { struct iio_dev *indio_dev = NULL; struct 
-> > > +as6200_data *data = NULL;
-> > 
-> > No need to initialize those here with dummy, this will just hide warnings in case you forgot to initialize them with actual data.
-> > 
-> > > +
-> > > +indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > > +
-> > > +if (!indio_dev)
-> > > +return -ENOMEM;
-> > > +
-> > > +data = iio_priv(indio_dev);
-> > > +i2c_set_clientdata(client, indio_dev);
-> > > +data->client = client;
-> > > +
-> > > +indio_dev->dev.parent = &client->dev; indio_dev->name = 
-> > > +dev_name(&client->dev);
-> > 
-> > use id->name for this. dev_name() contains things like the I2C bus and device address, etc. Whereas the IIO device name should describe the type of device.
-> > 
-> > > +indio_dev->modes = INDIO_DIRECT_MODE; indio_dev->info = 
-> > > +&as6200_info;
-> > > +
-> > > +indio_dev->channels = as6200_channels; indio_dev->num_channels = 
-> > > +ARRAY_SIZE(as6200_channels);
-> > > +
-> > > +initClientData(data);
-> > > +mutex_init(&data->update_lock);
-> > > +setupIRQ(indio_dev, true, 0);
-> > > +
-> > > +return iio_device_register(indio_dev);
-> > 
-> > Error handling is missing here, you need to free the resources that were acquired in case of an error.
-> > 
-> > > +}
-> > > +
-> > [...]
-> > 
-> > 
-> > 
-> 
-> 
+> +MODULE_DESCRIPTION("Allwinner sunxi platforms' GPADC MFD core driver");
+> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/include/linux/mfd/sunxi-gpadc-mfd.h b/include/linux/mfd/sunx=
+i-gpadc-mfd.h
+> new file mode 100644
+> index 0000000..c21abae
+> --- /dev/null
+> +++ b/include/linux/mfd/sunxi-gpadc-mfd.h
+> @@ -0,0 +1,94 @@
+> +/* Header of ADC MFD core driver for sunxi platforms
+> + *
+> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
+> + *
+> + * This program is free software; you can redistribute it and/or modify =
+it under
+> + * the terms of the GNU General Public License version 2 as published by=
+ the
+> + * Free Software Foundation.
+> + */
+> +
+> +#ifndef __SUNXI_GPADC_MFD__H__
+> +#define __SUNXI_GPADC_MFD__H__
+> +
+> +#define SUNXI_GPADC_TP_CTRL0				0x00
+> +
+> +#define SUNXI_GPADC_TP_CTRL0_ADC_FIRST_DLY(x)		((GENMASK(7, 0) & (x)) <<=
+ 24)
+> +#define SUNXI_GPADC_TP_CTRL0_ADC_FIRST_DLY_MODE		BIT(23)
+> +#define SUNXI_GPADC_TP_CTRL0_ADC_CLK_SELECT		BIT(22)
+> +#define SUNXI_GPADC_TP_CTRL0_ADC_CLK_DIVIDER(x)		((GENMASK(1, 0) & (x)) =
+<< 20)
+> +#define SUNXI_GPADC_TP_CTRL0_FS_DIV(x)			((GENMASK(3, 0) & (x)) << 16)
+> +#define SUNXI_GPADC_TP_CTRL0_T_ACQ(x)			(GENMASK(15, 0) & (x))
+> +
+> +#define SUNXI_GPADC_TP_CTRL1				0x04
 
--- 
+Isn't GPADC and TP redundant in your prefix, you seem to be always
+using TP, even for non touchscreen related defines...
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
---324295856-1419068016-1469772425=:7650--
+> +
+> +#define SUNXI_GPADC_TP_CTRL1_STYLUS_UP_DEBOUNCE(x)	((GENMASK(7, 0) & (x)=
+) << 12)
+> +#define SUNXI_GPADC_TP_CTRL1_STYLUS_UP_DEBOUNCE_EN	BIT(9)
+> +#define SUNXI_GPADC_TP_CTRL1_TOUCH_PAN_CALI_EN		BIT(6)
+> +#define SUNXI_GPADC_TP_CTRL1_TP_DUAL_EN			BIT(5)
+> +#define SUNXI_GPADC_TP_CTRL1_TP_MODE_EN			BIT(4)
+> +#define SUNXI_GPADC_TP_CTRL1_TP_ADC_SELECT		BIT(3)
+
+=2E.. sometimes twice ...
+
+> +#define SUNXI_GPADC_TP_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) & (x))
+> +
+> +/* TP_CTRL1 bits for sun6i SOCs */
+> +#define SUNXI_GPADC_TP_CTRL1_SUN6I_TOUCH_PAN_CALI_EN	BIT(7)
+> +#define SUNXI_GPADC_TP_CTRL1_SUN6I_TP_DUAL_EN		BIT(6)
+> +#define SUNXI_GPADC_TP_CTRL1_SUN6I_TP_MODE_EN		BIT(5)
+> +#define SUNXI_GPADC_TP_CTRL1_SUN6I_TP_ADC_SELECT	BIT(4)
+> +#define SUNXI_GPADC_TP_CTRL1_SUN6I_ADC_CHAN_SELECT(x)	(GENMASK(3, 0) & B=
+IT(x))
+> +
+> +#define SUNXI_GPADC_TP_CTRL2				0x08
+> +
+> +#define SUNXI_GPADC_TP_CTRL2_TP_SENSITIVE_ADJUST(x)	((GENMASK(3, 0) & (x=
+)) << 28)
+> +#define SUNXI_GPADC_TP_CTRL2_TP_MODE_SELECT(x)		((GENMASK(1, 0) & (x)) <=
+< 26)
+> +#define SUNXI_GPADC_TP_CTRL2_PRE_MEA_EN			BIT(24)
+> +#define SUNXI_GPADC_TP_CTRL2_PRE_MEA_THRE_CNT(x)	(GENMASK(23, 0) & (x))
+> +
+> +#define SUNXI_GPADC_TP_CTRL3				0x0c
+> +
+> +#define SUNXI_GPADC_TP_CTRL3_FILTER_EN			BIT(2)
+> +#define SUNXI_GPADC_TP_CTRL3_FILTER_TYPE(x)		(GENMASK(1, 0) & (x))
+> +
+> +#define SUNXI_GPADC_TP_TPR				0x18
+> +
+> +#define SUNXI_GPADC_TP_TPR_TEMP_ENABLE			BIT(16)
+> +#define SUNXI_GPADC_TP_TPR_TEMP_PERIOD(x)		(GENMASK(15, 0) & (x))
+> +
+> +#define SUNXI_GPADC_TP_INT_FIFOC			0x10
+> +
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TEMP_IRQ_EN		BIT(18)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_OVERRUN_IRQ_EN	BIT(17)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_DATA_IRQ_EN		BIT(16)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_DATA_XY_CHANGE	BIT(13)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_FIFO_TRIG_LEVEL(x)	((GENMASK(4, 0) &=
+ (x)) << 8)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_DATA_DRQ_EN		BIT(7)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_FIFO_FLUSH		BIT(4)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_UP_IRQ_EN		BIT(1)
+> +#define SUNXI_GPADC_TP_INT_FIFOC_TP_DOWN_IRQ_EN		BIT(0)
+> +
+> +#define SUNXI_GPADC_TP_INT_FIFOS			0x14
+> +
+> +#define SUNXI_GPADC_TP_INT_FIFOS_TEMP_DATA_PENDING	BIT(18)
+> +#define SUNXI_GPADC_TP_INT_FIFOS_FIFO_OVERRUN_PENDING	BIT(17)
+> +#define SUNXI_GPADC_TP_INT_FIFOS_FIFO_DATA_PENDING	BIT(16)
+> +#define SUNXI_GPADC_TP_INT_FIFOS_TP_IDLE_FLG		BIT(2)
+> +#define SUNXI_GPADC_TP_INT_FIFOS_TP_UP_PENDING		BIT(1)
+> +#define SUNXI_GPADC_TP_INT_FIFOS_TP_DOWN_PENDING	BIT(0)
+> +
+> +#define SUNXI_GPADC_TP_CDAT				0x1c
+> +#define SUNXI_GPADC_TEMP_DATA				0x20
+> +#define SUNXI_GPADC_TP_DATA				0x24
+> +
+> +#define SUNXI_IRQ_FIFO_DATA				0
+> +#define SUNXI_IRQ_TEMP_DATA				1
+
+=2E.. and sometimes not at all.
+
+> +
+> +/* 10s delay before suspending the IP */
+> +#define SUNXI_GPADC_AUTOSUSPEND_DELAY			10000
+> +
+> +struct sunxi_gpadc_mfd_dev {
+> +	struct device			*dev;
+> +	struct regmap			*regmap;
+> +	struct regmap_irq_chip_data	*regmap_irqc;
+> +	void __iomem			*regs;
+> +};
+> +
+> +#endif
+> --=20
+> 2.5.0
+>=20
+
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+
+--CE+1k2dSO48ffgeK
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1
+
+iQIcBAEBAgAGBQJXmvyPAAoJEBx+YmzsjxAg5A0P/iek4AwNnHHN5h9Y/bpbgu0p
+mFfuO2dUBpO4+mMT4kX2eBpUaQCTZbHIo+7WQK77ndl+lTN/dPsJuVeB8h6EVftj
+63xT0B5Fa6+g8vmkHGbjqOrCP0yAJASXGmLvbp4Kq25DIDwnwfH4LzE5wO2t9SYg
+gm2nhT4dAv7yfja4HISnbwIVYT13npibDZeLV2rbk61epzUaohP40V/aghZJE+v0
+CzP2r02YbWxspBF/fS1tRxrZHzJ1cPO4PXc4DjXwAgx6ZsZJG0lBFIlW5y368L0N
+kijjSe1pgHjk2jw5lU+KKNTgC/Y9s9i4fwlYcDA1+eqON4pHaslN6UcpwnUecffL
+AuNY1HUcYSPKHsnQ+r+Zk4O934xerZkjKMO/SKagBSFRmhCymYQj9ZF71nUtqllA
+H4gMVo1kb7/VbGkvPHr3wCNJegH/MidzQ6uqqE3G9h4r3m9Ii7VUGWg71GeNHvMx
+4C8mwt9C+fmtPXvXN9Sewg/sRAZnR+P9SinA7pL2GpCD4SfNhFKYXVOueVyuU31w
+ZqUnxT29S4HK1yun/6bt+ZS728zGxMonlyxsGuYXOsdV/23XUspsOJBTsnaBKoWw
+hyOQW2vyHRPxGCK/vByBubpinLZSpf9psc+Axh0593Mg9WV2hREbIOtWqjWI9a8o
+0qBVM+QVA2Fag38clapu
+=St+b
+-----END PGP SIGNATURE-----
+
+--CE+1k2dSO48ffgeK--
