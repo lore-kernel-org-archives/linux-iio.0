@@ -1,2777 +1,1050 @@
-Return-Path: <Florian.Lobmaier@ams.com>
-From: Florian Lobmaier <Florian.Lobmaier@ams.com>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: "jic23@kernel.org" <jic23@kernel.org>, Elitsa Polizoeva
-	<Elitsa.Polizoeva@ams.com>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Lars-Peter Clausen
-	<lars@metafoo.de>
-Subject: RE: [PATCH V3 1/1] iio: as6200: add AS6200 temperature sensor driver
- from ams AG
-Date: Mon, 1 Aug 2016 08:05:37 +0000
-Message-ID: <74d7c447fc1d442c95e8044c900beead@SUX5076.office.amsiag.com>
-Content-Type: text/plain; charset="iso-8859-1"
+Return-Path: <eballetbo@gmail.com>
 MIME-Version: 1.0
+In-Reply-To: <CABXOdTdDyZOhFd+Eo9e2WLkUj8iM36-bkYPX0BJqRTy61X_qAw@mail.gmail.com>
+References: <1469713776-5062-1-git-send-email-enric.balletbo@collabora.com>
+ <1469713776-5062-2-git-send-email-enric.balletbo@collabora.com> <CABXOdTdDyZOhFd+Eo9e2WLkUj8iM36-bkYPX0BJqRTy61X_qAw@mail.gmail.com>
+From: Enric Balletbo Serra <eballetbo@gmail.com>
+Date: Mon, 1 Aug 2016 10:46:48 +0200
+Message-ID: <CAFqH_52d4XLSj2zRDTxibiGu4hXFUABX=h=MWtE-mMcNOcGoBQ@mail.gmail.com>
+Subject: Re: [PATCH v3 1/4] iio: cros_ec_sensors_core: Add common functions
+ for the ChromeOS EC Sensor Hub.
+To: Guenter Roeck <groeck@google.com>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>, linux-iio@vger.kernel.org,
+	Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Hello Peter,
+Hi Guenter,
 
-Thanks for the feedback. We changed all open items accordingly.=20
-One item regarding the free_irq in as6200_set_pol function we did not under=
-stand: your feedback was " so irq is invalid here, but remove() would free =
-it again?". This is true that free_irq would be called twice if the as6200_=
-setup_irq function would fail afterwards. But is this a problem? If you cou=
-ld give us a hint how to overcome the problem it would be great.
-We removed the config sysfs file which allowed to write the complete config=
- register.
+Thanks for the review tags and the comments. I'll send v4 asap.
 
-Br,
-Florian
+2016-07-29 19:44 GMT+02:00 Guenter Roeck <groeck@google.com>:
+> On Thu, Jul 28, 2016 at 6:49 AM, Enric Balletbo i Serra
+> <enric.balletbo@collabora.com> wrote:
+>> Add the core functions to be able to support the sensors attached behind
+>> the ChromeOS Embedded Controller and used by other IIO cros-ec sensor
+>> drivers.
+>>
+>> The cros_ec_sensor_core driver matches with current driver in ChromeOS
+>> 4.4 tree, so it includes all the fixes at the moment. The support for
+>> this driver was made by Gwendal Grignou. The original patch and all the
+>> fixes has been squashed and rebased on top of mainline.
+>>
+>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>> Signed-off-by: Guenter Roeck <groeck@chromium.org>
+>> [eballetbo: split, squash and rebase on top of mainline the patches
+>> found in ChromeOS tree]
+>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+>> ---
+>>
+>> Changes since v2:
+>>   - Rebased and fix build error.
+>>   - Include a list of possible values in the description of location attr.
+>>   - Fix some typos.
+>>   - Remove id sysfs entry.
+>>
+>> Changes since v1:
+>>   - Check kernel-doc documentation.
+>>   - Bring this in as an when you need it in the rest of the series.
+>>   - Fix some spelling mistakes.
+>>   - Include ABI documentation.
+>>   - Be more careful with buffer sizes (sprintf -> snprintf)
+>>   - Add cros_ec_sensors prefix to all function.
+>>   - Check return values on some functions.
+>>
+>>
+>>  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  18 +
+>>  drivers/iio/common/Kconfig                         |   1 +
+>>  drivers/iio/common/Makefile                        |   1 +
+>>  drivers/iio/common/cros_ec_sensors/Kconfig         |  14 +
+>>  drivers/iio/common/cros_ec_sensors/Makefile        |   5 +
+>>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 491 +++++++++++++++++++++
+>>  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 177 ++++++++
+>>  include/linux/mfd/cros_ec.h                        |   9 +
+>>  include/linux/mfd/cros_ec_commands.h               |  99 ++++-
+>>  9 files changed, 810 insertions(+), 5 deletions(-)
+>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>>
+>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-cros-ec b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>> new file mode 100644
+>> index 0000000..297b972
+>> --- /dev/null
+>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>> @@ -0,0 +1,18 @@
+>> +What:          /sys/bus/iio/devices/iio:deviceX/calibrate
+>> +Date:          July 2015
+>> +KernelVersion: 4.7
+>> +Contact:       linux-iio@vger.kernel.org
+>> +Description:
+>> +               Writing '1' will perform a FOC (Fast Online Calibration). The
+>> +                corresponding calibration offsets can be read from *_calibbias
+>> +                entries.
+>> +
+>> +What:          /sys/bus/iio/devices/iio:deviceX/location
+>> +Date:          July 2015
+>> +KernelVersion: 4.7
+>> +Contact:       linux-iio@vger.kernel.org
+>> +Description:
+>> +               This attribute returns a string with the physical location where
+>> +                the motion sensor is placed. For example, in a laptop a motion
+>> +                sensor can be located on the base or on the lid. Current valid
+>> +               values are 'base' and 'lid'.
+>> diff --git a/drivers/iio/common/Kconfig b/drivers/iio/common/Kconfig
+>> index 26a6026..e108996 100644
+>> --- a/drivers/iio/common/Kconfig
+>> +++ b/drivers/iio/common/Kconfig
+>> @@ -2,6 +2,7 @@
+>>  # IIO common modules
+>>  #
+>>
+>> +source "drivers/iio/common/cros_ec_sensors/Kconfig"
+>>  source "drivers/iio/common/hid-sensors/Kconfig"
+>>  source "drivers/iio/common/ms_sensors/Kconfig"
+>>  source "drivers/iio/common/ssp_sensors/Kconfig"
+>> diff --git a/drivers/iio/common/Makefile b/drivers/iio/common/Makefile
+>> index 585da6a..6fa760e 100644
+>> --- a/drivers/iio/common/Makefile
+>> +++ b/drivers/iio/common/Makefile
+>> @@ -7,6 +7,7 @@
+>>  #
+>>
+>>  # When adding new entries keep the list in alphabetical order
+>> +obj-y += cros_ec_sensors/
+>>  obj-y += hid-sensors/
+>>  obj-y += ms_sensors/
+>>  obj-y += ssp_sensors/
+>> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
+>> new file mode 100644
+>> index 0000000..24743be
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+>> @@ -0,0 +1,14 @@
+>> +#
+>> +# Chrome OS Embedded Controller managed sensors library
+>> +#
+>> +config IIO_CROS_EC_SENSORS_CORE
+>> +       tristate "ChromeOS EC Sensors Core"
+>> +       depends on SYSFS && MFD_CROS_EC
+>> +       select IIO_BUFFER
+>> +       select IIO_TRIGGERED_BUFFER
+>> +       help
+>> +         Base module for the ChromeOS EC Sensors module.
+>> +         Contains core functions used by other IIO CrosEC sensor
+>> +         drivers.
+>> +         Define common attributes and sysfs interrupt handler.
+>> +
+>> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
+>> new file mode 100644
+>> index 0000000..95b6901
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
+>> @@ -0,0 +1,5 @@
+>> +#
+>> +# Makefile for sensors seen through the ChromeOS EC sensor hub.
+>> +#
+>> +
+>> +obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> new file mode 100644
+>> index 0000000..acc87b3
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> @@ -0,0 +1,491 @@
+>> +/*
+>> + * cros_ec_sensors_core - Common function for Chrome OS EC sensor driver.
+>> + *
+>> + * Copyright (C) 2016 Google, Inc
+>> + *
+>> + * This software is licensed under the terms of the GNU General Public
+>> + * License version 2, as published by the Free Software Foundation, and
+>> + * may be copied, distributed, and modified under those terms.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#include <linux/delay.h>
+>> +#include <linux/device.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/kfifo_buf.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/mfd/cros_ec.h>
+>> +#include <linux/mfd/cros_ec_commands.h>
+>> +#include <linux/module.h>
+>> +#include <linux/slab.h>
+>> +#include <linux/sysfs.h>
+>> +#include <linux/platform_device.h>
+>> +
+>> +#include "cros_ec_sensors_core.h"
+>> +
+>> +static char *cros_ec_loc[] = {
+>> +       [MOTIONSENSE_LOC_BASE] = "base",
+>> +       [MOTIONSENSE_LOC_LID] = "lid",
+>> +       [MOTIONSENSE_LOC_MAX] = "unknown",
+>> +};
+>> +
+>> +int cros_ec_sensors_core_init(struct platform_device *pdev,
+>> +                             struct iio_dev *indio_dev,
+>> +                             bool physical_device)
+>> +{
+>> +       struct device *dev = &pdev->dev;
+>> +       struct cros_ec_sensors_core_state *state = iio_priv(indio_dev);
+>> +       struct cros_ec_dev *ec = dev_get_drvdata(pdev->dev.parent);
+>> +       struct cros_ec_sensor_platform *sensor_platform = dev_get_platdata(dev);
+>> +
+>> +       platform_set_drvdata(pdev, indio_dev);
+>> +
+>> +       state->ec = ec->ec_dev;
+>> +       state->msg = devm_kzalloc(&pdev->dev,
+>> +                               max((u16)sizeof(struct ec_params_motion_sense),
+>> +                               state->ec->max_response), GFP_KERNEL);
+>> +       if (!state->msg)
+>> +               return -ENOMEM;
+>> +
+>> +       state->resp = (struct ec_response_motion_sense *)state->msg->data;
+>> +
+>> +       mutex_init(&state->cmd_lock);
+>> +
+>> +       /* Set up the host command structure. */
+>> +       state->msg->version = 2;
+>> +       state->msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
+>> +       state->msg->outsize = sizeof(struct ec_params_motion_sense);
+>> +
+>> +       indio_dev->dev.parent = &pdev->dev;
+>> +       indio_dev->name = pdev->name;
+>> +
+>> +       if (physical_device) {
+>> +               indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +               state->param.cmd = MOTIONSENSE_CMD_INFO;
+>> +               state->param.info.sensor_num = sensor_platform->sensor_num;
+>> +               if (cros_ec_motion_send_host_cmd(state, 0)) {
+>> +                       dev_warn(dev, "Can not access sensor info\n");
+>> +                       return -EIO;
+>> +               }
+>> +               state->type = state->resp->info.type;
+>> +               state->loc = state->resp->info.location;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_init);
+>> +
+>> +int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *state,
+>> +                                u16 opt_length)
+>> +{
+>> +       int ret;
+>> +
+>> +       if (opt_length)
+>> +               state->msg->insize = min(opt_length, state->ec->max_response);
+>> +       else
+>> +               state->msg->insize = state->ec->max_response;
+>> +
+>> +       memcpy(state->msg->data, &state->param, sizeof(state->param));
+>> +
+>> +       ret = cros_ec_cmd_xfer_status(state->ec, state->msg);
+>> +       if (ret < 0)
+>> +               return -EIO;
+>> +
+>> +       if (ret &&
+>> +           state->resp != (struct ec_response_motion_sense *)state->msg->data)
+>> +               memcpy(state->resp, state->msg->data, ret);
+>> +
+>> +       return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_motion_send_host_cmd);
+>> +
+>> +static ssize_t cros_ec_sensors_calibrate(struct iio_dev *indio_dev,
+>> +               uintptr_t private, const struct iio_chan_spec *chan,
+>> +               const char *buf, size_t len)
+>> +{
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +       int ret, i;
+>> +       bool calibrate;
+>> +
+>> +       ret = strtobool(buf, &calibrate);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +       if (!calibrate)
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&st->cmd_lock);
+>> +       st->param.cmd = MOTIONSENSE_CMD_PERFORM_CALIB;
+>> +       ret = cros_ec_motion_send_host_cmd(st, 0);
+>> +       if (ret != 0) {
+>> +               dev_warn(&indio_dev->dev, "Unable to calibrate sensor\n");
+>> +       } else {
+>> +               /* Save values */
+>> +               for (i = CROS_EC_SENSOR_X; i < CROS_EC_SENSOR_MAX_AXIS; i++)
+>> +                       st->calib[i].offset = st->resp->perform_calib.offset[i];
+>> +       }
+>> +       mutex_unlock(&st->cmd_lock);
+>> +
+>> +       return ret ? ret : len;
+>> +}
+>> +
+>> +static ssize_t cros_ec_sensors_loc(struct iio_dev *indio_dev,
+>> +               uintptr_t private, const struct iio_chan_spec *chan,
+>> +               char *buf)
+>> +{
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +       return snprintf(buf, PAGE_SIZE, "%s\n", cros_ec_loc[st->loc]);
+>> +}
+>> +
+>> +const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[] = {
+>> +       {
+>> +               .name = "calibrate",
+>> +               .shared = IIO_SHARED_BY_ALL,
+>> +               .write = cros_ec_sensors_calibrate
+>> +       },
+>> +       {
+>> +               .name = "location",
+>> +               .shared = IIO_SHARED_BY_ALL,
+>> +               .read = cros_ec_sensors_loc
+>> +       },
+>> +       { },
+>> +};
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_ext_info);
+>> +
+>> +/**
+>> + * cros_ec_sensors_idx_to_reg - convert index into offset in shared memory
+>> + * @st:                pointer to state information for device
+>> + * @idx:       sensor index (should be element of enum sensor_index)
+>> + *
+>> + * Return:     address to read at
+>> + */
+>> +static unsigned int cros_ec_sensors_idx_to_reg(
+>> +                                       struct cros_ec_sensors_core_state *st,
+>> +                                       unsigned int idx)
+>> +{
+>> +       /*
+>> +        * When using LPC interface, only space for 2 Accel and one Gyro.
+>> +        * First halfword of MOTIONSENSE_TYPE_ACCEL is used by angle.
+>> +        */
+>> +       if (st->type == MOTIONSENSE_TYPE_ACCEL)
+>> +               return EC_MEMMAP_ACC_DATA + sizeof(u16) *
+>> +                       (1 + idx + st->param.info.sensor_num *
+>> +                        CROS_EC_SENSOR_MAX_AXIS);
+>> +       else
+>
+> Nitpick: Unnecessary else
+>
+>> +               return EC_MEMMAP_GYRO_DATA + sizeof(u16) * idx;
+>> +}
+>> +
+>> +static int cros_ec_sensors_cmd_read_u8(struct cros_ec_device *ec,
+>> +                                      unsigned int offset, u8 *dest)
+>> +{
+>> +       return ec->cmd_readmem(ec, offset, 1, dest);
+>> +}
+>> +
+>> +static int cros_ec_sensors_cmd_read_u16(struct cros_ec_device *ec,
+>> +                                        unsigned int offset, u16 *dest)
+>> +{
+>> +       __le16 tmp;
+>> +       int ret = ec->cmd_readmem(ec, offset, 2, &tmp);
+>> +
+>> +       *dest = le16_to_cpu(tmp);
+>> +
+>
+> I am a bit concerned here about "variable may be unused" messages from
+> the compiler. Not that it really matters, but maybe the conversion
+> should only be done if ret >= 0.
+>
+>> +       return ret;
+>> +}
+>> +
+>> +/**
+>> + * cros_ec_sensors_read_until_not_busy() - read until is not busy
+>> + *
+>> + * @st:        pointer to state information for device
+>> + *
+>> + * Read from EC status byte until it reads not busy.
+>> + * Return: 8-bit status if ok, -errno on failure.
+>> + */
+>> +static int cros_ec_sensors_read_until_not_busy(
+>> +                                       struct cros_ec_sensors_core_state *st)
+>> +{
+>> +       struct cros_ec_device *ec = st->ec;
+>> +       u8 status;
+>> +       int ret, attempts = 0;
+>> +
+>> +       ret = cros_ec_sensors_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS, &status);
+>> +       if (ret < 0)
+>> +               return ret;
+>> +
+>> +       while (status & EC_MEMMAP_ACC_STATUS_BUSY_BIT) {
+>> +               /* Give up after enough attempts, return error. */
+>> +               if (attempts++ >= 50)
+>> +                       return -EIO;
+>> +
+>> +               /* Small delay every so often. */
+>> +               if (attempts % 5 == 0)
+>> +                       msleep(25);
+>> +
+>> +               ret = cros_ec_sensors_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS,
+>> +                                                 &status);
+>> +               if (ret < 0)
+>> +                       return ret;
+>> +       }
+>> +
+>> +       return status;
+>> +}
+>> +
+>> +/**
+>> + * read_ec_sensors_data_unsafe() - read acceleration data from EC shared memory
+>> + * @indio_dev: pointer to IIO device
+>> + * @scan_mask: bitmap of the sensor indices to scan
+>> + * @data:      location to store data
+>> + *
+>> + * This is the unsafe function for reading the EC data. It does not guarantee
+>> + * that the EC will not modify the data as it is being read in.
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +static int cros_ec_sensors_read_data_unsafe(struct iio_dev *indio_dev,
+>> +                        unsigned long scan_mask, s16 *data)
+>> +{
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +       struct cros_ec_device *ec = st->ec;
+>> +       unsigned int i;
+>> +       int ret;
+>> +
+>> +       /* Read all sensors enabled in scan_mask. Each value is 2 bytes. */
+>> +       for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
+>> +               ret = cros_ec_sensors_cmd_read_u16(ec,
+>> +                                            cros_ec_sensors_idx_to_reg(st, i),
+>> +                                            data);
+>> +               if (ret < 0)
+>> +                       return ret;
+>> +
+>> +               data++;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+>> +                            unsigned long scan_mask, s16 *data)
+>> +{
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +       struct cros_ec_device *ec = st->ec;
+>> +       u8 samp_id = 0xff, status = 0;
+>> +       int ret, attempts = 0;
+>> +
+>> +       /*
+>> +        * Continually read all data from EC until the status byte after
+>> +        * all reads reflects that the EC is not busy and the sample id
+>> +        * matches the sample id from before all reads. This guarantees
+>> +        * that data read in was not modified by the EC while reading.
+>> +        */
+>> +       while ((status & (EC_MEMMAP_ACC_STATUS_BUSY_BIT |
+>> +                         EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK)) != samp_id) {
+>> +               /* If we have tried to read too many times, return error. */
+>> +               if (attempts++ >= 5)
+>> +                       return -EIO;
+>> +
+>> +               /* Read status byte until EC is not busy. */
+>> +               status = cros_ec_sensors_read_until_not_busy(st);
+>> +               if (status < 0)
+>> +                       return status;
+>> +
+>> +               /*
+>> +                * Store the current sample id so that we can compare to the
+>> +                * sample id after reading the data.
+>> +                */
+>> +               samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+>> +
+>> +               /* Read all EC data, format it, and store it into data. */
+>> +               ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
+>> +                                                      data);
+>> +               if (ret < 0)
+>> +                       return ret;
+>> +
+>> +               /* Read status byte. */
+>> +               ret = cros_ec_sensors_cmd_read_u8(ec, EC_MEMMAP_ACC_STATUS,
+>> +                                                 &status);
+>> +               if (ret < 0)
+>> +                       return ret;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_read_lpc);
+>> +
+>> +int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev,
+>> +                            unsigned long scan_mask, s16 *data)
+>> +{
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +       int ret;
+>> +       unsigned int i = 0;
+>> +
+> Unless I am missing something, this initialization is unnecessary.
+>
+>> +       /* Read all sensor data through a command. */
+>> +       st->param.cmd = MOTIONSENSE_CMD_DATA;
+>> +       ret = cros_ec_motion_send_host_cmd(st, sizeof(st->resp->data));
+>> +       if (ret != 0) {
+>> +               dev_warn(&indio_dev->dev, "Unable to read sensor data\n");
+>> +               return ret;
+>> +       }
+>> +
+>> +       for_each_set_bit(i, &scan_mask, indio_dev->masklength) {
+>> +               *data = st->resp->data.data[i];
+>> +               data++;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_read_cmd);
+>> +
+>> +irqreturn_t cros_ec_sensors_capture(int irq, void *p)
+>> +{
+>> +       struct iio_poll_func *pf = p;
+>> +       struct iio_dev *indio_dev = pf->indio_dev;
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +       int ret;
+>> +
+>> +       mutex_lock(&st->cmd_lock);
+>> +
+>> +       /* Clear capture data. */
+>> +       memset(st->samples, 0, indio_dev->scan_bytes);
+>> +
+>> +       /* Read data based on which channels are enabled in scan mask. */
+>> +       ret = st->read_ec_sensors_data(indio_dev,
+>> +                                      *(indio_dev->active_scan_mask),
+>> +                                      (s16 *)st->samples);
+>> +       if (ret < 0)
+>> +               goto done;
+>> +
+>> +       iio_push_to_buffers_with_timestamp(indio_dev, st->samples,
+>> +                                          iio_get_time_ns(indio_dev));
+>> +
+>> +done:
+>> +       /*
+>> +        * Tell the core we are done with this trigger and ready for the
+>> +        * next one.
+>> +        */
+>> +       iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +       mutex_unlock(&st->cmd_lock);
+>> +
+>> +       return IRQ_HANDLED;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_capture);
+>> +
+>> +int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+>> +                         struct iio_chan_spec const *chan,
+>> +                         int *val, int *val2, long mask)
+>> +{
+>> +       int ret = IIO_VAL_INT;
+>> +
+>> +       switch (mask) {
+>> +       case IIO_CHAN_INFO_SAMP_FREQ:
+>> +               st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +               st->param.ec_rate.data =
+>> +                       EC_MOTION_SENSE_NO_VALUE;
+>> +
+>> +               if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                       ret = -EIO;
+>> +               else
+>> +                       *val = st->resp->ec_rate.ret;
+>> +               break;
+>> +       case IIO_CHAN_INFO_FREQUENCY:
+>> +               st->param.cmd = MOTIONSENSE_CMD_SENSOR_ODR;
+>> +               st->param.sensor_odr.data =
+>> +                       EC_MOTION_SENSE_NO_VALUE;
+>> +
+>> +               if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                       ret = -EIO;
+>> +               else
+>> +                       *val = st->resp->sensor_odr.ret;
+>> +               break;
+>> +       default:
+>> +               break;
+>> +       }
+>> +
+>> +       return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_read);
+>> +
+>> +int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+>> +                              struct iio_chan_spec const *chan,
+>> +                              int val, int val2, long mask)
+>> +{
+>> +       int ret = 0;
+>> +
+>> +       switch (mask) {
+>> +       case IIO_CHAN_INFO_FREQUENCY:
+>> +               st->param.cmd = MOTIONSENSE_CMD_SENSOR_ODR;
+>> +               st->param.sensor_odr.data = val;
+>> +
+>> +               /* Always roundup, so caller gets at least what it asks for. */
+>> +               st->param.sensor_odr.roundup = 1;
+>> +
+>> +               if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                       ret = -EIO;
+>> +               break;
+>> +       case IIO_CHAN_INFO_SAMP_FREQ:
+>> +               st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +               st->param.ec_rate.data = val;
+>> +
+>> +               if (cros_ec_motion_send_host_cmd(st, 0))
+>> +                       ret = -EIO;
+>> +               else
+>> +                       st->curr_sampl_freq = val;
+>> +               break;
+>> +       default:
+>> +               ret = -EINVAL;
+>> +               break;
+>> +       }
+>> +       return ret;
+>> +}
+>> +EXPORT_SYMBOL_GPL(cros_ec_sensors_core_write);
+>> +
+>> +static int __maybe_unused cros_ec_sensors_prepare(struct device *dev)
+>> +{
+>> +       struct platform_device *pdev = to_platform_device(dev);
+>> +       struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +       if (st->curr_sampl_freq == 0)
+>> +               return 0;
+>> +
+>> +       /*
+>> +        * If the sensors are sampled at high frequency, we will not be able to
+>> +        * sleep. Set to sampling to a long period if necessary.
+>> +        */
+>> +       if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
+>> +               mutex_lock(&st->cmd_lock);
+>> +               st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +               st->param.ec_rate.data = CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY;
+>> +               cros_ec_motion_send_host_cmd(st, 0);
+>> +               mutex_unlock(&st->cmd_lock);
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static void __maybe_unused cros_ec_sensors_complete(struct device *dev)
+>> +{
+>> +       struct platform_device *pdev = to_platform_device(dev);
+>> +       struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>> +       struct cros_ec_sensors_core_state *st = iio_priv(indio_dev);
+>> +
+>> +       if (st->curr_sampl_freq == 0)
+>> +               return;
+>> +
+>> +       if (st->curr_sampl_freq < CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY) {
+>> +               mutex_lock(&st->cmd_lock);
+>> +               st->param.cmd = MOTIONSENSE_CMD_EC_RATE;
+>> +               st->param.ec_rate.data = st->curr_sampl_freq;
+>> +               cros_ec_motion_send_host_cmd(st, 0);
+>> +               mutex_unlock(&st->cmd_lock);
+>> +       }
+>> +}
+>> +
+> In the chromeos code those functions were (optionally) used for PM.
+> The PM declarations are missing here, though, making the functions
+> unconditionally unused. If the PM functionality is added in a later
+> patch, maybe the functions should be added at that time as well ? Or
+> did the PM ops declaration get lost ?
+>
 
-Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
----
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kcon=
-fig
-index 21feaa4..d82e80f 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -3,6 +3,17 @@
- #
- menu "Temperature sensors"
-=20
-+config AS6200
-+	tristate "ams AG AS6200 temperature sensor"
-+	depends on I2C
-+	select REGMAP_I2C
-+	help
-+	  If you say yes here you get support for the AS6200 temperature
-+	  sensor from ams AG.
-+
-+	  This driver can also be built as a module. If so, the module will
-+	  be called as6200.
-+
- config MLX90614
- 	tristate "MLX90614 contact-less infrared sensor"
- 	depends on I2C
-diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Mak=
-efile
-index 40710a8..c0c9a9a 100644
---- a/drivers/iio/temperature/Makefile
-+++ b/drivers/iio/temperature/Makefile
-@@ -2,5 +2,6 @@
- # Makefile for industrial I/O temperature drivers
- #
-=20
-+obj-$(CONFIG_AS6200) +=3D as6200.o
- obj-$(CONFIG_MLX90614) +=3D mlx90614.o
- obj-$(CONFIG_TMP006) +=3D tmp006.o
-diff --git a/drivers/iio/temperature/as6200.c b/drivers/iio/temperature/as6=
-200.c
-new file mode 100644
-index 0000000..a3873f4
---- /dev/null
-+++ b/drivers/iio/temperature/as6200.c
-@@ -0,0 +1,747 @@
-+/*
-+ * Driver for ams AS6200 temperature sensor.
-+ *
-+ * Sensor supports following 7-bit I2C addresses: 0x48, 0x49, 0x4A, 0x4B
-+ *
-+ * Copyright (c) 2016 ams AG. All rights reserved.
-+ *
-+ * Author: Florian Lobmaier <florian.lobmaier@ams.com>
-+ * Author: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
-+ *
-+ * You should have received a copy of the GNU General Public License
-+ * along with this program; if not, write to the Free Software
-+ * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307 US=
-A
-+ */
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/init.h>
-+#include <linux/slab.h>
-+#include <linux/i2c.h>
-+#include <linux/err.h>
-+#include <linux/types.h>
-+#include <linux/irq.h>
-+#include <linux/interrupt.h>
-+#include <linux/gpio.h>
-+#include <linux/of_gpio.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/events.h>
-+#include <linux/regmap.h>
-+
-+static const int as6200_conv_rates[4][2] =3D { {4, 0}, {1, 0},
-+					{0, 250000}, {0, 125000} };
-+
-+static const char * const as6200_consec_faults[] =3D { "1", "2", "4", "6" =
-};
-+
-+/* AS6200 registers */
-+#define AS6200_REG_TVAL		0x00
-+#define AS6200_REG_CONFIG	0x01
-+#define AS6200_REG_TLOW		0x02
-+#define AS6200_REG_THIGH	0x03
-+#define AS6200_MAX_REGISTER	0x03
-+
-+#define AS6200_CONFIG_DW_MASK	BIT(4)
-+#define AS6200_CONFIG_DW_SHIFT	4
-+#define AS6200_CONFIG_AL_MASK	BIT(5)
-+#define AS6200_CONFIG_AL_SHIFT	5
-+#define AS6200_CONFIG_CR_MASK	GENMASK(7, 6)
-+#define AS6200_CONFIG_CR_SHIFT	6
-+#define AS6200_CONFIG_SM_MASK	BIT(8)
-+#define AS6200_CONFIG_SM_SHIFT	8
-+#define AS6200_CONFIG_IM_MASK	BIT(9)
-+#define AS6200_CONFIG_IM_SHIFT	9
-+#define AS6200_CONFIG_POL_MASK	BIT(10)
-+#define AS6200_CONFIG_POL_SHIFT	10
-+#define AS6200_CONFIG_CF_MASK	GENMASK(12, 11)
-+#define AS6200_CONFIG_CF_SHIFT	11
-+#define AS6200_CONFIG_SS_MASK	BIT(15)
-+#define AS6200_CONFIG_SS_SHIFT	15
-+
-+struct as6200_data {
-+	struct i2c_client *client;
-+	struct regmap *regmap;
-+};
-+
-+static const struct regmap_range as6200_readable_ranges[] =3D {
-+	regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_THIGH),
-+};
-+
-+static const struct regmap_access_table as6200_readable_table =3D {
-+	.yes_ranges =3D as6200_readable_ranges,
-+	.n_yes_ranges =3D ARRAY_SIZE(as6200_readable_ranges),
-+};
-+
-+static const struct regmap_range as6200_writable_ranges[] =3D {
-+	regmap_reg_range(AS6200_REG_CONFIG, AS6200_REG_THIGH),
-+};
-+
-+static const struct regmap_access_table as6200_writable_table =3D {
-+	.yes_ranges =3D as6200_writable_ranges,
-+	.n_yes_ranges =3D ARRAY_SIZE(as6200_writable_ranges),
-+};
-+
-+static const struct regmap_range as6200_volatile_ranges[] =3D {
-+	regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_TVAL),
-+};
-+
-+static const struct regmap_access_table as6200_volatile_table =3D {
-+	.yes_ranges =3D as6200_volatile_ranges,
-+	.n_yes_ranges =3D ARRAY_SIZE(as6200_volatile_ranges),
-+};
-+
-+static const struct regmap_config as6200_regmap_config =3D {
-+	.reg_bits =3D 8,
-+	.val_bits =3D 16,
-+	.max_register =3D AS6200_MAX_REGISTER,
-+	.cache_type =3D REGCACHE_RBTREE,
-+	.rd_table =3D &as6200_readable_table,
-+	.wr_table =3D &as6200_writable_table,
-+	.volatile_table =3D &as6200_volatile_table,
-+};
-+
-+static int as6200_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *channel, int *val,
-+			    int *val2, long mask)
-+{
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int cr, err;
-+	s32 ret;
-+
-+	if (channel->type !=3D IIO_TEMP)
-+		return -EINVAL;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
-+		err =3D regmap_read(data->regmap, AS6200_REG_TVAL,
-+					&reg_val);
-+		if (err < 0)
-+			return err;
-+		ret =3D sign_extend32(reg_val, 15) >> 4;
-+		if (mask =3D=3D IIO_CHAN_INFO_PROCESSED)
-+			*val =3D (ret * 625) / 10000;
-+		else
-+			*val =3D ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val =3D 62;
-+		*val2 =3D 500000;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		err =3D regmap_read(data->regmap, AS6200_REG_CONFIG,
-+					&reg_val);
-+		if (err < 0)
-+			return err;
-+		cr =3D (reg_val & AS6200_CONFIG_CR_MASK)
-+			>> AS6200_CONFIG_CR_SHIFT;
-+		*val =3D as6200_conv_rates[cr][0];
-+		*val2 =3D as6200_conv_rates[cr][1];
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		break;
-+	}
-+	return -EINVAL;
-+}
-+
-+static int as6200_write_raw(struct iio_dev *indio_dev,
-+			struct iio_chan_spec const *chan,
-+			int val,
-+			int val2,
-+			long mask)
-+{
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	int i;
-+	unsigned int config_val;
-+	int err =3D 0;
-+
-+	if (mask !=3D IIO_CHAN_INFO_SAMP_FREQ)
-+		return -EINVAL;
-+
-+	for (i =3D 0; i < ARRAY_SIZE(as6200_conv_rates); i++)
-+		if ((val =3D=3D as6200_conv_rates[i][0]) &&
-+			(val2 =3D=3D as6200_conv_rates[i][1])) {
-+			err =3D regmap_read(data->regmap,
-+				AS6200_REG_CONFIG, &config_val);
-+			if (err < 0)
-+				return err;
-+			config_val &=3D ~AS6200_CONFIG_CR_MASK;
-+			config_val |=3D i << AS6200_CONFIG_CR_SHIFT;
-+
-+			return regmap_write(data->regmap, AS6200_REG_CONFIG,
-+							config_val);
-+		}
-+	return -EINVAL;
-+}
-+
-+static irqreturn_t as6200_alert_isr(int irq, void *dev_id)
-+{
-+	struct iio_dev *indio_dev =3D dev_id;
-+
-+	iio_push_event(indio_dev,
-+		IIO_UNMOD_EVENT_CODE(IIO_TEMP,
-+					0,
-+					IIO_EV_TYPE_THRESH,
-+					IIO_EV_DIR_EITHER),
-+					iio_get_time_ns());
-+	return IRQ_HANDLED;
-+}
-+
-+static int as6200_setup_irq(struct iio_dev *indio_dev, bool pol)
-+{
-+	int err;
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct device *dev =3D &data->client->dev;
-+	int irq_trig;
-+
-+	if (pol)
-+		irq_trig =3D IRQF_TRIGGER_RISING;
-+	else
-+		irq_trig =3D IRQF_TRIGGER_FALLING;
-+
-+	err =3D request_irq(data->client->irq, as6200_alert_isr, irq_trig,
-+			"as6200", dev);
-+	if (err) {
-+		dev_err(dev, "error requesting irq %d\n", err);
-+		return err;
-+	}
-+
-+	return 0;
-+}
-+
-+static ssize_t as6200_show_thigh(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err, val;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val);
-+	if (err < 0)
-+		return err;
-+	reg_val =3D reg_val >> 4;
-+	val =3D (625 * reg_val) / 10000;
-+	return sprintf(buf, "%d Degree Celsius\n", val);
-+}
-+
-+static ssize_t as6200_show_tlow(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err, val;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val);
-+	if (err < 0)
-+		return err;
-+	reg_val =3D reg_val >> 4;
-+	val =3D (625 * reg_val) / 10000;
-+	return sprintf(buf, "%d Degree Celsius\n", val);
-+}
-+
-+static ssize_t as6200_show_thigh_reg(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val);
-+	if (err < 0)
-+		return err;
-+	return sprintf(buf, "%hX\n", reg_val);
-+}
-+
-+static ssize_t as6200_show_tlow_reg(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val);
-+	if (err < 0)
-+		return err;
-+	return sprintf(buf, "%hX\n", reg_val);
-+}
-+
-+static ssize_t as6200_show_al(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+	bool pol, al;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-+	if (err < 0)
-+		return err;
-+	pol =3D (reg_val & AS6200_CONFIG_POL_MASK) >> AS6200_CONFIG_POL_SHIFT;
-+	al =3D (reg_val & AS6200_CONFIG_AL_MASK) >> AS6200_CONFIG_AL_SHIFT;
-+	if (pol) {
-+		if (al)
-+			return sprintf(buf, "on\n");
-+		else
-+			return sprintf(buf, "off\n");
-+	} else {
-+		if (al )
-+			return sprintf(buf, "off\n");
-+		else
-+			return sprintf(buf, "on\n");
-+	}
-+}
-+
-+static ssize_t as6200_show_sm(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-+	if (err < 0)
-+		return err;
-+	return sprintf(buf, "%hX\n", (u16)((reg_val & AS6200_CONFIG_SM_MASK)
-+					>> AS6200_CONFIG_SM_SHIFT));
-+}
-+
-+static ssize_t as6200_show_im(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-+	if (err < 0)
-+		return err;
-+	return sprintf(buf, "%hX\n", (u16)((reg_val & AS6200_CONFIG_IM_MASK)
-+					>> AS6200_CONFIG_IM_SHIFT));
-+}
-+
-+static ssize_t as6200_show_pol(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-+	if (err < 0)
-+		return err;
-+	return sprintf(buf, "%hX\n", (u16)((reg_val & AS6200_CONFIG_POL_MASK)
-+					 >> AS6200_CONFIG_POL_SHIFT));
-+}
-+
-+static ssize_t as6200_show_cf(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-+	if (err < 0)
-+		return err;
-+	reg_val =3D (reg_val & AS6200_CONFIG_CF_MASK) >> AS6200_CONFIG_CF_SHIFT;
-+	return sprintf(buf, "%s\n", as6200_consec_faults[reg_val]);
-+}
-+
-+static ssize_t as6200_show_ss(struct device *dev,
-+	struct device_attribute *attr, char *buf)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	unsigned int reg_val;
-+	int err;
-+
-+	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-+	if (err < 0)
-+		return err;
-+	return sprintf(buf, "%hX\n", (u16)((reg_val & AS6200_CONFIG_SS_MASK)
-+					>> AS6200_CONFIG_SS_SHIFT));
-+}
-+
-+static ssize_t as6200_set_thigh(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	s16 reg_val;
-+	int err, val;
-+
-+	err =3D kstrtoint(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		if ((val < -40) || (val > 150))
-+			return count;
-+		val =3D (val * 10000) / 625;
-+		reg_val =3D val << 4;
-+		err =3D regmap_write(data->regmap, AS6200_REG_THIGH, reg_val);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_err(&client->dev,
-+			"Converting value for THIGH failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_tlow(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	s16 reg_val;
-+	int err, val;
-+
-+	err =3D kstrtoint(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		if ((val < -40) || (val > 150)) {
-+			dev_info(&client->dev,
-+				"Value for THIGH is invalid min =3D -40%cC, max =3D 150=B0C, val =3D %=
-d=B0C",
-+				(unsigned char)(248), val);
-+			return -ERANGE;
-+		}
-+		val =3D (val * 10000) / 625;
-+		reg_val =3D val << 4;
-+		err =3D regmap_write(data->regmap, AS6200_REG_TLOW, reg_val);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for TLOW failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_thigh_reg(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	u16 reg_val;
-+	int err;
-+
-+	err =3D kstrtou16(buf, 0, &reg_val);
-+	if (err =3D=3D 0) {
-+		err =3D regmap_write(data->regmap, AS6200_REG_THIGH, reg_val);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for THIGH failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_tlow_reg(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	int err;
-+	u16 reg_val;
-+
-+	err =3D kstrtou16(buf, 0, &reg_val);
-+	if (err =3D=3D 0) {
-+		err =3D regmap_write(data->regmap, AS6200_REG_TLOW, reg_val);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for TLOW failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_sm(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	int err;
-+	u16 val;
-+
-+	err =3D kstrtou16(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-+			AS6200_CONFIG_SM_MASK, val << AS6200_CONFIG_SM_SHIFT);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for SM field failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_im(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	int err;
-+	u16 val;
-+
-+	err =3D kstrtou16(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-+			AS6200_CONFIG_IM_MASK, val << AS6200_CONFIG_IM_SHIFT);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for IM field failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_pol(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	int err;
-+	u16 val;
-+
-+	err =3D kstrtou16(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		free_irq(client->irq, dev);
-+		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-+			AS6200_CONFIG_POL_MASK,
-+			val << AS6200_CONFIG_POL_SHIFT);
-+		if (err < 0)
-+			return err;
-+		as6200_setup_irq(indio_dev, (bool)val);
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for POL field failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_cf(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	int err;
-+	u16 val;
-+
-+	err =3D kstrtou16(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		switch (val) {
-+		case 1:
-+		case 2:
-+		case 4:
-+		case 6:
-+			err =3D regmap_update_bits(data->regmap,
-+				AS6200_REG_CONFIG, AS6200_CONFIG_CF_MASK,
-+				val << AS6200_CONFIG_CF_SHIFT);
-+			if (err < 0)
-+				return err;
-+			break;
-+		default:
-+			dev_info(&client->dev,
-+				"Value for CF field invalid, val =3D %hx", val);
-+			return count;
-+		}
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for CF field failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static ssize_t as6200_set_ss(struct device *dev,
-+	struct device_attribute *attr, const char *buf, size_t count)
-+{
-+	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-+	struct as6200_data *data =3D iio_priv(indio_dev);
-+	struct i2c_client *client =3D data->client;
-+	int err;
-+	u16 val;
-+
-+	err =3D kstrtou16(buf, 0, &val);
-+	if (err =3D=3D 0) {
-+		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-+			AS6200_CONFIG_SS_MASK, val << AS6200_CONFIG_SS_SHIFT);
-+		if (err < 0)
-+			return err;
-+	} else
-+		dev_info(&client->dev,
-+			"Converting value for SS field failed, err =3D %hx",
-+			err);
-+	return count;
-+}
-+
-+static IIO_DEVICE_ATTR(thigh, S_IWUSR | S_IRUGO, as6200_show_thigh,
-+	as6200_set_thigh, 0);
-+static IIO_DEVICE_ATTR(tlow, S_IWUSR | S_IRUGO, as6200_show_tlow,
-+	as6200_set_tlow, 0);
-+static IIO_DEVICE_ATTR(thigh_reg, S_IWUSR | S_IRUGO, as6200_show_thigh_reg=
-,
-+	as6200_set_thigh_reg, 0);
-+static IIO_DEVICE_ATTR(tlow_reg, S_IWUSR | S_IRUGO, as6200_show_tlow_reg,
-+	as6200_set_tlow_reg, 0);
-+static IIO_DEVICE_ATTR(al, S_IRUGO, as6200_show_al, NULL, 0);
-+static IIO_DEVICE_ATTR(sm, S_IWUSR | S_IRUGO, as6200_show_sm,
-+	as6200_set_sm, 0);
-+static IIO_DEVICE_ATTR(im, S_IWUSR | S_IRUGO, as6200_show_im,
-+	as6200_set_im, 0);
-+static IIO_DEVICE_ATTR(pol, S_IWUSR | S_IRUGO, as6200_show_pol,
-+	as6200_set_pol, 0);
-+static IIO_DEVICE_ATTR(cf, S_IWUSR | S_IRUGO, as6200_show_cf,
-+	as6200_set_cf, 0);
-+static IIO_DEVICE_ATTR(ss, S_IWUSR | S_IRUGO, as6200_show_ss,
-+	as6200_set_ss, 0);
-+
-+static IIO_CONST_ATTR(sampling_frequency_available, "4 1 0.25 0.125");
-+
-+static struct attribute *as6200_attrs[] =3D {
-+	&iio_dev_attr_thigh.dev_attr.attr,
-+	&iio_dev_attr_tlow.dev_attr.attr,
-+	&iio_dev_attr_thigh_reg.dev_attr.attr,
-+	&iio_dev_attr_tlow_reg.dev_attr.attr,
-+	&iio_dev_attr_al.dev_attr.attr,
-+	&iio_dev_attr_sm.dev_attr.attr,
-+	&iio_dev_attr_im.dev_attr.attr,
-+	&iio_dev_attr_pol.dev_attr.attr,
-+	&iio_dev_attr_cf.dev_attr.attr,
-+	&iio_dev_attr_ss.dev_attr.attr,
-+	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static struct attribute_group as6200_attr_group =3D {
-+	.attrs =3D as6200_attrs,
-+};
-+
-+static const struct iio_chan_spec as6200_channels[] =3D {
-+	{
-+		.type =3D IIO_TEMP,
-+		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
-+			BIT(IIO_CHAN_INFO_PROCESSED) |
-+			BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),
-+	}
-+};
-+
-+static const struct iio_info as6200_info =3D {
-+	.read_raw =3D as6200_read_raw,
-+	.write_raw =3D as6200_write_raw,
-+	.attrs =3D &as6200_attr_group,
-+	.driver_module =3D THIS_MODULE,
-+};
-+
-+static int as6200_i2c_probe(struct i2c_client *client,
-+	const struct i2c_device_id *id)
-+{
-+	struct iio_dev *indio_dev;
-+	struct as6200_data *data;
-+	int ret;
-+
-+	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data =3D iio_priv(indio_dev);
-+	i2c_set_clientdata(client, indio_dev);
-+	data->client =3D client;
-+
-+	data->regmap =3D devm_regmap_init_i2c(client, &as6200_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		ret =3D PTR_ERR(data->regmap);
-+		dev_err(&client->dev, "regmap init failed: %d\n", ret);
-+		return ret;
-+	}
-+
-+	indio_dev->dev.parent =3D &client->dev;
-+	indio_dev->name =3D id->name;
-+	indio_dev->modes =3D INDIO_DIRECT_MODE;
-+	indio_dev->info =3D &as6200_info;
-+
-+	indio_dev->channels =3D as6200_channels;
-+	indio_dev->num_channels =3D ARRAY_SIZE(as6200_channels);
-+
-+	ret =3D as6200_setup_irq(indio_dev, false);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret =3D iio_device_register(indio_dev);
-+	if (ret < 0)
-+		goto cleanup_irq;
-+
-+	return 0;
-+
-+cleanup_irq:
-+	free_irq(client->irq, &client->dev);
-+
-+	return ret;
-+}
-+
-+static int as6200_i2c_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+	free_irq(client->irq, &client->dev);
-+	return 0;
-+}
-+
-+static const struct of_device_id as6200_of_match[] =3D {
-+	{ .compatible =3D "ams,as6200", },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, as6200_of_match);
-+
-+
-+static const struct i2c_device_id as6200_i2c_id[] =3D {
-+	{ "as6200", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(i2c, as6200_id);
-+
-+static struct i2c_driver as6200_i2c_driver =3D {
-+	.driver =3D {
-+		.name =3D "as6200",
-+		.owner =3D THIS_MODULE,
-+		.of_match_table =3D as6200_of_match,
-+	},
-+	.probe =3D as6200_i2c_probe,
-+	.remove =3D as6200_i2c_remove,
-+	.id_table =3D as6200_i2c_id,
-+};
-+
-+module_i2c_driver(as6200_i2c_driver);
-+
-+MODULE_DESCRIPTION("ams AS6200 temperature sensor");
-+MODULE_AUTHOR("Florian Lobmaier <florian.lobmaier@ams.com>");
-+MODULE_AUTHOR("Elitsa Polizoeva <elitsa.polizoeva@ams.com>");
-+MODULE_LICENSE("GPL");
+I plan to add the PM functionality for when I have a platform to test
+properly, unfortunately PM is broken with the platform I'm using to
+test the patches. So yes, I guess is better add these function when
+the PM functionality is added.
 
------Original Message-----
-From: Peter Meerwald-Stadler [mailto:pmeerw@pmeerw.net]=20
-Sent: Freitag, 29. Juli 2016 08:42
-To: Florian Lobmaier <Florian.Lobmaier@ams.com>
-Cc: jic23@kernel.org; Elitsa Polizoeva <Elitsa.Polizoeva@ams.com>; knaack.h=
-@gmx.de; linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org; Lars-Pete=
-r Clausen <lars@metafoo.de>
-Subject: RE: [PATCH V2 1/1] iio: as6200: add AS6200 temperature sensor driv=
-er from ams AG
+>> +MODULE_DESCRIPTION("ChromeOS EC sensor hub core functions");
+>> +MODULE_LICENSE("GPL v2");
+>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>> new file mode 100644
+>> index 0000000..92ac4f8
+>> --- /dev/null
+>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>> @@ -0,0 +1,177 @@
+>> +/*
+>> + * ChromeOS EC sensor hub
+>> + *
+>> + * Copyright (C) 2016 Google, Inc
+>> + *
+>> + * This software is licensed under the terms of the GNU General Public
+>> + * License version 2, as published by the Free Software Foundation, and
+>> + * may be copied, distributed, and modified under those terms.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#ifndef __CROS_EC_SENSORS_CORE_H
+>> +#define __CROS_EC_SENSORS_CORE_H
+>> +
+>> +#include <linux/irqreturn.h>
+>> +
+>> +enum {
+>> +       CROS_EC_SENSOR_X,
+>> +       CROS_EC_SENSOR_Y,
+>> +       CROS_EC_SENSOR_Z,
+>> +       CROS_EC_SENSOR_MAX_AXIS,
+>> +};
+>> +
+>> +/* EC returns sensor values using signed 16 bit registers */
+>> +#define CROS_EC_SENSOR_BITS 16
+>> +
+>> +/*
+>> + * 4 16 bit channels are allowed.
+>> + * Good enough for current sensors, they use up to 3 16 bit vectors.
+>> + */
+>> +#define CROS_EC_SAMPLE_SIZE  (sizeof(s64) * 2)
+>> +
+>> +/* Minimum sampling period to use when device is suspending */
+>> +#define CROS_EC_MIN_SUSPEND_SAMPLING_FREQUENCY 1000  /* 1 second */
+>> +
+>> +/**
+>> + * struct cros_ec_sensors_core_state - state data for EC sensors IIO driver
+>> + * @ec:                                cros EC device structure
+>> + * @cmd_lock:                  lock used to prevent simultaneous access to the
+>> + *                             commands.
+>> + * @msg:                       cros EC command structure
+>> + * @param:                     motion sensor parameters structure
+>> + * @resp:                      motion sensor response structure
+>> + * @type:                      type of motion sensor
+>> + * @loc:                       location where the motion sensor is placed
+>> + * @calib:                     calibration parameters. Nothe that trigger
+>> + *                             captured data will always provide the calibrated
+>> + *                             data
+>> + * @samples:                   static array to hold data from a single capture.
+>> + *                             For each channel we need 2 bytes, except for
+>> + *                             the timestamp. The timestamp is always last and
+>> + *                             is always 8-byte aligned.
+>> + * @read_ec_sensors_data:      function used for accessing sensors values
+>> + * @cuur_sampl_freq:           current sampling period
+>> + */
+>> +struct cros_ec_sensors_core_state {
+>> +       struct cros_ec_device *ec;
+>> +       struct mutex cmd_lock;
+>> +
+>> +       struct cros_ec_command *msg;
+>> +       struct ec_params_motion_sense param;
+>> +       struct ec_response_motion_sense *resp;
+>> +
+>> +       enum motionsensor_type type;
+>> +       enum motionsensor_location loc;
+>> +
+>> +       struct calib_data {
+>> +               s16 offset;
+>> +       } calib[CROS_EC_SENSOR_MAX_AXIS];
+>
+> Wondering - why is this a structure and not just a simple array ? I
+> understand this comes from the code in chromeos, but still ...
+>
 
-Hello Florian,
-
-> As requested we can also provide a link to the datasheet of the chip:=20
-> http://ams.com/eng/Products/Environmental-Sensors/Temperature-Sensors
-> We also tried to cover all points (removed all debug msgs, simpler IRQ=20
-> pin config, etc.). Still all the show/store functions for each=20
-> configuration bit of the sensor are in. This was a request by our product=
-=20
-> management. If you suggest to take the show/store functions out=20
-> completely for the driver version in the kernel, we would also be fine=20
-> with that. We will give them out on request for customers then.
-
-looks a lot better; GPL copyright header missing and private API needs to=20
-be documented (or removed, but it really is just for debug?)
-
-more comments below
-
-regards, p.
-
-> Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-> Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
-> ---
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kc=
-onfig
-> index 21feaa4..d82e80f 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -3,6 +3,17 @@
->  #
->  menu "Temperature sensors"
-> =20
-> +config AS6200
-> +	tristate "ams AG AS6200 temperature sensor"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	  If you say yes here you get support for the AS6200 temperature
-> +	  sensor from ams AG.
-> +
-> +	  This driver can also be built as a module. If so, the module will
-> +	  be called as6200.
-> +
->  config MLX90614
->  	tristate "MLX90614 contact-less infrared sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/M=
-akefile
-> index 40710a8..c0c9a9a 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -2,5 +2,6 @@
->  # Makefile for industrial I/O temperature drivers
->  #
-> =20
-> +obj-$(CONFIG_AS6200) +=3D as6200.o
->  obj-$(CONFIG_MLX90614) +=3D mlx90614.o
->  obj-$(CONFIG_TMP006) +=3D tmp006.o
-> diff --git a/drivers/iio/temperature/as6200.c b/drivers/iio/temperature/a=
-s6200.c
-> new file mode 100644
-> index 0000000..289e950
-> --- /dev/null
-> +++ b/drivers/iio/temperature/as6200.c
-> @@ -0,0 +1,789 @@
-
-there needs to be a GPL copyright header, not sure if MODULE_LICENSE()=20
-below is enough
-
-I find it useful to state the I2C 7-bit chip address here as well
-
-> +#include <linux/module.h>
-> +#include <linux/device.h>
-> +#include <linux/init.h>
-> +#include <linux/slab.h>
-> +#include <linux/i2c.h>
-> +#include <linux/err.h>
-> +#include <linux/types.h>
-> +#include <linux/irq.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/gpio.h>
-> +#include <linux/of_gpio.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/events.h>
-> +#include <linux/regmap.h>
-> +
-> +static const int as6200_conv_rates[4][2] =3D { {4, 0}, {1, 0},
-> +					{0, 250000}, {0, 125000} };
-> +
-> +static const char * const as6200_consec_faults[] =3D { "1", "2", "4", "6=
-" };
-> +
-> +/* AS6200 registers */
-> +#define AS6200_REG_TVAL		0x00
-> +#define AS6200_REG_CONFIG	0x01
-> +#define AS6200_REG_TLOW		0x02
-> +#define AS6200_REG_THIGH	0x03
-> +#define AS6200_MAX_REGISTER	0x03
-> +
-> +#define AS6200_CONFIG_DW_MASK	BIT(4)
-> +#define AS6200_CONFIG_DW_SHIFT	4
-> +#define AS6200_CONFIG_AL_MASK	BIT(5)
-> +#define AS6200_CONFIG_AL_SHIFT	5
-> +#define AS6200_CONFIG_CR_MASK	GENMASK(7, 6)
-> +#define AS6200_CONFIG_CR_SHIFT	6
-> +#define AS6200_CONFIG_SM_MASK	BIT(8)
-> +#define AS6200_CONFIG_SM_SHIFT	8
-> +#define AS6200_CONFIG_IM_MASK	BIT(9)
-> +#define AS6200_CONFIG_IM_SHIFT	9
-> +#define AS6200_CONFIG_POL_MASK	BIT(10)
-> +#define AS6200_CONFIG_POL_SHIFT	10
-> +#define AS6200_CONFIG_CF_MASK	GENMASK(12, 11)
-> +#define AS6200_CONFIG_CF_SHIFT	11
-> +#define AS6200_CONFIG_SS_MASK	BIT(15)
-> +#define AS6200_CONFIG_SS_SHIFT	15
-> +
-> +struct as6200_data {
-> +	struct i2c_client *client;
-> +	struct regmap *regmap;
-> +};
-> +
-> +static const struct regmap_range as6200_readable_ranges[] =3D {
-> +	regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_THIGH),
-> +};
-> +
-> +static const struct regmap_access_table as6200_readable_table =3D {
-> +	.yes_ranges =3D as6200_readable_ranges,
-> +	.n_yes_ranges =3D ARRAY_SIZE(as6200_readable_ranges),
-> +};
-> +
-> +static const struct regmap_range as6200_writable_ranges[] =3D {
-> +	regmap_reg_range(AS6200_REG_CONFIG, AS6200_REG_THIGH),
-> +};
-> +
-> +static const struct regmap_access_table as6200_writable_table =3D {
-> +	.yes_ranges =3D as6200_writable_ranges,
-> +	.n_yes_ranges =3D ARRAY_SIZE(as6200_writable_ranges),
-> +};
-> +
-> +static const struct regmap_range as6200_volatile_ranges[] =3D {
-> +	regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_TVAL),
-> +};
-> +
-> +static const struct regmap_access_table as6200_volatile_table =3D {
-> +	.yes_ranges =3D as6200_volatile_ranges,
-> +	.n_yes_ranges =3D ARRAY_SIZE(as6200_volatile_ranges),
-> +};
-> +
-> +static const struct regmap_config as6200_regmap_config =3D {
-> +	.reg_bits =3D 8,
-> +	.val_bits =3D 16,
-> +	.max_register =3D AS6200_MAX_REGISTER,
-> +	.cache_type =3D REGCACHE_RBTREE,
-> +	.rd_table =3D &as6200_readable_table,
-> +	.wr_table =3D &as6200_writable_table,
-> +	.volatile_table =3D &as6200_volatile_table,
-> +};
-> +
-> +static int as6200_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *channel, int *val,
-> +			    int *val2, long mask)
-> +{
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	int cr;
-> +	s32 ret;
-> +	int err =3D 0;
-
-err initialization not needed
-
-> +	unsigned int reg_val =3D 0;
-
-reg_val initialization not needed
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_PROCESSED:
-
-I'd suggest the following to save some lines and simplity control flow
-
-if (channel->type !=3D IIO_TEMP)
-   return -EINVAL
-
-err =3D regmap_read(data->regmap, AS6200_REG_TVAL, ...
-return IIO_VAL_INT;
-
-(and similar below)
-
-> +		if (channel->type =3D=3D IIO_TEMP) {
-> +			err =3D regmap_read(data->regmap, AS6200_REG_TVAL,
-> +						&reg_val);
-> +			if (err < 0)
-> +				return err;
-> +			ret =3D reg_val;
-
-why this assignment? could do=20
-ret =3D sign_extend32(reg_val, 15) >> 4;=20
-
-> +			ret =3D sign_extend32(ret, 15) >> 4;
-> +			if (mask =3D=3D IIO_CHAN_INFO_PROCESSED)
-> +				*val =3D (ret * 625) / 10000;
-> +			else
-> +				*val =3D ret;
-> +		} else {
-> +			break;
-> +		}
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (channel->type =3D=3D IIO_TEMP) {
-> +			*val =3D 62;
-> +			*val2 =3D 500000;
-> +		} else {
-> +			break;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (channel->type =3D=3D IIO_TEMP) {
-> +			err =3D regmap_read(data->regmap, AS6200_REG_CONFIG,
-> +						&reg_val);
-> +			if (err < 0)
-> +				return err;
-> +			cr =3D (reg_val & AS6200_CONFIG_CR_MASK)
-> +				>> AS6200_CONFIG_CR_SHIFT;
-> +			*val =3D as6200_conv_rates[cr][0];
-> +			*val2 =3D as6200_conv_rates[cr][1];
-> +		} else {
-> +			break;
-> +		}
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		break;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static int as6200_write_raw(struct iio_dev *indio_dev,
-> +			struct iio_chan_spec const *chan,
-> +			int val,
-> +			int val2,
-> +			long mask)
-> +{
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	int i;
-> +	unsigned int config_val;
-> +	int err =3D 0;
-> +
-> +	if (mask !=3D IIO_CHAN_INFO_SAMP_FREQ)
-> +		return -EINVAL;
-> +
-> +	for (i =3D 0; i < ARRAY_SIZE(as6200_conv_rates); i++) {
-> +		if ((val =3D=3D as6200_conv_rates[i][0]) &&
-> +			(val2 =3D=3D as6200_conv_rates[i][1])) {
-
-parenthesis not needed
-
-> +			err =3D regmap_read(data->regmap,
-> +				AS6200_REG_CONFIG, &config_val);
-> +			if (err < 0)
-> +				return err;
-> +			config_val &=3D ~AS6200_CONFIG_CR_MASK;
-> +			config_val |=3D i << AS6200_CONFIG_CR_SHIFT;
-> +
-> +			return regmap_write(data->regmap, AS6200_REG_CONFIG,
-> +							config_val);
-> +		}
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static irqreturn_t as6200_alert_isr(int irq, void *dev_id)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_id;
-> +
-> +	iio_push_event(indio_dev,
-> +		IIO_UNMOD_EVENT_CODE(IIO_TEMP,
-> +					0,
-> +					IIO_EV_TYPE_THRESH,
-> +					IIO_EV_DIR_EITHER),
-> +					iio_get_time_ns());
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int as6200_setup_irq(struct iio_dev *indio_dev, bool set_gpio, u8=
- pol)
-> +{
-> +	int err;
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct device *dev =3D &data->client->dev;
-> +	int irq_trig;
-> +
-
-set_gpio not used?
-pol could be bool?
-
-> +	if (pol =3D=3D 1)
-> +		irq_trig =3D IRQF_TRIGGER_RISING;
-> +	else
-> +		irq_trig =3D IRQF_TRIGGER_FALLING;
-> +
-> +	err =3D request_irq(data->client->irq, as6200_alert_isr, irq_trig,
-> +			"as6200", dev);
-> +	if (err) {
-> +		dev_err(dev, "error requesting irq %d\n", err);
-> +		return err;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static ssize_t as6200_show_thigh(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-
-maybe common code could be split out
-
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0;
-> +	int err =3D 0;
-
-init not needed
-
-> +	int val;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	reg_val =3D reg_val >> 4;
-> +	val =3D (625 * reg_val) / 10000;
-> +	return sprintf(buf, "%d%cC\n", val, (unsigned char)(248));
-
-this tries to outputs the extended ASCII =B0 character (degree), this makes=
-=20
-little sense, most terminals are utf-8 and I'm not sure what the policy is=
-=20
-WRT non-ASCII
-
-> +}
-> +
-> +static ssize_t as6200_show_tlow(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +	int val;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	reg_val =3D reg_val >> 4;
-> +	val =3D (625 * reg_val) / 10000;
-> +	return sprintf(buf, "%d%cC\n", val, (unsigned char)(248));
-> +}
-> +
-> +static ssize_t as6200_show_thigh_reg(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", reg_val);
-> +}
-> +
-> +static ssize_t as6200_show_tlow_reg(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", reg_val);
-> +}
-> +
-> +static ssize_t as6200_show_config(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", reg_val);
-> +}
-> +
-> +static ssize_t as6200_show_al(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +	u16 pol =3D 0;
-
-init not needed
-
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	pol =3D (reg_val & AS6200_CONFIG_POL_MASK) >> AS6200_CONFIG_POL_SHIFT;
-> +	reg_val =3D (reg_val & AS6200_CONFIG_AL_MASK) >> AS6200_CONFIG_AL_SHIFT=
-;
-> +	if (pol =3D=3D 1) {
-> +		if (reg_val =3D=3D 0)
-> +			return sprintf(buf, "off\n");
-> +		else if (reg_val =3D=3D 1)
-> +			return sprintf(buf, "on\n");
-
-AL_MASK is a bit, I don't see how reg_val can end up different from 0/1
-
-maybe use a bool for pol?
+To be honest I don't know, was like this in the original code. I'm
+agree that it's more clear use just a simple array so I'll change
+this.
 
 
-
-> +		else
-> +			return sprintf(buf, "invalid\n");
-> +	} else if (pol =3D=3D 0) {
-> +		if (reg_val =3D=3D 0)
-> +			return sprintf(buf, "on\n");
-> +		else if (reg_val =3D=3D 1)
-> +			return sprintf(buf, "off\n");
-> +		else
-> +			return sprintf(buf, "invalid\n");
-> +	} else
-> +		return sprintf(buf, "invalid\n");
-> +}
-> +
-> +static ssize_t as6200_show_sm(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SM_MASK)
-> +					>> AS6200_CONFIG_SM_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_show_im(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_IM_MASK)
-> +					>> AS6200_CONFIG_IM_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_show_pol(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_POL_MASK)
-> +					 >> AS6200_CONFIG_POL_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_show_cf(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	reg_val =3D (reg_val & AS6200_CONFIG_CF_MASK) >> AS6200_CONFIG_CF_SHIFT=
-;
-
-could index into consec_faults array of strings to avoid the switch=20
-statement?
-
-> +	switch (reg_val) {
-> +	case 0:
-> +		return sprintf(buf, "1\n");
-> +	case 1:
-> +		return sprintf(buf, "2\n");
-> +	case 2:
-> +		return sprintf(buf, "4\n");
-> +	case 3:
-> +		return sprintf(buf, "6\n");
-> +	}
-> +	return sprintf(buf, "invalid\n");
-> +}
-> +
-> +static ssize_t as6200_show_ss(struct device *dev,
-> +	struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	unsigned int reg_val =3D 0x00;
-> +	int err =3D 0;
-> +
-> +	err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val);
-> +	if (err < 0)
-> +		return err;
-> +	return sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SS_MASK)
-> +					>> AS6200_CONFIG_SS_SHIFT);
-> +}
-> +
-> +static ssize_t as6200_set_thigh(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	int err =3D 0;
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	s16 reg_val;
-> +	int val;
-> +
-> +	err =3D kstrtoint(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		if ((val < -40) | (val > 150))
-
-should be ||
-
-> +			return count;
-> +		val =3D (val * 10000) / 625;
-> +		reg_val =3D val << 4;
-> +		err =3D regmap_write(data->regmap, AS6200_REG_THIGH, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-
-use dev_err if it is an error
-
-> +			"Converting value for THIGH failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_tlow(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err =3D 0;
-> +	s16 reg_val;
-> +	int val;
-> +
-> +	err =3D kstrtoint(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		if ((val < -40) | (val > 150)) {
-> +			dev_info(&client->dev,
-> +				"Value for THIGH is invalid min =3D -40%cC, max =3D 150=B0C, val =3D=
- %d=B0C",
-> +				(unsigned char)(248), val);
-
-this should return an error code I think, not count
-
-> +			return count;
-> +		}
-> +		val =3D (val * 10000) / 625;
-> +		reg_val =3D val << 4;
-> +		err =3D regmap_write(data->regmap, AS6200_REG_TLOW, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for TLOW failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_thigh_reg(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	int err =3D 0;
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	u16 reg_val;
-> +
-> +	err =3D kstrtou16(buf, 0, &reg_val);
-> +	if (err =3D=3D 0) {
-> +		err =3D regmap_write(data->regmap, AS6200_REG_THIGH, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for THIGH failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_tlow_reg(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err =3D 0;
-> +	u16 reg_val;
-> +
-> +	err =3D kstrtou16(buf, 0, &reg_val);
-> +	if (err =3D=3D 0) {
-> +		err =3D regmap_write(data->regmap, AS6200_REG_TLOW, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for TLOW failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_configreg(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err =3D 0;
-> +	u16 reg_val;
-
-what sense makes a driver abstraction if you allow to set any value=20
-imaginable anyways?
-
-try to reduce code by splitting out common functions
-
-> +
-> +	err =3D kstrtou16(buf, 0, &reg_val);
-> +	if (err =3D=3D 0) {
-> +		err =3D regmap_write(data->regmap, AS6200_REG_CONFIG, reg_val);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for CONFIG failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-
-drop newline
-
-> +
-> +static ssize_t as6200_set_sm(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err =3D kstrtou16(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_SM_MASK, val << AS6200_CONFIG_SM_SHIFT);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for SM field failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_im(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err =3D kstrtou16(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_IM_MASK, val << AS6200_CONFIG_IM_SHIFT);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for IM field failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_pol(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err =3D kstrtou16(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		free_irq(client->irq, dev);
-> +		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_POL_MASK,
-> +			val << AS6200_CONFIG_POL_SHIFT);
-> +		if (err < 0)
-
-so irq is invalid here, but remove() would free it again?
-
-> +			return err;
-> +		as6200_setup_irq(indio_dev, false, val);
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for POL field failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_cf(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err =3D kstrtou16(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		switch (val) {
-> +		case 1:
-> +		case 2:
-> +		case 4:
-> +		case 6:
-> +			err =3D regmap_update_bits(data->regmap,
-> +				AS6200_REG_CONFIG, AS6200_CONFIG_CF_MASK,
-> +				val << AS6200_CONFIG_CF_SHIFT);
-> +			if (err < 0)
-> +				return err;
-> +			break;
-> +		default:
-> +			dev_info(&client->dev,
-> +				"Value for CF field invalid, val =3D %hx", val);
-> +			return count;
-> +		}
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for CF field failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static ssize_t as6200_set_ss(struct device *dev,
-> +	struct device_attribute *attr, const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev =3D dev_to_iio_dev(dev);
-> +	struct as6200_data *data =3D iio_priv(indio_dev);
-> +	struct i2c_client *client =3D data->client;
-> +	int err;
-> +	u16 val;
-> +
-> +	err =3D kstrtou16(buf, 0, &val);
-> +	if (err =3D=3D 0) {
-> +		err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,
-> +			AS6200_CONFIG_SS_MASK, val << AS6200_CONFIG_SS_SHIFT);
-> +		if (err < 0)
-> +			return err;
-> +	} else
-> +		dev_info(&client->dev,
-> +			"Converting value for SS field failed, err =3D %hx",
-> +			err);
-> +	return count;
-> +}
-> +
-> +static IIO_DEVICE_ATTR(thigh, S_IWUSR | S_IRUGO, as6200_show_thigh,
-> +	as6200_set_thigh, 0);
-> +static IIO_DEVICE_ATTR(tlow, S_IWUSR | S_IRUGO, as6200_show_tlow,
-> +	as6200_set_tlow, 0);
-> +static IIO_DEVICE_ATTR(thigh_reg, S_IWUSR | S_IRUGO, as6200_show_thigh_r=
-eg,
-> +	as6200_set_thigh_reg, 0);
-> +static IIO_DEVICE_ATTR(tlow_reg, S_IWUSR | S_IRUGO, as6200_show_tlow_reg=
-,
-> +	as6200_set_tlow_reg, 0);
-> +static IIO_DEVICE_ATTR(config, S_IWUSR | S_IRUGO, as6200_show_config,
-> +	as6200_set_configreg, 0);
-> +static IIO_DEVICE_ATTR(al, S_IRUGO, as6200_show_al, NULL, 0);
-> +static IIO_DEVICE_ATTR(sm, S_IWUSR | S_IRUGO, as6200_show_sm,
-> +	as6200_set_sm, 0);
-> +static IIO_DEVICE_ATTR(im, S_IWUSR | S_IRUGO, as6200_show_im,
-> +	as6200_set_im, 0);
-> +static IIO_DEVICE_ATTR(pol, S_IWUSR | S_IRUGO, as6200_show_pol,
-> +	as6200_set_pol, 0);
-> +static IIO_DEVICE_ATTR(cf, S_IWUSR | S_IRUGO, as6200_show_cf,
-> +	as6200_set_cf, 0);
-> +static IIO_DEVICE_ATTR(ss, S_IWUSR | S_IRUGO, as6200_show_ss,
-> +	as6200_set_ss, 0);
-> +
-> +static IIO_CONST_ATTR(sampling_frequency_available, "4 1 0.25 0.125");
-> +
-> +static struct attribute *as6200_attrs[] =3D {
-> +	&iio_dev_attr_thigh.dev_attr.attr,
-> +	&iio_dev_attr_tlow.dev_attr.attr,
-> +	&iio_dev_attr_thigh_reg.dev_attr.attr,
-> +	&iio_dev_attr_tlow_reg.dev_attr.attr,
-> +	&iio_dev_attr_config.dev_attr.attr,
-> +	&iio_dev_attr_al.dev_attr.attr,
-> +	&iio_dev_attr_sm.dev_attr.attr,
-> +	&iio_dev_attr_im.dev_attr.attr,
-> +	&iio_dev_attr_pol.dev_attr.attr,
-> +	&iio_dev_attr_cf.dev_attr.attr,
-> +	&iio_dev_attr_ss.dev_attr.attr,
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static struct attribute_group as6200_attr_group =3D {
-> +	.attrs =3D as6200_attrs,
-> +};
-> +
-> +static const struct iio_chan_spec as6200_channels[] =3D {
-> +	{
-> +		.type =3D IIO_TEMP,
-> +		.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_PROCESSED) |
-> +			BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_type =3D BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	}
-> +};
-> +
-> +static const struct iio_info as6200_info =3D {
-> +	.read_raw =3D as6200_read_raw,
-> +	.write_raw =3D as6200_write_raw,
-> +	.attrs =3D &as6200_attr_group,
-> +	.driver_module =3D THIS_MODULE,
-> +};
-> +
-> +static int as6200_i2c_probe(struct i2c_client *client,
-> +	const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct as6200_data *data;
-> +	int ret;
-> +
-> +	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data =3D iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client =3D client;
-> +
-> +	data->regmap =3D devm_regmap_init_i2c(client, &as6200_regmap_config);
-> +	if (IS_ERR(data->regmap)) {
-> +		ret =3D PTR_ERR(data->regmap);
-> +		dev_err(&client->dev, "regmap init failed: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	indio_dev->dev.parent =3D &client->dev;
-> +	indio_dev->name =3D id->name;
-> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
-> +	indio_dev->info =3D &as6200_info;
-> +
-> +	indio_dev->channels =3D as6200_channels;
-> +	indio_dev->num_channels =3D ARRAY_SIZE(as6200_channels);
-> +
-> +	ret =3D as6200_setup_irq(indio_dev, true, 0);
-> +	if (ret < 0)
-
-if setup_irq() fails, irq has not been requested and no cleanup is needed
-
-> +		goto cleanup_irq;
-> +
-> +	return iio_device_register(indio_dev);
-
-however, if iio_device_register() fails, the irq needs to be freed
-
-> +
-> +cleanup_irq:
-> +	free_irq(client->irq, &client->dev);
-> +
-> +	return ret;
-> +}
-> +
-> +static int as6200_i2c_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	free_irq(client->irq, &client->dev);
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id as6200_of_match[] =3D {
-> +	{ .compatible =3D "ams,as6200", },
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(of, as6200_of_match);
-> +
-> +
-> +static const struct i2c_device_id as6200_i2c_id[] =3D {
-> +	{ "as6200", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, as6200_id);
-> +
-> +static struct i2c_driver as6200_i2c_driver =3D {
-> +	.driver =3D {
-> +		.name =3D "as6200",
-> +		.owner =3D THIS_MODULE,
-> +		.of_match_table =3D as6200_of_match,
-> +	},
-> +	.probe =3D as6200_i2c_probe,
-> +	.remove =3D as6200_i2c_remove,
-> +	.id_table =3D as6200_i2c_id,
-> +};
-> +
-> +module_i2c_driver(as6200_i2c_driver);
-> +
-> +MODULE_DESCRIPTION("ams AS6200 temperature sensor");
-> +MODULE_AUTHOR("Elitsa Polizoeva <elitsa.polizoeva@ams.com>");
-> +MODULE_AUTHOR("Florian Lobmaier <florian.lobmaier@ams.com>");
-> +MODULE_LICENSE("GPL");
->=20
-> -----Original Message-----
-> From: Peter Meerwald-Stadler [mailto:pmeerw@pmeerw.net]=20
-> Sent: Dienstag, 21. Juni 2016 15:12
-> To: Florian Lobmaier <Florian.Lobmaier@ams.com>
-> Cc: jic23@kernel.org; Elitsa Polizoeva <Elitsa.Polizoeva@ams.com>; knaack=
-.h@gmx.de; linux-kernel@vger.kernel.org; linux-iio@vger.kernel.org; Lars-Pe=
-ter Clausen <lars@metafoo.de>
-> Subject: RE: [PATCH V1 1/1] iio: as6200: add AS6200 temperature sensor dr=
-iver from ams AG
->=20
->=20
-> > Finally we got a Datasheet which we can release and share with you.=20
-> > Thanks for the feedback, we tried to integrate most of the feedback in=
-=20
-> > the driver. Some proprietary API is still present as all features of=20
-> > the chip should be reachable. If there are any features we could use=20
-> > from the iio framework we overlooked, please let us know.
->=20
-> can you provide a link to the datasheet? I almost missed the attached doc=
-ument...
->=20
-> more comments below, there still seems to be many issues; I stopped revie=
-wing at some point where I noticed that previous comments have not beed add=
-ressed
->=20
-> thanks, regards, p.
->=20
-> > Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-> > Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
-> > ---
-> > diff --git a/drivers/iio/temperature/Kconfig=20
-> > b/drivers/iio/temperature/Kconfig index 21feaa4..d82e80f 100644
-> > --- a/drivers/iio/temperature/Kconfig
-> > +++ b/drivers/iio/temperature/Kconfig
-> > @@ -3,6 +3,17 @@
-> >  #
-> >  menu "Temperature sensors"
-> > =20
-> > +config AS6200
-> > +tristate "ams AG AS6200 temperature sensor"
-> > +depends on I2C
-> > +select REGMAP_I2C
-> > +help
-> > +  If you say yes here you get support for the AS6200 temperature
-> > +  sensor from ams AG.
-> > +
-> > +  This driver can also be built as a module. If so, the module will =20
-> > + be called as6200.
-> > +
-> >  config MLX90614
-> >  tristate "MLX90614 contact-less infrared sensor"
-> >  depends on I2C
-> > diff --git a/drivers/iio/temperature/Makefile=20
-> > b/drivers/iio/temperature/Makefile
-> > index 40710a8..c0c9a9a 100644
-> > --- a/drivers/iio/temperature/Makefile
-> > +++ b/drivers/iio/temperature/Makefile
-> > @@ -2,5 +2,6 @@
-> >  # Makefile for industrial I/O temperature drivers  #
-> > =20
-> > +obj-$(CONFIG_AS6200) +=3D as6200.o
-> >  obj-$(CONFIG_MLX90614) +=3D mlx90614.o
-> >  obj-$(CONFIG_TMP006) +=3D tmp006.o
-> > diff --git a/drivers/iio/temperature/as6200.c=20
-> > b/drivers/iio/temperature/as6200.c
-> > new file mode 100644
-> > index 0000000..5e37227
-> > --- /dev/null
-> > +++ b/drivers/iio/temperature/as6200.c
-> > @@ -0,0 +1,808 @@
->=20
-> it is customary to put the GPL license statement here
->=20
-> > +#include <linux/module.h>
-> > +#include <linux/device.h>
-> > +#include <linux/init.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/i2c.h>
-> > +#include <linux/err.h>
-> > +#include <linux/types.h>
-> > +#include <linux/irq.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/gpio.h>
-> > +#include <linux/of_gpio.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/iio/sysfs.h>
-> > +#include <linux/iio/events.h>
-> > +#include <linux/regmap.h>
-> > +
-> > +/* to support regmap define in version 3.12 */
-> > +/* supported officially in kernel 3.13 and later */
->=20
-> please remove these comments, not relevant for mainline and not a proper =
-multi-line comment
->=20
-> > +#define regmap_reg_range(low, high) { .range_min =3D low, .range_max =
-=3D=20
-> > +high, }
->=20
-> as6200_ prefix needed
->=20
-> > +
-> > +static const int as6200_conv_rates[4][2] =3D { {4, 0}, {1, 0}, {0,=20
-> > +250000}, {0, 125000} };
-> > +
-> > +static const char * const as6200_consec_faults[] =3D { "1", "2", "4",=
-=20
-> > +"6" };
-> > +
-> > +/* AS6200 registers */
-> > +#define AS6200_REG_TVAL0x00
-> > +#define AS6200_REG_CONFIG0x01
-> > +#define AS6200_REG_TLOW0x02
-> > +#define AS6200_REG_THIGH0x03
-> > +#define AS6200_MAX_REGISTER0x03
-> > +
-> > +#define AS6200_CONFIG_DW_MASK0x0010
->=20
-> could use GENMASK() or BIT() macros to make it clearer which bits are rel=
-evant
->=20
-> > +#define AS6200_CONFIG_DW_SHIFT4
-> > +#define AS6200_CONFIG_AL_MASK0x0020
-> > +#define AS6200_CONFIG_AL_SHIFT5
-> > +#define AS6200_CONFIG_CR_MASK0x00C0
-> > +#define AS6200_CONFIG_CR_SHIFT6
-> > +#define AS6200_CONFIG_SM_MASK0x0100
-> > +#define AS6200_CONFIG_SM_SHIFT8
-> > +#define AS6200_CONFIG_IM_MASK0x0200
-> > +#define AS6200_CONFIG_IM_SHIFT9
-> > +#define AS6200_CONFIG_POL_MASK0x0400
-> > +#define AS6200_CONFIG_POL_SHIFT10
-> > +#define AS6200_CONFIG_CF_MASK0x1800
-> > +#define AS6200_CONFIG_CF_SHIFT11
-> > +#define AS6200_CONFIG_SS_MASK0x8000
-> > +#define AS6200_CONFIG_SS_SHIFT15
-> > +
-> > +struct as6200_data {
-> > +struct mutex update_lock;
->=20
-> mutex used anywhere?
->=20
-> > +struct i2c_client *client;
-> > +int irqn;
-> > +unsigned long irq_flags;
->=20
-> irq_flags not used
->=20
-> > +int gpio;
-> > +char valid; /* !=3D0 if following fields are valid */ struct regmap=20
-> > +*regmap; };
-> > +
->=20
-> drop newline
->=20
-> > +
-> > +static const struct regmap_range as6200_readable_ranges[] =3D {=20
-> > +regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_THIGH), };
->=20
-> add newline (here and below: one newline please)
->=20
-> > +static const struct regmap_access_table as6200_readable_table =3D {=20
-> > +.yes_ranges =3D as6200_readable_ranges, .n_yes_ranges =3D=20
-> > +ARRAY_SIZE(as6200_readable_ranges),
-> > +};
-> > +
-> > +static const struct regmap_range as6200_writable_ranges[] =3D {=20
-> > +regmap_reg_range(AS6200_REG_CONFIG, AS6200_REG_THIGH), }; static=20
-> > +const struct regmap_access_table as6200_writable_table =3D {=20
-> > +.yes_ranges =3D as6200_writable_ranges, .n_yes_ranges =3D=20
-> > +ARRAY_SIZE(as6200_writable_ranges),
-> > +};
-> > +
-> > +static const struct regmap_range as6200_volatile_ranges[] =3D {=20
-> > +regmap_reg_range(AS6200_REG_TVAL, AS6200_REG_TVAL), }; static const=20
-> > +struct regmap_access_table as6200_volatile_table =3D { .yes_ranges =3D=
-=20
-> > +as6200_volatile_ranges, .n_yes_ranges =3D=20
-> > +ARRAY_SIZE(as6200_volatile_ranges),
-> > +};
-> > +static const struct regmap_config as6200_regmap_config =3D { .reg_bits=
-=20
-> > +=3D 8, .val_bits =3D 16, .max_register =3D AS6200_MAX_REGISTER, .cache=
-_type=20
-> > +=3D REGCACHE_RBTREE, .rd_table =3D &as6200_readable_table, .wr_table =
-=3D=20
-> > +&as6200_writable_table, .volatile_table =3D &as6200_volatile_table, };
-> > +
-> > +
-> > +static int as6200_read_raw(struct iio_dev *indio_dev,
-> > +    struct iio_chan_spec const *channel, int *val,
-> > +    int *val2, long mask)
-> > +{
-> > +struct as6200_data *data =3D iio_priv(indio_dev); struct i2c_client=20
-> > +*client =3D data->client; int err =3D 0; unsigned int reg_val =3D 0; i=
-nt cr=20
-> > +=3D 0;
-> > +s32 ret =3D 0;
->=20
-> try to avoid unnecessary initialization
->=20
-> > +
-> > +switch (mask) {
-> > +case IIO_CHAN_INFO_RAW:
-> > +if (channel->type =3D=3D IIO_TEMP) {
-> > +err =3D regmap_read(data->regmap, AS6200_REG_TVAL, &reg_val);
->=20
-> error checking?
->=20
-> > +ret =3D reg_val;
-> > +*val =3D sign_extend32(ret, 15) >> 4;
-> > +} else {
-> > +break;
-> > +}
-> > +return IIO_VAL_INT;
-> > +case IIO_CHAN_INFO_PROCESSED:
-> > +if (channel->type =3D=3D IIO_TEMP) {
-> > +err =3D regmap_read(data->regmap, AS6200_REG_TVAL, &reg_val); ret =3D=
-=20
-> > +sign_extend32(ret, 15) >> 4; *val =3D (ret * 625) / 10000; } else {=20
-> > +break; } return IIO_VAL_INT;
->=20
-> I suggest to drop _INFO_PROCESSED as _RAW + _SCALE offers equivalent info=
-rmation; _PROCESSED is not in the chan_spec?!
->=20
-> otherwise, the code path are rather similar and could be combined
->=20
-> > +case IIO_CHAN_INFO_SCALE:
-> > +if (channel->type =3D=3D IIO_TEMP) {
-> > +*val =3D 62;
-> > +*val2 =3D 500000;
-> > +} else {
-> > +break;
-> > +}
-> > +return IIO_VAL_INT_PLUS_MICRO;
-> > +case IIO_CHAN_INFO_SAMP_FREQ:
-> > +if (channel->type =3D=3D IIO_TEMP) {
-> > +dev_info(&client->dev, "get CR from reg");
->=20
-> debug message, please remove
->=20
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); cr =3D=
-=20
-> > +(reg_val & AS6200_CONFIG_CR_MASK)
-> > +>> AS6200_CONFIG_CR_SHIFT;
-> > +*val =3D as6200_conv_rates[cr][0];
-> > +*val2 =3D as6200_conv_rates[cr][1];
-> > +} else {
-> > +break;
-> > +}
-> > +return IIO_VAL_INT_PLUS_MICRO;
-> > +default:
-> > +break;
-> > +}
-> > +return -EINVAL;
-> > +}
-> > +
-> > +static int as6200_write_raw(struct iio_dev *indio_dev, struct=20
-> > +iio_chan_spec const *chan, int val, int val2, long mask) { struct=20
-> > +as6200_data *data =3D iio_priv(indio_dev); int i; unsigned int=20
-> > +config_val;
-> > +
-> > +if (mask !=3D IIO_CHAN_INFO_SAMP_FREQ)
-> > +return -EINVAL;
-> > +
-> > +for (i =3D 0; i < ARRAY_SIZE(as6200_conv_rates); i++) { if ((val =3D=
-=3D=20
-> > +as6200_conv_rates[i][0]) &&
-> > +(val2 =3D=3D as6200_conv_rates[i][1])) {
-> > +regmap_read(data->regmap,
-> > +AS6200_REG_CONFIG, &config_val);
-> > +config_val &=3D ~AS6200_CONFIG_CR_MASK; config_val |=3D i <<=20
-> > +AS6200_CONFIG_CR_SHIFT;
-> > +
-> > +return regmap_write(data->regmap, AS6200_REG_CONFIG, config_val); } }=
-=20
-> > +return -EINVAL; }
-> > +
-> > +static irqreturn_t as6200_alert_isr(int irq, void *dev_id) { struct=20
-> > +iio_dev *indio_dev =3D dev_id;
-> > +
-> > +iio_push_event(indio_dev,
-> > +IIO_UNMOD_EVENT_CODE(IIO_TEMP,
-> > +0,
-> > +IIO_EV_TYPE_THRESH,
-> > +IIO_EV_DIR_EITHER),
-> > +iio_get_time_ns());
-> > +return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int as6200_setup_irq(struct iio_dev *indio_dev, bool set_gpio,=
-=20
-> > +u8 pol) { int err; struct as6200_data *data =3D iio_priv(indio_dev);=20
-> > +struct device *dev =3D &data->client->dev; int gpio =3D -1; int irq_nu=
-m;=20
-> > +int irq_trig;
-> > +
-> > +if (pol =3D=3D 1)
-> > +irq_trig =3D IRQF_TRIGGER_RISING;
-> > +else
-> > +irq_trig =3D IRQF_TRIGGER_FALLING;
-> > +
-> > +if (set_gpio) {
-> > +gpio =3D of_get_named_gpio_flags(dev->of_node,
-> > +"as6200,irq-gpio", 0, 0);
-> > +err =3D gpio_request(gpio, "as6200_irq"); if (err) { dev_err(dev,=20
-> > +"requesting gpio %d failed\n", gpio); return err; } err =3D=20
-> > +gpio_direction_input(gpio); if (err) { dev_err(dev, "gpio %d cannot=20
-> > +apply direction\n", gpio); return err; } }
-> > +data->gpio =3D gpio;
-> > +irq_num =3D gpio_to_irq(gpio);
-> > +err =3D request_irq(irq_num, as6200_alert_isr, irq_trig, "as6200",=20
-> > +dev); if (err) { dev_err(dev, "error requesting irq %d\n", err);=20
-> > +return err; }
-> > +data->irqn =3D irq_num;
-> > +
-> > +return 0;
-> > +}
-> > +
-> > +static ssize_t as6200_show_thigh(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0; int err =3D 0; int val;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val); reg_val=
-=20
-> > +=3D reg_val >> 4; val =3D (625 * reg_val) / 10000; return sprintf(buf,=
-=20
-> > +"%d%cC\n", val, (unsigned char)(248)); }
-> > +
-> > +static ssize_t as6200_show_tlow(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0; int val;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val); reg_val =
-=3D=20
-> > +reg_val >> 4; val =3D (625 * reg_val) / 10000; return sprintf(buf,=20
-> > +"%d%cC\n", val, (unsigned char)(248)); }
-> > +
-> > +static ssize_t as6200_show_thigh_reg(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_THIGH, &reg_val); return=
-=20
-> > +sprintf(buf, "%hX\n", reg_val); }
-> > +
-> > +static ssize_t as6200_show_tlow_reg(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_TLOW, &reg_val); return=20
-> > +sprintf(buf, "%hX\n", reg_val); }
-> > +
-> > +static ssize_t as6200_show_config(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return=
-=20
-> > +sprintf(buf, "%hX\n", reg_val); }
-> > +
-> > +static ssize_t as6200_show_al(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +u16 pol =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); pol =
-=3D=20
-> > +(reg_val & AS6200_CONFIG_POL_MASK) >> AS6200_CONFIG_POL_SHIFT;=20
-> > +reg_val =3D (reg_val & AS6200_CONFIG_AL_MASK) >>=20
-> > +AS6200_CONFIG_AL_SHIFT; if (pol =3D=3D 1) { if (reg_val =3D=3D 0) retu=
-rn=20
-> > +sprintf(buf, "off\n"); else if (reg_val =3D=3D 1) return sprintf(buf,=
-=20
-> > +"on\n"); else return sprintf(buf, "invalid\n"); } else if (pol =3D=3D =
-0)=20
-> > +{ if (reg_val =3D=3D 0) return sprintf(buf, "on\n"); else if (reg_val =
-=3D=3D=20
-> > +1) return sprintf(buf, "off\n"); else return sprintf(buf,=20
-> > +"invalid\n"); } else return sprintf(buf, "invalid\n"); }
-> > +
-> > +static ssize_t as6200_show_sm(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return=
-=20
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SM_MASK)
-> > +>> AS6200_CONFIG_SM_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_show_im(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return=
-=20
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_IM_MASK)
-> > +>> AS6200_CONFIG_IM_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_show_pol(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return=
-=20
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_POL_MASK)
-> > + >> AS6200_CONFIG_POL_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_show_cf(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); reg_va=
-l=20
-> > +=3D (reg_val & AS6200_CONFIG_CF_MASK) >> AS6200_CONFIG_CF_SHIFT; switc=
-h=20
-> > +(reg_val) { case 0:
-> > +return sprintf(buf, "1\n");
-> > +case 1:
-> > +return sprintf(buf, "2\n");
-> > +case 2:
-> > +return sprintf(buf, "4\n");
-> > +case 3:
-> > +return sprintf(buf, "6\n");
-> > +}
-> > +return sprintf(buf, "invalid\n");
-> > +}
-> > +
-> > +static ssize_t as6200_show_ss(struct device *dev, struct=20
-> > +device_attribute *attr, char *buf) { struct iio_dev *indio_dev =3D=20
-> > +dev_to_iio_dev(dev); struct as6200_data *data =3D iio_priv(indio_dev);=
-=20
-> > +unsigned int reg_val =3D 0x00; int err =3D 0;
-> > +
-> > +err =3D regmap_read(data->regmap, AS6200_REG_CONFIG, &reg_val); return=
-=20
-> > +sprintf(buf, "%hX\n", (reg_val & AS6200_CONFIG_SS_MASK)
-> > +>> AS6200_CONFIG_SS_SHIFT);
-> > +}
-> > +
-> > +static ssize_t as6200_set_thigh(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { int err =3D 0=
-;=20
-> > +struct iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data=
-=20
-> > +*data =3D iio_priv(indio_dev); struct i2c_client *client =3D=20
-> > +data->client;
-> > +s16 reg_val;
-> > +int val;
-> > +
-> > +err =3D kstrtoint(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +if ((val < -40) | (val > 150))
-> > +return count;
-> > +val =3D (val * 10000) / 625;
-> > +reg_val =3D val << 4;
-> > +err =3D regmap_write(data->regmap, AS6200_REG_THIGH, reg_val); } else=
-=20
-> > +dev_info(&client->dev, "Converting value for THIGH failed, err =3D=20
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_tlow(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err =3D 0;
-> > +s16 reg_val;
-> > +int val;
-> > +
-> > +err =3D kstrtoint(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +if ((val < -40) | (val > 150)) {
-> > +dev_info(&client->dev,
-> > +"Value for THIGH is invalid min =3D -40%cC, max =3D 150=B0C, val =3D %=
-d=B0C",=20
-> > +(unsigned char)(248), val); return count; } val =3D (val * 10000) /=20
-> > +625; reg_val =3D val << 4; err =3D regmap_write(data->regmap,=20
-> > +AS6200_REG_TLOW, reg_val); } else dev_info(&client->dev, "Converting=20
-> > +value for TLOW failed, err =3D %hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_thigh_reg(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { int err =3D 0=
-;=20
-> > +struct iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data=
-=20
-> > +*data =3D iio_priv(indio_dev); struct i2c_client *client =3D=20
-> > +data->client;
-> > +u16 reg_val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &reg_val);
-> > +if (err =3D=3D 0)
-> > +err =3D regmap_write(data->regmap, AS6200_REG_THIGH, reg_val); else=20
-> > +dev_info(&client->dev, "Converting value for THIGH failed, err =3D=20
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_tlow_reg(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err =3D 0;
-> > +u16 reg_val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &reg_val);
-> > +if (err =3D=3D 0)
-> > +err =3D regmap_write(data->regmap, AS6200_REG_TLOW, reg_val); else=20
-> > +dev_info(&client->dev, "Converting value for TLOW failed, err =3D %hx"=
-,=20
-> > +err); return count; }
-> > +
-> > +static ssize_t as6200_set_configreg(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err =3D 0;
-> > +u16 reg_val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &reg_val);
-> > +if (err =3D=3D 0)
-> > +err =3D regmap_write(data->regmap, AS6200_REG_CONFIG, reg_val); else=20
-> > +dev_info(&client->dev, "Converting value for CONFIG failed, err =3D=20
-> > +%hx", err); return count; }
-> > +
-> > +
-> > +static ssize_t as6200_set_sm(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err;
-> > +u16 val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,=20
-> > +AS6200_CONFIG_SM_MASK, val << AS6200_CONFIG_SM_SHIFT); } else=20
-> > +dev_info(&client->dev, "Converting value for SM field failed, err =3D=
-=20
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_im(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err;
-> > +u16 val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,=20
-> > +AS6200_CONFIG_IM_MASK, val << AS6200_CONFIG_IM_SHIFT); } else=20
-> > +dev_info(&client->dev, "Converting value for IM field failed, err =3D=
-=20
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_pol(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err; int irq_num =3D data->irqn;
-> > +u16 val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +free_irq(irq_num, dev);
-> > +err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,=20
-> > +AS6200_CONFIG_POL_MASK, val << AS6200_CONFIG_POL_SHIFT);=20
-> > +as6200_setup_irq(indio_dev, false, val); } else=20
-> > +dev_info(&client->dev, "Converting value for POL field failed, err =3D=
-=20
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_cf(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err;
-> > +u16 val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +switch (val) {
-> > +case 1:
-> > +case 2:
-> > +case 4:
-> > +case 6:
-> > +err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,=20
-> > +AS6200_CONFIG_CF_MASK, val << AS6200_CONFIG_CF_SHIFT); break;
-> > +default:
-> > +dev_info(&client->dev,
-> > +"Value for CF field invalid, val =3D %hx", val); return count; } } els=
-e=20
-> > +dev_info(&client->dev, "Converting value for CF field failed, err =3D=
-=20
-> > +%hx", err); return count; }
-> > +
-> > +static ssize_t as6200_set_ss(struct device *dev, struct=20
-> > +device_attribute *attr, const char *buf, size_t count) { struct=20
-> > +iio_dev *indio_dev =3D dev_to_iio_dev(dev); struct as6200_data *data =
-=3D=20
-> > +iio_priv(indio_dev); struct i2c_client *client =3D data->client; int=20
-> > +err;
-> > +u16 val;
-> > +
-> > +err =3D kstrtou16(buf, 0, &val);
-> > +if (err =3D=3D 0) {
-> > +err =3D regmap_update_bits(data->regmap, AS6200_REG_CONFIG,=20
-> > +AS6200_CONFIG_SS_MASK, val << AS6200_CONFIG_SS_SHIFT); } else=20
-> > +dev_info(&client->dev, "Converting value for SS field failed, err =3D=
-=20
-> > +%hx", err); return count; }
-> > +
-> > +static IIO_DEVICE_ATTR(thigh, S_IWUSR | S_IRUGO, as6200_show_thigh,=20
-> > +as6200_set_thigh, 0); static IIO_DEVICE_ATTR(tlow, S_IWUSR | S_IRUGO,=
-=20
-> > +as6200_show_tlow, as6200_set_tlow, 0); static=20
-> > +IIO_DEVICE_ATTR(thigh_reg, S_IWUSR | S_IRUGO, as6200_show_thigh_reg,=20
-> > +as6200_set_thigh_reg, 0); static IIO_DEVICE_ATTR(tlow_reg, S_IWUSR |=20
-> > +S_IRUGO, as6200_show_tlow_reg, as6200_set_tlow_reg, 0); static=20
-> > +IIO_DEVICE_ATTR(config, S_IWUSR | S_IRUGO, as6200_show_config,=20
-> > +as6200_set_configreg, 0); static IIO_DEVICE_ATTR(al, S_IRUGO,=20
-> > +as6200_show_al, NULL, 0); static IIO_DEVICE_ATTR(sm, S_IWUSR |=20
-> > +S_IRUGO, as6200_show_sm, as6200_set_sm, 0); static=20
-> > +IIO_DEVICE_ATTR(im, S_IWUSR | S_IRUGO, as6200_show_im, as6200_set_im,=
-=20
-> > +0); static IIO_DEVICE_ATTR(pol, S_IWUSR | S_IRUGO, as6200_show_pol,=20
-> > +as6200_set_pol, 0); static IIO_DEVICE_ATTR(cf, S_IWUSR | S_IRUGO,=20
-> > +as6200_show_cf, as6200_set_cf, 0); static IIO_DEVICE_ATTR(ss, S_IWUSR=
-=20
-> > +| S_IRUGO, as6200_show_ss, as6200_set_ss, 0);
-> > +
-> > +static IIO_CONST_ATTR(sampling_frequency_available, "4 1 0.25=20
-> > +0.125");
-> > +
-> > +static struct attribute *as6200_attrs[] =3D {=20
-> > +&iio_dev_attr_thigh.dev_attr.attr,
-> > +&iio_dev_attr_tlow.dev_attr.attr,
-> > +&iio_dev_attr_thigh_reg.dev_attr.attr,
-> > +&iio_dev_attr_tlow_reg.dev_attr.attr,
-> > +&iio_dev_attr_config.dev_attr.attr,
-> > +&iio_dev_attr_al.dev_attr.attr,
-> > +&iio_dev_attr_sm.dev_attr.attr,
-> > +&iio_dev_attr_im.dev_attr.attr,
-> > +&iio_dev_attr_pol.dev_attr.attr,
-> > +&iio_dev_attr_cf.dev_attr.attr,
-> > +&iio_dev_attr_ss.dev_attr.attr,
-> > +&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> > +NULL,
-> > +};
-> > +
-> > +static struct attribute_group as6200_attr_group =3D { .attrs =3D=20
-> > +as6200_attrs, };
-> > +
-> > +static const struct iio_chan_spec as6200_channels[] =3D { { .type =3D=
-=20
-> > +IIO_TEMP, .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |=20
-> > +BIT(IIO_CHAN_INFO_SCALE), .info_mask_shared_by_type =3D=20
-> > +BIT(IIO_CHAN_INFO_SAMP_FREQ), } };
-> > +
-> > +static const struct iio_info as6200_info =3D { .read_raw =3D=20
-> > +as6200_read_raw, .write_raw =3D as6200_write_raw, .attrs =3D=20
-> > +&as6200_attr_group, .driver_module =3D THIS_MODULE, };
-> > +
-> > +static int as6200_i2c_of_probe(struct i2c_client *i2c, struct=20
-> > +as6200_data *as6200) { struct device_node *np =3D i2c->dev.of_node;=20
-> > +struct irq_data *irq_data;
-> > +
-> > +if (!np) {
-> > +dev_err(&i2c->dev, "Device Tree not found\n"); return -EINVAL; }
-> > +
-> > +irq_data =3D irq_get_irq_data(i2c->irq);
->=20
-> what is this good for?
->=20
-> > +if (!irq_data) {
-> > +dev_err(&i2c->dev, "Invalid IRQ: %d\n", i2c->irq); return -EINVAL; }
-> > +
-> > +as6200->irq_flags =3D irqd_get_trigger_type(irq_data);
-> > +dev_dbg(&i2c->dev, "IRQ flags are 0x%08lx\n", as6200->irq_flags);=20
-> > +return 0; }
-> > +
-> > +static int as6200_i2c_probe(struct i2c_client *client, const struct=20
-> > +i2c_device_id *id) { struct iio_dev *indio_dev; struct as6200_data=20
-> > +*data; int ret;
-> > +
-> > +indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data)); if=20
-> > +(!indio_dev) return -ENOMEM;
-> > +
-> > +data =3D iio_priv(indio_dev);
-> > +i2c_set_clientdata(client, indio_dev);
-> > +data->client =3D client;
-> > +
-> > +ret =3D as6200_i2c_of_probe(client, data); if (ret < 0) return ret;
-> > +
-> > +data->regmap =3D devm_regmap_init_i2c(client, &as6200_regmap_config);
-> > +if (IS_ERR(data->regmap)) {
-> > +ret =3D PTR_ERR(data->regmap);
-> > +dev_err(&client->dev, "regmap init failed: %d\n", ret); return ret; }
-> > +
-> > +indio_dev->dev.parent =3D &client->dev; indio_dev->name =3D id->name;=
-=20
-> > +indio_dev->modes =3D INDIO_DIRECT_MODE; indio_dev->info =3D &as6200_in=
-fo;
-> > +
-> > +indio_dev->channels =3D as6200_channels; indio_dev->num_channels =3D=20
-> > +ARRAY_SIZE(as6200_channels);
-> > +
-> > +mutex_init(&data->update_lock);
-> > +ret =3D as6200_setup_irq(indio_dev, true, 0);
-> > +
->=20
-> no newline here
->=20
-> > +if (ret < 0)
-> > +goto cleanup_gpio_irq;
-> > +
-> > +return iio_device_register(indio_dev);
-> > +
-> > +cleanup_gpio_irq:
-> > +free_irq(data->irqn, &client->dev);
-> > +gpio_free(data->gpio);
-> > +
-> > +return ret;
-> > +}
-> > +
-> > +static int as6200_i2c_remove(struct i2c_client *client) { struct=20
-> > +iio_dev *indio_dev; struct as6200_data *data;
-> > +
-> > +indio_dev =3D i2c_get_clientdata(client); data =3D iio_priv(indio_dev)=
-;
->=20
-> most drivers do that via initialization, not assignment for conciseness
->=20
-> > +
-> > +iio_device_unregister(indio_dev);
-> > +free_irq(data->irqn, &client->dev);
-> > +gpio_free(data->gpio);
-> > +return 0;
-> > +}
-> > +
-> > +static const struct of_device_id as6200_of_match[] =3D { { .compatible=
-=20
-> > +=3D "ams,as6200", }, {}, }; MODULE_DEVICE_TABLE(of, as6200_of_match);
-> > +
-> > +
-> > +static const struct i2c_device_id as6200_i2c_id[] =3D { { "as6200", 0=
-=20
-> > +}, { } }; MODULE_DEVICE_TABLE(i2c, as6200_id);
-> > +
-> > +static struct i2c_driver as6200_i2c_driver =3D { .driver =3D { .name =
-=3D=20
-> > +"as6200", .owner =3D THIS_MODULE, .of_match_table =3D as6200_of_match,=
- },=20
-> > +.probe =3D as6200_i2c_probe, .remove =3D as6200_i2c_remove, .id_table =
-=3D=20
-> > +as6200_i2c_id, };
-> > +
-> > +module_i2c_driver(as6200_i2c_driver);
-> > +
-> > +MODULE_DESCRIPTION("ams AS6200 temperature sensor");=20
-> > +MODULE_AUTHOR("Elitsa Polizoeva <elitsa.polizoeva@ams.com>");=20
-> > +MODULE_AUTHOR("Florian Lobmaier <florian.lobmaier@ams.com>");=20
-> > +MODULE_LICENSE("GPL");
-> >=20
-> > -----Original Message-----
-> > From: Lars-Peter Clausen [mailto:lars@metafoo.de]
-> > Sent: Dienstag, 10. November 2015 12:52
-> > To: Florian Lobmaier <Florian.Lobmaier@ams.com>; jic23@kernel.org
-> > Cc: Elitsa Polizoeva <Elitsa.Polizoeva@ams.com>; knaack.h@gmx.de;=20
-> > pmeerw@pmeerw.net; linux-kernel@vger.kernel.org;=20
-> > linux-iio@vger.kernel.org
-> > Subject: Re: [PATCH V1 1/1] iio: as6200: add AS6200 temperature sensor=
-=20
-> > driver from ams AG
-> >=20
-> > On 11/10/2015 10:38 AM, Florian Lobmaier wrote:
-> > > The AS6200 is a compact temperature sensor chip with I2C interface.
-> > >=20
-> > > Add a driver to support the AS6200 temperature sensor.
-> > >=20
-> > > Signed-off-by: Elitsa Polizoeva <elitsa.polizoeva@ams.com>
-> > > Signed-off-by: Florian Lobmaier <florian.lobmaier@ams.com>
-> >=20
-> > Hi,
-> >=20
-> > Thanks for the patch.
-> >=20
-> > As Peter already said this patch introduces a lot of custom ABI, none o=
-f which is documented and most of which is probably not acceptable since. T=
-he whole idea of a framework is that you expose the capabilities of a devic=
-e through a standard device independent ABI, this allows to write generic a=
-pplications and libraries that can manage the devices through this ABI.
-> > This allows to leverage existing developments rather than starting from=
- scratch each time. If your device uses a complete custom ABI there is not =
-much point of having a driver in the first place since any application need=
-s device specific knowledge anyway to talk to the driver, in this case you =
-could just directly implement the I2C communication in the application.
-> >=20
-> > Please also consider reading and following Documentation/CodingStyle
-> >=20
-> > [...]
-> > > +static int as6200_read_reg(struct i2c_client *client,
-> > > +u8 reg_num, u16 *reg_val)
-> > > +{
-> > > +int err =3D 0;
-> > > +char tx_buf[1];
-> > > +char rx_buf[2];
-> > > +
-> > > +if ((reg_num >=3D 0) & (reg_num <=3D 3)) { tx_buf[0] =3D reg_num; er=
-r =3D=20
-> > > +i2c_master_send(client, tx_buf, 1); if (err =3D=3D 1) err =3D=20
-> > > +i2c_master_recv(client, rx_buf, 2);
-> >=20
-> > This is not thread safe. Another thread could interrupt between
-> > i2c_master_send() and i2c_master_recv() and cause undefined behavior.=20
-> > Use
-> > i2c_smbus_read_word_swapped() which makes sure that the I2C communicati=
-on happens atomically.
-> >=20
-> > > +if (err =3D=3D 2) {
-> > > +*reg_val =3D rx_buf[0];
-> > > +*reg_val =3D *reg_val << 8;
-> > > +*reg_val =3D *reg_val | rx_buf[1];
-> > > +}
-> > > +return err;
-> > > +} else {
-> > > +return -EINVAL;
-> > > +}
-> > > +}
-> > [...]
-> > > +
-> > > +static irqreturn_t alert_isr(int irq, void *dev_id) {=20
-> > > +dev_warn(dev_id, "Temperature outside of limits!");
-> >=20
-> > Please use IIO threshold events for this. Such out-of-band communicatio=
-n is really not acceptable.
-> >=20
-> > > +return IRQ_HANDLED;
-> > > +}
-> > > +
-> > > +static int setupIRQ(struct iio_dev *indio_dev, bool set_gpio, u8=20
-> > > +pol) { int err; struct as6200_data *data =3D iio_priv(indio_dev);=20
-> > > +struct device *dev =3D &data->client->dev; int gpio =3D -1; int=20
-> > > +irq_num; int irq_trig;
-> > > +
-> > > +if (pol =3D=3D 1)
-> > > +irq_trig =3D IRQF_TRIGGER_RISING;
-> > > +else
-> > > +irq_trig =3D IRQF_TRIGGER_FALLING;
-> > > +
-> > > +if (set_gpio) {
-> > > +gpio =3D of_get_named_gpio_flags(dev->of_node,
-> > > +"as6200,irq-gpio", 0, 0);
-> > > +err =3D gpio_request(gpio, "as6200_irq"); if (err) { dev_info(dev, "=
-%s:=20
-> > > +requesting gpio %d failed\n", as6200_id[0].name, gpio); return err;=
-=20
-> > > +} err =3D gpio_direction_input(gpio); if (err) { dev_info(dev, "%s:=
-=20
-> > > +gpio %d cannot apply direction\n", as6200_id[0].name, gpio); return=
-=20
-> > > +err; } } irq_num =3D gpio_to_irq(gpio); dev_info(dev, "%s:=20
-> > > +registering for IRQ %d\n", as6200_id[0].name, irq_num);
-> >=20
-> > Please drop all these dev_info(). That's just noise in the boot log, im=
-agine every driver did this you wouldn't be able to spot the critical infor=
-mation.
-> >=20
-> > > +err =3D request_irq(irq_num, alert_isr, irq_trig, as6200_id[0].name,=
-=20
-> > > +dev);
-> >=20
-> > Don't do all the GPIO translation. This pin is only used as a interrupt=
-, so specify it directly as an interrupt and use it that way as well.
-> >=20
-> > > +if (err) {
-> > > +dev_info(dev, "%s: error requesting irq %d\n", as6200_id[0].name,=20
-> > > +err);
-> >=20
-> > For errors use dev_err. Also the as6200_id[0].name is redundant since d=
-ev_info/dev_err already prefixes the message with the device name.
-> >=20
-> > > +return err;
-> > > +}
-> > > +dev_info(dev, "%s: registered for IRQ %d\n", as6200_id[0].name,=20
-> > > +irq_num); mutex_lock(&data->update_lock);
-> > > +data->irqn =3D irq_num;
-> > > +mutex_unlock(&data->update_lock);
-> >=20
-> > What exactly is protect by that mutex here?
-> >=20
-> > > +
-> > > +return 0;
-> > > +}
-> > > +
-> > [...]
-> > > +if (err =3D=3D 0) {
-> > > +if ((val < -40) | (val > 150)) {
-> > > +dev_info(&client->dev,
-> > > +"Value for THIGH is invalid min =3D -40%cC, max =3D 150=B0C, val =3D=
- %d=B0C",=20
-> > > +(unsigned char)(248), val);
-> >=20
-> > Please no out-of-band error reporting.
-> >=20
-> > > +return count;
-> > > +}
-> > > +val =3D (val * 10000) / 625;
-> > > +reg_val =3D val << 4;
-> > [...]
-> > > +static int as6200_probe(struct i2c_client *client, const struct=20
-> > > +i2c_device_id *id) { struct iio_dev *indio_dev =3D NULL; struct=20
-> > > +as6200_data *data =3D NULL;
-> >=20
-> > No need to initialize those here with dummy, this will just hide warnin=
-gs in case you forgot to initialize them with actual data.
-> >=20
-> > > +
-> > > +indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
-> > > +
-> > > +if (!indio_dev)
-> > > +return -ENOMEM;
-> > > +
-> > > +data =3D iio_priv(indio_dev);
-> > > +i2c_set_clientdata(client, indio_dev);
-> > > +data->client =3D client;
-> > > +
-> > > +indio_dev->dev.parent =3D &client->dev; indio_dev->name =3D=20
-> > > +dev_name(&client->dev);
-> >=20
-> > use id->name for this. dev_name() contains things like the I2C bus and =
-device address, etc. Whereas the IIO device name should describe the type o=
-f device.
-> >=20
-> > > +indio_dev->modes =3D INDIO_DIRECT_MODE; indio_dev->info =3D=20
-> > > +&as6200_info;
-> > > +
-> > > +indio_dev->channels =3D as6200_channels; indio_dev->num_channels =3D=
-=20
-> > > +ARRAY_SIZE(as6200_channels);
-> > > +
-> > > +initClientData(data);
-> > > +mutex_init(&data->update_lock);
-> > > +setupIRQ(indio_dev, true, 0);
-> > > +
-> > > +return iio_device_register(indio_dev);
-> >=20
-> > Error handling is missing here, you need to free the resources that wer=
-e acquired in case of an error.
-> >=20
-> > > +}
-> > > +
-> > [...]
-> >=20
-> >=20
-> >=20
->=20
->=20
-
---=20
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+>> +
+>> +       u8 samples[CROS_EC_SAMPLE_SIZE];
+>> +
+>> +       int (*read_ec_sensors_data)(struct iio_dev *indio_dev,
+>> +                                   unsigned long scan_mask, s16 *data);
+>> +
+>> +       int curr_sampl_freq;
+>> +};
+>> +
+>> +/**
+>> + * cros_ec_sensors_read_lpc() - retrieve data from EC shared memory
+>> + * @indio_dev: pointer to IIO device
+>> + * @scan_mask: bitmap of the sensor indices to scan
+>> + * @data:      location to store data
+>> + *
+>> + * This is the safe function for reading the EC data. It guarantees that the
+>> + * data sampled was not modified by the EC while being read.
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev, unsigned long scan_mask,
+>> +                            s16 *data);
+>> +
+>> +/**
+>> + * cros_ec_sensors_read_cmd() - retrieve data using the EC command protocol
+>> + * @indio_dev: pointer to IIO device
+>> + * @scan_mask: bitmap of the sensor indices to scan
+>> + * @data:      location to store data
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_sensors_read_cmd(struct iio_dev *indio_dev, unsigned long scan_mask,
+>> +                            s16 *data);
+>> +
+>> +/**
+>> + * cros_ec_sensors_core_init() - basic initialization of the core structure
+>> + * @pdev:              platform device created for the sensors
+>> + * @indio_dev:         iio device structure of the device
+>> + * @physical_device:   true if the device refers to a physical device
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_sensors_core_init(struct platform_device *pdev,
+>> +                             struct iio_dev *indio_dev, bool physical_device);
+>> +
+>> +/**
+>> + * cros_ec_sensors_capture() - the trigger handler function
+>> + * @irq:       the interrupt number.
+>> + * @p:         a pointer to the poll function.
+>> + *
+>> + * On a trigger event occurring, if the pollfunc is attached then this
+>> + * handler is called as a threaded interrupt (and hence may sleep). It
+>> + * is responsible for grabbing data from the device and pushing it into
+>> + * the associated buffer.
+>> + *
+>> + * Return: IRQ_HANDLED
+>> + */
+>> +irqreturn_t cros_ec_sensors_capture(int irq, void *p);
+>> +
+>> +/**
+>> + * cros_ec_motion_send_host_cmd() - send motion sense host command
+>> + * @st:                pointer to state information for device
+>> + * @opt_length:        optional length to reduce the response size, useful on the data
+>> + *             path. Otherwise, the maximal allowed response size is used
+>> + *
+>> + * When called, the sub-command is assumed to be set in param->cmd.
+>> + *
+>> + * Return: 0 on success, -errno on failure.
+>> + */
+>> +int cros_ec_motion_send_host_cmd(struct cros_ec_sensors_core_state *st,
+>> +                                u16 opt_length);
+>> +
+>> +/**
+>> + * cros_ec_sensors_core_read() - function to request a value from the sensor
+>> + * @st:                pointer to state information for device
+>> + * @chan:      channel specification structure table
+>> + * @val:       will contain one element making up the returned value
+>> + * @val2:      will contain another element making up the returned value
+>> + * @mask:      specifies which values to be requested
+>> + *
+>> + * Return:     the type of value returned by the device
+>> + */
+>> +int cros_ec_sensors_core_read(struct cros_ec_sensors_core_state *st,
+>> +                             struct iio_chan_spec const *chan,
+>> +                             int *val, int *val2, long mask);
+>> +
+>> +/**
+>> + * cros_ec_sensors_core_write() - function to write a value to the sensor
+>> + * @st:                pointer to state information for device
+>> + * @chan:      channel specification structure table
+>> + * @val:       first part of value to write
+>> + * @val2:      second part of value to write
+>> + * @mask:      specifies which values to write
+>> + *
+>> + * Return:     the type of value returned by the device
+>> + */
+>> +int cros_ec_sensors_core_write(struct cros_ec_sensors_core_state *st,
+>> +                              struct iio_chan_spec const *chan,
+>> +                              int val, int val2, long mask);
+>> +
+>> +/* List of extended channel specification for all sensors */
+>> +extern const struct iio_chan_spec_ext_info cros_ec_sensors_ext_info[];
+>> +
+>> +#endif  /* __CROS_EC_SENSORS_CORE_H */
+>> diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
+>> index d6539c1..7769ea6 100644
+>> --- a/include/linux/mfd/cros_ec.h
+>> +++ b/include/linux/mfd/cros_ec.h
+>> @@ -151,6 +151,15 @@ struct cros_ec_device {
+>>         int event_size;
+>>  };
+>>
+>> +/**
+>> + * struct cros_ec_sensor_platform - ChromeOS EC sensor platform information
+>> + *
+>> + * @sensor_num: Id of the sensor, as reported by the EC.
+>> + */
+>> +struct cros_ec_sensor_platform {
+>> +       u8 sensor_num;
+>> +};
+>> +
+>>  /* struct cros_ec_platform - ChromeOS EC platform information
+>>   *
+>>   * @ec_name: name of EC device (e.g. 'cros-ec', 'cros-pd', ...)
+>> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+>> index 76728ff..8826e0f 100644
+>> --- a/include/linux/mfd/cros_ec_commands.h
+>> +++ b/include/linux/mfd/cros_ec_commands.h
+>> @@ -1315,6 +1315,24 @@ enum motionsense_command {
+>>          */
+>>         MOTIONSENSE_CMD_KB_WAKE_ANGLE = 5,
+>>
+>> +       /*
+>> +        * Returns a single sensor data.
+>> +        */
+>> +       MOTIONSENSE_CMD_DATA = 6,
+>> +
+>> +       /*
+>> +        * Perform low level calibration.. On sensors that support it, ask to
+>> +        * do offset calibration.
+>> +        */
+>> +       MOTIONSENSE_CMD_PERFORM_CALIB = 10,
+>> +
+>> +       /*
+>> +        * Sensor Offset command is a setter/getter command for the offset used
+>> +        * for calibration. The offsets can be calculated by the host, or via
+>> +        * PERFORM_CALIB command.
+>> +        */
+>> +       MOTIONSENSE_CMD_SENSOR_OFFSET = 11,
+>> +
+>>         /* Number of motionsense sub-commands. */
+>>         MOTIONSENSE_NUM_CMDS
+>>  };
+>> @@ -1335,12 +1353,18 @@ enum motionsensor_id {
+>>  enum motionsensor_type {
+>>         MOTIONSENSE_TYPE_ACCEL = 0,
+>>         MOTIONSENSE_TYPE_GYRO = 1,
+>> +       MOTIONSENSE_TYPE_MAG = 2,
+>> +       MOTIONSENSE_TYPE_PROX = 3,
+>> +       MOTIONSENSE_TYPE_LIGHT = 4,
+>> +       MOTIONSENSE_TYPE_ACTIVITY = 5,
+>> +       MOTIONSENSE_TYPE_MAX
+>>  };
+>>
+>>  /* List of motion sensor locations. */
+>>  enum motionsensor_location {
+>>         MOTIONSENSE_LOC_BASE = 0,
+>>         MOTIONSENSE_LOC_LID = 1,
+>> +       MOTIONSENSE_LOC_MAX,
+>>  };
+>>
+>>  /* List of motion sensor chips. */
+>> @@ -1361,6 +1385,31 @@ enum motionsensor_chip {
+>>   */
+>>  #define EC_MOTION_SENSE_NO_VALUE -1
+>>
+>> +#define EC_MOTION_SENSE_INVALID_CALIB_TEMP 0x8000
+>> +
+>> +/* Set Calibration information */
+>> +#define MOTION_SENSE_SET_OFFSET        1
+>> +
+>> +struct ec_response_motion_sensor_data {
+>> +       /* Flags for each sensor. */
+>> +       uint8_t flags;
+>> +       /* Sensor number the data comes from */
+>> +       uint8_t sensor_num;
+>> +       /* Each sensor is up to 3-axis. */
+>> +       union {
+>> +               int16_t             data[3];
+>> +               struct {
+>> +                       uint16_t    rsvd;
+>> +                       uint32_t    timestamp;
+>> +               } __packed;
+>> +               struct {
+>> +                       uint8_t     activity; /* motionsensor_activity */
+>> +                       uint8_t     state;
+>> +                       int16_t     add_info[2];
+>> +               };
+>> +       };
+>> +} __packed;
+>> +
+>>  struct ec_params_motion_sense {
+>>         uint8_t cmd;
+>>         union {
+>> @@ -1378,9 +1427,37 @@ struct ec_params_motion_sense {
+>>                         int16_t data;
+>>                 } ec_rate, kb_wake_angle;
+>>
+>> +               /* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
+>> +               struct {
+>> +                       uint8_t sensor_num;
+>> +
+>> +                       /*
+>> +                        * bit 0: If set (MOTION_SENSE_SET_OFFSET), set
+>> +                        * the calibration information in the EC.
+>> +                        * If unset, just retrieve calibration information.
+>> +                        */
+>> +                       uint16_t flags;
+>> +
+>> +                       /*
+>> +                        * Temperature at calibration, in units of 0.01 C
+>> +                        * 0x8000: invalid / unknown.
+>> +                        * 0x0: 0C
+>> +                        * 0x7fff: +327.67C
+>> +                        */
+>> +                       int16_t temp;
+>> +
+>> +                       /*
+>> +                        * Offset for calibration.
+>> +                        * Unit:
+>> +                        * Accelerometer: 1/1024 g
+>> +                        * Gyro:          1/1024 deg/s
+>> +                        * Compass:       1/16 uT
+>> +                        */
+>> +                       int16_t offset[3];
+>> +               } __packed sensor_offset;
+>> +
+>>                 /* Used for MOTIONSENSE_CMD_INFO. */
+>>                 struct {
+>> -                       /* Should be element of enum motionsensor_id. */
+>>                         uint8_t sensor_num;
+>>                 } info;
+>>
+>> @@ -1410,11 +1487,14 @@ struct ec_response_motion_sense {
+>>                         /* Flags representing the motion sensor module. */
+>>                         uint8_t module_flags;
+>>
+>> -                       /* Flags for each sensor in enum motionsensor_id. */
+>> -                       uint8_t sensor_flags[EC_MOTION_SENSOR_COUNT];
+>> +                       /* Number of sensors managed directly by the EC. */
+>> +                       uint8_t sensor_count;
+>>
+>> -                       /* Array of all sensor data. Each sensor is 3-axis. */
+>> -                       int16_t data[3*EC_MOTION_SENSOR_COUNT];
+>> +                       /*
+>> +                        * Sensor data is truncated if response_max is too small
+>> +                        * for holding all the data.
+>> +                        */
+>> +                       struct ec_response_motion_sensor_data sensor[0];
+>>                 } dump;
+>>
+>>                 /* Used for MOTIONSENSE_CMD_INFO. */
+>> @@ -1429,6 +1509,9 @@ struct ec_response_motion_sense {
+>>                         uint8_t chip;
+>>                 } info;
+>>
+>> +               /* Used for MOTIONSENSE_CMD_DATA */
+>> +               struct ec_response_motion_sensor_data data;
+>> +
+>>                 /*
+>>                  * Used for MOTIONSENSE_CMD_EC_RATE, MOTIONSENSE_CMD_SENSOR_ODR,
+>>                  * MOTIONSENSE_CMD_SENSOR_RANGE, and
+>> @@ -1438,6 +1521,12 @@ struct ec_response_motion_sense {
+>>                         /* Current value of the parameter queried. */
+>>                         int32_t ret;
+>>                 } ec_rate, sensor_odr, sensor_range, kb_wake_angle;
+>> +
+>> +               /* Used for MOTIONSENSE_CMD_SENSOR_OFFSET */
+>> +               struct {
+>> +                       int16_t temp;
+>> +                       int16_t offset[3];
+>> +               } sensor_offset, perform_calib;
+>>         };
+>>  } __packed;
+>>
+>> --
+>> 2.1.0
+>>
