@@ -1,57 +1,91 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bh-25.webhostbox.net ([208.91.199.152]:45631 "EHLO
-	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751982AbcHLMke (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2016 08:40:34 -0400
-Subject: Re: [PATCH v3 2/9] hwmon: (core) New hwmon registration API
-To: Keerthy <a0393675@ti.com>, Jean Delvare <jdelvare@suse.com>
-References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
- <1469417552-9749-3-git-send-email-linux@roeck-us.net>
- <57AD85C4.5020409@ti.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Zhang Rui <rui.zhang@intel.com>,
-	Eduardo Valentin <edubezval@gmail.com>,
-	Punit Agrawal <punit.agrawal@arm.com>,
-	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-	"R, Vignesh" <vigneshr@ti.com>
-From: Guenter Roeck <linux@roeck-us.net>
-Message-ID: <ccf1b5d0-0dd0-cc9f-40e6-27f3bbae3bbf@roeck-us.net>
-Date: Fri, 12 Aug 2016 05:40:25 -0700
+Received: from mail-pa0-f50.google.com ([209.85.220.50]:33094 "EHLO
+	mail-pa0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1755591AbcHBCOk (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Aug 2016 22:14:40 -0400
+Received: by mail-pa0-f50.google.com with SMTP id b2so5477373pat.0
+        for <linux-iio@vger.kernel.org>; Mon, 01 Aug 2016 19:13:55 -0700 (PDT)
+Date: Mon, 1 Aug 2016 18:12:45 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Guenter Roeck <linux@roeck-us.net>,
+	Brian Norris <computersforpeace@gmail.com>
+Subject: iio: WARNING at kernel/sched/core.c:7630: do not call blocking ops
+ when !TASK_RUNNING
+Message-ID: <20160802011244.GA54171@google.com>
 MIME-Version: 1.0
-In-Reply-To: <57AD85C4.5020409@ti.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/12/2016 01:16 AM, Keerthy wrote:
-> On Monday 25 July 2016 09:02 AM, Guenter Roeck wrote:
->> Up to now, each hwmon driver has to implement its own sysfs attributes.
->> This requires a lot of template code, and distracts from the driver's core
->> function to read and write chip registers.
->>
->> To be able to reduce driver complexity, move sensor attribute handling
->> and thermal zone registration into hwmon core. By using the new API,
->> driver code and data size is typically reduced by 20-70%, depending
->> on driver complexity and the number of sysfs attributes supported.
->>
->> With this patch, the new API only supports thermal sensors. Support for
->> other sensor types will be added with subsequent patches.
->>
-> Hi Guenter,
->
-> Seems like this patch introduces a cycling dependency between
-> thermal_sys and hwmon:
->
-> DEPMOD 4.8.0-rc1-next-20160811-00001-g2f84cf7854e7
-> depmod: ERROR: Found 2 modules in dependency cycles!
-> depmod: ERROR: Cycle detected: hwmon -> thermal_sys -> hwmon
->
-> As reported by R, Vignesh <vigneshr@ti.com>.
->
+Hi all,
 
-Hmm ... interesting. Thanks for letting me know. I'll have to think about that.
+I'm seeing the following warnings when I read from an IIO char device,
+with CONFIG_DEBUG_ATOMIC_SLEEP=y. I'm testing a v4.4 kernel, but AFAICT,
+nothing too relevant has changed between that and v4.7:
 
-Guenter
+[   10.831289] do not call blocking ops when !TASK_RUNNING; state=1 set at [<ffffffc00026b610>] prepare_to_wait_event+0xb0/0x11c
+[   10.845531] ------------[ cut here ]------------
+[   10.850161] WARNING: at kernel/sched/core.c:7630
+[   10.858672] Modules linked in: cfg80211 nf_conntrack_ipv6 nf_defrag_ipv6 ip6table_filter ip6_tables asix usbnet mii joydev snd_seq_midi snd_seq_midi_event snd_rawmidi snd_seq snd_seq_device ppp_async ppp_generic slhc tun
+[   10.878459] 
+[   10.879953] CPU: 4 PID: 1844 Comm: BrowserBlocking Not tainted 4.4.14 #190
+[   10.886817] Hardware name: Google Kevin (DT)
+[   10.891085] task: ffffffc0e5a88000 ti: ffffffc0e2ce4000 task.ti: ffffffc0e2ce4000
+[   10.898574] PC is at __might_sleep+0x64/0x90
+[   10.902846] LR is at __might_sleep+0x64/0x90
+[   10.907115] pc : [<ffffffc00024ed44>] lr : [<ffffffc00024ed44>] pstate: 60000145
+[   10.914500] sp : ffffffc0e2ce7ba0
+[   10.917813] x29: ffffffc0e2ce7ba0 x28: 0000000000000001 
+[   10.923147] x27: 0000000000000000 x26: ffffffc0ed77b488 
+[   10.928476] x25: ffffffc001082000 x24: 0000000000000000 
+[   10.933809] x23: ffffffc0e2c49340 x22: 0000000000000000 
+[   10.939139] x21: 0000000000000269 x20: ffffffc000c1314e 
+[   10.944470] x19: ffffffc00114493e x18: 0000000000000000 
+[   10.949798] x17: 0000000000000000 x16: ffffffc000372094 
+[   10.955138] x15: 0000000000000000 x14: ffffffc0eacbb898 
+[   10.960474] x13: ffffffc000c14919 x12: 0000000000000000 
+[   10.965809] x11: 0000000000000000 x10: 0000000000001150 
+[   10.971141] x9 : ffffffc0e2ce7920 x8 : ffffffc0e5a891b0 
+[   10.976469] x7 : ffffffc000267934 x6 : ffffffc00024e7f0 
+[   10.981805] x5 : 0000000000000000 x4 : 0000000000000001 
+[   10.987138] x3 : 0000000000000000 x2 : cb88537fdc8ba60e 
+[   10.992479] x1 : cb88537fdc8ba60e x0 : 0000000000000071 
+[   10.997810] 
 
+...
+
+[   12.164333] ---[ end trace 45409966a9a76438 ]---
+[   12.168942] Call trace:
+[   12.171391] [<ffffffc00024ed44>] __might_sleep+0x64/0x90
+[   12.176699] [<ffffffc000954774>] mutex_lock_nested+0x50/0x3fc
+[   12.182440] [<ffffffc0007b9424>] iio_kfifo_buf_data_available+0x28/0x4c
+[   12.189043] [<ffffffc0007b76ac>] iio_buffer_ready+0x60/0xe0
+[   12.194608] [<ffffffc0007b7834>] iio_buffer_read_first_n_outer+0x108/0x1a8
+[   12.201474] [<ffffffc000370d48>] __vfs_read+0x58/0x114
+[   12.206606] [<ffffffc000371740>] vfs_read+0x94/0x118
+[   12.211564] [<ffffffc0003720f8>] SyS_read+0x64/0xb4
+[   12.216436] [<ffffffc000203cb4>] el0_svc_naked+0x24/0x28
+
+
+Have any of you seen this kind of issue before (perhaps most IIO users
+are not using CONFIG_DEBUG_ATOMIC_SLEEP)? If the WARNING is really
+correct, then this problem has really been around a while. It looks like
+we have a wait_event_interruptible() called, with this call chain in the
+'condition' path:
+
+  iio_buffer_ready()
+    -> iio_buffer_data_available() (i.e., iio_kfifo_buf_data_available())
+      -> mutex_lock()
+
+Calling mutex_lock() means we clobber the TASK_INTERRUPTIBLE state with
+TASK_RUNNING -- hence, the WARNING. Should this be using a spinlock
+instead? Or is there some way to refactor this to avoid calling these
+sleeping functions in the wait_event*() condition?
+
+Regards,
+Brian
