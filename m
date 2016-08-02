@@ -1,47 +1,48 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: iio: WARNING at kernel/sched/core.c:7630: do not call blocking
- ops when !TASK_RUNNING
-To: Brian Norris <briannorris@chromium.org>,
- Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20160802011244.GA54171@google.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
- Guenter Roeck <linux@roeck-us.net>,
- Brian Norris <computersforpeace@gmail.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
-Date: Tue, 2 Aug 2016 15:06:39 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f170.google.com ([209.85.161.170]:35191 "EHLO
+	mail-yw0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S966762AbcHBNmH (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Aug 2016 09:42:07 -0400
+Received: by mail-yw0-f170.google.com with SMTP id j12so197623017ywb.2
+        for <linux-iio@vger.kernel.org>; Tue, 02 Aug 2016 06:41:53 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20160802011244.GA54171@google.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CAKzfze8EDGjLCJGsNfefp5GkWS2=J6LYT=pZ5Agsvw3n9J_NeQ@mail.gmail.com>
+References: <CAKzfze8EDGjLCJGsNfefp5GkWS2=J6LYT=pZ5Agsvw3n9J_NeQ@mail.gmail.com>
+From: "Olivier C. Larocque" <olivier.c.larocque@gmail.com>
+Date: Tue, 2 Aug 2016 09:36:42 -0400
+Message-ID: <CA+xZK39P6Yb066cKNYhpNa5hCj477Q2cbFRS1EgHUPLmtKgZsg@mail.gmail.com>
+Subject: Re: ELCE IIO talk
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/02/2016 03:12 AM, Brian Norris wrote:
-> Hi all,
-> 
-> I'm seeing the following warnings when I read from an IIO char device,
-> with CONFIG_DEBUG_ATOMIC_SLEEP=y. I'm testing a v4.4 kernel, but AFAICT,
-> nothing too relevant has changed between that and v4.7:
-[...]
-> Have any of you seen this kind of issue before (perhaps most IIO users
-> are not using CONFIG_DEBUG_ATOMIC_SLEEP)? If the WARNING is really
-> correct, then this problem has really been around a while. It looks like
-> we have a wait_event_interruptible() called, with this call chain in the
-> 'condition' path:
-> 
->   iio_buffer_ready()
->     -> iio_buffer_data_available() (i.e., iio_kfifo_buf_data_available())
->       -> mutex_lock()
-> 
-> Calling mutex_lock() means we clobber the TASK_INTERRUPTIBLE state with
-> TASK_RUNNING -- hence, the WARNING. Should this be using a spinlock
-> instead? Or is there some way to refactor this to avoid calling these
-> sleeping functions in the wait_event*() condition?
+Hi Matt,
 
-Hi,
+This seems like a great talk, especially for new comers willing to
+start developing for the IIO subsystem. Do you know if any of the
+presentation material will be available afterwards? Or even better if
+it is filmed?
 
-Yes, this is an issue, thanks for pointing this out. It has been there for a
-while, my fault, sorry for that. We need a solution like pointed out in this
-article (https://lwn.net/Articles/628628/).
+Thanks,
 
-- Lars
+Olivier
+
+On Tue, Aug 2, 2016 at 2:33 AM, Matt Ranostay <mranostay@gmail.com> wrote:
+> Seems I am giving an IIO talk at ELCE... However I know what I
+> basically going to talk about. But anyone that has suggestions like me
+> know now... my demo is going to be a high speed thermocouple and a
+> chemical sensor
+>
+> https://openiotelceurope2016.sched.org/event/7rs1/industrial-io-and-you-nonsense-hacks-matt-ranostay-private-contractor
+>
+> Come troll me and/or buy me a beer (I like Gose and Weissbier style the best) :)
+>
+> Thanks,
+>
+> Matt
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
