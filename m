@@ -1,87 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f182.google.com ([209.85.216.182]:35936 "EHLO
-	mail-qt0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752711AbcHARD6 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 1 Aug 2016 13:03:58 -0400
-Received: by mail-qt0-f182.google.com with SMTP id 52so108167625qtq.3
-        for <linux-iio@vger.kernel.org>; Mon, 01 Aug 2016 10:03:17 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1470045278-18161-2-git-send-email-enric.balletbo@collabora.com>
-References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com> <1470045278-18161-2-git-send-email-enric.balletbo@collabora.com>
-From: Guenter Roeck <groeck@google.com>
-Date: Mon, 1 Aug 2016 09:57:28 -0700
-Message-ID: <CABXOdTf9HZLV1Wn==F8GV69ynnQPQXubcnzvkckY+QnW=wjNKQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/4] iio: cros_ec_sensors_core: Add common functions
- for the ChromeOS EC Sensor Hub.
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>,
-	linux-iio@vger.kernel.org, Olof Johansson <olof@lixom.net>,
-	Lee Jones <lee.jones@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Guenter Roeck <groeck@chromium.org>,
-	Gwendal Grignou <gwendal@chromium.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:35007 "EHLO
+	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751350AbcHBF1g (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 2 Aug 2016 01:27:36 -0400
+Received: by mail-pf0-f196.google.com with SMTP id h186so11671329pfg.2
+        for <linux-iio@vger.kernel.org>; Mon, 01 Aug 2016 22:27:36 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH] iio: chemical: ams-iaq-core: update driver name and DT match table
+Date: Mon,  1 Aug 2016 21:25:16 -0700
+Message-Id: <1470111916-9104-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 1, 2016 at 2:54 AM, Enric Balletbo i Serra
-<enric.balletbo@collabora.com> wrote:
-> Add the core functions to be able to support the sensors attached behind
-> the ChromeOS Embedded Controller and used by other IIO cros-ec sensor
-> drivers.
->
-> The cros_ec_sensor_core driver matches with current driver in ChromeOS
-> 4.4 tree, so it includes all the fixes at the moment. The support for
-> this driver was made by Gwendal Grignou. The original patch and all the
-> fixes has been squashed and rebased on top of mainline.
->
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Guenter Roeck <groeck@chromium.org>
-> [eballetbo: split, squash and rebase on top of mainline the patches
-> found in ChromeOS tree]
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+DT match name should be similar to the i2c device table entry, and also
+make the iio name match the driver name versus the i2c device location.
 
-Nitpick below. Please only address if you need to resend for a different reason.
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/chemical/ams-iaq-core.c | 8 +++++---
+ 1 file changed, 5 insertions(+), 3 deletions(-)
 
-Reviewed-by: Guenter Roeck <linux@roeck-us.net>
+diff --git a/drivers/iio/chemical/ams-iaq-core.c b/drivers/iio/chemical/ams-iaq-core.c
+index 41a8e6f2e31d..4c7d1f918d34 100644
+--- a/drivers/iio/chemical/ams-iaq-core.c
++++ b/drivers/iio/chemical/ams-iaq-core.c
+@@ -27,6 +27,8 @@
+ #define AMS_IAQCORE_VOC_RESISTANCE_IDX	1
+ #define AMS_IAQCORE_VOC_TVOC_IDX	2
+ 
++#define AMS_IAQCORE_DRVNAME		"ams-iaq-core"
++
+ struct ams_iaqcore_reading {
+ 	__be16 co2_ppm;
+ 	u8 status;
+@@ -164,7 +166,7 @@ static int ams_iaqcore_probe(struct i2c_client *client,
+ 
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->info = &ams_iaqcore_info,
+-	indio_dev->name = dev_name(&client->dev);
++	indio_dev->name = AMS_IAQCORE_DRVNAME;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	indio_dev->channels = ams_iaqcore_channels;
+@@ -180,14 +182,14 @@ static const struct i2c_device_id ams_iaqcore_id[] = {
+ MODULE_DEVICE_TABLE(i2c, ams_iaqcore_id);
+ 
+ static const struct of_device_id ams_iaqcore_dt_ids[] = {
+-	{ .compatible = "ams,iaq-core" },
++	{ .compatible = "ams,ams-iaq-core" },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(of, ams_iaqcore_dt_ids);
+ 
+ static struct i2c_driver ams_iaqcore_driver = {
+ 	.driver = {
+-		.name	= "ams-iaq-core",
++		.name = AMS_IAQCORE_DRVNAME,
+ 		.of_match_table = of_match_ptr(ams_iaqcore_dt_ids),
+ 	},
+ 	.probe = ams_iaqcore_probe,
+-- 
+2.7.4
 
-> ---
->
-[ ... ]
-
-> --- /dev/null
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -0,0 +1,450 @@
-> +/*
-> + * cros_ec_sensors_core - Common function for Chrome OS EC sensor driver.
-> + *
-> + * Copyright (C) 2016 Google, Inc
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/platform_device.h>
-
-Alphabetic oder.
