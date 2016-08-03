@@ -1,97 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f47.google.com ([209.85.214.47]:36546 "EHLO
-	mail-it0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1756824AbcHCPMf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 11:12:35 -0400
-Received: by mail-it0-f47.google.com with SMTP id f6so299290286ith.1
-        for <linux-iio@vger.kernel.org>; Wed, 03 Aug 2016 08:12:34 -0700 (PDT)
-Date: Wed, 3 Aug 2016 08:12:30 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: smbus read help needed
-Message-ID: <20160803151229.GA2591@d830.WORKGROUP>
-References: <20160803045710.GA3907@d830.WORKGROUP>
- <fd7d22c9-9541-cbfd-85b9-2eec5fb1ddbf@metafoo.de>
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH] iio: chemical: ams-iaq-core: update driver name and DT
+ match table
+To: Matt Ranostay <mranostay@gmail.com>
+References: <1470111916-9104-1-git-send-email-mranostay@gmail.com>
+ <9e983e54-9de4-8fe8-477f-9dd0263b0f32@metafoo.de>
+ <CAKzfze8vkmGwEX5Us4+K83pJp8vocgZfGVXDmivn+HYfe6hcrg@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <73ab649b-e28f-6783-b4e7-aeb07c839859@metafoo.de>
+Date: Wed, 3 Aug 2016 22:08:51 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <fd7d22c9-9541-cbfd-85b9-2eec5fb1ddbf@metafoo.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CAKzfze8vkmGwEX5Us4+K83pJp8vocgZfGVXDmivn+HYfe6hcrg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Aug 03, 2016 at 02:13:17PM +0200, Lars-Peter Clausen wrote:
-> On 08/03/2016 06:57 AM, Alison Schofield wrote:
-> > I'm blocked on this smbus read problem. 
-> > 
-> > hdc100x triggered buffer review feedback pointed out that I cannot rely
-> > on i2c_master_recv() since this driver currently only requires smbus funcs. 
-> > That led me to create an alternative path using smbus byte reads like the
-> > driver was doing in direct mode.
-> > 
-> > I found the reads don't work.  hdc100x does not expect a stop condition
-> > after sending the first byte which is what smbus_read_byte gives you. So,
-> > when you do the second read, you are getting the first byte again.  Net
-> > effect is that of the 14 bits used for the measurement, the 8 most
-> > significant bits are correct, the lower 6 are not.
-> > 
-> > hdc100x only wants this:
-> > 	S Addr Rd [A] [Data] A [Data] A ... A [Data] NA P 
-> > 
-> > I tried by testing, and by inspection, each flavor of smbus read and none 
-> > match the pattern that hdc100x wants.  (read_byte, read_word_data, 
-> > read_word_swapped, read_block_data, read_i2c_block_data all fail) 
-> > The read_byte is actually the only smbus read command the sensor accepts.
-> > 
-> > Texas Instruments publishes this doc explaining its SMBus (in)compatibility.
-> > http://www.ti.com/lit/an/sloa132/sloa132.pdf
-> > I did get one lead out of it.  It suggests using the write block protocol,
-> > with the READ bit set. That does look like it could work.  I tried using
-> > i2c_smbus_xfer() directly, thinking maybe I could fool it, but that doesn't
-> > get me down to the low level of control I think I would need to pull this off. 
-> > 
-> > I see flags for i2c_msg that might be helpful...if they worked at the
-> > smbus level: 
-> > I2C_M_REV_DIR_ADDR reverses r/w bit 
-> > I2C_M_NOSTART strips off that beginning segment we don't want
-> > 
-> > If we could use a NOSTOP flag on the read byte command then i could
-> > go back and get the next byte.  I don't see such a flag.  I don't see
-> > any flags, other than for PEC, on smbus.
-> > 
-> > Also, saw an MDELAY flag that seemed interesting, as if I could program
-> > the delay between starting and reading the measurement, so it could all
-> > be done in one block data command. Again, not smbus.
-> > 
-> > I guess these ideas are all breaking the idea of being smbus compliant
-> > anyway. 
-> > 
-> > Is this fixable with smbus? 
-> > If not, how do you 'graciously' change a drivers requirements?
+On 08/03/2016 10:02 PM, Matt Ranostay wrote:
+> On Wed, Aug 3, 2016 at 5:13 AM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 08/02/2016 06:25 AM, Matt Ranostay wrote:
+>>> DT match name should be similar to the i2c device table entry.
+>>
+>> Why?
 > 
+> To be consistent mostly.   But I have noticed  compatible =
+> "ams,iaq-core" doesn't actually match...
+
+Well, consistent with what? The normal pattern for devicetree compatible
+strings is vendor,partname. So that would suggest that ams,iaq-core is the
+preferred solution if it is supposed to be consistent. Btw. there seem to be
+no binding documents for this part.
+
+> Does anyone here know if i2c-core just checks the id_table, and not
+> of_match_table as well?
 > 
-> I wouldn't worry about this too much. If the part is not SMBUS compliant
-> there is no need to try to access it only with SMBUS methods. A system
-> designer will most likely not connect the part to a SMBUS-only controller.
-> 
-> What's actually quite important though at a software level is that you do
-> your write+read in a single I2C transaction and not split it over multiple
-> calls. Otherwise a device on the same I2C bus could be accessed in between
-> and that would really break things.
-> 
-> If you want to address Jonathan's comments about backwards compatibility,
-> instead of returning with an error simply disable buffer mode if the host
-> controller only has SMBUS capabilities.
->
+> Anyone have thoughts on this but I dig into this too deep?
 
-Thank Lars.
-I need to fix the existing direct mode reads first.  That is the part
-that could break existing userspace. 
-
-I like what you say about a system designer not connecting the part to a 
-SMBUS-only controller, but I'm guessing this fix is going to break
-the user who got lucky with SMBUS-only.
-
-I'll work up a patch for fixing the existing reads (with i2c cmds) and
-get it out for comments.
-
-alisons
+It uses of_match_table when it is set. See
+http://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/i2c/i2c-core.c#n609
