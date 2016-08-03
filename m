@@ -1,69 +1,66 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: iio: WARNING at kernel/sched/core.c:7630: do not call blocking
- ops when !TASK_RUNNING
-To: Brian Norris <briannorris@chromium.org>
-References: <20160802011244.GA54171@google.com>
- <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
- <20160802165732.GA3310@localhost>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
- Brian Norris <computersforpeace@gmail.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <9a6a7f54-0343-db74-57a2-9f747ae659cc@metafoo.de>
-Date: Tue, 2 Aug 2016 19:04:07 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yw0-f182.google.com ([209.85.161.182]:35824 "EHLO
+	mail-yw0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1750871AbcHCFFE (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 01:05:04 -0400
+Received: by mail-yw0-f182.google.com with SMTP id j12so217543963ywb.2
+        for <linux-iio@vger.kernel.org>; Tue, 02 Aug 2016 22:04:56 -0700 (PDT)
+Date: Tue, 2 Aug 2016 21:57:18 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: linux-iio@vger.kernel.org
+Subject: smbus read help needed
+Message-ID: <20160803045710.GA3907@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <20160802165732.GA3310@localhost>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/02/2016 06:57 PM, Brian Norris wrote:
-> Hi Lars,
-> 
-> On Tue, Aug 02, 2016 at 03:06:39PM +0200, Lars-Peter Clausen wrote:
->> On 08/02/2016 03:12 AM, Brian Norris wrote:
->>> I'm seeing the following warnings when I read from an IIO char device,
->>> with CONFIG_DEBUG_ATOMIC_SLEEP=y. I'm testing a v4.4 kernel, but AFAICT,
->>> nothing too relevant has changed between that and v4.7:
->> [...]
->>> Have any of you seen this kind of issue before (perhaps most IIO users
->>> are not using CONFIG_DEBUG_ATOMIC_SLEEP)? If the WARNING is really
->>> correct, then this problem has really been around a while. It looks like
->>> we have a wait_event_interruptible() called, with this call chain in the
->>> 'condition' path:
->>>
->>>   iio_buffer_ready()
->>>     -> iio_buffer_data_available() (i.e., iio_kfifo_buf_data_available())
->>>       -> mutex_lock()
->>>
->>> Calling mutex_lock() means we clobber the TASK_INTERRUPTIBLE state with
->>> TASK_RUNNING -- hence, the WARNING. Should this be using a spinlock
->>> instead? Or is there some way to refactor this to avoid calling these
->>> sleeping functions in the wait_event*() condition?
->>
->> Hi,
->>
->> Yes, this is an issue, thanks for pointing this out. It has been there for a
->> while, my fault, sorry for that. We need a solution like pointed out in this
->> article (https://lwn.net/Articles/628628/).
-> 
-> Ah, thanks for the pointer. I thought this problem seemed familiar, but
-> I couldn't find a canonical solution. The wait_woken() solution looks
-> like a good starting point, although it's definitely got more
-> boilerplate...
+I'm blocked on this smbus read problem. 
 
-Yes, the boilerplate is a bit of shame. spinlock might still be an option,
-but would certainly complicate things in case where we have hardware buffers
-and need to ask the hardware whether data is available rather than just
-checking a flag in software. And iio_buffer_flush_hwfifo() also needs to
-talk to the hardware and can block.
+hdc100x triggered buffer review feedback pointed out that I cannot rely
+on i2c_master_recv() since this driver currently only requires smbus funcs. 
+That led me to create an alternative path using smbus byte reads like the
+driver was doing in direct mode.
 
-> It also requires a 'timeout'; I guess we'd want
-> MAX_SCHEDULE_TIMEOUT for this case?
+I found the reads don't work.  hdc100x does not expect a stop condition
+after sending the first byte which is what smbus_read_byte gives you. So,
+when you do the second read, you are getting the first byte again.  Net
+effect is that of the 14 bits used for the measurement, the 8 most
+significant bits are correct, the lower 6 are not.
 
-Yes. MAX_SCHEDULE_TIMEOUT is a special case and means no timeout.
+hdc100x only wants this:
+	S Addr Rd [A] [Data] A [Data] A ... A [Data] NA P 
 
-> 
-> Do you want to cook a patch, or should I?
+I tried by testing, and by inspection, each flavor of smbus read and none 
+match the pattern that hdc100x wants.  (read_byte, read_word_data, 
+read_word_swapped, read_block_data, read_i2c_block_data all fail) 
+The read_byte is actually the only smbus read command the sensor accepts.
 
-Go ahead.
+Texas Instruments publishes this doc explaining its SMBus (in)compatibility.
+http://www.ti.com/lit/an/sloa132/sloa132.pdf
+I did get one lead out of it.  It suggests using the write block protocol,
+with the READ bit set. That does look like it could work.  I tried using
+i2c_smbus_xfer() directly, thinking maybe I could fool it, but that doesn't
+get me down to the low level of control I think I would need to pull this off. 
+
+I see flags for i2c_msg that might be helpful...if they worked at the
+smbus level: 
+I2C_M_REV_DIR_ADDR reverses r/w bit 
+I2C_M_NOSTART strips off that beginning segment we don't want
+
+If we could use a NOSTOP flag on the read byte command then i could
+go back and get the next byte.  I don't see such a flag.  I don't see
+any flags, other than for PEC, on smbus.
+
+Also, saw an MDELAY flag that seemed interesting, as if I could program
+the delay between starting and reading the measurement, so it could all
+be done in one block data command. Again, not smbus.
+
+I guess these ideas are all breaking the idea of being smbus compliant
+anyway. 
+
+Is this fixable with smbus? 
+If not, how do you 'graciously' change a drivers requirements?
+
+Thanks,
+alisons  
