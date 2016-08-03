@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f193.google.com ([209.85.220.193]:35828 "EHLO
-	mail-qk0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1758240AbcHCTeJ convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 15:34:09 -0400
+Received: from mail-qt0-f194.google.com ([209.85.216.194]:33107 "EHLO
+	mail-qt0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752810AbcHCTpX convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 15:45:23 -0400
 MIME-Version: 1.0
-In-Reply-To: <d1c121ee-a467-1642-ca75-a9fae90bbfc1@denx.de>
+In-Reply-To: <fe810e2f-f721-55af-e5f2-b13569f7a4e4@denx.de>
 References: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
  <370a02584386944b465deff5ccc48c8919b23dba.1466769907.git.ksenija.stanojevic@gmail.com>
  <20160628162834.GF29166@dell> <CAL7P5j+NYvUJfu==xQvncyCiw8JHtizOdfyeY1HL6Lb=-wsrWQ@mail.gmail.com>
@@ -13,10 +13,12 @@ References: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
  <CAL7P5jJEYUQihe4pynerRUNgVAQzymYbUZEO9BrVdb+-syok-Q@mail.gmail.com>
  <CAL7P5jKG=b0P9T10RX9p0EXR7epTOfKqbMT6nYZkDhnqiAz_jA@mail.gmail.com>
  <CAOMZO5BSUice=2Zioeu9Zrfi5ixhszO9hF1vmFW5FiPKWqkb9w@mail.gmail.com>
- <CAL7P5j+1vOXz8a7zrTN+KDRAJJWr0vPC25o4LcXutagO9wVRNA@mail.gmail.com> <d1c121ee-a467-1642-ca75-a9fae90bbfc1@denx.de>
+ <CAL7P5j+1vOXz8a7zrTN+KDRAJJWr0vPC25o4LcXutagO9wVRNA@mail.gmail.com>
+ <d1c121ee-a467-1642-ca75-a9fae90bbfc1@denx.de> <CAL7P5jJxpPUwR+Kf4-9oZ+jbtr_pgFwpAzxtKX-5ojerTL5Mfw@mail.gmail.com>
+ <fe810e2f-f721-55af-e5f2-b13569f7a4e4@denx.de>
 From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-Date: Wed, 3 Aug 2016 21:34:06 +0200
-Message-ID: <CAL7P5jJxpPUwR+Kf4-9oZ+jbtr_pgFwpAzxtKX-5ojerTL5Mfw@mail.gmail.com>
+Date: Wed, 3 Aug 2016 21:45:08 +0200
+Message-ID: <CAL7P5jKpW0GOa+1uazrQfULAQ_KBTYBB7ztbj-ADo=de=xT2vw@mail.gmail.com>
 Subject: Re: [PATCH v3 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
 To: Marek Vasut <marex@denx.de>
 Cc: Fabio Estevam <festevam@gmail.com>,
@@ -34,36 +36,44 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Aug 3, 2016 at 9:13 PM, Marek Vasut <marex@denx.de> wrote:
-> On 08/03/2016 06:45 PM, Ksenija Stanojević wrote:
->> Hi Fabio,
->
-> Hi,
->
->> On Wed, Aug 3, 2016 at 6:35 PM, Fabio Estevam <festevam@gmail.com> wrote:
->>> Hi Ksenija,
+On Wed, Aug 3, 2016 at 9:39 PM, Marek Vasut <marex@denx.de> wrote:
+> On 08/03/2016 09:34 PM, Ksenija Stanojević wrote:
+>> On Wed, Aug 3, 2016 at 9:13 PM, Marek Vasut <marex@denx.de> wrote:
+>>> On 08/03/2016 06:45 PM, Ksenija Stanojević wrote:
+>>>> Hi Fabio,
 >>>
->>> On Wed, Aug 3, 2016 at 1:32 PM, Ksenija Stanojević
->>> <ksenija.stanojevic@gmail.com> wrote:
+>>> Hi,
 >>>
->>>> Can someone with imx23 board send me /proc/interrupts log, I
->>>> need irq numbers...
->>>
->>> Can't you get them from the MX23 Reference Manual (Table 5-1. i.MX23
->>> Interrupt Sources)?
+>>>> On Wed, Aug 3, 2016 at 6:35 PM, Fabio Estevam <festevam@gmail.com> wrote:
+>>>>> Hi Ksenija,
+>>>>>
+>>>>> On Wed, Aug 3, 2016 at 1:32 PM, Ksenija Stanojević
+>>>>> <ksenija.stanojevic@gmail.com> wrote:
+>>>>>
+>>>>>> Can someone with imx23 board send me /proc/interrupts log, I
+>>>>>> need irq numbers...
+>>>>>
+>>>>> Can't you get them from the MX23 Reference Manual (Table 5-1. i.MX23
+>>>>> Interrupt Sources)?
+>>>>
+>>>> I thought it will be more reliable if I asked someone, since numbers from MX28
+>>>> manual don't match with /proc/interrupts log.
+>>>>
+>>> What do you mean they don't match ? Please elaborate.
 >>
->> I thought it will be more reliable if I asked someone, since numbers from MX28
->> manual don't match with /proc/interrupts log.
+>> irqs don't have the same values in Table 5.1 in MX28 manual and in
+>> /proc/interrupts
+>> output.
 >>
-> What do you mean they don't match ? Please elaborate.
+>> For example:
+>> touchscreen irq in MX28 manual have these values:
+>> 10 (source number) and 0x0028 (vector number)
+>>
+>> in /proc/interrupts:
+>> 210:          0         -  10 Edge      mxs-lradc-touchscreen
+>
+> I see lradc_touch_irq in the MX28RM is IRQ 10 and it is also 10 in your
+> /proc/interrupts output . What am I missing ?
 
-irqs don't have the same values in Table 5.1 in MX28 manual and in
-/proc/interrupts
-output.
-
-For example:
-touchscreen irq in MX28 manual have these values:
-10 (source number) and 0x0028 (vector number)
-
-in /proc/interrupts:
-210:          0         -  10 Edge      mxs-lradc-touchscreen
+I was referring to the number of the first column 210, that's the number that
+I need and cannot find in the Table of the manual.
