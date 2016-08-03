@@ -1,21 +1,22 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f176.google.com ([209.85.217.176]:36239 "EHLO
-	mail-ua0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754499AbcHCQft convert rfc822-to-8bit (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 12:35:49 -0400
+Received: from mail-qk0-f173.google.com ([209.85.220.173]:34726 "EHLO
+	mail-qk0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754757AbcHCQre convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 12:47:34 -0400
 MIME-Version: 1.0
-In-Reply-To: <CAL7P5jKG=b0P9T10RX9p0EXR7epTOfKqbMT6nYZkDhnqiAz_jA@mail.gmail.com>
+In-Reply-To: <CAOMZO5BSUice=2Zioeu9Zrfi5ixhszO9hF1vmFW5FiPKWqkb9w@mail.gmail.com>
 References: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
  <370a02584386944b465deff5ccc48c8919b23dba.1466769907.git.ksenija.stanojevic@gmail.com>
  <20160628162834.GF29166@dell> <CAL7P5j+NYvUJfu==xQvncyCiw8JHtizOdfyeY1HL6Lb=-wsrWQ@mail.gmail.com>
  <E1bIyD4-0000Jw-2c@stardust.g4.wien.funkfeuer.at> <20160713124935.GC11154@dell>
  <5bddd461-90e3-3116-8d18-fae51bf39310@denx.de> <397621614.8135.5a20a815-9153-4587-9aeb-f2a7fc5a4ff5.open-xchange@email.1und1.de>
- <CAL7P5jJEYUQihe4pynerRUNgVAQzymYbUZEO9BrVdb+-syok-Q@mail.gmail.com> <CAL7P5jKG=b0P9T10RX9p0EXR7epTOfKqbMT6nYZkDhnqiAz_jA@mail.gmail.com>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Wed, 3 Aug 2016 13:35:48 -0300
-Message-ID: <CAOMZO5BSUice=2Zioeu9Zrfi5ixhszO9hF1vmFW5FiPKWqkb9w@mail.gmail.com>
+ <CAL7P5jJEYUQihe4pynerRUNgVAQzymYbUZEO9BrVdb+-syok-Q@mail.gmail.com>
+ <CAL7P5jKG=b0P9T10RX9p0EXR7epTOfKqbMT6nYZkDhnqiAz_jA@mail.gmail.com> <CAOMZO5BSUice=2Zioeu9Zrfi5ixhszO9hF1vmFW5FiPKWqkb9w@mail.gmail.com>
+From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+Date: Wed, 3 Aug 2016 18:45:05 +0200
+Message-ID: <CAL7P5j+1vOXz8a7zrTN+KDRAJJWr0vPC25o4LcXutagO9wVRNA@mail.gmail.com>
 Subject: Re: [PATCH v3 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
-To: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+To: Fabio Estevam <festevam@gmail.com>
 Cc: Stefan Wahren <stefan.wahren@i2se.com>,
 	Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -31,13 +32,19 @@ Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Ksenija,
+Hi Fabio,
 
-On Wed, Aug 3, 2016 at 1:32 PM, Ksenija Stanojević
-<ksenija.stanojevic@gmail.com> wrote:
+On Wed, Aug 3, 2016 at 6:35 PM, Fabio Estevam <festevam@gmail.com> wrote:
+> Hi Ksenija,
+>
+> On Wed, Aug 3, 2016 at 1:32 PM, Ksenija Stanojević
+> <ksenija.stanojevic@gmail.com> wrote:
+>
+>> Can someone with imx23 board send me /proc/interrupts log, I
+>> need irq numbers...
+>
+> Can't you get them from the MX23 Reference Manual (Table 5-1. i.MX23
+> Interrupt Sources)?
 
-> Can someone with imx23 board send me /proc/interrupts log, I
-> need irq numbers...
-
-Can't you get them from the MX23 Reference Manual (Table 5-1. i.MX23
-Interrupt Sources)?
+I thought it will be more reliable if I asked someone, since numbers from MX28
+manual don't match with /proc/interrupts log.
