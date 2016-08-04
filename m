@@ -1,96 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f196.google.com ([209.85.161.196]:35720 "EHLO
-	mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1754023AbcHDDd3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 3 Aug 2016 23:33:29 -0400
-Date: Wed, 3 Aug 2016 20:33:03 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: humidity: hdc100x: use i2c_master_recv to read sensor
- data
-Message-ID: <20160804033253.GA31586@d830.WORKGROUP>
+Received: from mail-wm0-f46.google.com ([74.125.82.46]:38799 "EHLO
+	mail-wm0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754165AbcHDIaO (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Aug 2016 04:30:14 -0400
+Received: by mail-wm0-f46.google.com with SMTP id o80so368366491wme.1
+        for <linux-iio@vger.kernel.org>; Thu, 04 Aug 2016 01:30:13 -0700 (PDT)
+Date: Thu, 4 Aug 2016 09:31:36 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Marek Vasut <marex@denx.de>
+Cc: Harald Geyer <harald@ccbib.org>,
+	Ksenija =?utf-8?Q?Stanojevi=C4=87?=
+	<ksenija.stanojevic@gmail.com>, linux-kernel@vger.kernel.org,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, Stefan Wahren <stefan.wahren@i2se.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v3 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Message-ID: <20160804083136.GE5243@dell>
+References: <cover.1466769907.git.ksenija.stanojevic@gmail.com>
+ <370a02584386944b465deff5ccc48c8919b23dba.1466769907.git.ksenija.stanojevic@gmail.com>
+ <20160628162834.GF29166@dell>
+ <CAL7P5j+NYvUJfu==xQvncyCiw8JHtizOdfyeY1HL6Lb=-wsrWQ@mail.gmail.com>
+ <E1bIyD4-0000Jw-2c@stardust.g4.wien.funkfeuer.at>
+ <20160713124935.GC11154@dell>
+ <5bddd461-90e3-3116-8d18-fae51bf39310@denx.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <5bddd461-90e3-3116-8d18-fae51bf39310@denx.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Replace the i2c_smbus_read_byte commmands used to retrieve the sensor
-data with an i2c_master_recv command.
+On Thu, 14 Jul 2016, Marek Vasut wrote:
 
-The smbus read byte method fails because the device does not expect a
-stop condition after sending the first byte. When we issue the second
-read, we are getting the first byte again. Net effect is that of the 14
-bits used for the measurement, the 8 most significant bits are correct,
-the lower 6 are not.
+> On 07/13/2016 02:49 PM, Lee Jones wrote:
+> > On Fri, 01 Jul 2016, Harald Geyer wrote:
+> > 
+> > > Hi Ksenija!
+> > > 
+> > > Ksenija Stanojević writes:
+> > > > On Tue, Jun 28, 2016 at 6:28 PM, Lee Jones <lee.jones@linaro.org> wrote:
+> > > > > > +static int mxs_lradc_add_device(struct platform_device *pdev,
+> > > > > > +                             struct mxs_lradc *lradc, char *name, int i)
+> > > > > > +{
+> > > > > > +     struct mfd_cell *cell;
+> > > > > > +
+> > > > > > +     cell = &lradc->cells[i];
+> > > > > > +     cell->name = name;
+> > > > > > +     cell->platform_data = lradc;
+> > > > > > +     cell->pdata_size = sizeof(*lradc);
+> > > > > > +
+> > > > > > +     return devm_mfd_add_devices(&pdev->dev, -1, cell, 1, NULL, 0, NULL);
+> > > > > > +}
+> > > > > 
+> > > > > Please don't roll your own API.
+> > > > > 
+> > > > > Use 'struct mfd_cell' like everyone else does.
+> > > > 
+> > > > It has been suggested in previous reviews to use separate function to
+> > > > register mfd device, and to make mfd_cell allocate dynamically because
+> > > > struc mxs-lradc is allocated dynamically.
+> > > > But I can revrse changes and make mfd_cells allocate staticaly
+> > > > wthout separate function.
+> > > 
+> > > I think making mfd_cells members of struct mxs-lradc will address all
+> > > review comments.
+> > 
+> > No, please don't do that either.
+> > 
+> It'd be nice if you explained in detail why not. Otherwise this is just
+> empty splat.
 
-None of the smbus read protocols follow the pattern this device requires
-(S Addr Rd [A] Data [A] Data NA P), hence the switch to an i2c receive
-transaction.
+I already said what needs to be done.
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
----
- drivers/iio/humidity/hdc100x.c | 27 +++++++--------------------
- 1 file changed, 7 insertions(+), 20 deletions(-)
+"Use struct mfd_cell", in it's pure/static form.  Don't include it in
+any device data struct.
 
-diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-index a03832a..643a42d 100644
---- a/drivers/iio/humidity/hdc100x.c
-+++ b/drivers/iio/humidity/hdc100x.c
-@@ -142,7 +142,7 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
- 	struct i2c_client *client = data->client;
- 	int delay = data->adc_int_us[chan->address];
- 	int ret;
--	int val;
-+	u8 buf[2];
- 
- 	/* start measurement */
- 	ret = i2c_smbus_write_byte(client, chan->address);
-@@ -154,26 +154,13 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
- 	/* wait for integration time to pass */
- 	usleep_range(delay, delay + 1000);
- 
--	/*
--	 * i2c_smbus_read_word_data cannot() be used here due to the command
--	 * value not being understood and causes NAKs preventing any reading
--	 * from being accessed.
--	 */
--	ret = i2c_smbus_read_byte(client);
-+	/* read the 2 byte measurement */
-+	ret = i2c_master_recv(data->client, buf, 2);
- 	if (ret < 0) {
--		dev_err(&client->dev, "cannot read high byte measurement");
-+		dev_err(&client->dev, "cannot read sensor data\n");
- 		return ret;
- 	}
--	val = ret << 8;
--
--	ret = i2c_smbus_read_byte(client);
--	if (ret < 0) {
--		dev_err(&client->dev, "cannot read low byte measurement");
--		return ret;
--	}
--	val |= ret;
--
--	return val;
-+	return (int)(buf[0] << 8 | buf[1]);
- }
- 
- static int hdc100x_get_heater_status(struct hdc100x_data *data)
-@@ -272,8 +259,8 @@ static int hdc100x_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	struct hdc100x_data *data;
- 
--	if (!i2c_check_functionality(client->adapter,
--				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
-+	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
-+				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
- 		return -EOPNOTSUPP;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+"like everyone else does", look at other driver to see how they do
+it.
+
 -- 
-2.1.4
-
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
