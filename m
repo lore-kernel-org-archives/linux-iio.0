@@ -1,93 +1,214 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH] iio: fix sched WARNING "do not call blocking ops when
- !TASK_RUNNING"
-To: Brian Norris <briannorris@chromium.org>
-References: <20160802011244.GA54171@google.com>
- <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
- <20160802165732.GA3310@localhost>
- <9a6a7f54-0343-db74-57a2-9f747ae659cc@metafoo.de>
- <20160804082621.GA11331@localhost>
- <489632a0-9aaf-e63b-4b08-0fa724a06e28@metafoo.de>
- <20160804094113.GA25537@localhost>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
- Brian Norris <computersforpeace@gmail.com>,
- Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <8741ae27-2279-4615-7917-e3e3683e41fa@metafoo.de>
-Date: Thu, 4 Aug 2016 12:21:08 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yb0-f195.google.com ([209.85.213.195]:35625 "EHLO
+	mail-yb0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1754438AbcHDXhw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Thu, 4 Aug 2016 19:37:52 -0400
+Date: Thu, 4 Aug 2016 16:37:49 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: Matt Ranostay <mranostay@gmail.com>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH] iio: humidity: hdc100x: use i2c_master_recv to read
+ sensor data
+Message-ID: <20160804233747.GA15139@d830.WORKGROUP>
+References: <20160804033253.GA31586@d830.WORKGROUP>
+ <CAKzfze9bEdoPTri=+MTK2LPXAJZxwXKP=T_jTKk4aO38ZyANzA@mail.gmail.com>
+ <alpine.DEB.2.02.1608040718070.16194@pmeerw.net>
+ <CAKzfze8Ane_fR0-MamHFsVXfdORra9wt-qxrWf5yuRRKqQckkg@mail.gmail.com>
+ <20160804153551.GA2255@d830.WORKGROUP>
+ <CAKzfze_rFyOb+SsU4T68dutQ8rEH2vpoT84bEX5T+_N9QSDp1g@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20160804094113.GA25537@localhost>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAKzfze_rFyOb+SsU4T68dutQ8rEH2vpoT84bEX5T+_N9QSDp1g@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/04/2016 11:41 AM, Brian Norris wrote:
-> On Thu, Aug 04, 2016 at 10:45:39AM +0200, Lars-Peter Clausen wrote:
->>> @@ -132,10 +133,13 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->>>  		to_wait = min_t(size_t, n / datum_size, rb->watermark);
->>>  
->>>  	do {
->>> -		ret = wait_event_interruptible(rb->pollq,
->>> -		      iio_buffer_ready(indio_dev, rb, to_wait, n / datum_size));
->>> -		if (ret)
->>> -			return ret;
->>> +		add_wait_queue(&rb->pollq, &wait);
->>> +		while (!iio_buffer_ready(indio_dev, rb, to_wait,
->>> +					 n / datum_size)) {
->>> +			wait_woken(&wait, TASK_INTERRUPTIBLE,
->>> +				   MAX_SCHEDULE_TIMEOUT);
->>
->> We loose the ability to break out from this loop by sending a signal to the
->> task. This needs something like
->>
->> 	if (signal_pending(current)) {
->> 		ret = -ERESTARTSYS;
->> 		break;
->> 	}
->>
->> before the wait_woken()
+On Thu, Aug 04, 2016 at 03:21:13PM -0700, Matt Ranostay wrote:
+> On Thu, Aug 4, 2016 at 8:35 AM, Alison Schofield <amsfield22@gmail.com> wrote:
+> > On Wed, Aug 03, 2016 at 10:50:54PM -0700, Matt Ranostay wrote:
+> >> On Wed, Aug 3, 2016 at 10:19 PM, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> >> wrote:
+> >>
+> >> >
+> >> > > > Replace the i2c_smbus_read_byte commmands used to retrieve the sensor
+> >> > > > data with an i2c_master_recv command.
+> >> > > >
+> >> > > > The smbus read byte method fails because the device does not expect a
+> >> > > > stop condition after sending the first byte. When we issue the second
+> >> > > > read, we are getting the first byte again. Net effect is that of the 14
+> >> > > > bits used for the measurement, the 8 most significant bits are correct,
+> >> > > > the lower 6 are not.
+> >> > > >
+> >> > > > None of the smbus read protocols follow the pattern this device
+> >> > requires
+> >> > > > (S Addr Rd [A] Data [A] Data NA P), hence the switch to an i2c receive
+> >> > > > transaction.
+> >> > > >
+> >> > > > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> >> > > > Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> >> > > > ---
+> >> > > >  drivers/iio/humidity/hdc100x.c | 27 +++++++--------------------
+> >> > > >  1 file changed, 7 insertions(+), 20 deletions(-)
+> >> > > >
+> >> > > > diff --git a/drivers/iio/humidity/hdc100x.c
+> >> > b/drivers/iio/humidity/hdc100x.c
+> >> > > > index a03832a..643a42d 100644
+> >> > > > --- a/drivers/iio/humidity/hdc100x.c
+> >> > > > +++ b/drivers/iio/humidity/hdc100x.c
+> >> > > > @@ -142,7 +142,7 @@ static int hdc100x_get_measurement(struct
+> >> > hdc100x_data *data,
+> >> > > >         struct i2c_client *client = data->client;
+> >> > > >         int delay = data->adc_int_us[chan->address];
+> >> > > >         int ret;
+> >> > > > -       int val;
+> >> > > > +       u8 buf[2];
+> >> >
+> >> > __le16 val;
+> >> >
+> >> > > >
+> >> > > >         /* start measurement */
+> >> > > >         ret = i2c_smbus_write_byte(client, chan->address);
+> >> > > > @@ -154,26 +154,13 @@ static int hdc100x_get_measurement(struct
+> >> > hdc100x_data *data,
+> >> > > >         /* wait for integration time to pass */
+> >> > > >         usleep_range(delay, delay + 1000);
+> >> > > >
+> >> > > > -       /*
+> >> > > > -        * i2c_smbus_read_word_data cannot() be used here due to the
+> >> > command
+> >> > > > -        * value not being understood and causes NAKs preventing any
+> >> > reading
+> >> > > > -        * from being accessed.
+> >> > > > -        */
+> >> > > > -       ret = i2c_smbus_read_byte(client);
+> >> > > > +       /* read the 2 byte measurement */
+> >> > > > +       ret = i2c_master_recv(data->client, buf, 2);
+> >> > > >         if (ret < 0) {
+> >> > > > -               dev_err(&client->dev, "cannot read high byte
+> >> > measurement");
+> >> > > > +               dev_err(&client->dev, "cannot read sensor data\n");
+> >> > > >                 return ret;
+> >> > > >         }
+> >> > > > -       val = ret << 8;
+> >> > > > -
+> >> > > > -       ret = i2c_smbus_read_byte(client);
+> >> > > > -       if (ret < 0) {
+> >> > > > -               dev_err(&client->dev, "cannot read low byte
+> >> > measurement");
+> >> > > > -               return ret;
+> >> > > > -       }
+> >> > > > -       val |= ret;
+> >> > > > -
+> >> > > > -       return val;
+> >> > > > +       return (int)(buf[0] << 8 | buf[1]);
+> >> > >
+> >> > > Pretty sure you don't need to cast to int type here.
+> >> >
+> >> > return le16_to_cpu(val);
+> >> >
+> >> >
+> >> You mean le16_to_cpu(&buf)  I assume?
+> >>
+> >>
+> >> > >
+> >> > > >  }
+> >> > > >
+> >> > > >  static int hdc100x_get_heater_status(struct hdc100x_data *data)
+> >> > > > @@ -272,8 +259,8 @@ static int hdc100x_probe(struct i2c_client *client,
+> >> > > >         struct iio_dev *indio_dev;
+> >> > > >         struct hdc100x_data *data;
+> >> > > >
+> >> > > > -       if (!i2c_check_functionality(client->adapter,
+> >> > > > -                               I2C_FUNC_SMBUS_WORD_DATA |
+> >> > I2C_FUNC_SMBUS_BYTE))
+> >> > > > +       if (!i2c_check_functionality(client->adapter,
+> >> > I2C_FUNC_SMBUS_WORD_DATA |
+> >> > > > +                                    I2C_FUNC_SMBUS_BYTE |
+> >> > I2C_FUNC_I2C))
+> >> > >
+> >> > > Not sure we want to kill smbus support for this device...  iwe should
+> >> > > have two read methods for i2c and smbus (see the PulsedLight LIDAR
+> >> > > driver) in this case.
+> >> > >
+> >> > > Ideally I wouldn't have written it with only smbus in mind, but can
+> >> > > kill backwards compatibility unless we have a good reason.
+> >> > >
+> >> > > Thanks,
+> >> > >
+> >> > > Matt
+> >
+> > Thanks for the reviews. Let me clarify:
+> >
+> > This is a fix for a bug in the current driver.  See the changelog.
+> >
+> > The relationship between this patch and my triggered-buffer work
+> > is that I found this bug while trying to do just what you say above.
+> > I tried to have 2 methods for reading data - smbus and plain i2c.
+> > That's the point where I found that smbus reads do not work, never did.
+> >
+> > I know we want to stay on the smbus, so I'm looking for suggestions.
+> > As I noted in changelog and my 'smbus help' email - every defined smbus
+> > read command fails.
 > 
-> Sounds good.
+> Of course this depends on what dev board you are using and if the i2c
+> controller supports both.
 > 
->> And as a minor improvement I'd also move the
->> add_wait_queue()/remove_wait_queue() outside of the outer loop.
-> 
-> Sure.
-> 
->> And then
->> just if (!iio_buffer_ready(...)) continue; rather than having the inner
->> loop. This should slightly simplify the flow.
-> 
-> Perhaps I'm not gathering your meaning here, but wouldn't that turn this
-> into a spin loop, waiting for iio_buffer_ready()? i.e.:
-> 
-> 	do {
-> 		if (!iio_buffer_ready(...))
-> 			continue; // we shouldn't just hammer
-> 				  // iio_buffer_ready(), should we?
-> 
-> 		wait_woken(...);
-> 		...
-> 	};
+> Ideally you check for i2c support first then point to that xfer
+> transfer function for it, and then check for smbus support. Suspect
+> you did something similar to ->
+> https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/tree/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c?id=refs/tags/v4.7#n274
+> , correct?
 
-Hm, right, I didn't think this through.
+No, that's not what this bug & patch is about.
 
-How about:
+This patch is about the fact that we are reading the temp &
+humid data registers incorrectly in the current driver and
+we are exposing incorrect numbers via sysfs raw reads.
 
- 	do {
-		if (!indio_dev->info)
-			return -ENODEV;
+I have tried by testing and inspection each read protocol.
+It NAKs all of them - except for read_byte. Problem with
+read_byte is that we are always getting the MSB.   We do 2
+consecutive read_bytes, expecting MSB,LSB, but get MSB,MSB.
 
- 		if (!iio_buffer_ready(...)) {
-			if (signal_pending(current)) {
-				ret = -ERESTARTSYS;
-				break;
-			}	
-	 		wait_woken(...);
-			continue;
-		}
- 		...
- 	} while (ret == 0);
+I have been doing msmts w this driver for quite awhile, and
+to my human eye they looked reasonable in integer format.
+But, once I started looking at the byte level, to test moving
+those bytes into buffers, I saw the unmistakable pattern: 
+MSB == LSB always.
 
-And then also drop the if (!indio_dev->info) at the beginning of the function.
+Sorry to be the bearer of bad news.  I still hold out hope that
+we can fix this with some smbus magic and not 'kill backward
+compatibility'.  
+
+Who's the resident SMBUS expert(s)?
+
+I don't have a session logged, but I can set up and send a 
+demo if wanted.  Let me know.
+
+alisons
+
+> 
+> Thanks,
+> 
+> Matt > 
+> >
+> > alisons
+> >
+> >> > >
+> >> > > >                 return -EOPNOTSUPP;
+> >> > > >
+> >> > > >         indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> >> > > > --
+> >> > > > 2.1.4
+> >> > > >
+> >> > >
+> >> >
+> >> > --
+> >> >
+> >> > Peter Meerwald-Stadler
+> >> > +43-664-2444418 (mobile)
+> >> >
