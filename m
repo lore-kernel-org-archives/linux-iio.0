@@ -1,64 +1,58 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Fri, 5 Aug 2016 08:02:24 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Alexander Stein <alexander.stein@systec-electronic.com>
-Cc: linux-kernel@vger.kernel.org,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, marex@denx.de, linux-iio@vger.kernel.org,
-	harald@ccbib.org, stefan.wahren@i2se.com,
-	fabio.estevam@freescale.com
-Subject: Re: [PATCH v4 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
-Message-ID: <20160805070224.GH5243@dell>
-References: <cover.1470316956.git.ksenija.stanojevic@gmail.com>
- <0a60a10b249062d305237f04fdb9aea05b128b85.1470316956.git.ksenija.stanojevic@gmail.com>
- <2721285.1CS7CJCgc7@ws-stein>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:52488 "EHLO
+	www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1759483AbcHEJfm (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 5 Aug 2016 05:35:42 -0400
+Subject: Re: [PATCH] iio: humidity: hdc100x: use i2c_master_recv to read
+ sensor data
+To: Alison Schofield <amsfield22@gmail.com>,
+	Matt Ranostay <mranostay@gmail.com>
+References: <20160804033253.GA31586@d830.WORKGROUP>
+ <CAKzfze9bEdoPTri=+MTK2LPXAJZxwXKP=T_jTKk4aO38ZyANzA@mail.gmail.com>
+ <alpine.DEB.2.02.1608040718070.16194@pmeerw.net>
+ <CAKzfze8Ane_fR0-MamHFsVXfdORra9wt-qxrWf5yuRRKqQckkg@mail.gmail.com>
+ <20160804153551.GA2255@d830.WORKGROUP>
+ <CAKzfze_rFyOb+SsU4T68dutQ8rEH2vpoT84bEX5T+_N9QSDp1g@mail.gmail.com>
+ <20160804233747.GA15139@d830.WORKGROUP>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <16fc3ac8-5040-57dc-2651-39613899e308@metafoo.de>
+Date: Fri, 5 Aug 2016 11:35:37 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <2721285.1CS7CJCgc7@ws-stein>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160804233747.GA15139@d830.WORKGROUP>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, 04 Aug 2016, Alexander Stein wrote:
-
-> On Thursday 04 August 2016 15:28:18, Ksenija Stanojevic wrote:
-> > Add core files for mxs-lradc MFD driver.
-> > 
-> > Note:  this patch won't compile in iio/testing without this patch:
-> > a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
-> > 
-> > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> > ---
-> > [...]
-> > +static int mxs_lradc_probe(struct platform_device *pdev)
-> > +{
-> > +	const struct of_device_id *of_id;
-> > +	struct device *dev = &pdev->dev;
-> > +	struct device_node *node = dev->of_node;
-> > +	struct mxs_lradc *lradc;
-> > +	struct resource *iores;
-> > +	struct mfd_cell *cells = NULL;
-> > +	int ret = 0;
-> > +	u32 ts_wires = 0;
-> > +
-> > +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
-> > +	if (!lradc)
-> > +		return -ENOMEM;
-> > +
-> > +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> > +	lradc->soc = (enum mxs_lradc_id)of_id->data;
-> > +
-> > +	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> > +	lradc->base = devm_ioremap_resource(dev, iores);
+On 08/05/2016 01:37 AM, Alison Schofield wrote:
+[...]
 > 
-> Out of couriosity: Is it common to pass already ioremapped addresses to (MFD 
-> cell) platform drivers? I would have expected, and done myself, that ioremap 
-> is done in the driver itself, same as the IRQ.
+> No, that's not what this bug & patch is about.
+> 
+> This patch is about the fact that we are reading the temp &
+> humid data registers incorrectly in the current driver and
+> we are exposing incorrect numbers via sysfs raw reads.
+> 
+> I have tried by testing and inspection each read protocol.
+> It NAKs all of them - except for read_byte. Problem with
+> read_byte is that we are always getting the MSB.   We do 2
+> consecutive read_bytes, expecting MSB,LSB, but get MSB,MSB.
+> 
+> I have been doing msmts w this driver for quite awhile, and
+> to my human eye they looked reasonable in integer format.
+> But, once I started looking at the byte level, to test moving
+> those bytes into buffers, I saw the unmistakable pattern: 
+> MSB == LSB always.
+> 
+> Sorry to be the bearer of bad news.  I still hold out hope that
+> we can fix this with some smbus magic and not 'kill backward
+> compatibility'.  
 
-Yes, this is exactly what should happen.
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+If the part is not SMBUS compatible I don't see a reason to try to force it.
+It's also not affecting backwards compatibility, the driver never worked
+correctly in the first place with SMBUS only, so there is no regression.
+After the patch it sill does not work.
