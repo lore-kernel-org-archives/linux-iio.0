@@ -1,660 +1,179 @@
-Return-Path: <akinobu.mita@gmail.com>
-From: Akinobu Mita <akinobu.mita@gmail.com>
-To: linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Cc: Akinobu Mita <akinobu.mita@gmail.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald <pmeerw@pmeerw.net>
-Subject: [PATCH v3] iio: adc: add ADC12130/ADC12132/ADC12138 ADC driver
-Date: Mon,  8 Aug 2016 00:22:10 +0900
-Message-Id: <1470583330-6850-1-git-send-email-akinobu.mita@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from [195.159.176.226] ([195.159.176.226]:45923 "EHLO
+	blaine.gmane.org" rhost-flags-FAIL-FAIL-OK-OK) by vger.kernel.org
+	with ESMTP id S1751713AbcHGRT1 convert rfc822-to-8bit (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Sun, 7 Aug 2016 13:19:27 -0400
+Received: from list by blaine.gmane.org with local (Exim 4.84_2)
+	(envelope-from <glki-linux-iio@m.gmane.org>)
+	id 1bWRUq-0007Tr-Nz
+	for linux-iio@vger.kernel.org; Sun, 07 Aug 2016 19:04:20 +0200
+To: linux-iio@vger.kernel.org
+From: Atri Bhattacharya <badshah400@aim.com>
+Subject: Re: [PATCH v4 0/7] Intel Integrated Sensor Hub Support (ISH)
+Date: Sun, 07 Aug 2016 19:03:47 +0200
+Message-ID: <1470589427.32229.2.camel@aim.com>
+References: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Mime-Version: 1.0
+Content-Type: text/plain; charset="UTF-8"
+In-Reply-To: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds Texas Instruments' ADC12130/ADC12132/ADC12138 12-bit plus
-sign ADC driver.  I have tested with the ADC12138.  The ADC12130 and
-ADC12132 are not tested but these are similar to ADC12138 except that
-the mode programming instruction is a bit different.
+Hi Srinivas,
 
-Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Cc: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>
----
-* Changes from v2
-- improve error label names
+Apparently Patch 2 in the series didn't make it to the list again:
+http://marc.info/?l=linux-iio&r=1&b=201608&w=2
 
- .../devicetree/bindings/iio/adc/ti-adc12138.txt    |  32 ++
- drivers/iio/adc/Kconfig                            |  12 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/ti-adc12138.c                      | 542 +++++++++++++++++++++
- 4 files changed, 587 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
- create mode 100644 drivers/iio/adc/ti-adc12138.c
+Best wishes.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
-new file mode 100644
-index 0000000..3a11d2a
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
-@@ -0,0 +1,32 @@
-+* Texas Instruments' ADC12130/ADC12132/ADC12138
-+
-+Required properties:
-+ - compatible: Should be one of
-+	* "ti,adc12130"
-+	* "ti,adc12132"
-+	* "ti,adc12138"
-+ - reg: SPI chip select number for the device
-+ - interrupts: Should contain interrupt for EOC (end of conversion)
-+ - clocks: phandle to conversion clock input
-+ - spi-max-frequency: Definision as per
-+	Documentation/devicetree/bindings/spi/spi-bus.txt
-+ - vref-p-supply: The regulator supply for positive analog voltage reference
-+
-+Optional properties:
-+ - vref-n-supply: The regulator supply for negative analog voltage reference
-+	If not specified, this is assumed to be analog ground.
-+ - acquisition-time: The number of conversion clock periods for the S/H's
-+	acquisition time.  Should be one of 6, 10, 18, 34.  If not specified,
-+	default value of 10 is used.
-+
-+Example:
-+adc@0 {
-+	compatible = "ti,adc12138";
-+	reg = <0>;
-+	interrupts = <28 IRQ_TYPE_EDGE_RISING>;
-+	interrupt-parent = <&gpio1>;
-+	clocks = <&cclk>;
-+	vref-p-supply = <&ldo4_reg>;
-+	spi-max-frequency = <5000000>;
-+	acquisition-time = <6>;
-+};
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index fa0ff29..87ed82d 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -414,6 +414,18 @@ config TI_ADC0832
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-adc0832.
- 
-+config TI_ADC12138
-+	tristate "Texas Instruments ADC12130/ADC12132/ADC12138"
-+	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  If you say yes here you get support for Texas Instruments ADC12130,
-+	  ADC12132 and ADC12138 chips.
-+
-+	  This driver can also be built as a module. If so, the module will be
-+	  called ti-adc12138.
-+
- config TI_ADC128S052
- 	tristate "Texas Instruments ADC128S052/ADC122S021/ADC124S021"
- 	depends on SPI
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 599714b..3ae4ae3 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -40,6 +40,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
-+obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
- obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
- obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
-diff --git a/drivers/iio/adc/ti-adc12138.c b/drivers/iio/adc/ti-adc12138.c
-new file mode 100644
-index 0000000..33057fc
---- /dev/null
-+++ b/drivers/iio/adc/ti-adc12138.c
-@@ -0,0 +1,542 @@
-+/*
-+ * ADC12130/ADC12132/ADC12138 12-bit plus sign ADC driver
-+ *
-+ * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License.  See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * Datasheet: http://www.ti.com/lit/ds/symlink/adc12138.pdf
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/completion.h>
-+#include <linux/clk.h>
-+#include <linux/spi/spi.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/regulator/consumer.h>
-+
-+#define ADC12138_MODE_AUTO_CAL			0x08
-+#define ADC12138_MODE_READ_STATUS		0x0c
-+#define ADC12138_MODE_ACQUISITION_TIME_6	0x0e
-+#define ADC12138_MODE_ACQUISITION_TIME_10	0x4e
-+#define ADC12138_MODE_ACQUISITION_TIME_18	0x8e
-+#define ADC12138_MODE_ACQUISITION_TIME_34	0xce
-+
-+#define ADC12138_STATUS_CAL			BIT(6)
-+
-+enum {
-+	adc12130,
-+	adc12132,
-+	adc12138,
-+};
-+
-+struct adc12138 {
-+	struct spi_device *spi;
-+	unsigned int id;
-+	/* conversion clock */
-+	struct clk *cclk;
-+	/* positive analog voltage reference */
-+	struct regulator *vref_p;
-+	/* negative analog voltage reference */
-+	struct regulator *vref_n;
-+	struct mutex lock;
-+	struct completion complete;
-+	/* The number of cclk periods for the S/H's acquisition time */
-+	unsigned int acquisition_time;
-+
-+	u8 tx_buf[2] ____cacheline_aligned;
-+	u8 rx_buf[2];
-+};
-+
-+#define ADC12138_VOLTAGE_CHANNEL(chan)					\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = chan,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-+					| BIT(IIO_CHAN_INFO_OFFSET),	\
-+		.scan_index = chan,					\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 13,					\
-+			.storagebits = 16,				\
-+			.shift = 3,					\
-+			.endianness = IIO_BE,				\
-+		},							\
-+	}
-+
-+#define ADC12138_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si_offset)		\
-+	{								\
-+		.type = IIO_VOLTAGE,					\
-+		.indexed = 1,						\
-+		.channel = (chan1),					\
-+		.channel2 = (chan2),					\
-+		.differential = 1,					\
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-+					| BIT(IIO_CHAN_INFO_OFFSET),	\
-+		.scan_index = (chan1) + (si_offset),			\
-+		.scan_type = {						\
-+			.sign = 's',					\
-+			.realbits = 13,					\
-+			.storagebits = 16,				\
-+			.shift = 3,					\
-+			.endianness = IIO_BE,				\
-+		},							\
-+	}
-+
-+static const struct iio_chan_spec adc12132_channels[] = {
-+	ADC12138_VOLTAGE_CHANNEL(0),
-+	ADC12138_VOLTAGE_CHANNEL(1),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 2),
-+	IIO_CHAN_SOFT_TIMESTAMP(4),
-+};
-+
-+static const struct iio_chan_spec adc12138_channels[] = {
-+	ADC12138_VOLTAGE_CHANNEL(0),
-+	ADC12138_VOLTAGE_CHANNEL(1),
-+	ADC12138_VOLTAGE_CHANNEL(2),
-+	ADC12138_VOLTAGE_CHANNEL(3),
-+	ADC12138_VOLTAGE_CHANNEL(4),
-+	ADC12138_VOLTAGE_CHANNEL(5),
-+	ADC12138_VOLTAGE_CHANNEL(6),
-+	ADC12138_VOLTAGE_CHANNEL(7),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(2, 3, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(3, 2, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(4, 5, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(5, 4, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(6, 7, 8),
-+	ADC12138_VOLTAGE_CHANNEL_DIFF(7, 6, 8),
-+	IIO_CHAN_SOFT_TIMESTAMP(16),
-+};
-+
-+static int adc12138_mode_programming(struct adc12138 *adc, u8 mode,
-+				     void *rx_buf, int len)
-+{
-+	struct spi_transfer xfer = {
-+		.tx_buf = adc->tx_buf,
-+		.rx_buf = adc->rx_buf,
-+		.len = len,
-+	};
-+	int ret;
-+
-+	/* Skip unused bits for ADC12130 and ADC12132 */
-+	if (adc->id != adc12138)
-+		mode = (mode & 0xc0) | ((mode & 0x0f) << 2);
-+
-+	adc->tx_buf[0] = mode;
-+
-+	ret = spi_sync_transfer(adc->spi, &xfer, 1);
-+	if (ret)
-+		return ret;
-+
-+	memcpy(rx_buf, adc->rx_buf, len);
-+
-+	return 0;
-+}
-+
-+static int adc12138_read_status(struct adc12138 *adc)
-+{
-+	u8 rx_buf[2];
-+	int ret;
-+
-+	ret = adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
-+					rx_buf, 2);
-+	if (ret)
-+		return ret;
-+
-+	return (rx_buf[0] << 1) | (rx_buf[1] >> 7);
-+}
-+
-+static int __adc12138_start_conv(struct adc12138 *adc,
-+				 struct iio_chan_spec const *channel,
-+				 void *data, int len)
-+
-+{
-+	const u8 ch_to_mux[] = { 0, 4, 1, 5, 2, 6, 3, 7 };
-+	u8 mode = (ch_to_mux[channel->channel] << 4) |
-+		  (channel->differential ? 0 : 0x80);
-+
-+	return adc12138_mode_programming(adc, mode, data, len);
-+}
-+
-+static int adc12138_start_conv(struct adc12138 *adc,
-+			       struct iio_chan_spec const *channel)
-+{
-+	u8 trash;
-+
-+	return __adc12138_start_conv(adc, channel, &trash, 1);
-+}
-+
-+static int adc12138_start_and_read_conv(struct adc12138 *adc,
-+					struct iio_chan_spec const *channel,
-+					__be16 *data)
-+{
-+	return __adc12138_start_conv(adc, channel, data, 2);
-+}
-+
-+static int adc12138_read_conv_data(struct adc12138 *adc, __be16 *value)
-+{
-+	/* Issue a read status instruction and read previous conversion data */
-+	return adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
-+					 value, sizeof(*value));
-+}
-+
-+static int adc12138_wait_eoc(struct adc12138 *adc, unsigned long timeout)
-+{
-+	if (!wait_for_completion_timeout(&adc->complete, timeout))
-+		return -ETIMEDOUT;
-+
-+	return 0;
-+}
-+
-+static int adc12138_adc_conversion(struct adc12138 *adc,
-+				   struct iio_chan_spec const *channel,
-+				   __be16 *value)
-+{
-+	int ret;
-+
-+	reinit_completion(&adc->complete);
-+
-+	ret = adc12138_start_conv(adc, channel);
-+	if (ret)
-+		return ret;
-+
-+	ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
-+	if (ret)
-+		return ret;
-+
-+	return adc12138_read_conv_data(adc, value);
-+}
-+
-+static int adc12138_read_raw(struct iio_dev *iio,
-+			     struct iio_chan_spec const *channel, int *value,
-+			     int *shift, long mask)
-+{
-+	struct adc12138 *adc = iio_priv(iio);
-+	int ret;
-+	__be16 data;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		mutex_lock(&adc->lock);
-+		ret = adc12138_adc_conversion(adc, channel, &data);
-+		mutex_unlock(&adc->lock);
-+		if (ret)
-+			return ret;
-+
-+		*value = sign_extend32(be16_to_cpu(data) >> 3, 12);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = regulator_get_voltage(adc->vref_p);
-+		if (ret < 0)
-+			return ret;
-+		*value = ret;
-+
-+		if (!IS_ERR(adc->vref_n)) {
-+			ret = regulator_get_voltage(adc->vref_n);
-+			if (ret < 0)
-+				return ret;
-+			*value -= ret;
-+		}
-+
-+		/* convert regulator output voltage to mV */
-+		*value /= 1000;
-+		*shift = channel->scan_type.realbits - 1;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_OFFSET:
-+		if (!IS_ERR(adc->vref_n)) {
-+			*value = regulator_get_voltage(adc->vref_n);
-+			if (*value < 0)
-+				return *value;
-+		} else {
-+			*value = 0;
-+		}
-+
-+		/* convert regulator output voltage to mV */
-+		*value /= 1000;
-+
-+		return IIO_VAL_INT;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info adc12138_info = {
-+	.read_raw = adc12138_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int adc12138_init(struct adc12138 *adc)
-+{
-+	int ret;
-+	int status;
-+	u8 mode;
-+	u8 trash;
-+
-+	reinit_completion(&adc->complete);
-+
-+	ret = adc12138_mode_programming(adc, ADC12138_MODE_AUTO_CAL, &trash, 1);
-+	if (ret)
-+		return ret;
-+
-+	/* data output at this time has no significance */
-+	status = adc12138_read_status(adc);
-+	if (status < 0)
-+		return status;
-+
-+	adc12138_wait_eoc(adc, msecs_to_jiffies(100));
-+
-+	status = adc12138_read_status(adc);
-+	if (status & ADC12138_STATUS_CAL) {
-+		dev_warn(&adc->spi->dev,
-+			"Auto Cal sequence is still in progress: %#x\n",
-+			status);
-+		return -EIO;
-+	}
-+
-+	switch (adc->acquisition_time) {
-+	case 6:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_6;
-+		break;
-+	case 10:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_10;
-+		break;
-+	case 18:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_18;
-+		break;
-+	case 34:
-+		mode = ADC12138_MODE_ACQUISITION_TIME_34;
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	return adc12138_mode_programming(adc, mode, &trash, 1);
-+}
-+
-+static irqreturn_t adc12138_trigger_handler(int irq, void *p)
-+{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct adc12138 *adc = iio_priv(indio_dev);
-+	__be16 data[20] = { }; /* 16x 2 bytes ADC data + 8 bytes timestamp */
-+	__be16 trash;
-+	int ret;
-+	int scan_index;
-+	int i = 0;
-+
-+	mutex_lock(&adc->lock);
-+
-+	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
-+			 indio_dev->masklength) {
-+		const struct iio_chan_spec *scan_chan =
-+				&indio_dev->channels[scan_index];
-+
-+		reinit_completion(&adc->complete);
-+
-+		ret = adc12138_start_and_read_conv(adc, scan_chan,
-+						   i ? &data[i - 1] : &trash);
-+		if (ret) {
-+			dev_warn(&adc->spi->dev,
-+				 "failed to start conversion\n");
-+			goto out;
-+		}
-+
-+		ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
-+		if (ret) {
-+			dev_warn(&adc->spi->dev, "wait eoc timeout\n");
-+			goto out;
-+		}
-+
-+		i++;
-+	}
-+
-+	if (i) {
-+		ret = adc12138_read_conv_data(adc, &data[i - 1]);
-+		if (ret) {
-+			dev_warn(&adc->spi->dev,
-+				 "failed to get conversion data\n");
-+			goto out;
-+		}
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
-+out:
-+	mutex_unlock(&adc->lock);
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t adc12138_eoc_handler(int irq, void *p)
-+{
-+	struct iio_dev *indio_dev = p;
-+	struct adc12138 *adc = iio_priv(indio_dev);
-+
-+	complete(&adc->complete);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int adc12138_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct adc12138 *adc;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	adc = iio_priv(indio_dev);
-+	adc->spi = spi;
-+	adc->id = spi_get_device_id(spi)->driver_data;
-+	mutex_init(&adc->lock);
-+	init_completion(&adc->complete);
-+
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->info = &adc12138_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	switch (adc->id) {
-+	case adc12130:
-+	case adc12132:
-+		indio_dev->channels = adc12132_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc12132_channels);
-+		break;
-+	case adc12138:
-+		indio_dev->channels = adc12138_channels;
-+		indio_dev->num_channels = ARRAY_SIZE(adc12138_channels);
-+		break;
-+	default:
-+		return -EINVAL;
-+	}
-+
-+	ret = of_property_read_u32(spi->dev.of_node, "acquisition-time",
-+				   &adc->acquisition_time);
-+	if (ret)
-+		adc->acquisition_time = 10;
-+
-+	adc->cclk = devm_clk_get(&spi->dev, NULL);
-+	if (IS_ERR(adc->cclk))
-+		return PTR_ERR(adc->cclk);
-+
-+	adc->vref_p = devm_regulator_get(&spi->dev, "vref-p");
-+	if (IS_ERR(adc->vref_p))
-+		return PTR_ERR(adc->vref_p);
-+
-+	adc->vref_n = devm_regulator_get_optional(&spi->dev, "vref-n");
-+
-+	ret = devm_request_irq(&spi->dev, spi->irq, adc12138_eoc_handler,
-+			       IRQF_TRIGGER_RISING, indio_dev->name, indio_dev);
-+	if (ret)
-+		return ret;
-+
-+	ret = clk_prepare_enable(adc->cclk);
-+	if (ret)
-+		return ret;
-+
-+	ret = regulator_enable(adc->vref_p);
-+	if (ret)
-+		goto err_clk_disable;
-+
-+	if (!IS_ERR(adc->vref_n)) {
-+		ret = regulator_enable(adc->vref_n);
-+		if (ret)
-+			goto err_vref_p_disable;
-+	}
-+
-+	ret = adc12138_init(adc);
-+	if (ret)
-+		goto err_vref_n_disable;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 adc12138_trigger_handler, NULL);
-+	if (ret)
-+		goto err_vref_n_disable;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto err_buffer_cleanup;
-+
-+	return 0;
-+err_buffer_cleanup:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+err_vref_n_disable:
-+	if (!IS_ERR(adc->vref_n))
-+		regulator_disable(adc->vref_n);
-+err_vref_p_disable:
-+	regulator_disable(adc->vref_p);
-+err_clk_disable:
-+	clk_disable_unprepare(adc->cclk);
-+
-+	return ret;
-+}
-+
-+static int adc12138_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct adc12138 *adc = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	if (!IS_ERR(adc->vref_n))
-+		regulator_disable(adc->vref_n);
-+	regulator_disable(adc->vref_p);
-+	clk_disable_unprepare(adc->cclk);
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_OF
-+
-+static const struct of_device_id adc12138_dt_ids[] = {
-+	{ .compatible = "ti,adc12130", },
-+	{ .compatible = "ti,adc12132", },
-+	{ .compatible = "ti,adc12138", },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(of, adc12138_dt_ids);
-+
-+#endif
-+
-+static const struct spi_device_id adc12138_id[] = {
-+	{ "adc12130", adc12130 },
-+	{ "adc12132", adc12132 },
-+	{ "adc12138", adc12138 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(spi, adc12138_id);
-+
-+static struct spi_driver adc12138_driver = {
-+	.driver = {
-+		.name = "adc12138",
-+		.of_match_table = of_match_ptr(adc12138_dt_ids),
-+	},
-+	.probe = adc12138_probe,
-+	.remove = adc12138_remove,
-+	.id_table = adc12138_id,
-+};
-+module_spi_driver(adc12138_driver);
-+
-+MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
-+MODULE_DESCRIPTION("ADC12130/ADC12132/ADC12138 driver");
-+MODULE_LICENSE("GPL v2");
+On Sun, 2016-08-07 at 02:25 -0700, Srinivas Pandruvada wrote:
+> Change log
+> v4:
+> - Replace Bus PM suspend/resume callbacks to pm_ops calls to support
+> callbacks from hibernate as pointer by Rafael
+> - Fix kernel doc style comments: Now every function has kernel doc
+> header
+> - All checkpatch errors are resolved
+> - Function returning just a single value with no users of return
+> value to void
+> - reference_count in struct ishtp_cl_device changed to bool as
+> pointed by Ooi, Joyce
+> - auto module load glue logic as suggested by Ooi, Joyce
+> - Fix possible kernel warnings during module removal in ishtp
+> - Remove devices during ish-pci module removal
+> - Add Original-author tag
+> - Add MAINTAINER entry
+> 
+> v3:
+> - Rebased to linux-next as there are some new bus ids are added to
+> linux-next
+> - Documentation changes suggested by Jonathan
+> - The PCI device name for BXTP is changed to APL
+> - Added module parameter to enable DMA as some older FW
+> have issues in DMA support.
+> - On resume just restart to resume faster insted of reset for
+> S3 compliant platforms
+> 
+> Thanks to Grant Likely and Atri Bhattacharya, Rann Bar and Ooi Joyce
+> for test. 
+> I will add Tested-by to commits for the final version of the patches.
+> 
+> v2:
+> - Overview in documentation show analogy with usbhid implementation
+> - sparse errors for statics. Also pointed by Jiri
+> - Clearly marking exported function header file. Clean up all exports
+> unused inteface functions
+> - Changed to tristate from boolean as pointed by Jiri:
+> this required remove/unload functions
+> - Prevent crash when ISH enabled on non supported platform
+> - Break client.c to smaller part by seprating buffer allocations
+> - move bus register/unregister to ishtp module
+> - There is only one config symbol INTEL_ISH_HID, removed silent
+> config for TRANSPORT and IPC
+> 
+> 
+> Starting from Cherrytrail, multiple generation of Intel processors
+> offers
+> on package sensor hub. Several recent tablets, 2-in-1 convertible
+> laptops
+> are using ISH instead of external sensor hubs. This resulted in lack
+> of
+> support of sensor function like device rotation and auto backlight
+> adjustment.
+> In addition, depending on the OEM implementation, support of ISH is
+> required
+> to support low power sleep states.
+> 
+> The support of ISH on Linux platforms is not new. Android platforms
+> with
+> Intel SoCs had this support for a while submitted by Daniel Drubin. 
+> This patcheset is reusing most of those changes with  clean up and
+> removing Android platform specific changes.
+> 
+> The user mode ABI is still same as external sensor hubs using Linux
+> IIO. So existing user mode software should still work.
+> This series primarily brings in new HID transport used in ISH.
+> 
+> Thanks to the community members who tested RFC patches and provided
+> feedback.
+> 
+> For users testing on Linux distributions using IIO sensor proxy,
+> a short term work around is required till we have debugged this
+> issue.
+> In systemd unit file iio-sensor-proxy.service
+> In the section "[Unit]" add
+> After=multi-user.target
+> 
+> Srinivas Pandruvada (7):
+>   Documentation: hid: Intel ISH HID document
+>   hid: intel_ish-hid: ISH Transport layer
+>   hid: intel-ish-hid: ipc layer
+>   hid: intel-ish-hid: ISH HID client driver
+>   iio: hid-sensors: use asynchronous resume
+>   hid: hid-sensor-hub: Add ISH quirk
+>   MAINTAINERS: Add Intel ISH
+> 
+>  Documentation/hid/intel-ish-hid.txt                |  454 +++++++++
+>  MAINTAINERS                                        |    7 +
+>  drivers/hid/Kconfig                                |    2 +
+>  drivers/hid/Makefile                               |    2 +
+>  drivers/hid/hid-sensor-hub.c                       |    4 +
+>  drivers/hid/intel-ish-hid/Kconfig                  |   17 +
+>  drivers/hid/intel-ish-hid/Makefile                 |   22 +
+>  drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h        |  220 ++++
+>  drivers/hid/intel-ish-hid/ipc/hw-ish.h             |   71 ++
+>  drivers/hid/intel-ish-hid/ipc/ipc.c                |  882
+> ++++++++++++++++
+>  drivers/hid/intel-ish-hid/ipc/pci-ish.c            |  333 +++++++
+>  drivers/hid/intel-ish-hid/ipc/utils.h              |   64 ++
+>  drivers/hid/intel-ish-hid/ishtp-hid-client.c       |  978
+> ++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.c              |  246 +++++
+>  drivers/hid/intel-ish-hid/ishtp-hid.h              |  182 ++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.c              |  791
+> +++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/bus.h              |  114 +++
+>  drivers/hid/intel-ish-hid/ishtp/client-buffers.c   |  258 +++++
+>  drivers/hid/intel-ish-hid/ishtp/client.c           | 1054
+> ++++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/client.h           |  182 ++++
+>  drivers/hid/intel-ish-hid/ishtp/dma-if.c           |  175 ++++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.c              | 1032
+> +++++++++++++++++++
+>  drivers/hid/intel-ish-hid/ishtp/hbm.h              |  321 ++++++
+>  drivers/hid/intel-ish-hid/ishtp/init.c             |  115 +++
+>  drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h        |  277 +++++
+>  .../iio/common/hid-sensors/hid-sensor-trigger.c    |   21 +-
+>  include/linux/hid-sensor-hub.h                     |    1 +
+>  include/trace/events/intel_ish.h                   |   30 +
+>  include/uapi/linux/input.h                         |    1 +
+>  29 files changed, 7855 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/hid/intel-ish-hid.txt
+>  create mode 100644 drivers/hid/intel-ish-hid/Kconfig
+>  create mode 100644 drivers/hid/intel-ish-hid/Makefile
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish-regs.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/hw-ish.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/ipc.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/pci-ish.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ipc/utils.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid-client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp-hid.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/bus.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client-buffers.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/client.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/dma-if.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/hbm.h
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/init.c
+>  create mode 100644 drivers/hid/intel-ish-hid/ishtp/ishtp-dev.h
+>  create mode 100644 include/trace/events/intel_ish.h
+> 
 -- 
-2.7.4
+Atri Bhattacharya
+Sun  7 Aug 19:02:13 CEST 2016
+
+Sent from openSUSE Tumbleweed (20160805) (x86_64) on my laptop.
+
