@@ -1,110 +1,101 @@
-Return-Path: <hns@goldelico.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yb0-f194.google.com ([209.85.213.194]:36079 "EHLO
+	mail-yb0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752184AbcHHSOj (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2016 14:14:39 -0400
+Date: Mon, 8 Aug 2016 11:14:36 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: humidity: hdc100x: fix sensor data reads of temp and
+ humidity
+Message-ID: <20160808181430.GA2852@d830.WORKGROUP>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH] iio: pressure: bmp280: fix runtime suspend/resume crash
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <1469651578-6085-1-git-send-email-linus.walleij@linaro.org>
-Date: Mon, 8 Aug 2016 19:48:56 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>,
- linux-iio@vger.kernel.org,
- Akinobu Mita <akinobu.mita@gmail.com>,
- Matt Ranostay <mranostay@gmail.com>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Christoph Mair <christoph.mair@gmail.com>,
- Vlad Dogaru <vlad.dogaru@intel.com>,
- Hartmut Knaack <knaack.h@gmx.de>,
- Marek Belisko <marek@goldelico.com>,
- Eric Andersson <eric.andersson@unixphere.com>,
- Neil Brown <neilb@suse.de>
-Message-Id: <282AB1B2-89D0-4B87-A932-D67B5FC6C0FA@goldelico.com>
-References: <1469651578-6085-1-git-send-email-linus.walleij@linaro.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Linus,
-I can confirm that the crash exists.
+Replace the i2c_smbus_read_byte commmands used to retrieve the sensor
+data with an i2c_master_recv command.
 
-But is it possible to download / pull the patch from somewhere?
-It did not yet appear in linux-next. Is it applied to some other git =
-repo?
+The smbus read byte method fails because the device does not expect a
+stop condition after sending the first byte. When we issue the second
+read, we are getting the first byte again. Net effect is that of the 14
+bits used for the measurement, the 8 most significant bits are correct,
+the lower 6 are not.
 
-Unfortunately linux-iio isn't available in patchwork.kernel.org and this =
-patch didn't cc: to lkml.
+None of the smbus read protocols follow the pattern this device requires
+(S Addr Rd [A] Data [A] Data NA P), hence the switch to an i2c receive
+transaction.
 
-And the trick I just recently learned how to download it from gmane does =
-not work any more.
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+---
+Changes in v2:
+  update commit message to say what this fixes
+  use endian type & macro to correctly manage byte order
+  use sizeof for data length
 
-Finally markinfo does not appear to have a binary download either which =
-preserves subject&headers.
+ drivers/iio/humidity/hdc100x.c | 27 +++++++--------------------
+ 1 file changed, 7 insertions(+), 20 deletions(-)
 
-	http://marc.info/?l=3Dlinux-iio&m=3D146965159217655&w=3D2
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index a03832a..e0c9c70 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -142,7 +142,7 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
+ 	struct i2c_client *client = data->client;
+ 	int delay = data->adc_int_us[chan->address];
+ 	int ret;
+-	int val;
++	__be16 val;
+ 
+ 	/* start measurement */
+ 	ret = i2c_smbus_write_byte(client, chan->address);
+@@ -154,26 +154,13 @@ static int hdc100x_get_measurement(struct hdc100x_data *data,
+ 	/* wait for integration time to pass */
+ 	usleep_range(delay, delay + 1000);
+ 
+-	/*
+-	 * i2c_smbus_read_word_data cannot() be used here due to the command
+-	 * value not being understood and causes NAKs preventing any reading
+-	 * from being accessed.
+-	 */
+-	ret = i2c_smbus_read_byte(client);
++	/* read measurement */
++	ret = i2c_master_recv(data->client, (char *)&val, sizeof(val));
+ 	if (ret < 0) {
+-		dev_err(&client->dev, "cannot read high byte measurement");
++		dev_err(&client->dev, "cannot read sensor data\n");
+ 		return ret;
+ 	}
+-	val = ret << 8;
+-
+-	ret = i2c_smbus_read_byte(client);
+-	if (ret < 0) {
+-		dev_err(&client->dev, "cannot read low byte measurement");
+-		return ret;
+-	}
+-	val |= ret;
+-
+-	return val;
++	return be16_to_cpu(val);
+ }
+ 
+ static int hdc100x_get_heater_status(struct hdc100x_data *data)
+@@ -272,8 +259,8 @@ static int hdc100x_probe(struct i2c_client *client,
+ 	struct iio_dev *indio_dev;
+ 	struct hdc100x_data *data;
+ 
+-	if (!i2c_check_functionality(client->adapter,
+-				I2C_FUNC_SMBUS_WORD_DATA | I2C_FUNC_SMBUS_BYTE))
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
++				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+ 		return -EOPNOTSUPP;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+-- 
+2.1.4
 
-Well, I can still pull from this e-mail or copy&paste into a text file, =
-but sometimes formatting can go wrong.
-
-BR and thanks,
-Nikolaus
-
-
-> Am 27.07.2016 um 22:32 schrieb Linus Walleij =
-<linus.walleij@linaro.org>:
->=20
-> In commit 3d838118c6aa ("iio: pressure: bmp280: add power management")
->=20
-> For some reason the code in the runtime suspend/resume hooks
-> got wrong (I suspect in the ambition to cut down boilerplate)
-> and it seems it was tested without CONFIG_PM and crashes like
-> so for me:
->=20
-> Unable to handle kernel NULL pointer dereference at virtual address =
-0000000c
-> pgd =3D c0204000
-> [0000000c] *pgd=3D00000000
-> Internal error: Oops: 5 [#1] PREEMPT SMP ARM
-> Modules linked in:
-> CPU: 1 PID: 89 Comm: kworker/1:2 Not tainted
->  4.7.0-03348-g90dc3680458a-dirty #99
-> Hardware name: Generic DT based system
-> Workqueue: pm pm_runtime_work
-> task: df3c6300 ti: dec8a000 task.ti: dec8a000
-> PC is at regulator_disable+0x0/0x6c
-> LR is at bmp280_runtime_suspend+0x3c/0xa4
->=20
-> Dereferencing the BMP280 state container properly fixes the problem,
-> sorry for screwing up.
->=20
-> Fixes: 3d838118c6aa ("iio: pressure: bmp280: add power management")
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
-> drivers/iio/pressure/bmp280-core.c | 6 ++++--
-> 1 file changed, 4 insertions(+), 2 deletions(-)
->=20
-> diff --git a/drivers/iio/pressure/bmp280-core.c =
-b/drivers/iio/pressure/bmp280-core.c
-> index 6943688e66df..724fefd4af00 100644
-> --- a/drivers/iio/pressure/bmp280-core.c
-> +++ b/drivers/iio/pressure/bmp280-core.c
-> @@ -1079,7 +1079,8 @@ EXPORT_SYMBOL(bmp280_common_remove);
-> #ifdef CONFIG_PM
-> static int bmp280_runtime_suspend(struct device *dev)
-> {
-> -	struct bmp280_data *data =3D dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct bmp280_data *data =3D iio_priv(indio_dev);
-> 	int ret;
->=20
-> 	ret =3D regulator_disable(data->vdda);
-> @@ -1090,7 +1091,8 @@ static int bmp280_runtime_suspend(struct device =
-*dev)
->=20
-> static int bmp280_runtime_resume(struct device *dev)
-> {
-> -	struct bmp280_data *data =3D dev_get_drvdata(dev);
-> +	struct iio_dev *indio_dev =3D dev_get_drvdata(dev);
-> +	struct bmp280_data *data =3D iio_priv(indio_dev);
-> 	int ret;
->=20
-> 	ret =3D regulator_enable(data->vddd);
-> --=20
-> 2.7.4
->=20
