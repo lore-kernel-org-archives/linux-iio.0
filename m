@@ -1,61 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:47351 "EHLO
-	mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-	with ESMTP id S1752077AbcHHNwq (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2016 09:52:46 -0400
-Date: Mon, 8 Aug 2016 15:52:43 +0200
-From: Alexandre Belloni <alexandre.belloni@free-electrons.com>
-To: Anders Darander <anders@chargestorm.se>
-Cc: linux-iio@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: at91: unbreak channel adc channel 3
-Message-ID: <20160808135243.GA19793@piout.net>
-References: <1470660136-12524-1-git-send-email-anders@chargestorm.se>
+Received: from mail-pf0-f171.google.com ([209.85.192.171]:35585 "EHLO
+	mail-pf0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751554AbcHHWXX (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 8 Aug 2016 18:23:23 -0400
+Received: by mail-pf0-f171.google.com with SMTP id x72so123142906pfd.2
+        for <linux-iio@vger.kernel.org>; Mon, 08 Aug 2016 15:23:23 -0700 (PDT)
+Date: Mon, 8 Aug 2016 15:23:19 -0700
+From: Brian Norris <briannorris@chromium.org>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Guenter Roeck <linux@roeck-us.net>,
+	Brian Norris <computersforpeace@gmail.com>,
+	Peter Zijlstra <peterz@infradead.org>,
+	Ingo Molnar <mingo@kernel.org>
+Subject: Re: [PATCH] iio: fix sched WARNING "do not call blocking ops when
+ !TASK_RUNNING"
+Message-ID: <20160808222317.GA13805@localhost>
+References: <20160802011244.GA54171@google.com>
+ <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
+ <20160802165732.GA3310@localhost>
+ <9a6a7f54-0343-db74-57a2-9f747ae659cc@metafoo.de>
+ <20160804082621.GA11331@localhost>
+ <489632a0-9aaf-e63b-4b08-0fa724a06e28@metafoo.de>
+ <20160804094113.GA25537@localhost>
+ <8741ae27-2279-4615-7917-e3e3683e41fa@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1470660136-12524-1-git-send-email-anders@chargestorm.se>
+In-Reply-To: <8741ae27-2279-4615-7917-e3e3683e41fa@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/08/2016 at 14:42:16 +0200, Anders Darander wrote :
-> The driver always assumes that an input device has been created when
-> reading channel 3. This causes a kernel panic when dereferencing
-> st->ts_input.
-> 
-> The change was introduced in
-> commit 84882b060301 ("iio: adc: at91_adc: Add support for touchscreens
-> without TSMR"). Earlier versions only entered that part of the if-else
-> statement if only the following flags are set:
-> 
-> AT91_ADC_IER_XRDY | AT91_ADC_IER_YRDY | AT91_ADC_IER_PRDY
-> 
-> Signed-off-by: Anders Darander <anders@chargestorm.se>
-Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Hi Lars,
 
-> ---
->  drivers/iio/adc/at91_adc.c | 4 ++--
->  1 file changed, 2 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
-> index 52430ba..0438c68 100644
-> --- a/drivers/iio/adc/at91_adc.c
-> +++ b/drivers/iio/adc/at91_adc.c
-> @@ -381,8 +381,8 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
->  		st->ts_bufferedmeasure = false;
->  		input_report_key(st->ts_input, BTN_TOUCH, 0);
->  		input_sync(st->ts_input);
-> -	} else if (status & AT91_ADC_EOC(3)) {
-> -		/* Conversion finished */
-> +	} else if (status & AT91_ADC_EOC(3) && st->ts_input) {
-> +		/* Conversion finished and we've a touchscreen */
->  		if (st->ts_bufferedmeasure) {
->  			/*
->  			 * Last measurement is always discarded, since it can
-> -- 
-> 2.8.1
-> 
+On Thu, Aug 04, 2016 at 12:21:08PM +0200, Lars-Peter Clausen wrote:
+> And then also drop the if (!indio_dev->info) at the beginning of the function.
 
--- 
-Alexandre Belloni, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+I was poking through the usage of this ->info field, and it looks like
+it's supposed to be protected by the 'info_exist_lock' lock, but that's
+not being acquired here and in at least one other location. Is this
+another bug?
+
+Brian
