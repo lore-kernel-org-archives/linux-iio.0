@@ -1,40 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([198.47.19.12]:46205 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752051AbcHHLF2 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 8 Aug 2016 07:05:28 -0400
-From: Vignesh R <vigneshr@ti.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lee Jones <lee.jones@linaro.org>,
-	"Andrew F . Davis" <afd@ti.com>, <linux-iio@vger.kernel.org>,
-	<linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-	Vignesh R <vigneshr@ti.com>
-Subject: [PATCH 0/2] ADC: Fix bugs related to oneshot read
-Date: Mon, 8 Aug 2016 16:34:59 +0530
-Message-ID: <20160808110501.29586-1-vigneshr@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <anders@chargestorm.se>
+From: Anders Darander <anders@chargestorm.se>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org,
+	alexandre.belloni@free-electrons.com
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	linux-kernel@vger.kernel.org,
+	Anders Darander <anders@chargestorm.se>
+Subject: [PATCH] iio: adc: at91: unbreak channel adc channel 3
+Date: Mon,  8 Aug 2016 14:42:16 +0200
+Message-Id: <1470660136-12524-1-git-send-email-anders@chargestorm.se>
+List-ID: <linux-iio@vger.kernel.org>
 
+The driver always assumes that an input device has been created when
+reading channel 3. This causes a kernel panic when dereferencing
+st->ts_input.
 
+The change was introduced in
+commit 84882b060301 ("iio: adc: at91_adc: Add support for touchscreens
+without TSMR"). Earlier versions only entered that part of the if-else
+statement if only the following flags are set:
 
-This series fixes a couple of bugs related to simultaneous read of
-multiple ADC channels in oneshot mode. Since, all channels share FIFO1,
-it has to be protected using a mutex, implemented by patch 1. Patch 2
-increases the timeout waiting for a ADC sample.
+AT91_ADC_IER_XRDY | AT91_ADC_IER_YRDY | AT91_ADC_IER_PRDY
 
-Vignesh R (2):
-  iio: adc: ti_am335x_adc: Protect FIFO1 from concurrent access
-  iio: adc: ti_am335x_adc: Increase timeout value waiting for ADC sample
+Signed-off-by: Anders Darander <anders@chargestorm.se>
+---
+ drivers/iio/adc/at91_adc.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
- drivers/iio/adc/ti_am335x_adc.c      | 16 ++++++++++++----
- include/linux/mfd/ti_am335x_tscadc.h |  8 ++++----
- 2 files changed, 16 insertions(+), 8 deletions(-)
-
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index 52430ba..0438c68 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -381,8 +381,8 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
+ 		st->ts_bufferedmeasure = false;
+ 		input_report_key(st->ts_input, BTN_TOUCH, 0);
+ 		input_sync(st->ts_input);
+-	} else if (status & AT91_ADC_EOC(3)) {
+-		/* Conversion finished */
++	} else if (status & AT91_ADC_EOC(3) && st->ts_input) {
++		/* Conversion finished and we've a touchscreen */
+ 		if (st->ts_bufferedmeasure) {
+ 			/*
+ 			 * Last measurement is always discarded, since it can
 -- 
-2.9.2
-
+2.8.1
