@@ -1,61 +1,226 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:33433 "EHLO
-	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932669AbcHJDSf (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2016 23:18:35 -0400
-Received: by mail-pf0-f193.google.com with SMTP id i6so1970543pfe.0
-        for <linux-iio@vger.kernel.org>; Tue, 09 Aug 2016 20:18:35 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH 2/3] iio: chemical: atlas-ph-sensor: switch to REGCACHE_NONE regmap tree
-Date: Tue,  9 Aug 2016 20:05:58 -0700
-Message-Id: <1470798359-4919-3-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1470798359-4919-1-git-send-email-mranostay@gmail.com>
-References: <1470798359-4919-1-git-send-email-mranostay@gmail.com>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:37000 "EHLO
+	mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932854AbcHIN6J (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2016 09:58:09 -0400
+Received: by mail-wm0-f41.google.com with SMTP id i5so37255426wmg.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Aug 2016 06:58:08 -0700 (PDT)
+Date: Tue, 9 Aug 2016 14:59:35 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	Olof Johansson <olof@lixom.net>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>,
+	Vincent Palatin <vpalatin@chromium.org>,
+	Tomeu Vizoso <tomeu.vizoso@collabora.com>
+Subject: Re: [PATCH v4 3/4] platform/chrome: Introduce a new function to
+ check EC features.
+Message-ID: <20160809135935.GL5243@dell>
+References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
+ <1470045278-18161-4-git-send-email-enric.balletbo@collabora.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1470045278-18161-4-git-send-email-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Since there are overlapping volatile regions between parts, and only
-register that isn't volatile is the temperature compensation provided
-from userspace.
+On Mon, 01 Aug 2016, Enric Balletbo i Serra wrote:
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
----
- drivers/iio/chemical/atlas-ph-sensor.c | 16 ----------------
- 1 file changed, 16 deletions(-)
+> From: Vincent Palatin <vpalatin@chromium.org>
+> 
+> Use the EC_CMD_GET_FEATURES message to check the supported features for
+> each MCU.
+> 
+> Signed-off-by: Vincent Palatin <vpalatin@chromium.org>
+> [tomeu: adapted to changes in mainline]
+> Signed-off-by: Tomeu Vizoso <tomeu.vizoso@collabora.com>
+> [enric: remove references to USB PD feature and do it more generic]
+> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+> Reviewed-by: Guenter Roeck <groeck@chromium.org>
+> ---
+> 
+> Changes since v3:
+>  - Add Reviewed-by tag.
+> 
+>  drivers/platform/chrome/cros_ec_dev.c | 37 +++++++++++++++
+>  include/linux/mfd/cros_ec.h           |  1 +
+>  include/linux/mfd/cros_ec_commands.h  | 84 +++++++++++++++++++++++++++++++++++
 
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index 8e39b37a5385..a5993729cc47 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -84,26 +84,10 @@ struct atlas_data {
- 	__be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
- };
- 
--static const struct regmap_range atlas_volatile_ranges[] = {
--	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
--	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
--	regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
--};
--
--static const struct regmap_access_table atlas_volatile_table = {
--	.yes_ranges	= atlas_volatile_ranges,
--	.n_yes_ranges	= ARRAY_SIZE(atlas_volatile_ranges),
--};
--
- static const struct regmap_config atlas_regmap_config = {
- 	.name = ATLAS_REGMAP_NAME,
--
- 	.reg_bits = 8,
- 	.val_bits = 8,
--
--	.volatile_table = &atlas_volatile_table,
--	.max_register = ATLAS_REG_PSS_DATA + 4,
--	.cache_type = REGCACHE_RBTREE,
- };
- 
- static const struct iio_chan_spec atlas_ph_channels[] = {
+For the MFD changes:
+  Acked-by: Lee Jones <lee.jones@linaro.org>
+
+>  3 files changed, 122 insertions(+)
+> 
+> diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
+> index 8abd80d..7eb5307 100644
+> --- a/drivers/platform/chrome/cros_ec_dev.c
+> +++ b/drivers/platform/chrome/cros_ec_dev.c
+> @@ -87,6 +87,41 @@ exit:
+>  	return ret;
+>  }
+>  
+> +static int cros_ec_check_features(struct cros_ec_dev *ec, int feature)
+> +{
+> +	struct cros_ec_command *msg;
+> +	int ret;
+> +
+> +	if (ec->features[0] == -1U && ec->features[1] == -1U) {
+> +		/* features bitmap not read yet */
+> +
+> +		msg = kmalloc(sizeof(*msg) + sizeof(ec->features), GFP_KERNEL);
+> +		if (!msg)
+> +			return -ENOMEM;
+> +
+> +		msg->version = 0;
+> +		msg->command = EC_CMD_GET_FEATURES + ec->cmd_offset;
+> +		msg->insize = sizeof(ec->features);
+> +		msg->outsize = 0;
+> +
+> +		ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
+> +		if (ret < 0 || msg->result != EC_RES_SUCCESS) {
+> +			dev_warn(ec->dev, "cannot get EC features: %d/%d\n",
+> +				 ret, msg->result);
+> +			memset(ec->features, 0, sizeof(ec->features));
+> +		}
+> +
+> +		memcpy(ec->features, msg->data, sizeof(ec->features));
+> +
+> +		dev_dbg(ec->dev, "EC features %08x %08x\n",
+> +			ec->features[0], ec->features[1]);
+> +
+> +		kfree(msg);
+> +	}
+> +
+> +	return ec->features[feature / 32] & EC_FEATURE_MASK_0(feature);
+> +}
+> +
+>  /* Device file ops */
+>  static int ec_device_open(struct inode *inode, struct file *filp)
+>  {
+> @@ -245,6 +280,8 @@ static int ec_device_probe(struct platform_device *pdev)
+>  	ec->ec_dev = dev_get_drvdata(dev->parent);
+>  	ec->dev = dev;
+>  	ec->cmd_offset = ec_platform->cmd_offset;
+> +	ec->features[0] = -1U; /* Not cached yet */
+> +	ec->features[1] = -1U; /* Not cached yet */
+>  	device_initialize(&ec->class_dev);
+>  	cdev_init(&ec->cdev, &fops);
+>  
+> diff --git a/include/linux/mfd/cros_ec.h b/include/linux/mfd/cros_ec.h
+> index 7769ea6..7f039b2 100644
+> --- a/include/linux/mfd/cros_ec.h
+> +++ b/include/linux/mfd/cros_ec.h
+> @@ -187,6 +187,7 @@ struct cros_ec_dev {
+>  	struct cros_ec_device *ec_dev;
+>  	struct device *dev;
+>  	u16 cmd_offset;
+> +	u32 features[2];
+>  };
+>  
+>  /**
+> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+> index 8826e0f..1683003 100644
+> --- a/include/linux/mfd/cros_ec_commands.h
+> +++ b/include/linux/mfd/cros_ec_commands.h
+> @@ -713,6 +713,90 @@ struct ec_response_get_set_value {
+>  /* More than one command can use these structs to get/set paramters. */
+>  #define EC_CMD_GSV_PAUSE_IN_S5	0x0c
+>  
+> +/*****************************************************************************/
+> +/* List the features supported by the firmware */
+> +#define EC_CMD_GET_FEATURES  0x0d
+> +
+> +/* Supported features */
+> +enum ec_feature_code {
+> +	/*
+> +	 * This image contains a limited set of features. Another image
+> +	 * in RW partition may support more features.
+> +	 */
+> +	EC_FEATURE_LIMITED = 0,
+> +	/*
+> +	 * Commands for probing/reading/writing/erasing the flash in the
+> +	 * EC are present.
+> +	 */
+> +	EC_FEATURE_FLASH = 1,
+> +	/*
+> +	 * Can control the fan speed directly.
+> +	 */
+> +	EC_FEATURE_PWM_FAN = 2,
+> +	/*
+> +	 * Can control the intensity of the keyboard backlight.
+> +	 */
+> +	EC_FEATURE_PWM_KEYB = 3,
+> +	/*
+> +	 * Support Google lightbar, introduced on Pixel.
+> +	 */
+> +	EC_FEATURE_LIGHTBAR = 4,
+> +	/* Control of LEDs  */
+> +	EC_FEATURE_LED = 5,
+> +	/* Exposes an interface to control gyro and sensors.
+> +	 * The host goes through the EC to access these sensors.
+> +	 * In addition, the EC may provide composite sensors, like lid angle.
+> +	 */
+> +	EC_FEATURE_MOTION_SENSE = 6,
+> +	/* The keyboard is controlled by the EC */
+> +	EC_FEATURE_KEYB = 7,
+> +	/* The AP can use part of the EC flash as persistent storage. */
+> +	EC_FEATURE_PSTORE = 8,
+> +	/* The EC monitors BIOS port 80h, and can return POST codes. */
+> +	EC_FEATURE_PORT80 = 9,
+> +	/*
+> +	 * Thermal management: include TMP specific commands.
+> +	 * Higher level than direct fan control.
+> +	 */
+> +	EC_FEATURE_THERMAL = 10,
+> +	/* Can switch the screen backlight on/off */
+> +	EC_FEATURE_BKLIGHT_SWITCH = 11,
+> +	/* Can switch the wifi module on/off */
+> +	EC_FEATURE_WIFI_SWITCH = 12,
+> +	/* Monitor host events, through for example SMI or SCI */
+> +	EC_FEATURE_HOST_EVENTS = 13,
+> +	/* The EC exposes GPIO commands to control/monitor connected devices. */
+> +	EC_FEATURE_GPIO = 14,
+> +	/* The EC can send i2c messages to downstream devices. */
+> +	EC_FEATURE_I2C = 15,
+> +	/* Command to control charger are included */
+> +	EC_FEATURE_CHARGER = 16,
+> +	/* Simple battery support. */
+> +	EC_FEATURE_BATTERY = 17,
+> +	/*
+> +	 * Support Smart battery protocol
+> +	 * (Common Smart Battery System Interface Specification)
+> +	 */
+> +	EC_FEATURE_SMART_BATTERY = 18,
+> +	/* EC can dectect when the host hangs. */
+> +	EC_FEATURE_HANG_DETECT = 19,
+> +	/* Report power information, for pit only */
+> +	EC_FEATURE_PMU = 20,
+> +	/* Another Cros EC device is present downstream of this one */
+> +	EC_FEATURE_SUB_MCU = 21,
+> +	/* Support USB Power delivery (PD) commands */
+> +	EC_FEATURE_USB_PD = 22,
+> +	/* Control USB multiplexer, for audio through USB port for instance. */
+> +	EC_FEATURE_USB_MUX = 23,
+> +	/* Motion Sensor code has an internal software FIFO */
+> +	EC_FEATURE_MOTION_SENSE_FIFO = 24,
+> +};
+> +
+> +#define EC_FEATURE_MASK_0(event_code) (1UL << (event_code % 32))
+> +#define EC_FEATURE_MASK_1(event_code) (1UL << (event_code - 32))
+> +struct ec_response_get_features {
+> +	uint32_t flags[2];
+> +} __packed;
+>  
+>  /*****************************************************************************/
+>  /* Flash commands */
+
 -- 
-2.7.4
-
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
