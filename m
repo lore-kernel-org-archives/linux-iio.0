@@ -1,70 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from arroyo.ext.ti.com ([198.47.19.12]:58658 "EHLO arroyo.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S932165AbcHIJ6V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 9 Aug 2016 05:58:21 -0400
-Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: Protect FIFO1 from
- concurrent access
-To: Matt Ranostay <mranostay@gmail.com>
-References: <20160808110501.29586-1-vigneshr@ti.com>
- <20160808110501.29586-2-vigneshr@ti.com>
- <CAKzfze92jp-O1Zy_9gpFTjPdE4Oq_Tt26dAe7854jD30oAEKvg@mail.gmail.com>
-CC: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lee Jones <lee.jones@linaro.org>,
-	"Andrew F . Davis" <afd@ti.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	Linux OMAP List <linux-omap@vger.kernel.org>
-From: Vignesh R <vigneshr@ti.com>
-Message-ID: <a2b89956-5a1a-d311-8f5c-84ce2378c2e9@ti.com>
-Date: Tue, 9 Aug 2016 15:27:49 +0530
+Received: from mail-wm0-f43.google.com ([74.125.82.43]:36014 "EHLO
+	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932551AbcHINrV (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2016 09:47:21 -0400
+Received: by mail-wm0-f43.google.com with SMTP id q128so34528034wma.1
+        for <linux-iio@vger.kernel.org>; Tue, 09 Aug 2016 06:47:20 -0700 (PDT)
+Date: Tue, 9 Aug 2016 14:48:47 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+Subject: Re: [PATCH v3 3/4] mfd: mfd-core: reattach mfd of_node to cells
+ without of_compatible
+Message-ID: <20160809134847.GJ5243@dell>
+References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1469519027-11387-4-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze92jp-O1Zy_9gpFTjPdE4Oq_Tt26dAe7854jD30oAEKvg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1469519027-11387-4-git-send-email-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Tue, 26 Jul 2016, Quentin Schulz wrote:
 
-
-On Tuesday 09 August 2016 03:21 PM, Matt Ranostay wrote:
-> On Mon, Aug 8, 2016 at 4:05 AM, Vignesh R <vigneshr@ti.com> wrote:
->> It is possible that two or more ADC channels can be simultaneously
->> requested for raw samples, in which case there can be race in access to
->> FIFO data resulting in loss of samples.
->> If am335x_tsc_se_set_once() is called again from tiadc_read_raw(), when
->> ADC is still acquired to sample one of the channels, the second process
->> might be put into uninterruptible sleep state. Fix these issues, by
->> protecting FIFO access and channel configurations with a mutex. Since
->> tiadc_read_raw() might take anywhere between few microseconds to few
->> milliseconds to finish execution (depending on averaging and delay
->> values supplied via DT), its better to use mutex instead of spinlock.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
->> ---
->>  drivers/iio/adc/ti_am335x_adc.c | 14 +++++++++++---
->>  1 file changed, 11 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
->> index 8a368756881b..bed9977a1863 100644
->> --- a/drivers/iio/adc/ti_am335x_adc.c
->> +++ b/drivers/iio/adc/ti_am335x_adc.c
->> @@ -32,6 +32,7 @@
->>
->>  struct tiadc_device {
->>         struct ti_tscadc_dev *mfd_tscadc;
->> +       struct mutex fifo1_lock; /* to protect fifo access */
+> When an MFD cell has an of_compatible (meaning it is present in the Device
+> Tree), other nodes can reference it using a phandle.
 > 
-> Are there more than one FIFOs, or even possible? Just wondering the
-> number indexing here..
+> However when the MFD cell is not declared in the Device Tree, the only way
+> other nodes can reference it are by using a phandle to the MFD. Then when
+> this MFD cell tries to register itself in one framework, the registration
+> is denied by the framework because it is not matching the of_node of the
+> node which is referenced by the phandle in one of the other nodes.
+> 
+> This reattaches the of_node of the MFD to the MFD cell device structure
+> when the MFD cell has no of_compatible.
+> 
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> ---
+> 
+> We need this modification to register the thermal sensor in the thermal
+> framework.
+> 
+> Added in v3.
+> 
+>  drivers/mfd/mfd-core.c | 14 +++++++++-----
+>  1 file changed, 9 insertions(+), 5 deletions(-)
 
-ADC IP as such as two FIFOs: FIFO0 and FIFO1. FIFO0 is dedicated for
-touchscreen channels and FIFO1 is used for ADC channels. Its not
-possible to use FIFO0 for ADC, but to match h/w register naming, I used
-above name for mutex.
+Can you show me the DT code where this is used?
+
+Is it used by a patch in this series?
+
+> diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
+> index 3ac486a..0b19663 100644
+> --- a/drivers/mfd/mfd-core.c
+> +++ b/drivers/mfd/mfd-core.c
+> @@ -175,12 +175,16 @@ static int mfd_add_device(struct device *parent, int id,
+>  	if (ret < 0)
+>  		goto fail_res;
+>  
+> -	if (parent->of_node && cell->of_compatible) {
+> -		for_each_child_of_node(parent->of_node, np) {
+> -			if (of_device_is_compatible(np, cell->of_compatible)) {
+> -				pdev->dev.of_node = np;
+> -				break;
+> +	if (parent->of_node) {
+> +		if (cell->of_compatible) {
+> +			for_each_child_of_node(parent->of_node, np) {
+> +				if (of_device_is_compatible(np, cell->of_compatible)) {
+> +					pdev->dev.of_node = np;
+> +					break;
+> +				}
+>  			}
+> +		} else {
+> +			pdev->dev.of_node = parent->of_node;
+>  		}
+>  	}
+>  
 
 -- 
-Regards
-Vignesh
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
