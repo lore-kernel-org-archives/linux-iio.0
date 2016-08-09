@@ -1,89 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f54.google.com ([74.125.82.54]:35640 "EHLO
-	mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932237AbcHIJdg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2016 05:33:36 -0400
-Received: by mail-wm0-f54.google.com with SMTP id f65so21503371wmi.0
-        for <linux-iio@vger.kernel.org>; Tue, 09 Aug 2016 02:33:35 -0700 (PDT)
-Date: Tue, 9 Aug 2016 10:35:02 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Vignesh R <vigneshr@ti.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from arroyo.ext.ti.com ([198.47.19.12]:58658 "EHLO arroyo.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932165AbcHIJ6V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 9 Aug 2016 05:58:21 -0400
+Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: Protect FIFO1 from
+ concurrent access
+To: Matt Ranostay <mranostay@gmail.com>
+References: <20160808110501.29586-1-vigneshr@ti.com>
+ <20160808110501.29586-2-vigneshr@ti.com>
+ <CAKzfze92jp-O1Zy_9gpFTjPdE4Oq_Tt26dAe7854jD30oAEKvg@mail.gmail.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"Andrew F . Davis" <afd@ti.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: Increase timeout value
- waiting for ADC sample
-Message-ID: <20160809093502.GV5243@dell>
-References: <20160808110501.29586-1-vigneshr@ti.com>
- <20160808110501.29586-3-vigneshr@ti.com>
+	Lee Jones <lee.jones@linaro.org>,
+	"Andrew F . Davis" <afd@ti.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	Linux OMAP List <linux-omap@vger.kernel.org>
+From: Vignesh R <vigneshr@ti.com>
+Message-ID: <a2b89956-5a1a-d311-8f5c-84ce2378c2e9@ti.com>
+Date: Tue, 9 Aug 2016 15:27:49 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160808110501.29586-3-vigneshr@ti.com>
+In-Reply-To: <CAKzfze92jp-O1Zy_9gpFTjPdE4Oq_Tt26dAe7854jD30oAEKvg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 08 Aug 2016, Vignesh R wrote:
 
-> Now that open delay and sample delay for each channel is configurable
-> via DT, the default IDLE_TIMEOUT value is not enough as this is
-> calculated based on hardcoded macros. This results in driver returning
-> EBUSY sometimes. Fix this by increasing the timeout
-> value based on maximum value possible to open delay and sample delays
-> for each channel.
+
+On Tuesday 09 August 2016 03:21 PM, Matt Ranostay wrote:
+> On Mon, Aug 8, 2016 at 4:05 AM, Vignesh R <vigneshr@ti.com> wrote:
+>> It is possible that two or more ADC channels can be simultaneously
+>> requested for raw samples, in which case there can be race in access to
+>> FIFO data resulting in loss of samples.
+>> If am335x_tsc_se_set_once() is called again from tiadc_read_raw(), when
+>> ADC is still acquired to sample one of the channels, the second process
+>> might be put into uninterruptible sleep state. Fix these issues, by
+>> protecting FIFO access and channel configurations with a mutex. Since
+>> tiadc_read_raw() might take anywhere between few microseconds to few
+>> milliseconds to finish execution (depending on averaging and delay
+>> values supplied via DT), its better to use mutex instead of spinlock.
+>>
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+>> ---
+>>  drivers/iio/adc/ti_am335x_adc.c | 14 +++++++++++---
+>>  1 file changed, 11 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>> index 8a368756881b..bed9977a1863 100644
+>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>> @@ -32,6 +32,7 @@
+>>
+>>  struct tiadc_device {
+>>         struct ti_tscadc_dev *mfd_tscadc;
+>> +       struct mutex fifo1_lock; /* to protect fifo access */
 > 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      | 2 +-
->  include/linux/mfd/ti_am335x_tscadc.h | 8 ++++----
+> Are there more than one FIFOs, or even possible? Just wondering the
+> number indexing here..
 
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
->  2 files changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index bed9977a1863..c3cfacca2541 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -381,7 +381,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
->  
->  	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
->  
-> -	timeout = jiffies + usecs_to_jiffies
-> +	timeout = jiffies + msecs_to_jiffies
->  				(IDLE_TIMEOUT * adc_dev->channels);
->  	/* Wait for Fifo threshold interrupt */
->  	while (1) {
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 2567a87872b0..7f55b8b41032 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -138,16 +138,16 @@
->  /*
->   * time in us for processing a single channel, calculated as follows:
->   *
-> - * num cycles = open delay + (sample delay + conv time) * averaging
-> + * max num cycles = open delay + (sample delay + conv time) * averaging
->   *
-> - * num cycles: 152 + (1 + 13) * 16 = 376
-> + * max num cycles: 262143 + (255 + 13) * 16 = 266431
->   *
->   * clock frequency: 26MHz / 8 = 3.25MHz
->   * clock period: 1 / 3.25MHz = 308ns
->   *
-> - * processing time: 376 * 308ns = 116us
-> + * max processing time: 266431 * 308ns = 83ms(approx)
->   */
-> -#define IDLE_TIMEOUT 116 /* microsec */
-> +#define IDLE_TIMEOUT 83 /* milliseconds */
->  
->  #define TSCADC_CELLS		2
->  
+ADC IP as such as two FIFOs: FIFO0 and FIFO1. FIFO0 is dedicated for
+touchscreen channels and FIFO1 is used for ADC channels. Its not
+possible to use FIFO0 for ADC, but to match h/w register naming, I used
+above name for mutex.
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Regards
+Vignesh
