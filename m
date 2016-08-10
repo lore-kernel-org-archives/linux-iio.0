@@ -1,89 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f43.google.com ([74.125.82.43]:36014 "EHLO
-	mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932551AbcHINrV (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2016 09:47:21 -0400
-Received: by mail-wm0-f43.google.com with SMTP id q128so34528034wma.1
-        for <linux-iio@vger.kernel.org>; Tue, 09 Aug 2016 06:47:20 -0700 (PDT)
-Date: Tue, 9 Aug 2016 14:48:47 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com, wens@csie.org,
-	linux-kernel@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com
-Subject: Re: [PATCH v3 3/4] mfd: mfd-core: reattach mfd of_node to cells
- without of_compatible
-Message-ID: <20160809134847.GJ5243@dell>
-References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com>
- <1469519027-11387-4-git-send-email-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1469519027-11387-4-git-send-email-quentin.schulz@free-electrons.com>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:33433 "EHLO
+	mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932669AbcHJDSf (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 9 Aug 2016 23:18:35 -0400
+Received: by mail-pf0-f193.google.com with SMTP id i6so1970543pfe.0
+        for <linux-iio@vger.kernel.org>; Tue, 09 Aug 2016 20:18:35 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 2/3] iio: chemical: atlas-ph-sensor: switch to REGCACHE_NONE regmap tree
+Date: Tue,  9 Aug 2016 20:05:58 -0700
+Message-Id: <1470798359-4919-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1470798359-4919-1-git-send-email-mranostay@gmail.com>
+References: <1470798359-4919-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 26 Jul 2016, Quentin Schulz wrote:
+Since there are overlapping volatile regions between parts, and only
+register that isn't volatile is the temperature compensation provided
+from userspace.
 
-> When an MFD cell has an of_compatible (meaning it is present in the Device
-> Tree), other nodes can reference it using a phandle.
-> 
-> However when the MFD cell is not declared in the Device Tree, the only way
-> other nodes can reference it are by using a phandle to the MFD. Then when
-> this MFD cell tries to register itself in one framework, the registration
-> is denied by the framework because it is not matching the of_node of the
-> node which is referenced by the phandle in one of the other nodes.
-> 
-> This reattaches the of_node of the MFD to the MFD cell device structure
-> when the MFD cell has no of_compatible.
-> 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
-> 
-> We need this modification to register the thermal sensor in the thermal
-> framework.
-> 
-> Added in v3.
-> 
->  drivers/mfd/mfd-core.c | 14 +++++++++-----
->  1 file changed, 9 insertions(+), 5 deletions(-)
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/chemical/atlas-ph-sensor.c | 16 ----------------
+ 1 file changed, 16 deletions(-)
 
-Can you show me the DT code where this is used?
-
-Is it used by a patch in this series?
-
-> diff --git a/drivers/mfd/mfd-core.c b/drivers/mfd/mfd-core.c
-> index 3ac486a..0b19663 100644
-> --- a/drivers/mfd/mfd-core.c
-> +++ b/drivers/mfd/mfd-core.c
-> @@ -175,12 +175,16 @@ static int mfd_add_device(struct device *parent, int id,
->  	if (ret < 0)
->  		goto fail_res;
->  
-> -	if (parent->of_node && cell->of_compatible) {
-> -		for_each_child_of_node(parent->of_node, np) {
-> -			if (of_device_is_compatible(np, cell->of_compatible)) {
-> -				pdev->dev.of_node = np;
-> -				break;
-> +	if (parent->of_node) {
-> +		if (cell->of_compatible) {
-> +			for_each_child_of_node(parent->of_node, np) {
-> +				if (of_device_is_compatible(np, cell->of_compatible)) {
-> +					pdev->dev.of_node = np;
-> +					break;
-> +				}
->  			}
-> +		} else {
-> +			pdev->dev.of_node = parent->of_node;
->  		}
->  	}
->  
-
+diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+index 8e39b37a5385..a5993729cc47 100644
+--- a/drivers/iio/chemical/atlas-ph-sensor.c
++++ b/drivers/iio/chemical/atlas-ph-sensor.c
+@@ -84,26 +84,10 @@ struct atlas_data {
+ 	__be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
+ };
+ 
+-static const struct regmap_range atlas_volatile_ranges[] = {
+-	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
+-	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
+-	regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
+-};
+-
+-static const struct regmap_access_table atlas_volatile_table = {
+-	.yes_ranges	= atlas_volatile_ranges,
+-	.n_yes_ranges	= ARRAY_SIZE(atlas_volatile_ranges),
+-};
+-
+ static const struct regmap_config atlas_regmap_config = {
+ 	.name = ATLAS_REGMAP_NAME,
+-
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+-
+-	.volatile_table = &atlas_volatile_table,
+-	.max_register = ATLAS_REG_PSS_DATA + 4,
+-	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+ static const struct iio_chan_spec atlas_ph_channels[] = {
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.7.4
+
