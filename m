@@ -1,48 +1,77 @@
-Return-Path: <christophe.jaillet@wanadoo.fr>
-From: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-To: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org,
-	Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Subject: [PATCH] iio: light: us5182d: Add missing error code assignment before test
-Date: Wed, 10 Aug 2016 07:18:16 +0200
-Message-Id: <1470806296-8739-1-git-send-email-christophe.jaillet@wanadoo.fr>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from comal.ext.ti.com ([198.47.26.152]:52266 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S932227AbcHKGBw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Thu, 11 Aug 2016 02:01:52 -0400
+From: Mugunthan V N <mugunthanvnm@ti.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	<linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
+	Sekhar Nori <nsekhar@ti.com>,
+	Mugunthan V N <mugunthanvnm@ti.com>
+Subject: [PATCH] tools: iio: fix iio build error by adding KBUILD_OUTPUT support to makefile
+Date: Thu, 11 Aug 2016 11:31:24 +0530
+Message-ID: <20160811060124.6604-1-mugunthanvnm@ti.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-It is likely that checking the result of 'pm_runtime_set_active' is
-expected here.
+Current make doesn't have support to pass kernel built directory
+to find events.h kernel header file, so adding support for
+KBUILD_OUTPUT support to Makefile.
 
-Fixes: f0e5f57d3ac2 ("iio: light: us8152d: Add power management support")
+$ make CROSS_COMPILE=arm-linux-gnueabihf- -C tools/iio
+make: Entering directory '/home/a0131834/workspace/git/mainline/linux/tools/iio'
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE   -c -o iio_event_monitor.o iio_event_monitor.c
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE   -c -o iio_utils.o iio_utils.c
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE   -c -o lsiio.o lsiio.c
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE   -c -o iio_generic_buffer.o iio_generic_buffer.c
+arm-linux-gnueabihf-gcc   lsiio.o iio_utils.o   -o lsiio
+arm-linux-gnueabihf-gcc   iio_generic_buffer.o iio_utils.o   -o iio_generic_buffer
+iio_event_monitor.c:28:30: fatal error: linux/iio/events.h: No such file or directory
+ #include <linux/iio/events.h>
+                               ^
+compilation terminated.
+<builtin>: recipe for target 'iio_event_monitor.o' failed
+make: *** [iio_event_monitor.o] Error 1
+make: Leaving directory '/home/a0131834/workspace/git/mainline/linux/tools/iio'
 
-Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
+Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
 ---
- drivers/iio/light/us5182d.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index 20c40f780964..18cf2e29e4d5 100644
---- a/drivers/iio/light/us5182d.c
-+++ b/drivers/iio/light/us5182d.c
-@@ -894,7 +894,7 @@ static int us5182d_probe(struct i2c_client *client,
- 		goto out_err;
+With this fix I am able to build the iio tools
+
+$ make CROSS_COMPILE=arm-linux-gnueabihf- -C tools/iio KBUILD_OUTPUT=`pwd`
+make: Entering directory '/home/a0131834/workspace/git/mainline/linux/tools/iio'
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE -I/home/a0131834/workspace/git/mainline/linux/usr/include   -c -o iio_event_monitor.o iio_event_monitor.c
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE -I/home/a0131834/workspace/git/mainline/linux/usr/include   -c -o iio_utils.o iio_utils.c
+arm-linux-gnueabihf-gcc   iio_event_monitor.o iio_utils.o   -o iio_event_monitor
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE -I/home/a0131834/workspace/git/mainline/linux/usr/include   -c -o lsiio.o lsiio.c
+arm-linux-gnueabihf-gcc   lsiio.o iio_utils.o   -o lsiio
+arm-linux-gnueabihf-gcc -Wall -g -D_GNU_SOURCE -I/home/a0131834/workspace/git/mainline/linux/usr/include   -c -o iio_generic_buffer.o iio_generic_buffer.c
+arm-linux-gnueabihf-gcc   iio_generic_buffer.o iio_utils.o   -o iio_generic_buffer
+make: Leaving directory '/home/a0131834/workspace/git/mainline/linux/tools/iio'
+
+---
+ tools/iio/Makefile | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/tools/iio/Makefile b/tools/iio/Makefile
+index 5446d62..0ec3ea0 100644
+--- a/tools/iio/Makefile
++++ b/tools/iio/Makefile
+@@ -1,5 +1,6 @@
+ CC = $(CROSS_COMPILE)gcc
+-CFLAGS += -Wall -g -D_GNU_SOURCE
++KBUILD_OUTPUT ?= /lib/modules/$(shell uname -r)/build
++CFLAGS += -Wall -g -D_GNU_SOURCE -I$(KBUILD_OUTPUT)/usr/include
  
- 	if (data->default_continuous) {
--		pm_runtime_set_active(&client->dev);
-+		ret =3D pm_runtime_set_active(&client->dev);
- 		if (ret < 0)
- 			goto out_err;
- 	}
+ BINDIR=usr/bin
+ INSTALL_PROGRAM=install -m 755 -p
 -- 
-2.7.4
+2.9.2.664.ga0a1831
 
-
----
-L'absence de virus dans ce courrier =C3=A9lectronique a =C3=A9t=C3=A9 v=C3=
-=A9rifi=C3=A9e par le logiciel antivirus Avast.
-https://www.avast.com/antivirus
