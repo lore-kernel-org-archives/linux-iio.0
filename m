@@ -1,40 +1,57 @@
-Return-Path: <jarkko.nikula@linux.intel.com>
-Subject: Re: [PATCH] iio: pressure: bmp280: Fix incorrect pointer access in PM
- callbacks
-To: Linus Walleij <linus.walleij@linaro.org>
-References: <1471002271-11426-1-git-send-email-jarkko.nikula@linux.intel.com>
- <CACRpkdYd2vp9KMMv8sW9iNsWkO-j2deKwY_vdzGvqyGanT91gg@mail.gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Jarkko Nikula <jarkko.nikula@linux.intel.com>
-Message-ID: <e2104071-78df-e83d-4dcf-fbb37ee36eed@linux.intel.com>
-Date: Fri, 12 Aug 2016 15:36:58 +0300
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bh-25.webhostbox.net ([208.91.199.152]:45631 "EHLO
+	bh-25.webhostbox.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1751982AbcHLMke (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Fri, 12 Aug 2016 08:40:34 -0400
+Subject: Re: [PATCH v3 2/9] hwmon: (core) New hwmon registration API
+To: Keerthy <a0393675@ti.com>, Jean Delvare <jdelvare@suse.com>
+References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
+ <1469417552-9749-3-git-send-email-linux@roeck-us.net>
+ <57AD85C4.5020409@ti.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Eduardo Valentin <edubezval@gmail.com>,
+	Punit Agrawal <punit.agrawal@arm.com>,
+	linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
+	"R, Vignesh" <vigneshr@ti.com>
+From: Guenter Roeck <linux@roeck-us.net>
+Message-ID: <ccf1b5d0-0dd0-cc9f-40e6-27f3bbae3bbf@roeck-us.net>
+Date: Fri, 12 Aug 2016 05:40:25 -0700
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYd2vp9KMMv8sW9iNsWkO-j2deKwY_vdzGvqyGanT91gg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <57AD85C4.5020409@ti.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/12/2016 03:21 PM, Linus Walleij wrote:
-> On Fri, Aug 12, 2016 at 1:44 PM, Jarkko Nikula
-> <jarkko.nikula@linux.intel.com> wrote:
->
->> BMP280 runtime PM callbacks are incorrectly casting dev_get_drvdata() to
->> struct bmp280_data * while bmp280_common_probe() sets driver data to
->> struct iio_dev *. Fix this and get the struct bmp280_data * from private
->> data of struct iio_dev.
+On 08/12/2016 01:16 AM, Keerthy wrote:
+> On Monday 25 July 2016 09:02 AM, Guenter Roeck wrote:
+>> Up to now, each hwmon driver has to implement its own sysfs attributes.
+>> This requires a lot of template code, and distracts from the driver's core
+>> function to read and write chip registers.
 >>
->> Fixes: 3d838118c6aa ("iio: pressure: bmp280: add power management")
->> Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
->> ---
->> For v4.8-rc.
+>> To be able to reduce driver complexity, move sensor attribute handling
+>> and thermal zone registration into hwmon core. By using the new API,
+>> driver code and data size is typically reduced by 20-70%, depending
+>> on driver complexity and the number of sysfs attributes supported.
+>>
+>> With this patch, the new API only supports thermal sensors. Support for
+>> other sensor types will be added with subsequent patches.
+>>
+> Hi Guenter,
 >
-> Sent a fix for this already two weeks ago:
-> http://marc.info/?l=linux-iio&m=146965159217655&w=2
+> Seems like this patch introduces a cycling dependency between
+> thermal_sys and hwmon:
 >
-> Just waiting for it to be picked up and merged.
+> DEPMOD 4.8.0-rc1-next-20160811-00001-g2f84cf7854e7
+> depmod: ERROR: Found 2 modules in dependency cycles!
+> depmod: ERROR: Cycle detected: hwmon -> thermal_sys -> hwmon
 >
-Ok, please feel free to add my tested by to your patch then
+> As reported by R, Vignesh <vigneshr@ti.com>.
+>
 
-Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Hmm ... interesting. Thanks for letting me know. I'll have to think about that.
+
+Guenter
+
