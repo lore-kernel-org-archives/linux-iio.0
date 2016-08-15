@@ -1,99 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga03.intel.com ([134.134.136.65]:47172 "EHLO mga03.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1752824AbcHORb1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 15 Aug 2016 13:31:27 -0400
-Message-ID: <1471282163.20508.21.camel@linux.intel.com>
-Subject: Re: [PATCH v4 5/7] iio: hid-sensors: use asynchronous resume
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Jiri Kosina <jikos@kernel.org>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	linux-iio@vger.kernel.org
-Date: Mon, 15 Aug 2016 10:29:23 -0700
-In-Reply-To: <CAKdAkRRjh+21qOzq28=vSX59RcZsMOAt3pTUhjw4wXdpXXQg-w@mail.gmail.com>
-References: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <1470561939-14278-6-git-send-email-srinivas.pandruvada@linux.intel.com>
-	 <alpine.LNX.2.00.1608071214500.22028@cbobk.fhfr.pm>
-	 <884e74df-569e-8218-fbda-f9c7ecfe1e5a@kernel.org>
-	 <af2d1c90-a0ec-0888-8048-76463bf98ece@kernel.org>
-	 <CAKdAkRS-sVHqQ1tUZWVxNTfX5=ZxFzbCAxvsJPHV4=85mdEeRA@mail.gmail.com>
-	 <1471279360.20508.20.camel@linux.intel.com>
-	 <CAKdAkRRjh+21qOzq28=vSX59RcZsMOAt3pTUhjw4wXdpXXQg-w@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41570 "EHLO
+	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1752850AbcHOPgc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:36:32 -0400
+Subject: Re: [PATCH v3 1/4] hwmon: iio_hwmon: delay probing with late_initcall
+To: Quentin Schulz <quentin.schulz@free-electrons.com>,
+	Alexander Stein <alexander.stein@systec-electronic.com>
+References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com>
+ <209942367.uny0GxrY2s@ws-stein>
+ <10d14cc4-26f1-8f2d-2997-3b2bc323c40e@free-electrons.com>
+ <5277864.qlyRKbC1Zy@ws-stein>
+ <ed5c1761-bdc7-df9c-96c8-998e83c49c4c@free-electrons.com>
+Cc: linux-kernel@vger.kernel.org, jdelvare@suse.com,
+	linux@roeck-us.net, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, maxime.ripard@free-electrons.com, wens@csie.org,
+	lee.jones@linaro.org, linux-hwmon@vger.kernel.org,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <bce453f4-a776-a534-34f2-c8fcd09a3420@kernel.org>
+Date: Mon, 15 Aug 2016 16:36:28 +0100
+MIME-Version: 1.0
+In-Reply-To: <ed5c1761-bdc7-df9c-96c8-998e83c49c4c@free-electrons.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 2016-08-15 at 10:14 -0700, Dmitry Torokhov wrote:
-> On Mon, Aug 15, 2016 at 9:42 AM, Srinivas Pandruvada
-> <srinivas.pandruvada@linux.intel.com> wrote:
-> > 
-> > On Mon, 2016-08-15 at 08:45 -0700, Dmitry Torokhov wrote:
-> > > 
-> > > On Mon, Aug 15, 2016 at 7:52 AM, Jonathan Cameron <jic23@kernel.o
-> > > rg>
-> > > wrote:
-> > > > 
-> > > > 
-> > > > On 15/08/16 15:07, Jonathan Cameron wrote:
-> > > > > 
-> > > > > 
-> > > > > On 07/08/16 11:15, Jiri Kosina wrote:
-> > > > > > 
-> > > > > > 
-> > > > > > On Sun, 7 Aug 2016, Srinivas Pandruvada wrote:
-> > > > > > 
-> > > > > > > 
-> > > > > > > 
-> > > > > > > Some platforms power off sensor hubs during S3 suspend,
-> > > > > > > which
-> > > > > > > will require
-> > > > > > > longer time to resume. This hurts system resume time, so
-> > > > > > > resume
-> > > > > > > asynchronously.
-> > > > > > > 
-> > > > > > > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@l
-> > > > > > > inux
-> > > > > > > .intel.com>
-> > > > > > Jonathan, are you going to cherry-pick this patch from the
-> > > > > > series?
-> > > > > > Alternatively, if you're okay with it, I can pull it in
-> > > > > > together with the
-> > > > > > whole set with your Acked-by or Reviewed-by.
-> > > > > > 
-> > > > > I'll take it via IIO. Got a bit of catching up to do (been on
-> > > > > holiday)
-> > > > Applied to the togreg branch of iio.git - initially pushed out
-> > > > as
-> > > > testing for the autobuilders to play with it.
-> > > > This one is not really connected to the others so makes sense
-> > > > to
-> > > > take it separately.
-> > > > 
-> > > > I'm out of my depth on the rest of the patches in this series
-> > > > and don't have time to learn enough to follow them! Sorry I
-> > > > can't help on that front.
-> > > About this patch: me sees a new work, me does not see new calls
-> > > to
-> > > cancel_work_sync() or flush_work() anywhere, me gets worried.
-> > This work is scheduled during resume and is not delayed call. Only
-> > time
-> > really we need to cancel or flush if module is unloaded before
-> > resume
-> > work, not sure if this case realistic. Do you see any other case
-> > possible?
-> Runtime resume can happen at any time, I can unload module or unbind
-> it at any time. I also wasn't aware that our implementation goal for
-> locking rules/lifetime rules/etc was "realistic" instead of
-> "correct".
-This is not for runtime_resume, this is for regular S3 suspend. But I
-agree, I will submit a patch for correctness.
+On 26/07/16 10:33, Quentin Schulz wrote:
+> On 26/07/2016 11:05, Alexander Stein wrote:
+>> On Tuesday 26 July 2016 10:24:48, Quentin Schulz wrote:
+>>> On 26/07/2016 10:21, Alexander Stein wrote:
+>>>> On Tuesday 26 July 2016 09:43:44, Quentin Schulz wrote:
+>>>>> iio_channel_get_all returns -ENODEV when it cannot find either phandles
+>>>>> and
+>>>>> properties in the Device Tree or channels whose consumer_dev_name matches
+>>>>> iio_hwmon in iio_map_list. The iio_map_list is filled in by iio drivers
+>>>>> which might be probed after iio_hwmon.
+>>>>
+>>>> Would it work if iio_channel_get_all returning ENODEV is used for
+>>>> returning
+>>>> EPROBE_DEFER in iio_channel_get_all? Using late initcalls for
+>>>> driver/device
+>>>> dependencies seems not right for me at this place.
+>>>
+>>> Then what if the iio_channel_get_all is called outside of the probe of a
+>>> driver? We'll have to change the error code, things we are apparently
+>>> trying to avoid (see v2 patches' discussions).
+>>
+>> Maybe I didn't express my idea enough. I don't want to change the behavior of  
+>> iio_channel_get_all at all. Just the result evaluation of iio_channel_get_all 
+>> in iio_hwmon_probe. I have something link the patch below in mind.
+>>
+>> Best regards,
+>> Alexander
+>> ---
+>> diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
+>> index b550ba5..e32d150 100644
+>> --- a/drivers/hwmon/iio_hwmon.c
+>> +++ b/drivers/hwmon/iio_hwmon.c
+>> @@ -73,8 +73,12 @@ static int iio_hwmon_probe(struct platform_device *pdev)
+>>                 name = dev->of_node->name;
+>>  
+>>         channels = iio_channel_get_all(dev);
+>> -       if (IS_ERR(channels))
+>> -               return PTR_ERR(channels);
+>> +       if (IS_ERR(channels)) {
+>> +               if (PTR_ERR(channels) == -ENODEV)
+>> +                       return -EPROBE_DEFER;
+>> +               else
+>> +                       return PTR_ERR(channels);
+>> +       }
+>>  
+>>         st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
+>>         if (st == NULL) {
+> 
+> Indeed, I misunderstood what you told me.
+> 
+> Actually, the patch you proposed is part of my v1
+> (https://lkml.org/lkml/2016/6/28/203) and v2
+> (https://lkml.org/lkml/2016/7/15/215).
+> Jonathan and Guenter didn't really like the idea of changing the -ENODEV
+> in -EPROBE_DEFER.
+> 
+> What I thought you were proposing was to change the -ENODEV return code
+> inside iio_channel_get_all. This cannot be an option since the function
+> might be called outside of a probe (it is not yet, but might be in the
+> future?).
+If that did happen I'd be tempted to introduce a new function to be
+used outside of probe.  I definitely don't like rewriting in individual
+drivers.
 
-Thanks,
-Srinivas
+The defer question is still rather open in my mind. Will address it in the
+other thread.
 
 > 
-> Thanks.
+> Of what I understood, two possibilities are then possible (proposed
+> either by Guenter or Jonathan): either rework the iio framework to
+> register iio map array earlier or to use late_initcall instead of init
+> for the driver consuming the iio channels.
+Ultimately we probably need to rethink how the registration works
+(it was written before deferred probing came along and that has rather
+changed things for us!)
+
+For now I'm not convinced that deferring is that painful even if we
+do have to try reprobing every time a new module gets probed..
+
+Jonathan
 > 
+> Thanks,
+> Quentin
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
