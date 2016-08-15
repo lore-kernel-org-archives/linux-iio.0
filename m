@@ -1,46 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42270 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42352 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752824AbcHORdi (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 13:33:38 -0400
-Subject: Re: [PATCH] tools: iio: lsiio: enumerate processed channels
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1470105591-1006-1-git-send-email-mranostay@gmail.com>
+	with ESMTP id S1752713AbcHORt3 (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 13:49:29 -0400
+Subject: Re: [PATCH 1/1] iio:ti-ads1015: fix a wrong pointer definition.
+To: Giorgio <giorgio.nicole@arcor.de>, linux-iio@vger.kernel.org
+References: <20160727212749.21573-1-giorgio.nicole@arcor.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e691d6e0-5957-f476-5ee1-ce45bb406cd2@kernel.org>
-Date: Mon, 15 Aug 2016 18:33:36 +0100
+Message-ID: <7645ca07-ae31-e111-ffb1-a0c2b75bce47@kernel.org>
+Date: Mon, 15 Aug 2016 18:49:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <1470105591-1006-1-git-send-email-mranostay@gmail.com>
+In-Reply-To: <20160727212749.21573-1-giorgio.nicole@arcor.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/08/16 03:39, Matt Ranostay wrote:
-> Enumerate the processed channels (e.g. *_input) as well the raw channels.
-> 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-Applied to the togreg branch of iio.git
+On 27/07/16 22:27, Giorgio wrote:
+> The call to i2c_get_clientdata(client) returns a struct iio_dev*, not
+> the needed struct ads1015_data*. We need here an intermediate step as
+> in the function: void ads1015_get_channels_config(struct i2c_client *client).
+Please sign off on any patches you submit.
 
-Thanks,
+I can't apply this for you as it has legal meaning.
 
 Jonathan
 > ---
->  tools/iio/lsiio.c | 3 ++-
+>  drivers/iio/adc/ti-ads1015.c | 3 ++-
 >  1 file changed, 2 insertions(+), 1 deletion(-)
 > 
-> diff --git a/tools/iio/lsiio.c b/tools/iio/lsiio.c
-> index 3d650e668252..ab0f5cf16025 100644
-> --- a/tools/iio/lsiio.c
-> +++ b/tools/iio/lsiio.c
-> @@ -51,7 +51,8 @@ static int dump_channels(const char *dev_dir_name)
+> diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+> index 73cbf0b..fe96af6 100644
+> --- a/drivers/iio/adc/ti-ads1015.c
+> +++ b/drivers/iio/adc/ti-ads1015.c
+> @@ -403,7 +403,8 @@ static const struct iio_info ads1015_info = {
+>  #ifdef CONFIG_OF
+>  static int ads1015_get_channels_config_of(struct i2c_client *client)
+>  {
+> -	struct ads1015_data *data = i2c_get_clientdata(client);
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +	struct ads1015_data *data = iio_priv(indio_dev);
+>  	struct device_node *node;
 >  
->  	while (ent = readdir(dp), ent)
->  		if (check_prefix(ent->d_name, "in_") &&
-> -		    check_postfix(ent->d_name, "_raw"))
-> +		   (check_postfix(ent->d_name, "_raw") ||
-> +		    check_postfix(ent->d_name, "_input")))
->  			printf("   %-10s\n", ent->d_name);
->  
->  	return (closedir(dp) == -1) ? -errno : 0;
+>  	if (!client->dev.of_node ||
 > 
 
