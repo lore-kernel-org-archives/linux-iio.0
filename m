@@ -1,85 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41640 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41762 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752590AbcHOPrw (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:47:52 -0400
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: Increase timeout value
- waiting for ADC sample
-To: Vignesh R <vigneshr@ti.com>
-References: <20160808110501.29586-1-vigneshr@ti.com>
- <20160808110501.29586-3-vigneshr@ti.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lee Jones <lee.jones@linaro.org>,
-	"Andrew F . Davis" <afd@ti.com>, linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
+	with ESMTP id S1752590AbcHOQHB (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 12:07:01 -0400
+Subject: Re: [PATCH] tools: iio: iio_generic_buffer: initialize channel array
+ pointer
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+	Alison Schofield <amsfield22@gmail.com>
+References: <20160727031734.GA31933@d830.WORKGROUP>
+ <57986CF3.4070602@parrot.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6e5c9bea-7b0f-0fdb-976a-29b7a0bccc5e@kernel.org>
-Date: Mon, 15 Aug 2016 16:47:50 +0100
+Message-ID: <413c3362-48d4-6ba4-9849-e82f69652ece@kernel.org>
+Date: Mon, 15 Aug 2016 17:06:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160808110501.29586-3-vigneshr@ti.com>
+In-Reply-To: <57986CF3.4070602@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/08/16 12:05, Vignesh R wrote:
-> Now that open delay and sample delay for each channel is configurable
-> via DT, the default IDLE_TIMEOUT value is not enough as this is
-> calculated based on hardcoded macros. This results in driver returning
-> EBUSY sometimes. Fix this by increasing the timeout
-> value based on maximum value possible to open delay and sample delays
-> for each channel.
+On 27/07/16 09:12, Gregor Boirie wrote:
 > 
-> Signed-off-by: Vignesh R <vigneshr@ti.com>
-As with patch 1 could you provide a fixes tag as well highlighting the
-patch that introduced the issue. I'm thinking you are referring to:
+> On 07/27/2016 05:17 AM, Alison Schofield wrote:
+>> Uninitialized channel pointer causes segmentation fault when we
+>> call free(channel) during cleanup() with no channels initialized.
+>> This happens when you exit early for usage errors.  Initialize
+>> the pointer to NULL when it is declared.
+>>
+>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+>> ---
+>>   tools/iio/iio_generic_buffer.c | 2 +-
+>>   1 file changed, 1 insertion(+), 1 deletion(-)
+>>
+>> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+>> index 0e8a1f7..ae68bf0 100644
+>> --- a/tools/iio/iio_generic_buffer.c
+>> +++ b/tools/iio/iio_generic_buffer.c
+>> @@ -348,7 +348,7 @@ int main(int argc, char **argv)
+>>       int notrigger = 0;
+>>       char *dummy;
+>>   -    struct iio_channel_info *channels;
+>> +    struct iio_channel_info *channels = NULL;
+>>         register_cleanup();
+>>   
+> Tested-by: Gregor Boirie <gregor.boirie@parrot.com>
+I'm not marking this for stable purely because the huge about of
+churn in those files makes it tricky to be sure when it first
+broke or if it was always broken!
 
-iio: adc: ti_am335x_adc: make sample delay, open delay, averaging DT parameters
-5dc11e810676ec4a5acb4423ccd33314bf74f4e54
+Anyhow, applied to the fixes-togreg branch of iio.git.
 
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      | 2 +-
->  include/linux/mfd/ti_am335x_tscadc.h | 8 ++++----
->  2 files changed, 5 insertions(+), 5 deletions(-)
+Thanks,
+
+Jonathan
 > 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index bed9977a1863..c3cfacca2541 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -381,7 +381,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
->  
->  	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
->  
-> -	timeout = jiffies + usecs_to_jiffies
-> +	timeout = jiffies + msecs_to_jiffies
->  				(IDLE_TIMEOUT * adc_dev->channels);
->  	/* Wait for Fifo threshold interrupt */
->  	while (1) {
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index 2567a87872b0..7f55b8b41032 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -138,16 +138,16 @@
->  /*
->   * time in us for processing a single channel, calculated as follows:
->   *
-> - * num cycles = open delay + (sample delay + conv time) * averaging
-> + * max num cycles = open delay + (sample delay + conv time) * averaging
->   *
-> - * num cycles: 152 + (1 + 13) * 16 = 376
-> + * max num cycles: 262143 + (255 + 13) * 16 = 266431
->   *
->   * clock frequency: 26MHz / 8 = 3.25MHz
->   * clock period: 1 / 3.25MHz = 308ns
->   *
-> - * processing time: 376 * 308ns = 116us
-> + * max processing time: 266431 * 308ns = 83ms(approx)
->   */
-> -#define IDLE_TIMEOUT 116 /* microsec */
-> +#define IDLE_TIMEOUT 83 /* milliseconds */
->  
->  #define TSCADC_CELLS		2
->  
-> 
+> greg.
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
