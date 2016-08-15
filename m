@@ -1,86 +1,110 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 04/17] iio: accel: kxsd9: Use devm_iio_device_register()
-Date: Tue, 16 Aug 2016 15:33:30 +0200
-Message-Id: <1471354423-19186-5-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
-References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga02.intel.com ([134.134.136.20]:55832 "EHLO mga02.intel.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753115AbcHOTMx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Mon, 15 Aug 2016 15:12:53 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org, jic23@kernel.org
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+	srinivas.pandruvada@linux.intel.com, dmitry.torokhov@gmail.com
+Subject: [PATCH v5] iio: hid-sensors: use asynchronous resume
+Date: Mon, 15 Aug 2016 12:12:47 -0700
+Message-Id: <1471288367-5325-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This gives us less to keep track of when removing the driver
-and simplifies the code.
+Some platforms power off sensor hubs during S3 suspend, which will require
+longer time to resume. This hurts system resume time, so resume
+asynchronously.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 ---
- drivers/iio/accel/kxsd9.c | 19 +++----------------
- 1 file changed, 3 insertions(+), 16 deletions(-)
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index 094071306e42..d3e87eef2594 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -220,8 +220,7 @@ static const struct iio_info kxsd9_info = {
- 
- static int kxsd9_common_probe(struct device *parent,
- 			      struct kxsd9_transport *transport,
--			      const char *name,
--			      struct iio_dev **retdev)
-+			      const char *name)
- {
- 	struct iio_dev *indio_dev;
- 	struct kxsd9_state *st;
-@@ -244,11 +243,10 @@ static int kxsd9_common_probe(struct device *parent,
- 
- 	kxsd9_power_up(st);
- 
--	ret = iio_device_register(indio_dev);
-+	ret = devm_iio_device_register(parent, indio_dev);
- 	if (ret)
- 		return ret;
- 
--	*retdev = indio_dev;
- 	return 0;
+Formerly this patch was v4 5/7 for Intel ISH series, which was separated
+from the series.
+
+v5:
+Added cancel_work_sync
+
+
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 22 +++++++++++++++++++++-
+ include/linux/hid-sensor-hub.h                     |  1 +
+ 2 files changed, 22 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index 5b41f9d..5264ed6 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -122,6 +122,14 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ #endif
  }
  
-@@ -295,7 +293,6 @@ int kxsd9_spi_readval(struct kxsd9_transport *tr, u8 address)
- static int kxsd9_spi_probe(struct spi_device *spi)
++static void hid_sensor_set_power_work(struct work_struct *work)
++{
++	struct hid_sensor_common *attrb = container_of(work,
++						       struct hid_sensor_common,
++						       work);
++	_hid_sensor_power_state(attrb, true);
++}
++
+ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+ 						bool state)
  {
- 	struct kxsd9_transport *transport;
--	struct iio_dev *indio_dev;
- 	int ret;
+@@ -130,6 +138,7 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
  
- 	transport = devm_kzalloc(&spi->dev, sizeof(*transport), GFP_KERNEL);
-@@ -311,19 +308,10 @@ static int kxsd9_spi_probe(struct spi_device *spi)
+ void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
+ {
++	cancel_work_sync(&attrb->work);
+ 	iio_trigger_unregister(attrb->trigger);
+ 	iio_trigger_free(attrb->trigger);
+ }
+@@ -170,6 +179,9 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+ 		goto error_unreg_trigger;
  
- 	ret = kxsd9_common_probe(&spi->dev,
- 				 transport,
--				 spi_get_device_id(spi)->name,
--				 &indio_dev);
-+				 spi_get_device_id(spi)->name);
- 	if (ret)
- 		return ret;
+ 	iio_device_set_drvdata(indio_dev, attrb);
++
++	INIT_WORK(&attrb->work, hid_sensor_set_power_work);
++
+ 	pm_suspend_ignore_children(&attrb->pdev->dev, true);
+ 	pm_runtime_enable(&attrb->pdev->dev);
+ 	/* Default to 3 seconds, but can be changed from sysfs */
+@@ -202,7 +214,15 @@ static int hid_sensor_resume(struct device *dev)
+ 	struct platform_device *pdev = to_platform_device(dev);
+ 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+ 	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
++	schedule_work(&attrb->work);
++	return 0;
++}
  
--	spi_set_drvdata(spi, indio_dev);
--	return 0;
--}
--
--static int kxsd9_spi_remove(struct spi_device *spi)
--{
--	iio_device_unregister(spi_get_drvdata(spi));
--
- 	return 0;
++static int hid_sensor_runtime_resume(struct device *dev)
++{
++	struct platform_device *pdev = to_platform_device(dev);
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
+ 	return _hid_sensor_power_state(attrb, true);
  }
  
-@@ -338,7 +326,6 @@ static struct spi_driver kxsd9_spi_driver = {
- 		.name = "kxsd9",
- 	},
- 	.probe = kxsd9_spi_probe,
--	.remove = kxsd9_spi_remove,
- 	.id_table = kxsd9_spi_id,
+@@ -211,7 +231,7 @@ static int hid_sensor_resume(struct device *dev)
+ const struct dev_pm_ops hid_sensor_pm_ops = {
+ 	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend, hid_sensor_resume)
+ 	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
+-			   hid_sensor_resume, NULL)
++			   hid_sensor_runtime_resume, NULL)
  };
- module_spi_driver(kxsd9_spi_driver);
+ EXPORT_SYMBOL(hid_sensor_pm_ops);
+ 
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index c02b5ce..dd85f35 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -236,6 +236,7 @@ struct hid_sensor_common {
+ 	struct hid_sensor_hub_attribute_info report_state;
+ 	struct hid_sensor_hub_attribute_info power_state;
+ 	struct hid_sensor_hub_attribute_info sensitivity;
++	struct work_struct work;
+ };
+ 
+ /* Convert from hid unit expo to regular exponent */
 -- 
 2.7.4
+
