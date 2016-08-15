@@ -1,58 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42401 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42456 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752985AbcHOR4C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 13:56:02 -0400
-Subject: Re: [PATCH v2 2/2] iio: accel: Add support for Domintech DMARD06
- accelerometer
-To: Rob Herring <robh@kernel.org>, Aleksei Mamlin <mamlinav@gmail.com>
-References: <1469460078-6460-1-git-send-email-mamlinav@gmail.com>
- <1469460078-6460-3-git-send-email-mamlinav@gmail.com>
- <20160727145740.GA23467@rob-hp-laptop>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
+	with ESMTP id S1750791AbcHOSEe (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 14:04:34 -0400
+Subject: Re: [PATCH] iio: adc: rockchip_saradc: Explicitly disable ADC on
+ probe
+To: Guenter Roeck <linux@roeck-us.net>,
+	Caesar Wang <wxt@rock-chips.com>,
+	Heiko Stuebner <heiko@sntech.de>
+References: <1469475540-26855-1-git-send-email-linux@roeck-us.net>
+ <5796D036.1060101@rock-chips.com> <5796D792.4080407@roeck-us.net>
+Cc: linux-iio@vger.kernel.org, dianders@chromium.org,
+	linux-kernel@vger.kernel.org, linux-rockchip@lists.infradead.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <856a6531-9a19-6382-838a-f3c6b83259f6@kernel.org>
-Date: Mon, 15 Aug 2016 18:56:00 +0100
+Message-ID: <8ebf4c53-21e2-0220-1756-beb57af32304@kernel.org>
+Date: Mon, 15 Aug 2016 19:04:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160727145740.GA23467@rob-hp-laptop>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <5796D792.4080407@roeck-us.net>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/07/16 15:57, Rob Herring wrote:
-> On Mon, Jul 25, 2016 at 06:21:18PM +0300, Aleksei Mamlin wrote:
->> This patch add support for Domintech DMARD05, DMARD06 and DMARD07
->> accelerometers.
+On 26/07/16 04:22, Guenter Roeck wrote:
+> On 07/25/2016 07:51 PM, Caesar Wang wrote:
+>> Hi Guenter,
 >>
->> Signed-off-by: Aleksei Mamlin <mamlinav@gmail.com>
->> ---
->>  .../devicetree/bindings/iio/accel/dmard06.txt      |  19 ++
+>> Thanks for fixing it.
+>>
+>> On 2016年07月26日 03:39, Guenter Roeck wrote:
+>>> If the ADC is read for the first time, the caller gets a timeout error,
+>>> and the kernel log shows
+>>>
+>>> read channel() error: -110
+>>>
+>>> The ADC may be enabled on boot, and needs to be explicitly disabled
+>>> for a read sequence to work (otherwise there is no completion interrupt).
+>>> Disaple it explicitly in the probe function.
+>>>
+>>> Fixes: 44d6f2ef94f9 ("iio: adc: add driver for Rockchip saradc")
+>>> Signed-off-by: Guenter Roeck <linux@roeck-us.net>
+>>> ---
+>>>   drivers/iio/adc/rockchip_saradc.c | 3 +++
+>>>   1 file changed, 3 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
+>>> index f9ad6c2d6821..6aa3271d86b5 100644
+>>> --- a/drivers/iio/adc/rockchip_saradc.c
+>>> +++ b/drivers/iio/adc/rockchip_saradc.c
+>>> @@ -280,6 +280,9 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
+>>>           goto err_pclk;
+>>>       }
+>>> +    /* Make sure ADC is disabled */
+>>> +    writel_relaxed(0, info->regs + SARADC_CTRL);
+>>
+>> I think we should reset the saradc controller.
+>> Since make sure the reset value is 0 and loader-->kernel may even cause harm, as my experience on tsadc. (drivers/thermal/rockchip_thermal.c)
+>>
+>>
+>> e.g.:
+>> /**
+>> * Reset SARADC Controller, reset all saradc registers.
+>> */
+>> static void rockchip_saradc_reset_controller(struct reset_control *reset)
+>> {
+>> reset_control_assert(reset);
+>> usleep_range(10, 20);
+>> reset_control_deassert(reset);
+>> }
+>>
+>> ..probe()
+>> {
+>> ...
+>> rockchip_saradc_reset_controller();
+>> ...
+>> }
+>>
 > 
-> This could go into trivial-devices.txt, but this is fine too:
+> Ok, I'll give it a try.
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
-Applied to the togreg branch of iio.git - initially pushed out as
-test for the autobuilders to play with it.
-
-Nice compact little driver.
-
-Thanks,
-
-Jonathan
+> Guenter
+Could you confirm if this patch is superseded by that
+change or not?
 > 
->>  drivers/iio/accel/Kconfig                          |  11 +
->>  drivers/iio/accel/Makefile                         |   1 +
->>  drivers/iio/accel/dmard06.c                        | 241 +++++++++++++++++++++
->>  4 files changed, 272 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/accel/dmard06.txt
->>  create mode 100644 drivers/iio/accel/dmard06.c
-> --
+>>
+>> -
+>> Caesar
+>>
+>>> +
+>>>       platform_set_drvdata(pdev, indio_dev);
+>>>       indio_dev->name = dev_name(&pdev->dev);
+>>
+>>
+> 
+> -- 
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
