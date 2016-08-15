@@ -1,222 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41530 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41339 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752590AbcHOPb3 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:31:29 -0400
-Subject: Re: [PATCH v4 4/4] platform/chrome: cros_ec_dev - Register cros-ec
- sensors
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
- <1470045278-18161-5-git-send-email-enric.balletbo@collabora.com>
-Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Guenter Roeck <groeck@chromium.org>,
-	Gwendal Grignou <gwendal@chromium.org>
+	with ESMTP id S1752488AbcHOO6v (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 10:58:51 -0400
+Subject: Re: [PATCH] iio: document bindings for mounting matrixes
+To: Linus Walleij <linus.walleij@linaro.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <1469355434-17043-1-git-send-email-linus.walleij@linaro.org>
+ <CACRpkdY0gCLKD3rmiYuFgWSYOe6dtUaBeRi1ns-UFF=AspntFg@mail.gmail.com>
+Cc: Gregor Boirie <gregor.boirie@parrot.com>,
+	Sebastian Reichel <sre@kernel.org>,
+	Samu Onkalo <samu.onkalo@intel.com>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <94104b85-6dd7-01fa-85dc-ae1f16e47869@kernel.org>
-Date: Mon, 15 Aug 2016 16:31:26 +0100
+Message-ID: <c8e83cf2-f9dc-0bc9-fcde-326b05ee290b@kernel.org>
+Date: Mon, 15 Aug 2016 15:58:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <1470045278-18161-5-git-send-email-enric.balletbo@collabora.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkdY0gCLKD3rmiYuFgWSYOe6dtUaBeRi1ns-UFF=AspntFg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/08/16 10:54, Enric Balletbo i Serra wrote:
-> Check whether the ChromeOS Embedded Controller is a sensor hub and in
-> such case issue a command to get the number of sensors and register them
-> all.
+On 11/08/16 12:33, Linus Walleij wrote:
+> On Sun, Jul 24, 2016 at 12:17 PM, Linus Walleij
+> <linus.walleij@linaro.org> wrote:
 > 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> Reviewed-by: Guenter Roeck <groeck@chromium.org>
-> ---
+>> The mounting matrix for sensors was introduced in
+>> commit dfc57732ad38 ("iio:core: mounting matrix support")
+>>
+>> However the device tree bindings are very terse and since this is
+>> a widely applicable property, we need a proper binding for it
+>> that the other bindings can reference. This will also be useful
+>> for other operating systems and sensor engineering at large.
+>>
+>> I think all 3D sensors should support it, the current situation
+>> is probably that the mounting information is confined in magic
+>> userspace components rather than using the mounting matrix, which
+>> is not good for portability and reuse.
+>>
+>> Cc: Gregor Boirie <gregor.boirie@parrot.com>
+>> Cc: Sebastian Reichel <sre@kernel.org>
+>> Cc: Samu Onkalo <samu.onkalo@intel.com>
+>> Cc: devicetree@vger.kernel.org
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > 
-> Changes since v3:
->  - Remove Unnecessary ( ) around 'ret < 0'.
->  - Add Reviewed-by tag
+> AFAICT there is no comments on this patch per se, just chit chat
+> about misc, and we have Rob's ACK.
 > 
->  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   |   4 +-
->  drivers/platform/chrome/cros_ec_dev.c              | 122 +++++++++++++++++++++
->  2 files changed, 124 insertions(+), 2 deletions(-)
+> Can it be merged?
 > 
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> index 48edeba..d6c372b 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
-> @@ -51,7 +51,7 @@ static int cros_ec_sensors_read(struct iio_dev *indio_dev,
->  	s16 data = 0;
->  	s64 val64;
->  	int i;
-> -	int ret = IIO_VAL_INT;
-> +	int ret;
->  	int idx = chan->scan_index;
->  
->  	mutex_lock(&st->core.cmd_lock);
-> @@ -137,7 +137,7 @@ static int cros_ec_sensors_write(struct iio_dev *indio_dev,
->  {
->  	struct cros_ec_sensors_state *st = iio_priv(indio_dev);
->  	int i;
-> -	int ret = 0;
-> +	int ret;
->  	int idx = chan->scan_index;
-*raises eyebrows*
+I failed to actually look at it properly so far...
 
-Enough said?
+I'd also like input from Gregor as his usecase is somewhat different
+and drove the sysfs docs.  They need to agree and I haven't actually
+verified they do as yet!
 
-Was wondering why this patch had strayed into the IIO files.
+Also for trivial comments, plural of matrix is matrices.
+Isn't English weird sometimes ;)
 
-
->  
->  	mutex_lock(&st->core.cmd_lock);
-> diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
-> index 7eb5307..47268ec 100644
-> --- a/drivers/platform/chrome/cros_ec_dev.c
-> +++ b/drivers/platform/chrome/cros_ec_dev.c
-> @@ -18,6 +18,7 @@
->   */
->  
->  #include <linux/fs.h>
-> +#include <linux/mfd/core.h>
->  #include <linux/module.h>
->  #include <linux/platform_device.h>
->  #include <linux/slab.h>
-> @@ -265,6 +266,123 @@ static void __remove(struct device *dev)
->  	kfree(ec);
->  }
->  
-> +static void cros_ec_sensors_register(struct cros_ec_dev *ec)
-> +{
-> +	/*
-> +	 * Issue a command to get the number of sensor reported.
-> +	 * Build an array of sensors driver and register them all.
-> +	 */
-> +	int ret, i, id, sensor_num;
-> +	struct mfd_cell *sensor_cells;
-> +	struct cros_ec_sensor_platform *sensor_platforms;
-> +	int sensor_type[MOTIONSENSE_TYPE_MAX];
-> +	struct ec_params_motion_sense *params;
-> +	struct ec_response_motion_sense *resp;
-> +	struct cros_ec_command *msg;
-> +
-> +	msg = kzalloc(sizeof(struct cros_ec_command) +
-> +		      max(sizeof(*params), sizeof(*resp)), GFP_KERNEL);
-> +	if (msg == NULL)
-> +		return;
-> +
-> +	msg->version = 2;
-> +	msg->command = EC_CMD_MOTION_SENSE_CMD + ec->cmd_offset;
-> +	msg->outsize = sizeof(*params);
-> +	msg->insize = sizeof(*resp);
-> +
-> +	params = (struct ec_params_motion_sense *)msg->data;
-> +	params->cmd = MOTIONSENSE_CMD_DUMP;
-> +
-> +	ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
-> +	if (ret < 0 || msg->result != EC_RES_SUCCESS) {
-> +		dev_warn(ec->dev, "cannot get EC sensor information: %d/%d\n",
-> +			 ret, msg->result);
-> +		goto error;
-> +	}
-> +
-> +	resp = (struct ec_response_motion_sense *)msg->data;
-> +	sensor_num = resp->dump.sensor_count;
-> +	/* Allocate 2 extra sensors in case lid angle or FIFO are needed */
-> +	sensor_cells = kzalloc(sizeof(struct mfd_cell) * (sensor_num + 2),
-> +			       GFP_KERNEL);
-> +	if (sensor_cells == NULL)
-> +		goto error;
-> +
-> +	sensor_platforms = kzalloc(sizeof(struct cros_ec_sensor_platform) *
-> +		  (sensor_num + 1), GFP_KERNEL);
-> +	if (sensor_platforms == NULL)
-> +		goto error_platforms;
-> +
-> +	memset(sensor_type, 0, sizeof(sensor_type));
-> +	id = 0;
-> +	for (i = 0; i < sensor_num; i++) {
-> +		params->cmd = MOTIONSENSE_CMD_INFO;
-> +		params->info.sensor_num = i;
-> +		ret = cros_ec_cmd_xfer(ec->ec_dev, msg);
-> +		if (ret < 0 || msg->result != EC_RES_SUCCESS) {
-> +			dev_warn(ec->dev, "no info for EC sensor %d : %d/%d\n",
-> +				 i, ret, msg->result);
-> +			continue;
-> +		}
-> +		switch (resp->info.type) {
-> +		case MOTIONSENSE_TYPE_ACCEL:
-> +			sensor_cells[id].name = "cros-ec-accel";
-> +			break;
-> +		case MOTIONSENSE_TYPE_GYRO:
-> +			sensor_cells[id].name = "cros-ec-gyro";
-> +			break;
-> +		case MOTIONSENSE_TYPE_MAG:
-> +			sensor_cells[id].name = "cros-ec-mag";
-> +			break;
-> +		case MOTIONSENSE_TYPE_PROX:
-> +			sensor_cells[id].name = "cros-ec-prox";
-> +			break;
-> +		case MOTIONSENSE_TYPE_LIGHT:
-> +			sensor_cells[id].name = "cros-ec-light";
-> +			break;
-> +		case MOTIONSENSE_TYPE_ACTIVITY:
-> +			sensor_cells[id].name = "cros-ec-activity";
-> +			break;
-> +		default:
-> +			dev_warn(ec->dev, "unknown type %d\n", resp->info.type);
-> +			continue;
-> +		}
-> +		sensor_platforms[id].sensor_num = i;
-> +		sensor_cells[id].id = sensor_type[resp->info.type];
-> +		sensor_cells[id].platform_data = &sensor_platforms[id];
-> +		sensor_cells[id].pdata_size =
-> +			sizeof(struct cros_ec_sensor_platform);
-> +
-> +		sensor_type[resp->info.type]++;
-> +		id++;
-> +	}
-> +	if (sensor_type[MOTIONSENSE_TYPE_ACCEL] >= 2) {
-> +		sensor_platforms[id].sensor_num = sensor_num;
-> +
-> +		sensor_cells[id].name = "cros-ec-angle";
-> +		sensor_cells[id].id = 0;
-> +		sensor_cells[id].platform_data = &sensor_platforms[id];
-> +		sensor_cells[id].pdata_size =
-> +			sizeof(struct cros_ec_sensor_platform);
-> +		id++;
-> +	}
-> +	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE_FIFO)) {
-> +		sensor_cells[id].name = "cros-ec-ring";
-> +		id++;
-> +	}
-> +
-> +	ret = mfd_add_devices(ec->dev, 0, sensor_cells, id,
-> +			      NULL, 0, NULL);
-> +	if (ret)
-> +		dev_err(ec->dev, "failed to add EC sensors\n");
-> +
-> +	kfree(sensor_platforms);
-> +error_platforms:
-> +	kfree(sensor_cells);
-> +error:
-> +	kfree(msg);
-> +}
-> +
->  static int ec_device_probe(struct platform_device *pdev)
->  {
->  	int retval = -ENOMEM;
-> @@ -319,6 +437,10 @@ static int ec_device_probe(struct platform_device *pdev)
->  		goto dev_reg_failed;
->  	}
->  
-> +	/* check whether this EC is a sensor hub. */
-> +	if (cros_ec_check_features(ec, EC_FEATURE_MOTION_SENSE))
-> +		cros_ec_sensors_register(ec);
-> +
->  	return 0;
->  
->  dev_reg_failed:
+Jonathan
+> Yours,
+> Linus Walleij
 > 
 
