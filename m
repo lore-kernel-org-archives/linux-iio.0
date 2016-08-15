@@ -1,49 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41236 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41256 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752488AbcHOOoB (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 10:44:01 -0400
-Subject: Re: Messed up the fixes-togreg-post-rc1 branch so cherry picking into
- fixes-togreg
-To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Alison Schofield <amsfield22@gmail.com>
-References: <faaec59c-07d8-6618-cd0d-0614e690c3e2@kernel.org>
+	with ESMTP id S1752856AbcHOOqq (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 10:46:46 -0400
+Subject: Re: [PATCH] iio: pressure: bmp280: Fix incorrect pointer access in PM
+ callbacks
+To: Jarkko Nikula <jarkko.nikula@linux.intel.com>,
+	Linus Walleij <linus.walleij@linaro.org>
+References: <1471002271-11426-1-git-send-email-jarkko.nikula@linux.intel.com>
+ <CACRpkdYd2vp9KMMv8sW9iNsWkO-j2deKwY_vdzGvqyGanT91gg@mail.gmail.com>
+ <e2104071-78df-e83d-4dcf-fbb37ee36eed@linux.intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8bc6a47d-52e2-f1f0-5218-aff27c667bde@kernel.org>
-Date: Mon, 15 Aug 2016 15:43:59 +0100
+Message-ID: <beadcc22-db37-8f5b-9ce0-0d85e935013f@kernel.org>
+Date: Mon, 15 Aug 2016 15:46:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <faaec59c-07d8-6618-cd0d-0614e690c3e2@kernel.org>
+In-Reply-To: <e2104071-78df-e83d-4dcf-fbb37ee36eed@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/08/16 15:37, Jonathan Cameron wrote:
-> Hi All,
+On 12/08/16 13:36, Jarkko Nikula wrote:
+> On 08/12/2016 03:21 PM, Linus Walleij wrote:
+>> On Fri, Aug 12, 2016 at 1:44 PM, Jarkko Nikula
+>> <jarkko.nikula@linux.intel.com> wrote:
+>>
+>>> BMP280 runtime PM callbacks are incorrectly casting dev_get_drvdata() to
+>>> struct bmp280_data * while bmp280_common_probe() sets driver data to
+>>> struct iio_dev *. Fix this and get the struct bmp280_data * from private
+>>> data of struct iio_dev.
+>>>
+>>> Fixes: 3d838118c6aa ("iio: pressure: bmp280: add power management")
+>>> Signed-off-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+>>> ---
+>>> For v4.8-rc.
+>>
+>> Sent a fix for this already two weeks ago:
+>> http://marc.info/?l=linux-iio&m=146965159217655&w=2
+>>
+>> Just waiting for it to be picked up and merged.
+>>
+> Ok, please feel free to add my tested by to your patch then
 > 
-> Seems I messed up the base of the fixes-togreg-post-rc1 branch
-> (based on a random point in togreg rather than the last 
-> pull request as intended).  I'll drop that branch as
-> junk having cherry picked into an updated fixes-togreg branch.
-> 
-> Make a bit of a mess of dates, but otherwise should have no
-> real affect.
-> 
-> This is just in case anyone was basing on that branch which
-> will shortly disappear.
-> 
-> Jonathan
-Note this also involved dropping the thermocouple kconfig fix
-from Alison as that driver hasn't hit mainline yet.
-
-Alison, would you mind resending that one part of the patch based
-on the togreg branch?  That way I won't forget it.
-
-Thanks
-
-Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+> Tested-by: Jarkko Nikula <jarkko.nikula@linux.intel.com>
+Added.
