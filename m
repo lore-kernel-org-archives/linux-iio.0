@@ -1,641 +1,698 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42468 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41950 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752924AbcHOSFa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 14:05:30 -0400
-Subject: Re: [PATCH] iio: orientation: Add BNO055 9-axis Absolute Orientation
- Sensor driver
-To: navin patidar <navin.patidar@gmail.com>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1469488695-32050-1-git-send-email-navin.patidar@gmail.com>
- <alpine.DEB.2.02.1607260946460.6854@pmeerw.net>
- <CAPV97yfCHWp=+-QT1snUTJKD9rs-uhQTiQs1cwvhhdR2qOkwZA@mail.gmail.com>
- <alpine.DEB.2.02.1607262043110.12598@pmeerw.net>
- <CAPV97ydLjdGoNYVO+Rmh-whvBE1k7U=dVOuWWni4jnZfXUgBPw@mail.gmail.com>
-Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	linux-kernel@vger.kernel.org, Vlad Dogaru <vlad.dogaru@intel.com>
+	with ESMTP id S1752713AbcHOQmc (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 12:42:32 -0400
+Subject: Re: [PATCH v3] iio: adc: add ADC12130/ADC12132/ADC12138 ADC driver
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+References: <1470583330-6850-1-git-send-email-akinobu.mita@gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b0e501f6-1fa9-8713-4c6b-2a679d271dc2@kernel.org>
-Date: Mon, 15 Aug 2016 19:05:23 +0100
+Message-ID: <b43674fb-6a68-de05-0f06-e1f92986705d@kernel.org>
+Date: Mon, 15 Aug 2016 17:42:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAPV97ydLjdGoNYVO+Rmh-whvBE1k7U=dVOuWWni4jnZfXUgBPw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1470583330-6850-1-git-send-email-akinobu.mita@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/07/16 01:22, navin patidar wrote:
-> Oh, I didn't know that Vlad already have submitted a patch for BNO055.
-> My patch doesn't do any thing new so please drop my patch.
+On 07/08/16 16:22, Akinobu Mita wrote:
+> This adds Texas Instruments' ADC12130/ADC12132/ADC12138 12-bit plus
+> sign ADC driver.  I have tested with the ADC12138.  The ADC12130 and
+> ADC12132 are not tested but these are similar to ADC12138 except that
+> the mode programming instruction is a bit different.
 > 
-> regards,
-> --navin-patidar
-You have my utmost sympathies!  Sadly this happens to us
-all from time to time.
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+> Acked-by: Rob Herring <robh@kernel.org>
+Hi,
+
+Now had time for a closer look.  A few minor bits and bobs to fix
+up highlighted inline.
+
+Looks pretty good.
 
 Jonathan
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald <pmeerw@pmeerw.net>
+> ---
+> * Changes from v2
+> - improve error label names
 > 
-> On Tue, Jul 26, 2016 at 11:46 AM, Peter Meerwald-Stadler
-> <pmeerw@pmeerw.net> wrote:
->> Hallo Navin,
->>
->>> Thanks for reviewing the patch. I will send the updated patch.
->>
->> I am sorry to have overlooked a previous patch by Vlad Dogaru, see
->> http://comments.gmane.org/gmane.linux.kernel.iio/24643, for the BNO055
->>
->> there have been a number of issues, it has not been accepted yet
->>
->> I think our policy is first come, first served; I have compared the two
->> patches, maybe you can collaborate on a common proposal?
->>
->> regards, p.
->>
->>> regards,
->>> --navin-patidar
->>>
->>> On Tue, Jul 26, 2016 at 1:07 AM, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
->>> wrote:
->>>
->>>>
->>>>> BNO055 provides the following motion sensors data:
->>>>>
->>>>>  * Gyroscope
->>>>>  * Accelerometer
->>>>>  * Magnetometer
->>>>>  * Absolute Orientation (Quaternion)
->>>>
->>>> comments below
->>>>
->>>>> Signed-off-by: navin patidar <navin.patidar@gmail.com>
->>>>> ---
->>>>>  drivers/iio/orientation/Kconfig  |  10 +
->>>>>  drivers/iio/orientation/Makefile |   1 +
->>>>>  drivers/iio/orientation/bno055.c | 422
->>>> +++++++++++++++++++++++++++++++++++++++
->>>>>  3 files changed, 433 insertions(+)
->>>>>  create mode 100644 drivers/iio/orientation/bno055.c
->>>>>
->>>>> diff --git a/drivers/iio/orientation/Kconfig
->>>> b/drivers/iio/orientation/Kconfig
->>>>> index e3aa1e5..9ac21ee 100644
->>>>> --- a/drivers/iio/orientation/Kconfig
->>>>> +++ b/drivers/iio/orientation/Kconfig
->>>>> @@ -28,4 +28,14 @@ config HID_SENSOR_DEVICE_ROTATION
->>>>>         device rotation. The output of a device rotation sensor
->>>>>         is presented using quaternion format.
->>>>>
->>>>> +config BNO055
->>>>> +     tristate "BOSCH BNO055 Absolute Orientation"
->>>>> +     depends on I2C
->>>>> +     select REGMAP_I2C
->>>>> +     help
->>>>> +       Say yes here to build support for BOSCH BNO55 9-axis absolute
->>>> orientation sensor
->>>>> +       driver connected via I2C.
->>>>> +       This driver can also be built as a module. If so, the module
->>>>> +       will be called bno055.
->>>>> +
->>>>>  endmenu
->>>>> diff --git a/drivers/iio/orientation/Makefile
->>>> b/drivers/iio/orientation/Makefile
->>>>> index 4734dab..7d00037 100644
->>>>> --- a/drivers/iio/orientation/Makefile
->>>>> +++ b/drivers/iio/orientation/Makefile
->>>>> @@ -5,3 +5,4 @@
->>>>>  # When adding new entries keep the list in alphabetical order
->>>>>  obj-$(CONFIG_HID_SENSOR_INCLINOMETER_3D) += hid-sensor-incl-3d.o
->>>>>  obj-$(CONFIG_HID_SENSOR_DEVICE_ROTATION) += hid-sensor-rotation.o
->>>>> +obj-$(CONFIG_BNO055) += bno055.o
->>>>> diff --git a/drivers/iio/orientation/bno055.c
->>>> b/drivers/iio/orientation/bno055.c
->>>>> new file mode 100644
->>>>> index 0000000..48b9e93
->>>>> --- /dev/null
->>>>> +++ b/drivers/iio/orientation/bno055.c
->>>>> @@ -0,0 +1,422 @@
->>>>> +/*
->>>>> + * Copyright (c) 2016 Intel Corporation
->>>>> + *
->>>>> + * Driver for Bosch Sensortec BNO055 digital motion sensor.
->>>>> + *
->>>>> + * This program is free software; you can redistribute it and/or modify
->>>>> + * it under the terms of the GNU General Public License version 2 as
->>>>> + * published by the Free Software Foundation.
->>>>> + *
->>>>
->>>> I find it useful to state the 7-bit i2c chip address here
->>>>
->>>>> + */
->>>>> +
->>>>> +#define pr_fmt(fmt) "bno055: " fmt
->>>>> +
->>>>> +#include <linux/module.h>
->>>>> +#include <linux/i2c.h>
->>>>> +#include <linux/acpi.h>
->>>>> +#include <linux/regmap.h>
->>>>> +#include <linux/iio/iio.h>
->>>>> +#include <linux/iio/sysfs.h>
->>>>> +
->>>>
->>>> drop one newline
->>>>
->>>>> +
->>>>> +#define BNO055_CHIP_ID               0xA0
->>>>> +#define REG_MAG_RADIUS_MSB   0x6A
->>>>
->>>> please consistently prefix with BNO055_
->>>>
->>>>> +
->>>>> +/* BNO055 configuration registers */
->>>>> +#define REG_PWR_MODE         0x3E
->>>>> +#define REG_OPR_MODE         0x3D
->>>>> +#define REG_UNIT_SEL         0x3B
->>>>> +#define REG_AXIS_MAP_SIGN    0x42
->>>>> +#define REG_AXIS_MAP_CONFIG  0x41
->>>>> +#define REG_UNIT_SEL         0x3B
->>>>> +#define REG_SYS_TRIGGER              0x3F
->>>>> +#define BNO055_REG_PAGE_ID   0x07
->>>>> +#define BNO055_REG_ID                0x00
->>>>> +
->>>>> +/* BNO055 status registers */
->>>>> +#define SYS_STATUS           0x39
->>>>> +#define INT_STATUS           0x37
->>>>> +#define CALIB_STATUS 0x35
->>>>> +
->>>>> +/* BNO055 data registers */
->>>>
->>>> drop newline
->>>>
->>>>> +
->>>>> +#define GRV_DATA_Z_MSB 0x33
->>>>> +#define GRV_DATA_Z_LSB 0x32
->>>>> +#define GRV_DATA_Y_MSB 0x31
->>>>> +#define GRV_DATA_Y_LSB 0x30
->>>>> +#define GRV_DATA_X_MSB 0x2F
->>>>> +#define GRV_DATA_X_LSB 0x2E
->>>>
->>>> do we really need all those register #defines?
->>>> they are not used and noone wants to read just the LSB...
->>>>
->>>>> +
->>>>> +#define LIA_DATA_Z_MSB 0x2D
->>>>> +#define LIA_DATA_Z_LSB 0x2C
->>>>> +#define LIA_DATA_Y_MSB 0x2B
->>>>> +#define LIA_DATA_Y_LSB 0x2A
->>>>> +#define LIA_DATA_X_MSB 0x29
->>>>> +#define LIA_DATA_X_LSB 0x28
->>>>> +
->>>>> +#define QUA_DATA_Z_MSB 0x27
->>>>> +#define QUA_DATA_Z_LSB 0x26
->>>>> +#define QUA_DATA_Y_MSB 0x25
->>>>> +#define QUA_DATA_Y_LSB 0x24
->>>>> +#define QUA_DATA_X_MSB 0x23
->>>>> +#define QUA_DATA_X_LSB 0x22
->>>>> +#define QUA_DATA_W_MSB 0x21
->>>>> +#define QUA_DATA_W_LSB 0x20
->>>>> +
->>>>> +#define EUL_PITCH_MSB 0x1F
->>>>> +#define EUL_PITCH_LSB 0x1E
->>>>> +#define EUL_ROLL_MSB 0x1D
->>>>> +#define EUL_ROLL_LSB 0x1C
->>>>> +#define EUL_HEADING_MSB 0x1B
->>>>> +#define EUL_HEADING_LSB 0x1A
->>>>> +
->>>>> +#define GYR_DATA_Z_MSB 0x19
->>>>> +#define GYR_DATA_Z_LSB 0x18
->>>>> +#define GYR_DATA_Y_MSB 0x17
->>>>> +#define GYR_DATA_Y_LSB 0x16
->>>>> +#define GYR_DATA_X_MSB 0x15
->>>>> +#define GYR_DATA_X_LSB 0x14
->>>>> +
->>>>> +#define MAG_DATA_Z_MSB 0x13
->>>>> +#define MAG_DATA_Z_LSB 0x12
->>>>> +#define MAG_DATA_Y_MSB 0x11
->>>>> +#define MAG_DATA_Y_LSB 0x10
->>>>> +#define MAG_DATA_X_MSB 0x0F
->>>>> +#define MAG_DATA_X_LSB 0x0E
->>>>> +
->>>>> +#define ACC_DATA_Z_MSB 0x0D
->>>>> +#define ACC_DATA_Z_LSB 0x0C
->>>>> +#define ACC_DATA_Y_MSB 0x0B
->>>>> +#define ACC_DATA_Y_LSB 0x0A
->>>>> +#define ACC_DATA_X_MSB 0x09
->>>>> +#define ACC_DATA_X_LSB 0x08
->>>>> +
->>>>> +/* operation modes */
->>>>> +#define FUSION_NDOF_MODE 0x0C
->>>>> +
->>>>> +/* power modes */
->>>>> +#define NORMAL_MODE 0x00
->>>>> +#define LOW_POWER_MODE BIT(0)
->>>>> +#define SUSPEND_MODE BIT(1)
->>>>> +
->>>>> +#define PROPER_CALIBRATION 0xFF
->>>>> +
->>>>> +#define BASE_REG  0x08
->>>>> +#define SENSOR_AXIS_TO_REG(sensor,axis)      (BASE_REG + (sensor * 6) +
->>>> (axis * 2))
->>>>> +
->>>>> +#define BNO055_CHANNEL(_type, _axis) {
->>>>      \
->>>>> +     .type = IIO_##_type,                                            \
->>>>> +     .modified = 1,                                                  \
->>>>> +     .channel2 = IIO_MOD_##_axis,                                    \
->>>>> +     .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),                   \
->>>>
->>>> in what unit is the data returned; please check with IIO ABI documentation
->>>> I think you will likely need _SCALE for some channels
->>>>
->>>>> +     .scan_index = AXIS_##_axis,                                     \
->>>>
->>>> .scan_index is a continuous counter over ALL channels, not just for one
->>>> channel type
->>>>
->>>> the driver does not support buffered reads, so not scan_type/scan_index is
->>>> needed anyway
->>>>
->>>>> +     .scan_type = {                                                  \
->>>>> +             .sign = 's',                                            \
->>>>> +             .realbits = 16,                                 \
->>>>> +             .storagebits = 16,                                      \
->>>>> +             .endianness = IIO_LE,                                   \
->>>>> +     },                                                              \
->>>>> +}
->>>>> +
->>>>> +struct bno055_data {
->>>>> +     struct i2c_client *client;
->>>>> +     struct mutex lock;
->>>>> +     struct regmap *regmap;
->>>>> +};
->>>>> +
->>>>> +enum bno055_axis {
->>>>> +     AXIS_X,
->>>>> +     AXIS_Y,
->>>>> +     AXIS_Z,
->>>>> +};
->>>>> +
->>>>> +enum {ACC=0, MAG=1, GYR=2, EUL=3, QUA=4};
->>>>
->>>> prefix!
->>>>
->>>>> +
->>>>> +static const struct iio_chan_spec bno055_channels[] = {
->>>>> +     BNO055_CHANNEL(ANGL_VEL, X),
->>>>> +     BNO055_CHANNEL(ANGL_VEL, Y),
->>>>> +     BNO055_CHANNEL(ANGL_VEL, Z),
->>>>> +     BNO055_CHANNEL(MAGN, X),
->>>>> +     BNO055_CHANNEL(MAGN, Y),
->>>>> +     BNO055_CHANNEL(MAGN, Z),
->>>>> +     BNO055_CHANNEL(ACCEL, X),
->>>>> +     BNO055_CHANNEL(ACCEL, Y),
->>>>> +     BNO055_CHANNEL(ACCEL, Z),
->>>>> +     {
->>>>> +             .type = IIO_ROT,
->>>>> +             .modified = 1,
->>>>> +             .channel2 = IIO_MOD_QUATERNION,
->>>>> +             .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>>> +     }
->>>>> +};
->>>>> +
->>>>> +static bool bno055_is_writeable_reg(struct device *dev, unsigned int
->>>> reg)
->>>>> +{
->>>>> +     switch (reg) {
->>>>> +     case REG_PWR_MODE:
->>>>> +     case REG_OPR_MODE:
->>>>> +     case REG_UNIT_SEL:
->>>>> +     case REG_AXIS_MAP_SIGN:
->>>>> +     case REG_AXIS_MAP_CONFIG:
->>>>> +     case REG_SYS_TRIGGER:
->>>>> +             return true;
->>>>> +     default:
->>>>> +             return false;
->>>>> +     };
->>>>> +}
->>>>> +
->>>>> +static bool bno055_is_volatile_reg(struct device *dev, unsigned int reg)
->>>>> +{
->>>>> +     if ((reg >= ACC_DATA_X_LSB) && (reg <= QUA_DATA_Z_MSB))
->>>>> +             return true;
->>>>> +     else
->>>>> +             return false;
->>>>> +}
->>>>> +
->>>>> +static const struct regmap_config bno055_regmap_config = {
->>>>> +     .reg_bits = 8,
->>>>> +     .val_bits = 8,
->>>>> +
->>>>> +     .max_register = REG_MAG_RADIUS_MSB,
->>>>> +     .cache_type = REGCACHE_RBTREE,
->>>>> +
->>>>> +     .writeable_reg = bno055_is_writeable_reg,
->>>>> +     .volatile_reg = bno055_is_volatile_reg,
->>>>> +};
->>>>> +
->>>>
->>>> drop newline
->>>>
->>>>> +
->>>>> +static int read_bno055(struct bno055_data *data, int sensor, int axis,
->>>> int *val)
->>>>
->>>> bno055 prefix please
->>>>
->>>>> +{
->>>>> +     int ret;
->>>>> +     __le16 raw_val;
->>>>> +     int reg;
->>>>> +
->>>>> +     reg = SENSOR_AXIS_TO_REG(sensor, axis);
->>>>
->>>> you can use .address in channel spec for that
->>>>
->>>>> +
->>>>> +     ret = regmap_bulk_read(data->regmap, reg, &raw_val,
->>>>> +                            sizeof(raw_val));
->>>>> +     if (ret < 0) {
->>>>> +             dev_err(&data->client->dev, "Error reading axis %d\n",
->>>> axis);
->>>>> +             return ret;
->>>>> +     }
->>>>> +
->>>>> +     *val = sign_extend32(le16_to_cpu(raw_val), 15);
->>>>> +     return IIO_VAL_INT;
->>>>> +}
->>>>> +
->>>>> +/* Read raw quaternion values W,X,Y and Z.
->>>>> + * Raw values needs to be divied by the 16384 to get the exact
->>>> quaternion values.
->>>>> + */
->>>>> +
->>>>> +static int read_rot(struct bno055_data *data, int *vals, int *val_len)
->>>>> +{
->>>>> +     int ret, i;
->>>>> +     __le16 raw_val[4];
->>>>> +
->>>>> +     ret = regmap_bulk_read(data->regmap, QUA_DATA_W_LSB, &raw_val,
->>>>> +                            sizeof(raw_val));
->>>>> +     if (ret < 0) {
->>>>> +             dev_err(&data->client->dev, "Error reading Orientation
->>>> \n");
->>>>
->>>> lowercase orientation
->>>> delete space before \n
->>>>
->>>>> +             return ret;
->>>>> +     }
->>>>> +
->>>>> +     for (i = 0; i < 4; ++i)
->>>>> +             vals[i] = sign_extend32(le16_to_cpu(raw_val[i]), 15);
->>>>> +
->>>>> +     *val_len =  4;
->>>>> +     return IIO_VAL_INT_MULTIPLE;
->>>>> +}
->>>>> +
->>>>> +static int bno055_read_raw_multi(struct iio_dev *indio_dev,
->>>>> +                        struct iio_chan_spec const *chan, int size,
->>>>> +                        int *val, int *val2, long mask)
->>>>> +{
->>>>> +     int ret = -EINVAL;
->>>>> +     struct bno055_data *data = iio_priv(indio_dev);
->>>>> +
->>>>> +     mutex_lock(&data->lock);
->>>>> +
->>>>> +     switch (mask) {
->>>>> +     case IIO_CHAN_INFO_RAW:
->>>>> +             switch (chan->type) {
->>>>> +             case IIO_ROT:
->>>>> +                     ret = read_rot(data, val, val2);
->>>>> +                     break;
->>>>> +             case IIO_ANGL_VEL:
->>>>> +                     /* Gyroscope unit degrees per second */
->>>>> +                     /* Raw value needs to be divied by the 16 to get
->>>> the exact value.*/
->>>>
->>>> comment style, not a proper multi-line comment
->>>> use _SCALE, it is not about 'exact' but correct scaling/unit
->>>> typo: divided
->>>> wording: divided by 16
->>>>
->>>>> +                     ret = read_bno055(data, GYR, chan->scan_index,
->>>> val);
->>>>> +                     break;
->>>>> +             case IIO_ACCEL:
->>>>> +                     /* Accelerometer Unit m/s2 */
->>>>> +                     /* Raw value needs to be divied by the 100 to get
->>>> the exact value.*/
->>>>> +                     ret = read_bno055(data, ACC, chan->scan_index,
->>>> val);
->>>>> +                     break;
->>>>> +             case IIO_MAGN:
->>>>> +                     /* Magnetometer Unit microTesla */
->>>>> +                     /* Raw value needs to be divied by the 16 to get
->>>> the exact value. */
->>>>> +                     ret = read_bno055(data, MAG, chan->scan_index,
->>>> val);
->>>>> +                     break;
->>>>> +             default:
->>>>> +                     ret = -EINVAL;
->>>>> +                     break;
->>>>> +             }
->>>>> +             break;
->>>>> +
->>>>> +     default:
->>>>> +             ret = -EINVAL;
->>>>> +             break;
->>>>> +     }
->>>>> +
->>>>> +     mutex_unlock(&data->lock);
->>>>> +
->>>>> +     return ret;
->>>>> +}
->>>>> +
->>>>> +static const struct iio_info bno055_info = {
->>>>> +     .driver_module = THIS_MODULE,
->>>>> +     .read_raw_multi = &bno055_read_raw_multi,
->>>>> +};
->>>>> +
->>>>
->>>> drop newline
->>>>
->>>>> +
->>>>> +static int bno055_chip_init(struct bno055_data *data)
->>>>> +{
->>>>> +     int ret;
->>>>> +
->>>>> +     ret = regmap_write(data->regmap, REG_PWR_MODE,
->>>>> +                              NORMAL_MODE);
->>>>> +     if (ret < 0) {
->>>>> +             dev_err(&data->client->dev,
->>>>> +                     "failed to write power mode register\n");
->>>>> +             return ret;
->>>>> +     }
->>>>> +
->>>>> +     ret = regmap_write(data->regmap, REG_OPR_MODE,
->>>>> +                              FUSION_NDOF_MODE);
->>>>> +     if (ret < 0)
->>>>> +             dev_err(&data->client->dev,
->>>>> +                     "failed to write operation mode register\n");
->>>>> +
->>>>> +     return ret;
->>>>> +}
->>>>> +
->>>>> +static ssize_t show_calibration_status(struct device *dev, struct
->>>> device_attribute *attr,
->>>>> +                char *buf){
->>>>
->>>> this is private API which needs to be documented
->>>>
->>>>> +     struct bno055_data *data;
->>>>> +     int ret;
->>>>> +     unsigned int calib_stat;
->>>>> +
->>>>> +     data = dev->driver_data;
->>>>> +
->>>>> +     ret = regmap_read(data->regmap, CALIB_STATUS, &calib_stat);
->>>>> +
->>>>> +     if (ret){
->>>>
->>>> space before {
->>>>
->>>>> +             dev_err(dev, "Failed to read calibration status.\n");
->>>>> +             return ret;
->>>>> +     }
->>>>> +
->>>>> +     if (calib_stat != PROPER_CALIBRATION)
->>>>> +             dev_info(dev, "bad calibration.  expected %x got %x\n",
->>>>
->>>> two spaces before 'expected'
->>>>
->>>>> +                     PROPER_CALIBRATION, calib_stat);
->>>>> +
->>>>> +     return scnprintf(buf, PAGE_SIZE, "0x%x\n", calib_stat);
->>>>> +}
->>>>> +
->>>>> +static DEVICE_ATTR(calib_status, 0444, show_calibration_status, NULL);
->>>>> +
->>>>> +static int bno055_probe(struct i2c_client *client,
->>>>> +                     const struct i2c_device_id *id)
->>>>> +{
->>>>> +     int ret;
->>>>> +     struct iio_dev *indio_dev;
->>>>> +     struct bno055_data *data;
->>>>> +     unsigned int chip_id;
->>>>> +
->>>>> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->>>>> +     if (!indio_dev)
->>>>> +             return -ENOMEM;
->>>>> +
->>>>> +     data = iio_priv(indio_dev);
->>>>> +     mutex_init(&data->lock);
->>>>> +     data->client = client;
->>>>> +
->>>>> +     indio_dev->dev.parent = &client->dev;
->>>>> +     indio_dev->name = id->name;
->>>>> +     indio_dev->channels = bno055_channels;
->>>>> +     indio_dev->num_channels = ARRAY_SIZE(bno055_channels);
->>>>> +     indio_dev->info = &bno055_info;
->>>>> +     indio_dev->modes = INDIO_DIRECT_MODE;
->>>>> +
->>>>> +     data->regmap = devm_regmap_init_i2c(client, &bno055_regmap_config);
->>>>> +     if (IS_ERR(data->regmap)) {
->>>>> +             dev_err(&client->dev, "Failed to allocate register
->>>> map.\n");
->>>>> +             return PTR_ERR(data->regmap);
->>>>> +     }
->>>>> +
->>>>> +     indio_dev->dev.driver_data = data;
->>>>> +     i2c_set_clientdata(client, indio_dev);
->>>>> +
->>>>> +     ret = regmap_read(data->regmap, BNO055_REG_ID, &chip_id);
->>>>> +     if (ret < 0)
->>>>> +             return ret;
->>>>> +     if (chip_id != BNO055_CHIP_ID) {
->>>>> +             dev_err(&client->dev, "bad chip id.  expected %x got %x\n",
->>>>> +                     BNO055_CHIP_ID, chip_id);
->>>>> +             return -EINVAL;
->>>>> +     }
->>>>> +
->>>>> +     ret = bno055_chip_init(data);
->>>>> +     if (ret < 0)
->>>>> +             return ret;
->>>>> +
->>>>> +     ret = devm_iio_device_register(&client->dev, indio_dev);
->>>>> +     if (ret){
->>>>
->>>> space before {
->>>>
->>>>> +             dev_err(&client->dev, "failed to register IIO device.\n");
->>>>> +             return ret;
->>>>> +     }
->>>>> +
->>>>> +     ret = device_create_file(&indio_dev->dev, &dev_attr_calib_status);
->>>>
->>>> needs to be done BEFORE devm_iio_device_register()
->>>> IIO has specific mechanisms to create custom sysfs entries...
->>>>
->>>>> +     if (ret){
->>>>
->>>> space before {
->>>>
->>>>> +             dev_err(&client->dev, "failed to create sysfs entry.\n");
->>>>> +             devm_iio_device_unregister(&client->dev, indio_dev);
->>>>
->>>> no need to call devm_iio_device_unregister
->>>>
->>>>> +             return ret;
->>>>> +     }
->>>>> +
->>>>> +   return ret;
->>>>> +}
->>>>> +
->>>>> +static int bno055_remove(struct i2c_client *client)
->>>>> +{
->>>>> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>>>> +
->>>>> +     device_remove_file(&indio_dev->dev, &dev_attr_calib_status);
->>>>> +     devm_iio_device_unregister(&client->dev, indio_dev);
->>>>> +     return 0;
->>>>> +}
->>>>> +
->>>>> +static const struct acpi_device_id bno055_acpi_match[] = {
->>>>> +     {"bno055", 0},
->>>>> +     { },
->>>>> +};
->>>>> +MODULE_DEVICE_TABLE(acpi, bno055_acpi_match);
->>>>> +
->>>>> +static const struct i2c_device_id bno055_id[] = {
->>>>> +     {"bno055", 0},
->>>>> +     { },
->>>>> +};
->>>>> +MODULE_DEVICE_TABLE(i2c, bno055_id);
->>>>> +
->>>>> +static struct i2c_driver bno055_driver = {
->>>>> +     .driver = {
->>>>> +             .name   = "bno055",
->>>>> +             .acpi_match_table = ACPI_PTR(bno055_acpi_match),
->>>>> +     },
->>>>> +     .probe          = bno055_probe,
->>>>> +     .remove         = bno055_remove,
->>>>> +     .id_table       = bno055_id,
->>>>> +};
->>>>> +module_i2c_driver(bno055_driver);
->>>>> +
->>>>> +MODULE_AUTHOR("navin patidar <navin.patidar@gmail.com>");
->>>>> +MODULE_DESCRIPTION("Driver for Bosch Sensortec BNO055 orientation
->>>> sensor");
->>>>> +MODULE_LICENSE("GPL v2");
->>>>>
->>>>
->>>> --
->>>>
->>>> Peter Meerwald-Stadler
->>>> +43-664-2444418 (mobile)
->>>>
->>>
->>
->> --
->>
->> Peter Meerwald-Stadler
->> +43-664-2444418 (mobile)
+>  .../devicetree/bindings/iio/adc/ti-adc12138.txt    |  32 ++
+>  drivers/iio/adc/Kconfig                            |  12 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/ti-adc12138.c                      | 542 +++++++++++++++++++++
+>  4 files changed, 587 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
+>  create mode 100644 drivers/iio/adc/ti-adc12138.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
+> new file mode 100644
+> index 0000000..3a11d2a
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc12138.txt
+> @@ -0,0 +1,32 @@
+> +* Texas Instruments' ADC12130/ADC12132/ADC12138
+> +
+> +Required properties:
+> + - compatible: Should be one of
+> +	* "ti,adc12130"
+> +	* "ti,adc12132"
+> +	* "ti,adc12138"
+> + - reg: SPI chip select number for the device
+> + - interrupts: Should contain interrupt for EOC (end of conversion)
+> + - clocks: phandle to conversion clock input
+> + - spi-max-frequency: Definision as per
+> +	Documentation/devicetree/bindings/spi/spi-bus.txt
+> + - vref-p-supply: The regulator supply for positive analog voltage reference
+> +
+> +Optional properties:
+> + - vref-n-supply: The regulator supply for negative analog voltage reference
+> +	If not specified, this is assumed to be analog ground.
+This is novel. Documented in the datasheet as a negative reference which
+must be positive (greater than 0) for it to work well.
+
+Intersting question on whether this should be optional. Easy enough to
+provided a fixed regulator at 0V afterall.
+
+
+> + - acquisition-time: The number of conversion clock periods for the S/H's
+> +	acquisition time.  Should be one of 6, 10, 18, 34.  If not specified,
+> +	default value of 10 is used.
+Should this be a ti specific parameter.  Not sure.
+I'd also add a note here about why one would set this to other than the
+default (source impedance etc).
+
+
+> +
+> +Example:
+> +adc@0 {
+> +	compatible = "ti,adc12138";
+> +	reg = <0>;
+> +	interrupts = <28 IRQ_TYPE_EDGE_RISING>;
+> +	interrupt-parent = <&gpio1>;
+> +	clocks = <&cclk>;
+> +	vref-p-supply = <&ldo4_reg>;
+> +	spi-max-frequency = <5000000>;
+> +	acquisition-time = <6>;
+> +};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index fa0ff29..87ed82d 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -414,6 +414,18 @@ config TI_ADC0832
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc0832.
+>  
+> +config TI_ADC12138
+> +	tristate "Texas Instruments ADC12130/ADC12132/ADC12138"
+> +	depends on SPI
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADC12130,
+> +	  ADC12132 and ADC12138 chips.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called ti-adc12138.
+> +
+>  config TI_ADC128S052
+>  	tristate "Texas Instruments ADC128S052/ADC122S021/ADC124S021"
+>  	depends on SPI
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 599714b..3ae4ae3 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -40,6 +40,7 @@ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+> +obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+>  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
+>  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+>  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+> diff --git a/drivers/iio/adc/ti-adc12138.c b/drivers/iio/adc/ti-adc12138.c
+> new file mode 100644
+> index 0000000..33057fc
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-adc12138.c
+> @@ -0,0 +1,542 @@
+> +/*
+> + * ADC12130/ADC12132/ADC12138 12-bit plus sign ADC driver
+> + *
+> + * Copyright (c) 2016 Akinobu Mita <akinobu.mita@gmail.com>
+> + *
+> + * This file is subject to the terms and conditions of version 2 of
+> + * the GNU General Public License.  See the file COPYING in the main
+> + * directory of this archive for more details.
+> + *
+> + * Datasheet: http://www.ti.com/lit/ds/symlink/adc12138.pdf
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/completion.h>
+> +#include <linux/clk.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/regulator/consumer.h>
+> +
+> +#define ADC12138_MODE_AUTO_CAL			0x08
+> +#define ADC12138_MODE_READ_STATUS		0x0c
+> +#define ADC12138_MODE_ACQUISITION_TIME_6	0x0e
+> +#define ADC12138_MODE_ACQUISITION_TIME_10	0x4e
+> +#define ADC12138_MODE_ACQUISITION_TIME_18	0x8e
+> +#define ADC12138_MODE_ACQUISITION_TIME_34	0xce
+> +
+> +#define ADC12138_STATUS_CAL			BIT(6)
+> +
+> +enum {
+> +	adc12130,
+> +	adc12132,
+> +	adc12138,
+> +};
+> +
+> +struct adc12138 {
+> +	struct spi_device *spi;
+> +	unsigned int id;
+> +	/* conversion clock */
+> +	struct clk *cclk;
+> +	/* positive analog voltage reference */
+> +	struct regulator *vref_p;
+> +	/* negative analog voltage reference */
+> +	struct regulator *vref_n;
+> +	struct mutex lock;
+> +	struct completion complete;
+> +	/* The number of cclk periods for the S/H's acquisition time */
+> +	unsigned int acquisition_time;
+> +
+> +	u8 tx_buf[2] ____cacheline_aligned;
+> +	u8 rx_buf[2];
+> +};
+> +
+> +#define ADC12138_VOLTAGE_CHANNEL(chan)					\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = chan,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+> +					| BIT(IIO_CHAN_INFO_OFFSET),	\
+> +		.scan_index = chan,					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 13,					\
+> +			.storagebits = 16,				\
+> +			.shift = 3,					\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
+> +
+> +#define ADC12138_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si_offset)		\
+> +	{								\
+> +		.type = IIO_VOLTAGE,					\
+> +		.indexed = 1,						\
+> +		.channel = (chan1),					\
+> +		.channel2 = (chan2),					\
+> +		.differential = 1,					\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
+> +					| BIT(IIO_CHAN_INFO_OFFSET),	\
+> +		.scan_index = (chan1) + (si_offset),			\
+Wouldn't it have been easier to just have an explicit scan_index
+element in the macro parameters?
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 13,					\
+> +			.storagebits = 16,				\
+> +			.shift = 3,					\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec adc12132_channels[] = {
+> +	ADC12138_VOLTAGE_CHANNEL(0),
+> +	ADC12138_VOLTAGE_CHANNEL(1),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 2),
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+> +static const struct iio_chan_spec adc12138_channels[] = {
+> +	ADC12138_VOLTAGE_CHANNEL(0),
+> +	ADC12138_VOLTAGE_CHANNEL(1),
+> +	ADC12138_VOLTAGE_CHANNEL(2),
+> +	ADC12138_VOLTAGE_CHANNEL(3),
+> +	ADC12138_VOLTAGE_CHANNEL(4),
+> +	ADC12138_VOLTAGE_CHANNEL(5),
+> +	ADC12138_VOLTAGE_CHANNEL(6),
+> +	ADC12138_VOLTAGE_CHANNEL(7),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(1, 0, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(2, 3, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(3, 2, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(4, 5, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(5, 4, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(6, 7, 8),
+> +	ADC12138_VOLTAGE_CHANNEL_DIFF(7, 6, 8),
+> +	IIO_CHAN_SOFT_TIMESTAMP(16),
+> +};
+> +
+> +static int adc12138_mode_programming(struct adc12138 *adc, u8 mode,
+> +				     void *rx_buf, int len)
+> +{
+> +	struct spi_transfer xfer = {
+> +		.tx_buf = adc->tx_buf,
+> +		.rx_buf = adc->rx_buf,
+> +		.len = len,
+> +	};
+> +	int ret;
+> +
+> +	/* Skip unused bits for ADC12130 and ADC12132 */
+> +	if (adc->id != adc12138)
+> +		mode = (mode & 0xc0) | ((mode & 0x0f) << 2);
+> +
+> +	adc->tx_buf[0] = mode;
+> +
+> +	ret = spi_sync_transfer(adc->spi, &xfer, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	memcpy(rx_buf, adc->rx_buf, len);
+> +
+> +	return 0;
+> +}
+> +
+> +static int adc12138_read_status(struct adc12138 *adc)
+> +{
+> +	u8 rx_buf[2];
+> +	int ret;
+> +
+> +	ret = adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
+> +					rx_buf, 2);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return (rx_buf[0] << 1) | (rx_buf[1] >> 7);
+> +}
+> +
+> +static int __adc12138_start_conv(struct adc12138 *adc,
+> +				 struct iio_chan_spec const *channel,
+> +				 void *data, int len)
+> +
+> +{
+> +	const u8 ch_to_mux[] = { 0, 4, 1, 5, 2, 6, 3, 7 };
+> +	u8 mode = (ch_to_mux[channel->channel] << 4) |
+> +		  (channel->differential ? 0 : 0x80);
+> +
+> +	return adc12138_mode_programming(adc, mode, data, len);
+> +}
+> +
+> +static int adc12138_start_conv(struct adc12138 *adc,
+> +			       struct iio_chan_spec const *channel)
+> +{
+> +	u8 trash;
+> +
+> +	return __adc12138_start_conv(adc, channel, &trash, 1);
+> +}
+> +
+> +static int adc12138_start_and_read_conv(struct adc12138 *adc,
+> +					struct iio_chan_spec const *channel,
+> +					__be16 *data)
+> +{
+> +	return __adc12138_start_conv(adc, channel, data, 2);
+> +}
+> +
+> +static int adc12138_read_conv_data(struct adc12138 *adc, __be16 *value)
+> +{
+> +	/* Issue a read status instruction and read previous conversion data */
+> +	return adc12138_mode_programming(adc, ADC12138_MODE_READ_STATUS,
+> +					 value, sizeof(*value));
+> +}
+> +
+> +static int adc12138_wait_eoc(struct adc12138 *adc, unsigned long timeout)
+> +{
+> +	if (!wait_for_completion_timeout(&adc->complete, timeout))
+> +		return -ETIMEDOUT;
+> +
+> +	return 0;
+> +}
+> +
+> +static int adc12138_adc_conversion(struct adc12138 *adc,
+> +				   struct iio_chan_spec const *channel,
+> +				   __be16 *value)
+> +{
+> +	int ret;
+> +
+> +	reinit_completion(&adc->complete);
+> +
+> +	ret = adc12138_start_conv(adc, channel);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
+> +	if (ret)
+> +		return ret;
+> +
+> +	return adc12138_read_conv_data(adc, value);
+> +}
+> +
+> +static int adc12138_read_raw(struct iio_dev *iio,
+> +			     struct iio_chan_spec const *channel, int *value,
+> +			     int *shift, long mask)
+> +{
+> +	struct adc12138 *adc = iio_priv(iio);
+> +	int ret;
+> +	__be16 data;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&adc->lock);
+> +		ret = adc12138_adc_conversion(adc, channel, &data);
+> +		mutex_unlock(&adc->lock);
+> +		if (ret)
+> +			return ret;
+> +
+> +		*value = sign_extend32(be16_to_cpu(data) >> 3, 12);
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = regulator_get_voltage(adc->vref_p);
+> +		if (ret < 0)
+> +			return ret;
+> +		*value = ret;
+> +
+> +		if (!IS_ERR(adc->vref_n)) {
+> +			ret = regulator_get_voltage(adc->vref_n);
+> +			if (ret < 0)
+> +				return ret;
+> +			*value -= ret;
+> +		}
+> +
+> +		/* convert regulator output voltage to mV */
+> +		*value /= 1000;
+> +		*shift = channel->scan_type.realbits - 1;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		if (!IS_ERR(adc->vref_n)) {
+> +			*value = regulator_get_voltage(adc->vref_n);
+> +			if (*value < 0)
+> +				return *value;
+> +		} else {
+> +			*value = 0;
+> +		}
+> +
+> +		/* convert regulator output voltage to mV */
+> +		*value /= 1000;
+> +
+> +		return IIO_VAL_INT;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+> +static const struct iio_info adc12138_info = {
+> +	.read_raw = adc12138_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int adc12138_init(struct adc12138 *adc)
+> +{
+> +	int ret;
+> +	int status;
+> +	u8 mode;
+> +	u8 trash;
+> +
+> +	reinit_completion(&adc->complete);
+> +
+> +	ret = adc12138_mode_programming(adc, ADC12138_MODE_AUTO_CAL, &trash, 1);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* data output at this time has no significance */
+> +	status = adc12138_read_status(adc);
+> +	if (status < 0)
+> +		return status;
+> +
+> +	adc12138_wait_eoc(adc, msecs_to_jiffies(100));
+> +
+> +	status = adc12138_read_status(adc);
+> +	if (status & ADC12138_STATUS_CAL) {
+> +		dev_warn(&adc->spi->dev,
+> +			"Auto Cal sequence is still in progress: %#x\n",
+> +			status);
+> +		return -EIO;
+> +	}
+> +
+> +	switch (adc->acquisition_time) {
+> +	case 6:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_6;
+> +		break;
+> +	case 10:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_10;
+> +		break;
+> +	case 18:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_18;
+> +		break;
+> +	case 34:
+> +		mode = ADC12138_MODE_ACQUISITION_TIME_34;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	return adc12138_mode_programming(adc, mode, &trash, 1);
+> +}
+> +
+> +static irqreturn_t adc12138_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct adc12138 *adc = iio_priv(indio_dev);
+> +	__be16 data[20] = { }; /* 16x 2 bytes ADC data + 8 bytes timestamp */
+> +	__be16 trash;
+> +	int ret;
+> +	int scan_index;
+> +	int i = 0;
+> +
+> +	mutex_lock(&adc->lock);
+> +
+> +	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
+> +			 indio_dev->masklength) {
+> +		const struct iio_chan_spec *scan_chan =
+> +				&indio_dev->channels[scan_index];
+> +
+> +		reinit_completion(&adc->complete);
+> +
+> +		ret = adc12138_start_and_read_conv(adc, scan_chan,
+> +						   i ? &data[i - 1] : &trash);
+> +		if (ret) {
+> +			dev_warn(&adc->spi->dev,
+> +				 "failed to start conversion\n");
+> +			goto out;
+> +		}
+> +
+> +		ret = adc12138_wait_eoc(adc, msecs_to_jiffies(100));
+> +		if (ret) {
+> +			dev_warn(&adc->spi->dev, "wait eoc timeout\n");
+> +			goto out;
+> +		}
+> +
+> +		i++;
+> +	}
+> +
+> +	if (i) {
+> +		ret = adc12138_read_conv_data(adc, &data[i - 1]);
+> +		if (ret) {
+> +			dev_warn(&adc->spi->dev,
+> +				 "failed to get conversion data\n");
+> +			goto out;
+> +		}
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, data, iio_get_time_ns());
+> +out:
+> +	mutex_unlock(&adc->lock);
+> +
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static irqreturn_t adc12138_eoc_handler(int irq, void *p)
+> +{
+> +	struct iio_dev *indio_dev = p;
+> +	struct adc12138 *adc = iio_priv(indio_dev);
+> +
+> +	complete(&adc->complete);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int adc12138_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct adc12138 *adc;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adc));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	adc = iio_priv(indio_dev);
+> +	adc->spi = spi;
+> +	adc->id = spi_get_device_id(spi)->driver_data;
+> +	mutex_init(&adc->lock);
+> +	init_completion(&adc->complete);
+> +
+> +	indio_dev->name = spi_get_device_id(spi)->name;
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->info = &adc12138_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	switch (adc->id) {
+> +	case adc12130:
+> +	case adc12132:
+> +		indio_dev->channels = adc12132_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(adc12132_channels);
+> +		break;
+> +	case adc12138:
+> +		indio_dev->channels = adc12138_channels;
+> +		indio_dev->num_channels = ARRAY_SIZE(adc12138_channels);
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	ret = of_property_read_u32(spi->dev.of_node, "acquisition-time",
+> +				   &adc->acquisition_time);
+> +	if (ret)
+> +		adc->acquisition_time = 10;
+> +
+> +	adc->cclk = devm_clk_get(&spi->dev, NULL);
+> +	if (IS_ERR(adc->cclk))
+> +		return PTR_ERR(adc->cclk);
+> +
+> +	adc->vref_p = devm_regulator_get(&spi->dev, "vref-p");
+> +	if (IS_ERR(adc->vref_p))
+> +		return PTR_ERR(adc->vref_p);
+> +
+> +	adc->vref_n = devm_regulator_get_optional(&spi->dev, "vref-n");
+The issue here is if a regulator is specified but an attempt to get it fails.
+So say a request to defer probing occurs.
+
+You need to check for ENODEV which is the value returned if an optional
+regulator is not specified, otherwise you need to handle it as an error like
+any other.
+
+
+> +
+> +	ret = devm_request_irq(&spi->dev, spi->irq, adc12138_eoc_handler,
+> +			       IRQF_TRIGGER_RISING, indio_dev->name, indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = clk_prepare_enable(adc->cclk);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regulator_enable(adc->vref_p);
+> +	if (ret)
+> +		goto err_clk_disable;
+> +
+> +	if (!IS_ERR(adc->vref_n)) {
+> +		ret = regulator_enable(adc->vref_n);
+> +		if (ret)
+> +			goto err_vref_p_disable;
+> +	}
+> +
+> +	ret = adc12138_init(adc);
+> +	if (ret)
+> +		goto err_vref_n_disable;
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> +					 adc12138_trigger_handler, NULL);
+> +	if (ret)
+> +		goto err_vref_n_disable;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret)
+> +		goto err_buffer_cleanup;
+> +
+> +	return 0;
+> +err_buffer_cleanup:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +err_vref_n_disable:
+> +	if (!IS_ERR(adc->vref_n))
+> +		regulator_disable(adc->vref_n);
+> +err_vref_p_disable:
+> +	regulator_disable(adc->vref_p);
+> +err_clk_disable:
+> +	clk_disable_unprepare(adc->cclk);
+> +
+> +	return ret;
+> +}
+> +
+> +static int adc12138_remove(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +	struct adc12138 *adc = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	if (!IS_ERR(adc->vref_n))
+> +		regulator_disable(adc->vref_n);
+> +	regulator_disable(adc->vref_p);
+> +	clk_disable_unprepare(adc->cclk);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_OF
+> +
+> +static const struct of_device_id adc12138_dt_ids[] = {
+> +	{ .compatible = "ti,adc12130", },
+> +	{ .compatible = "ti,adc12132", },
+> +	{ .compatible = "ti,adc12138", },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(of, adc12138_dt_ids);
+> +
+> +#endif
+> +
+> +static const struct spi_device_id adc12138_id[] = {
+> +	{ "adc12130", adc12130 },
+> +	{ "adc12132", adc12132 },
+> +	{ "adc12138", adc12138 },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(spi, adc12138_id);
+> +
+> +static struct spi_driver adc12138_driver = {
+> +	.driver = {
+> +		.name = "adc12138",
+> +		.of_match_table = of_match_ptr(adc12138_dt_ids),
+> +	},
+> +	.probe = adc12138_probe,
+> +	.remove = adc12138_remove,
+> +	.id_table = adc12138_id,
+> +};
+> +module_spi_driver(adc12138_driver);
+> +
+> +MODULE_AUTHOR("Akinobu Mita <akinobu.mita@gmail.com>");
+> +MODULE_DESCRIPTION("ADC12130/ADC12132/ADC12138 driver");
+> +MODULE_LICENSE("GPL v2");
+> 
 
