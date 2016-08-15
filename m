@@ -1,122 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41692 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41640 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753019AbcHOPyg (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:54:36 -0400
-Subject: Re: [PATCH v2] iio: fix sched WARNING "do not call blocking ops when
- !TASK_RUNNING"
-To: Brian Norris <briannorris@chromium.org>,
-	Lars-Peter Clausen <lars@metafoo.de>
-References: <20160802011244.GA54171@google.com>
- <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
- <20160802165732.GA3310@localhost>
- <9a6a7f54-0343-db74-57a2-9f747ae659cc@metafoo.de>
- <20160804082621.GA11331@localhost> <20160809001937.GA23658@google.com>
+	with ESMTP id S1752590AbcHOPrw (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:47:52 -0400
+Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: Increase timeout value
+ waiting for ADC sample
+To: Vignesh R <vigneshr@ti.com>
+References: <20160808110501.29586-1-vigneshr@ti.com>
+ <20160808110501.29586-3-vigneshr@ti.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Guenter Roeck <linux@roeck-us.net>,
-	Brian Norris <computersforpeace@gmail.com>,
-	Peter Zijlstra <peterz@infradead.org>,
-	Ingo Molnar <mingo@kernel.org>
+	Lee Jones <lee.jones@linaro.org>,
+	"Andrew F . Davis" <afd@ti.com>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f1206fbd-3c04-32b5-a898-86c3248661d2@kernel.org>
-Date: Mon, 15 Aug 2016 16:54:32 +0100
+Message-ID: <6e5c9bea-7b0f-0fdb-976a-29b7a0bccc5e@kernel.org>
+Date: Mon, 15 Aug 2016 16:47:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160809001937.GA23658@google.com>
+In-Reply-To: <20160808110501.29586-3-vigneshr@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/08/16 01:19, Brian Norris wrote:
-> When using CONFIG_DEBUG_ATOMIC_SLEEP, the scheduler nicely points out
-> that we're calling sleeping primitives within the wait_event loop, which
-> means we might clobber the task state:
+On 08/08/16 12:05, Vignesh R wrote:
+> Now that open delay and sample delay for each channel is configurable
+> via DT, the default IDLE_TIMEOUT value is not enough as this is
+> calculated based on hardcoded macros. This results in driver returning
+> EBUSY sometimes. Fix this by increasing the timeout
+> value based on maximum value possible to open delay and sample delays
+> for each channel.
 > 
-> [   10.831289] do not call blocking ops when !TASK_RUNNING; state=1 set at [<ffffffc00026b610>]
-> [   10.845531] ------------[ cut here ]------------
-> [   10.850161] WARNING: at kernel/sched/core.c:7630
-> ...
-> [   12.164333] ---[ end trace 45409966a9a76438 ]---
-> [   12.168942] Call trace:
-> [   12.171391] [<ffffffc00024ed44>] __might_sleep+0x64/0x90
-> [   12.176699] [<ffffffc000954774>] mutex_lock_nested+0x50/0x3fc
-> [   12.182440] [<ffffffc0007b9424>] iio_kfifo_buf_data_available+0x28/0x4c
-> [   12.189043] [<ffffffc0007b76ac>] iio_buffer_ready+0x60/0xe0
-> [   12.194608] [<ffffffc0007b7834>] iio_buffer_read_first_n_outer+0x108/0x1a8
-> [   12.201474] [<ffffffc000370d48>] __vfs_read+0x58/0x114
-> [   12.206606] [<ffffffc000371740>] vfs_read+0x94/0x118
-> [   12.211564] [<ffffffc0003720f8>] SyS_read+0x64/0xb4
-> [   12.216436] [<ffffffc000203cb4>] el0_svc_naked+0x24/0x28
-> 
-> To avoid this, we should (a la https://lwn.net/Articles/628628/) use the
-> wait_woken() function, which avoids the nested sleeping while still
-> handling races between waiting / wake-events.
-> 
-> Signed-off-by: Brian Norris <briannorris@chromium.org>
-Looks good to me, but given Lars' involvement in the discussion I'd
-like his review before applying this.
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+As with patch 1 could you provide a fixes tag as well highlighting the
+patch that introduced the issue. I'm thinking you are referring to:
 
-Jonathan
+iio: adc: ti_am335x_adc: make sample delay, open delay, averaging DT parameters
+5dc11e810676ec4a5acb4423ccd33314bf74f4e54
+
 > ---
-> v2:
->  * Only add/remove to/from the wait queue once per call
->  * Restore interruptability via explicit signal_pending() call
->  * Refactor to avoid nested loop
+>  drivers/iio/adc/ti_am335x_adc.c      | 2 +-
+>  include/linux/mfd/ti_am335x_tscadc.h | 8 ++++----
+>  2 files changed, 5 insertions(+), 5 deletions(-)
 > 
-> Note that I did not remove the first (semi-redundant) test for
-> !indio_dev->info, so as to avoid disturbing the error codes used here.
-> 
->  drivers/iio/industrialio-buffer.c | 23 +++++++++++++++++------
->  1 file changed, 17 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
-> index 90462fcf5436..49bf9c59f117 100644
-> --- a/drivers/iio/industrialio-buffer.c
-> +++ b/drivers/iio/industrialio-buffer.c
-> @@ -107,6 +107,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->  {
->  	struct iio_dev *indio_dev = filp->private_data;
->  	struct iio_buffer *rb = indio_dev->buffer;
-> +	DEFINE_WAIT_FUNC(wait, woken_wake_function);
->  	size_t datum_size;
->  	size_t to_wait;
->  	int ret;
-> @@ -131,19 +132,29 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
->  	else
->  		to_wait = min_t(size_t, n / datum_size, rb->watermark);
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index bed9977a1863..c3cfacca2541 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -381,7 +381,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 >  
-> +	add_wait_queue(&rb->pollq, &wait);
->  	do {
-> -		ret = wait_event_interruptible(rb->pollq,
-> -		      iio_buffer_ready(indio_dev, rb, to_wait, n / datum_size));
-> -		if (ret)
-> -			return ret;
-> +		if (!indio_dev->info) {
-> +			ret = -ENODEV;
-> +			break;
-> +		}
+>  	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
 >  
-> -		if (!indio_dev->info)
-> -			return -ENODEV;
-> +		if (!iio_buffer_ready(indio_dev, rb, to_wait, n / datum_size)) {
-> +			if (signal_pending(current)) {
-> +				ret = -ERESTARTSYS;
-> +				break;
-> +			}
-> +
-> +			wait_woken(&wait, TASK_INTERRUPTIBLE,
-> +				   MAX_SCHEDULE_TIMEOUT);
-> +			continue;
-> +		}
+> -	timeout = jiffies + usecs_to_jiffies
+> +	timeout = jiffies + msecs_to_jiffies
+>  				(IDLE_TIMEOUT * adc_dev->channels);
+>  	/* Wait for Fifo threshold interrupt */
+>  	while (1) {
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index 2567a87872b0..7f55b8b41032 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -138,16 +138,16 @@
+>  /*
+>   * time in us for processing a single channel, calculated as follows:
+>   *
+> - * num cycles = open delay + (sample delay + conv time) * averaging
+> + * max num cycles = open delay + (sample delay + conv time) * averaging
+>   *
+> - * num cycles: 152 + (1 + 13) * 16 = 376
+> + * max num cycles: 262143 + (255 + 13) * 16 = 266431
+>   *
+>   * clock frequency: 26MHz / 8 = 3.25MHz
+>   * clock period: 1 / 3.25MHz = 308ns
+>   *
+> - * processing time: 376 * 308ns = 116us
+> + * max processing time: 266431 * 308ns = 83ms(approx)
+>   */
+> -#define IDLE_TIMEOUT 116 /* microsec */
+> +#define IDLE_TIMEOUT 83 /* milliseconds */
 >  
->  		ret = rb->access->read_first_n(rb, n, buf);
->  		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
->  			ret = -EAGAIN;
->  	 } while (ret == 0);
-> +	remove_wait_queue(&rb->pollq, &wait);
+>  #define TSCADC_CELLS		2
 >  
->  	return ret;
->  }
 > 
 
