@@ -1,84 +1,50 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org
-Subject: [PATCH 1/2] iio: gyro: Add MPU-3050 device tree bindings
-Date: Mon, 15 Aug 2016 20:37:55 +0200
-Message-Id: <1471286275-25024-1-git-send-email-linus.walleij@linaro.org>
+Return-Path: <amsfield22@gmail.com>
+Date: Mon, 15 Aug 2016 16:13:20 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: Messed up the fixes-togreg-post-rc1 branch so cherry picking
+ into fixes-togreg
+Message-ID: <20160815231305.GA12216@d830.WORKGROUP>
+References: <faaec59c-07d8-6618-cd0d-0614e690c3e2@kernel.org>
+ <8bc6a47d-52e2-f1f0-5218-aff27c667bde@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <8bc6a47d-52e2-f1f0-5218-aff27c667bde@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-This adds device tree bindings for the MPU-3050 gyroscope. Since it
-is the first set of bindings for a gyroscope, the folder for it
-is also created.
+On Mon, Aug 15, 2016 at 03:43:59PM +0100, Jonathan Cameron wrote:
+> On 15/08/16 15:37, Jonathan Cameron wrote:
+> > Hi All,
+> > 
+> > Seems I messed up the base of the fixes-togreg-post-rc1 branch
+> > (based on a random point in togreg rather than the last 
+> > pull request as intended).  I'll drop that branch as
+> > junk having cherry picked into an updated fixes-togreg branch.
+> > 
+> > Make a bit of a mess of dates, but otherwise should have no
+> > real affect.
+> > 
+> > This is just in case anyone was basing on that branch which
+> > will shortly disappear.
+> > 
+> > Jonathan
+> Note this also involved dropping the thermocouple kconfig fix
+> from Alison as that driver hasn't hit mainline yet.
+> 
+> Alison, would you mind resending that one part of the patch based
+> on the togreg branch?  That way I won't forget it.
 
-Cc: devicetree@vger.kernel.org
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- .../bindings/iio/gyroscope/invensense,mpu3050.txt  | 54 ++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+Done. Sent as an odd v2. Let me know if not ok.
+alisons
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-new file mode 100644
-index 000000000000..e17231a5f4b5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-@@ -0,0 +1,54 @@
-+Invensense MPU-3050 Gyroscope device tree bindings
-+
-+Required properties:
-+  - compatible : should be "invensense,mpu3050"
-+  - reg : the I2C address of the sensor
-+  - #address-cells : should be <1>, used to indicate the optional
-+    I2C mux node
-+  - #size-cells : should be <0>
-+
-+Optional properties:
-+  - interrupt-parent : should be the phandle for the interrupt controller
-+  - interrupts : interrupt mapping for the trigger interrupt from the
-+    internal oscillator. The following IRQ modes are supported:
-+    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
-+    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
-+    for the desired interrupt type.
-+  - vdd-supply : supply regulator for the main power voltage.
-+  - vlogic-supply : supply regulator for the signal voltage.
-+  - mount-matrix : see iio/mount-matrix.txt
-+
-+Optional subnodes:
-+  - The MPU-3050 will pass through and forward the I2C signals from the
-+    incoming I2C bus, alternatively drive traffic to a slave device (usually
-+    an accelerometer) on its own initiative. Therefore is supports a subnode
-+    i2c master node. This node is like any I2C master and should contain:
-+    #address-cells = <1>;
-+    #size-cells = <0>;
-+    reg = <0>;
-+
-+Example:
-+
-+mpu3050@68 {
-+	compatible = "invensense,mpu3050";
-+	reg = <0x68>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	interrupt-parent = <&foo>;
-+	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-+	vdd-supply = <&bar>;
-+	vlogic-supply = <&baz>;
-+
-+	/* External I2C interface */
-+	i2c@0 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		reg = <0>;
-+		fnord@18 {
-+			compatible = "fnord";
-+			reg = <0x18>;
-+			interrupt-parent = <&foo>;
-+			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
-+		};
-+	};
-+};
--- 
-2.7.4
+> 
+> Thanks
+> 
+> Jonathan
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > 
+> 
