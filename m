@@ -1,110 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:55832 "EHLO mga02.intel.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753115AbcHOTMx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Mon, 15 Aug 2016 15:12:53 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jikos@kernel.org, jic23@kernel.org
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-	srinivas.pandruvada@linux.intel.com, dmitry.torokhov@gmail.com
-Subject: [PATCH v5] iio: hid-sensors: use asynchronous resume
-Date: Mon, 15 Aug 2016 12:12:47 -0700
-Message-Id: <1471288367-5325-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:36046 "EHLO
+	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932201AbcHOXKA (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 19:10:00 -0400
+Date: Mon, 15 Aug 2016 16:09:36 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: temperature: add Kconfig selects for triggered buffer
+Message-ID: <20160815230929.GA12208@d830.WORKGROUP>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some platforms power off sensor hubs during S3 suspend, which will require
-longer time to resume. This hurts system resume time, so resume
-asynchronously.
+Select IIO_BUFFER and IIO_TRIGGERED_BUFFER to compile maxim_thermocouple.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
 ---
+Changes in v2
+ - split off from a group patch destined for another branch
+ - rebased on iio/togreg
 
-Formerly this patch was v4 5/7 for Intel ISH series, which was separated
-from the series.
+ drivers/iio/temperature/Kconfig | 2 ++
+ 1 file changed, 2 insertions(+)
 
-v5:
-Added cancel_work_sync
-
-
- .../iio/common/hid-sensors/hid-sensor-trigger.c    | 22 +++++++++++++++++++++-
- include/linux/hid-sensor-hub.h                     |  1 +
- 2 files changed, 22 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-index 5b41f9d..5264ed6 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-@@ -122,6 +122,14 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
- #endif
- }
- 
-+static void hid_sensor_set_power_work(struct work_struct *work)
-+{
-+	struct hid_sensor_common *attrb = container_of(work,
-+						       struct hid_sensor_common,
-+						       work);
-+	_hid_sensor_power_state(attrb, true);
-+}
-+
- static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 						bool state)
- {
-@@ -130,6 +138,7 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 
- void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
- {
-+	cancel_work_sync(&attrb->work);
- 	iio_trigger_unregister(attrb->trigger);
- 	iio_trigger_free(attrb->trigger);
- }
-@@ -170,6 +179,9 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
- 		goto error_unreg_trigger;
- 
- 	iio_device_set_drvdata(indio_dev, attrb);
-+
-+	INIT_WORK(&attrb->work, hid_sensor_set_power_work);
-+
- 	pm_suspend_ignore_children(&attrb->pdev->dev, true);
- 	pm_runtime_enable(&attrb->pdev->dev);
- 	/* Default to 3 seconds, but can be changed from sysfs */
-@@ -202,7 +214,15 @@ static int hid_sensor_resume(struct device *dev)
- 	struct platform_device *pdev = to_platform_device(dev);
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-+	schedule_work(&attrb->work);
-+	return 0;
-+}
- 
-+static int hid_sensor_runtime_resume(struct device *dev)
-+{
-+	struct platform_device *pdev = to_platform_device(dev);
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
- 	return _hid_sensor_power_state(attrb, true);
- }
- 
-@@ -211,7 +231,7 @@ static int hid_sensor_resume(struct device *dev)
- const struct dev_pm_ops hid_sensor_pm_ops = {
- 	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend, hid_sensor_resume)
- 	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
--			   hid_sensor_resume, NULL)
-+			   hid_sensor_runtime_resume, NULL)
- };
- EXPORT_SYMBOL(hid_sensor_pm_ops);
- 
-diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-index c02b5ce..dd85f35 100644
---- a/include/linux/hid-sensor-hub.h
-+++ b/include/linux/hid-sensor-hub.h
-@@ -236,6 +236,7 @@ struct hid_sensor_common {
- 	struct hid_sensor_hub_attribute_info report_state;
- 	struct hid_sensor_hub_attribute_info power_state;
- 	struct hid_sensor_hub_attribute_info sensitivity;
-+	struct work_struct work;
- };
- 
- /* Convert from hid unit expo to regular exponent */
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+index 1d3da05..5ea77a7 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -6,6 +6,8 @@ menu "Temperature sensors"
+ config MAXIM_THERMOCOUPLE
+ 	tristate "Maxim thermocouple sensors"
+ 	depends on SPI
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  If you say yes here you get support for the Maxim series of
+ 	  thermocouple sensors connected via SPI.
 -- 
-2.7.4
+2.1.4
 
