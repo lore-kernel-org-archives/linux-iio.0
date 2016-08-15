@@ -1,63 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41805 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41822 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752905AbcHOQNN (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 12:13:13 -0400
-Subject: Re: [PATCH v2] iio: accel: bma180: use iio helper function to
- guarantee direct mode
-To: Alison Schofield <amsfield22@gmail.com>
-References: <20160725191109.GA10048@d830.WORKGROUP>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+	with ESMTP id S1752859AbcHOQPx (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 12:15:53 -0400
+Subject: Re: [PATCH] iio: adc: at91: unbreak channel adc channel 3
+To: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+	Anders Darander <anders@chargestorm.se>
+References: <1470660136-12524-1-git-send-email-anders@chargestorm.se>
+ <20160808135243.GA19793@piout.net>
+Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <fbf0223b-1f8d-5828-0b51-abb3b2189dd2@kernel.org>
-Date: Mon, 15 Aug 2016 17:13:11 +0100
+Message-ID: <36ed1fcf-f6e9-62fe-b6fe-3a55431d387b@kernel.org>
+Date: Mon, 15 Aug 2016 17:15:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160725191109.GA10048@d830.WORKGROUP>
+In-Reply-To: <20160808135243.GA19793@piout.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/07/16 20:11, Alison Schofield wrote:
-> Replace the code that guarantees the device stays in direct mode
-> with iio_device_claim_direct_mode() which does same.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-Applied.
+On 08/08/16 14:52, Alexandre Belloni wrote:
+> On 08/08/2016 at 14:42:16 +0200, Anders Darander wrote :
+>> The driver always assumes that an input device has been created when
+>> reading channel 3. This causes a kernel panic when dereferencing
+>> st->ts_input.
+>>
+>> The change was introduced in
+>> commit 84882b060301 ("iio: adc: at91_adc: Add support for touchscreens
+>> without TSMR"). Earlier versions only entered that part of the if-else
+>> statement if only the following flags are set:
+>>
+>> AT91_ADC_IER_XRDY | AT91_ADC_IER_YRDY | AT91_ADC_IER_PRDY
+>>
+>> Signed-off-by: Anders Darander <anders@chargestorm.se>
+> Acked-by: Alexandre Belloni <alexandre.belloni@free-electrons.com>
+Applied and marked for stable.
 
-Thanks,
+Thanks in particular for the thorough description!
 
 Jonathan
-> ---
-> Changes in v2:
->  - put back private data lock I had removed in v1.
 > 
->  drivers/iio/accel/bma180.c | 9 +++++----
->  1 file changed, 5 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/bma180.c b/drivers/iio/accel/bma180.c
-> index e3f88ba..0890934 100644
-> --- a/drivers/iio/accel/bma180.c
-> +++ b/drivers/iio/accel/bma180.c
-> @@ -469,13 +469,14 @@ static int bma180_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> +		ret = iio_device_claim_direct_mode(indio_dev);
-> +		if (ret)
-> +			return ret;
-> +
->  		mutex_lock(&data->mutex);
-> -		if (iio_buffer_enabled(indio_dev)) {
-> -			mutex_unlock(&data->mutex);
-> -			return -EBUSY;
-> -		}
->  		ret = bma180_get_data_reg(data, chan->scan_index);
->  		mutex_unlock(&data->mutex);
-> +		iio_device_release_direct_mode(indio_dev);
->  		if (ret < 0)
->  			return ret;
->  		*val = sign_extend32(ret >> chan->scan_type.shift,
+>> ---
+>>  drivers/iio/adc/at91_adc.c | 4 ++--
+>>  1 file changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+>> index 52430ba..0438c68 100644
+>> --- a/drivers/iio/adc/at91_adc.c
+>> +++ b/drivers/iio/adc/at91_adc.c
+>> @@ -381,8 +381,8 @@ static irqreturn_t at91_adc_rl_interrupt(int irq, void *private)
+>>  		st->ts_bufferedmeasure = false;
+>>  		input_report_key(st->ts_input, BTN_TOUCH, 0);
+>>  		input_sync(st->ts_input);
+>> -	} else if (status & AT91_ADC_EOC(3)) {
+>> -		/* Conversion finished */
+>> +	} else if (status & AT91_ADC_EOC(3) && st->ts_input) {
+>> +		/* Conversion finished and we've a touchscreen */
+>>  		if (st->ts_bufferedmeasure) {
+>>  			/*
+>>  			 * Last measurement is always discarded, since it can
+>> -- 
+>> 2.8.1
+>>
 > 
 
