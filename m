@@ -1,40 +1,33 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41051 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41185 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752913AbcHOOHa (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 10:07:30 -0400
-Subject: Re: [PATCH v4 5/7] iio: hid-sensors: use asynchronous resume
-To: Jiri Kosina <jikos@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-References: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
- <1470561939-14278-6-git-send-email-srinivas.pandruvada@linux.intel.com>
- <alpine.LNX.2.00.1608071214500.22028@cbobk.fhfr.pm>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+	with ESMTP id S1753140AbcHOOhy (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 10:37:54 -0400
+Received: from [192.168.0.20] (cpc91196-cmbg18-2-0-cust659.5-4.cable.virginm.net [81.96.234.148])
+	by saturn.retrosnub.co.uk (Postfix; Retrosnub mail submission) with ESMTPSA id 7E1684067C
+	for <linux-iio@vger.kernel.org>; Mon, 15 Aug 2016 15:37:50 +0100 (BST)
+To: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <884e74df-569e-8218-fbda-f9c7ecfe1e5a@kernel.org>
-Date: Mon, 15 Aug 2016 15:07:24 +0100
+Subject: Messed up the fixes-togreg-post-rc1 branch so cherry picking into
+ fixes-togreg
+Message-ID: <faaec59c-07d8-6618-cd0d-0614e690c3e2@kernel.org>
+Date: Mon, 15 Aug 2016 15:37:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <alpine.LNX.2.00.1608071214500.22028@cbobk.fhfr.pm>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/08/16 11:15, Jiri Kosina wrote:
-> On Sun, 7 Aug 2016, Srinivas Pandruvada wrote:
-> 
->> Some platforms power off sensor hubs during S3 suspend, which will require
->> longer time to resume. This hurts system resume time, so resume
->> asynchronously.
->>
->> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-> 
-> Jonathan, are you going to cherry-pick this patch from the series? 
-> Alternatively, if you're okay with it, I can pull it in together with the 
-> whole set with your Acked-by or Reviewed-by.
-> 
-I'll take it via IIO. Got a bit of catching up to do (been on holiday)
+Hi All,
+
+Seems I messed up the base of the fixes-togreg-post-rc1 branch
+(based on a random point in togreg rather than the last 
+pull request as intended).  I'll drop that branch as
+junk having cherry picked into an updated fixes-togreg branch.
+
+Make a bit of a mess of dates, but otherwise should have no
+real affect.
+
+This is just in case anyone was basing on that branch which
+will shortly disappear.
 
 Jonathan
-> Thanks,
-> 
-
