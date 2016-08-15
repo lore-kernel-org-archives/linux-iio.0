@@ -1,107 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:56844 "EHLO pmeerw.net"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1753411AbcHPN70 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Tue, 16 Aug 2016 09:59:26 -0400
-Date: Tue, 16 Aug 2016 15:58:39 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Linus Walleij <linus.walleij@linaro.org>
-cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 11/17] iio: accel: kxsd9: Fix up offset and scaling
-In-Reply-To: <1471354423-19186-12-git-send-email-linus.walleij@linaro.org>
-Message-ID: <alpine.DEB.2.02.1608161557440.21709@pmeerw.net>
-References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org> <1471354423-19186-12-git-send-email-linus.walleij@linaro.org>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:36860 "EHLO
+	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S932329AbcHOWQY (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 18:16:24 -0400
+Date: Mon, 15 Aug 2016 15:16:22 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: magnetometer: mag3110: claim direct mode during raw
+ reads
+Message-ID: <20160815221607.GA4567@d830.WORKGROUP>
+References: <20160801154827.GA7017@d830.WORKGROUP>
+ <14defd5e-ef8c-047a-0512-e94835629201@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <14defd5e-ef8c-047a-0512-e94835629201@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, Aug 15, 2016 at 05:04:24PM +0100, Jonathan Cameron wrote:
+> On 01/08/16 16:48, Alison Schofield wrote:
+> > Driver was checking for direct mode but not locking it.  Use
+> > claim/release helper functions to guarantee the device stays
+> > in direct mode during raw reads.
+> > 
+> > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> > ---
+> >  drivers/iio/magnetometer/mag3110.c | 21 +++++++++++++--------
+> >  1 file changed, 13 insertions(+), 8 deletions(-)
+> > 
+> > diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+> > index f2be4a0..90574ff 100644
+> > --- a/drivers/iio/magnetometer/mag3110.c
+> > +++ b/drivers/iio/magnetometer/mag3110.c
+> > @@ -154,34 +154,39 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
+> >  
+> >  	switch (mask) {
+> >  	case IIO_CHAN_INFO_RAW:
+> > -		if (iio_buffer_enabled(indio_dev))
+> > -			return -EBUSY;
+> > +		ret = iio_device_claim_direct_mode(indio_dev);
+> > +		if (ret)
+> > +			return ret;
+> >  
+> >  		switch (chan->type) {
+> >  		case IIO_MAGN: /* in 0.1 uT / LSB */
+> >  			ret = mag3110_read(data, buffer);
+> >  			if (ret < 0)
+> > -				return ret;
+> > +				goto release;
+> >  			*val = sign_extend32(
+> >  				be16_to_cpu(buffer[chan->scan_index]), 15);
+> > -			return IIO_VAL_INT;
+> > +			ret = IIO_VAL_INT;
+> No break?
+oops...needs one and the next case too. Thanks!
 
-> - The code did not regard the fact that only the upper 12 bits of
->   the accelerometer values are valid. Shift these
->   down four bits to yield the real raw value.
 
-maybe can do without nval temporary variable
-
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  drivers/iio/accel/kxsd9.c | 35 ++++++++++++++++++-----------------
->  1 file changed, 18 insertions(+), 17 deletions(-)
+> >  		case IIO_TEMP: /* in 1 C / LSB */
+> >  			mutex_lock(&data->lock);
+> >  			ret = mag3110_request(data);
+> >  			if (ret < 0) {
+> >  				mutex_unlock(&data->lock);
+> > -				return ret;
+> > +				goto release;
+> >  			}
+> >  			ret = i2c_smbus_read_byte_data(data->client,
+> >  				MAG3110_DIE_TEMP);
+> >  			mutex_unlock(&data->lock);
+> >  			if (ret < 0)
+> > -				return ret;
+> > +				goto release;
+> >  			*val = sign_extend32(ret, 7);
+> > -			return IIO_VAL_INT;
+> > +			ret = IIO_VAL_INT;
+> No break here either....
+> >  		default:
+> > -			return -EINVAL;
+> > +			ret = -EINVAL;
+> >  		}
+> > +release:
+> > +		iio_device_release_direct_mode(indio_dev);
+> > +		return ret;
+> > +
+> >  	case IIO_CHAN_INFO_SCALE:
+> >  		switch (chan->type) {
+> >  		case IIO_MAGN:
+> > 
 > 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 14d949a4caf9..152042ef3e3c 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -55,6 +55,8 @@ struct kxsd9_state {
->  /* reverse order */
->  static const int kxsd9_micro_scales[4] = { 47853, 35934, 23927, 11978 };
->  
-> +#define KXSD9_ZERO_G_OFFSET -2048
-> +
->  static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
->  {
->  	int ret, i;
-> @@ -82,19 +84,6 @@ error_ret:
->  	return ret;
->  }
->  
-> -static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
-> -{
-> -	int ret;
-> -	struct kxsd9_state *st = iio_priv(indio_dev);
-> -	__be16 raw_val;
-> -
-> -	ret = regmap_bulk_read(st->map, address, &raw_val, sizeof(raw_val));
-> -	if (ret)
-> -		return ret;
-> -	/* Only 12 bits are valid */
-> -	return be16_to_cpu(raw_val) & 0xfff0;
-> -}
-> -
->  static IIO_CONST_ATTR(accel_scale_available,
->  		KXSD9_SCALE_2G " "
->  		KXSD9_SCALE_4G " "
-> @@ -131,13 +120,24 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  	int ret = -EINVAL;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  	unsigned int regval;
-> +	__be16 raw_val;
-> +	u16 nval;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		ret = kxsd9_read(indio_dev, chan->address);
-> -		if (ret < 0)
-> +		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
-> +				       sizeof(raw_val));
-> +		if (ret)
->  			goto error_ret;
-> -		*val = ret;
-> +		nval = be16_to_cpu(raw_val);
-> +		/* Only 12 bits are valid */
-> +		nval >>= 4;
-> +		*val = nval;
-> +		ret = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		/* This has a bias of -2048 */
-> +		*val = KXSD9_ZERO_G_OFFSET;
->  		ret = IIO_VAL_INT;
->  		break;
->  	case IIO_CHAN_INFO_SCALE:
-> @@ -161,7 +161,8 @@ error_ret:
->  		.modified = 1,						\
->  		.channel2 = IIO_MOD_##axis,				\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
-> +					BIT(IIO_CHAN_INFO_OFFSET),	\
->  		.address = KXSD9_REG_##axis,				\
->  	}
->  
-> 
-
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
