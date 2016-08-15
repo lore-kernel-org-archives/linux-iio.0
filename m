@@ -1,57 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41414 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41419 "EHLO
 	saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1752713AbcHOPND (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:13:03 -0400
-Subject: Re: [PATCH] iio: light: us5182d: Add missing error code assignment
- before test
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-References: <1470806296-8739-1-git-send-email-christophe.jaillet@wanadoo.fr>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
+	with ESMTP id S932227AbcHOPOM (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 11:14:12 -0400
+Subject: Re: [PATCH 1/3] iio: chemical: atlas-ph-sensor: switch to
+ iio_device_*_direct_mode helpers
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1470798359-4919-1-git-send-email-mranostay@gmail.com>
+ <1470798359-4919-2-git-send-email-mranostay@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <eb543108-e601-6c8b-4158-51b9298d4e5e@kernel.org>
-Date: Mon, 15 Aug 2016 16:13:00 +0100
+Message-ID: <8067f895-6ab3-9c40-f127-bc74da295f97@kernel.org>
+Date: Mon, 15 Aug 2016 16:14:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <1470806296-8739-1-git-send-email-christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1470798359-4919-2-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/08/16 06:18, Christophe JAILLET wrote:
-> It is likely that checking the result of 'pm_runtime_set_active' is
-> expected here.
-> 
-> Fixes: f0e5f57d3ac2 ("iio: light: us8152d: Add power management support")
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Applied to the togreg branch of iio.git. Initially pushed out as testing
-for the autobuilders to play with it.
-
-Whilst the fix is obviously correct, the missing assignment just results in
-a particular error not being handled rather than a 'bug' as such. Hence
-I'm sending this the slow route and it'll hit in the next merge window.
-
-Thanks,
-
-Jonathan
+On 10/08/16 04:05, Matt Ranostay wrote:
+> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 > ---
->  drivers/iio/light/us5182d.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
+>  drivers/iio/chemical/atlas-ph-sensor.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-> index 20c40f780964..18cf2e29e4d5 100644
-> --- a/drivers/iio/light/us5182d.c
-> +++ b/drivers/iio/light/us5182d.c
-> @@ -894,7 +894,7 @@ static int us5182d_probe(struct i2c_client *client,
->  		goto out_err;
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> index ae038a59d256..8e39b37a5385 100644
+> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -402,7 +402,9 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>  		case IIO_PH:
+>  		case IIO_CONCENTRATION:
+>  		case IIO_ELECTRICALCONDUCTIVITY:
+> -			mutex_lock(&indio_dev->mlock);
+> +			ret = iio_device_claim_direct_mode(indio_dev);
+> +			if (ret)
+> +				return ret;
 >  
->  	if (data->default_continuous) {
-> -		pm_runtime_set_active(&client->dev);
-> +		ret = pm_runtime_set_active(&client->dev);
->  		if (ret < 0)
->  			goto out_err;
->  	}
+>  			if (iio_buffer_enabled(indio_dev))
+>  				ret = -EBUSY;
+The claim_direct_mode helpers also perform this check...
+
+
+> @@ -410,7 +412,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
+>  				ret = atlas_read_measurement(data,
+>  							chan->address, &reg);
+>  
+> -			mutex_unlock(&indio_dev->mlock);
+> +			iio_device_release_direct_mode(indio_dev);
+>  			break;
+>  		default:
+>  			ret = -EINVAL;
 > 
 
