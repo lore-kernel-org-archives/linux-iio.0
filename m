@@ -1,92 +1,24 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:36860 "EHLO
-	mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S932329AbcHOWQY (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Mon, 15 Aug 2016 18:16:24 -0400
-Date: Mon, 15 Aug 2016 15:16:22 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: magnetometer: mag3110: claim direct mode during raw
- reads
-Message-ID: <20160815221607.GA4567@d830.WORKGROUP>
-References: <20160801154827.GA7017@d830.WORKGROUP>
- <14defd5e-ef8c-047a-0512-e94835629201@kernel.org>
+Return-Path: <robherring2@gmail.com>
+Date: Tue, 16 Aug 2016 09:28:19 -0500
+From: Rob Herring <robh@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/2] iio: gyro: Add MPU-3050 device tree bindings
+Message-ID: <20160816142819.GA15545@rob-hp-laptop>
+References: <1471286275-25024-1-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <14defd5e-ef8c-047a-0512-e94835629201@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1471286275-25024-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Aug 15, 2016 at 05:04:24PM +0100, Jonathan Cameron wrote:
-> On 01/08/16 16:48, Alison Schofield wrote:
-> > Driver was checking for direct mode but not locking it.  Use
-> > claim/release helper functions to guarantee the device stays
-> > in direct mode during raw reads.
-> > 
-> > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> > ---
-> >  drivers/iio/magnetometer/mag3110.c | 21 +++++++++++++--------
-> >  1 file changed, 13 insertions(+), 8 deletions(-)
-> > 
-> > diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-> > index f2be4a0..90574ff 100644
-> > --- a/drivers/iio/magnetometer/mag3110.c
-> > +++ b/drivers/iio/magnetometer/mag3110.c
-> > @@ -154,34 +154,39 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
-> >  
-> >  	switch (mask) {
-> >  	case IIO_CHAN_INFO_RAW:
-> > -		if (iio_buffer_enabled(indio_dev))
-> > -			return -EBUSY;
-> > +		ret = iio_device_claim_direct_mode(indio_dev);
-> > +		if (ret)
-> > +			return ret;
-> >  
-> >  		switch (chan->type) {
-> >  		case IIO_MAGN: /* in 0.1 uT / LSB */
-> >  			ret = mag3110_read(data, buffer);
-> >  			if (ret < 0)
-> > -				return ret;
-> > +				goto release;
-> >  			*val = sign_extend32(
-> >  				be16_to_cpu(buffer[chan->scan_index]), 15);
-> > -			return IIO_VAL_INT;
-> > +			ret = IIO_VAL_INT;
-> No break?
-oops...needs one and the next case too. Thanks!
+On Mon, Aug 15, 2016 at 08:37:55PM +0200, Linus Walleij wrote:
+> This adds device tree bindings for the MPU-3050 gyroscope. Since it
+> is the first set of bindings for a gyroscope, the folder for it
+> is also created.
 
+Is this not similar to mpu-6050 and other Invsense devices:
 
-> >  		case IIO_TEMP: /* in 1 C / LSB */
-> >  			mutex_lock(&data->lock);
-> >  			ret = mag3110_request(data);
-> >  			if (ret < 0) {
-> >  				mutex_unlock(&data->lock);
-> > -				return ret;
-> > +				goto release;
-> >  			}
-> >  			ret = i2c_smbus_read_byte_data(data->client,
-> >  				MAG3110_DIE_TEMP);
-> >  			mutex_unlock(&data->lock);
-> >  			if (ret < 0)
-> > -				return ret;
-> > +				goto release;
-> >  			*val = sign_extend32(ret, 7);
-> > -			return IIO_VAL_INT;
-> > +			ret = IIO_VAL_INT;
-> No break here either....
-> >  		default:
-> > -			return -EINVAL;
-> > +			ret = -EINVAL;
-> >  		}
-> > +release:
-> > +		iio_device_release_direct_mode(indio_dev);
-> > +		return ret;
-> > +
-> >  	case IIO_CHAN_INFO_SCALE:
-> >  		switch (chan->type) {
-> >  		case IIO_MAGN:
-> > 
-> 
+Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+
+Rob
