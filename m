@@ -1,76 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f196.google.com ([209.85.220.196]:36792 "EHLO
-	mail-qk0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1751516AbcHPM0C (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2016 08:26:02 -0400
+Received: from ns.pmeerw.net ([84.19.176.92]:56844 "EHLO pmeerw.net"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1753411AbcHPN70 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Tue, 16 Aug 2016 09:59:26 -0400
+Date: Tue, 16 Aug 2016 15:58:39 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Linus Walleij <linus.walleij@linaro.org>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 11/17] iio: accel: kxsd9: Fix up offset and scaling
+In-Reply-To: <1471354423-19186-12-git-send-email-linus.walleij@linaro.org>
+Message-ID: <alpine.DEB.2.02.1608161557440.21709@pmeerw.net>
+References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org> <1471354423-19186-12-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <1471349438-16262-1-git-send-email-clabbe.montjoie@gmail.com>
-References: <1471349438-16262-1-git-send-email-clabbe.montjoie@gmail.com>
-From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-Date: Tue, 16 Aug 2016 14:26:01 +0200
-Message-ID: <CAL7P5jLXhNX7m6y38xKqCoadd54Bg8BmEbWYkYj1Rjr1eSKbJg@mail.gmail.com>
-Subject: Re: [PATCH] iio: mxs-lradc: fix a possible NULL dereference
-To: LABBE Corentin <clabbe.montjoie@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Corentin,
 
-On Tue, Aug 16, 2016 at 2:10 PM, LABBE Corentin
-<clabbe.montjoie@gmail.com> wrote:
-> of_match_device could return NULL, and so cause a NULL pointer
-> dereference later.
->
-> For fixing this problem, we use of_device_get_match_data(), this will
-> simplify the code a little by using a standard function for
-> getting the match data.
->
-> Reported-by: coverity (CID 1127209)
-> Signed-off-by: LABBE Corentin <clabbe.montjoie@gmail.com>
+> - The code did not regard the fact that only the upper 12 bits of
+>   the accelerometer values are valid. Shift these
+>   down four bits to yield the real raw value.
+
+maybe can do without nval temporary variable
+
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 > ---
->  drivers/iio/adc/mxs-lradc.c | 8 +++-----
->  1 file changed, 3 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> index b84d37c..378547c 100644
-> --- a/drivers/iio/adc/mxs-lradc.c
-> +++ b/drivers/iio/adc/mxs-lradc.c
-> @@ -1570,10 +1570,7 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
->
->  static int mxs_lradc_probe(struct platform_device *pdev)
+>  drivers/iio/accel/kxsd9.c | 35 ++++++++++++++++++-----------------
+>  1 file changed, 18 insertions(+), 17 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> index 14d949a4caf9..152042ef3e3c 100644
+> --- a/drivers/iio/accel/kxsd9.c
+> +++ b/drivers/iio/accel/kxsd9.c
+> @@ -55,6 +55,8 @@ struct kxsd9_state {
+>  /* reverse order */
+>  static const int kxsd9_micro_scales[4] = { 47853, 35934, 23927, 11978 };
+>  
+> +#define KXSD9_ZERO_G_OFFSET -2048
+> +
+>  static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
 >  {
-> -       const struct of_device_id *of_id =
-> -               of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> -       const struct mxs_lradc_of_config *of_cfg =
-> -               &mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
-> +       const struct mxs_lradc_of_config *of_cfg;
->         struct device *dev = &pdev->dev;
->         struct device_node *node = dev->of_node;
->         struct mxs_lradc *lradc;
-> @@ -1591,7 +1588,8 @@ static int mxs_lradc_probe(struct platform_device *pdev)
->         }
->
->         lradc = iio_priv(iio);
-> -       lradc->soc = (enum mxs_lradc_id)of_id->data;
-> +       lradc->soc = (enum mxs_lradc_id)of_device_get_match_data(&pdev->dev);
-> +       of_cfg = &mxs_lradc_of_config[lradc->soc];
->
->         /* Grab the memory area */
->         iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> --
+>  	int ret, i;
+> @@ -82,19 +84,6 @@ error_ret:
+>  	return ret;
+>  }
+>  
+> -static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
+> -{
+> -	int ret;
+> -	struct kxsd9_state *st = iio_priv(indio_dev);
+> -	__be16 raw_val;
+> -
+> -	ret = regmap_bulk_read(st->map, address, &raw_val, sizeof(raw_val));
+> -	if (ret)
+> -		return ret;
+> -	/* Only 12 bits are valid */
+> -	return be16_to_cpu(raw_val) & 0xfff0;
+> -}
+> -
+>  static IIO_CONST_ATTR(accel_scale_available,
+>  		KXSD9_SCALE_2G " "
+>  		KXSD9_SCALE_4G " "
+> @@ -131,13 +120,24 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+>  	int ret = -EINVAL;
+>  	struct kxsd9_state *st = iio_priv(indio_dev);
+>  	unsigned int regval;
+> +	__be16 raw_val;
+> +	u16 nval;
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		ret = kxsd9_read(indio_dev, chan->address);
+> -		if (ret < 0)
+> +		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
+> +				       sizeof(raw_val));
+> +		if (ret)
+>  			goto error_ret;
+> -		*val = ret;
+> +		nval = be16_to_cpu(raw_val);
+> +		/* Only 12 bits are valid */
+> +		nval >>= 4;
+> +		*val = nval;
+> +		ret = IIO_VAL_INT;
+> +		break;
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		/* This has a bias of -2048 */
+> +		*val = KXSD9_ZERO_G_OFFSET;
+>  		ret = IIO_VAL_INT;
+>  		break;
+>  	case IIO_CHAN_INFO_SCALE:
+> @@ -161,7 +161,8 @@ error_ret:
+>  		.modified = 1,						\
+>  		.channel2 = IIO_MOD_##axis,				\
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+> +					BIT(IIO_CHAN_INFO_OFFSET),	\
+>  		.address = KXSD9_REG_##axis,				\
+>  	}
+>  
+> 
 
-This driver has been split into adc, touchscreen and mfd part. It's currently in
-process of review and not yet merged. And it's modified  in such a way that
-your changes wouldn't apply anyway. Please see:
-https://lkml.org/lkml/2016/8/4/270
-I think it's better to wait for modified driver to be merged and after send
-patches for it.
+-- 
 
-Thanks,
-Ksenija
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
