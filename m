@@ -1,24 +1,43 @@
-Return-Path: <robherring2@gmail.com>
-Date: Tue, 16 Aug 2016 09:28:19 -0500
-From: Rob Herring <robh@kernel.org>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: gyro: Add MPU-3050 device tree bindings
-Message-ID: <20160816142819.GA15545@rob-hp-laptop>
-References: <1471286275-25024-1-git-send-email-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1471286275-25024-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-in-08.arcor-online.net ([151.189.21.48]:36696 "EHLO
+	mail-in-08.arcor-online.net" rhost-flags-OK-OK-OK-OK)
+	by vger.kernel.org with ESMTP id S1752820AbcHPSnt (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2016 14:43:49 -0400
+From: Giorgio Dal Molin <giorgio.nicole@arcor.de>
+To: linux-iio@vger.kernel.org
+Cc: Giorgio Dal Molin <giorgio.nicole@arcor.de>,
+	jic23@jic23.retrosnub.co.uk
+Subject: [PATCH 1/1] iio:ti-ads1015: fix a wrong pointer definition.
+Date: Tue, 16 Aug 2016 20:43:37 +0200
+Message-Id: <20160816184337.17059-1-giorgio.nicole@arcor.de>
+In-Reply-To: <CAKzfze9e3U5MjgbwQYn7_APnvDMJpX8ORrstsASrrbN6bp5UOg@mail.gmail.com>
+References: <CAKzfze9e3U5MjgbwQYn7_APnvDMJpX8ORrstsASrrbN6bp5UOg@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 15, 2016 at 08:37:55PM +0200, Linus Walleij wrote:
-> This adds device tree bindings for the MPU-3050 gyroscope. Since it
-> is the first set of bindings for a gyroscope, the folder for it
-> is also created.
+The call to i2c_get_clientdata(client) returns a struct iio_dev*, not
+the needed struct ads1015_data*. We need here an intermediate step as
+in the function: void ads1015_get_channels_config(struct i2c_client *client).
 
-Is this not similar to mpu-6050 and other Invsense devices:
+Signed-off-by: Giorgio Dal Molin <giorgio.nicole@arcor.de>
+---
+ drivers/iio/adc/ti-ads1015.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-Documentation/devicetree/bindings/iio/imu/inv_mpu6050.txt
+diff --git a/drivers/iio/adc/ti-ads1015.c b/drivers/iio/adc/ti-ads1015.c
+index 1ef39877..066abaf 100644
+--- a/drivers/iio/adc/ti-ads1015.c
++++ b/drivers/iio/adc/ti-ads1015.c
+@@ -489,7 +489,8 @@ static struct iio_info ads1115_info = {
+ #ifdef CONFIG_OF
+ static int ads1015_get_channels_config_of(struct i2c_client *client)
+ {
+-	struct ads1015_data *data = i2c_get_clientdata(client);
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct ads1015_data *data = iio_priv(indio_dev);
+ 	struct device_node *node;
+ 
+ 	if (!client->dev.of_node ||
+-- 
+2.9.3
 
-Rob
