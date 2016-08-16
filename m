@@ -1,74 +1,133 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 16 Aug 2016 13:47:06 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Alexander Stein <alexander.stein@systec-electronic.com>,
-	linux-kernel@vger.kernel.org,
-	Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-	dmitry.torokhov@gmail.com, linux-input@vger.kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-	linux-iio@vger.kernel.org, harald@ccbib.org, stefan.wahren@i2se.com,
-	fabio.estevam@freescale.com
-Subject: Re: [PATCH v4 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
-Message-ID: <20160816124706.GJ25844@dell>
-References: <cover.1470316956.git.ksenija.stanojevic@gmail.com>
- <0a60a10b249062d305237f04fdb9aea05b128b85.1470316956.git.ksenija.stanojevic@gmail.com>
- <2721285.1CS7CJCgc7@ws-stein>
- <20160805070224.GH5243@dell>
- <22e16c7d-4ad7-6432-11e7-30b6b6194573@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:34647 "EHLO
+	mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+	with ESMTP id S1753256AbcHPNDD (ORCPT
+	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2016 09:03:03 -0400
+Received: by mail-wm0-f68.google.com with SMTP id q128so16318284wma.1
+        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2016 06:03:02 -0700 (PDT)
+Date: Tue, 16 Aug 2016 15:02:58 +0200
+From: Johanna Abrahamsson <johanna@mjao.org>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Cc: linux-iio@vger.kernel.org
+Subject: [PATCH] staging: iio: ade7854: checkpatch fixes
+Message-ID: <20160816130254.GA9657@fedora-21-dvm>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <22e16c7d-4ad7-6432-11e7-30b6b6194573@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 15 Aug 2016, Jonathan Cameron wrote:
+CHECK: Alignment should match open parenthesis
 
-> On 05/08/16 08:02, Lee Jones wrote:
-> > On Thu, 04 Aug 2016, Alexander Stein wrote:
-> > 
-> >> On Thursday 04 August 2016 15:28:18, Ksenija Stanojevic wrote:
-> >>> Add core files for mxs-lradc MFD driver.
-> >>>
-> >>> Note:  this patch won't compile in iio/testing without this patch:
-> >>> a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
-> >>>
-> >>> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> >>> ---
-> >>> [...]
-> >>> +static int mxs_lradc_probe(struct platform_device *pdev)
-> >>> +{
-> >>> +	const struct of_device_id *of_id;
-> >>> +	struct device *dev = &pdev->dev;
-> >>> +	struct device_node *node = dev->of_node;
-> >>> +	struct mxs_lradc *lradc;
-> >>> +	struct resource *iores;
-> >>> +	struct mfd_cell *cells = NULL;
-> >>> +	int ret = 0;
-> >>> +	u32 ts_wires = 0;
-> >>> +
-> >>> +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
-> >>> +	if (!lradc)
-> >>> +		return -ENOMEM;
-> >>> +
-> >>> +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> >>> +	lradc->soc = (enum mxs_lradc_id)of_id->data;
-> >>> +
-> >>> +	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> >>> +	lradc->base = devm_ioremap_resource(dev, iores);
-> >>
-> >> Out of couriosity: Is it common to pass already ioremapped addresses to (MFD 
-> >> cell) platform drivers? I would have expected, and done myself, that ioremap 
-> >> is done in the driver itself, same as the IRQ.
-> > 
-> > Yes, this is exactly what should happen.
-> > 
-> Lee, you've confused me with this answer.  Yes, it is common or Yes it
-> should have been done the way Alexander suggested?
+Signed-off-by: Johanna Abrahamsson <johanna@mjao.org>
+---
+ drivers/staging/iio/meter/ade7854.c | 40 ++++++++++++++++++-------------------
+ 1 file changed, 20 insertions(+), 20 deletions(-)
 
-The remapping and IRQ obtainment should be done in the leaf driver.
-
+diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
+index 75e8685..24edbc3 100644
+--- a/drivers/staging/iio/meter/ade7854.c
++++ b/drivers/staging/iio/meter/ade7854.c
+@@ -23,8 +23,8 @@
+ #include "ade7854.h"
+ 
+ static ssize_t ade7854_read_8bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				 struct device_attribute *attr,
++				 char *buf)
+ {
+ 	int ret;
+ 	u8 val = 0;
+@@ -40,8 +40,8 @@ static ssize_t ade7854_read_8bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7854_read_16bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				  struct device_attribute *attr,
++				  char *buf)
+ {
+ 	int ret;
+ 	u16 val = 0;
+@@ -57,8 +57,8 @@ static ssize_t ade7854_read_16bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7854_read_24bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				  struct device_attribute *attr,
++				  char *buf)
+ {
+ 	int ret;
+ 	u32 val;
+@@ -74,8 +74,8 @@ static ssize_t ade7854_read_24bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7854_read_32bit(struct device *dev,
+-		struct device_attribute *attr,
+-		char *buf)
++				  struct device_attribute *attr,
++				  char *buf)
+ {
+ 	int ret;
+ 	u32 val = 0;
+@@ -91,9 +91,9 @@ static ssize_t ade7854_read_32bit(struct device *dev,
+ }
+ 
+ static ssize_t ade7854_write_8bit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				  struct device_attribute *attr,
++				  const char *buf,
++				  size_t len)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -112,9 +112,9 @@ error_ret:
+ }
+ 
+ static ssize_t ade7854_write_16bit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				   struct device_attribute *attr,
++				   const char *buf,
++				   size_t len)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -133,9 +133,9 @@ error_ret:
+ }
+ 
+ static ssize_t ade7854_write_24bit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				   struct device_attribute *attr,
++				   const char *buf,
++				   size_t len)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+@@ -154,9 +154,9 @@ error_ret:
+ }
+ 
+ static ssize_t ade7854_write_32bit(struct device *dev,
+-		struct device_attribute *attr,
+-		const char *buf,
+-		size_t len)
++				   struct device_attribute *attr,
++				   const char *buf,
++				   size_t len)
+ {
+ 	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.1.4
+
