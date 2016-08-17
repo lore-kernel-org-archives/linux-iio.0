@@ -1,28 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx2.suse.de ([195.135.220.15]:39413 "EHLO mx2.suse.de"
+Received: from comal.ext.ti.com ([198.47.26.152]:45311 "EHLO comal.ext.ti.com"
 	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1750839AbcHQJRd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 17 Aug 2016 05:17:33 -0400
-Date: Wed, 17 Aug 2016 11:17:30 +0200 (CEST)
-From: Jiri Kosina <jikos@kernel.org>
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-cc: jic23@kernel.org, linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: Re: [PATCH v4 0/7] Intel Integrated Sensor Hub Support (ISH)
-In-Reply-To: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Message-ID: <alpine.LNX.2.00.1608171116480.22028@cbobk.fhfr.pm>
-References: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+	id S1752075AbcHQMOO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Aug 2016 08:14:14 -0400
+From: Vignesh R <vigneshr@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+	"Andrew F . Davis" <afd@ti.com>, <linux-iio@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 0/2] ti_am335x_adc: Fix bugs related to oneshot read
+Date: Wed, 17 Aug 2016 17:42:59 +0530
+Message-ID: <20160817121301.21785-1-vigneshr@ti.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-I've now applied the series (without the iio patch (5/7), as discussed 
-before) to hid.git#for-4.9/intel-ish
+This series fixes a couple of bugs related to simultaneous read of
+multiple ADC channels in oneshot mode. Since, all channels share FIFO1,
+it has to be protected using a mutex, implemented by patch 1. Patch 2
+increases the timeout waiting for a ADC sample.
 
-Thanks,
+Vignesh R (2):
+  iio: adc: ti_am335x_adc: Protect FIFO1 from concurrent access
+  iio: adc: ti_am335x_adc: Increase timeout value waiting for ADC sample
+
+ drivers/iio/adc/ti_am335x_adc.c      | 16 ++++++++++++----
+ include/linux/mfd/ti_am335x_tscadc.h |  8 ++++----
+ 2 files changed, 16 insertions(+), 8 deletions(-)
 
 -- 
-Jiri Kosina
-SUSE Labs
+2.9.2
 
