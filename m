@@ -1,61 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f65.google.com ([209.85.220.65]:33080 "EHLO
-        mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755656AbcHSUgZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2016 16:36:25 -0400
-Received: by mail-pa0-f65.google.com with SMTP id vy10so3882863pac.0
-        for <linux-iio@vger.kernel.org>; Fri, 19 Aug 2016 13:36:25 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v2 2/3] iio: chemical: atlas-ph-sensor: switch to REGCACHE_NONE regmap tree
-Date: Fri, 19 Aug 2016 13:36:10 -0700
-Message-Id: <1471638971-23039-3-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
-References: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
+Received: from comal.ext.ti.com ([198.47.26.152]:45313 "EHLO comal.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1752186AbcHQMOO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Aug 2016 08:14:14 -0400
+From: Vignesh R <vigneshr@ti.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+	"Andrew F . Davis" <afd@ti.com>, <linux-iio@vger.kernel.org>,
+	<linux-omap@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+Subject: [PATCH v2 1/2] iio: adc: ti_am335x_adc: Protect FIFO1 from concurrent access
+Date: Wed, 17 Aug 2016 17:43:00 +0530
+Message-ID: <20160817121301.21785-2-vigneshr@ti.com>
+In-Reply-To: <20160817121301.21785-1-vigneshr@ti.com>
+References: <20160817121301.21785-1-vigneshr@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Since there are overlapping volatile regions between parts, and only
-register that isn't volatile is the temperature compensation provided
-from userspace.
+It is possible that two or more ADC channels can be simultaneously
+requested for raw samples, in which case there can be race in access to
+FIFO data resulting in loss of samples.
+If am335x_tsc_se_set_once() is called again from tiadc_read_raw(), when
+ADC is still acquired to sample one of the channels, the second process
+might be put into uninterruptible sleep state. Fix these issues, by
+protecting FIFO access and channel configurations with a mutex. Since
+tiadc_read_raw() might take anywhere between few microseconds to few
+milliseconds to finish execution (depending on averaging and delay
+values supplied via DT), its better to use mutex instead of spinlock.
 
-Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+Fixes: 7ca6740cd1cd4 ("mfd: input: iio: ti_amm335x: Rework TSC/ADC synchronization")
+Signed-off-by: Vignesh R <vigneshr@ti.com>
 ---
- drivers/iio/chemical/atlas-ph-sensor.c | 16 ----------------
- 1 file changed, 16 deletions(-)
 
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index 696875413d10..c0a0ebbbd54a 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -84,26 +84,10 @@ struct atlas_data {
- 	__be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
- };
+v2: Add fixes tag.
+
+ drivers/iio/adc/ti_am335x_adc.c | 14 +++++++++++---
+ 1 file changed, 11 insertions(+), 3 deletions(-)
+
+diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+index 8a368756881b..bed9977a1863 100644
+--- a/drivers/iio/adc/ti_am335x_adc.c
++++ b/drivers/iio/adc/ti_am335x_adc.c
+@@ -32,6 +32,7 @@
  
--static const struct regmap_range atlas_volatile_ranges[] = {
--	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
--	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
--	regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
--};
--
--static const struct regmap_access_table atlas_volatile_table = {
--	.yes_ranges	= atlas_volatile_ranges,
--	.n_yes_ranges	= ARRAY_SIZE(atlas_volatile_ranges),
--};
--
- static const struct regmap_config atlas_regmap_config = {
- 	.name = ATLAS_REGMAP_NAME,
--
- 	.reg_bits = 8,
- 	.val_bits = 8,
--
--	.volatile_table = &atlas_volatile_table,
--	.max_register = ATLAS_REG_PSS_DATA + 4,
--	.cache_type = REGCACHE_RBTREE,
- };
+ struct tiadc_device {
+ 	struct ti_tscadc_dev *mfd_tscadc;
++	struct mutex fifo1_lock; /* to protect fifo access */
+ 	int channels;
+ 	u8 channel_line[8];
+ 	u8 channel_step[8];
+@@ -359,6 +360,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 		int *val, int *val2, long mask)
+ {
+ 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
++	int ret = IIO_VAL_INT;
+ 	int i, map_val;
+ 	unsigned int fifo1count, read, stepid;
+ 	bool found = false;
+@@ -372,6 +374,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	if (!step_en)
+ 		return -EINVAL;
  
- static const struct iio_chan_spec atlas_ph_channels[] = {
++	mutex_lock(&adc_dev->fifo1_lock);
+ 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+ 	while (fifo1count--)
+ 		tiadc_readl(adc_dev, REG_FIFO1);
+@@ -388,7 +391,8 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 
+ 		if (time_after(jiffies, timeout)) {
+ 			am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
+-			return -EAGAIN;
++			ret = -EAGAIN;
++			goto err_unlock;
+ 		}
+ 	}
+ 	map_val = adc_dev->channel_step[chan->scan_index];
+@@ -414,8 +418,11 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+ 	am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
+ 
+ 	if (found == false)
+-		return -EBUSY;
+-	return IIO_VAL_INT;
++		ret =  -EBUSY;
++
++err_unlock:
++	mutex_unlock(&adc_dev->fifo1_lock);
++	return ret;
+ }
+ 
+ static const struct iio_info tiadc_info = {
+@@ -483,6 +490,7 @@ static int tiadc_probe(struct platform_device *pdev)
+ 
+ 	tiadc_step_config(indio_dev);
+ 	tiadc_writel(adc_dev, REG_FIFO1THR, FIFO1_THRESHOLD);
++	mutex_init(&adc_dev->fifo1_lock);
+ 
+ 	err = tiadc_channel_init(indio_dev, adc_dev->channels);
+ 	if (err < 0)
 -- 
-2.7.4
+2.9.2
 
