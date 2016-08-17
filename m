@@ -1,50 +1,28 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:32807 "EHLO
-	devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753119AbcHQLMT (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Wed, 17 Aug 2016 07:12:19 -0400
-Subject: Re: [PATCH 2/2] iio: adc: ti_am335x_adc: Increase timeout value
- waiting for ADC sample
-To: Jonathan Cameron <jic23@kernel.org>
-References: <20160808110501.29586-1-vigneshr@ti.com>
- <20160808110501.29586-3-vigneshr@ti.com>
- <6e5c9bea-7b0f-0fdb-976a-29b7a0bccc5e@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lee Jones <lee.jones@linaro.org>, "Davis, Andrew" <afd@ti.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-From: Vignesh R <vigneshr@ti.com>
-Message-ID: <2696e440-af5f-e6b0-aac4-e26789eaa56d@ti.com>
-Date: Wed, 17 Aug 2016 16:41:41 +0530
+Received: from mx2.suse.de ([195.135.220.15]:39413 "EHLO mx2.suse.de"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1750839AbcHQJRd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Aug 2016 05:17:33 -0400
+Date: Wed, 17 Aug 2016 11:17:30 +0200 (CEST)
+From: Jiri Kosina <jikos@kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+cc: jic23@kernel.org, linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH v4 0/7] Intel Integrated Sensor Hub Support (ISH)
+In-Reply-To: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Message-ID: <alpine.LNX.2.00.1608171116480.22028@cbobk.fhfr.pm>
+References: <1470561939-14278-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <6e5c9bea-7b0f-0fdb-976a-29b7a0bccc5e@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+I've now applied the series (without the iio patch (5/7), as discussed 
+before) to hid.git#for-4.9/intel-ish
 
-
-On Monday 15 August 2016 09:17 PM, Jonathan Cameron wrote:
-> On 08/08/16 12:05, Vignesh R wrote:
->> Now that open delay and sample delay for each channel is configurable
->> via DT, the default IDLE_TIMEOUT value is not enough as this is
->> calculated based on hardcoded macros. This results in driver returning
->> EBUSY sometimes. Fix this by increasing the timeout
->> value based on maximum value possible to open delay and sample delays
->> for each channel.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> As with patch 1 could you provide a fixes tag as well highlighting the
-> patch that introduced the issue. I'm thinking you are referring to:
-> 
-> iio: adc: ti_am335x_adc: make sample delay, open delay, averaging DT parameters
-> 5dc11e810676ec4a5acb4423ccd33314bf74f4e54
-
-Yes, will send v2 with fixes tag pointing to above commit. Thanks!
+Thanks,
 
 -- 
-Regards
-Vignesh
+Jiri Kosina
+SUSE Labs
+
