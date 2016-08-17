@@ -1,76 +1,59 @@
-Return-Path: <marek.vasut@gmail.com>
-Subject: Re: [RFC v4 2/3] iio: adc: ti-adc161s626: add support for TI
- 1-channel differential ADCs
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1471663024-25623-1-git-send-email-mranostay@gmail.com>
- <1471663024-25623-3-git-send-email-mranostay@gmail.com>
-Cc: jic23@kernel.org
-From: Marek Vasut <marek.vasut@gmail.com>
-Message-ID: <de1272c8-cf35-84f3-84db-eaa42525a5bc@gmail.com>
-Date: Sat, 20 Aug 2016 18:47:43 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from bear.ext.ti.com ([198.47.19.11]:51046 "EHLO bear.ext.ti.com"
+	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+	id S1751591AbcHQLOL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+	Wed, 17 Aug 2016 07:14:11 -0400
+Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: Protect FIFO1 from
+ concurrent access
+To: Jonathan Cameron <jic23@kernel.org>
+References: <20160808110501.29586-1-vigneshr@ti.com>
+ <20160808110501.29586-2-vigneshr@ti.com>
+ <1731ca3d-56f1-1183-b049-360b155ced28@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Lee Jones <lee.jones@linaro.org>, "Davis, Andrew" <afd@ti.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
+From: Vignesh R <vigneshr@ti.com>
+Message-ID: <a3b53c07-39b9-31db-0a40-4018f74dc9c6@ti.com>
+Date: Wed, 17 Aug 2016 16:43:43 +0530
 MIME-Version: 1.0
-In-Reply-To: <1471663024-25623-3-git-send-email-mranostay@gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1731ca3d-56f1-1183-b049-360b155ced28@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/20/2016 05:17 AM, Matt Ranostay wrote:
-> Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
 
-Hi,
 
-[...]
+On Monday 15 August 2016 09:15 PM, Jonathan Cameron wrote:
+> On 08/08/16 12:05, Vignesh R wrote:
+>> It is possible that two or more ADC channels can be simultaneously
+>> requested for raw samples, in which case there can be race in access to
+>> FIFO data resulting in loss of samples.
+>> If am335x_tsc_se_set_once() is called again from tiadc_read_raw(), when
+>> ADC is still acquired to sample one of the channels, the second process
+>> might be put into uninterruptible sleep state. Fix these issues, by
+>> protecting FIFO access and channel configurations with a mutex. Since
+>> tiadc_read_raw() might take anywhere between few microseconds to few
+>> milliseconds to finish execution (depending on averaging and delay
+>> values supplied via DT), its better to use mutex instead of spinlock.
+>>
+>> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> Hi,
+> 
+> Thanks for the patch.
+> 
+> As this is clearly a fix for a long standing issue, I'd like to send
+> it for stable inclusion.  Would you mind doing a bit of detective work
+> to added a Fixes tag to say which original patch introduced the issue?
+> 
 
-> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc161s626.txt
-> @@ -0,0 +1,17 @@
-> +* Texas Instruments ADC141S626, and ADC161S626 chip
-
-I think you should drop the comma and use plural (chips) here.
-
-> +Required properties:
-> + - compatible: Should be "ti,adc141s626" or "ti,adc161s626"
-> + - reg: spi chip select number for the device
-> +
-> +Recommended properties:
-> + - spi-max-frequency: Definition as per
-> +		Documentation/devicetree/bindings/spi/spi-bus.txt
-> +
-> +Example:
-> +adc@0 {
-> +	compatible = "ti,adc161s626";
-> +	reg = <0>;
-> +	spi-max-frequency = <4300000>;
-> +};
-> +
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 1de31bdd4ce4..2658f2f69bad 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -426,6 +426,18 @@ config TI_ADC128S052
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-adc128s052.
->  
-> +config TI_ADC161S626
-> +	tristate "Texas Instruments ADC161S626 1-channel differential ADC"
-> +	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	help
-> +	  If you say yes here you get support for Texas Instruments ADC141S626,
-> +	  and ADC161S626 chips.
-> +
-> +	  This driver can also be build
-
-... be built ... :-)
-
-> as a module. If so, the module will be
-> +	  called ti-adc161s626.
-> +
->  config TI_ADS1015
->  	tristate "Texas Instruments ADS1015 ADC"
->  	depends on I2C && !SENSORS_ADS1015
-
-The code looks OK.
+Looks to be due to the commit 7ca6740cd1cd4 ("mfd: input: iio:
+ti_amm335x: Rework TSC/ADC synchronization")
+Will send v2 with fixes tag. Thanks!
 
 -- 
-Best regards,
-Marek Vasut
+Regards
+Vignesh
