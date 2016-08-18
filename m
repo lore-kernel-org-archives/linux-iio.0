@@ -1,88 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:35361 "EHLO
-        mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752338AbcHSKfF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2016 06:35:05 -0400
-Date: Thu, 18 Aug 2016 09:09:00 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH v2] iio: magnetometer: mag3110: claim direct mode during raw
- reads
-Message-ID: <20160818160849.GA21203@d830.WORKGROUP>
+Received: from mail-oi0-f68.google.com ([209.85.218.68]:33434 "EHLO
+        mail-oi0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754345AbcHSBWP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 18 Aug 2016 21:22:15 -0400
+Date: Thu, 18 Aug 2016 14:21:06 -0500
+From: Rob Herring <robh@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH 01/17] iio: accel: kxsd9: Add device tree bindings
+Message-ID: <20160818192106.GA28115@rob-hp-laptop>
+References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
+ <1471354423-19186-2-git-send-email-linus.walleij@linaro.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1471354423-19186-2-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Driver was checking for direct mode but not locking it.  Use
-claim/release helper functions to guarantee the device stays
-in direct mode during raw reads.
+On Tue, Aug 16, 2016 at 03:33:27PM +0200, Linus Walleij wrote:
+> This accelerometer can be probed from the device tree, so it needs
+> to have proper documentation of it's device tree bindings.
+> 
+> Cc: devicetree@vger.kernel.org
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  .../devicetree/bindings/iio/accel/kionix,kxsd9.txt | 22 ++++++++++++++++++++++
+>  1 file changed, 22 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/kionix,kxsd9.txt
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Cc: Daniel Baluta <daniel.baluta@gmail.com>
----
-Changes in v2:
- added breaks in switch to prevent fall through
-
- drivers/iio/magnetometer/mag3110.c | 23 +++++++++++++++--------
- 1 file changed, 15 insertions(+), 8 deletions(-)
-
-diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-index f2be4a0..f2b3bd7 100644
---- a/drivers/iio/magnetometer/mag3110.c
-+++ b/drivers/iio/magnetometer/mag3110.c
-@@ -154,34 +154,41 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (iio_buffer_enabled(indio_dev))
--			return -EBUSY;
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
- 
- 		switch (chan->type) {
- 		case IIO_MAGN: /* in 0.1 uT / LSB */
- 			ret = mag3110_read(data, buffer);
- 			if (ret < 0)
--				return ret;
-+				goto release;
- 			*val = sign_extend32(
- 				be16_to_cpu(buffer[chan->scan_index]), 15);
--			return IIO_VAL_INT;
-+			ret = IIO_VAL_INT;
-+			break;
- 		case IIO_TEMP: /* in 1 C / LSB */
- 			mutex_lock(&data->lock);
- 			ret = mag3110_request(data);
- 			if (ret < 0) {
- 				mutex_unlock(&data->lock);
--				return ret;
-+				goto release;
- 			}
- 			ret = i2c_smbus_read_byte_data(data->client,
- 				MAG3110_DIE_TEMP);
- 			mutex_unlock(&data->lock);
- 			if (ret < 0)
--				return ret;
-+				goto release;
- 			*val = sign_extend32(ret, 7);
--			return IIO_VAL_INT;
-+			ret = IIO_VAL_INT;
-+			break;
- 		default:
--			return -EINVAL;
-+			ret = -EINVAL;
- 		}
-+release:
-+		iio_device_release_direct_mode(indio_dev);
-+		return ret;
-+
- 	case IIO_CHAN_INFO_SCALE:
- 		switch (chan->type) {
- 		case IIO_MAGN:
--- 
-2.1.4
-
+Acked-by: Rob Herring <robh@kernel.org>
