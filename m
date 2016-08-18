@@ -1,90 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f180.google.com ([209.85.220.180]:36487 "EHLO
-	mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-	with ESMTP id S1753367AbcHPNf0 (ORCPT
-	<rfc822;linux-iio@vger.kernel.org>); Tue, 16 Aug 2016 09:35:26 -0400
-Received: by mail-qk0-f180.google.com with SMTP id l2so70478092qkf.3
-        for <linux-iio@vger.kernel.org>; Tue, 16 Aug 2016 06:34:55 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 17/17] iio: accel: kxsd9: Support reading a mounting matrix
-Date: Tue, 16 Aug 2016 15:33:43 +0200
-Message-Id: <1471354423-19186-18-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
-References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <zhiyong.tao@mediatek.com>
+From: Zhiyong Tao <zhiyong.tao@mediatek.com>
+To: <robh+dt@kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+	<lars@metafoo.de>, <pmeerw@pmeerw.net>
+CC: <srv_heupstream@mediatek.com>, <liguo.zhang@mediatek.com>,
+	<yingjoe.chen@mediatek.com>, <eddie.huang@mediatek.com>,
+	<erin.lo@mediatek.com>, <dawei.chien@mediatek.com>, <matthias.bgg@gmail.com>,
+	<s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
+	<linux-kernel@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+	<linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Subject: [PATCH v7 0/3] AUXADC: Mediatek auxadc driver 
+Date: Thu, 18 Aug 2016 15:11:34 +0800
+Message-ID: <1471504297-26947-1-git-send-email-zhiyong.tao@mediatek.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-This adds support for the mounting matrix to the KXSD9 driver.
+This series includes three patches:
+1.Change the device tree binding documentation.
+2.Add auxadc driver based on linux iio.
+3.Add auxadc nodes in the mediatek MT2701 dtsi file.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/accel/kxsd9.c | 24 ++++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
+Changes in patch v7:
+changes since v6:
+-Rebase to v4.8-rcl.
 
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index ce866ef1ab70..0c0d456cff8a 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -68,12 +68,14 @@
-  * struct kxsd9_state - device related storage
-  * @dev: pointer to the parent device
-  * @map: regmap to the device
-+ * @orientation: mounting matrix, flipped axis etc
-  * @regs: regulators for this device, VDD and IOVDD
-  * @scale: the current scaling setting
-  */
- struct kxsd9_state {
- 	struct device *dev;
- 	struct regmap *map;
-+	struct iio_mount_matrix orientation;
- 	struct regulator_bulk_data regs[2];
- 	u8 scale;
- };
-@@ -258,6 +260,20 @@ static const struct iio_buffer_setup_ops kxsd9_buffer_setup_ops = {
- 	.postdisable = kxsd9_buffer_postdisable,
- };
- 
-+static const struct iio_mount_matrix *
-+kxsd9_get_mount_matrix(const struct iio_dev *indio_dev,
-+		       const struct iio_chan_spec *chan)
-+{
-+	struct kxsd9_state *st = iio_priv(indio_dev);
-+
-+	return &st->orientation;
-+}
-+
-+static const struct iio_chan_spec_ext_info kxsd9_ext_info[] = {
-+	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, kxsd9_get_mount_matrix),
-+	{ },
-+};
-+
- #define KXSD9_ACCEL_CHAN(axis, index)						\
- 	{								\
- 		.type = IIO_ACCEL,					\
-@@ -266,6 +282,7 @@ static const struct iio_buffer_setup_ops kxsd9_buffer_setup_ops = {
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
- 					BIT(IIO_CHAN_INFO_OFFSET),	\
-+		.ext_info = kxsd9_ext_info,				\
- 		.address = KXSD9_REG_##axis,				\
- 		.scan_index = index,					\
- 		.scan_type = {                                          \
-@@ -403,6 +420,13 @@ int kxsd9_common_probe(struct device *dev,
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->available_scan_masks = kxsd9_scan_masks;
- 
-+	/* Read the mounting matrix, if present */
-+	ret = of_iio_read_mount_matrix(dev,
-+				       "mount-matrix",
-+				       &st->orientation);
-+	if (ret)
-+		return ret;
-+
- 	/* Fetch and turn on regulators */
- 	st->regs[0].supply = kxsd9_reg_vdd;
- 	st->regs[1].supply = kxsd9_reg_iovdd;
--- 
-2.7.4
+Changes in patch v6:
+1).Add commit message in auxadc node patch which dependents on "Add clock support for Mediatek MT2701"[1].
+2).Use val variable instead of rawdata variable and Change 'mutex_unlock' to 'goto err_timeout' in 'mt6577_auxadc_read'.
+3).Remove '.' in the log when failed to get auxadc base address.
+4).Change 'return -EINVAL' to 'return ret' and add 'ret = -EINVAL' when get null clock rate.
+5).Add inline function 'mt6577_auxadc_mod_reg' to replace read/modify/write code sequence.
 
+Changes in patch v5:
+1).Add 'Acked-by' information in commit message.
+1).Change auxadc compatible in binding document.
+2).Remove power on failed check.
+3).Moved power off error unwind block to 'err_power_off'.
+
+Changes in patch v4:
+1).Change the file name 'mt65xx_auxdc.txt' to 'mt6577_auxdc.txt'.
+2).Remove 'break' after 'return' in 'mt6577_auxadc_read_raw'.
+3).Use 'mt2701' instead of 'auxadc' in dts commit message.
+4).Change 'auxadc@' to 'adc@' in mt2701.dtsi.
+
+Changes in patch v3:
+1).Add '#' before 'io-channel-cells' and change 'auxadc@' to 'adc@' in auxadc binding document.
+2).Fix CONFIG_MEDIATEK_MT65XX_AUXADC sequence as alphabetical order.
+3).Change the prefix 'MT65XX' to 'MT6577' to match auxadc driver name.
+4).Remove the delays stored in 'mt6577_auxadc_device' and use the defined delay directly.
+5).Use '-ETIMEDOUT' instead of '-EINVAL'.
+6).Return value directly in 'mt6577_auxadc_read_raw'.
+7).Add power off and unprepare clock if 'iio_device_register' failed.
+8).Change 'Registers' to 'Register'.
+
+Changes in patch v2:
+1).Change the file name mt65xx_auxadc.c to mt6577_auxadc.c.
+2).Add 'depends on ARCH_MEDIATEK || COMPILE_TEST and HAS_IOMEM' for MEDIATEK_MT65XX_AUXADC config.
+3).Add check case for return value of 'readl_poll_timeout'.
+4).Remove returning 1 and 0 for SCALE and OFFSET. use channel type 'IIO_CHAN_INFO_PROCESSED' instead of 'IIO_CHAN_INFO_RAW'.
+5).Remove 'IIO_CHAN_INFO_OFFSET' and 'IIO_CHAN_INFO_SCALE' in 'MT65XX_AUXADC_CHANNEL' channel type.
+6).Add check case when auxadc power on failure. if auxadc power on failure, clk_disable_unprepare should be executed.
+7).Put 'platform_set_drvdata' before 'iio_device_register'.
+8).Fix coding style and spelling error.
+
+Zhiyong Tao (3):
+  dt-bindings: auxadc: Add binding document for Mediatek auxadc.
+  iio: adc: mt2701: Add Mediatek auxadc driver for mt2701.
+  arm: dts: mt2701: Add auxadc node.
+
+ .../auxadc.txt => iio/adc/mt6577_auxadc.txt}       |   18 +-
+ arch/arm/boot/dts/mt2701.dtsi                      |    9 +
+ drivers/iio/adc/Kconfig                            |   13 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/mt6577_auxadc.c                    |  291 ++++++++++++++++++++
+ 5 files changed, 327 insertions(+), 5 deletions(-)
+ rename Documentation/devicetree/bindings/{soc/mediatek/auxadc.txt => iio/adc/mt6577_auxadc.txt} (46%)
+ create mode 100644 drivers/iio/adc/mt6577_auxadc.c
