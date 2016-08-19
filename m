@@ -1,59 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bear.ext.ti.com ([198.47.19.11]:51046 "EHLO bear.ext.ti.com"
-	rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-	id S1751591AbcHQLOL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-	Wed, 17 Aug 2016 07:14:11 -0400
-Subject: Re: [PATCH 1/2] iio: adc: ti_am335x_adc: Protect FIFO1 from
- concurrent access
-To: Jonathan Cameron <jic23@kernel.org>
-References: <20160808110501.29586-1-vigneshr@ti.com>
- <20160808110501.29586-2-vigneshr@ti.com>
- <1731ca3d-56f1-1183-b049-360b155ced28@kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Lee Jones <lee.jones@linaro.org>, "Davis, Andrew" <afd@ti.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>
-From: Vignesh R <vigneshr@ti.com>
-Message-ID: <a3b53c07-39b9-31db-0a40-4018f74dc9c6@ti.com>
-Date: Wed, 17 Aug 2016 16:43:43 +0530
-MIME-Version: 1.0
-In-Reply-To: <1731ca3d-56f1-1183-b049-360b155ced28@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+Received: from mail-pa0-f65.google.com ([209.85.220.65]:33080 "EHLO
+        mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755656AbcHSUgZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2016 16:36:25 -0400
+Received: by mail-pa0-f65.google.com with SMTP id vy10so3882863pac.0
+        for <linux-iio@vger.kernel.org>; Fri, 19 Aug 2016 13:36:25 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH v2 2/3] iio: chemical: atlas-ph-sensor: switch to REGCACHE_NONE regmap tree
+Date: Fri, 19 Aug 2016 13:36:10 -0700
+Message-Id: <1471638971-23039-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
+References: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Since there are overlapping volatile regions between parts, and only
+register that isn't volatile is the temperature compensation provided
+from userspace.
 
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/chemical/atlas-ph-sensor.c | 16 ----------------
+ 1 file changed, 16 deletions(-)
 
-On Monday 15 August 2016 09:15 PM, Jonathan Cameron wrote:
-> On 08/08/16 12:05, Vignesh R wrote:
->> It is possible that two or more ADC channels can be simultaneously
->> requested for raw samples, in which case there can be race in access to
->> FIFO data resulting in loss of samples.
->> If am335x_tsc_se_set_once() is called again from tiadc_read_raw(), when
->> ADC is still acquired to sample one of the channels, the second process
->> might be put into uninterruptible sleep state. Fix these issues, by
->> protecting FIFO access and channel configurations with a mutex. Since
->> tiadc_read_raw() might take anywhere between few microseconds to few
->> milliseconds to finish execution (depending on averaging and delay
->> values supplied via DT), its better to use mutex instead of spinlock.
->>
->> Signed-off-by: Vignesh R <vigneshr@ti.com>
-> Hi,
-> 
-> Thanks for the patch.
-> 
-> As this is clearly a fix for a long standing issue, I'd like to send
-> it for stable inclusion.  Would you mind doing a bit of detective work
-> to added a Fixes tag to say which original patch introduced the issue?
-> 
-
-Looks to be due to the commit 7ca6740cd1cd4 ("mfd: input: iio:
-ti_amm335x: Rework TSC/ADC synchronization")
-Will send v2 with fixes tag. Thanks!
-
+diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+index 696875413d10..c0a0ebbbd54a 100644
+--- a/drivers/iio/chemical/atlas-ph-sensor.c
++++ b/drivers/iio/chemical/atlas-ph-sensor.c
+@@ -84,26 +84,10 @@ struct atlas_data {
+ 	__be32 buffer[6]; /* 96-bit data + 32-bit pad + 64-bit timestamp */
+ };
+ 
+-static const struct regmap_range atlas_volatile_ranges[] = {
+-	regmap_reg_range(ATLAS_REG_INT_CONTROL, ATLAS_REG_INT_CONTROL),
+-	regmap_reg_range(ATLAS_REG_PH_DATA, ATLAS_REG_PH_DATA + 4),
+-	regmap_reg_range(ATLAS_REG_EC_DATA, ATLAS_REG_PSS_DATA + 4),
+-};
+-
+-static const struct regmap_access_table atlas_volatile_table = {
+-	.yes_ranges	= atlas_volatile_ranges,
+-	.n_yes_ranges	= ARRAY_SIZE(atlas_volatile_ranges),
+-};
+-
+ static const struct regmap_config atlas_regmap_config = {
+ 	.name = ATLAS_REGMAP_NAME,
+-
+ 	.reg_bits = 8,
+ 	.val_bits = 8,
+-
+-	.volatile_table = &atlas_volatile_table,
+-	.max_register = ATLAS_REG_PSS_DATA + 4,
+-	.cache_type = REGCACHE_RBTREE,
+ };
+ 
+ static const struct iio_chan_spec atlas_ph_channels[] = {
 -- 
-Regards
-Vignesh
+2.7.4
+
