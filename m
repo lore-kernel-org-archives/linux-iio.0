@@ -1,51 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f66.google.com ([209.85.220.66]:35474 "EHLO
-        mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755636AbcHSUgT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2016 16:36:19 -0400
-Received: by mail-pa0-f66.google.com with SMTP id cf3so3863884pad.2
-        for <linux-iio@vger.kernel.org>; Fri, 19 Aug 2016 13:36:18 -0700 (PDT)
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:33042 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752435AbcHSUqa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2016 16:46:30 -0400
+Received: by mail-pf0-f195.google.com with SMTP id i6so1951581pfe.0
+        for <linux-iio@vger.kernel.org>; Fri, 19 Aug 2016 13:44:56 -0700 (PDT)
 From: Matt Ranostay <mranostay@gmail.com>
 To: linux-iio@vger.kernel.org
 Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v2 1/3] iio: chemical: atlas-ph-sensor: switch to iio_device_*_direct_mode helpers
-Date: Fri, 19 Aug 2016 13:36:09 -0700
-Message-Id: <1471638971-23039-2-git-send-email-mranostay@gmail.com>
-In-Reply-To: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
-References: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
+Subject: [PATCH RESEND] iio: iio-utils: use channel modifier scaling if it exists
+Date: Fri, 19 Aug 2016 13:44:52 -0700
+Message-Id: <1471639492-23531-1-git-send-email-mranostay@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Now there are channel modifiers with their own scaling those should be
+used when possible over the generic channel type scaling.
+
 Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- drivers/iio/chemical/atlas-ph-sensor.c | 12 +++++-------
- 1 file changed, 5 insertions(+), 7 deletions(-)
+ tools/iio/iio_utils.c | 11 +++++++----
+ 1 file changed, 7 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index ae038a59d256..696875413d10 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -402,15 +402,13 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
- 		case IIO_PH:
- 		case IIO_CONCENTRATION:
- 		case IIO_ELECTRICALCONDUCTIVITY:
--			mutex_lock(&indio_dev->mlock);
-+			ret = iio_device_claim_direct_mode(indio_dev);
-+			if (ret)
-+				return ret;
+diff --git a/tools/iio/iio_utils.c b/tools/iio/iio_utils.c
+index 5eb6793f3972..7a6d61c6c012 100644
+--- a/tools/iio/iio_utils.c
++++ b/tools/iio/iio_utils.c
+@@ -121,10 +121,6 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
  
--			if (iio_buffer_enabled(indio_dev))
--				ret = -EBUSY;
--			else
--				ret = atlas_read_measurement(data,
--							chan->address, &reg);
-+			ret = atlas_read_measurement(data, chan->address, &reg);
+ 	ret = -ENOENT;
+ 	while (ent = readdir(dp), ent)
+-		/*
+-		 * Do we allow devices to override a generic name with
+-		 * a specific one?
+-		 */
+ 		if ((strcmp(builtname, ent->d_name) == 0) ||
+ 		    (strcmp(builtname_generic, ent->d_name) == 0)) {
+ 			ret = asprintf(&filename,
+@@ -178,6 +174,13 @@ int iioutils_get_type(unsigned *is_signed, unsigned *bytes, unsigned *bits_used,
+ 			sysfsfp = 0;
+ 			free(filename);
+ 			filename = 0;
++
++			/*
++			 * Avoid having a more generic entry overwriting
++			 * the settings.
++			 */
++			if (strcmp(builtname, ent->d_name) == 0)
++				break;
+ 		}
  
--			mutex_unlock(&indio_dev->mlock);
-+			iio_device_release_direct_mode(indio_dev);
- 			break;
- 		default:
- 			ret = -EINVAL;
+ error_close_sysfsfp:
 -- 
 2.7.4
 
