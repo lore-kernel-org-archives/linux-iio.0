@@ -1,53 +1,76 @@
-Return-Path: <mika.westerberg@linux.intel.com>
-From: Mika Westerberg <mika.westerberg@linux.intel.com>
-To: linux-iio@vger.kernel.org
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	Mika Westerberg <mika.westerberg@linux.intel.com>
-Subject: [PATCH] iio: humidity: am2315: Select IIO_TRIGGERED_BUFFER to prevent build errors
-Date: Thu, 18 Aug 2016 17:05:18 +0300
-Message-Id: <1471529118-81255-1-git-send-email-mika.westerberg@linux.intel.com>
+Return-Path: <marek.vasut@gmail.com>
+Subject: Re: [RFC v4 2/3] iio: adc: ti-adc161s626: add support for TI
+ 1-channel differential ADCs
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1471663024-25623-1-git-send-email-mranostay@gmail.com>
+ <1471663024-25623-3-git-send-email-mranostay@gmail.com>
+Cc: jic23@kernel.org
+From: Marek Vasut <marek.vasut@gmail.com>
+Message-ID: <de1272c8-cf35-84f3-84db-eaa42525a5bc@gmail.com>
+Date: Sat, 20 Aug 2016 18:47:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <1471663024-25623-3-git-send-email-mranostay@gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-Commit 0d96d5ead3f7 ("iio: humidity: Add triggered buffer support for
-AM2315") added support for triggered buffers but those are only available
-when IIO_TRIGGERED_BUFFER is selected. Currently we get warnings like:
+On 08/20/2016 05:17 AM, Matt Ranostay wrote:
+> Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
 
-  drivers/iio/humidity/am2315.c: In function ‘am2315_trigger_handler’:
-  drivers/iio/humidity/am2315.c:186:2: error: implicit declaration of function
-    ‘iio_push_to_buffers_with_timestamp’ [-Werror=implicit-function-declaration]
-    ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  cc1: some warnings being treated as errors
-  scripts/Makefile.build:289: recipe for target 'drivers/iio/humidity/am2315.o' failed
+Hi,
 
-Furthermore linking the kernel executable fails because triggered buffer
-functions are never build.
+[...]
 
-Fix this by selecting IIO_TRIGGERED_BUFFER and IIO_BUFFER when the driver is
-enabled.
+> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc161s626.txt
+> @@ -0,0 +1,17 @@
+> +* Texas Instruments ADC141S626, and ADC161S626 chip
 
-Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
----
- drivers/iio/humidity/Kconfig | 2 ++
- 1 file changed, 2 insertions(+)
+I think you should drop the comma and use plural (chips) here.
 
-diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-index 738a86d9e4a9..d04124345992 100644
---- a/drivers/iio/humidity/Kconfig
-+++ b/drivers/iio/humidity/Kconfig
-@@ -6,6 +6,8 @@ menu "Humidity sensors"
- config AM2315
-     tristate "Aosong AM2315 relative humidity and temperature sensor"
-     depends on I2C
-+    select IIO_BUFFER
-+    select IIO_TRIGGERED_BUFFER
-     help
-       If you say yes here you get support for the Aosong AM2315
-       relative humidity and ambient temperature sensor.
+> +Required properties:
+> + - compatible: Should be "ti,adc141s626" or "ti,adc161s626"
+> + - reg: spi chip select number for the device
+> +
+> +Recommended properties:
+> + - spi-max-frequency: Definition as per
+> +		Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +Example:
+> +adc@0 {
+> +	compatible = "ti,adc161s626";
+> +	reg = <0>;
+> +	spi-max-frequency = <4300000>;
+> +};
+> +
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 1de31bdd4ce4..2658f2f69bad 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -426,6 +426,18 @@ config TI_ADC128S052
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called ti-adc128s052.
+>  
+> +config TI_ADC161S626
+> +	tristate "Texas Instruments ADC161S626 1-channel differential ADC"
+> +	depends on SPI
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	help
+> +	  If you say yes here you get support for Texas Instruments ADC141S626,
+> +	  and ADC161S626 chips.
+> +
+> +	  This driver can also be build
+
+... be built ... :-)
+
+> as a module. If so, the module will be
+> +	  called ti-adc161s626.
+> +
+>  config TI_ADS1015
+>  	tristate "Texas Instruments ADS1015 ADC"
+>  	depends on I2C && !SENSORS_ADS1015
+
+The code looks OK.
+
 -- 
-2.8.1
+Best regards,
+Marek Vasut
