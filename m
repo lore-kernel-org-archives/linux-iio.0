@@ -1,37 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:36742 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755632AbcHSUgR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 19 Aug 2016 16:36:17 -0400
-Received: by mail-pf0-f196.google.com with SMTP id y134so1933716pfg.3
-        for <linux-iio@vger.kernel.org>; Fri, 19 Aug 2016 13:36:17 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH v2 0/3] iio: chemical: atlas-ph-sensor: add ORP feature
-Date: Fri, 19 Aug 2016 13:36:08 -0700
-Message-Id: <1471638971-23039-1-git-send-email-mranostay@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53287 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752804AbcHUTuv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 15:50:51 -0400
+Subject: Re: [PATCH 02/17] iio: accel: kxsd9: Fix raw read return
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
+ <1471354423-19186-3-git-send-email-linus.walleij@linaro.org>
+ <DE81936B-E9FB-40A1-A139-9BCA6841C11F@kernel.org>
+ <CACRpkdauRqmbms4t3jcypao32dxy0S+LcdEMH1+m2SW_9G=n3g@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        stable <stable@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <1e12578c-bf58-92a0-7d06-ea56b3c69108@kernel.org>
+Date: Sun, 21 Aug 2016 20:40:17 +0100
+MIME-Version: 1.0
+In-Reply-To: <CACRpkdauRqmbms4t3jcypao32dxy0S+LcdEMH1+m2SW_9G=n3g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for the Oxidation-Reduction Potential SM OEM module from Atlas
-Scientific part, and some regmap + locking cleanups.
+On 17/08/16 08:15, Linus Walleij wrote:
+> On Tue, Aug 16, 2016 at 6:24 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> 
+>> *whistles whilst pretending this driver has nothing to do with me*
+>>
+>> What's really odd is I ran this not long ago and didn't notice this little
+>> quirk...
+> 
+> Yeah I remember you mentioned it... there must be something that
+> made it work and tick anyways. Maybe core changes?
+> 
+> If you can get the SPI-based system up we can get the driver in
+> really nice shape though! It's working like a charm for me at the
+> end of the series.
+> 
+It may take me a while (couple of weeks possibly) to spin up that hardware
+as I'm not quite on top of my back queue of patches.
 
-Changes from v1:
-* remove double locking of the mlock mutex
+I'll do a visual review in meantime but not apply anything until I can
+test.
 
-Matt Ranostay (3):
-  iio: chemical: atlas-ph-sensor: switch to iio_device_*_direct_mode
-    helpers
-  iio: chemical: atlas-ph-sensor: switch to REGCACHE_NONE regmap tree
-  iio: chemical: atlas-ph-sensor: add ORP feature
-
- .../bindings/iio/chemical/atlas,orp-sm.txt         | 22 ++++++
- drivers/iio/chemical/Kconfig                       |  1 +
- drivers/iio/chemical/atlas-ph-sensor.c             | 81 +++++++++++++++-------
- 3 files changed, 80 insertions(+), 24 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/chemical/atlas,orp-sm.txt
-
--- 
-2.7.4
+Jonathan
+> Yours,
+> Linus Walleij
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
