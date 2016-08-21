@@ -1,14 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53002 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53048 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752265AbcHUSyE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:54:04 -0400
-Subject: Re: [PATCH v7 1/3] dt-bindings: auxadc: Add binding document for
- Mediatek auxadc.
+        with ESMTP id S1752017AbcHUS6n (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:58:43 -0400
+Subject: Re: [PATCH v7 3/3] arm: dts: mt2701: Add auxadc node.
 To: Zhiyong Tao <zhiyong.tao@mediatek.com>, robh+dt@kernel.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
 References: <1471504297-26947-1-git-send-email-zhiyong.tao@mediatek.com>
- <1471504297-26947-2-git-send-email-zhiyong.tao@mediatek.com>
+ <1471504297-26947-4-git-send-email-zhiyong.tao@mediatek.com>
 Cc: srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
         yingjoe.chen@mediatek.com, eddie.huang@mediatek.com,
         erin.lo@mediatek.com, dawei.chien@mediatek.com,
@@ -17,70 +16,52 @@ Cc: srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
         linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
         linux-mediatek@lists.infradead.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <eb2d9448-5b6e-9ff7-5287-de35fb73d338@kernel.org>
-Date: Sun, 21 Aug 2016 19:54:00 +0100
+Message-ID: <c238236c-2445-7802-6f2e-2f4776778c36@kernel.org>
+Date: Sun, 21 Aug 2016 19:58:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471504297-26947-2-git-send-email-zhiyong.tao@mediatek.com>
+In-Reply-To: <1471504297-26947-4-git-send-email-zhiyong.tao@mediatek.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 18/08/16 08:11, Zhiyong Tao wrote:
-> The commit adds the device tree binding documentation for the mediatek
-> auxadc found on Mediatek MT2701.
-> Thermal gets auxadc sample data by iio device.
-> So the commit changes auxadc device tree binding documentation from
-> /soc/mediatek/auxadc.txt to /iio/adc/mt6577_auxadc.txt.
+> The commit adds auxadc nodes to the Mediatek MT2701 dtsi file.
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
 > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-Applied to the togreg branch of iio.git.
+> ---
+> This patch dependents on "Add clock support for Mediatek MT2701"[1].
+> Please accept this patch together with [1].
+> [1]http://lists.infradead.org/pipermail/linux-mediatek/2016-August/006620.html
+Guessing this is working it's way ultimately through arm-soc.  Patches
+1 and 2 are now heading through the iio / staging-iio route and should be
+merging in the next merge window if nothing odd happens.
 
 Thanks,
 
 Jonathan
 > ---
->  .../auxadc.txt => iio/adc/mt6577_auxadc.txt}       |   18 +++++++++++++-----
->  1 file changed, 13 insertions(+), 5 deletions(-)
->  rename Documentation/devicetree/bindings/{soc/mediatek/auxadc.txt => iio/adc/mt6577_auxadc.txt} (46%)
+>  arch/arm/boot/dts/mt2701.dtsi |    9 +++++++++
+>  1 file changed, 9 insertions(+)
 > 
-> diff --git a/Documentation/devicetree/bindings/soc/mediatek/auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> similarity index 46%
-> rename from Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
-> rename to Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> index bdb7829..68c45cb 100644
-> --- a/Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
-> +++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
-> @@ -1,4 +1,4 @@
-> -MediaTek AUXADC
-> +* Mediatek AUXADC - Analog to Digital Converter on Mediatek mobile soc (mt65xx/mt81xx/mt27xx)
->  ===============
+> diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
+> index 7eab6f4..8e6a18c 100644
+> --- a/arch/arm/boot/dts/mt2701.dtsi
+> +++ b/arch/arm/boot/dts/mt2701.dtsi
+> @@ -175,6 +175,15 @@
+>  		      <0 0x10216000 0 0x2000>;
+>  	};
 >  
->  The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
-> @@ -10,12 +10,20 @@ Documentation/devicetree/bindings/thermal/mediatek-thermal.txt
->  for the Thermal Controller which holds a phandle to the AUXADC.
->  
->  Required properties:
-> -- compatible: Must be "mediatek,mt8173-auxadc"
-> -- reg: Address range of the AUXADC unit
-> +  - compatible: Should be one of:
-> +    - "mediatek,mt2701-auxadc": For MT2701 family of SoCs
-> +    - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
-> +  - reg: Address range of the AUXADC unit.
-> +  - clocks: Should contain a clock specifier for each entry in clock-names
-> +  - clock-names: Should contain "main".
-> +  - #io-channel-cells: Should be 1, see ../iio-bindings.txt
->  
->  Example:
->  
-> -auxadc: auxadc@11001000 {
-> -	compatible = "mediatek,mt8173-auxadc";
-> +auxadc: adc@11001000 {
-> +	compatible = "mediatek,mt2701-auxadc";
->  	reg = <0 0x11001000 0 0x1000>;
-> +	clocks = <&pericfg CLK_PERI_AUXADC>;
-> +	clock-names = "main";
-> +	#io-channel-cells = <1>;
->  };
+> +	auxadc: adc@11001000 {
+> +		compatible = "mediatek,mt2701-auxadc";
+> +		reg = <0 0x11001000 0 0x1000>;
+> +		clocks = <&pericfg CLK_PERI_AUXADC>;
+> +		clock-names = "main";
+> +		#io-channel-cells = <1>;
+> +		status = "disabled";
+> +	};
+> +
+>  	uart0: serial@11002000 {
+>  		compatible = "mediatek,mt2701-uart",
+>  			     "mediatek,mt6577-uart";
 > 
 
