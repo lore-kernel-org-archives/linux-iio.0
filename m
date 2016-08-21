@@ -1,72 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52090 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52882 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753190AbcHUPMR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 11:12:17 -0400
-Subject: Re: [PATCH] iio: chemical: atlas-ph-sensor: fix typo in val
- assignment
-To: Matt Ranostay <mranostay@gmail.com>,
-        Colin King <colin.king@canonical.com>
-References: <1469484416-17305-1-git-send-email-colin.king@canonical.com>
- <CAKzfze97P6yJEMAeg6Wv5UMDV4iuqBSQOdeLjG1Ctf_xywQxSg@mail.gmail.com>
+        with ESMTP id S1752011AbcHUSg7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:36:59 -0400
+Subject: Re: [PATCH] iio: humidity: am2315: Select IIO_TRIGGERED_BUFFER to
+ prevent build errors
+To: Mika Westerberg <mika.westerberg@linux.intel.com>,
+        linux-iio@vger.kernel.org
+References: <1471529118-81255-1-git-send-email-mika.westerberg@linux.intel.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Sanchayan Maity <maitysanchayan@gmail.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+        Tiberiu Breana <tiberiu.a.breana@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ed277014-36e8-fc78-a7fb-1b52e258ef78@kernel.org>
-Date: Sun, 21 Aug 2016 16:12:14 +0100
+Message-ID: <db3ee142-4395-eeb6-389d-918e857adca2@kernel.org>
+Date: Sun, 21 Aug 2016 19:36:57 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKzfze97P6yJEMAeg6Wv5UMDV4iuqBSQOdeLjG1Ctf_xywQxSg@mail.gmail.com>
+In-Reply-To: <1471529118-81255-1-git-send-email-mika.westerberg@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/07/16 10:28, Matt Ranostay wrote:
-> On Mon, Jul 25, 2016 at 3:06 PM, Colin King <colin.king@canonical.com> wrote:
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> Fix an incorrect assignment due to a typo on a variable name. The
->> variable val2 should be assigned 100000 and not val.
+On 18/08/16 15:05, Mika Westerberg wrote:
+> Commit 0d96d5ead3f7 ("iio: humidity: Add triggered buffer support for
+> AM2315") added support for triggered buffers but those are only available
+> when IIO_TRIGGERED_BUFFER is selected. Currently we get warnings like:
 > 
-> Yikes! Good catch..
+>   drivers/iio/humidity/am2315.c: In function ‘am2315_trigger_handler’:
+>   drivers/iio/humidity/am2315.c:186:2: error: implicit declaration of function
+>     ‘iio_push_to_buffers_with_timestamp’ [-Werror=implicit-function-declaration]
+>     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>   cc1: some warnings being treated as errors
+>   scripts/Makefile.build:289: recipe for target 'drivers/iio/humidity/am2315.o' failed
 > 
-> Reviewed-By: Matt Ranostay <mranostay@gmail.com>
+> Furthermore linking the kernel executable fails because triggered buffer
+> functions are never build.
 > 
->>
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-Thanks Colin.
+> Fix this by selecting IIO_TRIGGERED_BUFFER and IIO_BUFFER when the driver is
+> enabled.
+> 
+> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+Hi Mika,
 
-Applied to the fixes-togreg branch of iio.git. Should head upstream
-in a day or two.
+I already have a patch queued up for this bug.  Just been on holiday so
+running a bit behind with getting things upstream. Should go in the
+next few days.
 
 Jonathan
->> ---
->>  drivers/iio/chemical/atlas-ph-sensor.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
->> index ae038a5..407f141 100644
->> --- a/drivers/iio/chemical/atlas-ph-sensor.c
->> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
->> @@ -434,7 +434,7 @@ static int atlas_read_raw(struct iio_dev *indio_dev,
->>                         break;
->>                 case IIO_ELECTRICALCONDUCTIVITY:
->>                         *val = 1; /* 0.00001 */
->> -                       *val = 100000;
->> +                       *val2 = 100000;
->>                         break;
->>                 case IIO_CONCENTRATION:
->>                         *val = 0; /* 0.000000001 */
->> --
->> 2.8.1
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+>  drivers/iio/humidity/Kconfig | 2 ++
+>  1 file changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> index 738a86d9e4a9..d04124345992 100644
+> --- a/drivers/iio/humidity/Kconfig
+> +++ b/drivers/iio/humidity/Kconfig
+> @@ -6,6 +6,8 @@ menu "Humidity sensors"
+>  config AM2315
+>      tristate "Aosong AM2315 relative humidity and temperature sensor"
+>      depends on I2C
+> +    select IIO_BUFFER
+> +    select IIO_TRIGGERED_BUFFER
+>      help
+>        If you say yes here you get support for the Aosong AM2315
+>        relative humidity and ambient temperature sensor.
 > 
 
