@@ -1,67 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53048 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53119 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752017AbcHUS6n (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:58:43 -0400
-Subject: Re: [PATCH v7 3/3] arm: dts: mt2701: Add auxadc node.
-To: Zhiyong Tao <zhiyong.tao@mediatek.com>, robh+dt@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-References: <1471504297-26947-1-git-send-email-zhiyong.tao@mediatek.com>
- <1471504297-26947-4-git-send-email-zhiyong.tao@mediatek.com>
-Cc: srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
-        yingjoe.chen@mediatek.com, eddie.huang@mediatek.com,
-        erin.lo@mediatek.com, dawei.chien@mediatek.com,
-        matthias.bgg@gmail.com, s.hauer@pengutronix.de,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-mediatek@lists.infradead.org
+        with ESMTP id S1752017AbcHUTNM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 15:13:12 -0400
+Subject: Re: [PATCH v5] iio: hid-sensors: use asynchronous resume
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        jikos@kernel.org
+References: <1471288367-5325-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        dmitry.torokhov@gmail.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c238236c-2445-7802-6f2e-2f4776778c36@kernel.org>
-Date: Sun, 21 Aug 2016 19:58:40 +0100
+Message-ID: <bafa3ac3-3542-3c98-c562-91879d485e47@kernel.org>
+Date: Sun, 21 Aug 2016 20:13:10 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471504297-26947-4-git-send-email-zhiyong.tao@mediatek.com>
+In-Reply-To: <1471288367-5325-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/08/16 08:11, Zhiyong Tao wrote:
-> The commit adds auxadc nodes to the Mediatek MT2701 dtsi file.
+On 15/08/16 20:12, Srinivas Pandruvada wrote:
+> Some platforms power off sensor hubs during S3 suspend, which will require
+> longer time to resume. This hurts system resume time, so resume
+> asynchronously.
 > 
-> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
-> ---
-> This patch dependents on "Add clock support for Mediatek MT2701"[1].
-> Please accept this patch together with [1].
-> [1]http://lists.infradead.org/pipermail/linux-mediatek/2016-August/006620.html
-Guessing this is working it's way ultimately through arm-soc.  Patches
-1 and 2 are now heading through the iio / staging-iio route and should be
-merging in the next merge window if nothing odd happens.
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
 
-Thanks,
+Thanks for tidying up the loose ends on this!
 
 Jonathan
 > ---
->  arch/arm/boot/dts/mt2701.dtsi |    9 +++++++++
->  1 file changed, 9 insertions(+)
 > 
-> diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
-> index 7eab6f4..8e6a18c 100644
-> --- a/arch/arm/boot/dts/mt2701.dtsi
-> +++ b/arch/arm/boot/dts/mt2701.dtsi
-> @@ -175,6 +175,15 @@
->  		      <0 0x10216000 0 0x2000>;
->  	};
+> Formerly this patch was v4 5/7 for Intel ISH series, which was separated
+> from the series.
+> 
+> v5:
+> Added cancel_work_sync
+> 
+> 
+>  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 22 +++++++++++++++++++++-
+>  include/linux/hid-sensor-hub.h                     |  1 +
+>  2 files changed, 22 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> index 5b41f9d..5264ed6 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+> @@ -122,6 +122,14 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+>  #endif
+>  }
 >  
-> +	auxadc: adc@11001000 {
-> +		compatible = "mediatek,mt2701-auxadc";
-> +		reg = <0 0x11001000 0 0x1000>;
-> +		clocks = <&pericfg CLK_PERI_AUXADC>;
-> +		clock-names = "main";
-> +		#io-channel-cells = <1>;
-> +		status = "disabled";
-> +	};
+> +static void hid_sensor_set_power_work(struct work_struct *work)
+> +{
+> +	struct hid_sensor_common *attrb = container_of(work,
+> +						       struct hid_sensor_common,
+> +						       work);
+> +	_hid_sensor_power_state(attrb, true);
+> +}
 > +
->  	uart0: serial@11002000 {
->  		compatible = "mediatek,mt2701-uart",
->  			     "mediatek,mt6577-uart";
+>  static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  						bool state)
+>  {
+> @@ -130,6 +138,7 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  
+>  void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
+>  {
+> +	cancel_work_sync(&attrb->work);
+>  	iio_trigger_unregister(attrb->trigger);
+>  	iio_trigger_free(attrb->trigger);
+>  }
+> @@ -170,6 +179,9 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+>  		goto error_unreg_trigger;
+>  
+>  	iio_device_set_drvdata(indio_dev, attrb);
+> +
+> +	INIT_WORK(&attrb->work, hid_sensor_set_power_work);
+> +
+>  	pm_suspend_ignore_children(&attrb->pdev->dev, true);
+>  	pm_runtime_enable(&attrb->pdev->dev);
+>  	/* Default to 3 seconds, but can be changed from sysfs */
+> @@ -202,7 +214,15 @@ static int hid_sensor_resume(struct device *dev)
+>  	struct platform_device *pdev = to_platform_device(dev);
+>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>  	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
+> +	schedule_work(&attrb->work);
+> +	return 0;
+> +}
+>  
+> +static int hid_sensor_runtime_resume(struct device *dev)
+> +{
+> +	struct platform_device *pdev = to_platform_device(dev);
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
+>  	return _hid_sensor_power_state(attrb, true);
+>  }
+>  
+> @@ -211,7 +231,7 @@ static int hid_sensor_resume(struct device *dev)
+>  const struct dev_pm_ops hid_sensor_pm_ops = {
+>  	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend, hid_sensor_resume)
+>  	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
+> -			   hid_sensor_resume, NULL)
+> +			   hid_sensor_runtime_resume, NULL)
+>  };
+>  EXPORT_SYMBOL(hid_sensor_pm_ops);
+>  
+> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+> index c02b5ce..dd85f35 100644
+> --- a/include/linux/hid-sensor-hub.h
+> +++ b/include/linux/hid-sensor-hub.h
+> @@ -236,6 +236,7 @@ struct hid_sensor_common {
+>  	struct hid_sensor_hub_attribute_info report_state;
+>  	struct hid_sensor_hub_attribute_info power_state;
+>  	struct hid_sensor_hub_attribute_info sensitivity;
+> +	struct work_struct work;
+>  };
+>  
+>  /* Convert from hid unit expo to regular exponent */
 > 
 
