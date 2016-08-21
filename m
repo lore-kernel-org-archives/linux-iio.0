@@ -1,121 +1,115 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53119 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53135 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752017AbcHUTNM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 15:13:12 -0400
-Subject: Re: [PATCH v5] iio: hid-sensors: use asynchronous resume
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        jikos@kernel.org
-References: <1471288367-5325-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        dmitry.torokhov@gmail.com
+        with ESMTP id S1752017AbcHUTP6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 15:15:58 -0400
+Subject: Re: [PATCH v2 1/2] iio: adc: ti_am335x_adc: Protect FIFO1 from
+ concurrent access
+To: Vignesh R <vigneshr@ti.com>
+References: <20160817121301.21785-1-vigneshr@ti.com>
+ <20160817121301.21785-2-vigneshr@ti.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Andrew F . Davis" <afd@ti.com>, linux-iio@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <bafa3ac3-3542-3c98-c562-91879d485e47@kernel.org>
-Date: Sun, 21 Aug 2016 20:13:10 +0100
+Message-ID: <639a3736-9e43-e4cc-faa8-d8871d29e2db@kernel.org>
+Date: Sun, 21 Aug 2016 19:49:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471288367-5325-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+In-Reply-To: <20160817121301.21785-2-vigneshr@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/08/16 20:12, Srinivas Pandruvada wrote:
-> Some platforms power off sensor hubs during S3 suspend, which will require
-> longer time to resume. This hurts system resume time, so resume
-> asynchronously.
+On 17/08/16 13:13, Vignesh R wrote:
+> It is possible that two or more ADC channels can be simultaneously
+> requested for raw samples, in which case there can be race in access to
+> FIFO data resulting in loss of samples.
+> If am335x_tsc_se_set_once() is called again from tiadc_read_raw(), when
+> ADC is still acquired to sample one of the channels, the second process
+> might be put into uninterruptible sleep state. Fix these issues, by
+> protecting FIFO access and channel configurations with a mutex. Since
+> tiadc_read_raw() might take anywhere between few microseconds to few
+> milliseconds to finish execution (depending on averaging and delay
+> values supplied via DT), its better to use mutex instead of spinlock.
 > 
-> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git - initially pushed out as testing
-for the autobuilders to play with it.
+> Fixes: 7ca6740cd1cd4 ("mfd: input: iio: ti_amm335x: Rework TSC/ADC synchronization")
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+Thanks for tracking this down and for the patch in the
+first place!
 
-Thanks for tidying up the loose ends on this!
+Applied to the fixes-togreg branch of iio.git and marked for
+stable.  Should head upstream sometime this week.
 
 Jonathan
 > ---
 > 
-> Formerly this patch was v4 5/7 for Intel ISH series, which was separated
-> from the series.
+> v2: Add fixes tag.
 > 
-> v5:
-> Added cancel_work_sync
+>  drivers/iio/adc/ti_am335x_adc.c | 14 +++++++++++---
+>  1 file changed, 11 insertions(+), 3 deletions(-)
 > 
-> 
->  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 22 +++++++++++++++++++++-
->  include/linux/hid-sensor-hub.h                     |  1 +
->  2 files changed, 22 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 5b41f9d..5264ed6 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -122,6 +122,14 @@ int hid_sensor_power_state(struct hid_sensor_common *st, bool state)
->  #endif
->  }
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index 8a368756881b..bed9977a1863 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -32,6 +32,7 @@
 >  
-> +static void hid_sensor_set_power_work(struct work_struct *work)
-> +{
-> +	struct hid_sensor_common *attrb = container_of(work,
-> +						       struct hid_sensor_common,
-> +						       work);
-> +	_hid_sensor_power_state(attrb, true);
-> +}
-> +
->  static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
->  						bool state)
+>  struct tiadc_device {
+>  	struct ti_tscadc_dev *mfd_tscadc;
+> +	struct mutex fifo1_lock; /* to protect fifo access */
+>  	int channels;
+>  	u8 channel_line[8];
+>  	u8 channel_step[8];
+> @@ -359,6 +360,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+>  		int *val, int *val2, long mask)
 >  {
-> @@ -130,6 +138,7 @@ static int hid_sensor_data_rdy_trigger_set_state(struct iio_trigger *trig,
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	int ret = IIO_VAL_INT;
+>  	int i, map_val;
+>  	unsigned int fifo1count, read, stepid;
+>  	bool found = false;
+> @@ -372,6 +374,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+>  	if (!step_en)
+>  		return -EINVAL;
 >  
->  void hid_sensor_remove_trigger(struct hid_sensor_common *attrb)
->  {
-> +	cancel_work_sync(&attrb->work);
->  	iio_trigger_unregister(attrb->trigger);
->  	iio_trigger_free(attrb->trigger);
->  }
-> @@ -170,6 +179,9 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
->  		goto error_unreg_trigger;
+> +	mutex_lock(&adc_dev->fifo1_lock);
+>  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+>  	while (fifo1count--)
+>  		tiadc_readl(adc_dev, REG_FIFO1);
+> @@ -388,7 +391,8 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 >  
->  	iio_device_set_drvdata(indio_dev, attrb);
+>  		if (time_after(jiffies, timeout)) {
+>  			am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
+> -			return -EAGAIN;
+> +			ret = -EAGAIN;
+> +			goto err_unlock;
+>  		}
+>  	}
+>  	map_val = adc_dev->channel_step[chan->scan_index];
+> @@ -414,8 +418,11 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
+>  	am335x_tsc_se_adc_done(adc_dev->mfd_tscadc);
+>  
+>  	if (found == false)
+> -		return -EBUSY;
+> -	return IIO_VAL_INT;
+> +		ret =  -EBUSY;
 > +
-> +	INIT_WORK(&attrb->work, hid_sensor_set_power_work);
-> +
->  	pm_suspend_ignore_children(&attrb->pdev->dev, true);
->  	pm_runtime_enable(&attrb->pdev->dev);
->  	/* Default to 3 seconds, but can be changed from sysfs */
-> @@ -202,7 +214,15 @@ static int hid_sensor_resume(struct device *dev)
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->  	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
-> +	schedule_work(&attrb->work);
-> +	return 0;
-> +}
->  
-> +static int hid_sensor_runtime_resume(struct device *dev)
-> +{
-> +	struct platform_device *pdev = to_platform_device(dev);
-> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> +	struct hid_sensor_common *attrb = iio_device_get_drvdata(indio_dev);
->  	return _hid_sensor_power_state(attrb, true);
+> +err_unlock:
+> +	mutex_unlock(&adc_dev->fifo1_lock);
+> +	return ret;
 >  }
 >  
-> @@ -211,7 +231,7 @@ static int hid_sensor_resume(struct device *dev)
->  const struct dev_pm_ops hid_sensor_pm_ops = {
->  	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend, hid_sensor_resume)
->  	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
-> -			   hid_sensor_resume, NULL)
-> +			   hid_sensor_runtime_resume, NULL)
->  };
->  EXPORT_SYMBOL(hid_sensor_pm_ops);
+>  static const struct iio_info tiadc_info = {
+> @@ -483,6 +490,7 @@ static int tiadc_probe(struct platform_device *pdev)
 >  
-> diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
-> index c02b5ce..dd85f35 100644
-> --- a/include/linux/hid-sensor-hub.h
-> +++ b/include/linux/hid-sensor-hub.h
-> @@ -236,6 +236,7 @@ struct hid_sensor_common {
->  	struct hid_sensor_hub_attribute_info report_state;
->  	struct hid_sensor_hub_attribute_info power_state;
->  	struct hid_sensor_hub_attribute_info sensitivity;
-> +	struct work_struct work;
->  };
+>  	tiadc_step_config(indio_dev);
+>  	tiadc_writel(adc_dev, REG_FIFO1THR, FIFO1_THRESHOLD);
+> +	mutex_init(&adc_dev->fifo1_lock);
 >  
->  /* Convert from hid unit expo to regular exponent */
+>  	err = tiadc_channel_init(indio_dev, adc_dev->channels);
+>  	if (err < 0)
 > 
 
