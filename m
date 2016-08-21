@@ -1,239 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52140 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52970 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753207AbcHUPVm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 11:21:42 -0400
-Subject: Re: [PATCH v2 2/2] staging: iio: vcnl4000: Replace i2c api's with
- regmap
-To: Pratik Prajapati <pratik.prajapati12@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        with ESMTP id S1752017AbcHUSuz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:50:55 -0400
+Subject: Re: [PATCH v2 2/2] iio: adc: ti_am335x_adc: Increase timeout value
+ waiting for ADC sample
+To: Vignesh R <vigneshr@ti.com>
+References: <20160817121301.21785-1-vigneshr@ti.com>
+ <20160817121301.21785-3-vigneshr@ti.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1469444249-2124-1-git-send-email-pratik.prajapati12@gmail.com>
- <1469444249-2124-2-git-send-email-pratik.prajapati12@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Andrew F . Davis" <afd@ti.com>, linux-iio@vger.kernel.org,
+        linux-omap@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a3e65095-e508-e571-4e8e-a74c5559362e@kernel.org>
-Date: Sun, 21 Aug 2016 16:21:40 +0100
+Message-ID: <5f496aae-2913-d652-b88c-e2c17cd92a30@kernel.org>
+Date: Sun, 21 Aug 2016 19:49:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <1469444249-2124-2-git-send-email-pratik.prajapati12@gmail.com>
+In-Reply-To: <20160817121301.21785-3-vigneshr@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/07/16 11:57, Pratik Prajapati wrote:
-> Signed-off-by: Pratik Prajapati <pratik.prajapati12@gmail.com>
-Why?  I.e. Why replace it with regmap. I kind of assumed this was
-to add spi support on a dual bus chip, but it doesn't look like
-vcnl4000 has an spi version...
+On 17/08/16 13:13, Vignesh R wrote:
+> Now that open delay and sample delay for each channel is configurable
+> via DT, the default IDLE_TIMEOUT value is not enough as this is
+> calculated based on hardcoded macros. This results in driver returning
+> EBUSY sometimes. Fix this by increasing the timeout
+> value based on maximum value possible to open delay and sample delays
+> for each channel.
+> 
+> Fixes: 5dc11e810676e ("iio: adc: ti_am335x_adc: make sample delay, open delay, averaging DT parameters")
+> Signed-off-by: Vignesh R <vigneshr@ti.com>
+> Acked-by: Lee Jones <lee.jones@linaro.org>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-I wouldn't have minded if the driver had originally been written
-to use regmap, but it seems a fair bit of churn if there are no
-advantages.
-
-Caching?
-
-Anyhow, description should include the answer to 'Why?'
+Thanks,
 
 Jonathan
 > ---
-> Changes v1 -> v2
->   - added error msgs for led current's read and write functions
 > 
->  drivers/iio/light/vcnl4000.c | 99 ++++++++++++++++++++++++++++++++++++++------
->  1 file changed, 86 insertions(+), 13 deletions(-)
+> v2: Add fixes tag.
 > 
-> diff --git a/drivers/iio/light/vcnl4000.c b/drivers/iio/light/vcnl4000.c
-> index dcf7a6f..9a79022 100644
-> --- a/drivers/iio/light/vcnl4000.c
-> +++ b/drivers/iio/light/vcnl4000.c
-> @@ -21,6 +21,7 @@
->  #include <linux/i2c.h>
->  #include <linux/err.h>
->  #include <linux/delay.h>
-> +#include <linux/regmap.h>
+>  drivers/iio/adc/ti_am335x_adc.c      | 2 +-
+>  include/linux/mfd/ti_am335x_tscadc.h | 8 ++++----
+>  2 files changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index bed9977a1863..c3cfacca2541 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -381,7 +381,7 @@ static int tiadc_read_raw(struct iio_dev *indio_dev,
 >  
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
-> @@ -53,6 +54,7 @@
->  struct vcnl4000_data {
->  	struct i2c_client *client;
->  	struct mutex lock;
-> +	struct regmap *regmap;
->  };
+>  	am335x_tsc_se_set_once(adc_dev->mfd_tscadc, step_en);
 >  
->  static const struct i2c_device_id vcnl4000_id[] = {
-> @@ -67,20 +69,20 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
->  	int tries = 20;
->  	__be16 buf;
->  	int ret;
-> +	unsigned int regval;
+> -	timeout = jiffies + usecs_to_jiffies
+> +	timeout = jiffies + msecs_to_jiffies
+>  				(IDLE_TIMEOUT * adc_dev->channels);
+>  	/* Wait for Fifo threshold interrupt */
+>  	while (1) {
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index 2567a87872b0..7f55b8b41032 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -138,16 +138,16 @@
+>  /*
+>   * time in us for processing a single channel, calculated as follows:
+>   *
+> - * num cycles = open delay + (sample delay + conv time) * averaging
+> + * max num cycles = open delay + (sample delay + conv time) * averaging
+>   *
+> - * num cycles: 152 + (1 + 13) * 16 = 376
+> + * max num cycles: 262143 + (255 + 13) * 16 = 266431
+>   *
+>   * clock frequency: 26MHz / 8 = 3.25MHz
+>   * clock period: 1 / 3.25MHz = 308ns
+>   *
+> - * processing time: 376 * 308ns = 116us
+> + * max processing time: 266431 * 308ns = 83ms(approx)
+>   */
+> -#define IDLE_TIMEOUT 116 /* microsec */
+> +#define IDLE_TIMEOUT 83 /* milliseconds */
 >  
->  	mutex_lock(&data->lock);
->  
-> -	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_COMMAND,
-> -					req_mask);
-> +	ret = regmap_write(data->regmap, VCNL4000_COMMAND, req_mask);
->  	if (ret < 0)
->  		goto fail;
->  
->  	/* wait for data to become ready */
->  	while (tries--) {
-> -		ret = i2c_smbus_read_byte_data(data->client, VCNL4000_COMMAND);
-> +		ret = regmap_read(data->regmap, VCNL4000_COMMAND, &regval);
->  		if (ret < 0)
->  			goto fail;
-> -		if (ret & rdy_mask)
-> +		if (regval & rdy_mask)
->  			break;
->  		msleep(20); /* measurement takes up to 100 ms */
->  	}
-> @@ -92,8 +94,8 @@ static int vcnl4000_measure(struct vcnl4000_data *data, u8 req_mask,
->  		goto fail;
->  	}
->  
-> -	ret = i2c_smbus_read_i2c_block_data(data->client,
-> -		data_reg, sizeof(buf), (u8 *) &buf);
-> +	ret = regmap_bulk_read(data->regmap, data_reg, (u8 *) &buf,
-> +			sizeof(buf));
->  	if (ret < 0)
->  		goto fail;
->  
-> @@ -127,29 +129,38 @@ static const struct iio_chan_spec vcnl4000_channels[] = {
->  
->  static int vcnl4000_write_led_current_raw(struct vcnl4000_data *data, int val)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
->  	int ret;
->  
->  	if (val < 0 || val > VCNL4000_LED_CURRENT_MAX)
->  		return -ERANGE;
-> +
->  	mutex_lock(&data->lock);
-> -	ret = i2c_smbus_write_byte_data(data->client, VCNL4000_LED_CURRENT,
-> -			VCNL4000_LED_CURRENT_MASK & val);
-> +	ret = regmap_write_bits(data->regmap, VCNL4000_LED_CURRENT,
-> +		VCNL4000_LED_CURRENT_MASK, val);
->  	mutex_unlock(&data->lock);
-> +	if (ret < 0)
-> +		dev_err(dev, "Failed to write to LED current register: %d",
-> +				ret);
->  
->  	return ret;
->  }
->  
->  static int vcnl4000_read_led_current_raw(struct vcnl4000_data *data)
->  {
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	unsigned int regval;
->  	int ret;
->  
->  	mutex_lock(&data->lock);
-> -	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_LED_CURRENT);
-> +	ret = regmap_read(data->regmap, VCNL4000_LED_CURRENT, &regval);
->  	mutex_unlock(&data->lock);
-> -	if (ret < 0)
-> +	if (ret < 0) {
-> +		dev_err(dev, "Failed to read LED current register: %d", ret);
->  		return ret;
-> +	}
->  
-> -	return ret &= VCNL4000_LED_CURRENT_MASK;
-> +	return regval &= VCNL4000_LED_CURRENT_MASK;
->  }
->  
->  static int vcnl4000_read_raw(struct iio_dev *indio_dev,
-> @@ -223,27 +234,89 @@ static const struct iio_info vcnl4000_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static bool vcnl4000_readable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case VCNL4000_COMMAND:
-> +	case VCNL4000_PROD_REV:
-> +	case VCNL4000_LED_CURRENT:
-> +	case VCNL4000_AL_PARAM:
-> +	case VCNL4000_AL_RESULT_HI:
-> +	case VCNL4000_AL_RESULT_LO:
-> +	case VCNL4000_PS_RESULT_HI:
-> +	case VCNL4000_PS_RESULT_LO:
-> +	case VCNL4000_PS_MEAS_FREQ:
-> +	case VCNL4000_PS_MOD_ADJ:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool vcnl4000_writeable_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case VCNL4000_COMMAND:
-> +	case VCNL4000_LED_CURRENT:
-> +	case VCNL4000_AL_PARAM:
-> +	case VCNL4000_PS_MEAS_FREQ:
-> +	case VCNL4000_PS_MOD_ADJ:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static bool vcnl4000_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case VCNL4000_COMMAND:
-> +	case VCNL4000_AL_RESULT_HI:
-> +	case VCNL4000_AL_RESULT_LO:
-> +	case VCNL4000_PS_RESULT_HI:
-> +	case VCNL4000_PS_RESULT_LO:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static const struct regmap_config vcnl4000_regmap_config = {
-> +	.reg_bits	= 8,
-> +	.val_bits	= 8,
-> +	.max_register	= VCNL4000_PS_MOD_ADJ,
-> +	.readable_reg	= vcnl4000_readable_reg,
-> +	.writeable_reg	= vcnl4000_writeable_reg,
-> +	.volatile_reg	= vcnl4000_volatile_reg,
-> +};
-> +
->  static int vcnl4000_probe(struct i2c_client *client,
->  			  const struct i2c_device_id *id)
->  {
->  	struct vcnl4000_data *data;
->  	struct iio_dev *indio_dev;
->  	int ret, prod_id;
-> +	unsigned int regval;
->  
->  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->  	if (!indio_dev)
->  		return -ENOMEM;
->  
->  	data = iio_priv(indio_dev);
-> +	data->regmap = devm_regmap_init_i2c(client, &vcnl4000_regmap_config);
-> +	if (IS_ERR(data->regmap)) {
-> +		dev_err(&client->dev, "regmap_init failed!\n");
-> +		return PTR_ERR(data->regmap);
-> +	}
->  	i2c_set_clientdata(client, indio_dev);
->  	data->client = client;
->  	mutex_init(&data->lock);
->  
-> -	ret = i2c_smbus_read_byte_data(data->client, VCNL4000_PROD_REV);
-> +	ret = regmap_read(data->regmap, VCNL4000_PROD_REV, &regval);
->  	if (ret < 0)
->  		return ret;
->  
-> -	prod_id = ret >> 4;
-> +	prod_id = regval >> 4;
->  	if (prod_id != VCNL4010_ID && prod_id != VCNL4000_ID)
->  		return -ENODEV;
+>  #define TSCADC_CELLS		2
 >  
 > 
 
