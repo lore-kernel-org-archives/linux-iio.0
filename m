@@ -1,40 +1,86 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH v2] iio: fix sched WARNING "do not call blocking ops when
- !TASK_RUNNING"
-To: Jonathan Cameron <jic23@kernel.org>,
- Brian Norris <briannorris@chromium.org>
-References: <20160802011244.GA54171@google.com>
- <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
- <20160802165732.GA3310@localhost>
- <9a6a7f54-0343-db74-57a2-9f747ae659cc@metafoo.de>
- <20160804082621.GA11331@localhost> <20160809001937.GA23658@google.com>
- <f1206fbd-3c04-32b5-a898-86c3248661d2@kernel.org>
- <ca1428a5-9fa2-2de1-0d09-85d6c02cbf34@metafoo.de>
- <7e9386ee-176d-6959-9950-6f4c967921e4@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org, Guenter Roeck <linux@roeck-us.net>,
- Brian Norris <computersforpeace@gmail.com>,
- Peter Zijlstra <peterz@infradead.org>, Ingo Molnar <mingo@kernel.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <02f8f093-9544-29b1-2e96-2a897053f916@metafoo.de>
-Date: Sun, 21 Aug 2016 14:26:47 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53002 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752265AbcHUSyE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:54:04 -0400
+Subject: Re: [PATCH v7 1/3] dt-bindings: auxadc: Add binding document for
+ Mediatek auxadc.
+To: Zhiyong Tao <zhiyong.tao@mediatek.com>, robh+dt@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+References: <1471504297-26947-1-git-send-email-zhiyong.tao@mediatek.com>
+ <1471504297-26947-2-git-send-email-zhiyong.tao@mediatek.com>
+Cc: srv_heupstream@mediatek.com, liguo.zhang@mediatek.com,
+        yingjoe.chen@mediatek.com, eddie.huang@mediatek.com,
+        erin.lo@mediatek.com, dawei.chien@mediatek.com,
+        matthias.bgg@gmail.com, s.hauer@pengutronix.de,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
+        linux-mediatek@lists.infradead.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <eb2d9448-5b6e-9ff7-5287-de35fb73d338@kernel.org>
+Date: Sun, 21 Aug 2016 19:54:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <7e9386ee-176d-6959-9950-6f4c967921e4@kernel.org>
+In-Reply-To: <1471504297-26947-2-git-send-email-zhiyong.tao@mediatek.com>
 Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 08/21/2016 01:21 PM, Jonathan Cameron wrote:
-[...]
-> I've applied to this to the fixes-togreg branch of iio.git
+On 18/08/16 08:11, Zhiyong Tao wrote:
+> The commit adds the device tree binding documentation for the mediatek
+> auxadc found on Mediatek MT2701.
+> Thermal gets auxadc sample data by iio device.
+> So the commit changes auxadc device tree binding documentation from
+> /soc/mediatek/auxadc.txt to /iio/adc/mt6577_auxadc.txt.
 > 
-> For now I haven't marked it for stable, purely because I'm not sure
-> when the first 'problem' usage was introduced.  I'm happy to explicitly
-> send a request for stable inclusion if anyone wants to track down
-> which stable trees this is applicable to.
-> 
-> I've very low on time today (holiday catch up) so won't get to
-> dig into it myself for a at least a few weeks.
+> Acked-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+Applied to the togreg branch of iio.git.
 
-The issue has been around for a bit longer, but the wait_woken()
-infrastructure has only available since v3.19.
+Thanks,
+
+Jonathan
+> ---
+>  .../auxadc.txt => iio/adc/mt6577_auxadc.txt}       |   18 +++++++++++++-----
+>  1 file changed, 13 insertions(+), 5 deletions(-)
+>  rename Documentation/devicetree/bindings/{soc/mediatek/auxadc.txt => iio/adc/mt6577_auxadc.txt} (46%)
+> 
+> diff --git a/Documentation/devicetree/bindings/soc/mediatek/auxadc.txt b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> similarity index 46%
+> rename from Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+> rename to Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> index bdb7829..68c45cb 100644
+> --- a/Documentation/devicetree/bindings/soc/mediatek/auxadc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/mt6577_auxadc.txt
+> @@ -1,4 +1,4 @@
+> -MediaTek AUXADC
+> +* Mediatek AUXADC - Analog to Digital Converter on Mediatek mobile soc (mt65xx/mt81xx/mt27xx)
+>  ===============
+>  
+>  The Auxiliary Analog/Digital Converter (AUXADC) is an ADC found
+> @@ -10,12 +10,20 @@ Documentation/devicetree/bindings/thermal/mediatek-thermal.txt
+>  for the Thermal Controller which holds a phandle to the AUXADC.
+>  
+>  Required properties:
+> -- compatible: Must be "mediatek,mt8173-auxadc"
+> -- reg: Address range of the AUXADC unit
+> +  - compatible: Should be one of:
+> +    - "mediatek,mt2701-auxadc": For MT2701 family of SoCs
+> +    - "mediatek,mt8173-auxadc": For MT8173 family of SoCs
+> +  - reg: Address range of the AUXADC unit.
+> +  - clocks: Should contain a clock specifier for each entry in clock-names
+> +  - clock-names: Should contain "main".
+> +  - #io-channel-cells: Should be 1, see ../iio-bindings.txt
+>  
+>  Example:
+>  
+> -auxadc: auxadc@11001000 {
+> -	compatible = "mediatek,mt8173-auxadc";
+> +auxadc: adc@11001000 {
+> +	compatible = "mediatek,mt2701-auxadc";
+>  	reg = <0 0x11001000 0 0x1000>;
+> +	clocks = <&pericfg CLK_PERI_AUXADC>;
+> +	clock-names = "main";
+> +	#io-channel-cells = <1>;
+>  };
+> 
+
