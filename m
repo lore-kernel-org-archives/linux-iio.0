@@ -1,139 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51090 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51112 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752253AbcHUKrx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 06:47:53 -0400
-Subject: Re: [RFC v4 1/3] iio: buffer-callback: allow getting underlying
- iio_dev
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+        with ESMTP id S1751694AbcHUKvw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 06:51:52 -0400
+Subject: Re: [RFC v4 2/3] iio: adc: ti-adc161s626: add support for TI
+ 1-channel differential ADCs
+To: Marek Vasut <marek.vasut@gmail.com>,
+        Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
 References: <1471663024-25623-1-git-send-email-mranostay@gmail.com>
- <1471663024-25623-2-git-send-email-mranostay@gmail.com>
+ <1471663024-25623-3-git-send-email-mranostay@gmail.com>
+ <de1272c8-cf35-84f3-84db-eaa42525a5bc@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9d3f7821-1c9e-d8b2-27ba-fd6d73f683f6@kernel.org>
-Date: Sun, 21 Aug 2016 11:47:51 +0100
+Message-ID: <d8780f4a-5a83-724d-88b5-0cc1d0a51728@kernel.org>
+Date: Sun, 21 Aug 2016 11:51:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471663024-25623-2-git-send-email-mranostay@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <de1272c8-cf35-84f3-84db-eaa42525a5bc@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/08/16 04:17, Matt Ranostay wrote:
-> Add iio_channel_cb_get_iio_dev function to allow getting the
-> underlying iio_dev. This is useful for setting the trigger of the
-> consumer ADC device.
+On 20/08/16 17:47, Marek Vasut wrote:
+> On 08/20/2016 05:17 AM, Matt Ranostay wrote:
+>> Add support for Texas Instruments ADC141S626, and ADC161S626 chips.
 > 
-> Signed-off-by: Matt Ranostay <mranostay@gmail.com>
-Clearly going to be a necessary bit of infrastructure.
-
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
-
-Thanks,
+> Hi,
+> 
+> [...]
+> 
+>> +++ b/Documentation/devicetree/bindings/iio/adc/ti-adc161s626.txt
+>> @@ -0,0 +1,17 @@
+>> +* Texas Instruments ADC141S626, and ADC161S626 chip
+> 
+> I think you should drop the comma and use plural (chips) here.
+> 
+>> +Required properties:
+>> + - compatible: Should be "ti,adc141s626" or "ti,adc161s626"
+>> + - reg: spi chip select number for the device
+>> +
+>> +Recommended properties:
+>> + - spi-max-frequency: Definition as per
+>> +		Documentation/devicetree/bindings/spi/spi-bus.txt
+>> +
+>> +Example:
+>> +adc@0 {
+>> +	compatible = "ti,adc161s626";
+>> +	reg = <0>;
+>> +	spi-max-frequency = <4300000>;
+>> +};
+>> +
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 1de31bdd4ce4..2658f2f69bad 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -426,6 +426,18 @@ config TI_ADC128S052
+>>  	  This driver can also be built as a module. If so, the module will be
+>>  	  called ti-adc128s052.
+>>  
+>> +config TI_ADC161S626
+>> +	tristate "Texas Instruments ADC161S626 1-channel differential ADC"
+>> +	depends on SPI
+>> +	select IIO_BUFFER
+>> +	select IIO_TRIGGERED_BUFFER
+>> +	help
+>> +	  If you say yes here you get support for Texas Instruments ADC141S626,
+>> +	  and ADC161S626 chips.
+>> +
+>> +	  This driver can also be build
+> 
+> ... be built ... :-)
+> 
+>> as a module. If so, the module will be
+>> +	  called ti-adc161s626.
+>> +
+>>  config TI_ADS1015
+>>  	tristate "Texas Instruments ADS1015 ADC"
+>>  	depends on I2C && !SENSORS_ADS1015
+> 
+> The code looks OK.
+> 
+Agreed - I fixed the above up and applied to the togreg branch of iio.git.
+This is a good little driver in it's own right.  No need to wait
+for the consumer you have for it Matt to be ready!
 
 Jonathan
-> ---
->  drivers/iio/buffer/industrialio-buffer-cb.c | 24 ++++++++++++++----------
->  include/linux/iio/consumer.h                | 12 ++++++++++++
->  2 files changed, 26 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/iio/buffer/industrialio-buffer-cb.c b/drivers/iio/buffer/industrialio-buffer-cb.c
-> index 323079c3ccce..b8f550e47d3d 100644
-> --- a/drivers/iio/buffer/industrialio-buffer-cb.c
-> +++ b/drivers/iio/buffer/industrialio-buffer-cb.c
-> @@ -18,6 +18,7 @@ struct iio_cb_buffer {
->  	int (*cb)(const void *data, void *private);
->  	void *private;
->  	struct iio_channel *channels;
-> +	struct iio_dev *indio_dev;
->  };
->  
->  static struct iio_cb_buffer *buffer_to_cb_buffer(struct iio_buffer *buffer)
-> @@ -52,7 +53,6 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
->  {
->  	int ret;
->  	struct iio_cb_buffer *cb_buff;
-> -	struct iio_dev *indio_dev;
->  	struct iio_channel *chan;
->  
->  	cb_buff = kzalloc(sizeof(*cb_buff), GFP_KERNEL);
-> @@ -72,17 +72,17 @@ struct iio_cb_buffer *iio_channel_get_all_cb(struct device *dev,
->  		goto error_free_cb_buff;
->  	}
->  
-> -	indio_dev = cb_buff->channels[0].indio_dev;
-> +	cb_buff->indio_dev = cb_buff->channels[0].indio_dev;
->  	cb_buff->buffer.scan_mask
-> -		= kcalloc(BITS_TO_LONGS(indio_dev->masklength), sizeof(long),
-> -			  GFP_KERNEL);
-> +		= kcalloc(BITS_TO_LONGS(cb_buff->indio_dev->masklength),
-> +			  sizeof(long), GFP_KERNEL);
->  	if (cb_buff->buffer.scan_mask == NULL) {
->  		ret = -ENOMEM;
->  		goto error_release_channels;
->  	}
->  	chan = &cb_buff->channels[0];
->  	while (chan->indio_dev) {
-> -		if (chan->indio_dev != indio_dev) {
-> +		if (chan->indio_dev != cb_buff->indio_dev) {
->  			ret = -EINVAL;
->  			goto error_free_scan_mask;
->  		}
-> @@ -105,17 +105,14 @@ EXPORT_SYMBOL_GPL(iio_channel_get_all_cb);
->  
->  int iio_channel_start_all_cb(struct iio_cb_buffer *cb_buff)
->  {
-> -	return iio_update_buffers(cb_buff->channels[0].indio_dev,
-> -				  &cb_buff->buffer,
-> +	return iio_update_buffers(cb_buff->indio_dev, &cb_buff->buffer,
->  				  NULL);
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_start_all_cb);
->  
->  void iio_channel_stop_all_cb(struct iio_cb_buffer *cb_buff)
->  {
-> -	iio_update_buffers(cb_buff->channels[0].indio_dev,
-> -			   NULL,
-> -			   &cb_buff->buffer);
-> +	iio_update_buffers(cb_buff->indio_dev, NULL, &cb_buff->buffer);
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_stop_all_cb);
->  
-> @@ -133,6 +130,13 @@ struct iio_channel
->  }
->  EXPORT_SYMBOL_GPL(iio_channel_cb_get_channels);
->  
-> +struct iio_dev
-> +*iio_channel_cb_get_iio_dev(const struct iio_cb_buffer *cb_buffer)
-> +{
-> +	return cb_buffer->indio_dev;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_channel_cb_get_iio_dev);
-> +
->  MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
->  MODULE_DESCRIPTION("Industrial I/O callback buffer");
->  MODULE_LICENSE("GPL");
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 3d672f72e7ec..9edccfba1ffb 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -165,6 +165,18 @@ struct iio_channel
->  *iio_channel_cb_get_channels(const struct iio_cb_buffer *cb_buffer);
->  
->  /**
-> + * iio_channel_cb_get_iio_dev() - get access to the underlying device.
-> + * @cb_buffer:		The callback buffer from whom we want the device
-> + *			information.
-> + *
-> + * This function allows one to obtain information about the device.
-> + * The primary aim is to allow drivers that are consuming a device to query
-> + * things like current trigger.
-> + */
-> +struct iio_dev
-> +*iio_channel_cb_get_iio_dev(const struct iio_cb_buffer *cb_buffer);
-> +
-> +/**
->   * iio_read_channel_raw() - read from a given channel
->   * @chan:		The channel being queried.
->   * @val:		Value read back.
-> 
-
