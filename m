@@ -1,106 +1,1836 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f179.google.com ([209.85.161.179]:34462 "EHLO
-        mail-yw0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755160AbcHVNYR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2016 09:24:17 -0400
-Date: Mon, 22 Aug 2016 09:24:09 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/1] iio: stx104: Add IIO support for the ADC channels
-Message-ID: <20160822132409.GA9041@sophia>
-References: <cover.1469468983.git.vilhelm.gray@gmail.com>
- <6d9544e530bf2d97175596f03a7d429f57153b40.1469468983.git.vilhelm.gray@gmail.com>
- <99c36f16-9f2c-383d-9f44-badeee523a5a@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52861 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752011AbcHUScY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:32:24 -0400
+Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Cc: Nick Vaccaro <nvaccaro@google.com>, Ge Gao <ggao@invensense.com>,
+        Anna Si <asi@invensense.com>,
+        Nathan Royer <nroyer@invensense.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Peter Rosin <peda@axentia.se>
+Message-ID: <53008712-7c50-79db-07ab-3544902887e1@kernel.org>
+Date: Sun, 21 Aug 2016 19:32:20 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <99c36f16-9f2c-383d-9f44-badeee523a5a@kernel.org>
+In-Reply-To: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Aug 21, 2016 at 08:39:01PM +0100, Jonathan Cameron wrote:
->On 25/07/16 18:54, William Breathitt Gray wrote:
->> The Apex Embedded Systems STX104 features 16 channels of single-ended (8
->> channels of true differential) 16-bit analog input. Differential input
->> configuration may be selected via a physical jumper on the device.
->> Similarly, input polarity (unipolar/bipolar) is configured via a
->> physical jumper on the device.
->> 
->> Input gain selection is available to the user via software, thus
->> allowing eight possible input ranges: +-10V, +-5V, +-2.5V, +-1.25V,
->> 0 to 10V, 0 to 5V, 0 to 2.5V, and 0 to 1.25V. Four input gain
->> configurations are supported: x1, x2, x4, and x8.
->> 
->> This ADC resolution is 16-bits (1/65536 of full scale). Analog input
->> samples are taken on software trigger; neither FIFO sampling nor
->> interrupt triggering is supported by this driver.
->> 
->> The Apex Embedded Systems STX104 is primarily an analog-to-digital
->> converter device. The STX104 IIO driver was initially placed in the DAC
->> directory because only the DAC portion of the STX104 was supported at
->> the time. Now that ADC support has been added to the STX104 IIO driver,
->> the driver should be moved to the more appropriate ADC directory.
->> 
->> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
->Hi William,
->
->I'd missed the odd use of an output channel to control scale.
->I'm guessing this is because we are looking at actual control of a front
->end separate amplifier on the board?  However as far as the driver is
->confirmed this is no different from any multi range ADC and so
->should be done with IIO_INFO_SCALE.
->
->Sorry for taking so long to get back to you.  Holiday season I'm afraid.
->
->Jonathan
+On 15/08/16 19:38, Linus Walleij wrote:
+> This adds a new driver for the Invensense MPU-3050 gyroscope.
+> This driver is based on information from the rough input driver
+> in drivers/input/misc/mpu3050.c and the scratch misc driver
+> posted by Nathan Royer in 2011. Some years have passed but this
+> is finally a fully-fledged driver for this gyroscope. It was
+> developed and tested on the Qualcomm APQ8060 Dragonboard.
+> 
+> The driver supports both raw and buffered input. It also
+> supports the internal trigger mechanism by registering a trigger
+> that can fire in response to the internal sample engine of the
+> component. In addition to reading out the gyroscope sensor
+> values, the driver also supports reading the temperature from
+> the sensor.
+> 
+> The driver currently only supports I2C but the MPU-3050 can
+> also be used from SPI, so the I2C portions are split in their
+> own file and we just use regmap to access all registers, so
+> it will be trivial to plug in SPI support if/when someone has
+> a system requireing this.
+requiring
+> 
+> To conserve power, the driver utilizes the runtime PM
+> framework and will put the sensor in off mode and disable the
+> regulators when unused, after a timeout of 10 seconds.
+> 
+> The fullscale can be set for the sensor to 250, 500, 1000 or
+> 2000 deg/s. This corresponds to scale values of rougly 0.000122,
+> 0.000275, 0.000512 or 0.001068. By writing such values (or close
+> to these) into "in_anglevel_scale", the corresponding fullscale
+> can be chosen. It will default to 2000 deg/s (~35 rad/s).
+> 
+> The gyro component can have DC offsets on all axes. These can be
+> compensated using the standard sysfs ABI property
+> "in_anglevel_[xyz]_calibbias". This is in positive/negative
+> values of the raw values, so a suitable calibration bias can be
+> determined by userspace by reading the "in_anglevel_[xyz]_raw"
+> for a few iterations while holding the sensor still, create an
+> average integer, and writing the negative inverse of that into
+> "in_anglevel_[xyz]_calibbias". After this the hardware will
+> automatically subtract the bias, also when using buffered
+> readings.
+> 
+> Since the MPU-3050 has an outgoing I2C port it needs to act as
+> an I2C mux. This means that the device is switching I2C traffic
+> to devices beyond it. On my system this is the only way to reach
+> the accelerometer. The "sensor fusion" ability of the MPU-3050
+> to directly talk to the device on the outgoing I2C port is
+> currently not used by the driver, but it has code to allow I2C
+> traffic to pass through so that the Linux kernel can reach the
+> device on the other side with a kernel driver.
+Cc'd Peter Rosin as he's maintaining the i2c mux code now.
+> 
+> Example usage with the native trigger:
+> 
+> $ generic_buffer -a -c10 -n mpu3050
+> iio device number being used is 0
+> iio trigger number being used is 0
+> No channels are enabled, enabling all channels
+> Enabling: in_anglvel_z_en
+> Enabling: in_timestamp_en
+> Enabling: in_anglvel_y_en
+> Enabling: in_temp_en
+> Enabling: in_anglvel_x_en
+> /sys/bus/iio/devices/iio:device0 mpu3050-dev0
+> 29607.142578 -0.117493 0.074768 0.012817 180788797150
+> 29639.285156 -0.117493 0.076904 0.013885 180888982335
+> 29696.427734 -0.116425 0.076904 0.012817 180989178039
+> 29742.857422 -0.117493 0.076904 0.012817 181089377742
+> 29764.285156 -0.116425 0.077972 0.012817 181189574187
+> 29860.714844 -0.115356 0.076904 0.012817 181289772705
+> 29864.285156 -0.117493 0.076904 0.012817 181389971520
+> 29910.714844 -0.115356 0.076904 0.013885 181490170483
+> 29917.857422 -0.116425 0.076904 0.011749 181590369742
+> 29975.000000 -0.116425 0.076904 0.012817 181690567075
+> Disabling: in_anglvel_z_en
+> Disabling: in_timestamp_en
+> Disabling: in_anglvel_y_en
+> Disabling: in_temp_en
+> Disabling: in_anglvel_x_en
+> 
+> The first column is the temperature in millidegrees, then the x,y,z
+> axes in succession followed by the timestamp. Also tested successfully
+> using the HRTimer trigger.
+> 
+> Cc: Nick Vaccaro <nvaccaro@google.com>
+> Cc: Ge Gao <ggao@invensense.com>
+> Cc: Anna Si <asi@invensense.com>
+> Cc: Nathan Royer <nroyer@invensense.com>
+> Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+> Cc: Crestez Dan Leonard <leonard.crestez@intel.com>
+> Cc: Daniel Baluta <daniel.baluta@intel.com>
+> Cc: Gregor Boirie <gregor.boirie@parrot.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+A lot of the complexity in the data handling in here is down to
+supporting triggers not supplied by this part.  Do we actually need
+to do so?
 
->> +#define STX104_GAIN_CHAN {					\
->> +	.type = IIO_VOLTAGE,					\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_HARDWAREGAIN),	\
->> +	.output = 1						\
->>  }
->
->I'm confused.  You have a separate output channel to control gain?
->Why... Variable gain devices are normally just represented via the
->info_mask element IIO_CHAN_INFO_SCALE as an info_mask_shared_by_type.
+The 6050 driver does similar 'interesting' stuff to make this
+work. Is it actually a good idea?  Given we can do direct 'last measurement'
+reads, perhaps we either operating in a fifo mode without trigger, or
+if a trigger is supplied we operate using direct reads as if the fifo
+wasn't there at all.
 
-Hey Jonathan,
+It mostly just feels more complex than it needs to be so I'd like to
+just through out these generic questions to see what people think.
 
-Thanks for getting back to me. I did have trouble figuring out the
-proper way to expose the gain control for this device. Perhaps if I
-describe the register interface it may make more sense.
+I'd also like to get some input from those particularly familiar with
+the 6050 which is obviously pretty similar - be it with slighly
+fewer odd corners...
 
-The STX104 ADC input range may be probed with a read to register offset
-11; bit 2 represents the ADC bipolar/unipolar configuration (ADBU),
-while bits 1 and 0 represent the ADC gain setting. ADBU is configured by
-physical jumper on the device, while the ADC gain setting is configured
-in software via a register write.
+Jonathan
+> ---
+> It is still unclear how to migrate users of the old input driver
+> to this driver. I want to merge this "clean" IIO driver first as
+> a base to extend it with input capabilities and then move over
+> any remaining users of the Input driver.
+> 
+> The CCs in this mail is just some random people that worked on
+> this or other Invensense products in the upstream kernel or in
+> Google's gits.
+> 
+> I suspect some of the stuff I've done here should be carried
+> over to the MPU-6050 driver in drivers/iio/imu/inv_mpu6050/*
+Which bits in particular?
 
-ADC gain may be set with a write of bits 1 and 0 to register offset 11;
-00 = gain of x1, 01 = gain of x2, 10 = gain of x4, 11 = gain of x8.
-Writing to this register sets the analog input gain for all 8/16 analog
-inputs.
 
-Since the ADC gain setting applies to all analog inputs rather than
-individual inputs separately, what is the proper way to expose this
-option? Should I remove the STX104_GAIN_CHAN #define entirely and use
-something like the following change instead:
+> ---
+>  MAINTAINERS                    |    7 +
+>  drivers/iio/gyro/Kconfig       |   17 +
+>  drivers/iio/gyro/Makefile      |    3 +
+>  drivers/iio/gyro/mpu3050-i2c.c |  124 ++++
+>  drivers/iio/gyro/mpu3050.c     | 1211 ++++++++++++++++++++++++++++++++++++++++
+>  drivers/iio/gyro/mpu3050.h     |  221 ++++++++
+>  6 files changed, 1583 insertions(+)
+>  create mode 100644 drivers/iio/gyro/mpu3050-i2c.c
+>  create mode 100644 drivers/iio/gyro/mpu3050.c
+>  create mode 100644 drivers/iio/gyro/mpu3050.h
+> 
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 20bb1d00098c..a6842d597efe 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6285,6 +6285,13 @@ S:	Maintained
+>  F:	arch/x86/include/asm/pmc_core.h
+>  F:	drivers/platform/x86/intel_pmc_core*
+>  
+> +INVENSENSE MPU-3050 GYROSCOPE DRIVER
+> +M:	Linus Walleij <linus.walleij@linaro.org>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	drivers/iio/gyro/mpu3050*
+> +F:	Documentation/devicetree/bindings/iio/gyroscope/inv,mpu3050.txt
+> +
+>  IOC3 ETHERNET DRIVER
+>  M:	Ralf Baechle <ralf@linux-mips.org>
+>  L:	linux-mips@linux-mips.org
+> diff --git a/drivers/iio/gyro/Kconfig b/drivers/iio/gyro/Kconfig
+> index 205a84420ae9..107b5efd4178 100644
+> --- a/drivers/iio/gyro/Kconfig
+> +++ b/drivers/iio/gyro/Kconfig
+> @@ -84,6 +84,23 @@ config HID_SENSOR_GYRO_3D
+>  	  Say yes here to build support for the HID SENSOR
+>  	  Gyroscope 3D.
+>  
+> +config MPU3050
+> +	tristate
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	select REGMAP
+> +
+> +config MPU3050_I2C
+> +	tristate "Invensense MPU3050 devices on I2C"
+> +	depends on !(INPUT_MPU3050=y || INPUT_MPU3050=m)
+> +	select MPU3050
+> +	select REGMAP_I2C
+> +	select I2C_MUX
+> +	help
+> +	  This driver supports the Invensense MPU3050 gyroscope over I2C.
+> +	  This driver can be built as a module. The module will be called
+> +	  inv-mpu3050-i2c.
+> +
+>  config IIO_ST_GYRO_3AXIS
+>  	tristate "STMicroelectronics gyroscopes 3-Axis Driver"
+>  	depends on (I2C || SPI_MASTER) && SYSFS
+> diff --git a/drivers/iio/gyro/Makefile b/drivers/iio/gyro/Makefile
+> index f866a4be0667..21c48e0f79dc 100644
+> --- a/drivers/iio/gyro/Makefile
+> +++ b/drivers/iio/gyro/Makefile
+> @@ -14,6 +14,9 @@ obj-$(CONFIG_BMG160_SPI) += bmg160_spi.o
+>  
+>  obj-$(CONFIG_HID_SENSOR_GYRO_3D) += hid-sensor-gyro-3d.o
+>  
+> +obj-$(CONFIG_MPU3050) += mpu3050.o
+> +obj-$(CONFIG_MPU3050_I2C) += mpu3050-i2c.o
+I'd have built it as a single module until we have spi support. Guessing
+that might be a while ;)
+> +
+>  itg3200-y               := itg3200_core.o
+>  itg3200-$(CONFIG_IIO_BUFFER) += itg3200_buffer.o
+>  obj-$(CONFIG_ITG3200)   += itg3200.o
+> diff --git a/drivers/iio/gyro/mpu3050-i2c.c b/drivers/iio/gyro/mpu3050-i2c.c
+> new file mode 100644
+> index 000000000000..27be9d4370c9
+> --- /dev/null
+> +++ b/drivers/iio/gyro/mpu3050-i2c.c
+> @@ -0,0 +1,124 @@
+> +#include <linux/err.h>
+> +#include <linux/i2c.h>
+> +#include <linux/i2c-mux.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/module.h>
+> +#include <linux/regmap.h>
+> +#include <linux/pm_runtime.h>
+> +
+> +#include "mpu3050.h"
+> +
+> +static const struct regmap_config mpu3050_i2c_regmap_config = {
+> +	.reg_bits = 8,
+> +	.val_bits = 8,
+> +};
+> +
+> +static int mpu3050_i2c_bypass_select(struct i2c_mux_core *mux, u32 chan_id)
+> +{
+> +	struct mpu3050 *mpu3050 = i2c_mux_priv(mux);
+> +
+> +	/* Just power up the device, that is all that is needed */
+> +	pm_runtime_get_sync(mpu3050->dev);
+nitpick : blank line before returns preferred.
+> +	return 0;
+> +}
+> +
+> +static int mpu3050_i2c_bypass_deselect(struct i2c_mux_core *mux, u32 chan_id)
+> +{
+> +	struct mpu3050 *mpu3050 = i2c_mux_priv(mux);
+> +
+> +	pm_runtime_mark_last_busy(mpu3050->dev);
+> +	pm_runtime_put_autosuspend(mpu3050->dev);
+> +	return 0;
+> +}
+> +
+> +static int mpu3050_i2c_probe(struct i2c_client *client,
+> +			     const struct i2c_device_id *id)
+> +{
+> +	struct regmap *regmap;
+> +	const char *name;
+> +	struct mpu3050 *mpu3050;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter,
+> +				     I2C_FUNC_SMBUS_I2C_BLOCK))
+> +		return -EOPNOTSUPP;
+> +
+> +	if (id)
+> +		name = id->name;
+> +	else
+> +		return -ENODEV;
+> +
+> +	regmap = devm_regmap_init_i2c(client, &mpu3050_i2c_regmap_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&client->dev, "Failed to register i2c regmap %d\n",
+> +			(int)PTR_ERR(regmap));
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	ret = mpu3050_common_probe(&client->dev, regmap, client->irq, name);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* The main driver is up, now register the I2C mux */
+> +	mpu3050 = iio_priv(dev_get_drvdata(&client->dev));
+> +	mpu3050->i2cmux = i2c_mux_alloc(client->adapter, &client->dev,
+> +					1, 0, I2C_MUX_LOCKED,
+> +					mpu3050_i2c_bypass_select,
+> +					mpu3050_i2c_bypass_deselect);
+> +	/* Just fail the mux, there is no point in killing the driver */
+> +	if (!mpu3050->i2cmux)
+> +		dev_err(&client->dev, "failed to allocate I2C mux\n");
+> +	else {
+> +		mpu3050->i2cmux->priv = mpu3050;
+> +		ret = i2c_mux_add_adapter(mpu3050->i2cmux, 0, 0, 0);
+> +		if (ret)
+> +			dev_err(&client->dev, "failed to add I2C mux\n");
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int mpu3050_i2c_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(&client->dev);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	if (mpu3050->i2cmux)
+> +		i2c_mux_del_adapters(mpu3050->i2cmux);
+> +
+> +	return mpu3050_common_remove(&client->dev);
+> +}
+> +
+> +/*
+> + * device id table is used to identify what device can be
+> + * supported by this driver
+> + */
+> +static const struct i2c_device_id mpu3050_i2c_id[] = {
+> +	{ "mpu3050" },
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, mpu3050_i2c_id);
+> +
+> +static const struct of_device_id mpu3050_i2c_of_match[] = {
+> +	{ .compatible = "invensense,mpu3050", .data = "mpu3050" },
+> +	/* Deprecated vendor ID from the Input driver */
+> +	{ .compatible = "invn,mpu3050", .data = "mpu3050" },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, mpu3050_i2c_of_match);
+> +
+> +static struct i2c_driver mpu3050_i2c_driver = {
+> +	.probe = mpu3050_i2c_probe,
+> +	.remove = mpu3050_i2c_remove,
+> +	.id_table = mpu3050_i2c_id,
+> +	.driver = {
+> +		.of_match_table = mpu3050_i2c_of_match,
+> +		.name = "mpu3050-i2c",
+> +		.pm = &mpu3050_dev_pm_ops,
+> +	},
+> +};
+> +module_i2c_driver(mpu3050_i2c_driver);
+> +
+> +MODULE_AUTHOR("Linus Walleij");
+> +MODULE_DESCRIPTION("Invensense MPU3050 gyroscope driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/iio/gyro/mpu3050.c b/drivers/iio/gyro/mpu3050.c
+> new file mode 100644
+> index 000000000000..1f95d6d72607
+> --- /dev/null
+> +++ b/drivers/iio/gyro/mpu3050.c
+> @@ -0,0 +1,1211 @@
+> +/*
+> + * MPU3050 gyroscope driver
+> + *
+> + * Copyright (C) 2016 Linaro Ltd.
+> + * Author: Linus Walleij <linus.walleij@linaro.org>
+> + *
+> + * Based on the input subsystem driver, Copyright (C) 2011 Wistron Co.Ltd
+> + * Joseph Lai <joseph_lai@wistron.com> and trimmed down by
+> + * Alan Cox <alan@linux.intel.com> in turn based on bma023.c.
+> + * Device behaviour based on a misc driver posted by Nathan Royer in 2011.
+> + */
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/delay.h>
+> +#include <linux/err.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/module.h>
+> +#include <linux/pm_runtime.h>
+> +#include <linux/random.h>
+> +#include <linux/slab.h>
+> +
+> +#include "mpu3050.h"
+> +
+> +/*
+> + * Fullscale precision is (for finest precision) +/- 250 deg/s, so the full
+> + * scale is actually 500 deg/s. All 16 bits are then used to cover this scale,
+> + * so 2^15 positive numbers and 2^15 negative numbers.
+> + */
+> +static unsigned int mpu3050_fs_precision[] = {
+> +	IIO_DEGREE_TO_RAD(250),
+> +	IIO_DEGREE_TO_RAD(500),
+> +	IIO_DEGREE_TO_RAD(1000),
+> +	IIO_DEGREE_TO_RAD(2000)
+> +};
+> +
+> +/*
+> + * Regulator names
+> + */
+> +static const char mpu3050_reg_vdd[] = "vdd";
+> +static const char mpu3050_reg_vlogic[] = "vlogic";
+> +
+> +static unsigned int mpu3050_get_freq(struct mpu3050 *mpu3050)
+> +{
+> +	unsigned int freq;
+> +
+> +	if (mpu3050->lpf == MPU3050_DLPF_CFG_256HZ_NOLPF2)
+> +		freq = 8000;
+> +	else
+> +		freq = 1000;
+> +	freq /= (mpu3050->divisor + 1);
+> +
+> +	return freq;
+> +}
+> +
+> +static int mpu3050_start_sampling(struct mpu3050 *mpu3050)
+> +{
+> +	__be16 raw_val[3];
+> +	int ret;
+> +	int i;
+> +
+> +	/* Reset */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_PWR_MGM,
+> +				 MPU3050_PWR_MGM_RESET,
+> +				 MPU3050_PWR_MGM_RESET);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Turn on the Z-axis PLL */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_PWR_MGM,
+> +				 MPU3050_PWR_MGM_CLKSEL_MASK,
+> +				 MPU3050_PWR_MGM_PLL_Z);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Write calibration offset registers */
+> +	for (i = 0; i < 3; i++)
+> +		raw_val[i] = cpu_to_be16(mpu3050->calibration[i]);
+> +
+> +	ret = regmap_bulk_write(mpu3050->map,
+> +				MPU3050_X_OFFS_USRH,
+> +				raw_val,
+> +				sizeof(raw_val));
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set low pass filter (sample rate), sync and full scale */
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_DLPF_FS_SYNC,
+> +			   MPU3050_EXT_SYNC_NONE << MPU3050_EXT_SYNC_SHIFT |
+> +			   mpu3050->fullscale << MPU3050_FS_SHIFT |
+> +			   mpu3050->lpf << MPU3050_DLPF_CFG_SHIFT);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Set up sampling frequency */
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_SMPLRT_DIV,
+> +			   mpu3050->divisor);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/*
+> +	 * Max 50 ms start-up time after setting DLPF_FS_SYNC
+> +	 * according to the data sheet, then wait for the next sample
+> +	 * at this frequency T = 1000/f ms.
+> +	 */
+> +	msleep(50 + 1000/mpu3050_get_freq(mpu3050));
+> +
+> +	return 0;
+> +}
+> +
+> +static int mpu3050_set_8khz_samplerate(struct mpu3050 *mpu3050)
+> +{
+> +	int ret;
+> +	u8 divisor;
+> +	enum mpu3050_lpf lpf;
+> +
+> +	lpf = mpu3050->lpf;
+> +	divisor = mpu3050->divisor;
+> +
+> +	mpu3050->lpf = LPF_256_HZ_NOLPF; /* 8 kHz base frequency */
+> +	mpu3050->divisor = 0; /* Divide by 1 */
+> +	ret = mpu3050_start_sampling(mpu3050);
+> +
+> +	mpu3050->lpf = lpf;
+> +	mpu3050->divisor = divisor;
+> +
+> +	return ret;
+> +}
+> +
+> +static int mpu3050_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2,
+> +			    long mask)
+> +{
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	int ret = -EINVAL;
+> +	__be16 raw_val;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			/* The temperature scaling is (x+23000)/280 Celsius */
+> +			*val = 23000;
+> +			return IIO_VAL_INT;
+> +		default:
+> +			break;
+> +		}
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		switch (chan->type) {
+> +		case IIO_ANGL_VEL:
+> +			*val = mpu3050->calibration[chan->scan_index-1];
+> +			return IIO_VAL_INT;
+> +		default:
+> +			break;
+> +		}
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			/* Millidegrees, see about temperature scaling above */
+> +			*val = 1000;
+> +			*val2 = 280;
+> +			return IIO_VAL_FRACTIONAL;
+> +		case IIO_ANGL_VEL:
+> +			/*
+> +			 * Convert to the corresponding full scale in
+> +			 * radians. All 16 bits are used with sign to
+> +			 * span the available scale.
+> +			 */
+> +			*val = mpu3050_fs_precision[mpu3050->fullscale];
+> +			*val2 = S16_MAX + 1; /* 2^15 + 1 (also the zero) */
+> +			return IIO_VAL_FRACTIONAL;
+> +		default:
+> +			break;
+> +		}
+> +	case IIO_CHAN_INFO_RAW:
+> +		/* Resume device */
+> +		pm_runtime_get_sync(mpu3050->dev);
+> +		mutex_lock(&mpu3050->lock);
+> +
+> +		ret = mpu3050_set_8khz_samplerate(mpu3050);
+> +		if (ret)
+> +			goto out_read_raw_unlock;
+> +
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			ret = regmap_bulk_read(mpu3050->map,
+> +					       MPU3050_TEMP_H,
+> +					       &raw_val,
+> +					       sizeof(raw_val));
+> +			if (ret) {
+> +				dev_err(mpu3050->dev,
+> +					"error reading temperature\n");
+> +				goto out_read_raw_unlock;
+> +			}
+> +
+> +			*val = be16_to_cpu(raw_val);
+> +			ret = IIO_VAL_INT;
+> +
+> +			goto out_read_raw_unlock;
+> +		case IIO_ANGL_VEL:
+> +			ret = regmap_bulk_read(mpu3050->map,
+> +				       MPU3050_AXIS_REGS(chan->scan_index-1),
+> +				       &raw_val,
+> +				       sizeof(raw_val));
+> +			if (ret) {
+> +				dev_err(mpu3050->dev,
+> +					"error reading axis data\n");
+> +				goto out_read_raw_unlock;
+> +			}
+> +
+> +			*val = be16_to_cpu(raw_val);
+> +			ret = IIO_VAL_INT;
+> +
+> +			goto out_read_raw_unlock;
+> +		default:
+> +			break;
+> +		}
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +
+> +out_read_raw_unlock:
+> +	mutex_unlock(&mpu3050->lock);
+> +	pm_runtime_mark_last_busy(mpu3050->dev);
+> +	pm_runtime_put_autosuspend(mpu3050->dev);
+> +
+> +	return ret;
+> +}
+> +
+> +static int mpu3050_write_raw(struct iio_dev *indio_dev,
+> +			     const struct iio_chan_spec *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	/*
+> +	 * Couldn't figure out a way to precalculate these at compile time.
+Do it on paper in advance? Or use a calculator and just document the
+calculation.
+> +	 */
+> +	unsigned int fs250 =
+> +		DIV_ROUND_CLOSEST(mpu3050_fs_precision[0] * 1000000,
+> +				  S16_MAX + 1);
+> +	unsigned int fs500 =
+> +		DIV_ROUND_CLOSEST(mpu3050_fs_precision[1] * 1000000,
+> +				  S16_MAX + 1);
+> +	unsigned int fs1000 =
+> +		DIV_ROUND_CLOSEST(mpu3050_fs_precision[2] * 1000000,
+> +				  S16_MAX + 1);
+> +	unsigned int fs2000 =
+> +		DIV_ROUND_CLOSEST(mpu3050_fs_precision[3] * 1000000,
+> +				  S16_MAX + 1);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_CALIBBIAS:
+> +		if (chan->type != IIO_ANGL_VEL)
+> +			return -EINVAL;
+> +		mpu3050->calibration[chan->scan_index-1] = val;
+> +		return 0;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (chan->type != IIO_ANGL_VEL)
+> +			return -EINVAL;
+> +		/*
+> +		 * We support +/-250, +/-500, +/-1000 and +/2000 deg/s
+> +		 * which means we need to round to the closest radians
+> +		 * which will be roughly +/-4.3, +/-8.7, +/-17.5, +/-35
+> +		 * rad/s. The scale is then for the 16 bits used to cover
+> +		 * it 1/(2^15+1) of that.
+> +		 */
+> +
+> +		/* Just too large, set the max range */
+> +		if (val != 0) {
+> +			mpu3050->fullscale = FS_2000_DPS;
+> +			return 0;
+> +		}
+> +
+> +		/*
+> +		 * Now we're dealing with fractions below zero in millirad/s
+> +		 * do some integer interpolation and match with the closest
+> +		 * fullscale in the table.
+> +		 */
+> +		if (val2 <= fs250 ||
+> +		    val2 < ((fs500 + fs250) / 2))
+> +			mpu3050->fullscale = FS_250_DPS;
+> +		else if (val2 <= fs500 ||
+> +			 val2 < ((fs1000 + fs500) / 2))
+> +			mpu3050->fullscale = FS_500_DPS;
+> +		else if (val2 <= fs1000 ||
+> +			 val2 < ((fs2000 + fs1000) / 2))
+> +			mpu3050->fullscale = FS_1000_DPS;
+> +		else
+> +			/* Catch-all */
+> +			mpu3050->fullscale = FS_2000_DPS;
+> +		return 0;
+> +	default:
+> +		break;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+These combined fifo / non fifo handlers always give
+me a headache. Do we actually need to support other triggers?
+We can if we have too poll the fifo counter in a thread to
+avoid the case of no interrupt wired. That would mean we can
+drop the triggers existence completely and have a nice simple
+bit of code?  I guess there are usecases for buffered capture
+at less than the full rate (when the rate is rather high as
+here) so we have to do this complexity.
 
-	#define STX104_IN_CHAN(chan, diff) {				\
-		.type = IIO_VOLTAGE,					\
-		.channel = chan,					\
-		.channel2 = chan,					\
-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-		.indexed = 1,						\
-		.output = 0,						\
-		.differential = diff					\
-	}
+I'm not sure there is a better way of doing it though so I
+guess we'll end up sticking with this.
 
-Where the IIO_CHAN_INFO_SCALE now exposes the gain setting affecting all
-analog inputs.
+> +static irqreturn_t mpu3050_trigger_handler(int irq, void *p)
+> +{
+> +	const struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	int ret;
+> +	/*
+> +	 * Temperature 1*16 bits
+> +	 * Three axes 3*16 bits
+> +	 * Timestamp 64 bits (4*16 bits)
+> +	 * Sum total 8*16 bits
+> +	 */
+> +	__be16 hw_values[8];
+> +	s64 timestamp;
+> +	unsigned int datums_from_fifo = 0;
+> +
+> +	/*
+> +	 * If we're using the hardware trigger, get the precise timestamp from
+> +	 * the top half of the threaded IRQ handler. Otherwise get the
+> +	 * timestamp here so it will be close in time to the actual values
+> +	 * read from the registers.
+> +	 */
+> +	if (mpu3050->hw_irq_trigger)
+> +		timestamp = mpu3050->hw_timestamp;
+> +	else
+> +		timestamp = iio_get_time_ns(indio_dev);
+> +
+> +	mutex_lock(&mpu3050->lock);
+> +
+> +	/* Using the hardware IRQ trigger? Check the buffer then. */
+> +	if (mpu3050->hw_irq_trigger) {
+> +		__be16 raw_fifocnt;
+> +		u16 fifocnt;
+> +		/* X, Y, Z + temperature */
+> +		unsigned int bytes_per_datum = 8;
+> +		bool fifo_overflow = false;
+> +
+> +		ret = regmap_bulk_read(mpu3050->map,
+> +				       MPU3050_FIFO_COUNT_H,
+> +				       &raw_fifocnt,
+> +				       sizeof(raw_fifocnt));
+> +		if (ret)
+> +			goto out_trigger_unlock;
+> +		fifocnt = be16_to_cpu(raw_fifocnt);
+> +
+> +		if (fifocnt == 512) {
+> +			dev_info(mpu3050->dev,
+> +				 "FIFO overflow! Emptying and resetting FIFO\n");
+> +			fifo_overflow = true;
+> +			/* Reset and enable the FIFO */
+> +			ret = regmap_update_bits(mpu3050->map,
+> +						 MPU3050_USR_CTRL,
+> +						 MPU3050_USR_CTRL_FIFO_EN |
+> +						 MPU3050_USR_CTRL_FIFO_RST,
+> +						 MPU3050_USR_CTRL_FIFO_EN |
+> +						 MPU3050_USR_CTRL_FIFO_RST);
+> +			if (ret) {
+> +				dev_info(mpu3050->dev, "error resetting FIFO\n");
+> +				goto out_trigger_unlock;
+> +			}
+> +			mpu3050->pending_fifo_footer = false;
+> +		}
+> +
+> +		if (fifocnt)
+> +			dev_dbg(mpu3050->dev,
+> +				"%d bytes in the FIFO\n",
+> +				fifocnt);
+> +
+> +		while (!fifo_overflow && fifocnt > bytes_per_datum) {
+> +			unsigned int toread;
+> +			unsigned int offset;
+> +			__be16 fifo_values[5];
+> +
+> +			/*
+> +			 * If there is a FIFO footer in the pipe, first clear
+> +			 * that out. This follows the complex algorithm in the
+> +			 * datasheet that states that you may never leave the
+> +			 * FIFO empty after the first reading: you have to
+> +			 * always leave two footer bytes in it. The footer is
+> +			 * in practice just two zero bytes.
+> +			 */
+> +			if (mpu3050->pending_fifo_footer) {
+> +				toread = bytes_per_datum + 2;
+> +				offset = 0;
+> +			} else {
+> +				toread = bytes_per_datum;
+> +				offset = 1;
+> +				fifo_values[0] = 0xAAAA;
+> +			}
+> +
+> +			ret = regmap_bulk_read(mpu3050->map,
+> +					       MPU3050_FIFO_R,
+> +					       &fifo_values[offset],
+> +					       toread);
+> +
+> +			dev_dbg(mpu3050->dev,
+> +				"%04x %04x %04x %04x %04x\n",
+> +				fifo_values[0],
+> +				fifo_values[1],
+> +				fifo_values[2],
+> +				fifo_values[3],
+> +				fifo_values[4]);
+> +
+> +			iio_push_to_buffers_with_timestamp(indio_dev,
+> +							   &fifo_values[1],
+> +							   timestamp);
+> +
+> +			fifocnt -= toread;
+> +			datums_from_fifo++;
+> +			mpu3050->pending_fifo_footer = true;
+> +
+> +			/*
+> +			 * If we're emptying the FIFO, just make sure to
+> +			 * check if something new appeared.
+> +			 */
+> +			if (fifocnt < bytes_per_datum) {
+> +				ret = regmap_bulk_read(mpu3050->map,
+> +						       MPU3050_FIFO_COUNT_H,
+> +						       &raw_fifocnt,
+> +						       sizeof(raw_fifocnt));
+> +				if (ret)
+> +					goto out_trigger_unlock;
+> +				fifocnt = be16_to_cpu(raw_fifocnt);
+> +			}
+> +
+> +			if (fifocnt < bytes_per_datum)
+> +				dev_dbg(mpu3050->dev,
+> +					"%d bytes left in the FIFO\n",
+> +					fifocnt);
+> +
+> +			/*
+> +			 * At this point, the timestamp that triggered the
+> +			 * hardware interrupt is no longer valid for what
+> +			 * we are reading (the interrupt likely fired for
+> +			 * the value on the top of the FIFO), so re-stamp
+> +			 * the time.
+> +			 */
+> +			timestamp = iio_get_time_ns(indio_dev);
+Hmm.  Normal trick when we have a hardware fifo is to not use
+triggers at all, but push directly to the buffer.
 
-Thanks,
+If we really want to do triggered handling then the next option is to use
+a timestamp set to 0 to indicate we don't actually know when the sample
+was generated (this is what the 6050 driver is doing - though in that
+case there is a local timestamp fifo to muddy the waters). Making one up
+here seems like a bad idea...
+> +		}
+> +	}
+> +
+> +	/*
+> +	 * If we picked some datums from the FIFO that's enough, else
+> +	 * fall through and just read from the current value registers.
+> +	 */
+> +	if (datums_from_fifo) {
+> +		dev_dbg(mpu3050->dev,
+> +			"read %d datums from the FIFO\n",
+> +			datums_from_fifo);
+> +		goto out_trigger_unlock;
+> +	}
+> +
+> +	ret = regmap_bulk_read(mpu3050->map,
+> +			       MPU3050_TEMP_H,
+> +			       &hw_values,
+> +			       sizeof(hw_values));
+So this is for the case where the (non device provided)
+trigger is running faster than the sampling frequency?
+Will result in duplicated data?  Perhaps a note to explain that.
+> +	if (ret) {
+> +		dev_err(mpu3050->dev,
+> +			"error reading axis data\n");
+> +		goto out_trigger_unlock;
+> +	}
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev,
+> +					   hw_values,
+> +					   timestamp);
+> +
+> +out_trigger_unlock:
+> +	mutex_unlock(&mpu3050->lock);
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static int mpu3050_buffer_preenable(struct iio_dev *indio_dev)
+> +{
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	pm_runtime_get_sync(mpu3050->dev);
+> +
+> +	/* Unless we have OUR trigger active, run at full speed */
+> +	if (!mpu3050->hw_irq_trigger)
+> +		return mpu3050_set_8khz_samplerate(mpu3050);
+> +
+> +	return 0;
+> +}
+> +
+> +static int mpu3050_buffer_postdisable(struct iio_dev *indio_dev)
+> +{
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	pm_runtime_mark_last_busy(mpu3050->dev);
+> +	pm_runtime_put_autosuspend(mpu3050->dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops mpu3050_buffer_setup_ops = {
+> +	.preenable = mpu3050_buffer_preenable,
+> +	.postenable = iio_triggered_buffer_postenable,
+> +	.predisable = iio_triggered_buffer_predisable,
+> +	.postdisable = mpu3050_buffer_postdisable,
+> +};
+> +
+> +static const struct iio_mount_matrix *
+> +mpu3050_get_mount_matrix(const struct iio_dev *indio_dev,
+> +			 const struct iio_chan_spec *chan)
+> +{
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	return &mpu3050->orientation;
+> +}
+> +
+> +static const struct iio_chan_spec_ext_info mpu3050_ext_info[] = {
+> +	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, mpu3050_get_mount_matrix),
+> +	{ },
+> +};
+> +
+> +#define MPU3050_AXIS_CHANNEL(axis, index)				\
+> +	{								\
+> +		.type = IIO_ANGL_VEL,					\
+> +		.modified = 1,						\
+> +		.channel2 = IIO_MOD_##axis,				\
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
+> +			BIT(IIO_CHAN_INFO_CALIBBIAS),			\
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +		.ext_info = mpu3050_ext_info,				\
+> +		.scan_index = index,					\
+> +		.scan_type = {						\
+> +			.sign = 's',					\
+> +			.realbits = 16,					\
+> +			.storagebits = 16,				\
+> +			.endianness = IIO_BE,				\
+> +		},							\
+> +	}
+> +
+> +static const struct iio_chan_spec mpu3050_channels[] = {
+> +	{
+> +		.type = IIO_TEMP,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> +				      BIT(IIO_CHAN_INFO_SCALE) |
+> +				      BIT(IIO_CHAN_INFO_OFFSET),
+> +		.scan_index = 0,
+> +		.scan_type = {
+> +			.sign = 's',
+> +			.realbits = 16,
+> +			.storagebits = 16,
+> +			.endianness = IIO_BE,
+> +		},
+> +	},
+> +	MPU3050_AXIS_CHANNEL(X, 1),
+> +	MPU3050_AXIS_CHANNEL(Y, 2),
+> +	MPU3050_AXIS_CHANNEL(Z, 3),
+> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+> +};
+> +
+> +/* Four channels apart from timestamp, scan mask = 0x0f */
+> +static const unsigned long mpu3050_scan_masks[] = { 0xf, 0 };
+> +
+> +static ssize_t mpu3050_write_frequency(struct device *dev,
+> +				       struct device_attribute *attr,
+> +				       const char *buf, size_t len)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	ret = kstrtouint(buf, 10, &val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* The max samplerate is 8000 Hz, the minimum 1000 / 256 ~= 4 Hz */
+> +	if (val < 4 || val > 8000)
+> +		return -EINVAL;
+> +
+> +	/*
+> +	 * Above 1000 Hz we must turn off the digital low pass filter so we
+> +	 * get a base frequency of 8kHz to the divider
+> +	 */
+> +	if (val > 1000) {
+> +		mpu3050->lpf = LPF_256_HZ_NOLPF;
+> +		mpu3050->divisor = DIV_ROUND_CLOSEST(8000, val) - 1;
+> +		return len;
+> +	}
+> +
+> +	mpu3050->lpf = LPF_188_HZ;
+> +	mpu3050->divisor = DIV_ROUND_CLOSEST(1000, val) - 1;
+> +	return len;
+> +}
+> +
+> +static ssize_t mpu3050_read_frequency(struct device *dev,
+> +				      struct device_attribute *attr,
+> +				      char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	return sprintf(buf, "%d\n", mpu3050_get_freq(mpu3050));
+> +}
+> +
+> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> +			      mpu3050_read_frequency,
+> +			      mpu3050_write_frequency);
 
-William Breathitt Gray
+Why not through the read_raw callback?  Need a very good reason to
+not use that for standard info_mask elements.  This prevents
+consumer drivers being able to read or set the sampling frequency.
+
+> +
+> +/*
+> + * These are just the hardcoded factors resulting from the more elaborate
+> + * calculations done with fractions in the scale raw get/set functions.
+> + */
+> +static IIO_CONST_ATTR(anglevel_scale_available,
+> +		      "0.000122070 "
+> +		      "0.000274658 "
+> +		      "0.000518798 "
+> +		      "0.001068115");
+> +
+> +static struct attribute *mpu3050_attributes[] = {
+> +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+> +	&iio_const_attr_anglevel_scale_available.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+> +static const struct attribute_group mpu3050_attribute_group = {
+> +	.attrs = mpu3050_attributes,
+> +};
+> +
+> +static const struct iio_info mpu3050_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = mpu3050_read_raw,
+> +	.write_raw = mpu3050_write_raw,
+> +	.attrs = &mpu3050_attribute_group,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +/**
+> + * mpu3050_read_mem() - read MPU-3050 internal memory
+> + * @mpu3050: device to read from
+> + * @bank: target bank
+> + * @addr: target address
+> + * @len: number of bytes
+> + * @buf: the buffer to store the read bytes in
+> + */
+> +static int mpu3050_read_mem(struct mpu3050 *mpu3050,
+> +			    u8 bank,
+> +			    u8 addr,
+> +			    u8 len,
+> +			    u8 *buf)
+> +{
+> +	int ret;
+> +
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_BANK_SEL,
+> +			   bank);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_MEM_START_ADDR,
+> +			   addr);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return regmap_bulk_read(mpu3050->map,
+> +				MPU3050_MEM_R_W,
+> +				buf,
+> +				len);
+> +}
+> +
+> +static int mpu3050_hw_init(struct mpu3050 *mpu3050)
+> +{
+> +	int ret;
+> +	u8 otp[8];
+> +
+> +	/* Reset */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_PWR_MGM,
+> +				 MPU3050_PWR_MGM_RESET,
+> +				 MPU3050_PWR_MGM_RESET);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Turn on the PLL */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_PWR_MGM,
+> +				 MPU3050_PWR_MGM_CLKSEL_MASK,
+> +				 MPU3050_PWR_MGM_PLL_Z);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Disable IRQs */
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_INT_CFG,
+> +			   0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Read out the 8 bytes of OTP (one-time-programmable) memory */
+> +	ret = mpu3050_read_mem(mpu3050,
+> +			       (MPU3050_MEM_PRFTCH |
+> +				MPU3050_MEM_USER_BANK |
+> +				MPU3050_MEM_OTP_BANK_0),
+> +			       0,
+> +			       sizeof(otp),
+> +			       otp);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* This is device-unique data so it goes into the entropy pool */
+> +	add_device_randomness(otp, sizeof(otp));
+> +
+> +	dev_info(mpu3050->dev,
+> +		 "die ID: %04X, wafer ID: %02X, A lot ID: %04X, "
+> +		 "W lot ID: %03X, WP ID: %01X, rev ID: %02X\n",
+> +		 /* Die ID, bits 0-12 */
+> +		 (otp[1] << 8 | otp[0]) & 0x1fff,
+> +		 /* Wafer ID, bits 13-17 */
+> +		 ((otp[2] << 8 | otp[1]) & 0x03e0) >> 5,
+> +		 /* A lot ID, bits 18-33 */
+> +		 ((otp[4] << 16 | otp[3] << 8 | otp[2]) & 0x3fffc) >> 2,
+> +		 /* W lot ID, bits 34-45 */
+> +		 ((otp[5] << 8 | otp[4]) & 0x3ffc) >> 2,
+> +		 /* WP ID, bits 47-49 */
+> +		 ((otp[6] << 8 | otp[5]) & 0x0380) >> 7,
+> +		 /* rev ID, bits 50-55 */
+> +		 otp[6] >> 2);
+> +
+> +	return 0;
+> +}
+> +
+> +int mpu3050_power_up(struct mpu3050 *mpu3050)
+> +{
+> +	int ret;
+> +
+> +	ret = regulator_bulk_enable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
+> +	if (ret) {
+> +		dev_err(mpu3050->dev, "Cannot enable regulators\n");
+> +		return ret;
+> +	}
+> +	/*
+> +	 * 20-100 ms start-up time for register read/write according to
+> +	 * the datasheet, be on the safe side and wait 200 ms.
+> +	 */
+> +	msleep(200);
+> +
+> +	/* Take device out of sleep mode */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_PWR_MGM,
+> +				 MPU3050_PWR_MGM_SLEEP,
+> +				 0);
+> +	if (ret) {
+> +		dev_err(mpu3050->dev, "error setting power mode\n");
+> +		return ret;
+> +	}
+> +	msleep(10);
+> +
+> +	return 0;
+> +}
+> +
+> +int mpu3050_power_down(struct mpu3050 *mpu3050)
+> +{
+> +	int ret;
+> +
+> +	/*
+> +	 * Put MPU-3050 into sleep mode before cutting regulators.
+> +	 * This is important, because we may not be the sole user
+> +	 * of the regulator so the power may stay on after this, and
+> +	 * then we would be wasting power unless we go to sleep mode
+> +	 * first.
+> +	 */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_PWR_MGM,
+> +				 MPU3050_PWR_MGM_SLEEP,
+> +				 MPU3050_PWR_MGM_SLEEP);
+> +	if (ret)
+> +		dev_err(mpu3050->dev, "error putting MPU-3050 to sleep\n");
+> +
+> +	ret = regulator_bulk_disable(ARRAY_SIZE(mpu3050->regs), mpu3050->regs);
+> +	if (ret)
+> +		dev_err(mpu3050->dev, "error disable MPU-3050 regulators\n");
+> +
+> +	return 0;
+> +}
+> +
+> +static irqreturn_t mpu3050_irq_handler(int irq, void *p)
+> +{
+> +	struct iio_trigger *trig = p;
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	if (!mpu3050->hw_irq_trigger)
+> +		return IRQ_NONE;
+> +
+> +	/* Get the time stamp as close in time as possible */
+> +	mpu3050->hw_timestamp = iio_get_time_ns(indio_dev);
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+> +static irqreturn_t mpu3050_irq_thread(int irq, void *p)
+> +{
+> +	struct iio_trigger *trig = p;
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	/* ACK IRQ and check if it was from us */
+> +	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+> +	if (ret) {
+> +		dev_err(mpu3050->dev, "error reading IRQ status\n");
+> +		return IRQ_HANDLED;
+> +	}
+> +	if (!(val & MPU3050_INT_STATUS_RAW_RDY))
+> +		return IRQ_NONE;
+> +
+> +	iio_trigger_poll_chained(p);
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +/**
+> + * mpu3050_drdy_trigger_set_state() - set data ready interrupt state
+> + * @trig: trigger instance
+> + * @enable: true if trigger should be enabled, false to disable
+> + */
+> +static int mpu3050_drdy_trigger_set_state(struct iio_trigger *trig,
+> +					  bool enable)
+> +{
+> +	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	/* Disabling trigger: disable interrupt and return */
+> +	if (!enable) {
+> +		/* Disable all interrupts */
+> +		ret = regmap_write(mpu3050->map,
+> +				   MPU3050_INT_CFG,
+> +				   0);
+> +		if (ret)
+> +			dev_err(mpu3050->dev, "error disabling IRQ\n");
+> +
+> +		/* Clear IRQ flag */
+> +		ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+> +		if (ret)
+> +			dev_err(mpu3050->dev, "error clearing IRQ status\n");
+> +
+> +		/* Disable all things in the FIFO and reset it */
+> +		ret = regmap_write(mpu3050->map,
+> +				   MPU3050_FIFO_EN,
+> +				   0);
+> +		if (ret)
+> +			dev_err(mpu3050->dev, "error disabling FIFO\n");
+> +
+> +		ret = regmap_write(mpu3050->map,
+> +				   MPU3050_USR_CTRL,
+> +				   MPU3050_USR_CTRL_FIFO_RST);
+> +		if (ret)
+> +			dev_err(mpu3050->dev, "error resetting FIFO\n");
+> +
+> +		pm_runtime_mark_last_busy(mpu3050->dev);
+> +		pm_runtime_put_autosuspend(mpu3050->dev);
+> +		mpu3050->hw_irq_trigger = false;
+> +		return 0;
+> +	}
+> +
+> +	/* Else we're enabling the trigger from this point */
+> +	pm_runtime_get_sync(mpu3050->dev);
+> +	mpu3050->hw_irq_trigger = true;
+> +
+> +	/* Disable all things in the FIFO */
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_FIFO_EN,
+> +			   0);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Reset and enable the FIFO */
+> +	ret = regmap_update_bits(mpu3050->map,
+> +				 MPU3050_USR_CTRL,
+> +				 MPU3050_USR_CTRL_FIFO_EN |
+> +				 MPU3050_USR_CTRL_FIFO_RST,
+> +				 MPU3050_USR_CTRL_FIFO_EN |
+> +				 MPU3050_USR_CTRL_FIFO_RST);
+> +	if (ret)
+> +		return ret;
+> +
+> +	mpu3050->pending_fifo_footer = false;
+> +
+> +	/* Turn on the FIFO for temp+X+Y+Z */
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_FIFO_EN,
+> +			   MPU3050_FIFO_EN_TEMP_OUT |
+> +			   MPU3050_FIFO_EN_GYRO_XOUT |
+> +			   MPU3050_FIFO_EN_GYRO_YOUT |
+> +			   MPU3050_FIFO_EN_GYRO_ZOUT |
+> +			   MPU3050_FIFO_EN_FOOTER);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Configure the sample engine */
+> +	ret = mpu3050_start_sampling(mpu3050);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Clear IRQ flag */
+> +	ret = regmap_read(mpu3050->map, MPU3050_INT_STATUS, &val);
+> +	if (ret)
+> +		dev_err(mpu3050->dev, "error clearing IRQ status\n");
+> +
+> +	/* Give us interrupts whenever there is new data ready */
+> +	val = MPU3050_INT_RAW_RDY_EN;
+> +
+> +	if (mpu3050->irq_actl)
+> +		val |= MPU3050_INT_ACTL;
+> +	if (mpu3050->irq_latch)
+> +		val |= MPU3050_INT_LATCH_EN;
+> +	if (mpu3050->irq_opendrain)
+> +		val |= MPU3050_INT_OPEN;
+> +
+> +	ret = regmap_write(mpu3050->map,
+> +			   MPU3050_INT_CFG,
+> +			   val);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_trigger_ops mpu3050_trigger_ops = {
+> +	.owner = THIS_MODULE,
+> +	.set_trigger_state = mpu3050_drdy_trigger_set_state,
+> +};
+> +
+> +static int mpu3050_trigger_probe(struct iio_dev *indio_dev, int irq)
+> +{
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +	unsigned long irq_trig;
+> +	int ret;
+> +
+> +	mpu3050->trig = devm_iio_trigger_alloc(&indio_dev->dev,
+> +					       "%s-dev%d",
+> +					       indio_dev->name,
+> +					       indio_dev->id);
+> +	if (!mpu3050->trig)
+> +		return -ENOMEM;
+> +
+> +	/* Check if IRQ is open drain */
+> +	if (of_property_read_bool(mpu3050->dev->of_node, "drive-open-drain"))
+> +		mpu3050->irq_opendrain = true;
+> +
+> +	irq_trig = irqd_get_trigger_type(irq_get_irq_data(irq));
+> +	/*
+> +	 * Configure the interrupt generator hardware to supply whatever
+> +	 * the interrupt is configured for, edges low/high level low/high,
+> +	 * we can provide it all.
+> +	 */
+> +	switch (irq_trig) {
+> +	case IRQF_TRIGGER_RISING:
+> +		dev_info(&indio_dev->dev,
+> +			 "pulse interrupts on the rising edge\n");
+> +		if (mpu3050->irq_opendrain) {
+> +			dev_info(&indio_dev->dev,
+> +				 "rising edge incompatible with open drain\n");
+> +			mpu3050->irq_opendrain = false;
+> +		}
+> +		break;
+> +	case IRQF_TRIGGER_FALLING:
+> +		mpu3050->irq_actl = true;
+> +		dev_info(&indio_dev->dev,
+> +			 "pulse interrupts on the falling edge\n");
+> +		break;
+> +	case IRQF_TRIGGER_HIGH:
+> +		mpu3050->irq_latch = true;
+> +		dev_info(&indio_dev->dev,
+> +			 "interrupts active high level\n");
+> +		if (mpu3050->irq_opendrain) {
+> +			dev_info(&indio_dev->dev,
+> +				 "active high incompatible with open drain\n");
+> +			mpu3050->irq_opendrain = false;
+> +		}
+> +		/*
+> +		 * With level IRQs, we mask the IRQ until it is processed,
+> +		 * but with edge IRQs (pulses) we can queue several interrupts
+> +		 * in the top half.
+> +		 */
+> +		irq_trig |= IRQF_ONESHOT;
+> +		break;
+> +	case IRQF_TRIGGER_LOW:
+> +		mpu3050->irq_latch = true;
+> +		mpu3050->irq_actl = true;
+> +		irq_trig |= IRQF_ONESHOT;
+> +		dev_info(&indio_dev->dev,
+> +			 "interrupts active low level\n");
+> +		break;
+> +	default:
+> +		/* This is the most preferred mode, if possible */
+> +		dev_err(&indio_dev->dev,
+> +			"unsupported IRQ trigger specified (%lx), enforce "
+> +			"rising edge\n", irq_trig);
+> +		irq_trig = IRQF_TRIGGER_RISING;
+> +		break;
+> +	}
+> +
+> +	/* An open drain line can be shared with several devices */
+> +	if (mpu3050->irq_opendrain)
+> +		irq_trig |= IRQF_SHARED;
+> +
+> +	ret = request_threaded_irq(irq,
+> +				   mpu3050_irq_handler,
+> +				   mpu3050_irq_thread,
+> +				   irq_trig,
+> +				   mpu3050->trig->name,
+> +				   mpu3050->trig);
+> +	if (ret) {
+> +		dev_err(mpu3050->dev,
+> +			"can't get IRQ %d, error %d\n", irq, ret);
+> +		return ret;
+> +	}
+> +
+> +	mpu3050->irq = irq;
+> +	mpu3050->trig->dev.parent = mpu3050->dev;
+> +	mpu3050->trig->ops = &mpu3050_trigger_ops;
+> +	iio_trigger_set_drvdata(mpu3050->trig, indio_dev);
+> +
+> +	ret = iio_trigger_register(mpu3050->trig);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->trig = iio_trigger_get(mpu3050->trig);
+> +
+> +	return 0;
+> +}
+> +
+> +int mpu3050_common_probe(struct device *dev,
+> +			 struct regmap *map,
+> +			 int irq,
+> +			 const char *name)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct mpu3050 *mpu3050;
+> +	unsigned int val;
+> +	int ret;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*mpu3050));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +	mpu3050 = iio_priv(indio_dev);
+> +
+> +	mpu3050->dev = dev;
+> +	mpu3050->map = map;
+> +	mutex_init(&mpu3050->lock);
+> +	/* Default fullscale: 2000 degrees per second */
+> +	mpu3050->fullscale = FS_2000_DPS;
+> +	/* 1 kHz, divide by 100, default frequency = 10 Hz */
+> +	mpu3050->lpf = MPU3050_DLPF_CFG_188HZ;
+> +	mpu3050->divisor = 99;
+> +
+> +	/* Read the mounting matrix, if present */
+> +	ret = of_iio_read_mount_matrix(dev,
+> +				       "mount-matrix",
+> +				       &mpu3050->orientation);
+> +	if (ret)
+> +		return ret;
+> +
+> +	/* Fetch and turn on regulators */
+> +	mpu3050->regs[0].supply = mpu3050_reg_vdd;
+> +	mpu3050->regs[1].supply = mpu3050_reg_vlogic;
+> +	ret = devm_regulator_bulk_get(dev,
+> +				      ARRAY_SIZE(mpu3050->regs),
+> +				      mpu3050->regs);
+> +	if (ret) {
+> +		dev_err(dev, "Cannot get regulators\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = mpu3050_power_up(mpu3050);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = regmap_read(map, MPU3050_CHIP_ID_REG, &val);
+> +	if (ret) {
+> +		dev_err(dev, "could not read device ID\n");
+> +		ret = -ENXIO;
+> +
+> +		goto err_power_down;
+> +	}
+> +
+> +	if (val != MPU3050_CHIP_ID) {
+> +		dev_err(dev, "unsupported chip id %02x\n", (u8)val);
+> +		ret = -ENXIO;
+> +		goto err_power_down;
+> +	}
+> +
+> +	ret = regmap_read(map, MPU3050_PRODUCT_ID_REG, &val);
+> +	if (ret) {
+> +		dev_err(dev, "could not read device ID\n");
+> +		ret = -ENXIO;
+> +
+> +		goto err_power_down;
+> +	}
+> +	dev_info(dev, "found MPU-3050 part no: %d, version: %d\n",
+> +		 ((val >> 4) & 0xf), (val & 0xf));
+> +
+> +	ret = mpu3050_hw_init(mpu3050);
+> +	if (ret)
+> +		goto err_power_down;
+> +
+> +	indio_dev->dev.parent = dev;
+> +	indio_dev->channels = mpu3050_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(mpu3050_channels);
+> +	indio_dev->info = &mpu3050_info;
+> +	indio_dev->available_scan_masks = mpu3050_scan_masks;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->name = name;
+> +
+> +	ret = iio_triggered_buffer_setup(indio_dev,
+> +					 iio_pollfunc_store_time,
+> +					 mpu3050_trigger_handler,
+> +					 &mpu3050_buffer_setup_ops);
+> +	if (ret) {
+> +		dev_err(dev, "triggered buffer setup failed\n");
+> +		goto err_power_down;
+> +	}
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret) {
+> +		dev_err(dev, "device register failed\n");
+> +		goto err_cleanup_buffer;
+> +	}
+> +
+> +	dev_set_drvdata(dev, indio_dev);
+> +
+> +	/* Check if we have an assigned IRQ to use as trigger */
+> +	if (irq) {
+> +		ret = mpu3050_trigger_probe(indio_dev, irq);
+> +		if (ret)
+> +			dev_err(dev, "failed to register trigger\n");
+> +	}
+> +
+> +	/* Enable runtime PM */
+> +	pm_runtime_get_noresume(dev);
+> +	pm_runtime_set_active(dev);
+> +	pm_runtime_enable(dev);
+> +	/*
+> +	 * Set autosuspend to two orders of magnitude larger than the
+> +	 * start-up time. 100ms start-up time means 10000ms autosuspend,
+> +	 * i.e. 10 seconds.
+> +	 */
+> +	pm_runtime_set_autosuspend_delay(dev, 10000);
+> +	pm_runtime_use_autosuspend(dev);
+> +	pm_runtime_put(dev);
+> +
+> +	return 0;
+> +
+> +err_cleanup_buffer:
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +err_power_down:
+> +	mpu3050_power_down(mpu3050);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL(mpu3050_common_probe);
+> +
+> +int mpu3050_common_remove(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+> +	struct mpu3050 *mpu3050 = iio_priv(indio_dev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	iio_triggered_buffer_cleanup(indio_dev);
+> +	pm_runtime_get_sync(dev);
+> +	pm_runtime_put_noidle(dev);
+> +	pm_runtime_disable(dev);
+> +	mpu3050_power_down(mpu3050);
+> +	if (mpu3050->irq)
+> +		free_irq(mpu3050->irq, mpu3050);
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(mpu3050_common_remove);
+> +
+> +#ifdef CONFIG_PM
+> +static int mpu3050_runtime_suspend(struct device *dev)
+> +{
+> +	return mpu3050_power_down(iio_priv(dev_get_drvdata(dev)));
+> +}
+> +
+> +static int mpu3050_runtime_resume(struct device *dev)
+> +{
+> +	return mpu3050_power_up(iio_priv(dev_get_drvdata(dev)));
+> +}
+> +#endif /* CONFIG_PM */
+> +
+> +const struct dev_pm_ops mpu3050_dev_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> +				pm_runtime_force_resume)
+> +	SET_RUNTIME_PM_OPS(mpu3050_runtime_suspend,
+> +			   mpu3050_runtime_resume, NULL)
+> +};
+> +EXPORT_SYMBOL(mpu3050_dev_pm_ops);
+> +
+> +MODULE_AUTHOR("Linus Walleij");
+> +MODULE_DESCRIPTION("MPU3050 gyroscope driver");
+> +MODULE_LICENSE("GPL");
+> diff --git a/drivers/iio/gyro/mpu3050.h b/drivers/iio/gyro/mpu3050.h
+> new file mode 100644
+> index 000000000000..d50dce6b69e5
+> --- /dev/null
+> +++ b/drivers/iio/gyro/mpu3050.h
+> @@ -0,0 +1,221 @@
+> +#include <linux/iio/iio.h>
+> +#include <linux/mutex.h>
+> +#include <linux/regmap.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/i2c.h>
+> +
+> +#define MPU3050_CHIP_ID		0x69
+> +
+> +/*
+> + * Register map: anything suffixed *_H is a big-endian high byte and always
+> + * followed by the corresponding low byte (*_L) even though these are not
+> + * explicitly included in the register definitions.
+> + */
+> +#define MPU3050_CHIP_ID_REG	0x00
+> +#define MPU3050_PRODUCT_ID_REG	0x01
+> +#define MPU3050_XG_OFFS_TC	0x05
+> +#define MPU3050_YG_OFFS_TC	0x08
+> +#define MPU3050_ZG_OFFS_TC	0x0B
+> +#define MPU3050_X_OFFS_USRH	0x0C
+> +#define MPU3050_Y_OFFS_USRH	0x0E
+> +#define MPU3050_Z_OFFS_USRH	0x10
+> +#define MPU3050_FIFO_EN		0x12
+> +#define MPU3050_AUX_VDDIO	0x13
+> +#define MPU3050_SLV_ADDR	0x14
+> +#define MPU3050_SMPLRT_DIV	0x15
+> +#define MPU3050_DLPF_FS_SYNC	0x16
+> +#define MPU3050_INT_CFG		0x17
+> +#define MPU3050_AUX_ADDR	0x18
+> +#define MPU3050_INT_STATUS	0x1A
+> +#define MPU3050_TEMP_H		0x1B
+> +#define MPU3050_XOUT_H		0x1D
+> +#define MPU3050_YOUT_H		0x1F
+> +#define MPU3050_ZOUT_H		0x21
+> +#define MPU3050_DMP_CFG1	0x35
+> +#define MPU3050_DMP_CFG2	0x36
+> +#define MPU3050_BANK_SEL	0x37
+> +#define MPU3050_MEM_START_ADDR	0x38
+> +#define MPU3050_MEM_R_W		0x39
+> +#define MPU3050_FIFO_COUNT_H	0x3A
+> +#define MPU3050_FIFO_R		0x3C
+> +#define MPU3050_USR_CTRL	0x3D
+> +#define MPU3050_PWR_MGM		0x3E
+> +
+> +/* MPU memory bank read options */
+> +#define MPU3050_MEM_PRFTCH	BIT(5)
+> +#define MPU3050_MEM_USER_BANK	BIT(4)
+> +/* Bits 8-11 select memory bank */
+> +#define MPU3050_MEM_RAM_BANK_0	0
+> +#define MPU3050_MEM_RAM_BANK_1	1
+> +#define MPU3050_MEM_RAM_BANK_2	2
+> +#define MPU3050_MEM_RAM_BANK_3	3
+> +#define MPU3050_MEM_OTP_BANK_0	4
+> +
+> +#define MPU3050_AXIS_REGS(axis) (MPU3050_XOUT_H + (axis * 2))
+> +
+> +/* Register bits */
+> +
+> +/* FIFO Enable */
+> +#define MPU3050_FIFO_EN_FOOTER		BIT(0)
+> +#define MPU3050_FIFO_EN_AUX_ZOUT	BIT(1)
+> +#define MPU3050_FIFO_EN_AUX_YOUT	BIT(2)
+> +#define MPU3050_FIFO_EN_AUX_XOUT	BIT(3)
+> +#define MPU3050_FIFO_EN_GYRO_ZOUT	BIT(4)
+> +#define MPU3050_FIFO_EN_GYRO_YOUT	BIT(5)
+> +#define MPU3050_FIFO_EN_GYRO_XOUT	BIT(6)
+> +#define MPU3050_FIFO_EN_TEMP_OUT	BIT(7)
+> +
+> +/*
+> + * Digital Low Pass filter (DLPF)
+> + * Full Scale (FS)
+> + * and Synchronization
+> + */
+> +#define MPU3050_EXT_SYNC_NONE		0x00
+> +#define MPU3050_EXT_SYNC_TEMP		0x20
+> +#define MPU3050_EXT_SYNC_GYROX		0x40
+> +#define MPU3050_EXT_SYNC_GYROY		0x60
+> +#define MPU3050_EXT_SYNC_GYROZ		0x80
+> +#define MPU3050_EXT_SYNC_ACCELX	0xA0
+> +#define MPU3050_EXT_SYNC_ACCELY	0xC0
+> +#define MPU3050_EXT_SYNC_ACCELZ	0xE0
+> +#define MPU3050_EXT_SYNC_MASK		0xE0
+> +#define MPU3050_EXT_SYNC_SHIFT		5
+> +
+> +/**
+> + * enum mpu3050_fullscale - indicates the full range of the sensor in deg/sec
+> + */
+> +enum mpu3050_fullscale {
+> +	FS_250_DPS = 0,
+> +	FS_500_DPS,
+> +	FS_1000_DPS,
+> +	FS_2000_DPS,
+> +};
+> +#define MPU3050_FS_250DPS		0x00
+> +#define MPU3050_FS_500DPS		0x08
+> +#define MPU3050_FS_1000DPS		0x10
+> +#define MPU3050_FS_2000DPS		0x18
+> +#define MPU3050_FS_MASK			0x18
+> +#define MPU3050_FS_SHIFT		3
+> +
+> +/**
+> + * enum mpu3050_lpf - indicates the low pass filter width
+> + */
+> +enum mpu3050_lpf {
+> +	/* This implicity sets sample frequency to 8 kHz */
+> +	LPF_256_HZ_NOLPF = 0,
+> +	/* All others sets the sample frequenct to 1 kHz */
+frequency
+> +	LPF_188_HZ,
+> +	LPF_98_HZ,
+> +	LPF_42_HZ,
+> +	LPF_20_HZ,
+> +	LPF_10_HZ,
+> +	LPF_5_HZ,
+> +	LPF_2100_HZ_NOLPF,
+> +};
+> +
+> +#define MPU3050_DLPF_CFG_256HZ_NOLPF2	0x00
+> +#define MPU3050_DLPF_CFG_188HZ		0x01
+> +#define MPU3050_DLPF_CFG_98HZ		0x02
+> +#define MPU3050_DLPF_CFG_42HZ		0x03
+> +#define MPU3050_DLPF_CFG_20HZ		0x04
+> +#define MPU3050_DLPF_CFG_10HZ		0x05
+> +#define MPU3050_DLPF_CFG_5HZ		0x06
+> +#define MPU3050_DLPF_CFG_2100HZ_NOLPF	0x07
+> +#define MPU3050_DLPF_CFG_MASK		0x07
+> +#define MPU3050_DLPF_CFG_SHIFT		0
+> +
+> +/* Interrupt config */
+> +#define MPU3050_INT_RAW_RDY_EN		BIT(0)
+> +#define MPU3050_INT_DMP_DONE_EN		BIT(1)
+> +#define MPU3050_INT_MPU_RDY_EN		BIT(2)
+> +#define MPU3050_INT_ANYRD_2CLEAR	BIT(4)
+> +#define MPU3050_INT_LATCH_EN		BIT(5)
+> +#define MPU3050_INT_OPEN		BIT(6)
+> +#define MPU3050_INT_ACTL		BIT(7)
+> +/* Interrupt status */
+> +#define MPU3050_INT_STATUS_RAW_RDY	BIT(0)
+> +#define MPU3050_INT_STATUS_DMP_DONE	BIT(1)
+> +#define MPU3050_INT_STATUS_MPU_RDY	BIT(2)
+> +#define MPU3050_INT_STATUS_FIFO_OVFLW	BIT(7)
+> +/* USR_CTRL */
+> +#define MPU3050_USR_CTRL_FIFO_EN	BIT(6)
+> +#define MPU3050_USR_CTRL_AUX_IF_EN	BIT(5)
+> +#define MPU3050_USR_CTRL_AUX_IF_RST	BIT(3)
+> +#define MPU3050_USR_CTRL_FIFO_RST	BIT(1)
+> +#define MPU3050_USR_CTRL_GYRO_RST	BIT(0)
+> +/* PWR_MGM */
+> +#define MPU3050_PWR_MGM_PLL_X		0x01
+> +#define MPU3050_PWR_MGM_PLL_Y		0x02
+> +#define MPU3050_PWR_MGM_PLL_Z		0x03
+> +#define MPU3050_PWR_MGM_CLKSEL_MASK	0x07
+> +#define MPU3050_PWR_MGM_STBY_ZG		BIT(3)
+> +#define MPU3050_PWR_MGM_STBY_YG		BIT(4)
+> +#define MPU3050_PWR_MGM_STBY_XG		BIT(5)
+> +#define MPU3050_PWR_MGM_SLEEP		BIT(6)
+> +#define MPU3050_PWR_MGM_RESET		BIT(7)
+> +#define MPU3050_PWR_MGM_MASK		0xff
+> +
+> +enum mpu3050_axis {
+> +	AXIS_X = 0,
+> +	AXIS_Y,
+> +	AXIS_Z,
+> +	AXIS_MAX,
+> +};
+A lot of this stuff is not relevant to the _i2c.c file, so I'd
+flatten it into the main c file.
+> +
+> +/**
+> + * struct mpu3050 - instance state container for the device
+> + * @dev: parent device for this instance
+> + * @orientation: mounting matrix, flipped axis etc
+> + * @map: regmap to reach the registers
+> + * @lock: serialization lock to marshal all requests
+> + * @irq: the IRQ used for this device
+> + * @regs: the regulators to power this device
+> + * @fullscale: the current fullscale setting for the device
+> + * @lpf: digital low pass filter setting for the device
+> + * @divisor: base frequency divider: divides 8 or 1 kHz
+> + * @calibration: the three signed 16-bit calibration settings that
+> + * get written into the offset registers for each axis to compensate
+> + * for DC offsets
+> + * @trig: trigger for the MPU-3050 interrupt, if present
+> + * @hw_irq_trigger: hardware interrupt trigger is in use
+> + * @irq_actl: interrupt is active low
+> + * @irq_latch: latched IRQ, this means that it is a level IRQ
+> + * @irq_opendrain: the interrupt line shall be configured open drain
+> + * @pending_fifo_footer: tells us if there is a pending footer in the FIFO
+> + * that we have to read out first when handling the FIFO
+> + * @hw_timestamp: latest hardware timestamp from the trigger IRQ, when in
+> + * use
+> + * @i2cmux: an I2C mux reflecting the fact that this sensor is a hub with
+> + * a pass-through I2C interface coming out of it: this device needs to be
+> + * powered up in order to reach devices on the other side of this mux
+> + */
+> +struct mpu3050 {
+> +	struct device *dev;
+> +	struct iio_mount_matrix orientation;
+> +	struct regmap *map;
+> +	struct mutex lock;
+> +	int irq;
+> +	struct regulator_bulk_data regs[2];
+> +	enum mpu3050_fullscale fullscale;
+> +	enum mpu3050_lpf lpf;
+> +	u8 divisor;
+> +	s16 calibration[3];
+> +	struct iio_trigger *trig;
+> +	bool hw_irq_trigger;
+> +	bool irq_actl;
+> +	bool irq_latch;
+> +	bool irq_opendrain;
+> +	bool pending_fifo_footer;
+> +	s64 hw_timestamp;
+> +	struct i2c_mux_core *i2cmux;
+> +};
+> +
+> +/* Probe called from different transports */
+> +int mpu3050_common_probe(struct device *dev,
+> +			 struct regmap *map,
+> +			 int irq,
+> +			 const char *name);
+> +int mpu3050_common_remove(struct device *dev);
+> +
+> +/* PM ops */
+> +extern const struct dev_pm_ops mpu3050_dev_pm_ops;
+> 
+
