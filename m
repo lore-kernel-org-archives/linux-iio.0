@@ -1,83 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51255 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51275 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752189AbcHULV7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 07:21:59 -0400
-Subject: Re: [PATCH v2] iio: fix sched WARNING "do not call blocking ops when
- !TASK_RUNNING"
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Brian Norris <briannorris@chromium.org>
-References: <20160802011244.GA54171@google.com>
- <37ea974c-9ac6-5a40-0f0e-ee34ef605a08@metafoo.de>
- <20160802165732.GA3310@localhost>
- <9a6a7f54-0343-db74-57a2-9f747ae659cc@metafoo.de>
- <20160804082621.GA11331@localhost> <20160809001937.GA23658@google.com>
- <f1206fbd-3c04-32b5-a898-86c3248661d2@kernel.org>
- <ca1428a5-9fa2-2de1-0d09-85d6c02cbf34@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        with ESMTP id S1752443AbcHULYm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 07:24:42 -0400
+Subject: Re: [PATCH] staging: iio: ade7854: checkpatch fixes
+To: Johanna Abrahamsson <johanna@mjao.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Guenter Roeck <linux@roeck-us.net>,
-        Brian Norris <computersforpeace@gmail.com>,
-        Peter Zijlstra <peterz@infradead.org>,
-        Ingo Molnar <mingo@kernel.org>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20160816130254.GA9657@fedora-21-dvm>
+Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7e9386ee-176d-6959-9950-6f4c967921e4@kernel.org>
-Date: Sun, 21 Aug 2016 12:21:55 +0100
+Message-ID: <f405eb36-0d8b-f6a8-8676-a300e9b7bb74@kernel.org>
+Date: Sun, 21 Aug 2016 12:24:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <ca1428a5-9fa2-2de1-0d09-85d6c02cbf34@metafoo.de>
+In-Reply-To: <20160816130254.GA9657@fedora-21-dvm>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/08/16 16:27, Lars-Peter Clausen wrote:
-> On 08/15/2016 05:54 PM, Jonathan Cameron wrote:
->> On 09/08/16 01:19, Brian Norris wrote:
->>> When using CONFIG_DEBUG_ATOMIC_SLEEP, the scheduler nicely points out
->>> that we're calling sleeping primitives within the wait_event loop, which
->>> means we might clobber the task state:
->>>
->>> [   10.831289] do not call blocking ops when !TASK_RUNNING; state=1 set at [<ffffffc00026b610>]
->>> [   10.845531] ------------[ cut here ]------------
->>> [   10.850161] WARNING: at kernel/sched/core.c:7630
->>> ...
->>> [   12.164333] ---[ end trace 45409966a9a76438 ]---
->>> [   12.168942] Call trace:
->>> [   12.171391] [<ffffffc00024ed44>] __might_sleep+0x64/0x90
->>> [   12.176699] [<ffffffc000954774>] mutex_lock_nested+0x50/0x3fc
->>> [   12.182440] [<ffffffc0007b9424>] iio_kfifo_buf_data_available+0x28/0x4c
->>> [   12.189043] [<ffffffc0007b76ac>] iio_buffer_ready+0x60/0xe0
->>> [   12.194608] [<ffffffc0007b7834>] iio_buffer_read_first_n_outer+0x108/0x1a8
->>> [   12.201474] [<ffffffc000370d48>] __vfs_read+0x58/0x114
->>> [   12.206606] [<ffffffc000371740>] vfs_read+0x94/0x118
->>> [   12.211564] [<ffffffc0003720f8>] SyS_read+0x64/0xb4
->>> [   12.216436] [<ffffffc000203cb4>] el0_svc_naked+0x24/0x28
->>>
->>> To avoid this, we should (a la https://lwn.net/Articles/628628/) use the
->>> wait_woken() function, which avoids the nested sleeping while still
->>> handling races between waiting / wake-events.
->>>
->>> Signed-off-by: Brian Norris <briannorris@chromium.org>
->> Looks good to me, but given Lars' involvement in the discussion I'd
->> like his review before applying this.
+On 16/08/16 14:02, Johanna Abrahamsson wrote:
+> CHECK: Alignment should match open parenthesis
 > 
-> Looks good. Thanks Brian for fixing this.
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-I've applied to this to the fixes-togreg branch of iio.git
+> Signed-off-by: Johanna Abrahamsson <johanna@mjao.org>
+Hi Johanna,
 
-For now I haven't marked it for stable, purely because I'm not sure
-when the first 'problem' usage was introduced.  I'm happy to explicitly
-send a request for stable inclusion if anyone wants to track down
-which stable trees this is applicable to.
+I'd have preferred the title to mention that this was alignment
+fixups. Otherwise, nice little cleanup.
 
-I've very low on time today (holiday catch up) so won't get to
-dig into it myself for a at least a few weeks.
+Applied to the togreg branch of iio.git - which
+will initially be pushed out as testing for the autobuilders to
+play with it.
+
+Thanks,
 
 Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+>  drivers/staging/iio/meter/ade7854.c | 40 ++++++++++++++++++-------------------
+>  1 file changed, 20 insertions(+), 20 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/meter/ade7854.c b/drivers/staging/iio/meter/ade7854.c
+> index 75e8685..24edbc3 100644
+> --- a/drivers/staging/iio/meter/ade7854.c
+> +++ b/drivers/staging/iio/meter/ade7854.c
+> @@ -23,8 +23,8 @@
+>  #include "ade7854.h"
+>  
+>  static ssize_t ade7854_read_8bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		char *buf)
+> +				 struct device_attribute *attr,
+> +				 char *buf)
+>  {
+>  	int ret;
+>  	u8 val = 0;
+> @@ -40,8 +40,8 @@ static ssize_t ade7854_read_8bit(struct device *dev,
+>  }
+>  
+>  static ssize_t ade7854_read_16bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		char *buf)
+> +				  struct device_attribute *attr,
+> +				  char *buf)
+>  {
+>  	int ret;
+>  	u16 val = 0;
+> @@ -57,8 +57,8 @@ static ssize_t ade7854_read_16bit(struct device *dev,
+>  }
+>  
+>  static ssize_t ade7854_read_24bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		char *buf)
+> +				  struct device_attribute *attr,
+> +				  char *buf)
+>  {
+>  	int ret;
+>  	u32 val;
+> @@ -74,8 +74,8 @@ static ssize_t ade7854_read_24bit(struct device *dev,
+>  }
+>  
+>  static ssize_t ade7854_read_32bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		char *buf)
+> +				  struct device_attribute *attr,
+> +				  char *buf)
+>  {
+>  	int ret;
+>  	u32 val = 0;
+> @@ -91,9 +91,9 @@ static ssize_t ade7854_read_32bit(struct device *dev,
+>  }
+>  
+>  static ssize_t ade7854_write_8bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		const char *buf,
+> -		size_t len)
+> +				  struct device_attribute *attr,
+> +				  const char *buf,
+> +				  size_t len)
+>  {
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> @@ -112,9 +112,9 @@ error_ret:
+>  }
+>  
+>  static ssize_t ade7854_write_16bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		const char *buf,
+> -		size_t len)
+> +				   struct device_attribute *attr,
+> +				   const char *buf,
+> +				   size_t len)
+>  {
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> @@ -133,9 +133,9 @@ error_ret:
+>  }
+>  
+>  static ssize_t ade7854_write_24bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		const char *buf,
+> -		size_t len)
+> +				   struct device_attribute *attr,
+> +				   const char *buf,
+> +				   size_t len)
+>  {
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> @@ -154,9 +154,9 @@ error_ret:
+>  }
+>  
+>  static ssize_t ade7854_write_32bit(struct device *dev,
+> -		struct device_attribute *attr,
+> -		const char *buf,
+> -		size_t len)
+> +				   struct device_attribute *attr,
+> +				   const char *buf,
+> +				   size_t len)
+>  {
+>  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
 > 
 
