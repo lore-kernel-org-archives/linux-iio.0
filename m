@@ -1,68 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52882 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52892 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752011AbcHUSg7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:36:59 -0400
-Subject: Re: [PATCH] iio: humidity: am2315: Select IIO_TRIGGERED_BUFFER to
- prevent build errors
-To: Mika Westerberg <mika.westerberg@linux.intel.com>,
-        linux-iio@vger.kernel.org
-References: <1471529118-81255-1-git-send-email-mika.westerberg@linux.intel.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Tiberiu Breana <tiberiu.a.breana@intel.com>
+        with ESMTP id S1752011AbcHUSiD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 14:38:03 -0400
+Subject: Re: [PATCH v2] iio: magnetometer: mag3110: claim direct mode during
+ raw reads
+To: Alison Schofield <amsfield22@gmail.com>
+References: <20160818160849.GA21203@d830.WORKGROUP>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <db3ee142-4395-eeb6-389d-918e857adca2@kernel.org>
-Date: Sun, 21 Aug 2016 19:36:57 +0100
+Message-ID: <f69f16a6-0d51-3211-81e3-16580817572d@kernel.org>
+Date: Sun, 21 Aug 2016 19:38:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471529118-81255-1-git-send-email-mika.westerberg@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160818160849.GA21203@d830.WORKGROUP>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/08/16 15:05, Mika Westerberg wrote:
-> Commit 0d96d5ead3f7 ("iio: humidity: Add triggered buffer support for
-> AM2315") added support for triggered buffers but those are only available
-> when IIO_TRIGGERED_BUFFER is selected. Currently we get warnings like:
+On 18/08/16 17:09, Alison Schofield wrote:
+> Driver was checking for direct mode but not locking it.  Use
+> claim/release helper functions to guarantee the device stays
+> in direct mode during raw reads.
 > 
->   drivers/iio/humidity/am2315.c: In function ‘am2315_trigger_handler’:
->   drivers/iio/humidity/am2315.c:186:2: error: implicit declaration of function
->     ‘iio_push_to_buffers_with_timestamp’ [-Werror=implicit-function-declaration]
->     ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
->   cc1: some warnings being treated as errors
->   scripts/Makefile.build:289: recipe for target 'drivers/iio/humidity/am2315.o' failed
-> 
-> Furthermore linking the kernel executable fails because triggered buffer
-> functions are never build.
-> 
-> Fix this by selecting IIO_TRIGGERED_BUFFER and IIO_BUFFER when the driver is
-> enabled.
-> 
-> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
-Hi Mika,
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Applied to the togreg branch of iio.git. Initially pushed
+out as testing for the autobuilders to play with it.
 
-I already have a patch queued up for this bug.  Just been on holiday so
-running a bit behind with getting things upstream. Should go in the
-next few days.
+Thanks,
 
 Jonathan
 > ---
->  drivers/iio/humidity/Kconfig | 2 ++
->  1 file changed, 2 insertions(+)
+> Changes in v2:
+>  added breaks in switch to prevent fall through
 > 
-> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> index 738a86d9e4a9..d04124345992 100644
-> --- a/drivers/iio/humidity/Kconfig
-> +++ b/drivers/iio/humidity/Kconfig
-> @@ -6,6 +6,8 @@ menu "Humidity sensors"
->  config AM2315
->      tristate "Aosong AM2315 relative humidity and temperature sensor"
->      depends on I2C
-> +    select IIO_BUFFER
-> +    select IIO_TRIGGERED_BUFFER
->      help
->        If you say yes here you get support for the Aosong AM2315
->        relative humidity and ambient temperature sensor.
+>  drivers/iio/magnetometer/mag3110.c | 23 +++++++++++++++--------
+>  1 file changed, 15 insertions(+), 8 deletions(-)
+> 
+> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+> index f2be4a0..f2b3bd7 100644
+> --- a/drivers/iio/magnetometer/mag3110.c
+> +++ b/drivers/iio/magnetometer/mag3110.c
+> @@ -154,34 +154,41 @@ static int mag3110_read_raw(struct iio_dev *indio_dev,
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (iio_buffer_enabled(indio_dev))
+> -			return -EBUSY;
+> +		ret = iio_device_claim_direct_mode(indio_dev);
+> +		if (ret)
+> +			return ret;
+>  
+>  		switch (chan->type) {
+>  		case IIO_MAGN: /* in 0.1 uT / LSB */
+>  			ret = mag3110_read(data, buffer);
+>  			if (ret < 0)
+> -				return ret;
+> +				goto release;
+>  			*val = sign_extend32(
+>  				be16_to_cpu(buffer[chan->scan_index]), 15);
+> -			return IIO_VAL_INT;
+> +			ret = IIO_VAL_INT;
+> +			break;
+>  		case IIO_TEMP: /* in 1 C / LSB */
+>  			mutex_lock(&data->lock);
+>  			ret = mag3110_request(data);
+>  			if (ret < 0) {
+>  				mutex_unlock(&data->lock);
+> -				return ret;
+> +				goto release;
+>  			}
+>  			ret = i2c_smbus_read_byte_data(data->client,
+>  				MAG3110_DIE_TEMP);
+>  			mutex_unlock(&data->lock);
+>  			if (ret < 0)
+> -				return ret;
+> +				goto release;
+>  			*val = sign_extend32(ret, 7);
+> -			return IIO_VAL_INT;
+> +			ret = IIO_VAL_INT;
+> +			break;
+>  		default:
+> -			return -EINVAL;
+> +			ret = -EINVAL;
+>  		}
+> +release:
+> +		iio_device_release_direct_mode(indio_dev);
+> +		return ret;
+> +
+>  	case IIO_CHAN_INFO_SCALE:
+>  		switch (chan->type) {
+>  		case IIO_MAGN:
 > 
 
