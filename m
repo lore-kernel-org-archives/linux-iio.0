@@ -1,47 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:33672 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752174AbcHUUfl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 21 Aug 2016 16:35:41 -0400
-Subject: Re: [PATCH] iio: ad5755: fix off-by-one on devnr limit check
-To: Jonathan Cameron <jic23@kernel.org>,
-        Colin King <colin.king@canonical.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-References: <1469486401-17839-1-git-send-email-colin.king@canonical.com>
- <1efdfc25-b13d-c383-2346-75b414b32081@kernel.org>
-Cc: linux-kernel@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <3ed48869-735a-002b-d89e-b1a694d19b6e@metafoo.de>
-Date: Sun, 21 Aug 2016 22:07:33 +0200
+Received: from mailgw01.mediatek.com ([218.249.47.110]:37598 "EHLO
+        mailgw01.mediatek.com" rhost-flags-OK-FAIL-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1754321AbcHVGWV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2016 02:22:21 -0400
+Message-ID: <1471846928.16635.3.camel@mhfsdcap03>
+Subject: Re: [PATCH v7 3/3] arm: dts: mt2701: Add auxadc node.
+From: zhiyong tao <zhiyong.tao@mediatek.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <robh+dt@kernel.org>, <knaack.h@gmx.de>, <lars@metafoo.de>,
+        <pmeerw@pmeerw.net>, <srv_heupstream@mediatek.com>,
+        <liguo.zhang@mediatek.com>, <yingjoe.chen@mediatek.com>,
+        <eddie.huang@mediatek.com>, <erin.lo@mediatek.com>,
+        <dawei.chien@mediatek.com>, <matthias.bgg@gmail.com>,
+        <s.hauer@pengutronix.de>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <linux-mediatek@lists.infradead.org>
+Date: Mon, 22 Aug 2016 14:22:08 +0800
+In-Reply-To: <c238236c-2445-7802-6f2e-2f4776778c36@kernel.org>
+References: <1471504297-26947-1-git-send-email-zhiyong.tao@mediatek.com>
+         <1471504297-26947-4-git-send-email-zhiyong.tao@mediatek.com>
+         <c238236c-2445-7802-6f2e-2f4776778c36@kernel.org>
+Content-Type: text/plain; charset="UTF-8"
 MIME-Version: 1.0
-In-Reply-To: <1efdfc25-b13d-c383-2346-75b414b32081@kernel.org>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/21/2016 09:30 PM, Jonathan Cameron wrote:
-> On 25/07/16 23:40, Colin King wrote:
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> The comparison for devnr limits is off-by-one, the current check
->> allows 0 to AD5755_NUM_CHANNELS and the limit should be in fact
->> 0 to AD5755_NUM_CHANNELS - 1.  This can lead to an out of bounds
->> write to pdata->dac[devnr]. Fix this by replacing > with >= on the
->> comparison.
->>
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> Lars? 
-> 
-> Looks correct to me.
-> 
-> I'd also like a fixes tag for this if possible.  Guessing it
-> might well be the original driver introduction but best to be
-> sure ;)
+On Sun, 2016-08-21 at 19:58 +0100, Jonathan Cameron wrote:
+> On 18/08/16 08:11, Zhiyong Tao wrote:
+> > The commit adds auxadc nodes to the Mediatek MT2701 dtsi file.
+> > 
+> > Signed-off-by: Zhiyong Tao <zhiyong.tao@mediatek.com>
+> > ---
+> > This patch dependents on "Add clock support for Mediatek MT2701"[1].
+> > Please accept this patch together with [1].
+> > [1]http://lists.infradead.org/pipermail/linux-mediatek/2016-August/006620.html
 
-It's new in 4.8-rc1. It was introduced by the devictree support patch.
+Dear Jonathan,
 
-Fixes: c947459979c6 ("iio: ad5755: add support for dt bindings")
+This patch dependents on "Add clock support for Mediatek MT2701"[1]. 
+We will refresh it again to Matthias when [1] is merged. 
+[1]http://lists.infradead.org/pipermail/linux-mediatek/2016-August/006620.html
+
+Thanks.
+
+> Guessing this is working it's way ultimately through arm-soc.  Patches
+> 1 and 2 are now heading through the iio / staging-iio route and should be
+> merging in the next merge window if nothing odd happens.
+> 
+> Thanks,
+> 
+> Jonathan
+> > ---
+> >  arch/arm/boot/dts/mt2701.dtsi |    9 +++++++++
+> >  1 file changed, 9 insertions(+)
+> > 
+> > diff --git a/arch/arm/boot/dts/mt2701.dtsi b/arch/arm/boot/dts/mt2701.dtsi
+> > index 7eab6f4..8e6a18c 100644
+> > --- a/arch/arm/boot/dts/mt2701.dtsi
+> > +++ b/arch/arm/boot/dts/mt2701.dtsi
+> > @@ -175,6 +175,15 @@
+> >  		      <0 0x10216000 0 0x2000>;
+> >  	};
+> >  
+> > +	auxadc: adc@11001000 {
+> > +		compatible = "mediatek,mt2701-auxadc";
+> > +		reg = <0 0x11001000 0 0x1000>;
+> > +		clocks = <&pericfg CLK_PERI_AUXADC>;
+> > +		clock-names = "main";
+> > +		#io-channel-cells = <1>;
+> > +		status = "disabled";
+> > +	};
+> > +
+> >  	uart0: serial@11002000 {
+> >  		compatible = "mediatek,mt2701-uart",
+> >  			     "mediatek,mt6577-uart";
+> > 
+> 
+
 
