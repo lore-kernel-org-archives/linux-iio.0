@@ -1,70 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.133]:60083 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753147AbcHWUTV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Aug 2016 16:19:21 -0400
-Date: Tue, 23 Aug 2016 22:18:55 +0200 (CEST)
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, linux-input@vger.kernel.org,
-        pmeerw@pmeerw.net, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, dmitry.torokhov@gmail.com, harald@ccbib.org,
-        linux-iio@vger.kernel.org, marex@denx.de,
-        Fabio Estevam <fabio.estevam@nxp.com>
-Message-ID: <770097944.403326.225ddbfe-fd96-4f9b-a2b9-e0173af882ba.open-xchange@email.1und1.de>
-In-Reply-To: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
-References: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
-Subject: Re: [PATCH v5 0/4] mxs-lradc: Split driver into MFD
+Received: from gloria.sntech.de ([95.129.55.99]:57245 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752059AbcHVRUA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 22 Aug 2016 13:20:00 -0400
+From: Heiko Stuebner <heiko@sntech.de>
+To: Caesar Wang <wxt@rock-chips.com>
+Cc: jic23@kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        dianders@chromium.org, linux-rockchip@lists.infradead.org,
+        robh+dt@kernel.org, john@metanate.com, linux@roeck-us.net,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v3 3/4] arm64: dts: rockchip: add reset saradc node for rk3368 SoCs
+Date: Mon, 22 Aug 2016 19:19:55 +0200
+Message-ID: <1802628.7aG4jhMeVI@phil>
+In-Reply-To: <1469629447-544-3-git-send-email-wxt@rock-chips.com>
+References: <1469629447-544-1-git-send-email-wxt@rock-chips.com> <1469629447-544-3-git-send-email-wxt@rock-chips.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Am Mittwoch, 27. Juli 2016, 22:24:06 CEST schrieb Caesar Wang:
+> SARADC controller needs to be reset before programming it, otherwise
+> it will not function properly.
+> 
+> Signed-off-by: Caesar Wang <wxt@rock-chips.com>
 
-[add Fabio's NXP address]
+Acked-by: Heiko Stuebner <heiko@sntech.de>
+Cc: <Stable@vger.kernel.org>
 
-> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 18. August 2016 um
-> 15:44 geschrieben:
-> 
-> 
-> Split existing driver mxs-lradc into MFD with touchscreen and
-> IIO part.
-> 
-> Tested on I.MX28.
-
-i tested the patch 1 and 2 successful on a i.MX23 board.
-
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
-
-> 
-> 
-> Ksenija Stanojevic (4):
->   mfd: mxs-lradc: Add support for mxs-lradc MFD
->   iio: adc: mxs-lradc: Add support for adc driver
->   input: touchscreen: mxs-lradc: Add support for touchscreen
->   iio: adc: mxs-lradc: Remove driver
-> 
->  drivers/iio/adc/Kconfig                  |   27 +-
->  drivers/iio/adc/Makefile                 |    2 +-
->  drivers/iio/adc/mxs-lradc-adc.c          |  844 ++++++++++++++
->  drivers/iio/adc/mxs-lradc.c              | 1775
-> ------------------------------
->  drivers/input/touchscreen/Kconfig        |   10 +
->  drivers/input/touchscreen/Makefile       |    1 +
->  drivers/input/touchscreen/mxs-lradc-ts.c |  742 +++++++++++++
->  drivers/mfd/Kconfig                      |   17 +
->  drivers/mfd/Makefile                     |    1 +
->  drivers/mfd/mxs-lradc.c                  |  255 +++++
->  include/linux/mfd/mxs-lradc.h            |  194 ++++
->  11 files changed, 2078 insertions(+), 1790 deletions(-)
->  create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
->  delete mode 100644 drivers/iio/adc/mxs-lradc.c
->  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
->  create mode 100644 drivers/mfd/mxs-lradc.c
->  create mode 100644 include/linux/mfd/mxs-lradc.h
-> 
-> -- 
-> 1.9.1
->
