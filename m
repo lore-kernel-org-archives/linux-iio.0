@@ -1,25 +1,30 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Tue, 23 Aug 2016 17:45:42 -0400
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] First round of IIO fixes for the 4.8 cycle.
-Message-ID: <20160823214542.GA22608@kroah.com>
-References: <b8f6cdf6-3235-bafc-6aa8-3c21eb2b3d71@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <b8f6cdf6-3235-bafc-6aa8-3c21eb2b3d71@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:32939 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750988AbcHWDpD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2016 23:45:03 -0400
+Received: by mail-pf0-f193.google.com with SMTP id i6so7446575pfe.0
+        for <linux-iio@vger.kernel.org>; Mon, 22 Aug 2016 20:45:02 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 0/3] iio: chemical: vz89x: add multiple chip functionality
+Date: Mon, 22 Aug 2016 20:44:51 -0700
+Message-Id: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 23, 2016 at 10:01:18PM +0100, Jonathan Cameron wrote:
-> The following changes since commit 694d0d0bb2030d2e36df73e2d23d5770511dbc8d:
-> 
->   Linux 4.8-rc2 (2016-08-14 19:11:36 -0700)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.8a
+Add support for multiple chip configuration, support for the vz89te part,
+CRC check functionality, and buffer corruption check.
 
-Pulled and pushed out, thanks.
+Matt Ranostay (3):
+  iio: chemical: vz89x: abstract chip configuration
+  iio: chemical: vz89x: add support for VZ89TE part
+  iio: chemical: vz89x: prevent corrupted buffer from being read
 
-greg k-h
+ drivers/iio/chemical/vz89x.c | 175 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 144 insertions(+), 31 deletions(-)
+
+-- 
+2.7.4
+
