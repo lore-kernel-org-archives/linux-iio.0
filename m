@@ -1,102 +1,25 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36134 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753490AbcHWSIP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Aug 2016 14:08:15 -0400
-Subject: Re: [PATCH v3 1/4] iio: adc: rockchip_saradc: reset saradc controller
- before programming it
-To: Heiko Stuebner <heiko@sntech.de>
-References: <1469629447-544-1-git-send-email-wxt@rock-chips.com>
- <7e84e59d-48ee-3e17-feff-8e57ae7c2b4b@kernel.org>
- <b25cda21-0e24-de46-fb23-2142135eca03@kernel.org> <2324843.WCcsUObKgk@phil>
-Cc: Caesar Wang <wxt@rock-chips.com>, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        dianders@chromium.org, linux-rockchip@lists.infradead.org,
-        robh+dt@kernel.org, john@metanate.com,
-        linux-arm-kernel@lists.infradead.org, linux@roeck-us.net
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d1fe2625-cd8c-30ac-0f50-d52d7e8c6c05@kernel.org>
-Date: Tue, 23 Aug 2016 19:08:11 +0100
+Return-Path: <gregkh@linuxfoundation.org>
+Date: Tue, 23 Aug 2016 17:45:42 -0400
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] First round of IIO fixes for the 4.8 cycle.
+Message-ID: <20160823214542.GA22608@kroah.com>
+References: <b8f6cdf6-3235-bafc-6aa8-3c21eb2b3d71@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <2324843.WCcsUObKgk@phil>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <b8f6cdf6-3235-bafc-6aa8-3c21eb2b3d71@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 22/08/16 18:19, Heiko Stuebner wrote:
-> Am Sonntag, 21. August 2016, 21:01:19 CEST schrieb Jonathan Cameron:
->> Something in here got it blocked by the lists. I'm guessing it
->> was the characters my email client didn't like so trying again
->> with them dropped.
->>
->> Jonathan
->>
->> On 21/08/16 20:11, Jonathan Cameron wrote:
->>> On 15/08/16 19:10, Caesar Wang wrote:
->>>>> On 27/07/16 15:24, Caesar Wang wrote:
->>>>>> SARADC controller needs to be reset before programming it, otherwise
->>>>>> it will not function properly.
->>>>>>
->>>>>> Signed-off-by: Caesar Wang <wxt@rock-chips.com>
->>>>>> Cc: Jonathan Cameron <jic23@kernel.org>
->>>>>> Cc: Heiko Stuebner <heiko@sntech.de>
->>>>>> Cc: Rob Herring <robh+dt@kernel.org>
->>>>>> Cc: linux-iio@vger.kernel.org
->>>>>> Cc: linux-rockchip@lists.infradead.org
->>>>>> Tested-by: Guenter Roeck <linux@roeck-us.net>
->>>>>
->>>>> Hi
->>>>>
->>>>> Patch is fine (I'll fix up the wording issue) however...
->>>>>
->>>>> I'm not clear on the severity of the issue. Is this something
->>>>> we should be pushing for stable?
->>>>
->>>> I think that should be pushing for stable, since the common isssue for
->>>> the ADC is initially enabled on loader, and only disabled after the
->>>> first read.
->>>>
->>>> cat /sys/class/hwmon/hwmon1/device/temp1_input
->>>> cat: /sys/class/hwmon/hwmon1/device/temp1_input: Connection timed out
->>>>
->>>> The kernel log shows:
->>>>
->>>> [ 32.209451] read channel() error: -110
->>>> ..
->>>>
->>>> Also, for my experience. Some other reasons caused the adc (controller)
->>>> glitch for the kernel side.> 
->>> Fine.  So now the only question is who is handling it. The
->>> fix is useless (I think) without the dts changes to support it.
->>> Normally we'd route the dts and driver changes separately as it
->>> should not matter, but here I think I'd prefer it if the whole
->>> thing went via rockchip -> arm-soc tree so it goes in together.
->>>
->>> Hence (with wording fixed)
->>>
->>> Acked-by: Jonathan Cameron <jic23@kernel.org>
->>> Cc: <Stable@vger.kernel.org>
->>> (for the driver patch).
->>>
->>> If people want me to take it via IIO then I'll need acks for
->>> the dts changes with explicit agreement that they can be marked
->>> for stable. Would image Heiko, these would come from you.
+On Tue, Aug 23, 2016 at 10:01:18PM +0100, Jonathan Cameron wrote:
+> The following changes since commit 694d0d0bb2030d2e36df73e2d23d5770511dbc8d:
 > 
-> I don't know how the armsoc people feel about routing other subsystem changes 
-> through armsoc, but I think small dts changes coming through driver trees is 
-> the more common case, so personally I'd think patches 1,3 and 4 could go 
-> through the iio tree.
+>   Linux 4.8-rc2 (2016-08-14 19:11:36 -0700)
 > 
-> Patch 2 of course isn't material for stable, as it adds new functionality, so 
-> I'd pick that up directly, especially as we see numerous rk3399 changes, so 
-> that would be prone to conflict.
-Absolutely.  This one applied to the fixes-togreg branch of iio.git
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.8a
 
-Thanks,
+Pulled and pushed out, thanks.
 
-Jonathan
-> 
-> 
-> Heiko
-> 
-
+greg k-h
