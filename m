@@ -1,47 +1,49 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Tue, 23 Aug 2016 10:10:10 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Matt Ranostay <mranostay@gmail.com>
-cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-    Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH 2/3] iio: chemical: vz89x: add support for VZ89TE part
-In-Reply-To: <CAKzfze9ERDejECJj-nrTaxvyEFuhDUKLafRegzpoKtpcqBLT5g@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1608231004100.13780@pmeerw.net>
-References: <1471923894-12194-1-git-send-email-mranostay@gmail.com> <1471923894-12194-3-git-send-email-mranostay@gmail.com> <alpine.DEB.2.02.1608230735270.12003@pmeerw.net> <CAKzfze9ERDejECJj-nrTaxvyEFuhDUKLafRegzpoKtpcqBLT5g@mail.gmail.com>
+Return-Path: <peda@axentia.se>
+Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
+To: Jonathan Cameron <jic23@kernel.org>, Linus Walleij
+	<linus.walleij@linaro.org>, <linux-iio@vger.kernel.org>
+References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
+ <53008712-7c50-79db-07ab-3544902887e1@kernel.org>
+CC: Nick Vaccaro <nvaccaro@google.com>, Ge Gao <ggao@invensense.com>, Anna Si
+	<asi@invensense.com>, Nathan Royer <nroyer@invensense.com>, Dmitry Torokhov
+	<dmitry.torokhov@gmail.com>, Crestez Dan Leonard <leonard.crestez@intel.com>,
+	Daniel Baluta <daniel.baluta@intel.com>, Gregor Boirie
+	<gregor.boirie@parrot.com>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <285e7c3f-eedb-28ed-f651-926260d17a8a@axentia.se>
+Date: Tue, 23 Aug 2016 10:37:34 +0200
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <53008712-7c50-79db-07ab-3544902887e1@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
+On 2016-08-21 20:32, Jonathan Cameron wrote:
+> On 15/08/16 19:38, Linus Walleij wrote:
+>> Since the MPU-3050 has an outgoing I2C port it needs to act as
+>> an I2C mux. This means that the device is switching I2C traffic
+>> to devices beyond it. On my system this is the only way to reach
+>> the accelerometer. The "sensor fusion" ability of the MPU-3050
+>> to directly talk to the device on the outgoing I2C port is
+>> currently not used by the driver, but it has code to allow I2C
+>> traffic to pass through so that the Linux kernel can reach the
+>> device on the other side with a kernel driver.
+> Cc'd Peter Rosin as he's maintaining the i2c mux code now.
 
-> >>  struct vz89x_data {
-> >> @@ -79,6 +92,40 @@ static const struct iio_chan_spec vz89x_channels[] = {
-> >>               .info_mask_separate =
-> >>                       BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> >>               .address = VZ89X_VOC_RESISTANCE_IDX,
-> >> +             .scan_index = -1,
-> >> +             .scan_type = {
-> >
-> > scan_type with a scan_index of -1 is unexpected
-> 
-> Isn't that the typical usage to signal a non bufffered channel?.
-> But guess the lack of storage, real bits, and buffered trigger
-> register would signal that anyway.
+The i2c-mux handling looks sane, with the current code, but I had
+an update in mind for the next merge window that affects this:
 
-scan_index == -1 signals that scan_type is not used for buffered reads, 
-but then scan_type is used to store endianness
+[PATCH v2 0/8] devicetree cleanup for i2c muxes/arbs/gates
+https://lkml.org/lkml/2016/8/15/569
 
-one *could* want a check/invariant that either 
-scan_index >= 0 and scan_type must be provided, and
-scan_index == -1 and scan_type must NOT be provided
+Specifically patch 3/8 is relevant
 
-no bit deal, maybe there is an easy way to store the channel endianness 
-elsewhere; maybe a chip_info struct?
+[PATCH v2 3/8] dt-bindings: i2c: add support for 'i2c-gate' subnode
+https://lkml.org/lkml/2016/8/15/270
 
-I haven't checked (yet) what other drivers do in this regards... 
+(implemented in 5/7)
 
-p.
+The above is not in next (yet). I don't know how this situation is
+best handled?
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+Cheers,
+Peter
