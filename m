@@ -1,41 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f66.google.com ([209.85.214.66]:32880 "EHLO
-        mail-it0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756631AbcHWCpd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2016 22:45:33 -0400
-From: Clifton Barnes <clifton.a.barnes@gmail.com>
-To: jic23@kernel.org
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org,
-        Clifton Barnes <clifton.a.barnes@gmail.com>
-Subject: [PATCH] staging: iio: accel: sca3000: remove extra space
-Date: Mon, 22 Aug 2016 22:45:05 -0400
-Message-Id: <1471920305-9474-1-git-send-email-clifton.a.barnes@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 3/3] iio: chemical: vz89x: prevent corrupted buffer from being read
+Date: Mon, 22 Aug 2016 20:44:54 -0700
+Message-Id: <1471923894-12194-4-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+References: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-fix checkpatch.pl warning about 'Statements should start on a
-tabstop'
-
-Signed-off-by: Clifton Barnes <clifton.a.barnes@gmail.com>
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
 ---
- drivers/staging/iio/accel/sca3000_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/iio/chemical/vz89x.c | 7 +++++--
+ 1 file changed, 5 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index b5625f5..61f3241 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -412,7 +412,7 @@ static const struct iio_event_spec sca3000_event = {
- 		},						\
- 		.event_spec = &sca3000_event,			\
- 		.num_event_specs = 1,				\
--	 }
-+	}
+diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+index 0347761ebdba..c2a311c59190 100644
+--- a/drivers/iio/chemical/vz89x.c
++++ b/drivers/iio/chemical/vz89x.c
+@@ -54,6 +54,7 @@ struct vz89x_data {
+ 	int (*xfer)(struct vz89x_data *data, u8 cmd);
+ 	int (*valid)(struct vz89x_data *data);
  
- static const struct iio_chan_spec sca3000_channels[] = {
- 	SCA3000_CHAN(0, IIO_MOD_X),
++	bool is_valid;
+ 	unsigned long last_update;
+ 	u8 cmd;
+ 	u8 write_size;
+@@ -220,8 +221,10 @@ static int vz89x_get_measurement(struct vz89x_data *data)
+ 
+ 	/* sensor can only be polled once a second max per datasheet */
+ 	if (!time_after(jiffies, data->last_update + HZ))
+-		return 0;
++		return data->is_valid ? 0 : -EAGAIN;
+ 
++	data->is_valid = false;
++	data->last_update = jiffies;
+ 	ret = data->xfer(data, data->cmd);
+ 	if (ret < 0)
+ 		return ret;
+@@ -230,7 +233,7 @@ static int vz89x_get_measurement(struct vz89x_data *data)
+ 	if (ret)
+ 		return -EAGAIN;
+ 
+-	data->last_update = jiffies;
++	data->is_valid = true;
+ 
+ 	return 0;
+ }
 -- 
 2.7.4
-
