@@ -1,30 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:32939 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750988AbcHWDpD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 22 Aug 2016 23:45:03 -0400
-Received: by mail-pf0-f193.google.com with SMTP id i6so7446575pfe.0
-        for <linux-iio@vger.kernel.org>; Mon, 22 Aug 2016 20:45:02 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>
-Subject: [PATCH 0/3] iio: chemical: vz89x: add multiple chip functionality
-Date: Mon, 22 Aug 2016 20:44:51 -0700
-Message-Id: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+Received: from mout.kundenserver.de ([212.227.126.133]:60083 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753147AbcHWUTV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Aug 2016 16:19:21 -0400
+Date: Tue, 23 Aug 2016 22:18:55 +0200 (CEST)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, linux-input@vger.kernel.org,
+        pmeerw@pmeerw.net, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, dmitry.torokhov@gmail.com, harald@ccbib.org,
+        linux-iio@vger.kernel.org, marex@denx.de,
+        Fabio Estevam <fabio.estevam@nxp.com>
+Message-ID: <770097944.403326.225ddbfe-fd96-4f9b-a2b9-e0173af882ba.open-xchange@email.1und1.de>
+In-Reply-To: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
+References: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
+Subject: Re: [PATCH v5 0/4] mxs-lradc: Split driver into MFD
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support for multiple chip configuration, support for the vz89te part,
-CRC check functionality, and buffer corruption check.
+Hi,
 
-Matt Ranostay (3):
-  iio: chemical: vz89x: abstract chip configuration
-  iio: chemical: vz89x: add support for VZ89TE part
-  iio: chemical: vz89x: prevent corrupted buffer from being read
+[add Fabio's NXP address]
 
- drivers/iio/chemical/vz89x.c | 175 +++++++++++++++++++++++++++++++++++--------
- 1 file changed, 144 insertions(+), 31 deletions(-)
+> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 18. August 2016 um
+> 15:44 geschrieben:
+> 
+> 
+> Split existing driver mxs-lradc into MFD with touchscreen and
+> IIO part.
+> 
+> Tested on I.MX28.
 
--- 
-2.7.4
+i tested the patch 1 and 2 successful on a i.MX23 board.
 
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+
+> 
+> 
+> Ksenija Stanojevic (4):
+>   mfd: mxs-lradc: Add support for mxs-lradc MFD
+>   iio: adc: mxs-lradc: Add support for adc driver
+>   input: touchscreen: mxs-lradc: Add support for touchscreen
+>   iio: adc: mxs-lradc: Remove driver
+> 
+>  drivers/iio/adc/Kconfig                  |   27 +-
+>  drivers/iio/adc/Makefile                 |    2 +-
+>  drivers/iio/adc/mxs-lradc-adc.c          |  844 ++++++++++++++
+>  drivers/iio/adc/mxs-lradc.c              | 1775
+> ------------------------------
+>  drivers/input/touchscreen/Kconfig        |   10 +
+>  drivers/input/touchscreen/Makefile       |    1 +
+>  drivers/input/touchscreen/mxs-lradc-ts.c |  742 +++++++++++++
+>  drivers/mfd/Kconfig                      |   17 +
+>  drivers/mfd/Makefile                     |    1 +
+>  drivers/mfd/mxs-lradc.c                  |  255 +++++
+>  include/linux/mfd/mxs-lradc.h            |  194 ++++
+>  11 files changed, 2078 insertions(+), 1790 deletions(-)
+>  create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+>  delete mode 100644 drivers/iio/adc/mxs-lradc.c
+>  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+>  create mode 100644 drivers/mfd/mxs-lradc.c
+>  create mode 100644 include/linux/mfd/mxs-lradc.h
+> 
+> -- 
+> 1.9.1
+>
