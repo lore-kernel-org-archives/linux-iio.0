@@ -1,259 +1,282 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:48954 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751068AbcHWFbm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 23 Aug 2016 01:31:42 -0400
-Date: Tue, 23 Aug 2016 07:31:38 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Alison Schofield <amsfield22@gmail.com>
-cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ltc2485: add support for Linear Technology
- LTC2485 ADC
-In-Reply-To: <20160823032521.GA27711@d830.WORKGROUP>
-Message-ID: <alpine.DEB.2.02.1608230725390.12003@pmeerw.net>
-References: <20160823032521.GA27711@d830.WORKGROUP>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mranostay@gmail.com>
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	Matt Ranostay <mranostay@gmail.com>
+Subject: [PATCH 2/3] iio: chemical: vz89x: add support for VZ89TE part
+Date: Mon, 22 Aug 2016 20:44:53 -0700
+Message-Id: <1471923894-12194-3-git-send-email-mranostay@gmail.com>
+In-Reply-To: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+References: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+Add support the VZ89TE variant which removes the voc_short channel,
+and has CRC check for data transactions.
 
-> Adds basic support for the LTC2485 ADC - a delta-sigma analog-to-digital
-> converter with an I2C interface that operates in single shot conversion
-> mode. 
+Signed-off-by: Matt Ranostay <mranostay@gmail.com>
+---
+ drivers/iio/chemical/vz89x.c | 149 +++++++++++++++++++++++++++++++++++--------
+ 1 file changed, 123 insertions(+), 26 deletions(-)
 
-comments below, looks good
+diff --git a/drivers/iio/chemical/vz89x.c b/drivers/iio/chemical/vz89x.c
+index f498228e044d..0347761ebdba 100644
+--- a/drivers/iio/chemical/vz89x.c
++++ b/drivers/iio/chemical/vz89x.c
+@@ -19,20 +19,33 @@
+ #include <linux/mutex.h>
+ #include <linux/init.h>
+ #include <linux/i2c.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
  
-> The driver supports an on board 5V reference and the power-on default
-> configuration which rejects both 50hz & 60hz line frequencies and
-> operates in 1x speed mode.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> ---
-> 
-> Reviewers: In addition to commenting on what is present, please comment
-> on what is absent and the priority in which you would like to see
-> additional features added to this driver, or needed in this first submittal.
-> 
-> Not supported: 
-> 1. External Vref
-> 2. Additional Configuration Modes
->         Temperature Sensor Mode: report temp data (not voltage).
-> 
->         Line Frequency Rejection Mode: select to reject 50Hz or 60Hz
-> 	or both. (both is default)
-> 
->         Speed Mode: Default speed mode (1x) performs two conversions each
-> 	cycle and combines the results.  2x speed mode only does one
-> 	conversion each cycle.
-> 3. Power management
-> 4. DT Bindings
-> 5. Triggered buffers
-> 6. What else?
-> 
-> 
->  drivers/iio/adc/Kconfig   |   9 +++
->  drivers/iio/adc/Makefile  |   1 +
->  drivers/iio/adc/ltc2485.c | 150 ++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 160 insertions(+)
->  create mode 100644 drivers/iio/adc/ltc2485.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 1de31bd..a042611 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -264,6 +264,15 @@ config LPC18XX_ADC
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called lpc18xx_adc.
->  
-> +config LTC2485
-> +	tristate "Linear Technology LTC2485 ADC driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for Linear Technology LTC2485 ADC.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ltc2485.
-> +
->  config MAX1027
->  	tristate "Maxim max1027 ADC driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 0ba0d50..1be5747 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -27,6 +27,7 @@ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
-> +obj-$(CONFIG_LTC2485) += ltc2485.o
->  obj-$(CONFIG_MAX1027) += max1027.o
->  obj-$(CONFIG_MAX1363) += max1363.o
->  obj-$(CONFIG_MCP320X) += mcp320x.o
-> diff --git a/drivers/iio/adc/ltc2485.c b/drivers/iio/adc/ltc2485.c
-> new file mode 100644
-> index 0000000..a62778b
-> --- /dev/null
-> +++ b/drivers/iio/adc/ltc2485.c
-> @@ -0,0 +1,150 @@
-> +/*
-> + * ltc2485.c - Driver for Linear Technology LTC2485 ADC
-> + *
-> + * Copyright (C) 2016 Alison Schofield <amsfield22@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
-> + *
-> + * Datasheet: http://cds.linear.com/docs/en/datasheet/2485fd.pdf
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +/* Power-on configuration: rejects both 50/60Hz, operates at 1x speed */
-> +#define LTC2485_CONFIG_DEFAULT		0
-> +
-> +struct ltc2485_data {
-> +	struct i2c_client	*client;
-> +	s64			time_prev;	/* last conversion */
-> +};
-> +
-> +static void ltc2485_wait_conv(struct ltc2485_data *data)
-> +{
-> +	int conv_time = 147000000;		/* conv time ns */
-
-const maybe?
-
-> +	s64 time_elapsed;
-> +
-> +	/* delay if conversion time not passed since last read or write */
-> +	time_elapsed = ktime_get_real_ns() - data->time_prev;
-> +
-> +	if (time_elapsed < conv_time) {
-> +		usleep_range((conv_time - time_elapsed) / 1000,
-> +			     conv_time / 1000);
-> +	}
-> +}
-> +
-> +static int ltc2485_read(struct ltc2485_data *data, int *val)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	__be32 buf = 0;
-> +	int ret;
-> +
-> +	ltc2485_wait_conv(data);
-> +
-> +	ret = i2c_master_recv(client, (char *)&buf, 4);
-> +	if (ret < 0)  {
-> +		dev_err(&client->dev, "i2c_master_recv failed\n");
-> +		return ret;
-> +	}
-> +
-> +	data->time_prev = ktime_get_real_ns();
-> +	*val = sign_extend32(be32_to_cpu(buf) >> 6, 24);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ltc2485_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
-> +{
-> +	struct ltc2485_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (mask == IIO_CHAN_INFO_RAW) {
-> +		ret = ltc2485_read(data, val);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		return IIO_VAL_INT;
-> +
-> +	} else if (mask == IIO_CHAN_INFO_SCALE) {
-> +		*val = 5000;			/* on board vref millivolts */
-> +		*val2 = 25;			/* 25 (24 + sign) data bits */
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +
-> +	} else {
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_chan_spec ltc2485_channel[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)
-> +	},
-> +};
-> +
-> +static const struct iio_info ltc2485_info = {
-> +	.read_raw = ltc2485_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int ltc2485_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ltc2485_data *data;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
-> +				     I2C_FUNC_SMBUS_WRITE_BYTE))
-> +		return -EOPNOTSUPP;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = id->name;
-> +	indio_dev->info = &ltc2485_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = ltc2485_channel;
-> +	indio_dev->num_channels = ARRAY_SIZE(ltc2485_channel);
-> +
-> +	ret = i2c_smbus_write_byte(data->client, LTC2485_CONFIG_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->time_prev = ktime_get_real_ns();
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static const struct i2c_device_id ltc2485_id[] = {
-> +	{ "ltc2485", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, ltc2485_id);
-> +
-> +static struct i2c_driver ltc2485_driver = {
-> +	.driver = {
-> +		.name = "ltc2485",
-> +	},
-> +	.probe = ltc2485_probe,
-> +	.id_table = ltc2485_id,
-> +};
-> +module_i2c_driver(ltc2485_driver);
-> +
-> +MODULE_AUTHOR("Alison Schofield <amsfield22@gmail.com>");
-> +MODULE_DESCRIPTION("Linear Technology LTC2485 ADC driver");
-> +MODULE_LICENSE("GPL v2");
-> 
-
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ 
+ #define VZ89X_REG_MEASUREMENT		0x09
++#define VZ89TE_REG_MEASUREMENT		0x0c
++
++#define VZ89X_REG_WRITE_SIZE		3
++#define VZ89TE_REG_WRITE_SIZE		6
++
+ #define VZ89X_REG_MEASUREMENT_SIZE	6
++#define VZ89TE_REG_MEASUREMENT_SIZE	7
+ 
+ #define VZ89X_VOC_CO2_IDX		0
+ #define VZ89X_VOC_SHORT_IDX		1
+ #define VZ89X_VOC_TVOC_IDX		2
+ #define VZ89X_VOC_RESISTANCE_IDX	3
+ 
++#define VZ89TE_VOC_TVOC_IDX		0
++#define VZ89TE_VOC_CO2_IDX		1
++#define VZ89TE_VOC_RESISTANCE_IDX	2
++
+ enum {
+ 	VZ89X,
++	VZ89TE,
+ };
+ 
+ struct vz89x_data {
+@@ -79,6 +92,40 @@ static const struct iio_chan_spec vz89x_channels[] = {
+ 		.info_mask_separate =
+ 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+ 		.address = VZ89X_VOC_RESISTANCE_IDX,
++		.scan_index = -1,
++		.scan_type = {
++			.endianness = IIO_LE,
++		},
++	},
++};
++
++static const struct iio_chan_spec vz89te_channels[] = {
++	{
++		.type = IIO_CONCENTRATION,
++		.channel2 = IIO_MOD_VOC,
++		.modified = 1,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_RAW),
++		.address = VZ89TE_VOC_TVOC_IDX,
++	},
++
++	{
++		.type = IIO_CONCENTRATION,
++		.channel2 = IIO_MOD_CO2,
++		.modified = 1,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_OFFSET) | BIT(IIO_CHAN_INFO_RAW),
++		.address = VZ89TE_VOC_CO2_IDX,
++	},
++	{
++		.type = IIO_RESISTANCE,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
++		.address = VZ89TE_VOC_RESISTANCE_IDX,
++		.scan_index = -1,
++		.scan_type = {
++			.endianness = IIO_BE,
++		},
+ 	},
+ };
+ 
+@@ -110,12 +157,27 @@ static int vz89x_measurement_is_valid(struct vz89x_data *data)
+ 	return !!(data->buffer[data->read_size - 1] > 0);
+ }
+ 
++/* VZ89TE device has a modified CRC-8 two complement check */
++static int vz89te_measurement_is_valid(struct vz89x_data *data)
++{
++	u8 crc = 0;
++	int i, sum = 0;
++
++	for (i = 0; i < (data->read_size - 1); i++) {
++		sum = crc + data->buffer[i];
++		crc = sum;
++		crc += sum / 256;
++	}
++
++	return !((0xff - crc) == data->buffer[data->read_size - 1]);
++}
++
+ static int vz89x_i2c_xfer(struct vz89x_data *data, u8 cmd)
+ {
+ 	struct i2c_client *client = data->client;
+ 	struct i2c_msg msg[2];
+ 	int ret;
+-	u8 buf[3] = { cmd, 0, 0};
++	u8 buf[6] = { cmd, 0, 0, 0, 0, 0xf3};
+ 
+ 	msg[0].addr = client->addr;
+ 	msg[0].flags = client->flags;
+@@ -173,11 +235,24 @@ static int vz89x_get_measurement(struct vz89x_data *data)
+ 	return 0;
+ }
+ 
+-static int vz89x_get_resistance_reading(struct vz89x_data *data)
++static int vz89x_get_resistance_reading(struct vz89x_data *data,
++					struct iio_chan_spec const *chan,
++					int *val)
+ {
+-	u8 *buf = &data->buffer[VZ89X_VOC_RESISTANCE_IDX];
++	u32 tmp = *((u32 *) ((u8 *) &data->buffer[chan->address]));
++
++	switch (chan->scan_type.endianness) {
++	case IIO_LE:
++		*val = le32_to_cpu(tmp) & GENMASK(23, 0);
++		break;
++	case IIO_BE:
++		*val = be32_to_cpu(tmp) >> 8;
++		break;
++	default:
++		return -EINVAL;
++	}
+ 
+-	return buf[0] | (buf[1] << 8);
++	return 0;
+ }
+ 
+ static int vz89x_read_raw(struct iio_dev *indio_dev,
+@@ -196,15 +271,15 @@ static int vz89x_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			return ret;
+ 
+-		switch (chan->address) {
+-		case VZ89X_VOC_CO2_IDX:
+-		case VZ89X_VOC_SHORT_IDX:
+-		case VZ89X_VOC_TVOC_IDX:
++		switch (chan->type) {
++		case IIO_CONCENTRATION:
+ 			*val = data->buffer[chan->address];
+ 			return IIO_VAL_INT;
+-		case VZ89X_VOC_RESISTANCE_IDX:
+-			*val = vz89x_get_resistance_reading(data);
+-			return IIO_VAL_INT;
++		case IIO_RESISTANCE:
++			ret = vz89x_get_resistance_reading(data, chan, val);
++			if (!ret)
++				return IIO_VAL_INT;
++			break;
+ 		default:
+ 			return -EINVAL;
+ 		}
+@@ -219,12 +294,12 @@ static int vz89x_read_raw(struct iio_dev *indio_dev,
+ 		}
+ 		break;
+ 	case IIO_CHAN_INFO_OFFSET:
+-		switch (chan->address) {
+-		case VZ89X_VOC_CO2_IDX:
++		switch (chan->channel2) {
++		case IIO_MOD_CO2:
+ 			*val = 44;
+ 			*val2 = 250000;
+ 			return IIO_VAL_INT_PLUS_MICRO;
+-		case VZ89X_VOC_TVOC_IDX:
++		case IIO_MOD_VOC:
+ 			*val = -13;
+ 			return IIO_VAL_INT;
+ 		default:
+@@ -241,11 +316,20 @@ static const struct iio_info vz89x_info = {
+ 	.driver_module	= THIS_MODULE,
+ };
+ 
++static const struct of_device_id vz89x_dt_ids[] = {
++	{ .compatible = "sgx,vz89x", .data = (void *) VZ89X },
++	{ .compatible = "sgx,vz89te", .data = (void *) VZ89TE },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, vz89x_dt_ids);
++
+ static int vz89x_probe(struct i2c_client *client,
+ 		       const struct i2c_device_id *id)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct vz89x_data *data;
++	const struct of_device_id *of_id;
++	int chip_id;
+ 
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (!indio_dev)
+@@ -260,13 +344,15 @@ static int vz89x_probe(struct i2c_client *client,
+ 	else
+ 		return -EOPNOTSUPP;
+ 
++	of_id = of_match_device(vz89x_dt_ids, &client->dev);
++	if (!of_id)
++		chip_id = id->driver_data;
++	else
++		chip_id = (unsigned long)of_id->data;
++
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	data->last_update = jiffies - HZ;
+-	data->cmd = VZ89X_REG_MEASUREMENT;
+-	data->write_size = 3;
+-	data->read_size = VZ89X_REG_MEASUREMENT_SIZE;
+-	data->valid = &vz89x_measurement_is_valid;
+ 	mutex_init(&data->lock);
+ 
+ 	indio_dev->dev.parent = &client->dev;
+@@ -274,24 +360,35 @@ static int vz89x_probe(struct i2c_client *client,
+ 	indio_dev->name = dev_name(&client->dev);
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+-	indio_dev->channels = vz89x_channels;
+-	indio_dev->num_channels = ARRAY_SIZE(vz89x_channels);
++	switch (chip_id) {
++	case VZ89X:
++		indio_dev->channels = vz89x_channels;
++		indio_dev->num_channels = ARRAY_SIZE(vz89x_channels);
++		data->cmd = VZ89X_REG_MEASUREMENT;
++		data->write_size = VZ89X_REG_WRITE_SIZE;
++		data->read_size = VZ89X_REG_MEASUREMENT_SIZE;
++		data->valid = &vz89x_measurement_is_valid;
++		break;
++	case VZ89TE:
++		indio_dev->channels = vz89te_channels;
++		indio_dev->num_channels = ARRAY_SIZE(vz89te_channels);
++		data->cmd = VZ89TE_REG_MEASUREMENT;
++		data->write_size = VZ89TE_REG_WRITE_SIZE;
++		data->read_size = VZ89TE_REG_MEASUREMENT_SIZE;
++		data->valid = &vz89te_measurement_is_valid;
++		break;
++	}
+ 
+ 	return devm_iio_device_register(&client->dev, indio_dev);
+ }
+ 
+ static const struct i2c_device_id vz89x_id[] = {
+ 	{ "vz89x", VZ89X },
++	{ "vz89te", VZ89TE },
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(i2c, vz89x_id);
+ 
+-static const struct of_device_id vz89x_dt_ids[] = {
+-	{ .compatible = "sgx,vz89x", .data = (void *) VZ89X },
+-	{ }
+-};
+-MODULE_DEVICE_TABLE(of, vz89x_dt_ids);
+-
+ static struct i2c_driver vz89x_driver = {
+ 	.driver = {
+ 		.name	= "vz89x",
 -- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+2.7.4
