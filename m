@@ -1,120 +1,259 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36186 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752835AbcHWSMo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Aug 2016 14:12:44 -0400
-Subject: Re: [PATCH v4 1/1] iio: stx104: Add IIO support for the ADC channels
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-References: <cover.1469468983.git.vilhelm.gray@gmail.com>
- <6d9544e530bf2d97175596f03a7d429f57153b40.1469468983.git.vilhelm.gray@gmail.com>
- <99c36f16-9f2c-383d-9f44-badeee523a5a@kernel.org>
- <20160822132409.GA9041@sophia>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+Received: from ns.pmeerw.net ([84.19.176.92]:48954 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751068AbcHWFbm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 23 Aug 2016 01:31:42 -0400
+Date: Tue, 23 Aug 2016 07:31:38 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Alison Schofield <amsfield22@gmail.com>
+cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <03a8000a-a289-db0a-2346-4acd6a61632f@kernel.org>
-Date: Tue, 23 Aug 2016 19:12:41 +0100
+Subject: Re: [PATCH] iio: adc: ltc2485: add support for Linear Technology
+ LTC2485 ADC
+In-Reply-To: <20160823032521.GA27711@d830.WORKGROUP>
+Message-ID: <alpine.DEB.2.02.1608230725390.12003@pmeerw.net>
+References: <20160823032521.GA27711@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <20160822132409.GA9041@sophia>
-Content-Type: text/plain; charset=utf-8
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/08/16 14:24, William Breathitt Gray wrote:
-> On Sun, Aug 21, 2016 at 08:39:01PM +0100, Jonathan Cameron wrote:
->> On 25/07/16 18:54, William Breathitt Gray wrote:
->>> The Apex Embedded Systems STX104 features 16 channels of single-ended (8
->>> channels of true differential) 16-bit analog input. Differential input
->>> configuration may be selected via a physical jumper on the device.
->>> Similarly, input polarity (unipolar/bipolar) is configured via a
->>> physical jumper on the device.
->>>
->>> Input gain selection is available to the user via software, thus
->>> allowing eight possible input ranges: +-10V, +-5V, +-2.5V, +-1.25V,
->>> 0 to 10V, 0 to 5V, 0 to 2.5V, and 0 to 1.25V. Four input gain
->>> configurations are supported: x1, x2, x4, and x8.
->>>
->>> This ADC resolution is 16-bits (1/65536 of full scale). Analog input
->>> samples are taken on software trigger; neither FIFO sampling nor
->>> interrupt triggering is supported by this driver.
->>>
->>> The Apex Embedded Systems STX104 is primarily an analog-to-digital
->>> converter device. The STX104 IIO driver was initially placed in the DAC
->>> directory because only the DAC portion of the STX104 was supported at
->>> the time. Now that ADC support has been added to the STX104 IIO driver,
->>> the driver should be moved to the more appropriate ADC directory.
->>>
->>> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
->> Hi William,
->>
->> I'd missed the odd use of an output channel to control scale.
->> I'm guessing this is because we are looking at actual control of a front
->> end separate amplifier on the board?  However as far as the driver is
->> confirmed this is no different from any multi range ADC and so
->> should be done with IIO_INFO_SCALE.
->>
->> Sorry for taking so long to get back to you.  Holiday season I'm afraid.
->>
->> Jonathan
-> 
->>> +#define STX104_GAIN_CHAN {					\
->>> +	.type = IIO_VOLTAGE,					\
->>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_HARDWAREGAIN),	\
->>> +	.output = 1						\
->>>  }
->>
->> I'm confused.  You have a separate output channel to control gain?
->> Why... Variable gain devices are normally just represented via the
->> info_mask element IIO_CHAN_INFO_SCALE as an info_mask_shared_by_type.
-> 
-> Hey Jonathan,
-> 
-> Thanks for getting back to me. I did have trouble figuring out the
-> proper way to expose the gain control for this device. Perhaps if I
-> describe the register interface it may make more sense.
-> 
-> The STX104 ADC input range may be probed with a read to register offset
-> 11; bit 2 represents the ADC bipolar/unipolar configuration (ADBU),
-> while bits 1 and 0 represent the ADC gain setting. ADBU is configured by
-> physical jumper on the device, while the ADC gain setting is configured
-> in software via a register write.
-> 
-> ADC gain may be set with a write of bits 1 and 0 to register offset 11;
-> 00 = gain of x1, 01 = gain of x2, 10 = gain of x4, 11 = gain of x8.
-> Writing to this register sets the analog input gain for all 8/16 analog
-> inputs.
-> 
-> Since the ADC gain setting applies to all analog inputs rather than
-> individual inputs separately, what is the proper way to expose this
-> option? Should I remove the STX104_GAIN_CHAN #define entirely and use
-> something like the following change instead:
-> 
-> 	#define STX104_IN_CHAN(chan, diff) {				\
-> 		.type = IIO_VOLTAGE,					\
-> 		.channel = chan,					\
-> 		.channel2 = chan,					\
-> 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> 		.indexed = 1,						\
-> 		.output = 0,						\
-> 		.differential = diff					\
-> 	}
-> 
-> Where the IIO_CHAN_INFO_SCALE now exposes the gain setting affecting all
-> analog inputs.
-Yes.  Basically using shared_by_type gives it an appropriate name
-in_voltage_scale and though you have the entry every time, only one attribute
-is created.  The others act more as documentation in the code than anything
-else (so they should be there).
 
-Jonathan
+> Adds basic support for the LTC2485 ADC - a delta-sigma analog-to-digital
+> converter with an I2C interface that operates in single shot conversion
+> mode. 
+
+comments below, looks good
+ 
+> The driver supports an on board 5V reference and the power-on default
+> configuration which rejects both 50hz & 60hz line frequencies and
+> operates in 1x speed mode.
 > 
-> Thanks,
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> ---
 > 
-> William Breathitt Gray
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Reviewers: In addition to commenting on what is present, please comment
+> on what is absent and the priority in which you would like to see
+> additional features added to this driver, or needed in this first submittal.
+> 
+> Not supported: 
+> 1. External Vref
+> 2. Additional Configuration Modes
+>         Temperature Sensor Mode: report temp data (not voltage).
+> 
+>         Line Frequency Rejection Mode: select to reject 50Hz or 60Hz
+> 	or both. (both is default)
+> 
+>         Speed Mode: Default speed mode (1x) performs two conversions each
+> 	cycle and combines the results.  2x speed mode only does one
+> 	conversion each cycle.
+> 3. Power management
+> 4. DT Bindings
+> 5. Triggered buffers
+> 6. What else?
+> 
+> 
+>  drivers/iio/adc/Kconfig   |   9 +++
+>  drivers/iio/adc/Makefile  |   1 +
+>  drivers/iio/adc/ltc2485.c | 150 ++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 160 insertions(+)
+>  create mode 100644 drivers/iio/adc/ltc2485.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 1de31bd..a042611 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -264,6 +264,15 @@ config LPC18XX_ADC
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called lpc18xx_adc.
+>  
+> +config LTC2485
+> +	tristate "Linear Technology LTC2485 ADC driver"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to build support for Linear Technology LTC2485 ADC.
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called ltc2485.
+> +
+>  config MAX1027
+>  	tristate "Maxim max1027 ADC driver"
+>  	depends on SPI
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 0ba0d50..1be5747 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -27,6 +27,7 @@ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+>  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+> +obj-$(CONFIG_LTC2485) += ltc2485.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+>  obj-$(CONFIG_MAX1363) += max1363.o
+>  obj-$(CONFIG_MCP320X) += mcp320x.o
+> diff --git a/drivers/iio/adc/ltc2485.c b/drivers/iio/adc/ltc2485.c
+> new file mode 100644
+> index 0000000..a62778b
+> --- /dev/null
+> +++ b/drivers/iio/adc/ltc2485.c
+> @@ -0,0 +1,150 @@
+> +/*
+> + * ltc2485.c - Driver for Linear Technology LTC2485 ADC
+> + *
+> + * Copyright (C) 2016 Alison Schofield <amsfield22@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + *
+> + * Datasheet: http://cds.linear.com/docs/en/datasheet/2485fd.pdf
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/i2c.h>
+> +#include <linux/module.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +/* Power-on configuration: rejects both 50/60Hz, operates at 1x speed */
+> +#define LTC2485_CONFIG_DEFAULT		0
+> +
+> +struct ltc2485_data {
+> +	struct i2c_client	*client;
+> +	s64			time_prev;	/* last conversion */
+> +};
+> +
+> +static void ltc2485_wait_conv(struct ltc2485_data *data)
+> +{
+> +	int conv_time = 147000000;		/* conv time ns */
+
+const maybe?
+
+> +	s64 time_elapsed;
+> +
+> +	/* delay if conversion time not passed since last read or write */
+> +	time_elapsed = ktime_get_real_ns() - data->time_prev;
+> +
+> +	if (time_elapsed < conv_time) {
+> +		usleep_range((conv_time - time_elapsed) / 1000,
+> +			     conv_time / 1000);
+> +	}
+> +}
+> +
+> +static int ltc2485_read(struct ltc2485_data *data, int *val)
+> +{
+> +	struct i2c_client *client = data->client;
+> +	__be32 buf = 0;
+> +	int ret;
+> +
+> +	ltc2485_wait_conv(data);
+> +
+> +	ret = i2c_master_recv(client, (char *)&buf, 4);
+> +	if (ret < 0)  {
+> +		dev_err(&client->dev, "i2c_master_recv failed\n");
+> +		return ret;
+> +	}
+> +
+> +	data->time_prev = ktime_get_real_ns();
+> +	*val = sign_extend32(be32_to_cpu(buf) >> 6, 24);
+> +
+> +	return ret;
+> +}
+> +
+> +static int ltc2485_read_raw(struct iio_dev *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int *val, int *val2, long mask)
+> +{
+> +	struct ltc2485_data *data = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	if (mask == IIO_CHAN_INFO_RAW) {
+> +		ret = ltc2485_read(data, val);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	} else if (mask == IIO_CHAN_INFO_SCALE) {
+> +		*val = 5000;			/* on board vref millivolts */
+> +		*val2 = 25;			/* 25 (24 + sign) data bits */
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +
+> +	} else {
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_chan_spec ltc2485_channel[] = {
+> +	{
+> +		.type = IIO_VOLTAGE,
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)
+> +	},
+> +};
+> +
+> +static const struct iio_info ltc2485_info = {
+> +	.read_raw = ltc2485_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int ltc2485_probe(struct i2c_client *client,
+> +			 const struct i2c_device_id *id)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct ltc2485_data *data;
+> +	int ret;
+> +
+> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
+> +				     I2C_FUNC_SMBUS_WRITE_BYTE))
+> +		return -EOPNOTSUPP;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	data = iio_priv(indio_dev);
+> +	i2c_set_clientdata(client, indio_dev);
+> +	data->client = client;
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->name = id->name;
+> +	indio_dev->info = &ltc2485_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = ltc2485_channel;
+> +	indio_dev->num_channels = ARRAY_SIZE(ltc2485_channel);
+> +
+> +	ret = i2c_smbus_write_byte(data->client, LTC2485_CONFIG_DEFAULT);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	data->time_prev = ktime_get_real_ns();
+> +	return devm_iio_device_register(&client->dev, indio_dev);
+> +}
+> +
+> +static const struct i2c_device_id ltc2485_id[] = {
+> +	{ "ltc2485", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(i2c, ltc2485_id);
+> +
+> +static struct i2c_driver ltc2485_driver = {
+> +	.driver = {
+> +		.name = "ltc2485",
+> +	},
+> +	.probe = ltc2485_probe,
+> +	.id_table = ltc2485_id,
+> +};
+> +module_i2c_driver(ltc2485_driver);
+> +
+> +MODULE_AUTHOR("Alison Schofield <amsfield22@gmail.com>");
+> +MODULE_DESCRIPTION("Linear Technology LTC2485 ADC driver");
+> +MODULE_LICENSE("GPL v2");
 > 
 
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
