@@ -1,58 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f66.google.com ([209.85.220.66]:36817 "EHLO
-        mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754543AbcHWXXx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 23 Aug 2016 19:23:53 -0400
-Date: Tue, 23 Aug 2016 16:23:46 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: kbuild test robot <lkp@intel.com>
-Cc: kbuild-all@01.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: adc: ltc2485: add support for Linear Technology
- LTC2485 ADC
-Message-ID: <20160823232344.GA6071@d830.WORKGROUP>
-References: <20160823032521.GA27711@d830.WORKGROUP>
- <201608231846.LrkmPoJu%fengguang.wu@intel.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <201608231846.LrkmPoJu%fengguang.wu@intel.com>
+Received: from mga09.intel.com ([134.134.136.24]:55567 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932428AbcHXSnN (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Aug 2016 14:43:13 -0400
+Message-ID: <1472064189.28351.3.camel@linux.intel.com>
+Subject: Re: [PATCH v2 0/6] Intel Integrated Sensor Hub Support (ISH)
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: Grant Likely <glikely@secretlab.ca>,
+        Jiri Kosina <jikos@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        benjamin.tissoires@redhat.com
+Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
+Date: Wed, 24 Aug 2016 11:43:09 -0700
+In-Reply-To: <CACxGe6v6pDisF9FpKPJrojGS7qUn13xUUd-Uydr7B1701Y4szg@mail.gmail.com>
+References: <1466574038-20613-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+         <b81da639-0ec5-bb30-1f77-b71d8e7ad434@secretlab.ca>
+         <CACxGe6v6pDisF9FpKPJrojGS7qUn13xUUd-Uydr7B1701Y4szg@mail.gmail.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Aug 23, 2016 at 06:27:58PM +0800, kbuild test robot wrote:
-> Hi Alison,
+On Wed, 2016-08-24 at 12:16 -0400, Grant Likely wrote:
+> On Tue, Jul 5, 2016 at 8:42 AM, Grant Likely <glikely@secretlab.ca>
+> wrote:
+> > 
+> > 
+> > On 22/06/16 06:40, Srinivas Pandruvada wrote:
+> > > 
+> > > 
+> > > Change log
+> > > v2:
+> > > - Overview in documentation show analogy with usbhid
+> > > implementation
+> > > - sparse errors for statics. Also pointed by Jiri
+> > > - Clearly marking exported function header file. Clean up all
+> > > exports
+> > > unused inteface functions
+> > > - Changed to tristate from boolean as pointed by Jiri:
+> > > this required remove/unload functions
+> > > - Prevent crash when ISH enabled on non supported platform
+> > > - Break client.c to smaller part by seprating buffer allocations
+> > > - move bus register/unregister to ishtp module
+> > > - There is only one config symbol INTEL_ISH_HID, removed silent
+> > > config for TRANSPORT and IPC
+> > 
+> > Tested-by: Grant Likely <grant.likely@secretlab.ca>
+> > 
+> > On an HP Spectre x360 laptop using v4.7-rc5.
 > 
-> [auto build test ERROR on iio/togreg]
-> [also build test ERROR on v4.8-rc3 next-20160823]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> [Suggest to use git(>=2.9.0) format-patch --base=<commit> (or --base=auto for convenience) to record what (public, well-known) commit your patch series was built on]
-> [Check https://git-scm.com/docs/git-format-patch for more information]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Alison-Schofield/iio-adc-ltc2485-add-support-for-Linear-Technology-LTC2485-ADC/20160823-112916
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> config: i386-allyesconfig (attached as .config)
-> compiler: gcc-6 (Debian 6.1.1-9) 6.1.1 20160705
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=i386 
-> 
-> All errors (new ones prefixed by >>):
-> 
->    drivers/built-in.o: In function `ltc2485_read_raw':
-> >> ltc2485.c:(.text+0x2795c3b): undefined reference to `__divdi3'
-> 
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+> Hey Srinivas. Any progress on this patch series?
+Unless someone has major objection, they can land up in 4.9.
+They will go through two different trees, I can ping you once I see all
+patches in linux-next.
 
-This is in the timestamp comparison code.  I guess I could use a
-do_div macro to perform the task.  However, now that I've stared
-the code a bit more, it doesn't need to be real time and in fact
-it would be better/safer to use monotonic time.  So, I'll change
-to monotonic time and use the ktime_t macros to manipulate.
-
-Thanks kbuild robot for finding this immediately!!
-alisons
+Thanks,
+Srinivas
 
 
+> 
+> g.
