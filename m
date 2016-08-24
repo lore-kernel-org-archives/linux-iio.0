@@ -1,104 +1,321 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0093.outbound.protection.outlook.com ([104.47.2.93]:50395
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752389AbcHXLWT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Aug 2016 07:22:19 -0400
-Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
-To: <jic23@jic23.retrosnub.co.uk>
-References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
- <53008712-7c50-79db-07ab-3544902887e1@kernel.org>
- <285e7c3f-eedb-28ed-f651-926260d17a8a@axentia.se>
- <c45a4c34d8c980d20e790741f33961f7@jic23.retrosnub.co.uk>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        <linux-iio@vger.kernel.org>, Nick Vaccaro <nvaccaro@google.com>,
-        Ge Gao <ggao@invensense.com>, Anna Si <asi@invensense.com>,
-        Nathan Royer <nroyer@invensense.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <ed7493a1-37e4-2291-c66e-11cb97b6e5e3@axentia.se>
-Date: Wed, 24 Aug 2016 10:49:54 +0200
-MIME-Version: 1.0
-In-Reply-To: <c45a4c34d8c980d20e790741f33961f7@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="windows-1252"
+Received: from smtpfb2-g21.free.fr ([212.27.42.10]:42862 "EHLO
+        smtpfb2-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753140AbcHXNxy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2016 09:53:54 -0400
+Received: from smtp3-g21.free.fr (smtp3-g21.free.fr [212.27.42.3])
+        by smtpfb2-g21.free.fr (Postfix) with ESMTP id 33E0AD19DF3
+        for <linux-iio@vger.kernel.org>; Wed, 24 Aug 2016 15:53:46 +0200 (CEST)
+From: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
+To: linux-iio@vger.kernel.org
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Paul Cercueil <paul.cercueil@analog.com>,
+        Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>,
+        Gwenhael <gwe@trabucayre.com>
+Subject: [PATCH] iio: dac: AD8801: add Analog Devices AD8801/AD8803 support
+Date: Wed, 24 Aug 2016 15:53:00 +0200
+Message-Id: <20160824135301.6263-1-gwenhael.goavec-merou@trabucayre.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-[CC'd linux-i2c@ and Wolfram Sang as the branch might end up with him]
+Add support for Analog Devices AD8801/AD8803, 8 channels 8bits, Digital to
+Analog converters.
 
-On 2016-08-23 16:38, jic23@jic23.retrosnub.co.uk wrote:
-> On 23.08.2016 09:37, Peter Rosin wrote:
->> On 2016-08-21 20:32, Jonathan Cameron wrote:
->>> On 15/08/16 19:38, Linus Walleij wrote:
->>>> Since the MPU-3050 has an outgoing I2C port it needs to act as
->>>> an I2C mux. This means that the device is switching I2C traffic
->>>> to devices beyond it. On my system this is the only way to reach
->>>> the accelerometer. The "sensor fusion" ability of the MPU-3050
->>>> to directly talk to the device on the outgoing I2C port is
->>>> currently not used by the driver, but it has code to allow I2C
->>>> traffic to pass through so that the Linux kernel can reach the
->>>> device on the other side with a kernel driver.
->>> Cc'd Peter Rosin as he's maintaining the i2c mux code now.
->>
->> The i2c-mux handling looks sane, with the current code, but I had
->> an update in mind for the next merge window that affects this:
->>
->> [PATCH v2 0/8] devicetree cleanup for i2c muxes/arbs/gates
->> https://lkml.org/lkml/2016/8/15/569
->>
->> Specifically patch 3/8 is relevant
->>
->> [PATCH v2 3/8] dt-bindings: i2c: add support for 'i2c-gate' subnode
->> https://lkml.org/lkml/2016/8/15/270
->>
->> (implemented in 5/7)
->>
->> The above is not in next (yet). I don't know how this situation is
->> best handled?
->>
->> Cheers,
->> Peter
-> Hmm. Depends a bit on timing.  The merge window close for IIO is in
-> perhaps 3 weeks time.  If this driver isn't ready reasonably quickly
-> I'll probably hold it for next window anyway.
-> 
-> If we do want to do the mux stuff and this in the same window then
-> the standard trick is a branch with just the relevant patches that
-> are the dependency in it and we both merge that into our trees.
-> Key thing is that we then don't touch this branch at all.
-> 
-> Git then sorts the mess out just fine when that works it's way to
-> Linus.  The two trees will have the same commit id's for the patches
-> so he'll get them via which ever tree he merges first.
+Signed-off-by: Gwenhael <gwe@trabucayre.com>
+---
+ drivers/iio/dac/Kconfig  |  10 ++
+ drivers/iio/dac/Makefile |   1 +
+ drivers/iio/dac/ad8801.c | 244 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 255 insertions(+)
+ create mode 100644 drivers/iio/dac/ad8801.c
 
-Ok, but if the driver is ready in time, then this i2c-mux-dt-branch
-needs to have soaked in next for at least a week before we start
-relying on it. No?
-
-Therefore, I better prepare the i2c-mux-dt-branch right away so that
-there is also time to make use of it. My plan is that I make the branch
-in the i2c-mux repo, then get it added to next somehow for soaking. I
-do not currently have a branch registered to be included in next, and I
-know it's just a matter of asking, but it seems rather pointless to add
-one just for this one-off occurrence? And since my series is closer to
-i2c than it is to iio, it feels righter to have it soak in next via the
-i2c tree.
-
-Wolfram, is that ok with you? Or should I just bite the bullet and ask
-Stephen to include a brand new for-next branch from the i2c-mux repo
-instead?
-
-And a final question before I start with the i2c-mux-dt-branch; Is any
-base better than any other for it? I know i2c/for-next is based on
-v4.8-rc3 (at least currently, but I don't think Wolfram rebases
-willy-nillilly). So, would v4.8-rc3 be ok as a base for everyone?
-
-Cheers,
-Peter
+diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+index ca81447..af0e684 100644
+--- a/drivers/iio/dac/Kconfig
++++ b/drivers/iio/dac/Kconfig
+@@ -181,6 +181,16 @@ config AD7303
+ 	  To compile this driver as module choose M here: the module will be called
+ 	  ad7303.
+ 
++config AD8801
++	tristate "Analog Devices AD8801/AD8803 DAC driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Analog Devices AD8801, ad8803 Digital to
++	  Analog Converters (DAC).
++
++	  To compile this driver as module choose M here: the module will be called
++	  ad8801.
++
+ config LPC18XX_DAC
+ 	tristate "NXP LPC18xx DAC driver"
+ 	depends on ARCH_LPC18XX || COMPILE_TEST
+diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+index 8b78d5c..c5767b8 100644
+--- a/drivers/iio/dac/Makefile
++++ b/drivers/iio/dac/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_AD5764) += ad5764.o
+ obj-$(CONFIG_AD5791) += ad5791.o
+ obj-$(CONFIG_AD5686) += ad5686.o
+ obj-$(CONFIG_AD7303) += ad7303.o
++obj-$(CONFIG_AD8801) += ad8801.o
+ obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
+ obj-$(CONFIG_M62332) += m62332.o
+ obj-$(CONFIG_MAX517) += max517.o
+diff --git a/drivers/iio/dac/ad8801.c b/drivers/iio/dac/ad8801.c
+new file mode 100644
+index 0000000..4e1891c
+--- /dev/null
++++ b/drivers/iio/dac/ad8801.c
+@@ -0,0 +1,244 @@
++/*
++ * IIO DAC driver for Analog Devices AD8801 DAC
++ *
++ * Copyright (C) 2016 Gwenhael Goavec-Merou
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
++ *
++ */
++
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
++#include <linux/regulator/consumer.h>
++#include <linux/spi/spi.h>
++#include <linux/sysfs.h>
++
++
++#define AD8801_CFG_ADDR_OFFSET 8
++
++enum ad8801_device_ids {
++	ID_AD8801,
++	ID_AD8803,
++};
++
++struct ad8801_state {
++	struct spi_device *spi;
++	unsigned char dac_cache[8]; /* Value write on each channel */
++	unsigned int vrefh_mv;
++	unsigned int vrefl_mv;
++	struct regulator *vrefh_reg;
++	struct regulator *vrefl_reg;
++
++	__be16 data ____cacheline_aligned;
++};
++
++static int ad8801_spi_write(struct ad8801_state *state,
++			     u8 channel, unsigned char value)
++{
++	state->data = cpu_to_be16((channel << AD8801_CFG_ADDR_OFFSET) | value);
++	return spi_write(state->spi, &state->data, sizeof(state->data));
++}
++
++static int ad8801_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long mask)
++{
++	struct ad8801_state *state = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (val >= 256 || val < 0)
++			return -EINVAL;
++
++		ret = ad8801_spi_write(state, chan->channel, val);
++		if (ret == 0)
++			state->dac_cache[chan->channel] = val;
++		break;
++	default:
++		ret = -EINVAL;
++	}
++
++	return ret;
++}
++
++static int ad8801_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int *val, int *val2, long info)
++{
++	struct ad8801_state *state = iio_priv(indio_dev);
++
++	switch (info) {
++	case IIO_CHAN_INFO_RAW:
++		*val = state->dac_cache[chan->channel];
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = (state->vrefh_mv - state->vrefl_mv);
++		*val2 = 8;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	case IIO_CHAN_INFO_OFFSET:
++		*val = state->vrefl_mv;
++		return IIO_VAL_INT;
++	default:
++		break;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info ad8801_info = {
++	.read_raw = ad8801_read_raw,
++	.write_raw = ad8801_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++#define AD8801_CHANNEL(chan) {		\
++	.type = IIO_VOLTAGE,			\
++	.indexed = 1,				\
++	.output = 1,				\
++	.channel = (chan + 1),			\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |  \
++		BIT(IIO_CHAN_INFO_OFFSET), \
++	.address = chan,			\
++}
++
++const struct iio_chan_spec ad8801_channels[] = {
++	AD8801_CHANNEL(0),
++	AD8801_CHANNEL(1),
++	AD8801_CHANNEL(2),
++	AD8801_CHANNEL(3),
++	AD8801_CHANNEL(4),
++	AD8801_CHANNEL(5),
++	AD8801_CHANNEL(6),
++	AD8801_CHANNEL(7),
++};
++
++static int ad8801_probe(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev;
++	struct ad8801_state *state;
++	const struct spi_device_id *id;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	state = iio_priv(indio_dev);
++	state->spi = spi;
++	id = spi_get_device_id(spi);
++
++	state->vrefh_reg = devm_regulator_get(&spi->dev, "vrefh");
++	if (IS_ERR(state->vrefh_reg)) {
++		dev_err(&spi->dev, "Vrefh regulator not specified\n");
++		return PTR_ERR(state->vrefh_reg);
++	}
++
++	ret = regulator_enable(state->vrefh_reg);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to enable vrefh regulator: %d\n",
++				ret);
++		return ret;
++	}
++
++	ret = regulator_get_voltage(state->vrefh_reg);
++	if (ret < 0) {
++		dev_err(&spi->dev, "Failed to read vrefh regulator: %d\n",
++				ret);
++		goto error_disable_vrefh_reg;
++	}
++	state->vrefh_mv = ret / 1000;
++
++	if (id->driver_data == ID_AD8803) {
++		state->vrefl_reg = devm_regulator_get(&spi->dev, "vrefl");
++		if (IS_ERR(state->vrefl_reg)) {
++			dev_err(&spi->dev, "Vrefl regulator not specified\n");
++			ret = PTR_ERR(state->vrefl_reg);
++			goto error_disable_vrefh_reg;
++		}
++
++		ret = regulator_enable(state->vrefl_reg);
++		if (ret) {
++			dev_err(&spi->dev, "Failed to enable vrefl regulator: %d\n",
++					ret);
++			goto error_disable_vrefh_reg;
++		}
++
++		ret = regulator_get_voltage(state->vrefl_reg);
++		if (ret < 0) {
++			dev_err(&spi->dev, "Failed to read vrefl regulator: %d\n",
++					ret);
++			goto error_disable_vrefl_reg;
++		}
++		state->vrefl_mv = ret / 1000;
++	} else {
++		state->vrefl_mv = 0;
++		state->vrefl_reg = NULL;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->info = &ad8801_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad8801_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad8801_channels);
++	indio_dev->name = id->name;
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&spi->dev, "Failed to register iio device: %d\n",
++				ret);
++		goto error_disable_vrefl_reg;
++	}
++
++	return 0;
++
++error_disable_vrefl_reg:
++	if (state->vrefl_reg)
++		regulator_disable(state->vrefl_reg);
++error_disable_vrefh_reg:
++	regulator_disable(state->vrefh_reg);
++	return ret;
++}
++
++static int ad8801_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad8801_state *state = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	if (state->vrefl_reg)
++		regulator_disable(state->vrefl_reg);
++	regulator_disable(state->vrefh_reg);
++
++	return 0;
++}
++
++static const struct spi_device_id ad8801_ids[] = {
++	{"ad8801", ID_AD8801},
++	{"ad8803", ID_AD8803},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad8801_ids);
++
++static struct spi_driver ad8801_driver = {
++	.driver = {
++		.name	= "ad8801",
++	},
++	.probe		= ad8801_probe,
++	.remove		= ad8801_remove,
++	.id_table	= ad8801_ids,
++};
++module_spi_driver(ad8801_driver);
++
++MODULE_AUTHOR("Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>");
++MODULE_DESCRIPTION("Analog Devices AD8801/AD8803 DAC");
++MODULE_LICENSE("GPL v2");
++
+-- 
+2.9.3
 
