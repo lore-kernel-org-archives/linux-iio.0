@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:54550 "EHLO mail.aswsp.com"
+Received: from mail.aswsp.com ([193.34.35.150]:34633 "EHLO mail.aswsp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753247AbcHXOz4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 24 Aug 2016 10:55:56 -0400
+        id S932773AbcHXO6C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 24 Aug 2016 10:58:02 -0400
 From: Gregor Boirie <gregor.boirie@parrot.com>
 To: <linux-iio@vger.kernel.org>
 CC: Jonathan Cameron <jic23@kernel.org>,
@@ -23,145 +23,69 @@ CC: Jonathan Cameron <jic23@kernel.org>,
         "Marek Vasut" <marex@denx.de>,
         Crestez Dan Leonard <leonard.crestez@intel.com>,
         Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v1 2/3] iio: add resource managed triggered buffer init helpers
-Date: Wed, 24 Aug 2016 16:58:47 +0200
-Message-ID: <56b6b3b6f490a4652d0b7047af97a6cbdd7b6a7a.1472050374.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1472050374.git.gregor.boirie@parrot.com>
-References: <cover.1472050374.git.gregor.boirie@parrot.com>
+Subject: [PATCH v1 0/3] iio: devm helpers and Murata zpa2326 barometer support
+Date: Wed, 24 Aug 2016 16:58:45 +0200
+Message-ID: <cover.1472050374.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add resource managed devm_iio_triggered_buffer_setup() and
-devm_iio_triggered_buffer_cleanup() to automatically clean up triggered
-buffers setup by IIO drivers, thus leading to simplified IIO drivers code.
+Introduce support for the Murata ZPA2326 pressure and temperature sensor.
+Also bring in resource managed versions for triggered buffer setup helpers and
+trigger registration which the above mentioned driver depends on.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- Documentation/driver-model/devres.txt              |  2 ++
- drivers/iio/buffer/industrialio-triggered-buffer.c | 42 ++++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |  3 +-
- include/linux/iio/iio.h                            |  1 +
- include/linux/iio/triggered_buffer.h               |  8 +++++
- 5 files changed, 55 insertions(+), 1 deletion(-)
+Driver features:
+* I2C and SPI buses
+* interrupt and polling based operations
+* direct, triggered and software buffered IIO sampling modes
+* hardware sampling frequency handling
+* trigger consumers notification (plugged on interrupt) 
+* runtime and system power states
 
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index 09e8649..daaede9d 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -266,6 +266,8 @@ IIO
-   devm_iio_device_unregister()
-   devm_iio_kfifo_allocate()
-   devm_iio_kfifo_free()
-+  devm_iio_triggered_buffer_setup()
-+  devm_iio_triggered_buffer_cleanup()
-   devm_iio_trigger_alloc()
-   devm_iio_trigger_free()
-   devm_iio_trigger_register()
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-index 4b2858b..d3db1fc 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -98,6 +98,48 @@ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
- }
- EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
- 
-+static void devm_iio_triggered_buffer_clean(struct device *dev, void *res)
-+{
-+	iio_triggered_buffer_cleanup(*(struct iio_dev **)res);
-+}
-+
-+int devm_iio_triggered_buffer_setup(struct device *dev,
-+				    struct iio_dev *indio_dev,
-+				    irqreturn_t (*h)(int irq, void *p),
-+				    irqreturn_t (*thread)(int irq, void *p),
-+				    const struct iio_buffer_setup_ops *ops)
-+{
-+	struct iio_dev **ptr;
-+	int ret;
-+
-+	ptr = devres_alloc(devm_iio_triggered_buffer_clean, sizeof(*ptr),
-+			   GFP_KERNEL);
-+	if (!ptr)
-+		return -ENOMEM;
-+
-+	*ptr = indio_dev;
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, h, thread, ops);
-+	if (!ret)
-+		devres_add(dev, ptr);
-+	else
-+		devres_free(ptr);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_setup);
-+
-+void devm_iio_triggered_buffer_cleanup(struct device *dev,
-+				       struct iio_dev *indio_dev)
-+{
-+	int rc;
-+
-+	rc = devres_release(dev, devm_iio_triggered_buffer_clean,
-+			    devm_iio_device_match, indio_dev);
-+	WARN_ON(rc);
-+}
-+EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_cleanup);
-+
- MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
- MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index f914d5d..0528a0c 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1309,7 +1309,7 @@ static void devm_iio_device_release(struct device *dev, void *res)
- 	iio_device_free(*(struct iio_dev **)res);
- }
- 
--static int devm_iio_device_match(struct device *dev, void *res, void *data)
-+int devm_iio_device_match(struct device *dev, void *res, void *data)
- {
- 	struct iio_dev **r = res;
- 	if (!r || !*r) {
-@@ -1318,6 +1318,7 @@ static int devm_iio_device_match(struct device *dev, void *res, void *data)
- 	}
- 	return *r == data;
- }
-+EXPORT_SYMBOL_GPL(devm_iio_device_match);
- 
- /**
-  * devm_iio_device_alloc - Resource-managed iio_device_alloc()
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 854e2da..cb8d598 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -642,6 +642,7 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
- }
- 
- void iio_device_free(struct iio_dev *indio_dev);
-+int devm_iio_device_match(struct device *dev, void *res, void *data);
- struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
- void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
- struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
-diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
-index f72f70d..3014561 100644
---- a/include/linux/iio/triggered_buffer.h
-+++ b/include/linux/iio/triggered_buffer.h
-@@ -12,4 +12,12 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
- 	const struct iio_buffer_setup_ops *setup_ops);
- void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
- 
-+int devm_iio_triggered_buffer_setup(struct device *dev,
-+				    struct iio_dev *indio_dev,
-+				    irqreturn_t (*h)(int irq, void *p),
-+				    irqreturn_t (*thread)(int irq, void *p),
-+				    const struct iio_buffer_setup_ops *ops);
-+void devm_iio_triggered_buffer_cleanup(struct device *dev,
-+				       struct iio_dev *indio_dev);
-+
- #endif
+2 questions with respect to current driver implementation for which I'd
+like to hear your suggestions...
+
+Hardware frequency handling is using the (legacy ?) IIO_DEV_ATTR_SAMP_FREQ and
+IIO_CONST_ATTR_SAMP_FREQ_AVAIL macros.  As I remember Jonathan telling he was
+trying to get rid of these, I wonder whether I should move to
+iio_chan_spec_ext_info based code or not.
+
+Sensor is able to sample in a continuous manner, triggering an interrupt each
+time a new sample is ready to be fetched by CPU. This mode is implemented using
+INDIO_BUFFER_SOFTWARE mode instead of INDIO_BUFFER_TRIGGERED (as can be seen in
+the vast majority of IIO drivers). Can somebody confirm there is no misuse
+here ?
+
+Regards,
+gregor.
+
+Gregor Boirie (3):
+  iio:trigger: add resource managed (un)register
+  iio: add resource managed triggered buffer init helpers
+  iio:pressure: initial zpa2326 barometer support
+
+ .../devicetree/bindings/iio/pressure/zpa2326.txt   |   23 +
+ Documentation/driver-model/devres.txt              |    4 +
+ drivers/iio/buffer/industrialio-triggered-buffer.c |   42 +
+ drivers/iio/industrialio-core.c                    |    3 +-
+ drivers/iio/industrialio-trigger.c                 |   59 +
+ drivers/iio/pressure/Kconfig                       |   33 +
+ drivers/iio/pressure/Makefile                      |    3 +
+ drivers/iio/pressure/zpa2326.c                     | 1766 ++++++++++++++++++++
+ drivers/iio/pressure/zpa2326.h                     |   76 +
+ drivers/iio/pressure/zpa2326_i2c.c                 |  188 +++
+ drivers/iio/pressure/zpa2326_spi.c                 |  184 ++
+ include/linux/iio/iio.h                            |    1 +
+ include/linux/iio/trigger.h                        |    6 +
+ include/linux/iio/triggered_buffer.h               |    8 +
+ 14 files changed, 2395 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+ create mode 100644 drivers/iio/pressure/zpa2326.c
+ create mode 100644 drivers/iio/pressure/zpa2326.h
+ create mode 100644 drivers/iio/pressure/zpa2326_i2c.c
+ create mode 100644 drivers/iio/pressure/zpa2326_spi.c
+
 -- 
 2.1.4
 
