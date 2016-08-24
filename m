@@ -1,41 +1,43 @@
-Return-Path: <gwenhael.goavec-merou@trabucayre.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtpfb1-g21.free.fr ([212.27.42.9]:47301 "EHLO
+        smtpfb1-g21.free.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753438AbcHXNx4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2016 09:53:56 -0400
+Received: from smtp3-g21.free.fr (smtp3-g21.free.fr [212.27.42.3])
+        by smtpfb1-g21.free.fr (Postfix) with ESMTP id 2E6FF77C7A9
+        for <linux-iio@vger.kernel.org>; Wed, 24 Aug 2016 15:53:46 +0200 (CEST)
 From: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
 To: linux-iio@vger.kernel.org
 Cc: Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Paul Cercueil <paul.cercueil@analog.com>,
-	Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
-Subject: [PATCH v2] iio: dac: AD8801: add Analog Devices AD8801/AD8803 support
-Date: Wed, 24 Aug 2016 16:44:20 +0200
-Message-Id: <20160824144420.7326-1-gwenhael.goavec-merou@trabucayre.com>
-List-ID: <linux-iio@vger.kernel.org>
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Paul Cercueil <paul.cercueil@analog.com>,
+        Gwenhael <gwe@trabucayre.com>
+Subject: [PATCH] iio: dac: AD8801: add Analog Devices AD8801/AD8803 support
+Date: Wed, 24 Aug 2016 15:53:01 +0200
+Message-Id: <20160824135301.6263-2-gwenhael.goavec-merou@trabucayre.com>
+In-Reply-To: <20160824135301.6263-1-gwenhael.goavec-merou@trabucayre.com>
+References: <20160824135301.6263-1-gwenhael.goavec-merou@trabucayre.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for Analog Devices AD8801/AD8803, 8 channels 8bits, Digital to
-Analog converters.
+From: Gwenhael <gwe@trabucayre.com>
 
-Signed-off-by: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
----
-Changes v1 -> v2:
-	- fix some whitespace (Lars-Peter Clausen)
-	- fix signed-off-by (Lars-Peter Clausen)
-	- supress useless of*.h headers (Lars-Peter Clausen)
-	- channel numbers must start at 0 (Lars-Peter Clausen)
-	- ad8801_channels array must be static (Lars-Peter Clausen)
-	- typo (Peter Meerwald-Stadler)
-	- suppress parenthesis (Peter Meerwald-Stadler)
-	- add a return -EINVAL (Peter Meerwald-Stadler)
+Add support for Analog Devices AD8801/AD8803, 8 channels 8bits, Digital to Analog 
+converters.
+
+Signed-off-by: Gwenhael <gwe@trabucayre.com>
 ---
  drivers/iio/dac/Kconfig  |  10 ++
  drivers/iio/dac/Makefile |   1 +
- drivers/iio/dac/ad8801.c | 241 +++++++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 252 insertions(+)
+ drivers/iio/dac/ad8801.c | 244 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 255 insertions(+)
  create mode 100644 drivers/iio/dac/ad8801.c
 
 diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
-index ca81447..b03063c 100644
+index ca81447..af0e684 100644
 --- a/drivers/iio/dac/Kconfig
 +++ b/drivers/iio/dac/Kconfig
 @@ -181,6 +181,16 @@ config AD7303
@@ -44,12 +46,12 @@ index ca81447..b03063c 100644
  
 +config AD8801
 +	tristate "Analog Devices AD8801/AD8803 DAC driver"
-+	depends on SPI_MASTER
++	depends on SPI
 +	help
-+	  Say yes here to build support for Analog Devices AD8801, AD8803 Digital to
++	  Say yes here to build support for Analog Devices AD8801, ad8803 Digital to
 +	  Analog Converters (DAC).
 +
-+	  To compile this driver as a module choose M here: the module will be called
++	  To compile this driver as module choose M here: the module will be called
 +	  ad8801.
 +
  config LPC18XX_DAC
@@ -69,10 +71,10 @@ index 8b78d5c..c5767b8 100644
  obj-$(CONFIG_MAX517) += max517.o
 diff --git a/drivers/iio/dac/ad8801.c b/drivers/iio/dac/ad8801.c
 new file mode 100644
-index 0000000..e81236e
+index 0000000..10ed0cb
 --- /dev/null
 +++ b/drivers/iio/dac/ad8801.c
-@@ -0,0 +1,241 @@
+@@ -0,0 +1,244 @@
 +/*
 + * IIO DAC driver for Analog Devices AD8801 DAC
 + *
@@ -83,16 +85,19 @@ index 0000000..e81236e
 + *
 + * This program is distributed in the hope that it will be useful, but
 + * WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
 + * General Public License for more details.
 + *
 + */
 +
 +#include <linux/iio/iio.h>
 +#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_gpio.h>
 +#include <linux/regulator/consumer.h>
 +#include <linux/spi/spi.h>
 +#include <linux/sysfs.h>
++
 +
 +#define AD8801_CFG_ADDR_OFFSET 8
 +
@@ -108,12 +113,12 @@ index 0000000..e81236e
 +	unsigned int vrefl_mv;
 +	struct regulator *vrefh_reg;
 +	struct regulator *vrefl_reg;
-+
++	 
 +	__be16 data ____cacheline_aligned;
 +};
 +
 +static int ad8801_spi_write(struct ad8801_state *state,
-+	u8 channel, unsigned char value)
++			     u8 channel, unsigned char value)
 +{
 +	state->data = cpu_to_be16((channel << AD8801_CFG_ADDR_OFFSET) | value);
 +	return spi_write(state->spi, &state->data, sizeof(state->data));
@@ -145,20 +150,20 @@ index 0000000..e81236e
 +	struct iio_chan_spec const *chan, int *val, int *val2, long info)
 +{
 +	struct ad8801_state *state = iio_priv(indio_dev);
-+
++	
 +	switch (info) {
 +	case IIO_CHAN_INFO_RAW:
 +		*val = state->dac_cache[chan->channel];
 +		return IIO_VAL_INT;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = state->vrefh_mv - state->vrefl_mv;
++		*val = (state->vrefh_mv - state->vrefl_mv);
 +		*val2 = 8;
 +		return IIO_VAL_FRACTIONAL_LOG2;
 +	case IIO_CHAN_INFO_OFFSET:
 +		*val = state->vrefl_mv;
 +		return IIO_VAL_INT;
 +	default:
-+		return -EINVAL;
++		break;
 +	}
 +
 +	return -EINVAL;
@@ -169,19 +174,19 @@ index 0000000..e81236e
 +	.write_raw = ad8801_write_raw,
 +	.driver_module = THIS_MODULE,
 +};
-+
++		
 +#define AD8801_CHANNEL(chan) {		\
 +	.type = IIO_VOLTAGE,			\
 +	.indexed = 1,				\
 +	.output = 1,				\
-+	.channel = chan,			\
++	.channel = (chan + 1),			\
 +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW), \
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |  \
 +		BIT(IIO_CHAN_INFO_OFFSET), \
 +	.address = chan,			\
 +}
 +
-+static const struct iio_chan_spec ad8801_channels[] = {
++const struct iio_chan_spec ad8801_channels[] = { 
 +	AD8801_CHANNEL(0),
 +	AD8801_CHANNEL(1),
 +	AD8801_CHANNEL(2),
@@ -316,3 +321,4 @@ index 0000000..e81236e
 +
 -- 
 2.9.3
+
