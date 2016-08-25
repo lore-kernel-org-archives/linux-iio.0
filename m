@@ -1,67 +1,98 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f43.google.com ([209.85.218.43]:36099 "EHLO
-        mail-oi0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753067AbcHYNNT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2016 09:13:19 -0400
-Received: by mail-oi0-f43.google.com with SMTP id f189so65570262oig.3
-        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2016 06:13:19 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <CACRpkdY=Y56Uz90Z2SW+=eYJaH1zd8FM6Th2tgjkXVmz6fSScA@mail.gmail.com>
-References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
- <53008712-7c50-79db-07ab-3544902887e1@kernel.org> <CACRpkdY=Y56Uz90Z2SW+=eYJaH1zd8FM6Th2tgjkXVmz6fSScA@mail.gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 25 Aug 2016 15:13:17 +0200
-Message-ID: <CACRpkdaAW2=taAED53kE9bQ3XSFXRaBAKye9msmtqa-rDZGkGA@mail.gmail.com>
+Return-Path: <peda@axentia.se>
 Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
-To: Jonathan Cameron <jic23@kernel.org>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Nick Vaccaro <nvaccaro@google.com>,
-        Ge Gao <ggao@invensense.com>, Anna Si <asi@invensense.com>,
-        Nathan Royer <nroyer@invensense.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Peter Rosin <peda@axentia.se>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
+ <53008712-7c50-79db-07ab-3544902887e1@kernel.org>
+ <285e7c3f-eedb-28ed-f651-926260d17a8a@axentia.se>
+ <CACRpkdZeomin6_u=1hm-fJucMnQmAJXu01YaC0g1KdafWPD2kg@mail.gmail.com>
+CC: Jonathan Cameron <jic23@kernel.org>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, Nick Vaccaro <nvaccaro@google.com>, Ge Gao
+	<ggao@invensense.com>, Anna Si <asi@invensense.com>, Nathan Royer
+	<nroyer@invensense.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	"Crestez Dan Leonard" <leonard.crestez@intel.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Gregor Boirie <gregor.boirie@parrot.com>, "Wolfram
+ Sang" <wsa@the-dreams.de>, "linux-i2c@vger.kernel.org"
+	<linux-i2c@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <5903e282-aaf9-9c86-5df5-17b75d5b4018@axentia.se>
+Date: Thu, 25 Aug 2016 22:32:36 +0200
+MIME-Version: 1.0
+In-Reply-To: <CACRpkdZeomin6_u=1hm-fJucMnQmAJXu01YaC0g1KdafWPD2kg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Aug 25, 2016 at 2:37 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
-
->>> I suspect some of the stuff I've done here should be carried
->>> over to the MPU-6050 driver in drivers/iio/imu/inv_mpu6050/*
+On 2016-08-25 14:44, Linus Walleij wrote:
+> On Tue, Aug 23, 2016 at 10:37 AM, Peter Rosin <peda@axentia.se> wrote:
+> 
+>> Specifically patch 3/8 is relevant
 >>
->> Which bits in particular?
->
-> - Fetch and handle regulators for vdd and vddio (currently
->   totally missing).
->
-> - Runtime PM, including getting rid of the horrible homebrewn
->   reference count in inv_mpu6050_set_power_itg()
->
-> - Oh mpu6050 doesn't even seem to power the device down
->   on .remove() I think it's a bug actually
+>> [PATCH v2 3/8] dt-bindings: i2c: add support for 'i2c-gate' subnode
+>> https://lkml.org/lkml/2016/8/15/270
+> 
+> Yup the gate is what I'm using.
 
-Oh and when it comes to the trigger interrupts in
-drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
+You need to update the dt bindings to the new simpler form, and then
+add the flag I2C_MUX_GATE to your i2c_mux_alloc call.
 
-- No active low handling (bit 7 reg 0x37)
+>> The above is not in next (yet). I don't know how this situation is
+>> best handled?
+> 
+> I can put these patches into my development branch to get
+> a working driver using the gate. But I'd prefer them be in -next
+> when I pick them.
+> 
+> Then the rest is merge mechanics, dunno the best there,
+> Jonathan can decide.
 
-- No open drain handling (bit 6 reg 0x37)
+I waited a bit for someone to scream about v4.8-rc3 being a bad base
+for some reason, but there was only silence. I have now pushed the
+series, and it can be pulled by anyone interested.
 
-- No level interrupt support (bit 5 reg 0x37)
+Wolfram, please merge it into i2c/for-next
 
-- No check of status register to return IRQ_NONE
-  i.e. spurious IRQ handling is non-existent.
+Linus/Jonathan, technically you don't need all patches and can skip
+the last three, but it seems a bit over the top to be super anal
+about that detail...
 
-- Timestamping should preferably happen in top
-  half.
+Cheers,
+Peter
 
-All of this should probably happen more like it happens
-in this MPU-3050 driver. Instead it assumes that the
-interrupt assigned will be an edge, low-to-high transition,
-and nothing else is supported.
 
-Yours,
-Linus Walleij
+The following changes since commit fa8410b355251fd30341662a40ac6b22d3e38468:
+
+  Linux 4.8-rc3 (2016-08-21 16:14:10 -0700)
+
+are available in the git repository at:
+
+  https://github.com/peda-r/i2c-mux.git i2c-mux-dt-3
+
+for you to fetch changes up to 8a191a7ad4ca9022bb838387b20d3de6acc88b72:
+
+  i2c: pca954x: add device tree binding (2016-08-25 22:11:04 +0200)
+
+----------------------------------------------------------------
+Peter Rosin (8):
+      dt-bindings: i2c: add support for 'i2c-mux' subnode
+      dt-bindings: i2c: add support for 'i2c-arb' subnode
+      dt-bindings: i2c: add support for 'i2c-gate' subnode
+      dt-bindings: i2c: add bindings for nxp,pca9541
+      i2c: mux: add support for 'i2c-mux', 'i2c-arb' and 'i2c-gate' DT subnodes
+      i2c: mux: inform the i2c mux core about how it is used
+      i2c: pca9541: add device tree binding
+      i2c: pca954x: add device tree binding
+
+ .../bindings/i2c/i2c-arb-gpio-challenge.txt        |  8 +---
+ Documentation/devicetree/bindings/i2c/i2c-arb.txt  | 35 ++++++++++++++++
+ Documentation/devicetree/bindings/i2c/i2c-gate.txt | 41 +++++++++++++++++++
+ Documentation/devicetree/bindings/i2c/i2c-mux.txt  | 23 ++++++++---
+ .../devicetree/bindings/i2c/nxp,pca9541.txt        | 29 ++++++++++++++
+ MAINTAINERS                                        |  2 +
+ drivers/i2c/i2c-mux.c                              | 44 +++++++++++++++++----
+ drivers/i2c/muxes/i2c-arb-gpio-challenge.c         |  2 +-
+ drivers/i2c/muxes/i2c-mux-pca9541.c                | 11 +++++-
+ drivers/i2c/muxes/i2c-mux-pca954x.c                | 46 ++++++++++++++++------
+ include/linux/i2c-mux.h                            |  8 +++-
+ 11 files changed, 214 insertions(+), 35 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-arb.txt
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-gate.txt
+ create mode 100644 Documentation/devicetree/bindings/i2c/nxp,pca9541.txt
