@@ -1,59 +1,67 @@
-Return-Path: <olof@lixom.net>
-From: Olof Johansson <olof@lixom.net>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	mpa@pengutronix.de,
-	irina.tirdea@intel.com,
-	linux-iio@vger.kernel.org,
-	Olof Johansson <olof@lixom.net>
-Subject: [PATCH] iio: accel: bmc150: reset chip at init time
-Date: Thu, 25 Aug 2016 09:45:33 -0700
-Message-Id: <1472143533-31869-1-git-send-email-olof@lixom.net>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi0-f43.google.com ([209.85.218.43]:36099 "EHLO
+        mail-oi0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753067AbcHYNNT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2016 09:13:19 -0400
+Received: by mail-oi0-f43.google.com with SMTP id f189so65570262oig.3
+        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2016 06:13:19 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <CACRpkdY=Y56Uz90Z2SW+=eYJaH1zd8FM6Th2tgjkXVmz6fSScA@mail.gmail.com>
+References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
+ <53008712-7c50-79db-07ab-3544902887e1@kernel.org> <CACRpkdY=Y56Uz90Z2SW+=eYJaH1zd8FM6Th2tgjkXVmz6fSScA@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Thu, 25 Aug 2016 15:13:17 +0200
+Message-ID: <CACRpkdaAW2=taAED53kE9bQ3XSFXRaBAKye9msmtqa-rDZGkGA@mail.gmail.com>
+Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
+To: Jonathan Cameron <jic23@kernel.org>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Nick Vaccaro <nvaccaro@google.com>,
+        Ge Gao <ggao@invensense.com>, Anna Si <asi@invensense.com>,
+        Nathan Royer <nroyer@invensense.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Peter Rosin <peda@axentia.se>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-In at least one known setup, the chip comes up in a state where reading
-the chip ID returns garbage unless it's been reset, due to noise on the
-wires during system boot.
+On Thu, Aug 25, 2016 at 2:37 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
 
-All supported chips have the same reset method, and based on the
-datasheets they all need 1.3 or 1.8ms to recover after reset. So, do
-the conservative thing here and always reset the chip.
+>>> I suspect some of the stuff I've done here should be carried
+>>> over to the MPU-6050 driver in drivers/iio/imu/inv_mpu6050/*
+>>
+>> Which bits in particular?
+>
+> - Fetch and handle regulators for vdd and vddio (currently
+>   totally missing).
+>
+> - Runtime PM, including getting rid of the horrible homebrewn
+>   reference count in inv_mpu6050_set_power_itg()
+>
+> - Oh mpu6050 doesn't even seem to power the device down
+>   on .remove() I think it's a bug actually
 
-Signed-off-by: Olof Johansson <olof@lixom.net>
----
- drivers/iio/accel/bmc150-accel-core.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+Oh and when it comes to the trigger interrupts in
+drivers/iio/imu/inv_mpu6050/inv_mpu_trigger.c
 
-diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-index bf17aae..59b380d 100644
---- a/drivers/iio/accel/bmc150-accel-core.c
-+++ b/drivers/iio/accel/bmc150-accel-core.c
-@@ -67,6 +67,9 @@
- #define BMC150_ACCEL_REG_PMU_BW		0x10
- #define BMC150_ACCEL_DEF_BW			125
- 
-+#define BMC150_ACCEL_REG_RESET			0x14
-+#define BMC150_ACCEL_RESET_VAL			0xB6
-+
- #define BMC150_ACCEL_REG_INT_MAP_0		0x19
- #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
- 
-@@ -1497,6 +1500,14 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
- 	int ret, i;
- 	unsigned int val;
- 
-+	/*
-+	 * Reset chip to get it in a known good state. A delay of 1.8ms after
-+	 * reset is required according to the data sheets of supported chips.
-+	 */
-+	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
-+		     BMC150_ACCEL_RESET_VAL);
-+	usleep_range(1800, 2500);
-+
- 	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
- 	if (ret < 0) {
- 		dev_err(dev, "Error: Reading chip id\n");
--- 
-2.8.0.rc3.29.gb552ff8
+- No active low handling (bit 7 reg 0x37)
+
+- No open drain handling (bit 6 reg 0x37)
+
+- No level interrupt support (bit 5 reg 0x37)
+
+- No check of status register to return IRQ_NONE
+  i.e. spurious IRQ handling is non-existent.
+
+- Timestamping should preferably happen in top
+  half.
+
+All of this should probably happen more like it happens
+in this MPU-3050 driver. Instead it assumes that the
+interrupt assigned will be an edge, low-to-high transition,
+and nothing else is supported.
+
+Yours,
+Linus Walleij
