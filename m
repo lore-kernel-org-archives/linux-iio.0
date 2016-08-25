@@ -1,58 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f44.google.com ([209.85.218.44]:33094 "EHLO
-        mail-oi0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752690AbcHYWLi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2016 18:11:38 -0400
-Received: by mail-oi0-f44.google.com with SMTP id c15so86509087oig.0
-        for <linux-iio@vger.kernel.org>; Thu, 25 Aug 2016 15:10:42 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <067a4882-c6f2-5994-e3ce-100e317ed121@kernel.org>
-References: <1469355434-17043-1-git-send-email-linus.walleij@linaro.org>
- <CACRpkdY0gCLKD3rmiYuFgWSYOe6dtUaBeRi1ns-UFF=AspntFg@mail.gmail.com>
- <c8e83cf2-f9dc-0bc9-fcde-326b05ee290b@kernel.org> <57BD9EB6.1090504@parrot.com>
- <067a4882-c6f2-5994-e3ce-100e317ed121@kernel.org>
+Return-Path: <linus.walleij@linaro.org>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 26 Aug 2016 00:04:45 +0200
-Message-ID: <CACRpkda-Mz0wOAXx4uoZ43OCVw0U_E0+iCrboUO_7keYV2scBw@mail.gmail.com>
-Subject: Re: [PATCH] iio: document bindings for mounting matrixes
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Gregor Boirie <gregor.boirie@parrot.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Samu Onkalo <samu.onkalo@intel.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	devicetree@vger.kernel.org,
+	Peter Rosin <peda@axentia.se>
+Subject: [PATCH 1/2 v2] iio: gyro: Add MPU-3050 device tree bindings
+Date: Thu, 25 Aug 2016 15:16:36 +0200
+Message-Id: <1472130997-27198-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Aug 24, 2016 at 11:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> Gregor:
->> So I feel like we should keep away from any temptation to define the coordinates
->> system too strictly.
->> I also think of systems composed of multiple hardware parts with sensors
->> scattered all over them. What would be the right "device/main hardware" reference
->> frame definition in these cases ?
->> As this is product specific, I feel like "device/main hardware" reference frame
->> definition should be left to the "board/main hardware/device..." implementor's
->> choice.
->
-> Flexible is good, but I think we should define a base rule for the chips frame
-> of reference and fix up any that disagree (which is nasty ABI breakage :(
-> Trivial choice of either right handed or left handed frame might be all we
-> define in general.  Useful to define consistent frames for device types that
-> are common perhaps as well.  (such as the screen ones Linus has here).
+This adds device tree bindings for the MPU-3050 gyroscope. Since it
+is the first set of bindings for a gyroscope, the folder for it
+is also created.
 
-Admittedly I come from the mobile phone industry.
+Cc: devicetree@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Not yet convered to use i2c-gate as I'm waiting for that
+  patch set to stabilize.
+- No changes, just reposting to keep the series together.
+---
+ .../bindings/iio/gyroscope/invensense,mpu3050.txt  | 54 ++++++++++++++++++++++
+ 1 file changed, 54 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
 
-So these frames of reference is not cooked up by me, I installed the
-Android app "Sensors test" to test two devices relative the world, so this
-is the frame of reference used by all mobile phones and tablets on the
-planet (I hardly think iPhone deviates).
-
-I would be happy to write explicitly that for human interaction devices
-with screens that frame of reference should always be assumed, but for
-other uses and device types other frames of reference may apply, would
-you agree?
-
-Yours,
-Linus Walleij
+diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+new file mode 100644
+index 000000000000..e17231a5f4b5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+@@ -0,0 +1,54 @@
++Invensense MPU-3050 Gyroscope device tree bindings
++
++Required properties:
++  - compatible : should be "invensense,mpu3050"
++  - reg : the I2C address of the sensor
++  - #address-cells : should be <1>, used to indicate the optional
++    I2C mux node
++  - #size-cells : should be <0>
++
++Optional properties:
++  - interrupt-parent : should be the phandle for the interrupt controller
++  - interrupts : interrupt mapping for the trigger interrupt from the
++    internal oscillator. The following IRQ modes are supported:
++    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
++    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
++    for the desired interrupt type.
++  - vdd-supply : supply regulator for the main power voltage.
++  - vlogic-supply : supply regulator for the signal voltage.
++  - mount-matrix : see iio/mount-matrix.txt
++
++Optional subnodes:
++  - The MPU-3050 will pass through and forward the I2C signals from the
++    incoming I2C bus, alternatively drive traffic to a slave device (usually
++    an accelerometer) on its own initiative. Therefore is supports a subnode
++    i2c master node. This node is like any I2C master and should contain:
++    #address-cells = <1>;
++    #size-cells = <0>;
++    reg = <0>;
++
++Example:
++
++mpu3050@68 {
++	compatible = "invensense,mpu3050";
++	reg = <0x68>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	interrupt-parent = <&foo>;
++	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
++	vdd-supply = <&bar>;
++	vlogic-supply = <&baz>;
++
++	/* External I2C interface */
++	i2c@0 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		reg = <0>;
++		fnord@18 {
++			compatible = "fnord";
++			reg = <0x18>;
++			interrupt-parent = <&foo>;
++			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
++		};
++	};
++};
+-- 
+2.7.4
