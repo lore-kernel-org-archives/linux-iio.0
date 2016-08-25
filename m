@@ -1,53 +1,249 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f179.google.com ([209.85.217.179]:35396 "EHLO
-        mail-ua0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755218AbcHXWgr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 24 Aug 2016 18:36:47 -0400
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:36364 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754425AbcHYGBk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2016 02:01:40 -0400
+Date: Wed, 24 Aug 2016 22:48:43 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH v2] iio: adc: ltc2485: add support for Linear Technology
+ LTC2485 ADC
+Message-ID: <20160825054829.GA15341@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <770097944.403326.225ddbfe-fd96-4f9b-a2b9-e0173af882ba.open-xchange@email.1und1.de>
-References: <cover.1471524593.git.ksenija.stanojevic@gmail.com> <770097944.403326.225ddbfe-fd96-4f9b-a2b9-e0173af882ba.open-xchange@email.1und1.de>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Wed, 24 Aug 2016 19:30:22 -0300
-Message-ID: <CAOMZO5AM4_51ahmaC5+XKP1GJg1Ltm=nmB2_Ou8_Hk0zOMSh=A@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] mxs-lradc: Split driver into MFD
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Harald Geyer <harald@ccbib.org>, linux-iio@vger.kernel.org,
-        =?UTF-8?B?TWFyZWsgVmHFoXV0?= <marex@denx.de>,
-        Fabio Estevam <fabio.estevam@nxp.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Stefan,
+Adds basic support for the LTC2485 ADC - a delta-sigma analog-to-digital
+converter with an I2C interface that operates in single shot conversion
+mode.
 
-On Tue, Aug 23, 2016 at 5:18 PM, Stefan Wahren <stefan.wahren@i2se.com> wrote:
-> Hi,
->
-> [add Fabio's NXP address]
->
->> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 18. August 2016 um
->> 15:44 geschrieben:
->>
->>
->> Split existing driver mxs-lradc into MFD with touchscreen and
->> IIO part.
->>
->> Tested on I.MX28.
->
-> i tested the patch 1 and 2 successful on a i.MX23 board.
->
-> Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+The driver supports an on board 5V reference and the power-on default
+configuration which rejects both 50hz & 60hz line frequencies and
+operates in 1x speed mode.
 
-Series looks good. I can't test the touchscreen at the moment because
-I don't have access to my mx28evk display, but as it was tested on
-mx23 and mx28 we are fine then.
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+---
+Changes in v2:
+  - changed the wait conversion time function to use monotonic rather than
+    real time and to use milliseconds rather than nanoseconds.  
+  - made conv time a constant int.
 
-Thanks
+Same notes as in v1:
+Reviewers: In addition to commenting on what is present, please comment
+on what is absent and the priority in which you would like to see
+additional features added to this driver, or needed in this first submittal.
+
+Not supported: 
+1. External Vref
+2. Additional Configuration Modes
+        Temperature Sensor Mode: report temp data (not voltage).
+
+        Line Frequency Rejection Mode: select to reject 50Hz or 60Hz
+	or both. (both is default)
+
+        Speed Mode: Default speed mode (1x) performs two conversions each
+	cycle and combines the results.  2x speed mode only does one
+	conversion each cycle.
+3. Power management
+4. DT Bindings
+5. Triggered buffers
+6. What else?
+
+
+ drivers/iio/adc/Kconfig   |   9 +++
+ drivers/iio/adc/Makefile  |   1 +
+ drivers/iio/adc/ltc2485.c | 146 ++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 156 insertions(+)
+ create mode 100644 drivers/iio/adc/ltc2485.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 1de31bd..a042611 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -264,6 +264,15 @@ config LPC18XX_ADC
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called lpc18xx_adc.
+ 
++config LTC2485
++	tristate "Linear Technology LTC2485 ADC driver"
++	depends on I2C
++	help
++	  Say yes here to build support for Linear Technology LTC2485 ADC.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called ltc2485.
++
+ config MAX1027
+ 	tristate "Maxim max1027 ADC driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 0ba0d50..1be5747 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -27,6 +27,7 @@ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+ obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
++obj-$(CONFIG_LTC2485) += ltc2485.o
+ obj-$(CONFIG_MAX1027) += max1027.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+ obj-$(CONFIG_MCP320X) += mcp320x.o
+diff --git a/drivers/iio/adc/ltc2485.c b/drivers/iio/adc/ltc2485.c
+new file mode 100644
+index 0000000..d8f9dac
+--- /dev/null
++++ b/drivers/iio/adc/ltc2485.c
+@@ -0,0 +1,146 @@
++/*
++ * ltc2485.c - Driver for Linear Technology LTC2485 ADC
++ *
++ * Copyright (C) 2016 Alison Schofield <amsfield22@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * Datasheet: http://cds.linear.com/docs/en/datasheet/2485fd.pdf
++ */
++
++#include <linux/delay.h>
++#include <linux/i2c.h>
++#include <linux/module.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++/* Power-on configuration: rejects both 50/60Hz, operates at 1x speed */
++#define LTC2485_CONFIG_DEFAULT		0
++
++struct ltc2485_data {
++	struct i2c_client	*client;
++	ktime_t			time_prev;	/* last conversion */
++};
++
++static void ltc2485_wait_conv(struct ltc2485_data *data)
++{
++	const unsigned int conv_time = 147;	/* conversion time ms */
++	unsigned int time_elapsed;
++
++	/* delay if conversion time not passed since last read or write */
++	time_elapsed = ktime_ms_delta(ktime_get(), data->time_prev);
++
++	if (time_elapsed < conv_time)
++		msleep(conv_time - time_elapsed);
++}
++
++static int ltc2485_read(struct ltc2485_data *data, int *val)
++{
++	struct i2c_client *client = data->client;
++	__be32 buf = 0;
++	int ret;
++
++	ltc2485_wait_conv(data);
++
++	ret = i2c_master_recv(client, (char *)&buf, 4);
++	if (ret < 0)  {
++		dev_err(&client->dev, "i2c_master_recv failed\n");
++		return ret;
++	}
++	data->time_prev = ktime_get();
++	*val = sign_extend32(be32_to_cpu(buf) >> 6, 24);
++	return ret;
++}
++
++static int ltc2485_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct ltc2485_data *data = iio_priv(indio_dev);
++	int ret;
++
++	if (mask == IIO_CHAN_INFO_RAW) {
++		ret = ltc2485_read(data, val);
++		if (ret < 0)
++			return ret;
++
++		return IIO_VAL_INT;
++
++	} else if (mask == IIO_CHAN_INFO_SCALE) {
++		*val = 5000;			/* on board vref millivolts */
++		*val2 = 25;			/* 25 (24 + sign) data bits */
++		return IIO_VAL_FRACTIONAL_LOG2;
++
++	} else {
++		return -EINVAL;
++	}
++}
++
++static const struct iio_chan_spec ltc2485_channel[] = {
++	{
++		.type = IIO_VOLTAGE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)
++	},
++};
++
++static const struct iio_info ltc2485_info = {
++	.read_raw = ltc2485_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int ltc2485_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct iio_dev *indio_dev;
++	struct ltc2485_data *data;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
++				     I2C_FUNC_SMBUS_WRITE_BYTE))
++		return -EOPNOTSUPP;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->info = &ltc2485_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ltc2485_channel;
++	indio_dev->num_channels = ARRAY_SIZE(ltc2485_channel);
++
++	ret = i2c_smbus_write_byte(data->client, LTC2485_CONFIG_DEFAULT);
++	if (ret < 0)
++		return ret;
++
++	data->time_prev = ktime_get();
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct i2c_device_id ltc2485_id[] = {
++	{ "ltc2485", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, ltc2485_id);
++
++static struct i2c_driver ltc2485_driver = {
++	.driver = {
++		.name = "ltc2485",
++	},
++	.probe = ltc2485_probe,
++	.id_table = ltc2485_id,
++};
++module_i2c_driver(ltc2485_driver);
++
++MODULE_AUTHOR("Alison Schofield <amsfield22@gmail.com>");
++MODULE_DESCRIPTION("Linear Technology LTC2485 ADC driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
+
