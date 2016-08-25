@@ -1,92 +1,36 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org,
-	Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org,
-	Peter Rosin <peda@axentia.se>
-Subject: [PATCH 1/2 v2] iio: gyro: Add MPU-3050 device tree bindings
-Date: Thu, 25 Aug 2016 15:16:36 +0200
-Message-Id: <1472130997-27198-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:50307 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933067AbcHYIDo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 25 Aug 2016 04:03:44 -0400
+Subject: Re: [PATCH v2] iio: dac: AD8801: add Analog Devices AD8801/AD8803
+ support
+To: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>,
+        linux-iio@vger.kernel.org
+References: <20160824144420.7326-1-gwenhael.goavec-merou@trabucayre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Paul Cercueil <paul.cercueil@analog.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <0177ce8f-4bc2-a726-1503-6786a14f3148@metafoo.de>
+Date: Thu, 25 Aug 2016 10:02:42 +0200
+MIME-Version: 1.0
+In-Reply-To: <20160824144420.7326-1-gwenhael.goavec-merou@trabucayre.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds device tree bindings for the MPU-3050 gyroscope. Since it
-is the first set of bindings for a gyroscope, the folder for it
-is also created.
+On 08/24/2016 04:44 PM, Gwenhael Goavec-Merou wrote:
+> Add support for Analog Devices AD8801/AD8803, 8 channels 8bits, Digital to
+> Analog converters.
+> 
+> Signed-off-by: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
 
-Cc: devicetree@vger.kernel.org
-Cc: Peter Rosin <peda@axentia.se>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- Not yet convered to use i2c-gate as I'm waiting for that
-  patch set to stabilize.
-- No changes, just reposting to keep the series together.
----
- .../bindings/iio/gyroscope/invensense,mpu3050.txt  | 54 ++++++++++++++++++++++
- 1 file changed, 54 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+Looks good, thanks.
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-new file mode 100644
-index 000000000000..e17231a5f4b5
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-@@ -0,0 +1,54 @@
-+Invensense MPU-3050 Gyroscope device tree bindings
-+
-+Required properties:
-+  - compatible : should be "invensense,mpu3050"
-+  - reg : the I2C address of the sensor
-+  - #address-cells : should be <1>, used to indicate the optional
-+    I2C mux node
-+  - #size-cells : should be <0>
-+
-+Optional properties:
-+  - interrupt-parent : should be the phandle for the interrupt controller
-+  - interrupts : interrupt mapping for the trigger interrupt from the
-+    internal oscillator. The following IRQ modes are supported:
-+    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
-+    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
-+    for the desired interrupt type.
-+  - vdd-supply : supply regulator for the main power voltage.
-+  - vlogic-supply : supply regulator for the signal voltage.
-+  - mount-matrix : see iio/mount-matrix.txt
-+
-+Optional subnodes:
-+  - The MPU-3050 will pass through and forward the I2C signals from the
-+    incoming I2C bus, alternatively drive traffic to a slave device (usually
-+    an accelerometer) on its own initiative. Therefore is supports a subnode
-+    i2c master node. This node is like any I2C master and should contain:
-+    #address-cells = <1>;
-+    #size-cells = <0>;
-+    reg = <0>;
-+
-+Example:
-+
-+mpu3050@68 {
-+	compatible = "invensense,mpu3050";
-+	reg = <0x68>;
-+	#address-cells = <1>;
-+	#size-cells = <0>;
-+	interrupt-parent = <&foo>;
-+	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-+	vdd-supply = <&bar>;
-+	vlogic-supply = <&baz>;
-+
-+	/* External I2C interface */
-+	i2c@0 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		reg = <0>;
-+		fnord@18 {
-+			compatible = "fnord";
-+			reg = <0x18>;
-+			interrupt-parent = <&foo>;
-+			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
-+		};
-+	};
-+};
--- 
-2.7.4
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+
+Just one tiny thing, there is a extra new line at the end of the file. But
+maybe Jonathan can remove that if he replies the patch.
