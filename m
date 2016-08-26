@@ -1,85 +1,72 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:36644 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752089AbcHZOdq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 26 Aug 2016 10:33:46 -0400
+Received: by mail-pf0-f193.google.com with SMTP id y134so5001299pfg.3
+        for <linux-iio@vger.kernel.org>; Fri, 26 Aug 2016 07:33:46 -0700 (PDT)
+From: Wei Yongjun <weiyj.lk@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-	devicetree@vger.kernel.org,
-	Peter Rosin <peda@axentia.se>
-Subject: [PATCH 1/2 v3] iio: gyro: Add MPU-3050 device tree bindings
-Date: Fri, 26 Aug 2016 09:59:07 +0200
-Message-Id: <1472198348-31201-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Matt Ranostay <mranostay@gmail.com>
+Cc: Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
+Subject: [PATCH -next] iio: temperature: fix non static symbol warnings
+Date: Fri, 26 Aug 2016 14:33:20 +0000
+Message-Id: <1472222000-1163-1-git-send-email-weiyj.lk@gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=ISO-8859-1
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds device tree bindings for the MPU-3050 gyroscope. Since it
-is the first set of bindings for a gyroscope, the folder for it
-is also created.
+From: Wei Yongjun <weiyongjun1@huawei.com>
 
-Cc: devicetree@vger.kernel.org
-Cc: Peter Rosin <peda@axentia.se>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Fixes the following sparse warnings:
+
+drivers/iio/temperature/maxim_thermocouple.c:35:28: warning:
+ symbol 'max6675_channels' was not declared. Should it be static?
+drivers/iio/temperature/maxim_thermocouple.c:52:28: warning:
+ symbol 'max31855_channels' was not declared. Should it be static?
+drivers/iio/temperature/maxim_thermocouple.c:98:38: warning:
+ symbol 'maxim_thermocouple_chips' was not declared. Should it be static?
+
+Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
 ---
-ChangeLog v2->v3:
-- Augmented device tree bindings to reflect Peter Rosins now merged
-  I2C gate bindings.
-ChangeLog v1->v2:
-- Not yet convered to use i2c-gate as I'm waiting for that
-  patch set to stabilize.
----
- .../bindings/iio/gyroscope/invensense,mpu3050.txt  | 46 ++++++++++++++++++++++
- 1 file changed, 46 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+ drivers/iio/temperature/maxim_thermocouple.c | 6 +++---
+ 1 file changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-new file mode 100644
-index 000000000000..b0d3b59966bc
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
-@@ -0,0 +1,46 @@
-+Invensense MPU-3050 Gyroscope device tree bindings
-+
-+Required properties:
-+  - compatible : should be "invensense,mpu3050"
-+  - reg : the I2C address of the sensor
-+
-+Optional properties:
-+  - interrupt-parent : should be the phandle for the interrupt controller
-+  - interrupts : interrupt mapping for the trigger interrupt from the
-+    internal oscillator. The following IRQ modes are supported:
-+    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
-+    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
-+    for the desired interrupt type.
-+  - vdd-supply : supply regulator for the main power voltage.
-+  - vlogic-supply : supply regulator for the signal voltage.
-+  - mount-matrix : see iio/mount-matrix.txt
-+
-+Optional subnodes:
-+  - The MPU-3050 will pass through and forward the I2C signals from the
-+    incoming I2C bus, alternatively drive traffic to a slave device (usually
-+    an accelerometer) on its own initiative. Therefore is supports a subnode
-+    i2c gate node. For details see: i2c/i2c-gate.txt
-+
-+Example:
-+
-+mpu3050@68 {
-+	compatible = "invensense,mpu3050";
-+	reg = <0x68>;
-+	interrupt-parent = <&foo>;
-+	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
-+	vdd-supply = <&bar>;
-+	vlogic-supply = <&baz>;
-+
-+	/* External I2C interface */
-+	i2c-gate {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		fnord@18 {
-+			compatible = "fnord";
-+			reg = <0x18>;
-+			interrupt-parent = <&foo>;
-+			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
-+		};
-+	};
-+};
--- 
-2.7.4
+diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+index 030827e..39dd202 100644
+--- a/drivers/iio/temperature/maxim_thermocouple.c
++++ b/drivers/iio/temperature/maxim_thermocouple.c
+@@ -32,7 +32,7 @@ enum {
+ 	MAX31855,
+ };
+ 
+-const struct iio_chan_spec max6675_channels[] = {
++static const struct iio_chan_spec max6675_channels[] = {
+ 	{	/* thermocouple temperature */
+ 		.type = IIO_TEMP,
+ 		.info_mask_separate =
+@@ -49,7 +49,7 @@ const struct iio_chan_spec max6675_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(1),
+ };
+ 
+-const struct iio_chan_spec max31855_channels[] = {
++static const struct iio_chan_spec max31855_channels[] = {
+ 	{	/* thermocouple temperature */
+ 		.type = IIO_TEMP,
+ 		.address = 2,
+@@ -95,7 +95,7 @@ struct maxim_thermocouple_chip {
+ 	u32 status_bit;
+ };
+ 
+-const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
++static const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
+ 	[MAX6675] = {
+ 			.channels = max6675_channels,
+ 			.num_channels = ARRAY_SIZE(max6675_channels),
+
+
+
