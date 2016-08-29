@@ -1,86 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42671 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42701 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754544AbcH2Syb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 14:54:31 -0400
-Subject: Re: [PATCH] iio: hid-sensors: avoid unused function warning
-To: Arnd Bergmann <arnd@arndb.de>
-References: <20160826152956.666025-1-arnd@arndb.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+        with ESMTP id S1752237AbcH2TBX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 15:01:23 -0400
+Subject: Re: [PATCH v1 3/3] iio:pressure: initial zpa2326 barometer support
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <cover.1472050374.git.gregor.boirie@parrot.com>
+ <a16becf5ac0ac811a993a26de32a0d41f3eb4ffa.1472050374.git.gregor.boirie@parrot.com>
+ <alpine.DEB.2.02.1608242115340.4077@pmeerw.net> <57BF0488.4000902@parrot.com>
+Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <99075295-c385-f856-bbe0-743858da549a@kernel.org>
-Date: Mon, 29 Aug 2016 19:54:26 +0100
+Message-ID: <8a47f701-1cff-7c5c-639b-ec2258c62025@kernel.org>
+Date: Mon, 29 Aug 2016 20:01:11 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160826152956.666025-1-arnd@arndb.de>
+In-Reply-To: <57BF0488.4000902@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/08/16 16:29, Arnd Bergmann wrote:
-> A small rework of the PM code in this driver introduced a harmless
-> warning when CONFIG_PM_SLEEP is not set:
+On 25/08/16 15:45, Gregor Boirie wrote:
+> Answers inline
 > 
-> drivers/iio/common/hid-sensors/hid-sensor-trigger.c:212:12: error: 'hid_sensor_resume' defined but not used [-Werror=unused-function]
+> On 08/25/2016 08:34 AM, Peter Meerwald-Stadler wrote:
 > 
-> This removes the #ifdef and instead marks all three PM functions
-> as __maybe_unused, which covers all possible cases and is harder
-> to get wrong.
+>> +#define ZPA_CONVERSION_TIMEOUT (HZ / 5)
+>> ZPA2326_ prefix would be expected by convention
+> It seems such a long prefix to me. I would prefer "zpa" but it's not distinctive enough.
+> Anyway, convention prevails.
 > 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 7f6cf7414538 ("iio: hid-sensors: use asynchronous resume")
-Applied to the togreg branch of iio.git
+>>
+>>> +
+>>> +/* Registers map. */
+>> Register map
+>>
+>>> +#define ZPA_REF_P_XL_REG                     ((u8)0x8)
+>> do we really need u8 here?
+> nop.
+> 
+>>   why?
+> Just to inform reader addresses are encoded onto 8 bits. Removed.
+> 
+>> +/*
+>> + * Enable device, i.e. get out of low power mode.
+>> + *
+>> + * Required to access complete register space and to perform any sampling
+>> + * or control operations.
+>> + */
+>> +static int zpa_enable_device(const struct iio_dev *indio_dev)
+>> +{
+>> +    int err = zpa_write_byte(indio_dev, ZPA_CTRL_REG0_REG,
+>> +                 ZPA_CTRL_REG0_ENABLE);
+>> +    if (err) {
+>> +        zpa_err(indio_dev, "failed to enable device (%d)", err);
+>> I think messages should end with \n
+> Why ? Enforce flushing ? dev_err adds an implicit "\n". It saves a few characters and
+> sometimes makes strings fit into 80 columns :)
+> 
+>> +/* Enqueue new channel samples to IIO buffer. */
+>> +static int zpa_fill_sample_buffer(struct iio_dev           *indio_dev,
+>> +                  const struct zpa_private *private)
+>> +{
+>> +    struct {
+>> +        u32 pressure;
+>> +        u16 temperature;
+>> timestamp should be 8-byte aligned, padding needed
+> This one surprises me. I may completly miss the point but unless using
+> the packed attribute, compiler implicitly aligns "timestamp" upon 8 bytes
+> boundary in this case.
+> 
+>>
+>>> +        u64 timestamp;
+>>> +    }   sample;
+>> extra spaces before 'sample'
+> text-aligned onto the below variable declaration.
+> 
+>>
+>>> +    int err;
+>>> +
+>>> +    if (test_bit(0, indio_dev->active_scan_mask)) {
+>>> +        /* Get current pressure from hardware fifo. */
+>>> +        err = zpa_dequeue_pressure(indio_dev, &sample.pressure);
+>> pressure is 4 bytes, but only 3 bytes are read; one byte uninitialized?
+> arrrgh! Many thanks for this. My mind must have been floating around while
+> coding this.
+>>
+>>> +        if (err) {
+>>> +            zpa_warn(indio_dev, "failed to fetch pressure (%d)",
+>> here and elsewhere: why zpa_warn() on error?
+> Because this error does not put kernel and/or driver functional stability in danger.
+> Maybe we can recover from it at next sampling round. It just requires user
+> attention.
+> 
+> I've always been a bit confused as to which log level to use and from which context.
+> Any rule of thumb ?
+> 
+>> +/* Retrieve a raw sample and convert it to CPU endianness. */
+>> +static int zpa_fetch_raw_sample(const struct iio_dev *indio_dev,
+>> +                enum iio_chan_type    type,
+>> +                int                  *value)
+>> +{
+>> +    int err;
+>> +
+>> +    switch (type) {
+>> +    case IIO_PRESSURE:
+>> +        zpa_dbg(indio_dev, "fetching raw pressure sample");
+>> +
+>> +        err = zpa_read_block(indio_dev, ZPA_PRESS_OUT_XL_REG, 3,
+>> +                     (u8 *)value);
+>> +        if (err) {
+>> +            zpa_warn(indio_dev, "failed to fetch pressure (%d)",
+>> +                 err);
+>> +            return err;
+>> +        }
+>> +
+>> +        /* Pressure is a 24 bits wide little-endian unsigned int. */
+>> +        *value = (((u8 *)value)[2] << 16) | (((u8 *)value)[1] << 8) |
+>> +             ((u8 *)value)[0];
+>> +
+>> +        return IIO_VAL_INT;
+>> +
+>> +    case IIO_TEMP:
+>> +        zpa_dbg(indio_dev, "fetching raw temperature sample");
+>> +
+>> +        err = zpa_read_block(indio_dev, ZPA_TEMP_OUT_L_REG, 2,
+>> +                     (u8 *)value);
+>> +        if (err) {
+>> +            zpa_warn(indio_dev, "failed to fetch temperature (%d)",
+>> +                 err);
+>> +            return err;
+>> +        }
+>> +
+>> +        /* Temperature is a 16 bits wide little-endian signed int. */
+>> +        *value = (int)le16_to_cpup((__le16 *)value);
+>> +
+>> +        return IIO_VAL_INT;
+>> +
+>> +    default:
+>> +        BUG();
+>> return -EINVAL
+> This case is clearly a coding bug since if channels are properly defined
+> this will never happen unless IIO layer is completly screwed up.
+> Why returning an error then ? This is a situation that requires debug / code rework.
+> Same for other BUG() invocations.
+> 
+> I'm not reluctant to change anything here, I just want to properly understand
+> the rationales.
+> 
+>>
+>> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+>> +                  zpa_show_frequency,
+>> +                  zpa_store_frequency);
+>> +
+>> +/* Expose supported hardware sampling frequencies (Hz) through sysfs. */
+>> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1 5 11 23");
+>> +
+>> +static struct attribute *zpa_attributes[] = {
+>> +    &iio_dev_attr_sampling_frequency.dev_attr.attr,
+>> +    &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>> +    NULL
+>> +};
+>> +
+>> +static const struct attribute_group zpa_attribute_group = {
+>> +    .attrs = zpa_attributes,
+>> +};
+>> +
+>> +static const struct iio_chan_spec zpa_channels[] = {
+>> +    [0] = {
+>> +        .type                   = IIO_PRESSURE,
+>> +        .channel                = 0,
+>> .channel is not needed since channels are not indexed
+> ack'ed
+> 
+>>> +
+>>> +    zpa_init_runtime(slave);
+>>> +
+>>> +    err = devm_iio_device_register(slave, indio_dev);
+>> can't use devm_ register if there is a non-empty remove()
+> Removal hooks are registered onto bus specific devices not onto
+> IIO ones. Enabling devm debug outputs a removal flow trace that
+> seems correct. Is this really wrong ?
+Yes.  The unwind of devm_iio_device_register will occur after the
+whatever is in the remove function.  As devm_iio_device_unregister
+is responsible for removal of the userspace and other interfaces
+until that happens they are still present.
 
-Thanks,
+Hence whilst a remove is going on the device can be powered
+down but the interfaces still exposed.  A read at that point
+is going to cause some an error to occur.
+
+Hence, using the devm form is fine if everything else is
+handled automatically, i.e. there is nothing in remove.
+Otherwise, you almost always have a race condition.
+
+It's a minor one given how often people remove modules, but
+worth cleaning up anyway!
 
 Jonathan
-> ---
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
 > 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 5264ed6e03e5..a3cce3a38300 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -199,8 +199,7 @@ error_ret:
->  }
->  EXPORT_SYMBOL(hid_sensor_setup_trigger);
->  
-> -#ifdef CONFIG_PM
-> -static int hid_sensor_suspend(struct device *dev)
-> +static int __maybe_unused hid_sensor_suspend(struct device *dev)
->  {
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -209,7 +208,7 @@ static int hid_sensor_suspend(struct device *dev)
->  	return _hid_sensor_power_state(attrb, false);
->  }
->  
-> -static int hid_sensor_resume(struct device *dev)
-> +static int __maybe_unused hid_sensor_resume(struct device *dev)
->  {
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -218,7 +217,7 @@ static int hid_sensor_resume(struct device *dev)
->  	return 0;
->  }
->  
-> -static int hid_sensor_runtime_resume(struct device *dev)
-> +static int __maybe_unused hid_sensor_runtime_resume(struct device *dev)
->  {
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -226,8 +225,6 @@ static int hid_sensor_runtime_resume(struct device *dev)
->  	return _hid_sensor_power_state(attrb, true);
->  }
->  
-> -#endif
-> -
->  const struct dev_pm_ops hid_sensor_pm_ops = {
->  	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend, hid_sensor_resume)
->  	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
-> 
+> Many thanks for the review. Regards,
+> Greg.
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
