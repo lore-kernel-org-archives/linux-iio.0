@@ -1,60 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f170.google.com ([209.85.192.170]:33152 "EHLO
-        mail-pf0-f170.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751277AbcH0G1B (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 27 Aug 2016 02:27:01 -0400
-Received: by mail-pf0-f170.google.com with SMTP id y134so35158698pfg.0
-        for <linux-iio@vger.kernel.org>; Fri, 26 Aug 2016 23:27:01 -0700 (PDT)
-From: Baoyou Xie <baoyou.xie@linaro.org>
-To: jic23@kernel.org, lars@metafoo.de, pmeerw@pmeerw.net
-Cc: linus.walleij@linaro.org, rob@kernel.org, maitysanchayan@gmail.com,
-        baoyou.xie@linaro.org, leonard.crestez@intel.com,
-        gregor.boirie@parrot.com, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, arnd@linaro.org,
-        xie.baoyou@zte.com.cn
-Subject: [PATCH] fix:iio:common:st_sensors:st_sensors_trigger:mark symbols static where possible
-Date: Sat, 27 Aug 2016 14:26:30 +0800
-Message-Id: <1472279190-23169-1-git-send-email-baoyou.xie@linaro.org>
+Received: from mail-oi0-f43.google.com ([209.85.218.43]:36381 "EHLO
+        mail-oi0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933015AbcH2NWD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 09:22:03 -0400
+Received: by mail-oi0-f43.google.com with SMTP id f189so195066025oig.3
+        for <linux-iio@vger.kernel.org>; Mon, 29 Aug 2016 06:21:51 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <20160826153137.701672-1-arnd@arndb.de>
+References: <20160826153137.701672-1-arnd@arndb.de>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Mon, 29 Aug 2016 15:21:50 +0200
+Message-ID: <CACRpkdbD-=o6CiZLLrEufi1QU+y-598QGDb5cH-VLRgDaeETKg@mail.gmail.com>
+Subject: Re: [PATCH] iio: magn/ak8974: avoid unused function warning
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We get 2 warnings when biuld kernel with W=1:
-drivers/iio/common/st_sensors/st_sensors_trigger.c:69:13: warning: no previous prototype
-for 'st_sensors_irq_handler' [-Wmissing-prototypes]
-drivers/iio/common/st_sensors/st_sensors_trigger.c:85:13: warning: no previous prototype
-for 'st_sensors_irq_thread' [-Wmissing-prototypes]
+On Fri, Aug 26, 2016 at 5:31 PM, Arnd Bergmann <arnd@arndb.de> wrote:
 
-In fact, these functions are only used in the file in which they are
-declared and don't need a declaration, but can be made static.
-so this patch marks these functions with 'static'.
+> The ak8974_configure() function is used only from the PM code,
+> but that can be hidden when CONFIG_PM is disabled:
+>
+> drivers/iio/magnetometer/ak8974.c:201:12: error: 'ak8974_configure' defined but not used [-Werror=unused-function]
+>
+> This replaces the #ifdef with a __maybe_unused annotation, which
+> will work correctly in all configurations and avoid the warning,
+> as the compiler can now see where ak8974_configure is called from.
+>
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Fixes: 7c94a8b2ee8c ("iio: magn: add a driver for AK8974")
 
-Signed-off-by: Baoyou Xie <baoyou.xie@linaro.org>
----
- drivers/iio/common/st_sensors/st_sensors_trigger.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Nice catch!
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-index e66f12e..fa73e67 100644
---- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
-@@ -66,7 +66,7 @@ static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
-  * @irq: irq number
-  * @p: private handler data
-  */
--irqreturn_t st_sensors_irq_handler(int irq, void *p)
-+static irqreturn_t st_sensors_irq_handler(int irq, void *p)
- {
- 	struct iio_trigger *trig = p;
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
-@@ -82,7 +82,7 @@ irqreturn_t st_sensors_irq_handler(int irq, void *p)
-  * @irq: irq number
-  * @p: private handler data
-  */
--irqreturn_t st_sensors_irq_thread(int irq, void *p)
-+static irqreturn_t st_sensors_irq_thread(int irq, void *p)
- {
- 	struct iio_trigger *trig = p;
- 	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
--- 
-2.7.4
-
+Yours,
+Linus Walleij
