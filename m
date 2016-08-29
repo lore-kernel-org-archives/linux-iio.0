@@ -1,50 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41574 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41880 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932968AbcH2P3l (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 11:29:41 -0400
-Subject: Re: [PATCH] staging: iio: accel: sca3000: remove extra space
-To: Clifton Barnes <clifton.a.barnes@gmail.com>
-References: <1471920305-9474-1-git-send-email-clifton.a.barnes@gmail.com>
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
+        with ESMTP id S1754648AbcH2Qh2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 12:37:28 -0400
+Subject: Re: [PATCH 2/3] iio: chemical: vz89x: add support for VZ89TE part
+To: Matt Ranostay <mranostay@gmail.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1471923894-12194-1-git-send-email-mranostay@gmail.com>
+ <1471923894-12194-3-git-send-email-mranostay@gmail.com>
+ <alpine.DEB.2.02.1608230735270.12003@pmeerw.net>
+ <CAKzfze9ERDejECJj-nrTaxvyEFuhDUKLafRegzpoKtpcqBLT5g@mail.gmail.com>
+ <alpine.DEB.2.02.1608231004100.13780@pmeerw.net>
+ <CAKzfze86ASAM9oKGP+JgCrzEvoQG7AEus13cq5vFY_BYeVUPhg@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1a986128-9e8c-94cc-f3c7-c710e9e0bf94@kernel.org>
-Date: Mon, 29 Aug 2016 16:29:39 +0100
+Message-ID: <623a0019-56b5-4787-92c7-213e1e751915@kernel.org>
+Date: Mon, 29 Aug 2016 17:37:24 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471920305-9474-1-git-send-email-clifton.a.barnes@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAKzfze86ASAM9oKGP+JgCrzEvoQG7AEus13cq5vFY_BYeVUPhg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/08/16 03:45, Clifton Barnes wrote:
-> fix checkpatch.pl warning about 'Statements should start on a
-> tabstop'
+On 23/08/16 09:43, Matt Ranostay wrote:
+> On Tue, Aug 23, 2016 at 1:10 AM, Peter Meerwald-Stadler
+> <pmeerw@pmeerw.net> wrote:
+>>
+>>>>>  struct vz89x_data {
+>>>>> @@ -79,6 +92,40 @@ static const struct iio_chan_spec vz89x_channels[] = {
+>>>>>               .info_mask_separate =
+>>>>>                       BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+>>>>>               .address = VZ89X_VOC_RESISTANCE_IDX,
+>>>>> +             .scan_index = -1,
+>>>>> +             .scan_type = {
+>>>>
+>>>> scan_type with a scan_index of -1 is unexpected
+>>>
+>>> Isn't that the typical usage to signal a non bufffered channel?.
+>>> But guess the lack of storage, real bits, and buffered trigger
+>>> register would signal that anyway.
+>>
+>> scan_index == -1 signals that scan_type is not used for buffered reads,
+>> but then scan_type is used to store endianness
+>>
+>> one *could* want a check/invariant that either
+>> scan_index >= 0 and scan_type must be provided, and
+This first one could indeed be done if anyone wanted to.
+It not being present and getting to a submission would rather signal
+a lack of testing with standard tools, but I guess this could happen
+by 'accident' if someone adds something like a temperature channel
+and only ever checks the sysfs interface.
+>> scan_index == -1 and scan_type must NOT be provided
+Not so keen on this one.
+>>
+>> no bit deal, maybe there is an easy way to store the channel endianness
+>> elsewhere; maybe a chip_info struct?
+>>
+>> I haven't checked (yet) what other drivers do in this regards...
 > 
-> Signed-off-by: Clifton Barnes <clifton.a.barnes@gmail.com>
-Applied to the togreg branch of iio.git. Will be initially 
-pushed out as testing for the autobuilders to play with it.
+> No real reason to do it here but since the struct already exists to
+> store this bit of information... maybe Jonathan has feedback either
+> way..
+It's fine to use it for this. Quite a few drivers IIRC have
+done this in the past.
 
-Thanks,
 
-Jonathan
-> ---
->  drivers/staging/iio/accel/sca3000_core.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-> index b5625f5..61f3241 100644
-> --- a/drivers/staging/iio/accel/sca3000_core.c
-> +++ b/drivers/staging/iio/accel/sca3000_core.c
-> @@ -412,7 +412,7 @@ static const struct iio_event_spec sca3000_event = {
->  		},						\
->  		.event_spec = &sca3000_event,			\
->  		.num_event_specs = 1,				\
-> -	 }
-> +	}
->  
->  static const struct iio_chan_spec sca3000_channels[] = {
->  	SCA3000_CHAN(0, IIO_MOD_X),
-> 
+>>
+>> p.
+>>
+>> --
+>>
+>> Peter Meerwald-Stadler
+>> +43-664-2444418 (mobile)
 
