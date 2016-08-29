@@ -1,140 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41512 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41525 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757552AbcH2PPV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 11:15:21 -0400
-Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
-To: Lee Jones <lee.jones@linaro.org>
-References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
- <b32afa2d-965c-569c-dde1-3611615080d3@kernel.org>
- <20160816124907.GK25844@dell>
- <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Olof Johansson <olof@lixom.net>,
+        with ESMTP id S1757454AbcH2PRB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 11:17:01 -0400
+Subject: Re: [PATCH] iio: ad5755: fix off-by-one on devnr limit check
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Colin King <colin.king@canonical.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>
+        linux-iio@vger.kernel.org
+References: <1469486401-17839-1-git-send-email-colin.king@canonical.com>
+ <1efdfc25-b13d-c383-2346-75b414b32081@kernel.org>
+ <3ed48869-735a-002b-d89e-b1a694d19b6e@metafoo.de>
+Cc: linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a2d7688d-753d-8c50-728b-f33cc5e31eb9@kernel.org>
-Date: Mon, 29 Aug 2016 16:14:29 +0100
+Message-ID: <dc382576-c8d8-3d63-219a-b8a9dee7db1f@kernel.org>
+Date: Mon, 29 Aug 2016 16:16:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org>
+In-Reply-To: <3ed48869-735a-002b-d89e-b1a694d19b6e@metafoo.de>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/08/16 20:57, Jonathan Cameron wrote:
-> On 16/08/16 13:49, Lee Jones wrote:
->> On Mon, 15 Aug 2016, Jonathan Cameron wrote:
->>
->>> On 01/08/16 10:54, Enric Balletbo i Serra wrote:
->>>> Hi,
->>>>
->>>> This is the four patchset to add support for the sensors behind the ChromeOS
->>>> Embedded Controller.
->>>>
->>>> This version has only the patches to support common functions and 3d
->>>> contiguous sensors like Accelerometers, Gyroscope and Magnetometer that are
->>>> presented by the ChromeOS EC Sensor hub. The patches were tested on an Oak board.
->>>>
->>>> The code was checked out from the ChromeOS v3.18 tree and forward ported to
->>>> mainline solving all the conflicts and build issues. I splitted the code in
->>>> single patches that have sense by themselves in order to avoid the chances
->>>> to fail.
->>>>
->>>> Note that the patches depends on this [1] to apply and work.
->>>>
->>>> [1] https://lkml.org/lkml/2016/7/1/188
->>> Given this dependency I'm assuming the best route for these is via
->>> the MFD tree...
+On 21/08/16 21:07, Lars-Peter Clausen wrote:
+> On 08/21/2016 09:30 PM, Jonathan Cameron wrote:
+>> On 25/07/16 23:40, Colin King wrote:
+>>> From: Colin Ian King <colin.king@canonical.com>
 >>>
->>> Lee, shout if you want them to go a different route.
+>>> The comparison for devnr limits is off-by-one, the current check
+>>> allows 0 to AD5755_NUM_CHANNELS and the limit should be in fact
+>>> 0 to AD5755_NUM_CHANNELS - 1.  This can lead to an out of bounds
+>>> write to pdata->dac[devnr]. Fix this by replacing > with >= on the
+>>> comparison.
+>>>
+>>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+>> Lars? 
 >>
->> IIO looks like a more suitable route.  Please provide me with a
->> pull-request base off of an immutable tag.
-> Hi Lee,
+>> Looks correct to me.
+>>
+>> I'd also like a fixes tag for this if possible.  Guessing it
+>> might well be the original driver introduction but best to be
+>> sure ;)
 > 
-> As far as I can tell the precursor patch above hasn't gone in your
-> tree yet which leaves me unable to take this through IIO for now.
+> It's new in 4.8-rc1. It was introduced by the devictree support patch.
 > 
-> Maybe I'm missing something!
-> 
-> Jonathan
+> Fixes: c947459979c6 ("iio: ad5755: add support for dt bindings")
+Thanks Lars,
 
-Hi Lee,
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
 
-Any movement on the dependency above?
-
-Last I can find was you adding your ack to it:
-[PATCH v2 1/2] mfd: cros_ec: Add MKBP event support
-
-https://lkml.org/lkml/2016/8/16/423
+Thanks,
 
 Jonathan
->>
->>>> Waiting for your reviews and feedback.
->>>>
->>>> Changes since v3 (requested by Guenter Roeck)
->>>>   - Convert structure to a simple array
->>>>   - Remove PM declarations
->>>>   - Remove unnecessary initializations
->>>>   - cros_ec_sensors_cmd_read_u16: Conversion should only be done if ret >= 0
->>>>   - Remove unnecessary else
->>>>   - Add Reviewed-by tag for two last patches.
->>>>
->>>> Changes since v2 (requested by Guenter Roeck and Jonhatan Cameron)
->>>>   - Rebased and fix build error.
->>>>   - Include a list of possible values in the description of location attr.
->>>>   - Fix some typos.
->>>>   - Remove id sysfs entry.
->>>>   - Skip filling by zero structure parameters that already zero'd.
->>>>   - Order includes alphabetically.
->>>>   - Propagate error codes.
->>>>
->>>> Changes since v1 (requested by Peter Meerwald-Stadler and Jonhatan Cameron)
->>>>   - Check kernel-doc documentation and 
->>>>   - Bring some patches together.
->>>>   - Fix some spelling mistakes.
->>>>   - Include ABI documentation.
->>>>   - Be more careful with buffer sizes (sprintf -> snprintf)
->>>>   - Add cros_ec_sensors prefix to all function.
->>>>   - Check return values on some functions.
->>>>
->>>> Best regards,
->>>>
->>>> Enric Balletbo i Serra (3):
->>>>   iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC
->>>>     Sensor Hub.
->>>>   iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
->>>>   platform/chrome: cros_ec_dev - Register cros-ec sensors
->>>>
->>>> Vincent Palatin (1):
->>>>   platform/chrome: Introduce a new function to check EC features.
->>>>
->>>>  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  18 +
->>>>  drivers/iio/common/Kconfig                         |   1 +
->>>>  drivers/iio/common/Makefile                        |   1 +
->>>>  drivers/iio/common/cros_ec_sensors/Kconfig         |  22 +
->>>>  drivers/iio/common/cros_ec_sensors/Makefile        |   6 +
->>>>  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++
->>>>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 450 +++++++++++++++++++++
->>>>  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 175 ++++++++
->>>>  drivers/platform/chrome/cros_ec_dev.c              | 159 ++++++++
->>>>  include/linux/mfd/cros_ec.h                        |  10 +
->>>>  include/linux/mfd/cros_ec_commands.h               | 183 ++++++++-
->>>>  11 files changed, 1342 insertions(+), 5 deletions(-)
->>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
->>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
->>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
->>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
->>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
->>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
->>>>
->>>
->>
 > 
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
