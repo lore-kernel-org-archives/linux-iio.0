@@ -1,91 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42630 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42772 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752400AbcH2Stp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 14:49:45 -0400
-Subject: Re: [PATCH -next] iio: temperature: fix non static symbol warnings
-To: Matt Ranostay <mranostay@gmail.com>,
-        Wei Yongjun <weiyj.lk@gmail.com>
-References: <1472222000-1163-1-git-send-email-weiyj.lk@gmail.com>
- <F9B1372A-28A3-4B3B-98CA-09BDA439A97D@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
+        with ESMTP id S1751314AbcH2TNv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 15:13:51 -0400
+Subject: Re: [PATCH] fix:iio:common:st_sensors:st_sensors_trigger:mark symbols
+ static where possible
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Baoyou Xie <baoyou.xie@linaro.org>
+References: <1472279190-23169-1-git-send-email-baoyou.xie@linaro.org>
+ <CACRpkdZgXX9v9AZcjb955rf8U2jNNM2J6X_jboDDKGS0z0CQsA@mail.gmail.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, rob@kernel.org,
+        maitysanchayan@gmail.com,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Arnd Bergmann <arnd@linaro.org>, xie.baoyou@zte.com.cn
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <396702fd-dbd0-a9dc-ec23-c59b8dd1a68a@kernel.org>
-Date: Mon, 29 Aug 2016 19:49:43 +0100
+Message-ID: <849dac94-63e1-8e0a-584c-b5c02dd811a7@kernel.org>
+Date: Mon, 29 Aug 2016 20:13:49 +0100
 MIME-Version: 1.0
-In-Reply-To: <F9B1372A-28A3-4B3B-98CA-09BDA439A97D@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkdZgXX9v9AZcjb955rf8U2jNNM2J6X_jboDDKGS0z0CQsA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/08/16 09:51, Matt Ranostay wrote:
-> Reviewed-By: Matt Ranostay <mranostay@gmail.com>
-Applied to the togreg branch of iio.git.
-This will be initially pushed out as testing for the autobuilders
-to play with it.
+On 27/08/16 09:44, Linus Walleij wrote:
+> On Sat, Aug 27, 2016 at 8:26 AM, Baoyou Xie <baoyou.xie@linaro.org> wrote:
+> 
+>> We get 2 warnings when biuld kernel with W=1:
+>> drivers/iio/common/st_sensors/st_sensors_trigger.c:69:13: warning: no previous prototype
+>> for 'st_sensors_irq_handler' [-Wmissing-prototypes]
+>> drivers/iio/common/st_sensors/st_sensors_trigger.c:85:13: warning: no previous prototype
+>> for 'st_sensors_irq_thread' [-Wmissing-prototypes]
+>>
+>> In fact, these functions are only used in the file in which they are
+>> declared and don't need a declaration, but can be made static.
+>> so this patch marks these functions with 'static'.
+>>
+>> Signed-off-by: Baoyou Xie <baoyou.xie@linaro.org>
+> 
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Applied to the togreg branch of iio.git. Initially pushed out
+as testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 > 
->> On Aug 26, 2016, at 07:33, Wei Yongjun <weiyj.lk@gmail.com> wrote:
->>
->> From: Wei Yongjun <weiyongjun1@huawei.com>
->>
->> Fixes the following sparse warnings:
->>
->> drivers/iio/temperature/maxim_thermocouple.c:35:28: warning:
->> symbol 'max6675_channels' was not declared. Should it be static?
->> drivers/iio/temperature/maxim_thermocouple.c:52:28: warning:
->> symbol 'max31855_channels' was not declared. Should it be static?
->> drivers/iio/temperature/maxim_thermocouple.c:98:38: warning:
->> symbol 'maxim_thermocouple_chips' was not declared. Should it be static?
->>
->> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
->> ---
->> drivers/iio/temperature/maxim_thermocouple.c | 6 +++---
->> 1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
->> index 030827e..39dd202 100644
->> --- a/drivers/iio/temperature/maxim_thermocouple.c
->> +++ b/drivers/iio/temperature/maxim_thermocouple.c
->> @@ -32,7 +32,7 @@ enum {
->>    MAX31855,
->> };
->>
->> -const struct iio_chan_spec max6675_channels[] = {
->> +static const struct iio_chan_spec max6675_channels[] = {
->>    {    /* thermocouple temperature */
->>        .type = IIO_TEMP,
->>        .info_mask_separate =
->> @@ -49,7 +49,7 @@ const struct iio_chan_spec max6675_channels[] = {
->>    IIO_CHAN_SOFT_TIMESTAMP(1),
->> };
->>
->> -const struct iio_chan_spec max31855_channels[] = {
->> +static const struct iio_chan_spec max31855_channels[] = {
->>    {    /* thermocouple temperature */
->>        .type = IIO_TEMP,
->>        .address = 2,
->> @@ -95,7 +95,7 @@ struct maxim_thermocouple_chip {
->>    u32 status_bit;
->> };
->>
->> -const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
->> +static const struct maxim_thermocouple_chip maxim_thermocouple_chips[] = {
->>    [MAX6675] = {
->>            .channels = max6675_channels,
->>            .num_channels = ARRAY_SIZE(max6675_channels),
->>
->>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Yours,
+> Linus Walleij
 > 
 
