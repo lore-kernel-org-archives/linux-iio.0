@@ -1,79 +1,74 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1472420960.2480.2.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: hid-sensors: avoid unused function warning
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Arnd Bergmann <arnd@arndb.de>, Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Date: Sun, 28 Aug 2016 14:49:20 -0700
-In-Reply-To: <20160826152956.666025-1-arnd@arndb.de>
-References: <20160826152956.666025-1-arnd@arndb.de>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42792 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755879AbcH2TPa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 15:15:30 -0400
+Subject: Re: [PATCH v2] fix:iio:common:st_sensors:st_sensors_trigger:mark
+ symbols static where possible
+To: Baoyou Xie <baoyou.xie@linaro.org>, lars@metafoo.de,
+        pmeerw@pmeerw.net
+References: <1472367851-14762-1-git-send-email-baoyou.xie@linaro.org>
+Cc: linus.walleij@linaro.org, rob@kernel.org, maitysanchayan@gmail.com,
+        leonard.crestez@intel.com, gregor.boirie@parrot.com,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        arnd@linaro.org, xie.baoyou@zte.com.cn
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <9bbf59e2-26e7-ee92-7568-4e1ecb990719@kernel.org>
+Date: Mon, 29 Aug 2016 20:15:22 +0100
+MIME-Version: 1.0
+In-Reply-To: <1472367851-14762-1-git-send-email-baoyou.xie@linaro.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, 2016-08-26 at 17:29 +0200, Arnd Bergmann wrote:
-A small rework of the PM code in this driver introduced a harmless
-> warning when CONFIG_PM_SLEEP is not set:
+On 28/08/16 08:04, Baoyou Xie wrote:
+> We get 2 warnings when biuld kernel with W=1:
+> drivers/iio/common/st_sensors/st_sensors_trigger.c:69:13: warning: no previous prototype
+> for 'st_sensors_irq_handler' [-Wmissing-prototypes]
+> drivers/iio/common/st_sensors/st_sensors_trigger.c:85:13: warning: no previous prototype
+> for 'st_sensors_irq_thread' [-Wmissing-prototypes]
 > 
-> drivers/iio/common/hid-sensors/hid-sensor-trigger.c:212:12: error:
-> 'hid_sensor_resume' defined but not used [-Werror=unused-function]
+> In fact, these functions are only used in the file in which they are
+> declared and don't need a declaration, but can be made static.
+> so this patch marks these functions with 'static'.
 > 
-> This removes the #ifdef and instead marks all three PM functions
-> as __maybe_unused, which covers all possible cases and is harder
-> to get wrong.
-> 
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Fixes: 7f6cf7414538 ("iio: hid-sensors: use asynchronous resume")
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+> Signed-off-by: Baoyou Xie <baoyou.xie@linaro.org>
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
+Hi.
 
+Please don't resend just to add Reviewed-by / acked-by tags.
+The maintainer will pick those up directly from the mailing list.
+
+If there is anything else different here and I'm missing it you
+should have highlighted what it was below the --- and
+I'm really being unobservant!
+
+Jonathan
 > ---
->  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 9 +++------
->  1 file changed, 3 insertions(+), 6 deletions(-)
+>  drivers/iio/common/st_sensors/st_sensors_trigger.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> index 5264ed6e03e5..a3cce3a38300 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> @@ -199,8 +199,7 @@ error_ret:
->  }
->  EXPORT_SYMBOL(hid_sensor_setup_trigger);
->  
-> -#ifdef CONFIG_PM
-> -static int hid_sensor_suspend(struct device *dev)
-> +static int __maybe_unused hid_sensor_suspend(struct device *dev)
->  {
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -209,7 +208,7 @@ static int hid_sensor_suspend(struct device *dev)
->  	return _hid_sensor_power_state(attrb, false);
->  }
->  
-> -static int hid_sensor_resume(struct device *dev)
-> +static int __maybe_unused hid_sensor_resume(struct device *dev)
->  {
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -218,7 +217,7 @@ static int hid_sensor_resume(struct device *dev)
->  	return 0;
->  }
->  
-> -static int hid_sensor_runtime_resume(struct device *dev)
-> +static int __maybe_unused hid_sensor_runtime_resume(struct device
-> *dev)
->  {
->  	struct platform_device *pdev = to_platform_device(dev);
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-> @@ -226,8 +225,6 @@ static int hid_sensor_runtime_resume(struct
-> device *dev)
->  	return _hid_sensor_power_state(attrb, true);
->  }
->  
-> -#endif
-> -
->  const struct dev_pm_ops hid_sensor_pm_ops = {
->  	SET_SYSTEM_SLEEP_PM_OPS(hid_sensor_suspend,
-> hid_sensor_resume)
->  	SET_RUNTIME_PM_OPS(hid_sensor_suspend,
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_trigger.c b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> index e66f12e..fa73e67 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_trigger.c
+> @@ -66,7 +66,7 @@ static int st_sensors_new_samples_available(struct iio_dev *indio_dev,
+>   * @irq: irq number
+>   * @p: private handler data
+>   */
+> -irqreturn_t st_sensors_irq_handler(int irq, void *p)
+> +static irqreturn_t st_sensors_irq_handler(int irq, void *p)
+>  {
+>  	struct iio_trigger *trig = p;
+>  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> @@ -82,7 +82,7 @@ irqreturn_t st_sensors_irq_handler(int irq, void *p)
+>   * @irq: irq number
+>   * @p: private handler data
+>   */
+> -irqreturn_t st_sensors_irq_thread(int irq, void *p)
+> +static irqreturn_t st_sensors_irq_thread(int irq, void *p)
+>  {
+>  	struct iio_trigger *trig = p;
+>  	struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+> 
+
