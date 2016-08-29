@@ -1,73 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42127 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42138 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751223AbcH2RXg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 13:23:36 -0400
-Subject: Re: [PATCH] iio: accel: bmc150: reset chip at init time
-To: Olof Johansson <olof@lixom.net>
-References: <1472143533-31869-1-git-send-email-olof@lixom.net>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        mpa@pengutronix.de, irina.tirdea@intel.com,
-        linux-iio@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+        with ESMTP id S1752237AbcH2RZA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 13:25:00 -0400
+Subject: Re: [PATCH] iio: document bindings for mounting matrixes
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1469355434-17043-1-git-send-email-linus.walleij@linaro.org>
+ <CACRpkdY0gCLKD3rmiYuFgWSYOe6dtUaBeRi1ns-UFF=AspntFg@mail.gmail.com>
+ <c8e83cf2-f9dc-0bc9-fcde-326b05ee290b@kernel.org>
+ <57BD9EB6.1090504@parrot.com>
+ <067a4882-c6f2-5994-e3ce-100e317ed121@kernel.org>
+ <CACRpkda-Mz0wOAXx4uoZ43OCVw0U_E0+iCrboUO_7keYV2scBw@mail.gmail.com>
+Cc: Gregor Boirie <gregor.boirie@parrot.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Samu Onkalo <samu.onkalo@intel.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <16ba4f3e-50fa-cadf-da57-39522b6ce386@kernel.org>
-Date: Mon, 29 Aug 2016 18:23:32 +0100
+Message-ID: <ec3fb3a4-1f8e-1eae-e4b7-42f8eb16fe25@kernel.org>
+Date: Mon, 29 Aug 2016 18:24:58 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472143533-31869-1-git-send-email-olof@lixom.net>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkda-Mz0wOAXx4uoZ43OCVw0U_E0+iCrboUO_7keYV2scBw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/08/16 17:45, Olof Johansson wrote:
-> In at least one known setup, the chip comes up in a state where reading
-> the chip ID returns garbage unless it's been reset, due to noise on the
-> wires during system boot.
+On 25/08/16 23:04, Linus Walleij wrote:
+> On Wed, Aug 24, 2016 at 11:29 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> Gregor:
+>>> So I feel like we should keep away from any temptation to define the coordinates
+>>> system too strictly.
+>>> I also think of systems composed of multiple hardware parts with sensors
+>>> scattered all over them. What would be the right "device/main hardware" reference
+>>> frame definition in these cases ?
+>>> As this is product specific, I feel like "device/main hardware" reference frame
+>>> definition should be left to the "board/main hardware/device..." implementor's
+>>> choice.
+>>
+>> Flexible is good, but I think we should define a base rule for the chips frame
+>> of reference and fix up any that disagree (which is nasty ABI breakage :(
+>> Trivial choice of either right handed or left handed frame might be all we
+>> define in general.  Useful to define consistent frames for device types that
+>> are common perhaps as well.  (such as the screen ones Linus has here).
 > 
-> All supported chips have the same reset method, and based on the
-> datasheets they all need 1.3 or 1.8ms to recover after reset. So, do
-> the conservative thing here and always reset the chip.
+> Admittedly I come from the mobile phone industry.
 > 
-> Signed-off-by: Olof Johansson <olof@lixom.net>
-Looks good to me.
-
-Srinivas, it's your driver. Can you take a quick look at this?
-
-Thanks,
+> So these frames of reference is not cooked up by me, I installed the
+> Android app "Sensors test" to test two devices relative the world, so this
+> is the frame of reference used by all mobile phones and tablets on the
+> planet (I hardly think iPhone deviates).
+> 
+> I would be happy to write explicitly that for human interaction devices
+> with screens that frame of reference should always be assumed, but for
+> other uses and device types other frames of reference may apply, would
+> you agree?
+Absolutely.  The references Gregor gave might also be worth mentioning
+as they provide pretty pictures etc ;)
 
 Jonathan
-> ---
->  drivers/iio/accel/bmc150-accel-core.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
 > 
-> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
-> index bf17aae..59b380d 100644
-> --- a/drivers/iio/accel/bmc150-accel-core.c
-> +++ b/drivers/iio/accel/bmc150-accel-core.c
-> @@ -67,6 +67,9 @@
->  #define BMC150_ACCEL_REG_PMU_BW		0x10
->  #define BMC150_ACCEL_DEF_BW			125
->  
-> +#define BMC150_ACCEL_REG_RESET			0x14
-> +#define BMC150_ACCEL_RESET_VAL			0xB6
-> +
->  #define BMC150_ACCEL_REG_INT_MAP_0		0x19
->  #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
->  
-> @@ -1497,6 +1500,14 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
->  	int ret, i;
->  	unsigned int val;
->  
-> +	/*
-> +	 * Reset chip to get it in a known good state. A delay of 1.8ms after
-> +	 * reset is required according to the data sheets of supported chips.
-> +	 */
-> +	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
-> +		     BMC150_ACCEL_RESET_VAL);
-> +	usleep_range(1800, 2500);
-> +
->  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
->  	if (ret < 0) {
->  		dev_err(dev, "Error: Reading chip id\n");
+> Yours,
+> Linus Walleij
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
