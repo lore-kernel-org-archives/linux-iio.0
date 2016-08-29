@@ -1,45 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42106 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42127 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751950AbcH2RUU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 13:20:20 -0400
-Subject: Re: [PATCH v2] iio: dac: AD8801: add Analog Devices AD8801/AD8803
- support
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>,
-        linux-iio@vger.kernel.org
-References: <20160824144420.7326-1-gwenhael.goavec-merou@trabucayre.com>
- <0177ce8f-4bc2-a726-1503-6786a14f3148@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Paul Cercueil <paul.cercueil@analog.com>
+        with ESMTP id S1751223AbcH2RXg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 13:23:36 -0400
+Subject: Re: [PATCH] iio: accel: bmc150: reset chip at init time
+To: Olof Johansson <olof@lixom.net>
+References: <1472143533-31869-1-git-send-email-olof@lixom.net>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        mpa@pengutronix.de, irina.tirdea@intel.com,
+        linux-iio@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8fcea3fb-dce1-d763-2d02-7909baed7ad3@kernel.org>
-Date: Mon, 29 Aug 2016 18:20:18 +0100
+Message-ID: <16ba4f3e-50fa-cadf-da57-39522b6ce386@kernel.org>
+Date: Mon, 29 Aug 2016 18:23:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <0177ce8f-4bc2-a726-1503-6786a14f3148@metafoo.de>
+In-Reply-To: <1472143533-31869-1-git-send-email-olof@lixom.net>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/08/16 09:02, Lars-Peter Clausen wrote:
-> On 08/24/2016 04:44 PM, Gwenhael Goavec-Merou wrote:
->> Add support for Analog Devices AD8801/AD8803, 8 channels 8bits, Digital to
->> Analog converters.
->>
->> Signed-off-by: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
+On 25/08/16 17:45, Olof Johansson wrote:
+> In at least one known setup, the chip comes up in a state where reading
+> the chip ID returns garbage unless it's been reset, due to noise on the
+> wires during system boot.
 > 
-> Looks good, thanks.
+> All supported chips have the same reset method, and based on the
+> datasheets they all need 1.3 or 1.8ms to recover after reset. So, do
+> the conservative thing here and always reset the chip.
 > 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Olof Johansson <olof@lixom.net>
+Looks good to me.
+
+Srinivas, it's your driver. Can you take a quick look at this?
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/accel/bmc150-accel-core.c | 11 +++++++++++
+>  1 file changed, 11 insertions(+)
 > 
-> Just one tiny thing, there is a extra new line at the end of the file. But
-> maybe Jonathan can remove that if he replies the patch.
-Done.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/drivers/iio/accel/bmc150-accel-core.c b/drivers/iio/accel/bmc150-accel-core.c
+> index bf17aae..59b380d 100644
+> --- a/drivers/iio/accel/bmc150-accel-core.c
+> +++ b/drivers/iio/accel/bmc150-accel-core.c
+> @@ -67,6 +67,9 @@
+>  #define BMC150_ACCEL_REG_PMU_BW		0x10
+>  #define BMC150_ACCEL_DEF_BW			125
+>  
+> +#define BMC150_ACCEL_REG_RESET			0x14
+> +#define BMC150_ACCEL_RESET_VAL			0xB6
+> +
+>  #define BMC150_ACCEL_REG_INT_MAP_0		0x19
+>  #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
+>  
+> @@ -1497,6 +1500,14 @@ static int bmc150_accel_chip_init(struct bmc150_accel_data *data)
+>  	int ret, i;
+>  	unsigned int val;
+>  
+> +	/*
+> +	 * Reset chip to get it in a known good state. A delay of 1.8ms after
+> +	 * reset is required according to the data sheets of supported chips.
+> +	 */
+> +	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
+> +		     BMC150_ACCEL_RESET_VAL);
+> +	usleep_range(1800, 2500);
+> +
+>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID, &val);
+>  	if (ret < 0) {
+>  		dev_err(dev, "Error: Reading chip id\n");
 > 
 
