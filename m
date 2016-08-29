@@ -1,58 +1,144 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:55529 "EHLO mga11.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756147AbcH2Cs4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 28 Aug 2016 22:48:56 -0400
-From: "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Pandruvada Srinivas <srinivas.pandruvada@intel.com>,
-        Jiri Kosina <jikos@kernel.org>
-Cc: linux-iio <linux-iio@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-input <linux-input@vger.kernel.org>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41512 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757552AbcH2PPV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 11:15:21 -0400
+Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
+To: Lee Jones <lee.jones@linaro.org>
+References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
+ <b32afa2d-965c-569c-dde1-3611615080d3@kernel.org>
+ <20160816124907.GK25844@dell>
+ <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Olof Johansson <olof@lixom.net>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Lim Lee Booi <lee.booi.lim@intel.com>,
-        Lay Kuan Loon <kuan.loon.lay@intel.com>,
-        Ooi Joyce <joyce.ooi@intel.com>,
-        "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
-Subject: [PATCH] iio: fix pressure data output unit in hid-sensor-attributes
-Date: Mon, 29 Aug 2016 18:50:56 +0800
-Message-Id: <1472467856-14526-1-git-send-email-hock.leong.kweh@intel.com>
+        Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <a2d7688d-753d-8c50-728b-f33cc5e31eb9@kernel.org>
+Date: Mon, 29 Aug 2016 16:14:29 +0100
+MIME-Version: 1.0
+In-Reply-To: <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
+On 21/08/16 20:57, Jonathan Cameron wrote:
+> On 16/08/16 13:49, Lee Jones wrote:
+>> On Mon, 15 Aug 2016, Jonathan Cameron wrote:
+>>
+>>> On 01/08/16 10:54, Enric Balletbo i Serra wrote:
+>>>> Hi,
+>>>>
+>>>> This is the four patchset to add support for the sensors behind the ChromeOS
+>>>> Embedded Controller.
+>>>>
+>>>> This version has only the patches to support common functions and 3d
+>>>> contiguous sensors like Accelerometers, Gyroscope and Magnetometer that are
+>>>> presented by the ChromeOS EC Sensor hub. The patches were tested on an Oak board.
+>>>>
+>>>> The code was checked out from the ChromeOS v3.18 tree and forward ported to
+>>>> mainline solving all the conflicts and build issues. I splitted the code in
+>>>> single patches that have sense by themselves in order to avoid the chances
+>>>> to fail.
+>>>>
+>>>> Note that the patches depends on this [1] to apply and work.
+>>>>
+>>>> [1] https://lkml.org/lkml/2016/7/1/188
+>>> Given this dependency I'm assuming the best route for these is via
+>>> the MFD tree...
+>>>
+>>> Lee, shout if you want them to go a different route.
+>>
+>> IIO looks like a more suitable route.  Please provide me with a
+>> pull-request base off of an immutable tag.
+> Hi Lee,
+> 
+> As far as I can tell the precursor patch above hasn't gone in your
+> tree yet which leaves me unable to take this through IIO for now.
+> 
+> Maybe I'm missing something!
+> 
+> Jonathan
 
-According to IIO ABI definition, IIO_PRESSURE data output unit is
-kilopascal:
-http://lxr.free-electrons.com/source/Documentation/ABI/testing/sysfs-bus-iio
+Hi Lee,
 
-This patch fix output unit of HID pressure sensor IIO driver from pascal to
-kilopascal to follow IIO ABI definition.
+Any movement on the dependency above?
 
-Signed-off-by: Kweh, Hock Leong <hock.leong.kweh@intel.com>
----
- .../iio/common/hid-sensors/hid-sensor-attributes.c |    4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Last I can find was you adding your ack to it:
+[PATCH v2 1/2] mfd: cros_ec: Add MKBP event support
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index e81f434..dc33c1d 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -56,8 +56,8 @@ static struct {
- 	{HID_USAGE_SENSOR_ALS, 0, 1, 0},
- 	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
- 
--	{HID_USAGE_SENSOR_PRESSURE, 0, 100000, 0},
--	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 1, 0},
-+	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
-+	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000},
- };
- 
- static int pow_10(unsigned power)
--- 
-1.7.9.5
+https://lkml.org/lkml/2016/8/16/423
+
+Jonathan
+>>
+>>>> Waiting for your reviews and feedback.
+>>>>
+>>>> Changes since v3 (requested by Guenter Roeck)
+>>>>   - Convert structure to a simple array
+>>>>   - Remove PM declarations
+>>>>   - Remove unnecessary initializations
+>>>>   - cros_ec_sensors_cmd_read_u16: Conversion should only be done if ret >= 0
+>>>>   - Remove unnecessary else
+>>>>   - Add Reviewed-by tag for two last patches.
+>>>>
+>>>> Changes since v2 (requested by Guenter Roeck and Jonhatan Cameron)
+>>>>   - Rebased and fix build error.
+>>>>   - Include a list of possible values in the description of location attr.
+>>>>   - Fix some typos.
+>>>>   - Remove id sysfs entry.
+>>>>   - Skip filling by zero structure parameters that already zero'd.
+>>>>   - Order includes alphabetically.
+>>>>   - Propagate error codes.
+>>>>
+>>>> Changes since v1 (requested by Peter Meerwald-Stadler and Jonhatan Cameron)
+>>>>   - Check kernel-doc documentation and 
+>>>>   - Bring some patches together.
+>>>>   - Fix some spelling mistakes.
+>>>>   - Include ABI documentation.
+>>>>   - Be more careful with buffer sizes (sprintf -> snprintf)
+>>>>   - Add cros_ec_sensors prefix to all function.
+>>>>   - Check return values on some functions.
+>>>>
+>>>> Best regards,
+>>>>
+>>>> Enric Balletbo i Serra (3):
+>>>>   iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC
+>>>>     Sensor Hub.
+>>>>   iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
+>>>>   platform/chrome: cros_ec_dev - Register cros-ec sensors
+>>>>
+>>>> Vincent Palatin (1):
+>>>>   platform/chrome: Introduce a new function to check EC features.
+>>>>
+>>>>  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  18 +
+>>>>  drivers/iio/common/Kconfig                         |   1 +
+>>>>  drivers/iio/common/Makefile                        |   1 +
+>>>>  drivers/iio/common/cros_ec_sensors/Kconfig         |  22 +
+>>>>  drivers/iio/common/cros_ec_sensors/Makefile        |   6 +
+>>>>  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++
+>>>>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 450 +++++++++++++++++++++
+>>>>  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 175 ++++++++
+>>>>  drivers/platform/chrome/cros_ec_dev.c              | 159 ++++++++
+>>>>  include/linux/mfd/cros_ec.h                        |  10 +
+>>>>  include/linux/mfd/cros_ec_commands.h               | 183 ++++++++-
+>>>>  11 files changed, 1342 insertions(+), 5 deletions(-)
+>>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
+>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
+>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>>>>
+>>>
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
