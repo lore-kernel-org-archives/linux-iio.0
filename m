@@ -1,144 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42569 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42603 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751271AbcH2Smv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 14:42:51 -0400
-Subject: Re: [PATCH] iio: st_sensors: fetch and enable regulators
- unconditionally
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1472163008-9516-1-git-send-email-linus.walleij@linaro.org>
-Cc: Giuseppe Barba <giuseppe.barba@st.com>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Mark Brown <broonie@kernel.org>
+        with ESMTP id S1753436AbcH2Srz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 14:47:55 -0400
+Subject: Re: [PATCH -next] iio: adc: mt2701: Remove redundant dev_err call in
+ mt6577_auxadc_probe()
+To: Wei Yongjun <weiyj.lk@gmail.com>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Matthias Brugger <matthias.bgg@gmail.com>,
+        Zhiyong Tao <zhiyong.tao@mediatek.com>
+References: <1472221581-28836-1-git-send-email-weiyj.lk@gmail.com>
+Cc: Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        linux-mediatek@lists.infradead.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a822abf1-03f5-fa06-9843-c02c77c09acc@kernel.org>
-Date: Mon, 29 Aug 2016 19:42:48 +0100
+Message-ID: <88307772-dd0f-a2f2-efd8-6c64a0cb14e4@kernel.org>
+Date: Mon, 29 Aug 2016 19:47:51 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472163008-9516-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472221581-28836-1-git-send-email-weiyj.lk@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/08/16 23:10, Linus Walleij wrote:
-> These sensors all have Vdd and Vdd_IO lines. This means the
-> supplies are *not* optional (optional means that the supply is
-> optional in the electrical sense, not the software sense)
-> so we need to get the and enable them at all times.
+On 26/08/16 15:26, Wei Yongjun wrote:
+> From: Wei Yongjun <weiyongjun1@huawei.com>
 > 
-> If the device tree or board file does not define suitable
-> regulators for the component, it will be substituted by a
-> dummy regulator, or, if regulators are disabled altogether,
-> by stubs. There is no need to use the IS_ERR_OR_NULL() check
-> that is considered harmful.
+> There is a error message within devm_ioremap_resource
+> already, so remove the dev_err call to avoid redundant
+> error message.
 > 
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Cc: Crestez Dan Leonard <leonard.crestez@intel.com>
-> Cc: Gregor Boirie <gregor.boirie@parrot.com>
-> Cc: Mark Brown <broonie@kernel.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Yeah, there was a fair bit of missunderstanding around this
-(including me) a while back so may well be more cases of
-this kicking around in IIO.
+> Signed-off-by: Wei Yongjun <weiyongjun1@huawei.com>
+Hi Wei,
 
-Good to clear this one out.
+I'm not so sure these are actually redundant.  Overly verbose perhaps,
+but they do provide additional information in the log as the
+devm_ioremap_resource doesn't know 'what' has failed, merely how
+it has failed.
 
-Applied to the togreg branch of iio.git.
-Will be initially pushed out as testing for the autobuilders to
-play with it.
+I'm happy to take these, if the driver author / maintainers
+agree, but I'm not keen enough to take them without that.
 
-If Denis or Giuseppe has a chance to look at in in the next
-few days that would be great as I doubt I'll send a pull to
-Greg until towards the end of the week.
-
-Thanks,
+Zhiyong Tao, what do you think on this one?
 
 Jonathan
 > ---
->  drivers/iio/common/st_sensors/st_sensors_core.c | 55 +++++++++++--------------
->  1 file changed, 24 insertions(+), 31 deletions(-)
+>  drivers/iio/adc/mt6577_auxadc.c | 4 +---
+>  1 file changed, 1 insertion(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index 2d5282e05482..41bfe1c5f4e9 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -234,39 +234,35 @@ int st_sensors_power_enable(struct iio_dev *indio_dev)
->  	int err;
+> diff --git a/drivers/iio/adc/mt6577_auxadc.c b/drivers/iio/adc/mt6577_auxadc.c
+> index 2d104c8..a268954 100644
+> --- a/drivers/iio/adc/mt6577_auxadc.c
+> +++ b/drivers/iio/adc/mt6577_auxadc.c
+> @@ -206,10 +206,8 @@ static int mt6577_auxadc_probe(struct platform_device *pdev)
 >  
->  	/* Regulators not mandatory, but if requested we should enable them. */
-> -	pdata->vdd = devm_regulator_get_optional(indio_dev->dev.parent, "vdd");
-> -	if (!IS_ERR(pdata->vdd)) {
-> -		err = regulator_enable(pdata->vdd);
-> -		if (err != 0) {
-> -			dev_warn(&indio_dev->dev,
-> -				 "Failed to enable specified Vdd supply\n");
-> -			return err;
-> -		}
-> -	} else {
-> -		err = PTR_ERR(pdata->vdd);
-> -		if (err != -ENODEV)
-> -			return err;
-> +	pdata->vdd = devm_regulator_get(indio_dev->dev.parent, "vdd");
-> +	if (IS_ERR(pdata->vdd)) {
-> +		dev_err(&indio_dev->dev, "unable to get Vdd supply\n");
-> +		return PTR_ERR(pdata->vdd);
-> +	}
-> +	err = regulator_enable(pdata->vdd);
-> +	if (err != 0) {
-> +		dev_warn(&indio_dev->dev,
-> +			 "Failed to enable specified Vdd supply\n");
-> +		return err;
->  	}
+>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>  	adc_dev->reg_base = devm_ioremap_resource(&pdev->dev, res);
+> -	if (IS_ERR(adc_dev->reg_base)) {
+> -		dev_err(&pdev->dev, "failed to get auxadc base address\n");
+> +	if (IS_ERR(adc_dev->reg_base))
+>  		return PTR_ERR(adc_dev->reg_base);
+> -	}
 >  
-> -	pdata->vdd_io = devm_regulator_get_optional(indio_dev->dev.parent, "vddio");
-> -	if (!IS_ERR(pdata->vdd_io)) {
-> -		err = regulator_enable(pdata->vdd_io);
-> -		if (err != 0) {
-> -			dev_warn(&indio_dev->dev,
-> -				 "Failed to enable specified Vdd_IO supply\n");
-> -			goto st_sensors_disable_vdd;
-> -		}
-> -	} else {
-> -		err = PTR_ERR(pdata->vdd_io);
-> -		if (err != -ENODEV)
-> -			goto st_sensors_disable_vdd;
-> +	pdata->vdd_io = devm_regulator_get(indio_dev->dev.parent, "vddio");
-> +	if (IS_ERR(pdata->vdd)) {
-> +		dev_err(&indio_dev->dev, "unable to get Vdd_IO supply\n");
-> +		err = PTR_ERR(pdata->vdd);
-> +		goto st_sensors_disable_vdd;
-> +	}
-> +	err = regulator_enable(pdata->vdd_io);
-> +	if (err != 0) {
-> +		dev_warn(&indio_dev->dev,
-> +			 "Failed to enable specified Vdd_IO supply\n");
-> +		goto st_sensors_disable_vdd;
->  	}
->  
->  	return 0;
->  
->  st_sensors_disable_vdd:
-> -	if (!IS_ERR_OR_NULL(pdata->vdd))
-> -		regulator_disable(pdata->vdd);
-> +	regulator_disable(pdata->vdd);
->  	return err;
->  }
->  EXPORT_SYMBOL(st_sensors_power_enable);
-> @@ -275,11 +271,8 @@ void st_sensors_power_disable(struct iio_dev *indio_dev)
->  {
->  	struct st_sensor_data *pdata = iio_priv(indio_dev);
->  
-> -	if (!IS_ERR_OR_NULL(pdata->vdd))
-> -		regulator_disable(pdata->vdd);
-> -
-> -	if (!IS_ERR_OR_NULL(pdata->vdd_io))
-> -		regulator_disable(pdata->vdd_io);
-> +	regulator_disable(pdata->vdd);
-> +	regulator_disable(pdata->vdd_io);
->  }
->  EXPORT_SYMBOL(st_sensors_power_disable);
->  
+>  	adc_dev->adc_clk = devm_clk_get(&pdev->dev, "main");
+>  	if (IS_ERR(adc_dev->adc_clk)) {
+> 
+> 
 > 
 
