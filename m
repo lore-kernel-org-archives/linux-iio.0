@@ -1,60 +1,46 @@
-Return-Path: <wsa@the-dreams.de>
-Date: Fri, 26 Aug 2016 00:52:53 +0200
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f52.google.com ([209.85.215.52]:35132 "EHLO
+        mail-lf0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751518AbcH3ISq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Aug 2016 04:18:46 -0400
+Received: by mail-lf0-f52.google.com with SMTP id f93so7981760lfi.2
+        for <linux-iio@vger.kernel.org>; Tue, 30 Aug 2016 01:18:46 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: Linus Walleij <linus.walleij@linaro.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Nick Vaccaro <nvaccaro@google.com>, Ge Gao <ggao@invensense.com>,
-	Anna Si <asi@invensense.com>, Nathan Royer <nroyer@invensense.com>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
-	"linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>
-Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
-Message-ID: <20160825225253.GB1621@katana>
-References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
- <53008712-7c50-79db-07ab-3544902887e1@kernel.org>
- <285e7c3f-eedb-28ed-f651-926260d17a8a@axentia.se>
- <CACRpkdZeomin6_u=1hm-fJucMnQmAJXu01YaC0g1KdafWPD2kg@mail.gmail.com>
- <5903e282-aaf9-9c86-5df5-17b75d5b4018@axentia.se>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="z6Eq5LdranGa6ru8"
-In-Reply-To: <5903e282-aaf9-9c86-5df5-17b75d5b4018@axentia.se>
-List-ID: <linux-iio@vger.kernel.org>
+        Giuseppe BARBA <giuseppe.barba@st.com>
+Subject: [PATCH] iio: st_sensors: fix errorcheck for regulators
+Date: Tue, 30 Aug 2016 10:18:39 +0200
+Message-Id: <1472545119-8092-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+We were checking the return code of vdd when we should be checking
+vdd_io. My mistake, mea culpa.
 
---z6Eq5LdranGa6ru8
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+Cc: Giuseppe BARBA <giuseppe.barba@st.com>
+Reported-by: Giuseppe BARBA <giuseppe.barba@st.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_core.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 41bfe1c5f4e9..285a64a589d7 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -247,9 +247,9 @@ int st_sensors_power_enable(struct iio_dev *indio_dev)
+ 	}
+ 
+ 	pdata->vdd_io = devm_regulator_get(indio_dev->dev.parent, "vddio");
+-	if (IS_ERR(pdata->vdd)) {
++	if (IS_ERR(pdata->vdd_io)) {
+ 		dev_err(&indio_dev->dev, "unable to get Vdd_IO supply\n");
+-		err = PTR_ERR(pdata->vdd);
++		err = PTR_ERR(pdata->vdd_io);
+ 		goto st_sensors_disable_vdd;
+ 	}
+ 	err = regulator_enable(pdata->vdd_io);
+-- 
+2.7.4
 
-> Wolfram, please merge it into i2c/for-next
-
-Pulled, thanks!
-
-
---z6Eq5LdranGa6ru8
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIcBAEBAgAGBQJXv3bFAAoJEBQN5MwUoCm2PZkP/iN1bw1f7e4ZGalUxRJzf4wK
-6mt8lWLHFjZHB22gVTwOmWGXXfHYnNGjg0Uyw7fZQVuLd+1YH15M44ou3rSFi385
-ieOzozjyyacfBLTRPBnDhkE36XW2k32QsJ5/qNOpU4SU0VAITcKnj3f7sdNcPyF/
-/05fNHCARnGr8Q9VPs2PLPVc9ArbWRQ5Ie1vRqJg5FcCOmBdQ/CZ2CR2UfNMAKNZ
-vX9Zum6+o+/iynOYvjZahO17wXhp2dRygjkaYpbs6jRNZXsTfjT5Z67Yv30m0krn
-mgAnsE0W+Pdv7+RRvM06LuBJTjKOWlLLzVS3wIHBHvOPDZ6/GPcnep6IExwIXpW3
-/vK/PiWZ8I7AhwNLFFo8hgOnWuyu0XTAu4aONQWcaiRd22edZGLUp2HCk8h1zDw9
-41pBPZi52N2ckVG+a418JhJ/i6nqnAeLWuY68H+TcXYlqD7dzp9TKTcXHXXYifZN
-MvB+PK+CiIebtmc1PgmyL20ke4myaZKkRJL0pJTDhqM4oi0OCCZn+N7ihrimRUYs
-O4qMi02TcV7IbLXoR/xCWTj3ugB6xWMANU9zBdD1EKFVsFx8h6f+Bg/WQ6RKpkLx
-/+fYZik/r2YSasLguZLveVxZIrpxjBOP1JJJDYQ02Voa4guGVHFiHbvDAyyUfqNI
-E2A3rcPW7PC0ybN2s6mO
-=1dDl
------END PGP SIGNATURE-----
-
---z6Eq5LdranGa6ru8--
