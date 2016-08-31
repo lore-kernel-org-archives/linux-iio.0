@@ -1,64 +1,127 @@
-Return-Path: <stillcompiling@gmail.com>
-Subject: Re: iio channel sync
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Matt Ranostay <mranostay@gmail.com>
-References: <4284e190-84c2-07cc-1157-ef6d2fdd0e8c@gmail.com>
- <CAKzfze-T6UqYp05YiGvHzxkV1bupSov0y_-p+0AiOtkbJETiKQ@mail.gmail.com>
- <9706EDAC-1039-4D89-B5D8-CA327FA1E300@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-From: Joshua Clayton <stillcompiling@gmail.com>
-Message-ID: <aa577c0c-c18c-26d3-b5c6-16692e813d35@gmail.com>
-Date: Wed, 31 Aug 2016 15:47:18 -0700
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33692 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753198AbcHaUoM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 16:44:12 -0400
 MIME-Version: 1.0
-In-Reply-To: <9706EDAC-1039-4D89-B5D8-CA327FA1E300@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1472675395.5025.31.camel@intel.com>
+References: <1472596930.23886.13.camel@intel.com> <CAKzfze_p_6AiF93rY8HCMtm3BpDDjPS91nRbG49exrg4DV7Qzg@mail.gmail.com>
+ <1472674733.5025.28.camel@intel.com> <CAKzfze_8zz6pYbccc3tpV_3qzT4gDRjaAxC_p4f3E+b0=FU4Wg@mail.gmail.com>
+ <1472675395.5025.31.camel@intel.com>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Wed, 31 Aug 2016 13:43:29 -0700
+Message-ID: <CAKzfze9KYOSzZxGz6PVb3xLeUN_0vYYVee4Y9HUgrz9iocxDkQ@mail.gmail.com>
+Subject: Re: screen rotation flipped in 4.8-rc
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux@sciencehorizons.net" <linux@sciencehorizons.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "hadess@hadess.net" <hadess@hadess.net>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Greetings,
-
-On 08/30/2016 09:26 AM, Jonathan Cameron wrote:
+On Wed, Aug 31, 2016 at 1:29 PM, Pandruvada, Srinivas
+<srinivas.pandruvada@intel.com> wrote:
+> On Wed, 2016-08-31 at 13:24 -0700, Matt Ranostay wrote:
+>> On Wed, Aug 31, 2016 at 1:18 PM, Pandruvada, Srinivas
+>> <srinivas.pandruvada@intel.com> wrote:
+>> >
+>> > On Tue, 2016-08-30 at 17:41 -0700, Matt Ranostay wrote:
+>> > >
+>> > > On Tue, Aug 30, 2016 at 3:42 PM, Pandruvada, Srinivas
+>> > > <srinivas.pandruvada@intel.com> wrote:
+>> > > >
+>> > > >
+>> > > > Hi All,
+>> > > >
+>> > > > I observed that using iio-sensor-proxy.service, the auto screen
+>> > > > rotation flipped on my laptop (Normal -> vertical, vertical-
+>> > > > >
+>> > > > > normal)
+>> > > > using kernel v4.8.
+>> > > >
+>> > > > Anyone else has seen this?
+>> > > >
+>> > > > I did a bisect and found a commit, which I am not sure how can
+>> > > > it
+>> > > > impact.
+>> > > Could you post the results of CONFIG_TEST_HASH enabled?
+>> > Attached dmesg.txt with the CONFIG_TEST_HASH=y.
+>> >
+>> > I see
+>> > [    4.276138] test_hash: __hash_32() has no arch implementation to
+>> > test.
+>> > [    4.276138] test_hash: hash_32() has no arch implementation to
+>> > test.
+>> > [    4.276139] test_hash: hash_64() has no arch implementation to
+>> > test.
+>> > [    4.276141] test_hash: 33152 tests passed.
+>> >
+>> Ok have you tested with that patchset reverted? And if so does the
+>> regression disappear?
+> Yes, but not after adding CONFIG_TEST_HASH=y.
+> regression disappears.
 >
-> On 30 August 2016 08:41:18 BST, Matt Ranostay <mranostay@gmail.com> wrote:
->> On Mon, Aug 29, 2016 at 10:03 AM, Joshua Clayton
->> <stillcompiling@gmail.com> wrote:
->>> Jonathan,
->>>
->>> I have an out-of tree driver I am working on mainlining.
->>>
->>> The device is a sensor that gets phase and amplitude (x and y) data
->>>
->>> on multiple physical and/or time multiplexed channels.
->>>
->>> It also has up to 4 optical encoders to get physical location.
->>>
->>> The existing driver bundles x and y together with a snapshot
->>>
->>> of the encoder sums at that moment.
->>>
->>>
->>> This seems like a good fit for iio, but one item is bothering me.
->>>
->>> How is synchronization between streams usually handled with
->>>
->>> iio drivers? Timing can be important.
->> Wouldn't the trigger buffer framework be good enough for this?
-> Perhaps you could describe your usecase a little more?
+>> I would highly doubt if it was a issue with that dcache patchsets it
+>> wouldn't be breaking a ton of things.
+> I also think that.
+
+Only thing I could suspect is a toolchain bug.. Have crazy idea for
+you to try below..
+
+>From the patchset notice the return doesn't cast the result to
+(unsigned int) as before. But __hash_32_generic is "static inline
+u32", and maybe the end_name_hash is returning the whole result as a
+64-bit unsigned long rather than 32-bit unsigned int.
+
+....
+static inline unsigned long end_name_hash(unsigned long hash)
+{
+- return (unsigned int)hash;
++ return __hash_32((unsigned int)hash);
+}
+....
+
+Just a theory.. Could totally be wrong :).
+
 >
-> Is the interesting bit that you want to sync streams with different sampling frequencies?
-> Are those encoders better represented by a separate driver? (In which case I have some thoughts on simple additions to IIO trigger handling that might help - basically a hold off on triggers until all relevant devices are attached)
-Thanks for responding.
-
-The encoders (often a pair of them, could be up to 4) represent the position
-of the sensor in relation to an object to be tested. (linear movement or
-rotation around an axis).
-The Maximum sample rate of the encoders is much higher than the sensor,
-but they are moved by a motor or by hand, so the actual sample rate is
-variable and may be higher or lower that the sensor sample rate.
-
-The encoders are sometimes used as a trigger for data collection, but
-the encoders are also used as positional data alongside the sensor data.
-
-The way we get around this now is to bundle a snapshot of the encoder
-with the sensor data and discard it later if the encoder hasn't changed and
-the trigger function is enabled.
+> Thanks,
+> Srinivas
+>
+>>
+>> >
+>> > Thanks,
+>> > Srinivas
+>> > >
+>> > >
+>> > > Thanks,
+>> > >
+>> > > Matt
+>> > >
+>> > > >
+>> > > >
+>> > > >
+>> > > >
+>> > > > commit 703b5faf22fbddf984a361e6555f3a03fdba63d9
+>> > > > Author: George Spelvin <linux@sciencehorizons.net>
+>> > > > Date:   Fri Jun 10 00:22:12 2016 -0400
+>> > > >
+>> > > >     fs/dcache.c: Save one 32-bit multiply in dcache lookup
+>> > > >
+>> > > >     Noe that we're mixing in the parent pointer earlier, we
+>> > > >     don't need to use hash_32() to mix its bits.  Instead, we
+>> > > > can
+>> > > >     just take the msbits of the hash value directly.
+>> > > >
+>> > > >     For those applications which use the partial_name_hash(),
+>> > > >     move the multiply to end_name_hash.
+>> > > >
+>> > > >     Signed-off-by: George Spelvin <linux@sciencehorizons.net>
+>> > > >     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.or
+>> > > > g>
+>> > > >
+>> > > >
+>> > > > Thanks,
+>> > > > Srinivas
