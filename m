@@ -1,64 +1,64 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "mranostay@gmail.com" <mranostay@gmail.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-	"linux@sciencehorizons.net" <linux@sciencehorizons.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "jic23@kernel.org"
-	<jic23@kernel.org>, "hadess@hadess.net" <hadess@hadess.net>
-Subject: Re: screen rotation flipped in 4.8-rc
-Date: Wed, 31 Aug 2016 20:29:56 +0000
-Message-ID: <1472675395.5025.31.camel@intel.com>
-References: <1472596930.23886.13.camel@intel.com>
-	 <CAKzfze_p_6AiF93rY8HCMtm3BpDDjPS91nRbG49exrg4DV7Qzg@mail.gmail.com>
-	 <1472674733.5025.28.camel@intel.com>
-	 <CAKzfze_8zz6pYbccc3tpV_3qzT4gDRjaAxC_p4f3E+b0=FU4Wg@mail.gmail.com>
-In-Reply-To: <CAKzfze_8zz6pYbccc3tpV_3qzT4gDRjaAxC_p4f3E+b0=FU4Wg@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <stillcompiling@gmail.com>
+Subject: Re: iio channel sync
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Matt Ranostay <mranostay@gmail.com>
+References: <4284e190-84c2-07cc-1157-ef6d2fdd0e8c@gmail.com>
+ <CAKzfze-T6UqYp05YiGvHzxkV1bupSov0y_-p+0AiOtkbJETiKQ@mail.gmail.com>
+ <9706EDAC-1039-4D89-B5D8-CA327FA1E300@jic23.retrosnub.co.uk>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Joshua Clayton <stillcompiling@gmail.com>
+Message-ID: <aa577c0c-c18c-26d3-b5c6-16692e813d35@gmail.com>
+Date: Wed, 31 Aug 2016 15:47:18 -0700
 MIME-Version: 1.0
+In-Reply-To: <9706EDAC-1039-4D89-B5D8-CA327FA1E300@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-T24gV2VkLCAyMDE2LTA4LTMxIGF0IDEzOjI0IC0wNzAwLCBNYXR0IFJhbm9zdGF5IHdyb3RlOg0K
-PiBPbiBXZWQsIEF1ZyAzMSwgMjAxNiBhdCAxOjE4IFBNLCBQYW5kcnV2YWRhLCBTcmluaXZhcw0K
-PiA8c3Jpbml2YXMucGFuZHJ1dmFkYUBpbnRlbC5jb20+IHdyb3RlOg0KPiA+IA0KPiA+IE9uIFR1
-ZSwgMjAxNi0wOC0zMCBhdCAxNzo0MSAtMDcwMCwgTWF0dCBSYW5vc3RheSB3cm90ZToNCj4gPiA+
-IA0KPiA+ID4gT24gVHVlLCBBdWcgMzAsIDIwMTYgYXQgMzo0MiBQTSwgUGFuZHJ1dmFkYSwgU3Jp
-bml2YXMNCj4gPiA+IDxzcmluaXZhcy5wYW5kcnV2YWRhQGludGVsLmNvbT4gd3JvdGU6DQo+ID4g
-PiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gSGkgQWxsLA0KPiA+ID4gPiANCj4gPiA+ID4gSSBvYnNl
-cnZlZCB0aGF0IHVzaW5nIGlpby1zZW5zb3ItcHJveHkuc2VydmljZSwgdGhlIGF1dG8gc2NyZWVu
-DQo+ID4gPiA+IHJvdGF0aW9uIGZsaXBwZWQgb24gbXkgbGFwdG9wIChOb3JtYWwgLT4gdmVydGlj
-YWwsIHZlcnRpY2FsLQ0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IG5vcm1hbCkNCj4gPiA+ID4gdXNp
-bmcga2VybmVsIHY0LjguDQo+ID4gPiA+IA0KPiA+ID4gPiBBbnlvbmUgZWxzZSBoYXMgc2VlbiB0
-aGlzPw0KPiA+ID4gPiANCj4gPiA+ID4gSSBkaWQgYSBiaXNlY3QgYW5kIGZvdW5kIGEgY29tbWl0
-LCB3aGljaCBJIGFtIG5vdCBzdXJlIGhvdyBjYW4NCj4gPiA+ID4gaXQNCj4gPiA+ID4gaW1wYWN0
-Lg0KPiA+ID4gQ291bGQgeW91IHBvc3QgdGhlIHJlc3VsdHMgb2YgQ09ORklHX1RFU1RfSEFTSCBl
-bmFibGVkPw0KPiA+IEF0dGFjaGVkIGRtZXNnLnR4dCB3aXRoIHRoZSBDT05GSUdfVEVTVF9IQVNI
-PXkuDQo+ID4gDQo+ID4gSSBzZWUNCj4gPiBbwqDCoMKgwqA0LjI3NjEzOF0gdGVzdF9oYXNoOiBf
-X2hhc2hfMzIoKSBoYXMgbm8gYXJjaCBpbXBsZW1lbnRhdGlvbiB0bw0KPiA+IHRlc3QuDQo+ID4g
-W8KgwqDCoMKgNC4yNzYxMzhdIHRlc3RfaGFzaDogaGFzaF8zMigpIGhhcyBubyBhcmNoIGltcGxl
-bWVudGF0aW9uIHRvDQo+ID4gdGVzdC4NCj4gPiBbwqDCoMKgwqA0LjI3NjEzOV0gdGVzdF9oYXNo
-OiBoYXNoXzY0KCkgaGFzIG5vIGFyY2ggaW1wbGVtZW50YXRpb24gdG8NCj4gPiB0ZXN0Lg0KPiA+
-IFvCoMKgwqDCoDQuMjc2MTQxXSB0ZXN0X2hhc2g6IDMzMTUyIHRlc3RzIHBhc3NlZC4NCj4gPiAN
-Cj4gT2sgaGF2ZSB5b3UgdGVzdGVkIHdpdGggdGhhdCBwYXRjaHNldCByZXZlcnRlZD8gQW5kIGlm
-IHNvIGRvZXMgdGhlDQo+IHJlZ3Jlc3Npb24gZGlzYXBwZWFyPw0KWWVzLCBidXQgbm90IGFmdGVy
-IGFkZGluZyBDT05GSUdfVEVTVF9IQVNIPXkuDQpyZWdyZXNzaW9uIGRpc2FwcGVhcnMuDQoNCj4g
-SSB3b3VsZCBoaWdobHkgZG91YnQgaWYgaXQgd2FzIGEgaXNzdWUgd2l0aCB0aGF0IGRjYWNoZSBw
-YXRjaHNldHMgaXQNCj4gd291bGRuJ3QgYmUgYnJlYWtpbmcgYSB0b24gb2YgdGhpbmdzLg0KSSBh
-bHNvIHRoaW5rIHRoYXQuDQoNClRoYW5rcywNClNyaW5pdmFzDQoNCj4gDQo+ID4gDQo+ID4gVGhh
-bmtzLA0KPiA+IFNyaW5pdmFzDQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gVGhhbmtzLA0KPiA+ID4g
-DQo+ID4gPiBNYXR0DQo+ID4gPiANCj4gPiA+ID4gDQo+ID4gPiA+IA0KPiA+ID4gPiANCj4gPiA+
-ID4gDQo+ID4gPiA+IGNvbW1pdCA3MDNiNWZhZjIyZmJkZGY5ODRhMzYxZTY1NTVmM2EwM2ZkYmE2
-M2Q5DQo+ID4gPiA+IEF1dGhvcjogR2VvcmdlIFNwZWx2aW4gPGxpbnV4QHNjaWVuY2Vob3Jpem9u
-cy5uZXQ+DQo+ID4gPiA+IERhdGU6wqDCoMKgRnJpIEp1biAxMCAwMDoyMjoxMiAyMDE2IC0wNDAw
-DQo+ID4gPiA+IA0KPiA+ID4gPiDCoMKgwqDCoGZzL2RjYWNoZS5jOiBTYXZlIG9uZSAzMi1iaXQg
-bXVsdGlwbHkgaW4gZGNhY2hlIGxvb2t1cA0KPiA+ID4gPiANCj4gPiA+ID4gwqDCoMKgwqBOb2Ug
-dGhhdCB3ZSdyZSBtaXhpbmcgaW4gdGhlIHBhcmVudCBwb2ludGVyIGVhcmxpZXIsIHdlDQo+ID4g
-PiA+IMKgwqDCoMKgZG9uJ3QgbmVlZCB0byB1c2UgaGFzaF8zMigpIHRvIG1peCBpdHMgYml0cy7C
-oMKgSW5zdGVhZCwgd2UNCj4gPiA+ID4gY2FuDQo+ID4gPiA+IMKgwqDCoMKganVzdCB0YWtlIHRo
-ZSBtc2JpdHMgb2YgdGhlIGhhc2ggdmFsdWUgZGlyZWN0bHkuDQo+ID4gPiA+IA0KPiA+ID4gPiDC
-oMKgwqDCoEZvciB0aG9zZSBhcHBsaWNhdGlvbnMgd2hpY2ggdXNlIHRoZSBwYXJ0aWFsX25hbWVf
-aGFzaCgpLA0KPiA+ID4gPiDCoMKgwqDCoG1vdmUgdGhlIG11bHRpcGx5IHRvIGVuZF9uYW1lX2hh
-c2guDQo+ID4gPiA+IA0KPiA+ID4gPiDCoMKgwqDCoFNpZ25lZC1vZmYtYnk6IEdlb3JnZSBTcGVs
-dmluIDxsaW51eEBzY2llbmNlaG9yaXpvbnMubmV0Pg0KPiA+ID4gPiDCoMKgwqDCoFNpZ25lZC1v
-ZmYtYnk6IExpbnVzIFRvcnZhbGRzIDx0b3J2YWxkc0BsaW51eC1mb3VuZGF0aW9uLm9yDQo+ID4g
-PiA+IGc+DQo+ID4gPiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gVGhhbmtzLA0KPiA+ID4gPiBTcmlu
-aXZhcw==
+Greetings,
+
+On 08/30/2016 09:26 AM, Jonathan Cameron wrote:
+>
+> On 30 August 2016 08:41:18 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+>> On Mon, Aug 29, 2016 at 10:03 AM, Joshua Clayton
+>> <stillcompiling@gmail.com> wrote:
+>>> Jonathan,
+>>>
+>>> I have an out-of tree driver I am working on mainlining.
+>>>
+>>> The device is a sensor that gets phase and amplitude (x and y) data
+>>>
+>>> on multiple physical and/or time multiplexed channels.
+>>>
+>>> It also has up to 4 optical encoders to get physical location.
+>>>
+>>> The existing driver bundles x and y together with a snapshot
+>>>
+>>> of the encoder sums at that moment.
+>>>
+>>>
+>>> This seems like a good fit for iio, but one item is bothering me.
+>>>
+>>> How is synchronization between streams usually handled with
+>>>
+>>> iio drivers? Timing can be important.
+>> Wouldn't the trigger buffer framework be good enough for this?
+> Perhaps you could describe your usecase a little more?
+>
+> Is the interesting bit that you want to sync streams with different sampling frequencies?
+> Are those encoders better represented by a separate driver? (In which case I have some thoughts on simple additions to IIO trigger handling that might help - basically a hold off on triggers until all relevant devices are attached)
+Thanks for responding.
+
+The encoders (often a pair of them, could be up to 4) represent the position
+of the sensor in relation to an object to be tested. (linear movement or
+rotation around an axis).
+The Maximum sample rate of the encoders is much higher than the sensor,
+but they are moved by a motor or by hand, so the actual sample rate is
+variable and may be higher or lower that the sensor sample rate.
+
+The encoders are sometimes used as a trigger for data collection, but
+the encoders are also used as positional data alongside the sensor data.
+
+The way we get around this now is to bundle a snapshot of the encoder
+with the sensor data and discard it later if the encoder hasn't changed and
+the trigger function is enabled.
