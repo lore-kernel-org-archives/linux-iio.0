@@ -1,47 +1,64 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "jikos@kernel.org" <jikos@kernel.org>, "Kweh, Hock Leong"
-	<hock.leong.kweh@intel.com>, "jic23@kernel.org" <jic23@kernel.org>
-CC: "Lay, Kuan Loon" <kuan.loon.lay@intel.com>, "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>, "lars@metafoo.de" <lars@metafoo.de>,
-	"knaack.h@gmx.de" <knaack.h@gmx.de>, "Ong, Boon Leong"
-	<boon.leong.ong@intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "Ooi,
- Joyce" <joyce.ooi@intel.com>, "linux-input@vger.kernel.org"
-	<linux-input@vger.kernel.org>, "Lim, Lee Booi" <lee.booi.lim@intel.com>
-Subject: Re: [PATCH] iio: fix pressure data output unit in
- hid-sensor-attributes
-Date: Tue, 30 Aug 2016 19:49:52 +0000
-Message-ID: <1472586592.5025.3.camel@intel.com>
-References: <1472467856-14526-1-git-send-email-hock.leong.kweh@intel.com>
-In-Reply-To: <1472467856-14526-1-git-send-email-hock.leong.kweh@intel.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:35333 "EHLO
+        mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751302AbcHaAm2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 30 Aug 2016 20:42:28 -0400
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1472596930.23886.13.camel@intel.com>
+References: <1472596930.23886.13.camel@intel.com>
+From: Matt Ranostay <mranostay@gmail.com>
+Date: Tue, 30 Aug 2016 17:41:45 -0700
+Message-ID: <CAKzfze_p_6AiF93rY8HCMtm3BpDDjPS91nRbG49exrg4DV7Qzg@mail.gmail.com>
+Subject: Re: screen rotation flipped in 4.8-rc
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+Cc: "linux@sciencehorizons.net" <linux@sciencehorizons.net>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "hadess@hadess.net" <hadess@hadess.net>,
+        "srinivas.pandruvada@linux.intel.com"
+        <srinivas.pandruvada@linux.intel.com>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDE2LTA4LTI5IGF0IDE4OjUwICswODAwLCBLd2VoLCBIb2NrIExlb25nIHdyb3Rl
-Og0KPiBGcm9tOiAiS3dlaCwgSG9jayBMZW9uZyIgPGhvY2subGVvbmcua3dlaEBpbnRlbC5jb20+
-DQo+IA0KPiBBY2NvcmRpbmcgdG8gSUlPIEFCSSBkZWZpbml0aW9uLCBJSU9fUFJFU1NVUkUgZGF0
-YSBvdXRwdXQgdW5pdCBpcw0KPiBraWxvcGFzY2FsOg0KPiBodHRwOi8vbHhyLmZyZWUtZWxlY3Ry
-b25zLmNvbS9zb3VyY2UvRG9jdW1lbnRhdGlvbi9BQkkvdGVzdGluZy9zeXNmcy0NCj4gYnVzLWlp
-bw0KPiANCj4gVGhpcyBwYXRjaCBmaXggb3V0cHV0IHVuaXQgb2YgSElEIHByZXNzdXJlIHNlbnNv
-ciBJSU8gZHJpdmVyIGZyb20NCj4gcGFzY2FsIHRvDQo+IGtpbG9wYXNjYWwgdG8gZm9sbG93IElJ
-TyBBQkkgZGVmaW5pdGlvbi4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IEt3ZWgsIEhvY2sgTGVvbmcg
-PGhvY2subGVvbmcua3dlaEBpbnRlbC5jb20+DQpSZXZpZXdlZC1ieTogU3Jpbml2YXMgUGFuZHJ1
-dmFkYSA8c3Jpbml2YXMucGFuZHJ1dmFkYUBsaW51eC5pbnRlbC5jb20+DQoNCj4gLS0tDQo+IMKg
-Li4uL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMgfMKgwqDC
-oMKgNCArKy0tDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDIgaW5zZXJ0aW9ucygrKSwgMiBkZWxldGlv
-bnMoLSkNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNvcnMv
-aGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gYi9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNv
-cnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gaW5kZXggZTgxZjQzNC4uZGMzM2MxZCAxMDA2
-NDQNCj4gLS0tIGEvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItYXR0
-cmlidXRlcy5jDQo+ICsrKyBiL2RyaXZlcnMvaWlvL2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vu
-c29yLWF0dHJpYnV0ZXMuYw0KPiBAQCAtNTYsOCArNTYsOCBAQCBzdGF0aWMgc3RydWN0IHsNCj4g
-wqAJe0hJRF9VU0FHRV9TRU5TT1JfQUxTLCAwLCAxLCAwfSwNCj4gwqAJe0hJRF9VU0FHRV9TRU5T
-T1JfQUxTLCBISURfVVNBR0VfU0VOU09SX1VOSVRTX0xVWCwgMSwgMH0sDQo+IMKgDQo+IC0Je0hJ
-RF9VU0FHRV9TRU5TT1JfUFJFU1NVUkUsIDAsIDEwMDAwMCwgMH0sDQo+IC0Je0hJRF9VU0FHRV9T
-RU5TT1JfUFJFU1NVUkUsIEhJRF9VU0FHRV9TRU5TT1JfVU5JVFNfUEFTQ0FMLA0KPiAxLCAwfSwN
-Cj4gKwl7SElEX1VTQUdFX1NFTlNPUl9QUkVTU1VSRSwgMCwgMTAwLCAwfSwNCj4gKwl7SElEX1VT
-QUdFX1NFTlNPUl9QUkVTU1VSRSwgSElEX1VTQUdFX1NFTlNPUl9VTklUU19QQVNDQUwsDQo+IDAs
-IDEwMDB9LA0KPiDCoH07DQo+IMKgDQo+IMKgc3RhdGljIGludCBwb3dfMTAodW5zaWduZWQgcG93
-ZXIp
+On Tue, Aug 30, 2016 at 3:42 PM, Pandruvada, Srinivas
+<srinivas.pandruvada@intel.com> wrote:
+> Hi All,
+>
+> I observed that using iio-sensor-proxy.service, the auto screen
+> rotation flipped on my laptop (Normal -> vertical, vertical->normal)
+> using kernel v4.8.
+>
+> Anyone else has seen this?
+>
+> I did a bisect and found a commit, which I am not sure how can it
+> impact.
+
+Could you post the results of CONFIG_TEST_HASH enabled?
+
+Thanks,
+
+Matt
+
+>
+>
+> commit 703b5faf22fbddf984a361e6555f3a03fdba63d9
+> Author: George Spelvin <linux@sciencehorizons.net>
+> Date:   Fri Jun 10 00:22:12 2016 -0400
+>
+>     fs/dcache.c: Save one 32-bit multiply in dcache lookup
+>
+>     Noe that we're mixing in the parent pointer earlier, we
+>     don't need to use hash_32() to mix its bits.  Instead, we can
+>     just take the msbits of the hash value directly.
+>
+>     For those applications which use the partial_name_hash(),
+>     move the multiply to end_name_hash.
+>
+>     Signed-off-by: George Spelvin <linux@sciencehorizons.net>
+>     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
+>
+>
+> Thanks,
+> Srinivas
