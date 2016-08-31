@@ -1,119 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55501 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55513 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753196AbcHaUFg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 16:05:36 -0400
-Subject: Re: [PATCH 13/17] iio: accel: kxsd9: Deploy proper register bit
- defines
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
- <1471354423-19186-14-git-send-email-linus.walleij@linaro.org>
+        with ESMTP id S1753517AbcHaUGz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 16:06:55 -0400
+Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
+To: Lee Jones <lee.jones@linaro.org>
+References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
+ <b32afa2d-965c-569c-dde1-3611615080d3@kernel.org>
+ <20160816124907.GK25844@dell>
+ <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org>
+ <a2d7688d-753d-8c50-728b-f33cc5e31eb9@kernel.org>
+ <20160830085756.GB1661@dell>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Olof Johansson <olof@lixom.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8591c030-f5dd-63b5-f215-92256428f36c@kernel.org>
-Date: Wed, 31 Aug 2016 21:05:34 +0100
+Message-ID: <a911916d-05bc-6bcd-0aea-bfd7a3d4ff1b@kernel.org>
+Date: Wed, 31 Aug 2016 21:06:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471354423-19186-14-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160830085756.GB1661@dell>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/08/16 14:33, Linus Walleij wrote:
-> There are some hardcoded register values etc in the code, define
-> proper bitfield definitions, and use them when getting and setting
-> the scale. Optimize a read/modify/write to use regmap_update_bits()
-> at the same time.
+On 30/08/16 09:57, Lee Jones wrote:
+> On Mon, 29 Aug 2016, Jonathan Cameron wrote:
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Tested this one, but the rest are trivial and with that crash on rmmod
-skulking around the reboot cycle on this board means I'm not going
-to try them until that's fixed up.
-
-Thanks Linus, mostly a pretty good set (though you 'could' have
-done regmap at the start and probably made it a shorter series ;)
+>> On 21/08/16 20:57, Jonathan Cameron wrote:
+>>> On 16/08/16 13:49, Lee Jones wrote:
+>>>> On Mon, 15 Aug 2016, Jonathan Cameron wrote:
+>>>>
+>>>>> On 01/08/16 10:54, Enric Balletbo i Serra wrote:
+>>>>>> Hi,
+>>>>>>
+>>>>>> This is the four patchset to add support for the sensors behind the ChromeOS
+>>>>>> Embedded Controller.
+>>>>>>
+>>>>>> This version has only the patches to support common functions and 3d
+>>>>>> contiguous sensors like Accelerometers, Gyroscope and Magnetometer that are
+>>>>>> presented by the ChromeOS EC Sensor hub. The patches were tested on an Oak board.
+>>>>>>
+>>>>>> The code was checked out from the ChromeOS v3.18 tree and forward ported to
+>>>>>> mainline solving all the conflicts and build issues. I splitted the code in
+>>>>>> single patches that have sense by themselves in order to avoid the chances
+>>>>>> to fail.
+>>>>>>
+>>>>>> Note that the patches depends on this [1] to apply and work.
+>>>>>>
+>>>>>> [1] https://lkml.org/lkml/2016/7/1/188
+>>>>> Given this dependency I'm assuming the best route for these is via
+>>>>> the MFD tree...
+>>>>>
+>>>>> Lee, shout if you want them to go a different route.
+>>>>
+>>>> IIO looks like a more suitable route.  Please provide me with a
+>>>> pull-request base off of an immutable tag.
+>>> Hi Lee,
+>>>
+>>> As far as I can tell the precursor patch above hasn't gone in your
+>>> tree yet which leaves me unable to take this through IIO for now.
+>>>
+>>> Maybe I'm missing something!
+>>>
+>>> Jonathan
+>>
+>> Hi Lee,
+>>
+>> Any movement on the dependency above?
+>>
+>> Last I can find was you adding your ack to it:
+>> [PATCH v2 1/2] mfd: cros_ec: Add MKBP event support
+>>
+>> https://lkml.org/lkml/2016/8/16/423
+> 
+> Well that's annoying.  Okay, well when I send out the pull-request for
+> this one, I will include you.
+> 
+> Actually, better still -- take all of them on one branch and I will
+> pull from you.  Saves the toing and froing.
+> 
+Sure. Will probably be the weekend before I get this sorted.
 
 Jonathan
-> ---
->  drivers/iio/accel/kxsd9.c | 36 +++++++++++++++++++++++++++---------
->  1 file changed, 27 insertions(+), 9 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 78afbe05710e..93be5e1f8968 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -20,6 +20,7 @@
->  #include <linux/slab.h>
->  #include <linux/module.h>
->  #include <linux/regmap.h>
-> +#include <linux/bitops.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
-> @@ -35,9 +36,29 @@
->  #define KXSD9_REG_RESET		0x0a
->  #define KXSD9_REG_CTRL_C	0x0c
->  
-> -#define KXSD9_FS_MASK		0x03
-> +#define KXSD9_CTRL_C_FS_MASK	0x03
-> +#define KXSD9_CTRL_C_FS_8G	0x00
-> +#define KXSD9_CTRL_C_FS_6G	0x01
-> +#define KXSD9_CTRL_C_FS_4G	0x02
-> +#define KXSD9_CTRL_C_FS_2G	0x03
-> +#define KXSD9_CTRL_C_MOT_LAT	BIT(3)
-> +#define KXSD9_CTRL_C_MOT_LEV	BIT(4)
-> +#define KXSD9_CTRL_C_LP_MASK	0xe0
-> +#define KXSD9_CTRL_C_LP_NONE	0x00
-> +#define KXSD9_CTRL_C_LP_2000HZC	BIT(5)
-> +#define KXSD9_CTRL_C_LP_2000HZB	BIT(6)
-> +#define KXSD9_CTRL_C_LP_2000HZA	(BIT(5)|BIT(6))
-> +#define KXSD9_CTRL_C_LP_1000HZ	BIT(7)
-> +#define KXSD9_CTRL_C_LP_500HZ	(BIT(7)|BIT(5))
-> +#define KXSD9_CTRL_C_LP_100HZ	(BIT(7)|BIT(6))
-> +#define KXSD9_CTRL_C_LP_50HZ	(BIT(7)|BIT(6)|BIT(5))
->  
->  #define KXSD9_REG_CTRL_B	0x0d
-> +
-> +#define KXSD9_CTRL_B_CLK_HLD	BIT(7)
-> +#define KXSD9_CTRL_B_ENABLE	BIT(6)
-> +#define KXSD9_CTRL_B_ST		BIT(5) /* Self-test */
-> +
->  #define KXSD9_REG_CTRL_A	0x0e
->  
->  /**
-> @@ -65,7 +86,6 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
->  	int ret, i;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  	bool foundit = false;
-> -	unsigned int val;
->  
->  	for (i = 0; i < 4; i++)
->  		if (micro == kxsd9_micro_scales[i]) {
-> @@ -75,14 +95,12 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
->  	if (!foundit)
->  		return -EINVAL;
->  
-> -	ret = regmap_read(st->map,
-> -			  KXSD9_REG_CTRL_C,
-> -			  &val);
-> +	ret = regmap_update_bits(st->map,
-> +				 KXSD9_REG_CTRL_C,
-> +				 KXSD9_CTRL_C_FS_MASK,
-> +				 i);
->  	if (ret < 0)
->  		goto error_ret;
-> -	ret = regmap_write(st->map,
-> -			   KXSD9_REG_CTRL_C,
-> -			   (val & ~KXSD9_FS_MASK) | i);
->  error_ret:
->  	return ret;
->  }
-> @@ -150,7 +168,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  		if (ret < 0)
->  			goto error_ret;
->  		*val = 0;
-> -		*val2 = kxsd9_micro_scales[regval & KXSD9_FS_MASK];
-> +		*val2 = kxsd9_micro_scales[regval & KXSD9_CTRL_C_FS_MASK];
->  		ret = IIO_VAL_INT_PLUS_MICRO;
->  		break;
->  	}
+>>>>>> Waiting for your reviews and feedback.
+>>>>>>
+>>>>>> Changes since v3 (requested by Guenter Roeck)
+>>>>>>   - Convert structure to a simple array
+>>>>>>   - Remove PM declarations
+>>>>>>   - Remove unnecessary initializations
+>>>>>>   - cros_ec_sensors_cmd_read_u16: Conversion should only be done if ret >= 0
+>>>>>>   - Remove unnecessary else
+>>>>>>   - Add Reviewed-by tag for two last patches.
+>>>>>>
+>>>>>> Changes since v2 (requested by Guenter Roeck and Jonhatan Cameron)
+>>>>>>   - Rebased and fix build error.
+>>>>>>   - Include a list of possible values in the description of location attr.
+>>>>>>   - Fix some typos.
+>>>>>>   - Remove id sysfs entry.
+>>>>>>   - Skip filling by zero structure parameters that already zero'd.
+>>>>>>   - Order includes alphabetically.
+>>>>>>   - Propagate error codes.
+>>>>>>
+>>>>>> Changes since v1 (requested by Peter Meerwald-Stadler and Jonhatan Cameron)
+>>>>>>   - Check kernel-doc documentation and 
+>>>>>>   - Bring some patches together.
+>>>>>>   - Fix some spelling mistakes.
+>>>>>>   - Include ABI documentation.
+>>>>>>   - Be more careful with buffer sizes (sprintf -> snprintf)
+>>>>>>   - Add cros_ec_sensors prefix to all function.
+>>>>>>   - Check return values on some functions.
+>>>>>>
+>>>>>> Best regards,
+>>>>>>
+>>>>>> Enric Balletbo i Serra (3):
+>>>>>>   iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC
+>>>>>>     Sensor Hub.
+>>>>>>   iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
+>>>>>>   platform/chrome: cros_ec_dev - Register cros-ec sensors
+>>>>>>
+>>>>>> Vincent Palatin (1):
+>>>>>>   platform/chrome: Introduce a new function to check EC features.
+>>>>>>
+>>>>>>  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  18 +
+>>>>>>  drivers/iio/common/Kconfig                         |   1 +
+>>>>>>  drivers/iio/common/Makefile                        |   1 +
+>>>>>>  drivers/iio/common/cros_ec_sensors/Kconfig         |  22 +
+>>>>>>  drivers/iio/common/cros_ec_sensors/Makefile        |   6 +
+>>>>>>  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++
+>>>>>>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 450 +++++++++++++++++++++
+>>>>>>  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 175 ++++++++
+>>>>>>  drivers/platform/chrome/cros_ec_dev.c              | 159 ++++++++
+>>>>>>  include/linux/mfd/cros_ec.h                        |  10 +
+>>>>>>  include/linux/mfd/cros_ec_commands.h               | 183 ++++++++-
+>>>>>>  11 files changed, 1342 insertions(+), 5 deletions(-)
+>>>>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>>>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
+>>>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
+>>>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+>>>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>>>>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>>>>>>
+>>>>>
+>>>>
+>>>
+>>
 > 
 
