@@ -1,62 +1,97 @@
-Return-Path: <glikely@secretlab.ca>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55405 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753070AbcHaTnm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 15:43:42 -0400
+Subject: Re: [PATCH 06/17] iio: accel: kxsd9: Do away with the write2 helper
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
+ <1471354423-19186-7-git-send-email-linus.walleij@linaro.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <af046759-250c-aeee-b81a-354feec51793@kernel.org>
+Date: Wed, 31 Aug 2016 20:43:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <4ab0f3f3-43e3-f815-dd7b-9f6aa0bf6833@kernel.org>
-References: <1466574038-20613-1-git-send-email-srinivas.pandruvada@linux.intel.com>
- <b81da639-0ec5-bb30-1f77-b71d8e7ad434@secretlab.ca> <CACxGe6v6pDisF9FpKPJrojGS7qUn13xUUd-Uydr7B1701Y4szg@mail.gmail.com>
- <alpine.LNX.2.00.1608242313540.22028@cbobk.fhfr.pm> <4ab0f3f3-43e3-f815-dd7b-9f6aa0bf6833@kernel.org>
-From: Grant Likely <glikely@secretlab.ca>
-Date: Wed, 31 Aug 2016 15:19:45 +0100
-Message-ID: <CACxGe6s9Xo8wBbTsro7RZjtXp=30a9tz6sxKkT9TyQDmoO+Vwg@mail.gmail.com>
-Subject: Re: [PATCH v2 0/6] Intel Integrated Sensor Hub Support (ISH)
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Jiri Kosina <jikos@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>, benjamin.tissoires@redhat.com,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, linux-iio@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1471354423-19186-7-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Aug 24, 2016 at 10:23 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 24/08/16 22:14, Jiri Kosina wrote:
->> On Wed, 24 Aug 2016, Grant Likely wrote:
->>
->>>>> v2:
->>>>> - Overview in documentation show analogy with usbhid implementation
->>>>> - sparse errors for statics. Also pointed by Jiri
->>>>> - Clearly marking exported function header file. Clean up all exports
->>>>> unused inteface functions
->>>>> - Changed to tristate from boolean as pointed by Jiri:
->>>>> this required remove/unload functions
->>>>> - Prevent crash when ISH enabled on non supported platform
->>>>> - Break client.c to smaller part by seprating buffer allocations
->>>>> - move bus register/unregister to ishtp module
->>>>> - There is only one config symbol INTEL_ISH_HID, removed silent
->>>>> config for TRANSPORT and IPC
->>>>
->>>> Tested-by: Grant Likely <grant.likely@secretlab.ca>
->>>>
->>>> On an HP Spectre x360 laptop using v4.7-rc5.
->>>
->>> Hey Srinivas. Any progress on this patch series?
->>
->> The HID part (with patch #5 omitted) should be in linux-next through
->> hid.git already.
->>
-> The one IIO patch was pulled by Greg KH last night so hit linux next
-> today.  Hence all on it's way by the sound of it!
+On 16/08/16 14:33, Linus Walleij wrote:
+> This is just a masquerading register write function, so use the
+> register write function instead.
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Tested-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  drivers/iio/accel/kxsd9-spi.c | 10 ----------
+>  drivers/iio/accel/kxsd9.c     |  4 ++--
+>  drivers/iio/accel/kxsd9.h     |  2 --
+>  3 files changed, 2 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
+> index 0789695c89e1..332b7664233e 100644
+> --- a/drivers/iio/accel/kxsd9-spi.c
+> +++ b/drivers/iio/accel/kxsd9-spi.c
+> @@ -25,15 +25,6 @@ static int kxsd9_spi_writereg(struct kxsd9_transport *tr, u8 address, u8 val)
+>  	return spi_write(spi, tr->tx, 2);
+>  }
+>  
+> -static int kxsd9_spi_write2(struct kxsd9_transport *tr, u8 b1, u8 b2)
+> -{
+> -	struct spi_device *spi = tr->trdev;
+> -
+> -	tr->tx[0] = b1;
+> -	tr->tx[1] = b2;
+> -	return spi_write(spi, tr->tx, 2);
+> -}
+> -
+>  static int kxsd9_spi_readval(struct kxsd9_transport *tr, u8 address)
+>  {
+>  	struct spi_device *spi = tr->trdev;
+> @@ -70,7 +61,6 @@ static int kxsd9_spi_probe(struct spi_device *spi)
+>  	transport->trdev = spi;
+>  	transport->readreg = kxsd9_spi_readreg;
+>  	transport->writereg = kxsd9_spi_writereg;
+> -	transport->write2 = kxsd9_spi_write2;
+>  	transport->readval = kxsd9_spi_readval;
+>  	spi->mode = SPI_MODE_0;
+>  	spi_setup(spi);
+> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> index efa9ba665f6e..7c94a0d3464a 100644
+> --- a/drivers/iio/accel/kxsd9.c
+> +++ b/drivers/iio/accel/kxsd9.c
+> @@ -184,10 +184,10 @@ static int kxsd9_power_up(struct kxsd9_state *st)
+>  {
+>  	int ret;
+>  
+> -	ret = st->transport->write2(st->transport, 0x0d, 0x40);
+> +	ret = st->transport->writereg(st->transport, KXSD9_REG_CTRL_B, 0x40);
+>  	if (ret)
+>  		return ret;
+> -	return st->transport->write2(st->transport, 0x0c, 0x9b);
+> +	return st->transport->writereg(st->transport, KXSD9_REG_CTRL_C, 0x9b);
+>  };
+>  
+>  static const struct iio_info kxsd9_info = {
+> diff --git a/drivers/iio/accel/kxsd9.h b/drivers/iio/accel/kxsd9.h
+> index c260a54e00fe..32f86c9b33c7 100644
+> --- a/drivers/iio/accel/kxsd9.h
+> +++ b/drivers/iio/accel/kxsd9.h
+> @@ -11,7 +11,6 @@ struct kxsd9_transport;
+>   * @trdev: transport device such as SPI or I2C
+>   * @readreg(): function to read a byte from an address in the device
+>   * @writereg(): function to write a byte to an address in the device
+> - * @write2(): function to write two consecutive bytes to the device
+>   * @readval(): function to read a 16bit value from the device
+>   * @rx: cache aligned read buffer
+>   * @tx: cache aligned write buffer
+> @@ -20,7 +19,6 @@ struct kxsd9_transport {
+>  	void *trdev;
+>  	int (*readreg) (struct kxsd9_transport *tr, u8 address);
+>  	int (*writereg) (struct kxsd9_transport *tr, u8 address, u8 val);
+> -	int (*write2) (struct kxsd9_transport *tr, u8 b1, u8 b2);
+>  	int (*readval) (struct kxsd9_transport *tr, u8 address);
+>  	u8 rx[KXSD9_STATE_RX_SIZE] ____cacheline_aligned;
+>  	u8 tx[KXSD9_STATE_TX_SIZE];
+> 
 
-Nice!
-
-Unfortunately, I've just hit a new bug after updating to v4.8-rc4.
-4.7.0-rc6 works fine.
-
-The kernel boots, and the driver loads, but the orientations are
-wrong. It appears that the X/Y is getting swapped:
-
-Normal orientation: display rotated 90 degrees CW
-Rotated 90 degrees CW: display normal orientation
-Rotated 180 degrees (upside down): display rotated 90 degrees CCW
-Rotated 90 degrees CCW: display rotated 180 degrees
-
-Cheers,
-g.
