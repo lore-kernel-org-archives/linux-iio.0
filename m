@@ -1,97 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55405 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55422 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753070AbcHaTnm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 15:43:42 -0400
-Subject: Re: [PATCH 06/17] iio: accel: kxsd9: Do away with the write2 helper
+        with ESMTP id S1753104AbcHaTrf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 15:47:35 -0400
+Subject: Re: [PATCH 10/17] iio: accel: kxsd9: Fix scaling bug
 To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
 References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
- <1471354423-19186-7-git-send-email-linus.walleij@linaro.org>
+ <1471354423-19186-11-git-send-email-linus.walleij@linaro.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <af046759-250c-aeee-b81a-354feec51793@kernel.org>
-Date: Wed, 31 Aug 2016 20:43:40 +0100
+Message-ID: <6c8174d4-0e53-edb3-8c3b-7304bb77ca91@kernel.org>
+Date: Wed, 31 Aug 2016 20:47:32 +0100
 MIME-Version: 1.0
-In-Reply-To: <1471354423-19186-7-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1471354423-19186-11-git-send-email-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 16/08/16 14:33, Linus Walleij wrote:
-> This is just a masquerading register write function, so use the
-> register write function instead.
+> All the scaling of the KXSD9 involves multiplication with a
+> fraction number < 1.
+> 
+> However the scaling value returned from IIO_INFO_SCALE was
+> unpredictable as only the micros of the value was assigned, and
+> not the integer part, resulting in scaling like this:
+> 
+> $cat in_accel_scale
+> -1057462640.011978
+> 
+> Fix this by assigning zero to the integer part.
 > 
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+I'll pick this up for stable.  If you want to reorder so it's at the top
+of the series of the remaining patches that would be cool.
+If not I'll wiggle it till it fits.
+
 Tested-by: Jonathan Cameron <jic23@kernel.org>
+
+oops.
 > ---
->  drivers/iio/accel/kxsd9-spi.c | 10 ----------
->  drivers/iio/accel/kxsd9.c     |  4 ++--
->  drivers/iio/accel/kxsd9.h     |  2 --
->  3 files changed, 2 insertions(+), 14 deletions(-)
+>  drivers/iio/accel/kxsd9.c | 1 +
+>  1 file changed, 1 insertion(+)
 > 
-> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
-> index 0789695c89e1..332b7664233e 100644
-> --- a/drivers/iio/accel/kxsd9-spi.c
-> +++ b/drivers/iio/accel/kxsd9-spi.c
-> @@ -25,15 +25,6 @@ static int kxsd9_spi_writereg(struct kxsd9_transport *tr, u8 address, u8 val)
->  	return spi_write(spi, tr->tx, 2);
->  }
->  
-> -static int kxsd9_spi_write2(struct kxsd9_transport *tr, u8 b1, u8 b2)
-> -{
-> -	struct spi_device *spi = tr->trdev;
-> -
-> -	tr->tx[0] = b1;
-> -	tr->tx[1] = b2;
-> -	return spi_write(spi, tr->tx, 2);
-> -}
-> -
->  static int kxsd9_spi_readval(struct kxsd9_transport *tr, u8 address)
->  {
->  	struct spi_device *spi = tr->trdev;
-> @@ -70,7 +61,6 @@ static int kxsd9_spi_probe(struct spi_device *spi)
->  	transport->trdev = spi;
->  	transport->readreg = kxsd9_spi_readreg;
->  	transport->writereg = kxsd9_spi_writereg;
-> -	transport->write2 = kxsd9_spi_write2;
->  	transport->readval = kxsd9_spi_readval;
->  	spi->mode = SPI_MODE_0;
->  	spi_setup(spi);
 > diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index efa9ba665f6e..7c94a0d3464a 100644
+> index a8ee041dd4e4..14d949a4caf9 100644
 > --- a/drivers/iio/accel/kxsd9.c
 > +++ b/drivers/iio/accel/kxsd9.c
-> @@ -184,10 +184,10 @@ static int kxsd9_power_up(struct kxsd9_state *st)
->  {
->  	int ret;
->  
-> -	ret = st->transport->write2(st->transport, 0x0d, 0x40);
-> +	ret = st->transport->writereg(st->transport, KXSD9_REG_CTRL_B, 0x40);
->  	if (ret)
->  		return ret;
-> -	return st->transport->write2(st->transport, 0x0c, 0x9b);
-> +	return st->transport->writereg(st->transport, KXSD9_REG_CTRL_C, 0x9b);
->  };
->  
->  static const struct iio_info kxsd9_info = {
-> diff --git a/drivers/iio/accel/kxsd9.h b/drivers/iio/accel/kxsd9.h
-> index c260a54e00fe..32f86c9b33c7 100644
-> --- a/drivers/iio/accel/kxsd9.h
-> +++ b/drivers/iio/accel/kxsd9.h
-> @@ -11,7 +11,6 @@ struct kxsd9_transport;
->   * @trdev: transport device such as SPI or I2C
->   * @readreg(): function to read a byte from an address in the device
->   * @writereg(): function to write a byte to an address in the device
-> - * @write2(): function to write two consecutive bytes to the device
->   * @readval(): function to read a 16bit value from the device
->   * @rx: cache aligned read buffer
->   * @tx: cache aligned write buffer
-> @@ -20,7 +19,6 @@ struct kxsd9_transport {
->  	void *trdev;
->  	int (*readreg) (struct kxsd9_transport *tr, u8 address);
->  	int (*writereg) (struct kxsd9_transport *tr, u8 address, u8 val);
-> -	int (*write2) (struct kxsd9_transport *tr, u8 b1, u8 b2);
->  	int (*readval) (struct kxsd9_transport *tr, u8 address);
->  	u8 rx[KXSD9_STATE_RX_SIZE] ____cacheline_aligned;
->  	u8 tx[KXSD9_STATE_TX_SIZE];
+> @@ -146,6 +146,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+>  				  &regval);
+>  		if (ret < 0)
+>  			goto error_ret;
+> +		*val = 0;
+>  		*val2 = kxsd9_micro_scales[regval & KXSD9_FS_MASK];
+>  		ret = IIO_VAL_INT_PLUS_MICRO;
+>  		break;
 > 
 
