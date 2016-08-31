@@ -1,84 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:32211 "EHLO mail.aswsp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756691AbcH3QOH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 30 Aug 2016 12:14:07 -0400
-Message-ID: <57C5B1C4.8090509@parrot.com>
-Date: Tue, 30 Aug 2016 18:18:12 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+Received: from mail-db5eur01on0110.outbound.protection.outlook.com ([104.47.2.110]:23872
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1755315AbcHaIDA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 31 Aug 2016 04:03:00 -0400
+From: Peter Rosin <peda@axentia.se>
+To: <linux-iio@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        <linux-kernel@vger.kernel.org>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>
+Subject: [PATCH] iio: imu: inv_mpu6050: inform the i2c mux core about how it is used
+Date: Wed, 31 Aug 2016 10:02:40 +0200
+Message-ID: <1472630560-4905-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: <linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [PATCH v1 3/3] iio:pressure: initial zpa2326 barometer support
-References: <cover.1472050374.git.gregor.boirie@parrot.com> <a16becf5ac0ac811a993a26de32a0d41f3eb4ffa.1472050374.git.gregor.boirie@parrot.com> <alpine.DEB.2.02.1608242115340.4077@pmeerw.net> <57BF0488.4000902@parrot.com> <8a47f701-1cff-7c5c-639b-ec2258c62025@kernel.org>
-In-Reply-To: <8a47f701-1cff-7c5c-639b-ec2258c62025@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The i2c mux core can then take appropriate action depending on if it is
+used for an actual i2c mux, or for an arbitrator or gate. In this case
+it is used as a gate.
 
+This will make devicetree bindings simpler when they are eventually
+added.
 
-On 08/29/2016 09:01 PM, Jonathan Cameron wrote:
-> On 25/08/16 15:45, Gregor Boirie wrote:
->> Answers inline
->>
->> On 08/25/2016 08:34 AM, Peter Meerwald-Stadler wrote:
->>
->>>> +
->>>> +    zpa_init_runtime(slave);
->>>> +
->>>> +    err = devm_iio_device_register(slave, indio_dev);
->>> can't use devm_ register if there is a non-empty remove()
->> Removal hooks are registered onto bus specific devices not onto
->> IIO ones. Enabling devm debug outputs a removal flow trace that
->> seems correct. Is this really wrong ?
-> Yes.  The unwind of devm_iio_device_register will occur after the
-> whatever is in the remove function.  As devm_iio_device_unregister
-> is responsible for removal of the userspace and other interfaces
-> until that happens they are still present.
->
-> Hence whilst a remove is going on the device can be powered
-> down but the interfaces still exposed.  A read at that point
-> is going to cause some an error to occur.
->
-> Hence, using the devm form is fine if everything else is
-> handled automatically, i.e. there is nothing in remove.
-> Otherwise, you almost always have a race condition.
->
-> It's a minor one given how often people remove modules, but
-> worth cleaning up anyway!
-Got it.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-But something still makes me feel uncomfortable. Shouldn't we ensure the
-bus specific driver (i.e., zpa2326_i2c or zpa2326_spi in this case) be 
-refcounted
-upon entry into the IIO layer ? Using try_module_get()/module_put() would :
-* prevent any attempt to remove module while being used
-* prevent any attempt to use module while it is going away.
+So, this depends on the i2c-mux-dt-3 branch [1] that Jonathan
+pulled to support the new mpu-3050 gyroscope driver. I had
+planned to submit this post 4.9-rc1, but since the iio tree
+got the prerequisite already, I'm sending it right away.
 
-I'm not quite sure here because of possible race conditions however 
-(feels like
-mixing devm_ and module layers).
+Cheers,
+Peter
 
-Anyway, it seems quite strange module removal succeeds despite being 
-under use
-by userspace. This leads to inconsistent system state where userspace 
-process
-gets stuck in poll syscall, waiting for data that will never come since 
-modprobing
-module again will in the end allocate an new IIO device, etc...
+[1] https://github.com/peda-r/i2c-mux.git i2c-mux-dt-3
 
-confused,
-Grégor.
-
->
-> Jonathan
->> Many thanks for the review. Regards,
->> Greg.
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+index 19580d1db597..2c3f8964a3ea 100644
+--- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
++++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+@@ -126,7 +126,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+ 
+ 	st = iio_priv(dev_get_drvdata(&client->dev));
+ 	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
+-				 1, 0, I2C_MUX_LOCKED,
++				 1, 0, I2C_MUX_LOCKED | I2C_MUX_GATE,
+ 				 inv_mpu6050_select_bypass,
+ 				 inv_mpu6050_deselect_bypass);
+ 	if (!st->muxc) {
+-- 
+2.1.4
 
