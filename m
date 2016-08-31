@@ -1,277 +1,604 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41734 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751335AbcH2QBV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 29 Aug 2016 12:01:21 -0400
-Subject: Re: [PATCH v2] iio: adc: ltc2485: add support for Linear Technology
- LTC2485 ADC
-To: Alison Schofield <amsfield22@gmail.com>
-References: <20160825054829.GA15341@d830.WORKGROUP>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9e95a885-8078-fc00-6104-ead4684d9d4b@kernel.org>
-Date: Mon, 29 Aug 2016 17:01:14 +0100
+Return-Path: <lee.jones@linaro.org>
+Date: Wed, 31 Aug 2016 13:05:52 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Cc: linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
+	linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+	linux-iio@vger.kernel.org, harald@ccbib.org, stefan.wahren@i2se.com,
+	fabio.estevam@freescale.com
+Subject: Re: [PATCH v5 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Message-ID: <20160831120552.GF8649@dell>
+References: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
+ <f968582fe3036a2967ed41494c73c43ac19e4767.1471524593.git.ksenija.stanojevic@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20160825054829.GA15341@d830.WORKGROUP>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <f968582fe3036a2967ed41494c73c43ac19e4767.1471524593.git.ksenija.stanojevic@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 25/08/16 06:48, Alison Schofield wrote:
-> Adds basic support for the LTC2485 ADC - a delta-sigma analog-to-digital
-> converter with an I2C interface that operates in single shot conversion
-> mode.
+On Thu, 18 Aug 2016, Ksenija Stanojevic wrote:
+
+> Add core files for mxs-lradc MFD driver.
 > 
-> The driver supports an on board 5V reference and the power-on default
-> configuration which rejects both 50hz & 60hz line frequencies and
-> operates in 1x speed mode.
+> Note:  this patch won't compile in iio/testing without this patch:
+> a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
 > 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
 > ---
+> Changes in v5:
+>  - use DEFINE_RES_MEM
+>  - don't pass ioreammaped adress to platform cells
+>  - move comment outside of struct mxs_lradc
+>  - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
+>    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
+> 
+> Changes in v4:
+>  - update copyright
+>  - use DEFINE_RES_IRQ_NAMED
+>  - remove mxs_lradc_add_device function
+>  - use struct mfd_cell in static form
+>  - improve spacing
+>  - remove unnecessary comment
+>  - remove platform_get_irq
+>  - remove touch_ret and use ret instead
+>  - rename use_touchscreen to touchscreen_wire
+>  - use goto statements
+>  - remove irq[13], irq_count and irq_name from struct mxs_lradc
+>  - remove all defines from inside the struct definition
+> 
+> Changes in v3:
+>  - add note to commit message
+>  - move switch statement into if(touch_ret == 0) branch
+>  - add MODULE_AUTHOR
+> 
 > Changes in v2:
->   - changed the wait conversion time function to use monotonic rather than
->     real time and to use milliseconds rather than nanoseconds.  
->   - made conv time a constant int.
+>  - do not change spacing in Kconfig
+>  - make struct mfd_cell part of struct mxs_lradc
+>  - use switch instead of if in mxs_lradc_irq_mask
+>  - use only necessary header files in mxs_lradc.h
+>  - use devm_mfd_add_device
+>  - use separate function to register mfd device
+>  - change licence to GPL
+>  - add copyright
 > 
-> Same notes as in v1:
-> Reviewers: In addition to commenting on what is present, please comment
-> on what is absent and the priority in which you would like to see
-> additional features added to this driver, or needed in this first submittal.
-None of the below are needed for initially submital.
-All 'value' add features at the end of the day. Job one: get reading from
-ADC done :)
-
-I made a few really small white space changes and applied this to the
-togreg branch of iio.git.  Will be initially pushed out as testing
-in a few minutes time to check the autobuilders can't find anything.
-
-Thanks,
-
-Jonathan
-
+>  drivers/mfd/Kconfig           |  17 +++
+>  drivers/mfd/Makefile          |   1 +
+>  drivers/mfd/mxs-lradc.c       | 255 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/mfd/mxs-lradc.h | 194 ++++++++++++++++++++++++++++++++
+>  4 files changed, 467 insertions(+)
+>  create mode 100644 drivers/mfd/mxs-lradc.c
+>  create mode 100644 include/linux/mfd/mxs-lradc.h
 > 
-> Not supported: 
-> 1. External Vref
-> 2. Additional Configuration Modes
->         Temperature Sensor Mode: report temp data (not voltage).
-> 
->         Line Frequency Rejection Mode: select to reject 50Hz or 60Hz
-> 	or both. (both is default)
-This is interesting... Will need some new ABI.  It's a filter so we probably
-want to try and fit it in with the existing filter ABI.  
-> 
->         Speed Mode: Default speed mode (1x) performs two conversions each
-> 	cycle and combines the results.  2x speed mode only does one
-> 	conversion each cycle.
-Really simple case of oversampling.  So this one is easy ;)
-
-> 3. Power management
-> 4. DT Bindings
-> 5. Triggered buffers
-Device is really slow, so no real rush on this one.  Nice to have for
-the convenience of using standard interfaces in libiio etc, but
-at 7sps reading sysfs will work fine for all usecases!
-
-> 6. What else?
-Other power supply regulators..
-(allows complete power disabling if there is an appropriate controllable
-regulator on the board).
-
-> 
-> 
->  drivers/iio/adc/Kconfig   |   9 +++
->  drivers/iio/adc/Makefile  |   1 +
->  drivers/iio/adc/ltc2485.c | 146 ++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 156 insertions(+)
->  create mode 100644 drivers/iio/adc/ltc2485.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 1de31bd..a042611 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -264,6 +264,15 @@ config LPC18XX_ADC
->  	  To compile this driver as a module, choose M here: the module will be
->  	  called lpc18xx_adc.
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 9ca66de..ffe14ef 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -271,6 +271,23 @@ config MFD_MC13XXX_I2C
+>  	help
+>  	  Select this if your MC13xxx is connected via an I2C bus.
 >  
-> +config LTC2485
-> +	tristate "Linear Technology LTC2485 ADC driver"
-> +	depends on I2C
+> +config MFD_MXS_LRADC
+> +	tristate "Freescale i.MX23/i.MX28 LRADC"
+> +	depends on ARCH_MXS || COMPILE_TEST
+> +	select MFD_CORE
+> +	select STMP_DEVICE
 > +	help
-> +	  Say yes here to build support for Linear Technology LTC2485 ADC.
+> +	  Say yes here to build support for the Low Resolution
+> +	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
+> +	  processors. This driver provides common support for accessing the
+> +	  device, additional drivers must be enabled in order to use the
+> +	  functionality of the device:
+> +		mxs-lradc-adc for ADC readings
+> +		mxs-lradc-ts  for touchscreen support
 > +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ltc2485.
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called mxs-lradc.
 > +
->  config MAX1027
->  	tristate "Maxim max1027 ADC driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 0ba0d50..1be5747 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -27,6 +27,7 @@ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
-> +obj-$(CONFIG_LTC2485) += ltc2485.o
->  obj-$(CONFIG_MAX1027) += max1027.o
->  obj-$(CONFIG_MAX1363) += max1363.o
->  obj-$(CONFIG_MCP320X) += mcp320x.o
-> diff --git a/drivers/iio/adc/ltc2485.c b/drivers/iio/adc/ltc2485.c
+>  config MFD_HI6421_PMIC
+>  	tristate "HiSilicon Hi6421 PMU/Codec IC"
+>  	depends on OF
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 0f230a6..ecf6399 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -198,3 +198,4 @@ intel-soc-pmic-objs		:= intel_soc_pmic_core.o intel_soc_pmic_crc.o
+>  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+= intel_soc_pmic_bxtwc.o
+>  obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
+>  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+> +obj-$(CONFIG_MFD_MXS_LRADC)	+= mxs-lradc.o
+> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
 > new file mode 100644
-> index 0000000..d8f9dac
+> index 0000000..268c48d
 > --- /dev/null
-> +++ b/drivers/iio/adc/ltc2485.c
-> @@ -0,0 +1,146 @@
+> +++ b/drivers/mfd/mxs-lradc.c
+> @@ -0,0 +1,255 @@
 > +/*
-> + * ltc2485.c - Driver for Linear Technology LTC2485 ADC
+> + * Freescale MXS LRADC driver
 > + *
-> + * Copyright (C) 2016 Alison Schofield <amsfield22@gmail.com>
-> + *
+> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+
+This needs an update.
+
+> + * Authors:
+> + * Marek Vasut <marex@denx.de>
+> + * Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+
+Nit: Add 2 ' 's before the names.
+
 > + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License version 2 as
-> + * published by the Free Software Foundation.
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
 > + *
-> + * Datasheet: http://cds.linear.com/docs/en/datasheet/2485fd.pdf
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
 > + */
 > +
-> +#include <linux/delay.h>
-> +#include <linux/i2c.h>
+> +#include <linux/clk.h>
+> +#include <linux/device.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/mfd/mxs-lradc.h>
 > +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
 > +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
+> +#define MXS_LRADC_BASE		0x80050000
 > +
-> +/* Power-on configuration: rejects both 50/60Hz, operates at 1x speed */
-> +#define LTC2485_CONFIG_DEFAULT		0
-> +
-> +struct ltc2485_data {
-> +	struct i2c_client	*client;
-> +	ktime_t			time_prev;	/* last conversion */
+> +enum mx23_lradc_irqs {
+> +	MX23_LRADC_TS_IRQ = 0,
+> +	MX23_LRADC_CH0_IRQ,
+> +	MX23_LRADC_CH1_IRQ,
+> +	MX23_LRADC_CH2_IRQ,
+> +	MX23_LRADC_CH3_IRQ,
+> +	MX23_LRADC_CH4_IRQ,
+> +	MX23_LRADC_CH5_IRQ,
+> +	MX23_LRADC_CH6_IRQ,
+> +	MX23_LRADC_CH7_IRQ,
 > +};
 > +
-> +static void ltc2485_wait_conv(struct ltc2485_data *data)
+> +enum mx28_lradc_irqs {
+> +	MX28_LRADC_TS_IRQ = 0,
+> +	MX28_LRADC_TRESH0_IRQ,
+> +	MX28_LRADC_TRESH1_IRQ,
+> +	MX28_LRADC_CH0_IRQ,
+> +	MX28_LRADC_CH1_IRQ,
+> +	MX28_LRADC_CH2_IRQ,
+> +	MX28_LRADC_CH3_IRQ,
+> +	MX28_LRADC_CH4_IRQ,
+> +	MX28_LRADC_CH5_IRQ,
+> +	MX28_LRADC_CH6_IRQ,
+> +	MX28_LRADC_CH7_IRQ,
+> +	MX28_LRADC_BUTTON0_IRQ,
+> +	MX28_LRADC_BUTTON1_IRQ,
+> +};
+> +
+> +static struct resource mx23_adc_resources[] = {
+> +	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
+> +};
+> +
+> +static struct resource mx23_touchscreen_resources[] = {
+> +	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
+> +};
+> +
+> +static struct resource mx28_adc_resources[] = {
+> +	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH0_IRQ, "mxs-lradc-thresh0"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH1_IRQ, "mxs-lradc-thresh1"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON0_IRQ, "mxs-lradc-button0"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON1_IRQ, "mxs-lradc-button1"),
+> +};
+> +
+> +static struct resource mx28_touchscreen_resources[] = {
+> +	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
+> +};
+> +
+> +static struct mfd_cell mx23_cells[] = {
+> +	{
+> +		.name = "mxs-lradc-adc",
+> +		.resources = mx23_adc_resources,
+> +		.num_resources = ARRAY_SIZE(mx23_adc_resources),
+> +	},
+> +	{
+> +		.name = "mxs-lradc-ts",
+> +		.resources = mx23_touchscreen_resources,
+> +		.num_resources = ARRAY_SIZE(mx23_touchscreen_resources),
+> +	},
+> +};
+> +
+> +static struct mfd_cell mx28_cells[] = {
+> +	{
+> +		.name = "mxs-lradc-adc",
+> +		.resources = mx28_adc_resources,
+> +		.num_resources = ARRAY_SIZE(mx28_adc_resources),
+> +	},
+> +	{
+> +		.name = "mxs-lradc-ts",
+> +		.resources = mx28_touchscreen_resources,
+> +		.num_resources = ARRAY_SIZE(mx28_touchscreen_resources),
+> +	}
+> +};
+> +
+> +static const struct of_device_id mxs_lradc_dt_ids[] = {
+> +	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
+> +	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
+> +
+> +static int mxs_lradc_probe(struct platform_device *pdev)
 > +{
-> +	const unsigned int conv_time = 147;	/* conversion time ms */
-> +	unsigned int time_elapsed;
+> +	const struct of_device_id *of_id;
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+> +	struct mxs_lradc *lradc;
+> +	struct mfd_cell *cells = NULL;
+> +	int ret = 0;
+> +	u32 ts_wires = 0;
 > +
-> +	/* delay if conversion time not passed since last read or write */
-> +	time_elapsed = ktime_ms_delta(ktime_get(), data->time_prev);
+> +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
+> +	if (!lradc)
+> +		return -ENOMEM;
 > +
-> +	if (time_elapsed < conv_time)
-> +		msleep(conv_time - time_elapsed);
-> +}
+> +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
+> +	lradc->soc = (enum mxs_lradc_id)of_id->data;
+
+Unnecessary cast.
+
+> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(lradc->clk)) {
+> +		dev_err(dev, "Failed to get the delay unit clock\n");
+> +		return PTR_ERR(lradc->clk);
+> +	}
 > +
-> +static int ltc2485_read(struct ltc2485_data *data, int *val)
-> +{
-> +	struct i2c_client *client = data->client;
-> +	__be32 buf = 0;
-> +	int ret;
-> +
-> +	ltc2485_wait_conv(data);
-> +
-> +	ret = i2c_master_recv(client, (char *)&buf, 4);
-> +	if (ret < 0)  {
-> +		dev_err(&client->dev, "i2c_master_recv failed\n");
+> +	ret = clk_prepare_enable(lradc->clk);
+> +	if (ret != 0) {
+
+if (ret)
+
+> +		dev_err(dev, "Failed to enable the delay unit clock\n");
 > +		return ret;
 > +	}
-> +	data->time_prev = ktime_get();
-> +	*val = sign_extend32(be32_to_cpu(buf) >> 6, 24);
-Slightly preference for a blank line before a simple return statement like
-this.  Makes it ever so slightly easier to read.
+> +
+> +	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> +					 &ts_wires);
+
+Superfluous '\n'
+
+if (!ret)
+
+> +	if (ret == 0) {
+> +		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
+> +
+> +		switch (ts_wires) {
+> +		case 4:
+> +			lradc->touchscreen_wire = MXS_LRADC_TOUCHSCREEN_4WIRE;
+> +			break;
+> +		case 5:
+> +			if (lradc->soc == IMX28_LRADC) {
+> +				lradc->touchscreen_wire =
+> +					MXS_LRADC_TOUCHSCREEN_5WIRE;
+> +				break;
+> +			}
+> +			/* fall through to an error message for i.MX23 */
+> +		default:
+> +			dev_err(&pdev->dev,
+> +				"Unsupported number of touchscreen wires (%d)\n"
+> +				, ts_wires);
+> +			ret = -EINVAL;
+> +			goto err_clk;
+> +		}
+> +	} else {
+> +		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, lradc);
+> +
+> +	switch (lradc->soc) {
+> +	case IMX23_LRADC:
+> +		cells = mx23_cells;
+> +		break;
+> +	case IMX28_LRADC:
+> +		cells = mx28_cells;
+> +		break;
+> +	default:
+
+Error message here.
+
+> +		ret = -EINVAL;
+
+-ENODEV
+
+> +		goto err_clk;
+> +	}
+> +
+> +	cells[0].platform_data = lradc;
+> +	cells[0].pdata_size = sizeof(*lradc);
+> +
+> +	ret = devm_mfd_add_devices(&pdev->dev, -1, &cells[0], 1, NULL, 0, NULL);
+
+Use the #defines, not -1.
+
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
+> +		goto err_clk;
+> +	}
+> +
+> +	if (!lradc->touchscreen_wire)
+> +		return 0;
+> +
+> +	cells[1].platform_data = lradc;
+> +	cells[1].pdata_size = sizeof(*lradc);
+> +
+> +	ret = devm_mfd_add_devices(&pdev->dev, -1, &cells[1], 1, NULL, 0, NULL);
+
+As above.
+
+> +	if (ret) {
+> +		dev_err(&pdev->dev,
+> +			"Failed to add the touchscreen subdevice\n");
+> +		goto err_clk;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_clk:
+> +	clk_disable_unprepare(lradc->clk);
+> +
 > +	return ret;
 > +}
 > +
-> +static int ltc2485_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val, int *val2, long mask)
+> +static int mxs_lradc_remove(struct platform_device *pdev)
 > +{
-> +	struct ltc2485_data *data = iio_priv(indio_dev);
-> +	int ret;
+> +	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
 > +
-> +	if (mask == IIO_CHAN_INFO_RAW) {
-> +		ret = ltc2485_read(data, val);
-> +		if (ret < 0)
-> +			return ret;
+> +	clk_disable_unprepare(lradc->clk);
 > +
-> +		return IIO_VAL_INT;
+> +	return 0;
+> +}
 > +
-> +	} else if (mask == IIO_CHAN_INFO_SCALE) {
-> +		*val = 5000;			/* on board vref millivolts */
-> +		*val2 = 25;			/* 25 (24 + sign) data bits */
-> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +static struct platform_driver mxs_lradc_driver = {
+> +	.driver = {
+> +		.name = "mxs-lradc",
+> +		.of_match_table = mxs_lradc_dt_ids,
+> +	},
+> +	.probe = mxs_lradc_probe,
+> +	.remove = mxs_lradc_remove,
+> +};
+> +module_platform_driver(mxs_lradc_driver);
 > +
-> +	} else {
-> +		return -EINVAL;
+> +MODULE_AUTHOR("Ksenija Stanojevic <ksenija.stanojevic@gmail.com>");
+> +MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
+> +MODULE_LICENSE("GPL");
+> +MODULE_ALIAS("platform:mxs-lradc");
+> diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
+> new file mode 100644
+> index 0000000..928f355
+> --- /dev/null
+> +++ b/include/linux/mfd/mxs-lradc.h
+> @@ -0,0 +1,194 @@
+> +/*
+> + * Freescale MXS LRADC driver
+> + *
+> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+
+Update required.
+
+> + * Author: Marek Vasut <marex@denx.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#ifndef __MFD_MXS_LRADC_H
+> +#define __MFD_MXS_LRADC_H
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/io.h>
+> +#include <linux/stmp_device.h>
+> +
+> +#define LRADC_MAX_DELAY_CHANS	4
+> +#define LRADC_MAX_MAPPED_CHANS	8
+> +#define LRADC_MAX_TOTAL_CHANS	16
+> +
+> +#define LRADC_DELAY_TIMER_HZ	2000
+> +
+> +#define LRADC_CTRL0				0x00
+> +# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
+> +# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
+> +# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
+> +# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
+> +# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
+> +# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
+> +# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
+> +# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
+> +
+> +# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
+> +# define LRADC_CTRL0_MX23_YM			BIT(19)
+> +# define LRADC_CTRL0_MX23_XM			BIT(18)
+> +# define LRADC_CTRL0_MX23_YP			BIT(17)
+> +# define LRADC_CTRL0_MX23_XP			BIT(16)
+> +
+> +# define LRADC_CTRL0_MX28_PLATE_MASK \
+> +		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
+> +		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
+> +		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
+> +		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
+> +
+> +# define LRADC_CTRL0_MX23_PLATE_MASK \
+> +		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
+> +		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
+> +		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
+> +
+> +#define LRADC_CTRL1				0x10
+> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
+> +#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+> +#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
+> +#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
+> +#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
+> +#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> +#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
+> +#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
+> +#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+> +
+> +#define LRADC_CTRL2				0x20
+> +#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+> +#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
+> +
+> +#define LRADC_STATUS				0x40
+> +#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
+> +
+> +#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
+> +#define LRADC_CH_ACCUMULATE			BIT(29)
+> +#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
+> +#define LRADC_CH_NUM_SAMPLES_OFFSET		24
+> +#define LRADC_CH_NUM_SAMPLES(x) \
+> +				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
+> +#define LRADC_CH_VALUE_MASK			0x3ffff
+> +#define LRADC_CH_VALUE_OFFSET			0
+> +
+> +#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
+> +#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
+> +#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
+> +#define LRADC_DELAY_TRIGGER(x) \
+> +				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
+> +				LRADC_DELAY_TRIGGER_LRADCS_MASK)
+> +#define LRADC_DELAY_KICK			BIT(20)
+> +#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
+> +#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
+> +#define LRADC_DELAY_TRIGGER_DELAYS(x) \
+> +				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
+> +				LRADC_DELAY_TRIGGER_DELAYS_MASK)
+> +#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
+> +#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
+> +#define LRADC_DELAY_LOOP(x) \
+> +				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
+> +				LRADC_DELAY_LOOP_COUNT_MASK)
+> +#define LRADC_DELAY_DELAY_MASK			0x7ff
+> +#define LRADC_DELAY_DELAY_OFFSET		0
+> +#define LRADC_DELAY_DELAY(x) \
+> +				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
+> +				LRADC_DELAY_DELAY_MASK)
+> +
+> +#define LRADC_CTRL4				0x140
+> +#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
+> +#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
+> +#define LRADC_CTRL4_LRADCSELECT(n, x) \
+> +				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
+> +				LRADC_CTRL4_LRADCSELECT_MASK(n))
+> +
+> +#define LRADC_RESOLUTION			12
+> +#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
+> +
+> +#define BUFFER_VCHANS_LIMITED		0x3f
+> +#define BUFFER_VCHANS_ALL		0xff
+> +
+> +	/*
+> +	 * Certain LRADC channels are shared between touchscreen
+> +	 * and/or touch-buttons and generic LRADC block. Therefore when using
+> +	 * either of these, these channels are not available for the regular
+> +	 * sampling. The shared channels are as follows:
+> +	 *
+> +	 * CH0 -- Touch button #0
+> +	 * CH1 -- Touch button #1
+> +	 * CH2 -- Touch screen XPUL
+> +	 * CH3 -- Touch screen YPLL
+> +	 * CH4 -- Touch screen XNUL
+> +	 * CH5 -- Touch screen YNLR
+> +	 * CH6 -- Touch screen WIPER (5-wire only)
+> +	 *
+> +	 * The bit fields below represents which parts of the LRADC block are
+> +	 * switched into special mode of operation. These channels can not
+> +	 * be sampled as regular LRADC channels. The driver will refuse any
+> +	 * attempt to sample these channels.
+> +	 */
+> +#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
+> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
+> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
+> +
+> +enum mxs_lradc_id {
+> +	IMX23_LRADC,
+> +	IMX28_LRADC,
+> +};
+> +
+> +enum mxs_lradc_ts_wires {
+> +	MXS_LRADC_TOUCHSCREEN_NONE = 0,
+> +	MXS_LRADC_TOUCHSCREEN_4WIRE,
+> +	MXS_LRADC_TOUCHSCREEN_5WIRE,
+> +};
+> +
+> +struct mxs_lradc {
+> +	enum mxs_lradc_id	soc;
+> +	struct clk		*clk;
+> +	u8			buffer_vchans;
+> +
+> +	enum mxs_lradc_ts_wires	touchscreen_wire;
+> +	bool			use_touchbutton;
+> +};
+
+A kernel-doc header would be helpful.
+
+> +static inline void mxs_lradc_reg_set(void __iomem *base, u32 val, u32 reg)
+> +{
+> +	writel(val, base + reg + STMP_OFFSET_REG_SET);
+> +}
+> +
+> +static inline void mxs_lradc_reg_clear(void __iomem *base, u32 val,
+> +				       u32 reg)
+> +{
+> +	writel(val, base + reg + STMP_OFFSET_REG_CLR);
+> +}
+> +
+> +static inline void mxs_lradc_reg_wrt(void __iomem *base, u32 val, u32 reg)
+> +{
+> +	writel(val, base + reg);
+> +}
+> +
+> +static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
+> +{
+> +	switch (lradc->soc) {
+> +	case IMX23_LRADC:
+> +		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
+> +	case IMX28_LRADC:
+> +		return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
+> +	default:
+> +		return 0;
 > +	}
 > +}
 > +
-> +static const struct iio_chan_spec ltc2485_channel[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)
-> +	},
-> +};
-> +
-> +static const struct iio_info ltc2485_info = {
-> +	.read_raw = ltc2485_read_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int ltc2485_probe(struct i2c_client *client,
-> +			 const struct i2c_device_id *id)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct ltc2485_data *data;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_I2C |
-> +				     I2C_FUNC_SMBUS_WRITE_BYTE))
-> +		return -EOPNOTSUPP;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = id->name;
-> +	indio_dev->info = &ltc2485_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = ltc2485_channel;
-> +	indio_dev->num_channels = ARRAY_SIZE(ltc2485_channel);
-> +
-> +	ret = i2c_smbus_write_byte(data->client, LTC2485_CONFIG_DEFAULT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->time_prev = ktime_get();
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +static const struct i2c_device_id ltc2485_id[] = {
-> +	{ "ltc2485", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, ltc2485_id);
-> +
-> +static struct i2c_driver ltc2485_driver = {
-> +	.driver = {
-> +		.name = "ltc2485",
-> +	},
-> +	.probe = ltc2485_probe,
-> +	.id_table = ltc2485_id,
-> +};
-> +module_i2c_driver(ltc2485_driver);
-> +
-> +MODULE_AUTHOR("Alison Schofield <amsfield22@gmail.com>");
-> +MODULE_DESCRIPTION("Linear Technology LTC2485 ADC driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+> +#endif /* __MXS_LRADC_H */
 
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
