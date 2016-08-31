@@ -1,85 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33792 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753202AbcHaUZK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 16:25:10 -0400
-MIME-Version: 1.0
-In-Reply-To: <1472674733.5025.28.camel@intel.com>
-References: <1472596930.23886.13.camel@intel.com> <CAKzfze_p_6AiF93rY8HCMtm3BpDDjPS91nRbG49exrg4DV7Qzg@mail.gmail.com>
- <1472674733.5025.28.camel@intel.com>
-From: Matt Ranostay <mranostay@gmail.com>
-Date: Wed, 31 Aug 2016 13:24:28 -0700
-Message-ID: <CAKzfze_8zz6pYbccc3tpV_3qzT4gDRjaAxC_p4f3E+b0=FU4Wg@mail.gmail.com>
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "mranostay@gmail.com" <mranostay@gmail.com>
+CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+	"linux@sciencehorizons.net" <linux@sciencehorizons.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "jic23@kernel.org"
+	<jic23@kernel.org>, "hadess@hadess.net" <hadess@hadess.net>
 Subject: Re: screen rotation flipped in 4.8-rc
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "linux@sciencehorizons.net" <linux@sciencehorizons.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "hadess@hadess.net" <hadess@hadess.net>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Date: Wed, 31 Aug 2016 20:29:56 +0000
+Message-ID: <1472675395.5025.31.camel@intel.com>
+References: <1472596930.23886.13.camel@intel.com>
+	 <CAKzfze_p_6AiF93rY8HCMtm3BpDDjPS91nRbG49exrg4DV7Qzg@mail.gmail.com>
+	 <1472674733.5025.28.camel@intel.com>
+	 <CAKzfze_8zz6pYbccc3tpV_3qzT4gDRjaAxC_p4f3E+b0=FU4Wg@mail.gmail.com>
+In-Reply-To: <CAKzfze_8zz6pYbccc3tpV_3qzT4gDRjaAxC_p4f3E+b0=FU4Wg@mail.gmail.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Aug 31, 2016 at 1:18 PM, Pandruvada, Srinivas
-<srinivas.pandruvada@intel.com> wrote:
-> On Tue, 2016-08-30 at 17:41 -0700, Matt Ranostay wrote:
->> On Tue, Aug 30, 2016 at 3:42 PM, Pandruvada, Srinivas
->> <srinivas.pandruvada@intel.com> wrote:
->> >
->> > Hi All,
->> >
->> > I observed that using iio-sensor-proxy.service, the auto screen
->> > rotation flipped on my laptop (Normal -> vertical, vertical-
->> > >normal)
->> > using kernel v4.8.
->> >
->> > Anyone else has seen this?
->> >
->> > I did a bisect and found a commit, which I am not sure how can it
->> > impact.
->> Could you post the results of CONFIG_TEST_HASH enabled?
-> Attached dmesg.txt with the CONFIG_TEST_HASH=y.
->
-> I see
-> [    4.276138] test_hash: __hash_32() has no arch implementation to
-> test.
-> [    4.276138] test_hash: hash_32() has no arch implementation to test.
-> [    4.276139] test_hash: hash_64() has no arch implementation to test.
-> [    4.276141] test_hash: 33152 tests passed.
->
-
-Ok have you tested with that patchset reverted? And if so does the
-regression disappear?
-I would highly doubt if it was a issue with that dcache patchsets it
-wouldn't be breaking a ton of things.
-
-> Thanks,
-> Srinivas
->>
->> Thanks,
->>
->> Matt
->>
->> >
->> >
->> >
->> > commit 703b5faf22fbddf984a361e6555f3a03fdba63d9
->> > Author: George Spelvin <linux@sciencehorizons.net>
->> > Date:   Fri Jun 10 00:22:12 2016 -0400
->> >
->> >     fs/dcache.c: Save one 32-bit multiply in dcache lookup
->> >
->> >     Noe that we're mixing in the parent pointer earlier, we
->> >     don't need to use hash_32() to mix its bits.  Instead, we can
->> >     just take the msbits of the hash value directly.
->> >
->> >     For those applications which use the partial_name_hash(),
->> >     move the multiply to end_name_hash.
->> >
->> >     Signed-off-by: George Spelvin <linux@sciencehorizons.net>
->> >     Signed-off-by: Linus Torvalds <torvalds@linux-foundation.org>
->> >
->> >
->> > Thanks,
->> > Srinivas
+T24gV2VkLCAyMDE2LTA4LTMxIGF0IDEzOjI0IC0wNzAwLCBNYXR0IFJhbm9zdGF5IHdyb3RlOg0K
+PiBPbiBXZWQsIEF1ZyAzMSwgMjAxNiBhdCAxOjE4IFBNLCBQYW5kcnV2YWRhLCBTcmluaXZhcw0K
+PiA8c3Jpbml2YXMucGFuZHJ1dmFkYUBpbnRlbC5jb20+IHdyb3RlOg0KPiA+IA0KPiA+IE9uIFR1
+ZSwgMjAxNi0wOC0zMCBhdCAxNzo0MSAtMDcwMCwgTWF0dCBSYW5vc3RheSB3cm90ZToNCj4gPiA+
+IA0KPiA+ID4gT24gVHVlLCBBdWcgMzAsIDIwMTYgYXQgMzo0MiBQTSwgUGFuZHJ1dmFkYSwgU3Jp
+bml2YXMNCj4gPiA+IDxzcmluaXZhcy5wYW5kcnV2YWRhQGludGVsLmNvbT4gd3JvdGU6DQo+ID4g
+PiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gSGkgQWxsLA0KPiA+ID4gPiANCj4gPiA+ID4gSSBvYnNl
+cnZlZCB0aGF0IHVzaW5nIGlpby1zZW5zb3ItcHJveHkuc2VydmljZSwgdGhlIGF1dG8gc2NyZWVu
+DQo+ID4gPiA+IHJvdGF0aW9uIGZsaXBwZWQgb24gbXkgbGFwdG9wIChOb3JtYWwgLT4gdmVydGlj
+YWwsIHZlcnRpY2FsLQ0KPiA+ID4gPiA+IA0KPiA+ID4gPiA+IG5vcm1hbCkNCj4gPiA+ID4gdXNp
+bmcga2VybmVsIHY0LjguDQo+ID4gPiA+IA0KPiA+ID4gPiBBbnlvbmUgZWxzZSBoYXMgc2VlbiB0
+aGlzPw0KPiA+ID4gPiANCj4gPiA+ID4gSSBkaWQgYSBiaXNlY3QgYW5kIGZvdW5kIGEgY29tbWl0
+LCB3aGljaCBJIGFtIG5vdCBzdXJlIGhvdyBjYW4NCj4gPiA+ID4gaXQNCj4gPiA+ID4gaW1wYWN0
+Lg0KPiA+ID4gQ291bGQgeW91IHBvc3QgdGhlIHJlc3VsdHMgb2YgQ09ORklHX1RFU1RfSEFTSCBl
+bmFibGVkPw0KPiA+IEF0dGFjaGVkIGRtZXNnLnR4dCB3aXRoIHRoZSBDT05GSUdfVEVTVF9IQVNI
+PXkuDQo+ID4gDQo+ID4gSSBzZWUNCj4gPiBbwqDCoMKgwqA0LjI3NjEzOF0gdGVzdF9oYXNoOiBf
+X2hhc2hfMzIoKSBoYXMgbm8gYXJjaCBpbXBsZW1lbnRhdGlvbiB0bw0KPiA+IHRlc3QuDQo+ID4g
+W8KgwqDCoMKgNC4yNzYxMzhdIHRlc3RfaGFzaDogaGFzaF8zMigpIGhhcyBubyBhcmNoIGltcGxl
+bWVudGF0aW9uIHRvDQo+ID4gdGVzdC4NCj4gPiBbwqDCoMKgwqA0LjI3NjEzOV0gdGVzdF9oYXNo
+OiBoYXNoXzY0KCkgaGFzIG5vIGFyY2ggaW1wbGVtZW50YXRpb24gdG8NCj4gPiB0ZXN0Lg0KPiA+
+IFvCoMKgwqDCoDQuMjc2MTQxXSB0ZXN0X2hhc2g6IDMzMTUyIHRlc3RzIHBhc3NlZC4NCj4gPiAN
+Cj4gT2sgaGF2ZSB5b3UgdGVzdGVkIHdpdGggdGhhdCBwYXRjaHNldCByZXZlcnRlZD8gQW5kIGlm
+IHNvIGRvZXMgdGhlDQo+IHJlZ3Jlc3Npb24gZGlzYXBwZWFyPw0KWWVzLCBidXQgbm90IGFmdGVy
+IGFkZGluZyBDT05GSUdfVEVTVF9IQVNIPXkuDQpyZWdyZXNzaW9uIGRpc2FwcGVhcnMuDQoNCj4g
+SSB3b3VsZCBoaWdobHkgZG91YnQgaWYgaXQgd2FzIGEgaXNzdWUgd2l0aCB0aGF0IGRjYWNoZSBw
+YXRjaHNldHMgaXQNCj4gd291bGRuJ3QgYmUgYnJlYWtpbmcgYSB0b24gb2YgdGhpbmdzLg0KSSBh
+bHNvIHRoaW5rIHRoYXQuDQoNClRoYW5rcywNClNyaW5pdmFzDQoNCj4gDQo+ID4gDQo+ID4gVGhh
+bmtzLA0KPiA+IFNyaW5pdmFzDQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gVGhhbmtzLA0KPiA+ID4g
+DQo+ID4gPiBNYXR0DQo+ID4gPiANCj4gPiA+ID4gDQo+ID4gPiA+IA0KPiA+ID4gPiANCj4gPiA+
+ID4gDQo+ID4gPiA+IGNvbW1pdCA3MDNiNWZhZjIyZmJkZGY5ODRhMzYxZTY1NTVmM2EwM2ZkYmE2
+M2Q5DQo+ID4gPiA+IEF1dGhvcjogR2VvcmdlIFNwZWx2aW4gPGxpbnV4QHNjaWVuY2Vob3Jpem9u
+cy5uZXQ+DQo+ID4gPiA+IERhdGU6wqDCoMKgRnJpIEp1biAxMCAwMDoyMjoxMiAyMDE2IC0wNDAw
+DQo+ID4gPiA+IA0KPiA+ID4gPiDCoMKgwqDCoGZzL2RjYWNoZS5jOiBTYXZlIG9uZSAzMi1iaXQg
+bXVsdGlwbHkgaW4gZGNhY2hlIGxvb2t1cA0KPiA+ID4gPiANCj4gPiA+ID4gwqDCoMKgwqBOb2Ug
+dGhhdCB3ZSdyZSBtaXhpbmcgaW4gdGhlIHBhcmVudCBwb2ludGVyIGVhcmxpZXIsIHdlDQo+ID4g
+PiA+IMKgwqDCoMKgZG9uJ3QgbmVlZCB0byB1c2UgaGFzaF8zMigpIHRvIG1peCBpdHMgYml0cy7C
+oMKgSW5zdGVhZCwgd2UNCj4gPiA+ID4gY2FuDQo+ID4gPiA+IMKgwqDCoMKganVzdCB0YWtlIHRo
+ZSBtc2JpdHMgb2YgdGhlIGhhc2ggdmFsdWUgZGlyZWN0bHkuDQo+ID4gPiA+IA0KPiA+ID4gPiDC
+oMKgwqDCoEZvciB0aG9zZSBhcHBsaWNhdGlvbnMgd2hpY2ggdXNlIHRoZSBwYXJ0aWFsX25hbWVf
+aGFzaCgpLA0KPiA+ID4gPiDCoMKgwqDCoG1vdmUgdGhlIG11bHRpcGx5IHRvIGVuZF9uYW1lX2hh
+c2guDQo+ID4gPiA+IA0KPiA+ID4gPiDCoMKgwqDCoFNpZ25lZC1vZmYtYnk6IEdlb3JnZSBTcGVs
+dmluIDxsaW51eEBzY2llbmNlaG9yaXpvbnMubmV0Pg0KPiA+ID4gPiDCoMKgwqDCoFNpZ25lZC1v
+ZmYtYnk6IExpbnVzIFRvcnZhbGRzIDx0b3J2YWxkc0BsaW51eC1mb3VuZGF0aW9uLm9yDQo+ID4g
+PiA+IGc+DQo+ID4gPiA+IA0KPiA+ID4gPiANCj4gPiA+ID4gVGhhbmtzLA0KPiA+ID4gPiBTcmlu
+aXZhcw==
