@@ -1,52 +1,80 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55355 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753047AbcHaT3f (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 31 Aug 2016 15:29:35 -0400
+Subject: Re: [PATCH 03/17] iio: accel: kxsd9: Split out transport mechanism
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
+ <1471354423-19186-4-git-send-email-linus.walleij@linaro.org>
+ <alpine.DEB.2.02.1608161549530.21709@pmeerw.net>
+ <CACRpkdZEsMTkP9Fo9QgzKvwfPukAoL=jUi+MOF1AQeBFJiHhBQ@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3c5c3bb7-6919-5eb7-2ea7-91b4fb149485@kernel.org>
+Date: Wed, 31 Aug 2016 20:29:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <abe57b5d-a3f0-a81b-d08a-ecf4c431ac27@kernel.org>
-References: <1471286287-25074-1-git-send-email-linus.walleij@linaro.org>
- <53008712-7c50-79db-07ab-3544902887e1@kernel.org> <CACRpkdY=Y56Uz90Z2SW+=eYJaH1zd8FM6Th2tgjkXVmz6fSScA@mail.gmail.com>
- <abe57b5d-a3f0-a81b-d08a-ecf4c431ac27@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 31 Aug 2016 14:36:38 +0200
-Message-ID: <CACRpkdaOes_n2yUyyiav54QZO5AN6Af=-xBsgfjp-QCOxT9Jxw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: gyro: Add driver for the MPU-3050 gyroscope
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Nick Vaccaro <nvaccaro@google.com>,
-	Ge Gao <ggao@invensense.com>, Anna Si <asi@invensense.com>,
-	Nathan Royer <nroyer@invensense.com>, Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>, Daniel Baluta <daniel.baluta@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>, Peter Rosin <peda@axentia.se>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <CACRpkdZEsMTkP9Fo9QgzKvwfPukAoL=jUi+MOF1AQeBFJiHhBQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, Aug 29, 2016 at 7:48 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 25/08/16 13:37, Linus Walleij wrote:
->> On Sun, Aug 21, 2016 at 8:32 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-
->> The pattern (support both native hardware trigger and
->> say HRTimer) emerge in other sensors too, including the whole
->> suite of ST MEMS sensors. Not being able to also use HRTimer
->> was reported as a bug when I was working on it so it definately
->> is a widespread problem.
+On 17/08/16 08:18, Linus Walleij wrote:
+> On Tue, Aug 16, 2016 at 3:53 PM, Peter Meerwald-Stadler
+> <pmeerw@pmeerw.net> wrote:
+> 
+>>> +/**
+>>> + * struct kxsd9_transport - transport adapter for SPI or I2C
+>>> + * @trdev: transport device such as SPI or I2C
+>>> + * @write1(): function to write a byte to the device
+>>> + * @write2(): function to write two consecutive bytes to the device
+>>> + * @readval(): function to read a 16bit value from the device
+>>> + * @rx: cache aligned read buffer
+>>> + * @tx: cache aligned write buffer
 >>
->> I think what I would like to do to alleviate the situation is to
->> make the IIO core aware of whether the device is using its
->> own trigger or some other trigger. So in the trigger callback
->> we can do something like
+>> tx doesn't seem to be cachline_aligned?
+> 
+> Haha no, comment carried over when moving the code.
+> I remove it later in the patch series.
+> 
+>>> +     void *trdev;
+>>> +     int (*write1) (struct kxsd9_transport *tr, u8 byte);
+>>> +     int (*write2) (struct kxsd9_transport *tr, u8 b1, u8 b2);
+>>> +     int (*readval) (struct kxsd9_transport *tr, u8 address);
+>>> +     u8 rx[KXSD9_STATE_RX_SIZE] ____cacheline_aligned;
+>>> +     u8 tx[KXSD9_STATE_TX_SIZE];
+>>> +};
+>>> +
+>>>  /**
+>>>   * struct kxsd9_state - device related storage
 >>
->> if (iio_using_own_trigger(indio_dev))
->>   ...
->> else
->>  ...
->>
->> I can try to take a stab at it and prepend this patch with that.
->> Would that be interesting?
->
-> Would be interesting to see what it gains us. I suspect you
-> are right in thinking this would be very useful.
+>> should add transport and remove us, rx, tx
+> 
+> Yeah. I remove  it later in the patch series when switching the
+> transport to regmap (IIRC) and this doesn't really cause any issues
+> to have left until that point.
+> 
+> But if you think it's worth it, I can respin it to make a cleaner
+> patch.
+If we are being fussy:
+drivers/iio/accel/kxsd9.c:255:5: warning: symbol 'kxsd9_spi_write1' was not declared. Should it be static?
+drivers/iio/accel/kxsd9.c:262:5: warning: symbol 'kxsd9_spi_write2' was not declared. Should it be static?
+drivers/iio/accel/kxsd9.c:271:5: warning: symbol 'kxsd9_spi_readval' was not declared. Should it be static?
 
-I'm trying this on top of the series as a stand-alone thing.
-It also affects the already in-tree ST Sensors so might
-as well keep it separate, also given that it's uncertain if it'll
-go anywhere.
+On the plus side:
+Tested-by: Jonathan Cameron <jic23@kernel.org>
 
-Yours,
-Linus Walleij
+Amazing how many ways one can miss specify how a device is connected to an spi bus..
+Took me rather longer to get this working that it should have done!
+
+Jonathan
+> 
+> Yours,
+> Linus Walleij
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
