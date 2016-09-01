@@ -3,123 +3,86 @@ From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>,
 	linux-iio@vger.kernel.org
 Cc: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 13/15 v2] iio: accel: kxsd9: Replace "parent" with "dev"
-Date: Thu,  1 Sep 2016 11:44:47 +0200
-Message-Id: <1472723089-25113-13-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 08/15 v2] iio: accel: kxsd9: Drop the buffer lock
+Date: Thu,  1 Sep 2016 11:44:42 +0200
+Message-Id: <1472723089-25113-8-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
 References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-What is passed to the .probe() and .remove() functions is
-technically the parent of the created IIO device but it becomes
-a big confusion for the head to have it named like this since
-it is usually clear from context the "dev" refers to the physical
-device, and when next adding PM callbacks a clean
-"struct device *dev" pointer is passed to these and that makes
-it even more confused. Rename "parent" to "dev" like in most
-other drivers.
+The RX/TX buffers are gone so drop the lock (it should have been
+in the transport struct anyway).
 
+Tested-by: Jonathan Cameron <jic23@kernel.org>
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
 ChangeLog v1->v2:
-- Rebased on the rest of the series.
+- Rebase on the rest of the series.
 ---
- drivers/iio/accel/kxsd9.c | 20 ++++++++++----------
- drivers/iio/accel/kxsd9.h |  4 ++--
- 2 files changed, 12 insertions(+), 12 deletions(-)
+ drivers/iio/accel/kxsd9.c | 18 ++++--------------
+ 1 file changed, 4 insertions(+), 14 deletions(-)
 
 diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index dc53f70e616e..f18cc9436094 100644
+index c065c6e09fa4..dc0bea7cbf4f 100644
 --- a/drivers/iio/accel/kxsd9.c
 +++ b/drivers/iio/accel/kxsd9.c
-@@ -335,7 +335,7 @@ static const struct iio_info kxsd9_info = {
- /* Four channels apart from timestamp, scan mask = 0x0f */
- static const unsigned long kxsd9_scan_masks[] = { 0xf, 0 };
+@@ -41,13 +41,10 @@
  
--int kxsd9_common_probe(struct device *parent,
-+int kxsd9_common_probe(struct device *dev,
- 		       struct regmap *map,
- 		       const char *name)
- {
-@@ -343,18 +343,18 @@ int kxsd9_common_probe(struct device *parent,
- 	struct kxsd9_state *st;
- 	int ret;
+ /**
+  * struct kxsd9_state - device related storage
+- * @transport:	transport for the KXSD9
+- * @buf_lock:	protect the rx and tx buffers.
+- * @us:		spi device
+- **/
++ * @map: regmap to the device
++ */
+ struct kxsd9_state {
+ 	struct regmap *map;
+-	struct mutex buf_lock;
+ };
  
--	indio_dev = devm_iio_device_alloc(parent, sizeof(*st));
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
- 	if (!indio_dev)
- 		return -ENOMEM;
+ #define KXSD9_SCALE_2G "0.011978"
+@@ -73,7 +70,6 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
+ 	if (!foundit)
+ 		return -EINVAL;
  
+-	mutex_lock(&st->buf_lock);
+ 	ret = regmap_read(st->map,
+ 			  KXSD9_REG_CTRL_C,
+ 			  &val);
+@@ -83,7 +79,6 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
+ 			   KXSD9_REG_CTRL_C,
+ 			   (val & ~KXSD9_FS_MASK) | i);
+ error_ret:
+-	mutex_unlock(&st->buf_lock);
+ 	return ret;
+ }
+ 
+@@ -93,15 +88,11 @@ static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
+ 	__be16 raw_val;
+ 
+-	mutex_lock(&st->buf_lock);
+ 	ret = regmap_bulk_read(st->map, address, &raw_val, sizeof(raw_val));
+ 	if (ret)
+-		goto out_fail_read;
++		return ret;
+ 	/* Only 12 bits are valid */
+-	ret = be16_to_cpu(raw_val) & 0xfff0;
+-out_fail_read:
+-	mutex_unlock(&st->buf_lock);
+-	return ret;
++	return be16_to_cpu(raw_val) & 0xfff0;
+ }
+ 
+ static IIO_CONST_ATTR(accel_scale_available,
+@@ -220,7 +211,6 @@ int kxsd9_common_probe(struct device *parent,
  	st = iio_priv(indio_dev);
--	st->dev = parent;
-+	st->dev = dev;
  	st->map = map;
  
+-	mutex_init(&st->buf_lock);
  	indio_dev->channels = kxsd9_channels;
  	indio_dev->num_channels = ARRAY_SIZE(kxsd9_channels);
  	indio_dev->name = name;
--	indio_dev->dev.parent = parent;
-+	indio_dev->dev.parent = dev;
- 	indio_dev->info = &kxsd9_info;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->available_scan_masks = kxsd9_scan_masks;
-@@ -362,11 +362,11 @@ int kxsd9_common_probe(struct device *parent,
- 	/* Fetch and turn on regulators */
- 	st->regs[0].supply = kxsd9_reg_vdd;
- 	st->regs[1].supply = kxsd9_reg_iovdd;
--	ret = devm_regulator_bulk_get(parent,
-+	ret = devm_regulator_bulk_get(dev,
- 				      ARRAY_SIZE(st->regs),
- 				      st->regs);
- 	if (ret) {
--		dev_err(parent, "Cannot get regulators\n");
-+		dev_err(dev, "Cannot get regulators\n");
- 		return ret;
- 	}
- 
-@@ -377,7 +377,7 @@ int kxsd9_common_probe(struct device *parent,
- 					 kxsd9_trigger_handler,
- 					 NULL);
- 	if (ret) {
--		dev_err(parent, "triggered buffer setup failed\n");
-+		dev_err(dev, "triggered buffer setup failed\n");
- 		goto err_power_down;
- 	}
- 
-@@ -385,7 +385,7 @@ int kxsd9_common_probe(struct device *parent,
- 	if (ret)
- 		goto err_cleanup_buffer;
- 
--	dev_set_drvdata(parent, indio_dev);
-+	dev_set_drvdata(dev, indio_dev);
- 
- 	return 0;
- 
-@@ -398,9 +398,9 @@ err_power_down:
- }
- EXPORT_SYMBOL(kxsd9_common_probe);
- 
--int kxsd9_common_remove(struct device *parent)
-+int kxsd9_common_remove(struct device *dev)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(parent);
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 
- 	iio_triggered_buffer_cleanup(indio_dev);
-diff --git a/drivers/iio/accel/kxsd9.h b/drivers/iio/accel/kxsd9.h
-index 19131a7a692c..9c0861f6b838 100644
---- a/drivers/iio/accel/kxsd9.h
-+++ b/drivers/iio/accel/kxsd9.h
-@@ -4,7 +4,7 @@
- #define KXSD9_STATE_RX_SIZE 2
- #define KXSD9_STATE_TX_SIZE 2
- 
--int kxsd9_common_probe(struct device *parent,
-+int kxsd9_common_probe(struct device *dev,
- 		       struct regmap *map,
- 		       const char *name);
--int kxsd9_common_remove(struct device *parent);
-+int kxsd9_common_remove(struct device *dev);
 -- 
 2.7.4
