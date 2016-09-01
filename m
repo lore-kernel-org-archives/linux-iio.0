@@ -1,96 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:46500 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752344AbcIAOFm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 10:05:42 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        maxime.ripard@free-electrons.com, wens@csie.org,
-        lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        thomas.petazzoni@free-electrons.com,
-        antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 0/3] add support for Allwinner SoCs ADC
-Date: Thu,  1 Sep 2016 16:05:02 +0200
-Message-Id: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com>
+Received: from mail-lf0-f44.google.com ([209.85.215.44]:36814 "EHLO
+        mail-lf0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751063AbcIAI10 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 04:27:26 -0400
+Received: by mail-lf0-f44.google.com with SMTP id g62so54795892lfe.3
+        for <linux-iio@vger.kernel.org>; Thu, 01 Sep 2016 01:27:26 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH 2/3] iio: st_sensors: use the helper function
+Date: Thu,  1 Sep 2016 10:27:18 +0200
+Message-Id: <1472718439-16734-2-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472718439-16734-1-git-send-email-linus.walleij@linaro.org>
+References: <1472718439-16734-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen
-controller and a thermal sensor. The first four channels can be used either
-for the ADC or the touchscreen and the fifth channel is used for the
-thermal sensor. We currently have a driver for the two latter functions in
-drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC
-feature at all. It is meant to replace the current driver by using MFD and
-subdrivers.
+The ST sensors can be used as a trigger for its own triggered buffer
+but it is also possible to use an external trigger: a HRTimer or
+even a different sensor (!) as trigger. In that case we should not
+pick the timestamp from our own interrupt top half even if it is
+active.
 
-This adds initial support for Allwinner SoCs ADC with all features. Yet,
-the touchscreen is not implemented but will be added later. To switch
-between touchscreen and ADC modes, you need to poke a few bits in registers
-and (de)activate an interrupt (pen-up).
-An MFD is provided to let the input driver activate the pen-up interrupt
-through a virtual interrupt, poke a few bits via regmap and read data from
-the ADC driver while both (and iio_hwmon) are probed by the MFD.
+This could practically happen if some other sensor is using the
+ST sensor as trigger but the ST sensor itself is using e.g.
+an HRTimer as trigger. So the trigger is on, but not used by us.
 
-There are slight variations between the different SoCs ADC like the address
-of some registers and the scale and offset to apply to raw thermal sensor
-values. These variations are handled by using different platform_device_id,
-passed to the sub-drivers when they are probed by the MFD.
+We used to assume that whenever the hardware interrupt is turned
+on, we are using it for our own trigger, but this is an
+oversimplification.
 
-Currently when no iio channel is found, the probing of iio-hwmon fails.
-This is problematic when iio-hwmon probes before the iio driver could
-register iio channels to share. Thus, this modifies iio-hwmon to probe late
-with late_initcall making sure all drivers which provides iio channels have
-probed before iio_hwmon.
+Handle this logically by using the iio_trigger_using_own() helper.
 
+Cc: Giuseppe Barba <giuseppe.barba@st.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Removal of proposed patch for iio_hwmon's iio channel's label in v3. The
-patch induces irreversible ABI changes and will be handled as a separate
-patch since I think it is not absolutely necessary to have labels yet in
-iio_hwmon.
-
-Removal of proposed patch for reattaching of_node of the MFD to the MFD
-cell device structure in v3. As Lee Jones said, this patch might cause
-"unintended side-effects for existing drivers.". Moreover, this patch
-introduced a bug of multiple probe of this MFD driver I haven't identified
-yet. This patch aimed at allowing the ADC driver (which is a child of the
-MFD and not present in the DT) to register in the thermal framework. The
-thermal driver has a phandle to the MFD node which is used to match against
-the MFD of_node but since the ADC driver has no node in the DT, could not
-register in the thermal framework. The other solution is to "impersonate"
-the MFD when registering in the thermal framework since the device is only
-used to match the phandle and the of_node, an other structure passed by
-parameter being used to compute temperatures.
-
-(in the ADC driver, probed by the MFD driver) instead of:
-tzd = devm_thermal_zone_of_sensor_register(&pdev->dev, 0, info,
-                                           &sun4i_ts_tz_ops);
-
-we now have:
-tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0, info,
-                                           &sun4i_ts_tz_ops);
-
-Quentin Schulz (3):
-  hwmon: iio_hwmon: delay probing with late_initcall
-  mfd: add support for Allwinner SoCs ADC
-  iio: adc: add support for Allwinner SoCs ADC
-
- drivers/hwmon/iio_hwmon.c           |  12 +-
- drivers/iio/adc/Kconfig             |  13 +
- drivers/iio/adc/Makefile            |   1 +
- drivers/iio/adc/sun4i-gpadc-iio.c   | 525 ++++++++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig                 |  15 ++
- drivers/mfd/Makefile                |   2 +
- drivers/mfd/sun4i-gpadc-mfd.c       | 174 ++++++++++++
- include/linux/mfd/sun4i-gpadc-mfd.h |  94 +++++++
- 8 files changed, 835 insertions(+), 1 deletion(-)
- create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
- create mode 100644 drivers/mfd/sun4i-gpadc-mfd.c
- create mode 100644 include/linux/mfd/sun4i-gpadc-mfd.h
-
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index d06e728cea37..fe7775bb3740 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -63,7 +63,7 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+ 	 * the hardware trigger) and the hw_timestamp may get updated.
+ 	 * By storing it in a local variable first, we are safe.
+ 	 */
+-	if (sdata->hw_irq_trigger)
++	if (iio_trigger_using_own(indio_dev))
+ 		timestamp = sdata->hw_timestamp;
+ 	else
+ 		timestamp = iio_get_time_ns(indio_dev);
 -- 
-2.5.0
+2.7.4
 
