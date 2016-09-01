@@ -1,95 +1,140 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44930 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753593AbcICPds (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 11:33:48 -0400
-Subject: Re: iio_push_event() race conditions
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <0e1e64ac-5c40-6319-1132-e5d7b2478f01@metafoo.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <58a59b36-b528-038f-38ed-7ce1b1e9f35f@kernel.org>
-Date: Sat, 3 Sep 2016 16:33:24 +0100
-MIME-Version: 1.0
-In-Reply-To: <0e1e64ac-5c40-6319-1132-e5d7b2478f01@metafoo.de>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 07/15 v2] iio: accel: kxsd9: Add I2C transport
+Date: Thu,  1 Sep 2016 11:44:41 +0200
+Message-Id: <1472723089-25113-7-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/09/16 16:08, Lars-Peter Clausen wrote:
-> Hi,
-> 
-> A common pattern that we see with drivers that implement events is the
-> following. I did not check all driver, but all those that I checked followed
-> this pattern.
-> 
-> irqreturn_t event_callback(int irq, void *devid)
-> {
-> 	struct iio_dev *indio_dev = devid;
-> 	...
-> 	iio_push_event(indio_dev, ...);
-> 	
-> 	return IRQ_HANDLED;
-> }
-> 
-> int driver_probe(struct device *dev)
-> {
-> 	struct iio_dev *indio_dev;
-> 
-> 	indio_dev = iio_device_alloc(...);
-> 
-> 	request_irq(event_irq, event_callback, ..., indio_dev);
-> 
-> 	return iio_device_register(indio_dev);
-> }
-Most of the time this is actually fine as we know the hardware
-is in a state where it won't generate interrupts until they
-are explicitly enabled from userspace (which requires
-iio_device_register to have occurred).
+This adds I2C regmap transport for the KXSD9 driver.
+Tested on the KXSD9 sensor on the APQ8060 Dragonboard.
 
-However you are quite correct in thinking this isn't always the
-case and we have a race to clean up here.
-> 
-> Now iio_push_event() accessed indio_dev->event_interface. The
-> event_interface is only allocated and assigned in iio_device_register()
-> though. This means there is a window of opportunity where the interrupt is
-> live and can trigger, but event_interface is still NULL. So we'll hit a NULL
-> pointer dereference if the IRQ fires before iio_device_register() completes.
-> 
-> I'm a bit conflicted on what is the best way to resolve this. On one hand
-> the correct approach appears to be to simply delay the requesting of the IRQ
-> until iio_device_register() has completed. 
-I'm not keen on the churn that would cause.
->On the other hand it is possible
-> to argue that users should be able to expect that it is safe to call APIs
-> that take a struct iio_dev if iio_device_alloc() succeeded.
-Agreed.  This is explicitly allowed in the equivalent in input.
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Rebase and account for the .remove() function being present
+  and necessary to call from the earlier refactorings.
+---
+ drivers/iio/accel/Kconfig     | 12 ++++++++-
+ drivers/iio/accel/Makefile    |  1 +
+ drivers/iio/accel/kxsd9-i2c.c | 63 +++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 75 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/accel/kxsd9-i2c.c
 
-See input_event in input.c description text.
-> 
-> The later approach also has the advantage that we only need to update
-> iio_push_event() rather than all drivers that use it. But raises the obvious
-> question what is the right behavior of iio_push_event() in case the event
-> interface has not been registered yet? Return an error? What should the
-> caller do if it encounters an error? Or maybe just silently become a no-op?
-Input just does it by no-op. 
-
-So what cases would that not make sense?
-* We want an event to say a channel is already above a threshold level.
-* err.
-
-For the first one it's hardware dependent whether an interrupt even occurs
-in that case so I'd have no problem with us making it disappear in all cases.
-
-Jonathan
-> 
-> - Lars
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 0ac316fbba38..ab1c87ce07ed 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -98,7 +98,7 @@ config KXSD9
+ 	tristate "Kionix KXSD9 Accelerometer Driver"
+ 	help
+ 	  Say yes here to build support for the Kionix KXSD9 accelerometer.
+-	  Currently this only supports the device via an SPI interface.
++	  It can be accessed using an (optional) SPI or I2C interface.
+ 
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called kxsd9.
+@@ -113,6 +113,16 @@ config KXSD9_SPI
+ 	  Say yes here to enable the Kionix KXSD9 accelerometer
+ 	  SPI transport channel.
+ 
++config KXSD9_I2C
++	tristate "Kionix KXSD9 I2C transport"
++	depends on KXSD9
++	depends on I2C
++	default KXSD9
++	select REGMAP_I2C
++	help
++	  Say yes here to enable the Kionix KXSD9 accelerometer
++	  I2C transport channel.
++
+ config KXCJK1013
+ 	tristate "Kionix 3-Axis Accelerometer Driver"
+ 	depends on I2C
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 22a5770f62a9..7031e842c2cb 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -12,6 +12,7 @@ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+ obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
+ obj-$(CONFIG_KXSD9_SPI)	+= kxsd9-spi.o
++obj-$(CONFIG_KXSD9_I2C)	+= kxsd9-i2c.o
+ 
+ obj-$(CONFIG_MMA7455)		+= mma7455_core.o
+ obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
+diff --git a/drivers/iio/accel/kxsd9-i2c.c b/drivers/iio/accel/kxsd9-i2c.c
+new file mode 100644
+index 000000000000..4aaa27d0aa32
+--- /dev/null
++++ b/drivers/iio/accel/kxsd9-i2c.c
+@@ -0,0 +1,63 @@
++#include <linux/device.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/regmap.h>
++
++#include "kxsd9.h"
++
++static int kxsd9_i2c_probe(struct i2c_client *i2c,
++			   const struct i2c_device_id *id)
++{
++	static const struct regmap_config config = {
++		.reg_bits = 8,
++		.val_bits = 8,
++		.max_register = 0x0e,
++	};
++	struct regmap *regmap;
++
++	regmap = devm_regmap_init_i2c(i2c, &config);
++	if (IS_ERR(regmap)) {
++		dev_err(&i2c->dev, "Failed to register i2c regmap %d\n",
++			(int)PTR_ERR(regmap));
++		return PTR_ERR(regmap);
++	}
++
++	return kxsd9_common_probe(&i2c->dev,
++				  regmap,
++				  i2c->name);
++}
++
++static int kxsd9_i2c_remove(struct i2c_client *client)
++{
++	return kxsd9_common_remove(&client->dev);
++}
++
++#ifdef CONFIG_OF
++static const struct of_device_id kxsd9_of_match[] = {
++	{ .compatible = "kionix,kxsd9", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, kxsd9_of_match);
++#else
++#define kxsd9_of_match NULL
++#endif
++
++static const struct i2c_device_id kxsd9_i2c_id[] = {
++	{"kxsd9", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(i2c, kxsd9_i2c_id);
++
++static struct i2c_driver kxsd9_i2c_driver = {
++	.driver = {
++		.name	= "kxsd9",
++		.of_match_table = of_match_ptr(kxsd9_of_match),
++	},
++	.probe		= kxsd9_i2c_probe,
++	.remove		= kxsd9_i2c_remove,
++	.id_table	= kxsd9_i2c_id,
++};
++module_i2c_driver(kxsd9_i2c_driver);
+-- 
+2.7.4
