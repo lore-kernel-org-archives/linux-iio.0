@@ -1,63 +1,89 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f44.google.com ([209.85.215.44]:36814 "EHLO
-        mail-lf0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751063AbcIAI10 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 04:27:26 -0400
-Received: by mail-lf0-f44.google.com with SMTP id g62so54795892lfe.3
-        for <linux-iio@vger.kernel.org>; Thu, 01 Sep 2016 01:27:26 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        Giuseppe Barba <giuseppe.barba@st.com>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH 2/3] iio: st_sensors: use the helper function
-Date: Thu,  1 Sep 2016 10:27:18 +0200
-Message-Id: <1472718439-16734-2-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1472718439-16734-1-git-send-email-linus.walleij@linaro.org>
-References: <1472718439-16734-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <gregor.boirie@parrot.com>
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>, Mark Rutland
+	<mark.rutland@arm.com>, Jonathan Corbet <corbet@lwn.net>, Laxman Dewangan
+	<ldewangan@nvidia.com>, Alexander Kurz <akurz@blala.de>, Tejun Heo
+	<tj@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, Akinobu Mita
+	<akinobu.mita@gmail.com>, Daniel Baluta <daniel.baluta@intel.com>, Ludovic
+ Tancerel <ludovic.tancerel@maplehightech.com>, Vlad Dogaru
+	<vlad.dogaru@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Marek
+ Vasut <marex@denx.de>, Crestez Dan Leonard <leonard.crestez@intel.com>, Neil
+ Armstrong <narmstrong@baylibre.com>, Masahiro Yamada
+	<yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Gregor Boirie
+	<gregor.boirie@parrot.com>
+Subject: [PATCH v2 0/3] iio: devm helpers and Murata zpa2326 barometer support
+Date: Thu, 1 Sep 2016 18:25:00 +0200
+Message-ID: <cover.1472746681.git.gregor.boirie@parrot.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-The ST sensors can be used as a trigger for its own triggered buffer
-but it is also possible to use an external trigger: a HRTimer or
-even a different sensor (!) as trigger. In that case we should not
-pick the timestamp from our own interrupt top half even if it is
-active.
+Introduce support for the Murata ZPA2326 pressure and temperature sensor.
+Also bring in resource managed versions for triggered buffer setup helpers and
+trigger registration which the above mentioned driver depends on.
 
-This could practically happen if some other sensor is using the
-ST sensor as trigger but the ST sensor itself is using e.g.
-an HRTimer as trigger. So the trigger is on, but not used by us.
+Driver features :
+* I2C and SPI buses
+* interrupt and polling based operations
+* direct, triggered and software buffered IIO sampling modes
+* hardware sampling frequency handling
+* trigger consumers notification (plugged on interrupt) 
+* runtime and system power states
 
-We used to assume that whenever the hardware interrupt is turned
-on, we are using it for our own trigger, but this is an
-oversimplification.
+Changes since v1 :
+* cosmetic and spelling corrections
+* remove useless header
+* remove useless u8 cast from register macro definitions
+* fix uninitialized pressure word for continuous sampling operation
+* rework of zpa_dequeue_pressure error handling flow for enhanced readability
+* merge zpa_acknowledge_irq() into zpa_handle_threaded_irq() for enhanced
+  readability
+* remove useless pm_runtime_mark_last_busy() invocation
+* remove useless channel initializers
+* add VRef regulator support
+* switch to regmap based bus operations (save ~100 lines of code)
+* make symbol prefixes consistent with source file name (zpa_ -> zpa2326_)
+* get rid of BUG() usage
+* protect sampling frequency reads from userspace with mutex
+* remove DEBUG macro (rely on dynamic debug or a futur DEBUG Kconfig option
+  defined at IIO level)
+* rename ZPA2326_CONVERSION_TIMEOUT macros to ZPA2326_CONVERSION_JIFFIES
+* simplify runtime power management error handling
+* rework ring setup operations for better separation of concerns
+* fix module removal / devm_iio_device_register() race condition
+* factor out hardware detection sequence
 
-Handle this logically by using the iio_trigger_using_own() helper.
+Regards,
+gregor.
 
-Cc: Giuseppe Barba <giuseppe.barba@st.com>
-Cc: Denis Ciocca <denis.ciocca@st.com>
-Cc: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Gregor Boirie <gregor.boirie@parrot.com>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/common/st_sensors/st_sensors_buffer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Gregor Boirie (3):
+  iio:trigger: add resource managed (un)register
+  iio: add resource managed triggered buffer init helpers
+  iio:pressure: initial zpa2326 barometer support
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-index d06e728cea37..fe7775bb3740 100644
---- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -63,7 +63,7 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
- 	 * the hardware trigger) and the hw_timestamp may get updated.
- 	 * By storing it in a local variable first, we are safe.
- 	 */
--	if (sdata->hw_irq_trigger)
-+	if (iio_trigger_using_own(indio_dev))
- 		timestamp = sdata->hw_timestamp;
- 	else
- 		timestamp = iio_get_time_ns(indio_dev);
+ .../devicetree/bindings/iio/pressure/zpa2326.txt   |   23 +
+ Documentation/driver-model/devres.txt              |    4 +
+ drivers/iio/buffer/industrialio-triggered-buffer.c |   42 +
+ drivers/iio/industrialio-core.c                    |    3 +-
+ drivers/iio/industrialio-trigger.c                 |   59 +
+ drivers/iio/pressure/Kconfig                       |   35 +
+ drivers/iio/pressure/Makefile                      |    3 +
+ drivers/iio/pressure/zpa2326.c                     | 1736 ++++++++++++++++++++
+ drivers/iio/pressure/zpa2326.h                     |   93 ++
+ drivers/iio/pressure/zpa2326_i2c.c                 |   97 ++
+ drivers/iio/pressure/zpa2326_spi.c                 |  101 ++
+ include/linux/iio/iio.h                            |    1 +
+ include/linux/iio/trigger.h                        |    6 +
+ include/linux/iio/triggered_buffer.h               |    8 +
+ 14 files changed, 2210 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+ create mode 100644 drivers/iio/pressure/zpa2326.c
+ create mode 100644 drivers/iio/pressure/zpa2326.h
+ create mode 100644 drivers/iio/pressure/zpa2326_i2c.c
+ create mode 100644 drivers/iio/pressure/zpa2326_spi.c
+
 -- 
-2.7.4
-
+2.1.4
