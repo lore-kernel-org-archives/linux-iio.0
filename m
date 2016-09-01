@@ -1,156 +1,284 @@
-Return-Path: <gregor.boirie@parrot.com>
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: <linux-iio@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>, Mark Rutland
-	<mark.rutland@arm.com>, Jonathan Corbet <corbet@lwn.net>, Laxman Dewangan
-	<ldewangan@nvidia.com>, Alexander Kurz <akurz@blala.de>, Tejun Heo
-	<tj@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, Akinobu Mita
-	<akinobu.mita@gmail.com>, Daniel Baluta <daniel.baluta@intel.com>, Ludovic
- Tancerel <ludovic.tancerel@maplehightech.com>, Vlad Dogaru
-	<vlad.dogaru@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Marek
- Vasut <marex@denx.de>, Crestez Dan Leonard <leonard.crestez@intel.com>, Neil
- Armstrong <narmstrong@baylibre.com>, Masahiro Yamada
-	<yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Gregor Boirie
-	<gregor.boirie@parrot.com>
-Subject: [PATCH v3 2/3] iio: add resource managed triggered buffer init helpers
-Date: Fri, 2 Sep 2016 20:47:55 +0200
-Message-ID: <6c078d51cfdc4b795004fea18d6d00e4aea59f27.1472841954.git.gregor.boirie@parrot.com>
-In-Reply-To: <cover.1472841954.git.gregor.boirie@parrot.com>
-References: <cover.1472841954.git.gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f171.google.com ([209.85.192.171]:34882 "EHLO
+        mail-pf0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933022AbcIAVcr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 17:32:47 -0400
+Date: Thu, 1 Sep 2016 13:34:39 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v3] iio: humidity: hdc100x: add triggered buffer support for
+ HDC100X
+Message-ID: <20160901203431.GA9696@d830.WORKGROUP>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add resource managed devm_iio_triggered_buffer_setup() and
-devm_iio_triggered_buffer_cleanup() to automatically clean up triggered
-buffers setup by IIO drivers, thus leading to simplified IIO drivers code.
+Triggered buffer support uses the HDC100X's dual acquisition mode
+to read both humidity and temperature in one shot.
 
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+This patch depends on
+	447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of
+		       temp and humidity")
+
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
 ---
- Documentation/driver-model/devres.txt              |  2 ++
- drivers/iio/buffer/industrialio-triggered-buffer.c | 42 ++++++++++++++++++++++
- drivers/iio/industrialio-core.c                    |  3 +-
- include/linux/iio/iio.h                            |  1 +
- include/linux/iio/triggered_buffer.h               |  8 +++++
- 5 files changed, 55 insertions(+), 1 deletion(-)
 
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index 6a2138a..75bc5b8 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -266,6 +266,8 @@ IIO
-   devm_iio_device_unregister()
-   devm_iio_kfifo_allocate()
-   devm_iio_kfifo_free()
-+  devm_iio_triggered_buffer_setup()
-+  devm_iio_triggered_buffer_cleanup()
-   devm_iio_trigger_alloc()
-   devm_iio_trigger_free()
-   devm_iio_trigger_register()
-diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-index 4b2858b..d3db1fc 100644
---- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-+++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-@@ -98,6 +98,48 @@ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
- }
- EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
+Changes in v3:
+ Thanks for the review Jonathan
+ - This patch now depends on 
+   447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of temp
+   and humidity")
+ - remove i2c functionality check, done in dependent patch
+ - remove unused define HDC100X_ALL_CHANNEL_MASK
+ - define and use available_scan_masks to demux between temp &/or humid
+   data in buffered mode
+ - changed timestamp channel scan_index from 3 to 2.
+ - put back private data lock in read_raw
+   (we'll lock private data lock and claim_direct_mode on raw reads)
+ - remove unneeded NULL parameters in iio_buffer_setup_ops
+ - add private data lock on buffered read
+   We are going to allow configuration changes while the sensor is in
+   buffered mode.  We need to allow the toggling of the Heater Enable bit
+   because the heater only functions during measurements. The lock will
+   ensure that the config change and buffer read transaction do not collide.
+ - blank lines added for readability per reviewer 
+
+Changes in v2:  
+ Thanks for the review Peter
+ - switched endianness from IIO_CPU to IIO_BE
+ - use only one buffer in the handler
+ - simplify selection of temp &/or humidity to push to buffer
+
+
+ drivers/iio/humidity/Kconfig   |   2 +
+ drivers/iio/humidity/hdc100x.c | 128 ++++++++++++++++++++++++++++++++++++++++-
+ 2 files changed, 128 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+index f155386..5a25569 100644
+--- a/drivers/iio/humidity/Kconfig
++++ b/drivers/iio/humidity/Kconfig
+@@ -25,6 +25,8 @@ config DHT11
+ config HDC100X
+ 	tristate "TI HDC100x relative humidity and temperature sensor"
+ 	depends on I2C
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
+ 	help
+ 	  Say yes here to build support for the Texas Instruments
+ 	  HDC1000 and HDC1008 relative humidity and temperature sensors.
+diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+index e0c9c70..7508c26 100644
+--- a/drivers/iio/humidity/hdc100x.c
++++ b/drivers/iio/humidity/hdc100x.c
+@@ -22,11 +22,15 @@
  
-+static void devm_iio_triggered_buffer_clean(struct device *dev, void *res)
-+{
-+	iio_triggered_buffer_cleanup(*(struct iio_dev **)res);
-+}
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
+ 
+ #define HDC100X_REG_TEMP			0x00
+ #define HDC100X_REG_HUMIDITY			0x01
+ 
+ #define HDC100X_REG_CONFIG			0x02
++#define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
+ #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
+ 
+ struct hdc100x_data {
+@@ -87,22 +91,40 @@ static const struct iio_chan_spec hdc100x_channels[] = {
+ 			BIT(IIO_CHAN_INFO_SCALE) |
+ 			BIT(IIO_CHAN_INFO_INT_TIME) |
+ 			BIT(IIO_CHAN_INFO_OFFSET),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
+ 	},
+ 	{
+ 		.type = IIO_HUMIDITYRELATIVE,
+ 		.address = HDC100X_REG_HUMIDITY,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 			BIT(IIO_CHAN_INFO_SCALE) |
+-			BIT(IIO_CHAN_INFO_INT_TIME)
++			BIT(IIO_CHAN_INFO_INT_TIME),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_BE,
++		},
+ 	},
+ 	{
+ 		.type = IIO_CURRENT,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+ 		.extend_name = "heater",
+ 		.output = 1,
++		.scan_index = -1,
+ 	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+ 
++static const unsigned long hdc100x_scan_masks[] = {0x3, 0};
 +
-+int devm_iio_triggered_buffer_setup(struct device *dev,
-+				    struct iio_dev *indio_dev,
-+				    irqreturn_t (*h)(int irq, void *p),
-+				    irqreturn_t (*thread)(int irq, void *p),
-+				    const struct iio_buffer_setup_ops *ops)
+ static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
+ {
+ 	int tmp = (~mask & data->config) | val;
+@@ -183,7 +205,12 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
+ 			*val = hdc100x_get_heater_status(data);
+ 			ret = IIO_VAL_INT;
+ 		} else {
++			ret = iio_device_claim_direct_mode(indio_dev);
++			if (ret)
++				return ret;
++
+ 			ret = hdc100x_get_measurement(data, chan);
++			iio_device_release_direct_mode(indio_dev);
+ 			if (ret >= 0) {
+ 				*val = ret;
+ 				ret = IIO_VAL_INT;
+@@ -246,6 +273,78 @@ static int hdc100x_write_raw(struct iio_dev *indio_dev,
+ 	}
+ }
+ 
++static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
 +{
-+	struct iio_dev **ptr;
++	struct hdc100x_data *data = iio_priv(indio_dev);
 +	int ret;
 +
-+	ptr = devres_alloc(devm_iio_triggered_buffer_clean, sizeof(*ptr),
-+			   GFP_KERNEL);
-+	if (!ptr)
-+		return -ENOMEM;
++	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
++	mutex_lock(&data->lock);
++	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
++				    HDC100X_REG_CONFIG_ACQ_MODE);
++	mutex_unlock(&data->lock);
++	if (ret)
++		return ret;
 +
-+	*ptr = indio_dev;
++	return iio_triggered_buffer_postenable(indio_dev);
++}
 +
-+	ret = iio_triggered_buffer_setup(indio_dev, h, thread, ops);
-+	if (!ret)
-+		devres_add(dev, ptr);
-+	else
-+		devres_free(ptr);
++static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct hdc100x_data *data = iio_priv(indio_dev);
++	int ret;
++
++	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
++	ret = iio_triggered_buffer_predisable(indio_dev);
++	if (ret)
++		return ret;
++
++	mutex_lock(&data->lock);
++	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
++	mutex_unlock(&data->lock);
 +
 +	return ret;
 +}
-+EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_setup);
 +
-+void devm_iio_triggered_buffer_cleanup(struct device *dev,
-+				       struct iio_dev *indio_dev)
++static const struct iio_buffer_setup_ops hdc_buffer_setup_ops = {
++	.postenable  = hdc100x_buffer_postenable,
++	.predisable  = hdc100x_buffer_predisable,
++};
++
++static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
 +{
-+	int rc;
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct hdc100x_data *data = iio_priv(indio_dev);
++	struct i2c_client *client = data->client;
++	int delay = data->adc_int_us[0] + data->adc_int_us[1];
++	int ret;
++	s16 buf[8];  /* 2x s16 + padding + 8 byte timestamp */
 +
-+	rc = devres_release(dev, devm_iio_triggered_buffer_clean,
-+			    devm_iio_device_match, indio_dev);
-+	WARN_ON(rc);
++	/* dual read starts at temp register */
++	mutex_lock(&data->lock);
++	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
++	if (ret < 0) {
++		dev_err(&client->dev, "cannot start measurement\n");
++		goto err;
++	}
++	usleep_range(delay, delay + 1000);
++
++	ret = i2c_master_recv(client, (u8 *)buf, 4);
++	if (ret < 0) {
++		dev_err(&client->dev, "cannot read sensor data\n");
++		goto err;
++	}
++	mutex_unlock(&data->lock);
++
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++					   iio_get_time_ns(indio_dev));
++err:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
 +}
-+EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_cleanup);
 +
- MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
- MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
- MODULE_LICENSE("GPL");
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index d2b8899..fc340ed 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -1308,7 +1308,7 @@ static void devm_iio_device_release(struct device *dev, void *res)
- 	iio_device_free(*(struct iio_dev **)res);
- }
- 
--static int devm_iio_device_match(struct device *dev, void *res, void *data)
-+int devm_iio_device_match(struct device *dev, void *res, void *data)
+ static const struct iio_info hdc100x_info = {
+ 	.read_raw = hdc100x_read_raw,
+ 	.write_raw = hdc100x_write_raw,
+@@ -258,6 +357,7 @@ static int hdc100x_probe(struct i2c_client *client,
  {
- 	struct iio_dev **r = res;
- 	if (!r || !*r) {
-@@ -1317,6 +1317,7 @@ static int devm_iio_device_match(struct device *dev, void *res, void *data)
- 	}
- 	return *r == data;
- }
-+EXPORT_SYMBOL_GPL(devm_iio_device_match);
+ 	struct iio_dev *indio_dev;
+ 	struct hdc100x_data *data;
++	int ret;
  
- /**
-  * devm_iio_device_alloc - Resource-managed iio_device_alloc()
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 854e2da..cb8d598 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -642,6 +642,7 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
- }
+ 	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+ 				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+@@ -279,12 +379,35 @@ static int hdc100x_probe(struct i2c_client *client,
  
- void iio_device_free(struct iio_dev *indio_dev);
-+int devm_iio_device_match(struct device *dev, void *res, void *data);
- struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
- void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
- struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
-diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
-index f72f70d..3014561 100644
---- a/include/linux/iio/triggered_buffer.h
-+++ b/include/linux/iio/triggered_buffer.h
-@@ -12,4 +12,12 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
- 	const struct iio_buffer_setup_ops *setup_ops);
- void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
+ 	indio_dev->channels = hdc100x_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
++	indio_dev->available_scan_masks = hdc100x_scan_masks;
  
-+int devm_iio_triggered_buffer_setup(struct device *dev,
-+				    struct iio_dev *indio_dev,
-+				    irqreturn_t (*h)(int irq, void *p),
-+				    irqreturn_t (*thread)(int irq, void *p),
-+				    const struct iio_buffer_setup_ops *ops);
-+void devm_iio_triggered_buffer_cleanup(struct device *dev,
-+				       struct iio_dev *indio_dev);
+ 	/* be sure we are in a known state */
+ 	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
+ 	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
++	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
 +
- #endif
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 hdc100x_trigger_handler,
++					 &hdc_buffer_setup_ops);
++	if (ret < 0) {
++		dev_err(&client->dev, "iio triggered buffer setup failed\n");
++		return ret;
++	}
++	ret = iio_device_register(indio_dev);
++	if (ret < 0)
++		iio_triggered_buffer_cleanup(indio_dev);
++
++	return ret;
++}
++
++static int hdc100x_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
+ 
+-	return devm_iio_device_register(&client->dev, indio_dev);
++	return 0;
+ }
+ 
+ static const struct i2c_device_id hdc100x_id[] = {
+@@ -298,6 +421,7 @@ static struct i2c_driver hdc100x_driver = {
+ 		.name	= "hdc100x",
+ 	},
+ 	.probe = hdc100x_probe,
++	.remove = hdc100x_remove,
+ 	.id_table = hdc100x_id,
+ };
+ module_i2c_driver(hdc100x_driver);
 -- 
 2.1.4
+
