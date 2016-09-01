@@ -1,48 +1,106 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f45.google.com ([209.85.218.45]:32780 "EHLO
-        mail-oi0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752060AbcIAInq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 04:43:46 -0400
-Received: by mail-oi0-f45.google.com with SMTP id c15so106971915oig.0
-        for <linux-iio@vger.kernel.org>; Thu, 01 Sep 2016 01:43:46 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <6c8174d4-0e53-edb3-8c3b-7304bb77ca91@kernel.org>
-References: <1471354423-19186-1-git-send-email-linus.walleij@linaro.org>
- <1471354423-19186-11-git-send-email-linus.walleij@linaro.org> <6c8174d4-0e53-edb3-8c3b-7304bb77ca91@kernel.org>
+Return-Path: <linus.walleij@linaro.org>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Thu, 1 Sep 2016 10:43:45 +0200
-Message-ID: <CACRpkdZLbu4NmRwiex=anGwHujha6iKwd2QaxghkS-W-VaVD6Q@mail.gmail.com>
-Subject: Re: [PATCH 10/17] iio: accel: kxsd9: Fix scaling bug
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 11/15 v2] iio: accel: kxsd9: Deploy proper register bit defines
+Date: Thu,  1 Sep 2016 11:44:45 +0200
+Message-Id: <1472723089-25113-11-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Aug 31, 2016 at 9:47 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 16/08/16 14:33, Linus Walleij wrote:
->> All the scaling of the KXSD9 involves multiplication with a
->> fraction number < 1.
->>
->> However the scaling value returned from IIO_INFO_SCALE was
->> unpredictable as only the micros of the value was assigned, and
->> not the integer part, resulting in scaling like this:
->>
->> $cat in_accel_scale
->> -1057462640.011978
->>
->> Fix this by assigning zero to the integer part.
->>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->
-> I'll pick this up for stable.  If you want to reorder so it's at the top
-> of the series of the remaining patches that would be cool.
-> If not I'll wiggle it till it fits.
->
-> Tested-by: Jonathan Cameron <jic23@kernel.org>
+There are some hardcoded register values etc in the code, define
+proper bitfield definitions, and use them when getting and setting
+the scale. Optimize a read/modify/write to use regmap_update_bits()
+at the same time.
 
-OK rebasing it to front and tagging for stable, no
-problem. Should've thought about it myself.
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Rebase on the rest of the series.
+---
+ drivers/iio/accel/kxsd9.c | 36 +++++++++++++++++++++++++++---------
+ 1 file changed, 27 insertions(+), 9 deletions(-)
 
-Yours,
-Linus Walleij
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index d84413ae14b1..8c6a4559256e 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -20,6 +20,7 @@
+ #include <linux/slab.h>
+ #include <linux/module.h>
+ #include <linux/regmap.h>
++#include <linux/bitops.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include <linux/iio/buffer.h>
+@@ -35,9 +36,29 @@
+ #define KXSD9_REG_RESET		0x0a
+ #define KXSD9_REG_CTRL_C	0x0c
+ 
+-#define KXSD9_FS_MASK		0x03
++#define KXSD9_CTRL_C_FS_MASK	0x03
++#define KXSD9_CTRL_C_FS_8G	0x00
++#define KXSD9_CTRL_C_FS_6G	0x01
++#define KXSD9_CTRL_C_FS_4G	0x02
++#define KXSD9_CTRL_C_FS_2G	0x03
++#define KXSD9_CTRL_C_MOT_LAT	BIT(3)
++#define KXSD9_CTRL_C_MOT_LEV	BIT(4)
++#define KXSD9_CTRL_C_LP_MASK	0xe0
++#define KXSD9_CTRL_C_LP_NONE	0x00
++#define KXSD9_CTRL_C_LP_2000HZC	BIT(5)
++#define KXSD9_CTRL_C_LP_2000HZB	BIT(6)
++#define KXSD9_CTRL_C_LP_2000HZA	(BIT(5)|BIT(6))
++#define KXSD9_CTRL_C_LP_1000HZ	BIT(7)
++#define KXSD9_CTRL_C_LP_500HZ	(BIT(7)|BIT(5))
++#define KXSD9_CTRL_C_LP_100HZ	(BIT(7)|BIT(6))
++#define KXSD9_CTRL_C_LP_50HZ	(BIT(7)|BIT(6)|BIT(5))
+ 
+ #define KXSD9_REG_CTRL_B	0x0d
++
++#define KXSD9_CTRL_B_CLK_HLD	BIT(7)
++#define KXSD9_CTRL_B_ENABLE	BIT(6)
++#define KXSD9_CTRL_B_ST		BIT(5) /* Self-test */
++
+ #define KXSD9_REG_CTRL_A	0x0e
+ 
+ /**
+@@ -65,7 +86,6 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
+ 	int ret, i;
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
+ 	bool foundit = false;
+-	unsigned int val;
+ 
+ 	for (i = 0; i < 4; i++)
+ 		if (micro == kxsd9_micro_scales[i]) {
+@@ -75,14 +95,12 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
+ 	if (!foundit)
+ 		return -EINVAL;
+ 
+-	ret = regmap_read(st->map,
+-			  KXSD9_REG_CTRL_C,
+-			  &val);
++	ret = regmap_update_bits(st->map,
++				 KXSD9_REG_CTRL_C,
++				 KXSD9_CTRL_C_FS_MASK,
++				 i);
+ 	if (ret < 0)
+ 		goto error_ret;
+-	ret = regmap_write(st->map,
+-			   KXSD9_REG_CTRL_C,
+-			   (val & ~KXSD9_FS_MASK) | i);
+ error_ret:
+ 	return ret;
+ }
+@@ -150,7 +168,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+ 		if (ret < 0)
+ 			goto error_ret;
+ 		*val = 0;
+-		*val2 = kxsd9_micro_scales[regval & KXSD9_FS_MASK];
++		*val2 = kxsd9_micro_scales[regval & KXSD9_CTRL_C_FS_MASK];
+ 		ret = IIO_VAL_INT_PLUS_MICRO;
+ 		break;
+ 	}
+-- 
+2.7.4
