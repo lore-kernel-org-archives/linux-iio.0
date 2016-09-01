@@ -1,75 +1,93 @@
-Return-Path: <quentin.schulz@free-electrons.com>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jdelvare@suse.com,
-	linux@roeck-us.net,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	maxime.ripard@free-electrons.com,
-	wens@csie.org,
-	lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com,
-	linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v4 1/3] hwmon: iio_hwmon: delay probing with late_initcall
-Date: Thu,  1 Sep 2016 16:05:03 +0200
-Message-Id: <1472738705-20145-2-git-send-email-quentin.schulz@free-electrons.com>
-In-Reply-To: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com>
-References: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f41.google.com ([209.85.215.41]:35916 "EHLO
+        mail-lf0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753163AbcIAJpX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 05:45:23 -0400
+Received: by mail-lf0-f41.google.com with SMTP id g62so56215860lfe.3
+        for <linux-iio@vger.kernel.org>; Thu, 01 Sep 2016 02:45:23 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 15/15 v2] iio: accel: kxsd9: Support reading a mounting matrix
+Date: Thu,  1 Sep 2016 11:44:49 +0200
+Message-Id: <1472723089-25113-15-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-iio_channel_get_all returns -ENODEV when it cannot find either phandles and
-properties in the Device Tree or channels whose consumer_dev_name matches
-iio_hwmon in iio_map_list. The iio_map_list is filled in by iio drivers
-which might be probed after iio_hwmon.
+This adds support for the mounting matrix to the KXSD9 driver.
 
-This makes sure iio_hwmon is probed after all iio drivers which provides
-channels to iio_hwmon are probed, be they present in the DT or using
-iio_map_list.
-
-This replaces module_platform_driver() by an explicit code variant which
-calls late_initcall() install of module_init(), meaning it probes after
-all the drivers using module_init() as their init.
-
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
+ChangeLog v1->v2:
+- Rebase on the rest of the series.
+---
+ drivers/iio/accel/kxsd9.c | 24 ++++++++++++++++++++++++
+ 1 file changed, 24 insertions(+)
 
-v4:
- - use platform_driver_register instead of platform_register_drivers,
-
-v3:
- - use late_initcall instead of deferring probe,
-
- drivers/hwmon/iio_hwmon.c | 12 +++++++++++-
- 1 file changed, 11 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/hwmon/iio_hwmon.c b/drivers/hwmon/iio_hwmon.c
-index b550ba5..c509779 100644
---- a/drivers/hwmon/iio_hwmon.c
-+++ b/drivers/hwmon/iio_hwmon.c
-@@ -192,7 +192,17 @@ static struct platform_driver __refdata iio_hwmon_driver = {
- 	.remove = iio_hwmon_remove,
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index a28163b76e12..9af60ac70738 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -68,12 +68,14 @@
+  * struct kxsd9_state - device related storage
+  * @dev: pointer to the parent device
+  * @map: regmap to the device
++ * @orientation: mounting matrix, flipped axis etc
+  * @regs: regulators for this device, VDD and IOVDD
+  * @scale: the current scaling setting
+  */
+ struct kxsd9_state {
+ 	struct device *dev;
+ 	struct regmap *map;
++	struct iio_mount_matrix orientation;
+ 	struct regulator_bulk_data regs[2];
+ 	u8 scale;
+ };
+@@ -258,6 +260,20 @@ static const struct iio_buffer_setup_ops kxsd9_buffer_setup_ops = {
+ 	.postdisable = kxsd9_buffer_postdisable,
  };
  
--module_platform_driver(iio_hwmon_driver);
-+static int __init iio_hwmon_late_init(void)
++static const struct iio_mount_matrix *
++kxsd9_get_mount_matrix(const struct iio_dev *indio_dev,
++		       const struct iio_chan_spec *chan)
 +{
-+	return platform_driver_register(&iio_hwmon_driver);
-+}
-+late_initcall(iio_hwmon_late_init);
++	struct kxsd9_state *st = iio_priv(indio_dev);
 +
-+static void __exit iio_hwmon_exit(void)
-+{
-+	platform_driver_unregister(&iio_hwmon_driver);
++	return &st->orientation;
 +}
-+module_exit(iio_hwmon_exit);
++
++static const struct iio_chan_spec_ext_info kxsd9_ext_info[] = {
++	IIO_MOUNT_MATRIX(IIO_SHARED_BY_TYPE, kxsd9_get_mount_matrix),
++	{ },
++};
++
+ #define KXSD9_ACCEL_CHAN(axis, index)						\
+ 	{								\
+ 		.type = IIO_ACCEL,					\
+@@ -266,6 +282,7 @@ static const struct iio_buffer_setup_ops kxsd9_buffer_setup_ops = {
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+ 					BIT(IIO_CHAN_INFO_OFFSET),	\
++		.ext_info = kxsd9_ext_info,				\
+ 		.address = KXSD9_REG_##axis,				\
+ 		.scan_index = index,					\
+ 		.scan_type = {                                          \
+@@ -403,6 +420,13 @@ int kxsd9_common_probe(struct device *dev,
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 	indio_dev->available_scan_masks = kxsd9_scan_masks;
  
- MODULE_AUTHOR("Jonathan Cameron <jic23@kernel.org>");
- MODULE_DESCRIPTION("IIO to hwmon driver");
++	/* Read the mounting matrix, if present */
++	ret = of_iio_read_mount_matrix(dev,
++				       "mount-matrix",
++				       &st->orientation);
++	if (ret)
++		return ret;
++
+ 	/* Fetch and turn on regulators */
+ 	st->regs[0].supply = kxsd9_reg_vdd;
+ 	st->regs[1].supply = kxsd9_reg_iovdd;
 -- 
-2.5.0
+2.7.4
+
