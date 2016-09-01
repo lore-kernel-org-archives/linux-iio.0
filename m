@@ -1,53 +1,117 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:35241 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753017AbcIBPXn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 11:23:43 -0400
-Message-ID: <1472829819.12668.3.camel@googlemail.com>
-Subject: Re: [PATCH] iio: sx9500: add final devicetree support
-From: Christoph Fritz <chf.fritz@googlemail.com>
-Reply-To: chf.fritz@googlemail.com
-To: Fabio Estevam <festevam@gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Vlad Dogaru <ddvlad@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Date: Fri, 02 Sep 2016 17:23:39 +0200
-In-Reply-To: <CAOMZO5BVDS=AaSyRS0ELBiEKx3RxdstXgA_xJ6ANUzKDxdyBxg@mail.gmail.com>
-References: <1472827740.1929.26.camel@googlemail.com>
-         <CAOMZO5BeL1EKOQvZQoXXObttHSKxL7UQ1s2r8H4EOuROOb_YnQ@mail.gmail.com>
-         <1472828671.1929.32.camel@googlemail.com>
-         <CAOMZO5BVDS=AaSyRS0ELBiEKx3RxdstXgA_xJ6ANUzKDxdyBxg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linus.walleij@linaro.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 09/15 v2] iio: accel: kxsd9: Fix up offset and scaling
+Date: Thu,  1 Sep 2016 11:44:43 +0200
+Message-Id: <1472723089-25113-9-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 2016-09-02 at 12:12 -0300, Fabio Estevam wrote:
-> On Fri, Sep 2, 2016 at 12:04 PM, Christoph Fritz
-> <chf.fritz@googlemail.com> wrote:
-> 
-> > Here on my board I'm using the reset pin as an open-drain with external
-> > pullup, so GPIO_ACTIVE_HIGH is valid.
-> >
-> > As this is an example, I don't care if it says _HIGH or _LOW.
-> 
-> Then probably it is better to remove "reset-gpios" from the example.
-> 
-> The driver does not parse this dt property and the reset is being done
-> via software command as far as I can see.
+This fixes several errors in the offset and scaling of the raw
+values from the KXSD9 sensor:
 
-What do you mean by "software command", to send a reset command by i2c?
+- The code did not convert the big endian value from the sensor
+  into the endianness of the host CPU. Fix this with
+  be16_to_cpu() on the raw obtained value.
 
-The reset GPIO is fetched in sx9500 here:
+- The code did not regard the fact that only the upper 12 bits of
+  the accelerometer values are valid. Shift these
+  down four bits to yield the real raw value.
 
-See sx9500_gpio_probe():
-...
-        data->gpiod_rst = devm_gpiod_get_index(dev, SX9500_GPIO_RESET,
-                                               0, GPIOD_OUT_HIGH);
-...
+- Further the sensor provides 2048 at zero g. This means that an
+  offset of 2048 must be subtracted from the raw value before
+  scaling. This was not taken into account by the driver,
+  yielding a weird value. Fix this by providing this offset in
+  sysfs.
 
+To house the scaling code better, the value reading code was
+factored into the raw reading function.
 
+This proper scaling and offseting is necessary to get proper
+values out of triggered buffer by offsetting, shifting and scaling
+them.
 
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v1->v2:
+- Rebase on the rest of the series.
+---
+ drivers/iio/accel/kxsd9.c | 35 ++++++++++++++++++-----------------
+ 1 file changed, 18 insertions(+), 17 deletions(-)
 
-
+diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+index dc0bea7cbf4f..6a1e67723d0c 100644
+--- a/drivers/iio/accel/kxsd9.c
++++ b/drivers/iio/accel/kxsd9.c
+@@ -55,6 +55,8 @@ struct kxsd9_state {
+ /* reverse order */
+ static const int kxsd9_micro_scales[4] = { 47853, 35934, 23927, 11978 };
+ 
++#define KXSD9_ZERO_G_OFFSET -2048
++
+ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
+ {
+ 	int ret, i;
+@@ -82,19 +84,6 @@ error_ret:
+ 	return ret;
+ }
+ 
+-static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
+-{
+-	int ret;
+-	struct kxsd9_state *st = iio_priv(indio_dev);
+-	__be16 raw_val;
+-
+-	ret = regmap_bulk_read(st->map, address, &raw_val, sizeof(raw_val));
+-	if (ret)
+-		return ret;
+-	/* Only 12 bits are valid */
+-	return be16_to_cpu(raw_val) & 0xfff0;
+-}
+-
+ static IIO_CONST_ATTR(accel_scale_available,
+ 		KXSD9_SCALE_2G " "
+ 		KXSD9_SCALE_4G " "
+@@ -131,13 +120,24 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+ 	int ret = -EINVAL;
+ 	struct kxsd9_state *st = iio_priv(indio_dev);
+ 	unsigned int regval;
++	__be16 raw_val;
++	u16 nval;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		ret = kxsd9_read(indio_dev, chan->address);
+-		if (ret < 0)
++		ret = regmap_bulk_read(st->map, chan->address, &raw_val,
++				       sizeof(raw_val));
++		if (ret)
+ 			goto error_ret;
+-		*val = ret;
++		nval = be16_to_cpu(raw_val);
++		/* Only 12 bits are valid */
++		nval >>= 4;
++		*val = nval;
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_OFFSET:
++		/* This has a bias of -2048 */
++		*val = KXSD9_ZERO_G_OFFSET;
+ 		ret = IIO_VAL_INT;
+ 		break;
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -161,7 +161,8 @@ error_ret:
+ 		.modified = 1,						\
+ 		.channel2 = IIO_MOD_##axis,				\
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+-		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
++					BIT(IIO_CHAN_INFO_OFFSET),	\
+ 		.address = KXSD9_REG_##axis,				\
+ 	}
+ 
+-- 
+2.7.4
