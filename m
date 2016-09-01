@@ -1,295 +1,234 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi0-f51.google.com ([209.85.218.51]:35706 "EHLO
+        mail-oi0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752063AbcIAU6j (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Sep 2016 16:58:39 -0400
+Received: by mail-oi0-f51.google.com with SMTP id p186so99577168oia.2
+        for <linux-iio@vger.kernel.org>; Thu, 01 Sep 2016 13:58:39 -0700 (PDT)
+MIME-Version: 1.0
+In-Reply-To: <e47d50396f14793f50b2bc198d5ef20210058ebc.1472746681.git.gregor.boirie@parrot.com>
+References: <cover.1472746681.git.gregor.boirie@parrot.com> <e47d50396f14793f50b2bc198d5ef20210058ebc.1472746681.git.gregor.boirie@parrot.com>
 From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 06/15 v2] iio: accel: kxsd9: Convert to use regmap for transport
-Date: Thu,  1 Sep 2016 11:44:40 +0200
-Message-Id: <1472723089-25113-6-git-send-email-linus.walleij@linaro.org>
-In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
-References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Date: Thu, 1 Sep 2016 22:30:28 +0200
+Message-ID: <CACRpkdb2GDQ3WX5oWXcvw1KSkPRFf073QgJmJ0xM9coT3gLg2w@mail.gmail.com>
+Subject: Re: [PATCH v2 3/3] iio:pressure: initial zpa2326 barometer support
+To: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Alexander Kurz <akurz@blala.de>, Tejun Heo <tj@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
+        Vlad Dogaru <vlad.dogaru@intel.com>,
+        Marek Vasut <marex@denx.de>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Arnd Bergmann <arnd@arndb.de>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This converts the KXSD9 driver to drop the custom transport
-mechanism and just use regmap like everything else.
+LOn Thu, Sep 1, 2016 at 6:25 PM, Gregor Boirie <gregor.boirie@parrot.com> wrote:
 
-Tested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- Rebase on the rest of the series.
----
- drivers/iio/accel/Kconfig     |  1 +
- drivers/iio/accel/kxsd9-spi.c | 79 ++++++++++---------------------------------
- drivers/iio/accel/kxsd9.c     | 40 +++++++++++++---------
- drivers/iio/accel/kxsd9.h     | 22 +-----------
- 4 files changed, 43 insertions(+), 99 deletions(-)
+> Introduce driver for Murata ZPA2326 pressure and temperature sensor:
+> http://www.murata.com/en-us/products/productdetail?partno=ZPA2326-0311A-R
+>
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 95e3fc09f640..0ac316fbba38 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -108,6 +108,7 @@ config KXSD9_SPI
- 	depends on KXSD9
- 	depends on SPI
- 	default KXSD9
-+	select REGMAP_SPI
- 	help
- 	  Say yes here to enable the Kionix KXSD9 accelerometer
- 	  SPI transport channel.
-diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
-index a49c10cd7634..c5af51b7dd7e 100644
---- a/drivers/iio/accel/kxsd9-spi.c
-+++ b/drivers/iio/accel/kxsd9-spi.c
-@@ -3,75 +3,30 @@
- #include <linux/spi/spi.h>
- #include <linux/module.h>
- #include <linux/slab.h>
-+#include <linux/regmap.h>
- 
- #include "kxsd9.h"
- 
--#define KXSD9_READ(a) (0x80 | (a))
--#define KXSD9_WRITE(a) (a)
--
--static int kxsd9_spi_readreg(struct kxsd9_transport *tr, u8 address)
--{
--	struct spi_device *spi = tr->trdev;
--
--	return spi_w8r8(spi, KXSD9_READ(address));
--}
--
--static int kxsd9_spi_writereg(struct kxsd9_transport *tr, u8 address, u8 val)
--{
--	struct spi_device *spi = tr->trdev;
--
--	tr->tx[0] = KXSD9_WRITE(address),
--	tr->tx[1] = val;
--	return spi_write(spi, tr->tx, 2);
--}
--
--static int kxsd9_spi_readval(struct kxsd9_transport *tr, u8 address)
--{
--	struct spi_device *spi = tr->trdev;
--	struct spi_transfer xfers[] = {
--		{
--			.bits_per_word = 8,
--			.len = 1,
--			.delay_usecs = 200,
--			.tx_buf = tr->tx,
--		}, {
--			.bits_per_word = 8,
--			.len = 2,
--			.rx_buf = tr->rx,
--		},
--	};
--	int ret;
--
--	tr->tx[0] = KXSD9_READ(address);
--	ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
--	if (!ret)
--		ret = (((u16)(tr->rx[0])) << 8) | (tr->rx[1]);
--	return ret;
--}
--
- static int kxsd9_spi_probe(struct spi_device *spi)
- {
--	struct kxsd9_transport *transport;
--	int ret;
--
--	transport = devm_kzalloc(&spi->dev, sizeof(*transport), GFP_KERNEL);
--	if (!transport)
--		return -ENOMEM;
-+	static const struct regmap_config config = {
-+		.reg_bits = 8,
-+		.val_bits = 8,
-+		.max_register = 0x0e,
-+	};
-+	struct regmap *regmap;
- 
--	transport->trdev = spi;
--	transport->readreg = kxsd9_spi_readreg;
--	transport->writereg = kxsd9_spi_writereg;
--	transport->readval = kxsd9_spi_readval;
- 	spi->mode = SPI_MODE_0;
--	spi_setup(spi);
--
--	ret = kxsd9_common_probe(&spi->dev,
--				 transport,
--				 spi_get_device_id(spi)->name);
--	if (ret)
--		return ret;
--
--	return 0;
-+	regmap = devm_regmap_init_spi(spi, &config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "%s: regmap allocation failed: %ld\n",
-+			__func__, PTR_ERR(regmap));
-+		return PTR_ERR(regmap);
-+	}
-+
-+	return kxsd9_common_probe(&spi->dev,
-+				  regmap,
-+				  spi_get_device_id(spi)->name);
- }
- 
- static int kxsd9_spi_remove(struct spi_device *spi)
-diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-index a787ec236608..c065c6e09fa4 100644
---- a/drivers/iio/accel/kxsd9.c
-+++ b/drivers/iio/accel/kxsd9.c
-@@ -21,7 +21,7 @@
- #include <linux/sysfs.h>
- #include <linux/slab.h>
- #include <linux/module.h>
--
-+#include <linux/regmap.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
- 
-@@ -46,7 +46,7 @@
-  * @us:		spi device
-  **/
- struct kxsd9_state {
--	struct kxsd9_transport *transport;
-+	struct regmap *map;
- 	struct mutex buf_lock;
- };
- 
-@@ -63,6 +63,7 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
- 	int ret, i;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
- 	bool foundit = false;
-+	unsigned int val;
- 
- 	for (i = 0; i < 4; i++)
- 		if (micro == kxsd9_micro_scales[i]) {
-@@ -73,13 +74,14 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
- 		return -EINVAL;
- 
- 	mutex_lock(&st->buf_lock);
--	ret = st->transport->readreg(st->transport,
--				     KXSD9_REG_CTRL_C);
-+	ret = regmap_read(st->map,
-+			  KXSD9_REG_CTRL_C,
-+			  &val);
- 	if (ret < 0)
- 		goto error_ret;
--	ret = st->transport->writereg(st->transport,
--				      KXSD9_REG_CTRL_C,
--				      (ret & ~KXSD9_FS_MASK) | i);
-+	ret = regmap_write(st->map,
-+			   KXSD9_REG_CTRL_C,
-+			   (val & ~KXSD9_FS_MASK) | i);
- error_ret:
- 	mutex_unlock(&st->buf_lock);
- 	return ret;
-@@ -89,11 +91,15 @@ static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
- {
- 	int ret;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
-+	__be16 raw_val;
- 
- 	mutex_lock(&st->buf_lock);
--	ret = st->transport->readval(st->transport, address);
-+	ret = regmap_bulk_read(st->map, address, &raw_val, sizeof(raw_val));
-+	if (ret)
-+		goto out_fail_read;
- 	/* Only 12 bits are valid */
--	ret &= 0xfff0;
-+	ret = be16_to_cpu(raw_val) & 0xfff0;
-+out_fail_read:
- 	mutex_unlock(&st->buf_lock);
- 	return ret;
- }
-@@ -133,6 +139,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
- {
- 	int ret = -EINVAL;
- 	struct kxsd9_state *st = iio_priv(indio_dev);
-+	unsigned int regval;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
-@@ -143,12 +150,13 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
- 		ret = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
--		ret = st->transport->readreg(st->transport,
--					     KXSD9_REG_CTRL_C);
-+		ret = regmap_read(st->map,
-+				  KXSD9_REG_CTRL_C,
-+				  &regval);
- 		if (ret < 0)
- 			goto error_ret;
- 		*val = 0;
--		*val2 = kxsd9_micro_scales[ret & KXSD9_FS_MASK];
-+		*val2 = kxsd9_micro_scales[regval & KXSD9_FS_MASK];
- 		ret = IIO_VAL_INT_PLUS_MICRO;
- 		break;
- 	}
-@@ -184,10 +192,10 @@ static int kxsd9_power_up(struct kxsd9_state *st)
- {
- 	int ret;
- 
--	ret = st->transport->writereg(st->transport, KXSD9_REG_CTRL_B, 0x40);
-+	ret = regmap_write(st->map, KXSD9_REG_CTRL_B, 0x40);
- 	if (ret)
- 		return ret;
--	return st->transport->writereg(st->transport, KXSD9_REG_CTRL_C, 0x9b);
-+	return regmap_write(st->map, KXSD9_REG_CTRL_C, 0x9b);
- };
- 
- static const struct iio_info kxsd9_info = {
-@@ -198,7 +206,7 @@ static const struct iio_info kxsd9_info = {
- };
- 
- int kxsd9_common_probe(struct device *parent,
--		       struct kxsd9_transport *transport,
-+		       struct regmap *map,
- 		       const char *name)
- {
- 	struct iio_dev *indio_dev;
-@@ -210,7 +218,7 @@ int kxsd9_common_probe(struct device *parent,
- 		return -ENOMEM;
- 
- 	st = iio_priv(indio_dev);
--	st->transport = transport;
-+	st->map = map;
- 
- 	mutex_init(&st->buf_lock);
- 	indio_dev->channels = kxsd9_channels;
-diff --git a/drivers/iio/accel/kxsd9.h b/drivers/iio/accel/kxsd9.h
-index b6328e88b56f..19131a7a692c 100644
---- a/drivers/iio/accel/kxsd9.h
-+++ b/drivers/iio/accel/kxsd9.h
-@@ -4,27 +4,7 @@
- #define KXSD9_STATE_RX_SIZE 2
- #define KXSD9_STATE_TX_SIZE 2
- 
--struct kxsd9_transport;
--
--/**
-- * struct kxsd9_transport - transport adapter for SPI or I2C
-- * @trdev: transport device such as SPI or I2C
-- * @readreg(): function to read a byte from an address in the device
-- * @writereg(): function to write a byte to an address in the device
-- * @readval(): function to read a 16bit value from the device
-- * @rx: cache aligned read buffer
-- * @tx: cache aligned write buffer
-- */
--struct kxsd9_transport {
--	void *trdev;
--	int (*readreg) (struct kxsd9_transport *tr, u8 address);
--	int (*writereg) (struct kxsd9_transport *tr, u8 address, u8 val);
--	int (*readval) (struct kxsd9_transport *tr, u8 address);
--	u8 rx[KXSD9_STATE_RX_SIZE] ____cacheline_aligned;
--	u8 tx[KXSD9_STATE_TX_SIZE];
--};
--
- int kxsd9_common_probe(struct device *parent,
--		       struct kxsd9_transport *transport,
-+		       struct regmap *map,
- 		       const char *name);
- int kxsd9_common_remove(struct device *parent);
--- 
-2.7.4
+Looking nice!
+
+> +Optional properties:
+> +- interrupt-parent: should be the phandle for the interrupt controller
+> +- interrupts: interrupt mapping for IRQ
+> +- vdd-supply: an optional regulator that needs to be on to provide VDD
+> +  power to the sensor
+> +
+
+vref-supply?
+
+> +/* Hardware sampling frequency descriptor. */
+> +struct zpa2326_frequency {
+> +       /* Stringified frequency in Hertz. */
+> +       const char *hz;
+> +       /* Output Data Rate word as expected by ZPA2326_CTRL_REG3_REG. */
+> +       u16         odr;
+> +};
+
+I still prefer the kerneldoc style of documenting, even if we're not
+building the
+documentation from this file. But OK it's a matter of taste maybe.
+
+> +/* Per-device internal private state. */
+> +struct zpa2326_private {
+
+That opinion applies also for this struct.
+
+> +/*
+> + * Fetch single byte from slave register.
+> + * indio_dev: IIO device the slave is attached to.
+> + * address:   address of register to read from.
+> + *
+> + * Returns the fetched byte when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_read_byte(const struct iio_dev *indio_dev, u8 address)
+
+I also prefer functions to use kerneldoc style. Even if they
+are not built into documents. For uniformness.
+
+> +static int zpa2326_enable_device(const struct iio_dev *indio_dev)
+> +{
+> +       int err = zpa2326_write_byte(indio_dev, ZPA2326_CTRL_REG0_REG,
+> +                                    ZPA2326_CTRL_REG0_ENABLE);
+
+Argh declaring a variable and immediately performing an operation
+assigning it a value scares me. I can't say why, it's just that I
+want it like:
+
+int ret;
+
+ret = zpa...
+
+I also use "ret" over "err". The rationale is that it is a return code,
+not an error code. It is only an error code if it is negative or != 0.
+Again that is a personal preference I guess, at least I have an
+explanation for it.
+
+> +static int zpa2326_power_on(const struct iio_dev         *indio_dev,
+> +                           const struct zpa2326_private *private)
+> +{
+> +       int err = regulator_enable(private->vref);
+> +
+> +       if (err)
+> +               return err;
+> +
+> +       err = regulator_enable(private->vdd);
+> +       if (err)
+> +               goto vref;
+> +
+> +       zpa2326_dbg(indio_dev, "powered on");
+> +
+> +       err = zpa2326_enable_device(indio_dev);
+> +       if (err)
+> +               goto vdd;
+> +
+> +       err = zpa2326_reset_device(indio_dev);
+> +       if (err)
+> +               goto disable;
+> +
+> +       return 0;
+> +
+> +disable:
+> +       zpa2326_disable_device(indio_dev);
+> +vdd:
+> +       regulator_disable(private->vdd);
+> +vref:
+> +       regulator_disable(private->vref);
+
+I would personally name the labels "out_disable_device"
+"out_disable_vdd", "out_disable_vref" but maybe I
+have a bit of talkative style.
+
+> +/* Power off device, i.e. disable attached power regulators. */
+> +static void zpa2326_power_off(const struct iio_dev         *indio_dev,
+> +                             const struct zpa2326_private *private)
+> +{
+> +       regulator_disable(private->vdd);
+> +       regulator_disable(private->vref);
+> +
+> +       zpa2326_dbg(indio_dev, "powered off");
+> +}
+
+Why is zpa2326_disable_device() called on the error path
+but not in the power off function?
+
+> +static int zpa2326_dequeue_pressure(const struct iio_dev *indio_dev,
+> +                                   u32                  *pressure)
+> +{
+> +       int err = zpa2326_read_byte(indio_dev, ZPA2326_STATUS_REG);
+> +       int cleared = -1;
+> +
+> +       if (err < 0)
+> +               return err;
+> +
+> +       *pressure = 0;
+> +
+> +       if (err & ZPA2326_STATUS_P_OR) {
+> +               /*
+> +                * Fifo overrun : first sample dequeued from fifo is the
+> +                * newest.
+> +                */
+> +               zpa2326_warn(indio_dev, "fifo overflow");
+> +
+> +               err = zpa2326_read_block(indio_dev, ZPA2326_PRESS_OUT_XL_REG, 3,
+> +                                        (u8 *)pressure);
+> +               if (err)
+> +                       return err;
+> +
+> +#define ZPA2326_FIFO_DEPTH (16U)
+> +               /* Hardware fifo may hold no more than 16 pressure samples. */
+> +               return zpa2326_clear_fifo(indio_dev, ZPA2326_FIFO_DEPTH - 1);
+
+I would not put a #define in the middle of the code like that, but
+in the top of the file. But I've seen others do this so it's no
+strong opinion.
+
+> +                       /*
+> +                        * Pressure resolution is 1/64 Pascal. Scale to kPascal
+> +                        * as required by IIO ABI.
+> +                        */
+> +                       *val = 0;
+> +                       *val2 = 1000000 / 64;
+> +                       return IIO_VAL_INT_PLUS_NANO;
+
+If what you return is a fraction why not:
+
+*val = 1000000;
+*val2 = 64;
+return IIO_VAL_FRACTIONAL;
+
+?
+
+If you insist on performing a division in the code,
+use DIV_ROUND_CLOSEST().
+
+> +       case IIO_CHAN_INFO_OFFSET:
+> +               switch (chan->type) {
+> +               case IIO_TEMP:
+> +                       *val = -17683000 / 649;
+> +                       *val2 = ((17683000 % 649) * 1000000000ULL) / 649ULL;
+> +                       return IIO_VAL_INT_PLUS_NANO;
+
+Same here. Rewrite that equation as a fraction and it becomes
+much prettier I think.
+
+> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> +                             zpa2326_show_frequency,
+> +                             zpa2326_store_frequency);
+> +
+> +/* Expose supported hardware sampling frequencies (Hz) through sysfs. */
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1 5 11 23");
+> +
+> +static struct attribute *zpa2326_attributes[] = {
+> +       &iio_dev_attr_sampling_frequency.dev_attr.attr,
+> +       &iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +       NULL
+> +};
+
+I was asked to supply these through the raw read/write functions in my
+driver by using IIO_CHAN_INFO_SAMP_FREQ. It works like a charm!
+If you want it to apply to the whole device, use the
+.info_mask_shared_by_all = = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+
+(See my MPU-3050 driver patch for an example.)
+
+Yours,
+Linus Walleij
