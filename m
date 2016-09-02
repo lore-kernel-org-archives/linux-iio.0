@@ -1,117 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:36170 "EHLO
-        mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750899AbcIBG2O (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 02:28:14 -0400
-Received: by mail-pa0-f67.google.com with SMTP id ez1so5157278pab.3
-        for <linux-iio@vger.kernel.org>; Thu, 01 Sep 2016 23:28:14 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, Matt Ranostay <mranostay@gmail.com>,
-        Matt Ranostay <matt@ranostay.consulting>
-Subject: [PATCH v2] iio: trigger: allow immutable triggers to be assigned
-Date: Thu,  1 Sep 2016 23:28:05 -0700
-Message-Id: <1472797685-12212-1-git-send-email-matt@ranostay.consulting>
+Received: from mail3-relais-sop.national.inria.fr ([192.134.164.104]:13438
+        "EHLO mail3-relais-sop.national.inria.fr" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751166AbcIBGau (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 02:30:50 -0400
+Date: Fri, 2 Sep 2016 07:30:38 +0100 (IST)
+From: Julia Lawall <julia.lawall@lip6.fr>
+To: Alison Schofield <amsfield22@gmail.com>
+cc: jic23@kernel.org, mranostay@gmail.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, mranostay@gmail.com, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3] iio: humidity: hdc100x: add triggered buffer support
+ for HDC100X
+Message-ID: <alpine.DEB.2.10.1609020729020.3923@hadrien>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Matt Ranostay <mranostay@gmail.com>
+Please check on the lines marked with @.  An unlock may be needed at line
+210.
 
-There are times when a trigger consumer shouldn't be allowed to change
-triggers after intialization.
+julia
 
-This is useful with use of callback buffers pushing ADC data back to the
-trigger providers iio device.
+---------- Forwarded message ----------
+Date: Fri, 2 Sep 2016 07:19:23 +0800
+From: kbuild test robot <fengguang.wu@intel.com>
+To: kbuild@01.org
+Cc: Julia Lawall <julia.lawall@lip6.fr>
+Subject: Re: [PATCH v3] iio: humidity: hdc100x: add triggered buffer support for
+     HDC100X
 
-Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
+Hi Alison,
+
+[auto build test WARNING on next-20160825]
+[also build test WARNING on v4.8-rc4]
+[cannot apply to iio/togreg v4.8-rc4 v4.8-rc3 v4.8-rc2]
+[if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
+[Suggest to use git(>=2.9.0) format-patch --base=<commit> (or --base=auto for convenience) to record what (public, well-known) commit your patch series was built on]
+[Check https://git-scm.com/docs/git-format-patch for more information]
+
+url:    https://github.com/0day-ci/linux/commits/Alison-Schofield/iio-humidity-hdc100x-add-triggered-buffer-support-for-HDC100X/20160902-055115
+:::::: branch date: 88 minutes ago
+:::::: commit date: 88 minutes ago
+
+>> drivers/iio/humidity/hdc100x.c:210:4-10: preceding lock on line 203
+   drivers/iio/humidity/hdc100x.c:345:1-7: preceding lock on line 325
+
+git remote add linux-review https://github.com/0day-ci/linux
+git remote update linux-review
+git checkout f6862a537522f8d668f7daec0aa0817f87706017
+vim +210 drivers/iio/humidity/hdc100x.c
+
+4839367d9 Matt Ranostay    2015-09-06  197  	struct hdc100x_data *data = iio_priv(indio_dev);
+4839367d9 Matt Ranostay    2015-09-06  198
+4839367d9 Matt Ranostay    2015-09-06  199  	switch (mask) {
+4839367d9 Matt Ranostay    2015-09-06  200  	case IIO_CHAN_INFO_RAW: {
+4839367d9 Matt Ranostay    2015-09-06  201  		int ret;
+4839367d9 Matt Ranostay    2015-09-06  202
+4839367d9 Matt Ranostay    2015-09-06 @203  		mutex_lock(&data->lock);
+4839367d9 Matt Ranostay    2015-09-06  204  		if (chan->type == IIO_CURRENT) {
+4839367d9 Matt Ranostay    2015-09-06  205  			*val = hdc100x_get_heater_status(data);
+4839367d9 Matt Ranostay    2015-09-06  206  			ret = IIO_VAL_INT;
+4839367d9 Matt Ranostay    2015-09-06  207  		} else {
+f6862a537 Alison Schofield 2016-09-01  208  			ret = iio_device_claim_direct_mode(indio_dev);
+f6862a537 Alison Schofield 2016-09-01  209  			if (ret)
+f6862a537 Alison Schofield 2016-09-01 @210  				return ret;
+f6862a537 Alison Schofield 2016-09-01  211
+4839367d9 Matt Ranostay    2015-09-06  212  			ret = hdc100x_get_measurement(data, chan);
+f6862a537 Alison Schofield 2016-09-01  213  			iio_device_release_direct_mode(indio_dev);
+
 ---
-
-Changes from v1:
- * use bool instead of int for trig_readonly property
-
- drivers/iio/industrialio-trigger.c | 20 ++++++++++++++++++++
- include/linux/iio/iio.h            |  2 ++
- include/linux/iio/trigger.h        |  9 +++++++++
- 3 files changed, 31 insertions(+)
-
-diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-index 7ad82fdd3e5b..a3ae3873f998 100644
---- a/drivers/iio/industrialio-trigger.c
-+++ b/drivers/iio/industrialio-trigger.c
-@@ -119,6 +119,22 @@ void iio_trigger_unregister(struct iio_trigger *trig_info)
- }
- EXPORT_SYMBOL(iio_trigger_unregister);
- 
-+int iio_trigger_set_immutable(struct iio_dev *dst, struct iio_trigger *trig)
-+{
-+	if (!dst || !trig)
-+		return -EINVAL;
-+
-+	mutex_lock(&dst->mlock);
-+	WARN_ON(dst->trig_readonly);
-+
-+	dst->trig = iio_trigger_get(trig);
-+	dst->trig_readonly = true;
-+	mutex_unlock(&dst->mlock);
-+
-+	return 0;
-+}
-+EXPORT_SYMBOL(iio_trigger_set_immutable);
-+
- /* Search for trigger by name, assuming iio_trigger_list_lock held */
- static struct iio_trigger *__iio_trigger_find_by_name(const char *name)
- {
-@@ -384,6 +400,10 @@ static ssize_t iio_trigger_write_current(struct device *dev,
- 		mutex_unlock(&indio_dev->mlock);
- 		return -EBUSY;
- 	}
-+	if (indio_dev->trig_readonly) {
-+		mutex_unlock(&indio_dev->mlock);
-+		return -EPERM;
-+	}
- 	mutex_unlock(&indio_dev->mlock);
- 
- 	trig = iio_trigger_find_by_name(buf, len);
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index 854e2dad1e0d..786952cd509f 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -483,6 +483,7 @@ struct iio_buffer_setup_ops {
-  * @scan_timestamp:	[INTERN] set if any buffers have requested timestamp
-  * @scan_index_timestamp:[INTERN] cache of the index to the timestamp
-  * @trig:		[INTERN] current device trigger (buffer modes)
-+ * @trig_readonly	[INTERN] mark the current trigger immutable
-  * @pollfunc:		[DRIVER] function run on trigger being received
-  * @pollfunc_event:	[DRIVER] function run on events trigger being received
-  * @channels:		[DRIVER] channel specification structure table
-@@ -523,6 +524,7 @@ struct iio_dev {
- 	bool				scan_timestamp;
- 	unsigned			scan_index_timestamp;
- 	struct iio_trigger		*trig;
-+	bool				trig_readonly;
- 	struct iio_poll_func		*pollfunc;
- 	struct iio_poll_func		*pollfunc_event;
- 
-diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-index 1c9e028e0d4a..9e22284a4122 100644
---- a/include/linux/iio/trigger.h
-+++ b/include/linux/iio/trigger.h
-@@ -132,6 +132,15 @@ int iio_trigger_register(struct iio_trigger *trig_info);
- void iio_trigger_unregister(struct iio_trigger *trig_info);
- 
- /**
-+ * iio_trigger_set_immutable() - set an immutable trigger on destination
-+ *
-+ * @dst - destination device for trigger
-+ * @trig - trigger to assign to destination
-+ *
-+ **/
-+int iio_trigger_set_immutable(struct iio_dev *dst, struct iio_trigger *trig);
-+
-+/**
-  * iio_trigger_poll() - called on a trigger occurring
-  * @trig:	trigger which occurred
-  *
--- 
-2.7.4
-
+0-DAY kernel test infrastructure                Open Source Technology Center
+https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
