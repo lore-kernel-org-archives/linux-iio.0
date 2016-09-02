@@ -3,45 +3,96 @@ From: Gregor Boirie <gregor.boirie@parrot.com>
 To: <linux-iio@vger.kernel.org>
 CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>, Gregor Boirie <gregor.boirie@parrot.com>
-Subject: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
-Date: Fri, 2 Sep 2016 20:27:46 +0200
-Message-ID: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com>
+	<pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>, Mark Rutland
+	<mark.rutland@arm.com>, Jonathan Corbet <corbet@lwn.net>, Laxman Dewangan
+	<ldewangan@nvidia.com>, Alexander Kurz <akurz@blala.de>, Tejun Heo
+	<tj@kernel.org>, Stephen Boyd <sboyd@codeaurora.org>, Akinobu Mita
+	<akinobu.mita@gmail.com>, Daniel Baluta <daniel.baluta@intel.com>, Ludovic
+ Tancerel <ludovic.tancerel@maplehightech.com>, Vlad Dogaru
+	<vlad.dogaru@intel.com>, Linus Walleij <linus.walleij@linaro.org>, Marek
+ Vasut <marex@denx.de>, Crestez Dan Leonard <leonard.crestez@intel.com>, Neil
+ Armstrong <narmstrong@baylibre.com>, Masahiro Yamada
+	<yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Gregor Boirie
+	<gregor.boirie@parrot.com>
+Subject: [PATCH v3 0/3] iio: devm helpers and Murata zpa2326 barometer support
+Date: Fri, 2 Sep 2016 20:47:53 +0200
+Message-ID: <cover.1472841954.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-7985e7c100 ("iio: Introduce a new fractional value type") introduced a
-new IIO_VAL_FRACTIONAL value type meant to represent rational type numbers
-expressed by a numerator and denominator combination.
+Introduce support for the Murata ZPA2326 pressure and temperature sensor.
+Also bring in resource managed versions for triggered buffer setup helpers and
+trigger registration which the above mentioned driver depends on.
 
-Formating of IIO_VAL_FRACTIONAL values relies upon do_div() usage. This
-fails handling negative values properly since parameters are reevaluated
-as unsigned values.
-Fix this by using div_s64_rem() instead. Computed integer part will carry
-properly signed value. Formatted fractional part will always be positive.
+Driver features :
+* I2C and SPI buses
+* interrupt and polling based operations
+* direct, triggered and software buffered IIO sampling modes
+* hardware sampling frequency handling
+* trigger consumers notification (plugged on interrupt) 
+* runtime and system power states
 
-Fixes: 7985e7c100 ("iio: Introduce a new fractional value type")
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
----
- drivers/iio/industrialio-core.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+Changes since v2 :
+* add missing vref-supply property into DT bindings doc
+* kerneldoc'ify comments
+* rename return code variables
+* compute channel scaling and offset using IIO_VAL_FRACTIONAL for enhanced
+  readability
+* replace legacy IIO_DEV_ATTR_SAMP_FREQ macro by channel info_mask_shared_by_all
+  mechanism 
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index f914d5d..d2b8899 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -613,9 +613,8 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
- 			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
- 	case IIO_VAL_FRACTIONAL:
- 		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
--		vals[1] = do_div(tmp, 1000000000LL);
--		vals[0] = tmp;
--		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-+		vals[0] = (int)div_s64_rem(tmp, 1000000000, &vals[1]);
-+		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
- 	case IIO_VAL_FRACTIONAL_LOG2:
- 		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
- 		vals[1] = do_div(tmp, 1000000000LL);
+Changes since v1 :
+* cosmetic and spelling corrections
+* remove useless header
+* remove useless u8 cast from register macro definitions
+* fix uninitialized pressure word for continuous sampling operation
+* rework of zpa_dequeue_pressure error handling flow for enhanced readability
+* merge zpa_acknowledge_irq() into zpa_handle_threaded_irq() for enhanced
+  readability
+* remove useless pm_runtime_mark_last_busy() invocation
+* remove useless channel initializers
+* add VRef regulator support
+* switch to regmap based bus operations (save ~100 lines of code)
+* make symbol prefixes consistent with source file name (zpa_ -> zpa2326_)
+* get rid of BUG() usage
+* protect sampling frequency reads from userspace with mutex
+* remove DEBUG macro (rely on dynamic debug or a futur DEBUG Kconfig option
+  defined at IIO level)
+* rename ZPA2326_CONVERSION_TIMEOUT macros to ZPA2326_CONVERSION_JIFFIES
+* simplify runtime power management error handling
+* rework ring setup operations for better separation of concerns
+* fix module removal / devm_iio_device_register() race condition
+* factor out hardware detection sequence
+
+Regards,
+gregor.
+
+Gregor Boirie (3):
+  iio:trigger: add resource managed (un)register
+  iio: add resource managed triggered buffer init helpers
+  iio:pressure: initial zpa2326 barometer support
+
+ .../devicetree/bindings/iio/pressure/zpa2326.txt   |   25 +
+ Documentation/driver-model/devres.txt              |    4 +
+ drivers/iio/buffer/industrialio-triggered-buffer.c |   42 +
+ drivers/iio/industrialio-core.c                    |    3 +-
+ drivers/iio/industrialio-trigger.c                 |   59 +
+ drivers/iio/pressure/Kconfig                       |   35 +
+ drivers/iio/pressure/Makefile                      |    3 +
+ drivers/iio/pressure/zpa2326.c                     | 1871 ++++++++++++++++++++
+ drivers/iio/pressure/zpa2326.h                     |   95 +
+ drivers/iio/pressure/zpa2326_i2c.c                 |   98 +
+ drivers/iio/pressure/zpa2326_spi.c                 |  102 ++
+ include/linux/iio/iio.h                            |    1 +
+ include/linux/iio/trigger.h                        |    6 +
+ include/linux/iio/triggered_buffer.h               |    8 +
+ 14 files changed, 2351 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+ create mode 100644 drivers/iio/pressure/zpa2326.c
+ create mode 100644 drivers/iio/pressure/zpa2326.h
+ create mode 100644 drivers/iio/pressure/zpa2326_i2c.c
+ create mode 100644 drivers/iio/pressure/zpa2326_spi.c
+
 -- 
 2.1.4
