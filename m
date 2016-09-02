@@ -1,40 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vk0-f50.google.com ([209.85.213.50]:33819 "EHLO
-        mail-vk0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754172AbcIBSZl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 14:25:41 -0400
-MIME-Version: 1.0
-In-Reply-To: <1472834833.12668.11.camel@googlemail.com>
-References: <1472827740.1929.26.camel@googlemail.com> <CAOMZO5BeL1EKOQvZQoXXObttHSKxL7UQ1s2r8H4EOuROOb_YnQ@mail.gmail.com>
- <1472828671.1929.32.camel@googlemail.com> <CAOMZO5BVDS=AaSyRS0ELBiEKx3RxdstXgA_xJ6ANUzKDxdyBxg@mail.gmail.com>
- <1472829819.12668.3.camel@googlemail.com> <CAOMZO5DbJLnH1wm2KuML+O36O-eSYWeGwrxE5pdKSRtB-Js-yA@mail.gmail.com>
- <1472834833.12668.11.camel@googlemail.com>
-From: Fabio Estevam <festevam@gmail.com>
-Date: Fri, 2 Sep 2016 15:25:40 -0300
-Message-ID: <CAOMZO5B8ttBvf-zimO5R_kgpzR2bxF73Ur0vZpBKUX8Ytbs8uQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: sx9500: add final devicetree support
-To: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Vlad Dogaru <ddvlad@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from mga11.intel.com ([192.55.52.93]:10755 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752956AbcIBWsJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 2 Sep 2016 18:48:09 -0400
+Message-ID: <1472856487.5025.84.camel@linux.intel.com>
+Subject: Re: screen rotation flipped in 4.8-rc
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: "linux@sciencehorizons.net" <linux@sciencehorizons.net>,
+        "jic23@kernel.org" <jic23@kernel.org>,
+        "hadess@hadess.net" <hadess@hadess.net>,
+        Grant Likely <glikely@secretlab.ca>, jikos@kernel.org
+Cc: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Date: Fri, 02 Sep 2016 15:48:07 -0700
+In-Reply-To: <1472596930.23886.13.camel@intel.com>
+References: <1472596930.23886.13.camel@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Sep 2, 2016 at 1:47 PM, Christoph Fritz
-<chf.fritz@googlemail.com> wrote:
+On Tue, 2016-08-30 at 22:42 +0000, Pandruvada, Srinivas wrote:
+> Hi All,
+> 
+> I observed that using iio-sensor-proxy.service, the auto screen
+> rotation flipped on my laptop (Normal -> vertical, vertical->normal)
+> using kernel v4.8.
+> 
+> Anyone else has seen this?
+> 
+> I did a bisect and found a commit, which I am not sure how can it
+> impact.
+> 
+> 
+> commit 703b5faf22fbddf984a361e6555f3a03fdba63d9
+> Author: George Spelvin <linux@sciencehorizons.net>
+> Date:   Fri Jun 10 00:22:12 2016 -0400
+> 
+[...]
 
-> But there is: devm_gpiod_get_index() calls gpiod_get_index() which calls
-> of_find_gpio() for of-string "reset-gpios".
+It turns out to be some assumption user space program is making about
+the traversing directory using glib call g_dir_read_name(). 
 
-Ok, great.
+With the commit 703b5faf22fbddf984a361e6555f3a03fdba63d9 (fs/dcache.c:
+Save one 32-bit multiply in dcache lookup)
+ in kernel 4.8-rc, somehow the order is changed (so the in_accel_y was
+appearing before in_accel_x )
 
->>
->> Does your board work well without passing "reset-gpios" property?
->
-> I don't know, the driver looks that way. I'll check that. If so, I'll
-> fix the docu and add the reset-gpios property as optional. Okay?
+I modified user space program to use correct iio scan element index to
+determine byte offset instead depending on the glib_dir_read_name,
+which doesn't guarantee any order.
 
-My main concern was the gpio reset polarity. Not sure why active high
-works in your case.
+I sent a pull request to author of iio-sensor-proxy to review.
+
+Hadess,
+	Please look.
+
+https://github.com/hadess/iio-sensor-proxy/pull/99/commits/de80c50b2678
+2ba6e899ee5a95b31b28790c940d
+
+
+Thanks,
+Srinivas
