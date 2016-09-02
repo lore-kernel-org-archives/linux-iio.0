@@ -14,85 +14,131 @@ CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
  Armstrong <narmstrong@baylibre.com>, Masahiro Yamada
 	<yamada.masahiro@socionext.com>, Arnd Bergmann <arnd@arndb.de>, Gregor Boirie
 	<gregor.boirie@parrot.com>
-Subject: [PATCH v3 0/3] iio: devm helpers and Murata zpa2326 barometer support
-Date: Fri, 2 Sep 2016 20:47:53 +0200
-Message-ID: <cover.1472841954.git.gregor.boirie@parrot.com>
+Subject: [PATCH v3 1/3] iio:trigger: add resource managed (un)register
+Date: Fri, 2 Sep 2016 20:47:54 +0200
+Message-ID: <3a8977c77d60048bf410fd43cd8d96c4ab42b35a.1472841954.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1472841954.git.gregor.boirie@parrot.com>
+References: <cover.1472841954.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-Introduce support for the Murata ZPA2326 pressure and temperature sensor.
-Also bring in resource managed versions for triggered buffer setup helpers and
-trigger registration which the above mentioned driver depends on.
+Add resource managed devm_iio_trigger_register() and
+devm_iio_triger_unregister() to automatically clean up registered triggers
+allocated by IIO drivers, thus leading to simplified IIO drivers code.
 
-Driver features :
-* I2C and SPI buses
-* interrupt and polling based operations
-* direct, triggered and software buffered IIO sampling modes
-* hardware sampling frequency handling
-* trigger consumers notification (plugged on interrupt) 
-* runtime and system power states
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ Documentation/driver-model/devres.txt |  2 ++
+ drivers/iio/industrialio-trigger.c    | 59 +++++++++++++++++++++++++++++++++++
+ include/linux/iio/trigger.h           |  6 ++++
+ 3 files changed, 67 insertions(+)
 
-Changes since v2 :
-* add missing vref-supply property into DT bindings doc
-* kerneldoc'ify comments
-* rename return code variables
-* compute channel scaling and offset using IIO_VAL_FRACTIONAL for enhanced
-  readability
-* replace legacy IIO_DEV_ATTR_SAMP_FREQ macro by channel info_mask_shared_by_all
-  mechanism 
-
-Changes since v1 :
-* cosmetic and spelling corrections
-* remove useless header
-* remove useless u8 cast from register macro definitions
-* fix uninitialized pressure word for continuous sampling operation
-* rework of zpa_dequeue_pressure error handling flow for enhanced readability
-* merge zpa_acknowledge_irq() into zpa_handle_threaded_irq() for enhanced
-  readability
-* remove useless pm_runtime_mark_last_busy() invocation
-* remove useless channel initializers
-* add VRef regulator support
-* switch to regmap based bus operations (save ~100 lines of code)
-* make symbol prefixes consistent with source file name (zpa_ -> zpa2326_)
-* get rid of BUG() usage
-* protect sampling frequency reads from userspace with mutex
-* remove DEBUG macro (rely on dynamic debug or a futur DEBUG Kconfig option
-  defined at IIO level)
-* rename ZPA2326_CONVERSION_TIMEOUT macros to ZPA2326_CONVERSION_JIFFIES
-* simplify runtime power management error handling
-* rework ring setup operations for better separation of concerns
-* fix module removal / devm_iio_device_register() race condition
-* factor out hardware detection sequence
-
-Regards,
-gregor.
-
-Gregor Boirie (3):
-  iio:trigger: add resource managed (un)register
-  iio: add resource managed triggered buffer init helpers
-  iio:pressure: initial zpa2326 barometer support
-
- .../devicetree/bindings/iio/pressure/zpa2326.txt   |   25 +
- Documentation/driver-model/devres.txt              |    4 +
- drivers/iio/buffer/industrialio-triggered-buffer.c |   42 +
- drivers/iio/industrialio-core.c                    |    3 +-
- drivers/iio/industrialio-trigger.c                 |   59 +
- drivers/iio/pressure/Kconfig                       |   35 +
- drivers/iio/pressure/Makefile                      |    3 +
- drivers/iio/pressure/zpa2326.c                     | 1871 ++++++++++++++++++++
- drivers/iio/pressure/zpa2326.h                     |   95 +
- drivers/iio/pressure/zpa2326_i2c.c                 |   98 +
- drivers/iio/pressure/zpa2326_spi.c                 |  102 ++
- include/linux/iio/iio.h                            |    1 +
- include/linux/iio/trigger.h                        |    6 +
- include/linux/iio/triggered_buffer.h               |    8 +
- 14 files changed, 2351 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
- create mode 100644 drivers/iio/pressure/zpa2326.c
- create mode 100644 drivers/iio/pressure/zpa2326.h
- create mode 100644 drivers/iio/pressure/zpa2326_i2c.c
- create mode 100644 drivers/iio/pressure/zpa2326_spi.c
-
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index b0d775d..6a2138a 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -268,6 +268,8 @@ IIO
+   devm_iio_kfifo_free()
+   devm_iio_trigger_alloc()
+   devm_iio_trigger_free()
++  devm_iio_trigger_register()
++  devm_iio_trigger_unregister()
+   devm_iio_channel_get()
+   devm_iio_channel_release()
+   devm_iio_channel_get_all()
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 7ad82fd..8ea2dc1 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -622,6 +622,65 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig)
+ }
+ EXPORT_SYMBOL_GPL(devm_iio_trigger_free);
+ 
++static void devm_iio_trigger_unreg(struct device *dev, void *res)
++{
++	iio_trigger_unregister(*(struct iio_trigger **)res);
++}
++
++/**
++ * devm_iio_trigger_register - Resource-managed iio_trigger_register()
++ * @dev:	device this trigger was allocated for
++ * @trig_info:	trigger to register
++ *
++ * Managed iio_trigger_register().  The IIO trigger registered with this
++ * function is automatically unregistered on driver detach. This function
++ * calls iio_trigger_register() internally. Refer to that function for more
++ * information.
++ *
++ * If an iio_trigger registered with this function needs to be unregistered
++ * separately, devm_iio_trigger_unregister() must be used.
++ *
++ * RETURNS:
++ * 0 on success, negative error number on failure.
++ */
++int devm_iio_trigger_register(struct device *dev, struct iio_trigger *trig_info)
++{
++	struct iio_trigger **ptr;
++	int ret;
++
++	ptr = devres_alloc(devm_iio_trigger_unreg, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return -ENOMEM;
++
++	*ptr = trig_info;
++	ret = iio_trigger_register(trig_info);
++	if (!ret)
++		devres_add(dev, ptr);
++	else
++		devres_free(ptr);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(devm_iio_trigger_register);
++
++/**
++ * devm_iio_trigger_unregister - Resource-managed iio_trigger_unregister()
++ * @dev:	device this iio_trigger belongs to
++ * @trig_info:	the trigger associated with the device
++ *
++ * Unregister trigger registered with devm_iio_trigger_register().
++ */
++void devm_iio_trigger_unregister(struct device *dev,
++				 struct iio_trigger *trig_info)
++{
++	int rc;
++
++	rc = devres_release(dev, devm_iio_trigger_unreg, devm_iio_trigger_match,
++			    trig_info);
++	WARN_ON(rc);
++}
++EXPORT_SYMBOL_GPL(devm_iio_trigger_unregister);
++
+ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+ {
+ 	indio_dev->groups[indio_dev->groupcounter++] =
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index 1c9e028..623d183 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -125,12 +125,18 @@ static inline void *iio_trigger_get_drvdata(struct iio_trigger *trig)
+  **/
+ int iio_trigger_register(struct iio_trigger *trig_info);
+ 
++int devm_iio_trigger_register(struct device *dev,
++			      struct iio_trigger *trig_info);
++
+ /**
+  * iio_trigger_unregister() - unregister a trigger from the core
+  * @trig_info:	trigger to be unregistered
+  **/
+ void iio_trigger_unregister(struct iio_trigger *trig_info);
+ 
++void devm_iio_trigger_unregister(struct device *dev,
++				 struct iio_trigger *trig_info);
++
+ /**
+  * iio_trigger_poll() - called on a trigger occurring
+  * @trig:	trigger which occurred
 -- 
 2.1.4
