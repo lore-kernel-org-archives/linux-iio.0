@@ -1,51 +1,64 @@
-Return-Path: <cmo@melexis.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:49642 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932111AbcIBPJA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 11:09:00 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+Subject: iio_push_event() race conditions
+To: Jonathan Cameron <jic23@kernel.org>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <0e1e64ac-5c40-6319-1132-e5d7b2478f01@metafoo.de>
+Date: Fri, 2 Sep 2016 17:08:54 +0200
 MIME-Version: 1.0
-In-Reply-To: <e069a51d-bf8d-ae70-6061-d3118491cd1d@metafoo.de>
-References: <20160902132717.5839-1-cmo@melexis.com> <e069a51d-bf8d-ae70-6061-d3118491cd1d@metafoo.de>
-From: Crt Mori <cmo@melexis.com>
-Date: Fri, 2 Sep 2016 15:48:55 +0200
-Message-ID: <CAKv63uui0kh1wauc2LcpKmBs8U8XMAbg7=XPHA8dwzhnVxxQHA@mail.gmail.com>
-Subject: Re: [PATCH] iio: fetch and enable regulators unconditionally
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Linux Iio <linux-iio@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Daniel Baluta <daniel.baluta@intel.com>, Gregor Boirie <gregor.boirie@parrot.com>,
-	Matt Ranostay <mranostay@gmail.com>, Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-	Markus Pargmann <mpa@pengutronix.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack <knaack.h@gmx.de>,
-	Linus Walleij <linus.walleij@linaro.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2 September 2016 at 15:40, Lars-Peter Clausen <lars@metafoo.de> wrote:
-> Hi,
->
-> Thanks for the patch.
->
-> On 09/02/2016 03:27 PM, Crt Mori wrote:
->> This patch is inspired by a comment of Jonathan Cameron on patch of
->> Linus Walleij commit aeb55fff3891834e07a3144159a7298a19696af8 ("iio: st_sensors: fetch and enable regulators unconditionally").
->>
->> The explanation for this change is same as in that patch:
->> "Supplies are *not* optional (optional means that the supply is
->> optional in the electrical sense, not the software sense) so we need to
->> get the and enable them at all times.
->
-> Some supplies are optional. I.e. the part is able to operate (potentially
-> with limited functionality) even if the optional external supply has not
-> been connected to the pin.
->
-> E.g. many converters have a built-in voltage reference but are able to
-> optionally accept an external reference. The driver needs to know if the
-> external reference is not connected or not to be able to allow or disallow
-> applications to switch the part into external reference mode. This is the
-> case for the ad7266 and ad5761 drivers and using regulator_get_optional() is
-> correct here.
->
-> Same seems to be true for the ads8688 and the fsl-imx-gcq, judging by how
-> their code is structured.
->
-> - Lars
-OK, so the voltage reference part can have optional regulator, but if
-it is supply voltage then it cannot.
+Hi,
 
-What about the IS_ERR_OR_NULL() check? Is that suitable for the
-optional regulators as well?
+A common pattern that we see with drivers that implement events is the
+following. I did not check all driver, but all those that I checked followed
+this pattern.
+
+irqreturn_t event_callback(int irq, void *devid)
+{
+	struct iio_dev *indio_dev = devid;
+	...
+	iio_push_event(indio_dev, ...);
+	
+	return IRQ_HANDLED;
+}
+
+int driver_probe(struct device *dev)
+{
+	struct iio_dev *indio_dev;
+
+	indio_dev = iio_device_alloc(...);
+
+	request_irq(event_irq, event_callback, ..., indio_dev);
+
+	return iio_device_register(indio_dev);
+}
+
+Now iio_push_event() accessed indio_dev->event_interface. The
+event_interface is only allocated and assigned in iio_device_register()
+though. This means there is a window of opportunity where the interrupt is
+live and can trigger, but event_interface is still NULL. So we'll hit a NULL
+pointer dereference if the IRQ fires before iio_device_register() completes.
+
+I'm a bit conflicted on what is the best way to resolve this. On one hand
+the correct approach appears to be to simply delay the requesting of the IRQ
+until iio_device_register() has completed. On the other hand it is possible
+to argue that users should be able to expect that it is safe to call APIs
+that take a struct iio_dev if iio_device_alloc() succeeded.
+
+The later approach also has the advantage that we only need to update
+iio_push_event() rather than all drivers that use it. But raises the obvious
+question what is the right behavior of iio_push_event() in case the event
+interface has not been registered yet? Return an error? What should the
+caller do if it encounters an error? Or maybe just silently become a no-op?
+
+- Lars
