@@ -1,104 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45348 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45205 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752851AbcICQsI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:48:08 -0400
-Subject: Re: [PATCH v1 3/3] iio:pressure: initial zpa2326 barometer support
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <cover.1472050374.git.gregor.boirie@parrot.com>
- <a16becf5ac0ac811a993a26de32a0d41f3eb4ffa.1472050374.git.gregor.boirie@parrot.com>
- <alpine.DEB.2.02.1608242115340.4077@pmeerw.net> <57BF0488.4000902@parrot.com>
- <8a47f701-1cff-7c5c-639b-ec2258c62025@kernel.org>
- <57C5B1C4.8090509@parrot.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>
+        with ESMTP id S1754273AbcICQZM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:25:12 -0400
+Subject: Re: [PATCH] iio: adc: at91: Add support for Touchscreen Switches
+ Closure Time
+To: Nicolas Ferre <nicolas.ferre@atmel.com>,
+        Cristian Birsan <cristian.birsan@microchip.com>,
+        Ludovic Desroches <ludovic.desroches@atmel.com>
+References: <20160830122701.19385-1-nicolas.ferre@atmel.com>
+Cc: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <23014ac9-04e2-7cc1-eb07-195aacfec0ac@kernel.org>
-Date: Sat, 3 Sep 2016 17:46:39 +0100
+Message-ID: <b7dcd8e4-db9e-a9ee-352f-b7b77d57cc7a@kernel.org>
+Date: Sat, 3 Sep 2016 17:24:43 +0100
 MIME-Version: 1.0
-In-Reply-To: <57C5B1C4.8090509@parrot.com>
+In-Reply-To: <20160830122701.19385-1-nicolas.ferre@atmel.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/08/16 17:18, Gregor Boirie wrote:
+On 30/08/16 13:27, Nicolas Ferre wrote:
+> On newer components compatible with the at91sam9x5, the Touchscreen
+> Switches Closure Time or TSSCTIM value of the Touchscreen Mode Register is
+> not filled at all.
+> On some hardware, having no time indicated for it may lead to incoherent
+> values and jitter.
+> We fix this time to 10us as it is usually difficult to retrieve impedance
+> values from LCD manufacturers.
 > 
-> 
-> On 08/29/2016 09:01 PM, Jonathan Cameron wrote:
->> On 25/08/16 15:45, Gregor Boirie wrote:
->>> Answers inline
->>>
->>> On 08/25/2016 08:34 AM, Peter Meerwald-Stadler wrote:
->>>
->>>>> +
->>>>> +    zpa_init_runtime(slave);
->>>>> +
->>>>> +    err = devm_iio_device_register(slave, indio_dev);
->>>> can't use devm_ register if there is a non-empty remove()
->>> Removal hooks are registered onto bus specific devices not onto
->>> IIO ones. Enabling devm debug outputs a removal flow trace that
->>> seems correct. Is this really wrong ?
->> Yes.  The unwind of devm_iio_device_register will occur after the
->> whatever is in the remove function.  As devm_iio_device_unregister
->> is responsible for removal of the userspace and other interfaces
->> until that happens they are still present.
->>
->> Hence whilst a remove is going on the device can be powered
->> down but the interfaces still exposed.  A read at that point
->> is going to cause some an error to occur.
->>
->> Hence, using the devm form is fine if everything else is
->> handled automatically, i.e. there is nothing in remove.
->> Otherwise, you almost always have a race condition.
->>
->> It's a minor one given how often people remove modules, but
->> worth cleaning up anyway!
-> Got it.
-> 
-> But something still makes me feel uncomfortable. Shouldn't we ensure the
-> bus specific driver (i.e., zpa2326_i2c or zpa2326_spi in this case) be refcounted
-> upon entry into the IIO layer ? Using try_module_get()/module_put() would :
-> * prevent any attempt to remove module while being used
-> * prevent any attempt to use module while it is going away.
-> 
-> I'm not quite sure here because of possible race conditions however (feels like
-> mixing devm_ and module layers).
-> 
-> Anyway, it seems quite strange module removal succeeds despite being under use
-> by userspace. This leads to inconsistent system state where userspace process
-> gets stuck in poll syscall, waiting for data that will never come since modprobing
-> module again will in the end allocate an new IIO device, etc...
-In theory it should all unwind fine.  Lars spent a while some time
-ago hammering this stuff with some test scripts and getting all
-the fall overs to happen. It should wake up the poll in the
-device_unregister and subsequent read should give an error to
-say the device has gone away.
+> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
+Hi Nicolas,
 
-Do you have a particular case where it gets stuck?
+Stable / fixes material or just have it head for the next merge window?
 
-It's effectively impossible to prevent a device going away when
-userspace is using it.  The module_get, module_put makes it
-slightly less likely, but unfortunately some sensors can simply
-be pulled from a usb port or similar or a remove forced from
-userspace.
 
 Jonathan
+> ---
+>  drivers/iio/adc/at91_adc.c | 13 +++++++++++++
+>  1 file changed, 13 insertions(+)
 > 
-> confused,
-> Grégor.
+> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+> index 0438c68015e8..bbdac07f4aaa 100644
+> --- a/drivers/iio/adc/at91_adc.c
+> +++ b/drivers/iio/adc/at91_adc.c
+> @@ -113,6 +113,7 @@
+>  #define		AT91_ADC_TSMR_TSAV	(3 << 4)	/* Averages samples */
+>  #define			AT91_ADC_TSMR_TSAV_(x)		((x) << 4)
+>  #define		AT91_ADC_TSMR_SCTIM	(0x0f << 16)	/* Switch closure time */
+> +#define			AT91_ADC_TSMR_SCTIM_(x)		((x) << 16)
+>  #define		AT91_ADC_TSMR_PENDBC	(0x0f << 28)	/* Pen Debounce time */
+>  #define			AT91_ADC_TSMR_PENDBC_(x)	((x) << 28)
+>  #define		AT91_ADC_TSMR_NOTSDMA	(1 << 22)	/* No Touchscreen DMA */
+> @@ -150,6 +151,7 @@
+>  #define MAX_RLPOS_BITS         10
+>  #define TOUCH_SAMPLE_PERIOD_US_RL      10000   /* 10ms, the SoC can't keep up with 2ms */
+>  #define TOUCH_SHTIM                    0xa
+> +#define TOUCH_SCTIM_US		10		/* 10us for the Touchscreen Switches Closure Time */
+>  
+>  /**
+>   * struct at91_adc_reg_desc - Various informations relative to registers
+> @@ -1001,7 +1003,9 @@ static void atmel_ts_close(struct input_dev *dev)
+>  
+>  static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
+>  {
+> +	struct iio_dev *idev = iio_priv_to_dev(st);
+>  	u32 reg = 0;
+> +	u32 tssctim = 0;
+>  	int i = 0;
+>  
+>  	/* a Pen Detect Debounce Time is necessary for the ADC Touch to avoid
+> @@ -1034,11 +1038,20 @@ static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
+>  		return 0;
+>  	}
+>  
+> +	/* Touchscreen Switches Closure time needed for allowing the value to
+> +	 * stabilize.
+> +	 * Switch Closure Time = (TSSCTIM * 4) ADCClock periods
+> +	 */
+> +	tssctim = DIV_ROUND_UP(TOUCH_SCTIM_US * adc_clk_khz / 1000, 4);
+> +	dev_dbg(&idev->dev, "adc_clk at: %d KHz, tssctim at: %d\n",
+> +		adc_clk_khz, tssctim);
+> +
+>  	if (st->touchscreen_type == ATMEL_ADC_TOUCHSCREEN_4WIRE)
+>  		reg = AT91_ADC_TSMR_TSMODE_4WIRE_PRESS;
+>  	else
+>  		reg = AT91_ADC_TSMR_TSMODE_5WIRE;
+>  
+> +	reg |= AT91_ADC_TSMR_SCTIM_(tssctim) & AT91_ADC_TSMR_SCTIM;
+>  	reg |= AT91_ADC_TSMR_TSAV_(st->caps->ts_filter_average)
+>  	       & AT91_ADC_TSMR_TSAV;
+>  	reg |= AT91_ADC_TSMR_PENDBC_(st->ts_pendbc) & AT91_ADC_TSMR_PENDBC;
 > 
->>
->> Jonathan
->>> Many thanks for the review. Regards,
->>> Greg.
->>> -- 
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
