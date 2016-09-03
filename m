@@ -1,196 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f50.google.com ([74.125.82.50]:35311 "EHLO
-        mail-wm0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752478AbcIBN2a (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 09:28:30 -0400
-Received: by mail-wm0-f50.google.com with SMTP id w2so29943973wmd.0
-        for <linux-iio@vger.kernel.org>; Fri, 02 Sep 2016 06:28:29 -0700 (PDT)
-From: Crt Mori <cmo@melexis.com>
-To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
-Cc: Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Matt Ranostay <mranostay@gmail.com>,
-        Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
-        Markus Pargmann <mpa@pengutronix.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Crt Mori <cmo@melexis.com>
-Subject: [PATCH] iio: fetch and enable regulators unconditionally
-Date: Fri,  2 Sep 2016 15:27:17 +0200
-Message-Id: <20160902132717.5839-1-cmo@melexis.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44627 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753231AbcICOiY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 10:38:24 -0400
+Subject: Re: iio channel sync
+To: Joshua Clayton <stillcompiling@gmail.com>,
+        Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        Matt Ranostay <mranostay@gmail.com>
+References: <4284e190-84c2-07cc-1157-ef6d2fdd0e8c@gmail.com>
+ <CAKzfze-T6UqYp05YiGvHzxkV1bupSov0y_-p+0AiOtkbJETiKQ@mail.gmail.com>
+ <9706EDAC-1039-4D89-B5D8-CA327FA1E300@jic23.retrosnub.co.uk>
+ <aa577c0c-c18c-26d3-b5c6-16692e813d35@gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <e7291439-cb74-f5eb-8fbe-a7376b2d2bf8@kernel.org>
+Date: Sat, 3 Sep 2016 15:37:50 +0100
+MIME-Version: 1.0
+In-Reply-To: <aa577c0c-c18c-26d3-b5c6-16692e813d35@gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch is inspired by a comment of Jonathan Cameron on patch of
-Linus Walleij commit aeb55fff3891834e07a3144159a7298a19696af8 ("iio: st_sensors: fetch and enable regulators unconditionally").
+On 31/08/16 23:47, Joshua Clayton wrote:
+> Greetings,
+> 
+> On 08/30/2016 09:26 AM, Jonathan Cameron wrote:
+>>
+>> On 30 August 2016 08:41:18 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+>>> On Mon, Aug 29, 2016 at 10:03 AM, Joshua Clayton
+>>> <stillcompiling@gmail.com> wrote:
+>>>> Jonathan,
+>>>>
+>>>> I have an out-of tree driver I am working on mainlining.
+>>>>
+>>>> The device is a sensor that gets phase and amplitude (x and y) data
+>>>>
+>>>> on multiple physical and/or time multiplexed channels.
+>>>>
+>>>> It also has up to 4 optical encoders to get physical location.
+>>>>
+>>>> The existing driver bundles x and y together with a snapshot
+>>>>
+>>>> of the encoder sums at that moment.
+>>>>
+>>>>
+>>>> This seems like a good fit for iio, but one item is bothering me.
+>>>>
+>>>> How is synchronization between streams usually handled with
+>>>>
+>>>> iio drivers? Timing can be important.
+>>> Wouldn't the trigger buffer framework be good enough for this?
+>> Perhaps you could describe your usecase a little more?
+>>
+>> Is the interesting bit that you want to sync streams with different
+>> sampling frequencies? Are those encoders better represented by a
+>> separate driver? (In which case I have some thoughts on simple
+>> additions to IIO trigger handling that might help - basically a
+>> hold off on triggers until all relevant devices are attached)
 
-The explanation for this change is same as in that patch:
-"Supplies are *not* optional (optional means that the supply is
-optional in the electrical sense, not the software sense) so we need to
-get the and enable them at all times.
+> Thanks for responding.
+> 
+> The encoders (often a pair of them, could be up to 4) represent the position
+> of the sensor in relation to an object to be tested. (linear movement or
+> rotation around an axis).
+> The Maximum sample rate of the encoders is much higher than the sensor,
+> but they are moved by a motor or by hand, so the actual sample rate is
+> variable and may be higher or lower that the sensor sample rate.
+> 
+> The encoders are sometimes used as a trigger for data collection,
+It would certainly be possible to do this by having a slightly unusual type
+of trigger.
+> but
+> the encoders are also used as positional data alongside the sensor data.
+Makes sense.
+> 
+> The way we get around this now is to bundle a snapshot of the encoder
+> with the sensor data and discard it later if the encoder hasn't changed and
+> the trigger function is enabled.
+The only slight change I'd suggest is that if the encoders are read by
+separate hardware (presumably they are into a capture unit of some type?)
+then you may need to have the encoder capture triggered off the same
+trigger as the sensor data.  Thus you'd end up with two buffers that
+could be easily fused in user space.
 
-If the device tree or board file does not define suitable regulators for
-the component, it will be substituted by a dummy regulator, or, if
-regulators are disabled altogether, by stubs. There is no need to use the
-IS_ERR_OR_NULL() check that is considered harmful.
+That would allow  generic drivers for other users of either the sensor
+or the encoder capture hardware.
 
-Reported-by: Linus Wallerij <linus.walleij@linaro.org>
-Suggested-by: Jonathan Cameron <jic23@kernel.org>
-Signed-off-by: Crt Mori <cmo@melexis.com>
----
- drivers/iio/adc/ad7266.c           | 8 +++-----
- drivers/iio/adc/fsl-imx25-gcq.c    | 6 +++---
- drivers/iio/adc/ti-ads8688.c       | 9 +++------
- drivers/iio/dac/ad5761.c           | 9 +++------
- drivers/iio/pressure/ms5611_core.c | 6 ++----
- 5 files changed, 14 insertions(+), 24 deletions(-)
+If they come in through the same bit of hardware (e.g. you are routing
+them both through an fpga or similar) then fine as you have it currently.
 
-diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
-index c0f6a98..196b29a 100644
---- a/drivers/iio/adc/ad7266.c
-+++ b/drivers/iio/adc/ad7266.c
-@@ -395,7 +395,7 @@ static int ad7266_probe(struct spi_device *spi)
- 
- 	st = iio_priv(indio_dev);
- 
--	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
-+	st->reg = devm_regulator_get(&spi->dev, "vref");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
-@@ -481,8 +481,7 @@ error_free_gpios:
- 	if (!st->fixed_addr)
- 		gpio_free_array(st->gpios, ARRAY_SIZE(st->gpios));
- error_disable_reg:
--	if (!IS_ERR_OR_NULL(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- 
- 	return ret;
- }
-@@ -496,8 +495,7 @@ static int ad7266_remove(struct spi_device *spi)
- 	iio_triggered_buffer_cleanup(indio_dev);
- 	if (!st->fixed_addr)
- 		gpio_free_array(st->gpios, ARRAY_SIZE(st->gpios));
--	if (!IS_ERR_OR_NULL(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- 
- 	return 0;
- }
-diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
-index 72b32c1..8aaf026 100644
---- a/drivers/iio/adc/fsl-imx25-gcq.c
-+++ b/drivers/iio/adc/fsl-imx25-gcq.c
-@@ -195,11 +195,11 @@ static int mx25_gcq_setup_cfgs(struct platform_device *pdev,
- 	 */
- 	priv->vref[MX25_ADC_REFP_INT] = NULL;
- 	priv->vref[MX25_ADC_REFP_EXT] =
--		devm_regulator_get_optional(&pdev->dev, "vref-ext");
-+		devm_regulator_get(&pdev->dev, "vref-ext");
- 	priv->vref[MX25_ADC_REFP_XP] =
--		devm_regulator_get_optional(&pdev->dev, "vref-xp");
-+		devm_regulator_get(&pdev->dev, "vref-xp");
- 	priv->vref[MX25_ADC_REFP_YP] =
--		devm_regulator_get_optional(&pdev->dev, "vref-yp");
-+		devm_regulator_get(&pdev->dev, "vref-yp");
- 
- 	for_each_child_of_node(np, child) {
- 		u32 reg;
-diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
-index c400439..39bc9e4 100644
---- a/drivers/iio/adc/ti-ads8688.c
-+++ b/drivers/iio/adc/ti-ads8688.c
-@@ -395,7 +395,7 @@ static int ads8688_probe(struct spi_device *spi)
- 
- 	st = iio_priv(indio_dev);
- 
--	st->reg = devm_regulator_get_optional(&spi->dev, "vref");
-+	st->reg = devm_regulator_get(&spi->dev, "vref");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
-@@ -438,9 +438,7 @@ static int ads8688_probe(struct spi_device *spi)
- 	return 0;
- 
- error_out:
--	if (!IS_ERR_OR_NULL(st->reg))
--		regulator_disable(st->reg);
--
-+	regulator_disable(st->reg);
- 	return ret;
- }
- 
-@@ -451,8 +449,7 @@ static int ads8688_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(indio_dev);
- 
--	if (!IS_ERR_OR_NULL(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- 
- 	return 0;
- }
-diff --git a/drivers/iio/dac/ad5761.c b/drivers/iio/dac/ad5761.c
-index d6510d6..70d88c4 100644
---- a/drivers/iio/dac/ad5761.c
-+++ b/drivers/iio/dac/ad5761.c
-@@ -292,7 +292,7 @@ static int ad5761_get_vref(struct ad5761_state *st,
- {
- 	int ret;
- 
--	st->vref_reg = devm_regulator_get_optional(&st->spi->dev, "vref");
-+	st->vref_reg = devm_regulator_get(&st->spi->dev, "vref");
- 	if (PTR_ERR(st->vref_reg) == -ENODEV) {
- 		/* Use Internal regulator */
- 		if (!chip_info->int_vref) {
-@@ -387,9 +387,7 @@ static int ad5761_probe(struct spi_device *spi)
- 	return 0;
- 
- disable_regulator_err:
--	if (!IS_ERR_OR_NULL(st->vref_reg))
--		regulator_disable(st->vref_reg);
--
-+	regulator_disable(st->vref_reg);
- 	return ret;
- }
- 
-@@ -400,8 +398,7 @@ static int ad5761_remove(struct spi_device *spi)
- 
- 	iio_device_unregister(iio_dev);
- 
--	if (!IS_ERR_OR_NULL(st->vref_reg))
--		regulator_disable(st->vref_reg);
-+	regulator_disable(st->vref_reg);
- 
- 	return 0;
- }
-diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-index feb41f8..a74ed1f 100644
---- a/drivers/iio/pressure/ms5611_core.c
-+++ b/drivers/iio/pressure/ms5611_core.c
-@@ -416,8 +416,7 @@ static int ms5611_init(struct iio_dev *indio_dev)
- 	return 0;
- 
- err_regulator_disable:
--	if (!IS_ERR_OR_NULL(st->vdd))
--		regulator_disable(st->vdd);
-+	regulator_disable(st->vdd);
- 	return ret;
- }
- 
-@@ -425,8 +424,7 @@ static void ms5611_fini(const struct iio_dev *indio_dev)
- {
- 	const struct ms5611_state *st = iio_priv(indio_dev);
- 
--	if (!IS_ERR_OR_NULL(st->vdd))
--		regulator_disable(st->vdd);
-+	regulator_disable(st->vdd);
- }
- 
- int ms5611_probe(struct iio_dev *indio_dev, struct device *dev,
--- 
-2.9.3
+Sounds like an interesting bit of hardware ;) Some sort of radio test kit
+around an antenna? (feel free to not answer, I'm always curious)
+
+Jonathan
+> 
 
