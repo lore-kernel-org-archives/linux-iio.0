@@ -1,99 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45226 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45324 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754145AbcICQ2B (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:28:01 -0400
-Subject: Re: [PATCH] iio: accel: bmc150: reset chip at init time
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        Olof Johansson <olof@lixom.net>
-References: <1472143533-31869-1-git-send-email-olof@lixom.net>
- <16ba4f3e-50fa-cadf-da57-39522b6ce386@kernel.org>
- <1472586343.5025.1.camel@linux.intel.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        mpa@pengutronix.de, irina.tirdea@intel.com,
-        linux-iio@vger.kernel.org
+        with ESMTP id S1754325AbcICQlV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:41:21 -0400
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: inform the i2c mux core about how
+ it is used
+To: Peter Rosin <peda@axentia.se>, linux-iio@vger.kernel.org
+References: <1472630560-4905-1-git-send-email-peda@axentia.se>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org,
+        Crestez Dan Leonard <leonard.crestez@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ab9f518b-c0b1-8c72-691a-b9f9a3ef8bb2@kernel.org>
-Date: Sat, 3 Sep 2016 17:27:28 +0100
+Message-ID: <8a4804d5-3d92-fff0-e48e-beebfb8ba1e2@kernel.org>
+Date: Sat, 3 Sep 2016 17:30:45 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472586343.5025.1.camel@linux.intel.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1472630560-4905-1-git-send-email-peda@axentia.se>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/08/16 20:45, Srinivas Pandruvada wrote:
-> On Mon, 2016-08-29 at 18:23 +0100, Jonathan Cameron wrote:
->> On 25/08/16 17:45, Olof Johansson wrote:
->>>
->>> In at least one known setup, the chip comes up in a state where
->>> reading
->>> the chip ID returns garbage unless it's been reset, due to noise on
->>> the
->>> wires during system boot.
->>>
->>> All supported chips have the same reset method, and based on the
->>> datasheets they all need 1.3 or 1.8ms to recover after reset. So,
->>> do
->>> the conservative thing here and always reset the chip.
->>>
->>> Signed-off-by: Olof Johansson <olof@lixom.net>
-> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+On 31/08/16 09:02, Peter Rosin wrote:
+> The i2c mux core can then take appropriate action depending on if it is
+> used for an actual i2c mux, or for an arbitrator or gate. In this case
+> it is used as a gate.
+> 
+> This will make devicetree bindings simpler when they are eventually
+> added.
+> 
+> Signed-off-by: Peter Rosin <peda@axentia.se>
+> ---
+>  drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> So, this depends on the i2c-mux-dt-3 branch [1] that Jonathan
+> pulled to support the new mpu-3050 gyroscope driver. I had
+> planned to submit this post 4.9-rc1, but since the iio tree
+> got the prerequisite already, I'm sending it right away.
+It's not there yet as the mpu-3050 has to go round again
+for other reasons.  As such I haven't yet pulled your branch.
+This patch isn't going to justify the pull on it's own.
 
-Thanks,
+I'll try and remember to pick it up when Linus gets back with
+the final mpu-3050 and I pull your tree in.
+
+If not give me a poke!
 
 Jonathan
 > 
->> Looks good to me.
->>
->> Srinivas, it's your driver. Can you take a quick look at this?
->>
->> Thanks,
->>
->> Jonathan
->>>
->>> ---
->>>  drivers/iio/accel/bmc150-accel-core.c | 11 +++++++++++
->>>  1 file changed, 11 insertions(+)
->>>
->>> diff --git a/drivers/iio/accel/bmc150-accel-core.c
->>> b/drivers/iio/accel/bmc150-accel-core.c
->>> index bf17aae..59b380d 100644
->>> --- a/drivers/iio/accel/bmc150-accel-core.c
->>> +++ b/drivers/iio/accel/bmc150-accel-core.c
->>> @@ -67,6 +67,9 @@
->>>  #define BMC150_ACCEL_REG_PMU_BW		0x10
->>>  #define BMC150_ACCEL_DEF_BW			125
->>>  
->>> +#define BMC150_ACCEL_REG_RESET			0x14
->>> +#define BMC150_ACCEL_RESET_VAL			0xB6
->>> +
->>>  #define BMC150_ACCEL_REG_INT_MAP_0		0x19
->>>  #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
->>>  
->>> @@ -1497,6 +1500,14 @@ static int bmc150_accel_chip_init(struct
->>> bmc150_accel_data *data)
->>>  	int ret, i;
->>>  	unsigned int val;
->>>  
->>> +	/*
->>> +	 * Reset chip to get it in a known good state. A delay of
->>> 1.8ms after
->>> +	 * reset is required according to the data sheets of
->>> supported chips.
->>> +	 */
->>> +	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
->>> +		     BMC150_ACCEL_RESET_VAL);
->>> +	usleep_range(1800, 2500);
->>> +
->>>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID,
->>> &val);
->>>  	if (ret < 0) {
->>>  		dev_err(dev, "Error: Reading chip id\n");
->>>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Cheers,
+> Peter
+> 
+> [1] https://github.com/peda-r/i2c-mux.git i2c-mux-dt-3
+> 
+> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> index 19580d1db597..2c3f8964a3ea 100644
+> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c
+> @@ -126,7 +126,7 @@ static int inv_mpu_probe(struct i2c_client *client,
+>  
+>  	st = iio_priv(dev_get_drvdata(&client->dev));
+>  	st->muxc = i2c_mux_alloc(client->adapter, &client->dev,
+> -				 1, 0, I2C_MUX_LOCKED,
+> +				 1, 0, I2C_MUX_LOCKED | I2C_MUX_GATE,
+>  				 inv_mpu6050_select_bypass,
+>  				 inv_mpu6050_deselect_bypass);
+>  	if (!st->muxc) {
 > 
 
