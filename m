@@ -1,62 +1,60 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH] iio: fetch and enable regulators unconditionally
-To: Crt Mori <cmo@melexis.com>
-References: <20160902132717.5839-1-cmo@melexis.com>
- <e069a51d-bf8d-ae70-6061-d3118491cd1d@metafoo.de>
- <CAKv63uui0kh1wauc2LcpKmBs8U8XMAbg7=XPHA8dwzhnVxxQHA@mail.gmail.com>
-Cc: Linux Iio <linux-iio@vger.kernel.org>, Jonathan Cameron
- <jic23@kernel.org>, Daniel Baluta <daniel.baluta@intel.com>,
- Gregor Boirie <gregor.boirie@parrot.com>, Matt Ranostay
- <mranostay@gmail.com>, Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
- Markus Pargmann <mpa@pengutronix.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Hartmut Knaack
- <knaack.h@gmx.de>, Linus Walleij <linus.walleij@linaro.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <b8abcf10-08fa-9089-d14a-3698996c82b1@metafoo.de>
-Date: Fri, 2 Sep 2016 16:48:46 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45572 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754411AbcICRbg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 13:31:36 -0400
+Subject: Re: [PATCH 01/15 v2] iio: accel: kxsd9: Fix scaling bug
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+Cc: stable@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <4b3d2f7d-e95b-32dd-3523-c7ceaeed5cb0@kernel.org>
+Date: Sat, 3 Sep 2016 18:31:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAKv63uui0kh1wauc2LcpKmBs8U8XMAbg7=XPHA8dwzhnVxxQHA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 09/02/2016 03:48 PM, Crt Mori wrote:
-> On 2 September 2016 at 15:40, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> Hi,
->>
->> Thanks for the patch.
->>
->> On 09/02/2016 03:27 PM, Crt Mori wrote:
->>> This patch is inspired by a comment of Jonathan Cameron on patch of
->>> Linus Walleij commit aeb55fff3891834e07a3144159a7298a19696af8 ("iio: st_sensors: fetch and enable regulators unconditionally").
->>>
->>> The explanation for this change is same as in that patch:
->>> "Supplies are *not* optional (optional means that the supply is
->>> optional in the electrical sense, not the software sense) so we need to
->>> get the and enable them at all times.
->>
->> Some supplies are optional. I.e. the part is able to operate (potentially
->> with limited functionality) even if the optional external supply has not
->> been connected to the pin.
->>
->> E.g. many converters have a built-in voltage reference but are able to
->> optionally accept an external reference. The driver needs to know if the
->> external reference is not connected or not to be able to allow or disallow
->> applications to switch the part into external reference mode. This is the
->> case for the ad7266 and ad5761 drivers and using regulator_get_optional() is
->> correct here.
->>
->> Same seems to be true for the ads8688 and the fsl-imx-gcq, judging by how
->> their code is structured.
->>
->> - Lars
-> OK, so the voltage reference part can have optional regulator, but if
-> it is supply voltage then it cannot.
+On 01/09/16 10:44, Linus Walleij wrote:
+> All the scaling of the KXSD9 involves multiplication with a
+> fraction number < 1.
 > 
-> What about the IS_ERR_OR_NULL() check? Is that suitable for the
-> optional regulators as well?
+> However the scaling value returned from IIO_INFO_SCALE was
+> unpredictable as only the micros of the value was assigned, and
+> not the integer part, resulting in scaling like this:
+> 
+> $cat in_accel_scale
+> -1057462640.011978
+> 
+> Fix this by assigning zero to the integer part.
+> 
+> Cc: stable@vger.kernel.org
+> Tested-by: Jonathan Cameron <jic23@kernel.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Applied to the fixes-togreg branch of iio.git.
 
-I think regulator_get_optional() should never return NULL, so replacing them
-with just IS_ERR() should be OK. But please check that the driver itself
-does not set the regulator explicitly to NULL.
+Thanks,
 
-- Lars
+Jonathan
+> ---
+> ChangeLog v1->v2:
+> - Move this first in the series as Jonathan's request.
+> ---
+>  drivers/iio/accel/kxsd9.c | 1 +
+>  1 file changed, 1 insertion(+)
+> 
+> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+> index da5fb67ecb34..9d72d4bcf5e9 100644
+> --- a/drivers/iio/accel/kxsd9.c
+> +++ b/drivers/iio/accel/kxsd9.c
+> @@ -166,6 +166,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+>  		ret = spi_w8r8(st->us, KXSD9_READ(KXSD9_REG_CTRL_C));
+>  		if (ret < 0)
+>  			goto error_ret;
+> +		*val = 0;
+>  		*val2 = kxsd9_micro_scales[ret & KXSD9_FS_MASK];
+>  		ret = IIO_VAL_INT_PLUS_MICRO;
+>  		break;
+> 
+
