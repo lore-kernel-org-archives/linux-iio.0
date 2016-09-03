@@ -1,68 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45311 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45348 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753296AbcICQis (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:38:48 -0400
-Subject: Re: A potential bug in drivers/iio/light/opt3001.ko
-To: Pavel Andrianov <andrianov@ispras.ru>
-References: <e5806302-9d1b-b262-766a-e64ca9a0159c@ispras.ru>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Koch <mail@alexanderkoch.net>,
-        Vaishali Thakkar <vaishali.thakkar@oracle.com>,
-        ldv-project@linuxtesting.org,
-        Andreas Dannenberg <dannenberg@ti.com>
+        with ESMTP id S1752851AbcICQsI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:48:08 -0400
+Subject: Re: [PATCH v1 3/3] iio:pressure: initial zpa2326 barometer support
+To: Gregor Boirie <gregor.boirie@parrot.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <cover.1472050374.git.gregor.boirie@parrot.com>
+ <a16becf5ac0ac811a993a26de32a0d41f3eb4ffa.1472050374.git.gregor.boirie@parrot.com>
+ <alpine.DEB.2.02.1608242115340.4077@pmeerw.net> <57BF0488.4000902@parrot.com>
+ <8a47f701-1cff-7c5c-639b-ec2258c62025@kernel.org>
+ <57C5B1C4.8090509@parrot.com>
+Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <61728463-8bd8-c68e-ef4a-7a3e0ddd7899@kernel.org>
-Date: Sat, 3 Sep 2016 17:38:44 +0100
+Message-ID: <23014ac9-04e2-7cc1-eb07-195aacfec0ac@kernel.org>
+Date: Sat, 3 Sep 2016 17:46:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <e5806302-9d1b-b262-766a-e64ca9a0159c@ispras.ru>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <57C5B1C4.8090509@parrot.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/08/16 11:23, Pavel Andrianov wrote:
-> Hi!
+On 30/08/16 17:18, Gregor Boirie wrote:
 > 
-> There is a bug in drivers/iio/light/opt3001.ko. Regard such case:
 > 
-> Thread 1                             Thread 2
-> -> opt3001_read_raw
->   -> mutex_lock(&opt->lock)
->   -> opt3001_get_lux()
->     ..
->     ->i2c_smbus_write_word_swapped()
->             Now an interrupt comes
->                                      -> opt3001_irq
->                                        -> mutex_lock(&opt->lock)
+> On 08/29/2016 09:01 PM, Jonathan Cameron wrote:
+>> On 25/08/16 15:45, Gregor Boirie wrote:
+>>> Answers inline
+>>>
+>>> On 08/25/2016 08:34 AM, Peter Meerwald-Stadler wrote:
+>>>
+>>>>> +
+>>>>> +    zpa_init_runtime(slave);
+>>>>> +
+>>>>> +    err = devm_iio_device_register(slave, indio_dev);
+>>>> can't use devm_ register if there is a non-empty remove()
+>>> Removal hooks are registered onto bus specific devices not onto
+>>> IIO ones. Enabling devm debug outputs a removal flow trace that
+>>> seems correct. Is this really wrong ?
+>> Yes.  The unwind of devm_iio_device_register will occur after the
+>> whatever is in the remove function.  As devm_iio_device_unregister
+>> is responsible for removal of the userspace and other interfaces
+>> until that happens they are still present.
+>>
+>> Hence whilst a remove is going on the device can be powered
+>> down but the interfaces still exposed.  A read at that point
+>> is going to cause some an error to occur.
+>>
+>> Hence, using the devm form is fine if everything else is
+>> handled automatically, i.e. there is nothing in remove.
+>> Otherwise, you almost always have a race condition.
+>>
+>> It's a minor one given how often people remove modules, but
+>> worth cleaning up anyway!
+> Got it.
 > 
-> This is a deadlock, as the flag ok_to_ignore_lock has not been set yet.
-Good find.  Will need reordering to set the ok_to_ignore_lock first.
-Whether it ever actually happens will depend on just how long that EOC
-interrupt takes to happen.  Still it's a theoretical problem with
-a fairly simple fix so let's fix it.
+> But something still makes me feel uncomfortable. Shouldn't we ensure the
+> bus specific driver (i.e., zpa2326_i2c or zpa2326_spi in this case) be refcounted
+> upon entry into the IIO layer ? Using try_module_get()/module_put() would :
+> * prevent any attempt to remove module while being used
+> * prevent any attempt to use module while it is going away.
 > 
-> Regard another case:
+> I'm not quite sure here because of possible race conditions however (feels like
+> mixing devm_ and module layers).
 > 
-> Thread 1                             Thread 2
-> -> opt3001_read_raw
->   -> mutex_lock(&opt->lock)
->   -> opt3001_get_lux()
->     ..
->     -> i2c_smbus_write_word_swapped()
->     opt->ok_to_ignore_lock = true;
->             Now an interrupt comes
->                                      -> opt3001_irq
->                                        ..
->                                        opt->result_ready = true
->                                        wake_up()
->      opt->result_ready = false;
->      wait_event_timeout()
-> 
-> In this case the first thread misses the result and waits until timeout expires.
-> 
-Agreed - looks like some reordering is needed here as well.
+> Anyway, it seems quite strange module removal succeeds despite being under use
+> by userspace. This leads to inconsistent system state where userspace process
+> gets stuck in poll syscall, waiting for data that will never come since modprobing
+> module again will in the end allocate an new IIO device, etc...
+In theory it should all unwind fine.  Lars spent a while some time
+ago hammering this stuff with some test scripts and getting all
+the fall overs to happen. It should wake up the poll in the
+device_unregister and subsequent read should give an error to
+say the device has gone away.
+
+Do you have a particular case where it gets stuck?
+
+It's effectively impossible to prevent a device going away when
+userspace is using it.  The module_get, module_put makes it
+slightly less likely, but unfortunately some sensors can simply
+be pulled from a usb port or similar or a remove forced from
+userspace.
 
 Jonathan
+> 
+> confused,
+> Grégor.
+> 
+>>
+>> Jonathan
+>>> Many thanks for the review. Regards,
+>>> Greg.
+>>> -- 
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
