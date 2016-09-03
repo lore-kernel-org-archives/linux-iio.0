@@ -1,198 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46054 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753239AbcICTdJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 15:33:09 -0400
-Subject: Re: [PATCH v3 1/4] hwmon: iio_hwmon: delay probing with late_initcall
-To: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        Guenter Roeck <linux@roeck-us.net>
-References: <1469519027-11387-1-git-send-email-quentin.schulz@free-electrons.com>
- <5277864.qlyRKbC1Zy@ws-stein>
- <ed5c1761-bdc7-df9c-96c8-998e83c49c4c@free-electrons.com>
- <2324970.FJcTUYNoO2@ws-stein> <20160726160410.GE30628@roeck-us.net>
- <aa387c9c-8330-fd2a-67c1-0aa0b9a90794@kernel.org>
- <20160815170730.GB32260@roeck-us.net>
- <ECA41B39-BCC0-44D0-8B3D-838C48D713D0@kernel.org>
- <3164bade-8022-8ad1-e327-f183128a3e88@free-electrons.com>
- <394c711d-3c5b-01b2-9d4a-eb977653b5c2@free-electrons.com>
-Cc: Alexander Stein <alexander.stein@systec-electronic.com>,
-        linux-kernel@vger.kernel.org, jdelvare@suse.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net,
-        maxime.ripard@free-electrons.com, wens@csie.org,
-        lee.jones@linaro.org, linux-hwmon@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com,
-        antoine.tenart@free-electrons.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <26c87c13-bedb-3b4d-8ea0-8f4db9cadef8@kernel.org>
-Date: Sat, 3 Sep 2016 20:32:21 +0100
+Return-Path: <stillcompiling@gmail.com>
+From: Joshua Clayton <stillcompiling@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Matt Ranostay <mranostay@gmail.com>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: iio channel sync
+Date: Sat, 03 Sep 2016 13:52:39 -0700
+Message-ID: <3109858.4eJt4Uf2VN@diplodocus>
+In-Reply-To: <e7291439-cb74-f5eb-8fbe-a7376b2d2bf8@kernel.org>
+References: <4284e190-84c2-07cc-1157-ef6d2fdd0e8c@gmail.com> <aa577c0c-c18c-26d3-b5c6-16692e813d35@gmail.com> <e7291439-cb74-f5eb-8fbe-a7376b2d2bf8@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <394c711d-3c5b-01b2-9d4a-eb977653b5c2@free-electrons.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="us-ascii"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/09/16 10:03, Quentin Schulz wrote:
-> On 01/09/2016 09:15, Quentin Schulz wrote:
->> On 15/08/2016 23:35, Jonathan Cameron wrote:
->>>
->>>
->>> On 15 August 2016 18:07:30 BST, Guenter Roeck <linux@roeck-us.net> wrote:
->>>> On Mon, Aug 15, 2016 at 04:40:21PM +0100, Jonathan Cameron wrote:
->>>>> On 26/07/16 17:04, Guenter Roeck wrote:
->>>>>> On Tue, Jul 26, 2016 at 12:00:33PM +0200, Alexander Stein wrote:
->>>>>>> On Tuesday 26 July 2016 11:33:59, Quentin Schulz wrote:
->>>>>>>> On 26/07/2016 11:05, Alexander Stein wrote:
->>>>>>>>> On Tuesday 26 July 2016 10:24:48, Quentin Schulz wrote:
->>>>>>>>>> On 26/07/2016 10:21, Alexander Stein wrote:
->>>>>>>>>>> On Tuesday 26 July 2016 09:43:44, Quentin Schulz wrote:
->>>>>>>>>>>> iio_channel_get_all returns -ENODEV when it cannot find
->>>> either phandles
->>>>>>>>>>>> and
->>>>>>>>>>>> properties in the Device Tree or channels whose
->>>> consumer_dev_name
->>>>>>>>>>>> matches
->>>>>>>>>>>> iio_hwmon in iio_map_list. The iio_map_list is filled in by
->>>> iio drivers
->>>>>>>>>>>> which might be probed after iio_hwmon.
->>>>>>>>>>>
->>>>>>>>>>> Would it work if iio_channel_get_all returning ENODEV is used
->>>> for
->>>>>>>>>>> returning
->>>>>>>>>>> EPROBE_DEFER in iio_channel_get_all? Using late initcalls for
->>>>>>>>>>> driver/device
->>>>>>>>>>> dependencies seems not right for me at this place.
->>>>>>>>>>
->>>>>>>>>> Then what if the iio_channel_get_all is called outside of the
->>>> probe of a
->>>>>>>>>> driver? We'll have to change the error code, things we are
->>>> apparently
->>>>>>>>>> trying to avoid (see v2 patches' discussions).
->>>>>>>>>
->>>>>>>>> Maybe I didn't express my idea enough. I don't want to change
->>>> the behavior
->>>>>>>>> of iio_channel_get_all at all. Just the result evaluation of
->>>>>>>>> iio_channel_get_all in iio_hwmon_probe. I have something link
->>>> the patch
->>>>>>>>> below in mind.
->>>>>>>>>
->>>>>>>>> Best regards,
->>>>>>>>> Alexander
->>>>>>>>> ---
->>>>>>>>> diff --git a/drivers/hwmon/iio_hwmon.c
->>>> b/drivers/hwmon/iio_hwmon.c
->>>>>>>>> index b550ba5..e32d150 100644
->>>>>>>>> --- a/drivers/hwmon/iio_hwmon.c
->>>>>>>>> +++ b/drivers/hwmon/iio_hwmon.c
->>>>>>>>> @@ -73,8 +73,12 @@ static int iio_hwmon_probe(struct
->>>> platform_device
->>>>>>>>> *pdev)
->>>>>>>>>
->>>>>>>>>                 name = dev->of_node->name;
->>>>>>>>>         
->>>>>>>>>         channels = iio_channel_get_all(dev);
->>>>>>>>>
->>>>>>>>> -       if (IS_ERR(channels))
->>>>>>>>> -               return PTR_ERR(channels);
->>>>>>>>> +       if (IS_ERR(channels)) {
->>>>>>>>> +               if (PTR_ERR(channels) == -ENODEV)
->>>>>>>>> +                       return -EPROBE_DEFER;
->>>>>>>>> +               else
->>>>>>>>> +                       return PTR_ERR(channels);
->>>>>>>>> +       }
->>>>>>>>>
->>>>>>>>>         st = devm_kzalloc(dev, sizeof(*st), GFP_KERNEL);
->>>>>>>>>         if (st == NULL) {
->>>>>>>>
->>>>>>>> Indeed, I misunderstood what you told me.
->>>>>>>>
->>>>>>>> Actually, the patch you proposed is part of my v1
->>>>>>>> (https://lkml.org/lkml/2016/6/28/203) and v2
->>>>>>>> (https://lkml.org/lkml/2016/7/15/215).
->>>>>>>> Jonathan and Guenter didn't really like the idea of changing the
->>>> -ENODEV
->>>>>>>> in -EPROBE_DEFER.
->>>>>>>
->>>>>>> Thanks for the links.
->>>>>>>
->>>>>>>> What I thought you were proposing was to change the -ENODEV
->>>> return code
->>>>>>>> inside iio_channel_get_all. This cannot be an option since the
->>>> function
->>>>>>>> might be called outside of a probe (it is not yet, but might be
->>>> in the
->>>>>>>> future?).
->>>>>>>
->>>>>>> AFAICS this is a helper function not knowing about device probing
->>>> itself. And 
->>>>>>> it should stay at that.
->>>>>>>
->>>>>>>> Of what I understood, two possibilities are then possible
->>>> (proposed
->>>>>>>> either by Guenter or Jonathan): either rework the iio framework
->>>> to
->>>>>>>> register iio map array earlier or to use late_initcall instead of
->>>> init
->>>>>>>> for the driver consuming the iio channels.
->>>>>>>
->>>>>>> Interestingly using this problem would not arise due to module
->>>> dependencies. 
->>>>>>> But using late_initcall would mean this needs to be done on any
->>>> driver using 
->>>>>>> iio channels? I would rather keep those consumers simple.
->>>>>>>
->>>>>> Me too, but that would imply a solution in iio. The change you
->>>> propose above
->>>>>> isn't exactly simple either, and would also be needed in each
->>>> consumer driver.
->>>>>>
->>>>>> Just for the record, I dislike the late_initcall solution as well,
->>>> but I prefer
->>>>>> it over blindly converting ENODEV to EPROBE_DEFER.
->>>>> I'm falling on the other side on this one right now. Though I'd be
->>>> tempted
->>>>> to renaming the function to something like
->>>> iio_channel_get_all_or_defer
->>>>> to make it explicit that it can result in deferred probing.
->>>>>
->>>> Would this new function return -EPROBE_DEFER instead of -ENODEV ?
->>> Yes. Though whether it really adds much over doing that in drivers isn't clear.
->>>
->>> Hmm. Needs more thought...
->>
->> Either we do the exact same "hack" as in the v2[1] in what you call
->> iio_channel_get_all_or_defer or we duplicate the code from
->> iio_channel_get_all in iio_channel_get_all_or_defer. Both do not seem
->> right to me but I really dislike the late_initcall method. With this
->> method we can only have one level of "channel dependency".
->>
->> This means if we ever create a new driver which depends on channels from
->> the driver using late_initcall, we will also have to use late_initcall
->> and we can't be sure the new driver will always be probed after the
->> driver he depends on.
->>
->> [1] https://lkml.org/lkml/2016/7/15/215
->>
->> Quentin
+On Saturday, September 03, 2016 03:37:50 PM Jonathan Cameron wrote:
+> On 31/08/16 23:47, Joshua Clayton wrote:
+> > Greetings,
+> > 
+> > On 08/30/2016 09:26 AM, Jonathan Cameron wrote:
+> >>
+> >> On 30 August 2016 08:41:18 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+> >>> On Mon, Aug 29, 2016 at 10:03 AM, Joshua Clayton
+> >>> <stillcompiling@gmail.com> wrote:
+> >>>> Jonathan,
+> >>>>
+> >>>> I have an out-of tree driver I am working on mainlining.
+> >>>>
+> >>>> The device is a sensor that gets phase and amplitude (x and y) data
+> >>>>
+> >>>> on multiple physical and/or time multiplexed channels.
+> >>>>
+> >>>> It also has up to 4 optical encoders to get physical location.
+> >>>>
+> >>>> The existing driver bundles x and y together with a snapshot
+> >>>>
+> >>>> of the encoder sums at that moment.
+> >>>>
+> >>>>
+> >>>> This seems like a good fit for iio, but one item is bothering me.
+> >>>>
+> >>>> How is synchronization between streams usually handled with
+> >>>>
+> >>>> iio drivers? Timing can be important.
+> >>> Wouldn't the trigger buffer framework be good enough for this?
+> >> Perhaps you could describe your usecase a little more?
+> >>
+> >> Is the interesting bit that you want to sync streams with different
+> >> sampling frequencies? Are those encoders better represented by a
+> >> separate driver? (In which case I have some thoughts on simple
+> >> additions to IIO trigger handling that might help - basically a
+> >> hold off on triggers until all relevant devices are attached)
 > 
-> Should I revert back to the hack introduced in v2 then?
-I think so.  Sorry I didn't see this until after you'd sent v4.
-
-That hack had it's disadvantages but in many ways it was a least clean.
-
-Jonathan
+> > Thanks for responding.
+> > 
+> > The encoders (often a pair of them, could be up to 4) represent the position
+> > of the sensor in relation to an object to be tested. (linear movement or
+> > rotation around an axis).
+> > The Maximum sample rate of the encoders is much higher than the sensor,
+> > but they are moved by a motor or by hand, so the actual sample rate is
+> > variable and may be higher or lower that the sensor sample rate.
+> > 
+> > The encoders are sometimes used as a trigger for data collection,
+> It would certainly be possible to do this by having a slightly unusual type
+> of trigger.
+> > but
+> > the encoders are also used as positional data alongside the sensor data.
+> Makes sense.
+> > 
+> > The way we get around this now is to bundle a snapshot of the encoder
+> > with the sensor data and discard it later if the encoder hasn't changed and
+> > the trigger function is enabled.
+> The only slight change I'd suggest is that if the encoders are read by
+> separate hardware (presumably they are into a capture unit of some type?)
+> then you may need to have the encoder capture triggered off the same
+> trigger as the sensor data.  Thus you'd end up with two buffers that
+> could be easily fused in user space.
 > 
->>>>
->>>> Thanks,
->>>> Guenter
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> That would allow  generic drivers for other users of either the sensor
+> or the encoder capture hardware.
 > 
+> If they come in through the same bit of hardware (e.g. you are routing
+> them both through an fpga or similar) then fine as you have it currently.
+>
 
+Thanks for responding to my questions. It is always hard to visualise how
+something that already exists might be re-architected, and you've given me
+enough to get my mind working on it.
+ 
+> Sounds like an interesting bit of hardware ;) Some sort of radio test kit
+> around an antenna? (feel free to not answer, I'm always curious)
+> 
+> Jonathan
+> >
+Haha. Yeah, its a bit of a tightrope walk trying to upstream code while
+keeping the "secret sauce" safe.
+
+I thinks its ok to tell you it is eddy current testing equipment, used in
+non-destructive testing of metal items.
+
+We set up a standing wave using a high speed A/C current in a coil,
+and measure distortion in the amplitude and phase of secondary
+A/C currents induced in another coil.
+
+It can be used to find defects near the surface, such as hairline cracks,
+as well as to indirectly measure thickness and conductivity that might
+indicate metal fatigue.
+
+Google "eddy current" if you are still curious.
+
+Joshua
