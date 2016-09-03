@@ -1,80 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45523 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45226 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752852AbcICRX4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 13:23:56 -0400
-Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
-To: Lee Jones <lee.jones@linaro.org>
-References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
- <b32afa2d-965c-569c-dde1-3611615080d3@kernel.org>
- <20160816124907.GK25844@dell>
- <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org>
- <a2d7688d-753d-8c50-728b-f33cc5e31eb9@kernel.org>
- <20160830085756.GB1661@dell>
- <a911916d-05bc-6bcd-0aea-bfd7a3d4ff1b@kernel.org>
- <20160901072404.GD4921@dell>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Olof Johansson <olof@lixom.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>
+        with ESMTP id S1754145AbcICQ2B (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Sep 2016 12:28:01 -0400
+Subject: Re: [PATCH] iio: accel: bmc150: reset chip at init time
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Olof Johansson <olof@lixom.net>
+References: <1472143533-31869-1-git-send-email-olof@lixom.net>
+ <16ba4f3e-50fa-cadf-da57-39522b6ce386@kernel.org>
+ <1472586343.5025.1.camel@linux.intel.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        mpa@pengutronix.de, irina.tirdea@intel.com,
+        linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6ae9c49a-c354-b3bd-a4d9-77bf81915615@kernel.org>
-Date: Sat, 3 Sep 2016 18:21:34 +0100
+Message-ID: <ab9f518b-c0b1-8c72-691a-b9f9a3ef8bb2@kernel.org>
+Date: Sat, 3 Sep 2016 17:27:28 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160901072404.GD4921@dell>
+In-Reply-To: <1472586343.5025.1.camel@linux.intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/16 08:24, Lee Jones wrote:
->>>>>>> Given this dependency I'm assuming the best route for these is via
->>>>>>> the MFD tree...
->>>>>>>
->>>>>>> Lee, shout if you want them to go a different route.
->>>>>>
->>>>>> IIO looks like a more suitable route.  Please provide me with a
->>>>>> pull-request base off of an immutable tag.
->>>>> Hi Lee,
->>>>>
->>>>> As far as I can tell the precursor patch above hasn't gone in your
->>>>> tree yet which leaves me unable to take this through IIO for now.
->>>>>
->>>>> Maybe I'm missing something!
->>>>>
->>>>> Jonathan
->>>>
->>>> Hi Lee,
->>>>
->>>> Any movement on the dependency above?
->>>>
->>>> Last I can find was you adding your ack to it:
->>>> [PATCH v2 1/2] mfd: cros_ec: Add MKBP event support
->>>>
->>>> https://lkml.org/lkml/2016/8/16/423
+On 30/08/16 20:45, Srinivas Pandruvada wrote:
+> On Mon, 2016-08-29 at 18:23 +0100, Jonathan Cameron wrote:
+>> On 25/08/16 17:45, Olof Johansson wrote:
 >>>
->>> Well that's annoying.  Okay, well when I send out the pull-request for
->>> this one, I will include you.
+>>> In at least one known setup, the chip comes up in a state where
+>>> reading
+>>> the chip ID returns garbage unless it's been reset, due to noise on
+>>> the
+>>> wires during system boot.
 >>>
->>> Actually, better still -- take all of them on one branch and I will
->>> pull from you.  Saves the toing and froing.
+>>> All supported chips have the same reset method, and based on the
+>>> datasheets they all need 1.3 or 1.8ms to recover after reset. So,
+>>> do
+>>> the conservative thing here and always reset the chip.
 >>>
->> Sure. Will probably be the weekend before I get this sorted.
-> 
-> No rush.
-> 
-Ah, I see you ended up with an immutable branch of this anyway:
-your ib-mfd-input-4.9 branch. 
-I'll build an immutable branch on that
-ib-iio-mfd-4.9 in iio.git.
+>>> Signed-off-by: Olof Johansson <olof@lixom.net>
+> Reviewed-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
 
-Unfortunately I don't have an Ack for patch 4 from Olof yet so 
-can't take that and until I do, the rest makes little sense as
-it's not enabled.
+Thanks,
 
 Jonathan
-
+> 
+>> Looks good to me.
+>>
+>> Srinivas, it's your driver. Can you take a quick look at this?
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>>
+>>> ---
+>>>  drivers/iio/accel/bmc150-accel-core.c | 11 +++++++++++
+>>>  1 file changed, 11 insertions(+)
+>>>
+>>> diff --git a/drivers/iio/accel/bmc150-accel-core.c
+>>> b/drivers/iio/accel/bmc150-accel-core.c
+>>> index bf17aae..59b380d 100644
+>>> --- a/drivers/iio/accel/bmc150-accel-core.c
+>>> +++ b/drivers/iio/accel/bmc150-accel-core.c
+>>> @@ -67,6 +67,9 @@
+>>>  #define BMC150_ACCEL_REG_PMU_BW		0x10
+>>>  #define BMC150_ACCEL_DEF_BW			125
+>>>  
+>>> +#define BMC150_ACCEL_REG_RESET			0x14
+>>> +#define BMC150_ACCEL_RESET_VAL			0xB6
+>>> +
+>>>  #define BMC150_ACCEL_REG_INT_MAP_0		0x19
+>>>  #define BMC150_ACCEL_INT_MAP_0_BIT_SLOPE	BIT(2)
+>>>  
+>>> @@ -1497,6 +1500,14 @@ static int bmc150_accel_chip_init(struct
+>>> bmc150_accel_data *data)
+>>>  	int ret, i;
+>>>  	unsigned int val;
+>>>  
+>>> +	/*
+>>> +	 * Reset chip to get it in a known good state. A delay of
+>>> 1.8ms after
+>>> +	 * reset is required according to the data sheets of
+>>> supported chips.
+>>> +	 */
+>>> +	regmap_write(data->regmap, BMC150_ACCEL_REG_RESET,
+>>> +		     BMC150_ACCEL_RESET_VAL);
+>>> +	usleep_range(1800, 2500);
+>>> +
+>>>  	ret = regmap_read(data->regmap, BMC150_ACCEL_REG_CHIP_ID,
+>>> &val);
+>>>  	if (ret < 0) {
+>>>  		dev_err(dev, "Error: Reading chip id\n");
+>>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
