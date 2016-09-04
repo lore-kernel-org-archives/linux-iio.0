@@ -1,395 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50039 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50114 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752152AbcIDOgm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 10:36:42 -0400
-Subject: Re: [PATCH v4 2/3] mfd: add support for Allwinner SoCs ADC
-To: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        jdelvare@suse.com, linux@roeck-us.net, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net,
-        maxime.ripard@free-electrons.com, wens@csie.org,
-        lee.jones@linaro.org
-References: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com>
- <1472738705-20145-3-git-send-email-quentin.schulz@free-electrons.com>
-Cc: thomas.petazzoni@free-electrons.com,
-        antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+        with ESMTP id S1752181AbcIDOnt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 10:43:49 -0400
+Subject: Re: [PATCH v3 2/3] iio: add resource managed triggered buffer init
+ helpers
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1472841954.git.gregor.boirie@parrot.com>
+ <6c078d51cfdc4b795004fea18d6d00e4aea59f27.1472841954.git.gregor.boirie@parrot.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Laxman Dewangan <ldewangan@nvidia.com>,
+        Alexander Kurz <akurz@blala.de>, Tejun Heo <tj@kernel.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
+        Vlad Dogaru <vlad.dogaru@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Marek Vasut <marex@denx.de>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Masahiro Yamada <yamada.masahiro@socionext.com>,
+        Arnd Bergmann <arnd@arndb.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7806c607-14f4-46b8-be22-beea591bca5c@kernel.org>
-Date: Sun, 4 Sep 2016 15:36:39 +0100
+Message-ID: <e7aabbc9-113b-e498-ba44-94e1d99793b8@kernel.org>
+Date: Sun, 4 Sep 2016 15:42:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472738705-20145-3-git-send-email-quentin.schulz@free-electrons.com>
+In-Reply-To: <6c078d51cfdc4b795004fea18d6d00e4aea59f27.1472841954.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/16 15:05, Quentin Schulz wrote:
-> The Allwinner SoCs all have an ADC that can also act as a touchscreen
-> controller and a thermal sensor. For now, only the ADC and the thermal
-> sensor drivers are probed by the MFD, the touchscreen controller support
-> will be added later.
+On 02/09/16 19:47, Gregor Boirie wrote:
+> Add resource managed devm_iio_triggered_buffer_setup() and
+> devm_iio_triggered_buffer_cleanup() to automatically clean up triggered
+> buffers setup by IIO drivers, thus leading to simplified IIO drivers code.
 > 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-Other than the patch 1 revertion to the earlier approach, I'm happy with this.
-I will need an Ack from Lee though given it's an mfd driver.
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+This feels a little less certain than the trigger one in my mind,
+but on balance probably still a good idea.
 
-Makes sense to take this on through IIO I think.
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 > ---
+>  Documentation/driver-model/devres.txt              |  2 ++
+>  drivers/iio/buffer/industrialio-triggered-buffer.c | 42 ++++++++++++++++++++++
+>  drivers/iio/industrialio-core.c                    |  3 +-
+>  include/linux/iio/iio.h                            |  1 +
+>  include/linux/iio/triggered_buffer.h               |  8 +++++
+>  5 files changed, 55 insertions(+), 1 deletion(-)
 > 
-> v4:
->  - rename files and variables from sunxi* to sun4i*,
->  - rename defines from SUNXI_* to SUN4I_* or SUN6I_*,
->  - remove TP in defines name,
->  - rename SUNXI_IRQ_* to SUN4I_GPADC_IRQ_* for consistency,
->  - use devm functions for regmap_add_irq_chip and mfd_add_devices,
->  - remove remove functions (now empty thanks to devm functions),
-> 
-> v3:
->  - use defines in regmap_irq instead of hard coded BITs,
->  - use of_device_id data field to chose which MFD cells to add considering
->    the compatible responsible of the MFD probe,
->  - remove useless initializations,
->  - disable all interrupts before adding them to regmap_irqchip,
->  - add goto error label in probe,
->  - correct wrapping in header license,
->  - move defines from IIO driver to header,
->  - use GENMASK to limit the size of the variable passed to a macro,
->  - prefix register BIT defines with the name of the register,
->  - reorder defines,
-> 
-> v2:
->  - add license headers,
->  - reorder alphabetically includes,
->  - add SUNXI_GPADC_ prefixes for defines,
-> 
->  drivers/mfd/Kconfig                 |  15 ++++
->  drivers/mfd/Makefile                |   2 +
->  drivers/mfd/sun4i-gpadc-mfd.c       | 174 ++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/sun4i-gpadc-mfd.h |  94 +++++++++++++++++++
->  4 files changed, 285 insertions(+)
->  create mode 100644 drivers/mfd/sun4i-gpadc-mfd.c
->  create mode 100644 include/linux/mfd/sun4i-gpadc-mfd.h
-> 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index 1bcf601..95b3c3e 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -29,6 +29,21 @@ config MFD_ACT8945A
->  	  linear regulators, along with a complete ActivePath battery
->  	  charger.
+> diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+> index 6a2138a..75bc5b8 100644
+> --- a/Documentation/driver-model/devres.txt
+> +++ b/Documentation/driver-model/devres.txt
+> @@ -266,6 +266,8 @@ IIO
+>    devm_iio_device_unregister()
+>    devm_iio_kfifo_allocate()
+>    devm_iio_kfifo_free()
+> +  devm_iio_triggered_buffer_setup()
+> +  devm_iio_triggered_buffer_cleanup()
+>    devm_iio_trigger_alloc()
+>    devm_iio_trigger_free()
+>    devm_iio_trigger_register()
+> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
+> index 4b2858b..d3db1fc 100644
+> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
+> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
+> @@ -98,6 +98,48 @@ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
+>  }
+>  EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
 >  
-> +config MFD_SUN4I_GPADC
-> +	tristate "Allwinner sunxi platforms' GPADC MFD driver"
-> +	select MFD_CORE
-> +	select REGMAP_MMIO
-> +	depends on ARCH_SUNXI || COMPILE_TEST
-> +	help
-> +	  Select this to get support for Allwinner SoCs (A10, A13 and A31) ADC.
-> +	  This driver will only map the hardware interrupt and registers, you
-> +	  have to select individual drivers based on this MFD to be able to use
-> +	  the ADC or the thermal sensor. This will try to probe the ADC driver
-> +	  sun4i-gpadc-iio and the hwmon driver iio_hwmon.
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called sun4i-gpadc-mfd.
-> +
->  config MFD_AS3711
->  	bool "AMS AS3711"
->  	select MFD_CORE
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 42a66e1..3b964d7 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -205,3 +205,5 @@ intel-soc-pmic-objs		:= intel_soc_pmic_core.o intel_soc_pmic_crc.o
->  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+= intel_soc_pmic_bxtwc.o
->  obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
->  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
-> +
-> +obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc-mfd.o
-> diff --git a/drivers/mfd/sun4i-gpadc-mfd.c b/drivers/mfd/sun4i-gpadc-mfd.c
-> new file mode 100644
-> index 0000000..75aa7a8
-> --- /dev/null
-> +++ b/drivers/mfd/sun4i-gpadc-mfd.c
-> @@ -0,0 +1,174 @@
-> +/* ADC MFD core driver for sunxi platforms
-> + *
-> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms of the GNU General Public License version 2 as published by
-> + * the Free Software Foundation.
-> + */
-> +
-> +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/core.h>
-> +#include <linux/module.h>
-> +#include <linux/of_device.h>
-> +#include <linux/of_irq.h>
-> +#include <linux/regmap.h>
-> +
-> +#include <linux/mfd/sun4i-gpadc-mfd.h>
-> +
-> +static struct resource adc_resources[] = {
-> +	{
-> +		.name	= "FIFO_DATA_PENDING",
-> +		.start	= SUN4I_GPADC_IRQ_FIFO_DATA,
-> +		.end	= SUN4I_GPADC_IRQ_FIFO_DATA,
-> +		.flags	= IORESOURCE_IRQ,
-> +	}, {
-> +		.name	= "TEMP_DATA_PENDING",
-> +		.start	= SUN4I_GPADC_IRQ_TEMP_DATA,
-> +		.end	= SUN4I_GPADC_IRQ_TEMP_DATA,
-> +		.flags	= IORESOURCE_IRQ,
-> +	},
-> +};
-> +
-> +static const struct regmap_irq sun4i_gpadc_mfd_regmap_irq[] = {
-> +	REGMAP_IRQ_REG(SUN4I_GPADC_IRQ_FIFO_DATA, 0,
-> +		       SUN4I_GPADC_INT_FIFOC_TP_DATA_IRQ_EN),
-> +	REGMAP_IRQ_REG(SUN4I_GPADC_IRQ_TEMP_DATA, 0,
-> +		       SUN4I_GPADC_INT_FIFOC_TEMP_IRQ_EN),
-> +};
-> +
-> +static const struct regmap_irq_chip sun4i_gpadc_mfd_regmap_irq_chip = {
-> +	.name = "sun4i_gpadc_mfd_irq_chip",
-> +	.status_base = SUN4I_GPADC_INT_FIFOS,
-> +	.ack_base = SUN4I_GPADC_INT_FIFOS,
-> +	.mask_base = SUN4I_GPADC_INT_FIFOC,
-> +	.init_ack_masked = true,
-> +	.mask_invert = true,
-> +	.irqs = sun4i_gpadc_mfd_regmap_irq,
-> +	.num_irqs = ARRAY_SIZE(sun4i_gpadc_mfd_regmap_irq),
-> +	.num_regs = 1,
-> +};
-> +
-> +static struct mfd_cell sun4i_gpadc_mfd_cells[] = {
-> +	{
-> +		.name	= "sun4i-a10-gpadc-iio",
-> +		.resources = adc_resources,
-> +		.num_resources = ARRAY_SIZE(adc_resources),
-> +	}, {
-> +		.name = "iio_hwmon",
-> +	}
-> +};
-> +
-> +static struct mfd_cell sun5i_gpadc_mfd_cells[] = {
-> +	{
-> +		.name	= "sun5i-a13-gpadc-iio",
-> +		.resources = adc_resources,
-> +		.num_resources = ARRAY_SIZE(adc_resources),
-> +	}, {
-> +		.name = "iio_hwmon",
-> +	},
-> +};
-> +
-> +static struct mfd_cell sun6i_gpadc_mfd_cells[] = {
-> +	{
-> +		.name	= "sun6i-a31-gpadc-iio",
-> +		.resources = adc_resources,
-> +		.num_resources = ARRAY_SIZE(adc_resources),
-> +	}, {
-> +		.name = "iio_hwmon",
-> +	},
-> +};
-> +
-> +static const struct regmap_config sun4i_gpadc_mfd_regmap_config = {
-> +	.reg_bits = 32,
-> +	.val_bits = 32,
-> +	.reg_stride = 4,
-> +	.fast_io = true,
-> +};
-> +
-> +static const struct of_device_id sun4i_gpadc_mfd_of_match[] = {
-> +	{
-> +		.compatible = "allwinner,sun4i-a10-ts",
-> +		.data = &sun4i_gpadc_mfd_cells,
-> +	}, {
-> +		.compatible = "allwinner,sun5i-a13-ts",
-> +		.data = &sun5i_gpadc_mfd_cells,
-> +	}, {
-> +		.compatible = "allwinner,sun6i-a31-ts",
-> +		.data = &sun6i_gpadc_mfd_cells,
-> +	}, { /* sentinel */ }
-> +};
-> +
-> +static int sun4i_gpadc_mfd_probe(struct platform_device *pdev)
+> +static void devm_iio_triggered_buffer_clean(struct device *dev, void *res)
 > +{
-> +	struct sun4i_gpadc_mfd_dev *mfd_dev;
-> +	struct resource *mem;
-> +	const struct of_device_id *of_id;
-> +	const struct mfd_cell *mfd_cells;
-> +	unsigned int irq;
-> +	int ret;
-> +
-> +	of_id = of_match_node(sun4i_gpadc_mfd_of_match, pdev->dev.of_node);
-> +	if (!of_id)
-> +		return -EINVAL;
-> +
-> +	mfd_dev = devm_kzalloc(&pdev->dev, sizeof(*mfd_dev), GFP_KERNEL);
-> +	if (!mfd_dev)
-> +		return -ENOMEM;
-> +
-> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> +	mfd_dev->regs = devm_ioremap_resource(&pdev->dev, mem);
-> +	if (IS_ERR(mfd_dev->regs))
-> +		return PTR_ERR(mfd_dev->regs);
-> +
-> +	mfd_dev->dev = &pdev->dev;
-> +	dev_set_drvdata(mfd_dev->dev, mfd_dev);
-> +
-> +	mfd_dev->regmap = devm_regmap_init_mmio(mfd_dev->dev, mfd_dev->regs,
-> +						&sun4i_gpadc_mfd_regmap_config);
-> +	if (IS_ERR(mfd_dev->regmap)) {
-> +		ret = PTR_ERR(mfd_dev->regmap);
-> +		dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	/* Disable all interrupts */
-> +	regmap_write(mfd_dev->regmap, SUN4I_GPADC_INT_FIFOC, 0);
-> +
-> +	irq = platform_get_irq(pdev, 0);
-> +	ret = devm_regmap_add_irq_chip(&pdev->dev, mfd_dev->regmap, irq,
-> +				       IRQF_ONESHOT, 0,
-> +				       &sun4i_gpadc_mfd_regmap_irq_chip,
-> +				       &mfd_dev->regmap_irqc);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to add irq chip: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	mfd_cells = of_id->data;
-> +	ret = devm_mfd_add_devices(mfd_dev->dev, 0, mfd_cells, 2, NULL, 0,
-> +				   NULL);
-> +	if (ret) {
-> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
+> +	iio_triggered_buffer_cleanup(*(struct iio_dev **)res);
 > +}
 > +
-> +MODULE_DEVICE_TABLE(of, sun4i_gpadc_mfd_of_match);
+> +int devm_iio_triggered_buffer_setup(struct device *dev,
+> +				    struct iio_dev *indio_dev,
+> +				    irqreturn_t (*h)(int irq, void *p),
+> +				    irqreturn_t (*thread)(int irq, void *p),
+> +				    const struct iio_buffer_setup_ops *ops)
+> +{
+> +	struct iio_dev **ptr;
+> +	int ret;
 > +
-> +static struct platform_driver sun4i_gpadc_mfd_driver = {
-> +	.driver = {
-> +		.name = "sun4i-adc-mfd",
-> +		.of_match_table = of_match_ptr(sun4i_gpadc_mfd_of_match),
-> +	},
-> +	.probe = sun4i_gpadc_mfd_probe,
-> +};
+> +	ptr = devres_alloc(devm_iio_triggered_buffer_clean, sizeof(*ptr),
+> +			   GFP_KERNEL);
+> +	if (!ptr)
+> +		return -ENOMEM;
 > +
-> +module_platform_driver(sun4i_gpadc_mfd_driver);
+> +	*ptr = indio_dev;
 > +
-> +MODULE_DESCRIPTION("Allwinner sunxi platforms' GPADC MFD core driver");
-> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/mfd/sun4i-gpadc-mfd.h b/include/linux/mfd/sun4i-gpadc-mfd.h
-> new file mode 100644
-> index 0000000..546274b
-> --- /dev/null
-> +++ b/include/linux/mfd/sun4i-gpadc-mfd.h
-> @@ -0,0 +1,94 @@
-> +/* Header of ADC MFD core driver for sunxi platforms
-> + *
-> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it under
-> + * the terms of the GNU General Public License version 2 as published by the
-> + * Free Software Foundation.
-> + */
+> +	ret = iio_triggered_buffer_setup(indio_dev, h, thread, ops);
+> +	if (!ret)
+> +		devres_add(dev, ptr);
+> +	else
+> +		devres_free(ptr);
 > +
-> +#ifndef __SUN4I_GPADC_MFD__H__
-> +#define __SUN4I_GPADC_MFD__H__
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_setup);
 > +
-> +#define SUN4I_GPADC_CTRL0				0x00
+> +void devm_iio_triggered_buffer_cleanup(struct device *dev,
+> +				       struct iio_dev *indio_dev)
+> +{
+> +	int rc;
 > +
-> +#define SUN4I_GPADC_CTRL0_ADC_FIRST_DLY(x)		((GENMASK(7, 0) & (x)) << 24)
-> +#define SUN4I_GPADC_CTRL0_ADC_FIRST_DLY_MODE		BIT(23)
-> +#define SUN4I_GPADC_CTRL0_ADC_CLK_SELECT		BIT(22)
-> +#define SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(x)		((GENMASK(1, 0) & (x)) << 20)
-> +#define SUN4I_GPADC_CTRL0_FS_DIV(x)			((GENMASK(3, 0) & (x)) << 16)
-> +#define SUN4I_GPADC_CTRL0_T_ACQ(x)			(GENMASK(15, 0) & (x))
+> +	rc = devres_release(dev, devm_iio_triggered_buffer_clean,
+> +			    devm_iio_device_match, indio_dev);
+> +	WARN_ON(rc);
+> +}
+> +EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_cleanup);
 > +
-> +#define SUN4I_GPADC_CTRL1				0x04
+>  MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
+>  MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
+>  MODULE_LICENSE("GPL");
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index d2b8899..fc340ed 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -1308,7 +1308,7 @@ static void devm_iio_device_release(struct device *dev, void *res)
+>  	iio_device_free(*(struct iio_dev **)res);
+>  }
+>  
+> -static int devm_iio_device_match(struct device *dev, void *res, void *data)
+> +int devm_iio_device_match(struct device *dev, void *res, void *data)
+>  {
+>  	struct iio_dev **r = res;
+>  	if (!r || !*r) {
+> @@ -1317,6 +1317,7 @@ static int devm_iio_device_match(struct device *dev, void *res, void *data)
+>  	}
+>  	return *r == data;
+>  }
+> +EXPORT_SYMBOL_GPL(devm_iio_device_match);
+>  
+>  /**
+>   * devm_iio_device_alloc - Resource-managed iio_device_alloc()
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 854e2da..cb8d598 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -642,6 +642,7 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
+>  }
+>  
+>  void iio_device_free(struct iio_dev *indio_dev);
+> +int devm_iio_device_match(struct device *dev, void *res, void *data);
+>  struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
+>  void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
+>  struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
+> diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
+> index f72f70d..3014561 100644
+> --- a/include/linux/iio/triggered_buffer.h
+> +++ b/include/linux/iio/triggered_buffer.h
+> @@ -12,4 +12,12 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
+>  	const struct iio_buffer_setup_ops *setup_ops);
+>  void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
+>  
+> +int devm_iio_triggered_buffer_setup(struct device *dev,
+> +				    struct iio_dev *indio_dev,
+> +				    irqreturn_t (*h)(int irq, void *p),
+> +				    irqreturn_t (*thread)(int irq, void *p),
+> +				    const struct iio_buffer_setup_ops *ops);
+> +void devm_iio_triggered_buffer_cleanup(struct device *dev,
+> +				       struct iio_dev *indio_dev);
 > +
-> +#define SUN4I_GPADC_CTRL1_STYLUS_UP_DEBOUNCE(x)		((GENMASK(7, 0) & (x)) << 12)
-> +#define SUN4I_GPADC_CTRL1_STYLUS_UP_DEBOUNCE_EN		BIT(9)
-> +#define SUN4I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(6)
-> +#define SUN4I_GPADC_CTRL1_TP_DUAL_EN			BIT(5)
-> +#define SUN4I_GPADC_CTRL1_TP_MODE_EN			BIT(4)
-> +#define SUN4I_GPADC_CTRL1_TP_ADC_SELECT			BIT(3)
-> +#define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) & (x))
-> +
-> +/* TP_CTRL1 bits for sun6i SOCs */
-> +#define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
-> +#define SUN6I_GPADC_CTRL1_TP_DUAL_EN			BIT(6)
-> +#define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
-> +#define SUN6I_GPADC_CTRL1_TP_ADC_SELECT			BIT(4)
-> +#define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
-> +
-> +#define SUN4I_GPADC_CTRL2				0x08
-> +
-> +#define SUN4I_GPADC_CTRL2_TP_SENSITIVE_ADJUST(x)	((GENMASK(3, 0) & (x)) << 28)
-> +#define SUN4I_GPADC_CTRL2_TP_MODE_SELECT(x)		((GENMASK(1, 0) & (x)) << 26)
-> +#define SUN4I_GPADC_CTRL2_PRE_MEA_EN			BIT(24)
-> +#define SUN4I_GPADC_CTRL2_PRE_MEA_THRE_CNT(x)		(GENMASK(23, 0) & (x))
-> +
-> +#define SUN4I_GPADC_CTRL3				0x0c
-> +
-> +#define SUN4I_GPADC_CTRL3_FILTER_EN			BIT(2)
-> +#define SUN4I_GPADC_CTRL3_FILTER_TYPE(x)		(GENMASK(1, 0) & (x))
-> +
-> +#define SUN4I_GPADC_TPR					0x18
-> +
-> +#define SUN4I_GPADC_TPR_TEMP_ENABLE			BIT(16)
-> +#define SUN4I_GPADC_TPR_TEMP_PERIOD(x)			(GENMASK(15, 0) & (x))
-> +
-> +#define SUN4I_GPADC_INT_FIFOC				0x10
-> +
-> +#define SUN4I_GPADC_INT_FIFOC_TEMP_IRQ_EN		BIT(18)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_OVERRUN_IRQ_EN		BIT(17)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_DATA_IRQ_EN		BIT(16)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_DATA_XY_CHANGE		BIT(13)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(x)	((GENMASK(4, 0) & (x)) << 8)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_DATA_DRQ_EN		BIT(7)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH		BIT(4)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_UP_IRQ_EN		BIT(1)
-> +#define SUN4I_GPADC_INT_FIFOC_TP_DOWN_IRQ_EN		BIT(0)
-> +
-> +#define SUN4I_GPADC_INT_FIFOS				0x14
-> +
-> +#define SUN4I_GPADC_INT_FIFOS_TEMP_DATA_PENDING		BIT(18)
-> +#define SUN4I_GPADC_INT_FIFOS_FIFO_OVERRUN_PENDING	BIT(17)
-> +#define SUN4I_GPADC_INT_FIFOS_FIFO_DATA_PENDING		BIT(16)
-> +#define SUN4I_GPADC_INT_FIFOS_TP_IDLE_FLG		BIT(2)
-> +#define SUN4I_GPADC_INT_FIFOS_TP_UP_PENDING		BIT(1)
-> +#define SUN4I_GPADC_INT_FIFOS_TP_DOWN_PENDING		BIT(0)
-> +
-> +#define SUN4I_GPADC_CDAT				0x1c
-> +#define SUN4I_GPADC_TEMP_DATA				0x20
-> +#define SUN4I_GPADC_DATA				0x24
-> +
-> +#define SUN4I_GPADC_IRQ_FIFO_DATA			0
-> +#define SUN4I_GPADC_IRQ_TEMP_DATA			1
-> +
-> +/* 10s delay before suspending the IP */
-> +#define SUN4I_GPADC_AUTOSUSPEND_DELAY			10000
-> +
-> +struct sun4i_gpadc_mfd_dev {
-> +	struct device			*dev;
-> +	struct regmap			*regmap;
-> +	struct regmap_irq_chip_data	*regmap_irqc;
-> +	void __iomem			*regs;
-> +};
-> +
-> +#endif
+>  #endif
 > 
 
