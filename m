@@ -1,65 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f68.google.com ([209.85.220.68]:34932 "EHLO
-        mail-pa0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934889AbcIEQrS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 12:47:18 -0400
-From: Joshua Clayton <stillcompiling@gmail.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: Maxime Ripard <maxime.ripard@free-electrons.com>,
-        jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-        lee.jones@linaro.org, thomas.petazzoni@free-electrons.com,
-        antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v4 3/3] iio: adc: add support for Allwinner SoCs ADC
-Date: Mon, 05 Sep 2016 09:47:12 -0700
-Message-ID: <1957122.9eY1bPBcZc@diplodocus>
-In-Reply-To: <9219f76c-384a-a7c3-5b13-ebaec980ab41@free-electrons.com>
-References: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com> <20160905070716.GA6322@lukather> <9219f76c-384a-a7c3-5b13-ebaec980ab41@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Received: from mx1.redhat.com ([209.132.183.28]:50746 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752147AbcIDRfj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 4 Sep 2016 13:35:39 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Teodora Baluta <teodora.baluta@intel.com>
+Cc: linux-iio@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] iio: accel: mxc6255 add support for the mxc6225
+Date: Sun,  4 Sep 2016 19:35:32 +0200
+Message-Id: <20160904173532.18994-1-hdegoede@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Monday, September 05, 2016 09:11:47 AM Quentin Schulz wrote:
-> On 05/09/2016 09:07, Maxime Ripard wrote:
-> > Hi,
-> > 
-> > Nitpicks ahead.
-> > 
-> > On Thu, Sep 01, 2016 at 04:05:05PM +0200, Quentin Schulz wrote:
-> >> +	info->soc_specific = (struct soc_specific *)platform_get_device_id(pdev)->driver_data;
-> > 
-> > This line is still rather long. How about calling the field "data" and
-> > the structure gpadc_data?
-> > 
-> 
-> driver_data is coming from the platform_device_id
-> (http://lxr.free-electrons.com/source/include/linux/mod_devicetable.h#L498)
-> so can't really change that.
-> I could change the structure to gpadc_data, that would save me 2
-> characters, still 13 characters above the 80 characters limit however.
-> 
-I think Maxime meant to change member "soc_specific" to "data" of type
-struct gpadc_data
+The mxc6225 is fully compatible with the existing mxc6255 driver,
+add support for it.
 
-> >> +
-> >> +	tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0, info,
-> >> +						   &sun4i_ts_tz_ops);
-> > 
-> > A comment on why you put the parent device structure and not the
-> > device itself like you're doing on all the other calls in that probe
-> > would be nice.
-> > 
-> 
-> Indeed.
-> 
-> Thanks,
-> Quentin
-> 
-> > Thanks!
-> > Maxime
-> > 
-> 
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/accel/mxc6255.c | 9 ++++++++-
+ 1 file changed, 8 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+index 97ccde7..50343a7 100644
+--- a/drivers/iio/accel/mxc6255.c
++++ b/drivers/iio/accel/mxc6255.c
+@@ -26,6 +26,7 @@
+ #define MXC6255_REG_YOUT		0x01
+ #define MXC6255_REG_CHIP_ID		0x08
+ 
++#define MXC6225_CHIP_ID			0xe5
+ #define MXC6255_CHIP_ID			0x05
+ 
+ /*
+@@ -154,7 +155,11 @@ static int mxc6255_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
+-	if (chip_id != MXC6255_CHIP_ID) {
++	switch (chip_id) {
++	case MXC6225_CHIP_ID:
++	case MXC6255_CHIP_ID:
++		break;
++	default:
+ 		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
+ 		return -ENODEV;
+ 	}
+@@ -171,12 +176,14 @@ static int mxc6255_probe(struct i2c_client *client,
+ }
+ 
+ static const struct acpi_device_id mxc6255_acpi_match[] = {
++	{"MXC6225",	0},
+ 	{"MXC6255",	0},
+ 	{ }
+ };
+ MODULE_DEVICE_TABLE(acpi, mxc6255_acpi_match);
+ 
+ static const struct i2c_device_id mxc6255_id[] = {
++	{"mxc6225",	0},
+ 	{"mxc6255",	0},
+ 	{ }
+ };
+-- 
+2.9.3
 
