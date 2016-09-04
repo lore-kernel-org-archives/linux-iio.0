@@ -1,74 +1,126 @@
-Return-Path: <gregor.boirie@parrot.com>
-Date: Sun, 4 Sep 2016 18:11:29 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
-To: Jonathan Cameron <jic23@kernel.org>
-CC: <linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
-Message-ID: <20160904161128.GA2016@geburah.sephiroth>
-References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com>
- <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49985 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752147AbcIDObU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 10:31:20 -0400
+Subject: Re: iio channel sync
+To: Joshua Clayton <stillcompiling@gmail.com>
+References: <4284e190-84c2-07cc-1157-ef6d2fdd0e8c@gmail.com>
+ <aa577c0c-c18c-26d3-b5c6-16692e813d35@gmail.com>
+ <e7291439-cb74-f5eb-8fbe-a7376b2d2bf8@kernel.org>
+ <3109858.4eJt4Uf2VN@diplodocus>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        Matt Ranostay <mranostay@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <ce5ca4eb-6ec2-9f11-69d5-a1ad39c6be1b@kernel.org>
+Date: Sun, 4 Sep 2016 15:22:00 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"
-In-Reply-To: <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <3109858.4eJt4Uf2VN@diplodocus>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Sep 03, 2016 at 04:13:30PM +0100, Jonathan Cameron wrote:
-> On 02/09/16 19:27, Gregor Boirie wrote:
-> > 7985e7c100 ("iio: Introduce a new fractional value type") introduced a
-> > new IIO_VAL_FRACTIONAL value type meant to represent rational type numb=
-ers
-> > expressed by a numerator and denominator combination.
-> >=20
-> > Formating of IIO_VAL_FRACTIONAL values relies upon do_div() usage. This
-> > fails handling negative values properly since parameters are reevaluated
-> > as unsigned values.
-> > Fix this by using div_s64_rem() instead. Computed integer part will car=
-ry
-> > properly signed value. Formatted fractional part will always be positiv=
-e.
-> >=20
-> > Fixes: 7985e7c100 ("iio: Introduce a new fractional value type")
-> > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->=20
-> Hi Gregor,
-Hi,
+On 03/09/16 21:52, Joshua Clayton wrote:
+> On Saturday, September 03, 2016 03:37:50 PM Jonathan Cameron wrote:
+>> On 31/08/16 23:47, Joshua Clayton wrote:
+>>> Greetings,
+>>>
+>>> On 08/30/2016 09:26 AM, Jonathan Cameron wrote:
+>>>>
+>>>> On 30 August 2016 08:41:18 BST, Matt Ranostay <mranostay@gmail.com> wrote:
+>>>>> On Mon, Aug 29, 2016 at 10:03 AM, Joshua Clayton
+>>>>> <stillcompiling@gmail.com> wrote:
+>>>>>> Jonathan,
+>>>>>>
+>>>>>> I have an out-of tree driver I am working on mainlining.
+>>>>>>
+>>>>>> The device is a sensor that gets phase and amplitude (x and y) data
+>>>>>>
+>>>>>> on multiple physical and/or time multiplexed channels.
+>>>>>>
+>>>>>> It also has up to 4 optical encoders to get physical location.
+>>>>>>
+>>>>>> The existing driver bundles x and y together with a snapshot
+>>>>>>
+>>>>>> of the encoder sums at that moment.
+>>>>>>
+>>>>>>
+>>>>>> This seems like a good fit for iio, but one item is bothering me.
+>>>>>>
+>>>>>> How is synchronization between streams usually handled with
+>>>>>>
+>>>>>> iio drivers? Timing can be important.
+>>>>> Wouldn't the trigger buffer framework be good enough for this?
+>>>> Perhaps you could describe your usecase a little more?
+>>>>
+>>>> Is the interesting bit that you want to sync streams with different
+>>>> sampling frequencies? Are those encoders better represented by a
+>>>> separate driver? (In which case I have some thoughts on simple
+>>>> additions to IIO trigger handling that might help - basically a
+>>>> hold off on triggers until all relevant devices are attached)
+>>
+>>> Thanks for responding.
+>>>
+>>> The encoders (often a pair of them, could be up to 4) represent the position
+>>> of the sensor in relation to an object to be tested. (linear movement or
+>>> rotation around an axis).
+>>> The Maximum sample rate of the encoders is much higher than the sensor,
+>>> but they are moved by a motor or by hand, so the actual sample rate is
+>>> variable and may be higher or lower that the sensor sample rate.
+>>>
+>>> The encoders are sometimes used as a trigger for data collection,
+>> It would certainly be possible to do this by having a slightly unusual type
+>> of trigger.
+>>> but
+>>> the encoders are also used as positional data alongside the sensor data.
+>> Makes sense.
+>>>
+>>> The way we get around this now is to bundle a snapshot of the encoder
+>>> with the sensor data and discard it later if the encoder hasn't changed and
+>>> the trigger function is enabled.
+>> The only slight change I'd suggest is that if the encoders are read by
+>> separate hardware (presumably they are into a capture unit of some type?)
+>> then you may need to have the encoder capture triggered off the same
+>> trigger as the sensor data.  Thus you'd end up with two buffers that
+>> could be easily fused in user space.
+>>
+>> That would allow  generic drivers for other users of either the sensor
+>> or the encoder capture hardware.
+>>
+>> If they come in through the same bit of hardware (e.g. you are routing
+>> them both through an fpga or similar) then fine as you have it currently.
+>>
+> 
+> Thanks for responding to my questions. It is always hard to visualise how
+> something that already exists might be re-architected, and you've given me
+> enough to get my mind working on it.
+>  
+>> Sounds like an interesting bit of hardware ;) Some sort of radio test kit
+>> around an antenna? (feel free to not answer, I'm always curious)
+>>
+>> Jonathan
+>>>
+> Haha. Yeah, its a bit of a tightrope walk trying to upstream code while
+> keeping the "secret sauce" safe.
+> 
+> I thinks its ok to tell you it is eddy current testing equipment, used in
+> non-destructive testing of metal items.
+> 
+> We set up a standing wave using a high speed A/C current in a coil,
+> and measure distortion in the amplitude and phase of secondary
+> A/C currents induced in another coil.
+> 
+> It can be used to find defects near the surface, such as hairline cracks,
+> as well as to indirectly measure thickness and conductivity that might
+> indicate metal fatigue.
+> 
+> Google "eddy current" if you are still curious.
+> 
+Cool, you learn something new every day ;).  Thanks for the info.
+Looking forward to seeing the code ;)
 
->=20
-> While this looks sensible to me, I always gain an almighty headache when
-> I hit the various divide functions.
-So am I.
->=20
-> Lars, the fractional code was yours in the first place.
-> If you have time can you sanity check this please.
-This patch may break a lot things indeed. I'd feel much more comfortable if
-someone else could perform additional testing too.
+Jonathan
+> Joshua
+> 
 
-Gr=C3=A9gor.
->=20
-> Jonathan
->=20
-> > ---
-> >  drivers/iio/industrialio-core.c | 5 ++---
-> >  1 file changed, 2 insertions(+), 3 deletions(-)
-> >=20
-> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio=
--core.c
-> > index f914d5d..d2b8899 100644
-> > --- a/drivers/iio/industrialio-core.c
-> > +++ b/drivers/iio/industrialio-core.c
-> > @@ -613,9 +613,8 @@ ssize_t iio_format_value(char *buf, unsigned int ty=
-pe, int size, int *vals)
-> >  			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-> >  	case IIO_VAL_FRACTIONAL:
-> >  		tmp =3D div_s64((s64)vals[0] * 1000000000LL, vals[1]);
-> > -		vals[1] =3D do_div(tmp, 1000000000LL);
-> > -		vals[0] =3D tmp;
-> > -		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-> > +		vals[0] =3D (int)div_s64_rem(tmp, 1000000000, &vals[1]);
-> > +		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
-> >  	case IIO_VAL_FRACTIONAL_LOG2:
-> >  		tmp =3D (s64)vals[0] * 1000000000LL >> vals[1];
-> >  		vals[1] =3D do_div(tmp, 1000000000LL);
-> >=20
->=20
