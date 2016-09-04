@@ -1,13 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50114 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50153 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752181AbcIDOnt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 10:43:49 -0400
-Subject: Re: [PATCH v3 2/3] iio: add resource managed triggered buffer init
- helpers
+        with ESMTP id S1752226AbcIDOvV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 10:51:21 -0400
+Subject: Re: [PATCH v3 1/3] iio:trigger: add resource managed (un)register
 To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
 References: <cover.1472841954.git.gregor.boirie@parrot.com>
- <6c078d51cfdc4b795004fea18d6d00e4aea59f27.1472841954.git.gregor.boirie@parrot.com>
+ <3a8977c77d60048bf410fd43cd8d96c4ab42b35a.1472841954.git.gregor.boirie@parrot.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -28,80 +27,87 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Masahiro Yamada <yamada.masahiro@socionext.com>,
         Arnd Bergmann <arnd@arndb.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e7aabbc9-113b-e498-ba44-94e1d99793b8@kernel.org>
-Date: Sun, 4 Sep 2016 15:42:29 +0100
+Message-ID: <6b4ada15-fb41-9ee8-99c5-af9eea5c4ae7@kernel.org>
+Date: Sun, 4 Sep 2016 15:40:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <6c078d51cfdc4b795004fea18d6d00e4aea59f27.1472841954.git.gregor.boirie@parrot.com>
+In-Reply-To: <3a8977c77d60048bf410fd43cd8d96c4ab42b35a.1472841954.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 02/09/16 19:47, Gregor Boirie wrote:
-> Add resource managed devm_iio_triggered_buffer_setup() and
-> devm_iio_triggered_buffer_cleanup() to automatically clean up triggered
-> buffers setup by IIO drivers, thus leading to simplified IIO drivers code.
+> Add resource managed devm_iio_trigger_register() and
+> devm_iio_triger_unregister() to automatically clean up registered triggers
+> allocated by IIO drivers, thus leading to simplified IIO drivers code.
 > 
 > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-This feels a little less certain than the trigger one in my mind,
-but on balance probably still a good idea.
+Looks good to me and stands fine on it's own.  Not sure why we'd
+never gotten around to doing this before!
 
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the autobuilders to play with it.
+Applied to the togreg branch of iio.git
 
 Thanks,
 
 Jonathan
 > ---
->  Documentation/driver-model/devres.txt              |  2 ++
->  drivers/iio/buffer/industrialio-triggered-buffer.c | 42 ++++++++++++++++++++++
->  drivers/iio/industrialio-core.c                    |  3 +-
->  include/linux/iio/iio.h                            |  1 +
->  include/linux/iio/triggered_buffer.h               |  8 +++++
->  5 files changed, 55 insertions(+), 1 deletion(-)
+>  Documentation/driver-model/devres.txt |  2 ++
+>  drivers/iio/industrialio-trigger.c    | 59 +++++++++++++++++++++++++++++++++++
+>  include/linux/iio/trigger.h           |  6 ++++
+>  3 files changed, 67 insertions(+)
 > 
 > diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-> index 6a2138a..75bc5b8 100644
+> index b0d775d..6a2138a 100644
 > --- a/Documentation/driver-model/devres.txt
 > +++ b/Documentation/driver-model/devres.txt
-> @@ -266,6 +266,8 @@ IIO
->    devm_iio_device_unregister()
->    devm_iio_kfifo_allocate()
+> @@ -268,6 +268,8 @@ IIO
 >    devm_iio_kfifo_free()
-> +  devm_iio_triggered_buffer_setup()
-> +  devm_iio_triggered_buffer_cleanup()
 >    devm_iio_trigger_alloc()
 >    devm_iio_trigger_free()
->    devm_iio_trigger_register()
-> diff --git a/drivers/iio/buffer/industrialio-triggered-buffer.c b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> index 4b2858b..d3db1fc 100644
-> --- a/drivers/iio/buffer/industrialio-triggered-buffer.c
-> +++ b/drivers/iio/buffer/industrialio-triggered-buffer.c
-> @@ -98,6 +98,48 @@ void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev)
+> +  devm_iio_trigger_register()
+> +  devm_iio_trigger_unregister()
+>    devm_iio_channel_get()
+>    devm_iio_channel_release()
+>    devm_iio_channel_get_all()
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index 7ad82fd..8ea2dc1 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -622,6 +622,65 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig)
 >  }
->  EXPORT_SYMBOL(iio_triggered_buffer_cleanup);
+>  EXPORT_SYMBOL_GPL(devm_iio_trigger_free);
 >  
-> +static void devm_iio_triggered_buffer_clean(struct device *dev, void *res)
+> +static void devm_iio_trigger_unreg(struct device *dev, void *res)
 > +{
-> +	iio_triggered_buffer_cleanup(*(struct iio_dev **)res);
+> +	iio_trigger_unregister(*(struct iio_trigger **)res);
 > +}
 > +
-> +int devm_iio_triggered_buffer_setup(struct device *dev,
-> +				    struct iio_dev *indio_dev,
-> +				    irqreturn_t (*h)(int irq, void *p),
-> +				    irqreturn_t (*thread)(int irq, void *p),
-> +				    const struct iio_buffer_setup_ops *ops)
+> +/**
+> + * devm_iio_trigger_register - Resource-managed iio_trigger_register()
+> + * @dev:	device this trigger was allocated for
+> + * @trig_info:	trigger to register
+> + *
+> + * Managed iio_trigger_register().  The IIO trigger registered with this
+> + * function is automatically unregistered on driver detach. This function
+> + * calls iio_trigger_register() internally. Refer to that function for more
+> + * information.
+> + *
+> + * If an iio_trigger registered with this function needs to be unregistered
+> + * separately, devm_iio_trigger_unregister() must be used.
+> + *
+> + * RETURNS:
+> + * 0 on success, negative error number on failure.
+> + */
+> +int devm_iio_trigger_register(struct device *dev, struct iio_trigger *trig_info)
 > +{
-> +	struct iio_dev **ptr;
+> +	struct iio_trigger **ptr;
 > +	int ret;
 > +
-> +	ptr = devres_alloc(devm_iio_triggered_buffer_clean, sizeof(*ptr),
-> +			   GFP_KERNEL);
+> +	ptr = devres_alloc(devm_iio_trigger_unreg, sizeof(*ptr), GFP_KERNEL);
 > +	if (!ptr)
 > +		return -ENOMEM;
 > +
-> +	*ptr = indio_dev;
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, h, thread, ops);
+> +	*ptr = trig_info;
+> +	ret = iio_trigger_register(trig_info);
 > +	if (!ret)
 > +		devres_add(dev, ptr);
 > +	else
@@ -109,71 +115,51 @@ Jonathan
 > +
 > +	return ret;
 > +}
-> +EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_setup);
+> +EXPORT_SYMBOL_GPL(devm_iio_trigger_register);
 > +
-> +void devm_iio_triggered_buffer_cleanup(struct device *dev,
-> +				       struct iio_dev *indio_dev)
+> +/**
+> + * devm_iio_trigger_unregister - Resource-managed iio_trigger_unregister()
+> + * @dev:	device this iio_trigger belongs to
+> + * @trig_info:	the trigger associated with the device
+> + *
+> + * Unregister trigger registered with devm_iio_trigger_register().
+> + */
+> +void devm_iio_trigger_unregister(struct device *dev,
+> +				 struct iio_trigger *trig_info)
 > +{
 > +	int rc;
 > +
-> +	rc = devres_release(dev, devm_iio_triggered_buffer_clean,
-> +			    devm_iio_device_match, indio_dev);
+> +	rc = devres_release(dev, devm_iio_trigger_unreg, devm_iio_trigger_match,
+> +			    trig_info);
 > +	WARN_ON(rc);
 > +}
-> +EXPORT_SYMBOL_GPL(devm_iio_triggered_buffer_cleanup);
+> +EXPORT_SYMBOL_GPL(devm_iio_trigger_unregister);
 > +
->  MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
->  MODULE_DESCRIPTION("IIO helper functions for setting up triggered buffers");
->  MODULE_LICENSE("GPL");
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index d2b8899..fc340ed 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -1308,7 +1308,7 @@ static void devm_iio_device_release(struct device *dev, void *res)
->  	iio_device_free(*(struct iio_dev **)res);
->  }
->  
-> -static int devm_iio_device_match(struct device *dev, void *res, void *data)
-> +int devm_iio_device_match(struct device *dev, void *res, void *data)
+>  void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
 >  {
->  	struct iio_dev **r = res;
->  	if (!r || !*r) {
-> @@ -1317,6 +1317,7 @@ static int devm_iio_device_match(struct device *dev, void *res, void *data)
->  	}
->  	return *r == data;
->  }
-> +EXPORT_SYMBOL_GPL(devm_iio_device_match);
+>  	indio_dev->groups[indio_dev->groupcounter++] =
+> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+> index 1c9e028..623d183 100644
+> --- a/include/linux/iio/trigger.h
+> +++ b/include/linux/iio/trigger.h
+> @@ -125,12 +125,18 @@ static inline void *iio_trigger_get_drvdata(struct iio_trigger *trig)
+>   **/
+>  int iio_trigger_register(struct iio_trigger *trig_info);
 >  
->  /**
->   * devm_iio_device_alloc - Resource-managed iio_device_alloc()
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index 854e2da..cb8d598 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -642,6 +642,7 @@ static inline struct iio_dev *iio_priv_to_dev(void *priv)
->  }
->  
->  void iio_device_free(struct iio_dev *indio_dev);
-> +int devm_iio_device_match(struct device *dev, void *res, void *data);
->  struct iio_dev *devm_iio_device_alloc(struct device *dev, int sizeof_priv);
->  void devm_iio_device_free(struct device *dev, struct iio_dev *indio_dev);
->  struct iio_trigger *devm_iio_trigger_alloc(struct device *dev,
-> diff --git a/include/linux/iio/triggered_buffer.h b/include/linux/iio/triggered_buffer.h
-> index f72f70d..3014561 100644
-> --- a/include/linux/iio/triggered_buffer.h
-> +++ b/include/linux/iio/triggered_buffer.h
-> @@ -12,4 +12,12 @@ int iio_triggered_buffer_setup(struct iio_dev *indio_dev,
->  	const struct iio_buffer_setup_ops *setup_ops);
->  void iio_triggered_buffer_cleanup(struct iio_dev *indio_dev);
->  
-> +int devm_iio_triggered_buffer_setup(struct device *dev,
-> +				    struct iio_dev *indio_dev,
-> +				    irqreturn_t (*h)(int irq, void *p),
-> +				    irqreturn_t (*thread)(int irq, void *p),
-> +				    const struct iio_buffer_setup_ops *ops);
-> +void devm_iio_triggered_buffer_cleanup(struct device *dev,
-> +				       struct iio_dev *indio_dev);
+> +int devm_iio_trigger_register(struct device *dev,
+> +			      struct iio_trigger *trig_info);
 > +
->  #endif
+>  /**
+>   * iio_trigger_unregister() - unregister a trigger from the core
+>   * @trig_info:	trigger to be unregistered
+>   **/
+>  void iio_trigger_unregister(struct iio_trigger *trig_info);
+>  
+> +void devm_iio_trigger_unregister(struct device *dev,
+> +				 struct iio_trigger *trig_info);
+> +
+>  /**
+>   * iio_trigger_poll() - called on a trigger occurring
+>   * @trig:	trigger which occurred
 > 
 
