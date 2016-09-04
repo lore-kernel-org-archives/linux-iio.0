@@ -1,165 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50153 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752226AbcIDOvV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 10:51:21 -0400
-Subject: Re: [PATCH v3 1/3] iio:trigger: add resource managed (un)register
-To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
-References: <cover.1472841954.git.gregor.boirie@parrot.com>
- <3a8977c77d60048bf410fd43cd8d96c4ab42b35a.1472841954.git.gregor.boirie@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Alexander Kurz <akurz@blala.de>, Tejun Heo <tj@kernel.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
-        Vlad Dogaru <vlad.dogaru@intel.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Marek Vasut <marex@denx.de>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Arnd Bergmann <arnd@arndb.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6b4ada15-fb41-9ee8-99c5-af9eea5c4ae7@kernel.org>
-Date: Sun, 4 Sep 2016 15:40:39 +0100
+Return-Path: <gregor.boirie@parrot.com>
+Date: Sun, 4 Sep 2016 18:11:29 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: <linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
+Message-ID: <20160904161128.GA2016@geburah.sephiroth>
+References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com>
+ <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <3a8977c77d60048bf410fd43cd8d96c4ab42b35a.1472841954.git.gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 02/09/16 19:47, Gregor Boirie wrote:
-> Add resource managed devm_iio_trigger_register() and
-> devm_iio_triger_unregister() to automatically clean up registered triggers
-> allocated by IIO drivers, thus leading to simplified IIO drivers code.
-> 
-> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-Looks good to me and stands fine on it's own.  Not sure why we'd
-never gotten around to doing this before!
+On Sat, Sep 03, 2016 at 04:13:30PM +0100, Jonathan Cameron wrote:
+> On 02/09/16 19:27, Gregor Boirie wrote:
+> > 7985e7c100 ("iio: Introduce a new fractional value type") introduced a
+> > new IIO_VAL_FRACTIONAL value type meant to represent rational type numb=
+ers
+> > expressed by a numerator and denominator combination.
+> >=20
+> > Formating of IIO_VAL_FRACTIONAL values relies upon do_div() usage. This
+> > fails handling negative values properly since parameters are reevaluated
+> > as unsigned values.
+> > Fix this by using div_s64_rem() instead. Computed integer part will car=
+ry
+> > properly signed value. Formatted fractional part will always be positiv=
+e.
+> >=20
+> > Fixes: 7985e7c100 ("iio: Introduce a new fractional value type")
+> > Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+>=20
+> Hi Gregor,
+Hi,
 
-Applied to the togreg branch of iio.git
+>=20
+> While this looks sensible to me, I always gain an almighty headache when
+> I hit the various divide functions.
+So am I.
+>=20
+> Lars, the fractional code was yours in the first place.
+> If you have time can you sanity check this please.
+This patch may break a lot things indeed. I'd feel much more comfortable if
+someone else could perform additional testing too.
 
-Thanks,
-
-Jonathan
-> ---
->  Documentation/driver-model/devres.txt |  2 ++
->  drivers/iio/industrialio-trigger.c    | 59 +++++++++++++++++++++++++++++++++++
->  include/linux/iio/trigger.h           |  6 ++++
->  3 files changed, 67 insertions(+)
-> 
-> diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-> index b0d775d..6a2138a 100644
-> --- a/Documentation/driver-model/devres.txt
-> +++ b/Documentation/driver-model/devres.txt
-> @@ -268,6 +268,8 @@ IIO
->    devm_iio_kfifo_free()
->    devm_iio_trigger_alloc()
->    devm_iio_trigger_free()
-> +  devm_iio_trigger_register()
-> +  devm_iio_trigger_unregister()
->    devm_iio_channel_get()
->    devm_iio_channel_release()
->    devm_iio_channel_get_all()
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 7ad82fd..8ea2dc1 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -622,6 +622,65 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig)
->  }
->  EXPORT_SYMBOL_GPL(devm_iio_trigger_free);
->  
-> +static void devm_iio_trigger_unreg(struct device *dev, void *res)
-> +{
-> +	iio_trigger_unregister(*(struct iio_trigger **)res);
-> +}
-> +
-> +/**
-> + * devm_iio_trigger_register - Resource-managed iio_trigger_register()
-> + * @dev:	device this trigger was allocated for
-> + * @trig_info:	trigger to register
-> + *
-> + * Managed iio_trigger_register().  The IIO trigger registered with this
-> + * function is automatically unregistered on driver detach. This function
-> + * calls iio_trigger_register() internally. Refer to that function for more
-> + * information.
-> + *
-> + * If an iio_trigger registered with this function needs to be unregistered
-> + * separately, devm_iio_trigger_unregister() must be used.
-> + *
-> + * RETURNS:
-> + * 0 on success, negative error number on failure.
-> + */
-> +int devm_iio_trigger_register(struct device *dev, struct iio_trigger *trig_info)
-> +{
-> +	struct iio_trigger **ptr;
-> +	int ret;
-> +
-> +	ptr = devres_alloc(devm_iio_trigger_unreg, sizeof(*ptr), GFP_KERNEL);
-> +	if (!ptr)
-> +		return -ENOMEM;
-> +
-> +	*ptr = trig_info;
-> +	ret = iio_trigger_register(trig_info);
-> +	if (!ret)
-> +		devres_add(dev, ptr);
-> +	else
-> +		devres_free(ptr);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(devm_iio_trigger_register);
-> +
-> +/**
-> + * devm_iio_trigger_unregister - Resource-managed iio_trigger_unregister()
-> + * @dev:	device this iio_trigger belongs to
-> + * @trig_info:	the trigger associated with the device
-> + *
-> + * Unregister trigger registered with devm_iio_trigger_register().
-> + */
-> +void devm_iio_trigger_unregister(struct device *dev,
-> +				 struct iio_trigger *trig_info)
-> +{
-> +	int rc;
-> +
-> +	rc = devres_release(dev, devm_iio_trigger_unreg, devm_iio_trigger_match,
-> +			    trig_info);
-> +	WARN_ON(rc);
-> +}
-> +EXPORT_SYMBOL_GPL(devm_iio_trigger_unregister);
-> +
->  void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
->  {
->  	indio_dev->groups[indio_dev->groupcounter++] =
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index 1c9e028..623d183 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -125,12 +125,18 @@ static inline void *iio_trigger_get_drvdata(struct iio_trigger *trig)
->   **/
->  int iio_trigger_register(struct iio_trigger *trig_info);
->  
-> +int devm_iio_trigger_register(struct device *dev,
-> +			      struct iio_trigger *trig_info);
-> +
->  /**
->   * iio_trigger_unregister() - unregister a trigger from the core
->   * @trig_info:	trigger to be unregistered
->   **/
->  void iio_trigger_unregister(struct iio_trigger *trig_info);
->  
-> +void devm_iio_trigger_unregister(struct device *dev,
-> +				 struct iio_trigger *trig_info);
-> +
->  /**
->   * iio_trigger_poll() - called on a trigger occurring
->   * @trig:	trigger which occurred
-> 
-
+Gr=C3=A9gor.
+>=20
+> Jonathan
+>=20
+> > ---
+> >  drivers/iio/industrialio-core.c | 5 ++---
+> >  1 file changed, 2 insertions(+), 3 deletions(-)
+> >=20
+> > diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio=
+-core.c
+> > index f914d5d..d2b8899 100644
+> > --- a/drivers/iio/industrialio-core.c
+> > +++ b/drivers/iio/industrialio-core.c
+> > @@ -613,9 +613,8 @@ ssize_t iio_format_value(char *buf, unsigned int ty=
+pe, int size, int *vals)
+> >  			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+> >  	case IIO_VAL_FRACTIONAL:
+> >  		tmp =3D div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> > -		vals[1] =3D do_div(tmp, 1000000000LL);
+> > -		vals[0] =3D tmp;
+> > -		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+> > +		vals[0] =3D (int)div_s64_rem(tmp, 1000000000, &vals[1]);
+> > +		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
+> >  	case IIO_VAL_FRACTIONAL_LOG2:
+> >  		tmp =3D (s64)vals[0] * 1000000000LL >> vals[1];
+> >  		vals[1] =3D do_div(tmp, 1000000000LL);
+> >=20
+>=20
