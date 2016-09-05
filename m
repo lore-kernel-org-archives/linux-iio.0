@@ -1,85 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58087 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58135 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933093AbcIEUPs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:15:48 -0400
-Subject: Re: A potential race in drivers/iio/adc/vf610_adc.ko
-To: Vaishali Thakkar <vaishali.thakkar@oracle.com>,
-        Pavel Andrianov <andrianov@ispras.ru>
-References: <8ad6537e-718a-4c5d-4f51-958e585b3727@ispras.ru>
- <bdc8ff42-d4a2-8701-45de-4c8ab6657571@kernel.org>
- <57CD1572.4040004@oracle.com>
+        with ESMTP id S933520AbcIEUYS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:24:18 -0400
+Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        linux-iio@vger.kernel.org
+References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com>
+ <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
+ <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        ldv-project@linuxtesting.org
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <466b5810-1aaa-c8cd-78fb-964f77a6319f@kernel.org>
-Date: Mon, 5 Sep 2016 21:15:44 +0100
+Message-ID: <419daee6-1e68-dba4-3e04-3c13d58eea44@kernel.org>
+Date: Mon, 5 Sep 2016 21:24:16 +0100
 MIME-Version: 1.0
-In-Reply-To: <57CD1572.4040004@oracle.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/09/16 07:49, Vaishali Thakkar wrote:
+On 05/09/16 08:59, Lars-Peter Clausen wrote:
+> On 09/03/2016 05:13 PM, Jonathan Cameron wrote:
+>> On 02/09/16 19:27, Gregor Boirie wrote:
+>>> 7985e7c100 ("iio: Introduce a new fractional value type") introduced a
+>>> new IIO_VAL_FRACTIONAL value type meant to represent rational type numbers
+>>> expressed by a numerator and denominator combination.
+>>>
+>>> Formating of IIO_VAL_FRACTIONAL values relies upon do_div() usage. This
+>>> fails handling negative values properly since parameters are reevaluated
+>>> as unsigned values.
+>>> Fix this by using div_s64_rem() instead. Computed integer part will carry
+>>> properly signed value. Formatted fractional part will always be positive.
+>>>
+>>> Fixes: 7985e7c100 ("iio: Introduce a new fractional value type")
+>>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+>>
+>> Hi Gregor,
+>>
+>> While this looks sensible to me, I always gain an almighty headache when
+>> I hit the various divide functions.
+>>
+>> Lars, the fractional code was yours in the first place.
+>> If you have time can you sanity check this please.
 > 
+> Looks good. While looking into this I noticed that we have a very similar
+> patch[1] in our tree, seems like somebody forgot to send that upstream.
 > 
-> On Saturday 03 September 2016 08:53 PM, Jonathan Cameron wrote:
->> On 02/09/16 09:05, Pavel Andrianov wrote:
->>>
->>
->>> Hi!
->> Hi Pavel,
->>>
->>> There is a potential race in drivers/iio/adc/vf610_adc.ko. Handlers
->>> vf610_set_conversion_mode and vf610_write_raw are called via
->>> device_attibute interface, but they are related to different
->>> attributes, so may be executed in parallel. vf610_set_conversion_mode
->>> acquires the mutex indio_dev->mlock, and vf610_write_raw does not.
->>> Thus updating the structure 'info' may be performed simultaneously.
->>>
->>> Should vf610_write_raw also acquire the same mutex indio_dev->mlock?
->>>
->>
->> As Alison observed, mlock is not a general purpose lock for use by
->> drivers. It's there to prevent state changes between direct reads
->> (polled) and buffered/triggered reads (pushed).
->>
->> The write raw simply sets the sampling frequency. That's not a problem
->> whilst buffered capture is running or otherwise.  Interesting question
->> of whether changing mode causes any trouble as well.  It's possible 
->> something is undefined in the hardware during a mode change...
->>
->> Anyhow, that covers mlock.  Next question: Is there a race condition in
->> general?
->>
->> Yes there definitely is as we have read modify write cycles
->> on VF610_REG_ADC_CFG in both paths.  So what is needed is a local lock
->> to protect these accesses.  Whilst in theory mlock could be used
->> it should not be as it has a clearly stated purpose and using it
->> for other purposes makes for much fiddlier and harder to read code!
-> 
-> Makes sense. What would be the best solution in this case? Should we
-> just introduce local lock for this module and use it for both or there
-> is anything we need to take care of while we have mlock for one?
-I'd leave the mlock as it is (or use the direct_claim wrappers as relevant).
-It would require a deep dive into the data sheet and hardware
-testing (for undocumented 'features') to be sure we could relax the
-current locking.  Tightening it doesn't make sense unless we have
-reason to believe the frequency change causes trouble.
+> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+Good to know about the previous patch - if there was anything hiding around
+this I would assume that would have shaken it out by now!
 
-A local lock as part of the structure retrieved from iio_priv would
-make sense to protect against multiple read, modify, write cycles
-occurring at the same time would cover the race conditions nicely.
+Thanks
 
 Jonathan
 > 
->> (as an aside IIRC there is no locking in sysfs attributes to prevent
->> a single attribute being read twice at the same time.)
->>
->> Jonathan
->>
+> 
+> [1]
+> https://github.com/analogdevicesinc/linux/commit/1dbcdcfd0c8d3f5513572697685d9f30ba49d851
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
