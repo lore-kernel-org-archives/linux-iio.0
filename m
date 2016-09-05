@@ -1,160 +1,82 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Mon, 5 Sep 2016 10:07:48 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-cc: thomas.petazzoni@free-electrons.com, lars@metafoo.de,
-    linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
-    linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-    knaack.h@gmx.de, maxime.ripard@free-electrons.com, jic23@kernel.org
-Subject: Re: [PATCH v4 3/3] iio: adc: add support for Allwinner SoCs ADC
-In-Reply-To: <aed1e00f-ceaa-27e9-502d-51428f59a84f@free-electrons.com>
-Message-ID: <alpine.DEB.2.02.1609050924370.12528@pmeerw.net>
-References: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com> <1472738705-20145-4-git-send-email-quentin.schulz@free-electrons.com> <alpine.DEB.2.02.1609041754350.2060@pmeerw.net>
- <aed1e00f-ceaa-27e9-502d-51428f59a84f@free-electrons.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58106 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932605AbcIEUTT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:19:19 -0400
+Subject: Re: [PATCH] iio: accel: mxc6255 add support for the mxc6225
+To: Hans de Goede <hdegoede@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Teodora Baluta <teodora.baluta@intel.com>
+References: <20160904173532.18994-1-hdegoede@redhat.com>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <7b90317d-363d-d690-a8ac-61fbc3a0acf8@kernel.org>
+Date: Mon, 5 Sep 2016 21:19:16 +0100
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160904173532.18994-1-hdegoede@redhat.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-> >> The Allwinner SoCs all have an ADC that can also act as a touchscreen
-> >> controller and a thermal sensor. This patch adds the ADC driver which is
-> >> based on the MFD for the same SoCs ADC.
-> > 
-> > nitpicking ahead
-
-> [...]
-> >> +
-> >> +const unsigned int sun4i_gpadc_chan_select(unsigned int chan)
-> > 
-> > static instead of const?
-
-> static const then?
-
-no, the const is redundant and ignored
--Wignored-qualifiers gives a warning
-
-just static, no const
-
-see
-http://stackoverflow.com/questions/12052468/type-qualifiers-on-function-return-type
-
-> >> +{
-> >> +	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
-> >> +}
-> >> +
-> >> +struct soc_specific {
-> >> +	const int		temp_offset;
-> > 
-> > wondering why you constify every member?
-> > 
+On 04/09/16 18:35, Hans de Goede wrote:
+> The mxc6225 is fully compatible with the existing mxc6255 driver,
+> add support for it.
 > 
-> Because they're supposed to be fixed values? It won't change in runtime.
-> Is there any reason why I shouldn't do that?
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Ah well. Can't find any docs on this on via google so I'll take
+your word for it :)
 
-yes, but using the entire struct as const has the same effect;
-constifying individual members makes more sense if there are also 
-non-const members
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
-nothing wrong, just unusual
+Thanks,
 
-> >> +	const int		temp_scale;
-> >> +	const unsigned int	tp_mode_en;
-> >> +	const unsigned int	tp_adc_select;
-> >> +	const unsigned int	(*adc_chan_select)(unsigned int chan);
-> >> +};
-> [...]
-> >> +static int sun4i_gpadc_read(struct iio_dev *indio_dev, int channel, int *val,
-> >> +			    unsigned int irq)
-> >> +{
-> >> +	struct sun4i_gpadc_dev *info = iio_priv(indio_dev);
-> >> +	int ret = 0;
-> >> +
-> >> +	pm_runtime_get_sync(indio_dev->dev.parent);
-> >> +	mutex_lock(&info->mutex);
-> >> +
-> >> +	reinit_completion(&info->completion);
-> >> +
-> >> +	regmap_write(info->regmap, SUN4I_GPADC_INT_FIFOC,
-> >> +		     SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(1) |
-> >> +		     SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH);
-> > 
-> > check retval? here and elsewhere for regmap_write()
-> > 
+Jonathan
+> ---
+>  drivers/iio/accel/mxc6255.c | 9 ++++++++-
+>  1 file changed, 8 insertions(+), 1 deletion(-)
 > 
-> ACK. What should I do with the retval then?
-> 
-> There are some in:
-> - sun4i_gpadc_read called for read_raws => return which error code (or
-> -ret only?)?
-
-I'd just return ret; in the other cases I think it's ok to ignore errors
-
-> - sun4i_gpadc_runtime_suspend => return value of ret, but that would
-> cancel the suspend right?
-> - sun4i_gpadc_runtime_resume => return value of ret, but that would
-> cancel resume right?
-> - sun4i_gpadc_probe in the error gotos => probe already failing so do we
-> actually care if regmap_update_bits fails? If yes, what's the expected
-> behaviour?
-> - sun4i_gpadc_remove => return value of ret, but that would mean the
-> remove failed right?
-> 
-> [...]
-> >> +static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
-> >> +				struct iio_chan_spec const *chan, int *val,
-> >> +				int *val2, long mask)
-> >> +{
-> >> +	int ret;
-> >> +
-> >> +	switch (mask) {
-> >> +	case IIO_CHAN_INFO_OFFSET:
-> >> +		ret = sun4i_gpadc_temp_offset(indio_dev, val);
-> >> +		if (ret)
-> >> +			return ret;
-> >> +
-> >> +		return IIO_VAL_INT;
-> >> +	case IIO_CHAN_INFO_RAW:
-> >> +		if (chan->type == IIO_VOLTAGE) {
-> >> +			ret = sun4i_gpadc_adc_read(indio_dev, chan->channel,
-> >> +						   val);
-> >> +			if (ret)
-> >> +				return ret;
-> > 
-> > could share the "if (ret) return ret;" between code path
-> > 
-> 
-> ACK.
-> 
-> [...]
-> >> +static int sun4i_irq_init(struct platform_device *pdev, const char *name,
-> >> +			  irq_handler_t handler, const char *devname,
-> >> +			  unsigned int *irq, atomic_t *atomic)
-> >> +{
-> >> +	int ret;
-> >> +	struct sun4i_gpadc_mfd_dev *mfd_dev = dev_get_drvdata(pdev->dev.parent);
-> >> +	struct sun4i_gpadc_dev *info = iio_priv(dev_get_drvdata(&pdev->dev));
-> >> +
-> >> +	/*
-> >> +	 * Once the interrupt is activated, the IP continuously performs
-> >> +	 * conversions thus throws interrupts. The interrupt is activated right
-> >> +	 * after being requested but we want to control when these interrupts
-> >> +	 * occurs thus we disable it right after being requested. However, an
-> > 
-> > occur
-> > 
-> 
-> ACK for all typos.
-> Thanks!
-> 
-> Quentin
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
+> diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+> index 97ccde7..50343a7 100644
+> --- a/drivers/iio/accel/mxc6255.c
+> +++ b/drivers/iio/accel/mxc6255.c
+> @@ -26,6 +26,7 @@
+>  #define MXC6255_REG_YOUT		0x01
+>  #define MXC6255_REG_CHIP_ID		0x08
+>  
+> +#define MXC6225_CHIP_ID			0xe5
+>  #define MXC6255_CHIP_ID			0x05
+>  
+>  /*
+> @@ -154,7 +155,11 @@ static int mxc6255_probe(struct i2c_client *client,
+>  		return ret;
+>  	}
+>  
+> -	if (chip_id != MXC6255_CHIP_ID) {
+> +	switch (chip_id) {
+> +	case MXC6225_CHIP_ID:
+> +	case MXC6255_CHIP_ID:
+> +		break;
+> +	default:
+>  		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
+>  		return -ENODEV;
+>  	}
+> @@ -171,12 +176,14 @@ static int mxc6255_probe(struct i2c_client *client,
+>  }
+>  
+>  static const struct acpi_device_id mxc6255_acpi_match[] = {
+> +	{"MXC6225",	0},
+>  	{"MXC6255",	0},
+>  	{ }
+>  };
+>  MODULE_DEVICE_TABLE(acpi, mxc6255_acpi_match);
+>  
+>  static const struct i2c_device_id mxc6255_id[] = {
+> +	{"mxc6225",	0},
+>  	{"mxc6255",	0},
+>  	{ }
+>  };
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
