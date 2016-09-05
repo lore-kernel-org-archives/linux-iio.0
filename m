@@ -1,103 +1,85 @@
-Return-Path: <Nicolas.FERRE@atmel.com>
-Subject: Re: [PATCH] iio: adc: at91: Add support for Touchscreen Switches
- Closure Time
-To: Jonathan Cameron <jic23@kernel.org>, Cristian Birsan
-	<cristian.birsan@microchip.com>, Ludovic Desroches
-	<ludovic.desroches@atmel.com>
-References: <20160830122701.19385-1-nicolas.ferre@atmel.com>
- <b7dcd8e4-db9e-a9ee-352f-b7b77d57cc7a@kernel.org>
-CC: Alexandre Belloni <alexandre.belloni@free-electrons.com>,
-	<linux-arm-kernel@lists.infradead.org>, <linux-kernel@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>
-From: Nicolas Ferre <nicolas.ferre@atmel.com>
-Message-ID: <51aeb56b-c2f7-461f-065d-c581d3837340@atmel.com>
-Date: Mon, 5 Sep 2016 10:26:08 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58087 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933093AbcIEUPs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:15:48 -0400
+Subject: Re: A potential race in drivers/iio/adc/vf610_adc.ko
+To: Vaishali Thakkar <vaishali.thakkar@oracle.com>,
+        Pavel Andrianov <andrianov@ispras.ru>
+References: <8ad6537e-718a-4c5d-4f51-958e585b3727@ispras.ru>
+ <bdc8ff42-d4a2-8701-45de-4c8ab6657571@kernel.org>
+ <57CD1572.4040004@oracle.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <466b5810-1aaa-c8cd-78fb-964f77a6319f@kernel.org>
+Date: Mon, 5 Sep 2016 21:15:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <b7dcd8e4-db9e-a9ee-352f-b7b77d57cc7a@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <57CD1572.4040004@oracle.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Le 03/09/2016 à 18:24, Jonathan Cameron a écrit :
-> On 30/08/16 13:27, Nicolas Ferre wrote:
->> On newer components compatible with the at91sam9x5, the Touchscreen
->> Switches Closure Time or TSSCTIM value of the Touchscreen Mode Register is
->> not filled at all.
->> On some hardware, having no time indicated for it may lead to incoherent
->> values and jitter.
->> We fix this time to 10us as it is usually difficult to retrieve impedance
->> values from LCD manufacturers.
->>
->> Signed-off-by: Nicolas Ferre <nicolas.ferre@atmel.com>
-> Hi Nicolas,
-> 
-> Stable / fixes material or just have it head for the next merge window?
-
-Well, I would say that it's an addition of a feature that fixes a bad
-behavior ;-)
-So, in summary, I would just add it to next kernel revision.
-
-Thanks for the heads-up. Bye,
-
-
->> ---
->>  drivers/iio/adc/at91_adc.c | 13 +++++++++++++
->>  1 file changed, 13 insertions(+)
->>
->> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
->> index 0438c68015e8..bbdac07f4aaa 100644
->> --- a/drivers/iio/adc/at91_adc.c
->> +++ b/drivers/iio/adc/at91_adc.c
->> @@ -113,6 +113,7 @@
->>  #define		AT91_ADC_TSMR_TSAV	(3 << 4)	/* Averages samples */
->>  #define			AT91_ADC_TSMR_TSAV_(x)		((x) << 4)
->>  #define		AT91_ADC_TSMR_SCTIM	(0x0f << 16)	/* Switch closure time */
->> +#define			AT91_ADC_TSMR_SCTIM_(x)		((x) << 16)
->>  #define		AT91_ADC_TSMR_PENDBC	(0x0f << 28)	/* Pen Debounce time */
->>  #define			AT91_ADC_TSMR_PENDBC_(x)	((x) << 28)
->>  #define		AT91_ADC_TSMR_NOTSDMA	(1 << 22)	/* No Touchscreen DMA */
->> @@ -150,6 +151,7 @@
->>  #define MAX_RLPOS_BITS         10
->>  #define TOUCH_SAMPLE_PERIOD_US_RL      10000   /* 10ms, the SoC can't keep up with 2ms */
->>  #define TOUCH_SHTIM                    0xa
->> +#define TOUCH_SCTIM_US		10		/* 10us for the Touchscreen Switches Closure Time */
->>  
->>  /**
->>   * struct at91_adc_reg_desc - Various informations relative to registers
->> @@ -1001,7 +1003,9 @@ static void atmel_ts_close(struct input_dev *dev)
->>  
->>  static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
->>  {
->> +	struct iio_dev *idev = iio_priv_to_dev(st);
->>  	u32 reg = 0;
->> +	u32 tssctim = 0;
->>  	int i = 0;
->>  
->>  	/* a Pen Detect Debounce Time is necessary for the ADC Touch to avoid
->> @@ -1034,11 +1038,20 @@ static int at91_ts_hw_init(struct at91_adc_state *st, u32 adc_clk_khz)
->>  		return 0;
->>  	}
->>  
->> +	/* Touchscreen Switches Closure time needed for allowing the value to
->> +	 * stabilize.
->> +	 * Switch Closure Time = (TSSCTIM * 4) ADCClock periods
->> +	 */
->> +	tssctim = DIV_ROUND_UP(TOUCH_SCTIM_US * adc_clk_khz / 1000, 4);
->> +	dev_dbg(&idev->dev, "adc_clk at: %d KHz, tssctim at: %d\n",
->> +		adc_clk_khz, tssctim);
->> +
->>  	if (st->touchscreen_type == ATMEL_ADC_TOUCHSCREEN_4WIRE)
->>  		reg = AT91_ADC_TSMR_TSMODE_4WIRE_PRESS;
->>  	else
->>  		reg = AT91_ADC_TSMR_TSMODE_5WIRE;
->>  
->> +	reg |= AT91_ADC_TSMR_SCTIM_(tssctim) & AT91_ADC_TSMR_SCTIM;
->>  	reg |= AT91_ADC_TSMR_TSAV_(st->caps->ts_filter_average)
->>  	       & AT91_ADC_TSMR_TSAV;
->>  	reg |= AT91_ADC_TSMR_PENDBC_(st->ts_pendbc) & AT91_ADC_TSMR_PENDBC;
->>
+On 05/09/16 07:49, Vaishali Thakkar wrote:
 > 
 > 
+> On Saturday 03 September 2016 08:53 PM, Jonathan Cameron wrote:
+>> On 02/09/16 09:05, Pavel Andrianov wrote:
+>>>
+>>
+>>> Hi!
+>> Hi Pavel,
+>>>
+>>> There is a potential race in drivers/iio/adc/vf610_adc.ko. Handlers
+>>> vf610_set_conversion_mode and vf610_write_raw are called via
+>>> device_attibute interface, but they are related to different
+>>> attributes, so may be executed in parallel. vf610_set_conversion_mode
+>>> acquires the mutex indio_dev->mlock, and vf610_write_raw does not.
+>>> Thus updating the structure 'info' may be performed simultaneously.
+>>>
+>>> Should vf610_write_raw also acquire the same mutex indio_dev->mlock?
+>>>
+>>
+>> As Alison observed, mlock is not a general purpose lock for use by
+>> drivers. It's there to prevent state changes between direct reads
+>> (polled) and buffered/triggered reads (pushed).
+>>
+>> The write raw simply sets the sampling frequency. That's not a problem
+>> whilst buffered capture is running or otherwise.  Interesting question
+>> of whether changing mode causes any trouble as well.  It's possible 
+>> something is undefined in the hardware during a mode change...
+>>
+>> Anyhow, that covers mlock.  Next question: Is there a race condition in
+>> general?
+>>
+>> Yes there definitely is as we have read modify write cycles
+>> on VF610_REG_ADC_CFG in both paths.  So what is needed is a local lock
+>> to protect these accesses.  Whilst in theory mlock could be used
+>> it should not be as it has a clearly stated purpose and using it
+>> for other purposes makes for much fiddlier and harder to read code!
+> 
+> Makes sense. What would be the best solution in this case? Should we
+> just introduce local lock for this module and use it for both or there
+> is anything we need to take care of while we have mlock for one?
+I'd leave the mlock as it is (or use the direct_claim wrappers as relevant).
+It would require a deep dive into the data sheet and hardware
+testing (for undocumented 'features') to be sure we could relax the
+current locking.  Tightening it doesn't make sense unless we have
+reason to believe the frequency change causes trouble.
 
+A local lock as part of the structure retrieved from iio_priv would
+make sense to protect against multiple read, modify, write cycles
+occurring at the same time would cover the race conditions nicely.
 
--- 
-Nicolas Ferre
+Jonathan
+> 
+>> (as an aside IIRC there is no locking in sysfs attributes to prevent
+>> a single attribute being read twice at the same time.)
+>>
+>> Jonathan
+>>
+> 
+
