@@ -1,84 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.ispras.ru ([83.149.199.45]:55056 "EHLO mail.ispras.ru"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932636AbcIEOPe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 5 Sep 2016 10:15:34 -0400
-Subject: Re: A potential bug in drivers/iio/light/opt3001.ko
-To: Jonathan Cameron <jic23@kernel.org>
-References: <e5806302-9d1b-b262-766a-e64ca9a0159c@ispras.ru>
- <61728463-8bd8-c68e-ef4a-7a3e0ddd7899@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from youngberry.canonical.com ([91.189.89.112]:34726 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755332AbcIEOkf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 10:40:35 -0400
+From: Colin King <colin.king@canonical.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Alexander Koch <mail@alexanderkoch.net>,
-        Vaishali Thakkar <vaishali.thakkar@oracle.com>,
-        ldv-project@linuxtesting.org,
-        Andreas Dannenberg <dannenberg@ti.com>
-From: Pavel Andrianov <andrianov@ispras.ru>
-Message-ID: <0bb361fc-5912-eae2-e081-05e45f774798@ispras.ru>
-Date: Mon, 5 Sep 2016 17:15:30 +0300
+        linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: ensure ret is initialized to zero before entering do loop
+Date: Mon,  5 Sep 2016 15:39:06 +0100
+Message-Id: <20160905143906.13579-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <61728463-8bd8-c68e-ef4a-7a3e0ddd7899@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-03.09.2016 19:38, Jonathan Cameron пишет:
-> On 31/08/16 11:23, Pavel Andrianov wrote:
->> Hi!
->>
->> There is a bug in drivers/iio/light/opt3001.ko. Regard such case:
->>
->> Thread 1                             Thread 2
->> -> opt3001_read_raw
->>   -> mutex_lock(&opt->lock)
->>   -> opt3001_get_lux()
->>     ..
->>     ->i2c_smbus_write_word_swapped()
->>             Now an interrupt comes
->>                                      -> opt3001_irq
->>                                        -> mutex_lock(&opt->lock)
->>
->> This is a deadlock, as the flag ok_to_ignore_lock has not been set yet.
-> Good find.  Will need reordering to set the ok_to_ignore_lock first.
-> Whether it ever actually happens will depend on just how long that EOC
-> interrupt takes to happen.  Still it's a theoretical problem with
-> a fairly simple fix so let's fix it.
->>
->> Regard another case:
->>
->> Thread 1                             Thread 2
->> -> opt3001_read_raw
->>   -> mutex_lock(&opt->lock)
->>   -> opt3001_get_lux()
->>     ..
->>     -> i2c_smbus_write_word_swapped()
->>     opt->ok_to_ignore_lock = true;
->>             Now an interrupt comes
->>                                      -> opt3001_irq
->>                                        ..
->>                                        opt->result_ready = true
->>                                        wake_up()
->>      opt->result_ready = false;
->>      wait_event_timeout()
->>
->> In this case the first thread misses the result and waits until timeout expires.
->>
-> Agreed - looks like some reordering is needed here as well.
->
-> Jonathan
->
+From: Colin Ian King <colin.king@canonical.com>
 
-In opt3001_get_lux has a comment, that i2c_smbus_write_word_swapped 
-(line 246) enables interrupt mechanism. If an interrupt can not arise 
-before the function, the assignments to both of flags should be moved 
-before i2c_smbus_write_word_swapped and this is the best fix for both of 
-issues.
-Do you know if my assumption is correct and interrupts are disabled 
-before i2c_smbus_write_word_swapped call?
+A recent fix to iio_buffer_read_first_n_outer removed ret from being set by
+a return from wait_event_interruptible and also added a continue in a loop
+which causes the variable ret to not be set when it reaches the end of the
+loop.  Fix this by initializing ret to zero.
+
+Also remove extraneous white space at the end of the loop.
+
+Fixes: fcf68f3c0bb2a5 ("fix sched WARNING "do not call blocking ops when !TASK_RUNNING")
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/industrialio-buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 49bf9c5..158aaf4 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -110,7 +110,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ 	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+ 	size_t datum_size;
+ 	size_t to_wait;
+-	int ret;
++	int ret = 0;
+ 
+ 	if (!indio_dev->info)
+ 		return -ENODEV;
+@@ -153,7 +153,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+ 		ret = rb->access->read_first_n(rb, n, buf);
+ 		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+ 			ret = -EAGAIN;
+-	 } while (ret == 0);
++	} while (ret == 0);
+ 	remove_wait_queue(&rb->pollq, &wait);
+ 
+ 	return ret;
 -- 
-Pavel Andrianov
-Linux Verification Center, ISPRAS
-web: http://linuxtesting.org
-e-mail: andrianov@ispras.ru
+2.9.3
+
