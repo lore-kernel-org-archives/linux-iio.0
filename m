@@ -1,152 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga07.intel.com ([134.134.136.100]:35976 "EHLO mga07.intel.com"
+Received: from mga06.intel.com ([134.134.136.31]:7897 "EHLO mga06.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932570AbcIHFHc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 8 Sep 2016 01:07:32 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: Jonathan Cameron <jic23@kernel.org>, <jdelvare@suse.com>,
-        Guenter Roeck <linux@roeck-us.net>, <knaack.h@gmx.de>,
-        <lars@metafoo.de>, <pmeerw@pmeerw.net>, <wens@csie.org>,
-        <lee.jones@linaro.org>
-CC: <thomas.petazzoni@free-electrons.com>,
-        <antoine.tenart@free-electrons.com>,
-        <linux-kernel@vger.kernel.org>, <linux-hwmon@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        "Zhang, Rui" <rui.zhang@intel.com>,
-        Eduardo Valentin <edubezval@gmail.com>,
-        linux-pm <linux-pm@vger.kernel.org>
-References: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com> <1472738705-20145-4-git-send-email-quentin.schulz@free-electrons.com> <272fb672-602c-1757-be9f-eadf928b330c@kernel.org>
-In-Reply-To: <272fb672-602c-1757-be9f-eadf928b330c@kernel.org>
-Subject: Re: [PATCH v4 3/3] iio: adc: add support for Allwinner SoCs ADC
-Date: Mon, 5 Sep 2016 00:29:20 -0600
-Message-ID: <f085ee35-889f-58e3-15d6-e6f3c0d15a92@free-electrons.com>
+        id S932667AbcIHIJq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 8 Sep 2016 04:09:46 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        <linux-iio@vger.kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com> <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
+In-Reply-To: <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
+Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
+Date: Mon, 5 Sep 2016 01:59:08 -0600
+Message-ID: <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de>
 MIME-Version: 1.0
 Content-Type: text/plain; charset="Windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/09/2016 16:35, Jonathan Cameron wrote:
-> On 01/09/16 15:05, Quentin Schulz wrote:
->> The Allwinner SoCs all have an ADC that can also act as a touchscreen
->> controller and a thermal sensor. This patch adds the ADC driver which is
->> based on the MFD for the same SoCs ADC.
+On 09/03/2016 05:13 PM, Jonathan Cameron wrote:
+> On 02/09/16 19:27, Gregor Boirie wrote:
+>> 7985e7c100 ("iio: Introduce a new fractional value type") introduced a
+>> new IIO_VAL_FRACTIONAL value type meant to represent rational type numbers
+>> expressed by a numerator and denominator combination.
 >>
->> This also registers the thermal adc channel in the iio map array so
->> iio_hwmon could use it without modifying the Device Tree. This registers
->> the driver in the thermal framework.
+>> Formating of IIO_VAL_FRACTIONAL values relies upon do_div() usage. This
+>> fails handling negative values properly since parameters are reevaluated
+>> as unsigned values.
+>> Fix this by using div_s64_rem() instead. Computed integer part will carry
+>> properly signed value. Formatted fractional part will always be positive.
 >>
->> This driver probes on three different platform_device_id to take into
->> account slight differences (registers bit and temperature computation)
->> between Allwinner SoCs ADCs.
->>
->> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> One utterly trivial point about unrolling code ordering inline.
+>> Fixes: 7985e7c100 ("iio: Introduce a new fractional value type")
+>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 > 
-> Other than the bit about patch 1 I'm basically happy with this..
+> Hi Gregor,
+> 
+> While this looks sensible to me, I always gain an almighty headache when
+> I hit the various divide functions.
+> 
+> Lars, the fractional code was yours in the first place.
+> If you have time can you sanity check this please.
 
-ACK. Will revert this patch in v5. Thanks.
+Looks good. While looking into this I noticed that we have a very similar
+patch[1] in our tree, seems like somebody forgot to send that upstream.
 
-> However I would like some input (i.e. an Ack) from thermal given this
-> sets up a thermal zone.
-> 
-> Zhang or Eduardo, could you take a quick look at this and confirm you
-> are happy with it?
-> 
-> Thanks,
-> 
-> Jonathan
-[...]
->> +
->> +err_map:
->> +	iio_map_array_unregister(indio_dev);
->> +
->> +err_fifo_irq:
->> +	/* Disable FIFO_DATA_PENDING interrupt on hardware side. */
->> +	regmap_update_bits(info->regmap, SUN4I_GPADC_INT_FIFOC,
->> +			   SUN4I_GPADC_INT_FIFOC_TP_DATA_IRQ_EN,
->> +			   0);
->> +
->> +err_temp_irq:
->> +	/* Disable TEMP_DATA_PENDING interrupt on hardware side. */
->> +	regmap_update_bits(info->regmap, SUN4I_GPADC_INT_FIFOC,
->> +			   SUN4I_GPADC_INT_FIFOC_TEMP_IRQ_EN,
->> +			   0);
->> +
->> +err:
->> +	pm_runtime_put(&pdev->dev);
->> +	pm_runtime_disable(&pdev->dev);
->> +
->> +	return ret;
->> +}
->> +
->> +static int sun4i_gpadc_remove(struct platform_device *pdev)
->> +{
->> +	struct sun4i_gpadc_dev *info;
->> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> +
->> +	info = iio_priv(indio_dev);
->> +	iio_device_unregister(indio_dev);
->> +	iio_map_array_unregister(indio_dev);
->> +	pm_runtime_put(&pdev->dev);
->> +	pm_runtime_disable(&pdev->dev);
-> Its really minor but in the interests of 'obviously correct' making
-> review easy I'd rather everything in the remove was in the reverse order
-> of probe (and hence the same as the error path in probe for most of it).
-> 
-> That would put the pm_runtime stuff last I think..
-> 
-> If you weren't rerolling anyway over patch 1 I'd probably have just let
-> this go, but might as well make this trivial change as well.
-> 
+Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
 
-I'm going with the following order:
-pm_runtime_put
-pm_runtime_disable
-regmap_update_bits
-iio_map_array_unregister
-iio_device_unregister
 
-Is that okay? (I don't really know which one of iio_map_array_unregister
-or iio_device_unregister to put first, if it matters in any way).
+[1]
+https://github.com/analogdevicesinc/linux/commit/1dbcdcfd0c8d3f5513572697685d9f30ba49d851
 
-Thanks!
-Quentin
-> 
->> +	/*
->> +	 * Disable TEMP_DATA_PENDING and FIFO_DATA_PENDING interrupts on
->> +	 * hardware side.
->> +	 */
->> +	regmap_update_bits(info->regmap, SUN4I_GPADC_INT_FIFOC,
->> +			   SUN4I_GPADC_INT_FIFOC_TEMP_IRQ_EN |
->> +				SUN4I_GPADC_INT_FIFOC_TP_DATA_IRQ_EN,
->> +			   0);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct platform_device_id sun4i_gpadc_id[] = {
->> +	{ "sun4i-a10-gpadc-iio", (kernel_ulong_t)&sun4i_gpadc_soc_specific },
->> +	{ "sun5i-a13-gpadc-iio", (kernel_ulong_t)&sun5i_gpadc_soc_specific },
->> +	{ "sun6i-a31-gpadc-iio", (kernel_ulong_t)&sun6i_gpadc_soc_specific },
->> +	{ /* sentinel */ },
->> +};
->> +
->> +static struct platform_driver sun4i_gpadc_driver = {
->> +	.driver = {
->> +		.name = "sun4i-gpadc-iio",
->> +		.pm = &sun4i_gpadc_pm_ops,
->> +	},
->> +	.id_table = sun4i_gpadc_id,
->> +	.probe = sun4i_gpadc_probe,
->> +	.remove = sun4i_gpadc_remove,
->> +};
->> +
->> +module_platform_driver(sun4i_gpadc_driver);
->> +
->> +MODULE_DESCRIPTION("ADC driver for sunxi platforms");
->> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
->> +MODULE_LICENSE("GPL v2");
->>
-> 
+--
+To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+the body of a message to majordomo@vger.kernel.org
+More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
