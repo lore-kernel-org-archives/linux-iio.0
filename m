@@ -1,197 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50647 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57983 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753613AbcIDQnz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Sep 2016 12:43:55 -0400
-Subject: Re: [PATCH 12/15 v2] iio: accel: kxsd9: Fetch and handle regulators
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
- <1472723089-25113-12-git-send-email-linus.walleij@linaro.org>
+        with ESMTP id S932446AbcIEUDa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:03:30 -0400
+Subject: Re: [PATCH] iio: ensure ret is initialized to zero before entering do
+ loop
+To: Colin King <colin.king@canonical.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+References: <20160905143906.13579-1-colin.king@canonical.com>
+Cc: linux-kernel@vger.kernel.org,
+        Brian Norris <briannorris@chromium.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9ba2fe58-58b5-0f7b-9268-f98e1e813ef5@kernel.org>
-Date: Sun, 4 Sep 2016 17:43:53 +0100
+Message-ID: <59ac3528-2245-ea61-f7e7-847bc5fe90b9@kernel.org>
+Date: Mon, 5 Sep 2016 21:03:26 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472723089-25113-12-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20160905143906.13579-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/16 10:44, Linus Walleij wrote:
-> This adds supply regulator handling for the VDD and IOVDD inputs
-> on the KXSD9 component, makes sure to bring the regulators online
-> during probe and disable them on remove or the errorpath.
+On 05/09/16 15:39, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
 > 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-I'm lazy and tested this without actually checking the regs were
-either configured correctly in my board file (unlikely ;) or
-actually enabled.  It doesn't break that case :)
+> A recent fix to iio_buffer_read_first_n_outer removed ret from being set by
+> a return from wait_event_interruptible and also added a continue in a loop
+> which causes the variable ret to not be set when it reaches the end of the
+> loop.  Fix this by initializing ret to zero.
+> 
+> Also remove extraneous white space at the end of the loop.
+> 
+> Fixes: fcf68f3c0bb2a5 ("fix sched WARNING "do not call blocking ops when !TASK_RUNNING")
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+Good find.  Strange that got through 0-day without a warning...
+
+Cc'd Brian as author of the fix this is fixing.
+Brian can you sanity check this patch as well.
+
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+Ah well, another one for the statistics on stable patches that introduce bugs while
+fixing other bugs.
+
+Pretty unlikely this will be hit I think, but in theory you never know.
 
 Jonathan
 > ---
-> ChangeLog v1->v2:
-> - Rebase on the rest of the series.
-> ---
->  drivers/iio/accel/kxsd9.c | 88 +++++++++++++++++++++++++++++++++++++++++++++--
->  1 file changed, 85 insertions(+), 3 deletions(-)
+>  drivers/iio/industrialio-buffer.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
 > 
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index 8c6a4559256e..dc53f70e616e 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -21,6 +21,8 @@
->  #include <linux/module.h>
->  #include <linux/regmap.h>
->  #include <linux/bitops.h>
-> +#include <linux/delay.h>
-> +#include <linux/regulator/consumer.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include <linux/iio/buffer.h>
-> @@ -65,10 +67,12 @@
->   * struct kxsd9_state - device related storage
->   * @dev: pointer to the parent device
->   * @map: regmap to the device
-> + * @regs: regulators for this device, VDD and IOVDD
->   */
->  struct kxsd9_state {
->  	struct device *dev;
->  	struct regmap *map;
-> +	struct regulator_bulk_data regs[2];
->  };
+> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+> index 49bf9c5..158aaf4 100644
+> --- a/drivers/iio/industrialio-buffer.c
+> +++ b/drivers/iio/industrialio-buffer.c
+> @@ -110,7 +110,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>  	DEFINE_WAIT_FUNC(wait, woken_wake_function);
+>  	size_t datum_size;
+>  	size_t to_wait;
+> -	int ret;
+> +	int ret = 0;
 >  
->  #define KXSD9_SCALE_2G "0.011978"
-> @@ -81,6 +85,12 @@ static const int kxsd9_micro_scales[4] = { 47853, 35934, 23927, 11978 };
->  
->  #define KXSD9_ZERO_G_OFFSET -2048
->  
-> +/*
-> + * Regulator names
-> + */
-> +static const char kxsd9_reg_vdd[] = "vdd";
-> +static const char kxsd9_reg_iovdd[] = "iovdd";
-> +
->  static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
->  {
->  	int ret, i;
-> @@ -252,12 +262,69 @@ static int kxsd9_power_up(struct kxsd9_state *st)
->  {
->  	int ret;
->  
-> -	ret = regmap_write(st->map, KXSD9_REG_CTRL_B, 0x40);
-> +	/* Enable the regulators */
-> +	ret = regulator_bulk_enable(ARRAY_SIZE(st->regs), st->regs);
-> +	if (ret) {
-> +		dev_err(st->dev, "Cannot enable regulators\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Power up */
-> +	ret = regmap_write(st->map,
-> +			   KXSD9_REG_CTRL_B,
-> +			   KXSD9_CTRL_B_ENABLE);
->  	if (ret)
->  		return ret;
-> -	return regmap_write(st->map, KXSD9_REG_CTRL_C, 0x9b);
-> +
-> +	/*
-> +	 * Set 1000Hz LPF, 2g fullscale, motion wakeup threshold 1g,
-> +	 * latched wakeup
-> +	 */
-> +	ret = regmap_write(st->map,
-> +			   KXSD9_REG_CTRL_C,
-> +			   KXSD9_CTRL_C_LP_1000HZ |
-> +			   KXSD9_CTRL_C_MOT_LEV	|
-> +			   KXSD9_CTRL_C_MOT_LAT |
-> +			   KXSD9_CTRL_C_FS_2G);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/*
-> +	 * Power-up time depends on the LPF setting, but typ 15.9 ms, let's
-> +	 * set 20 ms to allow for some slack.
-> +	 */
-> +	msleep(20);
-> +
-> +	return 0;
->  };
->  
-> +static int kxsd9_power_down(struct kxsd9_state *st)
-> +{
-> +	int ret;
-> +
-> +	/*
-> +	 * Set into low power mode - since there may be more users of the
-> +	 * regulators this is the first step of the power saving: it will
-> +	 * make sure we conserve power even if there are others users on the
-> +	 * regulators.
-> +	 */
-> +	ret = regmap_update_bits(st->map,
-> +				 KXSD9_REG_CTRL_B,
-> +				 KXSD9_CTRL_B_ENABLE,
-> +				 0);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Disable the regulators */
-> +	ret = regulator_bulk_disable(ARRAY_SIZE(st->regs), st->regs);
-> +	if (ret) {
-> +		dev_err(st->dev, "Cannot disable regulators\n");
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
->  static const struct iio_info kxsd9_info = {
->  	.read_raw = &kxsd9_read_raw,
->  	.write_raw = &kxsd9_write_raw,
-> @@ -292,6 +359,17 @@ int kxsd9_common_probe(struct device *parent,
->  	indio_dev->modes = INDIO_DIRECT_MODE;
->  	indio_dev->available_scan_masks = kxsd9_scan_masks;
->  
-> +	/* Fetch and turn on regulators */
-> +	st->regs[0].supply = kxsd9_reg_vdd;
-> +	st->regs[1].supply = kxsd9_reg_iovdd;
-> +	ret = devm_regulator_bulk_get(parent,
-> +				      ARRAY_SIZE(st->regs),
-> +				      st->regs);
-> +	if (ret) {
-> +		dev_err(parent, "Cannot get regulators\n");
-> +		return ret;
-> +	}
-> +
->  	kxsd9_power_up(st);
->  
->  	ret = iio_triggered_buffer_setup(indio_dev,
-> @@ -300,7 +378,7 @@ int kxsd9_common_probe(struct device *parent,
->  					 NULL);
->  	if (ret) {
->  		dev_err(parent, "triggered buffer setup failed\n");
-> -		return ret;
-> +		goto err_power_down;
->  	}
->  
->  	ret = iio_device_register(indio_dev);
-> @@ -313,6 +391,8 @@ int kxsd9_common_probe(struct device *parent,
->  
->  err_cleanup_buffer:
->  	iio_triggered_buffer_cleanup(indio_dev);
-> +err_power_down:
-> +	kxsd9_power_down(st);
+>  	if (!indio_dev->info)
+>  		return -ENODEV;
+> @@ -153,7 +153,7 @@ ssize_t iio_buffer_read_first_n_outer(struct file *filp, char __user *buf,
+>  		ret = rb->access->read_first_n(rb, n, buf);
+>  		if (ret == 0 && (filp->f_flags & O_NONBLOCK))
+>  			ret = -EAGAIN;
+> -	 } while (ret == 0);
+> +	} while (ret == 0);
+>  	remove_wait_queue(&rb->pollq, &wait);
 >  
 >  	return ret;
->  }
-> @@ -321,9 +401,11 @@ EXPORT_SYMBOL(kxsd9_common_probe);
->  int kxsd9_common_remove(struct device *parent)
->  {
->  	struct iio_dev *indio_dev = dev_get_drvdata(parent);
-> +	struct kxsd9_state *st = iio_priv(indio_dev);
->  
->  	iio_triggered_buffer_cleanup(indio_dev);
->  	iio_device_unregister(indio_dev);
-> +	kxsd9_power_down(st);
->  
->  	return 0;
->  }
 > 
 
