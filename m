@@ -1,75 +1,87 @@
-Return-Path: <labbott@redhat.com>
-Subject: Re: [PATCH] iio: Use type header from kernel tree
-To: Daniel Baluta <daniel.baluta@gmail.com>
-References: <1473434693-5495-1-git-send-email-labbott@redhat.com>
- <CAEnQRZBnw_s33+Bbtm9hrG5uqX0HYiCOPfo5RTa3oJ1OHT+dFg@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>
-From: Laura Abbott <labbott@redhat.com>
-Message-ID: <6b71d792-5300-b0cc-9d64-5cd0d5767e92@redhat.com>
-Date: Fri, 9 Sep 2016 08:47:46 -0700
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57998 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932446AbcIEUEl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:04:41 -0400
+Subject: Re: A potential bug in drivers/iio/light/opt3001.ko
+To: Pavel Andrianov <andrianov@ispras.ru>
+References: <e5806302-9d1b-b262-766a-e64ca9a0159c@ispras.ru>
+ <61728463-8bd8-c68e-ef4a-7a3e0ddd7899@kernel.org>
+ <0bb361fc-5912-eae2-e081-05e45f774798@ispras.ru>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Alexander Koch <mail@alexanderkoch.net>,
+        Vaishali Thakkar <vaishali.thakkar@oracle.com>,
+        ldv-project@linuxtesting.org,
+        Andreas Dannenberg <dannenberg@ti.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <0a1ed5de-b22a-dd74-7d12-2fc92f65d2fc@kernel.org>
+Date: Mon, 5 Sep 2016 21:04:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZBnw_s33+Bbtm9hrG5uqX0HYiCOPfo5RTa3oJ1OHT+dFg@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <0bb361fc-5912-eae2-e081-05e45f774798@ispras.ru>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 09/09/2016 08:35 AM, Daniel Baluta wrote:
-> On Fri, Sep 9, 2016 at 6:24 PM, Laura Abbott <labbott@redhat.com> wrote:
+On 05/09/16 15:15, Pavel Andrianov wrote:
+> 03.09.2016 19:38, Jonathan Cameron пишет:
+>> On 31/08/16 11:23, Pavel Andrianov wrote:
+>>> Hi!
+>>>
+>>> There is a bug in drivers/iio/light/opt3001.ko. Regard such case:
+>>>
+>>> Thread 1                             Thread 2
+>>> -> opt3001_read_raw
+>>>   -> mutex_lock(&opt->lock)
+>>>   -> opt3001_get_lux()
+>>>     ..
+>>>     ->i2c_smbus_write_word_swapped()
+>>>             Now an interrupt comes
+>>>                                      -> opt3001_irq
+>>>                                        -> mutex_lock(&opt->lock)
+>>>
+>>> This is a deadlock, as the flag ok_to_ignore_lock has not been set yet.
+>> Good find.  Will need reordering to set the ok_to_ignore_lock first.
+>> Whether it ever actually happens will depend on just how long that EOC
+>> interrupt takes to happen.  Still it's a theoretical problem with
+>> a fairly simple fix so let's fix it.
+>>>
+>>> Regard another case:
+>>>
+>>> Thread 1                             Thread 2
+>>> -> opt3001_read_raw
+>>>   -> mutex_lock(&opt->lock)
+>>>   -> opt3001_get_lux()
+>>>     ..
+>>>     -> i2c_smbus_write_word_swapped()
+>>>     opt->ok_to_ignore_lock = true;
+>>>             Now an interrupt comes
+>>>                                      -> opt3001_irq
+>>>                                        ..
+>>>                                        opt->result_ready = true
+>>>                                        wake_up()
+>>>      opt->result_ready = false;
+>>>      wait_event_timeout()
+>>>
+>>> In this case the first thread misses the result and waits until timeout expires.
+>>>
+>> Agreed - looks like some reordering is needed here as well.
 >>
->> The iio tools have been updated as new event types have been added to
->> the kernel. The tools currently use the standard system headers which
->> means that the system may not have the newest defintitions. This leads
->> to build failures when building newer tools on older hosts:
+>> Jonathan
 >>
->> gcc -Wall -g -D_GNU_SOURCE   -c -o iio_event_monitor.o
->> iio_event_monitor.c
->> iio_event_monitor.c:59:3: error: ‘IIO_UVINDEX’ undeclared here (not in a
->> function)
->>   [IIO_UVINDEX] = "uvindex",
->>    ^~~~~~~~~~~
->> iio_event_monitor.c:59:3: error: array index in initializer not of
->> integer type
->> iio_event_monitor.c:59:3: note: (near initialization for
->> ‘iio_chan_type_name_spec’)
->> iio_event_monitor.c:97:3: error: ‘IIO_MOD_LIGHT_UV’ undeclared here (not
->> in a function)
->>   [IIO_MOD_LIGHT_UV] = "uv",
->>    ^~~~~~~~~~~~~~~~
->> iio_event_monitor.c:97:3: error: array index in initializer not of
->> integer type
->> iio_event_monitor.c:97:3: note: (near initialization for
->> ‘iio_modifier_names’)
->> <builtin>: recipe for target 'iio_event_monitor.o' failed
->>
->> Switch to using the header from the kernel tree to ensure the newest
->> defintions are always picked up.
->>
->> Signed-off-by: Laura Abbott <labbott@redhat.com>
->
-> Hi Laura,
->
-> Thanks for your patch. The solution here would be to install the
-> headers for your
-> new kernel in order to use the updated types.
->
-> That is you should run make headers_install.
->
-> $ make help | grep headers
->   headers_install - Install sanitised kernel headers to INSTALL_HDR_PATH
->
-> You can use INSTALL_HDR_PATH to put the headers in a custom directory
-> and tell gcc to also include this directory when searching for include headers.
->
+> 
+> In opt3001_get_lux has a comment, that i2c_smbus_write_word_swapped
+> (line 246) enables interrupt mechanism. If an interrupt can not arise
+> before the function, the assignments to both of flags should be moved
+> before i2c_smbus_write_word_swapped and this is the best fix for both
+> of issues. Do you know if my assumption is correct and interrupts are
+> disabled before i2c_smbus_write_word_swapped call?
 
-That's a pretty ugly solution. We want to build this as part of Fedora
-and installing another local copy of the headers in the build environment
-complicates an already complicated build process. This is more work
-for users building on their own as well. Several other tools in the tools
-directory already use the headers from the kernel tree, is there a reason
-iio doesn't want to as well?
+Andreas, can you confirm this for us?
 
 Thanks,
-Laura
+
+Jonathan
+
