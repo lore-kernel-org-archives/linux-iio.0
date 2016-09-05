@@ -1,69 +1,160 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58135 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933520AbcIEUYS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Sep 2016 16:24:18 -0400
-Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        linux-iio@vger.kernel.org
-References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com>
- <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
- <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <419daee6-1e68-dba4-3e04-3c13d58eea44@kernel.org>
-Date: Mon, 5 Sep 2016 21:24:16 +0100
+Return-Path: <pmeerw@pmeerw.net>
+Date: Mon, 5 Sep 2016 10:07:48 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+cc: thomas.petazzoni@free-electrons.com, lars@metafoo.de,
+    linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
+    linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+    knaack.h@gmx.de, maxime.ripard@free-electrons.com, jic23@kernel.org
+Subject: Re: [PATCH v4 3/3] iio: adc: add support for Allwinner SoCs ADC
+In-Reply-To: <aed1e00f-ceaa-27e9-502d-51428f59a84f@free-electrons.com>
+Message-ID: <alpine.DEB.2.02.1609050924370.12528@pmeerw.net>
+References: <1472738705-20145-1-git-send-email-quentin.schulz@free-electrons.com> <1472738705-20145-4-git-send-email-quentin.schulz@free-electrons.com> <alpine.DEB.2.02.1609041754350.2060@pmeerw.net>
+ <aed1e00f-ceaa-27e9-502d-51428f59a84f@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/09/16 08:59, Lars-Peter Clausen wrote:
-> On 09/03/2016 05:13 PM, Jonathan Cameron wrote:
->> On 02/09/16 19:27, Gregor Boirie wrote:
->>> 7985e7c100 ("iio: Introduce a new fractional value type") introduced a
->>> new IIO_VAL_FRACTIONAL value type meant to represent rational type numbers
->>> expressed by a numerator and denominator combination.
->>>
->>> Formating of IIO_VAL_FRACTIONAL values relies upon do_div() usage. This
->>> fails handling negative values properly since parameters are reevaluated
->>> as unsigned values.
->>> Fix this by using div_s64_rem() instead. Computed integer part will carry
->>> properly signed value. Formatted fractional part will always be positive.
->>>
->>> Fixes: 7985e7c100 ("iio: Introduce a new fractional value type")
->>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->>
->> Hi Gregor,
->>
->> While this looks sensible to me, I always gain an almighty headache when
->> I hit the various divide functions.
->>
->> Lars, the fractional code was yours in the first place.
->> If you have time can you sanity check this please.
-> 
-> Looks good. While looking into this I noticed that we have a very similar
-> patch[1] in our tree, seems like somebody forgot to send that upstream.
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
-Good to know about the previous patch - if there was anything hiding around
-this I would assume that would have shaken it out by now!
 
-Thanks
+> >> The Allwinner SoCs all have an ADC that can also act as a touchscreen
+> >> controller and a thermal sensor. This patch adds the ADC driver which is
+> >> based on the MFD for the same SoCs ADC.
+> > 
+> > nitpicking ahead
 
-Jonathan
+> [...]
+> >> +
+> >> +const unsigned int sun4i_gpadc_chan_select(unsigned int chan)
+> > 
+> > static instead of const?
+
+> static const then?
+
+no, the const is redundant and ignored
+-Wignored-qualifiers gives a warning
+
+just static, no const
+
+see
+http://stackoverflow.com/questions/12052468/type-qualifiers-on-function-return-type
+
+> >> +{
+> >> +	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
+> >> +}
+> >> +
+> >> +struct soc_specific {
+> >> +	const int		temp_offset;
+> > 
+> > wondering why you constify every member?
+> > 
 > 
+> Because they're supposed to be fixed values? It won't change in runtime.
+> Is there any reason why I shouldn't do that?
+
+yes, but using the entire struct as const has the same effect;
+constifying individual members makes more sense if there are also 
+non-const members
+
+nothing wrong, just unusual
+
+> >> +	const int		temp_scale;
+> >> +	const unsigned int	tp_mode_en;
+> >> +	const unsigned int	tp_adc_select;
+> >> +	const unsigned int	(*adc_chan_select)(unsigned int chan);
+> >> +};
+> [...]
+> >> +static int sun4i_gpadc_read(struct iio_dev *indio_dev, int channel, int *val,
+> >> +			    unsigned int irq)
+> >> +{
+> >> +	struct sun4i_gpadc_dev *info = iio_priv(indio_dev);
+> >> +	int ret = 0;
+> >> +
+> >> +	pm_runtime_get_sync(indio_dev->dev.parent);
+> >> +	mutex_lock(&info->mutex);
+> >> +
+> >> +	reinit_completion(&info->completion);
+> >> +
+> >> +	regmap_write(info->regmap, SUN4I_GPADC_INT_FIFOC,
+> >> +		     SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(1) |
+> >> +		     SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH);
+> > 
+> > check retval? here and elsewhere for regmap_write()
+> > 
 > 
-> [1]
-> https://github.com/analogdevicesinc/linux/commit/1dbcdcfd0c8d3f5513572697685d9f30ba49d851
+> ACK. What should I do with the retval then?
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> There are some in:
+> - sun4i_gpadc_read called for read_raws => return which error code (or
+> -ret only?)?
+
+I'd just return ret; in the other cases I think it's ok to ignore errors
+
+> - sun4i_gpadc_runtime_suspend => return value of ret, but that would
+> cancel the suspend right?
+> - sun4i_gpadc_runtime_resume => return value of ret, but that would
+> cancel resume right?
+> - sun4i_gpadc_probe in the error gotos => probe already failing so do we
+> actually care if regmap_update_bits fails? If yes, what's the expected
+> behaviour?
+> - sun4i_gpadc_remove => return value of ret, but that would mean the
+> remove failed right?
+> 
+> [...]
+> >> +static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
+> >> +				struct iio_chan_spec const *chan, int *val,
+> >> +				int *val2, long mask)
+> >> +{
+> >> +	int ret;
+> >> +
+> >> +	switch (mask) {
+> >> +	case IIO_CHAN_INFO_OFFSET:
+> >> +		ret = sun4i_gpadc_temp_offset(indio_dev, val);
+> >> +		if (ret)
+> >> +			return ret;
+> >> +
+> >> +		return IIO_VAL_INT;
+> >> +	case IIO_CHAN_INFO_RAW:
+> >> +		if (chan->type == IIO_VOLTAGE) {
+> >> +			ret = sun4i_gpadc_adc_read(indio_dev, chan->channel,
+> >> +						   val);
+> >> +			if (ret)
+> >> +				return ret;
+> > 
+> > could share the "if (ret) return ret;" between code path
+> > 
+> 
+> ACK.
+> 
+> [...]
+> >> +static int sun4i_irq_init(struct platform_device *pdev, const char *name,
+> >> +			  irq_handler_t handler, const char *devname,
+> >> +			  unsigned int *irq, atomic_t *atomic)
+> >> +{
+> >> +	int ret;
+> >> +	struct sun4i_gpadc_mfd_dev *mfd_dev = dev_get_drvdata(pdev->dev.parent);
+> >> +	struct sun4i_gpadc_dev *info = iio_priv(dev_get_drvdata(&pdev->dev));
+> >> +
+> >> +	/*
+> >> +	 * Once the interrupt is activated, the IP continuously performs
+> >> +	 * conversions thus throws interrupts. The interrupt is activated right
+> >> +	 * after being requested but we want to control when these interrupts
+> >> +	 * occurs thus we disable it right after being requested. However, an
+> > 
+> > occur
+> > 
+> 
+> ACK for all typos.
+> Thanks!
+> 
+> Quentin
+> 
+> _______________________________________________
+> linux-arm-kernel mailing list
+> linux-arm-kernel@lists.infradead.org
+> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
 > 
 
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
