@@ -1,95 +1,82 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:34619 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755303AbcIBTPR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Sep 2016 15:15:17 -0400
-Date: Fri, 2 Sep 2016 12:15:15 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v2] iio: adc: ltc2485: add support for Linear Technology
- LTC2485 ADC
-Message-ID: <20160902191513.GA13014@d830.WORKGROUP>
-References: <20160825054829.GA15341@d830.WORKGROUP>
- <9e95a885-8078-fc00-6104-ead4684d9d4b@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <9e95a885-8078-fc00-6104-ead4684d9d4b@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <cmo@melexis.com>
+From: Crt Mori <cmo@melexis.com>
+To: linux-iio@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: Daniel Baluta <daniel.baluta@intel.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Matt Ranostay <mranostay@gmail.com>,
+	Sean Nyekjaer <sean.nyekjaer@prevas.dk>,
+	Markus Pargmann <mpa@pengutronix.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Crt Mori <cmo@melexis.com>
+Subject: [PATCH v2 2/2] iio: devm_regulator_get_optional never returns NULL
+Date: Mon,  5 Sep 2016 11:14:49 +0200
+Message-Id: <20160905091449.12297-2-cmo@melexis.com>
+In-Reply-To: <20160905091449.12297-1-cmo@melexis.com>
+References: <20160905091449.12297-1-cmo@melexis.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, Aug 29, 2016 at 05:01:14PM +0100, Jonathan Cameron wrote:
-> On 25/08/16 06:48, Alison Schofield wrote:
-> > Adds basic support for the LTC2485 ADC - a delta-sigma analog-to-digital
-> > converter with an I2C interface that operates in single shot conversion
-> > mode.
-> > 
-> > The driver supports an on board 5V reference and the power-on default
-> > configuration which rejects both 50hz & 60hz line frequencies and
-> > operates in 1x speed mode.
-> > 
-> > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> > ---
-> > Changes in v2:
-> >   - changed the wait conversion time function to use monotonic rather than
-> >     real time and to use milliseconds rather than nanoseconds.  
-> >   - made conv time a constant int.
-> > 
-> > Same notes as in v1:
-> > Reviewers: In addition to commenting on what is present, please comment
-> > on what is absent and the priority in which you would like to see
-> > additional features added to this driver, or needed in this first submittal.
-> None of the below are needed for initially submital.
-> All 'value' add features at the end of the day. Job one: get reading from
-> ADC done :)
-> 
-> I made a few really small white space changes and applied this to the
-> togreg branch of iio.git.  Will be initially pushed out as testing
-> in a few minutes time to check the autobuilders can't find anything.
-> 
-> Thanks,
-> 
-> Jonathan
-> 
-> > 
-> > Not supported: 
-> > 1. External Vref
-> > 2. Additional Configuration Modes
-> >         Temperature Sensor Mode: report temp data (not voltage).
-> > 
-> >         Line Frequency Rejection Mode: select to reject 50Hz or 60Hz
-> > 	or both. (both is default)
-> This is interesting... Will need some new ABI.  It's a filter so we probably
-> want to try and fit it in with the existing filter ABI.  
-> > 
-> >         Speed Mode: Default speed mode (1x) performs two conversions each
-> > 	cycle and combines the results.  2x speed mode only does one
-> > 	conversion each cycle.
-> Really simple case of oversampling.  So this one is easy ;)
-> 
-> > 3. Power management
-> > 4. DT Bindings
-> > 5. Triggered buffers
-> Device is really slow, so no real rush on this one.  Nice to have for
-> the convenience of using standard interfaces in libiio etc, but
-> at 7sps reading sysfs will work fine for all usecases!
-> 
-> > 6. What else?
-> Other power supply regulators..
-> (allows complete power disabling if there is an appropriate controllable
-> regulator on the board).
->
-Thanks Jonathan!  
-I need more direction on the power supply regulators. 
+This patch is inspired by a comment of Jonathan Cameron on patch of
+Linus Walleij commit aeb55fff3891834e07a3144159a7298a19696af8 ("iio:
+st_sensors: fetch and enable regulators unconditionally"). Because
+changes made in this patch are actually reference generators they should
+be using devm_regulator_get_optional, but if they do not explicitly set
+the reference to NULL they should not be using IS_ERR_OR_NULL, but
+simple IS_ERR check.
 
-When you say power supply regulator, is that the same as reference
-voltage?
+Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: Crt Mori <cmo@melexis.com>
+---
+ drivers/iio/adc/ad7266.c     | 4 ++--
+ drivers/iio/adc/ti-ads8688.c | 4 ++--
+ 2 files changed, 4 insertions(+), 4 deletions(-)
 
-The driver uses onboard vref now.  I see how I can add support for an
-external vref.  But, it seems like maybe you are commenting that we can
-have both, an external vref with an onboard vref as a fallback?  
-
-Thanks,
-alisons
+diff --git a/drivers/iio/adc/ad7266.c b/drivers/iio/adc/ad7266.c
+index c0f6a98..b8d5cfd 100644
+--- a/drivers/iio/adc/ad7266.c
++++ b/drivers/iio/adc/ad7266.c
+@@ -481,7 +481,7 @@ error_free_gpios:
+ 	if (!st->fixed_addr)
+ 		gpio_free_array(st->gpios, ARRAY_SIZE(st->gpios));
+ error_disable_reg:
+-	if (!IS_ERR_OR_NULL(st->reg))
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+ 
+ 	return ret;
+@@ -496,7 +496,7 @@ static int ad7266_remove(struct spi_device *spi)
+ 	iio_triggered_buffer_cleanup(indio_dev);
+ 	if (!st->fixed_addr)
+ 		gpio_free_array(st->gpios, ARRAY_SIZE(st->gpios));
+-	if (!IS_ERR_OR_NULL(st->reg))
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+ 
+ 	return 0;
+diff --git a/drivers/iio/adc/ti-ads8688.c b/drivers/iio/adc/ti-ads8688.c
+index c400439..4a16349 100644
+--- a/drivers/iio/adc/ti-ads8688.c
++++ b/drivers/iio/adc/ti-ads8688.c
+@@ -438,7 +438,7 @@ static int ads8688_probe(struct spi_device *spi)
+ 	return 0;
+ 
+ error_out:
+-	if (!IS_ERR_OR_NULL(st->reg))
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+ 
+ 	return ret;
+@@ -451,7 +451,7 @@ static int ads8688_remove(struct spi_device *spi)
+ 
+ 	iio_device_unregister(indio_dev);
+ 
+-	if (!IS_ERR_OR_NULL(st->reg))
++	if (!IS_ERR(st->reg))
+ 		regulator_disable(st->reg);
+ 
+ 	return 0;
+-- 
+2.9.3
