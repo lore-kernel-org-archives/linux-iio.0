@@ -1,93 +1,30 @@
-Return-Path: <hdegoede@redhat.com>
-Subject: Re: [PATCH] iio: accel: mxc6255 add support for the mxc6225
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Teodora Baluta <teodora.baluta@intel.com>
-References: <20160904173532.18994-1-hdegoede@redhat.com>
- <7b90317d-363d-d690-a8ac-61fbc3a0acf8@kernel.org>
-Cc: linux-iio@vger.kernel.org
-From: Hans de Goede <hdegoede@redhat.com>
-Message-ID: <f6647059-bd19-144a-9c6a-2656df0fa52a@redhat.com>
-Date: Tue, 6 Sep 2016 09:44:40 +0200
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:59477 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755850AbcIFKbr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Sep 2016 06:31:47 -0400
+Subject: Re: [PATCH] iio: light: acpi-als: Add a tuning parameter interface.
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>
+References: <1473157554-4990-1-git-send-email-enric.balletbo@collabora.com>
+Cc: Bryan Freed <bfreed@chromium.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <6b262774-fb80-7212-5426-dfc055689865@metafoo.de>
+Date: Tue, 6 Sep 2016 12:31:41 +0200
 MIME-Version: 1.0
-In-Reply-To: <7b90317d-363d-d690-a8ac-61fbc3a0acf8@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1473157554-4990-1-git-send-email-enric.balletbo@collabora.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On 09/06/2016 12:25 PM, Enric Balletbo i Serra wrote:
+> From: Bryan Freed <bfreed@chromium.org>
+> 
+> Add IIO_CHAN_INFO_CALIBSCALE to the channel to scale up or down
+> the raw measurements through the IIO framework.
+> 
+> Add IIO_CHAN_INFO_PROCESSED to provide the interface to read the
+> scaled measurements through the in_illuminance_input file.
 
-On 05-09-16 22:19, Jonathan Cameron wrote:
-> On 04/09/16 18:35, Hans de Goede wrote:
->> The mxc6225 is fully compatible with the existing mxc6255 driver,
->> add support for it.
->>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> Ah well. Can't find any docs on this on via google so I'll take
-> your word for it :)
-
-I don't have docs either, but the android driver uses the same
-registers and in the same way as the existing mxc6255 driver;
-and I've also confirmed that this works on actual hardware.
-
-Should I put something to this extend in the commit msg next
-time ?
-
-Regards,
-
-Hans
-
-
->
-> Applied to the togreg branch of iio.git and pushed out as testing
-> for the autobuilders to play with it.
->
-> Thanks,
->
-> Jonathan
->> ---
->>  drivers/iio/accel/mxc6255.c | 9 ++++++++-
->>  1 file changed, 8 insertions(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
->> index 97ccde7..50343a7 100644
->> --- a/drivers/iio/accel/mxc6255.c
->> +++ b/drivers/iio/accel/mxc6255.c
->> @@ -26,6 +26,7 @@
->>  #define MXC6255_REG_YOUT		0x01
->>  #define MXC6255_REG_CHIP_ID		0x08
->>
->> +#define MXC6225_CHIP_ID			0xe5
->>  #define MXC6255_CHIP_ID			0x05
->>
->>  /*
->> @@ -154,7 +155,11 @@ static int mxc6255_probe(struct i2c_client *client,
->>  		return ret;
->>  	}
->>
->> -	if (chip_id != MXC6255_CHIP_ID) {
->> +	switch (chip_id) {
->> +	case MXC6225_CHIP_ID:
->> +	case MXC6255_CHIP_ID:
->> +		break;
->> +	default:
->>  		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
->>  		return -ENODEV;
->>  	}
->> @@ -171,12 +176,14 @@ static int mxc6255_probe(struct i2c_client *client,
->>  }
->>
->>  static const struct acpi_device_id mxc6255_acpi_match[] = {
->> +	{"MXC6225",	0},
->>  	{"MXC6255",	0},
->>  	{ }
->>  };
->>  MODULE_DEVICE_TABLE(acpi, mxc6255_acpi_match);
->>
->>  static const struct i2c_device_id mxc6255_id[] = {
->> +	{"mxc6225",	0},
->>  	{"mxc6255",	0},
->>  	{ }
->>  };
->>
->
+What is the use-case for this, how is this interface supposed to be used?
