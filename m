@@ -1,134 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from bhuna.collabora.co.uk ([46.235.227.227]:54377 "EHLO
-        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754804AbcIFK0F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Sep 2016 06:26:05 -0400
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-To: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: Bryan Freed <bfreed@chromium.org>
-Subject: [PATCH] iio: light: acpi-als: Add a tuning parameter interface.
-Date: Tue,  6 Sep 2016 12:25:54 +0200
-Message-Id: <1473157554-4990-1-git-send-email-enric.balletbo@collabora.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hdegoede@redhat.com>
+Subject: Re: [PATCH] iio: accel: mxc6255 add support for the mxc6225
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Teodora Baluta <teodora.baluta@intel.com>
+References: <20160904173532.18994-1-hdegoede@redhat.com>
+ <7b90317d-363d-d690-a8ac-61fbc3a0acf8@kernel.org>
+Cc: linux-iio@vger.kernel.org
+From: Hans de Goede <hdegoede@redhat.com>
+Message-ID: <f6647059-bd19-144a-9c6a-2656df0fa52a@redhat.com>
+Date: Tue, 6 Sep 2016 09:44:40 +0200
+MIME-Version: 1.0
+In-Reply-To: <7b90317d-363d-d690-a8ac-61fbc3a0acf8@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-From: Bryan Freed <bfreed@chromium.org>
+Hi,
 
-Add IIO_CHAN_INFO_CALIBSCALE to the channel to scale up or down
-the raw measurements through the IIO framework.
+On 05-09-16 22:19, Jonathan Cameron wrote:
+> On 04/09/16 18:35, Hans de Goede wrote:
+>> The mxc6225 is fully compatible with the existing mxc6255 driver,
+>> add support for it.
+>>
+>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+> Ah well. Can't find any docs on this on via google so I'll take
+> your word for it :)
 
-Add IIO_CHAN_INFO_PROCESSED to provide the interface to read the
-scaled measurements through the in_illuminance_input file.
+I don't have docs either, but the android driver uses the same
+registers and in the same way as the existing mxc6255 driver;
+and I've also confirmed that this works on actual hardware.
 
-Signed-off-by: Bryan Freed <bfreed@chromium.org>
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
----
- drivers/iio/light/acpi-als.c | 59 +++++++++++++++++++++++++++++++++++++-------
- 1 file changed, 50 insertions(+), 9 deletions(-)
+Should I put something to this extend in the commit msg next
+time ?
 
-diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-index f0b47c5..40837bc 100644
---- a/drivers/iio/light/acpi-als.c
-+++ b/drivers/iio/light/acpi-als.c
-@@ -56,7 +56,8 @@ static const struct iio_chan_spec acpi_als_channels[] = {
- 		},
- 		/* _RAW is here for backward ABI compatibility */
- 		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
--					  BIT(IIO_CHAN_INFO_PROCESSED),
-+					  BIT(IIO_CHAN_INFO_PROCESSED) |
-+					  BIT(IIO_CHAN_INFO_CALIBSCALE),
- 	},
- };
- 
-@@ -76,6 +77,9 @@ struct acpi_als {
- 	struct mutex		lock;
- 
- 	s32			evt_buffer[ACPI_ALS_EVT_BUFFER_SIZE];
-+
-+	uint			als_scale;
-+	uint			als_uscale;
- };
- 
- /*
-@@ -154,25 +158,60 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
- 	s32 temp_val;
- 	int ret;
- 
--	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
--		return -EINVAL;
--
- 	/* we support only illumination (_ALI) so far. */
- 	if (chan->type != IIO_LIGHT)
- 		return -EINVAL;
- 
--	ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
--	if (ret < 0)
--		return ret;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
-+		if (ret < 0)
-+			return ret;
-+		if (mask == IIO_CHAN_INFO_PROCESSED) {
-+			/* use u64 to avoid overflow */
-+			u64 ulux = (u64) temp_val * 1000000;
-+
-+			mutex_lock(&als->lock);
-+			ulux = ulux * als->als_scale +
-+			       div_u64(ulux * als->als_uscale, 1000000U);
-+			mutex_unlock(&als->lock);
-+			*val = div_u64(ulux, 1000000U);
-+		} else {
-+			*val = temp_val;
-+		}
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_CALIBSCALE:
-+		mutex_lock(&als->lock);
-+		*val = als->als_scale;
-+		*val2 = als->als_uscale;
-+		mutex_unlock(&als->lock);
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
- 
--	*val = temp_val;
-+static int acpi_als_write_raw(struct iio_dev *iio,
-+			      struct iio_chan_spec const *chan, int val,
-+			      int val2, long mask)
-+{
-+	struct acpi_als *als = iio_priv(iio);
-+
-+	if (mask != IIO_CHAN_INFO_CALIBSCALE || chan->type != IIO_LIGHT)
-+		return -EINVAL;
- 
--	return IIO_VAL_INT;
-+	mutex_lock(&als->lock);
-+	als->als_scale = val;
-+	als->als_uscale = val2;
-+	mutex_unlock(&als->lock);
-+	return 0;
- }
- 
- static const struct iio_info acpi_als_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= acpi_als_read_raw,
-+	.write_raw		= acpi_als_write_raw,
- };
- 
- static int acpi_als_add(struct acpi_device *device)
-@@ -189,6 +228,8 @@ static int acpi_als_add(struct acpi_device *device)
- 
- 	device->driver_data = indio_dev;
- 	als->device = device;
-+	als->als_scale = 1;
-+	als->als_uscale = 0;
- 	mutex_init(&als->lock);
- 
- 	indio_dev->name = ACPI_ALS_DEVICE_NAME;
--- 
-2.1.0
+Regards,
 
+Hans
+
+
+>
+> Applied to the togreg branch of iio.git and pushed out as testing
+> for the autobuilders to play with it.
+>
+> Thanks,
+>
+> Jonathan
+>> ---
+>>  drivers/iio/accel/mxc6255.c | 9 ++++++++-
+>>  1 file changed, 8 insertions(+), 1 deletion(-)
+>>
+>> diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+>> index 97ccde7..50343a7 100644
+>> --- a/drivers/iio/accel/mxc6255.c
+>> +++ b/drivers/iio/accel/mxc6255.c
+>> @@ -26,6 +26,7 @@
+>>  #define MXC6255_REG_YOUT		0x01
+>>  #define MXC6255_REG_CHIP_ID		0x08
+>>
+>> +#define MXC6225_CHIP_ID			0xe5
+>>  #define MXC6255_CHIP_ID			0x05
+>>
+>>  /*
+>> @@ -154,7 +155,11 @@ static int mxc6255_probe(struct i2c_client *client,
+>>  		return ret;
+>>  	}
+>>
+>> -	if (chip_id != MXC6255_CHIP_ID) {
+>> +	switch (chip_id) {
+>> +	case MXC6225_CHIP_ID:
+>> +	case MXC6255_CHIP_ID:
+>> +		break;
+>> +	default:
+>>  		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
+>>  		return -ENODEV;
+>>  	}
+>> @@ -171,12 +176,14 @@ static int mxc6255_probe(struct i2c_client *client,
+>>  }
+>>
+>>  static const struct acpi_device_id mxc6255_acpi_match[] = {
+>> +	{"MXC6225",	0},
+>>  	{"MXC6255",	0},
+>>  	{ }
+>>  };
+>>  MODULE_DEVICE_TABLE(acpi, mxc6255_acpi_match);
+>>
+>>  static const struct i2c_device_id mxc6255_id[] = {
+>> +	{"mxc6225",	0},
+>>  	{"mxc6255",	0},
+>>  	{ }
+>>  };
+>>
+>
