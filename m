@@ -1,41 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.aswsp.com ([193.34.35.150]:54517 "EHLO mail.aswsp.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754775AbcIHIRJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 8 Sep 2016 04:17:09 -0400
-Message-ID: <57D11F7A.3020708@parrot.com>
-Date: Thu, 8 Sep 2016 10:21:14 +0200
+Return-Path: <gregor.boirie@parrot.com>
 From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>, Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v1 1/2] iio:buffer: properly handle polling of unregistered device
+Date: Wed, 7 Sep 2016 19:26:04 +0200
+Message-ID: <76209c68a95ae086878c35713e2ac6c2a3776f69.1473269007.git.gregor.boirie@parrot.com>
+In-Reply-To: <cover.1473269007.git.gregor.boirie@parrot.com>
+References: <cover.1473269007.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        <linux-iio@vger.kernel.org>
-CC: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
-References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com> <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org> <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de> <419daee6-1e68-dba4-3e04-3c13d58eea44@kernel.org> <57D0584E.2000709@parrot.com> <1fee492b-55f1-cffa-4bef-9e5ed421551d@metafoo.de>
-In-Reply-To: <1fee492b-55f1-cffa-4bef-9e5ed421551d@metafoo.de>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
+Using iio_device_unregister() on a device currently in use may stall
+userspace process polling for data availability (poll syscall).
 
+If device has vanished before running the iio_buffer_fileops poll hook, the
+latter will return empty poll event mask. Process will be stalled waiting
+for events that will never come (if no timeout specified).
 
-On 09/07/2016 08:54 PM, Lars-Peter Clausen wrote:
-> On 09/07/2016 08:11 PM, Gregor Boirie wrote:
->> Just to mention that a somewhat similar patch might be needed to handle
->> negative
->> IIO_VAL_FRACTIONAL_LOG2 values.
-> Hm, right, Michael's patch handled that. Do you want to send a patch, or do
-> you prefer that somebody else sends it?
-I'm sure Michael's patch will suit me, not to mention that I have no driver
-requiring IIO_VAL_FRACTIONAL_LOG2 computation on my setup :)
-Please, go ahead.
+This patch ensures iio_buffer_poll() returns POLLERR if device has just
+been unregistered in order to properly notify userspace process something
+wrong happened (such as removable device unplugged).
 
-Regards,
-Grégor.
+Fixes: 1bdc029390 ("iio: industrialio-buffer: Fix iio_buffer_poll return value")
+Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+---
+ drivers/iio/industrialio-buffer.c | 11 +++++++++--
+ 1 file changed, 9 insertions(+), 2 deletions(-)
 
->
-> Thanks,
-> - Lars
-
+diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+index 90462fc..b15b3386 100644
+--- a/drivers/iio/industrialio-buffer.c
++++ b/drivers/iio/industrialio-buffer.c
+@@ -162,13 +162,20 @@ unsigned int iio_buffer_poll(struct file *filp,
+ {
+ 	struct iio_dev *indio_dev = filp->private_data;
+ 	struct iio_buffer *rb = indio_dev->buffer;
++	bool rdy;
+ 
+ 	if (!indio_dev->info)
+-		return 0;
++		return POLLERR;
+ 
+ 	poll_wait(filp, &rb->pollq, wait);
+-	if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
++	rdy = iio_buffer_ready(indio_dev, rb, rb->watermark, 0);
++
++	if (!indio_dev->info)
++		return POLLERR;
++
++	if (rdy)
+ 		return POLLIN | POLLRDNORM;
++
+ 	return 0;
+ }
+ 
+-- 
+2.1.4
