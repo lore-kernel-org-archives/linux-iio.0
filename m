@@ -1,34 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:59144 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935727AbcIGSyr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2016 14:54:47 -0400
-Subject: Re: [PATCH v1 1/1] iio:core: fix IIO_VAL_FRACTIONAL sign handling
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <e66c33d8d00c51878039a967f2650f7bc1866e90.1472840709.git.gregor.boirie@parrot.com>
- <e20dc6d8-7bd0-0feb-6464-a8af61b880a9@kernel.org>
- <32c015f4-bbd7-e2f4-3b4c-f7799ea95360@metafoo.de>
- <419daee6-1e68-dba4-3e04-3c13d58eea44@kernel.org>
- <57D0584E.2000709@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <1fee492b-55f1-cffa-4bef-9e5ed421551d@metafoo.de>
-Date: Wed, 7 Sep 2016 20:54:43 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41927 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750957AbcIGTCW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2016 15:02:22 -0400
+To: Greg KH <gregkh@linuxfoundation.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] Second set of IIO fixes for the 4.8 cycle.
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <0a6aaf7b-3fa8-2b18-0d43-c5c726de39c4@kernel.org>
+Date: Wed, 7 Sep 2016 20:02:19 +0100
 MIME-Version: 1.0
-In-Reply-To: <57D0584E.2000709@parrot.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/07/2016 08:11 PM, Gregor Boirie wrote:
-> Just to mention that a somewhat similar patch might be needed to handle
-> negative
-> IIO_VAL_FRACTIONAL_LOG2 values.
+The following changes since commit eafe5cfe718926c1ed8b3dacd2191c189b3cdcd2:
 
-Hm, right, Michael's patch handled that. Do you want to send a patch, or do
-you prefer that somebody else sends it?
+  Merge tag 'iio-fixes-for-4.8a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into work-linus (2016-08-23 17:39:31 -0400)
 
-Thanks,
-- Lars
+are available in the git repository at:
+
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.8b
+
+for you to fetch changes up to 171c0091837c81ed5c949fec6966bb5afff2d1cf:
+
+  iio:core: fix IIO_VAL_FRACTIONAL sign handling (2016-09-05 21:21:32 +0100)
+
+----------------------------------------------------------------
+Second set of IIO fixes for the 4.8 cycle.
+
+We have a big rework of the kxsd9 driver queued up behind the fix below and
+a fix for a recent fix that was marked for stable.
+Hence this fix series is perhaps a little more urgent than average for IIO.
+* core
+  - a fix for a fix in the last set.  The recent fix for blocking ops when
+   ! task running left a path (unlikely one) in which the function return
+   value was not set - so initialise it to 0.
+  - The IIO_TYPE_FRACTIONAL code previously didn't cope with negative
+  fractions.  Turned out a fix for this was in Analog's tree but hadn't made
+  it upstream.
+* bmc150
+  - reset chip at init time. At least one board out there ends up coming up
+  in an unstable state due to noise during power up.  The reset does no
+  harm on other boards.
+* kxsd9
+  - Fix a bug in the reported scaling due to failing to set the integer
+  part to 0.
+* hid-sensors-pressure
+  - Output was in the wrong units to comply with the IIO ABI.
+* tools
+  - iio_generic_buffer: Fix the trigger-less mode by ensuring we don't fault
+    out for having no trigger when we explicitly said we didn't want to have
+    one.
+
+----------------------------------------------------------------
+Colin Ian King (1):
+      iio: ensure ret is initialized to zero before entering do loop
+
+Gregor Boirie (2):
+      tools:iio:iio_generic_buffer: fix trigger-less mode
+      iio:core: fix IIO_VAL_FRACTIONAL sign handling
+
+Kweh, Hock Leong (1):
+      iio: fix pressure data output unit in hid-sensor-attributes
+
+Linus Walleij (1):
+      iio: accel: kxsd9: Fix scaling bug
+
+Olof Johansson (1):
+      iio: accel: bmc150: reset chip at init time
+
+ drivers/iio/accel/bmc150-accel-core.c                  | 11 +++++++++++
+ drivers/iio/accel/kxsd9.c                              |  1 +
+ drivers/iio/common/hid-sensors/hid-sensor-attributes.c |  4 ++--
+ drivers/iio/industrialio-buffer.c                      |  4 ++--
+ drivers/iio/industrialio-core.c                        |  5 ++---
+ tools/iio/iio_generic_buffer.c                         |  2 +-
+ 6 files changed, 19 insertions(+), 8 deletions(-)
