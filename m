@@ -1,64 +1,61 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f49.google.com ([209.85.218.49]:32799 "EHLO
-        mail-oi0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756731AbcIGHyd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Sep 2016 03:54:33 -0400
-Received: by mail-oi0-f49.google.com with SMTP id y2so15037297oie.0
-        for <linux-iio@vger.kernel.org>; Wed, 07 Sep 2016 00:54:32 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <c9370190-1859-ab66-eaac-8e7e1dbdbf0d@kernel.org>
-References: <cover.1472841954.git.gregor.boirie@parrot.com>
- <53b4bcc7b2d5de2ed61a0aeebf0898fd7b5aa2cb.1472841954.git.gregor.boirie@parrot.com>
- <c9370190-1859-ab66-eaac-8e7e1dbdbf0d@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 7 Sep 2016 09:54:31 +0200
-Message-ID: <CACRpkdbHm8Shd_ZqFuciUna8g7vi+s9d9pURqL4SCV1NDg3WuA@mail.gmail.com>
-Subject: Re: [PATCH v3 3/3] iio:pressure: initial zpa2326 barometer support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Gregor Boirie <gregor.boirie@parrot.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Laxman Dewangan <ldewangan@nvidia.com>,
-        Alexander Kurz <akurz@blala.de>, Tejun Heo <tj@kernel.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
-        Vlad Dogaru <vlad.dogaru@intel.com>,
-        Marek Vasut <marex@denx.de>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Masahiro Yamada <yamada.masahiro@socionext.com>,
-        Arnd Bergmann <arnd@arndb.de>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <vilhelm.gray@gmail.com>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 0/2] Add IIO support for counter devices
+Date: Wed,  7 Sep 2016 13:55:01 -0400
+Message-Id: <cover.1473265537.git.vilhelm.gray@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Sep 4, 2016 at 6:22 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+This patchset adds new IIO channel type and info constants to facilitate
+support for counter devices. In addition, a new "counter" subdirectory
+is created to house drivers for these counter devices.
 
-> The nasty here is that we need to validate that the trigger is associate
-> with this device 'before' allowing others to associate.  Could be done I
-> think in a slightly more than average complexity validate call.
->
-> * If another trigger is used then pollfunc would have to initialize a oneshot
-> read as you already have it doing.
+Quadrature encoders, such as rotary encoders and linear encoders, are
+devices which are capable of encoding the relative position and
+direction of motion of a shaft. The following IIO enumeration constants
+are introduced to support quadrature encoder counter devices.
 
-I guess the new function iio_trigger_using_own() would be pretty helpful
-for this driver too.
+  IIO_COUNT: Current count (main data provided by the counter device)
 
-Do you think we can merge patch 1+2 of that series (adding the function
-and using it with the ST sensors) and I will squash patch
-3 into my pending MPU-3050 driver and then this driver can rely on it
-as well?
+  IIO_CHAN_INFO_FLAGS: Counter flag states (e.g. underflows, overflows,
+                       errors, etc.)
+  IIO_CHAN_INFO_DIRECTION: Set high when counting up and reset low when
+                           counting down
+  IIO_CHAN_INFO_INDEX: Set high when index input is at active level
+  IIO_CHAN_INFO_MODE: Count value encoding, counter range setting,
+                      quadrature phase mode, etc.
+  IIO_CHAN_INFO_PRESET: Counter preset value
+  IIO_CHAN_INFO_PRESET_EN: Set high to preset counter on signal (e.g.
+                           index input at active level)
 
-The way I see it is that when handling triggers we should always handle
-our own as well as any external trigger (e.g. HRTimer, or even a trigger
-from a different sensor...)
+Specifically, this patchset introduces a driver to support the ACCES
+104-QUAD-8 device, a general purpose quadrature encoder
+counter/interface board capable of monitoring the outputs of eight
+encoders.
 
-Yours,
-Linus Walleij
+William Breathitt Gray (2):
+  iio: Implement counter channel type and info constants
+  iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8
+
+ MAINTAINERS                      |   6 +
+ drivers/iio/Kconfig              |   1 +
+ drivers/iio/Makefile             |   1 +
+ drivers/iio/counter/104-quad-8.c | 265 +++++++++++++++++++++++++++++++++++++++
+ drivers/iio/counter/Kconfig      |  23 ++++
+ drivers/iio/counter/Makefile     |   7 ++
+ drivers/iio/industrialio-core.c  |   7 ++
+ include/linux/iio/iio.h          |   6 +
+ include/uapi/linux/iio/types.h   |   1 +
+ 9 files changed, 317 insertions(+)
+ create mode 100644 drivers/iio/counter/104-quad-8.c
+ create mode 100644 drivers/iio/counter/Kconfig
+ create mode 100644 drivers/iio/counter/Makefile
+
+-- 
+2.7.3
