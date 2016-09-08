@@ -1,56 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:59012 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S966119AbcIHQHb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Sep 2016 12:07:31 -0400
-Received: from pps.filterd (m0046661.ppops.net [127.0.0.1])
-        by mx08-00178001.pphosted.com (8.16.0.11/8.16.0.11) with SMTP id u88G5OEB009678
-        for <linux-iio@vger.kernel.org>; Thu, 8 Sep 2016 18:07:24 +0200
-Received: from beta.dmz-eu.st.com (beta.dmz-eu.st.com [164.129.1.35])
-        by mx08-.pphosted.com with ESMTP id 257nde2xsq-1
-        (version=TLSv1 cipher=ECDHE-RSA-AES256-SHA bits=256 verify=NOT)
-        for <linux-iio@vger.kernel.org>; Thu, 08 Sep 2016 18:07:24 +0200
-Received: from zeta.dmz-eu.st.com (zeta.dmz-eu.st.com [164.129.230.9])
-        by beta.dmz-eu.st.com (STMicroelectronics) with ESMTP id 1D4F93A
-        for <linux-iio@vger.kernel.org>; Thu,  8 Sep 2016 16:07:23 +0000 (GMT)
-Received: from Webmail-eu.st.com (safex1hubcas4.st.com [10.75.90.69])
-        by zeta.dmz-eu.st.com (STMicroelectronics) with ESMTP id D6949277A
-        for <linux-iio@vger.kernel.org>; Thu,  8 Sep 2016 16:07:23 +0000 (GMT)
-To: <linux-iio@vger.kernel.org>
-CC: Lorenzo BIANCONI <lorenzo.bianconi@st.com>,
-        Denis CIOCCA <denis.ciocca@st.com>
-From: Armando Visconti <armando.visconti@st.com>
-Subject: question about IIO buffer interface
-Message-ID: <e388b0fd-85a9-16d6-5ec9-28021f5a5f64@st.com>
-Date: Thu, 8 Sep 2016 18:07:22 +0200
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47631 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752327AbcIHRV0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Sep 2016 13:21:26 -0400
+In-Reply-To: <4d908dc7-e2fc-62d8-76e8-35b7fbc92b00@metafoo.de>
+References: <cover.1473269007.git.gregor.boirie@parrot.com> <76209c68a95ae086878c35713e2ac6c2a3776f69.1473269007.git.gregor.boirie@parrot.com> <aeee1e9c-4f0b-3435-a96d-478e256ebdf4@metafoo.de> <57D11E30.7070509@parrot.com> <4d908dc7-e2fc-62d8-76e8-35b7fbc92b00@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="utf-8"; format=flowed
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v1 1/2] iio:buffer: properly handle polling of unregistered device
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Thu, 08 Sep 2016 18:21:09 +0100
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Message-ID: <AD71C00A-CE66-44A4-A795-2E9312F3FBE6@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
 
-I'm using kernel 3.10, but question is valid for any kernel
-version.
 
-I'm not able to clearly understand how the pre/post enable/disable
-routines should be implemented in the IIO driver for my sensor.
+On 8 September 2016 17:14:02 BST, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>On 09/08/2016 10:15 AM, Gregor Boirie wrote:
+>> Hi Lars,
+>> 
+>> On 09/07/2016 08:13 PM, Lars-Peter Clausen wrote:
+>>> On 09/07/2016 07:26 PM, Gregor Boirie wrote:
+>>>> Using iio_device_unregister() on a device currently in use may
+>stall
+>>>> userspace process polling for data availability (poll syscall).
+>>>>
+>>>> If device has vanished before running the iio_buffer_fileops poll
+>hook, the
+>>>> latter will return empty poll event mask. Process will be stalled
+>waiting
+>>>> for events that will never come (if no timeout specified).
+>>>>
+>>>> This patch ensures iio_buffer_poll() returns POLLERR if device has
+>just
+>>>> been unregistered in order to properly notify userspace process
+>something
+>>>> wrong happened (such as removable device unplugged).
+>>>>
+>>>> Fixes: 1bdc029390 ("iio: industrialio-buffer: Fix iio_buffer_poll
+>return
+>>>> value")
+>>>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+>>> Hi,
+>>>
+>>> Thanks for the patch. I agree with the solution, I don't quite agree
+>with
+>>> the description. In my opinion the current behavior is not
+>necessarily a
+>>> bug. Obviously there won't be a wakeup when the device has been
+>removed
+>>> since no new data will be generated. But there are other scenarios
+>where
+>>> this can happen as well (e.g. broken hardware). An application
+>should be
+>>> prepared to handle this and if it is interactive for example allow
+>the user
+>>> to interrupt the capture process.
+>> Ok. What do you want me to do then ? Remove the "Fixes" tag ? Reword
+>> something in the commit log ?
+>> I'll merge the 2 patches as recommended by Jonathan anyway.
+>
+>I'd drop the Fixes tag and maybe change the subject to "Let poll report
+>an
+>error for unregistered devices"
+Agreed.
 
-In particular, it is not clear to me where I should be expected
-to put the enable/disable of the sensor.
+I guess this is in the no one should notice from the ABI change point of view.
 
-Looking at following comments inside include/linux/iio/iio.h, it
-seems to me that maybe the sensor enable should be put inside
-the postenable, and the sensor disabled inside the predisabled.
+J
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
-> * @preenable:        [DRIVER] function to run prior to marking buffer enabled
-> * @postenable:       [DRIVER] function to run after marking buffer enabled
-> * @predisable:       [DRIVER] function to run prior to marking buffer
-> *                    disabled
-> * @postdisable:      [DRIVER] function to run after marking buffer disabled
-
-But it is not so evident looking at the IIO framework.
-Can someone put some light on it?
-
-Thx,
-Armando
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
