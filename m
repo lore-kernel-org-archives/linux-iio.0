@@ -1,23 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.10]:64904 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751830AbcIJJLm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Sep 2016 05:11:42 -0400
-Date: Sat, 10 Sep 2016 11:11:29 +0200 (CEST)
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Crestez Dan Leonard <leonard.crestez@intel.com>
-Cc: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Message-ID: <2092126885.37136.6063e19d-0eb5-49d7-be1c-040cb1b17743.open-xchange@email.1und1.de>
-Subject: Status of IIO driver for si114x
+Received: from mail.aswsp.com ([193.34.35.150]:34439 "EHLO mail.aswsp.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751726AbcIHILj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 8 Sep 2016 04:11:39 -0400
+Message-ID: <57D11E30.7070509@parrot.com>
+Date: Thu, 8 Sep 2016 10:15:44 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH v1 1/2] iio:buffer: properly handle polling of unregistered
+ device
+References: <cover.1473269007.git.gregor.boirie@parrot.com> <76209c68a95ae086878c35713e2ac6c2a3776f69.1473269007.git.gregor.boirie@parrot.com> <aeee1e9c-4f0b-3435-a96d-478e256ebdf4@metafoo.de>
+In-Reply-To: <aeee1e9c-4f0b-3435-a96d-478e256ebdf4@metafoo.de>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Hi Lars,
 
-i would like to ask what's the current state of the si114x driver?
+On 09/07/2016 08:13 PM, Lars-Peter Clausen wrote:
+> On 09/07/2016 07:26 PM, Gregor Boirie wrote:
+>> Using iio_device_unregister() on a device currently in use may stall
+>> userspace process polling for data availability (poll syscall).
+>>
+>> If device has vanished before running the iio_buffer_fileops poll hook, the
+>> latter will return empty poll event mask. Process will be stalled waiting
+>> for events that will never come (if no timeout specified).
+>>
+>> This patch ensures iio_buffer_poll() returns POLLERR if device has just
+>> been unregistered in order to properly notify userspace process something
+>> wrong happened (such as removable device unplugged).
+>>
+>> Fixes: 1bdc029390 ("iio: industrialio-buffer: Fix iio_buffer_poll return value")
+>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+> Hi,
+>
+> Thanks for the patch. I agree with the solution, I don't quite agree with
+> the description. In my opinion the current behavior is not necessarily a
+> bug. Obviously there won't be a wakeup when the device has been removed
+> since no new data will be generated. But there are other scenarios where
+> this can happen as well (e.g. broken hardware). An application should be
+> prepared to handle this and if it is interactive for example allow the user
+> to interrupt the capture process.
+Ok. What do you want me to do then ? Remove the "Fixes" tag ? Reword
+something in the commit log ?
+I'll merge the 2 patches as recommended by Jonathan anyway.
+>
+> Nevertheless adding support for returning an error on poll() when the device
+> has been removed is a good idea.
+>
+>> ---
+>>   drivers/iio/industrialio-buffer.c | 11 +++++++++--
+>>   1 file changed, 9 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-buffer.c b/drivers/iio/industrialio-buffer.c
+>> index 90462fc..b15b3386 100644
+>> --- a/drivers/iio/industrialio-buffer.c
+>> +++ b/drivers/iio/industrialio-buffer.c
+>> @@ -162,13 +162,20 @@ unsigned int iio_buffer_poll(struct file *filp,
+>>   {
+>>   	struct iio_dev *indio_dev = filp->private_data;
+>>   	struct iio_buffer *rb = indio_dev->buffer;
+>> +	bool rdy;
+>>   
+>>   	if (!indio_dev->info)
+>> -		return 0;
+>> +		return POLLERR;
+> I've had a look at what other subsystems do and input returns POLLERR |
+> POLLHUP. Maybe we should mirror this.
+>
+>>   
+>>   	poll_wait(filp, &rb->pollq, wait);
+>> -	if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
+>> +	rdy = iio_buffer_ready(indio_dev, rb, rb->watermark, 0);
+>> +
+>> +	if (!indio_dev->info)
+>> +		return POLLERR;
+> Why check indio_dev->info twice though? I think we should check it only once
+> after the poll_wait() call. If the device is unregistered we wake the pollq.
+> So adding it there should make sure that the poll() callback is called again
+> if the device is unregistered after the check.
+>
+>> +
+>> +	if (rdy)
+>>   		return POLLIN | POLLRDNORM;
+>> +
+>>   	return 0;
+>>   }
+>>   
+>>
 
-The last patch series i've seen was V3. Is it still under development?
-
-Regards Stefan
