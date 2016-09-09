@@ -1,57 +1,32 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:47394 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756982AbcIHQOE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Sep 2016 12:14:04 -0400
-Subject: Re: [PATCH v1 1/2] iio:buffer: properly handle polling of
- unregistered device
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <cover.1473269007.git.gregor.boirie@parrot.com>
- <76209c68a95ae086878c35713e2ac6c2a3776f69.1473269007.git.gregor.boirie@parrot.com>
- <aeee1e9c-4f0b-3435-a96d-478e256ebdf4@metafoo.de>
- <57D11E30.7070509@parrot.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <4d908dc7-e2fc-62d8-76e8-35b7fbc92b00@metafoo.de>
-Date: Thu, 8 Sep 2016 18:14:02 +0200
+Received: from mail.linuxfoundation.org ([140.211.169.12]:60478 "EHLO
+        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753393AbcIILpO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Sep 2016 07:45:14 -0400
+Date: Fri, 9 Sep 2016 13:45:06 +0200
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] Second set of IIO fixes for the 4.8 cycle.
+Message-ID: <20160909114506.GA14926@kroah.com>
+References: <0a6aaf7b-3fa8-2b18-0d43-c5c726de39c4@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <57D11E30.7070509@parrot.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <0a6aaf7b-3fa8-2b18-0d43-c5c726de39c4@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/08/2016 10:15 AM, Gregor Boirie wrote:
-> Hi Lars,
+On Wed, Sep 07, 2016 at 08:02:19PM +0100, Jonathan Cameron wrote:
+> The following changes since commit eafe5cfe718926c1ed8b3dacd2191c189b3cdcd2:
 > 
-> On 09/07/2016 08:13 PM, Lars-Peter Clausen wrote:
->> On 09/07/2016 07:26 PM, Gregor Boirie wrote:
->>> Using iio_device_unregister() on a device currently in use may stall
->>> userspace process polling for data availability (poll syscall).
->>>
->>> If device has vanished before running the iio_buffer_fileops poll hook, the
->>> latter will return empty poll event mask. Process will be stalled waiting
->>> for events that will never come (if no timeout specified).
->>>
->>> This patch ensures iio_buffer_poll() returns POLLERR if device has just
->>> been unregistered in order to properly notify userspace process something
->>> wrong happened (such as removable device unplugged).
->>>
->>> Fixes: 1bdc029390 ("iio: industrialio-buffer: Fix iio_buffer_poll return
->>> value")
->>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
->> Hi,
->>
->> Thanks for the patch. I agree with the solution, I don't quite agree with
->> the description. In my opinion the current behavior is not necessarily a
->> bug. Obviously there won't be a wakeup when the device has been removed
->> since no new data will be generated. But there are other scenarios where
->> this can happen as well (e.g. broken hardware). An application should be
->> prepared to handle this and if it is interactive for example allow the user
->> to interrupt the capture process.
-> Ok. What do you want me to do then ? Remove the "Fixes" tag ? Reword
-> something in the commit log ?
-> I'll merge the 2 patches as recommended by Jonathan anyway.
+>   Merge tag 'iio-fixes-for-4.8a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into work-linus (2016-08-23 17:39:31 -0400)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.8b
+> 
+> for you to fetch changes up to 171c0091837c81ed5c949fec6966bb5afff2d1cf:
 
-I'd drop the Fixes tag and maybe change the subject to "Let poll report an
-error for unregistered devices"
+Pulled and pushed out, thanks.
 
+greg k-h
