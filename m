@@ -1,32 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:60478 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753393AbcIILpO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Sep 2016 07:45:14 -0400
-Date: Fri, 9 Sep 2016 13:45:06 +0200
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] Second set of IIO fixes for the 4.8 cycle.
-Message-ID: <20160909114506.GA14926@kroah.com>
-References: <0a6aaf7b-3fa8-2b18-0d43-c5c726de39c4@kernel.org>
+Received: from mail-lf0-f65.google.com ([209.85.215.65]:35046 "EHLO
+        mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750975AbcIIPEj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Sep 2016 11:04:39 -0400
+Received: by mail-lf0-f65.google.com with SMTP id s64so2886463lfs.2
+        for <linux-iio@vger.kernel.org>; Fri, 09 Sep 2016 08:04:38 -0700 (PDT)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <0a6aaf7b-3fa8-2b18-0d43-c5c726de39c4@kernel.org>
+In-Reply-To: <20160909143211.13038-1-ico@pruts.nl>
+References: <20160909143211.13038-1-ico@pruts.nl>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Fri, 9 Sep 2016 18:04:36 +0300
+Message-ID: <CAEnQRZDLf5p7rN6Kaaa8YapyZ8M3sdj84RDrLAgAyeQrYwXNmg@mail.gmail.com>
+Subject: Re: [PATCH] Fixed superfluous indent white space in sca3000_core.c
+To: Ico Doornekamp <ico@pruts.nl>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Sep 07, 2016 at 08:02:19PM +0100, Jonathan Cameron wrote:
-> The following changes since commit eafe5cfe718926c1ed8b3dacd2191c189b3cdcd2:
-> 
->   Merge tag 'iio-fixes-for-4.8a' of git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio into work-linus (2016-08-23 17:39:31 -0400)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.8b
-> 
-> for you to fetch changes up to 171c0091837c81ed5c949fec6966bb5afff2d1cf:
+On Fri, Sep 9, 2016 at 5:32 PM, Ico Doornekamp <ico@pruts.nl> wrote:
+>
 
-Pulled and pushed out, thanks.
+Patch subject should be something like:
 
-greg k-h
+iio: accel: sca3000_core: Fix superfluous indent white space
+
+> Signed-off-by: Ico Doornekamp <ico@pruts.nl>
+> ---
+>  drivers/staging/iio/accel/sca3000_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+> index b5625f5..61f3241 100644
+> --- a/drivers/staging/iio/accel/sca3000_core.c
+> +++ b/drivers/staging/iio/accel/sca3000_core.c
+> @@ -412,7 +412,7 @@ static const struct iio_event_spec sca3000_event = {
+>                 },                                              \
+>                 .event_spec = &sca3000_event,                   \
+>                 .num_event_specs = 1,                           \
+> -        }
+> +       }
+>
+>  static const struct iio_chan_spec sca3000_channels[] = {
+>         SCA3000_CHAN(0, IIO_MOD_X),
+> --
+> 2.9.3
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
