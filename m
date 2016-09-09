@@ -1,17 +1,22 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from pruts.nl ([82.94.235.106]:44265 "EHLO fe2.pruts.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752389AbcIINsy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 9 Sep 2016 09:48:54 -0400
+Return-Path: <ico@pruts.nl>
+Content-Type: text/plain; charset=UTF-8
 From: Ico Doornekamp <ico@pruts.nl>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Ico Doornekamp <ico@pruts.nl>
-Subject: [PATCH] Tiny whitespace fix to make ad7192.c cleanly pass checkpatch.pl
-Date: Fri,  9 Sep 2016 15:40:26 +0200
-Message-Id: <20160909134026.12055-1-ico@pruts.nl>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Crt Mori <cmo@melexis.com>
+Cc: Johnathan Iain Cameron <jic23@kernel.org>, Linux Iio <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] Tiny whitespace fix to make ad7192.c cleanly pass checkpatch.pl
+In-reply-to: <CAKv63usKoodnShr4Nw00F-X0qrhZ7s01yN8Az5rn3J-vJyE2VA@mail.gmail.com>
+References: <20160909134026.12055-1-ico@pruts.nl> <CAKv63usKoodnShr4Nw00F-X0qrhZ7s01yN8Az5rn3J-vJyE2VA@mail.gmail.com>
+Date: Fri, 09 Sep 2016 16:05:18 +0200
+Message-Id: <1473429689-sup-9519@pruts.nl>
+List-ID: <linux-iio@vger.kernel.org>
 
+* On 2016-09-09 15:56:31 +0200, Crt Mori wrote:
+ 
+> You are missing Signed-off-by flag.
+
+Sorry, first time around. Retry:
+
+Signed-off-by: Ico Doornekamp <ico@pruts.nl>
 ---
  drivers/staging/iio/adc/ad7192.c | 2 +-
  1 file changed, 1 insertion(+), 1 deletion(-)
@@ -31,4 +36,3 @@ index 1cf6b79..5688b29 100644
  static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
 -- 
 2.9.3
-
