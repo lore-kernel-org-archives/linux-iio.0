@@ -1,66 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58687 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754821AbcIJP5g (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Sep 2016 11:57:36 -0400
-Subject: Re: [PATCH] iio: light: acpi-als: Add a tuning parameter interface.
-To: Enric Balletbo Serra <eballetbo@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-References: <1473157554-4990-1-git-send-email-enric.balletbo@collabora.com>
- <6b262774-fb80-7212-5426-dfc055689865@metafoo.de>
- <CAFqH_513e24aOZ8NJ+m0WtzKmf-n3R8FwwApFGWCdgoQbJRdNA@mail.gmail.com>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cebd989a-6c84-fb60-eb26-e37b7eaf90ab@kernel.org>
-Date: Sat, 10 Sep 2016 16:57:34 +0100
+Received: from mail-yw0-f176.google.com ([209.85.161.176]:35796 "EHLO
+        mail-yw0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752771AbcIIPZT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Sep 2016 11:25:19 -0400
+Received: by mail-yw0-f176.google.com with SMTP id j1so48918647ywb.2
+        for <linux-iio@vger.kernel.org>; Fri, 09 Sep 2016 08:25:18 -0700 (PDT)
+From: Laura Abbott <labbott@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Laura Abbott <labbott@redhat.com>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: Use type header from kernel tree
+Date: Fri,  9 Sep 2016 08:24:53 -0700
+Message-Id: <1473434693-5495-1-git-send-email-labbott@redhat.com>
 MIME-Version: 1.0
-In-Reply-To: <CAFqH_513e24aOZ8NJ+m0WtzKmf-n3R8FwwApFGWCdgoQbJRdNA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/09/16 17:48, Enric Balletbo Serra wrote:
-> Hi Lars,
-> 
-> 2016-09-06 12:31 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
->> On 09/06/2016 12:25 PM, Enric Balletbo i Serra wrote:
->>> From: Bryan Freed <bfreed@chromium.org>
->>>
->>> Add IIO_CHAN_INFO_CALIBSCALE to the channel to scale up or down
->>> the raw measurements through the IIO framework.
->>>
->>> Add IIO_CHAN_INFO_PROCESSED to provide the interface to read the
->>> scaled measurements through the in_illuminance_input file.
->>
->> What is the use-case for this, how is this interface supposed to be used?
-> 
-> The idea behind this is be able to do a per-device calibration. The
-> use case we're thinking is:
-> 
->  1. Read raw measurements from sensor in controlled environment (at
-> 30, 500 and 1000 lux)
->  2. do some math to calculate the calibration value.
->  3. write the value to calibscale (in_illuminance_calibscale)
->  4. read the calibrated measurement (in_illuminance_input)
-> 
-I can see where you are coming from but its a rather nasty fudge.
-Given we have non trivial maths involved I'd be inclined to say this
-should really be left for userspace HAL layers.
 
-If we were getting it from ACPI tables (as the manufacturer had
-done the measurements for the device) then we might expose it this
-way but given userspace has to be involved to apply the tuning anyway
-I'm not sure having a means to 'fudge' the kernel returned value
-really makes sense.
+The iio tools have been updated as new event types have been added to
+the kernel. The tools currently use the standard system headers which
+means that the system may not have the newest defintitions. This leads
+to build failures when building newer tools on older hosts:
 
-Jonathan
-> Regards,
->   Enric
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+gcc -Wall -g -D_GNU_SOURCE   -c -o iio_event_monitor.o
+iio_event_monitor.c
+iio_event_monitor.c:59:3: error: ‘IIO_UVINDEX’ undeclared here (not in a
+function)
+  [IIO_UVINDEX] = "uvindex",
+   ^~~~~~~~~~~
+iio_event_monitor.c:59:3: error: array index in initializer not of
+integer type
+iio_event_monitor.c:59:3: note: (near initialization for
+‘iio_chan_type_name_spec’)
+iio_event_monitor.c:97:3: error: ‘IIO_MOD_LIGHT_UV’ undeclared here (not
+in a function)
+  [IIO_MOD_LIGHT_UV] = "uv",
+   ^~~~~~~~~~~~~~~~
+iio_event_monitor.c:97:3: error: array index in initializer not of
+integer type
+iio_event_monitor.c:97:3: note: (near initialization for
+‘iio_modifier_names’)
+<builtin>: recipe for target 'iio_event_monitor.o' failed
+
+Switch to using the header from the kernel tree to ensure the newest
+defintions are always picked up.
+
+Signed-off-by: Laura Abbott <labbott@redhat.com>
+---
+ tools/iio/iio_event_monitor.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index d9b7e0f..f02523d 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -26,7 +26,7 @@
+ #include <sys/ioctl.h>
+ #include "iio_utils.h"
+ #include <linux/iio/events.h>
+-#include <linux/iio/types.h>
++#include "../../include/uapi/linux/iio/types.h"
+ 
+ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_VOLTAGE] = "voltage",
+-- 
+2.7.4
 
