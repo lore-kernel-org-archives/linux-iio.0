@@ -1,150 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58615 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58625 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754249AbcIJPs0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Sep 2016 11:48:26 -0400
-Subject: Re: [PATCH 1/3] iio: trigger: helpers to determine own trigger
+        with ESMTP id S1755153AbcIJPuD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Sep 2016 11:50:03 -0400
+Subject: Re: [PATCH 2/3] iio: st_sensors: use the helper function
 To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
 References: <1472718439-16734-1-git-send-email-linus.walleij@linaro.org>
+ <1472718439-16734-2-git-send-email-linus.walleij@linaro.org>
 Cc: Giuseppe Barba <giuseppe.barba@st.com>,
         Denis Ciocca <denis.ciocca@st.com>,
         Crestez Dan Leonard <leonard.crestez@intel.com>,
         Gregor Boirie <gregor.boirie@parrot.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9048a22b-d536-617a-57b7-5201832b5eb5@kernel.org>
-Date: Sat, 10 Sep 2016 16:48:23 +0100
+Message-ID: <4bf712f5-6afd-d14f-02c1-55d7d6fb8876@kernel.org>
+Date: Sat, 10 Sep 2016 16:50:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472718439-16734-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1472718439-16734-2-git-send-email-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 01/09/16 09:27, Linus Walleij wrote:
-> This adds a helper function to the IIO trigger framework:
+> The ST sensors can be used as a trigger for its own triggered buffer
+> but it is also possible to use an external trigger: a HRTimer or
+> even a different sensor (!) as trigger. In that case we should not
+> pick the timestamp from our own interrupt top half even if it is
+> active.
 > 
-> iio_trigger_using_own(): for an IIO device, this tells
->   whether the device is using itself as a trigger.
->   This is true if the indio device:
->   (A) supplies a trigger and
->   (B) has assigned its own buffer poll function to use this
->       trigger.
+> This could practically happen if some other sensor is using the
+> ST sensor as trigger but the ST sensor itself is using e.g.
+> an HRTimer as trigger. So the trigger is on, but not used by us.
 > 
-> This helper function is good when constructing triggered,
-> buffered drivers that can either use its own hardware *OR*
-> an external trigger such as a HRTimer or even the trigger from
-> a totally different sensor.
+> We used to assume that whenever the hardware interrupt is turned
+> on, we are using it for our own trigger, but this is an
+> oversimplification.
 > 
-> Under such circumstances it is important to know for example
-> if the timestamp from the same trigger hardware should be used
-> when populating the buffer: if iio_trigger_using_own() is true,
-> we can use this timestamp, else we need to pick a unique
-> timestamp directly in the trigger handler.
-> 
-> For this to work of course IIO devices registering hardware
-> triggers must follow the convention to set the parent device
-> properly, as as well as setting the parent of the IIO device
-> itself.
-> 
-> When a new poll function is attached, we check if the parent
-> device of the IIO of the poll function is the same as the
-> parent device of the trigger and in that case we conclude that
-> the hardware is using itself as trigger.
+> Handle this logically by using the iio_trigger_using_own() helper.
 > 
 > Cc: Giuseppe Barba <giuseppe.barba@st.com>
 > Cc: Denis Ciocca <denis.ciocca@st.com>
 > Cc: Crestez Dan Leonard <leonard.crestez@intel.com>
 > Cc: Gregor Boirie <gregor.boirie@parrot.com>
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Applied to the togreg branch of iio.git with a fair bit
-of fuzz (please sanity check!)
-
-Initially pushed out as testing for the autobuilders to play
-with it.
+Applied to the togreg branch of iio.git and pushed out
+as testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/iio/industrialio-trigger.c | 16 ++++++++++++++++
->  include/linux/iio/trigger.h        | 11 +++++++++++
->  2 files changed, 27 insertions(+)
+>  drivers/iio/common/st_sensors/st_sensors_buffer.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 7ad82fdd3e5b..866d86832c50 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -255,6 +255,14 @@ static int iio_trigger_attach_poll_func(struct iio_trigger *trig,
->  			goto out_free_irq;
->  	}
->  
-> +	/*
-> +	 * Check if we just registered to our own trigger: we determine that
-> +	 * this is the case if the IIO device and the trigger device share the
-> +	 * same parent device.
-> +	 */
-> +	if (pf->indio_dev->dev.parent == trig->dev.parent)
-> +		trig->attached_own_device = true;
-> +
->  	return ret;
->  
->  out_free_irq:
-> @@ -279,6 +287,8 @@ static int iio_trigger_detach_poll_func(struct iio_trigger *trig,
->  		if (ret)
->  			return ret;
->  	}
-> +	if (pf->indio_dev->dev.parent == trig->dev.parent)
-> +		trig->attached_own_device = false;
->  	iio_trigger_put_irq(trig, pf->irq);
->  	free_irq(pf->irq, pf);
->  	module_put(pf->indio_dev->info->driver_module);
-> @@ -622,6 +632,12 @@ void devm_iio_trigger_free(struct device *dev, struct iio_trigger *iio_trig)
->  }
->  EXPORT_SYMBOL_GPL(devm_iio_trigger_free);
->  
-> +bool iio_trigger_using_own(struct iio_dev *indio_dev)
-> +{
-> +	return indio_dev->trig->attached_own_device;
-> +}
-> +EXPORT_SYMBOL(iio_trigger_using_own);
-> +
->  void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
->  {
->  	indio_dev->groups[indio_dev->groupcounter++] =
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index 1c9e028e0d4a..6e935ab0a47f 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -56,6 +56,9 @@ struct iio_trigger_ops {
->   * @subirqs:		[INTERN] information about the 'child' irqs.
->   * @pool:		[INTERN] bitmap of irqs currently in use.
->   * @pool_lock:		[INTERN] protection of the irq pool.
-> + * @attached_own_device:[INTERN] if we are using our own device as trigger,
-> + *			i.e. if we registered a poll function to the same
-> + *			device as the one providing the trigger.
->   **/
->  struct iio_trigger {
->  	const struct iio_trigger_ops	*ops;
-> @@ -73,6 +76,7 @@ struct iio_trigger {
->  	struct iio_subirq subirqs[CONFIG_IIO_CONSUMERS_PER_TRIGGER];
->  	unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
->  	struct mutex			pool_lock;
-> +	bool				attached_own_device;
->  };
->  
->  
-> @@ -145,6 +149,13 @@ irqreturn_t iio_trigger_generic_data_rdy_poll(int irq, void *private);
->  __printf(1, 2) struct iio_trigger *iio_trigger_alloc(const char *fmt, ...);
->  void iio_trigger_free(struct iio_trigger *trig);
->  
-> +/**
-> + * iio_trigger_using_own() - tells us if we use our own HW trigger ourselves
-> + * @indio_dev:  device to check
-> + */
-> +bool iio_trigger_using_own(struct iio_dev *indio_dev);
-> +
-> +
->  #else
->  struct iio_trigger;
->  struct iio_trigger_ops;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> index d06e728cea37..fe7775bb3740 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> @@ -63,7 +63,7 @@ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+>  	 * the hardware trigger) and the hw_timestamp may get updated.
+>  	 * By storing it in a local variable first, we are safe.
+>  	 */
+> -	if (sdata->hw_irq_trigger)
+> +	if (iio_trigger_using_own(indio_dev))
+>  		timestamp = sdata->hw_timestamp;
+>  	else
+>  		timestamp = iio_get_time_ns(indio_dev);
 > 
 
