@@ -1,37 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from pruts.nl ([82.94.235.106]:57333 "EHLO fe2.pruts.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754249AbcIJPz0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 10 Sep 2016 11:55:26 -0400
-Received: from localhost (localhost.localdomain [127.0.0.1])
-        by fe2.pruts.nl (Postfix) with ESMTP id 7BF0B140065
-        for <linux-iio@vger.kernel.org>; Sat, 10 Sep 2016 17:55:23 +0200 (CEST)
-Received: from fe2.pruts.nl ([IPv6:::ffff:127.0.0.1])
-        by localhost (fe2.local [::ffff:127.0.0.1]) (amavisd-new, port 10024)
-        with ESMTP id 4s7peJEiuVal for <linux-iio@vger.kernel.org>;
-        Sat, 10 Sep 2016 17:55:21 +0200 (CEST)
-Content-Type: text/plain; charset=UTF-8
-From: Ico Doornekamp <ico@pruts.nl>
-To: linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] Tiny whitespace fix to make ad7192.c cleanly pass checkpatch.pl
-In-reply-to: <cfb0e4da-7f6c-da8e-441d-3027b18c2ec2@kernel.org>
-References: <20160909134026.12055-1-ico@pruts.nl> <d848e8a4-d21d-8221-9e36-e89f653f9a35@metafoo.de> <cfb0e4da-7f6c-da8e-441d-3027b18c2ec2@kernel.org>
-Date: Sat, 10 Sep 2016 17:55:21 +0200
-Message-Id: <1473522671-sup-6934@pruts.nl>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58687 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754821AbcIJP5g (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Sep 2016 11:57:36 -0400
+Subject: Re: [PATCH] iio: light: acpi-als: Add a tuning parameter interface.
+To: Enric Balletbo Serra <eballetbo@gmail.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+References: <1473157554-4990-1-git-send-email-enric.balletbo@collabora.com>
+ <6b262774-fb80-7212-5426-dfc055689865@metafoo.de>
+ <CAFqH_513e24aOZ8NJ+m0WtzKmf-n3R8FwwApFGWCdgoQbJRdNA@mail.gmail.com>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <cebd989a-6c84-fb60-eb26-e37b7eaf90ab@kernel.org>
+Date: Sat, 10 Sep 2016 16:57:34 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAFqH_513e24aOZ8NJ+m0WtzKmf-n3R8FwwApFGWCdgoQbJRdNA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* On 2016-09-10 17:39:27 +0200, Jonathan Cameron wrote:
- 
-> On 09/09/16 14:59, Lars-Peter Clausen wrote:
+On 06/09/16 17:48, Enric Balletbo Serra wrote:
+> Hi Lars,
+> 
+> 2016-09-06 12:31 GMT+02:00 Lars-Peter Clausen <lars@metafoo.de>:
+>> On 09/06/2016 12:25 PM, Enric Balletbo i Serra wrote:
+>>> From: Bryan Freed <bfreed@chromium.org>
+>>>
+>>> Add IIO_CHAN_INFO_CALIBSCALE to the channel to scale up or down
+>>> the raw measurements through the IIO framework.
+>>>
+>>> Add IIO_CHAN_INFO_PROCESSED to provide the interface to read the
+>>> scaled measurements through the in_illuminance_input file.
+>>
+>> What is the use-case for this, how is this interface supposed to be used?
+> 
+> The idea behind this is be able to do a per-device calibration. The
+> use case we're thinking is:
+> 
+>  1. Read raw measurements from sensor in controlled environment (at
+> 30, 500 and 1000 lux)
+>  2. do some math to calculate the calibration value.
+>  3. write the value to calibscale (in_illuminance_calibscale)
+>  4. read the calibrated measurement (in_illuminance_input)
+> 
+I can see where you are coming from but its a rather nasty fudge.
+Given we have non trivial maths involved I'd be inclined to say this
+should really be left for userspace HAL layers.
 
-> Just to explain a bit more.  Checkpatch is assuming that it is looking
-> at two parameters. It's not. That's a string being passed into the macro.
-> It ultimately forms a file name in sysfs.
+If we were getting it from ACPI tables (as the manufacturer had
+done the measurements for the device) then we might expose it this
+way but given userspace has to be involved to apply the tuning anyway
+I'm not sure having a means to 'fudge' the kernel returned value
+really makes sense.
 
-Yeah, I figured that out eventually, after submitting the patch. Thanks
-for explaining, though.
+Jonathan
+> Regards,
+>   Enric
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
--- 
-:wq
-^X^Cy^K^X^C^C^C^C
