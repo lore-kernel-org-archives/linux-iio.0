@@ -1,35 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from pruts.nl ([82.94.235.106]:51778 "EHLO fe2.pruts.nl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751121AbcIIRpM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 9 Sep 2016 13:45:12 -0400
-From: Ico Doornekamp <ico@pruts.nl>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Ico Doornekamp <ico@pruts.nl>
-Subject: [PATCH] iio: accel: sca3000_core: Fix superfluous indent white space
-Date: Fri,  9 Sep 2016 19:44:14 +0200
-Message-Id: <20160909174414.31002-1-ico@pruts.nl>
+Received: from mout.kundenserver.de ([212.227.17.10]:64904 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751830AbcIJJLm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Sep 2016 05:11:42 -0400
+Date: Sat, 10 Sep 2016 11:11:29 +0200 (CEST)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Crestez Dan Leonard <leonard.crestez@intel.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+Message-ID: <2092126885.37136.6063e19d-0eb5-49d7-be1c-040cb1b17743.open-xchange@email.1und1.de>
+Subject: Status of IIO driver for si114x
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Ico Doornekamp <ico@pruts.nl>
----
- drivers/staging/iio/accel/sca3000_core.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi,
 
-diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-index b5625f5..61f3241 100644
---- a/drivers/staging/iio/accel/sca3000_core.c
-+++ b/drivers/staging/iio/accel/sca3000_core.c
-@@ -412,7 +412,7 @@ static const struct iio_event_spec sca3000_event = {
- 		},						\
- 		.event_spec = &sca3000_event,			\
- 		.num_event_specs = 1,				\
--	 }
-+	}
- 
- static const struct iio_chan_spec sca3000_channels[] = {
- 	SCA3000_CHAN(0, IIO_MOD_X),
--- 
-2.9.3
+i would like to ask what's the current state of the si114x driver?
 
+The last patch series i've seen was V3. Is it still under development?
+
+Regards Stefan
