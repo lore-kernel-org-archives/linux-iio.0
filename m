@@ -1,47 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:32870 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753075AbcILPo4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2016 11:44:56 -0400
-Date: Mon, 12 Sep 2016 10:44:52 -0500
-From: Rob Herring <robh@kernel.org>
-To: Christoph Fritz <chf.fritz@googlemail.com>
-Cc: Fabio Estevam <festevam@gmail.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Vlad Dogaru <ddvlad@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>, linux-iio@vger.kernel.org,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Subject: Re: [PATCH v2] iio: sx9500: add final devicetree support
-Message-ID: <20160912154452.GA29955@rob-hp-laptop>
-References: <1472827740.1929.26.camel@googlemail.com>
- <CAOMZO5BeL1EKOQvZQoXXObttHSKxL7UQ1s2r8H4EOuROOb_YnQ@mail.gmail.com>
- <1472828671.1929.32.camel@googlemail.com>
- <CAOMZO5BVDS=AaSyRS0ELBiEKx3RxdstXgA_xJ6ANUzKDxdyBxg@mail.gmail.com>
- <1472829819.12668.3.camel@googlemail.com>
- <CAOMZO5DbJLnH1wm2KuML+O36O-eSYWeGwrxE5pdKSRtB-Js-yA@mail.gmail.com>
- <1472834833.12668.11.camel@googlemail.com>
- <CAOMZO5B8ttBvf-zimO5R_kgpzR2bxF73Ur0vZpBKUX8Ytbs8uQ@mail.gmail.com>
- <1472898600.1918.4.camel@googlemail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1472898600.1918.4.camel@googlemail.com>
+Received: from mx1.redhat.com ([209.132.183.28]:44806 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751044AbcIKQ3V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 11 Sep 2016 12:29:21 -0400
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] iio: accel: mxc6255: Fix chip-id check
+Date: Sun, 11 Sep 2016 18:29:16 +0200
+Message-Id: <20160911162916.22495-1-hdegoede@redhat.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Sep 03, 2016 at 12:30:00PM +0200, Christoph Fritz wrote:
-> This makes sx9500 driver usable on devicetree based platforms too.
-> 
-> Signed-off-by: Christoph Fritz <chf.fritz@googlemail.com>
-> ---
-> 
-> Changes in v2:
-> 
->  - fix docu: add optional property reset-gpios
->  - adapt docu: change example "reset-gpios"
-> 
->  .../devicetree/bindings/iio/proximity/sx9500.txt   | 24 ++++++++++++++++++++++
->  drivers/iio/proximity/sx9500.c                     |  7 +++++++
->  2 files changed, 31 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/proximity/sx9500.txt
+The initial commit adding support for the mxc6225 assumed the
+mxc6225 has a chip-id of 0xe5 based on testing on a single Allwinner
+A23 tablet with a mxc6225. Testing on a bunch of other Allwinner
+tablets have shown that the chip-id for the mxc6225 is not constant.
 
-Acked-by: Rob Herring <robh@kernel.org>
+A datasheet for the MXC6255 which I've found online says that bits
+7 and 6 of the chip-id register are undefined (for the mxc6255), testing
+on 5 different tablets with a mxc6225 has found the following ids:
+0x25, 0x45, 0x65, 0x85, 0xe5. So it seems that for the mxc6225 bits
+7, 6 and 5 of the chip-id register are undefined.
+
+This commit adjusts the chip-id check so that the mxc6255 driver
+properly recognizes the mxc6225 in all these tablets.
+
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ drivers/iio/accel/mxc6255.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
+
+diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
+index 50343a7..0abad69 100644
+--- a/drivers/iio/accel/mxc6255.c
++++ b/drivers/iio/accel/mxc6255.c
+@@ -26,7 +26,6 @@
+ #define MXC6255_REG_YOUT		0x01
+ #define MXC6255_REG_CHIP_ID		0x08
+ 
+-#define MXC6225_CHIP_ID			0xe5
+ #define MXC6255_CHIP_ID			0x05
+ 
+ /*
+@@ -155,11 +154,7 @@ static int mxc6255_probe(struct i2c_client *client,
+ 		return ret;
+ 	}
+ 
+-	switch (chip_id) {
+-	case MXC6225_CHIP_ID:
+-	case MXC6255_CHIP_ID:
+-		break;
+-	default:
++	if ((chip_id & 0x1f) != MXC6255_CHIP_ID) {
+ 		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
+ 		return -ENODEV;
+ 	}
+-- 
+2.9.3
+
