@@ -1,76 +1,85 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41833 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755570AbcILTTw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2016 15:19:52 -0400
-Subject: Re: [PATCH] iio: accel: mxc6255: Fix chip-id check
-To: Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20160911162916.22495-1-hdegoede@redhat.com>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d429f1be-6821-486d-698c-361b1dd448de@kernel.org>
-Date: Mon, 12 Sep 2016 20:19:46 +0100
+Return-Path: <gregor.boirie@parrot.com>
+Message-ID: <57D6AC92.8000609@parrot.com>
+Date: Mon, 12 Sep 2016 15:24:34 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
 MIME-Version: 1.0
-In-Reply-To: <20160911162916.22495-1-hdegoede@redhat.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: Lars-Peter Clausen <lars@metafoo.de>, Jonathan Cameron <jic23@kernel.org>,
+	<linux-iio@vger.kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>
+Subject: Re: [PATCH v2 1/1] iio:buffer: let poll report an error for unregistered
+ devices
+References: <cover.1473430265.git.gregor.boirie@parrot.com> <579ce80942853be7eb6e6320727df0d4ffbd0903.1473430265.git.gregor.boirie@parrot.com> <7f729816-f82c-7ad1-8505-6df24a619131@kernel.org> <a544ae58-5e8b-7fd7-16ff-eb5d4144cc58@metafoo.de>
+In-Reply-To: <a544ae58-5e8b-7fd7-16ff-eb5d4144cc58@metafoo.de>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/09/16 17:29, Hans de Goede wrote:
-> The initial commit adding support for the mxc6225 assumed the
-> mxc6225 has a chip-id of 0xe5 based on testing on a single Allwinner
-> A23 tablet with a mxc6225. Testing on a bunch of other Allwinner
-> tablets have shown that the chip-id for the mxc6225 is not constant.
-> 
-> A datasheet for the MXC6255 which I've found online says that bits
-> 7 and 6 of the chip-id register are undefined (for the mxc6255), testing
-> on 5 different tablets with a mxc6225 has found the following ids:
-> 0x25, 0x45, 0x65, 0x85, 0xe5. So it seems that for the mxc6225 bits
-> 7, 6 and 5 of the chip-id register are undefined.
-> 
-> This commit adjusts the chip-id check so that the mxc6255 driver
-> properly recognizes the mxc6225 in all these tablets.
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-As this is trivial I'll slip it in late for the pull request I'm
-just doing.
+Hi,
 
-Applied to the togreg branch of iio.git.
+On 09/12/2016 02:18 PM, Lars-Peter Clausen wrote:
+> Hi,
+>
+> I had some more comments inline in v1, please see below.
+>
+> On 09/10/2016 05:44 PM, Jonathan Cameron wrote:
+>>> @@ -162,13 +163,20 @@ unsigned int iio_buffer_poll(struct file *filp,
+>>>   {
+>>>   	struct iio_dev *indio_dev = filp->private_data;
+>>>   	struct iio_buffer *rb = indio_dev->buffer;
+>>> +	bool rdy;
+>>>   
+>>>   	if (!indio_dev->info)
+>>> -		return 0;
+>>> +		return POLLERR;
+> I've had a look at what other subsystems do and input returns POLLERR |
+> POLLHUP. Maybe we should mirror this.
+Well, some input device only don't IFAIK (I'm no expert on this) as
+POLLHUP might be focused on output errors only.
 
-Thanks,
+>
+>>>   
+>>>   	poll_wait(filp, &rb->pollq, wait);
+>>> -	if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
+>>> +	rdy = iio_buffer_ready(indio_dev, rb, rb->watermark, 0);
+>>> +
+>>> +	if (!indio_dev->info)
+>>> +		return POLLERR;
+> Why check indio_dev->info twice though, since there is no locking involved
+> the second check does gain us anything in terms of race condition avoidance.
+I took iio_buffer_read_first_n_outer() as a reference : the check of
+indio_dev->info is performed at least twice :
+* once at function start
+* each time wait_event_interruptible() returns.
 
-Jonathan
-> ---
->  drivers/iio/accel/mxc6255.c | 7 +------
->  1 file changed, 1 insertion(+), 6 deletions(-)
-> 
-> diff --git a/drivers/iio/accel/mxc6255.c b/drivers/iio/accel/mxc6255.c
-> index 50343a7..0abad69 100644
-> --- a/drivers/iio/accel/mxc6255.c
-> +++ b/drivers/iio/accel/mxc6255.c
-> @@ -26,7 +26,6 @@
->  #define MXC6255_REG_YOUT		0x01
->  #define MXC6255_REG_CHIP_ID		0x08
->  
-> -#define MXC6225_CHIP_ID			0xe5
->  #define MXC6255_CHIP_ID			0x05
->  
->  /*
-> @@ -155,11 +154,7 @@ static int mxc6255_probe(struct i2c_client *client,
->  		return ret;
->  	}
->  
-> -	switch (chip_id) {
-> -	case MXC6225_CHIP_ID:
-> -	case MXC6255_CHIP_ID:
-> -		break;
-> -	default:
-> +	if ((chip_id & 0x1f) != MXC6255_CHIP_ID) {
->  		dev_err(&client->dev, "Invalid chip id %x\n", chip_id);
->  		return -ENODEV;
->  	}
-> 
+I thought it would be a good starting point.
 
+> I think we should have one check after the poll_wait() call. If the device
+> is unregistered we wake the pollq. So adding it there should make sure that
+> the poll() callback is called again if the device is unregistered after the
+> check.
+No risk that an "exotic" userspace process perform 2 sys_poll() in the time
+between iio_device_unregister() and iio_device_free() ?
+I mean : am I wrong in thinking that the filep is still valid as long as 
+the fd has
+not been released completly ?
+
+>
+> I'm not sure though if we'd need a explicit memory barrier or whether
+> poll_wait() can act as a implicit one. But probably we are ok, given that
+> poll_wait() should take a lock.
+>
+> To be sure that the code is race free we need a guarantee that there is
+> strict ordering between the indio_dev->info = NULL and wake_up() in
+> unregister as well as between poll_wait() and the if (indio_dev->info) check
+> in poll().
+>
+> The scenario is basically
+>
+> CPU0				CPU1
+> ---------------------------------------------------------
+> poll_wait()			indio_dev->info = NULL
+> if (!indio_dev->info)		wake_up()
+>
+>
+> If strict ordering is not observed for either side we could end up missing
+> the unregister and poll() will block forever just as before.
