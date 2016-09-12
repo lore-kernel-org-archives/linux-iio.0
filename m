@@ -1,141 +1,65 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 12 Sep 2016 16:07:15 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>, jdelvare@suse.com,
-	linux@roeck-us.net, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
-Message-ID: <20160912150715.GG9789@dell>
-References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
- <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
- <20160912091829.GB1873@dell>
- <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
- <20160912095923.GD1873@dell>
- <20160912100719.GJ9449@lukather>
- <20160912104932.GF1873@dell>
- <c322d309-993c-a572-5ffd-bf4012e26134@free-electrons.com>
- <20160912135655.GC9789@dell>
- <20160912143548.GL9449@lukather>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160912143548.GL9449@lukather>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:54656 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932245AbcILPjU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2016 11:39:20 -0400
+Message-ID: <1473694755.6389.2.camel@hadess.net>
+Subject: Re: accelerometer orientation
+From: Bastien Nocera <hadess@hadess.net>
+To: Hans de Goede <hdegoede@redhat.com>, linux-iio@vger.kernel.org
+Date: Mon, 12 Sep 2016 17:39:15 +0200
+In-Reply-To: <0b744f22-55c0-da22-b27f-6092aab18365@redhat.com>
+References: <0b744f22-55c0-da22-b27f-6092aab18365@redhat.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 12 Sep 2016, Maxime Ripard wrote:
+Hey,
 
-> On Mon, Sep 12, 2016 at 02:56:55PM +0100, Lee Jones wrote:
-> > > >>> Then use .data = <defined model ID> and set up a switch() in .probe().
-> > > >>
-> > > >> Uh? Why? It just adds a non-standard indirection, while using
-> > > >> of_match_device is very standard, and used extensively in Linux.
-> > > > 
-> > > > You still use of_match_device() to obtain the ID.
-> > > > 
-> > > > The "don't mix DT with the MFD API" is there to prevent some of the
-> > > > nasty hacks I've seen previously.  This particular example doesn't
-> > > > seem so bad, but it's a gateway to ridiculous hackery!
-> > > 
-> > > How am I supposed to get the .data without of_match_node then?
-> > > What's more hackish in using .data field for specific data for each
-> > > compatible than in using a random ID in .data and switching on it? The
-> > > result is exactly the same, the switching case being more verbose and
-> > > adding complexity to something that can be done in a straightforward manner.
-> > 
-> > I've already agreed that your implementation isn't terrible, but I'd
-> > still like to remain strict on the rules.
-> > 
-> > Better still, can you can dynamically test which platform you're on,
-> > via a version register or similar?
-> > 
-> > Failing that, see how everyone else does it:
-> > 
-> >  `git grep "\.data" -- drivers/mfd/`
+On Mon, 2016-09-12 at 17:25 +0200, Hans de Goede wrote:
+> Hi Bastien,
 > 
-> Just to make sure, you prefer something like
+> So as I guess you sorta know in my spare time I work on Linux
+> (mainline) support for Allwinner SoC based ARM devices, including
+> a whole lot of cheap Chinese tablets.
 > 
-> static struct my_struct data = {
-> };
+> Recently I've begun looking into supporting the accelerometers
+> on these devices and I'm making good progress on getting the
+> kernel bits working using iio drivers (including a few new
+> ones I've written recently).
 > 
-> static struct my_struct data2 = {
-> };
+> Yesterday I realized there is a bit of a catch though, all
+> these iio drivers report results assuming that the accelerometer
+> is mounted on the top side of the PCB and with its X/Y
+> coordination properly taken info account.
 > 
-> struct of_device_id matches[] = {
->        { compatible = "...", data = <ID> },
->        { compatible = "...", data = <ID2> },
-> };
+> Unfortunately neither is necessarily true. Almost all
+> tablet PCBS are mounted upside down (with an empty PCB
+> backside against the lcd-panel. Meaning that the Z axis
+> reads -1G when the tablet is lying on its back instead
+> of the expected +1G and some need X/Y axis swapping and/or
+> inversion too.
 > 
-> of_id = of_match_device (dev, matches);
-> switch (of_id->data) {
-> case <ID>:
->      function(data);
-> case <ID2>:
->      function(data2);
-> };
+> So there are 3 problems here:
 > 
-> over
+> 1) Where do we store the orientation of the chip
 > 
-> static struct my_struct data = {
-> };
-> 
-> static struct my_struct data2 = {
-> };
-> 
-> struct of_device_id matches[] = {
->        { compatible = "...", data = data },
->        { compatible = "...", data = data2 },
-> };
-> 
-> of_id = of_match_device (dev, matches);
-> function(of_id->data);
-> 
-> ?
-> 
-> This is the *only* time this is going to be used in that driver. I can
-> understand the need for a version if you need to apply quirks in
-> several functions, but here it clearly looks suboptimal.
-> 
-> And we are indeed using this construct in the AXP MFD, and it just
-> doesn't scale either and become quite difficult to maintain when you
-> have a significant number of variants, and then you have to patch
-> *all* the switch instances to get something done.
+<snip>
+> 2) Where do we correct the readings for the orientation
+<snip>
+> 3) Currently implementing orientation support in an iio driver
+> requires copy and pasting quite a bit of boiler plate, so
+> a question to the linux-iio list, has anyone though of an
+> easier way to do this. I really just want to be able to
+> pass say a single flag to iio_device_register and then
+> have the iio-core automatically call of_iio_read_mount_matrix()
+> and add mount_matrix ext_info.
 
-static struct my_struct data = {
-};
+All good ideas, but we need a way to do this for devices without DT
+(meaning all of the x86 tablets).
 
-static struct my_struct data2 = {
-};
+Perhaps iio-sensor-proxy could read from udev instead, and udev either
+pull from DT when available, or apply from its own rules?
 
-struct of_device_id matches[] = {
-       { compatible = "...", data = <ID> },
-       { compatible = "...", data = <ID2> },
-};
-
-int probe()
-{
-	struct mfd_cell *cell;
-
-	of_id = of_match_device (dev, matches);
-	switch (of_id->data) {
-	case <ID>:
-     	     cell = data;
-	case <ID2>:
-     	     cell = data2;
-	};
-
-	mfd_add_devices(..., cell, ...)
-};
-
-It's an extra few lines, but worth it to unbind MFD from DT.
-
-Is there really no way to obtain this information dynamically?
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Cheers
