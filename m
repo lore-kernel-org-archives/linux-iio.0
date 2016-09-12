@@ -1,101 +1,127 @@
-Return-Path: <labbott@redhat.com>
-Subject: Re: [PATCH] iio: Use type header from kernel tree
-To: Jonathan Cameron <jic23@kernel.org>,
- Daniel Baluta <daniel.baluta@gmail.com>
-References: <1473434693-5495-1-git-send-email-labbott@redhat.com>
- <CAEnQRZBnw_s33+Bbtm9hrG5uqX0HYiCOPfo5RTa3oJ1OHT+dFg@mail.gmail.com>
- <6b71d792-5300-b0cc-9d64-5cd0d5767e92@redhat.com>
- <f3c5a3f3-f05c-9d2f-ec82-0e664a859220@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, ben@decadent.org.uk
-From: Laura Abbott <labbott@redhat.com>
-Message-ID: <a9537e78-f40f-f954-c592-d416a44ea6e9@redhat.com>
-Date: Mon, 12 Sep 2016 08:22:17 -0700
+Return-Path: <lee.jones@linaro.org>
+Date: Mon, 12 Sep 2016 10:59:23 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160912095923.GD1873@dell>
+References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
+ <20160912091829.GB1873@dell>
+ <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <f3c5a3f3-f05c-9d2f-ec82-0e664a859220@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 09/10/2016 08:01 AM, Jonathan Cameron wrote:
-> On 09/09/16 16:47, Laura Abbott wrote:
->> On 09/09/2016 08:35 AM, Daniel Baluta wrote:
->>> On Fri, Sep 9, 2016 at 6:24 PM, Laura Abbott <labbott@redhat.com> wrote:
->>>>
->>>> The iio tools have been updated as new event types have been added to
->>>> the kernel. The tools currently use the standard system headers which
->>>> means that the system may not have the newest defintitions. This leads
->>>> to build failures when building newer tools on older hosts:
->>>>
->>>> gcc -Wall -g -D_GNU_SOURCE   -c -o iio_event_monitor.o
->>>> iio_event_monitor.c
->>>> iio_event_monitor.c:59:3: error: ‘IIO_UVINDEX’ undeclared here (not in a
->>>> function)
->>>>   [IIO_UVINDEX] = "uvindex",
->>>>    ^~~~~~~~~~~
->>>> iio_event_monitor.c:59:3: error: array index in initializer not of
->>>> integer type
->>>> iio_event_monitor.c:59:3: note: (near initialization for
->>>> ‘iio_chan_type_name_spec’)
->>>> iio_event_monitor.c:97:3: error: ‘IIO_MOD_LIGHT_UV’ undeclared here (not
->>>> in a function)
->>>>   [IIO_MOD_LIGHT_UV] = "uv",
->>>>    ^~~~~~~~~~~~~~~~
->>>> iio_event_monitor.c:97:3: error: array index in initializer not of
->>>> integer type
->>>> iio_event_monitor.c:97:3: note: (near initialization for
->>>> ‘iio_modifier_names’)
->>>> <builtin>: recipe for target 'iio_event_monitor.o' failed
->>>>
->>>> Switch to using the header from the kernel tree to ensure the newest
->>>> defintions are always picked up.
->>>>
->>>> Signed-off-by: Laura Abbott <labbott@redhat.com>
->>>
->>> Hi Laura,
->>>
->>> Thanks for your patch. The solution here would be to install the
->>> headers for your
->>> new kernel in order to use the updated types.
->>>
->>> That is you should run make headers_install.
->>>
->>> $ make help | grep headers
->>>   headers_install - Install sanitised kernel headers to INSTALL_HDR_PATH
->>>
->>> You can use INSTALL_HDR_PATH to put the headers in a custom directory
->>> and tell gcc to also include this directory when searching for include headers.
->>>
->>
->> That's a pretty ugly solution. We want to build this as part of Fedora
->> and installing another local copy of the headers in the build environment
->> complicates an already complicated build process. This is more work
->> for users building on their own as well. Several other tools in the tools
->> directory already use the headers from the kernel tree, is there a reason
->> iio doesn't want to as well?
-> This got raised as a suggestion for discussion at the kernel summit this
-> year.  Clearly a somewhat contentious topic ;)
->
-> https://lists.linuxfoundation.org/pipermail/ksummit-discuss/2016-September/003829.html
->
-> I'd prefer to see some resolution on that discussion before making any changes.
-> Looks like there are some moves afoot to standardise a lot of this stuff in
-> tools.
->
-> I've cc'd Ben who raised this particular issue in the first place.
->
+On Mon, 12 Sep 2016, Quentin Schulz wrote:
 
-Yes, some consistency would be useful across all tools. I really just want
-'make' to work on all the tools directories without having to worry about
-what kernel/headers are installed. I'll be around ksummit/plumbers so I'm
-happy to talk more there.
+> On 12/09/2016 11:18, Lee Jones wrote:
+> > On Thu, 08 Sep 2016, Quentin Schulz wrote:
+> > 
+> [...]
 
-Thanks,
-Laura
+[...]
 
-> Jonathan
->>
->> Thanks,
->> Laura
->
+> >> +++ b/drivers/mfd/sun4i-gpadc-mfd.c
+
+[...]
+
+> >> +static struct mfd_cell sun4i_gpadc_mfd_cells[] = {
+> >> +	{
+> >> +		.name	= "sun4i-a10-gpadc-iio",
+> >> +		.resources = adc_resources,
+> >> +		.num_resources = ARRAY_SIZE(adc_resources),
+> >> +	}, {
+> >> +		.name = "iio_hwmon",
+> >> +	}
+> > 
+> > Single line please
+> > 
+> > { .name = "iio_hwmon" }
+> >
+> 
+> +	{
+> +		.name	= "sun4i-a10-gpadc-iio",
+> +		.resources = adc_resources,
+> +		.num_resources = ARRAY_SIZE(adc_resources),
+> +	}, { .name = "iio_hwmon" }
+> 
+> or
+> 
+> +	{
+> +		.name	= "sun4i-a10-gpadc-iio",
+> +		.resources = adc_resources,
+> +		.num_resources = ARRAY_SIZE(adc_resources),
+> +	},
+> +	{ .name = "iio_hwmon" }
+> 
+> ?
+
+The latter.
+
+[...]
+
+> >> +static const struct of_device_id sun4i_gpadc_mfd_of_match[] = {
+> >> +	{
+> >> +		.compatible = "allwinner,sun4i-a10-ts",
+> >> +		.data = &sun4i_gpadc_mfd_cells,
+> >> +	}, {
+> >> +		.compatible = "allwinner,sun5i-a13-ts",
+> >> +		.data = &sun5i_gpadc_mfd_cells,
+> >> +	}, {
+> >> +		.compatible = "allwinner,sun6i-a31-ts",
+> >> +		.data = &sun6i_gpadc_mfd_cells,
+> >> +	}, { /* sentinel */ }
+> >> +};
+> > 
+> > Don't mix OF and MFD functionality.
+> > 
+> > Why don't you create a node for "iio_hwmon" and have
+> > platform_of_populate() do your bidding?
+> > 
+> 
+> We are using a stable binding which we cannot modify. This means, the DT
+> in its current state can only be modified to add features, which is not
+> the case of this driver (it is a rewriting of an existing driver which
+> uses the rtp node).
+
+Then use .data = <defined model ID> and set up a switch() in .probe().
+
+> >> +static int sun4i_gpadc_mfd_probe(struct platform_device *pdev)
+> > 
+> > Remove all mention of "mfd" from this file.
+> > 
+> > (Accept the calls to the MFD API of course).
+> > 
+> [...]
+> >> +
+> >> +MODULE_DEVICE_TABLE(of, sun4i_gpadc_mfd_of_match);
+> > 
+> > Place this directly under the table.
+> > 
+> >> +static struct platform_driver sun4i_gpadc_mfd_driver = {
+> >> +	.driver = {
+> >> +		.name = "sun4i-adc-mfd",
+> >> +		.of_match_table = of_match_ptr(sun4i_gpadc_mfd_of_match),
+> >> +	},
+> >> +	.probe = sun4i_gpadc_mfd_probe,
+> > 
+> > No .remove?
+> > 
+> 
+> No, everything in probe is handled with devm functions.
+
+Don't you need to undo the register write you did?
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
