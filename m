@@ -1,120 +1,87 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:47208 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756086AbcILNgb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 12 Sep 2016 09:36:31 -0400
-Subject: Re: [PATCH v2 1/1] iio:buffer: let poll report an error for
- unregistered devices
-To: Gregor Boirie <gregor.boirie@parrot.com>,
-        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <cover.1473430265.git.gregor.boirie@parrot.com>
- <579ce80942853be7eb6e6320727df0d4ffbd0903.1473430265.git.gregor.boirie@parrot.com>
- <7f729816-f82c-7ad1-8505-6df24a619131@kernel.org>
- <a544ae58-5e8b-7fd7-16ff-eb5d4144cc58@metafoo.de>
- <57D6AC92.8000609@parrot.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <4badd4ba-cc23-bdae-061f-0948af93e1f0@metafoo.de>
-Date: Mon, 12 Sep 2016 15:36:27 +0200
+Return-Path: <lee.jones@linaro.org>
+Date: Mon, 12 Sep 2016 14:56:55 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: Maxime Ripard <maxime.ripard@free-electrons.com>, jdelvare@suse.com,
+	linux@roeck-us.net, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160912135655.GC9789@dell>
+References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
+ <20160912091829.GB1873@dell>
+ <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
+ <20160912095923.GD1873@dell>
+ <20160912100719.GJ9449@lukather>
+ <20160912104932.GF1873@dell>
+ <c322d309-993c-a572-5ffd-bf4012e26134@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <57D6AC92.8000609@parrot.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <c322d309-993c-a572-5ffd-bf4012e26134@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/12/2016 03:24 PM, Gregor Boirie wrote:
-> Hi,
+On Mon, 12 Sep 2016, Quentin Schulz wrote:
+> On 12/09/2016 12:49, Lee Jones wrote:
+> > On Mon, 12 Sep 2016, Maxime Ripard wrote:
+> > 
+> >> On Mon, Sep 12, 2016 at 10:59:23AM +0100, Lee Jones wrote:
+> >>>>>> +static const struct of_device_id sun4i_gpadc_mfd_of_match[] = {
+> >>>>>> +	{
+> >>>>>> +		.compatible = "allwinner,sun4i-a10-ts",
+> >>>>>> +		.data = &sun4i_gpadc_mfd_cells,
+> >>>>>> +	}, {
+> >>>>>> +		.compatible = "allwinner,sun5i-a13-ts",
+> >>>>>> +		.data = &sun5i_gpadc_mfd_cells,
+> >>>>>> +	}, {
+> >>>>>> +		.compatible = "allwinner,sun6i-a31-ts",
+> >>>>>> +		.data = &sun6i_gpadc_mfd_cells,
+> >>>>>> +	}, { /* sentinel */ }
+> >>>>>> +};
+> >>>>>
+> >>>>> Don't mix OF and MFD functionality.
+> >>>>>
+> >>>>> Why don't you create a node for "iio_hwmon" and have
+> >>>>> platform_of_populate() do your bidding?
+> >>>>>
+> >>>>
+> >>>> We are using a stable binding which we cannot modify. This means, the DT
+> >>>> in its current state can only be modified to add features, which is not
+> >>>> the case of this driver (it is a rewriting of an existing driver which
+> >>>> uses the rtp node).
+> >>>
+> >>> Then use .data = <defined model ID> and set up a switch() in .probe().
+> >>
+> >> Uh? Why? It just adds a non-standard indirection, while using
+> >> of_match_device is very standard, and used extensively in Linux.
+> > 
+> > You still use of_match_device() to obtain the ID.
+> > 
+> > The "don't mix DT with the MFD API" is there to prevent some of the
+> > nasty hacks I've seen previously.  This particular example doesn't
+> > seem so bad, but it's a gateway to ridiculous hackery!
 > 
-> On 09/12/2016 02:18 PM, Lars-Peter Clausen wrote:
->> Hi,
->>
->> I had some more comments inline in v1, please see below.
->>
->> On 09/10/2016 05:44 PM, Jonathan Cameron wrote:
->>>> @@ -162,13 +163,20 @@ unsigned int iio_buffer_poll(struct file *filp,
->>>>   {
->>>>       struct iio_dev *indio_dev = filp->private_data;
->>>>       struct iio_buffer *rb = indio_dev->buffer;
->>>> +    bool rdy;
->>>>         if (!indio_dev->info)
->>>> -        return 0;
->>>> +        return POLLERR;
->> I've had a look at what other subsystems do and input returns POLLERR |
->> POLLHUP. Maybe we should mirror this.
-> Well, some input device only don't IFAIK (I'm no expert on this) as
-> POLLHUP might be focused on output errors only.
+> How am I supposed to get the .data without of_match_node then?
+> What's more hackish in using .data field for specific data for each
+> compatible than in using a random ID in .data and switching on it? The
+> result is exactly the same, the switching case being more verbose and
+> adding complexity to something that can be done in a straightforward manner.
 
-The way I understand it is that the 'output only' description for POLLHUP
-means that you can't pass POLLHUP as a event to listen for. A POLLHUP will
-always wakeup the poll() and be set in the revents field. It does not meant
-that is only set for output devices.
+I've already agreed that your implementation isn't terrible, but I'd
+still like to remain strict on the rules.
 
-> 
->>
->>>>         poll_wait(filp, &rb->pollq, wait);
->>>> -    if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
->>>> +    rdy = iio_buffer_ready(indio_dev, rb, rb->watermark, 0);
->>>> +
->>>> +    if (!indio_dev->info)
->>>> +        return POLLERR;
->> Why check indio_dev->info twice though, since there is no locking involved
->> the second check does gain us anything in terms of race condition avoidance.
-> I took iio_buffer_read_first_n_outer() as a reference : the check of
-> indio_dev->info is performed at least twice :
-> * once at function start
-> * each time wait_event_interruptible() returns.
-> 
-> I thought it would be a good starting point.
-> 
+Better still, can you can dynamically test which platform you're on,
+via a version register or similar?
 
-Strictly speaking the first check there is redundant.
+Failing that, see how everyone else does it:
 
->> I think we should have one check after the poll_wait() call. If the device
->> is unregistered we wake the pollq. So adding it there should make sure that
->> the poll() callback is called again if the device is unregistered after the
->> check.
-> No risk that an "exotic" userspace process perform 2 sys_poll() in the time
-> between iio_device_unregister() and iio_device_free() ?
-> I mean : am I wrong in thinking that the filep is still valid as long as the
-> fd has
-> not been released completly ?
+ `git grep "\.data" -- drivers/mfd/`
 
-The filep is valid as long as the file is open, same is true for the iio_dev
-and iio_buffer structures. The open file holds a reference to them.
-
-What I meant with the race condition here is that we should make sure that
-no matter how the device unregister() and the sys_poll() are timed relative
-to each other it should still work as expected and not result in a
-indefinitely waiting poll() operation.
-
-When multiple CPUs are involved the two operations can happen at the same
-time, so we need to cover that.
-
-> 
->>
->> I'm not sure though if we'd need a explicit memory barrier or whether
->> poll_wait() can act as a implicit one. But probably we are ok, given that
->> poll_wait() should take a lock.
->>
->> To be sure that the code is race free we need a guarantee that there is
->> strict ordering between the indio_dev->info = NULL and wake_up() in
->> unregister as well as between poll_wait() and the if (indio_dev->info) check
->> in poll().
->>
->> The scenario is basically
->>
->> CPU0                CPU1
->> ---------------------------------------------------------
->> poll_wait()            indio_dev->info = NULL
->> if (!indio_dev->info)        wake_up()
->>
->>
->> If strict ordering is not observed for either side we could end up missing
->> the unregister and poll() will block forever just as before.
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
