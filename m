@@ -1,331 +1,423 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:55582 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756168AbcIKRsC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 11 Sep 2016 13:48:02 -0400
-Date: Sun, 11 Sep 2016 19:47:59 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Hans de Goede <hdegoede@redhat.com>
-cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio: accel: Add driver for the mCube MC3230 3-axis
- accelerometer
-In-Reply-To: <20160911162907.22449-1-hdegoede@redhat.com>
-Message-ID: <alpine.DEB.2.02.1609111942500.28464@pmeerw.net>
-References: <20160911162907.22449-1-hdegoede@redhat.com>
+Return-Path: <lee.jones@linaro.org>
+Date: Mon, 12 Sep 2016 10:18:29 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	maxime.ripard@free-electrons.com, wens@csie.org,
+	thomas.petazzoni@free-electrons.com,
+	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
+	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160912091829.GB1873@dell>
+References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: MULTIPART/MIXED; BOUNDARY="324295856-2107515018-1473616079=:28464"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-  This message is in MIME format.  The first part should be readable text,
-  while the remaining parts are likely unreadable without MIME-aware tools.
+On Thu, 08 Sep 2016, Quentin Schulz wrote:
 
---324295856-2107515018-1473616079=:28464
-Content-Type: TEXT/PLAIN; charset=UTF-8
-Content-Transfer-Encoding: 8BIT
-
-
-> Add an IIO driver for the mCube MC3230 3-axis accelerometer.
-
-comments below
- 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
->  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
->  drivers/iio/accel/Kconfig                          |  10 +
->  drivers/iio/accel/Makefile                         |   1 +
->  drivers/iio/accel/mc3230.c                         | 225 +++++++++++++++++++++
->  4 files changed, 237 insertions(+)
->  create mode 100644 drivers/iio/accel/mc3230.c
+> The Allwinner SoCs all have an ADC that can also act as a touchscreen
+> controller and a thermal sensor. For now, only the ADC and the thermal
+> sensor drivers are probed by the MFD, the touchscreen controller support
+> will be added later.
 > 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index badf5eb..fbbad64 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -56,6 +56,7 @@ maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
->  maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
->  maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
->  mc,rv3029c2		Real Time Clock Module with I2C-Bus
-> +mcube,mc3230		mCube 3-axis 8-bit digital accelerometer
->  microchip,mcp4531-502	Microchip 7-bit Single I2C Digital Potentiometer (5k)
->  microchip,mcp4531-103	Microchip 7-bit Single I2C Digital Potentiometer (10k)
->  microchip,mcp4531-503	Microchip 7-bit Single I2C Digital Potentiometer (50k)
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 5630f23..3aee97d 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -138,6 +138,16 @@ config KXCJK1013
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called kxcjk-1013.
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> ---
+> 
+> v5:
+>  - correct mail address,
+> 
+> v4:
+>  - rename files and variables from sunxi* to sun4i*,
+>  - rename defines from SUNXI_* to SUN4I_* or SUN6I_*,
+>  - remove TP in defines name,
+>  - rename SUNXI_IRQ_* to SUN4I_GPADC_IRQ_* for consistency,
+>  - use devm functions for regmap_add_irq_chip and mfd_add_devices,
+>  - remove remove functions (now empty thanks to devm functions),
+> 
+> v3:
+>  - use defines in regmap_irq instead of hard coded BITs,
+>  - use of_device_id data field to chose which MFD cells to add considering
+>    the compatible responsible of the MFD probe,
+>  - remove useless initializations,
+>  - disable all interrupts before adding them to regmap_irqchip,
+>  - add goto error label in probe,
+>  - correct wrapping in header license,
+>  - move defines from IIO driver to header,
+>  - use GENMASK to limit the size of the variable passed to a macro,
+>  - prefix register BIT defines with the name of the register,
+>  - reorder defines,
+> 
+> v2:
+>  - add license headers,
+>  - reorder alphabetically includes,
+>  - add SUNXI_GPADC_ prefixes for defines,
+> 
+>  drivers/mfd/Kconfig                 |  15 ++++
+>  drivers/mfd/Makefile                |   2 +
+>  drivers/mfd/sun4i-gpadc-mfd.c       | 174 ++++++++++++++++++++++++++++++++++++
+>  include/linux/mfd/sun4i-gpadc-mfd.h |  94 +++++++++++++++++++
+>  4 files changed, 285 insertions(+)
+>  create mode 100644 drivers/mfd/sun4i-gpadc-mfd.c
+>  create mode 100644 include/linux/mfd/sun4i-gpadc-mfd.h
+> 
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 1bcf601..95b3c3e 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -29,6 +29,21 @@ config MFD_ACT8945A
+>  	  linear regulators, along with a complete ActivePath battery
+>  	  charger.
 >  
-> +config MC3230
-> +	tristate "mCube MC3230 Digital Accelerometer Driver"
-> +	depends on I2C
+> +config MFD_SUN4I_GPADC
+> +	tristate "Allwinner sunxi platforms' GPADC MFD driver"
+> +	select MFD_CORE
+> +	select REGMAP_MMIO
+> +	depends on ARCH_SUNXI || COMPILE_TEST
 > +	help
-> +	  Say yes here to build support for the mCube MC3230 low-g tri-axial
-> +	  digital accelerometer.
+> +	  Select this to get support for Allwinner SoCs (A10, A13 and A31) ADC.
+> +	  This driver will only map the hardware interrupt and registers, you
+> +	  have to select individual drivers based on this MFD to be able to use
+> +	  the ADC or the thermal sensor. This will try to probe the ADC driver
+> +	  sun4i-gpadc-iio and the hwmon driver iio_hwmon.
 > +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called mc3230.
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called sun4i-gpadc-mfd.
+
+Drop the -mfd.
+
+>  config MFD_AS3711
+>  	bool "AMS AS3711"
+>  	select MFD_CORE
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 42a66e1..3b964d7 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -205,3 +205,5 @@ intel-soc-pmic-objs		:= intel_soc_pmic_core.o intel_soc_pmic_crc.o
+>  intel-soc-pmic-$(CONFIG_INTEL_PMC_IPC)	+= intel_soc_pmic_bxtwc.o
+>  obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
+>  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
 > +
->  config MMA7455
->  	tristate
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index e974841..07a0c72 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -13,6 +13,7 @@ obj-$(CONFIG_DMARD09)	+= dmard09.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> +obj-$(CONFIG_MC3230)	+= mc3230.o
->  
->  obj-$(CONFIG_MMA7455)		+= mma7455_core.o
->  obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
-> diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
+> +obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc-mfd.o
+> diff --git a/drivers/mfd/sun4i-gpadc-mfd.c b/drivers/mfd/sun4i-gpadc-mfd.c
 > new file mode 100644
-> index 0000000..21127a9
+> index 0000000..b499545
 > --- /dev/null
-> +++ b/drivers/iio/accel/mc3230.c
-> @@ -0,0 +1,225 @@
-> +/**
-> + * mCube MC3230 3-Axis Accelerometer
+> +++ b/drivers/mfd/sun4i-gpadc-mfd.c
+
+Drop the -mfd.
+
+> @@ -0,0 +1,174 @@
+> +/* ADC MFD core driver for sunxi platforms
 > + *
-> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
+> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
 > + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * IIO driver for mCube MC3230; 7-bit I2C address: 0x4c.
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
 > + */
 > +
-> +#include <linux/i2c.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/core.h>
 > +#include <linux/module.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
+> +#include <linux/of_device.h>
+> +#include <linux/of_irq.h>
+> +#include <linux/regmap.h>
 > +
-> +#define MC3230_REG_XOUT			0x00
-> +#define MC3230_REG_YOUT			0x01
-> +#define MC3230_REG_ZOUT			0x02
+> +#include <linux/mfd/sun4i-gpadc-mfd.h>
 > +
-> +#define MC3230_REG_MODE			0x07
-> +#define MC3230_MODE_OPCON_MASK		0x03
-> +#define MC3230_MODE_OPCON_WAKE		0x01
-> +#define MC3230_MODE_OPCON_STANDBY	0x03
-> +
-> +#define MC3230_REG_CHIP_ID		0x18
-> +#define MC3230_CHIP_ID			0x01
-> +
-> +#define MC3230_REG_PRODUCT_CODE		0x3b
-> +#define MC3230_PRODUCT_CODE		0x19
-> +
-> +/*
-> + * The accelerometer has one measurement range:
-> + *
-> + * -1.5g - +1.5g (8-bit, signed)
-> + *
-> + * scale = (1.5 + 1.5) * 9.81 / (2^8 - 1)	= 0.115411765
-> + */
-> +
-> +#define MC3230_SCALE_AVAIL		"0.115411765"
-> +
-> +const int mc3230_nscale = 115411765;
+> +static struct resource adc_resources[] = {
+> +	{
+> +		.name	= "FIFO_DATA_PENDING",
+> +		.start	= SUN4I_GPADC_IRQ_FIFO_DATA,
+> +		.end	= SUN4I_GPADC_IRQ_FIFO_DATA,
+> +		.flags	= IORESOURCE_IRQ,
+> +	}, {
+> +		.name	= "TEMP_DATA_PENDING",
+> +		.start	= SUN4I_GPADC_IRQ_TEMP_DATA,
+> +		.end	= SUN4I_GPADC_IRQ_TEMP_DATA,
+> +		.flags	= IORESOURCE_IRQ,
+> +	},
+> +};
 
-static
+Use the RES_IRQ_* defines.
 
-> +
-> +#define MC3230_CHANNEL(reg, axis) {	\
-> +	.type = IIO_ACCEL,	\
-> +	.address = reg,	\
-> +	.modified = 1,	\
-> +	.channel2 = IIO_MOD_##axis,	\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec mc3230_channels[] = {
-> +	MC3230_CHANNEL(MC3230_REG_XOUT, X),
-> +	MC3230_CHANNEL(MC3230_REG_YOUT, Y),
-> +	MC3230_CHANNEL(MC3230_REG_ZOUT, Z),
+> +static const struct regmap_irq sun4i_gpadc_mfd_regmap_irq[] = {
+> +	REGMAP_IRQ_REG(SUN4I_GPADC_IRQ_FIFO_DATA, 0,
+> +		       SUN4I_GPADC_INT_FIFOC_TP_DATA_IRQ_EN),
+> +	REGMAP_IRQ_REG(SUN4I_GPADC_IRQ_TEMP_DATA, 0,
+> +		       SUN4I_GPADC_INT_FIFOC_TEMP_IRQ_EN),
 > +};
 > +
-> +struct mc3230_data {
-> +	struct i2c_client *client;
+> +static const struct regmap_irq_chip sun4i_gpadc_mfd_regmap_irq_chip = {
+> +	.name = "sun4i_gpadc_mfd_irq_chip",
+> +	.status_base = SUN4I_GPADC_INT_FIFOS,
+> +	.ack_base = SUN4I_GPADC_INT_FIFOS,
+> +	.mask_base = SUN4I_GPADC_INT_FIFOC,
+> +	.init_ack_masked = true,
+> +	.mask_invert = true,
+> +	.irqs = sun4i_gpadc_mfd_regmap_irq,
+> +	.num_irqs = ARRAY_SIZE(sun4i_gpadc_mfd_regmap_irq),
+> +	.num_regs = 1,
 > +};
 > +
-> +static IIO_CONST_ATTR(in_accel_scale_available, MC3230_SCALE_AVAIL);
-> +
-> +static struct attribute *mc3230_attributes[] = {
-> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	NULL,
+> +static struct mfd_cell sun4i_gpadc_mfd_cells[] = {
+> +	{
+> +		.name	= "sun4i-a10-gpadc-iio",
+> +		.resources = adc_resources,
+> +		.num_resources = ARRAY_SIZE(adc_resources),
+> +	}, {
+> +		.name = "iio_hwmon",
+> +	}
+
+Single line please
+
+{ .name = "iio_hwmon" }
+
 > +};
 > +
-> +static const struct attribute_group mc3230_attribute_group = {
-> +	.attrs = mc3230_attributes
+> +static struct mfd_cell sun5i_gpadc_mfd_cells[] = {
+> +	{
+> +		.name	= "sun5i-a13-gpadc-iio",
+> +		.resources = adc_resources,
+> +		.num_resources = ARRAY_SIZE(adc_resources),
+> +	}, {
+> +		.name = "iio_hwmon",
+> +	},
+> +};
+
+As above.
+
+> +static struct mfd_cell sun6i_gpadc_mfd_cells[] = {
+> +	{
+> +		.name	= "sun6i-a31-gpadc-iio",
+> +		.resources = adc_resources,
+> +		.num_resources = ARRAY_SIZE(adc_resources),
+> +	}, {
+> +		.name = "iio_hwmon",
+> +	},
+> +};
+
+As above.
+
+> +static const struct regmap_config sun4i_gpadc_mfd_regmap_config = {
+> +	.reg_bits = 32,
+> +	.val_bits = 32,
+> +	.reg_stride = 4,
+> +	.fast_io = true,
 > +};
 > +
-> +static int mc3230_set_opcon(struct mc3230_data *data, int opcon)
+> +static const struct of_device_id sun4i_gpadc_mfd_of_match[] = {
+> +	{
+> +		.compatible = "allwinner,sun4i-a10-ts",
+> +		.data = &sun4i_gpadc_mfd_cells,
+> +	}, {
+> +		.compatible = "allwinner,sun5i-a13-ts",
+> +		.data = &sun5i_gpadc_mfd_cells,
+> +	}, {
+> +		.compatible = "allwinner,sun6i-a31-ts",
+> +		.data = &sun6i_gpadc_mfd_cells,
+> +	}, { /* sentinel */ }
+> +};
+
+Don't mix OF and MFD functionality.
+
+Why don't you create a node for "iio_hwmon" and have
+platform_of_populate() do your bidding?
+
+> +static int sun4i_gpadc_mfd_probe(struct platform_device *pdev)
+
+Remove all mention of "mfd" from this file.
+
+(Accept the calls to the MFD API of course).
+
 > +{
+> +	struct sun4i_gpadc_mfd_dev *mfd_dev;
+> +	struct resource *mem;
+> +	const struct of_device_id *of_id;
+> +	const struct mfd_cell *mfd_cells;
+> +	unsigned int irq;
 > +	int ret;
-> +	struct i2c_client *client = data->client;
 > +
-
-guess we want locking here
-
-> +	ret = i2c_smbus_read_byte_data(client, MC3230_REG_MODE);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to read mode reg: %d\n", ret);
+> +	of_id = of_match_node(sun4i_gpadc_mfd_of_match, pdev->dev.of_node);
+> +	if (!of_id)
+> +		return -EINVAL;
+> +
+> +	mfd_dev = devm_kzalloc(&pdev->dev, sizeof(*mfd_dev), GFP_KERNEL);
+> +	if (!mfd_dev)
+> +		return -ENOMEM;
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	mfd_dev->regs = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(mfd_dev->regs))
+> +		return PTR_ERR(mfd_dev->regs);
+> +
+> +	mfd_dev->dev = &pdev->dev;
+> +	dev_set_drvdata(mfd_dev->dev, mfd_dev);
+> +
+> +	mfd_dev->regmap = devm_regmap_init_mmio(mfd_dev->dev, mfd_dev->regs,
+> +						&sun4i_gpadc_mfd_regmap_config);
+> +	if (IS_ERR(mfd_dev->regmap)) {
+> +		ret = PTR_ERR(mfd_dev->regmap);
+> +		dev_err(&pdev->dev, "failed to init regmap: %d\n", ret);
 > +		return ret;
 > +	}
 > +
-> +	ret &= ~MC3230_MODE_OPCON_MASK;
-> +	ret |= opcon;
+> +	/* Disable all interrupts */
+> +	regmap_write(mfd_dev->regmap, SUN4I_GPADC_INT_FIFOC, 0);
 > +
-> +	ret = i2c_smbus_write_byte_data(client, MC3230_REG_MODE, ret);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to write mode reg: %d\n", ret);
+> +	irq = platform_get_irq(pdev, 0);
+> +	ret = devm_regmap_add_irq_chip(&pdev->dev, mfd_dev->regmap, irq,
+> +				       IRQF_ONESHOT, 0,
+> +				       &sun4i_gpadc_mfd_regmap_irq_chip,
+> +				       &mfd_dev->regmap_irqc);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to add irq chip: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	mfd_cells = of_id->data;
+> +	ret = devm_mfd_add_devices(mfd_dev->dev, 0, mfd_cells, 2, NULL, 0,
+> +				   NULL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "failed to add MFD devices: %d\n", ret);
 > +		return ret;
 > +	}
 > +
 > +	return 0;
 > +}
 > +
-> +static int mc3230_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct mc3230_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = i2c_smbus_read_byte_data(data->client, chan->address);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = sign_extend32(ret, 7);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = mc3230_nscale;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info mc3230_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= mc3230_read_raw,
-> +	.attrs		= &mc3230_attribute_group,
-> +};
-> +
-> +static int mc3230_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct mc3230_data *data;
-> +
-> +	/* First check chip-id and product-id */
-> +	ret = i2c_smbus_read_byte_data(client, MC3230_REG_CHIP_ID);
-> +	if (ret != MC3230_CHIP_ID)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, MC3230_REG_PRODUCT_CODE);
-> +	if (ret != MC3230_PRODUCT_CODE)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &mc3230_info;
-> +	indio_dev->name = "mc3230";
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mc3230_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mc3230_channels);
-> +
-> +	ret = mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		mc3230_set_opcon(data, MC3230_MODE_OPCON_STANDBY);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int mc3230_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	return mc3230_set_opcon(iio_priv(indio_dev), MC3230_MODE_OPCON_STANDBY);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int mc3230_suspend(struct device *dev)
-> +{
-> +	struct mc3230_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return mc3230_set_opcon(data, MC3230_MODE_OPCON_STANDBY);
-> +}
-> +
-> +static int mc3230_resume(struct device *dev)
-> +{
-> +	struct mc3230_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(mc3230_pm_ops, mc3230_suspend, mc3230_resume);
-> +
-> +static const struct i2c_device_id mc3230_i2c_id[] = {
-> +	{"mc3230", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mc3230_i2c_id);
-> +
-> +static struct i2c_driver mc3230_driver = {
+> +MODULE_DEVICE_TABLE(of, sun4i_gpadc_mfd_of_match);
+
+Place this directly under the table.
+
+> +static struct platform_driver sun4i_gpadc_mfd_driver = {
 > +	.driver = {
-> +		.name = "mc3230",
-> +		.pm = &mc3230_pm_ops,
+> +		.name = "sun4i-adc-mfd",
+> +		.of_match_table = of_match_ptr(sun4i_gpadc_mfd_of_match),
 > +	},
-> +	.probe		= mc3230_probe,
-> +	.remove		= mc3230_remove,
-> +	.id_table	= mc3230_i2c_id,
+> +	.probe = sun4i_gpadc_mfd_probe,
+
+No .remove?
+
 > +};
 > +
-> +module_i2c_driver(mc3230_driver);
+> +module_platform_driver(sun4i_gpadc_mfd_driver);
 > +
-> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
-> +MODULE_DESCRIPTION("mCube MC3230 3-Axis Accelerometer driver");
+> +MODULE_DESCRIPTION("Allwinner sunxi platforms' GPADC MFD core driver");
+> +MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
 > +MODULE_LICENSE("GPL v2");
-> 
+> diff --git a/include/linux/mfd/sun4i-gpadc-mfd.h b/include/linux/mfd/sun4i-gpadc-mfd.h
+> new file mode 100644
+> index 0000000..5cc7863
+> --- /dev/null
+> +++ b/include/linux/mfd/sun4i-gpadc-mfd.h
+> @@ -0,0 +1,94 @@
+> +/* Header of ADC MFD core driver for sunxi platforms
+> + *
+> + * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.mfd>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it under
+> + * the terms of the GNU General Public License version 2 as published by the
+> + * Free Software Foundation.
+> + */
+> +
+> +#ifndef __SUN4I_GPADC_MFD__H__
+> +#define __SUN4I_GPADC_MFD__H__
+> +
+> +#define SUN4I_GPADC_CTRL0				0x00
+> +
+> +#define SUN4I_GPADC_CTRL0_ADC_FIRST_DLY(x)		((GENMASK(7, 0) & (x)) << 24)
+> +#define SUN4I_GPADC_CTRL0_ADC_FIRST_DLY_MODE		BIT(23)
+> +#define SUN4I_GPADC_CTRL0_ADC_CLK_SELECT		BIT(22)
+> +#define SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(x)		((GENMASK(1, 0) & (x)) << 20)
+> +#define SUN4I_GPADC_CTRL0_FS_DIV(x)			((GENMASK(3, 0) & (x)) << 16)
+> +#define SUN4I_GPADC_CTRL0_T_ACQ(x)			(GENMASK(15, 0) & (x))
+> +
+> +#define SUN4I_GPADC_CTRL1				0x04
+> +
+> +#define SUN4I_GPADC_CTRL1_STYLUS_UP_DEBOUNCE(x)		((GENMASK(7, 0) & (x)) << 12)
+> +#define SUN4I_GPADC_CTRL1_STYLUS_UP_DEBOUNCE_EN		BIT(9)
+> +#define SUN4I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(6)
+> +#define SUN4I_GPADC_CTRL1_TP_DUAL_EN			BIT(5)
+> +#define SUN4I_GPADC_CTRL1_TP_MODE_EN			BIT(4)
+> +#define SUN4I_GPADC_CTRL1_TP_ADC_SELECT			BIT(3)
+> +#define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) & (x))
+> +
+> +/* TP_CTRL1 bits for sun6i SOCs */
+> +#define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
+> +#define SUN6I_GPADC_CTRL1_TP_DUAL_EN			BIT(6)
+> +#define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
+> +#define SUN6I_GPADC_CTRL1_TP_ADC_SELECT			BIT(4)
+> +#define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
+> +
+> +#define SUN4I_GPADC_CTRL2				0x08
+> +
+> +#define SUN4I_GPADC_CTRL2_TP_SENSITIVE_ADJUST(x)	((GENMASK(3, 0) & (x)) << 28)
+> +#define SUN4I_GPADC_CTRL2_TP_MODE_SELECT(x)		((GENMASK(1, 0) & (x)) << 26)
+> +#define SUN4I_GPADC_CTRL2_PRE_MEA_EN			BIT(24)
+> +#define SUN4I_GPADC_CTRL2_PRE_MEA_THRE_CNT(x)		(GENMASK(23, 0) & (x))
+> +
+> +#define SUN4I_GPADC_CTRL3				0x0c
+> +
+> +#define SUN4I_GPADC_CTRL3_FILTER_EN			BIT(2)
+> +#define SUN4I_GPADC_CTRL3_FILTER_TYPE(x)		(GENMASK(1, 0) & (x))
+> +
+> +#define SUN4I_GPADC_TPR					0x18
+> +
+> +#define SUN4I_GPADC_TPR_TEMP_ENABLE			BIT(16)
+> +#define SUN4I_GPADC_TPR_TEMP_PERIOD(x)			(GENMASK(15, 0) & (x))
+> +
+> +#define SUN4I_GPADC_INT_FIFOC				0x10
+> +
+> +#define SUN4I_GPADC_INT_FIFOC_TEMP_IRQ_EN		BIT(18)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_OVERRUN_IRQ_EN		BIT(17)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_DATA_IRQ_EN		BIT(16)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_DATA_XY_CHANGE		BIT(13)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(x)	((GENMASK(4, 0) & (x)) << 8)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_DATA_DRQ_EN		BIT(7)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH		BIT(4)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_UP_IRQ_EN		BIT(1)
+> +#define SUN4I_GPADC_INT_FIFOC_TP_DOWN_IRQ_EN		BIT(0)
+> +
+> +#define SUN4I_GPADC_INT_FIFOS				0x14
+> +
+> +#define SUN4I_GPADC_INT_FIFOS_TEMP_DATA_PENDING		BIT(18)
+> +#define SUN4I_GPADC_INT_FIFOS_FIFO_OVERRUN_PENDING	BIT(17)
+> +#define SUN4I_GPADC_INT_FIFOS_FIFO_DATA_PENDING		BIT(16)
+> +#define SUN4I_GPADC_INT_FIFOS_TP_IDLE_FLG		BIT(2)
+> +#define SUN4I_GPADC_INT_FIFOS_TP_UP_PENDING		BIT(1)
+> +#define SUN4I_GPADC_INT_FIFOS_TP_DOWN_PENDING		BIT(0)
+> +
+> +#define SUN4I_GPADC_CDAT				0x1c
+> +#define SUN4I_GPADC_TEMP_DATA				0x20
+> +#define SUN4I_GPADC_DATA				0x24
+> +
+> +#define SUN4I_GPADC_IRQ_FIFO_DATA			0
+> +#define SUN4I_GPADC_IRQ_TEMP_DATA			1
+> +
+> +/* 10s delay before suspending the IP */
+> +#define SUN4I_GPADC_AUTOSUSPEND_DELAY			10000
+> +
+> +struct sun4i_gpadc_mfd_dev {
+> +	struct device			*dev;
+> +	struct regmap			*regmap;
+> +	struct regmap_irq_chip_data	*regmap_irqc;
+> +	void __iomem			*regs;
+
+It's *much* more common to call this 'base'.
+
+> +};
+> +
+> +#endif
 
 -- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
---324295856-2107515018-1473616079=:28464--
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
