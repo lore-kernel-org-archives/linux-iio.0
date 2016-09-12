@@ -1,84 +1,63 @@
-Return-Path: <gwenhael.goavec-merou@trabucayre.com>
-From: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
-To: linux-iio@vger.kernel.org
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Paul Cercueil <paul.cercueil@analog.com>,
-	devel@driverdev.osuosl.org,
-	Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
-Subject: [PATCH] stagging:iio:ad9834: add devicetree property support
-Date: Sun, 11 Sep 2016 12:52:29 +0200
-Message-Id: <20160911105229.25791-1-gwenhael.goavec-merou@trabucayre.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.92]:36276 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753016AbcILFcd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 12 Sep 2016 01:32:33 -0400
+Date: Mon, 12 Sep 2016 07:32:31 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Hans de Goede <hdegoede@redhat.com>
+cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: accel: Add driver for the mCube MC3230 3-axis
+ accelerometer
+In-Reply-To: <95a718cc-24c0-dfe9-6745-e3d933ba384b@redhat.com>
+Message-ID: <alpine.DEB.2.02.1609112319380.18800@pmeerw.net>
+References: <20160911162907.22449-1-hdegoede@redhat.com> <alpine.DEB.2.02.1609111942500.28464@pmeerw.net> <95a718cc-24c0-dfe9-6745-e3d933ba384b@redhat.com>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-ad9834 driver needs some default properties. Currently these parameters are
-provided through platform_data.
-This patch adds a function to create this pdata based on device-tree node.
 
-Signed-off-by: Gwenhael Goavec-Merou <gwenhael.goavec-merou@trabucayre.com>
----
- drivers/staging/iio/frequency/ad9834.c | 39 ++++++++++++++++++++++++++++++++++
- 1 file changed, 39 insertions(+)
+> > > +static const struct iio_chan_spec mc3230_channels[] = {
+> > > +	MC3230_CHANNEL(MC3230_REG_XOUT, X),
+> > > +	MC3230_CHANNEL(MC3230_REG_YOUT, Y),
+> > > +	MC3230_CHANNEL(MC3230_REG_ZOUT, Z),
+> > > +};
+> > > +
+> > > +struct mc3230_data {
+> > > +	struct i2c_client *client;
+> > > +};
 
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 6366216..6cec154 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -316,6 +316,39 @@ static const struct iio_info ad9833_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+#if defined(CONFIG_OF)
-+static struct ad9834_platform_data *ad9834_parse_dt(struct spi_device *spi)
-+{
-+	struct ad9834_platform_data *pdata;
-+	struct device_node *np = spi->dev.of_node;
-+
-+	pdata = devm_kzalloc(&spi->dev, sizeof(*pdata), GFP_KERNEL);
-+	if (!pdata)
-+		return ERR_PTR(-ENOMEM);
-+
-+	if (of_property_read_u32(np, "mclk", &pdata->mclk))
-+		return ERR_PTR(-ENODEV);
-+	if (of_property_read_u32(np, "freq0", &pdata->freq0))
-+		return ERR_PTR(-ENODEV);
-+	if (of_property_read_u32(np, "freq1", &pdata->freq1))
-+		return ERR_PTR(-ENODEV);
-+	if (of_property_read_u16(np, "phase0", &pdata->phase0))
-+		return ERR_PTR(-ENODEV);
-+	if (of_property_read_u16(np, "phase1", &pdata->phase1))
-+		return ERR_PTR(-ENODEV);
-+	pdata->en_div2 = of_property_read_bool(np, "en_div2");
-+	pdata->en_signbit_msb_out = of_property_read_bool(np,
-+					"en_signbit_msb_out");
-+
-+	return pdata;
-+}
-+#else
-+static struct ad9834_platform_data *ad9834_parse_dt(struct spi_device *spi)
-+{
-+	return NULL;
-+}
-+#endif
-+
- static int ad9834_probe(struct spi_device *spi)
- {
- 	struct ad9834_platform_data *pdata = dev_get_platdata(&spi->dev);
-@@ -324,6 +357,12 @@ static int ad9834_probe(struct spi_device *spi)
- 	struct regulator *reg;
- 	int ret;
- 
-+	if (!pdata && spi->dev.of_node) {
-+		pdata = ad9834_parse_dt(spi);
-+		if (IS_ERR(pdata))
-+			return PTR_ERR(pdata);
-+	}
-+
- 	if (!pdata) {
- 		dev_dbg(&spi->dev, "no platform data?\n");
- 		return -ENODEV;
+probably don't need mc3230_data (or the client pointer within), not worth 
+changing as likely stuff will be added in the future
+
+> > > +static int mc3230_set_opcon(struct mc3230_data *data, int opcon)
+> > > +{
+> > > +	int ret;
+> > > +	struct i2c_client *client = data->client;
+> > > +
+> > 
+> > guess we want locking here
+> 
+> This register only gets touched by this function, and this
+> function only gets called:
+> 
+> -pre iio_device_register
+> -post iio_device_unregister
+> -on suspend/resume
+
+> So I do not see what it could race with.
+
+I didn't check where set_opcon() is actually called, seems safe
+
+I think there is a theoretic race in _remove() as _unregister() retval is 
+not checked, no need to change
+
+p.
+
 -- 
-2.9.3
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
