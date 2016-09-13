@@ -1,67 +1,72 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 12 Sep 2016 11:49:32 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Maxime Ripard <maxime.ripard@free-electrons.com>
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>, jdelvare@suse.com,
-	linux@roeck-us.net, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, wens@csie.org,
-	thomas.petazzoni@free-electrons.com,
-	antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-	linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
-Message-ID: <20160912104932.GF1873@dell>
-References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
- <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
- <20160912091829.GB1873@dell>
- <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
- <20160912095923.GD1873@dell>
- <20160912100719.GJ9449@lukather>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20160912100719.GJ9449@lukather>
+Content-Type: text/plain; charset=UTF-8;
+ format=flowed
+Date: Tue, 13 Sep 2016 09:52:31 +0100
+From: jic23@jic23.retrosnub.co.uk
+To: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+ devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob
+ Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Akinobu
+ Mita <akinobu.mita@gmail.com>, Linus Walleij <linus.walleij@linaro.org>,
+ Vlad Dogaru <ddvlad@gmail.com>, Ludovic Tancerel
+ <ludovic.tancerel@maplehightech.com>, Marek Vasut <marex@denx.de>, Crestez
+ Dan Leonard <leonard.crestez@intel.com>
+Subject: Re: [PATCH v4 1/1] iio:pressure: initial zpa2326 barometer support
+In-Reply-To: <57D7B0F1.6030607@parrot.com>
+References: <cover.1473432897.git.gregor.boirie@parrot.com>
+ <68c225245eb4f4972f5acaa56bdbf9d25971f0f7.1473432897.git.gregor.boirie@parrot.com>
+ <d6122349-5e8c-6708-b5af-a38f9e8bb898@kernel.org>
+ <57D7B0F1.6030607@parrot.com>
+Message-ID: <0ebc56794afc97cf31782ccb6225446f@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Mon, 12 Sep 2016, Maxime Ripard wrote:
-
-> On Mon, Sep 12, 2016 at 10:59:23AM +0100, Lee Jones wrote:
-> > > >> +static const struct of_device_id sun4i_gpadc_mfd_of_match[] = {
-> > > >> +	{
-> > > >> +		.compatible = "allwinner,sun4i-a10-ts",
-> > > >> +		.data = &sun4i_gpadc_mfd_cells,
-> > > >> +	}, {
-> > > >> +		.compatible = "allwinner,sun5i-a13-ts",
-> > > >> +		.data = &sun5i_gpadc_mfd_cells,
-> > > >> +	}, {
-> > > >> +		.compatible = "allwinner,sun6i-a31-ts",
-> > > >> +		.data = &sun6i_gpadc_mfd_cells,
-> > > >> +	}, { /* sentinel */ }
-> > > >> +};
-> > > > 
-> > > > Don't mix OF and MFD functionality.
-> > > > 
-> > > > Why don't you create a node for "iio_hwmon" and have
-> > > > platform_of_populate() do your bidding?
-> > > > 
-> > > 
-> > > We are using a stable binding which we cannot modify. This means, the DT
-> > > in its current state can only be modified to add features, which is not
-> > > the case of this driver (it is a rewriting of an existing driver which
-> > > uses the rtp node).
-> > 
-> > Then use .data = <defined model ID> and set up a switch() in .probe().
+On 13.09.2016 08:55, Gregor Boirie wrote:
+> Hi,
 > 
-> Uh? Why? It just adds a non-standard indirection, while using
-> of_match_device is very standard, and used extensively in Linux.
-
-You still use of_match_device() to obtain the ID.
-
-The "don't mix DT with the MFD API" is there to prevent some of the
-nasty hacks I've seen previously.  This particular example doesn't
-seem so bad, but it's a gateway to ridiculous hackery!
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> On 09/10/2016 05:37 PM, Jonathan Cameron wrote:
+>> On 09/09/16 16:01, Gregor Boirie wrote:
+>>> Introduce driver for Murata ZPA2326 pressure and temperature sensor:
+>>> http://www.murata.com/en-us/products/productdetail?partno=ZPA2326-0311A-R
+>>> 
+>>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+>> This looks pretty good to me now.  A few minor bits and bobs inline.
+>> 
+>> I almost took it as is, but would like to have it sit on the list
+>> in it's current form for a few more days anyway so might as well get
+>> these few corners tidied up!
+> [...]
+>> 
+>> +/*
+>> + * Debugfs stuff
+>> + *
+>> + * We want to prevent debugfs hooks from altering configuration while 
+>> chip
+>> + * sampling is ongoing to preserve data consistency. Moreover, a few 
+>> registers,
+>> + * when read, change hardware state, e.g. interrupt acknowlege on 
+>> read. This is
+>> + * why debugfs read and write hooks acquire exclusive access to 
+>> register space.
+>> + *
+>> + * Also note this is mostly unusable with power management enabled 
+>> systems since
+>> + * registers content is lost during power off -> on transitions.
+>> + */
+>> It would be nice perhaps to tighten up the range of addresses that
+>> we are protecting.  Thus allow reading of any addresses that are not
+>> 'fragile'.  Only supported limited debug access is hardly a big
+>> issue however ;)
+> Quite frankly, I wonder if this debugfs stuff should not be thrown
+> away given that
+> regmap already provides a way to access registers over debugfs (with
+> very limited
+> protection...).
+> What do you think ?
+> 
+> [...]
+Agreed. Bin it.
+> 
+> Regards,
+> Grégor.
