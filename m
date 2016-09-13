@@ -1,106 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f49.google.com ([74.125.82.49]:37144 "EHLO
-        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752008AbcIMITa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Sep 2016 04:19:30 -0400
-Received: by mail-wm0-f49.google.com with SMTP id c131so98518178wmh.0
-        for <linux-iio@vger.kernel.org>; Tue, 13 Sep 2016 01:19:29 -0700 (PDT)
-Date: Tue, 13 Sep 2016 09:21:26 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        maxime.ripard@free-electrons.com, wens@csie.org,
-        thomas.petazzoni@free-electrons.com,
-        antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
-Message-ID: <20160913082126.GA22903@dell>
-References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
- <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
- <20160912091829.GB1873@dell>
- <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
- <20160912095923.GD1873@dell>
- <5dec118f-45ae-4fb6-dd1e-2028947add53@free-electrons.com>
- <20160912135646.GB9789@dell>
- <a48580b4-1494-d474-b33c-007f898b29b7@free-electrons.com>
+Received: from gloria.sntech.de ([95.129.55.99]:40667 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1757396AbcIMJxf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 13 Sep 2016 05:53:35 -0400
+From: Heiko Stuebner <heiko@sntech.de>
+To: Andy Yan <andy.yan@rock-chips.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, robh+dt@kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, lars@metafoo.de, mark.rutland@arm.com,
+        pmeerw@pmeerw.net
+Subject: Re: [PATCH] iio: dt-bindings: add documentation for Light&Proximity sensor STK331x
+Date: Tue, 13 Sep 2016 11:53:20 +0200
+Message-ID: <2244323.LAARBqky8d@phil>
+In-Reply-To: <1473758822-17955-1-git-send-email-andy.yan@rock-chips.com>
+References: <1473758822-17955-1-git-send-email-andy.yan@rock-chips.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <a48580b4-1494-d474-b33c-007f898b29b7@free-electrons.com>
+Content-Type: text/plain; charset="us-ascii"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 13 Sep 2016, Quentin Schulz wrote:
-> On 12/09/2016 15:56, Lee Jones wrote:
-> > On Mon, 12 Sep 2016, Quentin Schulz wrote:
-> >> On 12/09/2016 11:59, Lee Jones wrote:
-> >>> On Mon, 12 Sep 2016, Quentin Schulz wrote:
-> >>>
-> >>>> On 12/09/2016 11:18, Lee Jones wrote:
-> >>>>> On Thu, 08 Sep 2016, Quentin Schulz wrote:
-> >>>>> [...]
-> >>>>>> +
-> >>>>>> +MODULE_DEVICE_TABLE(of, sun4i_gpadc_mfd_of_match);
-> >>>>>
-> >>>>> Place this directly under the table.
-> >>>>>
-> >>>>>> +static struct platform_driver sun4i_gpadc_mfd_driver = {
-> >>>>>> +	.driver = {
-> >>>>>> +		.name = "sun4i-adc-mfd",
-> >>>>>> +		.of_match_table = of_match_ptr(sun4i_gpadc_mfd_of_match),
-> >>>>>> +	},
-> >>>>>> +	.probe = sun4i_gpadc_mfd_probe,
-> >>>>>
-> >>>>> No .remove?
-> >>>>>
-> >>>>
-> >>>> No, everything in probe is handled with devm functions.
-> >>>
-> >>> Don't you need to undo the register write you did?
-> >>>
-> >>
-> >> The regmap_write I use is there to disable all interrupts on hardware
-> >> side before the irq_chip handles all interrupts by itself. The
-> >> interrupts are not used in the MFD driver.
-> >>
-> >> Thus, I chose to disable the hardware interrupts in the remove function
-> >> of drivers using the interrupts (only the IIO yet but the touchscreen
-> >> driver later also which will be using a third interrupt). When the MFD
-> >> driver is removed, the MFD cells will all be removed, thus calling their
-> >> own remove functions, thus disabling hardware interrupts used in each
-> >> driver. So the hardware interrupts disabling would be called twice.
-> > 
-> > This does send some little alarm bells ringing.  I'd normally expect
-> > the .remove function to undo everything you did in .probe.  So, if you
-> > are disabling the IRQs from within the leaf drivers, shouldn't you be
-> > initialising them in the leaf driver's respective .probes?
-> > 
-> 
-> I use the regmap_write in the MFD driver's probe to disable all
-> interrupts before requesting irq_chip to guarantee the interrupts are in
-> a known state, being disabled. It is to insure no interrupt will occur
-> unwittingly before we want the leaf drivers to handle them.
-> 
-> The disabling of irqs in the remove is handled rather by
-> devm_regmap_del_irq_chip than by an explicit regmap_write in the
-> driver's removal function. It performs the exact same thing.
-> 
-> I always use devm functions for requesting either an irq_chip or the
-> irqs themselves. In that case, when the device is removed, the irqs are
-> freed on leaf drivers' (where the irqs are requested) removal while the
-> removal of irq_chip in the MFD driver will also free all irqs mapped to
-> this irq_chip thanks to devm_regmap_del_irq_chip. Therefore, the
-> interrupts are disabled by devm functions.
-> 
-> The regmap_update_bits in probe and removal of the ADC driver to disable
-> irqs are actually redundant because the devm functions already handle
-> the irqs disabling.
+Hi,
 
-Okay.  So long as you've thought about it, I'm happy.
+Am Dienstag, 13. September 2016, 17:27:02 CEST schrieb Andy Yan:
+> Add the device tree binding documentation for Light & Proximity sensor
+> STK331X from Sensortek
+> 
+> Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
+> ---
+> 
+>  .../devicetree/bindings/iio/light/stk3310.txt       | 21
+> +++++++++++++++++++++ 1 file changed, 21 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/stk3310.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/stk3310.txt
+> b/Documentation/devicetree/bindings/iio/light/stk3310.txt new file mode
+> 100644
+> index 0000000..d697118
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/stk3310.txt
+> @@ -0,0 +1,21 @@
+> +* Sensortek STK331X I2C Light&Proximity sensor
+> +
+> +Required properties:
+> +- compatible: should be "sensortek,STK3310" or "sensortek,STK3311"
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+I guess that is more a question for Rob / Jonathan regarding the casing.
+
+The stk3310 drivers currently provides both an acpi as well as an i2c module 
+table and in both the naming is in upper-case ... probably the i2c table being 
+simply a copy of the acpi table.
+
+By using the i2c-quirk of extracting the i2c-id from the compatible, the 
+binding here would codify this upper case, while normally i2c tables as well 
+as dt-bindings are all lower case. 
+
+Looking at kernel c-code and current mainline devicetree files, it doesn't look 
+like the i2c-ids gets used anywhere yet, so I guess we could do:
+
+- keep acpi-ids as they are
+- make i2c-ids lower-case
+- make dt-binding lower-case (and it can still use the i2c quirk to not need a 
+separate of id-table)
+
+alternatively we could also just add a separate of-id table with the lower-
+case compatible elements.
+
+
+Heiko
+
+> +- reg: the I2C address of the device
+> +- interrupt-parent: phandle to the parent interrupt controller
+> +- interrupts: interrupt mapping for GPIO IRQ
+> +
+> +Example:
+> +	&i2c1 {
+> +		/* ... */
+> +
+> +		stk3310@48 {
+> +			compatible = "sensortek,STK3310";
+> +			reg = <0x48>;
+> +			interrupt-parent = <&gpio1>;
+> +			interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
+> +		};
+> +
+> +		/* ... */
+> +	};
+
+
