@@ -1,84 +1,122 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:51260 "EHLO mx1.redhat.com"
+Received: from mail.aswsp.com ([193.34.35.150]:32049 "EHLO mail.aswsp.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753421AbcILPZt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 12 Sep 2016 11:25:49 -0400
-To: Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org
-From: Hans de Goede <hdegoede@redhat.com>
-Subject: accelerometer orientation
-Message-ID: <0b744f22-55c0-da22-b27f-6092aab18365@redhat.com>
-Date: Mon, 12 Sep 2016 17:25:45 +0200
+        id S1752315AbcIMMTP (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 13 Sep 2016 08:19:15 -0400
+From: Gregor Boirie <gregor.boirie@parrot.com>
+To: <linux-iio@vger.kernel.org>
+CC: <devicetree@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vlad Dogaru <ddvlad@gmail.com>,
+        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
+        Marek Vasut <marex@denx.de>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>
+Subject: [PATCH v5 0/1] iio: devm helpers and Murata zpa2326 barometer support
+Date: Tue, 13 Sep 2016 14:23:13 +0200
+Message-ID: <cover.1473769166.git.gregor.boirie@parrot.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Bastien,
+Introduce support for the Murata ZPA2326 pressure and temperature sensor.
+Also bring in resource managed versions for triggered buffer setup helpers and
+trigger registration which the above mentioned driver depends on.
 
-So as I guess you sorta know in my spare time I work on Linux
-(mainline) support for Allwinner SoC based ARM devices, including
-a whole lot of cheap Chinese tablets.
+Driver features :
+* I2C and SPI buses
+* interrupt and polling based operations
+* direct, external and internal triggered buffering IIO modes
+* hardware sampling frequency handling
+* trigger consumers notification (plugged on interrupt) 
+* runtime and system power states
 
-Recently I've begun looking into supporting the accelerometers
-on these devices and I'm making good progress on getting the
-kernel bits working using iio drivers (including a few new
-ones I've written recently).
+Changes since v4 :
+* cross reference the DT docs from zpa2326 DT bindings doc
+* standardize Kconfig according to BMC150 model
+* get rid of debugfs based register access (regmap already supports this)
+* avoid mixing devm_ and unmanaged function calls in zpa2326_probe()
+* remove useless header
 
-Yesterday I realized there is a bit of a catch though, all
-these iio drivers report results assuming that the accelerometer
-is mounted on the top side of the PCB and with its X/Y
-coordination properly taken info account.
+Changes since v3 :
+* drop first 2 patches since applied onto testing branch
+* spelling / syntax corrections
+* disable build of verbose message by default.
+* get rid of useless zpa_iio2slave() and zpa_iio2priv() macros
+* rename "slave" variables to "parent"
+* add missing blank lines
+* remove useless registers read/write wrappers
+* rename zpa_disable_device() to zpa_sleep()
+* reword comments to specify interrupt line <= 0 are invalid
+* replace zpa2326_claim_direct_mode()/zpa2326_release_direct_mode() by
+  equivalent inline statements
+* always return IRQ_HANDLED in trigger handlers
+* remove useless lock from zpa2326_get_frequency()
+* probing reworked
+* rename resource managed related init functions
+* don't init variables with non trivial function calls
+* replace exotic INDIO_BUFFER_SOFTWARE handling with traditional trigger driven
+  acquisition
 
-Unfortunately neither is necessarily true. Almost all
-tablet PCBS are mounted upside down (with an empty PCB
-backside against the lcd-panel. Meaning that the Z axis
-reads -1G when the tablet is lying on its back instead
-of the expected +1G and some need X/Y axis swapping and/or
-inversion too.
+Changes since v2 :
+* add missing vref-supply property into DT bindings doc
+* kerneldoc'ify comments
+* rename return code variables
+* compute channel scaling and offset using IIO_VAL_FRACTIONAL for enhanced
+  readability
+* replace legacy IIO_DEV_ATTR_SAMP_FREQ macro by channel info_mask_shared_by_all
+  mechanism 
 
-So there are 3 problems here:
-
-1) Where do we store the orientation of the chip
-
-For the allwinner tablets I'm working on the answer is
-easy: In devicetree
-
-2) Where do we correct the readings for the orientation
-
-AFAIK the iio framework does not offer a way to fix the readings
-up in the kernel (please correct me if I'm wrong), I'm seeing
-something called an mount_matrix in iio which seems to be
-able to convey the necessary info from the kernel to userspace.
-
-So Bastien, would you be open to a (future) patch to
-iio-sensor-proxy for reading and using this info,
-or even better yet be willing to write one ?
-
-In device tree it looks like this:
-
-                 mount-matrix = "-0.984807753012208",  /* x0 */
-                                "0",                   /* y0 */
-                                "-0.173648177666930",  /* z0 */
-                                "0",                   /* x1 */
-                                "-1",                  /* y1 */
-                                "0",                   /* z1 */
-                                "-0.173648177666930",  /* x2 */
-                                "0",                   /* y2 */
-                                "0.984807753012208";   /* z2 */
-
-And if I'm reading the iio-core code correctly the mount_matrix
-sysfs attribute will contain a string with these 9 values
-in text-format seperated by ","
-
-3) Currently implementing orientation support in an iio driver
-requires copy and pasting quite a bit of boiler plate, so
-a question to the linux-iio list, has anyone though of an
-easier way to do this. I really just want to be able to
-pass say a single flag to iio_device_register and then
-have the iio-core automatically call of_iio_read_mount_matrix()
-and add mount_matrix ext_info.
+Changes since v1 :
+* cosmetic and spelling corrections
+* remove useless header
+* remove useless u8 cast from register macro definitions
+* fix uninitialized pressure word for continuous sampling operation
+* rework of zpa_dequeue_pressure error handling flow for enhanced readability
+* merge zpa_acknowledge_irq() into zpa_handle_threaded_irq() for enhanced
+  readability
+* remove useless pm_runtime_mark_last_busy() invocation
+* remove useless channel initializers
+* add VRef regulator support
+* switch to regmap based bus operations (save ~100 lines of code)
+* make symbol prefixes consistent with source file name (zpa_ -> zpa2326_)
+* get rid of BUG() usage
+* protect sampling frequency reads from userspace with mutex
+* remove DEBUG macro (rely on dynamic debug or a futur DEBUG Kconfig option
+  defined at IIO level)
+* rename ZPA2326_CONVERSION_TIMEOUT macros to ZPA2326_CONVERSION_JIFFIES
+* simplify runtime power management error handling
+* rework ring setup operations for better separation of concerns
+* fix module removal / devm_iio_device_register() race condition
+* factor out hardware detection sequence
 
 Regards,
+gregor.
 
-Hans
+Gregor Boirie (1):
+  iio:pressure: initial zpa2326 barometer support
+
+ .../devicetree/bindings/iio/pressure/zpa2326.txt   |   31 +
+ drivers/iio/pressure/Kconfig                       |   22 +
+ drivers/iio/pressure/Makefile                      |    3 +
+ drivers/iio/pressure/zpa2326.c                     | 1735 ++++++++++++++++++++
+ drivers/iio/pressure/zpa2326.h                     |   89 +
+ drivers/iio/pressure/zpa2326_i2c.c                 |   99 ++
+ drivers/iio/pressure/zpa2326_spi.c                 |  103 ++
+ 7 files changed, 2082 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+ create mode 100644 drivers/iio/pressure/zpa2326.c
+ create mode 100644 drivers/iio/pressure/zpa2326.h
+ create mode 100644 drivers/iio/pressure/zpa2326_i2c.c
+ create mode 100644 drivers/iio/pressure/zpa2326_spi.c
+
+-- 
+2.1.4
 
