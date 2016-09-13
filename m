@@ -1,85 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail2-relais-roc.national.inria.fr ([192.134.164.83]:1802 "EHLO
-        mail2-relais-roc.national.inria.fr" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1755186AbcIPLNn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 16 Sep 2016 07:13:43 -0400
-From: Julia Lawall <Julia.Lawall@lip6.fr>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: kernel-janitors@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH 1/3] iio: common: ssp_sensors: accel: constify iio_info structures
-Date: Fri, 16 Sep 2016 12:55:24 +0200
-Message-Id: <1474023326-24645-2-git-send-email-Julia.Lawall@lip6.fr>
-In-Reply-To: <1474023326-24645-1-git-send-email-Julia.Lawall@lip6.fr>
-References: <1474023326-24645-1-git-send-email-Julia.Lawall@lip6.fr>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <gregor.boirie@parrot.com>
+Message-ID: <57D7B0F1.6030607@parrot.com>
+Date: Tue, 13 Sep 2016 09:55:29 +0200
+From: Gregor Boirie <gregor.boirie@parrot.com>
+MIME-Version: 1.0
+To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
+CC: <devicetree@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob
+ Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Akinobu
+ Mita <akinobu.mita@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Vlad
+ Dogaru <ddvlad@gmail.com>, Ludovic Tancerel
+	<ludovic.tancerel@maplehightech.com>, Marek Vasut <marex@denx.de>, Crestez
+ Dan Leonard <leonard.crestez@intel.com>
+Subject: Re: [PATCH v4 1/1] iio:pressure: initial zpa2326 barometer support
+References: <cover.1473432897.git.gregor.boirie@parrot.com> <68c225245eb4f4972f5acaa56bdbf9d25971f0f7.1473432897.git.gregor.boirie@parrot.com> <d6122349-5e8c-6708-b5af-a38f9e8bb898@kernel.org>
+In-Reply-To: <d6122349-5e8c-6708-b5af-a38f9e8bb898@kernel.org>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Check for iio_info structures that are only stored in the info field of a
-iio_dev structure.  This field is declared const, so iio_info structures
-that have this property can be declared as const also.
+Hi,
 
-The semantic patch that makes this change is as follows:
-(http://coccinelle.lip6.fr/)
+On 09/10/2016 05:37 PM, Jonathan Cameron wrote:
+> On 09/09/16 16:01, Gregor Boirie wrote:
+>> Introduce driver for Murata ZPA2326 pressure and temperature sensor:
+>> http://www.murata.com/en-us/products/productdetail?partno=ZPA2326-0311A-R
+>>
+>> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+> This looks pretty good to me now.  A few minor bits and bobs inline.
+>
+> I almost took it as is, but would like to have it sit on the list
+> in it's current form for a few more days anyway so might as well get
+> these few corners tidied up!
+[...]
+>
+> +/*
+> + * Debugfs stuff
+> + *
+> + * We want to prevent debugfs hooks from altering configuration while chip
+> + * sampling is ongoing to preserve data consistency. Moreover, a few registers,
+> + * when read, change hardware state, e.g. interrupt acknowlege on read. This is
+> + * why debugfs read and write hooks acquire exclusive access to register space.
+> + *
+> + * Also note this is mostly unusable with power management enabled systems since
+> + * registers content is lost during power off -> on transitions.
+> + */
+> It would be nice perhaps to tighten up the range of addresses that
+> we are protecting.  Thus allow reading of any addresses that are not
+> 'fragile'.  Only supported limited debug access is hardly a big
+> issue however ;)
+Quite frankly, I wonder if this debugfs stuff should not be thrown away 
+given that
+regmap already provides a way to access registers over debugfs (with 
+very limited
+protection...).
+What do you think ?
 
-// <smpl>
-@r disable optional_qualifier@
-identifier i;
-position p;
-@@
-static struct iio_info i@p = { ... };
+[...]
 
-@ok@
-identifier r.i;
-struct iio_dev e;
-position p;
-@@
-e.info = &i@p;
-
-@bad@
-position p != {r.p,ok.p};
-identifier r.i;
-struct iio_info e;
-@@
-e@i@p
-
-@depends on !bad disable optional_qualifier@
-identifier r.i;
-@@
-static
-+const
- struct iio_info i = { ... };
-// </smpl>
-
-The result of size on this file before the change is:
-   text	      data     bss     dec         hex	  filename
-   1265        344       0    1609         649
-   drivers/iio/accel/ssp_accel_sensor.o
-
-and after the change it is:
-   text	     data        bss	    dec	    hex	filename
-   1425	      192          0       1617     651
-   drivers/iio/accel/ssp_accel_sensor.o
-
-Signed-off-by: Julia Lawall <Julia.Lawall@lip6.fr>
-
----
- drivers/iio/accel/ssp_accel_sensor.c |    2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/iio/accel/ssp_accel_sensor.c b/drivers/iio/accel/ssp_accel_sensor.c
-index 4ae05fc..31db009 100644
---- a/drivers/iio/accel/ssp_accel_sensor.c
-+++ b/drivers/iio/accel/ssp_accel_sensor.c
-@@ -74,7 +74,7 @@ static int ssp_accel_write_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--static struct iio_info ssp_accel_iio_info = {
-+static const struct iio_info ssp_accel_iio_info = {
- 	.read_raw = &ssp_accel_read_raw,
- 	.write_raw = &ssp_accel_write_raw,
- };
-
+Regards,
+Grégor.
