@@ -1,85 +1,342 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f65.google.com ([209.85.220.65]:33424 "EHLO
-        mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754771AbcIMRaV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Sep 2016 13:30:21 -0400
-Received: by mail-pa0-f65.google.com with SMTP id h5so9463536pao.0
-        for <linux-iio@vger.kernel.org>; Tue, 13 Sep 2016 10:30:21 -0700 (PDT)
-Message-ID: <1473787814.8047.8.camel@researchut.com>
-Subject: possible odd acceleration scaling
-From: Ritesh Raj Sarraf <rrs@researchut.com>
-Reply-To: rrs@researchut.com
-To: linux-iio@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Date: Tue, 13 Sep 2016 23:00:14 +0530
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47761 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753968AbcIMRfc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Sep 2016 13:35:32 -0400
+Subject: Re: [PATCH] iio: accel: sca3000_core: implemented
+ IIO_CHAN_INFO_SAMP_FREQ
+To: Ico Doornekamp <ico@pruts.nl>
+References: <20160910191946.30105-1-ico@pruts.nl>
+From: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org
+Message-ID: <99ce25ac-2330-ad53-151d-f580226906eb@kernel.org>
+Date: Tue, 13 Sep 2016 18:35:28 +0100
+MIME-Version: 1.0
+In-Reply-To: <20160910191946.30105-1-ico@pruts.nl>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+On 10/09/16 20:19, Ico Doornekamp wrote:
+> Moved functionality from IIO_DEV_ATTR_SAMP_FREQ attribute into
+> IIO_CHAN_INFO_SAMP_FREQ handlers. Added sca3000_write_raw() to allow
+> writing the element as well.
+> 
+> Signed-off-by: Ico Doornekamp <ico@pruts.nl>
+> ---
+> 
+> Up for review.
+Don't need this comment ;)  You wouldn't post it if you weren't asking
+for review.
+> 
+> I'm not happy with gotos jumping out of switches, so sca3000_write_raw() needs
+> some fiddling to properly release the lock in the error path. Maybe it's better
+> to create functions for handling the IIO_CHAN_INFO_SAMP_FREQ case instead of
+> mixing it all into the switch?
+Sounds like a good idea to me.  Agreed on jumps out of switches being hideous.
+> 
+> Is there any way IIO_DEV_ATTR_SAMP_FREQ_AVAIL fits into the IIO_CHAN_INFO
+> elements, or should it stay the way it is currently implemented?
+Sadly not.  I had a patch set putting a means of doing this in place a while
+back but never got around to following in through.  Needs to much cleaning
+up of existing cases such as the one you are doing here first.
+> 
+> Maybe I should just stick to fixing white space issues...
+:) Don't even think about going back!
 
-Hello Srinivas and Others,
+Other than one big issue, the patch looks very good.
 
-[Please CC me in replies. I'm not subscribed to the list]
+You actually need to add this entry to one of the info_mask bitmaps to
+have the attributes instantiated.
 
-This email is in regard to an odd behavior, we seems to have discovered with
-iio-sensor-proxy version 1.2 and the iio driver in Linux, maybe particular to
-the following driver.
+In this particular case
+info_mask_shared_by_all = IIO_INFO_SAMP_FREQ; I think...
 
+Note that you need to add it for all changes that it effects.  It'll show
+up if you add it to just one, but the whole point is that the code makes
+it clear which elements are covered by it.
 
-rrs@learner:~$ lsusb 
-Bus 003 Device 002: ID 8087:8000 Intel Corp. 
-Bus 003 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-Bus 002 Device 001: ID 1d6b:0003 Linux Foundation 3.0 root hub
-Bus 001 Device 006: ID 048d:8350 Integrated Technology Express, Inc. 
-Bus 001 Device 005: ID 0bda:b728 Realtek Semiconductor Corp. 
-Bus 001 Device 004: ID 04f2:b40f Chicony Electronics Co., Ltd 
-Bus 001 Device 003: ID 04f3:0303 Elan Microelectronics Corp. 
-Bus 001 Device 002: ID 0bda:0129 Realtek Semiconductor Corp. RTS5129 Card Reader
-Controller
-Bus 001 Device 001: ID 1d6b:0002 Linux Foundation 2.0 root hub
-2016-09-13 / 22:56:58 ♒♒♒  ☺  
+Otherwise, nice patch and definitely a step up from white space cleanup!
+(though that has it's place and is also worthwhile in my view).
 
+> 
+>  drivers/staging/iio/accel/sca3000_core.c | 218 ++++++++++++++-----------------
+>  1 file changed, 96 insertions(+), 122 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+> index 61f3241..d80f61b 100644
+> --- a/drivers/staging/iio/accel/sca3000_core.c
+> +++ b/drivers/staging/iio/accel/sca3000_core.c
+> @@ -443,6 +443,35 @@ static u8 sca3000_addresses[3][3] = {
+>  	       SCA3000_MD_CTRL_OR_Z},
+>  };
+>  
+> +/**
+> + * __sca3000_get_base_freq() obtain mode specific base frequency
+> + *
+> + * lock must be held
+> + **/
+> +static inline int __sca3000_get_base_freq(struct sca3000_state *st,
+> +					  const struct sca3000_chip_info *info,
+> +					  int *base_freq)
+> +{
+> +	int ret;
+> +
+> +	ret = sca3000_read_data_short(st, SCA3000_REG_ADDR_MODE, 1);
+> +	if (ret)
+> +		goto error_ret;
+> +	switch (0x03 & st->rx[0]) {
+> +	case SCA3000_MEAS_MODE_NORMAL:
+> +		*base_freq = info->measurement_mode_freq;
+> +		break;
+> +	case SCA3000_MEAS_MODE_OP_1:
+> +		*base_freq = info->option_mode_1_freq;
+> +		break;
+> +	case SCA3000_MEAS_MODE_OP_2:
+> +		*base_freq = info->option_mode_2_freq;
+> +		break;
+> +	}
+> +error_ret:
+> +	return ret;
+> +}
+> +
+>  static int sca3000_read_raw(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan,
+>  			    int *val,
+> @@ -495,11 +524,77 @@ static int sca3000_read_raw(struct iio_dev *indio_dev,
+>  		*val = -214;
+>  		*val2 = 600000;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		mutex_lock(&st->lock);
+> +		ret = __sca3000_get_base_freq(st, st->info, val);
+> +		if (ret) {
+> +			mutex_unlock(&st->lock);
+> +			return ret;
+> +		}
+> +		ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
+> +		mutex_unlock(&st->lock);
+> +		if (ret < 0)
+> +			return ret;
+> +		if (*val > 0)
+> +			switch (ret & 0x03) {
+> +			case SCA3000_OUT_CTRL_BUF_DIV_2:
+> +				*val /= 2;
+> +				break;
+> +			case SCA3000_OUT_CTRL_BUF_DIV_4:
+> +				*val /= 4;
+> +				break;
+> +		}
+> +		return IIO_VAL_INT;
+>  	default:
+>  		return -EINVAL;
+>  	}
+>  }
+>  
+> +static int sca3000_write_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int val, int val2, long mask)
+> +{
+> +	struct sca3000_state *st = iio_priv(indio_dev);
+> +	int ret, base_freq;
+> +	int ctrlval;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		if (val2)
+> +			return -EINVAL;
+nice.  Lots of people miss this check.
 
-rrs@learner:/sys/devices/pci0000:00/0000:00:14.0/usb1/1-8/1-
-8:1.0/0003:048D:8350.0002/HID-SENSOR-200073.4.auto$ find iio\:device2/ -iname
-"*scale*" -print -exec cat '{}' \;
-iio:device2/in_accel_scale
-0.009806
-2016-09-13 / 22:37:29 ♒♒♒  ☺  
-
-
-Machine: Lenovo Yoga 2 13.
-
-
-For a background, please have a look at the github bug report.
-https://github.com/hadess/iio-sensor-proxy/issues/100
-
-
-If you need any information, please let me know. I'm not sure what other
-information to provide upfront, that maybe be relevant.
-
-
-- -- 
-Ritesh Raj Sarraf
-RESEARCHUT - http://www.researchut.com
-"Necessity is the mother of invention."
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCgAGBQJX2DemAAoJEKY6WKPy4XVpdVwP+QEgk8lQ4IyWwF65N0EwAubG
-Pnbf9sKcQ/uy8AALsOMFXDp0YKt3zLJPZfdMthdWPN9KjzX5GB5euspmbtF5ds81
-8ws4t1JVOvDK1IEmL8SNbk7Xe62Q1tzQ5UxYbsrchNbM8MnLPXQFc5g6rHIveun+
-xkS19l+pziwH5PdulrvDj5S4Db0TIM1ICqDJON74+ufaZ4APsHpLQ2EAB65AQVfJ
-c4DEpB8kIN1dtHwJYzt1ZowKbJiDytCnUGUkI2tRTkMkVlA6CG+w+GzRbBCJerGd
-3GgXNcEB23oteM3V6Je2oLoiH5Wvp3unwBTQgsX2WRPfLb9EnUlcCQxTbb8eAmF/
-9krmKmC6y9k1aLzp+CgpbV9l97rJROpnqiGdEZyNWvBIfhzaMaz5rXY/6QFTfOh6
-3LznSfGrZghwFq0vELsUx93xxR7qWBBj1Ra8XfTX0ueOQmdDbkCW0jB16TDCsgnu
-gOhultIlalnmCjOvz7xTnIYp2vbM6kpa85Vp0t4UTtDhDepJCBCohx0nqYWhel9I
-4MCPbWPYb24X7+XEYFQsPO8W4wiEqcx8kGXv8bF94eGWHsJK47xvNdlKtDq4IL9k
-vxaIIUhPauvgoHW9s15+AgZ/bn46Qnma4BTSTwL3fqNuElX98uIDNxJGbor63eo5
-m6/0B4X6jy2HJgUpnwCb
-=KDnB
------END PGP SIGNATURE-----
+> +		mutex_lock(&st->lock);
+> +		/* What mode are we in? */
+> +		ret = __sca3000_get_base_freq(st, st->info, &base_freq);
+> +		if (ret) {
+> +			mutex_unlock(&st->lock);
+> +			return ret;
+> +		}
+> +		ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
+> +		if (ret < 0) {
+> +			mutex_unlock(&st->lock);
+> +			return ret;
+> +		}
+> +		ctrlval = ret & ~0x03; /* clear the bits */
+An additional nice cleanup would be to add a define for this 'magic' mask and
+use that here instead of the value. Maybe worth checking for similar cases
+elsewhere in this driver.
+> +
+> +		if (val == base_freq / 2) {
+> +			ctrlval |= SCA3000_OUT_CTRL_BUF_DIV_2;
+> +		} else if (val == base_freq / 4) {
+> +			ctrlval |= SCA3000_OUT_CTRL_BUF_DIV_4;
+> +		} else if (val != base_freq) {
+> +			mutex_unlock(&st->lock);
+> +			return -EINVAL;
+> +		}
+> +		ret = sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL,
+> +					     ctrlval);
+> +		mutex_unlock(&st->lock);
+I'd return ret here.
+> +		break;
+> +	default:
+> +		ret = -EINVAL;
+return -EINVAL;
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+>  /**
+>   * sca3000_read_av_freq() sysfs function to get available frequencies
+>   *
+> @@ -548,133 +643,12 @@ error_ret:
+>  	return ret;
+>  }
+>  
+> -/**
+> - * __sca3000_get_base_freq() obtain mode specific base frequency
+> - *
+> - * lock must be held
+> - **/
+> -static inline int __sca3000_get_base_freq(struct sca3000_state *st,
+> -					  const struct sca3000_chip_info *info,
+> -					  int *base_freq)
+> -{
+> -	int ret;
+> -
+> -	ret = sca3000_read_data_short(st, SCA3000_REG_ADDR_MODE, 1);
+> -	if (ret)
+> -		goto error_ret;
+> -	switch (0x03 & st->rx[0]) {
+> -	case SCA3000_MEAS_MODE_NORMAL:
+> -		*base_freq = info->measurement_mode_freq;
+> -		break;
+> -	case SCA3000_MEAS_MODE_OP_1:
+> -		*base_freq = info->option_mode_1_freq;
+> -		break;
+> -	case SCA3000_MEAS_MODE_OP_2:
+> -		*base_freq = info->option_mode_2_freq;
+> -		break;
+> -	}
+> -error_ret:
+> -	return ret;
+> -}
+> -
+> -/**
+> - * sca3000_read_frequency() sysfs interface to get the current frequency
+> - **/
+> -static ssize_t sca3000_read_frequency(struct device *dev,
+> -				      struct device_attribute *attr,
+> -				      char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct sca3000_state *st = iio_priv(indio_dev);
+> -	int ret, len = 0, base_freq = 0, val;
+> -
+> -	mutex_lock(&st->lock);
+> -	ret = __sca3000_get_base_freq(st, st->info, &base_freq);
+> -	if (ret)
+> -		goto error_ret_mut;
+> -	ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
+> -	mutex_unlock(&st->lock);
+> -	if (ret < 0)
+> -		goto error_ret;
+> -	val = ret;
+> -	if (base_freq > 0)
+> -		switch (val & 0x03) {
+> -		case 0x00:
+> -		case 0x03:
+> -			len = sprintf(buf, "%d\n", base_freq);
+> -			break;
+> -		case 0x01:
+> -			len = sprintf(buf, "%d\n", base_freq / 2);
+> -			break;
+> -		case 0x02:
+> -			len = sprintf(buf, "%d\n", base_freq / 4);
+> -			break;
+> -	}
+> -
+> -	return len;
+> -error_ret_mut:
+> -	mutex_unlock(&st->lock);
+> -error_ret:
+> -	return ret;
+> -}
+> -
+> -/**
+> - * sca3000_set_frequency() sysfs interface to set the current frequency
+> - **/
+> -static ssize_t sca3000_set_frequency(struct device *dev,
+> -				     struct device_attribute *attr,
+> -				     const char *buf,
+> -				     size_t len)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct sca3000_state *st = iio_priv(indio_dev);
+> -	int ret, base_freq = 0;
+> -	int ctrlval;
+> -	int val;
+> -
+> -	ret = kstrtoint(buf, 10, &val);
+> -	if (ret)
+> -		return ret;
+> -
+> -	mutex_lock(&st->lock);
+> -	/* What mode are we in? */
+> -	ret = __sca3000_get_base_freq(st, st->info, &base_freq);
+> -	if (ret)
+> -		goto error_free_lock;
+> -
+> -	ret = sca3000_read_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL);
+> -	if (ret < 0)
+> -		goto error_free_lock;
+> -	ctrlval = ret;
+> -	/* clear the bits */
+> -	ctrlval &= ~0x03;
+> -
+> -	if (val == base_freq / 2) {
+> -		ctrlval |= SCA3000_OUT_CTRL_BUF_DIV_2;
+> -	} else if (val == base_freq / 4) {
+> -		ctrlval |= SCA3000_OUT_CTRL_BUF_DIV_4;
+> -	} else if (val != base_freq) {
+> -		ret = -EINVAL;
+> -		goto error_free_lock;
+> -	}
+> -	ret = sca3000_write_ctrl_reg(st, SCA3000_REG_CTRL_SEL_OUT_CTRL,
+> -				     ctrlval);
+> -error_free_lock:
+> -	mutex_unlock(&st->lock);
+> -
+> -	return ret ? ret : len;
+> -}
+> -
+>  /*
+>   * Should only really be registered if ring buffer support is compiled in.
+>   * Does no harm however and doing it right would add a fair bit of complexity
+>   */
+>  static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(sca3000_read_av_freq);
+>  
+> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> -			      sca3000_read_frequency,
+> -			      sca3000_set_frequency);
+> -
+>  /**
+>   * sca3000_read_thresh() - query of a threshold
+>   **/
+> @@ -751,7 +725,6 @@ static struct attribute *sca3000_attributes[] = {
+>  	&iio_dev_attr_measurement_mode_available.dev_attr.attr,
+>  	&iio_dev_attr_measurement_mode.dev_attr.attr,
+>  	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>  	NULL,
+>  };
+>  
+> @@ -1086,6 +1059,7 @@ error_ret:
+>  static const struct iio_info sca3000_info = {
+>  	.attrs = &sca3000_attribute_group,
+>  	.read_raw = &sca3000_read_raw,
+> +	.write_raw = &sca3000_write_raw,
+>  	.event_attrs = &sca3000_event_attribute_group,
+>  	.read_event_value = &sca3000_read_thresh,
+>  	.write_event_value = &sca3000_write_thresh,
+> 
 
