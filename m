@@ -1,60 +1,106 @@
-Return-Path: <gregor.boirie@parrot.com>
-Message-ID: <57D7B0F1.6030607@parrot.com>
-Date: Tue, 13 Sep 2016 09:55:29 +0200
-From: Gregor Boirie <gregor.boirie@parrot.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:37144 "EHLO
+        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752008AbcIMITa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Sep 2016 04:19:30 -0400
+Received: by mail-wm0-f49.google.com with SMTP id c131so98518178wmh.0
+        for <linux-iio@vger.kernel.org>; Tue, 13 Sep 2016 01:19:29 -0700 (PDT)
+Date: Tue, 13 Sep 2016 09:21:26 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        maxime.ripard@free-electrons.com, wens@csie.org,
+        thomas.petazzoni@free-electrons.com,
+        antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Subject: Re: [PATCH v5 2/3] mfd: add support for Allwinner SoCs ADC
+Message-ID: <20160913082126.GA22903@dell>
+References: <1473344917-1524-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1473344917-1524-3-git-send-email-quentin.schulz@free-electrons.com>
+ <20160912091829.GB1873@dell>
+ <93bd339b-85ab-d0fc-5e80-e2aca290c0d7@free-electrons.com>
+ <20160912095923.GD1873@dell>
+ <5dec118f-45ae-4fb6-dd1e-2028947add53@free-electrons.com>
+ <20160912135646.GB9789@dell>
+ <a48580b4-1494-d474-b33c-007f898b29b7@free-electrons.com>
 MIME-Version: 1.0
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-CC: <devicetree@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob
- Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Akinobu
- Mita <akinobu.mita@gmail.com>, Linus Walleij <linus.walleij@linaro.org>, Vlad
- Dogaru <ddvlad@gmail.com>, Ludovic Tancerel
-	<ludovic.tancerel@maplehightech.com>, Marek Vasut <marex@denx.de>, Crestez
- Dan Leonard <leonard.crestez@intel.com>
-Subject: Re: [PATCH v4 1/1] iio:pressure: initial zpa2326 barometer support
-References: <cover.1473432897.git.gregor.boirie@parrot.com> <68c225245eb4f4972f5acaa56bdbf9d25971f0f7.1473432897.git.gregor.boirie@parrot.com> <d6122349-5e8c-6708-b5af-a38f9e8bb898@kernel.org>
-In-Reply-To: <d6122349-5e8c-6708-b5af-a38f9e8bb898@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <a48580b4-1494-d474-b33c-007f898b29b7@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+On Tue, 13 Sep 2016, Quentin Schulz wrote:
+> On 12/09/2016 15:56, Lee Jones wrote:
+> > On Mon, 12 Sep 2016, Quentin Schulz wrote:
+> >> On 12/09/2016 11:59, Lee Jones wrote:
+> >>> On Mon, 12 Sep 2016, Quentin Schulz wrote:
+> >>>
+> >>>> On 12/09/2016 11:18, Lee Jones wrote:
+> >>>>> On Thu, 08 Sep 2016, Quentin Schulz wrote:
+> >>>>> [...]
+> >>>>>> +
+> >>>>>> +MODULE_DEVICE_TABLE(of, sun4i_gpadc_mfd_of_match);
+> >>>>>
+> >>>>> Place this directly under the table.
+> >>>>>
+> >>>>>> +static struct platform_driver sun4i_gpadc_mfd_driver = {
+> >>>>>> +	.driver = {
+> >>>>>> +		.name = "sun4i-adc-mfd",
+> >>>>>> +		.of_match_table = of_match_ptr(sun4i_gpadc_mfd_of_match),
+> >>>>>> +	},
+> >>>>>> +	.probe = sun4i_gpadc_mfd_probe,
+> >>>>>
+> >>>>> No .remove?
+> >>>>>
+> >>>>
+> >>>> No, everything in probe is handled with devm functions.
+> >>>
+> >>> Don't you need to undo the register write you did?
+> >>>
+> >>
+> >> The regmap_write I use is there to disable all interrupts on hardware
+> >> side before the irq_chip handles all interrupts by itself. The
+> >> interrupts are not used in the MFD driver.
+> >>
+> >> Thus, I chose to disable the hardware interrupts in the remove function
+> >> of drivers using the interrupts (only the IIO yet but the touchscreen
+> >> driver later also which will be using a third interrupt). When the MFD
+> >> driver is removed, the MFD cells will all be removed, thus calling their
+> >> own remove functions, thus disabling hardware interrupts used in each
+> >> driver. So the hardware interrupts disabling would be called twice.
+> > 
+> > This does send some little alarm bells ringing.  I'd normally expect
+> > the .remove function to undo everything you did in .probe.  So, if you
+> > are disabling the IRQs from within the leaf drivers, shouldn't you be
+> > initialising them in the leaf driver's respective .probes?
+> > 
+> 
+> I use the regmap_write in the MFD driver's probe to disable all
+> interrupts before requesting irq_chip to guarantee the interrupts are in
+> a known state, being disabled. It is to insure no interrupt will occur
+> unwittingly before we want the leaf drivers to handle them.
+> 
+> The disabling of irqs in the remove is handled rather by
+> devm_regmap_del_irq_chip than by an explicit regmap_write in the
+> driver's removal function. It performs the exact same thing.
+> 
+> I always use devm functions for requesting either an irq_chip or the
+> irqs themselves. In that case, when the device is removed, the irqs are
+> freed on leaf drivers' (where the irqs are requested) removal while the
+> removal of irq_chip in the MFD driver will also free all irqs mapped to
+> this irq_chip thanks to devm_regmap_del_irq_chip. Therefore, the
+> interrupts are disabled by devm functions.
+> 
+> The regmap_update_bits in probe and removal of the ADC driver to disable
+> irqs are actually redundant because the devm functions already handle
+> the irqs disabling.
 
-On 09/10/2016 05:37 PM, Jonathan Cameron wrote:
-> On 09/09/16 16:01, Gregor Boirie wrote:
->> Introduce driver for Murata ZPA2326 pressure and temperature sensor:
->> http://www.murata.com/en-us/products/productdetail?partno=ZPA2326-0311A-R
->>
->> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
-> This looks pretty good to me now.  A few minor bits and bobs inline.
->
-> I almost took it as is, but would like to have it sit on the list
-> in it's current form for a few more days anyway so might as well get
-> these few corners tidied up!
-[...]
->
-> +/*
-> + * Debugfs stuff
-> + *
-> + * We want to prevent debugfs hooks from altering configuration while chip
-> + * sampling is ongoing to preserve data consistency. Moreover, a few registers,
-> + * when read, change hardware state, e.g. interrupt acknowlege on read. This is
-> + * why debugfs read and write hooks acquire exclusive access to register space.
-> + *
-> + * Also note this is mostly unusable with power management enabled systems since
-> + * registers content is lost during power off -> on transitions.
-> + */
-> It would be nice perhaps to tighten up the range of addresses that
-> we are protecting.  Thus allow reading of any addresses that are not
-> 'fragile'.  Only supported limited debug access is hardly a big
-> issue however ;)
-Quite frankly, I wonder if this debugfs stuff should not be thrown away 
-given that
-regmap already provides a way to access registers over debugfs (with 
-very limited
-protection...).
-What do you think ?
+Okay.  So long as you've thought about it, I'm happy.
 
-[...]
-
-Regards,
-Grégor.
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org â”‚ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
