@@ -1,89 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:40667 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1757396AbcIMJxf (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 13 Sep 2016 05:53:35 -0400
-From: Heiko Stuebner <heiko@sntech.de>
-To: Andy Yan <andy.yan@rock-chips.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, robh+dt@kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, lars@metafoo.de, mark.rutland@arm.com,
-        pmeerw@pmeerw.net
-Subject: Re: [PATCH] iio: dt-bindings: add documentation for Light&Proximity sensor STK331x
-Date: Tue, 13 Sep 2016 11:53:20 +0200
-Message-ID: <2244323.LAARBqky8d@phil>
-In-Reply-To: <1473758822-17955-1-git-send-email-andy.yan@rock-chips.com>
-References: <1473758822-17955-1-git-send-email-andy.yan@rock-chips.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <1473832511-sup-5279@pruts.nl>
+References: <20160910191946.30105-1-ico@pruts.nl> <99ce25ac-2330-ad53-151d-f580226906eb@kernel.org> <1473832511-sup-5279@pruts.nl>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] iio: accel: sca3000_core: implemented IIO_CHAN_INFO_SAMP_FREQ
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 14 Sep 2016 07:26:37 +0100
+To: Ico Doornekamp <ico@pruts.nl>,Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio <linux-iio@vger.kernel.org>
+Message-ID: <AD989092-B155-46DA-AC09-5D251823EB9C@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
 
-Am Dienstag, 13. September 2016, 17:27:02 CEST schrieb Andy Yan:
-> Add the device tree binding documentation for Light & Proximity sensor
-> STK331X from Sensortek
+
+On 14 September 2016 06:59:23 BST, Ico Doornekamp <ico@pruts.nl> wrote:
+>* On 2016-09-13 19:35:28 +0200, Jonathan Cameron wrote:
 > 
-> Signed-off-by: Andy Yan <andy.yan@rock-chips.com>
-> ---
-> 
->  .../devicetree/bindings/iio/light/stk3310.txt       | 21
-> +++++++++++++++++++++ 1 file changed, 21 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/light/stk3310.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/light/stk3310.txt
-> b/Documentation/devicetree/bindings/iio/light/stk3310.txt new file mode
-> 100644
-> index 0000000..d697118
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/light/stk3310.txt
-> @@ -0,0 +1,21 @@
-> +* Sensortek STK331X I2C Light&Proximity sensor
-> +
-> +Required properties:
-> +- compatible: should be "sensortek,STK3310" or "sensortek,STK3311"
+>> Other than one big issue, the patch looks very good.
+>> 
+>> You actually need to add this entry to one of the info_mask bitmaps
+>to
+>> have the attributes instantiated.
+>
+>I suspected as much, but I wasn't quite sure about the semantics of the
+>fields, and when to use info_mask_shared_by_type vs
+>info_mask_shared_by_all.
+Here we have existing correct ABI to userspace so we should stick to what is
+present. Shared by all will keep naming as simply sampling_frequency.
 
-I guess that is more a question for Rob / Jonathan regarding the casing.
+J
 
-The stk3310 drivers currently provides both an acpi as well as an i2c module 
-table and in both the naming is in upper-case ... probably the i2c table being 
-simply a copy of the acpi table.
-
-By using the i2c-quirk of extracting the i2c-id from the compatible, the 
-binding here would codify this upper case, while normally i2c tables as well 
-as dt-bindings are all lower case. 
-
-Looking at kernel c-code and current mainline devicetree files, it doesn't look 
-like the i2c-ids gets used anywhere yet, so I guess we could do:
-
-- keep acpi-ids as they are
-- make i2c-ids lower-case
-- make dt-binding lower-case (and it can still use the i2c quirk to not need a 
-separate of id-table)
-
-alternatively we could also just add a separate of-id table with the lower-
-case compatible elements.
-
-
-Heiko
-
-> +- reg: the I2C address of the device
-> +- interrupt-parent: phandle to the parent interrupt controller
-> +- interrupts: interrupt mapping for GPIO IRQ
-> +
-> +Example:
-> +	&i2c1 {
-> +		/* ... */
-> +
-> +		stk3310@48 {
-> +			compatible = "sensortek,STK3310";
-> +			reg = <0x48>;
-> +			interrupt-parent = <&gpio1>;
-> +			interrupts = <5 IRQ_TYPE_LEVEL_LOW>;
-> +		};
-> +
-> +		/* ... */
-> +	};
-
-
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
