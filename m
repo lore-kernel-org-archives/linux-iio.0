@@ -1,91 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from down.free-electrons.com ([37.187.137.238]:39499 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S934131AbcIOMo6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 15 Sep 2016 08:44:58 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jdelvare@suse.com, linux@roeck-us.net, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        maxime.ripard@free-electrons.com, wens@csie.org,
-        lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        thomas.petazzoni@free-electrons.com,
-        antoine.tenart@free-electrons.com, linux-kernel@vger.kernel.org,
-        linux-hwmon@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Subject: [PATCH v6 0/2] add support for Allwinner SoCs ADC
-Date: Thu, 15 Sep 2016 14:44:02 +0200
-Message-Id: <1473943444-23979-1-git-send-email-quentin.schulz@free-electrons.com>
+Received: from mail-pf0-f178.google.com ([209.85.192.178]:35689 "EHLO
+        mail-pf0-f178.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1764135AbcINQAp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Sep 2016 12:00:45 -0400
+Received: by mail-pf0-f178.google.com with SMTP id z123so6995129pfz.2
+        for <linux-iio@vger.kernel.org>; Wed, 14 Sep 2016 09:00:40 -0700 (PDT)
+Message-ID: <1473868832.9913.14.camel@researchut.com>
+Subject: Re: possible odd acceleration scaling
+From: Ritesh Raj Sarraf <rrs@researchut.com>
+Reply-To: rrs@researchut.com
+To: Bastien Nocera <hadess@hadess.net>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Date: Wed, 14 Sep 2016 21:30:32 +0530
+In-Reply-To: <1473867872.6389.16.camel@hadess.net>
+References: <1473787814.8047.8.camel@researchut.com>
+         <a9078c9f-0d07-35bc-e449-2cfeee7b7987@kernel.org>
+         <d275ff67-4335-a6f4-b60b-c4227a59b34c@kernel.org>
+         <1473793566.6874.10.camel@linux.intel.com>
+         <1473843953.23872.3.camel@researchut.com>
+         <1473845312.23872.5.camel@researchut.com>
+         <1473861009.9913.7.camel@researchut.com>
+         <1473866880.35049.5.camel@linux.intel.com>
+         <1473867872.6389.16.camel@hadess.net>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen
-controller and a thermal sensor. The first four channels can be used either
-for the ADC or the touchscreen and the fifth channel is used for the
-thermal sensor. We currently have a driver for the two latter functions in
-drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC
-feature at all. It is meant to replace the current driver by using MFD and
-subdrivers.
+-----BEGIN PGP SIGNED MESSAGE-----
+Hash: SHA512
 
-This adds initial support for Allwinner SoCs ADC with all features. Yet,
-the touchscreen is not implemented but will be added later. To switch
-between touchscreen and ADC modes, you need to poke a few bits in registers
-and (de)activate an interrupt (pen-up).
-An MFD is provided to let the input driver activate the pen-up interrupt
-through a virtual interrupt, poke a few bits via regmap and read data from
-the ADC driver while both (and iio_hwmon) are probed by the MFD.
+Hello Bastien,
 
-There are slight variations between the different SoCs ADC like the address
-of some registers and the scale and offset to apply to raw thermal sensor
-values. These variations are handled by using different platform_device_id,
-passed to the sub-drivers when they are probed by the MFD.
+On Wed, 2016-09-14 at 17:44 +0200, Bastien Nocera wrote:
+> 
+> My guess:
+> -       return (int) (info_1->index - info_2->index);
+> +       return ((int) info_1->index - (int) info_2->index);
+> 
+> Ritesh, could you try to change those lines in compare_channel_index()
+> in src/iio-buffer-utils.c and capture another log if it fails?
 
-Removal of proposed patch for iio_hwmon's iio channel's label in v3. The
-patch induces irreversible ABI changes and will be handled as a separate
-patch since I think it is not absolutely necessary to have labels yet in
-iio_hwmon.
+That did not seem to change anything. I've put up the log at:
+https://people.debian.org/~rrs/tmp/iio-int.txt
 
-Removal of proposed patch for reattaching of_node of the MFD to the MFD
-cell device structure in v3. As Lee Jones said, this patch might cause
-"unintended side-effects for existing drivers.". Moreover, this patch
-introduced a bug of multiple probe of this MFD driver I haven't identified
-yet. This patch aimed at allowing the ADC driver (which is a child of the
-MFD and not present in the DT) to register in the thermal framework. The
-thermal driver has a phandle to the MFD node which is used to match against
-the MFD of_node but since the ADC driver has no node in the DT, could not
-register in the thermal framework. The other solution is to "impersonate"
-the MFD when registering in the thermal framework since the device is only
-used to match the phandle and the of_node, an other structure passed by
-parameter being used to compute temperatures.
+ 
+- -- 
+Ritesh Raj Sarraf
+RESEARCHUT - http://www.researchut.com
+"Necessity is the mother of invention."
+-----BEGIN PGP SIGNATURE-----
 
-(in the ADC driver, probed by the MFD driver) instead of:
-tzd = devm_thermal_zone_of_sensor_register(&pdev->dev, 0, info,
-					   &sun4i_ts_tz_ops);
-we now have:
-tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0, info,
-					   &sun4i_ts_tz_ops);
-
-Removal of proposed patch to use late_initcall for iio_hwmon probe deferring.
-
-Removal of patch for iio_hwmon probe deferring due to being applied to -next by
-Guenter Roeck.
-
-Quentin Schulz (2):
-  mfd: add support for Allwinner SoCs ADC
-  iio: adc: add support for Allwinner SoCs ADC
-
- drivers/iio/adc/Kconfig           |  13 +
- drivers/iio/adc/Makefile          |   1 +
- drivers/iio/adc/sun4i-gpadc-iio.c | 522 ++++++++++++++++++++++++++++++++++++++
- drivers/mfd/Kconfig               |  15 ++
- drivers/mfd/Makefile              |   2 +
- drivers/mfd/sun4i-gpadc.c         | 181 +++++++++++++
- include/linux/mfd/sun4i-gpadc.h   |  94 +++++++
- 7 files changed, 828 insertions(+)
- create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
- create mode 100644 drivers/mfd/sun4i-gpadc.c
- create mode 100644 include/linux/mfd/sun4i-gpadc.h
-
--- 
-2.5.0
+iQIcBAEBCgAGBQJX2XQhAAoJEKY6WKPy4XVp0G8P/jL93VwzPKnbrjR/B2hgVLXG
+SQc0WV6mNgNOUDcUfbEkSv/Fk4cNLMTIqRw9u/oTA4ZM5+omZUF4C0iZnNKx/f5C
+/1Q6rxKUVVn/ET31mG5vw/05MUqJqMN86LdJKgvno4ndmE1/hsF5CAn8vo5WRBr7
+V7XM6gPdEBfXQnIHd64nrbHADjsXAB2WxL+tqhXzjxOBUO2wdL/oXYivqij92niN
+TtHEiHQZLqnHfGOTKPPGaF39mDQJsmEf4AWCnlfHwugGN1EIZGaXZSbOsO/c6su8
+/SQQta1HmrVrodVVT/dITKGLPxbyYa0ei7LAp16BcrK0HXeV/1hQ0c4h8Brlg0du
+5W3a0GkbvXz4YcyRypRxHoNR6iel001k7ndWMYBFixWhTzUbNYhgf6QZU8seXyot
+yqDSAnxY9KJEasGtVG/SSQ8kRl4iIyq3JG3HqRxMvDWffZSm90HsWQ+KBKX8QzGJ
+X6A6SlotyWvnSGsWF/YAv2n952NQGdpzIdlJd9rTaXpzCJY4rh6eSCg/tP1oBgul
+GxY6G8OQy0zvfvcAl31Kxi1JOoOidlbyeYqs4wsSIAHJpKFlAd1Jw6agmk7JuwH6
+UE450+9u1Pk6klWnR6GGB5Q3xNO6+JxnFzr3Zp93wu45za6fUFZcCk8n/esDqyqq
+KsQ/LKGRoYi3M8ZJfF9i
+=ZUpR
+-----END PGP SIGNATURE-----
 
