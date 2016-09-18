@@ -1,89 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49545 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49552 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932140AbcIRKxM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 06:53:12 -0400
-Subject: Re: [PATCH] iio: accel: sca3000_core: Fix superfluous indent white
- space
-To: Alison Schofield <amsfield22@gmail.com>, daniel.baluta@gmail.com
-References: <20160909174414.31002-1-ico@pruts.nl>
- <95f27ba9-d54c-3dad-6b33-217010ce55bd@kernel.org>
- <1473522932-sup-4169@pruts.nl>
- <50ce9913-92cc-8e1b-f8eb-2faec769622a@kernel.org>
- <1473530764-sup-9251@pruts.nl>
- <bf8b4602-e470-60e4-c378-e2bbe22a4c88@kernel.org>
- <20160913192229.GA3846@d830.WORKGROUP>
-Cc: Ico Doornekamp <ico@pruts.nl>,
-        linux-iio <linux-iio@vger.kernel.org>
+        with ESMTP id S1754606AbcIRKyh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 06:54:37 -0400
+Subject: Re: question about IIO buffer interface
+To: Armando Visconti <armando.visconti@st.com>
+References: <e388b0fd-85a9-16d6-5ec9-28021f5a5f64@st.com>
+ <1033a3e3-51e3-a962-15d5-a7002795033b@kernel.org>
+ <19a0921b-bc70-bfaa-cbe7-97cf3e37faa5@st.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Lorenzo BIANCONI <lorenzo.bianconi@st.com>,
+        Denis CIOCCA <denis.ciocca@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <dea17b69-e830-51df-8648-a52972a53ded@kernel.org>
-Date: Sun, 18 Sep 2016 11:53:09 +0100
+Message-ID: <c1c5978a-af55-e0ef-01ae-8df8b313c49d@kernel.org>
+Date: Sun, 18 Sep 2016 11:54:35 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160913192229.GA3846@d830.WORKGROUP>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <19a0921b-bc70-bfaa-cbe7-97cf3e37faa5@st.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/09/16 20:22, Alison Schofield wrote:
-> On Tue, Sep 13, 2016 at 06:37:17PM +0100, Jonathan Cameron wrote:
->> On 10/09/16 19:16, Ico Doornekamp wrote:
->>> * On 2016-09-10 18:26:45 +0200, Jonathan Cameron wrote:
->>>  
->>>> Another good one is to find things in staging drivers that we now
->>>> have IIO_INFO_* elements for.
->>>>
->>>> For example in sca3000 I see there is an explicit attribute defined that
->>>> could be replaced by IIO_INFO_SAMPLING_FREQUENCY being added in the
->>>> relevant masks and appropriate sections added to the read_raw
->>>> and write_raw callbacks.
->>>>
->>>> Not a trivial job, but not too hard to figure out perhaps?
+On 16/09/16 16:03, Armando Visconti wrote:
+> Hello Jonathan,
 > 
-> Not trying to hijack Ico's work ;) but wondering if this task, applied to
-> staging drivers, would be good to offer to this round of Outreachy
-> applicants as a small coding task?
-There are probably other cases still out there.  Wouldn't guarantee they
-are all in staging either!
-
-Commenting out the relevant macros in include/linux/iio/sysfs.h is
-a good way to find these.  The whole shared_by_... stuff is
-'relatively recent' so quite a few drivers predate it.
-
-Good to get them cleaned up and it's not a bad step up from
-white space fixes (as Ico has just demonstrated ;)
-
-Thanks,
+> Thx for the very long explanation.
+> 
+> 
+>>
+>> Anyhow, the philosophy was:
+>>
+>> preenable -> stuff related to getting ready for buffered operation.
+>> This might be as simple as turning off something else that prevents
+>> buffered operation. Often this is simply not provided as there
+>> is nothing useful to be done.
+>>
+>> update_scan_mode -> get the scan mode set up right for all the buffers
+>> being feed by the iio_push_to_buffers calls.
+>>
+>> postenable -> Actually start the flow of data now all the flags are
+>> lined up to say we are enabled.  So in a typical triggered-buffer
+>> case call iio_trigger_attach_poll_func
+>>
+> 
+> Usually our drivers use prenable() for starting the data flow
+> and postdisable() to stop it.
+> 
+> Do you think it is a mistake?
+> Or acceptable?
+If you don't have a reason to use the update_scan_mode callback
+then it doesn't really matter. Conceptually I'd do it postenable and
+predisable, but I'm not that fussed!
 
 Jonathan
-
 > 
-> alisons
+>>
+>> For the disable side:
+>> predisable unwinds postenable and postdisable typically unwinds
+>> preenable.
+>>
 > 
->>>
->>> Not too hard, although I'm not able to actually run and test due to lack
->>> of hardware.
->> That's fine. This one is my driver (rather needing some care and attention)
->> and I have the hardware still.  It's somewhat of a pain to fire up so
->> I might do this one just on review but we'll see how busy I am at the weekend.
->>>
->>>> + a good step up from white space patches.
->>>
->>> I do hope the Little Penguin agrees on this :)
->> Should do!
->>>
->>>> Guess maybe that needs to be a bit later if you are ploughing through
->>>> the eudyptula-challenge (though that didn't exist when I got started
->>>> so I don't know what order they do stuff in!)
->>>
->>> I have no clue: I'm trying to stick to the steps and not peek ahead.
->>>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> --
+> Yes, that's clear.
+> 
+> Regards,
+> Arm
+> -- 
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
