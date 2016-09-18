@@ -1,309 +1,2191 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49403 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51526 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755737AbcIRK2w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 06:28:52 -0400
-Subject: Re: [PATCH 06/15 v2] iio: accel: kxsd9: Convert to use regmap for
- transport
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
- <1472723089-25113-6-git-send-email-linus.walleij@linaro.org>
+        with ESMTP id S1754958AbcIRSnF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 14:43:05 -0400
+Subject: Re: [PATCH v5 1/1] iio:pressure: initial zpa2326 barometer support
+To: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org
+References: <cover.1473769166.git.gregor.boirie@parrot.com>
+ <203dcd3e963f61c397a7256abb62cafe0d6183a6.1473769166.git.gregor.boirie@parrot.com>
+Cc: devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Vlad Dogaru <ddvlad@gmail.com>,
+        Ludovic Tancerel <ludovic.tancerel@maplehightech.com>,
+        Marek Vasut <marex@denx.de>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <532fd859-b013-4e17-e20e-c134beebb54f@kernel.org>
-Date: Sun, 18 Sep 2016 11:28:50 +0100
+Message-ID: <0860185f-a217-6552-6649-921f4fc28ca1@kernel.org>
+Date: Sun, 18 Sep 2016 19:42:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <1472723089-25113-6-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <203dcd3e963f61c397a7256abb62cafe0d6183a6.1473769166.git.gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/09/16 10:44, Linus Walleij wrote:
-> This converts the KXSD9 driver to drop the custom transport
-> mechanism and just use regmap like everything else.
+On 13/09/16 13:23, Gregor Boirie wrote:
+> Introduce driver for Murata ZPA2326 pressure and temperature sensor:
+> http://www.murata.com/en-us/products/productdetail?partno=ZPA2326-0311A-R
 > 
-> Tested-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Applied to the togreg branch of iio.git. Initially pushed out as testing
-for the autbuilders to play with it.
+> Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
+A nicely written driver for a bit of hardware with some crazy corners.
 
-Thanks,
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with it.
+
+Thanks
 
 Jonathan
 > ---
-> ChangeLog v1->v2:
-> - Rebase on the rest of the series.
-> ---
->  drivers/iio/accel/Kconfig     |  1 +
->  drivers/iio/accel/kxsd9-spi.c | 79 ++++++++++---------------------------------
->  drivers/iio/accel/kxsd9.c     | 40 +++++++++++++---------
->  drivers/iio/accel/kxsd9.h     | 22 +-----------
->  4 files changed, 43 insertions(+), 99 deletions(-)
+>  .../devicetree/bindings/iio/pressure/zpa2326.txt   |   31 +
+>  drivers/iio/pressure/Kconfig                       |   22 +
+>  drivers/iio/pressure/Makefile                      |    3 +
+>  drivers/iio/pressure/zpa2326.c                     | 1735 ++++++++++++++++++++
+>  drivers/iio/pressure/zpa2326.h                     |   89 +
+>  drivers/iio/pressure/zpa2326_i2c.c                 |   99 ++
+>  drivers/iio/pressure/zpa2326_spi.c                 |  103 ++
+>  7 files changed, 2082 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+>  create mode 100644 drivers/iio/pressure/zpa2326.c
+>  create mode 100644 drivers/iio/pressure/zpa2326.h
+>  create mode 100644 drivers/iio/pressure/zpa2326_i2c.c
+>  create mode 100644 drivers/iio/pressure/zpa2326_spi.c
 > 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 95e3fc09f640..0ac316fbba38 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -108,6 +108,7 @@ config KXSD9_SPI
->  	depends on KXSD9
->  	depends on SPI
->  	default KXSD9
+> diff --git a/Documentation/devicetree/bindings/iio/pressure/zpa2326.txt b/Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+> new file mode 100644
+> index 0000000..fb85de6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/pressure/zpa2326.txt
+> @@ -0,0 +1,31 @@
+> +Murata ZPA2326 pressure sensor
+> +
+> +Pressure sensor from Murata with SPI and I2C bus interfaces.
+> +
+> +Required properties:
+> +- compatible: "murata,zpa2326"
+> +- reg: the I2C address or SPI chip select the device will respond to
+> +
+> +Recommended properties for SPI bus usage:
+> +- spi-max-frequency: maximum SPI bus frequency as documented in
+> +  Documentation/devicetree/bindings/spi/spi-bus.txt
+> +
+> +Optional properties:
+> +- vref-supply: an optional regulator that needs to be on to provide VREF
+> +  power to the sensor
+> +- vdd-supply: an optional regulator that needs to be on to provide VDD
+> +  power to the sensor
+> +- interrupt-parent: phandle to the parent interrupt controller as documented in
+> +  Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> +- interrupts: interrupt mapping for IRQ as documented in
+> +  Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> +
+> +Example:
+> +
+> +zpa2326@5c {
+> +	compatible = "murata,zpa2326";
+> +	reg = <0x5c>;
+> +	interrupt-parent = <&gpio>;
+> +	interrupts = <12>;
+> +	vdd-supply = <&ldo_1v8_gnss>;
+> +};
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index d130cdc..cc090d8 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -187,4 +187,26 @@ config HP206C
+>  	  This driver can also be built as a module. If so, the module will
+>  	  be called hp206c.
+>  
+> +config ZPA2326
+> +	tristate "Murata ZPA2326 pressure sensor driver"
+> +	select IIO_BUFFER
+> +	select IIO_TRIGGERED_BUFFER
+> +	select REGMAP
+> +	select ZPA2326_I2C if I2C
+> +	select ZPA2326_SPI if SPI_MASTER
+> +	help
+> +	  Say Y here to build support for the Murata ZPA2326 pressure and
+> +	  temperature sensor.
+> +
+> +	  To compile this driver as a module, choose M here: the module will
+> +	  be called zpa2326.
+> +
+> +config ZPA2326_I2C
+> +	tristate
+> +	select REGMAP_I2C
+> +
+> +config ZPA2326_SPI
+> +	tristate
 > +	select REGMAP_SPI
->  	help
->  	  Say yes here to enable the Kionix KXSD9 accelerometer
->  	  SPI transport channel.
-> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
-> index a49c10cd7634..c5af51b7dd7e 100644
-> --- a/drivers/iio/accel/kxsd9-spi.c
-> +++ b/drivers/iio/accel/kxsd9-spi.c
-> @@ -3,75 +3,30 @@
->  #include <linux/spi/spi.h>
->  #include <linux/module.h>
->  #include <linux/slab.h>
+> +
+>  endmenu
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index 7f395be..fff7718 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -22,6 +22,9 @@ st_pressure-y := st_pressure_core.o
+>  st_pressure-$(CONFIG_IIO_BUFFER) += st_pressure_buffer.o
+>  obj-$(CONFIG_T5403) += t5403.o
+>  obj-$(CONFIG_HP206C) += hp206c.o
+> +obj-$(CONFIG_ZPA2326) += zpa2326.o
+> +obj-$(CONFIG_ZPA2326_I2C) += zpa2326_i2c.o
+> +obj-$(CONFIG_ZPA2326_SPI) += zpa2326_spi.o
+>  
+>  obj-$(CONFIG_IIO_ST_PRESS_I2C) += st_pressure_i2c.o
+>  obj-$(CONFIG_IIO_ST_PRESS_SPI) += st_pressure_spi.o
+> diff --git a/drivers/iio/pressure/zpa2326.c b/drivers/iio/pressure/zpa2326.c
+> new file mode 100644
+> index 0000000..19d2eb4
+> --- /dev/null
+> +++ b/drivers/iio/pressure/zpa2326.c
+> @@ -0,0 +1,1735 @@
+> +/*
+> + * Murata ZPA2326 pressure and temperature sensor IIO driver
+> + *
+> + * Copyright (c) 2016 Parrot S.A.
+> + *
+> + * Author: Gregor Boirie <gregor.boirie@parrot.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + */
+> +
+> +/**
+> + * DOC: ZPA2326 theory of operations
+> + *
+> + * This driver supports %INDIO_DIRECT_MODE and %INDIO_BUFFER_TRIGGERED IIO
+> + * modes.
+> + * A internal hardware trigger is also implemented to dispatch registered IIO
+> + * trigger consumers upon "sample ready" interrupts.
+> + *
+> + * ZPA2326 hardware supports 2 sampling mode: one shot and continuous.
+> + *
+> + * A complete one shot sampling cycle gets device out of low power mode,
+> + * performs pressure and temperature measurements, then automatically switches
+> + * back to low power mode. It is meant for on demand sampling with optimal power
+> + * saving at the cost of lower sampling rate and higher software overhead.
+> + * This is a natural candidate for IIO read_raw hook implementation
+> + * (%INDIO_DIRECT_MODE). It is also used for triggered buffering support to
+> + * ensure explicit synchronization with external trigger events
+> + * (%INDIO_BUFFER_TRIGGERED).
+> + *
+> + * The continuous mode works according to a periodic hardware measurement
+> + * process continuously pushing samples into an internal hardware FIFO (for
+> + * pressure samples only). Measurement cycle completion may be signaled by a
+> + * "sample ready" interrupt.
+> + * Typical software sequence of operations :
+> + * - get device out of low power mode,
+> + * - setup hardware sampling period,
+> + * - at end of period, upon data ready interrupt: pop pressure samples out of
+> + *   hardware FIFO and fetch temperature sample
+> + * - when no longer needed, stop sampling process by putting device into
+> + *   low power mode.
+> + * This mode is used to implement %INDIO_BUFFER_TRIGGERED mode if device tree
+> + * declares a valid interrupt line. In this case, the internal hardware trigger
+> + * drives acquisition.
+> + *
+> + * Note that hardware sampling frequency is taken into account only when
+> + * internal hardware trigger is attached as the highest sampling rate seems to
+> + * be the most energy efficient.
+> + *
+> + * TODO:
+> + *   preset pressure threshold crossing / IIO events ;
+> + *   differential pressure sampling ;
+> + *   hardware samples averaging.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/kernel.h>
+> +#include <linux/delay.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/pm_runtime.h>
 > +#include <linux/regmap.h>
->  
->  #include "kxsd9.h"
->  
-> -#define KXSD9_READ(a) (0x80 | (a))
-> -#define KXSD9_WRITE(a) (a)
-> -
-> -static int kxsd9_spi_readreg(struct kxsd9_transport *tr, u8 address)
-> -{
-> -	struct spi_device *spi = tr->trdev;
-> -
-> -	return spi_w8r8(spi, KXSD9_READ(address));
-> -}
-> -
-> -static int kxsd9_spi_writereg(struct kxsd9_transport *tr, u8 address, u8 val)
-> -{
-> -	struct spi_device *spi = tr->trdev;
-> -
-> -	tr->tx[0] = KXSD9_WRITE(address),
-> -	tr->tx[1] = val;
-> -	return spi_write(spi, tr->tx, 2);
-> -}
-> -
-> -static int kxsd9_spi_readval(struct kxsd9_transport *tr, u8 address)
-> -{
-> -	struct spi_device *spi = tr->trdev;
-> -	struct spi_transfer xfers[] = {
-> -		{
-> -			.bits_per_word = 8,
-> -			.len = 1,
-> -			.delay_usecs = 200,
-> -			.tx_buf = tr->tx,
-> -		}, {
-> -			.bits_per_word = 8,
-> -			.len = 2,
-> -			.rx_buf = tr->rx,
-> -		},
-> -	};
-> -	int ret;
-> -
-> -	tr->tx[0] = KXSD9_READ(address);
-> -	ret = spi_sync_transfer(spi, xfers, ARRAY_SIZE(xfers));
-> -	if (!ret)
-> -		ret = (((u16)(tr->rx[0])) << 8) | (tr->rx[1]);
-> -	return ret;
-> -}
-> -
->  static int kxsd9_spi_probe(struct spi_device *spi)
->  {
-> -	struct kxsd9_transport *transport;
-> -	int ret;
-> -
-> -	transport = devm_kzalloc(&spi->dev, sizeof(*transport), GFP_KERNEL);
-> -	if (!transport)
-> -		return -ENOMEM;
-> +	static const struct regmap_config config = {
-> +		.reg_bits = 8,
-> +		.val_bits = 8,
-> +		.max_register = 0x0e,
-> +	};
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include "zpa2326.h"
+> +
+> +/* 200 ms should be enough for the longest conversion time in one-shot mode. */
+> +#define ZPA2326_CONVERSION_JIFFIES (HZ / 5)
+> +
+> +/* There should be a 1 ms delay (Tpup) after getting out of reset. */
+> +#define ZPA2326_TPUP_USEC_MIN      (1000)
+> +#define ZPA2326_TPUP_USEC_MAX      (2000)
+> +
+> +/**
+> + * struct zpa2326_frequency - Hardware sampling frequency descriptor
+> + * @hz : Frequency in Hertz.
+> + * @odr: Output Data Rate word as expected by %ZPA2326_CTRL_REG3_REG.
+> + */
+> +struct zpa2326_frequency {
+> +	int hz;
+> +	u16 odr;
+> +};
+> +
+> +/*
+> + * Keep these in strict ascending order: last array entry is expected to
+> + * correspond to the highest sampling frequency.
+> + */
+> +static const struct zpa2326_frequency zpa2326_sampling_frequencies[] = {
+> +	{ .hz = 1,  .odr = 1 << ZPA2326_CTRL_REG3_ODR_SHIFT },
+> +	{ .hz = 5,  .odr = 5 << ZPA2326_CTRL_REG3_ODR_SHIFT },
+> +	{ .hz = 11, .odr = 6 << ZPA2326_CTRL_REG3_ODR_SHIFT },
+> +	{ .hz = 23, .odr = 7 << ZPA2326_CTRL_REG3_ODR_SHIFT },
+> +};
+> +
+> +/* Return the highest hardware sampling frequency available. */
+> +static const struct zpa2326_frequency *zpa2326_highest_frequency(void)
+> +{
+> +	return &zpa2326_sampling_frequencies[
+> +		ARRAY_SIZE(zpa2326_sampling_frequencies) - 1];
+> +}
+> +
+> +/**
+> + * struct zpa_private - Per-device internal private state
+> + * @timestamp:  Buffered samples ready datum.
+> + * @regmap:     Underlying I2C / SPI bus adapter used to abstract slave register
+> + *              accesses.
+> + * @result:     Allows sampling logic to get completion status of operations
+> + *              that interrupt handlers perform asynchronously.
+> + * @data_ready: Interrupt handler uses this to wake user context up at sampling
+> + *              operation completion.
+> + * @trigger:    Optional hardware / interrupt driven trigger used to notify
+> + *              external devices a new sample is ready.
+> + * @waken:      Flag indicating whether or not device has just been powered on.
+> + * @irq:        Optional interrupt line: negative or zero if not declared into
+> + *              DT, in which case sampling logic keeps polling status register
+> + *              to detect completion.
+> + * @frequency:  Current hardware sampling frequency.
+> + * @vref:       Power / voltage reference.
+> + * @vdd:        Power supply.
+> + */
+> +struct zpa2326_private {
+> +	s64                             timestamp;
+> +	struct regmap                  *regmap;
+> +	int                             result;
+> +	struct completion               data_ready;
+> +	struct iio_trigger             *trigger;
+> +	bool                            waken;
+> +	int                             irq;
+> +	const struct zpa2326_frequency *frequency;
+> +	struct regulator               *vref;
+> +	struct regulator               *vdd;
+> +};
+> +
+> +#define zpa2326_err(_idev, _format, _arg...) \
+> +	dev_err(_idev->dev.parent, _format, ##_arg)
+> +
+> +#define zpa2326_warn(_idev, _format, _arg...) \
+> +	dev_warn(_idev->dev.parent, _format, ##_arg)
+> +
+> +#ifdef DEBUG
+> +#define zpa2326_dbg(_idev, _format, _arg...) \
+> +	dev_dbg(_idev->dev.parent, _format, ##_arg)
+> +#else
+> +#define zpa2326_dbg(_idev, _format, _arg...)
+> +#endif
+> +
+> +bool zpa2326_isreg_writeable(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case ZPA2326_REF_P_XL_REG:
+> +	case ZPA2326_REF_P_L_REG:
+> +	case ZPA2326_REF_P_H_REG:
+> +	case ZPA2326_RES_CONF_REG:
+> +	case ZPA2326_CTRL_REG0_REG:
+> +	case ZPA2326_CTRL_REG1_REG:
+> +	case ZPA2326_CTRL_REG2_REG:
+> +	case ZPA2326_CTRL_REG3_REG:
+> +	case ZPA2326_THS_P_LOW_REG:
+> +	case ZPA2326_THS_P_HIGH_REG:
+> +		return true;
+> +
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(zpa2326_isreg_writeable);
+> +
+> +bool zpa2326_isreg_readable(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case ZPA2326_REF_P_XL_REG:
+> +	case ZPA2326_REF_P_L_REG:
+> +	case ZPA2326_REF_P_H_REG:
+> +	case ZPA2326_DEVICE_ID_REG:
+> +	case ZPA2326_RES_CONF_REG:
+> +	case ZPA2326_CTRL_REG0_REG:
+> +	case ZPA2326_CTRL_REG1_REG:
+> +	case ZPA2326_CTRL_REG2_REG:
+> +	case ZPA2326_CTRL_REG3_REG:
+> +	case ZPA2326_INT_SOURCE_REG:
+> +	case ZPA2326_THS_P_LOW_REG:
+> +	case ZPA2326_THS_P_HIGH_REG:
+> +	case ZPA2326_STATUS_REG:
+> +	case ZPA2326_PRESS_OUT_XL_REG:
+> +	case ZPA2326_PRESS_OUT_L_REG:
+> +	case ZPA2326_PRESS_OUT_H_REG:
+> +	case ZPA2326_TEMP_OUT_L_REG:
+> +	case ZPA2326_TEMP_OUT_H_REG:
+> +		return true;
+> +
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(zpa2326_isreg_readable);
+> +
+> +bool zpa2326_isreg_precious(struct device *dev, unsigned int reg)
+> +{
+> +	switch (reg) {
+> +	case ZPA2326_INT_SOURCE_REG:
+> +	case ZPA2326_PRESS_OUT_H_REG:
+> +		return true;
+> +
+> +	default:
+> +		return false;
+> +	}
+> +}
+> +EXPORT_SYMBOL_GPL(zpa2326_isreg_precious);
+> +
+> +/**
+> + * zpa2326_enable_device() - Enable device, i.e. get out of low power mode.
+> + * @indio_dev: The IIO device associated with the hardware to enable.
+> + *
+> + * Required to access complete register space and to perform any sampling
+> + * or control operations.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_enable_device(const struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +
+> +	err = regmap_write(((struct zpa2326_private *)
+> +			    iio_priv(indio_dev))->regmap,
+> +			    ZPA2326_CTRL_REG0_REG, ZPA2326_CTRL_REG0_ENABLE);
+> +	if (err) {
+> +		zpa2326_err(indio_dev, "failed to enable device (%d)", err);
+> +		return err;
+> +	}
+> +
+> +	zpa2326_dbg(indio_dev, "enabled");
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_sleep() - Disable device, i.e. switch to low power mode.
+> + * @indio_dev: The IIO device associated with the hardware to disable.
+> + *
+> + * Only %ZPA2326_DEVICE_ID_REG and %ZPA2326_CTRL_REG0_REG registers may be
+> + * accessed once device is in the disabled state.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_sleep(const struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +
+> +	err = regmap_write(((struct zpa2326_private *)
+> +			    iio_priv(indio_dev))->regmap,
+> +			    ZPA2326_CTRL_REG0_REG, 0);
+> +	if (err) {
+> +		zpa2326_err(indio_dev, "failed to sleep (%d)", err);
+> +		return err;
+> +	}
+> +
+> +	zpa2326_dbg(indio_dev, "sleeping");
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_reset_device() - Reset device to default hardware state.
+> + * @indio_dev: The IIO device associated with the hardware to reset.
+> + *
+> + * Disable sampling and empty hardware FIFO.
+> + * Device must be enabled before reset, i.e. not in low power mode.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_reset_device(const struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +
+> +	err = regmap_write(((struct zpa2326_private *)
+> +			    iio_priv(indio_dev))->regmap,
+> +			    ZPA2326_CTRL_REG2_REG, ZPA2326_CTRL_REG2_SWRESET);
+> +	if (err) {
+> +		zpa2326_err(indio_dev, "failed to reset device (%d)", err);
+> +		return err;
+> +	}
+> +
+> +	usleep_range(ZPA2326_TPUP_USEC_MIN, ZPA2326_TPUP_USEC_MAX);
+> +
+> +	zpa2326_dbg(indio_dev, "reset");
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_start_oneshot() - Start a single sampling cycle, i.e. in one shot
+> + *                           mode.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + *
+> + * Device must have been previously enabled and configured for one shot mode.
+> + * Device will be switched back to low power mode at end of cycle.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_start_oneshot(const struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +
+> +	err = regmap_write(((struct zpa2326_private *)
+> +			    iio_priv(indio_dev))->regmap,
+> +			    ZPA2326_CTRL_REG0_REG,
+> +			    ZPA2326_CTRL_REG0_ENABLE |
+> +			    ZPA2326_CTRL_REG0_ONE_SHOT);
+> +	if (err) {
+> +		zpa2326_err(indio_dev, "failed to start one shot cycle (%d)",
+> +			    err);
+> +		return err;
+> +	}
+> +
+> +	zpa2326_dbg(indio_dev, "one shot cycle started");
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_power_on() - Power on device to allow subsequent configuration.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @private:   Internal private state related to @indio_dev.
+> + *
+> + * Sampling will be disabled, preventing strange things from happening in our
+> + * back. Hardware FIFO content will be cleared.
+> + * When successful, device will be left in the enabled state to allow further
+> + * configuration.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_power_on(const struct iio_dev         *indio_dev,
+> +			    const struct zpa2326_private *private)
+> +{
+> +	int err;
+> +
+> +	err = regulator_enable(private->vref);
+> +	if (err)
+> +		return err;
+> +
+> +	err = regulator_enable(private->vdd);
+> +	if (err)
+> +		goto vref;
+> +
+> +	zpa2326_dbg(indio_dev, "powered on");
+> +
+> +	err = zpa2326_enable_device(indio_dev);
+> +	if (err)
+> +		goto vdd;
+> +
+> +	err = zpa2326_reset_device(indio_dev);
+> +	if (err)
+> +		goto sleep;
+> +
+> +	return 0;
+> +
+> +sleep:
+> +	zpa2326_sleep(indio_dev);
+> +vdd:
+> +	regulator_disable(private->vdd);
+> +vref:
+> +	regulator_disable(private->vref);
+> +
+> +	zpa2326_dbg(indio_dev, "powered off");
+> +
+> +	return err;
+> +}
+> +
+> +/**
+> + * zpa2326_power_off() - Power off device, i.e. disable attached power
+> + *                       regulators.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @private:   Internal private state related to @indio_dev.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static void zpa2326_power_off(const struct iio_dev         *indio_dev,
+> +			      const struct zpa2326_private *private)
+> +{
+> +	regulator_disable(private->vdd);
+> +	regulator_disable(private->vref);
+> +
+> +	zpa2326_dbg(indio_dev, "powered off");
+> +}
+> +
+> +/**
+> + * zpa2326_config_oneshot() - Setup device for one shot / on demand mode.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @irq:       Optional interrupt line the hardware uses to notify new data
+> + *             samples are ready. Negative or zero values indicate no interrupts
+> + *             are available, meaning polling is required.
+> + *
+> + * Output Data Rate is configured for the highest possible rate so that
+> + * conversion time and power consumption are reduced to a minimum.
+> + * Note that hardware internal averaging machinery (not implemented in this
+> + * driver) is not applicable in this mode.
+> + *
+> + * Device must have been previously enabled before calling
+> + * zpa2326_config_oneshot().
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_config_oneshot(const struct iio_dev *indio_dev,
+> +				  int                   irq)
+> +{
+> +	struct regmap                  *regs = ((struct zpa2326_private *)
+> +						iio_priv(indio_dev))->regmap;
+> +	const struct zpa2326_frequency *freq = zpa2326_highest_frequency();
+> +	int                             err;
+> +
+> +	/* Setup highest available Output Data Rate for one shot mode. */
+> +	err = regmap_write(regs, ZPA2326_CTRL_REG3_REG, freq->odr);
+> +	if (err)
+> +		return err;
+> +
+> +	if (irq > 0) {
+> +		/* Request interrupt when new sample is available. */
+> +		err = regmap_write(regs, ZPA2326_CTRL_REG1_REG,
+> +				   (u8)~ZPA2326_CTRL_REG1_MASK_DATA_READY);
+> +
+> +		if (err) {
+> +			dev_err(indio_dev->dev.parent,
+> +				"failed to setup one shot mode (%d)", err);
+> +			return err;
+> +		}
+> +	}
+> +
+> +	zpa2326_dbg(indio_dev, "one shot mode setup @%dHz", freq->hz);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_clear_fifo() - Clear remaining entries in hardware FIFO.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @min_count: Number of samples present within hardware FIFO.
+> + *
+> + * @min_count argument is a hint corresponding to the known minimum number of
+> + * samples currently living in the FIFO. This allows to reduce the number of bus
+> + * accesses by skipping status register read operation as long as we know for
+> + * sure there are still entries left.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_clear_fifo(const struct iio_dev *indio_dev,
+> +			      unsigned int          min_count)
+> +{
+> +	struct regmap *regs = ((struct zpa2326_private *)
+> +			       iio_priv(indio_dev))->regmap;
+> +	int            err;
+> +	unsigned int   val;
+> +
+> +	if (!min_count) {
+> +		/*
+> +		 * No hint: read status register to determine whether FIFO is
+> +		 * empty or not.
+> +		 */
+> +		err = regmap_read(regs, ZPA2326_STATUS_REG, &val);
+> +
+> +		if (err < 0)
+> +			goto err;
+> +
+> +		if (val & ZPA2326_STATUS_FIFO_E)
+> +			/* Fifo is empty: nothing to trash. */
+> +			return 0;
+> +	}
+> +
+> +	/* Clear FIFO. */
+> +	do {
+> +		/*
+> +		 * A single fetch from pressure MSB register is enough to pop
+> +		 * values out of FIFO.
+> +		 */
+> +		err = regmap_read(regs, ZPA2326_PRESS_OUT_H_REG, &val);
+> +		if (err < 0)
+> +			goto err;
+> +
+> +		if (min_count) {
+> +			/*
+> +			 * We know for sure there are at least min_count entries
+> +			 * left in FIFO. Skip status register read.
+> +			 */
+> +			min_count--;
+> +			continue;
+> +		}
+> +
+> +		err = regmap_read(regs, ZPA2326_STATUS_REG, &val);
+> +		if (err < 0)
+> +			goto err;
+> +
+> +	} while (!(val & ZPA2326_STATUS_FIFO_E));
+> +
+> +	zpa2326_dbg(indio_dev, "FIFO cleared");
+> +
+> +	return 0;
+> +
+> +err:
+> +	zpa2326_err(indio_dev, "failed to clear FIFO (%d)", err);
+> +
+> +	return err;
+> +}
+> +
+> +/**
+> + * zpa2326_dequeue_pressure() - Retrieve the most recent pressure sample from
+> + *                              hardware FIFO.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @pressure:  Sampled pressure output.
+> + *
+> + * Note that ZPA2326 hardware FIFO stores pressure samples only.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_dequeue_pressure(const struct iio_dev *indio_dev,
+> +				    u32                  *pressure)
+> +{
+> +	struct regmap *regs = ((struct zpa2326_private *)
+> +			       iio_priv(indio_dev))->regmap;
+> +	unsigned int   val;
+> +	int            err;
+> +	int            cleared = -1;
+> +
+> +	err = regmap_read(regs, ZPA2326_STATUS_REG, &val);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	*pressure = 0;
+> +
+> +	if (val & ZPA2326_STATUS_P_OR) {
+> +		/*
+> +		 * Fifo overrun : first sample dequeued from FIFO is the
+> +		 * newest.
+> +		 */
+> +		zpa2326_warn(indio_dev, "FIFO overflow");
+> +
+> +		err = regmap_bulk_read(regs, ZPA2326_PRESS_OUT_XL_REG, pressure,
+> +				       3);
+> +		if (err)
+> +			return err;
+> +
+> +#define ZPA2326_FIFO_DEPTH (16U)
+> +		/* Hardware FIFO may hold no more than 16 pressure samples. */
+> +		return zpa2326_clear_fifo(indio_dev, ZPA2326_FIFO_DEPTH - 1);
+> +	}
+> +
+> +	/*
+> +	 * Fifo has not overflown : retrieve newest sample. We need to pop
+> +	 * values out until FIFO is empty : last fetched pressure is the newest.
+> +	 * In nominal cases, we should find a single queued sample only.
+> +	 */
+> +	do {
+> +		err = regmap_bulk_read(regs, ZPA2326_PRESS_OUT_XL_REG, pressure,
+> +				       3);
+> +		if (err)
+> +			return err;
+> +
+> +		err = regmap_read(regs, ZPA2326_STATUS_REG, &val);
+> +		if (err < 0)
+> +			return err;
+> +
+> +		cleared++;
+> +	} while (!(val & ZPA2326_STATUS_FIFO_E));
+> +
+> +	if (cleared)
+> +		/*
+> +		 * Samples were pushed by hardware during previous rounds but we
+> +		 * didn't consume them fast enough: inform user.
+> +		 */
+> +		zpa2326_dbg(indio_dev, "cleared %d FIFO entries", cleared);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_fill_sample_buffer() - Enqueue new channel samples to IIO buffer.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @private:   Internal private state related to @indio_dev.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_fill_sample_buffer(struct iio_dev               *indio_dev,
+> +				      const struct zpa2326_private *private)
+> +{
+> +	struct {
+> +		u32 pressure;
+> +		u16 temperature;
+> +		u64 timestamp;
+> +	}   sample;
+> +	int err;
+> +
+> +	if (test_bit(0, indio_dev->active_scan_mask)) {
+> +		/* Get current pressure from hardware FIFO. */
+> +		err = zpa2326_dequeue_pressure(indio_dev, &sample.pressure);
+> +		if (err) {
+> +			zpa2326_warn(indio_dev, "failed to fetch pressure (%d)",
+> +				     err);
+> +			return err;
+> +		}
+> +	}
+> +
+> +	if (test_bit(1, indio_dev->active_scan_mask)) {
+> +		/* Get current temperature. */
+> +		err = regmap_bulk_read(private->regmap, ZPA2326_TEMP_OUT_L_REG,
+> +				       &sample.temperature, 2);
+> +		if (err) {
+> +			zpa2326_warn(indio_dev,
+> +				     "failed to fetch temperature (%d)", err);
+> +			return err;
+> +		}
+> +	}
+> +
+> +	/*
+> +	 * Now push samples using timestamp stored either :
+> +	 *   - by hardware interrupt handler if interrupt is available: see
+> +	 *     zpa2326_handle_irq(),
+> +	 *   - or oneshot completion polling machinery : see
+> +	 *     zpa2326_trigger_handler().
+> +	 */
+> +	zpa2326_dbg(indio_dev, "filling raw samples buffer");
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, &sample,
+> +					   private->timestamp);
+> +
+> +	return 0;
+> +}
+> +
+> +#ifdef CONFIG_PM
+> +static int zpa2326_runtime_suspend(struct device *parent)
+> +{
+> +	const struct iio_dev *indio_dev = dev_get_drvdata(parent);
+> +
+> +	if (pm_runtime_autosuspend_expiration(parent))
+> +		/* Userspace changed autosuspend delay. */
+> +		return -EAGAIN;
+> +
+> +	zpa2326_power_off(indio_dev, iio_priv(indio_dev));
+> +
+> +	return 0;
+> +}
+> +
+> +static int zpa2326_runtime_resume(struct device *parent)
+> +{
+> +	const struct iio_dev *indio_dev = dev_get_drvdata(parent);
+> +
+> +	return zpa2326_power_on(indio_dev, iio_priv(indio_dev));
+> +}
+> +
+> +const struct dev_pm_ops zpa2326_pm_ops = {
+> +	SET_SYSTEM_SLEEP_PM_OPS(pm_runtime_force_suspend,
+> +				pm_runtime_force_resume)
+> +	SET_RUNTIME_PM_OPS(zpa2326_runtime_suspend, zpa2326_runtime_resume,
+> +			   NULL)
+> +};
+> +EXPORT_SYMBOL_GPL(zpa2326_pm_ops);
+> +
+> +/**
+> + * zpa2326_resume() - Request the PM layer to power supply the device.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + *
+> + * Return:
+> + *  < 0 - a negative error code meaning failure ;
+> + *    0 - success, device has just been powered up ;
+> + *    1 - success, device was already powered.
+> + */
+> +static int zpa2326_resume(const struct iio_dev *indio_dev)
+> +{
+> +	int err;
+> +
+> +	err = pm_runtime_get_sync(indio_dev->dev.parent);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	if (err > 0) {
+> +		/*
+> +		 * Device was already power supplied: get it out of low power
+> +		 * mode and inform caller.
+> +		 */
+> +		zpa2326_enable_device(indio_dev);
+> +		return 1;
+> +	}
+> +
+> +	/* Inform caller device has just been brought back to life. */
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_suspend() - Schedule a power down using autosuspend feature of PM
+> + *                     layer.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + *
+> + * Device is switched to low power mode at first to save power even when
+> + * attached regulator is a "dummy" one.
+> + */
+> +static void zpa2326_suspend(struct iio_dev *indio_dev)
+> +{
+> +	struct device *parent = indio_dev->dev.parent;
+> +
+> +	zpa2326_sleep(indio_dev);
+> +
+> +	pm_runtime_mark_last_busy(parent);
+> +	pm_runtime_put_autosuspend(parent);
+> +}
+> +
+> +static void zpa2326_init_runtime(struct device *parent)
+> +{
+> +	pm_runtime_get_noresume(parent);
+> +	pm_runtime_set_active(parent);
+> +	pm_runtime_enable(parent);
+> +	pm_runtime_set_autosuspend_delay(parent, 1000);
+> +	pm_runtime_use_autosuspend(parent);
+> +	pm_runtime_mark_last_busy(parent);
+> +	pm_runtime_put_autosuspend(parent);
+> +}
+> +
+> +static void zpa2326_fini_runtime(struct device *parent)
+> +{
+> +	pm_runtime_disable(parent);
+> +	pm_runtime_set_suspended(parent);
+> +}
+> +#else /* !CONFIG_PM */
+> +static int zpa2326_resume(const struct iio_dev *indio_dev)
+> +{
+> +	zpa2326_enable_device(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static void zpa2326_suspend(struct iio_dev *indio_dev)
+> +{
+> +	zpa2326_sleep(indio_dev);
+> +}
+> +
+> +#define zpa2326_init_runtime(_parent)
+> +#define zpa2326_fini_runtime(_parent)
+> +#endif /* !CONFIG_PM */
+> +
+> +/**
+> + * zpa2326_handle_irq() - Process hardware interrupts.
+> + * @irq:  Interrupt line the hardware uses to notify new data has arrived.
+> + * @data: The IIO device associated with the sampling hardware.
+> + *
+> + * Timestamp buffered samples as soon as possible then schedule threaded bottom
+> + * half.
+> + *
+> + * Return: Always successful.
+> + */
+> +static irqreturn_t zpa2326_handle_irq(int irq, void *data)
+> +{
+> +	struct iio_dev *indio_dev = (struct iio_dev *)data;
+> +
+> +	if (iio_buffer_enabled(indio_dev)) {
+> +		/* Timestamping needed for buffered sampling only. */
+> +		((struct zpa2326_private *)
+> +		 iio_priv(indio_dev))->timestamp = iio_get_time_ns(indio_dev);
+> +	}
+> +
+> +	return IRQ_WAKE_THREAD;
+> +}
+> +
+> +/**
+> + * zpa2326_handle_threaded_irq() - Interrupt bottom-half handler.
+> + * @irq:  Interrupt line the hardware uses to notify new data has arrived.
+> + * @data: The IIO device associated with the sampling hardware.
+> + *
+> + * Mainly ensures interrupt is caused by a real "new sample available"
+> + * condition. This relies upon the ability to perform blocking / sleeping bus
+> + * accesses to slave's registers. This is why zpa2326_handle_threaded_irq() is
+> + * called from within a thread, i.e. not called from hard interrupt context.
+> + *
+> + * When device is using its own internal hardware trigger in continuous sampling
+> + * mode, data are available into hardware FIFO once interrupt has occurred. All
+> + * we have to do is to dispatch the trigger, which in turn will fetch data and
+> + * fill IIO buffer.
+> + *
+> + * When not using its own internal hardware trigger, the device has been
+> + * configured in one-shot mode either by an external trigger or the IIO read_raw
+> + * hook. This means one of the latter is currently waiting for sampling
+> + * completion, in which case we must simply wake it up.
+> + *
+> + * See zpa2326_trigger_handler().
+> + *
+> + * Return:
+> + *   %IRQ_NONE - no consistent interrupt happened ;
+> + *   %IRQ_HANDLED - there was new samples available.
+> + */
+> +static irqreturn_t zpa2326_handle_threaded_irq(int irq, void *data)
+> +{
+> +	struct iio_dev         *indio_dev = (struct iio_dev *)data;
+> +	struct zpa2326_private *priv = iio_priv(indio_dev);
+> +	unsigned int            val;
+> +	bool                    cont;
+> +	irqreturn_t             ret = IRQ_NONE;
+> +
+> +	/*
+> +	 * Are we using our own internal trigger in triggered buffer mode, i.e.,
+> +	 * currently working in continuous sampling mode ?
+> +	 */
+> +	cont = (iio_buffer_enabled(indio_dev) &&
+> +		iio_trigger_using_own(indio_dev));
+> +
+> +	/*
+> +	 * Device works according to a level interrupt scheme: reading interrupt
+> +	 * status de-asserts interrupt line.
+> +	 */
+> +	priv->result = regmap_read(priv->regmap, ZPA2326_INT_SOURCE_REG, &val);
+> +	if (priv->result < 0) {
+> +		if (cont)
+> +			return IRQ_NONE;
+> +
+> +		goto complete;
+> +	}
+> +
+> +	/* Data ready is the only interrupt source we requested. */
+> +	if (!(val & ZPA2326_INT_SOURCE_DATA_READY)) {
+> +		/*
+> +		 * Interrupt happened but no new sample available: likely caused
+> +		 * by spurious interrupts, in which case, returning IRQ_NONE
+> +		 * allows to benefit from the generic spurious interrupts
+> +		 * handling.
+> +		 */
+> +		zpa2326_warn(indio_dev, "unexpected interrupt status %02x",
+> +			     val);
+> +
+> +		if (cont)
+> +			return IRQ_NONE;
+> +
+> +		priv->result = -ENODATA;
+> +		goto complete;
+> +	}
+> +
+> +	/* New sample available: dispatch internal trigger consumers. */
+> +	iio_trigger_poll_chained(priv->trigger);
+> +
+> +	if (cont)
+> +		/*
+> +		 * Internal hardware trigger has been scheduled above : it will
+> +		 * fetch data on its own.
+> +		 */
+> +		return IRQ_HANDLED;
+> +
+> +	ret = IRQ_HANDLED;
+> +
+> +complete:
+> +	/*
+> +	 * Wake up direct or externaly triggered buffer mode waiters: see
+> +	 * zpa2326_sample_oneshot() and zpa2326_trigger_handler().
+> +	 */
+> +	complete(&priv->data_ready);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * zpa2326_wait_oneshot_completion() - Wait for oneshot data ready interrupt.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @private:   Internal private state related to @indio_dev.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_wait_oneshot_completion(const struct iio_dev   *indio_dev,
+> +					   struct zpa2326_private *private)
+> +{
+> +	int          ret;
+> +	unsigned int val;
+> +
+> +	zpa2326_dbg(indio_dev, "waiting for one shot completion interrupt");
+> +
+> +	ret = wait_for_completion_interruptible_timeout(
+> +		&private->data_ready, ZPA2326_CONVERSION_JIFFIES);
+> +	if (ret > 0)
+> +		/*
+> +		 * Interrupt handler completed before timeout: return operation
+> +		 * status.
+> +		 */
+> +		return private->result;
+> +
+> +	/* Clear all interrupts just to be sure. */
+> +	regmap_read(private->regmap, ZPA2326_INT_SOURCE_REG, &val);
+> +
+> +	if (!ret)
+> +		/* Timed out. */
+> +		ret = -ETIME;
+> +
+> +	if (ret != -ERESTARTSYS)
+> +		zpa2326_warn(indio_dev, "no one shot interrupt occurred (%d)",
+> +			     ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static int zpa2326_init_managed_irq(struct device          *parent,
+> +				    struct iio_dev         *indio_dev,
+> +				    struct zpa2326_private *private,
+> +				    int                     irq)
+> +{
+> +	int err;
+> +
+> +	private->irq = irq;
+> +
+> +	if (irq <= 0) {
+> +		/*
+> +		 * Platform declared no interrupt line: device will be polled
+> +		 * for data availability.
+> +		 */
+> +		dev_info(parent, "no interrupt found, running in polling mode");
+> +		return 0;
+> +	}
+> +
+> +	init_completion(&private->data_ready);
+> +
+> +	/* Request handler to be scheduled into threaded interrupt context. */
+> +	err = devm_request_threaded_irq(parent, irq, zpa2326_handle_irq,
+> +					zpa2326_handle_threaded_irq,
+> +					IRQF_TRIGGER_RISING | IRQF_ONESHOT,
+> +					dev_name(parent), indio_dev);
+> +	if (err) {
+> +		dev_err(parent, "failed to request interrupt %d (%d)", irq,
+> +			err);
+> +		return err;
+> +	}
+> +
+> +	dev_info(parent, "using interrupt %d", irq);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_poll_oneshot_completion() - Actively poll for one shot data ready.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + *
+> + * Loop over registers content to detect end of sampling cycle. Used when DT
+> + * declared no valid interrupt lines.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_poll_oneshot_completion(const struct iio_dev *indio_dev)
+> +{
+> +	unsigned long  tmout = jiffies + ZPA2326_CONVERSION_JIFFIES;
+> +	struct regmap *regs = ((struct zpa2326_private *)
+> +			       iio_priv(indio_dev))->regmap;
+> +	unsigned int   val;
+> +	int            err;
+> +
+> +	zpa2326_dbg(indio_dev, "polling for one shot completion");
+> +
+> +	/*
+> +	 * At least, 100 ms is needed for the device to complete its one-shot
+> +	 * cycle.
+> +	 */
+> +	if (msleep_interruptible(100))
+> +		return -ERESTARTSYS;
+> +
+> +	/* Poll for conversion completion in hardware. */
+> +	while (true) {
+> +		err = regmap_read(regs, ZPA2326_CTRL_REG0_REG, &val);
+> +		if (err < 0)
+> +			goto err;
+> +
+> +		if (!(val & ZPA2326_CTRL_REG0_ONE_SHOT))
+> +			/* One-shot bit self clears at conversion end. */
+> +			break;
+> +
+> +		if (time_after(jiffies, tmout)) {
+> +			/* Prevent from waiting forever : let's time out. */
+> +			err = -ETIME;
+> +			goto err;
+> +		}
+> +
+> +		usleep_range(10000, 20000);
+> +	}
+> +
+> +	/*
+> +	 * In oneshot mode, pressure sample availability guarantees that
+> +	 * temperature conversion has also completed : just check pressure
+> +	 * status bit to keep things simple.
+> +	 */
+> +	err = regmap_read(regs, ZPA2326_STATUS_REG, &val);
+> +	if (err < 0)
+> +		goto err;
+> +
+> +	if (!(val & ZPA2326_STATUS_P_DA)) {
+> +		/* No sample available. */
+> +		err = -ENODATA;
+> +		goto err;
+> +	}
+> +
+> +	return 0;
+> +
+> +err:
+> +	zpa2326_warn(indio_dev, "failed to poll one shot completion (%d)", err);
+> +
+> +	return err;
+> +}
+> +
+> +/**
+> + * zpa2326_fetch_raw_sample() - Retrieve a raw sample and convert it to CPU
+> + *                              endianness.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @type:      Type of measurement / channel to fetch from.
+> + * @value:     Sample output.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_fetch_raw_sample(const struct iio_dev *indio_dev,
+> +				    enum iio_chan_type    type,
+> +				    int                  *value)
+> +{
+> +	struct regmap *regs = ((struct zpa2326_private *)
+> +			       iio_priv(indio_dev))->regmap;
+> +	int            err;
+> +
+> +	switch (type) {
+> +	case IIO_PRESSURE:
+> +		zpa2326_dbg(indio_dev, "fetching raw pressure sample");
+> +
+> +		err = regmap_bulk_read(regs, ZPA2326_PRESS_OUT_XL_REG, value,
+> +				       3);
+> +		if (err) {
+> +			zpa2326_warn(indio_dev, "failed to fetch pressure (%d)",
+> +				     err);
+> +			return err;
+> +		}
+> +
+> +		/* Pressure is a 24 bits wide little-endian unsigned int. */
+> +		*value = (((u8 *)value)[2] << 16) | (((u8 *)value)[1] << 8) |
+> +			 ((u8 *)value)[0];
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	case IIO_TEMP:
+> +		zpa2326_dbg(indio_dev, "fetching raw temperature sample");
+> +
+> +		err = regmap_bulk_read(regs, ZPA2326_TEMP_OUT_L_REG, value, 2);
+> +		if (err) {
+> +			zpa2326_warn(indio_dev,
+> +				     "failed to fetch temperature (%d)", err);
+> +			return err;
+> +		}
+> +
+> +		/* Temperature is a 16 bits wide little-endian signed int. */
+> +		*value = (int)le16_to_cpup((__le16 *)value);
+> +
+> +		return IIO_VAL_INT;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +/**
+> + * zpa2326_sample_oneshot() - Perform a complete one shot sampling cycle.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @type:      Type of measurement / channel to fetch from.
+> + * @value:     Sample output.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_sample_oneshot(struct iio_dev     *indio_dev,
+> +				  enum iio_chan_type  type,
+> +				  int                *value)
+> +{
+> +	int                     ret;
+> +	struct zpa2326_private *priv;
+> +
+> +	ret = iio_device_claim_direct_mode(indio_dev);
+> +	if (ret)
+> +		return ret;
+> +
+> +	ret = zpa2326_resume(indio_dev);
+> +	if (ret < 0)
+> +		goto release;
+> +
+> +	priv = iio_priv(indio_dev);
+> +
+> +	if (ret > 0) {
+> +		/*
+> +		 * We were already power supplied. Just clear hardware FIFO to
+> +		 * get rid of samples acquired during previous rounds (if any).
+> +		 * Sampling operation always generates both temperature and
+> +		 * pressure samples. The latter are always enqueued into
+> +		 * hardware FIFO. This may lead to situations were pressure
+> +		 * samples still sit into FIFO when previous cycle(s) fetched
+> +		 * temperature data only.
+> +		 * Hence, we need to clear hardware FIFO content to prevent from
+> +		 * getting outdated values at the end of current cycle.
+> +		 */
+> +		if (type == IIO_PRESSURE) {
+> +			ret = zpa2326_clear_fifo(indio_dev, 0);
+> +			if (ret)
+> +				goto suspend;
+> +		}
+> +	} else {
+> +		/*
+> +		 * We have just been power supplied, i.e. device is in default
+> +		 * "out of reset" state, meaning we need to reconfigure it
+> +		 * entirely.
+> +		 */
+> +		ret = zpa2326_config_oneshot(indio_dev, priv->irq);
+> +		if (ret)
+> +			goto suspend;
+> +	}
+> +
+> +	/* Start a sampling cycle in oneshot mode. */
+> +	ret = zpa2326_start_oneshot(indio_dev);
+> +	if (ret)
+> +		goto suspend;
+> +
+> +	/* Wait for sampling cycle to complete. */
+> +	if (priv->irq > 0)
+> +		ret = zpa2326_wait_oneshot_completion(indio_dev, priv);
+> +	else
+> +		ret = zpa2326_poll_oneshot_completion(indio_dev);
+> +
+> +	if (ret)
+> +		goto suspend;
+> +
+> +	/* Retrieve raw sample value and convert it to CPU endianness. */
+> +	ret = zpa2326_fetch_raw_sample(indio_dev, type, value);
+> +
+> +suspend:
+> +	zpa2326_suspend(indio_dev);
+> +release:
+> +	iio_device_release_direct_mode(indio_dev);
+> +
+> +	return ret;
+> +}
+> +
+> +/**
+> + * zpa2326_trigger_handler() - Perform an IIO buffered sampling round in one
+> + *                             shot mode.
+> + * @irq:  The software interrupt assigned to @data
+> + * @data: The IIO poll function dispatched by external trigger our device is
+> + *        attached to.
+> + *
+> + * Bottom-half handler called by the IIO trigger to which our device is
+> + * currently attached. Allows us to synchronize this device buffered sampling
+> + * either with external events (such as timer expiration, external device sample
+> + * ready, etc...) or with its own interrupt (internal hardware trigger).
+> + *
+> + * When using an external trigger, basically run the same sequence of operations
+> + * as for zpa2326_sample_oneshot() with the following hereafter. Hardware FIFO
+> + * is not cleared since already done at buffering enable time and samples
+> + * dequeueing always retrieves the most recent value.
+> + *
+> + * Otherwise, when internal hardware trigger has dispatched us, just fetch data
+> + * from hardware FIFO.
+> + *
+> + * Fetched data will pushed unprocessed to IIO buffer since samples conversion
+> + * is delegated to userspace in buffered mode (endianness, etc...).
+> + *
+> + * Return:
+> + *   %IRQ_NONE - no consistent interrupt happened ;
+> + *   %IRQ_HANDLED - there was new samples available.
+> + */
+> +static irqreturn_t zpa2326_trigger_handler(int irq, void *data)
+> +{
+> +	struct iio_dev         *indio_dev = ((struct iio_poll_func *)
+> +					     data)->indio_dev;
+> +	struct zpa2326_private *priv = iio_priv(indio_dev);
+> +	bool                    cont;
+> +
+> +	/*
+> +	 * We have been dispatched, meaning we are in triggered buffer mode.
+> +	 * Using our own internal trigger implies we are currently in continuous
+> +	 * hardware sampling mode.
+> +	 */
+> +	cont = iio_trigger_using_own(indio_dev);
+> +
+> +	if (!cont) {
+> +		/* On demand sampling : start a one shot cycle. */
+> +		if (zpa2326_start_oneshot(indio_dev))
+> +			goto out;
+> +
+> +		/* Wait for sampling cycle to complete. */
+> +		if (priv->irq <= 0) {
+> +			/* No interrupt available: poll for completion. */
+> +			if (zpa2326_poll_oneshot_completion(indio_dev))
+> +				goto out;
+> +
+> +			/* Only timestamp sample once it is ready. */
+> +			priv->timestamp = iio_get_time_ns(indio_dev);
+> +		} else {
+> +			/* Interrupt handlers will timestamp for us. */
+> +			if (zpa2326_wait_oneshot_completion(indio_dev, priv))
+> +				goto out;
+> +		}
+> +	}
+> +
+> +	/* Enqueue to IIO buffer / userspace. */
+> +	zpa2326_fill_sample_buffer(indio_dev, priv);
+> +
+> +out:
+> +	if (!cont)
+> +		/* Don't switch to low power if sampling continuously. */
+> +		zpa2326_sleep(indio_dev);
+> +
+> +	/* Inform attached trigger we are done. */
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +/**
+> + * zpa2326_preenable_buffer() - Prepare device for configuring triggered
+> + *                              sampling
+> + * modes.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + *
+> + * Basically power up device.
+> + * Called with IIO device's lock held.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_preenable_buffer(struct iio_dev *indio_dev)
+> +{
+> +	int ret = zpa2326_resume(indio_dev);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Tell zpa2326_postenable_buffer() if we have just been powered on. */
+> +	((struct zpa2326_private *)
+> +	 iio_priv(indio_dev))->waken = iio_priv(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +/**
+> + * zpa2326_postenable_buffer() - Configure device for triggered sampling.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + *
+> + * Basically setup one-shot mode if plugging external trigger.
+> + * Otherwise, let internal trigger configure continuous sampling :
+> + * see zpa2326_set_trigger_state().
+> + *
+> + * If an error is returned, IIO layer will call our postdisable hook for us,
+> + * i.e. no need to explicitly power device off here.
+> + * Called with IIO device's lock held.
+> + *
+> + * Called with IIO device's lock held.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_postenable_buffer(struct iio_dev *indio_dev)
+> +{
+> +	const struct zpa2326_private *priv = iio_priv(indio_dev);
+> +	int                           err;
+> +
+> +	if (!priv->waken) {
+> +		/*
+> +		 * We were already power supplied. Just clear hardware FIFO to
+> +		 * get rid of samples acquired during previous rounds (if any).
+> +		 */
+> +		err = zpa2326_clear_fifo(indio_dev, 0);
+> +		if (err)
+> +			goto err;
+> +	}
+> +
+> +	if (!iio_trigger_using_own(indio_dev) && priv->waken) {
+> +		/*
+> +		 * We are using an external trigger and we have just been
+> +		 * powered up: reconfigure one-shot mode.
+> +		 */
+> +		err = zpa2326_config_oneshot(indio_dev, priv->irq);
+> +		if (err)
+> +			goto err;
+> +	}
+> +
+> +	/* Plug our own trigger event handler. */
+> +	err = iio_triggered_buffer_postenable(indio_dev);
+> +	if (err)
+> +		goto err;
+> +
+> +	return 0;
+> +
+> +err:
+> +	zpa2326_err(indio_dev, "failed to enable buffering (%d)", err);
+> +
+> +	return err;
+> +}
+> +
+> +static int zpa2326_postdisable_buffer(struct iio_dev *indio_dev)
+> +{
+> +	zpa2326_suspend(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_buffer_setup_ops zpa2326_buffer_setup_ops = {
+> +	.preenable   = zpa2326_preenable_buffer,
+> +	.postenable  = zpa2326_postenable_buffer,
+> +	.predisable  = iio_triggered_buffer_predisable,
+> +	.postdisable = zpa2326_postdisable_buffer
+> +};
+> +
+> +/**
+> + * zpa2326_set_trigger_state() - Start / stop continuous sampling.
+> + * @trig:  The trigger being attached to IIO device associated with the sampling
+> + *         hardware.
+> + * @state: Tell whether to start (true) or stop (false)
+> + *
+> + * Basically enable / disable hardware continuous sampling mode.
+> + *
+> + * Called with IIO device's lock held at postenable() or predisable() time.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_set_trigger_state(struct iio_trigger *trig, bool state)
+> +{
+> +	const struct iio_dev         *indio_dev = dev_get_drvdata(
+> +							trig->dev.parent);
+> +	const struct zpa2326_private *priv = iio_priv(indio_dev);
+> +	int                           err;
+> +
+> +	if (!state) {
+> +		/*
+> +		 * Switch trigger off : in case of failure, interrupt is left
+> +		 * disabled in order to prevent handler from accessing released
+> +		 * resources.
+> +		 */
+> +		unsigned int val;
+> +
+> +		/*
+> +		 * As device is working in continuous mode, handlers may be
+> +		 * accessing resources we are currently freeing...
+> +		 * Prevent this by disabling interrupt handlers and ensure
+> +		 * the device will generate no more interrupts unless explicitly
+> +		 * required to, i.e. by restoring back to default one shot mode.
+> +		 */
+> +		disable_irq(priv->irq);
+> +
+> +		/*
+> +		 * Disable continuous sampling mode to restore settings for
+> +		 * one shot / direct sampling operations.
+> +		 */
+> +		err = regmap_write(priv->regmap, ZPA2326_CTRL_REG3_REG,
+> +				   zpa2326_highest_frequency()->odr);
+> +		if (err)
+> +			return err;
+> +
+> +		/*
+> +		 * Now that device won't generate interrupts on its own,
+> +		 * acknowledge any currently active interrupts (may happen on
+> +		 * rare occasions while stopping continuous mode).
+> +		 */
+> +		err = regmap_read(priv->regmap, ZPA2326_INT_SOURCE_REG, &val);
+> +		if (err < 0)
+> +			return err;
+> +
+> +		/*
+> +		 * Re-enable interrupts only if we can guarantee the device will
+> +		 * generate no more interrupts to prevent handlers from
+> +		 * accessing released resources.
+> +		 */
+> +		enable_irq(priv->irq);
+> +
+> +		zpa2326_dbg(indio_dev, "continuous mode stopped");
+> +	} else {
+> +		/*
+> +		 * Switch trigger on : start continuous sampling at required
+> +		 * frequency.
+> +		 */
+> +
+> +		if (priv->waken) {
+> +			/* Enable interrupt if getting out of reset. */
+> +			err = regmap_write(priv->regmap, ZPA2326_CTRL_REG1_REG,
+> +					   (u8)
+> +					   ~ZPA2326_CTRL_REG1_MASK_DATA_READY);
+> +			if (err)
+> +				return err;
+> +		}
+> +
+> +		/* Enable continuous sampling at specified frequency. */
+> +		err = regmap_write(priv->regmap, ZPA2326_CTRL_REG3_REG,
+> +				   ZPA2326_CTRL_REG3_ENABLE_MEAS |
+> +				   priv->frequency->odr);
+> +		if (err)
+> +			return err;
+> +
+> +		zpa2326_dbg(indio_dev, "continuous mode setup @%dHz",
+> +			    priv->frequency->hz);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct iio_trigger_ops zpa2326_trigger_ops = {
+> +	.owner             = THIS_MODULE,
+> +	.set_trigger_state = zpa2326_set_trigger_state,
+> +};
+> +
+> +/**
+> + * zpa2326_init_trigger() - Create an interrupt driven / hardware trigger
+> + *                          allowing to notify external devices a new sample is
+> + *                          ready.
+> + * @parent:    Hardware sampling device @indio_dev is a child of.
+> + * @indio_dev: The IIO device associated with the sampling hardware.
+> + * @private:   Internal private state related to @indio_dev.
+> + * @irq:       Optional interrupt line the hardware uses to notify new data
+> + *             samples are ready. Negative or zero values indicate no interrupts
+> + *             are available, meaning polling is required.
+> + *
+> + * Only relevant when DT declares a valid interrupt line.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +static int zpa2326_init_managed_trigger(struct device          *parent,
+> +					struct iio_dev         *indio_dev,
+> +					struct zpa2326_private *private,
+> +					int                     irq)
+> +{
+> +	struct iio_trigger *trigger;
+> +	int                 ret;
+> +
+> +	if (irq <= 0)
+> +		return 0;
+> +
+> +	trigger = devm_iio_trigger_alloc(parent, "%s-dev%d",
+> +					 indio_dev->name, indio_dev->id);
+> +	if (!trigger)
+> +		return -ENOMEM;
+> +
+> +	/* Basic setup. */
+> +	trigger->dev.parent = parent;
+> +	trigger->ops = &zpa2326_trigger_ops;
+> +
+> +	private->trigger = trigger;
+> +
+> +	/* Register to triggers space. */
+> +	ret = devm_iio_trigger_register(parent, trigger);
+> +	if (ret)
+> +		dev_err(parent, "failed to register hardware trigger (%d)",
+> +			ret);
+> +
+> +	return ret;
+> +}
+> +
+> +static int zpa2326_get_frequency(const struct iio_dev *indio_dev)
+> +{
+> +	return ((struct zpa2326_private *)iio_priv(indio_dev))->frequency->hz;
+> +}
+> +
+> +static int zpa2326_set_frequency(struct iio_dev *indio_dev, int hz)
+> +{
+> +	struct zpa2326_private *priv = iio_priv(indio_dev);
+> +	int                     freq;
+> +	int                     err;
+> +
+> +	/* Check if requested frequency is supported. */
+> +	for (freq = 0; freq < ARRAY_SIZE(zpa2326_sampling_frequencies); freq++)
+> +		if (zpa2326_sampling_frequencies[freq].hz == hz)
+> +			break;
+> +	if (freq == ARRAY_SIZE(zpa2326_sampling_frequencies))
+> +		return -EINVAL;
+> +
+> +	/* Don't allow changing frequency if buffered sampling is ongoing. */
+> +	err = iio_device_claim_direct_mode(indio_dev);
+> +	if (err)
+> +		return err;
+> +
+> +	priv->frequency = &zpa2326_sampling_frequencies[freq];
+> +
+> +	iio_device_release_direct_mode(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +/* Expose supported hardware sampling frequencies (Hz) through sysfs. */
+> +static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("1 5 11 23");
+> +
+> +static struct attribute *zpa2326_attributes[] = {
+> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+> +	NULL
+> +};
+> +
+> +static const struct attribute_group zpa2326_attribute_group = {
+> +	.attrs = zpa2326_attributes,
+> +};
+> +
+> +static int zpa2326_read_raw(struct iio_dev             *indio_dev,
+> +			    struct iio_chan_spec const *chan,
+> +			    int                        *val,
+> +			    int                        *val2,
+> +			    long                        mask)
+> +{
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		return zpa2326_sample_oneshot(indio_dev, chan->type, val);
+> +
+> +	case IIO_CHAN_INFO_SCALE:
+> +		switch (chan->type) {
+> +		case IIO_PRESSURE:
+> +			/*
+> +			 * Pressure resolution is 1/64 Pascal. Scale to kPascal
+> +			 * as required by IIO ABI.
+> +			 */
+> +			*val = 1;
+> +			*val2 = 64000;
+> +			return IIO_VAL_FRACTIONAL;
+> +
+> +		case IIO_TEMP:
+> +			/*
+> +			 * Temperature follows the equation:
+> +			 *     Temp[degC] = Tempcode * 0.00649 - 176.83
+> +			 * where:
+> +			 *     Tempcode is composed the raw sampled 16 bits.
+> +			 *
+> +			 * Hence, to produce a temperature in milli-degrees
+> +			 * Celsius according to IIO ABI, we need to apply the
+> +			 * following equation to raw samples:
+> +			 *     Temp[milli degC] = (Tempcode + Offset) * Scale
+> +			 * where:
+> +			 *     Offset = -176.83 / 0.00649
+> +			 *     Scale = 0.00649 * 1000
+> +			 */
+> +			*val = 6;
+> +			*val2 = 490000;
+> +			return IIO_VAL_INT_PLUS_MICRO;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	case IIO_CHAN_INFO_OFFSET:
+> +		switch (chan->type) {
+> +		case IIO_TEMP:
+> +			*val = -17683000;
+> +			*val2 = 649;
+> +			return IIO_VAL_FRACTIONAL;
+> +
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val = zpa2326_get_frequency(indio_dev);
+> +		return IIO_VAL_INT;
+> +
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static int zpa2326_write_raw(struct iio_dev             *indio_dev,
+> +			     const struct iio_chan_spec *chan,
+> +			     int                         val,
+> +			     int                         val2,
+> +			     long                        mask)
+> +{
+> +	if ((mask != IIO_CHAN_INFO_SAMP_FREQ) || val2)
+> +		return -EINVAL;
+> +
+> +	return zpa2326_set_frequency(indio_dev, val);
+> +}
+> +
+> +static const struct iio_chan_spec zpa2326_channels[] = {
+> +	[0] = {
+> +		.type                    = IIO_PRESSURE,
+> +		.scan_index              = 0,
+> +		.scan_type               = {
+> +			.sign                   = 'u',
+> +			.realbits               = 24,
+> +			.storagebits            = 32,
+> +			.endianness             = IIO_LE,
+> +		},
+> +		.info_mask_separate      = BIT(IIO_CHAN_INFO_RAW) |
+> +					   BIT(IIO_CHAN_INFO_SCALE),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	},
+> +	[1] = {
+> +		.type                    = IIO_TEMP,
+> +		.scan_index              = 1,
+> +		.scan_type               = {
+> +			.sign                   = 's',
+> +			.realbits               = 16,
+> +			.storagebits            = 16,
+> +			.endianness             = IIO_LE,
+> +		},
+> +		.info_mask_separate      = BIT(IIO_CHAN_INFO_RAW) |
+> +					   BIT(IIO_CHAN_INFO_SCALE) |
+> +					   BIT(IIO_CHAN_INFO_OFFSET),
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> +	},
+> +	[2] = IIO_CHAN_SOFT_TIMESTAMP(2),
+> +};
+> +
+> +static const struct iio_info zpa2326_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.attrs         = &zpa2326_attribute_group,
+> +	.read_raw      = zpa2326_read_raw,
+> +	.write_raw     = zpa2326_write_raw,
+> +};
+> +
+> +static struct iio_dev *zpa2326_create_managed_iiodev(struct device *device,
+> +						     const char    *name,
+> +						     struct regmap *regmap)
+> +{
+> +	struct iio_dev *indio_dev;
+> +
+> +	/* Allocate space to hold IIO device internal state. */
+> +	indio_dev = devm_iio_device_alloc(device,
+> +					  sizeof(struct zpa2326_private));
+> +	if (!indio_dev)
+> +		return NULL;
+> +
+> +	/* Setup for userspace synchronous on demand sampling. */
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->dev.parent = device;
+> +	indio_dev->channels = zpa2326_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(zpa2326_channels);
+> +	indio_dev->name = name;
+> +	indio_dev->info = &zpa2326_info;
+> +
+> +	return indio_dev;
+> +}
+> +
+> +int zpa2326_probe(struct device *parent,
+> +		  const char    *name,
+> +		  int            irq,
+> +		  unsigned int   hwid,
+> +		  struct regmap *regmap)
+> +{
+> +	struct iio_dev         *indio_dev;
+> +	struct zpa2326_private *priv;
+> +	int                     err;
+> +	unsigned int            id;
+> +
+> +	indio_dev = zpa2326_create_managed_iiodev(parent, name, regmap);
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	priv = iio_priv(indio_dev);
+> +
+> +	priv->vref = devm_regulator_get(parent, "vref");
+> +	if (IS_ERR(priv->vref))
+> +		return PTR_ERR(priv->vref);
+> +
+> +	priv->vdd = devm_regulator_get(parent, "vdd");
+> +	if (IS_ERR(priv->vdd))
+> +		return PTR_ERR(priv->vdd);
+> +
+> +	/* Set default hardware sampling frequency to highest rate supported. */
+> +	priv->frequency = zpa2326_highest_frequency();
+> +
+> +	/*
+> +	 * Plug device's underlying bus abstraction : this MUST be set before
+> +	 * registering interrupt handlers since an interrupt might happen if
+> +	 * power up sequence is not properly applied.
+> +	 */
+> +	priv->regmap = regmap;
+> +
+> +	err = devm_iio_triggered_buffer_setup(parent, indio_dev, NULL,
+> +					      zpa2326_trigger_handler,
+> +					      &zpa2326_buffer_setup_ops);
+> +	if (err)
+> +		return err;
+> +
+> +	err = zpa2326_init_managed_trigger(parent, indio_dev, priv, irq);
+> +	if (err)
+> +		return err;
+> +
+> +	err = zpa2326_init_managed_irq(parent, indio_dev, priv, irq);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Power up to check device ID and perform initial hardware setup. */
+> +	err = zpa2326_power_on(indio_dev, priv);
+> +	if (err)
+> +		return err;
+> +
+> +	/* Read id register to check we are talking to the right slave. */
+> +	err = regmap_read(regmap, ZPA2326_DEVICE_ID_REG, &id);
+> +	if (err)
+> +		goto sleep;
+> +
+> +	if (id != hwid) {
+> +		dev_err(parent, "found device with unexpected id %02x", id);
+> +		err = -ENODEV;
+> +		goto sleep;
+> +	}
+> +
+> +	err = zpa2326_config_oneshot(indio_dev, irq);
+> +	if (err)
+> +		goto sleep;
+> +
+> +	/* Setup done : go sleeping. Device will be awaken upon user request. */
+> +	err = zpa2326_sleep(indio_dev);
+> +	if (err)
+> +		goto poweroff;
+> +
+> +	dev_set_drvdata(parent, indio_dev);
+> +
+> +	zpa2326_init_runtime(parent);
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err) {
+> +		zpa2326_fini_runtime(parent);
+> +		goto poweroff;
+> +	}
+> +
+> +	return 0;
+> +
+> +sleep:
+> +	/* Put to sleep just in case power regulators are "dummy" ones. */
+> +	zpa2326_sleep(indio_dev);
+> +poweroff:
+> +	zpa2326_power_off(indio_dev, priv);
+> +
+> +	return err;
+> +}
+> +EXPORT_SYMBOL_GPL(zpa2326_probe);
+> +
+> +void zpa2326_remove(const struct device *parent)
+> +{
+> +	struct iio_dev *indio_dev = dev_get_drvdata(parent);
+> +
+> +	iio_device_unregister(indio_dev);
+> +	zpa2326_fini_runtime(indio_dev->dev.parent);
+> +	zpa2326_sleep(indio_dev);
+> +	zpa2326_power_off(indio_dev, iio_priv(indio_dev));
+> +}
+> +EXPORT_SYMBOL_GPL(zpa2326_remove);
+> +
+> +MODULE_AUTHOR("Gregor Boirie <gregor.boirie@parrot.com>");
+> +MODULE_DESCRIPTION("Core driver for Murata ZPA2326 pressure sensor");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/pressure/zpa2326.h b/drivers/iio/pressure/zpa2326.h
+> new file mode 100644
+> index 0000000..05d3e1e
+> --- /dev/null
+> +++ b/drivers/iio/pressure/zpa2326.h
+> @@ -0,0 +1,89 @@
+> +/*
+> + * Murata ZPA2326 pressure and temperature sensor IIO driver
+> + *
+> + * Copyright (c) 2016 Parrot S.A.
+> + *
+> + * Author: Gregor Boirie <gregor.boirie@parrot.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + */
+> +
+> +#ifndef _ZPA2326_H
+> +#define _ZPA2326_H
+> +
+> +/* Register map. */
+> +#define ZPA2326_REF_P_XL_REG              (0x8)
+> +#define ZPA2326_REF_P_L_REG               (0x9)
+> +#define ZPA2326_REF_P_H_REG               (0xa)
+> +#define ZPA2326_DEVICE_ID_REG             (0xf)
+> +#define ZPA2326_DEVICE_ID                 (0xb9)
+> +#define ZPA2326_RES_CONF_REG              (0x10)
+> +#define ZPA2326_CTRL_REG0_REG             (0x20)
+> +#define ZPA2326_CTRL_REG0_ONE_SHOT        BIT(0)
+> +#define ZPA2326_CTRL_REG0_ENABLE          BIT(1)
+> +#define ZPA2326_CTRL_REG1_REG             (0x21)
+> +#define ZPA2326_CTRL_REG1_MASK_DATA_READY BIT(2)
+> +#define ZPA2326_CTRL_REG2_REG             (0x22)
+> +#define ZPA2326_CTRL_REG2_SWRESET         BIT(2)
+> +#define ZPA2326_CTRL_REG3_REG             (0x23)
+> +#define ZPA2326_CTRL_REG3_ODR_SHIFT       (4)
+> +#define ZPA2326_CTRL_REG3_ENABLE_MEAS     BIT(7)
+> +#define ZPA2326_INT_SOURCE_REG            (0x24)
+> +#define ZPA2326_INT_SOURCE_DATA_READY     BIT(2)
+> +#define ZPA2326_THS_P_LOW_REG             (0x25)
+> +#define ZPA2326_THS_P_HIGH_REG            (0x26)
+> +#define ZPA2326_STATUS_REG                (0x27)
+> +#define ZPA2326_STATUS_P_DA               BIT(1)
+> +#define ZPA2326_STATUS_FIFO_E             BIT(2)
+> +#define ZPA2326_STATUS_P_OR               BIT(5)
+> +#define ZPA2326_PRESS_OUT_XL_REG          (0x28)
+> +#define ZPA2326_PRESS_OUT_L_REG           (0x29)
+> +#define ZPA2326_PRESS_OUT_H_REG           (0x2a)
+> +#define ZPA2326_TEMP_OUT_L_REG            (0x2b)
+> +#define ZPA2326_TEMP_OUT_H_REG            (0x2c)
+> +
+> +struct device;
+> +struct regmap;
+> +
+> +bool zpa2326_isreg_writeable(struct device *dev, unsigned int reg);
+> +bool zpa2326_isreg_readable(struct device *dev, unsigned int reg);
+> +bool zpa2326_isreg_precious(struct device *dev, unsigned int reg);
+> +
+> +/**
+> + * zpa2326_probe() - Instantiate and register core ZPA2326 IIO device
+> + * @parent: Hardware sampling device the created IIO device will be a child of.
+> + * @name:   Arbitrary name to identify the device.
+> + * @irq:    Interrupt line, negative if none.
+> + * @hwid:   Expected device hardware id.
+> + * @regmap: Registers map used to abstract underlying bus accesses.
+> + *
+> + * Return: Zero when successful, a negative error code otherwise.
+> + */
+> +int zpa2326_probe(struct device        *parent,
+> +		  const char           *name,
+> +		  int                   irq,
+> +		  unsigned int          hwid,
+> +		  struct regmap        *regmap);
+> +
+> +/**
+> + * zpa2326_remove() - Unregister and destroy core ZPA2326 IIO device.
+> + * @parent: Hardware sampling device the IIO device to remove is a child of.
+> + */
+> +void zpa2326_remove(const struct device *parent);
+> +
+> +#ifdef CONFIG_PM
+> +#include <linux/pm.h>
+> +extern const struct dev_pm_ops zpa2326_pm_ops;
+> +#define ZPA2326_PM_OPS (&zpa2326_pm_ops)
+> +#else
+> +#define ZPA2326_PM_OPS (NULL)
+> +#endif
+> +
+> +#endif
+> diff --git a/drivers/iio/pressure/zpa2326_i2c.c b/drivers/iio/pressure/zpa2326_i2c.c
+> new file mode 100644
+> index 0000000..e4d27dd
+> --- /dev/null
+> +++ b/drivers/iio/pressure/zpa2326_i2c.c
+> @@ -0,0 +1,99 @@
+> +/*
+> + * Murata ZPA2326 I2C pressure and temperature sensor driver
+> + *
+> + * Copyright (c) 2016 Parrot S.A.
+> + *
+> + * Author: Gregor Boirie <gregor.boirie@parrot.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/regmap.h>
+> +#include <linux/i2c.h>
+> +#include <linux/of_device.h>
+> +#include "zpa2326.h"
+> +
+> +/*
+> + * read_flag_mask:
+> + *   - address bit 7 must be set to request a register read operation
+> + */
+> +static const struct regmap_config zpa2326_regmap_i2c_config = {
+> +	.reg_bits       = 8,
+> +	.val_bits       = 8,
+> +	.writeable_reg  = zpa2326_isreg_writeable,
+> +	.readable_reg   = zpa2326_isreg_readable,
+> +	.precious_reg   = zpa2326_isreg_precious,
+> +	.max_register   = ZPA2326_TEMP_OUT_H_REG,
+> +	.read_flag_mask = BIT(7),
+> +	.cache_type     = REGCACHE_NONE,
+> +};
+> +
+> +static unsigned int zpa2326_i2c_hwid(const struct i2c_client *client)
+> +{
+> +#define ZPA2326_SA0(_addr)          (_addr & BIT(0))
+> +#define ZPA2326_DEVICE_ID_SA0_SHIFT (1)
+> +
+> +	/* Identification register bit 1 mirrors device address bit 0. */
+> +	return (ZPA2326_DEVICE_ID |
+> +		(ZPA2326_SA0(client->addr) << ZPA2326_DEVICE_ID_SA0_SHIFT));
+> +}
+> +
+> +static int zpa2326_probe_i2c(struct i2c_client          *client,
+> +			     const struct i2c_device_id *i2c_id)
+> +{
 > +	struct regmap *regmap;
->  
-> -	transport->trdev = spi;
-> -	transport->readreg = kxsd9_spi_readreg;
-> -	transport->writereg = kxsd9_spi_writereg;
-> -	transport->readval = kxsd9_spi_readval;
->  	spi->mode = SPI_MODE_0;
-> -	spi_setup(spi);
-> -
-> -	ret = kxsd9_common_probe(&spi->dev,
-> -				 transport,
-> -				 spi_get_device_id(spi)->name);
-> -	if (ret)
-> -		return ret;
-> -
-> -	return 0;
-> +	regmap = devm_regmap_init_spi(spi, &config);
+> +
+> +	regmap = devm_regmap_init_i2c(client, &zpa2326_regmap_i2c_config);
 > +	if (IS_ERR(regmap)) {
-> +		dev_err(&spi->dev, "%s: regmap allocation failed: %ld\n",
-> +			__func__, PTR_ERR(regmap));
+> +		dev_err(&client->dev, "failed to init registers map");
 > +		return PTR_ERR(regmap);
 > +	}
 > +
-> +	return kxsd9_common_probe(&spi->dev,
-> +				  regmap,
-> +				  spi_get_device_id(spi)->name);
->  }
->  
->  static int kxsd9_spi_remove(struct spi_device *spi)
-> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
-> index a787ec236608..c065c6e09fa4 100644
-> --- a/drivers/iio/accel/kxsd9.c
-> +++ b/drivers/iio/accel/kxsd9.c
-> @@ -21,7 +21,7 @@
->  #include <linux/sysfs.h>
->  #include <linux/slab.h>
->  #include <linux/module.h>
-> -
+> +	return zpa2326_probe(&client->dev, i2c_id->name, client->irq,
+> +			     zpa2326_i2c_hwid(client), regmap);
+> +}
+> +
+> +static int zpa2326_remove_i2c(struct i2c_client *client)
+> +{
+> +	zpa2326_remove(&client->dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct i2c_device_id zpa2326_i2c_ids[] = {
+> +	{ "zpa2326", 0 },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(i2c, zpa2326_i2c_ids);
+> +
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id zpa2326_i2c_matches[] = {
+> +	{ .compatible = "murata,zpa2326" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, zpa2326_i2c_matches);
+> +#endif
+> +
+> +static struct i2c_driver zpa2326_i2c_driver = {
+> +	.driver = {
+> +		.name           = "zpa2326-i2c",
+> +		.of_match_table = of_match_ptr(zpa2326_i2c_matches),
+> +		.pm             = ZPA2326_PM_OPS,
+> +	},
+> +	.probe    = zpa2326_probe_i2c,
+> +	.remove   = zpa2326_remove_i2c,
+> +	.id_table = zpa2326_i2c_ids,
+> +};
+> +module_i2c_driver(zpa2326_i2c_driver);
+> +
+> +MODULE_AUTHOR("Gregor Boirie <gregor.boirie@parrot.com>");
+> +MODULE_DESCRIPTION("I2C driver for Murata ZPA2326 pressure sensor");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/iio/pressure/zpa2326_spi.c b/drivers/iio/pressure/zpa2326_spi.c
+> new file mode 100644
+> index 0000000..bd2c1c3
+> --- /dev/null
+> +++ b/drivers/iio/pressure/zpa2326_spi.c
+> @@ -0,0 +1,103 @@
+> +/*
+> + * Murata ZPA2326 SPI pressure and temperature sensor driver
+> + *
+> + * Copyright (c) 2016 Parrot S.A.
+> + *
+> + * Author: Gregor Boirie <gregor.boirie@parrot.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but WITHOUT
+> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+> + * more details.
+> + */
+> +
+> +#include <linux/module.h>
 > +#include <linux/regmap.h>
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  
-> @@ -46,7 +46,7 @@
->   * @us:		spi device
->   **/
->  struct kxsd9_state {
-> -	struct kxsd9_transport *transport;
-> +	struct regmap *map;
->  	struct mutex buf_lock;
->  };
->  
-> @@ -63,6 +63,7 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
->  	int ret, i;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
->  	bool foundit = false;
-> +	unsigned int val;
->  
->  	for (i = 0; i < 4; i++)
->  		if (micro == kxsd9_micro_scales[i]) {
-> @@ -73,13 +74,14 @@ static int kxsd9_write_scale(struct iio_dev *indio_dev, int micro)
->  		return -EINVAL;
->  
->  	mutex_lock(&st->buf_lock);
-> -	ret = st->transport->readreg(st->transport,
-> -				     KXSD9_REG_CTRL_C);
-> +	ret = regmap_read(st->map,
-> +			  KXSD9_REG_CTRL_C,
-> +			  &val);
->  	if (ret < 0)
->  		goto error_ret;
-> -	ret = st->transport->writereg(st->transport,
-> -				      KXSD9_REG_CTRL_C,
-> -				      (ret & ~KXSD9_FS_MASK) | i);
-> +	ret = regmap_write(st->map,
-> +			   KXSD9_REG_CTRL_C,
-> +			   (val & ~KXSD9_FS_MASK) | i);
->  error_ret:
->  	mutex_unlock(&st->buf_lock);
->  	return ret;
-> @@ -89,11 +91,15 @@ static int kxsd9_read(struct iio_dev *indio_dev, u8 address)
->  {
->  	int ret;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
-> +	__be16 raw_val;
->  
->  	mutex_lock(&st->buf_lock);
-> -	ret = st->transport->readval(st->transport, address);
-> +	ret = regmap_bulk_read(st->map, address, &raw_val, sizeof(raw_val));
-> +	if (ret)
-> +		goto out_fail_read;
->  	/* Only 12 bits are valid */
-> -	ret &= 0xfff0;
-> +	ret = be16_to_cpu(raw_val) & 0xfff0;
-> +out_fail_read:
->  	mutex_unlock(&st->buf_lock);
->  	return ret;
->  }
-> @@ -133,6 +139,7 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  {
->  	int ret = -EINVAL;
->  	struct kxsd9_state *st = iio_priv(indio_dev);
-> +	unsigned int regval;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> @@ -143,12 +150,13 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
->  		ret = IIO_VAL_INT;
->  		break;
->  	case IIO_CHAN_INFO_SCALE:
-> -		ret = st->transport->readreg(st->transport,
-> -					     KXSD9_REG_CTRL_C);
-> +		ret = regmap_read(st->map,
-> +				  KXSD9_REG_CTRL_C,
-> +				  &regval);
->  		if (ret < 0)
->  			goto error_ret;
->  		*val = 0;
-> -		*val2 = kxsd9_micro_scales[ret & KXSD9_FS_MASK];
-> +		*val2 = kxsd9_micro_scales[regval & KXSD9_FS_MASK];
->  		ret = IIO_VAL_INT_PLUS_MICRO;
->  		break;
->  	}
-> @@ -184,10 +192,10 @@ static int kxsd9_power_up(struct kxsd9_state *st)
->  {
->  	int ret;
->  
-> -	ret = st->transport->writereg(st->transport, KXSD9_REG_CTRL_B, 0x40);
-> +	ret = regmap_write(st->map, KXSD9_REG_CTRL_B, 0x40);
->  	if (ret)
->  		return ret;
-> -	return st->transport->writereg(st->transport, KXSD9_REG_CTRL_C, 0x9b);
-> +	return regmap_write(st->map, KXSD9_REG_CTRL_C, 0x9b);
->  };
->  
->  static const struct iio_info kxsd9_info = {
-> @@ -198,7 +206,7 @@ static const struct iio_info kxsd9_info = {
->  };
->  
->  int kxsd9_common_probe(struct device *parent,
-> -		       struct kxsd9_transport *transport,
-> +		       struct regmap *map,
->  		       const char *name)
->  {
->  	struct iio_dev *indio_dev;
-> @@ -210,7 +218,7 @@ int kxsd9_common_probe(struct device *parent,
->  		return -ENOMEM;
->  
->  	st = iio_priv(indio_dev);
-> -	st->transport = transport;
-> +	st->map = map;
->  
->  	mutex_init(&st->buf_lock);
->  	indio_dev->channels = kxsd9_channels;
-> diff --git a/drivers/iio/accel/kxsd9.h b/drivers/iio/accel/kxsd9.h
-> index b6328e88b56f..19131a7a692c 100644
-> --- a/drivers/iio/accel/kxsd9.h
-> +++ b/drivers/iio/accel/kxsd9.h
-> @@ -4,27 +4,7 @@
->  #define KXSD9_STATE_RX_SIZE 2
->  #define KXSD9_STATE_TX_SIZE 2
->  
-> -struct kxsd9_transport;
-> -
-> -/**
-> - * struct kxsd9_transport - transport adapter for SPI or I2C
-> - * @trdev: transport device such as SPI or I2C
-> - * @readreg(): function to read a byte from an address in the device
-> - * @writereg(): function to write a byte to an address in the device
-> - * @readval(): function to read a 16bit value from the device
-> - * @rx: cache aligned read buffer
-> - * @tx: cache aligned write buffer
-> - */
-> -struct kxsd9_transport {
-> -	void *trdev;
-> -	int (*readreg) (struct kxsd9_transport *tr, u8 address);
-> -	int (*writereg) (struct kxsd9_transport *tr, u8 address, u8 val);
-> -	int (*readval) (struct kxsd9_transport *tr, u8 address);
-> -	u8 rx[KXSD9_STATE_RX_SIZE] ____cacheline_aligned;
-> -	u8 tx[KXSD9_STATE_TX_SIZE];
-> -};
-> -
->  int kxsd9_common_probe(struct device *parent,
-> -		       struct kxsd9_transport *transport,
-> +		       struct regmap *map,
->  		       const char *name);
->  int kxsd9_common_remove(struct device *parent);
+> +#include <linux/spi/spi.h>
+> +#include <linux/of_device.h>
+> +#include "zpa2326.h"
+> +
+> +/*
+> + * read_flag_mask:
+> + *   - address bit 7 must be set to request a register read operation
+> + *   - address bit 6 must be set to request register address auto increment
+> + */
+> +static const struct regmap_config zpa2326_regmap_spi_config = {
+> +	.reg_bits       = 8,
+> +	.val_bits       = 8,
+> +	.writeable_reg  = zpa2326_isreg_writeable,
+> +	.readable_reg   = zpa2326_isreg_readable,
+> +	.precious_reg   = zpa2326_isreg_precious,
+> +	.max_register   = ZPA2326_TEMP_OUT_H_REG,
+> +	.read_flag_mask = BIT(7) | BIT(6),
+> +	.cache_type     = REGCACHE_NONE,
+> +};
+> +
+> +static int zpa2326_probe_spi(struct spi_device *spi)
+> +{
+> +	struct regmap *regmap;
+> +	int            err;
+> +
+> +	regmap = devm_regmap_init_spi(spi, &zpa2326_regmap_spi_config);
+> +	if (IS_ERR(regmap)) {
+> +		dev_err(&spi->dev, "failed to init registers map");
+> +		return PTR_ERR(regmap);
+> +	}
+> +
+> +	/*
+> +	 * Enforce SPI slave settings to prevent from DT misconfiguration.
+> +	 *
+> +	 * Clock is idle high. Sampling happens on trailing edge, i.e., rising
+> +	 * edge. Maximum bus frequency is 1 MHz. Registers are 8 bits wide.
+> +	 */
+> +	spi->mode = SPI_MODE_3;
+> +	spi->max_speed_hz = min(spi->max_speed_hz, 1000000U);
+> +	spi->bits_per_word = 8;
+> +	err = spi_setup(spi);
+> +	if (err < 0)
+> +		return err;
+> +
+> +	return zpa2326_probe(&spi->dev, spi_get_device_id(spi)->name,
+> +			     spi->irq, ZPA2326_DEVICE_ID, regmap);
+> +}
+> +
+> +static int zpa2326_remove_spi(struct spi_device *spi)
+> +{
+> +	zpa2326_remove(&spi->dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct spi_device_id zpa2326_spi_ids[] = {
+> +	{ "zpa2326", 0 },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(spi, zpa2326_spi_ids);
+> +
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id zpa2326_spi_matches[] = {
+> +	{ .compatible = "murata,zpa2326" },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, zpa2326_spi_matches);
+> +#endif
+> +
+> +static struct spi_driver zpa2326_spi_driver = {
+> +	.driver = {
+> +		.name           = "zpa2326-spi",
+> +		.of_match_table = of_match_ptr(zpa2326_spi_matches),
+> +		.pm             = ZPA2326_PM_OPS,
+> +	},
+> +	.probe    = zpa2326_probe_spi,
+> +	.remove   = zpa2326_remove_spi,
+> +	.id_table = zpa2326_spi_ids,
+> +};
+> +module_spi_driver(zpa2326_spi_driver);
+> +
+> +MODULE_AUTHOR("Gregor Boirie <gregor.boirie@parrot.com>");
+> +MODULE_DESCRIPTION("SPI driver for Murata ZPA2326 pressure sensor");
+> +MODULE_LICENSE("GPL v2");
 > 
 
