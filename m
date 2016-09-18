@@ -1,328 +1,255 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49982 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49435 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754166AbcIRM0O (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 08:26:14 -0400
-Subject: Re: [PATCH v2] iio: accel: Add driver for the mCube MC3230 3-axis
- accelerometer
-To: Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20160912074350.8040-1-hdegoede@redhat.com>
-Cc: linux-iio@vger.kernel.org
+        with ESMTP id S1754854AbcIRKcm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 06:32:42 -0400
+Subject: Re: [PATCH 10/15 v2] iio: accel: kxsd9: Add triggered buffer handling
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
+ <1472723089-25113-10-git-send-email-linus.walleij@linaro.org>
+ <2cd82198-5800-28e1-6e61-745c8508ff43@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6c2dddc4-9460-57ba-dd5b-3b738e439e86@kernel.org>
-Date: Sun, 18 Sep 2016 13:26:11 +0100
+Message-ID: <9aad18e8-ed76-088e-6e59-59c033031a52@kernel.org>
+Date: Sun, 18 Sep 2016 11:32:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160912074350.8040-1-hdegoede@redhat.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <2cd82198-5800-28e1-6e61-745c8508ff43@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/09/16 08:43, Hans de Goede wrote:
-> Add an IIO driver for the mCube MC3230 3-axis accelerometer.
+On 04/09/16 17:40, Jonathan Cameron wrote:
+> On 01/09/16 10:44, Linus Walleij wrote:
+>> As is custom with all modern sensors, add a clever burst mode
+>> that will just stream out values from the sensor and provide it
+>> to userspace to do the proper offsetting and scaling.
+>>
+>> This is the result when tested with an HRTimer trigger:
+>>
+>> $ generic_buffer -a -c 10 -n kxsd9 -t foo
+>> /sys/bus/iio/devices/iio:device1 foo
+>> 0.371318 0.718680 9.869872 1795.000000 97545896129
+>> -0.586922 0.179670 9.378775 2398.000000 97555864721
+>> -0.299450 0.179670 10.348992 2672.000000 97565874055
+>> 0.371318 0.335384 11.103606 2816.000000 97575883240
+>> 0.179670 0.574944 10.540640 2847.000000 97585862351
+>> 0.335384 0.754614 9.953718 2840.000000 97595872425
+>> 0.179670 0.754614 10.732288 2879.000000 97605882351
+>> 0.000000 0.754614 10.348992 2872.000000 97615891832
+>> -0.730658 0.574944 9.570422 2831.000000 97625871536
+>> 0.000000 1.137910 10.732288 2872.000000 97635881610
+>>
+>> Columns shown are x, y, z acceleration, so a positive acceleration
+>> of ~9.81 (shaky due to bad calibration) along the z axis. The
+>> fourth column is the AUX IN which is floating on this system,
+>> it seems to float up to the 2.85V VDD voltage.
+>>
+>> To be able to cleanup the triggered buffer, we need to add .remove()
+>> callbacks to the I2C and SPI subdrivers and call back into an
+>> exported .remove() callback in the core.
+>>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Tested-by: Jonathan Cameron <jic23@kernel.org>
+Applied.
 > 
-> A datasheet for the mCube MC3230 can be found here:
-> http://www.mcubemems.com/wp-content/uploads/2014/10/MC3230_2-Datasheet-APS-048-0007v1.6.pdf
+> I'd forgotten how bad the accuracy on accelerometers is sometimes!
 > 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Very nice.  Only oddity is why have a scale_available attribute when
-there is only one scale available and that can be read from scale?
-
-I've dropped that and applied to the togreg branch of iio.git.
-Pushed out as testing for the autobuilders to play with it.
-
-Thanks,
-
-Jonathan
-> ---
-> Changes in v2:
-> -make mc3230_nscale static
-> -add a link to the datasheet to the commit message
-> ---
->  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
->  drivers/iio/accel/Kconfig                          |  10 +
->  drivers/iio/accel/Makefile                         |   1 +
->  drivers/iio/accel/mc3230.c                         | 225 +++++++++++++++++++++
->  4 files changed, 237 insertions(+)
->  create mode 100644 drivers/iio/accel/mc3230.c
+> Jonathan
+>> ---
+>> ChangeLog v1->v2:
+>> - Rebased on the common remove function already present in
+>>   the new base of the series.
+>> ---
+>>  drivers/iio/accel/Kconfig |  2 ++
+>>  drivers/iio/accel/kxsd9.c | 82 +++++++++++++++++++++++++++++++++++++++++++----
+>>  2 files changed, 78 insertions(+), 6 deletions(-)
+>>
+>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+>> index ab1c87ce07ed..cd69353989cf 100644
+>> --- a/drivers/iio/accel/Kconfig
+>> +++ b/drivers/iio/accel/Kconfig
+>> @@ -96,6 +96,8 @@ config IIO_ST_ACCEL_SPI_3AXIS
+>>  
+>>  config KXSD9
+>>  	tristate "Kionix KXSD9 Accelerometer Driver"
+>> +	select IIO_BUFFER
+>> +	select IIO_TRIGGERED_BUFFER
+>>  	help
+>>  	  Say yes here to build support for the Kionix KXSD9 accelerometer.
+>>  	  It can be accessed using an (optional) SPI or I2C interface.
+>> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
+>> index 6a1e67723d0c..d84413ae14b1 100644
+>> --- a/drivers/iio/accel/kxsd9.c
+>> +++ b/drivers/iio/accel/kxsd9.c
+>> @@ -12,8 +12,6 @@
+>>   * I have a suitable wire made up.
+>>   *
+>>   * TODO:	Support the motion detector
+>> - *		Uses register address incrementing so could have a
+>> - *		heavily optimized ring buffer access function.
+>>   */
+>>  
+>>  #include <linux/device.h>
+>> @@ -24,6 +22,9 @@
+>>  #include <linux/regmap.h>
+>>  #include <linux/iio/iio.h>
+>>  #include <linux/iio/sysfs.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>>  
+>>  #include "kxsd9.h"
+>>  
+>> @@ -41,9 +42,11 @@
+>>  
+>>  /**
+>>   * struct kxsd9_state - device related storage
+>> + * @dev: pointer to the parent device
+>>   * @map: regmap to the device
+>>   */
+>>  struct kxsd9_state {
+>> +	struct device *dev;
+>>  	struct regmap *map;
+>>  };
+>>  
+>> @@ -155,7 +158,35 @@ static int kxsd9_read_raw(struct iio_dev *indio_dev,
+>>  error_ret:
+>>  	return ret;
+>>  };
+>> -#define KXSD9_ACCEL_CHAN(axis)						\
+>> +
+>> +static irqreturn_t kxsd9_trigger_handler(int irq, void *p)
+>> +{
+>> +	const struct iio_poll_func *pf = p;
+>> +	struct iio_dev *indio_dev = pf->indio_dev;
+>> +	struct kxsd9_state *st = iio_priv(indio_dev);
+>> +	int ret;
+>> +	/* 4 * 16bit values AND timestamp */
+>> +	__be16 hw_values[8];
+>> +
+>> +	ret = regmap_bulk_read(st->map,
+>> +			       KXSD9_REG_X,
+>> +			       &hw_values,
+>> +			       8);
+>> +	if (ret) {
+>> +		dev_err(st->dev,
+>> +			"error reading data\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	iio_push_to_buffers_with_timestamp(indio_dev,
+>> +					   hw_values,
+>> +					   iio_get_time_ns(indio_dev));
+>> +	iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +#define KXSD9_ACCEL_CHAN(axis, index)						\
+>>  	{								\
+>>  		.type = IIO_ACCEL,					\
+>>  		.modified = 1,						\
+>> @@ -164,16 +195,35 @@ error_ret:
+>>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |	\
+>>  					BIT(IIO_CHAN_INFO_OFFSET),	\
+>>  		.address = KXSD9_REG_##axis,				\
+>> +		.scan_index = index,					\
+>> +		.scan_type = {                                          \
+>> +			.sign = 'u',					\
+>> +			.realbits = 12,					\
+>> +			.storagebits = 16,				\
+>> +			.shift = 4,					\
+>> +			.endianness = IIO_BE,				\
+>> +		},							\
+>>  	}
+>>  
+>>  static const struct iio_chan_spec kxsd9_channels[] = {
+>> -	KXSD9_ACCEL_CHAN(X), KXSD9_ACCEL_CHAN(Y), KXSD9_ACCEL_CHAN(Z),
+>> +	KXSD9_ACCEL_CHAN(X, 0),
+>> +	KXSD9_ACCEL_CHAN(Y, 1),
+>> +	KXSD9_ACCEL_CHAN(Z, 2),
+>>  	{
+>>  		.type = IIO_VOLTAGE,
+>>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>  		.indexed = 1,
+>>  		.address = KXSD9_REG_AUX,
+>> -	}
+>> +		.scan_index = 3,
+>> +		.scan_type = {
+>> +			.sign = 'u',
+>> +			.realbits = 12,
+>> +			.storagebits = 16,
+>> +			.shift = 4,
+>> +			.endianness = IIO_BE,
+>> +		},
+>> +	},
+>> +	IIO_CHAN_SOFT_TIMESTAMP(4),
+>>  };
+>>  
+>>  static const struct attribute_group kxsd9_attribute_group = {
+>> @@ -197,6 +247,9 @@ static const struct iio_info kxsd9_info = {
+>>  	.driver_module = THIS_MODULE,
+>>  };
+>>  
+>> +/* Four channels apart from timestamp, scan mask = 0x0f */
+>> +static const unsigned long kxsd9_scan_masks[] = { 0xf, 0 };
+>> +
+>>  int kxsd9_common_probe(struct device *parent,
+>>  		       struct regmap *map,
+>>  		       const char *name)
+>> @@ -210,6 +263,7 @@ int kxsd9_common_probe(struct device *parent,
+>>  		return -ENOMEM;
+>>  
+>>  	st = iio_priv(indio_dev);
+>> +	st->dev = parent;
+>>  	st->map = map;
+>>  
+>>  	indio_dev->channels = kxsd9_channels;
+>> @@ -218,16 +272,31 @@ int kxsd9_common_probe(struct device *parent,
+>>  	indio_dev->dev.parent = parent;
+>>  	indio_dev->info = &kxsd9_info;
+>>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->available_scan_masks = kxsd9_scan_masks;
+>>  
+>>  	kxsd9_power_up(st);
+>>  
+>> +	ret = iio_triggered_buffer_setup(indio_dev,
+>> +					 iio_pollfunc_store_time,
+>> +					 kxsd9_trigger_handler,
+>> +					 NULL);
+>> +	if (ret) {
+>> +		dev_err(parent, "triggered buffer setup failed\n");
+>> +		return ret;
+>> +	}
+>> +
+>>  	ret = iio_device_register(indio_dev);
+>>  	if (ret)
+>> -		return ret;
+>> +		goto err_cleanup_buffer;
+>>  
+>>  	dev_set_drvdata(parent, indio_dev);
+>>  
+>>  	return 0;
+>> +
+>> +err_cleanup_buffer:
+>> +	iio_triggered_buffer_cleanup(indio_dev);
+>> +
+>> +	return ret;
+>>  }
+>>  EXPORT_SYMBOL(kxsd9_common_probe);
+>>  
+>> @@ -235,6 +304,7 @@ int kxsd9_common_remove(struct device *parent)
+>>  {
+>>  	struct iio_dev *indio_dev = dev_get_drvdata(parent);
+>>  
+>> +	iio_triggered_buffer_cleanup(indio_dev);
+>>  	iio_device_unregister(indio_dev);
+>>  
+>>  	return 0;
+>>
 > 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index badf5eb..fbbad64 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -56,6 +56,7 @@ maxim,ds1050		5 Bit Programmable, Pulse-Width Modulator
->  maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
->  maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
->  mc,rv3029c2		Real Time Clock Module with I2C-Bus
-> +mcube,mc3230		mCube 3-axis 8-bit digital accelerometer
->  microchip,mcp4531-502	Microchip 7-bit Single I2C Digital Potentiometer (5k)
->  microchip,mcp4531-103	Microchip 7-bit Single I2C Digital Potentiometer (10k)
->  microchip,mcp4531-503	Microchip 7-bit Single I2C Digital Potentiometer (50k)
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 5630f23..3aee97d 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -138,6 +138,16 @@ config KXCJK1013
->  	  To compile this driver as a module, choose M here: the module will
->  	  be called kxcjk-1013.
->  
-> +config MC3230
-> +	tristate "mCube MC3230 Digital Accelerometer Driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for the mCube MC3230 low-g tri-axial
-> +	  digital accelerometer.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called mc3230.
-> +
->  config MMA7455
->  	tristate
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index e974841..07a0c72 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -13,6 +13,7 @@ obj-$(CONFIG_DMARD09)	+= dmard09.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> +obj-$(CONFIG_MC3230)	+= mc3230.o
->  
->  obj-$(CONFIG_MMA7455)		+= mma7455_core.o
->  obj-$(CONFIG_MMA7455_I2C)	+= mma7455_i2c.o
-> diff --git a/drivers/iio/accel/mc3230.c b/drivers/iio/accel/mc3230.c
-> new file mode 100644
-> index 0000000..cac08ff
-> --- /dev/null
-> +++ b/drivers/iio/accel/mc3230.c
-> @@ -0,0 +1,225 @@
-> +/**
-> + * mCube MC3230 3-Axis Accelerometer
-> + *
-> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * IIO driver for mCube MC3230; 7-bit I2C address: 0x4c.
-> + */
-> +
-> +#include <linux/i2c.h>
-> +#include <linux/module.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define MC3230_REG_XOUT			0x00
-> +#define MC3230_REG_YOUT			0x01
-> +#define MC3230_REG_ZOUT			0x02
-> +
-> +#define MC3230_REG_MODE			0x07
-> +#define MC3230_MODE_OPCON_MASK		0x03
-> +#define MC3230_MODE_OPCON_WAKE		0x01
-> +#define MC3230_MODE_OPCON_STANDBY	0x03
-> +
-> +#define MC3230_REG_CHIP_ID		0x18
-> +#define MC3230_CHIP_ID			0x01
-> +
-> +#define MC3230_REG_PRODUCT_CODE		0x3b
-> +#define MC3230_PRODUCT_CODE		0x19
-> +
-> +/*
-> + * The accelerometer has one measurement range:
-> + *
-> + * -1.5g - +1.5g (8-bit, signed)
-> + *
-> + * scale = (1.5 + 1.5) * 9.81 / (2^8 - 1)	= 0.115411765
-> + */
-> +
-> +#define MC3230_SCALE_AVAIL		"0.115411765"
-> +
-> +static const int mc3230_nscale = 115411765;
-> +
-> +#define MC3230_CHANNEL(reg, axis) {	\
-> +	.type = IIO_ACCEL,	\
-> +	.address = reg,	\
-> +	.modified = 1,	\
-> +	.channel2 = IIO_MOD_##axis,	\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec mc3230_channels[] = {
-> +	MC3230_CHANNEL(MC3230_REG_XOUT, X),
-> +	MC3230_CHANNEL(MC3230_REG_YOUT, Y),
-> +	MC3230_CHANNEL(MC3230_REG_ZOUT, Z),
-> +};
-> +
-> +struct mc3230_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +static IIO_CONST_ATTR(in_accel_scale_available, MC3230_SCALE_AVAIL);
-> +
-> +static struct attribute *mc3230_attributes[] = {
-> +	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group mc3230_attribute_group = {
-> +	.attrs = mc3230_attributes
-> +};
-> +
-> +static int mc3230_set_opcon(struct mc3230_data *data, int opcon)
-> +{
-> +	int ret;
-> +	struct i2c_client *client = data->client;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, MC3230_REG_MODE);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to read mode reg: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	ret &= ~MC3230_MODE_OPCON_MASK;
-> +	ret |= opcon;
-> +
-> +	ret = i2c_smbus_write_byte_data(client, MC3230_REG_MODE, ret);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "failed to write mode reg: %d\n", ret);
-> +		return ret;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int mc3230_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct mc3230_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = i2c_smbus_read_byte_data(data->client, chan->address);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = sign_extend32(ret, 7);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = mc3230_nscale;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info mc3230_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= mc3230_read_raw,
-> +	.attrs		= &mc3230_attribute_group,
-> +};
-> +
-> +static int mc3230_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct mc3230_data *data;
-> +
-> +	/* First check chip-id and product-id */
-> +	ret = i2c_smbus_read_byte_data(client, MC3230_REG_CHIP_ID);
-> +	if (ret != MC3230_CHIP_ID)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, MC3230_REG_PRODUCT_CODE);
-> +	if (ret != MC3230_PRODUCT_CODE)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &mc3230_info;
-> +	indio_dev->name = "mc3230";
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = mc3230_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(mc3230_channels);
-> +
-> +	ret = mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		mc3230_set_opcon(data, MC3230_MODE_OPCON_STANDBY);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int mc3230_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	return mc3230_set_opcon(iio_priv(indio_dev), MC3230_MODE_OPCON_STANDBY);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int mc3230_suspend(struct device *dev)
-> +{
-> +	struct mc3230_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return mc3230_set_opcon(data, MC3230_MODE_OPCON_STANDBY);
-> +}
-> +
-> +static int mc3230_resume(struct device *dev)
-> +{
-> +	struct mc3230_data *data;
-> +
-> +	data = iio_priv(i2c_get_clientdata(to_i2c_client(dev)));
-> +
-> +	return mc3230_set_opcon(data, MC3230_MODE_OPCON_WAKE);
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(mc3230_pm_ops, mc3230_suspend, mc3230_resume);
-> +
-> +static const struct i2c_device_id mc3230_i2c_id[] = {
-> +	{"mc3230", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, mc3230_i2c_id);
-> +
-> +static struct i2c_driver mc3230_driver = {
-> +	.driver = {
-> +		.name = "mc3230",
-> +		.pm = &mc3230_pm_ops,
-> +	},
-> +	.probe		= mc3230_probe,
-> +	.remove		= mc3230_remove,
-> +	.id_table	= mc3230_i2c_id,
-> +};
-> +
-> +module_i2c_driver(mc3230_driver);
-> +
-> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
-> +MODULE_DESCRIPTION("mCube MC3230 3-Axis Accelerometer driver");
-> +MODULE_LICENSE("GPL v2");
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
