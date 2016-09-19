@@ -1,132 +1,350 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47700 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759045AbcIMRTK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Sep 2016 13:19:10 -0400
-Subject: Re: [PATCH v2 1/1] iio:buffer: let poll report an error for
- unregistered devices
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        linux-iio@vger.kernel.org
-References: <cover.1473430265.git.gregor.boirie@parrot.com>
- <579ce80942853be7eb6e6320727df0d4ffbd0903.1473430265.git.gregor.boirie@parrot.com>
- <7f729816-f82c-7ad1-8505-6df24a619131@kernel.org>
- <a544ae58-5e8b-7fd7-16ff-eb5d4144cc58@metafoo.de>
- <57D6AC92.8000609@parrot.com>
- <4badd4ba-cc23-bdae-061f-0948af93e1f0@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <0a007f35-4617-e82c-c65b-1c4caa5c177c@kernel.org>
-Date: Tue, 13 Sep 2016 18:19:08 +0100
-MIME-Version: 1.0
-In-Reply-To: <4badd4ba-cc23-bdae-061f-0948af93e1f0@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: linux-iio@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH v2] iio: accel: Add driver for dmard10 3-axis Accelerometer
+Date: Mon, 19 Sep 2016 20:48:06 +0200
+Message-Id: <20160919184806.29699-1-hdegoede@redhat.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/09/16 14:36, Lars-Peter Clausen wrote:
-> On 09/12/2016 03:24 PM, Gregor Boirie wrote:
->> Hi,
->>
->> On 09/12/2016 02:18 PM, Lars-Peter Clausen wrote:
->>> Hi,
->>>
->>> I had some more comments inline in v1, please see below.
->>>
->>> On 09/10/2016 05:44 PM, Jonathan Cameron wrote:
->>>>> @@ -162,13 +163,20 @@ unsigned int iio_buffer_poll(struct file *filp,
->>>>>   {
->>>>>       struct iio_dev *indio_dev = filp->private_data;
->>>>>       struct iio_buffer *rb = indio_dev->buffer;
->>>>> +    bool rdy;
->>>>>         if (!indio_dev->info)
->>>>> -        return 0;
->>>>> +        return POLLERR;
->>> I've had a look at what other subsystems do and input returns POLLERR |
->>> POLLHUP. Maybe we should mirror this.
->> Well, some input device only don't IFAIK (I'm no expert on this) as
->> POLLHUP might be focused on output errors only.
-> 
-> The way I understand it is that the 'output only' description for POLLHUP
-> means that you can't pass POLLHUP as a event to listen for. A POLLHUP will
-> always wakeup the poll() and be set in the revents field. It does not meant
-> that is only set for output devices.
-> 
->>
->>>
->>>>>         poll_wait(filp, &rb->pollq, wait);
->>>>> -    if (iio_buffer_ready(indio_dev, rb, rb->watermark, 0))
->>>>> +    rdy = iio_buffer_ready(indio_dev, rb, rb->watermark, 0);
->>>>> +
->>>>> +    if (!indio_dev->info)
->>>>> +        return POLLERR;
->>> Why check indio_dev->info twice though, since there is no locking involved
->>> the second check does gain us anything in terms of race condition avoidance.
->> I took iio_buffer_read_first_n_outer() as a reference : the check of
->> indio_dev->info is performed at least twice :
->> * once at function start
->> * each time wait_event_interruptible() returns.
->>
->> I thought it would be a good starting point.
->>
-> 
-> Strictly speaking the first check there is redundant.
-Feel free to post a patch killing it off :)
+Add a driver for the Domintech ARD10 3-axis Accelerometer, based on the
+android driver found here: https://github.com/domintech/dmard10
 
-J
-> 
->>> I think we should have one check after the poll_wait() call. If the device
->>> is unregistered we wake the pollq. So adding it there should make sure that
->>> the poll() callback is called again if the device is unregistered after the
->>> check.
->> No risk that an "exotic" userspace process perform 2 sys_poll() in the time
->> between iio_device_unregister() and iio_device_free() ?
->> I mean : am I wrong in thinking that the filep is still valid as long as the
->> fd has
->> not been released completly ?
-> 
-> The filep is valid as long as the file is open, same is true for the iio_dev
-> and iio_buffer structures. The open file holds a reference to them.
-> 
-> What I meant with the race condition here is that we should make sure that
-> no matter how the device unregister() and the sys_poll() are timed relative
-> to each other it should still work as expected and not result in a
-> indefinitely waiting poll() operation.
-> 
-> When multiple CPUs are involved the two operations can happen at the same
-> time, so we need to cover that.
-> 
->>
->>>
->>> I'm not sure though if we'd need a explicit memory barrier or whether
->>> poll_wait() can act as a implicit one. But probably we are ok, given that
->>> poll_wait() should take a lock.
->>>
->>> To be sure that the code is race free we need a guarantee that there is
->>> strict ordering between the indio_dev->info = NULL and wake_up() in
->>> unregister as well as between poll_wait() and the if (indio_dev->info) check
->>> in poll().
->>>
->>> The scenario is basically
->>>
->>> CPU0                CPU1
->>> ---------------------------------------------------------
->>> poll_wait()            indio_dev->info = NULL
->>> if (!indio_dev->info)        wake_up()
->>>
->>>
->>> If strict ordering is not observed for either side we could end up missing
->>> the unregister and poll() will block forever just as before.
->>
->> -- 
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+Changes in v2:
+-prefix all defines with DMARD10_ and uppercase them all
+-Cleanup typography of some comments
+-Use defines for offsets in databuffer
+-Use i2c_smbus_write_byte_data() where applicable
+-Reduce unnecessarily large buffer size in dmard10_shutdown()
+-Use __le16 buffer in dmard10_read_raw()
+---
+ .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+ drivers/iio/accel/Kconfig                          |  10 +
+ drivers/iio/accel/Makefile                         |   1 +
+ drivers/iio/accel/dmard10.c                        | 266 +++++++++++++++++++++
+ 4 files changed, 278 insertions(+)
+ create mode 100644 drivers/iio/accel/dmard10.c
 
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index fbbad64..21ca02e 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -39,6 +39,7 @@ dallas,ds75		Digital Thermometer and Thermostat
+ dlg,da9053		DA9053: flexible system level PMIC with multicore support
+ dlg,da9063		DA9063: system PMIC for quad-core application processors
+ domintech,dmard09	DMARD09: 3-axis Accelerometer
++domintech,dmard10	DMARD10: 3-axis Accelerometer
+ epson,rx8010		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+ epson,rx8025		High-Stability. I2C-Bus INTERFACE REAL TIME CLOCK MODULE
+ epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 6bf1b64..6236fd5 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -73,6 +73,16 @@ config DMARD09
+ 	  Choosing M will build the driver as a module. If so, the module
+ 	  will be called dmard09.
+ 
++config DMARD10
++	tristate "Domintech DMARD10 3-axis Accelerometer Driver"
++	depends on I2C
++	help
++	  Say yes here to get support for the Domintech DMARD10 3-axis
++	  accelerometer.
++
++	  Choosing M will build the driver as a module. If so, the module
++	  will be called dmard10.
++
+ config HID_SENSOR_ACCEL_3D
+ 	depends on HID_SENSOR_HUB
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 07a0c72..9f51559 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -10,6 +10,7 @@ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+ obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+ obj-$(CONFIG_DMARD06)	+= dmard06.o
+ obj-$(CONFIG_DMARD09)	+= dmard09.o
++obj-$(CONFIG_DMARD10)	+= dmard10.o
+ obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+ obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+ obj-$(CONFIG_KXSD9)	+= kxsd9.o
+diff --git a/drivers/iio/accel/dmard10.c b/drivers/iio/accel/dmard10.c
+new file mode 100644
+index 0000000..f8bacd2
+--- /dev/null
++++ b/drivers/iio/accel/dmard10.c
+@@ -0,0 +1,266 @@
++/**
++ * IIO driver for the 3-axis accelerometer Domintech ARD10.
++ *
++ * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
++ * Copyright (c) 2012 Domintech Technology Co., Ltd
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/byteorder/generic.h>
++
++#define DMARD10_REG_ACTR			0x00
++#define DMARD10_REG_AFEM			0x0c
++#define DMARD10_REG_STADR			0x12
++#define DMARD10_REG_STAINT			0x1c
++#define DMARD10_REG_MISC2			0x1f
++#define DMARD10_REG_PD				0x21
++
++#define DMARD10_MODE_OFF			0x00
++#define DMARD10_MODE_STANDBY			0x02
++#define DMARD10_MODE_ACTIVE			0x06
++#define DMARD10_MODE_READ_OTP			0x12
++#define DMARD10_MODE_RESET_DATA_PATH		0x82
++
++/* AFEN set 1, ATM[2:0]=b'000 (normal), EN_Z/Y/X/T=1 */
++#define DMARD10_VALUE_AFEM_AFEN_NORMAL		0x8f
++/* ODR[3:0]=b'0111 (100Hz), CCK[3:0]=b'0100 (204.8kHZ) */
++#define DMARD10_VALUE_CKSEL_ODR_100_204		0x74
++/* INTC[6:5]=b'00 */
++#define DMARD10_VALUE_INTC			0x00
++/* TAP1/TAP2 Average 2 */
++#define DMARD10_VALUE_TAPNS_AVE_2		0x11
++
++#define DMARD10_VALUE_STADR			0x55
++#define DMARD10_VALUE_STAINT			0xaa
++#define DMARD10_VALUE_MISC2_OSCA_EN		0x08
++#define DMARD10_VALUE_PD_RST			0x52
++
++/* Offsets into the buffer read in dmard10_read_raw() */
++#define DMARD10_X_OFFSET			1
++#define DMARD10_Y_OFFSET			2
++#define DMARD10_Z_OFFSET			3
++
++/*
++ * a value of + or -128 corresponds to + or - 1G
++ * scale = 1 / 128 = 0.007812500
++ */
++
++static const int dmard10_nscale = 7812500;
++
++#define DMARD10_CHANNEL(reg, axis) {	\
++	.type = IIO_ACCEL,	\
++	.address = reg,	\
++	.modified = 1,	\
++	.channel2 = IIO_MOD_##axis,	\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec dmard10_channels[] = {
++	DMARD10_CHANNEL(DMARD10_X_OFFSET, X),
++	DMARD10_CHANNEL(DMARD10_Y_OFFSET, Y),
++	DMARD10_CHANNEL(DMARD10_Z_OFFSET, Z),
++};
++
++struct dmard10_data {
++	struct i2c_client *client;
++};
++
++/* Init sequence taken from the android driver */
++static int dmard10_reset(struct i2c_client *client)
++{
++	unsigned char buffer[7];
++	int ret;
++
++	/* 1. Powerdown reset */
++	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_PD,
++						DMARD10_VALUE_PD_RST);
++	if (ret < 0)
++		return ret;
++
++	/*
++	 * 2. ACTR => Standby mode => Download OTP to parameter reg =>
++	 *    Standby mode => Reset data path => Standby mode
++	 */
++	buffer[0] = DMARD10_REG_ACTR;
++	buffer[1] = DMARD10_MODE_STANDBY;
++	buffer[2] = DMARD10_MODE_READ_OTP;
++	buffer[3] = DMARD10_MODE_STANDBY;
++	buffer[4] = DMARD10_MODE_RESET_DATA_PATH;
++	buffer[5] = DMARD10_MODE_STANDBY;
++	ret = i2c_master_send(client, buffer, 6);
++	if (ret < 0)
++		return ret;
++
++	/* 3. OSCA_EN = 1, TSTO = b'000 (INT1 = normal, TEST0 = normal) */
++	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_MISC2,
++						DMARD10_VALUE_MISC2_OSCA_EN);
++	if (ret < 0)
++		return ret;
++
++	/* 4. AFEN = 1 (AFE will powerdown after ADC) */
++	buffer[0] = DMARD10_REG_AFEM;
++	buffer[1] = DMARD10_VALUE_AFEM_AFEN_NORMAL;
++	buffer[2] = DMARD10_VALUE_CKSEL_ODR_100_204;
++	buffer[3] = DMARD10_VALUE_INTC;
++	buffer[4] = DMARD10_VALUE_TAPNS_AVE_2;
++	buffer[5] = 0x00; /* DLYC, no delay timing */
++	buffer[6] = 0x07; /* INTD=1 push-pull, INTA=1 active high, AUTOT=1 */
++	ret = i2c_master_send(client, buffer, 7);
++	if (ret < 0)
++		return ret;
++
++	/* 5. Activation mode */
++	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_ACTR,
++						DMARD10_MODE_ACTIVE);
++	if (ret < 0)
++		return ret;
++
++	return 0;
++}
++
++/* Shutdown sequence taken from the android driver */
++static int dmard10_shutdown(struct i2c_client *client)
++{
++	unsigned char buffer[3];
++
++	buffer[0] = DMARD10_REG_ACTR;
++	buffer[1] = DMARD10_MODE_STANDBY;
++	buffer[2] = DMARD10_MODE_OFF;
++
++	return i2c_master_send(client, buffer, 3);
++}
++
++static int dmard10_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct dmard10_data *data = iio_priv(indio_dev);
++	__le16 buf[4];
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * Read 8 bytes starting at the REG_STADR register, trying to
++		 * read the individual X, Y, Z registers will always read 0.
++		 */
++		ret = i2c_smbus_read_i2c_block_data(data->client,
++						    DMARD10_REG_STADR,
++						    sizeof(buf), (u8 *)buf);
++		if (ret < 0)
++			return ret;
++		ret = le16_to_cpu(buf[chan->address]);
++		*val = sign_extend32(ret, 12);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = dmard10_nscale;
++		return IIO_VAL_INT_PLUS_NANO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info dmard10_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= dmard10_read_raw,
++};
++
++static int dmard10_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct dmard10_data *data;
++
++	/* These 2 registers have special POR reset values used for id */
++	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STADR);
++	if (ret != DMARD10_VALUE_STADR)
++		return (ret < 0) ? ret : -ENODEV;
++
++	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STAINT);
++	if (ret != DMARD10_VALUE_STAINT)
++		return (ret < 0) ? ret : -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev) {
++		dev_err(&client->dev, "iio allocation failed!\n");
++		return -ENOMEM;
++	}
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	i2c_set_clientdata(client, indio_dev);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &dmard10_info;
++	indio_dev->name = "dmard10";
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = dmard10_channels;
++	indio_dev->num_channels = ARRAY_SIZE(dmard10_channels);
++
++	ret = dmard10_reset(client);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "device_register failed\n");
++		dmard10_shutdown(client);
++	}
++
++	return ret;
++}
++
++static int dmard10_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++
++	return dmard10_shutdown(client);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int dmard10_suspend(struct device *dev)
++{
++	return dmard10_shutdown(to_i2c_client(dev));
++}
++
++static int dmard10_resume(struct device *dev)
++{
++	return dmard10_reset(to_i2c_client(dev));
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(dmard10_pm_ops, dmard10_suspend, dmard10_resume);
++
++static const struct i2c_device_id dmard10_i2c_id[] = {
++	{"dmard10", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, dmard10_i2c_id);
++
++static struct i2c_driver dmard10_driver = {
++	.driver = {
++		.name = "dmard10",
++		.pm = &dmard10_pm_ops,
++	},
++	.probe		= dmard10_probe,
++	.remove		= dmard10_remove,
++	.id_table	= dmard10_i2c_id,
++};
++
++module_i2c_driver(dmard10_driver);
++
++MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
++MODULE_DESCRIPTION("Domintech ARD10 3-Axis Accelerometer driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.9.3
