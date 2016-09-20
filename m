@@ -1,49 +1,56 @@
-Return-Path: <mugunthanvnm@ti.com>
-From: Mugunthan V N <mugunthanvnm@ti.com>
-To: <linux-iio@vger.kernel.org>
-CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R
-	<vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Mugunthan V N <mugunthanvnm@ti.com>
-Subject: [PATCH 4/4] ARM: dts: am4372: add DMA properties for tscadc
-Date: Wed, 21 Sep 2016 21:41:34 +0530
-Message-ID: <20160921161134.6951-5-mugunthanvnm@ti.com>
-In-Reply-To: <20160921161134.6951-1-mugunthanvnm@ti.com>
-References: <20160921161134.6951-1-mugunthanvnm@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:34991 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752654AbcITCxm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Sep 2016 22:53:42 -0400
+Received: by mail-pf0-f196.google.com with SMTP id 6so237139pfl.2
+        for <linux-iio@vger.kernel.org>; Mon, 19 Sep 2016 19:53:42 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <matt@ranostay.consulting>
+Subject: [PATCH v5 0/2] iio: potentiostat: add LMP91000 support
+Date: Mon, 19 Sep 2016 19:53:36 -0700
+Message-Id: <1474340018-26647-1-git-send-email-matt@ranostay.consulting>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add DMA properties for tscadc
+Changes from v1:
+ * Rename ti-adc1x1s.c driver to ti-adc161s626.c
+ * Switch from iio_channel_read() to using the industrialio-buffer-cb
+interface
+ * Process data in ADC trigger handler for buffer callbacks
+ * Set the mux trigger to the ADC referenced by io-channels by default
 
-Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
----
- arch/arm/boot/dts/am4372.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+Changes from v2:
+ * Fix configuration index shifting values
+ * Switch from wait_for_completion_interruptible to wait_for_completion_timeout
 
-diff --git a/arch/arm/boot/dts/am4372.dtsi b/arch/arm/boot/dts/am4372.dtsi
-index 0fadae5..6094d17 100644
---- a/arch/arm/boot/dts/am4372.dtsi
-+++ b/arch/arm/boot/dts/am4372.dtsi
-@@ -867,6 +867,8 @@
- 			clocks = <&adc_tsc_fck>;
- 			clock-names = "fck";
- 			status = "disabled";
-+			dmas = <&edma 53 0>, <&edma 57 0>;
-+			dma-names = "fifo0", "fifo1";
- 
- 			tsc {
- 				compatible = "ti,am3359-tsc";
+Changes from v3:
+ * Fix order of probe function error rollback
+
+Changes from v4:
+ * Report back scale + offset from adc
+ * Switch temperature channel from IIO_VOLTAGE to IIO_TEMP with processing
+ * Add iio_read_channel_offset helper
+
+Matt Ranostay (2):
+  iio: inkern: add iio_read_channel_offset helper
+  iio: potentiostat: add LMP91000 support
+
+ .../bindings/iio/potentiostat/lmp91000.txt         |  30 ++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/inkern.c                               |  18 +
+ drivers/iio/potentiostat/Kconfig                   |  22 ++
+ drivers/iio/potentiostat/Makefile                  |   6 +
+ drivers/iio/potentiostat/lmp91000.c                | 439 +++++++++++++++++++++
+ include/linux/iio/consumer.h                       |  13 +
+ 8 files changed, 530 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+ create mode 100644 drivers/iio/potentiostat/Kconfig
+ create mode 100644 drivers/iio/potentiostat/Makefile
+ create mode 100644 drivers/iio/potentiostat/lmp91000.c
+
 -- 
-2.10.0.129.g35f6318
+2.7.4
+
