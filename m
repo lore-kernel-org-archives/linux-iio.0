@@ -1,52 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f67.google.com ([209.85.215.67]:34657 "EHLO
-        mail-lf0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1035078AbcIZTzu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2016 15:55:50 -0400
-Received: by mail-lf0-f67.google.com with SMTP id b71so9844709lfg.1
-        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2016 12:55:49 -0700 (PDT)
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-Subject: [PATCH 2/2] Documentation: dt: iio: humidity: add hts221 sensor device binding
-Date: Mon, 26 Sep 2016 21:55:41 +0200
-Message-Id: <1474919741-21316-3-git-send-email-lorenzo.bianconi@st.com>
-In-Reply-To: <1474919741-21316-1-git-send-email-lorenzo.bianconi@st.com>
-References: <1474919741-21316-1-git-send-email-lorenzo.bianconi@st.com>
+Received: from aserp1040.oracle.com ([141.146.126.69]:42153 "EHLO
+        aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752854AbcITKIv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Sep 2016 06:08:51 -0400
+Date: Tue, 20 Sep 2016 13:08:35 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Brian Masney <masneyb@onstation.org>
+Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Subject: Re: [PATCH 2/2] staging: iio: isl29018: fix alignment of function
+ arguments
+Message-ID: <20160920100835.GI13620@mwanda>
+References: <1474364337-13949-1-git-send-email-masneyb@onstation.org>
+ <1474364337-13949-2-git-send-email-masneyb@onstation.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1474364337-13949-2-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- .../devicetree/bindings/iio/humidity/hts221.txt       | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
+On Tue, Sep 20, 2016 at 05:38:57AM -0400, Brian Masney wrote:
+> Address warning from checkpatch:
+> 
+> CHECK: Alignment should match open parenthesis
+> 
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> ---
+>  drivers/staging/iio/light/isl29018.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index ea4d7f1..4401451 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -607,8 +607,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
+>  		return status;
+>  	}
+>  
+> -	status = isl29018_set_integration_time(chip,
+> -			isl29018_int_utimes[chip->type][chip->int_time]);
+> +	status = isl29018_set_integration_time(
+> +			chip, isl29018_int_utimes[chip->type][chip->int_time]);
 
-diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-new file mode 100644
-index 0000000..46a152c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-@@ -0,0 +1,19 @@
-+* HTS221 STM humidity + temperature sensor
-+
-+Required properties:
-+- compatible: should be "st,hts221"
-+- reg: i2c address of the sensor / spi cs line
-+
-+Optional properties:
-+- interrupts: interrupt mapping for GPIO IRQ. It should be configured with
-+	      flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING
-+- interrupt-parent: should be the phandle for the interrupt controller
-+
-+Example:
-+
-+hts221@5f {
-+	compatible = "st,hts221";
-+	reg = <0x5f>;
-+	interrupt-parent = <&gpio0>;
-+	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+};
--- 
-2.7.4
+Congrats on finding a hack to silence checkpatch but this doesn't really
+improve the code at all...  It's ok to ignore checkpatch.pl.
+
+regards,
+dan carpenter
 
