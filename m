@@ -1,44 +1,49 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:56804 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932385AbcITJrY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 20 Sep 2016 05:47:24 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: gregkh@linuxfoundation.org
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCH 1/2] staging: iio: isl29018: remove the FSF's mailing address
-Date: Tue, 20 Sep 2016 05:38:56 -0400
-Message-Id: <1474364337-13949-1-git-send-email-masneyb@onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <mugunthanvnm@ti.com>
+From: Mugunthan V N <mugunthanvnm@ti.com>
+To: <linux-iio@vger.kernel.org>
+CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, Vignesh R
+	<vigneshr@ti.com>,
+        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Mugunthan V N <mugunthanvnm@ti.com>
+Subject: [PATCH 3/4] ARM: dts: am33xx: add DMA properties for tscadc
+Date: Wed, 21 Sep 2016 21:41:33 +0530
+Message-ID: <20160921161134.6951-4-mugunthanvnm@ti.com>
+In-Reply-To: <20160921161134.6951-1-mugunthanvnm@ti.com>
+References: <20160921161134.6951-1-mugunthanvnm@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Address warning from checkpatch:
+Add DMA properties for tscadc
 
-CHECK: Do not include the paragraph about writing to the Free Software
-Foundation's mailing address from the sample GPL notice. The FSF has
-changed addresses in the past, and may do so again. Linux already
-includes a copy of the GPL.
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
 ---
- drivers/staging/iio/light/isl29018.c | 4 ----
- 1 file changed, 4 deletions(-)
+ arch/arm/boot/dts/am33xx.dtsi | 2 ++
+ 1 file changed, 2 insertions(+)
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 76d9f74..ea4d7f1 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -15,10 +15,6 @@
-  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-  * more details.
-- *
-- * You should have received a copy of the GNU General Public License along
-- * with this program; if not, write to the Free Software Foundation, Inc.,
-- * 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
-  */
+diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
+index 98748c6..6d607b8 100644
+--- a/arch/arm/boot/dts/am33xx.dtsi
++++ b/arch/arm/boot/dts/am33xx.dtsi
+@@ -917,6 +917,8 @@
+ 			interrupts = <16>;
+ 			ti,hwmods = "adc_tsc";
+ 			status = "disabled";
++			dmas = <&edma 53 0>, <&edma 57 0>;
++			dma-names = "fifo0", "fifo1";
  
- #include <linux/module.h>
+ 			tsc {
+ 				compatible = "ti,am3359-tsc";
 -- 
-2.7.4
-
+2.10.0.129.g35f6318
