@@ -1,120 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51758 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932228AbcIRTcL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 15:32:11 -0400
-Subject: Re: accelerometer orientation
-To: Hans de Goede <hdegoede@redhat.com>,
-        Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org
-References: <0b744f22-55c0-da22-b27f-6092aab18365@redhat.com>
- <1473694755.6389.2.camel@hadess.net>
- <761fcac8-c7c8-0745-d8e8-f70fbb82451c@redhat.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ae45d121-d91c-2566-7ec7-0eb7bcab88ca@kernel.org>
-Date: Sun, 18 Sep 2016 20:32:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <761fcac8-c7c8-0745-d8e8-f70fbb82451c@redhat.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-yw0-f193.google.com ([209.85.161.193]:36165 "EHLO
+        mail-yw0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757071AbcIUUQC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2016 16:16:02 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v4 1/2] iio: Implement counter channel type and info constants
+Date: Wed, 21 Sep 2016 16:15:55 -0400
+Message-Id: <87ac8c5c0e5413dc10059e64f49ede6f2e79c02b.1474487854.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1474487854.git.vilhelm.gray@gmail.com>
+References: <cover.1474487854.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/09/16 17:15, Hans de Goede wrote:
-> Hi,
-> 
-> On 12-09-16 17:39, Bastien Nocera wrote:
->> Hey,
->>
->> On Mon, 2016-09-12 at 17:25 +0200, Hans de Goede wrote:
->>> Hi Bastien,
->>>
->>> So as I guess you sorta know in my spare time I work on Linux
->>> (mainline) support for Allwinner SoC based ARM devices, including
->>> a whole lot of cheap Chinese tablets.
->>>
->>> Recently I've begun looking into supporting the accelerometers
->>> on these devices and I'm making good progress on getting the
->>> kernel bits working using iio drivers (including a few new
->>> ones I've written recently).
->>>
->>> Yesterday I realized there is a bit of a catch though, all
->>> these iio drivers report results assuming that the accelerometer
->>> is mounted on the top side of the PCB and with its X/Y
->>> coordination properly taken info account.
->>>
->>> Unfortunately neither is necessarily true. Almost all
->>> tablet PCBS are mounted upside down (with an empty PCB
->>> backside against the lcd-panel. Meaning that the Z axis
->>> reads -1G when the tablet is lying on its back instead
->>> of the expected +1G and some need X/Y axis swapping and/or
->>> inversion too.
->>>
->>> So there are 3 problems here:
->>>
->>> 1) Where do we store the orientation of the chip
->>>
->> <snip>
->>> 2) Where do we correct the readings for the orientation
->> <snip>
->>> 3) Currently implementing orientation support in an iio driver
->>> requires copy and pasting quite a bit of boiler plate, so
->>> a question to the linux-iio list, has anyone though of an
->>> easier way to do this. I really just want to be able to
->>> pass say a single flag to iio_device_register and then
->>> have the iio-core automatically call of_iio_read_mount_matrix()
->>> and add mount_matrix ext_info.
-Hmm. Whilst it all seems simple, that flag is going to be
-non trivial.  There are too many 'sensible' options and in compact
-devices event aligning with axes doesn't always happen.
+Quadrature encoders, such as rotary encoders and linear encoders, are
+devices which are capable of encoding the relative position and
+direction of motion of a shaft. This patch introduces several IIO
+constants for supporting quadrature encoder counter devices.
 
-Might be room for a some utility functions to reduced boiler plate
-though.
->>
->> All good ideas, but we need a way to do this for devices without DT
->> (meaning all of the x86 tablets).
-> 
-> Yes, so I've also been working on a touchscreen driver for silead
-> touchscreen controllers (the gsl1680 and compatibles), which has
-> the same problem, e.g. it needs tablet model specific firmware,
-> so we need to provide a per tablet firmware name, and also
-> things like resolution and orientation are different per model
-> tablet. I now have 2 x86 tablets with such touchscreens, my plan
-> for the silead driver is to use dmi info to identify the tablet
-> and have a tablet with per tablet info inside the driver, this
-> is not so easy to extend as the udev hw db, but in this case
-> the info is needed inside the actual driver for things to work
-> properly.
-Why?  Seems to me that there ought to be somewhere to massage
-that data on it's path from kernel to anywhere useful...
-> 
->> Perhaps iio-sensor-proxy could read from udev instead, and udev either
->> pull from DT when available, or apply from its own rules?
-> 
-> Directly pulling from dt is not really convenient and iio
-> already more or less has standardized on the mount_matrix
-> sysfs attribute. I think it might be best to make the
-> mount_matrix sysfs attribute writable and then udev can
-> write the correct settings there for x86 tablets at
-> least. So to any iio devs reading this thread:
-> would making the mount_matrix sysfs attribute writable
-> be an acceptable solution ?
-It's really ugly to push data into the kernel just in order
-to be able to read it directly out of the same interface.
+  IIO_COUNT: Current count (main data provided by the counter device)
+  IIO_INDEX: Counter device index value
+  IIO_CHAN_INFO_PRESET: Counter preset value
 
-My gut reaction to this is that we need something in between
-in user space which can 'massage' the mount matrix as it
-sees fit.
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 28 ++++++++++++++++++++++++++++
+ drivers/iio/industrialio-core.c         |  3 +++
+ include/linux/iio/iio.h                 |  1 +
+ include/uapi/linux/iio/types.h          |  2 ++
+ 4 files changed, 34 insertions(+)
 
-Should be possible to get udev to feed back the mount matrix
-if present I think... Udev not something I like
-to go near (or have in fact gone near in many years).
-
-Jonathan
-> 
-> Regards,
-> 
-> Hans
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index fee35c0..be66a41 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1579,3 +1579,31 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Raw (unscaled no offset etc.) electric conductivity reading that
+ 		can be processed to siemens per meter.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_raw
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw counter device counts from channel Y. For quadrature
++		counters, division by an available [Y]_scale results in the
++		counts of a single quadrature signal phase from channel Y.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If a scale value is available for channel Y, it is provided by
++		this attribute.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_preset
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If the counter device supports preset registers, the preset
++		count for channel Y is provided by this attribute.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_raw
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Raw counter device index value from channel Y.
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index fc340ed..ed175a2 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -81,6 +81,8 @@ static const char * const iio_chan_type_name_spec[] = {
+ 	[IIO_PH] = "ph",
+ 	[IIO_UVINDEX] = "uvindex",
+ 	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
++	[IIO_COUNT] = "count",
++	[IIO_INDEX] = "index",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+@@ -151,6 +153,7 @@ static const char * const iio_chan_info_postfix[] = {
+ 	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
+ 	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
+ 	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
++	[IIO_CHAN_INFO_PRESET] = "preset",
+ };
+ 
+ /**
+diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+index b4a0679..7dc86d1 100644
+--- a/include/linux/iio/iio.h
++++ b/include/linux/iio/iio.h
+@@ -46,6 +46,7 @@ enum iio_chan_info_enum {
+ 	IIO_CHAN_INFO_DEBOUNCE_TIME,
+ 	IIO_CHAN_INFO_CALIBEMISSIVITY,
+ 	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
++	IIO_CHAN_INFO_PRESET,
+ };
+ 
+ enum iio_shared_by {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 22e5e58..e54d14a 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -40,6 +40,8 @@ enum iio_chan_type {
+ 	IIO_PH,
+ 	IIO_UVINDEX,
+ 	IIO_ELECTRICALCONDUCTIVITY,
++	IIO_COUNT,
++	IIO_INDEX,
+ };
+ 
+ enum iio_modifier {
+-- 
+2.7.3
 
