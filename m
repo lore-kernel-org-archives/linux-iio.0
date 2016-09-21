@@ -1,444 +1,391 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Tue, 20 Sep 2016 17:35:18 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Lars-Peter Clausen <lars@metafoo.de>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:adc: Add support for AD7766/AD7767
-In-Reply-To: <1474384526-22708-1-git-send-email-lars@metafoo.de>
-Message-ID: <alpine.DEB.2.02.1609201728340.19944@pmeerw.net>
-References: <1474384526-22708-1-git-send-email-lars@metafoo.de>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Return-Path: <hdegoede@redhat.com>
+From: Hans de Goede <hdegoede@redhat.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, Hans de Goede <hdegoede@redhat.com>
+Subject: [PATCH] Add an IIO driver for the MiraMEMS DA311 3-axis 12-bit digital accelerometer
+Date: Wed, 21 Sep 2016 11:02:04 +0300
+Message-Id: <20160921080204.28903-1-hdegoede@redhat.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 20 Sep 2016, Lars-Peter Clausen wrote:
+This driver is based on the DA311 Android driver which can be found here:
+https://git.matricom.net/Firmware/kernel_amlogic_meson-common/tree/1e70113a5befd07debb68f537156def84c5be57a/drivers/amlogic/input/sensor
+the mir3da_* files are the DA311 driver.
 
-> Add support for the AD7766, AD7766-1, AD7766-2, AD7767, AD7767-1, AD7767-2
-> Analog to Digital converters. It's a family of single channel 24-bit SAR
-> ADCs. They are all digital interface compatible and the main difference is
-> the internal decimation rate and analog performance. For communication with
-> the host processor a SPI interface is used.
+Unfortunately there is no datasheet.
 
-looks good, nitpicking below
+Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+---
+ .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+ drivers/iio/accel/Kconfig                          |  10 +
+ drivers/iio/accel/Makefile                         |   1 +
+ drivers/iio/accel/da311.c                          | 312 +++++++++++++++++++++
+ 4 files changed, 324 insertions(+)
+ create mode 100644 drivers/iio/accel/da311.c
+
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+index 21ca02e..8ad9064 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -122,6 +122,7 @@ microchip,mcp4662-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Mem
+ microchip,mcp4662-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+ microchip,mcp4662-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+ microchip,mcp4662-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
++miramems,da311		MiraMEMS DA311 3-axis 12-bit digital accelerometer
+ national,lm63		Temperature sensor with integrated fan control
+ national,lm75		I2C TEMP SENSOR
+ national,lm80		Serial Interface ACPI-Compatible Microprocessor System Hardware Monitor
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index 6236fd5..c94348f 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -52,6 +52,16 @@ config BMC150_ACCEL_SPI
+ 	tristate
+ 	select REGMAP_SPI
  
-> In addition the part has a data ready pin that is pulsed for one MCLK cycle
-> when a conversion has completed and can be used as a IIO trigger.
-> 
-> Datasheets:
-> 	http://www.analog.com/media/en/technical-documentation/data-sheets/AD7766.pdf
-> 	http://www.analog.com/media/en/technical-documentation/data-sheets/AD7767.pdf
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-> ---
->  drivers/iio/adc/Kconfig  |  10 ++
->  drivers/iio/adc/Makefile |   1 +
->  drivers/iio/adc/ad7766.c | 342 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 353 insertions(+)
->  create mode 100644 drivers/iio/adc/ad7766.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 7edcf32..c9c38e4 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -58,6 +58,16 @@ config AD7476
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ad7476.
->  
-> +config AD7766
-> +	tristate "Analog Devices AD7766/AD7767 ADC driver"
-> +	depends on SPI_MASTER
-> +	help
-> +	  Say yes here to build support for Analog Devices AD7766, AD7766-1,
-> +	  AD7766-2, AD7767, AD7767-1, AD7767-2  SPI analog to digital converters.
-
-extra space before 'SPI'
-
-> +
-> +	  To compile this driver as a module, choose M here: the module will be
-> +	  called ad7766.
-> +
->  config AD7791
->  	tristate "Analog Devices AD7791 ADC driver"
->  	depends on SPI
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 7a40c04..96894b3 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -9,6 +9,7 @@ obj-$(CONFIG_AD7291) += ad7291.o
->  obj-$(CONFIG_AD7298) += ad7298.o
->  obj-$(CONFIG_AD7923) += ad7923.o
->  obj-$(CONFIG_AD7476) += ad7476.o
-> +obj-$(CONFIG_AD7766) += ad7766.o
->  obj-$(CONFIG_AD7791) += ad7791.o
->  obj-$(CONFIG_AD7793) += ad7793.o
->  obj-$(CONFIG_AD7887) += ad7887.o
-> diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-> new file mode 100644
-> index 0000000..4d82f9d
-> --- /dev/null
-> +++ b/drivers/iio/adc/ad7766.c
-> @@ -0,0 +1,342 @@
-> +/*
-> + * AD7766/AD7767 SPI ADC driver
-> + *
-> + * Copyright 2016 Analog Devices Inc.
-> + *
-> + * Licensed under the GPL-2 or later.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/module.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/slab.h>
-> +#include <linux/spi/spi.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +struct ad7766_chip_info {
-> +	unsigned int decimation_factor;
-> +};
-> +
-> +struct ad7766 {
-> +	const struct ad7766_chip_info *chip_info;
-> +	struct spi_device *spi;
-> +	struct clk *mclk;
-> +	struct gpio_desc *pd_gpio;
-> +	struct regulator_bulk_data reg[3];
-> +
-> +	struct iio_trigger *trig;
-> +
-> +	struct spi_transfer xfer;
-> +	struct spi_message msg;
-> +
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 * Make the buffer large enough for one 24 bit sample and one 64 bit
-> +	 * aligned 64 bit timestamp.
-> +	 */
-> +	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]
-> +			____cacheline_aligned;
-> +};
-> +
-> +enum ad7766_device_ids {
-> +	ID_AD7766,
-> +	ID_AD7766_1,
-> +	ID_AD7766_2,
-
-7767 missing? maybe worth a comment
-
-> +};
-> +
-> +static irqreturn_t ad7766_trigger_handler(int irq, void  *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ad7766 *ad7766 = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = spi_sync(ad7766->spi, &ad7766->msg);
-> +	if (ret < 0)
-> +		goto done;
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, ad7766->data,
-> +		pf->timestamp);
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int ad7766_preenable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7766 *ad7766 = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	ret = regulator_bulk_enable(ARRAY_SIZE(ad7766->reg),  ad7766->reg);
-
-two blanks before last argument
-
-> +	if (ret < 0) {
-> +		dev_err(&ad7766->spi->dev, "Failed to enable supplies: %d\n",
-> +			ret);
-> +		return ret;
-> +	}
-> +
-> +	ret = clk_prepare_enable(ad7766->mclk);
-> +	if (ret < 0) {
-> +		dev_err(&ad7766->spi->dev, "Failed to enable MCLK: %d\n", ret);
-> +		regulator_bulk_disable(ARRAY_SIZE(ad7766->reg), ad7766->reg);
-> +		return ret;
-> +	}
-> +
-> +	if (ad7766->pd_gpio)
-> +		gpiod_set_value(ad7766->pd_gpio, 0);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad7766_postdisable(struct iio_dev *indio_dev)
-> +{
-> +	struct ad7766 *ad7766 = iio_priv(indio_dev);
-> +
-> +	if (ad7766->pd_gpio)
-> +		gpiod_set_value(ad7766->pd_gpio, 1);
-> +
-> +	/*
-> +	 * The PD pin is synchronous to the clock, so give it some time to
-> +	 * notice the change before we disable the clock.
-> +	 */
-> +	msleep(20);
-> +
-> +	clk_disable_unprepare(ad7766->mclk);
-> +	regulator_bulk_disable(ARRAY_SIZE(ad7766->reg),  ad7766->reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static int ad7766_read_raw(struct iio_dev *indio_dev,
-> +	const struct iio_chan_spec *chan, int *val, int *val2, long info)
-> +{
-> +	struct ad7766 *ad7766 = iio_priv(indio_dev);
-> +	int scale_uv;
-> +
-> +	switch (info) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		scale_uv = regulator_get_voltage(ad7766->reg[2].consumer);
-
-could use a #define for the index 2, VREF_something or so
-
-> +		if (scale_uv < 0)
-> +			return scale_uv;
-> +		*val = scale_uv / 1000;
-> +		*val2 = chan->scan_type.realbits;
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		*val = clk_get_rate(ad7766->mclk) /
-> +			ad7766->chip_info->decimation_factor;
-> +		return IIO_VAL_INT;
-> +	}
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_chan_spec ad7766_channels[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.indexed = 1,
-
-have only one channel and still indexed?
-
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +		.scan_type = {
-> +			.sign = 's',
-> +			.realbits = 24,
-> +			.storagebits = 32,
-> +			.shift = 0,
-
-.shift not strictly necessary
-
-> +			.endianness = IIO_BE,
-> +		},
-> +	},
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
-> +};
-> +
-> +static const struct ad7766_chip_info ad7766_chip_info[] = {
-> +	[ID_AD7766] = {
-> +		.decimation_factor = 8,
-> +	},
-> +	[ID_AD7766_1] = {
-> +		.decimation_factor = 16,
-> +	},
-> +	[ID_AD7766_2] = {
-> +		.decimation_factor = 32,
-> +	},
-> +};
-> +
-> +static const struct iio_buffer_setup_ops ad7766_buffer_setup_ops = {
-> +	.preenable = &ad7766_preenable,
-> +	.postenable = &iio_triggered_buffer_postenable,
-> +	.predisable = &iio_triggered_buffer_predisable,
-> +	.postdisable = &ad7766_postdisable,
-> +};
-> +
-> +static const struct iio_info ad7766_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &ad7766_read_raw,
-> +};
-> +
-> +static irqreturn_t ad7766_irq(int irq, void *private)
-> +{
-> +	iio_trigger_poll(private);
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int ad7766_set_trigger_state(struct iio_trigger *trig, bool enable)
-> +{
-> +	struct ad7766 *ad7766 = iio_trigger_get_drvdata(trig);
-> +
-> +	if (enable)
-> +		enable_irq(ad7766->spi->irq);
-> +	else
-> +		disable_irq(ad7766->spi->irq);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_trigger_ops ad7766_trigger_ops = {
-> +	.owner = THIS_MODULE,
-> +	.set_trigger_state = ad7766_set_trigger_state,
-> +};
-> +
-> +static int ad7766_probe(struct spi_device *spi)
-> +{
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +	struct iio_dev *indio_dev;
-> +	struct ad7766 *ad7766;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*ad7766));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ad7766 = iio_priv(indio_dev);
-> +	ad7766->chip_info = &ad7766_chip_info[id->driver_data];
-> +
-> +	ad7766->mclk = devm_clk_get(&spi->dev, "mclk");
-> +	if (IS_ERR(ad7766->mclk))
-> +		return PTR_ERR(ad7766->mclk);
-> +
-> +	ad7766->reg[0].supply = "avdd";
-> +	ad7766->reg[1].supply = "dvdd";
-> +	ad7766->reg[2].supply = "vref";
-> +
-> +	ret = devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
-> +		ad7766->reg);
-> +	if (IS_ERR(ad7766->reg))
-> +		return PTR_ERR(ad7766->reg);
-> +
-> +	ad7766->pd_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
-> +		GPIOD_OUT_HIGH);
-> +	if (IS_ERR(ad7766->pd_gpio))
-> +		return PTR_ERR(ad7766->pd_gpio);
-> +
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = ad7766_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(ad7766_channels);
-> +	indio_dev->info = &ad7766_info;
-> +
-> +	if (spi->irq > 0) {
-> +		ad7766->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
-> +			indio_dev->name, indio_dev->id);
-> +		if (!ad7766->trig)
-> +			return -ENOMEM;
-> +
-> +		ad7766->trig->ops = &ad7766_trigger_ops;
-> +		iio_trigger_set_drvdata(ad7766->trig, ad7766);
-> +
-> +		ret = request_irq(spi->irq, ad7766_irq, IRQF_TRIGGER_FALLING,
-> +			  dev_name(&spi->dev), ad7766->trig);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		/*
-> +		 * The device generates interrupts as long as it is powered up.
-> +		 * Some platforms might not allow the option to power it down so
-> +		 * disable the interrupt to avoid extra load on the system
-> +		 */
-> +		disable_irq(spi->irq);
-> +
-> +		ret = iio_trigger_register(ad7766->trig);
-> +		if (ret)
-> +			goto err_free_irq;
-> +	}
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	ad7766->spi = spi;
-> +
-> +	/* First byte always 0 */
-> +	ad7766->xfer.rx_buf = &ad7766->data[1];
-> +	ad7766->xfer.len = 3;
-> +
-> +	spi_message_init(&ad7766->msg);
-> +	spi_message_add_tail(&ad7766->xfer, &ad7766->msg);
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +			&ad7766_trigger_handler, &ad7766_buffer_setup_ops);
-> +	if (ret)
-> +		goto err_trigger_unregister;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto err_triggered_buffer_cleanup;
-> +	return 0;
-> +
-> +err_triggered_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +err_trigger_unregister:
-> +	if (spi->irq > 0)
-> +		iio_trigger_unregister(ad7766->trig);
-> +err_free_irq:
-> +	if (spi->irq > 0)
-> +		free_irq(spi->irq, ad7766->trig);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ad7766_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct ad7766 *ad7766 = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	if (spi->irq > 0) {
-> +		iio_trigger_unregister(ad7766->trig);
-> +		free_irq(spi->irq, ad7766->trig);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ad7766_id[] = {
-> +	{"ad7766", ID_AD7766},
-> +	{"ad7766-1", ID_AD7766_1},
-> +	{"ad7766-2", ID_AD7766_2},
-> +	{"ad7767", ID_AD7766},
-> +	{"ad7767-1", ID_AD7766_1},
-> +	{"ad7767-2", ID_AD7766_2},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(spi, ad7766_id);
-> +
-> +static struct spi_driver ad7766_driver = {
-> +	.driver = {
-> +		.name	= "ad7766",
-> +	},
-> +	.probe		= ad7766_probe,
-> +	.remove		= ad7766_remove,
-> +	.id_table	= ad7766_id,
-> +};
-> +module_spi_driver(ad7766_driver);
-> +
-> +MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
-> +MODULE_DESCRIPTION("Analog Devices AD7766 and AD7767 ADCs driver support");
-> +MODULE_LICENSE("GPL v2");
-> 
-
++config DA311
++	tristate "MiraMEMS DA311 3-axis 12-bit digital accelerometer driver"
++	depends on I2C
++	help
++	  Say yes here to build support for the MiraMEMS DA311 3-axis 12-bit
++	  digital accelerometer.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called da311.
++
+ config DMARD06
+ 	tristate "Domintech DMARD06 Digital Accelerometer Driver"
+ 	depends on OF || COMPILE_TEST
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 9f51559..601ca59 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_BMA220) += bma220_spi.o
+ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+ obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
++obj-$(CONFIG_DA311)	+= da311.o
+ obj-$(CONFIG_DMARD06)	+= dmard06.o
+ obj-$(CONFIG_DMARD09)	+= dmard09.o
+ obj-$(CONFIG_DMARD10)	+= dmard10.o
+diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
+new file mode 100644
+index 0000000..93d027c
+--- /dev/null
++++ b/drivers/iio/accel/da311.c
+@@ -0,0 +1,312 @@
++/**
++ * IIO driver for the MiraMEMS DA311 3-axis accelerometer
++ *
++ * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
++ * Copyright (c) 2011-2013 MiraMEMS Sensing Technology Co., Ltd.
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms and conditions of the GNU General Public License,
++ * version 2, as published by the Free Software Foundation.
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/byteorder/generic.h>
++
++#define DA311_CHIP_ID			0x13
++
++/*
++ * Note register addressed go from 0 - 0x3f and then wrap.
++ * For some reason there are 2 banks with 0 - 0x3f addresses,
++ * rather then a single 0-0x7f bank.
++ */
++
++/* Bank 0 regs */
++#define DA311_REG_BANK			0x0000
++#define DA311_REG_LDO_REG		0x0006
++#define DA311_REG_CHIP_ID		0x000f
++#define DA311_REG_TEMP_CFG_REG		0x001f
++#define DA311_REG_CTRL_REG1		0x0020
++#define DA311_REG_CTRL_REG3		0x0022
++#define DA311_REG_CTRL_REG4		0x0023
++#define DA311_REG_CTRL_REG5		0x0024
++#define DA311_REG_CTRL_REG6		0x0025
++#define DA311_REG_STATUS_REG		0x0027
++#define DA311_REG_OUT_X_L		0x0028
++#define DA311_REG_OUT_X_H		0x0029
++#define DA311_REG_OUT_Y_L		0x002a
++#define DA311_REG_OUT_Y_H		0x002b
++#define DA311_REG_OUT_Z_L		0x002c
++#define DA311_REG_OUT_Z_H		0x002d
++#define DA311_REG_INT1_CFG		0x0030
++#define DA311_REG_INT1_SRC		0x0031
++#define DA311_REG_INT1_THS		0x0032
++#define DA311_REG_INT1_DURATION		0x0033
++#define DA311_REG_INT2_CFG		0x0034
++#define DA311_REG_INT2_SRC		0x0035
++#define DA311_REG_INT2_THS		0x0036
++#define DA311_REG_INT2_DURATION		0x0037
++#define DA311_REG_CLICK_CFG		0x0038
++#define DA311_REG_CLICK_SRC		0x0039
++#define DA311_REG_CLICK_THS		0x003a
++#define DA311_REG_TIME_LIMIT		0x003b
++#define DA311_REG_TIME_LATENCY		0x003c
++#define DA311_REG_TIME_WINDOW		0x003d
++
++/* Bank 1 regs */
++#define DA311_REG_SOFT_RESET		0x0105
++#define DA311_REG_OTP_XOFF_L		0x0110
++#define DA311_REG_OTP_XOFF_H		0x0111
++#define DA311_REG_OTP_YOFF_L		0x0112
++#define DA311_REG_OTP_YOFF_H		0x0113
++#define DA311_REG_OTP_ZOFF_L		0x0114
++#define DA311_REG_OTP_ZOFF_H		0x0115
++#define DA311_REG_OTP_XSO		0x0116
++#define DA311_REG_OTP_YSO		0x0117
++#define DA311_REG_OTP_ZSO		0x0118
++#define DA311_REG_OTP_TRIM_OSC		0x011b
++#define DA311_REG_LPF_ABSOLUTE		0x011c
++#define DA311_REG_TEMP_OFF1		0x0127
++#define DA311_REG_TEMP_OFF2		0x0128
++#define DA311_REG_TEMP_OFF3		0x0129
++#define DA311_REG_OTP_TRIM_THERM_H	0x011a
++
++/*
++ * a value of + or -1024 corresponds to + or - 1G
++ * scale = 1 / 1024 = 0.000976562
++ */
++
++static const int da311_nscale = 976562;
++
++#define DA311_CHANNEL(reg, axis) {	\
++	.type = IIO_ACCEL,	\
++	.address = reg,	\
++	.modified = 1,	\
++	.channel2 = IIO_MOD_##axis,	\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++}
++
++static const struct iio_chan_spec da311_channels[] = {
++	/* | 0x80 comes from the android driver */
++	DA311_CHANNEL(DA311_REG_OUT_X_L | 0x80, X),
++	DA311_CHANNEL(DA311_REG_OUT_Y_L | 0x80, Y),
++	DA311_CHANNEL(DA311_REG_OUT_Z_L | 0x80, Z),
++};
++
++struct da311_data {
++	struct i2c_client *client;
++};
++
++static int da311_register_mask_write(struct i2c_client *client, u16 addr,
++				     u8 mask, u8 data)
++{
++	int ret;
++	u8 tmp_data = 0;
++
++	if (addr & 0xff00) {
++		/* Select bank 1 */
++		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x01);
++		if (ret < 0)
++			return ret;
++	}
++
++	if (mask != 0xff) {
++		ret = i2c_smbus_read_byte_data(client, addr);
++		if (ret < 0)
++			return ret;
++		tmp_data = ret;
++	}
++
++	tmp_data &= ~mask;
++	tmp_data |= data & mask;
++	ret = i2c_smbus_write_byte_data(client, addr & 0xff, tmp_data);
++	if (ret < 0)
++		return ret;
++
++	if (addr & 0xff00) {
++		/* Back to bank 0 */
++		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x00);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++/* Init sequence taken from the android driver */
++static int da311_reset(struct i2c_client *client)
++{
++	const struct {
++		u16 addr;
++		u8 mask;
++		u8 data;
++	} init_data[] = {
++		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x08 },
++		{ DA311_REG_CTRL_REG5,          0xff,   0x80 },
++		{ DA311_REG_CTRL_REG4,          0x30,   0x00 },
++		{ DA311_REG_CTRL_REG1,          0xff,   0x6f },
++		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x88 },
++		{ DA311_REG_LDO_REG,            0xff,   0x02 },
++		{ DA311_REG_OTP_TRIM_OSC,       0xff,   0x27 },
++		{ DA311_REG_LPF_ABSOLUTE,       0xff,   0x30 },
++		{ DA311_REG_TEMP_OFF1,          0xff,   0x3f },
++		{ DA311_REG_TEMP_OFF2,          0xff,   0xff },
++		{ DA311_REG_TEMP_OFF3,          0xff,   0x0f },
++	};
++	int i, ret;
++
++	/* Reset */
++	ret = da311_register_mask_write(client, DA311_REG_SOFT_RESET,
++					0xff, 0xaa);
++	if (ret < 0)
++		return ret;
++
++	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
++		ret = da311_register_mask_write(client,
++						init_data[i].addr,
++						init_data[i].mask,
++						init_data[i].data);
++		if (ret < 0)
++			return ret;
++	}
++
++	return 0;
++}
++
++static int da311_enable(struct i2c_client *client, bool enable)
++{
++	u8 data = enable ? 0x00 : 0x20;
++
++	return da311_register_mask_write(client, DA311_REG_TEMP_CFG_REG,
++					 0x20, data);
++}
++
++static int da311_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct da311_data *data = iio_priv(indio_dev);
++	__le16 buf;
++	short tmp_val;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = i2c_smbus_read_i2c_block_data(data->client,
++						    chan->address,
++						    sizeof(buf), (u8 *)&buf);
++		if (ret < 0)
++			return ret;
++		tmp_val = le16_to_cpu(buf);
++		/*
++		 * Values are 12 bits, stored as 16 bits with the 4
++		 * least significant bits always 0.
++		 */
++		*val = tmp_val >> 4;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 0;
++		*val2 = da311_nscale;
++		return IIO_VAL_INT_PLUS_NANO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info da311_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= da311_read_raw,
++};
++
++static int da311_probe(struct i2c_client *client,
++			const struct i2c_device_id *id)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct da311_data *data;
++
++	ret = i2c_smbus_read_byte_data(client, DA311_REG_CHIP_ID);
++	if (ret != DA311_CHIP_ID)
++		return (ret < 0) ? ret : -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev) {
++		dev_err(&client->dev, "iio allocation failed!\n");
++		return -ENOMEM;
++	}
++
++	data = iio_priv(indio_dev);
++	data->client = client;
++	i2c_set_clientdata(client, indio_dev);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &da311_info;
++	indio_dev->name = "da311";
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = da311_channels;
++	indio_dev->num_channels = ARRAY_SIZE(da311_channels);
++
++	ret = da311_reset(client);
++	if (ret < 0)
++		return ret;
++
++	ret = da311_enable(client, true);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret < 0) {
++		dev_err(&client->dev, "device_register failed\n");
++		da311_enable(client, false);
++	}
++
++	return ret;
++}
++
++static int da311_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++
++	iio_device_unregister(indio_dev);
++
++	return da311_enable(client, false);
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int da311_suspend(struct device *dev)
++{
++	return da311_enable(to_i2c_client(dev), false);
++}
++
++static int da311_resume(struct device *dev)
++{
++	return da311_enable(to_i2c_client(dev), true);
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(da311_pm_ops, da311_suspend, da311_resume);
++
++static const struct i2c_device_id da311_i2c_id[] = {
++	{"da311", 0},
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, da311_i2c_id);
++
++static struct i2c_driver da311_driver = {
++	.driver = {
++		.name = "da311",
++		.pm = &da311_pm_ops,
++	},
++	.probe		= da311_probe,
++	.remove		= da311_remove,
++	.id_table	= da311_i2c_id,
++};
++
++module_i2c_driver(da311_driver);
++
++MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
++MODULE_DESCRIPTION("MiraMEMS DA311 3-Axis Accelerometer driver");
++MODULE_LICENSE("GPL v2");
 -- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+2.9.3
