@@ -1,124 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49401 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754739AbcIRK1w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Sep 2016 06:27:52 -0400
-Subject: Re: [PATCH 05/15 v2] iio: accel: kxsd9: Do away with the write2
- helper
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1472723089-25113-1-git-send-email-linus.walleij@linaro.org>
- <1472723089-25113-5-git-send-email-linus.walleij@linaro.org>
- <d6932c60-022f-8043-9702-de204034e7c5@kernel.org>
- <75fe6cac-f876-9bce-7154-a69d135d4da0@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <311fa2c3-37af-5efb-5ef5-d29024e472a1@kernel.org>
-Date: Sun, 18 Sep 2016 11:27:44 +0100
+Received: from bear.ext.ti.com ([198.47.19.11]:53615 "EHLO bear.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752016AbcIVLRn (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 22 Sep 2016 07:17:43 -0400
+Subject: Re: [PATCH 2/4] drivers: iio: ti_am335x_adc: add dma support
+To: Mugunthan V N <mugunthanvnm@ti.com>, Vignesh R <vigneshr@ti.com>,
+        <linux-iio@vger.kernel.org>
+References: <20160921161134.6951-1-mugunthanvnm@ti.com>
+ <20160921161134.6951-3-mugunthanvnm@ti.com>
+ <1dbd7bbd-36ac-4433-79bf-8975a06dd07e@ti.com>
+ <0cd3dfcc-2525-c2fb-35ab-1b260c5973a8@ti.com>
+CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>,
+        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Message-ID: <30294b90-af44-d8cf-d70b-92a9461f1e5f@ti.com>
+Date: Thu, 22 Sep 2016 14:16:42 +0300
 MIME-Version: 1.0
-In-Reply-To: <75fe6cac-f876-9bce-7154-a69d135d4da0@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <0cd3dfcc-2525-c2fb-35ab-1b260c5973a8@ti.com>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/09/16 20:30, Jonathan Cameron wrote:
-> On 03/09/16 20:25, Jonathan Cameron wrote:
->> On 01/09/16 10:44, Linus Walleij wrote:
->>> This is just a masquerading register write function, so use the
->>> register write function instead.
->>>
->>> Tested-by: Jonathan Cameron <jic23@kernel.org>
->>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
->> Applied.  Thanks,
-> Backed out due to later mess against the fixes.
-Applied again.
-> 
-> Jonathan
+On 09/22/16 13:45, Mugunthan V N wrote:
+>>> +	if (!dma->chan)
+>>> +		return -ENODEV;
+>>> +
+>>> +	/* RX buffer */
+>>> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+>>> +				      &dma->addr, GFP_KERNEL);
+>>> +	if (!dma->buf)
+>>> +		goto err;
+>>> +
+>>> +	dev_dbg_ratelimited(adc_dev->mfd_tscadc->dev, "got dma channel\n");
 >>
->> Jonathan
->>> ---
->>> ChangeLog v1->v2:
->>> - Rebase on the rest of the series.
->>> ---
->>>  drivers/iio/accel/kxsd9-spi.c | 10 ----------
->>>  drivers/iio/accel/kxsd9.c     |  4 ++--
->>>  drivers/iio/accel/kxsd9.h     |  2 --
->>>  3 files changed, 2 insertions(+), 14 deletions(-)
->>>
->>> diff --git a/drivers/iio/accel/kxsd9-spi.c b/drivers/iio/accel/kxsd9-spi.c
->>> index ec9d00d5340f..a49c10cd7634 100644
->>> --- a/drivers/iio/accel/kxsd9-spi.c
->>> +++ b/drivers/iio/accel/kxsd9-spi.c
->>> @@ -25,15 +25,6 @@ static int kxsd9_spi_writereg(struct kxsd9_transport *tr, u8 address, u8 val)
->>>  	return spi_write(spi, tr->tx, 2);
->>>  }
->>>  
->>> -static int kxsd9_spi_write2(struct kxsd9_transport *tr, u8 b1, u8 b2)
->>> -{
->>> -	struct spi_device *spi = tr->trdev;
->>> -
->>> -	tr->tx[0] = b1;
->>> -	tr->tx[1] = b2;
->>> -	return spi_write(spi, tr->tx, 2);
->>> -}
->>> -
->>>  static int kxsd9_spi_readval(struct kxsd9_transport *tr, u8 address)
->>>  {
->>>  	struct spi_device *spi = tr->trdev;
->>> @@ -70,7 +61,6 @@ static int kxsd9_spi_probe(struct spi_device *spi)
->>>  	transport->trdev = spi;
->>>  	transport->readreg = kxsd9_spi_readreg;
->>>  	transport->writereg = kxsd9_spi_writereg;
->>> -	transport->write2 = kxsd9_spi_write2;
->>>  	transport->readval = kxsd9_spi_readval;
->>>  	spi->mode = SPI_MODE_0;
->>>  	spi_setup(spi);
->>> diff --git a/drivers/iio/accel/kxsd9.c b/drivers/iio/accel/kxsd9.c
->>> index e2033374bfef..a787ec236608 100644
->>> --- a/drivers/iio/accel/kxsd9.c
->>> +++ b/drivers/iio/accel/kxsd9.c
->>> @@ -184,10 +184,10 @@ static int kxsd9_power_up(struct kxsd9_state *st)
->>>  {
->>>  	int ret;
->>>  
->>> -	ret = st->transport->write2(st->transport, 0x0d, 0x40);
->>> +	ret = st->transport->writereg(st->transport, KXSD9_REG_CTRL_B, 0x40);
->>>  	if (ret)
->>>  		return ret;
->>> -	return st->transport->write2(st->transport, 0x0c, 0x9b);
->>> +	return st->transport->writereg(st->transport, KXSD9_REG_CTRL_C, 0x9b);
->>>  };
->>>  
->>>  static const struct iio_info kxsd9_info = {
->>> diff --git a/drivers/iio/accel/kxsd9.h b/drivers/iio/accel/kxsd9.h
->>> index 28845c3440e9..b6328e88b56f 100644
->>> --- a/drivers/iio/accel/kxsd9.h
->>> +++ b/drivers/iio/accel/kxsd9.h
->>> @@ -11,7 +11,6 @@ struct kxsd9_transport;
->>>   * @trdev: transport device such as SPI or I2C
->>>   * @readreg(): function to read a byte from an address in the device
->>>   * @writereg(): function to write a byte to an address in the device
->>> - * @write2(): function to write two consecutive bytes to the device
->>>   * @readval(): function to read a 16bit value from the device
->>>   * @rx: cache aligned read buffer
->>>   * @tx: cache aligned write buffer
->>> @@ -20,7 +19,6 @@ struct kxsd9_transport {
->>>  	void *trdev;
->>>  	int (*readreg) (struct kxsd9_transport *tr, u8 address);
->>>  	int (*writereg) (struct kxsd9_transport *tr, u8 address, u8 val);
->>> -	int (*write2) (struct kxsd9_transport *tr, u8 b1, u8 b2);
->>>  	int (*readval) (struct kxsd9_transport *tr, u8 address);
->>>  	u8 rx[KXSD9_STATE_RX_SIZE] ____cacheline_aligned;
->>>  	u8 tx[KXSD9_STATE_TX_SIZE];
->>>
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
+>> Do we need _ratelimited? AFAICS, this print is called only once.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+> True, will change to dev_dbg.
 
+It would be better to remove it. It gives no useful debuggin information apart
+from the fact that the driver did not failed to probe.
+
+-- 
+Péter
