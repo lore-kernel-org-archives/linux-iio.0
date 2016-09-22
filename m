@@ -1,123 +1,433 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:35234 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751021AbcIWWr2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 18:47:28 -0400
-Date: Fri, 23 Sep 2016 17:47:26 -0500
-From: Rob Herring <robh@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
-        linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 1/8] drivers:input:tsc2007: add new common binding
- names, pre-calibration, flipping and rotation
-Message-ID: <20160923224726.GA4639@rob-hp-laptop>
-References: <cover.1474634475.git.hns@goldelico.com>
- <1409ed9845f17445a8a67bd6fb16c902c3e4f69c.1474634475.git.hns@goldelico.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1409ed9845f17445a8a67bd6fb16c902c3e4f69c.1474634475.git.hns@goldelico.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lars@metafoo.de>
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v2] iio:adc: Add support for AD7766/AD7767
+Date: Thu, 22 Sep 2016 13:48:21 +0200
+Message-Id: <1474544901-14712-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Sep 23, 2016 at 02:41:09PM +0200, H. Nikolaus Schaller wrote:
-> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
-> introduced common DT bindings for touchscreens [1] and a helper function to
-> parse the DT.
-> 
-> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-> added another helper for parsing axis inversion and swapping
-> and applying them to x and y coordinates.
-> 
-> Both helpers have been integrated to accommodate any orientation of the
-> touch panel in relation to the LCD.
-> 
-> A new feature is to introduce scaling the min/max ADC values to the screen
-> size.
-> 
-> This makes it possible to pre-calibrate the touch so that is (almost)
-> exactly matches the LCD pixel coordinates it is glued onto. This allows to
-> well enough operate the touch before a user space calibration step can
-> improve the precision.
-> 
-> Finally, calculate_pressure has been renamed to calculate_resistance
-> because that is what it is doing.
+Add support for the AD7766, AD7766-1, AD7766-2, AD7767, AD7767-1, AD7767-2
+Analog to Digital converters. It's a family of single channel 24-bit SAR
+ADCs. They are all digital interface compatible and the main difference is
+the internal decimation rate and analog performance. For communication with
+the host processor a SPI interface is used.
 
-Seems like you are breaking compatibility with old DTs. I can't tell for 
-sure though.
+In addition the part has a data ready pin that is pulsed for one MCLK cycle
+when a conversion has completed and can be used as a IIO trigger.
 
-> 
-> [1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
->  drivers/input/touchscreen/tsc2007.c                | 126 +++++++++++++++++----
->  include/linux/i2c/tsc2007.h                        |   8 ++
->  3 files changed, 123 insertions(+), 31 deletions(-)
-> 
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
-> index ec365e1..6e9fd55 100644
-> --- a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
-> @@ -6,6 +6,7 @@ Required properties:
->  - ti,x-plate-ohms: X-plate resistance in ohms.
->  
->  Optional properties:
-> +- generic touch screen properties: see touchscreen binding [2].
->  - gpios: the interrupt gpio the chip is connected to (trough the penirq pin).
->    The penirq pin goes to low when the panel is touched.
->    (see GPIO binding[1] for more details).
-> @@ -13,17 +14,20 @@ Optional properties:
->    (see interrupt binding[0]).
->  - interrupts: (gpio) interrupt to which the chip is connected
->    (see interrupt binding[0]).
-> -- ti,max-rt: maximum pressure.
-> -- ti,fuzzx: specifies the absolute input fuzz x value.
-> -  If set, it will permit noise in the data up to +- the value given to the fuzz
-> -  parameter, that is used to filter noise from the event stream.
-> -- ti,fuzzy: specifies the absolute input fuzz y value.
-> -- ti,fuzzz: specifies the absolute input fuzz z value.
-> +- ti,max-rt: maximum pressure resistance above which samples are ignored
-> +  (default: 4095).
-> +- ti,report-resistance: report resistance (no pressure = max_rt) instead
-> +  of pressure (no pressure = 0).
-> +- ti,min-x: minimum value reported by X axis ADC (default 0).
-> +- ti,max-x: maximum value reported by X axis ADC (default 4095).
-> +- ti,min-y: minimum value reported by Y axis ADC (default 0).
-> +- ti,max-y: maximum value reported by Y axis ADC (default 4095).
+Datasheets:
+	http://www.analog.com/media/en/technical-documentation/data-sheets/AD7766.pdf
+	http://www.analog.com/media/en/technical-documentation/data-sheets/AD7767.pdf
 
-Seems like these could be common too. They make more sense than giving x 
-and y sizes in pixel units which really should come from the panel.
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+Changes since v1: (Thanks to Peter Meerwald-Stadler for the review)
+	* Whitespace cleanup
+	* Introduce symbolic constants for regulator indices
+	* Document in the driver that AD7766 and AD7767 are fully register map
+	  compatible and only differ in analog performance
+---
+ drivers/iio/adc/Kconfig  |  10 ++
+ drivers/iio/adc/Makefile |   1 +
+ drivers/iio/adc/ad7766.c | 353 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 364 insertions(+)
+ create mode 100644 drivers/iio/adc/ad7766.c
 
->  - ti,poll-period: how much time to wait (in milliseconds) before reading again the
-> -  values from the tsc2007.
-> +  values from the tsc2007 (default 1).
->  
->  [0]: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
->  [1]: Documentation/devicetree/bindings/gpio/gpio.txt
-> +[2]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
->  
->  Example:
->  	&i2c1 {
-> @@ -35,6 +39,8 @@ Example:
->  			interrupts = <0x0 0x8>;
->  			gpios = <&gpio4 0 0>;
->  			ti,x-plate-ohms = <180>;
-> +			touchscreen-size-x = <640>;
-> +			touchscreen-size-y = <480>;
->  		};
->  
->  		/* ... */
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7edcf32..8d1ce02 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -58,6 +58,16 @@ config AD7476
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7476.
+ 
++config AD7766
++	tristate "Analog Devices AD7766/AD7767 ADC driver"
++	depends on SPI_MASTER
++	help
++	  Say yes here to build support for Analog Devices AD7766, AD7766-1,
++	  AD7766-2, AD7767, AD7767-1, AD7767-2 SPI analog to digital converters.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called ad7766.
++
+ config AD7791
+ 	tristate "Analog Devices AD7791 ADC driver"
+ 	depends on SPI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 7a40c04..96894b3 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -9,6 +9,7 @@ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7923) += ad7923.o
+ obj-$(CONFIG_AD7476) += ad7476.o
++obj-$(CONFIG_AD7766) += ad7766.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+ obj-$(CONFIG_AD7887) += ad7887.o
+diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
+new file mode 100644
+index 0000000..9e7cafb
+--- /dev/null
++++ b/drivers/iio/adc/ad7766.c
+@@ -0,0 +1,353 @@
++/*
++ * AD7766/AD7767 SPI ADC driver
++ *
++ * Copyright 2016 Analog Devices Inc.
++ *
++ * Licensed under the GPL-2 or later.
++ */
++
++#include <linux/clk.h>
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/gpio/consumer.h>
++#include <linux/module.h>
++#include <linux/regulator/consumer.h>
++#include <linux/slab.h>
++#include <linux/spi/spi.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++struct ad7766_chip_info {
++	unsigned int decimation_factor;
++};
++
++enum {
++	AD7766_SUPPLY_AVDD = 0,
++	AD7766_SUPPLY_DVDD = 1,
++	AD7766_SUPPLY_VREF = 2,
++	AD7766_NUM_SUPPLIES = 3
++};
++
++struct ad7766 {
++	const struct ad7766_chip_info *chip_info;
++	struct spi_device *spi;
++	struct clk *mclk;
++	struct gpio_desc *pd_gpio;
++	struct regulator_bulk_data reg[AD7766_NUM_SUPPLIES];
++
++	struct iio_trigger *trig;
++
++	struct spi_transfer xfer;
++	struct spi_message msg;
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 * Make the buffer large enough for one 24 bit sample and one 64 bit
++	 * aligned 64 bit timestamp.
++	 */
++	unsigned char data[ALIGN(3, sizeof(s64)) + sizeof(s64)]
++			____cacheline_aligned;
++};
++
++/*
++ * AD7766 and AD7767 variations are interface compatible, the main difference is
++ * analog performance. Both parts will use the same ID.
++ */
++enum ad7766_device_ids {
++	ID_AD7766,
++	ID_AD7766_1,
++	ID_AD7766_2,
++};
++
++static irqreturn_t ad7766_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct ad7766 *ad7766 = iio_priv(indio_dev);
++	int ret;
++
++	ret = spi_sync(ad7766->spi, &ad7766->msg);
++	if (ret < 0)
++		goto done;
++
++	iio_push_to_buffers_with_timestamp(indio_dev, ad7766->data,
++		pf->timestamp);
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int ad7766_preenable(struct iio_dev *indio_dev)
++{
++	struct ad7766 *ad7766 = iio_priv(indio_dev);
++	int ret;
++
++	ret = regulator_bulk_enable(ARRAY_SIZE(ad7766->reg), ad7766->reg);
++	if (ret < 0) {
++		dev_err(&ad7766->spi->dev, "Failed to enable supplies: %d\n",
++			ret);
++		return ret;
++	}
++
++	ret = clk_prepare_enable(ad7766->mclk);
++	if (ret < 0) {
++		dev_err(&ad7766->spi->dev, "Failed to enable MCLK: %d\n", ret);
++		regulator_bulk_disable(ARRAY_SIZE(ad7766->reg), ad7766->reg);
++		return ret;
++	}
++
++	if (ad7766->pd_gpio)
++		gpiod_set_value(ad7766->pd_gpio, 0);
++
++	return 0;
++}
++
++static int ad7766_postdisable(struct iio_dev *indio_dev)
++{
++	struct ad7766 *ad7766 = iio_priv(indio_dev);
++
++	if (ad7766->pd_gpio)
++		gpiod_set_value(ad7766->pd_gpio, 1);
++
++	/*
++	 * The PD pin is synchronous to the clock, so give it some time to
++	 * notice the change before we disable the clock.
++	 */
++	msleep(20);
++
++	clk_disable_unprepare(ad7766->mclk);
++	regulator_bulk_disable(ARRAY_SIZE(ad7766->reg), ad7766->reg);
++
++	return 0;
++}
++
++static int ad7766_read_raw(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, int *val, int *val2, long info)
++{
++	struct ad7766 *ad7766 = iio_priv(indio_dev);
++	struct regulator *vref = ad7766->reg[AD7766_SUPPLY_VREF].consumer;
++	int scale_uv;
++
++	switch (info) {
++	case IIO_CHAN_INFO_SCALE:
++		scale_uv = regulator_get_voltage(vref);
++		if (scale_uv < 0)
++			return scale_uv;
++		*val = scale_uv / 1000;
++		*val2 = chan->scan_type.realbits;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = clk_get_rate(ad7766->mclk) /
++			ad7766->chip_info->decimation_factor;
++		return IIO_VAL_INT;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_chan_spec ad7766_channels[] = {
++	{
++		.type = IIO_VOLTAGE,
++		.indexed = 1,
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.scan_type = {
++			.sign = 's',
++			.realbits = 24,
++			.storagebits = 32,
++			.endianness = IIO_BE,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1),
++};
++
++static const struct ad7766_chip_info ad7766_chip_info[] = {
++	[ID_AD7766] = {
++		.decimation_factor = 8,
++	},
++	[ID_AD7766_1] = {
++		.decimation_factor = 16,
++	},
++	[ID_AD7766_2] = {
++		.decimation_factor = 32,
++	},
++};
++
++static const struct iio_buffer_setup_ops ad7766_buffer_setup_ops = {
++	.preenable = &ad7766_preenable,
++	.postenable = &iio_triggered_buffer_postenable,
++	.predisable = &iio_triggered_buffer_predisable,
++	.postdisable = &ad7766_postdisable,
++};
++
++static const struct iio_info ad7766_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = &ad7766_read_raw,
++};
++
++static irqreturn_t ad7766_irq(int irq, void *private)
++{
++	iio_trigger_poll(private);
++	return IRQ_HANDLED;
++}
++
++static int ad7766_set_trigger_state(struct iio_trigger *trig, bool enable)
++{
++	struct ad7766 *ad7766 = iio_trigger_get_drvdata(trig);
++
++	if (enable)
++		enable_irq(ad7766->spi->irq);
++	else
++		disable_irq(ad7766->spi->irq);
++
++	return 0;
++}
++
++static const struct iio_trigger_ops ad7766_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = ad7766_set_trigger_state,
++};
++
++static int ad7766_probe(struct spi_device *spi)
++{
++	const struct spi_device_id *id = spi_get_device_id(spi);
++	struct iio_dev *indio_dev;
++	struct ad7766 *ad7766;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*ad7766));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ad7766 = iio_priv(indio_dev);
++	ad7766->chip_info = &ad7766_chip_info[id->driver_data];
++
++	ad7766->mclk = devm_clk_get(&spi->dev, "mclk");
++	if (IS_ERR(ad7766->mclk))
++		return PTR_ERR(ad7766->mclk);
++
++	ad7766->reg[AD7766_SUPPLY_AVDD].supply = "avdd";
++	ad7766->reg[AD7766_SUPPLY_DVDD].supply = "dvdd";
++	ad7766->reg[AD7766_SUPPLY_VREF].supply = "vref";
++
++	ret = devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
++		ad7766->reg);
++	if (IS_ERR(ad7766->reg))
++		return PTR_ERR(ad7766->reg);
++
++	ad7766->pd_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
++		GPIOD_OUT_HIGH);
++	if (IS_ERR(ad7766->pd_gpio))
++		return PTR_ERR(ad7766->pd_gpio);
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = ad7766_channels;
++	indio_dev->num_channels = ARRAY_SIZE(ad7766_channels);
++	indio_dev->info = &ad7766_info;
++
++	if (spi->irq > 0) {
++		ad7766->trig = devm_iio_trigger_alloc(&spi->dev, "%s-dev%d",
++			indio_dev->name, indio_dev->id);
++		if (!ad7766->trig)
++			return -ENOMEM;
++
++		ad7766->trig->ops = &ad7766_trigger_ops;
++		iio_trigger_set_drvdata(ad7766->trig, ad7766);
++
++		ret = request_irq(spi->irq, ad7766_irq, IRQF_TRIGGER_FALLING,
++			dev_name(&spi->dev), ad7766->trig);
++		if (ret < 0)
++			return ret;
++
++		/*
++		 * The device generates interrupts as long as it is powered up.
++		 * Some platforms might not allow the option to power it down so
++		 * disable the interrupt to avoid extra load on the system
++		 */
++		disable_irq(spi->irq);
++
++		ret = iio_trigger_register(ad7766->trig);
++		if (ret)
++			goto err_free_irq;
++	}
++
++	spi_set_drvdata(spi, indio_dev);
++
++	ad7766->spi = spi;
++
++	/* First byte always 0 */
++	ad7766->xfer.rx_buf = &ad7766->data[1];
++	ad7766->xfer.len = 3;
++
++	spi_message_init(&ad7766->msg);
++	spi_message_add_tail(&ad7766->xfer, &ad7766->msg);
++
++	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
++		&ad7766_trigger_handler, &ad7766_buffer_setup_ops);
++	if (ret)
++		goto err_trigger_unregister;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto err_triggered_buffer_cleanup;
++	return 0;
++
++err_triggered_buffer_cleanup:
++	iio_triggered_buffer_cleanup(indio_dev);
++err_trigger_unregister:
++	if (spi->irq > 0)
++		iio_trigger_unregister(ad7766->trig);
++err_free_irq:
++	if (spi->irq > 0)
++		free_irq(spi->irq, ad7766->trig);
++
++	return ret;
++}
++
++static int ad7766_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct ad7766 *ad7766 = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	if (spi->irq > 0) {
++		iio_trigger_unregister(ad7766->trig);
++		free_irq(spi->irq, ad7766->trig);
++	}
++
++	return 0;
++}
++
++static const struct spi_device_id ad7766_id[] = {
++	{"ad7766", ID_AD7766},
++	{"ad7766-1", ID_AD7766_1},
++	{"ad7766-2", ID_AD7766_2},
++	{"ad7767", ID_AD7766},
++	{"ad7767-1", ID_AD7766_1},
++	{"ad7767-2", ID_AD7766_2},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, ad7766_id);
++
++static struct spi_driver ad7766_driver = {
++	.driver = {
++		.name	= "ad7766",
++	},
++	.probe		= ad7766_probe,
++	.remove		= ad7766_remove,
++	.id_table	= ad7766_id,
++};
++module_spi_driver(ad7766_driver);
++
++MODULE_AUTHOR("Lars-Peter Clausen <lars@metafoo.de>");
++MODULE_DESCRIPTION("Analog Devices AD7766 and AD7767 ADCs driver support");
++MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
