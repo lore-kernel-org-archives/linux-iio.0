@@ -1,72 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.162]:51682 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758136AbcIWMlg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 08:41:36 -0400
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>
-Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v3 2/8] drivers:input:tsc2007: send pendown and penup only once like ads7846(+tsc2046) driver does
-Date: Fri, 23 Sep 2016 14:41:10 +0200
-Message-Id: <9eab7072cf800efa30de74ba308ef5a1f943b045.1474634475.git.hns@goldelico.com>
-In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
-References: <cover.1474634475.git.hns@goldelico.com>
-In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
-References: <cover.1474634475.git.hns@goldelico.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48077 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966179AbcIVS1A (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2016 14:27:00 -0400
+Subject: Re: [PATCH v5 1/2] iio: inkern: add iio_read_channel_offset helper
+To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
+References: <1474340018-26647-1-git-send-email-matt@ranostay.consulting>
+ <1474340018-26647-2-git-send-email-matt@ranostay.consulting>
+Cc: Matt Ranostay <matt@ranostay.consulting>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <9e76487a-6586-3c53-2f4d-777d80b8faa8@kernel.org>
+Date: Thu, 22 Sep 2016 19:26:58 +0100
+MIME-Version: 1.0
+In-Reply-To: <1474340018-26647-2-git-send-email-matt@ranostay.consulting>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-this should reduce unnecessary input events.
+On 20/09/16 03:53, Matt Ranostay wrote:
+> Allow access to underlying channel IIO_CHAN_INFO_OFFSET from a consumer
+> 
+> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
+Hmm. This one is useful enough to justify it's own function, but
+sooner or later we should just have a single query that reads any
+of the info_mask elements if present.
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/input/touchscreen/tsc2007.c | 11 ++++++++---
- 1 file changed, 8 insertions(+), 3 deletions(-)
+Bonus points for a generic function that allows code sharing even
+for just the scale and offset cases that are now present.
 
-diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
-index 9a11509..e9d5086 100644
---- a/drivers/input/touchscreen/tsc2007.c
-+++ b/drivers/input/touchscreen/tsc2007.c
-@@ -94,6 +94,7 @@ struct tsc2007 {
- 
- 	wait_queue_head_t	wait;
- 	bool			stopped;
-+	bool			pendown;
- 
- 	int			(*get_pendown_state)(struct device *);
- 	void			(*clear_penirq)(void);
-@@ -254,9 +255,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- 
- 	dev_dbg(&ts->client->dev, "UP\n");
- 
--	input_report_key(input, BTN_TOUCH, 0);
--	input_report_abs(input, ABS_PRESSURE, 0);
--	input_sync(input);
-+	if (ts->pendown) {
-+		input_report_key(input, BTN_TOUCH, 0);
-+		input_report_abs(input, ABS_PRESSURE, 0);
-+		input_sync(input);
-+
-+		ts->pendown = false;
-+	}
- 
- 	if (ts->clear_penirq)
- 		ts->clear_penirq();
--- 
-2.7.3
+If that function was also exported then all the better - would 
+need moving the info_mask define out to types.h probably so the
+stuff in iio.h can remain opaque to consumers that aren't IIO
+drivers.
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/inkern.c         | 18 ++++++++++++++++++
+>  include/linux/iio/consumer.h | 13 +++++++++++++
+>  2 files changed, 31 insertions(+)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index c4757e6367e7..d90af439b0a3 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -658,6 +658,24 @@ err_unlock:
+>  }
+>  EXPORT_SYMBOL_GPL(iio_convert_raw_to_processed);
+>  
+> +int iio_read_channel_offset(struct iio_channel *chan, int *val, int *val2)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> +	if (chan->indio_dev->info == NULL) {
+> +		ret = -ENODEV;
+> +		goto err_unlock;
+> +	}
+> +
+> +	ret = iio_channel_read(chan, val, val2, IIO_CHAN_INFO_OFFSET);
+> +err_unlock:
+> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_read_channel_offset);
+> +
+>  int iio_read_channel_processed(struct iio_channel *chan, int *val)
+>  {
+>  	int ret;
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index 9edccfba1ffb..638157234357 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -236,6 +236,19 @@ int iio_get_channel_type(struct iio_channel *channel,
+>  			 enum iio_chan_type *type);
+>  
+>  /**
+> + * iio_read_channel_offset() - read the offset value for a channel
+> + * @chan:		The channel being queried.
+> + * @val:		First part of value read back.
+> + * @val2:		Second part of value read back.
+> + *
+> + * Note returns a description of what is in val and val2, such
+> + * as IIO_VAL_INT_PLUS_MICRO telling us we have a value of val
+> + * + val2/1e6
+> + */
+> +int iio_read_channel_offset(struct iio_channel *chan, int *val,
+> +			   int *val2);
+> +
+> +/**
+>   * iio_read_channel_scale() - read the scale value for a channel
+>   * @chan:		The channel being queried.
+>   * @val:		First part of value read back.
+> 
 
