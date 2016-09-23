@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:16235 "EHLO
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.218]:56376 "EHLO
         mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758955AbcIWMll (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 08:41:41 -0400
+        with ESMTP id S1757746AbcIWMlg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 08:41:36 -0400
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -21,9 +21,9 @@ Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
         letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
         "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v3 6/8] drivers:input:ads7846(+tsc2046): add new common binding names, pre-calibration and flipping
-Date: Fri, 23 Sep 2016 14:41:14 +0200
-Message-Id: <7f69bbab0e932cb00bd28668f56c8a30e83c59e0.1474634475.git.hns@goldelico.com>
+Subject: [PATCH v3 3/8] drivers:input:tsc2007: add iio interface to read external ADC input, temperature and raw conversion values
+Date: Fri, 23 Sep 2016 14:41:11 +0200
+Message-Id: <909d06d4f54359c7ac0dcf36a49cbd3ff7e8ebf2.1474634475.git.hns@goldelico.com>
 In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
 References: <cover.1474634475.git.hns@goldelico.com>
 In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
@@ -31,193 +31,254 @@ References: <cover.1474634475.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
-introduced common DT bindings for touchscreens [1] and a helper function to
-parse the DT.
+The tsc2007 chip not only has a resistive touch screen controller but
+also an external AUX adc imput which can be used for an ambient
+light sensor, battery voltage monitoring or any general purpose.
 
-commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-added another helper for parsing axis inversion and swapping
-and applying them to x and y coordinates.
+Additionally it can measure the chip temperature.
 
-Both helpers have been integrated to accommodate any orientation of the
-touch panel in relation to the LCD.
-
-A new feature is to introduce scaling the min/max ADC values to the screen
-size.
-
-This makes it possible to pre-calibrate the touch so that is (almost)
-exactly matches the LCD pixel coordinates it is glued onto. This allows to
-well enough operate the touch before a user space calibration step can
-improve the precision.
-
-[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+This extension provides an iio interface for these adc channels
+in addition to the raw x, y, z values and the estimated touch
+screen resistance. This can be used for debugging or special
+applications.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- .../devicetree/bindings/input/ads7846.txt          |  9 +++-
- drivers/input/touchscreen/ads7846.c                | 60 ++++++++++++++++++----
- 2 files changed, 57 insertions(+), 12 deletions(-)
+ drivers/input/touchscreen/Kconfig   |   1 +
+ drivers/input/touchscreen/tsc2007.c | 137 +++++++++++++++++++++++++++++++++++-
+ 2 files changed, 136 insertions(+), 2 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/input/ads7846.txt b/Documentation/devicetree/bindings/input/ads7846.txt
-index 9fc47b0..29f91ed 100644
---- a/Documentation/devicetree/bindings/input/ads7846.txt
-+++ b/Documentation/devicetree/bindings/input/ads7846.txt
-@@ -26,6 +26,12 @@ Additional required properties:
+diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+index 2fb1f43..84c28e8 100644
+--- a/drivers/input/touchscreen/Kconfig
++++ b/drivers/input/touchscreen/Kconfig
+@@ -1019,6 +1019,7 @@ config TOUCHSCREEN_TSC2005
+ config TOUCHSCREEN_TSC2007
+ 	tristate "TSC2007 based touchscreens"
+ 	depends on I2C
++	select IIO
+ 	help
+ 	  Say Y here if you have a TSC2007 based touchscreen.
  
- Optional properties:
+diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+index e9d5086..559cbc6 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -30,6 +30,9 @@
+ #include <linux/of.h>
+ #include <linux/of_gpio.h>
+ #include <linux/input/touchscreen.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/machine.h>
++#include <linux/iio/driver.h>
  
-+You can optionally specify any of the touchscreen parameters described in
+ #define TSC2007_MEASURE_TEMP0		(0x0 << 4)
+ #define TSC2007_MEASURE_AUX		(0x2 << 4)
+@@ -61,6 +64,16 @@
+ #define READ_X		(ADC_ON_12BIT | TSC2007_MEASURE_X)
+ #define PWRDOWN		(TSC2007_12BIT | TSC2007_POWER_OFF_IRQ_EN)
+ 
++#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
++{ \
++	.datasheet_name = _name, \
++	.type = _type, \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
++			BIT(_chan_info), \
++	.indexed = 1, \
++	.channel = _chan, \
++}
 +
-+	Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
-+
-+This allows to scale, invert or swap coordinates and define the fuzz factors.
-+
- 	ti,vref-delay-usecs		vref supply delay in usecs, 0 for
- 					external vref (u16).
- 	ti,vref-mv			The VREF voltage, in millivolts (u16).
-@@ -33,7 +39,7 @@ Optional properties:
- 					(ADS7846).
- 	ti,keep-vref-on			set to keep vref on for differential
- 					measurements as well
--	ti,swap-xy			swap x and y axis
-+	ti,swap-xy			deprecated name for touchscreen-swapped-x-y
- 	ti,settle-delay-usec		Settling time of the analog signals;
- 					a function of Vcc and the capacitance
- 					on the X/Y drivers.  If set to non-zero,
-@@ -82,6 +88,7 @@ Example for a TSC2046 chip connected to an McSPI controller of an OMAP SoC::
- 			pendown-gpio = <&gpio1 8 0>;
- 			vcc-supply = <&reg_vcc3>;
+ struct ts_event {
+ 	u16	x;
+ 	u16	y;
+@@ -69,9 +82,11 @@ struct ts_event {
  
-+			touchscreen-swapped-x-y;
- 			ti,x-min = /bits/ 16 <0>;
- 			ti,x-max = /bits/ 16 <8000>;
- 			ti,y-min = /bits/ 16 <0>;
-diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
-index 1ce3ecb..400e421 100644
---- a/drivers/input/touchscreen/ads7846.c
-+++ b/drivers/input/touchscreen/ads7846.c
-@@ -34,6 +34,7 @@
- #include <linux/spi/ads7846.h>
- #include <linux/regulator/consumer.h>
- #include <linux/module.h>
-+#include <linux/input/touchscreen.h>
- #include <asm/irq.h>
+ struct tsc2007 {
+ 	struct input_dev	*input;
++	struct iio_dev		*indio;
+ 	char			phys[32];
  
- /*
-@@ -109,8 +110,13 @@ struct ads7846 {
- 	u16			vref_delay_usecs;
+ 	struct i2c_client	*client;
++	struct mutex		mlock;
+ 
+ 	u16			model;
  	u16			x_plate_ohms;
- 	u16			pressure_max;
-+	u16			x_min;
-+	u16			x_max;
-+	u16			y_min;
-+	u16			y_max;
+@@ -192,7 +207,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
+ 
+ 		/* pen is down, continue with the measurement */
 +
-+	struct touchscreen_properties prop;
++		mutex_lock(&ts->mlock);
+ 		tsc2007_read_values(ts, &tc);
++		mutex_unlock(&ts->mlock);
  
--	bool			swap_xy;
- 	bool			use_internal;
+ 		rt = tsc2007_calculate_resistance(ts, &tc);
  
- 	struct ads7846_packet	*packet;
-@@ -825,22 +831,36 @@ static void ads7846_report_state(struct ads7846 *ts)
- 	 */
- 	if (Rt) {
- 		struct input_dev *input = ts->input;
-+		int sx, sy;
-+
-+		dev_dbg(&ts->spi->dev,
-+			"Raw point(%4d,%4d), pressure (%4u)\n",
-+				x, y, Rt);
-+
-+		/* scale ADC values to desired output range */
-+		sx = (ts->prop.max_x * (x - ts->x_min))
-+			/ (ts->x_max - ts->x_min);
-+		sy = (ts->prop.max_y * (y - ts->y_min))
-+			/ (ts->y_max - ts->y_min);
- 
--		if (ts->swap_xy)
--			swap(x, y);
-+		dev_dbg(&ts->spi->dev,
-+			"Scaled point(%4d,%4d), pressure (%4u)\n",
-+				sx, sy, Rt);
- 
-+		/* report event */
- 		if (!ts->pendown) {
- 			input_report_key(input, BTN_TOUCH, 1);
- 			ts->pendown = true;
- 			dev_vdbg(&ts->spi->dev, "DOWN\n");
- 		}
- 
--		input_report_abs(input, ABS_X, x);
--		input_report_abs(input, ABS_Y, y);
-+		touchscreen_report_pos(ts->input, &ts->prop,
-+				       (unsigned int) sx, (unsigned int) sy,
-+				       false);
- 		input_report_abs(input, ABS_PRESSURE, ts->pressure_max - Rt);
- 
- 		input_sync(input);
--		dev_vdbg(&ts->spi->dev, "%4d/%4d/%4d\n", x, y, Rt);
-+		dev_vdbg(&ts->spi->dev, "%4d/%4d/%4d\n", sx, sy, Rt);
- 	}
+@@ -319,6 +337,86 @@ static void tsc2007_close(struct input_dev *input_dev)
+ 	tsc2007_stop(ts);
  }
  
-@@ -1212,6 +1232,8 @@ static const struct ads7846_platform_data *ads7846_probe_dt(struct device *dev)
- 	pdata->keep_vref_on = of_property_read_bool(node, "ti,keep-vref-on");
- 
- 	pdata->swap_xy = of_property_read_bool(node, "ti,swap-xy");
-+	if (pdata->swap_xy)
-+		dev_notice(dev, "please update device tree to use touchscreen-swapped-x-y");
- 
- 	of_property_read_u16(node, "ti,settle-delay-usec",
- 			     &pdata->settle_delay_usecs);
-@@ -1315,7 +1337,6 @@ static int ads7846_probe(struct spi_device *spi)
- 	ts->pressure_max = pdata->pressure_max ? : ~0;
- 
- 	ts->vref_mv = pdata->vref_mv;
--	ts->swap_xy = pdata->swap_xy;
- 
- 	if (pdata->filter != NULL) {
- 		if (pdata->filter_init != NULL) {
-@@ -1355,18 +1376,35 @@ static int ads7846_probe(struct spi_device *spi)
- 	input_dev->dev.parent = &spi->dev;
- 
- 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
-+	input_dev->absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) |
-+				BIT_MASK(ABS_PRESSURE);
- 	input_dev->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
++static const struct iio_chan_spec tsc2007_iio_channel[] = {
++	TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* Ohms? */
++	TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
++	TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
++};
 +
-+	ts->x_min = pdata->x_min ? : 0;
-+	ts->x_max = pdata->x_max ? : MAX_12BIT;
-+	ts->y_min = pdata->y_min ? : 0;
-+	ts->y_max = pdata->y_max ? : MAX_12BIT;
++static int tsc2007_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
++{
++	struct  tsc2007 *tsc = iio_priv(indio_dev);
++	int adc_chan = chan->channel;
++	int ret = 0;
 +
- 	input_set_abs_params(input_dev, ABS_X,
--			pdata->x_min ? : 0,
--			pdata->x_max ? : MAX_12BIT,
-+			ts->x_min,
-+			ts->x_max,
- 			0, 0);
- 	input_set_abs_params(input_dev, ABS_Y,
--			pdata->y_min ? : 0,
--			pdata->y_max ? : MAX_12BIT,
-+			ts->y_min,
-+			ts->y_max,
- 			0, 0);
- 	input_set_abs_params(input_dev, ABS_PRESSURE,
- 			pdata->pressure_min, pdata->pressure_max, 0, 0);
- 
-+	if (spi->dev.of_node) {
-+		input_abs_set_min(input_dev, ABS_X, 0);
-+		input_abs_set_min(input_dev, ABS_Y, 0);
++	if (adc_chan >= ARRAY_SIZE(tsc2007_iio_channel))
++		return -EINVAL;
 +
-+		touchscreen_parse_properties(ts->input, false, &ts->prop);
++	if (mask != IIO_CHAN_INFO_RAW)
++		return -EINVAL;
++
++	mutex_lock(&tsc->mlock);
++
++	switch (chan->channel) {
++	case 0:
++		*val = tsc2007_xfer(tsc, READ_X);
++		break;
++	case 1:
++		*val = tsc2007_xfer(tsc, READ_Y);
++		break;
++	case 2:
++		*val = tsc2007_xfer(tsc, READ_Z1);
++		break;
++	case 3:
++		*val = tsc2007_xfer(tsc, READ_Z2);
++		break;
++	case 4:
++		*val = tsc2007_xfer(tsc, (ADC_ON_12BIT | TSC2007_MEASURE_AUX));
++		break;
++	case 5: {
++		struct ts_event tc;
++
++		tc.x = tsc2007_xfer(tsc, READ_X);
++		tc.z1 = tsc2007_xfer(tsc, READ_Z1);
++		tc.z2 = tsc2007_xfer(tsc, READ_Z2);
++		*val = tsc2007_calculate_resistance(tsc, &tc);
++		break;
++	}
++	case 6:
++		*val = tsc2007_is_pen_down(tsc);
++		break;
++	case 7:
++		*val = tsc2007_xfer(tsc,
++				    (ADC_ON_12BIT | TSC2007_MEASURE_TEMP0));
++		break;
++	case 8:
++		*val = tsc2007_xfer(tsc,
++				    (ADC_ON_12BIT | TSC2007_MEASURE_TEMP1));
++		break;
 +	}
 +
-+	ts->prop.swap_x_y |= pdata->swap_xy;
++	/* Prepare for next touch reading - power down ADC, enable PENIRQ */
++	tsc2007_xfer(tsc, PWRDOWN);
 +
- 	ads7846_setup_spi_msg(ts, pdata);
++	mutex_unlock(&tsc->mlock);
++
++	ret = IIO_VAL_INT;
++
++	return ret;
++}
++
++static const struct iio_info tsc2007_iio_info = {
++	.read_raw = tsc2007_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
+ #ifdef CONFIG_OF
+ static int tsc2007_get_pendown_state_gpio(struct device *dev)
+ {
+@@ -453,15 +551,20 @@ static int tsc2007_probe(struct i2c_client *client,
+ 	const struct tsc2007_platform_data *pdata = dev_get_platdata(&client->dev);
+ 	struct tsc2007 *ts;
+ 	struct input_dev *input_dev;
++	struct iio_dev *indio_dev;
+ 	int err;
  
- 	ts->reg = regulator_get(&spi->dev, "vcc");
+ 	if (!i2c_check_functionality(client->adapter,
+ 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
+ 		return -EIO;
+ 
+-	ts = devm_kzalloc(&client->dev, sizeof(struct tsc2007), GFP_KERNEL);
+-	if (!ts)
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*ts));
++	if (!indio_dev) {
++		dev_err(&client->dev, "iio_device_alloc failed\n");
+ 		return -ENOMEM;
++	}
++
++	ts = iio_priv(indio_dev);
+ 
+ 	input_dev = devm_input_allocate_device(&client->dev);
+ 	if (!input_dev)
+@@ -469,10 +572,26 @@ static int tsc2007_probe(struct i2c_client *client,
+ 
+ 	i2c_set_clientdata(client, ts);
+ 
++	indio_dev->name = "tsc2007";
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &tsc2007_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = tsc2007_iio_channel;
++	indio_dev->num_channels = ARRAY_SIZE(tsc2007_iio_channel);
++
++	err = iio_device_register(indio_dev);
++	if (err < 0) {
++		dev_err(&client->dev, "iio_device_register() failed: %d\n",
++			err);
++		return err;
++	}
++
+ 	ts->client = client;
+ 	ts->irq = client->irq;
+ 	ts->input = input_dev;
++	ts->indio = indio_dev;
+ 	init_waitqueue_head(&ts->wait);
++	mutex_init(&ts->mlock);
+ 
+ 	snprintf(ts->phys, sizeof(ts->phys),
+ 		 "%s/input0", dev_name(&client->dev));
+@@ -548,6 +667,19 @@ static int tsc2007_probe(struct i2c_client *client,
+ 	return 0;
+ }
+ 
++static int tsc2007_remove(struct i2c_client *client)
++{
++	struct tsc2007 *ts = i2c_get_clientdata(client);
++	struct input_dev *input_dev = ts->input;
++	struct iio_dev *indio_dev = ts->indio;
++
++	input_unregister_device(input_dev);
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
+ static const struct i2c_device_id tsc2007_idtable[] = {
+ 	{ "tsc2007", 0 },
+ 	{ }
+@@ -570,6 +702,7 @@ static struct i2c_driver tsc2007_driver = {
+ 	},
+ 	.id_table	= tsc2007_idtable,
+ 	.probe		= tsc2007_probe,
++	.remove		= tsc2007_remove,
+ };
+ 
+ module_i2c_driver(tsc2007_driver);
 -- 
 2.7.3
 
