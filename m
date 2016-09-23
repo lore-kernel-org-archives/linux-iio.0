@@ -1,63 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:44061 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1035359AbcIWPTv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 11:19:51 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Philippe Reynes <tremyfr@yahoo.fr>,
-        Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH v3 2/4] iio:mma8452: Use new iio_trigger_validate_own_device() helper
-Date: Fri, 23 Sep 2016 17:19:42 +0200
-Message-Id: <1474643984-14262-2-git-send-email-lars@metafoo.de>
-In-Reply-To: <1474643984-14262-1-git-send-email-lars@metafoo.de>
-References: <1474643984-14262-1-git-send-email-lars@metafoo.de>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.162]:51682 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758136AbcIWMlg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 08:41:36 -0400
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: [PATCH v3 2/8] drivers:input:tsc2007: send pendown and penup only once like ads7846(+tsc2046) driver does
+Date: Fri, 23 Sep 2016 14:41:10 +0200
+Message-Id: <9eab7072cf800efa30de74ba308ef5a1f943b045.1474634475.git.hns@goldelico.com>
+In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
+References: <cover.1474634475.git.hns@goldelico.com>
+In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
+References: <cover.1474634475.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Use the new iio_trigger_validate_own_device() to verify that the trigger
-can only be attached to the matching IIO device rather than using a custom
-variant.
+this should reduce unnecessary input events.
 
-While the implementation of iio_trigger_validate_own_device() and the
-custom variant and are not identical their behaviour is.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
-New in v3
----
- drivers/iio/accel/mma8452.c | 13 +------------
- 1 file changed, 1 insertion(+), 12 deletions(-)
+ drivers/input/touchscreen/tsc2007.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index d41e1b5..1c70515 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -1347,20 +1347,9 @@ static int mma8452_data_rdy_trigger_set_state(struct iio_trigger *trig,
- 	return mma8452_change_config(data, MMA8452_CTRL_REG4, reg);
- }
+diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+index 9a11509..e9d5086 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -94,6 +94,7 @@ struct tsc2007 {
  
--static int mma8452_validate_device(struct iio_trigger *trig,
--				   struct iio_dev *indio_dev)
--{
--	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
--
--	if (indio != indio_dev)
--		return -EINVAL;
--
--	return 0;
--}
--
- static const struct iio_trigger_ops mma8452_trigger_ops = {
- 	.set_trigger_state = mma8452_data_rdy_trigger_set_state,
--	.validate_device = mma8452_validate_device,
-+	.validate_device = iio_trigger_validate_own_device,
- 	.owner = THIS_MODULE,
- };
+ 	wait_queue_head_t	wait;
+ 	bool			stopped;
++	bool			pendown;
  
+ 	int			(*get_pendown_state)(struct device *);
+ 	void			(*clear_penirq)(void);
+@@ -254,9 +255,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 
+ 	dev_dbg(&ts->client->dev, "UP\n");
+ 
+-	input_report_key(input, BTN_TOUCH, 0);
+-	input_report_abs(input, ABS_PRESSURE, 0);
+-	input_sync(input);
++	if (ts->pendown) {
++		input_report_key(input, BTN_TOUCH, 0);
++		input_report_abs(input, ABS_PRESSURE, 0);
++		input_sync(input);
++
++		ts->pendown = false;
++	}
+ 
+ 	if (ts->clear_penirq)
+ 		ts->clear_penirq();
 -- 
-2.1.4
+2.7.3
 
