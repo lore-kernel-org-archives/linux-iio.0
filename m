@@ -1,98 +1,121 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48077 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S966179AbcIVS1A (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2016 14:27:00 -0400
-Subject: Re: [PATCH v5 1/2] iio: inkern: add iio_read_channel_offset helper
-To: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-References: <1474340018-26647-1-git-send-email-matt@ranostay.consulting>
- <1474340018-26647-2-git-send-email-matt@ranostay.consulting>
-Cc: Matt Ranostay <matt@ranostay.consulting>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9e76487a-6586-3c53-2f4d-777d80b8faa8@kernel.org>
-Date: Thu, 22 Sep 2016 19:26:58 +0100
+Return-Path: <bankarsandhya512@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <1474340018-26647-2-git-send-email-matt@ranostay.consulting>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Reply-To: bankarsandhya512@gmail.com
+In-Reply-To: <cdae23c1-66de-6ad7-6f4a-059a78c652f3@metafoo.de>
+References: <20160923061312.GA5050@localhost.localdomain> <cdae23c1-66de-6ad7-6f4a-059a78c652f3@metafoo.de>
+From: sandhya bankar <bankarsandhya512@gmail.com>
+Date: Sat, 24 Sep 2016 01:18:28 +0530
+Message-ID: <CAA3ASz=0rZ7-rJ3muhicfapgNhUHJOmC=7QjWGJJt3cGSCgCxw@mail.gmail.com>
+Subject: Re: [PATCH] drivers: iio: max1027: Fix sparse warning: "dubious: x | !y"
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: jic23@kernel.org, knaack.h@gmx.de,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Daniel Baluta <Daniel.baluta@gmail.com>, Alison Schofield <amsfield22@gmail.com>
+Content-Type: multipart/alternative; boundary=001a1146f078f7d440053d320fe9
+List-ID: <linux-iio@vger.kernel.org>
 
-On 20/09/16 03:53, Matt Ranostay wrote:
-> Allow access to underlying channel IIO_CHAN_INFO_OFFSET from a consumer
-> 
-> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
-Hmm. This one is useful enough to justify it's own function, but
-sooner or later we should just have a single query that reads any
-of the info_mask elements if present.
+--001a1146f078f7d440053d320fe9
+Content-Type: text/plain; charset=UTF-8
 
-Bonus points for a generic function that allows code sharing even
-for just the scale and offset cases that are now present.
+On Fri, Sep 23, 2016 at 8:52 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-If that function was also exported then all the better - would 
-need moving the info_mask define out to types.h probably so the
-stuff in iio.h can remain opaque to consumers that aren't IIO
-drivers.
+> On 09/23/2016 08:13 AM, Sandhya Bankar wrote:
+> > Fixing below warning:
+> > drivers/iio/adc/max1027.c:241:34: warning: dubious: x | !y .
+> >
+> > Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
+>
+> Hi,
+>
+> Thanks for the patch. Looks good in general, just one minor detail
+>
+>
+Thanks for review !
+
+ I will incorporate your suggestion and send new patch.
+
 
 Thanks,
+Sandhya
 
-Jonathan
-> ---
->  drivers/iio/inkern.c         | 18 ++++++++++++++++++
->  include/linux/iio/consumer.h | 13 +++++++++++++
->  2 files changed, 31 insertions(+)
-> 
-> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> index c4757e6367e7..d90af439b0a3 100644
-> --- a/drivers/iio/inkern.c
-> +++ b/drivers/iio/inkern.c
-> @@ -658,6 +658,24 @@ err_unlock:
->  }
->  EXPORT_SYMBOL_GPL(iio_convert_raw_to_processed);
->  
-> +int iio_read_channel_offset(struct iio_channel *chan, int *val, int *val2)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> +	if (chan->indio_dev->info == NULL) {
-> +		ret = -ENODEV;
-> +		goto err_unlock;
-> +	}
-> +
-> +	ret = iio_channel_read(chan, val, val2, IIO_CHAN_INFO_OFFSET);
-> +err_unlock:
-> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> +
-> +	return ret;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_read_channel_offset);
-> +
->  int iio_read_channel_processed(struct iio_channel *chan, int *val)
->  {
->  	int ret;
-> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> index 9edccfba1ffb..638157234357 100644
-> --- a/include/linux/iio/consumer.h
-> +++ b/include/linux/iio/consumer.h
-> @@ -236,6 +236,19 @@ int iio_get_channel_type(struct iio_channel *channel,
->  			 enum iio_chan_type *type);
->  
->  /**
-> + * iio_read_channel_offset() - read the offset value for a channel
-> + * @chan:		The channel being queried.
-> + * @val:		First part of value read back.
-> + * @val2:		Second part of value read back.
-> + *
-> + * Note returns a description of what is in val and val2, such
-> + * as IIO_VAL_INT_PLUS_MICRO telling us we have a value of val
-> + * + val2/1e6
-> + */
-> +int iio_read_channel_offset(struct iio_channel *chan, int *val,
-> +			   int *val2);
-> +
-> +/**
->   * iio_read_channel_scale() - read the scale value for a channel
->   * @chan:		The channel being queried.
->   * @val:		First part of value read back.
-> 
 
+> > ---
+> >  drivers/iio/adc/max1027.c | 4 +++-
+> >  1 file changed, 3 insertions(+), 1 deletion(-)
+> >
+> > diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+> > index 712fbd2..b1fee47 100644
+> > --- a/drivers/iio/adc/max1027.c
+> > +++ b/drivers/iio/adc/max1027.c
+> > @@ -238,7 +238,9 @@ static int max1027_read_single_value(struct iio_dev
+> *indio_dev,
+> >
+> >       /* Configure conversion register with the requested chan */
+> >       st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
+> > -               MAX1027_NOSCAN | !!(chan->type == IIO_TEMP);
+> > +               MAX1027_NOSCAN;
+> > +     if (chan->type == IIO_TEMP)
+> > +             st->reg |= 1;
+>
+> The driver has a symbolic constant defined for this 'MAX1027_TEMP'. Using
+> this instead of the number makes it clear what the semantic meaning of the
+> value is.
+>
+>
+
+--001a1146f078f7d440053d320fe9
+Content-Type: text/html; charset=UTF-8
+Content-Transfer-Encoding: quoted-printable
+
+<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
+te">On Fri, Sep 23, 2016 at 8:52 PM, Lars-Peter Clausen <span dir=3D"ltr">&=
+lt;<a href=3D"mailto:lars@metafoo.de" target=3D"_blank">lars@metafoo.de</a>=
+&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
+ 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">On 09=
+/23/2016 08:13 AM, Sandhya Bankar wrote:<br>
+&gt; Fixing below warning:<br>
+&gt; drivers/iio/adc/max1027.c:241:<wbr>34: warning: dubious: x | !y .<br>
+&gt;<br>
+&gt; Signed-off-by: Sandhya Bankar &lt;<a href=3D"mailto:bankarsandhya512@g=
+mail.com">bankarsandhya512@gmail.com</a>&gt;<br>
+<br>
+</span>Hi,<br>
+<br>
+Thanks for the patch. Looks good in general, just one minor detail<br>
+<span class=3D""><br></span></blockquote><div><br></div><div>Thanks for rev=
+iew !<br><br>=C2=A0I will incorporate your suggestion and send new patch.<b=
+r><br><br></div><div>Thanks,<br></div><div>Sandhya<br></div><div>=C2=A0</di=
+v><blockquote class=3D"gmail_quote" style=3D"margin:0 0 0 .8ex;border-left:=
+1px #ccc solid;padding-left:1ex"><span class=3D"">
+&gt; ---<br>
+&gt;=C2=A0 drivers/iio/adc/max1027.c | 4 +++-<br>
+&gt;=C2=A0 1 file changed, 3 insertions(+), 1 deletion(-)<br>
+&gt;<br>
+&gt; diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c<br>
+&gt; index 712fbd2..b1fee47 100644<br>
+&gt; --- a/drivers/iio/adc/max1027.c<br>
+&gt; +++ b/drivers/iio/adc/max1027.c<br>
+&gt; @@ -238,7 +238,9 @@ static int max1027_read_single_value(<wbr>struct i=
+io_dev *indio_dev,<br>
+&gt;<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0/* Configure conversion register with the re=
+quested chan */<br>
+&gt;=C2=A0 =C2=A0 =C2=A0 =C2=A0st-&gt;reg =3D MAX1027_CONV_REG | MAX1027_CH=
+AN(chan-&gt;channel) |<br>
+&gt; -=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0MAX1027_NOSCAN=
+ | !!(chan-&gt;type =3D=3D IIO_TEMP);<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0MAX1027_NOSCAN=
+;<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0if (chan-&gt;type =3D=3D IIO_TEMP)<br>
+&gt; +=C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0st-&gt;reg |=3D 1;<br=
+>
+<br>
+</span>The driver has a symbolic constant defined for this &#39;MAX1027_TEM=
+P&#39;. Using<br>
+this instead of the number makes it clear what the semantic meaning of the<=
+br>
+value is.<br>
+<br>
+</blockquote></div><br></div></div>
+
+--001a1146f078f7d440053d320fe9--
