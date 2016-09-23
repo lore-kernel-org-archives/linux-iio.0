@@ -1,44 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:36391 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933263AbcIVUov (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2016 16:44:51 -0400
-Received: by mail-pf0-f193.google.com with SMTP id n24so4230215pfb.3
-        for <linux-iio@vger.kernel.org>; Thu, 22 Sep 2016 13:44:51 -0700 (PDT)
-Date: Fri, 23 Sep 2016 02:14:43 +0530
-From: Sandhya Bankar <bankarsandhya512@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, linux-iio@vger.kernel.org,
-        lars@metafoo.de, pmeerw@pmeerw.net
-Subject: [PATCH] drivers: iio: mma7660: Fix sparse warning
-Message-ID: <20160922204443.GA5786@localhost.localdomain>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from www381.your-server.de ([78.46.137.84]:44059 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1035364AbcIWPTw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 11:19:52 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org,
+        Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH v3 1/4] iio:trigger: Add helper function to verify that a trigger belongs to the same device
+Date: Fri, 23 Sep 2016 17:19:41 +0200
+Message-Id: <1474643984-14262-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixing belows sparse warning :
+Some triggers can only be attached to the IIO device that corresponds to
+the same physical device. Currently each driver that requires this
+implements its own trigger validation function.
 
-drivers/iio/accel/mma7660.c:42:11: warning: symbol 'mma7660_nscale' 
-was not declared. Should it be static?
+Introduce a new helper function called iio_trigger_validate_own_device()
+that can be used to do this check. Having a common implementation avoids
+code duplication and unnecessary boiler-plate code.
 
-Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/accel/mma7660.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+New in v3
+---
+ drivers/iio/industrialio-trigger.c | 21 +++++++++++++++++++++
+ include/linux/iio/trigger.h        |  2 ++
+ 2 files changed, 23 insertions(+)
 
-diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
-index 03beadf..3a40774 100644
---- a/drivers/iio/accel/mma7660.c
-+++ b/drivers/iio/accel/mma7660.c
-@@ -39,7 +39,7 @@
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index e1e1048..05b2011 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -717,6 +717,27 @@ bool iio_trigger_using_own(struct iio_dev *indio_dev)
+ }
+ EXPORT_SYMBOL(iio_trigger_using_own);
  
- #define MMA7660_SCALE_AVAIL	"0.467142857"
++/**
++ * iio_trigger_validate_own_device - Check if a trigger and IIO device belong to
++ *  the same device
++ * @trig: The IIO trigger to check
++ * @indio_devdev: the IIO device to check
++ *
++ * This function can be used as the validate_device callback for triggers that
++ * can only be attached to their own device.
++ *
++ * Return: 0 if both the trigger and the IIO device belong to the same
++ * device, -EINVAL otherwise.
++ */
++int iio_trigger_validate_own_device(struct iio_trigger *trig,
++	struct iio_dev *indio_dev)
++{
++	if (indio_dev->dev.parent != trig->dev.parent)
++		return -EINVAL;
++	return 0;
++}
++EXPORT_SYMBOL(iio_trigger_validate_own_device);
++
+ void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+ {
+ 	indio_dev->groups[indio_dev->groupcounter++] =
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index 4f1154f..ea08302 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -170,6 +170,8 @@ void iio_trigger_free(struct iio_trigger *trig);
+  */
+ bool iio_trigger_using_own(struct iio_dev *indio_dev);
  
--const int mma7660_nscale = 467142857;
-+static const int mma7660_nscale = 467142857;
++int iio_trigger_validate_own_device(struct iio_trigger *trig,
++				     struct iio_dev *indio_dev);
  
- #define MMA7660_CHANNEL(reg, axis) {	\
- 	.type = IIO_ACCEL,	\
+ #else
+ struct iio_trigger;
 -- 
-1.8.3.1
+2.1.4
 
