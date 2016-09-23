@@ -1,315 +1,233 @@
-Return-Path: <mugunthanvnm@ti.com>
-From: Mugunthan V N <mugunthanvnm@ti.com>
-To: <linux-iio@vger.kernel.org>
-CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark
- Rutland <mark.rutland@arm.com>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi0-f67.google.com ([209.85.218.67]:32989 "EHLO
+        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1761234AbcIWWuZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 18:50:25 -0400
+Date: Fri, 23 Sep 2016 17:50:23 -0500
+From: Rob Herring <robh@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R
-	<vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Mugunthan V N <mugunthanvnm@ti.com>
-Subject: [PATCH 2/4] drivers: iio: ti_am335x_adc: add dma support
-Date: Wed, 21 Sep 2016 21:41:32 +0530
-Message-ID: <20160921161134.6951-3-mugunthanvnm@ti.com>
-In-Reply-To: <20160921161134.6951-1-mugunthanvnm@ti.com>
-References: <20160921161134.6951-1-mugunthanvnm@ti.com>
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 6/8] drivers:input:ads7846(+tsc2046): add new common
+ binding names, pre-calibration and flipping
+Message-ID: <20160923225023.GA9994@rob-hp-laptop>
+References: <cover.1474634475.git.hns@goldelico.com>
+ <7f69bbab0e932cb00bd28668f56c8a30e83c59e0.1474634475.git.hns@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <7f69bbab0e932cb00bd28668f56c8a30e83c59e0.1474634475.git.hns@goldelico.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This patch adds the required pieces to ti_am335x_adc driver for
-DMA support
+On Fri, Sep 23, 2016 at 02:41:14PM +0200, H. Nikolaus Schaller wrote:
+> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+> introduced common DT bindings for touchscreens [1] and a helper function to
+> parse the DT.
+> 
+> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+> added another helper for parsing axis inversion and swapping
+> and applying them to x and y coordinates.
+> 
+> Both helpers have been integrated to accommodate any orientation of the
+> touch panel in relation to the LCD.
+> 
+> A new feature is to introduce scaling the min/max ADC values to the screen
+> size.
+> 
+> This makes it possible to pre-calibrate the touch so that is (almost)
+> exactly matches the LCD pixel coordinates it is glued onto. This allows to
+> well enough operate the touch before a user space calibration step can
+> improve the precision.
 
-Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
----
- drivers/iio/adc/ti_am335x_adc.c      | 160 ++++++++++++++++++++++++++++++++++-
- include/linux/mfd/ti_am335x_tscadc.h |   7 ++
- 2 files changed, 164 insertions(+), 3 deletions(-)
+This appears to be the prior patch's commit msg, or you don't need ADC 
+values in DT for this one?
 
-diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-index c3cfacca..89d0b07 100644
---- a/drivers/iio/adc/ti_am335x_adc.c
-+++ b/drivers/iio/adc/ti_am335x_adc.c
-@@ -30,10 +30,32 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/kfifo_buf.h>
- 
-+#include <linux/dmaengine.h>
-+#include <linux/dma-mapping.h>
-+
-+#define DMA_BUFFER_SIZE		SZ_2K
-+
-+struct tiadc_dma {
-+	/* Filter function */
-+	dma_filter_fn		fn;
-+	/* Parameter to the filter function */
-+	void			*param;
-+	struct dma_slave_config	conf;
-+	struct dma_chan		*chan;
-+	dma_addr_t		addr;
-+	dma_cookie_t		cookie;
-+	u8			*buf;
-+	bool			valid_buf_seg;
-+	int			buf_offset;
-+	u8			fifo_thresh;
-+};
-+
- struct tiadc_device {
- 	struct ti_tscadc_dev *mfd_tscadc;
-+	struct tiadc_dma dma;
- 	struct mutex fifo1_lock; /* to protect fifo access */
- 	int channels;
-+	int total_ch_enabled;
- 	u8 channel_line[8];
- 	u8 channel_step[8];
- 	int buffer_en_ch_steps;
-@@ -184,6 +206,7 @@ static irqreturn_t tiadc_worker_h(int irq, void *private)
- 	u16 *data = adc_dev->data;
- 
- 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-+
- 	for (k = 0; k < fifo1count; k = k + i) {
- 		for (i = 0; i < (indio_dev->scan_bytes)/2; i++) {
- 			read = tiadc_readl(adc_dev, REG_FIFO1);
-@@ -198,6 +221,68 @@ static irqreturn_t tiadc_worker_h(int irq, void *private)
- 	return IRQ_HANDLED;
- }
- 
-+static void tiadc_dma_rx_complete(void *param)
-+{
-+	struct iio_dev *indio_dev = param;
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	struct tiadc_dma *dma = &adc_dev->dma;
-+	u8 *data;
-+	int i;
-+
-+	data = dma->valid_buf_seg ? dma->buf + dma->buf_offset : dma->buf;
-+	dma->valid_buf_seg = !dma->valid_buf_seg;
-+
-+	for (i = 0; i < dma->buf_offset; i += indio_dev->scan_bytes) {
-+		iio_push_to_buffers(indio_dev, data);
-+		data += indio_dev->scan_bytes;
-+	}
-+}
-+
-+static int tiadc_start_dma(struct iio_dev *indio_dev)
-+{
-+	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	struct tiadc_dma *dma = &adc_dev->dma;
-+	struct dma_async_tx_descriptor *desc;
-+
-+	dma->valid_buf_seg = false;
-+	dma->fifo_thresh = FIFO1_THRESHOLD;
-+	/*
-+	 * Make the fifo thresh as the multiple of total number of
-+	 * channels enabled, so make sure that that cyclic DMA period
-+	 * length is also a multiple of total number of channels
-+	 * enabled. This ensures that no invalid data is reported
-+	 * to the stack via iio_push_to_buffers().
-+	 */
-+	dma->fifo_thresh -= (dma->fifo_thresh + 1) % adc_dev->total_ch_enabled;
-+	dma->buf_offset = DMA_BUFFER_SIZE / 2;
-+	/* Make sure that period length is multiple of fifo thresh level */
-+	dma->buf_offset -= dma->buf_offset % ((dma->fifo_thresh + 1) *
-+					      sizeof(u16));
-+
-+	dma->conf.src_maxburst = dma->fifo_thresh + 1;
-+	dmaengine_slave_config(dma->chan, &dma->conf);
-+
-+	desc = dmaengine_prep_dma_cyclic(dma->chan, dma->addr,
-+					 dma->buf_offset * 2,
-+					 dma->buf_offset, DMA_DEV_TO_MEM,
-+					 DMA_PREP_INTERRUPT);
-+	if (!desc)
-+		return -EBUSY;
-+
-+	desc->callback = tiadc_dma_rx_complete;
-+	desc->callback_param = indio_dev;
-+
-+	dma->cookie = dmaengine_submit(desc);
-+
-+	dma_async_issue_pending(dma->chan);
-+
-+	tiadc_writel(adc_dev, REG_FIFO1THR, dma->fifo_thresh);
-+	tiadc_writel(adc_dev, REG_DMA1REQ, dma->fifo_thresh);
-+	tiadc_writel(adc_dev, REG_DMAENABLE_SET, DMA_FIFO1);
-+
-+	return 0;
-+}
-+
- static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
- {
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-@@ -218,20 +303,30 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
- static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
- {
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	struct tiadc_dma *dma = &adc_dev->dma;
- 	unsigned int enb = 0;
- 	u8 bit;
-+	u32 irq_enable;
- 
- 	tiadc_step_config(indio_dev);
--	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels)
-+	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels) {
- 		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
-+		adc_dev->total_ch_enabled++;
-+	}
- 	adc_dev->buffer_en_ch_steps = enb;
- 
-+	if (dma->chan)
-+		tiadc_start_dma(indio_dev);
-+
- 	am335x_tsc_se_set_cache(adc_dev->mfd_tscadc, enb);
- 
- 	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
- 				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
--	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
--				| IRQENB_FIFO1OVRRUN);
-+
-+	irq_enable = IRQENB_FIFO1OVRRUN;
-+	if (!dma->chan)
-+		irq_enable |= IRQENB_FIFO1THRES;
-+	tiadc_writel(adc_dev,  REG_IRQENABLE, irq_enable);
- 
- 	return 0;
- }
-@@ -239,12 +334,18 @@ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
- static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
- {
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	struct tiadc_dma *dma = &adc_dev->dma;
- 	int fifo1count, i, read;
- 
- 	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
- 				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
- 	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
- 	adc_dev->buffer_en_ch_steps = 0;
-+	adc_dev->total_ch_enabled = 0;
-+	if (dma->chan) {
-+		tiadc_writel(adc_dev, REG_DMAENABLE_CLEAR, 0x2);
-+		dmaengine_terminate_async(dma->chan);
-+	}
- 
- 	/* Flush FIFO of leftover data in the time it takes to disable adc */
- 	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-@@ -430,6 +531,50 @@ static const struct iio_info tiadc_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+static bool the_no_dma_filter_fn(struct dma_chan *chan, void *param)
-+{
-+	return false;
-+}
-+
-+static int tiadc_request_dma(struct platform_device *pdev,
-+			     struct tiadc_device *adc_dev)
-+{
-+	struct tiadc_dma	*dma = &adc_dev->dma;
-+	dma_cap_mask_t		mask;
-+
-+	dma->fn = the_no_dma_filter_fn;
-+
-+	/* Default slave configuration parameters */
-+	dma->conf.direction = DMA_DEV_TO_MEM;
-+	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-+	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
-+
-+	dma_cap_zero(mask);
-+	dma_cap_set(DMA_CYCLIC, mask);
-+
-+	/* Get a channel for RX */
-+	dma->chan = dma_request_slave_channel_compat(mask,
-+						     dma->fn, dma->param,
-+						     adc_dev->mfd_tscadc->dev,
-+						     "fifo1");
-+	if (!dma->chan)
-+		return -ENODEV;
-+
-+	/* RX buffer */
-+	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-+				      &dma->addr, GFP_KERNEL);
-+	if (!dma->buf)
-+		goto err;
-+
-+	dev_dbg_ratelimited(adc_dev->mfd_tscadc->dev, "got dma channel\n");
-+
-+	return 0;
-+err:
-+	dma_release_channel(dma->chan);
-+
-+	return -ENOMEM;
-+}
-+
- static int tiadc_parse_dt(struct platform_device *pdev,
- 			  struct tiadc_device *adc_dev)
- {
-@@ -512,8 +657,14 @@ static int tiadc_probe(struct platform_device *pdev)
- 
- 	platform_set_drvdata(pdev, indio_dev);
- 
-+	err = tiadc_request_dma(pdev, adc_dev);
-+	if (err && err != -ENODEV)
-+		goto err_dma;
-+
- 	return 0;
- 
-+err_dma:
-+	iio_device_unregister(indio_dev);
- err_buffer_unregister:
- 	tiadc_iio_buffered_hardware_remove(indio_dev);
- err_free_channels:
-@@ -525,8 +676,11 @@ static int tiadc_remove(struct platform_device *pdev)
- {
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-+	struct tiadc_dma *dma = &adc_dev->dma;
- 	u32 step_en;
- 
-+	if (dma->chan)
-+		dma_release_channel(dma->chan);
- 	iio_device_unregister(indio_dev);
- 	tiadc_iio_buffered_hardware_remove(indio_dev);
- 	tiadc_channels_remove(indio_dev);
-diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-index e45a208..fb9dc99 100644
---- a/include/linux/mfd/ti_am335x_tscadc.h
-+++ b/include/linux/mfd/ti_am335x_tscadc.h
-@@ -23,6 +23,8 @@
- #define REG_IRQENABLE		0x02C
- #define REG_IRQCLR		0x030
- #define REG_IRQWAKEUP		0x034
-+#define REG_DMAENABLE_SET	0x038
-+#define REG_DMAENABLE_CLEAR	0x038
- #define REG_CTRL		0x040
- #define REG_ADCFSM		0x044
- #define REG_CLKDIV		0x04C
-@@ -36,6 +38,7 @@
- #define REG_FIFO0THR		0xE8
- #define REG_FIFO1CNT		0xF0
- #define REG_FIFO1THR		0xF4
-+#define REG_DMA1REQ		0xF8
- #define REG_FIFO0		0x100
- #define REG_FIFO1		0x200
- 
-@@ -126,6 +129,10 @@
- #define FIFOREAD_DATA_MASK (0xfff << 0)
- #define FIFOREAD_CHNLID_MASK (0xf << 16)
- 
-+/* DMA ENABLE/CLEAR Register */
-+#define DMA_FIFO0		BIT(0)
-+#define DMA_FIFO1		BIT(1)
-+
- /* Sequencer Status */
- #define SEQ_STATUS BIT(5)
- #define CHARGE_STEP		0x11
--- 
-2.10.0.129.g35f6318
+> 
+> [1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+> 
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+>  .../devicetree/bindings/input/ads7846.txt          |  9 +++-
+>  drivers/input/touchscreen/ads7846.c                | 60 ++++++++++++++++++----
+>  2 files changed, 57 insertions(+), 12 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/input/ads7846.txt b/Documentation/devicetree/bindings/input/ads7846.txt
+> index 9fc47b0..29f91ed 100644
+> --- a/Documentation/devicetree/bindings/input/ads7846.txt
+> +++ b/Documentation/devicetree/bindings/input/ads7846.txt
+> @@ -26,6 +26,12 @@ Additional required properties:
+>  
+>  Optional properties:
+>  
+> +You can optionally specify any of the touchscreen parameters described in
+> +
+> +	Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+> +
+> +This allows to scale, invert or swap coordinates and define the fuzz factors.
+> +
+>  	ti,vref-delay-usecs		vref supply delay in usecs, 0 for
+>  					external vref (u16).
+>  	ti,vref-mv			The VREF voltage, in millivolts (u16).
+> @@ -33,7 +39,7 @@ Optional properties:
+>  					(ADS7846).
+>  	ti,keep-vref-on			set to keep vref on for differential
+>  					measurements as well
+> -	ti,swap-xy			swap x and y axis
+> +	ti,swap-xy			deprecated name for touchscreen-swapped-x-y
+>  	ti,settle-delay-usec		Settling time of the analog signals;
+>  					a function of Vcc and the capacitance
+>  					on the X/Y drivers.  If set to non-zero,
+> @@ -82,6 +88,7 @@ Example for a TSC2046 chip connected to an McSPI controller of an OMAP SoC::
+>  			pendown-gpio = <&gpio1 8 0>;
+>  			vcc-supply = <&reg_vcc3>;
+>  
+> +			touchscreen-swapped-x-y;
+>  			ti,x-min = /bits/ 16 <0>;
+>  			ti,x-max = /bits/ 16 <8000>;
+>  			ti,y-min = /bits/ 16 <0>;
+> diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
+> index 1ce3ecb..400e421 100644
+> --- a/drivers/input/touchscreen/ads7846.c
+> +++ b/drivers/input/touchscreen/ads7846.c
+> @@ -34,6 +34,7 @@
+>  #include <linux/spi/ads7846.h>
+>  #include <linux/regulator/consumer.h>
+>  #include <linux/module.h>
+> +#include <linux/input/touchscreen.h>
+>  #include <asm/irq.h>
+>  
+>  /*
+> @@ -109,8 +110,13 @@ struct ads7846 {
+>  	u16			vref_delay_usecs;
+>  	u16			x_plate_ohms;
+>  	u16			pressure_max;
+> +	u16			x_min;
+> +	u16			x_max;
+> +	u16			y_min;
+> +	u16			y_max;
+> +
+> +	struct touchscreen_properties prop;
+>  
+> -	bool			swap_xy;
+>  	bool			use_internal;
+>  
+>  	struct ads7846_packet	*packet;
+> @@ -825,22 +831,36 @@ static void ads7846_report_state(struct ads7846 *ts)
+>  	 */
+>  	if (Rt) {
+>  		struct input_dev *input = ts->input;
+> +		int sx, sy;
+> +
+> +		dev_dbg(&ts->spi->dev,
+> +			"Raw point(%4d,%4d), pressure (%4u)\n",
+> +				x, y, Rt);
+> +
+> +		/* scale ADC values to desired output range */
+> +		sx = (ts->prop.max_x * (x - ts->x_min))
+> +			/ (ts->x_max - ts->x_min);
+> +		sy = (ts->prop.max_y * (y - ts->y_min))
+> +			/ (ts->y_max - ts->y_min);
+>  
+> -		if (ts->swap_xy)
+> -			swap(x, y);
+> +		dev_dbg(&ts->spi->dev,
+> +			"Scaled point(%4d,%4d), pressure (%4u)\n",
+> +				sx, sy, Rt);
+>  
+> +		/* report event */
+>  		if (!ts->pendown) {
+>  			input_report_key(input, BTN_TOUCH, 1);
+>  			ts->pendown = true;
+>  			dev_vdbg(&ts->spi->dev, "DOWN\n");
+>  		}
+>  
+> -		input_report_abs(input, ABS_X, x);
+> -		input_report_abs(input, ABS_Y, y);
+> +		touchscreen_report_pos(ts->input, &ts->prop,
+> +				       (unsigned int) sx, (unsigned int) sy,
+> +				       false);
+>  		input_report_abs(input, ABS_PRESSURE, ts->pressure_max - Rt);
+>  
+>  		input_sync(input);
+> -		dev_vdbg(&ts->spi->dev, "%4d/%4d/%4d\n", x, y, Rt);
+> +		dev_vdbg(&ts->spi->dev, "%4d/%4d/%4d\n", sx, sy, Rt);
+>  	}
+>  }
+>  
+> @@ -1212,6 +1232,8 @@ static const struct ads7846_platform_data *ads7846_probe_dt(struct device *dev)
+>  	pdata->keep_vref_on = of_property_read_bool(node, "ti,keep-vref-on");
+>  
+>  	pdata->swap_xy = of_property_read_bool(node, "ti,swap-xy");
+> +	if (pdata->swap_xy)
+> +		dev_notice(dev, "please update device tree to use touchscreen-swapped-x-y");
+>  
+>  	of_property_read_u16(node, "ti,settle-delay-usec",
+>  			     &pdata->settle_delay_usecs);
+> @@ -1315,7 +1337,6 @@ static int ads7846_probe(struct spi_device *spi)
+>  	ts->pressure_max = pdata->pressure_max ? : ~0;
+>  
+>  	ts->vref_mv = pdata->vref_mv;
+> -	ts->swap_xy = pdata->swap_xy;
+>  
+>  	if (pdata->filter != NULL) {
+>  		if (pdata->filter_init != NULL) {
+> @@ -1355,18 +1376,35 @@ static int ads7846_probe(struct spi_device *spi)
+>  	input_dev->dev.parent = &spi->dev;
+>  
+>  	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
+> +	input_dev->absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) |
+> +				BIT_MASK(ABS_PRESSURE);
+>  	input_dev->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+> +
+> +	ts->x_min = pdata->x_min ? : 0;
+> +	ts->x_max = pdata->x_max ? : MAX_12BIT;
+> +	ts->y_min = pdata->y_min ? : 0;
+> +	ts->y_max = pdata->y_max ? : MAX_12BIT;
+> +
+>  	input_set_abs_params(input_dev, ABS_X,
+> -			pdata->x_min ? : 0,
+> -			pdata->x_max ? : MAX_12BIT,
+> +			ts->x_min,
+> +			ts->x_max,
+>  			0, 0);
+>  	input_set_abs_params(input_dev, ABS_Y,
+> -			pdata->y_min ? : 0,
+> -			pdata->y_max ? : MAX_12BIT,
+> +			ts->y_min,
+> +			ts->y_max,
+>  			0, 0);
+>  	input_set_abs_params(input_dev, ABS_PRESSURE,
+>  			pdata->pressure_min, pdata->pressure_max, 0, 0);
+>  
+> +	if (spi->dev.of_node) {
+> +		input_abs_set_min(input_dev, ABS_X, 0);
+> +		input_abs_set_min(input_dev, ABS_Y, 0);
+> +
+> +		touchscreen_parse_properties(ts->input, false, &ts->prop);
+> +	}
+> +
+> +	ts->prop.swap_x_y |= pdata->swap_xy;
+> +
+>  	ads7846_setup_spi_msg(ts, pdata);
+>  
+>  	ts->reg = regulator_get(&spi->dev, "vcc");
+> -- 
+> 2.7.3
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe devicetree" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
