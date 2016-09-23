@@ -1,105 +1,442 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.218]:28660 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758211AbcIWMlg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Sep 2016 08:41:36 -0400
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>
-Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v3 8/8] DT:omap3+ads7846: use new common touchscreen bindings
-Date: Fri, 23 Sep 2016 14:41:16 +0200
-Message-Id: <161de1f3131808ae4a33beed5eae0d7acd0f2680.1474634475.git.hns@goldelico.com>
-In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
-References: <cover.1474634475.git.hns@goldelico.com>
-In-Reply-To: <cover.1474634475.git.hns@goldelico.com>
-References: <cover.1474634475.git.hns@goldelico.com>
+Received: from mx1.redhat.com ([209.132.183.28]:47350 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1034937AbcIWNv0 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 23 Sep 2016 09:51:26 -0400
+Subject: Re: [PATCH v2] iio: accel: Add driver for the MiraMEMS DA311 3-axis
+ 12-bit digital accelerometer
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>
+References: <20160922134229.773-1-hdegoede@redhat.com>
+ <54297b59-d0f0-39d0-f0d1-5e62c6b3c48a@kernel.org>
+Cc: linux-iio@vger.kernel.org
+From: Hans de Goede <hdegoede@redhat.com>
+Message-ID: <d9aca28e-c1eb-3af1-71fd-0966cfb84b52@redhat.com>
+Date: Fri, 23 Sep 2016 16:51:20 +0300
+MIME-Version: 1.0
+In-Reply-To: <54297b59-d0f0-39d0-f0d1-5e62c6b3c48a@kernel.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The standard touch screen bindings [1] replace the private ti,swap-xy
-with touchscreen-swaped-x-y. And for the Openpandora we use
-touchscreen-size etc. to match the LCD screen size.
+Hi,
 
-[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+On 09/22/2016 08:10 PM, Jonathan Cameron wrote:
+> On 22/09/16 14:42, Hans de Goede wrote:
+>> This driver is based on the DA311 Android driver which can be found here:
+>> https://git.matricom.net/Firmware/kernel_amlogic_meson-common/tree/1e70113a5befd07debb68f537156def84c5be57a/drivers/amlogic/input/sensor
+>> the mir3da_* files are the DA311 driver.
+>>
+>> Unfortunately there is no datasheet.
+>>
+> I was crossing my fingers that it was similar to the 312 which does have
+> a datasheet on their website. No such luck.
 
-Tested with OpenPandora.
+Yeah, I also looked at the da312 datasheet, but no luck indeed.
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- arch/arm/boot/dts/omap3-lilly-a83x.dtsi              |  2 +-
- arch/arm/boot/dts/omap3-pandora-common.dtsi          | 17 +++++++++++++----
- arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi |  3 ++-
- 3 files changed, 16 insertions(+), 6 deletions(-)
+> Looks good. Couple of really minor comment inline. I'd like this to sit
+> on the mailing list a bit longer. Unfortunately it's just missed the
+> upcoming merge window so we have lots and lots of time :)
+>
+> Jonathan
+>
+>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+>> ---
+>> Changes in v2:
+>> -Add proper prefix to patch Subject
+>> -Use i2c_smbus_read_word_data() instead of i2c_smbus_read_i2c_block_data()
+>> ---
+>>  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+>>  drivers/iio/accel/Kconfig                          |  10 +
+>>  drivers/iio/accel/Makefile                         |   1 +
+>>  drivers/iio/accel/da311.c                          | 305 +++++++++++++++++++++
+>>  4 files changed, 317 insertions(+)
+>>  create mode 100644 drivers/iio/accel/da311.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> index 21ca02e..8ad9064 100644
+>> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+>> @@ -122,6 +122,7 @@ microchip,mcp4662-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Mem
+>>  microchip,mcp4662-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+>>  microchip,mcp4662-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+>>  microchip,mcp4662-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
+>> +miramems,da311		MiraMEMS DA311 3-axis 12-bit digital accelerometer
+>>  national,lm63		Temperature sensor with integrated fan control
+>>  national,lm75		I2C TEMP SENSOR
+>>  national,lm80		Serial Interface ACPI-Compatible Microprocessor System Hardware Monitor
+>> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+>> index 6236fd5..c94348f 100644
+>> --- a/drivers/iio/accel/Kconfig
+>> +++ b/drivers/iio/accel/Kconfig
+>> @@ -52,6 +52,16 @@ config BMC150_ACCEL_SPI
+>>  	tristate
+>>  	select REGMAP_SPI
+>>
+>> +config DA311
+>> +	tristate "MiraMEMS DA311 3-axis 12-bit digital accelerometer driver"
+>> +	depends on I2C
+>> +	help
+>> +	  Say yes here to build support for the MiraMEMS DA311 3-axis 12-bit
+>> +	  digital accelerometer.
+>> +
+>> +	  To compile this driver as a module, choose M here: the
+>> +	  module will be called da311.
+>> +
+>>  config DMARD06
+>>  	tristate "Domintech DMARD06 Digital Accelerometer Driver"
+>>  	depends on OF || COMPILE_TEST
+>> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+>> index 9f51559..601ca59 100644
+>> --- a/drivers/iio/accel/Makefile
+>> +++ b/drivers/iio/accel/Makefile
+>> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMA220) += bma220_spi.o
+>>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+>>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+>> +obj-$(CONFIG_DA311)	+= da311.o
+>>  obj-$(CONFIG_DMARD06)	+= dmard06.o
+>>  obj-$(CONFIG_DMARD09)	+= dmard09.o
+>>  obj-$(CONFIG_DMARD10)	+= dmard10.o
+>> diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
+>> new file mode 100644
+>> index 0000000..8c852f5
+>> --- /dev/null
+>> +++ b/drivers/iio/accel/da311.c
+>> @@ -0,0 +1,305 @@
+>> +/**
+>> + * IIO driver for the MiraMEMS DA311 3-axis accelerometer
+>> + *
+>> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
+>> + * Copyright (c) 2011-2013 MiraMEMS Sensing Technology Co., Ltd.
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify it
+>> + * under the terms and conditions of the GNU General Public License,
+>> + * version 2, as published by the Free Software Foundation.
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/i2c.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/sysfs.h>
+>> +#include <linux/byteorder/generic.h>
+>> +
+>> +#define DA311_CHIP_ID			0x13
+>> +
+>> +/*
+>> + * Note register addressed go from 0 - 0x3f and then wrap.
+>> + * For some reason there are 2 banks with 0 - 0x3f addresses,
+>> + * rather then a single 0-0x7f bank.
+>> + */
+>> +
+>> +/* Bank 0 regs */
+>> +#define DA311_REG_BANK			0x0000
+>> +#define DA311_REG_LDO_REG		0x0006
+>> +#define DA311_REG_CHIP_ID		0x000f
+>> +#define DA311_REG_TEMP_CFG_REG		0x001f
+>> +#define DA311_REG_CTRL_REG1		0x0020
+>> +#define DA311_REG_CTRL_REG3		0x0022
+>> +#define DA311_REG_CTRL_REG4		0x0023
+>> +#define DA311_REG_CTRL_REG5		0x0024
+>> +#define DA311_REG_CTRL_REG6		0x0025
+>> +#define DA311_REG_STATUS_REG		0x0027
+>> +#define DA311_REG_OUT_X_L		0x0028
+>> +#define DA311_REG_OUT_X_H		0x0029
+>> +#define DA311_REG_OUT_Y_L		0x002a
+>> +#define DA311_REG_OUT_Y_H		0x002b
+>> +#define DA311_REG_OUT_Z_L		0x002c
+>> +#define DA311_REG_OUT_Z_H		0x002d
+>> +#define DA311_REG_INT1_CFG		0x0030
+>> +#define DA311_REG_INT1_SRC		0x0031
+>> +#define DA311_REG_INT1_THS		0x0032
+>> +#define DA311_REG_INT1_DURATION		0x0033
+>> +#define DA311_REG_INT2_CFG		0x0034
+>> +#define DA311_REG_INT2_SRC		0x0035
+>> +#define DA311_REG_INT2_THS		0x0036
+>> +#define DA311_REG_INT2_DURATION		0x0037
+>> +#define DA311_REG_CLICK_CFG		0x0038
+>> +#define DA311_REG_CLICK_SRC		0x0039
+>> +#define DA311_REG_CLICK_THS		0x003a
+>> +#define DA311_REG_TIME_LIMIT		0x003b
+>> +#define DA311_REG_TIME_LATENCY		0x003c
+>> +#define DA311_REG_TIME_WINDOW		0x003d
+>> +
+>> +/* Bank 1 regs */
+>> +#define DA311_REG_SOFT_RESET		0x0105
+>> +#define DA311_REG_OTP_XOFF_L		0x0110
+>> +#define DA311_REG_OTP_XOFF_H		0x0111
+>> +#define DA311_REG_OTP_YOFF_L		0x0112
+>> +#define DA311_REG_OTP_YOFF_H		0x0113
+>> +#define DA311_REG_OTP_ZOFF_L		0x0114
+>> +#define DA311_REG_OTP_ZOFF_H		0x0115
+>> +#define DA311_REG_OTP_XSO		0x0116
+>> +#define DA311_REG_OTP_YSO		0x0117
+>> +#define DA311_REG_OTP_ZSO		0x0118
+>> +#define DA311_REG_OTP_TRIM_OSC		0x011b
+>> +#define DA311_REG_LPF_ABSOLUTE		0x011c
+>> +#define DA311_REG_TEMP_OFF1		0x0127
+>> +#define DA311_REG_TEMP_OFF2		0x0128
+>> +#define DA311_REG_TEMP_OFF3		0x0129
+>> +#define DA311_REG_OTP_TRIM_THERM_H	0x011a
+>> +
+>> +/*
+>> + * a value of + or -1024 corresponds to + or - 1G
+>> + * scale = 1 / 1024 = 0.000976562
+>> + */
+>> +
+>> +static const int da311_nscale = 976562;
+>> +
+>> +#define DA311_CHANNEL(reg, axis) {	\
+>> +	.type = IIO_ACCEL,	\
+>> +	.address = reg,	\
+>> +	.modified = 1,	\
+>> +	.channel2 = IIO_MOD_##axis,	\
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>> +}
+>> +
+>> +static const struct iio_chan_spec da311_channels[] = {
+>> +	/* | 0x80 comes from the android driver */
+>> +	DA311_CHANNEL(DA311_REG_OUT_X_L | 0x80, X),
+>> +	DA311_CHANNEL(DA311_REG_OUT_Y_L | 0x80, Y),
+>> +	DA311_CHANNEL(DA311_REG_OUT_Z_L | 0x80, Z),
+>> +};
+>> +
+>> +struct da311_data {
+>> +	struct i2c_client *client;
+>> +};
+>> +
+>> +static int da311_register_mask_write(struct i2c_client *client, u16 addr,
+>> +				     u8 mask, u8 data)
+>> +{
+>> +	int ret;
+>> +	u8 tmp_data = 0;
+>> +
+>> +	if (addr & 0xff00) {
+>> +		/* Select bank 1 */
+>> +		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x01);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	}
+>> +
+>> +	if (mask != 0xff) {
+>> +		ret = i2c_smbus_read_byte_data(client, addr);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +		tmp_data = ret;
+>> +	}
+>> +
+>> +	tmp_data &= ~mask;
+>> +	tmp_data |= data & mask;
+>> +	ret = i2c_smbus_write_byte_data(client, addr & 0xff, tmp_data);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	if (addr & 0xff00) {
+>> +		/* Back to bank 0 */
+>> +		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x00);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +/* Init sequence taken from the android driver */
+>> +static int da311_reset(struct i2c_client *client)
+>> +{
+>> +	const struct {
+>> +		u16 addr;
+>> +		u8 mask;
+>> +		u8 data;
+>> +	} init_data[] = {
+>> +		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x08 },
+>> +		{ DA311_REG_CTRL_REG5,          0xff,   0x80 },
+>> +		{ DA311_REG_CTRL_REG4,          0x30,   0x00 },
+>> +		{ DA311_REG_CTRL_REG1,          0xff,   0x6f },
+>> +		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x88 },
+>> +		{ DA311_REG_LDO_REG,            0xff,   0x02 },
+>> +		{ DA311_REG_OTP_TRIM_OSC,       0xff,   0x27 },
+>> +		{ DA311_REG_LPF_ABSOLUTE,       0xff,   0x30 },
+>> +		{ DA311_REG_TEMP_OFF1,          0xff,   0x3f },
+>> +		{ DA311_REG_TEMP_OFF2,          0xff,   0xff },
+>> +		{ DA311_REG_TEMP_OFF3,          0xff,   0x0f },
+> Nice ;)  Not much we can do about this without a datasheet. Ah well.
 
-diff --git a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
-index eff816e..af6b66c 100644
---- a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
-+++ b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
-@@ -325,7 +325,7 @@
- 		ti,y-max = /bits/ 16 <3600>;
- 		ti,x-plate-ohms = /bits/ 16 <80>;
- 		ti,pressure-max = /bits/ 16 <255>;
--		ti,swap-xy;
-+		touchscreen-swapped-x-y;
- 
- 		wakeup-source;
- 	};
-diff --git a/arch/arm/boot/dts/omap3-pandora-common.dtsi b/arch/arm/boot/dts/omap3-pandora-common.dtsi
-index cbc47af..f66a2b4 100644
---- a/arch/arm/boot/dts/omap3-pandora-common.dtsi
-+++ b/arch/arm/boot/dts/omap3-pandora-common.dtsi
-@@ -700,10 +700,19 @@
- 		pendown-gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
- 		vcc-supply = <&vaux4>;
- 
--		ti,x-min = /bits/ 16 <0>;
--		ti,x-max = /bits/ 16 <8000>;
--		ti,y-min = /bits/ 16 <0>;
--		ti,y-max = /bits/ 16 <4800>;
-+		touchscreen-size-x = <800>;
-+		touchscreen-size-y = <480>;
-+		touchscreen-max-pressure = <1000>;
-+		touchscreen-fuzz-x = <16>;
-+		touchscreen-fuzz-y = <16>;
-+		touchscreen-fuzz-pressure = <10>;
-+		touchscreen-inverted-x;
-+		touchscreen-inverted-y;
-+
-+		ti,x-min = /bits/ 16 <160>;
-+		ti,x-max = /bits/ 16 <3900>;
-+		ti,y-min = /bits/ 16 <220>;
-+		ti,y-max = /bits/ 16 <3750>;
- 		ti,x-plate-ohms = /bits/ 16 <40>;
- 		ti,pressure-max = /bits/ 16 <255>;
- 
-diff --git a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
-index 157345b..3627a63 100644
---- a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
-+++ b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
-@@ -66,6 +66,7 @@
- 		ti,x-plate-ohms = /bits/ 16 <40>;
- 		ti,pressure-max = /bits/ 16 <255>;
- 		ti,swap-xy;
--		wakeup-source;
-+		touchscreen-swapped-x-y;
-+		linux,wakeup;
- 	};
- };
--- 
-2.7.3
+Yes, ah well indeed.
 
+>> +	};
+>> +	int i, ret;
+>> +
+>> +	/* Reset */
+>> +	ret = da311_register_mask_write(client, DA311_REG_SOFT_RESET,
+>> +					0xff, 0xaa);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
+>> +		ret = da311_register_mask_write(client,
+>> +						init_data[i].addr,
+>> +						init_data[i].mask,
+>> +						init_data[i].data);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int da311_enable(struct i2c_client *client, bool enable)
+>> +{
+>> +	u8 data = enable ? 0x00 : 0x20;
+> This feels ever so slightly like a magic number that ought to be
+> a define rather than inline.  Probably using BIT(5) to define it.
+> I guess this would be more obvious if we had a datasheet to tell us
+> what to call it etc.
+
+The problem is we've no clue what to call the define, so I would
+prefer to just keep this as is.
+
+>> +
+>> +	return da311_register_mask_write(client, DA311_REG_TEMP_CFG_REG,
+>> +					 0x20, data);
+>> +}
+>> +
+>> +static int da311_read_raw(struct iio_dev *indio_dev,
+>> +				struct iio_chan_spec const *chan,
+>> +				int *val, int *val2, long mask)
+>> +{
+>> +	struct da311_data *data = iio_priv(indio_dev);
+>> +	int ret;
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +		/*
+>> +		 * Values are 12 bits, stored as 16 bits with the 4
+>> +		 * least significant bits always 0.
+>> +		 */
+>> +		*val = ((short)le16_to_cpu(ret)) >> 4;
+>> +		return IIO_VAL_INT;
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		*val = 0;
+>> +		*val2 = da311_nscale;
+>> +		return IIO_VAL_INT_PLUS_NANO;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static const struct iio_info da311_info = {
+>> +	.driver_module	= THIS_MODULE,
+>> +	.read_raw	= da311_read_raw,
+>> +};
+>> +
+>> +static int da311_probe(struct i2c_client *client,
+>> +			const struct i2c_device_id *id)
+>> +{
+>> +	int ret;
+>> +	struct iio_dev *indio_dev;
+>> +	struct da311_data *data;
+>> +
+>> +	ret = i2c_smbus_read_byte_data(client, DA311_REG_CHIP_ID);
+>> +	if (ret != DA311_CHIP_ID)
+>> +		return (ret < 0) ? ret : -ENODEV;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	data = iio_priv(indio_dev);
+>> +	data->client = client;
+>> +	i2c_set_clientdata(client, indio_dev);
+>> +
+>> +	indio_dev->dev.parent = &client->dev;
+>> +	indio_dev->info = &da311_info;
+>> +	indio_dev->name = "da311";
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = da311_channels;
+>> +	indio_dev->num_channels = ARRAY_SIZE(da311_channels);
+>> +
+>> +	ret = da311_reset(client);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	ret = da311_enable(client, true);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret < 0) {
+>> +		dev_err(&client->dev, "device_register failed\n");
+>> +		da311_enable(client, false);
+>> +	}
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static int da311_remove(struct i2c_client *client)
+>> +{
+>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +
+>> +	return da311_enable(client, false);
+>> +}
+>> +
+>> +#ifdef CONFIG_PM_SLEEP
+>> +static int da311_suspend(struct device *dev)
+>> +{
+>> +	return da311_enable(to_i2c_client(dev), false);
+>> +}
+>> +
+>> +static int da311_resume(struct device *dev)
+>> +{
+>> +	return da311_enable(to_i2c_client(dev), true);
+>> +}
+>> +#endif
+> I'd just go with the __maybe_unused option rather than the
+> define protection.
+
+Hmm, almost all the drivers I've looked at / know of use
+#ifdef here, including the ones under iio/accel.
+
+So I would also prefer to just keep this as is.
+
+Let me know if you want a v3 with anything changed.
+
+Thanks & Regards,
+
+Hans
+
+
+>> +
+>> +static SIMPLE_DEV_PM_OPS(da311_pm_ops, da311_suspend, da311_resume);
+>> +
+>> +static const struct i2c_device_id da311_i2c_id[] = {
+>> +	{"da311", 0},
+>> +	{}
+>> +};
+>> +MODULE_DEVICE_TABLE(i2c, da311_i2c_id);
+>> +
+>> +static struct i2c_driver da311_driver = {
+>> +	.driver = {
+>> +		.name = "da311",
+>> +		.pm = &da311_pm_ops,
+>> +	},
+>> +	.probe		= da311_probe,
+>> +	.remove		= da311_remove,
+>> +	.id_table	= da311_i2c_id,
+>> +};
+>> +
+>> +module_i2c_driver(da311_driver);
+>> +
+>> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
+>> +MODULE_DESCRIPTION("MiraMEMS DA311 3-Axis Accelerometer driver");
+>> +MODULE_LICENSE("GPL v2");
+>>
+>
