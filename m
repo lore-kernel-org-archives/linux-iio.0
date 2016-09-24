@@ -1,428 +1,589 @@
-Return-Path: <hdegoede@redhat.com>
-Subject: Re: [PATCH] Add an IIO driver for the MiraMEMS DA311 3-axis 12-bit
- digital accelerometer
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20160921080204.28903-1-hdegoede@redhat.com>
- <alpine.DEB.2.02.1609211018180.5657@pmeerw.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-From: Hans de Goede <hdegoede@redhat.com>
-Message-ID: <1b34ff85-8da2-afbb-af2c-1ca0c7486d8a@redhat.com>
-Date: Thu, 22 Sep 2016 16:26:55 +0300
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1609211018180.5657@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:34146 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S938710AbcIXGEO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 02:04:14 -0400
+Received: by mail-pf0-f195.google.com with SMTP id 21so6193220pfy.1
+        for <linux-iio@vger.kernel.org>; Fri, 23 Sep 2016 23:04:14 -0700 (PDT)
+From: Matt Ranostay <mranostay@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <matt@ranostay.consulting>
+Subject: [PATCH v6 2/2] iio: potentiostat: add LMP91000 support
+Date: Fri, 23 Sep 2016 23:04:08 -0700
+Message-Id: <1474697048-22355-3-git-send-email-matt@ranostay.consulting>
+In-Reply-To: <1474697048-22355-1-git-send-email-matt@ranostay.consulting>
+References: <1474697048-22355-1-git-send-email-matt@ranostay.consulting>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi,
+Add support for the LMP91000 potentiostat which is used for chemical
+sensing applications.
 
-On 09/21/2016 11:22 AM, Peter Meerwald-Stadler wrote:
->
->> This driver is based on the DA311 Android driver which can be found here:
->> https://git.matricom.net/Firmware/kernel_amlogic_meson-common/tree/1e70113a5befd07debb68f537156def84c5be57a/drivers/amlogic/input/sensor
->> the mir3da_* files are the DA311 driver.
->
-> looks good to me, minor comment below
+Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
+---
+ .../bindings/iio/potentiostat/lmp91000.txt         |  30 ++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/potentiostat/Kconfig                   |  22 +
+ drivers/iio/potentiostat/Makefile                  |   6 +
+ drivers/iio/potentiostat/lmp91000.c                | 445 +++++++++++++++++++++
+ 6 files changed, 505 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+ create mode 100644 drivers/iio/potentiostat/Kconfig
+ create mode 100644 drivers/iio/potentiostat/Makefile
+ create mode 100644 drivers/iio/potentiostat/lmp91000.c
 
-Thank you for the quick review.
+diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+new file mode 100644
+index 000000000000..b9b621e94cd7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
+@@ -0,0 +1,30 @@
++* Texas Instruments LMP91000 potentiostat
++
++http://www.ti.com/lit/ds/symlink/lmp91000.pdf
++
++Required properties:
++
++  - compatible: should be "ti,lmp91000"
++  - reg: the I2C address of the device
++  - io-channels: the phandle of the iio provider
++
++  - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not defined this
++    needs to be set to signal that an external resistor value is being used.
++
++Optional properties:
++
++  - ti,tia-gain-ohm: ohm value of the internal resistor for the transimpedance
++    amplifier. Must be 2750, 3500, 7000, 14000, 35000, 120000, or 350000 ohms.
++
++  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
++    sensor. Must be 10, 33, 50, or 100 (default) ohms.
++
++Example:
++
++lmp91000@48 {
++	compatible = "ti,lmp91000";
++	reg = <0x48>;
++	ti,tia-gain-ohm = <7500>;
++	ti,rload = <100>;
++	io-channels = <&adc>;
++};
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index 6743b18194fb..a31a8cf2c330 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -87,6 +87,7 @@ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+ endif #IIO_TRIGGER
+ source "drivers/iio/potentiometer/Kconfig"
++source "drivers/iio/potentiostat/Kconfig"
+ source "drivers/iio/pressure/Kconfig"
+ source "drivers/iio/proximity/Kconfig"
+ source "drivers/iio/temperature/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 87e4c4369e2f..2b6e2762a886 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -29,6 +29,7 @@ obj-y += light/
+ obj-y += magnetometer/
+ obj-y += orientation/
+ obj-y += potentiometer/
++obj-y += potentiostat/
+ obj-y += pressure/
+ obj-y += proximity/
+ obj-y += temperature/
+diff --git a/drivers/iio/potentiostat/Kconfig b/drivers/iio/potentiostat/Kconfig
+new file mode 100644
+index 000000000000..1e3baf2cc97d
+--- /dev/null
++++ b/drivers/iio/potentiostat/Kconfig
+@@ -0,0 +1,22 @@
++#
++# Potentiostat drivers
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Digital potentiostats"
++
++config LMP91000
++	tristate "Texas Instruments LMP91000 potentiostat driver"
++	depends on I2C
++	select REGMAP_I2C
++	select IIO_BUFFER
++	select IIO_BUFFER_CB
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for the Texas Instruments
++	  LMP91000 digital potentiostat chip.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called lmp91000
++
++endmenu
+diff --git a/drivers/iio/potentiostat/Makefile b/drivers/iio/potentiostat/Makefile
+new file mode 100644
+index 000000000000..64d315ef4449
+--- /dev/null
++++ b/drivers/iio/potentiostat/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for industrial I/O potentiostat drivers
++#
++
++# When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_LMP91000) += lmp91000.o
+diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
+new file mode 100644
+index 000000000000..600e97d98f91
+--- /dev/null
++++ b/drivers/iio/potentiostat/lmp91000.c
+@@ -0,0 +1,445 @@
++/*
++ * lmp91000.c - Support for Texas Instruments digital potentiostats
++ *
++ * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
++ * TODO: bias voltage + polarity control, and multiple chip support
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/of.h>
++#include <linux/regmap.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++
++#define LMP91000_REG_LOCK		0x01
++#define LMP91000_REG_TIACN		0x10
++#define LMP91000_REG_TIACN_GAIN_SHIFT	2
++
++#define LMP91000_REG_REFCN		0x11
++#define LMP91000_REG_REFCN_EXT_REF	0x20
++#define LMP91000_REG_REFCN_50_ZERO	0x80
++
++#define LMP91000_REG_MODECN		0x12
++#define LMP91000_REG_MODECN_3LEAD	0x03
++#define LMP91000_REG_MODECN_TEMP	0x07
++
++#define LMP91000_DRV_NAME	"lmp91000"
++
++static const int lmp91000_tia_gain[] = { 0, 2750, 3500, 7000, 14000, 35000,
++					 120000, 350000 };
++
++static const int lmp91000_rload[] = { 10, 33, 50, 100 };
++
++#define LMP91000_TEMP_BASE	-40
++
++static const u16 lmp91000_temp_lut[] = {
++	1875, 1867, 1860, 1852, 1844, 1836, 1828, 1821, 1813, 1805,
++	1797, 1789, 1782, 1774, 1766, 1758, 1750, 1742, 1734, 1727,
++	1719, 1711, 1703, 1695, 1687, 1679, 1671, 1663, 1656, 1648,
++	1640, 1632, 1624, 1616, 1608, 1600, 1592, 1584, 1576, 1568,
++	1560, 1552, 1544, 1536, 1528, 1520, 1512, 1504, 1496, 1488,
++	1480, 1472, 1464, 1456, 1448, 1440, 1432, 1424, 1415, 1407,
++	1399, 1391, 1383, 1375, 1367, 1359, 1351, 1342, 1334, 1326,
++	1318, 1310, 1302, 1293, 1285, 1277, 1269, 1261, 1253, 1244,
++	1236, 1228, 1220, 1212, 1203, 1195, 1187, 1179, 1170, 1162,
++	1154, 1146, 1137, 1129, 1121, 1112, 1104, 1096, 1087, 1079,
++	1071, 1063, 1054, 1046, 1038, 1029, 1021, 1012, 1004,  996,
++	 987,  979,  971,  962,  954,  945,  937,  929,  920,  912,
++	 903,  895,  886,  878,  870,  861 };
++
++static const struct regmap_config lmp91000_regmap_config = {
++	.reg_bits = 8,
++	.val_bits = 8,
++};
++
++struct lmp91000_data {
++	struct regmap *regmap;
++	struct device *dev;
++
++	struct iio_trigger *trig;
++	struct iio_cb_buffer *cb_buffer;
++	struct iio_channel *adc_chan;
++
++	struct completion completion;
++	u8 chan_select;
++
++	u32 buffer[4]; /* 64-bit data + 64-bit timestamp */
++};
++
++static const struct iio_chan_spec lmp91000_channels[] = {
++	{ /* chemical channel mV */
++		.type = IIO_VOLTAGE,
++		.channel = 0,
++		.address = LMP91000_REG_MODECN_3LEAD,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 32,
++			.storagebits = 32,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(1),
++	{ /* temperature channel mV */
++		.type = IIO_TEMP,
++		.channel = 1,
++		.address = LMP91000_REG_MODECN_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
++		.scan_index = -1,
++	},
++};
++
++static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
++{
++	int state, ret;
++
++	ret = regmap_read(data->regmap, LMP91000_REG_MODECN, &state);
++	if (ret)
++		return -EINVAL;
++
++	ret = regmap_write(data->regmap, LMP91000_REG_MODECN, channel);
++	if (ret)
++		return -EINVAL;
++
++	/* delay till first temperature reading is complete */
++	if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
++		usleep_range(3000, 4000);
++
++	data->chan_select = channel != LMP91000_REG_MODECN_3LEAD;
++
++	iio_trigger_poll_chained(data->trig);
++
++	ret = wait_for_completion_timeout(&data->completion, HZ);
++	reinit_completion(&data->completion);
++
++	if (!ret)
++		return -ETIMEDOUT;
++
++	*val = data->buffer[data->chan_select];
++
++	return 0;
++}
++
++static irqreturn_t lmp91000_buffer_handler(int irq, void *private)
++{
++	struct iio_poll_func *pf = private;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct lmp91000_data *data = iio_priv(indio_dev);
++	int ret, val;
++
++	memset(data->buffer, 0, sizeof(data->buffer));
++
++	ret = lmp91000_read(data, LMP91000_REG_MODECN_3LEAD, &val);
++	if (!ret) {
++		data->buffer[0] = val;
++		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
++						   iio_get_time_ns(indio_dev));
++	}
++
++	iio_trigger_notify_done(indio_dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++static int lmp91000_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	struct lmp91000_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_PROCESSED: {
++		int ret = iio_channel_start_all_cb(data->cb_buffer);
++
++		if (ret)
++			return ret;
++
++		ret = lmp91000_read(data, chan->address, val);
++
++		iio_channel_stop_all_cb(data->cb_buffer);
++
++		if (ret)
++			return ret;
++
++		if (mask == IIO_CHAN_INFO_PROCESSED) {
++			int tmp, i;
++
++			ret = iio_convert_raw_to_processed(data->adc_chan,
++							   *val, &tmp, 1);
++			if (ret)
++				return ret;
++
++			for (i = 0; i < ARRAY_SIZE(lmp91000_temp_lut); i++)
++				if (lmp91000_temp_lut[i] < tmp)
++					break;
++
++			*val = (LMP91000_TEMP_BASE + i) * 1000;
++		}
++		return IIO_VAL_INT;
++	}
++	case IIO_CHAN_INFO_OFFSET:
++		return iio_read_channel_offset(data->adc_chan, val, val2);
++	case IIO_CHAN_INFO_SCALE:
++		return iio_read_channel_scale(data->adc_chan, val, val2);
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info lmp91000_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = lmp91000_read_raw,
++};
++
++static int lmp91000_read_config(struct lmp91000_data *data)
++{
++	struct device *dev = data->dev;
++	struct device_node *np = dev->of_node;
++	unsigned int reg, val;
++	int i, ret;
++
++	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
++	if (ret) {
++		if (of_property_read_bool(np, "ti,external-tia-resistor"))
++			val = 0;
++		else {
++			dev_err(dev, "no ti,tia-gain-ohm defined");
++			return ret;
++		}
++	}
++
++	ret = -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(lmp91000_tia_gain); i++) {
++		if (lmp91000_tia_gain[i] == val) {
++			reg = i << LMP91000_REG_TIACN_GAIN_SHIFT;
++			ret = 0;
++			break;
++		}
++	}
++
++	if (ret) {
++		dev_err(dev, "invalid ti,tia-gain-ohm %d\n", val);
++		return ret;
++	}
++
++	ret = of_property_read_u32(np, "ti,rload-ohm", &val);
++	if (ret) {
++		val = 100;
++		dev_info(dev, "no ti,rload-ohm defined, default to %d\n", val);
++	}
++
++	ret = -EINVAL;
++	for (i = 0; i < ARRAY_SIZE(lmp91000_rload); i++) {
++		if (lmp91000_rload[i] == val) {
++			reg |= i;
++			ret = 0;
++			break;
++		}
++	}
++
++	if (ret) {
++		dev_err(dev, "invalid ti,rload-ohm %d\n", val);
++		return ret;
++	}
++
++	regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
++	regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
++	regmap_write(data->regmap, LMP91000_REG_REFCN, LMP91000_REG_REFCN_EXT_REF
++					| LMP91000_REG_REFCN_50_ZERO);
++	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
++
++	return 0;
++}
++
++static int lmp91000_buffer_cb(const void *val, void *private)
++{
++	struct iio_dev *indio_dev = private;
++	struct lmp91000_data *data = iio_priv(indio_dev);
++
++	data->buffer[data->chan_select] = *((int *)val);
++	complete_all(&data->completion);
++
++	return 0;
++}
++
++static const struct iio_trigger_ops lmp91000_trigger_ops = {
++	.owner = THIS_MODULE,
++};
++
++
++static int lmp91000_buffer_preenable(struct iio_dev *indio_dev)
++{
++	struct lmp91000_data *data = iio_priv(indio_dev);
++
++	return iio_channel_start_all_cb(data->cb_buffer);
++}
++
++static int lmp91000_buffer_predisable(struct iio_dev *indio_dev)
++{
++	struct lmp91000_data *data = iio_priv(indio_dev);
++
++	iio_channel_stop_all_cb(data->cb_buffer);
++
++	return 0;
++}
++
++static const struct iio_buffer_setup_ops lmp91000_buffer_setup_ops = {
++	.preenable = lmp91000_buffer_preenable,
++	.postenable = iio_triggered_buffer_postenable,
++	.predisable = lmp91000_buffer_predisable,
++};
++
++static int lmp91000_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
++{
++	struct device *dev = &client->dev;
++	struct lmp91000_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	indio_dev->info = &lmp91000_info;
++	indio_dev->channels = lmp91000_channels;
++	indio_dev->num_channels = ARRAY_SIZE(lmp91000_channels);
++	indio_dev->name = LMP91000_DRV_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	i2c_set_clientdata(client, indio_dev);
++
++	data = iio_priv(indio_dev);
++	data->dev = dev;
++	data->regmap = devm_regmap_init_i2c(client, &lmp91000_regmap_config);
++	if (IS_ERR(data->regmap)) {
++		dev_err(dev, "regmap initialization failed.\n");
++		return PTR_ERR(data->regmap);
++	}
++
++	data->trig = devm_iio_trigger_alloc(data->dev, "%s-mux%d",
++					    indio_dev->name, indio_dev->id);
++	if (!data->trig) {
++		dev_err(dev, "cannot allocate iio trigger.\n");
++		return -ENOMEM;
++	}
++
++	data->trig->ops = &lmp91000_trigger_ops;
++	data->trig->dev.parent = dev;
++	init_completion(&data->completion);
++
++	ret = lmp91000_read_config(data);
++	if (ret)
++		return ret;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++					 &lmp91000_buffer_handler,
++					 &lmp91000_buffer_setup_ops);
++	if (ret)
++		return ret;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_unreg_buffer;
++
++	data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
++						 indio_dev);
++
++	if (IS_ERR(data->cb_buffer)) {
++		if (PTR_ERR(data->cb_buffer) == -ENODEV)
++			ret = -EPROBE_DEFER;
++		else
++			ret = PTR_ERR(data->cb_buffer);
++
++		goto error_unreg_device;
++	}
++	data->adc_chan = iio_channel_cb_get_channels(data->cb_buffer);
++
++	ret = iio_trigger_set_immutable(iio_channel_cb_get_iio_dev(data->cb_buffer),
++					data->trig);
++	if (ret) {
++		dev_err(dev, "cannot set immutable trigger.\n");
++		goto error_unreg_cb_buffer;
++	}
++
++	ret = iio_trigger_register(data->trig);
++	if (ret) {
++		dev_err(dev, "cannot register iio trigger.\n");
++		goto error_unreg_cb_buffer;
++	}
++
++	return 0;
++
++error_unreg_cb_buffer:
++	iio_channel_release_all_cb(data->cb_buffer);
++
++error_unreg_device:
++	iio_device_unregister(indio_dev);
++
++error_unreg_buffer:
++	iio_triggered_buffer_cleanup(indio_dev);
++
++	return ret;
++}
++
++static int lmp91000_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct lmp91000_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	iio_channel_stop_all_cb(data->cb_buffer);
++	iio_channel_release_all_cb(data->cb_buffer);
++
++	iio_triggered_buffer_cleanup(indio_dev);
++	iio_trigger_unregister(data->trig);
++
++	return 0;
++}
++
++static const struct of_device_id lmp91000_of_match[] = {
++	{ .compatible = "ti,lmp91000", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, lmp91000_of_match);
++
++static const struct i2c_device_id lmp91000_id[] = {
++	{ "lmp91000", 0 },
++	{}
++};
++MODULE_DEVICE_TABLE(i2c, lmp91000_id);
++
++static struct i2c_driver lmp91000_driver = {
++	.driver = {
++		.name = LMP91000_DRV_NAME,
++		.of_match_table = of_match_ptr(lmp91000_of_match),
++	},
++	.probe = lmp91000_probe,
++	.remove = lmp91000_remove,
++	.id_table = lmp91000_id,
++};
++module_i2c_driver(lmp91000_driver);
++
++MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
++MODULE_DESCRIPTION("LMP91000 digital potentiostat");
++MODULE_LICENSE("GPL");
+-- 
+2.7.4
 
->> Unfortunately there is no datasheet.
->>
->> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
->> ---
->>  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
->>  drivers/iio/accel/Kconfig                          |  10 +
->>  drivers/iio/accel/Makefile                         |   1 +
->>  drivers/iio/accel/da311.c                          | 312 +++++++++++++++++++++
->>  4 files changed, 324 insertions(+)
->>  create mode 100644 drivers/iio/accel/da311.c
->>
->> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
->> index 21ca02e..8ad9064 100644
->> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
->> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
->> @@ -122,6 +122,7 @@ microchip,mcp4662-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Mem
->>  microchip,mcp4662-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
->>  microchip,mcp4662-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
->>  microchip,mcp4662-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
->> +miramems,da311		MiraMEMS DA311 3-axis 12-bit digital accelerometer
->>  national,lm63		Temperature sensor with integrated fan control
->>  national,lm75		I2C TEMP SENSOR
->>  national,lm80		Serial Interface ACPI-Compatible Microprocessor System Hardware Monitor
->> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
->> index 6236fd5..c94348f 100644
->> --- a/drivers/iio/accel/Kconfig
->> +++ b/drivers/iio/accel/Kconfig
->> @@ -52,6 +52,16 @@ config BMC150_ACCEL_SPI
->>  	tristate
->>  	select REGMAP_SPI
->>
->> +config DA311
->> +	tristate "MiraMEMS DA311 3-axis 12-bit digital accelerometer driver"
->> +	depends on I2C
->> +	help
->> +	  Say yes here to build support for the MiraMEMS DA311 3-axis 12-bit
->> +	  digital accelerometer.
->> +
->> +	  To compile this driver as a module, choose M here: the
->> +	  module will be called da311.
->> +
->>  config DMARD06
->>  	tristate "Domintech DMARD06 Digital Accelerometer Driver"
->>  	depends on OF || COMPILE_TEST
->> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
->> index 9f51559..601ca59 100644
->> --- a/drivers/iio/accel/Makefile
->> +++ b/drivers/iio/accel/Makefile
->> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMA220) += bma220_spi.o
->>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
->>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
->>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
->> +obj-$(CONFIG_DA311)	+= da311.o
->>  obj-$(CONFIG_DMARD06)	+= dmard06.o
->>  obj-$(CONFIG_DMARD09)	+= dmard09.o
->>  obj-$(CONFIG_DMARD10)	+= dmard10.o
->> diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
->> new file mode 100644
->> index 0000000..93d027c
->> --- /dev/null
->> +++ b/drivers/iio/accel/da311.c
->> @@ -0,0 +1,312 @@
->> +/**
->> + * IIO driver for the MiraMEMS DA311 3-axis accelerometer
->> + *
->> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
->> + * Copyright (c) 2011-2013 MiraMEMS Sensing Technology Co., Ltd.
->> + *
->> + * This program is free software; you can redistribute it and/or modify it
->> + * under the terms and conditions of the GNU General Public License,
->> + * version 2, as published by the Free Software Foundation.
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/i2c.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/byteorder/generic.h>
->> +
->> +#define DA311_CHIP_ID			0x13
->> +
->> +/*
->> + * Note register addressed go from 0 - 0x3f and then wrap.
->> + * For some reason there are 2 banks with 0 - 0x3f addresses,
->> + * rather then a single 0-0x7f bank.
->> + */
->> +
->> +/* Bank 0 regs */
->> +#define DA311_REG_BANK			0x0000
->> +#define DA311_REG_LDO_REG		0x0006
->> +#define DA311_REG_CHIP_ID		0x000f
->> +#define DA311_REG_TEMP_CFG_REG		0x001f
->> +#define DA311_REG_CTRL_REG1		0x0020
->> +#define DA311_REG_CTRL_REG3		0x0022
->> +#define DA311_REG_CTRL_REG4		0x0023
->> +#define DA311_REG_CTRL_REG5		0x0024
->> +#define DA311_REG_CTRL_REG6		0x0025
->> +#define DA311_REG_STATUS_REG		0x0027
->> +#define DA311_REG_OUT_X_L		0x0028
->> +#define DA311_REG_OUT_X_H		0x0029
->> +#define DA311_REG_OUT_Y_L		0x002a
->> +#define DA311_REG_OUT_Y_H		0x002b
->> +#define DA311_REG_OUT_Z_L		0x002c
->> +#define DA311_REG_OUT_Z_H		0x002d
->> +#define DA311_REG_INT1_CFG		0x0030
->> +#define DA311_REG_INT1_SRC		0x0031
->> +#define DA311_REG_INT1_THS		0x0032
->> +#define DA311_REG_INT1_DURATION		0x0033
->> +#define DA311_REG_INT2_CFG		0x0034
->> +#define DA311_REG_INT2_SRC		0x0035
->> +#define DA311_REG_INT2_THS		0x0036
->> +#define DA311_REG_INT2_DURATION		0x0037
->> +#define DA311_REG_CLICK_CFG		0x0038
->> +#define DA311_REG_CLICK_SRC		0x0039
->> +#define DA311_REG_CLICK_THS		0x003a
->> +#define DA311_REG_TIME_LIMIT		0x003b
->> +#define DA311_REG_TIME_LATENCY		0x003c
->> +#define DA311_REG_TIME_WINDOW		0x003d
->> +
->> +/* Bank 1 regs */
->> +#define DA311_REG_SOFT_RESET		0x0105
->> +#define DA311_REG_OTP_XOFF_L		0x0110
->> +#define DA311_REG_OTP_XOFF_H		0x0111
->> +#define DA311_REG_OTP_YOFF_L		0x0112
->> +#define DA311_REG_OTP_YOFF_H		0x0113
->> +#define DA311_REG_OTP_ZOFF_L		0x0114
->> +#define DA311_REG_OTP_ZOFF_H		0x0115
->> +#define DA311_REG_OTP_XSO		0x0116
->> +#define DA311_REG_OTP_YSO		0x0117
->> +#define DA311_REG_OTP_ZSO		0x0118
->> +#define DA311_REG_OTP_TRIM_OSC		0x011b
->> +#define DA311_REG_LPF_ABSOLUTE		0x011c
->> +#define DA311_REG_TEMP_OFF1		0x0127
->> +#define DA311_REG_TEMP_OFF2		0x0128
->> +#define DA311_REG_TEMP_OFF3		0x0129
->> +#define DA311_REG_OTP_TRIM_THERM_H	0x011a
->> +
->> +/*
->> + * a value of + or -1024 corresponds to + or - 1G
->> + * scale = 1 / 1024 = 0.000976562
->> + */
->> +
->> +static const int da311_nscale = 976562;
->> +
->> +#define DA311_CHANNEL(reg, axis) {	\
->> +	.type = IIO_ACCEL,	\
->> +	.address = reg,	\
->> +	.modified = 1,	\
->> +	.channel2 = IIO_MOD_##axis,	\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
->> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
->> +}
->> +
->> +static const struct iio_chan_spec da311_channels[] = {
->> +	/* | 0x80 comes from the android driver */
->> +	DA311_CHANNEL(DA311_REG_OUT_X_L | 0x80, X),
->> +	DA311_CHANNEL(DA311_REG_OUT_Y_L | 0x80, Y),
->> +	DA311_CHANNEL(DA311_REG_OUT_Z_L | 0x80, Z),
->> +};
->> +
->> +struct da311_data {
->> +	struct i2c_client *client;
->> +};
->> +
->> +static int da311_register_mask_write(struct i2c_client *client, u16 addr,
->> +				     u8 mask, u8 data)
->> +{
->> +	int ret;
->> +	u8 tmp_data = 0;
->> +
->> +	if (addr & 0xff00) {
->> +		/* Select bank 1 */
->> +		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x01);
->> +		if (ret < 0)
->> +			return ret;
->> +	}
->> +
->> +	if (mask != 0xff) {
->> +		ret = i2c_smbus_read_byte_data(client, addr);
->> +		if (ret < 0)
->> +			return ret;
->> +		tmp_data = ret;
->> +	}
->> +
->> +	tmp_data &= ~mask;
->> +	tmp_data |= data & mask;
->> +	ret = i2c_smbus_write_byte_data(client, addr & 0xff, tmp_data);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	if (addr & 0xff00) {
->> +		/* Back to bank 0 */
->> +		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x00);
->> +		if (ret < 0)
->> +			return ret;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +/* Init sequence taken from the android driver */
->> +static int da311_reset(struct i2c_client *client)
->> +{
->> +	const struct {
->> +		u16 addr;
->> +		u8 mask;
->> +		u8 data;
->> +	} init_data[] = {
->> +		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x08 },
->> +		{ DA311_REG_CTRL_REG5,          0xff,   0x80 },
->> +		{ DA311_REG_CTRL_REG4,          0x30,   0x00 },
->> +		{ DA311_REG_CTRL_REG1,          0xff,   0x6f },
->> +		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x88 },
->> +		{ DA311_REG_LDO_REG,            0xff,   0x02 },
->> +		{ DA311_REG_OTP_TRIM_OSC,       0xff,   0x27 },
->> +		{ DA311_REG_LPF_ABSOLUTE,       0xff,   0x30 },
->> +		{ DA311_REG_TEMP_OFF1,          0xff,   0x3f },
->> +		{ DA311_REG_TEMP_OFF2,          0xff,   0xff },
->> +		{ DA311_REG_TEMP_OFF3,          0xff,   0x0f },
->> +	};
->> +	int i, ret;
->> +
->> +	/* Reset */
->> +	ret = da311_register_mask_write(client, DA311_REG_SOFT_RESET,
->> +					0xff, 0xaa);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
->> +		ret = da311_register_mask_write(client,
->> +						init_data[i].addr,
->> +						init_data[i].mask,
->> +						init_data[i].data);
->> +		if (ret < 0)
->> +			return ret;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int da311_enable(struct i2c_client *client, bool enable)
->> +{
->> +	u8 data = enable ? 0x00 : 0x20;
->> +
->> +	return da311_register_mask_write(client, DA311_REG_TEMP_CFG_REG,
->> +					 0x20, data);
->> +}
->> +
->> +static int da311_read_raw(struct iio_dev *indio_dev,
->> +				struct iio_chan_spec const *chan,
->> +				int *val, int *val2, long mask)
->> +{
->> +	struct da311_data *data = iio_priv(indio_dev);
->> +	__le16 buf;
->> +	short tmp_val;
->> +	int ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->
-> can't i2c_smbus_read_word_data() be used?
-
-Yes good idea.
-
-> and then sign_extend32()
-
-No that will not work, the returned value is 12 bits stored in the
-12 most significant bits of a 16 bits word. sign_extend expect
-the bits to be in the 12 least significant bits of the word.
-
-To get rid of the 4 0 bits in the least significant bits of the
-16 bits word I need to do a right shift 4. Doing a right
-shift on a signed value will automatically sign extend the value
-(keeping it at 16 bits) and storing this 16 bit sign-extended
-value into the 32 bit signed val ptr will automatically sign-extend
-it again to 32 bits.  So after the right shift there is no need to call
-sign_extend32.
-Regards,
-
-Hans
-
-
-
->> +		ret = i2c_smbus_read_i2c_block_data(data->client,
->> +						    chan->address,
->> +						    sizeof(buf), (u8 *)&buf);
->> +		if (ret < 0)
->> +			return ret;
->> +		tmp_val = le16_to_cpu(buf);
->> +		/*
->> +		 * Values are 12 bits, stored as 16 bits with the 4
->> +		 * least significant bits always 0.
->> +		 */
->> +		*val = tmp_val >> 4;
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_SCALE:
->> +		*val = 0;
->> +		*val2 = da311_nscale;
->> +		return IIO_VAL_INT_PLUS_NANO;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static const struct iio_info da311_info = {
->> +	.driver_module	= THIS_MODULE,
->> +	.read_raw	= da311_read_raw,
->> +};
->> +
->> +static int da311_probe(struct i2c_client *client,
->> +			const struct i2c_device_id *id)
->> +{
->> +	int ret;
->> +	struct iio_dev *indio_dev;
->> +	struct da311_data *data;
->> +
->> +	ret = i2c_smbus_read_byte_data(client, DA311_REG_CHIP_ID);
->> +	if (ret != DA311_CHIP_ID)
->> +		return (ret < 0) ? ret : -ENODEV;
->> +
->> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +	if (!indio_dev) {
->> +		dev_err(&client->dev, "iio allocation failed!\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	data = iio_priv(indio_dev);
->> +	data->client = client;
->> +	i2c_set_clientdata(client, indio_dev);
->> +
->> +	indio_dev->dev.parent = &client->dev;
->> +	indio_dev->info = &da311_info;
->> +	indio_dev->name = "da311";
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +	indio_dev->channels = da311_channels;
->> +	indio_dev->num_channels = ARRAY_SIZE(da311_channels);
->> +
->> +	ret = da311_reset(client);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = da311_enable(client, true);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret < 0) {
->> +		dev_err(&client->dev, "device_register failed\n");
->> +		da311_enable(client, false);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int da311_remove(struct i2c_client *client)
->> +{
->> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +
->> +	iio_device_unregister(indio_dev);
->> +
->> +	return da311_enable(client, false);
->> +}
->> +
->> +#ifdef CONFIG_PM_SLEEP
->> +static int da311_suspend(struct device *dev)
->> +{
->> +	return da311_enable(to_i2c_client(dev), false);
->> +}
->> +
->> +static int da311_resume(struct device *dev)
->> +{
->> +	return da311_enable(to_i2c_client(dev), true);
->> +}
->> +#endif
->> +
->> +static SIMPLE_DEV_PM_OPS(da311_pm_ops, da311_suspend, da311_resume);
->> +
->> +static const struct i2c_device_id da311_i2c_id[] = {
->> +	{"da311", 0},
->> +	{}
->> +};
->> +MODULE_DEVICE_TABLE(i2c, da311_i2c_id);
->> +
->> +static struct i2c_driver da311_driver = {
->> +	.driver = {
->> +		.name = "da311",
->> +		.pm = &da311_pm_ops,
->> +	},
->> +	.probe		= da311_probe,
->> +	.remove		= da311_remove,
->> +	.id_table	= da311_i2c_id,
->> +};
->> +
->> +module_i2c_driver(da311_driver);
->> +
->> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
->> +MODULE_DESCRIPTION("MiraMEMS DA311 3-Axis Accelerometer driver");
->> +MODULE_LICENSE("GPL v2");
->>
->
