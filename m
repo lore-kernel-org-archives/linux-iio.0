@@ -1,125 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49366 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932573AbcI0USE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2016 16:18:04 -0400
-Subject: Re: [PATCH] drivers: iio: chemical: Fix sparse endianness warnings
- cast to restricted __be16
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Sandhya Bankar <bankarsandhya512@gmail.com>, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-References: <20160924191621.GA18812@localhost.localdomain>
- <94d2f599-4773-5161-b176-ebbcaa44ec61@metafoo.de>
-Cc: outreachy-kernel@googlegroups.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <10ce32ce-e0c3-ef18-a6ac-1f06eb390bd0@kernel.org>
-Date: Tue, 27 Sep 2016 21:18:00 +0100
-MIME-Version: 1.0
-In-Reply-To: <94d2f599-4773-5161-b176-ebbcaa44ec61@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.162]:12911 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934735AbcIXF3D (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 01:29:03 -0400
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v3 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20160923224726.GA4639@rob-hp-laptop>
+Date: Sat, 24 Sep 2016 07:28:48 +0200
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org
+Message-Id: <118D373B-21B0-4246-A3C9-0E0373F66656@goldelico.com>
+References: <cover.1474634475.git.hns@goldelico.com> <1409ed9845f17445a8a67bd6fb16c902c3e4f69c.1474634475.git.hns@goldelico.com> <20160923224726.GA4639@rob-hp-laptop>
+To: Rob Herring <robh@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/16 16:04, Lars-Peter Clausen wrote:
-> On 09/24/2016 09:16 PM, Sandhya Bankar wrote:
->> Fix the following sparse endianness warnings:
->>
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
->> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-> 
-> Hi,
-> 
-> Thanks for patches, this is all good work, thanks for doing it.
-> 
-> When it comes to patches like these that address issue found by code
-> checkers it is useful to distinguish between whether the patch is
-> 
-> a) cosmetic. Meaning the code is currently correct and the behavior of the
-> code will not change with the patch applied. But having the correct
-> annotations will give us additional confidence that the code is correct and
-> also help catch future mistakes.
-> 
-> b) a bug fix. Meaning the current code is not correct and the patch alters
-> the behavior of the code to address it.
-> 
-> The distinction between the two cases should be noted in the commit message
-> as it allows maintainers to decide how the patch should be handled. E.g. if
-> the patch is cosmetic it will take the normal route of new patch, while if
-> the patch is a bug fix it will get priority and also should be applied to
-> stable trees.
-> 
-> E.g. this patch is a bug fix. val is a unsigned int which is a 32-bit
-> variable, of which the pointer is taken and then treated as a 16-bit storage
-> location by regmap_bulk_read(). This means that result is that the data is
-> stored in the upper two bytes of the variable.
-> 
-> Now val is passed to be16_to_cpu() which expects a 16-bit variable as its
-> parameter, so the 32-bit val variable is cast to a 16-bit value. Now here is
-> where the behavior is different on a big-endian and a little-endian
-> architecture. On a little-endian architecture the upper two bytes represent
-> the 16-bit value, so all is good since that's where the data was stored. On
-> a big-endian architecture the lower two bytes represent the 16-bit value.
-> The lower two bytes of val have never been initialized though, so the result
-> is that random data being passed to be16_to_cpu() and not the data that was
-> read by regmap_bulk_read().
-> 
-> This means this code does not work correctly on a big-endian architecture,
-> the patch message should ideally mention this and that the patch addresses
-> the issue.
-> 
-> Some of the other patches you send were cosmetic only since the variable
-> already had the correct storage size and the behavior of the code was the
-> same on BE and LE systems. Ideally the commit message for those kind of
-> patches would also mention this.
-> 
-> - Lars
-Thanks Lars, I'd missed this entirely.
+Hi,
 
-Now dropped from togreg and applied to fixes-togreg + marked for stable.
-I've supplemented the commit message with a very short form of Lars'
-analysis of the bug and a fixes tag for the patch that introduced
-this.
+> Am 24.09.2016 um 00:47 schrieb Rob Herring <robh@kernel.org>:
+>=20
+> On Fri, Sep 23, 2016 at 02:41:09PM +0200, H. Nikolaus Schaller wrote:
+>> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+>> introduced common DT bindings for touchscreens [1] and a helper =
+function to
+>> parse the DT.
+>>=20
+>> commit ed7c9870c9bc ("Input: of_touchscreen - add support for =
+inverted / swapped axes")
+>> added another helper for parsing axis inversion and swapping
+>> and applying them to x and y coordinates.
+>>=20
+>> Both helpers have been integrated to accommodate any orientation of =
+the
+>> touch panel in relation to the LCD.
+>>=20
+>> A new feature is to introduce scaling the min/max ADC values to the =
+screen
+>> size.
+>>=20
+>> This makes it possible to pre-calibrate the touch so that is (almost)
+>> exactly matches the LCD pixel coordinates it is glued onto. This =
+allows to
+>> well enough operate the touch before a user space calibration step =
+can
+>> improve the precision.
+>>=20
+>> Finally, calculate_pressure has been renamed to calculate_resistance
+>> because that is what it is doing.
+>=20
+> Seems like you are breaking compatibility with old DTs. I can't tell =
+for=20
+> sure though.
 
-Marked for stable.
+There is code to take missing values as 0 or maximum. So this will scale =
+1:1
+and should not break old DTs.
 
-Thanks,
-
-Jonathan
-> 
->>
->> Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
+>=20
+>>=20
+>> [1]: =
+Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+>>=20
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 >> ---
->>  drivers/iio/chemical/atlas-ph-sensor.c | 7 ++++---
->>  1 file changed, 4 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
->> index 407f141..a3fbdb7 100644
->> --- a/drivers/iio/chemical/atlas-ph-sensor.c
->> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
->> @@ -207,13 +207,14 @@ static int atlas_check_ec_calibration(struct atlas_data *data)
->>  	struct device *dev = &data->client->dev;
->>  	int ret;
->>  	unsigned int val;
->> +	__be16	rval;
->>  
->> -	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
->> +	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &rval, 2);
->>  	if (ret)
->>  		return ret;
->>  
->> -	dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
->> -						 be16_to_cpu(val) % 100);
->> +	val = be16_to_cpu(rval);
->> +	dev_info(dev, "probe set to K = %d.%.2d", val / 100, val % 100);
->>  
->>  	ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
->>  	if (ret)
->>
-> 
+>> .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
+>> drivers/input/touchscreen/tsc2007.c                | 126 =
++++++++++++++++++----
+>> include/linux/i2c/tsc2007.h                        |   8 ++
+>> 3 files changed, 123 insertions(+), 31 deletions(-)
+>>=20
+>> diff --git =
+a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt =
+b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+>> index ec365e1..6e9fd55 100644
+>> --- a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+>> +++ b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+>> @@ -6,6 +6,7 @@ Required properties:
+>> - ti,x-plate-ohms: X-plate resistance in ohms.
+>>=20
+>> Optional properties:
+>> +- generic touch screen properties: see touchscreen binding [2].
+>> - gpios: the interrupt gpio the chip is connected to (trough the =
+penirq pin).
+>>   The penirq pin goes to low when the panel is touched.
+>>   (see GPIO binding[1] for more details).
+>> @@ -13,17 +14,20 @@ Optional properties:
+>>   (see interrupt binding[0]).
+>> - interrupts: (gpio) interrupt to which the chip is connected
+>>   (see interrupt binding[0]).
+>> -- ti,max-rt: maximum pressure.
+>> -- ti,fuzzx: specifies the absolute input fuzz x value.
+>> -  If set, it will permit noise in the data up to +- the value given =
+to the fuzz
+>> -  parameter, that is used to filter noise from the event stream.
+>> -- ti,fuzzy: specifies the absolute input fuzz y value.
+>> -- ti,fuzzz: specifies the absolute input fuzz z value.
+>> +- ti,max-rt: maximum pressure resistance above which samples are =
+ignored
+>> +  (default: 4095).
+>> +- ti,report-resistance: report resistance (no pressure =3D max_rt) =
+instead
+>> +  of pressure (no pressure =3D 0).
+>> +- ti,min-x: minimum value reported by X axis ADC (default 0).
+>> +- ti,max-x: maximum value reported by X axis ADC (default 4095).
+>> +- ti,min-y: minimum value reported by Y axis ADC (default 0).
+>> +- ti,max-y: maximum value reported by Y axis ADC (default 4095).
+>=20
+> Seems like these could be common too. They make more sense than giving =
+x=20
+> and y sizes in pixel units which really should come from the panel.
+
+No. They have a different purpose!
+
+You need to scale values like this:
+
+ti,min-x   ->   0
+x          ->   some value between 0 and touchscreen-size-x
+ti,max-x   ->   touchscreen-size-x
+
+So the ti, values describe the ADC raw values while the common bindings
+describe the size in input-event coordinates.
+
+So we need both specified: raw values and pixel values.
+
+>=20
+>> - ti,poll-period: how much time to wait (in milliseconds) before =
+reading again the
+>> -  values from the tsc2007.
+>> +  values from the tsc2007 (default 1).
+>>=20
+>> [0]: =
+Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+>> [1]: Documentation/devicetree/bindings/gpio/gpio.txt
+>> +[2]: =
+Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+>>=20
+>> Example:
+>> 	&i2c1 {
+>> @@ -35,6 +39,8 @@ Example:
+>> 			interrupts =3D <0x0 0x8>;
+>> 			gpios =3D <&gpio4 0 0>;
+>> 			ti,x-plate-ohms =3D <180>;
+>> +			touchscreen-size-x =3D <640>;
+>> +			touchscreen-size-y =3D <480>;
+>> 		};
+>>=20
+>> 		/* ... */
+
+BR,
+Nikolaus
 
