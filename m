@@ -1,53 +1,77 @@
-Return-Path: <bankarsandhya512@gmail.com>
-Date: Sun, 25 Sep 2016 00:46:21 +0530
-From: Sandhya Bankar <bankarsandhya512@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org
-Cc: outreachy-kernel@googlegroups.com
-Subject: [PATCH] drivers: iio: chemical: Fix sparse endianness warnings cast
- to restricted __be16
-Message-ID: <20160924191621.GA18812@localhost.localdomain>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59612 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758168AbcIXQ1i (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 12:27:38 -0400
+Subject: Re: [PATCH v3 3/4] iio:max1027: Use iio_trigger_validate_own_device()
+ helper
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1474643984-14262-1-git-send-email-lars@metafoo.de>
+ <1474643984-14262-3-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5b5f0c71-1411-d22e-87fe-8b4d41133363@kernel.org>
+Date: Sat, 24 Sep 2016 17:27:36 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1474643984-14262-3-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Fix the following sparse endianness warnings:
+On 23/09/16 16:19, Lars-Peter Clausen wrote:
+> Use the new iio_trigger_validate_own_device() to verify that the trigger
+> can only be attached to the matching IIO device rather than using a custom
+> variant.
+> 
+> While the implementation of iio_trigger_validate_own_device() and the
+> custom variant and are not identical their behaviour is.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git - initially pushed out as testing
+for the autobuilders to play with.
 
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
-drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+Thanks,
 
-Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
----
- drivers/iio/chemical/atlas-ph-sensor.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+Jonathan
+> ---
+> New in v3
+> ---
+>  drivers/iio/adc/max1027.c | 13 +------------
+>  1 file changed, 1 insertion(+), 12 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+> index 712fbd2..8ea3271 100644
+> --- a/drivers/iio/adc/max1027.c
+> +++ b/drivers/iio/adc/max1027.c
+> @@ -360,17 +360,6 @@ static int max1027_set_trigger_state(struct iio_trigger *trig, bool state)
+>  	return 0;
+>  }
+>  
+> -static int max1027_validate_device(struct iio_trigger *trig,
+> -				   struct iio_dev *indio_dev)
+> -{
+> -	struct iio_dev *indio = iio_trigger_get_drvdata(trig);
+> -
+> -	if (indio != indio_dev)
+> -		return -EINVAL;
+> -
+> -	return 0;
+> -}
+> -
+>  static irqreturn_t max1027_trigger_handler(int irq, void *private)
+>  {
+>  	struct iio_poll_func *pf = (struct iio_poll_func *)private;
+> @@ -391,7 +380,7 @@ static irqreturn_t max1027_trigger_handler(int irq, void *private)
+>  
+>  static const struct iio_trigger_ops max1027_trigger_ops = {
+>  	.owner = THIS_MODULE,
+> -	.validate_device = &max1027_validate_device,
+> +	.validate_device = &iio_trigger_validate_own_device,
+>  	.set_trigger_state = &max1027_set_trigger_state,
+>  };
+>  
+> 
 
-diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
-index 407f141..a3fbdb7 100644
---- a/drivers/iio/chemical/atlas-ph-sensor.c
-+++ b/drivers/iio/chemical/atlas-ph-sensor.c
-@@ -207,13 +207,14 @@ static int atlas_check_ec_calibration(struct atlas_data *data)
- 	struct device *dev = &data->client->dev;
- 	int ret;
- 	unsigned int val;
-+	__be16	rval;
- 
--	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
-+	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &rval, 2);
- 	if (ret)
- 		return ret;
- 
--	dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
--						 be16_to_cpu(val) % 100);
-+	val = be16_to_cpu(rval);
-+	dev_info(dev, "probe set to K = %d.%.2d", val / 100, val % 100);
- 
- 	ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
- 	if (ret)
--- 
-1.8.3.1
