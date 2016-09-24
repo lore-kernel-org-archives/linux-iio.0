@@ -1,75 +1,116 @@
-Return-Path: <hns@goldelico.com>
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH v3 3/8] drivers:input:tsc2007: add iio interface to read external ADC input, temperature and raw conversion values
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <CAKdAkRS3OhUp=WXtrLxQSJAvtgt24jo2W8Nw_NwR4O=R9jboaA@mail.gmail.com>
-Date: Sat, 24 Sep 2016 19:51:01 +0200
-Cc: Jonathan Cameron <jic23@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>,
- Russell King <linux@armlinux.org.uk>,
- Arnd Bergmann <arnd@arndb.de>,
- Michael Welling <mwelling@ieee.org>,
- =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
- Javier Martinez Canillas <javier@osg.samsung.com>,
- Igor Grinberg <grinberg@compulab.co.il>,
- Sebastian Reichel <sre@kernel.org>,
- "Andrew F. Davis" <afd@ti.com>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- lkml <linux-kernel@vger.kernel.org>,
- Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
- linux-iio@vger.kernel.org
-Message-Id: <1D1171A5-21D2-4D5D-8182-02CB8DE06564@goldelico.com>
-References: <cover.1474634475.git.hns@goldelico.com> <909d06d4f54359c7ac0dcf36a49cbd3ff7e8ebf2.1474634475.git.hns@goldelico.com> <af39fdf1-b6e4-1ab7-9b41-ddb25bfab829@kernel.org> <8A30B517-FE25-418B-9921-407243B0B72B@goldelico.com> <CAKdAkRS3OhUp=WXtrLxQSJAvtgt24jo2W8Nw_NwR4O=R9jboaA@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from down.free-electrons.com ([37.187.137.238]:51088 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1755304AbcIXS0M (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 14:26:12 -0400
+Subject: Re: [PATCH 4/5] input: touchscreen: support Allwinner SoCs'
+ touchscreen
 To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
+ <20160720172532.GE25655@dtor-ws>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, maxime.ripard@free-electrons.com, wens@csie.org,
+        lee.jones@linaro.org, antoine.tenart@free-electrons.com,
+        thomas.petazzoni@free-electrons.com, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-input@vger.kernel.org
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Message-ID: <ca39a2e7-6116-6f6e-3f61-78abfdefcbb7@free-electrons.com>
+Date: Sat, 24 Sep 2016 20:26:08 +0200
+MIME-Version: 1.0
+In-Reply-To: <20160720172532.GE25655@dtor-ws>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Dmitry,
+Hi Dimitry,
 
-> Am 24.09.2016 um 19:44 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
+Sorry for the (long) delay, I did not have time to work on it. I'll
+mainly work in my free time now.
+
+On 20/07/2016 19:25, Dmitry Torokhov wrote:
+> Hi Quentin,
 > 
-> On Sat, Sep 24, 2016 at 10:07 AM, H. Nikolaus Schaller
-> <hns@goldelico.com> wrote:
->> Hi Jonathan,
->> 
->>> Am 24.09.2016 um 18:07 schrieb Jonathan Cameron <jic23@kernel.org>:
->>> 
->>> On 23/09/16 13:41, H. Nikolaus Schaller wrote:
->>>> The tsc2007 chip not only has a resistive touch screen controller but
->>>> also an external AUX adc imput which can be used for an ambient
->>>> light sensor, battery voltage monitoring or any general purpose.
->>>> 
->>>> Additionally it can measure the chip temperature.
->>>> 
->>>> This extension provides an iio interface for these adc channels
->>>> in addition to the raw x, y, z values and the estimated touch
->>>> screen resistance. This can be used for debugging or special
->>>> applications.
->>> I'm unconvinced that exposing the touch related channels is terribly
->>> useful.
->> 
->> Mostly for debugging of if someone wants to do a (better) touch detection
-
-s/of/or/
-
->> in user space.
+> On Wed, Jul 20, 2016 at 10:29:10AM +0200, Quentin Schulz wrote:
+>> This adds support for Allwinner SoCs' (A10, A13 and A31) resistive
+>> touchscreen. This driver is probed by the MFD sunxi-gpadc-mfd.
+>>
+>> This driver uses ADC channels exposed through the IIO framework by
+>> sunxi-gpadc-iio to get its data. When opening this input device, it will
+>> start buffering in the ADC driver and enable a TP_UP_PENDING irq. The ADC
+>> driver will fill in a buffer with all data and call the callback the input
+>> device associated with this buffer. The input device will then read the
+>> buffer two by two and send X and Y coordinates to the input framework based
+>> on what it received from the ADC's buffer. When closing this input device,
+>> the buffering is stopped.
+>>
+>> Note that locations in the first received buffer after an TP_UP_PENDING irq
+>> occurred are unreliable, thus dropped.
+>>
+>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>> ---
+[...]
+>> +	info->buffer = iio_channel_get_all_cb(&pdev->dev,
+>> +					      &sunxi_gpadc_ts_callback,
+>> +					      (void *)info);
 > 
-> For that we should probably export data as a heat map via V4L2
-> interface, similarly to what Nick Dyer did for Synaptics and Atmel
-> drivers (albeit their heatmap functions are too slow for real
-> processing and only suitable for debug/validation).
+> Any chance we could introduce devm-variant here? If you do not want to
+> wait for IIO to add it you can temporarily add call
+> devm_add_action_or_reset() after getting channels and remove it when IIO
+> API catches up.
+> 
 
-Sorry for my ignorance, but what is a heat map?
-Does it allow to cat /sys/bus/something the raw values?
+Something like:
 
-And why introduce another interface if we already get the iio that
-easily reports such values by just adding more channels and some
-lines of code?
+release_iio_channels(void* data)
+{
+	struct sunxi_gpadc_ts *info = data;
+	iio_channel_release_all_cb(info->buffer);
+}
 
-BR,
-Nikolaus
+[...]
+	info->buffer = iio_channel_get_all_cb(&pdev->dev,
+					      &sunxi_gpadc_ts_callback,
+					      (void *)info);
+	ret = devm_add_action_or_reset(&pdev->dev,
+				       release_iio_channels,
+				       (void *)info);
+	if (ret)
+		return ret;
+
+?
+
+May I know why you prefer that way instead of explicit removing in
+remove function of the platform device? I understand for devm-variant
+already in the framework but I am curious for this one.
+
+[...]
+>> +static int sunxi_gpadc_ts_remove(struct platform_device *pdev)
+>> +{
+>> +	struct sunxi_gpadc_ts *info = platform_get_drvdata(pdev);
+>> +
+>> +	iio_channel_stop_all_cb(info->buffer);
+>> +	iio_channel_release_all_cb(info->buffer);
+>> +
+>> +	disable_irq(info->tp_up_irq);
+> 
+> You are mixing devm and non-devm so your unwind order is completely out
+> of wack. If input device is opened while you are unloading (or
+> unbinding) the dirver, then you'll release channels, then input device's
+> close() will be called, which will try to stop the IIO channels again
+> and disable IRQ yet again.
+> 
+
+Do you mean that I should be using exclusively devm or non-devm functions?
+Do you mean input device's close will always be called when
+unloading/unbinding the driver?
+
+[...]
+Thanks,
+Quentin
+
+-- 
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
