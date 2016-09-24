@@ -1,54 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59529 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59580 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754578AbcIXQMv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 12:12:51 -0400
-Subject: Re: [PATCH v2] drivers: iio: max1027: Fix sparse warning: "dubious: x
- | !y"
-To: Sandhya Bankar <bankarsandhya512@gmail.com>, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-References: <20160923200447.GA13617@localhost.localdomain>
+        with ESMTP id S1758168AbcIXQVw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 12:21:52 -0400
+Subject: Re: [PATCH v3 1/4] iio:trigger: Add helper function to verify that a
+ trigger belongs to the same device
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1474643984-14262-1-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Philippe Reynes <tremyfr@yahoo.fr>,
+        Martin Fuzzey <mfuzzey@parkeon.com>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ddb19c43-9994-e201-60a6-7195abce332a@kernel.org>
-Date: Sat, 24 Sep 2016 17:12:49 +0100
+Message-ID: <c61a0d99-8c87-67a3-0eae-5c98b50c979a@kernel.org>
+Date: Sat, 24 Sep 2016 17:21:50 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160923200447.GA13617@localhost.localdomain>
+In-Reply-To: <1474643984-14262-1-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/09/16 21:04, Sandhya Bankar wrote:
-> Fixing below warning:
-> drivers/iio/adc/max1027.c:241:34: warning: dubious: x | !y .
+On 23/09/16 16:19, Lars-Peter Clausen wrote:
+> Some triggers can only be attached to the IIO device that corresponds to
+> the same physical device. Currently each driver that requires this
+> implements its own trigger validation function.
 > 
-> Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as
+> Introduce a new helper function called iio_trigger_validate_own_device()
+> that can be used to do this check. Having a common implementation avoids
+> code duplication and unnecessary boiler-plate code.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Good idea.  We are already relying on the trigger and device having the
+same parent now, so why not do this as well.
+
+Applied to the togreg branch of iio.git - initially pushed out as
 testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 > ---
-> Changes in v2:
-> * Using MAX1027_TEMP instead of number.
+> New in v3
+> ---
+>  drivers/iio/industrialio-trigger.c | 21 +++++++++++++++++++++
+>  include/linux/iio/trigger.h        |  2 ++
+>  2 files changed, 23 insertions(+)
 > 
->  drivers/iio/adc/max1027.c | 4 +++-
->  1 file changed, 3 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
-> index 712fbd2..d601818 100644
-> --- a/drivers/iio/adc/max1027.c
-> +++ b/drivers/iio/adc/max1027.c
-> @@ -238,7 +238,9 @@ static int max1027_read_single_value(struct iio_dev *indio_dev,
+> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+> index e1e1048..05b2011 100644
+> --- a/drivers/iio/industrialio-trigger.c
+> +++ b/drivers/iio/industrialio-trigger.c
+> @@ -717,6 +717,27 @@ bool iio_trigger_using_own(struct iio_dev *indio_dev)
+>  }
+>  EXPORT_SYMBOL(iio_trigger_using_own);
 >  
->  	/* Configure conversion register with the requested chan */
->  	st->reg = MAX1027_CONV_REG | MAX1027_CHAN(chan->channel) |
-> -		  MAX1027_NOSCAN | !!(chan->type == IIO_TEMP);
-> +		  MAX1027_NOSCAN;
-> +	if (chan->type == IIO_TEMP)
-> +		st->reg |= MAX1027_TEMP;
->  	ret = spi_write(st->spi, &st->reg, 1);
->  	if (ret < 0) {
->  		dev_err(&indio_dev->dev,
+> +/**
+> + * iio_trigger_validate_own_device - Check if a trigger and IIO device belong to
+> + *  the same device
+> + * @trig: The IIO trigger to check
+> + * @indio_devdev: the IIO device to check
+> + *
+> + * This function can be used as the validate_device callback for triggers that
+> + * can only be attached to their own device.
+> + *
+> + * Return: 0 if both the trigger and the IIO device belong to the same
+> + * device, -EINVAL otherwise.
+> + */
+> +int iio_trigger_validate_own_device(struct iio_trigger *trig,
+> +	struct iio_dev *indio_dev)
+> +{
+> +	if (indio_dev->dev.parent != trig->dev.parent)
+> +		return -EINVAL;
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(iio_trigger_validate_own_device);
+> +
+>  void iio_device_register_trigger_consumer(struct iio_dev *indio_dev)
+>  {
+>  	indio_dev->groups[indio_dev->groupcounter++] =
+> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+> index 4f1154f..ea08302 100644
+> --- a/include/linux/iio/trigger.h
+> +++ b/include/linux/iio/trigger.h
+> @@ -170,6 +170,8 @@ void iio_trigger_free(struct iio_trigger *trig);
+>   */
+>  bool iio_trigger_using_own(struct iio_dev *indio_dev);
+>  
+> +int iio_trigger_validate_own_device(struct iio_trigger *trig,
+> +				     struct iio_dev *indio_dev);
+>  
+>  #else
+>  struct iio_trigger;
 > 
 
