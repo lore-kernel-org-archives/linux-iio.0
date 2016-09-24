@@ -1,55 +1,78 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.web.de ([212.227.15.14]:50488 "EHLO mout.web.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1757832AbcIYTag (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 25 Sep 2016 15:30:36 -0400
-Subject: Re: iio: Adjust checks for null pointers in six functions
-To: Al Viro <viro@ZenIV.linux.org.uk>
-References: <566ABCD9.1060404@users.sourceforge.net>
- <c11fbb47-1fd3-4e9e-042e-0f271cfef814@users.sourceforge.net>
- <8e0c9fdd-fc9a-0093-278f-00f3beb2a8f6@users.sourceforge.net>
- <5064024e-3510-cec9-d925-b617f7204579@kernel.org>
- <4e79ad49-17fc-1ab9-6a88-06cff959b6de@users.sourceforge.net>
- <e107c883-eff6-2002-46ba-05e691e142d1@kernel.org>
- <3b681d28-c3f9-7d54-f3f3-eccb51479356@users.sourceforge.net>
- <20160925181509.GC19539@ZenIV.linux.org.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Julia Lawall <julia.lawall@lip6.fr>
-From: SF Markus Elfring <elfring@users.sourceforge.net>
-Message-ID: <c168cdae-5cf7-d114-9aa6-d4ebf80b939f@users.sourceforge.net>
-Date: Sun, 25 Sep 2016 21:30:15 +0200
+Return-Path: <amsfield22@gmail.com>
+Date: Sat, 24 Sep 2016 11:51:08 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org, outreachy-kernel@googlegroups.com
+Cc: Sandhya Bankar <bankarsandhya512@gmail.com>, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+Subject: Re: [PATCH] drivers: iio: light: Fix sparse warnings
+Message-ID: <20160924185107.GA3190@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <20160925181509.GC19539@ZenIV.linux.org.uk>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <9c0fb251-3d55-9da9-0f12-71e2c26231e4@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-> Are you, by any chance, some kind of sociology grad?
+On Sat, Sep 24, 2016 at 04:21:01PM +0100, Jonathan Cameron wrote:
+> On 24/09/16 13:12, Sandhya Bankar wrote:
+> > Fixing below warnings:
+> > 
+> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> > 
+> > Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
+> This is really just papering over the problem.
+> A better solution would be to introduce a __be16 local variable to do
+> the initial read into.  Then put it in regval via that be16_to_cpu
+> call.
+> 
+> Jonathan
 
-Not yet. ;-)   - It looks also unlikely at the moment that my life will evolve
-in such direction.
+
+CC'ing outreachy-kernel@googlegroups.com since this is an Outreachy
+task, and others will benefit from Jonathan's feedback to be sure that
+we type the data correctly when it enters the system.
+
+Sandhya, There are a few other patches from you in linux-iio that didn't
+go to the Outreachy group. Probably not worth bouncing at this point.
+Others can find them in linux-iio.  CC group on all future postings.
+
+Outreachy applicant patch creation reminders:
+ - use git log commands to decide on the commit path
+ - commit message says what is changing
+ - changelog says why it is changing
+ - changelog makes a reference to the tool used to find the 
+   issue and states the warning addresed.
+
+Goal is not to fix checkpatch, sparse, 'insert-your-favorite-tool' warnings.
+Goal is to correct the valid coding issues that these tools report.
+
+alisons
 
 
-> You can't study development purely on the process level,
-
-I find that I am not studying this topic. Am I practically contributing
-small improvements to free software (including Linux) for years?
 
 
-> ignoring the actual usefulness of contributions
 
-I guess their usefulness is varying over time.
-
-
-> and the fact that there are objective criteria of their worth.
-
-Are there any source code quality goals left over which would be nice
-to achieve also for this software module?
-
-Regards,
-Markus
+> > ---
+> >  drivers/iio/light/max44000.c | 2 +-
+> >  1 file changed, 1 insertion(+), 1 deletion(-)
+> > 
+> > diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+> > index 6511b20..1ea9af9 100644
+> > --- a/drivers/iio/light/max44000.c
+> > +++ b/drivers/iio/light/max44000.c
+> > @@ -214,7 +214,7 @@ static int max44000_read_alsval(struct max44000_data *data)
+> >  	if (ret < 0)
+> >  		return ret;
+> >  
+> > -	regval = be16_to_cpu(regval);
+> > +	be16_to_cpus(&regval);
+> >  
+> >  	/*
+> >  	 * Overflow is explained on datasheet page 17.
+> > 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
