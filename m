@@ -1,379 +1,386 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34802 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936514AbcIYIiX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 04:38:23 -0400
-Subject: Re: [PATCH v2] iio: accel: Add driver for dmard10 3-axis
- Accelerometer
-To: Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20160919184806.29699-1-hdegoede@redhat.com>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <eed77263-8f1f-1b7b-32df-6fbc360b3c97@kernel.org>
-Date: Sun, 25 Sep 2016 09:38:21 +0100
-MIME-Version: 1.0
-In-Reply-To: <20160919184806.29699-1-hdegoede@redhat.com>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:35925 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755556AbcIXRHk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 13:07:40 -0400
 Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v3 3/8] drivers:input:tsc2007: add iio interface to read external ADC input, temperature and raw conversion values
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <af39fdf1-b6e4-1ab7-9b41-ddb25bfab829@kernel.org>
+Date: Sat, 24 Sep 2016 19:07:22 +0200
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?windows-1252?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?windows-1252?Q?Mika_Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org
+Message-Id: <8A30B517-FE25-418B-9921-407243B0B72B@goldelico.com>
+References: <cover.1474634475.git.hns@goldelico.com> <909d06d4f54359c7ac0dcf36a49cbd3ff7e8ebf2.1474634475.git.hns@goldelico.com> <af39fdf1-b6e4-1ab7-9b41-ddb25bfab829@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/09/16 19:48, Hans de Goede wrote:
-> Add a driver for the Domintech ARD10 3-axis Accelerometer, based on the
-> android driver found here: https://github.com/domintech/dmard10
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Hi Hans,
+Hi Jonathan,
 
-I'm wondering if I missed it in your other accelerometer drivers
-(if so please send fixes!)
+> Am 24.09.2016 um 18:07 schrieb Jonathan Cameron <jic23@kernel.org>:
+>=20
+> On 23/09/16 13:41, H. Nikolaus Schaller wrote:
+>> The tsc2007 chip not only has a resistive touch screen controller but
+>> also an external AUX adc imput which can be used for an ambient
+>> light sensor, battery voltage monitoring or any general purpose.
+>>=20
+>> Additionally it can measure the chip temperature.
+>>=20
+>> This extension provides an iio interface for these adc channels
+>> in addition to the raw x, y, z values and the estimated touch
+>> screen resistance. This can be used for debugging or special
+>> applications.
+> I'm unconvinced that exposing the touch related channels is terribly
+> useful.
 
-Units of acceleration in IIO are m/s^2. We try to stick
-to SI units where possible (there are some quirks due to
-early attempts to maintain compatibility with Hwmon units).
+Mostly for debugging of if someone wants to do a (better) touch =
+detection
+in user space.
 
-Otherwise, very nice.
+>  Fair enough on the aux channel and temperature though.
+>=20
+> Otherwise a few minor bits and bobs.
+>=20
+> Jonathan
+>>=20
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> ---
+>> drivers/input/touchscreen/Kconfig   |   1 +
+>> drivers/input/touchscreen/tsc2007.c | 137 =
++++++++++++++++++++++++++++++++++++-
+>> 2 files changed, 136 insertions(+), 2 deletions(-)
+>>=20
+>> diff --git a/drivers/input/touchscreen/Kconfig =
+b/drivers/input/touchscreen/Kconfig
+>> index 2fb1f43..84c28e8 100644
+>> --- a/drivers/input/touchscreen/Kconfig
+>> +++ b/drivers/input/touchscreen/Kconfig
+>> @@ -1019,6 +1019,7 @@ config TOUCHSCREEN_TSC2005
+>> config TOUCHSCREEN_TSC2007
+>> 	tristate "TSC2007 based touchscreens"
+>> 	depends on I2C
+>> +	select IIO
+> This is pulling quite a bit of core IIO code in for a feature a lot
+> of users of this chip won't care about...
 
-Jonathan
-> ---
-> Changes in v2:
-> -prefix all defines with DMARD10_ and uppercase them all
-> -Cleanup typography of some comments
-> -Use defines for offsets in databuffer
-> -Use i2c_smbus_write_byte_data() where applicable
-> -Reduce unnecessarily large buffer size in dmard10_shutdown()
-> -Use __le16 buffer in dmard10_read_raw()
-> ---
->  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
->  drivers/iio/accel/Kconfig                          |  10 +
->  drivers/iio/accel/Makefile                         |   1 +
->  drivers/iio/accel/dmard10.c                        | 266 +++++++++++++++++++++
->  4 files changed, 278 insertions(+)
->  create mode 100644 drivers/iio/accel/dmard10.c
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index fbbad64..21ca02e 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -39,6 +39,7 @@ dallas,ds75		Digital Thermometer and Thermostat
->  dlg,da9053		DA9053: flexible system level PMIC with multicore support
->  dlg,da9063		DA9063: system PMIC for quad-core application processors
->  domintech,dmard09	DMARD09: 3-axis Accelerometer
-> +domintech,dmard10	DMARD10: 3-axis Accelerometer
->  epson,rx8010		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
->  epson,rx8025		High-Stability. I2C-Bus INTERFACE REAL TIME CLOCK MODULE
->  epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 6bf1b64..6236fd5 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -73,6 +73,16 @@ config DMARD09
->  	  Choosing M will build the driver as a module. If so, the module
->  	  will be called dmard09.
->  
-> +config DMARD10
-> +	tristate "Domintech DMARD10 3-axis Accelerometer Driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to get support for the Domintech DMARD10 3-axis
-> +	  accelerometer.
-> +
-> +	  Choosing M will build the driver as a module. If so, the module
-> +	  will be called dmard10.
-> +
->  config HID_SENSOR_ACCEL_3D
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 07a0c72..9f51559 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -10,6 +10,7 @@ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
->  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
->  obj-$(CONFIG_DMARD06)	+= dmard06.o
->  obj-$(CONFIG_DMARD09)	+= dmard09.o
-> +obj-$(CONFIG_DMARD10)	+= dmard10.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> diff --git a/drivers/iio/accel/dmard10.c b/drivers/iio/accel/dmard10.c
-> new file mode 100644
-> index 0000000..f8bacd2
-> --- /dev/null
-> +++ b/drivers/iio/accel/dmard10.c
-> @@ -0,0 +1,266 @@
-> +/**
-> + * IIO driver for the 3-axis accelerometer Domintech ARD10.
-> + *
-> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
-> + * Copyright (c) 2012 Domintech Technology Co., Ltd
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/byteorder/generic.h>
-> +
-> +#define DMARD10_REG_ACTR			0x00
-> +#define DMARD10_REG_AFEM			0x0c
-> +#define DMARD10_REG_STADR			0x12
-> +#define DMARD10_REG_STAINT			0x1c
-> +#define DMARD10_REG_MISC2			0x1f
-> +#define DMARD10_REG_PD				0x21
-> +
-> +#define DMARD10_MODE_OFF			0x00
-> +#define DMARD10_MODE_STANDBY			0x02
-> +#define DMARD10_MODE_ACTIVE			0x06
-> +#define DMARD10_MODE_READ_OTP			0x12
-> +#define DMARD10_MODE_RESET_DATA_PATH		0x82
-> +
-> +/* AFEN set 1, ATM[2:0]=b'000 (normal), EN_Z/Y/X/T=1 */
-> +#define DMARD10_VALUE_AFEM_AFEN_NORMAL		0x8f
-> +/* ODR[3:0]=b'0111 (100Hz), CCK[3:0]=b'0100 (204.8kHZ) */
-> +#define DMARD10_VALUE_CKSEL_ODR_100_204		0x74
-> +/* INTC[6:5]=b'00 */
-> +#define DMARD10_VALUE_INTC			0x00
-> +/* TAP1/TAP2 Average 2 */
-> +#define DMARD10_VALUE_TAPNS_AVE_2		0x11
-> +
-> +#define DMARD10_VALUE_STADR			0x55
-> +#define DMARD10_VALUE_STAINT			0xaa
-> +#define DMARD10_VALUE_MISC2_OSCA_EN		0x08
-> +#define DMARD10_VALUE_PD_RST			0x52
-> +
-> +/* Offsets into the buffer read in dmard10_read_raw() */
-> +#define DMARD10_X_OFFSET			1
-> +#define DMARD10_Y_OFFSET			2
-> +#define DMARD10_Z_OFFSET			3
-> +
-> +/*
-> + * a value of + or -128 corresponds to + or - 1G
-> + * scale = 1 / 128 = 0.007812500
-Units in IIO for acceleration are m/s^2
-Also for reference if it had been the above we have the
-fractional return types which make this sort of value
-easier to handle (also useful via in kernel interfaces
-as it may never be necessary to do the division)..
-> + */
-> +
-> +static const int dmard10_nscale = 7812500;
-> +
-> +#define DMARD10_CHANNEL(reg, axis) {	\
-> +	.type = IIO_ACCEL,	\
-> +	.address = reg,	\
-> +	.modified = 1,	\
-> +	.channel2 = IIO_MOD_##axis,	\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec dmard10_channels[] = {
-> +	DMARD10_CHANNEL(DMARD10_X_OFFSET, X),
-> +	DMARD10_CHANNEL(DMARD10_Y_OFFSET, Y),
-> +	DMARD10_CHANNEL(DMARD10_Z_OFFSET, Z),
-> +};
-> +
-> +struct dmard10_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +/* Init sequence taken from the android driver */
-> +static int dmard10_reset(struct i2c_client *client)
-> +{
-> +	unsigned char buffer[7];
-> +	int ret;
-> +
-> +	/* 1. Powerdown reset */
-> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_PD,
-> +						DMARD10_VALUE_PD_RST);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * 2. ACTR => Standby mode => Download OTP to parameter reg =>
-> +	 *    Standby mode => Reset data path => Standby mode
-> +	 */
-> +	buffer[0] = DMARD10_REG_ACTR;
-> +	buffer[1] = DMARD10_MODE_STANDBY;
-> +	buffer[2] = DMARD10_MODE_READ_OTP;
-> +	buffer[3] = DMARD10_MODE_STANDBY;
-> +	buffer[4] = DMARD10_MODE_RESET_DATA_PATH;
-> +	buffer[5] = DMARD10_MODE_STANDBY;
-> +	ret = i2c_master_send(client, buffer, 6);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* 3. OSCA_EN = 1, TSTO = b'000 (INT1 = normal, TEST0 = normal) */
-> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_MISC2,
-> +						DMARD10_VALUE_MISC2_OSCA_EN);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* 4. AFEN = 1 (AFE will powerdown after ADC) */
-> +	buffer[0] = DMARD10_REG_AFEM;
-> +	buffer[1] = DMARD10_VALUE_AFEM_AFEN_NORMAL;
-> +	buffer[2] = DMARD10_VALUE_CKSEL_ODR_100_204;
-> +	buffer[3] = DMARD10_VALUE_INTC;
-> +	buffer[4] = DMARD10_VALUE_TAPNS_AVE_2;
-> +	buffer[5] = 0x00; /* DLYC, no delay timing */
-> +	buffer[6] = 0x07; /* INTD=1 push-pull, INTA=1 active high, AUTOT=1 */
-> +	ret = i2c_master_send(client, buffer, 7);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* 5. Activation mode */
-> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_ACTR,
-> +						DMARD10_MODE_ACTIVE);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return 0;
-> +}
-> +
-> +/* Shutdown sequence taken from the android driver */
-> +static int dmard10_shutdown(struct i2c_client *client)
-> +{
-> +	unsigned char buffer[3];
-> +
-> +	buffer[0] = DMARD10_REG_ACTR;
-> +	buffer[1] = DMARD10_MODE_STANDBY;
-> +	buffer[2] = DMARD10_MODE_OFF;
-> +
-> +	return i2c_master_send(client, buffer, 3);
-> +}
-> +
-> +static int dmard10_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct dmard10_data *data = iio_priv(indio_dev);
-> +	__le16 buf[4];
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		/*
-> +		 * Read 8 bytes starting at the REG_STADR register, trying to
-> +		 * read the individual X, Y, Z registers will always read 0.
-> +		 */
-> +		ret = i2c_smbus_read_i2c_block_data(data->client,
-> +						    DMARD10_REG_STADR,
-> +						    sizeof(buf), (u8 *)buf);
-> +		if (ret < 0)
-> +			return ret;
-> +		ret = le16_to_cpu(buf[chan->address]);
-> +		*val = sign_extend32(ret, 12);
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = dmard10_nscale;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info dmard10_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= dmard10_read_raw,
-> +};
-> +
-> +static int dmard10_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct dmard10_data *data;
-> +
-> +	/* These 2 registers have special POR reset values used for id */
-> +	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STADR);
-> +	if (ret != DMARD10_VALUE_STADR)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STAINT);
-> +	if (ret != DMARD10_VALUE_STAINT)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &dmard10_info;
-> +	indio_dev->name = "dmard10";
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = dmard10_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(dmard10_channels);
-> +
-> +	ret = dmard10_reset(client);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		dmard10_shutdown(client);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int dmard10_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	return dmard10_shutdown(client);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int dmard10_suspend(struct device *dev)
-> +{
-> +	return dmard10_shutdown(to_i2c_client(dev));
-> +}
-> +
-> +static int dmard10_resume(struct device *dev)
-> +{
-> +	return dmard10_reset(to_i2c_client(dev));
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(dmard10_pm_ops, dmard10_suspend, dmard10_resume);
-> +
-> +static const struct i2c_device_id dmard10_i2c_id[] = {
-> +	{"dmard10", 0},
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, dmard10_i2c_id);
-> +
-> +static struct i2c_driver dmard10_driver = {
-> +	.driver = {
-> +		.name = "dmard10",
-> +		.pm = &dmard10_pm_ops,
-> +	},
-> +	.probe		= dmard10_probe,
-> +	.remove		= dmard10_remove,
-> +	.id_table	= dmard10_i2c_id,
-> +};
-> +
-> +module_i2c_driver(dmard10_driver);
-> +
-> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
-> +MODULE_DESCRIPTION("Domintech ARD10 3-Axis Accelerometer driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+Ah, yes.
+
+We didn't notice because we use many other IIO devices on the same board =
+(GTA04).
+
+So I will add some #ifdef CONFIG_IIO where necessary.
+
+
+>> 	help
+>> 	  Say Y here if you have a TSC2007 based touchscreen.
+>>=20
+>> diff --git a/drivers/input/touchscreen/tsc2007.c =
+b/drivers/input/touchscreen/tsc2007.c
+>> index e9d5086..559cbc6 100644
+>> --- a/drivers/input/touchscreen/tsc2007.c
+>> +++ b/drivers/input/touchscreen/tsc2007.c
+>> @@ -30,6 +30,9 @@
+>> #include <linux/of.h>
+>> #include <linux/of_gpio.h>
+>> #include <linux/input/touchscreen.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/machine.h>
+> Why machine.h? (or driver.h for that reason).
+
+Good question. Header files sometimes get in during
+development and are forgotten to take out... Or had
+been necessary when development started a while ago.
+Indeed I don't know why they are there.
+
+>=20
+>> +#include <linux/iio/driver.h>
+
+I have checked and we really neither need machine.h nor driver.h.
+
+>>=20
+>> #define TSC2007_MEASURE_TEMP0		(0x0 << 4)
+>> #define TSC2007_MEASURE_AUX		(0x2 << 4)
+>> @@ -61,6 +64,16 @@
+>> #define READ_X		(ADC_ON_12BIT | TSC2007_MEASURE_X)
+>> #define PWRDOWN		(TSC2007_12BIT | =
+TSC2007_POWER_OFF_IRQ_EN)
+>>=20
+>> +#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
+>> +{ \
+>> +	.datasheet_name =3D _name, \
+>> +	.type =3D _type, \
+>> +	.info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |	\
+>> +			BIT(_chan_info), \
+>> +	.indexed =3D 1, \
+>> +	.channel =3D _chan, \
+>> +}
+>> +
+>> struct ts_event {
+>> 	u16	x;
+>> 	u16	y;
+>> @@ -69,9 +82,11 @@ struct ts_event {
+>>=20
+>> struct tsc2007 {
+>> 	struct input_dev	*input;
+>> +	struct iio_dev		*indio;
+>> 	char			phys[32];
+>>=20
+>> 	struct i2c_client	*client;
+>> +	struct mutex		mlock;
+>>=20
+>> 	u16			model;
+>> 	u16			x_plate_ohms;
+>> @@ -192,7 +207,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, =
+void *handle)
+>> 	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
+>>=20
+>> 		/* pen is down, continue with the measurement */
+>> +
+>> +		mutex_lock(&ts->mlock);
+>> 		tsc2007_read_values(ts, &tc);
+>> +		mutex_unlock(&ts->mlock);
+>>=20
+>> 		rt =3D tsc2007_calculate_resistance(ts, &tc);
+>>=20
+>> @@ -319,6 +337,86 @@ static void tsc2007_close(struct input_dev =
+*input_dev)
+>> 	tsc2007_stop(ts);
+>> }
+>>=20
+>> +static const struct iio_chan_spec tsc2007_iio_channel[] =3D {
+>> +	TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +	TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +	TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +	TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +	TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +	TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* =
+Ohms? */
+> This one needs some explanation.  What is it measuring?
+
+Well, it is reporting the raw conductivity of the touch under certain
+conditions. But basically it is also a voltage measured by the ADC.
+
+The real pressure value reported to user space is calculated
+using this and the z1 and z2 values.
+
+If not pressed, conductivity is 0 and if lightly touched it jumps
+to some base value. When more pressed, conductivity increases
+while resistance goes down to some 300 Ohms or so.
+
+But I have not found an IIO_OHM or IIO_MHO constant. Which would also
+not be the best description because it is not scaled to real ohms.
+
+>=20
+>> +	TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
+> At the moment this is defined as barometric pressure.
+
+Ok, I see.
+
+>  I suppose there
+> is no reason it can't extend to touch pressure though, even if it's a =
+boolean
+> like this...
+
+So let's keep it this way?
+
+>=20
+>> +	TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
+>> +	TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
+> I would be tempted to only expose those channels that have a meaning
+> outside of touch screen usage (e.g. adc, temp0 and temp1). =20
+
+Well, for debugging and checking for non-responding or defective touch
+it is very handy to have them in /sys/bus/iio for direct inspection.
+For example we run a device test tool reading such values.
+
+You might argue that we should run our own fork for this purpose to =
+provide
+a patched driver. But we want people to use the kernel from kernel.org
+and still be able to do such debugging without asking them to replace =
+the
+kernel first.
+
+>> +};
+>> +
+>> +static int tsc2007_read_raw(struct iio_dev *indio_dev,
+>> +	struct iio_chan_spec const *chan, int *val, int *val2, long =
+mask)
+>> +{
+>> +	struct  tsc2007 *tsc =3D iio_priv(indio_dev);
+>> +	int adc_chan =3D chan->channel;
+>> +	int ret =3D 0;
+>> +
+>> +	if (adc_chan >=3D ARRAY_SIZE(tsc2007_iio_channel))
+>> +		return -EINVAL;
+>> +
+>> +	if (mask !=3D IIO_CHAN_INFO_RAW)
+>> +		return -EINVAL;
+>> +
+>> +	mutex_lock(&tsc->mlock);
+>> +
+>> +	switch (chan->channel) {
+>> +	case 0:
+>> +		*val =3D tsc2007_xfer(tsc, READ_X);
+>> +		break;
+>> +	case 1:
+>> +		*val =3D tsc2007_xfer(tsc, READ_Y);
+>> +		break;
+>> +	case 2:
+>> +		*val =3D tsc2007_xfer(tsc, READ_Z1);
+>> +		break;
+>> +	case 3:
+>> +		*val =3D tsc2007_xfer(tsc, READ_Z2);
+>> +		break;
+>> +	case 4:
+>> +		*val =3D tsc2007_xfer(tsc, (ADC_ON_12BIT | =
+TSC2007_MEASURE_AUX));
+>> +		break;
+>> +	case 5: {
+>> +		struct ts_event tc;
+>> +
+>> +		tc.x =3D tsc2007_xfer(tsc, READ_X);
+>> +		tc.z1 =3D tsc2007_xfer(tsc, READ_Z1);
+>> +		tc.z2 =3D tsc2007_xfer(tsc, READ_Z2);
+>> +		*val =3D tsc2007_calculate_resistance(tsc, &tc);
+>> +		break;
+>> +	}
+>> +	case 6:
+>> +		*val =3D tsc2007_is_pen_down(tsc);
+>> +		break;
+>> +	case 7:
+>> +		*val =3D tsc2007_xfer(tsc,
+>> +				    (ADC_ON_12BIT | =
+TSC2007_MEASURE_TEMP0));
+>> +		break;
+>> +	case 8:
+>> +		*val =3D tsc2007_xfer(tsc,
+>> +				    (ADC_ON_12BIT | =
+TSC2007_MEASURE_TEMP1));
+>> +		break;
+>> +	}
+>> +
+>> +	/* Prepare for next touch reading - power down ADC, enable =
+PENIRQ */
+>> +	tsc2007_xfer(tsc, PWRDOWN);
+>> +
+>> +	mutex_unlock(&tsc->mlock);
+>> +
+>> +	ret =3D IIO_VAL_INT;
+>> +
+>> +	return ret;
+>> +}
+>> +
+>> +static const struct iio_info tsc2007_iio_info =3D {
+>> +	.read_raw =3D tsc2007_read_raw,
+>> +	.driver_module =3D THIS_MODULE,
+>> +};
+>> +
+>> #ifdef CONFIG_OF
+>> static int tsc2007_get_pendown_state_gpio(struct device *dev)
+>> {
+>> @@ -453,15 +551,20 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>> 	const struct tsc2007_platform_data *pdata =3D =
+dev_get_platdata(&client->dev);
+>> 	struct tsc2007 *ts;
+>> 	struct input_dev *input_dev;
+>> +	struct iio_dev *indio_dev;
+>> 	int err;
+>>=20
+>> 	if (!i2c_check_functionality(client->adapter,
+>> 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
+>> 		return -EIO;
+>>=20
+>> -	ts =3D devm_kzalloc(&client->dev, sizeof(struct tsc2007), =
+GFP_KERNEL);
+>> -	if (!ts)
+>> +	indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*ts));
+>> +	if (!indio_dev) {
+>> +		dev_err(&client->dev, "iio_device_alloc failed\n");
+>> 		return -ENOMEM;
+>> +	}
+>> +
+>> +	ts =3D iio_priv(indio_dev);
+>>=20
+>> 	input_dev =3D devm_input_allocate_device(&client->dev);
+>> 	if (!input_dev)
+>> @@ -469,10 +572,26 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>=20
+>> 	i2c_set_clientdata(client, ts);
+>>=20
+>> +	indio_dev->name =3D "tsc2007";
+>> +	indio_dev->dev.parent =3D &client->dev;
+>> +	indio_dev->info =3D &tsc2007_iio_info;
+>> +	indio_dev->modes =3D INDIO_DIRECT_MODE;
+>> +	indio_dev->channels =3D tsc2007_iio_channel;
+>> +	indio_dev->num_channels =3D ARRAY_SIZE(tsc2007_iio_channel);
+>> +
+>> +	err =3D iio_device_register(indio_dev);
+>> +	if (err < 0) {
+>> +		dev_err(&client->dev, "iio_device_register() failed: =
+%d\n",
+>> +			err);
+>> +		return err;
+>> +	}
+>> +
+>> 	ts->client =3D client;
+>> 	ts->irq =3D client->irq;
+>> 	ts->input =3D input_dev;
+>> +	ts->indio =3D indio_dev;
+>> 	init_waitqueue_head(&ts->wait);
+>> +	mutex_init(&ts->mlock);
+>>=20
+>> 	snprintf(ts->phys, sizeof(ts->phys),
+>> 		 "%s/input0", dev_name(&client->dev));
+>> @@ -548,6 +667,19 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>> 	return 0;
+>> }
+>>=20
+>> +static int tsc2007_remove(struct i2c_client *client)
+>> +{
+>> +	struct tsc2007 *ts =3D i2c_get_clientdata(client);
+>> +	struct input_dev *input_dev =3D ts->input;
+>> +	struct iio_dev *indio_dev =3D ts->indio;
+>> +
+>> +	input_unregister_device(input_dev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> static const struct i2c_device_id tsc2007_idtable[] =3D {
+>> 	{ "tsc2007", 0 },
+>> 	{ }
+>> @@ -570,6 +702,7 @@ static struct i2c_driver tsc2007_driver =3D {
+>> 	},
+>> 	.id_table	=3D tsc2007_idtable,
+>> 	.probe		=3D tsc2007_probe,
+>> +	.remove		=3D tsc2007_remove,
+>> };
+>>=20
+>> module_i2c_driver(tsc2007_driver);
+>>=20
+>=20
+
+BR and thanks,
+Nikolaus
 
