@@ -1,67 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47789 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59281 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S965171AbcIVRjT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 22 Sep 2016 13:39:19 -0400
-Subject: Re: [PATCH] iio: accel: sca3000_core: avoid potentially uninitialized
- variable
-To: Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20160922094432.2230485-1-arnd@arndb.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Ioana Ciornei <ciorneiioana@gmail.com>,
-        Ico Doornekamp <ico@pruts.nl>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+        with ESMTP id S1750838AbcIXPVE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 11:21:04 -0400
+Subject: Re: [PATCH] drivers: iio: light: Fix sparse warnings
+To: Sandhya Bankar <bankarsandhya512@gmail.com>, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+References: <20160924121211.GA12546@localhost.localdomain>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <55b3334b-cc97-f8df-0636-531991b0fdd0@kernel.org>
-Date: Thu, 22 Sep 2016 18:39:16 +0100
+Message-ID: <9c0fb251-3d55-9da9-0f12-71e2c26231e4@kernel.org>
+Date: Sat, 24 Sep 2016 16:21:01 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160922094432.2230485-1-arnd@arndb.de>
+In-Reply-To: <20160924121211.GA12546@localhost.localdomain>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/09/16 10:43, Arnd Bergmann wrote:
-> The newly added __sca3000_get_base_freq function handles all valid
-> modes of the SCA3000_REG_ADDR_MODE register, but gcc notices
-> that any other value (i.e. 0x00) causes the base_freq variable to
-> not get initialized:
+On 24/09/16 13:12, Sandhya Bankar wrote:
+> Fixing below warnings:
 > 
-> drivers/staging/iio/accel/sca3000_core.c: In function 'sca3000_write_raw':
-> drivers/staging/iio/accel/sca3000_core.c:527:23: error: 'base_freq' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+> drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+> drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
 > 
-> This adds explicit error handling for unexpected register values,
-> to ensure this cannot happen.
-> 
-> Fixes: e0f3fc9b47e6 ("iio: accel: sca3000_core: implemented IIO_CHAN_INFO_SAMP_FREQ")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Applied to the togreg branch of iio.git. Initially pushed out as testing for the
-autobuilders to play with it.
-
-'Bug' has been there a long time.  The patch just move the code so I'm not
-going to rush this one in. Worth hardening this corner though!
-
-Thanks,
+> Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
+This is really just papering over the problem.
+A better solution would be to introduce a __be16 local variable to do
+the initial read into.  Then put it in regval via that be16_to_cpu
+call.
 
 Jonathan
 > ---
->  drivers/staging/iio/accel/sca3000_core.c | 2 ++
->  1 file changed, 2 insertions(+)
+>  drivers/iio/light/max44000.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
-> index d626125d7af9..564b36d4f648 100644
-> --- a/drivers/staging/iio/accel/sca3000_core.c
-> +++ b/drivers/staging/iio/accel/sca3000_core.c
-> @@ -468,6 +468,8 @@ static inline int __sca3000_get_base_freq(struct sca3000_state *st,
->  	case SCA3000_MEAS_MODE_OP_2:
->  		*base_freq = info->option_mode_2_freq;
->  		break;
-> +	default:
-> +		ret = -EINVAL;
->  	}
->  error_ret:
->  	return ret;
+> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+> index 6511b20..1ea9af9 100644
+> --- a/drivers/iio/light/max44000.c
+> +++ b/drivers/iio/light/max44000.c
+> @@ -214,7 +214,7 @@ static int max44000_read_alsval(struct max44000_data *data)
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	regval = be16_to_cpu(regval);
+> +	be16_to_cpus(&regval);
+>  
+>  	/*
+>  	 * Overflow is explained on datasheet page 17.
 > 
 
