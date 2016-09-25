@@ -1,62 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:33287 "EHLO
-        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757302AbcIXQPB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 12:15:01 -0400
-Received: by mail-pf0-f195.google.com with SMTP id q2so6719642pfj.0
-        for <linux-iio@vger.kernel.org>; Sat, 24 Sep 2016 09:15:01 -0700 (PDT)
-Date: Sat, 24 Sep 2016 21:44:55 +0530
-From: Sandhya Bankar <bankarsandhya512@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: [PATCH v2] drivers: iio: light: Fix sparse warnings
-Message-ID: <20160924161455.GA8895@localhost.localdomain>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34866 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751990AbcIYIu4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 04:50:56 -0400
+Subject: Re: [PATCH] drivers: iio: chemical: Fix sparse endianness warnings
+ cast to restricted __be16
+To: Sandhya Bankar <bankarsandhya512@gmail.com>, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+References: <20160924191621.GA18812@localhost.localdomain>
+Cc: outreachy-kernel@googlegroups.com,
+        Matt Ranostay <mranostay@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <fac3a3d0-e3e9-b4c6-500d-e7320bf4750b@kernel.org>
+Date: Sun, 25 Sep 2016 09:50:51 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20160924191621.GA18812@localhost.localdomain>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixing below warnings:
+On 24/09/16 20:16, Sandhya Bankar wrote:
+> Fix the following sparse endianness warnings:
+> 
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> drivers/iio/chemical/atlas-ph-sensor.c:215:9: warning: cast to restricted __be16
+> 
+> Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
+Hi Sandhya,
 
-drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
+Please also CC the author of a driver if possible.  Here it's a little
+trickier as Matt's email address changed recently.
 
-Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
----
-Changes in v2:
-* Introducing local variable to do the initial read,
-then put it in regval via be16_to_cpu call
+Patch is fine though so applied to the togreg branch of iio.git.
+Initially pushed out as testing for the autobuilders to play with it.
 
- drivers/iio/light/max44000.c | 5 +++--
- 1 file changed, 3 insertions(+), 2 deletions(-)
+Thanks,
 
-diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-index 6511b20..a144ca3 100644
---- a/drivers/iio/light/max44000.c
-+++ b/drivers/iio/light/max44000.c
-@@ -204,17 +204,18 @@ static int max44000_write_alspga(struct max44000_data *data, int val)
- static int max44000_read_alsval(struct max44000_data *data)
- {
- 	u16 regval;
-+	__be16 val;
- 	int alstim, ret;
- 
- 	ret = regmap_bulk_read(data->regmap, MAX44000_REG_ALS_DATA_HI,
--			       &regval, sizeof(regval));
-+			       &val, sizeof(val));
- 	if (ret < 0)
- 		return ret;
- 	alstim = ret = max44000_read_alstim(data);
- 	if (ret < 0)
- 		return ret;
- 
--	regval = be16_to_cpu(regval);
-+	regval = be16_to_cpu(val);
- 
- 	/*
- 	 * Overflow is explained on datasheet page 17.
--- 
-1.8.3.1
+Jonathan
+> ---
+>  drivers/iio/chemical/atlas-ph-sensor.c | 7 ++++---
+>  1 file changed, 4 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/chemical/atlas-ph-sensor.c b/drivers/iio/chemical/atlas-ph-sensor.c
+> index 407f141..a3fbdb7 100644
+> --- a/drivers/iio/chemical/atlas-ph-sensor.c
+> +++ b/drivers/iio/chemical/atlas-ph-sensor.c
+> @@ -207,13 +207,14 @@ static int atlas_check_ec_calibration(struct atlas_data *data)
+>  	struct device *dev = &data->client->dev;
+>  	int ret;
+>  	unsigned int val;
+> +	__be16	rval;
+>  
+> -	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &val, 2);
+> +	ret = regmap_bulk_read(data->regmap, ATLAS_REG_EC_PROBE, &rval, 2);
+>  	if (ret)
+>  		return ret;
+>  
+> -	dev_info(dev, "probe set to K = %d.%.2d", be16_to_cpu(val) / 100,
+> -						 be16_to_cpu(val) % 100);
+> +	val = be16_to_cpu(rval);
+> +	dev_info(dev, "probe set to K = %d.%.2d", val / 100, val % 100);
+>  
+>  	ret = regmap_read(data->regmap, ATLAS_REG_EC_CALIB_STATUS, &val);
+>  	if (ret)
+> 
 
