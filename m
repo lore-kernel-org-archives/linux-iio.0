@@ -1,619 +1,180 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f66.google.com ([209.85.220.66]:34588 "EHLO
-        mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751171AbcIYEDn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 00:03:43 -0400
-Received: by mail-pa0-f66.google.com with SMTP id i5so3819212pad.1
-        for <linux-iio@vger.kernel.org>; Sat, 24 Sep 2016 21:03:43 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, Matt Ranostay <mranostay@gmail.com>,
-        Matt Ranostay <matt@ranostay.consulting>
-Subject: [PATCH v7] iio: potentiostat: add LMP91000 support
-Date: Sat, 24 Sep 2016 21:03:00 -0700
-Message-Id: <1474776180-21601-1-git-send-email-matt@ranostay.consulting>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34776 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1422642AbcIYIbo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 04:31:44 -0400
+Subject: Re: accelerometer orientation
+To: Hans de Goede <hdegoede@redhat.com>,
+        Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org,
+        Patrick Porlan <patrick.porlan@intel.com>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Lars-Peter Clausen <lars@metafoo.de>
+References: <0b744f22-55c0-da22-b27f-6092aab18365@redhat.com>
+ <1473694755.6389.2.camel@hadess.net>
+ <761fcac8-c7c8-0745-d8e8-f70fbb82451c@redhat.com>
+ <ae45d121-d91c-2566-7ec7-0eb7bcab88ca@kernel.org>
+ <52f0fe9b-ad0c-aa32-861c-e187de825288@redhat.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <4b231b53-03a0-784a-8582-36f14c7c4557@kernel.org>
+Date: Sun, 25 Sep 2016 09:31:41 +0100
+MIME-Version: 1.0
+In-Reply-To: <52f0fe9b-ad0c-aa32-861c-e187de825288@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Matt Ranostay <mranostay@gmail.com>
-
-Add support for the LMP91000 potentiostat which is used for chemical
-sensing applications.
-
-Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
----
-
-Changes from v1:
- * Rename ti-adc1x1s.c driver to ti-adc161s626.c
- * Switch from iio_channel_read() to using the industrialio-buffer-cb
-   interface
- * Process data in ADC trigger handler for buffer callbacks
- * Set the mux trigger to the ADC referenced by io-channels by default
-
-Changes from v2:
- * Fix configuration index shifting values
- * Switch from wait_for_completion_interruptible to wait_for_completion_timeout
-
-Changes from v3:
- * Fix order of probe function error rollback
-
-Changes from v4:
- * Report back scale + offset from adc
- * Switch temperature channel from IIO_VOLTAGE to IIO_TEMP with processing
- * Add iio_read_channel_offset helper
-
-Changes from v5:
- * making IIO_CHAN_INFO_SCALE consumer access have less duplicate code
- * fixed race condition with trigger getting registered before immutable trigger
-   being set to the ADC consumer
-
-Changes from v6:
- * rework the probe function to avoid race conditions 
-
- .../bindings/iio/potentiostat/lmp91000.txt         |  30 ++
- drivers/iio/Kconfig                                |   1 +
- drivers/iio/Makefile                               |   1 +
- drivers/iio/potentiostat/Kconfig                   |  22 +
- drivers/iio/potentiostat/Makefile                  |   6 +
- drivers/iio/potentiostat/lmp91000.c                | 446 +++++++++++++++++++++
- 6 files changed, 506 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
- create mode 100644 drivers/iio/potentiostat/Kconfig
- create mode 100644 drivers/iio/potentiostat/Makefile
- create mode 100644 drivers/iio/potentiostat/lmp91000.c
-
-diff --git a/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-new file mode 100644
-index 000000000000..b9b621e94cd7
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/potentiostat/lmp91000.txt
-@@ -0,0 +1,30 @@
-+* Texas Instruments LMP91000 potentiostat
-+
-+http://www.ti.com/lit/ds/symlink/lmp91000.pdf
-+
-+Required properties:
-+
-+  - compatible: should be "ti,lmp91000"
-+  - reg: the I2C address of the device
-+  - io-channels: the phandle of the iio provider
-+
-+  - ti,external-tia-resistor: if the property ti,tia-gain-ohm is not defined this
-+    needs to be set to signal that an external resistor value is being used.
-+
-+Optional properties:
-+
-+  - ti,tia-gain-ohm: ohm value of the internal resistor for the transimpedance
-+    amplifier. Must be 2750, 3500, 7000, 14000, 35000, 120000, or 350000 ohms.
-+
-+  - ti,rload-ohm: ohm value of the internal resistor load applied to the gas
-+    sensor. Must be 10, 33, 50, or 100 (default) ohms.
-+
-+Example:
-+
-+lmp91000@48 {
-+	compatible = "ti,lmp91000";
-+	reg = <0x48>;
-+	ti,tia-gain-ohm = <7500>;
-+	ti,rload = <100>;
-+	io-channels = <&adc>;
-+};
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 6743b18194fb..a31a8cf2c330 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -87,6 +87,7 @@ if IIO_TRIGGER
-    source "drivers/iio/trigger/Kconfig"
- endif #IIO_TRIGGER
- source "drivers/iio/potentiometer/Kconfig"
-+source "drivers/iio/potentiostat/Kconfig"
- source "drivers/iio/pressure/Kconfig"
- source "drivers/iio/proximity/Kconfig"
- source "drivers/iio/temperature/Kconfig"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 87e4c4369e2f..2b6e2762a886 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -29,6 +29,7 @@ obj-y += light/
- obj-y += magnetometer/
- obj-y += orientation/
- obj-y += potentiometer/
-+obj-y += potentiostat/
- obj-y += pressure/
- obj-y += proximity/
- obj-y += temperature/
-diff --git a/drivers/iio/potentiostat/Kconfig b/drivers/iio/potentiostat/Kconfig
-new file mode 100644
-index 000000000000..1e3baf2cc97d
---- /dev/null
-+++ b/drivers/iio/potentiostat/Kconfig
-@@ -0,0 +1,22 @@
-+#
-+# Potentiostat drivers
-+#
-+# When adding new entries keep the list in alphabetical order
-+
-+menu "Digital potentiostats"
-+
-+config LMP91000
-+	tristate "Texas Instruments LMP91000 potentiostat driver"
-+	depends on I2C
-+	select REGMAP_I2C
-+	select IIO_BUFFER
-+	select IIO_BUFFER_CB
-+	select IIO_TRIGGERED_BUFFER
-+	help
-+	  Say yes here to build support for the Texas Instruments
-+	  LMP91000 digital potentiostat chip.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called lmp91000
-+
-+endmenu
-diff --git a/drivers/iio/potentiostat/Makefile b/drivers/iio/potentiostat/Makefile
-new file mode 100644
-index 000000000000..64d315ef4449
---- /dev/null
-+++ b/drivers/iio/potentiostat/Makefile
-@@ -0,0 +1,6 @@
-+#
-+# Makefile for industrial I/O potentiostat drivers
-+#
-+
-+# When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_LMP91000) += lmp91000.o
-diff --git a/drivers/iio/potentiostat/lmp91000.c b/drivers/iio/potentiostat/lmp91000.c
-new file mode 100644
-index 000000000000..e22714365022
---- /dev/null
-+++ b/drivers/iio/potentiostat/lmp91000.c
-@@ -0,0 +1,446 @@
-+/*
-+ * lmp91000.c - Support for Texas Instruments digital potentiostats
-+ *
-+ * Copyright (C) 2016 Matt Ranostay <mranostay@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ *
-+ * TODO: bias voltage + polarity control, and multiple chip support
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/delay.h>
-+#include <linux/of.h>
-+#include <linux/regmap.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/consumer.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define LMP91000_REG_LOCK		0x01
-+#define LMP91000_REG_TIACN		0x10
-+#define LMP91000_REG_TIACN_GAIN_SHIFT	2
-+
-+#define LMP91000_REG_REFCN		0x11
-+#define LMP91000_REG_REFCN_EXT_REF	0x20
-+#define LMP91000_REG_REFCN_50_ZERO	0x80
-+
-+#define LMP91000_REG_MODECN		0x12
-+#define LMP91000_REG_MODECN_3LEAD	0x03
-+#define LMP91000_REG_MODECN_TEMP	0x07
-+
-+#define LMP91000_DRV_NAME	"lmp91000"
-+
-+static const int lmp91000_tia_gain[] = { 0, 2750, 3500, 7000, 14000, 35000,
-+					 120000, 350000 };
-+
-+static const int lmp91000_rload[] = { 10, 33, 50, 100 };
-+
-+#define LMP91000_TEMP_BASE	-40
-+
-+static const u16 lmp91000_temp_lut[] = {
-+	1875, 1867, 1860, 1852, 1844, 1836, 1828, 1821, 1813, 1805,
-+	1797, 1789, 1782, 1774, 1766, 1758, 1750, 1742, 1734, 1727,
-+	1719, 1711, 1703, 1695, 1687, 1679, 1671, 1663, 1656, 1648,
-+	1640, 1632, 1624, 1616, 1608, 1600, 1592, 1584, 1576, 1568,
-+	1560, 1552, 1544, 1536, 1528, 1520, 1512, 1504, 1496, 1488,
-+	1480, 1472, 1464, 1456, 1448, 1440, 1432, 1424, 1415, 1407,
-+	1399, 1391, 1383, 1375, 1367, 1359, 1351, 1342, 1334, 1326,
-+	1318, 1310, 1302, 1293, 1285, 1277, 1269, 1261, 1253, 1244,
-+	1236, 1228, 1220, 1212, 1203, 1195, 1187, 1179, 1170, 1162,
-+	1154, 1146, 1137, 1129, 1121, 1112, 1104, 1096, 1087, 1079,
-+	1071, 1063, 1054, 1046, 1038, 1029, 1021, 1012, 1004,  996,
-+	 987,  979,  971,  962,  954,  945,  937,  929,  920,  912,
-+	 903,  895,  886,  878,  870,  861 };
-+
-+static const struct regmap_config lmp91000_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+};
-+
-+struct lmp91000_data {
-+	struct regmap *regmap;
-+	struct device *dev;
-+
-+	struct iio_trigger *trig;
-+	struct iio_cb_buffer *cb_buffer;
-+	struct iio_channel *adc_chan;
-+
-+	struct completion completion;
-+	u8 chan_select;
-+
-+	u32 buffer[4]; /* 64-bit data + 64-bit timestamp */
-+};
-+
-+static const struct iio_chan_spec lmp91000_channels[] = {
-+	{ /* chemical channel mV */
-+		.type = IIO_VOLTAGE,
-+		.channel = 0,
-+		.address = LMP91000_REG_MODECN_3LEAD,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_OFFSET) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 32,
-+			.storagebits = 32,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(1),
-+	{ /* temperature channel mV */
-+		.type = IIO_TEMP,
-+		.channel = 1,
-+		.address = LMP91000_REG_MODECN_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-+		.scan_index = -1,
-+	},
-+};
-+
-+static int lmp91000_read(struct lmp91000_data *data, int channel, int *val)
-+{
-+	int state, ret;
-+
-+	ret = regmap_read(data->regmap, LMP91000_REG_MODECN, &state);
-+	if (ret)
-+		return -EINVAL;
-+
-+	ret = regmap_write(data->regmap, LMP91000_REG_MODECN, channel);
-+	if (ret)
-+		return -EINVAL;
-+
-+	/* delay till first temperature reading is complete */
-+	if ((state != channel) && (channel == LMP91000_REG_MODECN_TEMP))
-+		usleep_range(3000, 4000);
-+
-+	data->chan_select = channel != LMP91000_REG_MODECN_3LEAD;
-+
-+	iio_trigger_poll_chained(data->trig);
-+
-+	ret = wait_for_completion_timeout(&data->completion, HZ);
-+	reinit_completion(&data->completion);
-+
-+	if (!ret)
-+		return -ETIMEDOUT;
-+
-+	*val = data->buffer[data->chan_select];
-+
-+	return 0;
-+}
-+
-+static irqreturn_t lmp91000_buffer_handler(int irq, void *private)
-+{
-+	struct iio_poll_func *pf = private;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct lmp91000_data *data = iio_priv(indio_dev);
-+	int ret, val;
-+
-+	memset(data->buffer, 0, sizeof(data->buffer));
-+
-+	ret = lmp91000_read(data, LMP91000_REG_MODECN_3LEAD, &val);
-+	if (!ret) {
-+		data->buffer[0] = val;
-+		iio_push_to_buffers_with_timestamp(indio_dev, data->buffer,
-+						   iio_get_time_ns(indio_dev));
-+	}
-+
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int lmp91000_read_raw(struct iio_dev *indio_dev,
-+			     struct iio_chan_spec const *chan,
-+			     int *val, int *val2, long mask)
-+{
-+	struct lmp91000_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED: {
-+		int ret = iio_channel_start_all_cb(data->cb_buffer);
-+
-+		if (ret)
-+			return ret;
-+
-+		ret = lmp91000_read(data, chan->address, val);
-+
-+		iio_channel_stop_all_cb(data->cb_buffer);
-+
-+		if (ret)
-+			return ret;
-+
-+		if (mask == IIO_CHAN_INFO_PROCESSED) {
-+			int tmp, i;
-+
-+			ret = iio_convert_raw_to_processed(data->adc_chan,
-+							   *val, &tmp, 1);
-+			if (ret)
-+				return ret;
-+
-+			for (i = 0; i < ARRAY_SIZE(lmp91000_temp_lut); i++)
-+				if (lmp91000_temp_lut[i] < tmp)
-+					break;
-+
-+			*val = (LMP91000_TEMP_BASE + i) * 1000;
-+		}
-+		return IIO_VAL_INT;
-+	}
-+	case IIO_CHAN_INFO_OFFSET:
-+		return iio_read_channel_offset(data->adc_chan, val, val2);
-+	case IIO_CHAN_INFO_SCALE:
-+		return iio_read_channel_scale(data->adc_chan, val, val2);
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info lmp91000_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = lmp91000_read_raw,
-+};
-+
-+static int lmp91000_read_config(struct lmp91000_data *data)
-+{
-+	struct device *dev = data->dev;
-+	struct device_node *np = dev->of_node;
-+	unsigned int reg, val;
-+	int i, ret;
-+
-+	ret = of_property_read_u32(np, "ti,tia-gain-ohm", &val);
-+	if (ret) {
-+		if (of_property_read_bool(np, "ti,external-tia-resistor"))
-+			val = 0;
-+		else {
-+			dev_err(dev, "no ti,tia-gain-ohm defined");
-+			return ret;
-+		}
-+	}
-+
-+	ret = -EINVAL;
-+	for (i = 0; i < ARRAY_SIZE(lmp91000_tia_gain); i++) {
-+		if (lmp91000_tia_gain[i] == val) {
-+			reg = i << LMP91000_REG_TIACN_GAIN_SHIFT;
-+			ret = 0;
-+			break;
-+		}
-+	}
-+
-+	if (ret) {
-+		dev_err(dev, "invalid ti,tia-gain-ohm %d\n", val);
-+		return ret;
-+	}
-+
-+	ret = of_property_read_u32(np, "ti,rload-ohm", &val);
-+	if (ret) {
-+		val = 100;
-+		dev_info(dev, "no ti,rload-ohm defined, default to %d\n", val);
-+	}
-+
-+	ret = -EINVAL;
-+	for (i = 0; i < ARRAY_SIZE(lmp91000_rload); i++) {
-+		if (lmp91000_rload[i] == val) {
-+			reg |= i;
-+			ret = 0;
-+			break;
-+		}
-+	}
-+
-+	if (ret) {
-+		dev_err(dev, "invalid ti,rload-ohm %d\n", val);
-+		return ret;
-+	}
-+
-+	regmap_write(data->regmap, LMP91000_REG_LOCK, 0);
-+	regmap_write(data->regmap, LMP91000_REG_TIACN, reg);
-+	regmap_write(data->regmap, LMP91000_REG_REFCN, LMP91000_REG_REFCN_EXT_REF
-+					| LMP91000_REG_REFCN_50_ZERO);
-+	regmap_write(data->regmap, LMP91000_REG_LOCK, 1);
-+
-+	return 0;
-+}
-+
-+static int lmp91000_buffer_cb(const void *val, void *private)
-+{
-+	struct iio_dev *indio_dev = private;
-+	struct lmp91000_data *data = iio_priv(indio_dev);
-+
-+	data->buffer[data->chan_select] = *((int *)val);
-+	complete_all(&data->completion);
-+
-+	return 0;
-+}
-+
-+static const struct iio_trigger_ops lmp91000_trigger_ops = {
-+	.owner = THIS_MODULE,
-+};
-+
-+
-+static int lmp91000_buffer_preenable(struct iio_dev *indio_dev)
-+{
-+	struct lmp91000_data *data = iio_priv(indio_dev);
-+
-+	return iio_channel_start_all_cb(data->cb_buffer);
-+}
-+
-+static int lmp91000_buffer_predisable(struct iio_dev *indio_dev)
-+{
-+	struct lmp91000_data *data = iio_priv(indio_dev);
-+
-+	iio_channel_stop_all_cb(data->cb_buffer);
-+
-+	return 0;
-+}
-+
-+static const struct iio_buffer_setup_ops lmp91000_buffer_setup_ops = {
-+	.preenable = lmp91000_buffer_preenable,
-+	.postenable = iio_triggered_buffer_postenable,
-+	.predisable = lmp91000_buffer_predisable,
-+};
-+
-+static int lmp91000_probe(struct i2c_client *client,
-+			  const struct i2c_device_id *id)
-+{
-+	struct device *dev = &client->dev;
-+	struct lmp91000_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	indio_dev->info = &lmp91000_info;
-+	indio_dev->channels = lmp91000_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(lmp91000_channels);
-+	indio_dev->name = LMP91000_DRV_NAME;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	data = iio_priv(indio_dev);
-+	data->dev = dev;
-+	data->regmap = devm_regmap_init_i2c(client, &lmp91000_regmap_config);
-+	if (IS_ERR(data->regmap)) {
-+		dev_err(dev, "regmap initialization failed.\n");
-+		return PTR_ERR(data->regmap);
-+	}
-+
-+	data->trig = devm_iio_trigger_alloc(data->dev, "%s-mux%d",
-+					    indio_dev->name, indio_dev->id);
-+	if (!data->trig) {
-+		dev_err(dev, "cannot allocate iio trigger.\n");
-+		return -ENOMEM;
-+	}
-+
-+	data->trig->ops = &lmp91000_trigger_ops;
-+	data->trig->dev.parent = dev;
-+	init_completion(&data->completion);
-+
-+	ret = lmp91000_read_config(data);
-+	if (ret)
-+		return ret;
-+
-+	ret = iio_trigger_set_immutable(iio_channel_cb_get_iio_dev(data->cb_buffer),
-+					data->trig);
-+	if (ret) {
-+		dev_err(dev, "cannot set immutable trigger.\n");
-+		return ret;
-+	}
-+
-+	ret = iio_trigger_register(data->trig);
-+	if (ret) {
-+		dev_err(dev, "cannot register iio trigger.\n");
-+		return ret;
-+	}
-+
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 &lmp91000_buffer_handler,
-+					 &lmp91000_buffer_setup_ops);
-+	if (ret)
-+		goto error_unreg_trigger;
-+
-+	data->cb_buffer = iio_channel_get_all_cb(dev, &lmp91000_buffer_cb,
-+						 indio_dev);
-+
-+	if (IS_ERR(data->cb_buffer)) {
-+		if (PTR_ERR(data->cb_buffer) == -ENODEV)
-+			ret = -EPROBE_DEFER;
-+		else
-+			ret = PTR_ERR(data->cb_buffer);
-+
-+		goto error_unreg_buffer;
-+	}
-+
-+	data->adc_chan = iio_channel_cb_get_channels(data->cb_buffer);
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret)
-+		goto error_unreg_cb_buffer;
-+
-+	return 0;
-+
-+error_unreg_cb_buffer:
-+	iio_channel_release_all_cb(data->cb_buffer);
-+
-+error_unreg_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+
-+error_unreg_trigger:
-+	iio_trigger_unregister(data->trig);
-+
-+	return ret;
-+}
-+
-+static int lmp91000_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct lmp91000_data *data = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	iio_channel_stop_all_cb(data->cb_buffer);
-+	iio_channel_release_all_cb(data->cb_buffer);
-+
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	iio_trigger_unregister(data->trig);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id lmp91000_of_match[] = {
-+	{ .compatible = "ti,lmp91000", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(of, lmp91000_of_match);
-+
-+static const struct i2c_device_id lmp91000_id[] = {
-+	{ "lmp91000", 0 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, lmp91000_id);
-+
-+static struct i2c_driver lmp91000_driver = {
-+	.driver = {
-+		.name = LMP91000_DRV_NAME,
-+		.of_match_table = of_match_ptr(lmp91000_of_match),
-+	},
-+	.probe = lmp91000_probe,
-+	.remove = lmp91000_remove,
-+	.id_table = lmp91000_id,
-+};
-+module_i2c_driver(lmp91000_driver);
-+
-+MODULE_AUTHOR("Matt Ranostay <mranostay@gmail.com>");
-+MODULE_DESCRIPTION("LMP91000 digital potentiostat");
-+MODULE_LICENSE("GPL");
--- 
-2.7.4
+On 19/09/16 15:14, Hans de Goede wrote:
+> Hi,
+> 
+> On 18-09-16 21:32, Jonathan Cameron wrote:
+>> On 12/09/16 17:15, Hans de Goede wrote:
+>>> Hi,
+>>>
+>>> On 12-09-16 17:39, Bastien Nocera wrote:
+>>>> Hey,
+>>>>
+>>>> On Mon, 2016-09-12 at 17:25 +0200, Hans de Goede wrote:
+>>>>> Hi Bastien,
+>>>>>
+>>>>> So as I guess you sorta know in my spare time I work on Linux
+>>>>> (mainline) support for Allwinner SoC based ARM devices, including
+>>>>> a whole lot of cheap Chinese tablets.
+>>>>>
+>>>>> Recently I've begun looking into supporting the accelerometers
+>>>>> on these devices and I'm making good progress on getting the
+>>>>> kernel bits working using iio drivers (including a few new
+>>>>> ones I've written recently).
+>>>>>
+>>>>> Yesterday I realized there is a bit of a catch though, all
+>>>>> these iio drivers report results assuming that the accelerometer
+>>>>> is mounted on the top side of the PCB and with its X/Y
+>>>>> coordination properly taken info account.
+>>>>>
+>>>>> Unfortunately neither is necessarily true. Almost all
+>>>>> tablet PCBS are mounted upside down (with an empty PCB
+>>>>> backside against the lcd-panel. Meaning that the Z axis
+>>>>> reads -1G when the tablet is lying on its back instead
+>>>>> of the expected +1G and some need X/Y axis swapping and/or
+>>>>> inversion too.
+>>>>>
+>>>>> So there are 3 problems here:
+>>>>>
+>>>>> 1) Where do we store the orientation of the chip
+>>>>>
+>>>> <snip>
+>>>>> 2) Where do we correct the readings for the orientation
+>>>> <snip>
+>>>>> 3) Currently implementing orientation support in an iio driver
+>>>>> requires copy and pasting quite a bit of boiler plate, so
+>>>>> a question to the linux-iio list, has anyone though of an
+>>>>> easier way to do this. I really just want to be able to
+>>>>> pass say a single flag to iio_device_register and then
+>>>>> have the iio-core automatically call of_iio_read_mount_matrix()
+>>>>> and add mount_matrix ext_info.
+>> Hmm. Whilst it all seems simple, that flag is going to be
+>> non trivial.  There are too many 'sensible' options
+> 
+> The flag is not there to provide all the options, it is just
+> there to tell the core to call of_iio_read_mount_matrix()
+> and if that returns an non default matrix then add the
+> mount_matrix ext_info.
+> 
+> So it would really be just a boolean.
+It would save some boiler plate but ultimately not that much at
+the cost of a lot of churn.  I'm unconvinced it's worth doing.
+> 
+>> and in compact
+>> devices event aligning with axes doesn't always happen.
+>>
+>> Might be room for a some utility functions to reduced boiler plate
+>> though.
+>>>>
+>>>> All good ideas, but we need a way to do this for devices without DT
+>>>> (meaning all of the x86 tablets).
+>>>
+>>> Yes, so I've also been working on a touchscreen driver for silead
+>>> touchscreen controllers (the gsl1680 and compatibles), which has
+>>> the same problem, e.g. it needs tablet model specific firmware,
+>>> so we need to provide a per tablet firmware name, and also
+>>> things like resolution and orientation are different per model
+>>> tablet. I now have 2 x86 tablets with such touchscreens, my plan
+>>> for the silead driver is to use dmi info to identify the tablet
+>>> and have a tablet with per tablet info inside the driver, this
+>>> is not so easy to extend as the udev hw db, but in this case
+>>> the info is needed inside the actual driver for things to work
+>>> properly.
+>> Why?  Seems to me that there ought to be somewhere to massage
+>> that data on it's path from kernel to anywhere useful...
+> 
+> Well for one the touchscreen controller needs to be initialized
+> with a digitizer specific firmware file and since we want to
+> be able to habe say a single usb live image with multiple x86
+> work on multiple tablets that means specifying a tablet specific
+> firmware file-name to pass to the in-kernel firmware loader.
+> 
+> An other issue is that there are multiple consumers of the kernel
+> evdev interface and they all expect evdev events to be ready
+> to use and not require more processing (other then maybe applying
+> a calibration matrix on resistive touchscreens).
+> 
+>>>
+>>>> Perhaps iio-sensor-proxy could read from udev instead, and udev either
+>>>> pull from DT when available, or apply from its own rules?
+>>>
+>>> Directly pulling from dt is not really convenient and iio
+>>> already more or less has standardized on the mount_matrix
+>>> sysfs attribute. I think it might be best to make the
+>>> mount_matrix sysfs attribute writable and then udev can
+>>> write the correct settings there for x86 tablets at
+>>> least. So to any iio devs reading this thread:
+>>> would making the mount_matrix sysfs attribute writable
+>>> be an acceptable solution ?
+>> It's really ugly to push data into the kernel just in order
+>> to be able to read it directly out of the same interface.
+> 
+> That is actually exactly what evdev is doing, e.g. for ps/2
+> keyboards the non standardized keycodes for e.g. brightness
+> hotkeys on laptops are read from a laptop specific udev hwdb
+> entry and then loaded into the kernels scancode to evdev button
+> code table for the ps/2 keyboard evdev device.
+> 
+> Likewise hwdb may be used to adjust to the abs axis min/max values
+> reported by touchpads since some touchpads lie about these
+> (both under and over reporting of the range happens).
+> 
+>> My gut reaction to this is that we need something in between
+>> in user space which can 'massage' the mount matrix as it
+>> sees fit.
+> 
+> Well we've 2 paths we're walking here, one which already
+> has been established is the mount-matrix sits in dt, gets
+> read by of_iio_read_mount_matrix() and then exported as
+> a mount_matrix sysfs attribute. The other is a yet to be
+> designed path for x86+efi/acpi devices which we are
+> discussing now. IMHO it would be good to present the
+> same interface to userspace for both paths.
+> 
+> And as my evdev examples show there us precedence
+> for loading such info from userspace into the kernel
+> for hw where it is inconvenient for the kernel to get
+> the info itself. The writing would of course be a root-only
+> thing.
+Good examples, I'm coming round to thinking having this
+writeable would not be too bad.  Cc'd a few of the intel
+guys doing the android HAL stuff for more feedback on this.
+> 
+>> Should be possible to get udev to feed back the mount matrix
+>> if present I think... Udev not something I like
+>> to go near (or have in fact gone near in many years).
+> 
+> Using an udev attribute definitely is an option here and udev
+> needs to be involved on x86 one way or the other anyways, but
+> I would like to keep udev out of the dt path since it is not
+> necessary there.
+Hmm. Udev to write or udev on the read path.  Not an obvious
+choice really.  
+> 
+> Regards,
+> 
+> Hans
 
