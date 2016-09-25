@@ -4,45 +4,92 @@ To: jic23@kernel.org
 Cc: gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH 1/2] include: linux: iio: add IIO_DEVICE_ATTR_{RO,WO,RW} macros
-Date: Sun, 25 Sep 2016 13:29:58 -0400
-Message-Id: <1474824599-30205-1-git-send-email-masneyb@onstation.org>
+Subject: [PATCH 2/2] staging: iio: isl29018: use IIO_DEVICE_ATTR_{RO,RW} macros
+Date: Sun, 25 Sep 2016 13:29:59 -0400
+Message-Id: <1474824599-30205-2-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1474824599-30205-1-git-send-email-masneyb@onstation.org>
+References: <1474824599-30205-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add three new macros: IIO_DEVICE_ATTR_RO, IIO_DEVICE_ATTR_WO and
-IIO_DEVICE_ATTR_RW to reduce the amount of boiler plate code that
-is needed for creating new attributes. This mimics the *_RO, *_WO,
-and *_RW macros that are found in include/linux/device.h and
-include/linux/sysfs.h.
+Use the IIO_DEVICE_ATTR_RO and IIO_DEVICE_ATTR_RW macros to
+create the device attributes.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- include/linux/iio/sysfs.h | 13 +++++++++++++
- 1 file changed, 13 insertions(+)
+ drivers/staging/iio/light/isl29018.c | 33 +++++++++++++++------------------
+ 1 file changed, 15 insertions(+), 18 deletions(-)
 
-diff --git a/include/linux/iio/sysfs.h b/include/linux/iio/sysfs.h
-index 9cd8f74..f7c6431 100644
---- a/include/linux/iio/sysfs.h
-+++ b/include/linux/iio/sysfs.h
-@@ -59,6 +59,19 @@ struct iio_const_attr {
- 	struct iio_dev_attr iio_dev_attr_##_name		\
- 	= IIO_ATTR(_name, _mode, _show, _store, _addr)
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 76d9f74..055981a 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -280,8 +280,9 @@ static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
+ 	return 0;
+ }
  
-+#define IIO_DEVICE_ATTR_RO(_name, _addr)			\
-+	struct iio_dev_attr iio_dev_attr_##_name		\
-+	= IIO_ATTR(_name, S_IRUGO, _name##_show, NULL, _addr)
-+
-+#define IIO_DEVICE_ATTR_WO(_name, _addr)			\
-+	struct iio_dev_attr iio_dev_attr_##_name		\
-+	= IIO_ATTR(_name, S_IWUSR, NULL, _name##_store, _addr)
-+
-+#define IIO_DEVICE_ATTR_RW(_name, _addr)			            \
-+	struct iio_dev_attr iio_dev_attr_##_name		            \
-+	= IIO_ATTR(_name, (S_IWUSR | S_IRUGO), _name##_show, _name##_store, \
-+		   _addr)
-+
- #define IIO_DEVICE_ATTR_NAMED(_vname, _name, _mode, _show, _store, _addr) \
- 	struct iio_dev_attr iio_dev_attr_##_vname			\
- 	= IIO_ATTR(_name, _mode, _show, _store, _addr)
+-static ssize_t show_scale_available(struct device *dev,
+-				    struct device_attribute *attr, char *buf)
++static ssize_t in_illuminance_scale_available_show
++			(struct device *dev, struct device_attribute *attr,
++			 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+@@ -297,8 +298,9 @@ static ssize_t show_scale_available(struct device *dev,
+ 	return len;
+ }
+ 
+-static ssize_t show_int_time_available(struct device *dev,
+-				       struct device_attribute *attr, char *buf)
++static ssize_t in_illuminance_integration_time_available_show
++			(struct device *dev, struct device_attribute *attr,
++			 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+@@ -314,9 +316,9 @@ static ssize_t show_int_time_available(struct device *dev,
+ }
+ 
+ /* proximity scheme */
+-static ssize_t show_prox_infrared_suppression(struct device *dev,
+-					      struct device_attribute *attr,
+-					      char *buf)
++static ssize_t proximity_on_chip_ambient_infrared_suppression_show
++			(struct device *dev, struct device_attribute *attr,
++			 char *buf)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+@@ -328,9 +330,9 @@ static ssize_t show_prox_infrared_suppression(struct device *dev,
+ 	return sprintf(buf, "%d\n", chip->prox_scheme);
+ }
+ 
+-static ssize_t store_prox_infrared_suppression(struct device *dev,
+-					       struct device_attribute *attr,
+-					       const char *buf, size_t count)
++static ssize_t proximity_on_chip_ambient_infrared_suppression_store
++			(struct device *dev, struct device_attribute *attr,
++			 const char *buf, size_t count)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct isl29018_chip *chip = iio_priv(indio_dev);
+@@ -490,14 +492,9 @@ static const struct iio_chan_spec isl29023_channels[] = {
+ 	ISL29018_IR_CHANNEL,
+ };
+ 
+-static IIO_DEVICE_ATTR(in_illuminance_integration_time_available, S_IRUGO,
+-		       show_int_time_available, NULL, 0);
+-static IIO_DEVICE_ATTR(in_illuminance_scale_available, S_IRUGO,
+-		      show_scale_available, NULL, 0);
+-static IIO_DEVICE_ATTR(proximity_on_chip_ambient_infrared_suppression,
+-					S_IRUGO | S_IWUSR,
+-					show_prox_infrared_suppression,
+-					store_prox_infrared_suppression, 0);
++static IIO_DEVICE_ATTR_RO(in_illuminance_integration_time_available, 0);
++static IIO_DEVICE_ATTR_RO(in_illuminance_scale_available, 0);
++static IIO_DEVICE_ATTR_RW(proximity_on_chip_ambient_infrared_suppression, 0);
+ 
+ #define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ 
 -- 
 2.7.4
