@@ -1,180 +1,379 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34776 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34802 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1422642AbcIYIbo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 04:31:44 -0400
-Subject: Re: accelerometer orientation
+        with ESMTP id S936514AbcIYIiX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 04:38:23 -0400
+Subject: Re: [PATCH v2] iio: accel: Add driver for dmard10 3-axis
+ Accelerometer
 To: Hans de Goede <hdegoede@redhat.com>,
-        Bastien Nocera <hadess@hadess.net>, linux-iio@vger.kernel.org,
-        Patrick Porlan <patrick.porlan@intel.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-References: <0b744f22-55c0-da22-b27f-6092aab18365@redhat.com>
- <1473694755.6389.2.camel@hadess.net>
- <761fcac8-c7c8-0745-d8e8-f70fbb82451c@redhat.com>
- <ae45d121-d91c-2566-7ec7-0eb7bcab88ca@kernel.org>
- <52f0fe9b-ad0c-aa32-861c-e187de825288@redhat.com>
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <20160919184806.29699-1-hdegoede@redhat.com>
+Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4b231b53-03a0-784a-8582-36f14c7c4557@kernel.org>
-Date: Sun, 25 Sep 2016 09:31:41 +0100
+Message-ID: <eed77263-8f1f-1b7b-32df-6fbc360b3c97@kernel.org>
+Date: Sun, 25 Sep 2016 09:38:21 +0100
 MIME-Version: 1.0
-In-Reply-To: <52f0fe9b-ad0c-aa32-861c-e187de825288@redhat.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20160919184806.29699-1-hdegoede@redhat.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/09/16 15:14, Hans de Goede wrote:
-> Hi,
+On 19/09/16 19:48, Hans de Goede wrote:
+> Add a driver for the Domintech ARD10 3-axis Accelerometer, based on the
+> android driver found here: https://github.com/domintech/dmard10
 > 
-> On 18-09-16 21:32, Jonathan Cameron wrote:
->> On 12/09/16 17:15, Hans de Goede wrote:
->>> Hi,
->>>
->>> On 12-09-16 17:39, Bastien Nocera wrote:
->>>> Hey,
->>>>
->>>> On Mon, 2016-09-12 at 17:25 +0200, Hans de Goede wrote:
->>>>> Hi Bastien,
->>>>>
->>>>> So as I guess you sorta know in my spare time I work on Linux
->>>>> (mainline) support for Allwinner SoC based ARM devices, including
->>>>> a whole lot of cheap Chinese tablets.
->>>>>
->>>>> Recently I've begun looking into supporting the accelerometers
->>>>> on these devices and I'm making good progress on getting the
->>>>> kernel bits working using iio drivers (including a few new
->>>>> ones I've written recently).
->>>>>
->>>>> Yesterday I realized there is a bit of a catch though, all
->>>>> these iio drivers report results assuming that the accelerometer
->>>>> is mounted on the top side of the PCB and with its X/Y
->>>>> coordination properly taken info account.
->>>>>
->>>>> Unfortunately neither is necessarily true. Almost all
->>>>> tablet PCBS are mounted upside down (with an empty PCB
->>>>> backside against the lcd-panel. Meaning that the Z axis
->>>>> reads -1G when the tablet is lying on its back instead
->>>>> of the expected +1G and some need X/Y axis swapping and/or
->>>>> inversion too.
->>>>>
->>>>> So there are 3 problems here:
->>>>>
->>>>> 1) Where do we store the orientation of the chip
->>>>>
->>>> <snip>
->>>>> 2) Where do we correct the readings for the orientation
->>>> <snip>
->>>>> 3) Currently implementing orientation support in an iio driver
->>>>> requires copy and pasting quite a bit of boiler plate, so
->>>>> a question to the linux-iio list, has anyone though of an
->>>>> easier way to do this. I really just want to be able to
->>>>> pass say a single flag to iio_device_register and then
->>>>> have the iio-core automatically call of_iio_read_mount_matrix()
->>>>> and add mount_matrix ext_info.
->> Hmm. Whilst it all seems simple, that flag is going to be
->> non trivial.  There are too many 'sensible' options
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Hi Hans,
+
+I'm wondering if I missed it in your other accelerometer drivers
+(if so please send fixes!)
+
+Units of acceleration in IIO are m/s^2. We try to stick
+to SI units where possible (there are some quirks due to
+early attempts to maintain compatibility with Hwmon units).
+
+Otherwise, very nice.
+
+Jonathan
+> ---
+> Changes in v2:
+> -prefix all defines with DMARD10_ and uppercase them all
+> -Cleanup typography of some comments
+> -Use defines for offsets in databuffer
+> -Use i2c_smbus_write_byte_data() where applicable
+> -Reduce unnecessarily large buffer size in dmard10_shutdown()
+> -Use __le16 buffer in dmard10_read_raw()
+> ---
+>  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
+>  drivers/iio/accel/Kconfig                          |  10 +
+>  drivers/iio/accel/Makefile                         |   1 +
+>  drivers/iio/accel/dmard10.c                        | 266 +++++++++++++++++++++
+>  4 files changed, 278 insertions(+)
+>  create mode 100644 drivers/iio/accel/dmard10.c
 > 
-> The flag is not there to provide all the options, it is just
-> there to tell the core to call of_iio_read_mount_matrix()
-> and if that returns an non default matrix then add the
-> mount_matrix ext_info.
+> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> index fbbad64..21ca02e 100644
+> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> @@ -39,6 +39,7 @@ dallas,ds75		Digital Thermometer and Thermostat
+>  dlg,da9053		DA9053: flexible system level PMIC with multicore support
+>  dlg,da9063		DA9063: system PMIC for quad-core application processors
+>  domintech,dmard09	DMARD09: 3-axis Accelerometer
+> +domintech,dmard10	DMARD10: 3-axis Accelerometer
+>  epson,rx8010		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+>  epson,rx8025		High-Stability. I2C-Bus INTERFACE REAL TIME CLOCK MODULE
+>  epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+> index 6bf1b64..6236fd5 100644
+> --- a/drivers/iio/accel/Kconfig
+> +++ b/drivers/iio/accel/Kconfig
+> @@ -73,6 +73,16 @@ config DMARD09
+>  	  Choosing M will build the driver as a module. If so, the module
+>  	  will be called dmard09.
+>  
+> +config DMARD10
+> +	tristate "Domintech DMARD10 3-axis Accelerometer Driver"
+> +	depends on I2C
+> +	help
+> +	  Say yes here to get support for the Domintech DMARD10 3-axis
+> +	  accelerometer.
+> +
+> +	  Choosing M will build the driver as a module. If so, the module
+> +	  will be called dmard10.
+> +
+>  config HID_SENSOR_ACCEL_3D
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+> index 07a0c72..9f51559 100644
+> --- a/drivers/iio/accel/Makefile
+> +++ b/drivers/iio/accel/Makefile
+> @@ -10,6 +10,7 @@ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+>  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+>  obj-$(CONFIG_DMARD06)	+= dmard06.o
+>  obj-$(CONFIG_DMARD09)	+= dmard09.o
+> +obj-$(CONFIG_DMARD10)	+= dmard10.o
+>  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
+>  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
+>  obj-$(CONFIG_KXSD9)	+= kxsd9.o
+> diff --git a/drivers/iio/accel/dmard10.c b/drivers/iio/accel/dmard10.c
+> new file mode 100644
+> index 0000000..f8bacd2
+> --- /dev/null
+> +++ b/drivers/iio/accel/dmard10.c
+> @@ -0,0 +1,266 @@
+> +/**
+> + * IIO driver for the 3-axis accelerometer Domintech ARD10.
+> + *
+> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
+> + * Copyright (c) 2012 Domintech Technology Co., Ltd
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms and conditions of the GNU General Public License,
+> + * version 2, as published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +#include <linux/byteorder/generic.h>
+> +
+> +#define DMARD10_REG_ACTR			0x00
+> +#define DMARD10_REG_AFEM			0x0c
+> +#define DMARD10_REG_STADR			0x12
+> +#define DMARD10_REG_STAINT			0x1c
+> +#define DMARD10_REG_MISC2			0x1f
+> +#define DMARD10_REG_PD				0x21
+> +
+> +#define DMARD10_MODE_OFF			0x00
+> +#define DMARD10_MODE_STANDBY			0x02
+> +#define DMARD10_MODE_ACTIVE			0x06
+> +#define DMARD10_MODE_READ_OTP			0x12
+> +#define DMARD10_MODE_RESET_DATA_PATH		0x82
+> +
+> +/* AFEN set 1, ATM[2:0]=b'000 (normal), EN_Z/Y/X/T=1 */
+> +#define DMARD10_VALUE_AFEM_AFEN_NORMAL		0x8f
+> +/* ODR[3:0]=b'0111 (100Hz), CCK[3:0]=b'0100 (204.8kHZ) */
+> +#define DMARD10_VALUE_CKSEL_ODR_100_204		0x74
+> +/* INTC[6:5]=b'00 */
+> +#define DMARD10_VALUE_INTC			0x00
+> +/* TAP1/TAP2 Average 2 */
+> +#define DMARD10_VALUE_TAPNS_AVE_2		0x11
+> +
+> +#define DMARD10_VALUE_STADR			0x55
+> +#define DMARD10_VALUE_STAINT			0xaa
+> +#define DMARD10_VALUE_MISC2_OSCA_EN		0x08
+> +#define DMARD10_VALUE_PD_RST			0x52
+> +
+> +/* Offsets into the buffer read in dmard10_read_raw() */
+> +#define DMARD10_X_OFFSET			1
+> +#define DMARD10_Y_OFFSET			2
+> +#define DMARD10_Z_OFFSET			3
+> +
+> +/*
+> + * a value of + or -128 corresponds to + or - 1G
+> + * scale = 1 / 128 = 0.007812500
+Units in IIO for acceleration are m/s^2
+Also for reference if it had been the above we have the
+fractional return types which make this sort of value
+easier to handle (also useful via in kernel interfaces
+as it may never be necessary to do the division)..
+> + */
+> +
+> +static const int dmard10_nscale = 7812500;
+> +
+> +#define DMARD10_CHANNEL(reg, axis) {	\
+> +	.type = IIO_ACCEL,	\
+> +	.address = reg,	\
+> +	.modified = 1,	\
+> +	.channel2 = IIO_MOD_##axis,	\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +}
+> +
+> +static const struct iio_chan_spec dmard10_channels[] = {
+> +	DMARD10_CHANNEL(DMARD10_X_OFFSET, X),
+> +	DMARD10_CHANNEL(DMARD10_Y_OFFSET, Y),
+> +	DMARD10_CHANNEL(DMARD10_Z_OFFSET, Z),
+> +};
+> +
+> +struct dmard10_data {
+> +	struct i2c_client *client;
+> +};
+> +
+> +/* Init sequence taken from the android driver */
+> +static int dmard10_reset(struct i2c_client *client)
+> +{
+> +	unsigned char buffer[7];
+> +	int ret;
+> +
+> +	/* 1. Powerdown reset */
+> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_PD,
+> +						DMARD10_VALUE_PD_RST);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/*
+> +	 * 2. ACTR => Standby mode => Download OTP to parameter reg =>
+> +	 *    Standby mode => Reset data path => Standby mode
+> +	 */
+> +	buffer[0] = DMARD10_REG_ACTR;
+> +	buffer[1] = DMARD10_MODE_STANDBY;
+> +	buffer[2] = DMARD10_MODE_READ_OTP;
+> +	buffer[3] = DMARD10_MODE_STANDBY;
+> +	buffer[4] = DMARD10_MODE_RESET_DATA_PATH;
+> +	buffer[5] = DMARD10_MODE_STANDBY;
+> +	ret = i2c_master_send(client, buffer, 6);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* 3. OSCA_EN = 1, TSTO = b'000 (INT1 = normal, TEST0 = normal) */
+> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_MISC2,
+> +						DMARD10_VALUE_MISC2_OSCA_EN);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* 4. AFEN = 1 (AFE will powerdown after ADC) */
+> +	buffer[0] = DMARD10_REG_AFEM;
+> +	buffer[1] = DMARD10_VALUE_AFEM_AFEN_NORMAL;
+> +	buffer[2] = DMARD10_VALUE_CKSEL_ODR_100_204;
+> +	buffer[3] = DMARD10_VALUE_INTC;
+> +	buffer[4] = DMARD10_VALUE_TAPNS_AVE_2;
+> +	buffer[5] = 0x00; /* DLYC, no delay timing */
+> +	buffer[6] = 0x07; /* INTD=1 push-pull, INTA=1 active high, AUTOT=1 */
+> +	ret = i2c_master_send(client, buffer, 7);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* 5. Activation mode */
+> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_ACTR,
+> +						DMARD10_MODE_ACTIVE);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	return 0;
+> +}
+> +
+> +/* Shutdown sequence taken from the android driver */
+> +static int dmard10_shutdown(struct i2c_client *client)
+> +{
+> +	unsigned char buffer[3];
+> +
+> +	buffer[0] = DMARD10_REG_ACTR;
+> +	buffer[1] = DMARD10_MODE_STANDBY;
+> +	buffer[2] = DMARD10_MODE_OFF;
+> +
+> +	return i2c_master_send(client, buffer, 3);
+> +}
+> +
+> +static int dmard10_read_raw(struct iio_dev *indio_dev,
+> +				struct iio_chan_spec const *chan,
+> +				int *val, int *val2, long mask)
+> +{
+> +	struct dmard10_data *data = iio_priv(indio_dev);
+> +	__le16 buf[4];
+> +	int ret;
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		/*
+> +		 * Read 8 bytes starting at the REG_STADR register, trying to
+> +		 * read the individual X, Y, Z registers will always read 0.
+> +		 */
+> +		ret = i2c_smbus_read_i2c_block_data(data->client,
+> +						    DMARD10_REG_STADR,
+> +						    sizeof(buf), (u8 *)buf);
+> +		if (ret < 0)
+> +			return ret;
+> +		ret = le16_to_cpu(buf[chan->address]);
+> +		*val = sign_extend32(ret, 12);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = 0;
+> +		*val2 = dmard10_nscale;
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static const struct iio_info dmard10_info = {
+> +	.driver_module	= THIS_MODULE,
+> +	.read_raw	= dmard10_read_raw,
+> +};
+> +
+> +static int dmard10_probe(struct i2c_client *client,
+> +			const struct i2c_device_id *id)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct dmard10_data *data;
+> +
+> +	/* These 2 registers have special POR reset values used for id */
+> +	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STADR);
+> +	if (ret != DMARD10_VALUE_STADR)
+> +		return (ret < 0) ? ret : -ENODEV;
+> +
+> +	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STAINT);
+> +	if (ret != DMARD10_VALUE_STAINT)
+> +		return (ret < 0) ? ret : -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+> +	if (!indio_dev) {
+> +		dev_err(&client->dev, "iio allocation failed!\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	data = iio_priv(indio_dev);
+> +	data->client = client;
+> +	i2c_set_clientdata(client, indio_dev);
+> +
+> +	indio_dev->dev.parent = &client->dev;
+> +	indio_dev->info = &dmard10_info;
+> +	indio_dev->name = "dmard10";
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = dmard10_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(dmard10_channels);
+> +
+> +	ret = dmard10_reset(client);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev, "device_register failed\n");
+> +		dmard10_shutdown(client);
+> +	}
+> +
+> +	return ret;
+> +}
+> +
+> +static int dmard10_remove(struct i2c_client *client)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return dmard10_shutdown(client);
+> +}
+> +
+> +#ifdef CONFIG_PM_SLEEP
+> +static int dmard10_suspend(struct device *dev)
+> +{
+> +	return dmard10_shutdown(to_i2c_client(dev));
+> +}
+> +
+> +static int dmard10_resume(struct device *dev)
+> +{
+> +	return dmard10_reset(to_i2c_client(dev));
+> +}
+> +#endif
+> +
+> +static SIMPLE_DEV_PM_OPS(dmard10_pm_ops, dmard10_suspend, dmard10_resume);
+> +
+> +static const struct i2c_device_id dmard10_i2c_id[] = {
+> +	{"dmard10", 0},
+> +	{}
+> +};
+> +MODULE_DEVICE_TABLE(i2c, dmard10_i2c_id);
+> +
+> +static struct i2c_driver dmard10_driver = {
+> +	.driver = {
+> +		.name = "dmard10",
+> +		.pm = &dmard10_pm_ops,
+> +	},
+> +	.probe		= dmard10_probe,
+> +	.remove		= dmard10_remove,
+> +	.id_table	= dmard10_i2c_id,
+> +};
+> +
+> +module_i2c_driver(dmard10_driver);
+> +
+> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
+> +MODULE_DESCRIPTION("Domintech ARD10 3-Axis Accelerometer driver");
+> +MODULE_LICENSE("GPL v2");
 > 
-> So it would really be just a boolean.
-It would save some boiler plate but ultimately not that much at
-the cost of a lot of churn.  I'm unconvinced it's worth doing.
-> 
->> and in compact
->> devices event aligning with axes doesn't always happen.
->>
->> Might be room for a some utility functions to reduced boiler plate
->> though.
->>>>
->>>> All good ideas, but we need a way to do this for devices without DT
->>>> (meaning all of the x86 tablets).
->>>
->>> Yes, so I've also been working on a touchscreen driver for silead
->>> touchscreen controllers (the gsl1680 and compatibles), which has
->>> the same problem, e.g. it needs tablet model specific firmware,
->>> so we need to provide a per tablet firmware name, and also
->>> things like resolution and orientation are different per model
->>> tablet. I now have 2 x86 tablets with such touchscreens, my plan
->>> for the silead driver is to use dmi info to identify the tablet
->>> and have a tablet with per tablet info inside the driver, this
->>> is not so easy to extend as the udev hw db, but in this case
->>> the info is needed inside the actual driver for things to work
->>> properly.
->> Why?  Seems to me that there ought to be somewhere to massage
->> that data on it's path from kernel to anywhere useful...
-> 
-> Well for one the touchscreen controller needs to be initialized
-> with a digitizer specific firmware file and since we want to
-> be able to habe say a single usb live image with multiple x86
-> work on multiple tablets that means specifying a tablet specific
-> firmware file-name to pass to the in-kernel firmware loader.
-> 
-> An other issue is that there are multiple consumers of the kernel
-> evdev interface and they all expect evdev events to be ready
-> to use and not require more processing (other then maybe applying
-> a calibration matrix on resistive touchscreens).
-> 
->>>
->>>> Perhaps iio-sensor-proxy could read from udev instead, and udev either
->>>> pull from DT when available, or apply from its own rules?
->>>
->>> Directly pulling from dt is not really convenient and iio
->>> already more or less has standardized on the mount_matrix
->>> sysfs attribute. I think it might be best to make the
->>> mount_matrix sysfs attribute writable and then udev can
->>> write the correct settings there for x86 tablets at
->>> least. So to any iio devs reading this thread:
->>> would making the mount_matrix sysfs attribute writable
->>> be an acceptable solution ?
->> It's really ugly to push data into the kernel just in order
->> to be able to read it directly out of the same interface.
-> 
-> That is actually exactly what evdev is doing, e.g. for ps/2
-> keyboards the non standardized keycodes for e.g. brightness
-> hotkeys on laptops are read from a laptop specific udev hwdb
-> entry and then loaded into the kernels scancode to evdev button
-> code table for the ps/2 keyboard evdev device.
-> 
-> Likewise hwdb may be used to adjust to the abs axis min/max values
-> reported by touchpads since some touchpads lie about these
-> (both under and over reporting of the range happens).
-> 
->> My gut reaction to this is that we need something in between
->> in user space which can 'massage' the mount matrix as it
->> sees fit.
-> 
-> Well we've 2 paths we're walking here, one which already
-> has been established is the mount-matrix sits in dt, gets
-> read by of_iio_read_mount_matrix() and then exported as
-> a mount_matrix sysfs attribute. The other is a yet to be
-> designed path for x86+efi/acpi devices which we are
-> discussing now. IMHO it would be good to present the
-> same interface to userspace for both paths.
-> 
-> And as my evdev examples show there us precedence
-> for loading such info from userspace into the kernel
-> for hw where it is inconvenient for the kernel to get
-> the info itself. The writing would of course be a root-only
-> thing.
-Good examples, I'm coming round to thinking having this
-writeable would not be too bad.  Cc'd a few of the intel
-guys doing the android HAL stuff for more feedback on this.
-> 
->> Should be possible to get udev to feed back the mount matrix
->> if present I think... Udev not something I like
->> to go near (or have in fact gone near in many years).
-> 
-> Using an udev attribute definitely is an option here and udev
-> needs to be involved on x86 one way or the other anyways, but
-> I would like to keep udev out of the dt path since it is not
-> necessary there.
-Hmm. Udev to write or udev on the read path.  Not an obvious
-choice really.  
-> 
-> Regards,
-> 
-> Hans
 
