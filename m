@@ -1,64 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59560 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36792 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758823AbcIXQSV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 12:18:21 -0400
-Subject: Re: [PATCH] drivers: iio: dac: Fix sparse warning
-To: Sandhya Bankar <bankarsandhya512@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org
-References: <20160923192022.GA10786@localhost.localdomain>
+        with ESMTP id S938834AbcIYQoI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 12:44:08 -0400
+Subject: Re: [PATCH v2] iio: accel: Add driver for the MiraMEMS DA311 3-axis
+ 12-bit digital accelerometer
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>
+References: <20160922134229.773-1-hdegoede@redhat.com>
+ <cb187395-d50d-ff10-c58e-7e68f5fab4f8@metafoo.de>
+Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <04f40c36-9a05-f439-6d01-e59729e655e1@kernel.org>
-Date: Sat, 24 Sep 2016 17:18:17 +0100
+Message-ID: <e8cdc33b-5331-7e25-8bdb-823cd462644f@kernel.org>
+Date: Sun, 25 Sep 2016 17:44:03 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160923192022.GA10786@localhost.localdomain>
+In-Reply-To: <cb187395-d50d-ff10-c58e-7e68f5fab4f8@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/09/16 20:20, Sandhya Bankar wrote:
-> Fixing below warnings:
+On 25/09/16 16:11, Lars-Peter Clausen wrote:
+> On 09/22/2016 03:42 PM, Hans de Goede wrote:
+> [...]
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
+>> +		if (ret < 0)
+>> +			return ret;
+>> +		/*
+>> +		 * Values are 12 bits, stored as 16 bits with the 4
+>> +		 * least significant bits always 0.
+>> +		 */
+>> +		*val = ((short)le16_to_cpu(ret)) >> 4;
 > 
-> drivers/iio/dac/ad5592r.c:58:41: warning: incorrect type in argument 2 (different base types)
-> drivers/iio/dac/ad5592r.c:58:41:    expected unsigned short [usertype] *buf
-> drivers/iio/dac/ad5592r.c:58:41:    got restricted __be16 *<noident>
-> drivers/iio/dac/ad5592r.c:62:41: warning: incorrect type in argument 2 (different base types)
-> drivers/iio/dac/ad5592r.c:62:41:    expected unsigned short [usertype] *buf
-> drivers/iio/dac/ad5592r.c:62:41:    got restricted __be16 *<noident>
-> drivers/iio/dac/ad5592r.c:92:41: warning: incorrect type in argument 2 (different base types)
-> drivers/iio/dac/ad5592r.c:92:41:    expected unsigned short [usertype] *buf
-> drivers/iio/dac/ad5592r.c:92:41:    got restricted __be16 *<noident>
-> drivers/iio/dac/ad5592r.c:110:41: warning: incorrect type in argument 2 (different base types)
-> drivers/iio/dac/ad5592r.c:110:41:    expected unsigned short [usertype] *buf
-> drivers/iio/dac/ad5592r.c:110:41:    got restricted __be16 *<noident>
-> 
-> Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
-Looks good to me.  Lars, will be a while before I send next pull if
-you want to comment on this as well.
-
-Applied to the togreg branch of iio.git -- initially pushed out as
-testing for the autobuilders to play with it.
+> I think the le16_to_cpu() is a leftover from the switch away from
+> i2c_smbus_read_i2c_block_data(). i2c_smbus_read_word_data() already returns
+> CPU endianess data. On a BE system le16_to_cpu() swaps the lower and upper
+> bytes on a BE system. So you'd get the wrong value in that case.
+Backed out.  Please check the scale value as well for v3.
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/iio/dac/ad5592r.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/dac/ad5592r.c b/drivers/iio/dac/ad5592r.c
-> index 0b235a2..6eed5b7 100644
-> --- a/drivers/iio/dac/ad5592r.c
-> +++ b/drivers/iio/dac/ad5592r.c
-> @@ -17,7 +17,7 @@
->  #define AD5592R_GPIO_READBACK_EN	BIT(10)
->  #define AD5592R_LDAC_READBACK_EN	BIT(6)
->  
-> -static int ad5592r_spi_wnop_r16(struct ad5592r_state *st, u16 *buf)
-> +static int ad5592r_spi_wnop_r16(struct ad5592r_state *st, __be16 *buf)
->  {
->  	struct spi_device *spi = container_of(st->dev, struct spi_device, dev);
->  	struct spi_transfer t = {
+>> +		return IIO_VAL_INT;
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
