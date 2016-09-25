@@ -1,78 +1,159 @@
-Return-Path: <amsfield22@gmail.com>
-Date: Sat, 24 Sep 2016 11:51:08 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org, outreachy-kernel@googlegroups.com
-Cc: Sandhya Bankar <bankarsandhya512@gmail.com>, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] drivers: iio: light: Fix sparse warnings
-Message-ID: <20160924185107.GA3190@d830.WORKGROUP>
+Return-Path: <quentin.schulz@free-electrons.com>
+Subject: Re: [PATCH 4/5] input: touchscreen: support Allwinner SoCs'
+ touchscreen
+To: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, lars@metafoo.de,
+ pmeerw@pmeerw.net, maxime.ripard@free-electrons.com, wens@csie.org,
+ dmitry.torokhov@gmail.com, lee.jones@linaro.org
+References: <1469003351-15263-1-git-send-email-quentin.schulz@free-electrons.com>
+ <1469003351-15263-5-git-send-email-quentin.schulz@free-electrons.com>
+ <8174039f-777e-b4b8-58c9-3509748f2799@kernel.org>
+Cc: antoine.tenart@free-electrons.com, thomas.petazzoni@free-electrons.com,
+ linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org, linux-input@vger.kernel.org
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Message-ID: <db3ab94a-9dbb-3bd6-fe43-e530b42c9246@free-electrons.com>
+Date: Sun, 25 Sep 2016 21:44:09 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <9c0fb251-3d55-9da9-0f12-71e2c26231e4@kernel.org>
+In-Reply-To: <8174039f-777e-b4b8-58c9-3509748f2799@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Sep 24, 2016 at 04:21:01PM +0100, Jonathan Cameron wrote:
-> On 24/09/16 13:12, Sandhya Bankar wrote:
-> > Fixing below warnings:
-> > 
-> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-> > drivers/iio/light/max44000.c:217:18: warning: cast to restricted __be16
-> > 
-> > Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
-> This is really just papering over the problem.
-> A better solution would be to introduce a __be16 local variable to do
-> the initial read into.  Then put it in regval via that be16_to_cpu
-> call.
+On 24/07/2016 13:24, Jonathan Cameron wrote:
+> On 20/07/16 09:29, Quentin Schulz wrote:
+>> This adds support for Allwinner SoCs' (A10, A13 and A31) resistive
+>> touchscreen. This driver is probed by the MFD sunxi-gpadc-mfd.
+>>
+>> This driver uses ADC channels exposed through the IIO framework by
+>> sunxi-gpadc-iio to get its data. When opening this input device, it will
+>> start buffering in the ADC driver and enable a TP_UP_PENDING irq. The ADC
+>> driver will fill in a buffer with all data and call the callback the input
+>> device associated with this buffer. The input device will then read the
+>> buffer two by two and send X and Y coordinates to the input framework based
+>> on what it received from the ADC's buffer. When closing this input device,
+>> the buffering is stopped.
+>>
+>> Note that locations in the first received buffer after an TP_UP_PENDING irq
+>> occurred are unreliable, thus dropped.
+>>
+> I think I now understand what you are doing.
 > 
-> Jonathan
+> The channel grab is grabbing 4 channels, when there are only two real
+> ones (x and y) then you are abusing the callback interface from IIO.
 
+Actually, I need an IIO channel only for registering the callback from
+the consumer but I never use the IIO channel in an other way from
+consumer side (everything's done in the provider by reading the FIFO
+register and sending data to the callback via iio_buffer).
 
-CC'ing outreachy-kernel@googlegroups.com since this is an Outreachy
-task, and others will benefit from Jonathan's feedback to be sure that
-we type the data correctly when it enters the system.
-
-Sandhya, There are a few other patches from you in linux-iio that didn't
-go to the Outreachy group. Probably not worth bouncing at this point.
-Others can find them in linux-iio.  CC group on all future postings.
-
-Outreachy applicant patch creation reminders:
- - use git log commands to decide on the commit path
- - commit message says what is changing
- - changelog says why it is changing
- - changelog makes a reference to the tool used to find the 
-   issue and states the warning addresed.
-
-Goal is not to fix checkpatch, sparse, 'insert-your-favorite-tool' warnings.
-Goal is to correct the valid coding issues that these tools report.
-
-alisons
-
-
-
-
-
-> > ---
-> >  drivers/iio/light/max44000.c | 2 +-
-> >  1 file changed, 1 insertion(+), 1 deletion(-)
-> > 
-> > diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
-> > index 6511b20..1ea9af9 100644
-> > --- a/drivers/iio/light/max44000.c
-> > +++ b/drivers/iio/light/max44000.c
-> > @@ -214,7 +214,7 @@ static int max44000_read_alsval(struct max44000_data *data)
-> >  	if (ret < 0)
-> >  		return ret;
-> >  
-> > -	regval = be16_to_cpu(regval);
-> > +	be16_to_cpus(&regval);
-> >  
-> >  	/*
-> >  	 * Overflow is explained on datasheet page 17.
-> > 
+> That transmits only one scan (e.g. here (x,y)) per call. Because you
+> have added a sideband route for the buffer size what you have wil work.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> However, it is not how the interface should be used.  Please fix that.
+> Using it correctly is not a big issue.
+> 
+> On the channels front, I'd be tempted to do this as follows:
+> 
+> 6 Channels, not 4.
+> 
+> First 4 are standard ADC channels
+> Next 2 are the touch screen channels with appropriate descriptions
+> (guessing these are actually differential channels across the various
+> wires of the first two?)
+> 
+
+Yes they are differential channels.
+
+However, I think there is actually no sense in using several channels
+for the touchscreen as everything is handled by the hardware. You only
+select the touchscreen mode by setting a register and then X and Y
+coordinates will be added to the FIFO register when touching the
+touchscreen. I would not mind not having IIO channel at all since we do
+not read from the consumer. But I need a way to register a callback to
+get data from the provider. I don't know if I make myself clear enough?
+
+> Then you set the map up to apply to the last two channels only.
+> By setting available_scan_masks to the relevant options in the IIO driver
+> you'll be able to automatically lock the device when ever the
+> touch screeen driver is loaded.
+> 
+> That map will be something like (in binary
+> 000000
+> 000011
+> 000100
+> 001000
+> 010000
+> 100000
+> 001100
+> 010100
+> 011000
+> 100100
+> 101000
+> 110000
+> 011100
+> 101100
+> 110100
+> 111000
+> 111100
+> 
+> thus any combination of the ADC channels, but always all or none of the
+> touchscreen (none when ever the ADC channels are on) the order above
+> ensures we always turn on the minimum possible for a given requirement.
+> 
+> Hence whenever the touch screen is there it'll lock out the ADC usage.
+> Your postenable can look at what is there and put it in the right mode.
+> 
+
+I'll dive more into that.
+
+> After that, break your fifo read up into individual pairs of readings
+> and push those out.
+> 
+> That way we end up using the interface in the standard fashion.
+> 
+> You'll also need fix the usage of the fifo for ADC mode which suffers
+> from the same problem.  There all sorts of nasty crashes might occur
+> or you might just loose data
+> 
+[...]
+>> +/*
+>> + * This function will be called by iio_push_to_buffers from another driver
+>> + * (namely sunxi-gpadc-iio). It will be passed the buffer filled with input
+>> + * values (X value then Y value) and the sunxi_gpadc_ts structure representing
+>> + * the device.
+>> + */
+>> +static int sunxi_gpadc_ts_callback(const void *data, void *private)
+>> +{
+>> +	const struct sunxi_gpadc_buffer *buffer = data;
+>> +	struct sunxi_gpadc_ts *info = private;
+>> +	int i = 0;
+>> +
+>> +	/* Locations in the first buffer after an up event are unreliable */
+>> +	if (info->ignore_fifo_data) {
+>> +		info->ignore_fifo_data = false;
+>> +		return 0;
+>> +	}
+>> +
+> It doesn't work like this at all. You'll get one scan only on each call of
+> this function.  As I said in the previous driver, if there is a true reason
+> to do this (and I'm unconvinced as yet) then we need to add support in the
+> iio core etc for this (and emulating it when multiple scan passing isn't
+> happening).
+> 
+> I guess this will work, as you are passing the buffer size as a side
+> band, but it is definitely not how that ABI is meant to be used.
+> 
+> Also, you grab 4 channels, and only two are used here.  Please explain...
+> 
+
+Hum. Actually, that's a mistake. I'm quiet confused about how I should
+do it while I never read channels from the consumer. I still "need" one
+for "linking" the consumer and the provider but in the meantime, I'm
+never using that channel.
+
+Thanks,
+Quentin
+
+-- 
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
