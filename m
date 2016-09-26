@@ -1,70 +1,43 @@
-Return-Path: <mugunthanvnm@ti.com>
-Subject: Re: [PATCH 0/4] Add DMA support for ti_am335x_adc driver
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>
-References: <20160921161134.6951-1-mugunthanvnm@ti.com>
- <22588f2d-d0de-7911-35ed-92094f7dd28d@kernel.org>
-CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark
- Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartmut
- Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
-From: Mugunthan V N <mugunthanvnm@ti.com>
-Message-ID: <ff19f584-e4e5-61ff-046d-68ec37ab51c2@ti.com>
-Date: Thu, 29 Sep 2016 18:31:30 +0530
-MIME-Version: 1.0
-In-Reply-To: <22588f2d-d0de-7911-35ed-92094f7dd28d@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f65.google.com ([209.85.215.65]:36049 "EHLO
+        mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S936198AbcIZTsV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2016 15:48:21 -0400
+Received: by mail-lf0-f65.google.com with SMTP id s29so10642496lfg.3
+        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2016 12:48:08 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH 0/2] add support to STM LSM6DS3-LSM6DSM 6-axis Mems sensor
+Date: Mon, 26 Sep 2016 21:48:02 +0200
+Message-Id: <1474919284-20898-1-git-send-email-lorenzo.bianconi@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sunday 25 September 2016 03:11 PM, Jonathan Cameron wrote:
-> On 21/09/16 17:11, Mugunthan V N wrote:
->> > The ADC has a 64 work depth fifo length which holds the ADC data
->> > till the CPU reads. So when a user program needs a large ADC data
->> > to operate on, then it has to do multiple reads to get its
->> > buffer. Currently if the application asks for 4 samples per
->> > channel with all 8 channels are enabled, kernel can provide only
->> > 3 samples per channel when all 8 channels are enabled (logs at
->> > [1]). So with DMA support user can request for large number of
->> > samples at a time (logs at [2]).
->> > 
->> > Tested the patch on AM437x-gp-evm and AM335x Boneblack with the
->> > patch [3] to enable ADC and pushed a branch for testing [4]
->> > 
->> > [1] - http://pastebin.ubuntu.com/23211490/
->> > [2] - http://pastebin.ubuntu.com/23211492/
->> > [3] - http://pastebin.ubuntu.com/23211494/
->> > [4] - git://git.ti.com/~mugunthanvnm/ti-linux-kernel/linux.git iio-dma
-> Just curious.  How fast is the ADC sampling at in these?  Never that
-> obvious for this driver!
-> 
-> I'm also curious as to whether you started to hit the limits of the
-> kfifo based interface.  Might be worth considering adding alternative
-> support for the dma buffers interface which is obviously much lower
-> overhead.
-> 
-> Good to have this work prior to that as the kfifo stuff is somewhat
-> easier to use.
+Lorenzo Bianconi (2):
+  iio: imu: add support to lsm6dsx driver
+  Documentation: dt: iio: add st_lsm6dsx sensor device binding
 
-Currently ADC clock is 3MHz, which can produce a data rate of 225KBps
-per channel with no open delay and no averaging of samples. So when all
-8 Channels are enables the data rate will be 1.75MBps
+ .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     |  20 +
+ drivers/iio/imu/Kconfig                            |   1 +
+ drivers/iio/imu/Makefile                           |   1 +
+ drivers/iio/imu/st_lsm6dsx/Kconfig                 |  23 +
+ drivers/iio/imu/st_lsm6dsx/Makefile                |   6 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            | 105 +++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c     | 241 +++++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       | 705 +++++++++++++++++++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c        | 137 ++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c        | 155 +++++
+ 10 files changed, 1394 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/Kconfig
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/Makefile
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
 
-ADC can be operated at 24MHz, which can generate a data rate of 28MBps
-with all 8 channels enabled and no open delay and averaging, but our
-target is to get 800K samples per second per channel which has a data
-rate of 12.5MBps
+-- 
+2.7.4
 
-I think with this data rate, DMA will be the best option to implement
-without any data loss and less cpu overload to read the ADC samples.
-
-Regards
-Mugunthan V N
