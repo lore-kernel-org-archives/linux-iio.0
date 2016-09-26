@@ -1,55 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36792 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938834AbcIYQoI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 12:44:08 -0400
-Subject: Re: [PATCH v2] iio: accel: Add driver for the MiraMEMS DA311 3-axis
- 12-bit digital accelerometer
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>
-References: <20160922134229.773-1-hdegoede@redhat.com>
- <cb187395-d50d-ff10-c58e-7e68f5fab4f8@metafoo.de>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e8cdc33b-5331-7e25-8bdb-823cd462644f@kernel.org>
-Date: Sun, 25 Sep 2016 17:44:03 +0100
-MIME-Version: 1.0
-In-Reply-To: <cb187395-d50d-ff10-c58e-7e68f5fab4f8@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-lf0-f66.google.com ([209.85.215.66]:33583 "EHLO
+        mail-lf0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S936198AbcIZTsM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2016 15:48:12 -0400
+Received: by mail-lf0-f66.google.com with SMTP id l131so10624190lfl.0
+        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2016 12:48:11 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH 2/2] Documentation: dt: iio: add st_lsm6dsx sensor device binding
+Date: Mon, 26 Sep 2016 21:48:04 +0200
+Message-Id: <1474919284-20898-3-git-send-email-lorenzo.bianconi@st.com>
+In-Reply-To: <1474919284-20898-1-git-send-email-lorenzo.bianconi@st.com>
+References: <1474919284-20898-1-git-send-email-lorenzo.bianconi@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/16 16:11, Lars-Peter Clausen wrote:
-> On 09/22/2016 03:42 PM, Hans de Goede wrote:
-> [...]
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
->> +		if (ret < 0)
->> +			return ret;
->> +		/*
->> +		 * Values are 12 bits, stored as 16 bits with the 4
->> +		 * least significant bits always 0.
->> +		 */
->> +		*val = ((short)le16_to_cpu(ret)) >> 4;
-> 
-> I think the le16_to_cpu() is a leftover from the switch away from
-> i2c_smbus_read_i2c_block_data(). i2c_smbus_read_word_data() already returns
-> CPU endianess data. On a BE system le16_to_cpu() swaps the lower and upper
-> bytes on a BE system. So you'd get the wrong value in that case.
-Backed out.  Please check the scale value as well for v3.
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ .../devicetree/bindings/iio/imu/st_lsm6dsx.txt       | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
 
-Thanks,
-
-Jonathan
-> 
->> +		return IIO_VAL_INT;
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+new file mode 100644
+index 0000000..9f7b3a5
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+@@ -0,0 +1,20 @@
++* ST_LSM6DSX driver for STM LSM6DS3-LSM6DSM 6-axis (acc + gyro) Mems sensor
++
++Required properties:
++- compatible: must be one of:
++  "st,lsm6ds3"
++  "st,lsm6dsm"
++- reg: i2c address of the sensor / spi cs line
++
++Optional properties:
++- interrupts: interrupt mapping for GPIO IRQ
++- interrupt-parent: should be the phandle for the interrupt controller
++
++Example:
++
++lsm6dsm@6b {
++	compatible = "st,lsm6dsm";
++	reg = <0x6b>;
++	interrupt-parent = <&gpio0>;
++	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
++};
+-- 
+2.7.4
 
