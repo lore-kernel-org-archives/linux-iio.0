@@ -1,140 +1,112 @@
-Return-Path: <vilhelm.gray@gmail.com>
-Date: Tue, 27 Sep 2016 14:30:42 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4 1/2] iio: Implement counter channel type and info
- constants
-Message-ID: <20160927183042.GB15896@sophia>
-References: <cover.1474487854.git.vilhelm.gray@gmail.com>
- <87ac8c5c0e5413dc10059e64f49ede6f2e79c02b.1474487854.git.vilhelm.gray@gmail.com>
- <659454ba-dcf4-800d-c589-22af5392b07a@kernel.org>
+Return-Path: <lee.jones@linaro.org>
+Date: Tue, 27 Sep 2016 19:50:00 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Ksenija =?utf-8?Q?Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+Cc: linux-kernel <linux-kernel@vger.kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Marek =?utf-8?B?VmHFoXV0?= <marex@denx.de>,
+	linux-iio@vger.kernel.org, Harald Geyer <harald@ccbib.org>,
+	Stefan Wahren <stefan.wahren@i2se.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Subject: Re: [PATCH v5 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Message-ID: <20160927185000.GF21388@dell>
+References: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
+ <f968582fe3036a2967ed41494c73c43ac19e4767.1471524593.git.ksenija.stanojevic@gmail.com>
+ <20160831120552.GF8649@dell>
+ <CAL7P5jKx4S-cduxTmNzocD0VrkgzK4vQ+w6G__sWOJMNsoJhCA@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <659454ba-dcf4-800d-c589-22af5392b07a@kernel.org>
+In-Reply-To: <CAL7P5jKx4S-cduxTmNzocD0VrkgzK4vQ+w6G__sWOJMNsoJhCA@mail.gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Sep 24, 2016 at 06:03:21PM +0100, Jonathan Cameron wrote:
->On 21/09/16 21:15, William Breathitt Gray wrote:
->> Quadrature encoders, such as rotary encoders and linear encoders, are
->> devices which are capable of encoding the relative position and
->> direction of motion of a shaft. This patch introduces several IIO
->> constants for supporting quadrature encoder counter devices.
->> 
->>   IIO_COUNT: Current count (main data provided by the counter device)
->>   IIO_INDEX: Counter device index value
->>   IIO_CHAN_INFO_PRESET: Counter preset value
->> 
->> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
->> ---
->>  Documentation/ABI/testing/sysfs-bus-iio | 28 ++++++++++++++++++++++++++++
->>  drivers/iio/industrialio-core.c         |  3 +++
->>  include/linux/iio/iio.h                 |  1 +
->>  include/uapi/linux/iio/types.h          |  2 ++
->>  4 files changed, 34 insertions(+)
->> 
->> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
->> index fee35c0..be66a41 100644
->> --- a/Documentation/ABI/testing/sysfs-bus-iio
->> +++ b/Documentation/ABI/testing/sysfs-bus-iio
->> @@ -1579,3 +1579,31 @@ Contact:	linux-iio@vger.kernel.org
->>  Description:
->>  		Raw (unscaled no offset etc.) electric conductivity reading that
->>  		can be processed to siemens per meter.
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_countY_raw
->> +KernelVersion:	4.9
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Raw counter device counts from channel Y. For quadrature
->> +		counters, division by an available [Y]_scale results in the
->> +		counts of a single quadrature signal phase from channel Y.
->Division?  Needs to be multiplication to be consistent with the other
->interfaces.  
+On Sat, 17 Sep 2016, Ksenija Stanojević wrote:
+> On Wed, Aug 31, 2016 at 2:05 PM, Lee Jones <lee.jones@linaro.org> wrote:
+> > On Thu, 18 Aug 2016, Ksenija Stanojevic wrote:
+> >
+> > > Add core files for mxs-lradc MFD driver.
+> > >
+> > > Note:  this patch won't compile in iio/testing without this patch:
+> > > a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
+> > >
+> > > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> > > ---
+> > > Changes in v5:
+> > >  - use DEFINE_RES_MEM
+> > >  - don't pass ioreammaped adress to platform cells
+> > >  - move comment outside of struct mxs_lradc
+> > >  - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
+> > >    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
+> > >
+> > > Changes in v4:
+> > >  - update copyright
+> > >  - use DEFINE_RES_IRQ_NAMED
+> > >  - remove mxs_lradc_add_device function
+> > >  - use struct mfd_cell in static form
+> > >  - improve spacing
+> > >  - remove unnecessary comment
+> > >  - remove platform_get_irq
+> > >  - remove touch_ret and use ret instead
+> > >  - rename use_touchscreen to touchscreen_wire
+> > >  - use goto statements
+> > >  - remove irq[13], irq_count and irq_name from struct mxs_lradc
+> > >  - remove all defines from inside the struct definition
+> > >
+> > > Changes in v3:
+> > >  - add note to commit message
+> > >  - move switch statement into if(touch_ret == 0) branch
+> > >  - add MODULE_AUTHOR
+> > >
+> > > Changes in v2:
+> > >  - do not change spacing in Kconfig
+> > >  - make struct mfd_cell part of struct mxs_lradc
+> > >  - use switch instead of if in mxs_lradc_irq_mask
+> > >  - use only necessary header files in mxs_lradc.h
+> > >  - use devm_mfd_add_device
+> > >  - use separate function to register mfd device
+> > >  - change licence to GPL
+> > >  - add copyright
+> > >
+> > >  drivers/mfd/Kconfig           |  17 +++
+> > >  drivers/mfd/Makefile          |   1 +
+> > >  drivers/mfd/mxs-lradc.c       | 255 ++++++++++++++++++++++++++++++++++++++++++
+> > >  include/linux/mfd/mxs-lradc.h | 194 ++++++++++++++++++++++++++++++++
+> > >  4 files changed, 467 insertions(+)
+> > >  create mode 100644 drivers/mfd/mxs-lradc.c
+> > >  create mode 100644 include/linux/mfd/mxs-lradc.h
 
-That makes sense. What I'll do is refactor scale to accept the values 1,
-0.5, and 0.25 to select the respective x1, x2, and x4 quadrature modes.
+[...]
 
-The counter device will count full-phase edges on quadrature x1 mode,
-half-phase edges on quadrature x2 mode (twice as many counts as x1), and
-quarter-phase edges on quadrature x4 mode (twice as many counts as x2).
-One of the benefits of the x2 and x4 quadrature modes is increased
-position fidelity, so exposing scale as a fraction will allow it to be
-multipled to raw counts without sacrificing the precision benefit of the
-x2 and x4 quadrature modes.
+> > > +static int mxs_lradc_probe(struct platform_device *pdev)
+> > > +{
+> > > +     const struct of_device_id *of_id;
+> > > +     struct device *dev = &pdev->dev;
+> > > +     struct device_node *node = dev->of_node;
+> > > +     struct mxs_lradc *lradc;
+> > > +     struct mfd_cell *cells = NULL;
+> > > +     int ret = 0;
+> > > +     u32 ts_wires = 0;
+> > > +
+> > > +     lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
+> > > +     if (!lradc)
+> > > +             return -ENOMEM;
+> > > +
+> > > +     of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
+> > > +     lradc->soc = (enum mxs_lradc_id)of_id->data;
+> >
+> > Unnecessary cast.
+> 
+> If I remove the cast I get this error:
+> drivers/mfd/mxs-lradc.c:148:13: error: incompatible types when
+> assigning to type ‘enum mxs_lradc_id’ from type ‘const void * const’
 
-William Breathitt Gray
+Ah, because it's a const.  Fair enough.
 
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
->> +KernelVersion:	4.9
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		If a scale value is available for channel Y, it is provided by
->> +		this attribute.
->Can just add the What line to the big block of _scale attributes already
->listed.  Generic text should cover it fine.
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_countY_preset
->> +KernelVersion:	4.9
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		If the counter device supports preset registers, the preset
->> +		count for channel Y is provided by this attribute.
->> +
->> +What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_raw
->> +KernelVersion:	4.9
->> +Contact:	linux-iio@vger.kernel.org
->> +Description:
->> +		Raw counter device index value from channel Y.
->Needs more description.  Don't assume people have any idea what an 'index'
->value is on a counter.
->> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
->> index fc340ed..ed175a2 100644
->> --- a/drivers/iio/industrialio-core.c
->> +++ b/drivers/iio/industrialio-core.c
->> @@ -81,6 +81,8 @@ static const char * const iio_chan_type_name_spec[] = {
->>  	[IIO_PH] = "ph",
->>  	[IIO_UVINDEX] = "uvindex",
->>  	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
->> +	[IIO_COUNT] = "count",
->> +	[IIO_INDEX] = "index",
->>  };
->>  
->>  static const char * const iio_modifier_names[] = {
->> @@ -151,6 +153,7 @@ static const char * const iio_chan_info_postfix[] = {
->>  	[IIO_CHAN_INFO_DEBOUNCE_TIME] = "debounce_time",
->>  	[IIO_CHAN_INFO_CALIBEMISSIVITY] = "calibemissivity",
->>  	[IIO_CHAN_INFO_OVERSAMPLING_RATIO] = "oversampling_ratio",
->> +	[IIO_CHAN_INFO_PRESET] = "preset",
->>  };
->>  
->>  /**
->> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
->> index b4a0679..7dc86d1 100644
->> --- a/include/linux/iio/iio.h
->> +++ b/include/linux/iio/iio.h
->> @@ -46,6 +46,7 @@ enum iio_chan_info_enum {
->>  	IIO_CHAN_INFO_DEBOUNCE_TIME,
->>  	IIO_CHAN_INFO_CALIBEMISSIVITY,
->>  	IIO_CHAN_INFO_OVERSAMPLING_RATIO,
->> +	IIO_CHAN_INFO_PRESET,
->>  };
->>  
->>  enum iio_shared_by {
->> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
->> index 22e5e58..e54d14a 100644
->> --- a/include/uapi/linux/iio/types.h
->> +++ b/include/uapi/linux/iio/types.h
->> @@ -40,6 +40,8 @@ enum iio_chan_type {
->>  	IIO_PH,
->>  	IIO_UVINDEX,
->>  	IIO_ELECTRICALCONDUCTIVITY,
->> +	IIO_COUNT,
->> +	IIO_INDEX,
->>  };
->>  
->>  enum iio_modifier {
->> 
->
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
