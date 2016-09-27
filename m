@@ -1,112 +1,50 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 27 Sep 2016 19:50:00 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Ksenija =?utf-8?Q?Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-Cc: linux-kernel <linux-kernel@vger.kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	linux-input@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Marek =?utf-8?B?VmHFoXV0?= <marex@denx.de>,
-	linux-iio@vger.kernel.org, Harald Geyer <harald@ccbib.org>,
-	Stefan Wahren <stefan.wahren@i2se.com>,
-	Fabio Estevam <fabio.estevam@freescale.com>
-Subject: Re: [PATCH v5 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
-Message-ID: <20160927185000.GF21388@dell>
-References: <cover.1471524593.git.ksenija.stanojevic@gmail.com>
- <f968582fe3036a2967ed41494c73c43ac19e4767.1471524593.git.ksenija.stanojevic@gmail.com>
- <20160831120552.GF8649@dell>
- <CAL7P5jKx4S-cduxTmNzocD0VrkgzK4vQ+w6G__sWOJMNsoJhCA@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49111 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933067AbcI0TTN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2016 15:19:13 -0400
+Subject: Re: [PATCH] io: accel: mma7666: declare mma7660_nscale as static
+To: Ico Doornekamp <ico@pruts.nl>
+References: <20160926184027.5356-1-ico@pruts.nl>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <7ed517e8-b5ec-7ad8-ebe0-6df82e846681@kernel.org>
+Date: Tue, 27 Sep 2016 20:19:09 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CAL7P5jKx4S-cduxTmNzocD0VrkgzK4vQ+w6G__sWOJMNsoJhCA@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160926184027.5356-1-ico@pruts.nl>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, 17 Sep 2016, Ksenija Stanojević wrote:
-> On Wed, Aug 31, 2016 at 2:05 PM, Lee Jones <lee.jones@linaro.org> wrote:
-> > On Thu, 18 Aug 2016, Ksenija Stanojevic wrote:
-> >
-> > > Add core files for mxs-lradc MFD driver.
-> > >
-> > > Note:  this patch won't compile in iio/testing without this patch:
-> > > a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
-> > >
-> > > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> > > ---
-> > > Changes in v5:
-> > >  - use DEFINE_RES_MEM
-> > >  - don't pass ioreammaped adress to platform cells
-> > >  - move comment outside of struct mxs_lradc
-> > >  - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
-> > >    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
-> > >
-> > > Changes in v4:
-> > >  - update copyright
-> > >  - use DEFINE_RES_IRQ_NAMED
-> > >  - remove mxs_lradc_add_device function
-> > >  - use struct mfd_cell in static form
-> > >  - improve spacing
-> > >  - remove unnecessary comment
-> > >  - remove platform_get_irq
-> > >  - remove touch_ret and use ret instead
-> > >  - rename use_touchscreen to touchscreen_wire
-> > >  - use goto statements
-> > >  - remove irq[13], irq_count and irq_name from struct mxs_lradc
-> > >  - remove all defines from inside the struct definition
-> > >
-> > > Changes in v3:
-> > >  - add note to commit message
-> > >  - move switch statement into if(touch_ret == 0) branch
-> > >  - add MODULE_AUTHOR
-> > >
-> > > Changes in v2:
-> > >  - do not change spacing in Kconfig
-> > >  - make struct mfd_cell part of struct mxs_lradc
-> > >  - use switch instead of if in mxs_lradc_irq_mask
-> > >  - use only necessary header files in mxs_lradc.h
-> > >  - use devm_mfd_add_device
-> > >  - use separate function to register mfd device
-> > >  - change licence to GPL
-> > >  - add copyright
-> > >
-> > >  drivers/mfd/Kconfig           |  17 +++
-> > >  drivers/mfd/Makefile          |   1 +
-> > >  drivers/mfd/mxs-lradc.c       | 255 ++++++++++++++++++++++++++++++++++++++++++
-> > >  include/linux/mfd/mxs-lradc.h | 194 ++++++++++++++++++++++++++++++++
-> > >  4 files changed, 467 insertions(+)
-> > >  create mode 100644 drivers/mfd/mxs-lradc.c
-> > >  create mode 100644 include/linux/mfd/mxs-lradc.h
-
-[...]
-
-> > > +static int mxs_lradc_probe(struct platform_device *pdev)
-> > > +{
-> > > +     const struct of_device_id *of_id;
-> > > +     struct device *dev = &pdev->dev;
-> > > +     struct device_node *node = dev->of_node;
-> > > +     struct mxs_lradc *lradc;
-> > > +     struct mfd_cell *cells = NULL;
-> > > +     int ret = 0;
-> > > +     u32 ts_wires = 0;
-> > > +
-> > > +     lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
-> > > +     if (!lradc)
-> > > +             return -ENOMEM;
-> > > +
-> > > +     of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> > > +     lradc->soc = (enum mxs_lradc_id)of_id->data;
-> >
-> > Unnecessary cast.
+On 26/09/16 19:40, Ico Doornekamp wrote:
+> As reported by sparse
 > 
-> If I remove the cast I get this error:
-> drivers/mfd/mxs-lradc.c:148:13: error: incompatible types when
-> assigning to type ‘enum mxs_lradc_id’ from type ‘const void * const’
+> Signed-off-by: Ico Doornekamp <ico@pruts.nl>
+Hi,
 
-Ah, because it's a const.  Fair enough.
+Already fixed - see the testing branch of iio.git.
+I picked up a patch for this on Saturday from Wei Jongjun
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/iio/accel/mma7660.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/accel/mma7660.c b/drivers/iio/accel/mma7660.c
+> index 03beadf..3a40774 100644
+> --- a/drivers/iio/accel/mma7660.c
+> +++ b/drivers/iio/accel/mma7660.c
+> @@ -39,7 +39,7 @@
+>  
+>  #define MMA7660_SCALE_AVAIL	"0.467142857"
+>  
+> -const int mma7660_nscale = 467142857;
+> +static const int mma7660_nscale = 467142857;
+>  
+>  #define MMA7660_CHANNEL(reg, axis) {	\
+>  	.type = IIO_ACCEL,	\
+> 
+
