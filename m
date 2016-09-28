@@ -1,95 +1,45 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f195.google.com ([209.85.161.195]:36013 "EHLO
-        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753352AbcI1R76 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2016 13:59:58 -0400
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH v5 1/2] iio: Implement counter channel type and info constants
-Date: Wed, 28 Sep 2016 13:59:49 -0400
-Message-Id: <3f3ed59f4dc5de28b7a78d8006030a39ea0485bb.1475079578.git.vilhelm.gray@gmail.com>
-In-Reply-To: <cover.1475079578.git.vilhelm.gray@gmail.com>
-References: <cover.1475079578.git.vilhelm.gray@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lorenzo.bianconi83@gmail.com>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	lorenzo.bianconi@st.com,
+	denis.ciocca@st.com
+Subject: [PATCH] iio: common: st_sensors: fix channel data parsing
+Date: Wed, 28 Sep 2016 22:06:01 +0200
+Message-Id: <1475093161-7239-1-git-send-email-lorenzo.bianconi@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Quadrature encoders, such as rotary encoders and linear encoders, are
-devices which are capable of encoding the relative position and
-direction of motion of a shaft. This patch introduces several IIO
-constants for supporting quadrature encoder counter devices.
+Using realbits as i2c/spi read len, when that value is not byte aligned
+(e.g 12 bits), lead to skip msb part of out data registers.
+Fix this using storagebits as read length
 
-  IIO_COUNT: Current count (main data provided by the counter device)
-  IIO_INDEX: Counter device index value
-
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 ---
- Documentation/ABI/testing/sysfs-bus-iio | 18 ++++++++++++++++++
- drivers/iio/industrialio-core.c         |  2 ++
- include/uapi/linux/iio/types.h          |  2 ++
- 3 files changed, 22 insertions(+)
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 5 ++---
+ 1 file changed, 2 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index fee35c0..b8f220f 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -329,6 +329,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
- What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
-+What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
- KernelVersion:	2.6.35
- Contact:	linux-iio@vger.kernel.org
- Description:
-@@ -1579,3 +1580,20 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Raw (unscaled no offset etc.) electric conductivity reading that
- 		can be processed to siemens per meter.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_countY_raw
-+KernelVersion:	4.9
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw counter device counts from channel Y. For quadrature
-+		counters, multiplication by an available [Y]_scale results in
-+		the counts of a single quadrature signal phase from channel Y.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_raw
-+KernelVersion:	4.9
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Raw counter device index value from channel Y. This attribute
-+		provides an absolute positional reference (e.g. a pulse once per
-+		revolution) which may be used to home positional systems as
-+		required.
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index fc340ed..649725b 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -81,6 +81,8 @@ static const char * const iio_chan_type_name_spec[] = {
- 	[IIO_PH] = "ph",
- 	[IIO_UVINDEX] = "uvindex",
- 	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
-+	[IIO_COUNT] = "count",
-+	[IIO_INDEX] = "index",
- };
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index fe7775b..d01aa34 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -30,16 +30,15 @@ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
  
- static const char * const iio_modifier_names[] = {
-diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-index 22e5e58..e54d14a 100644
---- a/include/uapi/linux/iio/types.h
-+++ b/include/uapi/linux/iio/types.h
-@@ -40,6 +40,8 @@ enum iio_chan_type {
- 	IIO_PH,
- 	IIO_UVINDEX,
- 	IIO_ELECTRICALCONDUCTIVITY,
-+	IIO_COUNT,
-+	IIO_INDEX,
- };
+ 	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
+ 		const struct iio_chan_spec *channel = &indio_dev->channels[i];
+-		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+ 		unsigned int storage_bytes =
+ 			channel->scan_type.storagebits >> 3;
  
- enum iio_modifier {
+ 		buf = PTR_ALIGN(buf, storage_bytes);
+ 		if (sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+ 						  channel->address,
+-						  bytes_to_read, buf,
++						  storage_bytes, buf,
+ 						  sdata->multiread_bit) <
+-		    bytes_to_read)
++		    storage_bytes)
+ 			return -EIO;
+ 
+ 		/* Advance the buffer pointer */
 -- 
-2.7.3
-
+2.7.4
