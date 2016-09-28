@@ -1,1489 +1,866 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f65.google.com ([209.85.215.65]:35482 "EHLO
-        mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936198AbcIZTsZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 26 Sep 2016 15:48:25 -0400
-Received: by mail-lf0-f65.google.com with SMTP id s64so10631795lfs.2
-        for <linux-iio@vger.kernel.org>; Mon, 26 Sep 2016 12:48:11 -0700 (PDT)
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-Subject: [PATCH 1/2] iio: imu: add support to lsm6dsx driver
-Date: Mon, 26 Sep 2016 21:48:03 +0200
-Message-Id: <1474919284-20898-2-git-send-email-lorenzo.bianconi@st.com>
-In-Reply-To: <1474919284-20898-1-git-send-email-lorenzo.bianconi@st.com>
-References: <1474919284-20898-1-git-send-email-lorenzo.bianconi@st.com>
+Received: from mail-vk0-f67.google.com ([209.85.213.67]:35201 "EHLO
+        mail-vk0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753438AbcI1SAK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2016 14:00:10 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v5 2/2] iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8
+Date: Wed, 28 Sep 2016 14:00:01 -0400
+Message-Id: <b43e2942b763b87afc85bfa9fe36e5695cba4c44.1475079578.git.vilhelm.gray@gmail.com>
+In-Reply-To: <cover.1475079578.git.vilhelm.gray@gmail.com>
+References: <cover.1475079578.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add support to STM LSM6DS3-LSM6DSM 6-axis (acc + gyro) Mems sensor
+The ACCES 104-QUAD-8 is a general purpose quadrature encoder
+counter/interface board. The 104-QUAD-8 is capable of monitoring the
+outputs of eight encoders via four on-board LSI/CSI LS7266R1 24-bit
+dual-axis quadrature counter chips. Core functions handled by the
+LS7266R1, such as direction and total count, are available.
 
-http://www.st.com/resource/en/datasheet/lsm6ds3.pdf
-http://www.st.com/resource/en/datasheet/lsm6dsm.pdf
+Performing a write to a counter's IIO_CHAN_INFO_RAW sets the counter and
+also clears the counter's respective error flag. Although the counters
+have a 25-bit range, only the lower 24 bits may be set, either directly
+or via a counter's preset attribute. Interrupts are not supported by
+this driver.
 
-- continuos mode support
-- i2c support
-- spi support
-- trigger mode support
-- supported devices: lsm6ds3, lsm6dsm
+This driver adds IIO support for the ACCES 104-QUAD-8 and ACCES
+104-QUAD-4. The base port addresses for the devices may be configured
+via the base array module parameter.
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/iio/imu/Kconfig                        |   1 +
- drivers/iio/imu/Makefile                       |   1 +
- drivers/iio/imu/st_lsm6dsx/Kconfig             |  23 +
- drivers/iio/imu/st_lsm6dsx/Makefile            |   6 +
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h        | 105 ++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 241 +++++++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c   | 705 +++++++++++++++++++++++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c    | 137 +++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c    | 155 ++++++
- 9 files changed, 1374 insertions(+)
- create mode 100644 drivers/iio/imu/st_lsm6dsx/Kconfig
- create mode 100644 drivers/iio/imu/st_lsm6dsx/Makefile
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+ .../ABI/testing/sysfs-bus-iio-counter-104-quad-8   | 125 +++++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/counter/104-quad-8.c                   | 593 +++++++++++++++++++++
+ drivers/iio/counter/Kconfig                        |  24 +
+ drivers/iio/counter/Makefile                       |   7 +
+ 7 files changed, 757 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+ create mode 100644 drivers/iio/counter/104-quad-8.c
+ create mode 100644 drivers/iio/counter/Kconfig
+ create mode 100644 drivers/iio/counter/Makefile
 
-diff --git a/drivers/iio/imu/Kconfig b/drivers/iio/imu/Kconfig
-index 1f1ad41..156630a 100644
---- a/drivers/iio/imu/Kconfig
-+++ b/drivers/iio/imu/Kconfig
-@@ -39,6 +39,7 @@ config KMX61
- 	  be called kmx61.
- 
- source "drivers/iio/imu/inv_mpu6050/Kconfig"
-+source "drivers/iio/imu/st_lsm6dsx/Kconfig"
- 
- endmenu
- 
-diff --git a/drivers/iio/imu/Makefile b/drivers/iio/imu/Makefile
-index c71bcd3..549621b 100644
---- a/drivers/iio/imu/Makefile
-+++ b/drivers/iio/imu/Makefile
-@@ -15,5 +15,6 @@ obj-$(CONFIG_IIO_ADIS_LIB) += adis_lib.o
- 
- obj-y += bmi160/
- obj-y += inv_mpu6050/
-+obj-y += st_lsm6dsx/
- 
- obj-$(CONFIG_KMX61) += kmx61.o
-diff --git a/drivers/iio/imu/st_lsm6dsx/Kconfig b/drivers/iio/imu/st_lsm6dsx/Kconfig
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
 new file mode 100644
-index 0000000..5001f41
+index 0000000..ba67652
 --- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/Kconfig
-@@ -0,0 +1,23 @@
++++ b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+@@ -0,0 +1,125 @@
++What:		/sys/bus/iio/devices/iio:deviceX/in_count_count_direction_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_count_count_mode_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_count_noise_error_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_count_quadrature_mode_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_index_index_polarity_available
++What:		/sys/bus/iio/devices/iio:deviceX/in_index_synchronous_mode_available
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Discrete set of available values for the respective counter
++		configuration are listed in this file.
 +
-+config IIO_ST_LSM6DSX
-+	tristate "STMicroelectronics LSM6DS3/LSM6DSM sensor driver"
-+	depends on (I2C || SPI) && SYSFS
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	select IIO_ST_LSM6DSX_I2C if (I2C)
-+	select IIO_ST_LSM6DSX_SPI if (SPI_MASTER)
-+	help
-+	  Say yes here to build support for STMicroelectronics LSM6DSX imu
-+	  sensor. Supported devices: lsm6ds3, lsm6dsm
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_count_direction
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only attribute that indicates whether the counter for
++		channel Y is counting up or down.
 +
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called st_lsm6dsx.
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_count_mode
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Count mode for channel Y. Four count modes are available:
++		normal, range limit, non-recycle, and modulo-n. The preset value
++		for channel Y is used by the count mode where required.
 +
-+config IIO_ST_LSM6DSX_I2C
-+	tristate
-+	depends on IIO_ST_LSM6DSX
++		Normal:
++			Counting is continuous in either direction.
 +
-+config IIO_ST_LSM6DSX_SPI
-+	tristate
-+	depends on IIO_ST_LSM6DSX
++		Range Limit:
++			An upper or lower limit is set, mimicking limit switches
++			in the mechanical counterpart. The upper limit is set to
++			the preset value, while the lower limit is set to 0. The
++			counter freezes at count = preset when counting up, and
++			at count = 0 when counting down. At either of these
++			limits, the counting is resumed only when the count
++			direction is reversed.
 +
-diff --git a/drivers/iio/imu/st_lsm6dsx/Makefile b/drivers/iio/imu/st_lsm6dsx/Makefile
++		Non-recycle:
++			Counter is disabled whenever a 24-bit count overflow or
++			underflow takes place. The counter is re-enabled when a
++			new count value is loaded to the counter via a preset
++			operation or write to raw.
++
++		Modulo-N:
++			A count boundary is set between 0 and the preset value.
++			The counter is reset to 0 at count = preset when
++			counting up, while the counter is set to the preset
++			value at count = 0 when counting down; the counter does
++			not freeze at the bundary points, but counts
++			continuously throughout.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_noise_error
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Read-only attribute that indicates whether excessive noise is
++		present at the channel Y count inputs in quadrature clock mode;
++		irrelevant in non-quadrature clock mode.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_preset
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		If the counter device supports preset registers, the preset
++		count for channel Y is provided by this attribute.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_quadrature_mode
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Configure channel Y counter for non-quadrature or quadrature
++		clock mode. Selecting non-quadrature clock mode will disable
++		synchronous load mode. In quadrature clock mode, the channel Y
++		scale attribute selects the encoder phase division (scale of 1
++		selects full-cycle, scale of 0.5 selects half-cycle, scale of
++		0.25 selects quarter-cycle) processed by the channel Y counter.
++
++		Non-quadrature:
++			The filter and decoder circuit are bypassed. Encoder A
++			input serves as the count input and B as the UP/DOWN
++			direction control input, with B = 1 selecting UP Count
++			mode and B = 0 selecting Down Count mode.
++
++		Quadrature:
++			Encoder A and B inputs are digitally filtered and
++			decoded for UP/DN clock.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_set_to_preset_on_index
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Whether to set channel Y counter with channel Y preset value
++		when channel Y index input is active, or continuously count.
++		Valid attribute values are boolean.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_index_polarity
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Active level of channel Y index input; irrelevant in
++		non-synchronous load mode.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_synchronous_mode
++KernelVersion:	4.9
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Configure channel Y counter for non-synchronous or synchronous
++		load mode. Synchronous load mode cannot be selected in
++		non-quadrature clock mode.
++
++		Non-synchronous:
++			A logic low level is the active level at this index
++			input. The index function (as enabled via
++			set_to_preset_on_index) is performed directly on the
++			active level of the index input.
++
++		Synchronous:
++			Intended for interfacing with encoder Index output in
++			quadrature clock mode. The active level is configured
++			via index_polarity. The index function (as enabled via
++			set_to_preset_on_index) is performed synchronously with
++			the quadrature clock on the active level of the index
++			input.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index e013c2b..982dff3 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -255,6 +255,12 @@ L:	linux-gpio@vger.kernel.org
+ S:	Maintained
+ F:	drivers/gpio/gpio-104-idio-16.c
+ 
++ACCES 104-QUAD-8 IIO DRIVER
++M:	William Breathitt Gray <vilhelm.gray@gmail.com>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	drivers/iio/counter/104-quad-8.c
++
+ ACENIC DRIVER
+ M:	Jes Sorensen <jes@trained-monkey.org>
+ L:	linux-acenic@sunsite.dk
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index a31a8cf..a918270 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -73,6 +73,7 @@ source "drivers/iio/adc/Kconfig"
+ source "drivers/iio/amplifiers/Kconfig"
+ source "drivers/iio/chemical/Kconfig"
+ source "drivers/iio/common/Kconfig"
++source "drivers/iio/counter/Kconfig"
+ source "drivers/iio/dac/Kconfig"
+ source "drivers/iio/dummy/Kconfig"
+ source "drivers/iio/frequency/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 2b6e276..33fa402 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -18,6 +18,7 @@ obj-y += amplifiers/
+ obj-y += buffer/
+ obj-y += chemical/
+ obj-y += common/
++obj-y += counter/
+ obj-y += dac/
+ obj-y += dummy/
+ obj-y += gyro/
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
 new file mode 100644
-index 0000000..257d6ee
+index 0000000..2d2ee35
 --- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/Makefile
-@@ -0,0 +1,6 @@
-+st_lsm6dsx-y := st_lsm6dsx_core.o
-+st_lsm6dsx-$(CONFIG_IIO_BUFFER) += st_lsm6dsx_buffer.o
-+
-+obj-$(CONFIG_IIO_ST_LSM6DSX) += st_lsm6dsx.o
-+obj-$(CONFIG_IIO_ST_LSM6DSX_I2C) += st_lsm6dsx_i2c.o
-+obj-$(CONFIG_IIO_ST_LSM6DSX_SPI) += st_lsm6dsx_spi.o
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-new file mode 100644
-index 0000000..e79d301
---- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
-@@ -0,0 +1,105 @@
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -0,0 +1,593 @@
 +/*
-+ * STMicroelectronics st_lsm6dsx sensor driver
++ * IIO driver for the ACCES 104-QUAD-8
++ * Copyright (C) 2016 William Breathitt Gray
 + *
-+ * Copyright 2016 STMicroelectronics Inc.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License, version 2, as
++ * published by the Free Software Foundation.
 + *
-+ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
-+ * Denis Ciocca <denis.ciocca@st.com>
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
++ * General Public License for more details.
 + *
-+ * Licensed under the GPL-2.
++ * This driver supports the ACCES 104-QUAD-8 and ACCES 104-QUAD-4.
 + */
-+
-+#ifndef ST_LSM6DSX_H
-+#define ST_LSM6DSX_H
-+
++#include <linux/bitops.h>
 +#include <linux/device.h>
-+
-+#define ST_LSM6DS3_DEV_NAME	"lsm6ds3"
-+#define ST_LSM6DSM_DEV_NAME	"lsm6dsm"
-+
-+#define ST_LSM6DSX_SAMPLE_SIZE	6
-+
-+#if defined(CONFIG_IIO_ST_LSM6DSX_SPI) || \
-+	defined(CONFIG_IIO_ST_LSM6DSX_SPI_MODULE)
-+#define ST_LSM6DSX_RX_MAX_LENGTH	12
-+#define ST_LSM6DSX_TX_MAX_LENGTH	8193
-+
-+struct st_lsm6dsx_transfer_buffer {
-+	u8 rx_buf[ST_LSM6DSX_RX_MAX_LENGTH];
-+	u8 tx_buf[ST_LSM6DSX_TX_MAX_LENGTH] ____cacheline_aligned;
-+};
-+#endif /* CONFIG_IIO_ST_LSM6DSX_SPI */
-+
-+struct st_lsm6dsx_transfer_function {
-+	int (*read)(struct device *dev, u8 addr, int len, u8 *data);
-+	int (*write)(struct device *dev, u8 addr, int len, u8 *data);
-+};
-+
-+enum st_lsm6dsx_sensor_id {
-+	ST_LSM6DSX_ID_ACC,
-+	ST_LSM6DSX_ID_GYRO,
-+	ST_LSM6DSX_ID_MAX,
-+};
-+
-+struct st_lsm6dsx_sensor {
-+	enum st_lsm6dsx_sensor_id id;
-+	struct st_lsm6dsx_dev *dev;
-+	struct iio_trigger *trig;
-+
-+	u16 odr;
-+	u32 gain;
-+
-+	u8 drdy_data_mask;
-+	u8 drdy_irq_mask;
-+};
-+
-+struct st_lsm6dsx_dev {
-+	const char *name;
-+	struct device *dev;
-+	int irq;
-+	struct mutex lock;
-+
-+	s64 hw_timestamp;
-+
-+	struct iio_dev *iio_devs[ST_LSM6DSX_ID_MAX];
-+
-+	const struct st_lsm6dsx_transfer_function *tf;
-+#if defined(CONFIG_IIO_ST_LSM6DSX_SPI) || \
-+	defined(CONFIG_IIO_ST_LSM6DSX_SPI_MODULE)
-+	struct st_lsm6dsx_transfer_buffer tb;
-+#endif /* CONFIG_IIO_ST_LSM6DSX_SPI */
-+};
-+
-+int st_lsm6dsx_probe(struct st_lsm6dsx_dev *dev);
-+int st_lsm6dsx_remove(struct st_lsm6dsx_dev *dev);
-+int st_lsm6dsx_set_enable(struct st_lsm6dsx_sensor *sensor, bool enable);
-+int st_lsm6dsx_write_with_mask(struct st_lsm6dsx_dev *dev, u8 addr, u8 mask,
-+			       u8 val);
-+#ifdef CONFIG_IIO_BUFFER
-+int st_lsm6dsx_allocate_triggers(struct st_lsm6dsx_dev *dev);
-+int st_lsm6dsx_deallocate_triggers(struct st_lsm6dsx_dev *dev);
-+int st_lsm6dsx_allocate_buffers(struct st_lsm6dsx_dev *dev);
-+int st_lsm6dsx_deallocate_buffers(struct st_lsm6dsx_dev *dev);
-+#else
-+static inline int st_lsm6dsx_allocate_triggers(struct st_lsm6dsx_dev *dev)
-+{
-+	return 0;
-+}
-+
-+static inline int st_lsm6dsx_deallocate_triggers(struct st_lsm6dsx_dev *dev)
-+{
-+	return 0;
-+}
-+
-+static inline int st_lsm6dsx_allocate_buffers(struct st_lsm6dsx_dev *dev)
-+{
-+	return 0;
-+}
-+
-+static inline int st_lsm6dsx_deallocate_buffers(struct st_lsm6dsx_dev *dev)
-+{
-+	return 0;
-+}
-+#endif /* CONFIG_IIO_BUFFER */
-+#endif /* ST_LSM6DSX_H */
-+
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-new file mode 100644
-index 0000000..5fcbb4d
---- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
-@@ -0,0 +1,241 @@
-+/*
-+ * STMicroelectronics st_lsm6dsx sensor driver
-+ *
-+ * Copyright 2016 STMicroelectronics Inc.
-+ *
-+ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+#include <linux/module.h>
-+#include <linux/device.h>
-+#include <linux/kernel.h>
-+#include <linux/interrupt.h>
-+#include <linux/slab.h>
-+#include <linux/irqreturn.h>
++#include <linux/errno.h>
 +#include <linux/iio/iio.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/interrupt.h>
-+#include <linux/iio/events.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/buffer.h>
-+#include "st_lsm6dsx.h"
-+
-+#define REG_INT1_ADDR		0x0d
-+#define REG_DATA_AVL_ADDR	0x1e
-+
-+static int st_lsm6dsx_trig_set_state(struct iio_trigger *trig, bool state)
-+{
-+	u8 val = (state) ? 1 : 0;
-+	struct iio_dev *iio_dev = iio_trigger_get_drvdata(trig);
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+
-+	return st_lsm6dsx_write_with_mask(sensor->dev, REG_INT1_ADDR,
-+					  sensor->drdy_irq_mask, val);
-+}
-+
-+static const struct iio_trigger_ops st_lsm6dsx_trigger_ops = {
-+	.owner = THIS_MODULE,
-+	.set_trigger_state = st_lsm6dsx_trig_set_state,
-+};
-+
-+static irqreturn_t st_lsm6dsx_trigger_handler_th(int irq, void *private)
-+{
-+	struct st_lsm6dsx_dev *dev = (struct st_lsm6dsx_dev *)private;
-+
-+	dev->hw_timestamp = iio_get_time_ns(dev->iio_devs[0]);
-+
-+	return IRQ_WAKE_THREAD;
-+}
-+
-+static irqreturn_t st_lsm6dsx_trigger_handler_bh(int irq, void *private)
-+{
-+	int i, err;
-+	u8 avl_data;
-+	struct st_lsm6dsx_sensor *sensor;
-+	struct st_lsm6dsx_dev *dev = (struct st_lsm6dsx_dev *)private;
-+
-+	err = dev->tf->read(dev->dev, REG_DATA_AVL_ADDR, 1, &avl_data);
-+	if (err < 0)
-+		return IRQ_HANDLED;
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		sensor = iio_priv(dev->iio_devs[i]);
-+
-+		if (avl_data & sensor->drdy_data_mask)
-+			iio_trigger_poll_chained(sensor->trig);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+int st_lsm6dsx_allocate_triggers(struct st_lsm6dsx_dev *dev)
-+{
-+	int i, err, count = 0;
-+	struct st_lsm6dsx_sensor *sensor;
-+	unsigned long irq_type;
-+
-+	irq_type = irqd_get_trigger_type(irq_get_irq_data(dev->irq));
-+
-+	switch (irq_type) {
-+	case IRQF_TRIGGER_HIGH:
-+	case IRQF_TRIGGER_LOW:
-+	case IRQF_TRIGGER_RISING:
-+		break;
-+	default:
-+		dev_info(dev->dev,
-+			 "mode %lx unsupported, use IRQF_TRIGGER_RISING\n",
-+			 irq_type);
-+		irq_type = IRQF_TRIGGER_RISING;
-+		break;
-+	}
-+
-+	err = devm_request_threaded_irq(dev->dev, dev->irq,
-+					st_lsm6dsx_trigger_handler_th,
-+					st_lsm6dsx_trigger_handler_bh,
-+					irq_type | IRQF_ONESHOT,
-+					dev->name, dev);
-+	if (err) {
-+		dev_err(dev->dev, "failed to request trigger irq %d\n",
-+			dev->irq);
-+		return err;
-+	}
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		sensor = iio_priv(dev->iio_devs[i]);
-+		sensor->trig = iio_trigger_alloc("%s-trigger",
-+						 dev->iio_devs[i]->name);
-+		if (!sensor->trig) {
-+			err = -ENOMEM;
-+			goto iio_trigger_error;
-+		}
-+
-+		iio_trigger_set_drvdata(sensor->trig, dev->iio_devs[i]);
-+		sensor->trig->ops = &st_lsm6dsx_trigger_ops;
-+		sensor->trig->dev.parent = dev->dev;
-+
-+		err = iio_trigger_register(sensor->trig);
-+		if (err < 0) {
-+			dev_err(dev->dev, "failed to register iio trigger\n");
-+			goto iio_trigger_error;
-+		}
-+		dev->iio_devs[i]->trig = iio_trigger_get(sensor->trig);
-+
-+		count++;
-+	}
-+
-+	return 0;
-+
-+iio_trigger_error:
-+	for (i = count - 1; i >= 0; i--) {
-+		sensor = iio_priv(dev->iio_devs[i]);
-+		iio_trigger_unregister(sensor->trig);
-+	}
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		sensor = iio_priv(dev->iio_devs[i]);
-+		if (sensor->trig)
-+			iio_trigger_free(sensor->trig);
-+	}
-+
-+	return err;
-+}
-+
-+int st_lsm6dsx_deallocate_triggers(struct st_lsm6dsx_dev *dev)
-+{
-+	int i;
-+	struct st_lsm6dsx_sensor *sensor;
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		sensor = iio_priv(dev->iio_devs[i]);
-+		iio_trigger_unregister(sensor->trig);
-+		iio_trigger_free(sensor->trig);
-+	}
-+
-+	return 0;
-+}
-+
-+static int st_lsm6dsx_buffer_preenable(struct iio_dev *iio_dev)
-+{
-+	return st_lsm6dsx_set_enable(iio_priv(iio_dev), true);
-+}
-+
-+static int st_lsm6dsx_buffer_postdisable(struct iio_dev *iio_dev)
-+{
-+	return st_lsm6dsx_set_enable(iio_priv(iio_dev), false);
-+}
-+
-+static const struct iio_buffer_setup_ops st_lsm6dsx_buffer_ops = {
-+	.preenable = st_lsm6dsx_buffer_preenable,
-+	.postenable = iio_triggered_buffer_postenable,
-+	.predisable = iio_triggered_buffer_predisable,
-+	.postdisable = st_lsm6dsx_buffer_postdisable,
-+};
-+
-+static irqreturn_t st_lsm6dsx_buffer_handler_bh(int irq, void *p)
-+{
-+	int i, err, chan_byte, in = 0, out = 0;
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *iio_dev = pf->indio_dev;
-+	struct iio_chan_spec const *ch = iio_dev->channels;
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
-+	struct st_lsm6dsx_dev *dev = sensor->dev;
-+	u8 out_data[iio_dev->scan_bytes], buffer[ST_LSM6DSX_SAMPLE_SIZE];
-+
-+	err = dev->tf->read(dev->dev, ch[0].address, ST_LSM6DSX_SAMPLE_SIZE,
-+			    buffer);
-+	if (err < 0)
-+		goto out;
-+
-+	for (i = 0; i < iio_dev->num_channels; i++) {
-+		chan_byte = ch[i].scan_type.storagebits >> 3;
-+
-+		if (test_bit(i, iio_dev->active_scan_mask)) {
-+			memcpy(&out_data[out], &buffer[in], chan_byte);
-+			out += chan_byte;
-+		}
-+		in += chan_byte;
-+	}
-+
-+	iio_push_to_buffers_with_timestamp(iio_dev, out_data,
-+					   dev->hw_timestamp);
-+
-+out:
-+	iio_trigger_notify_done(sensor->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+int st_lsm6dsx_allocate_buffers(struct st_lsm6dsx_dev *dev)
-+{
-+	int i, err, count = 0;
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		err = iio_triggered_buffer_setup(dev->iio_devs[i], NULL,
-+						 st_lsm6dsx_buffer_handler_bh,
-+						 &st_lsm6dsx_buffer_ops);
-+		if (err < 0)
-+			goto iio_buffer_error;
-+		count++;
-+	}
-+
-+	return 0;
-+
-+iio_buffer_error:
-+	for (i = count - 1; i >= 0; i--)
-+		iio_triggered_buffer_cleanup(dev->iio_devs[i]);
-+
-+	return err;
-+}
-+
-+int st_lsm6dsx_deallocate_buffers(struct st_lsm6dsx_dev *dev)
-+{
-+	int i;
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++)
-+		iio_triggered_buffer_cleanup(dev->iio_devs[i]);
-+
-+	return 0;
-+}
-+
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-new file mode 100644
-index 0000000..ed3e714
---- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -0,0 +1,705 @@
-+/*
-+ * STMicroelectronics st_lsm6dsx sensor driver
-+ *
-+ * Copyright 2016 STMicroelectronics Inc.
-+ *
-+ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
++#include <linux/iio/types.h>
++#include <linux/io.h>
++#include <linux/ioport.h>
++#include <linux/isa.h>
 +#include <linux/kernel.h>
 +#include <linux/module.h>
-+#include <linux/interrupt.h>
-+#include <linux/slab.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <asm/unaligned.h>
-+#include "st_lsm6dsx.h"
++#include <linux/moduleparam.h>
++#include <linux/types.h>
 +
-+#define REG_ACC_DRDY_IRQ_MASK	0x01
-+#define REG_GYRO_DRDY_IRQ_MASK	0x02
-+#define REG_WHOAMI_ADDR		0x0f
-+#define REG_RESET_ADDR		0x12
-+#define REG_RESET_MASK		0x01
-+#define REG_BDU_ADDR		0x12
-+#define REG_BDU_MASK		0x40
-+#define REG_INT2_ON_INT1_ADDR	0x13
-+#define REG_INT2_ON_INT1_MASK	0x20
-+#define REG_ROUNDING_ADDR	0x16
-+#define REG_ROUNDING_MASK	0x04
-+#define REG_LIR_ADDR		0x58
-+#define REG_LIR_MASK		0x01
++#define QUAD8_EXTENT 32
 +
-+#define REG_ACC_ODR_ADDR	0x10
-+#define REG_ACC_ODR_MASK	0xf0
-+#define REG_ACC_FS_ADDR		0x10
-+#define REG_ACC_FS_MASK		0x0c
-+#define REG_ACC_OUT_X_L_ADDR	0x28
-+#define REG_ACC_OUT_Y_L_ADDR	0x2a
-+#define REG_ACC_OUT_Z_L_ADDR	0x2c
++static unsigned int base[max_num_isa_dev(QUAD8_EXTENT)];
++static unsigned int num_quad8;
++module_param_array(base, uint, &num_quad8, 0);
++MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
 +
-+#define REG_GYRO_ODR_ADDR	0x11
-+#define REG_GYRO_ODR_MASK	0xf0
-+#define REG_GYRO_FS_ADDR	0x11
-+#define REG_GYRO_FS_MASK	0x0c
-+#define REG_GYRO_OUT_X_L_ADDR	0x22
-+#define REG_GYRO_OUT_Y_L_ADDR	0x24
-+#define REG_GYRO_OUT_Z_L_ADDR	0x26
++#define QUAD8_NUM_COUNTERS 8
 +
-+#define ST_LSM6DS3_WHOAMI	0x69
-+#define ST_LSM6DSM_WHOAMI	0x6a
-+
-+#define ST_LSM6DSX_ACC_FS_2G_GAIN	IIO_G_TO_M_S_2(61)
-+#define ST_LSM6DSX_ACC_FS_4G_GAIN	IIO_G_TO_M_S_2(122)
-+#define ST_LSM6DSX_ACC_FS_8G_GAIN	IIO_G_TO_M_S_2(244)
-+#define ST_LSM6DSX_ACC_FS_16G_GAIN	IIO_G_TO_M_S_2(488)
-+
-+#define ST_LSM6DSX_DATA_ACC_AVL_MASK	0x01
-+
-+#define ST_LSM6DSX_GYRO_FS_245_GAIN	IIO_DEGREE_TO_RAD(4375)
-+#define ST_LSM6DSX_GYRO_FS_500_GAIN	IIO_DEGREE_TO_RAD(8750)
-+#define ST_LSM6DSX_GYRO_FS_1000_GAIN	IIO_DEGREE_TO_RAD(17500)
-+#define ST_LSM6DSX_GYRO_FS_2000_GAIN	IIO_DEGREE_TO_RAD(70000)
-+
-+#define ST_LSM6DSX_DATA_GYRO_AVL_MASK	0x02
-+
-+struct st_lsm6dsx_odr {
-+	u32 hz;
-+	u8 val;
++/**
++ * struct quad8_iio - IIO device private data structure
++ * @preset:		array of preset values
++ * @count_mode:		array of count mode configurations
++ * @quadrature_mode:	array of quadrature mode configurations
++ * @quadrature_scale:	array of quadrature mode scale configurations
++ * @ab_enable:		array of A and B inputs enable configurations
++ * @preset_enable:	array of set_to_preset_on_index attribute configurations
++ * @synchronous_mode:	array of index function synchronous mode configurations
++ * @index_polarity:	array of index function polarity configurations
++ * @base:		base port address of the IIO device
++ */
++struct quad8_iio {
++	unsigned int preset[QUAD8_NUM_COUNTERS];
++	unsigned int count_mode[QUAD8_NUM_COUNTERS];
++	unsigned int quadrature_mode[QUAD8_NUM_COUNTERS];
++	unsigned int quadrature_scale[QUAD8_NUM_COUNTERS];
++	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
++	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
++	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
++	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
++	unsigned int base;
 +};
 +
-+#define ST_LSM6DSX_ODR_LIST_SIZE	6
-+struct st_lsm6dsx_odr_table_entry {
-+	u8 addr;
-+	u8 mask;
-+	struct st_lsm6dsx_odr odr_avl[ST_LSM6DSX_ODR_LIST_SIZE];
-+};
-+
-+static const struct st_lsm6dsx_odr_table_entry st_lsm6dsx_odr_table[] = {
-+	[ST_LSM6DSX_ID_ACC] = {
-+		.addr = REG_ACC_ODR_ADDR,
-+		.mask = REG_ACC_ODR_MASK,
-+		.odr_avl[0] = {  13, 0x01 },
-+		.odr_avl[1] = {  26, 0x02 },
-+		.odr_avl[2] = {  52, 0x03 },
-+		.odr_avl[3] = { 104, 0x04 },
-+		.odr_avl[4] = { 208, 0x05 },
-+		.odr_avl[5] = { 416, 0x06 },
-+	},
-+	[ST_LSM6DSX_ID_GYRO] = {
-+		.addr = REG_GYRO_ODR_ADDR,
-+		.mask = REG_GYRO_ODR_MASK,
-+		.odr_avl[0] = {  13, 0x01 },
-+		.odr_avl[1] = {  26, 0x02 },
-+		.odr_avl[2] = {  52, 0x03 },
-+		.odr_avl[3] = { 104, 0x04 },
-+		.odr_avl[4] = { 208, 0x05 },
-+		.odr_avl[5] = { 416, 0x06 },
-+	}
-+};
-+
-+struct st_lsm6dsx_fs {
-+	u32 gain;
-+	u8 val;
-+};
-+
-+#define ST_LSM6DSX_FS_LIST_SIZE		4
-+struct st_lsm6dsx_fs_table_entry {
-+	u8 addr;
-+	u8 mask;
-+	struct st_lsm6dsx_fs fs_avl[ST_LSM6DSX_FS_LIST_SIZE];
-+};
-+
-+static const struct st_lsm6dsx_fs_table_entry st_lsm6dsx_fs_table[] = {
-+	[ST_LSM6DSX_ID_ACC] = {
-+		.addr = REG_ACC_FS_ADDR,
-+		.mask = REG_ACC_FS_MASK,
-+		.fs_avl[0] = {  ST_LSM6DSX_ACC_FS_2G_GAIN, 0x0 },
-+		.fs_avl[1] = {  ST_LSM6DSX_ACC_FS_4G_GAIN, 0x2 },
-+		.fs_avl[2] = {  ST_LSM6DSX_ACC_FS_8G_GAIN, 0x3 },
-+		.fs_avl[3] = { ST_LSM6DSX_ACC_FS_16G_GAIN, 0x1 },
-+	},
-+	[ST_LSM6DSX_ID_GYRO] = {
-+		.addr = REG_GYRO_FS_ADDR,
-+		.mask = REG_GYRO_FS_MASK,
-+		.fs_avl[0] = {  ST_LSM6DSX_GYRO_FS_245_GAIN, 0x0 },
-+		.fs_avl[1] = {  ST_LSM6DSX_GYRO_FS_500_GAIN, 0x1 },
-+		.fs_avl[2] = { ST_LSM6DSX_GYRO_FS_1000_GAIN, 0x2 },
-+		.fs_avl[3] = { ST_LSM6DSX_GYRO_FS_2000_GAIN, 0x3 },
-+	}
-+};
-+
-+static const struct iio_chan_spec st_lsm6dsx_acc_channels[] = {
-+	{
-+		.type = IIO_ACCEL,
-+		.address = REG_ACC_OUT_X_L_ADDR,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_X,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.shift = 0,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	{
-+		.type = IIO_ACCEL,
-+		.address = REG_ACC_OUT_Y_L_ADDR,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Y,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.shift = 0,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	{
-+		.type = IIO_ACCEL,
-+		.address = REG_ACC_OUT_Z_L_ADDR,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Z,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 2,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.shift = 0,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
-+};
-+
-+static const struct iio_chan_spec st_lsm6dsx_gyro_channels[] = {
-+	{
-+		.type = IIO_ANGL_VEL,
-+		.address = REG_GYRO_OUT_X_L_ADDR,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_X,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 0,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.shift = 0,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	{
-+		.type = IIO_ANGL_VEL,
-+		.address = REG_GYRO_OUT_Y_L_ADDR,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Y,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 1,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.shift = 0,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	{
-+		.type = IIO_ANGL_VEL,
-+		.address = REG_GYRO_OUT_Z_L_ADDR,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Z,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE),
-+		.scan_index = 2,
-+		.scan_type = {
-+			.sign = 's',
-+			.realbits = 16,
-+			.storagebits = 16,
-+			.shift = 0,
-+			.endianness = IIO_LE,
-+		},
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(3),
-+};
-+
-+int st_lsm6dsx_write_with_mask(struct st_lsm6dsx_dev *dev, u8 addr, u8 mask,
-+			       u8 val)
++static int quad8_read_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
 +{
-+	u8 data;
-+	int err;
-+
-+	mutex_lock(&dev->lock);
-+
-+	err = dev->tf->read(dev->dev, addr, 1, &data);
-+	if (err < 0) {
-+		dev_err(dev->dev, "failed to read %02x register\n", addr);
-+		mutex_unlock(&dev->lock);
-+
-+		return err;
-+	}
-+
-+	data = (data & ~mask) | ((val << __ffs(mask)) & mask);
-+
-+	err = dev->tf->write(dev->dev, addr, 1, &data);
-+	if (err < 0) {
-+		dev_err(dev->dev, "failed to write %02x register\n", addr);
-+		mutex_unlock(&dev->lock);
-+
-+		return err;
-+	}
-+
-+	mutex_unlock(&dev->lock);
-+
-+	return 0;
-+}
-+
-+static int st_lsm6dsx_check_whoami(struct st_lsm6dsx_dev *dev)
-+{
-+	u8 data;
-+	int err;
-+
-+	err = dev->tf->read(dev->dev, REG_WHOAMI_ADDR, 1, &data);
-+	if (err < 0) {
-+		dev_err(dev->dev, "failed to read whoami register\n");
-+		return err;
-+	}
-+
-+	if (data != ST_LSM6DS3_WHOAMI &&
-+	    data != ST_LSM6DSM_WHOAMI) {
-+		dev_err(dev->dev, "wrong whoami [%02x]\n", data);
-+		return -ENODEV;
-+	}
-+
-+	return 0;
-+}
-+
-+static int st_lsm6dsx_set_fs(struct st_lsm6dsx_sensor *sensor, u32 gain)
-+{
-+	u8 val;
-+	int i, err;
-+	enum st_lsm6dsx_sensor_id id = sensor->id;
-+
-+	for (i = 0; i < ST_LSM6DSX_FS_LIST_SIZE; i++)
-+		if (st_lsm6dsx_fs_table[id].fs_avl[i].gain == gain)
-+			break;
-+
-+	if (i == ST_LSM6DSX_FS_LIST_SIZE)
-+		return -EINVAL;
-+
-+	val = st_lsm6dsx_fs_table[id].fs_avl[i].val;
-+	err = st_lsm6dsx_write_with_mask(sensor->dev,
-+					 st_lsm6dsx_fs_table[id].addr,
-+					 st_lsm6dsx_fs_table[id].mask, val);
-+	if (err < 0)
-+		return err;
-+
-+	sensor->gain = gain;
-+
-+	return 0;
-+}
-+
-+static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
-+{
-+	u8 val;
-+	int i, err;
-+	enum st_lsm6dsx_sensor_id id = sensor->id;
-+	struct st_lsm6dsx_dev *dev = sensor->dev;
-+
-+	for (i = 0; i < ST_LSM6DSX_ODR_LIST_SIZE; i++)
-+		if (st_lsm6dsx_odr_table[id].odr_avl[i].hz == odr)
-+			break;
-+
-+	if (i == ST_LSM6DSX_ODR_LIST_SIZE)
-+		return -EINVAL;
-+
-+	disable_irq(dev->irq);
-+
-+	val = st_lsm6dsx_odr_table[id].odr_avl[i].val;
-+	err = st_lsm6dsx_write_with_mask(sensor->dev,
-+					 st_lsm6dsx_odr_table[id].addr,
-+					 st_lsm6dsx_odr_table[id].mask, val);
-+	if (err < 0) {
-+		enable_irq(dev->irq);
-+		return err;
-+	}
-+
-+	sensor->odr = odr;
-+	enable_irq(dev->irq);
-+
-+	return 0;
-+}
-+
-+int st_lsm6dsx_set_enable(struct st_lsm6dsx_sensor *sensor, bool enable)
-+{
-+	enum st_lsm6dsx_sensor_id id = sensor->id;
-+
-+	if (enable)
-+		return st_lsm6dsx_set_odr(sensor, sensor->odr);
-+	else
-+		return st_lsm6dsx_write_with_mask(sensor->dev,
-+					st_lsm6dsx_odr_table[id].addr,
-+					st_lsm6dsx_odr_table[id].mask, 0);
-+}
-+
-+static int st_lsm6dsx_read_raw(struct iio_dev *iio_dev,
-+			       struct iio_chan_spec const *ch,
-+			       int *val, int *val2, long mask)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const int base_offset = priv->base + 2 * chan->channel;
++	unsigned int flags;
++	unsigned int borrow;
++	unsigned int carry;
++	int i;
 +
 +	switch (mask) {
-+	case IIO_CHAN_INFO_RAW: {
-+		int err;
-+		u8 data[2];
-+		struct st_lsm6dsx_dev *dev;
-+
-+		mutex_lock(&iio_dev->mlock);
-+
-+		if (iio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+			mutex_unlock(&iio_dev->mlock);
-+			return -EBUSY;
++	case IIO_CHAN_INFO_RAW:
++		if (chan->type == IIO_INDEX) {
++			*val = !!(inb(priv->base + 0x16) & BIT(chan->channel));
++			return IIO_VAL_INT;
 +		}
 +
-+		dev = sensor->dev;
-+		err = st_lsm6dsx_set_enable(sensor, true);
-+		if (err < 0) {
-+			mutex_unlock(&iio_dev->mlock);
-+			return err;
-+		}
++		flags = inb(base_offset);
++		borrow = flags & BIT(0);
++		carry = !!(flags & BIT(1));
 +
-+		msleep(120);
++		/* Borrow XOR Carry effectively doubles count range */
++		*val = (borrow ^ carry) << 24;
 +
-+		err = dev->tf->read(dev->dev, ch->address, 2, data);
-+		if (err < 0) {
-+			mutex_unlock(&iio_dev->mlock);
-+			return err;
-+		}
++		/* Reset Byte Pointer; transfer Counter to Output Latch */
++		outb(0x11, base_offset + 1);
 +
-+		st_lsm6dsx_set_enable(sensor, false);
-+
-+		*val = (s16)get_unaligned_le16(data);
-+		*val = *val >> ch->scan_type.shift;
-+
-+		mutex_unlock(&iio_dev->mlock);
++		for (i = 0; i < 3; i++)
++			*val |= (unsigned int)inb(base_offset) << (8 * i);
 +
 +		return IIO_VAL_INT;
-+	}
++	case IIO_CHAN_INFO_ENABLE:
++		*val = priv->ab_enable[chan->channel];
++		return IIO_VAL_INT;
 +	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = sensor->gain;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
++		*val = 1;
++		*val2 = priv->quadrature_scale[chan->channel];
++		return IIO_VAL_FRACTIONAL_LOG2;
 +	}
 +
-+	return 0;
++	return -EINVAL;
 +}
 +
-+static int st_lsm6dsx_write_raw(struct iio_dev *iio_dev,
-+				struct iio_chan_spec const *chan,
-+				int val, int val2, long mask)
++static int quad8_write_raw(struct iio_dev *indio_dev,
++	struct iio_chan_spec const *chan, int val, int val2, long mask)
 +{
-+	int err;
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(iio_dev);
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const int base_offset = priv->base + 2 * chan->channel;
++	int i;
++	unsigned int ior_cfg;
 +
 +	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (chan->type == IIO_INDEX)
++			return -EINVAL;
++
++		/* Only 24-bit values are supported */
++		if ((unsigned int)val > 0xFFFFFF)
++			return -EINVAL;
++
++		/* Reset Byte Pointer */
++		outb(0x01, base_offset + 1);
++
++		/* Counter can only be set via Preset Register */
++		for (i = 0; i < 3; i++)
++			outb(val >> (8 * i), base_offset);
++
++		/* Transfer Preset Register to Counter */
++		outb(0x08, base_offset + 1);
++
++		/* Reset Byte Pointer */
++		outb(0x01, base_offset + 1);
++
++		/* Set Preset Register back to original value */
++		val = priv->preset[chan->channel];
++		for (i = 0; i < 3; i++)
++			outb(val >> (8 * i), base_offset);
++
++		/* Reset Borrow, Carry, Compare, and Sign flags */
++		outb(0x02, base_offset + 1);
++		/* Reset Error flag */
++		outb(0x06, base_offset + 1);
++
++		return 0;
++	case IIO_CHAN_INFO_ENABLE:
++		/* only boolean values accepted */
++		if (val < 0 || val > 1)
++			return -EINVAL;
++
++		priv->ab_enable[chan->channel] = val;
++
++		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
++
++		/* Load I/O control configuration */
++		outb(0x40 | ior_cfg, base_offset);
++
++		return 0;
 +	case IIO_CHAN_INFO_SCALE:
-+		mutex_lock(&iio_dev->mlock);
++		/* Quadrature scaling only available in quadrature mode */
++		if (!priv->quadrature_mode[chan->channel] && (val2 || val != 1))
++			return -EINVAL;
 +
-+		if (iio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
-+			mutex_unlock(&iio_dev->mlock);
-+			return -EBUSY;
-+		}
-+		err = st_lsm6dsx_set_fs(sensor, val2);
++		/* Only three gain states (1, 0.5, 0.25) */
++		if (val == 1 && !val2)
++			priv->quadrature_scale[chan->channel] = 0;
++		else if (!val)
++			switch (val2) {
++			case 500000:
++				priv->quadrature_scale[chan->channel] = 1;
++				break;
++			case 250000:
++				priv->quadrature_scale[chan->channel] = 2;
++				break;
++			default:
++				return -EINVAL;
++			}
++		else
++			return -EINVAL;
 +
-+		mutex_unlock(&iio_dev->mlock);
-+		break;
-+	default:
-+		return -EINVAL;
++		return 0;
 +	}
 +
-+	return err < 0 ? err : 0;
++	return -EINVAL;
 +}
 +
-+static ssize_t
-+st_lsm6dsx_sysfs_get_sampling_frequency(struct device *device,
-+					struct device_attribute *attr,
-+					char *buf)
-+{
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(dev_get_drvdata(device));
-+
-+	return sprintf(buf, "%d\n", sensor->odr);
-+}
-+
-+static ssize_t
-+st_lsm6dsx_sysfs_set_sampling_frequency(struct device *device,
-+					struct device_attribute *attr,
-+					const char *buf, size_t size)
-+{
-+	int err;
-+	u32 odr;
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(dev_get_drvdata(device));
-+
-+	err = kstrtoint(buf, 10, &odr);
-+	if (err < 0)
-+		return err;
-+
-+	err = st_lsm6dsx_set_odr(sensor, odr);
-+
-+	return err < 0 ? err : size;
-+}
-+
-+static ssize_t
-+st_lsm6dsx_sysfs_sampling_frequency_avl(struct device *device,
-+					struct device_attribute *attr,
-+					char *buf)
-+{
-+	int i, len = 0;
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(dev_get_drvdata(device));
-+	enum st_lsm6dsx_sensor_id id = sensor->id;
-+
-+	for (i = 0; i < ST_LSM6DSX_ODR_LIST_SIZE; i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
-+				 st_lsm6dsx_odr_table[id].odr_avl[i].hz);
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static ssize_t st_lsm6dsx_sysfs_scale_avail(struct device *device,
-+					    struct device_attribute *attr,
-+					    char *buf)
-+{
-+	int i, len = 0;
-+	struct st_lsm6dsx_sensor *sensor = iio_priv(dev_get_drvdata(device));
-+	enum st_lsm6dsx_sensor_id id = sensor->id;
-+
-+	for (i = 0; i < ST_LSM6DSX_FS_LIST_SIZE; i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
-+				 st_lsm6dsx_fs_table[id].fs_avl[i].gain);
-+	buf[len - 1] = '\n';
-+
-+	return len;
-+}
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-+			      st_lsm6dsx_sysfs_get_sampling_frequency,
-+			      st_lsm6dsx_sysfs_set_sampling_frequency);
-+static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(st_lsm6dsx_sysfs_sampling_frequency_avl);
-+static IIO_DEVICE_ATTR(in_accel_scale_available, S_IRUGO,
-+		       st_lsm6dsx_sysfs_scale_avail, NULL, 0);
-+static IIO_DEVICE_ATTR(in_anglvel_scale_available, S_IRUGO,
-+		       st_lsm6dsx_sysfs_scale_avail, NULL, 0);
-+
-+static struct attribute *st_lsm6dsx_acc_attributes[] = {
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	&iio_dev_attr_in_accel_scale_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group st_lsm6dsx_acc_attribute_group = {
-+	.attrs = st_lsm6dsx_acc_attributes,
-+};
-+
-+static const struct iio_info st_lsm6dsx_acc_info = {
++static const struct iio_info quad8_info = {
 +	.driver_module = THIS_MODULE,
-+	.attrs = &st_lsm6dsx_acc_attribute_group,
-+	.read_raw = st_lsm6dsx_read_raw,
-+	.write_raw = st_lsm6dsx_write_raw,
++	.read_raw = quad8_read_raw,
++	.write_raw = quad8_write_raw
 +};
 +
-+static struct attribute *st_lsm6dsx_gyro_attributes[] = {
-+	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	&iio_dev_attr_in_anglvel_scale_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group st_lsm6dsx_gyro_attribute_group = {
-+	.attrs = st_lsm6dsx_gyro_attributes,
-+};
-+
-+static const struct iio_info st_lsm6dsx_gyro_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &st_lsm6dsx_gyro_attribute_group,
-+	.read_raw = st_lsm6dsx_read_raw,
-+	.write_raw = st_lsm6dsx_write_raw,
-+};
-+
-+static int st_lsm6dsx_init_device(struct st_lsm6dsx_dev *dev)
++static ssize_t quad8_read_preset(struct iio_dev *indio_dev, uintptr_t private,
++	const struct iio_chan_spec *chan, char *buf)
 +{
-+	int err;
-+	u8 data;
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
 +
-+	data = REG_RESET_MASK;
-+	err = dev->tf->write(dev->dev, REG_RESET_ADDR, 1, &data);
-+	if (err < 0)
-+		return err;
-+
-+	msleep(200);
-+
-+	/* latch interrupts */
-+	err = st_lsm6dsx_write_with_mask(dev, REG_LIR_ADDR, REG_LIR_MASK, 1);
-+	if (err < 0)
-+		return err;
-+
-+	/* enable BDU */
-+	err = st_lsm6dsx_write_with_mask(dev, REG_BDU_ADDR, REG_BDU_MASK, 1);
-+	if (err < 0)
-+		return err;
-+
-+	err = st_lsm6dsx_write_with_mask(dev, REG_ROUNDING_ADDR,
-+					 REG_ROUNDING_MASK, 1);
-+	if (err < 0)
-+		return err;
-+
-+	/* redirect INT2 on INT1 */
-+	err = st_lsm6dsx_write_with_mask(dev, REG_INT2_ON_INT1_ADDR,
-+					 REG_INT2_ON_INT1_MASK, 1);
-+	if (err < 0)
-+		return err;
-+
-+	return 0;
++	return snprintf(buf, PAGE_SIZE, "%u\n", priv->preset[chan->channel]);
 +}
 +
-+static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_dev *dev,
-+					       enum st_lsm6dsx_sensor_id id)
++static ssize_t quad8_write_preset(struct iio_dev *indio_dev, uintptr_t private,
++	const struct iio_chan_spec *chan, const char *buf, size_t len)
 +{
-+	struct iio_dev *iio_dev;
-+	struct st_lsm6dsx_sensor *sensor;
-+
-+	iio_dev = iio_device_alloc(sizeof(*sensor));
-+	if (!iio_dev)
-+		return NULL;
-+
-+	iio_dev->modes = INDIO_DIRECT_MODE;
-+	iio_dev->dev.parent = dev->dev;
-+
-+	sensor = iio_priv(iio_dev);
-+	sensor->id = id;
-+	sensor->dev = dev;
-+	sensor->odr = st_lsm6dsx_odr_table[id].odr_avl[0].hz;
-+	sensor->gain = st_lsm6dsx_fs_table[id].fs_avl[0].gain;
-+
-+	switch (id) {
-+	case ST_LSM6DSX_ID_ACC:
-+		iio_dev->channels = st_lsm6dsx_acc_channels;
-+		iio_dev->num_channels = ARRAY_SIZE(st_lsm6dsx_acc_channels);
-+		iio_dev->name = "lsm6dsx_accel";
-+		iio_dev->info = &st_lsm6dsx_acc_info;
-+
-+		sensor->drdy_data_mask = ST_LSM6DSX_DATA_ACC_AVL_MASK;
-+		sensor->drdy_irq_mask = REG_ACC_DRDY_IRQ_MASK;
-+		break;
-+	case ST_LSM6DSX_ID_GYRO:
-+		iio_dev->channels = st_lsm6dsx_gyro_channels;
-+		iio_dev->num_channels = ARRAY_SIZE(st_lsm6dsx_gyro_channels);
-+		iio_dev->name = "lsm6dsx_gyro";
-+		iio_dev->info = &st_lsm6dsx_gyro_info;
-+
-+		sensor->drdy_data_mask = ST_LSM6DSX_DATA_GYRO_AVL_MASK;
-+		sensor->drdy_irq_mask = REG_GYRO_DRDY_IRQ_MASK;
-+		break;
-+	default:
-+		iio_device_free(iio_dev);
-+		return NULL;
-+	}
-+
-+	return iio_dev;
-+}
-+
-+int st_lsm6dsx_probe(struct st_lsm6dsx_dev *dev)
-+{
-+	int i, j, err;
-+
-+	mutex_init(&dev->lock);
-+
-+	err = st_lsm6dsx_check_whoami(dev);
-+	if (err < 0)
-+		return err;
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		dev->iio_devs[i] = st_lsm6dsx_alloc_iiodev(dev, i);
-+		if (!dev->iio_devs[i]) {
-+			err = -ENOMEM;
-+			goto iio_device_free;
-+		}
-+	}
-+
-+	err = st_lsm6dsx_init_device(dev);
-+	if (err < 0)
-+		goto iio_device_free;
-+
-+	if (dev->irq > 0) {
-+		err = st_lsm6dsx_allocate_buffers(dev);
-+		if (err < 0)
-+			goto iio_device_free;
-+
-+		err = st_lsm6dsx_allocate_triggers(dev);
-+		if (err < 0)
-+			goto deallocate_buffers;
-+	}
-+
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++) {
-+		err = iio_device_register(dev->iio_devs[i]);
-+		if (err)
-+			goto iio_device_unregister;
-+	}
-+
-+	return 0;
-+
-+iio_device_unregister:
-+	for (j = i - 1; j >= 0; j--)
-+		iio_device_unregister(dev->iio_devs[i]);
-+	if (dev->irq > 0)
-+		st_lsm6dsx_deallocate_triggers(dev);
-+deallocate_buffers:
-+	if (dev->irq > 0)
-+		st_lsm6dsx_deallocate_buffers(dev);
-+iio_device_free:
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++)
-+		if (dev->iio_devs[i])
-+			iio_device_free(dev->iio_devs[i]);
-+
-+	return err;
-+}
-+EXPORT_SYMBOL(st_lsm6dsx_probe);
-+
-+int st_lsm6dsx_remove(struct st_lsm6dsx_dev *dev)
-+{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const int base_offset = priv->base + 2 * chan->channel;
++	unsigned int preset;
++	int ret;
 +	int i;
 +
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++)
-+		iio_device_unregister(dev->iio_devs[i]);
++	ret = kstrtouint(buf, 0, &preset);
++	if (ret)
++		return ret;
 +
-+	if (dev->irq > 0) {
-+		st_lsm6dsx_deallocate_triggers(dev);
-+		st_lsm6dsx_deallocate_buffers(dev);
-+	}
++	/* Only 24-bit values are supported */
++	if (preset > 0xFFFFFF)
++		return -EINVAL;
 +
-+	for (i = 0; i < ST_LSM6DSX_ID_MAX; i++)
-+		iio_device_free(dev->iio_devs[i]);
++	priv->preset[chan->channel] = preset;
 +
-+	return 0;
-+}
-+EXPORT_SYMBOL(st_lsm6dsx_remove);
++	/* Reset Byte Pointer */
++	outb(0x01, base_offset + 1);
 +
-+MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-new file mode 100644
-index 0000000..88b6794
---- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
-@@ -0,0 +1,137 @@
-+/*
-+ * STMicroelectronics st_lsm6dsx i2c driver
-+ *
-+ * Copyright 2016 STMicroelectronics Inc.
-+ *
-+ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/slab.h>
-+#include "st_lsm6dsx.h"
-+
-+static int st_lsm6dsx_i2c_read(struct device *dev, u8 addr, int len, u8 *data)
-+{
-+	struct i2c_msg msg[2];
-+	struct i2c_client *client = to_i2c_client(dev);
-+
-+	msg[0].addr = client->addr;
-+	msg[0].flags = client->flags;
-+	msg[0].len = 1;
-+	msg[0].buf = &addr;
-+
-+	msg[1].addr = client->addr;
-+	msg[1].flags = client->flags | I2C_M_RD;
-+	msg[1].len = len;
-+	msg[1].buf = data;
-+
-+	return i2c_transfer(client->adapter, msg, 2);
-+}
-+
-+static int st_lsm6dsx_i2c_write(struct device *dev, u8 addr, int len, u8 *data)
-+{
-+	u8 send[len + 1];
-+	struct i2c_msg msg;
-+	struct i2c_client *client = to_i2c_client(dev);
-+
-+	send[0] = addr;
-+	memcpy(&send[1], data, len * sizeof(u8));
-+
-+	msg.addr = client->addr;
-+	msg.flags = client->flags;
-+	msg.len = len + 1;
-+	msg.buf = send;
-+
-+	return i2c_transfer(client->adapter, &msg, 1);
-+}
-+
-+static const struct st_lsm6dsx_transfer_function st_lsm6dsx_transfer_fn = {
-+	.read = st_lsm6dsx_i2c_read,
-+	.write = st_lsm6dsx_i2c_write,
-+};
-+
-+static int st_lsm6dsx_i2c_probe(struct i2c_client *client,
-+				const struct i2c_device_id *id)
-+{
-+	int err;
-+	struct st_lsm6dsx_dev *dev;
-+
-+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-+	if (!dev)
-+		return -ENOMEM;
-+
-+	i2c_set_clientdata(client, dev);
-+	dev->name = client->name;
-+	dev->dev = &client->dev;
-+	dev->irq = client->irq;
-+	dev->tf = &st_lsm6dsx_transfer_fn;
-+
-+	err = st_lsm6dsx_probe(dev);
-+	if (err < 0) {
-+		kfree(dev);
-+		return err;
-+	}
-+
-+	dev_info(&client->dev, "sensor probed\n");
-+
-+	return 0;
-+}
-+
-+static int st_lsm6dsx_i2c_remove(struct i2c_client *client)
-+{
-+	int err;
-+	struct st_lsm6dsx_dev *dev = i2c_get_clientdata(client);
-+
-+	err = st_lsm6dsx_remove(dev);
-+	if (err < 0)
-+		return err;
-+
-+	dev_info(&client->dev, "sensor removed\n");
-+
-+	return 0;
-+}
-+
-+#ifdef CONFIG_OF
-+static const struct of_device_id st_lsm6dsx_i2c_of_match[] = {
-+	{
-+		.compatible = "st,lsm6ds3",
-+		.data = ST_LSM6DS3_DEV_NAME,
-+	},
-+	{
-+		.compatible = "st,lsm6dsm",
-+		.data = ST_LSM6DSM_DEV_NAME,
-+	},
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, st_lsm6dsx_i2c_of_match);
-+#endif /* CONFIG_OF */
-+
-+static const struct i2c_device_id st_lsm6dsx_i2c_id_table[] = {
-+	{ ST_LSM6DS3_DEV_NAME },
-+	{ ST_LSM6DSM_DEV_NAME },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(i2c, st_lsm6dsx_i2c_id_table);
-+
-+static struct i2c_driver st_lsm6dsx_driver = {
-+	.driver = {
-+		.name = "st_lsm6dsx_i2c",
-+#ifdef CONFIG_OF
-+		.of_match_table = st_lsm6dsx_i2c_of_match,
-+#endif /* CONFIG_OF */
-+	},
-+	.probe = st_lsm6dsx_i2c_probe,
-+	.remove = st_lsm6dsx_i2c_remove,
-+	.id_table = st_lsm6dsx_i2c_id_table,
-+};
-+module_i2c_driver(st_lsm6dsx_driver);
-+
-+MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx i2c driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-new file mode 100644
-index 0000000..b5042b2
---- /dev/null
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-@@ -0,0 +1,155 @@
-+/*
-+ * STMicroelectronics st_lsm6dsx spi driver
-+ *
-+ * Copyright 2016 STMicroelectronics Inc.
-+ *
-+ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
-+ * Denis Ciocca <denis.ciocca@st.com>
-+ *
-+ * Licensed under the GPL-2.
-+ */
-+
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/slab.h>
-+#include "st_lsm6dsx.h"
-+
-+#define SENSORS_SPI_READ	0x80
-+
-+static int st_lsm6dsx_spi_read(struct device *device, u8 addr, int len,
-+			       u8 *data)
-+{
-+	int err;
-+	struct spi_device *spi = to_spi_device(device);
-+	struct st_lsm6dsx_dev *dev = spi_get_drvdata(spi);
-+
-+	struct spi_transfer xfers[] = {
-+		{
-+			.tx_buf = dev->tb.tx_buf,
-+			.bits_per_word = 8,
-+			.len = 1,
-+		},
-+		{
-+			.rx_buf = dev->tb.rx_buf,
-+			.bits_per_word = 8,
-+			.len = len,
-+		}
-+	};
-+
-+	dev->tb.tx_buf[0] = addr | SENSORS_SPI_READ;
-+
-+	err = spi_sync_transfer(spi, xfers,  ARRAY_SIZE(xfers));
-+	if (err < 0)
-+		return err;
-+
-+	memcpy(data, dev->tb.rx_buf, len * sizeof(u8));
++	/* Set Preset Register */
++	for (i = 0; i < 3; i++)
++		outb(preset >> (8 * i), base_offset);
 +
 +	return len;
 +}
 +
-+static int st_lsm6dsx_spi_write(struct device *device, u8 addr, int len,
-+				u8 *data)
++static ssize_t quad8_read_set_to_preset_on_index(struct iio_dev *indio_dev,
++	uintptr_t private, const struct iio_chan_spec *chan, char *buf)
 +{
-+	struct spi_device *spi = to_spi_device(device);
-+	struct st_lsm6dsx_dev *dev = spi_get_drvdata(spi);
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
 +
-+	struct spi_transfer xfers = {
-+		.tx_buf = dev->tb.tx_buf,
-+		.bits_per_word = 8,
-+		.len = len + 1,
-+	};
-+
-+	if (len >= ST_LSM6DSX_TX_MAX_LENGTH)
-+		return -ENOMEM;
-+
-+	dev->tb.tx_buf[0] = addr;
-+	memcpy(&dev->tb.tx_buf[1], data, len);
-+
-+	return spi_sync_transfer(spi, &xfers, 1);
++	return snprintf(buf, PAGE_SIZE, "%u\n",
++		priv->preset_enable[chan->channel]);
 +}
 +
-+static const struct st_lsm6dsx_transfer_function st_lsm6dsx_transfer_fn = {
-+	.read = st_lsm6dsx_spi_read,
-+	.write = st_lsm6dsx_spi_write,
++static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
++	uintptr_t private, const struct iio_chan_spec *chan, const char *buf,
++	size_t len)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const int base_offset = priv->base + 2 * chan->channel;
++	bool preset_enable;
++	int ret;
++	unsigned int ior_cfg;
++
++	ret = kstrtobool(buf, &preset_enable);
++	if (ret)
++		return ret;
++
++	priv->preset_enable[chan->channel] = preset_enable;
++
++	ior_cfg = priv->ab_enable[chan->channel] |
++		(unsigned int)preset_enable << 1;
++
++	/* Load I/O control configuration to Input / Output Control Register */
++	outb(0x40 | ior_cfg, base_offset);
++
++	return len;
++}
++
++static const char *const quad8_noise_error_states[] = {
++	"No excessive noise is present at the count inputs",
++	"Excessive noise is present at the count inputs"
 +};
 +
-+static int st_lsm6dsx_spi_probe(struct spi_device *spi)
++static int quad8_get_noise_error(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
 +{
-+	int err;
-+	struct st_lsm6dsx_dev *dev;
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const int base_offset = priv->base + 2 * chan->channel + 1;
 +
-+	dev = kzalloc(sizeof(*dev), GFP_KERNEL);
-+	if (!dev)
-+		return -ENOMEM;
++	return !!(inb(base_offset) & BIT(4));
++}
 +
-+	spi_set_drvdata(spi, dev);
-+	dev->name = spi->modalias;
-+	dev->dev = &spi->dev;
-+	dev->irq = spi->irq;
-+	dev->tf = &st_lsm6dsx_transfer_fn;
++static const struct iio_enum quad8_noise_error_enum = {
++	.items = quad8_noise_error_states,
++	.num_items = ARRAY_SIZE(quad8_noise_error_states),
++	.get = quad8_get_noise_error
++};
 +
-+	err = st_lsm6dsx_probe(dev);
-+	if (err < 0) {
-+		kfree(dev);
-+		return err;
++static const char *const quad8_count_direction_states[] = {
++	"down",
++	"up"
++};
++
++static int quad8_get_count_direction(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const int base_offset = priv->base + 2 * chan->channel + 1;
++
++	return !!(inb(base_offset) & BIT(5));
++}
++
++static const struct iio_enum quad8_count_direction_enum = {
++	.items = quad8_count_direction_states,
++	.num_items = ARRAY_SIZE(quad8_count_direction_states),
++	.get = quad8_get_count_direction
++};
++
++static const char *const quad8_count_modes[] = {
++	"normal",
++	"range limit",
++	"non-recycle",
++	"modulo-n"
++};
++
++static int quad8_set_count_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int count_mode)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	unsigned int mode_cfg = count_mode << 1;
++	const int base_offset = priv->base + 2 * chan->channel + 1;
++
++	priv->count_mode[chan->channel] = count_mode;
++
++	/* Add quadrature mode configuration */
++	if (priv->quadrature_mode[chan->channel])
++		mode_cfg |= (priv->quadrature_scale[chan->channel] + 1) << 3;
++
++	/* Load mode configuration to Counter Mode Register */
++	outb(0x20 | mode_cfg, base_offset);
++
++	return 0;
++}
++
++static int quad8_get_count_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++
++	return priv->count_mode[chan->channel];
++}
++
++static const struct iio_enum quad8_count_mode_enum = {
++	.items = quad8_count_modes,
++	.num_items = ARRAY_SIZE(quad8_count_modes),
++	.set = quad8_set_count_mode,
++	.get = quad8_get_count_mode
++};
++
++static const char *const quad8_synchronous_modes[] = {
++	"non-synchronous",
++	"synchronous"
++};
++
++static int quad8_set_synchronous_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int synchronous_mode)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const unsigned int idr_cfg = synchronous_mode |
++		priv->index_polarity[chan->channel] << 1;
++	const int base_offset = priv->base + 2 * chan->channel + 1;
++
++	/* Index function must be non-synchronous in non-quadrature mode */
++	if (synchronous_mode && !priv->quadrature_mode[chan->channel])
++		return -EINVAL;
++
++	priv->synchronous_mode[chan->channel] = synchronous_mode;
++
++	/* Load Index Control configuration to Index Control Register */
++	outb(0x40 | idr_cfg, base_offset);
++
++	return 0;
++}
++
++static int quad8_get_synchronous_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++
++	return priv->synchronous_mode[chan->channel];
++}
++
++static const struct iio_enum quad8_synchronous_mode_enum = {
++	.items = quad8_synchronous_modes,
++	.num_items = ARRAY_SIZE(quad8_synchronous_modes),
++	.set = quad8_set_synchronous_mode,
++	.get = quad8_get_synchronous_mode
++};
++
++static const char *const quad8_quadrature_modes[] = {
++	"non-quadrature",
++	"quadrature"
++};
++
++static int quad8_set_quadrature_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int quadrature_mode)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	unsigned int mode_cfg = priv->count_mode[chan->channel] << 1;
++	const int base_offset = priv->base + 2 * chan->channel + 1;
++
++	if (quadrature_mode)
++		mode_cfg |= (priv->quadrature_scale[chan->channel] + 1) << 3;
++	else {
++		/* Quadrature scaling only available in quadrature mode */
++		priv->quadrature_scale[chan->channel] = 0;
++
++		/* Synchronous function not supported in non-quadrature mode */
++		if (priv->synchronous_mode[chan->channel])
++			quad8_set_synchronous_mode(indio_dev, chan, 0);
 +	}
 +
-+	dev_info(&spi->dev, "sensor probed\n");
++	priv->quadrature_mode[chan->channel] = quadrature_mode;
++
++	/* Load mode configuration to Counter Mode Register */
++	outb(0x20 | mode_cfg, base_offset);
 +
 +	return 0;
 +}
 +
-+static int st_lsm6dsx_spi_remove(struct spi_device *spi)
++static int quad8_get_quadrature_mode(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
 +{
-+	int err;
-+	struct st_lsm6dsx_dev *dev = spi_get_drvdata(spi);
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
 +
-+	err = st_lsm6dsx_remove(dev);
-+	if (err < 0)
-+		return err;
++	return priv->quadrature_mode[chan->channel];
++}
 +
-+	dev_info(&spi->dev, "sensor removed\n");
++static const struct iio_enum quad8_quadrature_mode_enum = {
++	.items = quad8_quadrature_modes,
++	.num_items = ARRAY_SIZE(quad8_quadrature_modes),
++	.set = quad8_set_quadrature_mode,
++	.get = quad8_get_quadrature_mode
++};
++
++static const char *const quad8_index_polarity_modes[] = {
++	"negative",
++	"positive"
++};
++
++static int quad8_set_index_polarity(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int index_polarity)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const unsigned int idr_cfg = priv->synchronous_mode[chan->channel] |
++		index_polarity << 1;
++	const int base_offset = priv->base + 2 * chan->channel + 1;
++
++	priv->index_polarity[chan->channel] = index_polarity;
++
++	/* Load Index Control configuration to Index Control Register */
++	outb(0x40 | idr_cfg, base_offset);
 +
 +	return 0;
 +}
 +
-+#ifdef CONFIG_OF
-+static const struct of_device_id st_lsm6dsx_spi_of_match[] = {
++static int quad8_get_index_polarity(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++
++	return priv->index_polarity[chan->channel];
++}
++
++static const struct iio_enum quad8_index_polarity_enum = {
++	.items = quad8_index_polarity_modes,
++	.num_items = ARRAY_SIZE(quad8_index_polarity_modes),
++	.set = quad8_set_index_polarity,
++	.get = quad8_get_index_polarity
++};
++
++static const struct iio_chan_spec_ext_info quad8_count_ext_info[] = {
 +	{
-+		.compatible = "st,lsm6ds3",
-+		.data = ST_LSM6DS3_DEV_NAME,
++		.name = "preset",
++		.shared = IIO_SEPARATE,
++		.read = quad8_read_preset,
++		.write = quad8_write_preset
 +	},
 +	{
-+		.compatible = "st,lsm6dsm",
-+		.data = ST_LSM6DSM_DEV_NAME,
++		.name = "set_to_preset_on_index",
++		.shared = IIO_SEPARATE,
++		.read = quad8_read_set_to_preset_on_index,
++		.write = quad8_write_set_to_preset_on_index
 +	},
-+	{},
++	IIO_ENUM("noise_error", IIO_SEPARATE, &quad8_noise_error_enum),
++	IIO_ENUM_AVAILABLE("noise_error", &quad8_noise_error_enum),
++	IIO_ENUM("count_direction", IIO_SEPARATE, &quad8_count_direction_enum),
++	IIO_ENUM_AVAILABLE("count_direction", &quad8_count_direction_enum),
++	IIO_ENUM("count_mode", IIO_SEPARATE, &quad8_count_mode_enum),
++	IIO_ENUM_AVAILABLE("count_mode", &quad8_count_mode_enum),
++	IIO_ENUM("quadrature_mode", IIO_SEPARATE, &quad8_quadrature_mode_enum),
++	IIO_ENUM_AVAILABLE("quadrature_mode", &quad8_quadrature_mode_enum),
++	{}
 +};
-+MODULE_DEVICE_TABLE(of, st_lsm6dsx_spi_of_match);
-+#endif /* CONFIG_OF */
 +
-+static const struct spi_device_id st_lsm6dsx_spi_id_table[] = {
-+	{ ST_LSM6DS3_DEV_NAME },
-+	{ ST_LSM6DSM_DEV_NAME },
-+	{},
++static const struct iio_chan_spec_ext_info quad8_index_ext_info[] = {
++	IIO_ENUM("synchronous_mode", IIO_SEPARATE,
++		&quad8_synchronous_mode_enum),
++	IIO_ENUM_AVAILABLE("synchronous_mode", &quad8_synchronous_mode_enum),
++	IIO_ENUM("index_polarity", IIO_SEPARATE, &quad8_index_polarity_enum),
++	IIO_ENUM_AVAILABLE("index_polarity", &quad8_index_polarity_enum),
++	{}
 +};
-+MODULE_DEVICE_TABLE(spi, st_lsm6dsx_spi_id_table);
 +
-+static struct spi_driver st_lsm6dsx_driver = {
++#define QUAD8_COUNT_CHAN(_chan) {					\
++	.type = IIO_COUNT,						\
++	.channel = (_chan),						\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
++		BIT(IIO_CHAN_INFO_ENABLE) | BIT(IIO_CHAN_INFO_SCALE),	\
++	.ext_info = quad8_count_ext_info,				\
++	.indexed = 1							\
++}
++
++#define QUAD8_INDEX_CHAN(_chan) {			\
++	.type = IIO_INDEX,				\
++	.channel = (_chan),				\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
++	.ext_info = quad8_index_ext_info,		\
++	.indexed = 1					\
++}
++
++static const struct iio_chan_spec quad8_channels[] = {
++	QUAD8_COUNT_CHAN(0), QUAD8_INDEX_CHAN(0),
++	QUAD8_COUNT_CHAN(1), QUAD8_INDEX_CHAN(1),
++	QUAD8_COUNT_CHAN(2), QUAD8_INDEX_CHAN(2),
++	QUAD8_COUNT_CHAN(3), QUAD8_INDEX_CHAN(3),
++	QUAD8_COUNT_CHAN(4), QUAD8_INDEX_CHAN(4),
++	QUAD8_COUNT_CHAN(5), QUAD8_INDEX_CHAN(5),
++	QUAD8_COUNT_CHAN(6), QUAD8_INDEX_CHAN(6),
++	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
++};
++
++static int quad8_probe(struct device *dev, unsigned int id)
++{
++	struct iio_dev *indio_dev;
++	struct quad8_iio *priv;
++	int i, j;
++	unsigned int base_offset;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	if (!devm_request_region(dev, base[id], QUAD8_EXTENT,
++		dev_name(dev))) {
++		dev_err(dev, "Unable to lock port addresses (0x%X-0x%X)\n",
++			base[id], base[id] + QUAD8_EXTENT);
++		return -EBUSY;
++	}
++
++	indio_dev->info = &quad8_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = ARRAY_SIZE(quad8_channels);
++	indio_dev->channels = quad8_channels;
++	indio_dev->name = dev_name(dev);
++
++	priv = iio_priv(indio_dev);
++	priv->base = base[id];
++
++	/* Reset all counters and disable interrupt function */
++	outb(0x01, base[id] + 0x11);
++	/* Set initial configuration for all counters */
++	for (i = 0; i < QUAD8_NUM_COUNTERS; i++) {
++		base_offset = base[id] + 2 * i;
++		/* Reset Byte Pointer */
++		outb(0x01, base_offset + 1);
++		/* Reset Preset Register */
++		for (j = 0; j < 3; j++)
++			outb(0x00, base_offset);
++		/* Reset Borrow, Carry, Compare, and Sign flags */
++		outb(0x04, base_offset + 1);
++		/* Reset Error flag */
++		outb(0x06, base_offset + 1);
++		/* Binary encoding; Normal count; non-quadrature mode */
++		outb(0x20, base_offset + 1);
++		/* Disable A and B inputs; preset on index; FLG1 as Carry */
++		outb(0x40, base_offset + 1);
++		/* Disable index function; negative index polarity */
++		outb(0x60, base_offset + 1);
++	}
++	/* Enable all counters */
++	outb(0x00, base[id] + 0x11);
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static struct isa_driver quad8_driver = {
++	.probe = quad8_probe,
 +	.driver = {
-+		.name = "st_lsm6dsx_spi",
-+#ifdef CONFIG_OF
-+		.of_match_table = st_lsm6dsx_spi_of_match,
-+#endif /* CONFIG_OF */
-+	},
-+	.probe = st_lsm6dsx_spi_probe,
-+	.remove = st_lsm6dsx_spi_remove,
-+	.id_table = st_lsm6dsx_spi_id_table,
++		.name = "104-quad-8"
++	}
 +};
-+module_spi_driver(st_lsm6dsx_driver);
 +
-+MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
-+MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
-+MODULE_DESCRIPTION("STMicroelectronics st_lsm6dsx spi driver");
++module_isa_driver(quad8_driver, num_quad8);
++
++MODULE_AUTHOR("William Breathitt Gray <vilhelm.gray@gmail.com>");
++MODULE_DESCRIPTION("ACCES 104-QUAD-8 IIO driver");
 +MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+new file mode 100644
+index 0000000..44627f6
+--- /dev/null
++++ b/drivers/iio/counter/Kconfig
+@@ -0,0 +1,24 @@
++#
++# Counter devices
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Counters"
++
++config 104_QUAD_8
++	tristate "ACCES 104-QUAD-8 driver"
++	depends on X86 && ISA_BUS_API
++	help
++	  Say yes here to build support for the ACCES 104-QUAD-8 quadrature
++	  encoder counter/interface device family (104-QUAD-8, 104-QUAD-4).
++
++	  Performing a write to a counter's IIO_CHAN_INFO_RAW sets the counter and
++	  also clears the counter's respective error flag. Although the counters
++	  have a 25-bit range, only the lower 24 bits may be set, either directly
++	  or via a counter's preset attribute. Interrupts are not supported by
++	  this driver.
++
++	  The base port addresses for the devices may be configured via the base
++	  array module parameter.
++
++endmenu
+diff --git a/drivers/iio/counter/Makefile b/drivers/iio/counter/Makefile
+new file mode 100644
+index 0000000..007e884
+--- /dev/null
++++ b/drivers/iio/counter/Makefile
+@@ -0,0 +1,7 @@
++#
++# Makefile for IIO counter devices
++#
++
++# When adding new entries keep the list in alphabetical order
++
++obj-$(CONFIG_104_QUAD_8)	+= 104-quad-8.o
 -- 
-2.7.4
+2.7.3
 
