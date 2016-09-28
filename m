@@ -1,167 +1,111 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.162]:12911 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934735AbcIXF3D (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Sep 2016 01:29:03 -0400
-Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH v3 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20160923224726.GA4639@rob-hp-laptop>
-Date: Sat, 24 Sep 2016 07:28:48 +0200
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
-        linux-iio@vger.kernel.org
-Message-Id: <118D373B-21B0-4246-A3C9-0E0373F66656@goldelico.com>
-References: <cover.1474634475.git.hns@goldelico.com> <1409ed9845f17445a8a67bd6fb16c902c3e4f69c.1474634475.git.hns@goldelico.com> <20160923224726.GA4639@rob-hp-laptop>
-To: Rob Herring <robh@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <dmitry.torokhov@gmail.com>
+In-Reply-To: <20160927185000.GF21388@dell>
+References: <cover.1471524593.git.ksenija.stanojevic@gmail.com> <f968582fe3036a2967ed41494c73c43ac19e4767.1471524593.git.ksenija.stanojevic@gmail.com> <20160831120552.GF8649@dell> <CAL7P5jKx4S-cduxTmNzocD0VrkgzK4vQ+w6G__sWOJMNsoJhCA@mail.gmail.com> <20160927185000.GF21388@dell>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v5 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Date: Tue, 27 Sep 2016 19:07:51 -0700
+To: Lee Jones <lee.jones@linaro.org>,=?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+CC: linux-kernel <linux-kernel@vger.kernel.org>,linux-input@vger.kernel.org,Jonathan Cameron <jic23@kernel.org>,Hartmut Knaack <knaack.h@gmx.de>,Lars-Peter Clausen <lars@metafoo.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,=?UTF-8?Q?Marek_Va=C5=A1ut?= <marex@denx.de>,linux-iio@vger.kernel.org,Harald Geyer <harald@ccbib.org>,Stefan Wahren <stefan.wahren@i2se.com>,Fabio Estevam <fabio.estevam@freescale.com>
+Message-ID: <66EF5E82-AE82-4F05-A67F-2F27F798F30E@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi,
+On September 27, 2016 11:50:00 AM PDT, Lee Jones <lee.jones@linaro.org> wrote:
+>On Sat, 17 Sep 2016, Ksenija Stanojević wrote:
+>> On Wed, Aug 31, 2016 at 2:05 PM, Lee Jones <lee.jones@linaro.org>
+>wrote:
+>> > On Thu, 18 Aug 2016, Ksenija Stanojevic wrote:
+>> >
+>> > > Add core files for mxs-lradc MFD driver.
+>> > >
+>> > > Note:  this patch won't compile in iio/testing without this
+>patch:
+>> > > a8f447be8056 ("mfd: Add resource managed APIs for
+>mfd_add_devices")
+>> > >
+>> > > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+>> > > ---
+>> > > Changes in v5:
+>> > >  - use DEFINE_RES_MEM
+>> > >  - don't pass ioreammaped adress to platform cells
+>> > >  - move comment outside of struct mxs_lradc
+>> > >  - change type of argument in mxs_lradc_reg_set,
+>mxs_lradc_reg_clear,
+>> > >    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
+>> > >
+>> > > Changes in v4:
+>> > >  - update copyright
+>> > >  - use DEFINE_RES_IRQ_NAMED
+>> > >  - remove mxs_lradc_add_device function
+>> > >  - use struct mfd_cell in static form
+>> > >  - improve spacing
+>> > >  - remove unnecessary comment
+>> > >  - remove platform_get_irq
+>> > >  - remove touch_ret and use ret instead
+>> > >  - rename use_touchscreen to touchscreen_wire
+>> > >  - use goto statements
+>> > >  - remove irq[13], irq_count and irq_name from struct mxs_lradc
+>> > >  - remove all defines from inside the struct definition
+>> > >
+>> > > Changes in v3:
+>> > >  - add note to commit message
+>> > >  - move switch statement into if(touch_ret == 0) branch
+>> > >  - add MODULE_AUTHOR
+>> > >
+>> > > Changes in v2:
+>> > >  - do not change spacing in Kconfig
+>> > >  - make struct mfd_cell part of struct mxs_lradc
+>> > >  - use switch instead of if in mxs_lradc_irq_mask
+>> > >  - use only necessary header files in mxs_lradc.h
+>> > >  - use devm_mfd_add_device
+>> > >  - use separate function to register mfd device
+>> > >  - change licence to GPL
+>> > >  - add copyright
+>> > >
+>> > >  drivers/mfd/Kconfig           |  17 +++
+>> > >  drivers/mfd/Makefile          |   1 +
+>> > >  drivers/mfd/mxs-lradc.c       | 255
+>++++++++++++++++++++++++++++++++++++++++++
+>> > >  include/linux/mfd/mxs-lradc.h | 194
+>++++++++++++++++++++++++++++++++
+>> > >  4 files changed, 467 insertions(+)
+>> > >  create mode 100644 drivers/mfd/mxs-lradc.c
+>> > >  create mode 100644 include/linux/mfd/mxs-lradc.h
+>
+>[...]
+>
+>> > > +static int mxs_lradc_probe(struct platform_device *pdev)
+>> > > +{
+>> > > +     const struct of_device_id *of_id;
+>> > > +     struct device *dev = &pdev->dev;
+>> > > +     struct device_node *node = dev->of_node;
+>> > > +     struct mxs_lradc *lradc;
+>> > > +     struct mfd_cell *cells = NULL;
+>> > > +     int ret = 0;
+>> > > +     u32 ts_wires = 0;
+>> > > +
+>> > > +     lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc),
+>GFP_KERNEL);
+>> > > +     if (!lradc)
+>> > > +             return -ENOMEM;
+>> > > +
+>> > > +     of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
+>> > > +     lradc->soc = (enum mxs_lradc_id)of_id->data;
+>> >
+>> > Unnecessary cast.
+>> 
+>> If I remove the cast I get this error:
+>> drivers/mfd/mxs-lradc.c:148:13: error: incompatible types when
+>> assigning to type ‘enum mxs_lradc_id’ from type ‘const void * const’
+>
+>Ah, because it's a const.  Fair enough.
 
-> Am 24.09.2016 um 00:47 schrieb Rob Herring <robh@kernel.org>:
->=20
-> On Fri, Sep 23, 2016 at 02:41:09PM +0200, H. Nikolaus Schaller wrote:
->> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
->> introduced common DT bindings for touchscreens [1] and a helper =
-function to
->> parse the DT.
->>=20
->> commit ed7c9870c9bc ("Input: of_touchscreen - add support for =
-inverted / swapped axes")
->> added another helper for parsing axis inversion and swapping
->> and applying them to x and y coordinates.
->>=20
->> Both helpers have been integrated to accommodate any orientation of =
-the
->> touch panel in relation to the LCD.
->>=20
->> A new feature is to introduce scaling the min/max ADC values to the =
-screen
->> size.
->>=20
->> This makes it possible to pre-calibrate the touch so that is (almost)
->> exactly matches the LCD pixel coordinates it is glued onto. This =
-allows to
->> well enough operate the touch before a user space calibration step =
-can
->> improve the precision.
->>=20
->> Finally, calculate_pressure has been renamed to calculate_resistance
->> because that is what it is doing.
->=20
-> Seems like you are breaking compatibility with old DTs. I can't tell =
-for=20
-> sure though.
+No, it's because void * has to be cast to a non-pointer data type explicitly.
 
-There is code to take missing values as 0 or maximum. So this will scale =
-1:1
-and should not break old DTs.
 
->=20
->>=20
->> [1]: =
-Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
->>=20
->> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->> ---
->> .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
->> drivers/input/touchscreen/tsc2007.c                | 126 =
-+++++++++++++++++----
->> include/linux/i2c/tsc2007.h                        |   8 ++
->> 3 files changed, 123 insertions(+), 31 deletions(-)
->>=20
->> diff --git =
-a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt =
-b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
->> index ec365e1..6e9fd55 100644
->> --- a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
->> +++ b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
->> @@ -6,6 +6,7 @@ Required properties:
->> - ti,x-plate-ohms: X-plate resistance in ohms.
->>=20
->> Optional properties:
->> +- generic touch screen properties: see touchscreen binding [2].
->> - gpios: the interrupt gpio the chip is connected to (trough the =
-penirq pin).
->>   The penirq pin goes to low when the panel is touched.
->>   (see GPIO binding[1] for more details).
->> @@ -13,17 +14,20 @@ Optional properties:
->>   (see interrupt binding[0]).
->> - interrupts: (gpio) interrupt to which the chip is connected
->>   (see interrupt binding[0]).
->> -- ti,max-rt: maximum pressure.
->> -- ti,fuzzx: specifies the absolute input fuzz x value.
->> -  If set, it will permit noise in the data up to +- the value given =
-to the fuzz
->> -  parameter, that is used to filter noise from the event stream.
->> -- ti,fuzzy: specifies the absolute input fuzz y value.
->> -- ti,fuzzz: specifies the absolute input fuzz z value.
->> +- ti,max-rt: maximum pressure resistance above which samples are =
-ignored
->> +  (default: 4095).
->> +- ti,report-resistance: report resistance (no pressure =3D max_rt) =
-instead
->> +  of pressure (no pressure =3D 0).
->> +- ti,min-x: minimum value reported by X axis ADC (default 0).
->> +- ti,max-x: maximum value reported by X axis ADC (default 4095).
->> +- ti,min-y: minimum value reported by Y axis ADC (default 0).
->> +- ti,max-y: maximum value reported by Y axis ADC (default 4095).
->=20
-> Seems like these could be common too. They make more sense than giving =
-x=20
-> and y sizes in pixel units which really should come from the panel.
+Thanks.
 
-No. They have a different purpose!
-
-You need to scale values like this:
-
-ti,min-x   ->   0
-x          ->   some value between 0 and touchscreen-size-x
-ti,max-x   ->   touchscreen-size-x
-
-So the ti, values describe the ADC raw values while the common bindings
-describe the size in input-event coordinates.
-
-So we need both specified: raw values and pixel values.
-
->=20
->> - ti,poll-period: how much time to wait (in milliseconds) before =
-reading again the
->> -  values from the tsc2007.
->> +  values from the tsc2007 (default 1).
->>=20
->> [0]: =
-Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
->> [1]: Documentation/devicetree/bindings/gpio/gpio.txt
->> +[2]: =
-Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
->>=20
->> Example:
->> 	&i2c1 {
->> @@ -35,6 +39,8 @@ Example:
->> 			interrupts =3D <0x0 0x8>;
->> 			gpios =3D <&gpio4 0 0>;
->> 			ti,x-plate-ohms =3D <180>;
->> +			touchscreen-size-x =3D <640>;
->> +			touchscreen-size-y =3D <480>;
->> 		};
->>=20
->> 		/* ... */
-
-BR,
-Nikolaus
-
+-- 
+Dmitry
