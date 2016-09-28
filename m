@@ -1,89 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f66.google.com ([209.85.220.66]:33408 "EHLO
-        mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932824AbcI1QRJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2016 12:17:09 -0400
-Received: by mail-pa0-f66.google.com with SMTP id oz2so2251373pac.0
-        for <linux-iio@vger.kernel.org>; Wed, 28 Sep 2016 09:17:09 -0700 (PDT)
-Date: Wed, 28 Sep 2016 21:46:51 +0530
-From: sayli karnik <karniksayli1995@gmail.com>
-To: outreachy-kernel@googlegroups.com
-Cc: jic23@kernel.org, mranostay@gmail.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
-Subject: [PATCH v4] iio: maxim_thermocouple: Align 16 bit big endian value of
- raw reads
-Message-ID: <20160928161651.GA28186@sayli-HP-15-Notebook-PC>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:34264 "EHLO
+        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750726AbcI1R7k (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2016 13:59:40 -0400
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH v5 0/2] Add IIO support for counter devices
+Date: Wed, 28 Sep 2016 13:59:32 -0400
+Message-Id: <cover.1475079578.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Driver was reporting invalid raw read values for MAX6675 on big
-endian architectures. MAX6675 buffered mode is not affected, nor
-is the MAX31855.
+Changes in v5:
+  - Refactored scale to handle values of 1, 0.5, and 0.25, in order to
+    be consistent with the multiplication usage of the other interfaces
+  - Reimplemented preset as an ext_info since the preset functionality
+    is rather device specific
+  - Reimplemented ab_enable ext_info as IIO_CHAN_INFO_ENABLE; this
+    should make the counter enable/disable interface more intuitive
+  - Renamed "preset_enable" attribute to "set_to_preset_on_index" (and
+    refactored as a boolean) to make the functionality clearer
+  - Updated documentation to account for the changes in this patchset
 
-The driver was losing a 2 byte read value when it used a 32 bit
-integer buffer to store a 16 bit big endian value. Use big endian
-types to properly align buffers on big endian architectures.
+This patchset adds new IIO channel type constants to facilitate support
+for counter devices. In addition, a new "counter" subdirectory is
+created to house drivers for these counter devices.
 
-Fixes following sparse endianness warnings:
-warning: cast to restricted __be16
-warning: cast to restricted __be32
-Fixes checkpatch issue:
-CHECK: No space is necessary after a cast
+Quadrature encoders, such as rotary encoders and linear encoders, are
+devices which are capable of encoding the relative position and
+direction of motion of a shaft. This patchset introduces several IIO
+constants for supporting quadrature encoder counter devices.
 
-Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
-Fixes: 1f25ca11d84a ("iio: temperature: add support for Maxim
-thermocouple chips")
----
-Changes in v4:
-Reverted back to v2 with changed names for buffers
+  IIO_COUNT: Current count (main data provided by the counter device)
+  IIO_INDEX: Counter device index value
 
-Changes in v3:
-Updated the commit message
-Updated the changelog to include explanation to the bug fix
-Fixed the checkpatch issue: CHECK: No space is necessary after a cast
-Added the fixes tag
+Specifically, this patchset introduces a driver to support the ACCES
+104-QUAD-8 device, a general purpose quadrature encoder
+counter/interface board capable of monitoring the outputs of eight
+encoders.
 
- drivers/iio/temperature/maxim_thermocouple.c | 16 +++++++++-------
- 1 file changed, 9 insertions(+), 7 deletions(-)
+William Breathitt Gray (2):
+  iio: Implement counter channel type and info constants
+  iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8
 
-diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-index 39dd202..066161a 100644
---- a/drivers/iio/temperature/maxim_thermocouple.c
-+++ b/drivers/iio/temperature/maxim_thermocouple.c
-@@ -123,22 +123,24 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
- {
- 	unsigned int storage_bytes = data->chip->read_size;
- 	unsigned int shift = chan->scan_type.shift + (chan->address * 8);
--	unsigned int buf;
-+	__be16 buf16;
-+	__be32 buf32;
- 	int ret;
- 
--	ret = spi_read(data->spi, (void *) &buf, storage_bytes);
--	if (ret)
--		return ret;
--
- 	switch (storage_bytes) {
- 	case 2:
--		*val = be16_to_cpu(buf);
-+		ret = spi_read(data->spi, (void *)&buf16, storage_bytes);
-+		*val = be16_to_cpu(buf16);
- 		break;
- 	case 4:
--		*val = be32_to_cpu(buf);
-+		ret = spi_read(data->spi, (void *)&buf32, storage_bytes);
-+		*val = be32_to_cpu(buf32);
- 		break;
- 	}
- 
-+	if (ret)
-+		return ret;
-+
- 	/* check to be sure this is a valid reading */
- 	if (*val & data->chip->status_bit)
- 		return -EINVAL;
+ Documentation/ABI/testing/sysfs-bus-iio            |  18 +
+ .../ABI/testing/sysfs-bus-iio-counter-104-quad-8   | 125 +++++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/counter/104-quad-8.c                   | 593 +++++++++++++++++++++
+ drivers/iio/counter/Kconfig                        |  24 +
+ drivers/iio/counter/Makefile                       |   7 +
+ drivers/iio/industrialio-core.c                    |   2 +
+ include/uapi/linux/iio/types.h                     |   2 +
+ 10 files changed, 779 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+ create mode 100644 drivers/iio/counter/104-quad-8.c
+ create mode 100644 drivers/iio/counter/Kconfig
+ create mode 100644 drivers/iio/counter/Makefile
+
 -- 
-2.7.4
+2.7.3
 
