@@ -1,62 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:38606 "EHLO
-        devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754258AbcIUQNF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Sep 2016 12:13:05 -0400
-From: Mugunthan V N <mugunthanvnm@ti.com>
-To: <linux-iio@vger.kernel.org>
-CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
+Received: from www381.your-server.de ([78.46.137.84]:58475 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750793AbcI1HTk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Sep 2016 03:19:40 -0400
+Subject: Re: [PATCH v3] iio: temperature: maxim_thermocouple: Replace unsigned
+ int with __be16/__be32 to fix endianness warnings
+To: Matt Ranostay <mranostay@gmail.com>,
+        sayli karnik <karniksayli1995@gmail.com>
+References: <20160927181039.GA16272@sayli-HP-15-Notebook-PC>
+ <CAKzfze8K65dar8LPkQscSy=ESU7M-P=PY3-VsFS4P_ufvz4fPg@mail.gmail.com>
+Cc: outreachy-kernel@googlegroups.com,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        Mugunthan V N <mugunthanvnm@ti.com>
-Subject: [PATCH 0/4] Add DMA support for ti_am335x_adc driver
-Date: Wed, 21 Sep 2016 21:41:30 +0530
-Message-ID: <20160921161134.6951-1-mugunthanvnm@ti.com>
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <69edaf73-92f5-aa45-39f6-97a48d2c3b3b@metafoo.de>
+Date: Wed, 28 Sep 2016 09:19:33 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CAKzfze8K65dar8LPkQscSy=ESU7M-P=PY3-VsFS4P_ufvz4fPg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ADC has a 64 work depth fifo length which holds the ADC data
-till the CPU reads. So when a user program needs a large ADC data
-to operate on, then it has to do multiple reads to get its
-buffer. Currently if the application asks for 4 samples per
-channel with all 8 channels are enabled, kernel can provide only
-3 samples per channel when all 8 channels are enabled (logs at
-[1]). So with DMA support user can request for large number of
-samples at a time (logs at [2]).
+[...]
+>>
+>> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+>> index 39dd202..01cad6e 100644
+>> --- a/drivers/iio/temperature/maxim_thermocouple.c
+>> +++ b/drivers/iio/temperature/maxim_thermocouple.c
+>> @@ -123,22 +123,24 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
+>>  {
+>>         unsigned int storage_bytes = data->chip->read_size;
+>>         unsigned int shift = chan->scan_type.shift + (chan->address * 8);
+>> -       unsigned int buf;
+>> +       __be16 buf1;
+>> +       __be32 buf2;
+>>         int ret;
+>>
+>> -       ret = spi_read(data->spi, (void *) &buf, storage_bytes);
+>> -       if (ret)
+>> -               return ret;
+>> -
+>>         switch (storage_bytes) {
+>>         case 2:
+>> -               *val = be16_to_cpu(buf);
+>> +               ret = spi_read(data->spi, (void *)&buf1, storage_bytes);
+>> +               *val = be16_to_cpu(buf1);
+> 
+> Meh don't really like having buf1, and buf2 esp since they only used
+> in one branch of the switch statement. And waste 2-4 byte of stack :).
+> 
+> I recommend something like:
+> 
+> case 2: {
+>         __be16 buf;
+>         ret = spi_read(data->spi, (void *)&buf1, storage_bytes);
+>         *val = be16_to_cpu(buf1);
+>         break;
+> }
+> case 4:
+> ....
+> 
 
-Tested the patch on AM437x-gp-evm and AM335x Boneblack with the
-patch [3] to enable ADC and pushed a branch for testing [4]
-
-[1] - http://pastebin.ubuntu.com/23211490/
-[2] - http://pastebin.ubuntu.com/23211492/
-[3] - http://pastebin.ubuntu.com/23211494/
-[4] - git://git.ti.com/~mugunthanvnm/ti-linux-kernel/linux.git iio-dma
-
-Mugunthan V N (4):
-  mfd: ti_am335x_tscadc: store physical address
-  drivers: iio: ti_am335x_adc: add dma support
-  ARM: dts: am33xx: add DMA properties for tscadc
-  ARM: dts: am4372: add DMA properties for tscadc
-
- arch/arm/boot/dts/am33xx.dtsi        |   2 +
- arch/arm/boot/dts/am4372.dtsi        |   2 +
- drivers/iio/adc/ti_am335x_adc.c      | 160 ++++++++++++++++++++++++++++++++++-
- drivers/mfd/ti_am335x_tscadc.c       |   1 +
- include/linux/mfd/ti_am335x_tscadc.h |   8 ++
- 5 files changed, 170 insertions(+), 3 deletions(-)
-
--- 
-2.10.0.129.g35f6318
+I'd be quite surprised if the compiled end result actually looks different
+between this and the original patch. Compilers are quite smart these days. I
+wouldn't worry too much about it and keep the original solution, since it
+has a nicer code flow to it.
 
