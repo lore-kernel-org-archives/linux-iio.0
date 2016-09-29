@@ -1,45 +1,90 @@
-Return-Path: <lorenzo.bianconi83@gmail.com>
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	lorenzo.bianconi@st.com,
-	denis.ciocca@st.com
-Subject: [PATCH] iio: common: st_sensors: fix channel data parsing
-Date: Wed, 28 Sep 2016 22:06:01 +0200
-Message-Id: <1475093161-7239-1-git-send-email-lorenzo.bianconi@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f182.google.com ([209.85.192.182]:35873 "EHLO
+        mail-pf0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934811AbcI2RNa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Sep 2016 13:13:30 -0400
+Received: by mail-pf0-f182.google.com with SMTP id q2so30911728pfj.3
+        for <linux-iio@vger.kernel.org>; Thu, 29 Sep 2016 10:13:29 -0700 (PDT)
+Date: Thu, 29 Sep 2016 18:15:40 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Stefan Wahren <stefan.wahren@i2se.com>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        linux-input@vger.kernel.org, pmeerw@pmeerw.net, jic23@kernel.org,
+        linux-kernel@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        dmitry.torokhov@gmail.com, harald@ccbib.org,
+        fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+        marex@denx.de
+Subject: Re: [PATCH v6 1/4] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Message-ID: <20160929171540.GB2844@dell>
+References: <cover.1474108510.git.ksenija.stanojevic@gmail.com>
+ <b50209289b241995c6fd5e23c7343448857fc301.1474108510.git.ksenija.stanojevic@gmail.com>
+ <20160928010533.GQ21388@dell>
+ <1882238802.204734.75f5f595-10ac-4107-8738-e75dfde001f1.open-xchange@email.1und1.de>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1882238802.204734.75f5f595-10ac-4107-8738-e75dfde001f1.open-xchange@email.1und1.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Using realbits as i2c/spi read len, when that value is not byte aligned
-(e.g 12 bits), lead to skip msb part of out data registers.
-Fix this using storagebits as read length
+On Thu, 29 Sep 2016, Stefan Wahren wrote:
+> > Lee Jones <lee.jones@linaro.org> hat am 28. September 2016 um 03:05
+> > geschrieben:
+> > 
+> > 
+> > On Sat, 17 Sep 2016, Ksenija Stanojevic wrote:
+> > 
+> > > +
+> > > +static int mxs_lradc_probe(struct platform_device *pdev)
+> > > +{
+> > > +	const struct of_device_id *of_id;
+> > > +	struct device *dev = &pdev->dev;
+> > > +	struct device_node *node = dev->of_node;
+> > > +	struct mxs_lradc *lradc;
+> > > +	struct mfd_cell *cells = NULL;
+> > > +	int ret = 0;
+> > > +	u32 ts_wires = 0;
+> > > +
+> > > +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
+> > > +	if (!lradc)
+> > > +		return -ENOMEM;
+> > > +
+> > > +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
+> > > +	lradc->soc = (enum mxs_lradc_id)of_id->data;
+> > > +
+> > > +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> > > +	if (IS_ERR(lradc->clk)) {
+> > > +		dev_err(dev, "Failed to get the delay unit clock\n");
+> > > +		return PTR_ERR(lradc->clk);
+> > > +	}
+> > > +
+> > > +	ret = clk_prepare_enable(lradc->clk);
+> > > +	if (ret) {
+> > > +		dev_err(dev, "Failed to enable the delay unit clock\n");
+> > > +		return ret;
+> > > +	}
+> > > +
+> > > +	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> > 
+> > Have you moved the documentation into devicetree/bindings/mfd?
+> > 
+> 
+> i hope it's okay if i answer. The binding has moved to
+> devicetree/binding/iio/adc/ [1]
+> 
+> Should it move completely to mfd or split too?
+> 
+> I'm asking myself how we keep DT ABI in the latter case.
+> 
+> [1] -
+> http://lxr.free-electrons.com/source/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- drivers/iio/common/st_sensors/st_sensors_buffer.c | 5 ++---
- 1 file changed, 2 insertions(+), 3 deletions(-)
+I haven't read into the documentation too to deeply, but it stands to
+reason that the bindings which are now being used in MFD should be
+documented in the MFD binding document, and the ones which are no longer
+used in the IIO driver should be removed.
 
-diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-index fe7775b..d01aa34 100644
---- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-@@ -30,16 +30,15 @@ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
- 
- 	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
- 		const struct iio_chan_spec *channel = &indio_dev->channels[i];
--		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
- 		unsigned int storage_bytes =
- 			channel->scan_type.storagebits >> 3;
- 
- 		buf = PTR_ALIGN(buf, storage_bytes);
- 		if (sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
- 						  channel->address,
--						  bytes_to_read, buf,
-+						  storage_bytes, buf,
- 						  sdata->multiread_bit) <
--		    bytes_to_read)
-+		    storage_bytes)
- 			return -EIO;
- 
- 		/* Advance the buffer pointer */
 -- 
-2.7.4
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
