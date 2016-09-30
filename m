@@ -1,53 +1,39 @@
-Return-Path: <masneyb@onstation.org>
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	gregkh@linuxfoundation.org
-Subject: [PATCH v3 5/5] staging: iio: isl29018: check if the chip is in a suspended state
-Date: Mon, 26 Sep 2016 20:20:20 -0400
-Message-Id: <1474935620-13151-5-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1474935620-13151-1-git-send-email-masneyb@onstation.org>
-References: <20160926075935.GA25938@kroah.com>
- <1474935620-13151-1-git-send-email-masneyb@onstation.org>
-In-Reply-To: <20160926075935.GA25938@kroah.com>
-References: <20160926075935.GA25938@kroah.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hosting.pavoucek.net ([46.28.107.168]:59479 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933050AbcI3N0m (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Sep 2016 09:26:42 -0400
+From: Tomas Novotny <tomas@novotny.cz>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
+Subject: [PATCH 0/3] iio: dac: mcp4725: add vref selection and devicetree support
+Date: Fri, 30 Sep 2016 15:19:45 +0200
+Message-Id: <1475241588-18429-1-git-send-email-tomas@novotny.cz>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add a check to isl29018_write_raw() to ensure that the chip is not in a
-suspended state. This makes the code consistent with what is present
-in isl29018_read_raw().
+Hi all,
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/isl29018.c | 7 ++++++-
- 1 file changed, 6 insertions(+), 1 deletion(-)
+here is a small series to add voltage reference selection and devicetree support
+to mcp4725/6. This series was tested on mcp4726 with devicetree boot.
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 3a4d79d..51226bd 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -355,6 +355,10 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
- 	int ret = -EINVAL;
- 
- 	mutex_lock(&chip->lock);
-+	if (chip->suspended) {
-+		ret = -EBUSY;
-+		goto write_done;
-+	}
- 	switch (mask) {
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		if (chan->type == IIO_LIGHT) {
-@@ -374,8 +378,9 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
- 	default:
- 		break;
- 	}
--	mutex_unlock(&chip->lock);
- 
-+write_done:
-+	mutex_unlock(&chip->lock);
- 	return ret;
- }
- 
+Tomas Novotny (3):
+  iio: dac: mcp4725: support voltage reference selection
+  Documentation: dt: iio: add mcp4725/6 dac device binding
+  iio: dac: mcp4725: add devicetree support
+
+ .../devicetree/bindings/iio/dac/mcp4725.txt        |  28 ++++++
+ drivers/iio/dac/mcp4725.c                          | 108 ++++++++++++++++++---
+ include/linux/iio/dac/mcp4725.h                    |   1 +
+ 3 files changed, 126 insertions(+), 11 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+
 -- 
-2.7.4
+2.1.4
+
