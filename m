@@ -1,139 +1,186 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:35232 "EHLO
-        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932573AbcI0UV3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Sep 2016 16:21:29 -0400
-Received: by mail-pf0-f195.google.com with SMTP id 6so1153550pfl.2
-        for <linux-iio@vger.kernel.org>; Tue, 27 Sep 2016 13:21:28 -0700 (PDT)
-Date: Tue, 27 Sep 2016 13:21:19 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Matt Ranostay <mranostay@gmail.com>
-Cc: sayli karnik <karniksayli1995@gmail.com>,
-        outreachy-kernel@googlegroups.com,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH v3] iio: temperature: maxim_thermocouple: Replace
- unsigned int with __be16/__be32 to fix endianness warnings
-Message-ID: <20160927202119.GB20525@d830.WORKGROUP>
-References: <20160927181039.GA16272@sayli-HP-15-Notebook-PC>
- <CAKzfze8K65dar8LPkQscSy=ESU7M-P=PY3-VsFS4P_ufvz4fPg@mail.gmail.com>
+Received: from mail.kernel.org ([198.145.29.136]:59348 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750703AbcI3OQK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 30 Sep 2016 10:16:10 -0400
+Date: Fri, 30 Sep 2016 16:16:04 +0200
+From: Sebastian Reichel <sre@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Rob Herring <robh@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH v3 1/8] drivers:input:tsc2007: add new common binding
+ names, pre-calibration, flipping and rotation
+Message-ID: <20160930141603.mlo5v75oy72j64d5@earth>
+References: <cover.1474634475.git.hns@goldelico.com>
+ <1409ed9845f17445a8a67bd6fb16c902c3e4f69c.1474634475.git.hns@goldelico.com>
+ <20160923224726.GA4639@rob-hp-laptop>
+ <20160924003133.htaaiphjrm7vy52t@earth>
+ <E8C59C6C-23D4-4417-8A9E-3E9AE5D2D100@goldelico.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAKzfze8K65dar8LPkQscSy=ESU7M-P=PY3-VsFS4P_ufvz4fPg@mail.gmail.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="jzu4yvdwt2tjqcxr"
+In-Reply-To: <E8C59C6C-23D4-4417-8A9E-3E9AE5D2D100@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Sep 27, 2016 at 01:03:00PM -0700, Matt Ranostay wrote:
-> On Tue, Sep 27, 2016 at 11:10 AM, sayli karnik
-> <karniksayli1995@gmail.com> wrote:
-> > Fix following endianness warnings using sparse:
-> > warning: cast to restricted __be16
-> > warning: cast to restricted __be32
-> > Use __be16 type for incoming read data when storage_bytes equals 2 and
-> > __be32 when storage_bytes equals 4.
-> > Also, the patch fixes the following bug:
-> > Variable 'buf' which is an unsigned int (32 bits) points to a location where
-> > only 2 bytes of data are placed during spi_read(). These 2 bytes go in the
-> > upper bytes. be16_to_cpu() casts buf to 16 bits. When storage_bytes equals 2,
-> > (for thermocouple chip-MAX6675) this will work on Little Endian systems but
-> > will give invalid data on Big Endian systems. The patch fixes this bug existing
-> > on Big Endian systems for chip MAX6675.
-> > Additionally, the patch removes space after a type cast as suggested by
-> > checkpatch.pl.
-> 
-> See comments inline.
-> 
-> >
-> > Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
-> > Fixes: 1f25ca11d84a ("iio: temperature: add support for Maxim thermocouple chips")
-> 
-> 
-> Please CC the linux-iio mailing list in the future :)
-> 
-> > ---
-> > Changes in v3:
-> > Updated the commit message
-> > Updated the changelog to include explanation to the bug fix
-> > Fixed the checkpatch issue: CHECK: No space is necessary after a cast
-> > Added the fixes tag
-> >
-> >  drivers/iio/temperature/maxim_thermocouple.c | 16 +++++++++-------
-> >  1 file changed, 9 insertions(+), 7 deletions(-)
-> >
-> > diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-> > index 39dd202..01cad6e 100644
-> > --- a/drivers/iio/temperature/maxim_thermocouple.c
-> > +++ b/drivers/iio/temperature/maxim_thermocouple.c
-> > @@ -123,22 +123,24 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
-> >  {
-> >         unsigned int storage_bytes = data->chip->read_size;
-> >         unsigned int shift = chan->scan_type.shift + (chan->address * 8);
-> > -       unsigned int buf;
-> > +       __be16 buf1;
-> > +       __be32 buf2;
-> >         int ret;
-> >
-> > -       ret = spi_read(data->spi, (void *) &buf, storage_bytes);
-> > -       if (ret)
-> > -               return ret;
-> > -
-> >         switch (storage_bytes) {
-> >         case 2:
-> > -               *val = be16_to_cpu(buf);
-> > +               ret = spi_read(data->spi, (void *)&buf1, storage_bytes);
-> > +               *val = be16_to_cpu(buf1);
-> 
-> Meh don't really like having buf1, and buf2 esp since they only used
-> in one branch of the switch statement. And waste 2-4 byte of stack :).
-> 
-> I recommend something like:
-> 
-> case 2: {
->         __be16 buf;
->         ret = spi_read(data->spi, (void *)&buf1, storage_bytes);
->         *val = be16_to_cpu(buf1);
->         break;
-> }
-> case 4:
-> ....
-> 
-> 
-> Or one could also change "unsigned int buf" to "__be32 buf"
-> And just do the following to fix the big endian system issue:
-> 
-> *val = be32_to_cpu(buf) >> 16;
-> 
-Thanks Matt!  (good reason for right cc lists)
 
-Sayli -
-What do you think of Matt's second option?  It types
-the data as __be32 as it comes into the system (although the wrong
-size) so that's better endian behavior.  The be32_to_cpu() is now done
-on the correct type, so sparse should be happy.  I'll suggest a short
-comment alongside that shift to say you are shifting to align a __be16
-alisons
+--jzu4yvdwt2tjqcxr
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-> >                 break;
-> >         case 4:
-> > -               *val = be32_to_cpu(buf);
-> > +               ret = spi_read(data->spi, (void *)&buf2, storage_bytes);
-> > +               *val = be32_to_cpu(buf2);
-> >                 break;
-> >         }
-> >
-> > +       if (ret)
-> > +               return ret;
-> > +
-> >         /* check to be sure this is a valid reading */
-> >         if (*val & data->chip->status_bit)
-> >                 return -EINVAL;
-> > --
-> > 2.7.4
-> >
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+Hi,
+
+On Sat, Sep 24, 2016 at 07:55:27AM +0200, H. Nikolaus Schaller wrote:
+> > So ti,max-[xy] is basically the same as touchscreen-size-[xy],
+>=20
+> No it is not the same and should be kept separate.
+>=20
+> > except, that the generic bindings don't support min-[xy] !=3D 0.
+>=20
+> What would be the purpose of this? Every user-space I know
+> about (X11, Replicant) expects coordinates in some range
+> 0..max so setting min in device tree makes no sense to me.
+>=20
+> >=20
+> > So maybe change the generic bindings like this:
+> >=20
+> > touchscreen-min-x: minimum value reported by X axis ADC (default 0)
+> > touchscreen-max-x: maximum value reported by Y axis ADC
+> > touchscreen-min-y: minimum value reported by Y axis ADC (default 0)
+> > touchscreen-max-y: maximum value reported by Y axis ADC
+> > touchscreen-size-x: deprecated alias for touchscreen-max-x
+> > touchscreen-size-y: deprecated alias for touchscreen-max-y
+> >=20
+>=20
+> Initially I had thought about this but it does not solve the problems
+> with touch pre-calibration. Since it mixes raw coordinates with
+> system coordinates.
+
+touchscreen-size-x was actually refering to your definition of
+touchscreen-max-x and not system coordinates. For that it would
+make much more sense to use a phandle to the screen IMHO.
+
+> To achieve the goal of having a roughly precalibrated touch which
+> should provide (0,0) at the lower left corner and
+> (touchscreen-size-x,touchscreen-size-y) in pixel coordinates of
+> the panel. Hence it roughly works without a calibration matrix in
+> user space (e.g. xorg.conf or Replicant).
+
+well I did not mean to use touchscreen-size-x/y for describing the
+size of screen, as visible in n900.dts (first implementation of the
+common binding), which sets the value to 4096.
+
+> Why do we need pre-calibration? Because some systems might need
+> touch interaction before they can offer (force) the user into
+> a touch calibration step. We use these drivers and approach in
+> our production kernels for GTA04, OpenPandora and Pyra for a while
+> and nobody was even missing a user-space calibration tool any more.
+
+I have nothing against the feature. OTOH I'm quite in of kernel
+based TS calibration. Note, that you can only add it for hardware
+without pre-existing touchscreen support, since you break peoples
+systems otherwise (We have that problem for N900).
+
+> The underlaying problem is that you can have the same controller chip
+> in different board designs and there are different touch panel types.
+> Each one has certain physical properties but they can differ.
+> But you certainly want touchscreen-size-x/y to be a constant.
+>
+> Now if we make touchscreen-max-x/y the same as touchscreen-size-x/y
+> and change the panel, we have to adjust user space transformation
+> each time we change the panel. This does not seem to be right
+> and can be done better by keeping them separately.
+>
+> This is what this approach does: the roughly correct scaling of
+> raw values to pixel values.
+>=20
+> ti,min-x   ->   0
+> ...
+> x          ->   some value between 0 and touchscreen-size-x
+>                 calculated by
+> 			touchscreen-size-x * (x - min-x) / (max-x - min-x)
+> ...
+> ti,max-x   ->   touchscreen-size-x
+>=20
+> Hence the ti,min/max values describe the range of expected input
+> values from the ADC and the touchscreen-size-x describes the touch
+> in LCD pixels passed as input events.
+
+so basically you use touchscreen-size-x to describe the screen and
+not the touchscreen. When I added it, I did mean the max ADC value.
+Actually I was under the impression, that X drivers would scale this
+to screen size automatically. Since all my touchscreen HW required
+calibration I did never test this, though.
+
+> Example:
+>=20
+> ti,min-x =3D 64
+> ti,max-x =3D 4016
+> touchscreen-size-x =3D 480
+>=20
+> If we change the panel type which presents a slightly different ADC range:
+>=20
+> ti,min-x =3D 100
+> ti,max-x =3D 3900
+> touchscreen-size-x =3D 480
+>=20
+> and we still get a coordinate range (0 .. 480).
+>=20
+> Note that this feature can be effectively disabled if ti,min-x=3D0 and
+> ti,max-x=3D4095 and touchscreen-size-x=3D4095, i.e. reports the full
+> range of ADC values because then it multiplies by 1.
+>=20
+> Our proposed driver does use these values if they are missing from DT
+> and therefore it should not break old DT files which expect raw values
+> to be reported.
+>=20
+> I hope this clarifies what we need to achieve and you can
+> agree.
+
+I did understand what you want, but I disagreed about
+using touchscreen-size-x/y for system coordinates. I
+now see, that it's too late for that, as other people
+already did so.
+
+I do agree with Rob, that the ti,min/max-x/y should become common,
+though. Also I would do s/minimum value/minimum raw value/g.
+Additionally touchscreen-size-x/y should mention, that it's used to
+scale the raw values.
+
+-- Sebastian
+
+--jzu4yvdwt2tjqcxr
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAABCgAGBQJX7nOhAAoJENju1/PIO/qavicP/0UDpqwloBnqpUudwUfl5J12
+DArzKiw9tB7HAlMvZ41PBB6vTrNYNxFj+Sv+9cWN8PKMhna3OGRcZSMkp86CJVlI
+EHatoEH0805Q3qUeVFjtkG91TtLnXU4naGD6Wx7ykM+TkVNKIcN7TOKtXKZQndSp
+TOupDYjXtWzN82gzranemAud3Th0NcpsxEASth51uMkEwzCcCNfqFDPY+434qcyZ
+SeYou65HcOXGwa/zSHdmTJidXWpKkoDkHN0UrKAfIH2fm3wQWGlt1k8makZpSraZ
+ynLmsdMrNorizx32XWAo31BstqYnuQ8hnBfW3+rN7zpcK78w0OAEFuj1w1p0GlRd
+A5+1wfjl56YqMnIACuKA8YTg7sJ0AZAY4cgwTcWWszDm5e237MwjVrqESvOU26nG
+SO+aRp5+03+y/RP4a8AE7PuNqKLGPgyMFoTnt3VBxqROFg3ODsqFwsOC4VU1SmwJ
+jSDFbenLQnEHGHqWY1EMX9MEEYd22xlz0gph1D0ubhUtAZB3NLQvYcw3wLCOnNLR
+bBQx0B8GUe0u5qzdzzW6Io5WjFZSLvWP8c1SzJZG6q6XRtJ4e72hOS7Kbt3Yt1AH
+z7aUcwZYA0sSS/c5dqRCK8GxSbkWFmLEFhezI4HBNtwxkLM6LG34foBfPAZ0gOIT
+Tc2HIQRJ27CbutbHs7VZ
+=Cz04
+-----END PGP SIGNATURE-----
+
+--jzu4yvdwt2tjqcxr--
