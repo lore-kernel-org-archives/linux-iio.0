@@ -1,62 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36206 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1034067AbcIYOXw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Sep 2016 10:23:52 -0400
-Subject: Re: iio: Rename a jump label in iio_buffer_store_watermark()
-To: SF Markus Elfring <elfring@users.sourceforge.net>
-References: <566ABCD9.1060404@users.sourceforge.net>
- <c11fbb47-1fd3-4e9e-042e-0f271cfef814@users.sourceforge.net>
- <50eb1352-fb0a-1cf5-70d8-48fe8f98b9eb@users.sourceforge.net>
- <dfb5e8de-8217-ba50-017a-6a3c20209419@kernel.org>
- <bd5f10ad-f379-2678-5af1-968bba63d519@users.sourceforge.net>
- <c030d093-56d9-1437-fce5-315c960e61d2@kernel.org>
- <69f22bcd-9945-2214-9f80-4b42f95a3d80@users.sourceforge.net>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from hosting.pavoucek.net ([46.28.107.168]:59483 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932813AbcI3N0m (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Sep 2016 09:26:42 -0400
+From: Tomas Novotny <tomas@novotny.cz>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        LKML <linux-kernel@vger.kernel.org>,
-        kernel-janitors@vger.kernel.org,
-        Julia Lawall <julia.lawall@lip6.fr>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6da5896d-a605-300e-568c-b6b3c6e49eef@kernel.org>
-Date: Sun, 25 Sep 2016 15:23:49 +0100
-MIME-Version: 1.0
-In-Reply-To: <69f22bcd-9945-2214-9f80-4b42f95a3d80@users.sourceforge.net>
-Content-Type: text/plain; charset=utf-8
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
+Subject: [PATCH 2/3] Documentation: dt: iio: add mcp4725/6 dac device binding
+Date: Fri, 30 Sep 2016 15:19:47 +0200
+Message-Id: <1475241588-18429-3-git-send-email-tomas@novotny.cz>
+In-Reply-To: <1475241588-18429-1-git-send-email-tomas@novotny.cz>
+References: <1475241588-18429-1-git-send-email-tomas@novotny.cz>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/09/16 14:00, SF Markus Elfring wrote:
->> I'm not seeing this one in there.
-> 
-> How much do you care about selection of appropriate identifiers in source files?
-It's not an inappropriate identifier as it stands. The point is
-that it could be better.
-> 
-> 
->> Which tool is spitting it out?
-> 
-> Are you looking for any special tool?
-I was wondering how you identified these particular
-issues as I wanted to know the logic behind the test.
-> 
-> 
->> Or is the test yours?
-> 
-> Which test do you mean?
-Whatever you used to find these jump labels (the patch series
-description suggested it was a static checker).
-> 
-> 
->> Yeah, I saw the discussion / flame war that resulted in that revert...
-> 
-> Would you like to share any more constructive ideas for this software evolution?
-Not a lot of time at the moment, sorry.
+Signed-off-by: Tomas Novotny <tomas@novotny.cz>
+---
+ .../devicetree/bindings/iio/dac/mcp4725.txt        | 28 ++++++++++++++++++++++
+ 1 file changed, 28 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
 
-Jonathan
-> 
-> Regards,
-> Markus
-> 
+diff --git a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+new file mode 100644
+index 0000000..69c9462
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+@@ -0,0 +1,28 @@
++Microchpip mcp4725 and mcp4726 DAC device driver
++
++Required properties:
++	- compatible: Must be "microchip,mcp4725" or "microchip,mcp4726"
++	- reg: Should contain the DAC I2C address
++	- vref-millivolt: Value of the reference voltage
++
++Optional properties:
++	- vref-mode: Reference voltage selection. It is available only on
++	  mcp4726. Valid values are:
++		- 0, 1: Vdd pin voltage (unbuffered)
++		- 2: Vref pin voltage unbuffered
++		- 3: Vref pin voltage internally buffered
++
++Examples:
++
++        mcp4725@60 {
++                compatible = "microchip,mcp4725";
++                reg = <0x60>;
++                vref-millivolt = <3300>;
++        };
++
++        mcp4726@60 {
++                compatible = "microchip,mcp4726";
++                reg = <0x60>;
++                vref-mode = <2>;
++                vref-millivolt = <2500>;
++        };
+-- 
+2.1.4
 
