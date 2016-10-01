@@ -1,85 +1,101 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sat, 1 Oct 2016 13:42:43 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Tomas Novotny <tomas@novotny.cz>
-cc: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org,
-    Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-    Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-    Akinobu Mita <akinobu.mita@gmail.com>, Yong Li <sdliyong@gmail.com>,
-    linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] Documentation: dt: iio: add mcp4725/6 dac device
- binding
-In-Reply-To: <ac9b5f52-5ac1-52a9-aa9a-eb812639e033@kernel.org>
-Message-ID: <alpine.DEB.2.02.1610011340530.21854@pmeerw.net>
-References: <1475241588-18429-1-git-send-email-tomas@novotny.cz> <1475241588-18429-3-git-send-email-tomas@novotny.cz> <ac9b5f52-5ac1-52a9-aa9a-eb812639e033@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44570 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750818AbcJANmF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 09:42:05 -0400
+Subject: Re: [PATCH v4] iio: maxim_thermocouple: Align 16 bit big endian value
+ of raw reads
+To: sayli karnik <karniksayli1995@gmail.com>,
+        outreachy-kernel@googlegroups.com
+References: <20160928161651.GA28186@sayli-HP-15-Notebook-PC>
+Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <94653dd3-0281-aae9-b4e5-a31b40cd149e@kernel.org>
+Date: Sat, 1 Oct 2016 14:42:01 +0100
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20160928161651.GA28186@sayli-HP-15-Notebook-PC>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-On Sat, 1 Oct 2016, Jonathan Cameron wrote:
-
-some more comments
-
-> On 30/09/16 14:19, Tomas Novotny wrote:
-> > Signed-off-by: Tomas Novotny <tomas@novotny.cz>
-> > ---
-> >  .../devicetree/bindings/iio/dac/mcp4725.txt        | 28 ++++++++++++++++++++++
-> >  1 file changed, 28 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
-> > new file mode 100644
-> > index 0000000..69c9462
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
-> > @@ -0,0 +1,28 @@
-> > +Microchpip mcp4725 and mcp4726 DAC device driver
-
-Microchip
-
-> > +
-> > +Required properties:
-> > +	- compatible: Must be "microchip,mcp4725" or "microchip,mcp4726"
-> > +	- reg: Should contain the DAC I2C address
-> > +	- vref-millivolt: Value of the reference voltage
-> > +
-> > +Optional properties:
-> > +	- vref-mode: Reference voltage selection. It is available only on
-> Not a generic attribute, so wants to have a vendor prefix on it.
-> > +	  mcp4726. Valid values are:
-> > +		- 0, 1: Vdd pin voltage (unbuffered)
-> This should not be a direct mapping of the register values but rather
-> a means to control the setting.  Having two values mapping to the
-> same thing makes no sense.
+On 28/09/16 17:16, sayli karnik wrote:
+> Driver was reporting invalid raw read values for MAX6675 on big
+> endian architectures. MAX6675 buffered mode is not affected, nor
+> is the MAX31855.
 > 
-> Would also be odd to specify a vref and then not use it.  So you could
-> infer this first option.
-> > +		- 2: Vref pin voltage unbuffered
-> > +		- 3: Vref pin voltage internally buffered
-> Having inferred the first option then this becomes control of whether it
-> is buffered  or not. So could be named appropriately to cover that.
-> Might be nice to have a little note here on why you might want the
-> buffer or not..
-> > +
-> > +Examples:
-> > +
-> > +        mcp4725@60 {
-> > +                compatible = "microchip,mcp4725";
-> > +                reg = <0x60>;
-> > +                vref-millivolt = <3300>;
-> > +        };
-> > +
-> > +        mcp4726@60 {
-> > +                compatible = "microchip,mcp4726";
-> > +                reg = <0x60>;
-> > +                vref-mode = <2>;
-> > +                vref-millivolt = <2500>;
-> > +        };
-> > 
+> The driver was losing a 2 byte read value when it used a 32 bit
+> integer buffer to store a 16 bit big endian value. Use big endian
+> types to properly align buffers on big endian architectures.
+> 
+> Fixes following sparse endianness warnings:
+> warning: cast to restricted __be16
+> warning: cast to restricted __be32
+> Fixes checkpatch issue:
+> CHECK: No space is necessary after a cast
+> 
+> Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
+> Fixes: 1f25ca11d84a ("iio: temperature: add support for Maxim
+> thermocouple chips")
+Applied to the fixes-togreg-post-rc1 branch of iio.git where
+I gather patches like this one which are too late to make
+the merge window (which is probably opening tomorrow) and
+rely on patches that will merge during that window.
+
+Things always get complex for a few weeks around this
+point in the cycle!
+
+Thanks.  Nice patch and good description,
+
+Jonathan
+> ---
+> Changes in v4:
+> Reverted back to v2 with changed names for buffers
+> 
+> Changes in v3:
+> Updated the commit message
+> Updated the changelog to include explanation to the bug fix
+> Fixed the checkpatch issue: CHECK: No space is necessary after a cast
+> Added the fixes tag
+> 
+>  drivers/iio/temperature/maxim_thermocouple.c | 16 +++++++++-------
+>  1 file changed, 9 insertions(+), 7 deletions(-)
+> 
+> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+> index 39dd202..066161a 100644
+> --- a/drivers/iio/temperature/maxim_thermocouple.c
+> +++ b/drivers/iio/temperature/maxim_thermocouple.c
+> @@ -123,22 +123,24 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
+>  {
+>  	unsigned int storage_bytes = data->chip->read_size;
+>  	unsigned int shift = chan->scan_type.shift + (chan->address * 8);
+> -	unsigned int buf;
+> +	__be16 buf16;
+> +	__be32 buf32;
+>  	int ret;
+>  
+> -	ret = spi_read(data->spi, (void *) &buf, storage_bytes);
+> -	if (ret)
+> -		return ret;
+> -
+>  	switch (storage_bytes) {
+>  	case 2:
+> -		*val = be16_to_cpu(buf);
+> +		ret = spi_read(data->spi, (void *)&buf16, storage_bytes);
+> +		*val = be16_to_cpu(buf16);
+>  		break;
+>  	case 4:
+> -		*val = be32_to_cpu(buf);
+> +		ret = spi_read(data->spi, (void *)&buf32, storage_bytes);
+> +		*val = be32_to_cpu(buf32);
+>  		break;
+>  	}
+>  
+> +	if (ret)
+> +		return ret;
+> +
+>  	/* check to be sure this is a valid reading */
+>  	if (*val & data->chip->status_bit)
+>  		return -EINVAL;
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
