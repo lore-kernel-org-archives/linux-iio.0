@@ -1,44 +1,37 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:34801 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750853AbcJAJ5m (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 05:57:42 -0400
-From: Bhumika Goyal <bhumirks@gmail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Cc: Bhumika Goyal <bhumirks@gmail.com>
-Subject: [PATCH] iio: Declare event_attrs field of iio_info structure as const
-Date: Sat,  1 Oct 2016 15:27:18 +0530
-Message-Id: <1475315838-15366-1-git-send-email-bhumirks@gmail.com>
+Received: from tex.lwn.net ([70.33.254.29]:33200 "EHLO vena.lwn.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750714AbcJAGum (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 1 Oct 2016 02:50:42 -0400
+Date: Sat, 1 Oct 2016 00:50:36 -0600
+From: Jonathan Corbet <corbet@lwn.net>
+To: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Sandhya Bankar <bankarsandhya512@gmail.com>,
+        Alison Schofield <amsfield22@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        outreachy-kernel <outreachy-kernel@googlegroups.com>
+Subject: Re: [PATCH] iio: Documentation: Correct the path used to create
+ triggers.
+Message-ID: <20161001005036.0a0634f9@lwn.net>
+In-Reply-To: <CAEnQRZA_vtutS7xbUVi4Xvdkx9Eph+4cuD-MR=A11Fb15ULekw@mail.gmail.com>
+References: <20160930161922.GA11685@localhost.localdomain>
+        <CAEnQRZA_vtutS7xbUVi4Xvdkx9Eph+4cuD-MR=A11Fb15ULekw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The event_attrs field of iio_info structure is only initialized once
-whenever an object of iio_info is created. After that this field
-is never modified again anywhere in the kernel. So, declare event_attrs
-field of iio_info as a const struct attribute_group.
-Checked for occurences throughout the kernel using grep and
-coccinelle.
+On Fri, 30 Sep 2016 22:21:07 +0300
+Daniel Baluta <daniel.baluta@gmail.com> wrote:
 
-Signed-off-by: Bhumika Goyal <bhumirks@gmail.com>
----
- include/linux/iio/iio.h | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+> On Fri, Sep 30, 2016 at 7:19 PM, Sandhya Bankar
+> <bankarsandhya512@gmail.com> wrote:
+> > Correct the path used to create triggers.
+> >
+> > Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>  
+> 
+> Acked-by: Daniel Baluta <daniel.baluta@intel.com>
 
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index b4a0679..4591d8e 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -381,7 +381,7 @@ struct iio_dev;
-  **/
- struct iio_info {
- 	struct module			*driver_module;
--	struct attribute_group		*event_attrs;
-+	const struct attribute_group	*event_attrs;
- 	const struct attribute_group	*attrs;
- 
- 	int (*read_raw)(struct iio_dev *indio_dev,
--- 
-1.9.1
+Applied to the docs tree, thanks.
 
+jon
