@@ -1,65 +1,59 @@
-Return-Path: <lorenzo.bianconi83@gmail.com>
-Date: Sat, 1 Oct 2016 19:15:49 +0200
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-Subject: Re: [PATCH 2/2] Documentation: dt: iio: humidity: add hts221 sensor
- device binding
-Message-ID: <20161001171548.GB22409@lorenzobianconi.net>
-References: <1474919741-21316-1-git-send-email-lorenzo.bianconi@st.com>
- <1474919741-21316-3-git-send-email-lorenzo.bianconi@st.com>
- <01eba341-2323-52c9-cb86-32da09526a36@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <01eba341-2323-52c9-cb86-32da09526a36@kernel.org>
+Return-Path: <ico@pruts.nl>
+From: Ico Doornekamp <ico@pruts.nl>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Ico Doornekamp <ico@pruts.nl>
+Subject: [PATCH] iio: magnetometer: ak8974: small endianness fixes
+Date: Sat,  1 Oct 2016 19:30:14 +0200
+Message-Id: <20161001173014.16059-1-ico@pruts.nl>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Oct 01, Jonathan Cameron wrote:
-> On 26/09/16 20:55, Lorenzo Bianconi wrote:
-> > Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> Please cc the device tree list and maintainers on the next version.
-> This is simple enough I 'can' take it without their Ack, but
-> nice to keep them informed.
+Fixes two cases of 'cast to restricted __le16' as reported by sparse.
 
-Ack. I will cc in v2
+Signed-off-by: Ico Doornekamp <ico@pruts.nl>
+---
+ drivers/iio/magnetometer/ak8974.c | 8 ++++----
+ 1 file changed, 4 insertions(+), 4 deletions(-)
 
-Regards,
-Lorenzo
-
-> 
-> Jonathan
-> > ---
-> >  .../devicetree/bindings/iio/humidity/hts221.txt       | 19 +++++++++++++++++++
-> >  1 file changed, 19 insertions(+)
-> >  create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> > 
-> > diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> > new file mode 100644
-> > index 0000000..46a152c
-> > --- /dev/null
-> > +++ b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> > @@ -0,0 +1,19 @@
-> > +* HTS221 STM humidity + temperature sensor
-> > +
-> > +Required properties:
-> > +- compatible: should be "st,hts221"
-> > +- reg: i2c address of the sensor / spi cs line
-> > +
-> > +Optional properties:
-> > +- interrupts: interrupt mapping for GPIO IRQ. It should be configured with
-> > +	      flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING
-> > +- interrupt-parent: should be the phandle for the interrupt controller
-> > +
-> > +Example:
-> > +
-> > +hts221@5f {
-> > +	compatible = "st,hts221";
-> > +	reg = <0x5f>;
-> > +	interrupt-parent = <&gpio0>;
-> > +	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-> > +};
-> > 
-> 
-
+diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+index 2173531..ce09d77 100644
+--- a/drivers/iio/magnetometer/ak8974.c
++++ b/drivers/iio/magnetometer/ak8974.c
+@@ -287,7 +287,7 @@ static int ak8974_await_drdy(struct ak8974 *ak8974)
+ 	return 0;
+ }
+ 
+-static int ak8974_getresult(struct ak8974 *ak8974, s16 *result)
++static int ak8974_getresult(struct ak8974 *ak8974, __le16 *result)
+ {
+ 	unsigned int src;
+ 	int ret;
+@@ -395,7 +395,7 @@ static int ak8974_selftest(struct ak8974 *ak8974)
+ static int ak8974_get_u16_val(struct ak8974 *ak8974, u8 reg, u16 *val)
+ {
+ 	int ret;
+-	u16 bulk;
++	__le16 bulk;
+ 
+ 	ret = regmap_bulk_read(ak8974->map, reg, &bulk, 2);
+ 	if (ret)
+@@ -453,7 +453,7 @@ static int ak8974_read_raw(struct iio_dev *indio_dev,
+ 			   long mask)
+ {
+ 	struct ak8974 *ak8974 = iio_priv(indio_dev);
+-	s16 hw_values[3];
++	__le16 hw_values[3];
+ 	int ret = -EINVAL;
+ 
+ 	pm_runtime_get_sync(&ak8974->i2c->dev);
+@@ -494,7 +494,7 @@ static void ak8974_fill_buffer(struct iio_dev *indio_dev)
+ {
+ 	struct ak8974 *ak8974 = iio_priv(indio_dev);
+ 	int ret;
+-	s16 hw_values[8]; /* Three axes + 64bit padding */
++	__le16 hw_values[8]; /* Three axes + 64bit padding */
+ 
+ 	pm_runtime_get_sync(&ak8974->i2c->dev);
+ 	mutex_lock(&ak8974->lock);
 -- 
-UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch; unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp; umount; make clean; sleep
+2.9.3
