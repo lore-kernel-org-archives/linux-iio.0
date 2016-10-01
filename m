@@ -1,101 +1,80 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44570 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44497 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750818AbcJANmF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 09:42:05 -0400
-Subject: Re: [PATCH v4] iio: maxim_thermocouple: Align 16 bit big endian value
- of raw reads
-To: sayli karnik <karniksayli1995@gmail.com>,
-        outreachy-kernel@googlegroups.com
-References: <20160928161651.GA28186@sayli-HP-15-Notebook-PC>
-Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+        with ESMTP id S1750818AbcJANaD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 09:30:03 -0400
+Subject: Re: [PATCH] iio: common: st_sensors: fix channel data parsing
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+References: <1475093161-7239-1-git-send-email-lorenzo.bianconi@st.com>
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
+        denis.ciocca@st.com, Gregor Boirie <gregor.boirie@parrot.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <94653dd3-0281-aae9-b4e5-a31b40cd149e@kernel.org>
-Date: Sat, 1 Oct 2016 14:42:01 +0100
+Message-ID: <45809aef-5396-90fa-1312-677eaeec36da@kernel.org>
+Date: Sat, 1 Oct 2016 14:30:00 +0100
 MIME-Version: 1.0
-In-Reply-To: <20160928161651.GA28186@sayli-HP-15-Notebook-PC>
+In-Reply-To: <1475093161-7239-1-git-send-email-lorenzo.bianconi@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/09/16 17:16, sayli karnik wrote:
-> Driver was reporting invalid raw read values for MAX6675 on big
-> endian architectures. MAX6675 buffered mode is not affected, nor
-> is the MAX31855.
+On 28/09/16 21:06, Lorenzo Bianconi wrote:
+> Using realbits as i2c/spi read len, when that value is not byte aligned
+> (e.g 12 bits), lead to skip msb part of out data registers.
+> Fix this using storagebits as read length
 > 
-> The driver was losing a 2 byte read value when it used a 32 bit
-> integer buffer to store a 16 bit big endian value. Use big endian
-> types to properly align buffers on big endian architectures.
-> 
-> Fixes following sparse endianness warnings:
-> warning: cast to restricted __be16
-> warning: cast to restricted __be32
-> Fixes checkpatch issue:
-> CHECK: No space is necessary after a cast
-> 
-> Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
-> Fixes: 1f25ca11d84a ("iio: temperature: add support for Maxim
-> thermocouple chips")
-Applied to the fixes-togreg-post-rc1 branch of iio.git where
-I gather patches like this one which are too late to make
-the merge window (which is probably opening tomorrow) and
-rely on patches that will merge during that window.
+> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+Hi Lorenzo,
 
-Things always get complex for a few weeks around this
-point in the cycle!
+This would ideally have had a fixes tag.
 
-Thanks.  Nice patch and good description,
+I think it was
+Fixes: e7385de5 ("iio:st_sensors: align on storagebits boundaries")
+Doing that would also have lead to you to the logic that lead to
+this buggy change in the first place. Would also have shown
+you that there is another place that probably suffers from the
+same sort of issue.
+
+Gregor can you take a look at this please.
+
+If I recall the issue that lead to the original patch it was
+that we were miss handling 24 bit values on pressure sensors and
+this was intended to pad them?
+
+I think the 'right' fix will be something along the lines of:
+unsigned int bytes_to_read = (channel->scan_type.realbits + 7) >> 3;
+
+Should give 2 bytes for a 12 bit and still the 3 bytes needed for a
+24 bit read.
+
+Thanks,
 
 Jonathan
 > ---
-> Changes in v4:
-> Reverted back to v2 with changed names for buffers
+>  drivers/iio/common/st_sensors/st_sensors_buffer.c | 5 ++---
+>  1 file changed, 2 insertions(+), 3 deletions(-)
 > 
-> Changes in v3:
-> Updated the commit message
-> Updated the changelog to include explanation to the bug fix
-> Fixed the checkpatch issue: CHECK: No space is necessary after a cast
-> Added the fixes tag
-> 
->  drivers/iio/temperature/maxim_thermocouple.c | 16 +++++++++-------
->  1 file changed, 9 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-> index 39dd202..066161a 100644
-> --- a/drivers/iio/temperature/maxim_thermocouple.c
-> +++ b/drivers/iio/temperature/maxim_thermocouple.c
-> @@ -123,22 +123,24 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
->  {
->  	unsigned int storage_bytes = data->chip->read_size;
->  	unsigned int shift = chan->scan_type.shift + (chan->address * 8);
-> -	unsigned int buf;
-> +	__be16 buf16;
-> +	__be32 buf32;
->  	int ret;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> index fe7775b..d01aa34 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> @@ -30,16 +30,15 @@ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
 >  
-> -	ret = spi_read(data->spi, (void *) &buf, storage_bytes);
-> -	if (ret)
-> -		return ret;
-> -
->  	switch (storage_bytes) {
->  	case 2:
-> -		*val = be16_to_cpu(buf);
-> +		ret = spi_read(data->spi, (void *)&buf16, storage_bytes);
-> +		*val = be16_to_cpu(buf16);
->  		break;
->  	case 4:
-> -		*val = be32_to_cpu(buf);
-> +		ret = spi_read(data->spi, (void *)&buf32, storage_bytes);
-> +		*val = be32_to_cpu(buf32);
->  		break;
->  	}
+>  	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {q
+>  		const struct iio_chan_spec *channel = &indio_dev->channels[i];
+> -		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+>  		unsigned int storage_bytes =
+>  			channel->scan_type.storagebits >> 3;
 >  
-> +	if (ret)
-> +		return ret;
-> +
->  	/* check to be sure this is a valid reading */
->  	if (*val & data->chip->status_bit)
->  		return -EINVAL;
+>  		buf = PTR_ALIGN(buf, storage_bytes);
+>  		if (sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+>  						  channel->address,
+> -						  bytes_to_read, buf,
+> +						  storage_bytes, buf,
+>  						  sdata->multiread_bit) <
+> -		    bytes_to_read)
+> +		    storage_bytes)
+>  			return -EIO;
+>  
+>  		/* Advance the buffer pointer */
 > 
 
