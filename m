@@ -1,51 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:35162 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751365AbcJBRsZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 13:48:25 -0400
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
-        devicetree@vger.kernel.org
-Subject: [PATCH v2 2/2] Documentation: dt: iio: humidity: add hts221 sensor device binding
-Date: Sun,  2 Oct 2016 19:48:17 +0200
-Message-Id: <1475430497-7861-3-git-send-email-lorenzo.bianconi@st.com>
-In-Reply-To: <1475430497-7861-1-git-send-email-lorenzo.bianconi@st.com>
-References: <1475430497-7861-1-git-send-email-lorenzo.bianconi@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44666 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750853AbcJAN7v (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 09:59:51 -0400
+Subject: Re: [PATCH v3 5/5] staging: iio: isl29018: check if the chip is in a
+ suspended state
+To: Brian Masney <masneyb@onstation.org>
+References: <20160926075935.GA25938@kroah.com>
+ <1474935620-13151-1-git-send-email-masneyb@onstation.org>
+ <1474935620-13151-5-git-send-email-masneyb@onstation.org>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        gregkh@linuxfoundation.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <547487cf-87f7-0922-ad30-cf8dff599d71@kernel.org>
+Date: Sat, 1 Oct 2016 14:59:49 +0100
+MIME-Version: 1.0
+In-Reply-To: <1474935620-13151-5-git-send-email-masneyb@onstation.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- .../devicetree/bindings/iio/humidity/hts221.txt       | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
+On 27/09/16 01:20, Brian Masney wrote:
+> Add a check to isl29018_write_raw() to ensure that the chip is not in a
+> suspended state. This makes the code consistent with what is present
+> in isl29018_read_raw().
+> 
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+Applied to the togreg branch of iio.git.
 
-diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-new file mode 100644
-index 0000000..46a152c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-@@ -0,0 +1,19 @@
-+* HTS221 STM humidity + temperature sensor
-+
-+Required properties:
-+- compatible: should be "st,hts221"
-+- reg: i2c address of the sensor / spi cs line
-+
-+Optional properties:
-+- interrupts: interrupt mapping for GPIO IRQ. It should be configured with
-+	      flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING
-+- interrupt-parent: should be the phandle for the interrupt controller
-+
-+Example:
-+
-+hts221@5f {
-+	compatible = "st,hts221";
-+	reg = <0x5f>;
-+	interrupt-parent = <&gpio0>;
-+	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+};
--- 
-2.7.4
+Out of curiosity, do you actually have one of these?
+
+At a quick glance, the only remaining bit keeping this driver
+in staging is the lack of docs on the infrared_supression
+attribute.  If you want to add something on that and a patch
+moving it out of staging that would be great.
+
+However, note that the graduation patch is usually the one
+that gets the driver thoroughly reviewed by several people so
+more stuff may come out of the woodwork.
+
+Thanks,
+
+Jonathan
+
+> ---
+>  drivers/staging/iio/light/isl29018.c | 7 ++++++-
+>  1 file changed, 6 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index 3a4d79d..51226bd 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -355,6 +355,10 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+>  	int ret = -EINVAL;
+>  
+>  	mutex_lock(&chip->lock);
+> +	if (chip->suspended) {
+> +		ret = -EBUSY;
+> +		goto write_done;
+> +	}
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_CALIBSCALE:
+>  		if (chan->type == IIO_LIGHT) {
+> @@ -374,8 +378,9 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+>  	default:
+>  		break;
+>  	}
+> -	mutex_unlock(&chip->lock);
+>  
+> +write_done:
+> +	mutex_unlock(&chip->lock);
+>  	return ret;
+>  }
+>  
+> 
 
