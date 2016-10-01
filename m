@@ -1,101 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45349 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45359 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751212AbcJAQG6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 12:06:58 -0400
-Subject: Re: [PATCH v5 1/2] iio: Implement counter channel type and info
- constants
-To: William Breathitt Gray <vilhelm.gray@gmail.com>, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net
-References: <cover.1475079578.git.vilhelm.gray@gmail.com>
- <3f3ed59f4dc5de28b7a78d8006030a39ea0485bb.1475079578.git.vilhelm.gray@gmail.com>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+        with ESMTP id S1750820AbcJAQJq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 1 Oct 2016 12:09:46 -0400
+Subject: Re: [PATCH] io: adc: ad7606_core: fix signed/unsigned number
+ comparison
+To: Ico Doornekamp <ico@pruts.nl>
+References: <20160928134149.2563-1-ico@pruts.nl>
+Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <655a0a10-c7be-d3ed-95d6-9a59a4622233@kernel.org>
-Date: Sat, 1 Oct 2016 17:06:56 +0100
+Message-ID: <c4a0a801-14d6-7ea9-ec4f-958449a9dcb6@kernel.org>
+Date: Sat, 1 Oct 2016 17:09:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <3f3ed59f4dc5de28b7a78d8006030a39ea0485bb.1475079578.git.vilhelm.gray@gmail.com>
+In-Reply-To: <20160928134149.2563-1-ico@pruts.nl>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/09/16 18:59, William Breathitt Gray wrote:
-> Quadrature encoders, such as rotary encoders and linear encoders, are
-> devices which are capable of encoding the relative position and
-> direction of motion of a shaft. This patch introduces several IIO
-> constants for supporting quadrature encoder counter devices.
+On 28/09/16 14:41, Ico Doornekamp wrote:
+> reported by 'make W=2' in ad7606_oversampling_get_index()
 > 
->   IIO_COUNT: Current count (main data provided by the counter device)
->   IIO_INDEX: Counter device index value
-> 
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-Applied
+> Signed-off-by: Ico Doornekamp <ico@pruts.nl>
+hmm. It's pretty much a non problem in the first place as we know
+it can't cause issues (can see it is 7).   Also this really just
+moves to typecasting it later when we return i.
 
-Thanks,
+So unless I'm missing something I'm not going to apply this one.
+
+If Greg picks it up I don't mind though as doesn't do any harm
+really.
+
+Jonathan
 > ---
->  Documentation/ABI/testing/sysfs-bus-iio | 18 ++++++++++++++++++
->  drivers/iio/industrialio-core.c         |  2 ++
->  include/uapi/linux/iio/types.h          |  2 ++
->  3 files changed, 22 insertions(+)
+>  drivers/staging/iio/adc/ad7606_core.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index fee35c0..b8f220f 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -329,6 +329,7 @@ What:		/sys/bus/iio/devices/iio:deviceX/in_pressure_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_humidityrelative_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_velocity_sqrt(x^2+y^2+z^2)_scale
->  What:		/sys/bus/iio/devices/iio:deviceX/in_illuminance_scale
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_countY_scale
->  KernelVersion:	2.6.35
->  Contact:	linux-iio@vger.kernel.org
->  Description:
-> @@ -1579,3 +1580,20 @@ Contact:	linux-iio@vger.kernel.org
->  Description:
->  		Raw (unscaled no offset etc.) electric conductivity reading that
->  		can be processed to siemens per meter.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_countY_raw
-> +KernelVersion:	4.9
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw counter device counts from channel Y. For quadrature
-> +		counters, multiplication by an available [Y]_scale results in
-> +		the counts of a single quadrature signal phase from channel Y.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_raw
-> +KernelVersion:	4.9
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		Raw counter device index value from channel Y. This attribute
-> +		provides an absolute positional reference (e.g. a pulse once per
-> +		revolution) which may be used to home positional systems as
-> +		required.
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index fc340ed..649725b 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -81,6 +81,8 @@ static const char * const iio_chan_type_name_spec[] = {
->  	[IIO_PH] = "ph",
->  	[IIO_UVINDEX] = "uvindex",
->  	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
-> +	[IIO_COUNT] = "count",
-> +	[IIO_INDEX] = "index",
->  };
+> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+> index f79ee61..681389a 100644
+> --- a/drivers/staging/iio/adc/ad7606_core.c
+> +++ b/drivers/staging/iio/adc/ad7606_core.c
+> @@ -158,7 +158,7 @@ static ssize_t ad7606_show_oversampling_ratio(struct device *dev,
+>  static int ad7606_oversampling_get_index(unsigned int val)
+>  {
+>  	unsigned char supported[] = {0, 2, 4, 8, 16, 32, 64};
+> -	int i;
+> +	unsigned int i;
 >  
->  static const char * const iio_modifier_names[] = {
-> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-> index 22e5e58..e54d14a 100644
-> --- a/include/uapi/linux/iio/types.h
-> +++ b/include/uapi/linux/iio/types.h
-> @@ -40,6 +40,8 @@ enum iio_chan_type {
->  	IIO_PH,
->  	IIO_UVINDEX,
->  	IIO_ELECTRICALCONDUCTIVITY,
-> +	IIO_COUNT,
-> +	IIO_INDEX,
->  };
->  
->  enum iio_modifier {
+>  	for (i = 0; i < ARRAY_SIZE(supported); i++)
+>  		if (val == supported[i])
 > 
 
