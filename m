@@ -1,93 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f65.google.com ([209.85.220.65]:36015 "EHLO
-        mail-pa0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750975AbcJBFAg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 01:00:36 -0400
-Received: by mail-pa0-f65.google.com with SMTP id cd13so4891302pac.3
-        for <linux-iio@vger.kernel.org>; Sat, 01 Oct 2016 22:00:36 -0700 (PDT)
-Date: Sat, 1 Oct 2016 22:00:33 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: sayli karnik <karniksayli1995@gmail.com>
-Cc: outreachy-kernel@googlegroups.com,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [Outreachy kernel] [PATCH] iio: imu: bmi160: bmi160_core: Fix
- sparse warning
-Message-ID: <20161002050032.GA14117@d830.WORKGROUP>
-References: <20161001110418.GA25515@sayli-HP-15-Notebook-PC>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161001110418.GA25515@sayli-HP-15-Notebook-PC>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:36136 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750969AbcJBOQB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 10:16:01 -0400
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v7 2/5] iio: adc: mxs-lradc: Add support for adc driver
+Date: Sun,  2 Oct 2016 16:15:46 +0200
+Message-Id: <645df80f346859a1830c33f4eba81677525a39a4.1475416202.git.ksenija.stanojevic@gmail.com>
+In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Oct 01, 2016 at 04:34:18PM +0530, sayli karnik wrote:
-> Fix the following sparse warning due to incorrect type in assignment:
-> drivers/iio/imu/bmi160/bmi160_core.c:411:26: warning: incorrect type
-> in assignment (different base types)
-> 
-> drivers/iio/imu/bmi160/bmi160_core.c:411:26: expected signed short
-> [signed] [short] [explicitly-signed] <noident>
-> drivers/iio/imu/bmi160/bmi160_core.c:411:26: got restricted __le16
-> [addressable] [usertype] sample
-> 
-> Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
+Add support for sixteen-channel 12-bit resolution ADC and its functions,
+which include general-purpose ADC readings, battery voltage measurement,
+and die temperature measurement.
 
-Hi Sayli,
+Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+---
+Changes in v7:
+ - none
 
-Please claim this via the outreachy task page - section endianness coding
-task.  Perhaps you can update the commit msg & changelog with the cosmetic
-vs bug impact statement as in your earlier patch. 
+Changes in v6:
+ - update copyright
 
-question inline below
+Changes in v5:
+ - add field void __iomem *base to struct mxs_lradc_adc
+ - change arguments in all functions for accessing I/O memory
+   to follow the previous change.
+ - use devm_ioremap for mapping I/O memory
 
-> ---
->  drivers/iio/imu/bmi160/bmi160_core.c | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index e0251b8..5355507 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -398,7 +398,8 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->  	struct iio_poll_func *pf = p;
->  	struct iio_dev *indio_dev = pf->indio_dev;
->  	struct bmi160_data *data = iio_priv(indio_dev);
-> -	s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
-> +	__le16 buf[16];
-> +	/* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
->  	int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
->  	__le16 sample;
+Changes in v4:
+ - update copyright
+ - use platform_get_irq_byname
+ - use irq_of_parse_and_map
 
-Wondering about this option below.  Data was read into an __le16, so that
-was good diligence on drivers part.  Seems we can use le16_to_cpu() for the
-conversion into the buf.
+Changes in v3:
+ - make buffer large enough for timestamps
+ - remove unnecessary blank lines
 
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -408,7 +408,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
- 				       &sample, sizeof(__le16));
- 		if (ret < 0)
- 			goto done;
--		buf[j++] = sample;
-+		buf[j++] = le16_to_cpu(sample);
- 	}
+Changes in v2:
+ - improve commit message
+ - do not change spacing in Kconfig
+ - impove formating
+ - remove wrapper show_scale_avail
+ - use correct syntax for comments
+ - use devm_iio_trigger_alloc
+ - do not allocate buffer dynamically
+ - use iio_device_claim_*_mode helpers
+ - add spinlock in struct mxs_lradc_ts to enable locking in interrupt handler
+ - only grab irqs that are relevant to adc
+ - remove blank line at the end of the file
+ - change licence to GPL
+ - add copyright
+
+ drivers/iio/adc/Kconfig  | 13 +++++++++++++
+ drivers/iio/adc/Makefile |  1 +
+ 2 files changed, 14 insertions(+)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7edcf32..6414397 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -207,6 +207,19 @@ config EXYNOS_ADC
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called exynos_adc.
  
- 	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++config MXS_LRADC_ADC
++	tristate "Freescale i.MX23/i.MX28 LRADC ADC"
++	depends on MFD_MXS_LRADC
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for the ADC functions of the
++	  i.MX23/i.MX28 LRADC. This includes general-purpose ADC readings,
++	  battery voltage measurement, and die temperature measurement.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called mxs-lradc-adc.
++
+ config FSL_MX25_ADC
+ 	tristate "Freescale MX25 ADC driver"
+ 	depends on MFD_MX25_TSADC
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 7a40c04..e62ebeb 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -34,6 +34,7 @@ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+ obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
+ obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
++obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
+ obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
+ obj-$(CONFIG_NAU7802) += nau7802.o
+ obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
+-- 
+1.9.1
 
-
-alisons
-
->  
-> -- 
-> 2.7.4
-> 
-> -- 
-> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> To post to this group, send email to outreachy-kernel@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20161001110418.GA25515%40sayli-HP-15-Notebook-PC.
-> For more options, visit https://groups.google.com/d/optout.
