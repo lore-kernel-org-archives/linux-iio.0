@@ -1,65 +1,52 @@
-Return-Path: <hdegoede@redhat.com>
-From: Hans de Goede <hdegoede@redhat.com>
-To: Rob Herring <robh+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH 2/2] dt: bindings: vendor-prefix: Add 3 accelerometer vendor prefixes
-Date: Sun,  2 Oct 2016 17:51:35 +0200
-Message-Id: <20161002155135.23298-2-hdegoede@redhat.com>
-In-Reply-To: <20161002155135.23298-1-hdegoede@redhat.com>
-References: <20161002155135.23298-1-hdegoede@redhat.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:33964 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751271AbcJBRsV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 13:48:21 -0400
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 0/2] add support to STM HTS221 humidity + temperature sensor
+Date: Sun,  2 Oct 2016 19:48:15 +0200
+Message-Id: <1475430497-7861-1-git-send-email-lorenzo.bianconi@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Recently the kernel has gotten support in the iio subsystem for a number
-of new accelerometers from Domintech, mCube, Memsic and MiraMEMS.
+Changes since v1:
+- use single iio_device for both humidity and temperature sensors
+- use iio_claim_direct_mode() routine instead of grabbing the mutex directly
+- use more unique prefix for all defines
+- remove useless dev_info()
+- use of_match_ptr instead of access directly to of_match_table
+- use devm_iio_* routines
+- use info_mask_shared_by_all element for sampling_frequency
+- use oversampling ABI for humidityrelative_avg_sample and temp_avg_sample
 
-This commit adds the vendor prefixes already used for these vendors
-in Documentation/devicetree/bindings/i2c/trivial-devices.txt to
-vendor-prefixes.txt.
+Lorenzo Bianconi (2):
+  iio: humidity: add support to hts221 rh/temp combo device
+  Documentation: dt: iio: humidity: add hts221 sensor device binding
 
-Domintech's full company name was taken from copyright headers for
-their drivers from: https://github.com/domintech/
+ .../devicetree/bindings/iio/humidity/hts221.txt    |  19 +
+ drivers/iio/humidity/Kconfig                       |   2 +
+ drivers/iio/humidity/Makefile                      |   1 +
+ drivers/iio/humidity/hts221/Kconfig                |  23 +
+ drivers/iio/humidity/hts221/Makefile               |   6 +
+ drivers/iio/humidity/hts221/hts221.h               | 100 +++
+ drivers/iio/humidity/hts221/hts221_buffer.c        | 191 ++++++
+ drivers/iio/humidity/hts221/hts221_core.c          | 687 +++++++++++++++++++++
+ drivers/iio/humidity/hts221/hts221_i2c.c           | 119 ++++
+ drivers/iio/humidity/hts221/hts221_spi.c           | 134 ++++
+ 10 files changed, 1282 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
+ create mode 100644 drivers/iio/humidity/hts221/Kconfig
+ create mode 100644 drivers/iio/humidity/hts221/Makefile
+ create mode 100644 drivers/iio/humidity/hts221/hts221.h
+ create mode 100644 drivers/iio/humidity/hts221/hts221_buffer.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_core.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_i2c.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_spi.c
 
-The other full company names were taken from the company's websites:
-http://www.mcubemems.com/
-http://www.memsic.com/
-http://www.miramems.com/en/
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- Documentation/devicetree/bindings/vendor-prefixes.txt | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index 3651670..c4eb298 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -75,6 +75,7 @@ digilent	Diglent, Inc.
- dlg	Dialog Semiconductor
- dlink	D-Link Corporation
- dmo	Data Modul AG
-+domintech	Domintech Technology Co.
- dptechnics	DPTechnics
- dragino	Dragino Technology Co., Limited
- ea	Embedded Artists AB
-@@ -156,13 +157,16 @@ lltc	Linear Technology Corporation
- marvell	Marvell Technology Group Ltd.
- maxim	Maxim Integrated Products
- meas	Measurement Specialties
-+mcube	mCube
- mediatek	MediaTek Inc.
- melexis	Melexis N.V.
-+memsic	MEMSIC Inc.
- merrii	Merrii Technology Co., Ltd.
- micrel	Micrel Inc.
- microchip	Microchip Technology Inc.
- micron	Micron Technology Inc.
- minix	MINIX Technology Ltd.
-+miramems	MiraMEMS Sensing Technology Co., Ltd.
- mitsubishi	Mitsubishi Electric Corporation
- mosaixtech	Mosaix Technologies, Inc.
- moxa	Moxa
 -- 
-2.9.3
+2.7.4
+
