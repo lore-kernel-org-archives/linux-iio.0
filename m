@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:36148 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752111AbcJBOQE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 10:16:04 -0400
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:32792 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752104AbcJBOP7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 10:15:59 -0400
 From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
 To: linux-kernel@vger.kernel.org
 Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
@@ -11,9 +11,9 @@ Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
         linux-iio@vger.kernel.org, harald@ccbib.org,
         stefan.wahren@i2se.com, fabio.estevam@freescale.com,
         Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH v7 3/5] input: touchscreen: mxs-lradc: Add support for touchscreen
-Date: Sun,  2 Oct 2016 16:15:47 +0200
-Message-Id: <8cf09a8c576ac22345bf31e0b3ae03b1d6efecdc.1475416202.git.ksenija.stanojevic@gmail.com>
+Subject: [PATCH v7 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Date: Sun,  2 Oct 2016 16:15:45 +0200
+Message-Id: <449aa536e2c0aa0365ff98400bad979570d4854f.1475416202.git.ksenija.stanojevic@gmail.com>
 In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
 References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
 In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
@@ -21,84 +21,104 @@ References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add 4-wire/5-wire touchscreen controller.
+Add core files for mxs-lradc MFD driver.
+
+Note:  this patch won't compile in iio/testing without this patch:
+a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
 
 Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
 ---
 Changes in v7:
- - remove touch_ret variable in probe and use ret instead
- - make error check on of_property_read_u32 in probe
+ - define macros ADC_CELL and TSC_CELL
+ - remove one cell and dynamically set them in the switch()
+ - fail in the touchscreen driver instead of mfd driver if 
+   hardware doesn't contain a touchscreen
 
 Changes in v6:
  - update copyright
+ - add kernel-doc header for struct mxs-lradc
+ - add error message
+ - change EINVAL to ENODEV
+ - use PLATFORM_DEVID_NONE instead -1
+ - cosmetic fixes
 
 Changes in v5:
- - add field void __iomem *base to struct mxs_lradc_adc
- - change arguments in all functions for accessing I/O memory
-   to follow the previous change.
- - use devm_ioremap for mapping I/O memory
+ - use DEFINE_RES_MEM
+ - don't pass ioreammaped adress to platform cells
+ - move comment outside of struct mxs_lradc
+ - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
+   mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
 
 Changes in v4:
  - update copyright
- - use platform_get_irq_byname
- - use irq_of_parse_and_map
+ - use DEFINE_RES_IRQ_NAMED
+ - remove mxs_lradc_add_device function
+ - use struct mfd_cell in static form
+ - improve spacing
+ - remove unnecessary comment
+ - remove platform_get_irq
+ - remove touch_ret and use ret instead
+ - rename use_touchscreen to touchscreen_wire
+ - use goto statements
+ - remove irq[13], irq_count and irq_name from struct mxs_lradc
+ - remove all defines from inside the struct definition
 
 Changes in v3:
- - make buffer large enough for timestamps
- - remove unnecessary blank lines
+ - add note to commit message
+ - move switch statement into if(touch_ret == 0) branch
+ - add MODULE_AUTHOR
 
 Changes in v2:
- - improve commit message
  - do not change spacing in Kconfig
- - impove formating
- - remove wrapper show_scale_avail
- - use correct syntax for comments
- - use devm_iio_trigger_alloc
- - do not allocate buffer dynamically
- - use iio_device_claim_*_mode helpers
- - add spinlock in struct mxs_lradc_ts to enable locking in interrupt handler
- - only grab irqs that are relevant to adc
- - remove blank line at the end of the file
+ - make struct mfd_cell part of struct mxs_lradc
+ - use switch instead of if in mxs_lradc_irq_mask
+ - use only necessary header files in mxs_lradc.h
+ - use devm_mfd_add_device
+ - use separate function to register mfd device
  - change licence to GPL
  - add copyright
 
- drivers/input/touchscreen/Kconfig  | 10 ++++++++++
- drivers/input/touchscreen/Makefile |  1 +
- 2 files changed, 11 insertions(+)
+ drivers/mfd/Kconfig  | 17 +++++++++++++++++
+ drivers/mfd/Makefile |  1 +
+ 2 files changed, 18 insertions(+)
 
-diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-index 2fb1f43..49ea962 100644
---- a/drivers/input/touchscreen/Kconfig
-+++ b/drivers/input/touchscreen/Kconfig
-@@ -305,6 +305,16 @@ config TOUCHSCREEN_EGALAX_SERIAL
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called egalax_ts_serial.
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 2d1fb64..188c7d1 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -308,6 +308,23 @@ config MFD_MC13XXX_I2C
+ 	help
+ 	  Select this if your MC13xxx is connected via an I2C bus.
  
-+config TOUCHSCREEN_MXS_LRADC
-+	tristate "Freescale i.MX23/i.MX28 LRADC touchscreen"
-+	depends on MFD_MXS_LRADC
++config MFD_MXS_LRADC
++	tristate "Freescale i.MX23/i.MX28 LRADC"
++	depends on ARCH_MXS || COMPILE_TEST
++	select MFD_CORE
++	select STMP_DEVICE
 +	help
-+	  Say Y here if you have a touchscreen connected to the low-resolution
-+	  analog-to-digital converter (LRADC) on an i.MX23 or i.MX28 processor.
++	  Say yes here to build support for the Low Resolution
++	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
++	  processors. This driver provides common support for accessing the
++	  device, additional drivers must be enabled in order to use the
++	  functionality of the device:
++		mxs-lradc-adc for ADC readings
++		mxs-lradc-ts  for touchscreen support
 +
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called mxs-lradc-ts.
++	  This driver can also be built as a module. If so, the module will be
++	  called mxs-lradc.
 +
- config TOUCHSCREEN_FT6236
- 	tristate "FT6236 I2C touchscreen"
- 	depends on I2C
-diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
-index b4373d6..9f2b76b 100644
---- a/drivers/input/touchscreen/Makefile
-+++ b/drivers/input/touchscreen/Makefile
-@@ -54,6 +54,7 @@ obj-$(CONFIG_TOUCHSCREEN_MIGOR)		+= migor_ts.o
- obj-$(CONFIG_TOUCHSCREEN_MMS114)	+= mms114.o
- obj-$(CONFIG_TOUCHSCREEN_MTOUCH)	+= mtouch.o
- obj-$(CONFIG_TOUCHSCREEN_MK712)		+= mk712.o
-+obj-$(CONFIG_TOUCHSCREEN_MXS_LRADC)     += mxs-lradc-ts.o
- obj-$(CONFIG_TOUCHSCREEN_HP600)		+= hp680_ts_input.o
- obj-$(CONFIG_TOUCHSCREEN_HP7XX)		+= jornada720_ts.o
- obj-$(CONFIG_TOUCHSCREEN_IPAQ_MICRO)	+= ipaq-micro-ts.o
+ config MFD_MX25_TSADC
+ 	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
+ 	select REGMAP_MMIO
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index 2ba3ba3..c9f9c80 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -207,3 +207,4 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
+ obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+ 
+ obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
++obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
 -- 
 1.9.1
 
