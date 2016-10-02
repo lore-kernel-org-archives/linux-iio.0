@@ -1,1849 +1,1371 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:32864 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752176AbcJBOQK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 10:16:10 -0400
-From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH v7 4/5] iio: adc: mxs-lradc: Remove driver
-Date: Sun,  2 Oct 2016 16:15:48 +0200
-Message-Id: <f03f5363565c404c5f661faf0282982927d59b01.1475416202.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
-References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
-References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:35157 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751271AbcJBRsZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 13:48:25 -0400
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com,
+        devicetree@vger.kernel.org
+Subject: [PATCH v2 1/2] iio: humidity: add support to hts221 rh/temp combo device
+Date: Sun,  2 Oct 2016 19:48:16 +0200
+Message-Id: <1475430497-7861-2-git-send-email-lorenzo.bianconi@st.com>
+In-Reply-To: <1475430497-7861-1-git-send-email-lorenzo.bianconi@st.com>
+References: <1475430497-7861-1-git-send-email-lorenzo.bianconi@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Since the driver has been split into mfd there is no reason for it to
-stay, so remove it.
+Add support to STM HTS221 humidity + temperature sensor
 
-Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
+http://www.st.com/resource/en/datasheet/hts221.pdf
+
+- continuos mode support
+- i2c support
+- spi support
+- trigger mode support
+
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 ---
-Changes in v7:
- - none
+ drivers/iio/humidity/Kconfig                |   2 +
+ drivers/iio/humidity/Makefile               |   1 +
+ drivers/iio/humidity/hts221/Kconfig         |  23 +
+ drivers/iio/humidity/hts221/Makefile        |   6 +
+ drivers/iio/humidity/hts221/hts221.h        | 100 ++++
+ drivers/iio/humidity/hts221/hts221_buffer.c | 191 ++++++++
+ drivers/iio/humidity/hts221/hts221_core.c   | 687 ++++++++++++++++++++++++++++
+ drivers/iio/humidity/hts221/hts221_i2c.c    | 119 +++++
+ drivers/iio/humidity/hts221/hts221_spi.c    | 134 ++++++
+ 9 files changed, 1263 insertions(+)
+ create mode 100644 drivers/iio/humidity/hts221/Kconfig
+ create mode 100644 drivers/iio/humidity/hts221/Makefile
+ create mode 100644 drivers/iio/humidity/hts221/hts221.h
+ create mode 100644 drivers/iio/humidity/hts221/hts221_buffer.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_core.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_i2c.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_spi.c
 
-Changes in v6:
- - none
-
-Changes in v5:
- - none
-
-Changes in v4:
- - none
-
-Changes in v3:
- - none
-
-Changes in v2:
- - add to the patchset
-
- drivers/iio/adc/Kconfig     |   14 -
- drivers/iio/adc/Makefile    |    1 -
- drivers/iio/adc/mxs-lradc.c | 1750 -------------------------------------------
- 3 files changed, 1765 deletions(-)
- delete mode 100644 drivers/iio/adc/mxs-lradc.c
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 6414397..02c7592 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -362,20 +362,6 @@ config MEN_Z188_ADC
- 	  This driver can also be built as a module. If so, the module will be
- 	  called men_z188_adc.
+diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+index b17e2e2..4ce75da 100644
+--- a/drivers/iio/humidity/Kconfig
++++ b/drivers/iio/humidity/Kconfig
+@@ -69,4 +69,6 @@ config SI7020
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called si7020.
  
--config MXS_LRADC
--        tristate "Freescale i.MX23/i.MX28 LRADC"
--        depends on (ARCH_MXS || COMPILE_TEST) && HAS_IOMEM
--        depends on INPUT
--        select STMP_DEVICE
--        select IIO_BUFFER
--        select IIO_TRIGGERED_BUFFER
--        help
--          Say yes here to build support for i.MX23/i.MX28 LRADC convertor
--          built into these chips.
--
--          To compile this driver as a module, choose M here: the
--          module will be called mxs-lradc.
--
- config NAU7802
- 	tristate "Nuvoton NAU7802 ADC driver"
- 	depends on I2C
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index e62ebeb..131c466 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -35,7 +35,6 @@ obj-$(CONFIG_MCP3422) += mcp3422.o
- obj-$(CONFIG_MEDIATEK_MT6577_AUXADC) += mt6577_auxadc.o
- obj-$(CONFIG_MEN_Z188_ADC) += men_z188_adc.o
- obj-$(CONFIG_MXS_LRADC_ADC) += mxs-lradc-adc.o
--obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
- obj-$(CONFIG_NAU7802) += nau7802.o
- obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
- obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-deleted file mode 100644
-index b84d37c..0000000
---- a/drivers/iio/adc/mxs-lradc.c
-+++ /dev/null
-@@ -1,1750 +0,0 @@
--/*
-- * Freescale MXS LRADC driver
-- *
-- * Copyright (c) 2012 DENX Software Engineering, GmbH.
-- * Marek Vasut <marex@denx.de>
-- *
-- * This program is free software; you can redistribute it and/or modify
-- * it under the terms of the GNU General Public License as published by
-- * the Free Software Foundation; either version 2 of the License, or
-- * (at your option) any later version.
-- *
-- * This program is distributed in the hope that it will be useful,
-- * but WITHOUT ANY WARRANTY; without even the implied warranty of
-- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-- * GNU General Public License for more details.
-- */
--
--#include <linux/bitops.h>
--#include <linux/clk.h>
--#include <linux/completion.h>
--#include <linux/device.h>
--#include <linux/err.h>
--#include <linux/input.h>
--#include <linux/interrupt.h>
--#include <linux/io.h>
--#include <linux/kernel.h>
--#include <linux/module.h>
--#include <linux/mutex.h>
--#include <linux/of.h>
--#include <linux/of_device.h>
--#include <linux/platform_device.h>
--#include <linux/slab.h>
--#include <linux/stmp_device.h>
--#include <linux/sysfs.h>
--
--#include <linux/iio/buffer.h>
--#include <linux/iio/iio.h>
--#include <linux/iio/trigger.h>
--#include <linux/iio/trigger_consumer.h>
--#include <linux/iio/triggered_buffer.h>
--#include <linux/iio/sysfs.h>
--
--#define DRIVER_NAME		"mxs-lradc"
--
--#define LRADC_MAX_DELAY_CHANS	4
--#define LRADC_MAX_MAPPED_CHANS	8
--#define LRADC_MAX_TOTAL_CHANS	16
--
--#define LRADC_DELAY_TIMER_HZ	2000
--
--/*
-- * Make this runtime configurable if necessary. Currently, if the buffered mode
-- * is enabled, the LRADC takes LRADC_DELAY_TIMER_LOOP samples of data before
-- * triggering IRQ. The sampling happens every (LRADC_DELAY_TIMER_PER / 2000)
-- * seconds. The result is that the samples arrive every 500mS.
-- */
--#define LRADC_DELAY_TIMER_PER	200
--#define LRADC_DELAY_TIMER_LOOP	5
--
--/*
-- * Once the pen touches the touchscreen, the touchscreen switches from
-- * IRQ-driven mode to polling mode to prevent interrupt storm. The polling
-- * is realized by worker thread, which is called every 20 or so milliseconds.
-- * This gives the touchscreen enough fluency and does not strain the system
-- * too much.
-- */
--#define LRADC_TS_SAMPLE_DELAY_MS	5
--
--/*
-- * The LRADC reads the following amount of samples from each touchscreen
-- * channel and the driver then computes average of these.
-- */
--#define LRADC_TS_SAMPLE_AMOUNT		4
--
--enum mxs_lradc_id {
--	IMX23_LRADC,
--	IMX28_LRADC,
--};
--
--static const char * const mx23_lradc_irq_names[] = {
--	"mxs-lradc-touchscreen",
--	"mxs-lradc-channel0",
--	"mxs-lradc-channel1",
--	"mxs-lradc-channel2",
--	"mxs-lradc-channel3",
--	"mxs-lradc-channel4",
--	"mxs-lradc-channel5",
--	"mxs-lradc-channel6",
--	"mxs-lradc-channel7",
--};
--
--static const char * const mx28_lradc_irq_names[] = {
--	"mxs-lradc-touchscreen",
--	"mxs-lradc-thresh0",
--	"mxs-lradc-thresh1",
--	"mxs-lradc-channel0",
--	"mxs-lradc-channel1",
--	"mxs-lradc-channel2",
--	"mxs-lradc-channel3",
--	"mxs-lradc-channel4",
--	"mxs-lradc-channel5",
--	"mxs-lradc-channel6",
--	"mxs-lradc-channel7",
--	"mxs-lradc-button0",
--	"mxs-lradc-button1",
--};
--
--struct mxs_lradc_of_config {
--	const int		irq_count;
--	const char * const	*irq_name;
--	const u32		*vref_mv;
--};
--
--#define VREF_MV_BASE 1850
--
--static const u32 mx23_vref_mv[LRADC_MAX_TOTAL_CHANS] = {
--	VREF_MV_BASE,		/* CH0 */
--	VREF_MV_BASE,		/* CH1 */
--	VREF_MV_BASE,		/* CH2 */
--	VREF_MV_BASE,		/* CH3 */
--	VREF_MV_BASE,		/* CH4 */
--	VREF_MV_BASE,		/* CH5 */
--	VREF_MV_BASE * 2,	/* CH6 VDDIO */
--	VREF_MV_BASE * 4,	/* CH7 VBATT */
--	VREF_MV_BASE,		/* CH8 Temp sense 0 */
--	VREF_MV_BASE,		/* CH9 Temp sense 1 */
--	VREF_MV_BASE,		/* CH10 */
--	VREF_MV_BASE,		/* CH11 */
--	VREF_MV_BASE,		/* CH12 USB_DP */
--	VREF_MV_BASE,		/* CH13 USB_DN */
--	VREF_MV_BASE,		/* CH14 VBG */
--	VREF_MV_BASE * 4,	/* CH15 VDD5V */
--};
--
--static const u32 mx28_vref_mv[LRADC_MAX_TOTAL_CHANS] = {
--	VREF_MV_BASE,		/* CH0 */
--	VREF_MV_BASE,		/* CH1 */
--	VREF_MV_BASE,		/* CH2 */
--	VREF_MV_BASE,		/* CH3 */
--	VREF_MV_BASE,		/* CH4 */
--	VREF_MV_BASE,		/* CH5 */
--	VREF_MV_BASE,		/* CH6 */
--	VREF_MV_BASE * 4,	/* CH7 VBATT */
--	VREF_MV_BASE,		/* CH8 Temp sense 0 */
--	VREF_MV_BASE,		/* CH9 Temp sense 1 */
--	VREF_MV_BASE * 2,	/* CH10 VDDIO */
--	VREF_MV_BASE,		/* CH11 VTH */
--	VREF_MV_BASE * 2,	/* CH12 VDDA */
--	VREF_MV_BASE,		/* CH13 VDDD */
--	VREF_MV_BASE,		/* CH14 VBG */
--	VREF_MV_BASE * 4,	/* CH15 VDD5V */
--};
--
--static const struct mxs_lradc_of_config mxs_lradc_of_config[] = {
--	[IMX23_LRADC] = {
--		.irq_count	= ARRAY_SIZE(mx23_lradc_irq_names),
--		.irq_name	= mx23_lradc_irq_names,
--		.vref_mv	= mx23_vref_mv,
--	},
--	[IMX28_LRADC] = {
--		.irq_count	= ARRAY_SIZE(mx28_lradc_irq_names),
--		.irq_name	= mx28_lradc_irq_names,
--		.vref_mv	= mx28_vref_mv,
--	},
--};
--
--enum mxs_lradc_ts {
--	MXS_LRADC_TOUCHSCREEN_NONE = 0,
--	MXS_LRADC_TOUCHSCREEN_4WIRE,
--	MXS_LRADC_TOUCHSCREEN_5WIRE,
--};
--
--/*
-- * Touchscreen handling
-- */
--enum lradc_ts_plate {
--	LRADC_TOUCH = 0,
--	LRADC_SAMPLE_X,
--	LRADC_SAMPLE_Y,
--	LRADC_SAMPLE_PRESSURE,
--	LRADC_SAMPLE_VALID,
--};
--
--enum mxs_lradc_divbytwo {
--	MXS_LRADC_DIV_DISABLED = 0,
--	MXS_LRADC_DIV_ENABLED,
--};
--
--struct mxs_lradc_scale {
--	unsigned int		integer;
--	unsigned int		nano;
--};
--
--struct mxs_lradc {
--	struct device		*dev;
--	void __iomem		*base;
--	int			irq[13];
--
--	struct clk		*clk;
--
--	u32			*buffer;
--	struct iio_trigger	*trig;
--
--	struct mutex		lock;
--
--	struct completion	completion;
--
--	const u32		*vref_mv;
--	struct mxs_lradc_scale	scale_avail[LRADC_MAX_TOTAL_CHANS][2];
--	unsigned long		is_divided;
--
--	/*
--	 * When the touchscreen is enabled, we give it two private virtual
--	 * channels: #6 and #7. This means that only 6 virtual channels (instead
--	 * of 8) will be available for buffered capture.
--	 */
--#define TOUCHSCREEN_VCHANNEL1		7
--#define TOUCHSCREEN_VCHANNEL2		6
--#define BUFFER_VCHANS_LIMITED		0x3f
--#define BUFFER_VCHANS_ALL		0xff
--	u8			buffer_vchans;
--
--	/*
--	 * Furthermore, certain LRADC channels are shared between touchscreen
--	 * and/or touch-buttons and generic LRADC block. Therefore when using
--	 * either of these, these channels are not available for the regular
--	 * sampling. The shared channels are as follows:
--	 *
--	 * CH0 -- Touch button #0
--	 * CH1 -- Touch button #1
--	 * CH2 -- Touch screen XPUL
--	 * CH3 -- Touch screen YPLL
--	 * CH4 -- Touch screen XNUL
--	 * CH5 -- Touch screen YNLR
--	 * CH6 -- Touch screen WIPER (5-wire only)
--	 *
--	 * The bit fields below represents which parts of the LRADC block are
--	 * switched into special mode of operation. These channels can not
--	 * be sampled as regular LRADC channels. The driver will refuse any
--	 * attempt to sample these channels.
--	 */
--#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
--#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
--#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
--	enum mxs_lradc_ts	use_touchscreen;
--	bool			use_touchbutton;
--
--	struct input_dev	*ts_input;
--
--	enum mxs_lradc_id	soc;
--	enum lradc_ts_plate	cur_plate; /* state machine */
--	bool			ts_valid;
--	unsigned		ts_x_pos;
--	unsigned		ts_y_pos;
--	unsigned		ts_pressure;
--
--	/* handle touchscreen's physical behaviour */
--	/* samples per coordinate */
--	unsigned		over_sample_cnt;
--	/* time clocks between samples */
--	unsigned		over_sample_delay;
--	/* time in clocks to wait after the plates where switched */
--	unsigned		settling_delay;
--};
--
--#define	LRADC_CTRL0				0x00
--# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
--# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
--# define LRADC_CTRL0_MX28_YNNSW	/* YM */	BIT(21)
--# define LRADC_CTRL0_MX28_YPNSW	/* YP */	BIT(20)
--# define LRADC_CTRL0_MX28_YPPSW	/* YP */	BIT(19)
--# define LRADC_CTRL0_MX28_XNNSW	/* XM */	BIT(18)
--# define LRADC_CTRL0_MX28_XNPSW	/* XM */	BIT(17)
--# define LRADC_CTRL0_MX28_XPPSW	/* XP */	BIT(16)
--
--# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
--# define LRADC_CTRL0_MX23_YM			BIT(19)
--# define LRADC_CTRL0_MX23_XM			BIT(18)
--# define LRADC_CTRL0_MX23_YP			BIT(17)
--# define LRADC_CTRL0_MX23_XP			BIT(16)
--
--# define LRADC_CTRL0_MX28_PLATE_MASK \
--		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
--		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
--		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
--		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
--
--# define LRADC_CTRL0_MX23_PLATE_MASK \
--		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
--		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
--		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
--
--#define	LRADC_CTRL1				0x10
--#define	LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
--#define	LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
--#define	LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
--#define	LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
--#define	LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
--#define	LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
--#define	LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
--#define	LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
--#define	LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
--#define	LRADC_CTRL1_LRADC_IRQ_OFFSET		0
--
--#define	LRADC_CTRL2				0x20
--#define	LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
--#define	LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
--
--#define	LRADC_STATUS				0x40
--#define	LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
--
--#define	LRADC_CH(n)				(0x50 + (0x10 * (n)))
--#define	LRADC_CH_ACCUMULATE			BIT(29)
--#define	LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
--#define	LRADC_CH_NUM_SAMPLES_OFFSET		24
--#define	LRADC_CH_NUM_SAMPLES(x) \
--				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
--#define	LRADC_CH_VALUE_MASK			0x3ffff
--#define	LRADC_CH_VALUE_OFFSET			0
--
--#define	LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
--#define	LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
--#define	LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
--#define	LRADC_DELAY_TRIGGER(x) \
--				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
--				LRADC_DELAY_TRIGGER_LRADCS_MASK)
--#define	LRADC_DELAY_KICK			BIT(20)
--#define	LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
--#define	LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
--#define	LRADC_DELAY_TRIGGER_DELAYS(x) \
--				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
--				LRADC_DELAY_TRIGGER_DELAYS_MASK)
--#define	LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
--#define	LRADC_DELAY_LOOP_COUNT_OFFSET		11
--#define	LRADC_DELAY_LOOP(x) \
--				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
--				LRADC_DELAY_LOOP_COUNT_MASK)
--#define	LRADC_DELAY_DELAY_MASK			0x7ff
--#define	LRADC_DELAY_DELAY_OFFSET		0
--#define	LRADC_DELAY_DELAY(x) \
--				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
--				LRADC_DELAY_DELAY_MASK)
--
--#define	LRADC_CTRL4				0x140
--#define	LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
--#define	LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
--#define	LRADC_CTRL4_LRADCSELECT(n, x) \
--				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
--				LRADC_CTRL4_LRADCSELECT_MASK(n))
--
--#define LRADC_RESOLUTION			12
--#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
--
--static void mxs_lradc_reg_set(struct mxs_lradc *lradc, u32 val, u32 reg)
--{
--	writel(val, lradc->base + reg + STMP_OFFSET_REG_SET);
--}
--
--static void mxs_lradc_reg_clear(struct mxs_lradc *lradc, u32 val, u32 reg)
--{
--	writel(val, lradc->base + reg + STMP_OFFSET_REG_CLR);
--}
--
--static void mxs_lradc_reg_wrt(struct mxs_lradc *lradc, u32 val, u32 reg)
--{
--	writel(val, lradc->base + reg);
--}
--
--static u32 mxs_lradc_plate_mask(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL0_MX23_PLATE_MASK;
--	return LRADC_CTRL0_MX28_PLATE_MASK;
--}
--
--static u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
--	return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
--}
--
--static u32 mxs_lradc_touch_detect_bit(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE;
--	return LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE;
--}
--
--static u32 mxs_lradc_drive_x_plate(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL0_MX23_XP | LRADC_CTRL0_MX23_XM;
--	return LRADC_CTRL0_MX28_XPPSW | LRADC_CTRL0_MX28_XNNSW;
--}
--
--static u32 mxs_lradc_drive_y_plate(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_YM;
--	return LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_YNNSW;
--}
--
--static u32 mxs_lradc_drive_pressure(struct mxs_lradc *lradc)
--{
--	if (lradc->soc == IMX23_LRADC)
--		return LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XM;
--	return LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW;
--}
--
--static bool mxs_lradc_check_touch_event(struct mxs_lradc *lradc)
--{
--	return !!(readl(lradc->base + LRADC_STATUS) &
--					LRADC_STATUS_TOUCH_DETECT_RAW);
--}
--
--static void mxs_lradc_map_channel(struct mxs_lradc *lradc, unsigned vch,
--				  unsigned ch)
--{
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL4_LRADCSELECT_MASK(vch),
--			    LRADC_CTRL4);
--	mxs_lradc_reg_set(lradc, LRADC_CTRL4_LRADCSELECT(vch, ch), LRADC_CTRL4);
--}
--
--static void mxs_lradc_setup_ts_channel(struct mxs_lradc *lradc, unsigned ch)
--{
--	/*
--	 * prepare for oversampling conversion
--	 *
--	 * from the datasheet:
--	 * "The ACCUMULATE bit in the appropriate channel register
--	 * HW_LRADC_CHn must be set to 1 if NUM_SAMPLES is greater then 0;
--	 * otherwise, the IRQs will not fire."
--	 */
--	mxs_lradc_reg_wrt(lradc, LRADC_CH_ACCUMULATE |
--			  LRADC_CH_NUM_SAMPLES(lradc->over_sample_cnt - 1),
--			  LRADC_CH(ch));
--
--	/*
--	 * from the datasheet:
--	 * "Software must clear this register in preparation for a
--	 * multi-cycle accumulation.
--	 */
--	mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch));
--
--	/*
--	 * prepare the delay/loop unit according to the oversampling count
--	 *
--	 * from the datasheet:
--	 * "The DELAY fields in HW_LRADC_DELAY0, HW_LRADC_DELAY1,
--	 * HW_LRADC_DELAY2, and HW_LRADC_DELAY3 must be non-zero; otherwise,
--	 * the LRADC will not trigger the delay group."
--	 */
--	mxs_lradc_reg_wrt(lradc, LRADC_DELAY_TRIGGER(1 << ch) |
--			  LRADC_DELAY_TRIGGER_DELAYS(0) |
--			  LRADC_DELAY_LOOP(lradc->over_sample_cnt - 1) |
--			  LRADC_DELAY_DELAY(lradc->over_sample_delay - 1),
--			  LRADC_DELAY(3));
--
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ(ch), LRADC_CTRL1);
--
--	/*
--	 * after changing the touchscreen plates setting
--	 * the signals need some initial time to settle. Start the
--	 * SoC's delay unit and start the conversion later
--	 * and automatically.
--	 */
--	mxs_lradc_reg_wrt(
--		lradc,
--		LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
--		LRADC_DELAY_TRIGGER_DELAYS(BIT(3)) | /* trigger DELAY unit#3 */
--		LRADC_DELAY_KICK |
--		LRADC_DELAY_DELAY(lradc->settling_delay),
--		LRADC_DELAY(2));
--}
--
--/*
-- * Pressure detection is special:
-- * We want to do both required measurements for the pressure detection in
-- * one turn. Use the hardware features to chain both conversions and let the
-- * hardware report one interrupt if both conversions are done
-- */
--static void mxs_lradc_setup_ts_pressure(struct mxs_lradc *lradc, unsigned ch1,
--					unsigned ch2)
--{
--	u32 reg;
--
--	/*
--	 * prepare for oversampling conversion
--	 *
--	 * from the datasheet:
--	 * "The ACCUMULATE bit in the appropriate channel register
--	 * HW_LRADC_CHn must be set to 1 if NUM_SAMPLES is greater then 0;
--	 * otherwise, the IRQs will not fire."
--	 */
--	reg = LRADC_CH_ACCUMULATE |
--		LRADC_CH_NUM_SAMPLES(lradc->over_sample_cnt - 1);
--	mxs_lradc_reg_wrt(lradc, reg, LRADC_CH(ch1));
--	mxs_lradc_reg_wrt(lradc, reg, LRADC_CH(ch2));
--
--	/*
--	 * from the datasheet:
--	 * "Software must clear this register in preparation for a
--	 * multi-cycle accumulation.
--	 */
--	mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch1));
--	mxs_lradc_reg_clear(lradc, LRADC_CH_VALUE_MASK, LRADC_CH(ch2));
--
--	/* prepare the delay/loop unit according to the oversampling count */
--	mxs_lradc_reg_wrt(
--		    lradc,
--		    LRADC_DELAY_TRIGGER(1 << ch1) |
--		    LRADC_DELAY_TRIGGER(1 << ch2) | /* start both channels */
--		    LRADC_DELAY_TRIGGER_DELAYS(0) |
--		    LRADC_DELAY_LOOP(lradc->over_sample_cnt - 1) |
--		    LRADC_DELAY_DELAY(lradc->over_sample_delay - 1),
--		    LRADC_DELAY(3));
--
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ(ch2), LRADC_CTRL1);
--
--	/*
--	 * after changing the touchscreen plates setting
--	 * the signals need some initial time to settle. Start the
--	 * SoC's delay unit and start the conversion later
--	 * and automatically.
--	 */
--	mxs_lradc_reg_wrt(
--		lradc,
--		LRADC_DELAY_TRIGGER(0) | /* don't trigger ADC */
--		LRADC_DELAY_TRIGGER_DELAYS(BIT(3)) | /* trigger DELAY unit#3 */
--		LRADC_DELAY_KICK |
--		LRADC_DELAY_DELAY(lradc->settling_delay), LRADC_DELAY(2));
--}
--
--static unsigned mxs_lradc_read_raw_channel(struct mxs_lradc *lradc,
--					   unsigned channel)
--{
--	u32 reg;
--	unsigned num_samples, val;
--
--	reg = readl(lradc->base + LRADC_CH(channel));
--	if (reg & LRADC_CH_ACCUMULATE)
--		num_samples = lradc->over_sample_cnt;
--	else
--		num_samples = 1;
--
--	val = (reg & LRADC_CH_VALUE_MASK) >> LRADC_CH_VALUE_OFFSET;
--	return val / num_samples;
--}
--
--static unsigned mxs_lradc_read_ts_pressure(struct mxs_lradc *lradc,
--					   unsigned ch1, unsigned ch2)
--{
--	u32 reg, mask;
--	unsigned pressure, m1, m2;
--
--	mask = LRADC_CTRL1_LRADC_IRQ(ch1) | LRADC_CTRL1_LRADC_IRQ(ch2);
--	reg = readl(lradc->base + LRADC_CTRL1) & mask;
--
--	while (reg != mask) {
--		reg = readl(lradc->base + LRADC_CTRL1) & mask;
--		dev_dbg(lradc->dev, "One channel is still busy: %X\n", reg);
--	}
--
--	m1 = mxs_lradc_read_raw_channel(lradc, ch1);
--	m2 = mxs_lradc_read_raw_channel(lradc, ch2);
--
--	if (m2 == 0) {
--		dev_warn(lradc->dev, "Cannot calculate pressure\n");
--		return 1 << (LRADC_RESOLUTION - 1);
--	}
--
--	/* simply scale the value from 0 ... max ADC resolution */
--	pressure = m1;
--	pressure *= (1 << LRADC_RESOLUTION);
--	pressure /= m2;
--
--	dev_dbg(lradc->dev, "Pressure = %u\n", pressure);
--	return pressure;
--}
--
--#define TS_CH_XP 2
--#define TS_CH_YP 3
--#define TS_CH_XM 4
--#define TS_CH_YM 5
--
--/*
-- * YP(open)--+-------------+
-- *           |             |--+
-- *           |             |  |
-- *    YM(-)--+-------------+  |
-- *             +--------------+
-- *             |              |
-- *         XP(weak+)        XM(open)
-- *
-- * "weak+" means 200k Ohm VDDIO
-- * (-) means GND
-- */
--static void mxs_lradc_setup_touch_detection(struct mxs_lradc *lradc)
--{
--	/*
--	 * In order to detect a touch event the 'touch detect enable' bit
--	 * enables:
--	 *  - a weak pullup to the X+ connector
--	 *  - a strong ground at the Y- connector
--	 */
--	mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
--	mxs_lradc_reg_set(lradc, mxs_lradc_touch_detect_bit(lradc),
--			  LRADC_CTRL0);
--}
--
--/*
-- * YP(meas)--+-------------+
-- *           |             |--+
-- *           |             |  |
-- * YM(open)--+-------------+  |
-- *             +--------------+
-- *             |              |
-- *           XP(+)          XM(-)
-- *
-- * (+) means here 1.85 V
-- * (-) means here GND
-- */
--static void mxs_lradc_prepare_x_pos(struct mxs_lradc *lradc)
--{
--	mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
--	mxs_lradc_reg_set(lradc, mxs_lradc_drive_x_plate(lradc), LRADC_CTRL0);
--
--	lradc->cur_plate = LRADC_SAMPLE_X;
--	mxs_lradc_map_channel(lradc, TOUCHSCREEN_VCHANNEL1, TS_CH_YP);
--	mxs_lradc_setup_ts_channel(lradc, TOUCHSCREEN_VCHANNEL1);
--}
--
--/*
-- *   YP(+)--+-------------+
-- *          |             |--+
-- *          |             |  |
-- *   YM(-)--+-------------+  |
-- *            +--------------+
-- *            |              |
-- *         XP(open)        XM(meas)
-- *
-- * (+) means here 1.85 V
-- * (-) means here GND
-- */
--static void mxs_lradc_prepare_y_pos(struct mxs_lradc *lradc)
--{
--	mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
--	mxs_lradc_reg_set(lradc, mxs_lradc_drive_y_plate(lradc), LRADC_CTRL0);
--
--	lradc->cur_plate = LRADC_SAMPLE_Y;
--	mxs_lradc_map_channel(lradc, TOUCHSCREEN_VCHANNEL1, TS_CH_XM);
--	mxs_lradc_setup_ts_channel(lradc, TOUCHSCREEN_VCHANNEL1);
--}
--
--/*
-- *    YP(+)--+-------------+
-- *           |             |--+
-- *           |             |  |
-- * YM(meas)--+-------------+  |
-- *             +--------------+
-- *             |              |
-- *          XP(meas)        XM(-)
-- *
-- * (+) means here 1.85 V
-- * (-) means here GND
-- */
--static void mxs_lradc_prepare_pressure(struct mxs_lradc *lradc)
--{
--	mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
--	mxs_lradc_reg_set(lradc, mxs_lradc_drive_pressure(lradc), LRADC_CTRL0);
--
--	lradc->cur_plate = LRADC_SAMPLE_PRESSURE;
--	mxs_lradc_map_channel(lradc, TOUCHSCREEN_VCHANNEL1, TS_CH_YM);
--	mxs_lradc_map_channel(lradc, TOUCHSCREEN_VCHANNEL2, TS_CH_XP);
--	mxs_lradc_setup_ts_pressure(lradc, TOUCHSCREEN_VCHANNEL2,
--				    TOUCHSCREEN_VCHANNEL1);
--}
--
--static void mxs_lradc_enable_touch_detection(struct mxs_lradc *lradc)
--{
--	/* Configure the touchscreen type */
--	if (lradc->soc == IMX28_LRADC) {
--		mxs_lradc_reg_clear(lradc, LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
--				    LRADC_CTRL0);
--
--		if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
--			mxs_lradc_reg_set(lradc,
--					  LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE,
--					  LRADC_CTRL0);
--	}
--
--	mxs_lradc_setup_touch_detection(lradc);
--
--	lradc->cur_plate = LRADC_TOUCH;
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ |
--			    LRADC_CTRL1_TOUCH_DETECT_IRQ_EN, LRADC_CTRL1);
--	mxs_lradc_reg_set(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN, LRADC_CTRL1);
--}
--
--static void mxs_lradc_start_touch_event(struct mxs_lradc *lradc)
--{
--	mxs_lradc_reg_clear(lradc,
--			    LRADC_CTRL1_TOUCH_DETECT_IRQ_EN,
--			    LRADC_CTRL1);
--	mxs_lradc_reg_set(lradc,
--			  LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL1),
--			  LRADC_CTRL1);
--	/*
--	 * start with the Y-pos, because it uses nearly the same plate
--	 * settings like the touch detection
--	 */
--	mxs_lradc_prepare_y_pos(lradc);
--}
--
--static void mxs_lradc_report_ts_event(struct mxs_lradc *lradc)
--{
--	input_report_abs(lradc->ts_input, ABS_X, lradc->ts_x_pos);
--	input_report_abs(lradc->ts_input, ABS_Y, lradc->ts_y_pos);
--	input_report_abs(lradc->ts_input, ABS_PRESSURE, lradc->ts_pressure);
--	input_report_key(lradc->ts_input, BTN_TOUCH, 1);
--	input_sync(lradc->ts_input);
--}
--
--static void mxs_lradc_complete_touch_event(struct mxs_lradc *lradc)
--{
--	mxs_lradc_setup_touch_detection(lradc);
--	lradc->cur_plate = LRADC_SAMPLE_VALID;
--	/*
--	 * start a dummy conversion to burn time to settle the signals
--	 * note: we are not interested in the conversion's value
--	 */
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_CH(TOUCHSCREEN_VCHANNEL1));
--	mxs_lradc_reg_clear(lradc,
--			    LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1) |
--			    LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2),
--			    LRADC_CTRL1);
--	mxs_lradc_reg_wrt(
--		    lradc,
--		    LRADC_DELAY_TRIGGER(1 << TOUCHSCREEN_VCHANNEL1) |
--		    LRADC_DELAY_KICK | LRADC_DELAY_DELAY(10), /* waste 5 ms */
--		    LRADC_DELAY(2));
--}
--
--/*
-- * in order to avoid false measurements, report only samples where
-- * the surface is still touched after the position measurement
-- */
--static void mxs_lradc_finish_touch_event(struct mxs_lradc *lradc, bool valid)
--{
--	/* if it is still touched, report the sample */
--	if (valid && mxs_lradc_check_touch_event(lradc)) {
--		lradc->ts_valid = true;
--		mxs_lradc_report_ts_event(lradc);
--	}
--
--	/* if it is even still touched, continue with the next measurement */
--	if (mxs_lradc_check_touch_event(lradc)) {
--		mxs_lradc_prepare_y_pos(lradc);
--		return;
--	}
--
--	if (lradc->ts_valid) {
--		/* signal the release */
--		lradc->ts_valid = false;
--		input_report_key(lradc->ts_input, BTN_TOUCH, 0);
--		input_sync(lradc->ts_input);
--	}
--
--	/* if it is released, wait for the next touch via IRQ */
--	lradc->cur_plate = LRADC_TOUCH;
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
--	mxs_lradc_reg_clear(lradc,
--			    LRADC_CTRL1_TOUCH_DETECT_IRQ |
--			    LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL1) |
--			    LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1),
--			    LRADC_CTRL1);
--	mxs_lradc_reg_set(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN, LRADC_CTRL1);
--}
--
--/* touchscreen's state machine */
--static void mxs_lradc_handle_touch(struct mxs_lradc *lradc)
--{
--	switch (lradc->cur_plate) {
--	case LRADC_TOUCH:
--		if (mxs_lradc_check_touch_event(lradc))
--			mxs_lradc_start_touch_event(lradc);
--		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ,
--				    LRADC_CTRL1);
--		return;
--
--	case LRADC_SAMPLE_Y:
--		lradc->ts_y_pos =
--		    mxs_lradc_read_raw_channel(lradc,
--					       TOUCHSCREEN_VCHANNEL1);
--		mxs_lradc_prepare_x_pos(lradc);
--		return;
--
--	case LRADC_SAMPLE_X:
--		lradc->ts_x_pos =
--		    mxs_lradc_read_raw_channel(lradc,
--					       TOUCHSCREEN_VCHANNEL1);
--		mxs_lradc_prepare_pressure(lradc);
--		return;
--
--	case LRADC_SAMPLE_PRESSURE:
--		lradc->ts_pressure =
--		    mxs_lradc_read_ts_pressure(lradc,
--					       TOUCHSCREEN_VCHANNEL2,
--					       TOUCHSCREEN_VCHANNEL1);
--		mxs_lradc_complete_touch_event(lradc);
--		return;
--
--	case LRADC_SAMPLE_VALID:
--		mxs_lradc_finish_touch_event(lradc, 1);
--		break;
--	}
--}
--
--/*
-- * Raw I/O operations
-- */
--static int mxs_lradc_read_single(struct iio_dev *iio_dev, int chan, int *val)
--{
--	struct mxs_lradc *lradc = iio_priv(iio_dev);
--	int ret;
--
--	/*
--	 * See if there is no buffered operation in progress. If there is, simply
--	 * bail out. This can be improved to support both buffered and raw IO at
--	 * the same time, yet the code becomes horribly complicated. Therefore I
--	 * applied KISS principle here.
--	 */
--	ret = mutex_trylock(&lradc->lock);
--	if (!ret)
--		return -EBUSY;
--
--	reinit_completion(&lradc->completion);
--
--	/*
--	 * No buffered operation in progress, map the channel and trigger it.
--	 * Virtual channel 0 is always used here as the others are always not
--	 * used if doing raw sampling.
--	 */
--	if (lradc->soc == IMX28_LRADC)
--		mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ_EN(0),
--				    LRADC_CTRL1);
--	mxs_lradc_reg_clear(lradc, 0x1, LRADC_CTRL0);
--
--	/* Enable / disable the divider per requirement */
--	if (test_bit(chan, &lradc->is_divided))
--		mxs_lradc_reg_set(lradc,
--				  1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
--				  LRADC_CTRL2);
--	else
--		mxs_lradc_reg_clear(lradc,
--				    1 << LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET,
--				    LRADC_CTRL2);
--
--	/* Clean the slot's previous content, then set new one. */
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL4_LRADCSELECT_MASK(0),
--			    LRADC_CTRL4);
--	mxs_lradc_reg_set(lradc, chan, LRADC_CTRL4);
--
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_CH(0));
--
--	/* Enable the IRQ and start sampling the channel. */
--	mxs_lradc_reg_set(lradc, LRADC_CTRL1_LRADC_IRQ_EN(0), LRADC_CTRL1);
--	mxs_lradc_reg_set(lradc, BIT(0), LRADC_CTRL0);
--
--	/* Wait for completion on the channel, 1 second max. */
--	ret = wait_for_completion_killable_timeout(&lradc->completion, HZ);
--	if (!ret)
--		ret = -ETIMEDOUT;
--	if (ret < 0)
--		goto err;
--
--	/* Read the data. */
--	*val = readl(lradc->base + LRADC_CH(0)) & LRADC_CH_VALUE_MASK;
--	ret = IIO_VAL_INT;
--
--err:
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_LRADC_IRQ_EN(0), LRADC_CTRL1);
--
--	mutex_unlock(&lradc->lock);
--
--	return ret;
--}
--
--static int mxs_lradc_read_temp(struct iio_dev *iio_dev, int *val)
--{
--	int ret, min, max;
--
--	ret = mxs_lradc_read_single(iio_dev, 8, &min);
--	if (ret != IIO_VAL_INT)
--		return ret;
--
--	ret = mxs_lradc_read_single(iio_dev, 9, &max);
--	if (ret != IIO_VAL_INT)
--		return ret;
--
--	*val = max - min;
--
--	return IIO_VAL_INT;
--}
--
--static int mxs_lradc_read_raw(struct iio_dev *iio_dev,
--			      const struct iio_chan_spec *chan,
--			      int *val, int *val2, long m)
--{
--	struct mxs_lradc *lradc = iio_priv(iio_dev);
--
--	switch (m) {
--	case IIO_CHAN_INFO_RAW:
--		if (chan->type == IIO_TEMP)
--			return mxs_lradc_read_temp(iio_dev, val);
--
--		return mxs_lradc_read_single(iio_dev, chan->channel, val);
--
--	case IIO_CHAN_INFO_SCALE:
--		if (chan->type == IIO_TEMP) {
--			/*
--			 * From the datasheet, we have to multiply by 1.012 and
--			 * divide by 4
--			 */
--			*val = 0;
--			*val2 = 253000;
--			return IIO_VAL_INT_PLUS_MICRO;
--		}
--
--		*val = lradc->vref_mv[chan->channel];
--		*val2 = chan->scan_type.realbits -
--			test_bit(chan->channel, &lradc->is_divided);
--		return IIO_VAL_FRACTIONAL_LOG2;
--
--	case IIO_CHAN_INFO_OFFSET:
--		if (chan->type == IIO_TEMP) {
--			/*
--			 * The calculated value from the ADC is in Kelvin, we
--			 * want Celsius for hwmon so the offset is -273.15
--			 * The offset is applied before scaling so it is
--			 * actually -213.15 * 4 / 1.012 = -1079.644268
--			 */
--			*val = -1079;
--			*val2 = 644268;
--
--			return IIO_VAL_INT_PLUS_MICRO;
--		}
--
--		return -EINVAL;
--
--	default:
--		break;
--	}
--
--	return -EINVAL;
--}
--
--static int mxs_lradc_write_raw(struct iio_dev *iio_dev,
--			       const struct iio_chan_spec *chan,
--			       int val, int val2, long m)
--{
--	struct mxs_lradc *lradc = iio_priv(iio_dev);
--	struct mxs_lradc_scale *scale_avail =
--			lradc->scale_avail[chan->channel];
--	int ret;
--
--	ret = mutex_trylock(&lradc->lock);
--	if (!ret)
--		return -EBUSY;
--
--	switch (m) {
--	case IIO_CHAN_INFO_SCALE:
--		ret = -EINVAL;
--		if (val == scale_avail[MXS_LRADC_DIV_DISABLED].integer &&
--		    val2 == scale_avail[MXS_LRADC_DIV_DISABLED].nano) {
--			/* divider by two disabled */
--			clear_bit(chan->channel, &lradc->is_divided);
--			ret = 0;
--		} else if (val == scale_avail[MXS_LRADC_DIV_ENABLED].integer &&
--			   val2 == scale_avail[MXS_LRADC_DIV_ENABLED].nano) {
--			/* divider by two enabled */
--			set_bit(chan->channel, &lradc->is_divided);
--			ret = 0;
--		}
--
--		break;
--	default:
--		ret = -EINVAL;
--		break;
--	}
--
--	mutex_unlock(&lradc->lock);
--
--	return ret;
--}
--
--static int mxs_lradc_write_raw_get_fmt(struct iio_dev *iio_dev,
--				       const struct iio_chan_spec *chan,
--				       long m)
--{
--	return IIO_VAL_INT_PLUS_NANO;
--}
--
--static ssize_t mxs_lradc_show_scale_available_ch(struct device *dev,
--						 struct device_attribute *attr,
--						 char *buf,
--						 int ch)
--{
--	struct iio_dev *iio = dev_to_iio_dev(dev);
--	struct mxs_lradc *lradc = iio_priv(iio);
--	int i, len = 0;
--
--	for (i = 0; i < ARRAY_SIZE(lradc->scale_avail[ch]); i++)
--		len += sprintf(buf + len, "%u.%09u ",
--			       lradc->scale_avail[ch][i].integer,
--			       lradc->scale_avail[ch][i].nano);
--
--	len += sprintf(buf + len, "\n");
--
--	return len;
--}
--
--static ssize_t mxs_lradc_show_scale_available(struct device *dev,
--					      struct device_attribute *attr,
--					      char *buf)
--{
--	struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
--
--	return mxs_lradc_show_scale_available_ch(dev, attr, buf,
--						 iio_attr->address);
--}
--
--#define SHOW_SCALE_AVAILABLE_ATTR(ch)					\
--static IIO_DEVICE_ATTR(in_voltage##ch##_scale_available, S_IRUGO,	\
--		       mxs_lradc_show_scale_available, NULL, ch)
--
--SHOW_SCALE_AVAILABLE_ATTR(0);
--SHOW_SCALE_AVAILABLE_ATTR(1);
--SHOW_SCALE_AVAILABLE_ATTR(2);
--SHOW_SCALE_AVAILABLE_ATTR(3);
--SHOW_SCALE_AVAILABLE_ATTR(4);
--SHOW_SCALE_AVAILABLE_ATTR(5);
--SHOW_SCALE_AVAILABLE_ATTR(6);
--SHOW_SCALE_AVAILABLE_ATTR(7);
--SHOW_SCALE_AVAILABLE_ATTR(10);
--SHOW_SCALE_AVAILABLE_ATTR(11);
--SHOW_SCALE_AVAILABLE_ATTR(12);
--SHOW_SCALE_AVAILABLE_ATTR(13);
--SHOW_SCALE_AVAILABLE_ATTR(14);
--SHOW_SCALE_AVAILABLE_ATTR(15);
--
--static struct attribute *mxs_lradc_attributes[] = {
--	&iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage1_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage2_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage3_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage4_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage5_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage6_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage7_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage10_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage11_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage12_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage13_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage14_scale_available.dev_attr.attr,
--	&iio_dev_attr_in_voltage15_scale_available.dev_attr.attr,
--	NULL
--};
--
--static const struct attribute_group mxs_lradc_attribute_group = {
--	.attrs = mxs_lradc_attributes,
--};
--
--static const struct iio_info mxs_lradc_iio_info = {
--	.driver_module		= THIS_MODULE,
--	.read_raw		= mxs_lradc_read_raw,
--	.write_raw		= mxs_lradc_write_raw,
--	.write_raw_get_fmt	= mxs_lradc_write_raw_get_fmt,
--	.attrs			= &mxs_lradc_attribute_group,
--};
--
--static int mxs_lradc_ts_open(struct input_dev *dev)
--{
--	struct mxs_lradc *lradc = input_get_drvdata(dev);
--
--	/* Enable the touch-detect circuitry. */
--	mxs_lradc_enable_touch_detection(lradc);
--
--	return 0;
--}
--
--static void mxs_lradc_disable_ts(struct mxs_lradc *lradc)
--{
--	/* stop all interrupts from firing */
--	mxs_lradc_reg_clear(lradc, LRADC_CTRL1_TOUCH_DETECT_IRQ_EN |
--		LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL1) |
--		LRADC_CTRL1_LRADC_IRQ_EN(TOUCHSCREEN_VCHANNEL2), LRADC_CTRL1);
--
--	/* Power-down touchscreen touch-detect circuitry. */
--	mxs_lradc_reg_clear(lradc, mxs_lradc_plate_mask(lradc), LRADC_CTRL0);
--}
--
--static void mxs_lradc_ts_close(struct input_dev *dev)
--{
--	struct mxs_lradc *lradc = input_get_drvdata(dev);
--
--	mxs_lradc_disable_ts(lradc);
--}
--
--static int mxs_lradc_ts_register(struct mxs_lradc *lradc)
--{
--	struct input_dev *input;
--	struct device *dev = lradc->dev;
--
--	if (!lradc->use_touchscreen)
--		return 0;
--
--	input = devm_input_allocate_device(dev);
--	if (!input)
--		return -ENOMEM;
--
--	input->name = DRIVER_NAME;
--	input->id.bustype = BUS_HOST;
--	input->open = mxs_lradc_ts_open;
--	input->close = mxs_lradc_ts_close;
--
--	__set_bit(EV_ABS, input->evbit);
--	__set_bit(EV_KEY, input->evbit);
--	__set_bit(BTN_TOUCH, input->keybit);
--	__set_bit(INPUT_PROP_DIRECT, input->propbit);
--	input_set_abs_params(input, ABS_X, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
--	input_set_abs_params(input, ABS_Y, 0, LRADC_SINGLE_SAMPLE_MASK, 0, 0);
--	input_set_abs_params(input, ABS_PRESSURE, 0, LRADC_SINGLE_SAMPLE_MASK,
--			     0, 0);
--
--	lradc->ts_input = input;
--	input_set_drvdata(input, lradc);
--
--	return input_register_device(input);
--}
--
--/*
-- * IRQ Handling
-- */
--static irqreturn_t mxs_lradc_handle_irq(int irq, void *data)
--{
--	struct iio_dev *iio = data;
--	struct mxs_lradc *lradc = iio_priv(iio);
--	unsigned long reg = readl(lradc->base + LRADC_CTRL1);
--	u32 clr_irq = mxs_lradc_irq_mask(lradc);
--	const u32 ts_irq_mask =
--		LRADC_CTRL1_TOUCH_DETECT_IRQ |
--		LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1) |
--		LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2);
--
--	if (!(reg & mxs_lradc_irq_mask(lradc)))
--		return IRQ_NONE;
--
--	if (lradc->use_touchscreen && (reg & ts_irq_mask)) {
--		mxs_lradc_handle_touch(lradc);
--
--		/* Make sure we don't clear the next conversion's interrupt. */
--		clr_irq &= ~(LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL1) |
--				LRADC_CTRL1_LRADC_IRQ(TOUCHSCREEN_VCHANNEL2));
--	}
--
--	if (iio_buffer_enabled(iio)) {
--		if (reg & lradc->buffer_vchans)
--			iio_trigger_poll(iio->trig);
--	} else if (reg & LRADC_CTRL1_LRADC_IRQ(0)) {
--		complete(&lradc->completion);
--	}
--
--	mxs_lradc_reg_clear(lradc, reg & clr_irq, LRADC_CTRL1);
--
--	return IRQ_HANDLED;
--}
--
--/*
-- * Trigger handling
-- */
--static irqreturn_t mxs_lradc_trigger_handler(int irq, void *p)
--{
--	struct iio_poll_func *pf = p;
--	struct iio_dev *iio = pf->indio_dev;
--	struct mxs_lradc *lradc = iio_priv(iio);
--	const u32 chan_value = LRADC_CH_ACCUMULATE |
--		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
--	unsigned int i, j = 0;
--
--	for_each_set_bit(i, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
--		lradc->buffer[j] = readl(lradc->base + LRADC_CH(j));
--		mxs_lradc_reg_wrt(lradc, chan_value, LRADC_CH(j));
--		lradc->buffer[j] &= LRADC_CH_VALUE_MASK;
--		lradc->buffer[j] /= LRADC_DELAY_TIMER_LOOP;
--		j++;
--	}
--
--	iio_push_to_buffers_with_timestamp(iio, lradc->buffer, pf->timestamp);
--
--	iio_trigger_notify_done(iio->trig);
--
--	return IRQ_HANDLED;
--}
--
--static int mxs_lradc_configure_trigger(struct iio_trigger *trig, bool state)
--{
--	struct iio_dev *iio = iio_trigger_get_drvdata(trig);
--	struct mxs_lradc *lradc = iio_priv(iio);
--	const u32 st = state ? STMP_OFFSET_REG_SET : STMP_OFFSET_REG_CLR;
--
--	mxs_lradc_reg_wrt(lradc, LRADC_DELAY_KICK, LRADC_DELAY(0) + st);
--
--	return 0;
--}
--
--static const struct iio_trigger_ops mxs_lradc_trigger_ops = {
--	.owner = THIS_MODULE,
--	.set_trigger_state = &mxs_lradc_configure_trigger,
--};
--
--static int mxs_lradc_trigger_init(struct iio_dev *iio)
--{
--	int ret;
--	struct iio_trigger *trig;
--	struct mxs_lradc *lradc = iio_priv(iio);
--
--	trig = iio_trigger_alloc("%s-dev%i", iio->name, iio->id);
--	if (!trig)
--		return -ENOMEM;
--
--	trig->dev.parent = lradc->dev;
--	iio_trigger_set_drvdata(trig, iio);
--	trig->ops = &mxs_lradc_trigger_ops;
--
--	ret = iio_trigger_register(trig);
--	if (ret) {
--		iio_trigger_free(trig);
--		return ret;
--	}
--
--	lradc->trig = trig;
--
--	return 0;
--}
--
--static void mxs_lradc_trigger_remove(struct iio_dev *iio)
--{
--	struct mxs_lradc *lradc = iio_priv(iio);
--
--	iio_trigger_unregister(lradc->trig);
--	iio_trigger_free(lradc->trig);
--}
--
--static int mxs_lradc_buffer_preenable(struct iio_dev *iio)
--{
--	struct mxs_lradc *lradc = iio_priv(iio);
--	int ret = 0, chan, ofs = 0;
--	unsigned long enable = 0;
--	u32 ctrl4_set = 0;
--	u32 ctrl4_clr = 0;
--	u32 ctrl1_irq = 0;
--	const u32 chan_value = LRADC_CH_ACCUMULATE |
--		((LRADC_DELAY_TIMER_LOOP - 1) << LRADC_CH_NUM_SAMPLES_OFFSET);
--	const int len = bitmap_weight(iio->active_scan_mask,
--			LRADC_MAX_TOTAL_CHANS);
--
--	if (!len)
--		return -EINVAL;
--
--	/*
--	 * Lock the driver so raw access can not be done during buffered
--	 * operation. This simplifies the code a lot.
--	 */
--	ret = mutex_trylock(&lradc->lock);
--	if (!ret)
--		return -EBUSY;
--
--	lradc->buffer = kmalloc_array(len, sizeof(*lradc->buffer), GFP_KERNEL);
--	if (!lradc->buffer) {
--		ret = -ENOMEM;
--		goto err_mem;
--	}
--
--	if (lradc->soc == IMX28_LRADC)
--		mxs_lradc_reg_clear(
--			lradc,
--			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
--			LRADC_CTRL1);
--	mxs_lradc_reg_clear(lradc, lradc->buffer_vchans, LRADC_CTRL0);
--
--	for_each_set_bit(chan, iio->active_scan_mask, LRADC_MAX_TOTAL_CHANS) {
--		ctrl4_set |= chan << LRADC_CTRL4_LRADCSELECT_OFFSET(ofs);
--		ctrl4_clr |= LRADC_CTRL4_LRADCSELECT_MASK(ofs);
--		ctrl1_irq |= LRADC_CTRL1_LRADC_IRQ_EN(ofs);
--		mxs_lradc_reg_wrt(lradc, chan_value, LRADC_CH(ofs));
--		bitmap_set(&enable, ofs, 1);
--		ofs++;
--	}
--
--	mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
--			    LRADC_DELAY_KICK, LRADC_DELAY(0));
--	mxs_lradc_reg_clear(lradc, ctrl4_clr, LRADC_CTRL4);
--	mxs_lradc_reg_set(lradc, ctrl4_set, LRADC_CTRL4);
--	mxs_lradc_reg_set(lradc, ctrl1_irq, LRADC_CTRL1);
--	mxs_lradc_reg_set(lradc, enable << LRADC_DELAY_TRIGGER_LRADCS_OFFSET,
--			  LRADC_DELAY(0));
--
--	return 0;
--
--err_mem:
--	mutex_unlock(&lradc->lock);
--	return ret;
--}
--
--static int mxs_lradc_buffer_postdisable(struct iio_dev *iio)
--{
--	struct mxs_lradc *lradc = iio_priv(iio);
--
--	mxs_lradc_reg_clear(lradc, LRADC_DELAY_TRIGGER_LRADCS_MASK |
--			    LRADC_DELAY_KICK, LRADC_DELAY(0));
--
--	mxs_lradc_reg_clear(lradc, lradc->buffer_vchans, LRADC_CTRL0);
--	if (lradc->soc == IMX28_LRADC)
--		mxs_lradc_reg_clear(
--			lradc,
--			lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
--			LRADC_CTRL1);
--
--	kfree(lradc->buffer);
--	mutex_unlock(&lradc->lock);
--
--	return 0;
--}
--
--static bool mxs_lradc_validate_scan_mask(struct iio_dev *iio,
--					 const unsigned long *mask)
--{
--	struct mxs_lradc *lradc = iio_priv(iio);
--	const int map_chans = bitmap_weight(mask, LRADC_MAX_TOTAL_CHANS);
--	int rsvd_chans = 0;
--	unsigned long rsvd_mask = 0;
--
--	if (lradc->use_touchbutton)
--		rsvd_mask |= CHAN_MASK_TOUCHBUTTON;
--	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_4WIRE)
--		rsvd_mask |= CHAN_MASK_TOUCHSCREEN_4WIRE;
--	if (lradc->use_touchscreen == MXS_LRADC_TOUCHSCREEN_5WIRE)
--		rsvd_mask |= CHAN_MASK_TOUCHSCREEN_5WIRE;
--
--	if (lradc->use_touchbutton)
--		rsvd_chans++;
--	if (lradc->use_touchscreen)
--		rsvd_chans += 2;
--
--	/* Test for attempts to map channels with special mode of operation. */
--	if (bitmap_intersects(mask, &rsvd_mask, LRADC_MAX_TOTAL_CHANS))
--		return false;
--
--	/* Test for attempts to map more channels then available slots. */
--	if (map_chans + rsvd_chans > LRADC_MAX_MAPPED_CHANS)
--		return false;
--
--	return true;
--}
--
--static const struct iio_buffer_setup_ops mxs_lradc_buffer_ops = {
--	.preenable = &mxs_lradc_buffer_preenable,
--	.postenable = &iio_triggered_buffer_postenable,
--	.predisable = &iio_triggered_buffer_predisable,
--	.postdisable = &mxs_lradc_buffer_postdisable,
--	.validate_scan_mask = &mxs_lradc_validate_scan_mask,
--};
--
--/*
-- * Driver initialization
-- */
--
--#define MXS_ADC_CHAN(idx, chan_type, name) {			\
--	.type = (chan_type),					\
--	.indexed = 1,						\
--	.scan_index = (idx),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |		\
--			      BIT(IIO_CHAN_INFO_SCALE),		\
--	.channel = (idx),					\
--	.address = (idx),					\
--	.scan_type = {						\
--		.sign = 'u',					\
--		.realbits = LRADC_RESOLUTION,			\
--		.storagebits = 32,				\
--	},							\
--	.datasheet_name = (name),				\
--}
--
--static const struct iio_chan_spec mx23_lradc_chan_spec[] = {
--	MXS_ADC_CHAN(0, IIO_VOLTAGE, "LRADC0"),
--	MXS_ADC_CHAN(1, IIO_VOLTAGE, "LRADC1"),
--	MXS_ADC_CHAN(2, IIO_VOLTAGE, "LRADC2"),
--	MXS_ADC_CHAN(3, IIO_VOLTAGE, "LRADC3"),
--	MXS_ADC_CHAN(4, IIO_VOLTAGE, "LRADC4"),
--	MXS_ADC_CHAN(5, IIO_VOLTAGE, "LRADC5"),
--	MXS_ADC_CHAN(6, IIO_VOLTAGE, "VDDIO"),
--	MXS_ADC_CHAN(7, IIO_VOLTAGE, "VBATT"),
--	/* Combined Temperature sensors */
--	{
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.scan_index = 8,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--				      BIT(IIO_CHAN_INFO_OFFSET) |
--				      BIT(IIO_CHAN_INFO_SCALE),
--		.channel = 8,
--		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
--		.datasheet_name = "TEMP_DIE",
--	},
--	/* Hidden channel to keep indexes */
--	{
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.scan_index = -1,
--		.channel = 9,
--	},
--	MXS_ADC_CHAN(10, IIO_VOLTAGE, NULL),
--	MXS_ADC_CHAN(11, IIO_VOLTAGE, NULL),
--	MXS_ADC_CHAN(12, IIO_VOLTAGE, "USB_DP"),
--	MXS_ADC_CHAN(13, IIO_VOLTAGE, "USB_DN"),
--	MXS_ADC_CHAN(14, IIO_VOLTAGE, "VBG"),
--	MXS_ADC_CHAN(15, IIO_VOLTAGE, "VDD5V"),
--};
--
--static const struct iio_chan_spec mx28_lradc_chan_spec[] = {
--	MXS_ADC_CHAN(0, IIO_VOLTAGE, "LRADC0"),
--	MXS_ADC_CHAN(1, IIO_VOLTAGE, "LRADC1"),
--	MXS_ADC_CHAN(2, IIO_VOLTAGE, "LRADC2"),
--	MXS_ADC_CHAN(3, IIO_VOLTAGE, "LRADC3"),
--	MXS_ADC_CHAN(4, IIO_VOLTAGE, "LRADC4"),
--	MXS_ADC_CHAN(5, IIO_VOLTAGE, "LRADC5"),
--	MXS_ADC_CHAN(6, IIO_VOLTAGE, "LRADC6"),
--	MXS_ADC_CHAN(7, IIO_VOLTAGE, "VBATT"),
--	/* Combined Temperature sensors */
--	{
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.scan_index = 8,
--		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
--				      BIT(IIO_CHAN_INFO_OFFSET) |
--				      BIT(IIO_CHAN_INFO_SCALE),
--		.channel = 8,
--		.scan_type = {.sign = 'u', .realbits = 18, .storagebits = 32,},
--		.datasheet_name = "TEMP_DIE",
--	},
--	/* Hidden channel to keep indexes */
--	{
--		.type = IIO_TEMP,
--		.indexed = 1,
--		.scan_index = -1,
--		.channel = 9,
--	},
--	MXS_ADC_CHAN(10, IIO_VOLTAGE, "VDDIO"),
--	MXS_ADC_CHAN(11, IIO_VOLTAGE, "VTH"),
--	MXS_ADC_CHAN(12, IIO_VOLTAGE, "VDDA"),
--	MXS_ADC_CHAN(13, IIO_VOLTAGE, "VDDD"),
--	MXS_ADC_CHAN(14, IIO_VOLTAGE, "VBG"),
--	MXS_ADC_CHAN(15, IIO_VOLTAGE, "VDD5V"),
--};
--
--static void mxs_lradc_hw_init(struct mxs_lradc *lradc)
--{
--	/* The ADC always uses DELAY CHANNEL 0. */
--	const u32 adc_cfg =
--		(1 << (LRADC_DELAY_TRIGGER_DELAYS_OFFSET + 0)) |
--		(LRADC_DELAY_TIMER_PER << LRADC_DELAY_DELAY_OFFSET);
--
--	/* Configure DELAY CHANNEL 0 for generic ADC sampling. */
--	mxs_lradc_reg_wrt(lradc, adc_cfg, LRADC_DELAY(0));
--
--	/* Disable remaining DELAY CHANNELs */
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(1));
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(2));
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(3));
--
--	/* Start internal temperature sensing. */
--	mxs_lradc_reg_wrt(lradc, 0, LRADC_CTRL2);
--}
--
--static void mxs_lradc_hw_stop(struct mxs_lradc *lradc)
--{
--	int i;
--
--	mxs_lradc_reg_clear(lradc,
--		lradc->buffer_vchans << LRADC_CTRL1_LRADC_IRQ_EN_OFFSET,
--		LRADC_CTRL1);
--
--	for (i = 0; i < LRADC_MAX_DELAY_CHANS; i++)
--		mxs_lradc_reg_wrt(lradc, 0, LRADC_DELAY(i));
--}
--
--static const struct of_device_id mxs_lradc_dt_ids[] = {
--	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
--	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
--	{ /* sentinel */ }
--};
--MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
--
--static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
--				       struct device_node *lradc_node)
--{
--	int ret;
--	u32 ts_wires = 0, adapt;
--
--	ret = of_property_read_u32(lradc_node, "fsl,lradc-touchscreen-wires",
--				   &ts_wires);
--	if (ret)
--		return -ENODEV; /* touchscreen feature disabled */
--
--	switch (ts_wires) {
--	case 4:
--		lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_4WIRE;
--		break;
--	case 5:
--		if (lradc->soc == IMX28_LRADC) {
--			lradc->use_touchscreen = MXS_LRADC_TOUCHSCREEN_5WIRE;
--			break;
--		}
--		/* fall through an error message for i.MX23 */
--	default:
--		dev_err(lradc->dev,
--			"Unsupported number of touchscreen wires (%d)\n",
--			ts_wires);
--		return -EINVAL;
--	}
--
--	if (of_property_read_u32(lradc_node, "fsl,ave-ctrl", &adapt)) {
--		lradc->over_sample_cnt = 4;
--	} else {
--		if (adapt < 1 || adapt > 32) {
--			dev_err(lradc->dev, "Invalid sample count (%u)\n",
--				adapt);
--			return -EINVAL;
--		}
--		lradc->over_sample_cnt = adapt;
--	}
--
--	if (of_property_read_u32(lradc_node, "fsl,ave-delay", &adapt)) {
--		lradc->over_sample_delay = 2;
--	} else {
--		if (adapt < 2 || adapt > LRADC_DELAY_DELAY_MASK + 1) {
--			dev_err(lradc->dev, "Invalid sample delay (%u)\n",
--				adapt);
--			return -EINVAL;
--		}
--		lradc->over_sample_delay = adapt;
--	}
--
--	if (of_property_read_u32(lradc_node, "fsl,settling", &adapt)) {
--		lradc->settling_delay = 10;
--	} else {
--		if (adapt < 1 || adapt > LRADC_DELAY_DELAY_MASK) {
--			dev_err(lradc->dev, "Invalid settling delay (%u)\n",
--				adapt);
--			return -EINVAL;
--		}
--		lradc->settling_delay = adapt;
--	}
--
--	return 0;
--}
--
--static int mxs_lradc_probe(struct platform_device *pdev)
--{
--	const struct of_device_id *of_id =
--		of_match_device(mxs_lradc_dt_ids, &pdev->dev);
--	const struct mxs_lradc_of_config *of_cfg =
--		&mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
--	struct device *dev = &pdev->dev;
--	struct device_node *node = dev->of_node;
--	struct mxs_lradc *lradc;
--	struct iio_dev *iio;
--	struct resource *iores;
--	int ret = 0, touch_ret;
--	int i, s;
--	u64 scale_uv;
--
--	/* Allocate the IIO device. */
--	iio = devm_iio_device_alloc(dev, sizeof(*lradc));
--	if (!iio) {
--		dev_err(dev, "Failed to allocate IIO device\n");
--		return -ENOMEM;
--	}
--
--	lradc = iio_priv(iio);
--	lradc->soc = (enum mxs_lradc_id)of_id->data;
--
--	/* Grab the memory area */
--	iores = platform_get_resource(pdev, IORESOURCE_MEM, 0);
--	lradc->dev = &pdev->dev;
--	lradc->base = devm_ioremap_resource(dev, iores);
--	if (IS_ERR(lradc->base))
--		return PTR_ERR(lradc->base);
--
--	lradc->clk = devm_clk_get(&pdev->dev, NULL);
--	if (IS_ERR(lradc->clk)) {
--		dev_err(dev, "Failed to get the delay unit clock\n");
--		return PTR_ERR(lradc->clk);
--	}
--	ret = clk_prepare_enable(lradc->clk);
--	if (ret != 0) {
--		dev_err(dev, "Failed to enable the delay unit clock\n");
--		return ret;
--	}
--
--	touch_ret = mxs_lradc_probe_touchscreen(lradc, node);
--
--	if (touch_ret == 0)
--		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
--	else
--		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
--
--	/* Grab all IRQ sources */
--	for (i = 0; i < of_cfg->irq_count; i++) {
--		lradc->irq[i] = platform_get_irq(pdev, i);
--		if (lradc->irq[i] < 0) {
--			ret = lradc->irq[i];
--			goto err_clk;
--		}
--
--		ret = devm_request_irq(dev, lradc->irq[i],
--				       mxs_lradc_handle_irq, 0,
--				       of_cfg->irq_name[i], iio);
--		if (ret)
--			goto err_clk;
--	}
--
--	lradc->vref_mv = of_cfg->vref_mv;
--
--	platform_set_drvdata(pdev, iio);
--
--	init_completion(&lradc->completion);
--	mutex_init(&lradc->lock);
--
--	iio->name = pdev->name;
--	iio->dev.parent = &pdev->dev;
--	iio->info = &mxs_lradc_iio_info;
--	iio->modes = INDIO_DIRECT_MODE;
--	iio->masklength = LRADC_MAX_TOTAL_CHANS;
--
--	if (lradc->soc == IMX23_LRADC) {
--		iio->channels = mx23_lradc_chan_spec;
--		iio->num_channels = ARRAY_SIZE(mx23_lradc_chan_spec);
--	} else {
--		iio->channels = mx28_lradc_chan_spec;
--		iio->num_channels = ARRAY_SIZE(mx28_lradc_chan_spec);
--	}
--
--	ret = iio_triggered_buffer_setup(iio, &iio_pollfunc_store_time,
--					 &mxs_lradc_trigger_handler,
--					 &mxs_lradc_buffer_ops);
--	if (ret)
--		goto err_clk;
--
--	ret = mxs_lradc_trigger_init(iio);
--	if (ret)
--		goto err_trig;
--
--	/* Populate available ADC input ranges */
--	for (i = 0; i < LRADC_MAX_TOTAL_CHANS; i++) {
--		for (s = 0; s < ARRAY_SIZE(lradc->scale_avail[i]); s++) {
--			/*
--			 * [s=0] = optional divider by two disabled (default)
--			 * [s=1] = optional divider by two enabled
--			 *
--			 * The scale is calculated by doing:
--			 *   Vref >> (realbits - s)
--			 * which multiplies by two on the second component
--			 * of the array.
--			 */
--			scale_uv = ((u64)lradc->vref_mv[i] * 100000000) >>
--				   (LRADC_RESOLUTION - s);
--			lradc->scale_avail[i][s].nano =
--					do_div(scale_uv, 100000000) * 10;
--			lradc->scale_avail[i][s].integer = scale_uv;
--		}
--	}
--
--	ret = stmp_reset_block(lradc->base);
--	if (ret)
--		goto err_dev;
--
--	/* Configure the hardware. */
--	mxs_lradc_hw_init(lradc);
--
--	/* Register the touchscreen input device. */
--	if (touch_ret == 0) {
--		ret = mxs_lradc_ts_register(lradc);
--		if (ret)
--			goto err_ts_register;
--	}
--
--	/* Register IIO device. */
--	ret = iio_device_register(iio);
--	if (ret) {
--		dev_err(dev, "Failed to register IIO device\n");
--		return ret;
--	}
--
--	return 0;
--
--err_ts_register:
--	mxs_lradc_hw_stop(lradc);
--err_dev:
--	mxs_lradc_trigger_remove(iio);
--err_trig:
--	iio_triggered_buffer_cleanup(iio);
--err_clk:
--	clk_disable_unprepare(lradc->clk);
--	return ret;
--}
--
--static int mxs_lradc_remove(struct platform_device *pdev)
--{
--	struct iio_dev *iio = platform_get_drvdata(pdev);
--	struct mxs_lradc *lradc = iio_priv(iio);
--
--	iio_device_unregister(iio);
--	mxs_lradc_hw_stop(lradc);
--	mxs_lradc_trigger_remove(iio);
--	iio_triggered_buffer_cleanup(iio);
--
--	clk_disable_unprepare(lradc->clk);
--
--	return 0;
--}
--
--static struct platform_driver mxs_lradc_driver = {
--	.driver	= {
--		.name	= DRIVER_NAME,
--		.of_match_table = mxs_lradc_dt_ids,
--	},
--	.probe	= mxs_lradc_probe,
--	.remove	= mxs_lradc_remove,
--};
--
--module_platform_driver(mxs_lradc_driver);
--
--MODULE_AUTHOR("Marek Vasut <marex@denx.de>");
--MODULE_DESCRIPTION("Freescale MXS LRADC driver");
--MODULE_LICENSE("GPL v2");
--MODULE_ALIAS("platform:" DRIVER_NAME);
++source "drivers/iio/humidity/hts221/Kconfig"
++
+ endmenu
+diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+index 4a73442..bdd5cd0 100644
+--- a/drivers/iio/humidity/Makefile
++++ b/drivers/iio/humidity/Makefile
+@@ -8,3 +8,4 @@ obj-$(CONFIG_HDC100X) += hdc100x.o
+ obj-$(CONFIG_HTU21) += htu21.o
+ obj-$(CONFIG_SI7005) += si7005.o
+ obj-$(CONFIG_SI7020) += si7020.o
++obj-$(CONFIG_IIO_HTS221) += hts221/
+diff --git a/drivers/iio/humidity/hts221/Kconfig b/drivers/iio/humidity/hts221/Kconfig
+new file mode 100644
+index 0000000..95b40e0
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/Kconfig
+@@ -0,0 +1,23 @@
++
++config IIO_HTS221
++	tristate "STMicroelectronics HTS221 sensor Driver"
++	depends on (I2C || SPI) && SYSFS
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	select IIO_HTS221_I2C if (I2C)
++	select IIO_HTS221_SPI if (SPI_MASTER)
++	help
++	  Say yes here to build support for STMicroelectronics HTS221
++	  temperature-humidity sensor
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called hts221.
++
++config IIO_HTS221_I2C
++	tristate
++	depends on IIO_HTS221
++
++config IIO_HTS221_SPI
++	tristate
++	depends on IIO_HTS221
++
+diff --git a/drivers/iio/humidity/hts221/Makefile b/drivers/iio/humidity/hts221/Makefile
+new file mode 100644
+index 0000000..6fdfc6a
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/Makefile
+@@ -0,0 +1,6 @@
++hts221-y := hts221_core.o
++hts221-$(CONFIG_IIO_BUFFER) += hts221_buffer.o
++
++obj-$(CONFIG_IIO_HTS221) += hts221.o
++obj-$(CONFIG_IIO_HTS221_I2C) += hts221_i2c.o
++obj-$(CONFIG_IIO_HTS221_SPI) += hts221_spi.o
+diff --git a/drivers/iio/humidity/hts221/hts221.h b/drivers/iio/humidity/hts221/hts221.h
+new file mode 100644
+index 0000000..ee8d2fb
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/hts221.h
+@@ -0,0 +1,100 @@
++/*
++ * STMicroelectronics hts221 sensor driver
++ *
++ * Copyright 2016 STMicroelectronics Inc.
++ *
++ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#ifndef HTS221_H
++#define HTS221_H
++
++#define HTS221_DEV_NAME		"hts221"
++
++#include <linux/iio/iio.h>
++
++#define HTS221_RX_MAX_LENGTH	500
++#define HTS221_TX_MAX_LENGTH	500
++
++struct hts221_transfer_buffer {
++	u8 rx_buf[HTS221_RX_MAX_LENGTH];
++	u8 tx_buf[HTS221_TX_MAX_LENGTH] ____cacheline_aligned;
++};
++
++struct hts221_transfer_function {
++	int (*read)(struct device *dev, u8 addr, int len, u8 *data);
++	int (*write)(struct device *dev, u8 addr, int len, u8 *data);
++};
++
++#define HTS221_AVG_DEPTH	8
++struct hts221_avg_avl {
++	u16 avg;
++	u8 val;
++};
++
++enum hts221_sensor_type {
++	HTS221_SENSOR_H,
++	HTS221_SENSOR_T,
++	HTS221_SENSOR_MAX,
++};
++
++struct hts221_sensor {
++	struct hts221_dev *dev;
++
++	enum hts221_sensor_type type;
++	u8 cur_avg_idx;
++	int slope, b_gen;
++};
++
++struct hts221_dev {
++	const char *name;
++	struct device *dev;
++
++	struct mutex lock;
++
++	u8 buffer[4];
++	struct iio_trigger *trig;
++	int irq;
++
++	struct hts221_sensor sensors[HTS221_SENSOR_MAX];
++
++	s64 hw_timestamp;
++	u8 odr;
++
++	const struct hts221_transfer_function *tf;
++	struct hts221_transfer_buffer tb;
++};
++
++int hts221_config_drdy(struct hts221_dev *dev, bool enable);
++int hts221_probe(struct hts221_dev *dev);
++int hts221_remove(struct hts221_dev *dev);
++int hts221_dev_power_on(struct hts221_dev *dev);
++int hts221_dev_power_off(struct hts221_dev *dev);
++#ifdef CONFIG_IIO_BUFFER
++int hts221_allocate_buffers(struct hts221_dev *dev);
++void hts221_deallocate_buffers(struct hts221_dev *dev);
++int hts221_allocate_triggers(struct hts221_dev *dev);
++void hts221_deallocate_triggers(struct hts221_dev *dev);
++#else
++static inline int hts221_allocate_buffers(struct hts221_dev *dev)
++{
++	return 0;
++}
++
++static inline void hts221_deallocate_buffers(struct hts221_dev *dev)
++{
++}
++
++static inline int hts221_allocate_triggers(struct hts221_dev *dev)
++{
++	return 0;
++}
++
++static inline void hts221_deallocate_triggers(struct hts221_dev *dev)
++{
++}
++#endif /* CONFIG_IIO_BUFFER */
++
++#endif /* HTS221_H */
+diff --git a/drivers/iio/humidity/hts221/hts221_buffer.c b/drivers/iio/humidity/hts221/hts221_buffer.c
+new file mode 100644
+index 0000000..ab77e98
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/hts221_buffer.c
+@@ -0,0 +1,191 @@
++/*
++ * STMicroelectronics hts221 sensor driver
++ *
++ * Copyright 2016 STMicroelectronics Inc.
++ *
++ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/device.h>
++#include <linux/interrupt.h>
++#include <linux/irqreturn.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/trigger.h>
++#include <linux/interrupt.h>
++#include <linux/iio/events.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/buffer.h>
++
++#include "hts221.h"
++
++#define HTS221_REG_STATUS_ADDR		0x27
++#define HTS221_RH_DRDY_MASK		0x2
++#define HTS221_TEMP_DRDY_MASK		0x1
++
++int hts221_trig_set_state(struct iio_trigger *trig, bool state)
++{
++	struct iio_dev *iio_dev = iio_trigger_get_drvdata(trig);
++	struct hts221_dev *dev = iio_priv(iio_dev);
++
++	return hts221_config_drdy(dev, state);
++}
++
++static const struct iio_trigger_ops hts221_trigger_ops = {
++	.owner = THIS_MODULE,
++	.set_trigger_state = hts221_trig_set_state,
++};
++
++static irqreturn_t hts221_trigger_handler_irq(int irq, void *private)
++{
++	struct hts221_dev *dev = (struct hts221_dev *)private;
++	struct iio_dev *iio_dev = iio_priv_to_dev(dev);
++
++	dev->hw_timestamp = iio_get_time_ns(iio_dev);
++
++	return IRQ_WAKE_THREAD;
++}
++
++static irqreturn_t hts221_trigger_handler_thread(int irq, void *private)
++{
++	struct hts221_dev *dev = (struct hts221_dev *)private;
++	struct iio_dev *iio_dev = iio_priv_to_dev(dev);
++	struct iio_chan_spec const *ch;
++	int err, count = 0;
++	u8 status;
++
++	err = dev->tf->read(dev->dev, HTS221_REG_STATUS_ADDR, 1, &status);
++	if (err < 0)
++		return IRQ_HANDLED;
++
++	/* humidity data */
++	if (status & HTS221_RH_DRDY_MASK) {
++		ch = &iio_dev->channels[HTS221_SENSOR_H];
++		err = dev->tf->read(dev->dev, ch->address, 2,
++				    dev->buffer);
++		if (err < 0)
++			return IRQ_HANDLED;
++
++		count++;
++	}
++
++	/* temp data */
++	if (status & HTS221_TEMP_DRDY_MASK) {
++		ch = &iio_dev->channels[HTS221_SENSOR_T];
++		err = dev->tf->read(dev->dev, ch->address, 2,
++				    dev->buffer + 2 * count);
++		if (err < 0)
++			return IRQ_HANDLED;
++
++		count++;
++	}
++
++	if (count > 0) {
++		iio_trigger_poll_chained(dev->trig);
++		return IRQ_HANDLED;
++	} else {
++		return IRQ_NONE;
++	}
++}
++
++int hts221_allocate_triggers(struct hts221_dev *dev)
++{
++	struct iio_dev *iio_dev = iio_priv_to_dev(dev);
++	unsigned long irq_type;
++	int err;
++
++	irq_type = irqd_get_trigger_type(irq_get_irq_data(dev->irq));
++
++	switch (irq_type) {
++	case IRQF_TRIGGER_HIGH:
++	case IRQF_TRIGGER_RISING:
++		break;
++	default:
++		dev_info(dev->dev,
++			 "mode %lx unsupported, using IRQF_TRIGGER_RISING\n",
++			 irq_type);
++		irq_type = IRQF_TRIGGER_RISING;
++		break;
++	}
++
++	err = devm_request_threaded_irq(dev->dev, dev->irq,
++					hts221_trigger_handler_irq,
++					hts221_trigger_handler_thread,
++					irq_type | IRQF_ONESHOT,
++					dev->name, dev);
++	if (err) {
++		dev_err(dev->dev, "failed to request trigger irq %d\n",
++			dev->irq);
++		return err;
++	}
++
++	dev->trig = devm_iio_trigger_alloc(dev->dev, "%s-trigger",
++					   iio_dev->name);
++	if (!dev->trig)
++		return -ENOMEM;
++
++	iio_trigger_set_drvdata(dev->trig, iio_dev);
++	dev->trig->ops = &hts221_trigger_ops;
++	dev->trig->dev.parent = dev->dev;
++	iio_dev->trig = iio_trigger_get(dev->trig);
++
++	return iio_trigger_register(dev->trig);
++}
++
++void hts221_deallocate_triggers(struct hts221_dev *dev)
++{
++	iio_trigger_unregister(dev->trig);
++}
++
++static int hts221_buffer_preenable(struct iio_dev *iio_dev)
++{
++	return hts221_dev_power_on(iio_priv(iio_dev));
++}
++
++static int hts221_buffer_postdisable(struct iio_dev *iio_dev)
++{
++	return hts221_dev_power_off(iio_priv(iio_dev));
++}
++
++static const struct iio_buffer_setup_ops hts221_buffer_ops = {
++	.preenable = hts221_buffer_preenable,
++	.postenable = iio_triggered_buffer_postenable,
++	.predisable = iio_triggered_buffer_predisable,
++	.postdisable = hts221_buffer_postdisable,
++};
++
++static irqreturn_t hts221_buffer_handler_thread(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *iio_dev = pf->indio_dev;
++	struct hts221_dev *dev = iio_priv(iio_dev);
++	u8 out_data[ALIGN(4, sizeof(s64)) + sizeof(s64)];
++
++	memcpy(out_data, dev->buffer, sizeof(dev->buffer));
++	iio_push_to_buffers_with_timestamp(iio_dev, out_data,
++					   dev->hw_timestamp);
++
++	iio_trigger_notify_done(dev->trig);
++
++	return IRQ_HANDLED;
++}
++
++int hts221_allocate_buffers(struct hts221_dev *dev)
++{
++	return iio_triggered_buffer_setup(iio_priv_to_dev(dev), NULL,
++					  hts221_buffer_handler_thread,
++					  &hts221_buffer_ops);
++}
++
++void hts221_deallocate_buffers(struct hts221_dev *dev)
++{
++	iio_triggered_buffer_cleanup(iio_priv_to_dev(dev));
++}
++
++MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics hts221 buffer driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/humidity/hts221/hts221_core.c b/drivers/iio/humidity/hts221/hts221_core.c
+new file mode 100644
+index 0000000..f6f9c20
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/hts221_core.c
+@@ -0,0 +1,687 @@
++/*
++ * STMicroelectronics hts221 sensor driver
++ *
++ * Copyright 2016 STMicroelectronics Inc.
++ *
++ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/device.h>
++#include <linux/iio/sysfs.h>
++#include <linux/delay.h>
++#include <asm/unaligned.h>
++
++#include "hts221.h"
++
++#define HTS221_REG_WHOAMI_ADDR		0x0f
++#define HTS221_REG_WHOAMI_VAL		0xbc
++
++#define HTS221_REG_CNTRL1_ADDR		0x20
++#define HTS221_REG_CNTRL2_ADDR		0x21
++#define HTS221_REG_CNTRL3_ADDR		0x22
++
++#define HTS221_REG_H_AVG_ADDR		0x10
++#define HTS221_REG_T_AVG_ADDR		0x10
++#define HTS221_REG_H_OUT_L		0x28
++#define HTS221_REG_T_OUT_L		0x2a
++
++#define HTS221_H_AVG_MASK		0x07
++#define HTS221_T_AVG_MASK		0x38
++
++#define ODR_MASK			0x87
++#define BDU_MASK			0x04
++
++#define DRDY_MASK			0x04
++
++#define ENABLE_SENSOR			0x80
++
++#define HTS221_H_AVG_4			0x00 /* 0.4 %RH */
++#define HTS221_H_AVG_8			0x01 /* 0.3 %RH */
++#define HTS221_H_AVG_16			0x02 /* 0.2 %RH */
++#define HTS221_H_AVG_32			0x03 /* 0.15 %RH */
++#define HTS221_H_AVG_64			0x04 /* 0.1 %RH */
++#define HTS221_H_AVG_128		0x05 /* 0.07 %RH */
++#define HTS221_H_AVG_256		0x06 /* 0.05 %RH */
++#define HTS221_H_AVG_512		0x07 /* 0.03 %RH */
++
++#define HTS221_T_AVG_2			0x00 /* 0.08 degC */
++#define HTS221_T_AVG_4			0x08 /* 0.05 degC */
++#define HTS221_T_AVG_8			0x10 /* 0.04 degC */
++#define HTS221_T_AVG_16			0x18 /* 0.03 degC */
++#define HTS221_T_AVG_32			0x20 /* 0.02 degC */
++#define HTS221_T_AVG_64			0x28 /* 0.015 degC */
++#define HTS221_T_AVG_128		0x30 /* 0.01 degC */
++#define HTS221_T_AVG_256		0x38 /* 0.007 degC */
++
++/* caldata registers */
++#define HTS221_REG_0RH_CAL_X_H		0x36
++#define HTS221_REG_1RH_CAL_X_H		0x3a
++#define HTS221_REG_0RH_CAL_Y_H		0x30
++#define HTS221_REG_1RH_CAL_Y_H		0x31
++#define HTS221_REG_0T_CAL_X_L		0x3c
++#define HTS221_REG_1T_CAL_X_L		0x3e
++#define HTS221_REG_0T_CAL_Y_H		0x32
++#define HTS221_REG_1T_CAL_Y_H		0x33
++#define HTS221_REG_T1_T0_CAL_Y_H	0x35
++
++struct hts221_odr {
++	u32 hz;
++	u8 val;
++};
++
++struct hts221_avg {
++	u8 addr;
++	u8 mask;
++	struct hts221_avg_avl avg_avl[HTS221_AVG_DEPTH];
++};
++
++static const struct hts221_odr hts221_odr_table[] = {
++	{ 1, 0x01 },	/* 1Hz */
++	{ 7, 0x02 },	/* 7Hz */
++	{ 13, 0x03 },	/* 12.5 HZ */
++};
++
++static const struct hts221_avg hts221_avg_list[] = {
++	{
++		.addr = HTS221_REG_H_AVG_ADDR,
++		.mask = HTS221_H_AVG_MASK,
++		.avg_avl = {
++			{ 4, HTS221_H_AVG_4 },
++			{ 8, HTS221_H_AVG_8 },
++			{ 16, HTS221_H_AVG_16 },
++			{ 32, HTS221_H_AVG_32 },
++			{ 64, HTS221_H_AVG_64 },
++			{ 128, HTS221_H_AVG_128 },
++			{ 256, HTS221_H_AVG_256 },
++			{ 512, HTS221_H_AVG_512 },
++		},
++	},
++	{
++		.addr = HTS221_REG_T_AVG_ADDR,
++		.mask = HTS221_T_AVG_MASK,
++		.avg_avl = {
++			{ 2, HTS221_T_AVG_2 },
++			{ 4, HTS221_T_AVG_4 },
++			{ 8, HTS221_T_AVG_8 },
++			{ 16, HTS221_T_AVG_16 },
++			{ 32, HTS221_T_AVG_32 },
++			{ 64, HTS221_T_AVG_64 },
++			{ 128, HTS221_T_AVG_128 },
++			{ 256, HTS221_T_AVG_256 },
++		},
++	},
++};
++
++static const struct iio_chan_spec hts221_channels[] = {
++	{
++		.type = IIO_HUMIDITYRELATIVE,
++		.address = HTS221_REG_H_OUT_L,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++	},
++	{
++		.type = IIO_TEMP,
++		.address = HTS221_REG_T_OUT_L,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_OFFSET) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++		.scan_index = 1,
++		.scan_type = {
++			.sign = 's',
++			.realbits = 16,
++			.storagebits = 16,
++			.endianness = IIO_LE,
++		},
++	},
++	IIO_CHAN_SOFT_TIMESTAMP(2),
++};
++
++static int hts221_write_with_mask(struct hts221_dev *dev, u8 addr, u8 mask,
++				  u8 val)
++{
++	u8 data;
++	int err;
++
++	mutex_lock(&dev->lock);
++
++	err = dev->tf->read(dev->dev, addr, 1, &data);
++	if (err < 0) {
++		dev_err(dev->dev, "failed to read %02x register\n", addr);
++		mutex_unlock(&dev->lock);
++
++		return err;
++	}
++
++	data = (data & ~mask) | (val & mask);
++
++	err = dev->tf->write(dev->dev, addr, 1, &data);
++	if (err < 0) {
++		dev_err(dev->dev, "failed to write %02x register\n", addr);
++		mutex_unlock(&dev->lock);
++
++		return err;
++	}
++
++	mutex_unlock(&dev->lock);
++
++	return 0;
++}
++
++static int hts221_check_whoami(struct hts221_dev *dev)
++{
++	u8 data;
++	int err;
++
++	err = dev->tf->read(dev->dev, HTS221_REG_WHOAMI_ADDR, 1, &data);
++	if (err < 0) {
++		dev_err(dev->dev, "failed to read whoami register\n");
++		return err;
++	}
++
++	if (data != HTS221_REG_WHOAMI_VAL) {
++		dev_err(dev->dev, "wrong whoami {%02x-%02x}\n",
++			data, HTS221_REG_WHOAMI_VAL);
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++int hts221_config_drdy(struct hts221_dev *dev, bool enable)
++{
++	u8 val = (enable) ? 0x04 : 0;
++
++	return hts221_write_with_mask(dev, HTS221_REG_CNTRL3_ADDR,
++				      DRDY_MASK, val);
++}
++
++static int hts221_update_odr(struct hts221_dev *dev, u8 odr)
++{
++	int i, err;
++
++	for (i = 0; i < ARRAY_SIZE(hts221_odr_table); i++)
++		if (hts221_odr_table[i].hz == odr)
++			break;
++
++	if (i == ARRAY_SIZE(hts221_odr_table))
++		return -EINVAL;
++
++	err = hts221_write_with_mask(dev, HTS221_REG_CNTRL1_ADDR, ODR_MASK,
++				     ENABLE_SENSOR | BDU_MASK |
++				     hts221_odr_table[i].val);
++	if (err < 0)
++		return err;
++
++	dev->odr = odr;
++
++	return 0;
++}
++
++static int hts221_update_avg(struct hts221_sensor *sensor, u16 val)
++{
++	int i, err;
++	const struct hts221_avg *avg = &hts221_avg_list[sensor->type];
++
++	for (i = 0; i < HTS221_AVG_DEPTH; i++)
++		if (avg->avg_avl[i].avg == val)
++			break;
++
++	if (i == HTS221_AVG_DEPTH)
++		return -EINVAL;
++
++	err = hts221_write_with_mask(sensor->dev, avg->addr, avg->mask,
++				     avg->avg_avl[i].val);
++	if (err < 0)
++		return err;
++
++	sensor->cur_avg_idx = i;
++
++	return 0;
++}
++
++static ssize_t hts221_sysfs_sampling_freq(struct device *dev,
++					  struct device_attribute *attr,
++					  char *buf)
++{
++	int i;
++	ssize_t len = 0;
++
++	for (i = 0; i < ARRAY_SIZE(hts221_odr_table); i++)
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
++				 hts221_odr_table[i].hz);
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static ssize_t
++hts221_sysfs_rh_oversampling_avail(struct device *dev,
++				   struct device_attribute *attr,
++				   char *buf)
++{
++	struct hts221_avg const *avg = &hts221_avg_list[HTS221_SENSOR_H];
++	ssize_t len = 0;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(avg->avg_avl); i++)
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
++				 avg->avg_avl[i].avg);
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++static ssize_t
++hts221_sysfs_temp_oversampling_avail(struct device *dev,
++				     struct device_attribute *attr,
++				     char *buf)
++{
++	struct hts221_avg const *avg = &hts221_avg_list[HTS221_SENSOR_T];
++	ssize_t len = 0;
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(avg->avg_avl); i++)
++		len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
++				 avg->avg_avl[i].avg);
++	buf[len - 1] = '\n';
++
++	return len;
++}
++
++int hts221_dev_power_on(struct hts221_dev *dev)
++{
++	struct hts221_sensor *sensor;
++	int i, err, val;
++
++	for (i = 0; i < HTS221_SENSOR_MAX; i++) {
++		sensor = &dev->sensors[i];
++		val = hts221_avg_list[i].avg_avl[sensor->cur_avg_idx].avg;
++
++		err = hts221_update_avg(sensor, val);
++		if (err < 0)
++			return err;
++	}
++
++	err = hts221_update_odr(dev, dev->odr);
++	if (err < 0)
++		return err;
++
++	return 0;
++}
++
++int hts221_dev_power_off(struct hts221_dev *dev)
++{
++	u8 data[] = {0x00, 0x00};
++
++	return dev->tf->write(dev->dev, HTS221_REG_CNTRL1_ADDR, 2, data);
++}
++
++static int hts221_parse_caldata(struct hts221_sensor *sensor)
++{
++	int err, *slope, *b_gen;
++	u8 addr_x0, addr_x1;
++	s16 cal_x0, cal_x1, cal_y0, cal_y1;
++	struct hts221_dev *dev = sensor->dev;
++
++	switch (sensor->type) {
++	case HTS221_SENSOR_H:
++		addr_x0 = HTS221_REG_0RH_CAL_X_H;
++		addr_x1 = HTS221_REG_1RH_CAL_X_H;
++
++		cal_y1 = 0;
++		cal_y0 = 0;
++		err = dev->tf->read(dev->dev, HTS221_REG_0RH_CAL_Y_H, 1,
++				    (u8 *)&cal_y0);
++		if (err < 0)
++			return err;
++
++		err = dev->tf->read(dev->dev, HTS221_REG_1RH_CAL_Y_H, 1,
++				    (u8 *)&cal_y1);
++		if (err < 0)
++			return err;
++		break;
++	case HTS221_SENSOR_T: {
++		u8 cal0, cal1;
++
++		addr_x0 = HTS221_REG_0T_CAL_X_L;
++		addr_x1 = HTS221_REG_1T_CAL_X_L;
++
++		err = dev->tf->read(dev->dev, HTS221_REG_0T_CAL_Y_H, 1,
++				    &cal0);
++		if (err < 0)
++			return err;
++
++		err = dev->tf->read(dev->dev, HTS221_REG_T1_T0_CAL_Y_H, 1,
++				    &cal1);
++		if (err < 0)
++			return err;
++		cal_y0 = (le16_to_cpu(cal1 & 0x3) << 8) | cal0;
++
++		err = dev->tf->read(dev->dev, HTS221_REG_1T_CAL_Y_H, 1,
++				    &cal0);
++		if (err < 0)
++			return err;
++
++		err = dev->tf->read(dev->dev, HTS221_REG_T1_T0_CAL_Y_H, 1,
++				    &cal1);
++		if (err < 0)
++			return err;
++		cal_y1 = (le16_to_cpu((cal1 & 0xc) >> 2) << 8) | cal0;
++		break;
++	}
++	default:
++		return -ENODEV;
++	}
++
++	err = dev->tf->read(dev->dev, addr_x0, 2, (u8 *)&cal_x0);
++	if (err < 0)
++		return err;
++	cal_x0 = le32_to_cpu(cal_x0);
++
++	err = dev->tf->read(dev->dev, addr_x1, 2, (u8 *)&cal_x1);
++	if (err < 0)
++		return err;
++	cal_x1 = le32_to_cpu(cal_x1);
++
++	slope = &sensor->slope;
++	b_gen = &sensor->b_gen;
++
++	*slope = ((cal_y1 - cal_y0) * 8000) / (cal_x1 - cal_x0);
++	*b_gen = (((s32)cal_x1 * cal_y0 - (s32)cal_x0 * cal_y1) * 1000) /
++		 (cal_x1 - cal_x0);
++	*b_gen *= 8;
++
++	return 0;
++}
++
++static int hts221_read_raw(struct iio_dev *iio_dev,
++			   struct iio_chan_spec const *ch,
++			   int *val, int *val2, long mask)
++{
++	struct hts221_dev *dev = iio_priv(iio_dev);
++	int ret;
++
++	ret = iio_device_claim_direct_mode(iio_dev);
++	if (ret)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW: {
++		u8 data[2];
++
++		ret = hts221_dev_power_on(dev);
++		if (ret < 0)
++			goto out;
++
++		msleep(50);
++
++		ret = dev->tf->read(dev->dev, ch->address, 2, data);
++		if (ret < 0)
++			goto out;
++
++		ret = hts221_dev_power_off(dev);
++		if (ret < 0)
++			goto out;
++
++		*val = (s16)get_unaligned_le16(data);
++		ret = IIO_VAL_INT;
++
++		break;
++	}
++	case IIO_CHAN_INFO_SCALE: {
++		s64 tmp;
++		s32 rem, div, data;
++
++		switch (ch->type) {
++		case IIO_HUMIDITYRELATIVE:
++			data = dev->sensors[HTS221_SENSOR_H].slope;
++			div = (1 << 4) * 1000;
++			break;
++		case IIO_TEMP:
++			data = dev->sensors[HTS221_SENSOR_T].slope;
++			div = (1 << 6) * 1000;
++			break;
++		default:
++			goto out;
++		}
++
++		tmp = div_s64(data * 1000000000LL, div);
++		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
++
++		*val = tmp;
++		*val2 = rem;
++		ret = IIO_VAL_INT_PLUS_NANO;
++		break;
++	}
++	case IIO_CHAN_INFO_OFFSET: {
++		s64 tmp;
++		s32 rem, div, data;
++
++		switch (ch->type) {
++		case IIO_HUMIDITYRELATIVE:
++			data = dev->sensors[HTS221_SENSOR_H].b_gen;
++			div = dev->sensors[HTS221_SENSOR_H].slope;
++			break;
++		case IIO_TEMP:
++			data = dev->sensors[HTS221_SENSOR_T].b_gen;
++			div = dev->sensors[HTS221_SENSOR_T].slope;
++			break;
++		default:
++			goto out;
++		}
++
++		tmp = div_s64(data * 1000000000LL, div);
++		tmp = div_s64_rem(tmp, 1000000000LL, &rem);
++
++		*val = tmp;
++		*val2 = abs(rem);
++		ret = IIO_VAL_INT_PLUS_NANO;
++		break;
++	}
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = dev->odr;
++		ret = IIO_VAL_INT;
++		break;
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO: {
++		u8 idx;
++		struct hts221_avg const *avg;
++
++		switch (ch->type) {
++		case IIO_HUMIDITYRELATIVE:
++			avg = &hts221_avg_list[HTS221_SENSOR_H];
++			idx = dev->sensors[HTS221_SENSOR_H].cur_avg_idx;
++			break;
++		case IIO_TEMP:
++			avg = &hts221_avg_list[HTS221_SENSOR_T];
++			idx = dev->sensors[HTS221_SENSOR_T].cur_avg_idx;
++			break;
++		default:
++			goto out;
++		}
++
++		*val = avg->avg_avl[idx].avg;
++		ret = IIO_VAL_INT;
++		break;
++	}
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++out:
++	iio_device_release_direct_mode(iio_dev);
++
++	return ret;
++}
++
++static int hts221_write_raw(struct iio_dev *iio_dev,
++			    struct iio_chan_spec const *chan,
++			    int val, int val2, long mask)
++{
++	struct hts221_dev *dev = iio_priv(iio_dev);
++	int ret;
++
++	ret = iio_device_claim_direct_mode(iio_dev);
++	if (ret)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		ret = hts221_update_odr(dev, val);
++		break;
++	case IIO_CHAN_INFO_OVERSAMPLING_RATIO: {
++		enum hts221_sensor_type type;
++
++		switch (chan->type) {
++		case IIO_HUMIDITYRELATIVE:
++			type = HTS221_SENSOR_H;
++			break;
++		case IIO_TEMP:
++			type = HTS221_SENSOR_T;
++			break;
++		default:
++			ret = -EINVAL;
++			goto out;
++		}
++
++		ret = hts221_update_avg(&dev->sensors[type], val);
++		break;
++	}
++	default:
++		ret = -EINVAL;
++		break;
++	}
++
++out:
++	iio_device_release_direct_mode(iio_dev);
++
++	return ret;
++}
++
++static IIO_DEVICE_ATTR(in_humidity_oversampling_ratio_available, S_IRUGO,
++		       hts221_sysfs_rh_oversampling_avail, NULL, 0);
++static IIO_DEVICE_ATTR(in_temp_oversampling_ratio_available, S_IRUGO,
++		       hts221_sysfs_temp_oversampling_avail, NULL, 0);
++static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hts221_sysfs_sampling_freq);
++
++static struct attribute *hts221_attributes[] = {
++	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
++	&iio_dev_attr_in_humidity_oversampling_ratio_available.dev_attr.attr,
++	&iio_dev_attr_in_temp_oversampling_ratio_available.dev_attr.attr,
++	NULL,
++};
++
++static const struct attribute_group hts221_attribute_group = {
++	.attrs = hts221_attributes,
++};
++
++static const struct iio_info hts221_info = {
++	.driver_module = THIS_MODULE,
++	.attrs = &hts221_attribute_group,
++	.read_raw = hts221_read_raw,
++	.write_raw = hts221_write_raw,
++};
++
++static const unsigned long hts221_scan_masks[] = {0x3, 0x0};
++
++int hts221_probe(struct hts221_dev *dev)
++{
++	struct iio_dev *iio_dev = iio_priv_to_dev(dev);
++	int i, err;
++
++	mutex_init(&dev->lock);
++
++	err = hts221_check_whoami(dev);
++	if (err < 0)
++		return err;
++
++	err = hts221_update_odr(dev, 1);
++	if (err < 0)
++		return err;
++
++	dev->odr = hts221_odr_table[0].hz;
++
++	iio_dev->modes = INDIO_DIRECT_MODE;
++	iio_dev->dev.parent = dev->dev;
++	iio_dev->available_scan_masks = hts221_scan_masks;
++	iio_dev->channels = hts221_channels;
++	iio_dev->num_channels = ARRAY_SIZE(hts221_channels);
++	iio_dev->name = HTS221_DEV_NAME;
++	iio_dev->info = &hts221_info;
++
++	for (i = 0; i < HTS221_SENSOR_MAX; i++) {
++		dev->sensors[i].type = i;
++		dev->sensors[i].dev = dev;
++
++		err = hts221_update_avg(&dev->sensors[i],
++					hts221_avg_list[i].avg_avl[3].avg);
++		if (err < 0)
++			goto power_off;
++
++		err = hts221_parse_caldata(&dev->sensors[i]);
++		if (err < 0)
++			goto power_off;
++	}
++
++	err = hts221_dev_power_off(dev);
++	if (err < 0)
++		return err;
++
++	if (dev->irq > 0) {
++		err = hts221_allocate_buffers(dev);
++		if (err < 0)
++			return err;
++
++		err = hts221_allocate_triggers(dev);
++		if (err) {
++			hts221_deallocate_buffers(dev);
++			return err;
++		}
++	}
++
++	return iio_device_register(iio_dev);
++
++power_off:
++	hts221_dev_power_off(dev);
++
++	return err;
++}
++EXPORT_SYMBOL(hts221_probe);
++
++int hts221_remove(struct hts221_dev *dev)
++{
++	struct iio_dev *iio_dev = iio_priv_to_dev(dev);
++	int err;
++
++	err = hts221_dev_power_off(dev);
++
++	iio_device_unregister(iio_dev);
++
++	if (dev->irq > 0) {
++		hts221_deallocate_triggers(dev);
++		hts221_deallocate_buffers(dev);
++	}
++
++	return err;
++}
++EXPORT_SYMBOL(hts221_remove);
++
++MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics hts221 sensor driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/humidity/hts221/hts221_i2c.c b/drivers/iio/humidity/hts221/hts221_i2c.c
+new file mode 100644
+index 0000000..28ea781
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/hts221_i2c.c
+@@ -0,0 +1,119 @@
++/*
++ * STMicroelectronics hts221 i2c driver
++ *
++ * Copyright 2016 STMicroelectronics Inc.
++ *
++ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/slab.h>
++#include "hts221.h"
++
++#define I2C_AUTO_INCREMENT	0x80
++
++static int hts221_i2c_read(struct device *dev, u8 addr, int len, u8 *data)
++{
++	struct i2c_msg msg[2];
++	struct i2c_client *client = to_i2c_client(dev);
++
++	if (len > 1)
++		addr |= I2C_AUTO_INCREMENT;
++
++	msg[0].addr = client->addr;
++	msg[0].flags = client->flags;
++	msg[0].len = 1;
++	msg[0].buf = &addr;
++
++	msg[1].addr = client->addr;
++	msg[1].flags = client->flags | I2C_M_RD;
++	msg[1].len = len;
++	msg[1].buf = data;
++
++	return i2c_transfer(client->adapter, msg, 2);
++}
++
++static int hts221_i2c_write(struct device *dev, u8 addr, int len, u8 *data)
++{
++	u8 send[len + 1];
++	struct i2c_msg msg;
++	struct i2c_client *client = to_i2c_client(dev);
++
++	if (len > 1)
++		addr |= I2C_AUTO_INCREMENT;
++
++	send[0] = addr;
++	memcpy(&send[1], data, len * sizeof(u8));
++
++	msg.addr = client->addr;
++	msg.flags = client->flags;
++	msg.len = len + 1;
++	msg.buf = send;
++
++	return i2c_transfer(client->adapter, &msg, 1);
++}
++
++static const struct hts221_transfer_function hts221_transfer_fn = {
++	.read = hts221_i2c_read,
++	.write = hts221_i2c_write,
++};
++
++static int hts221_i2c_probe(struct i2c_client *client,
++			    const struct i2c_device_id *id)
++{
++	struct hts221_dev *dev;
++	struct iio_dev *iio_dev;
++
++	iio_dev = devm_iio_device_alloc(&client->dev, sizeof(*dev));
++	if (!iio_dev)
++		return -ENOMEM;
++
++	i2c_set_clientdata(client, iio_dev);
++
++	dev = iio_priv(iio_dev);
++	dev->name = client->name;
++	dev->dev = &client->dev;
++	dev->irq = client->irq;
++	dev->tf = &hts221_transfer_fn;
++
++	return hts221_probe(dev);
++}
++
++static int hts221_i2c_remove(struct i2c_client *client)
++{
++	struct iio_dev *iio_dev = i2c_get_clientdata(client);
++	struct hts221_dev *dev = iio_priv(iio_dev);
++
++	return hts221_remove(dev);
++}
++
++static const struct of_device_id hts221_i2c_of_match[] = {
++	{ .compatible = "st,hts221", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, hts221_i2c_of_match);
++
++static const struct i2c_device_id hts221_i2c_id_table[] = {
++	{ HTS221_DEV_NAME },
++	{},
++};
++MODULE_DEVICE_TABLE(i2c, hts221_i2c_id_table);
++
++static struct i2c_driver hts221_driver = {
++	.driver = {
++		.name = "hts221_i2c",
++		.of_match_table = of_match_ptr(hts221_i2c_of_match),
++	},
++	.probe = hts221_i2c_probe,
++	.remove = hts221_i2c_remove,
++	.id_table = hts221_i2c_id_table,
++};
++module_i2c_driver(hts221_driver);
++
++MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics hts221 i2c driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/humidity/hts221/hts221_spi.c b/drivers/iio/humidity/hts221/hts221_spi.c
+new file mode 100644
+index 0000000..f0f649e
+--- /dev/null
++++ b/drivers/iio/humidity/hts221/hts221_spi.c
+@@ -0,0 +1,134 @@
++/*
++ * STMicroelectronics hts221 spi driver
++ *
++ * Copyright 2016 STMicroelectronics Inc.
++ *
++ * Lorenzo Bianconi <lorenzo.bianconi@st.com>
++ *
++ * Licensed under the GPL-2.
++ */
++
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/slab.h>
++#include "hts221.h"
++
++#define SENSORS_SPI_READ	0x80
++#define SPI_AUTO_INCREMENT	0x40
++
++static int hts221_spi_read(struct device *device, u8 addr, int len, u8 *data)
++{
++	int err;
++	struct spi_device *spi = to_spi_device(device);
++	struct iio_dev *iio_dev = spi_get_drvdata(spi);
++	struct hts221_dev *dev = iio_priv(iio_dev);
++
++	struct spi_transfer xfers[] = {
++		{
++			.tx_buf = dev->tb.tx_buf,
++			.bits_per_word = 8,
++			.len = 1,
++		},
++		{
++			.rx_buf = dev->tb.rx_buf,
++			.bits_per_word = 8,
++			.len = len,
++		}
++	};
++
++	if (len > 1)
++		addr |= SPI_AUTO_INCREMENT;
++	dev->tb.tx_buf[0] = addr | SENSORS_SPI_READ;
++
++	err = spi_sync_transfer(spi, xfers,  ARRAY_SIZE(xfers));
++	if (err < 0)
++		return err;
++
++	memcpy(data, dev->tb.rx_buf, len * sizeof(u8));
++
++	return len;
++}
++
++static int hts221_spi_write(struct device *device, u8 addr, int len, u8 *data)
++{
++	struct spi_device *spi = to_spi_device(device);
++	struct iio_dev *iio_dev = spi_get_drvdata(spi);
++	struct hts221_dev *dev = iio_priv(iio_dev);
++
++	struct spi_transfer xfers = {
++		.tx_buf = dev->tb.tx_buf,
++		.bits_per_word = 8,
++		.len = len + 1,
++	};
++
++	if (len >= HTS221_TX_MAX_LENGTH)
++		return -ENOMEM;
++
++	if (len > 1)
++		addr |= SPI_AUTO_INCREMENT;
++	dev->tb.tx_buf[0] = addr;
++	memcpy(&dev->tb.tx_buf[1], data, len);
++
++	return spi_sync_transfer(spi, &xfers, 1);
++}
++
++static const struct hts221_transfer_function hts221_transfer_fn = {
++	.read = hts221_spi_read,
++	.write = hts221_spi_write,
++};
++
++static int hts221_spi_probe(struct spi_device *spi)
++{
++	struct hts221_dev *dev;
++	struct iio_dev *iio_dev;
++
++	iio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*dev));
++	if (!iio_dev)
++		return -ENOMEM;
++
++	spi_set_drvdata(spi, iio_dev);
++
++	dev = iio_priv(iio_dev);
++	dev->name = spi->modalias;
++	dev->dev = &spi->dev;
++	dev->irq = spi->irq;
++	dev->tf = &hts221_transfer_fn;
++
++	return hts221_probe(dev);
++}
++
++static int hts221_spi_remove(struct spi_device *spi)
++{
++	struct iio_dev *iio_dev = spi_get_drvdata(spi);
++	struct hts221_dev *dev = iio_priv(iio_dev);
++
++	return hts221_remove(dev);
++}
++
++static const struct of_device_id hts221_spi_of_match[] = {
++	{ .compatible = "st,hts221", },
++	{},
++};
++MODULE_DEVICE_TABLE(of, hts221_spi_of_match);
++
++static const struct spi_device_id hts221_spi_id_table[] = {
++	{ HTS221_DEV_NAME },
++	{},
++};
++MODULE_DEVICE_TABLE(spi, hts221_spi_id_table);
++
++static struct spi_driver hts221_driver = {
++	.driver = {
++		.name = "hts221_spi",
++		.of_match_table = of_match_ptr(hts221_spi_of_match),
++	},
++	.probe = hts221_spi_probe,
++	.remove = hts221_spi_remove,
++	.id_table = hts221_spi_id_table,
++};
++module_spi_driver(hts221_driver);
++
++MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
++MODULE_DESCRIPTION("STMicroelectronics hts221 spi driver");
++MODULE_LICENSE("GPL v2");
 -- 
-1.9.1
+2.7.4
 
