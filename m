@@ -1,91 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f67.google.com ([209.85.220.67]:35420 "EHLO
-        mail-pa0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751260AbcJCRQE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2016 13:16:04 -0400
-Received: by mail-pa0-f67.google.com with SMTP id t6so5168343pae.2
-        for <linux-iio@vger.kernel.org>; Mon, 03 Oct 2016 10:16:04 -0700 (PDT)
-Date: Mon, 3 Oct 2016 10:16:02 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: sayli karnik <karniksayli1995@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        outreachy-kernel@googlegroups.com,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Subject: Re: [Outreachy kernel] [PATCH] iio: imu: bmi160: bmi160_core: Fix
- sparse warning
-Message-ID: <20161003171601.GC3132@d830.WORKGROUP>
-References: <20161001110418.GA25515@sayli-HP-15-Notebook-PC>
- <20161002050032.GA14117@d830.WORKGROUP>
- <e4800421-2dc9-2460-470b-a043d198f469@metafoo.de>
- <20161002232524.GA2822@d830.WORKGROUP>
- <CAKG5xWi6M5jemARfENuVgigaqUbvdJmeVbwpR3kWDM9d8LBW-w@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAKG5xWi6M5jemARfENuVgigaqUbvdJmeVbwpR3kWDM9d8LBW-w@mail.gmail.com>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:32775 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750969AbcJBOPz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 2 Oct 2016 10:15:55 -0400
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v7 0/5] mxs-lradc: Split driver into MFD
+Date: Sun,  2 Oct 2016 16:15:44 +0200
+Message-Id: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Oct 03, 2016 at 07:07:39PM +0530, sayli karnik wrote:
-> On Mon, Oct 3, 2016 at 4:55 AM, Alison Schofield <amsfield22@gmail.com> wrote:
-> > On Sun, Oct 02, 2016 at 05:53:08PM +0200, Lars-Peter Clausen wrote:
-> >> On 10/02/2016 07:00 AM, Alison Schofield wrote:
-> >> [...]
-> >> >> ---
-> >> >>  drivers/iio/imu/bmi160/bmi160_core.c | 3 ++-
-> >> >>  1 file changed, 2 insertions(+), 1 deletion(-)
-> >> >>
-> >> >> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> >> >> index e0251b8..5355507 100644
-> >> >> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> >> >> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> >> >> @@ -398,7 +398,8 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
-> >> >>    struct iio_poll_func *pf = p;
-> >> >>    struct iio_dev *indio_dev = pf->indio_dev;
-> >> >>    struct bmi160_data *data = iio_priv(indio_dev);
-> >> >> -  s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
-> >> >> +  __le16 buf[16];
-> >> >> +  /* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
-> >> >>    int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
-> >> >>    __le16 sample;
-> >> >
-> >> > Wondering about this option below.  Data was read into an __le16, so that
-> >> > was good diligence on drivers part.  Seems we can use le16_to_cpu() for the
-> >> > conversion into the buf.
-> >> >
-> >> > --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> >> > +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> >> > @@ -408,7 +408,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
-> >> >                                    &sample, sizeof(__le16));
-> >> >             if (ret < 0)
-> >> >                     goto done;
-> >> > -           buf[j++] = sample;
-> >> > +           buf[j++] = le16_to_cpu(sample);
-> >> >     }
-> >>
-> >> This conversion is usually skipped on purpose and delayed until it is
-> >> actually needed by the user. The IIO channel is accordingly marked that it
-> >> will produce LE data.
-> > Thanks Lars.  I knew that for buffers, overlooked it, now I'll know it
-> > better!
-> >
-> > So, Sayli, you probably got this from the analysis of the last patch.
-> > In buffered mode, we'll go ahead and return the data in it's 'native'
-> > order.  So, my suggestion to convert it here, is wrong.  Ignore ;)
-> >
-> Oh I see! So should I resend the patch with an updated
-> description?(cosmetic/bug fix)
+Split existing driver mxs-lradc into MFD with touchscreen and
+IIO part.
 
-Yes.  In the commit message, you can leave out the subdirs (imu: bmc160:)
-so that you have more space for a descriptive message of the change.
-alisons
+Tested on I.MX28.
 
-> 
-> thanks,
-> sayli
-> 
-> > alisons
-> >
-> >>
+Ksenija Stanojevic (5):
+  mfd: mxs-lradc: Add support for mxs-lradc MFD
+  iio: adc: mxs-lradc: Add support for adc driver
+  input: touchscreen: mxs-lradc: Add support for touchscreen
+  iio: adc: mxs-lradc: Remove driver
+  mfd: Move binding document
+
+ .../devicetree/bindings/iio/adc/mxs-lradc.txt      |   47 -
+ .../devicetree/bindings/mfd/mxs-lradc.txt          |   47 +
+ drivers/iio/adc/Kconfig                            |   27 +-
+ drivers/iio/adc/Makefile                           |    2 +-
+ drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
+ drivers/input/touchscreen/Kconfig                  |   10 +
+ drivers/input/touchscreen/Makefile                 |    1 +
+ drivers/mfd/Kconfig                                |   17 +
+ drivers/mfd/Makefile                               |    1 +
+ 9 files changed, 90 insertions(+), 1812 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+ delete mode 100644 drivers/iio/adc/mxs-lradc.c
+
+-- 
+1.9.1
+
