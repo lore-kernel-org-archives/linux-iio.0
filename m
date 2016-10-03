@@ -1,123 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58391 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58386 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753339AbcJCT1N (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2016 15:27:13 -0400
+        with ESMTP id S1753402AbcJCT1O (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2016 15:27:14 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 12/18] staging:iio:accel:sca3000 Add write support to the low pass filter control
-Date: Mon,  3 Oct 2016 20:26:56 +0100
-Message-Id: <20161003192702.24361-13-jic23@kernel.org>
+Subject: [PATCH 15/18] staging:iio:accel:sca3000 Tidy up probe order to avoid a race.
+Date: Mon,  3 Oct 2016 20:26:59 +0100
+Message-Id: <20161003192702.24361-16-jic23@kernel.org>
 In-Reply-To: <20161003192702.24361-1-jic23@kernel.org>
 References: <20161003192702.24361-1-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Also includes an available attribute.  The ordering of values appears
-a bit random, but as the ABI doesn't specify this and we already have
-both rising and falling lists I think this is fine.
+Previously the device was exposed to userspace and in kernel consumers
+before the interrupts had been configured. As nothing stopped them being
+enabled in the interval this could cause unhandled interrupts.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/accel/sca3000.c | 55 +++++++++++++++++++++++++++++++++++++
- 1 file changed, 55 insertions(+)
+ drivers/staging/iio/accel/sca3000.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/staging/iio/accel/sca3000.c b/drivers/staging/iio/accel/sca3000.c
-index e8f43df65142..7f03f916c9ec 100644
+index 2a911843fdf0..bb184eade558 100644
 --- a/drivers/staging/iio/accel/sca3000.c
 +++ b/drivers/staging/iio/accel/sca3000.c
-@@ -432,6 +432,26 @@ error_ret:
- 	return ret ? ret : len;
+@@ -1452,9 +1452,6 @@ static int sca3000_probe(struct spi_device *spi)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	sca3000_configure_ring(indio_dev);
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0)
+-		return ret;
+ 
+ 	if (spi->irq) {
+ 		ret = request_threaded_irq(spi->irq,
+@@ -1464,7 +1461,7 @@ static int sca3000_probe(struct spi_device *spi)
+ 					   "sca3000",
+ 					   indio_dev);
+ 		if (ret)
+-			goto error_unregister_dev;
++			return ret;
+ 	}
+ 	indio_dev->setup_ops = &sca3000_ring_setup_ops;
+ 	ret = sca3000_clean_setup(st);
+@@ -1475,13 +1472,12 @@ static int sca3000_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_free_irq;
+ 
+-	return 0;
++	return iio_device_register(indio_dev);
+ 
+ error_free_irq:
+ 	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+-error_unregister_dev:
+-	iio_device_unregister(indio_dev);
++
+ 	return ret;
  }
  
-+static ssize_t
-+sca3000_show_available_3db_freqs(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct sca3000_state *st = iio_priv(indio_dev);
-+	int len;
-+
-+	len = sprintf(buf, "%d", st->info->measurement_mode_3db_freq);
-+	if (st->info->option_mode_1)
-+		len += sprintf(buf + len, " %d",
-+			       st->info->option_mode_1_3db_freq);
-+	if (st->info->option_mode_2)
-+		len += sprintf(buf + len, " %d",
-+			       st->info->option_mode_2_3db_freq);
-+	len += sprintf(buf + len, "\n");
-+
-+	return len;
-+}
- /**
-  * sca3000_show_available_measurement_modes() display available modes
-  *
-@@ -570,6 +590,9 @@ static IIO_DEVICE_ATTR(measurement_mode, S_IRUGO | S_IWUSR,
- 		       sca3000_store_measurement_mode,
- 		       0);
+@@ -1508,11 +1504,13 @@ static int sca3000_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct sca3000_state *st = iio_priv(indio_dev);
  
-+static IIO_DEVICE_ATTR(in_accel_filter_low_pass_3db_frequency_available,
-+		       S_IRUGO, sca3000_show_available_3db_freqs,
-+		       NULL, 0);
- /* More standard attributes */
++	iio_device_unregister(indio_dev);
++
+ 	/* Must ensure no interrupts can be generated after this! */
+ 	sca3000_stop_all_interrupts(st);
+ 	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+-	iio_device_unregister(indio_dev);
++
+ 	sca3000_unconfigure_ring(indio_dev);
  
- static IIO_DEVICE_ATTR(revision, S_IRUGO, sca3000_show_rev, NULL, 0);
-@@ -778,6 +801,31 @@ static int sca3000_read_3db_freq(struct sca3000_state *st, int *val)
- 	}
- }
- 
-+static int sca3000_write_3db_freq(struct sca3000_state *st, int val)
-+{
-+	int ret;
-+	int mode;
-+
-+	if (val == st->info->measurement_mode_3db_freq)
-+		mode = SCA3000_REG_MODE_MEAS_MODE_NORMAL;
-+	else if (st->info->option_mode_1 &&
-+		 (val == st->info->option_mode_1_3db_freq))
-+		mode = SCA3000_REG_MODE_MEAS_MODE_OP_1;
-+	else if (st->info->option_mode_2 &&
-+		 (val == st->info->option_mode_2_3db_freq))
-+		mode = SCA3000_REG_MODE_MEAS_MODE_OP_2;
-+	else
-+		return -EINVAL;
-+	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
-+	if (ret)
-+		return ret;
-+
-+	st->rx[0] &= ~SCA3000_REG_MODE_MODE_MASK;
-+	st->rx[0] |= (mode & SCA3000_REG_MODE_MODE_MASK);
-+
-+	return sca3000_write_reg(st, SCA3000_REG_MODE_ADDR, st->rx[0]);
-+}
-+
- static int sca3000_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val,
-@@ -860,6 +908,12 @@ static int sca3000_write_raw(struct iio_dev *indio_dev,
- 		ret = write_raw_samp_freq(st, val);
- 		mutex_unlock(&st->lock);
- 		return ret;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		if (val2)
-+			return -EINVAL;
-+		mutex_lock(&st->lock);
-+		ret = sca3000_write_3db_freq(st, val);
-+		mutex_unlock(&st->lock);
- 	default:
- 		return -EINVAL;
- 	}
-@@ -1006,6 +1060,7 @@ static struct attribute *sca3000_attributes[] = {
- 	&iio_dev_attr_revision.dev_attr.attr,
- 	&iio_dev_attr_measurement_mode_available.dev_attr.attr,
- 	&iio_dev_attr_measurement_mode.dev_attr.attr,
-+	&iio_dev_attr_in_accel_filter_low_pass_3db_frequency_available.dev_attr.attr,
- 	&iio_dev_attr_sampling_frequency_available.dev_attr.attr,
- 	NULL,
- };
+ 	return 0;
 -- 
 2.10.0
 
