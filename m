@@ -1,39 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58370 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58367 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752984AbcJCT1L (ORCPT
+        with ESMTP id S1753156AbcJCT1L (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2016 15:27:11 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 01/18] staging:iio:accel:sca3000 Fix a use before setting of the indio_dev->buffer pointer.
-Date: Mon,  3 Oct 2016 20:26:45 +0100
-Message-Id: <20161003192702.24361-2-jic23@kernel.org>
+Subject: [PATCH 03/18] staging:iio:accel:sca3000 drop sca3000_register_ring_funcs
+Date: Mon,  3 Oct 2016 20:26:47 +0100
+Message-Id: <20161003192702.24361-4-jic23@kernel.org>
 In-Reply-To: <20161003192702.24361-1-jic23@kernel.org>
 References: <20161003192702.24361-1-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This was needed when the buffer support was optional. Pointless wrapper
+now so drop it.
+
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/accel/sca3000_ring.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/accel/sca3000.c | 7 +------
+ 1 file changed, 1 insertion(+), 6 deletions(-)
 
-diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
-index d1cb9b9cf22b..e5de52d05a5c 100644
---- a/drivers/staging/iio/accel/sca3000_ring.c
-+++ b/drivers/staging/iio/accel/sca3000_ring.c
-@@ -270,8 +270,8 @@ int sca3000_configure_ring(struct iio_dev *indio_dev)
- 		return -ENOMEM;
- 	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
+diff --git a/drivers/staging/iio/accel/sca3000.c b/drivers/staging/iio/accel/sca3000.c
+index 62ab1aef2528..36a52d02ee0e 100644
+--- a/drivers/staging/iio/accel/sca3000.c
++++ b/drivers/staging/iio/accel/sca3000.c
+@@ -1504,11 +1504,6 @@ static const struct iio_buffer_setup_ops sca3000_ring_setup_ops = {
+ 	.postdisable = &sca3000_hw_ring_postdisable,
+ };
  
--	indio_dev->buffer->access = &sca3000_ring_access_funcs;
- 
-+	buffer->access = &sca3000_ring_access_funcs;
- 	iio_device_attach_buffer(indio_dev, buffer);
- 
- 	return 0;
+-static void sca3000_register_ring_funcs(struct iio_dev *indio_dev)
+-{
+-	indio_dev->setup_ops = &sca3000_ring_setup_ops;
+-}
+-
+ /**
+  * sca3000_clean_setup() get the device into a predictable state
+  *
+@@ -1631,7 +1626,7 @@ static int sca3000_probe(struct spi_device *spi)
+ 		if (ret)
+ 			goto error_unregister_dev;
+ 	}
+-	sca3000_register_ring_funcs(indio_dev);
++	indio_dev->setup_ops = &sca3000_ring_setup_ops;
+ 	ret = sca3000_clean_setup(st);
+ 	if (ret)
+ 		goto error_free_irq;
 -- 
 2.10.0
 
