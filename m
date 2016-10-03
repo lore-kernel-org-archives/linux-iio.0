@@ -1,55 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:49184 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S936397AbcJGAt6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 6 Oct 2016 20:49:58 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Subject: [PATCH 3/4] staging: iio: isl29018: rename Kconfig variable to match existing light drivers in mainline.
-Date: Thu,  6 Oct 2016 20:48:36 -0400
-Message-Id: <1475801317-29449-3-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
-References: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
+Received: from devils.ext.ti.com ([198.47.26.153]:38415 "EHLO
+        devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751991AbcJCNEf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2016 09:04:35 -0400
+From: Mugunthan V N <mugunthanvnm@ti.com>
+To: <linux-iio@vger.kernel.org>
+CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        John Syne <john3909@gmail.com>,
+        Mugunthan V N <mugunthanvnm@ti.com>
+Subject: [PATCH v2 1/4] mfd: ti_am335x_tscadc: store physical address
+Date: Mon, 3 Oct 2016 18:33:15 +0530
+Message-ID: <20161003130318.12591-2-mugunthanvnm@ti.com>
+In-Reply-To: <20161003130318.12591-1-mugunthanvnm@ti.com>
+References: <20161003130318.12591-1-mugunthanvnm@ti.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Rename CONFIG_SENSORS_ISL29018 to CONFIG_ISL29018 for consistency with
-the other light drivers in mainline.
+store the physical address of the device in its priv to use it
+for DMA addressing in the client drivers.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
 ---
- drivers/staging/iio/light/Kconfig  | 2 +-
- drivers/staging/iio/light/Makefile | 2 +-
- 2 files changed, 2 insertions(+), 2 deletions(-)
+ drivers/mfd/ti_am335x_tscadc.c       | 1 +
+ include/linux/mfd/ti_am335x_tscadc.h | 1 +
+ 2 files changed, 2 insertions(+)
 
-diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-index ca8d6e6..b0e2948 100644
---- a/drivers/staging/iio/light/Kconfig
-+++ b/drivers/staging/iio/light/Kconfig
-@@ -3,7 +3,7 @@
- #
- menu "Light sensors"
+diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+index c8f027b..0f3fab4 100644
+--- a/drivers/mfd/ti_am335x_tscadc.c
++++ b/drivers/mfd/ti_am335x_tscadc.c
+@@ -183,6 +183,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+ 		tscadc->irq = err;
  
--config SENSORS_ISL29018
-+config ISL29018
- 	tristate "ISL 29018 light and proximity sensor"
- 	depends on I2C
- 	select REGMAP_I2C
-diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-index 9960fdf..89d6b02 100644
---- a/drivers/staging/iio/light/Makefile
-+++ b/drivers/staging/iio/light/Makefile
-@@ -2,7 +2,7 @@
- # Makefile for industrial I/O Light sensors
- #
- 
--obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
-+obj-$(CONFIG_ISL29018)	+= isl29018.o
- obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
- obj-$(CONFIG_TSL2583)	+= tsl2583.o
- obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
+ 	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	tscadc->tscadc_phys_base = res->start;
+ 	tscadc->tscadc_base = devm_ioremap_resource(&pdev->dev, res);
+ 	if (IS_ERR(tscadc->tscadc_base))
+ 		return PTR_ERR(tscadc->tscadc_base);
+diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+index 7f55b8b..e45a208 100644
+--- a/include/linux/mfd/ti_am335x_tscadc.h
++++ b/include/linux/mfd/ti_am335x_tscadc.h
+@@ -155,6 +155,7 @@ struct ti_tscadc_dev {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+ 	void __iomem *tscadc_base;
++	phys_addr_t tscadc_phys_base;
+ 	int irq;
+ 	int used_cells;	/* 1-2 */
+ 	int tsc_wires;
 -- 
-2.5.5
+2.10.0.372.g6fe1b14
 
