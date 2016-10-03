@@ -1,69 +1,57 @@
-Return-Path: <amsfield22@gmail.com>
-Date: Sat, 1 Oct 2016 09:49:33 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Ico Doornekamp <ico@pruts.nl>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] io: adc: ad7606_core: fix signed/unsigned number
- comparison
-Message-ID: <20161001164932.GA2815@d830.WORKGROUP>
-References: <20160928134149.2563-1-ico@pruts.nl>
- <c4a0a801-14d6-7ea9-ec4f-958449a9dcb6@kernel.org>
- <1475338371-sup-5926@pruts.nl>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1475338371-sup-5926@pruts.nl>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58366 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753219AbcJCT1L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 3 Oct 2016 15:27:11 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 04/18] staging:iio:accel:sca3000 Fix clearing of flag + setting of size of scan.
+Date: Mon,  3 Oct 2016 20:26:48 +0100
+Message-Id: <20161003192702.24361-5-jic23@kernel.org>
+In-Reply-To: <20161003192702.24361-1-jic23@kernel.org>
+References: <20161003192702.24361-1-jic23@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Oct 01, 2016 at 06:17:02PM +0200, Ico Doornekamp wrote:
-> * On 2016-10-01 18:09:44 +0200, Jonathan Cameron wrote:
->  
-> > On 28/09/16 14:41, Ico Doornekamp wrote:
-> > > reported by 'make W=2' in ad7606_oversampling_get_index()
-> > > 
-> > > Signed-off-by: Ico Doornekamp <ico@pruts.nl>
-> > hmm. It's pretty much a non problem in the first place as we know
-> > it can't cause issues (can see it is 7).   Also this really just
-> > moves to typecasting it later when we return i.
-> > 
-> > So unless I'm missing something I'm not going to apply this one.
-> 
-> Fair enough. It's one of those little penguin task things again, you
-> probably guessed already. 'Find a bug reported by sparse and fix it'.
-> But your IIO tree is simply too high-quality, sparse has nothing to
-> complain :)
+Not clearing the stuff_to_read flag can lead to a false flag being set
+on restarting the buffer if the data was not all read the previous time.
 
-Hi Ico,
+The size of the scan is needed to ensure the function
+iio_buffer_read_first_n_outer actually tries to read the data.
 
-Flattering the maintainer, always good and so true, so true :)
+This stuff has been broken for some time so not stable material.
 
-Here's something found by sparse for little penguin.
-See the Outreachy tasks page.  https://kernelnewbies.org/IIO_tasks
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/accel/sca3000.c | 13 +++++++++++++
+ 1 file changed, 13 insertions(+)
 
-You'll see I leveraged your IIO_CHAN* patch for the first coding task.
-We have a second coding task for sparse endianness patches.  There are
-some remaining.  If you tell me you're grabbing one, I'll put it on
-our claimed page so an applicant doesn't start on it. 
+diff --git a/drivers/staging/iio/accel/sca3000.c b/drivers/staging/iio/accel/sca3000.c
+index 36a52d02ee0e..8af7d83e658d 100644
+--- a/drivers/staging/iio/accel/sca3000.c
++++ b/drivers/staging/iio/accel/sca3000.c
+@@ -1491,6 +1491,19 @@ error_ret:
+  **/
+ static int sca3000_hw_ring_preenable(struct iio_dev *indio_dev)
+ {
++	/*
++	 * Set stuff to read to indicate no data present.
++	 * Need for cases where the interrupt had fired at the
++	 * end of a cycle, but the data was never read.
++	 */
++	indio_dev->buffer->stufftoread = 0;
++	/*
++	 * Needed to ensure the core will actually read data
++	 * from the device rather than assuming no channels
++	 * are enabled.
++	 */
++	indio_dev->buffer->bytes_per_datum = 6;
++
+ 	return __sca3000_hw_ring_state_set(indio_dev, 1);
+ }
+ 
+-- 
+2.10.0
 
-I know this one is unclaimed at the moment:
-CHECK   drivers/iio/magnetometer/ak8974.c
-drivers/iio/magnetometer/ak8974.c:403:16: warning: cast to restricted
-__le16
-drivers/iio/magnetometer/ak8974.c:480:24: warning: cast to restricted
-__le16
-
-alisons
-
-
-
-
-
-
-> 
-> -- 
-> :wq
-> ^X^Cy^K^X^C^C^C^C
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
