@@ -1,241 +1,273 @@
-Return-Path: <jdelvare@suse.de>
-Date: Fri, 7 Oct 2016 14:32:13 +0200
-From: Jean Delvare <jdelvare@suse.de>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Jonathan Cameron <jic23@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
- Eduardo Valentin <edubezval@gmail.com>, Punit Agrawal
- <punit.agrawal@arm.com>, linux-pm@vger.kernel.org,
- linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
- linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/9] hwmon: (core) New hwmon registration API
-Message-ID: <20161007143213.0ba633fe@endymion>
-In-Reply-To: <20161004193713.GA26304@roeck-us.net>
-References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
- <1469417552-9749-3-git-send-email-linux@roeck-us.net>
- <1475570759.3052.22.camel@chaos.suse>
- <20161004193713.GA26304@roeck-us.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:36512 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751423AbcJDSJl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 4 Oct 2016 14:09:41 -0400
+Received: by mail-pf0-f195.google.com with SMTP id n24so10599876pfb.3
+        for <linux-iio@vger.kernel.org>; Tue, 04 Oct 2016 11:09:41 -0700 (PDT)
+Date: Tue, 4 Oct 2016 11:09:39 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: eraretuya@gmail.com, Jonathan Cameron <jic23@kernel.org>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+        daniel.baluta@gmail.com
+Subject: Re: [PATCH v2] staging: iio: ad7192: implement
+ IIO_CHAN_INFO_SAMP_FREQ
+Message-ID: <20161004180938.GA3819@d830.WORKGROUP>
+References: <1475308164-3461-1-git-send-email-eraretuya@gmail.com>
+ <a1258b09-192c-3870-e7b2-057ceeb1dc62@kernel.org>
+ <20161003040045.GB2267@Socrates-DK>
+ <3cc1b4d1-b1c9-21f4-8ab1-3672b3aa3845@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <3cc1b4d1-b1c9-21f4-8ab1-3672b3aa3845@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Guenter,
-
-On Tue, 4 Oct 2016 12:37:13 -0700, Guenter Roeck wrote:
-> On Tue, Oct 04, 2016 at 10:45:59AM +0200, Jean Delvare wrote:
-> > I see this patch is upstream now, but I had started reviewing it and
-> > maybe some of my comments are still relevant.
+On Mon, Oct 03, 2016 at 08:56:07PM +0100, Jonathan Cameron wrote:
+> On 03/10/16 05:00, Eva Rachel Retuya wrote:
+> > On Sat, Oct 01, 2016 at 12:35:26PM +0100, Jonathan Cameron wrote:
+> >> On 01/10/16 08:49, Eva Rachel Retuya wrote:
+> >>> This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ attribute
+> >>> wherein usage has some advantages like it can be accessed by in-kernel
+> >>> consumers as well as reduces the code size.
+> >>>
+> >>> Therefore, use IIO_CHAN_INFO_SAMP_FREQ to implement the sampling_frequency
+> >>> attribute instead of using IIO_DEV_ATTR_SAMP_FREQ() macro.
+> >>>
+> >>> Move code from the functions associated with IIO_DEV_ATTR_SAMP_FREQ() into
+> >>> respective read and write hooks with the mask set to IIO_CHAN_INFO_SAMP_FREQ.
+> >>>
+> >>> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+> >> Given this is heading away from the generic staging fixes and into the
+> >> list of specific IIO tasks, please do make sure to cc the linux-iio
+> >> list.
+> >>
+> >> (I'd prefer that for all IIO touching patches - but give that's somewhat
+> >> of an oddity for staging I don't really mind that much)
+> >>
 > > 
-> As always, I appreciate the feedback. I'll be happy to submit follow-up
-> patches to address any concerns.
+> > My apologies for that. I will include the linux-iio list in the future
+> > revisions and patch submissions. (cc'ing the list now..)
+> > 
+> >> Otherwise, almost perfect, but there is a weird corner in this driver.
+> >>
+> >> Take a look at what write_raw_get_fmt is set to...
+> >> For this write it should return be IIO_VAL_INT;
+> >>
+> > 
+> > I had set the return to IIO_VAL_INT already. Can you please point out where
+> > else I had missed?
+> You return that for the read which is quite correct, the interesting one
+> is the write_raw callback change.  Have a bit of a dig into how that knows
+> what it is getting (in val and val2).
+
+Hi Eva,
+
+Replying back in this main thread to keep all in one place.
+
+If you go look at the iio_info struct definition (be sure to scroll up
+and see the comments), you'll find this info you need. I believe you'll
+add a case for your new attribute to *write_raw_get_fmt().
+
+See if that gets you further along.
+
+Questions, please ask in this thread.
+Thanks,
+alisons
+
 > 
-> > It's not meant to be a complete review, which is why I had not sent it
-> > yet :-(
 > > 
-> > Also I did not follow the first iterations of this patchset so my
-> > apologies if I raise points which have already been discussed.
+> >> Lars / Michael, this driver is only a very small distance from being
+> >> fine to move out of staging.  I'm basically seeing two bits of
+> >> custom ABI that need documenting and review, but otherwise post
+> >> this cleanup looks in pretty good state to me.
+> >>
 > > 
-> > May I ask if any other subsystem is already doing anything like that?
+> > By any chance, are you referring to these:
+> > static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
+> > 			     in_voltage-voltage_scale_available,
+> > 			     S_IRUGO, ad7192_show_scale_available, NULL, 0);
 > > 
-> Depends what you mean with "anything like that". The API is inspired by
-> the iio API and a little by the thermal API. The details are probably
-> unique, though.
-
-I meant the idea of describing the device capabilities and letting the
-core code generate the device attributes (or anything else) based on
-that data. The benefits are obvious, but it has a complexity and
-run-time cost so I am wondering how popular this approach is.
-
-> > FYI I gave a presentation about the hwmon device registration API
-> > evolution last week at Kernel Recipes [1] in Paris and mentioned this
-> > proposal.
-> > 
-> > [1] https://kernel-recipes.org/en/2016/
-> > 
-> > On dim., 2016-07-24 at 20:32 -0700, Guenter Roeck wrote:
-> > > Up to now, each hwmon driver has to implement its own sysfs attributes.
-> > > This requires a lot of template code, and distracts from the driver's core
-> > > function to read and write chip registers.
-> > > 
-> > > To be able to reduce driver complexity, move sensor attribute handling
-> > > and thermal zone registration into hwmon core. By using the new API,
-> > > driver code and data size is typically reduced by 20-70%, depending
-> > > on driver complexity and the number of sysfs attributes supported.
-> > 
-> > I looked at the diffstats for the drivers you have already converted and
-> > couldn't see any such huge improvement... Some drivers appear to be even
-> > larger after conversion?
-> > 
-> The above refers to code and data sizes.
-
-You mean at the binary level?
-
-Have you considered the case where several devices exist for the same
-driver? Static attributes are shared between devices, but with the
-generated ones this is no longer the case, right?
-
-> > > (...)
-> > > +static struct attribute *hwmon_genattr(struct device *dev,
-> > > +				       const void *drvdata,
-> > > +				       enum hwmon_sensor_types type,
-> > > +				       u32 attr,
-> > > +				       int index,
-> > > +				       const char *template,
-> > > +				       const struct hwmon_ops *ops)
-> > > +{
-> > > +	struct hwmon_device_attribute *hattr;
-> > > +	struct device_attribute *dattr;
-> > > +	struct attribute *a;
-> > > +	umode_t mode;
-> > > +	char *name;
-> > > +
-> > > +	/* The attribute is invisible if there is no template string */
-> > > +	if (!template)
-> > > +		return ERR_PTR(-ENOENT);
-> > > +
-> > > +	mode = ops->is_visible(drvdata, type, attr, index);
-> > 
-> > Any reason why you don't simply attach the provided ->is_visible to the
-> > attribute group and let the driver core do the work?
-> > 
-> Parameter are all different
-> 	umode_t (*is_visible)(const void *drvdata, enum hwmon_sensor_types type,
-> 	                              u32 attr, int channel);
-> vs.
-> 	umode_t (*is_visible)(struct kobject *, struct attribute *, int);
-
-But this is the consequence of how you implemented it, not the reason?
-
-Now I seem to understand that delegating the check to the driver core
-would make it happen later, which means you would have to instantiate
-all attributes, even if some are never going to be used? So this is an
-optimization?
-
-But this prevents sharing the attributes between devices, as pointed
-out above. Well, I guess you can't have it all. I don't know what is
-the more important.
-
-> > > +		return ERR_PTR(-ENOENT);
-> > > +
-> > > +	if ((mode & S_IRUGO) && !ops->read)
-> > > +		return ERR_PTR(-EINVAL);
-> > > +	if ((mode & S_IWUGO) && !ops->write)
-> > > +		return ERR_PTR(-EINVAL);
-> > > +
-> > > +	if (type == hwmon_chip) {
-> > 
-> > This needs a comment. It's not obvious what "hwmon_chip" is supposed to
-> > represent. From what I understand, maybe "hwmon_unique" would be a more
-> > appropriate name.
-> > 
-> Those are meant to be for attributes which apply to the entire chip.
-
-Not really. As you implemented it, it is meant for attributes which are
-not specific to an input or output in particular. That is, attributes
-which do not include a channel number. "update_interval" and
-"alarms" (which I'd like to get rid of, btw) apply to the entire chip,
-but "temp_reset_history" does not.
-
-> Not sure if 'hwmon_unique' would reflect that better.
-> From the documentation:
-> 	"A virtual sensor type, used to describe attributes
-> 	 which apply to the entire chip"
+> > static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
+> > 		       ad7192_show_scale_available, NULL, 0);
+> Those two are actually standard ABI (though there is a long term plan to handle
+> the available attributes in a nicer fashion)
 > 
-> Do you have an idea for a better description ?
-
-For one thing I would rename hwmon_chip_attr_templates to
-hwmon_chip_attrs (or whatever, without _templates.) They are used
-directly, as opposed to all other hwmon_*_attr_templates strings which
-must be generated as needed.
-
-This is the reason why the term "unique" came to my mind: the absence
-of %d in the name makes this array special. If we can't find a name
-that expresses that, I think a comment should be added to explain it.
-
-As for the description in the documentation, what about:
-
-	"A virtual sensor type, used to describe attributes
-	which are not bound to a specific input or output"
-
-"input or output" could be shortened as "channel" but I think spelling
-it out is more explicit.
-
-> > > +		name = (char *)template;
-> > > +	} else {
-> > > +		name = devm_kzalloc(dev, strlen(template) + 16, GFP_KERNEL);
-> > > +		if (!name)
-> > > +			return ERR_PTR(-ENOMEM);
-> > > +		scnprintf(name, strlen(template) + 16, template,
-> > > +			  index + hwmon_attr_base(type));
-> > > +	}
-> > > +
-> > > +	hattr = devm_kzalloc(dev, sizeof(*hattr), GFP_KERNEL);
-> > > +	if (!hattr)
-> > > +		return ERR_PTR(-ENOMEM);
+> The custom pair are bridge_switch_en and ac_excitation_en,
 > > 
-> > So basically you are doing 1 or 2 memory allocations for every
-> > attribute? Looks quite bad from a memory fragmentation
-> > perspective :-( Not to mention performance. Given that you have all the
-> > data at hand before you start, can't you preallocate an array with the
-> > right number of hattr and pick from it? That would at least solve half
-> > of the problem.
-
-FTR I took a quick look at the iio code and there seems to be something
-like the idea above implemented in iio_device_register_sysfs(). But
-attributes themselves as instantiated by iio_device_register_sysfs()
-are still allocated individually. But hey I'm not familiar with the iio
-code anyway, I'm sure you know it better than I do.
-
-> > Something similar for string allocation may work too, although it's
-> > somewhat more complex due to the variable length. But I think the
-> > abituguru3 driver is doing it right, so maybe you can too.
->
-> I'll look into it.
-
-> > (...)
-> > As a side note I am wondering if it would be reasonable to limit it to a
-> > single group, instead of a NULL-terminated array of groups. This would
-> > make the code a little more efficient.
+> > Can you please guide me as to what to do next on the "documenting" part,
+> > and should I send a patchset instead with this and the documentation bit
+> > put together?
+> This one definitely wants input from Lars-Peter.  I don't know the hardware
+> at all.  It might be possible to work out what these are well enough to
+> figure out if the ABI is 'right' (by which I mean well defined within the
+> full set of IIO ABIs) and to work out some documentation.
+> 
+> However such docs would still want a review from Lars or one of his colleagues.
 > > 
-> The underlying code is all the same; hwmon_device_register_with_groups()
-> also calls __hwmon_device_register(). I would prefer to keep the code as
-> common as possible.
-
-OK, that makes sense. Maybe it can be revisited when/if we manage to
-remove some of the old registration methods.
-
-> > > (...)
-> > > @@ -26,6 +164,16 @@ struct device *
-> > >  devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
-> > >  				       void *drvdata,
-> > >  				       const struct attribute_group **groups);
-> > > +struct device *
-> > > +hwmon_device_register_with_info(struct device *dev,
-> > > +				const char *name, void *drvdata,
-> > > +				const struct hwmon_chip_info *info,
-> > > +				const struct attribute_group **groups);
-> > > +struct device *
-> > > +devm_hwmon_device_register_with_info(struct device *dev,
-> > > +				     const char *name, void *drvdata,
-> > > +				     const struct hwmon_chip_info *info,
-> > > +				     const struct attribute_group **groups);
-> > >  
-> > >  void hwmon_device_unregister(struct device *dev);
-> > >  void devm_hwmon_device_unregister(struct device *dev);
+> > Thanks for the feedback,
+> You are welcome.
+> 
+> Jonathan
+> > Eva
 > > 
-> > This is adding a 4th and 5th way to register a hwmon device. Starts
-> > being a bit messy... Do you have any plans to get rid of some of the
-> > other functions to make things more consistent and efficient?
->
-> Would be nice, but then someone would have to spend the time cleaning
-> up the old drivers to replace the old API, and for the most part we would
-> not be able to test the result. Are you sure that is worth the risk ?
-
-What I had in mind was rather along the lines of marking the function
-as __deprecated, adding a run-time notice message when it is called,
-and let whoever uses these driver contribute the fix. Call me an
-optimistic :-) There are 54 drivers still using
-hwmon_device_register(), out of 157.
-
--- 
-Jean Delvare
-SUSE L3 Support
+> >> Thanks,
+> >>
+> >> Jonathan
+> >>> ---
+> >>> Changes in v2:
+> >>> * Make commit message more detailed
+> >>> * Fix tiny bug about bypassing iio_device_release_direct_mode()
+> >>> * Remove unneeded goto and use break instead
+> >>>
+> >>>  drivers/staging/iio/adc/ad7192.c       | 75 ++++++++++------------------------
+> >>>  include/linux/iio/adc/ad_sigma_delta.h |  1 +
+> >>>  2 files changed, 22 insertions(+), 54 deletions(-)
+> >>>
+> >>> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> >>> index 1cf6b79..e6e4505 100644
+> >>> --- a/drivers/staging/iio/adc/ad7192.c
+> >>> +++ b/drivers/staging/iio/adc/ad7192.c
+> >>> @@ -322,57 +322,6 @@ out:
+> >>>  	return ret;
+> >>>  }
+> >>>  
+> >>> -static ssize_t ad7192_read_frequency(struct device *dev,
+> >>> -				     struct device_attribute *attr,
+> >>> -				     char *buf)
+> >>> -{
+> >>> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >>> -	struct ad7192_state *st = iio_priv(indio_dev);
+> >>> -
+> >>> -	return sprintf(buf, "%d\n", st->mclk /
+> >>> -			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode)));
+> >>> -}
+> >>> -
+> >>> -static ssize_t ad7192_write_frequency(struct device *dev,
+> >>> -				      struct device_attribute *attr,
+> >>> -				      const char *buf,
+> >>> -				      size_t len)
+> >>> -{
+> >>> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> >>> -	struct ad7192_state *st = iio_priv(indio_dev);
+> >>> -	unsigned long lval;
+> >>> -	int div, ret;
+> >>> -
+> >>> -	ret = kstrtoul(buf, 10, &lval);
+> >>> -	if (ret)
+> >>> -		return ret;
+> >>> -	if (lval == 0)
+> >>> -		return -EINVAL;
+> >>> -
+> >>> -	ret = iio_device_claim_direct_mode(indio_dev);
+> >>> -	if (ret)
+> >>> -		return ret;
+> >>> -
+> >>> -	div = st->mclk / (lval * st->f_order * 1024);
+> >>> -	if (div < 1 || div > 1023) {
+> >>> -		ret = -EINVAL;
+> >>> -		goto out;
+> >>> -	}
+> >>> -
+> >>> -	st->mode &= ~AD7192_MODE_RATE(-1);
+> >>> -	st->mode |= AD7192_MODE_RATE(div);
+> >>> -	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+> >>> -
+> >>> -out:
+> >>> -	iio_device_release_direct_mode(indio_dev);
+> >>> -
+> >>> -	return ret ? ret : len;
+> >>> -}
+> >>> -
+> >>> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> >>> -		ad7192_read_frequency,
+> >>> -		ad7192_write_frequency);
+> >>> -
+> >>>  static ssize_t
+> >>>  ad7192_show_scale_available(struct device *dev,
+> >>>  			    struct device_attribute *attr, char *buf)
+> >>> @@ -471,7 +420,6 @@ static IIO_DEVICE_ATTR(ac_excitation_en, S_IRUGO | S_IWUSR,
+> >>>  		       AD7192_REG_MODE);
+> >>>  
+> >>>  static struct attribute *ad7192_attributes[] = {
+> >>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+> >>>  	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+> >>>  	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+> >>>  	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+> >>> @@ -484,7 +432,6 @@ static const struct attribute_group ad7192_attribute_group = {
+> >>>  };
+> >>>  
+> >>>  static struct attribute *ad7195_attributes[] = {
+> >>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+> >>>  	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+> >>>  	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+> >>>  	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+> >>> @@ -536,6 +483,10 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
+> >>>  		if (chan->type == IIO_TEMP)
+> >>>  			*val -= 273 * ad7192_get_temp_scale(unipolar);
+> >>>  		return IIO_VAL_INT;
+> >>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> >>> +		*val = st->mclk /
+> >>> +			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode));
+> >>> +		return IIO_VAL_INT;
+> >>>  	}
+> >>>  
+> >>>  	return -EINVAL;
+> >>> @@ -548,7 +499,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+> >>>  			    long mask)
+> >>>  {
+> >>>  	struct ad7192_state *st = iio_priv(indio_dev);
+> >>> -	int ret, i;
+> >>> +	int ret, i, div;
+> >>>  	unsigned int tmp;
+> >>>  
+> >>>  	ret = iio_device_claim_direct_mode(indio_dev);
+> >>> @@ -572,6 +523,22 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+> >>>  				break;
+> >>>  			}
+> >>>  		break;
+> >>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> >>> +		if (!val) {
+> >>> +			ret = -EINVAL;
+> >>> +			break;
+> >>> +		}
+> >>> +
+> >>> +		div = st->mclk / (val * st->f_order * 1024);
+> >>> +		if (div < 1 || div > 1023) {
+> >>> +			ret = -EINVAL;
+> >>> +			break;
+> >>> +		}
+> >>> +
+> >>> +		st->mode &= ~AD7192_MODE_RATE(-1);
+> >>> +		st->mode |= AD7192_MODE_RATE(div);
+> >>> +		ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+> >>> +		break;
+> >>>  	default:
+> >>>  		ret = -EINVAL;
+> >>>  	}
+> >>> diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+> >>> index e7fdec4..5ba430c 100644
+> >>> --- a/include/linux/iio/adc/ad_sigma_delta.h
+> >>> +++ b/include/linux/iio/adc/ad_sigma_delta.h
+> >>> @@ -136,6 +136,7 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+> >>>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+> >>>  			BIT(IIO_CHAN_INFO_OFFSET), \
+> >>>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+> >>> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+> >>>  		.scan_index = (_si), \
+> >>>  		.scan_type = { \
+> >>>  			.sign = 'u', \
+> >>>
+> >>
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > 
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
