@@ -1,174 +1,137 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:33843 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754899AbcJHQGI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 12:06:08 -0400
-Received: by mail-pf0-f193.google.com with SMTP id 190so4598132pfv.1
-        for <linux-iio@vger.kernel.org>; Sat, 08 Oct 2016 09:06:07 -0700 (PDT)
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v4 2/2] staging: iio: ad7606: implement IIO_CHAN_INFO_OVERSAMPLING_RATIO
-Date: Sun,  9 Oct 2016 00:05:40 +0800
-Message-Id: <112de0943e9e3b8764d11612451b04b1f2939509.1475942324.git.eraretuya@gmail.com>
-In-Reply-To: <cover.1475942324.git.eraretuya@gmail.com>
-References: <cover.1475942324.git.eraretuya@gmail.com>
-In-Reply-To: <cover.1475942324.git.eraretuya@gmail.com>
-References: <cover.1475942324.git.eraretuya@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <peter.ujfalusi@ti.com>
+Subject: Re: [PATCH v2 2/4] drivers: iio: ti_am335x_adc: add dma support
+To: Mugunthan V N <mugunthanvnm@ti.com>, <linux-iio@vger.kernel.org>
+References: <20161003130318.12591-1-mugunthanvnm@ti.com>
+ <20161003130318.12591-3-mugunthanvnm@ti.com>
+CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark
+ Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, Vignesh R
+	<vigneshr@ti.com>,
+        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
+        <devicetree@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        John Syne <john3909@gmail.com>
+From: Peter Ujfalusi <peter.ujfalusi@ti.com>
+Message-ID: <0ff2c6ef-3fa1-dc8b-fb6e-1a4dcfea8ea9@ti.com>
+Date: Tue, 4 Oct 2016 11:32:16 +0300
+MIME-Version: 1.0
+In-Reply-To: <20161003130318.12591-3-mugunthanvnm@ti.com>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-This driver predates the availability of IIO_CHAN_INFO_OVERSAMPLING_RATIO
-attribute wherein usage has some advantages like it can be accessed by
-in-kernel consumers as well as reduces the code size.
+On 10/03/16 16:03, Mugunthan V N wrote:
+> +static int tiadc_request_dma(struct platform_device *pdev,
+> +			     struct tiadc_device *adc_dev)
+> +{
+> +	struct tiadc_dma	*dma = &adc_dev->dma;
+> +	dma_cap_mask_t		mask;
+> +
+> +	/* Default slave configuration parameters */
+> +	dma->conf.direction = DMA_DEV_TO_MEM;
+> +	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+> +	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
+> +
+> +	dma_cap_zero(mask);
+> +	dma_cap_set(DMA_CYCLIC, mask);
+> +
+> +	/* Get a channel for RX */
+> +	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
+> +	if (!dma->chan)
+> +		return -ENODEV;
 
-Therefore, use IIO_CHAN_INFO_OVERSAMPLING_RATIO to implement the
-oversampling_ratio attribute instead of using IIO_DEVICE_ATTR() macro.
+dma_request_chan() ERR_PTR in case of failure, never NULL. You should reuse
+the returned error code to support deferred probing.
 
-Move code from the functions associated with IIO_DEVICE_ATTR() into
-the read_raw hook as well as add the write_raw hook with both masks set
-to IIO_CHAN_INFO_OVERSAMPLING_RATIO.
+> +
+> +	/* RX buffer */
+> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+> +				      &dma->addr, GFP_KERNEL);
+> +	if (!dma->buf)
+> +		goto err;
+> +
+> +	return 0;
+> +err:
+> +	dma_release_channel(dma->chan);
+> +
+> +	return -ENOMEM;
+> +}
+> +
+>  static int tiadc_parse_dt(struct platform_device *pdev,
+>  			  struct tiadc_device *adc_dev)
+>  {
+> @@ -512,8 +639,14 @@ static int tiadc_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, indio_dev);
+>  
+> +	err = tiadc_request_dma(pdev, adc_dev);
+> +	if (err && err != -ENODEV)
+> +		goto err_dma;
 
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
-Acked-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7606_core.c | 67 ++++++++++++++++-------------------
- 1 file changed, 31 insertions(+), 36 deletions(-)
+You should handle the deferred probing for DMA channel.
 
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index cbd6bc5..2042225 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -103,6 +103,9 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
- 		*val = st->range * 2;
- 		*val2 = st->chip_info->channels[0].scan_type.realbits;
- 		return IIO_VAL_FRACTIONAL_LOG2;
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		*val = st->oversampling;
-+		return IIO_VAL_INT;
- 	}
- 	return -EINVAL;
- }
-@@ -145,16 +148,6 @@ static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR,
- 		       ad7606_show_range, ad7606_store_range, 0);
- static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
- 
--static ssize_t ad7606_show_oversampling_ratio(struct device *dev,
--					      struct device_attribute *attr,
--					      char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7606_state *st = iio_priv(indio_dev);
--
--	return sprintf(buf, "%u\n", st->oversampling);
--}
--
- static int ad7606_oversampling_get_index(unsigned int val)
- {
- 	unsigned char supported[] = {0, 2, 4, 8, 16, 32, 64};
-@@ -167,44 +160,43 @@ static int ad7606_oversampling_get_index(unsigned int val)
- 	return -EINVAL;
- }
- 
--static ssize_t ad7606_store_oversampling_ratio(struct device *dev,
--					       struct device_attribute *attr,
--					       const char *buf, size_t count)
-+static int ad7606_write_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *chan,
-+			    int val,
-+			    int val2,
-+			    long mask)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7606_state *st = iio_priv(indio_dev);
--	unsigned long lval;
- 	int ret;
- 
--	ret = kstrtoul(buf, 10, &lval);
--	if (ret)
--		return ret;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-+		if (val2)
-+			return -EINVAL;
-+		ret = ad7606_oversampling_get_index(val);
-+		if (ret < 0) {
-+			dev_err(st->dev, "oversampling %d is not supported\n",
-+				val);
-+			return ret;
-+		}
- 
--	ret = ad7606_oversampling_get_index(lval);
--	if (ret < 0) {
--		dev_err(dev, "oversampling %lu is not supported\n", lval);
--		return ret;
-+		mutex_lock(&indio_dev->mlock);
-+		gpio_set_value(st->pdata->gpio_os0, (ret >> 0) & 1);
-+		gpio_set_value(st->pdata->gpio_os1, (ret >> 1) & 1);
-+		gpio_set_value(st->pdata->gpio_os2, (ret >> 2) & 1);
-+		st->oversampling = val;
-+		mutex_unlock(&indio_dev->mlock);
-+		return 0;
-+	default:
-+		return -EINVAL;
- 	}
--
--	mutex_lock(&indio_dev->mlock);
--	gpio_set_value(st->pdata->gpio_os0, (ret >> 0) & 1);
--	gpio_set_value(st->pdata->gpio_os1, (ret >> 1) & 1);
--	gpio_set_value(st->pdata->gpio_os2, (ret >> 2) & 1);
--	st->oversampling = lval;
--	mutex_unlock(&indio_dev->mlock);
--
--	return count;
- }
- 
--static IIO_DEVICE_ATTR(oversampling_ratio, S_IRUGO | S_IWUSR,
--		       ad7606_show_oversampling_ratio,
--		       ad7606_store_oversampling_ratio, 0);
- static IIO_CONST_ATTR(oversampling_ratio_available, "0 2 4 8 16 32 64");
- 
- static struct attribute *ad7606_attributes_os_and_range[] = {
- 	&iio_dev_attr_in_voltage_range.dev_attr.attr,
- 	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
--	&iio_dev_attr_oversampling_ratio.dev_attr.attr,
- 	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
- 	NULL,
- };
-@@ -214,7 +206,6 @@ static const struct attribute_group ad7606_attribute_group_os_and_range = {
- };
- 
- static struct attribute *ad7606_attributes_os[] = {
--	&iio_dev_attr_oversampling_ratio.dev_attr.attr,
- 	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
- 	NULL,
- };
-@@ -241,6 +232,8 @@ static const struct attribute_group ad7606_attribute_group_range = {
- 		.address = num,					\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_all =			\
-+			BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO),	\
- 		.scan_index = num,				\
- 		.scan_type = {					\
- 			.sign = 's',				\
-@@ -429,12 +422,14 @@ static const struct iio_info ad7606_info_no_os_or_range = {
- static const struct iio_info ad7606_info_os_and_range = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7606_read_raw,
-+	.write_raw = &ad7606_write_raw,
- 	.attrs = &ad7606_attribute_group_os_and_range,
- };
- 
- static const struct iio_info ad7606_info_os = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7606_read_raw,
-+	.write_raw = &ad7606_write_raw,
- 	.attrs = &ad7606_attribute_group_os,
- };
- 
+> +
+>  	return 0;
+>  
+> +err_dma:
+> +	iio_device_unregister(indio_dev);
+>  err_buffer_unregister:
+>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>  err_free_channels:
+> @@ -525,8 +658,14 @@ static int tiadc_remove(struct platform_device *pdev)
+>  {
+>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct tiadc_dma *dma = &adc_dev->dma;
+>  	u32 step_en;
+>  
+> +	if (dma->chan) {
+> +		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+> +				  dma->buf, dma->addr);
+> +		dma_release_channel(dma->chan);
+> +	}
+>  	iio_device_unregister(indio_dev);
+>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>  	tiadc_channels_remove(indio_dev);
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index e45a208..b9a53e0 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -23,6 +23,8 @@
+>  #define REG_IRQENABLE		0x02C
+>  #define REG_IRQCLR		0x030
+>  #define REG_IRQWAKEUP		0x034
+> +#define REG_DMAENABLE_SET	0x038
+> +#define REG_DMAENABLE_CLEAR	0x03c
+>  #define REG_CTRL		0x040
+>  #define REG_ADCFSM		0x044
+>  #define REG_CLKDIV		0x04C
+> @@ -36,6 +38,7 @@
+>  #define REG_FIFO0THR		0xE8
+>  #define REG_FIFO1CNT		0xF0
+>  #define REG_FIFO1THR		0xF4
+> +#define REG_DMA1REQ		0xF8
+>  #define REG_FIFO0		0x100
+>  #define REG_FIFO1		0x200
+>  
+> @@ -126,6 +129,10 @@
+>  #define FIFOREAD_DATA_MASK (0xfff << 0)
+>  #define FIFOREAD_CHNLID_MASK (0xf << 16)
+>  
+> +/* DMA ENABLE/CLEAR Register */
+> +#define DMA_FIFO0		BIT(0)
+> +#define DMA_FIFO1		BIT(1)
+> +
+>  /* Sequencer Status */
+>  #define SEQ_STATUS BIT(5)
+>  #define CHARGE_STEP		0x11
+> 
+
+
 -- 
-2.7.4
-
+Péter
