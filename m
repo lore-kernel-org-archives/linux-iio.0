@@ -1,195 +1,160 @@
-Return-Path: <eraretuya@gmail.com>
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org
-Cc: outreachy-kernel@googlegroups.com,
-	linux-iio@vger.kernel.org,
-	Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v3] staging: iio: ad7192: implement IIO_CHAN_INFO_SAMP_FREQ
-Date: Wed,  5 Oct 2016 11:06:21 +0800
-Message-Id: <1475636781-6471-1-git-send-email-eraretuya@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([198.47.19.12]:47404 "EHLO arroyo.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751393AbcJEGXA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 5 Oct 2016 02:23:00 -0400
+Subject: Re: [PATCH v2 2/4] drivers: iio: ti_am335x_adc: add dma support
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>, <linux-iio@vger.kernel.org>
+References: <20161003130318.12591-1-mugunthanvnm@ti.com>
+ <20161003130318.12591-3-mugunthanvnm@ti.com>
+ <0ff2c6ef-3fa1-dc8b-fb6e-1a4dcfea8ea9@ti.com>
+CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
+        <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        John Syne <john3909@gmail.com>
+From: Mugunthan V N <mugunthanvnm@ti.com>
+Message-ID: <e9c3108e-ffd1-472a-a2d3-2948665de217@ti.com>
+Date: Wed, 5 Oct 2016 11:51:56 +0530
+MIME-Version: 1.0
+In-Reply-To: <0ff2c6ef-3fa1-dc8b-fb6e-1a4dcfea8ea9@ti.com>
+Content-Type: text/plain; charset="windows-1252"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ
-attribute wherein usage has some advantages like it can be accessed by
-in-kernel consumers as well as reduces the code size.
+On Tuesday 04 October 2016 02:02 PM, Peter Ujfalusi wrote:
+> On 10/03/16 16:03, Mugunthan V N wrote:
+>> +static int tiadc_request_dma(struct platform_device *pdev,
+>> +			     struct tiadc_device *adc_dev)
+>> +{
+>> +	struct tiadc_dma	*dma = &adc_dev->dma;
+>> +	dma_cap_mask_t		mask;
+>> +
+>> +	/* Default slave configuration parameters */
+>> +	dma->conf.direction = DMA_DEV_TO_MEM;
+>> +	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+>> +	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
+>> +
+>> +	dma_cap_zero(mask);
+>> +	dma_cap_set(DMA_CYCLIC, mask);
+>> +
+>> +	/* Get a channel for RX */
+>> +	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
+>> +	if (!dma->chan)
+>> +		return -ENODEV;
+> 
+> dma_request_chan() ERR_PTR in case of failure, never NULL. You should reuse
+> the returned error code to support deferred probing.
 
-Therefore, use IIO_CHAN_INFO_SAMP_FREQ to implement the
-sampling_frequency attribute instead of using IIO_DEV_ATTR_SAMP_FREQ()
-macro.
+Will fix this in v3.
 
-Move code from the functions associated with IIO_DEV_ATTR_SAMP_FREQ()
-into respective read and write hooks with the mask set to
-IIO_CHAN_INFO_SAMP_FREQ.
+> 
+>> +
+>> +	/* RX buffer */
+>> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+>> +				      &dma->addr, GFP_KERNEL);
+>> +	if (!dma->buf)
+>> +		goto err;
+>> +
+>> +	return 0;
+>> +err:
+>> +	dma_release_channel(dma->chan);
+>> +
+>> +	return -ENOMEM;
+>> +}
+>> +
+>>  static int tiadc_parse_dt(struct platform_device *pdev,
+>>  			  struct tiadc_device *adc_dev)
+>>  {
+>> @@ -512,8 +639,14 @@ static int tiadc_probe(struct platform_device *pdev)
+>>  
+>>  	platform_set_drvdata(pdev, indio_dev);
+>>  
+>> +	err = tiadc_request_dma(pdev, adc_dev);
+>> +	if (err && err != -ENODEV)
+>> +		goto err_dma;
+> 
+> You should handle the deferred probing for DMA channel.
 
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
-Changes in v3:
-* Adjust changelog to fit within 72 columns.
-* Set the IIO_CHAN_INFO_SAMP_FREQ bitmask to return IIO_VAL_INT on the
-write_raw_get_fmt() function
-
-Changes in v2:
-* Make commit message more detailed
-* Fix tiny bug about bypassing iio_device_release_direct_mode()
-* Remove unneeded goto and use break instead
-
- drivers/staging/iio/adc/ad7192.c       | 84 ++++++++++++----------------------
- include/linux/iio/adc/ad_sigma_delta.h |  1 +
- 2 files changed, 30 insertions(+), 55 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 1cf6b79..bfa12ce 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -322,57 +322,6 @@ out:
- 	return ret;
- }
- 
--static ssize_t ad7192_read_frequency(struct device *dev,
--				     struct device_attribute *attr,
--				     char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7192_state *st = iio_priv(indio_dev);
--
--	return sprintf(buf, "%d\n", st->mclk /
--			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode)));
--}
--
--static ssize_t ad7192_write_frequency(struct device *dev,
--				      struct device_attribute *attr,
--				      const char *buf,
--				      size_t len)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7192_state *st = iio_priv(indio_dev);
--	unsigned long lval;
--	int div, ret;
--
--	ret = kstrtoul(buf, 10, &lval);
--	if (ret)
--		return ret;
--	if (lval == 0)
--		return -EINVAL;
--
--	ret = iio_device_claim_direct_mode(indio_dev);
--	if (ret)
--		return ret;
--
--	div = st->mclk / (lval * st->f_order * 1024);
--	if (div < 1 || div > 1023) {
--		ret = -EINVAL;
--		goto out;
--	}
--
--	st->mode &= ~AD7192_MODE_RATE(-1);
--	st->mode |= AD7192_MODE_RATE(div);
--	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
--
--out:
--	iio_device_release_direct_mode(indio_dev);
--
--	return ret ? ret : len;
--}
--
--static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
--		ad7192_read_frequency,
--		ad7192_write_frequency);
--
- static ssize_t
- ad7192_show_scale_available(struct device *dev,
- 			    struct device_attribute *attr, char *buf)
-@@ -471,7 +420,6 @@ static IIO_DEVICE_ATTR(ac_excitation_en, S_IRUGO | S_IWUSR,
- 		       AD7192_REG_MODE);
- 
- static struct attribute *ad7192_attributes[] = {
--	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
- 	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
- 	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
-@@ -484,7 +432,6 @@ static const struct attribute_group ad7192_attribute_group = {
- };
- 
- static struct attribute *ad7195_attributes[] = {
--	&iio_dev_attr_sampling_frequency.dev_attr.attr,
- 	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
- 	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
- 	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
-@@ -536,6 +483,10 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
- 		if (chan->type == IIO_TEMP)
- 			*val -= 273 * ad7192_get_temp_scale(unipolar);
- 		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		*val = st->mclk /
-+			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode));
-+		return IIO_VAL_INT;
- 	}
- 
- 	return -EINVAL;
-@@ -548,7 +499,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
- 			    long mask)
- {
- 	struct ad7192_state *st = iio_priv(indio_dev);
--	int ret, i;
-+	int ret, i, div;
- 	unsigned int tmp;
- 
- 	ret = iio_device_claim_direct_mode(indio_dev);
-@@ -572,6 +523,22 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
- 				break;
- 			}
- 		break;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		if (!val) {
-+			ret = -EINVAL;
-+			break;
-+		}
++	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
++	if (IS_ERR(dma->chan)) {
++		int ret = PTR_ERR(dma->chan);
 +
-+		div = st->mclk / (val * st->f_order * 1024);
-+		if (div < 1 || div > 1023) {
-+			ret = -EINVAL;
-+			break;
-+		}
-+
-+		st->mode &= ~AD7192_MODE_RATE(-1);
-+		st->mode |= AD7192_MODE_RATE(div);
-+		ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
-+		break;
- 	default:
- 		ret = -EINVAL;
- 	}
-@@ -585,7 +552,14 @@ static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
- 				    struct iio_chan_spec const *chan,
- 				    long mask)
- {
--	return IIO_VAL_INT_PLUS_NANO;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
++		dma->chan = NULL;
++		return ret;
 +	}
- }
- 
- static const struct iio_info ad7192_info = {
-diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
-index e7fdec4..5ba430c 100644
---- a/include/linux/iio/adc/ad_sigma_delta.h
-+++ b/include/linux/iio/adc/ad_sigma_delta.h
-@@ -136,6 +136,7 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
- 			BIT(IIO_CHAN_INFO_OFFSET), \
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
- 		.scan_index = (_si), \
- 		.scan_type = { \
- 			.sign = 'u', \
--- 
-2.7.4
+
+With this probe defer will be taken care and ADC will continue without
+DMA when request channel returns -ENODEV.
+
+Regards
+Mugunthan V N
+
+> 
+>> +
+>>  	return 0;
+>>  
+>> +err_dma:
+>> +	iio_device_unregister(indio_dev);
+>>  err_buffer_unregister:
+>>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>>  err_free_channels:
+>> @@ -525,8 +658,14 @@ static int tiadc_remove(struct platform_device *pdev)
+>>  {
+>>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct tiadc_dma *dma = &adc_dev->dma;
+>>  	u32 step_en;
+>>  
+>> +	if (dma->chan) {
+>> +		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+>> +				  dma->buf, dma->addr);
+>> +		dma_release_channel(dma->chan);
+>> +	}
+>>  	iio_device_unregister(indio_dev);
+>>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>>  	tiadc_channels_remove(indio_dev);
+>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+>> index e45a208..b9a53e0 100644
+>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>> @@ -23,6 +23,8 @@
+>>  #define REG_IRQENABLE		0x02C
+>>  #define REG_IRQCLR		0x030
+>>  #define REG_IRQWAKEUP		0x034
+>> +#define REG_DMAENABLE_SET	0x038
+>> +#define REG_DMAENABLE_CLEAR	0x03c
+>>  #define REG_CTRL		0x040
+>>  #define REG_ADCFSM		0x044
+>>  #define REG_CLKDIV		0x04C
+>> @@ -36,6 +38,7 @@
+>>  #define REG_FIFO0THR		0xE8
+>>  #define REG_FIFO1CNT		0xF0
+>>  #define REG_FIFO1THR		0xF4
+>> +#define REG_DMA1REQ		0xF8
+>>  #define REG_FIFO0		0x100
+>>  #define REG_FIFO1		0x200
+>>  
+>> @@ -126,6 +129,10 @@
+>>  #define FIFOREAD_DATA_MASK (0xfff << 0)
+>>  #define FIFOREAD_CHNLID_MASK (0xf << 16)
+>>  
+>> +/* DMA ENABLE/CLEAR Register */
+>> +#define DMA_FIFO0		BIT(0)
+>> +#define DMA_FIFO1		BIT(1)
+>> +
+>>  /* Sequencer Status */
+>>  #define SEQ_STATUS BIT(5)
+>>  #define CHARGE_STEP		0x11
+>>
+> 
+> 
+
