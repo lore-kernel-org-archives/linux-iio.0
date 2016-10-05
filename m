@@ -1,908 +1,195 @@
-Return-Path: <linux@roeck-us.net>
-Date: Tue, 4 Oct 2016 12:37:13 -0700
-From: Guenter Roeck <linux@roeck-us.net>
-To: Jean Delvare <jdelvare@suse.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Zhang Rui <rui.zhang@intel.com>,
-	Eduardo Valentin <edubezval@gmail.com>,
-	Punit Agrawal <punit.agrawal@arm.com>, linux-pm@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v3 2/9] hwmon: (core) New hwmon registration API
-Message-ID: <20161004193713.GA26304@roeck-us.net>
-References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
- <1469417552-9749-3-git-send-email-linux@roeck-us.net>
- <1475570759.3052.22.camel@chaos.suse>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1475570759.3052.22.camel@chaos.suse>
+Return-Path: <eraretuya@gmail.com>
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org
+Cc: outreachy-kernel@googlegroups.com,
+	linux-iio@vger.kernel.org,
+	Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v3] staging: iio: ad7192: implement IIO_CHAN_INFO_SAMP_FREQ
+Date: Wed,  5 Oct 2016 11:06:21 +0800
+Message-Id: <1475636781-6471-1-git-send-email-eraretuya@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jean,
+This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ
+attribute wherein usage has some advantages like it can be accessed by
+in-kernel consumers as well as reduces the code size.
 
-On Tue, Oct 04, 2016 at 10:45:59AM +0200, Jean Delvare wrote:
-> Hi Guenter,
-> 
-> I see this patch is upstream now, but I had started reviewing it and
-> maybe some of my comments are still relevant.
-> 
-As always, I appreciate the feedback. I'll be happy to submit follow-up
-patches to address any concerns.
+Therefore, use IIO_CHAN_INFO_SAMP_FREQ to implement the
+sampling_frequency attribute instead of using IIO_DEV_ATTR_SAMP_FREQ()
+macro.
 
-> It's not meant to be a complete review, which is why I had not sent it
-> yet :-(
-> 
-> Also I did not follow the first iterations of this patchset so my
-> apologies if I raise points which have already been discussed.
-> 
-> May I ask if any other subsystem is already doing anything like that?
-> 
-Depends what you mean with "anything like that". The API is inspired by
-the iio API and a little by the thermal API. The details are probably
-unique, though.
+Move code from the functions associated with IIO_DEV_ATTR_SAMP_FREQ()
+into respective read and write hooks with the mask set to
+IIO_CHAN_INFO_SAMP_FREQ.
 
-> FYI I gave a presentation about the hwmon device registration API
-> evolution last week at Kernel Recipes [1] in Paris and mentioned this
-> proposal.
-> 
-> [1] https://kernel-recipes.org/en/2016/
-> 
-> On dim., 2016-07-24 at 20:32 -0700, Guenter Roeck wrote:
-> > Up to now, each hwmon driver has to implement its own sysfs attributes.
-> > This requires a lot of template code, and distracts from the driver's core
-> > function to read and write chip registers.
-> > 
-> > To be able to reduce driver complexity, move sensor attribute handling
-> > and thermal zone registration into hwmon core. By using the new API,
-> > driver code and data size is typically reduced by 20-70%, depending
-> > on driver complexity and the number of sysfs attributes supported.
-> 
-> I looked at the diffstats for the drivers you have already converted and
-> couldn't see any such huge improvement... Some drivers appear to be even
-> larger after conversion?
-> 
-The above refers to code and data sizes.
+Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+---
+Changes in v3:
+* Adjust changelog to fit within 72 columns.
+* Set the IIO_CHAN_INFO_SAMP_FREQ bitmask to return IIO_VAL_INT on the
+write_raw_get_fmt() function
 
-> > With this patch, the new API only supports thermal sensors. Support for
-> > other sensor types will be added with subsequent patches.
-> > 
-> > Acked-by: Punit Agrawal <punit.agrawal@arm.com>
-> > Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-> > Signed-off-by: Guenter Roeck <linux@roeck-us.net>
-> > ---
-> > v3:
-> > - Thermal registration depends on IS_REACHABLE(CONFIG_THERMAL) and
-> >   CONFIG_THERMAL_OF.
-> > v2:
-> > - Document callback function parameters of struct hwmon_ops in
-> >   include/linux/hwmon.h.
-> > - Clarify that the is_visible() callback is mandatory.
-> > - Initialize device attribute read/write callback functions unconditionally.
-> > - If an attribute has no template string, treat it as invisible, not as
-> >   error. Affected are virtual attributes such as HWMON_C_REGISTER_TZ.
-> > - Added newline to improve readability.
-> > 
-> > Review comments not addressed:
-> > - Stick with u32 for attribute masks. We could use u64, but it is currently
-> >   not needed, and changing it later would be straightforward.
-> > - Do not use for_each_set_bit() to walk attribute masks.
-> >   for_each_set_bit() expects a pointer to an unsigned long as argument,
-> >   which would make it difficult to switch to u64 attribute masks if/when
-> >   needed.
-> > 
-> >  drivers/hwmon/hwmon.c | 485 +++++++++++++++++++++++++++++++++++++++++++++++---
-> >  include/linux/hwmon.h | 148 +++++++++++++++
-> >  2 files changed, 606 insertions(+), 27 deletions(-)
-> > 
-> > diff --git a/drivers/hwmon/hwmon.c b/drivers/hwmon/hwmon.c
-> > index 649a68d119b4..3e4cc442a089 100644
-> > --- a/drivers/hwmon/hwmon.c
-> > +++ b/drivers/hwmon/hwmon.c
-> 
-> I believe it would make sense to add you copyright at the top of the
-> file. That's a pretty big change with lots of code.
-> 
-I don't really feel too strong about that. But, sure, can do.
+Changes in v2:
+* Make commit message more detailed
+* Fix tiny bug about bypassing iio_device_release_direct_mode()
+* Remove unneeded goto and use break instead
 
-> > @@ -12,6 +12,7 @@
-> >  
-> >  #define pr_fmt(fmt) KBUILD_MODNAME ": " fmt
-> >  
-> > +#include <linux/bitops.h>
-> >  #include <linux/device.h>
-> >  #include <linux/err.h>
-> >  #include <linux/gfp.h>
-> > @@ -21,6 +22,7 @@
-> >  #include <linux/pci.h>
-> >  #include <linux/slab.h>
-> >  #include <linux/string.h>
-> > +#include <linux/thermal.h>
-> >  
-> >  #define HWMON_ID_PREFIX "hwmon"
-> >  #define HWMON_ID_FORMAT HWMON_ID_PREFIX "%d"
-> > @@ -28,9 +30,35 @@
-> >  struct hwmon_device {
-> >  	const char *name;
-> >  	struct device dev;
-> > +	const struct hwmon_chip_info *chip;
-> > +
-> > +	struct attribute_group group;
-> > +	const struct attribute_group **groups;
-> >  };
-> > +
-> >  #define to_hwmon_device(d) container_of(d, struct hwmon_device, dev)
-> >  
-> > +struct hwmon_device_attribute {
-> > +	struct device_attribute dev_attr;
-> > +	const struct hwmon_ops *ops;
-> > +	enum hwmon_sensor_types type;
-> > +	u32 attr;
-> > +	int index;
-> > +};
-> > +
-> > +#define to_hwmon_attr(d) \
-> > +	container_of(d, struct hwmon_device_attribute, dev_attr)
-> > +
-> > +/*
-> > + * Thermal zone information
-> > + * In addition to the reference to the hwmon device,
-> > + * also provides the sensor index.
-> > + */
-> > +struct hwmon_thermal_data {
-> > +	struct hwmon_device *hwdev;	/* Reference to hwmon device */
-> > +	int index;			/* sensor index */
-> > +};
-> > +
-> >  static ssize_t
-> >  show_name(struct device *dev, struct device_attribute *attr, char *buf)
-> >  {
-> > @@ -78,25 +106,286 @@ static struct class hwmon_class = {
-> >  
-> >  static DEFINE_IDA(hwmon_ida);
-> >  
-> > -/**
-> > - * hwmon_device_register_with_groups - register w/ hwmon
-> > - * @dev: the parent device
-> > - * @name: hwmon name attribute
-> > - * @drvdata: driver data to attach to created device
-> > - * @groups: List of attribute groups to create
-> > - *
-> > - * hwmon_device_unregister() must be called when the device is no
-> > - * longer needed.
-> > - *
-> > - * Returns the pointer to the new device.
-> > - */
-> > -struct device *
-> > -hwmon_device_register_with_groups(struct device *dev, const char *name,
-> > -				  void *drvdata,
-> > -				  const struct attribute_group **groups)
-> > +/* Thermal zone handling */
-> > +
-> > +#if IS_REACHABLE(CONFIG_THERMAL) && defined(CONFIG_THERMAL_OF)
-> > +static int hwmon_thermal_get_temp(void *data, int *temp)
-> > +{
-> > +	struct hwmon_thermal_data *tdata = data;
-> > +	struct hwmon_device *hwdev = tdata->hwdev;
-> > +	int ret;
-> > +	long t;
-> > +
-> > +	ret = hwdev->chip->ops->read(&hwdev->dev, hwmon_temp, hwmon_temp_input,
-> > +				     tdata->index, &t);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	*temp = t;
-> > +
-> > +	return 0;
-> > +}
-> > +
-> > +static struct thermal_zone_of_device_ops hwmon_thermal_ops = {
-> > +	.get_temp = hwmon_thermal_get_temp,
-> > +};
-> > +
-> > +static int hwmon_thermal_add_sensor(struct device *dev,
-> > +				    struct hwmon_device *hwdev, int index)
-> > +{
-> > +	struct hwmon_thermal_data *tdata;
-> > +
-> > +	tdata = devm_kzalloc(dev, sizeof(*tdata), GFP_KERNEL);
-> > +	if (!tdata)
-> > +		return -ENOMEM;
-> > +
-> > +	tdata->hwdev = hwdev;
-> > +	tdata->index = index;
-> > +
-> > +	devm_thermal_zone_of_sensor_register(&hwdev->dev, index, tdata,
-> > +					     &hwmon_thermal_ops);
-> > +
-> > +	return 0;
-> > +}
-> > +#else
-> > +static int hwmon_thermal_add_sensor(struct device *dev,
-> > +				    struct hwmon_device *hwdev, int index)
-> > +{
-> > +	return 0;
-> > +}
-> > +#endif /* IS_REACHABLE(CONFIG_THERMAL) && defined(CONFIG_THERMAL_OF) */
-> > +
-> > +/* sysfs attribute management */
-> > +
-> > +static ssize_t hwmon_attr_show(struct device *dev,
-> > +			       struct device_attribute *devattr, char *buf)
-> > +{
-> > +	struct hwmon_device_attribute *hattr = to_hwmon_attr(devattr);
-> > +	long val;
-> > +	int ret;
-> > +
-> > +	ret = hattr->ops->read(dev, hattr->type, hattr->attr, hattr->index,
-> > +			       &val);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return sprintf(buf, "%ld\n", val);
-> > +}
-> > +
-> > +static ssize_t hwmon_attr_store(struct device *dev,
-> > +				struct device_attribute *devattr,
-> > +				const char *buf, size_t count)
-> > +{
-> > +	struct hwmon_device_attribute *hattr = to_hwmon_attr(devattr);
-> > +	long val;
-> > +	int ret;
-> > +
-> > +	ret = kstrtol(buf, 10, &val);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	ret = hattr->ops->write(dev, hattr->type, hattr->attr, hattr->index,
-> > +				val);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return count;
-> > +}
-> > +
-> > +static int hwmon_attr_base(enum hwmon_sensor_types type)
-> > +{
-> > +	if (type == hwmon_in)
-> > +		return 0;
-> > +	return 1;
-> > +}
-> > +
-> > +static struct attribute *hwmon_genattr(struct device *dev,
-> > +				       const void *drvdata,
-> > +				       enum hwmon_sensor_types type,
-> > +				       u32 attr,
-> > +				       int index,
-> > +				       const char *template,
-> > +				       const struct hwmon_ops *ops)
-> > +{
-> > +	struct hwmon_device_attribute *hattr;
-> > +	struct device_attribute *dattr;
-> > +	struct attribute *a;
-> > +	umode_t mode;
-> > +	char *name;
-> > +
-> > +	/* The attribute is invisible if there is no template string */
-> > +	if (!template)
-> > +		return ERR_PTR(-ENOENT);
-> > +
-> > +	mode = ops->is_visible(drvdata, type, attr, index);
-> 
-> Any reason why you don't simply attach the provided ->is_visible to the
-> attribute group and let the driver core do the work?
-> 
-Parameter are all different
-	umode_t (*is_visible)(const void *drvdata, enum hwmon_sensor_types type,
-	                              u32 attr, int channel);
-vs.
-	umode_t (*is_visible)(struct kobject *, struct attribute *, int);
+ drivers/staging/iio/adc/ad7192.c       | 84 ++++++++++++----------------------
+ include/linux/iio/adc/ad_sigma_delta.h |  1 +
+ 2 files changed, 30 insertions(+), 55 deletions(-)
 
-> > +		return ERR_PTR(-ENOENT);
-> > +
-> > +	if ((mode & S_IRUGO) && !ops->read)
-> > +		return ERR_PTR(-EINVAL);
-> > +	if ((mode & S_IWUGO) && !ops->write)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	if (type == hwmon_chip) {
-> 
-> This needs a comment. It's not obvious what "hwmon_chip" is supposed to
-> represent. From what I understand, maybe "hwmon_unique" would be a more
-> appropriate name.
-> 
-Those are meant to be for attributes which apply to the entire chip.
-Not sure if 'hwmon_unique' would reflect that better.
->From the documentation:
-	"A virtual sensor type, used to describe attributes
-	 which apply to the entire chip"
-
-Do you have an idea for a better description ?
-
-> > +		name = (char *)template;
-> > +	} else {
-> > +		name = devm_kzalloc(dev, strlen(template) + 16, GFP_KERNEL);
-> > +		if (!name)
-> > +			return ERR_PTR(-ENOMEM);
-> > +		scnprintf(name, strlen(template) + 16, template,
-> > +			  index + hwmon_attr_base(type));
-> > +	}
-> > +
-> > +	hattr = devm_kzalloc(dev, sizeof(*hattr), GFP_KERNEL);
-> > +	if (!hattr)
-> > +		return ERR_PTR(-ENOMEM);
-> 
-> So basically you are doing 1 or 2 memory allocations for every
-> attribute? Looks quite bad from a memory fragmentation
-> perspective :-( Not to mention performance. Given that you have all the
-> data at hand before you start, can't you preallocate an array with the
-> right number of hattr and pick from it? That would at least solve half
-> of the problem.
-> 
-> Something similar for string allocation may work too, although it's
-> somewhat more complex due to the variable length. But I think the
-> abituguru3 driver is doing it right, so maybe you can too.
-> 
-I'll look into it.
-
-> > +
-> > +	hattr->type = type;
-> > +	hattr->attr = attr;
-> > +	hattr->index = index;
-> > +	hattr->ops = ops;
-> > +
-> > +	dattr = &hattr->dev_attr;
-> > +	dattr->show = hwmon_attr_show;
-> > +	dattr->store = hwmon_attr_store;
-> > +
-> > +	a = &dattr->attr;
-> > +	sysfs_attr_init(a);
-> > +	a->name = name;
-> > +	a->mode = mode;
-> > +
-> > +	return a;
-> > +}
-> > +
-> > +static const char * const hwmon_chip_attr_templates[] = {
-> > +	[hwmon_chip_temp_reset_history] = "temp_reset_history",
-> > +	[hwmon_chip_update_interval] = "update_interval",
-> > +	[hwmon_chip_alarms] = "alarms",
-> > +};
-> > +
-> > +static const char * const hwmon_temp_attr_templates[] = {
-> > +	[hwmon_temp_input] = "temp%d_input",
-> > +	[hwmon_temp_type] = "temp%d_type",
-> > +	[hwmon_temp_lcrit] = "temp%d_lcrit",
-> > +	[hwmon_temp_lcrit_hyst] = "temp%d_lcrit_hyst",
-> > +	[hwmon_temp_min] = "temp%d_min",
-> > +	[hwmon_temp_min_hyst] = "temp%d_min_hyst",
-> > +	[hwmon_temp_max] = "temp%d_max",
-> > +	[hwmon_temp_max_hyst] = "temp%d_max_hyst",
-> > +	[hwmon_temp_crit] = "temp%d_crit",
-> > +	[hwmon_temp_crit_hyst] = "temp%d_crit_hyst",
-> > +	[hwmon_temp_emergency] = "temp%d_emergency",
-> > +	[hwmon_temp_emergency_hyst] = "temp%d_emergency_hyst",
-> > +	[hwmon_temp_alarm] = "temp%d_alarm",
-> > +	[hwmon_temp_lcrit_alarm] = "temp%d_lcrit_alarm",
-> > +	[hwmon_temp_min_alarm] = "temp%d_min_alarm",
-> > +	[hwmon_temp_max_alarm] = "temp%d_max_alarm",
-> > +	[hwmon_temp_crit_alarm] = "temp%d_crit_alarm",
-> > +	[hwmon_temp_emergency_alarm] = "temp%d_emergency_alarm",
-> > +	[hwmon_temp_fault] = "temp%d_fault",
-> > +	[hwmon_temp_offset] = "temp%d_offset",
-> > +	[hwmon_temp_label] = "temp%d_label",
-> > +	[hwmon_temp_lowest] = "temp%d_lowest",
-> > +	[hwmon_temp_highest] = "temp%d_highest",
-> > +	[hwmon_temp_reset_history] = "temp%d_reset_history",
-> > +};
-> > +
-> 
-> This starts looking a lot like libsensors' code ;-)
-> 
-> > +static const char * const *__templates[] = {
-> > +	[hwmon_chip] = hwmon_chip_attr_templates,
-> > +	[hwmon_temp] = hwmon_temp_attr_templates,
-> > +};
-> > +
-> > +static const int __templates_size[] = {
-> > +	[hwmon_chip] = ARRAY_SIZE(hwmon_chip_attr_templates),
-> > +	[hwmon_temp] = ARRAY_SIZE(hwmon_temp_attr_templates),
-> > +};
-> > +
-> > +static int hwmon_num_channel_attrs(const struct hwmon_channel_info *info)
-> > +{
-> > +	int i, n;
-> > +
-> > +	for (i = n = 0; info->config[i]; i++)
-> > +		n += hweight32(info->config[i]);
-> > +
-> > +	return n;
-> > +}
-> > +
-> > +static int hwmon_genattrs(struct device *dev,
-> > +			  const void *drvdata,
-> > +			  struct attribute **attrs,
-> > +			  const struct hwmon_ops *ops,
-> > +			  const struct hwmon_channel_info *info)
-> > +{
-> > +	const char * const *templates;
-> > +	int template_size;
-> > +	int i, aindex = 0;
-> > +
-> > +	if (info->type >= ARRAY_SIZE(__templates))
-> > +		return -EINVAL;
-> > +
-> > +	templates = __templates[info->type];
-> > +	template_size = __templates_size[info->type];
-> > +
-> > +	for (i = 0; info->config[i]; i++) {
-> > +		u32 attr_mask = info->config[i];
-> > +		u32 attr;
-> > +
-> > +		while (attr_mask) {
-> > +			struct attribute *a;
-> > +
-> > +			attr = __ffs(attr_mask);
-> > +			attr_mask &= ~BIT(attr);
-> > +			if (attr >= template_size)
-> > +				return -EINVAL;
-> > +			a = hwmon_genattr(dev, drvdata, info->type, attr, i,
-> > +					  templates[attr], ops);
-> > +			if (IS_ERR(a)) {
-> > +				if (PTR_ERR(a) != -ENOENT)
-> > +					return PTR_ERR(a);
-> > +				continue;
-> > +			}
-> > +			attrs[aindex++] = a;
-> > +		}
-> > +	}
-> > +	return aindex;
-> > +}
-> > +
-> > +static struct attribute **
-> > +__hwmon_create_attrs(struct device *dev, const void *drvdata,
-> > +		     const struct hwmon_chip_info *chip)
-> > +{
-> > +	int ret, i, aindex = 0, nattrs = 0;
-> > +	struct attribute **attrs;
-> > +
-> > +	for (i = 0; chip->info[i]; i++)
-> > +		nattrs += hwmon_num_channel_attrs(chip->info[i]);
-> > +
-> > +	if (nattrs == 0)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	attrs = devm_kcalloc(dev, nattrs + 1, sizeof(*attrs), GFP_KERNEL);
-> > +	if (!attrs)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	for (i = 0; chip->info[i]; i++) {
-> > +		ret = hwmon_genattrs(dev, drvdata, &attrs[aindex], chip->ops,
-> > +				     chip->info[i]);
-> > +		if (ret < 0)
-> > +			return ERR_PTR(ret);
-> > +		aindex += ret;
-> > +	}
-> > +
-> > +	return attrs;
-> > +}
-> > +
-> > +static struct device *
-> > +__hwmon_device_register(struct device *dev, const char *name, void *drvdata,
-> > +			const struct hwmon_chip_info *chip,
-> > +			const struct attribute_group **groups)
-> >  {
-> >  	struct hwmon_device *hwdev;
-> > -	int err, id;
-> > +	struct device *hdev;
-> > +	int i, j, err, id;
-> >  
-> >  	/* Do not accept invalid characters in hwmon name attribute */
-> >  	if (name && (!strlen(name) || strpbrk(name, "-* \t\n")))
-> > @@ -112,28 +401,128 @@ hwmon_device_register_with_groups(struct device *dev, const char *name,
-> >  		goto ida_remove;
-> >  	}
-> >  
-> > +	hdev = &hwdev->dev;
-> > +
-> > +	if (chip && chip->ops->is_visible) {
-> 
-> is_visible is documented as mandatory, so why would this check be needed
-> (and not result in an error if failed?)
-> 
-Let me check. I don't recall if the documentation is at fault or the
-code.
-
-> > +		struct attribute **attrs;
-> > +		int ngroups = 2;
-> 
-> I'd appreciate a comment here.
-> 
-Sure.
-
-> > +
-> > +		if (groups)
-> > +			for (i = 0; groups[i]; i++)
-> > +				ngroups++;
-> > +
-> > +		hwdev->groups = devm_kcalloc(dev, ngroups, sizeof(*groups),
-> > +					     GFP_KERNEL);
-> > +		if (!hwdev->groups)
-> > +			return ERR_PTR(-ENOMEM);
-> > +
-> > +		attrs = __hwmon_create_attrs(dev, drvdata, chip);
-> > +		if (IS_ERR(attrs)) {
-> > +			err = PTR_ERR(attrs);
-> > +			goto free_hwmon;
-> > +		}
-> > +
-> > +		hwdev->group.attrs = attrs;
-> > +		ngroups = 0;
-> > +		hwdev->groups[ngroups++] = &hwdev->group;
-> > +
-> > +		if (groups) {
-> > +			for (i = 0; groups[i]; i++)
-> > +				hwdev->groups[ngroups++] = groups[i];
-> > +		}
-> > +
-> > +		hdev->groups = hwdev->groups;
-> > +	} else {
-> > +		hdev->groups = groups;
-> > +	}
-> > +
-> >  	hwdev->name = name;
-> > -	hwdev->dev.class = &hwmon_class;
-> > -	hwdev->dev.parent = dev;
-> > -	hwdev->dev.groups = groups;
-> > -	hwdev->dev.of_node = dev ? dev->of_node : NULL;
-> > -	dev_set_drvdata(&hwdev->dev, drvdata);
-> > -	dev_set_name(&hwdev->dev, HWMON_ID_FORMAT, id);
-> > -	err = device_register(&hwdev->dev);
-> > +	hdev->class = &hwmon_class;
-> > +	hdev->parent = dev;
-> > +	hdev->of_node = dev ? dev->of_node : NULL;
-> > +	hwdev->chip = chip;
-> > +	dev_set_drvdata(hdev, drvdata);
-> > +	dev_set_name(hdev, HWMON_ID_FORMAT, id);
-> > +	err = device_register(hdev);
-> >  	if (err)
-> > -		goto free;
-> > +		goto free_hwmon;
-> > +
-> > +	if (chip && chip->ops->is_visible && chip->ops->read &&
-> > +	    chip->info[0]->type == hwmon_chip &&
-> > +	    (chip->info[0]->config[0] & HWMON_C_REGISTER_TZ)) {
-> > +		const struct hwmon_channel_info **info = chip->info;
-> > +
-> > +		for (i = 1; info[i]; i++) {
-> > +			if (info[i]->type != hwmon_temp)
-> > +				continue;
-> > +
-> > +			for (j = 0; info[i]->config[j]; j++) {
-> > +				if (!chip->ops->is_visible(drvdata, hwmon_temp,
-> > +							   hwmon_temp_input, j))
-> > +					continue;
-> > +				if (info[i]->config[j] & HWMON_T_INPUT)
-> > +					hwmon_thermal_add_sensor(dev, hwdev, j);
-> > +			}
-> > +		}
-> > +	}
-> >  
-> > -	return &hwdev->dev;
-> > +	return hdev;
-> >  
-> > -free:
-> > +free_hwmon:
-> >  	kfree(hwdev);
-> >  ida_remove:
-> >  	ida_simple_remove(&hwmon_ida, id);
-> >  	return ERR_PTR(err);
-> >  }
-> > +
-> > +/**
-> > + * hwmon_device_register_with_groups - register w/ hwmon
-> > + * @dev: the parent device
-> > + * @name: hwmon name attribute
-> > + * @drvdata: driver data to attach to created device
-> > + * @groups: List of attribute groups to create
-> > + *
-> > + * hwmon_device_unregister() must be called when the device is no
-> > + * longer needed.
-> > + *
-> > + * Returns the pointer to the new device.
-> > + */
-> > +struct device *
-> > +hwmon_device_register_with_groups(struct device *dev, const char *name,
-> > +				  void *drvdata,
-> > +				  const struct attribute_group **groups)
-> > +{
-> > +	return __hwmon_device_register(dev, name, drvdata, NULL, groups);
-> > +}
-> >  EXPORT_SYMBOL_GPL(hwmon_device_register_with_groups);
-> >  
-> >  /**
-> > + * hwmon_device_register_with_info - register w/ hwmon
-> > + * @dev: the parent device
-> > + * @name: hwmon name attribute
-> > + * @drvdata: driver data to attach to created device
-> > + * @info: Pointer to hwmon chip information
-> > + * @groups - pointer to list of driver specific attribute groups
-> 
-> I don't find this clear. "driver specific" doesn't really tell me what
-> it is. My first reaction when reviewing the changes from an API
-> perspective was "the attributes would be generated from the
-> hwmon_chip_info, so why are we still passing them as a parameter?" Now I
-> seem to understand that "groups" here is meant for extra attributes
-> which aren't part of standard sysfs interface. This would be NULL for
-> most drivers, right?
-> 
-Correct.
-
-> To clear up the confusion, what about renaming this parameter to
-> "extra_groups"? And maybe rewording "driver specific" to "non-standard"?
-> 
-No problem with that.
-
-> As a side note I am wondering if it would be reasonable to limit it to a
-> single group, instead of a NULL-terminated array of groups. This would
-> make the code a little more efficient.
-> 
-The underlying code is all the same; hwmon_device_register_with_groups()
-also calls __hwmon_device_register(). I would prefer to keep the code as
-common as possible.
-
-> > + *
-> > + * hwmon_device_unregister() must be called when the device is no
-> > + * longer needed.
-> > + *
-> > + * Returns the pointer to the new device.
-> > + */
-> > +struct device *
-> > +hwmon_device_register_with_info(struct device *dev, const char *name,
-> > +				void *drvdata,
-> > +				const struct hwmon_chip_info *chip,
-> > +				const struct attribute_group **groups)
-> > +{
-> > +	if (chip && (!chip->ops || !chip->info))
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	return __hwmon_device_register(dev, name, drvdata, chip, groups);
-> > +}
-> > +EXPORT_SYMBOL_GPL(hwmon_device_register_with_info);
-> > +
-> > +/**
-> >   * hwmon_device_register - register w/ hwmon
-> >   * @dev: the device to register
-> >   *
-> > @@ -211,6 +600,48 @@ error:
-> >  }
-> >  EXPORT_SYMBOL_GPL(devm_hwmon_device_register_with_groups);
-> >  
-> > +/**
-> > + * devm_hwmon_device_register_with_info - register w/ hwmon
-> > + * @dev: the parent device
-> > + * @name: hwmon name attribute
-> > + * @drvdata: driver data to attach to created device
-> > + * @info: Pointer to hwmon chip information
-> > + * @groups - pointer to list of driver specific attribute groups
-> > + *
-> > + * Returns the pointer to the new device. The new device is automatically
-> > + * unregistered with the parent device.
-> > + */
-> > +struct device *
-> > +devm_hwmon_device_register_with_info(struct device *dev, const char *name,
-> > +				     void *drvdata,
-> > +				     const struct hwmon_chip_info *chip,
-> > +				     const struct attribute_group **groups)
-> > +{
-> > +	struct device **ptr, *hwdev;
-> > +
-> > +	if (!dev)
-> > +		return ERR_PTR(-EINVAL);
-> > +
-> > +	ptr = devres_alloc(devm_hwmon_release, sizeof(*ptr), GFP_KERNEL);
-> > +	if (!ptr)
-> > +		return ERR_PTR(-ENOMEM);
-> > +
-> > +	hwdev = hwmon_device_register_with_info(dev, name, drvdata, chip,
-> > +						groups);
-> > +	if (IS_ERR(hwdev))
-> > +		goto error;
-> > +
-> > +	*ptr = hwdev;
-> > +	devres_add(dev, ptr);
-> > +
-> > +	return hwdev;
-> > +
-> > +error:
-> > +	devres_free(ptr);
-> > +	return hwdev;
-> > +}
-> > +EXPORT_SYMBOL_GPL(devm_hwmon_device_register_with_info);
-> > +
-> >  static int devm_hwmon_match(struct device *dev, void *res, void *data)
-> >  {
-> >  	struct device **hwdev = res;
-> > diff --git a/include/linux/hwmon.h b/include/linux/hwmon.h
-> > index 09354f6c1d63..52e56d71d742 100644
-> > --- a/include/linux/hwmon.h
-> > +++ b/include/linux/hwmon.h
-> > @@ -14,9 +14,147 @@
-> >  #ifndef _HWMON_H_
-> >  #define _HWMON_H_
-> >  
-> > +#include <linux/bitops.h>
-> > +
-> >  struct device;
-> >  struct attribute_group;
-> >  
-> > +enum hwmon_sensor_types {
-> > +	hwmon_chip,
-> > +	hwmon_temp,
-> > +	hwmon_in,
-> > +	hwmon_curr,
-> > +	hwmon_power,
-> > +	hwmon_energy,
-> > +};
-> > +
-> > +enum hwmon_chip_attributes {
-> > +	hwmon_chip_temp_reset_history,
-> > +	hwmon_chip_register_tz,
-> > +	hwmon_chip_update_interval,
-> > +	hwmon_chip_alarms,
-> > +};
-> > +
-> > +#define HWMON_C_TEMP_RESET_HISTORY	BIT(hwmon_chip_temp_reset_history)
-> > +#define HWMON_C_IN_RESET_HISTORY	BIT(hwmon_chip_in_reset_history)
-> 
-> Ideally this one should go in next patch ("Add voltage attribute support
-> to new API".)
-> 
-> > +#define HWMON_C_REGISTER_TZ		BIT(hwmon_chip_register_tz)
-> > +#define HWMON_C_UPDATE_INTERVAL		BIT(hwmon_chip_update_interval)
-> > +#define HWMON_C_ALARMS			BIT(hwmon_chip_alarms)
-> > +
-> > +enum hwmon_temp_attributes {
-> > +	hwmon_temp_input = 0,
-> > +	hwmon_temp_type,
-> > +	hwmon_temp_lcrit,
-> > +	hwmon_temp_lcrit_hyst,
-> > +	hwmon_temp_min,
-> > +	hwmon_temp_min_hyst,
-> > +	hwmon_temp_max,
-> > +	hwmon_temp_max_hyst,
-> > +	hwmon_temp_crit,
-> > +	hwmon_temp_crit_hyst,
-> > +	hwmon_temp_emergency,
-> > +	hwmon_temp_emergency_hyst,
-> > +	hwmon_temp_alarm,
-> > +	hwmon_temp_lcrit_alarm,
-> > +	hwmon_temp_min_alarm,
-> > +	hwmon_temp_max_alarm,
-> > +	hwmon_temp_crit_alarm,
-> > +	hwmon_temp_emergency_alarm,
-> > +	hwmon_temp_fault,
-> > +	hwmon_temp_offset,
-> > +	hwmon_temp_label,
-> > +	hwmon_temp_lowest,
-> > +	hwmon_temp_highest,
-> > +	hwmon_temp_reset_history,
-> > +};
-> > +
-> > +#define HWMON_T_INPUT		BIT(hwmon_temp_input)
-> > +#define HWMON_T_TYPE		BIT(hwmon_temp_type)
-> > +#define HWMON_T_LCRIT		BIT(hwmon_temp_lcrit)
-> > +#define HWMON_T_LCRIT_HYST	BIT(hwmon_temp_lcrit_hyst)
-> > +#define HWMON_T_MIN		BIT(hwmon_temp_min)
-> > +#define HWMON_T_MIN_HYST	BIT(hwmon_temp_min_hyst)
-> > +#define HWMON_T_MAX		BIT(hwmon_temp_max)
-> > +#define HWMON_T_MAX_HYST	BIT(hwmon_temp_max_hyst)
-> > +#define HWMON_T_CRIT		BIT(hwmon_temp_crit)
-> > +#define HWMON_T_CRIT_HYST	BIT(hwmon_temp_crit_hyst)
-> > +#define HWMON_T_EMERGENCY	BIT(hwmon_temp_emergency)
-> > +#define HWMON_T_EMERGENCY_HYST	BIT(hwmon_temp_emergency_hyst)
-> > +#define HWMON_T_MIN_ALARM	BIT(hwmon_temp_min_alarm)
-> > +#define HWMON_T_MAX_ALARM	BIT(hwmon_temp_max_alarm)
-> > +#define HWMON_T_CRIT_ALARM	BIT(hwmon_temp_crit_alarm)
-> > +#define HWMON_T_EMERGENCY_ALARM	BIT(hwmon_temp_emergency_alarm)
-> > +#define HWMON_T_FAULT		BIT(hwmon_temp_fault)
-> > +#define HWMON_T_OFFSET		BIT(hwmon_temp_offset)
-> > +#define HWMON_T_LABEL		BIT(hwmon_temp_label)
-> > +#define HWMON_T_LOWEST		BIT(hwmon_temp_lowest)
-> > +#define HWMON_T_HIGHEST		BIT(hwmon_temp_highest)
-> > +#define HWMON_T_RESET_HISTORY	BIT(hwmon_temp_reset_history)
-> > +
-> > +/**
-> > + * struct hwmon_ops - hwmon device operations
-> > + * @is_visible: Callback to return attribute visibility. Mandatory.
-> > + *		Parameters are:
-> > + *		@const void *drvdata:
-> > + *			Pointer to driver-private data structure passed
-> > + *			as argument to hwmon_device_register_with_info().
-> > + *		@type:	Sensor type
-> > + *		@attr:	Sensor attribute
-> > + *		@channel:
-> > + *			Channel number
-> > + *		The function returns the file permissions.
-> > + *		If the return value is 0, no attribute will be created.
-> > + * @read:       Read callback. Optional. If not provided, attributes
-> > + *		will not be readable.
-> > + *		Parameters are:
-> > + *		@dev:	Pointer to hardware monitoring device
-> > + *		@type:	Sensor type
-> > + *		@attr:	Sensor attribute
-> > + *		@channel:
-> > + *			Channel number
-> > + *		@val:	Pointer to returned value
-> > + *		The function returns 0 on success or a negative error number.
-> > + * @write:	Write callback. Optional. If not provided, attributes
-> > + *		will not be writable.
-> > + *		Parameters are:
-> > + *		@dev:	Pointer to hardware monitoring device
-> > + *		@type:	Sensor type
-> > + *		@attr:	Sensor attribute
-> > + *		@channel:
-> > + *			Channel number
-> > + *		@val:	Value to write
-> > + *		The function returns 0 on success or a negative error number.
-> > + */
-> > +struct hwmon_ops {
-> > +	umode_t (*is_visible)(const void *drvdata, enum hwmon_sensor_types type,
-> > +			      u32 attr, int channel);
-> > +	int (*read)(struct device *dev, enum hwmon_sensor_types type,
-> > +		    u32 attr, int channel, long *val);
-> > +	int (*write)(struct device *dev, enum hwmon_sensor_types type,
-> > +		     u32 attr, int channel, long val);
-> > +};
-> > +
-> > +/**
-> > + * Channel information
-> > + * @type:	Channel type.
-> > + * @config:	Pointer to NULL-terminated list of channel parameters.
-> > + *		Use for per-channel attributes.
-> > + */
-> > +struct hwmon_channel_info {
-> > +	enum hwmon_sensor_types type;
-> > +	const u32 *config;
-> > +};
-> > +
-> > +/**
-> > + * Chip configuration
-> > + * @ops:	Pointer to hwmon operations.
-> > + * @info:	Null-terminated list of channel information.
-> > + */
-> > +struct hwmon_chip_info {
-> > +	const struct hwmon_ops *ops;
-> > +	const struct hwmon_channel_info **info;
-> > +};
-> > +
-> >  struct device *hwmon_device_register(struct device *dev);
-> >  struct device *
-> >  hwmon_device_register_with_groups(struct device *dev, const char *name,
-> > @@ -26,6 +164,16 @@ struct device *
-> >  devm_hwmon_device_register_with_groups(struct device *dev, const char *name,
-> >  				       void *drvdata,
-> >  				       const struct attribute_group **groups);
-> > +struct device *
-> > +hwmon_device_register_with_info(struct device *dev,
-> > +				const char *name, void *drvdata,
-> > +				const struct hwmon_chip_info *info,
-> > +				const struct attribute_group **groups);
-> > +struct device *
-> > +devm_hwmon_device_register_with_info(struct device *dev,
-> > +				     const char *name, void *drvdata,
-> > +				     const struct hwmon_chip_info *info,
-> > +				     const struct attribute_group **groups);
-> >  
-> >  void hwmon_device_unregister(struct device *dev);
-> >  void devm_hwmon_device_unregister(struct device *dev);
-> 
-> This is adding a 4th and 5th way to register a hwmon device. Starts
-> being a bit messy... Do you have any plans to get rid of some of the
-> other functions to make things more consistent and efficient?
-> 
-Would be nice, but then someone would have to spend the time cleaning
-up the old drivers to replace the old API, and for the most part we would
-not be able to test the result. Are you sure that is worth the risk ?
-
-Thanks,
-Guenter
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 1cf6b79..bfa12ce 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -322,57 +322,6 @@ out:
+ 	return ret;
+ }
+ 
+-static ssize_t ad7192_read_frequency(struct device *dev,
+-				     struct device_attribute *attr,
+-				     char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7192_state *st = iio_priv(indio_dev);
+-
+-	return sprintf(buf, "%d\n", st->mclk /
+-			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode)));
+-}
+-
+-static ssize_t ad7192_write_frequency(struct device *dev,
+-				      struct device_attribute *attr,
+-				      const char *buf,
+-				      size_t len)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct ad7192_state *st = iio_priv(indio_dev);
+-	unsigned long lval;
+-	int div, ret;
+-
+-	ret = kstrtoul(buf, 10, &lval);
+-	if (ret)
+-		return ret;
+-	if (lval == 0)
+-		return -EINVAL;
+-
+-	ret = iio_device_claim_direct_mode(indio_dev);
+-	if (ret)
+-		return ret;
+-
+-	div = st->mclk / (lval * st->f_order * 1024);
+-	if (div < 1 || div > 1023) {
+-		ret = -EINVAL;
+-		goto out;
+-	}
+-
+-	st->mode &= ~AD7192_MODE_RATE(-1);
+-	st->mode |= AD7192_MODE_RATE(div);
+-	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+-
+-out:
+-	iio_device_release_direct_mode(indio_dev);
+-
+-	return ret ? ret : len;
+-}
+-
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+-		ad7192_read_frequency,
+-		ad7192_write_frequency);
+-
+ static ssize_t
+ ad7192_show_scale_available(struct device *dev,
+ 			    struct device_attribute *attr, char *buf)
+@@ -471,7 +420,6 @@ static IIO_DEVICE_ATTR(ac_excitation_en, S_IRUGO | S_IWUSR,
+ 		       AD7192_REG_MODE);
+ 
+ static struct attribute *ad7192_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+@@ -484,7 +432,6 @@ static const struct attribute_group ad7192_attribute_group = {
+ };
+ 
+ static struct attribute *ad7195_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+ 	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+@@ -536,6 +483,10 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
+ 		if (chan->type == IIO_TEMP)
+ 			*val -= 273 * ad7192_get_temp_scale(unipolar);
+ 		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		*val = st->mclk /
++			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode));
++		return IIO_VAL_INT;
+ 	}
+ 
+ 	return -EINVAL;
+@@ -548,7 +499,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+ 			    long mask)
+ {
+ 	struct ad7192_state *st = iio_priv(indio_dev);
+-	int ret, i;
++	int ret, i, div;
+ 	unsigned int tmp;
+ 
+ 	ret = iio_device_claim_direct_mode(indio_dev);
+@@ -572,6 +523,22 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+ 				break;
+ 			}
+ 		break;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		if (!val) {
++			ret = -EINVAL;
++			break;
++		}
++
++		div = st->mclk / (val * st->f_order * 1024);
++		if (div < 1 || div > 1023) {
++			ret = -EINVAL;
++			break;
++		}
++
++		st->mode &= ~AD7192_MODE_RATE(-1);
++		st->mode |= AD7192_MODE_RATE(div);
++		ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
++		break;
+ 	default:
+ 		ret = -EINVAL;
+ 	}
+@@ -585,7 +552,14 @@ static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
+ 				    struct iio_chan_spec const *chan,
+ 				    long mask)
+ {
+-	return IIO_VAL_INT_PLUS_NANO;
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		return IIO_VAL_INT_PLUS_NANO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
+ }
+ 
+ static const struct iio_info ad7192_info = {
+diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+index e7fdec4..5ba430c 100644
+--- a/include/linux/iio/adc/ad_sigma_delta.h
++++ b/include/linux/iio/adc/ad_sigma_delta.h
+@@ -136,6 +136,7 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+ 			BIT(IIO_CHAN_INFO_OFFSET), \
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+ 		.scan_index = (_si), \
+ 		.scan_type = { \
+ 			.sign = 'u', \
+-- 
+2.7.4
