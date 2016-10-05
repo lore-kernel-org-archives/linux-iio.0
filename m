@@ -1,307 +1,126 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:35746 "EHLO comal.ext.ti.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752948AbcJEJ1M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 5 Oct 2016 05:27:12 -0400
-Subject: Re: [PATCH v3 2/4] drivers: iio: ti_am335x_adc: add dma support
-To: Mugunthan V N <mugunthanvnm@ti.com>, <linux-iio@vger.kernel.org>
-References: <20161005090443.24576-1-mugunthanvnm@ti.com>
- <20161005090443.24576-3-mugunthanvnm@ti.com>
-CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        John Syne <john3909@gmail.com>
-From: Peter Ujfalusi <peter.ujfalusi@ti.com>
-Message-ID: <8ff4af23-9e90-535c-0e25-9373d845caab@ti.com>
-Date: Wed, 5 Oct 2016 12:26:01 +0300
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:33619 "EHLO
+        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754503AbcJESBB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 5 Oct 2016 14:01:01 -0400
+Received: by mail-yw0-f195.google.com with SMTP id g192so9967771ywh.0
+        for <linux-iio@vger.kernel.org>; Wed, 05 Oct 2016 11:01:01 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20161005090443.24576-3-mugunthanvnm@ti.com>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <20161004234757.GA5635@d830.WORKGROUP>
+References: <20161001110418.GA25515@sayli-HP-15-Notebook-PC>
+ <20161002050032.GA14117@d830.WORKGROUP> <e4800421-2dc9-2460-470b-a043d198f469@metafoo.de>
+ <20161002232524.GA2822@d830.WORKGROUP> <CAKG5xWi6M5jemARfENuVgigaqUbvdJmeVbwpR3kWDM9d8LBW-w@mail.gmail.com>
+ <20161003171601.GC3132@d830.WORKGROUP> <CAKG5xWj7RSTpeGcnJtA-2PJk5NVFO_2DV-Fgo938wAafvhS8PA@mail.gmail.com>
+ <20161004234757.GA5635@d830.WORKGROUP>
+From: sayli karnik <karniksayli1995@gmail.com>
+Date: Wed, 5 Oct 2016 23:30:20 +0530
+Message-ID: <CAKG5xWhxd0N6ogx2GvkET1TOhJFrrOmOMRLPtBp1L7FcTBhkPQ@mail.gmail.com>
+Subject: Re: [Outreachy kernel] [PATCH] iio: imu: bmi160: bmi160_core: Fix
+ sparse warning
+To: Alison Schofield <amsfield22@gmail.com>
+Cc: outreachy-kernel <outreachy-kernel@googlegroups.com>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/05/16 12:04, Mugunthan V N wrote:
-> This patch adds the required pieces to ti_am335x_adc driver for
-> DMA support
-> 
-> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      | 148 ++++++++++++++++++++++++++++++++++-
->  include/linux/mfd/ti_am335x_tscadc.h |   7 ++
->  2 files changed, 152 insertions(+), 3 deletions(-)
+On Wed, Oct 5, 2016 at 5:17 AM, Alison Schofield <amsfield22@gmail.com> wrote:
+> On Wed, Oct 05, 2016 at 03:17:22AM +0530, sayli karnik wrote:
+>> On Mon, Oct 3, 2016 at 10:46 PM, Alison Schofield <amsfield22@gmail.com> wrote:
+>> > On Mon, Oct 03, 2016 at 07:07:39PM +0530, sayli karnik wrote:
+>> >> On Mon, Oct 3, 2016 at 4:55 AM, Alison Schofield <amsfield22@gmail.com> wrote:
+>> >> > On Sun, Oct 02, 2016 at 05:53:08PM +0200, Lars-Peter Clausen wrote:
+>> >> >> On 10/02/2016 07:00 AM, Alison Schofield wrote:
+>> >> >> [...]
+>> >> >> >> ---
+>> >> >> >>  drivers/iio/imu/bmi160/bmi160_core.c | 3 ++-
+>> >> >> >>  1 file changed, 2 insertions(+), 1 deletion(-)
+>> >> >> >>
+>> >> >> >> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+>> >> >> >> index e0251b8..5355507 100644
+>> >> >> >> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+>> >> >> >> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+>> >> >> >> @@ -398,7 +398,8 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
+>> >> >> >>    struct iio_poll_func *pf = p;
+>> >> >> >>    struct iio_dev *indio_dev = pf->indio_dev;
+>> >> >> >>    struct bmi160_data *data = iio_priv(indio_dev);
+>> >> >> >> -  s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
+>> >> >> >> +  __le16 buf[16];
+>> >> >> >> +  /* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
+>> >> >> >>    int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
+>> >> >> >>    __le16 sample;
+>> >> >> >
+>> >> >> > Wondering about this option below.  Data was read into an __le16, so that
+>> >> >> > was good diligence on drivers part.  Seems we can use le16_to_cpu() for the
+>> >> >> > conversion into the buf.
+>> >> >> >
+>> >> >> > --- a/drivers/iio/imu/bmi160/bmi160_core.c
+>> >> >> > +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+>> >> >> > @@ -408,7 +408,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
+>> >> >> >                                    &sample, sizeof(__le16));
+>> >> >> >             if (ret < 0)
+>> >> >> >                     goto done;
+>> >> >> > -           buf[j++] = sample;
+>> >> >> > +           buf[j++] = le16_to_cpu(sample);
+>> >> >> >     }
+>> >> >>
+>> >> >> This conversion is usually skipped on purpose and delayed until it is
+>> >> >> actually needed by the user. The IIO channel is accordingly marked that it
+>> >> >> will produce LE data.
+>> >> > Thanks Lars.  I knew that for buffers, overlooked it, now I'll know it
+>> >> > better!
+>> >> >
+>> >> > So, Sayli, you probably got this from the analysis of the last patch.
+>> >> > In buffered mode, we'll go ahead and return the data in it's 'native'
+>> >> > order.  So, my suggestion to convert it here, is wrong.  Ignore ;)
+>> >> >
+>> >> Oh I see! So should I resend the patch with an updated
+>> >> description?(cosmetic/bug fix)
+>> >
+>> > Yes.  In the commit message, you can leave out the subdirs (imu: bmc160:)
+>> > so that you have more space for a descriptive message of the change.
+>>
+>> A quick question about this being a bug fix or not. This would have
+>> worked fine on little endian systems. But wouldn't the byte order have
+>> changed in case of a big endian buffer, when the little endian samples
+>> are stored in it?
+>> If not, then this will be a cosmetic patch.
+>>
+>> thanks,
+>> sayli
+>
+> Hi Sayli,
+> Pulling linux-iio back in.  Once we've started group thread, we need to
+> keep replying to 'all'.  It helps those invested in this particular
+> patch, and also helps those who search in the future with similar
+> issues.
+>
+> To answer your question.  I say cosmetic, because the le16 is going
+> into a 16bit buf element, and is labelled as IIO_LE in the channel
+> buffer definition.  That's why Lars was saying we don't need to do
+> any conversion. We'll pass the bits as they came in, and tell the
+> readers of the buf that they are in little endian format.  (And, also
+> note we weren't truncating any as was the case in your first endian fix.)
+>
+Noted!
 
-Reviewed-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> OK - having said that, I stare at this code more, and wonder why
+> we are even bothering to label the sample as __le16, and whether
+> we should just label it as s16.
 
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index c3cfacca..ad9dec3 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -30,10 +30,28 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/kfifo_buf.h>
->  
-> +#include <linux/dmaengine.h>
-> +#include <linux/dma-mapping.h>
-> +
-> +#define DMA_BUFFER_SIZE		SZ_2K
-> +
-> +struct tiadc_dma {
-> +	struct dma_slave_config	conf;
-> +	struct dma_chan		*chan;
-> +	dma_addr_t		addr;
-> +	dma_cookie_t		cookie;
-> +	u8			*buf;
-> +	int			current_period;
-> +	int			period_size;
-> +	u8			fifo_thresh;
-> +};
-> +
->  struct tiadc_device {
->  	struct ti_tscadc_dev *mfd_tscadc;
-> +	struct tiadc_dma dma;
->  	struct mutex fifo1_lock; /* to protect fifo access */
->  	int channels;
-> +	int total_ch_enabled;
->  	u8 channel_line[8];
->  	u8 channel_step[8];
->  	int buffer_en_ch_steps;
-> @@ -198,6 +216,67 @@ static irqreturn_t tiadc_worker_h(int irq, void *private)
->  	return IRQ_HANDLED;
->  }
->  
-> +static void tiadc_dma_rx_complete(void *param)
-> +{
-> +	struct iio_dev *indio_dev = param;
-> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
-> +	u8 *data;
-> +	int i;
-> +
-> +	data = dma->buf + dma->current_period * dma->period_size;
-> +	dma->current_period = 1 - dma->current_period; /* swap the buffer ID */
-> +
-> +	for (i = 0; i < dma->period_size; i += indio_dev->scan_bytes) {
-> +		iio_push_to_buffers(indio_dev, data);
-> +		data += indio_dev->scan_bytes;
-> +	}
-> +}
-> +
-> +static int tiadc_start_dma(struct iio_dev *indio_dev)
-> +{
-> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
-> +	struct dma_async_tx_descriptor *desc;
-> +
-> +	dma->current_period = 0; /* We start to fill period 0 */
-> +	/*
-> +	 * Make the fifo thresh as the multiple of total number of
-> +	 * channels enabled, so make sure that cyclic DMA period
-> +	 * length is also a multiple of total number of channels
-> +	 * enabled. This ensures that no invalid data is reported
-> +	 * to the stack via iio_push_to_buffers().
-> +	 */
-> +	dma->fifo_thresh = rounddown(FIFO1_THRESHOLD + 1,
-> +				     adc_dev->total_ch_enabled) - 1;
-> +	/* Make sure that period length is multiple of fifo thresh level */
-> +	dma->period_size = rounddown(DMA_BUFFER_SIZE / 2,
-> +				    (dma->fifo_thresh + 1) * sizeof(u16));
-> +
-> +	dma->conf.src_maxburst = dma->fifo_thresh + 1;
-> +	dmaengine_slave_config(dma->chan, &dma->conf);
-> +
-> +	desc = dmaengine_prep_dma_cyclic(dma->chan, dma->addr,
-> +					 dma->period_size * 2,
-> +					 dma->period_size, DMA_DEV_TO_MEM,
-> +					 DMA_PREP_INTERRUPT);
-> +	if (!desc)
-> +		return -EBUSY;
-> +
-> +	desc->callback = tiadc_dma_rx_complete;
-> +	desc->callback_param = indio_dev;
-> +
-> +	dma->cookie = dmaengine_submit(desc);
-> +
-> +	dma_async_issue_pending(dma->chan);
-> +
-> +	tiadc_writel(adc_dev, REG_FIFO1THR, dma->fifo_thresh);
-> +	tiadc_writel(adc_dev, REG_DMA1REQ, dma->fifo_thresh);
-> +	tiadc_writel(adc_dev, REG_DMAENABLE_SET, DMA_FIFO1);
-> +
-> +	return 0;
-> +}
-> +
->  static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> @@ -218,20 +297,30 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
->  static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
-> +	unsigned int irq_enable;
->  	unsigned int enb = 0;
->  	u8 bit;
->  
->  	tiadc_step_config(indio_dev);
-> -	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels)
-> +	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels) {
->  		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
-> +		adc_dev->total_ch_enabled++;
-> +	}
->  	adc_dev->buffer_en_ch_steps = enb;
->  
-> +	if (dma->chan)
-> +		tiadc_start_dma(indio_dev);
-> +
->  	am335x_tsc_se_set_cache(adc_dev->mfd_tscadc, enb);
->  
->  	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
->  				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
-> -	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
-> -				| IRQENB_FIFO1OVRRUN);
-> +
-> +	irq_enable = IRQENB_FIFO1OVRRUN;
-> +	if (!dma->chan)
-> +		irq_enable |= IRQENB_FIFO1THRES;
-> +	tiadc_writel(adc_dev,  REG_IRQENABLE, irq_enable);
->  
->  	return 0;
->  }
-> @@ -239,12 +328,18 @@ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
->  static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
->  	int fifo1count, i, read;
->  
->  	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
->  				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
->  	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
->  	adc_dev->buffer_en_ch_steps = 0;
-> +	adc_dev->total_ch_enabled = 0;
-> +	if (dma->chan) {
-> +		tiadc_writel(adc_dev, REG_DMAENABLE_CLEAR, 0x2);
-> +		dmaengine_terminate_async(dma->chan);
-> +	}
->  
->  	/* Flush FIFO of leftover data in the time it takes to disable adc */
->  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-> @@ -430,6 +525,41 @@ static const struct iio_info tiadc_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static int tiadc_request_dma(struct platform_device *pdev,
-> +			     struct tiadc_device *adc_dev)
-> +{
-> +	struct tiadc_dma	*dma = &adc_dev->dma;
-> +	dma_cap_mask_t		mask;
-> +
-> +	/* Default slave configuration parameters */
-> +	dma->conf.direction = DMA_DEV_TO_MEM;
-> +	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-> +	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
-> +
-> +	dma_cap_zero(mask);
-> +	dma_cap_set(DMA_CYCLIC, mask);
-> +
-> +	/* Get a channel for RX */
-> +	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
-> +	if (IS_ERR(dma->chan)) {
-> +		int ret = PTR_ERR(dma->chan);
-> +
-> +		dma->chan = NULL;
-> +		return ret;
-> +	}
-> +
-> +	/* RX buffer */
-> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-> +				      &dma->addr, GFP_KERNEL);
-> +	if (!dma->buf)
-> +		goto err;
-> +
-> +	return 0;
-> +err:
-> +	dma_release_channel(dma->chan);
-> +	return -ENOMEM;
-> +}
-> +
->  static int tiadc_parse_dt(struct platform_device *pdev,
->  			  struct tiadc_device *adc_dev)
->  {
-> @@ -512,8 +642,14 @@ static int tiadc_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, indio_dev);
->  
-> +	err = tiadc_request_dma(pdev, adc_dev);
-> +	if (err && err == -EPROBE_DEFER)
-> +		goto err_dma;
-> +
->  	return 0;
->  
-> +err_dma:
-> +	iio_device_unregister(indio_dev);
->  err_buffer_unregister:
->  	tiadc_iio_buffered_hardware_remove(indio_dev);
->  err_free_channels:
-> @@ -525,8 +661,14 @@ static int tiadc_remove(struct platform_device *pdev)
->  {
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
->  	u32 step_en;
->  
-> +	if (dma->chan) {
-> +		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-> +				  dma->buf, dma->addr);
-> +		dma_release_channel(dma->chan);
-> +	}
->  	iio_device_unregister(indio_dev);
->  	tiadc_iio_buffered_hardware_remove(indio_dev);
->  	tiadc_channels_remove(indio_dev);
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index e45a208..b9a53e0 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -23,6 +23,8 @@
->  #define REG_IRQENABLE		0x02C
->  #define REG_IRQCLR		0x030
->  #define REG_IRQWAKEUP		0x034
-> +#define REG_DMAENABLE_SET	0x038
-> +#define REG_DMAENABLE_CLEAR	0x03c
->  #define REG_CTRL		0x040
->  #define REG_ADCFSM		0x044
->  #define REG_CLKDIV		0x04C
-> @@ -36,6 +38,7 @@
->  #define REG_FIFO0THR		0xE8
->  #define REG_FIFO1CNT		0xF0
->  #define REG_FIFO1THR		0xF4
-> +#define REG_DMA1REQ		0xF8
->  #define REG_FIFO0		0x100
->  #define REG_FIFO1		0x200
->  
-> @@ -126,6 +129,10 @@
->  #define FIFOREAD_DATA_MASK (0xfff << 0)
->  #define FIFOREAD_CHNLID_MASK (0xf << 16)
->  
-> +/* DMA ENABLE/CLEAR Register */
-> +#define DMA_FIFO0		BIT(0)
-> +#define DMA_FIFO1		BIT(1)
-> +
->  /* Sequencer Status */
->  #define SEQ_STATUS BIT(5)
->  #define CHARGE_STEP		0x11
-> 
+Oh, in that case we could make both buf and sample s16.
 
+ Also, I'm wondering about the use
+> of sizeof().  Shouldn't we be saying sizeof(sample) not sizeof(__le16)?
+> It's not a checkpatch error, but I feel like I've seen coccichecks
+> or coccinelle script patches repairing these misuses of sizeof
+>
+Yes sizeof(variable) instead of sizeof(type) makes code resistant to
+future type changes.
 
--- 
-Péter
+> See what you think, group reply with questions, and we'll get to the
+> bottom of this one soon!
+>
+> Thanks,
+> alisons
+>
