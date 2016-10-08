@@ -1,37 +1,58 @@
-Return-Path: <eraretuya@gmail.com>
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org,
-	outreachy-kernel@googlegroups.com
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v3 0/2] staging: iio: ad7606: oversampling_ratio clean-up
-Date: Sat,  8 Oct 2016 14:50:03 +0800
-Message-Id: <cover.1475907512.git.eraretuya@gmail.com>
+Return-Path: <lorenzo.bianconi83@gmail.com>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	lorenzo.bianconi@st.com
+Subject: [PATCH v3 0/2] add support to STM HTS221 humidity + temperature sensor
+Date: Sat,  8 Oct 2016 09:45:50 +0200
+Message-Id: <1475912752-6444-1-git-send-email-lorenzo.bianconi@st.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Implement the oversampling_ratio attribute using standard global define
-as well as fix bug about incorrect setting of oversampling pins
+Changes since v2:
+- fix endianness issue in hts221_parse_caldata()
+- make dev->buffer large enough to avoid the memcpy() in
+  hts221_buffer_handler_thread()
+- remove trigger top half routine and move timestamp sampling in
+  hts221_buffer_handler_thread()
+- use devm_iio_* routines to register iio_device/trigger and setup
+  iio_triggered_buffer
+- reduce spi max read/write size
+- cosmetics
 
-Changes in v3:
-* Add follow-up patch fixing bug about incorrect setting of oversampling
-  pins
-* Add Fixes tag
+Changes since v1:
+- use single iio_device for both humidity and temperature sensors
+- use iio_claim_direct_mode() routine instead of grabbing the mutex directly
+- use more unique prefix for all defines
+- remove useless dev_info()
+- use of_match_ptr instead of access directly to of_match_table
+- use devm_iio_* routines
+- use info_mask_shared_by_all element for sampling_frequency
+- use oversampling ABI for humidityrelative_avg_sample and temp_avg_sample
 
-Changes in v2:
-* Add Lars' Acked-by tag
-* Update dev_err() to use proper arguments
+Lorenzo Bianconi (2):
+  iio: humidity: add support to hts221 rh/temp combo device
+  Documentation: dt: iio: humidity: add hts221 sensor device binding
 
-Eva Rachel Retuya (2):
-  staging: iio: ad7606: implement IIO_CHAN_INFO_OVERSAMPLING_RATIO
-  staging: iio: ad7606: fix improper setting of oversampling pins
-
- drivers/staging/iio/adc/ad7606_core.c | 67 ++++++++++++++++-------------------
- 1 file changed, 31 insertions(+), 36 deletions(-)
+ .../devicetree/bindings/iio/humidity/hts221.txt    |  19 +
+ drivers/iio/humidity/Kconfig                       |   2 +
+ drivers/iio/humidity/Makefile                      |   1 +
+ drivers/iio/humidity/hts221/Kconfig                |  23 +
+ drivers/iio/humidity/hts221/Makefile               |   6 +
+ drivers/iio/humidity/hts221/hts221.h               |  78 +++
+ drivers/iio/humidity/hts221/hts221_buffer.c        | 168 +++++
+ drivers/iio/humidity/hts221/hts221_core.c          | 684 +++++++++++++++++++++
+ drivers/iio/humidity/hts221/hts221_i2c.c           | 110 ++++
+ drivers/iio/humidity/hts221/hts221_spi.c           | 125 ++++
+ 10 files changed, 1216 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
+ create mode 100644 drivers/iio/humidity/hts221/Kconfig
+ create mode 100644 drivers/iio/humidity/hts221/Makefile
+ create mode 100644 drivers/iio/humidity/hts221/hts221.h
+ create mode 100644 drivers/iio/humidity/hts221/hts221_buffer.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_core.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_i2c.c
+ create mode 100644 drivers/iio/humidity/hts221/hts221_spi.c
 
 -- 
 2.7.4
