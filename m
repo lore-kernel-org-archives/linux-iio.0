@@ -1,122 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35649 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35671 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751493AbcJHRKk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 13:10:40 -0400
-Subject: Re: [PATCH 2/4] iio: accel: Add driver for dmard10 3-axis
- Accelerometer
+        with ESMTP id S1751493AbcJHROO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 13:14:14 -0400
+Subject: Re: [PATCH 3/4] iio: accel: Add driver for the MiraMEMS DA311 3-axis
+ 12-bit digital accelerometer
 To: Hans de Goede <hdegoede@redhat.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 References: <20161008123426.8991-1-hdegoede@redhat.com>
- <20161008123426.8991-3-hdegoede@redhat.com>
+ <20161008123426.8991-4-hdegoede@redhat.com>
 Cc: linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e23b116d-ad5a-d0ea-a899-f61b06ba7790@kernel.org>
-Date: Sat, 8 Oct 2016 18:10:37 +0100
+Message-ID: <abbe6cb1-7ec5-3d9c-2d49-710353d6230f@kernel.org>
+Date: Sat, 8 Oct 2016 18:14:10 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161008123426.8991-3-hdegoede@redhat.com>
+In-Reply-To: <20161008123426.8991-4-hdegoede@redhat.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 08/10/16 13:34, Hans de Goede wrote:
-> Add a driver for the Domintech ARD10 3-axis Accelerometer, based on the
-> android driver found here: https://github.com/domintech/dmard10
+> This driver is based on the DA311 Android driver which can be found here:
+> https://git.matricom.net/Firmware/kernel_amlogic_meson-common/tree/1e70113a5befd07debb68f537156def84c5be57a/drivers/amlogic/input/sensor
+> the mir3da_* files are the DA311 driver.
+> 
+> Unfortunately there is no datasheet.
 > 
 > Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-> ---
-> Changes in v2:
-> -prefix all defines with DMARD10_ and uppercase them all
-> -Cleanup typography of some comments
-> -Use defines for offsets in databuffer
-> -Use i2c_smbus_write_byte_data() where applicable
-> -Reduce unnecessarily large buffer size in dmard10_shutdown()
-> -Use __le16 buffer in dmard10_read_raw()
-> Changes in v3:
-> -Express unit in m/s^2 instead of in "G"
-Looks good to me. I thought about leaving it for a few days, but as the change
-is so minor I would guess anyone who cared would have had plenty of time
-to look at V2.
+Again, minor well defined changes from V2 so I'm happy to take
+this without it staying on the list for long first.
 
-It'll be sat in my testing branch until next weekend anyway if anyone does
-get a chance to take a look!
+Lars, plenty of time to add Reviewed-by/Acked-by if you
+want to give them. Not to worry if not (though you and
+all other reviewers never get enough credit in my view!)
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Applied to the togreg branch of iio.git - initially pushed out
+as testing for the autobuilders to play with it.
 
-Thanks. Another nice neat little driver.  Will be interesting to see
-if anyone wants to ultimately try doing 'push' type data flows on these
-devices.  Easy to add later though and I always like the approach where
-the driver gains that feature after we are sure the simple stuff is
-working well.
+Thanks,
 
 Jonathan
+> ---
+> Changes in v2:
+> -Add proper prefix to patch Subject
+> -Use i2c_smbus_read_word_data() instead of i2c_smbus_read_i2c_block_data()
+> Changes in v3:
+> -Express unit in m/s^2 instead of in "G"
+> -Drop le16_to_cpu, i2c_smbus_read_word_data() already does this
 > ---
 >  .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
 >  drivers/iio/accel/Kconfig                          |  10 +
 >  drivers/iio/accel/Makefile                         |   1 +
->  drivers/iio/accel/dmard10.c                        | 266 +++++++++++++++++++++
->  4 files changed, 278 insertions(+)
->  create mode 100644 drivers/iio/accel/dmard10.c
+>  drivers/iio/accel/da311.c                          | 305 +++++++++++++++++++++
+>  4 files changed, 317 insertions(+)
+>  create mode 100644 drivers/iio/accel/da311.c
 > 
 > diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index ce9db50..4689b31 100644
+> index 4689b31..b23ded3 100644
 > --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
 > +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -39,6 +39,7 @@ dallas,ds75		Digital Thermometer and Thermostat
->  dlg,da9053		DA9053: flexible system level PMIC with multicore support
->  dlg,da9063		DA9063: system PMIC for quad-core application processors
->  domintech,dmard09	DMARD09: 3-axis Accelerometer
-> +domintech,dmard10	DMARD10: 3-axis Accelerometer
->  epson,rx8010		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
->  epson,rx8025		High-Stability. I2C-Bus INTERFACE REAL TIME CLOCK MODULE
->  epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+> @@ -124,6 +124,7 @@ microchip,mcp4662-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Mem
+>  microchip,mcp4662-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
+>  microchip,mcp4662-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
+>  microchip,mcp4662-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
+> +miramems,da311		MiraMEMS DA311 3-axis 12-bit digital accelerometer
+>  national,lm63		Temperature sensor with integrated fan control
+>  national,lm75		I2C TEMP SENSOR
+>  national,lm80		Serial Interface ACPI-Compatible Microprocessor System Hardware Monitor
 > diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index 6bf1b64..6236fd5 100644
+> index 6236fd5..c94348f 100644
 > --- a/drivers/iio/accel/Kconfig
 > +++ b/drivers/iio/accel/Kconfig
-> @@ -73,6 +73,16 @@ config DMARD09
->  	  Choosing M will build the driver as a module. If so, the module
->  	  will be called dmard09.
+> @@ -52,6 +52,16 @@ config BMC150_ACCEL_SPI
+>  	tristate
+>  	select REGMAP_SPI
 >  
-> +config DMARD10
-> +	tristate "Domintech DMARD10 3-axis Accelerometer Driver"
+> +config DA311
+> +	tristate "MiraMEMS DA311 3-axis 12-bit digital accelerometer driver"
 > +	depends on I2C
 > +	help
-> +	  Say yes here to get support for the Domintech DMARD10 3-axis
-> +	  accelerometer.
+> +	  Say yes here to build support for the MiraMEMS DA311 3-axis 12-bit
+> +	  digital accelerometer.
 > +
-> +	  Choosing M will build the driver as a module. If so, the module
-> +	  will be called dmard10.
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called da311.
 > +
->  config HID_SENSOR_ACCEL_3D
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
+>  config DMARD06
+>  	tristate "Domintech DMARD06 Digital Accelerometer Driver"
+>  	depends on OF || COMPILE_TEST
 > diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 07a0c72..9f51559 100644
+> index 9f51559..601ca59 100644
 > --- a/drivers/iio/accel/Makefile
 > +++ b/drivers/iio/accel/Makefile
-> @@ -10,6 +10,7 @@ obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
+> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMA220) += bma220_spi.o
+>  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+>  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
 >  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
+> +obj-$(CONFIG_DA311)	+= da311.o
 >  obj-$(CONFIG_DMARD06)	+= dmard06.o
 >  obj-$(CONFIG_DMARD09)	+= dmard09.o
-> +obj-$(CONFIG_DMARD10)	+= dmard10.o
->  obj-$(CONFIG_HID_SENSOR_ACCEL_3D) += hid-sensor-accel-3d.o
->  obj-$(CONFIG_KXCJK1013) += kxcjk-1013.o
->  obj-$(CONFIG_KXSD9)	+= kxsd9.o
-> diff --git a/drivers/iio/accel/dmard10.c b/drivers/iio/accel/dmard10.c
+>  obj-$(CONFIG_DMARD10)	+= dmard10.o
+> diff --git a/drivers/iio/accel/da311.c b/drivers/iio/accel/da311.c
 > new file mode 100644
-> index 0000000..b8736cc
+> index 0000000..537cfa8
 > --- /dev/null
-> +++ b/drivers/iio/accel/dmard10.c
-> @@ -0,0 +1,266 @@
+> +++ b/drivers/iio/accel/da311.c
+> @@ -0,0 +1,305 @@
 > +/**
-> + * IIO driver for the 3-axis accelerometer Domintech ARD10.
+> + * IIO driver for the MiraMEMS DA311 3-axis accelerometer
 > + *
 > + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
-> + * Copyright (c) 2012 Domintech Technology Co., Ltd
+> + * Copyright (c) 2011-2013 MiraMEMS Sensing Technology Co., Ltd.
 > + *
 > + * This program is free software; you can redistribute it and/or modify it
 > + * under the terms and conditions of the GNU General Public License,
@@ -129,46 +125,72 @@ Jonathan
 > +#include <linux/iio/sysfs.h>
 > +#include <linux/byteorder/generic.h>
 > +
-> +#define DMARD10_REG_ACTR			0x00
-> +#define DMARD10_REG_AFEM			0x0c
-> +#define DMARD10_REG_STADR			0x12
-> +#define DMARD10_REG_STAINT			0x1c
-> +#define DMARD10_REG_MISC2			0x1f
-> +#define DMARD10_REG_PD				0x21
-> +
-> +#define DMARD10_MODE_OFF			0x00
-> +#define DMARD10_MODE_STANDBY			0x02
-> +#define DMARD10_MODE_ACTIVE			0x06
-> +#define DMARD10_MODE_READ_OTP			0x12
-> +#define DMARD10_MODE_RESET_DATA_PATH		0x82
-> +
-> +/* AFEN set 1, ATM[2:0]=b'000 (normal), EN_Z/Y/X/T=1 */
-> +#define DMARD10_VALUE_AFEM_AFEN_NORMAL		0x8f
-> +/* ODR[3:0]=b'0111 (100Hz), CCK[3:0]=b'0100 (204.8kHZ) */
-> +#define DMARD10_VALUE_CKSEL_ODR_100_204		0x74
-> +/* INTC[6:5]=b'00 */
-> +#define DMARD10_VALUE_INTC			0x00
-> +/* TAP1/TAP2 Average 2 */
-> +#define DMARD10_VALUE_TAPNS_AVE_2		0x11
-> +
-> +#define DMARD10_VALUE_STADR			0x55
-> +#define DMARD10_VALUE_STAINT			0xaa
-> +#define DMARD10_VALUE_MISC2_OSCA_EN		0x08
-> +#define DMARD10_VALUE_PD_RST			0x52
-> +
-> +/* Offsets into the buffer read in dmard10_read_raw() */
-> +#define DMARD10_X_OFFSET			1
-> +#define DMARD10_Y_OFFSET			2
-> +#define DMARD10_Z_OFFSET			3
+> +#define DA311_CHIP_ID			0x13
 > +
 > +/*
-> + * a value of + or -128 corresponds to + or - 1G
-> + * scale = 9.81 / 128 = 0.076640625
+> + * Note register addressed go from 0 - 0x3f and then wrap.
+> + * For some reason there are 2 banks with 0 - 0x3f addresses,
+> + * rather then a single 0-0x7f bank.
 > + */
 > +
-> +static const int dmard10_nscale = 76640625;
+> +/* Bank 0 regs */
+> +#define DA311_REG_BANK			0x0000
+> +#define DA311_REG_LDO_REG		0x0006
+> +#define DA311_REG_CHIP_ID		0x000f
+> +#define DA311_REG_TEMP_CFG_REG		0x001f
+> +#define DA311_REG_CTRL_REG1		0x0020
+> +#define DA311_REG_CTRL_REG3		0x0022
+> +#define DA311_REG_CTRL_REG4		0x0023
+> +#define DA311_REG_CTRL_REG5		0x0024
+> +#define DA311_REG_CTRL_REG6		0x0025
+> +#define DA311_REG_STATUS_REG		0x0027
+> +#define DA311_REG_OUT_X_L		0x0028
+> +#define DA311_REG_OUT_X_H		0x0029
+> +#define DA311_REG_OUT_Y_L		0x002a
+> +#define DA311_REG_OUT_Y_H		0x002b
+> +#define DA311_REG_OUT_Z_L		0x002c
+> +#define DA311_REG_OUT_Z_H		0x002d
+> +#define DA311_REG_INT1_CFG		0x0030
+> +#define DA311_REG_INT1_SRC		0x0031
+> +#define DA311_REG_INT1_THS		0x0032
+> +#define DA311_REG_INT1_DURATION		0x0033
+> +#define DA311_REG_INT2_CFG		0x0034
+> +#define DA311_REG_INT2_SRC		0x0035
+> +#define DA311_REG_INT2_THS		0x0036
+> +#define DA311_REG_INT2_DURATION		0x0037
+> +#define DA311_REG_CLICK_CFG		0x0038
+> +#define DA311_REG_CLICK_SRC		0x0039
+> +#define DA311_REG_CLICK_THS		0x003a
+> +#define DA311_REG_TIME_LIMIT		0x003b
+> +#define DA311_REG_TIME_LATENCY		0x003c
+> +#define DA311_REG_TIME_WINDOW		0x003d
 > +
-> +#define DMARD10_CHANNEL(reg, axis) {	\
+> +/* Bank 1 regs */
+> +#define DA311_REG_SOFT_RESET		0x0105
+> +#define DA311_REG_OTP_XOFF_L		0x0110
+> +#define DA311_REG_OTP_XOFF_H		0x0111
+> +#define DA311_REG_OTP_YOFF_L		0x0112
+> +#define DA311_REG_OTP_YOFF_H		0x0113
+> +#define DA311_REG_OTP_ZOFF_L		0x0114
+> +#define DA311_REG_OTP_ZOFF_H		0x0115
+> +#define DA311_REG_OTP_XSO		0x0116
+> +#define DA311_REG_OTP_YSO		0x0117
+> +#define DA311_REG_OTP_ZSO		0x0118
+> +#define DA311_REG_OTP_TRIM_OSC		0x011b
+> +#define DA311_REG_LPF_ABSOLUTE		0x011c
+> +#define DA311_REG_TEMP_OFF1		0x0127
+> +#define DA311_REG_TEMP_OFF2		0x0128
+> +#define DA311_REG_TEMP_OFF3		0x0129
+> +#define DA311_REG_OTP_TRIM_THERM_H	0x011a
+> +
+> +/*
+> + * a value of + or -1024 corresponds to + or - 1G
+> + * scale = 9.81 / 1024 = 0.009580078
+> + */
+> +
+> +static const int da311_nscale = 9580078;
+> +
+> +#define DA311_CHANNEL(reg, axis) {	\
 > +	.type = IIO_ACCEL,	\
 > +	.address = reg,	\
 > +	.modified = 1,	\
@@ -177,206 +199,219 @@ Jonathan
 > +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
 > +}
 > +
-> +static const struct iio_chan_spec dmard10_channels[] = {
-> +	DMARD10_CHANNEL(DMARD10_X_OFFSET, X),
-> +	DMARD10_CHANNEL(DMARD10_Y_OFFSET, Y),
-> +	DMARD10_CHANNEL(DMARD10_Z_OFFSET, Z),
+> +static const struct iio_chan_spec da311_channels[] = {
+> +	/* | 0x80 comes from the android driver */
+> +	DA311_CHANNEL(DA311_REG_OUT_X_L | 0x80, X),
+> +	DA311_CHANNEL(DA311_REG_OUT_Y_L | 0x80, Y),
+> +	DA311_CHANNEL(DA311_REG_OUT_Z_L | 0x80, Z),
 > +};
 > +
-> +struct dmard10_data {
+> +struct da311_data {
 > +	struct i2c_client *client;
 > +};
 > +
-> +/* Init sequence taken from the android driver */
-> +static int dmard10_reset(struct i2c_client *client)
+> +static int da311_register_mask_write(struct i2c_client *client, u16 addr,
+> +				     u8 mask, u8 data)
 > +{
-> +	unsigned char buffer[7];
 > +	int ret;
+> +	u8 tmp_data = 0;
 > +
-> +	/* 1. Powerdown reset */
-> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_PD,
-> +						DMARD10_VALUE_PD_RST);
+> +	if (addr & 0xff00) {
+> +		/* Select bank 1 */
+> +		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x01);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	if (mask != 0xff) {
+> +		ret = i2c_smbus_read_byte_data(client, addr);
+> +		if (ret < 0)
+> +			return ret;
+> +		tmp_data = ret;
+> +	}
+> +
+> +	tmp_data &= ~mask;
+> +	tmp_data |= data & mask;
+> +	ret = i2c_smbus_write_byte_data(client, addr & 0xff, tmp_data);
 > +	if (ret < 0)
 > +		return ret;
 > +
-> +	/*
-> +	 * 2. ACTR => Standby mode => Download OTP to parameter reg =>
-> +	 *    Standby mode => Reset data path => Standby mode
-> +	 */
-> +	buffer[0] = DMARD10_REG_ACTR;
-> +	buffer[1] = DMARD10_MODE_STANDBY;
-> +	buffer[2] = DMARD10_MODE_READ_OTP;
-> +	buffer[3] = DMARD10_MODE_STANDBY;
-> +	buffer[4] = DMARD10_MODE_RESET_DATA_PATH;
-> +	buffer[5] = DMARD10_MODE_STANDBY;
-> +	ret = i2c_master_send(client, buffer, 6);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* 3. OSCA_EN = 1, TSTO = b'000 (INT1 = normal, TEST0 = normal) */
-> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_MISC2,
-> +						DMARD10_VALUE_MISC2_OSCA_EN);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* 4. AFEN = 1 (AFE will powerdown after ADC) */
-> +	buffer[0] = DMARD10_REG_AFEM;
-> +	buffer[1] = DMARD10_VALUE_AFEM_AFEN_NORMAL;
-> +	buffer[2] = DMARD10_VALUE_CKSEL_ODR_100_204;
-> +	buffer[3] = DMARD10_VALUE_INTC;
-> +	buffer[4] = DMARD10_VALUE_TAPNS_AVE_2;
-> +	buffer[5] = 0x00; /* DLYC, no delay timing */
-> +	buffer[6] = 0x07; /* INTD=1 push-pull, INTA=1 active high, AUTOT=1 */
-> +	ret = i2c_master_send(client, buffer, 7);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* 5. Activation mode */
-> +	ret = i2c_smbus_write_byte_data(client, DMARD10_REG_ACTR,
-> +						DMARD10_MODE_ACTIVE);
-> +	if (ret < 0)
-> +		return ret;
+> +	if (addr & 0xff00) {
+> +		/* Back to bank 0 */
+> +		ret = i2c_smbus_write_byte_data(client, DA311_REG_BANK, 0x00);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
 > +
 > +	return 0;
 > +}
 > +
-> +/* Shutdown sequence taken from the android driver */
-> +static int dmard10_shutdown(struct i2c_client *client)
+> +/* Init sequence taken from the android driver */
+> +static int da311_reset(struct i2c_client *client)
 > +{
-> +	unsigned char buffer[3];
+> +	const struct {
+> +		u16 addr;
+> +		u8 mask;
+> +		u8 data;
+> +	} init_data[] = {
+> +		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x08 },
+> +		{ DA311_REG_CTRL_REG5,          0xff,   0x80 },
+> +		{ DA311_REG_CTRL_REG4,          0x30,   0x00 },
+> +		{ DA311_REG_CTRL_REG1,          0xff,   0x6f },
+> +		{ DA311_REG_TEMP_CFG_REG,       0xff,   0x88 },
+> +		{ DA311_REG_LDO_REG,            0xff,   0x02 },
+> +		{ DA311_REG_OTP_TRIM_OSC,       0xff,   0x27 },
+> +		{ DA311_REG_LPF_ABSOLUTE,       0xff,   0x30 },
+> +		{ DA311_REG_TEMP_OFF1,          0xff,   0x3f },
+> +		{ DA311_REG_TEMP_OFF2,          0xff,   0xff },
+> +		{ DA311_REG_TEMP_OFF3,          0xff,   0x0f },
+> +	};
+> +	int i, ret;
 > +
-> +	buffer[0] = DMARD10_REG_ACTR;
-> +	buffer[1] = DMARD10_MODE_STANDBY;
-> +	buffer[2] = DMARD10_MODE_OFF;
+> +	/* Reset */
+> +	ret = da311_register_mask_write(client, DA311_REG_SOFT_RESET,
+> +					0xff, 0xaa);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +	return i2c_master_send(client, buffer, 3);
+> +	for (i = 0; i < ARRAY_SIZE(init_data); i++) {
+> +		ret = da311_register_mask_write(client,
+> +						init_data[i].addr,
+> +						init_data[i].mask,
+> +						init_data[i].data);
+> +		if (ret < 0)
+> +			return ret;
+> +	}
+> +
+> +	return 0;
 > +}
 > +
-> +static int dmard10_read_raw(struct iio_dev *indio_dev,
+> +static int da311_enable(struct i2c_client *client, bool enable)
+> +{
+> +	u8 data = enable ? 0x00 : 0x20;
+> +
+> +	return da311_register_mask_write(client, DA311_REG_TEMP_CFG_REG,
+> +					 0x20, data);
+> +}
+> +
+> +static int da311_read_raw(struct iio_dev *indio_dev,
 > +				struct iio_chan_spec const *chan,
 > +				int *val, int *val2, long mask)
 > +{
-> +	struct dmard10_data *data = iio_priv(indio_dev);
-> +	__le16 buf[4];
+> +	struct da311_data *data = iio_priv(indio_dev);
 > +	int ret;
 > +
 > +	switch (mask) {
 > +	case IIO_CHAN_INFO_RAW:
-> +		/*
-> +		 * Read 8 bytes starting at the REG_STADR register, trying to
-> +		 * read the individual X, Y, Z registers will always read 0.
-> +		 */
-> +		ret = i2c_smbus_read_i2c_block_data(data->client,
-> +						    DMARD10_REG_STADR,
-> +						    sizeof(buf), (u8 *)buf);
+> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
 > +		if (ret < 0)
 > +			return ret;
-> +		ret = le16_to_cpu(buf[chan->address]);
-> +		*val = sign_extend32(ret, 12);
+> +		/*
+> +		 * Values are 12 bits, stored as 16 bits with the 4
+> +		 * least significant bits always 0.
+> +		 */
+> +		*val = (short)ret >> 4;
 > +		return IIO_VAL_INT;
 > +	case IIO_CHAN_INFO_SCALE:
 > +		*val = 0;
-> +		*val2 = dmard10_nscale;
+> +		*val2 = da311_nscale;
 > +		return IIO_VAL_INT_PLUS_NANO;
 > +	default:
 > +		return -EINVAL;
 > +	}
 > +}
 > +
-> +static const struct iio_info dmard10_info = {
+> +static const struct iio_info da311_info = {
 > +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= dmard10_read_raw,
+> +	.read_raw	= da311_read_raw,
 > +};
 > +
-> +static int dmard10_probe(struct i2c_client *client,
+> +static int da311_probe(struct i2c_client *client,
 > +			const struct i2c_device_id *id)
 > +{
 > +	int ret;
 > +	struct iio_dev *indio_dev;
-> +	struct dmard10_data *data;
+> +	struct da311_data *data;
 > +
-> +	/* These 2 registers have special POR reset values used for id */
-> +	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STADR);
-> +	if (ret != DMARD10_VALUE_STADR)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, DMARD10_REG_STAINT);
-> +	if (ret != DMARD10_VALUE_STAINT)
+> +	ret = i2c_smbus_read_byte_data(client, DA311_REG_CHIP_ID);
+> +	if (ret != DA311_CHIP_ID)
 > +		return (ret < 0) ? ret : -ENODEV;
 > +
 > +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev) {
-> +		dev_err(&client->dev, "iio allocation failed!\n");
+> +	if (!indio_dev)
 > +		return -ENOMEM;
-> +	}
 > +
 > +	data = iio_priv(indio_dev);
 > +	data->client = client;
 > +	i2c_set_clientdata(client, indio_dev);
 > +
 > +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &dmard10_info;
-> +	indio_dev->name = "dmard10";
+> +	indio_dev->info = &da311_info;
+> +	indio_dev->name = "da311";
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = dmard10_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(dmard10_channels);
+> +	indio_dev->channels = da311_channels;
+> +	indio_dev->num_channels = ARRAY_SIZE(da311_channels);
 > +
-> +	ret = dmard10_reset(client);
+> +	ret = da311_reset(client);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	ret = da311_enable(client, true);
 > +	if (ret < 0)
 > +		return ret;
 > +
 > +	ret = iio_device_register(indio_dev);
 > +	if (ret < 0) {
 > +		dev_err(&client->dev, "device_register failed\n");
-> +		dmard10_shutdown(client);
+> +		da311_enable(client, false);
 > +	}
 > +
 > +	return ret;
 > +}
 > +
-> +static int dmard10_remove(struct i2c_client *client)
+> +static int da311_remove(struct i2c_client *client)
 > +{
 > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
 > +
 > +	iio_device_unregister(indio_dev);
 > +
-> +	return dmard10_shutdown(client);
+> +	return da311_enable(client, false);
 > +}
 > +
 > +#ifdef CONFIG_PM_SLEEP
-> +static int dmard10_suspend(struct device *dev)
+> +static int da311_suspend(struct device *dev)
 > +{
-> +	return dmard10_shutdown(to_i2c_client(dev));
+> +	return da311_enable(to_i2c_client(dev), false);
 > +}
 > +
-> +static int dmard10_resume(struct device *dev)
+> +static int da311_resume(struct device *dev)
 > +{
-> +	return dmard10_reset(to_i2c_client(dev));
+> +	return da311_enable(to_i2c_client(dev), true);
 > +}
 > +#endif
 > +
-> +static SIMPLE_DEV_PM_OPS(dmard10_pm_ops, dmard10_suspend, dmard10_resume);
+> +static SIMPLE_DEV_PM_OPS(da311_pm_ops, da311_suspend, da311_resume);
 > +
-> +static const struct i2c_device_id dmard10_i2c_id[] = {
-> +	{"dmard10", 0},
+> +static const struct i2c_device_id da311_i2c_id[] = {
+> +	{"da311", 0},
 > +	{}
 > +};
-> +MODULE_DEVICE_TABLE(i2c, dmard10_i2c_id);
+> +MODULE_DEVICE_TABLE(i2c, da311_i2c_id);
 > +
-> +static struct i2c_driver dmard10_driver = {
+> +static struct i2c_driver da311_driver = {
 > +	.driver = {
-> +		.name = "dmard10",
-> +		.pm = &dmard10_pm_ops,
+> +		.name = "da311",
+> +		.pm = &da311_pm_ops,
 > +	},
-> +	.probe		= dmard10_probe,
-> +	.remove		= dmard10_remove,
-> +	.id_table	= dmard10_i2c_id,
+> +	.probe		= da311_probe,
+> +	.remove		= da311_remove,
+> +	.id_table	= da311_i2c_id,
 > +};
 > +
-> +module_i2c_driver(dmard10_driver);
+> +module_i2c_driver(da311_driver);
 > +
 > +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
-> +MODULE_DESCRIPTION("Domintech ARD10 3-Axis Accelerometer driver");
+> +MODULE_DESCRIPTION("MiraMEMS DA311 3-Axis Accelerometer driver");
 > +MODULE_LICENSE("GPL v2");
 > 
 
