@@ -1,148 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35404 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35390 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756532AbcJHQjd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 12:39:33 -0400
+        with ESMTP id S1756713AbcJHQje (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 12:39:34 -0400
 From: Jonathan Cameron <jic23@kernel.org>
 To: linux-iio@vger.kernel.org
 Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         Jonathan Cameron <jic23@kernel.org>
-Subject: [PATCH 10/18] staging:iio:accel:sca3000 add readback of the 3db low pass filter frequency
-Date: Sat,  8 Oct 2016 17:39:10 +0100
-Message-Id: <20161008163918.18758-11-jic23@kernel.org>
+Subject: [PATCH 15/18] staging:iio:accel:sca3000 Tidy up probe order to avoid a race.
+Date: Sat,  8 Oct 2016 17:39:15 +0100
+Message-Id: <20161008163918.18758-16-jic23@kernel.org>
 In-Reply-To: <20161008163918.18758-1-jic23@kernel.org>
 References: <20161008163918.18758-1-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Driving towards getting rid of the non standard mode control interface.
+Previously the device was exposed to userspace and in kernel consumers
+before the interrupts had been configured. As nothing stopped them being
+enabled in the interval this could cause unhandled interrupts.
 
 Signed-off-by: Jonathan Cameron <jic23@kernel.org>
 ---
- drivers/staging/iio/accel/sca3000.c | 48 ++++++++++++++++++++++++++++++++++++-
- 1 file changed, 47 insertions(+), 1 deletion(-)
+ drivers/staging/iio/accel/sca3000.c | 14 ++++++--------
+ 1 file changed, 6 insertions(+), 8 deletions(-)
 
 diff --git a/drivers/staging/iio/accel/sca3000.c b/drivers/staging/iio/accel/sca3000.c
-index 097a702c0ba4..e951be35a18a 100644
+index dc1d2cf1558a..dd3759ea52a0 100644
 --- a/drivers/staging/iio/accel/sca3000.c
 +++ b/drivers/staging/iio/accel/sca3000.c
-@@ -190,10 +190,13 @@ struct sca3000_chip_info {
- 	unsigned int		scale;
- 	bool			temp_output;
- 	int			measurement_mode_freq;
-+	int			measurement_mode_3db_freq;
- 	int			option_mode_1;
- 	int			option_mode_1_freq;
-+	int			option_mode_1_3db_freq;
- 	int			option_mode_2;
- 	int			option_mode_2_freq;
-+	int			option_mode_2_3db_freq;
- 	int			mot_det_mult_xz[6];
- 	int			mot_det_mult_y[7];
- };
-@@ -218,36 +221,46 @@ static const struct sca3000_chip_info sca3000_spi_chip_info_tbl[] = {
- 		.scale = 7357,
- 		.temp_output = true,
- 		.measurement_mode_freq = 250,
-+		.measurement_mode_3db_freq = 45,
- 		.option_mode_1 = SCA3000_OP_MODE_BYPASS,
- 		.option_mode_1_freq = 250,
-+		.option_mode_1_3db_freq = 70,
- 		.mot_det_mult_xz = {50, 100, 200, 350, 650, 1300},
- 		.mot_det_mult_y = {50, 100, 150, 250, 450, 850, 1750},
- 	},
- 	[e02] = {
- 		.scale = 9810,
- 		.measurement_mode_freq = 125,
-+		.measurement_mode_3db_freq = 40,
- 		.option_mode_1 = SCA3000_OP_MODE_NARROW,
- 		.option_mode_1_freq = 63,
-+		.option_mode_1_3db_freq = 11,
- 		.mot_det_mult_xz = {100, 150, 300, 550, 1050, 2050},
- 		.mot_det_mult_y = {50, 100, 200, 350, 700, 1350, 2700},
- 	},
- 	[e04] = {
- 		.scale = 19620,
- 		.measurement_mode_freq = 100,
-+		.measurement_mode_3db_freq = 38,
- 		.option_mode_1 = SCA3000_OP_MODE_NARROW,
- 		.option_mode_1_freq = 50,
-+		.option_mode_1_3db_freq = 9,
- 		.option_mode_2 = SCA3000_OP_MODE_WIDE,
- 		.option_mode_2_freq = 400,
-+		.option_mode_2_3db_freq = 70,
- 		.mot_det_mult_xz = {200, 300, 600, 1100, 2100, 4100},
- 		.mot_det_mult_y = {100, 200, 400, 7000, 1400, 2700, 54000},
- 	},
- 	[e05] = {
- 		.scale = 61313,
- 		.measurement_mode_freq = 200,
-+		.measurement_mode_3db_freq = 60,
- 		.option_mode_1 = SCA3000_OP_MODE_NARROW,
- 		.option_mode_1_freq = 50,
-+		.option_mode_1_3db_freq = 9,
- 		.option_mode_2 = SCA3000_OP_MODE_WIDE,
- 		.option_mode_2_freq = 400,
-+		.option_mode_2_3db_freq = 75,
- 		.mot_det_mult_xz = {600, 900, 1700, 3200, 6100, 11900},
- 		.mot_det_mult_y = {300, 600, 1200, 2000, 4100, 7800, 15600},
- 	},
-@@ -577,7 +590,8 @@ static const struct iio_event_spec sca3000_event = {
- 		.modified = 1,					\
- 		.channel2 = mod,				\
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
--		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),\
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |\
-+			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),\
- 		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),\
- 		.address = index,				\
- 		.scan_index = index,				\
-@@ -737,6 +751,33 @@ static int write_raw_samp_freq(struct sca3000_state *st, int val)
- 				     ctrlval);
+@@ -1439,9 +1439,6 @@ static int sca3000_probe(struct spi_device *spi)
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+ 
+ 	sca3000_configure_ring(indio_dev);
+-	ret = iio_device_register(indio_dev);
+-	if (ret < 0)
+-		return ret;
+ 
+ 	if (spi->irq) {
+ 		ret = request_threaded_irq(spi->irq,
+@@ -1451,7 +1448,7 @@ static int sca3000_probe(struct spi_device *spi)
+ 					   "sca3000",
+ 					   indio_dev);
+ 		if (ret)
+-			goto error_unregister_dev;
++			return ret;
+ 	}
+ 	indio_dev->setup_ops = &sca3000_ring_setup_ops;
+ 	ret = sca3000_clean_setup(st);
+@@ -1462,13 +1459,12 @@ static int sca3000_probe(struct spi_device *spi)
+ 	if (ret)
+ 		goto error_free_irq;
+ 
+-	return 0;
++	return iio_device_register(indio_dev);
+ 
+ error_free_irq:
+ 	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+-error_unregister_dev:
+-	iio_device_unregister(indio_dev);
++
+ 	return ret;
  }
  
-+static int sca3000_read_3db_freq(struct sca3000_state *st, int *val)
-+{
-+	int ret;
+@@ -1495,11 +1491,13 @@ static int sca3000_remove(struct spi_device *spi)
+ 	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+ 	struct sca3000_state *st = iio_priv(indio_dev);
+ 
++	iio_device_unregister(indio_dev);
 +
-+	ret = sca3000_read_data_short(st, SCA3000_REG_MODE_ADDR, 1);
-+	if (ret)
-+		return ret;
+ 	/* Must ensure no interrupts can be generated after this! */
+ 	sca3000_stop_all_interrupts(st);
+ 	if (spi->irq)
+ 		free_irq(spi->irq, indio_dev);
+-	iio_device_unregister(indio_dev);
 +
-+	/* mask bottom 2 bits - only ones that are relevant */
-+	st->rx[0] &= SCA3000_REG_MODE_MODE_MASK;
-+	switch (st->rx[0]) {
-+	case SCA3000_REG_MODE_MEAS_MODE_NORMAL:
-+		*val = st->info->measurement_mode_3db_freq;
-+		return IIO_VAL_INT;
-+	case SCA3000_REG_MODE_MEAS_MODE_MOT_DET:
-+		return -EBUSY;
-+	case SCA3000_REG_MODE_MEAS_MODE_OP_1:
-+		*val = st->info->option_mode_1_3db_freq;
-+		return IIO_VAL_INT;
-+	case SCA3000_REG_MODE_MEAS_MODE_OP_2:
-+		*val = st->info->option_mode_2_3db_freq;
-+		return IIO_VAL_INT;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static int sca3000_read_raw(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan,
- 			    int *val,
-@@ -794,6 +835,11 @@ static int sca3000_read_raw(struct iio_dev *indio_dev,
- 		ret = read_raw_samp_freq(st, val);
- 		mutex_unlock(&st->lock);
- 		return ret ? ret : IIO_VAL_INT;
-+	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
-+		mutex_lock(&st->lock);
-+		ret = sca3000_read_3db_freq(st, val);
-+		mutex_unlock(&st->lock);
-+		return ret;
- 	default:
- 		return -EINVAL;
- 	}
+ 	sca3000_unconfigure_ring(indio_dev);
+ 
+ 	return 0;
 -- 
 2.10.0
 
