@@ -1,55 +1,37 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from comal.ext.ti.com ([198.47.26.152]:35059 "EHLO comal.ext.ti.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754586AbcJEJHz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 5 Oct 2016 05:07:55 -0400
-From: Mugunthan V N <mugunthanvnm@ti.com>
-To: <linux-iio@vger.kernel.org>
-CC: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, <linux-omap@vger.kernel.org>,
-        <devicetree@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        John Syne <john3909@gmail.com>,
-        Mugunthan V N <mugunthanvnm@ti.com>
-Subject: [PATCH v3 3/4] ARM: dts: am33xx: add DMA properties for tscadc
-Date: Wed, 5 Oct 2016 14:34:42 +0530
-Message-ID: <20161005090443.24576-4-mugunthanvnm@ti.com>
-In-Reply-To: <20161005090443.24576-1-mugunthanvnm@ti.com>
-References: <20161005090443.24576-1-mugunthanvnm@ti.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <eraretuya@gmail.com>
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: linux-iio@vger.kernel.org,
+	outreachy-kernel@googlegroups.com
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v3 0/2] staging: iio: ad7606: oversampling_ratio clean-up
+Date: Sat,  8 Oct 2016 14:50:03 +0800
+Message-Id: <cover.1475907512.git.eraretuya@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add DMA properties for tscadc
+Implement the oversampling_ratio attribute using standard global define
+as well as fix bug about incorrect setting of oversampling pins
 
-Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
----
- arch/arm/boot/dts/am33xx.dtsi | 2 ++
- 1 file changed, 2 insertions(+)
+Changes in v3:
+* Add follow-up patch fixing bug about incorrect setting of oversampling
+  pins
+* Add Fixes tag
 
-diff --git a/arch/arm/boot/dts/am33xx.dtsi b/arch/arm/boot/dts/am33xx.dtsi
-index 98748c6..6d607b8 100644
---- a/arch/arm/boot/dts/am33xx.dtsi
-+++ b/arch/arm/boot/dts/am33xx.dtsi
-@@ -917,6 +917,8 @@
- 			interrupts = <16>;
- 			ti,hwmods = "adc_tsc";
- 			status = "disabled";
-+			dmas = <&edma 53 0>, <&edma 57 0>;
-+			dma-names = "fifo0", "fifo1";
- 
- 			tsc {
- 				compatible = "ti,am3359-tsc";
+Changes in v2:
+* Add Lars' Acked-by tag
+* Update dev_err() to use proper arguments
+
+Eva Rachel Retuya (2):
+  staging: iio: ad7606: implement IIO_CHAN_INFO_OVERSAMPLING_RATIO
+  staging: iio: ad7606: fix improper setting of oversampling pins
+
+ drivers/staging/iio/adc/ad7606_core.c | 67 ++++++++++++++++-------------------
+ 1 file changed, 31 insertions(+), 36 deletions(-)
+
 -- 
-2.10.0.372.g6fe1b14
-
+2.7.4
