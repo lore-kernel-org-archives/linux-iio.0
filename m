@@ -1,83 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39386 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35608 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752305AbcJIIvq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 04:51:46 -0400
-Subject: Re: [PATCH 1/4] staging: iio: isl29018: add documentation about the
- infrared suppression
-To: Brian Masney <masneyb@onstation.org>
-References: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
- <f6c89f7b-b048-a119-c3d2-080715bb271a@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
+        with ESMTP id S1752411AbcJHRCq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 13:02:46 -0400
+Subject: Re: [PATCH 1/4] dt: bindings: i2c/trivial-devices.txt: Add 2 iio
+ supported accelerometers
+To: Hans de Goede <hdegoede@redhat.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <20161008123426.8991-1-hdegoede@redhat.com>
+ <20161008123426.8991-2-hdegoede@redhat.com>
+Cc: linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <33a941c1-84eb-395a-9193-4bf82c242634@kernel.org>
-Date: Sun, 9 Oct 2016 09:51:43 +0100
+Message-ID: <d2dc4bdc-236b-b66d-8fd6-11ab077747bd@kernel.org>
+Date: Sat, 8 Oct 2016 18:02:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <f6c89f7b-b048-a119-c3d2-080715bb271a@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20161008123426.8991-2-hdegoede@redhat.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/10/16 09:43, Jonathan Cameron wrote:
-> On 07/10/16 01:48, Brian Masney wrote:
->> Add documentation from the ISL29018 Data Sheet (FN6619.4, Oct 8, 2012)
->> about the infrared suppression that can be controlled
->> with the proximity_on_chip_ambient_infrared_suppression sysfs attribute.
->>
->> Signed-off-by: Brian Masney <masneyb@onstation.org>
->> ---
->>  drivers/staging/iio/light/isl29018.c | 18 ++++++++++++++++++
->>  1 file changed, 18 insertions(+)
->>
->> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
->> index 51226bd..52bfb1cb 100644
->> --- a/drivers/staging/iio/light/isl29018.c
->> +++ b/drivers/staging/iio/light/isl29018.c
->> @@ -307,6 +307,24 @@ static ssize_t in_illuminance_integration_time_available_show
->>  	return len;
->>  }
->>  
->> +/*
->> + * From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
->> + * infrared suppression:
->> + *
->> + *   Proximity Sensing Scheme: Bit 7. This bit programs the function
->> + * of the proximity detection. Logic 0 of this bit, Scheme 0, makes
->> + * full n (4, 8, 12, 16) bits (unsigned) proximity detection. The range
->> + * of Scheme 0 proximity count is from 0 to 2^n. Logic 1 of this bit,
->> + * Scheme 1, makes n-1 (3, 7, 11, 15) bits (2's complementary)
->> + * proximity_less_ambient detection. The range of Scheme 1
->> + * proximity count is from -2^(n-1) to 2^(n-1) . The sign bit is extended
->> + * for resolutions less than 16. While Scheme 0 has wider dynamic
->> + * range, Scheme 1 proximity detection is less affected by the
->> + * ambient IR noise variation.
->> + *
->> + * 0 Sensing IR from LED and ambient
->> + * 1 Sensing IR from LED with ambient IR rejection
->> + */
-> Hi Brian,
+On 08/10/16 13:34, Hans de Goede wrote:
+> Add compatible strings for 2 accelerometers which follow the trivial
+> i2c device bindings and have been supported by the iio subsystem for
+> a while now.
 > 
-> This is good stuff, but the home of ABI docs (where it 'has' to be as
-> opposed to here where it is nice to have) is
-> Documentation/ABI/testing/sysfs-bus-iio-* (here isl29018 until we
-> see if this becomes generic enough to promote to a more generic file)
-> 
-Forgot to say, I applied this as it is a good addition in it's own right.
-Just looking for a follow up patch adding the ABI docs.
+> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+Applied and pushed out as testing for the autobuilders to ignore it ;)
 
 Thanks,
 
 Jonathan
-> Jonathan
->>  static ssize_t proximity_on_chip_ambient_infrared_suppression_show
->>  			(struct device *dev, struct device_attribute *attr,
->>  			 char *buf)
->>
+> ---
+>  Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
+>  1 file changed, 2 insertions(+)
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> index fbbad64..ce9db50 100644
+> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+> @@ -44,6 +44,7 @@ epson,rx8025		High-Stability. I2C-Bus INTERFACE REAL TIME CLOCK MODULE
+>  epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+>  fsl,mag3110		MAG3110: Xtrinsic High Accuracy, 3D Magnetometer
+>  fsl,mc13892		MC13892: Power Management Integrated Circuit (PMIC) for i.MX35/51
+> +fsl,mma7660		MMA7660FC: 3-Axis Orientation/Motion Detection Sensor
+>  fsl,mma8450		MMA8450Q: Xtrinsic Low-power, 3-axis Xtrinsic Accelerometer
+>  fsl,mpl3115		MPL3115: Absolute Digital Pressure Sensor
+>  fsl,mpr121		MPR121: Proximity Capacitive Touch Sensor Controller
+> @@ -57,6 +58,7 @@ maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
+>  maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
+>  mc,rv3029c2		Real Time Clock Module with I2C-Bus
+>  mcube,mc3230		mCube 3-axis 8-bit digital accelerometer
+> +memsic,mxc6225		MEMSIC 2-axis 8-bit digital accelerometer
+>  microchip,mcp4531-502	Microchip 7-bit Single I2C Digital Potentiometer (5k)
+>  microchip,mcp4531-103	Microchip 7-bit Single I2C Digital Potentiometer (10k)
+>  microchip,mcp4531-503	Microchip 7-bit Single I2C Digital Potentiometer (50k)
 > 
 
