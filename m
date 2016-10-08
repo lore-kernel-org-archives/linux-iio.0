@@ -1,60 +1,35 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35608 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752411AbcJHRCq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 8 Oct 2016 13:02:46 -0400
-Subject: Re: [PATCH 1/4] dt: bindings: i2c/trivial-devices.txt: Add 2 iio
- supported accelerometers
-To: Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20161008123426.8991-1-hdegoede@redhat.com>
- <20161008123426.8991-2-hdegoede@redhat.com>
-Cc: linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>
+Return-Path: <jic23@kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d2dc4bdc-236b-b66d-8fd6-11ab077747bd@kernel.org>
-Date: Sat, 8 Oct 2016 18:02:44 +0100
-MIME-Version: 1.0
-In-Reply-To: <20161008123426.8991-2-hdegoede@redhat.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+To: linux-iio@vger.kernel.org
+Cc: knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 01/18] staging:iio:accel:sca3000 Fix a use before setting of the indio_dev->buffer pointer.
+Date: Sat,  8 Oct 2016 17:39:01 +0100
+Message-Id: <20161008163918.18758-2-jic23@kernel.org>
+In-Reply-To: <20161008163918.18758-1-jic23@kernel.org>
+References: <20161008163918.18758-1-jic23@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 08/10/16 13:34, Hans de Goede wrote:
-> Add compatible strings for 2 accelerometers which follow the trivial
-> i2c device bindings and have been supported by the iio subsystem for
-> a while now.
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Applied and pushed out as testing for the autobuilders to ignore it ;)
+Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+---
+ drivers/staging/iio/accel/sca3000_ring.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-> ---
->  Documentation/devicetree/bindings/i2c/trivial-devices.txt | 2 ++
->  1 file changed, 2 insertions(+)
-> 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index fbbad64..ce9db50 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -44,6 +44,7 @@ epson,rx8025		High-Stability. I2C-Bus INTERFACE REAL TIME CLOCK MODULE
->  epson,rx8581		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
->  fsl,mag3110		MAG3110: Xtrinsic High Accuracy, 3D Magnetometer
->  fsl,mc13892		MC13892: Power Management Integrated Circuit (PMIC) for i.MX35/51
-> +fsl,mma7660		MMA7660FC: 3-Axis Orientation/Motion Detection Sensor
->  fsl,mma8450		MMA8450Q: Xtrinsic Low-power, 3-axis Xtrinsic Accelerometer
->  fsl,mpl3115		MPL3115: Absolute Digital Pressure Sensor
->  fsl,mpr121		MPR121: Proximity Capacitive Touch Sensor Controller
-> @@ -57,6 +58,7 @@ maxim,max1237		Low-Power, 4-/12-Channel, 2-Wire Serial, 12-Bit ADCs
->  maxim,max6625		9-Bit/12-Bit Temperature Sensors with I²C-Compatible Serial Interface
->  mc,rv3029c2		Real Time Clock Module with I2C-Bus
->  mcube,mc3230		mCube 3-axis 8-bit digital accelerometer
-> +memsic,mxc6225		MEMSIC 2-axis 8-bit digital accelerometer
->  microchip,mcp4531-502	Microchip 7-bit Single I2C Digital Potentiometer (5k)
->  microchip,mcp4531-103	Microchip 7-bit Single I2C Digital Potentiometer (10k)
->  microchip,mcp4531-503	Microchip 7-bit Single I2C Digital Potentiometer (50k)
-> 
-
+diff --git a/drivers/staging/iio/accel/sca3000_ring.c b/drivers/staging/iio/accel/sca3000_ring.c
+index d1cb9b9cf22b..e5de52d05a5c 100644
+--- a/drivers/staging/iio/accel/sca3000_ring.c
++++ b/drivers/staging/iio/accel/sca3000_ring.c
+@@ -270,8 +270,8 @@ int sca3000_configure_ring(struct iio_dev *indio_dev)
+ 		return -ENOMEM;
+ 	indio_dev->modes |= INDIO_BUFFER_HARDWARE;
+ 
+-	indio_dev->buffer->access = &sca3000_ring_access_funcs;
+ 
++	buffer->access = &sca3000_ring_access_funcs;
+ 	iio_device_attach_buffer(indio_dev, buffer);
+ 
+ 	return 0;
+-- 
+2.10.0
