@@ -1,69 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39350 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39372 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753183AbcJIInm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 04:43:42 -0400
-Subject: Re: [PATCH 1/4] staging: iio: isl29018: add documentation about the
- infrared suppression
+        with ESMTP id S1752305AbcJIIsV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 04:48:21 -0400
+Subject: Re: [PATCH 2/4] staging: iio: isl29018: document device tree bindings
 To: Brian Masney <masneyb@onstation.org>
 References: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
+ <1475801317-29449-2-git-send-email-masneyb@onstation.org>
 Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
+        devel@driverdev.osuosl.org,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <Mark.Rutland@arm.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f6c89f7b-b048-a119-c3d2-080715bb271a@kernel.org>
-Date: Sun, 9 Oct 2016 09:43:30 +0100
+Message-ID: <c7fe672e-3776-a738-91a2-249f7948d606@kernel.org>
+Date: Sun, 9 Oct 2016 09:48:14 +0100
 MIME-Version: 1.0
-In-Reply-To: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1475801317-29449-2-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 07/10/16 01:48, Brian Masney wrote:
-> Add documentation from the ISL29018 Data Sheet (FN6619.4, Oct 8, 2012)
-> about the infrared suppression that can be controlled
-> with the proximity_on_chip_ambient_infrared_suppression sysfs attribute.
+> Fix the following warnings from checkpatch:
+> 
+> WARNING: DT compatible string "isil,isl29018" appears un-documented --
+> check ./Documentation/devicetree/bindings/
+> WARNING: DT compatible string "isil,isl29023" appears un-documented --
+> check ./Documentation/devicetree/bindings/
+> WARNING: DT compatible string "isil,isl29035" appears un-documented --
+> check ./Documentation/devicetree/bindings/
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
-> ---
->  drivers/staging/iio/light/isl29018.c | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
-> 
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index 51226bd..52bfb1cb 100644
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -307,6 +307,24 @@ static ssize_t in_illuminance_integration_time_available_show
->  	return len;
->  }
->  
-> +/*
-> + * From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
-> + * infrared suppression:
-> + *
-> + *   Proximity Sensing Scheme: Bit 7. This bit programs the function
-> + * of the proximity detection. Logic 0 of this bit, Scheme 0, makes
-> + * full n (4, 8, 12, 16) bits (unsigned) proximity detection. The range
-> + * of Scheme 0 proximity count is from 0 to 2^n. Logic 1 of this bit,
-> + * Scheme 1, makes n-1 (3, 7, 11, 15) bits (2's complementary)
-> + * proximity_less_ambient detection. The range of Scheme 1
-> + * proximity count is from -2^(n-1) to 2^(n-1) . The sign bit is extended
-> + * for resolutions less than 16. While Scheme 0 has wider dynamic
-> + * range, Scheme 1 proximity detection is less affected by the
-> + * ambient IR noise variation.
-> + *
-> + * 0 Sensing IR from LED and ambient
-> + * 1 Sensing IR from LED with ambient IR rejection
-> + */
-Hi Brian,
+Device tree patches should always be cc'd to the device tree list and
+maintainers. (done above).
 
-This is good stuff, but the home of ABI docs (where it 'has' to be as
-opposed to here where it is nice to have) is
-Documentation/ABI/testing/sysfs-bus-iio-* (here isl29018 until we
-see if this becomes generic enough to promote to a more generic file)
+As this is very simple I'm happy to take it without an Ack from
+them (though one would always be welcome and can be added for
+a week or so as I'm not pushing this out in a non rebasing tree yet).
+
+Applied to the togreg branch of iio.git - pushed out as testing for
+the autobuilders to play with it.
+
+Mark and Rob, just noticed we are down to just the two of you.
+Good luck guys and hope you find more assistance soon if you
+want it.
+
+Thanks,
 
 Jonathan
->  static ssize_t proximity_on_chip_ambient_infrared_suppression_show
->  			(struct device *dev, struct device_attribute *attr,
->  			 char *buf)
+> ---
+>  .../devicetree/bindings/iio/light/isl29018.txt     | 28 ++++++++++++++++++++++
+>  1 file changed, 28 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/isl29018.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/light/isl29018.txt b/Documentation/devicetree/bindings/iio/light/isl29018.txt
+> new file mode 100644
+> index 0000000..7e53524
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/light/isl29018.txt
+> @@ -0,0 +1,28 @@
+> +* ISL 29018/29023/29035 I2C ALS, Proximity, and Infrared sensor
+> +
+> +Required properties:
+> +
+> +  - compatible: Should be one of
+> +		"isil,isl29018"
+> +		"isil,isl29023"
+> +		"isil,isl29035"
+> +  - reg: the I2C address of the device
+> +
+> +Optional properties:
+> +
+> +  - interrupt-parent: should be the phandle for the interrupt controller
+> +  - interrupts: the sole interrupt generated by the device
+> +
+> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+> +  node bindings.
+> +
+> +  - vcc-supply: phandle to the regulator that provides power to the sensor.
+> +
+> +Example:
+> +
+> +isl29018@44 {
+> +	compatible = "isil,isl29018";
+> +	reg = <0x44>;
+> +	interrupt-parent = <&gpio>;
+> +	interrupts = <TEGRA_GPIO(Z, 2) IRQ_TYPE_LEVEL_HIGH>;
+> +};
 > 
 
