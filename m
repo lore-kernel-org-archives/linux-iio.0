@@ -1,67 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39803 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39808 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753629AbcJIKcl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 06:32:41 -0400
-Subject: Re: [PATCH v3 2/2] Documentation: dt: iio: humidity: add hts221
- sensor device binding
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-References: <1475912752-6444-1-git-send-email-lorenzo.bianconi@st.com>
- <1475912752-6444-3-git-send-email-lorenzo.bianconi@st.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
+        with ESMTP id S1752807AbcJIKdT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 06:33:19 -0400
+Subject: Re: [PATCH 3/4] staging: iio: isl29018: rename Kconfig variable to
+ match existing light drivers in mainline.
+To: Brian Masney <masneyb@onstation.org>
+References: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
+ <1475801317-29449-3-git-send-email-masneyb@onstation.org>
+Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <975bb745-cf11-1c6c-aa73-71e00bf1a42b@kernel.org>
-Date: Sun, 9 Oct 2016 11:32:39 +0100
+Message-ID: <4efa6955-eaca-312a-009b-5d487688d1b7@kernel.org>
+Date: Sun, 9 Oct 2016 11:33:17 +0100
 MIME-Version: 1.0
-In-Reply-To: <1475912752-6444-3-git-send-email-lorenzo.bianconi@st.com>
+In-Reply-To: <1475801317-29449-3-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/10/16 08:45, Lorenzo Bianconi wrote:
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-> ---
->  .../devicetree/bindings/iio/humidity/hts221.txt       | 19 +++++++++++++++++++
->  1 file changed, 19 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
+On 07/10/16 01:48, Brian Masney wrote:
+> Rename CONFIG_SENSORS_ISL29018 to CONFIG_ISL29018 for consistency with
+> the other light drivers in mainline.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> new file mode 100644
-> index 0000000..46a152c
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
-> @@ -0,0 +1,19 @@
-> +* HTS221 STM humidity + temperature sensor
-> +
-> +Required properties:
-> +- compatible: should be "st,hts221"
-> +- reg: i2c address of the sensor / spi cs line
-> +
-> +Optional properties:
-> +- interrupts: interrupt mapping for GPIO IRQ. It should be configured with
-> +	      flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING
-It might not be a gpio irq.  Plenty of IRQ only chips out there that you can't
-use for general purpose reading (you can't explicitly read their state).
-
-> +- interrupt-parent: should be the phandle for the interrupt controller
-Convention here is to add a cross reference to the main interrupt docs.
-We have been a bit lax on this in some IIO drivers but might as well be
-good with a new one.
-
-Otherwise this looks good to me.
-
-Thanks,
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+I'm always a bit split on these.  It would be lovely to tidy
+it up, but it may cause unnecessary breakage to people's
+configs for a very minor gain.  Hence I'm not going to apply this.
 
 Jonathan
-> +
-> +Example:
-> +
-> +hts221@5f {
-> +	compatible = "st,hts221";
-> +	reg = <0x5f>;
-> +	interrupt-parent = <&gpio0>;
-> +	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-> +};
+> ---
+>  drivers/staging/iio/light/Kconfig  | 2 +-
+>  drivers/staging/iio/light/Makefile | 2 +-
+>  2 files changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+> index ca8d6e6..b0e2948 100644
+> --- a/drivers/staging/iio/light/Kconfig
+> +++ b/drivers/staging/iio/light/Kconfig
+> @@ -3,7 +3,7 @@
+>  #
+>  menu "Light sensors"
+>  
+> -config SENSORS_ISL29018
+> +config ISL29018
+>  	tristate "ISL 29018 light and proximity sensor"
+>  	depends on I2C
+>  	select REGMAP_I2C
+> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
+> index 9960fdf..89d6b02 100644
+> --- a/drivers/staging/iio/light/Makefile
+> +++ b/drivers/staging/iio/light/Makefile
+> @@ -2,7 +2,7 @@
+>  # Makefile for industrial I/O Light sensors
+>  #
+>  
+> -obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
+> +obj-$(CONFIG_ISL29018)	+= isl29018.o
+>  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
+>  obj-$(CONFIG_TSL2583)	+= tsl2583.o
+>  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
 > 
 
