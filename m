@@ -1,267 +1,209 @@
-Return-Path: <hdegoede@redhat.com>
-From: Hans de Goede <hdegoede@redhat.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH v2] iio: accel: Add driver for the MiraMEMS DA280 3-axis 14-bit digital accelerometer
-Date: Sat,  8 Oct 2016 20:15:27 +0200
-Message-Id: <20161008181527.6646-1-hdegoede@redhat.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38873 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752852AbcJIHOl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 03:14:41 -0400
+Subject: Re: [PATCH v3] staging: iio: ad7192: implement
+ IIO_CHAN_INFO_SAMP_FREQ
+To: Eva Rachel Retuya <eraretuya@gmail.com>, lars@metafoo.de,
+        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org
+References: <1475636781-6471-1-git-send-email-eraretuya@gmail.com>
+Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3dfdca5d-a7d9-20b4-bd44-dd080ac514c2@kernel.org>
+Date: Sun, 9 Oct 2016 08:14:32 +0100
+MIME-Version: 1.0
+In-Reply-To: <1475636781-6471-1-git-send-email-eraretuya@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add an iio driver for the MiraMEMS DA280 3-axis 14-bit accelerometer, as
-well as for the DA226 which is a fully compatible 2-axis version.
+On 05/10/16 04:06, Eva Rachel Retuya wrote:
+> This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ
+> attribute wherein usage has some advantages like it can be accessed by
+> in-kernel consumers as well as reduces the code size.
+> 
+> Therefore, use IIO_CHAN_INFO_SAMP_FREQ to implement the
+> sampling_frequency attribute instead of using IIO_DEV_ATTR_SAMP_FREQ()
+> macro.
+> 
+> Move code from the functions associated with IIO_DEV_ATTR_SAMP_FREQ()
+> into respective read and write hooks with the mask set to
+> IIO_CHAN_INFO_SAMP_FREQ.
+> 
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Nice patch.
 
-Datasheets for the DA280 and DA226 can be found at the manufacturers site:
-http://www.miramems.com/en/products.asp?list=1
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
-Changes in v2:
--Drop le16_to_cpu, i2c_smbus_read_word_data() already does this
----
- .../devicetree/bindings/i2c/trivial-devices.txt    |   2 +
- drivers/iio/accel/Kconfig                          |  10 ++
- drivers/iio/accel/Makefile                         |   1 +
- drivers/iio/accel/da280.c                          | 183 +++++++++++++++++++++
- 4 files changed, 196 insertions(+)
- create mode 100644 drivers/iio/accel/da280.c
+Thanks,
 
-diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-index b23ded3..6e4ba81 100644
---- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-+++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-@@ -124,6 +124,8 @@ microchip,mcp4662-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Mem
- microchip,mcp4662-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
- microchip,mcp4662-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
- microchip,mcp4662-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
-+miramems,da226		MiraMEMS DA226 2-axis 14-bit digital accelerometer
-+miramems,da280		MiraMEMS DA280 3-axis 14-bit digital accelerometer
- miramems,da311		MiraMEMS DA311 3-axis 12-bit digital accelerometer
- national,lm63		Temperature sensor with integrated fan control
- national,lm75		I2C TEMP SENSOR
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index c94348f..c2ed6cf 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -52,6 +52,16 @@ config BMC150_ACCEL_SPI
- 	tristate
- 	select REGMAP_SPI
- 
-+config DA280
-+	tristate "MiraMEMS DA280 3-axis 14-bit digital accelerometer driver"
-+	depends on I2C
-+	help
-+	  Say yes here to build support for the MiraMEMS DA280 3-axis 14-bit
-+	  digital accelerometer.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called da280.
-+
- config DA311
- 	tristate "MiraMEMS DA311 3-axis 12-bit digital accelerometer driver"
- 	depends on I2C
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index 601ca59..b7a9ba7 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -8,6 +8,7 @@ obj-$(CONFIG_BMA220) += bma220_spi.o
- obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
- obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
- obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
-+obj-$(CONFIG_DA280)	+= da280.o
- obj-$(CONFIG_DA311)	+= da311.o
- obj-$(CONFIG_DMARD06)	+= dmard06.o
- obj-$(CONFIG_DMARD09)	+= dmard09.o
-diff --git a/drivers/iio/accel/da280.c b/drivers/iio/accel/da280.c
-new file mode 100644
-index 0000000..ed8343a
---- /dev/null
-+++ b/drivers/iio/accel/da280.c
-@@ -0,0 +1,183 @@
-+/**
-+ * IIO driver for the MiraMEMS DA280 3-axis accelerometer and
-+ * IIO driver for the MiraMEMS DA226 2-axis accelerometer
-+ *
-+ * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/i2c.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/byteorder/generic.h>
-+
-+#define DA280_REG_CHIP_ID		0x01
-+#define DA280_REG_ACC_X_LSB		0x02
-+#define DA280_REG_ACC_Y_LSB		0x04
-+#define DA280_REG_ACC_Z_LSB		0x06
-+#define DA280_REG_MODE_BW		0x11
-+
-+#define DA280_CHIP_ID			0x13
-+#define DA280_MODE_ENABLE		0x1e
-+#define DA280_MODE_DISABLE		0x9e
-+
-+enum { da226, da280 };
-+
-+/*
-+ * a value of + or -4096 corresponds to + or - 1G
-+ * scale = 9.81 / 4096 = 0.002395019
-+ */
-+
-+static const int da280_nscale = 2395019;
-+
-+#define DA280_CHANNEL(reg, axis) {	\
-+	.type = IIO_ACCEL,	\
-+	.address = reg,	\
-+	.modified = 1,	\
-+	.channel2 = IIO_MOD_##axis,	\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+}
-+
-+static const struct iio_chan_spec da280_channels[] = {
-+	DA280_CHANNEL(DA280_REG_ACC_X_LSB, X),
-+	DA280_CHANNEL(DA280_REG_ACC_Y_LSB, Y),
-+	DA280_CHANNEL(DA280_REG_ACC_Z_LSB, Z),
-+};
-+
-+struct da280_data {
-+	struct i2c_client *client;
-+};
-+
-+static int da280_enable(struct i2c_client *client, bool enable)
-+{
-+	u8 data = enable ? DA280_MODE_ENABLE : DA280_MODE_DISABLE;
-+
-+	return i2c_smbus_write_byte_data(client, DA280_REG_MODE_BW, data);
-+}
-+
-+static int da280_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct da280_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = i2c_smbus_read_word_data(data->client, chan->address);
-+		if (ret < 0)
-+			return ret;
-+		/*
-+		 * Values are 14 bits, stored as 16 bits with the 2
-+		 * least significant bits always 0.
-+		 */
-+		*val = (short)ret >> 2;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = 0;
-+		*val2 = da280_nscale;
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info da280_info = {
-+	.driver_module	= THIS_MODULE,
-+	.read_raw	= da280_read_raw,
-+};
-+
-+static int da280_probe(struct i2c_client *client,
-+			const struct i2c_device_id *id)
-+{
-+	int ret;
-+	struct iio_dev *indio_dev;
-+	struct da280_data *data;
-+
-+	ret = i2c_smbus_read_byte_data(client, DA280_REG_CHIP_ID);
-+	if (ret != DA280_CHIP_ID)
-+		return (ret < 0) ? ret : -ENODEV;
-+
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	data = iio_priv(indio_dev);
-+	data->client = client;
-+	i2c_set_clientdata(client, indio_dev);
-+
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &da280_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = da280_channels;
-+	if (id->driver_data == da226) {
-+		indio_dev->name = "da226";
-+		indio_dev->num_channels = 2;
-+	} else {
-+		indio_dev->name = "da280";
-+		indio_dev->num_channels = 3;
-+	}
-+
-+	ret = da280_enable(client, true);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = iio_device_register(indio_dev);
-+	if (ret < 0) {
-+		dev_err(&client->dev, "device_register failed\n");
-+		da280_enable(client, false);
-+	}
-+
-+	return ret;
-+}
-+
-+static int da280_remove(struct i2c_client *client)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return da280_enable(client, false);
-+}
-+
-+#ifdef CONFIG_PM_SLEEP
-+static int da280_suspend(struct device *dev)
-+{
-+	return da280_enable(to_i2c_client(dev), false);
-+}
-+
-+static int da280_resume(struct device *dev)
-+{
-+	return da280_enable(to_i2c_client(dev), true);
-+}
-+#endif
-+
-+static SIMPLE_DEV_PM_OPS(da280_pm_ops, da280_suspend, da280_resume);
-+
-+static const struct i2c_device_id da280_i2c_id[] = {
-+	{ "da226", da226 },
-+	{ "da280", da280 },
-+	{}
-+};
-+MODULE_DEVICE_TABLE(i2c, da280_i2c_id);
-+
-+static struct i2c_driver da280_driver = {
-+	.driver = {
-+		.name = "da280",
-+		.pm = &da280_pm_ops,
-+	},
-+	.probe		= da280_probe,
-+	.remove		= da280_remove,
-+	.id_table	= da280_i2c_id,
-+};
-+
-+module_i2c_driver(da280_driver);
-+
-+MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
-+MODULE_DESCRIPTION("MiraMEMS DA280 3-Axis Accelerometer driver");
-+MODULE_LICENSE("GPL v2");
--- 
-2.9.3
+Jonathan
+> ---
+> Changes in v3:
+> * Adjust changelog to fit within 72 columns.
+> * Set the IIO_CHAN_INFO_SAMP_FREQ bitmask to return IIO_VAL_INT on the
+> write_raw_get_fmt() function
+> 
+> Changes in v2:
+> * Make commit message more detailed
+> * Fix tiny bug about bypassing iio_device_release_direct_mode()
+> * Remove unneeded goto and use break instead
+> 
+>  drivers/staging/iio/adc/ad7192.c       | 84 ++++++++++++----------------------
+>  include/linux/iio/adc/ad_sigma_delta.h |  1 +
+>  2 files changed, 30 insertions(+), 55 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index 1cf6b79..bfa12ce 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -322,57 +322,6 @@ out:
+>  	return ret;
+>  }
+>  
+> -static ssize_t ad7192_read_frequency(struct device *dev,
+> -				     struct device_attribute *attr,
+> -				     char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -
+> -	return sprintf(buf, "%d\n", st->mclk /
+> -			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode)));
+> -}
+> -
+> -static ssize_t ad7192_write_frequency(struct device *dev,
+> -				      struct device_attribute *attr,
+> -				      const char *buf,
+> -				      size_t len)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7192_state *st = iio_priv(indio_dev);
+> -	unsigned long lval;
+> -	int div, ret;
+> -
+> -	ret = kstrtoul(buf, 10, &lval);
+> -	if (ret)
+> -		return ret;
+> -	if (lval == 0)
+> -		return -EINVAL;
+> -
+> -	ret = iio_device_claim_direct_mode(indio_dev);
+> -	if (ret)
+> -		return ret;
+> -
+> -	div = st->mclk / (lval * st->f_order * 1024);
+> -	if (div < 1 || div > 1023) {
+> -		ret = -EINVAL;
+> -		goto out;
+> -	}
+> -
+> -	st->mode &= ~AD7192_MODE_RATE(-1);
+> -	st->mode |= AD7192_MODE_RATE(div);
+> -	ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+> -
+> -out:
+> -	iio_device_release_direct_mode(indio_dev);
+> -
+> -	return ret ? ret : len;
+> -}
+> -
+> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> -		ad7192_read_frequency,
+> -		ad7192_write_frequency);
+> -
+>  static ssize_t
+>  ad7192_show_scale_available(struct device *dev,
+>  			    struct device_attribute *attr, char *buf)
+> @@ -471,7 +420,6 @@ static IIO_DEVICE_ATTR(ac_excitation_en, S_IRUGO | S_IWUSR,
+>  		       AD7192_REG_MODE);
+>  
+>  static struct attribute *ad7192_attributes[] = {
+> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>  	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+> @@ -484,7 +432,6 @@ static const struct attribute_group ad7192_attribute_group = {
+>  };
+>  
+>  static struct attribute *ad7195_attributes[] = {
+> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>  	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
+>  	&iio_dev_attr_bridge_switch_en.dev_attr.attr,
+> @@ -536,6 +483,10 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
+>  		if (chan->type == IIO_TEMP)
+>  			*val -= 273 * ad7192_get_temp_scale(unipolar);
+>  		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		*val = st->mclk /
+> +			(st->f_order * 1024 * AD7192_MODE_RATE(st->mode));
+> +		return IIO_VAL_INT;
+>  	}
+>  
+>  	return -EINVAL;
+> @@ -548,7 +499,7 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+>  			    long mask)
+>  {
+>  	struct ad7192_state *st = iio_priv(indio_dev);
+> -	int ret, i;
+> +	int ret, i, div;
+>  	unsigned int tmp;
+>  
+>  	ret = iio_device_claim_direct_mode(indio_dev);
+> @@ -572,6 +523,22 @@ static int ad7192_write_raw(struct iio_dev *indio_dev,
+>  				break;
+>  			}
+>  		break;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		if (!val) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		div = st->mclk / (val * st->f_order * 1024);
+> +		if (div < 1 || div > 1023) {
+> +			ret = -EINVAL;
+> +			break;
+> +		}
+> +
+> +		st->mode &= ~AD7192_MODE_RATE(-1);
+> +		st->mode |= AD7192_MODE_RATE(div);
+> +		ad_sd_write_reg(&st->sd, AD7192_REG_MODE, 3, st->mode);
+> +		break;
+>  	default:
+>  		ret = -EINVAL;
+>  	}
+> @@ -585,7 +552,14 @@ static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
+>  				    struct iio_chan_spec const *chan,
+>  				    long mask)
+>  {
+> -	return IIO_VAL_INT_PLUS_NANO;
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		return IIO_VAL_INT_PLUS_NANO;
+> +	case IIO_CHAN_INFO_SAMP_FREQ:
+> +		return IIO_VAL_INT;
+> +	default:
+> +		return -EINVAL;
+> +	}
+>  }
+>  
+>  static const struct iio_info ad7192_info = {
+> diff --git a/include/linux/iio/adc/ad_sigma_delta.h b/include/linux/iio/adc/ad_sigma_delta.h
+> index e7fdec4..5ba430c 100644
+> --- a/include/linux/iio/adc/ad_sigma_delta.h
+> +++ b/include/linux/iio/adc/ad_sigma_delta.h
+> @@ -136,6 +136,7 @@ int ad_sd_validate_trigger(struct iio_dev *indio_dev, struct iio_trigger *trig);
+>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
+>  			BIT(IIO_CHAN_INFO_OFFSET), \
+>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>  		.scan_index = (_si), \
+>  		.scan_type = { \
+>  			.sign = 'u', \
+> 
+
