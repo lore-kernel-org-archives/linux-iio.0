@@ -1,37 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39904 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39803 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750999AbcJIKta (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 06:49:30 -0400
-Subject: Re: [PATCH] staging:iio:dac:max517 dac documentation.
-To: linux-iio@vger.kernel.org
-References: <20161009104831.9396-1-jic23@kernel.org>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+        with ESMTP id S1753629AbcJIKcl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 06:32:41 -0400
+Subject: Re: [PATCH v3 2/2] Documentation: dt: iio: humidity: add hts221
+ sensor device binding
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+References: <1475912752-6444-1-git-send-email-lorenzo.bianconi@st.com>
+ <1475912752-6444-3-git-send-email-lorenzo.bianconi@st.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@st.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1c533ec3-645a-a43b-ace8-106316c3c0a8@kernel.org>
-Date: Sun, 9 Oct 2016 11:49:26 +0100
+Message-ID: <975bb745-cf11-1c6c-aa73-71e00bf1a42b@kernel.org>
+Date: Sun, 9 Oct 2016 11:32:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161009104831.9396-1-jic23@kernel.org>
+In-Reply-To: <1475912752-6444-3-git-send-email-lorenzo.bianconi@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/10/16 11:48, Jonathan Cameron wrote:
-> The driver graduated a while back, btu this documentation file (which
-> mostly gives background info on the chips supported) got left behind.
-> 
-> I can't see any reason not to just move it out of staging.
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-I'll fix up the somewhat uninformative patch title when applying if
-no one objects!  Ooops.  Jonathan
+On 08/10/16 08:45, Lorenzo Bianconi wrote:
+> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 > ---
->  {drivers/staging/iio/Documentation => Documentation/iio}/dac/max517 | 0
->  1 file changed, 0 insertions(+), 0 deletions(-)
+>  .../devicetree/bindings/iio/humidity/hts221.txt       | 19 +++++++++++++++++++
+>  1 file changed, 19 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/humidity/hts221.txt
 > 
-> diff --git a/drivers/staging/iio/Documentation/dac/max517 b/Documentation/iio/dac/max517
-> similarity index 100%
-> rename from drivers/staging/iio/Documentation/dac/max517
-> rename to Documentation/iio/dac/max517
+> diff --git a/Documentation/devicetree/bindings/iio/humidity/hts221.txt b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
+> new file mode 100644
+> index 0000000..46a152c
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/humidity/hts221.txt
+> @@ -0,0 +1,19 @@
+> +* HTS221 STM humidity + temperature sensor
+> +
+> +Required properties:
+> +- compatible: should be "st,hts221"
+> +- reg: i2c address of the sensor / spi cs line
+> +
+> +Optional properties:
+> +- interrupts: interrupt mapping for GPIO IRQ. It should be configured with
+> +	      flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING
+It might not be a gpio irq.  Plenty of IRQ only chips out there that you can't
+use for general purpose reading (you can't explicitly read their state).
+
+> +- interrupt-parent: should be the phandle for the interrupt controller
+Convention here is to add a cross reference to the main interrupt docs.
+We have been a bit lax on this in some IIO drivers but might as well be
+good with a new one.
+
+Otherwise this looks good to me.
+
+Thanks,
+
+Jonathan
+> +
+> +Example:
+> +
+> +hts221@5f {
+> +	compatible = "st,hts221";
+> +	reg = <0x5f>;
+> +	interrupt-parent = <&gpio0>;
+> +	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
+> +};
 > 
 
