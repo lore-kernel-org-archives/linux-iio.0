@@ -1,294 +1,314 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39105 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39268 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751882AbcJIH6p (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 03:58:45 -0400
-Subject: Re: [PATCH] Staging: iio: meter: ade7758_core: implement
- IIO_CHAN_INFO_SAMP_FREQ
-To: Sandhya Bankar <bankarsandhya512@gmail.com>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-References: <20161003205906.GA9271@localhost.localdomain>
-Cc: outreachy-kernel@googlegroups.com
+        with ESMTP id S1753050AbcJIIav (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 04:30:51 -0400
+Subject: Re: [PATCH v3 2/4] drivers: iio: ti_am335x_adc: add dma support
+To: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org
+References: <20161005090443.24576-1-mugunthanvnm@ti.com>
+ <20161005090443.24576-3-mugunthanvnm@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+        "Andrew F . Davis" <afd@ti.com>, linux-omap@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        John Syne <john3909@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <db94a7bd-715c-0c8d-3d9d-ecc4dbdefde4@kernel.org>
-Date: Sun, 9 Oct 2016 08:58:34 +0100
+Message-ID: <d0105217-a8ee-cd8e-221d-34c19257765e@kernel.org>
+Date: Sun, 9 Oct 2016 09:30:39 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161003205906.GA9271@localhost.localdomain>
+In-Reply-To: <20161005090443.24576-3-mugunthanvnm@ti.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/10/16 21:59, Sandhya Bankar wrote:
-> This driver predates the availability of IIO_CHAN_INFO_SAMP_FREQ attribute
-> wherein usage has some advantages like it can be accessed by in-kernel
-> consumers as well as reduces the code size.
+On 05/10/16 10:04, Mugunthan V N wrote:
+> This patch adds the required pieces to ti_am335x_adc driver for
+> DMA support
 > 
-> Hence moving functionality from IIO_DEV_ATTR_SAMP_FREQ attribute into
-> IIO_CHAN_INFO_SAMP_FREQ handlers. Also Adding ade7758_read_raw() and
-> ade7758_write_raw() to allow reading/writing the element as well.
-> 
-> Signed-off-by: Sandhya Bankar <bankarsandhya512@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
+Hi,
 
-This is another driver where I'd argue that hardware will be needed
-to take it much further unfortunately. I've asked Lars to confirm
-if Analog have any intent wrt to these meter drivers in the other
-thread. Let's see what he comes back with,
+Just the one question inline.  I'll also need an Ack from Lee as
+this touches code in mfd (as does the previous patch).
+We have obviously missed this merge window, so no particular rush.
 
-Thanks,
+Otherwise, looking very nice indeed.  Got to get my BBB out and play
+with this now ;)
 
 Jonathan
 > ---
->  drivers/staging/iio/meter/ade7758_core.c | 86 +++++++++++++++++++++++---------
->  1 file changed, 63 insertions(+), 23 deletions(-)
+>  drivers/iio/adc/ti_am335x_adc.c      | 148 ++++++++++++++++++++++++++++++++++-
+>  include/linux/mfd/ti_am335x_tscadc.h |   7 ++
+>  2 files changed, 152 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/meter/ade7758_core.c b/drivers/staging/iio/meter/ade7758_core.c
-> index ebb8a19..8fcca97 100644
-> --- a/drivers/staging/iio/meter/ade7758_core.c
-> +++ b/drivers/staging/iio/meter/ade7758_core.c
-> @@ -465,38 +465,26 @@ err_ret:
->  	return ret;
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index c3cfacca..ad9dec3 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -30,10 +30,28 @@
+>  #include <linux/iio/buffer.h>
+>  #include <linux/iio/kfifo_buf.h>
+>  
+> +#include <linux/dmaengine.h>
+> +#include <linux/dma-mapping.h>
+> +
+> +#define DMA_BUFFER_SIZE		SZ_2K
+> +
+> +struct tiadc_dma {
+> +	struct dma_slave_config	conf;
+> +	struct dma_chan		*chan;
+> +	dma_addr_t		addr;
+> +	dma_cookie_t		cookie;
+> +	u8			*buf;
+> +	int			current_period;
+> +	int			period_size;
+> +	u8			fifo_thresh;
+> +};
+> +
+>  struct tiadc_device {
+>  	struct ti_tscadc_dev *mfd_tscadc;
+> +	struct tiadc_dma dma;
+>  	struct mutex fifo1_lock; /* to protect fifo access */
+>  	int channels;
+> +	int total_ch_enabled;
+>  	u8 channel_line[8];
+>  	u8 channel_step[8];
+>  	int buffer_en_ch_steps;
+> @@ -198,6 +216,67 @@ static irqreturn_t tiadc_worker_h(int irq, void *private)
+>  	return IRQ_HANDLED;
 >  }
 >  
-> -static ssize_t ade7758_read_frequency(struct device *dev,
-> -				      struct device_attribute *attr, char *buf)
-> +static int ade7758_read_samp_freq(struct device *dev, int *val)
->  {
->  	int ret;
->  	u8 t;
-> -	int sps;
->  
->  	ret = ade7758_spi_read_reg_8(dev, ADE7758_WAVMODE, &t);
->  	if (ret)
->  		return ret;
->  
->  	t = (t >> 5) & 0x3;
-> -	sps = 26040 / (1 << t);
-> +	*val = 26040 / (1 << t);
->  
-> -	return sprintf(buf, "%d SPS\n", sps);
+> +static void tiadc_dma_rx_complete(void *param)
+> +{
+> +	struct iio_dev *indio_dev = param;
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct tiadc_dma *dma = &adc_dev->dma;
+> +	u8 *data;
+> +	int i;
+> +
+> +	data = dma->buf + dma->current_period * dma->period_size;
+> +	dma->current_period = 1 - dma->current_period; /* swap the buffer ID */
+> +
+> +	for (i = 0; i < dma->period_size; i += indio_dev->scan_bytes) {
+> +		iio_push_to_buffers(indio_dev, data);
+> +		data += indio_dev->scan_bytes;
+> +	}
+Hmm. Another case for the mooted iio_push_to_buffers_multi. Guess
+we should move on with that one ;)
+> +}
+> +
+> +static int tiadc_start_dma(struct iio_dev *indio_dev)
+> +{
+> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct tiadc_dma *dma = &adc_dev->dma;
+> +	struct dma_async_tx_descriptor *desc;
+> +
+> +	dma->current_period = 0; /* We start to fill period 0 */
+> +	/*
+> +	 * Make the fifo thresh as the multiple of total number of
+> +	 * channels enabled, so make sure that cyclic DMA period
+> +	 * length is also a multiple of total number of channels
+> +	 * enabled. This ensures that no invalid data is reported
+> +	 * to the stack via iio_push_to_buffers().
+> +	 */
+> +	dma->fifo_thresh = rounddown(FIFO1_THRESHOLD + 1,
+> +				     adc_dev->total_ch_enabled) - 1;
+> +	/* Make sure that period length is multiple of fifo thresh level */
+> +	dma->period_size = rounddown(DMA_BUFFER_SIZE / 2,
+> +				    (dma->fifo_thresh + 1) * sizeof(u16));
+> +
+> +	dma->conf.src_maxburst = dma->fifo_thresh + 1;
+> +	dmaengine_slave_config(dma->chan, &dma->conf);
+> +
+> +	desc = dmaengine_prep_dma_cyclic(dma->chan, dma->addr,
+> +					 dma->period_size * 2,
+> +					 dma->period_size, DMA_DEV_TO_MEM,
+> +					 DMA_PREP_INTERRUPT);
+> +	if (!desc)
+> +		return -EBUSY;
+> +
+> +	desc->callback = tiadc_dma_rx_complete;
+> +	desc->callback_param = indio_dev;
+> +
+> +	dma->cookie = dmaengine_submit(desc);
+> +
+> +	dma_async_issue_pending(dma->chan);
+> +
+> +	tiadc_writel(adc_dev, REG_FIFO1THR, dma->fifo_thresh);
+> +	tiadc_writel(adc_dev, REG_DMA1REQ, dma->fifo_thresh);
+> +	tiadc_writel(adc_dev, REG_DMAENABLE_SET, DMA_FIFO1);
+> +
 > +	return 0;
->  }
->  
-> -static ssize_t ade7758_write_frequency(struct device *dev,
-> -				       struct device_attribute *attr,
-> -				       const char *buf, size_t len)
-> +static int ade7758_write_samp_freq(struct device *dev, int val)
+> +}
+> +
+>  static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
 >  {
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	u16 val;
->  	int ret;
->  	u8 reg, t;
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> @@ -218,20 +297,30 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
+>  static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
+>  {
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct tiadc_dma *dma = &adc_dev->dma;
+> +	unsigned int irq_enable;
+>  	unsigned int enb = 0;
+>  	u8 bit;
 >  
-> -	ret = kstrtou16(buf, 10, &val);
-> -	if (ret)
-> -		return ret;
-> -
-> -	mutex_lock(&indio_dev->mlock);
-> -
->  	switch (val) {
->  	case 26040:
->  		t = 0;
-> @@ -525,9 +513,49 @@ static ssize_t ade7758_write_frequency(struct device *dev,
->  	ret = ade7758_spi_write_reg_8(dev, ADE7758_WAVMODE, reg);
->  
->  out:
-> -	mutex_unlock(&indio_dev->mlock);
-> +	return ret;
-> +}
->  
-> -	return ret ? ret : len;
-> +static int ade7758_read_raw(struct iio_dev *indio_dev,
-> +			    struct iio_chan_spec const *chan,
-> +			    int *val,
-> +			    int *val2,
-> +			    long mask)
-> +{
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		mutex_lock(&indio_dev->mlock);
-> +		ret = ade7758_read_samp_freq(&indio_dev->dev, val);
-> +		mutex_unlock(&indio_dev->mlock);
-> +		return ret;
-> +	default:
-> +		return -EINVAL;
+>  	tiadc_step_config(indio_dev);
+> -	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels)
+> +	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels) {
+>  		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
+> +		adc_dev->total_ch_enabled++;
 > +	}
+>  	adc_dev->buffer_en_ch_steps = enb;
+>  
+> +	if (dma->chan)
+> +		tiadc_start_dma(indio_dev);
 > +
-> +	return ret;
-> +}
+>  	am335x_tsc_se_set_cache(adc_dev->mfd_tscadc, enb);
+>  
+>  	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
+>  				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
+> -	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
+> -				| IRQENB_FIFO1OVRRUN);
 > +
-> +static int ade7758_write_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int val, int val2, long mask)
-> +{
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		if (val2)
-> +			return -EINVAL;
-> +		mutex_lock(&indio_dev->mlock);
-> +		ret = ade7758_write_samp_freq(&indio_dev->dev, val);
-> +		mutex_unlock(&indio_dev->mlock);
-> +		return ret;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return ret;
+> +	irq_enable = IRQENB_FIFO1OVRRUN;
+> +	if (!dma->chan)
+> +		irq_enable |= IRQENB_FIFO1THRES;
+This changes the non dma behaviour as we no longer set IRQENB_FIFO1THRES.
+Why?  Was it wrong before?
+> +	tiadc_writel(adc_dev,  REG_IRQENABLE, irq_enable);
+>  
+>  	return 0;
 >  }
+> @@ -239,12 +328,18 @@ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
+>  static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
+>  {
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct tiadc_dma *dma = &adc_dev->dma;
+>  	int fifo1count, i, read;
 >  
->  static IIO_DEV_ATTR_TEMP_RAW(ade7758_read_8bit);
-> @@ -553,17 +581,12 @@ static IIO_DEV_ATTR_BVAHR(ade7758_read_16bit,
->  static IIO_DEV_ATTR_CVAHR(ade7758_read_16bit,
->  		ADE7758_CVAHR);
+>  	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
+>  				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
+>  	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
+>  	adc_dev->buffer_en_ch_steps = 0;
+> +	adc_dev->total_ch_enabled = 0;
+> +	if (dma->chan) {
+> +		tiadc_writel(adc_dev, REG_DMAENABLE_CLEAR, 0x2);
+> +		dmaengine_terminate_async(dma->chan);
+> +	}
 >  
-> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
-> -		ade7758_read_frequency,
-> -		ade7758_write_frequency);
-> -
->  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("26040 13020 6510 3255");
->  
->  static struct attribute *ade7758_attributes[] = {
->  	&iio_dev_attr_in_temp_raw.dev_attr.attr,
->  	&iio_const_attr_in_temp_offset.dev_attr.attr,
->  	&iio_const_attr_in_temp_scale.dev_attr.attr,
-> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->  	&iio_dev_attr_awatthr.dev_attr.attr,
->  	&iio_dev_attr_bwatthr.dev_attr.attr,
-> @@ -611,6 +634,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.type = IIO_VOLTAGE,
->  		.indexed = 1,
->  		.channel = 0,
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_A, AD7758_VOLTAGE),
->  		.scan_index = 0,
->  		.scan_type = {
-> @@ -622,6 +646,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.type = IIO_CURRENT,
->  		.indexed = 1,
->  		.channel = 0,
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_A, AD7758_CURRENT),
->  		.scan_index = 1,
->  		.scan_type = {
-> @@ -634,6 +659,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 0,
->  		.extend_name = "apparent",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_A, AD7758_APP_PWR),
->  		.scan_index = 2,
->  		.scan_type = {
-> @@ -646,6 +672,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 0,
->  		.extend_name = "active",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_A, AD7758_ACT_PWR),
->  		.scan_index = 3,
->  		.scan_type = {
-> @@ -658,6 +685,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 0,
->  		.extend_name = "reactive",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_A, AD7758_REACT_PWR),
->  		.scan_index = 4,
->  		.scan_type = {
-> @@ -669,6 +697,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.type = IIO_VOLTAGE,
->  		.indexed = 1,
->  		.channel = 1,
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_B, AD7758_VOLTAGE),
->  		.scan_index = 5,
->  		.scan_type = {
-> @@ -680,6 +709,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.type = IIO_CURRENT,
->  		.indexed = 1,
->  		.channel = 1,
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_B, AD7758_CURRENT),
->  		.scan_index = 6,
->  		.scan_type = {
-> @@ -692,6 +722,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 1,
->  		.extend_name = "apparent",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_B, AD7758_APP_PWR),
->  		.scan_index = 7,
->  		.scan_type = {
-> @@ -704,6 +735,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 1,
->  		.extend_name = "active",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_B, AD7758_ACT_PWR),
->  		.scan_index = 8,
->  		.scan_type = {
-> @@ -716,6 +748,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 1,
->  		.extend_name = "reactive",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_B, AD7758_REACT_PWR),
->  		.scan_index = 9,
->  		.scan_type = {
-> @@ -727,6 +760,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.type = IIO_VOLTAGE,
->  		.indexed = 1,
->  		.channel = 2,
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_C, AD7758_VOLTAGE),
->  		.scan_index = 10,
->  		.scan_type = {
-> @@ -738,6 +772,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.type = IIO_CURRENT,
->  		.indexed = 1,
->  		.channel = 2,
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_C, AD7758_CURRENT),
->  		.scan_index = 11,
->  		.scan_type = {
-> @@ -750,6 +785,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 2,
->  		.extend_name = "apparent",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_C, AD7758_APP_PWR),
->  		.scan_index = 12,
->  		.scan_type = {
-> @@ -762,6 +798,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 2,
->  		.extend_name = "active",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_C, AD7758_ACT_PWR),
->  		.scan_index = 13,
->  		.scan_type = {
-> @@ -774,6 +811,7 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  		.indexed = 1,
->  		.channel = 2,
->  		.extend_name = "reactive",
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
->  		.address = AD7758_WT(AD7758_PHASE_C, AD7758_REACT_PWR),
->  		.scan_index = 14,
->  		.scan_type = {
-> @@ -787,6 +825,8 @@ static const struct iio_chan_spec ade7758_channels[] = {
->  
->  static const struct iio_info ade7758_info = {
->  	.attrs = &ade7758_attribute_group,
-> +	.read_raw = &ade7758_read_raw,
-> +	.write_raw = &ade7758_write_raw,
+>  	/* Flush FIFO of leftover data in the time it takes to disable adc */
+>  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+> @@ -430,6 +525,41 @@ static const struct iio_info tiadc_info = {
 >  	.driver_module = THIS_MODULE,
 >  };
 >  
+> +static int tiadc_request_dma(struct platform_device *pdev,
+> +			     struct tiadc_device *adc_dev)
+> +{
+> +	struct tiadc_dma	*dma = &adc_dev->dma;
+> +	dma_cap_mask_t		mask;
+> +
+> +	/* Default slave configuration parameters */
+> +	dma->conf.direction = DMA_DEV_TO_MEM;
+> +	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+> +	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
+> +
+> +	dma_cap_zero(mask);
+> +	dma_cap_set(DMA_CYCLIC, mask);
+> +
+> +	/* Get a channel for RX */
+> +	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
+> +	if (IS_ERR(dma->chan)) {
+> +		int ret = PTR_ERR(dma->chan);
+> +
+> +		dma->chan = NULL;
+> +		return ret;
+> +	}
+> +
+> +	/* RX buffer */
+> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+> +				      &dma->addr, GFP_KERNEL);
+> +	if (!dma->buf)
+> +		goto err;
+> +
+> +	return 0;
+> +err:
+> +	dma_release_channel(dma->chan);
+> +	return -ENOMEM;
+> +}
+> +
+>  static int tiadc_parse_dt(struct platform_device *pdev,
+>  			  struct tiadc_device *adc_dev)
+>  {
+> @@ -512,8 +642,14 @@ static int tiadc_probe(struct platform_device *pdev)
+>  
+>  	platform_set_drvdata(pdev, indio_dev);
+>  
+> +	err = tiadc_request_dma(pdev, adc_dev);
+> +	if (err && err == -EPROBE_DEFER)
+> +		goto err_dma;
+> +
+>  	return 0;
+>  
+> +err_dma:
+> +	iio_device_unregister(indio_dev);
+>  err_buffer_unregister:
+>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>  err_free_channels:
+> @@ -525,8 +661,14 @@ static int tiadc_remove(struct platform_device *pdev)
+>  {
+>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> +	struct tiadc_dma *dma = &adc_dev->dma;
+>  	u32 step_en;
+>  
+> +	if (dma->chan) {
+> +		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+> +				  dma->buf, dma->addr);
+> +		dma_release_channel(dma->chan);
+> +	}
+>  	iio_device_unregister(indio_dev);
+>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>  	tiadc_channels_remove(indio_dev);
+> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> index e45a208..b9a53e0 100644
+> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> @@ -23,6 +23,8 @@
+>  #define REG_IRQENABLE		0x02C
+>  #define REG_IRQCLR		0x030
+>  #define REG_IRQWAKEUP		0x034
+> +#define REG_DMAENABLE_SET	0x038
+> +#define REG_DMAENABLE_CLEAR	0x03c
+>  #define REG_CTRL		0x040
+>  #define REG_ADCFSM		0x044
+>  #define REG_CLKDIV		0x04C
+> @@ -36,6 +38,7 @@
+>  #define REG_FIFO0THR		0xE8
+>  #define REG_FIFO1CNT		0xF0
+>  #define REG_FIFO1THR		0xF4
+> +#define REG_DMA1REQ		0xF8
+>  #define REG_FIFO0		0x100
+>  #define REG_FIFO1		0x200
+>  
+> @@ -126,6 +129,10 @@
+>  #define FIFOREAD_DATA_MASK (0xfff << 0)
+>  #define FIFOREAD_CHNLID_MASK (0xf << 16)
+>  
+> +/* DMA ENABLE/CLEAR Register */
+> +#define DMA_FIFO0		BIT(0)
+> +#define DMA_FIFO1		BIT(1)
+> +
+>  /* Sequencer Status */
+>  #define SEQ_STATUS BIT(5)
+>  #define CHARGE_STEP		0x11
 > 
 
