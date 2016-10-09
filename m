@@ -1,1852 +1,1684 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39614 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39618 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932162AbcJIJpQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 05:45:16 -0400
-Subject: Re: [PATCH 4/4] staging: iio: isl29018: move out of staging
-To: Brian Masney <masneyb@onstation.org>
-References: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
- <1475801317-29449-4-git-send-email-masneyb@onstation.org>
+        with ESMTP id S932162AbcJIJqP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 05:46:15 -0400
+Subject: Re: [PATCH 1/2] iio: humidity: add support to hts221 rh/temp combo
+ device
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+References: <1474919741-21316-1-git-send-email-lorenzo.bianconi@st.com>
+ <1474919741-21316-2-git-send-email-lorenzo.bianconi@st.com>
+ <0f6e72e2-fbb6-0c46-98d3-5fe5e6a39103@kernel.org>
+ <20161001171503.GA22409@lorenzobianconi.net>
+ <1fd8c57f-76be-909b-b332-996de74dd788@kernel.org>
+ <CAA2SeNKDzm3sNOFUEbQMXGH03yfuYsQy4zbHN-0VbtPT7tTG=w@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org,
+        Lorenzo BIANCONI <lorenzo.bianconi@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org
-Message-ID: <d940ec91-26e8-9c7c-347f-c8f73eb28e54@kernel.org>
-Date: Sun, 9 Oct 2016 10:45:12 +0100
+Message-ID: <aa819d1c-0c5c-8ee7-443b-67906dcc00dd@kernel.org>
+Date: Sun, 9 Oct 2016 10:46:13 +0100
 MIME-Version: 1.0
-In-Reply-To: <1475801317-29449-4-git-send-email-masneyb@onstation.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAA2SeNKDzm3sNOFUEbQMXGH03yfuYsQy4zbHN-0VbtPT7tTG=w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/10/16 01:48, Brian Masney wrote:
-> Move ISL29018/ISL29023/ISL29035 driver out of staging into mainline.
+On 09/10/16 10:37, Lorenzo Bianconi wrote:
+>> On 01/10/16 18:15, Lorenzo Bianconi wrote:
+>>> On Oct 01, Jonathan Cameron wrote:
+>>>> On 26/09/16 20:55, Lorenzo Bianconi wrote:
+>>>>> Add support to STM HTS221 humidity + temperature sensor
+>>>>>
+>>>>> http://www.st.com/resource/en/datasheet/hts221.pdf
+>>>>>
+>>>>> - continuos mode support
+>>>>> - i2c support
+>>>>> - spi support
+>>>>> - trigger mode support
+>>>>>
+>>>>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>
+>>> Hi Jonathan,
+>>>
+>>> thanks for the review :)
+>>>
+>>>> This is an odd device for something so seemingly simple.  It would have
+>>>> been helpful to have a little bit of text explaining that here.
+>>>>
+>>>> Key point is that the two sensors both operate with data ready interrupts,
+>>>> but not necessarily at the same frequency.  Hence the multiple IIO devices.
+>>>> Why it makes sense to bother doing this in a device that runs at a 'maximum'
+>>>> of 12.5Hz is beyond me but that's what the hardware does ;(
+>>>>
+>>>> Hmm. Good old hardware designers make something lovely and flexible.
+>>>> Actual result, a bit of hardware that doesn't generate data in a form that
+>>>> anyone actually wants to use.  Normally you explicitly want temperature and
+>>>> humidity to be paired.
+>>>>
+>>>> One really stupid question that I can't figure out from the datasheet.
+>>>> Do the average values effect the output rate?  (or are they a moving window).
+>>>>
+>>>> I think I'd have been cynical on this device and just not supported triggered
+>>>> / buffered reading at all.  Used it in oneshot mode. It's slow, so not as
+>>>> though we need to do buffered data flows.  Still if you want to do it the
+>>>> hard way then fair enough!
+>>>
+>>> Running a couple of tests I verified the ODR is shared between humidity and
+>>> temperature sensor, so I think we can use just one iio_dev structure for both
+>>> sensors and define a temperature channel and humidity one.  This will simplify
+>>> the triggered mode support. What do you think? Do you prefer to just support
+>>> oneshot mode or modify the trigger/buffer support?
+>> For this one a combined device would be nice.
+>>
+>> If it's straight forward then then modified trigger/buffer support option would be
+>> the ideal. If not, I'd be happy enough with oneshot mode only at these rates.
+>>
+>> Up to you ;)
+>>
+>> Guessing you are several versions later you've already gone one way or the
+>> other though.
+>>
+>> Sorry I didn't get to this during the week.
+>>
 > 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Time for a nitpick tastic review ;)
+> No worries :)
+> I sent out a v3 yesterday morning with trigger/buffer support since it
+> was quite straight forward.
+Cool - that would be the series I've left to last today as the one
+that might take the most thinking about ;)
 
-The nature of a move out of staging patch is that we'll go over it
-with the level of fine toothed comb we apply to a new submission.
-A good part of my aim here is to ensure that once it's out it doesn't
-get a lot of churn from whitespace or comment syntax patches etc.
-
-I want to be able to ignore it for ever more and have it continue to
-work perfectly and be beautiful code ;)
-
-Anyhow, nothing of any significance at all in here, but it will need
-a couple of precursor patches to clean up the loose ends before we
-move it out of staging.
-
-Thanks for doing this and sorry to bounce it back to you over such
-trivial stuff!
+Lots of nice trivial stuff to allow me to wake up slowly before it.
 
 Jonathan
-
-p.s. I may let the next version sit for a little while on the list
-anyway as these move out of staging patches often attract some
-good reviews.
-
-> ---
->  drivers/iio/light/Kconfig            |  12 +
->  drivers/iio/light/Makefile           |   1 +
->  drivers/iio/light/isl29018.c         | 847 +++++++++++++++++++++++++++++++++++
->  drivers/staging/iio/light/Kconfig    |  12 -
->  drivers/staging/iio/light/Makefile   |   1 -
->  drivers/staging/iio/light/isl29018.c | 847 -----------------------------------
->  6 files changed, 860 insertions(+), 860 deletions(-)
->  create mode 100644 drivers/iio/light/isl29018.c
->  delete mode 100644 drivers/staging/iio/light/isl29018.c
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index ba2e64d..222a5ad 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -140,6 +140,18 @@ config GP2AP020A00F
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called gp2ap020a00f.
->  
-> +config ISL29018
-> +	tristate "ISL 29018 light and proximity sensor"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	default n
-> +	help
-> +	 If you say yes here you get support for ambient light sensing and
-> +	 proximity infrared sensing from Intersil ISL29018.
-> +	 This driver will provide the measurements of ambient light intensity
-> +	 in lux, proximity infrared sensing and normal infrared sensing.
-> +	 Data from sensor is accessible via sysfs.
-> +
->  config ISL29125
->  	tristate "Intersil ISL29125 digital color light sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index c5768df..652240b 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -17,6 +17,7 @@ obj-$(CONFIG_CM36651)		+= cm36651.o
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
->  obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
-> +obj-$(CONFIG_ISL29018)		+= isl29018.o
->  obj-$(CONFIG_ISL29125)		+= isl29125.o
->  obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
-> diff --git a/drivers/iio/light/isl29018.c b/drivers/iio/light/isl29018.c
-> new file mode 100644
-> index 0000000..52bfb1cb
-> --- /dev/null
-> +++ b/drivers/iio/light/isl29018.c
-> @@ -0,0 +1,847 @@
-> +/*
-> + * A iio driver for the light sensor ISL 29018/29023/29035.
-> + *
-> + * IIO driver for monitoring ambient light intensity in luxi, proximity
-> + * sensing and infrared sensing.
-> + *
-> + * Copyright (c) 2010, NVIDIA Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/err.h>
-> +#include <linux/mutex.h>
-> +#include <linux/delay.h>
-> +#include <linux/regmap.h>
-> +#include <linux/slab.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/acpi.h>
-> +
-> +#define ISL29018_CONV_TIME_MS		100
-> +
-> +#define ISL29018_REG_ADD_COMMAND1	0x00
-> +#define ISL29018_CMD1_OPMODE_SHIFT	5
-> +#define ISL29018_CMD1_OPMODE_MASK	(7 << ISL29018_CMD1_OPMODE_SHIFT)
-> +#define ISL29018_CMD1_OPMODE_POWER_DOWN	0
-> +#define ISL29018_CMD1_OPMODE_ALS_ONCE	1
-> +#define ISL29018_CMD1_OPMODE_IR_ONCE	2
-> +#define ISL29018_CMD1_OPMODE_PROX_ONCE	3
-> +
-> +#define ISL29018_REG_ADD_COMMAND2	0x01
-> +#define ISL29018_CMD2_RESOLUTION_SHIFT	2
-> +#define ISL29018_CMD2_RESOLUTION_MASK	(0x3 << ISL29018_CMD2_RESOLUTION_SHIFT)
-> +
-> +#define ISL29018_CMD2_RANGE_SHIFT	0
-> +#define ISL29018_CMD2_RANGE_MASK	(0x3 << ISL29018_CMD2_RANGE_SHIFT)
-> +
-> +#define ISL29018_CMD2_SCHEME_SHIFT	7
-> +#define ISL29018_CMD2_SCHEME_MASK	(0x1 << ISL29018_CMD2_SCHEME_SHIFT)
-> +
-> +#define ISL29018_REG_ADD_DATA_LSB	0x02
-> +#define ISL29018_REG_ADD_DATA_MSB	0x03
-> +
-> +#define ISL29018_REG_TEST		0x08
-> +#define ISL29018_TEST_SHIFT		0
-> +#define ISL29018_TEST_MASK		(0xFF << ISL29018_TEST_SHIFT)
-> +
-> +#define ISL29035_REG_DEVICE_ID		0x0F
-> +#define ISL29035_DEVICE_ID_SHIFT	0x03
-> +#define ISL29035_DEVICE_ID_MASK		(0x7 << ISL29035_DEVICE_ID_SHIFT)
-> +#define ISL29035_DEVICE_ID		0x5
-> +#define ISL29035_BOUT_SHIFT		0x07
-> +#define ISL29035_BOUT_MASK		(0x01 << ISL29035_BOUT_SHIFT)
-> +
-> +enum isl29018_int_time {
-> +	ISL29018_INT_TIME_16,
-> +	ISL29018_INT_TIME_12,
-> +	ISL29018_INT_TIME_8,
-> +	ISL29018_INT_TIME_4,
-> +};
-> +
-> +static const unsigned int isl29018_int_utimes[3][4] = {
-> +	{90000, 5630, 351, 21},
-> +	{90000, 5600, 352, 22},
-> +	{105000, 6500, 410, 25},
-> +};
-> +
-> +static const struct isl29018_scale {
-> +	unsigned int scale;
-> +	unsigned int uscale;
-> +} isl29018_scales[4][4] = {
-> +	{ {0, 15258}, {0, 61035}, {0, 244140}, {0, 976562} },
-> +	{ {0, 244140}, {0, 976562}, {3, 906250}, {15, 625000} },
-> +	{ {3, 906250}, {15, 625000}, {62, 500000}, {250, 0} },
-> +	{ {62, 500000}, {250, 0}, {1000, 0}, {4000, 0} }
-> +};
-> +
-> +struct isl29018_chip {
-> +	struct regmap		*regmap;
-> +	struct mutex		lock;
-> +	int			type;
-> +	unsigned int		calibscale;
-> +	unsigned int		ucalibscale;
-> +	unsigned int		int_time;
-> +	struct isl29018_scale	scale;
-> +	int			prox_scheme;
-> +	bool			suspended;
-> +};
-> +
-> +static int isl29018_set_integration_time(struct isl29018_chip *chip,
-> +					 unsigned int utime)
-> +{
-> +	unsigned int i;
-> +	int ret;
-> +	unsigned int int_time, new_int_time;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i) {
-> +		if (utime == isl29018_int_utimes[chip->type][i]) {
-> +			new_int_time = i;
-> +			break;
-> +		}
-> +	}
-> +
-> +	if (i >= ARRAY_SIZE(isl29018_int_utimes[chip->type]))
-> +		return -EINVAL;
-> +
-> +	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
-> +				 ISL29018_CMD2_RESOLUTION_MASK,
-> +				 i << ISL29018_CMD2_RESOLUTION_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Keep the same range when integration time changes */
-> +	int_time = chip->int_time;
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[int_time]); ++i) {
-> +		if (chip->scale.scale == isl29018_scales[int_time][i].scale &&
-> +		    chip->scale.uscale == isl29018_scales[int_time][i].uscale) {
-> +			chip->scale = isl29018_scales[new_int_time][i];
-> +			break;
-> +		}
-> +	}
-> +	chip->int_time = new_int_time;
-> +
-> +	return 0;
-> +}
-> +
-> +static int isl29018_set_scale(struct isl29018_chip *chip, int scale, int uscale)
-> +{
-> +	unsigned int i;
-> +	int ret;
-> +	struct isl29018_scale new_scale;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i) {
-> +		if (scale == isl29018_scales[chip->int_time][i].scale &&
-> +		    uscale == isl29018_scales[chip->int_time][i].uscale) {
-> +			new_scale = isl29018_scales[chip->int_time][i];
-> +			break;
-> +		}
-> +	}
-> +
-> +	if (i >= ARRAY_SIZE(isl29018_scales[chip->int_time]))
-> +		return -EINVAL;
-> +
-> +	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
-> +				 ISL29018_CMD2_RANGE_MASK,
-> +				 i << ISL29018_CMD2_RANGE_SHIFT);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	chip->scale = new_scale;
-> +
-> +	return 0;
-> +}
-> +
-> +static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
-> +{
-> +	int status;
-> +	unsigned int lsb;
-> +	unsigned int msb;
-> +	struct device *dev = regmap_get_device(chip->regmap);
-> +
-> +	/* Set mode */
-> +	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1,
-> +			      mode << ISL29018_CMD1_OPMODE_SHIFT);
-> +	if (status) {
-> +		dev_err(dev,
-> +			"Error in setting operating mode err %d\n", status);
-> +		return status;
-> +	}
-> +	msleep(ISL29018_CONV_TIME_MS);
-> +	status = regmap_read(chip->regmap, ISL29018_REG_ADD_DATA_LSB, &lsb);
-> +	if (status < 0) {
-> +		dev_err(dev,
-> +			"Error in reading LSB DATA with err %d\n", status);
-> +		return status;
-> +	}
-> +
-> +	status = regmap_read(chip->regmap, ISL29018_REG_ADD_DATA_MSB, &msb);
-> +	if (status < 0) {
-> +		dev_err(dev,
-> +			"Error in reading MSB DATA with error %d\n", status);
-> +		return status;
-> +	}
-> +	dev_vdbg(dev, "MSB 0x%x and LSB 0x%x\n", msb, lsb);
-> +
-> +	return (msb << 8) | lsb;
-> +}
-> +
-> +static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
-> +{
-> +	int lux_data;
-> +	unsigned int data_x_range;
-> +
-> +	lux_data = isl29018_read_sensor_input(chip,
-> +					      ISL29018_CMD1_OPMODE_ALS_ONCE);
-> +	if (lux_data < 0)
-> +		return lux_data;
-> +
-> +	data_x_range = lux_data * chip->scale.scale +
-> +		       lux_data * chip->scale.uscale / 1000000;
-> +	*lux = data_x_range * chip->calibscale +
-> +	       data_x_range * chip->ucalibscale / 1000000;
-> +
-> +	return 0;
-> +}
-> +
-> +static int isl29018_read_ir(struct isl29018_chip *chip, int *ir)
-> +{
-> +	int ir_data;
-> +
-> +	ir_data = isl29018_read_sensor_input(chip,
-> +					     ISL29018_CMD1_OPMODE_IR_ONCE);
-> +	if (ir_data < 0)
-> +		return ir_data;
-> +
-> +	*ir = ir_data;
-> +
-> +	return 0;
-> +}
-> +
-> +static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
-> +				      int *near_ir)
-> +{
-> +	int status;
-> +	int prox_data = -1;
-> +	int ir_data = -1;
-> +	struct device *dev = regmap_get_device(chip->regmap);
-> +
-> +	/* Do proximity sensing with required scheme */
-> +	status = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
-> +				    ISL29018_CMD2_SCHEME_MASK,
-> +				    scheme << ISL29018_CMD2_SCHEME_SHIFT);
-> +	if (status) {
-> +		dev_err(dev, "Error in setting operating mode\n");
-> +		return status;
-> +	}
-> +
-> +	prox_data = isl29018_read_sensor_input(chip,
-> +					       ISL29018_CMD1_OPMODE_PROX_ONCE);
-> +	if (prox_data < 0)
-> +		return prox_data;
-> +
-> +	if (scheme == 1) {
-> +		*near_ir = prox_data;
-> +		return 0;
-> +	}
-> +
-> +	ir_data = isl29018_read_sensor_input(chip,
-> +					     ISL29018_CMD1_OPMODE_IR_ONCE);
-> +	if (ir_data < 0)
-> +		return ir_data;
-> +
-> +	if (prox_data >= ir_data)
-> +		*near_ir = prox_data - ir_data;
-> +	else
-> +		*near_ir = 0;
-> +
-> +	return 0;
-> +}
-> +
-> +static ssize_t in_illuminance_scale_available_show
-> +			(struct device *dev, struct device_attribute *attr,
-> +			 char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	unsigned int i;
-> +	int len = 0;
-> +
-> +	mutex_lock(&chip->lock);
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i)
-> +		len += sprintf(buf + len, "%d.%06d ",
-> +			       isl29018_scales[chip->int_time][i].scale,
-> +			       isl29018_scales[chip->int_time][i].uscale);
-> +	mutex_unlock(&chip->lock);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t in_illuminance_integration_time_available_show
-> +			(struct device *dev, struct device_attribute *attr,
-> +			 char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	unsigned int i;
-> +	int len = 0;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i)
-> +		len += sprintf(buf + len, "0.%06d ",
-> +			       isl29018_int_utimes[chip->type][i]);
-> +
-> +	buf[len - 1] = '\n';
-> +
-> +	return len;
-> +}
-> +
-> +/*
-> + * From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
-> + * infrared suppression:
-> + *
-> + *   Proximity Sensing Scheme: Bit 7. This bit programs the function
-> + * of the proximity detection. Logic 0 of this bit, Scheme 0, makes
-> + * full n (4, 8, 12, 16) bits (unsigned) proximity detection. The range
-> + * of Scheme 0 proximity count is from 0 to 2^n. Logic 1 of this bit,
-> + * Scheme 1, makes n-1 (3, 7, 11, 15) bits (2's complementary)
-> + * proximity_less_ambient detection. The range of Scheme 1
-> + * proximity count is from -2^(n-1) to 2^(n-1) . The sign bit is extended
-> + * for resolutions less than 16. While Scheme 0 has wider dynamic
-> + * range, Scheme 1 proximity detection is less affected by the
-> + * ambient IR noise variation.
-> + *
-> + * 0 Sensing IR from LED and ambient
-> + * 1 Sensing IR from LED with ambient IR rejection
-> + */
-> +static ssize_t proximity_on_chip_ambient_infrared_suppression_show
-> +			(struct device *dev, struct device_attribute *attr,
-> +			 char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +
-> +	/*
-> +	 * Return the "proximity scheme" i.e. if the chip does on chip
-> +	 * infrared suppression (1 means perform on chip suppression)
-> +	 */
-> +	return sprintf(buf, "%d\n", chip->prox_scheme);
-> +}
-> +
-> +static ssize_t proximity_on_chip_ambient_infrared_suppression_store
-> +			(struct device *dev, struct device_attribute *attr,
-> +			 const char *buf, size_t count)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	int val;
-> +
-> +	if (kstrtoint(buf, 10, &val))
-> +		return -EINVAL;
-> +	if (!(val == 0 || val == 1))
-> +		return -EINVAL;
-> +
-> +	/*
-> +	 * Get the "proximity scheme" i.e. if the chip does on chip
-> +	 * infrared suppression (1 means perform on chip suppression)
-> +	 */
-> +	mutex_lock(&chip->lock);
-> +	chip->prox_scheme = val;
-> +	mutex_unlock(&chip->lock);
-> +
-> +	return count;
-> +}
-> +
-> +static int isl29018_write_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val,
-> +			      int val2,
-> +			      long mask)
-> +{
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +	int ret = -EINVAL;
-> +
-> +	mutex_lock(&chip->lock);
-> +	if (chip->suspended) {
-> +		ret = -EBUSY;
-> +		goto write_done;
-> +	}
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			chip->calibscale = val;
-> +			chip->ucalibscale = val2;
-> +			ret = 0;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT && !val)
-> +			ret = isl29018_set_integration_time(chip, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT)
-> +			ret = isl29018_set_scale(chip, val, val2);
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +write_done:
-> +	mutex_unlock(&chip->lock);
-blank line here.
-> +	return ret;
-> +}
-> +
-> +static int isl29018_read_raw(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val,
-> +			     int *val2,
-> +			     long mask)
-> +{
-> +	int ret = -EINVAL;
-> +	struct isl29018_chip *chip = iio_priv(indio_dev);
-> +
-> +	mutex_lock(&chip->lock);
-> +	if (chip->suspended) {
-> +		ret = -EBUSY;
-> +		goto read_done;
-> +	}
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		switch (chan->type) {
-> +		case IIO_LIGHT:
-> +			ret = isl29018_read_lux(chip, val);
-> +			break;
-> +		case IIO_INTENSITY:
-> +			ret = isl29018_read_ir(chip, val);
-> +			break;
-> +		case IIO_PROXIMITY:
-> +			ret = isl29018_read_proximity_ir(chip,
-> +							 chip->prox_scheme,
-> +							 val);
-> +			break;
-> +		default:
-> +			break;
-> +		}
-> +		if (!ret)
-> +			ret = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_INT_TIME:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = 0;
-> +			*val2 = isl29018_int_utimes[chip->type][chip->int_time];
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = chip->scale.scale;
-> +			*val2 = chip->scale.uscale;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		if (chan->type == IIO_LIGHT) {
-> +			*val = chip->calibscale;
-> +			*val2 = chip->ucalibscale;
-> +			ret = IIO_VAL_INT_PLUS_MICRO;
-> +		}
-> +		break;
-> +	default:
-> +		break;
-> +	}
-> +
-> +read_done:
-> +	mutex_unlock(&chip->lock);
-blank line here.
-> +	return ret;
-> +}
-> +
-> +#define ISL29018_LIGHT_CHANNEL {					\
-> +	.type = IIO_LIGHT,						\
-> +	.indexed = 1,							\
-> +	.channel = 0,							\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |		\
-> +	BIT(IIO_CHAN_INFO_CALIBSCALE) |					\
-> +	BIT(IIO_CHAN_INFO_SCALE) |					\
-> +	BIT(IIO_CHAN_INFO_INT_TIME),					\
-> +}
-> +
-> +#define ISL29018_IR_CHANNEL {						\
-> +	.type = IIO_INTENSITY,						\
-> +	.modified = 1,							\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.channel2 = IIO_MOD_LIGHT_IR,					\
-> +}
-> +
-> +#define ISL29018_PROXIMITY_CHANNEL {					\
-> +	.type = IIO_PROXIMITY,						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +}
-> +
-> +static const struct iio_chan_spec isl29018_channels[] = {
-> +	ISL29018_LIGHT_CHANNEL,
-> +	ISL29018_IR_CHANNEL,
-> +	ISL29018_PROXIMITY_CHANNEL,
-> +};
-> +
-> +static const struct iio_chan_spec isl29023_channels[] = {
-> +	ISL29018_LIGHT_CHANNEL,
-> +	ISL29018_IR_CHANNEL,
-> +};
-> +
-> +static IIO_DEVICE_ATTR_RO(in_illuminance_integration_time_available, 0);
-> +static IIO_DEVICE_ATTR_RO(in_illuminance_scale_available, 0);
-> +static IIO_DEVICE_ATTR_RW(proximity_on_chip_ambient_infrared_suppression, 0);
-> +
-> +#define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
-> +
-> +static struct attribute *isl29018_attributes[] = {
-> +	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> +	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
-> +	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
-> +	NULL
-> +};
-> +
-> +static struct attribute *isl29023_attributes[] = {
-> +	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> +	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group isl29018_group = {
-> +	.attrs = isl29018_attributes,
-> +};
-> +
-> +static const struct attribute_group isl29023_group = {
-> +	.attrs = isl29023_attributes,
-> +};
-> +
-> +static int isl29035_detect(struct isl29018_chip *chip)
-> +{
-This isn't just doing chip detection.  I'd drop the separate function
-and just have the code in init directly.  Will be cleaner and get
-rid of the naming confusion for this function.
-> +	int status;
-> +	unsigned int id;
-> +	struct device *dev = regmap_get_device(chip->regmap);
-> +
-> +	status = regmap_read(chip->regmap, ISL29035_REG_DEVICE_ID, &id);
-> +	if (status < 0) {
-> +		dev_err(dev,
-> +			"Error reading ID register with error %d\n",
-> +			status);
-> +		return status;
-> +	}
-> +
-> +	id = (id & ISL29035_DEVICE_ID_MASK) >> ISL29035_DEVICE_ID_SHIFT;
-> +
-> +	if (id != ISL29035_DEVICE_ID)
-> +		return -ENODEV;
-> +
-> +	/* Clear brownout bit */
-> +	return regmap_update_bits(chip->regmap, ISL29035_REG_DEVICE_ID,
-> +				  ISL29035_BOUT_MASK, 0);
-> +}
-> +
-> +enum {
-> +	isl29018,
-> +	isl29023,
-> +	isl29035,
-> +};
-> +
-> +static int isl29018_chip_init(struct isl29018_chip *chip)
-> +{
-> +	int status;
-> +	struct device *dev = regmap_get_device(chip->regmap);
-> +
-> +	if (chip->type == isl29035) {
-> +		status = isl29035_detect(chip);
-> +		if (status < 0)
-> +			return status;
-> +	}
-> +
-> +	/* Code added per Intersil Application Note 1534:
-> +	 *     When VDD sinks to approximately 1.8V or below, some of
-> +	 * the part's registers may change their state. When VDD
-> +	 * recovers to 2.25V (or greater), the part may thus be in an
-> +	 * unknown mode of operation. The user can return the part to
-> +	 * a known mode of operation either by (a) setting VDD = 0V for
-> +	 * 1 second or more and then powering back up with a slew rate
-> +	 * of 0.5V/ms or greater, or (b) via I2C disable all ALS/PROX
-> +	 * conversions, clear the test registers, and then rewrite all
-> +	 * registers to the desired values.
-> +	 * ...
-> +	 * For ISL29011, ISL29018, ISL29021, ISL29023
-> +	 * 1. Write 0x00 to register 0x08 (TEST)
-> +	 * 2. Write 0x00 to register 0x00 (CMD1)
-> +	 * 3. Rewrite all registers to the desired values
-> +	 *
-> +	 * ISL29018 Data Sheet (FN6619.1, Feb 11, 2010) essentially says
-> +	 * the same thing EXCEPT the data sheet asks for a 1ms delay after
-> +	 * writing the CMD1 register.
-> +	 */
-> +	status = regmap_write(chip->regmap, ISL29018_REG_TEST, 0x0);
-> +	if (status < 0) {
-> +		dev_err(dev, "Failed to clear isl29018 TEST reg.(%d)\n",
-> +			status);
-> +		return status;
-> +	}
-> +
-Multiline comment syntax.  Please fix throughout. Not going to comment on
-this again.
-> +	/* See Intersil AN1534 comments above.
-> +	 * "Operating Mode" (COMMAND1) register is reprogrammed when
-> +	 * data is read from the device.
-> +	 */
-> +	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1, 0);
-> +	if (status < 0) {
-> +		dev_err(dev, "Failed to clear isl29018 CMD1 reg.(%d)\n",
-> +			status);
-> +		return status;
-> +	}
-> +
-> +	usleep_range(1000, 2000);	/* per data sheet, page 10 */
-> +
-> +	/* Set defaults */
-> +	status = isl29018_set_scale(chip, chip->scale.scale,
-> +				    chip->scale.uscale);
-> +	if (status < 0) {
-> +		dev_err(dev, "Init of isl29018 fails\n");
-> +		return status;
-> +	}
-> +
-> +	status = isl29018_set_integration_time(chip,
-> +			isl29018_int_utimes[chip->type][chip->int_time]);
-> +	if (status < 0) {
-> +		dev_err(dev, "Init of isl29018 fails\n");
-> +		return status;
-Drop the return status out of the if (status < 0) and get rid of
-the return 0.  One of the varous static checkers picks up on this so we'll
-get someone doing it shortly anyway and it's a worthwhile little tweak so
-let's do it now.
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct iio_info isl29018_info = {
-> +	.attrs = &isl29018_group,
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = isl29018_read_raw,
-> +	.write_raw = isl29018_write_raw,
-> +};
-> +
-> +static const struct iio_info isl29023_info = {
-> +	.attrs = &isl29023_group,
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = isl29018_read_raw,
-> +	.write_raw = isl29018_write_raw,
-> +};
-> +
-> +static bool isl29018_is_volatile_reg(struct device *dev, unsigned int reg)
-> +{
-> +	switch (reg) {
-> +	case ISL29018_REG_ADD_DATA_LSB:
-> +	case ISL29018_REG_ADD_DATA_MSB:
-> +	case ISL29018_REG_ADD_COMMAND1:
-> +	case ISL29018_REG_TEST:
-> +	case ISL29035_REG_DEVICE_ID:
-> +		return true;
-> +	default:
-> +		return false;
-> +	}
-> +}
-> +
-> +static const struct regmap_config isl29018_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.volatile_reg = isl29018_is_volatile_reg,
-> +	.max_register = ISL29018_REG_TEST,
-> +	.num_reg_defaults_raw = ISL29018_REG_TEST + 1,
-> +	.cache_type = REGCACHE_RBTREE,
-> +};
-> +
-> +static const struct regmap_config isl29035_regmap_config = {
-> +	.reg_bits = 8,
-> +	.val_bits = 8,
-> +	.volatile_reg = isl29018_is_volatile_reg,
-> +	.max_register = ISL29035_REG_DEVICE_ID,
-> +	.num_reg_defaults_raw = ISL29035_REG_DEVICE_ID + 1,
-> +	.cache_type = REGCACHE_RBTREE,
-> +};
-> +
-> +struct isl29018_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	int num_channels;
-> +	const struct iio_info *indio_info;
-> +	const struct regmap_config *regmap_cfg;
-> +};
-> +
-> +static const struct isl29018_chip_info isl29018_chip_info_tbl[] = {
-> +	[isl29018] = {
-> +		.channels = isl29018_channels,
-> +		.num_channels = ARRAY_SIZE(isl29018_channels),
-> +		.indio_info = &isl29018_info,
-> +		.regmap_cfg = &isl29018_regmap_config,
-> +	},
-> +	[isl29023] = {
-> +		.channels = isl29023_channels,
-> +		.num_channels = ARRAY_SIZE(isl29023_channels),
-> +		.indio_info = &isl29023_info,
-> +		.regmap_cfg = &isl29018_regmap_config,
-> +	},
-> +	[isl29035] = {
-> +		.channels = isl29023_channels,
-> +		.num_channels = ARRAY_SIZE(isl29023_channels),
-> +		.indio_info = &isl29023_info,
-> +		.regmap_cfg = &isl29035_regmap_config,
-> +	},
-> +};
-> +
-> +static const char *isl29018_match_acpi_device(struct device *dev, int *data)
-> +{
-> +	const struct acpi_device_id *id;
-> +
-> +	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> +
-> +	if (!id)
-> +		return NULL;
-> +
-> +	*data = (int)id->driver_data;
-> +
-> +	return dev_name(dev);
-> +}
-> +
-> +static int isl29018_probe(struct i2c_client *client,
-> +			  const struct i2c_device_id *id)
-> +{
-> +	struct isl29018_chip *chip;
-> +	struct iio_dev *indio_dev;
-> +	int err;
-> +	const char *name = NULL;
-> +	int dev_id = 0;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-I'd throw in a blank line here for readability.
-> +	chip = iio_priv(indio_dev);
-> +
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	if (id) {
-> +		name = id->name;
-> +		dev_id = id->driver_data;
-> +	}
-> +
-> +	if (ACPI_HANDLE(&client->dev))
-> +		name = isl29018_match_acpi_device(&client->dev, &dev_id);
-> +
-> +	mutex_init(&chip->lock);
-> +
-> +	chip->type = dev_id;
-> +	chip->calibscale = 1;
-> +	chip->ucalibscale = 0;
-> +	chip->int_time = ISL29018_INT_TIME_16;
-> +	chip->scale = isl29018_scales[chip->int_time][0];
-> +	chip->suspended = false;
-> +
-> +	chip->regmap = devm_regmap_init_i2c(client,
-> +				isl29018_chip_info_tbl[dev_id].regmap_cfg);
-> +	if (IS_ERR(chip->regmap)) {
-> +		err = PTR_ERR(chip->regmap);
-> +		dev_err(&client->dev, "regmap initialization fails: %d\n", err);
-> +		return err;
-> +	}
-> +
-> +	err = isl29018_chip_init(chip);
-> +	if (err)
-> +		return err;
-> +
-> +	indio_dev->info = isl29018_chip_info_tbl[dev_id].indio_info;
-> +	indio_dev->channels = isl29018_chip_info_tbl[dev_id].channels;
-> +	indio_dev->num_channels = isl29018_chip_info_tbl[dev_id].num_channels;
-> +	indio_dev->name = name;
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	return devm_iio_device_register(&client->dev, indio_dev);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int isl29018_suspend(struct device *dev)
-> +{
-> +	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-> +
-> +	mutex_lock(&chip->lock);
-> +
-Not quite kernel multiline comment syntax.
-> +	/* Since this driver uses only polling commands, we are by default in
-> +	 * auto shutdown (ie, power-down) mode.
-> +	 * So we do not have much to do here.
-> +	 */
-> +	chip->suspended = true;
-> +
-> +	mutex_unlock(&chip->lock);
-blank line here.
-> +	return 0;
-> +}
-> +
-> +static int isl29018_resume(struct device *dev)
-> +{
-> +	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-> +	int err;
-> +
-> +	mutex_lock(&chip->lock);
-> +
-> +	err = isl29018_chip_init(chip);
-> +	if (!err)
-> +		chip->suspended = false;
-> +
-> +	mutex_unlock(&chip->lock);
-blank line here.
-> +	return err;
-> +}
-> +
-> +static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
-> +#define ISL29018_PM_OPS (&isl29018_pm_ops)
-> +#else
-> +#define ISL29018_PM_OPS NULL
-> +#endif
-> +
-> +static const struct acpi_device_id isl29018_acpi_match[] = {
-> +	{"ISL29018", isl29018},
-> +	{"ISL29023", isl29023},
-> +	{"ISL29035", isl29035},
-> +	{},
-> +};
-> +MODULE_DEVICE_TABLE(acpi, isl29018_acpi_match);
-> +
-> +static const struct i2c_device_id isl29018_id[] = {
-> +	{"isl29018", isl29018},
-> +	{"isl29023", isl29023},
-> +	{"isl29035", isl29035},
-> +	{}
-> +};
-> +
-Consistency would say no line break here.
-> +MODULE_DEVICE_TABLE(i2c, isl29018_id);
-> +
-> +static const struct of_device_id isl29018_of_match[] = {
-> +	{ .compatible = "isil,isl29018", },
-> +	{ .compatible = "isil,isl29023", },
-> +	{ .compatible = "isil,isl29035", },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, isl29018_of_match);
-> +
-> +static struct i2c_driver isl29018_driver = {
-> +	.driver	 = {
-> +			.name = "isl29018",
-> +			.acpi_match_table = ACPI_PTR(isl29018_acpi_match),
-> +			.pm = ISL29018_PM_OPS,
-> +			.of_match_table = isl29018_of_match,
-> +		    },
-> +	.probe	 = isl29018_probe,
-> +	.id_table = isl29018_id,
-> +};
-> +module_i2c_driver(isl29018_driver);
-> +
-> +MODULE_DESCRIPTION("ISL29018 Ambient Light Sensor driver");
-> +MODULE_LICENSE("GPL");
-> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-> index b0e2948..dbf22d3 100644
-> --- a/drivers/staging/iio/light/Kconfig
-> +++ b/drivers/staging/iio/light/Kconfig
-> @@ -3,18 +3,6 @@
->  #
->  menu "Light sensors"
->  
-> -config ISL29018
-> -	tristate "ISL 29018 light and proximity sensor"
-> -	depends on I2C
-> -	select REGMAP_I2C
-> -	default n
-> -	help
-> -	 If you say yes here you get support for ambient light sensing and
-> -	 proximity infrared sensing from Intersil ISL29018.
-> -	 This driver will provide the measurements of ambient light intensity
-> -	 in lux, proximity infrared sensing and normal infrared sensing.
-> -	 Data from sensor is accessible via sysfs.
-> -
->  config SENSORS_ISL29028
->  	tristate "Intersil ISL29028 Concurrent Light and Proximity Sensor"
->  	depends on I2C
-> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-> index 89d6b02..6480856 100644
-> --- a/drivers/staging/iio/light/Makefile
-> +++ b/drivers/staging/iio/light/Makefile
-> @@ -2,7 +2,6 @@
->  # Makefile for industrial I/O Light sensors
->  #
->  
-> -obj-$(CONFIG_ISL29018)	+= isl29018.o
->  obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->  obj-$(CONFIG_TSL2583)	+= tsl2583.o
->  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> deleted file mode 100644
-> index 52bfb1cb..0000000
-> --- a/drivers/staging/iio/light/isl29018.c
-> +++ /dev/null
-> @@ -1,847 +0,0 @@
-> -/*
-> - * A iio driver for the light sensor ISL 29018/29023/29035.
-> - *
-> - * IIO driver for monitoring ambient light intensity in luxi, proximity
-> - * sensing and infrared sensing.
-> - *
-> - * Copyright (c) 2010, NVIDIA Corporation.
-> - *
-> - * This program is free software; you can redistribute it and/or modify
-> - * it under the terms of the GNU General Public License as published by
-> - * the Free Software Foundation; either version 2 of the License, or
-> - * (at your option) any later version.
-> - *
-> - * This program is distributed in the hope that it will be useful, but WITHOUT
-> - * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> - * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> - * more details.
-> - */
-> -
-> -#include <linux/module.h>
-> -#include <linux/i2c.h>
-> -#include <linux/err.h>
-> -#include <linux/mutex.h>
-> -#include <linux/delay.h>
-> -#include <linux/regmap.h>
-> -#include <linux/slab.h>
-> -#include <linux/iio/iio.h>
-> -#include <linux/iio/sysfs.h>
-> -#include <linux/acpi.h>
-> -
-> -#define ISL29018_CONV_TIME_MS		100
-> -
-> -#define ISL29018_REG_ADD_COMMAND1	0x00
-> -#define ISL29018_CMD1_OPMODE_SHIFT	5
-> -#define ISL29018_CMD1_OPMODE_MASK	(7 << ISL29018_CMD1_OPMODE_SHIFT)
-> -#define ISL29018_CMD1_OPMODE_POWER_DOWN	0
-> -#define ISL29018_CMD1_OPMODE_ALS_ONCE	1
-> -#define ISL29018_CMD1_OPMODE_IR_ONCE	2
-> -#define ISL29018_CMD1_OPMODE_PROX_ONCE	3
-> -
-> -#define ISL29018_REG_ADD_COMMAND2	0x01
-> -#define ISL29018_CMD2_RESOLUTION_SHIFT	2
-> -#define ISL29018_CMD2_RESOLUTION_MASK	(0x3 << ISL29018_CMD2_RESOLUTION_SHIFT)
-> -
-> -#define ISL29018_CMD2_RANGE_SHIFT	0
-> -#define ISL29018_CMD2_RANGE_MASK	(0x3 << ISL29018_CMD2_RANGE_SHIFT)
-> -
-> -#define ISL29018_CMD2_SCHEME_SHIFT	7
-> -#define ISL29018_CMD2_SCHEME_MASK	(0x1 << ISL29018_CMD2_SCHEME_SHIFT)
-> -
-> -#define ISL29018_REG_ADD_DATA_LSB	0x02
-> -#define ISL29018_REG_ADD_DATA_MSB	0x03
-> -
-> -#define ISL29018_REG_TEST		0x08
-> -#define ISL29018_TEST_SHIFT		0
-> -#define ISL29018_TEST_MASK		(0xFF << ISL29018_TEST_SHIFT)
-> -
-> -#define ISL29035_REG_DEVICE_ID		0x0F
-> -#define ISL29035_DEVICE_ID_SHIFT	0x03
-> -#define ISL29035_DEVICE_ID_MASK		(0x7 << ISL29035_DEVICE_ID_SHIFT)
-> -#define ISL29035_DEVICE_ID		0x5
-> -#define ISL29035_BOUT_SHIFT		0x07
-> -#define ISL29035_BOUT_MASK		(0x01 << ISL29035_BOUT_SHIFT)
-> -
-> -enum isl29018_int_time {
-> -	ISL29018_INT_TIME_16,
-> -	ISL29018_INT_TIME_12,
-> -	ISL29018_INT_TIME_8,
-> -	ISL29018_INT_TIME_4,
-> -};
-> -
-> -static const unsigned int isl29018_int_utimes[3][4] = {
-> -	{90000, 5630, 351, 21},
-> -	{90000, 5600, 352, 22},
-> -	{105000, 6500, 410, 25},
-> -};
-> -
-> -static const struct isl29018_scale {
-> -	unsigned int scale;
-> -	unsigned int uscale;
-> -} isl29018_scales[4][4] = {
-> -	{ {0, 15258}, {0, 61035}, {0, 244140}, {0, 976562} },
-> -	{ {0, 244140}, {0, 976562}, {3, 906250}, {15, 625000} },
-> -	{ {3, 906250}, {15, 625000}, {62, 500000}, {250, 0} },
-> -	{ {62, 500000}, {250, 0}, {1000, 0}, {4000, 0} }
-> -};
-> -
-> -struct isl29018_chip {
-> -	struct regmap		*regmap;
-> -	struct mutex		lock;
-> -	int			type;
-> -	unsigned int		calibscale;
-> -	unsigned int		ucalibscale;
-> -	unsigned int		int_time;
-> -	struct isl29018_scale	scale;
-> -	int			prox_scheme;
-> -	bool			suspended;
-> -};
-> -
-> -static int isl29018_set_integration_time(struct isl29018_chip *chip,
-> -					 unsigned int utime)
-> -{
-> -	unsigned int i;
-> -	int ret;
-> -	unsigned int int_time, new_int_time;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i) {
-> -		if (utime == isl29018_int_utimes[chip->type][i]) {
-> -			new_int_time = i;
-> -			break;
-> -		}
-> -	}
-> -
-> -	if (i >= ARRAY_SIZE(isl29018_int_utimes[chip->type]))
-> -		return -EINVAL;
-> -
-> -	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
-> -				 ISL29018_CMD2_RESOLUTION_MASK,
-> -				 i << ISL29018_CMD2_RESOLUTION_SHIFT);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	/* Keep the same range when integration time changes */
-> -	int_time = chip->int_time;
-> -	for (i = 0; i < ARRAY_SIZE(isl29018_scales[int_time]); ++i) {
-> -		if (chip->scale.scale == isl29018_scales[int_time][i].scale &&
-> -		    chip->scale.uscale == isl29018_scales[int_time][i].uscale) {
-> -			chip->scale = isl29018_scales[new_int_time][i];
-> -			break;
-> -		}
-> -	}
-> -	chip->int_time = new_int_time;
-> -
-> -	return 0;
-> -}
-> -
-> -static int isl29018_set_scale(struct isl29018_chip *chip, int scale, int uscale)
-> -{
-> -	unsigned int i;
-> -	int ret;
-> -	struct isl29018_scale new_scale;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i) {
-> -		if (scale == isl29018_scales[chip->int_time][i].scale &&
-> -		    uscale == isl29018_scales[chip->int_time][i].uscale) {
-> -			new_scale = isl29018_scales[chip->int_time][i];
-> -			break;
-> -		}
-> -	}
-> -
-> -	if (i >= ARRAY_SIZE(isl29018_scales[chip->int_time]))
-> -		return -EINVAL;
-> -
-> -	ret = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
-> -				 ISL29018_CMD2_RANGE_MASK,
-> -				 i << ISL29018_CMD2_RANGE_SHIFT);
-> -	if (ret < 0)
-> -		return ret;
-> -
-> -	chip->scale = new_scale;
-> -
-> -	return 0;
-> -}
-> -
-> -static int isl29018_read_sensor_input(struct isl29018_chip *chip, int mode)
-> -{
-> -	int status;
-> -	unsigned int lsb;
-> -	unsigned int msb;
-> -	struct device *dev = regmap_get_device(chip->regmap);
-> -
-> -	/* Set mode */
-> -	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1,
-> -			      mode << ISL29018_CMD1_OPMODE_SHIFT);
-> -	if (status) {
-> -		dev_err(dev,
-> -			"Error in setting operating mode err %d\n", status);
-> -		return status;
-> -	}
-> -	msleep(ISL29018_CONV_TIME_MS);
-> -	status = regmap_read(chip->regmap, ISL29018_REG_ADD_DATA_LSB, &lsb);
-> -	if (status < 0) {
-> -		dev_err(dev,
-> -			"Error in reading LSB DATA with err %d\n", status);
-> -		return status;
-> -	}
-> -
-> -	status = regmap_read(chip->regmap, ISL29018_REG_ADD_DATA_MSB, &msb);
-> -	if (status < 0) {
-> -		dev_err(dev,
-> -			"Error in reading MSB DATA with error %d\n", status);
-> -		return status;
-> -	}
-> -	dev_vdbg(dev, "MSB 0x%x and LSB 0x%x\n", msb, lsb);
-> -
-> -	return (msb << 8) | lsb;
-> -}
-> -
-> -static int isl29018_read_lux(struct isl29018_chip *chip, int *lux)
-> -{
-> -	int lux_data;
-> -	unsigned int data_x_range;
-> -
-> -	lux_data = isl29018_read_sensor_input(chip,
-> -					      ISL29018_CMD1_OPMODE_ALS_ONCE);
-> -	if (lux_data < 0)
-> -		return lux_data;
-> -
-> -	data_x_range = lux_data * chip->scale.scale +
-> -		       lux_data * chip->scale.uscale / 1000000;
-> -	*lux = data_x_range * chip->calibscale +
-> -	       data_x_range * chip->ucalibscale / 1000000;
-> -
-> -	return 0;
-> -}
-> -
-> -static int isl29018_read_ir(struct isl29018_chip *chip, int *ir)
-> -{
-> -	int ir_data;
-> -
-> -	ir_data = isl29018_read_sensor_input(chip,
-> -					     ISL29018_CMD1_OPMODE_IR_ONCE);
-> -	if (ir_data < 0)
-> -		return ir_data;
-> -
-> -	*ir = ir_data;
-> -
-> -	return 0;
-> -}
-> -
-> -static int isl29018_read_proximity_ir(struct isl29018_chip *chip, int scheme,
-> -				      int *near_ir)
-> -{
-> -	int status;
-> -	int prox_data = -1;
-> -	int ir_data = -1;
-> -	struct device *dev = regmap_get_device(chip->regmap);
-> -
-> -	/* Do proximity sensing with required scheme */
-> -	status = regmap_update_bits(chip->regmap, ISL29018_REG_ADD_COMMAND2,
-> -				    ISL29018_CMD2_SCHEME_MASK,
-> -				    scheme << ISL29018_CMD2_SCHEME_SHIFT);
-> -	if (status) {
-> -		dev_err(dev, "Error in setting operating mode\n");
-> -		return status;
-> -	}
-> -
-> -	prox_data = isl29018_read_sensor_input(chip,
-> -					       ISL29018_CMD1_OPMODE_PROX_ONCE);
-> -	if (prox_data < 0)
-> -		return prox_data;
-> -
-> -	if (scheme == 1) {
-> -		*near_ir = prox_data;
-> -		return 0;
-> -	}
-> -
-> -	ir_data = isl29018_read_sensor_input(chip,
-> -					     ISL29018_CMD1_OPMODE_IR_ONCE);
-> -	if (ir_data < 0)
-> -		return ir_data;
-> -
-> -	if (prox_data >= ir_data)
-> -		*near_ir = prox_data - ir_data;
-> -	else
-> -		*near_ir = 0;
-> -
-> -	return 0;
-> -}
-> -
-> -static ssize_t in_illuminance_scale_available_show
-> -			(struct device *dev, struct device_attribute *attr,
-> -			 char *buf)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct isl29018_chip *chip = iio_priv(indio_dev);
-> -	unsigned int i;
-> -	int len = 0;
-> -
-> -	mutex_lock(&chip->lock);
-> -	for (i = 0; i < ARRAY_SIZE(isl29018_scales[chip->int_time]); ++i)
-> -		len += sprintf(buf + len, "%d.%06d ",
-> -			       isl29018_scales[chip->int_time][i].scale,
-> -			       isl29018_scales[chip->int_time][i].uscale);
-> -	mutex_unlock(&chip->lock);
-> -
-> -	buf[len - 1] = '\n';
-> -
-> -	return len;
-> -}
-> -
-> -static ssize_t in_illuminance_integration_time_available_show
-> -			(struct device *dev, struct device_attribute *attr,
-> -			 char *buf)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct isl29018_chip *chip = iio_priv(indio_dev);
-> -	unsigned int i;
-> -	int len = 0;
-> -
-> -	for (i = 0; i < ARRAY_SIZE(isl29018_int_utimes[chip->type]); ++i)
-> -		len += sprintf(buf + len, "0.%06d ",
-> -			       isl29018_int_utimes[chip->type][i]);
-> -
-> -	buf[len - 1] = '\n';
-> -
-> -	return len;
-> -}
-> -
-> -/*
-> - * From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
-> - * infrared suppression:
-> - *
-> - *   Proximity Sensing Scheme: Bit 7. This bit programs the function
-> - * of the proximity detection. Logic 0 of this bit, Scheme 0, makes
-> - * full n (4, 8, 12, 16) bits (unsigned) proximity detection. The range
-> - * of Scheme 0 proximity count is from 0 to 2^n. Logic 1 of this bit,
-> - * Scheme 1, makes n-1 (3, 7, 11, 15) bits (2's complementary)
-> - * proximity_less_ambient detection. The range of Scheme 1
-> - * proximity count is from -2^(n-1) to 2^(n-1) . The sign bit is extended
-> - * for resolutions less than 16. While Scheme 0 has wider dynamic
-> - * range, Scheme 1 proximity detection is less affected by the
-> - * ambient IR noise variation.
-> - *
-> - * 0 Sensing IR from LED and ambient
-> - * 1 Sensing IR from LED with ambient IR rejection
-> - */
-> -static ssize_t proximity_on_chip_ambient_infrared_suppression_show
-> -			(struct device *dev, struct device_attribute *attr,
-> -			 char *buf)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct isl29018_chip *chip = iio_priv(indio_dev);
-> -
-> -	/*
-> -	 * Return the "proximity scheme" i.e. if the chip does on chip
-> -	 * infrared suppression (1 means perform on chip suppression)
-> -	 */
-> -	return sprintf(buf, "%d\n", chip->prox_scheme);
-> -}
-> -
-> -static ssize_t proximity_on_chip_ambient_infrared_suppression_store
-> -			(struct device *dev, struct device_attribute *attr,
-> -			 const char *buf, size_t count)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct isl29018_chip *chip = iio_priv(indio_dev);
-> -	int val;
-> -
-> -	if (kstrtoint(buf, 10, &val))
-> -		return -EINVAL;
-> -	if (!(val == 0 || val == 1))
-> -		return -EINVAL;
-> -
-> -	/*
-> -	 * Get the "proximity scheme" i.e. if the chip does on chip
-> -	 * infrared suppression (1 means perform on chip suppression)
-> -	 */
-> -	mutex_lock(&chip->lock);
-> -	chip->prox_scheme = val;
-> -	mutex_unlock(&chip->lock);
-> -
-> -	return count;
-> -}
-> -
-> -static int isl29018_write_raw(struct iio_dev *indio_dev,
-> -			      struct iio_chan_spec const *chan,
-> -			      int val,
-> -			      int val2,
-> -			      long mask)
-> -{
-> -	struct isl29018_chip *chip = iio_priv(indio_dev);
-> -	int ret = -EINVAL;
-> -
-> -	mutex_lock(&chip->lock);
-> -	if (chip->suspended) {
-> -		ret = -EBUSY;
-> -		goto write_done;
-> -	}
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_CALIBSCALE:
-> -		if (chan->type == IIO_LIGHT) {
-> -			chip->calibscale = val;
-> -			chip->ucalibscale = val2;
-> -			ret = 0;
-> -		}
-> -		break;
-> -	case IIO_CHAN_INFO_INT_TIME:
-> -		if (chan->type == IIO_LIGHT && !val)
-> -			ret = isl29018_set_integration_time(chip, val2);
-> -		break;
-> -	case IIO_CHAN_INFO_SCALE:
-> -		if (chan->type == IIO_LIGHT)
-> -			ret = isl29018_set_scale(chip, val, val2);
-> -		break;
-> -	default:
-> -		break;
-> -	}
-> -
-> -write_done:
-> -	mutex_unlock(&chip->lock);
-> -	return ret;
-> -}
-> -
-> -static int isl29018_read_raw(struct iio_dev *indio_dev,
-> -			     struct iio_chan_spec const *chan,
-> -			     int *val,
-> -			     int *val2,
-> -			     long mask)
-> -{
-> -	int ret = -EINVAL;
-> -	struct isl29018_chip *chip = iio_priv(indio_dev);
-> -
-> -	mutex_lock(&chip->lock);
-> -	if (chip->suspended) {
-> -		ret = -EBUSY;
-> -		goto read_done;
-> -	}
-> -	switch (mask) {
-> -	case IIO_CHAN_INFO_RAW:
-> -	case IIO_CHAN_INFO_PROCESSED:
-> -		switch (chan->type) {
-> -		case IIO_LIGHT:
-> -			ret = isl29018_read_lux(chip, val);
-> -			break;
-> -		case IIO_INTENSITY:
-> -			ret = isl29018_read_ir(chip, val);
-> -			break;
-> -		case IIO_PROXIMITY:
-> -			ret = isl29018_read_proximity_ir(chip,
-> -							 chip->prox_scheme,
-> -							 val);
-> -			break;
-> -		default:
-> -			break;
-> -		}
-> -		if (!ret)
-> -			ret = IIO_VAL_INT;
-> -		break;
-> -	case IIO_CHAN_INFO_INT_TIME:
-> -		if (chan->type == IIO_LIGHT) {
-> -			*val = 0;
-> -			*val2 = isl29018_int_utimes[chip->type][chip->int_time];
-> -			ret = IIO_VAL_INT_PLUS_MICRO;
-> -		}
-> -		break;
-> -	case IIO_CHAN_INFO_SCALE:
-> -		if (chan->type == IIO_LIGHT) {
-> -			*val = chip->scale.scale;
-> -			*val2 = chip->scale.uscale;
-> -			ret = IIO_VAL_INT_PLUS_MICRO;
-> -		}
-> -		break;
-> -	case IIO_CHAN_INFO_CALIBSCALE:
-> -		if (chan->type == IIO_LIGHT) {
-> -			*val = chip->calibscale;
-> -			*val2 = chip->ucalibscale;
-> -			ret = IIO_VAL_INT_PLUS_MICRO;
-> -		}
-> -		break;
-> -	default:
-> -		break;
-> -	}
-> -
-> -read_done:
-> -	mutex_unlock(&chip->lock);
-> -	return ret;
-> -}
-> -
-> -#define ISL29018_LIGHT_CHANNEL {					\
-> -	.type = IIO_LIGHT,						\
-> -	.indexed = 1,							\
-> -	.channel = 0,							\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED) |		\
-> -	BIT(IIO_CHAN_INFO_CALIBSCALE) |					\
-> -	BIT(IIO_CHAN_INFO_SCALE) |					\
-> -	BIT(IIO_CHAN_INFO_INT_TIME),					\
-> -}
-> -
-> -#define ISL29018_IR_CHANNEL {						\
-> -	.type = IIO_INTENSITY,						\
-> -	.modified = 1,							\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> -	.channel2 = IIO_MOD_LIGHT_IR,					\
-> -}
-> -
-> -#define ISL29018_PROXIMITY_CHANNEL {					\
-> -	.type = IIO_PROXIMITY,						\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> -}
-> -
-> -static const struct iio_chan_spec isl29018_channels[] = {
-> -	ISL29018_LIGHT_CHANNEL,
-> -	ISL29018_IR_CHANNEL,
-> -	ISL29018_PROXIMITY_CHANNEL,
-> -};
-> -
-> -static const struct iio_chan_spec isl29023_channels[] = {
-> -	ISL29018_LIGHT_CHANNEL,
-> -	ISL29018_IR_CHANNEL,
-> -};
-> -
-> -static IIO_DEVICE_ATTR_RO(in_illuminance_integration_time_available, 0);
-> -static IIO_DEVICE_ATTR_RO(in_illuminance_scale_available, 0);
-> -static IIO_DEVICE_ATTR_RW(proximity_on_chip_ambient_infrared_suppression, 0);
-> -
-> -#define ISL29018_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
-> -
-> -static struct attribute *isl29018_attributes[] = {
-> -	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> -	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
-> -	ISL29018_DEV_ATTR(proximity_on_chip_ambient_infrared_suppression),
-> -	NULL
-> -};
-> -
-> -static struct attribute *isl29023_attributes[] = {
-> -	ISL29018_DEV_ATTR(in_illuminance_scale_available),
-> -	ISL29018_DEV_ATTR(in_illuminance_integration_time_available),
-> -	NULL
-> -};
-> -
-> -static const struct attribute_group isl29018_group = {
-> -	.attrs = isl29018_attributes,
-> -};
-> -
-> -static const struct attribute_group isl29023_group = {
-> -	.attrs = isl29023_attributes,
-> -};
-> -
-> -static int isl29035_detect(struct isl29018_chip *chip)
-> -{
-> -	int status;
-> -	unsigned int id;
-> -	struct device *dev = regmap_get_device(chip->regmap);
-> -
-> -	status = regmap_read(chip->regmap, ISL29035_REG_DEVICE_ID, &id);
-> -	if (status < 0) {
-> -		dev_err(dev,
-> -			"Error reading ID register with error %d\n",
-> -			status);
-> -		return status;
-> -	}
-> -
-> -	id = (id & ISL29035_DEVICE_ID_MASK) >> ISL29035_DEVICE_ID_SHIFT;
-> -
-> -	if (id != ISL29035_DEVICE_ID)
-> -		return -ENODEV;
-> -
-> -	/* Clear brownout bit */
-> -	return regmap_update_bits(chip->regmap, ISL29035_REG_DEVICE_ID,
-> -				  ISL29035_BOUT_MASK, 0);
-> -}
-> -
-> -enum {
-> -	isl29018,
-> -	isl29023,
-> -	isl29035,
-> -};
-> -
-> -static int isl29018_chip_init(struct isl29018_chip *chip)
-> -{
-> -	int status;
-> -	struct device *dev = regmap_get_device(chip->regmap);
-> -
-> -	if (chip->type == isl29035) {
-> -		status = isl29035_detect(chip);
-> -		if (status < 0)
-> -			return status;
-> -	}
-> -
-> -	/* Code added per Intersil Application Note 1534:
-> -	 *     When VDD sinks to approximately 1.8V or below, some of
-> -	 * the part's registers may change their state. When VDD
-> -	 * recovers to 2.25V (or greater), the part may thus be in an
-> -	 * unknown mode of operation. The user can return the part to
-> -	 * a known mode of operation either by (a) setting VDD = 0V for
-> -	 * 1 second or more and then powering back up with a slew rate
-> -	 * of 0.5V/ms or greater, or (b) via I2C disable all ALS/PROX
-> -	 * conversions, clear the test registers, and then rewrite all
-> -	 * registers to the desired values.
-> -	 * ...
-> -	 * For ISL29011, ISL29018, ISL29021, ISL29023
-> -	 * 1. Write 0x00 to register 0x08 (TEST)
-> -	 * 2. Write 0x00 to register 0x00 (CMD1)
-> -	 * 3. Rewrite all registers to the desired values
-> -	 *
-> -	 * ISL29018 Data Sheet (FN6619.1, Feb 11, 2010) essentially says
-> -	 * the same thing EXCEPT the data sheet asks for a 1ms delay after
-> -	 * writing the CMD1 register.
-> -	 */
-> -	status = regmap_write(chip->regmap, ISL29018_REG_TEST, 0x0);
-> -	if (status < 0) {
-> -		dev_err(dev, "Failed to clear isl29018 TEST reg.(%d)\n",
-> -			status);
-> -		return status;
-> -	}
-> -
-> -	/* See Intersil AN1534 comments above.
-> -	 * "Operating Mode" (COMMAND1) register is reprogrammed when
-> -	 * data is read from the device.
-> -	 */
-> -	status = regmap_write(chip->regmap, ISL29018_REG_ADD_COMMAND1, 0);
-> -	if (status < 0) {
-> -		dev_err(dev, "Failed to clear isl29018 CMD1 reg.(%d)\n",
-> -			status);
-> -		return status;
-> -	}
-> -
-> -	usleep_range(1000, 2000);	/* per data sheet, page 10 */
-> -
-> -	/* Set defaults */
-> -	status = isl29018_set_scale(chip, chip->scale.scale,
-> -				    chip->scale.uscale);
-> -	if (status < 0) {
-> -		dev_err(dev, "Init of isl29018 fails\n");
-> -		return status;
-> -	}
-> -
-> -	status = isl29018_set_integration_time(chip,
-> -			isl29018_int_utimes[chip->type][chip->int_time]);
-> -	if (status < 0) {
-> -		dev_err(dev, "Init of isl29018 fails\n");
-> -		return status;
-> -	}
-> -
-> -	return 0;
-> -}
-> -
-> -static const struct iio_info isl29018_info = {
-> -	.attrs = &isl29018_group,
-> -	.driver_module = THIS_MODULE,
-> -	.read_raw = isl29018_read_raw,
-> -	.write_raw = isl29018_write_raw,
-> -};
-> -
-> -static const struct iio_info isl29023_info = {
-> -	.attrs = &isl29023_group,
-> -	.driver_module = THIS_MODULE,
-> -	.read_raw = isl29018_read_raw,
-> -	.write_raw = isl29018_write_raw,
-> -};
-> -
-> -static bool isl29018_is_volatile_reg(struct device *dev, unsigned int reg)
-> -{
-> -	switch (reg) {
-> -	case ISL29018_REG_ADD_DATA_LSB:
-> -	case ISL29018_REG_ADD_DATA_MSB:
-> -	case ISL29018_REG_ADD_COMMAND1:
-> -	case ISL29018_REG_TEST:
-> -	case ISL29035_REG_DEVICE_ID:
-> -		return true;
-> -	default:
-> -		return false;
-> -	}
-> -}
-> -
-> -static const struct regmap_config isl29018_regmap_config = {
-> -	.reg_bits = 8,
-> -	.val_bits = 8,
-> -	.volatile_reg = isl29018_is_volatile_reg,
-> -	.max_register = ISL29018_REG_TEST,
-> -	.num_reg_defaults_raw = ISL29018_REG_TEST + 1,
-> -	.cache_type = REGCACHE_RBTREE,
-> -};
-> -
-> -static const struct regmap_config isl29035_regmap_config = {
-> -	.reg_bits = 8,
-> -	.val_bits = 8,
-> -	.volatile_reg = isl29018_is_volatile_reg,
-> -	.max_register = ISL29035_REG_DEVICE_ID,
-> -	.num_reg_defaults_raw = ISL29035_REG_DEVICE_ID + 1,
-> -	.cache_type = REGCACHE_RBTREE,
-> -};
-> -
-> -struct isl29018_chip_info {
-> -	const struct iio_chan_spec *channels;
-> -	int num_channels;
-> -	const struct iio_info *indio_info;
-> -	const struct regmap_config *regmap_cfg;
-> -};
-> -
-> -static const struct isl29018_chip_info isl29018_chip_info_tbl[] = {
-> -	[isl29018] = {
-> -		.channels = isl29018_channels,
-> -		.num_channels = ARRAY_SIZE(isl29018_channels),
-> -		.indio_info = &isl29018_info,
-> -		.regmap_cfg = &isl29018_regmap_config,
-> -	},
-> -	[isl29023] = {
-> -		.channels = isl29023_channels,
-> -		.num_channels = ARRAY_SIZE(isl29023_channels),
-> -		.indio_info = &isl29023_info,
-> -		.regmap_cfg = &isl29018_regmap_config,
-> -	},
-> -	[isl29035] = {
-> -		.channels = isl29023_channels,
-> -		.num_channels = ARRAY_SIZE(isl29023_channels),
-> -		.indio_info = &isl29023_info,
-> -		.regmap_cfg = &isl29035_regmap_config,
-> -	},
-> -};
-> -
-> -static const char *isl29018_match_acpi_device(struct device *dev, int *data)
-> -{
-> -	const struct acpi_device_id *id;
-> -
-> -	id = acpi_match_device(dev->driver->acpi_match_table, dev);
-> -
-> -	if (!id)
-> -		return NULL;
-> -
-> -	*data = (int)id->driver_data;
-> -
-> -	return dev_name(dev);
-> -}
-> -
-> -static int isl29018_probe(struct i2c_client *client,
-> -			  const struct i2c_device_id *id)
-> -{
-> -	struct isl29018_chip *chip;
-> -	struct iio_dev *indio_dev;
-> -	int err;
-> -	const char *name = NULL;
-> -	int dev_id = 0;
-> -
-> -	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-> -	if (!indio_dev)
-> -		return -ENOMEM;
-> -	chip = iio_priv(indio_dev);
-> -
-> -	i2c_set_clientdata(client, indio_dev);
-> -
-> -	if (id) {
-> -		name = id->name;
-> -		dev_id = id->driver_data;
-> -	}
-> -
-> -	if (ACPI_HANDLE(&client->dev))
-> -		name = isl29018_match_acpi_device(&client->dev, &dev_id);
-> -
-> -	mutex_init(&chip->lock);
-> -
-> -	chip->type = dev_id;
-> -	chip->calibscale = 1;
-> -	chip->ucalibscale = 0;
-> -	chip->int_time = ISL29018_INT_TIME_16;
-> -	chip->scale = isl29018_scales[chip->int_time][0];
-> -	chip->suspended = false;
-> -
-> -	chip->regmap = devm_regmap_init_i2c(client,
-> -				isl29018_chip_info_tbl[dev_id].regmap_cfg);
-> -	if (IS_ERR(chip->regmap)) {
-> -		err = PTR_ERR(chip->regmap);
-> -		dev_err(&client->dev, "regmap initialization fails: %d\n", err);
-> -		return err;
-> -	}
-> -
-> -	err = isl29018_chip_init(chip);
-> -	if (err)
-> -		return err;
-> -
-> -	indio_dev->info = isl29018_chip_info_tbl[dev_id].indio_info;
-> -	indio_dev->channels = isl29018_chip_info_tbl[dev_id].channels;
-> -	indio_dev->num_channels = isl29018_chip_info_tbl[dev_id].num_channels;
-> -	indio_dev->name = name;
-> -	indio_dev->dev.parent = &client->dev;
-> -	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	return devm_iio_device_register(&client->dev, indio_dev);
-> -}
-> -
-> -#ifdef CONFIG_PM_SLEEP
-> -static int isl29018_suspend(struct device *dev)
-> -{
-> -	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-> -
-> -	mutex_lock(&chip->lock);
-> -
-> -	/* Since this driver uses only polling commands, we are by default in
-> -	 * auto shutdown (ie, power-down) mode.
-> -	 * So we do not have much to do here.
-> -	 */
-> -	chip->suspended = true;
-> -
-> -	mutex_unlock(&chip->lock);
-> -	return 0;
-> -}
-> -
-> -static int isl29018_resume(struct device *dev)
-> -{
-> -	struct isl29018_chip *chip = iio_priv(dev_get_drvdata(dev));
-> -	int err;
-> -
-> -	mutex_lock(&chip->lock);
-> -
-> -	err = isl29018_chip_init(chip);
-> -	if (!err)
-> -		chip->suspended = false;
-> -
-> -	mutex_unlock(&chip->lock);
-> -	return err;
-> -}
-> -
-> -static SIMPLE_DEV_PM_OPS(isl29018_pm_ops, isl29018_suspend, isl29018_resume);
-> -#define ISL29018_PM_OPS (&isl29018_pm_ops)
-> -#else
-> -#define ISL29018_PM_OPS NULL
-> -#endif
-> -
-> -static const struct acpi_device_id isl29018_acpi_match[] = {
-> -	{"ISL29018", isl29018},
-> -	{"ISL29023", isl29023},
-> -	{"ISL29035", isl29035},
-> -	{},
-> -};
-> -MODULE_DEVICE_TABLE(acpi, isl29018_acpi_match);
-> -
-> -static const struct i2c_device_id isl29018_id[] = {
-> -	{"isl29018", isl29018},
-> -	{"isl29023", isl29023},
-> -	{"isl29035", isl29035},
-> -	{}
-> -};
-> -
-> -MODULE_DEVICE_TABLE(i2c, isl29018_id);
-> -
-> -static const struct of_device_id isl29018_of_match[] = {
-> -	{ .compatible = "isil,isl29018", },
-> -	{ .compatible = "isil,isl29023", },
-> -	{ .compatible = "isil,isl29035", },
-> -	{ },
-> -};
-> -MODULE_DEVICE_TABLE(of, isl29018_of_match);
-> -
-> -static struct i2c_driver isl29018_driver = {
-> -	.driver	 = {
-> -			.name = "isl29018",
-> -			.acpi_match_table = ACPI_PTR(isl29018_acpi_match),
-> -			.pm = ISL29018_PM_OPS,
-> -			.of_match_table = isl29018_of_match,
-> -		    },
-> -	.probe	 = isl29018_probe,
-> -	.id_table = isl29018_id,
-> -};
-> -module_i2c_driver(isl29018_driver);
-> -
-> -MODULE_DESCRIPTION("ISL29018 Ambient Light Sensor driver");
-> -MODULE_LICENSE("GPL");
+> Regards,
+> Lorenzo
+> 
+>> Jonathan
+>>>
+>>> Best regards,
+>>> Lorenzo
+>>>
+>>>>
+>>>> Jonathan
+>>>>> ---
+>>>>>  drivers/iio/humidity/Kconfig                |   2 +
+>>>>>  drivers/iio/humidity/Makefile               |   1 +
+>>>>>  drivers/iio/humidity/hts221/Kconfig         |  23 +
+>>>>>  drivers/iio/humidity/hts221/Makefile        |   6 +
+>>>>>  drivers/iio/humidity/hts221/hts221.h        | 106 ++++
+>>>>>  drivers/iio/humidity/hts221/hts221_buffer.c | 227 ++++++++
+>>>>>  drivers/iio/humidity/hts221/hts221_core.c   | 804 ++++++++++++++++++++++++++++
+>>>>>  drivers/iio/humidity/hts221/hts221_i2c.c    | 135 +++++
+>>>>>  drivers/iio/humidity/hts221/hts221_spi.c    | 148 +++++
+>>>>>  9 files changed, 1452 insertions(+)
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/Kconfig
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/Makefile
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/hts221.h
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/hts221_buffer.c
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/hts221_core.c
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/hts221_i2c.c
+>>>>>  create mode 100644 drivers/iio/humidity/hts221/hts221_spi.c
+>>>>>
+>>>>> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+>>>>> index b17e2e2..4ce75da 100644
+>>>>> --- a/drivers/iio/humidity/Kconfig
+>>>>> +++ b/drivers/iio/humidity/Kconfig
+>>>>> @@ -69,4 +69,6 @@ config SI7020
+>>>>>       To compile this driver as a module, choose M here: the module
+>>>>>       will be called si7020.
+>>>>>
+>>>>> +source "drivers/iio/humidity/hts221/Kconfig"
+>>>>> +
+>>>>>  endmenu
+>>>>> diff --git a/drivers/iio/humidity/Makefile b/drivers/iio/humidity/Makefile
+>>>>> index 4a73442..bdd5cd0 100644
+>>>>> --- a/drivers/iio/humidity/Makefile
+>>>>> +++ b/drivers/iio/humidity/Makefile
+>>>>> @@ -8,3 +8,4 @@ obj-$(CONFIG_HDC100X) += hdc100x.o
+>>>>>  obj-$(CONFIG_HTU21) += htu21.o
+>>>>>  obj-$(CONFIG_SI7005) += si7005.o
+>>>>>  obj-$(CONFIG_SI7020) += si7020.o
+>>>>> +obj-$(CONFIG_IIO_HTS221) += hts221/
+>>>>> diff --git a/drivers/iio/humidity/hts221/Kconfig b/drivers/iio/humidity/hts221/Kconfig
+>>>>> new file mode 100644
+>>>>> index 0000000..95b40e0
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/Kconfig
+>>>>> @@ -0,0 +1,23 @@
+>>>>> +
+>>>>> +config IIO_HTS221
+>>>>> +   tristate "STMicroelectronics HTS221 sensor Driver"
+>>>>> +   depends on (I2C || SPI) && SYSFS
+>>>>> +   select IIO_BUFFER
+>>>>> +   select IIO_TRIGGERED_BUFFER
+>>>>> +   select IIO_HTS221_I2C if (I2C)
+>>>>> +   select IIO_HTS221_SPI if (SPI_MASTER)
+>>>>> +   help
+>>>>> +     Say yes here to build support for STMicroelectronics HTS221
+>>>>> +     temperature-humidity sensor
+>>>>> +
+>>>>> +     To compile this driver as a module, choose M here: the module
+>>>>> +     will be called hts221.
+>>>>> +
+>>>>> +config IIO_HTS221_I2C
+>>>>> +   tristate
+>>>>> +   depends on IIO_HTS221
+>>>>> +
+>>>>> +config IIO_HTS221_SPI
+>>>>> +   tristate
+>>>>> +   depends on IIO_HTS221
+>>>>> +
+>>>>> diff --git a/drivers/iio/humidity/hts221/Makefile b/drivers/iio/humidity/hts221/Makefile
+>>>>> new file mode 100644
+>>>>> index 0000000..6fdfc6a
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/Makefile
+>>>>> @@ -0,0 +1,6 @@
+>>>>> +hts221-y := hts221_core.o
+>>>>> +hts221-$(CONFIG_IIO_BUFFER) += hts221_buffer.o
+>>>>> +
+>>>>> +obj-$(CONFIG_IIO_HTS221) += hts221.o
+>>>>> +obj-$(CONFIG_IIO_HTS221_I2C) += hts221_i2c.o
+>>>>> +obj-$(CONFIG_IIO_HTS221_SPI) += hts221_spi.o
+>>>>> diff --git a/drivers/iio/humidity/hts221/hts221.h b/drivers/iio/humidity/hts221/hts221.h
+>>>>> new file mode 100644
+>>>>> index 0000000..23cf5b2
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/hts221.h
+>>>>> @@ -0,0 +1,106 @@
+>>>>> +/*
+>>>>> + * STMicroelectronics hts221 sensor driver
+>>>>> + *
+>>>>> + * Copyright 2016 STMicroelectronics Inc.
+>>>>> + *
+>>>>> + * Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>>> + *
+>>>>> + * Licensed under the GPL-2.
+>>>>> + */
+>>>>> +
+>>>>> +#ifndef HTS221_H
+>>>>> +#define HTS221_H
+>>>>> +
+>>>>> +#define HTS221_DEV_NAME            "hts221"
+>>>>> +
+>>>>> +#include <linux/iio/iio.h>
+>>>>> +
+>>>>> +#if defined(CONFIG_IIO_HTS221_SPI) || \
+>>>>> +   defined(CONFIG_IIO_HTS221_SPI_MODULE)
+>>>>> +#define HTS221_RX_MAX_LENGTH       500
+>>>>> +#define HTS221_TX_MAX_LENGTH       500
+>>>>> +
+>>>>> +struct hts221_transfer_buffer {
+>>>>> +   u8 rx_buf[HTS221_RX_MAX_LENGTH];
+>>>>> +   u8 tx_buf[HTS221_TX_MAX_LENGTH] ____cacheline_aligned;
+>>>>> +};
+>>>>> +#endif /* CONFIG_IIO_HTS221_SPI */
+>>>>> +
+>>>>> +struct hts221_transfer_function {
+>>>>> +   int (*read)(struct device *dev, u8 addr, int len, u8 *data);
+>>>>> +   int (*write)(struct device *dev, u8 addr, int len, u8 *data);
+>>>>> +};
+>>>>> +
+>>>>> +#define HTS221_AVG_DEPTH   8
+>>>>> +struct hts221_avg_avl {
+>>>>> +   u16 avg;
+>>>>> +   u8 val;
+>>>>> +};
+>>>>> +
+>>>>> +enum hts221_sensor_type {
+>>>>> +   HTS221_SENSOR_H,
+>>>>> +   HTS221_SENSOR_T,
+>>>>> +   HTS221_SENSOR_MAX,
+>>>>> +};
+>>>>> +
+>>>>> +struct hts221_sensor {
+>>>>> +   struct hts221_dev *dev;
+>>>>> +   struct iio_trigger *trig;
+>>>>> +
+>>>>> +   enum hts221_sensor_type type;
+>>>>> +   bool enabled;
+>>>>> +   u8 odr, cur_avg_idx;
+>>>>> +   int slope, b_gen;
+>>>>> +
+>>>>> +   u8 drdy_data_mask;
+>>>>> +   u8 buffer[2];
+>>>>> +};
+>>>>> +
+>>>>> +struct hts221_dev {
+>>>>> +   const char *name;
+>>>>> +   struct device *dev;
+>>>>> +   int irq;
+>>>>> +   struct mutex lock;
+>>>>> +
+>>>>> +   struct iio_dev *iio_devs[HTS221_SENSOR_MAX];
+>>>>> +
+>>>>> +   s64 hw_timestamp;
+>>>>> +
+>>>>> +   const struct hts221_transfer_function *tf;
+>>>>> +#if defined(CONFIG_IIO_HTS221_SPI) || \
+>>>>> +   defined(CONFIG_IIO_HTS221_SPI_MODULE)
+>>>>> +   struct hts221_transfer_buffer tb;
+>>>>> +#endif /* CONFIG_IIO_HTS221_SPI */
+>>>> I'd be cynical. It's tiny, leave this there even in the i2c case...
+>>>>> +};
+>>>>> +
+>>>>> +int hts221_config_drdy(struct hts221_sensor *sensor, bool enable);
+>>>>> +int hts221_probe(struct hts221_dev *dev);
+>>>>> +int hts221_remove(struct hts221_dev *dev);
+>>>>> +int hts221_sensor_power_on(struct hts221_sensor *sensor);
+>>>>> +int hts221_sensor_power_off(struct hts221_sensor *sensor);
+>>>>> +#ifdef CONFIG_IIO_BUFFER
+>>>>> +int hts221_allocate_buffers(struct hts221_dev *dev);
+>>>>> +void hts221_deallocate_buffers(struct hts221_dev *dev);
+>>>>> +int hts221_allocate_triggers(struct hts221_dev *dev);
+>>>>> +void hts221_deallocate_triggers(struct hts221_dev *dev);
+>>>>> +#else
+>>>>> +static inline int hts221_allocate_buffers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static inline void hts221_deallocate_buffers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +}
+>>>>> +
+>>>>> +static inline int hts221_allocate_triggers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static inline void hts221_deallocate_triggers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +}
+>>>>> +#endif /* CONFIG_IIO_BUFFER */
+>>>>> +
+>>>>> +#endif /* HTS221_H */
+>>>>> diff --git a/drivers/iio/humidity/hts221/hts221_buffer.c b/drivers/iio/humidity/hts221/hts221_buffer.c
+>>>>> new file mode 100644
+>>>>> index 0000000..31ac29c
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/hts221_buffer.c
+>>>>> @@ -0,0 +1,227 @@
+>>>>> +/*
+>>>>> + * STMicroelectronics hts221 sensor driver
+>>>>> + *
+>>>>> + * Copyright 2016 STMicroelectronics Inc.
+>>>>> + *
+>>>>> + * Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>>> + *
+>>>>> + * Licensed under the GPL-2.
+>>>>> + */
+>>>>> +#include <linux/kernel.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/device.h>
+>>>>> +#include <linux/interrupt.h>
+>>>>> +#include <linux/irqreturn.h>
+>>>>> +
+>>>>> +#include <linux/iio/iio.h>
+>>>>> +#include <linux/iio/trigger.h>
+>>>>> +#include <linux/interrupt.h>
+>>>>> +#include <linux/iio/events.h>
+>>>>> +#include <linux/iio/trigger_consumer.h>
+>>>>> +#include <linux/iio/triggered_buffer.h>
+>>>>> +#include <linux/iio/buffer.h>
+>>>>> +
+>>>>> +#include "hts221.h"
+>>>>> +
+>>>>> +#define REG_STATUS_ADDR            0x27
+>>>>> +
+>>>>> +int hts221_trig_set_state(struct iio_trigger *trig, bool state)
+>>>>> +{
+>>>>> +   struct iio_dev *indio_dev = iio_trigger_get_drvdata(trig);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   return hts221_config_drdy(sensor, state);
+>>>>> +}
+>>>>> +
+>>>>> +static const struct iio_trigger_ops hts221_trigger_ops = {
+>>>>> +   .owner = THIS_MODULE,
+>>>>> +   .set_trigger_state = hts221_trig_set_state,
+>>>>> +};
+>>>>> +
+>>>>> +static irqreturn_t hts221_trigger_handler_th(int irq, void *private)
+>>>>> +{
+>>>>> +   struct hts221_dev *dev = (struct hts221_dev *)private;
+>>>>> +
+>>>>> +   dev->hw_timestamp = iio_get_time_ns(dev->iio_devs[0]);
+>>>> Hmm. Might be on the wrong clock base for the particular device.
+>>>> You'll probably have to grab one for each of the IIO devices then
+>>>> use the right one later.
+>>>>> +
+>>>>> +   return IRQ_WAKE_THREAD;
+>>>>> +}
+>>>>> +
+>>>>> +static irqreturn_t hts221_trigger_handler_bh(int irq, void *private)
+>>>>> +{
+>>>>> +   u8 status;
+>>>>> +   int i, err;
+>>>>> +   struct hts221_sensor *sensor;
+>>>>> +   struct iio_chan_spec const *ch;
+>>>>> +   struct hts221_dev *dev = (struct hts221_dev *)private;
+>>>>> +
+>>>>> +   err = dev->tf->read(dev->dev, REG_STATUS_ADDR, 1, &status);
+>>>>> +   if (err < 0)
+>>>>> +           return IRQ_HANDLED;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +
+>>>>> +           if (status & sensor->drdy_data_mask) {
+>>>>> +                   ch = dev->iio_devs[i]->channels;
+>>>>> +                   err = dev->tf->read(dev->dev, ch[0].address, 2,
+>>>>> +                                       sensor->buffer);
+>>>>> +                   if (err < 0)
+>>>>> +                           continue;
+>>>>> +
+>>>>> +                   iio_trigger_poll_chained(sensor->trig);
+>>>>> +           }
+>>>>> +   }
+>>>>> +
+>>>>> +   return IRQ_HANDLED;
+>>>> Shouldn't return IRQ handled if it wasn't us... i.e. no bits are set.
+>>>> Someone may want to support shared irqs in the future.
+>>>>> +}
+>>>>> +
+>>>>> +int hts221_allocate_triggers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   int i, err, count = 0;
+>>>>> +   unsigned long irq_type;
+>>>>> +   struct hts221_sensor *sensor;
+>>>>> +
+>>>>> +   irq_type = irqd_get_trigger_type(irq_get_irq_data(dev->irq));
+>>>>> +
+>>>>> +   switch (irq_type) {
+>>>>> +   case IRQF_TRIGGER_HIGH:
+>>>>> +   case IRQF_TRIGGER_RISING:
+>>>>> +           break;
+>>>>> +   default:
+>>>>> +           dev_info(dev->dev,
+>>>>> +                    "mode %lx unsupported, use IRQF_TRIGGER_RISING\n",
+>>>> using (use would tell them to change it, not that the driver is going to
+>>>> do it on it's own).
+>>>>> +                    irq_type);
+>>>>> +           irq_type = IRQF_TRIGGER_RISING;
+>>>>> +           break;
+>>>>> +   }
+>>>>> +
+>>>>> +   err = devm_request_threaded_irq(dev->dev, dev->irq,
+>>>>> +                                   hts221_trigger_handler_th,
+>>>>> +                                   hts221_trigger_handler_bh,
+>>>>> +                                   irq_type | IRQF_ONESHOT,
+>>>>> +                                   dev->name, dev);
+>>>>> +   if (err) {
+>>>>> +           dev_err(dev->dev, "failed to request trigger irq %d\n",
+>>>>> +                   dev->irq);
+>>>>> +           return err;
+>>>>> +   }
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +           sensor->trig = iio_trigger_alloc("%s-trigger",
+>>>>> +                                            dev->iio_devs[i]->name);
+>>>>> +           if (!sensor->trig) {
+>>>>> +                   err = -ENOMEM;
+>>>>> +                   goto iio_trigger_error;
+>>>>> +           }
+>>>>> +
+>>>>> +           iio_trigger_set_drvdata(sensor->trig, dev->iio_devs[i]);
+>>>>> +           sensor->trig->ops = &hts221_trigger_ops;
+>>>>> +           sensor->trig->dev.parent = dev->dev;
+>>>>> +
+>>>>> +           err = iio_trigger_register(sensor->trig);
+>>>>> +           if (err < 0) {
+>>>>> +                   dev_err(dev->dev, "failed to register iio trigger\n");
+>>>>> +                   goto iio_trigger_error;
+>>>>> +           }
+>>>>> +           dev->iio_devs[i]->trig = iio_trigger_get(sensor->trig);
+>>>>> +           count++;
+>>>>> +   }
+>>>>> +
+>>>>> +   return 0;
+>>>>> +
+>>>>> +iio_trigger_error:
+>>>>> +   for (i = count - 1; i >= 0; i--) {
+>>>>> +           sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +           iio_trigger_unregister(sensor->trig);
+>>>>> +   }
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +           iio_trigger_free(sensor->trig);
+>>>>> +   }
+>>>>> +
+>>>>> +   return err;
+>>>>> +}
+>>>>> +
+>>>>> +void hts221_deallocate_triggers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +   struct hts221_sensor *sensor;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +           iio_trigger_unregister(sensor->trig);
+>>>>> +           iio_trigger_free(sensor->trig);
+>>>>> +   }
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_buffer_preenable(struct iio_dev *indio_dev)
+>>>>> +{
+>>>>> +   return hts221_sensor_power_on(iio_priv(indio_dev));
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_buffer_postdisable(struct iio_dev *indio_dev)
+>>>>> +{
+>>>>> +   return hts221_sensor_power_off(iio_priv(indio_dev));
+>>>>> +}
+>>>>> +
+>>>>> +static const struct iio_buffer_setup_ops hts221_buffer_ops = {
+>>>>> +   .preenable = hts221_buffer_preenable,
+>>>>> +   .postenable = iio_triggered_buffer_postenable,
+>>>>> +   .predisable = iio_triggered_buffer_predisable,
+>>>>> +   .postdisable = hts221_buffer_postdisable,
+>>>>> +};
+>>>>> +
+>>>>> +static irqreturn_t hts221_buffer_handler_bh(int irq, void *p)
+>>>>> +{
+>>>>> +   struct iio_poll_func *pf = p;
+>>>>> +   struct iio_dev *iio_dev = pf->indio_dev;
+>>>>> +   struct hts221_sensor *sensor = iio_priv(iio_dev);
+>>>>> +   u8 out_data[iio_dev->scan_bytes];
+>>>>> +
+>>>>> +   if (iio_dev->active_scan_mask &&
+>>>>> +       test_bit(0, iio_dev->active_scan_mask))
+>>>>> +           memcpy(out_data, sensor->buffer, 2);
+>>>>> +
+>>>>> +   iio_push_to_buffers_with_timestamp(iio_dev, out_data,
+>>>>> +                                      sensor->dev->hw_timestamp);
+>>>>> +
+>>>>> +   iio_trigger_notify_done(sensor->trig);
+>>>>> +
+>>>>> +   return IRQ_HANDLED;
+>>>>> +}
+>>>>> +
+>>>>> +int hts221_allocate_buffers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   int i, err, count = 0;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           err = iio_triggered_buffer_setup(dev->iio_devs[i], NULL,
+>>>>> +                                            hts221_buffer_handler_bh,
+>>>>> +                                            &hts221_buffer_ops);
+>>>>> +           if (err < 0)
+>>>>> +                   goto iio_buffer_error;
+>>>>> +           count++;
+>>>>> +   }
+>>>>> +
+>>>>> +   return 0;
+>>>>> +
+>>>>> +iio_buffer_error:
+>>>>> +   for (i = count - 1; i >= 0; i--)
+>>>>> +           iio_triggered_buffer_cleanup(dev->iio_devs[i]);
+>>>>> +
+>>>>> +   return err;
+>>>>> +}
+>>>>> +
+>>>>> +void hts221_deallocate_buffers(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++)
+>>>>> +           iio_triggered_buffer_cleanup(dev->iio_devs[i]);
+>>>>> +}
+>>>>> +
+>>>>> +MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
+>>>>> +MODULE_DESCRIPTION("STMicroelectronics hts221 buffer driver");
+>>>>> +MODULE_LICENSE("GPL v2");
+>>>>> diff --git a/drivers/iio/humidity/hts221/hts221_core.c b/drivers/iio/humidity/hts221/hts221_core.c
+>>>>> new file mode 100644
+>>>>> index 0000000..0beac47
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/hts221_core.c
+>>>>> @@ -0,0 +1,804 @@
+>>>>> +/*
+>>>>> + * STMicroelectronics hts221 sensor driver
+>>>>> + *
+>>>>> + * Copyright 2016 STMicroelectronics Inc.
+>>>>> + *
+>>>>> + * Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>>> + *
+>>>>> + * Licensed under the GPL-2.
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/kernel.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/device.h>
+>>>>> +#include <linux/iio/sysfs.h>
+>>>>> +#include <linux/delay.h>
+>>>>> +#include <asm/unaligned.h>
+>>>>> +
+>>>>> +#include "hts221.h"
+>>>>> +
+>>>>> +#define REG_WHOAMI_ADDR            0x0f
+>>>>> +#define REG_WHOAMI_VAL             0xbc
+>>>>> +
+>>>>> +#define REG_CNTRL1_ADDR            0x20
+>>>>> +#define REG_CNTRL2_ADDR            0x21
+>>>>> +#define REG_CNTRL3_ADDR            0x22
+>>>>> +
+>>>>> +#define REG_H_AVG_ADDR             0x10
+>>>>> +#define REG_T_AVG_ADDR             0x10
+>>>>> +#define REG_H_OUT_L                0x28
+>>>>> +#define REG_T_OUT_L                0x2a
+>>>>> +
+>>>>> +#define H_AVG_MASK         0x07
+>>>>> +#define T_AVG_MASK         0x38
+>>>>> +
+>>>>> +#define ODR_MASK           0x87
+>>>>> +#define BDU_MASK           0x04
+>>>>> +
+>>>>> +#define DRDY_MASK          0x04
+>>>>> +
+>>>>> +#define ENABLE_SENSOR              0x80
+>>>>> +
+>>>> A more unique prefix for all defines will make future clashes far less likely.
+>>>> so HTS221_H_AVG_4 etc
+>>>>> +#define H_AVG_4                    0x00 /* 0.4 %RH */
+>>>>> +#define H_AVG_8                    0x01 /* 0.3 %RH */
+>>>>> +#define H_AVG_16           0x02 /* 0.2 %RH */
+>>>>> +#define H_AVG_32           0x03 /* 0.15 %RH */
+>>>>> +#define H_AVG_64           0x04 /* 0.1 %RH */
+>>>>> +#define H_AVG_128          0x05 /* 0.07 %RH */
+>>>>> +#define H_AVG_256          0x06 /* 0.05 %RH */
+>>>>> +#define H_AVG_512          0x07 /* 0.03 %RH */
+>>>>> +
+>>>>> +#define T_AVG_2                    0x00 /* 0.08 degC */
+>>>>> +#define T_AVG_4                    0x08 /* 0.05 degC */
+>>>>> +#define T_AVG_8                    0x10 /* 0.04 degC */
+>>>>> +#define T_AVG_16           0x18 /* 0.03 degC */
+>>>>> +#define T_AVG_32           0x20 /* 0.02 degC */
+>>>>> +#define T_AVG_64           0x28 /* 0.015 degC */
+>>>>> +#define T_AVG_128          0x30 /* 0.01 degC */
+>>>>> +#define T_AVG_256          0x38 /* 0.007 degC */
+>>>>> +
+>>>>> +/* caldata registers */
+>>>>> +#define REG_0RH_CAL_X_H            0x36
+>>>>> +#define REG_1RH_CAL_X_H            0x3a
+>>>>> +#define REG_0RH_CAL_Y_H            0x30
+>>>>> +#define REG_1RH_CAL_Y_H            0x31
+>>>>> +#define REG_0T_CAL_X_L             0x3c
+>>>>> +#define REG_1T_CAL_X_L             0x3e
+>>>>> +#define REG_0T_CAL_Y_H             0x32
+>>>>> +#define REG_1T_CAL_Y_H             0x33
+>>>>> +#define REG_T1_T0_CAL_Y_H  0x35
+>>>>> +
+>>>>> +struct hts221_odr {
+>>>>> +   u32 hz;
+>>>>> +   u8 val;
+>>>>> +};
+>>>>> +
+>>>>> +struct hts221_avg {
+>>>>> +   u8 addr;
+>>>>> +   u8 mask;
+>>>>> +   struct hts221_avg_avl avg_avl[HTS221_AVG_DEPTH];
+>>>>> +};
+>>>>> +
+>>>>> +static const struct hts221_odr hts221_odr_table[] = {
+>>>>> +   { 1, 0x01 },    /* 1Hz */
+>>>>> +   { 7, 0x02 },    /* 7Hz */
+>>>>> +   { 13, 0x03 },   /* 12.5 HZ */
+>>>>> +};
+>>>>> +
+>>>>> +static const struct hts221_avg hts221_avg_list[] = {
+>>>>> +   {
+>>>>> +           .addr = REG_H_AVG_ADDR,
+>>>>> +           .mask = H_AVG_MASK,
+>>>>> +           .avg_avl = {
+>>>>> +                   { 4, H_AVG_4 },
+>>>>> +                   { 8, H_AVG_8 },
+>>>>> +                   { 16, H_AVG_16 },
+>>>>> +                   { 32, H_AVG_32 },
+>>>>> +                   { 64, H_AVG_64 },
+>>>>> +                   { 128, H_AVG_128 },
+>>>>> +                   { 256, H_AVG_256 },
+>>>>> +                   { 512, H_AVG_512 },
+>>>>> +           },
+>>>>> +   },
+>>>>> +   {
+>>>>> +           .addr = REG_T_AVG_ADDR,
+>>>>> +           .mask = T_AVG_MASK,
+>>>>> +           .avg_avl = {
+>>>>> +                   { 2, T_AVG_2 },
+>>>>> +                   { 4, T_AVG_4 },
+>>>>> +                   { 8, T_AVG_8 },
+>>>>> +                   { 16, T_AVG_16 },
+>>>>> +                   { 32, T_AVG_32 },
+>>>>> +                   { 64, T_AVG_64 },
+>>>>> +                   { 128, T_AVG_128 },
+>>>>> +                   { 256, T_AVG_256 },
+>>>>> +           },
+>>>>> +   },
+>>>>> +};
+>>>>> +
+>>>>> +static const struct iio_chan_spec hts221_h_channels[] = {
+>>>>> +   {
+>>>>> +           .type = IIO_HUMIDITYRELATIVE,
+>>>>> +           .address = REG_H_OUT_L,
+>>>>> +           .modified = 0,
+>>>>> +           .channel2 = IIO_NO_MOD,
+>>>>> +           .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>>>> +                                 BIT(IIO_CHAN_INFO_OFFSET) |
+>>>>> +                                 BIT(IIO_CHAN_INFO_SCALE),
+>>>>> +           .scan_index = 0,
+>>>>> +           .scan_type = {
+>>>>> +                   .sign = 's',
+>>>>> +                   .realbits = 16,
+>>>>> +                   .storagebits = 16,
+>>>>> +                   .endianness = IIO_LE,
+>>>>> +           },
+>>>>> +   },
+>>>>> +   IIO_CHAN_SOFT_TIMESTAMP(1),
+>>>>> +};
+>>>>> +
+>>>>> +static const struct iio_chan_spec hts221_t_channels[] = {
+>>>>> +   {
+>>>>> +           .type = IIO_TEMP,
+>>>>> +           .address = REG_T_OUT_L,
+>>>> No need to specify modified or channel2 as they will be allocated to 0 anyway
+>>>> and there is no semantic meaning in setting them again (unlike scan_index where
+>>>> there is)
+>>>>> +           .modified = 0,
+>>>>> +           .channel2 = IIO_NO_MOD,
+>>>>> +           .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>>>> +                                 BIT(IIO_CHAN_INFO_OFFSET) |
+>>>>> +                                 BIT(IIO_CHAN_INFO_SCALE),
+>>>>> +           .scan_index = 0,
+>>>>> +           .scan_type = {
+>>>>> +                   .sign = 's',
+>>>>> +                   .realbits = 16,
+>>>>> +                   .storagebits = 16,
+>>>>> +                   .endianness = IIO_LE,
+>>>>> +           },
+>>>>> +   },
+>>>>> +   IIO_CHAN_SOFT_TIMESTAMP(1),
+>>>>> +};
+>>>>> +
+>>>>> +static int hts221_write_with_mask(struct hts221_dev *dev, u8 addr, u8 mask,
+>>>>> +                             u8 val)
+>>>>> +{
+>>>>> +   u8 data;
+>>>>> +   int err;
+>>>>> +
+>>>>> +   mutex_lock(&dev->lock);
+>>>>> +
+>>>>> +   err = dev->tf->read(dev->dev, addr, 1, &data);
+>>>>> +   if (err < 0) {
+>>>>> +           dev_err(dev->dev, "failed to read %02x register\n", addr);
+>>>>> +           mutex_unlock(&dev->lock);
+>>>>> +
+>>>>> +           return err;
+>>>>> +   }
+>>>>> +
+>>>>> +   data = (data & ~mask) | (val & mask);
+>>>>> +
+>>>>> +   err = dev->tf->write(dev->dev, addr, 1, &data);
+>>>>> +   if (err < 0) {
+>>>>> +           dev_err(dev->dev, "failed to write %02x register\n", addr);
+>>>>> +           mutex_unlock(&dev->lock);
+>>>>> +
+>>>>> +           return err;
+>>>>> +   }
+>>>>> +
+>>>>> +   mutex_unlock(&dev->lock);
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_check_whoami(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   u8 data;
+>>>>> +   int err;
+>>>>> +
+>>>>> +   err = dev->tf->read(dev->dev, REG_WHOAMI_ADDR, 1, &data);
+>>>>> +   if (err < 0) {
+>>>>> +           dev_err(dev->dev, "failed to read whoami register\n");
+>>>>> +           return err;
+>>>>> +   }
+>>>>> +
+>>>>> +   if (data != REG_WHOAMI_VAL) {
+>>>>> +           dev_err(dev->dev, "wrong whoami {%02x-%02x}\n",
+>>>>> +                   data, REG_WHOAMI_VAL);
+>>>>> +           return -ENODEV;
+>>>>> +   }
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +int hts221_config_drdy(struct hts221_sensor *sensor, bool enable)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +   struct hts221_sensor *cur_sensor;
+>>>>> +   struct hts221_dev *dev = sensor->dev;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           cur_sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +
+>>>>> +           if (cur_sensor == sensor)
+>>>>> +                   continue;
+>>>>> +
+>>>>> +           if (!cur_sensor->enabled)
+>>>>> +                   break;
+>>>>> +   }
+>>>>> +
+>>>>> +   if (i < HTS221_SENSOR_MAX) {
+>>>>> +           u8 val = (enable) ? 0x04 : 0;
+>>>>> +
+>>>>> +           return hts221_write_with_mask(dev, REG_CNTRL3_ADDR,
+>>>>> +                                         DRDY_MASK, val);
+>>>>> +   } else {
+>>>>> +           return 0;
+>>>>> +   }
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_update_odr(struct hts221_dev *dev, u8 odr)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +
+>>>>> +   for (i = 0; i < ARRAY_SIZE(hts221_odr_table); i++)
+>>>>> +           if (hts221_odr_table[i].hz == odr)
+>>>>> +                   break;
+>>>>> +
+>>>>> +   if (i == ARRAY_SIZE(hts221_odr_table))
+>>>>> +           return -EINVAL;
+>>>>> +
+>>>>> +   return hts221_write_with_mask(dev, REG_CNTRL1_ADDR, ODR_MASK,
+>>>>> +                                 ENABLE_SENSOR | BDU_MASK |
+>>>>> +                                 hts221_odr_table[i].val);
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_sensor_update_odr(struct hts221_sensor *sensor, u8 odr)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +   struct hts221_sensor *cur_sensor;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           cur_sensor = iio_priv(sensor->dev->iio_devs[i]);
+>>>>> +
+>>>>> +           if (cur_sensor == sensor)
+>>>>> +                   continue;
+>>>>> +
+>>>>> +           if (cur_sensor->enabled && cur_sensor->odr >= odr)
+>>>>> +                   return 0;
+>>>>> +   }
+>>>>> +
+>>>>> +   return hts221_update_odr(sensor->dev, odr);
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_update_avg(struct hts221_sensor *sensor, u16 val)
+>>>>> +{
+>>>>> +   int i, err;
+>>>>> +   const struct hts221_avg *avg = &hts221_avg_list[sensor->type];
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_AVG_DEPTH; i++)
+>>>>> +           if (avg->avg_avl[i].avg == val)
+>>>>> +                   break;
+>>>>> +
+>>>>> +   if (i == HTS221_AVG_DEPTH)
+>>>>> +           return -EINVAL;
+>>>>> +
+>>>>> +   err = hts221_write_with_mask(sensor->dev, avg->addr, avg->mask,
+>>>>> +                                avg->avg_avl[i].val);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   sensor->cur_avg_idx = i;
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t
+>>>>> +hts221_sysfs_get_h_avg_val(struct device *device,
+>>>>> +                      struct device_attribute *attr, char *buf)
+>>>>> +{
+>>>>> +   int idx, val;
+>>>>> +   struct iio_dev *indio_dev = dev_get_drvdata(device);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   idx = sensor->cur_avg_idx;
+>>>>> +   val = hts221_avg_list[HTS221_SENSOR_H].avg_avl[idx].avg;
+>>>>> +
+>>>>> +   return sprintf(buf, "%d\n", val);
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t
+>>>>> +hts221_sysfs_set_h_avg_val(struct device *device,
+>>>>> +                      struct device_attribute *attr,
+>>>>> +                      const char *buf, size_t size)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   unsigned int val;
+>>>>> +   struct iio_dev *indio_dev = dev_get_drvdata(device);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   err = kstrtoint(buf, 10, &val);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   err = hts221_update_avg(sensor, (u16)val);
+>>>>> +
+>>>>> +   return err < 0 ? err : size;
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t
+>>>>> +hts221_sysfs_get_t_avg_val(struct device *device,
+>>>>> +                      struct device_attribute *attr, char *buf)
+>>>>> +{
+>>>>> +   int idx, val;
+>>>>> +   struct iio_dev *indio_dev = dev_get_drvdata(device);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   idx = sensor->cur_avg_idx;
+>>>>> +   val = hts221_avg_list[HTS221_SENSOR_T].avg_avl[idx].avg;
+>>>>> +
+>>>>> +   return sprintf(buf, "%d\n", val);
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t
+>>>>> +hts221_sysfs_set_t_avg_val(struct device *device,
+>>>>> +                      struct device_attribute *attr,
+>>>>> +                      const char *buf, size_t size)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   unsigned int val;
+>>>>> +   struct iio_dev *indio_dev = dev_get_drvdata(device);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   err = kstrtoint(buf, 10, &val);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   err = hts221_update_avg(sensor, (u16)val);
+>>>>> +
+>>>>> +   return err < 0 ? err : size;
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t hts221_sysfs_sampling_freq(struct device *dev,
+>>>>> +                                     struct device_attribute *attr,
+>>>>> +                                     char *buf)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +   ssize_t len = 0;
+>>>>> +
+>>>>> +   for (i = 0; i < ARRAY_SIZE(hts221_odr_table); i++)
+>>>>> +           len += scnprintf(buf + len, PAGE_SIZE - len, "%d ",
+>>>>> +                            hts221_odr_table[i].hz);
+>>>>> +   buf[len - 1] = '\n';
+>>>>> +
+>>>>> +   return len;
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t
+>>>>> +hts221_sysfs_get_sampling_frequency(struct device *device,
+>>>>> +                               struct device_attribute *attr, char *buf)
+>>>>> +{
+>>>>> +   struct iio_dev *indio_dev = dev_get_drvdata(device);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   return sprintf(buf, "%d\n", sensor->odr);
+>>>>> +}
+>>>>> +
+>>>>> +static ssize_t
+>>>>> +hts221_sysfs_set_sampling_frequency(struct device *device,
+>>>>> +                               struct device_attribute *attr,
+>>>>> +                               const char *buf, size_t size)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   unsigned int odr;
+>>>>> +   struct iio_dev *indio_dev = dev_get_drvdata(device);
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +
+>>>>> +   err = kstrtoint(buf, 10, &odr);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   err = hts221_sensor_update_odr(sensor, odr);
+>>>>> +   if (!err)
+>>>>> +           sensor->odr = odr;
+>>>>> +
+>>>>> +   return err < 0 ? err : size;
+>>>>> +}
+>>>>> +
+>>>>> +int hts221_sensor_power_on(struct hts221_sensor *sensor)
+>>>>> +{
+>>>>> +   int err, idx, val;
+>>>>> +
+>>>>> +   idx = sensor->cur_avg_idx;
+>>>>> +   val = hts221_avg_list[sensor->type].avg_avl[idx].avg;
+>>>>> +   err = hts221_update_avg(sensor, val);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   err = hts221_sensor_update_odr(sensor, sensor->odr);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   sensor->enabled = true;
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_dev_power_off(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   u8 data[] = {0x00, 0x00};
+>>>>> +
+>>>>> +   return dev->tf->write(dev->dev, REG_CNTRL1_ADDR, 2, data);
+>>>>> +}
+>>>>> +
+>>>>> +int hts221_sensor_power_off(struct hts221_sensor *sensor)
+>>>>> +{
+>>>>> +   int i;
+>>>>> +   struct hts221_sensor *cur_sensor;
+>>>>> +   struct hts221_dev *dev = sensor->dev;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           cur_sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +           if (cur_sensor == sensor)
+>>>>> +                   continue;
+>>>>> +
+>>>>> +           if (cur_sensor->enabled)
+>>>>> +                   break;
+>>>>> +   }
+>>>>> +
+>>>>> +   if (i == HTS221_SENSOR_MAX)
+>>>>> +           hts221_dev_power_off(dev);
+>>>>> +
+>>>>> +   sensor->enabled = false;
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_parse_caldata(struct hts221_sensor *sensor)
+>>>>> +{
+>>>>> +   int err, *slope, *b_gen;
+>>>>> +   u8 addr_x0, addr_x1;
+>>>>> +   s16 cal_x0, cal_x1, cal_y0, cal_y1;
+>>>>> +   struct hts221_dev *dev = sensor->dev;
+>>>>> +
+>>>>> +   switch (sensor->type) {
+>>>>> +   case HTS221_SENSOR_H:
+>>>>> +           addr_x0 = REG_0RH_CAL_X_H;
+>>>>> +           addr_x1 = REG_1RH_CAL_X_H;
+>>>>> +
+>>>>> +           cal_y1 = 0;
+>>>>> +           cal_y0 = 0;
+>>>>> +           err = dev->tf->read(dev->dev, REG_0RH_CAL_Y_H, 1,
+>>>>> +                               (u8 *)&cal_y0);
+>>>>> +           if (err < 0)
+>>>>> +                   return err;
+>>>>> +
+>>>>> +           err = dev->tf->read(dev->dev, REG_1RH_CAL_Y_H, 1,
+>>>>> +                               (u8 *)&cal_y1);
+>>>>> +           if (err < 0)
+>>>>> +                   return err;
+>>>>> +           break;
+>>>>> +   case HTS221_SENSOR_T: {
+>>>>> +           u8 cal0, cal1;
+>>>>> +
+>>>>> +           addr_x0 = REG_0T_CAL_X_L;
+>>>>> +           addr_x1 = REG_1T_CAL_X_L;
+>>>>> +
+>>>>> +           err = dev->tf->read(dev->dev, REG_0T_CAL_Y_H, 1, &cal0);
+>>>>> +           if (err < 0)
+>>>>> +                   return err;
+>>>>> +
+>>>>> +           err = dev->tf->read(dev->dev, REG_T1_T0_CAL_Y_H, 1, &cal1);
+>>>>> +           if (err < 0)
+>>>>> +                   return err;
+>>>>> +           cal_y0 = (le16_to_cpu(cal1 & 0x3) << 8) | cal0;
+>>>>> +
+>>>>> +           err = dev->tf->read(dev->dev, REG_1T_CAL_Y_H, 1, &cal0);
+>>>>> +           if (err < 0)
+>>>>> +                   return err;
+>>>>> +
+>>>>> +           err = dev->tf->read(dev->dev, REG_T1_T0_CAL_Y_H, 1, &cal1);
+>>>>> +           if (err < 0)
+>>>>> +                   return err;
+>>>>> +           cal_y1 = (le16_to_cpu((cal1 & 0xc) >> 2) << 8) | cal0;
+>>>>> +           break;
+>>>>> +   }
+>>>>> +   default:
+>>>>> +           return -ENODEV;
+>>>>> +   }
+>>>>> +
+>>>>> +   err = dev->tf->read(dev->dev, addr_x0, 2, (u8 *)&cal_x0);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +   cal_x0 = le32_to_cpu(cal_x0);
+>>>>> +
+>>>>> +   err = dev->tf->read(dev->dev, addr_x1, 2, (u8 *)&cal_x1);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +   cal_x1 = le32_to_cpu(cal_x1);
+>>>>> +
+>>>>> +   slope = &sensor->slope;
+>>>>> +   b_gen = &sensor->b_gen;
+>>>>> +
+>>>>> +   *slope = ((cal_y1 - cal_y0) * 8000) / (cal_x1 - cal_x0);
+>>>>> +   *b_gen = (((s32)cal_x1 * cal_y0 - (s32)cal_x0 * cal_y1) * 1000) /
+>>>>> +            (cal_x1 - cal_x0);
+>>>>> +   *b_gen *= 8;
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_read_raw(struct iio_dev *indio_dev,
+>>>>> +                      struct iio_chan_spec const *ch,
+>>>>> +                      int *val, int *val2, long mask)
+>>>>> +{
+>>>>> +   int ret;
+>>>>> +   struct hts221_sensor *sensor = iio_priv(indio_dev);
+>>>>> +   struct hts221_dev *dev = sensor->dev;
+>>>>> +
+>>>>> +   switch (mask) {
+>>>>> +   case IIO_CHAN_INFO_RAW: {
+>>>>> +           u8 data[2];
+>>>>> +
+>>>>> +           mutex_lock(&indio_dev->mlock);
+>>>> Use the iio_claim_direct_mode functions rather than hand rolling it.
+>>>>
+>>>>> +           if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED) {
+>>>>> +                   mutex_unlock(&indio_dev->mlock);
+>>>>> +                   return -EBUSY;
+>>>>> +           }
+>>>>> +
+>>>> I'd roll this up into a separate function with the unlocking outside.
+>>>> Will lead to neater code.
+>>>>> +           ret = hts221_sensor_power_on(sensor);
+>>>>> +           if (ret < 0) {
+>>>>> +                   mutex_unlock(&indio_dev->mlock);
+>>>>> +                   return ret;
+>>>>> +           }
+>>>>> +
+>>>>> +           msleep(50);
+>>>>> +
+>>>>> +           ret = dev->tf->read(dev->dev, ch->address, 2, data);
+>>>>> +           if (ret < 0) {
+>>>>> +                   mutex_unlock(&indio_dev->mlock);
+>>>>> +                   return ret;
+>>>>> +           }
+>>>>> +
+>>>>> +           ret = hts221_sensor_power_off(sensor);
+>>>>> +           if (ret < 0) {
+>>>>> +                   mutex_unlock(&indio_dev->mlock);
+>>>>> +                   return ret;
+>>>>> +           }
+>>>>> +
+>>>>> +           *val = (s16)get_unaligned_le16(data);
+>>>>> +           ret = IIO_VAL_INT;
+>>>>> +           mutex_unlock(&indio_dev->mlock);
+>>>>> +
+>>>>> +           break;
+>>>>> +   }
+>>>>> +   case IIO_CHAN_INFO_SCALE: {
+>>>>> +           s64 tmp;
+>>>>> +           s32 rem, div, data = sensor->slope;
+>>>>> +
+>>>>> +           switch (ch->type) {
+>>>>> +           case IIO_HUMIDITYRELATIVE: {
+>>>>> +                   div = (1 << 4) * 1000;
+>>>>> +                   break;
+>>>>> +           }
+>>>>> +           case IIO_TEMP: {
+>>>>> +                   div = (1 << 6) * 1000;
+>>>>> +                   break;
+>>>>> +           }
+>>>>> +           default:
+>>>>> +                   return -EINVAL;
+>>>>> +           }
+>>>>> +
+>>>>> +           tmp = div_s64(data * 1000000000LL, div);
+>>>>> +           tmp = div_s64_rem(tmp, 1000000000LL, &rem);
+>>>>> +
+>>>>> +           *val = tmp;
+>>>>> +           *val2 = rem;
+>>>>> +           ret = IIO_VAL_INT_PLUS_NANO;
+>>>>> +           break;
+>>>>> +   }
+>>>>> +   case IIO_CHAN_INFO_OFFSET: {
+>>>>> +           s64 tmp;
+>>>>> +           s32 rem, div = sensor->slope, data = sensor->b_gen;
+>>>>> +
+>>>>> +           tmp = div_s64(data * 1000000000LL, div);
+>>>>> +           tmp = div_s64_rem(tmp, 1000000000LL, &rem);
+>>>>> +
+>>>>> +           *val = tmp;
+>>>>> +           *val2 = abs(rem);
+>>>>> +           ret = IIO_VAL_INT_PLUS_NANO;
+>>>>> +           break;
+>>>>> +   }
+>>>>> +   default:
+>>>>> +           ret = -EINVAL;
+>>>>> +           break;
+>>>>> +   }
+>>>>> +
+>>>>> +   return ret;
+>>>>> +}
+>>>>> +
+>>>>> +static IIO_CONST_ATTR(humidityrelative_avg_sample_available,
+>>>>> +                 "4 8 16 32 64 128 256 512");
+>>>>> +static IIO_DEVICE_ATTR(humidityrelative_avg_sample, S_IWUSR | S_IRUGO,
+>>>>> +                  hts221_sysfs_get_h_avg_val,
+>>>>> +                  hts221_sysfs_set_h_avg_val, 0);
+>>>>> +static IIO_CONST_ATTR(temp_avg_sample_available,
+>>>>> +                 "2 4 8 16 32 64 128 256");
+>>>>> +static IIO_DEVICE_ATTR(temp_avg_sample, S_IWUSR | S_IRUGO,
+>>>>> +                  hts221_sysfs_get_t_avg_val,
+>>>>> +                  hts221_sysfs_set_t_avg_val, 0);
+>>>>> +
+>>>>> +static IIO_DEV_ATTR_SAMP_FREQ_AVAIL(hts221_sysfs_sampling_freq);
+>>>>> +static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+>>>>> +                         hts221_sysfs_get_sampling_frequency,
+>>>>> +                         hts221_sysfs_set_sampling_frequency);
+>>>>> +
+>>>>> +static struct attribute *hts221_h_attributes[] = {
+>>>>> +   &iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>>>>> +   &iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>>> Please use the info_mask_shared_by_all element for sampling_frequency.
+>>>>
+>>>>> +   &iio_const_attr_humidityrelative_avg_sample_available.dev_attr.attr,
+>>>>> +   &iio_dev_attr_humidityrelative_avg_sample.dev_attr.attr,
+>>>> This is oversampling whatever they have decided to call it in the
+>>>> datasheet.  ABI for that is standard...  The sampling frequency and
+>>>> this will be annoying tied together but keeping to standard abi will
+>>>> make it worth the pain..  Usual trick is to cache the requested
+>>>> sampling frequency and go for the best match possible when the oversampling
+>>>> ratio is changed.
+>>>>
+>>>>> +   NULL,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct attribute_group hts221_h_attribute_group = {
+>>>>> +   .attrs = hts221_h_attributes,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct iio_info hts221_h_info = {
+>>>>> +   .driver_module = THIS_MODULE,
+>>>>> +   .attrs = &hts221_h_attribute_group,
+>>>>> +   .read_raw = &hts221_read_raw,
+>>>>> +};
+>>>>> +
+>>>>> +static struct attribute *hts221_t_attributes[] = {
+>>>>> +   &iio_dev_attr_sampling_frequency_available.dev_attr.attr,
+>>>>> +   &iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>>>> +   &iio_const_attr_temp_avg_sample_available.dev_attr.attr,
+>>>>> +   &iio_dev_attr_temp_avg_sample.dev_attr.attr,
+>>>>> +   NULL,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct attribute_group hts221_t_attribute_group = {
+>>>>> +   .attrs = hts221_t_attributes,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct iio_info hts221_t_info = {
+>>>>> +   .driver_module = THIS_MODULE,
+>>>>> +   .attrs = &hts221_t_attribute_group,
+>>>>> +   .read_raw = hts221_read_raw,
+>>>>> +};
+>>>>> +
+>>>>> +static struct iio_dev *hts221_alloc_iio_sensor(struct hts221_dev *dev,
+>>>>> +                                          enum hts221_sensor_type type)
+>>>>> +{
+>>>>> +   struct iio_dev *iio_dev;
+>>>>> +   struct hts221_sensor *sensor;
+>>>>> +
+>>>>> +   iio_dev = iio_device_alloc(sizeof(*sensor));
+>>>>> +   if (!iio_dev)
+>>>>> +           return NULL;
+>>>>> +
+>>>>> +   iio_dev->modes = INDIO_DIRECT_MODE;
+>>>>> +   iio_dev->dev.parent = dev->dev;
+>>>>> +
+>>>>> +   sensor = iio_priv(iio_dev);
+>>>>> +   sensor->type = type;
+>>>>> +   sensor->dev = dev;
+>>>>> +   sensor->odr = hts221_odr_table[0].hz;
+>>>>> +
+>>>>> +   switch (type) {
+>>>>> +   case HTS221_SENSOR_H:
+>>>>> +           iio_dev->channels = hts221_h_channels;
+>>>>> +           iio_dev->num_channels = ARRAY_SIZE(hts221_h_channels);
+>>>>> +           iio_dev->name = "hts221_rh";
+>>>>> +           iio_dev->info = &hts221_h_info;
+>>>>> +           sensor->drdy_data_mask = 0x02;
+>>>>> +           break;
+>>>>> +   case HTS221_SENSOR_T:
+>>>>> +           iio_dev->channels = hts221_t_channels;
+>>>>> +           iio_dev->num_channels = ARRAY_SIZE(hts221_t_channels);
+>>>>> +           iio_dev->name = "hts221_temp";
+>>>>> +           iio_dev->info = &hts221_t_info;
+>>>>> +           sensor->drdy_data_mask = 0x01;
+>>>>> +           break;
+>>>>> +   default:
+>>>>> +           iio_device_free(iio_dev);
+>>>>> +           return NULL;
+>>>>> +   }
+>>>>> +
+>>>>> +   return iio_dev;
+>>>>> +}
+>>>>> +
+>>>>> +int hts221_probe(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   int i, err, count = 0;
+>>>>> +   struct hts221_sensor *sensor;
+>>>>> +
+>>>>> +   mutex_init(&dev->lock);
+>>>>> +
+>>>>> +   err = hts221_check_whoami(dev);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   err = hts221_update_odr(dev, 1);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           dev->iio_devs[i] = hts221_alloc_iio_sensor(dev, i);
+>>>>> +           if (!dev->iio_devs[i]) {
+>>>>> +                   err = -ENOMEM;
+>>>>> +                   goto power_off;
+>>>>> +           }
+>>>>> +           sensor = iio_priv(dev->iio_devs[i]);
+>>>>> +
+>>>>> +           err = hts221_update_avg(sensor,
+>>>>> +                                   hts221_avg_list[i].avg_avl[3].avg);
+>>>>> +           if (err < 0)
+>>>>> +                   goto power_off;
+>>>>> +
+>>>>> +           err = hts221_parse_caldata(sensor);
+>>>>> +           if (err < 0)
+>>>>> +                   goto power_off;
+>>>>> +   }
+>>>>> +
+>>>>> +   err = hts221_dev_power_off(dev);
+>>>>> +   if (err < 0)
+>>>>> +           goto iio_device_free;
+>>>>> +
+>>>>> +   if (dev->irq > 0) {
+>>>>> +           err = hts221_allocate_buffers(dev);
+>>>>> +           if (err < 0)
+>>>>> +                   goto iio_device_free;
+>>>>> +
+>>>>> +           err = hts221_allocate_triggers(dev);
+>>>>> +           if (err) {
+>>>>> +                   hts221_deallocate_buffers(dev);
+>>>>> +                   goto iio_device_free;
+>>>>> +           }
+>>>>> +   }
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++) {
+>>>>> +           err = iio_device_register(dev->iio_devs[i]);
+>>>>> +           if (err < 0)
+>>>>> +                   goto iio_register_err;
+>>>>> +           count++;
+>>>>> +   }
+>>>>> +
+>>>>> +   return 0;
+>>>>> +
+>>>>> +iio_register_err:
+>>>>> +   for (i = count - 1; i >= 0; i--)
+>>>>> +           iio_device_unregister(dev->iio_devs[i]);
+>>>>> +power_off:
+>>>>> +   hts221_dev_power_off(dev);
+>>>>> +iio_device_free:
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++)
+>>>>> +           if (dev->iio_devs[i])
+>>>>> +                   iio_device_free(dev->iio_devs[i]);
+>>>>> +
+>>>>> +   return err;
+>>>>> +}
+>>>>> +EXPORT_SYMBOL(hts221_probe);
+>>>>> +
+>>>>> +int hts221_remove(struct hts221_dev *dev)
+>>>>> +{
+>>>>> +   int i, err;
+>>>>> +
+>>>>> +   err = hts221_dev_power_off(dev);
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++)
+>>>>> +           iio_device_unregister(dev->iio_devs[i]);
+>>>> Ideal would be for remove to precisely reverse the ordering
+>>>> of probe. That includes running these loops the other way around.
+>>>>> +
+>>>>> +   if (dev->irq > 0) {
+>>>>> +           hts221_deallocate_triggers(dev);
+>>>>> +           hts221_deallocate_buffers(dev);
+>>>>> +   }
+>>>>> +
+>>>>> +   for (i = 0; i < HTS221_SENSOR_MAX; i++)
+>>>>> +           iio_device_free(dev->iio_devs[i]);
+>>>> Nothing prevents you using devm_iio_device_alloc thus
+>>>> allowing you to drop the need to free here and in the error path
+>>>> above.
+>>>>
+>>>>> +
+>>>>> +   return err;
+>>>>> +}
+>>>>> +EXPORT_SYMBOL(hts221_remove);
+>>>>> +
+>>>>> +MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
+>>>>> +MODULE_DESCRIPTION("STMicroelectronics hts221 sensor driver");
+>>>>> +MODULE_LICENSE("GPL v2");
+>>>>> diff --git a/drivers/iio/humidity/hts221/hts221_i2c.c b/drivers/iio/humidity/hts221/hts221_i2c.c
+>>>>> new file mode 100644
+>>>>> index 0000000..c02c6d2
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/hts221_i2c.c
+>>>>> @@ -0,0 +1,135 @@
+>>>>> +/*
+>>>>> + * STMicroelectronics hts221 i2c driver
+>>>>> + *
+>>>>> + * Copyright 2016 STMicroelectronics Inc.
+>>>>> + *
+>>>>> + * Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>>> + *
+>>>>> + * Licensed under the GPL-2.
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/kernel.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/i2c.h>
+>>>>> +#include <linux/slab.h>
+>>>>> +#include "hts221.h"
+>>>>> +
+>>>>> +#define I2C_AUTO_INCREMENT 0x80
+>>>>> +
+>>>>> +static int hts221_i2c_read(struct device *dev, u8 addr, int len, u8 *data)
+>>>>> +{
+>>>>> +   struct i2c_msg msg[2];
+>>>>> +   struct i2c_client *client = to_i2c_client(dev);
+>>>>> +
+>>>>> +   if (len > 1)
+>>>>> +           addr |= I2C_AUTO_INCREMENT;
+>>>>> +
+>>>>> +   msg[0].addr = client->addr;
+>>>>> +   msg[0].flags = client->flags;
+>>>>> +   msg[0].len = 1;
+>>>>> +   msg[0].buf = &addr;
+>>>>> +
+>>>>> +   msg[1].addr = client->addr;
+>>>>> +   msg[1].flags = client->flags | I2C_M_RD;
+>>>>> +   msg[1].len = len;
+>>>>> +   msg[1].buf = data;
+>>>>> +
+>>>>> +   return i2c_transfer(client->adapter, msg, 2);
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_i2c_write(struct device *dev, u8 addr, int len, u8 *data)
+>>>>> +{
+>>>>> +   u8 send[len + 1];
+>>>>> +   struct i2c_msg msg;
+>>>>> +   struct i2c_client *client = to_i2c_client(dev);
+>>>>> +
+>>>>> +   if (len > 1)
+>>>>> +           addr |= I2C_AUTO_INCREMENT;
+>>>>> +
+>>>>> +   send[0] = addr;
+>>>>> +   memcpy(&send[1], data, len * sizeof(u8));
+>>>>> +
+>>>>> +   msg.addr = client->addr;
+>>>>> +   msg.flags = client->flags;
+>>>>> +   msg.len = len + 1;
+>>>>> +   msg.buf = send;
+>>>>> +
+>>>>> +   return i2c_transfer(client->adapter, &msg, 1);
+>>>>> +}
+>>>>> +
+>>>>> +static const struct hts221_transfer_function hts221_transfer_fn = {
+>>>>> +   .read = hts221_i2c_read,
+>>>>> +   .write = hts221_i2c_write,
+>>>>> +};
+>>>>> +
+>>>>> +static int hts221_i2c_probe(struct i2c_client *client,
+>>>>> +                       const struct i2c_device_id *id)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   struct hts221_dev *dev;
+>>>>> +
+>>>>> +   dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+>>>>> +   if (!dev)
+>>>>> +           return -ENOMEM;
+>>>>> +
+>>>>> +   i2c_set_clientdata(client, dev);
+>>>>> +   dev->name = client->name;
+>>>>> +   dev->dev = &client->dev;
+>>>>> +   dev->irq = client->irq;
+>>>>> +   dev->tf = &hts221_transfer_fn;
+>>>>> +
+>>>>> +   err = hts221_probe(dev);
+>>>>> +   if (err < 0) {
+>>>>> +           kfree(dev);
+>>>>> +           return err;
+>>>>> +   }
+>>>>> +
+>>>>> +   dev_info(&client->dev, "sensor probed\n");
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_i2c_remove(struct i2c_client *client)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   struct hts221_dev *dev = i2c_get_clientdata(client);
+>>>>> +
+>>>>> +   err = hts221_remove(dev);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   dev_info(&client->dev, "sensor removed\n");
+>>>> Again, too much info.
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +#ifdef CONFIG_OF
+>>>>> +static const struct of_device_id hts221_i2c_of_match[] = {
+>>>>> +   { .compatible = "st,hts221", },
+>>>>> +   {},
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(of, hts221_i2c_of_match);
+>>>>> +#endif /* CONFIG_OF */
+>>>>> +
+>>>>> +static const struct i2c_device_id hts221_i2c_id_table[] = {
+>>>>> +   { HTS221_DEV_NAME },
+>>>>> +   {},
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(i2c, hts221_i2c_id_table);
+>>>>> +
+>>>>> +static struct i2c_driver hts221_driver = {
+>>>>> +   .driver = {
+>>>>> +           .name = "hts221_i2c",
+>>>>> +#ifdef CONFIG_OF
+>>>>> +           .of_match_table = hts221_i2c_of_match,
+>>>>> +#endif /* CONFIG_OF */
+>>>> As with SPI, there are cleaner ways of doing this. Look at
+>>>> other drivers.
+>>>>> +   },
+>>>>> +   .probe = hts221_i2c_probe,
+>>>>> +   .remove = hts221_i2c_remove,
+>>>>> +   .id_table = hts221_i2c_id_table,
+>>>>> +};
+>>>>> +module_i2c_driver(hts221_driver);
+>>>>> +
+>>>>> +MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
+>>>>> +MODULE_DESCRIPTION("STMicroelectronics hts221 i2c driver");
+>>>>> +MODULE_LICENSE("GPL v2");
+>>>>> diff --git a/drivers/iio/humidity/hts221/hts221_spi.c b/drivers/iio/humidity/hts221/hts221_spi.c
+>>>>> new file mode 100644
+>>>>> index 0000000..10056c5
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/humidity/hts221/hts221_spi.c
+>>>>> @@ -0,0 +1,148 @@
+>>>>> +/*
+>>>>> + * STMicroelectronics hts221 spi driver
+>>>>> + *
+>>>>> + * Copyright 2016 STMicroelectronics Inc.
+>>>>> + *
+>>>>> + * Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>>> + *
+>>>>> + * Licensed under the GPL-2.
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/kernel.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/spi/spi.h>
+>>>>> +#include <linux/slab.h>
+>>>>> +#include "hts221.h"
+>>>>> +
+>>>>> +#define SENSORS_SPI_READ   0x80
+>>>>> +#define SPI_AUTO_INCREMENT 0x40
+>>>>> +
+>>>>> +static int hts221_spi_read(struct device *device, u8 addr, int len, u8 *data)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   struct spi_device *spi = to_spi_device(device);
+>>>>> +   struct hts221_dev *dev = spi_get_drvdata(spi);
+>>>>> +
+>>>>> +   struct spi_transfer xfers[] = {
+>>>>> +           {
+>>>>> +                   .tx_buf = dev->tb.tx_buf,
+>>>>> +                   .bits_per_word = 8,
+>>>>> +                   .len = 1,
+>>>>> +           },
+>>>>> +           {
+>>>>> +                   .rx_buf = dev->tb.rx_buf,
+>>>>> +                   .bits_per_word = 8,
+>>>>> +                   .len = len,
+>>>>> +           }
+>>>>> +   };
+>>>>> +
+>>>>> +   if (len > 1)
+>>>>> +           addr |= SPI_AUTO_INCREMENT;
+>>>>> +   dev->tb.tx_buf[0] = addr | SENSORS_SPI_READ;
+>>>>> +
+>>>>> +   err = spi_sync_transfer(spi, xfers,  ARRAY_SIZE(xfers));
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   memcpy(data, dev->tb.rx_buf, len * sizeof(u8));
+>>>>> +
+>>>>> +   return len;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_spi_write(struct device *device, u8 addr, int len, u8 *data)
+>>>>> +{
+>>>>> +   struct spi_device *spi = to_spi_device(device);
+>>>>> +   struct hts221_dev *dev = spi_get_drvdata(spi);
+>>>>> +
+>>>>> +   struct spi_transfer xfers = {
+>>>>> +           .tx_buf = dev->tb.tx_buf,
+>>>>> +           .bits_per_word = 8,
+>>>>> +           .len = len + 1,
+>>>>> +   };
+>>>>> +
+>>>>> +   if (len >= HTS221_TX_MAX_LENGTH)
+>>>>> +           return -ENOMEM;
+>>>>> +
+>>>>> +   if (len > 1)
+>>>>> +           addr |= SPI_AUTO_INCREMENT;
+>>>>> +   dev->tb.tx_buf[0] = addr;
+>>>>> +   memcpy(&dev->tb.tx_buf[1], data, len);
+>>>>> +
+>>>>> +   return spi_sync_transfer(spi, &xfers, 1);
+>>>>> +}
+>>>>> +
+>>>>> +static const struct hts221_transfer_function hts221_transfer_fn = {
+>>>>> +   .read = hts221_spi_read,
+>>>>> +   .write = hts221_spi_write,
+>>>>> +};
+>>>>> +
+>>>>> +static int hts221_spi_probe(struct spi_device *spi)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   struct hts221_dev *dev;
+>>>>> +
+>>>>> +   dev = kzalloc(sizeof(*dev), GFP_KERNEL);
+>>>>> +   if (!dev)
+>>>>> +           return -ENOMEM;
+>>>>> +
+>>>>> +   spi_set_drvdata(spi, dev);
+>>>>> +   dev->name = spi->modalias;
+>>>>> +   dev->dev = &spi->dev;
+>>>>> +   dev->irq = spi->irq;
+>>>>> +   dev->tf = &hts221_transfer_fn;
+>>>>> +
+>>>>> +   err = hts221_probe(dev);
+>>>>> +   if (err < 0) {
+>>>>> +           kfree(dev);
+>>>> Having dropped th dv_info, can use drop this return outside the brackets.
+>>>>> +           return err;
+>>>>> +   }
+>>>>> +
+>>>>> +   dev_info(&spi->dev, "sensor probed\n");
+>>>> No useful information that isn't available elsewhere, please drop this
+>>>> dev_info.
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int hts221_spi_remove(struct spi_device *spi)
+>>>>> +{
+>>>>> +   int err;
+>>>>> +   struct hts221_dev *dev = spi_get_drvdata(spi);
+>>>>> +
+>>>>> +   err = hts221_remove(dev);
+>>>>> +   if (err < 0)
+>>>>> +           return err;
+>>>>> +
+>>>>> +   dev_info(&spi->dev, "sensor removed\n");
+>>>> No useful information that can't be trivially obtained from sysfs, so drop
+>>>> this dev_info.
+>>>>> +
+>>>>> +   return 0;
+>>>>> +}
+>>>>> +
+>>>> Not worth the ifdefs to save a tiny amount of space here.
+>>>>> +#ifdef CONFIG_OF
+>>>>> +static const struct of_device_id hts221_spi_of_match[] = {
+>>>>> +   { .compatible = "st,hts221", },
+>>>>> +   {},
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(of, hts221_spi_of_match);
+>>>>> +#endif /* CONFIG_OF */
+>>>>> +
+>>>>> +static const struct spi_device_id hts221_spi_id_table[] = {
+>>>>> +   { HTS221_DEV_NAME },
+>>>>> +   {},
+>>>>> +};
+>>>>> +MODULE_DEVICE_TABLE(spi, hts221_spi_id_table);
+>>>>> +
+>>>>> +static struct spi_driver hts221_driver = {
+>>>>> +   .driver = {
+>>>>> +           .name = "hts221_spi",
+>>>>> +#ifdef CONFIG_OF
+>>>>> +           .of_match_table = hts221_spi_of_match,
+>>>>> +#endif /* CONFIG_OF */
+>>>> use the of_match_pointer macro that I think has the same effect
+>>>> and is cleaner.
+>>>>> +   },
+>>>>> +   .probe = hts221_spi_probe,
+>>>>> +   .remove = hts221_spi_remove,
+>>>>> +   .id_table = hts221_spi_id_table,
+>>>>> +};
+>>>>> +module_spi_driver(hts221_driver);
+>>>>> +
+>>>>> +MODULE_AUTHOR("Lorenzo Bianconi <lorenzo.bianconi@st.com>");
+>>>>> +MODULE_DESCRIPTION("STMicroelectronics hts221 spi driver");
+>>>>> +MODULE_LICENSE("GPL v2");
+>>>>>
+>>>>
+>>>
+>>
+> 
+> 
 > 
 
