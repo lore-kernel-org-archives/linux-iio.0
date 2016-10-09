@@ -1,263 +1,144 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39005 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39033 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753286AbcJIHi2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 03:38:28 -0400
-Subject: Re: [Outreachy kernel] [PATCH] staging: iio: meter: ade7754:
- Implement IIO_CHAN_INFO_SAMP_FREQ
-To: Alison Schofield <amsfield22@gmail.com>,
-        sayli karnik <karniksayli1995@gmail.com>
-References: <20161006160217.GA21538@sayli-HP-15-Notebook-PC>
- <20161007164606.GC2804@d830.WORKGROUP>
-Cc: outreachy-kernel@googlegroups.com,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, Barry Song <21cnbao@gmail.com>
+        with ESMTP id S1753286AbcJIHno (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 03:43:44 -0400
+Subject: Re: [Outreachy kernel] [PATCH] iio: imu: bmi160: bmi160_core: Fix
+ sparse warning
+To: sayli karnik <karniksayli1995@gmail.com>,
+        Alison Schofield <amsfield22@gmail.com>
+References: <20161001110418.GA25515@sayli-HP-15-Notebook-PC>
+ <20161002050032.GA14117@d830.WORKGROUP>
+ <e4800421-2dc9-2460-470b-a043d198f469@metafoo.de>
+ <20161002232524.GA2822@d830.WORKGROUP>
+ <CAKG5xWi6M5jemARfENuVgigaqUbvdJmeVbwpR3kWDM9d8LBW-w@mail.gmail.com>
+ <20161003171601.GC3132@d830.WORKGROUP>
+ <CAKG5xWj7RSTpeGcnJtA-2PJk5NVFO_2DV-Fgo938wAafvhS8PA@mail.gmail.com>
+ <20161004234757.GA5635@d830.WORKGROUP>
+ <CAKG5xWhxd0N6ogx2GvkET1TOhJFrrOmOMRLPtBp1L7FcTBhkPQ@mail.gmail.com>
+Cc: outreachy-kernel <outreachy-kernel@googlegroups.com>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <582be15b-63da-593d-fa97-29dbf19c5ab2@kernel.org>
-Date: Sun, 9 Oct 2016 08:36:50 +0100
+Message-ID: <89fc892c-d9ef-118f-4d9a-5f47e7ac914c@kernel.org>
+Date: Sun, 9 Oct 2016 08:43:41 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161007164606.GC2804@d830.WORKGROUP>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAKG5xWhxd0N6ogx2GvkET1TOhJFrrOmOMRLPtBp1L7FcTBhkPQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/10/16 17:46, Alison Schofield wrote:
-> On Thu, Oct 06, 2016 at 09:32:17PM +0530, sayli karnik wrote:
->> Attributes that were once privately defined become standard with time
->> and hence a special global define is used. Hence update driver ade7754 to use
->> IIO_CHAN_INFO_SAMP_FREQ which is a global define instead of
->> IIO_DEV_ATTR_SAMP_FREQ.
->> Move functionality from IIO_DEV_ATTR_SAMP_FREQ attribute into
->> IIO_CHAN_INFO_SAMP_FREQ to implement the sampling_frequency attribute.
->> Add ade7754_read_raw() and ade7754_write_raw() to allow reading and
->> writing the element as well.
->> Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
-> 
-> Hi Sayli,
-> 
-> This one looks similar to the ade7753 patch discussed on linux-iio
-> recently.  No channels defined hence no place to define the attribute.
-> http://marc.info/?l=linux-iio&m=147552631607342&w=2
-> 
-> alisons
-> 
-Hmm.. I wouldn't necessarily advise going anywhere near this driver
-without access to hardware.   Probably also wants someone with
-non trivial electrical experience (and a 3 phase power supply or
-perhaps a 3 phase motor inverter might do - or custom test bench)
-It should be possible to simulate it I suppose.
-
-The driver needs a complete rethink from the bottom up.
-
-Lars, are there any plans wrt to these power meter drivers?
-
-Jonathan  
-> 
->> ---
->>  drivers/staging/iio/meter/ade7754.c | 155 +++++++++++++++++++++---------------
->>  1 file changed, 89 insertions(+), 66 deletions(-)
+On 05/10/16 19:00, sayli karnik wrote:
+> On Wed, Oct 5, 2016 at 5:17 AM, Alison Schofield <amsfield22@gmail.com> wrote:
+>> On Wed, Oct 05, 2016 at 03:17:22AM +0530, sayli karnik wrote:
+>>> On Mon, Oct 3, 2016 at 10:46 PM, Alison Schofield <amsfield22@gmail.com> wrote:
+>>>> On Mon, Oct 03, 2016 at 07:07:39PM +0530, sayli karnik wrote:
+>>>>> On Mon, Oct 3, 2016 at 4:55 AM, Alison Schofield <amsfield22@gmail.com> wrote:
+>>>>>> On Sun, Oct 02, 2016 at 05:53:08PM +0200, Lars-Peter Clausen wrote:
+>>>>>>> On 10/02/2016 07:00 AM, Alison Schofield wrote:
+>>>>>>> [...]
+>>>>>>>>> ---
+>>>>>>>>>  drivers/iio/imu/bmi160/bmi160_core.c | 3 ++-
+>>>>>>>>>  1 file changed, 2 insertions(+), 1 deletion(-)
+>>>>>>>>>
+>>>>>>>>> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+>>>>>>>>> index e0251b8..5355507 100644
+>>>>>>>>> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+>>>>>>>>> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+>>>>>>>>> @@ -398,7 +398,8 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
+>>>>>>>>>    struct iio_poll_func *pf = p;
+>>>>>>>>>    struct iio_dev *indio_dev = pf->indio_dev;
+>>>>>>>>>    struct bmi160_data *data = iio_priv(indio_dev);
+>>>>>>>>> -  s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
+>>>>>>>>> +  __le16 buf[16];
+>>>>>>>>> +  /* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
+>>>>>>>>>    int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
+>>>>>>>>>    __le16 sample;
+>>>>>>>>
+>>>>>>>> Wondering about this option below.  Data was read into an __le16, so that
+>>>>>>>> was good diligence on drivers part.  Seems we can use le16_to_cpu() for the
+>>>>>>>> conversion into the buf.
+>>>>>>>>
+>>>>>>>> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+>>>>>>>> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+>>>>>>>> @@ -408,7 +408,7 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
+>>>>>>>>                                    &sample, sizeof(__le16));
+>>>>>>>>             if (ret < 0)
+>>>>>>>>                     goto done;
+>>>>>>>> -           buf[j++] = sample;
+>>>>>>>> +           buf[j++] = le16_to_cpu(sample);
+>>>>>>>>     }
+>>>>>>>
+>>>>>>> This conversion is usually skipped on purpose and delayed until it is
+>>>>>>> actually needed by the user. The IIO channel is accordingly marked that it
+>>>>>>> will produce LE data.
+>>>>>> Thanks Lars.  I knew that for buffers, overlooked it, now I'll know it
+>>>>>> better!
+>>>>>>
+>>>>>> So, Sayli, you probably got this from the analysis of the last patch.
+>>>>>> In buffered mode, we'll go ahead and return the data in it's 'native'
+>>>>>> order.  So, my suggestion to convert it here, is wrong.  Ignore ;)
+>>>>>>
+>>>>> Oh I see! So should I resend the patch with an updated
+>>>>> description?(cosmetic/bug fix)
+>>>>
+>>>> Yes.  In the commit message, you can leave out the subdirs (imu: bmc160:)
+>>>> so that you have more space for a descriptive message of the change.
+>>>
+>>> A quick question about this being a bug fix or not. This would have
+>>> worked fine on little endian systems. But wouldn't the byte order have
+>>> changed in case of a big endian buffer, when the little endian samples
+>>> are stored in it?
+>>> If not, then this will be a cosmetic patch.
+>>>
+>>> thanks,
+>>> sayli
 >>
->> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
->> index 1730959..8043539 100644
->> --- a/drivers/staging/iio/meter/ade7754.c
->> +++ b/drivers/staging/iio/meter/ade7754.c
->> @@ -395,81 +395,15 @@ err_ret:
->>  	return ret;
->>  }
->>  
->> -static ssize_t ade7754_read_frequency(struct device *dev,
->> -				      struct device_attribute *attr,
->> -				      char *buf)
->> -{
->> -	int ret;
->> -	u8 t;
->> -	int sps;
->> -
->> -	ret = ade7754_spi_read_reg_8(dev, ADE7754_WAVMODE, &t);
->> -	if (ret)
->> -		return ret;
->> -
->> -	t = (t >> 3) & 0x3;
->> -	sps = 26000 / (1 + t);
->> -
->> -	return sprintf(buf, "%d\n", sps);
->> -}
->> -
->> -static ssize_t ade7754_write_frequency(struct device *dev,
->> -				       struct device_attribute *attr,
->> -				       const char *buf,
->> -				       size_t len)
->> -{
->> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->> -	struct ade7754_state *st = iio_priv(indio_dev);
->> -	u16 val;
->> -	int ret;
->> -	u8 reg, t;
->> -
->> -	ret = kstrtou16(buf, 10, &val);
->> -	if (ret)
->> -		return ret;
->> -	if (!val)
->> -		return -EINVAL;
->> -
->> -	mutex_lock(&indio_dev->mlock);
->> -
->> -	t = 26000 / val;
->> -	if (t > 0)
->> -		t--;
->> -
->> -	if (t > 1)
->> -		st->us->max_speed_hz = ADE7754_SPI_SLOW;
->> -	else
->> -		st->us->max_speed_hz = ADE7754_SPI_FAST;
->> -
->> -	ret = ade7754_spi_read_reg_8(dev, ADE7754_WAVMODE, &reg);
->> -	if (ret)
->> -		goto out;
->> -
->> -	reg &= ~(3 << 3);
->> -	reg |= t << 3;
->> -
->> -	ret = ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
->> -
->> -out:
->> -	mutex_unlock(&indio_dev->mlock);
->> -
->> -	return ret ? ret : len;
->> -}
->>  static IIO_DEV_ATTR_TEMP_RAW(ade7754_read_8bit);
->>  static IIO_CONST_ATTR(in_temp_offset, "129 C");
->>  static IIO_CONST_ATTR(in_temp_scale, "4 C");
->> -
->> -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
->> -		ade7754_read_frequency,
->> -		ade7754_write_frequency);
->> -
->>  static IIO_CONST_ATTR_SAMP_FREQ_AVAIL("26000 13000 65000 33000");
->>  
->>  static struct attribute *ade7754_attributes[] = {
->>  	&iio_dev_attr_in_temp_raw.dev_attr.attr,
->>  	&iio_const_attr_in_temp_offset.dev_attr.attr,
->>  	&iio_const_attr_in_temp_scale.dev_attr.attr,
->> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
->>  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
->>  	&iio_dev_attr_aenergy.dev_attr.attr,
->>  	&iio_dev_attr_laenergy.dev_attr.attr,
->> @@ -505,6 +439,93 @@ static struct attribute *ade7754_attributes[] = {
->>  	NULL,
->>  };
->>  
->> +static int read_raw_samp_freq(struct device *dev, int *val)
->> +{
->> +	int ret;
->> +	u8 t;
->> +
->> +	ret = ade7754_spi_read_reg_8(dev, ADE7754_WAVMODE, &t);
->> +	if (ret)
->> +		return ret;
->> +
->> +	t = (t >> 3) & 0x3;
->> +	*val = 26000 / (1 + t);
->> +
->> +	return 0;
->> +}
->> +
->> +static int write_raw_samp_freq(struct device *dev, int val)
->> +{
->> +	struct ade7754_state *st = iio_priv(dev_to_iio_dev(dev));
->> +	int ret;
->> +	u8 reg, t;
->> +
->> +	if (!val)
->> +		return -EINVAL;
->> +
->> +	t = 26000 / val;
->> +	if (t > 0)
->> +		t--;
->> +
->> +	if (t > 1)
->> +		st->us->max_speed_hz = ADE7754_SPI_SLOW;
->> +	else
->> +		st->us->max_speed_hz = ADE7754_SPI_FAST;
->> +
->> +	ret = ade7754_spi_read_reg_8(dev, ADE7754_WAVMODE, &reg);
->> +	if (ret)
->> +		return ret;
->> +
->> +	reg &= ~(3 << 3);
->> +	reg |= t << 3;
->> +
->> +	ret = ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
->> +
->> +	return ret;
->> +}
->> +
->> +static int ade7754_read_raw(struct iio_dev *indio_dev,
->> +			    struct iio_chan_spec const *chan,
->> +			    int *val, int *val2, long mask)
->> +{
->> +	int ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		if (val2)
->> +			return -EINVAL;
->> +		mutex_lock(&indio_dev->mlock);
->> +		ret = read_raw_samp_freq(&indio_dev->dev, val);
->> +		mutex_unlock(&indio_dev->mlock);
->> +		return ret;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int ade7754_write_raw(struct iio_dev *indio_dev,
->> +			     struct iio_chan_spec const *chan,
->> +			     int val, int val2, long mask)
->> +{
->> +	int ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SAMP_FREQ:
->> +		if (val2)
->> +			return -EINVAL;
->> +		mutex_lock(&indio_dev->mlock);
->> +		ret = write_raw_samp_freq(&indio_dev->dev, val);
->> +		mutex_unlock(&indio_dev->mlock);
->> +		return ret;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->>  static const struct attribute_group ade7754_attribute_group = {
->>  	.attrs = ade7754_attributes,
->>  };
->> @@ -512,6 +533,8 @@ static const struct attribute_group ade7754_attribute_group = {
->>  static const struct iio_info ade7754_info = {
->>  	.attrs = &ade7754_attribute_group,
->>  	.driver_module = THIS_MODULE,
->> +	.read_raw = &ade7754_read_raw,
->> +	.write_raw = &ade7754_write_raw,
->>  };
->>  
->>  static int ade7754_probe(struct spi_device *spi)
->> -- 
->> 2.7.4
+>> Hi Sayli,
+>> Pulling linux-iio back in.  Once we've started group thread, we need to
+>> keep replying to 'all'.  It helps those invested in this particular
+>> patch, and also helps those who search in the future with similar
+>> issues.
 >>
->> -- 
->> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
->> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
->> To post to this group, send email to outreachy-kernel@googlegroups.com.
->> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20161006160217.GA21538%40sayli-HP-15-Notebook-PC.
->> For more options, visit https://groups.google.com/d/optout.
+>> To answer your question.  I say cosmetic, because the le16 is going
+>> into a 16bit buf element, and is labelled as IIO_LE in the channel
+>> buffer definition.  That's why Lars was saying we don't need to do
+>> any conversion. We'll pass the bits as they came in, and tell the
+>> readers of the buf that they are in little endian format.  (And, also
+>> note we weren't truncating any as was the case in your first endian fix.)
+>>
+> Noted!
+> 
+>> OK - having said that, I stare at this code more, and wonder why
+>> we are even bothering to label the sample as __le16, and whether
+>> we should just label it as s16.
+> 
+> Oh, in that case we could make both buf and sample s16.
+I actually fall just the other way.  They are little endian so we
+should mark them as such, whether or not we are going to do any
+conversions on them in kernel. It acts as a form of documentation
+and makes it a little more obvious what the code is doing.
+It gets vaguer with buffer as that is a mixed endian beast.
+If you really want that one right you could use a structure, but
+honestly it's not worth the hassle.
+
+> 
+>  Also, I'm wondering about the use
+>> of sizeof().  Shouldn't we be saying sizeof(sample) not sizeof(__le16)?
+>> It's not a checkpatch error, but I feel like I've seen coccichecks
+>> or coccinelle script patches repairing these misuses of sizeof
+>>
+> Yes sizeof(variable) instead of sizeof(type) makes code resistant to
+> future type changes.
+Absolutely (I missed that in the original reviews!)
+
+Jonathan
+> 
+>> See what you think, group reply with questions, and we'll get to the
+>> bottom of this one soon!
+>>
+>> Thanks,
+>> alisons
+>>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
