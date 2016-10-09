@@ -1,314 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39268 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39350 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753050AbcJIIav (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 04:30:51 -0400
-Subject: Re: [PATCH v3 2/4] drivers: iio: ti_am335x_adc: add dma support
-To: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org
-References: <20161005090443.24576-1-mugunthanvnm@ti.com>
- <20161005090443.24576-3-mugunthanvnm@ti.com>
-Cc: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
-        "Andrew F . Davis" <afd@ti.com>, linux-omap@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>,
-        John Syne <john3909@gmail.com>
+        with ESMTP id S1753183AbcJIInm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 04:43:42 -0400
+Subject: Re: [PATCH 1/4] staging: iio: isl29018: add documentation about the
+ infrared suppression
+To: Brian Masney <masneyb@onstation.org>
+References: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
+Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d0105217-a8ee-cd8e-221d-34c19257765e@kernel.org>
-Date: Sun, 9 Oct 2016 09:30:39 +0100
+Message-ID: <f6c89f7b-b048-a119-c3d2-080715bb271a@kernel.org>
+Date: Sun, 9 Oct 2016 09:43:30 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161005090443.24576-3-mugunthanvnm@ti.com>
+In-Reply-To: <1475801317-29449-1-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/10/16 10:04, Mugunthan V N wrote:
-> This patch adds the required pieces to ti_am335x_adc driver for
-> DMA support
+On 07/10/16 01:48, Brian Masney wrote:
+> Add documentation from the ISL29018 Data Sheet (FN6619.4, Oct 8, 2012)
+> about the infrared suppression that can be controlled
+> with the proximity_on_chip_ambient_infrared_suppression sysfs attribute.
 > 
-> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
-Hi,
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> ---
+>  drivers/staging/iio/light/isl29018.c | 18 ++++++++++++++++++
+>  1 file changed, 18 insertions(+)
+> 
+> diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+> index 51226bd..52bfb1cb 100644
+> --- a/drivers/staging/iio/light/isl29018.c
+> +++ b/drivers/staging/iio/light/isl29018.c
+> @@ -307,6 +307,24 @@ static ssize_t in_illuminance_integration_time_available_show
+>  	return len;
+>  }
+>  
+> +/*
+> + * From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
+> + * infrared suppression:
+> + *
+> + *   Proximity Sensing Scheme: Bit 7. This bit programs the function
+> + * of the proximity detection. Logic 0 of this bit, Scheme 0, makes
+> + * full n (4, 8, 12, 16) bits (unsigned) proximity detection. The range
+> + * of Scheme 0 proximity count is from 0 to 2^n. Logic 1 of this bit,
+> + * Scheme 1, makes n-1 (3, 7, 11, 15) bits (2's complementary)
+> + * proximity_less_ambient detection. The range of Scheme 1
+> + * proximity count is from -2^(n-1) to 2^(n-1) . The sign bit is extended
+> + * for resolutions less than 16. While Scheme 0 has wider dynamic
+> + * range, Scheme 1 proximity detection is less affected by the
+> + * ambient IR noise variation.
+> + *
+> + * 0 Sensing IR from LED and ambient
+> + * 1 Sensing IR from LED with ambient IR rejection
+> + */
+Hi Brian,
 
-Just the one question inline.  I'll also need an Ack from Lee as
-this touches code in mfd (as does the previous patch).
-We have obviously missed this merge window, so no particular rush.
-
-Otherwise, looking very nice indeed.  Got to get my BBB out and play
-with this now ;)
+This is good stuff, but the home of ABI docs (where it 'has' to be as
+opposed to here where it is nice to have) is
+Documentation/ABI/testing/sysfs-bus-iio-* (here isl29018 until we
+see if this becomes generic enough to promote to a more generic file)
 
 Jonathan
-> ---
->  drivers/iio/adc/ti_am335x_adc.c      | 148 ++++++++++++++++++++++++++++++++++-
->  include/linux/mfd/ti_am335x_tscadc.h |   7 ++
->  2 files changed, 152 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
-> index c3cfacca..ad9dec3 100644
-> --- a/drivers/iio/adc/ti_am335x_adc.c
-> +++ b/drivers/iio/adc/ti_am335x_adc.c
-> @@ -30,10 +30,28 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/kfifo_buf.h>
->  
-> +#include <linux/dmaengine.h>
-> +#include <linux/dma-mapping.h>
-> +
-> +#define DMA_BUFFER_SIZE		SZ_2K
-> +
-> +struct tiadc_dma {
-> +	struct dma_slave_config	conf;
-> +	struct dma_chan		*chan;
-> +	dma_addr_t		addr;
-> +	dma_cookie_t		cookie;
-> +	u8			*buf;
-> +	int			current_period;
-> +	int			period_size;
-> +	u8			fifo_thresh;
-> +};
-> +
->  struct tiadc_device {
->  	struct ti_tscadc_dev *mfd_tscadc;
-> +	struct tiadc_dma dma;
->  	struct mutex fifo1_lock; /* to protect fifo access */
->  	int channels;
-> +	int total_ch_enabled;
->  	u8 channel_line[8];
->  	u8 channel_step[8];
->  	int buffer_en_ch_steps;
-> @@ -198,6 +216,67 @@ static irqreturn_t tiadc_worker_h(int irq, void *private)
->  	return IRQ_HANDLED;
->  }
->  
-> +static void tiadc_dma_rx_complete(void *param)
-> +{
-> +	struct iio_dev *indio_dev = param;
-> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
-> +	u8 *data;
-> +	int i;
-> +
-> +	data = dma->buf + dma->current_period * dma->period_size;
-> +	dma->current_period = 1 - dma->current_period; /* swap the buffer ID */
-> +
-> +	for (i = 0; i < dma->period_size; i += indio_dev->scan_bytes) {
-> +		iio_push_to_buffers(indio_dev, data);
-> +		data += indio_dev->scan_bytes;
-> +	}
-Hmm. Another case for the mooted iio_push_to_buffers_multi. Guess
-we should move on with that one ;)
-> +}
-> +
-> +static int tiadc_start_dma(struct iio_dev *indio_dev)
-> +{
-> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
-> +	struct dma_async_tx_descriptor *desc;
-> +
-> +	dma->current_period = 0; /* We start to fill period 0 */
-> +	/*
-> +	 * Make the fifo thresh as the multiple of total number of
-> +	 * channels enabled, so make sure that cyclic DMA period
-> +	 * length is also a multiple of total number of channels
-> +	 * enabled. This ensures that no invalid data is reported
-> +	 * to the stack via iio_push_to_buffers().
-> +	 */
-> +	dma->fifo_thresh = rounddown(FIFO1_THRESHOLD + 1,
-> +				     adc_dev->total_ch_enabled) - 1;
-> +	/* Make sure that period length is multiple of fifo thresh level */
-> +	dma->period_size = rounddown(DMA_BUFFER_SIZE / 2,
-> +				    (dma->fifo_thresh + 1) * sizeof(u16));
-> +
-> +	dma->conf.src_maxburst = dma->fifo_thresh + 1;
-> +	dmaengine_slave_config(dma->chan, &dma->conf);
-> +
-> +	desc = dmaengine_prep_dma_cyclic(dma->chan, dma->addr,
-> +					 dma->period_size * 2,
-> +					 dma->period_size, DMA_DEV_TO_MEM,
-> +					 DMA_PREP_INTERRUPT);
-> +	if (!desc)
-> +		return -EBUSY;
-> +
-> +	desc->callback = tiadc_dma_rx_complete;
-> +	desc->callback_param = indio_dev;
-> +
-> +	dma->cookie = dmaengine_submit(desc);
-> +
-> +	dma_async_issue_pending(dma->chan);
-> +
-> +	tiadc_writel(adc_dev, REG_FIFO1THR, dma->fifo_thresh);
-> +	tiadc_writel(adc_dev, REG_DMA1REQ, dma->fifo_thresh);
-> +	tiadc_writel(adc_dev, REG_DMAENABLE_SET, DMA_FIFO1);
-> +
-> +	return 0;
-> +}
-> +
->  static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> @@ -218,20 +297,30 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
->  static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
-> +	unsigned int irq_enable;
->  	unsigned int enb = 0;
->  	u8 bit;
->  
->  	tiadc_step_config(indio_dev);
-> -	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels)
-> +	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels) {
->  		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
-> +		adc_dev->total_ch_enabled++;
-> +	}
->  	adc_dev->buffer_en_ch_steps = enb;
->  
-> +	if (dma->chan)
-> +		tiadc_start_dma(indio_dev);
-> +
->  	am335x_tsc_se_set_cache(adc_dev->mfd_tscadc, enb);
->  
->  	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
->  				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
-> -	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
-> -				| IRQENB_FIFO1OVRRUN);
-> +
-> +	irq_enable = IRQENB_FIFO1OVRRUN;
-> +	if (!dma->chan)
-> +		irq_enable |= IRQENB_FIFO1THRES;
-This changes the non dma behaviour as we no longer set IRQENB_FIFO1THRES.
-Why?  Was it wrong before?
-> +	tiadc_writel(adc_dev,  REG_IRQENABLE, irq_enable);
->  
->  	return 0;
->  }
-> @@ -239,12 +328,18 @@ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
->  static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
->  {
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
->  	int fifo1count, i, read;
->  
->  	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
->  				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
->  	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
->  	adc_dev->buffer_en_ch_steps = 0;
-> +	adc_dev->total_ch_enabled = 0;
-> +	if (dma->chan) {
-> +		tiadc_writel(adc_dev, REG_DMAENABLE_CLEAR, 0x2);
-> +		dmaengine_terminate_async(dma->chan);
-> +	}
->  
->  	/* Flush FIFO of leftover data in the time it takes to disable adc */
->  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
-> @@ -430,6 +525,41 @@ static const struct iio_info tiadc_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static int tiadc_request_dma(struct platform_device *pdev,
-> +			     struct tiadc_device *adc_dev)
-> +{
-> +	struct tiadc_dma	*dma = &adc_dev->dma;
-> +	dma_cap_mask_t		mask;
-> +
-> +	/* Default slave configuration parameters */
-> +	dma->conf.direction = DMA_DEV_TO_MEM;
-> +	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
-> +	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
-> +
-> +	dma_cap_zero(mask);
-> +	dma_cap_set(DMA_CYCLIC, mask);
-> +
-> +	/* Get a channel for RX */
-> +	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
-> +	if (IS_ERR(dma->chan)) {
-> +		int ret = PTR_ERR(dma->chan);
-> +
-> +		dma->chan = NULL;
-> +		return ret;
-> +	}
-> +
-> +	/* RX buffer */
-> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-> +				      &dma->addr, GFP_KERNEL);
-> +	if (!dma->buf)
-> +		goto err;
-> +
-> +	return 0;
-> +err:
-> +	dma_release_channel(dma->chan);
-> +	return -ENOMEM;
-> +}
-> +
->  static int tiadc_parse_dt(struct platform_device *pdev,
->  			  struct tiadc_device *adc_dev)
->  {
-> @@ -512,8 +642,14 @@ static int tiadc_probe(struct platform_device *pdev)
->  
->  	platform_set_drvdata(pdev, indio_dev);
->  
-> +	err = tiadc_request_dma(pdev, adc_dev);
-> +	if (err && err == -EPROBE_DEFER)
-> +		goto err_dma;
-> +
->  	return 0;
->  
-> +err_dma:
-> +	iio_device_unregister(indio_dev);
->  err_buffer_unregister:
->  	tiadc_iio_buffered_hardware_remove(indio_dev);
->  err_free_channels:
-> @@ -525,8 +661,14 @@ static int tiadc_remove(struct platform_device *pdev)
->  {
->  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
-> +	struct tiadc_dma *dma = &adc_dev->dma;
->  	u32 step_en;
->  
-> +	if (dma->chan) {
-> +		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
-> +				  dma->buf, dma->addr);
-> +		dma_release_channel(dma->chan);
-> +	}
->  	iio_device_unregister(indio_dev);
->  	tiadc_iio_buffered_hardware_remove(indio_dev);
->  	tiadc_channels_remove(indio_dev);
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> index e45a208..b9a53e0 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -23,6 +23,8 @@
->  #define REG_IRQENABLE		0x02C
->  #define REG_IRQCLR		0x030
->  #define REG_IRQWAKEUP		0x034
-> +#define REG_DMAENABLE_SET	0x038
-> +#define REG_DMAENABLE_CLEAR	0x03c
->  #define REG_CTRL		0x040
->  #define REG_ADCFSM		0x044
->  #define REG_CLKDIV		0x04C
-> @@ -36,6 +38,7 @@
->  #define REG_FIFO0THR		0xE8
->  #define REG_FIFO1CNT		0xF0
->  #define REG_FIFO1THR		0xF4
-> +#define REG_DMA1REQ		0xF8
->  #define REG_FIFO0		0x100
->  #define REG_FIFO1		0x200
->  
-> @@ -126,6 +129,10 @@
->  #define FIFOREAD_DATA_MASK (0xfff << 0)
->  #define FIFOREAD_CHNLID_MASK (0xf << 16)
->  
-> +/* DMA ENABLE/CLEAR Register */
-> +#define DMA_FIFO0		BIT(0)
-> +#define DMA_FIFO1		BIT(1)
-> +
->  /* Sequencer Status */
->  #define SEQ_STATUS BIT(5)
->  #define CHARGE_STEP		0x11
+>  static ssize_t proximity_on_chip_ambient_infrared_suppression_show
+>  			(struct device *dev, struct device_attribute *attr,
+>  			 char *buf)
 > 
 
