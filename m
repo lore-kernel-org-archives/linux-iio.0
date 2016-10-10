@@ -1,83 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48535 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48628 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751579AbcJJUeV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Oct 2016 16:34:21 -0400
-Subject: Re: [PATCH v2 3/8] staging: iio: isl29018: fix multiline comment
- syntax
+        with ESMTP id S1751498AbcJJUx1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 10 Oct 2016 16:53:27 -0400
+Subject: Re: [PATCH v2 4/8] staging: iio: isl29018: combine two return
+ statements into one
 To: Brian Masney <masneyb@onstation.org>
 References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
- <1476084002-29683-4-git-send-email-masneyb@onstation.org>
+ <1476084002-29683-5-git-send-email-masneyb@onstation.org>
 Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d77e6e1d-d31c-4af8-b586-f2feba8857dd@kernel.org>
-Date: Mon, 10 Oct 2016 21:34:19 +0100
+Message-ID: <a094e2a9-5462-d634-1a31-05360642e483@kernel.org>
+Date: Mon, 10 Oct 2016 21:53:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476084002-29683-4-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1476084002-29683-5-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 10/10/16 08:19, Brian Masney wrote:
-> Change multiline comments from:
-> 
-> /* line1
->  * line2
->  * ...
->  */
-> 
-> to
-> 
-> /*
->  * line1
->  * line2
->  * ...
->  */
+> Use the return value from isl29018_set_integration_time() as the return
+> value for isl29018_chip_init() since this is the last piece of work
+> inside that function.
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
-Applied to the togreg branch of iio.git and pushed out as testing.
+Applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
 > ---
->  drivers/staging/iio/light/isl29018.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
+>  drivers/staging/iio/light/isl29018.c | 6 ++----
+>  1 file changed, 2 insertions(+), 4 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-> index 130f222..132de8e 100644
+> index 132de8e..6b6c761 100644
 > --- a/drivers/staging/iio/light/isl29018.c
 > +++ b/drivers/staging/iio/light/isl29018.c
-> @@ -564,7 +564,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
->  			return status;
->  	}
+> @@ -616,12 +616,10 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
 >  
-> -	/* Code added per Intersil Application Note 1534:
-> +	/*
-> +	 * Code added per Intersil Application Note 1534:
->  	 *     When VDD sinks to approximately 1.8V or below, some of
->  	 * the part's registers may change their state. When VDD
->  	 * recovers to 2.25V (or greater), the part may thus be in an
-> @@ -591,7 +592,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
->  		return status;
->  	}
+>  	status = isl29018_set_integration_time(chip,
+>  			isl29018_int_utimes[chip->type][chip->int_time]);
+> -	if (status < 0) {
+> +	if (status < 0)
+>  		dev_err(dev, "Init of isl29018 fails\n");
+> -		return status;
+> -	}
 >  
-> -	/* See Intersil AN1534 comments above.
-> +	/*
-> +	 * See Intersil AN1534 comments above.
->  	 * "Operating Mode" (COMMAND1) register is reprogrammed when
->  	 * data is read from the device.
->  	 */
-> @@ -773,7 +775,8 @@ static int isl29018_suspend(struct device *dev)
+> -	return 0;
+> +	return status;
+>  }
 >  
->  	mutex_lock(&chip->lock);
->  
-> -	/* Since this driver uses only polling commands, we are by default in
-> +	/*
-> +	 * Since this driver uses only polling commands, we are by default in
->  	 * auto shutdown (ie, power-down) mode.
->  	 * So we do not have much to do here.
->  	 */
+>  static const struct iio_info isl29018_info = {
 > 
 
