@@ -4,47 +4,32 @@ To: jic23@kernel.org
 Cc: gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH v2 7/8] staging: iio: isl29018: add ABI documentation for infrared suppression
-Date: Mon, 10 Oct 2016 03:20:01 -0400
-Message-Id: <1476084002-29683-8-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 5/8] staging: iio: isl29018: remove blank line for consistency
+Date: Mon, 10 Oct 2016 03:19:59 -0400
+Message-Id: <1476084002-29683-6-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add ABI documentation from the ISL29018 Data Sheet (FN6619.4, Oct 8,
-2012) about the infrared suppression that can be controlled
-with the proximity_on_chip_ambient_infrared_suppression sysfs attribute.
+Remove blank line between MODULE_DEVICE_TABLE() and its corresponding
+structure for consistency with the other device table entries.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- .../ABI/testing/sysfs-bus-iio-light-isl29018          | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
+ drivers/staging/iio/light/isl29018.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018 b/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
-new file mode 100644
-index 0000000..f0ce0a0
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
-@@ -0,0 +1,19 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/proximity_on_chip_ambient_infrared_suppression
-+Date:		January 2011
-+KernelVersion:	2.6.37
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
-+		infrared suppression:
-+
-+		Scheme 0, makes full n (4, 8, 12, 16) bits (unsigned) proximity
-+		detection. The range of Scheme 0 proximity count is from 0 to
-+		2^n. Logic 1 of this bit, Scheme 1, makes n-1 (3, 7, 11, 15)
-+		bits (2's complementary) proximity_less_ambient detection. The
-+		range of Scheme 1 proximity count is from -2^(n-1) to 2^(n-1).
-+		The sign bit is extended for resolutions less than 16. While
-+		Scheme 0 has wider dynamic range, Scheme 1 proximity detection
-+		is less affected by the ambient IR noise variation.
-+
-+		0 Sensing IR from LED and ambient
-+		1 Sensing IR from LED with ambient IR rejection
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 6b6c761..917dd8b 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -821,7 +821,6 @@ static const struct i2c_device_id isl29018_id[] = {
+ 	{"isl29035", isl29035},
+ 	{}
+ };
+-
+ MODULE_DEVICE_TABLE(i2c, isl29018_id);
+ 
+ static const struct of_device_id isl29018_of_match[] = {
 -- 
 2.5.5
