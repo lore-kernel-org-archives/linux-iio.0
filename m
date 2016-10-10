@@ -4,72 +4,66 @@ To: jic23@kernel.org
 Cc: gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH v2 1/8] staging: iio: isl29018: add newlines to improve readability
-Date: Mon, 10 Oct 2016 03:19:55 -0400
-Message-Id: <1476084002-29683-2-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 3/8] staging: iio: isl29018: fix multiline comment syntax
+Date: Mon, 10 Oct 2016 03:19:57 -0400
+Message-Id: <1476084002-29683-4-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add newlines to improve code readability in preparation for moving the
-driver out of staging.
+Change multiline comments from:
+
+/* line1
+ * line2
+ * ...
+ */
+
+to
+
+/*
+ * line1
+ * line2
+ * ...
+ */
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/isl29018.c | 6 ++++++
- 1 file changed, 6 insertions(+)
+ drivers/staging/iio/light/isl29018.c | 9 ++++++---
+ 1 file changed, 6 insertions(+), 3 deletions(-)
 
 diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 52bfb1cb..26bbbb8 100644
+index 130f222..132de8e 100644
 --- a/drivers/staging/iio/light/isl29018.c
 +++ b/drivers/staging/iio/light/isl29018.c
-@@ -399,6 +399,7 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+@@ -564,7 +564,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
+ 			return status;
+ 	}
  
- write_done:
- 	mutex_unlock(&chip->lock);
-+
- 	return ret;
- }
+-	/* Code added per Intersil Application Note 1534:
++	/*
++	 * Code added per Intersil Application Note 1534:
+ 	 *     When VDD sinks to approximately 1.8V or below, some of
+ 	 * the part's registers may change their state. When VDD
+ 	 * recovers to 2.25V (or greater), the part may thus be in an
+@@ -591,7 +592,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
+ 		return status;
+ 	}
  
-@@ -464,6 +465,7 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
+-	/* See Intersil AN1534 comments above.
++	/*
++	 * See Intersil AN1534 comments above.
+ 	 * "Operating Mode" (COMMAND1) register is reprogrammed when
+ 	 * data is read from the device.
+ 	 */
+@@ -773,7 +775,8 @@ static int isl29018_suspend(struct device *dev)
  
- read_done:
- 	mutex_unlock(&chip->lock);
-+
- 	return ret;
- }
+ 	mutex_lock(&chip->lock);
  
-@@ -726,6 +728,7 @@ static int isl29018_probe(struct i2c_client *client,
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
- 	if (!indio_dev)
- 		return -ENOMEM;
-+
- 	chip = iio_priv(indio_dev);
- 
- 	i2c_set_clientdata(client, indio_dev);
-@@ -765,6 +768,7 @@ static int isl29018_probe(struct i2c_client *client,
- 	indio_dev->name = name;
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
-+
- 	return devm_iio_device_register(&client->dev, indio_dev);
- }
- 
-@@ -782,6 +786,7 @@ static int isl29018_suspend(struct device *dev)
- 	chip->suspended = true;
- 
- 	mutex_unlock(&chip->lock);
-+
- 	return 0;
- }
- 
-@@ -797,6 +802,7 @@ static int isl29018_resume(struct device *dev)
- 		chip->suspended = false;
- 
- 	mutex_unlock(&chip->lock);
-+
- 	return err;
- }
- 
+-	/* Since this driver uses only polling commands, we are by default in
++	/*
++	 * Since this driver uses only polling commands, we are by default in
+ 	 * auto shutdown (ie, power-down) mode.
+ 	 * So we do not have much to do here.
+ 	 */
 -- 
 2.5.5
