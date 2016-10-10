@@ -4,66 +4,47 @@ To: jic23@kernel.org
 Cc: gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH v2 3/8] staging: iio: isl29018: fix multiline comment syntax
-Date: Mon, 10 Oct 2016 03:19:57 -0400
-Message-Id: <1476084002-29683-4-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 7/8] staging: iio: isl29018: add ABI documentation for infrared suppression
+Date: Mon, 10 Oct 2016 03:20:01 -0400
+Message-Id: <1476084002-29683-8-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-Change multiline comments from:
-
-/* line1
- * line2
- * ...
- */
-
-to
-
-/*
- * line1
- * line2
- * ...
- */
+Add ABI documentation from the ISL29018 Data Sheet (FN6619.4, Oct 8,
+2012) about the infrared suppression that can be controlled
+with the proximity_on_chip_ambient_infrared_suppression sysfs attribute.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/isl29018.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ .../ABI/testing/sysfs-bus-iio-light-isl29018          | 19 +++++++++++++++++++
+ 1 file changed, 19 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 130f222..132de8e 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -564,7 +564,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
- 			return status;
- 	}
- 
--	/* Code added per Intersil Application Note 1534:
-+	/*
-+	 * Code added per Intersil Application Note 1534:
- 	 *     When VDD sinks to approximately 1.8V or below, some of
- 	 * the part's registers may change their state. When VDD
- 	 * recovers to 2.25V (or greater), the part may thus be in an
-@@ -591,7 +592,8 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
- 		return status;
- 	}
- 
--	/* See Intersil AN1534 comments above.
-+	/*
-+	 * See Intersil AN1534 comments above.
- 	 * "Operating Mode" (COMMAND1) register is reprogrammed when
- 	 * data is read from the device.
- 	 */
-@@ -773,7 +775,8 @@ static int isl29018_suspend(struct device *dev)
- 
- 	mutex_lock(&chip->lock);
- 
--	/* Since this driver uses only polling commands, we are by default in
-+	/*
-+	 * Since this driver uses only polling commands, we are by default in
- 	 * auto shutdown (ie, power-down) mode.
- 	 * So we do not have much to do here.
- 	 */
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018 b/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
+new file mode 100644
+index 0000000..f0ce0a0
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
+@@ -0,0 +1,19 @@
++What:		/sys/bus/iio/devices/iio:deviceX/proximity_on_chip_ambient_infrared_suppression
++Date:		January 2011
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		From ISL29018 Data Sheet (FN6619.4, Oct 8, 2012) regarding the
++		infrared suppression:
++
++		Scheme 0, makes full n (4, 8, 12, 16) bits (unsigned) proximity
++		detection. The range of Scheme 0 proximity count is from 0 to
++		2^n. Logic 1 of this bit, Scheme 1, makes n-1 (3, 7, 11, 15)
++		bits (2's complementary) proximity_less_ambient detection. The
++		range of Scheme 1 proximity count is from -2^(n-1) to 2^(n-1).
++		The sign bit is extended for resolutions less than 16. While
++		Scheme 0 has wider dynamic range, Scheme 1 proximity detection
++		is less affected by the ambient IR noise variation.
++
++		0 Sensing IR from LED and ambient
++		1 Sensing IR from LED with ambient IR rejection
 -- 
 2.5.5
