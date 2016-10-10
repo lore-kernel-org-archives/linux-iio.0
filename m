@@ -1,63 +1,133 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <20161010011321.jh5yovnjo7b5fuxj@wfg-t540p.sh.intel.com>
-References: <20161005144650.50634-1-mika.westerberg@linux.intel.com> <9a919615-020e-e8e1-3e7e-fb5ab442a7f7@kernel.org> <20161010011321.jh5yovnjo7b5fuxj@wfg-t540p.sh.intel.com>
+Return-Path: <karniksayli1995@gmail.com>
+Date: Mon, 10 Oct 2016 11:50:48 +0530
+From: sayli karnik <karniksayli1995@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>, 21cnbao@gmail.com,
+	linux-iio@vger.kernel.org
+Subject: [PATCH v2] staging: iio: cdc: ad7152: Replace mlock with a local
+ mutex lock
+Message-ID: <20161010062048.GA14750@sayli-HP-15-Notebook-PC>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH] iio: adc: ti-adc081c: Select IIO_TRIGGERED_BUFFER to prevent build errors
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Mon, 10 Oct 2016 06:40:54 +0100
-To: Fengguang Wu <fengguang.wu@intel.com>,Jonathan Cameron <jic23@kernel.org>
-CC: Mika Westerberg <mika.westerberg@linux.intel.com>,Hartmut Knaack <knaack.h@gmx.de>,Lars-Peter Clausen <lars@metafoo.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,linux-iio@vger.kernel.org
-Message-ID: <CEEE5EC6-DBC3-4A6E-B047-2D9A76D25779@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
+mlock is intended to protect only switches between modes.
+Given this driver doesn't support more than one mode (sysfs polled reads
+only), replace mlock with a local mutex lock.
 
+Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
+---
+v2:
+Made changes on top of previous commit i.e, implement IIO_CHAN_INFO_SAMP_FREQ
 
-On 10 October 2016 02:13:21 BST, Fengguang Wu <fengguang.wu@intel.com> wrote:
->On Sun, Oct 09, 2016 at 08:47:11AM +0100, Jonathan Cameron wrote:
->>On 05/10/16 15:46, Mika Westerberg wrote:
->>> Commit 08e05d1fce5c ("ti-adc081c: Initial triggered buffer support")
->added
->>> triggered buffer support but that also requires
->CONFIG_IIO_TRIGGERED_BUFFER,
->>> otherwise we get errors from linker such as:
->>>
->>>   drivers/built-in.o: In function `adc081c_remove':
->>>   drivers/iio/adc/ti-adc081c.c:225: undefined reference to
->`iio_triggered_buffer_cleanup'
->>>
->>> Fix these by explicitly selecting both CONFIG_IIO_TRIGGERED_BUFFER
->and
->>> CONFIG_IIO_BUFFER in Kconfig for the driver.
->>>
->>> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
->>Applied to the fixes-togreg-post-rc1 branch of iio.git which I'll send
->>a pull request for once the merge window is closed. Strange this one
->>got through the autobuilders (less strange that it snuck past me
->>reviewing it ;(
->>
->>Fengguang, any thoughts?
->
->Sorry I find no log for that error and noticed 08e05d1fce5c is half
->year old which is not contained in any recent updated trees. Many
->things could have been changed/fixed during the time -- if you look at
->
->https://lists.01.org/pipermail/kbuild-all/2016-May/thread.html
->
->There are significant less error reports in May, which probably
->impacts late April as well -- at the time the commit is introduced.
->Then the problems are discovered and the report number is restored to
->over 1000 in June.
->
->Thanks,
->Fengguang
+ drivers/staging/iio/cdc/ad7152.c | 22 ++++++++++++----------
+ 1 file changed, 12 insertions(+), 10 deletions(-)
 
-Cool. I hadn't registered it was that old.  
-
-Thank
-
-Jonathan
-
+diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
+index b3cc629..24d355d 100644
+--- a/drivers/staging/iio/cdc/ad7152.c
++++ b/drivers/staging/iio/cdc/ad7152.c
+@@ -89,6 +89,7 @@ struct ad7152_chip_info {
+ 	 */
+ 	u8	filter_rate_setup;
+ 	u8	setup[2];
++	struct mutex state_lock;	/* protect hardware state */
+ };
+ 
+ static inline ssize_t ad7152_start_calib(struct device *dev,
+@@ -115,10 +116,10 @@ static inline ssize_t ad7152_start_calib(struct device *dev,
+ 	else
+ 		regval |= AD7152_CONF_CH2EN;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&chip->state_lock);
+ 	ret = i2c_smbus_write_byte_data(chip->client, AD7152_REG_CFG, regval);
+ 	if (ret < 0) {
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&chip->state_lock);
+ 		return ret;
+ 	}
+ 
+@@ -126,12 +127,12 @@ static inline ssize_t ad7152_start_calib(struct device *dev,
+ 		mdelay(20);
+ 		ret = i2c_smbus_read_byte_data(chip->client, AD7152_REG_CFG);
+ 		if (ret < 0) {
+-			mutex_unlock(&indio_dev->mlock);
++			mutex_unlock(&chip->state_lock);
+ 			return ret;
+ 		}
+ 	} while ((ret == regval) && timeout--);
+ 
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&chip->state_lock);
+ 	return len;
+ }
+ static ssize_t ad7152_start_offset_calib(struct device *dev,
+@@ -229,14 +230,14 @@ static int ad7152_write_raw_samp_freq(struct device *dev, int val)
+ 	if (i >= ARRAY_SIZE(ad7152_filter_rate_table))
+ 		i = ARRAY_SIZE(ad7152_filter_rate_table) - 1;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&chip->state_lock);
+ 	ret = i2c_smbus_write_byte_data(chip->client,
+ 					AD7152_REG_CFG2, AD7152_CFG2_OSR(i));
+ 	if (ret < 0)
+ 		return ret;
+ 
+ 	chip->filter_rate_setup = i;
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&chip->state_lock);
+ 
+ 	return ret;
+ }
+@@ -249,7 +250,7 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
+ 	struct ad7152_chip_info *chip = iio_priv(indio_dev);
+ 	int ret, i;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&chip->state_lock);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBSCALE:
+@@ -317,7 +318,7 @@ static int ad7152_write_raw(struct iio_dev *indio_dev,
+ 	}
+ 
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&chip->state_lock);
+ 	return ret;
+ }
+ static int ad7152_read_raw(struct iio_dev *indio_dev,
+@@ -329,7 +330,7 @@ static int ad7152_read_raw(struct iio_dev *indio_dev,
+ 	int ret;
+ 	u8 regval = 0;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&chip->state_lock);
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+@@ -417,7 +418,7 @@ static int ad7152_read_raw(struct iio_dev *indio_dev,
+ 		ret = -EINVAL;
+ 	}
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&chip->state_lock);
+ 	return ret;
+ }
+ 
+@@ -503,6 +504,7 @@ static int ad7152_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 
+ 	chip->client = client;
++	mutex_init(&chip->state_lock);
+ 
+ 	/* Establish that the iio_dev is a child of the i2c device */
+ 	indio_dev->name = id->name;
 -- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+2.7.4
