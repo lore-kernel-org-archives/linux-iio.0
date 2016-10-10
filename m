@@ -4,82 +4,33 @@ To: jic23@kernel.org
 Cc: gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH v2 2/8] staging: iio: isl29018: fix poorly named function
-Date: Mon, 10 Oct 2016 03:19:56 -0400
-Message-Id: <1476084002-29683-3-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 6/8] staging: iio: isl29018: rename description in Kconfig for consistency
+Date: Mon, 10 Oct 2016 03:20:00 -0400
+Message-Id: <1476084002-29683-7-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-isl29035_detect() did not do chip detection. Move functionality directly
-into isl29018_chip_init() to avoid naming confusion.
+Rename description from "ISL 29018" to "Intersil 29018" in Kconfig for
+consistency with other drivers in mainline.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/isl29018.c | 44 ++++++++++++++++--------------------
- 1 file changed, 19 insertions(+), 25 deletions(-)
+ drivers/staging/iio/light/Kconfig | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
-index 26bbbb8..130f222 100644
---- a/drivers/staging/iio/light/isl29018.c
-+++ b/drivers/staging/iio/light/isl29018.c
-@@ -529,30 +529,6 @@ static const struct attribute_group isl29023_group = {
- 	.attrs = isl29023_attributes,
- };
+diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
+index ca8d6e6..5e4e77e 100644
+--- a/drivers/staging/iio/light/Kconfig
++++ b/drivers/staging/iio/light/Kconfig
+@@ -4,7 +4,7 @@
+ menu "Light sensors"
  
--static int isl29035_detect(struct isl29018_chip *chip)
--{
--	int status;
--	unsigned int id;
--	struct device *dev = regmap_get_device(chip->regmap);
--
--	status = regmap_read(chip->regmap, ISL29035_REG_DEVICE_ID, &id);
--	if (status < 0) {
--		dev_err(dev,
--			"Error reading ID register with error %d\n",
--			status);
--		return status;
--	}
--
--	id = (id & ISL29035_DEVICE_ID_MASK) >> ISL29035_DEVICE_ID_SHIFT;
--
--	if (id != ISL29035_DEVICE_ID)
--		return -ENODEV;
--
--	/* Clear brownout bit */
--	return regmap_update_bits(chip->regmap, ISL29035_REG_DEVICE_ID,
--				  ISL29035_BOUT_MASK, 0);
--}
--
- enum {
- 	isl29018,
- 	isl29023,
-@@ -565,7 +541,25 @@ static int isl29018_chip_init(struct isl29018_chip *chip)
- 	struct device *dev = regmap_get_device(chip->regmap);
- 
- 	if (chip->type == isl29035) {
--		status = isl29035_detect(chip);
-+		unsigned int id;
-+
-+		status = regmap_read(chip->regmap, ISL29035_REG_DEVICE_ID, &id);
-+		if (status < 0) {
-+			dev_err(dev,
-+				"Error reading ID register with error %d\n",
-+				status);
-+			return status;
-+		}
-+
-+		id = (id & ISL29035_DEVICE_ID_MASK) >> ISL29035_DEVICE_ID_SHIFT;
-+
-+		if (id != ISL29035_DEVICE_ID)
-+			return -ENODEV;
-+
-+		/* Clear brownout bit */
-+		status = regmap_update_bits(chip->regmap,
-+					    ISL29035_REG_DEVICE_ID,
-+					    ISL29035_BOUT_MASK, 0);
- 		if (status < 0)
- 			return status;
- 	}
+ config SENSORS_ISL29018
+-	tristate "ISL 29018 light and proximity sensor"
++	tristate "Intersil 29018 light and proximity sensor"
+ 	depends on I2C
+ 	select REGMAP_I2C
+ 	default n
 -- 
 2.5.5
