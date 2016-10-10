@@ -4,36 +4,72 @@ To: jic23@kernel.org
 Cc: gregkh@linuxfoundation.org,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org
-Subject: [PATCH v2 0/8] staging: iio: isl29018: move out of staging
-Date: Mon, 10 Oct 2016 03:19:54 -0400
-Message-Id: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 1/8] staging: iio: isl29018: add newlines to improve readability
+Date: Mon, 10 Oct 2016 03:19:55 -0400
+Message-Id: <1476084002-29683-2-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
+References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-This is a series of cleanup patches to the ISL29018/ISL29023/ISL29035
-driver to move it out of staging based on feedback from Jonathan
-Cameron.
+Add newlines to improve code readability in preparation for moving the
+driver out of staging.
 
-Brian Masney (8):
-  staging: iio: isl29018: add newlines to improve readability
-  staging: iio: isl29018: remove poorly named function
-  staging: iio: isl29018: fix multiline comment syntax
-  staging: iio: isl29018: combine two return statements into one
-  staging: iio: isl29018: remove blank line for consistency
-  staging: iio: isl29018: rename description in Kconfig for consistency
-  staging: iio: isl29018: add ABI documentation for infrared suppression
-  staging: iio: isl29018: move out of staging
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/isl29018.c | 6 ++++++
+ 1 file changed, 6 insertions(+)
 
- .../ABI/testing/sysfs-bus-iio-light-isl29018       |  19 +
- drivers/iio/light/Kconfig                          |  12 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/isl29018.c                       | 847 +++++++++++++++++++++
- drivers/staging/iio/light/Kconfig                  |  12 -
- drivers/staging/iio/light/Makefile                 |   1 -
- drivers/staging/iio/light/isl29018.c               | 847 ---------------------
- 7 files changed, 879 insertions(+), 860 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-isl29018
- create mode 100644 drivers/iio/light/isl29018.c
- delete mode 100644 drivers/staging/iio/light/isl29018.c
-
+diff --git a/drivers/staging/iio/light/isl29018.c b/drivers/staging/iio/light/isl29018.c
+index 52bfb1cb..26bbbb8 100644
+--- a/drivers/staging/iio/light/isl29018.c
++++ b/drivers/staging/iio/light/isl29018.c
+@@ -399,6 +399,7 @@ static int isl29018_write_raw(struct iio_dev *indio_dev,
+ 
+ write_done:
+ 	mutex_unlock(&chip->lock);
++
+ 	return ret;
+ }
+ 
+@@ -464,6 +465,7 @@ static int isl29018_read_raw(struct iio_dev *indio_dev,
+ 
+ read_done:
+ 	mutex_unlock(&chip->lock);
++
+ 	return ret;
+ }
+ 
+@@ -726,6 +728,7 @@ static int isl29018_probe(struct i2c_client *client,
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
+ 	if (!indio_dev)
+ 		return -ENOMEM;
++
+ 	chip = iio_priv(indio_dev);
+ 
+ 	i2c_set_clientdata(client, indio_dev);
+@@ -765,6 +768,7 @@ static int isl29018_probe(struct i2c_client *client,
+ 	indio_dev->name = name;
+ 	indio_dev->dev.parent = &client->dev;
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
++
+ 	return devm_iio_device_register(&client->dev, indio_dev);
+ }
+ 
+@@ -782,6 +786,7 @@ static int isl29018_suspend(struct device *dev)
+ 	chip->suspended = true;
+ 
+ 	mutex_unlock(&chip->lock);
++
+ 	return 0;
+ }
+ 
+@@ -797,6 +802,7 @@ static int isl29018_resume(struct device *dev)
+ 		chip->suspended = false;
+ 
+ 	mutex_unlock(&chip->lock);
++
+ 	return err;
+ }
+ 
 -- 
 2.5.5
