@@ -1,25 +1,52 @@
-Return-Path: <gregkh@linuxfoundation.org>
-Date: Sun, 9 Oct 2016 16:08:41 +0200
-From: Greg KH <Gregkh@linuxfoundation.org>
+Return-Path: <fengguang.wu@intel.com>
+Date: Mon, 10 Oct 2016 09:13:21 +0800
+From: Fengguang Wu <fengguang.wu@intel.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net
-Subject: Re: [PATCH] staging:iio:TODO drop outdated entries in this todo.
-Message-ID: <20161009140841.GA31909@kroah.com>
-References: <20161009103819.8751-1-jic23@kernel.org>
+Cc: Mika Westerberg <mika.westerberg@linux.intel.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: ti-adc081c: Select IIO_TRIGGERED_BUFFER to
+ prevent build errors
+Message-ID: <20161010011321.jh5yovnjo7b5fuxj@wfg-t540p.sh.intel.com>
+References: <20161005144650.50634-1-mika.westerberg@linux.intel.com>
+ <9a919615-020e-e8e1-3e7e-fb5ab442a7f7@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161009103819.8751-1-jic23@kernel.org>
+Content-Type: text/plain; charset=us-ascii; format=flowed
+In-Reply-To: <9a919615-020e-e8e1-3e7e-fb5ab442a7f7@kernel.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Oct 09, 2016 at 11:38:19AM +0100, Jonathan Cameron wrote:
-> There is still stuff to be done in the remaining drivers but pretty much
-> nothing was left from this original TODO.
-> 
-> Sorry Greg, should have been keeping this up to date.
+On Sun, Oct 09, 2016 at 08:47:11AM +0100, Jonathan Cameron wrote:
+>On 05/10/16 15:46, Mika Westerberg wrote:
+>> Commit 08e05d1fce5c ("ti-adc081c: Initial triggered buffer support") added
+>> triggered buffer support but that also requires CONFIG_IIO_TRIGGERED_BUFFER,
+>> otherwise we get errors from linker such as:
+>>
+>>   drivers/built-in.o: In function `adc081c_remove':
+>>   drivers/iio/adc/ti-adc081c.c:225: undefined reference to `iio_triggered_buffer_cleanup'
+>>
+>> Fix these by explicitly selecting both CONFIG_IIO_TRIGGERED_BUFFER and
+>> CONFIG_IIO_BUFFER in Kconfig for the driver.
+>>
+>> Signed-off-by: Mika Westerberg <mika.westerberg@linux.intel.com>
+>Applied to the fixes-togreg-post-rc1 branch of iio.git which I'll send
+>a pull request for once the merge window is closed. Strange this one
+>got through the autobuilders (less strange that it snuck past me
+>reviewing it ;(
+>
+>Fengguang, any thoughts?
 
-Not a problem.
+Sorry I find no log for that error and noticed 08e05d1fce5c is half
+year old which is not contained in any recent updated trees. Many
+things could have been changed/fixed during the time -- if you look at
 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+https://lists.01.org/pipermail/kbuild-all/2016-May/thread.html
 
-Acked-by: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+There are significant less error reports in May, which probably
+impacts late April as well -- at the time the commit is introduced.
+Then the problems are discovered and the report number is restored to
+over 1000 in June.
+
+Thanks,
+Fengguang
