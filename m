@@ -1,102 +1,164 @@
-Return-Path: <eraretuya@gmail.com>
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org,
-	outreachy-kernel@googlegroups.com
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH] staging: iio: cdc: ad7746: add additional config defines
-Date: Mon, 17 Oct 2016 11:21:49 +0800
-Message-Id: <1476674510-10734-1-git-send-email-eraretuya@gmail.com>
+Return-Path: <amsfield22@gmail.com>
+Date: Tue, 11 Oct 2016 12:57:23 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: ltr501: claim direct mode during raw writes
+Message-ID: <20161011195714.GA9549@d830.WORKGROUP>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 List-ID: <linux-iio@vger.kernel.org>
 
-Introduce defines for shifting and mask under the config register for
-better readability.
+Driver was checking for direct mode but not locking it.  Use
+claim/release helper functions to guarantee the device stays
+in direct mode during all raw write operations.
 
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
 ---
- drivers/staging/iio/cdc/ad7746.c | 26 ++++++++++++++++----------
- 1 file changed, 16 insertions(+), 10 deletions(-)
+ drivers/iio/light/ltr501.c | 71 +++++++++++++++++++++++++++-------------------
+ 1 file changed, 42 insertions(+), 29 deletions(-)
 
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index f41251c..751f0d1 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -70,8 +70,12 @@
- #define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
+diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+index 3afc53a..0f1032d 100644
+--- a/drivers/iio/light/ltr501.c
++++ b/drivers/iio/light/ltr501.c
+@@ -729,8 +729,9 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 	int i, ret, freq_val, freq_val2;
+ 	struct ltr501_chip_info *info = data->chip_info;
  
- /* Config Register Bit Designations (AD7746_REG_CFG) */
--#define AD7746_CONF_VTFS(x)		((x) << 6)
--#define AD7746_CONF_CAPFS(x)		((x) << 3)
-+#define AD7746_CONF_VTFS_SHIFT		6
-+#define AD7746_CONF_CAPFS_SHIFT		3
-+#define AD7746_CONF_VTFS_MASK		0x3
-+#define AD7746_CONF_CAPFS_MASK		0x7
-+#define AD7746_CONF_VTFS(x)		((x) << AD7746_CONF_VTFS_SHIFT)
-+#define AD7746_CONF_CAPFS(x)		((x) << AD7746_CONF_CAPFS_SHIFT)
- #define AD7746_CONF_MODE_IDLE		(0 << 0)
- #define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
- #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
-@@ -224,8 +228,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
- 	case IIO_CAPACITANCE:
- 		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
- 		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
--		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
--			0x7][1];
-+		delay = ad7746_cap_filter_rate_table[(chip->config &
-+			AD7746_CONF_CAPFS_MASK) >> AD7746_CONF_CAPFS_SHIFT][1];
+-	if (iio_buffer_enabled(indio_dev))
+-		return -EBUSY;
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
  
- 		if (chip->capdac_set != chan->channel) {
- 			ret = i2c_smbus_write_byte_data(chip->client,
-@@ -246,8 +250,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
- 	case IIO_TEMP:
- 		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
- 		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
--		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
--			0x3][1];
-+		delay = ad7746_cap_filter_rate_table[(chip->config &
-+			AD7746_CONF_VTFS_MASK) >> AD7746_CONF_VTFS_SHIFT][1];
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -369,7 +373,7 @@ static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
- 	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
- 		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+@@ -739,39 +740,50 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 			i = ltr501_get_gain_index(info->als_gain,
+ 						  info->als_gain_tbl_size,
+ 						  val, val2);
+-			if (i < 0)
+-				return -EINVAL;
++			if (i < 0) {
++				ret = -EINVAL;
++				goto release;
++			}
  
--	chip->config &= ~AD7746_CONF_CAPFS(0x7);
-+	chip->config &= ~AD7746_CONF_CAPFS(AD7746_CONF_CAPFS_MASK);
- 	chip->config |= AD7746_CONF_CAPFS(i);
+ 			data->als_contr &= ~info->als_gain_mask;
+ 			data->als_contr |= i << info->als_gain_shift;
  
- 	return 0;
-@@ -387,7 +391,7 @@ static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
- 	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
- 		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
+-			return regmap_write(data->regmap, LTR501_ALS_CONTR,
+-					    data->als_contr);
++			ret = regmap_write(data->regmap, LTR501_ALS_CONTR,
++					   data->als_contr);
++			goto release;
+ 		case IIO_PROXIMITY:
+ 			i = ltr501_get_gain_index(info->ps_gain,
+ 						  info->ps_gain_tbl_size,
+ 						  val, val2);
+-			if (i < 0)
+-				return -EINVAL;
++			if (i < 0) {
++				ret = -EINVAL;
++				goto release;
++			}
+ 			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
+ 			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
  
--	chip->config &= ~AD7746_CONF_VTFS(0x3);
-+	chip->config &= ~AD7746_CONF_VTFS(AD7746_CONF_VTFS_MASK);
- 	chip->config |= AD7746_CONF_VTFS(i);
- 
- 	return 0;
-@@ -636,12 +640,14 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
- 		switch (chan->type) {
- 		case IIO_CAPACITANCE:
- 			*val = ad7746_cap_filter_rate_table[
--					(chip->config >> 3) & 0x7][0];
-+				(chip->config & AD7746_CONF_CAPFS_MASK) >>
-+					AD7746_CONF_CAPFS_SHIFT][0];
- 			ret = IIO_VAL_INT;
- 			break;
- 		case IIO_VOLTAGE:
- 			*val = ad7746_vt_filter_rate_table[
--					(chip->config >> 6) & 0x3][0];
-+				(chip->config & AD7746_CONF_VTFS_MASK) >>
-+					AD7746_CONF_VTFS_SHIFT][0];
- 			break;
+-			return regmap_write(data->regmap, LTR501_PS_CONTR,
+-					    data->ps_contr);
++			ret = regmap_write(data->regmap, LTR501_PS_CONTR,
++					   data->ps_contr);
++			goto release;
  		default:
- 			ret = -EINVAL;
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto release;
+ 		}
+ 	case IIO_CHAN_INFO_INT_TIME:
+ 		switch (chan->type) {
+ 		case IIO_INTENSITY:
+-			if (val != 0)
+-				return -EINVAL;
++			if (val != 0) {
++				ret = -EINVAL;
++				goto release;
++			}
+ 			mutex_lock(&data->lock_als);
+ 			i = ltr501_set_it_time(data, val2);
+ 			mutex_unlock(&data->lock_als);
+-			return i;
++			ret = i;
++			goto release;
+ 		default:
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto release;
+ 		}
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		switch (chan->type) {
+@@ -779,45 +791,46 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+ 			ret = ltr501_als_read_samp_freq(data, &freq_val,
+ 							&freq_val2);
+ 			if (ret < 0)
+-				return ret;
++				goto release;
+ 
+ 			ret = ltr501_als_write_samp_freq(data, val, val2);
+ 			if (ret < 0)
+-				return ret;
++				goto release;
+ 
+ 			/* update persistence count when changing frequency */
+ 			ret = ltr501_write_intr_prst(data, chan->type,
+ 						     0, data->als_period);
+ 
+ 			if (ret < 0)
+-				return ltr501_als_write_samp_freq(data,
+-								  freq_val,
+-								  freq_val2);
+-			return ret;
++				ret = ltr501_als_write_samp_freq(data, freq_val,
++								 freq_val2);
++			goto release;
+ 		case IIO_PROXIMITY:
+ 			ret = ltr501_ps_read_samp_freq(data, &freq_val,
+ 						       &freq_val2);
+ 			if (ret < 0)
+-				return ret;
++				goto release;
+ 
+ 			ret = ltr501_ps_write_samp_freq(data, val, val2);
+ 			if (ret < 0)
+-				return ret;
++				goto release;
+ 
+ 			/* update persistence count when changing frequency */
+ 			ret = ltr501_write_intr_prst(data, chan->type,
+ 						     0, data->ps_period);
+ 
+ 			if (ret < 0)
+-				return ltr501_ps_write_samp_freq(data,
+-								 freq_val,
+-								 freq_val2);
+-			return ret;
++				ret = ltr501_ps_write_samp_freq(data, freq_val,
++								freq_val2);
++			goto release;
+ 		default:
+-			return -EINVAL;
++			ret = -EINVAL;
++			goto release;
+ 		}
+ 	}
+-	return -EINVAL;
++release:
++	iio_device_release_direct_mode(indio_dev);
++	return ret;
+ }
+ 
+ static int ltr501_read_thresh(struct iio_dev *indio_dev,
 -- 
-2.7.4
+2.1.4
