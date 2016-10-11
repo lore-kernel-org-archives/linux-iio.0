@@ -1,69 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hosting.pavoucek.net ([46.28.107.168]:50799 "EHLO
-        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S941009AbcJRRtg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:49:36 -0400
-From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
-To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
-        Tomas Novotny <tomas@novotny.cz>
-Subject: [PATCH v3 0/5] iio: dac: mcp4725: use regulator framework, add vref and dt support
-Date: Tue, 18 Oct 2016 19:43:04 +0200
-Message-Id: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:36431 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752554AbcJKTrc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Oct 2016 15:47:32 -0400
+Date: Tue, 11 Oct 2016 12:31:36 -0700
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: accel: mma8452: claim direct mode during raw reads
+Message-ID: <20161011193127.GA8708@d830.WORKGROUP>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Tomas Novotny <tomas@novotny.cz>
+Driver was checking for direct mode but not locking it.  Use
+claim/release helper functions to guarantee the device stays
+in direct mode during raw reads.
 
-Hi all,
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+ drivers/iio/accel/mma8452.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
 
-here is a third version of a series to use regulator framework, add an
-option to set external reference and to add devicetree support for
-mcp4725/6.
-
-Third version fixes mainly small bits found in the previous version.
-
-Series is tested on MCP4726 on device tree platform.
-
-Changes since v2:
-- whitespace fix of two consecutive lines between patches (it affects
-  already applied patch)
-- abort probe instead of recovery in case of invalid configuration
-- use local variable instead of allocation for platform data
-- move unrelated comment fix to the new patch
-- add ack from Rob
-- fix doubled space in an assignment
-- add documentation for the struct mcp4725_platform_data
-- move the documentation patch forward because it is referenced in struct
-  mcp4725_platform_data now
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 6e82e02..cbbc746 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -459,12 +459,14 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
  
-Changes since v1:
-- add the first patch
-- use regulator framework
-- fix printf argument (%u instead of %d)
-- add parenthesis to make expression more clear
-- fix typo in documentation (Microchpip)
-- move vref configuration from probe function to new mcp4726_set_cfg
-
-Tomas Novotny (5):
-  iio: dac: mcp4725: use regulator framework
-  iio: dac: mcp4725: fix incorrect comment
-  Documentation: dt: iio: add mcp4725/6 dac device binding
-  iio: dac: mcp4725: support voltage reference selection
-  iio: dac: mcp4725: add devicetree support
-
- .../devicetree/bindings/iio/dac/mcp4725.txt        |  35 ++++
- drivers/iio/dac/mcp4725.c                          | 177 +++++++++++++++++++--
- include/linux/iio/dac/mcp4725.h                    |  12 +-
- 3 files changed, 206 insertions(+), 18 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
-
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (iio_buffer_enabled(indio_dev))
+-			return -EBUSY;
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
+ 
+ 		mutex_lock(&data->lock);
+ 		ret = mma8452_read(data, buffer);
+ 		mutex_unlock(&data->lock);
++		iio_device_release_direct_mode(indio_dev);
+ 		if (ret < 0)
+ 			return ret;
+ 
 -- 
 2.1.4
 
