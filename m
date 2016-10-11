@@ -1,55 +1,72 @@
-Return-Path: <karniksayli1995@gmail.com>
-Date: Tue, 11 Oct 2016 17:07:21 +0530
-From: sayli karnik <karniksayli1995@gmail.com>
-To: outreachy-kernel@googlegroups.com
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: bmi160_core: Fix sparse warning due to incorrect
- type in assignment
-Message-ID: <20161011113721.GA26944@sayli-HP-15-Notebook-PC>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hosting.pavoucek.net ([46.28.107.168]:36098 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752754AbcJKN6A (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Oct 2016 09:58:00 -0400
+From: Tomas Novotny <tomas@novotny.cz>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
+Subject: [PATCH v2 3/4] Documentation: dt: iio: add mcp4725/6 dac device binding
+Date: Tue, 11 Oct 2016 15:57:42 +0200
+Message-Id: <1476194263-12015-4-git-send-email-tomas@novotny.cz>
+In-Reply-To: <1476194263-12015-1-git-send-email-tomas@novotny.cz>
+References: <1476194263-12015-1-git-send-email-tomas@novotny.cz>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-There is a type mismatch between the buffer which is of type s16 and the
-samples stored, which are declared as __le16.
-
-Fix the following sparse warning:
-drivers/iio/imu/bmi160/bmi160_core.c:411:26: warning: incorrect type
-in assignment (different base types)
-
-drivers/iio/imu/bmi160/bmi160_core.c:411:26: expected signed short
-[signed] [short] [explicitly-signed] <noident>
-drivers/iio/imu/bmi160/bmi160_core.c:411:26: got restricted __le16
-[addressable] [usertype] sample
-
-This is a cosmetic-type patch since it does not alter code behaviour.
-The le16 is going into a 16bit buf element, and is labelled as IIO_LE in the
-channel buffer definition.
-
-Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
+Signed-off-by: Tomas Novotny <tomas@novotny.cz>
 ---
-Changes in v2:
-Moved comment above declaration of buf array
+ .../devicetree/bindings/iio/dac/mcp4725.txt        | 35 ++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
 
- drivers/iio/imu/bmi160/bmi160_core.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index e0251b8..5355507 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -398,7 +398,8 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
- 	struct iio_poll_func *pf = p;
- 	struct iio_dev *indio_dev = pf->indio_dev;
- 	struct bmi160_data *data = iio_priv(indio_dev);
--	s16 buf[16]; /* 3 sens x 3 axis x s16 + 3 x s16 pad + 4 x s16 tstamp */
-+	__le16 buf[16];
-+	/* 3 sens x 3 axis x __le16 + 3 x __le16 pad + 4 x __le16 tstamp */
- 	int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
- 	__le16 sample;
- 
+diff --git a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+new file mode 100644
+index 0000000..1bc6c09
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+@@ -0,0 +1,35 @@
++Microchip mcp4725 and mcp4726 DAC device driver
++
++Required properties:
++	- compatible: Must be "microchip,mcp4725" or "microchip,mcp4726"
++	- reg: Should contain the DAC I2C address
++	- vdd-supply: Phandle to the Vdd power supply. This supply is used as a
++	  voltage reference on mcp4725. It is used as a voltage reference on
++	  mcp4726 if there is no vref-supply specified.
++
++Optional properties (valid only for mcp4726):
++	- vref-supply: Optional phandle to the Vref power supply. Vref pin is
++	  used as a voltage reference when this supply is specified.
++	- microchip,vref-buffered: Boolean to enable buffering of the external
++	  Vref pin. This boolean is not valid without the vref-supply. Quoting
++	  the datasheet: This is offered in cases where the reference voltage
++	  does not have the current capability not to drop its voltage when
++	  connected to the internal resistor ladder circuit.
++
++Examples:
++
++	/* simple mcp4725 */
++	mcp4725@60 {
++		compatible = "microchip,mcp4725";
++		reg = <0x60>;
++		vdd-supply = <&vdac_vdd>;
++	};
++
++	/* mcp4726 with the buffered external reference voltage */
++	mcp4726@60 {
++		compatible = "microchip,mcp4726";
++		reg = <0x60>;
++		vdd-supply = <&vdac_vdd>;
++		vref-supply = <&vdac_vref>;
++		microchip,vref-buffered;
++	};
 -- 
-2.7.4
+2.1.4
+
