@@ -1,284 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38907 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751280AbcJIHSf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 9 Oct 2016 03:18:35 -0400
-Subject: Re: [PATCH v2] iio: accel: Add driver for the MiraMEMS DA280 3-axis
- 14-bit digital accelerometer
-To: Hans de Goede <hdegoede@redhat.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20161008181527.6646-1-hdegoede@redhat.com>
-Cc: linux-iio@vger.kernel.org, devicetree <devicetree@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <410b67e3-99b5-f155-0810-32cda6e53d40@kernel.org>
-Date: Sun, 9 Oct 2016 08:18:15 +0100
+Received: from mx2.suse.de ([195.135.220.15]:43388 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751487AbcJKM32 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 11 Oct 2016 08:29:28 -0400
+Date: Tue, 11 Oct 2016 14:29:17 +0200
+From: Jean Delvare <jdelvare@suse.de>
+To: Guenter Roeck <linux@roeck-us.net>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Zhang Rui <rui.zhang@intel.com>,
+        Eduardo Valentin <edubezval@gmail.com>,
+        Punit Agrawal <punit.agrawal@arm.com>,
+        linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-hwmon@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v3 2/9] hwmon: (core) New hwmon registration API
+Message-ID: <20161011142917.26482970@endymion>
+In-Reply-To: <20161010234822.GA11563@roeck-us.net>
+References: <1469417552-9749-1-git-send-email-linux@roeck-us.net>
+        <1469417552-9749-3-git-send-email-linux@roeck-us.net>
+        <1475570759.3052.22.camel@chaos.suse>
+        <20161004193713.GA26304@roeck-us.net>
+        <20161007143213.0ba633fe@endymion>
+        <20161010234822.GA11563@roeck-us.net>
 MIME-Version: 1.0
-In-Reply-To: <20161008181527.6646-1-hdegoede@redhat.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/10/16 19:15, Hans de Goede wrote:
-> Add an iio driver for the MiraMEMS DA280 3-axis 14-bit accelerometer, as
-> well as for the DA226 which is a fully compatible 2-axis version.
-> 
-> Datasheets for the DA280 and DA226 can be found at the manufacturers site:
-> http://www.miramems.com/en/products.asp?list=1
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-Thanks and applied to the togreg branch of iio.git - initially pushed out
-as testing for the autobuilders to play with it.
+Hi Guenter,
 
-Thanks,
-
-Jonathan
-> ---
-> Changes in v2:
-> -Drop le16_to_cpu, i2c_smbus_read_word_data() already does this
-> ---
->  .../devicetree/bindings/i2c/trivial-devices.txt    |   2 +
->  drivers/iio/accel/Kconfig                          |  10 ++
->  drivers/iio/accel/Makefile                         |   1 +
->  drivers/iio/accel/da280.c                          | 183 +++++++++++++++++++++
->  4 files changed, 196 insertions(+)
->  create mode 100644 drivers/iio/accel/da280.c
+On Mon, 10 Oct 2016 16:48:22 -0700, Guenter Roeck wrote:
+> On Fri, Oct 07, 2016 at 02:32:13PM +0200, Jean Delvare wrote:
+> > On Tue, 4 Oct 2016 12:37:13 -0700, Guenter Roeck wrote:
+> > > On Tue, Oct 04, 2016 at 10:45:59AM +0200, Jean Delvare wrote:
+> > > > May I ask if any other subsystem is already doing anything like that?
+> > > > 
+> > > Depends what you mean with "anything like that". The API is inspired by
+> > > the iio API and a little by the thermal API. The details are probably
+> > > unique, though.
+> > 
+> > I meant the idea of describing the device capabilities and letting the
+> > core code generate the device attributes (or anything else) based on
+> > that data. The benefits are obvious, but it has a complexity and
+> > run-time cost so I am wondering how popular this approach is.
 > 
-> diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> index b23ded3..6e4ba81 100644
-> --- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> +++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
-> @@ -124,6 +124,8 @@ microchip,mcp4662-502	Microchip 8-bit Dual I2C Digital Potentiometer with NV Mem
->  microchip,mcp4662-103	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (10k)
->  microchip,mcp4662-503	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (50k)
->  microchip,mcp4662-104	Microchip 8-bit Dual I2C Digital Potentiometer with NV Memory (100k)
-> +miramems,da226		MiraMEMS DA226 2-axis 14-bit digital accelerometer
-> +miramems,da280		MiraMEMS DA280 3-axis 14-bit digital accelerometer
->  miramems,da311		MiraMEMS DA311 3-axis 12-bit digital accelerometer
->  national,lm63		Temperature sensor with integrated fan control
->  national,lm75		I2C TEMP SENSOR
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index c94348f..c2ed6cf 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -52,6 +52,16 @@ config BMC150_ACCEL_SPI
->  	tristate
->  	select REGMAP_SPI
->  
-> +config DA280
-> +	tristate "MiraMEMS DA280 3-axis 14-bit digital accelerometer driver"
-> +	depends on I2C
-> +	help
-> +	  Say yes here to build support for the MiraMEMS DA280 3-axis 14-bit
-> +	  digital accelerometer.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called da280.
-> +
->  config DA311
->  	tristate "MiraMEMS DA311 3-axis 12-bit digital accelerometer driver"
->  	depends on I2C
-> diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-> index 601ca59..b7a9ba7 100644
-> --- a/drivers/iio/accel/Makefile
-> +++ b/drivers/iio/accel/Makefile
-> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMA220) += bma220_spi.o
->  obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
->  obj-$(CONFIG_BMC150_ACCEL_I2C) += bmc150-accel-i2c.o
->  obj-$(CONFIG_BMC150_ACCEL_SPI) += bmc150-accel-spi.o
-> +obj-$(CONFIG_DA280)	+= da280.o
->  obj-$(CONFIG_DA311)	+= da311.o
->  obj-$(CONFIG_DMARD06)	+= dmard06.o
->  obj-$(CONFIG_DMARD09)	+= dmard09.o
-> diff --git a/drivers/iio/accel/da280.c b/drivers/iio/accel/da280.c
-> new file mode 100644
-> index 0000000..ed8343a
-> --- /dev/null
-> +++ b/drivers/iio/accel/da280.c
-> @@ -0,0 +1,183 @@
-> +/**
-> + * IIO driver for the MiraMEMS DA280 3-axis accelerometer and
-> + * IIO driver for the MiraMEMS DA226 2-axis accelerometer
-> + *
-> + * Copyright (c) 2016 Hans de Goede <hdegoede@redhat.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + */
-> +
-> +#include <linux/module.h>
-> +#include <linux/i2c.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/byteorder/generic.h>
-> +
-> +#define DA280_REG_CHIP_ID		0x01
-> +#define DA280_REG_ACC_X_LSB		0x02
-> +#define DA280_REG_ACC_Y_LSB		0x04
-> +#define DA280_REG_ACC_Z_LSB		0x06
-> +#define DA280_REG_MODE_BW		0x11
-> +
-> +#define DA280_CHIP_ID			0x13
-> +#define DA280_MODE_ENABLE		0x1e
-> +#define DA280_MODE_DISABLE		0x9e
-> +
-> +enum { da226, da280 };
-> +
-> +/*
-> + * a value of + or -4096 corresponds to + or - 1G
-> + * scale = 9.81 / 4096 = 0.002395019
-> + */
-> +
-> +static const int da280_nscale = 2395019;
-> +
-> +#define DA280_CHANNEL(reg, axis) {	\
-> +	.type = IIO_ACCEL,	\
-> +	.address = reg,	\
-> +	.modified = 1,	\
-> +	.channel2 = IIO_MOD_##axis,	\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),	\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec da280_channels[] = {
-> +	DA280_CHANNEL(DA280_REG_ACC_X_LSB, X),
-> +	DA280_CHANNEL(DA280_REG_ACC_Y_LSB, Y),
-> +	DA280_CHANNEL(DA280_REG_ACC_Z_LSB, Z),
-> +};
-> +
-> +struct da280_data {
-> +	struct i2c_client *client;
-> +};
-> +
-> +static int da280_enable(struct i2c_client *client, bool enable)
-> +{
-> +	u8 data = enable ? DA280_MODE_ENABLE : DA280_MODE_DISABLE;
-> +
-> +	return i2c_smbus_write_byte_data(client, DA280_REG_MODE_BW, data);
-> +}
-> +
-> +static int da280_read_raw(struct iio_dev *indio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct da280_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = i2c_smbus_read_word_data(data->client, chan->address);
-> +		if (ret < 0)
-> +			return ret;
-> +		/*
-> +		 * Values are 14 bits, stored as 16 bits with the 2
-> +		 * least significant bits always 0.
-> +		 */
-> +		*val = (short)ret >> 2;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = da280_nscale;
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static const struct iio_info da280_info = {
-> +	.driver_module	= THIS_MODULE,
-> +	.read_raw	= da280_read_raw,
-> +};
-> +
-> +static int da280_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *id)
-> +{
-> +	int ret;
-> +	struct iio_dev *indio_dev;
-> +	struct da280_data *data;
-> +
-> +	ret = i2c_smbus_read_byte_data(client, DA280_REG_CHIP_ID);
-> +	if (ret != DA280_CHIP_ID)
-> +		return (ret < 0) ? ret : -ENODEV;
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	data->client = client;
-> +	i2c_set_clientdata(client, indio_dev);
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->info = &da280_info;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = da280_channels;
-> +	if (id->driver_data == da226) {
-> +		indio_dev->name = "da226";
-> +		indio_dev->num_channels = 2;
-> +	} else {
-> +		indio_dev->name = "da280";
-> +		indio_dev->num_channels = 3;
-> +	}
-> +
-> +	ret = da280_enable(client, true);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret < 0) {
-> +		dev_err(&client->dev, "device_register failed\n");
-> +		da280_enable(client, false);
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static int da280_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	return da280_enable(client, false);
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int da280_suspend(struct device *dev)
-> +{
-> +	return da280_enable(to_i2c_client(dev), false);
-> +}
-> +
-> +static int da280_resume(struct device *dev)
-> +{
-> +	return da280_enable(to_i2c_client(dev), true);
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(da280_pm_ops, da280_suspend, da280_resume);
-> +
-> +static const struct i2c_device_id da280_i2c_id[] = {
-> +	{ "da226", da226 },
-> +	{ "da280", da280 },
-> +	{}
-> +};
-> +MODULE_DEVICE_TABLE(i2c, da280_i2c_id);
-> +
-> +static struct i2c_driver da280_driver = {
-> +	.driver = {
-> +		.name = "da280",
-> +		.pm = &da280_pm_ops,
-> +	},
-> +	.probe		= da280_probe,
-> +	.remove		= da280_remove,
-> +	.id_table	= da280_i2c_id,
-> +};
-> +
-> +module_i2c_driver(da280_driver);
-> +
-> +MODULE_AUTHOR("Hans de Goede <hdegoede@redhat.com>");
-> +MODULE_DESCRIPTION("MiraMEMS DA280 3-Axis Accelerometer driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+> The goal of this patch series was to provide abstraction between driver
+> and userspace ABI. I think this is quite common in the kernel.
 
+Yes, you are right. I am so used to the (wrong) way hwmon did that I
+did not realize all other subsystems already provided some form of
+abstraction for their device drivers. Even i2c does, so I should know.
+
+> I am not sure I undersatand the run-time cost concern. The main run-time
+> cost occurs during device instantiation and only happens once. Other
+> abstraction APIs in the kernel have a much higher runtime cost, and
+> instantiation tends to be quite costly as well.
+
+I'm not too worried about this one, except for the memory allocations
+as mentioned previously.
+
+I am more concerned about the per-sysfs read overhead. Compared to the
+old model, you have another indirection call for each access. And for
+each driver, you end up with a single function to read from all
+attributes. You will inevitably end up with a huge switch/case
+statement to figure out what value to return. This smells like linear
+search? Not sure if the compiler can optimize it. I was also wondering
+how cache-friendly such a large function can be.
+
+But anyway, I didn't measure anything, it's pure speculation on my
+side. And it's probably irrelevant as your change has many benefits
+anyway. And I wouldn't even ask myself the question if things had been
+implemented right in the first place. So just ignore me ^^
+
+> The new API has the addd benefit of reducing driver size, in some cases
+> significantly. Maybe I am off, but I considered this important, which is
+> why I mentioned it. Maybe I should not have mentioned it at all, and
+> instead have focused on abstraction alone.
+
+You were very right mentioning it, I mention it every time a patch of
+mine reduces binary size. That's one of the actual benefits of the
+change, no reason to silent it.
+
+> > You mean at the binary level?
+> > 
+> > Have you considered the case where several devices exist for the same
+> > driver? Static attributes are shared between devices, but with the
+> > generated ones this is no longer the case, right?
+>
+> As mentioned above, I considered static sizes to be more important.
+> Sure, there are situations where multiple instances of a driver are
+> loaded, but those are not typically memory size limited. But, again,
+> I guess maybe I should not have mentioned driver size impact at all.
+
+I did not make any measurement, and I won't take the time to make them.
+So I have no idea how the various costs compare to each other. Which in
+turn means I don't have any point here, and we can go with what you
+have ;-)
+
+Really I was only commenting out loud while reviewing. Doesn't mean
+much...
+
+> > > > (...)
+> > > > This is adding a 4th and 5th way to register a hwmon device. Starts
+> > > > being a bit messy... Do you have any plans to get rid of some of the
+> > > > other functions to make things more consistent and efficient?
+> > >
+> > > Would be nice, but then someone would have to spend the time cleaning
+> > > up the old drivers to replace the old API, and for the most part we would
+> > > not be able to test the result. Are you sure that is worth the risk ?
+> > 
+> > What I had in mind was rather along the lines of marking the function
+> > as __deprecated, adding a run-time notice message when it is called,
+> > and let whoever uses these driver contribute the fix. Call me an
+> > optimistic :-) There are 54 drivers still using
+> > hwmon_device_register(), out of 157.
+>
+> For most of those testing was not possible, otherwise I would have converted
+> them by now.
+> 
+> I am not sure about deprecated; doesn't that mean a failure to compile with
+> -Werror ? That would not help much.
+
+It causes gcc to generate a warning, so I guess it would indeed break
+with -Werror. But this option isn't enabled by default, and I doubt
+anyone can actually build a general-purpose kernel with that option
+enabled. If it's a custom kernel then maybe there's one hwmon driver
+enabled, and if that one needs conversion, then you've just found your
+tester ;-)
+
+If you are worried about build-time __deprecated, you can also just
+spit a message in the logs when hwmon_device_register() is called.
+Won't break anything and may get you some tester, or even someone to
+convert the driver for you.
+
+But then again, you are pretty much in charge of the hwmon subsystem by
+now (and you are doing that very well, thank you very much) so I'm
+really only making suggestions, which you are totally free to ignore if
+they seem irrelevant to you.
+
+-- 
+Jean Delvare
+SUSE L3 Support
