@@ -1,90 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:35718 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752927AbcJNKS4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2016 06:18:56 -0400
-Received: by mail-pf0-f194.google.com with SMTP id s8so6967830pfj.2
-        for <linux-iio@vger.kernel.org>; Fri, 14 Oct 2016 03:18:56 -0700 (PDT)
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH] tools: iio: iio_generic_buffer: add -A to force-enable all channels
-Date: Fri, 14 Oct 2016 18:18:39 +0800
-Message-Id: <1476440319-11124-1-git-send-email-eraretuya@gmail.com>
+Received: from userp1040.oracle.com ([156.151.31.81]:26598 "EHLO
+        userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752738AbcJLGH4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 12 Oct 2016 02:07:56 -0400
+Date: Wed, 12 Oct 2016 09:07:19 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: cmo@melexis.com
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Subject: [bug report] iio: fetch and enable regulators unconditionally
+Message-ID: <20161012060719.GD12841@mwanda>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-If attribute/s is/are already enabled (by default or via scripts or
-manual interaction), issuing -a will fail to enable the channels thereby
-one has to manually disable the said attribute/s before proceeding with
-auto-enabling.
+Hello Crt Mori,
 
-Add a command-line option -A to force-activate all channels regardless
-of their current state.
+The patch 67516074884b: "iio: fetch and enable regulators
+unconditionally" from Sep 5, 2016, leads to the following static
+checker warning:
 
-Suggested-by: Alison Schofield <amsfield22@gmail.com>
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
- tools/iio/iio_generic_buffer.c | 17 ++++++++++++-----
- 1 file changed, 12 insertions(+), 5 deletions(-)
+	drivers/iio/pressure/ms5611_core.c:419 ms5611_init()
+	error: 'st->vdd' dereferencing possible ERR_PTR()
 
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index f39c0e9..84c9888 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -247,6 +247,7 @@ void print_usage(void)
- 	fprintf(stderr, "Usage: generic_buffer [options]...\n"
- 		"Capture, convert and output data from IIO device buffer\n"
- 		"  -a         Auto-activate all available channels\n"
-+		"  -A         Force-activate ALL channels\n"
- 		"  -c <n>     Do n conversions\n"
- 		"  -e         Disable wait for event (new data)\n"
- 		"  -g         Use trigger-less mode\n"
-@@ -347,16 +348,22 @@ int main(int argc, char **argv)
- 	int noevents = 0;
- 	int notrigger = 0;
- 	char *dummy;
-+	int force = 0;
- 
- 	struct iio_channel_info *channels = NULL;
- 
- 	register_cleanup();
- 
--	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:T:w:", longopts, NULL)) != -1) {
-+	while ((c = getopt_long(argc, argv, "aAc:egl:n:N:t:T:w:", longopts,
-+		NULL)) != -1) {
- 		switch (c) {
- 		case 'a':
- 			autochannels = AUTOCHANNELS_ENABLED;
- 			break;
-+		case 'A':
-+			autochannels = AUTOCHANNELS_ENABLED;
-+			force = 1;
-+			break;
- 		case 'c':
- 			errno = 0;
- 			num_loops = strtoul(optarg, &dummy, 10);
-@@ -519,15 +526,15 @@ int main(int argc, char **argv)
- 			"diag %s\n", dev_dir_name);
- 		goto error;
- 	}
--	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
-+	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
- 		fprintf(stderr, "Auto-channels selected but some channels "
- 			"are already activated in sysfs\n");
- 		fprintf(stderr, "Proceeding without activating any channels\n");
- 	}
- 
--	if (!num_channels && autochannels == AUTOCHANNELS_ENABLED) {
--		fprintf(stderr,
--			"No channels are enabled, enabling all channels\n");
-+	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
-+	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
-+		fprintf(stderr, "Enabling all channels\n");
- 
- 		ret = enable_disable_all_channels(dev_dir_name, 1);
- 		if (ret) {
--- 
-2.7.4
+drivers/iio/pressure/ms5611_core.c
+   388  static int ms5611_init(struct iio_dev *indio_dev)
+   389  {
+   390          int ret;
+   391          struct ms5611_state *st = iio_priv(indio_dev);
+   392  
+   393          /* Enable attached regulator if any. */
+   394          st->vdd = devm_regulator_get(indio_dev->dev.parent, "vdd");
+   395          if (!IS_ERR(st->vdd)) {
+   396                  ret = regulator_enable(st->vdd);
+   397                  if (ret) {
+   398                          dev_err(indio_dev->dev.parent,
+   399                                  "failed to enable Vdd supply: %d\n", ret);
+   400                          return ret;
+   401                  }
+   402          } else {
+   403                  ret = PTR_ERR(st->vdd);
+   404                  if (ret != -ENODEV)
+   405                          return ret;
 
+You probably want to update this chunk as well?  Otherwise static
+checkers think we're dereferencing -ENODEV.
+
+   406          }
+   407  
+   408          ret = ms5611_reset(indio_dev);
+   409          if (ret < 0)
+   410                  goto err_regulator_disable;
+   411  
+   412          ret = ms5611_read_prom(indio_dev);
+   413          if (ret < 0)
+   414                  goto err_regulator_disable;
+   415  
+   416          return 0;
+   417  
+   418  err_regulator_disable:
+   419          regulator_disable(st->vdd);
+   420          return ret;
+   421  }
+
+regards,
+dan carpenter
