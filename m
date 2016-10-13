@@ -1,90 +1,149 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:11937 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754240AbcJTQEm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 12:04:42 -0400
-Message-ID: <5808E78B.4060109@nvidia.com>
-Date: Thu, 20 Oct 2016 21:19:31 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Return-Path: <juliana.orod@gmail.com>
+Date: Thu, 13 Oct 2016 17:38:31 -0300
+From: Juliana Rodrigues <juliana.orod@gmail.com>
+To: outreachy-kernel@googlegroups.com, lars@metafoo.de,
+	michael.hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org
+Subject: [RESEND PATCH] iio: gyro: adis16136: implemented
+ IIO_CHAN_INFO_SAMP_FREQ
+Message-ID: <20161013203831.GA1666@spock>
 MIME-Version: 1.0
-To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
-CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
-        <edubezval@gmail.com>
-Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
-References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com> <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com>
-In-Reply-To: <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
+Moved functionality from IIO_DEV_ATTR_SAMP_FREQ macro into
+IIO_CHAN_INFO_SAMP_FREQ. Modified adis16136_read_raw and
+adis16136_write_raw to allow reading and writing the element.
 
-On Thursday 20 October 2016 08:26 PM, Paweł Jarosz wrote:
->
->
-> W dniu 20.10.2016 o 14:40, Laxman Dewangan pisze:
->>
->> On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
->>> In current version of the driver there is error in temperature
->>> calculation.
->>>
->>> So lets fix it using proper linear function.
->>>
->>> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
->>
->> Per my calculation, existing and your equation is same as both are 
->> doing linear interpolation.
->>
->> Only think I have seen is that I have used 1000 for two consecutive 
->> temp difference and you used (t2 - t1), so your is better in this 
->> case but still the equation is same.
->>
->> The equation from you is
->>
->>     t1 + (hi -val) * factor.
->>
->> and existing one is
->>      t2 - (val -lo) * factor
->>
->>
->> factor is abs((t2-t1)/(hi-lo))
->>
->> If my analysis is not correct then can you please provide the example 
->> with calculation for better understansing?
->
-> Hi
->
-> For example if we try to calculate temp for val = 8, i = 1 and table:
->
-> <0 9
->  2 7>
->
->     adc_hi = gti->lookup_table[2 * i - 1];
->     adc_lo = gti->lookup_table[2 * i + 1];
->     temp = gti->lookup_table[2 * i];
->     temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
->
-> Your method gives temp =  -498
->
->
+Signed-off-by: Juliana Rodrigues <juliana.orod@gmail.com>
+---
+ drivers/iio/gyro/adis16136.c | 58 ++++++++++++--------------------------------
+ 1 file changed, 15 insertions(+), 43 deletions(-)
 
-
-The temp should be in the milli-centigrade in the table so it should be
-<0 9
-   2000 7>;
-
-and if you relplace 1000 with the t2 -t1 where
-
-t1  = gti->lookup_table[2*i -2]
-t2 = gti->lookup_table[2 *i]
-
-then it will work perfectly.
-
-So your change for replacing 1000 is correct as what I said but need not 
-to change whole equation altogether.
-
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+index b04faf9..71d282e 100644
+--- a/drivers/iio/gyro/adis16136.c
++++ b/drivers/iio/gyro/adis16136.c
+@@ -168,11 +168,11 @@ static int adis16136_debugfs_init(struct iio_dev *indio_dev)
+ 
+ #endif
+ 
+-static int adis16136_set_freq(struct adis16136 *adis16136, unsigned int freq)
++static int adis16136_write_raw_samp_freq(struct adis16136 *adis16136, int *val)
+ {
+ 	unsigned int t;
+ 
+-	t = 32768 / freq;
++	t = 32768 / *val;
+ 	if (t < 0xf)
+ 		t = 0xf;
+ 	else if (t > 0xffff)
+@@ -197,44 +197,19 @@ static int adis16136_get_freq(struct adis16136 *adis16136, unsigned int *freq)
+ 	return 0;
+ }
+ 
+-static ssize_t adis16136_write_frequency(struct device *dev,
+-	struct device_attribute *attr, const char *buf, size_t len)
++static int adis16136_read_raw_samp_freq(struct adis16136 *st, int *val)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct adis16136 *adis16136 = iio_priv(indio_dev);
+-	unsigned int val;
+-	int ret;
+-
+-	ret = kstrtouint(buf, 10, &val);
+-	if (ret)
+-		return ret;
+-
+-	if (val == 0)
+-		return -EINVAL;
+-
+-	ret = adis16136_set_freq(adis16136, val);
+-
+-	return ret ? ret : len;
+-}
+-
+-static ssize_t adis16136_read_frequency(struct device *dev,
+-	struct device_attribute *attr, char *buf)
+-{
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct adis16136 *adis16136 = iio_priv(indio_dev);
+ 	unsigned int freq;
+ 	int ret;
+ 
+-	ret = adis16136_get_freq(adis16136, &freq);
++	ret = adis16136_get_freq(st, &freq);
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	return sprintf(buf, "%d\n", freq);
+-}
++	*val = freq;
+ 
+-static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+-				  adis16136_read_frequency,
+-				  adis16136_write_frequency);
++	return 0;
++}
+ 
+ static const unsigned adis16136_3db_divisors[] = {
+ 	[0] = 2, /* Special case */
+@@ -322,6 +297,10 @@ static int adis16136_read_raw(struct iio_dev *indio_dev,
+ 		*val = sign_extend32(val32, 31);
+ 
+ 		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return adis16136_read_raw_samp_freq(adis16136, val);
++
+ 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+ 		return adis16136_get_filter(indio_dev, val);
+ 	default:
+@@ -340,6 +319,8 @@ static int adis16136_write_raw(struct iio_dev *indio_dev,
+ 			ADIS16136_REG_GYRO_OFF2, val);
+ 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+ 		return adis16136_set_filter(indio_dev, val);
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		return adis16136_write_raw_samp_freq(adis16136, &val);
+ 	default:
+ 		break;
+ 	}
+@@ -361,7 +342,7 @@ static const struct iio_chan_spec adis16136_channels[] = {
+ 			BIT(IIO_CHAN_INFO_CALIBBIAS) |
+ 			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+ 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+-
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.address = ADIS16136_REG_GYRO_OUT2,
+ 		.scan_index = ADIS16136_SCAN_GYRO,
+ 		.scan_type = {
+@@ -376,6 +357,7 @@ static const struct iio_chan_spec adis16136_channels[] = {
+ 		.channel = 0,
+ 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+ 			BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+ 		.address = ADIS16136_REG_TEMP_OUT,
+ 		.scan_index = ADIS16136_SCAN_TEMP,
+ 		.scan_type = {
+@@ -388,18 +370,8 @@ static const struct iio_chan_spec adis16136_channels[] = {
+ 	IIO_CHAN_SOFT_TIMESTAMP(2),
+ };
+ 
+-static struct attribute *adis16136_attributes[] = {
+-	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+-	NULL
+-};
+-
+-static const struct attribute_group adis16136_attribute_group = {
+-	.attrs = adis16136_attributes,
+-};
+-
+ static const struct iio_info adis16136_info = {
+ 	.driver_module = THIS_MODULE,
+-	.attrs = &adis16136_attribute_group,
+ 	.read_raw = &adis16136_read_raw,
+ 	.write_raw = &adis16136_write_raw,
+ 	.update_scan_mode = adis_update_scan_mode,
+-- 
+2.10.0
