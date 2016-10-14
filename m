@@ -1,77 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:42523 "EHLO
-        aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753042AbcJNOiM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2016 10:38:12 -0400
-Date: Fri, 14 Oct 2016 17:37:26 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: gregor.boirie@parrot.com
-Cc: linux-iio@vger.kernel.org
-Subject: [bug report] iio:pressure: initial zpa2326 barometer support
-Message-ID: <20161014143726.GA32542@mwanda>
+Received: from hosting.pavoucek.net ([46.28.107.168]:43936 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754471AbcJNMYc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2016 08:24:32 -0400
+Date: Fri, 14 Oct 2016 14:24:23 +0200
+From: Tomas Novotny <tomas@novotny.cz>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 1/4] iio: dac: mcp4725: use regulator framework
+Message-ID: <20161014142423.005b3108@tomas>
+In-Reply-To: <87088906-8986-cca0-c29a-747610bae982@metafoo.de>
+References: <1476194263-12015-1-git-send-email-tomas@novotny.cz>
+        <1476194263-12015-2-git-send-email-tomas@novotny.cz>
+        <87088906-8986-cca0-c29a-747610bae982@metafoo.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Gregor Boirie,
+Hi,
 
-The patch 03b262f2bbf4: "iio:pressure: initial zpa2326 barometer
-support" from Sep 13, 2016, leads to the following static checker
-warning:
+On Fri, 14 Oct 2016 13:58:24 +0200
+Lars-Peter Clausen <lars@metafoo.de> wrote:
 
-	drivers/iio/pressure/zpa2326.c:1050 zpa2326_fetch_raw_sample()
-	warn: passing casted pointer 'value' to '__le16_to_cpup()' 32 vs 16.
+> On 10/11/2016 03:57 PM, Tomas Novotny wrote:
+> 
+> Hi,
+> 
+> Looks mostly good. One small thing that should be addressed.
+> 
+> > diff --git a/include/linux/iio/dac/mcp4725.h
+> > b/include/linux/iio/dac/mcp4725.h index 91530e6..7c062e8 100644
+> > --- a/include/linux/iio/dac/mcp4725.h
+> > +++ b/include/linux/iio/dac/mcp4725.h
+> > @@ -10,7 +10,6 @@
+> >  #define IIO_DAC_MCP4725_H_
+> >  
+> >  struct mcp4725_platform_data {
+> > -	u16 vref_mv;
+> >  };
+> 
+> Might as well remove the whole struct and file and drop the if (!pdata)
+> check in the driver probe function. Having to declare a empty platform_data
+> for the driver to work is not that sensible.
 
-drivers/iio/pressure/zpa2326.c
-  1013  static int zpa2326_fetch_raw_sample(const struct iio_dev *indio_dev,
-  1014                                      enum iio_chan_type    type,
-  1015                                      int                  *value)
-  1016  {
-  1017          struct regmap *regs = ((struct zpa2326_private *)
-  1018                                 iio_priv(indio_dev))->regmap;
-  1019          int            err;
-  1020  
-  1021          switch (type) {
-  1022          case IIO_PRESSURE:
-  1023                  zpa2326_dbg(indio_dev, "fetching raw pressure sample");
-  1024  
-  1025                  err = regmap_bulk_read(regs, ZPA2326_PRESS_OUT_XL_REG, value,
-  1026                                         3);
-  1027                  if (err) {
-  1028                          zpa2326_warn(indio_dev, "failed to fetch pressure (%d)",
-  1029                                       err);
-  1030                          return err;
-  1031                  }
-  1032  
-  1033                  /* Pressure is a 24 bits wide little-endian unsigned int. */
-  1034                  *value = (((u8 *)value)[2] << 16) | (((u8 *)value)[1] << 8) |
-  1035                           ((u8 *)value)[0];
-  1036  
-  1037                  return IIO_VAL_INT;
-  1038  
-  1039          case IIO_TEMP:
-  1040                  zpa2326_dbg(indio_dev, "fetching raw temperature sample");
-  1041  
-  1042                  err = regmap_bulk_read(regs, ZPA2326_TEMP_OUT_L_REG, value, 2);
-  1043                  if (err) {
-  1044                          zpa2326_warn(indio_dev,
-  1045                                       "failed to fetch temperature (%d)", err);
-  1046                          return err;
-  1047                  }
-  1048  
-  1049                  /* Temperature is a 16 bits wide little-endian signed int. */
-  1050                  *value = (int)le16_to_cpup((__le16 *)value);
+Yes, I was thinking of it but I left the empty structure in the driver
+finally (I briefly comment it also in the commit message of this patch). The
+reason is that the structure is used again in the next commit. So removing
+the file and associated checks and putting it back again would make
+unnecessary noise in the patches. Anyway, if you think that it is really
+needed I will do it.
 
-This works...  but so ugly.  Next time consider a temporary variable.
+Thanks,
 
-  1051  
-  1052                  return IIO_VAL_INT;
-  1053  
-  1054          default:
-  1055                  return -EINVAL;
-  1056          }
+Tomas
 
-
-regards,
-dan carpenter
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
