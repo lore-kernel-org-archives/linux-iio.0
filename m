@@ -1,173 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hosting.pavoucek.net ([46.28.107.168]:50796 "EHLO
-        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932230AbcJRRtg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:49:36 -0400
-From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
-To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
-        Tomas Novotny <tomas@novotny.cz>
-Subject: [PATCH v3 1/5] iio: dac: mcp4725: use regulator framework
-Date: Tue, 18 Oct 2016 19:43:05 +0200
-Message-Id: <1476812589-18333-2-git-send-email-tomas.novotny@tbs-biometrics.com>
-In-Reply-To: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
-References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+Received: from mout.kundenserver.de ([212.227.17.24]:60790 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752646AbcJOQlm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Oct 2016 12:41:42 -0400
+Date: Sat, 15 Oct 2016 18:41:14 +0200 (CEST)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, linux-input@vger.kernel.org,
+        pmeerw@pmeerw.net, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, dmitry.torokhov@gmail.com, harald@ccbib.org,
+        fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+        marex@denx.de
+Message-ID: <417434821.363505.2bd73c71-f221-4323-833d-b752e7c41a53.open-xchange@email.1und1.de>
+In-Reply-To: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+Subject: Re: [PATCH v7 0/5] mxs-lradc: Split driver into MFD
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Tomas Novotny <tomas@novotny.cz>
+Hi Ksenija,
 
-Use a standard framework to get the reference voltage. It is done that way
-in the iio subsystem and it will simplify extending of the driver.
+> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 2. Oktober 2016 um
+> 16:15 geschrieben:
+> 
+> 
+> Split existing driver mxs-lradc into MFD with touchscreen and
+> IIO part.
 
-Structure mcp4725_platform_data is left undeleted because it used in the
-next patch.
+i'm back from holidays and wanted to test your patch series. Unfortunately patch
+1-3 looks broken to me. Maybe you should wait for 4.9rc-1 and then resend the
+patch series.
 
-This change breaks the current users of the driver, but there is no
-mainline user of struct mcp4725_platform_data.
+Stefan
 
-Signed-off-by: Tomas Novotny <tomas@novotny.cz>
----
- drivers/iio/dac/mcp4725.c       | 45 ++++++++++++++++++++++++++++++++---------
- include/linux/iio/dac/mcp4725.h |  1 -
- 2 files changed, 36 insertions(+), 10 deletions(-)
-
-diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-index cca935c..1f55d1b 100644
---- a/drivers/iio/dac/mcp4725.c
-+++ b/drivers/iio/dac/mcp4725.c
-@@ -18,6 +18,7 @@
- #include <linux/i2c.h>
- #include <linux/err.h>
- #include <linux/delay.h>
-+#include <linux/regulator/consumer.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -28,10 +29,10 @@
- 
- struct mcp4725_data {
- 	struct i2c_client *client;
--	u16 vref_mv;
- 	u16 dac_value;
- 	bool powerdown;
- 	unsigned powerdown_mode;
-+	struct regulator *vdd_reg;
- };
- 
- static int mcp4725_suspend(struct device *dev)
-@@ -283,13 +284,18 @@ static int mcp4725_read_raw(struct iio_dev *indio_dev,
- 			   int *val, int *val2, long mask)
- {
- 	struct mcp4725_data *data = iio_priv(indio_dev);
-+	int ret;
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		*val = data->dac_value;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = data->vref_mv;
-+		ret = regulator_get_voltage(data->vdd_reg);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = ret / 1000;
- 		*val2 = 12;
- 		return IIO_VAL_FRACTIONAL_LOG2;
- 	}
-@@ -328,12 +334,12 @@ static int mcp4725_probe(struct i2c_client *client,
- {
- 	struct mcp4725_data *data;
- 	struct iio_dev *indio_dev;
--	struct mcp4725_platform_data *platform_data = client->dev.platform_data;
-+	struct mcp4725_platform_data *pdata = dev_get_platdata(&client->dev);
- 	u8 inbuf[3];
- 	u8 pd;
- 	int err;
- 
--	if (!platform_data || !platform_data->vref_mv) {
-+	if (!pdata) {
- 		dev_err(&client->dev, "invalid platform data");
- 		return -EINVAL;
- 	}
-@@ -345,6 +351,14 @@ static int mcp4725_probe(struct i2c_client *client,
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
- 
-+	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
-+	if (IS_ERR(data->vdd_reg))
-+		return PTR_ERR(data->vdd_reg);
-+
-+	err = regulator_enable(data->vdd_reg);
-+	if (err)
-+		return err;
-+
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = id->name;
- 	indio_dev->info = &mcp4725_info;
-@@ -352,25 +366,38 @@ static int mcp4725_probe(struct i2c_client *client,
- 	indio_dev->num_channels = 1;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	data->vref_mv = platform_data->vref_mv;
--
- 	/* read current DAC value */
- 	err = i2c_master_recv(client, inbuf, 3);
- 	if (err < 0) {
- 		dev_err(&client->dev, "failed to read DAC value");
--		return err;
-+		goto err_disable_vdd_reg;
- 	}
- 	pd = (inbuf[0] >> 1) & 0x3;
- 	data->powerdown = pd > 0 ? true : false;
- 	data->powerdown_mode = pd ? pd - 1 : 2; /* largest register to gnd */
- 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
- 
--	return iio_device_register(indio_dev);
-+	err = iio_device_register(indio_dev);
-+	if (err)
-+		goto err_disable_vdd_reg;
-+
-+	return 0;
-+
-+err_disable_vdd_reg:
-+	regulator_disable(data->vdd_reg);
-+
-+	return err;
- }
- 
- static int mcp4725_remove(struct i2c_client *client)
- {
--	iio_device_unregister(i2c_get_clientdata(client));
-+	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-+	struct mcp4725_data *data = iio_priv(indio_dev);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	regulator_disable(data->vdd_reg);
-+
- 	return 0;
- }
- 
-diff --git a/include/linux/iio/dac/mcp4725.h b/include/linux/iio/dac/mcp4725.h
-index 91530e6..7c062e8 100644
---- a/include/linux/iio/dac/mcp4725.h
-+++ b/include/linux/iio/dac/mcp4725.h
-@@ -10,7 +10,6 @@
- #define IIO_DAC_MCP4725_H_
- 
- struct mcp4725_platform_data {
--	u16 vref_mv;
- };
- 
- #endif /* IIO_DAC_MCP4725_H_ */
--- 
-2.1.4
-
+> 
+> Tested on I.MX28.
+> 
+> Ksenija Stanojevic (5):
+>   mfd: mxs-lradc: Add support for mxs-lradc MFD
+>   iio: adc: mxs-lradc: Add support for adc driver
+>   input: touchscreen: mxs-lradc: Add support for touchscreen
+>   iio: adc: mxs-lradc: Remove driver
+>   mfd: Move binding document
+> 
+>  .../devicetree/bindings/iio/adc/mxs-lradc.txt      |   47 -
+>  .../devicetree/bindings/mfd/mxs-lradc.txt          |   47 +
+>  drivers/iio/adc/Kconfig                            |   27 +-
+>  drivers/iio/adc/Makefile                           |    2 +-
+>  drivers/iio/adc/mxs-lradc.c                        | 1750
+> --------------------
+>  drivers/input/touchscreen/Kconfig                  |   10 +
+>  drivers/input/touchscreen/Makefile                 |    1 +
+>  drivers/mfd/Kconfig                                |   17 +
+>  drivers/mfd/Makefile                               |    1 +
+>  9 files changed, 90 insertions(+), 1812 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+>  delete mode 100644 drivers/iio/adc/mxs-lradc.c
+> 
+> -- 
+> 1.9.1
+>
