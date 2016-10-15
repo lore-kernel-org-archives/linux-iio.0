@@ -1,105 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48430 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48560 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753808AbcJOO1Y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Oct 2016 10:27:24 -0400
-Subject: Re: [PATCH] tools: iio: iio_generic_buffer: add -A to force-enable
- all channels
-To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
-        outreachy-kernel@googlegroups.com
-References: <1476440319-11124-1-git-send-email-eraretuya@gmail.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+        with ESMTP id S1753161AbcJOOv3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Oct 2016 10:51:29 -0400
+Subject: Re: [PATCH] iio: accel: mma8452: claim direct mode during raw reads
+To: Alison Schofield <amsfield22@gmail.com>
+References: <20161011193127.GA8708@d830.WORKGROUP>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <80bfc9a1-592e-3f8b-3a72-ea7259a74469@kernel.org>
-Date: Sat, 15 Oct 2016 15:27:22 +0100
+Message-ID: <caa2c0c2-1ef7-15e8-cd1c-e0d6c7da1c81@kernel.org>
+Date: Sat, 15 Oct 2016 15:50:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476440319-11124-1-git-send-email-eraretuya@gmail.com>
+In-Reply-To: <20161011193127.GA8708@d830.WORKGROUP>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/10/16 11:18, Eva Rachel Retuya wrote:
-> If attribute/s is/are already enabled (by default or via scripts or
-> manual interaction), issuing -a will fail to enable the channels thereby
-> one has to manually disable the said attribute/s before proceeding with
-> auto-enabling.
+On 11/10/16 20:31, Alison Schofield wrote:
+> Driver was checking for direct mode but not locking it.  Use
+> claim/release helper functions to guarantee the device stays
+> in direct mode during raw reads.
 > 
-> Add a command-line option -A to force-activate all channels regardless
-> of their current state.
-> 
-> Suggested-by: Alison Schofield <amsfield22@gmail.com>
-> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
-Seems like a useful addition with minimal 'cost'.
-
-Applied, though there was some fuzz due to a recent patch making
-sure the ? was in the argument list, so please check I didn't mess
-it up!
-
-Applied to the togreg branch of iio.git - initially pushed out as
+> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as
 testing for the autobuilders to play with it.
+
+Hohum. Amazing how often we used to get this rather obvious
+thing wrong ;)
 
 Thanks,
 
 Jonathan
 > ---
->  tools/iio/iio_generic_buffer.c | 17 ++++++++++++-----
->  1 file changed, 12 insertions(+), 5 deletions(-)
+>  drivers/iio/accel/mma8452.c | 6 ++++--
+>  1 file changed, 4 insertions(+), 2 deletions(-)
 > 
-> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-> index f39c0e9..84c9888 100644
-> --- a/tools/iio/iio_generic_buffer.c
-> +++ b/tools/iio/iio_generic_buffer.c
-> @@ -247,6 +247,7 @@ void print_usage(void)
->  	fprintf(stderr, "Usage: generic_buffer [options]...\n"
->  		"Capture, convert and output data from IIO device buffer\n"
->  		"  -a         Auto-activate all available channels\n"
-> +		"  -A         Force-activate ALL channels\n"
->  		"  -c <n>     Do n conversions\n"
->  		"  -e         Disable wait for event (new data)\n"
->  		"  -g         Use trigger-less mode\n"
-> @@ -347,16 +348,22 @@ int main(int argc, char **argv)
->  	int noevents = 0;
->  	int notrigger = 0;
->  	char *dummy;
-> +	int force = 0;
+> diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+> index 6e82e02..cbbc746 100644
+> --- a/drivers/iio/accel/mma8452.c
+> +++ b/drivers/iio/accel/mma8452.c
+> @@ -459,12 +459,14 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
 >  
->  	struct iio_channel_info *channels = NULL;
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (iio_buffer_enabled(indio_dev))
+> -			return -EBUSY;
+> +		ret = iio_device_claim_direct_mode(indio_dev);
+> +		if (ret)
+> +			return ret;
 >  
->  	register_cleanup();
+>  		mutex_lock(&data->lock);
+>  		ret = mma8452_read(data, buffer);
+>  		mutex_unlock(&data->lock);
+> +		iio_device_release_direct_mode(indio_dev);
+>  		if (ret < 0)
+>  			return ret;
 >  
-> -	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:T:w:", longopts, NULL)) != -1) {
-> +	while ((c = getopt_long(argc, argv, "aAc:egl:n:N:t:T:w:", longopts,
-> +		NULL)) != -1) {
->  		switch (c) {
->  		case 'a':
->  			autochannels = AUTOCHANNELS_ENABLED;
->  			break;
-> +		case 'A':
-> +			autochannels = AUTOCHANNELS_ENABLED;
-> +			force = 1;
-> +			break;
->  		case 'c':
->  			errno = 0;
->  			num_loops = strtoul(optarg, &dummy, 10);
-> @@ -519,15 +526,15 @@ int main(int argc, char **argv)
->  			"diag %s\n", dev_dir_name);
->  		goto error;
->  	}
-> -	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
-> +	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
->  		fprintf(stderr, "Auto-channels selected but some channels "
->  			"are already activated in sysfs\n");
->  		fprintf(stderr, "Proceeding without activating any channels\n");
->  	}
->  
-> -	if (!num_channels && autochannels == AUTOCHANNELS_ENABLED) {
-> -		fprintf(stderr,
-> -			"No channels are enabled, enabling all channels\n");
-> +	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
-> +	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
-> +		fprintf(stderr, "Enabling all channels\n");
->  
->  		ret = enable_disable_all_channels(dev_dir_name, 1);
->  		if (ret) {
 > 
 
