@@ -1,76 +1,44 @@
-Return-Path: <eraretuya@gmail.com>
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH 2/2] staging: iio: ad7606: rework regulator handling
-Date: Thu, 20 Oct 2016 21:08:23 +0800
-Message-Id: <1476968903-15771-3-git-send-email-eraretuya@gmail.com>
-In-Reply-To: <1476968903-15771-1-git-send-email-eraretuya@gmail.com>
-References: <1476968903-15771-1-git-send-email-eraretuya@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:56644 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753860AbcJPCZR (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 15 Oct 2016 22:25:17 -0400
+Date: Sat, 15 Oct 2016 22:25:15 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org
+Subject: Re: [PATCH v2 8/8] staging: iio: isl29018: move out of staging
+Message-ID: <20161016022515.GA31998@basecamp.onstation.org>
+References: <1476084002-29683-1-git-send-email-masneyb@onstation.org>
+ <1476084002-29683-9-git-send-email-masneyb@onstation.org>
+ <ca556582-a736-e6d3-36e1-72e649f51df1@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <ca556582-a736-e6d3-36e1-72e649f51df1@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Currently, this driver ignores all errors from regulator_get(). The way
-it is now, it also breaks probe deferral (EPROBE_DEFER). The correct
-behavior is to propagate the error to the upper layers so they can
-handle it accordingly.
+On Sat, Oct 15, 2016 at 04:15:57PM +0100, Jonathan Cameron wrote:
+> On 10/10/16 08:20, Brian Masney wrote:
+> > Move ISL29018/ISL29023/ISL29035 driver out of staging into mainline.
+> > 
+> > Signed-off-by: Brian Masney <masneyb@onstation.org>
+> Applied to the togreg branch of iio.git and pushed out as testing
+> for the autobuilders to play with it.
+> 
+> Thanks Brian for taking this one on and your hard work on getting
+> these last few little issues sorted so it can graduate from staging.
 
-Rework the regulator handling so that it matches the standard behavior.
-If the specific design uses a static always-on regulator and does not
-explicitly specify it, regulator_get() will return the dummy regulator.
+Thanks, Jonathan for all of your feedback. I'm going to send you a patch
+set sometime this week against the light/tsl2583.c driver to work
+towards eventually moving it out of staging.
 
-Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
- drivers/staging/iio/adc/ad7606.c | 17 +++++++++--------
- 1 file changed, 9 insertions(+), 8 deletions(-)
+I also looked at the light/isl29028.c driver. It doesn't look like it
+needs much to move out of staging. A few very minor code style cleanups,
+and the device tree documentation. If you have time, could you take a
+brief look to see if it needs any major changes? I'll be glad to take on
+the grunt work to clean up that driver as well.
 
-diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index f9b354f..b0ae04a 100644
---- a/drivers/staging/iio/adc/ad7606.c
-+++ b/drivers/staging/iio/adc/ad7606.c
-@@ -425,10 +425,13 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
- 
- 	st->reg = devm_regulator_get(dev, "avcc");
--	if (!IS_ERR(st->reg)) {
--		ret = regulator_enable(st->reg);
--		if (ret)
--			return ret;
-+	if (IS_ERR(st->reg))
-+		return PTR_ERR(st->reg);
-+
-+	ret = regulator_enable(st->reg);
-+	if (ret) {
-+		dev_err(dev, "Failed to enable specified AVcc supply\n");
-+		return ret;
- 	}
- 
- 	ret = ad7606_request_gpios(st);
-@@ -484,8 +487,7 @@ error_free_irq:
- 	free_irq(irq, indio_dev);
- 
- error_disable_reg:
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(ad7606_probe);
-@@ -499,8 +501,7 @@ int ad7606_remove(struct device *dev, int irq)
- 	iio_triggered_buffer_cleanup(indio_dev);
- 
- 	free_irq(irq, indio_dev);
--	if (!IS_ERR(st->reg))
--		regulator_disable(st->reg);
-+	regulator_disable(st->reg);
- 
- 	return 0;
- }
--- 
-2.7.4
+Brian
+
