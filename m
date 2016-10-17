@@ -1,81 +1,106 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:56449 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751195AbcJNJBf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 14 Oct 2016 05:01:35 -0400
-Subject: Re: [bug report] iio: fetch and enable regulators unconditionally
-To: Crt Mori <cmo@melexis.com>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20161012060719.GD12841@mwanda>
- <CAKv63uskg4u6p-rH=Vt7JqmAj-VpRSfJUcv1j0SWHdd=yafxFw@mail.gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linux Iio <linux-iio@vger.kernel.org>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <27ebc18e-e99e-d4dc-1272-7b16d5231a79@metafoo.de>
-Date: Fri, 14 Oct 2016 11:01:27 +0200
+Return-Path: <pmeerw@pmeerw.net>
+Date: Mon, 17 Oct 2016 23:15:53 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Eva Rachel Retuya <eraretuya@gmail.com>
+cc: linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com,
+    jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de
+Subject: Re: [PATCH] tools: iio: iio_generic_buffer: add -A to force-enable
+ all channels
+In-Reply-To: <1476440319-11124-1-git-send-email-eraretuya@gmail.com>
+Message-ID: <alpine.DEB.2.02.1610172311510.31400@pmeerw.net>
+References: <1476440319-11124-1-git-send-email-eraretuya@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CAKv63uskg4u6p-rH=Vt7JqmAj-VpRSfJUcv1j0SWHdd=yafxFw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/13/2016 10:25 AM, Crt Mori wrote:
-> Hello Dan,
+
+> If attribute/s is/are already enabled (by default or via scripts or
+> manual interaction), issuing -a will fail to enable the channels thereby
+> one has to manually disable the said attribute/s before proceeding with
+> auto-enabling.
 > 
-> On 12 October 2016 at 08:07, Dan Carpenter <dan.carpenter@oracle.com> wrote:
->> Hello Crt Mori,
->>
->> The patch 67516074884b: "iio: fetch and enable regulators
->> unconditionally" from Sep 5, 2016, leads to the following static
->> checker warning:
->>
->>         drivers/iio/pressure/ms5611_core.c:419 ms5611_init()
->>         error: 'st->vdd' dereferencing possible ERR_PTR()
->>
->> drivers/iio/pressure/ms5611_core.c
->>    388  static int ms5611_init(struct iio_dev *indio_dev)
->>    389  {
->>    390          int ret;
->>    391          struct ms5611_state *st = iio_priv(indio_dev);
->>    392
->>    393          /* Enable attached regulator if any. */
->>    394          st->vdd = devm_regulator_get(indio_dev->dev.parent, "vdd");
->>    395          if (!IS_ERR(st->vdd)) {
->>    396                  ret = regulator_enable(st->vdd);
->>    397                  if (ret) {
->>    398                          dev_err(indio_dev->dev.parent,
->>    399                                  "failed to enable Vdd supply: %d\n", ret);
->>    400                          return ret;
->>    401                  }
->>    402          } else {
->>    403                  ret = PTR_ERR(st->vdd);
->>    404                  if (ret != -ENODEV)
->>    405                          return ret;
->>
->> You probably want to update this chunk as well?  Otherwise static
->> checkers think we're dereferencing -ENODEV.
+> Add a command-line option -A to force-activate all channels regardless
+> of their current state.
+
+comments below
+ 
+> Suggested-by: Alison Schofield <amsfield22@gmail.com>
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+> ---
+>  tools/iio/iio_generic_buffer.c | 17 ++++++++++++-----
+>  1 file changed, 12 insertions(+), 5 deletions(-)
 > 
-> Can you explain a bit more why they would think of it like that and
-> what would better proposal be like?
+> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+> index f39c0e9..84c9888 100644
+> --- a/tools/iio/iio_generic_buffer.c
+> +++ b/tools/iio/iio_generic_buffer.c
+> @@ -247,6 +247,7 @@ void print_usage(void)
+>  	fprintf(stderr, "Usage: generic_buffer [options]...\n"
+>  		"Capture, convert and output data from IIO device buffer\n"
+>  		"  -a         Auto-activate all available channels\n"
+> +		"  -A         Force-activate ALL channels\n"
+>  		"  -c <n>     Do n conversions\n"
+>  		"  -e         Disable wait for event (new data)\n"
+>  		"  -g         Use trigger-less mode\n"
+> @@ -347,16 +348,22 @@ int main(int argc, char **argv)
+>  	int noevents = 0;
+>  	int notrigger = 0;
+>  	char *dummy;
+> +	int force = 0;
+
+bool instead of int
+maybe force_autochannels
+
+>  
+>  	struct iio_channel_info *channels = NULL;
+>  
+>  	register_cleanup();
+>  
+> -	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:T:w:", longopts, NULL)) != -1) {
+> +	while ((c = getopt_long(argc, argv, "aAc:egl:n:N:t:T:w:", longopts,
+> +		NULL)) != -1) {
+>  		switch (c) {
+>  		case 'a':
+>  			autochannels = AUTOCHANNELS_ENABLED;
+>  			break;
+> +		case 'A':
+> +			autochannels = AUTOCHANNELS_ENABLED;
+> +			force = 1;
+> +			break;
+>  		case 'c':
+>  			errno = 0;
+>  			num_loops = strtoul(optarg, &dummy, 10);
+> @@ -519,15 +526,15 @@ int main(int argc, char **argv)
+>  			"diag %s\n", dev_dir_name);
+>  		goto error;
+>  	}
+> -	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
+> +	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
+
+parenthesis not strictly required/needed
+the bracketing is inconsistent, when do you use parenthesis with && and 
+when not? I suggest to drop parenthesis
+
+>  		fprintf(stderr, "Auto-channels selected but some channels "
+>  			"are already activated in sysfs\n");
+>  		fprintf(stderr, "Proceeding without activating any channels\n");
+>  	}
+>  
+> -	if (!num_channels && autochannels == AUTOCHANNELS_ENABLED) {
+> -		fprintf(stderr,
+> -			"No channels are enabled, enabling all channels\n");
+> +	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
+> +	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
+> +		fprintf(stderr, "Enabling all channels\n");
+
+as above
+
+>  
+>  		ret = enable_disable_all_channels(dev_dir_name, 1);
+>  		if (ret) {
 > 
-> ret is a return value and it is st->vdd pointer is checked for error
-> before we deduct error information out, so I do not see where
-> dereferencing takes part?
 
-The thing is, if PTR_ERR(st->vdd) is -ENODEV, we do not return an error and
-just continue in the probe function. And then if one of the cleanup
-functions is called st->vdd is passed to regulator_disable() which will
-crash if it is passed -ENODEV instead of a valid pointer.
+-- 
 
-I think the ENODEV check should be dropped and the whole thing should be
-turned into
-
-if (IS_ERR(st->vdd))
-	retrurn PTR_ERR(st->vdd))
-
-ret = regulator_enable()
-...
-
-This is the behavior that we expect for normal supply regulators.
-
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
