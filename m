@@ -1,127 +1,112 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se> <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de> <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:59078 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756668AbcJQHvO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2016 03:51:14 -0400
+Subject: Re: [PATCH] staging: iio: cdc: ad7746: add additional config defines
+To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
+        outreachy-kernel@googlegroups.com
+References: <1476674510-10734-1-git-send-email-eraretuya@gmail.com>
+Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <e0a34a65-5443-7fc4-500c-f1b43b1788dc@metafoo.de>
+Date: Mon, 17 Oct 2016 09:51:07 +0200
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 20 Oct 2016 18:37:56 +0100
-To: Lars-Peter Clausen <lars@metafoo.de>,Peter Rosin <peda@axentia.se>,linux-kernel@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>,Hartmut Knaack <knaack.h@gmx.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,Rob Herring <robh+dt@kernel.org>,Mark Rutland <mark.rutland@arm.com>,linux-iio@vger.kernel.org,devicetree@vger.kernel.org
-Message-ID: <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1476674510-10734-1-git-send-email-eraretuya@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 10/17/2016 05:21 AM, Eva Rachel Retuya wrote:
+> Introduce defines for shifting and mask under the config register for
+> better readability.
+> 
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
 
+Hi,
 
-On 20 October 2016 18:30:19 BST, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
->
->
->On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de>
->wrote:
->>On 10/20/2016 11:25 AM, Peter Rosin wrote:
->>> Hi!
->>> 
->>> These two drivers share the fact that they wrap another iio channel,
->>> and I use the first in combination with the second, which is why I'm
->>> submitting them as a pair.
->>> 
->>> The first driver is a simple wrapper converting an iio dpot into an
->>> iio dac. It only changes the unit and scale. It also does not add
->any
->>> fancy iio buffer support that I don't need. I suppose that can be
->>> added. By someone else :-)
->>> 
->>> Please look over the scale conversion, notably for the fractional
->>log2
->>> case that I don't need myself, so is untested. Maybe I should just
->>> remove it?
->>> 
->>> Also, is there some agreed-upon way to dig out the maximum value
->from
->>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from
->the
->>> dt bindings, which would have been nice...
->>
->>Yes, this is something we could really use. In a sense it exists for
->>the
->>devices with buffer-capable channels where there is the real_bits
->field
->>which tells us the data width of the channel. But a dedicated
->mechanism
->>for
->>querying the maximum (and minimum) valid code seems like a useful
->>feature.
->>Not only for in-kernel clients, but also for userspace.
->This was something that was addressed by the rather ancient patch
->series i posted that added 
->an available call back which provided info on range and values for all
->info mask elements.
->Series got buried by there being a lot of precursors but quite a few of
->those have merged since.
->
->Hmm Google won't let me find it on my phone. Was a while back now. Will
->try to get on pc with
-> decent email archive later and dig out a reference.
-http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
->
->>
->>> 
->>> I'm also wondering if I'm somehow abusing the regulator? I only
->added
->>> it to get rid of a "dpot-dac,max-voltage" thing from the dt
->bindings.
->>> It feels right though, but maybe I should do more with it than check
->>> its voltage? What?
->>
->>Enable the regulator when it is in use?
->>
->>> 
->>> The second driver (the envelope detector) is more involved. It also
->>> explains why I need the dpot-dac driver. I wanted the envelope
->>> detector to be generic and work with any dac, but I had a dpot...
->>> 
->>> The envelope detector was previously discussed late last year [1],
->>> and this is what I came up with instead of that mess.
->>> 
->>> There are a couple of things to be said about the envelope detector,
->>> one question is where it should live? I placed it in the adc
->>directory,
->>> but maybe it deserves an iio directory of its own? I'm also a bit
->>> worried that the name is a wee bit too generic. But what is a good
->>> name? I don't want it to be too long like dac-comp-envelope-detector
->>> and something like dac-comp-env-det is just unreadable. Naming is
->>> difficult... And suggestions?
->>
->>Yeah, it is a bit tricky. It is a envelope detector built from
->discrete
->>components, but of course there are many more ways to build one. If
->you
->>have
->>a codename for your platform you could use this for the DT compatible
->>string, like 'vendor,foobar-envelope-detector'.
->>
->>> 
->>> Another thing is that I'm not 100% satisfied with the fact that you
->>> have to decide at instantiation if you are going to invert the
->search
->>> or not (search from below). But in order for that to be selectable
->>> at runtime with a channel attribute of some sort, I need to be able
->>> to rebind the interrupt to the other edge and I want to do that
->>> without releasing the irq and grabbing it again (someone might
->>> otherwise steal the irq, making the driver lose the irq all
->>together).
->>> I don't see any API to change the irq trigger condition. Is there
->>> such a thing?
->>> 
->>> Anyway, despite all the above questions and remarks, this works for
->>> me. Please consider applying.
->>
->>In general this series looks really good, good and clear
->implementation
->>as
->>well as documentation. A few minor bits here and there, but that is
->>normal.
+Thanks for the patch. Comments inline.
 
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+> ---
+>  drivers/staging/iio/cdc/ad7746.c | 26 ++++++++++++++++----------
+>  1 file changed, 16 insertions(+), 10 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> index f41251c..751f0d1 100644
+> --- a/drivers/staging/iio/cdc/ad7746.c
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -70,8 +70,12 @@
+>  #define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
+>  
+>  /* Config Register Bit Designations (AD7746_REG_CFG) */
+> -#define AD7746_CONF_VTFS(x)		((x) << 6)
+> -#define AD7746_CONF_CAPFS(x)		((x) << 3)
+> +#define AD7746_CONF_VTFS_SHIFT		6
+> +#define AD7746_CONF_CAPFS_SHIFT		3
+> +#define AD7746_CONF_VTFS_MASK		0x3
+> +#define AD7746_CONF_CAPFS_MASK		0x7
+> +#define AD7746_CONF_VTFS(x)		((x) << AD7746_CONF_VTFS_SHIFT)
+> +#define AD7746_CONF_CAPFS(x)		((x) << AD7746_CONF_CAPFS_SHIFT)
+>  #define AD7746_CONF_MODE_IDLE		(0 << 0)
+>  #define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
+>  #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
+> @@ -224,8 +228,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+>  	case IIO_CAPACITANCE:
+>  		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
+>  		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
+> -		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
+> -			0x7][1];
+> +		delay = ad7746_cap_filter_rate_table[(chip->config &
+> +			AD7746_CONF_CAPFS_MASK) >> AD7746_CONF_CAPFS_SHIFT][1];
+
+This flips the order in which the shift and the mask are applied, that will
+break things. But maybe we should change things so that the mask includes
+the offset and use the GENMASK() macro to create them. This would also allow
+to simplify
+
+	chip->config &= ~AD7746_CONF_CAPFS(AD7746_CONF_CAPFS_MASK);
+
+to
+
+	chip->config &= ~AD7746_CONF_CAPFS_MASK;
+
+I'd also introduce a helper variable to move the index calculation outside
+of the array brackets. It is a bit convoluted the way it is right now.
+
+Same comment for the similar changes done below.
+
+>  
+>  		if (chip->capdac_set != chan->channel) {
+>  			ret = i2c_smbus_write_byte_data(chip->client,
+> @@ -246,8 +250,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+>  	case IIO_TEMP:
+>  		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
+>  		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
+> -		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
+> -			0x3][1];
+> +		delay = ad7746_cap_filter_rate_table[(chip->config &
+> +			AD7746_CONF_VTFS_MASK) >> AD7746_CONF_VTFS_SHIFT][1];
+>  		break;
+>  	default:
+>  		return -EINVAL;
+[...]
+> @@ -636,12 +640,14 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+>  		switch (chan->type) {
+>  		case IIO_CAPACITANCE:
+>  			*val = ad7746_cap_filter_rate_table[
+> -					(chip->config >> 3) & 0x7][0];
+> +				(chip->config & AD7746_CONF_CAPFS_MASK) >>
+> +					AD7746_CONF_CAPFS_SHIFT][0];
+>  			ret = IIO_VAL_INT;
+>  			break;
+>  		case IIO_VOLTAGE:
+>  			*val = ad7746_vt_filter_rate_table[
+> -					(chip->config >> 6) & 0x3][0];
+> +				(chip->config & AD7746_CONF_VTFS_MASK) >>
+> +					AD7746_CONF_VTFS_SHIFT][0];
+>  			break;
+>  		default:
+>  			ret = -EINVAL;
+> 
+
