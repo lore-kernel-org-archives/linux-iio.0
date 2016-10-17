@@ -1,63 +1,102 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f195.google.com ([209.85.216.195]:34787 "EHLO
-        mail-qt0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756987AbcJPRwT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Oct 2016 13:52:19 -0400
-Received: by mail-qt0-f195.google.com with SMTP id f6so5469067qtd.1
-        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2016 10:52:19 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <4e53b4e7-6529-f120-29aa-f0ab20d0a353@kernel.org>
-References: <1476554677-1777-1-git-send-email-matt@ranostay.consulting> <4e53b4e7-6529-f120-29aa-f0ab20d0a353@kernel.org>
-From: Matt Ranostay <matt@ranostay.consulting>
-Date: Sun, 16 Oct 2016 10:52:18 -0700
-Message-ID: <CAJ_EiSQ7UKS6ZacpcgXmmOrzUM+O6jvSX6t201d6nw9ru_-+MA@mail.gmail.com>
-Subject: Re: [PATCH] iio: proximity: pulsedlight-lidar-lite-v2: cleanup power management
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <eraretuya@gmail.com>
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: linux-iio@vger.kernel.org,
+	outreachy-kernel@googlegroups.com
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH] staging: iio: cdc: ad7746: add additional config defines
+Date: Mon, 17 Oct 2016 11:21:49 +0800
+Message-Id: <1476674510-10734-1-git-send-email-eraretuya@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Oct 16, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 15/10/16 19:04, Matt Ranostay wrote:
->> Remove pm_runtime_mark_last_busy() call that wasn't need in the probe
->> since the device should be put to sleep
->>
->> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
-> Hi Matt,
->
-> I don't really follow what you are addressing here.
-> Is the point that without this call it will suspend immediately?
-> I could figure this out from the pm docs based on a quick skim
-> read.
->
-> Or is it simply that the pm_runtime_idle call following it
-> will suspend immediately whatever this value contains?
+Introduce defines for shifting and mask under the config register for
+better readability.
 
-Basically it going to be suspended once pm_runtime_idle() is called,
-and setting the last busy is useless and not needed.
-Clearly this doesn't affect the device running but just makes the code
-more consistent with other uses.
+Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+---
+ drivers/staging/iio/cdc/ad7746.c | 26 ++++++++++++++++----------
+ 1 file changed, 16 insertions(+), 10 deletions(-)
 
->
->
-> Jonathan
->> ---
->>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 2 --
->>  1 file changed, 2 deletions(-)
->>
->> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> index 3141c3c161bb..1fa9eefa0982 100644
->> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
->> @@ -301,8 +301,6 @@ static int lidar_probe(struct i2c_client *client,
->>       if (ret)
->>               goto error_unreg_buffer;
->>       pm_runtime_enable(&client->dev);
->> -
->> -     pm_runtime_mark_last_busy(&client->dev);
->>       pm_runtime_idle(&client->dev);
->>
->>       return 0;
->>
->
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index f41251c..751f0d1 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -70,8 +70,12 @@
+ #define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
+ 
+ /* Config Register Bit Designations (AD7746_REG_CFG) */
+-#define AD7746_CONF_VTFS(x)		((x) << 6)
+-#define AD7746_CONF_CAPFS(x)		((x) << 3)
++#define AD7746_CONF_VTFS_SHIFT		6
++#define AD7746_CONF_CAPFS_SHIFT		3
++#define AD7746_CONF_VTFS_MASK		0x3
++#define AD7746_CONF_CAPFS_MASK		0x7
++#define AD7746_CONF_VTFS(x)		((x) << AD7746_CONF_VTFS_SHIFT)
++#define AD7746_CONF_CAPFS(x)		((x) << AD7746_CONF_CAPFS_SHIFT)
+ #define AD7746_CONF_MODE_IDLE		(0 << 0)
+ #define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
+ #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
+@@ -224,8 +228,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+ 	case IIO_CAPACITANCE:
+ 		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
+ 		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
+-		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
+-			0x7][1];
++		delay = ad7746_cap_filter_rate_table[(chip->config &
++			AD7746_CONF_CAPFS_MASK) >> AD7746_CONF_CAPFS_SHIFT][1];
+ 
+ 		if (chip->capdac_set != chan->channel) {
+ 			ret = i2c_smbus_write_byte_data(chip->client,
+@@ -246,8 +250,8 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+ 	case IIO_TEMP:
+ 		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
+ 		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
+-		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
+-			0x3][1];
++		delay = ad7746_cap_filter_rate_table[(chip->config &
++			AD7746_CONF_VTFS_MASK) >> AD7746_CONF_VTFS_SHIFT][1];
+ 		break;
+ 	default:
+ 		return -EINVAL;
+@@ -369,7 +373,7 @@ static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
+ 	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
+ 		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
+ 
+-	chip->config &= ~AD7746_CONF_CAPFS(0x7);
++	chip->config &= ~AD7746_CONF_CAPFS(AD7746_CONF_CAPFS_MASK);
+ 	chip->config |= AD7746_CONF_CAPFS(i);
+ 
+ 	return 0;
+@@ -387,7 +391,7 @@ static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
+ 	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
+ 		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
+ 
+-	chip->config &= ~AD7746_CONF_VTFS(0x3);
++	chip->config &= ~AD7746_CONF_VTFS(AD7746_CONF_VTFS_MASK);
+ 	chip->config |= AD7746_CONF_VTFS(i);
+ 
+ 	return 0;
+@@ -636,12 +640,14 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 		switch (chan->type) {
+ 		case IIO_CAPACITANCE:
+ 			*val = ad7746_cap_filter_rate_table[
+-					(chip->config >> 3) & 0x7][0];
++				(chip->config & AD7746_CONF_CAPFS_MASK) >>
++					AD7746_CONF_CAPFS_SHIFT][0];
+ 			ret = IIO_VAL_INT;
+ 			break;
+ 		case IIO_VOLTAGE:
+ 			*val = ad7746_vt_filter_rate_table[
+-					(chip->config >> 6) & 0x3][0];
++				(chip->config & AD7746_CONF_VTFS_MASK) >>
++					AD7746_CONF_VTFS_SHIFT][0];
+ 			break;
+ 		default:
+ 			ret = -EINVAL;
+-- 
+2.7.4
