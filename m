@@ -1,54 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1050.oracle.com ([141.146.126.70]:44495 "EHLO
-        aserp1050.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935048AbcJSOR5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 10:17:57 -0400
-Date: Wed, 19 Oct 2016 15:51:25 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Brian Masney <masneyb@onstation.org>
-Cc: devel@driverdev.osuosl.org, lars@metafoo.de,
-        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        jic23@kernel.org
-Subject: Re: [PATCH 2/7] iio: light: tsl2583: change functions to only have a
- single exit point
-Message-ID: <20161019125125.GK4469@mwanda>
-References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
- <1476873130-24926-2-git-send-email-masneyb@onstation.org>
- <20161019110859.GG4469@mwanda>
- <20161019123816.GA6741@basecamp.onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161019123816.GA6741@basecamp.onstation.org>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.160]:64474 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S965042AbcJQQxB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2016 12:53:01 -0400
+Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v4 7/8] drivers:input:ads7846(+tsc2046): fix spi module table
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <acdf452f-01f2-27df-11c5-bb8db002394a@ti.com>
+Date: Mon, 17 Oct 2016 18:52:51 +0200
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?windows-1252?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?windows-1252?Q?Mika_Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Message-Id: <FB793B8D-2CFB-4070-9267-A6A9680C8B5C@goldelico.com>
+References: <cover.1476712675.git.hns@goldelico.com> <70cc986f3cf98dd89f0460b5042083aad58a7366.1476712675.git.hns@goldelico.com> <acdf452f-01f2-27df-11c5-bb8db002394a@ti.com>
+To: "Andrew F. Davis" <afd@ti.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Oct 19, 2016 at 08:38:16AM -0400, Brian Masney wrote:
-> On Wed, Oct 19, 2016 at 02:08:59PM +0300, Dan Carpenter wrote:
-> > On Wed, Oct 19, 2016 at 06:32:05AM -0400, Brian Masney wrote:
-> > > Change the following functions to only have a single exit point:
-> > > taos_i2c_read(), taos_als_calibrate(), taos_chip_on(),
-> > > taos_gain_store(), taos_gain_available_show(), taos_luxtable_store()
-> > > and taos_probe().
-> > > 
-> > 
-> > What's the point of this?  This style of code just makes things more
-> > complicated and leads to "forgot the error code" bugs.  People think
-> > that it future proofs the code in case we add locking but I have looked
-> > into this and it has minimal if any impact at preventing locking bugs.
-> 
-> The reason that I did this was due to the locking that I added later in
-> the patch series. Each function would only have a single call to
-> mutex_unlock(). I should have mentioned that in my message.
 
-This kind of trick does not work in real life.  I have looked at it.
-In theory, it should work but in real life, empirically, it does not
-and it introduces additional new bugs.
+> Am 17.10.2016 um 17:54 schrieb Andrew F. Davis <afd@ti.com>:
+>=20
+> On 10/17/2016 08:57 AM, H. Nikolaus Schaller wrote:
+>> Fix module table so that the driver is loaded if compiled
+>> as module and requested by DT.
+>>=20
+>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> ---
+>> drivers/input/touchscreen/ads7846.c | 11 +++++++++++
+>> 1 file changed, 11 insertions(+)
+>>=20
+>> diff --git a/drivers/input/touchscreen/ads7846.c =
+b/drivers/input/touchscreen/ads7846.c
+>> index 400e421..9a5d84d 100644
+>> --- a/drivers/input/touchscreen/ads7846.c
+>> +++ b/drivers/input/touchscreen/ads7846.c
+>> @@ -1532,6 +1532,17 @@ static int ads7846_remove(struct spi_device =
+*spi)
+>> 	return 0;
+>> }
+>>=20
+>> +static const struct spi_device_id ads7846_idtable[] =3D {
+>> +	{ "tsc2046", 0 },
+>> +	{ "ads7843", 0 },
+>> +	{ "ads7845", 0 },
+>> +	{ "ads7846", 0 },
+>> +	{ "ads7873", 0 },
+>> +	{ }
+>> +};
+>> +
+>=20
+> no space needed
+>=20
+>> +MODULE_DEVICE_TABLE(spi, ads7846_idtable);
+>> +
+>> static struct spi_driver ads7846_driver =3D {
+>> 	.driver =3D {
+>> 		.name	=3D "ads7846",
+>>=20
+>=20
+> the MODULE_ALIAS below can now also be removed with this patch.
 
-People are always looking for a magic bullet but there is no such thing.
-The best approach is just to write the simplest, clearest code that you
-can.
+Ok! Noted for V5.
 
-regards,
-dan carpenter
+BR and thanks,
+Nikolaus
 
