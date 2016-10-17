@@ -1,74 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from devils.ext.ti.com ([198.47.26.153]:44256 "EHLO
-        devils.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S965112AbcJQPzk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2016 11:55:40 -0400
-Subject: Re: [PATCH v4 7/8] drivers:input:ads7846(+tsc2046): fix spi module
- table
-To: "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-References: <cover.1476712675.git.hns@goldelico.com>
- <70cc986f3cf98dd89f0460b5042083aad58a7366.1476712675.git.hns@goldelico.com>
-CC: <linux-input@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>, <linux-omap@vger.kernel.org>,
-        <letux-kernel@openphoenux.org>, <linux-iio@vger.kernel.org>,
-        <kernel@pyra-handheld.com>
-From: "Andrew F. Davis" <afd@ti.com>
-Message-ID: <acdf452f-01f2-27df-11c5-bb8db002394a@ti.com>
-Date: Mon, 17 Oct 2016 10:54:03 -0500
-MIME-Version: 1.0
-In-Reply-To: <70cc986f3cf98dd89f0460b5042083aad58a7366.1476712675.git.hns@goldelico.com>
-Content-Type: text/plain; charset="windows-1252"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: 
+Cc: Linus Torvalds <torvalds@linux-foundation.org>,
+	linux-kernel@vger.kernel.org,
+	Arnd Bergmann <arnd@arndb.de>,
+	Ico Doornekamp <ico@pruts.nl>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Ioana Ciornei <ciorneiioana@gmail.com>,
+	Luis de Bethencourt <luisbg@osg.samsung.com>,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org
+Subject: [PATCH 14/28] iio: accel: sca3000_core: avoid potentially uninitialized variable
+Date: Tue, 18 Oct 2016 00:13:35 +0200
+Message-Id: <20161017221355.1861551-2-arnd@arndb.de>
+In-Reply-To: <20161017220342.1627073-1-arnd@arndb.de>
+References: <20161017220342.1627073-1-arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 10/17/2016 08:57 AM, H. Nikolaus Schaller wrote:
-> Fix module table so that the driver is loaded if compiled
-> as module and requested by DT.
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/input/touchscreen/ads7846.c | 11 +++++++++++
->  1 file changed, 11 insertions(+)
-> 
-> diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
-> index 400e421..9a5d84d 100644
-> --- a/drivers/input/touchscreen/ads7846.c
-> +++ b/drivers/input/touchscreen/ads7846.c
-> @@ -1532,6 +1532,17 @@ static int ads7846_remove(struct spi_device *spi)
->  	return 0;
->  }
->  
-> +static const struct spi_device_id ads7846_idtable[] = {
-> +	{ "tsc2046", 0 },
-> +	{ "ads7843", 0 },
-> +	{ "ads7845", 0 },
-> +	{ "ads7846", 0 },
-> +	{ "ads7873", 0 },
-> +	{ }
-> +};
-> +
+The newly added __sca3000_get_base_freq function handles all valid
+modes of the SCA3000_REG_ADDR_MODE register, but gcc notices
+that any other value (i.e. 0x00) causes the base_freq variable to
+not get initialized:
 
-no space needed
+drivers/staging/iio/accel/sca3000_core.c: In function 'sca3000_write_raw':
+drivers/staging/iio/accel/sca3000_core.c:527:23: error: 'base_freq' may be used uninitialized in this function [-Werror=maybe-uninitialized]
 
-> +MODULE_DEVICE_TABLE(spi, ads7846_idtable);
-> +
->  static struct spi_driver ads7846_driver = {
->  	.driver = {
->  		.name	= "ads7846",
-> 
+This adds explicit error handling for unexpected register values,
+to ensure this cannot happen.
 
-the MODULE_ALIAS below can now also be removed with this patch.
+Fixes: e0f3fc9b47e6 ("iio: accel: sca3000_core: implemented IIO_CHAN_INFO_SAMP_FREQ")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Cc: Ico Doornekamp <ico@pruts.nl>
+Cc: Jonathan Cameron <jic23@kernel.org>
+---
+I submitted this on Sept 22, and Jonathan said he applied it to his
+'togreg' tree, but it hasn't appeared in linux-next yet, presumably
+since this was not considered material for v4.9.
+
+If we enable the warning again by default, we may want to have the
+fix merged for v4.9 after all.
+
+ drivers/staging/iio/accel/sca3000_core.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/staging/iio/accel/sca3000_core.c b/drivers/staging/iio/accel/sca3000_core.c
+index d626125..564b36d 100644
+--- a/drivers/staging/iio/accel/sca3000_core.c
++++ b/drivers/staging/iio/accel/sca3000_core.c
+@@ -468,6 +468,8 @@ static inline int __sca3000_get_base_freq(struct sca3000_state *st,
+ 	case SCA3000_MEAS_MODE_OP_2:
+ 		*base_freq = info->option_mode_2_freq;
+ 		break;
++	default:
++		ret = -EINVAL;
+ 	}
+ error_ret:
+ 	return ret;
+-- 
+2.9.0
