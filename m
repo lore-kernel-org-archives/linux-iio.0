@@ -1,298 +1,244 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.220]:23619 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934322AbcJQODR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2016 10:03:17 -0400
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com
-Subject: [PATCH v4 4/8] drivers:input:tsc2007: add iio interface to read external ADC input and temperature
-Date: Mon, 17 Oct 2016 15:57:52 +0200
-Message-Id: <4d3c600bf0a6b75a74212a103bf31525505290a0.1476712675.git.hns@goldelico.com>
-In-Reply-To: <cover.1476712675.git.hns@goldelico.com>
-References: <cover.1476712675.git.hns@goldelico.com>
-In-Reply-To: <cover.1476712675.git.hns@goldelico.com>
-References: <cover.1476712675.git.hns@goldelico.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <akinobu.mita@gmail.com>
+MIME-Version: 1.0
+In-Reply-To: <20161016180854.GA3597@d830.WORKGROUP>
+References: <1476633582-21211-1-git-send-email-akinobu.mita@gmail.com> <20161016180854.GA3597@d830.WORKGROUP>
+From: Akinobu Mita <akinobu.mita@gmail.com>
+Date: Mon, 17 Oct 2016 23:03:44 +0900
+Message-ID: <CAC5umygBg2U=AAQoKm+TXLAA_RgR128zr-CYi920i9en6ga7Gw@mail.gmail.com>
+Subject: Re: [PATCH] iio: ti-adc0832: add triggered buffer support
+To: Alison Schofield <amsfield22@gmail.com>
+Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-The tsc2007 chip not only has a resistive touch screen controller but
-also an external AUX adc imput which can be used for an ambient
-light sensor, battery voltage monitoring or any general purpose.
+2016-10-17 3:08 GMT+09:00 Alison Schofield <amsfield22@gmail.com>:
+> On Mon, Oct 17, 2016 at 12:59:42AM +0900, Akinobu Mita wrote:
+>> This adds triggered buffer support for it-adc0832 driver.  Tested with
+>> ADC0831 and ADC0832 by using SYSFS trigger.
+>>
+>> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>> Cc: Jonathan Cameron <jic23@kernel.org>
+>> Cc: Hartmut Knaack <knaack.h@gmx.de>
+>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+>> ---
+>
+> Hi Akinobu,
+> I just scanned this looking for usage of iio_device_claim_direct_mode().
+> I don't see it, so wondering if that is intentional. Do you want to
+> allow both raw and buffered access at same time?  If not, look at
+> the iio_device_claim|release_direct_mode() functions.
+> alisons
 
-Additionally it can measure the chip temperature.
+The triggered buffer handler added by this patch does nothing special
+other than the ADC conversion by direct mode in this driver.
+It just calls adc0832_adc_conversion() for each enabled scan element.
+So I think protecting from multiple accesses by adc->lock is enough.
 
-This extension provides an iio interface for these adc channels.
+But I don't fully understand iio subsystem usages, please let me know
+if there is a reason to use iio_device_claim_direct_mode() in this case.
 
-Since it is not wasting much resources and is very straightforward,
-we simply provide all other adc channels as optional iio interfaces
-as weel. This can be used for debugging or special applications.
-
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/input/touchscreen/tsc2007.c | 151 +++++++++++++++++++++++++++++++++++-
- 1 file changed, 150 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
-index c314331..b4a9504 100644
---- a/drivers/input/touchscreen/tsc2007.c
-+++ b/drivers/input/touchscreen/tsc2007.c
-@@ -30,6 +30,7 @@
- #include <linux/of.h>
- #include <linux/of_gpio.h>
- #include <linux/input/touchscreen.h>
-+#include <linux/iio/iio.h>
- 
- #define TSC2007_MEASURE_TEMP0		(0x0 << 4)
- #define TSC2007_MEASURE_AUX		(0x2 << 4)
-@@ -61,6 +62,16 @@
- #define READ_X		(ADC_ON_12BIT | TSC2007_MEASURE_X)
- #define PWRDOWN		(TSC2007_12BIT | TSC2007_POWER_OFF_IRQ_EN)
- 
-+#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
-+{ \
-+	.datasheet_name = _name, \
-+	.type = _type, \
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
-+			BIT(_chan_info), \
-+	.indexed = 1, \
-+	.channel = _chan, \
-+}
-+
- struct ts_event {
- 	u16	x;
- 	u16	y;
-@@ -69,9 +80,13 @@ struct ts_event {
- 
- struct tsc2007 {
- 	struct input_dev	*input;
-+#ifdef CONFIG_IIO
-+	struct iio_dev		*indio;
-+#endif
- 	char			phys[32];
- 
- 	struct i2c_client	*client;
-+	struct mutex		mlock;
- 
- 	u16			model;
- 	u16			x_plate_ohms;
-@@ -192,7 +207,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- 	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
- 
- 		/* pen is down, continue with the measurement */
-+
-+		mutex_lock(&ts->mlock);
- 		tsc2007_read_values(ts, &tc);
-+		mutex_unlock(&ts->mlock);
- 
- 		rt = tsc2007_calculate_resistance(ts, &tc);
- 
-@@ -319,6 +337,89 @@ static void tsc2007_close(struct input_dev *input_dev)
- 	tsc2007_stop(ts);
- }
- 
-+#ifdef CONFIG_IIO
-+
-+static const struct iio_chan_spec tsc2007_iio_channel[] = {
-+	TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* Ohms? */
-+	TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
-+	TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
-+};
-+
-+static int tsc2007_read_raw(struct iio_dev *indio_dev,
-+	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
-+{
-+	struct  tsc2007 *tsc = iio_priv(indio_dev);
-+	int adc_chan = chan->channel;
-+	int ret = 0;
-+
-+	if (adc_chan >= ARRAY_SIZE(tsc2007_iio_channel))
-+		return -EINVAL;
-+
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
-+	mutex_lock(&tsc->mlock);
-+
-+	switch (chan->channel) {
-+	case 0:
-+		*val = tsc2007_xfer(tsc, READ_X);
-+		break;
-+	case 1:
-+		*val = tsc2007_xfer(tsc, READ_Y);
-+		break;
-+	case 2:
-+		*val = tsc2007_xfer(tsc, READ_Z1);
-+		break;
-+	case 3:
-+		*val = tsc2007_xfer(tsc, READ_Z2);
-+		break;
-+	case 4:
-+		*val = tsc2007_xfer(tsc, (ADC_ON_12BIT | TSC2007_MEASURE_AUX));
-+		break;
-+	case 5: {
-+		struct ts_event tc;
-+
-+		tc.x = tsc2007_xfer(tsc, READ_X);
-+		tc.z1 = tsc2007_xfer(tsc, READ_Z1);
-+		tc.z2 = tsc2007_xfer(tsc, READ_Z2);
-+		*val = tsc2007_calculate_resistance(tsc, &tc);
-+		break;
-+	}
-+	case 6:
-+		*val = tsc2007_is_pen_down(tsc);
-+		break;
-+	case 7:
-+		*val = tsc2007_xfer(tsc,
-+				    (ADC_ON_12BIT | TSC2007_MEASURE_TEMP0));
-+		break;
-+	case 8:
-+		*val = tsc2007_xfer(tsc,
-+				    (ADC_ON_12BIT | TSC2007_MEASURE_TEMP1));
-+		break;
-+	}
-+
-+	/* Prepare for next touch reading - power down ADC, enable PENIRQ */
-+	tsc2007_xfer(tsc, PWRDOWN);
-+
-+	mutex_unlock(&tsc->mlock);
-+
-+	ret = IIO_VAL_INT;
-+
-+	return ret;
-+}
-+
-+static const struct iio_info tsc2007_iio_info = {
-+	.read_raw = tsc2007_read_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+#endif
-+
- #ifdef CONFIG_OF
- static int tsc2007_get_pendown_state_gpio(struct device *dev)
- {
-@@ -453,26 +554,56 @@ static int tsc2007_probe(struct i2c_client *client,
- 	const struct tsc2007_platform_data *pdata = dev_get_platdata(&client->dev);
- 	struct tsc2007 *ts;
- 	struct input_dev *input_dev;
-+#ifdef CONFIG_IIO
-+	struct iio_dev *indio_dev;
-+#endif
- 	int err;
- 
- 	if (!i2c_check_functionality(client->adapter,
- 				     I2C_FUNC_SMBUS_READ_WORD_DATA))
- 		return -EIO;
- 
-+#ifdef CONFIG_IIO
-+	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*ts));
-+	if (!indio_dev) {
-+		dev_err(&client->dev, "iio_device_alloc failed\n");
-+		return -ENOMEM;
-+	}
-+
-+	ts = iio_priv(indio_dev);
-+#else
- 	ts = devm_kzalloc(&client->dev, sizeof(struct tsc2007), GFP_KERNEL);
- 	if (!ts)
- 		return -ENOMEM;
--
-+#endif
- 	input_dev = devm_input_allocate_device(&client->dev);
- 	if (!input_dev)
- 		return -ENOMEM;
- 
- 	i2c_set_clientdata(client, ts);
- 
-+#ifdef CONFIG_IIO
-+	indio_dev->name = "tsc2007";
-+	indio_dev->dev.parent = &client->dev;
-+	indio_dev->info = &tsc2007_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = tsc2007_iio_channel;
-+	indio_dev->num_channels = ARRAY_SIZE(tsc2007_iio_channel);
-+
-+	err = iio_device_register(indio_dev);
-+	if (err < 0) {
-+		dev_err(&client->dev, "iio_device_register() failed: %d\n",
-+			err);
-+		return err;
-+	}
-+	ts->indio = indio_dev;
-+#endif
-+
- 	ts->client = client;
- 	ts->irq = client->irq;
- 	ts->input = input_dev;
- 	init_waitqueue_head(&ts->wait);
-+	mutex_init(&ts->mlock);
- 
- 	snprintf(ts->phys, sizeof(ts->phys),
- 		 "%s/input0", dev_name(&client->dev));
-@@ -543,7 +674,9 @@ static int tsc2007_probe(struct i2c_client *client,
- 	if (err < 0) {
- 		dev_err(&client->dev,
- 			"Failed to setup chip: %d\n", err);
-+#ifdef CONFIG_IIO
- 		iio_device_unregister(indio_dev);
-+#endif
- 		return err;	/* usually, chip does not respond */
- 	}
- 
-@@ -557,6 +690,21 @@ static int tsc2007_probe(struct i2c_client *client,
- 	return 0;
- }
- 
-+static int tsc2007_remove(struct i2c_client *client)
-+{
-+	struct tsc2007 *ts = i2c_get_clientdata(client);
-+	struct input_dev *input_dev = ts->input;
-+#ifdef CONFIG_IIO
-+	struct iio_dev *indio_dev = ts->indio;
-+#endif
-+	input_unregister_device(input_dev);
-+
-+#ifdef CONFIG_IIO
-+	iio_device_unregister(indio_dev);
-+#endif
-+	return 0;
-+}
-+
- static const struct i2c_device_id tsc2007_idtable[] = {
- 	{ "tsc2007", 0 },
- 	{ }
-@@ -579,6 +727,7 @@ static struct i2c_driver tsc2007_driver = {
- 	},
- 	.id_table	= tsc2007_idtable,
- 	.probe		= tsc2007_probe,
-+	.remove		= tsc2007_remove,
- };
- 
- module_i2c_driver(tsc2007_driver);
--- 
-2.7.3
-
+>>  drivers/iio/adc/Kconfig      |   2 +
+>>  drivers/iio/adc/ti-adc0832.c | 106 +++++++++++++++++++++++++++++++++++--------
+>>  2 files changed, 89 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 3dc60c0..bd8d108 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -457,6 +457,8 @@ config TI_ADC081C
+>>  config TI_ADC0832
+>>       tristate "Texas Instruments ADC0831/ADC0832/ADC0834/ADC0838"
+>>       depends on SPI
+>> +     select IIO_BUFFER
+>> +     select IIO_TRIGGERED_BUFFER
+>>       help
+>>         If you say yes here you get support for Texas Instruments ADC0831,
+>>         ADC0832, ADC0834, ADC0838 ADC chips.
+>> diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
+>> index f4ba23e..e952e94 100644
+>> --- a/drivers/iio/adc/ti-adc0832.c
+>> +++ b/drivers/iio/adc/ti-adc0832.c
+>> @@ -14,6 +14,10 @@
+>>  #include <linux/spi/spi.h>
+>>  #include <linux/iio/iio.h>
+>>  #include <linux/regulator/consumer.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/trigger.h>
+>> +#include <linux/iio/triggered_buffer.h>
+>> +#include <linux/iio/trigger_consumer.h>
+>>
+>>  enum {
+>>       adc0831,
+>> @@ -38,10 +42,16 @@ struct adc0832 {
+>>               .indexed = 1,                                           \
+>>               .channel = chan,                                        \
+>>               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
+>> -             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)    \
+>> +             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
+>> +             .scan_index = chan,                                     \
+>> +             .scan_type = {                                          \
+>> +                     .sign = 'u',                                    \
+>> +                     .realbits = 8,                                  \
+>> +                     .storagebits = 8,                               \
+>> +             },                                                      \
+>>       }
+>>
+>> -#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2)                   \
+>> +#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)                       \
+>>       {                                                               \
+>>               .type = IIO_VOLTAGE,                                    \
+>>               .indexed = 1,                                           \
+>> @@ -49,18 +59,26 @@ struct adc0832 {
+>>               .channel2 = (chan2),                                    \
+>>               .differential = 1,                                      \
+>>               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
+>> -             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)    \
+>> +             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
+>> +             .scan_index = si,                                       \
+>> +             .scan_type = {                                          \
+>> +                     .sign = 'u',                                    \
+>> +                     .realbits = 8,                                  \
+>> +                     .storagebits = 8,                               \
+>> +             },                                                      \
+>>       }
+>>
+>>  static const struct iio_chan_spec adc0831_channels[] = {
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 0),
+>> +     IIO_CHAN_SOFT_TIMESTAMP(1),
+>>  };
+>>
+>>  static const struct iio_chan_spec adc0832_channels[] = {
+>>       ADC0832_VOLTAGE_CHANNEL(0),
+>>       ADC0832_VOLTAGE_CHANNEL(1),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 3),
+>> +     IIO_CHAN_SOFT_TIMESTAMP(4),
+>>  };
+>>
+>>  static const struct iio_chan_spec adc0834_channels[] = {
+>> @@ -68,10 +86,11 @@ static const struct iio_chan_spec adc0834_channels[] = {
+>>       ADC0832_VOLTAGE_CHANNEL(1),
+>>       ADC0832_VOLTAGE_CHANNEL(2),
+>>       ADC0832_VOLTAGE_CHANNEL(3),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 4),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 5),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 6),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 7),
+>> +     IIO_CHAN_SOFT_TIMESTAMP(8),
+>>  };
+>>
+>>  static const struct iio_chan_spec adc0838_channels[] = {
+>> @@ -83,14 +102,15 @@ static const struct iio_chan_spec adc0838_channels[] = {
+>>       ADC0832_VOLTAGE_CHANNEL(5),
+>>       ADC0832_VOLTAGE_CHANNEL(6),
+>>       ADC0832_VOLTAGE_CHANNEL(7),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7),
+>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 9),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 10),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 11),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5, 12),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4, 13),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7, 14),
+>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
+>> +     IIO_CHAN_SOFT_TIMESTAMP(16),
+>>  };
+>>
+>>  static int adc0831_adc_conversion(struct adc0832 *adc)
+>> @@ -178,6 +198,42 @@ static const struct iio_info adc0832_info = {
+>>       .driver_module = THIS_MODULE,
+>>  };
+>>
+>> +static irqreturn_t adc0832_trigger_handler(int irq, void *p)
+>> +{
+>> +     struct iio_poll_func *pf = p;
+>> +     struct iio_dev *indio_dev = pf->indio_dev;
+>> +     struct adc0832 *adc = iio_priv(indio_dev);
+>> +     u8 data[24] = { }; /* 16x 1 byte ADC data + 8 bytes timestamp */
+>> +     int scan_index;
+>> +     int i = 0;
+>> +
+>> +     mutex_lock(&adc->lock);
+>> +
+>> +     for_each_set_bit(scan_index, indio_dev->active_scan_mask,
+>> +                      indio_dev->masklength) {
+>> +             const struct iio_chan_spec *scan_chan =
+>> +                             &indio_dev->channels[scan_index];
+>> +             int ret = adc0832_adc_conversion(adc, scan_chan->channel,
+>> +                                              scan_chan->differential);
+>> +             if (ret < 0) {
+>> +                     dev_warn(&adc->spi->dev,
+>> +                              "failed to get conversion data\n");
+>> +                     goto out;
+>> +             }
+>> +
+>> +             data[i] = ret;
+>> +             i++;
+>> +     }
+>> +     iio_push_to_buffers_with_timestamp(indio_dev, data,
+>> +                                        iio_get_time_ns(indio_dev));
+>> +out:
+>> +     mutex_unlock(&adc->lock);
+>> +
+>> +     iio_trigger_notify_done(indio_dev->trig);
+>> +
+>> +     return IRQ_HANDLED;
+>> +}
+>> +
+>>  static int adc0832_probe(struct spi_device *spi)
+>>  {
+>>       struct iio_dev *indio_dev;
+>> @@ -233,9 +289,20 @@ static int adc0832_probe(struct spi_device *spi)
+>>
+>>       spi_set_drvdata(spi, indio_dev);
+>>
+>> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>> +                                      adc0832_trigger_handler, NULL);
+>> +     if (ret)
+>> +             goto err_reg_disable;
+>> +
+>>       ret = iio_device_register(indio_dev);
+>>       if (ret)
+>> -             regulator_disable(adc->reg);
+>> +             goto err_buffer_cleanup;
+>> +
+>> +     return 0;
+>> +err_buffer_cleanup:
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>> +err_reg_disable:
+>> +     regulator_disable(adc->reg);
+>>
+>>       return ret;
+>>  }
+>> @@ -246,6 +313,7 @@ static int adc0832_remove(struct spi_device *spi)
+>>       struct adc0832 *adc = iio_priv(indio_dev);
+>>
+>>       iio_device_unregister(indio_dev);
+>> +     iio_triggered_buffer_cleanup(indio_dev);
+>>       regulator_disable(adc->reg);
+>>
+>>       return 0;
+>> --
+>> 2.7.4
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
