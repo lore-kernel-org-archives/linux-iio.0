@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:30587 "EHLO
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.221]:21775 "EHLO
         mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934346AbcJQODS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2016 10:03:18 -0400
+        with ESMTP id S932930AbcJQOAH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 17 Oct 2016 10:00:07 -0400
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -24,9 +24,9 @@ Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
         letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
         kernel@pyra-handheld.com
-Subject: [PATCH v4 7/8] drivers:input:ads7846(+tsc2046): fix spi module table
-Date: Mon, 17 Oct 2016 15:57:55 +0200
-Message-Id: <70cc986f3cf98dd89f0460b5042083aad58a7366.1476712675.git.hns@goldelico.com>
+Subject: [PATCH v4 8/8] DT:omap3+ads7846: use new common touchscreen bindings
+Date: Mon, 17 Oct 2016 15:57:56 +0200
+Message-Id: <c6100c315496a5fde69029f7b7b0a5d2c3ffda0a.1476712675.git.hns@goldelico.com>
 In-Reply-To: <cover.1476712675.git.hns@goldelico.com>
 References: <cover.1476712675.git.hns@goldelico.com>
 In-Reply-To: <cover.1476712675.git.hns@goldelico.com>
@@ -34,36 +34,75 @@ References: <cover.1476712675.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix module table so that the driver is loaded if compiled
-as module and requested by DT.
+The standard touch screen bindings [1] replace the private ti,swap-xy
+with touchscreen-swaped-x-y. And for the Openpandora we use
+touchscreen-size etc. to match the LCD screen size.
+
+[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+Tested with OpenPandora.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/input/touchscreen/ads7846.c | 11 +++++++++++
- 1 file changed, 11 insertions(+)
+ arch/arm/boot/dts/omap3-lilly-a83x.dtsi              |  2 +-
+ arch/arm/boot/dts/omap3-pandora-common.dtsi          | 17 +++++++++++++----
+ arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi |  3 ++-
+ 3 files changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
-index 400e421..9a5d84d 100644
---- a/drivers/input/touchscreen/ads7846.c
-+++ b/drivers/input/touchscreen/ads7846.c
-@@ -1532,6 +1532,17 @@ static int ads7846_remove(struct spi_device *spi)
- 	return 0;
- }
+diff --git a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
+index fa611a5..b8b3864 100644
+--- a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
++++ b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
+@@ -325,7 +325,7 @@
+ 		ti,y-max = /bits/ 16 <3600>;
+ 		ti,x-plate-ohms = /bits/ 16 <80>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+-		ti,swap-xy;
++		touchscreen-swapped-x-y;
  
-+static const struct spi_device_id ads7846_idtable[] = {
-+	{ "tsc2046", 0 },
-+	{ "ads7843", 0 },
-+	{ "ads7845", 0 },
-+	{ "ads7846", 0 },
-+	{ "ads7873", 0 },
-+	{ }
-+};
+ 		wakeup-source;
+ 	};
+diff --git a/arch/arm/boot/dts/omap3-pandora-common.dtsi b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+index b0d1551..d12008a 100644
+--- a/arch/arm/boot/dts/omap3-pandora-common.dtsi
++++ b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+@@ -700,10 +700,19 @@
+ 		pendown-gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
+ 		vcc-supply = <&vaux4>;
+ 
+-		ti,x-min = /bits/ 16 <0>;
+-		ti,x-max = /bits/ 16 <8000>;
+-		ti,y-min = /bits/ 16 <0>;
+-		ti,y-max = /bits/ 16 <4800>;
++		touchscreen-size-x = <800>;
++		touchscreen-size-y = <480>;
++		touchscreen-max-pressure = <1000>;
++		touchscreen-fuzz-x = <16>;
++		touchscreen-fuzz-y = <16>;
++		touchscreen-fuzz-pressure = <10>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
 +
-+MODULE_DEVICE_TABLE(spi, ads7846_idtable);
-+
- static struct spi_driver ads7846_driver = {
- 	.driver = {
- 		.name	= "ads7846",
++		ti,x-min = /bits/ 16 <160>;
++		ti,x-max = /bits/ 16 <3900>;
++		ti,y-min = /bits/ 16 <220>;
++		ti,y-max = /bits/ 16 <3750>;
+ 		ti,x-plate-ohms = /bits/ 16 <40>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+ 
+diff --git a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
+index 157345b..3627a63 100644
+--- a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
++++ b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
+@@ -66,6 +66,7 @@
+ 		ti,x-plate-ohms = /bits/ 16 <40>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+ 		ti,swap-xy;
+-		wakeup-source;
++		touchscreen-swapped-x-y;
++		linux,wakeup;
+ 	};
+ };
 -- 
 2.7.3
 
