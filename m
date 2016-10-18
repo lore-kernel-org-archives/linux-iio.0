@@ -1,57 +1,72 @@
-Return-Path: <peda@axentia.se>
-Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
-To: <jic23@kernel.org>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
- <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
- <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
- <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
- <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
- <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Lars-Peter Clausen
-	<lars@metafoo.de>, <linux-kernel@vger.kernel.org>, Hartmut Knaack
-	<knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring
-	<robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-iio-owner@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <28861d1d-7f50-7ea2-f8cb-5a9d359f74c0@axentia.se>
-Date: Fri, 21 Oct 2016 10:24:24 +0200
-MIME-Version: 1.0
-In-Reply-To: <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="windows-1252"
+Return-Path: <tomas.novotny@tbs-biometrics.com>
+From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+	devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Akinobu Mita <akinobu.mita@gmail.com>,
+	Yong Li <sdliyong@gmail.com>,
+	linux-iio@vger.kernel.org,
+	Tomas Novotny <tomas@novotny.cz>
+Subject: [PATCH v3 3/5] Documentation: dt: iio: add mcp4725/6 dac device binding
+Date: Tue, 18 Oct 2016 19:43:07 +0200
+Message-Id: <1476812589-18333-4-git-send-email-tomas.novotny@tbs-biometrics.com>
+In-Reply-To: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 2016-10-21 09:17, jic23@kernel.org wrote:
-> On 20.10.2016 19:17, Peter Rosin wrote:
->> On 2016-10-20 19:37, Jonathan Cameron wrote:
->>> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
->>
->> Interesting, one issue with that is that it is all in real world
->> units, while I'd rather have the raw value.
-> Um.. It's been a while, but the principle was (IIRC) that every
-> _available would match the units fo the associated info mask element.
-> Thus if you have a _raw element it would be in adc counts (most likely).
-> 
-> _input would be in relevant real world units, scale etc in the whatever
-> units the value itself is in.
+From: Tomas Novotny <tomas@novotny.cz>
 
-Ah, that was just me totally misreading the patch. I didn't realize
-that the iio_format_value function is also used for raw values and
-assumed it was all about real world units when that function was
-used. Feel rather silly ATM...
+Signed-off-by: Tomas Novotny <tomas@novotny.cz>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ .../devicetree/bindings/iio/dac/mcp4725.txt        | 35 ++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
 
->> So, I would need to
->> convert back to the raw value using the scale, which sounds boring
->> but doable. However, I wonder if calibration may also be involved
->> with that conversion back to raw for some channels? That sounds a
->> bit more driver specific and potentially troublesome...
-> I've not had a chance to look at your code (only picked up on this as
-> there was a fair length thread developing), but I wouldn't have thought 
-> we'd
-> need to deal with calibrations.   Might need them to move to real world
-> units from raw but that's always the case anyway (unfortunately).
-
-Right.
-
-Cheers,
-Peter
+diff --git a/Documentation/devicetree/bindings/iio/dac/mcp4725.txt b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+new file mode 100644
+index 0000000..1bc6c09
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+@@ -0,0 +1,35 @@
++Microchip mcp4725 and mcp4726 DAC device driver
++
++Required properties:
++	- compatible: Must be "microchip,mcp4725" or "microchip,mcp4726"
++	- reg: Should contain the DAC I2C address
++	- vdd-supply: Phandle to the Vdd power supply. This supply is used as a
++	  voltage reference on mcp4725. It is used as a voltage reference on
++	  mcp4726 if there is no vref-supply specified.
++
++Optional properties (valid only for mcp4726):
++	- vref-supply: Optional phandle to the Vref power supply. Vref pin is
++	  used as a voltage reference when this supply is specified.
++	- microchip,vref-buffered: Boolean to enable buffering of the external
++	  Vref pin. This boolean is not valid without the vref-supply. Quoting
++	  the datasheet: This is offered in cases where the reference voltage
++	  does not have the current capability not to drop its voltage when
++	  connected to the internal resistor ladder circuit.
++
++Examples:
++
++	/* simple mcp4725 */
++	mcp4725@60 {
++		compatible = "microchip,mcp4725";
++		reg = <0x60>;
++		vdd-supply = <&vdac_vdd>;
++	};
++
++	/* mcp4726 with the buffered external reference voltage */
++	mcp4726@60 {
++		compatible = "microchip,mcp4726";
++		reg = <0x60>;
++		vdd-supply = <&vdac_vdd>;
++		vref-supply = <&vdac_vref>;
++		microchip,vref-buffered;
++	};
+-- 
+2.1.4
