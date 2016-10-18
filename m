@@ -1,97 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f48.google.com ([209.85.215.48]:34325 "EHLO
-        mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936172AbcJTQNh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 12:13:37 -0400
-Received: by mail-lf0-f48.google.com with SMTP id b81so89749353lfe.1
-        for <linux-iio@vger.kernel.org>; Thu, 20 Oct 2016 09:13:36 -0700 (PDT)
-Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature
- approximation
-To: Laxman Dewangan <ldewangan@nvidia.com>
-References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com>
- <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com>
- <5808E78B.4060109@nvidia.com>
-Cc: linux-iio@vger.kernel.org, rui.zhang@intel.com, edubezval@gmail.com
-From: =?UTF-8?Q?Pawe=c5=82_Jarosz?= <paweljarosz3691@gmail.com>
-Message-ID: <514328e7-9c2d-1d47-2624-593f0a373e0f@gmail.com>
-Date: Thu, 20 Oct 2016 18:14:46 +0200
-MIME-Version: 1.0
-In-Reply-To: <5808E78B.4060109@nvidia.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from hosting.pavoucek.net ([46.28.107.168]:38386 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934340AbcJRRyh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:54:37 -0400
+From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
+        Tomas Novotny <tomas@novotny.cz>
+Subject: [PATCH v3 2/5] iio: dac: mcp4725: fix incorrect comment
+Date: Tue, 18 Oct 2016 19:43:06 +0200
+Message-Id: <1476812589-18333-3-git-send-email-tomas.novotny@tbs-biometrics.com>
+In-Reply-To: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+From: Tomas Novotny <tomas@novotny.cz>
 
+Number 2 is referencing to the settings with the largest available
+resistor.
 
-W dniu 20.10.2016 o 17:49, Laxman Dewangan pisze:
->
-> On Thursday 20 October 2016 08:26 PM, Paweł Jarosz wrote:
->>
->>
->> W dniu 20.10.2016 o 14:40, Laxman Dewangan pisze:
->>>
->>> On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
->>>> In current version of the driver there is error in temperature
->>>> calculation.
->>>>
->>>> So lets fix it using proper linear function.
->>>>
->>>> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
->>>
->>> Per my calculation, existing and your equation is same as both are 
->>> doing linear interpolation.
->>>
->>> Only think I have seen is that I have used 1000 for two consecutive 
->>> temp difference and you used (t2 - t1), so your is better in this 
->>> case but still the equation is same.
->>>
->>> The equation from you is
->>>
->>>     t1 + (hi -val) * factor.
->>>
->>> and existing one is
->>>      t2 - (val -lo) * factor
->>>
->>>
->>> factor is abs((t2-t1)/(hi-lo))
->>>
->>> If my analysis is not correct then can you please provide the 
->>> example with calculation for better understansing?
->>
->> Hi
->>
->> For example if we try to calculate temp for val = 8, i = 1 and table:
->>
->> <0 9
->>  2 7>
->>
->>     adc_hi = gti->lookup_table[2 * i - 1];
->>     adc_lo = gti->lookup_table[2 * i + 1];
->>     temp = gti->lookup_table[2 * i];
->>     temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
->>
->> Your method gives temp =  -498
->>
->>
->
->
-> The temp should be in the milli-centigrade in the table so it should be
-> <0 9
->   2000 7>;
->
-> and if you relplace 1000 with the t2 -t1 where
->
-> t1  = gti->lookup_table[2*i -2]
-> t2 = gti->lookup_table[2 *i]
->
-> then it will work perfectly.
->
-> So your change for replacing 1000 is correct as what I said but need 
-> not to change whole equation altogether.
+No functional change.
 
-Sorry for that ... when i was writing this i wasn't using your equation, 
-but writing from scratch.
-I can send new patch with corrections or leave it as it is. Your call.
+Signed-off-by: Tomas Novotny <tomas@novotny.cz>
+---
+ drivers/iio/dac/mcp4725.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index 1f55d1b..e481f38 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -374,7 +374,7 @@ static int mcp4725_probe(struct i2c_client *client,
+ 	}
+ 	pd = (inbuf[0] >> 1) & 0x3;
+ 	data->powerdown = pd > 0 ? true : false;
+-	data->powerdown_mode = pd ? pd - 1 : 2; /* largest register to gnd */
++	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
+ 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
+ 
+ 	err = iio_device_register(indio_dev);
+-- 
+2.1.4
 
-Paweł
