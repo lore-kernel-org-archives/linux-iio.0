@@ -1,131 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49133 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751488AbcJOQmr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Oct 2016 12:42:47 -0400
-Subject: Re: [PATCH 00/18 V2] staging:iio:accel rework driver and move out of
- staging.
-To: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
-References: <20161008163918.18758-1-jic23@kernel.org>
- <d7ee3c5c-5922-d1ac-731d-2eb08154d4bf@kernel.org>
- <54aa839a-3965-e49f-f5b6-c89fc3f5b36f@metafoo.de>
-Cc: knaack.h@gmx.de, pmeerw@pmeerw.net
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c02b6ad1-e4ea-2d32-c486-12b4b02a478c@kernel.org>
-Date: Sat, 15 Oct 2016 17:42:43 +0100
-MIME-Version: 1.0
-In-Reply-To: <54aa839a-3965-e49f-f5b6-c89fc3f5b36f@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from hosting.pavoucek.net ([46.28.107.168]:50799 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S941009AbcJRRtg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:49:36 -0400
+From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
+        Tomas Novotny <tomas@novotny.cz>
+Subject: [PATCH v3 0/5] iio: dac: mcp4725: use regulator framework, add vref and dt support
+Date: Tue, 18 Oct 2016 19:43:04 +0200
+Message-Id: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/10/16 16:58, Lars-Peter Clausen wrote:
-> On 10/15/2016 05:17 PM, Jonathan Cameron wrote:
->> *Smiles sweetly at the list*
->>
->> Go on, someone give me a review on these.
-> 
-> Looks good, otherwise I'd complained ;)
-> 
-> Reviewed-by: Lars-Peter Clausen <lars@metafoo.de>
-Cool. Don't want to add to those stats of applied with
-no sign offs or reviews other than the author ;)
+From: Tomas Novotny <tomas@novotny.cz>
 
-Jonathan
-> 
->>
->> Thanks,
->>
->> Jonathan
->>
->> On 08/10/16 17:39, Jonathan Cameron wrote:
->>> Changes since V1:
->>> - Fix the patch that breaks the makefile due to a := when it should be +=
->>>   It didn't make it to the end of the set, but broke building of other drivers
->>>   in the middle (thanks Lars-Peter Clausen)
->>> - Drop the unwanted buffer setup after the move to the hybrid hardware /
->>>   software buffer (Lars-Peter Clausen)
->>> - Use chan->address rather than the modifier to index the address array.
->>>   (Lars-Peter Clausen)
->>> - Typo and gibberish fixups (Peter Meerwald-Stadhler)
->>>
->>> V1 Message
->>>
->>> This was around about the 4th IIO driver dating back to the days when I was
->>> sticking these on sprinters and seeing if we could learn anything useful
->>> about how they ran.
->>>
->>> It was a device way ahead of it's time.  Back then this was pretty much
->>> the only relatively high G / low cost sensor and it had a hardware fifo.
->>>
->>> Anyhow, it has languished in staging primarily because of the complexity
->>> around working out how we handle hardware buffers.  However, that trail has
->>> long since been blaized by the likes of the am335x driver and now lots of
->>> of newer devices are coming with fifos to smooth the flow of data between
->>> these realtime chips and non realtime operating sytems, so it just became
->>> a question of getting around to sorting it out.  I suspect there are very
->>> few of these still out there, but I have an sca3000-e05 so that's no excuse 
->>>
->>> Anyhow, please review the whole series, but in particular the final move
->>> patch (i.e. the resulting code).  The only odd corner I know of now is
->>> the interaction of the watermark with the software controlled watermarks.
->>> That may take some thought, but in the meantime I don't think that is
->>> sufficient reason to keep it in staging.
->>>
->>> Some wacky corners in this hardware (like the crazy number representations
->>> for the motion detection thresholds).  It's a good datasheet but you
->>> do have to wonder what the designers were thinking at times 
->>>
->>> Jonathan
->>>
->>> p.s. The best bit about this series is now I can moan at everyone else
->>> about not cleaning up their staging drivers as this is the last one
->>> of mine. 
->>>
->>> Jonathan Cameron (18):
->>>   staging:iio:accel:sca3000 Fix a use before setting of the
->>>     indio_dev->buffer pointer.
->>>   staging:iio:accel:sca3000 merge files into one.
->>>   staging:iio:accel:sca3000 drop sca3000_register_ring_funcs
->>>   staging:iio:accel:sca3000 Fix clearing of flag + setting of size of
->>>     scan.
->>>   staging:iio:accel:sca3000 Drop custom ABI for watersheds.
->>>   staging:iio:accel:sca3000 move to hybrid hard / soft buffer design.
->>>   staging:iio:accel:sca3000 drop some unused variables.
->>>   staging:iio:accel:sca3000 use a 'fake' channel to handle freefall
->>>     event registration.
->>>   staging:iio:accel:sca3000 Clean up register defines.
->>>   staging:iio:accel:sca3000 add readback of the 3db low pass filter
->>>     frequency
->>>   staging:iio:accel:sca3000: Fix off by one error in axis due to
->>>     IIO_NO_MOD
->>>   staging:iio:accel:sca3000 Add write support to the low pass filter
->>>     control
->>>   staging:iio:accel:sca3000 Drop custom measurement mode attributes
->>>   staging:iio:accel:sca3000 replace non standard revision attr with
->>>     dev_info on probe
->>>   staging:iio:accel:sca3000 Tidy up probe order to avoid a race.
->>>   staging:iio:accel:sca3000 small checkpatch fixes (alignment etc)
->>>   staging:iio:accel:sca3000 kernel docify comments that were nearly
->>>     kernel doc.
->>>   staging:iio:accel:sca3000 Move out of staging.
->>>
->>>  drivers/iio/accel/Kconfig                |   12 +
->>>  drivers/iio/accel/Makefile               |    2 +
->>>  drivers/iio/accel/sca3000.c              | 1575 ++++++++++++++++++++++++++++++
->>>  drivers/staging/iio/accel/Kconfig        |   10 -
->>>  drivers/staging/iio/accel/Makefile       |    3 -
->>>  drivers/staging/iio/accel/sca3000.h      |  279 ------
->>>  drivers/staging/iio/accel/sca3000_core.c | 1210 -----------------------
->>>  drivers/staging/iio/accel/sca3000_ring.c |  350 -------
->>>  drivers/staging/iio/ring_hw.h            |   27 -
->>>  9 files changed, 1589 insertions(+), 1879 deletions(-)
->>>  create mode 100644 drivers/iio/accel/sca3000.c
->>>  delete mode 100644 drivers/staging/iio/accel/sca3000.h
->>>  delete mode 100644 drivers/staging/iio/accel/sca3000_core.c
->>>  delete mode 100644 drivers/staging/iio/accel/sca3000_ring.c
->>>  delete mode 100644 drivers/staging/iio/ring_hw.h
->>>
->>
-> 
+Hi all,
+
+here is a third version of a series to use regulator framework, add an
+option to set external reference and to add devicetree support for
+mcp4725/6.
+
+Third version fixes mainly small bits found in the previous version.
+
+Series is tested on MCP4726 on device tree platform.
+
+Changes since v2:
+- whitespace fix of two consecutive lines between patches (it affects
+  already applied patch)
+- abort probe instead of recovery in case of invalid configuration
+- use local variable instead of allocation for platform data
+- move unrelated comment fix to the new patch
+- add ack from Rob
+- fix doubled space in an assignment
+- add documentation for the struct mcp4725_platform_data
+- move the documentation patch forward because it is referenced in struct
+  mcp4725_platform_data now
+ 
+Changes since v1:
+- add the first patch
+- use regulator framework
+- fix printf argument (%u instead of %d)
+- add parenthesis to make expression more clear
+- fix typo in documentation (Microchpip)
+- move vref configuration from probe function to new mcp4726_set_cfg
+
+Tomas Novotny (5):
+  iio: dac: mcp4725: use regulator framework
+  iio: dac: mcp4725: fix incorrect comment
+  Documentation: dt: iio: add mcp4725/6 dac device binding
+  iio: dac: mcp4725: support voltage reference selection
+  iio: dac: mcp4725: add devicetree support
+
+ .../devicetree/bindings/iio/dac/mcp4725.txt        |  35 ++++
+ drivers/iio/dac/mcp4725.c                          | 177 +++++++++++++++++++--
+ include/linux/iio/dac/mcp4725.h                    |  12 +-
+ 3 files changed, 206 insertions(+), 18 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
+
+-- 
+2.1.4
 
