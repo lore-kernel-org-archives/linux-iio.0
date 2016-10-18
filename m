@@ -1,149 +1,111 @@
-Return-Path: <juliana.orod@gmail.com>
-Date: Thu, 13 Oct 2016 17:38:31 -0300
-From: Juliana Rodrigues <juliana.orod@gmail.com>
-To: outreachy-kernel@googlegroups.com, lars@metafoo.de,
-	michael.hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-	pmeerw@pmeerw.net
-Cc: linux-iio@vger.kernel.org
-Subject: [RESEND PATCH] iio: gyro: adis16136: implemented
- IIO_CHAN_INFO_SAMP_FREQ
-Message-ID: <20161013203831.GA1666@spock>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from hosting.pavoucek.net ([46.28.107.168]:38383 "EHLO
+        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934293AbcJRRyh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:54:37 -0400
+From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
+To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
+        Tomas Novotny <tomas@novotny.cz>
+Subject: [PATCH v3 5/5] iio: dac: mcp4725: add devicetree support
+Date: Tue, 18 Oct 2016 19:43:09 +0200
+Message-Id: <1476812589-18333-6-git-send-email-tomas.novotny@tbs-biometrics.com>
+In-Reply-To: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Moved functionality from IIO_DEV_ATTR_SAMP_FREQ macro into
-IIO_CHAN_INFO_SAMP_FREQ. Modified adis16136_read_raw and
-adis16136_write_raw to allow reading and writing the element.
+From: Tomas Novotny <tomas@novotny.cz>
 
-Signed-off-by: Juliana Rodrigues <juliana.orod@gmail.com>
+Signed-off-by: Tomas Novotny <tomas@novotny.cz>
 ---
- drivers/iio/gyro/adis16136.c | 58 ++++++++++++--------------------------------
- 1 file changed, 15 insertions(+), 43 deletions(-)
+ drivers/iio/dac/mcp4725.c | 43 +++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 37 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
-index b04faf9..71d282e 100644
---- a/drivers/iio/gyro/adis16136.c
-+++ b/drivers/iio/gyro/adis16136.c
-@@ -168,11 +168,11 @@ static int adis16136_debugfs_init(struct iio_dev *indio_dev)
+diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
+index 83d431f..05f7f4d 100644
+--- a/drivers/iio/dac/mcp4725.c
++++ b/drivers/iio/dac/mcp4725.c
+@@ -19,6 +19,7 @@
+ #include <linux/err.h>
+ #include <linux/delay.h>
+ #include <linux/regulator/consumer.h>
++#include <linux/of.h>
  
- #endif
- 
--static int adis16136_set_freq(struct adis16136 *adis16136, unsigned int freq)
-+static int adis16136_write_raw_samp_freq(struct adis16136 *adis16136, int *val)
- {
- 	unsigned int t;
- 
--	t = 32768 / freq;
-+	t = 32768 / *val;
- 	if (t < 0xf)
- 		t = 0xf;
- 	else if (t > 0xffff)
-@@ -197,44 +197,19 @@ static int adis16136_get_freq(struct adis16136 *adis16136, unsigned int *freq)
- 	return 0;
- }
- 
--static ssize_t adis16136_write_frequency(struct device *dev,
--	struct device_attribute *attr, const char *buf, size_t len)
-+static int adis16136_read_raw_samp_freq(struct adis16136 *st, int *val)
- {
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct adis16136 *adis16136 = iio_priv(indio_dev);
--	unsigned int val;
--	int ret;
--
--	ret = kstrtouint(buf, 10, &val);
--	if (ret)
--		return ret;
--
--	if (val == 0)
--		return -EINVAL;
--
--	ret = adis16136_set_freq(adis16136, val);
--
--	return ret ? ret : len;
--}
--
--static ssize_t adis16136_read_frequency(struct device *dev,
--	struct device_attribute *attr, char *buf)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct adis16136 *adis16136 = iio_priv(indio_dev);
- 	unsigned int freq;
- 	int ret;
- 
--	ret = adis16136_get_freq(adis16136, &freq);
-+	ret = adis16136_get_freq(st, &freq);
- 	if (ret < 0)
- 		return ret;
- 
--	return sprintf(buf, "%d\n", freq);
--}
-+	*val = freq;
- 
--static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
--				  adis16136_read_frequency,
--				  adis16136_write_frequency);
-+	return 0;
-+}
- 
- static const unsigned adis16136_3db_divisors[] = {
- 	[0] = 2, /* Special case */
-@@ -322,6 +297,10 @@ static int adis16136_read_raw(struct iio_dev *indio_dev,
- 		*val = sign_extend32(val32, 31);
- 
- 		return IIO_VAL_INT;
-+
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return adis16136_read_raw_samp_freq(adis16136, val);
-+
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
- 		return adis16136_get_filter(indio_dev, val);
- 	default:
-@@ -340,6 +319,8 @@ static int adis16136_write_raw(struct iio_dev *indio_dev,
- 			ADIS16136_REG_GYRO_OFF2, val);
- 	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
- 		return adis16136_set_filter(indio_dev, val);
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		return adis16136_write_raw_samp_freq(adis16136, &val);
- 	default:
- 		break;
- 	}
-@@ -361,7 +342,7 @@ static const struct iio_chan_spec adis16136_channels[] = {
- 			BIT(IIO_CHAN_INFO_CALIBBIAS) |
- 			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
- 		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
--
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.address = ADIS16136_REG_GYRO_OUT2,
- 		.scan_index = ADIS16136_SCAN_GYRO,
- 		.scan_type = {
-@@ -376,6 +357,7 @@ static const struct iio_chan_spec adis16136_channels[] = {
- 		.channel = 0,
- 		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
- 			BIT(IIO_CHAN_INFO_SCALE),
-+		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
- 		.address = ADIS16136_REG_TEMP_OUT,
- 		.scan_index = ADIS16136_SCAN_TEMP,
- 		.scan_type = {
-@@ -388,18 +370,8 @@ static const struct iio_chan_spec adis16136_channels[] = {
- 	IIO_CHAN_SOFT_TIMESTAMP(2),
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+@@ -364,22 +365,41 @@ static const struct iio_info mcp4725_info = {
+ 	.driver_module = THIS_MODULE,
  };
  
--static struct attribute *adis16136_attributes[] = {
--	&iio_dev_attr_sampling_frequency.dev_attr.attr,
--	NULL
--};
++#ifdef CONFIG_OF
++static int mcp4725_probe_dt(struct device *dev,
++			    struct mcp4725_platform_data *pdata)
++{
++	struct device_node *np = dev->of_node;
++
++	if (!np)
++		return -ENODEV;
++
++	/* check if is the vref-supply defined */
++	pdata->use_vref = of_property_read_bool(np, "vref-supply");
++	pdata->vref_buffered =
++		of_property_read_bool(np, "microchip,vref-buffered");
++
++	return 0;
++}
++#else
++static int mcp4725_probe_dt(struct device *dev,
++			    struct mcp4725_platform_data *platform_data)
++{
++	return -ENODEV;
++}
++#endif
++
+ static int mcp4725_probe(struct i2c_client *client,
+ 			 const struct i2c_device_id *id)
+ {
+ 	struct mcp4725_data *data;
+ 	struct iio_dev *indio_dev;
+-	struct mcp4725_platform_data *pdata = dev_get_platdata(&client->dev);
++	struct mcp4725_platform_data *pdata, pdata_dt;
+ 	u8 inbuf[4];
+ 	u8 pd;
+ 	u8 ref;
+ 	int err;
+ 
+-	if (!pdata) {
+-		dev_err(&client->dev, "invalid platform data");
+-		return -EINVAL;
+-	}
 -
--static const struct attribute_group adis16136_attribute_group = {
--	.attrs = adis16136_attributes,
--};
--
- static const struct iio_info adis16136_info = {
- 	.driver_module = THIS_MODULE,
--	.attrs = &adis16136_attribute_group,
- 	.read_raw = &adis16136_read_raw,
- 	.write_raw = &adis16136_write_raw,
- 	.update_scan_mode = adis_update_scan_mode,
+ 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
+ 	if (indio_dev == NULL)
+ 		return -ENOMEM;
+@@ -387,6 +407,17 @@ static int mcp4725_probe(struct i2c_client *client,
+ 	i2c_set_clientdata(client, indio_dev);
+ 	data->client = client;
+ 	data->id = id->driver_data;
++	pdata = dev_get_platdata(&client->dev);
++
++	if (!pdata) {
++		err = mcp4725_probe_dt(&client->dev, &pdata_dt);
++		if (err) {
++			dev_err(&client->dev,
++				"invalid platform or devicetree data");
++			return err;
++		}
++		pdata = &pdata_dt;
++	}
+ 
+ 	if (data->id == MCP4725 && pdata->use_vref) {
+ 		dev_err(&client->dev,
 -- 
-2.10.0
+2.1.4
+
