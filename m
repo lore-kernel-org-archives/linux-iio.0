@@ -1,141 +1,304 @@
-Return-Path: <tomas@novotny.cz>
-Date: Tue, 18 Oct 2016 15:56:11 +0200
-From: Tomas Novotny <tomas@novotny.cz>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:34038 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933622AbcJRPs7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 11:48:59 -0400
+Date: Tue, 18 Oct 2016 08:48:57 -0700
+From: Alison Schofield <amsfield22@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Rob Herring
- <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Akinobu Mita
- <akinobu.mita@gmail.com>, Yong Li <sdliyong@gmail.com>,
- linux-iio@vger.kernel.org
-Subject: Re: [PATCH v2 4/4] iio: dac: mcp4725: add devicetree support
-Message-ID: <20161018155611.79dc2229@tomas.local.tbs-biometrics.cz>
-In-Reply-To: <a710bc16-24e9-8b30-5db0-8eff371a012b@kernel.org>
-References: <1476194263-12015-1-git-send-email-tomas@novotny.cz>
-	<1476194263-12015-5-git-send-email-tomas@novotny.cz>
-	<a710bc16-24e9-8b30-5db0-8eff371a012b@kernel.org>
+Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH v4] iio: humidity: hdc100x: add triggered buffer support
+ for HDC100X
+Message-ID: <20161018154856.GA2535@d830.WORKGROUP>
+References: <20160902172311.GA12607@d830.WORKGROUP>
+ <0fc99451-1fd9-b835-834e-fc797fa05f1b@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <0fc99451-1fd9-b835-834e-fc797fa05f1b@kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
-
-On Sat, 15 Oct 2016 15:14:19 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
-
-> On 11/10/16 14:57, Tomas Novotny wrote:
-> > Signed-off-by: Tomas Novotny <tomas@novotny.cz>
-> Few small bits inline.
+On Sat, Sep 03, 2016 at 08:37:27PM +0100, Jonathan Cameron wrote:
+> On 02/09/16 18:23, Alison Schofield wrote:
+> > Triggered buffer support uses the HDC100X's dual acquisition mode
+> > to read both humidity and temperature in one shot.
+> > 
+> > This patch depends on
+> > 	447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of
+> > 		       temp and humidity")
+> > 
+> > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
+> Looks good.  I'll have to hold it until the dependency has worked it's way
+> into my togreg branch in a week or so.
+> 
+> Feel free to remind me!
 > 
 > Jonathan
+
+It's safe to take this one now.  Thanks!
+alisons
+
 > > ---
-> >  drivers/iio/dac/mcp4725.c | 46 +++++++++++++++++++++++++++++++++++++++++-----
-> >  1 file changed, 41 insertions(+), 5 deletions(-)
 > > 
-> > diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> > index 29cf85d..b8954f2 100644
-> > --- a/drivers/iio/dac/mcp4725.c
-> > +++ b/drivers/iio/dac/mcp4725.c
-> > @@ -19,6 +19,7 @@
-> >  #include <linux/err.h>
-> >  #include <linux/delay.h>
-> >  #include <linux/regulator/consumer.h>
-> > +#include <linux/of.h>
+> > Changes in v4:
+> >  - unlock private lock if claim_direct_mode fails (kbuild robot reported)
+> >  - move unlock to err: out path in trigger handler (kbuild robot inspired)
+> > 
+> > Changes in v3:
+> >  Thanks for the review Jonathan
+> >  - This patch now depends on 
+> >    447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of temp
+> >    and humidity")
+> >  - remove i2c functionality check, done in dependent patch
+> >  - remove unused define HDC100X_ALL_CHANNEL_MASK
+> >  - define and use available_scan_masks to demux between temp &/or humid
+> >    data in buffered mode
+> >  - changed timestamp channel scan_index from 3 to 2.
+> >  - put back private data lock in read_raw
+> >    (we'll lock private data lock and claim_direct_mode on raw reads)
+> >  - remove unneeded NULL parameters in iio_buffer_setup_ops
+> >  - add private data lock on buffered read
+> >    We are going to allow configuration changes while the sensor is in
+> >    buffered mode.  We need to allow the toggling of the Heater Enable bit
+> >    because the heater only functions during measurements. The lock will
+> >    ensure that the config change and buffer read transaction do not collide.
+> >  - blank lines added for readability per reviewer 
+> > 
+> > Changes in v2:  
+> >  Thanks for the review Peter
+> >  - switched endianness from IIO_CPU to IIO_BE
+> >  - use only one buffer in the handler
+> >  - simplify selection of temp &/or humidity to push to buffer
+> > 
+> > 
+> >  drivers/iio/humidity/Kconfig   |   2 +
+> >  drivers/iio/humidity/hdc100x.c | 130 ++++++++++++++++++++++++++++++++++++++++-
+> >  2 files changed, 130 insertions(+), 2 deletions(-)
+> > 
+> > diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
+> > index f155386..5a25569 100644
+> > --- a/drivers/iio/humidity/Kconfig
+> > +++ b/drivers/iio/humidity/Kconfig
+> > @@ -25,6 +25,8 @@ config DHT11
+> >  config HDC100X
+> >  	tristate "TI HDC100x relative humidity and temperature sensor"
+> >  	depends on I2C
+> > +	select IIO_BUFFER
+> > +	select IIO_TRIGGERED_BUFFER
+> >  	help
+> >  	  Say yes here to build support for the Texas Instruments
+> >  	  HDC1000 and HDC1008 relative humidity and temperature sensors.
+> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
+> > index e0c9c70..265c34d 100644
+> > --- a/drivers/iio/humidity/hdc100x.c
+> > +++ b/drivers/iio/humidity/hdc100x.c
+> > @@ -22,11 +22,15 @@
 > >  
 > >  #include <linux/iio/iio.h>
 > >  #include <linux/iio/sysfs.h>
-> > @@ -364,6 +365,30 @@ static const struct iio_info mcp4725_info = {
-> >  	.driver_module = THIS_MODULE,
+> > +#include <linux/iio/buffer.h>
+> > +#include <linux/iio/trigger_consumer.h>
+> > +#include <linux/iio/triggered_buffer.h>
+> >  
+> >  #define HDC100X_REG_TEMP			0x00
+> >  #define HDC100X_REG_HUMIDITY			0x01
+> >  
+> >  #define HDC100X_REG_CONFIG			0x02
+> > +#define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
+> >  #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
+> >  
+> >  struct hdc100x_data {
+> > @@ -87,22 +91,40 @@ static const struct iio_chan_spec hdc100x_channels[] = {
+> >  			BIT(IIO_CHAN_INFO_SCALE) |
+> >  			BIT(IIO_CHAN_INFO_INT_TIME) |
+> >  			BIT(IIO_CHAN_INFO_OFFSET),
+> > +		.scan_index = 0,
+> > +		.scan_type = {
+> > +			.sign = 's',
+> > +			.realbits = 16,
+> > +			.storagebits = 16,
+> > +			.endianness = IIO_BE,
+> > +		},
+> >  	},
+> >  	{
+> >  		.type = IIO_HUMIDITYRELATIVE,
+> >  		.address = HDC100X_REG_HUMIDITY,
+> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> >  			BIT(IIO_CHAN_INFO_SCALE) |
+> > -			BIT(IIO_CHAN_INFO_INT_TIME)
+> > +			BIT(IIO_CHAN_INFO_INT_TIME),
+> > +		.scan_index = 1,
+> > +		.scan_type = {
+> > +			.sign = 'u',
+> > +			.realbits = 16,
+> > +			.storagebits = 16,
+> > +			.endianness = IIO_BE,
+> > +		},
+> >  	},
+> >  	{
+> >  		.type = IIO_CURRENT,
+> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> >  		.extend_name = "heater",
+> >  		.output = 1,
+> > +		.scan_index = -1,
+> >  	},
+> > +	IIO_CHAN_SOFT_TIMESTAMP(2),
 > >  };
 > >  
-> > +#ifdef CONFIG_OF
-> > +static int mcp4725_probe_dt(struct device *dev,
-> > +			    struct mcp4725_platform_data *pdata)
-> > +{
-> > +	struct device_node *np = dev->of_node;
+> > +static const unsigned long hdc100x_scan_masks[] = {0x3, 0};
 > > +
-> > +	if (!np)
-> > +		return -ENODEV;
-> > +
-> > +	/* check if is the vref-supply defined */
-> > +	pdata->use_vref = of_property_read_bool(np, "vref-supply");
-> > +	pdata->vref_buffered =
-> > +		of_property_read_bool(np, "microchip,vref-buffered");
-> > +
-> > +	return 0;
-> > +}
-> > +#else
-> > +static int mcp4725_probe_dt(struct device *dev,
-> > +			    struct mcp4725_platform_data *platform_data)
-> > +{
-> > +	return -ENODEV;
-> > +}
-> > +#endif
-> > +
-> >  static int mcp4725_probe(struct i2c_client *client,
-> >  			 const struct i2c_device_id *id)
+> >  static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
 > >  {
-> > @@ -375,11 +400,6 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	u8 ref;
-> >  	int err;
-> >  
-> > -	if (!pdata) {
-> > -		dev_err(&client->dev, "invalid platform data");
-> > -		return -EINVAL;
-> > -	}
-> > -
-> >  	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> >  	if (indio_dev == NULL)
-> >  		return -ENOMEM;
-> > @@ -388,6 +408,19 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	data->client = client;
-> >  	data->id = id->driver_data;
-> >  
-> > +	if (!pdata) {
-> May seem an odd way to do it, but I would use
-> if (!dev_get_platdata(&client->dev)) so it's obvious what it matches
-> against when it comes to unwinding this down below.
-
-I will rewrite it completely, see below.
-
-> > +		pdata = devm_kzalloc(&client->dev, sizeof(*pdata), GFP_KERNEL);
-> > +		if (!pdata)
-> > +			return -ENOMEM;
+> >  	int tmp = (~mask & data->config) | val;
+> > @@ -183,7 +205,14 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
+> >  			*val = hdc100x_get_heater_status(data);
+> >  			ret = IIO_VAL_INT;
+> >  		} else {
+> > +			ret = iio_device_claim_direct_mode(indio_dev);
+> > +			if (ret) {
+> > +				mutex_unlock(&data->lock);
+> > +				return ret;
+> > +			}
 > > +
-> > +		err = mcp4725_probe_dt(&client->dev, pdata);
-> > +		if (err) {
-> > +			dev_err(&client->dev,
-> > +				"invalid platform or devicetree data");
-> > +			return err;
-> > +		}
+> >  			ret = hdc100x_get_measurement(data, chan);
+> > +			iio_device_release_direct_mode(indio_dev);
+> >  			if (ret >= 0) {
+> >  				*val = ret;
+> >  				ret = IIO_VAL_INT;
+> > @@ -246,6 +275,78 @@ static int hdc100x_write_raw(struct iio_dev *indio_dev,
+> >  	}
+> >  }
+> >  
+> > +static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct hdc100x_data *data = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
+> > +	mutex_lock(&data->lock);
+> > +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
+> > +				    HDC100X_REG_CONFIG_ACQ_MODE);
+> > +	mutex_unlock(&data->lock);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	return iio_triggered_buffer_postenable(indio_dev);
+> > +}
+> > +
+> > +static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
+> > +{
+> > +	struct hdc100x_data *data = iio_priv(indio_dev);
+> > +	int ret;
+> > +
+> > +	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
+> > +	ret = iio_triggered_buffer_predisable(indio_dev);
+> > +	if (ret)
+> > +		return ret;
+> > +
+> > +	mutex_lock(&data->lock);
+> > +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
+> > +	mutex_unlock(&data->lock);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static const struct iio_buffer_setup_ops hdc_buffer_setup_ops = {
+> > +	.postenable  = hdc100x_buffer_postenable,
+> > +	.predisable  = hdc100x_buffer_predisable,
+> > +};
+> > +
+> > +static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
+> > +{
+> > +	struct iio_poll_func *pf = p;
+> > +	struct iio_dev *indio_dev = pf->indio_dev;
+> > +	struct hdc100x_data *data = iio_priv(indio_dev);
+> > +	struct i2c_client *client = data->client;
+> > +	int delay = data->adc_int_us[0] + data->adc_int_us[1];
+> > +	int ret;
+> > +	s16 buf[8];  /* 2x s16 + padding + 8 byte timestamp */
+> > +
+> > +	/* dual read starts at temp register */
+> > +	mutex_lock(&data->lock);
+> > +	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
+> > +	if (ret < 0) {
+> > +		dev_err(&client->dev, "cannot start measurement\n");
+> > +		goto err;
+> > +	}
+> > +	usleep_range(delay, delay + 1000);
+> > +
+> > +	ret = i2c_master_recv(client, (u8 *)buf, 4);
+> > +	if (ret < 0) {
+> > +		dev_err(&client->dev, "cannot read sensor data\n");
+> > +		goto err;
 > > +	}
 > > +
-> >  	if (data->id == MCP4725 && pdata->use_vref) {
-> >  		dev_warn(&client->dev,
-> >  			"ignoring unavailable external reference on MCP4725");
-> > @@ -460,6 +493,9 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	if (err)
-> >  		goto err_disable_vref_reg;
-> >  
-> > +	if (!dev_get_platdata(&client->dev))
-> > +		devm_kfree(&client->dev, pdata);
-> Hmm. I wonder if it's worth freeing this explicitly rather than just letting
-> it clear up on driver remove.  It seems odd to use devm allocations for
-> what is a short term termporary variable.
-> 
-> Actually why not just use a local variable on the stack and set
-> pdata to point to that?  Then your cleanup is all nice an automatic
-> without having to do this slightly odd devm usage.
-
-Well, you are right. I saw this construction somewhere else (in another
-subsystem) but the local variable would be better.
-
-Thanks for the review,
-
-Tomas
-
+> > +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> > +					   iio_get_time_ns(indio_dev));
+> > +err:
+> > +	mutex_unlock(&data->lock);
+> > +	iio_trigger_notify_done(indio_dev->trig);
 > > +
-> >  	return 0;
+> > +	return IRQ_HANDLED;
+> > +}
+> > +
+> >  static const struct iio_info hdc100x_info = {
+> >  	.read_raw = hdc100x_read_raw,
+> >  	.write_raw = hdc100x_write_raw,
+> > @@ -258,6 +359,7 @@ static int hdc100x_probe(struct i2c_client *client,
+> >  {
+> >  	struct iio_dev *indio_dev;
+> >  	struct hdc100x_data *data;
+> > +	int ret;
 > >  
-> >  err_disable_vref_reg:
+> >  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
+> >  				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
+> > @@ -279,12 +381,35 @@ static int hdc100x_probe(struct i2c_client *client,
+> >  
+> >  	indio_dev->channels = hdc100x_channels;
+> >  	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
+> > +	indio_dev->available_scan_masks = hdc100x_scan_masks;
+> >  
+> >  	/* be sure we are in a known state */
+> >  	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
+> >  	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
+> > +	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
+> > +
+> > +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
+> > +					 hdc100x_trigger_handler,
+> > +					 &hdc_buffer_setup_ops);
+> > +	if (ret < 0) {
+> > +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
+> > +		return ret;
+> > +	}
+> > +	ret = iio_device_register(indio_dev);
+> > +	if (ret < 0)
+> > +		iio_triggered_buffer_cleanup(indio_dev);
+> > +
+> > +	return ret;
+> > +}
+> > +
+> > +static int hdc100x_remove(struct i2c_client *client)
+> > +{
+> > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
+> > +
+> > +	iio_device_unregister(indio_dev);
+> > +	iio_triggered_buffer_cleanup(indio_dev);
+> >  
+> > -	return devm_iio_device_register(&client->dev, indio_dev);
+> > +	return 0;
+> >  }
+> >  
+> >  static const struct i2c_device_id hdc100x_id[] = {
+> > @@ -298,6 +423,7 @@ static struct i2c_driver hdc100x_driver = {
+> >  		.name	= "hdc100x",
+> >  	},
+> >  	.probe = hdc100x_probe,
+> > +	.remove = hdc100x_remove,
+> >  	.id_table = hdc100x_id,
+> >  };
+> >  module_i2c_driver(hdc100x_driver);
 > > 
 > 
