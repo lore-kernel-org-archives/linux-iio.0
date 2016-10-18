@@ -1,107 +1,85 @@
-Return-Path: <jic23@jic23.retrosnub.co.uk>
-In-Reply-To: <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se> <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+Return-Path: <eballetbo@gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain;
- charset=UTF-8
-Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
-From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Date: Thu, 20 Oct 2016 18:30:19 +0100
-To: Lars-Peter Clausen <lars@metafoo.de>,Peter Rosin <peda@axentia.se>,linux-kernel@vger.kernel.org
-CC: Jonathan Cameron <jic23@kernel.org>,Hartmut Knaack <knaack.h@gmx.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,Rob Herring <robh+dt@kernel.org>,Mark Rutland <mark.rutland@arm.com>,linux-iio@vger.kernel.org,devicetree@vger.kernel.org
-Message-ID: <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+In-Reply-To: <6ae9c49a-c354-b3bd-a4d9-77bf81915615@kernel.org>
+References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
+ <b32afa2d-965c-569c-dde1-3611615080d3@kernel.org> <20160816124907.GK25844@dell>
+ <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org> <a2d7688d-753d-8c50-728b-f33cc5e31eb9@kernel.org>
+ <20160830085756.GB1661@dell> <a911916d-05bc-6bcd-0aea-bfd7a3d4ff1b@kernel.org>
+ <20160901072404.GD4921@dell> <6ae9c49a-c354-b3bd-a4d9-77bf81915615@kernel.org>
+From: Enric Balletbo Serra <eballetbo@gmail.com>
+Date: Tue, 18 Oct 2016 10:35:06 +0200
+Message-ID: <CAFqH_53q+0=RBWeTTb1FkML5PudZx8iOAFZ6xOkTec+ciwj0pQ@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+	Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-kernel <linux-kernel@vger.kernel.org>,
+	linux-iio@vger.kernel.org, Olof Johansson <olof@lixom.net>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Guenter Roeck <groeck@chromium.org>,
+	Gwendal Grignou <gwendal@chromium.org>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Jonathan,
+
+2016-09-03 19:21 GMT+02:00 Jonathan Cameron <jic23@kernel.org>:
+> On 01/09/16 08:24, Lee Jones wrote:
+>>>>>>>> Given this dependency I'm assuming the best route for these is via
+>>>>>>>> the MFD tree...
+>>>>>>>>
+>>>>>>>> Lee, shout if you want them to go a different route.
+>>>>>>>
+>>>>>>> IIO looks like a more suitable route.  Please provide me with a
+>>>>>>> pull-request base off of an immutable tag.
+>>>>>> Hi Lee,
+>>>>>>
+>>>>>> As far as I can tell the precursor patch above hasn't gone in your
+>>>>>> tree yet which leaves me unable to take this through IIO for now.
+>>>>>>
+>>>>>> Maybe I'm missing something!
+>>>>>>
+>>>>>> Jonathan
+>>>>>
+>>>>> Hi Lee,
+>>>>>
+>>>>> Any movement on the dependency above?
+>>>>>
+>>>>> Last I can find was you adding your ack to it:
+>>>>> [PATCH v2 1/2] mfd: cros_ec: Add MKBP event support
+>>>>>
+>>>>> https://lkml.org/lkml/2016/8/16/423
+>>>>
+>>>> Well that's annoying.  Okay, well when I send out the pull-request for
+>>>> this one, I will include you.
+>>>>
+>>>> Actually, better still -- take all of them on one branch and I will
+>>>> pull from you.  Saves the toing and froing.
+>>>>
+>>> Sure. Will probably be the weekend before I get this sorted.
+>>
+>> No rush.
+>>
+> Ah, I see you ended up with an immutable branch of this anyway:
+> your ib-mfd-input-4.9 branch.
+> I'll build an immutable branch on that
+> ib-iio-mfd-4.9 in iio.git.
+>
+
+Nice, I just saw that the dependencies for this patch series are
+already in mainline, thanks.
+
+I don't see the patches in your iio tree, need I to rebase the patch
+series on top of mainline and send v5 or you are already taking care
+about it?
+
+Cheers,
+  Enric.
 
 
-On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> wrote:
->On 10/20/2016 11:25 AM, Peter Rosin wrote:
->> Hi!
->> 
->> These two drivers share the fact that they wrap another iio channel,
->> and I use the first in combination with the second, which is why I'm
->> submitting them as a pair.
->> 
->> The first driver is a simple wrapper converting an iio dpot into an
->> iio dac. It only changes the unit and scale. It also does not add any
->> fancy iio buffer support that I don't need. I suppose that can be
->> added. By someone else :-)
->> 
->> Please look over the scale conversion, notably for the fractional
->log2
->> case that I don't need myself, so is untested. Maybe I should just
->> remove it?
->> 
->> Also, is there some agreed-upon way to dig out the maximum value from
->> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from the
->> dt bindings, which would have been nice...
+> Unfortunately I don't have an Ack for patch 4 from Olof yet so
+> can't take that and until I do, the rest makes little sense as
+> it's not enabled.
 >
->Yes, this is something we could really use. In a sense it exists for
->the
->devices with buffer-capable channels where there is the real_bits field
->which tells us the data width of the channel. But a dedicated mechanism
->for
->querying the maximum (and minimum) valid code seems like a useful
->feature.
->Not only for in-kernel clients, but also for userspace.
-This was something that was addressed by the rather ancient patch series i posted that added 
-an available call back which provided info on range and values for all info mask elements.
-Series got buried by there being a lot of precursors but quite a few of those have merged since.
-
-Hmm Google won't let me find it on my phone. Was a while back now. Will try to get on pc with
- decent email archive later and dig out a reference.
-
+> Jonathan
 >
->> 
->> I'm also wondering if I'm somehow abusing the regulator? I only added
->> it to get rid of a "dpot-dac,max-voltage" thing from the dt bindings.
->> It feels right though, but maybe I should do more with it than check
->> its voltage? What?
 >
->Enable the regulator when it is in use?
->
->> 
->> The second driver (the envelope detector) is more involved. It also
->> explains why I need the dpot-dac driver. I wanted the envelope
->> detector to be generic and work with any dac, but I had a dpot...
->> 
->> The envelope detector was previously discussed late last year [1],
->> and this is what I came up with instead of that mess.
->> 
->> There are a couple of things to be said about the envelope detector,
->> one question is where it should live? I placed it in the adc
->directory,
->> but maybe it deserves an iio directory of its own? I'm also a bit
->> worried that the name is a wee bit too generic. But what is a good
->> name? I don't want it to be too long like dac-comp-envelope-detector
->> and something like dac-comp-env-det is just unreadable. Naming is
->> difficult... And suggestions?
->
->Yeah, it is a bit tricky. It is a envelope detector built from discrete
->components, but of course there are many more ways to build one. If you
->have
->a codename for your platform you could use this for the DT compatible
->string, like 'vendor,foobar-envelope-detector'.
->
->> 
->> Another thing is that I'm not 100% satisfied with the fact that you
->> have to decide at instantiation if you are going to invert the search
->> or not (search from below). But in order for that to be selectable
->> at runtime with a channel attribute of some sort, I need to be able
->> to rebind the interrupt to the other edge and I want to do that
->> without releasing the irq and grabbing it again (someone might
->> otherwise steal the irq, making the driver lose the irq all
->together).
->> I don't see any API to change the irq trigger condition. Is there
->> such a thing?
->> 
->> Anyway, despite all the above questions and remarks, this works for
->> me. Please consider applying.
->
->In general this series looks really good, good and clear implementation
->as
->well as documentation. A few minor bits here and there, but that is
->normal.
-
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
