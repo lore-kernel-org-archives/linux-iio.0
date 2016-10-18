@@ -1,50 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:36431 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752554AbcJKTrc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 11 Oct 2016 15:47:32 -0400
-Date: Tue, 11 Oct 2016 12:31:36 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: accel: mma8452: claim direct mode during raw reads
-Message-ID: <20161011193127.GA8708@d830.WORKGROUP>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:35947 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933242AbcJRTae (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 15:30:34 -0400
+Received: by mail-wm0-f68.google.com with SMTP id o81so864045wma.3
+        for <linux-iio@vger.kernel.org>; Tue, 18 Oct 2016 12:30:34 -0700 (PDT)
+Date: Tue, 18 Oct 2016 21:31:47 +0200
+From: =?utf-8?B?UGF3ZcWC?= Jarosz <paweljarosz3691@gmail.com>
+To: paweljarosz3691@gmail.com
+Cc: linux-iio@vger.kernel.org, ldewangan@nvidia.com,
+        rui.zhang@intel.com, edubezval@gmail.com
+Subject: [PATCH] thermal: generic-adc: Fix linear temperature approximation
+Message-ID: <20161018193147.GA14745@vaio-ubuntu>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Driver was checking for direct mode but not locking it.  Use
-claim/release helper functions to guarantee the device stays
-in direct mode during raw reads.
+In current version of the driver there is error in temperature
+calculation.
 
-Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+So lets fix it using proper linear function.
+
+Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
 ---
- drivers/iio/accel/mma8452.c | 6 ++++--
- 1 file changed, 4 insertions(+), 2 deletions(-)
+ drivers/thermal/thermal-generic-adc.c | 13 ++++++++-----
+ 1 file changed, 8 insertions(+), 5 deletions(-)
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 6e82e02..cbbc746 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -459,12 +459,14 @@ static int mma8452_read_raw(struct iio_dev *indio_dev,
+diff --git a/drivers/thermal/thermal-generic-adc.c b/drivers/thermal/thermal-generic-adc.c
+index 73f55d6..1190aee 100644
+--- a/drivers/thermal/thermal-generic-adc.c
++++ b/drivers/thermal/thermal-generic-adc.c
+@@ -26,7 +26,7 @@ struct gadc_thermal_info {
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (iio_buffer_enabled(indio_dev))
--			return -EBUSY;
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret)
-+			return ret;
+ static int gadc_thermal_adc_to_temp(struct gadc_thermal_info *gti, int val)
+ {
+-	int temp, adc_hi, adc_lo;
++	int temp, adc1, adc2, temp1, temp2;
+ 	int i;
  
- 		mutex_lock(&data->lock);
- 		ret = mma8452_read(data, buffer);
- 		mutex_unlock(&data->lock);
-+		iio_device_release_direct_mode(indio_dev);
- 		if (ret < 0)
- 			return ret;
+ 	for (i = 0; i < gti->nlookup_table; i++) {
+@@ -39,10 +39,13 @@ static int gadc_thermal_adc_to_temp(struct gadc_thermal_info *gti, int val)
+ 	} else if (i >= (gti->nlookup_table - 1)) {
+ 		temp = gti->lookup_table[2 * (gti->nlookup_table - 1)];
+ 	} else {
+-		adc_hi = gti->lookup_table[2 * i - 1];
+-		adc_lo = gti->lookup_table[2 * i + 1];
+-		temp = gti->lookup_table[2 * i];
+-		temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
++		adc1 = gti->lookup_table[2 * i - 1];
++		adc2 = gti->lookup_table[2 * i + 1];
++
++		temp1 = gti->lookup_table[2 * i - 2];
++		temp2 = gti->lookup_table[2 * i];
++
++		temp = (val - adc1) * (temp2 - temp1) / (adc2 - adc1) + temp1;
+ 	}
  
+ 	return temp;
 -- 
-2.1.4
+2.7.4
 
