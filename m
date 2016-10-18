@@ -1,42 +1,34 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:35482 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S942703AbcJSOhc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 19 Oct 2016 10:37:32 -0400
-Date: Wed, 19 Oct 2016 08:38:16 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: jic23@kernel.org, devel@driverdev.osuosl.org, lars@metafoo.de,
-        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de
-Subject: Re: [PATCH 2/7] iio: light: tsl2583: change functions to only have a
- single exit point
-Message-ID: <20161019123816.GA6741@basecamp.onstation.org>
-References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
- <1476873130-24926-2-git-send-email-masneyb@onstation.org>
- <20161019110859.GG4469@mwanda>
+Received: from mail-oi0-f65.google.com ([209.85.218.65]:34275 "EHLO
+        mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754966AbcJRMnL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 08:43:11 -0400
+Date: Tue, 18 Oct 2016 07:43:09 -0500
+From: Rob Herring <robh@kernel.org>
+To: Tomas Novotny <tomas@novotny.cz>
+Cc: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Akinobu Mita <akinobu.mita@gmail.com>,
+        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
+Subject: Re: [PATCH v2 3/4] Documentation: dt: iio: add mcp4725/6 dac device
+ binding
+Message-ID: <20161018124309.wru2pwpefx6h3v5e@rob-hp-laptop>
+References: <1476194263-12015-1-git-send-email-tomas@novotny.cz>
+ <1476194263-12015-4-git-send-email-tomas@novotny.cz>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161019110859.GG4469@mwanda>
+In-Reply-To: <1476194263-12015-4-git-send-email-tomas@novotny.cz>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Oct 19, 2016 at 02:08:59PM +0300, Dan Carpenter wrote:
-> On Wed, Oct 19, 2016 at 06:32:05AM -0400, Brian Masney wrote:
-> > Change the following functions to only have a single exit point:
-> > taos_i2c_read(), taos_als_calibrate(), taos_chip_on(),
-> > taos_gain_store(), taos_gain_available_show(), taos_luxtable_store()
-> > and taos_probe().
-> > 
-> 
-> What's the point of this?  This style of code just makes things more
-> complicated and leads to "forgot the error code" bugs.  People think
-> that it future proofs the code in case we add locking but I have looked
-> into this and it has minimal if any impact at preventing locking bugs.
+On Tue, Oct 11, 2016 at 03:57:42PM +0200, Tomas Novotny wrote:
+> Signed-off-by: Tomas Novotny <tomas@novotny.cz>
+> ---
+>  .../devicetree/bindings/iio/dac/mcp4725.txt        | 35 ++++++++++++++++++++++
+>  1 file changed, 35 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/mcp4725.txt
 
-The reason that I did this was due to the locking that I added later in
-the patch series. Each function would only have a single call to
-mutex_unlock(). I should have mentioned that in my message.
-
-Brian
-
+Acked-by: Rob Herring <robh@kernel.org>
