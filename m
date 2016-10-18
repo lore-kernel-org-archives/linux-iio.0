@@ -1,304 +1,195 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:34038 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933622AbcJRPs7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 11:48:59 -0400
-Date: Tue, 18 Oct 2016 08:48:57 -0700
-From: Alison Schofield <amsfield22@gmail.com>
+Return-Path: <juliana.orod@gmail.com>
+Date: Tue, 18 Oct 2016 17:57:25 -0200
+From: Juliana Rodrigues <juliana.orod@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH v4] iio: humidity: hdc100x: add triggered buffer support
- for HDC100X
-Message-ID: <20161018154856.GA2535@d830.WORKGROUP>
-References: <20160902172311.GA12607@d830.WORKGROUP>
- <0fc99451-1fd9-b835-834e-fc797fa05f1b@kernel.org>
+Cc: outreachy-kernel@googlegroups.com, lars@metafoo.de,
+	michael.hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org
+Subject: Re: [RESEND PATCH] iio: gyro: adis16136: implemented
+ IIO_CHAN_INFO_SAMP_FREQ
+Message-ID: <20161018195725.GC11725@spock>
+References: <20161013203831.GA1666@spock>
+ <b43090e4-0e18-90cc-3370-3bc7f2194de2@kernel.org>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <0fc99451-1fd9-b835-834e-fc797fa05f1b@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <b43090e4-0e18-90cc-3370-3bc7f2194de2@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Sep 03, 2016 at 08:37:27PM +0100, Jonathan Cameron wrote:
-> On 02/09/16 18:23, Alison Schofield wrote:
-> > Triggered buffer support uses the HDC100X's dual acquisition mode
-> > to read both humidity and temperature in one shot.
+On Sat, Oct 15, 2016 at 03:43:36PM +0100, Jonathan Cameron wrote:
+> On 13/10/16 21:38, Juliana Rodrigues wrote:
+> > Moved functionality from IIO_DEV_ATTR_SAMP_FREQ macro into
+> > IIO_CHAN_INFO_SAMP_FREQ. Modified adis16136_read_raw and
+> > adis16136_write_raw to allow reading and writing the element.
 > > 
-> > This patch depends on
-> > 	447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of
-> > 		       temp and humidity")
-> > 
-> > Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> > Cc: Daniel Baluta <daniel.baluta@gmail.com>
-> Looks good.  I'll have to hold it until the dependency has worked it's way
-> into my togreg branch in a week or so.
+> > Signed-off-by: Juliana Rodrigues <juliana.orod@gmail.com>
+> Diff certainly made this one more complex to read that it needed to be.
+> Ah well, automated tools for you ;)
 > 
-> Feel free to remind me!
+> Anyhow, a good driver to fixup as a major gain to be had in terms of
+> shorter code.
+> 
+> Few comments inline.
 > 
 > Jonathan
 
-It's safe to take this one now.  Thanks!
-alisons
+Hi Jonathan,
+
+Yeah, I moved some functions and ended up with huge chunks of diff
+that actually weren't modified. Oh, well...
+
+Again, thank you very much for taking your time to comment on this. I'll
+send a new version with your fixes.
+
+Juliana
 
 > > ---
+> >  drivers/iio/gyro/adis16136.c | 58 ++++++++++++--------------------------------
+> >  1 file changed, 15 insertions(+), 43 deletions(-)
 > > 
-> > Changes in v4:
-> >  - unlock private lock if claim_direct_mode fails (kbuild robot reported)
-> >  - move unlock to err: out path in trigger handler (kbuild robot inspired)
-> > 
-> > Changes in v3:
-> >  Thanks for the review Jonathan
-> >  - This patch now depends on 
-> >    447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of temp
-> >    and humidity")
-> >  - remove i2c functionality check, done in dependent patch
-> >  - remove unused define HDC100X_ALL_CHANNEL_MASK
-> >  - define and use available_scan_masks to demux between temp &/or humid
-> >    data in buffered mode
-> >  - changed timestamp channel scan_index from 3 to 2.
-> >  - put back private data lock in read_raw
-> >    (we'll lock private data lock and claim_direct_mode on raw reads)
-> >  - remove unneeded NULL parameters in iio_buffer_setup_ops
-> >  - add private data lock on buffered read
-> >    We are going to allow configuration changes while the sensor is in
-> >    buffered mode.  We need to allow the toggling of the Heater Enable bit
-> >    because the heater only functions during measurements. The lock will
-> >    ensure that the config change and buffer read transaction do not collide.
-> >  - blank lines added for readability per reviewer 
-> > 
-> > Changes in v2:  
-> >  Thanks for the review Peter
-> >  - switched endianness from IIO_CPU to IIO_BE
-> >  - use only one buffer in the handler
-> >  - simplify selection of temp &/or humidity to push to buffer
-> > 
-> > 
-> >  drivers/iio/humidity/Kconfig   |   2 +
-> >  drivers/iio/humidity/hdc100x.c | 130 ++++++++++++++++++++++++++++++++++++++++-
-> >  2 files changed, 130 insertions(+), 2 deletions(-)
-> > 
-> > diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
-> > index f155386..5a25569 100644
-> > --- a/drivers/iio/humidity/Kconfig
-> > +++ b/drivers/iio/humidity/Kconfig
-> > @@ -25,6 +25,8 @@ config DHT11
-> >  config HDC100X
-> >  	tristate "TI HDC100x relative humidity and temperature sensor"
-> >  	depends on I2C
-> > +	select IIO_BUFFER
-> > +	select IIO_TRIGGERED_BUFFER
-> >  	help
-> >  	  Say yes here to build support for the Texas Instruments
-> >  	  HDC1000 and HDC1008 relative humidity and temperature sensors.
-> > diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
-> > index e0c9c70..265c34d 100644
-> > --- a/drivers/iio/humidity/hdc100x.c
-> > +++ b/drivers/iio/humidity/hdc100x.c
-> > @@ -22,11 +22,15 @@
+> > diff --git a/drivers/iio/gyro/adis16136.c b/drivers/iio/gyro/adis16136.c
+> > index b04faf9..71d282e 100644
+> > --- a/drivers/iio/gyro/adis16136.c
+> > +++ b/drivers/iio/gyro/adis16136.c
+> > @@ -168,11 +168,11 @@ static int adis16136_debugfs_init(struct iio_dev *indio_dev)
 > >  
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/sysfs.h>
-> > +#include <linux/iio/buffer.h>
-> > +#include <linux/iio/trigger_consumer.h>
-> > +#include <linux/iio/triggered_buffer.h>
+> >  #endif
 > >  
-> >  #define HDC100X_REG_TEMP			0x00
-> >  #define HDC100X_REG_HUMIDITY			0x01
-> >  
-> >  #define HDC100X_REG_CONFIG			0x02
-> > +#define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
-> >  #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
-> >  
-> >  struct hdc100x_data {
-> > @@ -87,22 +91,40 @@ static const struct iio_chan_spec hdc100x_channels[] = {
-> >  			BIT(IIO_CHAN_INFO_SCALE) |
-> >  			BIT(IIO_CHAN_INFO_INT_TIME) |
-> >  			BIT(IIO_CHAN_INFO_OFFSET),
-> > +		.scan_index = 0,
-> > +		.scan_type = {
-> > +			.sign = 's',
-> > +			.realbits = 16,
-> > +			.storagebits = 16,
-> > +			.endianness = IIO_BE,
-> > +		},
-> >  	},
-> >  	{
-> >  		.type = IIO_HUMIDITYRELATIVE,
-> >  		.address = HDC100X_REG_HUMIDITY,
-> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> >  			BIT(IIO_CHAN_INFO_SCALE) |
-> > -			BIT(IIO_CHAN_INFO_INT_TIME)
-> > +			BIT(IIO_CHAN_INFO_INT_TIME),
-> > +		.scan_index = 1,
-> > +		.scan_type = {
-> > +			.sign = 'u',
-> > +			.realbits = 16,
-> > +			.storagebits = 16,
-> > +			.endianness = IIO_BE,
-> > +		},
-> >  	},
-> >  	{
-> >  		.type = IIO_CURRENT,
-> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> >  		.extend_name = "heater",
-> >  		.output = 1,
-> > +		.scan_index = -1,
-> >  	},
-> > +	IIO_CHAN_SOFT_TIMESTAMP(2),
-> >  };
-> >  
-> > +static const unsigned long hdc100x_scan_masks[] = {0x3, 0};
-> > +
-> >  static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
+> > -static int adis16136_set_freq(struct adis16136 *adis16136, unsigned int freq)
+> > +static int adis16136_write_raw_samp_freq(struct adis16136 *adis16136, int *val)
+> I'd add a check on whether *val is negative.  Also why pass by pointer?
+
+I did that while debugging and forgot to change it back! Thank you for
+spotting.
+
 > >  {
-> >  	int tmp = (~mask & data->config) | val;
-> > @@ -183,7 +205,14 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
-> >  			*val = hdc100x_get_heater_status(data);
-> >  			ret = IIO_VAL_INT;
-> >  		} else {
-> > +			ret = iio_device_claim_direct_mode(indio_dev);
-> > +			if (ret) {
-> > +				mutex_unlock(&data->lock);
-> > +				return ret;
-> > +			}
-> > +
-> >  			ret = hdc100x_get_measurement(data, chan);
-> > +			iio_device_release_direct_mode(indio_dev);
-> >  			if (ret >= 0) {
-> >  				*val = ret;
-> >  				ret = IIO_VAL_INT;
-> > @@ -246,6 +275,78 @@ static int hdc100x_write_raw(struct iio_dev *indio_dev,
-> >  	}
+> >  	unsigned int t;
+> >  
+> > -	t = 32768 / freq;
+> > +	t = 32768 / *val;
+> >  	if (t < 0xf)
+> >  		t = 0xf;
+> >  	else if (t > 0xffff)
+> > @@ -197,44 +197,19 @@ static int adis16136_get_freq(struct adis16136 *adis16136, unsigned int *freq)
+> >  	return 0;
 > >  }
 > >  
-> > +static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
-> > +{
-> > +	struct hdc100x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
-> > +	mutex_lock(&data->lock);
-> > +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
-> > +				    HDC100X_REG_CONFIG_ACQ_MODE);
-> > +	mutex_unlock(&data->lock);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	return iio_triggered_buffer_postenable(indio_dev);
-> > +}
-> > +
-> > +static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
-> > +{
-> > +	struct hdc100x_data *data = iio_priv(indio_dev);
-> > +	int ret;
-> > +
-> > +	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
-> > +	ret = iio_triggered_buffer_predisable(indio_dev);
-> > +	if (ret)
-> > +		return ret;
-> > +
-> > +	mutex_lock(&data->lock);
-> > +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
-> > +	mutex_unlock(&data->lock);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static const struct iio_buffer_setup_ops hdc_buffer_setup_ops = {
-> > +	.postenable  = hdc100x_buffer_postenable,
-> > +	.predisable  = hdc100x_buffer_predisable,
-> > +};
-> > +
-> > +static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
-> > +{
-> > +	struct iio_poll_func *pf = p;
-> > +	struct iio_dev *indio_dev = pf->indio_dev;
-> > +	struct hdc100x_data *data = iio_priv(indio_dev);
-> > +	struct i2c_client *client = data->client;
-> > +	int delay = data->adc_int_us[0] + data->adc_int_us[1];
-> > +	int ret;
-> > +	s16 buf[8];  /* 2x s16 + padding + 8 byte timestamp */
-> > +
-> > +	/* dual read starts at temp register */
-> > +	mutex_lock(&data->lock);
-> > +	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "cannot start measurement\n");
-> > +		goto err;
-> > +	}
-> > +	usleep_range(delay, delay + 1000);
-> > +
-> > +	ret = i2c_master_recv(client, (u8 *)buf, 4);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "cannot read sensor data\n");
-> > +		goto err;
-> > +	}
-> > +
-> > +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
-> > +					   iio_get_time_ns(indio_dev));
-> > +err:
-> > +	mutex_unlock(&data->lock);
-> > +	iio_trigger_notify_done(indio_dev->trig);
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> >  static const struct iio_info hdc100x_info = {
-> >  	.read_raw = hdc100x_read_raw,
-> >  	.write_raw = hdc100x_write_raw,
-> > @@ -258,6 +359,7 @@ static int hdc100x_probe(struct i2c_client *client,
+> > -static ssize_t adis16136_write_frequency(struct device *dev,
+> > -	struct device_attribute *attr, const char *buf, size_t len)
+> > +static int adis16136_read_raw_samp_freq(struct adis16136 *st, int *val)
+> Whilst I'd normally prefer the st naming, stick with what is commonly 
+> used in the driver.  Better to have consistent style than a mess.
+
+Roger that.
+
+> 
 > >  {
-> >  	struct iio_dev *indio_dev;
-> >  	struct hdc100x_data *data;
-> > +	int ret;
+> > -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > -	struct adis16136 *adis16136 = iio_priv(indio_dev);
+> > -	unsigned int val;
+> > -	int ret;
+> > -
+> > -	ret = kstrtouint(buf, 10, &val);
+> > -	if (ret)
+> > -		return ret;
+> > -
+> > -	if (val == 0)
+> > -		return -EINVAL;
+> > -
+> > -	ret = adis16136_set_freq(adis16136, val);
+> > -
+> > -	return ret ? ret : len;
+> > -}
+> > -
+> > -static ssize_t adis16136_read_frequency(struct device *dev,
+> > -	struct device_attribute *attr, char *buf)
+> > -{
+> > -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> > -	struct adis16136 *adis16136 = iio_priv(indio_dev);
+> >  	unsigned int freq;
+> >  	int ret;
 > >  
-> >  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
-> >  				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
-> > @@ -279,12 +381,35 @@ static int hdc100x_probe(struct i2c_client *client,
+> > -	ret = adis16136_get_freq(adis16136, &freq);
+> > +	ret = adis16136_get_freq(st, &freq);
+> >  	if (ret < 0)
+> >  		return ret;
 > >  
-> >  	indio_dev->channels = hdc100x_channels;
-> >  	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
-> > +	indio_dev->available_scan_masks = hdc100x_scan_masks;
+> > -	return sprintf(buf, "%d\n", freq);
+> > -}
+> > +	*val = freq;
 > >  
-> >  	/* be sure we are in a known state */
-> >  	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
-> >  	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
-> > +	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
-> > +
-> > +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> > +					 hdc100x_trigger_handler,
-> > +					 &hdc_buffer_setup_ops);
-> > +	if (ret < 0) {
-> > +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
-> > +		return ret;
-> > +	}
-> > +	ret = iio_device_register(indio_dev);
-> > +	if (ret < 0)
-> > +		iio_triggered_buffer_cleanup(indio_dev);
-> > +
-> > +	return ret;
-> > +}
-> > +
-> > +static int hdc100x_remove(struct i2c_client *client)
-> > +{
-> > +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> > +
-> > +	iio_device_unregister(indio_dev);
-> > +	iio_triggered_buffer_cleanup(indio_dev);
-> >  
-> > -	return devm_iio_device_register(&client->dev, indio_dev);
+> > -static IIO_DEV_ATTR_SAMP_FREQ(S_IWUSR | S_IRUGO,
+> > -				  adis16136_read_frequency,
+> > -				  adis16136_write_frequency);
 > > +	return 0;
-> >  }
+> > +}
+> This last chunk is the most 'interesting' bit of git diff
+> output I've seen in a while ;)  Guess a somewhat pathological
+> case...
+
+Don't know what you mean by 'interesting' but this shows clearly how
+code was changed (and mostly removed). I actually feel a lot relieved to
+see that much lines being deleted. One of those weird pleasures... :P
+
+
 > >  
-> >  static const struct i2c_device_id hdc100x_id[] = {
-> > @@ -298,6 +423,7 @@ static struct i2c_driver hdc100x_driver = {
-> >  		.name	= "hdc100x",
-> >  	},
-> >  	.probe = hdc100x_probe,
-> > +	.remove = hdc100x_remove,
-> >  	.id_table = hdc100x_id,
+> >  static const unsigned adis16136_3db_divisors[] = {
+> >  	[0] = 2, /* Special case */
+> > @@ -322,6 +297,10 @@ static int adis16136_read_raw(struct iio_dev *indio_dev,
+> >  		*val = sign_extend32(val32, 31);
+> >  
+> >  		return IIO_VAL_INT;
+> > +
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> > +		return adis16136_read_raw_samp_freq(adis16136, val);
+> > +
+> >  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> >  		return adis16136_get_filter(indio_dev, val);
+> >  	default:
+> > @@ -340,6 +319,8 @@ static int adis16136_write_raw(struct iio_dev *indio_dev,
+> >  			ADIS16136_REG_GYRO_OFF2, val);
+> >  	case IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY:
+> >  		return adis16136_set_filter(indio_dev, val);
+> > +	case IIO_CHAN_INFO_SAMP_FREQ:
+> why pass val as a pointer?
+> > +		return adis16136_write_raw_samp_freq(adis16136, &val);
+> >  	default:
+> >  		break;
+> >  	}
+> > @@ -361,7 +342,7 @@ static const struct iio_chan_spec adis16136_channels[] = {
+> >  			BIT(IIO_CHAN_INFO_CALIBBIAS) |
+> >  			BIT(IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY),
+> >  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
+> > -
+> > +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> >  		.address = ADIS16136_REG_GYRO_OUT2,
+> >  		.scan_index = ADIS16136_SCAN_GYRO,
+> >  		.scan_type = {
+> > @@ -376,6 +357,7 @@ static const struct iio_chan_spec adis16136_channels[] = {
+> >  		.channel = 0,
+> >  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+> >  			BIT(IIO_CHAN_INFO_SCALE),
+> > +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+> >  		.address = ADIS16136_REG_TEMP_OUT,
+> >  		.scan_index = ADIS16136_SCAN_TEMP,
+> >  		.scan_type = {
+> > @@ -388,18 +370,8 @@ static const struct iio_chan_spec adis16136_channels[] = {
+> >  	IIO_CHAN_SOFT_TIMESTAMP(2),
 > >  };
-> >  module_i2c_driver(hdc100x_driver);
+> >  
+> > -static struct attribute *adis16136_attributes[] = {
+> > -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+> > -	NULL
+> > -};
+> > -
+> > -static const struct attribute_group adis16136_attribute_group = {
+> > -	.attrs = adis16136_attributes,
+> > -};
+> > -
+> >  static const struct iio_info adis16136_info = {
+> >  	.driver_module = THIS_MODULE,
+> > -	.attrs = &adis16136_attribute_group,
+> >  	.read_raw = &adis16136_read_raw,
+> >  	.write_raw = &adis16136_write_raw,
+> >  	.update_scan_mode = adis_update_scan_mode,
 > > 
 > 
