@@ -8,67 +8,82 @@ Cc: knaack.h@gmx.de,
 	linux-iio@vger.kernel.org,
 	devel@driverdev.osuosl.org,
 	linux-kernel@vger.kernel.org
-Subject: [PATCH 4/7] iio: light: tsl2583: return proper error code in sysfs store functions
-Date: Wed, 19 Oct 2016 06:32:07 -0400
-Message-Id: <1476873130-24926-4-git-send-email-masneyb@onstation.org>
+Subject: [PATCH 5/7] iio: light: tsl2583: check return values from taos_chip_{on,off}
+Date: Wed, 19 Oct 2016 06:32:08 -0400
+Message-Id: <1476873130-24926-5-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
 References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-illuminance0_calibbias_store(), illuminance0_input_target_store(), and
-illuminance0_calibrate_store() did not return an error code when
-an invalid value was passed in. The input was checked to see if the
-input was valid, however the caller would not be notified that an
-invalid value was passed in. This patch changes these three functions to
-return -EINVAL when invalid input is passed in.
+The return values from taos_chip_on() and taos_chip_off() was not
+checked in several places. This patch adds proper error checking to
+these function calls.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 15 +++++++++------
- 1 file changed, 9 insertions(+), 6 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 25 ++++++++++++++++++-------
+ 1 file changed, 18 insertions(+), 7 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index bbb8fc3..a60433e 100644
+index a60433e..60f0ce9 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -657,9 +657,10 @@ static ssize_t illuminance0_calibbias_store(struct device *dev,
+@@ -515,15 +515,18 @@ static ssize_t power_state_store(struct device *dev,
+ 				 const char *buf, size_t len)
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	int value;
++	int value, ret;
  
  	if (kstrtoint(buf, 0, &value))
  		return -EINVAL;
-+	else if (!value)
-+		return -EINVAL;
  
--	if (value)
--		chip->taos_settings.als_gain_trim = value;
-+	chip->taos_settings.als_gain_trim = value;
- 
- 	return len;
- }
-@@ -684,9 +685,10 @@ static ssize_t illuminance0_input_target_store(struct device *dev,
- 
- 	if (kstrtoint(buf, 0, &value))
- 		return -EINVAL;
-+	else if (!value)
-+		return -EINVAL;
- 
--	if (value)
--		chip->taos_settings.als_cal_target = value;
-+	chip->taos_settings.als_cal_target = value;
+ 	if (!value)
+-		taos_chip_off(indio_dev);
++		ret = taos_chip_off(indio_dev);
+ 	else
+-		taos_chip_on(indio_dev);
++		ret = taos_chip_on(indio_dev);
++
++	if (ret < 0)
++		return ret;
  
  	return len;
  }
-@@ -713,9 +715,10 @@ static ssize_t illuminance0_calibrate_store(struct device *dev,
+@@ -775,14 +778,20 @@ static ssize_t illuminance0_lux_table_store(struct device *dev,
+ 		goto luxable_store_done;
+ 	}
  
- 	if (kstrtoint(buf, 0, &value))
- 		return -EINVAL;
-+	else if (value != 1)
-+		return -EINVAL;
+-	if (chip->taos_chip_status == TSL258X_CHIP_WORKING)
+-		taos_chip_off(indio_dev);
++	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
++		ret = taos_chip_off(indio_dev);
++		if (ret < 0)
++			return ret;
++	}
  
--	if (value == 1)
--		taos_als_calibrate(indio_dev);
-+	taos_als_calibrate(indio_dev);
+ 	/* Zero out the table */
+ 	memset(taos_device_lux, 0, sizeof(taos_device_lux));
+ 	memcpy(taos_device_lux, &value[1], (value[0] * 4));
  
- 	return len;
- }
+-	taos_chip_on(indio_dev);
++	ret = taos_chip_on(indio_dev);
++	if (ret < 0)
++		return ret;
++
+ 	ret = len;
+ 
+ luxable_store_done:
+@@ -914,7 +923,9 @@ static int taos_probe(struct i2c_client *clientp,
+ 	taos_defaults(chip);
+ 
+ 	/* Make sure the chip is on */
+-	taos_chip_on(indio_dev);
++	ret = taos_chip_on(indio_dev);
++	if (ret < 0)
++		return ret;
+ 
+ 	dev_info(&clientp->dev, "Light sensor found.\n");
+ 
 -- 
 2.7.4
