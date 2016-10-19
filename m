@@ -1,40 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp1050.oracle.com ([156.151.31.82]:48709 "EHLO
-        userp1050.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932188AbcJSOMm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 10:12:42 -0400
-Date: Wed, 19 Oct 2016 15:57:43 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Brian Masney <masneyb@onstation.org>
-Cc: devel@driverdev.osuosl.org, lars@metafoo.de,
-        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        jic23@kernel.org
-Subject: Re: [PATCH 5/7] iio: light: tsl2583: check return values from
- taos_chip_{on, off}
-Message-ID: <20161019125742.GM4469@mwanda>
+Received: from onstation.org ([52.200.56.107]:35382 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S941301AbcJSOWd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 19 Oct 2016 10:22:33 -0400
+Date: Wed, 19 Oct 2016 09:04:51 -0400
+From: Brian Masney <masneyb@onstation.org>
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 3/7] iio: light: tsl2583: use DEVICE_ATTR_{RO, RW, WO}
+ macros
+Message-ID: <20161019130451.GC6741@basecamp.onstation.org>
 References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
- <1476873130-24926-5-git-send-email-masneyb@onstation.org>
- <20161019112249.GH4469@mwanda>
- <20161019124832.GB6741@basecamp.onstation.org>
- <20161019125423.GL4469@mwanda>
+ <1476873130-24926-3-git-send-email-masneyb@onstation.org>
+ <alpine.DEB.2.02.1610191244390.29572@pmeerw.net>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161019125423.GL4469@mwanda>
+In-Reply-To: <alpine.DEB.2.02.1610191244390.29572@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Oct 19, 2016 at 03:54:23PM +0300, Dan Carpenter wrote:
-> On Wed, Oct 19, 2016 at 08:48:32AM -0400, Brian Masney wrote:
-> > Ok, I'll rework my patch series to stick with the direct returns. I
-> > personally prefer that approach. I was using the gotos since I thought
-> > that was standard convention in the kernel.
-> > 
+On Wed, Oct 19, 2016 at 12:47:13PM +0200, Peter Meerwald-Stadler wrote:
 > 
-> It *should* but "goto unlock;"
+> > Use the DEVICE_ATTR_RO, IIO_DEVICE_ATTR_RW, and IIO_DEVICE_ATTR_WO
+> > macros to create the device attributes.
+> 
+> great that you work on cleaning this up!
+> 
+> the patch does a bit more than is claimed, it also renames stuff; 
+> eventually, a proper prefix ('tsl2583_') should be used...
 
-s/but/be/
+We can't have the tsl2583_ prefix on the function with the
+DEVICE_ATTR_{RW,RO,WO} macros. drivers/acpi/nfit/core.c is one of many
+examples of this.
 
-regards,
-dan carpenter
+I will submit a separate patch to fix the prefix on the other functions
+when I get to code style cleanups in that driver.
+
+> maybe you can unify the two files in this patch series?
+> ./staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+> ./staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
+> 
+> Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> :-)
+
+I'll add that to my list.
+
+There are plenty of other issues to fix in this driver and I'll have
+more cleanup patches. I was at a good stopping point and wanted to send
+out what I had so far to get feedback. I should have let the patch series
+sit for a day before I sent it out.
+
+Brian
 
