@@ -1,75 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:59995 "EHLO
+Received: from www381.your-server.de ([78.46.137.84]:60361 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757146AbcJSRHU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:07:20 -0400
+        with ESMTP id S941777AbcJSRLN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:11:13 -0400
 From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 01/13] staging:iio:ad7606: Remove unused int_vref_mv field
-Date: Wed, 19 Oct 2016 19:06:56 +0200
-Message-Id: <1476896828-10544-2-git-send-email-lars@metafoo.de>
+Subject: [PATCH 11/13] staging:iio:ad7606: Run trigger handler only once per trigger event
+Date: Wed, 19 Oct 2016 19:07:06 +0200
+Message-Id: <1476896828-10544-12-git-send-email-lars@metafoo.de>
 In-Reply-To: <1476896828-10544-1-git-send-email-lars@metafoo.de>
 References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Remove the int_vref_mv field from the ad7606_chip_info struct since the
-field is never used by the driver. The value is also the same for all
-derivatives of this chip, so if it will ever be used in the driver a
-constant value will work just fine.
+Currently the ad7606 driver installs the same function for the hard-irq and
+threaded trigger handlers. This was introduced in commit 1caf7cb46135
+("staging:iio:adc:ad7606 Convert to new channel registration method Update
+Add missing call to iio_trigger_notify_done() Set pollfunc top and bottom
+half handler"). Unfortunately the commit message does not mention why this
+was done and Michael does not remember either.
+
+Since the trigger handler function is idempotent (set a GPIO to 1) running
+it twice does not do any harm, but is simply not necessary either. So set
+the threaded trigger handler for the driver to NULL.
+
+While we are at it also remove the function description comment that does
+no say anything that can't be derived from the function name itself.
 
 Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/staging/iio/adc/ad7606.h      | 2 --
- drivers/staging/iio/adc/ad7606_core.c | 3 ---
- 2 files changed, 5 deletions(-)
+ drivers/staging/iio/adc/ad7606_ring.c | 11 +++--------
+ 1 file changed, 3 insertions(+), 8 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 39f5044..b7e59a6 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -43,14 +43,12 @@ struct ad7606_platform_data {
- /**
-  * struct ad7606_chip_info - chip specific information
-  * @name:		identification string for chip
-- * @int_vref_mv:	the internal reference voltage
-  * @channels:		channel specification
-  * @num_channels:	number of channels
-  */
+diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+index b7bf0cf..81e4a0ac 100644
+--- a/drivers/staging/iio/adc/ad7606_ring.c
++++ b/drivers/staging/iio/adc/ad7606_ring.c
+@@ -18,11 +18,7 @@
  
- struct ad7606_chip_info {
- 	const char			*name;
--	u16				int_vref_mv;
- 	const struct iio_chan_spec	*channels;
- 	unsigned int			num_channels;
- };
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index 2042225..a1f18d4 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -261,19 +261,16 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
- 	 */
- 	[ID_AD7606_8] = {
- 		.name = "ad7606",
--		.int_vref_mv = 2500,
- 		.channels = ad7606_channels,
- 		.num_channels = 9,
- 	},
- 	[ID_AD7606_6] = {
- 		.name = "ad7606-6",
--		.int_vref_mv = 2500,
- 		.channels = ad7606_channels,
- 		.num_channels = 7,
- 	},
- 	[ID_AD7606_4] = {
- 		.name = "ad7606-4",
--		.int_vref_mv = 2500,
- 		.channels = ad7606_channels,
- 		.num_channels = 5,
- 	},
+ #include "ad7606.h"
+ 
+-/**
+- * ad7606_trigger_handler_th() th/bh of trigger launched polling to ring buffer
+- *
+- **/
+-static irqreturn_t ad7606_trigger_handler_th_bh(int irq, void *p)
++static irqreturn_t ad7606_trigger_handler(int irq, void *p)
+ {
+ 	struct iio_poll_func *pf = p;
+ 	struct ad7606_state *st = iio_priv(pf->indio_dev);
+@@ -63,9 +59,8 @@ int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
+ 
+ 	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
+ 
+-	return iio_triggered_buffer_setup(indio_dev,
+-		&ad7606_trigger_handler_th_bh, &ad7606_trigger_handler_th_bh,
+-		NULL);
++	return iio_triggered_buffer_setup(indio_dev, &ad7606_trigger_handler,
++					  NULL, NULL);
+ }
+ 
+ void ad7606_ring_cleanup(struct iio_dev *indio_dev)
 -- 
 2.1.4
 
