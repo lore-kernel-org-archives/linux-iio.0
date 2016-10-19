@@ -1,142 +1,82 @@
-Return-Path: <enric.balletbo@collabora.com>
-From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-To: linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	jic23@kernel.org
-Cc: lars@metafoo.de,
-	gwendal@chromium.org
-Subject: [PATCH] iio: light: acpi-als: Add IO_CHAN_INFO_OFFSET/SCALE to mask.
-Date: Fri, 21 Oct 2016 10:17:09 +0200
-Message-Id: <1477037829-20352-1-git-send-email-enric.balletbo@collabora.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:59994 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757132AbcJSRHU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:07:20 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 03/13] staging:iio:ad7606: Remove default device configuration from platform data
+Date: Wed, 19 Oct 2016 19:06:58 +0200
+Message-Id: <1476896828-10544-4-git-send-email-lars@metafoo.de>
+In-Reply-To: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-According the ACPI specification (Version 5.0 Errata A) [1], the data
-coming from the sensor represent the ambient light illuminance reading
-expressed in lux. Unfortunately ACPI interface doesn't provide a
-mechanism to calibrate this value, so this raw value can be slightly
-wrong.
+While for some very selected setups it might be useful to be able to
+provide default configuration data via the platform data, generally this
+becomes very impractical as the number of configuration options increases.
+So the general policy is to use the power-on default values of the device
+and let the application using the device configure it according to its
+needs.
 
-This patch adds IIO_CHAN_INFO_OFFSET and IIO_CHAN_INFO_SCALE attributes
-to give the possibiity to the userspace to calculate a calibrated data
-by doing:
+Implement this scheme for the ad7606 driver by removing support for
+specifying a default configuration via the platform data.
 
- (raw_value + offset) * scale = calibrated_value (in lux)
-
-[1] http://www.acpi.info/DOWNLOADS/ACPI_5_Errata%20A.pdf
-
-Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
 ---
- drivers/iio/light/acpi-als.c | 66 ++++++++++++++++++++++++++++++++++++++------
- 1 file changed, 57 insertions(+), 9 deletions(-)
+ drivers/staging/iio/adc/ad7606.h      |  4 ----
+ drivers/staging/iio/adc/ad7606_core.c | 12 ++----------
+ 2 files changed, 2 insertions(+), 14 deletions(-)
 
-diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
-index f0b47c5..a8093ba 100644
---- a/drivers/iio/light/acpi-als.c
-+++ b/drivers/iio/light/acpi-als.c
-@@ -56,7 +56,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
- 		},
- 		/* _RAW is here for backward ABI compatibility */
- 		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
--					  BIT(IIO_CHAN_INFO_PROCESSED),
-+					  BIT(IIO_CHAN_INFO_PROCESSED) |
-+					  BIT(IIO_CHAN_INFO_SCALE) |
-+					  BIT(IIO_CHAN_INFO_OFFSET),
- 	},
- };
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 380c56a..cf6be65 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -15,8 +15,6 @@
  
-@@ -76,6 +78,10 @@ struct acpi_als {
- 	struct mutex		lock;
+ /**
+  * struct ad7606_platform_data - platform/board specific information
+- * @default_os:		default oversampling value {0, 2, 4, 8, 16, 32, 64}
+- * @default_range:	default range +/-{5000, 10000} mVolt
+  * @gpio_convst:	number of gpio connected to the CONVST pin
+  * @gpio_reset:		gpio connected to the RESET pin, if not used set to -1
+  * @gpio_range:		gpio connected to the RANGE pin, if not used set to -1
+@@ -28,8 +26,6 @@
+  */
  
- 	s32			evt_buffer[ACPI_ALS_EVT_BUFFER_SIZE];
-+
-+	int			scale;
-+	int			uscale;
-+	int			offset;
- };
- 
- /*
-@@ -154,25 +160,64 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
- 	s32 temp_val;
- 	int ret;
- 
--	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
--		return -EINVAL;
+ struct ad7606_platform_data {
+-	unsigned int			default_os;
+-	unsigned int			default_range;
+ 	unsigned int			gpio_convst;
+ 	unsigned int			gpio_reset;
+ 	unsigned int			gpio_range;
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index 1093647..a16c6f5 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -452,16 +452,8 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+ 	st->dev = dev;
+ 	st->bops = bops;
+ 	st->base_address = base_address;
+-	st->range = pdata->default_range == 10000 ? 10000 : 5000;
 -
- 	/* we support only illumination (_ALI) so far. */
- 	if (chan->type != IIO_LIGHT)
- 		return -EINVAL;
+-	ret = ad7606_oversampling_get_index(pdata->default_os);
+-	if (ret < 0) {
+-		dev_warn(dev, "oversampling %d is not supported\n",
+-			 pdata->default_os);
+-		st->oversampling = 0;
+-	} else {
+-		st->oversampling = pdata->default_os;
+-	}
++	st->range = 5000;
++	st->oversampling = 0;
  
--	ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
--	if (ret < 0)
--		return ret;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+	case IIO_CHAN_INFO_PROCESSED:
-+		ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
-+		if (ret < 0)
-+			return ret;
-+		*val = temp_val;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_OFFSET:
-+		mutex_lock(&als->lock);
-+		*val = als->offset;
-+		mutex_unlock(&als->lock);
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		mutex_lock(&als->lock);
-+		*val = als->scale;
-+		*val2 = als->uscale;
-+		mutex_unlock(&als->lock);
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
- 
--	*val = temp_val;
-+static int acpi_als_write_raw(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan, int val,
-+			      int val2, long mask)
-+{
-+	struct acpi_als *als = iio_priv(indio_dev);
-+
-+	if (chan->type != IIO_LIGHT)
-+		return -EINVAL;
- 
--	return IIO_VAL_INT;
-+	switch (mask) {
-+	case IIO_CHAN_INFO_OFFSET:
-+		mutex_lock(&als->lock);
-+		als->offset = val;
-+		mutex_unlock(&als->lock);
-+		return 0;
-+	case IIO_CHAN_INFO_SCALE:
-+		mutex_lock(&als->lock);
-+		als->scale = val;
-+		als->uscale = val2;
-+		mutex_unlock(&als->lock);
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
- }
- 
- static const struct iio_info acpi_als_info = {
- 	.driver_module		= THIS_MODULE,
- 	.read_raw		= acpi_als_read_raw,
-+	.write_raw		= acpi_als_write_raw,
- };
- 
- static int acpi_als_add(struct acpi_device *device)
-@@ -189,6 +234,9 @@ static int acpi_als_add(struct acpi_device *device)
- 
- 	device->driver_data = indio_dev;
- 	als->device = device;
-+	als->scale = 1;
-+	als->uscale = 0;
-+	als->offset = 0;
- 	mutex_init(&als->lock);
- 
- 	indio_dev->name = ACPI_ALS_DEVICE_NAME;
+ 	st->reg = devm_regulator_get(dev, "vcc");
+ 	if (!IS_ERR(st->reg)) {
 -- 
-2.1.0
+2.1.4
+
