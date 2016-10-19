@@ -1,37 +1,28 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp1050.oracle.com ([156.151.31.82]:49329 "EHLO
-        userp1050.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938647AbcJSOUS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 10:20:18 -0400
-Date: Wed, 19 Oct 2016 16:11:42 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Brian Masney <masneyb@onstation.org>
-Cc: jic23@kernel.org, devel@driverdev.osuosl.org, lars@metafoo.de,
-        linux-iio@vger.kernel.org, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, pmeerw@pmeerw.net, knaack.h@gmx.de
-Subject: Re: [PATCH 3/7] iio: light: tsl2583: use DEVICE_ATTR_{RO, RW, WO}
- macros
-Message-ID: <20161019131142.GG4418@mwanda>
-References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
- <1476873130-24926-3-git-send-email-masneyb@onstation.org>
- <20161019112626.GI4469@mwanda>
- <20161019130830.GD6741@basecamp.onstation.org>
+Return-Path: <matt@ranostay.consulting>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161019130830.GD6741@basecamp.onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+From: Matt Ranostay <matt@ranostay.consulting>
+Date: Wed, 19 Oct 2016 10:13:36 -0700
+Message-ID: <CAJ_EiSQ0KEXOqNOQvqcaF5=f-TJtxZNsWs39k6gHuzN_f1OT7w@mail.gmail.com>
+Subject: [RFC] multipixel infrared thermopile sensors
+To: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Oct 19, 2016 at 09:08:30AM -0400, Brian Masney wrote:
-> On Wed, Oct 19, 2016 at 02:26:27PM +0300, Dan Carpenter wrote:
-> > What does illuminance0_ mean?  Can we remove that?
-> 
-> I left the names of the existing sysfs attributes intact to not break
-> any existing users of the driver. I'm not sure why the original author
-> named it that way.
+Jonathan et all,
 
-Ah...  Then I defer to your judgement.
+Know this has been brought up in the past but what is the view of
+multipixel infrared thermopiles?
 
-regards,
-dan carpenter
+Initially I plan to do summing average of all the pixels and report
+that back, but would like in the future to be able to push the pixel
+data to the buffers.
 
+These of course are weird because they barely fit into iio, but nor do
+they fit into v4l2 (especially since the data isn't DMA'able).
+
+Datasheet -> https://eewiki.net/download/attachments/13599167/Grid-EYE%20SPECIFICATIONS%28Reference%29.pdf
+
+Thanks,
+
+Matt
