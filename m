@@ -1,165 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:60018 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757154AbcJSRHV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:07:21 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 07/13] staging:iio:ad7606: Factor out common code between periodic and one-shot capture
-Date: Wed, 19 Oct 2016 19:07:02 +0200
-Message-Id: <1476896828-10544-8-git-send-email-lars@metafoo.de>
-In-Reply-To: <1476896828-10544-1-git-send-email-lars@metafoo.de>
-References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+Received: from mail-pf0-f193.google.com ([209.85.192.193]:34600 "EHLO
+        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933448AbcJSRKB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:10:01 -0400
+Received: by mail-pf0-f193.google.com with SMTP id 128so2980262pfz.1
+        for <linux-iio@vger.kernel.org>; Wed, 19 Oct 2016 10:10:01 -0700 (PDT)
+Date: Thu, 20 Oct 2016 01:09:57 +0800
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, outreachy-kernel@googlegroups.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de
+Subject: Re: [PATCH] tools: iio: iio_generic_buffer: add -A to force-enable
+ all channels
+Message-ID: <20161019170953.GA2121@Socrates-DK>
+References: <1476440319-11124-1-git-send-email-eraretuya@gmail.com>
+ <alpine.DEB.2.02.1610172311510.31400@pmeerw.net>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <alpine.DEB.2.02.1610172311510.31400@pmeerw.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Both the periodic buffer based and one-shot sysfs based capture methods
-share a large portion of their code. Factor this out into a common helper
-function.
+On Mon, Oct 17, 2016 at 11:15:53PM +0200, Peter Meerwald-Stadler wrote:
+> 
+> > If attribute/s is/are already enabled (by default or via scripts or
+> > manual interaction), issuing -a will fail to enable the channels thereby
+> > one has to manually disable the said attribute/s before proceeding with
+> > auto-enabling.
+> > 
+> > Add a command-line option -A to force-activate all channels regardless
+> > of their current state.
+> 
+> comments below
+>  
+> > Suggested-by: Alison Schofield <amsfield22@gmail.com>
+> > Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+> > ---
+> >  tools/iio/iio_generic_buffer.c | 17 ++++++++++++-----
+> >  1 file changed, 12 insertions(+), 5 deletions(-)
+> > 
+> > diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+> > index f39c0e9..84c9888 100644
+> > --- a/tools/iio/iio_generic_buffer.c
+> > +++ b/tools/iio/iio_generic_buffer.c
+> > @@ -247,6 +247,7 @@ void print_usage(void)
+> >  	fprintf(stderr, "Usage: generic_buffer [options]...\n"
+> >  		"Capture, convert and output data from IIO device buffer\n"
+> >  		"  -a         Auto-activate all available channels\n"
+> > +		"  -A         Force-activate ALL channels\n"
+> >  		"  -c <n>     Do n conversions\n"
+> >  		"  -e         Disable wait for event (new data)\n"
+> >  		"  -g         Use trigger-less mode\n"
+> > @@ -347,16 +348,22 @@ int main(int argc, char **argv)
+> >  	int noevents = 0;
+> >  	int notrigger = 0;
+> >  	char *dummy;
+> > +	int force = 0;
+> 
+> bool instead of int
+> maybe force_autochannels
+> 
+> >  
+> >  	struct iio_channel_info *channels = NULL;
+> >  
+> >  	register_cleanup();
+> >  
+> > -	while ((c = getopt_long(argc, argv, "ac:egl:n:N:t:T:w:", longopts, NULL)) != -1) {
+> > +	while ((c = getopt_long(argc, argv, "aAc:egl:n:N:t:T:w:", longopts,
+> > +		NULL)) != -1) {
+> >  		switch (c) {
+> >  		case 'a':
+> >  			autochannels = AUTOCHANNELS_ENABLED;
+> >  			break;
+> > +		case 'A':
+> > +			autochannels = AUTOCHANNELS_ENABLED;
+> > +			force = 1;
+> > +			break;
+> >  		case 'c':
+> >  			errno = 0;
+> >  			num_loops = strtoul(optarg, &dummy, 10);
+> > @@ -519,15 +526,15 @@ int main(int argc, char **argv)
+> >  			"diag %s\n", dev_dir_name);
+> >  		goto error;
+> >  	}
+> > -	if (num_channels && autochannels == AUTOCHANNELS_ENABLED) {
+> > +	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
+> 
+> parenthesis not strictly required/needed
+> the bracketing is inconsistent, when do you use parenthesis with && and 
+> when not? I suggest to drop parenthesis
+> 
+> >  		fprintf(stderr, "Auto-channels selected but some channels "
+> >  			"are already activated in sysfs\n");
+> >  		fprintf(stderr, "Proceeding without activating any channels\n");
+> >  	}
+> >  
+> > -	if (!num_channels && autochannels == AUTOCHANNELS_ENABLED) {
+> > -		fprintf(stderr,
+> > -			"No channels are enabled, enabling all channels\n");
+> > +	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
+> > +	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
+> > +		fprintf(stderr, "Enabling all channels\n");
+> 
+> as above
+ 
+Thanks for the feedback. I submitted a patchset about these suggestions.
+However, I cannot fully omit all extra parentheses on that part
+otherwise the tool will not compile due to requiring parentheses around
+'||'.
 
-Also provide a comment that better explains in more detail what is going on
-in the capture function.
-
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7606.h      |  1 +
- drivers/staging/iio/adc/ad7606_core.c | 58 ++++++++++++++++++++++-------------
- drivers/staging/iio/adc/ad7606_ring.c | 30 +++---------------
- 3 files changed, 41 insertions(+), 48 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 129f94e..2257bdb 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -84,6 +84,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
- 			      const struct ad7606_bus_ops *bops);
- int ad7606_remove(struct iio_dev *indio_dev, int irq);
- int ad7606_reset(struct ad7606_state *st);
-+int ad7606_read_samples(struct ad7606_state *st);
- 
- enum ad7606_supported_device_ids {
- 	ID_AD7606_8,
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index 7c093e2..4ce103a 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -36,6 +36,39 @@ int ad7606_reset(struct ad7606_state *st)
- 	return -ENODEV;
- }
- 
-+int ad7606_read_samples(struct ad7606_state *st)
-+{
-+	unsigned int num = st->chip_info->num_channels;
-+	u16 *data = st->data;
-+	int ret;
-+
-+	/*
-+	 * The frstdata signal is set to high while and after reading the sample
-+	 * of the first channel and low for all other channels. This can be used
-+	 * to check that the incoming data is correctly aligned. During normal
-+	 * operation the data should never become unaligned, but some glitch or
-+	 * electrostatic discharge might cause an extra read or clock cycle.
-+	 * Monitoring the frstdata signal allows to recover from such failure
-+	 * situations.
-+	 */
-+
-+	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
-+		ret = st->bops->read_block(st->dev, 1, data);
-+		if (ret)
-+			return ret;
-+
-+		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
-+			ad7606_reset(st);
-+			return -EIO;
-+		}
-+
-+		data++;
-+		num--;
-+	}
-+
-+	return st->bops->read_block(st->dev, num, data);
-+}
-+
- static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- {
- 	struct ad7606_state *st = iio_priv(indio_dev);
-@@ -48,28 +81,9 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
- 	if (ret)
- 		goto error_ret;
- 
--	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
--		ret = st->bops->read_block(st->dev, 1, st->data);
--		if (ret)
--			goto error_ret;
--		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
--			/* This should never happen */
--			ad7606_reset(st);
--			ret = -EIO;
--			goto error_ret;
--		}
--		ret = st->bops->read_block(st->dev,
--			st->chip_info->num_channels - 1, &st->data[1]);
--		if (ret)
--			goto error_ret;
--	} else {
--		ret = st->bops->read_block(st->dev,
--			st->chip_info->num_channels, st->data);
--		if (ret)
--			goto error_ret;
--	}
--
--	ret = st->data[ch];
-+	ret = ad7606_read_samples(st);
-+	if (ret == 0)
-+		ret = st->data[ch];
- 
- error_ret:
- 	gpio_set_value(st->pdata->gpio_convst, 0);
-diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-index 7fa4ccc..b7bf0cf 100644
---- a/drivers/staging/iio/adc/ad7606_ring.c
-+++ b/drivers/staging/iio/adc/ad7606_ring.c
-@@ -48,33 +48,11 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
- 	struct iio_dev *indio_dev = iio_priv_to_dev(st);
- 	int ret;
- 
--	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
--		ret = st->bops->read_block(st->dev, 1, st->data);
--		if (ret)
--			goto done;
--		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
--			/* This should never happen. However
--			 * some signal glitch caused by bad PCB desgin or
--			 * electrostatic discharge, could cause an extra read
--			 * or clock. This allows recovery.
--			 */
--			ad7606_reset(st);
--			goto done;
--		}
--		ret = st->bops->read_block(st->dev,
--			st->chip_info->num_channels - 1, st->data + 1);
--		if (ret)
--			goto done;
--	} else {
--		ret = st->bops->read_block(st->dev,
--			st->chip_info->num_channels, st->data);
--		if (ret)
--			goto done;
--	}
-+	ret = ad7606_read_samples(st);
-+	if (ret == 0)
-+		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
-+						   iio_get_time_ns(indio_dev));
- 
--	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
--					   iio_get_time_ns(indio_dev));
--done:
- 	gpio_set_value(st->pdata->gpio_convst, 0);
- 	iio_trigger_notify_done(indio_dev->trig);
- }
--- 
-2.1.4
-
+Eva
+> >  
+> >  		ret = enable_disable_all_channels(dev_dir_name, 1);
+> >  		if (ret) {
+> > 
+> 
+> -- 
+> 
+> Peter Meerwald-Stadler
+> +43-664-2444418 (mobile)
