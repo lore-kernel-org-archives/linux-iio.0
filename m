@@ -1,246 +1,146 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pa0-f66.google.com ([209.85.220.66]:34705 "EHLO
-        mail-pa0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756948AbcJPSI6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 16 Oct 2016 14:08:58 -0400
-Received: by mail-pa0-f66.google.com with SMTP id fn2so7457335pad.1
-        for <linux-iio@vger.kernel.org>; Sun, 16 Oct 2016 11:08:58 -0700 (PDT)
-Date: Sun, 16 Oct 2016 11:08:55 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: Akinobu Mita <akinobu.mita@gmail.com>
-Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: ti-adc0832: add triggered buffer support
-Message-ID: <20161016180854.GA3597@d830.WORKGROUP>
-References: <1476633582-21211-1-git-send-email-akinobu.mita@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1476633582-21211-1-git-send-email-akinobu.mita@gmail.com>
+Received: from www381.your-server.de ([78.46.137.84]:59990 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757130AbcJSRHV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:07:21 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 02/13] staging:iio:ad7606: Remove redundant name field from ad7606_chip_info
+Date: Wed, 19 Oct 2016 19:06:57 +0200
+Message-Id: <1476896828-10544-3-git-send-email-lars@metafoo.de>
+In-Reply-To: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Oct 17, 2016 at 12:59:42AM +0900, Akinobu Mita wrote:
-> This adds triggered buffer support for it-adc0832 driver.  Tested with
-> ADC0831 and ADC0832 by using SYSFS trigger.
-> 
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-> ---
+The name field in the ad7606_chip_info struct is set to the same value as
+the as the name field in the corresponding {platform,spi}_device_id table
+entry. Remove it from the ad7606_chip_info struct and pass the name from
+the ID to the probe function. This slightly reduces the size of the
+chip_info table and adding new entries requires less boilerplate.
 
-Hi Akinobu,
-I just scanned this looking for usage of iio_device_claim_direct_mode().
-I don't see it, so wondering if that is intentional. Do you want to
-allow both raw and buffered access at same time?  If not, look at
-the iio_device_claim|release_direct_mode() functions.
-alisons
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/staging/iio/adc/ad7606.h      |  4 ++--
+ drivers/staging/iio/adc/ad7606_core.c | 11 ++++-------
+ drivers/staging/iio/adc/ad7606_par.c  |  3 ++-
+ drivers/staging/iio/adc/ad7606_spi.c  |  3 ++-
+ 4 files changed, 10 insertions(+), 11 deletions(-)
 
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index b7e59a6..380c56a 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -48,7 +48,6 @@ struct ad7606_platform_data {
+  */
+ 
+ struct ad7606_chip_info {
+-	const char			*name;
+ 	const struct iio_chan_spec	*channels;
+ 	unsigned int			num_channels;
+ };
+@@ -84,7 +83,8 @@ struct ad7606_bus_ops {
+ };
+ 
+ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+-			      void __iomem *base_address, unsigned int id,
++			      void __iomem *base_address,
++			      const char *name, unsigned int id,
+ 			      const struct ad7606_bus_ops *bops);
+ int ad7606_remove(struct iio_dev *indio_dev, int irq);
+ int ad7606_reset(struct ad7606_state *st);
+diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+index a1f18d4..1093647 100644
+--- a/drivers/staging/iio/adc/ad7606_core.c
++++ b/drivers/staging/iio/adc/ad7606_core.c
+@@ -260,17 +260,14 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+ 	 * More devices added in future
+ 	 */
+ 	[ID_AD7606_8] = {
+-		.name = "ad7606",
+ 		.channels = ad7606_channels,
+ 		.num_channels = 9,
+ 	},
+ 	[ID_AD7606_6] = {
+-		.name = "ad7606-6",
+ 		.channels = ad7606_channels,
+ 		.num_channels = 7,
+ 	},
+ 	[ID_AD7606_4] = {
+-		.name = "ad7606-4",
+ 		.channels = ad7606_channels,
+ 		.num_channels = 5,
+ 	},
+@@ -438,7 +435,7 @@ static const struct iio_info ad7606_info_range = {
+ 
+ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+ 			     void __iomem *base_address,
+-			     unsigned int id,
++			     const char *name, unsigned int id,
+ 			     const struct ad7606_bus_ops *bops)
+ {
+ 	struct ad7606_platform_data *pdata = dev->platform_data;
+@@ -491,7 +488,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+ 			indio_dev->info = &ad7606_info_no_os_or_range;
+ 	}
+ 	indio_dev->modes = INDIO_DIRECT_MODE;
+-	indio_dev->name = st->chip_info->name;
++	indio_dev->name = name;
+ 	indio_dev->channels = st->chip_info->channels;
+ 	indio_dev->num_channels = st->chip_info->num_channels;
+ 
+@@ -505,8 +502,8 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+ 	if (ret)
+ 		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
+ 
+-	ret = request_irq(irq, ad7606_interrupt,
+-			  IRQF_TRIGGER_FALLING, st->chip_info->name, indio_dev);
++	ret = request_irq(irq, ad7606_interrupt, IRQF_TRIGGER_FALLING, name,
++			  indio_dev);
+ 	if (ret)
+ 		goto error_free_gpios;
+ 
+diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+index 84d2393..0a23cd9 100644
+--- a/drivers/staging/iio/adc/ad7606_par.c
++++ b/drivers/staging/iio/adc/ad7606_par.c
+@@ -49,6 +49,7 @@ static const struct ad7606_bus_ops ad7606_par8_bops = {
+ 
+ static int ad7606_par_probe(struct platform_device *pdev)
+ {
++	const struct platform_device_id *id = platform_get_device_id(pdev);
+ 	struct resource *res;
+ 	struct iio_dev *indio_dev;
+ 	void __iomem *addr;
+@@ -69,7 +70,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
+ 	remap_size = resource_size(res);
+ 
+ 	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
+-				 platform_get_device_id(pdev)->driver_data,
++				 id->name, id->driver_data,
+ 				 remap_size > 1 ? &ad7606_par16_bops :
+ 				 &ad7606_par8_bops);
+ 
+diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+index 9587fa8..f69db59 100644
+--- a/drivers/staging/iio/adc/ad7606_spi.c
++++ b/drivers/staging/iio/adc/ad7606_spi.c
+@@ -42,10 +42,11 @@ static const struct ad7606_bus_ops ad7606_spi_bops = {
+ 
+ static int ad7606_spi_probe(struct spi_device *spi)
+ {
++	const struct spi_device_id *id = spi_get_device_id(spi);
+ 	struct iio_dev *indio_dev;
+ 
+ 	indio_dev = ad7606_probe(&spi->dev, spi->irq, NULL,
+-				 spi_get_device_id(spi)->driver_data,
++				 id->name, id->driver_data,
+ 				 &ad7606_spi_bops);
+ 
+ 	if (IS_ERR(indio_dev))
+-- 
+2.1.4
 
-
-
->  drivers/iio/adc/Kconfig      |   2 +
->  drivers/iio/adc/ti-adc0832.c | 106 +++++++++++++++++++++++++++++++++++--------
->  2 files changed, 89 insertions(+), 19 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 3dc60c0..bd8d108 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -457,6 +457,8 @@ config TI_ADC081C
->  config TI_ADC0832
->  	tristate "Texas Instruments ADC0831/ADC0832/ADC0834/ADC0838"
->  	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  If you say yes here you get support for Texas Instruments ADC0831,
->  	  ADC0832, ADC0834, ADC0838 ADC chips.
-> diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
-> index f4ba23e..e952e94 100644
-> --- a/drivers/iio/adc/ti-adc0832.c
-> +++ b/drivers/iio/adc/ti-adc0832.c
-> @@ -14,6 +14,10 @@
->  #include <linux/spi/spi.h>
->  #include <linux/iio/iio.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
->  
->  enum {
->  	adc0831,
-> @@ -38,10 +42,16 @@ struct adc0832 {
->  		.indexed = 1,						\
->  		.channel = chan,					\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.scan_index = chan,					\
-> +		.scan_type = {						\
-> +			.sign = 'u',					\
-> +			.realbits = 8,					\
-> +			.storagebits = 8,				\
-> +		},							\
->  	}
->  
-> -#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2)			\
-> +#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)			\
->  	{								\
->  		.type = IIO_VOLTAGE,					\
->  		.indexed = 1,						\
-> @@ -49,18 +59,26 @@ struct adc0832 {
->  		.channel2 = (chan2),					\
->  		.differential = 1,					\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.scan_index = si,					\
-> +		.scan_type = {						\
-> +			.sign = 'u',					\
-> +			.realbits = 8,					\
-> +			.storagebits = 8,				\
-> +		},							\
->  	}
->  
->  static const struct iio_chan_spec adc0831_channels[] = {
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 0),
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
->  };
->  
->  static const struct iio_chan_spec adc0832_channels[] = {
->  	ADC0832_VOLTAGE_CHANNEL(0),
->  	ADC0832_VOLTAGE_CHANNEL(1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 3),
-> +	IIO_CHAN_SOFT_TIMESTAMP(4),
->  };
->  
->  static const struct iio_chan_spec adc0834_channels[] = {
-> @@ -68,10 +86,11 @@ static const struct iio_chan_spec adc0834_channels[] = {
->  	ADC0832_VOLTAGE_CHANNEL(1),
->  	ADC0832_VOLTAGE_CHANNEL(2),
->  	ADC0832_VOLTAGE_CHANNEL(3),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 4),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 5),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 6),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 7),
-> +	IIO_CHAN_SOFT_TIMESTAMP(8),
->  };
->  
->  static const struct iio_chan_spec adc0838_channels[] = {
-> @@ -83,14 +102,15 @@ static const struct iio_chan_spec adc0838_channels[] = {
->  	ADC0832_VOLTAGE_CHANNEL(5),
->  	ADC0832_VOLTAGE_CHANNEL(6),
->  	ADC0832_VOLTAGE_CHANNEL(7),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 9),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 10),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 11),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5, 12),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4, 13),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7, 14),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
-> +	IIO_CHAN_SOFT_TIMESTAMP(16),
->  };
->  
->  static int adc0831_adc_conversion(struct adc0832 *adc)
-> @@ -178,6 +198,42 @@ static const struct iio_info adc0832_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static irqreturn_t adc0832_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct adc0832 *adc = iio_priv(indio_dev);
-> +	u8 data[24] = { }; /* 16x 1 byte ADC data + 8 bytes timestamp */
-> +	int scan_index;
-> +	int i = 0;
-> +
-> +	mutex_lock(&adc->lock);
-> +
-> +	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
-> +			 indio_dev->masklength) {
-> +		const struct iio_chan_spec *scan_chan =
-> +				&indio_dev->channels[scan_index];
-> +		int ret = adc0832_adc_conversion(adc, scan_chan->channel,
-> +						 scan_chan->differential);
-> +		if (ret < 0) {
-> +			dev_warn(&adc->spi->dev,
-> +				 "failed to get conversion data\n");
-> +			goto out;
-> +		}
-> +
-> +		data[i] = ret;
-> +		i++;
-> +	}
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data,
-> +					   iio_get_time_ns(indio_dev));
-> +out:
-> +	mutex_unlock(&adc->lock);
-> +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int adc0832_probe(struct spi_device *spi)
->  {
->  	struct iio_dev *indio_dev;
-> @@ -233,9 +289,20 @@ static int adc0832_probe(struct spi_device *spi)
->  
->  	spi_set_drvdata(spi, indio_dev);
->  
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 adc0832_trigger_handler, NULL);
-> +	if (ret)
-> +		goto err_reg_disable;
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> -		regulator_disable(adc->reg);
-> +		goto err_buffer_cleanup;
-> +
-> +	return 0;
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +err_reg_disable:
-> +	regulator_disable(adc->reg);
->  
->  	return ret;
->  }
-> @@ -246,6 +313,7 @@ static int adc0832_remove(struct spi_device *spi)
->  	struct adc0832 *adc = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  	regulator_disable(adc->reg);
->  
->  	return 0;
-> -- 
-> 2.7.4
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
