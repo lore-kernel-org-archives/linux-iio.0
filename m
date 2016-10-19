@@ -1,128 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:37074 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S934907AbcJRQXL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 18 Oct 2016 12:23:11 -0400
-MIME-Version: 1.0
-In-Reply-To: <76746b85957c9f3ef7101a7ee883898a414cabd8.1476712675.git.hns@goldelico.com>
-References: <cover.1476712675.git.hns@goldelico.com> <76746b85957c9f3ef7101a7ee883898a414cabd8.1476712675.git.hns@goldelico.com>
-From: Rob Herring <robh+dt@kernel.org>
-Date: Tue, 18 Oct 2016 11:22:43 -0500
-Message-ID: <CAL_JsqJhzZC6Hw3eRLFDiBA8jih=N507WvEh=TRbPhLS9EjhBQ@mail.gmail.com>
-Subject: Re: [PATCH v4 1/8] drivers:input:tsc2007: add new common binding
- names, pre-calibration, flipping and rotation
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        letux-kernel@openphoenux.org,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernel@pyra-handheld.com
-Content-Type: text/plain; charset=UTF-8
+Received: from www381.your-server.de ([78.46.137.84]:59993 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757122AbcJSRHU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:07:20 -0400
+From: Lars-Peter Clausen <lars@metafoo.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 00/13] staging:iio:ad7606: Towards moving out of staging
+Date: Wed, 19 Oct 2016 19:06:55 +0200
+Message-Id: <1476896828-10544-1-git-send-email-lars@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Oct 17, 2016 at 8:57 AM, H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
-> introduced common DT bindings for touchscreens [1] and a helper function to
-> parse the DT.
->
-> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-> added another helper for parsing axis inversion and swapping
-> and applying them to x and y coordinates.
->
-> Both helpers have been integrated to accommodate any orientation of the
-> touch panel in relation to the LCD.
+Sorry, if you received this twice, forgot the list on the first try.
 
-Please add the explanation of why this is a compatible change here.
+This patch series contains a few cleanups for the ad7606 driver that
+prepares it for moving out of staging. There are still a few small things
+left to do after this series though, but hopefully we can get to them
+within this developement window so the driver can be moved for the final
+v4.10 IIO pull request.
 
-> A new feature is to introduce scaling the min/max ADC values to the screen
-> size.
+Among the things that still need to be addressed:
+	* Replace range/range_available with the standard scale/scale_available
+	* Cleanup the regulator handling so it matches the standard behavior
+	  established by the framework
 
-Sounds like a separate change.
+- Lars
 
-> This makes it possible to pre-calibrate the touch so that is (almost)
-> exactly matches the LCD pixel coordinates it is glued onto. This allows to
-> well enough operate the touch before a user space calibration step can
-> improve the precision.
->
-> Finally, calculate_pressure has been renamed to calculate_resistance
-> because that is what it is doing.
->
-> [1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
->
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
->  drivers/input/touchscreen/tsc2007.c                | 120 +++++++++++++++++----
->  include/linux/i2c/tsc2007.h                        |   8 ++
->  3 files changed, 118 insertions(+), 30 deletions(-)
->
-> diff --git a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
-> index ec365e1..6e9fd55 100644
-> --- a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
-> +++ b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
-> @@ -6,6 +6,7 @@ Required properties:
->  - ti,x-plate-ohms: X-plate resistance in ohms.
->
->  Optional properties:
-> +- generic touch screen properties: see touchscreen binding [2].
->  - gpios: the interrupt gpio the chip is connected to (trough the penirq pin).
->    The penirq pin goes to low when the panel is touched.
->    (see GPIO binding[1] for more details).
-> @@ -13,17 +14,20 @@ Optional properties:
->    (see interrupt binding[0]).
->  - interrupts: (gpio) interrupt to which the chip is connected
->    (see interrupt binding[0]).
-> -- ti,max-rt: maximum pressure.
-> -- ti,fuzzx: specifies the absolute input fuzz x value.
-> -  If set, it will permit noise in the data up to +- the value given to the fuzz
-> -  parameter, that is used to filter noise from the event stream.
-> -- ti,fuzzy: specifies the absolute input fuzz y value.
-> -- ti,fuzzz: specifies the absolute input fuzz z value.
-> +- ti,max-rt: maximum pressure resistance above which samples are ignored
-> +  (default: 4095).
-> +- ti,report-resistance: report resistance (no pressure = max_rt) instead
-> +  of pressure (no pressure = 0).
-> +- ti,min-x: minimum value reported by X axis ADC (default 0).
-> +- ti,max-x: maximum value reported by X axis ADC (default 4095).
-> +- ti,min-y: minimum value reported by Y axis ADC (default 0).
-> +- ti,max-y: maximum value reported by Y axis ADC (default 4095).
+Lars-Peter Clausen (13):
+  staging:iio:ad7606: Remove unused int_vref_mv field
+  staging:iio:ad7606: Remove redundant name field from ad7606_chip_info
+  staging:iio:ad7606: Remove default device configuration from platform
+    data
+  staging:iio:ad7606: Remove out-of-band error reporting
+  staging:iio:ad7606: Use oversampling ratio of 1 for no oversampling
+  staging:iio:ad7606: Avoid allocating buffer for each data capture
+  staging:iio:ad7606: Factor out common code between periodic and
+    one-shot capture
+  staging:iio:ad7606: Move set_drvdata() into common code
+  staging:iio:ad7606: Let the common probe function return int
+  staging:iio:ad7606: Let common remove function take a struct device *
+  staging:iio:ad7606: Run trigger handler only once per trigger event
+  staging:iio:ad7606: Use GPIO descriptor API
+  staging:iio:ad7606: Move buffer code to main source file
 
-I thought these were going to be common? I think they should be.
+ drivers/staging/iio/adc/Makefile      |   1 -
+ drivers/staging/iio/adc/ad7606.c      | 545 +++++++++++++++++++++++++++++++
+ drivers/staging/iio/adc/ad7606.h      |  58 +---
+ drivers/staging/iio/adc/ad7606_core.c | 598 ----------------------------------
+ drivers/staging/iio/adc/ad7606_par.c  |  23 +-
+ drivers/staging/iio/adc/ad7606_ring.c | 102 ------
+ drivers/staging/iio/adc/ad7606_spi.c  |  19 +-
+ 7 files changed, 569 insertions(+), 777 deletions(-)
+ create mode 100644 drivers/staging/iio/adc/ad7606.c
+ delete mode 100644 drivers/staging/iio/adc/ad7606_core.c
+ delete mode 100644 drivers/staging/iio/adc/ad7606_ring.c
 
-Rob
+-- 
+2.1.4
 
->  - ti,poll-period: how much time to wait (in milliseconds) before reading again the
-> -  values from the tsc2007.
-> +  values from the tsc2007 (default 1).
->
->  [0]: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
->  [1]: Documentation/devicetree/bindings/gpio/gpio.txt
-> +[2]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
->
->  Example:
->         &i2c1 {
-> @@ -35,6 +39,8 @@ Example:
->                         interrupts = <0x0 0x8>;
->                         gpios = <&gpio4 0 0>;
->                         ti,x-plate-ohms = <180>;
-> +                       touchscreen-size-x = <640>;
-> +                       touchscreen-size-y = <480>;
->                 };
->
->                 /* ... */
