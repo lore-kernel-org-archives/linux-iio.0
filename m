@@ -1,111 +1,300 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hosting.pavoucek.net ([46.28.107.168]:38383 "EHLO
-        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934293AbcJRRyh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:54:37 -0400
-From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
-To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
-        Tomas Novotny <tomas@novotny.cz>
-Subject: [PATCH v3 5/5] iio: dac: mcp4725: add devicetree support
-Date: Tue, 18 Oct 2016 19:43:09 +0200
-Message-Id: <1476812589-18333-6-git-send-email-tomas.novotny@tbs-biometrics.com>
-In-Reply-To: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
-References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44364 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S946227AbcJSQac (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 12:30:32 -0400
+In-Reply-To: <1476873130-24926-3-git-send-email-masneyb@onstation.org>
+References: <1476873130-24926-1-git-send-email-masneyb@onstation.org> <1476873130-24926-3-git-send-email-masneyb@onstation.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 3/7] iio: light: tsl2583: use DEVICE_ATTR_{RO, RW, WO} macros
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 19 Oct 2016 17:30:25 +0100
+To: Brian Masney <masneyb@onstation.org>, jic23@kernel.org
+CC: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+Message-ID: <F0DEA1F9-B45C-4537-9B8A-D0A6BCBB7DF2@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Tomas Novotny <tomas@novotny.cz>
 
-Signed-off-by: Tomas Novotny <tomas@novotny.cz>
----
- drivers/iio/dac/mcp4725.c | 43 +++++++++++++++++++++++++++++++++++++------
- 1 file changed, 37 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-index 83d431f..05f7f4d 100644
---- a/drivers/iio/dac/mcp4725.c
-+++ b/drivers/iio/dac/mcp4725.c
-@@ -19,6 +19,7 @@
- #include <linux/err.h>
- #include <linux/delay.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/of.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-@@ -364,22 +365,41 @@ static const struct iio_info mcp4725_info = {
- 	.driver_module = THIS_MODULE,
- };
- 
-+#ifdef CONFIG_OF
-+static int mcp4725_probe_dt(struct device *dev,
-+			    struct mcp4725_platform_data *pdata)
-+{
-+	struct device_node *np = dev->of_node;
-+
-+	if (!np)
-+		return -ENODEV;
-+
-+	/* check if is the vref-supply defined */
-+	pdata->use_vref = of_property_read_bool(np, "vref-supply");
-+	pdata->vref_buffered =
-+		of_property_read_bool(np, "microchip,vref-buffered");
-+
-+	return 0;
-+}
-+#else
-+static int mcp4725_probe_dt(struct device *dev,
-+			    struct mcp4725_platform_data *platform_data)
-+{
-+	return -ENODEV;
-+}
-+#endif
-+
- static int mcp4725_probe(struct i2c_client *client,
- 			 const struct i2c_device_id *id)
- {
- 	struct mcp4725_data *data;
- 	struct iio_dev *indio_dev;
--	struct mcp4725_platform_data *pdata = dev_get_platdata(&client->dev);
-+	struct mcp4725_platform_data *pdata, pdata_dt;
- 	u8 inbuf[4];
- 	u8 pd;
- 	u8 ref;
- 	int err;
- 
--	if (!pdata) {
--		dev_err(&client->dev, "invalid platform data");
--		return -EINVAL;
--	}
--
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
- 	if (indio_dev == NULL)
- 		return -ENOMEM;
-@@ -387,6 +407,17 @@ static int mcp4725_probe(struct i2c_client *client,
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
- 	data->id = id->driver_data;
-+	pdata = dev_get_platdata(&client->dev);
-+
-+	if (!pdata) {
-+		err = mcp4725_probe_dt(&client->dev, &pdata_dt);
-+		if (err) {
-+			dev_err(&client->dev,
-+				"invalid platform or devicetree data");
-+			return err;
-+		}
-+		pdata = &pdata_dt;
-+	}
- 
- 	if (data->id == MCP4725 && pdata->use_vref) {
- 		dev_err(&client->dev,
+On 19 October 2016 11:32:06 BST, Brian Masney <masneyb@onstation.org> wrote:
+>Use the DEVICE_ATTR_RO, IIO_DEVICE_ATTR_RW, and IIO_DEVICE_ATTR_WO
+>macros to create the device attributes.
+>
+>Signed-off-by: Brian Masney <masneyb@onstation.org>
+
+Hi Brian, 
+
+One very quick comment.  Driver should be using an iio_chan_spec array and relevant
+ info_mask elements plus read_raw etc.
+
+That will get rid of about half of these so I would do that before cleaning up the remainder.
+
+J
+>---
+>drivers/staging/iio/light/tsl2583.c | 117
+>++++++++++++++++++------------------
+> 1 file changed, 57 insertions(+), 60 deletions(-)
+>
+>diff --git a/drivers/staging/iio/light/tsl2583.c
+>b/drivers/staging/iio/light/tsl2583.c
+>index 8448a87..bbb8fc3 100644
+>--- a/drivers/staging/iio/light/tsl2583.c
+>+++ b/drivers/staging/iio/light/tsl2583.c
+>@@ -501,8 +501,8 @@ static int taos_chip_off(struct iio_dev *indio_dev)
+> 
+> /* Sysfs Interface Functions */
+> 
+>-static ssize_t taos_power_state_show(struct device *dev,
+>-				     struct device_attribute *attr, char *buf)
+>+static ssize_t power_state_show(struct device *dev,
+>+				struct device_attribute *attr, char *buf)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -510,9 +510,9 @@ static ssize_t taos_power_state_show(struct device
+>*dev,
+> 	return sprintf(buf, "%d\n", chip->taos_chip_status);
+> }
+> 
+>-static ssize_t taos_power_state_store(struct device *dev,
+>-				      struct device_attribute *attr,
+>-				      const char *buf, size_t len)
+>+static ssize_t power_state_store(struct device *dev,
+>+				 struct device_attribute *attr,
+>+				 const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	int value;
+>@@ -528,8 +528,9 @@ static ssize_t taos_power_state_store(struct device
+>*dev,
+> 	return len;
+> }
+> 
+>-static ssize_t taos_gain_show(struct device *dev,
+>-			      struct device_attribute *attr, char *buf)
+>+static ssize_t illuminance0_calibscale_show(struct device *dev,
+>+					    struct device_attribute *attr,
+>+					    char *buf)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -553,9 +554,9 @@ static ssize_t taos_gain_show(struct device *dev,
+> 	return sprintf(buf, "%s\n", gain);
+> }
+> 
+>-static ssize_t taos_gain_store(struct device *dev,
+>-			       struct device_attribute *attr,
+>-			       const char *buf, size_t len)
+>+static ssize_t illuminance0_calibscale_store(struct device *dev,
+>+					     struct device_attribute *attr,
+>+					     const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -587,15 +588,16 @@ gain_store_done:
+> 	return ret;
+> }
+> 
+>-static ssize_t taos_gain_available_show(struct device *dev,
+>-					struct device_attribute *attr,
+>-					char *buf)
+>+static ssize_t illuminance0_calibscale_available_show(struct device
+>*dev,
+>+						  struct device_attribute *attr,
+>+						  char *buf)
+> {
+> 	return sprintf(buf, "%s\n", "1 8 16 111");
+> }
+> 
+>-static ssize_t taos_als_time_show(struct device *dev,
+>-				  struct device_attribute *attr, char *buf)
+>+static ssize_t illuminance0_integration_time_show(struct device *dev,
+>+						  struct device_attribute *attr,
+>+						  char *buf)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -603,9 +605,9 @@ static ssize_t taos_als_time_show(struct device
+>*dev,
+> 	return sprintf(buf, "%d\n", chip->taos_settings.als_time);
+> }
+> 
+>-static ssize_t taos_als_time_store(struct device *dev,
+>-				   struct device_attribute *attr,
+>-				   const char *buf, size_t len)
+>+static ssize_t illuminance0_integration_time_store(struct device *dev,
+>+						  struct device_attribute *attr,
+>+						  const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -627,16 +629,17 @@ als_time_store_done:
+> 	return ret;
+> }
+> 
+>-static ssize_t taos_als_time_available_show(struct device *dev,
+>-					    struct device_attribute *attr,
+>-					    char *buf)
+>+static ssize_t illuminance0_integration_time_available_show(struct
+>device *dev,
+>+						  struct device_attribute *attr,
+>+						  char *buf)
+> {
+> 	return sprintf(buf, "%s\n",
+> 		"50 100 150 200 250 300 350 400 450 500 550 600 650");
+> }
+> 
+>-static ssize_t taos_als_trim_show(struct device *dev,
+>-				  struct device_attribute *attr, char *buf)
+>+static ssize_t illuminance0_calibbias_show(struct device *dev,
+>+					   struct device_attribute *attr,
+>+					   char *buf)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -644,9 +647,9 @@ static ssize_t taos_als_trim_show(struct device
+>*dev,
+> 	return sprintf(buf, "%d\n", chip->taos_settings.als_gain_trim);
+> }
+> 
+>-static ssize_t taos_als_trim_store(struct device *dev,
+>-				   struct device_attribute *attr,
+>-				   const char *buf, size_t len)
+>+static ssize_t illuminance0_calibbias_store(struct device *dev,
+>+					    struct device_attribute *attr,
+>+					    const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -661,9 +664,9 @@ static ssize_t taos_als_trim_store(struct device
+>*dev,
+> 	return len;
+> }
+> 
+>-static ssize_t taos_als_cal_target_show(struct device *dev,
+>-					struct device_attribute *attr,
+>-					char *buf)
+>+static ssize_t illuminance0_input_target_show(struct device *dev,
+>+					      struct device_attribute *attr,
+>+					      char *buf)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -671,9 +674,9 @@ static ssize_t taos_als_cal_target_show(struct
+>device *dev,
+> 	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
+> }
+> 
+>-static ssize_t taos_als_cal_target_store(struct device *dev,
+>-					 struct device_attribute *attr,
+>-					 const char *buf, size_t len)
+>+static ssize_t illuminance0_input_target_store(struct device *dev,
+>+					       struct device_attribute *attr,
+>+					       const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -688,8 +691,9 @@ static ssize_t taos_als_cal_target_store(struct
+>device *dev,
+> 	return len;
+> }
+> 
+>-static ssize_t taos_lux_show(struct device *dev, struct
+>device_attribute *attr,
+>-			     char *buf)
+>+static ssize_t illuminance0_input_show(struct device *dev,
+>+				       struct device_attribute *attr,
+>+				       char *buf)
+> {
+> 	int ret;
+> 
+>@@ -700,9 +704,9 @@ static ssize_t taos_lux_show(struct device *dev,
+>struct device_attribute *attr,
+> 	return sprintf(buf, "%d\n", ret);
+> }
+> 
+>-static ssize_t taos_do_calibrate(struct device *dev,
+>-				 struct device_attribute *attr,
+>-				 const char *buf, size_t len)
+>+static ssize_t illuminance0_calibrate_store(struct device *dev,
+>+					    struct device_attribute *attr,
+>+					    const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	int value;
+>@@ -716,8 +720,9 @@ static ssize_t taos_do_calibrate(struct device
+>*dev,
+> 	return len;
+> }
+> 
+>-static ssize_t taos_luxtable_show(struct device *dev,
+>-				  struct device_attribute *attr, char *buf)
+>+static ssize_t illuminance0_lux_table_show(struct device *dev,
+>+					   struct device_attribute *attr,
+>+					   char *buf)
+> {
+> 	int i;
+> 	int offset = 0;
+>@@ -741,9 +746,9 @@ static ssize_t taos_luxtable_show(struct device
+>*dev,
+> 	return offset;
+> }
+> 
+>-static ssize_t taos_luxtable_store(struct device *dev,
+>-				   struct device_attribute *attr,
+>-				   const char *buf, size_t len)
+>+static ssize_t illuminance0_lux_table_store(struct device *dev,
+>+					    struct device_attribute *attr,
+>+					    const char *buf, size_t len)
+> {
+> 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>@@ -781,29 +786,21 @@ luxable_store_done:
+> 	return ret;
+> }
+> 
+>-static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
+>-		taos_power_state_show, taos_power_state_store);
+>+static DEVICE_ATTR_RW(power_state);
+> 
+>-static DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
+>-		taos_gain_show, taos_gain_store);
+>-static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
+>-		taos_gain_available_show, NULL);
+>+static DEVICE_ATTR_RW(illuminance0_calibscale);
+>+static DEVICE_ATTR_RO(illuminance0_calibscale_available);
+> 
+>-static DEVICE_ATTR(illuminance0_integration_time, S_IRUGO | S_IWUSR,
+>-		taos_als_time_show, taos_als_time_store);
+>-static DEVICE_ATTR(illuminance0_integration_time_available, S_IRUGO,
+>-		taos_als_time_available_show, NULL);
+>+static DEVICE_ATTR_RW(illuminance0_integration_time);
+>+static DEVICE_ATTR_RO(illuminance0_integration_time_available);
+> 
+>-static DEVICE_ATTR(illuminance0_calibbias, S_IRUGO | S_IWUSR,
+>-		taos_als_trim_show, taos_als_trim_store);
+>+static DEVICE_ATTR_RW(illuminance0_calibbias);
+> 
+>-static DEVICE_ATTR(illuminance0_input_target, S_IRUGO | S_IWUSR,
+>-		taos_als_cal_target_show, taos_als_cal_target_store);
+>+static DEVICE_ATTR_RW(illuminance0_input_target);
+> 
+>-static DEVICE_ATTR(illuminance0_input, S_IRUGO, taos_lux_show, NULL);
+>-static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL,
+>taos_do_calibrate);
+>-static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
+>-		taos_luxtable_show, taos_luxtable_store);
+>+static DEVICE_ATTR_RO(illuminance0_input);
+>+static DEVICE_ATTR_WO(illuminance0_calibrate);
+>+static DEVICE_ATTR_RW(illuminance0_lux_table);
+> 
+> static struct attribute *sysfs_attrs_ctrl[] = {
+> 	&dev_attr_power_state.attr,
+
 -- 
-2.1.4
-
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
