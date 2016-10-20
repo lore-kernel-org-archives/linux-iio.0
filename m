@@ -1,104 +1,127 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:9972 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932817AbcJTQQn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 12:16:43 -0400
-Message-ID: <5808EA5D.5070300@nvidia.com>
-Date: Thu, 20 Oct 2016 21:31:33 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se> <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de> <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
 MIME-Version: 1.0
-To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
-CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
-        <edubezval@gmail.com>
-Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
-References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com> <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com> <5808E78B.4060109@nvidia.com> <514328e7-9c2d-1d47-2624-593f0a373e0f@gmail.com>
-In-Reply-To: <514328e7-9c2d-1d47-2624-593f0a373e0f@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Thu, 20 Oct 2016 18:37:56 +0100
+To: Lars-Peter Clausen <lars@metafoo.de>,Peter Rosin <peda@axentia.se>,linux-kernel@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>,Hartmut Knaack <knaack.h@gmx.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,Rob Herring <robh+dt@kernel.org>,Mark Rutland <mark.rutland@arm.com>,linux-iio@vger.kernel.org,devicetree@vger.kernel.org
+Message-ID: <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
 
-On Thursday 20 October 2016 09:44 PM, Paweł Jarosz wrote:
->
->
-> W dniu 20.10.2016 o 17:49, Laxman Dewangan pisze:
->>
->> On Thursday 20 October 2016 08:26 PM, Paweł Jarosz wrote:
->>>
->>>
->>> W dniu 20.10.2016 o 14:40, Laxman Dewangan pisze:
->>>>
->>>> On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
->>>>> In current version of the driver there is error in temperature
->>>>> calculation.
->>>>>
->>>>> So lets fix it using proper linear function.
->>>>>
->>>>> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
->>>>
->>>> Per my calculation, existing and your equation is same as both are 
->>>> doing linear interpolation.
->>>>
->>>> Only think I have seen is that I have used 1000 for two consecutive 
->>>> temp difference and you used (t2 - t1), so your is better in this 
->>>> case but still the equation is same.
->>>>
->>>> The equation from you is
->>>>
->>>>     t1 + (hi -val) * factor.
->>>>
->>>> and existing one is
->>>>      t2 - (val -lo) * factor
->>>>
->>>>
->>>> factor is abs((t2-t1)/(hi-lo))
->>>>
->>>> If my analysis is not correct then can you please provide the 
->>>> example with calculation for better understansing?
->>>
->>> Hi
->>>
->>> For example if we try to calculate temp for val = 8, i = 1 and table:
->>>
->>> <0 9
->>>  2 7>
->>>
->>>     adc_hi = gti->lookup_table[2 * i - 1];
->>>     adc_lo = gti->lookup_table[2 * i + 1];
->>>     temp = gti->lookup_table[2 * i];
->>>     temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
->>>
->>> Your method gives temp =  -498
->>>
->>>
->>
->>
->> The temp should be in the milli-centigrade in the table so it should be
->> <0 9
->>   2000 7>;
->>
->> and if you relplace 1000 with the t2 -t1 where
->>
->> t1  = gti->lookup_table[2*i -2]
->> t2 = gti->lookup_table[2 *i]
->>
->> then it will work perfectly.
->>
->> So your change for replacing 1000 is correct as what I said but need 
->> not to change whole equation altogether.
->
-> Sorry for that ... when i was writing this i wasn't using your 
-> equation, but writing from scratch.
-> I can send new patch with corrections or leave it as it is. Your call.
->
->
-Yes please send patch to replace the 1000 with the temp1 - temp2 as what 
-you did in your original patch.
-This will fix the non-sequenced (un-equally spaced) temperature table.
 
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+On 20 October 2016 18:30:19 BST, Jonathan Cameron <jic23@jic23.retrosnub.co.uk> wrote:
+>
+>
+>On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de>
+>wrote:
+>>On 10/20/2016 11:25 AM, Peter Rosin wrote:
+>>> Hi!
+>>> 
+>>> These two drivers share the fact that they wrap another iio channel,
+>>> and I use the first in combination with the second, which is why I'm
+>>> submitting them as a pair.
+>>> 
+>>> The first driver is a simple wrapper converting an iio dpot into an
+>>> iio dac. It only changes the unit and scale. It also does not add
+>any
+>>> fancy iio buffer support that I don't need. I suppose that can be
+>>> added. By someone else :-)
+>>> 
+>>> Please look over the scale conversion, notably for the fractional
+>>log2
+>>> case that I don't need myself, so is untested. Maybe I should just
+>>> remove it?
+>>> 
+>>> Also, is there some agreed-upon way to dig out the maximum value
+>from
+>>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from
+>the
+>>> dt bindings, which would have been nice...
+>>
+>>Yes, this is something we could really use. In a sense it exists for
+>>the
+>>devices with buffer-capable channels where there is the real_bits
+>field
+>>which tells us the data width of the channel. But a dedicated
+>mechanism
+>>for
+>>querying the maximum (and minimum) valid code seems like a useful
+>>feature.
+>>Not only for in-kernel clients, but also for userspace.
+>This was something that was addressed by the rather ancient patch
+>series i posted that added 
+>an available call back which provided info on range and values for all
+>info mask elements.
+>Series got buried by there being a lot of precursors but quite a few of
+>those have merged since.
+>
+>Hmm Google won't let me find it on my phone. Was a while back now. Will
+>try to get on pc with
+> decent email archive later and dig out a reference.
+http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
+>
+>>
+>>> 
+>>> I'm also wondering if I'm somehow abusing the regulator? I only
+>added
+>>> it to get rid of a "dpot-dac,max-voltage" thing from the dt
+>bindings.
+>>> It feels right though, but maybe I should do more with it than check
+>>> its voltage? What?
+>>
+>>Enable the regulator when it is in use?
+>>
+>>> 
+>>> The second driver (the envelope detector) is more involved. It also
+>>> explains why I need the dpot-dac driver. I wanted the envelope
+>>> detector to be generic and work with any dac, but I had a dpot...
+>>> 
+>>> The envelope detector was previously discussed late last year [1],
+>>> and this is what I came up with instead of that mess.
+>>> 
+>>> There are a couple of things to be said about the envelope detector,
+>>> one question is where it should live? I placed it in the adc
+>>directory,
+>>> but maybe it deserves an iio directory of its own? I'm also a bit
+>>> worried that the name is a wee bit too generic. But what is a good
+>>> name? I don't want it to be too long like dac-comp-envelope-detector
+>>> and something like dac-comp-env-det is just unreadable. Naming is
+>>> difficult... And suggestions?
+>>
+>>Yeah, it is a bit tricky. It is a envelope detector built from
+>discrete
+>>components, but of course there are many more ways to build one. If
+>you
+>>have
+>>a codename for your platform you could use this for the DT compatible
+>>string, like 'vendor,foobar-envelope-detector'.
+>>
+>>> 
+>>> Another thing is that I'm not 100% satisfied with the fact that you
+>>> have to decide at instantiation if you are going to invert the
+>search
+>>> or not (search from below). But in order for that to be selectable
+>>> at runtime with a channel attribute of some sort, I need to be able
+>>> to rebind the interrupt to the other edge and I want to do that
+>>> without releasing the irq and grabbing it again (someone might
+>>> otherwise steal the irq, making the driver lose the irq all
+>>together).
+>>> I don't see any API to change the irq trigger condition. Is there
+>>> such a thing?
+>>> 
+>>> Anyway, despite all the above questions and remarks, this works for
+>>> me. Please consider applying.
+>>
+>>In general this series looks really good, good and clear
+>implementation
+>>as
+>>well as documentation. A few minor bits here and there, but that is
+>>normal.
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
