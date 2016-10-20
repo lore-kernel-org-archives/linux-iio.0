@@ -1,101 +1,114 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0101.outbound.protection.outlook.com ([104.47.2.101]:28544
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1755474AbcJTVA7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 20 Oct 2016 17:00:59 -0400
+Return-Path: <peda@axentia.se>
 From: Peter Rosin <peda@axentia.se>
 To: <linux-kernel@vger.kernel.org>
 CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Mark Rutland" <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: [PATCH 1/4] dt-bindings: iio: document dpot-dac bindings
-Date: Thu, 20 Oct 2016 11:25:59 +0200
-Message-ID: <1476955562-13673-2-git-send-email-peda@axentia.se>
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
+	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH 3/4] dt-bindings: iio: document envelope-detector bindings
+Date: Thu, 20 Oct 2016 11:26:01 +0200
+Message-ID: <1476955562-13673-4-git-send-email-peda@axentia.se>
 In-Reply-To: <1476955562-13673-1-git-send-email-peda@axentia.se>
 References: <1476955562-13673-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- .../devicetree/bindings/iio/dac/dpot-dac.txt       | 43 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 +++
- 2 files changed, 49 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+ .../bindings/iio/adc/envelope-detector.txt         | 65 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 ++
+ 2 files changed, 71 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
 new file mode 100644
-index 000000000000..a381188676c3
+index 000000000000..0e26299516fd
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
-@@ -0,0 +1,43 @@
-+Bindings for DAC emulation using a digital potentiometer
++++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+@@ -0,0 +1,65 @@
++Bindings for ADC envelope detector using a DAC and a comparator
 +
-+It is assumed the that the dpot is used as a voltage divider between the
-+current dpot wiper setting and the maximum resistance of the dpot. The
-+divided voltage is provided by a vref regulator.
-+
-+                  .------.
-+   .-----------.  |      |
-+   | Vref      |--'    .---.
-+   | regulator |--.    |   |
-+   '-----------'  |    | d |
-+                  |    | p |
-+                  |    | o |  wiper
-+                  |    | t |<---------+
-+                  |    |   |
-+                  |    '---'       dac output voltage
-+                  |      |
-+                  '------+------------+
++The DAC is used to find the peak level of an alternating voltage input
++signal by a binary search using the output of a comparator wired to
++an interrupt pin. Like so:
++                          _
++                         | \
++    input +------>-------|+ \
++                         |   \
++           .-------.     |    }---.
++           |       |     |   /    |
++           |    dac|-->--|- /     |
++           |       |     |_/      |
++           |       |              |
++           |       |              |
++           |    irq|------<-------'
++           |       |
++           '-------'
 +
 +Required properties:
-+- compatible: Should be "dpot-dac"
-+- vref-supply: The regulator supplying the voltage divider.
-+- io-channels: Channel node of the dpot to be used for the voltage division.
-+- io-channel-names: Should be "dpot".
-+- dpot-dac,max-ohms: The maximum resistance of the dpot.
++- compatible: Should be "envelope-detector"
++- io-channels: Channel node of the dac to be used for comparator input.
++- io-channel-names: Should be "dac".
++- interrupt specification for one client interrupt,
++  see ../../interrupt-controller/interrupts.txt for details.
++- interrupt-names: Should be "comp".
++- envelope-detector,dac-max: The maximum raw input value for the dac.
++- envelope-detector,comp-interval-ms: How long to wait for the comparator
++  to trigger before moving on to another DAC level. This interval needs to
++  relate to the lowest possible frequency of the above input signal.
++
++Optional properties:
++- envelope-detector,inverted: If the input signal is centered around the
++  dac-max voltage (instead of zero), this property causes the detector to
++  search for the lowest DAC value that does not triggers the comparator
++  (instead of the highest). The result is also inverted so that a lower DAC
++  reading yields a higher voltage value.
++
 +
 +Example:
 +
-+	&i2c {
-+		dpot: mcp4651-503@28 {
-+			compatible = "microchip,mcp4651-503";
-+			reg = <0x28>;
++	&spi {
++		dac: ad7303@4 {
++			compatible = "adi,ad7303";
++			reg = <4>;
++			spi-max-frequency = <10000000>;
++			Vdd-supply = <&vdd_supply>;
++			adi,use-external-reference;
++			REF-supply = <&vref_supply>;
 +			#io-channel-cells = <1>;
 +		};
 +	};
 +
-+	dac {
-+		compatible = "dpot-dac";
-+		vref-supply = <&reg_3v3>;
-+		io-channels = <&dpot 0>;
-+		io-channel-names = "dpot";
-+		dpot-dac,max-ohms = <50000>;
++	envelope-detector {
++		compatible = "envelope-detector";
++		io-channels = <&dac 0>;
++		io-channel-names = "dac";
++
++		interrupt-parent = <&gpio>;
++		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
++		interrupt-names = "comp";
++
++		envelope-detector,dac-max = <255>;
++		envelope-detector,comp-interval-ms = <50>;
 +	};
 diff --git a/MAINTAINERS b/MAINTAINERS
-index 1cd38a7e0064..c68b72088945 100644
+index 8c8aae24b96b..4b6f6ec1b703 100644
 --- a/MAINTAINERS
 +++ b/MAINTAINERS
-@@ -6111,6 +6111,12 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- F:	drivers/media/rc/iguanair.c
+@@ -6118,6 +6118,12 @@ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+ F:	drivers/iio/dac/dpot-dac.c
  
-+IIO DIGITAL POTENTIOMETER DAC
++IIO ENVELOPE DETECTOR
 +M:	Peter Rosin <peda@axentia.se>
 +L:	linux-iio@vger.kernel.org
 +S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
++F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
 +
  IIO SUBSYSTEM AND DRIVERS
  M:	Jonathan Cameron <jic23@kernel.org>
  R:	Hartmut Knaack <knaack.h@gmx.de>
 -- 
 2.1.4
-
