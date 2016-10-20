@@ -1,114 +1,60 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
-	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH 3/4] dt-bindings: iio: document envelope-detector bindings
-Date: Thu, 20 Oct 2016 11:26:01 +0200
-Message-ID: <1476955562-13673-4-git-send-email-peda@axentia.se>
-In-Reply-To: <1476955562-13673-1-git-send-email-peda@axentia.se>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-lf0-f45.google.com ([209.85.215.45]:32957 "EHLO
+        mail-lf0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S938679AbcJTRYw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 13:24:52 -0400
+Received: by mail-lf0-f45.google.com with SMTP id x79so99850193lff.0
+        for <linux-iio@vger.kernel.org>; Thu, 20 Oct 2016 10:24:51 -0700 (PDT)
+Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature
+ approximation
+To: Laxman Dewangan <ldewangan@nvidia.com>
+References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com>
+ <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com>
+ <5808E78B.4060109@nvidia.com>
+ <0412f751-fb88-7b9e-8a8c-501e019de774@gmail.com>
+ <5808F86A.4080800@nvidia.com>
+Cc: linux-iio@vger.kernel.org, rui.zhang@intel.com, edubezval@gmail.com
+From: =?UTF-8?Q?Pawe=c5=82_Jarosz?= <paweljarosz3691@gmail.com>
+Message-ID: <bd01678c-5cf4-e50c-2dff-5aea04040e29@gmail.com>
+Date: Thu, 20 Oct 2016 19:26:03 +0200
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <5808F86A.4080800@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../bindings/iio/adc/envelope-detector.txt         | 65 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 ++
- 2 files changed, 71 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-new file mode 100644
-index 000000000000..0e26299516fd
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-@@ -0,0 +1,65 @@
-+Bindings for ADC envelope detector using a DAC and a comparator
-+
-+The DAC is used to find the peak level of an alternating voltage input
-+signal by a binary search using the output of a comparator wired to
-+an interrupt pin. Like so:
-+                          _
-+                         | \
-+    input +------>-------|+ \
-+                         |   \
-+           .-------.     |    }---.
-+           |       |     |   /    |
-+           |    dac|-->--|- /     |
-+           |       |     |_/      |
-+           |       |              |
-+           |       |              |
-+           |    irq|------<-------'
-+           |       |
-+           '-------'
-+
-+Required properties:
-+- compatible: Should be "envelope-detector"
-+- io-channels: Channel node of the dac to be used for comparator input.
-+- io-channel-names: Should be "dac".
-+- interrupt specification for one client interrupt,
-+  see ../../interrupt-controller/interrupts.txt for details.
-+- interrupt-names: Should be "comp".
-+- envelope-detector,dac-max: The maximum raw input value for the dac.
-+- envelope-detector,comp-interval-ms: How long to wait for the comparator
-+  to trigger before moving on to another DAC level. This interval needs to
-+  relate to the lowest possible frequency of the above input signal.
-+
-+Optional properties:
-+- envelope-detector,inverted: If the input signal is centered around the
-+  dac-max voltage (instead of zero), this property causes the detector to
-+  search for the lowest DAC value that does not triggers the comparator
-+  (instead of the highest). The result is also inverted so that a lower DAC
-+  reading yields a higher voltage value.
-+
-+
-+Example:
-+
-+	&spi {
-+		dac: ad7303@4 {
-+			compatible = "adi,ad7303";
-+			reg = <4>;
-+			spi-max-frequency = <10000000>;
-+			Vdd-supply = <&vdd_supply>;
-+			adi,use-external-reference;
-+			REF-supply = <&vref_supply>;
-+			#io-channel-cells = <1>;
-+		};
-+	};
-+
-+	envelope-detector {
-+		compatible = "envelope-detector";
-+		io-channels = <&dac 0>;
-+		io-channel-names = "dac";
-+
-+		interrupt-parent = <&gpio>;
-+		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
-+		interrupt-names = "comp";
-+
-+		envelope-detector,dac-max = <255>;
-+		envelope-detector,comp-interval-ms = <50>;
-+	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 8c8aae24b96b..4b6f6ec1b703 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6118,6 +6118,12 @@ S:	Maintained
- F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
- F:	drivers/iio/dac/dpot-dac.c
- 
-+IIO ENVELOPE DETECTOR
-+M:	Peter Rosin <peda@axentia.se>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-+
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
- R:	Hartmut Knaack <knaack.h@gmx.de>
--- 
-2.1.4
+> It is Negative Coefficient Thermistor (NCT) and so adc reads are 
+> different.
+> Lower temp gives higher value.
+>
+> So table should be
+>
+> <7000 10
+> 9000 8>;
+>
+> temp1 = gti->lookup_table[2 * i];
+> temp2 = gti->lookup_table[2 * i - 2];
+>
+> and then use in following equation.
+>
+>>
+>>     adc_hi = gti->lookup_table[2 * i - 1];
+>>     adc_lo = gti->lookup_table[2 * i + 1];
+>>     temp = gti->lookup_table[2 * i];
+>>     temp -= (val - adc_lo) * (temp1 - temp2) / (adc_hi - adc_lo);
+
+val = 9
+adc_hi = 10
+adc_lo = 8
+temp = 9000 - (9 - 8)*(7000 - 9000)/(10 - 8)
+temp = 9000 - (1)*(-2000)/(2)
+
+temp = 9000 - (-1000) = 10000
+
+still wrong ... temp for val = 9 should be 8000
+
+Maybe we could leave this patch as it is?
+
+
+Paweł
