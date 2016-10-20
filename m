@@ -1,66 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:59999 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757147AbcJSRHU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:07:20 -0400
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 04/13] staging:iio:ad7606: Remove out-of-band error reporting
-Date: Wed, 19 Oct 2016 19:06:59 +0200
-Message-Id: <1476896828-10544-5-git-send-email-lars@metafoo.de>
-In-Reply-To: <1476896828-10544-1-git-send-email-lars@metafoo.de>
-References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:9972 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932817AbcJTQQn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 12:16:43 -0400
+Message-ID: <5808EA5D.5070300@nvidia.com>
+Date: Thu, 20 Oct 2016 21:31:33 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
+MIME-Version: 1.0
+To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
+CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
+        <edubezval@gmail.com>
+Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
+References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com> <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com> <5808E78B.4060109@nvidia.com> <514328e7-9c2d-1d47-2624-593f0a373e0f@gmail.com>
+In-Reply-To: <514328e7-9c2d-1d47-2624-593f0a373e0f@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Currently the ad7606 driver prints a error message to the kernel log when
-an application writes an invalid value to a sysfs attribute. While for
-initial driver development and testing this might be useful it is quite
-disadvantageous in a production environment. The write() call to the sysfs
-attribute will already return an error if the value was invalid so the
-application is aware that the operation failed. And generally speaking it
-is impossible for an application to reliably match a log message in the
-kernel log to a specific operation it performed, so the message becomes
-just noise and might distract from more critical messages.
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7606_core.c | 10 +++-------
- 1 file changed, 3 insertions(+), 7 deletions(-)
+On Thursday 20 October 2016 09:44 PM, Paweł Jarosz wrote:
+>
+>
+> W dniu 20.10.2016 o 17:49, Laxman Dewangan pisze:
+>>
+>> On Thursday 20 October 2016 08:26 PM, Paweł Jarosz wrote:
+>>>
+>>>
+>>> W dniu 20.10.2016 o 14:40, Laxman Dewangan pisze:
+>>>>
+>>>> On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
+>>>>> In current version of the driver there is error in temperature
+>>>>> calculation.
+>>>>>
+>>>>> So lets fix it using proper linear function.
+>>>>>
+>>>>> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
+>>>>
+>>>> Per my calculation, existing and your equation is same as both are 
+>>>> doing linear interpolation.
+>>>>
+>>>> Only think I have seen is that I have used 1000 for two consecutive 
+>>>> temp difference and you used (t2 - t1), so your is better in this 
+>>>> case but still the equation is same.
+>>>>
+>>>> The equation from you is
+>>>>
+>>>>     t1 + (hi -val) * factor.
+>>>>
+>>>> and existing one is
+>>>>      t2 - (val -lo) * factor
+>>>>
+>>>>
+>>>> factor is abs((t2-t1)/(hi-lo))
+>>>>
+>>>> If my analysis is not correct then can you please provide the 
+>>>> example with calculation for better understansing?
+>>>
+>>> Hi
+>>>
+>>> For example if we try to calculate temp for val = 8, i = 1 and table:
+>>>
+>>> <0 9
+>>>  2 7>
+>>>
+>>>     adc_hi = gti->lookup_table[2 * i - 1];
+>>>     adc_lo = gti->lookup_table[2 * i + 1];
+>>>     temp = gti->lookup_table[2 * i];
+>>>     temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
+>>>
+>>> Your method gives temp =  -498
+>>>
+>>>
+>>
+>>
+>> The temp should be in the milli-centigrade in the table so it should be
+>> <0 9
+>>   2000 7>;
+>>
+>> and if you relplace 1000 with the t2 -t1 where
+>>
+>> t1  = gti->lookup_table[2*i -2]
+>> t2 = gti->lookup_table[2 *i]
+>>
+>> then it will work perfectly.
+>>
+>> So your change for replacing 1000 is correct as what I said but need 
+>> not to change whole equation altogether.
+>
+> Sorry for that ... when i was writing this i wasn't using your 
+> equation, but writing from scratch.
+> I can send new patch with corrections or leave it as it is. Your call.
+>
+>
+Yes please send patch to replace the 1000 with the temp1 - temp2 as what 
+you did in your original patch.
+This will fix the non-sequenced (un-equally spaced) temperature table.
 
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index a16c6f5..d3a3551 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -132,10 +132,9 @@ static ssize_t ad7606_store_range(struct device *dev,
- 	if (ret)
- 		return ret;
- 
--	if (!(lval == 5000 || lval == 10000)) {
--		dev_err(dev, "range is not supported\n");
-+	if (!(lval == 5000 || lval == 10000))
- 		return -EINVAL;
--	}
-+
- 	mutex_lock(&indio_dev->mlock);
- 	gpio_set_value(st->pdata->gpio_range, lval == 10000);
- 	st->range = lval;
-@@ -174,11 +173,8 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
- 		if (val2)
- 			return -EINVAL;
- 		ret = ad7606_oversampling_get_index(val);
--		if (ret < 0) {
--			dev_err(st->dev, "oversampling %d is not supported\n",
--				val);
-+		if (ret < 0)
- 			return ret;
--		}
- 
- 		mutex_lock(&indio_dev->mlock);
- 		gpio_set_value(st->pdata->gpio_os0, (ret >> 0) & 1);
--- 
-2.1.4
-
+-----------------------------------------------------------------------------------
+This email message is for the sole use of the intended recipient(s) and may contain
+confidential information.  Any unauthorized review, use, disclosure or distribution
+is prohibited.  If you are not the intended recipient, please contact the sender by
+reply email and destroy all copies of the original message.
+-----------------------------------------------------------------------------------
