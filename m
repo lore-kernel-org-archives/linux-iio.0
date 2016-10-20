@@ -1,132 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:35178 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932582AbcJTL3V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 20 Oct 2016 07:29:21 -0400
-Date: Thu, 20 Oct 2016 13:29:16 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Peter Rosin <peda@axentia.se>
-cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 3/4] dt-bindings: iio: document envelope-detector
- bindings
-In-Reply-To: <1476955562-13673-4-git-send-email-peda@axentia.se>
-Message-ID: <alpine.DEB.2.02.1610201304490.19919@pmeerw.net>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se> <1476955562-13673-4-git-send-email-peda@axentia.se>
+Received: from hqemgate14.nvidia.com ([216.228.121.143]:11597 "EHLO
+        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S935180AbcJTMzj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 08:55:39 -0400
+Message-ID: <5808BB3D.2020201@nvidia.com>
+Date: Thu, 20 Oct 2016 18:10:29 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
+CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
+        <edubezval@gmail.com>
+Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
+References: <20161018193147.GA14745@vaio-ubuntu>
+In-Reply-To: <20161018193147.GA14745@vaio-ubuntu>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 20 Oct 2016, Peter Rosin wrote:
 
-nitpicking below
+On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
+> In current version of the driver there is error in temperature
+> calculation.
+>
+> So lets fix it using proper linear function.
+>
+> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
 
-> Signed-off-by: Peter Rosin <peda@axentia.se>
-> ---
->  .../bindings/iio/adc/envelope-detector.txt         | 65 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 ++
->  2 files changed, 71 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> new file mode 100644
-> index 000000000000..0e26299516fd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> @@ -0,0 +1,65 @@
-> +Bindings for ADC envelope detector using a DAC and a comparator
-> +
-> +The DAC is used to find the peak level of an alternating voltage input
-> +signal by a binary search using the output of a comparator wired to
-> +an interrupt pin. Like so:
-> +                          _
-> +                         | \
-> +    input +------>-------|+ \
-> +                         |   \
-> +           .-------.     |    }---.
-> +           |       |     |   /    |
-> +           |    dac|-->--|- /     |
-> +           |       |     |_/      |
-> +           |       |              |
-> +           |       |              |
-> +           |    irq|------<-------'
-> +           |       |
-> +           '-------'
-> +
-> +Required properties:
-> +- compatible: Should be "envelope-detector"
-> +- io-channels: Channel node of the dac to be used for comparator input.
-> +- io-channel-names: Should be "dac".
-> +- interrupt specification for one client interrupt,
-> +  see ../../interrupt-controller/interrupts.txt for details.
-> +- interrupt-names: Should be "comp".
-> +- envelope-detector,dac-max: The maximum raw input value for the dac.
-> +- envelope-detector,comp-interval-ms: How long to wait for the comparator
-> +  to trigger before moving on to another DAC level. This interval needs to
-> +  relate to the lowest possible frequency of the above input signal.
-> +
-> +Optional properties:
-> +- envelope-detector,inverted: If the input signal is centered around the
-> +  dac-max voltage (instead of zero), this property causes the detector to
-> +  search for the lowest DAC value that does not triggers the comparator
+Per my calculation, existing and your equation is same as both are doing 
+linear interpolation.
 
-does not trigger
+Only think I have seen is that I have used 1000 for two consecutive temp 
+difference and you used (t2 - t1), so your is better in this case but 
+still the equation is same.
 
-> +  (instead of the highest). The result is also inverted so that a lower DAC
-> +  reading yields a higher voltage value.
-> +
-> +
-> +Example:
-> +
-> +	&spi {
-> +		dac: ad7303@4 {
-> +			compatible = "adi,ad7303";
-> +			reg = <4>;
-> +			spi-max-frequency = <10000000>;
-> +			Vdd-supply = <&vdd_supply>;
-> +			adi,use-external-reference;
-> +			REF-supply = <&vref_supply>;
-> +			#io-channel-cells = <1>;
-> +		};
-> +	};
-> +
-> +	envelope-detector {
-> +		compatible = "envelope-detector";
-> +		io-channels = <&dac 0>;
-> +		io-channel-names = "dac";
-> +
-> +		interrupt-parent = <&gpio>;
-> +		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
-> +		interrupt-names = "comp";
-> +
-> +		envelope-detector,dac-max = <255>;
-> +		envelope-detector,comp-interval-ms = <50>;
-> +	};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8c8aae24b96b..4b6f6ec1b703 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6118,6 +6118,12 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
->  F:	drivers/iio/dac/dpot-dac.c
->  
-> +IIO ENVELOPE DETECTOR
-> +M:	Peter Rosin <peda@axentia.se>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> +
->  IIO SUBSYSTEM AND DRIVERS
->  M:	Jonathan Cameron <jic23@kernel.org>
->  R:	Hartmut Knaack <knaack.h@gmx.de>
-> 
+The equation from you is
 
--- 
+     t1 + (hi -val) * factor.
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+and existing one is
+      t2 - (val -lo) * factor
+
+
+factor is abs((t2-t1)/(hi-lo))
+
+If my analysis is not correct then can you please provide the example 
+with calculation for better understansing?
+
+
+-----------------------------------------------------------------------------------
+This email message is for the sole use of the intended recipient(s) and may contain
+confidential information.  Any unauthorized review, use, disclosure or distribution
+is prohibited.  If you are not the intended recipient, please contact the sender by
+reply email and destroy all copies of the original message.
+-----------------------------------------------------------------------------------
