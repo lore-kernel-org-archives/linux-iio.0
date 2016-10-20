@@ -1,72 +1,68 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:44090 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754485AbcJTOI5 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 20 Oct 2016 10:08:57 -0400
-Date: Thu, 20 Oct 2016 16:08:55 +0200 (CEST)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Peter Rosin <peda@axentia.se>
-cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/4] iio: dpot-dac: DAC driver based on a digital
- potentiometer
-In-Reply-To: <22d07498-860d-29f8-07ef-ae2f5df6ab25@axentia.se>
-Message-ID: <alpine.DEB.2.02.1610201604280.22512@pmeerw.net>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se> <1476955562-13673-3-git-send-email-peda@axentia.se> <alpine.DEB.2.02.1610201254370.19919@pmeerw.net> <22d07498-860d-29f8-07ef-ae2f5df6ab25@axentia.se>
+Received: from mail-lf0-f47.google.com ([209.85.215.47]:34838 "EHLO
+        mail-lf0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756500AbcJTOzq (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 10:55:46 -0400
+Received: by mail-lf0-f47.google.com with SMTP id l131so83040947lfl.2
+        for <linux-iio@vger.kernel.org>; Thu, 20 Oct 2016 07:55:46 -0700 (PDT)
+Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature
+ approximation
+To: Laxman Dewangan <ldewangan@nvidia.com>
+References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com>
+Cc: linux-iio@vger.kernel.org, rui.zhang@intel.com, edubezval@gmail.com
+From: =?UTF-8?Q?Pawe=c5=82_Jarosz?= <paweljarosz3691@gmail.com>
+Message-ID: <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com>
+Date: Thu, 20 Oct 2016 16:56:55 +0200
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <5808BB3D.2020201@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
-> >> +struct dpot_dac {
-> >> +	struct regulator *vref;
-> >> +	struct iio_channel *dpot;
-> > 
-> > const
-> 
-> const? devm_iio_channel_get doesn't return a const iio_channel. What
-> am I missing?
 
-ah, I mixed this up with iio_chan_spec
- 
-> >> +	u32 max_ohms;
-> >> +};
-> >> +
-> >> +static const struct iio_chan_spec dpot_dac_iio_channel = {
-> >> +	.type = IIO_VOLTAGE,
-> >> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
-> >> +			    | BIT(IIO_CHAN_INFO_SCALE),
-> >> +	.output = 1,
-> >> +};
-> >> +
-> >> +static int dpot_dac_read_raw(struct iio_dev *indio_dev,
-> >> +			     struct iio_chan_spec const *chan,
-> >> +			     int *val, int *val2, long mask)
-> >> +{
-> >> +	struct dpot_dac *dac = iio_priv(indio_dev);
-> >> +	int ret;
-> >> +	unsigned long long tmp;
-> > 
-> > s64 (which is used to cast below)
-> 
-> I assume that what you really want is to get rid of the cast, and
-> that you aren't really bothered if tmp is ull or s32, right? Given
-> that assumption, I'm just dropping the cast instead. The LL specifier
-> on the constant should promote *val anyway.
+W dniu 20.10.2016 o 14:40, Laxman Dewangan pisze:
+>
+> On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
+>> In current version of the driver there is error in temperature
+>> calculation.
+>>
+>> So lets fix it using proper linear function.
+>>
+>> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
+>
+> Per my calculation, existing and your equation is same as both are 
+> doing linear interpolation.
+>
+> Only think I have seen is that I have used 1000 for two consecutive 
+> temp difference and you used (t2 - t1), so your is better in this case 
+> but still the equation is same.
+>
+> The equation from you is
+>
+>     t1 + (hi -val) * factor.
+>
+> and existing one is
+>      t2 - (val -lo) * factor
+>
+>
+> factor is abs((t2-t1)/(hi-lo))
+>
+> If my analysis is not correct then can you please provide the example 
+> with calculation for better understansing?
 
-what I meant to pick upon was mixing
-s64 with unsigned long long with LL in the code that follows
+Hi
 
-anything simpler and more consistent would be good
+For example if we try to calculate temp for val = 8, i = 1 and table:
 
-thanks, p.
+<0 9
+  2 7>
 
--- 
+	adc_hi = gti->lookup_table[2 * i - 1];
+	adc_lo = gti->lookup_table[2 * i + 1];
+	temp = gti->lookup_table[2 * i];
+	temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+Your method gives temp =  -498
+
+Paweł
