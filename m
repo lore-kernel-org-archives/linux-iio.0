@@ -1,225 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0094.outbound.protection.outlook.com ([104.47.2.94]:56685
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1756988AbcJXBOk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 23 Oct 2016 21:14:40 -0400
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Mark Rutland" <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>,
-        <devicetree@vger.kernel.org>
-Subject: [PATCH v3 3/8] iio: mcp4531: provide range of available raw values
-Date: Mon, 24 Oct 2016 00:39:36 +0200
-Message-ID: <1477262381-7800-4-git-send-email-peda@axentia.se>
-In-Reply-To: <1477262381-7800-1-git-send-email-peda@axentia.se>
-References: <1477262381-7800-1-git-send-email-peda@axentia.se>
+Received: from hqemgate16.nvidia.com ([216.228.121.65]:1649 "EHLO
+        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932416AbcJTRQl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 13:16:41 -0400
+Message-ID: <5808F86A.4080800@nvidia.com>
+Date: Thu, 20 Oct 2016 22:31:30 +0530
+From: Laxman Dewangan <ldewangan@nvidia.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
+CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
+        <edubezval@gmail.com>
+Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
+References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com> <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com> <5808E78B.4060109@nvidia.com> <0412f751-fb88-7b9e-8a8c-501e019de774@gmail.com>
+In-Reply-To: <0412f751-fb88-7b9e-8a8c-501e019de774@gmail.com>
+Content-Type: text/plain; charset="UTF-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Example:
 
-$ cat '/sys/bus/iio/devices/iio:device0/out_resistance_raw_available'
-[0 1 256]
+On Thursday 20 October 2016 10:40 PM, Paweł Jarosz wrote:
+>
+>> Yes please send patch to replace the 1000 with the temp1 - temp2 as 
+>> what you did in your original patch.
+>> This will fix the non-sequenced (un-equally spaced) temperature table.
+>
+> replacing 1000 with (temp1 - temp2) is not enough as for example for 
+> val = 9 and table
+>
+> <7000 8
+>  9000 10>
 
-Meaning: min 0, step 1 and max 256.
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../testing/sysfs-bus-iio-potentiometer-mcp4531    |   8 ++
- MAINTAINERS                                        |   1 +
- drivers/iio/potentiometer/mcp4531.c                | 104 ++++++++++++---------
- 3 files changed, 71 insertions(+), 42 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+It is Negative Coefficient Thermistor (NCT) and so adc reads are different.
+Lower temp gives higher value.
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531 b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
-new file mode 100644
-index 000000000000..2a91fbe394fc
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
-@@ -0,0 +1,8 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_resistance_raw_available
-+Date:		October 2016
-+KernelVersion:	4.9
-+Contact:	Peter Rosin <peda@axentia.se>
-+Description:
-+		The range of available values represented as the minimum value,
-+		the step and the maximum value, all enclosed in square brackets.
-+		Example: [0 1 256]
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 1cd38a7e0064..7c65585e1230 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7694,6 +7694,7 @@ MCP4531 MICROCHIP DIGITAL POTENTIOMETER DRIVER
- M:	Peter Rosin <peda@axentia.se>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
- F:	drivers/iio/potentiometer/mcp4531.c
- 
- MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
-diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
-index 13b6ae2fcf7b..0d1bcf89ae17 100644
---- a/drivers/iio/potentiometer/mcp4531.c
-+++ b/drivers/iio/potentiometer/mcp4531.c
-@@ -38,7 +38,7 @@
- 
- struct mcp4531_cfg {
- 	int wipers;
--	int max_pos;
-+	int avail[3];
- 	int kohms;
- };
- 
-@@ -78,38 +78,38 @@ enum mcp4531_type {
- };
- 
- static const struct mcp4531_cfg mcp4531_cfg[] = {
--	[MCP453x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
--	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
--	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
--	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
--	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
--	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
--	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
--	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
--	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
--	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
--	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
--	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
--	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
--	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
--	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
--	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
--	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
--	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
--	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
--	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
--	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
--	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
--	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
--	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
--	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
--	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
--	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
--	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
--	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
--	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
--	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
--	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
-+	[MCP453x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP453x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP453x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP453x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP454x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP454x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP454x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP454x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP455x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP455x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP455x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP455x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP456x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP456x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP456x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP456x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP463x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP463x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP463x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP463x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP464x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP464x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP464x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP464x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP465x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP465x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP465x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP465x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP466x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP466x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP466x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP466x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
- };
- 
- #define MCP4531_WRITE (0 << 2)
-@@ -124,13 +124,14 @@ struct mcp4531_data {
- 	const struct mcp4531_cfg *cfg;
- };
- 
--#define MCP4531_CHANNEL(ch) {					\
--	.type = IIO_RESISTANCE,					\
--	.indexed = 1,						\
--	.output = 1,						\
--	.channel = (ch),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+#define MCP4531_CHANNEL(ch) {						\
-+	.type = IIO_RESISTANCE,						\
-+	.indexed = 1,							\
-+	.output = 1,							\
-+	.channel = (ch),						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
- }
- 
- static const struct iio_chan_spec mcp4531_channels[] = {
-@@ -156,13 +157,31 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 1000 * data->cfg->kohms;
--		*val2 = data->cfg->max_pos;
-+		*val2 = data->cfg->avail[2];
- 		return IIO_VAL_FRACTIONAL;
- 	}
- 
- 	return -EINVAL;
- }
- 
-+static int mcp4531_read_avail(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct mcp4531_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		*length = ARRAY_SIZE(data->cfg->avail);
-+		*vals = data->cfg->avail;
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_RANGE;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
-@@ -172,7 +191,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > data->cfg->max_pos || val < 0)
-+		if (val > data->cfg->avail[2] || val < 0)
- 			return -EINVAL;
- 		break;
- 	default:
-@@ -186,6 +205,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info mcp4531_info = {
- 	.read_raw = mcp4531_read_raw,
-+	.read_avail = mcp4531_read_avail,
- 	.write_raw = mcp4531_write_raw,
- 	.driver_module = THIS_MODULE,
- };
--- 
-2.1.4
+So table should be
 
+<7000 10
+9000 8>;
+
+temp1 = gti->lookup_table[2 * i];
+temp2 = gti->lookup_table[2 * i - 2];
+
+and then use in following equation.
+
+>
+>     adc_hi = gti->lookup_table[2 * i - 1];
+>     adc_lo = gti->lookup_table[2 * i + 1];
+>     temp = gti->lookup_table[2 * i];
+>     temp -= (val - adc_lo) * (temp1 - temp2) / (adc_hi - adc_lo);
+>
+>
+
+> adc_hi = 8
+> adc_lo = 10
+> temp = 9000 - (9 - 10) * (7000 - 9000) / (8 - 10)
+> temp = 9000 - (-1) * (-2000) / (-2)
+> temp = 9000 - (-1000) = 10000
+>
+> and for val = 9 temp should be 8000.
+>
+>
+
+-----------------------------------------------------------------------------------
+This email message is for the sole use of the intended recipient(s) and may contain
+confidential information.  Any unauthorized review, use, disclosure or distribution
+is prohibited.  If you are not the intended recipient, please contact the sender by
+reply email and destroy all copies of the original message.
+-----------------------------------------------------------------------------------
