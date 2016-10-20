@@ -1,40 +1,107 @@
-Return-Path: <lars@metafoo.de>
-Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
-To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
- <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
- <7472292a-a509-c791-4eff-5a5037ead837@axentia.se>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring
- <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <30a4b562-f553-2620-e961-c2904bce9c51@metafoo.de>
-Date: Thu, 20 Oct 2016 17:29:16 +0200
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se> <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <7472292a-a509-c791-4eff-5a5037ead837@axentia.se>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Thu, 20 Oct 2016 18:30:19 +0100
+To: Lars-Peter Clausen <lars@metafoo.de>,Peter Rosin <peda@axentia.se>,linux-kernel@vger.kernel.org
+CC: Jonathan Cameron <jic23@kernel.org>,Hartmut Knaack <knaack.h@gmx.de>,Peter Meerwald-Stadler <pmeerw@pmeerw.net>,Rob Herring <robh+dt@kernel.org>,Mark Rutland <mark.rutland@arm.com>,linux-iio@vger.kernel.org,devicetree@vger.kernel.org
+Message-ID: <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 10/20/2016 04:53 PM, Peter Rosin wrote:
-[...]
-> Good idea! Then the "envelope-detector,inverted" bool can go, and be
-> implied by the compatible string. If some way to rebind the irq trigger
-> is later discovered that can be added as a channel attr without
-> deprecating any dt bindings stuff. While at it, the other properties
-> ("envelope-detector,dac-max" and "envelope-detector,comp-interval-ms")
-> could also be implied from the compatible string. Would that be better?
-> I think so.
-> 
-> But, the compatible string is one thing and the driver name is another.
-> "axentia,tse850-envelope-detector" doesn't seem like the best of driver
-> names...
 
-The driver name is not that important we can still change that later if we
-have to, the DT compatible string on the other hand is fixed.
 
-> 
-> Are there any existing examples of drivers for (generic) things built
-> with discrete components like this that could perhaps provide guidance?
+On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>On 10/20/2016 11:25 AM, Peter Rosin wrote:
+>> Hi!
+>> 
+>> These two drivers share the fact that they wrap another iio channel,
+>> and I use the first in combination with the second, which is why I'm
+>> submitting them as a pair.
+>> 
+>> The first driver is a simple wrapper converting an iio dpot into an
+>> iio dac. It only changes the unit and scale. It also does not add any
+>> fancy iio buffer support that I don't need. I suppose that can be
+>> added. By someone else :-)
+>> 
+>> Please look over the scale conversion, notably for the fractional
+>log2
+>> case that I don't need myself, so is untested. Maybe I should just
+>> remove it?
+>> 
+>> Also, is there some agreed-upon way to dig out the maximum value from
+>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from the
+>> dt bindings, which would have been nice...
+>
+>Yes, this is something we could really use. In a sense it exists for
+>the
+>devices with buffer-capable channels where there is the real_bits field
+>which tells us the data width of the channel. But a dedicated mechanism
+>for
+>querying the maximum (and minimum) valid code seems like a useful
+>feature.
+>Not only for in-kernel clients, but also for userspace.
+This was something that was addressed by the rather ancient patch series i posted that added 
+an available call back which provided info on range and values for all info mask elements.
+Series got buried by there being a lot of precursors but quite a few of those have merged since.
 
-Not that I'm aware of.
+Hmm Google won't let me find it on my phone. Was a while back now. Will try to get on pc with
+ decent email archive later and dig out a reference.
+
+>
+>> 
+>> I'm also wondering if I'm somehow abusing the regulator? I only added
+>> it to get rid of a "dpot-dac,max-voltage" thing from the dt bindings.
+>> It feels right though, but maybe I should do more with it than check
+>> its voltage? What?
+>
+>Enable the regulator when it is in use?
+>
+>> 
+>> The second driver (the envelope detector) is more involved. It also
+>> explains why I need the dpot-dac driver. I wanted the envelope
+>> detector to be generic and work with any dac, but I had a dpot...
+>> 
+>> The envelope detector was previously discussed late last year [1],
+>> and this is what I came up with instead of that mess.
+>> 
+>> There are a couple of things to be said about the envelope detector,
+>> one question is where it should live? I placed it in the adc
+>directory,
+>> but maybe it deserves an iio directory of its own? I'm also a bit
+>> worried that the name is a wee bit too generic. But what is a good
+>> name? I don't want it to be too long like dac-comp-envelope-detector
+>> and something like dac-comp-env-det is just unreadable. Naming is
+>> difficult... And suggestions?
+>
+>Yeah, it is a bit tricky. It is a envelope detector built from discrete
+>components, but of course there are many more ways to build one. If you
+>have
+>a codename for your platform you could use this for the DT compatible
+>string, like 'vendor,foobar-envelope-detector'.
+>
+>> 
+>> Another thing is that I'm not 100% satisfied with the fact that you
+>> have to decide at instantiation if you are going to invert the search
+>> or not (search from below). But in order for that to be selectable
+>> at runtime with a channel attribute of some sort, I need to be able
+>> to rebind the interrupt to the other edge and I want to do that
+>> without releasing the irq and grabbing it again (someone might
+>> otherwise steal the irq, making the driver lose the irq all
+>together).
+>> I don't see any API to change the irq trigger condition. Is there
+>> such a thing?
+>> 
+>> Anyway, despite all the above questions and remarks, this works for
+>> me. Please consider applying.
+>
+>In general this series looks really good, good and clear implementation
+>as
+>well as documentation. A few minor bits here and there, but that is
+>normal.
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
