@@ -1,92 +1,376 @@
-Return-Path: <lars@metafoo.de>
-From: Lars-Peter Clausen <lars@metafoo.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 10/13] staging:iio:ad7606: Let common remove function take a struct device *
-Date: Wed, 19 Oct 2016 19:07:05 +0200
-Message-Id: <1476896828-10544-11-git-send-email-lars@metafoo.de>
-In-Reply-To: <1476896828-10544-1-git-send-email-lars@metafoo.de>
-References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+Return-Path: <peda@axentia.se>
+Subject: Re: [PATCH 2/4] iio: dpot-dac: DAC driver based on a digital
+ potentiometer
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+ <1476955562-13673-3-git-send-email-peda@axentia.se>
+ <alpine.DEB.2.02.1610201254370.19919@pmeerw.net>
+CC: <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, "Rob
+ Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <22d07498-860d-29f8-07ef-ae2f5df6ab25@axentia.se>
+Date: Thu, 20 Oct 2016 15:48:24 +0200
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.02.1610201254370.19919@pmeerw.net>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-Currently the common remove function takes a struct iio_dev *. This
-parameter is retrieved by the individual driver remove functions by calling
-get_drvdata() on their device. To simplify the code let the common remove
-function directly take a struct dev * and do the IIO device in retrieval
-the common remove function.
+On 2016-10-20 13:29, Peter Meerwald-Stadler wrote:
+>> It is assumed the that the dpot is used as a voltage divider between the
+>> current dpot wiper setting and the maximum resistance of the dpot. The
+>> divided voltage is provided by a vref regulator.
+>>
+>>                   .------.
+>>    .-----------.  |      |
+>>    | Vref      |--'    .---.
+>>    | regulator |--.    |   |
+>>    '-----------'  |    | d |
+>>                   |    | p |
+>>                   |    | o |  wiper
+>>                   |    | t |<---------+
+>>                   |    |   |
+>>                   |    '---'       dac output voltage
+>>                   |      |
+>>                   '------+------------+
+> 
+> nice ASCII art :)
 
-This also aligns the interface with the common probe function.
+Thanks!
 
-Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
----
- drivers/staging/iio/adc/ad7606.h      | 2 +-
- drivers/staging/iio/adc/ad7606_core.c | 3 ++-
- drivers/staging/iio/adc/ad7606_par.c  | 6 +-----
- drivers/staging/iio/adc/ad7606_spi.c  | 4 +---
- 4 files changed, 5 insertions(+), 10 deletions(-)
+> comments below, just nitpicking
+> 
+>> Signed-off-by: Peter Rosin <peda@axentia.se>
+>> ---
+>>  MAINTAINERS                |   1 +
+>>  drivers/iio/dac/Kconfig    |  10 +++
+>>  drivers/iio/dac/Makefile   |   1 +
+>>  drivers/iio/dac/dpot-dac.c | 219 +++++++++++++++++++++++++++++++++++++++++++++
+>>  4 files changed, 231 insertions(+)
+>>  create mode 100644 drivers/iio/dac/dpot-dac.c
+>>
+>> diff --git a/MAINTAINERS b/MAINTAINERS
+>> index c68b72088945..8c8aae24b96b 100644
+>> --- a/MAINTAINERS
+>> +++ b/MAINTAINERS
+>> @@ -6116,6 +6116,7 @@ M:	Peter Rosin <peda@axentia.se>
+>>  L:	linux-iio@vger.kernel.org
+>>  S:	Maintained
+>>  F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+>> +F:	drivers/iio/dac/dpot-dac.c
+>>  
+>>  IIO SUBSYSTEM AND DRIVERS
+>>  M:	Jonathan Cameron <jic23@kernel.org>
+>> diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+>> index 120b24478469..934d4138fcdb 100644
+>> --- a/drivers/iio/dac/Kconfig
+>> +++ b/drivers/iio/dac/Kconfig
+>> @@ -200,6 +200,16 @@ config AD8801
+>>  	  To compile this driver as a module choose M here: the module will be called
+>>  	  ad8801.
+>>  
+>> +config DPOT_DAC
+>> +	tristate "DAC emulation using a DPOT"
+>> +	depends on OF
+>> +	help
+>> +	  Say yes here to build support for DAC emulation using a digital
+>> +	  potentiometer.
+>> +
+>> +	  To compile this driver as a module, choose M here: the module will be
+>> +	  called iio-dpot-dac.
+> 
+> I guess the name will be dpot-dac?
+> 
+>> +
+>>  config LPC18XX_DAC
+>>  	tristate "NXP LPC18xx DAC driver"
+>>  	depends on ARCH_LPC18XX || COMPILE_TEST
+>> diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+>> index 27642bbf75f2..f01bf4a99867 100644
+>> --- a/drivers/iio/dac/Makefile
+>> +++ b/drivers/iio/dac/Makefile
+>> @@ -22,6 +22,7 @@ obj-$(CONFIG_AD5686) += ad5686.o
+>>  obj-$(CONFIG_AD7303) += ad7303.o
+>>  obj-$(CONFIG_AD8801) += ad8801.o
+>>  obj-$(CONFIG_CIO_DAC) += cio-dac.o
+>> +obj-$(CONFIG_DPOT_DAC) += dpot-dac.o
+>>  obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
+>>  obj-$(CONFIG_M62332) += m62332.o
+>>  obj-$(CONFIG_MAX517) += max517.o
+>> diff --git a/drivers/iio/dac/dpot-dac.c b/drivers/iio/dac/dpot-dac.c
+>> new file mode 100644
+>> index 000000000000..94fbb4b27287
+>> --- /dev/null
+>> +++ b/drivers/iio/dac/dpot-dac.c
+>> @@ -0,0 +1,219 @@
+>> +/*
+>> + * IIO DAC emulation driver using a digital potentiometer
+>> + *
+>> + * Copyright (C) 2016 Axentia Technologies AB
+>> + *
+>> + * Author: Peter Rosin <peda@axentia.se>
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + */
+>> +
+>> +/*
+>> + * It is assumed the that the dpot is used as a voltage divider between the
+> 
+> delete first 'the'
 
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index b4b25a2..6dde987 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -81,7 +81,7 @@ struct ad7606_bus_ops {
- int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 		 const char *name, unsigned int id,
- 		 const struct ad7606_bus_ops *bops);
--int ad7606_remove(struct iio_dev *indio_dev, int irq);
-+int ad7606_remove(struct device *dev, int irq);
- int ad7606_reset(struct ad7606_state *st);
- int ad7606_read_samples(struct ad7606_state *st);
- 
-diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-index 1ee7a29..670caa2 100644
---- a/drivers/staging/iio/adc/ad7606_core.c
-+++ b/drivers/staging/iio/adc/ad7606_core.c
-@@ -535,8 +535,9 @@ error_disable_reg:
- }
- EXPORT_SYMBOL_GPL(ad7606_probe);
- 
--int ad7606_remove(struct iio_dev *indio_dev, int irq)
-+int ad7606_remove(struct device *dev, int irq)
- {
-+	struct iio_dev *indio_dev = dev_get_drvdata(dev);
- 	struct ad7606_state *st = iio_priv(indio_dev);
- 
- 	iio_device_unregister(indio_dev);
-diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-index 42eb9e0..cd6c410c 100644
---- a/drivers/staging/iio/adc/ad7606_par.c
-+++ b/drivers/staging/iio/adc/ad7606_par.c
-@@ -76,11 +76,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
- 
- static int ad7606_par_remove(struct platform_device *pdev)
- {
--	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
--
--	ad7606_remove(indio_dev, platform_get_irq(pdev, 0));
--
--	return 0;
-+	return ad7606_remove(&pdev->dev, platform_get_irq(pdev, 0));
- }
- 
- static const struct platform_device_id ad7606_driver_ids[] = {
-diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-index 064c4c2..c9b1f266 100644
---- a/drivers/staging/iio/adc/ad7606_spi.c
-+++ b/drivers/staging/iio/adc/ad7606_spi.c
-@@ -51,9 +51,7 @@ static int ad7606_spi_probe(struct spi_device *spi)
- 
- static int ad7606_spi_remove(struct spi_device *spi)
- {
--	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
--
--	return ad7606_remove(indio_dev, spi->irq);
-+	return ad7606_remove(&spi->dev, spi->irq);
- }
- 
- static const struct spi_device_id ad7606_id[] = {
--- 
-2.1.4
+Right. Lining this and a few other things up for v2. I'm hoping
+for more feedback on other stuff though, so I'll hold that off for
+a bit.
+
+>> + * current dpot wiper setting and the maximum resistance of the dpot. The
+>> + * divided voltage is provided by a vref regulator.
+>> + *
+>> + *                   .------.
+>> + *    .-----------.  |      |
+>> + *    | Vref      |--'    .---.
+> 
+> vref maybe lowercase
+
+Right, I'm changing Vref to vref all over the map.
+
+>> + *    | regulator |--.    |   |
+>> + *    '-----------'  |    | d |
+>> + *                   |    | p |
+>> + *                   |    | o |  wiper
+>> + *                   |    | t |<---------+
+>> + *                   |    |   |
+>> + *                   |    '---'       dac output voltage
+>> + *                   |      |
+>> + *                   '------+------------+
+>> + */
+>> +
+>> +#include <linux/err.h>
+>> +#include <linux/iio/consumer.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/module.h>
+>> +#include <linux/of.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/regulator/consumer.h>
+>> +
+>> +struct dpot_dac {
+>> +	struct regulator *vref;
+>> +	struct iio_channel *dpot;
+> 
+> const
+
+const? devm_iio_channel_get doesn't return a const iio_channel. What
+am I missing?
+
+>> +	u32 max_ohms;
+>> +};
+>> +
+>> +static const struct iio_chan_spec dpot_dac_iio_channel = {
+>> +	.type = IIO_VOLTAGE,
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
+>> +			    | BIT(IIO_CHAN_INFO_SCALE),
+>> +	.output = 1,
+>> +};
+>> +
+>> +static int dpot_dac_read_raw(struct iio_dev *indio_dev,
+>> +			     struct iio_chan_spec const *chan,
+>> +			     int *val, int *val2, long mask)
+>> +{
+>> +	struct dpot_dac *dac = iio_priv(indio_dev);
+>> +	int ret;
+>> +	unsigned long long tmp;
+> 
+> s64 (which is used to cast below)
+
+I assume that what you really want is to get rid of the cast, and
+that you aren't really bothered if tmp is ull or s32, right? Given
+that assumption, I'm just dropping the cast instead. The LL specifier
+on the constant should promote *val anyway.
+
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		return iio_read_channel_raw(dac->dpot, val);
+>> +
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		ret = iio_read_channel_scale(dac->dpot, val, val2);
+>> +		switch (ret) {
+>> +		case IIO_VAL_FRACTIONAL_LOG2:
+>> +			tmp = (s64)*val * 1000000000LL;
+>> +			do_div(tmp, dac->max_ohms);
+>> +			tmp *= regulator_get_voltage(dac->vref) / 1000;
+>> +			do_div(tmp, 1000000000LL);
+>> +			*val = tmp;
+>> +			return ret;
+>> +		case IIO_VAL_INT:
+>> +			*val2 = 1;
+> 
+> I think this needs a comment to clarify what's going on...
+
+How about this:
+
+/*
+ * Convert integer scale to fractional scale by
+ * setting the denominator (*val2) to 1 (one) and
+ * fall through to the handler for fractional scale.
+ */
+
+>> +			ret = IIO_VAL_FRACTIONAL;
+>> +			break;
+>> +		}
+>> +		*val *= regulator_get_voltage(dac->vref) / 1000;
+>> +		*val2 *= dac->max_ohms;
+>> +
+>> +		return ret;
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static int dpot_dac_write_raw(struct iio_dev *indio_dev,
+>> +			      struct iio_chan_spec const *chan,
+>> +			      int val, int val2, long mask)
+>> +{
+>> +	struct dpot_dac *dac = iio_priv(indio_dev);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		return iio_write_channel_raw(dac->dpot, val);
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +
+>> +static const struct iio_info dpot_dac_info = {
+>> +	.read_raw = dpot_dac_read_raw,
+>> +	.write_raw = dpot_dac_write_raw,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +static int dpot_dac_probe(struct platform_device *pdev)
+>> +{
+>> +	struct device *dev = &pdev->dev;
+>> +	struct iio_dev *indio_dev;
+>> +	struct dpot_dac *dac;
+>> +	enum iio_chan_type type;
+>> +	int ret;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*dac));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	platform_set_drvdata(pdev, indio_dev);
+>> +	dac = iio_priv(indio_dev);
+>> +
+>> +	indio_dev->name = dev_name(dev);
+>> +	indio_dev->dev.parent = dev;
+>> +	indio_dev->info = &dpot_dac_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = &dpot_dac_iio_channel;
+>> +	indio_dev->num_channels = 1;
+> 
+> maybe ARRAY_SIZE(dpot_dac_iio_channel) to future-proof it
+
+Except dpot_dac_iio_channel isn't an array. Does ARRAY_SIZE
+work on non-arrays?
+
+Cheers,
+Peter
+
+>> +
+>> +	dac->vref = devm_regulator_get(dev, "vref");
+>> +	if (IS_ERR(dac->vref)) {
+>> +		if (PTR_ERR(dac->dpot) != -EPROBE_DEFER)
+>> +			dev_err(&pdev->dev, "failed to get vref regulator\n");
+>> +		return PTR_ERR(dac->vref);
+>> +	}
+>> +
+>> +	dac->dpot = devm_iio_channel_get(dev, "dpot");
+>> +	if (IS_ERR(dac->dpot)) {
+>> +		if (PTR_ERR(dac->dpot) != -EPROBE_DEFER)
+>> +			dev_err(dev, "failed to get dpot input channel\n");
+>> +		return PTR_ERR(dac->dpot);
+>> +	}
+>> +
+>> +	switch (iio_read_channel_scale(dac->dpot, &ret, NULL)) {
+>> +	case IIO_VAL_INT:
+>> +	case IIO_VAL_FRACTIONAL:
+>> +	case IIO_VAL_FRACTIONAL_LOG2:
+>> +		break;
+>> +	default:
+>> +		dev_err(dev, "dpot has a scale that is too weird\n");
+> 
+> :-)
+> 
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	ret = iio_get_channel_type(dac->dpot, &type);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +
+>> +	if (type != IIO_RESISTANCE) {
+>> +		dev_err(dev, "dpot is of the wrong type\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	ret = of_property_read_u32(dev->of_node, "dpot-dac,max-ohms",
+>> +				   &dac->max_ohms);
+>> +	if (ret) {
+>> +		dev_err(dev, "the dpot-dac,max-ohms property is missing\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = regulator_enable(dac->vref);
+>> +	if (ret) {
+>> +		dev_err(dev, "failed to enable the vref regulator\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>> +	if (ret) {
+>> +		dev_err(dev, "failed to register iio device\n");
+>> +		goto disable_reg;
+>> +	}
+>> +
+>> +	return 0;
+>> +
+>> +disable_reg:
+>> +	regulator_disable(dac->vref);
+>> +	return ret;
+>> +}
+>> +
+>> +static int dpot_dac_remove(struct platform_device *pdev)
+>> +{
+>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>> +	struct dpot_dac *dac = iio_priv(indio_dev);
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +	regulator_disable(dac->vref);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct of_device_id dpot_dac_match[] = {
+>> +	{ .compatible = "dpot-dac" },
+>> +	{ /* sentinel */ }
+>> +};
+>> +MODULE_DEVICE_TABLE(of, dpot_dac_match);
+>> +
+>> +static struct platform_driver dpot_dac_driver = {
+>> +	.probe = dpot_dac_probe,
+>> +	.remove = dpot_dac_remove,
+>> +	.driver = {
+>> +		.name = "iio-dpot-dac",
+>> +		.of_match_table = dpot_dac_match,
+>> +	},
+>> +};
+>> +module_platform_driver(dpot_dac_driver);
+>> +
+>> +MODULE_DESCRIPTION("DAC emulation driver using a digital potentiometer");
+>> +MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
+>> +MODULE_LICENSE("GPL v2");
+>>
+> 
