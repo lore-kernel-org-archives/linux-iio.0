@@ -1,40 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:33108 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752987AbcJOSEv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 15 Oct 2016 14:04:51 -0400
-Received: by mail-pf0-f196.google.com with SMTP id i85so6160473pfa.0
-        for <linux-iio@vger.kernel.org>; Sat, 15 Oct 2016 11:04:51 -0700 (PDT)
-From: Matt Ranostay <mranostay@gmail.com>
+Return-Path: <eraretuya@gmail.com>
+From: Eva Rachel Retuya <eraretuya@gmail.com>
 To: linux-iio@vger.kernel.org
-Cc: Matt Ranostay <matt@ranostay.consulting>
-Subject: [PATCH] iio: proximity: pulsedlight-lidar-lite-v2: cleanup power management
-Date: Sat, 15 Oct 2016 11:04:37 -0700
-Message-Id: <1476554677-1777-1-git-send-email-matt@ranostay.consulting>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v2 1/2] tools: iio: iio_generic_buffer: rename and change type of force variable
+Date: Thu, 20 Oct 2016 17:19:23 +0800
+Message-Id: <3749c6e558d696269bcdce627b470ddc60a87fc5.1476952931.git.eraretuya@gmail.com>
+In-Reply-To: <cover.1476952931.git.eraretuya@gmail.com>
+References: <cover.1476952931.git.eraretuya@gmail.com>
+In-Reply-To: <cover.1476952931.git.eraretuya@gmail.com>
+References: <cover.1476952931.git.eraretuya@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Remove pm_runtime_mark_last_busy() call that wasn't need in the probe
-since the device should be put to sleep
+Replace the type of 'force' flag from int to bool and at the same time
+rename it to 'force_autochannels' for better readability.
 
-Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
+Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
 ---
- drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 2 --
- 1 file changed, 2 deletions(-)
+ tools/iio/iio_generic_buffer.c | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-index 3141c3c161bb..1fa9eefa0982 100644
---- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-+++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
-@@ -301,8 +301,6 @@ static int lidar_probe(struct i2c_client *client,
- 	if (ret)
- 		goto error_unreg_buffer;
- 	pm_runtime_enable(&client->dev);
--
--	pm_runtime_mark_last_busy(&client->dev);
- 	pm_runtime_idle(&client->dev);
+diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+index 31ddd3a..8ef39ae 100644
+--- a/tools/iio/iio_generic_buffer.c
++++ b/tools/iio/iio_generic_buffer.c
+@@ -348,7 +348,7 @@ int main(int argc, char **argv)
+ 	int noevents = 0;
+ 	int notrigger = 0;
+ 	char *dummy;
+-	int force = 0;
++	bool force_autochannels = false;
  
- 	return 0;
+ 	struct iio_channel_info *channels = NULL;
+ 
+@@ -362,7 +362,7 @@ int main(int argc, char **argv)
+ 			break;
+ 		case 'A':
+ 			autochannels = AUTOCHANNELS_ENABLED;
+-			force = 1;
++			force_autochannels = true;
+ 			break;	
+ 		case 'c':
+ 			errno = 0;
+@@ -526,14 +526,15 @@ int main(int argc, char **argv)
+ 			"diag %s\n", dev_dir_name);
+ 		goto error;
+ 	}
+-	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
++	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) &&
++	    !force_autochannels) {
+ 		fprintf(stderr, "Auto-channels selected but some channels "
+ 			"are already activated in sysfs\n");
+ 		fprintf(stderr, "Proceeding without activating any channels\n");
+ 	}
+ 
+ 	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
+-	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
++	    ((autochannels == AUTOCHANNELS_ENABLED) && force_autochannels)) {
+ 		fprintf(stderr, "Enabling all channels\n");
+ 
+ 		ret = enable_disable_all_channels(dev_dir_name, 1);
 -- 
 2.7.4
-
