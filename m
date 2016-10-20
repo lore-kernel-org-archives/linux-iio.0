@@ -1,181 +1,93 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53144 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935082AbcJVPNu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:13:50 -0400
-Subject: Re: [PATCH] iio: light: acpi-als: Add IO_CHAN_INFO_OFFSET/SCALE to
- mask.
-To: Gwendal Grignou <gwendal@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>
-References: <1477037829-20352-1-git-send-email-enric.balletbo@collabora.com>
- <CAMHSBOXJArBSUZqNT0gbN0KQqPAttaWgL=BoXy7keV4Ez0VB6w@mail.gmail.com>
-Cc: Linux Kernel <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <968cc6eb-5da3-93e3-839d-71f8e34937f9@kernel.org>
-Date: Sat, 22 Oct 2016 16:13:47 +0100
+Received: from mail-db5eur01on0119.outbound.protection.outlook.com ([104.47.2.119]:55223
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1756227AbcJTV0V (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 20 Oct 2016 17:26:21 -0400
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        <linux-kernel@vger.kernel.org>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+ <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+CC: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <7472292a-a509-c791-4eff-5a5037ead837@axentia.se>
+Date: Thu, 20 Oct 2016 16:53:45 +0200
 MIME-Version: 1.0
-In-Reply-To: <CAMHSBOXJArBSUZqNT0gbN0KQqPAttaWgL=BoXy7keV4Ez0VB6w@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/10/16 17:43, Gwendal Grignou wrote:
-> On Fri, Oct 21, 2016 at 1:17 AM, Enric Balletbo i Serra
-> <enric.balletbo@collabora.com> wrote:
->> According the ACPI specification (Version 5.0 Errata A) [1], the data
->> coming from the sensor represent the ambient light illuminance reading
->> expressed in lux. Unfortunately ACPI interface doesn't provide a
->> mechanism to calibrate this value, so this raw value can be slightly
->> wrong.
->>
->> This patch adds IIO_CHAN_INFO_OFFSET and IIO_CHAN_INFO_SCALE attributes
->> to give the possibiity to the userspace to calculate a calibrated data
-possibility
->> by doing:
->>
->>  (raw_value + offset) * scale = calibrated_value (in lux)
->>
->> [1] http://www.acpi.info/DOWNLOADS/ACPI_5_Errata%20A.pdf
->>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+On 2016-10-20 14:55, Lars-Peter Clausen wrote:
+> On 10/20/2016 11:25 AM, Peter Rosin wrote:
+>> Also, is there some agreed-upon way to dig out the maximum value from
+>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from the
+>> dt bindings, which would have been nice...
+> 
+> Yes, this is something we could really use. In a sense it exists for the
+> devices with buffer-capable channels where there is the real_bits field
+> which tells us the data width of the channel. But a dedicated mechanism for
+> querying the maximum (and minimum) valid code seems like a useful feature.
+> Not only for in-kernel clients, but also for userspace.
 
-Hmm.. I'm not particularly keen on adding support to an individual driver
-to push calibration data into the kernel just so it can be 'popped' again
-later.
+For the dpot I have, real_bits (if provided) would not be too great since
+the maximum value is 256 (i.e. 257 possible wiper positions). I doesn't
+feel like I'm the most qualified person to add these new min/max attributes
+though, as I'm not familiar with most parts of the iio code. I'll happily
+jump on board if they are somehow magically available, of course :-)
 
-After all ever light sensor suffers from the same 'fine tuning' problem as
-ultimately does every sensor of any kind.
+>> I'm also wondering if I'm somehow abusing the regulator? I only added
+>> it to get rid of a "dpot-dac,max-voltage" thing from the dt bindings.
+>> It feels right though, but maybe I should do more with it than check
+>> its voltage? What?
+> 
+> Enable the regulator when it is in use?
 
-To my mind this is a job for userspace really rather than something
-that ought to be pushed into the kernel.
+Right, I didn't express myself all that clearly, I do in fact already
+enable the regulator in ->probe and disable it in ->remove. Anything
+else?
 
-These values are 'supposed' to be correct as provided by ACPI so its
-not as though we are trying handle gross differences.
+>> There are a couple of things to be said about the envelope detector,
+>> one question is where it should live? I placed it in the adc directory,
+>> but maybe it deserves an iio directory of its own? I'm also a bit
+>> worried that the name is a wee bit too generic. But what is a good
+>> name? I don't want it to be too long like dac-comp-envelope-detector
+>> and something like dac-comp-env-det is just unreadable. Naming is
+>> difficult... And suggestions?
+> 
+> Yeah, it is a bit tricky. It is a envelope detector built from discrete
+> components, but of course there are many more ways to build one. If you have
+> a codename for your platform you could use this for the DT compatible
+> string, like 'vendor,foobar-envelope-detector'.
 
-Or are we looking at patching buggy firmwares?
+Good idea! Then the "envelope-detector,inverted" bool can go, and be
+implied by the compatible string. If some way to rebind the irq trigger
+is later discovered that can be added as a channel attr without
+deprecating any dt bindings stuff. While at it, the other properties
+("envelope-detector,dac-max" and "envelope-detector,comp-interval-ms")
+could also be implied from the compatible string. Would that be better?
+I think so.
 
-Jonathan
+But, the compatible string is one thing and the driver name is another.
+"axentia,tse850-envelope-detector" doesn't seem like the best of driver
+names...
 
->> ---
->>  drivers/iio/light/acpi-als.c | 66 ++++++++++++++++++++++++++++++++++++++------
->>  1 file changed, 57 insertions(+), 9 deletions(-)
->>
->> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
->> index f0b47c5..a8093ba 100644
->> --- a/drivers/iio/light/acpi-als.c
->> +++ b/drivers/iio/light/acpi-als.c
->> @@ -56,7 +56,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
->>                 },
->>                 /* _RAW is here for backward ABI compatibility */
->>                 .info_mask_separate     = BIT(IIO_CHAN_INFO_RAW) |
->> -                                         BIT(IIO_CHAN_INFO_PROCESSED),
->> +                                         BIT(IIO_CHAN_INFO_PROCESSED) |
->> +                                         BIT(IIO_CHAN_INFO_SCALE) |
->> +                                         BIT(IIO_CHAN_INFO_OFFSET),
->>         },
->>  };
->>
->> @@ -76,6 +78,10 @@ struct acpi_als {
->>         struct mutex            lock;
->>
->>         s32                     evt_buffer[ACPI_ALS_EVT_BUFFER_SIZE];
->> +
->> +       int                     scale;
->> +       int                     uscale;
->> +       int                     offset;
->>  };
->>
->>  /*
->> @@ -154,25 +160,64 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
->>         s32 temp_val;
->>         int ret;
->>
->> -       if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
->> -               return -EINVAL;
->> -
->>         /* we support only illumination (_ALI) so far. */
->>         if (chan->type != IIO_LIGHT)
->>                 return -EINVAL;
->>
->> -       ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
->> -       if (ret < 0)
->> -               return ret;
->> +       switch (mask) {
->> +       case IIO_CHAN_INFO_RAW:
->> +       case IIO_CHAN_INFO_PROCESSED:
-> It seems PROCESSED is identical to RAW. Shouldn't we remove this attribute?
-You can't without breaking userspace ABI.  We got this messed up a long
-time back, but now we are pretty much stuck with having both.
->> +               ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
->> +               if (ret < 0)
->> +                       return ret;
->> +               *val = temp_val;
->> +               return IIO_VAL_INT;
->> +       case IIO_CHAN_INFO_OFFSET:
->> +               mutex_lock(&als->lock);
->> +               *val = als->offset;
->> +               mutex_unlock(&als->lock);
->> +               return IIO_VAL_INT;
->> +       case IIO_CHAN_INFO_SCALE:
->> +               mutex_lock(&als->lock);
->> +               *val = als->scale;
->> +               *val2 = als->uscale;
->> +               mutex_unlock(&als->lock);
->> +               return IIO_VAL_INT_PLUS_MICRO;
->> +       default:
->> +               return -EINVAL;
->> +       }
->> +}
->>
->> -       *val = temp_val;
->> +static int acpi_als_write_raw(struct iio_dev *indio_dev,
->> +                             struct iio_chan_spec const *chan, int val,
->> +                             int val2, long mask)
->> +{
->> +       struct acpi_als *als = iio_priv(indio_dev);
->> +
->> +       if (chan->type != IIO_LIGHT)
->> +               return -EINVAL;
->>
->> -       return IIO_VAL_INT;
->> +       switch (mask) {
->> +       case IIO_CHAN_INFO_OFFSET:
->> +               mutex_lock(&als->lock);
->> +               als->offset = val;
-If you aren't providing a write_raw_fmt callback, then you
-should sanity check that val2 is not non 0 for this case.
->> +               mutex_unlock(&als->lock);
->> +               return 0;
->> +       case IIO_CHAN_INFO_SCALE:
->> +               mutex_lock(&als->lock);
->> +               als->scale = val;
->> +               als->uscale = val2;
->> +               mutex_unlock(&als->lock);
->> +               return 0;
->> +       default:
->> +               return -EINVAL;
->> +       }
->>  }
->>
->>  static const struct iio_info acpi_als_info = {
->>         .driver_module          = THIS_MODULE,
->>         .read_raw               = acpi_als_read_raw,
->> +       .write_raw              = acpi_als_write_raw,
->>  };
->>
->>  static int acpi_als_add(struct acpi_device *device)
->> @@ -189,6 +234,9 @@ static int acpi_als_add(struct acpi_device *device)
->>
->>         device->driver_data = indio_dev;
->>         als->device = device;
->> +       als->scale = 1;
->> +       als->uscale = 0;
->> +       als->offset = 0;
->>         mutex_init(&als->lock);
->>
->>         indio_dev->name = ACPI_ALS_DEVICE_NAME;
->> --
->> 2.1.0
->>
+Are there any existing examples of drivers for (generic) things built
+with discrete components like this that could perhaps provide guidance?
 
+>> Anyway, despite all the above questions and remarks, this works for
+>> me. Please consider applying.
+> 
+> In general this series looks really good, good and clear implementation as
+> well as documentation. A few minor bits here and there, but that is normal.
+
+Thanks, appreciated!
+
+Cheers,
+Peter
