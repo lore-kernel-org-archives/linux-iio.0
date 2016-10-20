@@ -1,31 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f176.google.com ([209.85.192.176]:32803 "EHLO
-        mail-pf0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753358AbcJSRFK (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 19 Oct 2016 13:05:10 -0400
-Received: by mail-pf0-f176.google.com with SMTP id 128so19251431pfz.0
-        for <linux-iio@vger.kernel.org>; Wed, 19 Oct 2016 10:05:10 -0700 (PDT)
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH 0/2] tools: iio: iio_generic_buffer: -A option code cleanups
-Date: Thu, 20 Oct 2016 01:04:26 +0800
-Message-Id: <1476896668-2200-1-git-send-email-eraretuya@gmail.com>
+Received: from mail-lf0-f48.google.com ([209.85.215.48]:34325 "EHLO
+        mail-lf0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S936172AbcJTQNh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 12:13:37 -0400
+Received: by mail-lf0-f48.google.com with SMTP id b81so89749353lfe.1
+        for <linux-iio@vger.kernel.org>; Thu, 20 Oct 2016 09:13:36 -0700 (PDT)
+Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature
+ approximation
+To: Laxman Dewangan <ldewangan@nvidia.com>
+References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com>
+ <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com>
+ <5808E78B.4060109@nvidia.com>
+Cc: linux-iio@vger.kernel.org, rui.zhang@intel.com, edubezval@gmail.com
+From: =?UTF-8?Q?Pawe=c5=82_Jarosz?= <paweljarosz3691@gmail.com>
+Message-ID: <514328e7-9c2d-1d47-2624-593f0a373e0f@gmail.com>
+Date: Thu, 20 Oct 2016 18:14:46 +0200
+MIME-Version: 1.0
+In-Reply-To: <5808E78B.4060109@nvidia.com>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Address Peter's comments:
-https://marc.info/?l=linux-iio&m=147673895620791&w=2
 
-Eva Rachel Retuya (2):
-  tools: iio: iio_generic_buffer: rename and change type of force
-    variable
-  tools: iio: iio_generic_buffer: drop unneeded parentheses
 
- tools/iio/iio_generic_buffer.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+W dniu 20.10.2016 o 17:49, Laxman Dewangan pisze:
+>
+> On Thursday 20 October 2016 08:26 PM, Paweł Jarosz wrote:
+>>
+>>
+>> W dniu 20.10.2016 o 14:40, Laxman Dewangan pisze:
+>>>
+>>> On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
+>>>> In current version of the driver there is error in temperature
+>>>> calculation.
+>>>>
+>>>> So lets fix it using proper linear function.
+>>>>
+>>>> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
+>>>
+>>> Per my calculation, existing and your equation is same as both are 
+>>> doing linear interpolation.
+>>>
+>>> Only think I have seen is that I have used 1000 for two consecutive 
+>>> temp difference and you used (t2 - t1), so your is better in this 
+>>> case but still the equation is same.
+>>>
+>>> The equation from you is
+>>>
+>>>     t1 + (hi -val) * factor.
+>>>
+>>> and existing one is
+>>>      t2 - (val -lo) * factor
+>>>
+>>>
+>>> factor is abs((t2-t1)/(hi-lo))
+>>>
+>>> If my analysis is not correct then can you please provide the 
+>>> example with calculation for better understansing?
+>>
+>> Hi
+>>
+>> For example if we try to calculate temp for val = 8, i = 1 and table:
+>>
+>> <0 9
+>>  2 7>
+>>
+>>     adc_hi = gti->lookup_table[2 * i - 1];
+>>     adc_lo = gti->lookup_table[2 * i + 1];
+>>     temp = gti->lookup_table[2 * i];
+>>     temp -= ((val - adc_lo) * 1000) / (adc_hi - adc_lo);
+>>
+>> Your method gives temp =  -498
+>>
+>>
+>
+>
+> The temp should be in the milli-centigrade in the table so it should be
+> <0 9
+>   2000 7>;
+>
+> and if you relplace 1000 with the t2 -t1 where
+>
+> t1  = gti->lookup_table[2*i -2]
+> t2 = gti->lookup_table[2 *i]
+>
+> then it will work perfectly.
+>
+> So your change for replacing 1000 is correct as what I said but need 
+> not to change whole equation altogether.
 
--- 
-2.7.4
+Sorry for that ... when i was writing this i wasn't using your equation, 
+but writing from scratch.
+I can send new patch with corrections or leave it as it is. Your call.
 
+
+Paweł
