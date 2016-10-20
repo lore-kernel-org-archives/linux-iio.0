@@ -1,55 +1,32 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate14.nvidia.com ([216.228.121.143]:11597 "EHLO
-        hqemgate14.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935180AbcJTMzj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 08:55:39 -0400
-Message-ID: <5808BB3D.2020201@nvidia.com>
-Date: Thu, 20 Oct 2016 18:10:29 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
-MIME-Version: 1.0
-To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
-CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
-        <edubezval@gmail.com>
-Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
-References: <20161018193147.GA14745@vaio-ubuntu>
-In-Reply-To: <20161018193147.GA14745@vaio-ubuntu>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <eraretuya@gmail.com>
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH 0/2] staging: iio: ad7606: regulator clean-up
+Date: Thu, 20 Oct 2016 21:08:21 +0800
+Message-Id: <1476968903-15771-1-git-send-email-eraretuya@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+This patchset is dependent on Lars' recently submitted patchset:
+[PATCH 00/13] staging:iio:ad7606: Towards moving out of staging
+https://marc.info/?l=linux-iio&m=147689684332118&w=2
 
-On Wednesday 19 October 2016 01:01 AM, Paweł Jarosz wrote:
-> In current version of the driver there is error in temperature
-> calculation.
->
-> So lets fix it using proper linear function.
->
-> Signed-off-by: Paweł Jarosz <paweljarosz3691@gmail.com>
+Address the regulator handling previously mentioned on the above link.
+Datasheet:
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD7606_7606-6_7606-4.pdf
 
-Per my calculation, existing and your equation is same as both are doing 
-linear interpolation.
+Eva Rachel Retuya (2):
+  staging: iio: ad7606: set proper supply name to devm_regulator_get()
+  staging: iio: ad7606: rework regulator handling
 
-Only think I have seen is that I have used 1000 for two consecutive temp 
-difference and you used (t2 - t1), so your is better in this case but 
-still the equation is same.
+ drivers/staging/iio/adc/ad7606.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-The equation from you is
-
-     t1 + (hi -val) * factor.
-
-and existing one is
-      t2 - (val -lo) * factor
-
-
-factor is abs((t2-t1)/(hi-lo))
-
-If my analysis is not correct then can you please provide the example 
-with calculation for better understansing?
-
-
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+-- 
+2.7.4
