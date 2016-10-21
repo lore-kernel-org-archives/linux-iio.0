@@ -1,66 +1,57 @@
-Return-Path: <eraretuya@gmail.com>
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH 1/2] tools: iio: iio_generic_buffer: rename and change type of force variable
-Date: Thu, 20 Oct 2016 01:04:27 +0800
-Message-Id: <1476896668-2200-2-git-send-email-eraretuya@gmail.com>
-In-Reply-To: <1476896668-2200-1-git-send-email-eraretuya@gmail.com>
-References: <1476896668-2200-1-git-send-email-eraretuya@gmail.com>
+Return-Path: <peda@axentia.se>
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+To: <jic23@kernel.org>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+ <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+ <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+ <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
+ <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
+ <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>, Lars-Peter Clausen
+	<lars@metafoo.de>, <linux-kernel@vger.kernel.org>, Hartmut Knaack
+	<knaack.h@gmx.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring
+	<robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio-owner@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <28861d1d-7f50-7ea2-f8cb-5a9d359f74c0@axentia.se>
+Date: Fri, 21 Oct 2016 10:24:24 +0200
+MIME-Version: 1.0
+In-Reply-To: <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-Replace the type of 'force' flag from int to bool and at the same time
-rename it to 'force_autochannels' for better readability.
+On 2016-10-21 09:17, jic23@kernel.org wrote:
+> On 20.10.2016 19:17, Peter Rosin wrote:
+>> On 2016-10-20 19:37, Jonathan Cameron wrote:
+>>> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
+>>
+>> Interesting, one issue with that is that it is all in real world
+>> units, while I'd rather have the raw value.
+> Um.. It's been a while, but the principle was (IIRC) that every
+> _available would match the units fo the associated info mask element.
+> Thus if you have a _raw element it would be in adc counts (most likely).
+> 
+> _input would be in relevant real world units, scale etc in the whatever
+> units the value itself is in.
 
-Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
- tools/iio/iio_generic_buffer.c | 9 +++++----
- 1 file changed, 5 insertions(+), 4 deletions(-)
+Ah, that was just me totally misreading the patch. I didn't realize
+that the iio_format_value function is also used for raw values and
+assumed it was all about real world units when that function was
+used. Feel rather silly ATM...
 
-diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
-index 31ddd3a..e0a0c83 100644
---- a/tools/iio/iio_generic_buffer.c
-+++ b/tools/iio/iio_generic_buffer.c
-@@ -348,7 +348,7 @@ int main(int argc, char **argv)
- 	int noevents = 0;
- 	int notrigger = 0;
- 	char *dummy;
--	int force = 0;
-+	bool force_autochannels = 0;
- 
- 	struct iio_channel_info *channels = NULL;
- 
-@@ -362,7 +362,7 @@ int main(int argc, char **argv)
- 			break;
- 		case 'A':
- 			autochannels = AUTOCHANNELS_ENABLED;
--			force = 1;
-+			force_autochannels = 1;
- 			break;	
- 		case 'c':
- 			errno = 0;
-@@ -526,14 +526,15 @@ int main(int argc, char **argv)
- 			"diag %s\n", dev_dir_name);
- 		goto error;
- 	}
--	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
-+	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) &&
-+	    !force_autochannels) {
- 		fprintf(stderr, "Auto-channels selected but some channels "
- 			"are already activated in sysfs\n");
- 		fprintf(stderr, "Proceeding without activating any channels\n");
- 	}
- 
- 	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
--	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
-+	    ((autochannels == AUTOCHANNELS_ENABLED) && force_autochannels)) {
- 		fprintf(stderr, "Enabling all channels\n");
- 
- 		ret = enable_disable_all_channels(dev_dir_name, 1);
--- 
-2.7.4
+>> So, I would need to
+>> convert back to the raw value using the scale, which sounds boring
+>> but doable. However, I wonder if calibration may also be involved
+>> with that conversion back to raw for some channels? That sounds a
+>> bit more driver specific and potentially troublesome...
+> I've not had a chance to look at your code (only picked up on this as
+> there was a fair length thread developing), but I wouldn't have thought 
+> we'd
+> need to deal with calibrations.   Might need them to move to real world
+> units from raw but that's always the case anyway (unfortunately).
+
+Right.
+
+Cheers,
+Peter
