@@ -1,75 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:32778 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754365AbcJZJsx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 05:48:53 -0400
-Date: Wed, 26 Oct 2016 17:48:44 +0800
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+Received: from mail-db5eur01on0133.outbound.protection.outlook.com ([104.47.2.133]:55270
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1751414AbcJVFci (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Oct 2016 01:32:38 -0400
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+To: <jic23@kernel.org>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+ <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+ <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+ <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
+ <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
+ <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
+CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: cdc/ad7746: fix missing return value
-Message-ID: <20161026094839.GA2243@Socrates-DK>
-References: <20161025155646.64112-1-arnd@arndb.de>
- <b19d0f7a-03c4-c4e6-dd8c-188012402530@kernel.org>
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio-owner@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <58b9c20d-6c3c-4693-b073-e5a8f9c4cb94@axentia.se>
+Date: Sat, 22 Oct 2016 00:58:27 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <b19d0f7a-03c4-c4e6-dd8c-188012402530@kernel.org>
+In-Reply-To: <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 25, 2016 at 05:27:07PM +0100, Jonathan Cameron wrote:
-> On 25/10/16 16:56, Arnd Bergmann wrote:
-> > As found by "gcc -Wmaybe-uninitialized", the latest change to the
-> > driver lacked an initalization for the return code in one of the
-> > added cases:
-> > 
-> > drivers/staging/iio/cdc/ad7746.c: In function ‘ad7746_read_raw’:
-> > drivers/staging/iio/cdc/ad7746.c:655:2: error: ‘ret’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
-> > 
-> > This sets it to IIO_VAL_INT, which I think is what we want here.
-> > 
-> > Fixes: 2296c0623eb7 ("staging: iio: cdc: ad7746: implement IIO_CHAN_INFO_SAMP_FREQ")
-> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-> Gah, not a good bit of reviewing from me. Should have caught that one.  Thanks Arnd.
+On 2016-10-21 09:17, jic23@kernel.org wrote:
+> On 20.10.2016 19:17, Peter Rosin wrote:
+>> On 2016-10-20 19:37, Jonathan Cameron wrote:
+>>> On 20 October 2016 18:30:19 BST, Jonathan Cameron 
+>>> <jic23@jic23.retrosnub.co.uk> wrote:
+>>>> On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> 
+>>>> wrote:
+>>>>> On 10/20/2016 11:25 AM, Peter Rosin wrote:
+>>>>>> Also, is there some agreed-upon way to dig out the maximum value 
+>>>>>> from
+>>>>>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from 
+>>>>>> the
+>>>>>> dt bindings, which would have been nice...
+>>>>>
+>>>>> Yes, this is something we could really use. In a sense it exists for
+>>>>> the
+>>>>> devices with buffer-capable channels where there is the real_bits 
+>>>>> field
+>>>>> which tells us the data width of the channel. But a dedicated 
+>>>>> mechanism
+>>>>> for
+>>>>> querying the maximum (and minimum) valid code seems like a useful
+>>>>> feature.
+>>>>> Not only for in-kernel clients, but also for userspace.
+>>>>
+>>>> This was something that was addressed by the rather ancient patch
+>>>> series i posted that added
+>>>> an available call back which provided info on range and values for 
+>>>> all info mask elements.
+>>>> Series got buried by there being a lot of precursors but quite a few of
+>>>> those have merged since.
+>>>>
+>>>> Hmm Google won't let me find it on my phone. Was a while back now. 
+>>>> Will
+>>>> try to get on pc with
+>>>> decent email archive later and dig out a reference.
+>>> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
+>>
+>> Interesting, one issue with that is that it is all in real world
+>> units, while I'd rather have the raw value.
+> Um.. It's been a while, but the principle was (IIRC) that every
+> _available would match the units fo the associated info mask element.
+> Thus if you have a _raw element it would be in adc counts (most likely).
 > 
+> _input would be in relevant real world units, scale etc in the whatever
+> units the value itself is in.
 
-It's not your fault. My apologies. v1 of this patch is OK, I just happen to 
-encounter a problem and had to rework the v2 on another branch resulting
-to this blunder.
+Ok, so I forward ported that patch and added code so that the relevant
+channels provide what is available. I also added code to turn the
+rest of the parameter style devicetree properties into iio device/channel
+attributes. So, it is now much neater from a bindings point of view.
 
-I will be extra careful next time.
+Before I post the updated patches, I'm wondering what the status is
+on that ancient patch? It didn't forward port without issues, but there
+were no real difficulties that I noticed. Should I just start off my v2
+series with that patch? I tend to think that that's the best option,
+because I suspect that adding a "max-ohms" devicetree property as a
+stop-gap pending some new infrastructure is pretty unrealistic...
 
-Eva
+Basically, my question is if that ancient patch as any chance of living
+at all in a form close to what it is, or if should start looking for
+an alternative right away?
 
-> Applied to the togreg branch of iio.git - initially pushed out as testing for the
-> autobuilders to play with it.  Will probably be a little while before I send
-> another pull to Greg (most likely the weekend)
-> 
-> Thanks again,
-> 
-> Jonathan
-> > ---
-> >  drivers/staging/iio/cdc/ad7746.c | 1 +
-> >  1 file changed, 1 insertion(+)
-> > 
-> > diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> > index f41251ceeacd..a5828f9aa437 100644
-> > --- a/drivers/staging/iio/cdc/ad7746.c
-> > +++ b/drivers/staging/iio/cdc/ad7746.c
-> > @@ -642,6 +642,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
-> >  		case IIO_VOLTAGE:
-> >  			*val = ad7746_vt_filter_rate_table[
-> >  					(chip->config >> 6) & 0x3][0];
-> > +			ret = IIO_VAL_INT;
-> >  			break;
-> >  		default:
-> >  			ret = -EINVAL;
-> > 
-> 
+Cheers,
+Peter
+
