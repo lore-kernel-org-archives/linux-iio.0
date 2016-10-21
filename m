@@ -1,87 +1,142 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate15.nvidia.com ([216.228.121.64]:1815 "EHLO
-        hqemgate15.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754387AbcJUGeE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Oct 2016 02:34:04 -0400
-Message-ID: <5809B34C.6040301@nvidia.com>
-Date: Fri, 21 Oct 2016 11:48:52 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
-MIME-Version: 1.0
-To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
-CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
-        <edubezval@gmail.com>
-Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
-References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com> <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com> <5808E78B.4060109@nvidia.com> <0412f751-fb88-7b9e-8a8c-501e019de774@gmail.com> <5808F86A.4080800@nvidia.com> <bd01678c-5cf4-e50c-2dff-5aea04040e29@gmail.com>
-In-Reply-To: <bd01678c-5cf4-e50c-2dff-5aea04040e29@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <enric.balletbo@collabora.com>
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To: linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: lars@metafoo.de,
+	gwendal@chromium.org
+Subject: [PATCH] iio: light: acpi-als: Add IO_CHAN_INFO_OFFSET/SCALE to mask.
+Date: Fri, 21 Oct 2016 10:17:09 +0200
+Message-Id: <1477037829-20352-1-git-send-email-enric.balletbo@collabora.com>
+List-ID: <linux-iio@vger.kernel.org>
 
+According the ACPI specification (Version 5.0 Errata A) [1], the data
+coming from the sensor represent the ambient light illuminance reading
+expressed in lux. Unfortunately ACPI interface doesn't provide a
+mechanism to calibrate this value, so this raw value can be slightly
+wrong.
 
-On Thursday 20 October 2016 10:56 PM, Paweł Jarosz wrote:
->
->> It is Negative Coefficient Thermistor (NCT) and so adc reads are 
->> different.
->> Lower temp gives higher value.
->>
->> So table should be
->>
->> <7000 10
->> 9000 8>;
->>
->> temp1 = gti->lookup_table[2 * i];
->> temp2 = gti->lookup_table[2 * i - 2];
->>
->> and then use in following equation.
->>
->>>
->>>     adc_hi = gti->lookup_table[2 * i - 1];
->>>     adc_lo = gti->lookup_table[2 * i + 1];
->>>     temp = gti->lookup_table[2 * i];
->>>     temp -= (val - adc_lo) * (temp1 - temp2) / (adc_hi - adc_lo);
->
-> val = 9
-> adc_hi = 10
-> adc_lo = 8
-> temp = 9000 - (9 - 8)*(7000 - 9000)/(10 - 8)
-> temp = 9000 - (1)*(-2000)/(2)
->
-> temp = 9000 - (-1000) = 10000
->
-> still wrong ... temp for val = 9 should be 8000
+This patch adds IIO_CHAN_INFO_OFFSET and IIO_CHAN_INFO_SCALE attributes
+to give the possibiity to the userspace to calculate a calibrated data
+by doing:
 
+ (raw_value + offset) * scale = calibrated_value (in lux)
 
-Your temp1 and temp2 calculation is something wrong.
+[1] http://www.acpi.info/DOWNLOADS/ACPI_5_Errata%20A.pdf
 
-temp1 = gti->lookup_table[2 * i];
-temp2 = gti->lookup_table[2 * i - 2];
-so temp1 = 9000, temp2 = 7000
+Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+---
+ drivers/iio/light/acpi-als.c | 66 ++++++++++++++++++++++++++++++++++++++------
+ 1 file changed, 57 insertions(+), 9 deletions(-)
 
-temp -= (val - adc_lo) * (temp1 - temp2) / (adc_hi - adc_lo);
-
-temp = 9000 - (9 - 8)*(9000 - 7000)/(10 - 8)
-temp = 9000 - (1)*(2000)/(2) = 8000 which is expected.
-
-
-
->
-> Maybe we could leave this patch as it is?
->
-
-
-temp = gti->lookup_table[2 * i];
-+ tlow = gti->lookup_table[2 * i - 2];
-(modify) temp -= (val - adc_lo) * (temp - tlow) / (adc_hi - adc_lo);
-
-This will gives you correct result.
-
-Let me know if you can send the updated patch. Else I will send.
-
-Thanks,
-Laxman
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
+diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+index f0b47c5..a8093ba 100644
+--- a/drivers/iio/light/acpi-als.c
++++ b/drivers/iio/light/acpi-als.c
+@@ -56,7 +56,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
+ 		},
+ 		/* _RAW is here for backward ABI compatibility */
+ 		.info_mask_separate	= BIT(IIO_CHAN_INFO_RAW) |
+-					  BIT(IIO_CHAN_INFO_PROCESSED),
++					  BIT(IIO_CHAN_INFO_PROCESSED) |
++					  BIT(IIO_CHAN_INFO_SCALE) |
++					  BIT(IIO_CHAN_INFO_OFFSET),
+ 	},
+ };
+ 
+@@ -76,6 +78,10 @@ struct acpi_als {
+ 	struct mutex		lock;
+ 
+ 	s32			evt_buffer[ACPI_ALS_EVT_BUFFER_SIZE];
++
++	int			scale;
++	int			uscale;
++	int			offset;
+ };
+ 
+ /*
+@@ -154,25 +160,64 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
+ 	s32 temp_val;
+ 	int ret;
+ 
+-	if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
+-		return -EINVAL;
+-
+ 	/* we support only illumination (_ALI) so far. */
+ 	if (chan->type != IIO_LIGHT)
+ 		return -EINVAL;
+ 
+-	ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
+-	if (ret < 0)
+-		return ret;
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++	case IIO_CHAN_INFO_PROCESSED:
++		ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
++		if (ret < 0)
++			return ret;
++		*val = temp_val;
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_OFFSET:
++		mutex_lock(&als->lock);
++		*val = als->offset;
++		mutex_unlock(&als->lock);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		mutex_lock(&als->lock);
++		*val = als->scale;
++		*val2 = als->uscale;
++		mutex_unlock(&als->lock);
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
+ 
+-	*val = temp_val;
++static int acpi_als_write_raw(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan, int val,
++			      int val2, long mask)
++{
++	struct acpi_als *als = iio_priv(indio_dev);
++
++	if (chan->type != IIO_LIGHT)
++		return -EINVAL;
+ 
+-	return IIO_VAL_INT;
++	switch (mask) {
++	case IIO_CHAN_INFO_OFFSET:
++		mutex_lock(&als->lock);
++		als->offset = val;
++		mutex_unlock(&als->lock);
++		return 0;
++	case IIO_CHAN_INFO_SCALE:
++		mutex_lock(&als->lock);
++		als->scale = val;
++		als->uscale = val2;
++		mutex_unlock(&als->lock);
++		return 0;
++	default:
++		return -EINVAL;
++	}
+ }
+ 
+ static const struct iio_info acpi_als_info = {
+ 	.driver_module		= THIS_MODULE,
+ 	.read_raw		= acpi_als_read_raw,
++	.write_raw		= acpi_als_write_raw,
+ };
+ 
+ static int acpi_als_add(struct acpi_device *device)
+@@ -189,6 +234,9 @@ static int acpi_als_add(struct acpi_device *device)
+ 
+ 	device->driver_data = indio_dev;
+ 	als->device = device;
++	als->scale = 1;
++	als->uscale = 0;
++	als->offset = 0;
+ 	mutex_init(&als->lock);
+ 
+ 	indio_dev->name = ACPI_ALS_DEVICE_NAME;
+-- 
+2.1.0
