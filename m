@@ -1,151 +1,97 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53204 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45835 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S937392AbcJVPXY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:23:24 -0400
-Subject: Re: [PATCH 02/13] staging:iio:ad7606: Remove redundant name field
- from ad7606_chip_info
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
- <1476896828-10544-3-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d52756b5-5ff9-adde-2837-4cf8d9715d11@kernel.org>
-Date: Sat, 22 Oct 2016 16:23:22 +0100
+        with ESMTP id S1752603AbcJUHRC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Oct 2016 03:17:02 -0400
 MIME-Version: 1.0
-In-Reply-To: <1476896828-10544-3-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII;
+ format=flowed
+Date: Fri, 21 Oct 2016 08:17:00 +0100
+From: jic23@kernel.org
+To: Peter Rosin <peda@axentia.se>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio-owner@vger.kernel.org
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+In-Reply-To: <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+ <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+ <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+ <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
+ <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
+Message-ID: <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/10/16 18:06, Lars-Peter Clausen wrote:
-> The name field in the ad7606_chip_info struct is set to the same value as
-> the as the name field in the corresponding {platform,spi}_device_id table
-> entry. Remove it from the ad7606_chip_info struct and pass the name from
-> the ID to the probe function. This slightly reduces the size of the
-> chip_info table and adding new entries requires less boilerplate.
+On 20.10.2016 19:17, Peter Rosin wrote:
+> On 2016-10-20 19:37, Jonathan Cameron wrote:
+>> On 20 October 2016 18:30:19 BST, Jonathan Cameron 
+>> <jic23@jic23.retrosnub.co.uk> wrote:
+>>> On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> 
+>>> wrote:
+>>>> On 10/20/2016 11:25 AM, Peter Rosin wrote:
+>>>>> Also, is there some agreed-upon way to dig out the maximum value 
+>>>>> from
+>>>>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from 
+>>>>> the
+>>>>> dt bindings, which would have been nice...
+>>>> 
+>>>> Yes, this is something we could really use. In a sense it exists for
+>>>> the
+>>>> devices with buffer-capable channels where there is the real_bits 
+>>>> field
+>>>> which tells us the data width of the channel. But a dedicated 
+>>>> mechanism
+>>>> for
+>>>> querying the maximum (and minimum) valid code seems like a useful
+>>>> feature.
+>>>> Not only for in-kernel clients, but also for userspace.
+>>> 
+>>> This was something that was addressed by the rather ancient patch
+>>> series i posted that added
+>>> an available call back which provided info on range and values for 
+>>> all
+>>> info mask elements.
+>>> Series got buried by there being a lot of precursors but quite a few 
+>>> of
+>>> those have merged since.
+>>> 
+>>> Hmm Google won't let me find it on my phone. Was a while back now. 
+>>> Will
+>>> try to get on pc with
+>>> decent email archive later and dig out a reference.
+>> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
-> ---
->  drivers/staging/iio/adc/ad7606.h      |  4 ++--
->  drivers/staging/iio/adc/ad7606_core.c | 11 ++++-------
->  drivers/staging/iio/adc/ad7606_par.c  |  3 ++-
->  drivers/staging/iio/adc/ad7606_spi.c  |  3 ++-
->  4 files changed, 10 insertions(+), 11 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-> index b7e59a6..380c56a 100644
-> --- a/drivers/staging/iio/adc/ad7606.h
-> +++ b/drivers/staging/iio/adc/ad7606.h
-> @@ -48,7 +48,6 @@ struct ad7606_platform_data {
->   */
->  
->  struct ad7606_chip_info {
-> -	const char			*name;
->  	const struct iio_chan_spec	*channels;
->  	unsigned int			num_channels;
->  };
-> @@ -84,7 +83,8 @@ struct ad7606_bus_ops {
->  };
->  
->  struct iio_dev *ad7606_probe(struct device *dev, int irq,
-> -			      void __iomem *base_address, unsigned int id,
-> +			      void __iomem *base_address,
-> +			      const char *name, unsigned int id,
->  			      const struct ad7606_bus_ops *bops);
->  int ad7606_remove(struct iio_dev *indio_dev, int irq);
->  int ad7606_reset(struct ad7606_state *st);
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index a1f18d4..1093647 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -260,17 +260,14 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
->  	 * More devices added in future
->  	 */
->  	[ID_AD7606_8] = {
-> -		.name = "ad7606",
->  		.channels = ad7606_channels,
->  		.num_channels = 9,
->  	},
->  	[ID_AD7606_6] = {
-> -		.name = "ad7606-6",
->  		.channels = ad7606_channels,
->  		.num_channels = 7,
->  	},
->  	[ID_AD7606_4] = {
-> -		.name = "ad7606-4",
->  		.channels = ad7606_channels,
->  		.num_channels = 5,
->  	},
-> @@ -438,7 +435,7 @@ static const struct iio_info ad7606_info_range = {
->  
->  struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  			     void __iomem *base_address,
-> -			     unsigned int id,
-> +			     const char *name, unsigned int id,
->  			     const struct ad7606_bus_ops *bops)
->  {
->  	struct ad7606_platform_data *pdata = dev->platform_data;
-> @@ -491,7 +488,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  			indio_dev->info = &ad7606_info_no_os_or_range;
->  	}
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> -	indio_dev->name = st->chip_info->name;
-> +	indio_dev->name = name;
->  	indio_dev->channels = st->chip_info->channels;
->  	indio_dev->num_channels = st->chip_info->num_channels;
->  
-> @@ -505,8 +502,8 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  	if (ret)
->  		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
->  
-> -	ret = request_irq(irq, ad7606_interrupt,
-> -			  IRQF_TRIGGER_FALLING, st->chip_info->name, indio_dev);
-> +	ret = request_irq(irq, ad7606_interrupt, IRQF_TRIGGER_FALLING, name,
-> +			  indio_dev);
->  	if (ret)
->  		goto error_free_gpios;
->  
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index 84d2393..0a23cd9 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -49,6 +49,7 @@ static const struct ad7606_bus_ops ad7606_par8_bops = {
->  
->  static int ad7606_par_probe(struct platform_device *pdev)
->  {
-> +	const struct platform_device_id *id = platform_get_device_id(pdev);
->  	struct resource *res;
->  	struct iio_dev *indio_dev;
->  	void __iomem *addr;
-> @@ -69,7 +70,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
->  	remap_size = resource_size(res);
->  
->  	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
-> -				 platform_get_device_id(pdev)->driver_data,
-> +				 id->name, id->driver_data,
->  				 remap_size > 1 ? &ad7606_par16_bops :
->  				 &ad7606_par8_bops);
->  
-> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-> index 9587fa8..f69db59 100644
-> --- a/drivers/staging/iio/adc/ad7606_spi.c
-> +++ b/drivers/staging/iio/adc/ad7606_spi.c
-> @@ -42,10 +42,11 @@ static const struct ad7606_bus_ops ad7606_spi_bops = {
->  
->  static int ad7606_spi_probe(struct spi_device *spi)
->  {
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
->  	struct iio_dev *indio_dev;
->  
->  	indio_dev = ad7606_probe(&spi->dev, spi->irq, NULL,
-> -				 spi_get_device_id(spi)->driver_data,
-> +				 id->name, id->driver_data,
->  				 &ad7606_spi_bops);
->  
->  	if (IS_ERR(indio_dev))
-> 
+> Interesting, one issue with that is that it is all in real world
+> units, while I'd rather have the raw value.
+Um.. It's been a while, but the principle was (IIRC) that every
+_available would match the units fo the associated info mask element.
+Thus if you have a _raw element it would be in adc counts (most likely).
 
+_input would be in relevant real world units, scale etc in the whatever
+units the value itself is in.
+
+> So, I would need to
+> convert back to the raw value using the scale, which sounds boring
+> but doable. However, I wonder if calibration may also be involved
+> with that conversion back to raw for some channels? That sounds a
+> bit more driver specific and potentially troublesome...
+I've not had a chance to look at your code (only picked up on this as
+there was a fair length thread developing), but I wouldn't have thought 
+we'd
+need to deal with calibrations.   Might need them to move to real world
+units from raw but that's always the case anyway (unfortunately).
+
+Jonathan
+> 
+> Cheers,
+> Peter
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
