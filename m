@@ -1,150 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53833 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53775 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S964798AbcJVRpS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:45:18 -0400
-Subject: Re: [PATCH v2] staging: iio: cdc: ad7746: add additional config
- defines
-To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
-        outreachy-kernel@googlegroups.com
-References: <1476886753-9739-1-git-send-email-eraretuya@gmail.com>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+        with ESMTP id S964850AbcJVRcL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:32:11 -0400
+Subject: Re: [PATCH 7/7] iio: light: tsl2583: fix concurrency issue in
+ taos_get_lux()
+To: Brian Masney <masneyb@onstation.org>
+References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
+ <1476873130-24926-7-git-send-email-masneyb@onstation.org>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d20a6894-2a56-d8ac-dcdb-f662ea2c5879@kernel.org>
-Date: Sat, 22 Oct 2016 18:45:15 +0100
+Message-ID: <90d80d86-7e1b-ea97-6801-174a6cf438e8@kernel.org>
+Date: Sat, 22 Oct 2016 18:32:09 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476886753-9739-1-git-send-email-eraretuya@gmail.com>
+In-Reply-To: <1476873130-24926-7-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/10/16 15:19, Eva Rachel Retuya wrote:
-> Introduce defines for shifting and mask under the config register for
-> better readability.
+On 19/10/16 11:32, Brian Masney wrote:
+> taos_get_lux() calls mutex_trylock(). If the lock could not be acquired,
+> then chip->als_cur_info.lux is returned. The issue is that this value
+> is updated while the mutex is held and could cause a half written value
+> to be returned to the caller. This patch changes the call to
+> mutex_trylock() with mutex_lock().
 > 
-> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
-Worth sanity checking the resulting values when using macros (and reading
-the docs closely!)
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+I'd go with the simple approach you have here.
+
+If someone cares enough they can figure out the complex solution.  Probably
+should be pushed off to userspace.  It's not unusual for devices to take
+'a little while' to respond to sysfs reads.
+
+Jonathan
 > ---
-> Changes in v2:
-> * Use GENMASK to generate both VTFS and CAPFS masks including offset,
->   respectively.
-> * Introduce helper variables for index calculation.
+> This is the most controversial change in my patch set. There are two
+> other possible solutions that I could envision to work around this
+> issue:
 > 
->  drivers/staging/iio/cdc/ad7746.c | 36 ++++++++++++++++++++++--------------
->  1 file changed, 22 insertions(+), 14 deletions(-)
+> 1) Return -EBUSY and make the caller responsible for backing off
+> 2) Change this driver to use RCU instead of a mutex
 > 
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index f41251c..5e9ceeb 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -70,8 +70,12 @@
->  #define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
+>  drivers/staging/iio/light/tsl2583.c | 5 +----
+>  1 file changed, 1 insertion(+), 4 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index 47656ae..c4d2e3a 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -206,10 +206,7 @@ static int taos_get_lux(struct iio_dev *indio_dev)
+>  	u32 ch0lux = 0;
+>  	u32 ch1lux = 0;
 >  
->  /* Config Register Bit Designations (AD7746_REG_CFG) */
-> -#define AD7746_CONF_VTFS(x)		((x) << 6)
-> -#define AD7746_CONF_CAPFS(x)		((x) << 3)
-> +#define AD7746_CONF_VTFS_SHIFT		6
-> +#define AD7746_CONF_CAPFS_SHIFT		3
-> +#define AD7746_CONF_VTFS_MASK(x)	GENMASK(1, x)
-> +#define AD7746_CONF_CAPFS_MASK(x)	GENMASK(2, x)
-These are only safe if x <= 1, 2
-
-
-> +#define AD7746_CONF_VTFS(x)		((x) << AD7746_CONF_VTFS_SHIFT)
-> +#define AD7746_CONF_CAPFS(x)		((x) << AD7746_CONF_CAPFS_SHIFT)
->  #define AD7746_CONF_MODE_IDLE		(0 << 0)
->  #define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
->  #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
-> @@ -217,15 +221,16 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
->  			    struct iio_chan_spec const *chan)
->  {
->  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-> -	int ret, delay;
-> +	int ret, delay, idx;
->  	u8 vt_setup, cap_setup;
+> -	if (mutex_trylock(&chip->als_mutex) == 0) {
+> -		dev_info(&chip->client->dev, "taos_get_lux device is busy\n");
+> -		return chip->als_cur_info.lux; /* busy, so return LAST VALUE */
+> -	}
+> +	mutex_lock(&chip->als_mutex);
 >  
->  	switch (chan->type) {
->  	case IIO_CAPACITANCE:
->  		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
->  		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
-> -		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
-> -			0x7][1];
-> +		idx = (chip->config >> AD7746_CONF_CAPFS_SHIFT) &
-> +			AD7746_CONF_CAPFS_MASK(0);
-> +		delay = ad7746_cap_filter_rate_table[idx][1];
->  
->  		if (chip->capdac_set != chan->channel) {
->  			ret = i2c_smbus_write_byte_data(chip->client,
-> @@ -246,8 +251,9 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
->  	case IIO_TEMP:
->  		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
->  		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
-> -		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
-> -			0x3][1];
-> +		idx = (chip->config >> AD7746_CONF_VTFS_SHIFT) &
-> +			AD7746_CONF_VTFS_MASK(0);
-> +		delay = ad7746_cap_filter_rate_table[idx][1];
->  		break;
->  	default:
->  		return -EINVAL;
-> @@ -369,7 +375,7 @@ static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
->  	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
->  		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
->  
-> -	chip->config &= ~AD7746_CONF_CAPFS(0x7);
-> +	chip->config &= ~AD7746_CONF_CAPFS_MASK(AD7746_CONF_CAPFS_SHIFT);
->  	chip->config |= AD7746_CONF_CAPFS(i);
->  
->  	return 0;
-> @@ -387,7 +393,7 @@ static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
->  	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
->  		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
->  
-> -	chip->config &= ~AD7746_CONF_VTFS(0x3);
-> +	chip->config &= ~AD7746_CONF_VTFS_MASK(AD7746_CONF_VTFS_SHIFT);
-This evaulates (I think) to GENMASK(1, 6);
-Now this is gibberish (mask from bit 1 downto 6...)
-To satisfy curiousity the implementation is:
-GENMASK(h, l)
-(((~0UL) << (l)) & (~0UL >> (BITS_PER_LONG - 1 - (h))))
-
-so we have something like (0xFFFFFFFF << 6) & (0xFFFFFFFF >> (32 - 1 - 1))
-0xFFFFFFC0 & ( 0x00000003) = 0.  Not good.
-
-
->  	chip->config |= AD7746_CONF_VTFS(i);
->  
->  	return 0;
-> @@ -527,7 +533,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
->  			   long mask)
->  {
->  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
-> -	int ret, delay;
-> +	int ret, delay, idx;
->  	u8 regval, reg;
->  
->  	mutex_lock(&indio_dev->mlock);
-> @@ -635,13 +641,15 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
->  	case IIO_CHAN_INFO_SAMP_FREQ:
->  		switch (chan->type) {
->  		case IIO_CAPACITANCE:
-> -			*val = ad7746_cap_filter_rate_table[
-> -					(chip->config >> 3) & 0x7][0];
-> +			idx = (chip->config >> AD7746_CONF_CAPFS_SHIFT) &
-> +				AD7746_CONF_CAPFS_MASK(0);
-> +			*val = ad7746_cap_filter_rate_table[idx][0];
->  			ret = IIO_VAL_INT;
->  			break;
->  		case IIO_VOLTAGE:
-> -			*val = ad7746_vt_filter_rate_table[
-> -					(chip->config >> 6) & 0x3][0];
-> +			idx = (chip->config >> AD7746_CONF_VTFS_SHIFT) &
-> +				AD7746_CONF_VTFS_MASK(0);
-> +			*val = ad7746_vt_filter_rate_table[idx][0];
->  			break;
->  		default:
->  			ret = -EINVAL;
+>  	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
+>  		/* device is not enabled */
 > 
 
