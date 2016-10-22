@@ -1,248 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hosting.pavoucek.net ([46.28.107.168]:38381 "EHLO
-        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932230AbcJRRyh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 18 Oct 2016 13:54:37 -0400
-From: Tomas Novotny <tomas.novotny@tbs-biometrics.com>
-To: Jonathan Cameron <jic23@kernel.org>, devicetree@vger.kernel.org
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52902 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S935471AbcJVO0t (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 10:26:49 -0400
+Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
+To: Peter Rosin <peda@axentia.se>
+References: <1476955562-13673-1-git-send-email-peda@axentia.se>
+ <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
+ <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
+ <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
+ <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
+ <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
+ <58b9c20d-6c3c-4693-b073-e5a8f9c4cb94@axentia.se>
+Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org,
-        Tomas Novotny <tomas@novotny.cz>
-Subject: [PATCH v3 4/5] iio: dac: mcp4725: support voltage reference selection
-Date: Tue, 18 Oct 2016 19:43:08 +0200
-Message-Id: <1476812589-18333-5-git-send-email-tomas.novotny@tbs-biometrics.com>
-In-Reply-To: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
-References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-iio-owner@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <6831bef2-78f6-d5dd-ee62-ffa50ad7a757@kernel.org>
+Date: Sat, 22 Oct 2016 15:26:45 +0100
+MIME-Version: 1.0
+In-Reply-To: <58b9c20d-6c3c-4693-b073-e5a8f9c4cb94@axentia.se>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Tomas Novotny <tomas@novotny.cz>
+On 21/10/16 23:58, Peter Rosin wrote:
+> On 2016-10-21 09:17, jic23@kernel.org wrote:
+>> On 20.10.2016 19:17, Peter Rosin wrote:
+>>> On 2016-10-20 19:37, Jonathan Cameron wrote:
+>>>> On 20 October 2016 18:30:19 BST, Jonathan Cameron 
+>>>> <jic23@jic23.retrosnub.co.uk> wrote:
+>>>>> On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> 
+>>>>> wrote:
+>>>>>> On 10/20/2016 11:25 AM, Peter Rosin wrote:
+>>>>>>> Also, is there some agreed-upon way to dig out the maximum value 
+>>>>>>> from
+>>>>>>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from 
+>>>>>>> the
+>>>>>>> dt bindings, which would have been nice...
+>>>>>>
+>>>>>> Yes, this is something we could really use. In a sense it exists for
+>>>>>> the
+>>>>>> devices with buffer-capable channels where there is the real_bits 
+>>>>>> field
+>>>>>> which tells us the data width of the channel. But a dedicated 
+>>>>>> mechanism
+>>>>>> for
+>>>>>> querying the maximum (and minimum) valid code seems like a useful
+>>>>>> feature.
+>>>>>> Not only for in-kernel clients, but also for userspace.
+>>>>>
+>>>>> This was something that was addressed by the rather ancient patch
+>>>>> series i posted that added
+>>>>> an available call back which provided info on range and values for 
+>>>>> all info mask elements.
+>>>>> Series got buried by there being a lot of precursors but quite a few of
+>>>>> those have merged since.
+>>>>>
+>>>>> Hmm Google won't let me find it on my phone. Was a while back now. 
+>>>>> Will
+>>>>> try to get on pc with
+>>>>> decent email archive later and dig out a reference.
+>>>> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
+>>>
+>>> Interesting, one issue with that is that it is all in real world
+>>> units, while I'd rather have the raw value.
+>> Um.. It's been a while, but the principle was (IIRC) that every
+>> _available would match the units fo the associated info mask element.
+>> Thus if you have a _raw element it would be in adc counts (most likely).
+>>
+>> _input would be in relevant real world units, scale etc in the whatever
+>> units the value itself is in.
+> 
+> Ok, so I forward ported that patch and added code so that the relevant
+> channels provide what is available. I also added code to turn the
+> rest of the parameter style devicetree properties into iio device/channel
+> attributes. So, it is now much neater from a bindings point of view.
+> 
+> Before I post the updated patches, I'm wondering what the status is
+> on that ancient patch? It didn't forward port without issues, but there
+> were no real difficulties that I noticed. Should I just start off my v2
+> series with that patch? I tend to think that that's the best option,
+> because I suspect that adding a "max-ohms" devicetree property as a
+> stop-gap pending some new infrastructure is pretty unrealistic...
+> 
+> Basically, my question is if that ancient patch as any chance of living
+> at all in a form close to what it is, or if should start looking for
+> an alternative right away?
+The stoppers (IIRC) were that at the time we had a lot of drivers not
+making full use off the info_mask stuff so there were a whole load
+of precursor patches.  A lot of those have been done since, so we are
+probably much more ready for it.
 
-MCP47x6 chip supports selection of a voltage reference (VDD, VREF buffered
-or unbuffered). MCP4725 doesn't have this feature thus the eventual setting
-is ignored and user is warned.
+The controversial bit was the question of how to describe ranges, but
+I don't think that got all that much attention back then.
 
-The setting is stored only in the volatile memory of the chip. You need to
-manually store it to the EEPROM of the chip via 'store_eeprom' sysfs entry.
+If you are happy to take on looking after that series I'd certainly
+be very happy!   3 years kind of implies I'm not going to get to
+it particularly soon myself :(
 
-Signed-off-by: Tomas Novotny <tomas@novotny.cz>
----
- drivers/iio/dac/mcp4725.c       | 97 ++++++++++++++++++++++++++++++++++++++---
- include/linux/iio/dac/mcp4725.h | 11 +++++
- 2 files changed, 102 insertions(+), 6 deletions(-)
+Will be interesting to see what reviews we get of it when you post it
+though.   Perhaps we deliberately push it into drivers only slowly
+initially so that if we decide it was a horrible mistake (or that we
+need to make changes to the ABI) we only end up supporting obsolete
+ABI in a few drivers...
 
-diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-index e481f38..83d431f 100644
---- a/drivers/iio/dac/mcp4725.c
-+++ b/drivers/iio/dac/mcp4725.c
-@@ -27,12 +27,20 @@
- 
- #define MCP4725_DRV_NAME "mcp4725"
- 
-+#define MCP472X_REF_VDD			0x00
-+#define MCP472X_REF_VREF_UNBUFFERED	0x02
-+#define MCP472X_REF_VREF_BUFFERED	0x03
-+
- struct mcp4725_data {
- 	struct i2c_client *client;
-+	int id;
-+	unsigned ref_mode;
-+	bool vref_buffered;
- 	u16 dac_value;
- 	bool powerdown;
- 	unsigned powerdown_mode;
- 	struct regulator *vdd_reg;
-+	struct regulator *vref_reg;
- };
- 
- static int mcp4725_suspend(struct device *dev)
-@@ -87,6 +95,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
- 		return 0;
- 
- 	inoutbuf[0] = 0x60; /* write EEPROM */
-+	inoutbuf[0] |= data->ref_mode << 3;
- 	inoutbuf[1] = data->dac_value >> 4;
- 	inoutbuf[2] = (data->dac_value & 0xf) << 4;
- 
-@@ -279,6 +288,28 @@ static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
- 		return 0;
- }
- 
-+static int mcp4726_set_cfg(struct iio_dev *indio_dev)
-+{
-+	struct mcp4725_data *data = iio_priv(indio_dev);
-+	u8 outbuf[3];
-+	int ret;
-+
-+	outbuf[0] = 0x40;
-+	outbuf[0] |= data->ref_mode << 3;
-+	if (data->powerdown)
-+		outbuf[0] |= data->powerdown << 1;
-+	outbuf[1] = data->dac_value >> 4;
-+	outbuf[2] = (data->dac_value & 0xf) << 4;
-+
-+	ret = i2c_master_send(data->client, outbuf, 3);
-+	if (ret < 0)
-+		return ret;
-+	else if (ret != 3)
-+		return -EIO;
-+	else
-+		return 0;
-+}
-+
- static int mcp4725_read_raw(struct iio_dev *indio_dev,
- 			   struct iio_chan_spec const *chan,
- 			   int *val, int *val2, long mask)
-@@ -291,7 +322,11 @@ static int mcp4725_read_raw(struct iio_dev *indio_dev,
- 		*val = data->dac_value;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		ret = regulator_get_voltage(data->vdd_reg);
-+		if (data->ref_mode == MCP472X_REF_VDD)
-+			ret = regulator_get_voltage(data->vdd_reg);
-+		else
-+			ret = regulator_get_voltage(data->vref_reg);
-+
- 		if (ret < 0)
- 			return ret;
- 
-@@ -335,8 +370,9 @@ static int mcp4725_probe(struct i2c_client *client,
- 	struct mcp4725_data *data;
- 	struct iio_dev *indio_dev;
- 	struct mcp4725_platform_data *pdata = dev_get_platdata(&client->dev);
--	u8 inbuf[3];
-+	u8 inbuf[4];
- 	u8 pd;
-+	u8 ref;
- 	int err;
- 
- 	if (!pdata) {
-@@ -350,6 +386,26 @@ static int mcp4725_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
-+	data->id = id->driver_data;
-+
-+	if (data->id == MCP4725 && pdata->use_vref) {
-+		dev_err(&client->dev,
-+			"external reference is unavailable on MCP4725");
-+		return -EINVAL;
-+	}
-+
-+	if (!pdata->use_vref && pdata->vref_buffered) {
-+		dev_err(&client->dev,
-+			"buffering is unavailable on the internal reference");
-+		return -EINVAL;
-+	}
-+
-+	if (!pdata->use_vref)
-+		data->ref_mode = MCP472X_REF_VDD;
-+	else
-+		data->ref_mode = pdata->vref_buffered ?
-+			MCP472X_REF_VREF_BUFFERED :
-+			MCP472X_REF_VREF_UNBUFFERED;
- 
- 	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
- 	if (IS_ERR(data->vdd_reg))
-@@ -359,6 +415,18 @@ static int mcp4725_probe(struct i2c_client *client,
- 	if (err)
- 		return err;
- 
-+	if (pdata->use_vref) {
-+		data->vref_reg = devm_regulator_get(&client->dev, "vref");
-+		if (IS_ERR(data->vref_reg)) {
-+			err = PTR_ERR(data->vdd_reg);
-+			goto err_disable_vdd_reg;
-+		}
-+
-+		err = regulator_enable(data->vref_reg);
-+		if (err)
-+			goto err_disable_vdd_reg;
-+	}
-+
- 	indio_dev->dev.parent = &client->dev;
- 	indio_dev->name = id->name;
- 	indio_dev->info = &mcp4725_info;
-@@ -366,23 +434,38 @@ static int mcp4725_probe(struct i2c_client *client,
- 	indio_dev->num_channels = 1;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 
--	/* read current DAC value */
--	err = i2c_master_recv(client, inbuf, 3);
-+	/* read current DAC value and settings */
-+	err = i2c_master_recv(client, inbuf, data->id == MCP4725 ? 3 : 4);
- 	if (err < 0) {
- 		dev_err(&client->dev, "failed to read DAC value");
--		goto err_disable_vdd_reg;
-+		goto err_disable_vref_reg;
- 	}
- 	pd = (inbuf[0] >> 1) & 0x3;
- 	data->powerdown = pd > 0 ? true : false;
- 	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
- 	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
-+	if (data->id == MCP4726)
-+		ref = (inbuf[3] >> 3) & 0x3;
-+
-+	if (data->id == MCP4726 && ref != data->ref_mode) {
-+		dev_info(&client->dev,
-+			"voltage reference mode differs (conf: %u, eeprom: %u), setting %u",
-+			data->ref_mode, ref, data->ref_mode);
-+		err = mcp4726_set_cfg(indio_dev);
-+		if (err < 0)
-+			goto err_disable_vref_reg;
-+	}
- 
- 	err = iio_device_register(indio_dev);
- 	if (err)
--		goto err_disable_vdd_reg;
-+		goto err_disable_vref_reg;
- 
- 	return 0;
- 
-+err_disable_vref_reg:
-+	if (data->vref_reg)
-+		regulator_disable(data->vref_reg);
-+
- err_disable_vdd_reg:
- 	regulator_disable(data->vdd_reg);
- 
-@@ -396,6 +479,8 @@ static int mcp4725_remove(struct i2c_client *client)
- 
- 	iio_device_unregister(indio_dev);
- 
-+	if (data->vref_reg)
-+		regulator_disable(data->vref_reg);
- 	regulator_disable(data->vdd_reg);
- 
- 	return 0;
-diff --git a/include/linux/iio/dac/mcp4725.h b/include/linux/iio/dac/mcp4725.h
-index 7c062e8..628b2cf 100644
---- a/include/linux/iio/dac/mcp4725.h
-+++ b/include/linux/iio/dac/mcp4725.h
-@@ -9,7 +9,18 @@
- #ifndef IIO_DAC_MCP4725_H_
- #define IIO_DAC_MCP4725_H_
- 
-+/**
-+ * struct mcp4725_platform_data - MCP4725/6 DAC specific data.
-+ * @use_vref: Whether an external reference voltage on Vref pin should be used.
-+ *            Additional vref-supply must be specified when used.
-+ * @vref_buffered: Controls buffering of the external reference voltage.
-+ *
-+ * Vref related settings are available only on MCP4756. See
-+ * Documentation/devicetree/bindings/iio/dac/mcp4725.txt for more information.
-+ */
- struct mcp4725_platform_data {
-+	bool use_vref;
-+	bool vref_buffered;
- };
- 
- #endif /* IIO_DAC_MCP4725_H_ */
--- 
-2.1.4
+So a slowly but surely one perhaps rather than mass adoption.
+
+Jonathan
+> 
+> Cheers,
+> Peter
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
