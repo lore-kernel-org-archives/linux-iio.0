@@ -1,322 +1,260 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54117 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54140 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752336AbcJVSfx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:35:53 -0400
-Subject: Re: [PATCH v4] iio: humidity: hdc100x: add triggered buffer support
- for HDC100X
-To: Alison Schofield <amsfield22@gmail.com>
-References: <20160902172311.GA12607@d830.WORKGROUP>
- <0fc99451-1fd9-b835-834e-fc797fa05f1b@kernel.org>
- <20161018154856.GA2535@d830.WORKGROUP>
-Cc: mranostay@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
+        with ESMTP id S1752336AbcJVSjW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:39:22 -0400
+Subject: Re: [PATCH] iio: ti-adc0832: add triggered buffer support
+To: Akinobu Mita <akinobu.mita@gmail.com>,
+        Alison Schofield <amsfield22@gmail.com>
+References: <1476633582-21211-1-git-send-email-akinobu.mita@gmail.com>
+ <20161016180854.GA3597@d830.WORKGROUP>
+ <CAC5umygBg2U=AAQoKm+TXLAA_RgR128zr-CYi920i9en6ga7Gw@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <917e2f75-a87a-e7e4-9387-f2e1dcbec1c7@kernel.org>
-Date: Sat, 22 Oct 2016 19:35:50 +0100
+Message-ID: <409282c3-512b-9718-534e-9cdc73815903@kernel.org>
+Date: Sat, 22 Oct 2016 19:39:20 +0100
 MIME-Version: 1.0
-In-Reply-To: <20161018154856.GA2535@d830.WORKGROUP>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAC5umygBg2U=AAQoKm+TXLAA_RgR128zr-CYi920i9en6ga7Gw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/10/16 16:48, Alison Schofield wrote:
-> On Sat, Sep 03, 2016 at 08:37:27PM +0100, Jonathan Cameron wrote:
->> On 02/09/16 18:23, Alison Schofield wrote:
->>> Triggered buffer support uses the HDC100X's dual acquisition mode
->>> to read both humidity and temperature in one shot.
+On 17/10/16 15:03, Akinobu Mita wrote:
+> 2016-10-17 3:08 GMT+09:00 Alison Schofield <amsfield22@gmail.com>:
+>> On Mon, Oct 17, 2016 at 12:59:42AM +0900, Akinobu Mita wrote:
+>>> This adds triggered buffer support for it-adc0832 driver.  Tested with
+>>> ADC0831 and ADC0832 by using SYSFS trigger.
 >>>
->>> This patch depends on
->>> 	447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of
->>> 		       temp and humidity")
->>>
->>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
->>> Cc: Daniel Baluta <daniel.baluta@gmail.com>
->> Looks good.  I'll have to hold it until the dependency has worked it's way
->> into my togreg branch in a week or so.
+>>> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+>>> Cc: Jonathan Cameron <jic23@kernel.org>
+>>> Cc: Hartmut Knaack <knaack.h@gmx.de>
+>>> Cc: Lars-Peter Clausen <lars@metafoo.de>
+>>> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+>>> ---
 >>
->> Feel free to remind me!
->>
->> Jonathan
+>> Hi Akinobu,
+>> I just scanned this looking for usage of iio_device_claim_direct_mode().
+>> I don't see it, so wondering if that is intentional. Do you want to
+>> allow both raw and buffered access at same time?  If not, look at
+>> the iio_device_claim|release_direct_mode() functions.
+>> alisons
 > 
-> It's safe to take this one now.  Thanks!
-Excellent.  Good thing you reminded me.  Was a long enough ago I didn't
-see it when scanning back through my emails looking for stuff I'd marked
-to deal with later!
+> The triggered buffer handler added by this patch does nothing special
+> other than the ADC conversion by direct mode in this driver.
+> It just calls adc0832_adc_conversion() for each enabled scan element.
+> So I think protecting from multiple accesses by adc->lock is enough.
+> 
+> But I don't fully understand iio subsystem usages, please let me know
+> if there is a reason to use iio_device_claim_direct_mode() in this case.
+Usually fine as long as there is no 'hold off on writing until I'm
+read once' in the device.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to deal with it.
-
-thanks,
+So fine here.
 
 Jonathan
-> alisons
 > 
->>> ---
+>>>  drivers/iio/adc/Kconfig      |   2 +
+>>>  drivers/iio/adc/ti-adc0832.c | 106 +++++++++++++++++++++++++++++++++++--------
+>>>  2 files changed, 89 insertions(+), 19 deletions(-)
 >>>
->>> Changes in v4:
->>>  - unlock private lock if claim_direct_mode fails (kbuild robot reported)
->>>  - move unlock to err: out path in trigger handler (kbuild robot inspired)
->>>
->>> Changes in v3:
->>>  Thanks for the review Jonathan
->>>  - This patch now depends on 
->>>    447136effbf4 ("iio: humidity: hdc100x: fix sensor data reads of temp
->>>    and humidity")
->>>  - remove i2c functionality check, done in dependent patch
->>>  - remove unused define HDC100X_ALL_CHANNEL_MASK
->>>  - define and use available_scan_masks to demux between temp &/or humid
->>>    data in buffered mode
->>>  - changed timestamp channel scan_index from 3 to 2.
->>>  - put back private data lock in read_raw
->>>    (we'll lock private data lock and claim_direct_mode on raw reads)
->>>  - remove unneeded NULL parameters in iio_buffer_setup_ops
->>>  - add private data lock on buffered read
->>>    We are going to allow configuration changes while the sensor is in
->>>    buffered mode.  We need to allow the toggling of the Heater Enable bit
->>>    because the heater only functions during measurements. The lock will
->>>    ensure that the config change and buffer read transaction do not collide.
->>>  - blank lines added for readability per reviewer 
->>>
->>> Changes in v2:  
->>>  Thanks for the review Peter
->>>  - switched endianness from IIO_CPU to IIO_BE
->>>  - use only one buffer in the handler
->>>  - simplify selection of temp &/or humidity to push to buffer
->>>
->>>
->>>  drivers/iio/humidity/Kconfig   |   2 +
->>>  drivers/iio/humidity/hdc100x.c | 130 ++++++++++++++++++++++++++++++++++++++++-
->>>  2 files changed, 130 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/iio/humidity/Kconfig b/drivers/iio/humidity/Kconfig
->>> index f155386..5a25569 100644
->>> --- a/drivers/iio/humidity/Kconfig
->>> +++ b/drivers/iio/humidity/Kconfig
->>> @@ -25,6 +25,8 @@ config DHT11
->>>  config HDC100X
->>>  	tristate "TI HDC100x relative humidity and temperature sensor"
->>>  	depends on I2C
->>> +	select IIO_BUFFER
->>> +	select IIO_TRIGGERED_BUFFER
->>>  	help
->>>  	  Say yes here to build support for the Texas Instruments
->>>  	  HDC1000 and HDC1008 relative humidity and temperature sensors.
->>> diff --git a/drivers/iio/humidity/hdc100x.c b/drivers/iio/humidity/hdc100x.c
->>> index e0c9c70..265c34d 100644
->>> --- a/drivers/iio/humidity/hdc100x.c
->>> +++ b/drivers/iio/humidity/hdc100x.c
->>> @@ -22,11 +22,15 @@
->>>  
+>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>> index 3dc60c0..bd8d108 100644
+>>> --- a/drivers/iio/adc/Kconfig
+>>> +++ b/drivers/iio/adc/Kconfig
+>>> @@ -457,6 +457,8 @@ config TI_ADC081C
+>>>  config TI_ADC0832
+>>>       tristate "Texas Instruments ADC0831/ADC0832/ADC0834/ADC0838"
+>>>       depends on SPI
+>>> +     select IIO_BUFFER
+>>> +     select IIO_TRIGGERED_BUFFER
+>>>       help
+>>>         If you say yes here you get support for Texas Instruments ADC0831,
+>>>         ADC0832, ADC0834, ADC0838 ADC chips.
+>>> diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
+>>> index f4ba23e..e952e94 100644
+>>> --- a/drivers/iio/adc/ti-adc0832.c
+>>> +++ b/drivers/iio/adc/ti-adc0832.c
+>>> @@ -14,6 +14,10 @@
+>>>  #include <linux/spi/spi.h>
 >>>  #include <linux/iio/iio.h>
->>>  #include <linux/iio/sysfs.h>
+>>>  #include <linux/regulator/consumer.h>
 >>> +#include <linux/iio/buffer.h>
->>> +#include <linux/iio/trigger_consumer.h>
+>>> +#include <linux/iio/trigger.h>
 >>> +#include <linux/iio/triggered_buffer.h>
->>>  
->>>  #define HDC100X_REG_TEMP			0x00
->>>  #define HDC100X_REG_HUMIDITY			0x01
->>>  
->>>  #define HDC100X_REG_CONFIG			0x02
->>> +#define HDC100X_REG_CONFIG_ACQ_MODE		BIT(12)
->>>  #define HDC100X_REG_CONFIG_HEATER_EN		BIT(13)
->>>  
->>>  struct hdc100x_data {
->>> @@ -87,22 +91,40 @@ static const struct iio_chan_spec hdc100x_channels[] = {
->>>  			BIT(IIO_CHAN_INFO_SCALE) |
->>>  			BIT(IIO_CHAN_INFO_INT_TIME) |
->>>  			BIT(IIO_CHAN_INFO_OFFSET),
->>> +		.scan_index = 0,
->>> +		.scan_type = {
->>> +			.sign = 's',
->>> +			.realbits = 16,
->>> +			.storagebits = 16,
->>> +			.endianness = IIO_BE,
->>> +		},
->>>  	},
->>>  	{
->>>  		.type = IIO_HUMIDITYRELATIVE,
->>>  		.address = HDC100X_REG_HUMIDITY,
->>>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
->>>  			BIT(IIO_CHAN_INFO_SCALE) |
->>> -			BIT(IIO_CHAN_INFO_INT_TIME)
->>> +			BIT(IIO_CHAN_INFO_INT_TIME),
->>> +		.scan_index = 1,
->>> +		.scan_type = {
->>> +			.sign = 'u',
->>> +			.realbits = 16,
->>> +			.storagebits = 16,
->>> +			.endianness = IIO_BE,
->>> +		},
->>>  	},
->>>  	{
->>>  		.type = IIO_CURRENT,
->>>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->>>  		.extend_name = "heater",
->>>  		.output = 1,
->>> +		.scan_index = -1,
->>>  	},
->>> +	IIO_CHAN_SOFT_TIMESTAMP(2),
->>>  };
->>>  
->>> +static const unsigned long hdc100x_scan_masks[] = {0x3, 0};
->>> +
->>>  static int hdc100x_update_config(struct hdc100x_data *data, int mask, int val)
->>>  {
->>>  	int tmp = (~mask & data->config) | val;
->>> @@ -183,7 +205,14 @@ static int hdc100x_read_raw(struct iio_dev *indio_dev,
->>>  			*val = hdc100x_get_heater_status(data);
->>>  			ret = IIO_VAL_INT;
->>>  		} else {
->>> +			ret = iio_device_claim_direct_mode(indio_dev);
->>> +			if (ret) {
->>> +				mutex_unlock(&data->lock);
->>> +				return ret;
->>> +			}
->>> +
->>>  			ret = hdc100x_get_measurement(data, chan);
->>> +			iio_device_release_direct_mode(indio_dev);
->>>  			if (ret >= 0) {
->>>  				*val = ret;
->>>  				ret = IIO_VAL_INT;
->>> @@ -246,6 +275,78 @@ static int hdc100x_write_raw(struct iio_dev *indio_dev,
->>>  	}
->>>  }
->>>  
->>> +static int hdc100x_buffer_postenable(struct iio_dev *indio_dev)
->>> +{
->>> +	struct hdc100x_data *data = iio_priv(indio_dev);
->>> +	int ret;
->>> +
->>> +	/* Buffer is enabled. First set ACQ Mode, then attach poll func */
->>> +	mutex_lock(&data->lock);
->>> +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE,
->>> +				    HDC100X_REG_CONFIG_ACQ_MODE);
->>> +	mutex_unlock(&data->lock);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	return iio_triggered_buffer_postenable(indio_dev);
->>> +}
->>> +
->>> +static int hdc100x_buffer_predisable(struct iio_dev *indio_dev)
->>> +{
->>> +	struct hdc100x_data *data = iio_priv(indio_dev);
->>> +	int ret;
->>> +
->>> +	/* First detach poll func, then reset ACQ mode. OK to disable buffer */
->>> +	ret = iio_triggered_buffer_predisable(indio_dev);
->>> +	if (ret)
->>> +		return ret;
->>> +
->>> +	mutex_lock(&data->lock);
->>> +	ret = hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
->>> +	mutex_unlock(&data->lock);
->>> +
->>> +	return ret;
->>> +}
->>> +
->>> +static const struct iio_buffer_setup_ops hdc_buffer_setup_ops = {
->>> +	.postenable  = hdc100x_buffer_postenable,
->>> +	.predisable  = hdc100x_buffer_predisable,
->>> +};
->>> +
->>> +static irqreturn_t hdc100x_trigger_handler(int irq, void *p)
->>> +{
->>> +	struct iio_poll_func *pf = p;
->>> +	struct iio_dev *indio_dev = pf->indio_dev;
->>> +	struct hdc100x_data *data = iio_priv(indio_dev);
->>> +	struct i2c_client *client = data->client;
->>> +	int delay = data->adc_int_us[0] + data->adc_int_us[1];
->>> +	int ret;
->>> +	s16 buf[8];  /* 2x s16 + padding + 8 byte timestamp */
->>> +
->>> +	/* dual read starts at temp register */
->>> +	mutex_lock(&data->lock);
->>> +	ret = i2c_smbus_write_byte(client, HDC100X_REG_TEMP);
->>> +	if (ret < 0) {
->>> +		dev_err(&client->dev, "cannot start measurement\n");
->>> +		goto err;
->>> +	}
->>> +	usleep_range(delay, delay + 1000);
->>> +
->>> +	ret = i2c_master_recv(client, (u8 *)buf, 4);
->>> +	if (ret < 0) {
->>> +		dev_err(&client->dev, "cannot read sensor data\n");
->>> +		goto err;
->>> +	}
->>> +
->>> +	iio_push_to_buffers_with_timestamp(indio_dev, buf,
->>> +					   iio_get_time_ns(indio_dev));
->>> +err:
->>> +	mutex_unlock(&data->lock);
->>> +	iio_trigger_notify_done(indio_dev->trig);
->>> +
->>> +	return IRQ_HANDLED;
->>> +}
->>> +
->>>  static const struct iio_info hdc100x_info = {
->>>  	.read_raw = hdc100x_read_raw,
->>>  	.write_raw = hdc100x_write_raw,
->>> @@ -258,6 +359,7 @@ static int hdc100x_probe(struct i2c_client *client,
->>>  {
->>>  	struct iio_dev *indio_dev;
->>>  	struct hdc100x_data *data;
->>> +	int ret;
->>>  
->>>  	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA |
->>>  				     I2C_FUNC_SMBUS_BYTE | I2C_FUNC_I2C))
->>> @@ -279,12 +381,35 @@ static int hdc100x_probe(struct i2c_client *client,
->>>  
->>>  	indio_dev->channels = hdc100x_channels;
->>>  	indio_dev->num_channels = ARRAY_SIZE(hdc100x_channels);
->>> +	indio_dev->available_scan_masks = hdc100x_scan_masks;
->>>  
->>>  	/* be sure we are in a known state */
->>>  	hdc100x_set_it_time(data, 0, hdc100x_int_time[0][0]);
->>>  	hdc100x_set_it_time(data, 1, hdc100x_int_time[1][0]);
->>> +	hdc100x_update_config(data, HDC100X_REG_CONFIG_ACQ_MODE, 0);
->>> +
->>> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
->>> +					 hdc100x_trigger_handler,
->>> +					 &hdc_buffer_setup_ops);
->>> +	if (ret < 0) {
->>> +		dev_err(&client->dev, "iio triggered buffer setup failed\n");
->>> +		return ret;
->>> +	}
->>> +	ret = iio_device_register(indio_dev);
->>> +	if (ret < 0)
->>> +		iio_triggered_buffer_cleanup(indio_dev);
->>> +
->>> +	return ret;
->>> +}
->>> +
->>> +static int hdc100x_remove(struct i2c_client *client)
->>> +{
->>> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
->>> +
->>> +	iio_device_unregister(indio_dev);
->>> +	iio_triggered_buffer_cleanup(indio_dev);
->>>  
->>> -	return devm_iio_device_register(&client->dev, indio_dev);
->>> +	return 0;
->>>  }
->>>  
->>>  static const struct i2c_device_id hdc100x_id[] = {
->>> @@ -298,6 +423,7 @@ static struct i2c_driver hdc100x_driver = {
->>>  		.name	= "hdc100x",
->>>  	},
->>>  	.probe = hdc100x_probe,
->>> +	.remove = hdc100x_remove,
->>>  	.id_table = hdc100x_id,
->>>  };
->>>  module_i2c_driver(hdc100x_driver);
+>>> +#include <linux/iio/trigger_consumer.h>
 >>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>>>  enum {
+>>>       adc0831,
+>>> @@ -38,10 +42,16 @@ struct adc0832 {
+>>>               .indexed = 1,                                           \
+>>>               .channel = chan,                                        \
+>>>               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
+>>> -             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)    \
+>>> +             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
+>>> +             .scan_index = chan,                                     \
+>>> +             .scan_type = {                                          \
+>>> +                     .sign = 'u',                                    \
+>>> +                     .realbits = 8,                                  \
+>>> +                     .storagebits = 8,                               \
+>>> +             },                                                      \
+>>>       }
+>>>
+>>> -#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2)                   \
+>>> +#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)                       \
+>>>       {                                                               \
+>>>               .type = IIO_VOLTAGE,                                    \
+>>>               .indexed = 1,                                           \
+>>> @@ -49,18 +59,26 @@ struct adc0832 {
+>>>               .channel2 = (chan2),                                    \
+>>>               .differential = 1,                                      \
+>>>               .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),           \
+>>> -             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)    \
+>>> +             .info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),   \
+>>> +             .scan_index = si,                                       \
+>>> +             .scan_type = {                                          \
+>>> +                     .sign = 'u',                                    \
+>>> +                     .realbits = 8,                                  \
+>>> +                     .storagebits = 8,                               \
+>>> +             },                                                      \
+>>>       }
+>>>
+>>>  static const struct iio_chan_spec adc0831_channels[] = {
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 0),
+>>> +     IIO_CHAN_SOFT_TIMESTAMP(1),
+>>>  };
+>>>
+>>>  static const struct iio_chan_spec adc0832_channels[] = {
+>>>       ADC0832_VOLTAGE_CHANNEL(0),
+>>>       ADC0832_VOLTAGE_CHANNEL(1),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 3),
+>>> +     IIO_CHAN_SOFT_TIMESTAMP(4),
+>>>  };
+>>>
+>>>  static const struct iio_chan_spec adc0834_channels[] = {
+>>> @@ -68,10 +86,11 @@ static const struct iio_chan_spec adc0834_channels[] = {
+>>>       ADC0832_VOLTAGE_CHANNEL(1),
+>>>       ADC0832_VOLTAGE_CHANNEL(2),
+>>>       ADC0832_VOLTAGE_CHANNEL(3),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 4),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 5),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 6),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 7),
+>>> +     IIO_CHAN_SOFT_TIMESTAMP(8),
+>>>  };
+>>>
+>>>  static const struct iio_chan_spec adc0838_channels[] = {
+>>> @@ -83,14 +102,15 @@ static const struct iio_chan_spec adc0838_channels[] = {
+>>>       ADC0832_VOLTAGE_CHANNEL(5),
+>>>       ADC0832_VOLTAGE_CHANNEL(6),
+>>>       ADC0832_VOLTAGE_CHANNEL(7),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7),
+>>> -     ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 9),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 10),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 11),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5, 12),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4, 13),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7, 14),
+>>> +     ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
+>>> +     IIO_CHAN_SOFT_TIMESTAMP(16),
+>>>  };
+>>>
+>>>  static int adc0831_adc_conversion(struct adc0832 *adc)
+>>> @@ -178,6 +198,42 @@ static const struct iio_info adc0832_info = {
+>>>       .driver_module = THIS_MODULE,
+>>>  };
+>>>
+>>> +static irqreturn_t adc0832_trigger_handler(int irq, void *p)
+>>> +{
+>>> +     struct iio_poll_func *pf = p;
+>>> +     struct iio_dev *indio_dev = pf->indio_dev;
+>>> +     struct adc0832 *adc = iio_priv(indio_dev);
+>>> +     u8 data[24] = { }; /* 16x 1 byte ADC data + 8 bytes timestamp */
+>>> +     int scan_index;
+>>> +     int i = 0;
+>>> +
+>>> +     mutex_lock(&adc->lock);
+>>> +
+>>> +     for_each_set_bit(scan_index, indio_dev->active_scan_mask,
+>>> +                      indio_dev->masklength) {
+>>> +             const struct iio_chan_spec *scan_chan =
+>>> +                             &indio_dev->channels[scan_index];
+>>> +             int ret = adc0832_adc_conversion(adc, scan_chan->channel,
+>>> +                                              scan_chan->differential);
+>>> +             if (ret < 0) {
+>>> +                     dev_warn(&adc->spi->dev,
+>>> +                              "failed to get conversion data\n");
+>>> +                     goto out;
+>>> +             }
+>>> +
+>>> +             data[i] = ret;
+>>> +             i++;
+>>> +     }
+>>> +     iio_push_to_buffers_with_timestamp(indio_dev, data,
+>>> +                                        iio_get_time_ns(indio_dev));
+>>> +out:
+>>> +     mutex_unlock(&adc->lock);
+>>> +
+>>> +     iio_trigger_notify_done(indio_dev->trig);
+>>> +
+>>> +     return IRQ_HANDLED;
+>>> +}
+>>> +
+>>>  static int adc0832_probe(struct spi_device *spi)
+>>>  {
+>>>       struct iio_dev *indio_dev;
+>>> @@ -233,9 +289,20 @@ static int adc0832_probe(struct spi_device *spi)
+>>>
+>>>       spi_set_drvdata(spi, indio_dev);
+>>>
+>>> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>> +                                      adc0832_trigger_handler, NULL);
+>>> +     if (ret)
+>>> +             goto err_reg_disable;
+>>> +
+>>>       ret = iio_device_register(indio_dev);
+>>>       if (ret)
+>>> -             regulator_disable(adc->reg);
+>>> +             goto err_buffer_cleanup;
+>>> +
+>>> +     return 0;
+>>> +err_buffer_cleanup:
+>>> +     iio_triggered_buffer_cleanup(indio_dev);
+>>> +err_reg_disable:
+>>> +     regulator_disable(adc->reg);
+>>>
+>>>       return ret;
+>>>  }
+>>> @@ -246,6 +313,7 @@ static int adc0832_remove(struct spi_device *spi)
+>>>       struct adc0832 *adc = iio_priv(indio_dev);
+>>>
+>>>       iio_device_unregister(indio_dev);
+>>> +     iio_triggered_buffer_cleanup(indio_dev);
+>>>       regulator_disable(adc->reg);
+>>>
+>>>       return 0;
+>>> --
+>>> 2.7.4
+>>>
+>>> --
+>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>>> the body of a message to majordomo@vger.kernel.org
+>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
