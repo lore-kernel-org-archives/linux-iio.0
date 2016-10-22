@@ -1,72 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53230 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53175 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936614AbcJVP2L (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:28:11 -0400
-Subject: Re: [PATCH 05/13] staging:iio:ad7606: Use oversampling ratio of 1 for
- no oversampling
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
- <1476896828-10544-6-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
+        with ESMTP id S938579AbcJVPUR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:20:17 -0400
+Subject: Re: [PATCH v2 1/2] tools: iio: iio_generic_buffer: rename and change
+ type of force variable
+To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org
+References: <cover.1476952931.git.eraretuya@gmail.com>
+ <3749c6e558d696269bcdce627b470ddc60a87fc5.1476952931.git.eraretuya@gmail.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <64c94276-fd4a-b504-c0d6-354a7eae01b4@kernel.org>
-Date: Sat, 22 Oct 2016 16:28:09 +0100
+Message-ID: <10187e73-4181-b5fd-4936-ea3856de128c@kernel.org>
+Date: Sat, 22 Oct 2016 16:20:15 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476896828-10544-6-git-send-email-lars@metafoo.de>
+In-Reply-To: <3749c6e558d696269bcdce627b470ddc60a87fc5.1476952931.git.eraretuya@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/10/16 18:07, Lars-Peter Clausen wrote:
-> Currently the ad7606 driver uses a value of 0 for the oversampling ratio to
-> express that no oversampling is done. Strictly speaking this means though
-> that no data capture is done at all. Instead change the driver to use a
-> value of 1, this is in accordance with what other drivers do and what the
-> IIO spec suggests.
+On 20/10/16 10:19, Eva Rachel Retuya wrote:
+> Replace the type of 'force' flag from int to bool and at the same time
+> rename it to 'force_autochannels' for better readability.
 > 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
+> Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to play with it.
 
 Thanks,
 
-J
+Jonathan
 > ---
->  drivers/staging/iio/adc/ad7606_core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
+>  tools/iio/iio_generic_buffer.c | 9 +++++----
+>  1 file changed, 5 insertions(+), 4 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index d3a3551..7c093e2 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -149,7 +149,7 @@ static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
+> diff --git a/tools/iio/iio_generic_buffer.c b/tools/iio/iio_generic_buffer.c
+> index 31ddd3a..8ef39ae 100644
+> --- a/tools/iio/iio_generic_buffer.c
+> +++ b/tools/iio/iio_generic_buffer.c
+> @@ -348,7 +348,7 @@ int main(int argc, char **argv)
+>  	int noevents = 0;
+>  	int notrigger = 0;
+>  	char *dummy;
+> -	int force = 0;
+> +	bool force_autochannels = false;
 >  
->  static int ad7606_oversampling_get_index(unsigned int val)
->  {
-> -	unsigned char supported[] = {0, 2, 4, 8, 16, 32, 64};
-> +	unsigned char supported[] = {1, 2, 4, 8, 16, 32, 64};
->  	int i;
+>  	struct iio_channel_info *channels = NULL;
 >  
->  	for (i = 0; i < ARRAY_SIZE(supported); i++)
-> @@ -188,7 +188,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+> @@ -362,7 +362,7 @@ int main(int argc, char **argv)
+>  			break;
+>  		case 'A':
+>  			autochannels = AUTOCHANNELS_ENABLED;
+> -			force = 1;
+> +			force_autochannels = true;
+>  			break;	
+>  		case 'c':
+>  			errno = 0;
+> @@ -526,14 +526,15 @@ int main(int argc, char **argv)
+>  			"diag %s\n", dev_dir_name);
+>  		goto error;
 >  	}
->  }
+> -	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) && !force) {
+> +	if ((num_channels && autochannels == AUTOCHANNELS_ENABLED) &&
+> +	    !force_autochannels) {
+>  		fprintf(stderr, "Auto-channels selected but some channels "
+>  			"are already activated in sysfs\n");
+>  		fprintf(stderr, "Proceeding without activating any channels\n");
+>  	}
 >  
-> -static IIO_CONST_ATTR(oversampling_ratio_available, "0 2 4 8 16 32 64");
-> +static IIO_CONST_ATTR(oversampling_ratio_available, "1 2 4 8 16 32 64");
+>  	if ((!num_channels && autochannels == AUTOCHANNELS_ENABLED) ||
+> -	    ((autochannels == AUTOCHANNELS_ENABLED) && force)) {
+> +	    ((autochannels == AUTOCHANNELS_ENABLED) && force_autochannels)) {
+>  		fprintf(stderr, "Enabling all channels\n");
 >  
->  static struct attribute *ad7606_attributes_os_and_range[] = {
->  	&iio_dev_attr_in_voltage_range.dev_attr.attr,
-> @@ -449,7 +449,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  	st->bops = bops;
->  	st->base_address = base_address;
->  	st->range = 5000;
-> -	st->oversampling = 0;
-> +	st->oversampling = 1;
->  
->  	st->reg = devm_regulator_get(dev, "vcc");
->  	if (!IS_ERR(st->reg)) {
+>  		ret = enable_disable_all_channels(dev_dir_name, 1);
 > 
 
