@@ -1,235 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54161 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54196 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752343AbcJVSmM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:42:12 -0400
-Subject: Re: [PATCH] iio: ti-adc0832: add triggered buffer support
-To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
-References: <1476633582-21211-1-git-send-email-akinobu.mita@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        with ESMTP id S1752596AbcJVSrc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:47:32 -0400
+Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
+Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8a1b7a0d-c13f-39a8-d6df-8a8a426f7f7f@kernel.org>
-Date: Sat, 22 Oct 2016 19:42:09 +0100
+Message-ID: <45a6a20a-0ad4-99cd-28e5-cb75c083c215@kernel.org>
+Date: Sat, 22 Oct 2016 19:47:29 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476633582-21211-1-git-send-email-akinobu.mita@gmail.com>
+In-Reply-To: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/10/16 16:59, Akinobu Mita wrote:
-> This adds triggered buffer support for it-adc0832 driver.  Tested with
-> ADC0831 and ADC0832 by using SYSFS trigger.
+On 01/08/16 10:54, Enric Balletbo i Serra wrote:
+> Hi,
 > 
-> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: Hartmut Knaack <knaack.h@gmx.de>
-> Cc: Lars-Peter Clausen <lars@metafoo.de>
-> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Looks good to me other than the one typo above! (I'll fix that)
+> This is the four patchset to add support for the sensors behind the ChromeOS
+> Embedded Controller.
+> 
+> This version has only the patches to support common functions and 3d
+> contiguous sensors like Accelerometers, Gyroscope and Magnetometer that are
+> presented by the ChromeOS EC Sensor hub. The patches were tested on an Oak board.
+> 
+> The code was checked out from the ChromeOS v3.18 tree and forward ported to
+> mainline solving all the conflicts and build issues. I splitted the code in
+> single patches that have sense by themselves in order to avoid the chances
+> to fail.
+> 
+> Note that the patches depends on this [1] to apply and work.
+> 
+> [1] https://lkml.org/lkml/2016/7/1/188
+OK. All looking good for this with one minor delay.
 
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+I need to bring my tree up to date to apply it.  I'll be doing
+a pull request to Greg (IIO patches are routed via his staging tree as
+we still have quite a few drivers in there and it's awfully convenient).
 
-Thanks,
+Once that's pulled I can fast forward and apply this.
+
+Should get this done later this week if there are no hicups in
+my pull request.
 
 Jonathan
-> ---
->  drivers/iio/adc/Kconfig      |   2 +
->  drivers/iio/adc/ti-adc0832.c | 106 +++++++++++++++++++++++++++++++++++--------
->  2 files changed, 89 insertions(+), 19 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 3dc60c0..bd8d108 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -457,6 +457,8 @@ config TI_ADC081C
->  config TI_ADC0832
->  	tristate "Texas Instruments ADC0831/ADC0832/ADC0834/ADC0838"
->  	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
->  	help
->  	  If you say yes here you get support for Texas Instruments ADC0831,
->  	  ADC0832, ADC0834, ADC0838 ADC chips.
-> diff --git a/drivers/iio/adc/ti-adc0832.c b/drivers/iio/adc/ti-adc0832.c
-> index f4ba23e..e952e94 100644
-> --- a/drivers/iio/adc/ti-adc0832.c
-> +++ b/drivers/iio/adc/ti-adc0832.c
-> @@ -14,6 +14,10 @@
->  #include <linux/spi/spi.h>
->  #include <linux/iio/iio.h>
->  #include <linux/regulator/consumer.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
->  
->  enum {
->  	adc0831,
-> @@ -38,10 +42,16 @@ struct adc0832 {
->  		.indexed = 1,						\
->  		.channel = chan,					\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.scan_index = chan,					\
-> +		.scan_type = {						\
-> +			.sign = 'u',					\
-> +			.realbits = 8,					\
-> +			.storagebits = 8,				\
-> +		},							\
->  	}
->  
-> -#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2)			\
-> +#define ADC0832_VOLTAGE_CHANNEL_DIFF(chan1, chan2, si)			\
->  	{								\
->  		.type = IIO_VOLTAGE,					\
->  		.indexed = 1,						\
-> @@ -49,18 +59,26 @@ struct adc0832 {
->  		.channel2 = (chan2),					\
->  		.differential = 1,					\
->  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE)	\
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +		.scan_index = si,					\
-> +		.scan_type = {						\
-> +			.sign = 'u',					\
-> +			.realbits = 8,					\
-> +			.storagebits = 8,				\
-> +		},							\
->  	}
->  
->  static const struct iio_chan_spec adc0831_channels[] = {
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 0),
-> +	IIO_CHAN_SOFT_TIMESTAMP(1),
->  };
->  
->  static const struct iio_chan_spec adc0832_channels[] = {
->  	ADC0832_VOLTAGE_CHANNEL(0),
->  	ADC0832_VOLTAGE_CHANNEL(1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 2),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 3),
-> +	IIO_CHAN_SOFT_TIMESTAMP(4),
->  };
->  
->  static const struct iio_chan_spec adc0834_channels[] = {
-> @@ -68,10 +86,11 @@ static const struct iio_chan_spec adc0834_channels[] = {
->  	ADC0832_VOLTAGE_CHANNEL(1),
->  	ADC0832_VOLTAGE_CHANNEL(2),
->  	ADC0832_VOLTAGE_CHANNEL(3),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 4),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 5),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 6),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 7),
-> +	IIO_CHAN_SOFT_TIMESTAMP(8),
->  };
->  
->  static const struct iio_chan_spec adc0838_channels[] = {
-> @@ -83,14 +102,15 @@ static const struct iio_chan_spec adc0838_channels[] = {
->  	ADC0832_VOLTAGE_CHANNEL(5),
->  	ADC0832_VOLTAGE_CHANNEL(6),
->  	ADC0832_VOLTAGE_CHANNEL(7),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7),
-> -	ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(0, 1, 8),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(1, 0, 9),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(2, 3, 10),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(3, 2, 11),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(4, 5, 12),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(5, 4, 13),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(6, 7, 14),
-> +	ADC0832_VOLTAGE_CHANNEL_DIFF(7, 6, 15),
-> +	IIO_CHAN_SOFT_TIMESTAMP(16),
->  };
->  
->  static int adc0831_adc_conversion(struct adc0832 *adc)
-> @@ -178,6 +198,42 @@ static const struct iio_info adc0832_info = {
->  	.driver_module = THIS_MODULE,
->  };
->  
-> +static irqreturn_t adc0832_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct adc0832 *adc = iio_priv(indio_dev);
-> +	u8 data[24] = { }; /* 16x 1 byte ADC data + 8 bytes timestamp */
-> +	int scan_index;
-> +	int i = 0;
-> +
-> +	mutex_lock(&adc->lock);
-> +
-> +	for_each_set_bit(scan_index, indio_dev->active_scan_mask,
-> +			 indio_dev->masklength) {
-> +		const struct iio_chan_spec *scan_chan =
-> +				&indio_dev->channels[scan_index];
-> +		int ret = adc0832_adc_conversion(adc, scan_chan->channel,
-> +						 scan_chan->differential);
-> +		if (ret < 0) {
-> +			dev_warn(&adc->spi->dev,
-> +				 "failed to get conversion data\n");
-> +			goto out;
-> +		}
-> +
-> +		data[i] = ret;
-> +		i++;
-> +	}
-> +	iio_push_to_buffers_with_timestamp(indio_dev, data,
-> +					   iio_get_time_ns(indio_dev));
-> +out:
-> +	mutex_unlock(&adc->lock);
-> +
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
->  static int adc0832_probe(struct spi_device *spi)
->  {
->  	struct iio_dev *indio_dev;
-> @@ -233,9 +289,20 @@ static int adc0832_probe(struct spi_device *spi)
->  
->  	spi_set_drvdata(spi, indio_dev);
->  
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 adc0832_trigger_handler, NULL);
-> +	if (ret)
-> +		goto err_reg_disable;
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret)
-> -		regulator_disable(adc->reg);
-> +		goto err_buffer_cleanup;
-> +
-> +	return 0;
-> +err_buffer_cleanup:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +err_reg_disable:
-> +	regulator_disable(adc->reg);
->  
->  	return ret;
->  }
-> @@ -246,6 +313,7 @@ static int adc0832_remove(struct spi_device *spi)
->  	struct adc0832 *adc = iio_priv(indio_dev);
->  
->  	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
->  	regulator_disable(adc->reg);
->  
->  	return 0;
+> Waiting for your reviews and feedback.
+> 
+> Changes since v3 (requested by Guenter Roeck)
+>   - Convert structure to a simple array
+>   - Remove PM declarations
+>   - Remove unnecessary initializations
+>   - cros_ec_sensors_cmd_read_u16: Conversion should only be done if ret >= 0
+>   - Remove unnecessary else
+>   - Add Reviewed-by tag for two last patches.
+> 
+> Changes since v2 (requested by Guenter Roeck and Jonhatan Cameron)
+>   - Rebased and fix build error.
+>   - Include a list of possible values in the description of location attr.
+>   - Fix some typos.
+>   - Remove id sysfs entry.
+>   - Skip filling by zero structure parameters that already zero'd.
+>   - Order includes alphabetically.
+>   - Propagate error codes.
+> 
+> Changes since v1 (requested by Peter Meerwald-Stadler and Jonhatan Cameron)
+>   - Check kernel-doc documentation and 
+>   - Bring some patches together.
+>   - Fix some spelling mistakes.
+>   - Include ABI documentation.
+>   - Be more careful with buffer sizes (sprintf -> snprintf)
+>   - Add cros_ec_sensors prefix to all function.
+>   - Check return values on some functions.
+> 
+> Best regards,
+> 
+> Enric Balletbo i Serra (3):
+>   iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC
+>     Sensor Hub.
+>   iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
+>   platform/chrome: cros_ec_dev - Register cros-ec sensors
+> 
+> Vincent Palatin (1):
+>   platform/chrome: Introduce a new function to check EC features.
+> 
+>  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  18 +
+>  drivers/iio/common/Kconfig                         |   1 +
+>  drivers/iio/common/Makefile                        |   1 +
+>  drivers/iio/common/cros_ec_sensors/Kconfig         |  22 +
+>  drivers/iio/common/cros_ec_sensors/Makefile        |   6 +
+>  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++
+>  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 450 +++++++++++++++++++++
+>  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 175 ++++++++
+>  drivers/platform/chrome/cros_ec_dev.c              | 159 ++++++++
+>  include/linux/mfd/cros_ec.h                        |  10 +
+>  include/linux/mfd/cros_ec_commands.h               | 183 ++++++++-
+>  11 files changed, 1342 insertions(+), 5 deletions(-)
+>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
 > 
 
