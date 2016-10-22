@@ -1,114 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54196 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54173 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752596AbcJVSrc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:47:32 -0400
-Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
-Cc: Olof Johansson <olof@lixom.net>, Lee Jones <lee.jones@linaro.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>
+        with ESMTP id S1752596AbcJVSou (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:44:50 -0400
+Subject: Re: [PATCH] iio: proximity: pulsedlight-lidar-lite-v2: cleanup power
+ management
+To: Matt Ranostay <matt@ranostay.consulting>
+References: <1476554677-1777-1-git-send-email-matt@ranostay.consulting>
+ <4e53b4e7-6529-f120-29aa-f0ab20d0a353@kernel.org>
+ <CAJ_EiSQ7UKS6ZacpcgXmmOrzUM+O6jvSX6t201d6nw9ru_-+MA@mail.gmail.com>
+Cc: Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <45a6a20a-0ad4-99cd-28e5-cb75c083c215@kernel.org>
-Date: Sat, 22 Oct 2016 19:47:29 +0100
+Message-ID: <fe5ce635-65a5-5b72-db3c-86c9f7cfca21@kernel.org>
+Date: Sat, 22 Oct 2016 19:44:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAJ_EiSQ7UKS6ZacpcgXmmOrzUM+O6jvSX6t201d6nw9ru_-+MA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/08/16 10:54, Enric Balletbo i Serra wrote:
-> Hi,
+On 16/10/16 18:52, Matt Ranostay wrote:
+> On Sun, Oct 16, 2016 at 6:41 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 15/10/16 19:04, Matt Ranostay wrote:
+>>> Remove pm_runtime_mark_last_busy() call that wasn't need in the probe
+>>> since the device should be put to sleep
+>>>
+>>> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
+>> Hi Matt,
+>>
+>> I don't really follow what you are addressing here.
+>> Is the point that without this call it will suspend immediately?
+>> I could figure this out from the pm docs based on a quick skim
+>> read.
+>>
+>> Or is it simply that the pm_runtime_idle call following it
+>> will suspend immediately whatever this value contains?
 > 
-> This is the four patchset to add support for the sensors behind the ChromeOS
-> Embedded Controller.
-> 
-> This version has only the patches to support common functions and 3d
-> contiguous sensors like Accelerometers, Gyroscope and Magnetometer that are
-> presented by the ChromeOS EC Sensor hub. The patches were tested on an Oak board.
-> 
-> The code was checked out from the ChromeOS v3.18 tree and forward ported to
-> mainline solving all the conflicts and build issues. I splitted the code in
-> single patches that have sense by themselves in order to avoid the chances
-> to fail.
-> 
-> Note that the patches depends on this [1] to apply and work.
-> 
-> [1] https://lkml.org/lkml/2016/7/1/188
-OK. All looking good for this with one minor delay.
+> Basically it going to be suspended once pm_runtime_idle() is called,
+> and setting the last busy is useless and not needed.
+> Clearly this doesn't affect the device running but just makes the code
+> more consistent with other uses.
 
-I need to bring my tree up to date to apply it.  I'll be doing
-a pull request to Greg (IIO patches are routed via his staging tree as
-we still have quite a few drivers in there and it's awfully convenient).
+I added a quote of this to the patch description and applied.
 
-Once that's pulled I can fast forward and apply this.
-
-Should get this done later this week if there are no hicups in
-my pull request.
+Thanks,
 
 Jonathan
 > 
-> Waiting for your reviews and feedback.
-> 
-> Changes since v3 (requested by Guenter Roeck)
->   - Convert structure to a simple array
->   - Remove PM declarations
->   - Remove unnecessary initializations
->   - cros_ec_sensors_cmd_read_u16: Conversion should only be done if ret >= 0
->   - Remove unnecessary else
->   - Add Reviewed-by tag for two last patches.
-> 
-> Changes since v2 (requested by Guenter Roeck and Jonhatan Cameron)
->   - Rebased and fix build error.
->   - Include a list of possible values in the description of location attr.
->   - Fix some typos.
->   - Remove id sysfs entry.
->   - Skip filling by zero structure parameters that already zero'd.
->   - Order includes alphabetically.
->   - Propagate error codes.
-> 
-> Changes since v1 (requested by Peter Meerwald-Stadler and Jonhatan Cameron)
->   - Check kernel-doc documentation and 
->   - Bring some patches together.
->   - Fix some spelling mistakes.
->   - Include ABI documentation.
->   - Be more careful with buffer sizes (sprintf -> snprintf)
->   - Add cros_ec_sensors prefix to all function.
->   - Check return values on some functions.
-> 
-> Best regards,
-> 
-> Enric Balletbo i Serra (3):
->   iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC
->     Sensor Hub.
->   iio: cros_ec_sensors: add ChromeOS EC Contiguous Sensors driver
->   platform/chrome: cros_ec_dev - Register cros-ec sensors
-> 
-> Vincent Palatin (1):
->   platform/chrome: Introduce a new function to check EC features.
-> 
->  Documentation/ABI/testing/sysfs-bus-iio-cros-ec    |  18 +
->  drivers/iio/common/Kconfig                         |   1 +
->  drivers/iio/common/Makefile                        |   1 +
->  drivers/iio/common/cros_ec_sensors/Kconfig         |  22 +
->  drivers/iio/common/cros_ec_sensors/Makefile        |   6 +
->  .../iio/common/cros_ec_sensors/cros_ec_sensors.c   | 322 +++++++++++++++
->  .../common/cros_ec_sensors/cros_ec_sensors_core.c  | 450 +++++++++++++++++++++
->  .../common/cros_ec_sensors/cros_ec_sensors_core.h  | 175 ++++++++
->  drivers/platform/chrome/cros_ec_dev.c              | 159 ++++++++
->  include/linux/mfd/cros_ec.h                        |  10 +
->  include/linux/mfd/cros_ec_commands.h               | 183 ++++++++-
->  11 files changed, 1342 insertions(+), 5 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-cros-ec
->  create mode 100644 drivers/iio/common/cros_ec_sensors/Kconfig
->  create mode 100644 drivers/iio/common/cros_ec_sensors/Makefile
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors.c
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
->  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.h
+>>
+>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 2 --
+>>>  1 file changed, 2 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+>>> index 3141c3c161bb..1fa9eefa0982 100644
+>>> --- a/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+>>> +++ b/drivers/iio/proximity/pulsedlight-lidar-lite-v2.c
+>>> @@ -301,8 +301,6 @@ static int lidar_probe(struct i2c_client *client,
+>>>       if (ret)
+>>>               goto error_unreg_buffer;
+>>>       pm_runtime_enable(&client->dev);
+>>> -
+>>> -     pm_runtime_mark_last_busy(&client->dev);
+>>>       pm_runtime_idle(&client->dev);
+>>>
+>>>       return 0;
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
