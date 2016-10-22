@@ -1,90 +1,84 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
-	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v3 5/8] dt-bindings: iio: document dpot-dac bindings
-Date: Mon, 24 Oct 2016 00:39:38 +0200
-Message-ID: <1477262381-7800-6-git-send-email-peda@axentia.se>
-In-Reply-To: <1477262381-7800-1-git-send-email-peda@axentia.se>
-References: <1477262381-7800-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53198 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S937874AbcJVPWY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:22:24 -0400
+Subject: Re: [PATCH 01/13] staging:iio:ad7606: Remove unused int_vref_mv field
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+ <1476896828-10544-2-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <c8bc16d4-a135-dfa6-c7e3-714e0caeb5df@kernel.org>
+Date: Sat, 22 Oct 2016 16:22:22 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1476896828-10544-2-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../devicetree/bindings/iio/dac/dpot-dac.txt       | 41 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 ++++
- 2 files changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+On 19/10/16 18:06, Lars-Peter Clausen wrote:
+> Remove the int_vref_mv field from the ad7606_chip_info struct since the
+> field is never used by the driver. The value is also the same for all
+> derivatives of this chip, so if it will ever be used in the driver a
+> constant value will work just fine.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the togreg branch of iio.git - initially pushed out as
+testing for the autobuilders to play with it.
 
-diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
-new file mode 100644
-index 000000000000..fdf47a01bfef
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
-@@ -0,0 +1,41 @@
-+Bindings for DAC emulation using a digital potentiometer
-+
-+It is assumed that the dpot is used as a voltage divider between the
-+current dpot wiper setting and the maximum resistance of the dpot. The
-+divided voltage is provided by a vref regulator.
-+
-+                  .------.
-+   .-----------.  |      |
-+   | vref      |--'    .---.
-+   | regulator |--.    |   |
-+   '-----------'  |    | d |
-+                  |    | p |
-+                  |    | o |  wiper
-+                  |    | t |<---------+
-+                  |    |   |
-+                  |    '---'       dac output voltage
-+                  |      |
-+                  '------+------------+
-+
-+Required properties:
-+- compatible: Should be "dpot-dac"
-+- vref-supply: The regulator supplying the voltage divider.
-+- io-channels: Channel node of the dpot to be used for the voltage division.
-+- io-channel-names: Should be "dpot".
-+
-+Example:
-+
-+	&i2c {
-+		dpot: mcp4651-503@28 {
-+			compatible = "microchip,mcp4651-503";
-+			reg = <0x28>;
-+			#io-channel-cells = <1>;
-+		};
-+	};
-+
-+	dac {
-+		compatible = "dpot-dac";
-+		vref-supply = <&reg_3v3>;
-+		io-channels = <&dpot 0>;
-+		io-channel-names = "dpot";
-+	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 7c65585e1230..6218010128dc 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6111,6 +6111,12 @@ L:	linux-media@vger.kernel.org
- S:	Maintained
- F:	drivers/media/rc/iguanair.c
- 
-+IIO DIGITAL POTENTIOMETER DAC
-+M:	Peter Rosin <peda@axentia.se>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
-+
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
- R:	Hartmut Knaack <knaack.h@gmx.de>
--- 
-2.1.4
+Thanks,
+
+Jonathan
+> ---
+>  drivers/staging/iio/adc/ad7606.h      | 2 --
+>  drivers/staging/iio/adc/ad7606_core.c | 3 ---
+>  2 files changed, 5 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> index 39f5044..b7e59a6 100644
+> --- a/drivers/staging/iio/adc/ad7606.h
+> +++ b/drivers/staging/iio/adc/ad7606.h
+> @@ -43,14 +43,12 @@ struct ad7606_platform_data {
+>  /**
+>   * struct ad7606_chip_info - chip specific information
+>   * @name:		identification string for chip
+> - * @int_vref_mv:	the internal reference voltage
+>   * @channels:		channel specification
+>   * @num_channels:	number of channels
+>   */
+>  
+>  struct ad7606_chip_info {
+>  	const char			*name;
+> -	u16				int_vref_mv;
+>  	const struct iio_chan_spec	*channels;
+>  	unsigned int			num_channels;
+>  };
+> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+> index 2042225..a1f18d4 100644
+> --- a/drivers/staging/iio/adc/ad7606_core.c
+> +++ b/drivers/staging/iio/adc/ad7606_core.c
+> @@ -261,19 +261,16 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+>  	 */
+>  	[ID_AD7606_8] = {
+>  		.name = "ad7606",
+> -		.int_vref_mv = 2500,
+>  		.channels = ad7606_channels,
+>  		.num_channels = 9,
+>  	},
+>  	[ID_AD7606_6] = {
+>  		.name = "ad7606-6",
+> -		.int_vref_mv = 2500,
+>  		.channels = ad7606_channels,
+>  		.num_channels = 7,
+>  	},
+>  	[ID_AD7606_4] = {
+>  		.name = "ad7606-4",
+> -		.int_vref_mv = 2500,
+>  		.channels = ad7606_channels,
+>  		.num_channels = 5,
+>  	},
+> 
+
