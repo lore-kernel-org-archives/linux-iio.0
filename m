@@ -1,492 +1,614 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ve1eur01on0102.outbound.protection.outlook.com ([104.47.1.102]:36018
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
+Received: from mail-db5eur01on0110.outbound.protection.outlook.com ([104.47.2.110]:46544
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
         rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S936395AbcJXJOv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 24 Oct 2016 05:14:51 -0400
+        id S935604AbcJWDTc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 22 Oct 2016 23:19:32 -0400
 From: Peter Rosin <peda@axentia.se>
 To: <linux-kernel@vger.kernel.org>
-CC: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>,
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
         "Mark Rutland" <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>,
         <devicetree@vger.kernel.org>
-Subject: [PATCH v3 1/8] iio:core: add a callback to allow drivers to provide _available attributes
-Date: Mon, 24 Oct 2016 00:39:34 +0200
-Message-ID: <1477262381-7800-2-git-send-email-peda@axentia.se>
-In-Reply-To: <1477262381-7800-1-git-send-email-peda@axentia.se>
-References: <1477262381-7800-1-git-send-email-peda@axentia.se>
+Subject: [PATCH v2 7/7] iio: envelope-detector: ADC driver based on a DAC and a comparator
+Date: Sun, 23 Oct 2016 00:43:46 +0200
+Message-ID: <1477176226-10566-8-git-send-email-peda@axentia.se>
+In-Reply-To: <1477176226-10566-1-git-send-email-peda@axentia.se>
+References: <1477176226-10566-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Jonathan Cameron <jic23@kernel.org>
+The DAC is used to find the peak level of an alternating voltage input
+signal by a binary search using the output of a comparator wired to
+an interrupt pin. Like so:
+                          _
+                         | \
+    input +------>-------|+ \
+                         |   \
+           .-------.     |    }---.
+           |       |     |   /    |
+           |    dac|-->--|- /     |
+           |       |     |_/      |
+           |       |              |
+           |       |              |
+           |    irq|------<-------'
+           |       |
+           '-------'
 
-A large number of attributes can only take a limited range of values.
-Currently in IIO this is handled by directly registering additional
-*_available attributes thus providing this information to userspace.
-
-It is desirable to provide this information via the core for much the same
-reason this was done for the actual channel information attributes in the
-first place.  If it isn't there, then it can only really be accessed from
-userspace.  Other in kernel IIO consumers have no access to what valid
-parameters are.
-
-Two forms are currently supported:
-* list of values in one particular IIO_VAL_* format.
-	e.g. 1.300000 1.500000 1.730000
-* range specification with a step size:
-	e.g. [1.000000 0.500000 2.500000]
-	equivalent to 1.000000 1.5000000 2.000000 2.500000
-
-An addition set of masks are used to allow different sharing rules for the
-*_available attributes generated.
-
-This allows for example:
-
-in_accel_x_offset
-in_accel_y_offset
-in_accel_offset_available.
-
-We could have gone with having a specification for each and every
-info_mask element but that would have meant changing the existing userspace
-ABI.  This approach does not.
-
-Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-[forward ported, added some docs and fixed buffer overflows /peda]
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/industrialio-core.c | 259 +++++++++++++++++++++++++++++++++++-----
- include/linux/iio/iio.h         |  29 +++++
- include/linux/iio/types.h       |   5 +
- 3 files changed, 260 insertions(+), 33 deletions(-)
+ .../testing/sysfs-bus-iio-adc-envelope-detector    |  36 ++
+ MAINTAINERS                                        |   2 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/envelope-detector.c                | 463 +++++++++++++++++++++
+ 5 files changed, 512 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+ create mode 100644 drivers/iio/adc/envelope-detector.c
 
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index fc340ed3dca1..b35c61a31fa6 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -575,66 +575,82 @@ int of_iio_read_mount_matrix(const struct device *dev,
- #endif
- EXPORT_SYMBOL(of_iio_read_mount_matrix);
- 
--/**
-- * iio_format_value() - Formats a IIO value into its string representation
-- * @buf:	The buffer to which the formatted value gets written
-- * @type:	One of the IIO_VAL_... constants. This decides how the val
-- *		and val2 parameters are formatted.
-- * @size:	Number of IIO value entries contained in vals
-- * @vals:	Pointer to the values, exact meaning depends on the
-- *		type parameter.
-- *
-- * Return: 0 by default, a negative number on failure or the
-- *	   total number of characters written for a type that belongs
-- *	   to the IIO_VAL_... constant.
-- */
--ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
-+static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
-+				  int size, const int *vals)
- {
- 	unsigned long long tmp;
-+	int tmp0, tmp1;
- 	bool scale_db = false;
- 
- 	switch (type) {
- 	case IIO_VAL_INT:
--		return sprintf(buf, "%d\n", vals[0]);
-+		return snprintf(buf, len, "%d", vals[0]);
- 	case IIO_VAL_INT_PLUS_MICRO_DB:
- 		scale_db = true;
- 	case IIO_VAL_INT_PLUS_MICRO:
- 		if (vals[1] < 0)
--			return sprintf(buf, "-%d.%06u%s\n", abs(vals[0]),
--				       -vals[1], scale_db ? " dB" : "");
-+			return snprintf(buf, len, "-%d.%06u%s", abs(vals[0]),
-+					-vals[1], scale_db ? " dB" : "");
- 		else
--			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
--				scale_db ? " dB" : "");
-+			return snprintf(buf, len, "%d.%06u%s", vals[0], vals[1],
-+					scale_db ? " dB" : "");
- 	case IIO_VAL_INT_PLUS_NANO:
- 		if (vals[1] < 0)
--			return sprintf(buf, "-%d.%09u\n", abs(vals[0]),
--				       -vals[1]);
-+			return snprintf(buf, len, "-%d.%09u", abs(vals[0]),
-+					-vals[1]);
- 		else
--			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-+			return snprintf(buf, len, "%d.%09u", vals[0], vals[1]);
- 	case IIO_VAL_FRACTIONAL:
- 		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
--		vals[0] = (int)div_s64_rem(tmp, 1000000000, &vals[1]);
--		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
-+		tmp1 = vals[1];
-+		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
-+		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
- 	case IIO_VAL_FRACTIONAL_LOG2:
- 		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
--		vals[1] = do_div(tmp, 1000000000LL);
--		vals[0] = tmp;
--		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-+		tmp1 = do_div(tmp, 1000000000LL);
-+		tmp0 = tmp;
-+		return snprintf(buf, len, "%d.%09u", tmp0, tmp1);
- 	case IIO_VAL_INT_MULTIPLE:
- 	{
- 		int i;
--		int len = 0;
-+		int l = 0;
- 
--		for (i = 0; i < size; ++i)
--			len += snprintf(&buf[len], PAGE_SIZE - len, "%d ",
--								vals[i]);
--		len += snprintf(&buf[len], PAGE_SIZE - len, "\n");
--		return len;
-+		for (i = 0; i < size; ++i) {
-+			l += snprintf(&buf[l], len - l, "%d ", vals[i]);
-+			if (l >= len)
-+				break;
-+		}
-+		return l;
- 	}
- 	default:
- 		return 0;
- 	}
- }
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector b/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+new file mode 100644
+index 000000000000..8d890028a649
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+@@ -0,0 +1,36 @@
++What:		/sys/bus/iio/devices/iio:deviceX/invert
++Date:		October 2016
++KernelVersion:	4.9
++Contact:	Peter Rosin <peda@axentia.se>
++Description:
++		The DAC is used to find the peak level of an alternating
++		voltage input signal by a binary search using the output
++		of a comparator wired to an interrupt pin. Like so:
++		                           _
++		                          | \
++		     input +------>-------|+ \
++		                          |   \
++		            .-------.     |    }---.
++		            |       |     |   /    |
++		            |    dac|-->--|- /     |
++		            |       |     |_/      |
++		            |       |              |
++		            |       |              |
++		            |    irq|------<-------'
++		            |       |
++		            '-------'
++		The boolean invert attribute (0/1) should be set when the
++		input signal is centered around the maximum value of the
++		dac instead of zero. The envelope detector will search
++		from below in this case and will also invert the result.
++		The edge/level of the interrupt is also switched to its
++		opposite value.
 +
-+/**
-+ * iio_format_value() - Formats a IIO value into its string representation
-+ * @buf:	The buffer to which the formatted value gets written
-+ *		which is assumed to be big enough (i.e. PAGE_SIZE).
-+ * @type:	One of the IIO_VAL_... constants. This decides how the val
-+ *		and val2 parameters are formatted.
-+ * @size:	Number of IIO value entries contained in vals
-+ * @vals:	Pointer to the values, exact meaning depends on the
-+ *		type parameter.
++What:		/sys/bus/iio/devices/iio:deviceX/compare_interval_ms
++Date:		October 2016
++KernelVersion:	4.9
++Contact:	Peter Rosin <peda@axentia.se>
++Description:
++		Number of milliseconds to wait for the comparator in each
++		step of the binary search for the input peak level. Needs
++		to relate to the frequency of the input signal.
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 4b6f6ec1b703..0d20f3561700 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6122,7 +6122,9 @@ IIO ENVELOPE DETECTOR
+ M:	Peter Rosin <peda@axentia.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
++F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+ F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
++F:	drivers/iio/adc/envelope-detector.c
+ 
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7edcf3238620..d5c4a95855c2 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -195,6 +195,16 @@ config DA9150_GPADC
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called berlin2-adc.
+ 
++config ENVELOPE_DETECTOR
++	tristate "Envelope detector using a DAC and a comparator"
++	depends on OF
++	help
++	  Say yes here to build support for an envelope detector using a DAC
++	  and a comparator.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called iio-envelope-detector.
++
+ config EXYNOS_ADC
+ 	tristate "Exynos ADC driver support"
+ 	depends on ARCH_EXYNOS || ARCH_S3C24XX || ARCH_S3C64XX || (OF && COMPILE_TEST)
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 7a40c04c311f..0d773c6a0578 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_BCM_IPROC_ADC) += bcm_iproc_adc.o
+ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
++obj-$(CONFIG_ENVELOPE_DETECTOR) += envelope-detector.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+ obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
+ obj-$(CONFIG_HI8435) += hi8435.o
+diff --git a/drivers/iio/adc/envelope-detector.c b/drivers/iio/adc/envelope-detector.c
+new file mode 100644
+index 000000000000..3842d1a72023
+--- /dev/null
++++ b/drivers/iio/adc/envelope-detector.c
+@@ -0,0 +1,463 @@
++/*
++ * Driver for an envelope detector using a DAC and a comparator
 + *
-+ * Return: 0 by default, a negative number on failure or the
-+ *	   total number of characters written for a type that belongs
-+ *	   to the IIO_VAL_... constant.
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
-+ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
++
++/*
++ * The DAC is used to find the peak level of an alternating voltage input
++ * signal by a binary search using the output of a comparator wired to
++ * an interrupt pin. Like so:
++ *                           _
++ *                          | \
++ *     input +------>-------|+ \
++ *                          |   \
++ *            .-------.     |    }---.
++ *            |       |     |   /    |
++ *            |    dac|-->--|- /     |
++ *            |       |     |_/      |
++ *            |       |              |
++ *            |       |              |
++ *            |    irq|------<-------'
++ *            |       |
++ *            '-------'
++ */
++
++#include <linux/completion.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/interrupt.h>
++#include <linux/irq.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/spinlock.h>
++#include <linux/workqueue.h>
++
++struct envelope {
++	spinlock_t comp_lock; /* protects comp */
++	int comp;
++
++	struct mutex read_lock; /* protects everything else */
++
++	int comp_irq;
++	u32 comp_irq_trigger;
++	u32 comp_irq_trigger_inv;
++
++	struct iio_channel *dac;
++	struct delayed_work comp_timeout;
++
++	unsigned int comp_interval;
++	bool invert;
++	u32 dac_max;
++
++	int high;
++	int level;
++	int low;
++
++	struct completion done;
++};
++
++/*
++ * The envelope_detector_comp_latch function works together with the compare
++ * interrupt service routine below (envelope_detector_comp_isr) as a latch
++ * (one-bit memory) for if the interrupt has triggered since last calling
++ * this function.
++ * The ..._comp_isr function disables the interrupt so that the cpu does not
++ * need to service a possible interrupt flood from the comparator when no-one
++ * cares anyway, and this ..._comp_latch function reenables them again if
++ * needed.
++ */
++static int envelope_detector_comp_latch(struct envelope *env)
 +{
-+	ssize_t len;
++	int comp;
 +
-+	len = __iio_format_value(buf, PAGE_SIZE, type, size, vals);
-+	if (len >= PAGE_SIZE - 1)
-+		return -EFBIG;
++	spin_lock_irq(&env->comp_lock);
++	comp = env->comp;
++	env->comp = 0;
++	spin_unlock_irq(&env->comp_lock);
 +
-+	return len + sprintf(buf + len, "\n");
++	if (!comp)
++		return 0;
++
++	/*
++	 * The irq was disabled, and is reenabled just now.
++	 * But there might have been a pending irq that
++	 * happened while the irq was disabled that fires
++	 * just as the irq is reenabled. That is not what
++	 * is desired.
++	 */
++	enable_irq(env->comp_irq);
++
++	/* So, synchronize this possibly pending irq... */
++	synchronize_irq(env->comp_irq);
++
++	/* ...and redo the whole dance. */
++	spin_lock_irq(&env->comp_lock);
++	comp = env->comp;
++	env->comp = 0;
++	spin_unlock_irq(&env->comp_lock);
++
++	if (comp)
++		enable_irq(env->comp_irq);
++
++	return 1;
 +}
- EXPORT_SYMBOL_GPL(iio_format_value);
- 
- static ssize_t iio_read_channel_info(struct device *dev,
-@@ -662,6 +678,119 @@ static ssize_t iio_read_channel_info(struct device *dev,
- 	return iio_format_value(buf, ret, val_len, vals);
- }
- 
-+static ssize_t iio_format_avail_list(char *buf, const int *vals,
-+				     int type, int length)
++
++static irqreturn_t envelope_detector_comp_isr(int irq, void *ctx)
 +{
-+	int i;
-+	ssize_t len = 0;
++	struct envelope *env = ctx;
 +
-+	switch (type) {
-+	case IIO_VAL_INT:
-+		for (i = 0; i < length; i++) {
-+			len += __iio_format_value(buf + len, PAGE_SIZE - len,
-+						  type, 1, &vals[i]);
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+			if (i < length - 1)
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						" ");
-+			else
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						"\n");
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+		}
-+		break;
-+	default:
-+		for (i = 0; i < length / 2; i++) {
-+			len += __iio_format_value(buf + len, PAGE_SIZE - len,
-+						  type, 2, &vals[i * 2]);
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+			if (i < length / 2 - 1)
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						" ");
-+			else
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						"\n");
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+		}
-+	};
++	spin_lock(&env->comp_lock);
++	env->comp = 1;
++	disable_irq_nosync(env->comp_irq);
++	spin_unlock(&env->comp_lock);
 +
-+	return len;
++	return IRQ_HANDLED;
 +}
 +
-+static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
++static void envelope_detector_setup_compare(struct envelope *env)
 +{
-+	int i;
-+	ssize_t len;
++	int ret;
 +
-+	len = snprintf(buf, PAGE_SIZE, "[");
-+	switch (type) {
-+	case IIO_VAL_INT:
-+		for (i = 0; i < 3; i++) {
-+			len += __iio_format_value(buf + len, PAGE_SIZE - len,
-+						  type, 1, &vals[i]);
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+			if (i < 2)
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						" ");
-+			else
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						"]\n");
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+		}
-+		break;
-+	default:
-+		for (i = 0; i < 3; i++) {
-+			len += __iio_format_value(buf + len, PAGE_SIZE - len,
-+						  type, 2, &vals[i * 2]);
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+			if (i < 2)
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						" ");
-+			else
-+				len += snprintf(buf + len, PAGE_SIZE - len,
-+						"]\n");
-+			if (len >= PAGE_SIZE)
-+				return -EFBIG;
-+		}
-+	};
++	/*
++	 * Do a binary search for the peak input level, and stop
++	 * when that level is "trapped" between two adjacent DAC
++	 * values.
++	 * When invert is active, use the midpoint floor so that
++	 * env->level ends up as env->low when the termination
++	 * criteria below is fulfilled, and use the midpoint
++	 * ceiling when invert is not active so that env->level
++	 * ends up as env->high in that case.
++	 */
++	env->level = (env->high + env->low + !env->invert) / 2;
 +
-+	return len;
++	if (env->high == env->low + 1) {
++		complete(&env->done);
++		return;
++	}
++
++	/* Set a "safe" DAC level (if there is such a thing)... */
++	ret = iio_write_channel_raw(env->dac, env->invert ? 0 : env->dac_max);
++	if (ret < 0)
++		goto err;
++
++	/* ...clear the comparison result... */
++	envelope_detector_comp_latch(env);
++
++	/* ...set the real DAC level... */
++	ret = iio_write_channel_raw(env->dac, env->level);
++	if (ret < 0)
++		goto err;
++
++	/* ...and wait for a bit to see if the latch catches anything. */
++	schedule_delayed_work(&env->comp_timeout,
++			      msecs_to_jiffies(env->comp_interval));
++	return;
++
++err:
++	env->level = ret;
++	complete(&env->done);
 +}
 +
-+static ssize_t iio_read_channel_info_avail(struct device *dev,
++static void envelope_detector_timeout(struct work_struct *work)
++{
++	struct envelope *env = container_of(work, struct envelope,
++					    comp_timeout.work);
++
++	/* Adjust low/high depending on the latch content... */
++	if (!envelope_detector_comp_latch(env) ^ !env->invert)
++		env->low = env->level;
++	else
++		env->high = env->level;
++
++	/* ...and continue the search. */
++	envelope_detector_setup_compare(env);
++}
++
++static int envelope_detector_read_raw(struct iio_dev *indio_dev,
++				      struct iio_chan_spec const *chan,
++				      int *val, int *val2, long mask)
++{
++	struct envelope *env = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * When invert is active, start with high=max+1 and low=0
++		 * since we will end up with the low value when the
++		 * termination criteria is fulfilled (rounding down). And
++		 * start with high=max and low=-1 when invert is not active
++		 * since we will end up with the high value in that case.
++		 * This ensures that the returned value in both cases are
++		 * in the same range as the DAC and is a value that has not
++		 * triggered the comparator.
++		 */
++		mutex_lock(&env->read_lock);
++		env->high = env->dac_max + env->invert;
++		env->low = -1 + env->invert;
++		envelope_detector_setup_compare(env);
++		wait_for_completion(&env->done);
++		if (env->level < 0) {
++			ret = env->level;
++			goto err_unlock;
++		}
++		*val = env->invert ? env->dac_max - env->level : env->level;
++		mutex_unlock(&env->read_lock);
++
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_SCALE:
++		return iio_read_channel_scale(env->dac, val, val2);
++	}
++
++	return -EINVAL;
++
++err_unlock:
++	mutex_unlock(&env->read_lock);
++	return ret;
++}
++
++static int envelope_detector_channel_raw_max(struct iio_channel *ch)
++{
++	struct iio_dev *indio_dev = ch->indio_dev;
++	const int *vals;
++	int type;
++	int len;
++	int ret;
++
++	if (!ch->indio_dev->info->read_avail)
++		return -EINVAL;
++
++	ret = ch->indio_dev->info->read_avail(indio_dev, ch->channel,
++					      &vals, &type, &len,
++					      IIO_CHAN_INFO_RAW);
++
++	if (ret < 0)
++		return ret;
++	if (type != IIO_VAL_INT)
++		return -EINVAL;
++
++	switch (ret) {
++	case IIO_AVAIL_RANGE:
++		if (len != 3)
++			return -EINVAL;
++		return vals[2];
++	}
++	return -EINVAL;
++}
++
++static const struct iio_chan_spec envelope_detector_iio_channel = {
++	.type = IIO_ALTVOLTAGE,
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
++			    | BIT(IIO_CHAN_INFO_SCALE),
++	.indexed = 1,
++};
++
++static ssize_t envelope_show_invert(struct device *dev,
++				    struct device_attribute *attr,
++				    char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct envelope *env = iio_priv(indio_dev);
++
++	return sprintf(buf, "%u\n", env->invert);
++}
++
++static ssize_t envelope_store_invert(struct device *dev,
++				     struct device_attribute *attr,
++				     const char *buf,
++				     size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct envelope *env = iio_priv(indio_dev);
++	unsigned long invert;
++	int ret;
++	u32 trigger;
++
++	ret = kstrtoul(buf, 0, &invert);
++	if (ret < 0)
++		return ret;
++	if (invert > 1)
++		return -EINVAL;
++
++	trigger = invert ? env->comp_irq_trigger_inv : env->comp_irq_trigger;
++
++	mutex_lock(&env->read_lock);
++	if (invert != env->invert)
++		ret = irq_set_irq_type(env->comp_irq, trigger);
++	if (!ret) {
++		env->invert = invert;
++		ret = len;
++	}
++	mutex_unlock(&env->read_lock);
++
++	return ret;
++}
++
++static IIO_DEVICE_ATTR(invert, 0644,
++		       envelope_show_invert,
++		       envelope_store_invert, 0);
++
++static ssize_t envelope_show_comp_interval(struct device *dev,
 +					   struct device_attribute *attr,
 +					   char *buf)
 +{
 +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-+	const int *vals;
-+	int ret;
-+	int length;
-+	int type;
++	struct envelope *env = iio_priv(indio_dev);
 +
-+	ret = indio_dev->info->read_avail(indio_dev, this_attr->c,
-+					  &vals, &type, &length,
-+					  this_attr->address);
-+
-+	if (ret < 0)
-+		return ret;
-+	switch (ret) {
-+	case IIO_AVAIL_LIST:
-+		return iio_format_avail_list(buf, vals, type, length);
-+	case IIO_AVAIL_RANGE:
-+		return iio_format_avail_range(buf, vals, type);
-+	default:
-+		return -EINVAL;
-+	}
++	return sprintf(buf, "%u\n", env->comp_interval);
 +}
 +
- /**
-  * iio_str_to_fixpoint() - Parse a fixed-point number from a string
-  * @str: The string to parse
-@@ -978,6 +1107,40 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
- 	return attrcount;
- }
- 
-+static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
-+					       struct iio_chan_spec const *chan,
-+					       enum iio_shared_by shared_by,
-+					       const long *infomask)
++static ssize_t envelope_store_comp_interval(struct device *dev,
++					    struct device_attribute *attr,
++					    const char *buf,
++					    size_t len)
 +{
-+	int i, ret, attrcount = 0;
-+	char *avail_postfix;
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct envelope *env = iio_priv(indio_dev);
++	unsigned long interval;
++	int ret;
 +
-+	for_each_set_bit(i, infomask, sizeof(infomask) * 8) {
-+		avail_postfix = kasprintf(GFP_KERNEL,
-+					  "%s_available",
-+					  iio_chan_info_postfix[i]);
-+		if (!avail_postfix)
-+			return -ENOMEM;
++	ret = kstrtoul(buf, 0, &interval);
++	if (ret < 0)
++		return ret;
++	if (interval > 1000)
++		return -EINVAL;
 +
-+		ret = __iio_add_chan_devattr(avail_postfix,
-+					     chan,
-+					     &iio_read_channel_info_avail,
-+					     NULL,
-+					     i,
-+					     shared_by,
-+					     &indio_dev->dev,
-+					     &indio_dev->channel_attr_list);
-+		kfree(avail_postfix);
-+		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
-+			continue;
-+		else if (ret < 0)
-+			return ret;
-+		attrcount++;
-+	}
++	mutex_lock(&env->read_lock);
++	env->comp_interval = interval;
++	mutex_unlock(&env->read_lock);
 +
-+	return attrcount;
++	return len;
 +}
 +
- static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 					struct iio_chan_spec const *chan)
- {
-@@ -993,6 +1156,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 		return ret;
- 	attrcount += ret;
- 
-+	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-+						  IIO_SEPARATE,
-+						  &chan->
-+						  info_mask_separate_available);
-+	if (ret < 0)
-+		return ret;
-+	attrcount += ret;
++static IIO_DEVICE_ATTR(compare_interval_ms, 0644,
++		       envelope_show_comp_interval,
++		       envelope_store_comp_interval, 0);
 +
- 	ret = iio_device_add_info_mask_type(indio_dev, chan,
- 					    IIO_SHARED_BY_TYPE,
- 					    &chan->info_mask_shared_by_type);
-@@ -1000,6 +1171,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 		return ret;
- 	attrcount += ret;
- 
-+	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-+						  IIO_SHARED_BY_TYPE,
-+						  &chan->
-+						  info_mask_shared_by_type_available);
-+	if (ret < 0)
-+		return ret;
-+	attrcount += ret;
-+
- 	ret = iio_device_add_info_mask_type(indio_dev, chan,
- 					    IIO_SHARED_BY_DIR,
- 					    &chan->info_mask_shared_by_dir);
-@@ -1007,6 +1186,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 		return ret;
- 	attrcount += ret;
- 
-+	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-+						  IIO_SHARED_BY_DIR,
-+						  &chan->info_mask_shared_by_dir_available);
-+	if (ret < 0)
-+		return ret;
-+	attrcount += ret;
-+
- 	ret = iio_device_add_info_mask_type(indio_dev, chan,
- 					    IIO_SHARED_BY_ALL,
- 					    &chan->info_mask_shared_by_all);
-@@ -1014,6 +1200,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
- 		return ret;
- 	attrcount += ret;
- 
-+	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-+						  IIO_SHARED_BY_ALL,
-+						  &chan->info_mask_shared_by_all_available);
-+	if (ret < 0)
-+		return ret;
-+	attrcount += ret;
-+
- 	if (chan->ext_info) {
- 		unsigned int i = 0;
- 		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index b4a0679e4a49..45b781084a4b 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -225,12 +225,22 @@ struct iio_event_spec {
-  *			endianness:	little or big endian
-  * @info_mask_separate: What information is to be exported that is specific to
-  *			this channel.
-+ * @info_mask_separate_available: What availability information is to be
-+ *			exported that is specific to this channel.
-  * @info_mask_shared_by_type: What information is to be exported that is shared
-  *			by all channels of the same type.
-+ * @info_mask_shared_by_type_available: What availability information is to be
-+ *			exported that is shared by all channels of the same
-+ *			type.
-  * @info_mask_shared_by_dir: What information is to be exported that is shared
-  *			by all channels of the same direction.
-+ * @info_mask_shared_by_dir_available: What availability information is to be
-+ *			exported that is shared by all channels of the same
-+ *			direction.
-  * @info_mask_shared_by_all: What information is to be exported that is shared
-  *			by all channels.
-+ * @info_mask_shared_by_all_available: What availability information is to be
-+ *			exported that is shared by all channels.
-  * @event_spec:		Array of events which should be registered for this
-  *			channel.
-  * @num_event_specs:	Size of the event_spec array.
-@@ -269,9 +279,13 @@ struct iio_chan_spec {
- 		enum iio_endian endianness;
- 	} scan_type;
- 	long			info_mask_separate;
-+	long			info_mask_separate_available;
- 	long			info_mask_shared_by_type;
-+	long			info_mask_shared_by_type_available;
- 	long			info_mask_shared_by_dir;
-+	long			info_mask_shared_by_dir_available;
- 	long			info_mask_shared_by_all;
-+	long			info_mask_shared_by_all_available;
- 	const struct iio_event_spec *event_spec;
- 	unsigned int		num_event_specs;
- 	const struct iio_chan_spec_ext_info *ext_info;
-@@ -349,6 +363,14 @@ struct iio_dev;
-  *			max_len specifies maximum number of elements
-  *			vals pointer can contain. val_len is used to return
-  *			length of valid elements in vals.
-+ * @read_avail:		function to return the available values from the device.
-+ *			mask specifies which value. Note 0 means the available
-+ *			values for the channel in question.  Return value
-+ *			specifies if a IIO_AVAIL_LIST or a IIO_AVAIL_RANGE is
-+ *			returned in vals. The type of the vals are returned in
-+ *			type and the number of vals is returned in length. For
-+ *			ranges, there are always three vals returned; min, step
-+ *			and max. For lists, all possible values are enumerated.
-  * @write_raw:		function to write a value to the device.
-  *			Parameters are the same as for read_raw.
-  * @write_raw_get_fmt:	callback function to query the expected
-@@ -397,6 +419,13 @@ struct iio_info {
- 			int *val_len,
- 			long mask);
- 
-+	int (*read_avail)(struct iio_dev *indio_dev,
-+			  struct iio_chan_spec const *chan,
-+			  const int **vals,
-+			  int *type,
-+			  int *length,
-+			  long mask);
-+
- 	int (*write_raw)(struct iio_dev *indio_dev,
- 			 struct iio_chan_spec const *chan,
- 			 int val,
-diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-index 32b579525004..2aa7b6384d64 100644
---- a/include/linux/iio/types.h
-+++ b/include/linux/iio/types.h
-@@ -29,4 +29,9 @@ enum iio_event_info {
- #define IIO_VAL_FRACTIONAL 10
- #define IIO_VAL_FRACTIONAL_LOG2 11
- 
-+enum iio_available_type {
-+	IIO_AVAIL_LIST,
-+	IIO_AVAIL_RANGE,
++static struct attribute *envelope_detector_attributes[] = {
++	&iio_dev_attr_invert.dev_attr.attr,
++	&iio_dev_attr_compare_interval_ms.dev_attr.attr,
++	NULL,
 +};
 +
- #endif /* _IIO_TYPES_H_ */
++static const struct attribute_group envelope_detector_attribute_group = {
++	.attrs = envelope_detector_attributes,
++};
++
++static const struct iio_info envelope_detector_info = {
++	.read_raw = &envelope_detector_read_raw,
++	.driver_module = THIS_MODULE,
++	.attrs = &envelope_detector_attribute_group,
++};
++
++static int envelope_detector_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *indio_dev;
++	struct envelope *env;
++	enum iio_chan_type type;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*env));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	platform_set_drvdata(pdev, indio_dev);
++	env = iio_priv(indio_dev);
++	env->comp_interval = 50; /* some sensible default? */
++
++	spin_lock_init(&env->comp_lock);
++	mutex_init(&env->read_lock);
++	init_completion(&env->done);
++	INIT_DELAYED_WORK(&env->comp_timeout, envelope_detector_timeout);
++
++	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
++	indio_dev->dev.of_node = dev->of_node;
++	indio_dev->info = &envelope_detector_info;
++	indio_dev->channels = &envelope_detector_iio_channel;
++	indio_dev->num_channels = 1;
++
++	env->dac = devm_iio_channel_get(dev, "dac");
++	if (IS_ERR(env->dac)) {
++		if (PTR_ERR(env->dac) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get dac input channel\n");
++		return PTR_ERR(env->dac);
++	}
++
++	env->comp_irq = platform_get_irq_byname(pdev, "comp");
++	if (env->comp_irq < 0) {
++		if (env->comp_irq != -EPROBE_DEFER)
++			dev_err(dev, "failed to get compare interrupt\n");
++		return env->comp_irq;
++	}
++
++	ret = devm_request_irq(dev, env->comp_irq, envelope_detector_comp_isr,
++			       0, "envelope-detector", env);
++	if (ret) {
++		if (ret != -EPROBE_DEFER)
++			dev_err(dev, "failed to request interrupt\n");
++		return ret;
++	}
++	env->comp_irq_trigger = irq_get_trigger_type(env->comp_irq);
++	if (env->comp_irq_trigger & IRQF_TRIGGER_RISING)
++		env->comp_irq_trigger_inv |= IRQF_TRIGGER_FALLING;
++	if (env->comp_irq_trigger & IRQF_TRIGGER_FALLING)
++		env->comp_irq_trigger_inv |= IRQF_TRIGGER_RISING;
++	if (env->comp_irq_trigger & IRQF_TRIGGER_HIGH)
++		env->comp_irq_trigger_inv |= IRQF_TRIGGER_LOW;
++	if (env->comp_irq_trigger & IRQF_TRIGGER_LOW)
++		env->comp_irq_trigger_inv |= IRQF_TRIGGER_HIGH;
++
++	ret = iio_get_channel_type(env->dac, &type);
++	if (ret < 0)
++		return ret;
++
++	if (type != IIO_VOLTAGE) {
++		dev_err(dev, "dac is of the wrong type\n");
++		return -EINVAL;
++	}
++
++	ret = envelope_detector_channel_raw_max(env->dac);
++	if (ret < 0) {
++		dev_err(dev, "dac does not indicate its raw maximum value\n");
++		return ret;
++	}
++	env->dac_max = ret;
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct of_device_id envelope_detector_match[] = {
++	{ .compatible = "axentia,tse850-envelope-detector", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, envelope_detector_match);
++
++static struct platform_driver envelope_detector_driver = {
++	.probe = envelope_detector_probe,
++	.driver = {
++		.name = "iio-envelope-detector",
++		.of_match_table = envelope_detector_match,
++	},
++};
++module_platform_driver(envelope_detector_driver);
++
++MODULE_DESCRIPTION("Envelope detector using a DAC and a comparator");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
++MODULE_LICENSE("GPL v2");
 -- 
 2.1.4
 
