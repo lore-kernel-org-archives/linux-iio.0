@@ -1,75 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53225 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53240 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S936614AbcJVP12 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:27:28 -0400
-Subject: Re: [PATCH 04/13] staging:iio:ad7606: Remove out-of-band error
- reporting
+        with ESMTP id S936614AbcJVP3B (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:29:01 -0400
+Subject: Re: [PATCH 06/13] staging:iio:ad7606: Avoid allocating buffer for
+ each data capture
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
- <1476896828-10544-5-git-send-email-lars@metafoo.de>
+ <1476896828-10544-7-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8ff1e01c-0700-5e75-6bbb-c14968089de3@kernel.org>
-Date: Sat, 22 Oct 2016 16:27:27 +0100
+Message-ID: <0eea14a6-95ee-7c5a-63d7-2bd2a1e2a34d@kernel.org>
+Date: Sat, 22 Oct 2016 16:28:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476896828-10544-5-git-send-email-lars@metafoo.de>
+In-Reply-To: <1476896828-10544-7-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/10/16 18:06, Lars-Peter Clausen wrote:
-> Currently the ad7606 driver prints a error message to the kernel log when
-> an application writes an invalid value to a sysfs attribute. While for
-> initial driver development and testing this might be useful it is quite
-> disadvantageous in a production environment. The write() call to the sysfs
-> attribute will already return an error if the value was invalid so the
-> application is aware that the operation failed. And generally speaking it
-> is impossible for an application to reliably match a log message in the
-> kernel log to a specific operation it performed, so the message becomes
-> just noise and might distract from more critical messages.
+On 19/10/16 18:07, Lars-Peter Clausen wrote:
+> Currently the ad7606 driver dynamically allocates and frees a transfer
+> buffer each time a sample capture is performed in buffered mode, which
+> introduces unnecessary overhead. The driver state struct already contains a
+> buffer that is used for transfers in one-shot mode. This buffer is large
+> enough to hold all samples, but not the timestamp that might be present in
+> buffered mode. Extend the buffer size to be able to contain the timestamp
+> and update the buffered capture function to use this buffer.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
-
-Thanks,
+Applied. Thanks,
 
 Jonathan
 > ---
->  drivers/staging/iio/adc/ad7606_core.c | 10 +++-------
->  1 file changed, 3 insertions(+), 7 deletions(-)
+>  drivers/staging/iio/adc/ad7606.h      |  4 ++--
+>  drivers/staging/iio/adc/ad7606_ring.c | 14 ++++----------
+>  2 files changed, 6 insertions(+), 12 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index a16c6f5..d3a3551 100644
-> --- a/drivers/staging/iio/adc/ad7606_core.c
-> +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -132,10 +132,9 @@ static ssize_t ad7606_store_range(struct device *dev,
->  	if (ret)
->  		return ret;
+> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> index cf6be65..129f94e 100644
+> --- a/drivers/staging/iio/adc/ad7606.h
+> +++ b/drivers/staging/iio/adc/ad7606.h
+> @@ -68,9 +68,9 @@ struct ad7606_state {
+>  	/*
+>  	 * DMA (thus cache coherency maintenance) requires the
+>  	 * transfer buffers to live in their own cache lines.
+> +	 * 8 * 16-bit samples + 64-bit timestamp
+>  	 */
+> -
+> -	unsigned short			data[8] ____cacheline_aligned;
+> +	unsigned short			data[12] ____cacheline_aligned;
+>  };
 >  
-> -	if (!(lval == 5000 || lval == 10000)) {
-> -		dev_err(dev, "range is not supported\n");
-> +	if (!(lval == 5000 || lval == 10000))
->  		return -EINVAL;
-> -	}
-> +
->  	mutex_lock(&indio_dev->mlock);
->  	gpio_set_value(st->pdata->gpio_range, lval == 10000);
->  	st->range = lval;
-> @@ -174,11 +173,8 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
->  		if (val2)
->  			return -EINVAL;
->  		ret = ad7606_oversampling_get_index(val);
-> -		if (ret < 0) {
-> -			dev_err(st->dev, "oversampling %d is not supported\n",
-> -				val);
-> +		if (ret < 0)
->  			return ret;
-> -		}
+>  struct ad7606_bus_ops {
+> diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+> index 0572df9..7fa4ccc 100644
+> --- a/drivers/staging/iio/adc/ad7606_ring.c
+> +++ b/drivers/staging/iio/adc/ad7606_ring.c
+> @@ -46,15 +46,10 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+>  	struct ad7606_state *st = container_of(work_s, struct ad7606_state,
+>  						poll_work);
+>  	struct iio_dev *indio_dev = iio_priv_to_dev(st);
+> -	__u8 *buf;
+>  	int ret;
 >  
->  		mutex_lock(&indio_dev->mlock);
->  		gpio_set_value(st->pdata->gpio_os0, (ret >> 0) & 1);
+> -	buf = kzalloc(indio_dev->scan_bytes, GFP_KERNEL);
+> -	if (!buf)
+> -		return;
+> -
+>  	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+> -		ret = st->bops->read_block(st->dev, 1, buf);
+> +		ret = st->bops->read_block(st->dev, 1, st->data);
+>  		if (ret)
+>  			goto done;
+>  		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
+> @@ -67,22 +62,21 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+>  			goto done;
+>  		}
+>  		ret = st->bops->read_block(st->dev,
+> -			st->chip_info->num_channels - 1, buf + 2);
+> +			st->chip_info->num_channels - 1, st->data + 1);
+>  		if (ret)
+>  			goto done;
+>  	} else {
+>  		ret = st->bops->read_block(st->dev,
+> -			st->chip_info->num_channels, buf);
+> +			st->chip_info->num_channels, st->data);
+>  		if (ret)
+>  			goto done;
+>  	}
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, buf,
+> +	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+>  					   iio_get_time_ns(indio_dev));
+>  done:
+>  	gpio_set_value(st->pdata->gpio_convst, 0);
+>  	iio_trigger_notify_done(indio_dev->trig);
+> -	kfree(buf);
+>  }
+>  
+>  int ad7606_register_ring_funcs_and_init(struct iio_dev *indio_dev)
 > 
 
