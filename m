@@ -1,78 +1,170 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53595 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53607 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935413AbcJVQ7m (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 12:59:42 -0400
-Subject: Re: [PATCH 08/13] staging:iio:ad7606: Move set_drvdata() into common
- code
+        with ESMTP id S935413AbcJVRBu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:01:50 -0400
+Subject: Re: [PATCH 07/13] staging:iio:ad7606: Factor out common code between
+ periodic and one-shot capture
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
- <1476896828-10544-9-git-send-email-lars@metafoo.de>
+ <1476896828-10544-8-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4c2eab58-eb29-008b-8dac-71cc95f5cc80@kernel.org>
-Date: Sat, 22 Oct 2016 17:59:36 +0100
+Message-ID: <731ef8f9-e784-77cd-fcb0-8878bcf14ed3@kernel.org>
+Date: Sat, 22 Oct 2016 18:01:48 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476896828-10544-9-git-send-email-lars@metafoo.de>
+In-Reply-To: <1476896828-10544-8-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/10/16 18:07, Lars-Peter Clausen wrote:
-> Both the platform_device and SPI driver call set_drvdata() at the end of
-> their probe function. Move this into the common probe() function to reduce
-> duplicated code.
+> Both the periodic buffer based and one-shot sysfs based capture methods
+> share a large portion of their code. Factor this out into a common helper
+> function.
+> 
+> Also provide a comment that better explains in more detail what is going on
+> in the capture function.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.  Thanks
-
-Jonathan
+Applied.
 > ---
->  drivers/staging/iio/adc/ad7606_core.c | 2 ++
->  drivers/staging/iio/adc/ad7606_par.c  | 2 --
->  drivers/staging/iio/adc/ad7606_spi.c  | 2 --
->  3 files changed, 2 insertions(+), 4 deletions(-)
+>  drivers/staging/iio/adc/ad7606.h      |  1 +
+>  drivers/staging/iio/adc/ad7606_core.c | 58 ++++++++++++++++++++++-------------
+>  drivers/staging/iio/adc/ad7606_ring.c | 30 +++---------------
+>  3 files changed, 41 insertions(+), 48 deletions(-)
 > 
+> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> index 129f94e..2257bdb 100644
+> --- a/drivers/staging/iio/adc/ad7606.h
+> +++ b/drivers/staging/iio/adc/ad7606.h
+> @@ -84,6 +84,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+>  			      const struct ad7606_bus_ops *bops);
+>  int ad7606_remove(struct iio_dev *indio_dev, int irq);
+>  int ad7606_reset(struct ad7606_state *st);
+> +int ad7606_read_samples(struct ad7606_state *st);
+>  
+>  enum ad7606_supported_device_ids {
+>  	ID_AD7606_8,
 > diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index 4ce103a..13d8090 100644
+> index 7c093e2..4ce103a 100644
 > --- a/drivers/staging/iio/adc/ad7606_core.c
 > +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -517,6 +517,8 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  	if (ret)
->  		goto error_unregister_ring;
+> @@ -36,6 +36,39 @@ int ad7606_reset(struct ad7606_state *st)
+>  	return -ENODEV;
+>  }
 >  
-> +	dev_set_drvdata(dev, indio_dev);
+> +int ad7606_read_samples(struct ad7606_state *st)
+> +{
+> +	unsigned int num = st->chip_info->num_channels;
+> +	u16 *data = st->data;
+> +	int ret;
 > +
->  	return indio_dev;
->  error_unregister_ring:
->  	ad7606_ring_cleanup(indio_dev);
-> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
-> index 0a23cd9..c273993 100644
-> --- a/drivers/staging/iio/adc/ad7606_par.c
-> +++ b/drivers/staging/iio/adc/ad7606_par.c
-> @@ -77,8 +77,6 @@ static int ad7606_par_probe(struct platform_device *pdev)
->  	if (IS_ERR(indio_dev))
->  		return PTR_ERR(indio_dev);
+> +	/*
+> +	 * The frstdata signal is set to high while and after reading the sample
+> +	 * of the first channel and low for all other channels. This can be used
+> +	 * to check that the incoming data is correctly aligned. During normal
+> +	 * operation the data should never become unaligned, but some glitch or
+> +	 * electrostatic discharge might cause an extra read or clock cycle.
+> +	 * Monitoring the frstdata signal allows to recover from such failure
+> +	 * situations.
+> +	 */
+> +
+> +	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+> +		ret = st->bops->read_block(st->dev, 1, data);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
+> +			ad7606_reset(st);
+> +			return -EIO;
+> +		}
+> +
+> +		data++;
+> +		num--;
+> +	}
+> +
+> +	return st->bops->read_block(st->dev, num, data);
+> +}
+> +
+>  static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+>  {
+>  	struct ad7606_state *st = iio_priv(indio_dev);
+> @@ -48,28 +81,9 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+>  	if (ret)
+>  		goto error_ret;
 >  
-> -	platform_set_drvdata(pdev, indio_dev);
+> -	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+> -		ret = st->bops->read_block(st->dev, 1, st->data);
+> -		if (ret)
+> -			goto error_ret;
+> -		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
+> -			/* This should never happen */
+> -			ad7606_reset(st);
+> -			ret = -EIO;
+> -			goto error_ret;
+> -		}
+> -		ret = st->bops->read_block(st->dev,
+> -			st->chip_info->num_channels - 1, &st->data[1]);
+> -		if (ret)
+> -			goto error_ret;
+> -	} else {
+> -		ret = st->bops->read_block(st->dev,
+> -			st->chip_info->num_channels, st->data);
+> -		if (ret)
+> -			goto error_ret;
+> -	}
 > -
->  	return 0;
+> -	ret = st->data[ch];
+> +	ret = ad7606_read_samples(st);
+> +	if (ret == 0)
+> +		ret = st->data[ch];
+>  
+>  error_ret:
+>  	gpio_set_value(st->pdata->gpio_convst, 0);
+> diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
+> index 7fa4ccc..b7bf0cf 100644
+> --- a/drivers/staging/iio/adc/ad7606_ring.c
+> +++ b/drivers/staging/iio/adc/ad7606_ring.c
+> @@ -48,33 +48,11 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
+>  	struct iio_dev *indio_dev = iio_priv_to_dev(st);
+>  	int ret;
+>  
+> -	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
+> -		ret = st->bops->read_block(st->dev, 1, st->data);
+> -		if (ret)
+> -			goto done;
+> -		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
+> -			/* This should never happen. However
+> -			 * some signal glitch caused by bad PCB desgin or
+> -			 * electrostatic discharge, could cause an extra read
+> -			 * or clock. This allows recovery.
+> -			 */
+> -			ad7606_reset(st);
+> -			goto done;
+> -		}
+> -		ret = st->bops->read_block(st->dev,
+> -			st->chip_info->num_channels - 1, st->data + 1);
+> -		if (ret)
+> -			goto done;
+> -	} else {
+> -		ret = st->bops->read_block(st->dev,
+> -			st->chip_info->num_channels, st->data);
+> -		if (ret)
+> -			goto done;
+> -	}
+> +	ret = ad7606_read_samples(st);
+> +	if (ret == 0)
+> +		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+> +						   iio_get_time_ns(indio_dev));
+>  
+> -	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
+> -					   iio_get_time_ns(indio_dev));
+> -done:
+>  	gpio_set_value(st->pdata->gpio_convst, 0);
+>  	iio_trigger_notify_done(indio_dev->trig);
 >  }
->  
-> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
-> index f69db59..9abbc15 100644
-> --- a/drivers/staging/iio/adc/ad7606_spi.c
-> +++ b/drivers/staging/iio/adc/ad7606_spi.c
-> @@ -52,8 +52,6 @@ static int ad7606_spi_probe(struct spi_device *spi)
->  	if (IS_ERR(indio_dev))
->  		return PTR_ERR(indio_dev);
->  
-> -	spi_set_drvdata(spi, indio_dev);
-> -
->  	return 0;
->  }
->  
 > 
 
