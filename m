@@ -1,143 +1,181 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53045 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53144 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935509AbcJVOxN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 10:53:13 -0400
-Subject: Re: [PATCH 3/4] dt-bindings: iio: document envelope-detector bindings
-To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
- <1476955562-13673-4-git-send-email-peda@axentia.se>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
+        with ESMTP id S935082AbcJVPNu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:13:50 -0400
+Subject: Re: [PATCH] iio: light: acpi-als: Add IO_CHAN_INFO_OFFSET/SCALE to
+ mask.
+To: Gwendal Grignou <gwendal@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+References: <1477037829-20352-1-git-send-email-enric.balletbo@collabora.com>
+ <CAMHSBOXJArBSUZqNT0gbN0KQqPAttaWgL=BoXy7keV4Ez0VB6w@mail.gmail.com>
+Cc: Linux Kernel <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a97858d3-16b4-838c-c46c-a197318264bf@kernel.org>
-Date: Sat, 22 Oct 2016 15:53:07 +0100
+Message-ID: <968cc6eb-5da3-93e3-839d-71f8e34937f9@kernel.org>
+Date: Sat, 22 Oct 2016 16:13:47 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476955562-13673-4-git-send-email-peda@axentia.se>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAMHSBOXJArBSUZqNT0gbN0KQqPAttaWgL=BoXy7keV4Ez0VB6w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/10/16 10:26, Peter Rosin wrote:
-> Signed-off-by: Peter Rosin <peda@axentia.se>
-Definitely going to need device tree maintainer input!  (though as Lars
-and you discussed some mods to this in the cover letter discussion,
-perhaps they should wait for V2).
-> ---
->  .../bindings/iio/adc/envelope-detector.txt         | 65 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 ++
->  2 files changed, 71 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> new file mode 100644
-> index 000000000000..0e26299516fd
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> @@ -0,0 +1,65 @@
-> +Bindings for ADC envelope detector using a DAC and a comparator
-> +
-> +The DAC is used to find the peak level of an alternating voltage input
-> +signal by a binary search using the output of a comparator wired to
-> +an interrupt pin. Like so:
-> +                          _
-> +                         | \
-> +    input +------>-------|+ \
-> +                         |   \
-> +           .-------.     |    }---.
-> +           |       |     |   /    |
-> +           |    dac|-->--|- /     |
-> +           |       |     |_/      |
-> +           |       |              |
-> +           |       |              |
-> +           |    irq|------<-------'
-> +           |       |
-> +           '-------'
-> +
-> +Required properties:
-> +- compatible: Should be "envelope-detector"
-Agreed with the discussion in the cover letter responses.  Needs
-to be more specific as lots of ways of skinning this cat.
-Hehe, just occurred to me that your Maintainer entry below
-makes you responsible for all of them.. Acked!
+On 21/10/16 17:43, Gwendal Grignou wrote:
+> On Fri, Oct 21, 2016 at 1:17 AM, Enric Balletbo i Serra
+> <enric.balletbo@collabora.com> wrote:
+>> According the ACPI specification (Version 5.0 Errata A) [1], the data
+>> coming from the sensor represent the ambient light illuminance reading
+>> expressed in lux. Unfortunately ACPI interface doesn't provide a
+>> mechanism to calibrate this value, so this raw value can be slightly
+>> wrong.
+>>
+>> This patch adds IIO_CHAN_INFO_OFFSET and IIO_CHAN_INFO_SCALE attributes
+>> to give the possibiity to the userspace to calculate a calibrated data
+possibility
+>> by doing:
+>>
+>>  (raw_value + offset) * scale = calibrated_value (in lux)
+>>
+>> [1] http://www.acpi.info/DOWNLOADS/ACPI_5_Errata%20A.pdf
+>>
+>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
 
-> +- io-channels: Channel node of the dac to be used for comparator input.
-> +- io-channel-names: Should be "dac".
-> +- interrupt specification for one client interrupt,
-> +  see ../../interrupt-controller/interrupts.txt for details.
-> +- interrupt-names: Should be "comp".
-> +- envelope-detector,dac-max: The maximum raw input value for the dac.
-I guess the available stuff you have brought up to date should deal with this
-one without needing another param.
+Hmm.. I'm not particularly keen on adding support to an individual driver
+to push calibration data into the kernel just so it can be 'popped' again
+later.
 
-> +- envelope-detector,comp-interval-ms: How long to wait for the comparator
-> +  to trigger before moving on to another DAC level. This interval needs to
-> +  relate to the lowest possible frequency of the above input signal.
-This is an odd one and definitely a case for the device tree guys.
+After all ever light sensor suffers from the same 'fine tuning' problem as
+ultimately does every sensor of any kind.
 
-It's not generic enough to not have a 'manufacturer' in the param name,
-but there isn't really a manufacturer as anyone with a few chips can build
-one of these (using the 'wiring' diagram above ;)
+To my mind this is a job for userspace really rather than something
+that ought to be pushed into the kernel.
 
-So what should the prefix be?
+These values are 'supposed' to be correct as provided by ACPI so its
+not as though we are trying handle gross differences.
 
-> +
-> +Optional properties:
-> +- envelope-detector,inverted: If the input signal is centered around the
-> +  dac-max voltage (instead of zero), this property causes the detector to
-> +  search for the lowest DAC value that does not triggers the comparator
-> +  (instead of the highest). The result is also inverted so that a lower DAC
-> +  reading yields a higher voltage value.
-As discussed, this is fundamental enough that it should probably
-be based on the compatible string rather than a separate item.
-> +
-> +
-> +Example:
-> +
-> +	&spi {
-> +		dac: ad7303@4 {
-> +			compatible = "adi,ad7303";
-> +			reg = <4>;
-> +			spi-max-frequency = <10000000>;
-> +			Vdd-supply = <&vdd_supply>;
-> +			adi,use-external-reference;
-> +			REF-supply = <&vref_supply>;
-> +			#io-channel-cells = <1>;
-> +		};
-> +	};
-> +
-> +	envelope-detector {
-> +		compatible = "envelope-detector";
-> +		io-channels = <&dac 0>;
-> +		io-channel-names = "dac";
-> +
-> +		interrupt-parent = <&gpio>;
-> +		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
-> +		interrupt-names = "comp";
-> +
-> +		envelope-detector,dac-max = <255>;
-> +		envelope-detector,comp-interval-ms = <50>;
-> +	};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8c8aae24b96b..4b6f6ec1b703 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6118,6 +6118,12 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
->  F:	drivers/iio/dac/dpot-dac.c
->  
-> +IIO ENVELOPE DETECTOR
-> +M:	Peter Rosin <peda@axentia.se>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> +
->  IIO SUBSYSTEM AND DRIVERS
->  M:	Jonathan Cameron <jic23@kernel.org>
->  R:	Hartmut Knaack <knaack.h@gmx.de>
-> 
+Or are we looking at patching buggy firmwares?
+
+Jonathan
+
+>> ---
+>>  drivers/iio/light/acpi-als.c | 66 ++++++++++++++++++++++++++++++++++++++------
+>>  1 file changed, 57 insertions(+), 9 deletions(-)
+>>
+>> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
+>> index f0b47c5..a8093ba 100644
+>> --- a/drivers/iio/light/acpi-als.c
+>> +++ b/drivers/iio/light/acpi-als.c
+>> @@ -56,7 +56,9 @@ static const struct iio_chan_spec acpi_als_channels[] = {
+>>                 },
+>>                 /* _RAW is here for backward ABI compatibility */
+>>                 .info_mask_separate     = BIT(IIO_CHAN_INFO_RAW) |
+>> -                                         BIT(IIO_CHAN_INFO_PROCESSED),
+>> +                                         BIT(IIO_CHAN_INFO_PROCESSED) |
+>> +                                         BIT(IIO_CHAN_INFO_SCALE) |
+>> +                                         BIT(IIO_CHAN_INFO_OFFSET),
+>>         },
+>>  };
+>>
+>> @@ -76,6 +78,10 @@ struct acpi_als {
+>>         struct mutex            lock;
+>>
+>>         s32                     evt_buffer[ACPI_ALS_EVT_BUFFER_SIZE];
+>> +
+>> +       int                     scale;
+>> +       int                     uscale;
+>> +       int                     offset;
+>>  };
+>>
+>>  /*
+>> @@ -154,25 +160,64 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
+>>         s32 temp_val;
+>>         int ret;
+>>
+>> -       if ((mask != IIO_CHAN_INFO_PROCESSED) && (mask != IIO_CHAN_INFO_RAW))
+>> -               return -EINVAL;
+>> -
+>>         /* we support only illumination (_ALI) so far. */
+>>         if (chan->type != IIO_LIGHT)
+>>                 return -EINVAL;
+>>
+>> -       ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
+>> -       if (ret < 0)
+>> -               return ret;
+>> +       switch (mask) {
+>> +       case IIO_CHAN_INFO_RAW:
+>> +       case IIO_CHAN_INFO_PROCESSED:
+> It seems PROCESSED is identical to RAW. Shouldn't we remove this attribute?
+You can't without breaking userspace ABI.  We got this messed up a long
+time back, but now we are pretty much stuck with having both.
+>> +               ret = acpi_als_read_value(als, ACPI_ALS_ILLUMINANCE, &temp_val);
+>> +               if (ret < 0)
+>> +                       return ret;
+>> +               *val = temp_val;
+>> +               return IIO_VAL_INT;
+>> +       case IIO_CHAN_INFO_OFFSET:
+>> +               mutex_lock(&als->lock);
+>> +               *val = als->offset;
+>> +               mutex_unlock(&als->lock);
+>> +               return IIO_VAL_INT;
+>> +       case IIO_CHAN_INFO_SCALE:
+>> +               mutex_lock(&als->lock);
+>> +               *val = als->scale;
+>> +               *val2 = als->uscale;
+>> +               mutex_unlock(&als->lock);
+>> +               return IIO_VAL_INT_PLUS_MICRO;
+>> +       default:
+>> +               return -EINVAL;
+>> +       }
+>> +}
+>>
+>> -       *val = temp_val;
+>> +static int acpi_als_write_raw(struct iio_dev *indio_dev,
+>> +                             struct iio_chan_spec const *chan, int val,
+>> +                             int val2, long mask)
+>> +{
+>> +       struct acpi_als *als = iio_priv(indio_dev);
+>> +
+>> +       if (chan->type != IIO_LIGHT)
+>> +               return -EINVAL;
+>>
+>> -       return IIO_VAL_INT;
+>> +       switch (mask) {
+>> +       case IIO_CHAN_INFO_OFFSET:
+>> +               mutex_lock(&als->lock);
+>> +               als->offset = val;
+If you aren't providing a write_raw_fmt callback, then you
+should sanity check that val2 is not non 0 for this case.
+>> +               mutex_unlock(&als->lock);
+>> +               return 0;
+>> +       case IIO_CHAN_INFO_SCALE:
+>> +               mutex_lock(&als->lock);
+>> +               als->scale = val;
+>> +               als->uscale = val2;
+>> +               mutex_unlock(&als->lock);
+>> +               return 0;
+>> +       default:
+>> +               return -EINVAL;
+>> +       }
+>>  }
+>>
+>>  static const struct iio_info acpi_als_info = {
+>>         .driver_module          = THIS_MODULE,
+>>         .read_raw               = acpi_als_read_raw,
+>> +       .write_raw              = acpi_als_write_raw,
+>>  };
+>>
+>>  static int acpi_als_add(struct acpi_device *device)
+>> @@ -189,6 +234,9 @@ static int acpi_als_add(struct acpi_device *device)
+>>
+>>         device->driver_data = indio_dev;
+>>         als->device = device;
+>> +       als->scale = 1;
+>> +       als->uscale = 0;
+>> +       als->offset = 0;
+>>         mutex_init(&als->lock);
+>>
+>>         indio_dev->name = ACPI_ALS_DEVICE_NAME;
+>> --
+>> 2.1.0
+>>
 
