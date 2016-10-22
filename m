@@ -1,111 +1,151 @@
-Return-Path: <olof@lixom.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53204 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S937392AbcJVPXY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 11:23:24 -0400
+Subject: Re: [PATCH 02/13] staging:iio:ad7606: Remove redundant name field
+ from ad7606_chip_info
+To: Lars-Peter Clausen <lars@metafoo.de>
+References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
+ <1476896828-10544-3-git-send-email-lars@metafoo.de>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <d52756b5-5ff9-adde-2837-4cf8d9715d11@kernel.org>
+Date: Sat, 22 Oct 2016 16:23:22 +0100
 MIME-Version: 1.0
-In-Reply-To: <B9807854-374B-417C-9685-E230B89579AA@jic23.retrosnub.co.uk>
-References: <1470045278-18161-1-git-send-email-enric.balletbo@collabora.com>
- <b32afa2d-965c-569c-dde1-3611615080d3@kernel.org> <20160816124907.GK25844@dell>
- <2a50b180-c6ce-8261-5784-a3713c35b30c@kernel.org> <a2d7688d-753d-8c50-728b-f33cc5e31eb9@kernel.org>
- <20160830085756.GB1661@dell> <a911916d-05bc-6bcd-0aea-bfd7a3d4ff1b@kernel.org>
- <20160901072404.GD4921@dell> <6ae9c49a-c354-b3bd-a4d9-77bf81915615@kernel.org>
- <CAFqH_53q+0=RBWeTTb1FkML5PudZx8iOAFZ6xOkTec+ciwj0pQ@mail.gmail.com> <B9807854-374B-417C-9685-E230B89579AA@jic23.retrosnub.co.uk>
-From: Olof Johansson <olof@lixom.net>
-Date: Sat, 22 Oct 2016 10:49:30 -0700
-Message-ID: <CAOesGMhJCU4ch9gKcuS8_Zm80vsC=9LHTPPby3oBWDbTy0E3vw@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] Add support for cros-ec-sensors
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Enric Balletbo Serra <eballetbo@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
-	Lee Jones <lee.jones@linaro.org>,
-	Enric Balletbo i Serra <enric.balletbo@collabora.com>, linux-kernel <linux-kernel@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Guenter Roeck <groeck@chromium.org>,
-	Gwendal Grignou <gwendal@chromium.org>, Benson Leung <bleung@chromium.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1476896828-10544-3-git-send-email-lars@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-[once more in plain text]
+On 19/10/16 18:06, Lars-Peter Clausen wrote:
+> The name field in the ad7606_chip_info struct is set to the same value as
+> the as the name field in the corresponding {platform,spi}_device_id table
+> entry. Remove it from the ad7606_chip_info struct and pass the name from
+> the ID to the probe function. This slightly reduces the size of the
+> chip_info table and adding new entries requires less boilerplate.
+> 
+> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied.
+> ---
+>  drivers/staging/iio/adc/ad7606.h      |  4 ++--
+>  drivers/staging/iio/adc/ad7606_core.c | 11 ++++-------
+>  drivers/staging/iio/adc/ad7606_par.c  |  3 ++-
+>  drivers/staging/iio/adc/ad7606_spi.c  |  3 ++-
+>  4 files changed, 10 insertions(+), 11 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+> index b7e59a6..380c56a 100644
+> --- a/drivers/staging/iio/adc/ad7606.h
+> +++ b/drivers/staging/iio/adc/ad7606.h
+> @@ -48,7 +48,6 @@ struct ad7606_platform_data {
+>   */
+>  
+>  struct ad7606_chip_info {
+> -	const char			*name;
+>  	const struct iio_chan_spec	*channels;
+>  	unsigned int			num_channels;
+>  };
+> @@ -84,7 +83,8 @@ struct ad7606_bus_ops {
+>  };
+>  
+>  struct iio_dev *ad7606_probe(struct device *dev, int irq,
+> -			      void __iomem *base_address, unsigned int id,
+> +			      void __iomem *base_address,
+> +			      const char *name, unsigned int id,
+>  			      const struct ad7606_bus_ops *bops);
+>  int ad7606_remove(struct iio_dev *indio_dev, int irq);
+>  int ad7606_reset(struct ad7606_state *st);
+> diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
+> index a1f18d4..1093647 100644
+> --- a/drivers/staging/iio/adc/ad7606_core.c
+> +++ b/drivers/staging/iio/adc/ad7606_core.c
+> @@ -260,17 +260,14 @@ static const struct ad7606_chip_info ad7606_chip_info_tbl[] = {
+>  	 * More devices added in future
+>  	 */
+>  	[ID_AD7606_8] = {
+> -		.name = "ad7606",
+>  		.channels = ad7606_channels,
+>  		.num_channels = 9,
+>  	},
+>  	[ID_AD7606_6] = {
+> -		.name = "ad7606-6",
+>  		.channels = ad7606_channels,
+>  		.num_channels = 7,
+>  	},
+>  	[ID_AD7606_4] = {
+> -		.name = "ad7606-4",
+>  		.channels = ad7606_channels,
+>  		.num_channels = 5,
+>  	},
+> @@ -438,7 +435,7 @@ static const struct iio_info ad7606_info_range = {
+>  
+>  struct iio_dev *ad7606_probe(struct device *dev, int irq,
+>  			     void __iomem *base_address,
+> -			     unsigned int id,
+> +			     const char *name, unsigned int id,
+>  			     const struct ad7606_bus_ops *bops)
+>  {
+>  	struct ad7606_platform_data *pdata = dev->platform_data;
+> @@ -491,7 +488,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+>  			indio_dev->info = &ad7606_info_no_os_or_range;
+>  	}
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+> -	indio_dev->name = st->chip_info->name;
+> +	indio_dev->name = name;
+>  	indio_dev->channels = st->chip_info->channels;
+>  	indio_dev->num_channels = st->chip_info->num_channels;
+>  
+> @@ -505,8 +502,8 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+>  	if (ret)
+>  		dev_warn(st->dev, "failed to RESET: no RESET GPIO specified\n");
+>  
+> -	ret = request_irq(irq, ad7606_interrupt,
+> -			  IRQF_TRIGGER_FALLING, st->chip_info->name, indio_dev);
+> +	ret = request_irq(irq, ad7606_interrupt, IRQF_TRIGGER_FALLING, name,
+> +			  indio_dev);
+>  	if (ret)
+>  		goto error_free_gpios;
+>  
+> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+> index 84d2393..0a23cd9 100644
+> --- a/drivers/staging/iio/adc/ad7606_par.c
+> +++ b/drivers/staging/iio/adc/ad7606_par.c
+> @@ -49,6 +49,7 @@ static const struct ad7606_bus_ops ad7606_par8_bops = {
+>  
+>  static int ad7606_par_probe(struct platform_device *pdev)
+>  {
+> +	const struct platform_device_id *id = platform_get_device_id(pdev);
+>  	struct resource *res;
+>  	struct iio_dev *indio_dev;
+>  	void __iomem *addr;
+> @@ -69,7 +70,7 @@ static int ad7606_par_probe(struct platform_device *pdev)
+>  	remap_size = resource_size(res);
+>  
+>  	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
+> -				 platform_get_device_id(pdev)->driver_data,
+> +				 id->name, id->driver_data,
+>  				 remap_size > 1 ? &ad7606_par16_bops :
+>  				 &ad7606_par8_bops);
+>  
+> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+> index 9587fa8..f69db59 100644
+> --- a/drivers/staging/iio/adc/ad7606_spi.c
+> +++ b/drivers/staging/iio/adc/ad7606_spi.c
+> @@ -42,10 +42,11 @@ static const struct ad7606_bus_ops ad7606_spi_bops = {
+>  
+>  static int ad7606_spi_probe(struct spi_device *spi)
+>  {
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
+>  	struct iio_dev *indio_dev;
+>  
+>  	indio_dev = ad7606_probe(&spi->dev, spi->irq, NULL,
+> -				 spi_get_device_id(spi)->driver_data,
+> +				 id->name, id->driver_data,
+>  				 &ad7606_spi_bops);
+>  
+>  	if (IS_ERR(indio_dev))
+> 
 
-
-On Tue, Oct 18, 2016 at 1:56 AM, Jonathan Cameron
-<jic23@jic23.retrosnub.co.uk> wrote:
->
->
-> On 18 October 2016 09:35:06 BST, Enric Balletbo Serra <eballetbo@gmail.com> wrote:
->>Hi Jonathan,
->>
->>2016-09-03 19:21 GMT+02:00 Jonathan Cameron <jic23@kernel.org>:
->>> On 01/09/16 08:24, Lee Jones wrote:
->>>>>>>>>> Given this dependency I'm assuming the best route for these is
->>via
->>>>>>>>>> the MFD tree...
->>>>>>>>>>
->>>>>>>>>> Lee, shout if you want them to go a different route.
->>>>>>>>>
->>>>>>>>> IIO looks like a more suitable route.  Please provide me with a
->>>>>>>>> pull-request base off of an immutable tag.
->>>>>>>> Hi Lee,
->>>>>>>>
->>>>>>>> As far as I can tell the precursor patch above hasn't gone in
->>your
->>>>>>>> tree yet which leaves me unable to take this through IIO for
->>now.
->>>>>>>>
->>>>>>>> Maybe I'm missing something!
->>>>>>>>
->>>>>>>> Jonathan
->>>>>>>
->>>>>>> Hi Lee,
->>>>>>>
->>>>>>> Any movement on the dependency above?
->>>>>>>
->>>>>>> Last I can find was you adding your ack to it:
->>>>>>> [PATCH v2 1/2] mfd: cros_ec: Add MKBP event support
->>>>>>>
->>>>>>> https://lkml.org/lkml/2016/8/16/423
->>>>>>
->>>>>> Well that's annoying.  Okay, well when I send out the pull-request
->>for
->>>>>> this one, I will include you.
->>>>>>
->>>>>> Actually, better still -- take all of them on one branch and I
->>will
->>>>>> pull from you.  Saves the toing and froing.
->>>>>>
->>>>> Sure. Will probably be the weekend before I get this sorted.
->>>>
->>>> No rush.
->>>>
->>> Ah, I see you ended up with an immutable branch of this anyway:
->>> your ib-mfd-input-4.9 branch.
->>> I'll build an immutable branch on that
->>> ib-iio-mfd-4.9 in iio.git.
->>>
->>
->>Nice, I just saw that the dependencies for this patch series are
->>already in mainline, thanks.
->>
->>I don't see the patches in your iio tree, need I to rebase the patch
->>series on top of mainline and send v5 or you are already taking care
->>about it?
->>
->>Cheers,
->>  Enric.
->>
->>
->>> Unfortunately I don't have an Ack for patch 4 from Olof yet so
->>> can't take that and until I do, the rest makes little sense as
->>> it's not enabled.
-> Still looking for an Ack from Olof I think...
->
-> Perhaps pm him to get him to take a look.
-> I doubt much reading is needed but feel free to confirm that!
-
-
-Acked-by: Olof Johansson <olof@lixom.net>
-
-
-Apologies for the severe delays here. I don't have hardware to test on
-for this, so I have to rely on others to vouch for functionality. I
-hope to transition maintainership to someone that can pay closer
-attention soon.
-
-
--Olof
