@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53607 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53611 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935413AbcJVRBu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:01:50 -0400
+        with ESMTP id S935413AbcJVRCG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:02:06 -0400
 Subject: Re: [PATCH 07/13] staging:iio:ad7606: Factor out common code between
  periodic and one-shot capture
 To: Lars-Peter Clausen <lars@metafoo.de>
@@ -12,8 +12,8 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <731ef8f9-e784-77cd-fcb0-8878bcf14ed3@kernel.org>
-Date: Sat, 22 Oct 2016 18:01:48 +0100
+Message-ID: <cc407e3d-ab6c-095d-f42e-a9a0b31366de@kernel.org>
+Date: Sat, 22 Oct 2016 18:02:04 +0100
 MIME-Version: 1.0
 In-Reply-To: <1476896828-10544-8-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
@@ -29,7 +29,9 @@ On 19/10/16 18:07, Lars-Peter Clausen wrote:
 > in the capture function.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied.
+Few comments inline, but nothing that actually matters.
+
+Jonathan
 > ---
 >  drivers/staging/iio/adc/ad7606.h      |  1 +
 >  drivers/staging/iio/adc/ad7606_core.c | 58 ++++++++++++++++++++++-------------
@@ -71,6 +73,7 @@ Applied.
 > +	 * Monitoring the frstdata signal allows to recover from such failure
 > +	 * situations.
 > +	 */
+Serious paranoia ;)
 > +
 > +	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
 > +		ret = st->bops->read_block(st->dev, 1, data);
@@ -156,6 +159,10 @@ Applied.
 > -			goto done;
 > -	}
 > +	ret = ad7606_read_samples(st);
+I personally always slightly prefer the 'good' path to not be out of the
+'direct' flow.
+
+Still minor point and I don't care that much!
 > +	if (ret == 0)
 > +		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
 > +						   iio_get_time_ns(indio_dev));
