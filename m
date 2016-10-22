@@ -1,97 +1,322 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45835 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53902 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752603AbcJUHRC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 21 Oct 2016 03:17:02 -0400
+        with ESMTP id S964793AbcJVRyj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:54:39 -0400
+Subject: Re: [PATCH] iio: imu: inv_mpu6050: implemented
+ IIO_CHAN_INFO_SAMP_FREQ
+To: Juliana Rodrigues <juliana.orod@gmail.com>
+References: <20161014022043.GA8114@spock>
+ <45751c64-ae17-fed1-74e9-bf749562a59d@kernel.org>
+ <20161018193652.GA11725@spock>
+Cc: outreachy-kernel@googlegroups.com, lars@metafoo.de,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <cb660d9c-fd08-8553-dd22-78f061ec5686@kernel.org>
+Date: Sat, 22 Oct 2016 18:54:35 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII;
- format=flowed
-Date: Fri, 21 Oct 2016 08:17:00 +0100
-From: jic23@kernel.org
-To: Peter Rosin <peda@axentia.se>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio-owner@vger.kernel.org
-Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
-In-Reply-To: <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
- <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
- <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
- <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
- <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
-Message-ID: <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
+In-Reply-To: <20161018193652.GA11725@spock>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20.10.2016 19:17, Peter Rosin wrote:
-> On 2016-10-20 19:37, Jonathan Cameron wrote:
->> On 20 October 2016 18:30:19 BST, Jonathan Cameron 
->> <jic23@jic23.retrosnub.co.uk> wrote:
->>> On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> 
->>> wrote:
->>>> On 10/20/2016 11:25 AM, Peter Rosin wrote:
->>>>> Also, is there some agreed-upon way to dig out the maximum value 
->>>>> from
->>>>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from 
->>>>> the
->>>>> dt bindings, which would have been nice...
->>>> 
->>>> Yes, this is something we could really use. In a sense it exists for
->>>> the
->>>> devices with buffer-capable channels where there is the real_bits 
->>>> field
->>>> which tells us the data width of the channel. But a dedicated 
->>>> mechanism
->>>> for
->>>> querying the maximum (and minimum) valid code seems like a useful
->>>> feature.
->>>> Not only for in-kernel clients, but also for userspace.
->>> 
->>> This was something that was addressed by the rather ancient patch
->>> series i posted that added
->>> an available call back which provided info on range and values for 
->>> all
->>> info mask elements.
->>> Series got buried by there being a lot of precursors but quite a few 
->>> of
->>> those have merged since.
->>> 
->>> Hmm Google won't let me find it on my phone. Was a while back now. 
->>> Will
->>> try to get on pc with
->>> decent email archive later and dig out a reference.
->> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
+On 18/10/16 20:36, Juliana Rodrigues wrote:
+> On Sat, Oct 15, 2016 at 03:36:47PM +0100, Jonathan Cameron wrote:
+>> On 14/10/16 03:20, Juliana Rodrigues wrote:
+>>> Moved functionality from IIO_DEV_ATTR_SAMP_FREQ macro into
+>>> IIO_CHAN_INFO_SAMP_FREQ in order to create a generic attribute.
+>>> Modified inv_mpu6050_read_raw and inv_mpu6050_write_raw to allow
+>>> reading and writing the element.
+>>>
+>>> Signed-off-by: Juliana Rodrigues <juliana.orod@gmail.com>
+>> Hi Juliana,
+>>
+>> This driver does things a little differently from some others, so you need
+>> to take a little more care when reworking elements to add them to the
+>> write_raw callback.
+>>
+>> Anyhow, take another look at that, and perhaps whilst you are there
+>> check out the odd error handling path in that function which I'm embarrassed
+>> to say I've never noticed before!
+>>
+>> Jonathan
 > 
-> Interesting, one issue with that is that it is all in real world
-> units, while I'd rather have the raw value.
-Um.. It's been a while, but the principle was (IIRC) that every
-_available would match the units fo the associated info mask element.
-Thus if you have a _raw element it would be in adc counts (most likely).
-
-_input would be in relevant real world units, scale etc in the whatever
-units the value itself is in.
-
-> So, I would need to
-> convert back to the raw value using the scale, which sounds boring
-> but doable. However, I wonder if calibration may also be involved
-> with that conversion back to raw for some channels? That sounds a
-> bit more driver specific and potentially troublesome...
-I've not had a chance to look at your code (only picked up on this as
-there was a fair length thread developing), but I wouldn't have thought 
-we'd
-need to deal with calibrations.   Might need them to move to real world
-units from raw but that's always the case anyway (unfortunately).
-
-Jonathan
+> Hi Jonathan,
 > 
-> Cheers,
-> Peter
+> Thank you for your comments. I'll write a new patch to fix the issues
+> you've mentioned. I just have a few questions bellow.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Juliana
+>>> ---
+>>>  drivers/iio/imu/inv_mpu6050/inv_mpu_core.c | 187 ++++++++++++++---------------
+>>>  1 file changed, 92 insertions(+), 95 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>> index b9fcbf1..20722c8 100644
+>>> --- a/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>> +++ b/drivers/iio/imu/inv_mpu6050/inv_mpu_core.c
+>>> @@ -263,6 +263,88 @@ static int inv_mpu6050_sensor_set(struct inv_mpu6050_state  *st, int reg,
+>>>  	return 0;
+>>>  }
+>>>  
+>>> +/**
+>>> + *  inv_mpu6050_set_lpf() - set low pass filer based on fifo rate.
+>>> + *
+>>> + *                  Based on the Nyquist principle, the sampling rate must
+>>> + *                  exceed twice of the bandwidth of the signal, or there
+>>> + *                  would be alising. This function basically search for the
+>>> + *                  correct low pass parameters based on the fifo rate, e.g,
+>>> + *                  sampling frequency.
+>>> + */
+>>> +static int inv_mpu6050_set_lpf(struct inv_mpu6050_state *st, int rate)
+>>> +{
+>>> +	const int hz[] = {188, 98, 42, 20, 10, 5};
+>>> +	const int d[] = {INV_MPU6050_FILTER_188HZ, INV_MPU6050_FILTER_98HZ,
+>>> +			INV_MPU6050_FILTER_42HZ, INV_MPU6050_FILTER_20HZ,
+>>> +			INV_MPU6050_FILTER_10HZ, INV_MPU6050_FILTER_5HZ};
+>>> +	int i, h, result;
+>>> +	u8 data;
+>>> +
+>>> +	h = (rate >> 1);
+>>> +	i = 0;
+>>> +	while ((h < hz[i]) && (i < ARRAY_SIZE(d) - 1))
+>>> +		i++;
+>>> +	data = d[i];
+>>> +	result = regmap_write(st->map, st->reg->lpf, data);
+>>> +	if (result)
+>>> +		return result;
+>>> +	st->chip_config.lpf = data;
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +/**
+>>> + * inv_mpu6050_write_raw_samp_freq() - Set current raw sampling rate.
+>>> + */
+>>> +static int inv_mpu6050_write_raw_samp_freq(struct iio_dev *indio_dev,
+>>> +					   struct inv_mpu6050_state *st,
+>>> +					   int val) {
+>>> +
+>>> +	u8 d;
+>>> +	int result;
+>>> +
+>>> +	if (val < INV_MPU6050_MIN_FIFO_RATE || val > INV_MPU6050_MAX_FIFO_RATE)
+>>> +		return -EINVAL;
+>>> +	if (val == st->chip_config.fifo_rate)
+>>> +		return 0;
+>>> +
+>>> +	mutex_lock(&indio_dev->mlock);
+>> Please take a close look at the write_raw function... It is doing various
+>> things before calling this - including taking mlock. Also does some stuff
+>> afterwards, including some truely mistifying error handling which definitely
+>> looks buggy.
+>>
+> 
+> Maybe would be better to move checks and mutex locks outside?
+Might do.  Have a go and see if looks simpler that way.
+> 
+> About the error handling, looks like it's trying to turn on, write,
+> and turn off with a lot of gotos in the middle to check if it was
+> sucessful. I don't see, though, how it's buggy. Can you enlighten me? (:
+> 
+>>> +	if (st->chip_config.enable) {
+>>> +		result = -EBUSY;
+>>> +		goto fifo_rate_fail;
+>>> +	}
+>>> +
+>>> +	result = inv_mpu6050_set_power_itg(st, true);
+>>> +	if (result)
+>>> +		goto fifo_rate_fail;
+>>> +
+>>> +	d = INV_MPU6050_ONE_K_HZ / val - 1;
+>>> +
+>>> +	result = regmap_write(st->map, st->reg->sample_rate_div, d);
+>>> +
+>>> +	if (result)
+>>> +		goto fifo_rate_fail;
+>>> +
+>>> +	st->chip_config.fifo_rate = val;
+>>> +
+>>> +	result = inv_mpu6050_set_lpf(st, val);
+>>> +
+>>> +	if (result)
+>>> +		goto fifo_rate_fail;
+>>> +
+>>> +fifo_rate_fail:
+>>> +	result |= inv_mpu6050_set_power_itg(st, false);
+What is result now set to?
+>>> +	mutex_unlock(&indio_dev->mlock);
+>>> +
+>>> +	if (result)
+>>> +		return result;
+>>> +
+>>> +	return 0;
+simple return result in all cases should be fine once the above mysterious
+| is dealt with.   If we are in a fail condition we should not overwrite
+or scramble the original error.
+
+>>> +
+>>> +}
+>>> +
+>>> +
+>>>  static int inv_mpu6050_sensor_show(struct inv_mpu6050_state  *st, int reg,
+>>>  				   int axis, int *val)
+>>>  {
+>>> @@ -399,6 +481,10 @@ inv_mpu6050_read_raw(struct iio_dev *indio_dev,
+>>>  		default:
+>>>  			return -EINVAL;
+>>>  		}
+>>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +		*val = st->chip_config.fifo_rate;
+>>> +
+>>> +		return IIO_VAL_INT;
+>>>  	default:
+>>>  		return -EINVAL;
+>>>  	}
+>>> @@ -511,6 +597,10 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+>>>  		default:
+>>>  			result = -EINVAL;
+>>>  		}
+>>> +		break;
+>>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +		result = inv_mpu6050_write_raw_samp_freq(indio_dev, st, val);
+>> Sanity check that val2 == 0 please.
+>>> +		break;
+>>>  	default:
+>>>  		result = -EINVAL;
+>>>  		break;
+>>> @@ -524,98 +614,6 @@ static int inv_mpu6050_write_raw(struct iio_dev *indio_dev,
+>>>  }
+>>>  
+>>>  /**
+>>> - *  inv_mpu6050_set_lpf() - set low pass filer based on fifo rate.
+>>> - *
+>>> - *                  Based on the Nyquist principle, the sampling rate must
+>>> - *                  exceed twice of the bandwidth of the signal, or there
+>>> - *                  would be alising. This function basically search for the
+>>> - *                  correct low pass parameters based on the fifo rate, e.g,
+>>> - *                  sampling frequency.
+>>> - */
+>>> -static int inv_mpu6050_set_lpf(struct inv_mpu6050_state *st, int rate)
+>>> -{
+>>> -	const int hz[] = {188, 98, 42, 20, 10, 5};
+>>> -	const int d[] = {INV_MPU6050_FILTER_188HZ, INV_MPU6050_FILTER_98HZ,
+>>> -			INV_MPU6050_FILTER_42HZ, INV_MPU6050_FILTER_20HZ,
+>>> -			INV_MPU6050_FILTER_10HZ, INV_MPU6050_FILTER_5HZ};
+>>> -	int i, h, result;
+>>> -	u8 data;
+>>> -
+>>> -	h = (rate >> 1);
+>>> -	i = 0;
+>>> -	while ((h < hz[i]) && (i < ARRAY_SIZE(d) - 1))
+>>> -		i++;
+>>> -	data = d[i];
+>>> -	result = regmap_write(st->map, st->reg->lpf, data);
+>>> -	if (result)
+>>> -		return result;
+>>> -	st->chip_config.lpf = data;
+>>> -
+>>> -	return 0;
+>>> -}
+>>> -
+>>> -/**
+>>> - * inv_mpu6050_fifo_rate_store() - Set fifo rate.
+>>> - */
+>>> -static ssize_t
+>>> -inv_mpu6050_fifo_rate_store(struct device *dev, struct device_attribute *attr,
+>>> -			    const char *buf, size_t count)
+>>> -{
+>>> -	s32 fifo_rate;
+>>> -	u8 d;
+>>> -	int result;
+>>> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>> -	struct inv_mpu6050_state *st = iio_priv(indio_dev);
+>>> -
+>>> -	if (kstrtoint(buf, 10, &fifo_rate))
+>>> -		return -EINVAL;
+>>> -	if (fifo_rate < INV_MPU6050_MIN_FIFO_RATE ||
+>>> -	    fifo_rate > INV_MPU6050_MAX_FIFO_RATE)
+>>> -		return -EINVAL;
+>>> -	if (fifo_rate == st->chip_config.fifo_rate)
+>>> -		return count;
+>>> -
+>>> -	mutex_lock(&indio_dev->mlock);
+>>> -	if (st->chip_config.enable) {
+>>> -		result = -EBUSY;
+>>> -		goto fifo_rate_fail;
+>>> -	}
+>>> -	result = inv_mpu6050_set_power_itg(st, true);
+>>> -	if (result)
+>>> -		goto fifo_rate_fail;
+>>> -
+>>> -	d = INV_MPU6050_ONE_K_HZ / fifo_rate - 1;
+>>> -	result = regmap_write(st->map, st->reg->sample_rate_div, d);
+>>> -	if (result)
+>>> -		goto fifo_rate_fail;
+>>> -	st->chip_config.fifo_rate = fifo_rate;
+>>> -
+>>> -	result = inv_mpu6050_set_lpf(st, fifo_rate);
+>>> -	if (result)
+>>> -		goto fifo_rate_fail;
+>>> -
+>>> -fifo_rate_fail:
+>>> -	result |= inv_mpu6050_set_power_itg(st, false);
+>>> -	mutex_unlock(&indio_dev->mlock);
+>>> -	if (result)
+>>> -		return result;
+>>> -
+>>> -	return count;
+>>> -}
+>>> -
+>>> -/**
+>>> - * inv_fifo_rate_show() - Get the current sampling rate.
+>>> - */
+>>> -static ssize_t
+>>> -inv_fifo_rate_show(struct device *dev, struct device_attribute *attr,
+>>> -		   char *buf)
+>>> -{
+>>> -	struct inv_mpu6050_state *st = iio_priv(dev_to_iio_dev(dev));
+>>> -
+>>> -	return sprintf(buf, "%d\n", st->chip_config.fifo_rate);
+>>> -}
+>>> -
+>>> -/**
+>>>   * inv_attr_show() - calling this function will show current
+>>>   *                    parameters.
+>>>   *
+>>> @@ -686,6 +684,7 @@ static const struct iio_chan_spec_ext_info inv_ext_info[] = {
+>>>  		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
+>>>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	      \
+>>>  				      BIT(IIO_CHAN_INFO_CALIBBIAS),   \
+>>> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ), \
+>>>  		.scan_index = _index,                                 \
+>>>  		.scan_type = {                                        \
+>>>  				.sign = 's',                          \
+>>> @@ -708,6 +707,7 @@ static const struct iio_chan_spec inv_mpu_channels[] = {
+>>>  		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
+>>>  				| BIT(IIO_CHAN_INFO_OFFSET)
+>>>  				| BIT(IIO_CHAN_INFO_SCALE),
+>>> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
+>>>  		.scan_index = -1,
+>>>  	},
+>>>  	INV_MPU6050_CHAN(IIO_ANGL_VEL, IIO_MOD_X, INV_MPU6050_SCAN_GYRO_X),
+>>> @@ -725,8 +725,6 @@ static IIO_CONST_ATTR(in_anglvel_scale_available,
+>>>  					  "0.000133090 0.000266181 0.000532362 0.001064724");
+>>>  static IIO_CONST_ATTR(in_accel_scale_available,
+>>>  					  "0.000598 0.001196 0.002392 0.004785");
+>>> -static IIO_DEV_ATTR_SAMP_FREQ(S_IRUGO | S_IWUSR, inv_fifo_rate_show,
+>>> -	inv_mpu6050_fifo_rate_store);
+>>>  
+>>>  /* Deprecated: kept for userspace backward compatibility. */
+>>>  static IIO_DEVICE_ATTR(in_gyro_matrix, S_IRUGO, inv_attr_show, NULL,
+>>> @@ -737,7 +735,6 @@ static IIO_DEVICE_ATTR(in_accel_matrix, S_IRUGO, inv_attr_show, NULL,
+>>>  static struct attribute *inv_attributes[] = {
+>>>  	&iio_dev_attr_in_gyro_matrix.dev_attr.attr,  /* deprecated */
+>>>  	&iio_dev_attr_in_accel_matrix.dev_attr.attr, /* deprecated */
+>>> -	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+>>>  	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
+>>>  	&iio_const_attr_in_accel_scale_available.dev_attr.attr,
+>>>  	&iio_const_attr_in_anglvel_scale_available.dev_attr.attr,
+>>>
+>>
+
