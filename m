@@ -1,95 +1,210 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:36004 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S941144AbcJXU7E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2016 16:59:04 -0400
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to 24MHz
-From: John Syne <john3909@gmail.com>
-In-Reply-To: <20161024060226.4170-1-mugunthanvnm@ti.com>
-Date: Mon, 24 Oct 2016 13:58:55 -0700
-Cc: Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Vignesh R <vigneshr@ti.com>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
-Message-Id: <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com>
-To: Mugunthan V N <mugunthanvnm@ti.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54135 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752343AbcJVSiV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:38:21 -0400
+Subject: Re: [PATCH v2] iio: light: ltr501: claim direct mode during raw
+ writes
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <20161016050209.GA15218@d830.WORKGROUP>
+ <92aa6993-f6a2-a077-f7ff-a1c1f7fa99a6@kernel.org>
+ <alpine.DEB.2.02.1610172307470.31400@pmeerw.net>
+Cc: Alison Schofield <amsfield22@gmail.com>, knaack.h@gmx.de,
+        lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <eff0bc69-aee6-5346-9241-044707c9fad0@kernel.org>
+Date: Sat, 22 Oct 2016 19:38:18 +0100
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.02.1610172307470.31400@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-> On Oct 23, 2016, at 11:02 PM, Mugunthan V N <mugunthanvnm@ti.com> =
-wrote:
->=20
-> Increase ADC reference clock from 3MHz to 24MHz so that the
-> sampling rates goes up from 100K samples per second to 800K
-> samples per second on AM335x and AM437x SoC.
->=20
-> Also increase opendelay for touchscreen configuration to
-> equalize the increase in ADC reference clock frequency,
-> which results in the same amount touch events reported via
-> evtest on AM335x GP EVM.
->=20
-> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
-> ---
->=20
-> This patch depends on ADC DMA patch series [1]
->=20
-> Without DMA support, when ADC ref clock is set at 24MHz, I am
-> seeing fifo overflow as CPU is not able to pull the ADC samples.
-> This answers that DMA support is must for ADC to consume the
-> samples generated at 24MHz with no open, step delay or
-> averaging with patch [2].
->=20
-> Measured the performance with the iio_generic_buffer with the
-> patch [3] applied
->=20
-> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
-> [2] - http://pastebin.ubuntu.com/23357935/
-> [3] - http://pastebin.ubuntu.com/23357939/
->=20
-> ---
-> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
-> 1 file changed, 2 insertions(+), 2 deletions(-)
->=20
-> diff --git a/include/linux/mfd/ti_am335x_tscadc.h =
-b/include/linux/mfd/ti_am335x_tscadc.h
-> index b9a53e0..96c4207 100644
-> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> @@ -90,7 +90,7 @@
-> /* Delay register */
-> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
-> #define STEPDELAY_OPEN(val)	((val) << 0)
-> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
-Wouldn=E2=80=99t this be better to add this to the devicetree?
-
-	ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
-	ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 0x500 0x500 =
-0x500>;
-	ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
-
-Regards,
-John
-> +#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x500)
-> #define STEPDELAY_SAMPLE_MASK	(0xFF << 24)
-> #define STEPDELAY_SAMPLE(val)	((val) << 24)
-> #define STEPCONFIG_SAMPLEDLY	STEPDELAY_SAMPLE(0)
-> @@ -137,7 +137,7 @@
-> #define SEQ_STATUS BIT(5)
-> #define CHARGE_STEP		0x11
->=20
-> -#define ADC_CLK			3000000
-> +#define ADC_CLK			24000000
-> #define TOTAL_STEPS		16
-> #define TOTAL_CHANNELS		8
-> #define FIFO1_THRESHOLD		19
-> --=20
-> 2.10.1.502.g6598894
->=20
+On 17/10/16 22:10, Peter Meerwald-Stadler wrote:
+> On Sun, 16 Oct 2016, Jonathan Cameron wrote:
+> 
+>> On 16/10/16 06:02, Alison Schofield wrote:
+>>> Driver was checking for direct mode but not locking it.  Use
+>>> claim/release helper functions to guarantee the device stays
+>>> in direct mode during all raw write operations.
+>>>
+>>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>>> ---
+>>> Changes in v2:
+>>>   Replaced 'goto release' statements with breaks.
+>>>   The release helper function remains in the same place as in version
+>>>   one of patch, but now break statements control the flow rather than
+>>>   jumping out with goto's.
+>>>   
+>>>   I may have 'break'd more than needed at tail end of nested switch.
+>>>   Tried to follow official c language definition.  
+>>>
+>> I'd have done it exactly the same
+>>
+>> Applied to the togreg branch of iio.git.  Again, Peter, if you have
+>> a chance to look at this that would be great.  If not then not to worry!
+> 
+> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Added to both this and the raw reads patch (on basis I'm assuming you
+don't mind that one 
+>  
+>> Jonathan
+>>>
+>>>  drivers/iio/light/ltr501.c | 81 +++++++++++++++++++++++++++++-----------------
+>>>  1 file changed, 51 insertions(+), 30 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
+>>> index 3afc53a..8f9d5cf 100644
+>>> --- a/drivers/iio/light/ltr501.c
+>>> +++ b/drivers/iio/light/ltr501.c
+>>> @@ -729,8 +729,9 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>>>  	int i, ret, freq_val, freq_val2;
+>>>  	struct ltr501_chip_info *info = data->chip_info;
+>>>  
+>>> -	if (iio_buffer_enabled(indio_dev))
+>>> -		return -EBUSY;
+>>> +	ret = iio_device_claim_direct_mode(indio_dev);
+>>> +	if (ret)
+>>> +		return ret;
+>>>  
+>>>  	switch (mask) {
+>>>  	case IIO_CHAN_INFO_SCALE:
+>>> @@ -739,85 +740,105 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
+>>>  			i = ltr501_get_gain_index(info->als_gain,
+>>>  						  info->als_gain_tbl_size,
+>>>  						  val, val2);
+>>> -			if (i < 0)
+>>> -				return -EINVAL;
+>>> +			if (i < 0) {
+>>> +				ret = -EINVAL;
+>>> +				break;
+>>> +			}
+>>>  
+>>>  			data->als_contr &= ~info->als_gain_mask;
+>>>  			data->als_contr |= i << info->als_gain_shift;
+>>>  
+>>> -			return regmap_write(data->regmap, LTR501_ALS_CONTR,
+>>> -					    data->als_contr);
+>>> +			ret = regmap_write(data->regmap, LTR501_ALS_CONTR,
+>>> +					   data->als_contr);
+>>> +			break;
+>>>  		case IIO_PROXIMITY:
+>>>  			i = ltr501_get_gain_index(info->ps_gain,
+>>>  						  info->ps_gain_tbl_size,
+>>>  						  val, val2);
+>>> -			if (i < 0)
+>>> -				return -EINVAL;
+>>> +			if (i < 0) {
+>>> +				ret = -EINVAL;
+>>> +				break;
+>>> +			}
+>>>  			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
+>>>  			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
+>>>  
+>>> -			return regmap_write(data->regmap, LTR501_PS_CONTR,
+>>> -					    data->ps_contr);
+>>> +			ret = regmap_write(data->regmap, LTR501_PS_CONTR,
+>>> +					   data->ps_contr);
+>>> +			break;
+>>>  		default:
+>>> -			return -EINVAL;
+>>> +			ret = -EINVAL;
+>>> +			break;
+>>>  		}
+>>> +		break;
+>>> +
+>>>  	case IIO_CHAN_INFO_INT_TIME:
+>>>  		switch (chan->type) {
+>>>  		case IIO_INTENSITY:
+>>> -			if (val != 0)
+>>> -				return -EINVAL;
+>>> +			if (val != 0) {
+>>> +				ret = -EINVAL;
+>>> +				break;
+>>> +			}
+>>>  			mutex_lock(&data->lock_als);
+>>> -			i = ltr501_set_it_time(data, val2);
+>>> +			ret = ltr501_set_it_time(data, val2);
+>>>  			mutex_unlock(&data->lock_als);
+>>> -			return i;
+>>> +			break;
+>>>  		default:
+>>> -			return -EINVAL;
+>>> +			ret = -EINVAL;
+>>> +			break;
+>>>  		}
+>>> +		break;
+>>> +
+>>>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>>>  		switch (chan->type) {
+>>>  		case IIO_INTENSITY:
+>>>  			ret = ltr501_als_read_samp_freq(data, &freq_val,
+>>>  							&freq_val2);
+>>>  			if (ret < 0)
+>>> -				return ret;
+>>> +				break;
+>>>  
+>>>  			ret = ltr501_als_write_samp_freq(data, val, val2);
+>>>  			if (ret < 0)
+>>> -				return ret;
+>>> +				break;
+>>>  
+>>>  			/* update persistence count when changing frequency */
+>>>  			ret = ltr501_write_intr_prst(data, chan->type,
+>>>  						     0, data->als_period);
+>>>  
+>>>  			if (ret < 0)
+>>> -				return ltr501_als_write_samp_freq(data,
+>>> -								  freq_val,
+>>> -								  freq_val2);
+>>> -			return ret;
+>>> +				ret = ltr501_als_write_samp_freq(data, freq_val,
+>>> +								 freq_val2);
+>>> +			break;
+>>>  		case IIO_PROXIMITY:
+>>>  			ret = ltr501_ps_read_samp_freq(data, &freq_val,
+>>>  						       &freq_val2);
+>>>  			if (ret < 0)
+>>> -				return ret;
+>>> +				break;
+>>>  
+>>>  			ret = ltr501_ps_write_samp_freq(data, val, val2);
+>>>  			if (ret < 0)
+>>> -				return ret;
+>>> +				break;
+>>>  
+>>>  			/* update persistence count when changing frequency */
+>>>  			ret = ltr501_write_intr_prst(data, chan->type,
+>>>  						     0, data->ps_period);
+>>>  
+>>>  			if (ret < 0)
+>>> -				return ltr501_ps_write_samp_freq(data,
+>>> -								 freq_val,
+>>> -								 freq_val2);
+>>> -			return ret;
+>>> +				ret = ltr501_ps_write_samp_freq(data, freq_val,
+>>> +								freq_val2);
+>>> +			break;
+>>>  		default:
+>>> -			return -EINVAL;
+>>> +			ret = -EINVAL;
+>>> +			break;
+>>>  		}
+>>> +		break;
+>>> +
+>>> +	default:
+>>> +		ret = -EINVAL;
+>>> +		break;
+>>>  	}
+>>> -	return -EINVAL;
+>>> +
+>>> +	iio_device_release_direct_mode(indio_dev);
+>>> +	return ret;
+>>>  }
+>>>  
+>>>  static int ltr501_read_thresh(struct iio_dev *indio_dev,
+>>>
+>>
+> 
 
