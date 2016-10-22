@@ -1,177 +1,172 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53611 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53617 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935413AbcJVRCG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:02:06 -0400
-Subject: Re: [PATCH 07/13] staging:iio:ad7606: Factor out common code between
- periodic and one-shot capture
+        with ESMTP id S935413AbcJVRCn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 13:02:43 -0400
+Subject: Re: [PATCH 09/13] staging:iio:ad7606: Let the common probe function
+ return int
 To: Lars-Peter Clausen <lars@metafoo.de>
 References: <1476896828-10544-1-git-send-email-lars@metafoo.de>
- <1476896828-10544-8-git-send-email-lars@metafoo.de>
+ <1476896828-10544-10-git-send-email-lars@metafoo.de>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cc407e3d-ab6c-095d-f42e-a9a0b31366de@kernel.org>
-Date: Sat, 22 Oct 2016 18:02:04 +0100
+Message-ID: <d35de0e7-0c4b-645b-e2aa-f0e6d4a70931@kernel.org>
+Date: Sat, 22 Oct 2016 18:02:42 +0100
 MIME-Version: 1.0
-In-Reply-To: <1476896828-10544-8-git-send-email-lars@metafoo.de>
+In-Reply-To: <1476896828-10544-10-git-send-email-lars@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 19/10/16 18:07, Lars-Peter Clausen wrote:
-> Both the periodic buffer based and one-shot sysfs based capture methods
-> share a large portion of their code. Factor this out into a common helper
-> function.
+> The common probe function for the ad7606 currently returns a struct iio_dev
+> pointer. The returned value is not used by the individual driver probe
+> functions other than for error checking.
 > 
-> Also provide a comment that better explains in more detail what is going on
-> in the capture function.
+> Let the common probe function return a int instead to report the error
+> value directly (or 0 on success). This allows to simplify the code.
 > 
 > Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Few comments inline, but nothing that actually matters.
+Applied.  Amazing how this convoluted stuff ends up in drivers
+sometimes ;)
 
 Jonathan
 > ---
->  drivers/staging/iio/adc/ad7606.h      |  1 +
->  drivers/staging/iio/adc/ad7606_core.c | 58 ++++++++++++++++++++++-------------
->  drivers/staging/iio/adc/ad7606_ring.c | 30 +++---------------
->  3 files changed, 41 insertions(+), 48 deletions(-)
+>  drivers/staging/iio/adc/ad7606.h      |  7 +++----
+>  drivers/staging/iio/adc/ad7606_core.c | 15 +++++++--------
+>  drivers/staging/iio/adc/ad7606_par.c  | 14 ++++----------
+>  drivers/staging/iio/adc/ad7606_spi.c  | 12 +++---------
+>  4 files changed, 17 insertions(+), 31 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-> index 129f94e..2257bdb 100644
+> index 2257bdb..b4b25a2 100644
 > --- a/drivers/staging/iio/adc/ad7606.h
 > +++ b/drivers/staging/iio/adc/ad7606.h
-> @@ -84,6 +84,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
->  			      const struct ad7606_bus_ops *bops);
+> @@ -78,10 +78,9 @@ struct ad7606_bus_ops {
+>  	int (*read_block)(struct device *, int, void *);
+>  };
+>  
+> -struct iio_dev *ad7606_probe(struct device *dev, int irq,
+> -			      void __iomem *base_address,
+> -			      const char *name, unsigned int id,
+> -			      const struct ad7606_bus_ops *bops);
+> +int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+> +		 const char *name, unsigned int id,
+> +		 const struct ad7606_bus_ops *bops);
 >  int ad7606_remove(struct iio_dev *indio_dev, int irq);
 >  int ad7606_reset(struct ad7606_state *st);
-> +int ad7606_read_samples(struct ad7606_state *st);
->  
->  enum ad7606_supported_device_ids {
->  	ID_AD7606_8,
+>  int ad7606_read_samples(struct ad7606_state *st);
 > diff --git a/drivers/staging/iio/adc/ad7606_core.c b/drivers/staging/iio/adc/ad7606_core.c
-> index 7c093e2..4ce103a 100644
+> index 13d8090..1ee7a29 100644
 > --- a/drivers/staging/iio/adc/ad7606_core.c
 > +++ b/drivers/staging/iio/adc/ad7606_core.c
-> @@ -36,6 +36,39 @@ int ad7606_reset(struct ad7606_state *st)
->  	return -ENODEV;
->  }
+> @@ -443,10 +443,9 @@ static const struct iio_info ad7606_info_range = {
+>  	.attrs = &ad7606_attribute_group_range,
+>  };
 >  
-> +int ad7606_read_samples(struct ad7606_state *st)
-> +{
-> +	unsigned int num = st->chip_info->num_channels;
-> +	u16 *data = st->data;
-> +	int ret;
-> +
-> +	/*
-> +	 * The frstdata signal is set to high while and after reading the sample
-> +	 * of the first channel and low for all other channels. This can be used
-> +	 * to check that the incoming data is correctly aligned. During normal
-> +	 * operation the data should never become unaligned, but some glitch or
-> +	 * electrostatic discharge might cause an extra read or clock cycle.
-> +	 * Monitoring the frstdata signal allows to recover from such failure
-> +	 * situations.
-> +	 */
-Serious paranoia ;)
-> +
-> +	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
-> +		ret = st->bops->read_block(st->dev, 1, data);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
-> +			ad7606_reset(st);
-> +			return -EIO;
-> +		}
-> +
-> +		data++;
-> +		num--;
-> +	}
-> +
-> +	return st->bops->read_block(st->dev, num, data);
-> +}
-> +
->  static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
+> -struct iio_dev *ad7606_probe(struct device *dev, int irq,
+> -			     void __iomem *base_address,
+> -			     const char *name, unsigned int id,
+> -			     const struct ad7606_bus_ops *bops)
+> +int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+> +		 const char *name, unsigned int id,
+> +		 const struct ad7606_bus_ops *bops)
 >  {
->  	struct ad7606_state *st = iio_priv(indio_dev);
-> @@ -48,28 +81,9 @@ static int ad7606_scan_direct(struct iio_dev *indio_dev, unsigned int ch)
->  	if (ret)
->  		goto error_ret;
+>  	struct ad7606_platform_data *pdata = dev->platform_data;
+>  	struct ad7606_state *st;
+> @@ -455,7 +454,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
 >  
-> -	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
-> -		ret = st->bops->read_block(st->dev, 1, st->data);
-> -		if (ret)
-> -			goto error_ret;
-> -		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
-> -			/* This should never happen */
-> -			ad7606_reset(st);
-> -			ret = -EIO;
-> -			goto error_ret;
-> -		}
-> -		ret = st->bops->read_block(st->dev,
-> -			st->chip_info->num_channels - 1, &st->data[1]);
-> -		if (ret)
-> -			goto error_ret;
-> -	} else {
-> -		ret = st->bops->read_block(st->dev,
-> -			st->chip_info->num_channels, st->data);
-> -		if (ret)
-> -			goto error_ret;
-> -	}
-> -
-> -	ret = st->data[ch];
-> +	ret = ad7606_read_samples(st);
-> +	if (ret == 0)
-> +		ret = st->data[ch];
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
+>  	if (!indio_dev)
+> -		return ERR_PTR(-ENOMEM);
+> +		return -ENOMEM;
 >  
->  error_ret:
->  	gpio_set_value(st->pdata->gpio_convst, 0);
-> diff --git a/drivers/staging/iio/adc/ad7606_ring.c b/drivers/staging/iio/adc/ad7606_ring.c
-> index 7fa4ccc..b7bf0cf 100644
-> --- a/drivers/staging/iio/adc/ad7606_ring.c
-> +++ b/drivers/staging/iio/adc/ad7606_ring.c
-> @@ -48,33 +48,11 @@ static void ad7606_poll_bh_to_ring(struct work_struct *work_s)
->  	struct iio_dev *indio_dev = iio_priv_to_dev(st);
->  	int ret;
+>  	st = iio_priv(indio_dev);
 >  
-> -	if (gpio_is_valid(st->pdata->gpio_frstdata)) {
-> -		ret = st->bops->read_block(st->dev, 1, st->data);
-> -		if (ret)
-> -			goto done;
-> -		if (!gpio_get_value(st->pdata->gpio_frstdata)) {
-> -			/* This should never happen. However
-> -			 * some signal glitch caused by bad PCB desgin or
-> -			 * electrostatic discharge, could cause an extra read
-> -			 * or clock. This allows recovery.
-> -			 */
-> -			ad7606_reset(st);
-> -			goto done;
-> -		}
-> -		ret = st->bops->read_block(st->dev,
-> -			st->chip_info->num_channels - 1, st->data + 1);
-> -		if (ret)
-> -			goto done;
-> -	} else {
-> -		ret = st->bops->read_block(st->dev,
-> -			st->chip_info->num_channels, st->data);
-> -		if (ret)
-> -			goto done;
-> -	}
-> +	ret = ad7606_read_samples(st);
-I personally always slightly prefer the 'good' path to not be out of the
-'direct' flow.
-
-Still minor point and I don't care that much!
-> +	if (ret == 0)
-> +		iio_push_to_buffers_with_timestamp(indio_dev, st->data,
-> +						   iio_get_time_ns(indio_dev));
+> @@ -469,7 +468,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+>  	if (!IS_ERR(st->reg)) {
+>  		ret = regulator_enable(st->reg);
+>  		if (ret)
+> -			return ERR_PTR(ret);
+> +			return ret;
+>  	}
 >  
-> -	iio_push_to_buffers_with_timestamp(indio_dev, st->data,
-> -					   iio_get_time_ns(indio_dev));
-> -done:
->  	gpio_set_value(st->pdata->gpio_convst, 0);
->  	iio_trigger_notify_done(indio_dev->trig);
+>  	st->pdata = pdata;
+> @@ -519,7 +518,7 @@ struct iio_dev *ad7606_probe(struct device *dev, int irq,
+>  
+>  	dev_set_drvdata(dev, indio_dev);
+>  
+> -	return indio_dev;
+> +	return 0;
+>  error_unregister_ring:
+>  	ad7606_ring_cleanup(indio_dev);
+>  
+> @@ -532,7 +531,7 @@ error_free_gpios:
+>  error_disable_reg:
+>  	if (!IS_ERR(st->reg))
+>  		regulator_disable(st->reg);
+> -	return ERR_PTR(ret);
+> +	return ret;
 >  }
+>  EXPORT_SYMBOL_GPL(ad7606_probe);
+>  
+> diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/staging/iio/adc/ad7606_par.c
+> index c273993..42eb9e0 100644
+> --- a/drivers/staging/iio/adc/ad7606_par.c
+> +++ b/drivers/staging/iio/adc/ad7606_par.c
+> @@ -51,7 +51,6 @@ static int ad7606_par_probe(struct platform_device *pdev)
+>  {
+>  	const struct platform_device_id *id = platform_get_device_id(pdev);
+>  	struct resource *res;
+> -	struct iio_dev *indio_dev;
+>  	void __iomem *addr;
+>  	resource_size_t remap_size;
+>  	int irq;
+> @@ -69,15 +68,10 @@ static int ad7606_par_probe(struct platform_device *pdev)
+>  
+>  	remap_size = resource_size(res);
+>  
+> -	indio_dev = ad7606_probe(&pdev->dev, irq, addr,
+> -				 id->name, id->driver_data,
+> -				 remap_size > 1 ? &ad7606_par16_bops :
+> -				 &ad7606_par8_bops);
+> -
+> -	if (IS_ERR(indio_dev))
+> -		return PTR_ERR(indio_dev);
+> -
+> -	return 0;
+> +	return ad7606_probe(&pdev->dev, irq, addr,
+> +			    id->name, id->driver_data,
+> +			    remap_size > 1 ? &ad7606_par16_bops :
+> +			    &ad7606_par8_bops);
+>  }
+>  
+>  static int ad7606_par_remove(struct platform_device *pdev)
+> diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/staging/iio/adc/ad7606_spi.c
+> index 9abbc15..064c4c2 100644
+> --- a/drivers/staging/iio/adc/ad7606_spi.c
+> +++ b/drivers/staging/iio/adc/ad7606_spi.c
+> @@ -43,16 +43,10 @@ static const struct ad7606_bus_ops ad7606_spi_bops = {
+>  static int ad7606_spi_probe(struct spi_device *spi)
+>  {
+>  	const struct spi_device_id *id = spi_get_device_id(spi);
+> -	struct iio_dev *indio_dev;
+>  
+> -	indio_dev = ad7606_probe(&spi->dev, spi->irq, NULL,
+> -				 id->name, id->driver_data,
+> -				 &ad7606_spi_bops);
+> -
+> -	if (IS_ERR(indio_dev))
+> -		return PTR_ERR(indio_dev);
+> -
+> -	return 0;
+> +	return ad7606_probe(&spi->dev, spi->irq, NULL,
+> +			    id->name, id->driver_data,
+> +			    &ad7606_spi_bops);
+>  }
+>  
+>  static int ad7606_spi_remove(struct spi_device *spi)
 > 
 
