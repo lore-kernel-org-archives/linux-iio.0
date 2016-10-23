@@ -1,94 +1,225 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:34253 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754702AbcJYGB7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 02:01:59 -0400
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to 24MHz
-From: John Syne <john3909@gmail.com>
-In-Reply-To: <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
-Date: Mon, 24 Oct 2016 23:01:56 -0700
-Cc: Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Vignesh R <vigneshr@ti.com>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
-Message-Id: <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com> <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com> <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
-To: Mugunthan V N <mugunthanvnm@ti.com>
+Received: from mail-db5eur01on0094.outbound.protection.outlook.com ([104.47.2.94]:56685
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1756988AbcJXBOk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 23 Oct 2016 21:14:40 -0400
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH v3 3/8] iio: mcp4531: provide range of available raw values
+Date: Mon, 24 Oct 2016 00:39:36 +0200
+Message-ID: <1477262381-7800-4-git-send-email-peda@axentia.se>
+In-Reply-To: <1477262381-7800-1-git-send-email-peda@axentia.se>
+References: <1477262381-7800-1-git-send-email-peda@axentia.se>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Example:
 
-> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> =
-wrote:
->=20
-> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
->>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N <mugunthanvnm@ti.com> =
-wrote:
->>>>=20
->>>> Increase ADC reference clock from 3MHz to 24MHz so that the
->>>> sampling rates goes up from 100K samples per second to 800K
->>>> samples per second on AM335x and AM437x SoC.
->>>>=20
->>>> Also increase opendelay for touchscreen configuration to
->>>> equalize the increase in ADC reference clock frequency,
->>>> which results in the same amount touch events reported via
->>>> evtest on AM335x GP EVM.
->>>>=20
->>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
->>>> ---
->>>>=20
->>>> This patch depends on ADC DMA patch series [1]
->>>>=20
->>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
->>>> seeing fifo overflow as CPU is not able to pull the ADC samples.
->>>> This answers that DMA support is must for ADC to consume the
->>>> samples generated at 24MHz with no open, step delay or
->>>> averaging with patch [2].
->>>>=20
->>>> Measured the performance with the iio_generic_buffer with the
->>>> patch [3] applied
->>>>=20
->>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
->>>> [2] - http://pastebin.ubuntu.com/23357935/
->>>> [3] - http://pastebin.ubuntu.com/23357939/
->>>>=20
->>>> ---
->>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
->>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>=20
->>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h =
-b/include/linux/mfd/ti_am335x_tscadc.h
->>>> index b9a53e0..96c4207 100644
->>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
->>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->>>> @@ -90,7 +90,7 @@
->>>> /* Delay register */
->>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
->>>> #define STEPDELAY_OPEN(val)	((val) << 0)
->>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
->> Wouldn=E2=80=99t this be better to add this to the devicetree?
->>=20
->> 	ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
->> 	ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 0x500 0x500 =
-0x500>;
->> 	ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
->=20
-> For a touch screen, there is not need to change in these parameter
-> settings, so my opinion is to keep it as is. Or am I missing =
-something?
-I was thinking that if you are using this driver as an ADC, you may want =
-the flexibility to make these changes in the DT. I=E2=80=99m doing this =
-by connecting sensors to the ADC inputs. I=E2=80=99m not using this =
-driver for a touchscreen.=20
+$ cat '/sys/bus/iio/devices/iio:device0/out_resistance_raw_available'
+[0 1 256]
 
-Regards,
-John
->=20
-> Regards
-> Mugunthan V N
+Meaning: min 0, step 1 and max 256.
+
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../testing/sysfs-bus-iio-potentiometer-mcp4531    |   8 ++
+ MAINTAINERS                                        |   1 +
+ drivers/iio/potentiometer/mcp4531.c                | 104 ++++++++++++---------
+ 3 files changed, 71 insertions(+), 42 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531 b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+new file mode 100644
+index 000000000000..2a91fbe394fc
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+@@ -0,0 +1,8 @@
++What:		/sys/bus/iio/devices/iio:deviceX/out_resistance_raw_available
++Date:		October 2016
++KernelVersion:	4.9
++Contact:	Peter Rosin <peda@axentia.se>
++Description:
++		The range of available values represented as the minimum value,
++		the step and the maximum value, all enclosed in square brackets.
++		Example: [0 1 256]
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 1cd38a7e0064..7c65585e1230 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -7694,6 +7694,7 @@ MCP4531 MICROCHIP DIGITAL POTENTIOMETER DRIVER
+ M:	Peter Rosin <peda@axentia.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
++F:	Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+ F:	drivers/iio/potentiometer/mcp4531.c
+ 
+ MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
+diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
+index 13b6ae2fcf7b..0d1bcf89ae17 100644
+--- a/drivers/iio/potentiometer/mcp4531.c
++++ b/drivers/iio/potentiometer/mcp4531.c
+@@ -38,7 +38,7 @@
+ 
+ struct mcp4531_cfg {
+ 	int wipers;
+-	int max_pos;
++	int avail[3];
+ 	int kohms;
+ };
+ 
+@@ -78,38 +78,38 @@ enum mcp4531_type {
+ };
+ 
+ static const struct mcp4531_cfg mcp4531_cfg[] = {
+-	[MCP453x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+-	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+-	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+-	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+-	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+-	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+-	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+-	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+-	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+-	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+-	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+-	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+-	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+-	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+-	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+-	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+-	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+-	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+-	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+-	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+-	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+-	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+-	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+-	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+-	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+-	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+-	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+-	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+-	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+-	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+-	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+-	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
++	[MCP453x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
++	[MCP453x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
++	[MCP453x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
++	[MCP453x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
++	[MCP454x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
++	[MCP454x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
++	[MCP454x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
++	[MCP454x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
++	[MCP455x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
++	[MCP455x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
++	[MCP455x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
++	[MCP455x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
++	[MCP456x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
++	[MCP456x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
++	[MCP456x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
++	[MCP456x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
++	[MCP463x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
++	[MCP463x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
++	[MCP463x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
++	[MCP463x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
++	[MCP464x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
++	[MCP464x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
++	[MCP464x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
++	[MCP464x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
++	[MCP465x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
++	[MCP465x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
++	[MCP465x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
++	[MCP465x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
++	[MCP466x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
++	[MCP466x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
++	[MCP466x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
++	[MCP466x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
+ };
+ 
+ #define MCP4531_WRITE (0 << 2)
+@@ -124,13 +124,14 @@ struct mcp4531_data {
+ 	const struct mcp4531_cfg *cfg;
+ };
+ 
+-#define MCP4531_CHANNEL(ch) {					\
+-	.type = IIO_RESISTANCE,					\
+-	.indexed = 1,						\
+-	.output = 1,						\
+-	.channel = (ch),					\
+-	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++#define MCP4531_CHANNEL(ch) {						\
++	.type = IIO_RESISTANCE,						\
++	.indexed = 1,							\
++	.output = 1,							\
++	.channel = (ch),						\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
++	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
+ }
+ 
+ static const struct iio_chan_spec mcp4531_channels[] = {
+@@ -156,13 +157,31 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_SCALE:
+ 		*val = 1000 * data->cfg->kohms;
+-		*val2 = data->cfg->max_pos;
++		*val2 = data->cfg->avail[2];
+ 		return IIO_VAL_FRACTIONAL;
+ 	}
+ 
+ 	return -EINVAL;
+ }
+ 
++static int mcp4531_read_avail(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      const int **vals, int *type, int *length,
++			      long mask)
++{
++	struct mcp4531_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*length = ARRAY_SIZE(data->cfg->avail);
++		*vals = data->cfg->avail;
++		*type = IIO_VAL_INT;
++		return IIO_AVAIL_RANGE;
++	}
++
++	return -EINVAL;
++}
++
+ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+ 			     struct iio_chan_spec const *chan,
+ 			     int val, int val2, long mask)
+@@ -172,7 +191,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_RAW:
+-		if (val > data->cfg->max_pos || val < 0)
++		if (val > data->cfg->avail[2] || val < 0)
+ 			return -EINVAL;
+ 		break;
+ 	default:
+@@ -186,6 +205,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+ 
+ static const struct iio_info mcp4531_info = {
+ 	.read_raw = mcp4531_read_raw,
++	.read_avail = mcp4531_read_avail,
+ 	.write_raw = mcp4531_write_raw,
+ 	.driver_module = THIS_MODULE,
+ };
+-- 
+2.1.4
 
