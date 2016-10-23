@@ -1,595 +1,418 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:35699 "EHLO
-        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756477AbcJWPTU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 11:19:20 -0400
-From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH v8 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
-Date: Sun, 23 Oct 2016 17:18:57 +0200
-Message-Id: <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1477235446.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1477235446.git.ksenija.stanojevic@gmail.com>
-References: <cover.1477235446.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1477235446.git.ksenija.stanojevic@gmail.com>
-References: <cover.1477235446.git.ksenija.stanojevic@gmail.com>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.162]:16136 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756682AbcJWSgU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 14:36:20 -0400
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v4 4/8] drivers:input:tsc2007: add iio interface to read external ADC input and temperature
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <976C7328-A6AA-4CD5-AAAA-3B14BA3BD793@goldelico.com>
+Date: Sun, 23 Oct 2016 20:34:56 +0200
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        kernel@pyra-handheld.com, Tony Lindgren <tony@atomide.com>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        linux-input@vger.kernel.org, Michael Welling <mwelling@ieee.org>,
+        letux-kernel@openphoenux.org, "Andrew F. Davis" <afd@ti.com>,
+        Igor Grinberg <grinberg@compulab.co.il>
+Message-Id: <F0CB8C7F-29FD-41DF-A652-9D1AF7824D5F@goldelico.com>
+References: <cover.1476712675.git.hns@goldelico.com> <4d3c600bf0a6b75a74212a103bf31525505290a0.1476712675.git.hns@goldelico.com> <07bb4d52-a439-f9a9-8593-ddde8e93e6ee@kernel.org> <7A0E332C-4930-4F1A-8320-F87F864B53AE@goldelico.com> <1dd251db-7f45-78bf-c9dd-4ae29b0ed757@kernel.org> <976C7328-A6AA-4CD5-AAAA-3B14BA3BD793@goldelico.com>
+To: Jonathan Cameron <jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add core files for mxs-lradc MFD driver.
+Hi Jonathan,
 
-Note:  this patch won't compile in iio/testing without this patch:
-a8f447be8056 ("mfd: Add resource managed APIs for mfd_add_devices")
+> Am 23.10.2016 um 11:57 schrieb H. Nikolaus Schaller =
+<hns@goldelico.com>:
+>=20
+> Hi,
+>=20
+>>> +static int tsc2007_alloc(struct i2c_client *client, struct tsc2007 =
+**ts,
+>>> +                          struct input_dev **input_dev)
+>>> +{
+>>> +       int err;
+>>> +       struct iio_dev *indio_dev;
+>>> +
+>>> +       indio_dev =3D devm_iio_device_alloc(&client->dev, =
+sizeof(*ts));
+>> Instead of doing this to reduce the delta between versions make=20
+>> iio_priv a struct tsc2007 **
+>>=20
+>> That is have a single pointer in there and do your allocation of =
+struct
+>> tsc2007 separately.
+>=20
+> Sorry, but I think I do not completely understand what you mean here.
+>=20
+> The problem is that we need to allocate some struct tsc2007 in both =
+cases.
+> But in one case managed directly by &client->dev and in the other =
+managed
+> indirectly. This is why I use the private area of struct iio_dev to =
+store
+> the full struct tsc2007 and not just a pointer.
 
-Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
----
-Changes in v8:
- - rebase onto 4.9-rc1
+Ok, I think I finally did understand how you mean this and have started =
+to
+implement something.
 
-Changes in v7:
- - define macros ADC_CELL and TSC_CELL
- - remove one cell and dynamically set them in the switch()
- - fail in the touchscreen driver instead of mfd driver if
-   hardware doesn't contain a touchscreen
+The idea is to have one alloc function to return a struct tsc2007. This
+can be part of the probe function, like it is in the unpatched driver.
 
-Changes in v6:
- - update copyright
- - add kernel-doc header for struct mxs-lradc
- - add error message
- - change EINVAL to ENODEV
- - use PLATFORM_DEVID_NONE instead -1
- - cosmetic fixes
+In case of iio this struct tsc2007 is also allocated explicitly so that
+a pointer can be stored in iio_priv.
 
-Changes in v5:
- - use DEFINE_RES_MEM
- - don't pass ioreammaped adress to platform cells
- - move comment outside of struct mxs_lradc
- - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
-   mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
+This just means an additional iio_priv->ts =3D devm_kzalloc() in case of =
+iio.
 
-Changes in v4:
- - update copyright
- - use DEFINE_RES_IRQ_NAMED
- - remove mxs_lradc_add_device function
- - use struct mfd_cell in static form
- - improve spacing
- - remove unnecessary comment
- - remove platform_get_irq
- - remove touch_ret and use ret instead
- - rename use_touchscreen to touchscreen_wire
- - use goto statements
- - remove irq[13], irq_count and irq_name from struct mxs_lradc
- - remove all defines from inside the struct definition
+I have added that approach to my inlined patch and it seems to work =
+(attached).
 
-Changes in v3:
- - add note to commit message
- - move switch statement into if(touch_ret == 0) branch
- - add MODULE_AUTHOR
+Sorry if I do not use the wording you would use and sometimes overlook
+something you have said. I feel here like moving on thin ice and doing
+guesswork about unspoken assumptions...
 
-Changes in v2:
- - do not change spacing in Kconfig
- - make struct mfd_cell part of struct mxs_lradc
- - use switch instead of if in mxs_lradc_irq_mask
- - use only necessary header files in mxs_lradc.h
- - use devm_mfd_add_device
- - use separate function to register mfd device
- - change licence to GPL
- - add copyright
+>=20
+>>=20
+>> Having doing that, you can have this CONFIG_IIO block as just
+>> doing the iio stuff with the input elements pulled back into the main
+>> probe function.
+>>=20
+>> Then define something like
+>>=20
+>> iio_configure (stubbed to nothing if no IIO)
+>> and
+>> iio_unconfigure (also stubbed to nothing if no IIO).
 
- drivers/mfd/Kconfig           |  17 +++
- drivers/mfd/Makefile          |   1 +
- drivers/mfd/mxs-lradc.c       | 249 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/mxs-lradc.h | 203 ++++++++++++++++++++++++++++++++++
- 4 files changed, 470 insertions(+)
- create mode 100644 drivers/mfd/mxs-lradc.c
- create mode 100644 include/linux/mfd/mxs-lradc.h
+This seems to work (draft attached).
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index c6df644..bdd88cf 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -326,6 +326,23 @@ config MFD_MC13XXX_I2C
- 	help
- 	  Select this if your MC13xxx is connected via an I2C bus.
- 
-+config MFD_MXS_LRADC
-+	tristate "Freescale i.MX23/i.MX28 LRADC"
-+	depends on ARCH_MXS || COMPILE_TEST
-+	select MFD_CORE
-+	select STMP_DEVICE
-+	help
-+	  Say yes here to build support for the Low Resolution
-+	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
-+	  processors. This driver provides common support for accessing the
-+	  device, additional drivers must be enabled in order to use the
-+	  functionality of the device:
-+		mxs-lradc-adc for ADC readings
-+		mxs-lradc-ts  for touchscreen support
+>>=20
+>> A couple of additions in the header
+
+I think you mean tsc2007.h?
+
+This currently contains only platform data and could IMHO be eliminated
+if everything becomes DT.
+
+>> to make it all work
+>> (the struct tsc2007 and tsc2007_xfer() + a few of the
+>> register defines..
+
+Here it appears to me that I have to make a lot of so far private static
+and even static inline functions public so that I can make them stubs =
+and
+call them from tsc2007_iio.c.
+
+And for having proper parameter types I have to make most private =
+structs
+also public.
+
+I really like the idea to have the optional iio feature in a separate =
+source
+file, but when really starting to write code, I get the impression that
+it introduces more problems than it solves.
+
+And I wonder a little why it is not done for #ifdef CONFIG_OF in =
+tsc2007.c
+as well. There are also two static function in some #ifdef #else # endif
+and not going through stubs.
+
+So is this intended to give up some static definitions?
+
+BR and thanks,
+Nikolaus
+
+diff --git a/drivers/input/touchscreen/tsc2007.c =
+b/drivers/input/touchscreen/tsc2007.c
+index 5e3c4bf..92da8f6 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -30,6 +30,7 @@
+ #include <linux/of.h>
+ #include <linux/of_gpio.h>
+ #include <linux/input/touchscreen.h>
++#include <linux/iio/iio.h>
+=20
+ #define TSC2007_MEASURE_TEMP0          (0x0 << 4)
+ #define TSC2007_MEASURE_AUX            (0x2 << 4)
+@@ -98,6 +99,9 @@ struct tsc2007 {
+=20
+        int                     (*get_pendown_state)(struct device *);
+        void                    (*clear_penirq)(void);
 +
-+	  This driver can also be built as a module. If so, the module will be
-+	  called mxs-lradc.
++       struct mutex            mlock;
++       void                    *private;
+ };
+=20
+ static inline int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
+@@ -192,7 +196,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, void =
+*handle)
+        while (!ts->stopped && tsc2007_is_pen_down(ts)) {
+=20
+                /* pen is down, continue with the measurement */
 +
- config MFD_MX25_TSADC
- 	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
- 	select REGMAP_MMIO
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 9834e66..057ca15 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -211,3 +211,4 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
- obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
- 
- obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
-+obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
-diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
-new file mode 100644
-index 0000000..ffc8f2e
---- /dev/null
-+++ b/drivers/mfd/mxs-lradc.c
-@@ -0,0 +1,249 @@
-+/*
-+ * Freescale MXS Low Resolution Analog-to-Digital Converter driver
-+ *
-+ * Copyright (c) 2012 DENX Software Engineering, GmbH.
-+ * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-+ *
-+ * Authors:
-+ *  Marek Vasut <marex@denx.de>
-+ *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
++               mutex_lock(&ts->mlock);
+                tsc2007_read_values(ts, &tc);
++               mutex_unlock(&ts->mlock);
+=20
+                rt =3D tsc2007_calculate_resistance(ts, &tc);
+=20
+@@ -319,6 +326,157 @@ static void tsc2007_close(struct input_dev =
+*input_dev)
+        tsc2007_stop(ts);
+ }
+=20
++#ifdef CONFIG_IIO
 +
-+#include <linux/clk.h>
-+#include <linux/device.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mfd/mxs-lradc.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+#include <linux/slab.h>
-+
-+#define MXS_LRADC_BASE		0x80050000
-+#define ADC_CELL		0
-+#define TSC_CELL		1
-+
-+enum mx23_lradc_irqs {
-+	MX23_LRADC_TS_IRQ = 0,
-+	MX23_LRADC_CH0_IRQ,
-+	MX23_LRADC_CH1_IRQ,
-+	MX23_LRADC_CH2_IRQ,
-+	MX23_LRADC_CH3_IRQ,
-+	MX23_LRADC_CH4_IRQ,
-+	MX23_LRADC_CH5_IRQ,
-+	MX23_LRADC_CH6_IRQ,
-+	MX23_LRADC_CH7_IRQ,
++struct tsc2007_iio {
++       struct tsc2007 *ts;
 +};
 +
-+enum mx28_lradc_irqs {
-+	MX28_LRADC_TS_IRQ = 0,
-+	MX28_LRADC_TRESH0_IRQ,
-+	MX28_LRADC_TRESH1_IRQ,
-+	MX28_LRADC_CH0_IRQ,
-+	MX28_LRADC_CH1_IRQ,
-+	MX28_LRADC_CH2_IRQ,
-+	MX28_LRADC_CH3_IRQ,
-+	MX28_LRADC_CH4_IRQ,
-+	MX28_LRADC_CH5_IRQ,
-+	MX28_LRADC_CH6_IRQ,
-+	MX28_LRADC_CH7_IRQ,
-+	MX28_LRADC_BUTTON0_IRQ,
-+	MX28_LRADC_BUTTON1_IRQ,
-+};
-+
-+static struct resource mx23_adc_resources[] = {
-+	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
-+};
-+
-+static struct resource mx23_touchscreen_resources[] = {
-+	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
-+};
-+
-+static struct resource mx28_adc_resources[] = {
-+	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH0_IRQ, "mxs-lradc-thresh0"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH1_IRQ, "mxs-lradc-thresh1"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON0_IRQ, "mxs-lradc-button0"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON1_IRQ, "mxs-lradc-button1"),
-+};
-+
-+static struct resource mx28_touchscreen_resources[] = {
-+	DEFINE_RES_MEM(MXS_LRADC_BASE, 0x1fff),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
-+};
-+
-+static struct mfd_cell mxs_cells[] = {
-+	{
-+		.name = "mxs-lradc-adc",
-+	},
-+	{
-+		.name = "mxs-lradc-ts",
-+	},
-+};
-+
-+static const struct of_device_id mxs_lradc_dt_ids[] = {
-+	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
-+	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
-+
-+static int mxs_lradc_probe(struct platform_device *pdev)
-+{
-+	const struct of_device_id *of_id;
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = dev->of_node;
-+	struct mxs_lradc *lradc;
-+	struct mfd_cell *cells = mxs_cells;
-+	int ret = 0;
-+	u32 ts_wires = 0;
-+
-+	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
-+	if (!lradc)
-+		return -ENOMEM;
-+
-+	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-+	lradc->soc = (enum mxs_lradc_id)of_id->data;
-+
-+	lradc->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(lradc->clk)) {
-+		dev_err(dev, "Failed to get the delay unit clock\n");
-+		return PTR_ERR(lradc->clk);
-+	}
-+
-+	ret = clk_prepare_enable(lradc->clk);
-+	if (ret) {
-+		dev_err(dev, "Failed to enable the delay unit clock\n");
-+		return ret;
-+	}
-+
-+	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
-+					 &ts_wires);
-+
-+	if (!ret) {
-+		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
-+
-+		switch (ts_wires) {
-+		case 4:
-+			lradc->touchscreen_wire = MXS_LRADC_TOUCHSCREEN_4WIRE;
-+			break;
-+		case 5:
-+			if (lradc->soc == IMX28_LRADC) {
-+				lradc->touchscreen_wire =
-+					MXS_LRADC_TOUCHSCREEN_5WIRE;
-+				break;
-+			}
-+			/* fall through to an error message for i.MX23 */
-+		default:
-+			dev_err(&pdev->dev,
-+				"Unsupported number of touchscreen wires (%d)\n"
-+				, ts_wires);
-+			ret = -EINVAL;
-+			goto err_clk;
-+		}
-+	} else {
-+		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
-+	}
-+
-+	platform_set_drvdata(pdev, lradc);
-+
-+	switch (lradc->soc) {
-+	case IMX23_LRADC:
-+		cells[ADC_CELL].resources = mx23_adc_resources;
-+		cells[ADC_CELL].num_resources = ARRAY_SIZE(mx23_adc_resources);
-+		cells[TSC_CELL].resources = mx23_touchscreen_resources;
-+		cells[TSC_CELL].num_resources =
-+			ARRAY_SIZE(mx23_touchscreen_resources);
-+		break;
-+	case IMX28_LRADC:
-+		cells[ADC_CELL].resources = mx28_adc_resources;
-+		cells[ADC_CELL].num_resources = ARRAY_SIZE(mx28_adc_resources);
-+		cells[TSC_CELL].resources = mx28_touchscreen_resources;
-+		cells[TSC_CELL].num_resources =
-+			ARRAY_SIZE(mx28_touchscreen_resources);
-+		break;
-+	default:
-+		dev_err(dev, "Unsupported SoC\n");
-+		ret = -ENODEV;
-+		goto err_clk;
-+	}
-+
-+	cells[ADC_CELL].platform_data = lradc;
-+	cells[ADC_CELL].pdata_size = sizeof(*lradc);
-+
-+	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
-+				   &cells[ADC_CELL], 1, NULL, 0, NULL);
-+	if (ret) {
-+		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
-+		goto err_clk;
-+	}
-+
-+	cells[TSC_CELL].platform_data = lradc;
-+	cells[TSC_CELL].pdata_size = sizeof(*lradc);
-+
-+	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
-+				   &cells[TSC_CELL], 1, NULL, 0, NULL);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"Failed to add the touchscreen subdevice\n");
-+		goto err_clk;
-+	}
-+
-+	return 0;
-+
-+err_clk:
-+	clk_disable_unprepare(lradc->clk);
-+
-+	return ret;
++#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
++{ \
++       .datasheet_name =3D _name, \
++       .type =3D _type, \
++       .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |  \
++                       BIT(_chan_info), \
++       .indexed =3D 1, \
++       .channel =3D _chan, \
 +}
 +
-+static int mxs_lradc_remove(struct platform_device *pdev)
-+{
-+	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
-+
-+	clk_disable_unprepare(lradc->clk);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver mxs_lradc_driver = {
-+	.driver = {
-+		.name = "mxs-lradc",
-+		.of_match_table = mxs_lradc_dt_ids,
-+	},
-+	.probe = mxs_lradc_probe,
-+	.remove = mxs_lradc_remove,
-+};
-+module_platform_driver(mxs_lradc_driver);
-+
-+MODULE_AUTHOR("Ksenija Stanojevic <ksenija.stanojevic@gmail.com>");
-+MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:mxs-lradc");
-diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
-new file mode 100644
-index 0000000..64140681
---- /dev/null
-+++ b/include/linux/mfd/mxs-lradc.h
-@@ -0,0 +1,203 @@
-+/*
-+ * Freescale MXS Low Resolution Analog-to-Digital Converter driver
-+ *
-+ * Copyright (c) 2012 DENX Software Engineering, GmbH.
-+ * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-+ *
-+ * Author: Marek Vasut <marex@denx.de>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#ifndef __MFD_MXS_LRADC_H
-+#define __MFD_MXS_LRADC_H
-+
-+#include <linux/bitops.h>
-+#include <linux/io.h>
-+#include <linux/stmp_device.h>
-+
-+#define LRADC_MAX_DELAY_CHANS	4
-+#define LRADC_MAX_MAPPED_CHANS	8
-+#define LRADC_MAX_TOTAL_CHANS	16
-+
-+#define LRADC_DELAY_TIMER_HZ	2000
-+
-+#define LRADC_CTRL0				0x00
-+# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
-+# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
-+# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
-+# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
-+# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
-+# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
-+# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
-+# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
-+
-+# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
-+# define LRADC_CTRL0_MX23_YM			BIT(19)
-+# define LRADC_CTRL0_MX23_XM			BIT(18)
-+# define LRADC_CTRL0_MX23_YP			BIT(17)
-+# define LRADC_CTRL0_MX23_XP			BIT(16)
-+
-+# define LRADC_CTRL0_MX28_PLATE_MASK \
-+		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
-+		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
-+		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
-+		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
-+
-+# define LRADC_CTRL0_MX23_PLATE_MASK \
-+		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
-+		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
-+		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
-+
-+#define LRADC_CTRL1				0x10
-+#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
-+#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
-+#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
-+#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
-+#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
-+#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
-+#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
-+#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
-+#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
-+#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
-+
-+#define LRADC_CTRL2				0x20
-+#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
-+#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
-+
-+#define LRADC_STATUS				0x40
-+#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
-+
-+#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
-+#define LRADC_CH_ACCUMULATE			BIT(29)
-+#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
-+#define LRADC_CH_NUM_SAMPLES_OFFSET		24
-+#define LRADC_CH_NUM_SAMPLES(x) \
-+				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
-+#define LRADC_CH_VALUE_MASK			0x3ffff
-+#define LRADC_CH_VALUE_OFFSET			0
-+
-+#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
-+#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
-+#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
-+#define LRADC_DELAY_TRIGGER(x) \
-+				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
-+				LRADC_DELAY_TRIGGER_LRADCS_MASK)
-+#define LRADC_DELAY_KICK			BIT(20)
-+#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
-+#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
-+#define LRADC_DELAY_TRIGGER_DELAYS(x) \
-+				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
-+				LRADC_DELAY_TRIGGER_DELAYS_MASK)
-+#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
-+#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
-+#define LRADC_DELAY_LOOP(x) \
-+				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
-+				LRADC_DELAY_LOOP_COUNT_MASK)
-+#define LRADC_DELAY_DELAY_MASK			0x7ff
-+#define LRADC_DELAY_DELAY_OFFSET		0
-+#define LRADC_DELAY_DELAY(x) \
-+				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
-+				LRADC_DELAY_DELAY_MASK)
-+
-+#define LRADC_CTRL4				0x140
-+#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
-+#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
-+#define LRADC_CTRL4_LRADCSELECT(n, x) \
-+				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
-+				LRADC_CTRL4_LRADCSELECT_MASK(n))
-+
-+#define LRADC_RESOLUTION			12
-+#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
-+
-+#define BUFFER_VCHANS_LIMITED		0x3f
-+#define BUFFER_VCHANS_ALL		0xff
-+
-+	/*
-+	 * Certain LRADC channels are shared between touchscreen
-+	 * and/or touch-buttons and generic LRADC block. Therefore when using
-+	 * either of these, these channels are not available for the regular
-+	 * sampling. The shared channels are as follows:
-+	 *
-+	 * CH0 -- Touch button #0
-+	 * CH1 -- Touch button #1
-+	 * CH2 -- Touch screen XPUL
-+	 * CH3 -- Touch screen YPLL
-+	 * CH4 -- Touch screen XNUL
-+	 * CH5 -- Touch screen YNLR
-+	 * CH6 -- Touch screen WIPER (5-wire only)
-+	 *
-+	 * The bit fields below represents which parts of the LRADC block are
-+	 * switched into special mode of operation. These channels can not
-+	 * be sampled as regular LRADC channels. The driver will refuse any
-+	 * attempt to sample these channels.
-+	 */
-+#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
-+#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
-+#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
-+
-+enum mxs_lradc_id {
-+	IMX23_LRADC,
-+	IMX28_LRADC,
++static const struct iio_chan_spec tsc2007_iio_channel[] =3D {
++       TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* =
+Ohms? */
++       TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
++       TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
 +};
 +
-+enum mxs_lradc_ts_wires {
-+	MXS_LRADC_TOUCHSCREEN_NONE = 0,
-+	MXS_LRADC_TOUCHSCREEN_4WIRE,
-+	MXS_LRADC_TOUCHSCREEN_5WIRE,
++static int tsc2007_read_raw(struct iio_dev *indio_dev,
++       struct iio_chan_spec const *chan, int *val, int *val2, long =
+mask)
++{
++       struct tsc2007_iio *iio =3D iio_priv(indio_dev);
++       struct tsc2007 *tsc =3D iio->ts;
++       int adc_chan =3D chan->channel;
++       int ret =3D 0;
++
++       if (adc_chan >=3D ARRAY_SIZE(tsc2007_iio_channel))
++               return -EINVAL;
++
++       if (mask !=3D IIO_CHAN_INFO_RAW)
++               return -EINVAL;
++
++       mutex_lock(&tsc->mlock);
++
++       switch (chan->channel) {
++       case 0:
++               *val =3D tsc2007_xfer(tsc, READ_X);
++               break;
++       case 1:
++               *val =3D tsc2007_xfer(tsc, READ_Y);
++               break;
++       case 2:
++               *val =3D tsc2007_xfer(tsc, READ_Z1);
++               break;
++       case 3:
++               *val =3D tsc2007_xfer(tsc, READ_Z2);
++               break;
++       case 4:
++               *val =3D tsc2007_xfer(tsc, (ADC_ON_12BIT | =
+TSC2007_MEASURE_AUX));
++               break;
++       case 5: {
++               struct ts_event tc;
++
++               tc.x =3D tsc2007_xfer(tsc, READ_X);
++               tc.z1 =3D tsc2007_xfer(tsc, READ_Z1);
++               tc.z2 =3D tsc2007_xfer(tsc, READ_Z2);
++               *val =3D tsc2007_calculate_resistance(tsc, &tc);
++               break;
++       }
++       case 6:
++               *val =3D tsc2007_is_pen_down(tsc);
++               break;
++       case 7:
++               *val =3D tsc2007_xfer(tsc,
++                                   (ADC_ON_12BIT | =
+TSC2007_MEASURE_TEMP0));
++               break;
++       case 8:
++               *val =3D tsc2007_xfer(tsc,
++                                   (ADC_ON_12BIT | =
+TSC2007_MEASURE_TEMP1));
++               break;
++       }
++
++       /* Prepare for next touch reading - power down ADC, enable =
+PENIRQ */
++       tsc2007_xfer(tsc, PWRDOWN);
++
++       mutex_unlock(&tsc->mlock);
++
++       ret =3D IIO_VAL_INT;
++
++       return ret;
++}
++
++static const struct iio_info tsc2007_iio_info =3D {
++       .read_raw =3D tsc2007_read_raw,
++       .driver_module =3D THIS_MODULE,
 +};
 +
-+/**
-+ * struct mxs_lradc
-+ * @soc: soc type (IMX23 or IMX28)
-+ * @clk: 2 kHz clock for delay units
-+ * @buffer_vchans: channels that can be used during buffered capture
-+ * @touchscreen_wire: touchscreen type (4-wire or 5-wire)
-+ * @use_touchbutton: button state (on or off)
-+ */
-+struct mxs_lradc {
-+	enum mxs_lradc_id	soc;
-+	struct clk		*clk;
-+	u8			buffer_vchans;
-+
-+	enum mxs_lradc_ts_wires	touchscreen_wire;
-+	bool			use_touchbutton;
-+};
-+
-+static inline void mxs_lradc_reg_set(void __iomem *base, u32 val, u32 reg)
++static inline int tsc2007_iio_configure(struct tsc2007 *ts)
 +{
-+	writel(val, base + reg + STMP_OFFSET_REG_SET);
++       int err;
++       struct iio_dev *indio_dev;
++       struct tsc2007_iio *iio;
++
++       indio_dev =3D devm_iio_device_alloc(&ts->client->dev, =
+sizeof(struct tsc2007_iio));
++       if (!indio_dev) {
++               dev_err(&ts->client->dev, "iio_device_alloc failed\n");
++               return -ENOMEM;
++       }
++
++       iio =3D iio_priv(indio_dev);
++       iio->ts =3D ts;
++       ts->private =3D (void *) indio_dev;
++
++       indio_dev->name =3D "tsc2007";
++       indio_dev->dev.parent =3D &ts->client->dev;
++       indio_dev->info =3D &tsc2007_iio_info;
++       indio_dev->modes =3D INDIO_DIRECT_MODE;
++       indio_dev->channels =3D tsc2007_iio_channel;
++       indio_dev->num_channels =3D ARRAY_SIZE(tsc2007_iio_channel);
++
++       err =3D iio_device_register(indio_dev);
++       if (err < 0) {
++               dev_err(&ts->client->dev, "iio_device_register() failed: =
+%d\n",
++                       err);
++               return err;
++       }
++
++       return 0;
 +}
 +
-+static inline void mxs_lradc_reg_clear(void __iomem *base, u32 val,
-+				       u32 reg)
++static inline void tsc2007_iio_unconfigure(struct tsc2007 *ts)
 +{
-+	writel(val, base + reg + STMP_OFFSET_REG_CLR);
++       struct iio_dev *indio_dev =3D ts->private;
++
++       iio_device_unregister(indio_dev);
 +}
 +
-+static inline void mxs_lradc_reg_wrt(void __iomem *base, u32 val, u32 reg)
++#else /* CONFIG_IIO */
++
++static inline int tsc2007_iio_configure(struct tsc2007 *ts)
 +{
-+	writel(val, base + reg);
++       /* not needed */
 +}
 +
-+static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
++static inline void tsc2007_iio_unconfigure(struct tsc2007 *ts)
 +{
-+	switch (lradc->soc) {
-+	case IMX23_LRADC:
-+		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
-+	case IMX28_LRADC:
-+		return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
-+	default:
-+		return 0;
-+	}
++       /* not needed */
 +}
 +
-+#endif /* __MXS_LRADC_H */
--- 
-1.9.1
-
++#endif /* CONFIG_IIO */
++
+ #ifdef CONFIG_OF
+ static int tsc2007_get_pendown_state_gpio(struct device *dev)
+ {
+@@ -472,7 +630,13 @@ static int tsc2007_probe(struct i2c_client *client,
+        ts->client =3D client;
+        ts->irq =3D client->irq;
+        ts->input =3D input_dev;
++
++       err =3D tsc2007_iio_configure(ts);
++       if (err < 0)
++               return err;
++
+        init_waitqueue_head(&ts->wait);
++       mutex_init(&ts->mlock);
+=20
+        snprintf(ts->phys, sizeof(ts->phys),
+                 "%s/input0", dev_name(&client->dev));
+@@ -503,8 +667,10 @@ static int tsc2007_probe(struct i2c_client *client,
+                                                          ts->fuzzz, 0);
+        } else {
+                err =3D tsc2007_probe_dt(client, ts);
+-               if (err)
++               if (err) {
++                       tsc2007_iio_unconfigure(ts);
+                        return err;
++               }
+        }
+=20
+        if (pdata) {
+@@ -516,6 +682,7 @@ static int tsc2007_probe(struct i2c_client *client,
+                                dev_err(&client->dev,
+                                        "Failed to register =
+exit_platform_hw action, %d\n",
+                                        err);
++                               tsc2007_iio_unconfigure(ts);
+                                return err;
+                        }
+                }
+@@ -533,6 +700,7 @@ static int tsc2007_probe(struct i2c_client *client,
+        if (err) {
+                dev_err(&client->dev, "Failed to request irq %d: %d\n",
+                        ts->irq, err);
++               tsc2007_iio_unconfigure(ts);
+                return err;
+        }
+=20
+@@ -543,6 +711,7 @@ static int tsc2007_probe(struct i2c_client *client,
+        if (err < 0) {
+                dev_err(&client->dev,
+                        "Failed to setup chip: %d\n", err);
++               tsc2007_iio_unconfigure(ts);
+                return err;     /* usually, chip does not respond */
+        }
+=20
+@@ -550,12 +719,21 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+        if (err) {
+                dev_err(&client->dev,
+                        "Failed to register input device: %d\n", err);
++               tsc2007_iio_unconfigure(ts);
+                return err;
+        }
+=20
+        return 0;
+ }
+=20
++static int tsc2007_remove(struct i2c_client *client)
++{
++       struct tsc2007 *ts =3D i2c_get_clientdata(client);
++       tsc2007_iio_unconfigure(ts);
++       input_unregister_device(ts->input);
++       return 0;
++}
++
+ static const struct i2c_device_id tsc2007_idtable[] =3D {
+        { "tsc2007", 0 },
+        { }
+@@ -578,6 +756,7 @@ static struct i2c_driver tsc2007_driver =3D {
+        },
+        .id_table       =3D tsc2007_idtable,
+        .probe          =3D tsc2007_probe,
++       .remove         =3D tsc2007_remove,
+ };
+=20
+ module_i2c_driver(tsc2007_driver);=
