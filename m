@@ -1,13 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57257 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57277 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756403AbcJWJdr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 05:33:47 -0400
-Subject: Re: [PATCH v2 1/7] iio:core: add a callback to allow drivers to
- provide _available attributes
+        with ESMTP id S1752605AbcJWJgL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 05:36:11 -0400
+Subject: Re: [PATCH v2 2/7] iio: mcp4531: provide range of available raw
+ values
 To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
 References: <1477176226-10566-1-git-send-email-peda@axentia.se>
- <1477176226-10566-2-git-send-email-peda@axentia.se>
+ <1477176226-10566-3-git-send-email-peda@axentia.se>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -15,441 +15,184 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <74746223-a1aa-e9c6-622c-854526d0722d@kernel.org>
-Date: Sun, 23 Oct 2016 10:33:44 +0100
+Message-ID: <aa10fbe2-f902-695e-6f6d-bac5c695ea5c@kernel.org>
+Date: Sun, 23 Oct 2016 10:36:08 +0100
 MIME-Version: 1.0
-In-Reply-To: <1477176226-10566-2-git-send-email-peda@axentia.se>
+In-Reply-To: <1477176226-10566-3-git-send-email-peda@axentia.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 22/10/16 23:43, Peter Rosin wrote:
-> From: Jonathan Cameron <jic23@kernel.org>
-> 
-> A large number of attributes can only take a limited range of values.
-> Currently in IIO this is handled by directly registering additional
-> *_available attributes thus providing this information to userspace.
-> 
-> It is desirable to provide this information via the core for much the same
-> reason this was done for the actual channel information attributes in the
-> first place.  If it isn't there, then it can only really be accessed from
-> userspace.  Other in kernel IIO consumers have no access to what valid
-> parameters are.
-> 
-> Two forms are currently supported:
-> * list of values in one particular IIO_VAL_* format.
-> 	e.g. 1.300000 1.500000 1.730000
-> * range specification with a step size:
-> 	e.g. [1.000000 0.500000 2.500000]
-> 	equivalent to 1.000000 1.5000000 2.000000 2.500000
-> 
-> An addition set of masks are used to allow different sharing rules for the
-> *_available attributes generated.
-> 
-> This allows for example:
-> 
-> in_accel_x_offset
-> in_accel_y_offset
-> in_accel_offset_available.
-> 
-> We could have gone with having a specification for each and every
-> info_mask element but that would have meant changing the existing userspace
-> ABI.  This approach does not.
-I'm wondering what I meant by this... where does it cause use ABI issues?
-Do you have any idea?
-
-I'd forgotten I'd even done it like this rather than just insisting on 
-available for everything (which is more logical to me as we should know
-the range of everything).
-
-It's pretty low cost though and gives a way of adding this to drivers
-piecemeal which is probably a good idea!
-> 
-> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
-> [rather mindlessly forward ported from approx 3 years ago /peda]
-More importantly shepherding it through review!
-
-Naturally it's perfect code so not comments inline ;)
-
-Thanks again for picking this up!
-
-So... I want to see lots of comments on this. If people are happy with
-it (unlikely ;) then please say so.  It's at least a bit controversial
-and adds a 'lot' of new ABI.
-
-
-Jonathan
 > Signed-off-by: Peter Rosin <peda@axentia.se>
+Looks great to me.
+
+Perhaps it's worth doing a cat *_available in the directory and pasting
+the result here to show what the resulting ABI looks like.
+
+Also new ABI so needs documenting! (you didn't think it would be
+this easy did you? :)
+
+J
 > ---
->  drivers/iio/industrialio-core.c | 232 +++++++++++++++++++++++++++++++++++-----
->  include/linux/iio/iio.h         |  11 ++
->  include/linux/iio/types.h       |   5 +
->  3 files changed, 223 insertions(+), 25 deletions(-)
+>  drivers/iio/potentiometer/mcp4531.c | 104 +++++++++++++++++++++---------------
+>  1 file changed, 62 insertions(+), 42 deletions(-)
 > 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index fc340ed3dca1..93c69ebeda1e 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -575,51 +575,41 @@ int of_iio_read_mount_matrix(const struct device *dev,
->  #endif
->  EXPORT_SYMBOL(of_iio_read_mount_matrix);
+> diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
+> index 13b6ae2fcf7b..0d1bcf89ae17 100644
+> --- a/drivers/iio/potentiometer/mcp4531.c
+> +++ b/drivers/iio/potentiometer/mcp4531.c
+> @@ -38,7 +38,7 @@
 >  
-> -/**
-> - * iio_format_value() - Formats a IIO value into its string representation
-> - * @buf:	The buffer to which the formatted value gets written
-> - * @type:	One of the IIO_VAL_... constants. This decides how the val
-> - *		and val2 parameters are formatted.
-> - * @size:	Number of IIO value entries contained in vals
-> - * @vals:	Pointer to the values, exact meaning depends on the
-> - *		type parameter.
-> - *
-> - * Return: 0 by default, a negative number on failure or the
-> - *	   total number of characters written for a type that belongs
-> - *	   to the IIO_VAL_... constant.
-> - */
-> -ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
-> +static ssize_t __iio_format_value(char *buf, unsigned int type,
-> +				  int size, const int *vals)
->  {
->  	unsigned long long tmp;
-> +	int tmp0, tmp1;
->  	bool scale_db = false;
+>  struct mcp4531_cfg {
+>  	int wipers;
+> -	int max_pos;
+> +	int avail[3];
+>  	int kohms;
+>  };
 >  
->  	switch (type) {
->  	case IIO_VAL_INT:
-> -		return sprintf(buf, "%d\n", vals[0]);
-> +		return sprintf(buf, "%d", vals[0]);
->  	case IIO_VAL_INT_PLUS_MICRO_DB:
->  		scale_db = true;
->  	case IIO_VAL_INT_PLUS_MICRO:
->  		if (vals[1] < 0)
-> -			return sprintf(buf, "-%d.%06u%s\n", abs(vals[0]),
-> +			return sprintf(buf, "-%d.%06u%s", abs(vals[0]),
->  				       -vals[1], scale_db ? " dB" : "");
->  		else
-> -			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
-> +			return sprintf(buf, "%d.%06u%s", vals[0], vals[1],
->  				scale_db ? " dB" : "");
->  	case IIO_VAL_INT_PLUS_NANO:
->  		if (vals[1] < 0)
-> -			return sprintf(buf, "-%d.%09u\n", abs(vals[0]),
-> +			return sprintf(buf, "-%d.%09u", abs(vals[0]),
->  				       -vals[1]);
->  		else
-> -			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-> +			return sprintf(buf, "%d.%09u", vals[0], vals[1]);
->  	case IIO_VAL_FRACTIONAL:
->  		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
-> -		vals[0] = (int)div_s64_rem(tmp, 1000000000, &vals[1]);
-> -		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
-> +		tmp1 = vals[1];
-> +		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
-> +		return sprintf(buf, "%d.%09u", tmp0, abs(tmp1));
->  	case IIO_VAL_FRACTIONAL_LOG2:
->  		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
-> -		vals[1] = do_div(tmp, 1000000000LL);
-> -		vals[0] = tmp;
-> -		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
-> +		tmp1 = do_div(tmp, 1000000000LL);
-> +		tmp0 = tmp;
-> +		return sprintf(buf, "%d.%09u", tmp0, tmp1);
->  	case IIO_VAL_INT_MULTIPLE:
->  	{
->  		int i;
-> @@ -628,13 +618,34 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
->  		for (i = 0; i < size; ++i)
->  			len += snprintf(&buf[len], PAGE_SIZE - len, "%d ",
->  								vals[i]);
-> -		len += snprintf(&buf[len], PAGE_SIZE - len, "\n");
->  		return len;
+> @@ -78,38 +78,38 @@ enum mcp4531_type {
+>  };
+>  
+>  static const struct mcp4531_cfg mcp4531_cfg[] = {
+> -	[MCP453x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+> -	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+> -	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+> -	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+> -	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
+> -	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
+> -	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
+> -	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
+> -	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+> -	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+> -	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+> -	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+> -	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
+> -	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
+> -	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
+> -	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
+> -	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+> -	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+> -	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+> -	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+> -	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
+> -	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
+> -	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
+> -	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
+> -	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+> -	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+> -	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+> -	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+> -	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
+> -	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
+> -	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
+> -	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
+> +	[MCP453x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
+> +	[MCP453x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
+> +	[MCP453x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
+> +	[MCP453x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
+> +	[MCP454x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
+> +	[MCP454x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
+> +	[MCP454x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
+> +	[MCP454x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
+> +	[MCP455x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
+> +	[MCP455x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
+> +	[MCP455x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
+> +	[MCP455x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
+> +	[MCP456x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
+> +	[MCP456x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
+> +	[MCP456x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
+> +	[MCP456x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
+> +	[MCP463x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
+> +	[MCP463x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
+> +	[MCP463x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
+> +	[MCP463x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
+> +	[MCP464x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
+> +	[MCP464x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
+> +	[MCP464x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
+> +	[MCP464x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
+> +	[MCP465x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
+> +	[MCP465x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
+> +	[MCP465x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
+> +	[MCP465x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
+> +	[MCP466x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
+> +	[MCP466x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
+> +	[MCP466x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
+> +	[MCP466x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
+>  };
+>  
+>  #define MCP4531_WRITE (0 << 2)
+> @@ -124,13 +124,14 @@ struct mcp4531_data {
+>  	const struct mcp4531_cfg *cfg;
+>  };
+>  
+> -#define MCP4531_CHANNEL(ch) {					\
+> -	.type = IIO_RESISTANCE,					\
+> -	.indexed = 1,						\
+> -	.output = 1,						\
+> -	.channel = (ch),					\
+> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+> +#define MCP4531_CHANNEL(ch) {						\
+> +	.type = IIO_RESISTANCE,						\
+> +	.indexed = 1,							\
+> +	.output = 1,							\
+> +	.channel = (ch),						\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
+> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
+> +	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
+>  }
+>  
+>  static const struct iio_chan_spec mcp4531_channels[] = {
+> @@ -156,13 +157,31 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+>  		*val = 1000 * data->cfg->kohms;
+> -		*val2 = data->cfg->max_pos;
+> +		*val2 = data->cfg->avail[2];
+>  		return IIO_VAL_FRACTIONAL;
 >  	}
+>  
+>  	return -EINVAL;
+>  }
+>  
+> +static int mcp4531_read_avail(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      const int **vals, int *type, int *length,
+> +			      long mask)
+> +{
+> +	struct mcp4531_data *data = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		*length = ARRAY_SIZE(data->cfg->avail);
+> +		*vals = data->cfg->avail;
+> +		*type = IIO_VAL_INT;
+> +		return IIO_AVAIL_RANGE;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+> +
+>  static int mcp4531_write_raw(struct iio_dev *indio_dev,
+>  			     struct iio_chan_spec const *chan,
+>  			     int val, int val2, long mask)
+> @@ -172,7 +191,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+>  
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+> -		if (val > data->cfg->max_pos || val < 0)
+> +		if (val > data->cfg->avail[2] || val < 0)
+>  			return -EINVAL;
+>  		break;
 >  	default:
->  		return 0;
->  	}
->  }
-> +
-> +/**
-> + * iio_format_value() - Formats a IIO value into its string representation
-> + * @buf:	The buffer to which the formatted value gets written
-> + * @type:	One of the IIO_VAL_... constants. This decides how the val
-> + *		and val2 parameters are formatted.
-> + * @size:	Number of IIO value entries contained in vals
-> + * @vals:	Pointer to the values, exact meaning depends on the
-> + *		type parameter.
-> + *
-> + * Return: 0 by default, a negative number on failure or the
-> + *	   total number of characters written for a type that belongs
-> + *	   to the IIO_VAL_... constant.
-> + */
-> +ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
-> +{
-> +	ssize_t len;
-> +
-> +	len = __iio_format_value(buf, type, size, vals);
-> +
-> +	return len + sprintf(buf + len, "\n");
-> +}
->  EXPORT_SYMBOL_GPL(iio_format_value);
+> @@ -186,6 +205,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
 >  
->  static ssize_t iio_read_channel_info(struct device *dev,
-> @@ -662,6 +673,113 @@ static ssize_t iio_read_channel_info(struct device *dev,
->  	return iio_format_value(buf, ret, val_len, vals);
->  }
->  
-> +static ssize_t iio_format_avail_list(char *buf, const int *vals,
-> +				     int type, int length)
-> +{
-> +	int i;
-> +	ssize_t len = 0;
-> +
-> +	switch (type) {
-> +	case IIO_VAL_INT:
-> +		for (i = 0; i < length; i++) {
-> +			len += __iio_format_value(buf + len, type, 1, &vals[i]);
-> +			if (i < length - 1)
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						" ");
-> +			else
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						"\n");
-> +		}
-> +		break;
-> +	default:
-> +		for (i = 0; i < length / 2; i++) {
-> +			len += __iio_format_value(buf + len,
-> +						  type,
-> +						  2,
-> +						  &vals[i * 2]);
-> +			if (i < length / 2 - 1)
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						" ");
-> +			else
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						"\n");
-> +		}
-> +	};
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
-> +{
-> +	int i;
-> +	ssize_t len;
-> +
-> +	len = snprintf(buf, PAGE_SIZE, "[");
-> +	switch (type) {
-> +	case IIO_VAL_INT:
-> +		for (i = 0; i < 3; i++) {
-> +			len += __iio_format_value(buf + len, type, 1, &vals[i]);
-> +			if (i < 2)
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						" ");
-> +			else
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						"]\n");
-> +		}
-> +		break;
-> +	default:
-> +		for (i = 0; i < 3; i++) {
-> +			len += __iio_format_value(buf + len,
-> +						  type,
-> +						  2,
-> +						  &vals[i * 2]);
-> +			if (i < 2)
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						" ");
-> +			else
-> +				len += snprintf(buf + len,
-> +						PAGE_SIZE - len,
-> +						"]\n");
-> +		}
-> +	};
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t iio_read_channel_info_avail(struct device *dev,
-> +					   struct device_attribute *attr,
-> +					   char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
-> +	const int *vals;
-> +	int ret;
-> +	int length;
-> +	int type;
-> +
-> +	ret = indio_dev->info->read_avail(indio_dev, this_attr->c,
-> +					  &vals, &type, &length,
-> +					  this_attr->address);
-> +
-> +	if (ret < 0)
-> +		return ret;
-> +	switch (ret) {
-> +	case IIO_AVAIL_LIST:
-> +		return iio_format_avail_list(buf, vals, type, length);
-> +	case IIO_AVAIL_RANGE:
-> +		return iio_format_avail_range(buf, vals, type);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
->  /**
->   * iio_str_to_fixpoint() - Parse a fixed-point number from a string
->   * @str: The string to parse
-> @@ -978,6 +1096,40 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
->  	return attrcount;
->  }
->  
-> +static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
-> +					       struct iio_chan_spec const *chan,
-> +					       enum iio_shared_by shared_by,
-> +					       const long *infomask)
-> +{
-> +	int i, ret, attrcount = 0;
-> +	char *avail_postfix;
-> +
-> +	for_each_set_bit(i, infomask, sizeof(infomask) * 8) {
-> +		avail_postfix = kasprintf(GFP_KERNEL,
-> +					  "%s_available",
-> +					  iio_chan_info_postfix[i]);
-> +		if (!avail_postfix)
-> +			return -ENOMEM;
-> +
-> +		ret = __iio_add_chan_devattr(avail_postfix,
-> +					     chan,
-> +					     &iio_read_channel_info_avail,
-> +					     NULL,
-> +					     i,
-> +					     shared_by,
-> +					     &indio_dev->dev,
-> +					     &indio_dev->channel_attr_list);
-> +		kfree(avail_postfix);
-> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
-> +			continue;
-> +		else if (ret < 0)
-> +			return ret;
-> +		attrcount++;
-> +	}
-> +
-> +	return attrcount;
-> +}
-> +
->  static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  					struct iio_chan_spec const *chan)
->  {
-> @@ -993,6 +1145,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  		return ret;
->  	attrcount += ret;
->  
-> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-> +						  IIO_SEPARATE,
-> +						  &chan->
-> +						  info_mask_separate_available);
-> +	if (ret < 0)
-> +		return ret;
-> +	attrcount += ret;
-> +
->  	ret = iio_device_add_info_mask_type(indio_dev, chan,
->  					    IIO_SHARED_BY_TYPE,
->  					    &chan->info_mask_shared_by_type);
-> @@ -1000,6 +1160,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  		return ret;
->  	attrcount += ret;
->  
-> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-> +						  IIO_SHARED_BY_TYPE,
-> +						  &chan->
-> +						  info_mask_shared_by_type_available);
-> +	if (ret < 0)
-> +		return ret;
-> +	attrcount += ret;
-> +
->  	ret = iio_device_add_info_mask_type(indio_dev, chan,
->  					    IIO_SHARED_BY_DIR,
->  					    &chan->info_mask_shared_by_dir);
-> @@ -1007,6 +1175,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  		return ret;
->  	attrcount += ret;
->  
-> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-> +						  IIO_SHARED_BY_DIR,
-> +						  &chan->info_mask_shared_by_dir_available);
-> +	if (ret < 0)
-> +		return ret;
-> +	attrcount += ret;
-> +
->  	ret = iio_device_add_info_mask_type(indio_dev, chan,
->  					    IIO_SHARED_BY_ALL,
->  					    &chan->info_mask_shared_by_all);
-> @@ -1014,6 +1189,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
->  		return ret;
->  	attrcount += ret;
->  
-> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
-> +						  IIO_SHARED_BY_ALL,
-> +						  &chan->info_mask_shared_by_all_available);
-> +	if (ret < 0)
-> +		return ret;
-> +	attrcount += ret;
-> +
->  	if (chan->ext_info) {
->  		unsigned int i = 0;
->  		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
-> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> index b4a0679e4a49..c0f897084620 100644
-> --- a/include/linux/iio/iio.h
-> +++ b/include/linux/iio/iio.h
-> @@ -269,9 +269,13 @@ struct iio_chan_spec {
->  		enum iio_endian endianness;
->  	} scan_type;
->  	long			info_mask_separate;
-> +	long			info_mask_separate_available;
->  	long			info_mask_shared_by_type;
-> +	long			info_mask_shared_by_type_available;
->  	long			info_mask_shared_by_dir;
-> +	long			info_mask_shared_by_dir_available;
->  	long			info_mask_shared_by_all;
-> +	long			info_mask_shared_by_all_available;
->  	const struct iio_event_spec *event_spec;
->  	unsigned int		num_event_specs;
->  	const struct iio_chan_spec_ext_info *ext_info;
-> @@ -397,6 +401,13 @@ struct iio_info {
->  			int *val_len,
->  			long mask);
->  
-> +	int (*read_avail)(struct iio_dev *indio_dev,
-> +			  struct iio_chan_spec const *chan,
-> +			  const int **vals,
-> +			  int *type,
-> +			  int *length,
-> +			  long mask_el);
-> +
->  	int (*write_raw)(struct iio_dev *indio_dev,
->  			 struct iio_chan_spec const *chan,
->  			 int val,
-> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
-> index 32b579525004..2aa7b6384d64 100644
-> --- a/include/linux/iio/types.h
-> +++ b/include/linux/iio/types.h
-> @@ -29,4 +29,9 @@ enum iio_event_info {
->  #define IIO_VAL_FRACTIONAL 10
->  #define IIO_VAL_FRACTIONAL_LOG2 11
->  
-> +enum iio_available_type {
-> +	IIO_AVAIL_LIST,
-> +	IIO_AVAIL_RANGE,
-> +};
-> +
->  #endif /* _IIO_TYPES_H_ */
+>  static const struct iio_info mcp4531_info = {
+>  	.read_raw = mcp4531_read_raw,
+> +	.read_avail = mcp4531_read_avail,
+>  	.write_raw = mcp4531_write_raw,
+>  	.driver_module = THIS_MODULE,
+>  };
 > 
 
