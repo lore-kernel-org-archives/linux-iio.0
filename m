@@ -1,438 +1,165 @@
-Return-Path: <rphani@codeaurora.org>
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org,
-	jic23@kernel.org,
-	devicetree@vger.kernel.org
-Cc: robh@kernel.org,
-	linux-arm-msm@vger.kernel.org,
-	smohanad@codeaurora.org,
-	mgautam@codeaurora.org,
-	sivaa@codeaurora.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	Julia.Lawall@lip6.fr,
-	Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V3 2/2] iio: adc: spmi-vadc: Changes to support different scaling
-Date: Wed, 26 Oct 2016 20:11:27 +0530
-Message-Id: <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
-In-Reply-To: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
-References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-db5eur01on0094.outbound.protection.outlook.com ([104.47.2.94]:31488
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1754475AbcJXBOK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 23 Oct 2016 21:14:10 -0400
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+Subject: [PATCH v3 0/8] IIO wrapper drivers, dpot-dac and envelope-detector
+Date: Mon, 24 Oct 2016 00:39:33 +0200
+Message-ID: <1477262381-7800-1-git-send-email-peda@axentia.se>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Polling can also be used for End of conversion completion. Implement logic
-to choose either polling or interrupt for End of conversion completion.
-Scaling can be done on the voltage to report adc code in physical units.
-Add changes to support different scale functions to convert adc code to
-physical units.
+Hi!
 
-Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
----
- .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 ++
- drivers/iio/adc/qcom-spmi-vadc.c                   | 263 +++++++++++++++++----
- 2 files changed, 236 insertions(+), 41 deletions(-)
+These two drivers share the fact that they wrap another iio channel,
+and I use the first in combination with the second, which is why I'm
+submitting them as a pair.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-index 0fb4613..39e31c0e 100644
---- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
-@@ -37,6 +37,12 @@ VADC node:
-     Value type: <prop-encoded-array>
-     Definition: End of conversion interrupt.
- 
-+- qcom,vadc-poll-eoc:
-+    Usage: optional
-+    Value type: <bool>
-+    Definition: Use polling instead of interrupts for End of Conversion
-+		completion.
-+
- Channel node properties:
- 
- - reg:
-@@ -92,6 +98,14 @@ Channel node properties:
-             Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
-             If property is not found, 1 sample will be used.
- 
-+- qcom,scale-function:
-+    Usage: optional
-+    Value type: <u32>
-+    Definition: Scaling function used to convert raw ADC code to
-+	units specific to a given channel. Scaled units can be
-+	microvolts, millidegC.Valid values are: 0, 1, 2, 3, 4.
-+	If property is not found, 0 scaling will be used.
-+
- NOTE:
- 
- Following channels, also known as reference point channels, are used for
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index ff4d549..6e521a9 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -92,6 +92,8 @@
- #define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
- #define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
- 
-+#define VADC_DEF_SCALE_FN			SCALE_DEFAULT
-+
- #define VADC_DECIMATION_MIN			512
- #define VADC_DECIMATION_MAX			4096
- 
-@@ -100,9 +102,43 @@
- 
- #define KELVINMIL_CELSIUSMIL			273150
- 
-+#define PMI_CHG_SCALE_1				-138890
-+#define PMI_CHG_SCALE_2				391750000000
-+
- #define VADC_CHAN_MIN			VADC_USBIN
- #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
- 
-+/**
-+ * enum vadc_scale_fn_type - Scaling function to convert ADC code to
-+ *				physical scaled units for the channel.
-+ * %SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
-+ * %SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
-+ *				 Uses a mapping table with 100K pullup.
-+ * %SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
-+ * %SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
-+ * %SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
-+ * %SCALE_NONE: Do not use this scaling type.
-+ */
-+enum vadc_scale_fn_type {
-+	SCALE_DEFAULT = 0,
-+	SCALE_THERM_100K_PULLUP,
-+	SCALE_PMIC_THERM,
-+	SCALE_XOTHERM,
-+	SCALE_PMI_CHG_TEMP,
-+	SCALE_NONE,
-+};
-+
-+/**
-+ * struct vadc_map_pt - Map the graph representation for ADC channel
-+ * @x: Represent the ADC digitized code.
-+ * @y: Represent the physical data which can be temperature, voltage,
-+ *     resistance.
-+ */
-+struct vadc_map_pt {
-+	s32 x;
-+	s32 y;
-+};
-+
- /*
-  * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-  * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-@@ -148,6 +184,9 @@ struct vadc_prescale_ratio {
-  *	start of conversion.
-  * @avg_samples: ability to provide single result from the ADC
-  *	that is an average of multiple measurements.
-+ *@scale_function: Represents the scaling function to convert voltage
-+ *	physical units desired by the client for the channel.
-+ *	Referenced from enum vadc_scale_fn_type.
-  */
- struct vadc_channel_prop {
- 	unsigned int channel;
-@@ -156,6 +195,7 @@ struct vadc_channel_prop {
- 	unsigned int prescale;
- 	unsigned int hw_settle_time;
- 	unsigned int avg_samples;
-+	unsigned int scale_function;
- };
- 
- /**
-@@ -197,6 +237,44 @@ struct vadc_priv {
- 	{.num =  1, .den = 10}
- };
- 
-+/* Voltage to temperature */
-+static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
-+	{1758,	-40},
-+	{1742,	-35},
-+	{1719,	-30},
-+	{1691,	-25},
-+	{1654,	-20},
-+	{1608,	-15},
-+	{1551,	-10},
-+	{1483,	-5},
-+	{1404,	0},
-+	{1315,	5},
-+	{1218,	10},
-+	{1114,	15},
-+	{1007,	20},
-+	{900,	25},
-+	{795,	30},
-+	{696,	35},
-+	{605,	40},
-+	{522,	45},
-+	{448,	50},
-+	{383,	55},
-+	{327,	60},
-+	{278,	65},
-+	{237,	70},
-+	{202,	75},
-+	{172,	80},
-+	{146,	85},
-+	{125,	90},
-+	{107,	95},
-+	{92,	100},
-+	{79,	105},
-+	{68,	110},
-+	{59,	115},
-+	{51,	120},
-+	{44,	125}
-+};
-+
- static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
- {
- 	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
-@@ -468,6 +546,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	return ret;
- }
- 
-+static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
-+				 u32 tablesize, s32 input, s64 *output)
-+{
-+	bool descending = 1;
-+	u32 i = 0;
-+
-+	if (!pts)
-+		return -EINVAL;
-+
-+	/* Check if table is descending or ascending */
-+	if (tablesize > 1) {
-+		if (pts[0].x < pts[1].x)
-+			descending = 0;
-+	}
-+
-+	while (i < tablesize) {
-+		if ((descending) && (pts[i].x < input)) {
-+			/* table entry is less than measured*/
-+			 /* value and table is descending, stop */
-+			break;
-+		} else if ((!descending) &&
-+				(pts[i].x > input)) {
-+			/* table entry is greater than measured*/
-+			/*value and table is ascending, stop */
-+			break;
-+		}
-+		i++;
-+	}
-+
-+	if (i == 0) {
-+		*output = pts[0].y;
-+	} else if (i == tablesize) {
-+		*output = pts[tablesize - 1].y;
-+	} else {
-+		/* result is between search_index and search_index-1 */
-+		/* interpolate linearly */
-+		*output = (((s32)((pts[i].y - pts[i - 1].y) *
-+			(input - pts[i - 1].x)) /
-+			(pts[i].x - pts[i - 1].x)) +
-+			pts[i - 1].y);
-+	}
-+
-+	return 0;
-+}
-+
- static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
- 			     const struct vadc_channel_prop *prop,
- 			     s64 *scale_voltage)
-@@ -489,15 +612,61 @@ static s64 vadc_scale_fn(struct vadc_priv *vadc,
- 			 const struct vadc_channel_prop *prop, u16 adc_code)
- {
- 	const struct vadc_prescale_ratio *prescale;
--	s64 voltage = 0;
-+	s64 voltage = 0, result = 0;
-+	int ret;
-+
-+	switch (prop->scale_function) {
-+	case SCALE_DEFAULT:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+		prescale = &vadc_prescale_ratios[prop->prescale];
-+		voltage = voltage * prescale->den;
-+		return div64_s64(voltage, prescale->num);
-+
-+	case SCALE_THERM_100K_PULLUP:
-+	case SCALE_XOTHERM:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+		if (prop->calibration == VADC_CALIB_ABSOLUTE)
-+			voltage /= 1000;
-+
-+		vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
-+				      ARRAY_SIZE(adcmap_100k_104ef_104fb),
-+				      voltage, &result);
-+		result *= 1000;
-+		return result;
-+
-+	case SCALE_PMIC_THERM:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+		if (voltage > 0) {
-+			prescale = &vadc_prescale_ratios[prop->prescale];
-+			voltage = voltage * prescale->den;
-+			voltage /= (prescale->num * 2);
-+		} else {
-+			voltage = 0;
-+		}
-+
-+		voltage -= KELVINMIL_CELSIUSMIL;
- 
--	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+		return voltage;
- 
--	prescale = &vadc_prescale_ratios[prop->prescale];
-+	case SCALE_PMI_CHG_TEMP:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+		prescale = &vadc_prescale_ratios[prop->prescale];
-+		voltage = voltage * prescale->den;
- 
--	voltage = voltage * prescale->den;
-+		voltage = div64_s64(voltage, prescale->num);
-+		voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
-+		voltage = (voltage + PMI_CHG_SCALE_2);
-+		return div64_s64(voltage, 1000000);
- 
--	return div64_s64(voltage, prescale->num);
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
- }
- 
- static int vadc_decimation_from_dt(u32 value)
-@@ -615,7 +784,9 @@ struct vadc_channels {
- 	},								\
- 
- #define VADC_CHAN_TEMP(_dname, _pre)					\
--	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
-+	VADC_CHAN(_dname, IIO_TEMP,	\
-+		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED), \
-+		_pre)	\
- 
- #define VADC_CHAN_VOLT(_dname, _pre)					\
- 	VADC_CHAN(_dname, IIO_VOLTAGE,				\
-@@ -639,7 +810,7 @@ struct vadc_channels {
- 	VADC_CHAN_TEMP(DIE_TEMP, 0)
- 	VADC_CHAN_VOLT(REF_625MV, 0)
- 	VADC_CHAN_VOLT(REF_1250MV, 0)
--	VADC_CHAN_VOLT(CHG_TEMP, 0)
-+	VADC_CHAN_TEMP(CHG_TEMP, 0)
- 	VADC_CHAN_VOLT(SPARE1, 0)
- 	VADC_CHAN_VOLT(SPARE2, 0)
- 	VADC_CHAN_VOLT(GND_REF, 0)
-@@ -693,41 +864,41 @@ struct vadc_channels {
- 	VADC_CHAN_VOLT(AMUX_PU2, 0)
- 	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
- 
--	VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0)
-+	VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0)
-+	VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0)
- 	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0)
-+	VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0)
- 	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0)
- 
--	VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0)
-+	VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0)
-+	VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0)
- 	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0)
-+	VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0)
- 	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0)
- 
--	VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
-+	VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
-+	VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
- 	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
-+	VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
- 	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
- };
- 
- static int vadc_get_dt_channel_data(struct device *dev,
-@@ -804,6 +975,11 @@ static int vadc_get_dt_channel_data(struct device *dev,
- 		prop->avg_samples = VADC_DEF_AVG_SAMPLES;
- 	}
- 
-+	ret = of_property_read_u32(node, "qcom,scale-function",
-+				   &prop->scale_function);
-+	if (ret)
-+		prop->scale_function = SCALE_DEFAULT;
-+
- 	if (of_property_read_bool(node, "qcom,ratiometric"))
- 		prop->calibration = VADC_CALIB_RATIOMETRIC;
- 	else
-@@ -966,16 +1142,21 @@ static int vadc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	irq_eoc = platform_get_irq(pdev, 0);
--	if (irq_eoc < 0) {
--		if (irq_eoc == -EPROBE_DEFER || irq_eoc == -EINVAL)
--			return irq_eoc;
--		vadc->poll_eoc = true;
--	} else {
--		ret = devm_request_irq(dev, irq_eoc, vadc_isr, 0,
--				       "spmi-vadc", vadc);
--		if (ret)
--			return ret;
-+	vadc->poll_eoc = of_property_read_bool(node,
-+						"qcom,vadc-poll-eoc");
-+
-+	if (!vadc->poll_eoc) {
-+		irq_eoc = platform_get_irq(pdev, 0);
-+		if (irq_eoc < 0) {
-+			if (irq_eoc == -EPROBE_DEFER || irq_eoc == -EINVAL)
-+				return irq_eoc;
-+			vadc->poll_eoc = true;
-+		} else {
-+			ret = devm_request_irq(dev, irq_eoc, vadc_isr, 0,
-+					       "spmi-vadc", vadc);
-+			if (ret)
-+				return ret;
-+		}
- 	}
- 
- 	ret = vadc_reset(vadc);
+The first driver is a simple wrapper converting an iio dpot into an
+iio dac. It only changes the unit and scale. It also does not add any
+fancy iio buffer support that I don't need. I suppose that can be
+added. By someone else :-)
+
+The second driver (the envelope detector) is more involved. It also
+explains why I need the dpot-dac driver. I wanted the envelope
+detector to be generic and work with any dac, but I had a dpot...
+
+But before those two new drivers, there is some infrastructure added
+to provide available values for a channel.
+
+Ok, so the devicetree compatible string for the envelope-detector gained
+the "axentia,tse850-" prefix in v2, but at the same time the driver also
+gained generality that in my mind puts it in about the same position as the
+dpot-dac driver. The driver really has very little to do with the specifics
+of the TSE-850. But at the same time there are more ways to build an
+envelope detector compared to the obviousness of building a dac from a dpot...
+
+One thing I still don't like is that the irq needs to be changed for cases
+where it is only ever interesting with the 'invert' variant, and it may not
+work to set up the irq the wrong way first. For the TSE-850, this does not
+matter, since we have a mux on the envelope detector input and can make use
+of both 'invert' and 'normal' for different signals (we could have gotten
+by with only 'invert' since the only signals we are measuring that are
+'normal' are also DC signals and can thus be detected both from below and
+from above), but it is nice to have it both ways. The only way out of this
+is a devicetree thing. I suppose it will have to be added by whomever needs
+it whenever that is...
+
+I also wonder if the "new" *_available ABI should perhaps be documented
+for all variants directly in sysfs-bus-iio instead of doing it ina driver
+specific maner that I did? But that can be fixed later by someone more
+capable than me :-)
+
+v2 -> v3
+- add some missing @foo comments in iio.h in the initial forward ported patch
+- killed some buffer overflow problems in the initial forward ported patch
+- add inkern.c helpers for the new available attributes to avoid viral
+  boilerplating in the future (also add support for finding max of
+  IIO_AVAIL_LISTs of IIO_VAL_INTs)
+- add ABI docs for new ABI of mcp4531 (out_resistance_raw_available)
+  and an example in the commit message
+
+dpot-dac:
+- two more counts of s/assumed the that the/assumed that the/   *blush*
+- add ABI docs for new ABI (out_voltageY_raw_available)
+
+envelope detector:
+- move device attributes 'compare_interval_ms' and 'invert' to extended
+  channel attributes (out_altvoltage0_compare_interval and
+  out_altvoltage0_invert) as they really are about the channel and not
+  the device
+- kill "dpot-dac,max-ohms = <100000>;" in the devicetree example
+
+
+v1 -> v2
+- provide out_resistanceX_raw_available channel attribute in mcp4531 dpot
+
+dpot-dac:
+- change Vref to vref
+- the module will be called dpot-dac (in Kconfig help)
+- removed a 'the'
+- removed (s64) cast
+- make the channel indexed, makes libiio find the channel (tested with 0.5)
+- add a comment on how integer scale is converted to fractional scale
+  and clarify the code a bit
+- dig out max-ohms by looking at scale and maximum available raw value
+  from the dpot channel and drop the 'dpot-dac,max-ohms' devicetree property
+- provide out_voltageX_raw_available channel attribute
+
+envelope-detector:
+- change compatible from envelope-detector to axentia,tse850-envelope-detector
+- remove envelope-detector,invert and envelope-detector,comp-interval-ms from
+  devicetree and add them as iio device attributes instead
+- make the channel indexed, makes libiio find the channel (tested with 0.5)
+- reorder struct envelope to better indicate what is covered by read_lock
+- add comment on interaction between envelope_detector_comp_latch (renamed
+  from envelope_detector_latch) and envelope_detector_comp_isr (renamed
+  from envelope_detector_isr)
+- fixup a problem in envelope_detector_comp_latch where interrupts pending
+  from when the interrupt has been disabled interferes with expected
+  operation
+- slight rewrite of the initial high/low assignments
+- use a better name when requesting the interrupt
+- dig out dac_max by looking at scale and maximum available raw value
+  from the dac channel and drop the 'envelope-detector,dac-max' devicetree
+  property
+
+Cheers,
+Peter
+
+Jonathan Cameron (1):
+  iio:core: add a callback to allow drivers to provide _available
+    attributes
+
+Peter Rosin (7):
+  iio: inkern: add helpers to query available values from channels
+  iio: mcp4531: provide range of available raw values
+  dt-bindings: add axentia to vendor-prefixes
+  dt-bindings: iio: document dpot-dac bindings
+  iio: dpot-dac: DAC driver based on a digital potentiometer
+  dt-bindings: iio: document envelope-detector bindings
+  iio: envelope-detector: ADC driver based on a DAC and a comparator
+
+ .../testing/sysfs-bus-iio-adc-envelope-detector    |  36 ++
+ .../ABI/testing/sysfs-bus-iio-dac-dpot-dac         |   8 +
+ .../testing/sysfs-bus-iio-potentiometer-mcp4531    |   8 +
+ .../bindings/iio/adc/envelope-detector.txt         |  54 +++
+ .../devicetree/bindings/iio/dac/dpot-dac.txt       |  41 ++
+ .../devicetree/bindings/vendor-prefixes.txt        |   1 +
+ MAINTAINERS                                        |  17 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/envelope-detector.c                | 422 +++++++++++++++++++++
+ drivers/iio/dac/Kconfig                            |  10 +
+ drivers/iio/dac/Makefile                           |   1 +
+ drivers/iio/dac/dpot-dac.c                         | 267 +++++++++++++
+ drivers/iio/industrialio-core.c                    | 259 +++++++++++--
+ drivers/iio/inkern.c                               |  97 +++++
+ drivers/iio/potentiometer/mcp4531.c                | 104 +++--
+ include/linux/iio/consumer.h                       |  29 ++
+ include/linux/iio/iio.h                            |  46 +++
+ include/linux/iio/types.h                          |   5 +
+ 19 files changed, 1341 insertions(+), 75 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+ create mode 100644 drivers/iio/adc/envelope-detector.c
+ create mode 100644 drivers/iio/dac/dpot-dac.c
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.1.4
+
