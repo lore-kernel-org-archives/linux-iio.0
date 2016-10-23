@@ -1,517 +1,490 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:53537 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754133AbcJYF1r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 01:27:47 -0400
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: linux-arm-msm@vger.kernel.org, smohanad@codeaurora.org,
-        mgautam@codeaurora.org,
-        Rama Krishna Phani A <rphani@codeaurora.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Julia Lawall <Julia.Lawall@lip6.fr>,
-        linux-kernel@vger.kernel.org (open list)
-Subject: [PATCH V1]iio: adc: spmi-vadc: Changes to support different scaling
-Date: Tue, 25 Oct 2016 10:57:03 +0530
-Message-Id: <1477373226-29587-1-git-send-email-rphani@codeaurora.org>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.218]:32648 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754123AbcJWTNE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 15:13:04 -0400
+Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v4 4/8] drivers:input:tsc2007: add iio interface to read external ADC input and temperature
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <4b6773d9-bc33-7471-ee29-01f51c5cfce2@kernel.org>
+Date: Sun, 23 Oct 2016 21:11:48 +0200
+Cc: Mark Rutland <mark.rutland@arm.com>, devicetree@vger.kernel.org,
+        linux-omap@vger.kernel.org, Arnd Bergmann <arnd@arndb.de>,
+        kernel@pyra-handheld.com, Tony Lindgren <tony@atomide.com>,
+        linux-kernel@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Russell King <linux@armlinux.org.uk>,
+        linux-iio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?windows-1252?Q?Mika_Penttil=E4?= <mika.penttila@nextfour.com>,
+        =?windows-1252?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+        linux-input@vger.kernel.org, Michael Welling <mwelling@ieee.org>,
+        letux-kernel@openphoenux.org, "Andrew F. Davis" <afd@ti.com>,
+        Igor Grinberg <grinberg@compulab.co.il>
+Message-Id: <6A4D5B67-A852-4827-A67D-04A288CDED30@goldelico.com>
+References: <cover.1476712675.git.hns@goldelico.com> <4d3c600bf0a6b75a74212a103bf31525505290a0.1476712675.git.hns@goldelico.com> <07bb4d52-a439-f9a9-8593-ddde8e93e6ee@kernel.org> <7A0E332C-4930-4F1A-8320-F87F864B53AE@goldelico.com> <1dd251db-7f45-78bf-c9dd-4ae29b0ed757@kernel.org> <976C7328-A6AA-4CD5-AAAA-3B14BA3BD793@goldelico.com> <F0CB8C7F-29FD-41DF-A652-9D1AF7824D5F@goldelico.com> <4b6773d9-bc33-7471-ee29-01f51c5cfce2@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add changes to support different scale functions to convert adc code to
-physical units.
+Hi,
 
-Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
----
- drivers/iio/adc/qcom-spmi-vadc.c | 319 ++++++++++++++++++++++++++++++---------
- 1 file changed, 249 insertions(+), 70 deletions(-)
+> Am 23.10.2016 um 21:00 schrieb Jonathan Cameron <jic23@kernel.org>:
+>=20
+> On 23/10/16 19:34, H. Nikolaus Schaller wrote:
+>> Hi Jonathan,
+>>=20
+>>> Am 23.10.2016 um 11:57 schrieb H. Nikolaus Schaller =
+<hns@goldelico.com>:
+>>>=20
+>>> Hi,
+>>>=20
+>>>>> +static int tsc2007_alloc(struct i2c_client *client, struct =
+tsc2007 **ts,
+>>>>> +                          struct input_dev **input_dev)
+>>>>> +{
+>>>>> +       int err;
+>>>>> +       struct iio_dev *indio_dev;
+>>>>> +
+>>>>> +       indio_dev =3D devm_iio_device_alloc(&client->dev, =
+sizeof(*ts));
+>>>> Instead of doing this to reduce the delta between versions make=20
+>>>> iio_priv a struct tsc2007 **
+>>>>=20
+>>>> That is have a single pointer in there and do your allocation of =
+struct
+>>>> tsc2007 separately.
+>>>=20
+>>> Sorry, but I think I do not completely understand what you mean =
+here.
+>>>=20
+>>> The problem is that we need to allocate some struct tsc2007 in both =
+cases.
+>>> But in one case managed directly by &client->dev and in the other =
+managed
+>>> indirectly. This is why I use the private area of struct iio_dev to =
+store
+>>> the full struct tsc2007 and not just a pointer.
+>>=20
+>> Ok, I think I finally did understand how you mean this and have =
+started to
+>> implement something.
+>>=20
+> oops. Didn't look on in my emails to get to this one!
+>> The idea is to have one alloc function to return a struct tsc2007. =
+This
+>> can be part of the probe function, like it is in the unpatched =
+driver.
+>>=20
+>> In case of iio this struct tsc2007 is also allocated explicitly so =
+that
+>> a pointer can be stored in iio_priv.
+>>=20
+>> This just means an additional iio_priv->ts =3D devm_kzalloc() in case =
+of iio.
+>>=20
+>> I have added that approach to my inlined patch and it seems to work =
+(attached).
+>>=20
+>> Sorry if I do not use the wording you would use and sometimes =
+overlook
+>> something you have said. I feel here like moving on thin ice and =
+doing
+>> guesswork about unspoken assumptions...
+> That's fine.  Stuff that can appear obvious to one person is not
+> necessarily obvious to another!
+>>=20
+>>>=20
+>>>>=20
+>>>> Having doing that, you can have this CONFIG_IIO block as just
+>>>> doing the iio stuff with the input elements pulled back into the =
+main
+>>>> probe function.
+>>>>=20
+>>>> Then define something like
+>>>>=20
+>>>> iio_configure (stubbed to nothing if no IIO)
+>>>> and
+>>>> iio_unconfigure (also stubbed to nothing if no IIO).
+>>=20
+>> This seems to work (draft attached).
+>>=20
+>>>>=20
+>>>> A couple of additions in the header
+>>=20
+>> I think you mean tsc2007.h?
+> Nope. A local header alongside the driver is what you want for this =
+stuff.
+> driver/input/tsc2007.h=20
 
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index c2babe5..e605a9d 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License version 2 and
-@@ -84,7 +84,7 @@
- #define VADC_MAX_ADC_CODE			0xa800
- 
- #define VADC_ABSOLUTE_RANGE_UV			625000
--#define VADC_RATIOMETRIC_RANGE_UV		1800000
-+#define VADC_RATIOMETRIC_RANGE			1800
- 
- #define VADC_DEF_PRESCALING			0 /* 1:1 */
- #define VADC_DEF_DECIMATION			0 /* 512 */
-@@ -92,6 +92,8 @@
- #define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
- #define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
- 
-+#define VADC_DEF_SCALE_FN			SCALE_DEFAULT
-+
- #define VADC_DECIMATION_MIN			512
- #define VADC_DECIMATION_MAX			4096
- 
-@@ -100,9 +102,43 @@
- 
- #define KELVINMIL_CELSIUSMIL			273150
- 
-+#define PMI_CHG_SCALE_1				-138890
-+#define PMI_CHG_SCALE_2				391750000000
-+
- #define VADC_CHAN_MIN			VADC_USBIN
- #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
- 
-+/**
-+ * enum vadc_scale_fn_type - Scaling function to convert ADC code to
-+ *				physical scaled units for the channel.
-+ * %SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
-+ * %SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
-+ *				 Uses a mapping table with 100K pullup.
-+ * %SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
-+ * %SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
-+ * %SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
-+ * %SCALE_NONE: Do not use this scaling type.
-+ */
-+enum vadc_scale_fn_type {
-+	SCALE_DEFAULT = 0,
-+	SCALE_THERM_100K_PULLUP,
-+	SCALE_PMIC_THERM,
-+	SCALE_XOTHERM,
-+	SCALE_PMI_CHG_TEMP,
-+	SCALE_NONE,
-+};
-+
-+/**
-+ * struct vadc_map_pt - Map the graph representation for ADC channel
-+ * @x: Represent the ADC digitized code.
-+ * @y: Represent the physical data which can be temperature, voltage,
-+ *     resistance.
-+ */
-+struct vadc_map_pt {
-+	s32 x;
-+	s32 y;
-+};
-+
- /*
-  * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-  * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-@@ -148,6 +184,9 @@ struct vadc_prescale_ratio {
-  *	start of conversion.
-  * @avg_samples: ability to provide single result from the ADC
-  *	that is an average of multiple measurements.
-+ *@scale_function: Represents the scaling function to convert voltage
-+ *	physical units desired by the client for the channel.
-+ *	Referenced from enum vadc_scale_fn_type.
-  */
- struct vadc_channel_prop {
- 	unsigned int channel;
-@@ -156,6 +195,7 @@ struct vadc_channel_prop {
- 	unsigned int prescale;
- 	unsigned int hw_settle_time;
- 	unsigned int avg_samples;
-+	unsigned int scale_function;
- };
- 
- /**
-@@ -197,6 +237,44 @@ struct vadc_priv {
- 	{.num =  1, .den = 10}
- };
- 
-+/* Voltage to temperature */
-+static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
-+	{1758,	-40},
-+	{1742,	-35},
-+	{1719,	-30},
-+	{1691,	-25},
-+	{1654,	-20},
-+	{1608,	-15},
-+	{1551,	-10},
-+	{1483,	-5},
-+	{1404,	0},
-+	{1315,	5},
-+	{1218,	10},
-+	{1114,	15},
-+	{1007,	20},
-+	{900,	25},
-+	{795,	30},
-+	{696,	35},
-+	{605,	40},
-+	{522,	45},
-+	{448,	50},
-+	{383,	55},
-+	{327,	60},
-+	{278,	65},
-+	{237,	70},
-+	{202,	75},
-+	{172,	80},
-+	{146,	85},
-+	{125,	90},
-+	{107,	95},
-+	{92,	100},
-+	{79,	105},
-+	{68,	110},
-+	{59,	115},
-+	{51,	120},
-+	{44,	125}
-+};
-+
- static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
- {
- 	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
-@@ -418,7 +496,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	u16 read_1, read_2;
- 	int ret;
- 
--	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
-+	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
- 	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
- 
- 	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-@@ -468,27 +546,128 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	return ret;
- }
- 
--static s32 vadc_calibrate(struct vadc_priv *vadc,
--			  const struct vadc_channel_prop *prop, u16 adc_code)
-+static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
-+				 u32 tablesize, s32 input, s64 *output)
- {
--	const struct vadc_prescale_ratio *prescale;
--	s64 voltage;
-+	bool descending = 1;
-+	u32 i = 0;
-+
-+	if (!pts)
-+		return -EINVAL;
-+
-+	/* Check if table is descending or ascending */
-+	if (tablesize > 1) {
-+		if (pts[0].x < pts[1].x)
-+			descending = 0;
-+	}
-+
-+	while (i < tablesize) {
-+		if ((descending == 1) && (pts[i].x < input)) {
-+			/* table entry is less than measured*/
-+			 /* value and table is descending, stop */
-+			break;
-+		} else if ((descending == 0) &&
-+				(pts[i].x > input)) {
-+			/* table entry is greater than measured*/
-+			/*value and table is ascending, stop */
-+			break;
-+		}
-+		i++;
-+	}
-+
-+	if (i == 0) {
-+		*output = pts[0].y;
-+	} else if (i == tablesize) {
-+		*output = pts[tablesize - 1].y;
-+	} else {
-+		/* result is between search_index and search_index-1 */
-+		/* interpolate linearly */
-+		*output = (((s32)((pts[i].y - pts[i - 1].y) *
-+			(input - pts[i - 1].x)) /
-+			(pts[i].x - pts[i - 1].x)) +
-+			pts[i - 1].y);
-+	}
- 
--	voltage = adc_code - vadc->graph[prop->calibration].gnd;
--	voltage *= vadc->graph[prop->calibration].dx;
--	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
-+	return 0;
-+}
- 
-+static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
-+			     const struct vadc_channel_prop *prop,
-+			     s64 *scale_voltage)
-+{
-+	*scale_voltage = (adc_code -
-+		vadc->graph[prop->calibration].gnd);
-+	*scale_voltage *= vadc->graph[prop->calibration].dx;
-+	*scale_voltage = div64_s64(*scale_voltage,
-+		vadc->graph[prop->calibration].dy);
- 	if (prop->calibration == VADC_CALIB_ABSOLUTE)
--		voltage += vadc->graph[prop->calibration].dx;
-+		*scale_voltage +=
-+		vadc->graph[prop->calibration].dx;
- 
--	if (voltage < 0)
--		voltage = 0;
-+	if (*scale_voltage < 0)
-+		*scale_voltage = 0;
-+}
- 
--	prescale = &vadc_prescale_ratios[prop->prescale];
-+static s64 vadc_scale_fn(struct vadc_priv *vadc,
-+			 const struct vadc_channel_prop *prop, u16 adc_code)
-+{
-+	const struct vadc_prescale_ratio *prescale;
-+	s64 voltage = 0, result = 0;
-+	int ret;
- 
--	voltage = voltage * prescale->den;
-+	switch (prop->scale_function) {
- 
--	return div64_s64(voltage, prescale->num);
-+	case SCALE_DEFAULT:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+		prescale = &vadc_prescale_ratios[prop->prescale];
-+		voltage = voltage * prescale->den;
-+		return div64_s64(voltage, prescale->num);
-+
-+	case SCALE_THERM_100K_PULLUP:
-+	case SCALE_XOTHERM:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+		if (prop->calibration == VADC_CALIB_ABSOLUTE)
-+			do_div(voltage, 1000);
-+
-+		vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
-+				      ARRAY_SIZE(adcmap_100k_104ef_104fb),
-+				      voltage, &result);
-+		result *= 1000;
-+		return result;
-+
-+	case SCALE_PMIC_THERM:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+		if (voltage > 0) {
-+			prescale = &vadc_prescale_ratios[prop->prescale];
-+			voltage = voltage * prescale->den;
-+			do_div(voltage, prescale->num * 2);
-+		} else {
-+			voltage = 0;
-+		}
-+
-+		voltage -= KELVINMIL_CELSIUSMIL;
-+
-+		return voltage;
-+
-+	case SCALE_PMI_CHG_TEMP:
-+		vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+		prescale = &vadc_prescale_ratios[prop->prescale];
-+		voltage = voltage * prescale->den;
-+
-+		voltage = div64_s64(voltage, prescale->num);
-+		voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
-+		voltage = (voltage + PMI_CHG_SCALE_2);
-+		return div64_s64(voltage, 1000000);
-+
-+	default:
-+		ret = -EINVAL;
-+		break;
-+	}
-+
-+	return ret;
- }
- 
- static int vadc_decimation_from_dt(u32 value)
-@@ -552,11 +731,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			break;
- 
--		*val = vadc_calibrate(vadc, prop, adc_code);
-+		*val = vadc_scale_fn(vadc, prop, adc_code);
- 
--		/* 2mV/K, return milli Celsius */
--		*val /= 2;
--		*val -= KELVINMIL_CELSIUSMIL;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_RAW:
- 		prop = &vadc->chan_props[chan->address];
-@@ -564,12 +740,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			break;
- 
--		*val = vadc_calibrate(vadc, prop, adc_code);
-+		*val = (int)adc_code;
- 		return IIO_VAL_INT;
--	case IIO_CHAN_INFO_SCALE:
--		*val = 0;
--		*val2 = 1000;
--		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		ret = -EINVAL;
- 		break;
-@@ -613,11 +785,13 @@ struct vadc_channels {
- 	},								\
- 
- #define VADC_CHAN_TEMP(_dname, _pre)					\
--	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
-+	VADC_CHAN(_dname, IIO_TEMP,	\
-+		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED), \
-+		_pre)	\
- 
- #define VADC_CHAN_VOLT(_dname, _pre)					\
--	VADC_CHAN(_dname, IIO_VOLTAGE,					\
--		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
-+	VADC_CHAN(_dname, IIO_VOLTAGE,				\
-+		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
- 		  _pre)							\
- 
- /*
-@@ -637,12 +811,11 @@ struct vadc_channels {
- 	VADC_CHAN_TEMP(DIE_TEMP, 0)
- 	VADC_CHAN_VOLT(REF_625MV, 0)
- 	VADC_CHAN_VOLT(REF_1250MV, 0)
--	VADC_CHAN_VOLT(CHG_TEMP, 0)
-+	VADC_CHAN_TEMP(CHG_TEMP, 0)
- 	VADC_CHAN_VOLT(SPARE1, 0)
- 	VADC_CHAN_VOLT(SPARE2, 0)
- 	VADC_CHAN_VOLT(GND_REF, 0)
- 	VADC_CHAN_VOLT(VDD_VADC, 0)
--
- 	VADC_CHAN_VOLT(P_MUX1_1_1, 0)
- 	VADC_CHAN_VOLT(P_MUX2_1_1, 0)
- 	VADC_CHAN_VOLT(P_MUX3_1_1, 0)
-@@ -659,7 +832,6 @@ struct vadc_channels {
- 	VADC_CHAN_VOLT(P_MUX14_1_1, 0)
- 	VADC_CHAN_VOLT(P_MUX15_1_1, 0)
- 	VADC_CHAN_VOLT(P_MUX16_1_1, 0)
--
- 	VADC_CHAN_VOLT(P_MUX1_1_3, 1)
- 	VADC_CHAN_VOLT(P_MUX2_1_3, 1)
- 	VADC_CHAN_VOLT(P_MUX3_1_3, 1)
-@@ -676,7 +848,6 @@ struct vadc_channels {
- 	VADC_CHAN_VOLT(P_MUX14_1_3, 1)
- 	VADC_CHAN_VOLT(P_MUX15_1_3, 1)
- 	VADC_CHAN_VOLT(P_MUX16_1_3, 1)
--
- 	VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
- 	VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
-@@ -690,42 +861,40 @@ struct vadc_channels {
- 	VADC_CHAN_VOLT(AMUX_PU1, 0)
- 	VADC_CHAN_VOLT(AMUX_PU2, 0)
- 	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
--
--	VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0)
-+	VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0)
-+	VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0)
- 	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0)
-+	VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0)
- 	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
--
--	VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0)
-+	VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0)
-+	VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0)
- 	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0)
-+	VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0)
- 	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
--
--	VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0)
- 	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
-+	VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
-+	VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
- 	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
-+	VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
- 	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
-+
- };
- 
- static int vadc_get_dt_channel_data(struct device *dev,
-@@ -802,6 +971,11 @@ static int vadc_get_dt_channel_data(struct device *dev,
- 		prop->avg_samples = VADC_DEF_AVG_SAMPLES;
- 	}
- 
-+	ret = of_property_read_u32(node, "qcom,scale-function",
-+				   &prop->scale_function);
-+	if (ret)
-+		prop->scale_function = SCALE_DEFAULT;
-+
- 	if (of_property_read_bool(node, "qcom,ratiometric"))
- 		prop->calibration = VADC_CALIB_RATIOMETRIC;
- 	else
-@@ -850,9 +1024,9 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- 
- 		iio_chan->channel = prop.channel;
- 		iio_chan->datasheet_name = vadc_chan->datasheet_name;
-+		iio_chan->extend_name = child->name;
- 		iio_chan->info_mask_separate = vadc_chan->info_mask;
- 		iio_chan->type = vadc_chan->type;
--		iio_chan->indexed = 1;
- 		iio_chan->address = index++;
- 
- 		iio_chan++;
-@@ -964,16 +1138,21 @@ static int vadc_probe(struct platform_device *pdev)
- 	if (ret)
- 		return ret;
- 
--	irq_eoc = platform_get_irq(pdev, 0);
--	if (irq_eoc < 0) {
--		if (irq_eoc == -EPROBE_DEFER || irq_eoc == -EINVAL)
--			return irq_eoc;
--		vadc->poll_eoc = true;
--	} else {
--		ret = devm_request_irq(dev, irq_eoc, vadc_isr, 0,
--				       "spmi-vadc", vadc);
--		if (ret)
--			return ret;
-+	vadc->poll_eoc = of_property_read_bool(node,
-+						"qcom,vadc-poll-eoc");
-+
-+	if (!vadc->poll_eoc) {
-+		irq_eoc = platform_get_irq(pdev, 0);
-+		if (irq_eoc < 0) {
-+			if (irq_eoc == -EPROBE_DEFER || irq_eoc == -EINVAL)
-+				return irq_eoc;
-+			vadc->poll_eoc = true;
-+		} else {
-+			ret = devm_request_irq(dev, irq_eoc, vadc_isr, 0,
-+					       "spmi-vadc", vadc);
-+			if (ret)
-+				return ret;
-+		}
- 	}
- 
- 	ret = vadc_reset(vadc);
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+Ah, ok. This makes sense.
+
+>>=20
+>> This currently contains only platform data and could IMHO be =
+eliminated
+>> if everything becomes DT.
+>>=20
+>>>> to make it all work
+>>>> (the struct tsc2007 and tsc2007_xfer() + a few of the
+>>>> register defines..
+>>=20
+>> Here it appears to me that I have to make a lot of so far private =
+static
+>> and even static inline functions public so that I can make them stubs =
+and
+>> call them from tsc2007_iio.c.
+> There will be a few.
+>>=20
+>> And for having proper parameter types I have to make most private =
+structs
+>> also public.
+> Yes a few of those as well.
+>>=20
+>> I really like the idea to have the optional iio feature in a separate =
+source
+>> file, but when really starting to write code, I get the impression =
+that
+>> it introduces more problems than it solves.
+>>=20
+>> And I wonder a little why it is not done for #ifdef CONFIG_OF in =
+tsc2007.c
+>> as well. There are also two static function in some #ifdef #else # =
+endif
+>> and not going through stubs.
+> Usually it is only done once a certain volume of code exists.
+>>=20
+>> So is this intended to give up some static definitions?
+> Yes, that happens the moment you have multiple source files.
+>=20
+> Some losses but generally end up with clean code separation. Always a =
+trade
+> off unfortunately.  Pity we can't just insist IIO is available! Rather =
+large
+> to pull in for what is probable a niche use case.
+>=20
+> Below is definitely heading in the right direction. I remember vaguely =
+being
+> convinced of the worth of doing this when optional code is involved!
+> (was a good while ago now)
+
+Ok. I think I can now integrate it and then post as PATCH v5 (together =
+with
+some other fixes for the patch set).
+
+>=20
+> Jonathan
+>>=20
+>> BR and thanks,
+>> Nikolaus
+>>=20
+>> diff --git a/drivers/input/touchscreen/tsc2007.c =
+b/drivers/input/touchscreen/tsc2007.c
+>> index 5e3c4bf..92da8f6 100644
+>> --- a/drivers/input/touchscreen/tsc2007.c
+>> +++ b/drivers/input/touchscreen/tsc2007.c
+>> @@ -30,6 +30,7 @@
+>> #include <linux/of.h>
+>> #include <linux/of_gpio.h>
+>> #include <linux/input/touchscreen.h>
+>> +#include <linux/iio/iio.h>
+> Should not need this after introducing the new file.  Will only be
+> needed in the iio specific .c file.
+>>=20
+>> #define TSC2007_MEASURE_TEMP0          (0x0 << 4)
+>> #define TSC2007_MEASURE_AUX            (0x2 << 4)
+>> @@ -98,6 +99,9 @@ struct tsc2007 {
+> This will definitely need to go in the header though.
+>>=20
+>>        int                     (*get_pendown_state)(struct device *);
+>>        void                    (*clear_penirq)(void);
+>> +
+>> +       struct mutex            mlock;
+>> +       void                    *private;
+>> };
+>>=20
+>> static inline int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
+>> @@ -192,7 +196,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, =
+void *handle)
+>>        while (!ts->stopped && tsc2007_is_pen_down(ts)) {
+>>=20
+>>                /* pen is down, continue with the measurement */
+>> +
+>> +               mutex_lock(&ts->mlock);
+>>                tsc2007_read_values(ts, &tc);
+>> +               mutex_unlock(&ts->mlock);
+>>=20
+>>                rt =3D tsc2007_calculate_resistance(ts, &tc);
+>>=20
+>> @@ -319,6 +326,157 @@ static void tsc2007_close(struct input_dev =
+*input_dev)
+>>        tsc2007_stop(ts);
+>> }
+>>=20
+>> +#ifdef CONFIG_IIO
+>> +
+>> +struct tsc2007_iio {
+>> +       struct tsc2007 *ts;
+> Spot on.
+>> +};
+>> +
+>> +#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
+>> +{ \
+>> +       .datasheet_name =3D _name, \
+>> +       .type =3D _type, \
+>> +       .info_mask_separate =3D BIT(IIO_CHAN_INFO_RAW) |  \
+>> +                       BIT(_chan_info), \
+>> +       .indexed =3D 1, \
+>> +       .channel =3D _chan, \
+>> +}
+>> +
+>> +static const struct iio_chan_spec tsc2007_iio_channel[] =3D {
+>> +       TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* =
+Ohms? */
+>> +       TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
+>> +       TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
+>> +};
+>> +
+>> +static int tsc2007_read_raw(struct iio_dev *indio_dev,
+>> +       struct iio_chan_spec const *chan, int *val, int *val2, long =
+mask)
+>> +{
+>> +       struct tsc2007_iio *iio =3D iio_priv(indio_dev);
+>> +       struct tsc2007 *tsc =3D iio->ts;
+>> +       int adc_chan =3D chan->channel;
+>> +       int ret =3D 0;
+>> +
+>> +       if (adc_chan >=3D ARRAY_SIZE(tsc2007_iio_channel))
+>> +               return -EINVAL;
+>> +
+>> +       if (mask !=3D IIO_CHAN_INFO_RAW)
+>> +               return -EINVAL;
+>> +
+>> +       mutex_lock(&tsc->mlock);
+>> +
+>> +       switch (chan->channel) {
+>> +       case 0:
+>> +               *val =3D tsc2007_xfer(tsc, READ_X);
+>> +               break;
+>> +       case 1:
+>> +               *val =3D tsc2007_xfer(tsc, READ_Y);
+>> +               break;
+>> +       case 2:
+>> +               *val =3D tsc2007_xfer(tsc, READ_Z1);
+>> +               break;
+>> +       case 3:
+>> +               *val =3D tsc2007_xfer(tsc, READ_Z2);
+>> +               break;
+>> +       case 4:
+>> +               *val =3D tsc2007_xfer(tsc, (ADC_ON_12BIT | =
+TSC2007_MEASURE_AUX));
+>> +               break;
+>> +       case 5: {
+>> +               struct ts_event tc;
+>> +
+>> +               tc.x =3D tsc2007_xfer(tsc, READ_X);
+>> +               tc.z1 =3D tsc2007_xfer(tsc, READ_Z1);
+>> +               tc.z2 =3D tsc2007_xfer(tsc, READ_Z2);
+>> +               *val =3D tsc2007_calculate_resistance(tsc, &tc);
+>> +               break;
+>> +       }
+>> +       case 6:
+>> +               *val =3D tsc2007_is_pen_down(tsc);
+>> +               break;
+>> +       case 7:
+>> +               *val =3D tsc2007_xfer(tsc,
+>> +                                   (ADC_ON_12BIT | =
+TSC2007_MEASURE_TEMP0));
+>> +               break;
+>> +       case 8:
+>> +               *val =3D tsc2007_xfer(tsc,
+>> +                                   (ADC_ON_12BIT | =
+TSC2007_MEASURE_TEMP1));
+>> +               break;
+>> +       }
+>> +
+>> +       /* Prepare for next touch reading - power down ADC, enable =
+PENIRQ */
+>> +       tsc2007_xfer(tsc, PWRDOWN);
+>> +
+>> +       mutex_unlock(&tsc->mlock);
+>> +
+>> +       ret =3D IIO_VAL_INT;
+>> +
+>> +       return ret;
+>> +}
+>> +
+>> +static const struct iio_info tsc2007_iio_info =3D {
+>> +       .read_raw =3D tsc2007_read_raw,
+>> +       .driver_module =3D THIS_MODULE,
+>> +};
+>> +
+>> +static inline int tsc2007_iio_configure(struct tsc2007 *ts)
+>> +{
+>> +       int err;
+>> +       struct iio_dev *indio_dev;
+>> +       struct tsc2007_iio *iio;
+>> +
+>> +       indio_dev =3D devm_iio_device_alloc(&ts->client->dev, =
+sizeof(struct tsc2007_iio));
+>> +       if (!indio_dev) {
+>> +               dev_err(&ts->client->dev, "iio_device_alloc =
+failed\n");
+>> +               return -ENOMEM;
+>> +       }
+>> +
+>> +       iio =3D iio_priv(indio_dev);
+>> +       iio->ts =3D ts;
+>> +       ts->private =3D (void *) indio_dev;
+>> +
+>> +       indio_dev->name =3D "tsc2007";
+>> +       indio_dev->dev.parent =3D &ts->client->dev;
+>> +       indio_dev->info =3D &tsc2007_iio_info;
+>> +       indio_dev->modes =3D INDIO_DIRECT_MODE;
+>> +       indio_dev->channels =3D tsc2007_iio_channel;
+>> +       indio_dev->num_channels =3D ARRAY_SIZE(tsc2007_iio_channel);
+>> +
+>> +       err =3D iio_device_register(indio_dev);
+>> +       if (err < 0) {
+>> +               dev_err(&ts->client->dev, "iio_device_register() =
+failed: %d\n",
+>> +                       err);
+>> +               return err;
+>> +       }
+>> +
+>> +       return 0;
+>> +}
+>> +
+>> +static inline void tsc2007_iio_unconfigure(struct tsc2007 *ts)
+>> +{
+>> +       struct iio_dev *indio_dev =3D ts->private;
+>> +
+>> +       iio_device_unregister(indio_dev);
+>> +}
+>> +
+>> +#else /* CONFIG_IIO */
+>> +
+>> +static inline int tsc2007_iio_configure(struct tsc2007 *ts)
+>> +{
+>> +       /* not needed */
+>> +}
+>> +
+>> +static inline void tsc2007_iio_unconfigure(struct tsc2007 *ts)
+>> +{
+>> +       /* not needed */
+>> +}
+>> +
+>> +#endif /* CONFIG_IIO */
+>> +
+>> #ifdef CONFIG_OF
+>> static int tsc2007_get_pendown_state_gpio(struct device *dev)
+>> {
+>> @@ -472,7 +630,13 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>        ts->client =3D client;
+>>        ts->irq =3D client->irq;
+>>        ts->input =3D input_dev;
+>> +
+>> +       err =3D tsc2007_iio_configure(ts);
+>> +       if (err < 0)
+>> +               return err;
+>> +
+>>        init_waitqueue_head(&ts->wait);
+>> +       mutex_init(&ts->mlock);
+>>=20
+>>        snprintf(ts->phys, sizeof(ts->phys),
+>>                 "%s/input0", dev_name(&client->dev));
+>> @@ -503,8 +667,10 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>                                                          ts->fuzzz, =
+0);
+>>        } else {
+>>                err =3D tsc2007_probe_dt(client, ts);
+>> -               if (err)
+>> +               if (err) {
+>> +                       tsc2007_iio_unconfigure(ts);
+>>                        return err;
+>> +               }
+>>        }
+>>=20
+>>        if (pdata) {
+>> @@ -516,6 +682,7 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>                                dev_err(&client->dev,
+>>                                        "Failed to register =
+exit_platform_hw action, %d\n",
+>>                                        err);
+>> +                               tsc2007_iio_unconfigure(ts);
+>>                                return err;
+>>                        }
+>>                }
+>> @@ -533,6 +700,7 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>        if (err) {
+>>                dev_err(&client->dev, "Failed to request irq %d: =
+%d\n",
+>>                        ts->irq, err);
+>> +               tsc2007_iio_unconfigure(ts);
+> Maybe need a common unwind and use a goto to get to it.
+
+Yes, makes sense.
+
+>>                return err;
+>>        }
+>>=20
+>> @@ -543,6 +711,7 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>        if (err < 0) {
+>>                dev_err(&client->dev,
+>>                        "Failed to setup chip: %d\n", err);
+>> +               tsc2007_iio_unconfigure(ts);
+>>                return err;     /* usually, chip does not respond */
+>>        }
+>>=20
+>> @@ -550,12 +719,21 @@ static int tsc2007_probe(struct i2c_client =
+*client,
+>>        if (err) {
+>>                dev_err(&client->dev,
+>>                        "Failed to register input device: %d\n", err);
+>> +               tsc2007_iio_unconfigure(ts);
+>>                return err;
+>>        }
+>>=20
+>>        return 0;
+>> }
+>>=20
+>> +static int tsc2007_remove(struct i2c_client *client)
+>> +{
+>> +       struct tsc2007 *ts =3D i2c_get_clientdata(client);
+>> +       tsc2007_iio_unconfigure(ts);
+>> +       input_unregister_device(ts->input);
+>> +       return 0;
+>> +}
+>> +
+>> static const struct i2c_device_id tsc2007_idtable[] =3D {
+>>        { "tsc2007", 0 },
+>>        { }
+>> @@ -578,6 +756,7 @@ static struct i2c_driver tsc2007_driver =3D {
+>>        },
+>>        .id_table       =3D tsc2007_idtable,
+>>        .probe          =3D tsc2007_probe,
+>> +       .remove         =3D tsc2007_remove,
+>> };
+>>=20
+>> module_i2c_driver(tsc2007_driver);--
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" =
+in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
+BR and thanks,
+Nikolaus
+
 
