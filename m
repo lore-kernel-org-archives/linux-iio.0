@@ -1,272 +1,476 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hosting.pavoucek.net ([46.28.107.168]:36581 "EHLO
-        hosting.pavoucek.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750955AbcJXKQt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2016 06:16:49 -0400
-Date: Mon, 24 Oct 2016 12:16:43 +0200
-From: Tomas Novotny <tomas@novotny.cz>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: devicetree@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
-        Yong Li <sdliyong@gmail.com>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH v3 4/5] iio: dac: mcp4725: support voltage reference
- selection
-Message-ID: <20161024121643.478feb72@tomas.local.tbs-biometrics.cz>
-In-Reply-To: <2a820b1f-b6d7-88f9-7403-06a1c5e3b2ee@kernel.org>
-References: <1476812589-18333-1-git-send-email-tomas.novotny@tbs-biometrics.com>
-        <1476812589-18333-5-git-send-email-tomas.novotny@tbs-biometrics.com>
-        <2a820b1f-b6d7-88f9-7403-06a1c5e3b2ee@kernel.org>
+Return-Path: <peda@axentia.se>
+Subject: Re: [PATCH v2 1/7] iio:core: add a callback to allow drivers to
+ provide _available attributes
+To: Jonathan Cameron <jic23@kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1477176226-10566-1-git-send-email-peda@axentia.se>
+ <1477176226-10566-2-git-send-email-peda@axentia.se>
+ <74746223-a1aa-e9c6-622c-854526d0722d@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <6a079aa4-f56e-1090-924e-aa3911ce0fca@axentia.se>
+Date: Mon, 24 Oct 2016 00:10:43 +0200
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <74746223-a1aa-e9c6-622c-854526d0722d@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+On 2016-10-23 11:33, Jonathan Cameron wrote:
+> On 22/10/16 23:43, Peter Rosin wrote:
+>> From: Jonathan Cameron <jic23@kernel.org>
+>>
+>> A large number of attributes can only take a limited range of values.
+>> Currently in IIO this is handled by directly registering additional
+>> *_available attributes thus providing this information to userspace.
+>>
+>> It is desirable to provide this information via the core for much the same
+>> reason this was done for the actual channel information attributes in the
+>> first place.  If it isn't there, then it can only really be accessed from
+>> userspace.  Other in kernel IIO consumers have no access to what valid
+>> parameters are.
+>>
+>> Two forms are currently supported:
+>> * list of values in one particular IIO_VAL_* format.
+>> 	e.g. 1.300000 1.500000 1.730000
+>> * range specification with a step size:
+>> 	e.g. [1.000000 0.500000 2.500000]
+>> 	equivalent to 1.000000 1.5000000 2.000000 2.500000
+>>
+>> An addition set of masks are used to allow different sharing rules for the
+>> *_available attributes generated.
+>>
+>> This allows for example:
+>>
+>> in_accel_x_offset
+>> in_accel_y_offset
+>> in_accel_offset_available.
+>>
+>> We could have gone with having a specification for each and every
+>> info_mask element but that would have meant changing the existing userspace
+>> ABI.  This approach does not.
+> I'm wondering what I meant by this... where does it cause use ABI issues?
+> Do you have any idea?
 
-On Sat, 22 Oct 2016 19:18:06 +0100
-Jonathan Cameron <jic23@kernel.org> wrote:
+Nope, sorry. My memory is probably just as blank as yours :-)
 
-> On 18/10/16 18:43, Tomas Novotny wrote:
-> > From: Tomas Novotny <tomas@novotny.cz>
-> > 
-> > MCP47x6 chip supports selection of a voltage reference (VDD, VREF buffered
-> > or unbuffered). MCP4725 doesn't have this feature thus the eventual setting
-> > is ignored and user is warned.
-> > 
-> > The setting is stored only in the volatile memory of the chip. You need to
-> > manually store it to the EEPROM of the chip via 'store_eeprom' sysfs entry.
-> > 
-> > Signed-off-by: Tomas Novotny <tomas@novotny.cz>
-> Something odd happened and this patch wouldn't apply without some manual
-> intervention.
+> I'd forgotten I'd even done it like this rather than just insisting on 
+> available for everything (which is more logical to me as we should know
+> the range of everything).
 > 
-> Please check the result in the testing branch of iio.git.
+> It's pretty low cost though and gives a way of adding this to drivers
+> piecemeal which is probably a good idea!
 
-It was a whitespace fix. The result is correct.
+Yes, that's always a good sign. Flag days are a pain.
 
-Thanks for the reviews and for taking this series,
-
-Tomas
-
-> Thanks,
+>> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+>> [rather mindlessly forward ported from approx 3 years ago /peda]
+> More importantly shepherding it through review!
 > 
+> Naturally it's perfect code so not comments inline ;)
+> 
+> Thanks again for picking this up!
+> 
+> So... I want to see lots of comments on this. If people are happy with
+> it (unlikely ;) then please say so.  It's at least a bit controversial
+
+Hmmm, maybe I should looking over the changes line-by-line, see inline
+comments...
+
+> and adds a 'lot' of new ABI.
+
+I'd appreciate it if someone else wrote up the common stuff in the
+testing/sysfs-bus/iio file. That file is a jungle to a newcomer...
+
 > Jonathan
-> > ---
-> >  drivers/iio/dac/mcp4725.c       | 97 ++++++++++++++++++++++++++++++++++++++---
-> >  include/linux/iio/dac/mcp4725.h | 11 +++++
-> >  2 files changed, 102 insertions(+), 6 deletions(-)
-> > 
-> > diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-> > index e481f38..83d431f 100644
-> > --- a/drivers/iio/dac/mcp4725.c
-> > +++ b/drivers/iio/dac/mcp4725.c
-> > @@ -27,12 +27,20 @@
-> >  
-> >  #define MCP4725_DRV_NAME "mcp4725"
-> >  
-> > +#define MCP472X_REF_VDD			0x00
-> > +#define MCP472X_REF_VREF_UNBUFFERED	0x02
-> > +#define MCP472X_REF_VREF_BUFFERED	0x03
-> > +
-> >  struct mcp4725_data {
-> >  	struct i2c_client *client;
-> > +	int id;
-> > +	unsigned ref_mode;
-> > +	bool vref_buffered;
-> >  	u16 dac_value;
-> >  	bool powerdown;
-> >  	unsigned powerdown_mode;
-> >  	struct regulator *vdd_reg;
-> > +	struct regulator *vref_reg;
-> >  };
-> >  
-> >  static int mcp4725_suspend(struct device *dev)
-> > @@ -87,6 +95,7 @@ static ssize_t mcp4725_store_eeprom(struct device *dev,
-> >  		return 0;
-> >  
-> >  	inoutbuf[0] = 0x60; /* write EEPROM */
-> > +	inoutbuf[0] |= data->ref_mode << 3;
-> >  	inoutbuf[1] = data->dac_value >> 4;
-> >  	inoutbuf[2] = (data->dac_value & 0xf) << 4;
-> >  
-> > @@ -279,6 +288,28 @@ static int mcp4725_set_value(struct iio_dev *indio_dev, int val)
-> >  		return 0;
-> >  }
-> >  
-> > +static int mcp4726_set_cfg(struct iio_dev *indio_dev)
-> > +{
-> > +	struct mcp4725_data *data = iio_priv(indio_dev);
-> > +	u8 outbuf[3];
-> > +	int ret;
-> > +
-> > +	outbuf[0] = 0x40;
-> > +	outbuf[0] |= data->ref_mode << 3;
-> > +	if (data->powerdown)
-> > +		outbuf[0] |= data->powerdown << 1;
-> > +	outbuf[1] = data->dac_value >> 4;
-> > +	outbuf[2] = (data->dac_value & 0xf) << 4;
-> > +
-> > +	ret = i2c_master_send(data->client, outbuf, 3);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +	else if (ret != 3)
-> > +		return -EIO;
-> > +	else
-> > +		return 0;
-> > +}
-> > +
-> >  static int mcp4725_read_raw(struct iio_dev *indio_dev,
-> >  			   struct iio_chan_spec const *chan,
-> >  			   int *val, int *val2, long mask)
-> > @@ -291,7 +322,11 @@ static int mcp4725_read_raw(struct iio_dev *indio_dev,
-> >  		*val = data->dac_value;
-> >  		return IIO_VAL_INT;
-> >  	case IIO_CHAN_INFO_SCALE:
-> > -		ret = regulator_get_voltage(data->vdd_reg);
-> > +		if (data->ref_mode == MCP472X_REF_VDD)
-> > +			ret = regulator_get_voltage(data->vdd_reg);
-> > +		else
-> > +			ret = regulator_get_voltage(data->vref_reg);
-> > +
-> >  		if (ret < 0)
-> >  			return ret;
-> >  
-> > @@ -335,8 +370,9 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	struct mcp4725_data *data;
-> >  	struct iio_dev *indio_dev;
-> >  	struct mcp4725_platform_data *pdata = dev_get_platdata(&client->dev);
-> > -	u8 inbuf[3];
-> > +	u8 inbuf[4];
-> >  	u8 pd;
-> > +	u8 ref;
-> >  	int err;
-> >  
-> >  	if (!pdata) {
-> > @@ -350,6 +386,26 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	data = iio_priv(indio_dev);
-> >  	i2c_set_clientdata(client, indio_dev);
-> >  	data->client = client;
-> > +	data->id = id->driver_data;
-> > +
-> > +	if (data->id == MCP4725 && pdata->use_vref) {
-> > +		dev_err(&client->dev,
-> > +			"external reference is unavailable on MCP4725");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	if (!pdata->use_vref && pdata->vref_buffered) {
-> > +		dev_err(&client->dev,
-> > +			"buffering is unavailable on the internal reference");
-> > +		return -EINVAL;
-> > +	}
-> > +
-> > +	if (!pdata->use_vref)
-> > +		data->ref_mode = MCP472X_REF_VDD;
-> > +	else
-> > +		data->ref_mode = pdata->vref_buffered ?
-> > +			MCP472X_REF_VREF_BUFFERED :
-> > +			MCP472X_REF_VREF_UNBUFFERED;
-> >  
-> >  	data->vdd_reg = devm_regulator_get(&client->dev, "vdd");
-> >  	if (IS_ERR(data->vdd_reg))
-> > @@ -359,6 +415,18 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	if (err)
-> >  		return err;
-> >  
-> > +	if (pdata->use_vref) {
-> > +		data->vref_reg = devm_regulator_get(&client->dev, "vref");
-> > +		if (IS_ERR(data->vref_reg)) {
-> > +			err = PTR_ERR(data->vdd_reg);
-> > +			goto err_disable_vdd_reg;
-> > +		}
-> > +
-> > +		err = regulator_enable(data->vref_reg);
-> > +		if (err)
-> > +			goto err_disable_vdd_reg;
-> > +	}
-> > +
-> >  	indio_dev->dev.parent = &client->dev;
-> >  	indio_dev->name = id->name;
-> >  	indio_dev->info = &mcp4725_info;
-> > @@ -366,23 +434,38 @@ static int mcp4725_probe(struct i2c_client *client,
-> >  	indio_dev->num_channels = 1;
-> >  	indio_dev->modes = INDIO_DIRECT_MODE;
-> >  
-> > -	/* read current DAC value */
-> > -	err = i2c_master_recv(client, inbuf, 3);
-> > +	/* read current DAC value and settings */
-> > +	err = i2c_master_recv(client, inbuf, data->id == MCP4725 ? 3 : 4);
-> >  	if (err < 0) {
-> >  		dev_err(&client->dev, "failed to read DAC value");
-> > -		goto err_disable_vdd_reg;
-> > +		goto err_disable_vref_reg;
-> >  	}
-> >  	pd = (inbuf[0] >> 1) & 0x3;
-> >  	data->powerdown = pd > 0 ? true : false;
-> >  	data->powerdown_mode = pd ? pd - 1 : 2; /* largest resistor to gnd */
-> >  	data->dac_value = (inbuf[1] << 4) | (inbuf[2] >> 4);
-> > +	if (data->id == MCP4726)
-> > +		ref = (inbuf[3] >> 3) & 0x3;
-> > +
-> > +	if (data->id == MCP4726 && ref != data->ref_mode) {
-> > +		dev_info(&client->dev,
-> > +			"voltage reference mode differs (conf: %u, eeprom: %u), setting %u",
-> > +			data->ref_mode, ref, data->ref_mode);
-> > +		err = mcp4726_set_cfg(indio_dev);
-> > +		if (err < 0)
-> > +			goto err_disable_vref_reg;
-> > +	}
-> >  
-> >  	err = iio_device_register(indio_dev);
-> >  	if (err)
-> > -		goto err_disable_vdd_reg;
-> > +		goto err_disable_vref_reg;
-> >  
-> >  	return 0;
-> >  
-> > +err_disable_vref_reg:
-> > +	if (data->vref_reg)
-> > +		regulator_disable(data->vref_reg);
-> > +
-> >  err_disable_vdd_reg:
-> >  	regulator_disable(data->vdd_reg);
-> >  
-> > @@ -396,6 +479,8 @@ static int mcp4725_remove(struct i2c_client *client)
-> >  
-> >  	iio_device_unregister(indio_dev);
-> >  
-> > +	if (data->vref_reg)
-> > +		regulator_disable(data->vref_reg);
-> >  	regulator_disable(data->vdd_reg);
-> >  
-> >  	return 0;
-> > diff --git a/include/linux/iio/dac/mcp4725.h b/include/linux/iio/dac/mcp4725.h
-> > index 7c062e8..628b2cf 100644
-> > --- a/include/linux/iio/dac/mcp4725.h
-> > +++ b/include/linux/iio/dac/mcp4725.h
-> > @@ -9,7 +9,18 @@
-> >  #ifndef IIO_DAC_MCP4725_H_
-> >  #define IIO_DAC_MCP4725_H_
-> >  
-> > +/**
-> > + * struct mcp4725_platform_data - MCP4725/6 DAC specific data.
-> > + * @use_vref: Whether an external reference voltage on Vref pin should be used.
-> > + *            Additional vref-supply must be specified when used.
-> > + * @vref_buffered: Controls buffering of the external reference voltage.
-> > + *
-> > + * Vref related settings are available only on MCP4756. See
-> > + * Documentation/devicetree/bindings/iio/dac/mcp4725.txt for more information.
-> > + */
-> >  struct mcp4725_platform_data {
-> > +	bool use_vref;
-> > +	bool vref_buffered;
-> >  };
-> >  
-> >  #endif /* IIO_DAC_MCP4725_H_ */
-> > 
-> 
+>> Signed-off-by: Peter Rosin <peda@axentia.se>
+>> ---
+>>  drivers/iio/industrialio-core.c | 232 +++++++++++++++++++++++++++++++++++-----
+>>  include/linux/iio/iio.h         |  11 ++
+>>  include/linux/iio/types.h       |   5 +
+>>  3 files changed, 223 insertions(+), 25 deletions(-)
+>>
+>> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+>> index fc340ed3dca1..93c69ebeda1e 100644
+>> --- a/drivers/iio/industrialio-core.c
+>> +++ b/drivers/iio/industrialio-core.c
+>> @@ -575,51 +575,41 @@ int of_iio_read_mount_matrix(const struct device *dev,
+>>  #endif
+>>  EXPORT_SYMBOL(of_iio_read_mount_matrix);
+>>  
+>> -/**
+>> - * iio_format_value() - Formats a IIO value into its string representation
+>> - * @buf:	The buffer to which the formatted value gets written
+>> - * @type:	One of the IIO_VAL_... constants. This decides how the val
+>> - *		and val2 parameters are formatted.
+>> - * @size:	Number of IIO value entries contained in vals
+>> - * @vals:	Pointer to the values, exact meaning depends on the
+>> - *		type parameter.
+>> - *
+>> - * Return: 0 by default, a negative number on failure or the
+>> - *	   total number of characters written for a type that belongs
+>> - *	   to the IIO_VAL_... constant.
+>> - */
+>> -ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+>> +static ssize_t __iio_format_value(char *buf, unsigned int type,
+>> +				  int size, const int *vals)
+>>  {
+>>  	unsigned long long tmp;
+>> +	int tmp0, tmp1;
+>>  	bool scale_db = false;
+>>  
+>>  	switch (type) {
+>>  	case IIO_VAL_INT:
+>> -		return sprintf(buf, "%d\n", vals[0]);
+>> +		return sprintf(buf, "%d", vals[0]);
 
+This function was previously used to format one or a perhaps a few
+values presumable at the start of a page. It doesn't bother to check
+for buffer overflow. That is probably very bad now that it is used
+to print arbitrary length lists of values...
+
+I'll add a suggested fix in v3.
+
+>>  	case IIO_VAL_INT_PLUS_MICRO_DB:
+>>  		scale_db = true;
+>>  	case IIO_VAL_INT_PLUS_MICRO:
+>>  		if (vals[1] < 0)
+>> -			return sprintf(buf, "-%d.%06u%s\n", abs(vals[0]),
+>> +			return sprintf(buf, "-%d.%06u%s", abs(vals[0]),
+>>  				       -vals[1], scale_db ? " dB" : "");
+>>  		else
+>> -			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
+>> +			return sprintf(buf, "%d.%06u%s", vals[0], vals[1],
+>>  				scale_db ? " dB" : "");
+>>  	case IIO_VAL_INT_PLUS_NANO:
+>>  		if (vals[1] < 0)
+>> -			return sprintf(buf, "-%d.%09u\n", abs(vals[0]),
+>> +			return sprintf(buf, "-%d.%09u", abs(vals[0]),
+>>  				       -vals[1]);
+>>  		else
+>> -			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>> +			return sprintf(buf, "%d.%09u", vals[0], vals[1]);
+>>  	case IIO_VAL_FRACTIONAL:
+>>  		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+>> -		vals[0] = (int)div_s64_rem(tmp, 1000000000, &vals[1]);
+>> -		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
+>> +		tmp1 = vals[1];
+>> +		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+>> +		return sprintf(buf, "%d.%09u", tmp0, abs(tmp1));
+>>  	case IIO_VAL_FRACTIONAL_LOG2:
+>>  		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+>> -		vals[1] = do_div(tmp, 1000000000LL);
+>> -		vals[0] = tmp;
+>> -		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+>> +		tmp1 = do_div(tmp, 1000000000LL);
+>> +		tmp0 = tmp;
+>> +		return sprintf(buf, "%d.%09u", tmp0, tmp1);
+>>  	case IIO_VAL_INT_MULTIPLE:
+>>  	{
+>>  		int i;
+>> @@ -628,13 +618,34 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+>>  		for (i = 0; i < size; ++i)
+>>  			len += snprintf(&buf[len], PAGE_SIZE - len, "%d ",
+>>  								vals[i]);
+
+This seems like a dangerous thing to do, arg 2 of snprintf is size_t which
+is unsigned, so if one call would have overflowed the buffer, the next
+will see a negative available buffer, turned very large since unsigned.
+*boom*
+
+I'll add a suggested fix in v3.
+
+>> -		len += snprintf(&buf[len], PAGE_SIZE - len, "\n");
+>>  		return len;
+>>  	}
+>>  	default:
+>>  		return 0;
+>>  	}
+>>  }
+>> +
+>> +/**
+>> + * iio_format_value() - Formats a IIO value into its string representation
+>> + * @buf:	The buffer to which the formatted value gets written
+>> + * @type:	One of the IIO_VAL_... constants. This decides how the val
+>> + *		and val2 parameters are formatted.
+>> + * @size:	Number of IIO value entries contained in vals
+>> + * @vals:	Pointer to the values, exact meaning depends on the
+>> + *		type parameter.
+>> + *
+>> + * Return: 0 by default, a negative number on failure or the
+>> + *	   total number of characters written for a type that belongs
+>> + *	   to the IIO_VAL_... constant.
+>> + */
+>> +ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+>> +{
+>> +	ssize_t len;
+>> +
+>> +	len = __iio_format_value(buf, type, size, vals);
+>> +
+>> +	return len + sprintf(buf + len, "\n");
+>> +}
+>>  EXPORT_SYMBOL_GPL(iio_format_value);
+>>  
+>>  static ssize_t iio_read_channel_info(struct device *dev,
+>> @@ -662,6 +673,113 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>>  	return iio_format_value(buf, ret, val_len, vals);
+>>  }
+>>  
+>> +static ssize_t iio_format_avail_list(char *buf, const int *vals,
+>> +				     int type, int length)
+>> +{
+>> +	int i;
+>> +	ssize_t len = 0;
+>> +
+>> +	switch (type) {
+>> +	case IIO_VAL_INT:
+>> +		for (i = 0; i < length; i++) {
+>> +			len += __iio_format_value(buf + len, type, 1, &vals[i]);
+>> +			if (i < length - 1)
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						" ");
+>> +			else
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						"\n");
+>> +		}
+>> +		break;
+>> +	default:
+>> +		for (i = 0; i < length / 2; i++) {
+>> +			len += __iio_format_value(buf + len,
+>> +						  type,
+>> +						  2,
+>> +						  &vals[i * 2]);
+>> +			if (i < length / 2 - 1)
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						" ");
+>> +			else
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						"\n");
+>> +		}
+>> +	};
+>> +
+>> +	return len;
+>> +}
+>> +
+>> +static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
+>> +{
+>> +	int i;
+>> +	ssize_t len;
+>> +
+>> +	len = snprintf(buf, PAGE_SIZE, "[");
+>> +	switch (type) {
+>> +	case IIO_VAL_INT:
+>> +		for (i = 0; i < 3; i++) {
+>> +			len += __iio_format_value(buf + len, type, 1, &vals[i]);
+>> +			if (i < 2)
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						" ");
+>> +			else
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						"]\n");
+>> +		}
+>> +		break;
+>> +	default:
+>> +		for (i = 0; i < 3; i++) {
+>> +			len += __iio_format_value(buf + len,
+>> +						  type,
+>> +						  2,
+>> +						  &vals[i * 2]);
+>> +			if (i < 2)
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						" ");
+>> +			else
+>> +				len += snprintf(buf + len,
+>> +						PAGE_SIZE - len,
+>> +						"]\n");
+>> +		}
+>> +	};
+>> +
+>> +	return len;
+>> +}
+>> +
+>> +static ssize_t iio_read_channel_info_avail(struct device *dev,
+>> +					   struct device_attribute *attr,
+>> +					   char *buf)
+>> +{
+>> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+>> +	const int *vals;
+>> +	int ret;
+>> +	int length;
+>> +	int type;
+>> +
+>> +	ret = indio_dev->info->read_avail(indio_dev, this_attr->c,
+>> +					  &vals, &type, &length,
+>> +					  this_attr->address);
+>> +
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	switch (ret) {
+>> +	case IIO_AVAIL_LIST:
+>> +		return iio_format_avail_list(buf, vals, type, length);
+>> +	case IIO_AVAIL_RANGE:
+>> +		return iio_format_avail_range(buf, vals, type);
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>>  /**
+>>   * iio_str_to_fixpoint() - Parse a fixed-point number from a string
+>>   * @str: The string to parse
+>> @@ -978,6 +1096,40 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+>>  	return attrcount;
+>>  }
+>>  
+>> +static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
+>> +					       struct iio_chan_spec const *chan,
+>> +					       enum iio_shared_by shared_by,
+>> +					       const long *infomask)
+>> +{
+>> +	int i, ret, attrcount = 0;
+>> +	char *avail_postfix;
+>> +
+>> +	for_each_set_bit(i, infomask, sizeof(infomask) * 8) {
+>> +		avail_postfix = kasprintf(GFP_KERNEL,
+>> +					  "%s_available",
+>> +					  iio_chan_info_postfix[i]);
+>> +		if (!avail_postfix)
+>> +			return -ENOMEM;
+>> +
+>> +		ret = __iio_add_chan_devattr(avail_postfix,
+>> +					     chan,
+>> +					     &iio_read_channel_info_avail,
+>> +					     NULL,
+>> +					     i,
+>> +					     shared_by,
+>> +					     &indio_dev->dev,
+>> +					     &indio_dev->channel_attr_list);
+>> +		kfree(avail_postfix);
+>> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
+>> +			continue;
+>> +		else if (ret < 0)
+>> +			return ret;
+>> +		attrcount++;
+>> +	}
+>> +
+>> +	return attrcount;
+>> +}
+>> +
+>>  static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>>  					struct iio_chan_spec const *chan)
+>>  {
+>> @@ -993,6 +1145,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>>  		return ret;
+>>  	attrcount += ret;
+>>  
+>> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+>> +						  IIO_SEPARATE,
+>> +						  &chan->
+>> +						  info_mask_separate_available);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	attrcount += ret;
+>> +
+>>  	ret = iio_device_add_info_mask_type(indio_dev, chan,
+>>  					    IIO_SHARED_BY_TYPE,
+>>  					    &chan->info_mask_shared_by_type);
+>> @@ -1000,6 +1160,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>>  		return ret;
+>>  	attrcount += ret;
+>>  
+>> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+>> +						  IIO_SHARED_BY_TYPE,
+>> +						  &chan->
+>> +						  info_mask_shared_by_type_available);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	attrcount += ret;
+>> +
+>>  	ret = iio_device_add_info_mask_type(indio_dev, chan,
+>>  					    IIO_SHARED_BY_DIR,
+>>  					    &chan->info_mask_shared_by_dir);
+>> @@ -1007,6 +1175,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>>  		return ret;
+>>  	attrcount += ret;
+>>  
+>> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+>> +						  IIO_SHARED_BY_DIR,
+>> +						  &chan->info_mask_shared_by_dir_available);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	attrcount += ret;
+>> +
+>>  	ret = iio_device_add_info_mask_type(indio_dev, chan,
+>>  					    IIO_SHARED_BY_ALL,
+>>  					    &chan->info_mask_shared_by_all);
+>> @@ -1014,6 +1189,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>>  		return ret;
+>>  	attrcount += ret;
+>>  
+>> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+>> +						  IIO_SHARED_BY_ALL,
+>> +						  &chan->info_mask_shared_by_all_available);
+>> +	if (ret < 0)
+>> +		return ret;
+>> +	attrcount += ret;
+>> +
+>>  	if (chan->ext_info) {
+>>  		unsigned int i = 0;
+>>  		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
+>> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+>> index b4a0679e4a49..c0f897084620 100644
+>> --- a/include/linux/iio/iio.h
+>> +++ b/include/linux/iio/iio.h
+>> @@ -269,9 +269,13 @@ struct iio_chan_spec {
+>>  		enum iio_endian endianness;
+>>  	} scan_type;
+>>  	long			info_mask_separate;
+>> +	long			info_mask_separate_available;
+>>  	long			info_mask_shared_by_type;
+>> +	long			info_mask_shared_by_type_available;
+>>  	long			info_mask_shared_by_dir;
+>> +	long			info_mask_shared_by_dir_available;
+>>  	long			info_mask_shared_by_all;
+>> +	long			info_mask_shared_by_all_available;
+>>  	const struct iio_event_spec *event_spec;
+>>  	unsigned int		num_event_specs;
+>>  	const struct iio_chan_spec_ext_info *ext_info;
+>> @@ -397,6 +401,13 @@ struct iio_info {
+>>  			int *val_len,
+>>  			long mask);
+>>  
+>> +	int (*read_avail)(struct iio_dev *indio_dev,
+>> +			  struct iio_chan_spec const *chan,
+>> +			  const int **vals,
+>> +			  int *type,
+>> +			  int *length,
+>> +			  long mask_el);
+>> +
+>>  	int (*write_raw)(struct iio_dev *indio_dev,
+>>  			 struct iio_chan_spec const *chan,
+>>  			 int val,
+>> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+>> index 32b579525004..2aa7b6384d64 100644
+>> --- a/include/linux/iio/types.h
+>> +++ b/include/linux/iio/types.h
+>> @@ -29,4 +29,9 @@ enum iio_event_info {
+>>  #define IIO_VAL_FRACTIONAL 10
+>>  #define IIO_VAL_FRACTIONAL_LOG2 11
+>>  
+>> +enum iio_available_type {
+>> +	IIO_AVAIL_LIST,
+>> +	IIO_AVAIL_RANGE,
+>> +};
+>> +
+>>  #endif /* _IIO_TYPES_H_ */
+>>
+> 
