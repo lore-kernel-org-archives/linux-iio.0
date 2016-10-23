@@ -1,68 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-he1eur01on0092.outbound.protection.outlook.com ([104.47.0.92]:14205
-        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752359AbcJUDXT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 20 Oct 2016 23:23:19 -0400
-Subject: Re: [PATCH 2/4] iio: dpot-dac: DAC driver based on a digital
- potentiometer
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
- <1476955562-13673-3-git-send-email-peda@axentia.se>
- <alpine.DEB.2.02.1610201254370.19919@pmeerw.net>
- <22d07498-860d-29f8-07ef-ae2f5df6ab25@axentia.se>
- <alpine.DEB.2.02.1610201604280.22512@pmeerw.net>
-CC: <linux-kernel@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
+Received: from ns.pmeerw.net ([84.19.176.92]:36378 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750847AbcJWICe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 23 Oct 2016 04:02:34 -0400
+Date: Sun, 23 Oct 2016 10:02:31 +0200 (CEST)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Peter Rosin <peda@axentia.se>
+cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <430867e6-478d-420a-f2ae-5474a4ebfa0d@axentia.se>
-Date: Thu, 20 Oct 2016 16:51:23 +0200
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v2 4/7] dt-bindings: iio: document dpot-dac bindings
+In-Reply-To: <1477176226-10566-5-git-send-email-peda@axentia.se>
+Message-ID: <alpine.DEB.2.02.1610231001110.7656@pmeerw.net>
+References: <1477176226-10566-1-git-send-email-peda@axentia.se> <1477176226-10566-5-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1610201604280.22512@pmeerw.net>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2016-10-20 16:08, Peter Meerwald-Stadler wrote:
->>>> +	u32 max_ohms;
->>>> +};
->>>> +
->>>> +static const struct iio_chan_spec dpot_dac_iio_channel = {
->>>> +	.type = IIO_VOLTAGE,
->>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
->>>> +			    | BIT(IIO_CHAN_INFO_SCALE),
->>>> +	.output = 1,
->>>> +};
->>>> +
->>>> +static int dpot_dac_read_raw(struct iio_dev *indio_dev,
->>>> +			     struct iio_chan_spec const *chan,
->>>> +			     int *val, int *val2, long mask)
->>>> +{
->>>> +	struct dpot_dac *dac = iio_priv(indio_dev);
->>>> +	int ret;
->>>> +	unsigned long long tmp;
->>>
->>> s64 (which is used to cast below)
->>
->> I assume that what you really want is to get rid of the cast, and
->> that you aren't really bothered if tmp is ull or s32, right? Given
->> that assumption, I'm just dropping the cast instead. The LL specifier
->> on the constant should promote *val anyway.
+
+nitpicking below
+
+> Signed-off-by: Peter Rosin <peda@axentia.se>
+> ---
+>  .../devicetree/bindings/iio/dac/dpot-dac.txt       | 41 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  6 ++++
+>  2 files changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
 > 
-> what I meant to pick upon was mixing
-> s64 with unsigned long long with LL in the code that follows
+> diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+> new file mode 100644
+> index 000000000000..4fd5d63cc2d6
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+> @@ -0,0 +1,41 @@
+> +Bindings for DAC emulation using a digital potentiometer
+> +
+> +It is assumed the that the dpot is used as a voltage divider between the
+
+delete 'the' before 'that'
+
+> +current dpot wiper setting and the maximum resistance of the dpot. The
+> +divided voltage is provided by a vref regulator.
+> +
+> +                  .------.
+> +   .-----------.  |      |
+> +   | vref      |--'    .---.
+> +   | regulator |--.    |   |
+> +   '-----------'  |    | d |
+> +                  |    | p |
+> +                  |    | o |  wiper
+> +                  |    | t |<---------+
+> +                  |    |   |
+> +                  |    '---'       dac output voltage
+> +                  |      |
+> +                  '------+------------+
+> +
+> +Required properties:
+> +- compatible: Should be "dpot-dac"
+> +- vref-supply: The regulator supplying the voltage divider.
+> +- io-channels: Channel node of the dpot to be used for the voltage division.
+> +- io-channel-names: Should be "dpot".
+> +
+> +Example:
+> +
+> +	&i2c {
+> +		dpot: mcp4651-503@28 {
+> +			compatible = "microchip,mcp4651-503";
+> +			reg = <0x28>;
+> +			#io-channel-cells = <1>;
+> +		};
+> +	};
+> +
+> +	dac {
+> +		compatible = "dpot-dac";
+> +		vref-supply = <&reg_3v3>;
+> +		io-channels = <&dpot 0>;
+> +		io-channel-names = "dpot";
+> +	};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index 1cd38a7e0064..c68b72088945 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -6111,6 +6111,12 @@ L:	linux-media@vger.kernel.org
+>  S:	Maintained
+>  F:	drivers/media/rc/iguanair.c
+>  
+> +IIO DIGITAL POTENTIOMETER DAC
+> +M:	Peter Rosin <peda@axentia.se>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+> +
+>  IIO SUBSYSTEM AND DRIVERS
+>  M:	Jonathan Cameron <jic23@kernel.org>
+>  R:	Hartmut Knaack <knaack.h@gmx.de>
 > 
-> anything simpler and more consistent would be good
 
-Right, I should however note that I copied the pattern from the
-industrialio-core.c:iio_format_value function. So, in my defense
-I was consistent with that...
+-- 
 
-Cheers,
-Peter
-
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
