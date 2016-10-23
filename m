@@ -1,121 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0095.outbound.protection.outlook.com ([104.47.2.95]:18656
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1753308AbcJWLeO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 23 Oct 2016 07:34:14 -0400
-Subject: Re: [PATCH v2 6/7] dt-bindings: iio: document envelope-detector
- bindings
-To: <linux-kernel@vger.kernel.org>
-References: <1477176226-10566-1-git-send-email-peda@axentia.se>
- <1477176226-10566-7-git-send-email-peda@axentia.se>
-CC: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <f743f779-84e2-ca8f-ec04-dc2e360e934f@axentia.se>
-Date: Sun, 23 Oct 2016 11:01:16 +0200
-MIME-Version: 1.0
-In-Reply-To: <1477176226-10566-7-git-send-email-peda@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:35613 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753174AbcJWPTK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 11:19:10 -0400
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v8 0/5] mxs-lradc: Split driver into MFD
+Date: Sun, 23 Oct 2016 17:18:56 +0200
+Message-Id: <cover.1477235446.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2016-10-23 00:43, Peter Rosin wrote:
-> Signed-off-by: Peter Rosin <peda@axentia.se>
-> ---
->  .../bindings/iio/adc/envelope-detector.txt         | 55 ++++++++++++++++++++++
->  MAINTAINERS                                        |  6 +++
->  2 files changed, 61 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> new file mode 100644
-> index 000000000000..9099531cffff
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> @@ -0,0 +1,55 @@
-> +Bindings for ADC envelope detector using a DAC and a comparator
-> +
-> +The DAC is used to find the peak level of an alternating voltage input
-> +signal by a binary search using the output of a comparator wired to
-> +an interrupt pin. Like so:
-> +                          _
-> +                         | \
-> +    input +------>-------|+ \
-> +                         |   \
-> +           .-------.     |    }---.
-> +           |       |     |   /    |
-> +           |    dac|-->--|- /     |
-> +           |       |     |_/      |
-> +           |       |              |
-> +           |       |              |
-> +           |    irq|------<-------'
-> +           |       |
-> +           '-------'
-> +
-> +Required properties:
-> +- compatible: Should be "axentia,tse850-envelope-detector"
-> +- io-channels: Channel node of the dac to be used for comparator input.
-> +- io-channel-names: Should be "dac".
-> +- interrupt specification for one client interrupt,
-> +  see ../../interrupt-controller/interrupts.txt for details.
-> +- interrupt-names: Should be "comp".
-> +
-> +Example:
-> +
-> +	&i2c {
-> +		dpot: mcp4651-104@28 {
-> +			compatible = "microchip,mcp4651-104";
-> +			reg = <0x28>;
-> +			#io-channel-cells = <1>;
-> +		};
-> +	};
-> +
-> +	dac: dac {
-> +		compatible = "dpot-dac";
-> +		vref-supply = <&reg_3v3>;
-> +		io-channels = <&dpot 0>;
-> +		io-channel-names = "dpot";
-> +		dpot-dac,max-ohms = <100000>;
+Split existing driver mxs-lradc into MFD with touchscreen and
+IIO part.
 
-Just noticed that this line isn't needed anymore. I'll kill it for v3.
+Tested on I.MX28.
 
-Cheers,
-Peter
+Ksenija Stanojevic (5):
+  mfd: mxs-lradc: Add support for mxs-lradc MFD
+  iio: adc: mxs-lradc: Add support for adc driver
+  input: touchscreen: mxs-lradc: Add support for touchscreen
+  iio: adc: mxs-lradc: Remove driver
+  mfd: Move binding document
 
-> +		#io-channel-cells = <1>;
-> +	};
-> +
-> +	envelope-detector {
-> +		compatible = "axentia,tse850-envelope-detector";
-> +		io-channels = <&dac 0>;
-> +		io-channel-names = "dac";
-> +
-> +		interrupt-parent = <&gpio>;
-> +		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
-> +		interrupt-names = "comp";
-> +	};
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 8c8aae24b96b..4b6f6ec1b703 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -6118,6 +6118,12 @@ S:	Maintained
->  F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
->  F:	drivers/iio/dac/dpot-dac.c
->  
-> +IIO ENVELOPE DETECTOR
-> +M:	Peter Rosin <peda@axentia.se>
-> +L:	linux-iio@vger.kernel.org
-> +S:	Maintained
-> +F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-> +
->  IIO SUBSYSTEM AND DRIVERS
->  M:	Jonathan Cameron <jic23@kernel.org>
->  R:	Hartmut Knaack <knaack.h@gmx.de>
-> 
+ .../devicetree/bindings/iio/adc/mxs-lradc.txt      |   47 -
+ .../devicetree/bindings/mfd/mxs-lradc.txt          |   47 +
+ drivers/iio/adc/Kconfig                            |   27 +-
+ drivers/iio/adc/Makefile                           |    2 +-
+ drivers/iio/adc/mxs-lradc-adc.c                    |  845 ++++++++++
+ drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
+ drivers/input/touchscreen/Kconfig                  |   10 +
+ drivers/input/touchscreen/Makefile                 |    1 +
+ drivers/input/touchscreen/mxs-lradc-ts.c           |  743 +++++++++
+ drivers/mfd/Kconfig                                |   17 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/mxs-lradc.c                            |  249 +++
+ include/linux/mfd/mxs-lradc.h                      |  203 +++
+ 13 files changed, 2130 insertions(+), 1812 deletions(-)
+ delete mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+ create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+ delete mode 100644 drivers/iio/adc/mxs-lradc.c
+ create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+ create mode 100644 drivers/mfd/mxs-lradc.c
+ create mode 100644 include/linux/mfd/mxs-lradc.h
+
+-- 
+1.9.1
 
