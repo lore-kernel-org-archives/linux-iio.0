@@ -1,159 +1,90 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f49.google.com ([74.125.82.49]:37424 "EHLO
-        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753692AbcJZONv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 10:13:51 -0400
-Received: by mail-wm0-f49.google.com with SMTP id 140so21263637wmv.0
-        for <linux-iio@vger.kernel.org>; Wed, 26 Oct 2016 07:13:50 -0700 (PDT)
-Date: Wed, 26 Oct 2016 15:16:22 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Cc: linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com
-Subject: Re: [PATCH v8 5/5] mfd: Move binding document
-Message-ID: <20161026141622.GI13127@dell>
-References: <cover.1477235446.git.ksenija.stanojevic@gmail.com>
- <8dd0d136619121e5c89566550b81680b238380a5.1477235446.git.ksenija.stanojevic@gmail.com>
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
+	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>,
+	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
+Subject: [PATCH v3 5/8] dt-bindings: iio: document dpot-dac bindings
+Date: Mon, 24 Oct 2016 00:39:38 +0200
+Message-ID: <1477262381-7800-6-git-send-email-peda@axentia.se>
+In-Reply-To: <1477262381-7800-1-git-send-email-peda@axentia.se>
+References: <1477262381-7800-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <8dd0d136619121e5c89566550b81680b238380a5.1477235446.git.ksenija.stanojevic@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, 23 Oct 2016, Ksenija Stanojevic wrote:
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../devicetree/bindings/iio/dac/dpot-dac.txt       | 41 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 ++++
+ 2 files changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
 
-> The bindings, which are now used in MFD, need also to be
-> documented in the MFD binding document.
-> 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> ---
-> Changes in v8:
->  - rebase onto 4.9-rc1
-> 
-> Changes in v7:
->  - add to the patchset
-> 
->  .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ----------------------
->  .../devicetree/bindings/mfd/mxs-lradc.txt          | 47 ++++++++++++++++++++++
->  2 files changed, 47 insertions(+), 47 deletions(-)
->  delete mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-
-> diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> deleted file mode 100644
-> index 555fb11..0000000
-> --- a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> +++ /dev/null
-> @@ -1,47 +0,0 @@
-> -* Freescale MXS LRADC device driver
-> -
-> -Required properties:
-> -- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
-> -              for i.MX28 SoC
-> -- reg: Address and length of the register set for the device
-> -- interrupts: Should contain the LRADC interrupts
-> -
-> -Optional properties:
-> -- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
-> -                               to LRADC. Valid value is either 4 or 5. If this
-> -                               property is not present, then the touchscreen is
-> -                               disabled. 5 wires is valid for i.MX28 SoC only.
-> -- fsl,ave-ctrl: number of samples per direction to calculate an average value.
-> -                Allowed value is 1 ... 32, default is 4
-> -- fsl,ave-delay: delay between consecutive samples. Allowed value is
-> -                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
-> -                 2 kHz and its default is 2 (= 1 ms)
-> -- fsl,settling: delay between plate switch to next sample. Allowed value is
-> -                1 ... 2047. It counts at 2 kHz and its default is
-> -                10 (= 5 ms)
-> -
-> -Example for i.MX23 SoC:
-> -
-> -	lradc@80050000 {
-> -		compatible = "fsl,imx23-lradc";
-> -		reg = <0x80050000 0x2000>;
-> -		interrupts = <36 37 38 39 40 41 42 43 44>;
-> -		status = "okay";
-> -		fsl,lradc-touchscreen-wires = <4>;
-> -		fsl,ave-ctrl = <4>;
-> -		fsl,ave-delay = <2>;
-> -		fsl,settling = <10>;
-> -	};
-> -
-> -Example for i.MX28 SoC:
-> -
-> -	lradc@80050000 {
-> -		compatible = "fsl,imx28-lradc";
-> -		reg = <0x80050000 0x2000>;
-> -		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
-> -		status = "okay";
-> -		fsl,lradc-touchscreen-wires = <5>;
-> -		fsl,ave-ctrl = <4>;
-> -		fsl,ave-delay = <2>;
-> -		fsl,settling = <10>;
-> -	};
-> diff --git a/Documentation/devicetree/bindings/mfd/mxs-lradc.txt b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-> new file mode 100644
-> index 0000000..555fb11
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-> @@ -0,0 +1,47 @@
-> +* Freescale MXS LRADC device driver
-> +
-> +Required properties:
-> +- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
-> +              for i.MX28 SoC
-> +- reg: Address and length of the register set for the device
-> +- interrupts: Should contain the LRADC interrupts
-> +
-> +Optional properties:
-> +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
-> +                               to LRADC. Valid value is either 4 or 5. If this
-> +                               property is not present, then the touchscreen is
-> +                               disabled. 5 wires is valid for i.MX28 SoC only.
-> +- fsl,ave-ctrl: number of samples per direction to calculate an average value.
-> +                Allowed value is 1 ... 32, default is 4
-> +- fsl,ave-delay: delay between consecutive samples. Allowed value is
-> +                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
-> +                 2 kHz and its default is 2 (= 1 ms)
-> +- fsl,settling: delay between plate switch to next sample. Allowed value is
-> +                1 ... 2047. It counts at 2 kHz and its default is
-> +                10 (= 5 ms)
-> +
-> +Example for i.MX23 SoC:
-> +
-> +	lradc@80050000 {
-> +		compatible = "fsl,imx23-lradc";
-> +		reg = <0x80050000 0x2000>;
-> +		interrupts = <36 37 38 39 40 41 42 43 44>;
-> +		status = "okay";
-> +		fsl,lradc-touchscreen-wires = <4>;
-> +		fsl,ave-ctrl = <4>;
-> +		fsl,ave-delay = <2>;
-> +		fsl,settling = <10>;
-> +	};
-> +
-> +Example for i.MX28 SoC:
-> +
-> +	lradc@80050000 {
-> +		compatible = "fsl,imx28-lradc";
-> +		reg = <0x80050000 0x2000>;
-> +		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
-> +		status = "okay";
-> +		fsl,lradc-touchscreen-wires = <5>;
-> +		fsl,ave-ctrl = <4>;
-> +		fsl,ave-delay = <2>;
-> +		fsl,settling = <10>;
-> +	};
-
+diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+new file mode 100644
+index 000000000000..fdf47a01bfef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+@@ -0,0 +1,41 @@
++Bindings for DAC emulation using a digital potentiometer
++
++It is assumed that the dpot is used as a voltage divider between the
++current dpot wiper setting and the maximum resistance of the dpot. The
++divided voltage is provided by a vref regulator.
++
++                  .------.
++   .-----------.  |      |
++   | vref      |--'    .---.
++   | regulator |--.    |   |
++   '-----------'  |    | d |
++                  |    | p |
++                  |    | o |  wiper
++                  |    | t |<---------+
++                  |    |   |
++                  |    '---'       dac output voltage
++                  |      |
++                  '------+------------+
++
++Required properties:
++- compatible: Should be "dpot-dac"
++- vref-supply: The regulator supplying the voltage divider.
++- io-channels: Channel node of the dpot to be used for the voltage division.
++- io-channel-names: Should be "dpot".
++
++Example:
++
++	&i2c {
++		dpot: mcp4651-503@28 {
++			compatible = "microchip,mcp4651-503";
++			reg = <0x28>;
++			#io-channel-cells = <1>;
++		};
++	};
++
++	dac {
++		compatible = "dpot-dac";
++		vref-supply = <&reg_3v3>;
++		io-channels = <&dpot 0>;
++		io-channel-names = "dpot";
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7c65585e1230..6218010128dc 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6111,6 +6111,12 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ F:	drivers/media/rc/iguanair.c
+ 
++IIO DIGITAL POTENTIOMETER DAC
++M:	Peter Rosin <peda@axentia.se>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
++
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+ R:	Hartmut Knaack <knaack.h@gmx.de>
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.1.4
