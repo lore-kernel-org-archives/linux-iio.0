@@ -1,396 +1,455 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57211 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57257 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752642AbcJWJY2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 05:24:28 -0400
-Subject: Re: [PATCH v4 4/8] drivers:input:tsc2007: add iio interface to read
- external ADC input and temperature
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-References: <cover.1476712675.git.hns@goldelico.com>
- <4d3c600bf0a6b75a74212a103bf31525505290a0.1476712675.git.hns@goldelico.com>
- <07bb4d52-a439-f9a9-8593-ddde8e93e6ee@kernel.org>
- <7A0E332C-4930-4F1A-8320-F87F864B53AE@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        with ESMTP id S1756403AbcJWJdr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 23 Oct 2016 05:33:47 -0400
+Subject: Re: [PATCH v2 1/7] iio:core: add a callback to allow drivers to
+ provide _available attributes
+To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
+References: <1477176226-10566-1-git-send-email-peda@axentia.se>
+ <1477176226-10566-2-git-send-email-peda@axentia.se>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1dd251db-7f45-78bf-c9dd-4ae29b0ed757@kernel.org>
-Date: Sun, 23 Oct 2016 10:24:21 +0100
+Message-ID: <74746223-a1aa-e9c6-622c-854526d0722d@kernel.org>
+Date: Sun, 23 Oct 2016 10:33:44 +0100
 MIME-Version: 1.0
-In-Reply-To: <7A0E332C-4930-4F1A-8320-F87F864B53AE@goldelico.com>
+In-Reply-To: <1477176226-10566-2-git-send-email-peda@axentia.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/10/16 21:46, H. Nikolaus Schaller wrote:
-> Hi Jonathan,
+On 22/10/16 23:43, Peter Rosin wrote:
+> From: Jonathan Cameron <jic23@kernel.org>
 > 
->> Am 22.10.2016 um 20:33 schrieb Jonathan Cameron <jic23@kernel.org>:
->>
->> On 17/10/16 14:57, H. Nikolaus Schaller wrote:
->>> The tsc2007 chip not only has a resistive touch screen controller but
->>> also an external AUX adc imput which can be used for an ambient
->>> light sensor, battery voltage monitoring or any general purpose.
->>>
->>> Additionally it can measure the chip temperature.
->>>
->>> This extension provides an iio interface for these adc channels.
->>>
->>> Since it is not wasting much resources and is very straightforward,
->>> we simply provide all other adc channels as optional iio interfaces
->>> as weel. This can be used for debugging or special applications.
->> well
->>>
->>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->> This could be cleaner done perhaps by factoring out the IIO stuff into a separate
->> file and using a header with stubs to deal with the no available case.
->>
->> There will only be a handful of stubs and it'll give you a lot cleaner code
->> in here.
->>
->> If def fun in .c files is always harder to deal with than in a header
->> where stubs are really obvious.
+> A large number of attributes can only take a limited range of values.
+> Currently in IIO this is handled by directly registering additional
+> *_available attributes thus providing this information to userspace.
 > 
-> Yes, it became a lot of #ifdefs spread over the source file.
+> It is desirable to provide this information via the core for much the same
+> reason this was done for the actual channel information attributes in the
+> first place.  If it isn't there, then it can only really be accessed from
+> userspace.  Other in kernel IIO consumers have no access to what valid
+> parameters are.
 > 
-> The easiest thing would be to require IIO to be enabled :)
+> Two forms are currently supported:
+> * list of values in one particular IIO_VAL_* format.
+> 	e.g. 1.300000 1.500000 1.730000
+> * range specification with a step size:
+> 	e.g. [1.000000 0.500000 2.500000]
+> 	equivalent to 1.000000 1.5000000 2.000000 2.500000
 > 
-> With your proposal to consider refactoring, I think the crucial part
-> is the conditional allocation either through devm_iio_device_alloc()
-> or devm_kzalloc(). This can be refactored into some conditional
-> tsc2007_alloc().
+> An addition set of masks are used to allow different sharing rules for the
+> *_available attributes generated.
 > 
-> I have tried some draft (not tested and not tidied up) to check if the
-> direction is good.
+> This allows for example:
 > 
-> This reduces the number of #ifdef CONFIG_IIO from 7 to 2 without introducing
-> new files or includes. There are also 2 other #ifdef CONFIG_OF so it doesn't
-> seem to be very complex now in comparison. And the patch itself has only a
-> handful of hunks (8).
+> in_accel_x_offset
+> in_accel_y_offset
+> in_accel_offset_available.
 > 
-> Moving tsc2007_alloc into a separate file tsc2007_iio.c would only move around
-> one #ifdef CONFIG_OF from tsc2007.c but IMHO makes it more difficult to understand
-> because it is not really iio specific and one has to switch between two source
-> files. And I would have to touch the Makefile as well.
-> 
-> What do you think?
-I'd still split it.  The only bit of the IIO block that isn't specific is
-a tiny chunk of the allocation code (as you've highlighted).
+> We could have gone with having a specification for each and every
+> info_mask element but that would have meant changing the existing userspace
+> ABI.  This approach does not.
+I'm wondering what I meant by this... where does it cause use ABI issues?
+Do you have any idea?
 
-Even that can be avoided by adding a tiny bit more indirection than would
-otherwise be needed (it's not pretty but it would give a clean separation).
+I'd forgotten I'd even done it like this rather than just insisting on 
+available for everything (which is more logical to me as we should know
+the range of everything).
 
-It's pretty much the way this sort of optional functionality should always
-be done - means that if you don't care (i.e. it's not enabled) you don't
-even have to see the code.
+It's pretty low cost though and gives a way of adding this to drivers
+piecemeal which is probably a good idea!
+> 
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> [rather mindlessly forward ported from approx 3 years ago /peda]
+More importantly shepherding it through review!
+
+Naturally it's perfect code so not comments inline ;)
+
+Thanks again for picking this up!
+
+So... I want to see lots of comments on this. If people are happy with
+it (unlikely ;) then please say so.  It's at least a bit controversial
+and adds a 'lot' of new ABI.
+
 
 Jonathan
+> Signed-off-by: Peter Rosin <peda@axentia.se>
+> ---
+>  drivers/iio/industrialio-core.c | 232 +++++++++++++++++++++++++++++++++++-----
+>  include/linux/iio/iio.h         |  11 ++
+>  include/linux/iio/types.h       |   5 +
+>  3 files changed, 223 insertions(+), 25 deletions(-)
 > 
-> If generally ok, I can include that in [PATCH v5].
-> 
-> BR and thanks,
-> Nikolaus
-> 
-> 
-> diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
-> index 5e3c4bf..691e79f 100644
-> --- a/drivers/input/touchscreen/tsc2007.c
-> +++ b/drivers/input/touchscreen/tsc2007.c
-> @@ -30,6 +30,7 @@
->  #include <linux/of.h>
->  #include <linux/of_gpio.h>
->  #include <linux/input/touchscreen.h>
-> +#include <linux/iio/iio.h>
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index fc340ed3dca1..93c69ebeda1e 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -575,51 +575,41 @@ int of_iio_read_mount_matrix(const struct device *dev,
+>  #endif
+>  EXPORT_SYMBOL(of_iio_read_mount_matrix);
 >  
->  #define TSC2007_MEASURE_TEMP0          (0x0 << 4)
->  #define TSC2007_MEASURE_AUX            (0x2 << 4)
-> @@ -69,9 +70,13 @@ struct ts_event {
->  
->  struct tsc2007 {
->         struct input_dev        *input;
-> +#ifdef CONFIG_IIO
-> +       struct iio_dev          *indio;
-> +#endif
-I wouldn't bother with this one.  Just have 
-struct iio_dev; before this and it'll waste a whole
-one pointer (+ you shouldn't need to have iio.h included
-in here once you have spit the files).
->         char                    phys[32];
->  
->         struct i2c_client       *client;
-> +       struct mutex            mlock;
->  
->         u16                     model;
->         u16                     x_plate_ohms;
-> @@ -192,7 +197,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
->         while (!ts->stopped && tsc2007_is_pen_down(ts)) {
->  
->                 /* pen is down, continue with the measurement */
-> +
-> +               mutex_lock(&ts->mlock);
->                 tsc2007_read_values(ts, &tc);
-> +               mutex_unlock(&ts->mlock);
->  
->                 rt = tsc2007_calculate_resistance(ts, &tc);
->  
-> @@ -319,6 +327,162 @@ static void tsc2007_close(struct input_dev *input_dev)
->         tsc2007_stop(ts);
->  }
->  
-> +#ifdef CONFIG_IIO
-> +
-> +#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
-> +{ \
-> +       .datasheet_name = _name, \
-> +       .type = _type, \
-> +       .info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
-> +                       BIT(_chan_info), \
-> +       .indexed = 1, \
-> +       .channel = _chan, \
-> +}
-> +
-> +static const struct iio_chan_spec tsc2007_iio_channel[] = {
-> +       TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* Ohms? */
-> +       TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
-> +       TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
-> +};
-> +
-> +static int tsc2007_read_raw(struct iio_dev *indio_dev,
-> +       struct iio_chan_spec const *chan, int *val, int *val2, long mask)
-> +{
-> +       struct  tsc2007 *tsc = iio_priv(indio_dev);
-> +       int adc_chan = chan->channel;
-> +       int ret = 0;
-> +
-> +       if (adc_chan >= ARRAY_SIZE(tsc2007_iio_channel))
-> +               return -EINVAL;
-> +
-> +       if (mask != IIO_CHAN_INFO_RAW)
-> +               return -EINVAL;
-> +
-> +       mutex_lock(&tsc->mlock);
-> +
-> +       switch (chan->channel) {
-> +       case 0:
-> +               *val = tsc2007_xfer(tsc, READ_X);
-> +               break;
-> +       case 1:
-> +               *val = tsc2007_xfer(tsc, READ_Y);
-> +               break;
-> +       case 2:
-> +               *val = tsc2007_xfer(tsc, READ_Z1);
-> +               break;
-> +       case 3:
-> +               *val = tsc2007_xfer(tsc, READ_Z2);
-> +               break;
-> +       case 4:
-> +               *val = tsc2007_xfer(tsc, (ADC_ON_12BIT | TSC2007_MEASURE_AUX));
-> +               break;
-> +       case 5: {
-> +               struct ts_event tc;
-> +
-> +               tc.x = tsc2007_xfer(tsc, READ_X);
-> +               tc.z1 = tsc2007_xfer(tsc, READ_Z1);
-> +               tc.z2 = tsc2007_xfer(tsc, READ_Z2);
-> +               *val = tsc2007_calculate_resistance(tsc, &tc);
-> +               break;
-> +       }
-> +       case 6:
-> +               *val = tsc2007_is_pen_down(tsc);
-> +               break;
-> +       case 7:
-> +               *val = tsc2007_xfer(tsc,
-> +                                   (ADC_ON_12BIT | TSC2007_MEASURE_TEMP0));
-> +               break;
-> +       case 8:
-> +               *val = tsc2007_xfer(tsc,
-> +                                   (ADC_ON_12BIT | TSC2007_MEASURE_TEMP1));
-> +               break;
-> +       }
-> +
-> +       /* Prepare for next touch reading - power down ADC, enable PENIRQ */
-> +       tsc2007_xfer(tsc, PWRDOWN);
-> +
-> +       mutex_unlock(&tsc->mlock);
-> +
-> +       ret = IIO_VAL_INT;
-> +
-> +       return ret;
-> +}
-> +
-> +static const struct iio_info tsc2007_iio_info = {
-> +       .read_raw = tsc2007_read_raw,
-> +       .driver_module = THIS_MODULE,
-> +};
-> +
-> +static int tsc2007_alloc(struct i2c_client *client, struct tsc2007 **ts,
-> +                          struct input_dev **input_dev)
-> +{
-> +       int err;
-> +       struct iio_dev *indio_dev;
-> +
-> +       indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*ts));
-Instead of doing this to reduce the delta between versions make 
-iio_priv a struct tsc2007 **
-
-That is have a single pointer in there and do your allocation of struct
-tsc2007 separately.
-
-Having doing that, you can have this CONFIG_IIO block as just
-doing the iio stuff with the input elements pulled back into the main
-probe function.
-
-Then define something like
-
-iio_configure (stubbed to nothing if no IIO)
-and
-iio_unconfigure (also stubbed to nothing if no IIO).
-
-A couple of additions in the header to make it all work
-(the struct tsc2007 and tsc2007_xfer() + a few of the
-register defines..
-
-Nothing big and gets all the CONFIG_IIO into some really
-obvious stubbing out in the header.
-
-
-> +       if (!indio_dev) {
-> +               dev_err(&client->dev, "iio_device_alloc failed\n");
-> +               return -ENOMEM;
-> +       }
-> +
-> +       *ts = iio_priv(indio_dev);
-> +
-> +       *input_dev = devm_input_allocate_device(&client->dev);
-> +       if (!*input_dev)
-> +               return -ENOMEM;
-> +
-> +       i2c_set_clientdata(client, *ts);
-> +       (*ts)->indio = indio_dev;
-> +
-> +       indio_dev->name = "tsc2007";
-> +       indio_dev->dev.parent = &client->dev;
-> +       indio_dev->info = &tsc2007_iio_info;
-> +       indio_dev->modes = INDIO_DIRECT_MODE;
-> +       indio_dev->channels = tsc2007_iio_channel;
-> +       indio_dev->num_channels = ARRAY_SIZE(tsc2007_iio_channel);
-> +
-> +       err = iio_device_register(indio_dev);
-> +       if (err < 0) {
-> +               dev_err(&client->dev, "iio_device_register() failed: %d\n",
-> +                       err);
-> +               return err;
-> +       }
-> +
-> +       return 0;
-> +}
-> +
-> +#define tsc2007_iio_device_unregister(ts) iio_device_unregister(ts->indio)
-> +
-> +#else /* CONFIG_IIO */
-> +
-> +static int tsc2007_alloc(struct i2c_client *client, struct tsc2007 **ts,
-> +                          struct input_dev **input_dev)
-> +{
-> +       int err;
-> +
-> +       *ts = devm_kzalloc(&client->dev, sizeof(struct tsc2007), GFP_KERNEL);
-> +       if (!*ts)
-> +               return -ENOMEM;
-> +
-> +       *input_dev = devm_input_allocate_device(&client->dev);
-> +       if (!*input_dev)
-> +               return -ENOMEM;
-> +
-> +       i2c_set_clientdata(client, *ts);
-> +
-> +       return 0;
-> +}
-> +
-> +#define tsc2007_iio_device_unregister(ts) /* not needed */
-That's rather ugly and fragile.  I'd stub it out as an actual function
-with no content and let the compiler drop it.
-> +
-> +#endif /* CONFIG_IIO */
-> +
->  #ifdef CONFIG_OF
->  static int tsc2007_get_pendown_state_gpio(struct device *dev)
+> -/**
+> - * iio_format_value() - Formats a IIO value into its string representation
+> - * @buf:	The buffer to which the formatted value gets written
+> - * @type:	One of the IIO_VAL_... constants. This decides how the val
+> - *		and val2 parameters are formatted.
+> - * @size:	Number of IIO value entries contained in vals
+> - * @vals:	Pointer to the values, exact meaning depends on the
+> - *		type parameter.
+> - *
+> - * Return: 0 by default, a negative number on failure or the
+> - *	   total number of characters written for a type that belongs
+> - *	   to the IIO_VAL_... constant.
+> - */
+> -ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+> +static ssize_t __iio_format_value(char *buf, unsigned int type,
+> +				  int size, const int *vals)
 >  {
-> @@ -459,20 +623,15 @@ static int tsc2007_probe(struct i2c_client *client,
->                                      I2C_FUNC_SMBUS_READ_WORD_DATA))
->                 return -EIO;
+>  	unsigned long long tmp;
+> +	int tmp0, tmp1;
+>  	bool scale_db = false;
 >  
-> -       ts = devm_kzalloc(&client->dev, sizeof(struct tsc2007), GFP_KERNEL);
-> -       if (!ts)
-> -               return -ENOMEM;
-> -
-> -       input_dev = devm_input_allocate_device(&client->dev);
-> -       if (!input_dev)
-> -               return -ENOMEM;
-> -
-> -       i2c_set_clientdata(client, ts);
-> +       err = tsc2007_alloc(client, &ts, &input_dev);
-> +       if (err < 0)
-> +               return err;
+>  	switch (type) {
+>  	case IIO_VAL_INT:
+> -		return sprintf(buf, "%d\n", vals[0]);
+> +		return sprintf(buf, "%d", vals[0]);
+>  	case IIO_VAL_INT_PLUS_MICRO_DB:
+>  		scale_db = true;
+>  	case IIO_VAL_INT_PLUS_MICRO:
+>  		if (vals[1] < 0)
+> -			return sprintf(buf, "-%d.%06u%s\n", abs(vals[0]),
+> +			return sprintf(buf, "-%d.%06u%s", abs(vals[0]),
+>  				       -vals[1], scale_db ? " dB" : "");
+>  		else
+> -			return sprintf(buf, "%d.%06u%s\n", vals[0], vals[1],
+> +			return sprintf(buf, "%d.%06u%s", vals[0], vals[1],
+>  				scale_db ? " dB" : "");
+>  	case IIO_VAL_INT_PLUS_NANO:
+>  		if (vals[1] < 0)
+> -			return sprintf(buf, "-%d.%09u\n", abs(vals[0]),
+> +			return sprintf(buf, "-%d.%09u", abs(vals[0]),
+>  				       -vals[1]);
+>  		else
+> -			return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+> +			return sprintf(buf, "%d.%09u", vals[0], vals[1]);
+>  	case IIO_VAL_FRACTIONAL:
+>  		tmp = div_s64((s64)vals[0] * 1000000000LL, vals[1]);
+> -		vals[0] = (int)div_s64_rem(tmp, 1000000000, &vals[1]);
+> -		return sprintf(buf, "%d.%09u\n", vals[0], abs(vals[1]));
+> +		tmp1 = vals[1];
+> +		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+> +		return sprintf(buf, "%d.%09u", tmp0, abs(tmp1));
+>  	case IIO_VAL_FRACTIONAL_LOG2:
+>  		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+> -		vals[1] = do_div(tmp, 1000000000LL);
+> -		vals[0] = tmp;
+> -		return sprintf(buf, "%d.%09u\n", vals[0], vals[1]);
+> +		tmp1 = do_div(tmp, 1000000000LL);
+> +		tmp0 = tmp;
+> +		return sprintf(buf, "%d.%09u", tmp0, tmp1);
+>  	case IIO_VAL_INT_MULTIPLE:
+>  	{
+>  		int i;
+> @@ -628,13 +618,34 @@ ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+>  		for (i = 0; i < size; ++i)
+>  			len += snprintf(&buf[len], PAGE_SIZE - len, "%d ",
+>  								vals[i]);
+> -		len += snprintf(&buf[len], PAGE_SIZE - len, "\n");
+>  		return len;
+>  	}
+>  	default:
+>  		return 0;
+>  	}
+>  }
+> +
+> +/**
+> + * iio_format_value() - Formats a IIO value into its string representation
+> + * @buf:	The buffer to which the formatted value gets written
+> + * @type:	One of the IIO_VAL_... constants. This decides how the val
+> + *		and val2 parameters are formatted.
+> + * @size:	Number of IIO value entries contained in vals
+> + * @vals:	Pointer to the values, exact meaning depends on the
+> + *		type parameter.
+> + *
+> + * Return: 0 by default, a negative number on failure or the
+> + *	   total number of characters written for a type that belongs
+> + *	   to the IIO_VAL_... constant.
+> + */
+> +ssize_t iio_format_value(char *buf, unsigned int type, int size, int *vals)
+> +{
+> +	ssize_t len;
+> +
+> +	len = __iio_format_value(buf, type, size, vals);
+> +
+> +	return len + sprintf(buf + len, "\n");
+> +}
+>  EXPORT_SYMBOL_GPL(iio_format_value);
 >  
->         ts->client = client;
->         ts->irq = client->irq;
->         ts->input = input_dev;
->         init_waitqueue_head(&ts->wait);
-> +       mutex_init(&ts->mlock);
->  
->         snprintf(ts->phys, sizeof(ts->phys),
->                  "%s/input0", dev_name(&client->dev));
-> @@ -543,6 +702,7 @@ static int tsc2007_probe(struct i2c_client *client,
->         if (err < 0) {
->                 dev_err(&client->dev,
->                         "Failed to setup chip: %d\n", err);
-> +               tsc2007_iio_device_unregister(ts);
->                 return err;     /* usually, chip does not respond */
->         }
->  
-> @@ -556,6 +716,14 @@ static int tsc2007_probe(struct i2c_client *client,
->         return 0;
+>  static ssize_t iio_read_channel_info(struct device *dev,
+> @@ -662,6 +673,113 @@ static ssize_t iio_read_channel_info(struct device *dev,
+>  	return iio_format_value(buf, ret, val_len, vals);
 >  }
 >  
-> +static int tsc2007_remove(struct i2c_client *client)
+> +static ssize_t iio_format_avail_list(char *buf, const int *vals,
+> +				     int type, int length)
 > +{
-> +       struct tsc2007 *ts = i2c_get_clientdata(client);
-> +       input_unregister_device(ts->input);
-> +       tsc2007_iio_device_unregister(ts);
-> +       return 0;
+> +	int i;
+> +	ssize_t len = 0;
+> +
+> +	switch (type) {
+> +	case IIO_VAL_INT:
+> +		for (i = 0; i < length; i++) {
+> +			len += __iio_format_value(buf + len, type, 1, &vals[i]);
+> +			if (i < length - 1)
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						" ");
+> +			else
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						"\n");
+> +		}
+> +		break;
+> +	default:
+> +		for (i = 0; i < length / 2; i++) {
+> +			len += __iio_format_value(buf + len,
+> +						  type,
+> +						  2,
+> +						  &vals[i * 2]);
+> +			if (i < length / 2 - 1)
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						" ");
+> +			else
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						"\n");
+> +		}
+> +	};
+> +
+> +	return len;
 > +}
 > +
->  static const struct i2c_device_id tsc2007_idtable[] = {
->         { "tsc2007", 0 },
->         { }
-> @@ -578,6 +746,7 @@ static struct i2c_driver tsc2007_driver = {
->         },
->         .id_table       = tsc2007_idtable,
->         .probe          = tsc2007_probe,
-> +       .remove         = tsc2007_remove,
->  };
+> +static ssize_t iio_format_avail_range(char *buf, const int *vals, int type)
+> +{
+> +	int i;
+> +	ssize_t len;
+> +
+> +	len = snprintf(buf, PAGE_SIZE, "[");
+> +	switch (type) {
+> +	case IIO_VAL_INT:
+> +		for (i = 0; i < 3; i++) {
+> +			len += __iio_format_value(buf + len, type, 1, &vals[i]);
+> +			if (i < 2)
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						" ");
+> +			else
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						"]\n");
+> +		}
+> +		break;
+> +	default:
+> +		for (i = 0; i < 3; i++) {
+> +			len += __iio_format_value(buf + len,
+> +						  type,
+> +						  2,
+> +						  &vals[i * 2]);
+> +			if (i < 2)
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						" ");
+> +			else
+> +				len += snprintf(buf + len,
+> +						PAGE_SIZE - len,
+> +						"]\n");
+> +		}
+> +	};
+> +
+> +	return len;
+> +}
+> +
+> +static ssize_t iio_read_channel_info_avail(struct device *dev,
+> +					   struct device_attribute *attr,
+> +					   char *buf)
+> +{
+> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> +	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
+> +	const int *vals;
+> +	int ret;
+> +	int length;
+> +	int type;
+> +
+> +	ret = indio_dev->info->read_avail(indio_dev, this_attr->c,
+> +					  &vals, &type, &length,
+> +					  this_attr->address);
+> +
+> +	if (ret < 0)
+> +		return ret;
+> +	switch (ret) {
+> +	case IIO_AVAIL_LIST:
+> +		return iio_format_avail_list(buf, vals, type, length);
+> +	case IIO_AVAIL_RANGE:
+> +		return iio_format_avail_range(buf, vals, type);
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+>  /**
+>   * iio_str_to_fixpoint() - Parse a fixed-point number from a string
+>   * @str: The string to parse
+> @@ -978,6 +1096,40 @@ static int iio_device_add_info_mask_type(struct iio_dev *indio_dev,
+>  	return attrcount;
+>  }
 >  
->  module_i2c_driver(tsc2007_driver);
+> +static int iio_device_add_info_mask_type_avail(struct iio_dev *indio_dev,
+> +					       struct iio_chan_spec const *chan,
+> +					       enum iio_shared_by shared_by,
+> +					       const long *infomask)
+> +{
+> +	int i, ret, attrcount = 0;
+> +	char *avail_postfix;
+> +
+> +	for_each_set_bit(i, infomask, sizeof(infomask) * 8) {
+> +		avail_postfix = kasprintf(GFP_KERNEL,
+> +					  "%s_available",
+> +					  iio_chan_info_postfix[i]);
+> +		if (!avail_postfix)
+> +			return -ENOMEM;
+> +
+> +		ret = __iio_add_chan_devattr(avail_postfix,
+> +					     chan,
+> +					     &iio_read_channel_info_avail,
+> +					     NULL,
+> +					     i,
+> +					     shared_by,
+> +					     &indio_dev->dev,
+> +					     &indio_dev->channel_attr_list);
+> +		kfree(avail_postfix);
+> +		if ((ret == -EBUSY) && (shared_by != IIO_SEPARATE))
+> +			continue;
+> +		else if (ret < 0)
+> +			return ret;
+> +		attrcount++;
+> +	}
+> +
+> +	return attrcount;
+> +}
+> +
+>  static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>  					struct iio_chan_spec const *chan)
+>  {
+> @@ -993,6 +1145,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>  		return ret;
+>  	attrcount += ret;
+>  
+> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+> +						  IIO_SEPARATE,
+> +						  &chan->
+> +						  info_mask_separate_available);
+> +	if (ret < 0)
+> +		return ret;
+> +	attrcount += ret;
+> +
+>  	ret = iio_device_add_info_mask_type(indio_dev, chan,
+>  					    IIO_SHARED_BY_TYPE,
+>  					    &chan->info_mask_shared_by_type);
+> @@ -1000,6 +1160,14 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>  		return ret;
+>  	attrcount += ret;
+>  
+> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+> +						  IIO_SHARED_BY_TYPE,
+> +						  &chan->
+> +						  info_mask_shared_by_type_available);
+> +	if (ret < 0)
+> +		return ret;
+> +	attrcount += ret;
+> +
+>  	ret = iio_device_add_info_mask_type(indio_dev, chan,
+>  					    IIO_SHARED_BY_DIR,
+>  					    &chan->info_mask_shared_by_dir);
+> @@ -1007,6 +1175,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>  		return ret;
+>  	attrcount += ret;
+>  
+> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+> +						  IIO_SHARED_BY_DIR,
+> +						  &chan->info_mask_shared_by_dir_available);
+> +	if (ret < 0)
+> +		return ret;
+> +	attrcount += ret;
+> +
+>  	ret = iio_device_add_info_mask_type(indio_dev, chan,
+>  					    IIO_SHARED_BY_ALL,
+>  					    &chan->info_mask_shared_by_all);
+> @@ -1014,6 +1189,13 @@ static int iio_device_add_channel_sysfs(struct iio_dev *indio_dev,
+>  		return ret;
+>  	attrcount += ret;
+>  
+> +	ret = iio_device_add_info_mask_type_avail(indio_dev, chan,
+> +						  IIO_SHARED_BY_ALL,
+> +						  &chan->info_mask_shared_by_all_available);
+> +	if (ret < 0)
+> +		return ret;
+> +	attrcount += ret;
+> +
+>  	if (chan->ext_info) {
+>  		unsigned int i = 0;
+>  		for (ext_info = chan->ext_info; ext_info->name; ext_info++) {
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index b4a0679e4a49..c0f897084620 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -269,9 +269,13 @@ struct iio_chan_spec {
+>  		enum iio_endian endianness;
+>  	} scan_type;
+>  	long			info_mask_separate;
+> +	long			info_mask_separate_available;
+>  	long			info_mask_shared_by_type;
+> +	long			info_mask_shared_by_type_available;
+>  	long			info_mask_shared_by_dir;
+> +	long			info_mask_shared_by_dir_available;
+>  	long			info_mask_shared_by_all;
+> +	long			info_mask_shared_by_all_available;
+>  	const struct iio_event_spec *event_spec;
+>  	unsigned int		num_event_specs;
+>  	const struct iio_chan_spec_ext_info *ext_info;
+> @@ -397,6 +401,13 @@ struct iio_info {
+>  			int *val_len,
+>  			long mask);
+>  
+> +	int (*read_avail)(struct iio_dev *indio_dev,
+> +			  struct iio_chan_spec const *chan,
+> +			  const int **vals,
+> +			  int *type,
+> +			  int *length,
+> +			  long mask_el);
+> +
+>  	int (*write_raw)(struct iio_dev *indio_dev,
+>  			 struct iio_chan_spec const *chan,
+>  			 int val,
+> diff --git a/include/linux/iio/types.h b/include/linux/iio/types.h
+> index 32b579525004..2aa7b6384d64 100644
+> --- a/include/linux/iio/types.h
+> +++ b/include/linux/iio/types.h
+> @@ -29,4 +29,9 @@ enum iio_event_info {
+>  #define IIO_VAL_FRACTIONAL 10
+>  #define IIO_VAL_FRACTIONAL_LOG2 11
+>  
+> +enum iio_available_type {
+> +	IIO_AVAIL_LIST,
+> +	IIO_AVAIL_RANGE,
+> +};
+> +
+>  #endif /* _IIO_TYPES_H_ */
 > 
 
