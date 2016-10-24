@@ -1,114 +1,148 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42058 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932547AbcJYQ5S (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 12:57:18 -0400
-Subject: Re: [PATCH] [v2] staging: iio: ad5933: avoid uninitialized variable
- in error case
-To: Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20161024152226.2536749-1-arnd@arndb.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Alison Schofield <amsfield22@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <39545e74-af9b-cd31-c525-fba9f4c369b4@kernel.org>
-Date: Tue, 25 Oct 2016 17:57:15 +0100
+Return-Path: <lorenzo.bianconi83@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <20161024152226.2536749-1-arnd@arndb.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <11ec8730-5cee-479f-c3a8-b7d601c4f54c@kernel.org>
+References: <1475093161-7239-1-git-send-email-lorenzo.bianconi@st.com>
+ <45809aef-5396-90fa-1312-677eaeec36da@kernel.org> <CAA2SeNKCr3+rWJd2_Laa0UriPs0FUUWzy6c-s7-smFRSJEk0vQ@mail.gmail.com>
+ <8b3ae000-43fc-9624-acc6-8416ef22fb5f@kernel.org> <57F22A77.6090706@parrot.com>
+ <20161003193550.GA31585@lorenzobianconi.net> <11ec8730-5cee-479f-c3a8-b7d601c4f54c@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Date: Mon, 24 Oct 2016 14:51:19 +0200
+Message-ID: <CAA2SeNLs_RV=kMr2Swpb4wTg-RhpTp_53uhf9_YzE3nYmT8fGQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: common: st_sensors: fix channel data parsing
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Gregor Boirie <gregor.boirie@parrot.com>, linux-iio@vger.kernel.org,
+	Lorenzo BIANCONI <lorenzo.bianconi@st.com>, Denis Ciocca <denis.ciocca@st.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 24/10/16 16:22, Arnd Bergmann wrote:
-> The ad5933_i2c_read function returns an error code to indicate
-> whether it could read data or not. However ad5933_work() ignores
-> this return code and just accesses the data unconditionally,
-> which gets detected by gcc as a possible bug:
-> 
-> drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
-> drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
-> 
-> This adds minimal error handling so we only evaluate the
-> data if it was correctly read.
-> 
-> Link: https://patchwork.kernel.org/patch/8110281/
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Looks good to me.
+Hi Gregor,
 
-Lars?
+> On 03/10/16 20:35, Lorenzo Bianconi wrote:
+>>> Sorry for the delay (vacations). Answers inline...
+>>
+>> Hi Gregor,
+>>
+>>>
+>>>
+>>> On 10/01/2016 04:58 PM, Jonathan Cameron wrote:
+>>>> On 01/10/16 15:18, Lorenzo Bianconi wrote:
+>>>>>> On 28/09/16 21:06, Lorenzo Bianconi wrote:
+>>>>>>> Using realbits as i2c/spi read len, when that value is not byte aligned
+>>>>>>> (e.g 12 bits), lead to skip msb part of out data registers.
+>>>>>>> Fix this using storagebits as read length
+>>>>>>>
+>>>>>>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>>>>> Hi Lorenzo,
+>>>>> Hi Jonathan,
+>>>>>
+>>>>>> This would ideally have had a fixes tag.
+>>>>>>
+>>>>>> I think it was
+>>>>>> Fixes: e7385de5 ("iio:st_sensors: align on storagebits boundaries")
+>>>>>> Doing that would also have lead to you to the logic that lead to
+>>>>>> this buggy change in the first place. Would also have shown
+>>>>>> you that there is another place that probably suffers from the
+>>>>>> same sort of issue.
+>>>>>>
+>>>>> Right. I missed the same issue in st_sensors_read_axis_data()
+>>>>>
+>>>>>> Gregor can you take a look at this please.
+>>>>>>
+>>>>>> If I recall the issue that lead to the original patch it was
+>>>>>> that we were miss handling 24 bit values on pressure sensors and
+>>>>>> this was intended to pad them?
+>>>>>>
+>>>>>> I think the 'right' fix will be something along the lines of:
+>>>>>> unsigned int bytes_to_read = (channel->scan_type.realbits + 7) >> 3;
+>>>>>>
+>>>>> This should not be correct if you consider 8bit accel like LIS331DL.
+>>>> 8 + 7 = 15
+>>>> 15 >> 3 = 1 byte.
+>>>>
+>>>> Would get interest if the data was shifted to run across two bytes, but
+>>>> it's not.  Could handle that case as well by doing
+>>>> (channel->scan_type.realbits + channel->scan_type.shift + 7) >> 3
+>>> Agreed.Maybe using DIV_ROUND_UP() would make ita bit clearer ? Something
+>>> like :
+>>> DIV_ROUND_UP(channel->scan_type.realbits + channel->scan_type.shift, 8)
+>>>
+>>> Should alsobe applied to st_sensors_get_buffer_element() and
+>>> st_sensors_read_axis_data() functions as told earlier.
+>>>
+>>>
+>>>>> Taking a look to lps22hb code I think storagebits should be 24 and not
+>>>>> 32 for pressure channel. What do you think?
+>>>> No. Storage bytes must always be a power of 2. It's assumed at various
+>>>> points in the buffer handling code in the core and userspace code.
+>>>> This is why Gregor's fix was needed.
+>>> That was it.
+>>>
+>>> I'll be happy to perform some testing with my setup (LPS22HB).
+>>
+>> Today I tested the patch inline on 8,12,16 bit device and it worked properly.
+>> I had no the chance to test it on 24 bit device (lps22hb). Can you give it a
+>> whirl?
+>>
+>> Thanks,
+>> Lorenzo
+>>
+>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+> Much nicer than my 'bodge' ;)
+>
+> Once Gregor's had a chance to test, please send me a fresh copy of this with
+> his tested-by etc so I don't have to fiddle with pulling it out of this thread.
+>
+> Thanks,
+>
+> Jonathan
+
+have you got the chance to test that patch on lps22hb?
+
+Regards,
+Lorenzo
+
+>> ---
+>>  drivers/iio/common/st_sensors/st_sensors_buffer.c | 4 +++-
+>>  drivers/iio/common/st_sensors/st_sensors_core.c   | 4 +++-
+>>  2 files changed, 6 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+>> index fe7775b..df40452 100644
+>> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
+>> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+>> @@ -30,7 +30,9 @@ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>>
+>>       for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
+>>               const struct iio_chan_spec *channel = &indio_dev->channels[i];
+>> -             unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+>> +             unsigned int bytes_to_read =
+>> +                     DIV_ROUND_UP(channel->scan_type.realbits +
+>> +                                  channel->scan_type.shift, 8);
+>>               unsigned int storage_bytes =
+>>                       channel->scan_type.storagebits >> 3;
+>>
+>> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+>> index 285a64a..afd60a6 100644
+>> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+>> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+>> @@ -483,8 +483,10 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+>>       int err;
+>>       u8 *outdata;
+>>       struct st_sensor_data *sdata = iio_priv(indio_dev);
+>> -     unsigned int byte_for_channel = ch->scan_type.realbits >> 3;
+>> +     unsigned int byte_for_channel;
+>>
+>> +     byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
+>> +                                     ch->scan_type.shift, 8);
+>>       outdata = kmalloc(byte_for_channel, GFP_KERNEL);
+>>       if (!outdata)
+>>               return -ENOMEM;
+>>
+>
 
 
-> ---
-> v2: handle failure for both affected reads instead of just the one
->     we get a warning for
-> v2: do not retry on failure to avoid looping in case of permanent
->     errors
-> ---
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 17 ++++++++++-------
->  1 file changed, 10 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 5eecf1cb1028..3892a7470410 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -655,6 +655,7 @@ static void ad5933_work(struct work_struct *work)
->  	__be16 buf[2];
->  	int val[2];
->  	unsigned char status;
-> +	int ret;
->  
->  	mutex_lock(&indio_dev->mlock);
->  	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
-> @@ -662,19 +663,22 @@ static void ad5933_work(struct work_struct *work)
->  		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
->  		st->state = AD5933_CTRL_START_SWEEP;
->  		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-> -		mutex_unlock(&indio_dev->mlock);
-> -		return;
-> +		goto out;
->  	}
->  
-> -	ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-> +	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-> +	if (ret)
-> +		goto out;
->  
->  	if (status & AD5933_STAT_DATA_VALID) {
->  		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
->  					       indio_dev->masklength);
-> -		ad5933_i2c_read(st->client,
-> +		ret = ad5933_i2c_read(st->client,
->  				test_bit(1, indio_dev->active_scan_mask) ?
->  				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
->  				scan_count * 2, (u8 *)buf);
-> +		if (ret)
-> +			goto out;
->  
->  		if (scan_count == 2) {
->  			val[0] = be16_to_cpu(buf[0]);
-> @@ -686,8 +690,7 @@ static void ad5933_work(struct work_struct *work)
->  	} else {
->  		/* no data available - try again later */
->  		schedule_delayed_work(&st->work, st->poll_time_jiffies);
-> -		mutex_unlock(&indio_dev->mlock);
-> -		return;
-> +		goto out;
->  	}
->  
->  	if (status & AD5933_STAT_SWEEP_DONE) {
-> @@ -700,7 +703,7 @@ static void ad5933_work(struct work_struct *work)
->  		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
->  		schedule_delayed_work(&st->work, st->poll_time_jiffies);
->  	}
-> -
-> +out:
->  	mutex_unlock(&indio_dev->mlock);
->  }
->  
-> 
 
+-- 
+UNIX is Sexy: who | grep -i blonde | talk; cd ~; wine; talk; touch;
+unzip; touch; strip; gasp; finger; gasp; mount; fsck; more; yes; gasp;
+umount; make clean; sleep
