@@ -1,63 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42240 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S941233AbcJYRbY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 13:31:24 -0400
-Subject: Re: [PATCH] [v2] staging: iio: ad5933: avoid uninitialized variable
- in error case
+Received: from youngberry.canonical.com ([91.189.89.112]:42788 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753069AbcJYSov (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 14:44:51 -0400
+From: Colin King <colin.king@canonical.com>
 To: Lars-Peter Clausen <lars@metafoo.de>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-References: <20161024152226.2536749-1-arnd@arndb.de>
- <39545e74-af9b-cd31-c525-fba9f4c369b4@kernel.org>
- <e2df94af-a165-bd82-aa7f-c9e1f820443a@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Alison Schofield <amsfield22@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <26943ae6-ff2a-f521-cb66-1e98a1af8520@kernel.org>
-Date: Tue, 25 Oct 2016 18:31:21 +0100
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH] staging: iio: cdc: ad7746: set ret on IIO_VOLTAGE case
+Date: Tue, 25 Oct 2016 19:44:40 +0100
+Message-Id: <20161025184440.4274-1-colin.king@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <e2df94af-a165-bd82-aa7f-c9e1f820443a@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/10/16 18:00, Lars-Peter Clausen wrote:
-> On 10/25/2016 06:57 PM, Jonathan Cameron wrote:
->> On 24/10/16 16:22, Arnd Bergmann wrote:
->>> The ad5933_i2c_read function returns an error code to indicate
->>> whether it could read data or not. However ad5933_work() ignores
->>> this return code and just accesses the data unconditionally,
->>> which gets detected by gcc as a possible bug:
->>>
->>> drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
->>> drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
->>>
->>> This adds minimal error handling so we only evaluate the
->>> data if it was correctly read.
->>>
->>> Link: https://patchwork.kernel.org/patch/8110281/
->>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
->> Looks good to me.
->>
->> Lars?
->>
-> 
-> Looks good, thanks.
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the fixes-togreg branch of iio.git and marked for stable.
+From: Colin Ian King <colin.king@canonical.com>
 
-thanks,
+For a IIO_VOLTAGE case, ret is not being set causing an
+uninitialized value being returned by ad7746_read_raw. Fix
+this by setting ret to IIO_VAL_INT for this specific case.
 
-Jonathan
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/staging/iio/cdc/ad7746.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index f41251c..a5828f9 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -642,6 +642,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+ 		case IIO_VOLTAGE:
+ 			*val = ad7746_vt_filter_rate_table[
+ 					(chip->config >> 6) & 0x3][0];
++			ret = IIO_VAL_INT;
+ 			break;
+ 		default:
+ 			ret = -EINVAL;
+-- 
+2.9.3
 
