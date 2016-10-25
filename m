@@ -1,95 +1,63 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 25 Oct 2016 07:38:47 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: John Syne <john3909@gmail.com>
-Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
-	Tony Lindgren <tony@atomide.com>,
-	Jonathan Cameron <jic23@kernel.org>, Vignesh R <vigneshr@ti.com>,
-	linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	linux-kernel@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
-	Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock
- to 24MHz
-Message-ID: <20161025063847.GD8574@dell>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com>
- <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
- <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
- <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
- <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42240 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S941233AbcJYRbY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 13:31:24 -0400
+Subject: Re: [PATCH] [v2] staging: iio: ad5933: avoid uninitialized variable
+ in error case
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20161024152226.2536749-1-arnd@arndb.de>
+ <39545e74-af9b-cd31-c525-fba9f4c369b4@kernel.org>
+ <e2df94af-a165-bd82-aa7f-c9e1f820443a@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Alison Schofield <amsfield22@gmail.com>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <26943ae6-ff2a-f521-cb66-1e98a1af8520@kernel.org>
+Date: Tue, 25 Oct 2016 18:31:21 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <e2df94af-a165-bd82-aa7f-c9e1f820443a@metafoo.de>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 24 Oct 2016, John Syne wrote:
-> > On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> wrote:
-> >> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
-> >> 
-> >> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
-> >>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
-> >>>>> 
-> >>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
-> >>>>> sampling rates goes up from 100K samples per second to 800K
-> >>>>> samples per second on AM335x and AM437x SoC.
-> >>>>> 
-> >>>>> Also increase opendelay for touchscreen configuration to
-> >>>>> equalize the increase in ADC reference clock frequency,
-> >>>>> which results in the same amount touch events reported via
-> >>>>> evtest on AM335x GP EVM.
-> >>>>> 
-> >>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
-> >>>>> ---
-> >>>>> 
-> >>>>> This patch depends on ADC DMA patch series [1]
-> >>>>> 
-> >>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
-> >>>>> seeing fifo overflow as CPU is not able to pull the ADC samples.
-> >>>>> This answers that DMA support is must for ADC to consume the
-> >>>>> samples generated at 24MHz with no open, step delay or
-> >>>>> averaging with patch [2].
-> >>>>> 
-> >>>>> Measured the performance with the iio_generic_buffer with the
-> >>>>> patch [3] applied
-> >>>>> 
-> >>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
-> >>>>> [2] - http://pastebin.ubuntu.com/23357935/
-> >>>>> [3] - http://pastebin.ubuntu.com/23357939/
-> >>>>> 
-> >>>>> ---
-> >>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
-> >>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
-> >>>>> 
-> >>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> >>>>> index b9a53e0..96c4207 100644
-> >>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> >>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> >>>>> @@ -90,7 +90,7 @@
-> >>>>> /* Delay register */
-> >>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
-> >>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
-> >>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
-> >>> Wouldn’t this be better to add this to the devicetree?
-> >>> 
-> >>> 	ti,chan-step-avg = <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
-> >>> 	ti,chan-step-opendelay = <0x500 0x500 0x500 0x500 0x500 0x500 0x500>;
-> >>> 	ti,chan-step-sampledelay = <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
-> >> 
-> >> For a touch screen, there is not need to change in these parameter
-> >> settings, so my opinion is to keep it as is. Or am I missing something?
-> > I was thinking that if you are using this driver as an ADC, you may want the flexibility to make these changes in the DT. I’m doing this by connecting sensors to the ADC inputs. I’m not using this driver for a touchscreen. 
+On 25/10/16 18:00, Lars-Peter Clausen wrote:
+> On 10/25/2016 06:57 PM, Jonathan Cameron wrote:
+>> On 24/10/16 16:22, Arnd Bergmann wrote:
+>>> The ad5933_i2c_read function returns an error code to indicate
+>>> whether it could read data or not. However ad5933_work() ignores
+>>> this return code and just accesses the data unconditionally,
+>>> which gets detected by gcc as a possible bug:
+>>>
+>>> drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
+>>> drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
+>>>
+>>> This adds minimal error handling so we only evaluate the
+>>> data if it was correctly read.
+>>>
+>>> Link: https://patchwork.kernel.org/patch/8110281/
+>>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>> Looks good to me.
+>>
+>> Lars?
+>>
 > 
-> Here is a DT overlay were this gets using on the BeagleBoneBlack.  
+> Looks good, thanks.
 > 
-> https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-ADC-00A0.dts
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+thanks,
+
+Jonathan
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> Besides, these DT features are already implemented in the driver so it is just a matter of adding these entries to the am33xx.dtsi & am4372.dtsi, which you modified in this patch series.
 
-This looks like configuration, no?
-
-DT should be used to describe the hardware.
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
