@@ -1,39 +1,65 @@
-Return-Path: <john3909@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:32794 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1759115AbcJYPre (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 11:47:34 -0400
 Content-Type: text/plain; charset=utf-8
 Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
 Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to 24MHz
 From: John Syne <john3909@gmail.com>
-In-Reply-To: <7024bec3-2ebe-db82-12e2-6d6bcc664c6b@ti.com>
-Date: Tue, 25 Oct 2016 08:39:12 -0700
-Cc: Mugunthan V N <mugunthanvnm@ti.com>,
- Lee Jones <lee.jones@linaro.org>,
- linux-iio@vger.kernel.org,
- Tony Lindgren <tony@atomide.com>,
- Jonathan Cameron <jic23@kernel.org>,
- linux-omap@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org,
- Sekhar Nori <nsekhar@ti.com>,
- Peter Ujfalusi <peter.ujfalusi@ti.com>
-Message-Id: <893994DA-C6BB-4562-8207-1F75E6568A0B@gmail.com>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com> <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com> <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com> <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com> <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <7024bec3-2ebe-db82-12e2-6d6bcc664c6b@ti.com>
-To: Vignesh R <vigneshr@ti.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20161025063847.GD8574@dell>
+Date: Tue, 25 Oct 2016 08:47:30 -0700
+Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Vignesh R <vigneshr@ti.com>, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>
+Message-Id: <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com>
+References: <20161024060226.4170-1-mugunthanvnm@ti.com> <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com> <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com> <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com> <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <20161025063847.GD8574@dell>
+To: Lee Jones <lee.jones@linaro.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-> On Oct 24, 2016, at 11:37 PM, Vignesh R <vigneshr@ti.com> wrote:
+> On Oct 24, 2016, at 11:38 PM, Lee Jones <lee.jones@linaro.org> wrote:
 >=20
->=20
->=20
-> On Tuesday 25 October 2016 11:46 AM, John Syne wrote:
->>=20
+> On Mon, 24 Oct 2016, John Syne wrote:
 >>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> wrote:
->>>=20
->>>>=20
 >>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> =
 wrote:
 >>>>=20
-> [...]
+>>>> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
+>>>>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N =
+<mugunthanvnm@ti.com> wrote:
+>>>>>>>=20
+>>>>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
+>>>>>>> sampling rates goes up from 100K samples per second to 800K
+>>>>>>> samples per second on AM335x and AM437x SoC.
+>>>>>>>=20
+>>>>>>> Also increase opendelay for touchscreen configuration to
+>>>>>>> equalize the increase in ADC reference clock frequency,
+>>>>>>> which results in the same amount touch events reported via
+>>>>>>> evtest on AM335x GP EVM.
+>>>>>>>=20
+>>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
+>>>>>>> ---
+>>>>>>>=20
+>>>>>>> This patch depends on ADC DMA patch series [1]
+>>>>>>>=20
+>>>>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
+>>>>>>> seeing fifo overflow as CPU is not able to pull the ADC samples.
+>>>>>>> This answers that DMA support is must for ADC to consume the
+>>>>>>> samples generated at 24MHz with no open, step delay or
+>>>>>>> averaging with patch [2].
+>>>>>>>=20
+>>>>>>> Measured the performance with the iio_generic_buffer with the
+>>>>>>> patch [3] applied
+>>>>>>>=20
+>>>>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
+>>>>>>> [2] - http://pastebin.ubuntu.com/23357935/
+>>>>>>> [3] - http://pastebin.ubuntu.com/23357939/
 >>>>>>>=20
 >>>>>>> ---
 >>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
@@ -62,12 +88,8 @@ something?
 >>> I was thinking that if you are using this driver as an ADC, you may =
 want the flexibility to make these changes in the DT. I=E2=80=99m doing =
 this by connecting sensors to the ADC inputs. I=E2=80=99m not using this =
-driver for a touchscreen.
+driver for a touchscreen.=20
 >>=20
->=20
-> ti_am335x_adc driver already supports above DT parameters and its upto
-> the user to adjust these parameters as required.
->=20
 >> Here is a DT overlay were this gets using on the BeagleBoneBlack. =20
 >>=20
 >> =
@@ -77,19 +99,22 @@ C-00A0.dts
 >> Besides, these DT features are already implemented in the driver so =
 it is just a matter of adding these entries to the am33xx.dtsi & =
 am4372.dtsi, which you modified in this patch series.
->>=20
 >=20
-> Touchscreen driver (ti_am335x_tsc.c) does not support above DT =
-parameters.
-This patch series also modifies ti_am335x_adc.c
-
-=
-https://github.com/analogdevicesinc/linux/blob/master/drivers/iio/adc/ti_a=
-m335x_adc.c#L447
+> This looks like configuration, no?
+>=20
+> DT should be used to describe the hardware.
+You may be right, but how is this different to setting the baud rate on =
+a serial channel or sampling rate on a audio channel? Looking through =
+the DT, there are many configuration settings, so I=E2=80=99m not sure =
+what is the correct way to handle this. Surely it is better to handle =
+this in DT vs hard coding these settings?
 
 Regards,
 John
 >=20
 > --=20
-> Regards
-> Vignesh
+> Lee Jones
+> Linaro STMicroelectronics Landing Team Lead
+> Linaro.org =E2=94=82 Open source software for ARM SoCs
+> Follow Linaro: Facebook | Twitter | Blog
+
