@@ -1,120 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:32794 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759115AbcJYPre (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 11:47:34 -0400
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to 24MHz
-From: John Syne <john3909@gmail.com>
-In-Reply-To: <20161025063847.GD8574@dell>
-Date: Tue, 25 Oct 2016 08:47:30 -0700
-Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Vignesh R <vigneshr@ti.com>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
-Message-Id: <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com> <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com> <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com> <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com> <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <20161025063847.GD8574@dell>
-To: Lee Jones <lee.jones@linaro.org>
+Received: from mout.kundenserver.de ([212.227.126.130]:49868 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752744AbcJYP40 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 11:56:26 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Matt Ranostay <mranostay@gmail.com>,
+        sayli karnik <karniksayli1995@gmail.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: maxim_thermocouple: detect invalid storage size in read()
+Date: Tue, 25 Oct 2016 17:55:04 +0200
+Message-Id: <20161025155538.38037-1-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+As found by gcc -Wmaybe-uninitialized, having a storage_bytes value other
+than 2 or 4 will result in undefined behavior:
 
-> On Oct 24, 2016, at 11:38 PM, Lee Jones <lee.jones@linaro.org> wrote:
->=20
-> On Mon, 24 Oct 2016, John Syne wrote:
->>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> wrote:
->>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> =
-wrote:
->>>>=20
->>>> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
->>>>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N =
-<mugunthanvnm@ti.com> wrote:
->>>>>>>=20
->>>>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
->>>>>>> sampling rates goes up from 100K samples per second to 800K
->>>>>>> samples per second on AM335x and AM437x SoC.
->>>>>>>=20
->>>>>>> Also increase opendelay for touchscreen configuration to
->>>>>>> equalize the increase in ADC reference clock frequency,
->>>>>>> which results in the same amount touch events reported via
->>>>>>> evtest on AM335x GP EVM.
->>>>>>>=20
->>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
->>>>>>> ---
->>>>>>>=20
->>>>>>> This patch depends on ADC DMA patch series [1]
->>>>>>>=20
->>>>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
->>>>>>> seeing fifo overflow as CPU is not able to pull the ADC samples.
->>>>>>> This answers that DMA support is must for ADC to consume the
->>>>>>> samples generated at 24MHz with no open, step delay or
->>>>>>> averaging with patch [2].
->>>>>>>=20
->>>>>>> Measured the performance with the iio_generic_buffer with the
->>>>>>> patch [3] applied
->>>>>>>=20
->>>>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
->>>>>>> [2] - http://pastebin.ubuntu.com/23357935/
->>>>>>> [3] - http://pastebin.ubuntu.com/23357939/
->>>>>>>=20
->>>>>>> ---
->>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
->>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>>=20
->>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h =
-b/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>> index b9a53e0..96c4207 100644
->>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>> @@ -90,7 +90,7 @@
->>>>>>> /* Delay register */
->>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
->>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
->>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
->>>>> Wouldn=E2=80=99t this be better to add this to the devicetree?
->>>>>=20
->>>>> 	ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
->>>>> 	ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 0x500 0x500 =
-0x500>;
->>>>> 	ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
->>>>=20
->>>> For a touch screen, there is not need to change in these parameter
->>>> settings, so my opinion is to keep it as is. Or am I missing =
-something?
->>> I was thinking that if you are using this driver as an ADC, you may =
-want the flexibility to make these changes in the DT. I=E2=80=99m doing =
-this by connecting sensors to the ADC inputs. I=E2=80=99m not using this =
-driver for a touchscreen.=20
->>=20
->> Here is a DT overlay were this gets using on the BeagleBoneBlack. =20
->>=20
->> =
-https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-AD=
-C-00A0.dts
->>=20
->> Besides, these DT features are already implemented in the driver so =
-it is just a matter of adding these entries to the am33xx.dtsi & =
-am4372.dtsi, which you modified in this patch series.
->=20
-> This looks like configuration, no?
->=20
-> DT should be used to describe the hardware.
-You may be right, but how is this different to setting the baud rate on =
-a serial channel or sampling rate on a audio channel? Looking through =
-the DT, there are many configuration settings, so I=E2=80=99m not sure =
-what is the correct way to handle this. Surely it is better to handle =
-this in DT vs hard coding these settings?
+drivers/iio/temperature/maxim_thermocouple.c: In function 'maxim_thermocouple_read':
+drivers/iio/temperature/maxim_thermocouple.c:141:5: error: 'ret' may be used uninitialized in this function [-Werror=maybe-uninitialized]
 
-Regards,
-John
->=20
-> --=20
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org =E2=94=82 Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+This probably cannot happen, but returning -EINVAL here is appropriate
+and makes gcc happy and the code more robust.
+
+Fixes: 231147ee77f3 ("iio: maxim_thermocouple: Align 16 bit big endian value of raw reads")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/temperature/maxim_thermocouple.c | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
+index 066161a4bccd..f962f31a5eb2 100644
+--- a/drivers/iio/temperature/maxim_thermocouple.c
++++ b/drivers/iio/temperature/maxim_thermocouple.c
+@@ -136,6 +136,8 @@ static int maxim_thermocouple_read(struct maxim_thermocouple_data *data,
+ 		ret = spi_read(data->spi, (void *)&buf32, storage_bytes);
+ 		*val = be32_to_cpu(buf32);
+ 		break;
++	default:
++		ret = -EINVAL;
+ 	}
+ 
+ 	if (ret)
+-- 
+2.9.0
 
