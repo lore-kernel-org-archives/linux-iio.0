@@ -1,53 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:53440 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755529AbcJZOlz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 10:41:55 -0400
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org,
-        devicetree@vger.kernel.org
-Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
-        Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V3 0/2] iio: adc: spmi-vadc: Changes to support different scaling
-Date: Wed, 26 Oct 2016 20:11:25 +0530
-Message-Id: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
+Received: from www381.your-server.de ([78.46.137.84]:46222 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754818AbcJYRBK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 13:01:10 -0400
+Subject: Re: [PATCH] [v2] staging: iio: ad5933: avoid uninitialized variable
+ in error case
+To: Jonathan Cameron <jic23@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+References: <20161024152226.2536749-1-arnd@arndb.de>
+ <39545e74-af9b-cd31-c525-fba9f4c369b4@kernel.org>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Alison Schofield <amsfield22@gmail.com>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <e2df94af-a165-bd82-aa7f-c9e1f820443a@metafoo.de>
+Date: Tue, 25 Oct 2016 19:00:58 +0200
+MIME-Version: 1.0
+In-Reply-To: <39545e74-af9b-cd31-c525-fba9f4c369b4@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-VADC is a 15 bit ADC that measures signals through the Main analog
-multiplexer (AMUX). The driver arbitrates the request to issue ADC
-read requests. These patches adds different scaling functionality
-to convert adc code to physical units.
+On 10/25/2016 06:57 PM, Jonathan Cameron wrote:
+> On 24/10/16 16:22, Arnd Bergmann wrote:
+>> The ad5933_i2c_read function returns an error code to indicate
+>> whether it could read data or not. However ad5933_work() ignores
+>> this return code and just accesses the data unconditionally,
+>> which gets detected by gcc as a possible bug:
+>>
+>> drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
+>> drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
+>>
+>> This adds minimal error handling so we only evaluate the
+>> data if it was correctly read.
+>>
+>> Link: https://patchwork.kernel.org/patch/8110281/
+>> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Looks good to me.
+> 
+> Lars?
+> 
 
-[V3]
-	1. Update the commit text to give more information on the
-	   functionality implemented in the patches.
-	2. Added Dt maintainers.
+Looks good, thanks.
 
-[V2]
-	1. Replaced the do_div with normal division.
-	2. Split the functionality implemented in v1 patch.
-	3. Abstracted out common logic and updated change to report
-	   Raw adc code properly.
-	4. Change to support different scaling functionality.
-	5. Added support for introducing new bindings in driver.
-
-[V1]
-	https://lkml.org/lkml/2016/10/25/26
-
-Rama Krishna Phani A (2):
-  iio: adc: spmi-vadc: Update changes to support reporting of Raw adc
-    code.
-  iio: adc: spmi-vadc: Changes to support different scaling
-
- .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 +
- drivers/iio/adc/qcom-spmi-vadc.c                   | 311 ++++++++++++++++-----
- 2 files changed, 261 insertions(+), 64 deletions(-)
-
--- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+Acked-by: Lars-Peter Clausen <lars@metafoo.de>
