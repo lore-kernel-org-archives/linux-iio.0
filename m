@@ -1,180 +1,67 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
-	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v2 2/7] iio: mcp4531: provide range of available raw values
-Date: Sun, 23 Oct 2016 00:43:41 +0200
-Message-ID: <1477176226-10566-3-git-send-email-peda@axentia.se>
-In-Reply-To: <1477176226-10566-1-git-send-email-peda@axentia.se>
-References: <1477176226-10566-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:49290 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1756547AbcJYQ0j (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 12:26:39 -0400
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
+Subject: [PATCH 00/10] Add support for STM32 ADC
+Date: Tue, 25 Oct 2016 18:25:12 +0200
+Message-ID: <1477412722-24061-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/iio/potentiometer/mcp4531.c | 104 +++++++++++++++++++++---------------
- 1 file changed, 62 insertions(+), 42 deletions(-)
+This series adds support for STM32F4 ADC into IIO framework.
+STM32F4 ADC is a 12-bit successive approximation analog-to-digital
+converter. It has up to 19 multiplexed input channels. Conversions can
+be performed in single, continuous, scan or discontinuous mode.
+Conversions can be launched in software or using hardware triggers.
 
-diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
-index 13b6ae2fcf7b..0d1bcf89ae17 100644
---- a/drivers/iio/potentiometer/mcp4531.c
-+++ b/drivers/iio/potentiometer/mcp4531.c
-@@ -38,7 +38,7 @@
- 
- struct mcp4531_cfg {
- 	int wipers;
--	int max_pos;
-+	int avail[3];
- 	int kohms;
- };
- 
-@@ -78,38 +78,38 @@ enum mcp4531_type {
- };
- 
- static const struct mcp4531_cfg mcp4531_cfg[] = {
--	[MCP453x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
--	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
--	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
--	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
--	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
--	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
--	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
--	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
--	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
--	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
--	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
--	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
--	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
--	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
--	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
--	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
--	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
--	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
--	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
--	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
--	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
--	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
--	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
--	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
--	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
--	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
--	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
--	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
--	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
--	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
--	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
--	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
-+	[MCP453x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP453x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP453x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP453x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP454x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP454x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP454x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP454x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP455x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP455x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP455x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP455x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP456x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP456x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP456x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP456x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP463x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP463x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP463x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP463x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP464x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP464x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP464x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP464x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP465x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP465x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP465x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP465x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP466x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP466x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP466x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP466x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
- };
- 
- #define MCP4531_WRITE (0 << 2)
-@@ -124,13 +124,14 @@ struct mcp4531_data {
- 	const struct mcp4531_cfg *cfg;
- };
- 
--#define MCP4531_CHANNEL(ch) {					\
--	.type = IIO_RESISTANCE,					\
--	.indexed = 1,						\
--	.output = 1,						\
--	.channel = (ch),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+#define MCP4531_CHANNEL(ch) {						\
-+	.type = IIO_RESISTANCE,						\
-+	.indexed = 1,							\
-+	.output = 1,							\
-+	.channel = (ch),						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
- }
- 
- static const struct iio_chan_spec mcp4531_channels[] = {
-@@ -156,13 +157,31 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
- 		*val = 1000 * data->cfg->kohms;
--		*val2 = data->cfg->max_pos;
-+		*val2 = data->cfg->avail[2];
- 		return IIO_VAL_FRACTIONAL;
- 	}
- 
- 	return -EINVAL;
- }
- 
-+static int mcp4531_read_avail(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct mcp4531_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		*length = ARRAY_SIZE(data->cfg->avail);
-+		*vals = data->cfg->avail;
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_RANGE;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
-@@ -172,7 +191,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > data->cfg->max_pos || val < 0)
-+		if (val > data->cfg->avail[2] || val < 0)
- 			return -EINVAL;
- 		break;
- 	default:
-@@ -186,6 +205,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 
- static const struct iio_info mcp4531_info = {
- 	.read_raw = mcp4531_read_raw,
-+	.read_avail = mcp4531_read_avail,
- 	.write_raw = mcp4531_write_raw,
- 	.driver_module = THIS_MODULE,
- };
+This driver has been developed and tested on STM32F429 eval board.
+It consist of a core driver, to ease support for other STM32 family
+ADCs, and a specific driver for STM32F4 ADC.
+It allows to use direct or triggered buffer modes with triggers.
+Optional support for DMA and few extended attributes is included.
+
+Fabrice Gasnier (10):
+  Documentation: dt-bindings: Document STM32 ADC DT bindings
+  iio: adc: Add stm32 support
+  iio: adc: stm32: add optional dma support
+  iio: adc: stm32: add optional support for exti gpios
+  iio: adc: stm32: add trigger polarity ext attr
+  iio: adc: stm32: add ext attrs to configure sampling time
+  ARM: configs: stm32: enable IIO ADC driver
+  ARM: dts: stm32f429: Add adc support
+  ARM: dts: stm32f429: enable adc on eval board
+  ARM: dts: stm32f429: Add dma support to adc
+
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |   78 ++
+ arch/arm/boot/dts/stm32429i-eval.dts               |   30 +
+ arch/arm/boot/dts/stm32f429.dtsi                   |   68 +
+ arch/arm/configs/stm32_defconfig                   |    2 +
+ drivers/iio/adc/Kconfig                            |    2 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/stm32/Kconfig                      |   36 +
+ drivers/iio/adc/stm32/Makefile                     |    4 +
+ drivers/iio/adc/stm32/stm32-adc.c                  | 1334 ++++++++++++++++++++
+ drivers/iio/adc/stm32/stm32-adc.h                  |  489 +++++++
+ drivers/iio/adc/stm32/stm32f4-adc.c                |  652 ++++++++++
+ 11 files changed, 2696 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+ create mode 100644 drivers/iio/adc/stm32/Kconfig
+ create mode 100644 drivers/iio/adc/stm32/Makefile
+ create mode 100644 drivers/iio/adc/stm32/stm32-adc.c
+ create mode 100644 drivers/iio/adc/stm32/stm32-adc.h
+ create mode 100644 drivers/iio/adc/stm32/stm32f4-adc.c
+
 -- 
-2.1.4
+1.9.1
+
