@@ -1,48 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:41216 "EHLO
+Received: from aserp1040.oracle.com ([141.146.126.69]:24506 "EHLO
         aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938647AbcJXJgJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 24 Oct 2016 05:36:09 -0400
-Date: Mon, 24 Oct 2016 12:35:31 +0300
+        with ESMTP id S1750806AbcJYTOb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 15:14:31 -0400
+Date: Tue, 25 Oct 2016 22:06:16 +0300
 From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Brian Masney <masneyb@onstation.org>, devel@driverdev.osuosl.org,
-        lars@metafoo.de, linux-iio@vger.kernel.org,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        pmeerw@pmeerw.net, knaack.h@gmx.de
-Subject: Re: [PATCH 6/7] iio: light: tsl2583: add locking to sysfs *_store()
- functions
-Message-ID: <20161024093530.GV4469@mwanda>
-References: <1476873130-24926-1-git-send-email-masneyb@onstation.org>
- <1476873130-24926-6-git-send-email-masneyb@onstation.org>
- <20161019113345.GJ4469@mwanda>
- <20161019113731.GF4418@mwanda>
- <f6a017a4-0fd6-9706-472b-7174a6bd4769@kernel.org>
+To: mranostay@gmail.com
+Cc: linux-iio@vger.kernel.org
+Subject: [bug report] iio: adc: ti-adc161s626: add regulator support
+Message-ID: <20161025190616.GA30520@elgon.mountain>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <f6a017a4-0fd6-9706-472b-7174a6bd4769@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Oct 22, 2016 at 06:29:55PM +0100, Jonathan Cameron wrote:
-> On 19/10/16 12:37, Dan Carpenter wrote:
-> > I appologize for laughing, but I am still secretly amused in my heart.
-> > 
-> > regards,
-> > dan carpenter
-> > 
-> Fewer beers or less caffeine for Dan!
+Hello Matt Ranostay,
 
-;)
+The patch 92f0afb5b2be: "iio: adc: ti-adc161s626: add regulator
+support" from Sep 18, 2016, leads to the following static checker
+warning:
 
-> 
-> Key take away here is keep things simple.  The gotos in my mind
-> would actually have made sense, but I wouldn't do the refactoring until
-> you need it. i.e. when you introduce the locking in this patch.
+	drivers/iio/adc/ti-adc161s626.c:237 ti_adc_probe()
+	error: 'data->ref' dereferencing possible ERR_PTR()
 
-Yeah, I totally agree do it when you need it.  I like gotos if they're
-needed.
+drivers/iio/adc/ti-adc161s626.c
+   214  
+   215          data->ref = devm_regulator_get(&spi->dev, "vdda");
+   216          if (!IS_ERR(data->ref)) {
+
+I don't understand what's going on here.
+
+   217                  ret = regulator_enable(data->ref);
+   218                  if (ret < 0)
+   219                          return ret;
+   220          }
+   221  
+   222          ret = iio_triggered_buffer_setup(indio_dev, NULL,
+   223                                           ti_adc_trigger_handler, NULL);
+   224          if (ret)
+   225                  goto error_regulator_disable;
+   226  
+   227          ret = iio_device_register(indio_dev);
+   228          if (ret)
+   229                  goto error_unreg_buffer;
+   230  
+   231          return 0;
+   232  
+   233  error_unreg_buffer:
+   234          iio_triggered_buffer_cleanup(indio_dev);
+   235  
+   236  error_regulator_disable:
+   237          regulator_disable(data->ref);
+
+Static checker is correct.
+
+   238  
+   239          return ret;
+   240  }
 
 regards,
 dan carpenter
-
