@@ -1,114 +1,79 @@
-Return-Path: <hns@goldelico.com>
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	Sebastian Reichel <sre@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Sangwon Jee <jeesw@melfas.com>
-Cc: linux-input@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	letux-kernel@openphoenux.org,
-	linux-iio@vger.kernel.org,
-	kernel@pyra-handheld.com
-Subject: [PATCH v5 0/8] drivers: touchscreen: tsc2007 and ads7846/tsc2046 improvements (use common touchscreen bindings, pre-calibration, spi fix and provide iio raw values)
-Date: Tue, 25 Oct 2016 21:26:14 +0200
-Message-Id: <cover.1477423581.git.hns@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
-
-Changes V5:
-* ads7846: remove an empty line (suggested by Andrew F. Davis <afd@ti.com>)
-* ads7846: remove MODULE_ALIAS for SPI (suggested by Andrew F. Davis <afd@ti.com>)
-* tsc2007: fix a bug from swapping patch 3/n and patch 4/n (found by kbuid test robot)
-* refactored tsc2007 into tsc2007_core and tsc2007_iio (asked for by Jonathan Cameron <jic23@kernel.org>)
-
-2016-10-17 16:00:02: Changes V4:
-* fix a merge/squash issue resulting in a non-bisectable patch set (suggested by kbuid test robot)
-* remove some unnecessary #include (suggested by Jonathan Cameron <jic23@kernel.org>)
-* make the iio extension depend on CONFIG_IIO rather than selecting it (suggested by Jonathan Cameron <jic23@kernel.org>)
-* swapped patch 3/n and patch 4/n to remove internal dependency
-
-2016-09-23 14:41:23: Changes V3:
-* fix an issue with swapping
-* remove hard clipping to min/max rectangle - some systems expect to handle negative coordinates
-* make use of commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-
-2015-11-13 21:36:07: Changes V2:
-* add a patch to make drivers still recognise the old "ti,swap-xy" property (suggested by Rob Herring)
-
-2015-11-06 16:14:53: This patch series improves the drivers for the tsc2007 and
-ads7846/tsc2046 touchscreen controllers which are e.g. used by the GTA04
-OpenPandora and Pyra devices.
-
-New common bindings have been defined by
-commit b98abe52fa8e ("Input: add common DT binding for touchscreens"):
-
-	Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
-
-which also defines a helper function to parse the DT. These new parameters
-allow to specify the fuzz factors (jitter suppression), inversion of x or y axis and
-swapping of x and y to achieve inversion and rotation so that the touch
-coordinate axes match the natural orientation of the display panel.
-
-Another improvement is to better use the min/max ADC values and
-scale to the screen size as defined by the DT. This allows to coarsely
-calibrate the touch to match the LCD to which it is glued on so that the
-touch can quite precisely be operated before any user-space fine-calibration
-can be (and needs to be) started.
-
-For the adc7846 we fix an issue with the spi module table.
-
-Finally we add an iio interface for the AUX and temperature ADC channels of
-the tsc2007 and also provide the touch screen raw values. This allows to read
-an optional ambient light sensor installed on the gta04 board and improves
-calibration and hardware monitoring.
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from arroyo.ext.ti.com ([198.47.19.12]:39735 "EHLO arroyo.ext.ti.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755921AbcJYGjH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 25 Oct 2016 02:39:07 -0400
+Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to
+ 24MHz
+To: John Syne <john3909@gmail.com>, Mugunthan V N <mugunthanvnm@ti.com>
+References: <20161024060226.4170-1-mugunthanvnm@ti.com>
+ <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
+ <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
+ <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
+ <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com>
+CC: Lee Jones <lee.jones@linaro.org>, <linux-iio@vger.kernel.org>,
+        Tony Lindgren <tony@atomide.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        <linux-omap@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-kernel@vger.kernel.org>, Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>
+From: Vignesh R <vigneshr@ti.com>
+Message-ID: <7024bec3-2ebe-db82-12e2-6d6bcc664c6b@ti.com>
+Date: Tue, 25 Oct 2016 12:07:51 +0530
+MIME-Version: 1.0
+In-Reply-To: <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com>
+Content-Type: text/plain; charset="utf-8"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-H. Nikolaus Schaller (8):
-  drivers:input:tsc2007: add new common binding names, pre-calibration,
-    flipping and rotation
-  drivers:input:tsc2007: send pendown and penup only once like
-    ads7846(+tsc2046) driver does
-  drivers:input:tsc2007: check for presence and power down tsc2007
-    during probe
-  drivers:input:tsc2007: add iio interface to read external ADC input
-    and temperature
-  DT:omap3+tsc2007: use new common touchscreen bindings
-  drivers:input:ads7846(+tsc2046): add new common binding names,
-    pre-calibration and flipping
-  drivers:input:ads7846(+tsc2046): fix spi module table
-  DT:omap3+ads7846: use new common touchscreen bindings
 
- .../devicetree/bindings/input/ads7846.txt          |   9 +-
- .../bindings/input/touchscreen/tsc2007.txt         |  20 +-
- arch/arm/boot/dts/omap3-gta04.dtsi                 |  25 ++-
- arch/arm/boot/dts/omap3-lilly-a83x.dtsi            |   2 +-
- arch/arm/boot/dts/omap3-pandora-common.dtsi        |  17 +-
- .../boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi    |   3 +-
- drivers/input/touchscreen/Makefile                 |   2 +
- drivers/input/touchscreen/ads7846.c                |  71 ++++--
- drivers/input/touchscreen/tsc2007.h                | 124 +++++++++++
- .../touchscreen/{tsc2007.c => tsc2007_core.c}      | 240 ++++++++++++---------
- drivers/input/touchscreen/tsc2007_iio.c            | 162 ++++++++++++++
- include/linux/i2c/tsc2007.h                        |   8 +
- 12 files changed, 556 insertions(+), 127 deletions(-)
- create mode 100644 drivers/input/touchscreen/tsc2007.h
- rename drivers/input/touchscreen/{tsc2007.c => tsc2007_core.c} (70%)
- create mode 100644 drivers/input/touchscreen/tsc2007_iio.c
+On Tuesday 25 October 2016 11:46 AM, John Syne wrote:
+> 
+>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> wrote:
+>>
+>>>
+>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
+>>>
+[...]
+>>>>>>
+>>>>>> ---
+>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
+>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>>
+>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+>>>>>> index b9a53e0..96c4207 100644
+>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>>>>>> @@ -90,7 +90,7 @@
+>>>>>> /* Delay register */
+>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
+>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
+>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
+>>>> Wouldn’t this be better to add this to the devicetree?
+>>>>
+>>>> 	ti,chan-step-avg = <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
+>>>> 	ti,chan-step-opendelay = <0x500 0x500 0x500 0x500 0x500 0x500 0x500>;
+>>>> 	ti,chan-step-sampledelay = <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
+>>>
+>>> For a touch screen, there is not need to change in these parameter
+>>> settings, so my opinion is to keep it as is. Or am I missing something?
+>> I was thinking that if you are using this driver as an ADC, you may want the flexibility to make these changes in the DT. I’m doing this by connecting sensors to the ADC inputs. I’m not using this driver for a touchscreen.
+> 
+
+ti_am335x_adc driver already supports above DT parameters and its upto
+the user to adjust these parameters as required.
+
+> Here is a DT overlay were this gets using on the BeagleBoneBlack.  
+> 
+> https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-ADC-00A0.dts
+> 
+> Besides, these DT features are already implemented in the driver so it is just a matter of adding these entries to the am33xx.dtsi & am4372.dtsi, which you modified in this patch series.
+> 
+
+Touchscreen driver (ti_am335x_tsc.c) does not support above DT parameters.
 
 -- 
-2.7.3
+Regards
+Vignesh
