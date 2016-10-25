@@ -1,100 +1,39 @@
-Return-Path: <arnd@arndb.de>
-From: Arnd Bergmann <arnd@arndb.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Alison Schofield <amsfield22@gmail.com>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: [PATCH] [v2] staging: iio: ad5933: avoid uninitialized variable in error case
-Date: Mon, 24 Oct 2016 17:22:01 +0200
-Message-Id: <20161024152226.2536749-1-arnd@arndb.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:38875 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932711AbcJYTLa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 15:11:30 -0400
+Subject: Re: [PATCH] iio: maxim_thermocouple: return -EINVAL on invalid read
+ size
+To: Colin King <colin.king@canonical.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        sayli karnik <karniksayli1995@gmail.com>,
+        Matt Ranostay <mranostay@gmail.com>,
+        Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
+References: <20161025190408.5012-1-colin.king@canonical.com>
+Cc: linux-kernel@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <ed223a81-32c1-d339-b4e1-16b8fca88b2e@metafoo.de>
+Date: Tue, 25 Oct 2016 21:11:21 +0200
+MIME-Version: 1.0
+In-Reply-To: <20161025190408.5012-1-colin.king@canonical.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The ad5933_i2c_read function returns an error code to indicate
-whether it could read data or not. However ad5933_work() ignores
-this return code and just accesses the data unconditionally,
-which gets detected by gcc as a possible bug:
+On 10/25/2016 09:04 PM, Colin King wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+> 
+> In the case that the read size is not 2 or 4 bytes
+> then maxim_thermocouple_read is not initializing ret and
+> hence may return early with a bogus error return or
+> just through to return with a bogos unread value in *val.
+> Fix this by setting ret to -EINVAL for invalid (unhandled)
+> read sizes.
+> 
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-drivers/staging/iio/impedance-analyzer/ad5933.c: In function 'ad5933_work':
-drivers/staging/iio/impedance-analyzer/ad5933.c:649:16: warning: 'status' may be used uninitialized in this function [-Wmaybe-uninitialized]
+Again, Arnd already took the prize, https://lkml.org/lkml/2016/10/25/518
 
-This adds minimal error handling so we only evaluate the
-data if it was correctly read.
-
-Link: https://patchwork.kernel.org/patch/8110281/
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
-v2: handle failure for both affected reads instead of just the one
-    we get a warning for
-v2: do not retry on failure to avoid looping in case of permanent
-    errors
----
- drivers/staging/iio/impedance-analyzer/ad5933.c | 17 ++++++++++-------
- 1 file changed, 10 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 5eecf1cb1028..3892a7470410 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -655,6 +655,7 @@ static void ad5933_work(struct work_struct *work)
- 	__be16 buf[2];
- 	int val[2];
- 	unsigned char status;
-+	int ret;
- 
- 	mutex_lock(&indio_dev->mlock);
- 	if (st->state == AD5933_CTRL_INIT_START_FREQ) {
-@@ -662,19 +663,22 @@ static void ad5933_work(struct work_struct *work)
- 		ad5933_cmd(st, AD5933_CTRL_START_SWEEP);
- 		st->state = AD5933_CTRL_START_SWEEP;
- 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
--		mutex_unlock(&indio_dev->mlock);
--		return;
-+		goto out;
- 	}
- 
--	ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-+	ret = ad5933_i2c_read(st->client, AD5933_REG_STATUS, 1, &status);
-+	if (ret)
-+		goto out;
- 
- 	if (status & AD5933_STAT_DATA_VALID) {
- 		int scan_count = bitmap_weight(indio_dev->active_scan_mask,
- 					       indio_dev->masklength);
--		ad5933_i2c_read(st->client,
-+		ret = ad5933_i2c_read(st->client,
- 				test_bit(1, indio_dev->active_scan_mask) ?
- 				AD5933_REG_REAL_DATA : AD5933_REG_IMAG_DATA,
- 				scan_count * 2, (u8 *)buf);
-+		if (ret)
-+			goto out;
- 
- 		if (scan_count == 2) {
- 			val[0] = be16_to_cpu(buf[0]);
-@@ -686,8 +690,7 @@ static void ad5933_work(struct work_struct *work)
- 	} else {
- 		/* no data available - try again later */
- 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
--		mutex_unlock(&indio_dev->mlock);
--		return;
-+		goto out;
- 	}
- 
- 	if (status & AD5933_STAT_SWEEP_DONE) {
-@@ -700,7 +703,7 @@ static void ad5933_work(struct work_struct *work)
- 		ad5933_cmd(st, AD5933_CTRL_INC_FREQ);
- 		schedule_delayed_work(&st->work, st->poll_time_jiffies);
- 	}
--
-+out:
- 	mutex_unlock(&indio_dev->mlock);
- }
- 
--- 
-2.9.0
