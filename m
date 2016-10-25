@@ -1,54 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:58351 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755630AbcJYP5N (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 11:57:13 -0400
-From: Arnd Bergmann <arnd@arndb.de>
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: cdc/ad7746: fix missing return value
-Date: Tue, 25 Oct 2016 17:56:23 +0200
-Message-Id: <20161025155646.64112-1-arnd@arndb.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41809 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753619AbcJYQOD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 12:14:03 -0400
+Subject: Re: [PATCH 1/2 v6] iio: gyro: Add MPU-3050 device tree bindings
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1477404954-3942-1-git-send-email-linus.walleij@linaro.org>
+Cc: devicetree@vger.kernel.org, Peter Rosin <peda@axentia.se>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <e6e8241e-d9db-a61d-8a9b-530e4ec3f28a@kernel.org>
+Date: Tue, 25 Oct 2016 17:13:57 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <1477404954-3942-1-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-As found by "gcc -Wmaybe-uninitialized", the latest change to the
-driver lacked an initalization for the return code in one of the
-added cases:
+On 25/10/16 15:15, Linus Walleij wrote:
+> This adds device tree bindings for the MPU-3050 gyroscope. Since it
+> is the first set of bindings for a gyroscope, the folder for it
+> is also created.
+> 
+> Cc: devicetree@vger.kernel.org
+> Cc: Peter Rosin <peda@axentia.se>
+> Acked-by: Rob Herring <robh@kernel.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Applied to the togreg branch of iio.git and pushed out as testing
+for the autobuilders to largely ignore this patch ;)
 
-drivers/staging/iio/cdc/ad7746.c: In function ‘ad7746_read_raw’:
-drivers/staging/iio/cdc/ad7746.c:655:2: error: ‘ret’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+Thanks
 
-This sets it to IIO_VAL_INT, which I think is what we want here.
-
-Fixes: 2296c0623eb7 ("staging: iio: cdc: ad7746: implement IIO_CHAN_INFO_SAMP_FREQ")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/staging/iio/cdc/ad7746.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index f41251ceeacd..a5828f9aa437 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -642,6 +642,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
- 		case IIO_VOLTAGE:
- 			*val = ad7746_vt_filter_rate_table[
- 					(chip->config >> 6) & 0x3][0];
-+			ret = IIO_VAL_INT;
- 			break;
- 		default:
- 			ret = -EINVAL;
--- 
-2.9.0
+Jonathan
+> ---
+> ChangeLog v5->v6:
+> - No changes, just reposting.
+> ChangeLog v4->v5:
+> - No changes, just reposting.
+> ChangeLog v3->v4:
+> - No changes, just reposting. If we agree on these bindings and since
+>   the dependent I2C bindings are merged, this patch should be merge
+>   material now I guess.
+> ChangeLog v2->v3:
+> - Augmented device tree bindings to reflect Peter Rosins now merged
+>   I2C gate bindings.
+> ChangeLog v1->v2:
+> - Not yet convered to use i2c-gate as I'm waiting for that
+>   patch set to stabilize.
+> ---
+>  .../bindings/iio/gyroscope/invensense,mpu3050.txt  | 46 ++++++++++++++++++++++
+>  1 file changed, 46 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+> new file mode 100644
+> index 000000000000..b0d3b59966bc
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/gyroscope/invensense,mpu3050.txt
+> @@ -0,0 +1,46 @@
+> +Invensense MPU-3050 Gyroscope device tree bindings
+> +
+> +Required properties:
+> +  - compatible : should be "invensense,mpu3050"
+> +  - reg : the I2C address of the sensor
+> +
+> +Optional properties:
+> +  - interrupt-parent : should be the phandle for the interrupt controller
+> +  - interrupts : interrupt mapping for the trigger interrupt from the
+> +    internal oscillator. The following IRQ modes are supported:
+> +    IRQ_TYPE_EDGE_RISING, IRQ_TYPE_EDGE_FALLING, IRQ_TYPE_LEVEL_HIGH and
+> +    IRQ_TYPE_LEVEL_LOW. The driver should detect and configure the hardware
+> +    for the desired interrupt type.
+> +  - vdd-supply : supply regulator for the main power voltage.
+> +  - vlogic-supply : supply regulator for the signal voltage.
+> +  - mount-matrix : see iio/mount-matrix.txt
+> +
+> +Optional subnodes:
+> +  - The MPU-3050 will pass through and forward the I2C signals from the
+> +    incoming I2C bus, alternatively drive traffic to a slave device (usually
+> +    an accelerometer) on its own initiative. Therefore is supports a subnode
+> +    i2c gate node. For details see: i2c/i2c-gate.txt
+> +
+> +Example:
+> +
+> +mpu3050@68 {
+> +	compatible = "invensense,mpu3050";
+> +	reg = <0x68>;
+> +	interrupt-parent = <&foo>;
+> +	interrupts = <12 IRQ_TYPE_EDGE_FALLING>;
+> +	vdd-supply = <&bar>;
+> +	vlogic-supply = <&baz>;
+> +
+> +	/* External I2C interface */
+> +	i2c-gate {
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		fnord@18 {
+> +			compatible = "fnord";
+> +			reg = <0x18>;
+> +			interrupt-parent = <&foo>;
+> +			interrupts = <13 IRQ_TYPE_EDGE_FALLING>;
+> +		};
+> +	};
+> +};
+> 
 
