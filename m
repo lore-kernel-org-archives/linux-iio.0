@@ -1,210 +1,173 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:54135 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752343AbcJVSiV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 22 Oct 2016 14:38:21 -0400
-Subject: Re: [PATCH v2] iio: light: ltr501: claim direct mode during raw
- writes
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20161016050209.GA15218@d830.WORKGROUP>
- <92aa6993-f6a2-a077-f7ff-a1c1f7fa99a6@kernel.org>
- <alpine.DEB.2.02.1610172307470.31400@pmeerw.net>
-Cc: Alison Schofield <amsfield22@gmail.com>, knaack.h@gmx.de,
-        lars@metafoo.de, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <eff0bc69-aee6-5346-9241-044707c9fad0@kernel.org>
-Date: Sat, 22 Oct 2016 19:38:18 +0100
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1610172307470.31400@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga07.intel.com ([134.134.136.100]:4041 "EHLO mga07.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932479AbcJYB1P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 24 Oct 2016 21:27:15 -0400
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH] iio: hid-sensors: Increase the precision of scale
+Date: Tue, 25 Oct 2016 01:30:07 +0000
+Message-Id: <1477359007-17240-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/10/16 22:10, Peter Meerwald-Stadler wrote:
-> On Sun, 16 Oct 2016, Jonathan Cameron wrote:
-> 
->> On 16/10/16 06:02, Alison Schofield wrote:
->>> Driver was checking for direct mode but not locking it.  Use
->>> claim/release helper functions to guarantee the device stays
->>> in direct mode during all raw write operations.
->>>
->>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
->>> ---
->>> Changes in v2:
->>>   Replaced 'goto release' statements with breaks.
->>>   The release helper function remains in the same place as in version
->>>   one of patch, but now break statements control the flow rather than
->>>   jumping out with goto's.
->>>   
->>>   I may have 'break'd more than needed at tail end of nested switch.
->>>   Tried to follow official c language definition.  
->>>
->> I'd have done it exactly the same
->>
->> Applied to the togreg branch of iio.git.  Again, Peter, if you have
->> a chance to look at this that would be great.  If not then not to worry!
-> 
-> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Added to both this and the raw reads patch (on basis I'm assuming you
-don't mind that one 
->  
->> Jonathan
->>>
->>>  drivers/iio/light/ltr501.c | 81 +++++++++++++++++++++++++++++-----------------
->>>  1 file changed, 51 insertions(+), 30 deletions(-)
->>>
->>> diff --git a/drivers/iio/light/ltr501.c b/drivers/iio/light/ltr501.c
->>> index 3afc53a..8f9d5cf 100644
->>> --- a/drivers/iio/light/ltr501.c
->>> +++ b/drivers/iio/light/ltr501.c
->>> @@ -729,8 +729,9 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
->>>  	int i, ret, freq_val, freq_val2;
->>>  	struct ltr501_chip_info *info = data->chip_info;
->>>  
->>> -	if (iio_buffer_enabled(indio_dev))
->>> -		return -EBUSY;
->>> +	ret = iio_device_claim_direct_mode(indio_dev);
->>> +	if (ret)
->>> +		return ret;
->>>  
->>>  	switch (mask) {
->>>  	case IIO_CHAN_INFO_SCALE:
->>> @@ -739,85 +740,105 @@ static int ltr501_write_raw(struct iio_dev *indio_dev,
->>>  			i = ltr501_get_gain_index(info->als_gain,
->>>  						  info->als_gain_tbl_size,
->>>  						  val, val2);
->>> -			if (i < 0)
->>> -				return -EINVAL;
->>> +			if (i < 0) {
->>> +				ret = -EINVAL;
->>> +				break;
->>> +			}
->>>  
->>>  			data->als_contr &= ~info->als_gain_mask;
->>>  			data->als_contr |= i << info->als_gain_shift;
->>>  
->>> -			return regmap_write(data->regmap, LTR501_ALS_CONTR,
->>> -					    data->als_contr);
->>> +			ret = regmap_write(data->regmap, LTR501_ALS_CONTR,
->>> +					   data->als_contr);
->>> +			break;
->>>  		case IIO_PROXIMITY:
->>>  			i = ltr501_get_gain_index(info->ps_gain,
->>>  						  info->ps_gain_tbl_size,
->>>  						  val, val2);
->>> -			if (i < 0)
->>> -				return -EINVAL;
->>> +			if (i < 0) {
->>> +				ret = -EINVAL;
->>> +				break;
->>> +			}
->>>  			data->ps_contr &= ~LTR501_CONTR_PS_GAIN_MASK;
->>>  			data->ps_contr |= i << LTR501_CONTR_PS_GAIN_SHIFT;
->>>  
->>> -			return regmap_write(data->regmap, LTR501_PS_CONTR,
->>> -					    data->ps_contr);
->>> +			ret = regmap_write(data->regmap, LTR501_PS_CONTR,
->>> +					   data->ps_contr);
->>> +			break;
->>>  		default:
->>> -			return -EINVAL;
->>> +			ret = -EINVAL;
->>> +			break;
->>>  		}
->>> +		break;
->>> +
->>>  	case IIO_CHAN_INFO_INT_TIME:
->>>  		switch (chan->type) {
->>>  		case IIO_INTENSITY:
->>> -			if (val != 0)
->>> -				return -EINVAL;
->>> +			if (val != 0) {
->>> +				ret = -EINVAL;
->>> +				break;
->>> +			}
->>>  			mutex_lock(&data->lock_als);
->>> -			i = ltr501_set_it_time(data, val2);
->>> +			ret = ltr501_set_it_time(data, val2);
->>>  			mutex_unlock(&data->lock_als);
->>> -			return i;
->>> +			break;
->>>  		default:
->>> -			return -EINVAL;
->>> +			ret = -EINVAL;
->>> +			break;
->>>  		}
->>> +		break;
->>> +
->>>  	case IIO_CHAN_INFO_SAMP_FREQ:
->>>  		switch (chan->type) {
->>>  		case IIO_INTENSITY:
->>>  			ret = ltr501_als_read_samp_freq(data, &freq_val,
->>>  							&freq_val2);
->>>  			if (ret < 0)
->>> -				return ret;
->>> +				break;
->>>  
->>>  			ret = ltr501_als_write_samp_freq(data, val, val2);
->>>  			if (ret < 0)
->>> -				return ret;
->>> +				break;
->>>  
->>>  			/* update persistence count when changing frequency */
->>>  			ret = ltr501_write_intr_prst(data, chan->type,
->>>  						     0, data->als_period);
->>>  
->>>  			if (ret < 0)
->>> -				return ltr501_als_write_samp_freq(data,
->>> -								  freq_val,
->>> -								  freq_val2);
->>> -			return ret;
->>> +				ret = ltr501_als_write_samp_freq(data, freq_val,
->>> +								 freq_val2);
->>> +			break;
->>>  		case IIO_PROXIMITY:
->>>  			ret = ltr501_ps_read_samp_freq(data, &freq_val,
->>>  						       &freq_val2);
->>>  			if (ret < 0)
->>> -				return ret;
->>> +				break;
->>>  
->>>  			ret = ltr501_ps_write_samp_freq(data, val, val2);
->>>  			if (ret < 0)
->>> -				return ret;
->>> +				break;
->>>  
->>>  			/* update persistence count when changing frequency */
->>>  			ret = ltr501_write_intr_prst(data, chan->type,
->>>  						     0, data->ps_period);
->>>  
->>>  			if (ret < 0)
->>> -				return ltr501_ps_write_samp_freq(data,
->>> -								 freq_val,
->>> -								 freq_val2);
->>> -			return ret;
->>> +				ret = ltr501_ps_write_samp_freq(data, freq_val,
->>> +								freq_val2);
->>> +			break;
->>>  		default:
->>> -			return -EINVAL;
->>> +			ret = -EINVAL;
->>> +			break;
->>>  		}
->>> +		break;
->>> +
->>> +	default:
->>> +		ret = -EINVAL;
->>> +		break;
->>>  	}
->>> -	return -EINVAL;
->>> +
->>> +	iio_device_release_direct_mode(indio_dev);
->>> +	return ret;
->>>  }
->>>  
->>>  static int ltr501_read_thresh(struct iio_dev *indio_dev,
->>>
->>
-> 
+While testing, it was observed that on some platforms the scale value
+from iio sysfs for gyroscope is always 0 (E.g. Yoga 260). This results
+in the final angular velocity component values to be zeros.
+
+This is caused by insufficient precision of scale value displayed in sysfs.
+If the precision is changed to nano from current micro, then this is
+sufficient to display the scale value on this platform.
+Since this can be a problem for all other HID sensors, increase scale
+precision of all HID sensors to nano from current micro.
+
+Results on Yoga 260:
+
+name		scale before	scale now
+--------------------------------------------
+gyro_3d		0.000000	0.000000174
+als			0.001000	0.001000000
+magn_3d		0.000001	0.000001000
+accel_3d		0.000009	0.000009806
+
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+---
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 56 +++++++++++-----------
+ 1 file changed, 28 insertions(+), 28 deletions(-)
+
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index dc33c1d..b5beea53 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -30,26 +30,26 @@
+ 	u32 usage_id;
+ 	int unit; /* 0 for default others from HID sensor spec */
+ 	int scale_val0; /* scale, whole number */
+-	int scale_val1; /* scale, fraction in micros */
++	int scale_val1; /* scale, fraction in nanos */
+ } unit_conversion[] = {
+-	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
++	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650000},
+ 	{HID_USAGE_SENSOR_ACCEL_3D,
+ 		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
+ 	{HID_USAGE_SENSOR_ACCEL_3D,
+-		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
++		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
+ 
+-	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
++	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453293},
+ 	{HID_USAGE_SENSOR_GYRO_3D,
+ 		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
+ 	{HID_USAGE_SENSOR_GYRO_3D,
+-		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
++		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453293},
+ 
+-	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
++	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+ 	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+ 
+-	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
++	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+-		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
++		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+ 		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
+ 
+@@ -57,7 +57,7 @@
+ 	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
+ 
+ 	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
+-	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000},
++	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000000},
+ };
+ 
+ static int pow_10(unsigned power)
+@@ -266,15 +266,15 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+ /*
+  * This fuction applies the unit exponent to the scale.
+  * For example:
+- * 9.806650 ->exp:2-> val0[980]val1[665000]
+- * 9.000806 ->exp:2-> val0[900]val1[80600]
+- * 0.174535 ->exp:2-> val0[17]val1[453500]
+- * 1.001745 ->exp:0-> val0[1]val1[1745]
+- * 1.001745 ->exp:2-> val0[100]val1[174500]
+- * 1.001745 ->exp:4-> val0[10017]val1[450000]
+- * 9.806650 ->exp:-2-> val0[0]val1[98066]
++ * 9.806650000 ->exp:2-> val0[980]val1[665000000]
++ * 9.000806000 ->exp:2-> val0[900]val1[80600000]
++ * 0.174535293 ->exp:2-> val0[17]val1[453529300]
++ * 1.001745329 ->exp:0-> val0[1]val1[1745329]
++ * 1.001745329 ->exp:2-> val0[100]val1[174532900]
++ * 1.001745329 ->exp:4-> val0[10017]val1[453290000]
++ * 9.806650000 ->exp:-2-> val0[0]val1[98066500]
+  */
+-static void adjust_exponent_micro(int *val0, int *val1, int scale0,
++static void adjust_exponent_nano(int *val0, int *val1, int scale0,
+ 				  int scale1, int exp)
+ {
+ 	int i;
+@@ -285,32 +285,32 @@ static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+ 	if (exp > 0) {
+ 		*val0 = scale0 * pow_10(exp);
+ 		res = 0;
+-		if (exp > 6) {
++		if (exp > 9) {
+ 			*val1 = 0;
+ 			return;
+ 		}
+ 		for (i = 0; i < exp; ++i) {
+-			x = scale1 / pow_10(5 - i);
++			x = scale1 / pow_10(8 - i);
+ 			res += (pow_10(exp - 1 - i) * x);
+-			scale1 = scale1 % pow_10(5 - i);
++			scale1 = scale1 % pow_10(8 - i);
+ 		}
+ 		*val0 += res;
+ 			*val1 = scale1 * pow_10(exp);
+ 	} else if (exp < 0) {
+ 		exp = abs(exp);
+-		if (exp > 6) {
++		if (exp > 9) {
+ 			*val0 = *val1 = 0;
+ 			return;
+ 		}
+ 		*val0 = scale0 / pow_10(exp);
+ 		rem = scale0 % pow_10(exp);
+ 		res = 0;
+-		for (i = 0; i < (6 - exp); ++i) {
+-			x = scale1 / pow_10(5 - i);
+-			res += (pow_10(5 - exp - i) * x);
+-			scale1 = scale1 % pow_10(5 - i);
++		for (i = 0; i < (9 - exp); ++i) {
++			x = scale1 / pow_10(8 - i);
++			res += (pow_10(8 - exp - i) * x);
++			scale1 = scale1 % pow_10(8 - i);
+ 		}
+-		*val1 = rem * pow_10(6 - exp) + res;
++		*val1 = rem * pow_10(9 - exp) + res;
+ 	} else {
+ 		*val0 = scale0;
+ 		*val1 = scale1;
+@@ -332,14 +332,14 @@ int hid_sensor_format_scale(u32 usage_id,
+ 			unit_conversion[i].unit == attr_info->units) {
+ 			exp  = hid_sensor_convert_exponent(
+ 						attr_info->unit_expo);
+-			adjust_exponent_micro(val0, val1,
++			adjust_exponent_nano(val0, val1,
+ 					unit_conversion[i].scale_val0,
+ 					unit_conversion[i].scale_val1, exp);
+ 			break;
+ 		}
+ 	}
+ 
+-	return IIO_VAL_INT_PLUS_MICRO;
++	return IIO_VAL_INT_PLUS_NANO;
+ }
+ EXPORT_SYMBOL(hid_sensor_format_scale);
+ 
+-- 
+1.9.1
 
