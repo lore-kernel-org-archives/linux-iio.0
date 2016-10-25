@@ -1,70 +1,113 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from hqemgate16.nvidia.com ([216.228.121.65]:1649 "EHLO
-        hqemgate16.nvidia.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932416AbcJTRQl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 20 Oct 2016 13:16:41 -0400
-Message-ID: <5808F86A.4080800@nvidia.com>
-Date: Thu, 20 Oct 2016 22:31:30 +0530
-From: Laxman Dewangan <ldewangan@nvidia.com>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:13440 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S941754AbcJYQ05 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 12:26:57 -0400
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
+Subject: [PATCH 08/10] ARM: dts: stm32f429: Add adc support
+Date: Tue, 25 Oct 2016 18:25:20 +0200
+Message-ID: <1477412722-24061-9-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <1477412722-24061-1-git-send-email-fabrice.gasnier@st.com>
+References: <1477412722-24061-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-To: =?UTF-8?B?UGF3ZcWCIEphcm9zeg==?= <paweljarosz3691@gmail.com>
-CC: <linux-iio@vger.kernel.org>, <rui.zhang@intel.com>,
-        <edubezval@gmail.com>
-Subject: Re: [PATCH] thermal: generic-adc: Fix linear temperature approximation
-References: <20161018193147.GA14745@vaio-ubuntu> <5808BB3D.2020201@nvidia.com> <8d2a5917-30b4-d9eb-304a-b96780de9f4c@gmail.com> <5808E78B.4060109@nvidia.com> <0412f751-fb88-7b9e-8a8c-501e019de774@gmail.com>
-In-Reply-To: <0412f751-fb88-7b9e-8a8c-501e019de774@gmail.com>
-Content-Type: text/plain; charset="UTF-8"; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Add adc support & pinctrl analog phandle (adc3_in8) to stm32f429.
 
-On Thursday 20 October 2016 10:40 PM, Paweł Jarosz wrote:
->
->> Yes please send patch to replace the 1000 with the temp1 - temp2 as 
->> what you did in your original patch.
->> This will fix the non-sequenced (un-equally spaced) temperature table.
->
-> replacing 1000 with (temp1 - temp2) is not enough as for example for 
-> val = 9 and table
->
-> <7000 8
->  9000 10>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ arch/arm/boot/dts/stm32f429.dtsi | 62 ++++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 62 insertions(+)
 
+diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
+index 336ee4f..3fcd941 100644
+--- a/arch/arm/boot/dts/stm32f429.dtsi
++++ b/arch/arm/boot/dts/stm32f429.dtsi
+@@ -172,6 +172,62 @@
+ 			status = "disabled";
+ 		};
+ 
++		adc: adc@40012000 {
++			compatible = "st,stm32f4-adc";
++			reg = <0x40012000 0x400>;
++			interrupts = <18>;
++			clocks = <&rcc 0 168>;
++			clock-names = "adc";
++			status = "disabled";
++
++			#address-cells = <1>;
++			#size-cells = <0>;
++			adc1: adc1-master@0 {
++				#io-channel-cells = <1>;
++				reg = <0x0>;
++				clocks = <&rcc 0 168>;
++				status = "disabled";
++			};
++
++			jadc1: adc1-injected@0 {
++				#io-channel-cells = <1>;
++				reg = <0x0>;
++				clocks = <&rcc 0 168>;
++				st,injected;
++				status = "disabled";
++			};
++
++			adc2: adc2-slave@100 {
++				#io-channel-cells = <1>;
++				reg = <0x100>;
++				clocks = <&rcc 0 169>;
++				status = "disabled";
++			};
++
++			jadc2: adc2-injected@100 {
++				#io-channel-cells = <1>;
++				reg = <0x100>;
++				clocks = <&rcc 0 169>;
++				st,injected;
++				status = "disabled";
++			};
++
++			adc3: adc3-slave@200 {
++				#io-channel-cells = <1>;
++				reg = <0x200>;
++				clocks = <&rcc 0 170>;
++				status = "disabled";
++			};
++
++			jadc3: adc3-injected@200 {
++				#io-channel-cells = <1>;
++				reg = <0x200>;
++				clocks = <&rcc 0 170>;
++				st,injected;
++				status = "disabled";
++			};
++		};
++
+ 		syscfg: system-config@40013800 {
+ 			compatible = "syscon";
+ 			reg = <0x40013800 0x400>;
+@@ -332,6 +388,12 @@
+ 					slew-rate = <2>;
+ 				};
+ 			};
++
++			adc3_in8_pin: adc@0 {
++				pins {
++					pinmux = <STM32F429_PF10_FUNC_ANALOG>;
++				};
++			};
+ 		};
+ 
+ 		rcc: rcc@40023810 {
+-- 
+1.9.1
 
-It is Negative Coefficient Thermistor (NCT) and so adc reads are different.
-Lower temp gives higher value.
-
-So table should be
-
-<7000 10
-9000 8>;
-
-temp1 = gti->lookup_table[2 * i];
-temp2 = gti->lookup_table[2 * i - 2];
-
-and then use in following equation.
-
->
->     adc_hi = gti->lookup_table[2 * i - 1];
->     adc_lo = gti->lookup_table[2 * i + 1];
->     temp = gti->lookup_table[2 * i];
->     temp -= (val - adc_lo) * (temp1 - temp2) / (adc_hi - adc_lo);
->
->
-
-> adc_hi = 8
-> adc_lo = 10
-> temp = 9000 - (9 - 10) * (7000 - 9000) / (8 - 10)
-> temp = 9000 - (-1) * (-2000) / (-2)
-> temp = 9000 - (-1000) = 10000
->
-> and for val = 9 temp should be 8000.
->
->
-
------------------------------------------------------------------------------------
-This email message is for the sole use of the intended recipient(s) and may contain
-confidential information.  Any unauthorized review, use, disclosure or distribution
-is prohibited.  If you are not the intended recipient, please contact the sender by
-reply email and destroy all copies of the original message.
------------------------------------------------------------------------------------
