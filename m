@@ -1,150 +1,114 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:43720 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S942191AbcJZNBz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 09:01:55 -0400
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: linux-arm-msm@vger.kernel.org, smohanad@codeaurora.org,
-        mgautam@codeaurora.org, sivaa@codeaurora.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
-        Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V2 1/2] iio: adc: spmi-vadc: Update changes to support reporting of Raw adc code.
-Date: Wed, 26 Oct 2016 18:30:50 +0530
-Message-Id: <1477486851-24700-2-git-send-email-rphani@codeaurora.org>
-In-Reply-To: <1477486851-24700-1-git-send-email-rphani@codeaurora.org>
-References: <1477486851-24700-1-git-send-email-rphani@codeaurora.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hns@goldelico.com>
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Michael Welling <mwelling@ieee.org>,
+	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	Igor Grinberg <grinberg@compulab.co.il>,
+	Sebastian Reichel <sre@kernel.org>,
+	"Andrew F. Davis" <afd@ti.com>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Sangwon Jee <jeesw@melfas.com>
+Cc: linux-input@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	letux-kernel@openphoenux.org,
+	linux-iio@vger.kernel.org,
+	kernel@pyra-handheld.com
+Subject: [PATCH v5 0/8] drivers: touchscreen: tsc2007 and ads7846/tsc2046 improvements (use common touchscreen bindings, pre-calibration, spi fix and provide iio raw values)
+Date: Tue, 25 Oct 2016 21:26:14 +0200
+Message-Id: <cover.1477423581.git.hns@goldelico.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Update changes to support reporting of Raw adc code.
+Changes V5:
+* ads7846: remove an empty line (suggested by Andrew F. Davis <afd@ti.com>)
+* ads7846: remove MODULE_ALIAS for SPI (suggested by Andrew F. Davis <afd@ti.com>)
+* tsc2007: fix a bug from swapping patch 3/n and patch 4/n (found by kbuid test robot)
+* refactored tsc2007 into tsc2007_core and tsc2007_iio (asked for by Jonathan Cameron <jic23@kernel.org>)
 
-Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
----
- drivers/iio/adc/qcom-spmi-vadc.c | 54 +++++++++++++++++++++-------------------
- 1 file changed, 28 insertions(+), 26 deletions(-)
+2016-10-17 16:00:02: Changes V4:
+* fix a merge/squash issue resulting in a non-bisectable patch set (suggested by kbuid test robot)
+* remove some unnecessary #include (suggested by Jonathan Cameron <jic23@kernel.org>)
+* make the iio extension depend on CONFIG_IIO rather than selecting it (suggested by Jonathan Cameron <jic23@kernel.org>)
+* swapped patch 3/n and patch 4/n to remove internal dependency
 
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index c2babe5..ff4d549 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -1,5 +1,5 @@
- /*
-- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-+ * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License version 2 and
-@@ -84,7 +84,7 @@
- #define VADC_MAX_ADC_CODE			0xa800
- 
- #define VADC_ABSOLUTE_RANGE_UV			625000
--#define VADC_RATIOMETRIC_RANGE_UV		1800000
-+#define VADC_RATIOMETRIC_RANGE			1800
- 
- #define VADC_DEF_PRESCALING			0 /* 1:1 */
- #define VADC_DEF_DECIMATION			0 /* 512 */
-@@ -418,7 +418,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	u16 read_1, read_2;
- 	int ret;
- 
--	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
-+	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
- 	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
- 
- 	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-@@ -468,21 +468,30 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	return ret;
- }
- 
--static s32 vadc_calibrate(struct vadc_priv *vadc,
--			  const struct vadc_channel_prop *prop, u16 adc_code)
-+static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
-+			     const struct vadc_channel_prop *prop,
-+			     s64 *scale_voltage)
- {
--	const struct vadc_prescale_ratio *prescale;
--	s64 voltage;
-+	*scale_voltage = (adc_code -
-+		vadc->graph[prop->calibration].gnd);
-+	*scale_voltage *= vadc->graph[prop->calibration].dx;
-+	*scale_voltage = div64_s64(*scale_voltage,
-+		vadc->graph[prop->calibration].dy);
-+	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-+		*scale_voltage +=
-+		vadc->graph[prop->calibration].dx;
- 
--	voltage = adc_code - vadc->graph[prop->calibration].gnd;
--	voltage *= vadc->graph[prop->calibration].dx;
--	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
-+	if (*scale_voltage < 0)
-+		*scale_voltage = 0;
-+}
- 
--	if (prop->calibration == VADC_CALIB_ABSOLUTE)
--		voltage += vadc->graph[prop->calibration].dx;
-+static s64 vadc_scale_fn(struct vadc_priv *vadc,
-+			 const struct vadc_channel_prop *prop, u16 adc_code)
-+{
-+	const struct vadc_prescale_ratio *prescale;
-+	s64 voltage = 0;
- 
--	if (voltage < 0)
--		voltage = 0;
-+	vadc_scale_calib(vadc, adc_code, prop, &voltage);
- 
- 	prescale = &vadc_prescale_ratios[prop->prescale];
- 
-@@ -552,11 +561,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			break;
- 
--		*val = vadc_calibrate(vadc, prop, adc_code);
-+		*val = vadc_scale_fn(vadc, prop, adc_code);
- 
--		/* 2mV/K, return milli Celsius */
--		*val /= 2;
--		*val -= KELVINMIL_CELSIUSMIL;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_RAW:
- 		prop = &vadc->chan_props[chan->address];
-@@ -564,12 +570,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			break;
- 
--		*val = vadc_calibrate(vadc, prop, adc_code);
-+		*val = (int)adc_code;
- 		return IIO_VAL_INT;
--	case IIO_CHAN_INFO_SCALE:
--		*val = 0;
--		*val2 = 1000;
--		return IIO_VAL_INT_PLUS_MICRO;
- 	default:
- 		ret = -EINVAL;
- 		break;
-@@ -616,8 +618,8 @@ struct vadc_channels {
- 	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
- 
- #define VADC_CHAN_VOLT(_dname, _pre)					\
--	VADC_CHAN(_dname, IIO_VOLTAGE,					\
--		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
-+	VADC_CHAN(_dname, IIO_VOLTAGE,				\
-+		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
- 		  _pre)							\
- 
- /*
-@@ -850,9 +852,9 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- 
- 		iio_chan->channel = prop.channel;
- 		iio_chan->datasheet_name = vadc_chan->datasheet_name;
-+		iio_chan->extend_name = child->name;
- 		iio_chan->info_mask_separate = vadc_chan->info_mask;
- 		iio_chan->type = vadc_chan->type;
--		iio_chan->indexed = 1;
- 		iio_chan->address = index++;
- 
- 		iio_chan++;
+2016-09-23 14:41:23: Changes V3:
+* fix an issue with swapping
+* remove hard clipping to min/max rectangle - some systems expect to handle negative coordinates
+* make use of commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+
+2015-11-13 21:36:07: Changes V2:
+* add a patch to make drivers still recognise the old "ti,swap-xy" property (suggested by Rob Herring)
+
+2015-11-06 16:14:53: This patch series improves the drivers for the tsc2007 and
+ads7846/tsc2046 touchscreen controllers which are e.g. used by the GTA04
+OpenPandora and Pyra devices.
+
+New common bindings have been defined by
+commit b98abe52fa8e ("Input: add common DT binding for touchscreens"):
+
+	Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+which also defines a helper function to parse the DT. These new parameters
+allow to specify the fuzz factors (jitter suppression), inversion of x or y axis and
+swapping of x and y to achieve inversion and rotation so that the touch
+coordinate axes match the natural orientation of the display panel.
+
+Another improvement is to better use the min/max ADC values and
+scale to the screen size as defined by the DT. This allows to coarsely
+calibrate the touch to match the LCD to which it is glued on so that the
+touch can quite precisely be operated before any user-space fine-calibration
+can be (and needs to be) started.
+
+For the adc7846 we fix an issue with the spi module table.
+
+Finally we add an iio interface for the AUX and temperature ADC channels of
+the tsc2007 and also provide the touch screen raw values. This allows to read
+an optional ambient light sensor installed on the gta04 board and improves
+calibration and hardware monitoring.
+
+
+H. Nikolaus Schaller (8):
+  drivers:input:tsc2007: add new common binding names, pre-calibration,
+    flipping and rotation
+  drivers:input:tsc2007: send pendown and penup only once like
+    ads7846(+tsc2046) driver does
+  drivers:input:tsc2007: check for presence and power down tsc2007
+    during probe
+  drivers:input:tsc2007: add iio interface to read external ADC input
+    and temperature
+  DT:omap3+tsc2007: use new common touchscreen bindings
+  drivers:input:ads7846(+tsc2046): add new common binding names,
+    pre-calibration and flipping
+  drivers:input:ads7846(+tsc2046): fix spi module table
+  DT:omap3+ads7846: use new common touchscreen bindings
+
+ .../devicetree/bindings/input/ads7846.txt          |   9 +-
+ .../bindings/input/touchscreen/tsc2007.txt         |  20 +-
+ arch/arm/boot/dts/omap3-gta04.dtsi                 |  25 ++-
+ arch/arm/boot/dts/omap3-lilly-a83x.dtsi            |   2 +-
+ arch/arm/boot/dts/omap3-pandora-common.dtsi        |  17 +-
+ .../boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi    |   3 +-
+ drivers/input/touchscreen/Makefile                 |   2 +
+ drivers/input/touchscreen/ads7846.c                |  71 ++++--
+ drivers/input/touchscreen/tsc2007.h                | 124 +++++++++++
+ .../touchscreen/{tsc2007.c => tsc2007_core.c}      | 240 ++++++++++++---------
+ drivers/input/touchscreen/tsc2007_iio.c            | 162 ++++++++++++++
+ include/linux/i2c/tsc2007.h                        |   8 +
+ 12 files changed, 556 insertions(+), 127 deletions(-)
+ create mode 100644 drivers/input/touchscreen/tsc2007.h
+ rename drivers/input/touchscreen/{tsc2007.c => tsc2007_core.c} (70%)
+ create mode 100644 drivers/input/touchscreen/tsc2007_iio.c
+
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+2.7.3
