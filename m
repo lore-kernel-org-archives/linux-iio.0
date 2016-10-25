@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.177]:16213 "EHLO
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.179]:20673 "EHLO
         mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752842AbcJYT0r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 15:26:47 -0400
+        with ESMTP id S1753871AbcJYT0o (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 15:26:44 -0400
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Rob Herring <robh+dt@kernel.org>,
@@ -26,9 +26,9 @@ Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
         letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
         kernel@pyra-handheld.com
-Subject: [PATCH v5 7/8] drivers:input:ads7846(+tsc2046): fix spi module table
-Date: Tue, 25 Oct 2016 21:26:21 +0200
-Message-Id: <02ab640b7496faa121c405f9fdae314d0d445185.1477423581.git.hns@goldelico.com>
+Subject: [PATCH v5 2/8] drivers:input:tsc2007: send pendown and penup only once like ads7846(+tsc2046) driver does
+Date: Tue, 25 Oct 2016 21:26:16 +0200
+Message-Id: <5e961a92f11b1509bd0effb96ef560f19839aa9d.1477423581.git.hns@goldelico.com>
 In-Reply-To: <cover.1477423581.git.hns@goldelico.com>
 References: <cover.1477423581.git.hns@goldelico.com>
 In-Reply-To: <cover.1477423581.git.hns@goldelico.com>
@@ -36,40 +36,55 @@ References: <cover.1477423581.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix module table so that the driver is loaded if compiled
-as module and requested by DT.
+this should reduce unnecessary input events.
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/input/touchscreen/ads7846.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/input/touchscreen/tsc2007.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
-index 400e421..50c85d2 100644
---- a/drivers/input/touchscreen/ads7846.c
-+++ b/drivers/input/touchscreen/ads7846.c
-@@ -1532,6 +1532,16 @@ static int ads7846_remove(struct spi_device *spi)
- 	return 0;
- }
+diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+index c1d9593..e9d5086 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -94,6 +94,7 @@ struct tsc2007 {
  
-+static const struct spi_device_id ads7846_idtable[] = {
-+	{ "tsc2046", 0 },
-+	{ "ads7843", 0 },
-+	{ "ads7845", 0 },
-+	{ "ads7846", 0 },
-+	{ "ads7873", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ads7846_idtable);
+ 	wait_queue_head_t	wait;
+ 	bool			stopped;
++	bool			pendown;
+ 
+ 	int			(*get_pendown_state)(struct device *);
+ 	void			(*clear_penirq)(void);
+@@ -227,7 +228,11 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 				sx, sy, rt);
+ 
+ 			/* report event */
+-			input_report_key(input, BTN_TOUCH, 1);
++			if (!ts->pendown) {
++				input_report_key(input, BTN_TOUCH, 1);
++				ts->pendown = true;
++			}
 +
- static struct spi_driver ads7846_driver = {
- 	.driver = {
- 		.name	= "ads7846",
-@@ -1546,4 +1556,3 @@ module_spi_driver(ads7846_driver);
+ 			touchscreen_report_pos(ts->input, &ts->prop,
+ 						(unsigned int) sx,
+ 						(unsigned int) sy,
+@@ -250,9 +255,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
  
- MODULE_DESCRIPTION("ADS7846 TouchScreen Driver");
- MODULE_LICENSE("GPL");
--MODULE_ALIAS("spi:ads7846");
+ 	dev_dbg(&ts->client->dev, "UP\n");
+ 
+-	input_report_key(input, BTN_TOUCH, 0);
+-	input_report_abs(input, ABS_PRESSURE, 0);
+-	input_sync(input);
++	if (ts->pendown) {
++		input_report_key(input, BTN_TOUCH, 0);
++		input_report_abs(input, ABS_PRESSURE, 0);
++		input_sync(input);
++
++		ts->pendown = false;
++	}
+ 
+ 	if (ts->clear_penirq)
+ 		ts->clear_penirq();
 -- 
 2.7.3
 
