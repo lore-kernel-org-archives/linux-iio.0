@@ -1,44 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from youngberry.canonical.com ([91.189.89.112]:43471 "EHLO
-        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753282AbcJYUFQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 25 Oct 2016 16:05:16 -0400
-Subject: Re: [PATCH] iio: maxim_thermocouple: return -EINVAL on invalid read
- size
-To: Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-wm0-f48.google.com ([74.125.82.48]:38190 "EHLO
+        mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752027AbcJZIpi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 04:45:38 -0400
+Received: by mail-wm0-f48.google.com with SMTP id d128so72899815wmf.1
+        for <linux-iio@vger.kernel.org>; Wed, 26 Oct 2016 01:45:37 -0700 (PDT)
+Date: Wed, 26 Oct 2016 09:48:11 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: John Syne <john3909@gmail.com>
+Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        sayli karnik <karniksayli1995@gmail.com>,
-        Matt Ranostay <mranostay@gmail.com>,
-        Wei Yongjun <weiyongjun1@huawei.com>, linux-iio@vger.kernel.org
-References: <20161025190408.5012-1-colin.king@canonical.com>
- <ed223a81-32c1-d339-b4e1-16b8fca88b2e@metafoo.de>
-Cc: linux-kernel@vger.kernel.org
-From: Colin Ian King <colin.king@canonical.com>
-Message-ID: <08aed45b-08a0-27be-d8ee-c051ef05bfe6@canonical.com>
-Date: Tue, 25 Oct 2016 21:05:12 +0100
+        Vignesh R <vigneshr@ti.com>, linux-omap@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>
+Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock
+ to 24MHz
+Message-ID: <20161026084811.GI8574@dell>
+References: <20161024060226.4170-1-mugunthanvnm@ti.com>
+ <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
+ <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
+ <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
+ <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com>
+ <20161025063847.GD8574@dell>
+ <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <ed223a81-32c1-d339-b4e1-16b8fca88b2e@metafoo.de>
 Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/10/16 20:11, Lars-Peter Clausen wrote:
-> On 10/25/2016 09:04 PM, Colin King wrote:
->> From: Colin Ian King <colin.king@canonical.com>
->>
->> In the case that the read size is not 2 or 4 bytes
->> then maxim_thermocouple_read is not initializing ret and
->> hence may return early with a bogus error return or
->> just through to return with a bogos unread value in *val.
->> Fix this by setting ret to -EINVAL for invalid (unhandled)
->> read sizes.
->>
->> Signed-off-by: Colin Ian King <colin.king@canonical.com>
-> 
-> Again, Arnd already took the prize, https://lkml.org/lkml/2016/10/25/518
-> 
-Not my day :-)
+On Tue, 25 Oct 2016, John Syne wrote:
+> > On Oct 24, 2016, at 11:38 PM, Lee Jones <lee.jones@linaro.org> wrote:
+> > On Mon, 24 Oct 2016, John Syne wrote:
+> >>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> wrote:
+> >>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
+> >>>> 
+> >>>> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
+> >>>>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
+> >>>>>>> 
+> >>>>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
+> >>>>>>> sampling rates goes up from 100K samples per second to 800K
+> >>>>>>> samples per second on AM335x and AM437x SoC.
+> >>>>>>> 
+> >>>>>>> Also increase opendelay for touchscreen configuration to
+> >>>>>>> equalize the increase in ADC reference clock frequency,
+> >>>>>>> which results in the same amount touch events reported via
+> >>>>>>> evtest on AM335x GP EVM.
+> >>>>>>> 
+> >>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
+> >>>>>>> ---
+> >>>>>>> 
+> >>>>>>> This patch depends on ADC DMA patch series [1]
+> >>>>>>> 
+> >>>>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
+> >>>>>>> seeing fifo overflow as CPU is not able to pull the ADC samples.
+> >>>>>>> This answers that DMA support is must for ADC to consume the
+> >>>>>>> samples generated at 24MHz with no open, step delay or
+> >>>>>>> averaging with patch [2].
+> >>>>>>> 
+> >>>>>>> Measured the performance with the iio_generic_buffer with the
+> >>>>>>> patch [3] applied
+> >>>>>>> 
+> >>>>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
+> >>>>>>> [2] - http://pastebin.ubuntu.com/23357935/
+> >>>>>>> [3] - http://pastebin.ubuntu.com/23357939/
+> >>>>>>> 
+> >>>>>>> ---
+> >>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
+> >>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+> >>>>>>> 
+> >>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+> >>>>>>> index b9a53e0..96c4207 100644
+> >>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+> >>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+> >>>>>>> @@ -90,7 +90,7 @@
+> >>>>>>> /* Delay register */
+> >>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
+> >>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
+> >>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
+> >>>>> Wouldn’t this be better to add this to the devicetree?
+> >>>>> 
+> >>>>> 	ti,chan-step-avg = <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
+> >>>>> 	ti,chan-step-opendelay = <0x500 0x500 0x500 0x500 0x500 0x500 0x500>;
+> >>>>> 	ti,chan-step-sampledelay = <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
+> >>>> 
+> >>>> For a touch screen, there is not need to change in these parameter
+> >>>> settings, so my opinion is to keep it as is. Or am I missing something?
+> >>> I was thinking that if you are using this driver as an ADC, you may want the flexibility to make these changes in the DT. I’m doing this by connecting sensors to the ADC inputs. I’m not using this driver for a touchscreen. 
+> >> 
+> >> Here is a DT overlay were this gets using on the BeagleBoneBlack.  
+> >> 
+> >> https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-ADC-00A0.dts
+> >> 
+> >> Besides, these DT features are already implemented in the driver so it is just a matter of adding these entries to the am33xx.dtsi & am4372.dtsi, which you modified in this patch series.
+> > 
+> > This looks like configuration, no?
+> > 
+> > DT should be used to describe the hardware.
+> You may be right, but how is this different to setting the baud rate on a serial channel or sampling rate on a audio channel? Looking through the DT, there are many configuration settings, so I’m not sure what is the correct way to handle this. Surely it is better to handle this in DT vs hard coding these settings?
 
-Colin
+I think setting the UART baud rate is also an invalid DT entry.
+
+It's okay to list all of the options in DT, but to actually select
+one, that should be done either in userspace or as a kernel option.
+Perhaps as a Kconfig selection.
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
