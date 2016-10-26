@@ -1,114 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:38190 "EHLO
-        mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752027AbcJZIpi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 04:45:38 -0400
-Received: by mail-wm0-f48.google.com with SMTP id d128so72899815wmf.1
-        for <linux-iio@vger.kernel.org>; Wed, 26 Oct 2016 01:45:37 -0700 (PDT)
-Date: Wed, 26 Oct 2016 09:48:11 +0100
-From: Lee Jones <lee.jones@linaro.org>
-To: John Syne <john3909@gmail.com>
-Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Vignesh R <vigneshr@ti.com>, linux-omap@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock
- to 24MHz
-Message-ID: <20161026084811.GI8574@dell>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com>
- <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
- <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
- <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
- <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com>
- <20161025063847.GD8574@dell>
- <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com>
+Received: from smtp.codeaurora.org ([198.145.29.96]:53478 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755525AbcJZOly (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 10:41:54 -0400
+From: Rama Krishna Phani A <rphani@codeaurora.org>
+To: linux-iio@vger.kernel.org, jic23@kernel.org,
+        devicetree@vger.kernel.org
+Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
+        Rama Krishna Phani A <rphani@codeaurora.org>
+Subject: [PATCH V3 1/2] iio: adc: spmi-vadc: Update changes to support reporting of Raw adc code.
+Date: Wed, 26 Oct 2016 20:11:26 +0530
+Message-Id: <1477492887-1663-2-git-send-email-rphani@codeaurora.org>
+In-Reply-To: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
+References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 25 Oct 2016, John Syne wrote:
-> > On Oct 24, 2016, at 11:38 PM, Lee Jones <lee.jones@linaro.org> wrote:
-> > On Mon, 24 Oct 2016, John Syne wrote:
-> >>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> wrote:
-> >>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
-> >>>> 
-> >>>> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
-> >>>>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N <mugunthanvnm@ti.com> wrote:
-> >>>>>>> 
-> >>>>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
-> >>>>>>> sampling rates goes up from 100K samples per second to 800K
-> >>>>>>> samples per second on AM335x and AM437x SoC.
-> >>>>>>> 
-> >>>>>>> Also increase opendelay for touchscreen configuration to
-> >>>>>>> equalize the increase in ADC reference clock frequency,
-> >>>>>>> which results in the same amount touch events reported via
-> >>>>>>> evtest on AM335x GP EVM.
-> >>>>>>> 
-> >>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
-> >>>>>>> ---
-> >>>>>>> 
-> >>>>>>> This patch depends on ADC DMA patch series [1]
-> >>>>>>> 
-> >>>>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
-> >>>>>>> seeing fifo overflow as CPU is not able to pull the ADC samples.
-> >>>>>>> This answers that DMA support is must for ADC to consume the
-> >>>>>>> samples generated at 24MHz with no open, step delay or
-> >>>>>>> averaging with patch [2].
-> >>>>>>> 
-> >>>>>>> Measured the performance with the iio_generic_buffer with the
-> >>>>>>> patch [3] applied
-> >>>>>>> 
-> >>>>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
-> >>>>>>> [2] - http://pastebin.ubuntu.com/23357935/
-> >>>>>>> [3] - http://pastebin.ubuntu.com/23357939/
-> >>>>>>> 
-> >>>>>>> ---
-> >>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
-> >>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
-> >>>>>>> 
-> >>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
-> >>>>>>> index b9a53e0..96c4207 100644
-> >>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
-> >>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
-> >>>>>>> @@ -90,7 +90,7 @@
-> >>>>>>> /* Delay register */
-> >>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
-> >>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
-> >>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
-> >>>>> Wouldn’t this be better to add this to the devicetree?
-> >>>>> 
-> >>>>> 	ti,chan-step-avg = <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
-> >>>>> 	ti,chan-step-opendelay = <0x500 0x500 0x500 0x500 0x500 0x500 0x500>;
-> >>>>> 	ti,chan-step-sampledelay = <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
-> >>>> 
-> >>>> For a touch screen, there is not need to change in these parameter
-> >>>> settings, so my opinion is to keep it as is. Or am I missing something?
-> >>> I was thinking that if you are using this driver as an ADC, you may want the flexibility to make these changes in the DT. I’m doing this by connecting sensors to the ADC inputs. I’m not using this driver for a touchscreen. 
-> >> 
-> >> Here is a DT overlay were this gets using on the BeagleBoneBlack.  
-> >> 
-> >> https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-ADC-00A0.dts
-> >> 
-> >> Besides, these DT features are already implemented in the driver so it is just a matter of adding these entries to the am33xx.dtsi & am4372.dtsi, which you modified in this patch series.
-> > 
-> > This looks like configuration, no?
-> > 
-> > DT should be used to describe the hardware.
-> You may be right, but how is this different to setting the baud rate on a serial channel or sampling rate on a audio channel? Looking through the DT, there are many configuration settings, so I’m not sure what is the correct way to handle this. Surely it is better to handle this in DT vs hard coding these settings?
+Logic to convert adc code to voltage is generic across all channels.
+Different scaling can be done on the obtained voltage to report in physical
+units. Implement separate function for generic conversion logic.
+Scaling functionality can be changed per channel. Update changes to support
+reporting of Raw adc code.
 
-I think setting the UART baud rate is also an invalid DT entry.
+Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+---
+ drivers/iio/adc/qcom-spmi-vadc.c | 54 +++++++++++++++++++++-------------------
+ 1 file changed, 28 insertions(+), 26 deletions(-)
 
-It's okay to list all of the options in DT, but to actually select
-one, that should be done either in userspace or as a kernel option.
-Perhaps as a Kconfig selection.
-
+diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+index c2babe5..ff4d549 100644
+--- a/drivers/iio/adc/qcom-spmi-vadc.c
++++ b/drivers/iio/adc/qcom-spmi-vadc.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 and
+@@ -84,7 +84,7 @@
+ #define VADC_MAX_ADC_CODE			0xa800
+ 
+ #define VADC_ABSOLUTE_RANGE_UV			625000
+-#define VADC_RATIOMETRIC_RANGE_UV		1800000
++#define VADC_RATIOMETRIC_RANGE			1800
+ 
+ #define VADC_DEF_PRESCALING			0 /* 1:1 */
+ #define VADC_DEF_DECIMATION			0 /* 512 */
+@@ -418,7 +418,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ 	u16 read_1, read_2;
+ 	int ret;
+ 
+-	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
++	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
+ 	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+ 
+ 	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+@@ -468,21 +468,30 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ 	return ret;
+ }
+ 
+-static s32 vadc_calibrate(struct vadc_priv *vadc,
+-			  const struct vadc_channel_prop *prop, u16 adc_code)
++static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
++			     const struct vadc_channel_prop *prop,
++			     s64 *scale_voltage)
+ {
+-	const struct vadc_prescale_ratio *prescale;
+-	s64 voltage;
++	*scale_voltage = (adc_code -
++		vadc->graph[prop->calibration].gnd);
++	*scale_voltage *= vadc->graph[prop->calibration].dx;
++	*scale_voltage = div64_s64(*scale_voltage,
++		vadc->graph[prop->calibration].dy);
++	if (prop->calibration == VADC_CALIB_ABSOLUTE)
++		*scale_voltage +=
++		vadc->graph[prop->calibration].dx;
+ 
+-	voltage = adc_code - vadc->graph[prop->calibration].gnd;
+-	voltage *= vadc->graph[prop->calibration].dx;
+-	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
++	if (*scale_voltage < 0)
++		*scale_voltage = 0;
++}
+ 
+-	if (prop->calibration == VADC_CALIB_ABSOLUTE)
+-		voltage += vadc->graph[prop->calibration].dx;
++static s64 vadc_scale_fn(struct vadc_priv *vadc,
++			 const struct vadc_channel_prop *prop, u16 adc_code)
++{
++	const struct vadc_prescale_ratio *prescale;
++	s64 voltage = 0;
+ 
+-	if (voltage < 0)
+-		voltage = 0;
++	vadc_scale_calib(vadc, adc_code, prop, &voltage);
+ 
+ 	prescale = &vadc_prescale_ratios[prop->prescale];
+ 
+@@ -552,11 +561,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			break;
+ 
+-		*val = vadc_calibrate(vadc, prop, adc_code);
++		*val = vadc_scale_fn(vadc, prop, adc_code);
+ 
+-		/* 2mV/K, return milli Celsius */
+-		*val /= 2;
+-		*val -= KELVINMIL_CELSIUSMIL;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_RAW:
+ 		prop = &vadc->chan_props[chan->address];
+@@ -564,12 +570,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			break;
+ 
+-		*val = vadc_calibrate(vadc, prop, adc_code);
++		*val = (int)adc_code;
+ 		return IIO_VAL_INT;
+-	case IIO_CHAN_INFO_SCALE:
+-		*val = 0;
+-		*val2 = 1000;
+-		return IIO_VAL_INT_PLUS_MICRO;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -616,8 +618,8 @@ struct vadc_channels {
+ 	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
+ 
+ #define VADC_CHAN_VOLT(_dname, _pre)					\
+-	VADC_CHAN(_dname, IIO_VOLTAGE,					\
+-		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
++	VADC_CHAN(_dname, IIO_VOLTAGE,				\
++		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
+ 		  _pre)							\
+ 
+ /*
+@@ -850,9 +852,9 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+ 
+ 		iio_chan->channel = prop.channel;
+ 		iio_chan->datasheet_name = vadc_chan->datasheet_name;
++		iio_chan->extend_name = child->name;
+ 		iio_chan->info_mask_separate = vadc_chan->info_mask;
+ 		iio_chan->type = vadc_chan->type;
+-		iio_chan->indexed = 1;
+ 		iio_chan->address = index++;
+ 
+ 		iio_chan++;
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
