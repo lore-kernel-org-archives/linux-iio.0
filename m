@@ -1,29 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:53478 "EHLO
+Received: from smtp.codeaurora.org ([198.145.29.96]:43720 "EHLO
         smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755525AbcJZOly (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 10:41:54 -0400
+        with ESMTP id S942191AbcJZNBz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 09:01:55 -0400
 From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org,
-        devicetree@vger.kernel.org
-Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
+To: linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: linux-arm-msm@vger.kernel.org, smohanad@codeaurora.org,
+        mgautam@codeaurora.org, sivaa@codeaurora.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
         Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V3 1/2] iio: adc: spmi-vadc: Update changes to support reporting of Raw adc code.
-Date: Wed, 26 Oct 2016 20:11:26 +0530
-Message-Id: <1477492887-1663-2-git-send-email-rphani@codeaurora.org>
-In-Reply-To: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
-References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
+Subject: [PATCH V2 1/2] iio: adc: spmi-vadc: Update changes to support reporting of Raw adc code.
+Date: Wed, 26 Oct 2016 18:30:50 +0530
+Message-Id: <1477486851-24700-2-git-send-email-rphani@codeaurora.org>
+In-Reply-To: <1477486851-24700-1-git-send-email-rphani@codeaurora.org>
+References: <1477486851-24700-1-git-send-email-rphani@codeaurora.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Logic to convert adc code to voltage is generic across all channels.
-Different scaling can be done on the obtained voltage to report in physical
-units. Implement separate function for generic conversion logic.
-Scaling functionality can be changed per channel. Update changes to support
-reporting of Raw adc code.
+Update changes to support reporting of Raw adc code.
 
 Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
 ---
