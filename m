@@ -1,163 +1,392 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:50872 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1759947AbcJ1KAc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 28 Oct 2016 06:00:32 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, Mark.Rutland@arm.com
-Subject: [PATCH 08/10] staging: iio: tsl2583: use IIO_*_ATTR* macros to create sysfs entries
-Date: Fri, 28 Oct 2016 06:00:19 -0400
-Message-Id: <1477648821-3786-9-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
-References: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <john3909@gmail.com>
+From: John Syne <john3909@gmail.com>
+Message-Id: <5F10EC3A-7164-4798-91ED-D2CFEE9A9AAD@gmail.com>
+Content-Type: multipart/alternative;
+ boundary="Apple-Mail=_D20E0817-7EFE-4206-AA92-3546C53DB1B5"
+Mime-Version: 1.0 (Mac OS X Mail 10.1 \(3251\))
+Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to
+ 24MHz
+Date: Wed, 26 Oct 2016 12:33:18 -0700
+In-Reply-To: <20161026084811.GI8574@dell>
+Cc: Mugunthan V N <mugunthanvnm@ti.com>,
+ linux-iio@vger.kernel.org,
+ Tony Lindgren <tony@atomide.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Vignesh R <vigneshr@ti.com>,
+ linux-omap@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ linux-kernel@vger.kernel.org,
+ Sekhar Nori <nsekhar@ti.com>,
+ Peter Ujfalusi <peter.ujfalusi@ti.com>
+To: Lee Jones <lee.jones@linaro.org>
+References: <20161024060226.4170-1-mugunthanvnm@ti.com>
+ <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
+ <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
+ <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
+ <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <20161025063847.GD8574@dell>
+ <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com> <20161026084811.GI8574@dell>
+List-ID: <linux-iio@vger.kernel.org>
 
-Use the IIO_CONST_ATTR, IIO_DEVICE_ATTR_RW, and IIO_DEVICE_ATTR_WO
-macros for creating the in_illuminance_calibscale_available,
-in_illuminance_integration_time_available, in_illuminance_input_target,
-in_illuminance_calibrate, and in_illuminance_lux_table sysfs entries.
-Previously these sysfs entries were prefixed with illuminance0_, however
-they are now prefixed with in_illuminance_ to make these sysfs entries
-consistent with how the IIO core is creating the other sysfs entries.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/tsl2583.c | 73 ++++++++++++++-----------------------
- 1 file changed, 27 insertions(+), 46 deletions(-)
+--Apple-Mail=_D20E0817-7EFE-4206-AA92-3546C53DB1B5
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=utf-8
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index bfff6ca..1462374 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -29,6 +29,7 @@
- #include <linux/slab.h>
- #include <linux/module.h>
- #include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
- 
- #define TSL258X_MAX_DEVICE_REGS		32
- 
-@@ -506,24 +507,9 @@ static int taos_chip_off(struct iio_dev *indio_dev)
- 
- /* Sysfs Interface Functions */
- 
--static ssize_t taos_gain_available_show(struct device *dev,
--					struct device_attribute *attr,
--					char *buf)
--{
--	return sprintf(buf, "%s\n", "1 8 16 111");
--}
--
--static ssize_t taos_als_time_available_show(struct device *dev,
--					    struct device_attribute *attr,
--					    char *buf)
--{
--	return sprintf(buf, "%s\n",
--		"0.000050 0.000100 0.000150 0.000200 0.000250 0.000300 0.000350 0.000400 0.000450 0.000500 0.000550 0.000600 0.000650");
--}
--
--static ssize_t taos_als_cal_target_show(struct device *dev,
--					struct device_attribute *attr,
--					char *buf)
-+static ssize_t in_illuminance_input_target_show(struct device *dev,
-+						struct device_attribute *attr,
-+						char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
-@@ -531,9 +517,9 @@ static ssize_t taos_als_cal_target_show(struct device *dev,
- 	return sprintf(buf, "%d\n", chip->taos_settings.als_cal_target);
- }
- 
--static ssize_t taos_als_cal_target_store(struct device *dev,
--					 struct device_attribute *attr,
--					 const char *buf, size_t len)
-+static ssize_t in_illuminance_input_target_store(struct device *dev,
-+						 struct device_attribute *attr,
-+						 const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
-@@ -548,9 +534,9 @@ static ssize_t taos_als_cal_target_store(struct device *dev,
- 	return len;
- }
- 
--static ssize_t taos_do_calibrate(struct device *dev,
--				 struct device_attribute *attr,
--				 const char *buf, size_t len)
-+static ssize_t in_illuminance_calibrate_store(struct device *dev,
-+					      struct device_attribute *attr,
-+					      const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	int value;
-@@ -564,8 +550,9 @@ static ssize_t taos_do_calibrate(struct device *dev,
- 	return len;
- }
- 
--static ssize_t taos_luxtable_show(struct device *dev,
--				  struct device_attribute *attr, char *buf)
-+static ssize_t in_illuminance_lux_table_show(struct device *dev,
-+					     struct device_attribute *attr,
-+					     char *buf)
- {
- 	int i;
- 	int offset = 0;
-@@ -589,9 +576,9 @@ static ssize_t taos_luxtable_show(struct device *dev,
- 	return offset;
- }
- 
--static ssize_t taos_luxtable_store(struct device *dev,
--				   struct device_attribute *attr,
--				   const char *buf, size_t len)
-+static ssize_t in_illuminance_lux_table_store(struct device *dev,
-+					      struct device_attribute *attr,
-+					      const char *buf, size_t len)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
-@@ -635,25 +622,19 @@ static ssize_t taos_luxtable_store(struct device *dev,
- 	return ret;
- }
- 
--static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
--		taos_gain_available_show, NULL);
--
--static DEVICE_ATTR(illuminance0_integration_time_available, S_IRUGO,
--		taos_als_time_available_show, NULL);
--
--static DEVICE_ATTR(illuminance0_input_target, S_IRUGO | S_IWUSR,
--		taos_als_cal_target_show, taos_als_cal_target_store);
--
--static DEVICE_ATTR(illuminance0_calibrate, S_IWUSR, NULL, taos_do_calibrate);
--static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
--		taos_luxtable_show, taos_luxtable_store);
-+static IIO_CONST_ATTR(in_illuminance_calibscale_available, "1 8 16 111");
-+static IIO_CONST_ATTR(in_illuminance_integration_time_available,
-+		      "0.000050 0.000100 0.000150 0.000200 0.000250 0.000300 0.000350 0.000400 0.000450 0.000500 0.000550 0.000600 0.000650");
-+static IIO_DEVICE_ATTR_RW(in_illuminance_input_target, 0);
-+static IIO_DEVICE_ATTR_WO(in_illuminance_calibrate, 0);
-+static IIO_DEVICE_ATTR_RW(in_illuminance_lux_table, 0);
- 
- static struct attribute *sysfs_attrs_ctrl[] = {
--	&dev_attr_illuminance0_calibscale_available.attr,
--	&dev_attr_illuminance0_integration_time_available.attr,
--	&dev_attr_illuminance0_input_target.attr,
--	&dev_attr_illuminance0_calibrate.attr,
--	&dev_attr_illuminance0_lux_table.attr,
-+	&iio_const_attr_in_illuminance_calibscale_available.dev_attr.attr,
-+	&iio_const_attr_in_illuminance_integration_time_available.dev_attr.attr,
-+	&iio_dev_attr_in_illuminance_input_target.dev_attr.attr,
-+	&iio_dev_attr_in_illuminance_calibrate.dev_attr.attr,
-+	&iio_dev_attr_in_illuminance_lux_table.dev_attr.attr,
- 	NULL
- };
- 
--- 
-2.7.4
 
+> On Oct 26, 2016, at 1:48 AM, Lee Jones <lee.jones@linaro.org> wrote:
+>=20
+> On Tue, 25 Oct 2016, John Syne wrote:
+>>> On Oct 24, 2016, at 11:38 PM, Lee Jones <lee.jones@linaro.org> =
+wrote:
+>>> On Mon, 24 Oct 2016, John Syne wrote:
+>>>>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com> =
+wrote:
+>>>>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com> =
+wrote:
+>>>>>>=20
+>>>>>> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
+>>>>>>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N =
+<mugunthanvnm@ti.com> wrote:
+>>>>>>>>>=20
+>>>>>>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
+>>>>>>>>> sampling rates goes up from 100K samples per second to 800K
+>>>>>>>>> samples per second on AM335x and AM437x SoC.
+>>>>>>>>>=20
+>>>>>>>>> Also increase opendelay for touchscreen configuration to
+>>>>>>>>> equalize the increase in ADC reference clock frequency,
+>>>>>>>>> which results in the same amount touch events reported via
+>>>>>>>>> evtest on AM335x GP EVM.
+>>>>>>>>>=20
+>>>>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
+>>>>>>>>> ---
+>>>>>>>>>=20
+>>>>>>>>> This patch depends on ADC DMA patch series [1]
+>>>>>>>>>=20
+>>>>>>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
+>>>>>>>>> seeing fifo overflow as CPU is not able to pull the ADC =
+samples.
+>>>>>>>>> This answers that DMA support is must for ADC to consume the
+>>>>>>>>> samples generated at 24MHz with no open, step delay or
+>>>>>>>>> averaging with patch [2].
+>>>>>>>>>=20
+>>>>>>>>> Measured the performance with the iio_generic_buffer with the
+>>>>>>>>> patch [3] applied
+>>>>>>>>>=20
+>>>>>>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html
+>>>>>>>>> [2] - http://pastebin.ubuntu.com/23357935/
+>>>>>>>>> [3] - http://pastebin.ubuntu.com/23357939/
+>>>>>>>>>=20
+>>>>>>>>> ---
+>>>>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
+>>>>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
+>>>>>>>>>=20
+>>>>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h =
+b/include/linux/mfd/ti_am335x_tscadc.h
+>>>>>>>>> index b9a53e0..96c4207 100644
+>>>>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>>>>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>>>>>>>>> @@ -90,7 +90,7 @@
+>>>>>>>>> /* Delay register */
+>>>>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
+>>>>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
+>>>>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
+>>>>>>> Wouldn=E2=80=99t this be better to add this to the devicetree?
+>>>>>>>=20
+>>>>>>> 	ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 =
+0x16>;
+>>>>>>> 	ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 =
+0x500 0x500 0x500>;
+>>>>>>> 	ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 =
+0x0>;
+>>>>>>=20
+>>>>>> For a touch screen, there is not need to change in these =
+parameter
+>>>>>> settings, so my opinion is to keep it as is. Or am I missing =
+something?
+>>>>> I was thinking that if you are using this driver as an ADC, you =
+may want the flexibility to make these changes in the DT. I=E2=80=99m =
+doing this by connecting sensors to the ADC inputs. I=E2=80=99m not =
+using this driver for a touchscreen.=20
+>>>>=20
+>>>> Here is a DT overlay were this gets using on the BeagleBoneBlack. =20=
+
+>>>>=20
+>>>> =
+https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-AD=
+C-00A0.dts
+>>>>=20
+>>>> Besides, these DT features are already implemented in the driver so =
+it is just a matter of adding these entries to the am33xx.dtsi & =
+am4372.dtsi, which you modified in this patch series.
+>>>=20
+>>> This looks like configuration, no?
+>>>=20
+>>> DT should be used to describe the hardware.
+>> You may be right, but how is this different to setting the baud rate =
+on a serial channel or sampling rate on a audio channel? Looking through =
+the DT, there are many configuration settings, so I=E2=80=99m not sure =
+what is the correct way to handle this. Surely it is better to handle =
+this in DT vs hard coding these settings?
+>=20
+> I think setting the UART baud rate is also an invalid DT entry.
+>=20
+> It's okay to list all of the options in DT, but to actually select
+> one, that should be done either in userspace or as a kernel option.
+> Perhaps as a Kconfig selection.
+Yeah, this has been inconsistent for a long time. My only point was that =
+these DT parameters had already been implemented in the ti_am335x_adc KM =
+and I thought that this was better than hard coding these settings. I =
+defer to the domain experts to decide the best way forward.=20
+
+Regards,
+John
+>=20
+> --=20
+> Lee Jones
+> Linaro STMicroelectronics Landing Team Lead
+> Linaro.org <http://linaro.org/> =E2=94=82 Open source software for ARM =
+SoCs
+> Follow Linaro: Facebook | Twitter | Blog
+
+
+--Apple-Mail=_D20E0817-7EFE-4206-AA92-3546C53DB1B5
+Content-Transfer-Encoding: quoted-printable
+Content-Type: text/html;
+	charset=utf-8
+
+<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html =
+charset=3Dutf-8"></head><body style=3D"word-wrap: break-word; =
+-webkit-nbsp-mode: space; -webkit-line-break: after-white-space;" =
+class=3D""><br class=3D""><div><blockquote type=3D"cite" class=3D""><div =
+class=3D"">On Oct 26, 2016, at 1:48 AM, Lee Jones &lt;<a =
+href=3D"mailto:lee.jones@linaro.org" =
+class=3D"">lee.jones@linaro.org</a>&gt; wrote:</div><br =
+class=3D"Apple-interchange-newline"><div class=3D""><span =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; float: none; display: inline =
+!important;" class=3D"">On Tue, 25 Oct 2016, John Syne wrote:</span><br =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;" class=3D""><blockquote type=3D"cite" =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-size-adjust: auto; -webkit-text-stroke-width: 0px;" =
+class=3D""><blockquote type=3D"cite" class=3D"">On Oct 24, 2016, at =
+11:38 PM, Lee Jones &lt;<a href=3D"mailto:lee.jones@linaro.org" =
+class=3D"">lee.jones@linaro.org</a>&gt; wrote:<br class=3D"">On Mon, 24 =
+Oct 2016, John Syne wrote:<br class=3D""><blockquote type=3D"cite" =
+class=3D""><blockquote type=3D"cite" class=3D"">On Oct 24, 2016, at =
+11:01 PM, John Syne &lt;<a href=3D"mailto:john3909@gmail.com" =
+class=3D"">john3909@gmail.com</a>&gt; wrote:<br class=3D""><blockquote =
+type=3D"cite" class=3D"">On Oct 24, 2016, at 10:52 PM, Mugunthan V N =
+&lt;<a href=3D"mailto:mugunthanvnm@ti.com" =
+class=3D"">mugunthanvnm@ti.com</a>&gt; wrote:<br class=3D""><br =
+class=3D"">On Tuesday 25 October 2016 02:28 AM, John Syne wrote:<br =
+class=3D""><blockquote type=3D"cite" class=3D""><blockquote type=3D"cite" =
+class=3D""><blockquote type=3D"cite" class=3D"">On Oct 23, 2016, at =
+11:02 PM, Mugunthan V N &lt;<a href=3D"mailto:mugunthanvnm@ti.com" =
+class=3D"">mugunthanvnm@ti.com</a>&gt; wrote:<br class=3D""><br =
+class=3D"">Increase ADC reference clock from 3MHz to 24MHz so that =
+the<br class=3D"">sampling rates goes up from 100K samples per second to =
+800K<br class=3D"">samples per second on AM335x and AM437x SoC.<br =
+class=3D""><br class=3D"">Also increase opendelay for touchscreen =
+configuration to<br class=3D"">equalize the increase in ADC reference =
+clock frequency,<br class=3D"">which results in the same amount touch =
+events reported via<br class=3D"">evtest on AM335x GP EVM.<br =
+class=3D""><br class=3D"">Signed-off-by: Mugunthan V N &lt;<a =
+href=3D"mailto:mugunthanvnm@ti.com" =
+class=3D"">mugunthanvnm@ti.com</a>&gt;<br class=3D"">---<br class=3D""><br=
+ class=3D"">This patch depends on ADC DMA patch series [1]<br =
+class=3D""><br class=3D"">Without DMA support, when ADC ref clock is set =
+at 24MHz, I am<br class=3D"">seeing fifo overflow as CPU is not able to =
+pull the ADC samples.<br class=3D"">This answers that DMA support is =
+must for ADC to consume the<br class=3D"">samples generated at 24MHz =
+with no open, step delay or<br class=3D"">averaging with patch [2].<br =
+class=3D""><br class=3D"">Measured the performance with the =
+iio_generic_buffer with the<br class=3D"">patch [3] applied<br =
+class=3D""><br class=3D"">[1] - <a =
+href=3D"http://www.spinics.net/lists/devicetree/msg145045.html" =
+class=3D"">http://www.spinics.net/lists/devicetree/msg145045.html</a><br =
+class=3D"">[2] - <a href=3D"http://pastebin.ubuntu.com/23357935/" =
+class=3D"">http://pastebin.ubuntu.com/23357935/</a><br class=3D"">[3] - =
+<a href=3D"http://pastebin.ubuntu.com/23357939/" =
+class=3D"">http://pastebin.ubuntu.com/23357939/</a><br class=3D""><br =
+class=3D"">---<br class=3D"">include/linux/mfd/ti_am335x_tscadc.h | 4 =
+++--<br class=3D"">1 file changed, 2 insertions(+), 2 deletions(-)<br =
+class=3D""><br class=3D"">diff --git =
+a/include/linux/mfd/ti_am335x_tscadc.h =
+b/include/linux/mfd/ti_am335x_tscadc.h<br class=3D"">index =
+b9a53e0..96c4207 100644<br class=3D"">--- =
+a/include/linux/mfd/ti_am335x_tscadc.h<br class=3D"">+++ =
+b/include/linux/mfd/ti_am335x_tscadc.h<br class=3D"">@@ -90,7 +90,7 =
+@@<br class=3D"">/* Delay register */<br class=3D"">#define =
+STEPDELAY_OPEN_MASK<span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span>(0x3FFFF &lt;&lt; 0)<br class=3D"">#define =
+STEPDELAY_OPEN(val)<span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span>((val) &lt;&lt; 0)<br class=3D"">-#define =
+STEPCONFIG_OPENDLY<span class=3D"Apple-tab-span" style=3D"white-space: =
+pre;">	</span>STEPDELAY_OPEN(0x098)<br =
+class=3D""></blockquote></blockquote>Wouldn=E2=80=99t this be better to =
+add this to the devicetree?<br class=3D""><br class=3D""><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>ti,chan-step-avg =3D &lt;0x16 0x16 0x16 0x16 0x16 0x16 =
+0x16&gt;;<br class=3D""><span class=3D"Apple-tab-span" =
+style=3D"white-space: pre;">	</span>ti,chan-step-opendelay =3D =
+&lt;0x500 0x500 0x500 0x500 0x500 0x500 0x500&gt;;<br class=3D""><span =
+class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
+</span>ti,chan-step-sampledelay =3D &lt;0x0 0x0 0x0 0x0 0x0 0x0 =
+0x0&gt;;<br class=3D""></blockquote><br class=3D"">For a touch screen, =
+there is not need to change in these parameter<br class=3D"">settings, =
+so my opinion is to keep it as is. Or am I missing something?<br =
+class=3D""></blockquote>I was thinking that if you are using this driver =
+as an ADC, you may want the flexibility to make these changes in the DT. =
+I=E2=80=99m doing this by connecting sensors to the ADC inputs. I=E2=80=99=
+m not using this driver for a touchscreen.<span =
+class=3D"Apple-converted-space">&nbsp;</span><br =
+class=3D""></blockquote><br class=3D"">Here is a DT overlay were this =
+gets using on the BeagleBoneBlack. &nbsp;<br class=3D""><br class=3D""><a =
+href=3D"https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/a=
+rm/BB-ADC-00A0.dts" =
+class=3D"">https://github.com/RobertCNelson/bb.org-overlays/blob/master/sr=
+c/arm/BB-ADC-00A0.dts</a><br class=3D""><br class=3D"">Besides, these DT =
+features are already implemented in the driver so it is just a matter of =
+adding these entries to the am33xx.dtsi &amp; am4372.dtsi, which you =
+modified in this patch series.<br class=3D""></blockquote><br =
+class=3D"">This looks like configuration, no?<br class=3D""><br =
+class=3D"">DT should be used to describe the hardware.<br =
+class=3D""></blockquote>You may be right, but how is this different to =
+setting the baud rate on a serial channel or sampling rate on a audio =
+channel? Looking through the DT, there are many configuration settings, =
+so I=E2=80=99m not sure what is the correct way to handle this. Surely =
+it is better to handle this in DT vs hard coding these settings?<br =
+class=3D""></blockquote><br style=3D"font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; orphans: auto; text-align: start; =
+text-indent: 0px; text-transform: none; white-space: normal; widows: =
+auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;" class=3D""><span=
+ style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; float: none; display: inline =
+!important;" class=3D"">I think setting the UART baud rate is also an =
+invalid DT entry.</span><br style=3D"font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; orphans: auto; text-align: start; =
+text-indent: 0px; text-transform: none; white-space: normal; widows: =
+auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;" class=3D""><br =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+float: none; display: inline !important;" class=3D"">It's okay to list =
+all of the options in DT, but to actually select</span><br =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+float: none; display: inline !important;" class=3D"">one, that should be =
+done either in userspace or as a kernel option.</span><br =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+float: none; display: inline !important;" class=3D"">Perhaps as a =
+Kconfig selection.</span><br style=3D"font-family: Helvetica; font-size: =
+12px; font-style: normal; font-variant-caps: normal; font-weight: =
+normal; letter-spacing: normal; orphans: auto; text-align: start; =
+text-indent: 0px; text-transform: none; white-space: normal; widows: =
+auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;" =
+class=3D""></div></blockquote>Yeah, this has been inconsistent for a =
+long time. My only point was that these DT parameters had already been =
+implemented in the ti_am335x_adc KM and I thought that this was better =
+than hard coding these settings. I defer to the domain experts to decide =
+the best way forward.&nbsp;</div><div><br =
+class=3D""></div><div>Regards,</div><div>John<br class=3D""><blockquote =
+type=3D"cite" class=3D""><div class=3D""><br style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: =
+0px;" class=3D""><span style=3D"font-family: Helvetica; font-size: 12px; =
+font-style: normal; font-variant-caps: normal; font-weight: normal; =
+letter-spacing: normal; orphans: auto; text-align: start; text-indent: =
+0px; text-transform: none; white-space: normal; widows: auto; =
+word-spacing: 0px; -webkit-text-stroke-width: 0px; float: none; display: =
+inline !important;" class=3D"">--<span =
+class=3D"Apple-converted-space">&nbsp;</span></span><br =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+float: none; display: inline !important;" class=3D"">Lee Jones</span><br =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px;" class=3D""><span style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
+float: none; display: inline !important;" class=3D"">Linaro =
+STMicroelectronics Landing Team Lead</span><br style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: =
+0px;" class=3D""><a href=3D"http://linaro.org/" style=3D"font-family: =
+Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
+normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
+text-align: start; text-indent: 0px; text-transform: none; white-space: =
+normal; widows: auto; word-spacing: 0px; -webkit-text-size-adjust: auto; =
+-webkit-text-stroke-width: 0px;" class=3D"">Linaro.org</a><span =
+style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
+font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
+orphans: auto; text-align: start; text-indent: 0px; text-transform: =
+none; white-space: normal; widows: auto; word-spacing: 0px; =
+-webkit-text-stroke-width: 0px; float: none; display: inline =
+!important;" class=3D""><span =
+class=3D"Apple-converted-space">&nbsp;</span>=E2=94=82 Open source =
+software for ARM SoCs</span><br style=3D"font-family: Helvetica; =
+font-size: 12px; font-style: normal; font-variant-caps: normal; =
+font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
+start; text-indent: 0px; text-transform: none; white-space: normal; =
+widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;" =
+class=3D""><span style=3D"font-family: Helvetica; font-size: 12px; =
+font-style: normal; font-variant-caps: normal; font-weight: normal; =
+letter-spacing: normal; orphans: auto; text-align: start; text-indent: =
+0px; text-transform: none; white-space: normal; widows: auto; =
+word-spacing: 0px; -webkit-text-stroke-width: 0px; float: none; display: =
+inline !important;" class=3D"">Follow Linaro: Facebook | Twitter | =
+Blog</span></div></blockquote></div><br class=3D""></body></html>=
+
+--Apple-Mail=_D20E0817-7EFE-4206-AA92-3546C53DB1B5--
