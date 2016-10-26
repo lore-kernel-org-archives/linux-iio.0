@@ -1,122 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:33702 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756358AbcJZKR1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 06:17:27 -0400
-From: "Sricharan" <sricharan@codeaurora.org>
-To: "'Phani A, Rama Krishna'" <rphani@codeaurora.org>,
-        <linux-iio@vger.kernel.org>, <jic23@kernel.org>
-Cc: <linux-arm-msm@vger.kernel.org>, <smohanad@codeaurora.org>,
-        <mgautam@codeaurora.org>, "'Hartmut Knaack'" <knaack.h@gmx.de>,
-        "'Lars-Peter Clausen'" <lars@metafoo.de>,
-        "'Peter Meerwald-Stadler'" <pmeerw@pmeerw.net>,
-        "'Julia Lawall'" <Julia.Lawall@lip6.fr>,
-        "'open list'" <linux-kernel@vger.kernel.org>
-References: <1477373226-29587-1-git-send-email-rphani@codeaurora.org> <00c001d22ec1$142a2d80$3c7e8880$@codeaurora.org> <241f4520-92da-5aff-7f4f-9487d6082906@codeaurora.org>
-In-Reply-To: <241f4520-92da-5aff-7f4f-9487d6082906@codeaurora.org>
-Subject: RE: [PATCH V1]iio: adc: spmi-vadc: Changes to support different scaling
-Date: Wed, 26 Oct 2016 15:47:17 +0530
-Message-ID: <001c01d22f72$25990c10$70cb2430$@codeaurora.org>
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:32778 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754365AbcJZJsx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 05:48:53 -0400
+Date: Wed, 26 Oct 2016 17:48:44 +0800
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] staging: iio: cdc/ad7746: fix missing return value
+Message-ID: <20161026094839.GA2243@Socrates-DK>
+References: <20161025155646.64112-1-arnd@arndb.de>
+ <b19d0f7a-03c4-c4e6-dd8c-188012402530@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain;
-        charset="utf-8"
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <b19d0f7a-03c4-c4e6-dd8c-188012402530@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Ramakrishna,
+On Tue, Oct 25, 2016 at 05:27:07PM +0100, Jonathan Cameron wrote:
+> On 25/10/16 16:56, Arnd Bergmann wrote:
+> > As found by "gcc -Wmaybe-uninitialized", the latest change to the
+> > driver lacked an initalization for the return code in one of the
+> > added cases:
+> > 
+> > drivers/staging/iio/cdc/ad7746.c: In function ‘ad7746_read_raw’:
+> > drivers/staging/iio/cdc/ad7746.c:655:2: error: ‘ret’ may be used uninitialized in this function [-Werror=maybe-uninitialized]
+> > 
+> > This sets it to IIO_VAL_INT, which I think is what we want here.
+> > 
+> > Fixes: 2296c0623eb7 ("staging: iio: cdc: ad7746: implement IIO_CHAN_INFO_SAMP_FREQ")
+> > Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+> Gah, not a good bit of reviewing from me. Should have caught that one.  Thanks Arnd.
+> 
 
-[snip..]
+It's not your fault. My apologies. v1 of this patch is OK, I just happen to 
+encounter a problem and had to rework the v2 on another branch resulting
+to this blunder.
 
->>> +	u32 i = 0;
->>> +
->>> +	if (!pts)
->>> +		return -EINVAL;
->>> +
->>> +	/* Check if table is descending or ascending */
->>> +	if (tablesize > 1) {
->>> +		if (pts[0].x < pts[1].x)
->>> +			descending = 0;
->>> +	}
->>> +
->>> +	while (i < tablesize) {
->>> +		if ((descending == 1) && (pts[i].x < input)) {
->>
->>          Just if (descending) instead of (descending == 1) and so on for the below as well
->
->	Will change in next patch.
->
->>
->>> +			/* table entry is less than measured*/
->>> +			 /* value and table is descending, stop */
->>> +			break;
->>> +		} else if ((descending == 0) &&
->>> +				(pts[i].x > input)) {
->>> +			/* table entry is greater than measured*/
->>> +			/*value and table is ascending, stop */
->>> +			break;
->>> +		}
->>> +		i++;
->>> +	}
->>> +
->>> +	if (i == 0) {
->>> +		*output = pts[0].y;
->>> +	} else if (i == tablesize) {
->>> +		*output = pts[tablesize - 1].y;
->>> +	} else {
->>> +		/* result is between search_index and search_index-1 */
->>> +		/* interpolate linearly */
->>> +		*output = (((s32)((pts[i].y - pts[i - 1].y) *
->>> +			(input - pts[i - 1].x)) /
->>> +			(pts[i].x - pts[i - 1].x)) +
->>> +			pts[i - 1].y);
->>> +	}
->>
->>                hmm, so for descending, input - pts[i -1].x is negative and
->>                we are adding that to pts[i-1].y, is that correct ?
->
->		The formula used is to interpolate between two points 	using linear
->interpolation.
+I will be extra careful next time.
 
- Right, agree. my question can be ignored.
+Eva
 
-[snip..]
-
->>> #define VADC_CHAN_TEMP(_dname, _pre)					\
->>> -	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
->>> +	VADC_CHAN(_dname, IIO_TEMP,	\
->>> +		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED), \
->>> +		_pre)	\
->>>
->>> #define VADC_CHAN_VOLT(_dname, _pre)					\
->>> -	VADC_CHAN(_dname, IIO_VOLTAGE,					\
->>> -		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
->>> +	VADC_CHAN(_dname, IIO_VOLTAGE,				\
->>> +		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
->>> 		  _pre)							\
->>>
->>   For this and the below changes to VADC_CHAN_VOLT to TEMP, why is that done ?
->>    Now both macros are setting the same flags.
->
->	For Voltage channels IIO_VOLTAGE is needed where as for Temperature
->channels IIO_TEMP is needed.
->
->>
->>> /*
->>> @@ -637,12 +811,11 @@ struct vadc_channels {
->>> 	VADC_CHAN_TEMP(DIE_TEMP, 0)
->>> 	VADC_CHAN_VOLT(REF_625MV, 0)
->>> 	VADC_CHAN_VOLT(REF_1250MV, 0)
->>> -	VADC_CHAN_VOLT(CHG_TEMP, 0)
->>> +	VADC_CHAN_TEMP(CHG_TEMP, 0)
->>> 	VADC_CHAN_VOLT(SPARE1, 0)
->>> 	VADC_CHAN_VOLT(SPARE2, 0)
->>> 	VADC_CHAN_VOLT(GND_REF, 0)
->>> 	VADC_CHAN_VOLT(VDD_VADC, 0)
->>> -
-
-And also looks like the deletion of these and below 
-new lines are unnecessary ?
-
-Regards,
- Sricharan
-
+> Applied to the togreg branch of iio.git - initially pushed out as testing for the
+> autobuilders to play with it.  Will probably be a little while before I send
+> another pull to Greg (most likely the weekend)
+> 
+> Thanks again,
+> 
+> Jonathan
+> > ---
+> >  drivers/staging/iio/cdc/ad7746.c | 1 +
+> >  1 file changed, 1 insertion(+)
+> > 
+> > diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> > index f41251ceeacd..a5828f9aa437 100644
+> > --- a/drivers/staging/iio/cdc/ad7746.c
+> > +++ b/drivers/staging/iio/cdc/ad7746.c
+> > @@ -642,6 +642,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+> >  		case IIO_VOLTAGE:
+> >  			*val = ad7746_vt_filter_rate_table[
+> >  					(chip->config >> 6) & 0x3][0];
+> > +			ret = IIO_VAL_INT;
+> >  			break;
+> >  		default:
+> >  			ret = -EINVAL;
+> > 
+> 
