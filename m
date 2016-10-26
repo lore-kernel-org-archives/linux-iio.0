@@ -1,97 +1,160 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0133.outbound.protection.outlook.com ([104.47.2.133]:55270
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751414AbcJVFci (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 22 Oct 2016 01:32:38 -0400
-Subject: Re: [PATCH 0/4] IIO wrapper drivers, dpot-dac and envelope-detector
-To: <jic23@kernel.org>
-References: <1476955562-13673-1-git-send-email-peda@axentia.se>
- <9b8c0789-566d-67a3-b4f5-dbe4c69f6932@metafoo.de>
- <8B9238AE-D53C-4A22-84CF-EC42FDA2DFB2@jic23.retrosnub.co.uk>
- <DB170A5C-B172-4B86-80D5-58FD53752ED4@jic23.retrosnub.co.uk>
- <ba941bcd-c542-b699-638f-3b3003e8af00@axentia.se>
- <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
-CC: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        <linux-kernel@vger.kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio-owner@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <58b9c20d-6c3c-4693-b073-e5a8f9c4cb94@axentia.se>
-Date: Sat, 22 Oct 2016 00:58:27 +0200
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:35240 "EHLO
+        mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966723AbcJZMj4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 08:39:56 -0400
+Received: by mail-wm0-f44.google.com with SMTP id e69so27391585wmg.0
+        for <linux-iio@vger.kernel.org>; Wed, 26 Oct 2016 05:39:55 -0700 (PDT)
+Date: Wed, 26 Oct 2016 13:42:27 +0100
+From: Lee Jones <lee.jones@linaro.org>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Cc: linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com
+Subject: Re: [PATCH v7 5/5] mfd: Move binding document
+Message-ID: <20161026124227.GG11267@dell>
+References: <cover.1475416202.git.ksenija.stanojevic@gmail.com>
+ <e4106d819bf15c1d35ea5dadebc354fd0f999f71.1475416202.git.ksenija.stanojevic@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <736c146284d93633a4692b1102eaadaf@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <e4106d819bf15c1d35ea5dadebc354fd0f999f71.1475416202.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2016-10-21 09:17, jic23@kernel.org wrote:
-> On 20.10.2016 19:17, Peter Rosin wrote:
->> On 2016-10-20 19:37, Jonathan Cameron wrote:
->>> On 20 October 2016 18:30:19 BST, Jonathan Cameron 
->>> <jic23@jic23.retrosnub.co.uk> wrote:
->>>> On 20 October 2016 13:55:12 BST, Lars-Peter Clausen <lars@metafoo.de> 
->>>> wrote:
->>>>> On 10/20/2016 11:25 AM, Peter Rosin wrote:
->>>>>> Also, is there some agreed-upon way to dig out the maximum value 
->>>>>> from
->>>>>> an iio channel? If so, "dpot-dac,max-ohms" can be eliminated from 
->>>>>> the
->>>>>> dt bindings, which would have been nice...
->>>>>
->>>>> Yes, this is something we could really use. In a sense it exists for
->>>>> the
->>>>> devices with buffer-capable channels where there is the real_bits 
->>>>> field
->>>>> which tells us the data width of the channel. But a dedicated 
->>>>> mechanism
->>>>> for
->>>>> querying the maximum (and minimum) valid code seems like a useful
->>>>> feature.
->>>>> Not only for in-kernel clients, but also for userspace.
->>>>
->>>> This was something that was addressed by the rather ancient patch
->>>> series i posted that added
->>>> an available call back which provided info on range and values for 
->>>> all info mask elements.
->>>> Series got buried by there being a lot of precursors but quite a few of
->>>> those have merged since.
->>>>
->>>> Hmm Google won't let me find it on my phone. Was a while back now. 
->>>> Will
->>>> try to get on pc with
->>>> decent email archive later and dig out a reference.
->>> http://marc.info/?l=linux-iio&m=138469765309868&w=2 I think...
->>
->> Interesting, one issue with that is that it is all in real world
->> units, while I'd rather have the raw value.
-> Um.. It's been a while, but the principle was (IIRC) that every
-> _available would match the units fo the associated info mask element.
-> Thus if you have a _raw element it would be in adc counts (most likely).
+On Sun, 02 Oct 2016, Ksenija Stanojevic wrote:
+
+> The bindings, which are now used in MFD, need also to be
+> documented in the MFD binding document.
 > 
-> _input would be in relevant real world units, scale etc in the whatever
-> units the value itself is in.
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> ---
+> Changes in v7:
+>  - add to the patchset
+> 
+>  .../devicetree/bindings/iio/adc/mxs-lradc.txt      | 47 ----------------------
+>  .../devicetree/bindings/mfd/mxs-lradc.txt          | 47 ++++++++++++++++++++++
+>  2 files changed, 47 insertions(+), 47 deletions(-)
+>  delete mode 100644 Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+>  create mode 100644 Documentation/devicetree/bindings/mfd/mxs-lradc.txt
 
-Ok, so I forward ported that patch and added code so that the relevant
-channels provide what is available. I also added code to turn the
-rest of the parameter style devicetree properties into iio device/channel
-attributes. So, it is now much neater from a bindings point of view.
+Please use -M when you create these kinds of patches.
 
-Before I post the updated patches, I'm wondering what the status is
-on that ancient patch? It didn't forward port without issues, but there
-were no real difficulties that I noticed. Should I just start off my v2
-series with that patch? I tend to think that that's the best option,
-because I suspect that adding a "max-ohms" devicetree property as a
-stop-gap pending some new infrastructure is pretty unrealistic...
+NB: I use -M all the time.  It doesn't hurt in cases where it's not
+required.
 
-Basically, my question is if that ancient patch as any chance of living
-at all in a form close to what it is, or if should start looking for
-an alternative right away?
+Please re-submit.
 
-Cheers,
-Peter
+> diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+> deleted file mode 100644
+> index 555fb11..0000000
+> --- a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
+> +++ /dev/null
+> @@ -1,47 +0,0 @@
+> -* Freescale MXS LRADC device driver
+> -
+> -Required properties:
+> -- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
+> -              for i.MX28 SoC
+> -- reg: Address and length of the register set for the device
+> -- interrupts: Should contain the LRADC interrupts
+> -
+> -Optional properties:
+> -- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+> -                               to LRADC. Valid value is either 4 or 5. If this
+> -                               property is not present, then the touchscreen is
+> -                               disabled. 5 wires is valid for i.MX28 SoC only.
+> -- fsl,ave-ctrl: number of samples per direction to calculate an average value.
+> -                Allowed value is 1 ... 32, default is 4
+> -- fsl,ave-delay: delay between consecutive samples. Allowed value is
+> -                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
+> -                 2 kHz and its default is 2 (= 1 ms)
+> -- fsl,settling: delay between plate switch to next sample. Allowed value is
+> -                1 ... 2047. It counts at 2 kHz and its default is
+> -                10 (= 5 ms)
+> -
+> -Example for i.MX23 SoC:
+> -
+> -	lradc@80050000 {
+> -		compatible = "fsl,imx23-lradc";
+> -		reg = <0x80050000 0x2000>;
+> -		interrupts = <36 37 38 39 40 41 42 43 44>;
+> -		status = "okay";
+> -		fsl,lradc-touchscreen-wires = <4>;
+> -		fsl,ave-ctrl = <4>;
+> -		fsl,ave-delay = <2>;
+> -		fsl,settling = <10>;
+> -	};
+> -
+> -Example for i.MX28 SoC:
+> -
+> -	lradc@80050000 {
+> -		compatible = "fsl,imx28-lradc";
+> -		reg = <0x80050000 0x2000>;
+> -		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
+> -		status = "okay";
+> -		fsl,lradc-touchscreen-wires = <5>;
+> -		fsl,ave-ctrl = <4>;
+> -		fsl,ave-delay = <2>;
+> -		fsl,settling = <10>;
+> -	};
+> diff --git a/Documentation/devicetree/bindings/mfd/mxs-lradc.txt b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+> new file mode 100644
+> index 0000000..555fb11
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+> @@ -0,0 +1,47 @@
+> +* Freescale MXS LRADC device driver
+> +
+> +Required properties:
+> +- compatible: Should be "fsl,imx23-lradc" for i.MX23 SoC and "fsl,imx28-lradc"
+> +              for i.MX28 SoC
+> +- reg: Address and length of the register set for the device
+> +- interrupts: Should contain the LRADC interrupts
+> +
+> +Optional properties:
+> +- fsl,lradc-touchscreen-wires: Number of wires used to connect the touchscreen
+> +                               to LRADC. Valid value is either 4 or 5. If this
+> +                               property is not present, then the touchscreen is
+> +                               disabled. 5 wires is valid for i.MX28 SoC only.
+> +- fsl,ave-ctrl: number of samples per direction to calculate an average value.
+> +                Allowed value is 1 ... 32, default is 4
+> +- fsl,ave-delay: delay between consecutive samples. Allowed value is
+> +                 2 ... 2048. It is used if 'fsl,ave-ctrl' > 1, counts at
+> +                 2 kHz and its default is 2 (= 1 ms)
+> +- fsl,settling: delay between plate switch to next sample. Allowed value is
+> +                1 ... 2047. It counts at 2 kHz and its default is
+> +                10 (= 5 ms)
+> +
+> +Example for i.MX23 SoC:
+> +
+> +	lradc@80050000 {
+> +		compatible = "fsl,imx23-lradc";
+> +		reg = <0x80050000 0x2000>;
+> +		interrupts = <36 37 38 39 40 41 42 43 44>;
+> +		status = "okay";
+> +		fsl,lradc-touchscreen-wires = <4>;
+> +		fsl,ave-ctrl = <4>;
+> +		fsl,ave-delay = <2>;
+> +		fsl,settling = <10>;
+> +	};
+> +
+> +Example for i.MX28 SoC:
+> +
+> +	lradc@80050000 {
+> +		compatible = "fsl,imx28-lradc";
+> +		reg = <0x80050000 0x2000>;
+> +		interrupts = <10 14 15 16 17 18 19 20 21 22 23 24 25>;
+> +		status = "okay";
+> +		fsl,lradc-touchscreen-wires = <5>;
+> +		fsl,ave-ctrl = <4>;
+> +		fsl,ave-delay = <2>;
+> +		fsl,settling = <10>;
+> +	};
 
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
