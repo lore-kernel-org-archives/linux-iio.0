@@ -1,65 +1,86 @@
-Return-Path: <hns@goldelico.com>
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	Sebastian Reichel <sre@kernel.org>,
-	"Andrew F. Davis" <afd@ti.com>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Sangwon Jee <jeesw@melfas.com>
-Cc: linux-input@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	letux-kernel@openphoenux.org,
-	linux-iio@vger.kernel.org,
-	kernel@pyra-handheld.com
-Subject: [PATCH v6 3/8] drivers:input:tsc2007: check for presence and power down tsc2007 during probe
-Date: Thu, 27 Oct 2016 10:44:16 +0200
-Message-Id: <d868be0fc14f8a9cd2230fb449ec9a8f21138d96.1477557860.git.hns@goldelico.com>
-In-Reply-To: <cover.1477557860.git.hns@goldelico.com>
-References: <cover.1477557860.git.hns@goldelico.com>
-In-Reply-To: <cover.1477557860.git.hns@goldelico.com>
-References: <cover.1477557860.git.hns@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:37716 "EHLO
+        mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755186AbcJ0Nss (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Oct 2016 09:48:48 -0400
+Received: by mail-wm0-f52.google.com with SMTP id 140so26715943wmv.0
+        for <linux-iio@vger.kernel.org>; Thu, 27 Oct 2016 06:48:48 -0700 (PDT)
+Subject: Re: [PATCH V3 2/2] iio: adc: spmi-vadc: Changes to support different
+ scaling
+To: Rama Krishna Phani A <rphani@codeaurora.org>,
+        linux-iio@vger.kernel.org, jic23@kernel.org,
+        devicetree@vger.kernel.org
+References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
+ <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
+Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+From: Stanimir Varbanov <stanimir.varbanov@linaro.org>
+Message-ID: <8418e7f1-55d9-2dfa-1dc7-5960f9da0305@linaro.org>
+Date: Thu, 27 Oct 2016 14:18:42 +0300
+MIME-Version: 1.0
+In-Reply-To: <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-1. check if chip is really present and don't succeed if it isn't.
-2. if it succeeds, power down the chip until accessed
+Hi Rama,
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/input/touchscreen/tsc2007.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+On 10/26/2016 05:41 PM, Rama Krishna Phani A wrote:
+> Polling can also be used for End of conversion completion. Implement logic
+> to choose either polling or interrupt for End of conversion completion.
+> Scaling can be done on the voltage to report adc code in physical units.
+> Add changes to support different scale functions to convert adc code to
+> physical units.
+> 
+> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+> ---
+>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 ++
+>  drivers/iio/adc/qcom-spmi-vadc.c                   | 263 +++++++++++++++++----
+>  2 files changed, 236 insertions(+), 41 deletions(-)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> index 0fb4613..39e31c0e 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+> @@ -37,6 +37,12 @@ VADC node:
+>      Value type: <prop-encoded-array>
+>      Definition: End of conversion interrupt.
+>  
+> +- qcom,vadc-poll-eoc:
+> +    Usage: optional
+> +    Value type: <bool>
+> +    Definition: Use polling instead of interrupts for End of Conversion
+> +		completion.
 
-diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
-index e9d5086..5e3c4bf 100644
---- a/drivers/input/touchscreen/tsc2007.c
-+++ b/drivers/input/touchscreen/tsc2007.c
-@@ -538,6 +538,14 @@ static int tsc2007_probe(struct i2c_client *client,
- 
- 	tsc2007_stop(ts);
- 
-+	/* power down the chip (TSC2007_SETUP does not ACK on I2C) */
-+	err = tsc2007_xfer(ts, PWRDOWN);
-+	if (err < 0) {
-+		dev_err(&client->dev,
-+			"Failed to setup chip: %d\n", err);
-+		return err;	/* usually, chip does not respond */
-+	}
-+
- 	err = input_register_device(input_dev);
- 	if (err) {
- 		dev_err(&client->dev,
+Why you need to add such a flag in DT?
+
+The DT should describe hardware details not how the driver will choose
+pooling vs interrupt.
+
+On which use-case you would prefer pooling?
+
+> +
+>  Channel node properties:
+>  
+>  - reg:
+> @@ -92,6 +98,14 @@ Channel node properties:
+>              Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+>              If property is not found, 1 sample will be used.
+>  
+> +- qcom,scale-function:
+> +    Usage: optional
+> +    Value type: <u32>
+> +    Definition: Scaling function used to convert raw ADC code to
+> +	units specific to a given channel. Scaled units can be
+> +	microvolts, millidegC.Valid values are: 0, 1, 2, 3, 4.
+> +	If property is not found, 0 scaling will be used.
+
+This shouldn't be in DT binding. Just select the scale function for each
+channel in the driver based on compatible property.
+
+
 -- 
-2.7.3
+regards,
+Stan
