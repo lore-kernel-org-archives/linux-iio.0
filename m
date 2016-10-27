@@ -1,133 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:45718 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752886AbcJZKpv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 26 Oct 2016 06:45:51 -0400
-Subject: Re: [PATCH V1]iio: adc: spmi-vadc: Changes to support different
- scaling
-To: Sricharan <sricharan@codeaurora.org>, linux-iio@vger.kernel.org,
-        jic23@kernel.org
-References: <1477373226-29587-1-git-send-email-rphani@codeaurora.org>
- <00c001d22ec1$142a2d80$3c7e8880$@codeaurora.org>
- <241f4520-92da-5aff-7f4f-9487d6082906@codeaurora.org>
- <001c01d22f72$25990c10$70cb2430$@codeaurora.org>
-Cc: linux-arm-msm@vger.kernel.org, smohanad@codeaurora.org,
-        mgautam@codeaurora.org, 'Hartmut Knaack' <knaack.h@gmx.de>,
-        'Lars-Peter Clausen' <lars@metafoo.de>,
-        'Peter Meerwald-Stadler' <pmeerw@pmeerw.net>,
-        'Julia Lawall' <Julia.Lawall@lip6.fr>,
-        'open list' <linux-kernel@vger.kernel.org>
-From: "Phani A, Rama Krishna" <rphani@codeaurora.org>
-Message-ID: <dfc205f9-172f-3407-272f-dcef8cacfc4d@codeaurora.org>
-Date: Wed, 26 Oct 2016 16:15:42 +0530
-MIME-Version: 1.0
-In-Reply-To: <001c01d22f72$25990c10$70cb2430$@codeaurora.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.176]:36300 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932605AbcJ0JR1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Oct 2016 05:17:27 -0400
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: [PATCH v6 0/8] drivers: touchscreen: tsc2007 and ads7846/tsc2046 improvements (use common touchscreen bindings, pre-calibration, spi fix and provide iio raw values)
+Date: Thu, 27 Oct 2016 10:44:13 +0200
+Message-Id: <cover.1477557860.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Sricharan,
+Changes V6:
+* iio patch (no changes elsewhere)
+	- tsc2007_iio: fix a missing return 0 for non-iio case (found by kbuid test robot)
+	- tsc2007_core: group error return paths so that tsc2007_iio_unconfigure is called at only one place
+	- tsc2007_iio: fix copyright (this file is 100% original work)
 
-On 26-Oct-16 3:47 PM, Sricharan wrote:
-> Hi Ramakrishna,
->
-> [snip..]
->
->>>> +	u32 i = 0;
->>>> +
->>>> +	if (!pts)
->>>> +		return -EINVAL;
->>>> +
->>>> +	/* Check if table is descending or ascending */
->>>> +	if (tablesize > 1) {
->>>> +		if (pts[0].x < pts[1].x)
->>>> +			descending = 0;
->>>> +	}
->>>> +
->>>> +	while (i < tablesize) {
->>>> +		if ((descending == 1) && (pts[i].x < input)) {
->>>
->>>          Just if (descending) instead of (descending == 1) and so on for the below as well
->>
->> 	Will change in next patch.
->>
->>>
->>>> +			/* table entry is less than measured*/
->>>> +			 /* value and table is descending, stop */
->>>> +			break;
->>>> +		} else if ((descending == 0) &&
->>>> +				(pts[i].x > input)) {
->>>> +			/* table entry is greater than measured*/
->>>> +			/*value and table is ascending, stop */
->>>> +			break;
->>>> +		}
->>>> +		i++;
->>>> +	}
->>>> +
->>>> +	if (i == 0) {
->>>> +		*output = pts[0].y;
->>>> +	} else if (i == tablesize) {
->>>> +		*output = pts[tablesize - 1].y;
->>>> +	} else {
->>>> +		/* result is between search_index and search_index-1 */
->>>> +		/* interpolate linearly */
->>>> +		*output = (((s32)((pts[i].y - pts[i - 1].y) *
->>>> +			(input - pts[i - 1].x)) /
->>>> +			(pts[i].x - pts[i - 1].x)) +
->>>> +			pts[i - 1].y);
->>>> +	}
->>>
->>>                hmm, so for descending, input - pts[i -1].x is negative and
->>>                we are adding that to pts[i-1].y, is that correct ?
->>
->> 		The formula used is to interpolate between two points 	using linear
->> interpolation.
->
->  Right, agree. my question can be ignored.
->
-> [snip..]
->
->>>> #define VADC_CHAN_TEMP(_dname, _pre)					\
->>>> -	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
->>>> +	VADC_CHAN(_dname, IIO_TEMP,	\
->>>> +		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED), \
->>>> +		_pre)	\
->>>>
->>>> #define VADC_CHAN_VOLT(_dname, _pre)					\
->>>> -	VADC_CHAN(_dname, IIO_VOLTAGE,					\
->>>> -		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
->>>> +	VADC_CHAN(_dname, IIO_VOLTAGE,				\
->>>> +		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
->>>> 		  _pre)							\
->>>>
->>>   For this and the below changes to VADC_CHAN_VOLT to TEMP, why is that done ?
->>>    Now both macros are setting the same flags.
->>
->> 	For Voltage channels IIO_VOLTAGE is needed where as for Temperature
->> channels IIO_TEMP is needed.
->>
->>>
->>>> /*
->>>> @@ -637,12 +811,11 @@ struct vadc_channels {
->>>> 	VADC_CHAN_TEMP(DIE_TEMP, 0)
->>>> 	VADC_CHAN_VOLT(REF_625MV, 0)
->>>> 	VADC_CHAN_VOLT(REF_1250MV, 0)
->>>> -	VADC_CHAN_VOLT(CHG_TEMP, 0)
->>>> +	VADC_CHAN_TEMP(CHG_TEMP, 0)
->>>> 	VADC_CHAN_VOLT(SPARE1, 0)
->>>> 	VADC_CHAN_VOLT(SPARE2, 0)
->>>> 	VADC_CHAN_VOLT(GND_REF, 0)
->>>> 	VADC_CHAN_VOLT(VDD_VADC, 0)
->>>> -
->
-> And also looks like the deletion of these and below
-> new lines are unnecessary ?
+2016-10-25 21:26:46: Changes V5:
+* ads7846: remove an empty line (suggested by Andrew F. Davis <afd@ti.com>)
+* ads7846: remove MODULE_ALIAS for SPI (suggested by Andrew F. Davis <afd@ti.com>)
+* tsc2007: fix a bug from swapping patch 3/n and patch 4/n (found by kbuid test robot)
+* refactored tsc2007 into tsc2007_core and tsc2007_iio (asked for by Jonathan Cameron <jic23@kernel.org>)
 
-Agree, Will retain these new lines in next patch V2.
->
-> Regards,
->  Sricharan
->
+2016-10-17 16:00:02: Changes V4:
+* fix a merge/squash issue resulting in a non-bisectable patch set (suggested by kbuid test robot)
+* remove some unnecessary #include (suggested by Jonathan Cameron <jic23@kernel.org>)
+* make the iio extension depend on CONFIG_IIO rather than selecting it (suggested by Jonathan Cameron <jic23@kernel.org>)
+* swapped patch 3/n and patch 4/n to remove internal dependency
 
-Thanks,
-Ramakrishna
+2016-09-23 14:41:23: Changes V3:
+* fix an issue with swapping
+* remove hard clipping to min/max rectangle - some systems expect to handle negative coordinates
+* make use of commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+
+2015-11-13 21:36:07: Changes V2:
+* add a patch to make drivers still recognise the old "ti,swap-xy" property (suggested by Rob Herring)
+
+2015-11-06 16:14:53: This patch series improves the drivers for the tsc2007 and
+ads7846/tsc2046 touchscreen controllers which are e.g. used by the GTA04
+OpenPandora and Pyra devices.
+
+New common bindings have been defined by
+commit b98abe52fa8e ("Input: add common DT binding for touchscreens"):
+
+	Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+which also defines a helper function to parse the DT. These new parameters
+allow to specify the fuzz factors (jitter suppression), inversion of x or y axis and
+swapping of x and y to achieve inversion and rotation so that the touch
+coordinate axes match the natural orientation of the display panel.
+
+Another improvement is to better use the min/max ADC values and
+scale to the screen size as defined by the DT. This allows to coarsely
+calibrate the touch to match the LCD to which it is glued on so that the
+touch can quite precisely be operated before any user-space fine-calibration
+can be (and needs to be) started.
+
+For the adc7846 we fix an issue with the spi module table.
+
+Finally we add an iio interface for the AUX and temperature ADC channels of
+the tsc2007 and also provide the touch screen raw values. This allows to read
+an optional ambient light sensor installed on the gta04 board and improves
+calibration and hardware monitoring.
+
+
+H. Nikolaus Schaller (8):
+  drivers:input:tsc2007: add new common binding names, pre-calibration,
+    flipping and rotation
+  drivers:input:tsc2007: send pendown and penup only once like
+    ads7846(+tsc2046) driver does
+  drivers:input:tsc2007: check for presence and power down tsc2007
+    during probe
+  drivers:input:tsc2007: add iio interface to read external ADC input
+    and temperature
+  DT:omap3+tsc2007: use new common touchscreen bindings
+  drivers:input:ads7846(+tsc2046): add new common binding names,
+    pre-calibration and flipping
+  drivers:input:ads7846(+tsc2046): fix spi module table
+  DT:omap3+ads7846: use new common touchscreen bindings
+
+ .../devicetree/bindings/input/ads7846.txt          |   9 +-
+ .../bindings/input/touchscreen/tsc2007.txt         |  20 +-
+ arch/arm/boot/dts/omap3-gta04.dtsi                 |  25 ++-
+ arch/arm/boot/dts/omap3-lilly-a83x.dtsi            |   2 +-
+ arch/arm/boot/dts/omap3-pandora-common.dtsi        |  17 +-
+ .../boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi    |   3 +-
+ drivers/input/touchscreen/Makefile                 |   2 +
+ drivers/input/touchscreen/ads7846.c                |  71 +++++-
+ drivers/input/touchscreen/tsc2007.h                | 129 +++++++++++
+ .../touchscreen/{tsc2007.c => tsc2007_core.c}      | 244 ++++++++++++---------
+ drivers/input/touchscreen/tsc2007_iio.c            | 151 +++++++++++++
+ include/linux/i2c/tsc2007.h                        |   8 +
+ 12 files changed, 551 insertions(+), 130 deletions(-)
+ create mode 100644 drivers/input/touchscreen/tsc2007.h
+ rename drivers/input/touchscreen/{tsc2007.c => tsc2007_core.c} (70%)
+ create mode 100644 drivers/input/touchscreen/tsc2007_iio.c
+
+-- 
+2.7.3
+
