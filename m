@@ -1,55 +1,110 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43657 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754765AbcJ3StD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 14:49:03 -0400
-Subject: Re: [PATCH v3] staging: iio: cdc: ad7746: add additional config
- defines
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-References: <1477643212-7200-1-git-send-email-eraretuya@gmail.com>
- <f59b10dc-e273-d147-611c-0fca52ee8bc0@kernel.org>
- <48d88156-88a9-dcc9-48d8-809d992c56e1@metafoo.de>
-Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5ef0f1e1-236c-0698-cdfc-533125b2d2c7@kernel.org>
-Date: Sun, 30 Oct 2016 18:49:00 +0000
-MIME-Version: 1.0
-In-Reply-To: <48d88156-88a9-dcc9-48d8-809d992c56e1@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.177]:9082 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S935089AbcJ0JRl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Oct 2016 05:17:41 -0400
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: [PATCH v6 8/8] DT:omap3+ads7846: use new common touchscreen bindings
+Date: Thu, 27 Oct 2016 10:44:21 +0200
+Message-Id: <be92bcaf2df15f6ef6d798a8ea72878c28b374c0.1477557860.git.hns@goldelico.com>
+In-Reply-To: <cover.1477557860.git.hns@goldelico.com>
+References: <cover.1477557860.git.hns@goldelico.com>
+In-Reply-To: <cover.1477557860.git.hns@goldelico.com>
+References: <cover.1477557860.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/10/16 17:46, Lars-Peter Clausen wrote:
-> On 10/30/2016 06:41 PM, Jonathan Cameron wrote:
->> On 28/10/16 09:26, Eva Rachel Retuya wrote:
->>> Introduce defines for shifting and mask under the config register for
->>> better readability. Also, introduce helper variables for index
->>> calculation.
->>>
->>> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
->> Looks good to me.
->>
->> Lars could you sanity check this one as well?
-> 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
-There was a bit of fun applying this.  Eva, can you check I didn't mess it
-up?
+The standard touch screen bindings [1] replace the private ti,swap-xy
+with touchscreen-swaped-x-y. And for the Openpandora we use
+touchscreen-size etc. to match the LCD screen size.
 
-Applied to the togreg branch of iio.git.  Initially pushed out as testing
-for the autobuilders to play with it. (and this time I remembered to actually
-do the push!)
+[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
 
-thanks,
+Tested with OpenPandora.
 
-Jonathan
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ arch/arm/boot/dts/omap3-lilly-a83x.dtsi              |  2 +-
+ arch/arm/boot/dts/omap3-pandora-common.dtsi          | 17 +++++++++++++----
+ arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi |  3 ++-
+ 3 files changed, 16 insertions(+), 6 deletions(-)
+
+diff --git a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
+index fa611a5..b8b3864 100644
+--- a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
++++ b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
+@@ -325,7 +325,7 @@
+ 		ti,y-max = /bits/ 16 <3600>;
+ 		ti,x-plate-ohms = /bits/ 16 <80>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+-		ti,swap-xy;
++		touchscreen-swapped-x-y;
+ 
+ 		wakeup-source;
+ 	};
+diff --git a/arch/arm/boot/dts/omap3-pandora-common.dtsi b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+index b0d1551..d12008a 100644
+--- a/arch/arm/boot/dts/omap3-pandora-common.dtsi
++++ b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+@@ -700,10 +700,19 @@
+ 		pendown-gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
+ 		vcc-supply = <&vaux4>;
+ 
+-		ti,x-min = /bits/ 16 <0>;
+-		ti,x-max = /bits/ 16 <8000>;
+-		ti,y-min = /bits/ 16 <0>;
+-		ti,y-max = /bits/ 16 <4800>;
++		touchscreen-size-x = <800>;
++		touchscreen-size-y = <480>;
++		touchscreen-max-pressure = <1000>;
++		touchscreen-fuzz-x = <16>;
++		touchscreen-fuzz-y = <16>;
++		touchscreen-fuzz-pressure = <10>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++
++		ti,x-min = /bits/ 16 <160>;
++		ti,x-max = /bits/ 16 <3900>;
++		ti,y-min = /bits/ 16 <220>;
++		ti,y-max = /bits/ 16 <3750>;
+ 		ti,x-plate-ohms = /bits/ 16 <40>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+ 
+diff --git a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
+index 157345b..3627a63 100644
+--- a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
++++ b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
+@@ -66,6 +66,7 @@
+ 		ti,x-plate-ohms = /bits/ 16 <40>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+ 		ti,swap-xy;
+-		wakeup-source;
++		touchscreen-swapped-x-y;
++		linux,wakeup;
+ 	};
+ };
+-- 
+2.7.3
 
