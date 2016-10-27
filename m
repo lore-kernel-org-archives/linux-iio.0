@@ -1,65 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:50894 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1759990AbcJ1KAc (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 28 Oct 2016 06:00:32 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, Mark.Rutland@arm.com
-Subject: [PATCH 09/10] staging: iio: tsl2583: add error code to sysfs store functions
-Date: Fri, 28 Oct 2016 06:00:20 -0400
-Message-Id: <1477648821-3786-10-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
-References: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.177]:9561 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932629AbcJ0JR0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 27 Oct 2016 05:17:26 -0400
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: [PATCH v6 2/8] drivers:input:tsc2007: send pendown and penup only once like ads7846(+tsc2046) driver does
+Date: Thu, 27 Oct 2016 10:44:15 +0200
+Message-Id: <5e961a92f11b1509bd0effb96ef560f19839aa9d.1477557860.git.hns@goldelico.com>
+In-Reply-To: <cover.1477557860.git.hns@goldelico.com>
+References: <cover.1477557860.git.hns@goldelico.com>
+In-Reply-To: <cover.1477557860.git.hns@goldelico.com>
+References: <cover.1477557860.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-in_illuminance_input_target_store() and in_illuminance_calibrate_store()
-validated the data from userspace, however it would not return an
-error code to userspace if an invalid value was passed in. This patch
-changes these functions so that they return -EINVAL if invalid data is
-passed in.
+this should reduce unnecessary input events.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/staging/iio/light/tsl2583.c | 10 ++++------
- 1 file changed, 4 insertions(+), 6 deletions(-)
+ drivers/input/touchscreen/tsc2007.c | 17 +++++++++++++----
+ 1 file changed, 13 insertions(+), 4 deletions(-)
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 1462374..98afa5b 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -525,11 +525,10 @@ static ssize_t in_illuminance_input_target_store(struct device *dev,
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int value;
+diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+index c1d9593..e9d5086 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -94,6 +94,7 @@ struct tsc2007 {
  
--	if (kstrtoint(buf, 0, &value))
-+	if (kstrtoint(buf, 0, &value) || !value)
- 		return -EINVAL;
+ 	wait_queue_head_t	wait;
+ 	bool			stopped;
++	bool			pendown;
  
--	if (value)
--		chip->taos_settings.als_cal_target = value;
-+	chip->taos_settings.als_cal_target = value;
+ 	int			(*get_pendown_state)(struct device *);
+ 	void			(*clear_penirq)(void);
+@@ -227,7 +228,11 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 				sx, sy, rt);
  
- 	return len;
- }
-@@ -541,11 +540,10 @@ static ssize_t in_illuminance_calibrate_store(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	int value;
+ 			/* report event */
+-			input_report_key(input, BTN_TOUCH, 1);
++			if (!ts->pendown) {
++				input_report_key(input, BTN_TOUCH, 1);
++				ts->pendown = true;
++			}
++
+ 			touchscreen_report_pos(ts->input, &ts->prop,
+ 						(unsigned int) sx,
+ 						(unsigned int) sy,
+@@ -250,9 +255,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
  
--	if (kstrtoint(buf, 0, &value))
-+	if (kstrtoint(buf, 0, &value) || value != 1)
- 		return -EINVAL;
+ 	dev_dbg(&ts->client->dev, "UP\n");
  
--	if (value == 1)
--		taos_als_calibrate(indio_dev);
-+	taos_als_calibrate(indio_dev);
+-	input_report_key(input, BTN_TOUCH, 0);
+-	input_report_abs(input, ABS_PRESSURE, 0);
+-	input_sync(input);
++	if (ts->pendown) {
++		input_report_key(input, BTN_TOUCH, 0);
++		input_report_abs(input, ABS_PRESSURE, 0);
++		input_sync(input);
++
++		ts->pendown = false;
++	}
  
- 	return len;
- }
+ 	if (ts->clear_penirq)
+ 		ts->clear_penirq();
 -- 
-2.7.4
+2.7.3
 
