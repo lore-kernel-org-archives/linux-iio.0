@@ -1,172 +1,240 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42301 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751981AbcJ3Odl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 10:33:41 -0400
-Subject: Re: [PATCH 05/10] iio: adc: stm32: add trigger polarity ext attr
-To: Fabrice Gasnier <fabrice.gasnier@st.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1477412722-24061-1-git-send-email-fabrice.gasnier@st.com>
- <1477412722-24061-6-git-send-email-fabrice.gasnier@st.com>
-Cc: linux@armlinux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <42d0ccc5-7fcd-f30b-42b2-fdd2591984d1@kernel.org>
-Date: Sun, 30 Oct 2016 14:33:38 +0000
+Return-Path: <pmeerw@pmeerw.net>
+Date: Sun, 30 Oct 2016 16:23:00 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>
+cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+    Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
+    Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+    devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 2/8] iio: inkern: add helpers to query available values
+ from channels
+In-Reply-To: <c7848c84-960b-506f-f2e2-4aadfc5246f9@kernel.org>
+Message-ID: <alpine.DEB.2.02.1610301611070.32031@pmeerw.net>
+References: <1477262381-7800-1-git-send-email-peda@axentia.se> <1477262381-7800-3-git-send-email-peda@axentia.se> <c7848c84-960b-506f-f2e2-4aadfc5246f9@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1477412722-24061-6-git-send-email-fabrice.gasnier@st.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-On 25/10/16 17:25, Fabrice Gasnier wrote:
-> Add trigger polarity extended attribute.
+
+> On 23/10/16 23:39, Peter Rosin wrote:
+> > Specifically a helper for reading the available maximum raw value of a
+> > channel and a helper for forwarding read_avail requests for raw values
+> > from one iio driver to an iio channel that is consumed.
+> > 
+> > These rather specific helpers are in turn built with generic helpers
+> > making it easy to build more helpers for available values as needed.
+> > 
+> > Signed-off-by: Peter Rosin <peda@axentia.se>
+> Looks good to me.  Just what I was after.
+
+some comments below
+ 
+> Jonathan
+> > ---
+> >  drivers/iio/inkern.c         | 97 ++++++++++++++++++++++++++++++++++++++++++++
+> >  include/linux/iio/consumer.h | 29 +++++++++++++
+> >  include/linux/iio/iio.h      | 17 ++++++++
+> >  3 files changed, 143 insertions(+)
+> > 
+> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> > index c4757e6367e7..74808f8a187a 100644
+> > --- a/drivers/iio/inkern.c
+> > +++ b/drivers/iio/inkern.c
+> > @@ -703,6 +703,103 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
+> >  }
+> >  EXPORT_SYMBOL_GPL(iio_read_channel_scale);
+> >  
+> > +static int iio_channel_read_avail(struct iio_channel *chan,
+> > +				  const int **vals, int *type, int *length,
+> > +				  enum iio_chan_info_enum info)
+> > +{
+> > +	if (!iio_channel_has_available(chan->channel, info))
+> > +		return -EINVAL;
+> > +
+> > +	return chan->indio_dev->info->read_avail(chan->indio_dev, chan->channel,
+> > +						 vals, type, length, info);
+> > +}
+> > +
+> > +int iio_read_avail_channel_raw(struct iio_channel *chan,
+> > +			       const int **vals, int *type, int *length)
+> > +{
+> > +	int ret;
+> > +
+> > +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> > +	if (!chan->indio_dev->info) {
+> > +		ret = -ENODEV;
+> > +		goto err_unlock;
+> > +	}
+> > +
+> > +	ret = iio_channel_read_avail(chan,
+> > +				     vals, type, length, IIO_CHAN_INFO_RAW);
+> > +err_unlock:
+> > +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iio_read_avail_channel_raw);
+> > +
+> > +static int iio_channel_read_max(struct iio_channel *chan,
+> > +				int *val, int *val2, int *type,
+> > +				enum iio_chan_info_enum info)
+> > +{
+> > +	int unused;
+> > +	const int *vals;
+> > +	int length;
+> > +	int ret;
+> > +
+> > +	if (!val2)
+> > +		val2 = &unused;
+> > +
+> > +	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
+> > +	switch (ret) {
+> > +	case IIO_AVAIL_RANGE:
+> > +		switch (*type) {
+> > +		case IIO_VAL_INT:
+> > +			*val = vals[2];
+> > +			break;
+> > +		default:
+> > +			*val = vals[4];
+> > +			*val2 = vals[5];
+> > +		}
+> > +		return 0;
+> > +
+> > +	case IIO_AVAIL_LIST:
+> > +		if (length <= 0)
+> > +			return -EINVAL;
+> > +		switch (*type) {
+> > +		case IIO_VAL_INT:
+> > +			*val = vals[--length];
+> > +			while (length) {
+> > +				if (vals[--length] > *val)
+> > +					*val = vals[length];
+> > +			}
+> > +			break;
+> > +		default:
+> > +			/* FIXME: learn about max for other iio values */
+> > +			return -EINVAL;
+> > +		}
+> > +		return 0;
+> > +
+> > +	default:
+> > +		return ret;
+> > +	}
+> > +}
+> > +
+> > +int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
+> > +{
+> > +	int ret;
+> > +	int type;
+> > +
+> > +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> > +	if (!chan->indio_dev->info) {
+> > +		ret = -ENODEV;
+> > +		goto err_unlock;
+> > +	}
+> > +
+> > +	ret = iio_channel_read_max(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
+> > +err_unlock:
+> > +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> > +
+> > +	return ret;
+> > +}
+> > +EXPORT_SYMBOL_GPL(iio_read_max_channel_raw);
+> > +
+> >  int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
+> >  {
+> >  	int ret = 0;
+> > diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> > index 9edccfba1ffb..baab5e45734f 100644
+> > --- a/include/linux/iio/consumer.h
+> > +++ b/include/linux/iio/consumer.h
+> > @@ -226,6 +226,35 @@ int iio_read_channel_processed(struct iio_channel *chan, int *val);
+> >  int iio_write_channel_raw(struct iio_channel *chan, int val);
+> >  
+> >  /**
+> > + * iio_read_max_channel_raw() - read maximum available raw value from a given
+> > + *				channel
+> > + * @chan:		The channel being queried.
+> > + * @val:		Value read back.
+> > + *
+> > + * Note raw reads from iio channels are in adc counts and hence
+
+"Note: raw reads..." would be easier...
+here and below
+
+why is there no val2 here?
+
+just reading the documentation ("maximum available raw value") I am not 
+sure what the function does: does it return the maximum value possible? or 
+the maximum value in some internal buffer? maximum value ever seen?
+
+> > + * scale will need to be applied if standard units are required.
+> > + */
+> > +int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
+> > +
+> > +/**
+> > + * iio_read_avail_channel_raw() - read available raw values from a given channel
+> > + * @chan:		The channel being queried.
+> > + * @vals:		Available values read back.
+
+no vals2?
+
+> > + * @type:		Type of available values in vals.
+
+it is not clear what type is
+
+> > + * @length:		Number of entries in vals.
+> > + *
+> > + * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
+> > + *
+> > + * For ranges, three vals are always returned; min, step and max.
+> > + * For lists, all the possible values are enumerated.
+> > + *
+> > + * Note raw available values from iio channels are in adc counts and
+> > + * hence scale will need to be applied if standard units are required.
+> > + */
+> > +int iio_read_avail_channel_raw(struct iio_channel *chan,
+> > +			       const int **vals, int *type, int *length);
+> > +
+> > +/**
+> >   * iio_get_channel_type() - get the type of a channel
+> >   * @channel:		The channel being queried.
+> >   * @type:		The type of the channel.
+> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> > index 45b781084a4b..e565701d13ce 100644
+> > --- a/include/linux/iio/iio.h
+> > +++ b/include/linux/iio/iio.h
+> > @@ -315,6 +315,23 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+> >  		(chan->info_mask_shared_by_all & BIT(type));
+> >  }
+> >  
+> > +/**
+> > + * iio_channel_has_available() - Checks if a channel has an available attribute
+> > + * @chan: The channel to be queried
+> > + * @type: Type of the available attribute to be checked
+> > + *
+> > + * Returns true if the channels supports reporting available values for the
+
+channel
+
+> > + * given attribute type, false otherwise.
+> > + */
+> > +static inline bool iio_channel_has_available(const struct iio_chan_spec *chan,
+> > +					     enum iio_chan_info_enum type)
+> > +{
+> > +	return (chan->info_mask_separate_available & BIT(type)) |
+> > +		(chan->info_mask_shared_by_type_available & BIT(type)) |
+> > +		(chan->info_mask_shared_by_dir_available & BIT(type)) |
+> > +		(chan->info_mask_shared_by_all_available & BIT(type));
+> > +}
+> > +
+> >  #define IIO_CHAN_SOFT_TIMESTAMP(_si) {					\
+> >  	.type = IIO_TIMESTAMP,						\
+> >  	.channel = -1,							\
+> > 
 > 
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-ABI always needs documenting.  Add docs also makes it easy to review
-without diving into the code.
 
-This will also need a convincing argument for why it doesn't belong in the
-device tree.
+-- 
 
-J
-> ---
->  drivers/iio/adc/stm32/stm32-adc.c   | 41 ++++++++++++++++++++++++++++++++++++-
->  drivers/iio/adc/stm32/stm32-adc.h   |  4 ++++
->  drivers/iio/adc/stm32/stm32f4-adc.c | 12 +++++++++++
->  3 files changed, 56 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/iio/adc/stm32/stm32-adc.c b/drivers/iio/adc/stm32/stm32-adc.c
-> index 1a13450..9b4b459 100644
-> --- a/drivers/iio/adc/stm32/stm32-adc.c
-> +++ b/drivers/iio/adc/stm32/stm32-adc.c
-> @@ -207,7 +207,11 @@ static int stm32_adc_set_trig(struct iio_dev *indio_dev,
->  
->  		/* trigger source */
->  		extsel = trig_info[ret].extsel;
-> -		exten = STM32_EXTEN_HWTRIG_RISING_EDGE;
-> +
-> +		/* default to rising edge if no polarity */
-> +		if (adc->exten == STM32_EXTEN_SWTRIG)
-> +			adc->exten = STM32_EXTEN_HWTRIG_RISING_EDGE;
-> +		exten = adc->exten;
->  	}
->  
->  	spin_lock_irqsave(&adc->lock, flags);
-> @@ -221,6 +225,40 @@ static int stm32_adc_set_trig(struct iio_dev *indio_dev,
->  	return 0;
->  }
->  
-> +static int stm32_adc_set_trig_pol(struct iio_dev *indio_dev,
-> +				  const struct iio_chan_spec *chan,
-> +				  unsigned int type)
-> +{
-> +	struct stm32_adc *adc = iio_priv(indio_dev);
-> +
-> +	adc->exten = type;
-> +
-> +	return 0;
-> +}
-> +
-> +static int stm32_adc_get_trig_pol(struct iio_dev *indio_dev,
-> +				  const struct iio_chan_spec *chan)
-> +{
-> +	struct stm32_adc *adc = iio_priv(indio_dev);
-> +
-> +	return adc->exten;
-> +}
-> +
-> +static const char * const stm32_trig_pol_items[] = {
-> +	[STM32_EXTEN_SWTRIG] = "swtrig",
-> +	[STM32_EXTEN_HWTRIG_RISING_EDGE] = "rising-edge",
-> +	[STM32_EXTEN_HWTRIG_FALLING_EDGE] = "falling-edge",
-> +	[STM32_EXTEN_HWTRIG_BOTH_EDGES] = "both-edges",
-> +};
-> +
-> +const struct iio_enum stm32_adc_trig_pol = {
-> +	.items = stm32_trig_pol_items,
-> +	.num_items = ARRAY_SIZE(stm32_trig_pol_items),
-> +	.get = stm32_adc_get_trig_pol,
-> +	.set = stm32_adc_set_trig_pol,
-> +};
-> +EXPORT_SYMBOL_GPL(stm32_adc_trig_pol);
-> +
->  /**
->   * stm32_adc_conv_irq_enable() - Unmask end of conversion irq
->   * @adc: stm32 adc instance
-> @@ -893,6 +931,7 @@ static void stm32_adc_chan_init_one(struct iio_dev *indio_dev,
->  	chan->scan_type.realbits = adc->common->data->highres;
->  	chan->scan_type.storagebits = STM32_STORAGEBITS;
->  	chan->scan_type.shift = 0;
-> +	chan->ext_info = adc->common->data->ext_info;
->  }
->  
->  static int stm32_adc_chan_of_init(struct iio_dev *indio_dev,
-> diff --git a/drivers/iio/adc/stm32/stm32-adc.h b/drivers/iio/adc/stm32/stm32-adc.h
-> index fe3568b..6c9b70d 100644
-> --- a/drivers/iio/adc/stm32/stm32-adc.h
-> +++ b/drivers/iio/adc/stm32/stm32-adc.h
-> @@ -234,6 +234,7 @@ struct stm32_adc_reginfo {
->   * @ext_triggers:	Reference to trigger info for regular channels
->   * @jext_triggers:	Reference to trigger info for injected channels
->   * @adc_reginfo:	stm32 ADC registers description
-> + * @ext_info:		Extended channel info
->   * @highres:		Max resolution
->   * @max_clock_rate:	Max input clock rate
->   * @clk_sel:		routine to select common clock and prescaler
-> @@ -251,6 +252,7 @@ struct stm32_adc_ops {
->  	const struct stm32_adc_trig_info *ext_triggers;
->  	const struct stm32_adc_trig_info *jext_triggers;
->  	const struct stm32_adc_reginfo *adc_reginfo;
-> +	const struct iio_chan_spec_ext_info *ext_info;
->  	int highres;
->  	unsigned long max_clock_rate;
->  	int (*clk_sel)(struct stm32_adc *adc);
-> @@ -273,6 +275,7 @@ struct stm32_adc_ops {
->   * @id:			ADC instance number (e.g. adc 1, 2 or 3)
->   * @offset:		ADC instance register offset in ADC block
->   * @max_channels:	Max channels number for this ADC.
-> + * @exten:		External trigger config (enable/polarity)
->   * @extrig_list:	External trigger list (for regular channel)
->   * @completion:		end of single conversion completion
->   * @buffer:		data buffer
-> @@ -295,6 +298,7 @@ struct stm32_adc {
->  	int			id;
->  	int			offset;
->  	int			max_channels;
-> +	enum stm32_adc_exten	exten;
->  	struct list_head	extrig_list;
->  	struct completion	completion;
->  	u16			*buffer;
-> diff --git a/drivers/iio/adc/stm32/stm32f4-adc.c b/drivers/iio/adc/stm32/stm32f4-adc.c
-> index 4d7a2a8..e033a68 100644
-> --- a/drivers/iio/adc/stm32/stm32f4-adc.c
-> +++ b/drivers/iio/adc/stm32/stm32f4-adc.c
-> @@ -555,11 +555,23 @@ static int stm32f4_adc_clk_sel(struct stm32_adc *adc)
->  	return 0;
->  }
->  
-> +static const struct iio_chan_spec_ext_info stm32f4_adc_ext_info[] = {
-> +	IIO_ENUM("trigger_pol", IIO_SHARED_BY_ALL, &stm32_adc_trig_pol),
-> +	{
-> +		.name = "trigger_pol_available",
-> +		.shared = IIO_SHARED_BY_ALL,
-> +		.read = iio_enum_available_read,
-> +		.private = (uintptr_t)&stm32_adc_trig_pol,
-> +	},
-> +	{},
-> +};
-> +
->  static const struct stm32_adc_ops stm32f4_adc_ops = {
->  	.adc_info = stm32f4_adc_info,
->  	.ext_triggers = stm32f4_adc_ext_triggers,
->  	.jext_triggers = stm32f4_adc_jext_triggers,
->  	.adc_reginfo = &stm32f4_adc_reginfo,
-> +	.ext_info = stm32f4_adc_ext_info,
->  	.highres = 12,
->  	.max_clock_rate = 36000000,
->  	.clk_sel = stm32f4_adc_clk_sel,
-> 
-
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
