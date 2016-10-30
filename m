@@ -1,240 +1,335 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Sun, 30 Oct 2016 16:23:00 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>
-cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>, Rob Herring <robh+dt@kernel.org>,
-    Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-    devicetree@vger.kernel.org
-Subject: Re: [PATCH v3 2/8] iio: inkern: add helpers to query available values
- from channels
-In-Reply-To: <c7848c84-960b-506f-f2e2-4aadfc5246f9@kernel.org>
-Message-ID: <alpine.DEB.2.02.1610301611070.32031@pmeerw.net>
-References: <1477262381-7800-1-git-send-email-peda@axentia.se> <1477262381-7800-3-git-send-email-peda@axentia.se> <c7848c84-960b-506f-f2e2-4aadfc5246f9@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42239 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754879AbcJ3OVT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 10:21:19 -0400
+Subject: Re: [PATCH 06/10] iio: adc: stm32: add ext attrs to configure
+ sampling time
+To: Fabrice Gasnier <fabrice.gasnier@st.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1477412722-24061-1-git-send-email-fabrice.gasnier@st.com>
+ <1477412722-24061-7-git-send-email-fabrice.gasnier@st.com>
+Cc: linux@armlinux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3e6634e9-35ce-5bd0-6647-e4e7d6d40261@kernel.org>
+Date: Sun, 30 Oct 2016 14:21:11 +0000
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1477412722-24061-7-git-send-email-fabrice.gasnier@st.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+On 25/10/16 17:25, Fabrice Gasnier wrote:
+> Add per channel "smpr" IIO extended attribute, to allow sampling
+> time configuration.
+> 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+First thing is that any attributes need to be documented in
+Documentation/ABI/testing/sysfs-bus-iio-*
+
+Secondly this feels rather like it should be possible to use standard ABI for
+this. The documentation manages to successfully skip passed the use of
+any standard ADC terminology. I'm not actually sure what its
+doing when it talks about sampling time... Does this device even have an
+inbuilt track and hold?  Presumably but who knows...  Ah, the document
+'How to get the best ADC accuracy in STM32FX ... ' gives some details in the
+section on how to deal with high impedance sources.  Worth adding a reference
+to that for this.
+
+Arguably the 'right' value for these is dependent on the local electrical
+properties, so should be described in the device tree rather than tweaked
+from userspace.
+
+If you do want to do still want to provide userspace control then it
+needs to fit nicely within the IIO ABI.  Now arguably it's 'sort of'
+integration time but only via a nasty non linear relationship so lets
+not abuse that but rather work up something ADC specific.
+
+As such we would be looking at something like.
+
+in_voltageX_track_time and the units should be seconds (it'll be a pain, but
+we need to end up with a generic ABI so it has to be in standard units).
+It might make sense to add this to the core info_mask element list and
+handle it that way.  I'm still dubious that this isn't really a hardware
+question that should never be exposed to userspace in the first place...
+You will need to convince me ;)
+
+A few more specific comments inline.
+> ---
+>  drivers/iio/adc/stm32/stm32-adc.c   | 75 +++++++++++++++++++++++++++++++++++++
+>  drivers/iio/adc/stm32/stm32-adc.h   | 25 +++++++++++++
+>  drivers/iio/adc/stm32/stm32f4-adc.c | 48 ++++++++++++++++++++++++
+>  3 files changed, 148 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/stm32/stm32-adc.c b/drivers/iio/adc/stm32/stm32-adc.c
+> index 9b4b459..1681f75 100644
+> --- a/drivers/iio/adc/stm32/stm32-adc.c
+> +++ b/drivers/iio/adc/stm32/stm32-adc.c
+> @@ -38,6 +38,61 @@
+>  #include "stm32-adc.h"
+>  
+>  /**
+> + * stm32_adc_conf_smp() - Configure sampling time for each channel
+> + * @indio_dev: IIO device
+> + * @scan_mask: channels to be converted
+> + */
+> +static int stm32_adc_conf_smp(struct iio_dev *indio_dev,
+> +			      const unsigned long *scan_mask)
+> +{
+> +	struct stm32_adc *adc = iio_priv(indio_dev);
+> +	const struct stm32_adc_regs *smp =
+> +		adc->common->data->adc_reginfo->smpr_regs;
+> +	struct stm32_adc_chan *stm32_chan;
+> +	const struct iio_chan_spec *chan;
+> +	u32 bit, val;
+> +	int i;
+> +
+> +	for_each_set_bit(bit, scan_mask, indio_dev->masklength) {
+> +		chan = indio_dev->channels + bit;
+> +		stm32_chan = to_stm32_chan(adc, chan);
+> +		i = chan->channel;
+> +
+> +		if (i >= adc->max_channels)
+> +			return -EINVAL;
+> +
+> +		val = stm32_adc_readl(adc, smp[i].reg);
+> +		val &= ~smp[i].mask;
+> +		val |= (stm32_chan->smpr << smp[i].shift) & smp[i].mask;
+> +		stm32_adc_writel(adc, smp[i].reg, val);
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +int stm32_adc_set_smpr(struct iio_dev *indio_dev,
+> +		       const struct iio_chan_spec *chan, unsigned int smpr)
+> +{
+> +	struct stm32_adc *adc = iio_priv(indio_dev);
+> +	struct stm32_adc_chan *stm32_chan = to_stm32_chan(adc, chan);
+> +
+> +	stm32_chan->smpr = smpr;
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL_GPL(stm32_adc_set_smpr);
+> +
+> +int stm32_adc_get_smpr(struct iio_dev *indio_dev,
+> +		       const struct iio_chan_spec *chan)
+> +{
+> +	struct stm32_adc *adc = iio_priv(indio_dev);
+> +	struct stm32_adc_chan *stm32_chan = to_stm32_chan(adc, chan);
+> +
+> +	return stm32_chan->smpr;
+> +}
+> +EXPORT_SYMBOL_GPL(stm32_adc_get_smpr);
+> +
+> +/**
+>   * stm32_adc_conf_scan_seq() - Build regular or injected channels scan sequence
+>   * @indio_dev: IIO device
+>   * @scan_mask: channels to be converted
+> @@ -126,6 +181,12 @@ static int stm32_adc_conf_scan(struct iio_dev *indio_dev,
+>  		return ret;
+>  	}
+>  
+> +	ret = stm32_adc_conf_smp(indio_dev, scan_mask);
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "Failed to configure samp time\n");
+> +		goto err_dis;
+> +	}
+> +
+>  	ret = stm32_adc_conf_scan_seq(indio_dev, scan_mask);
+>  	if (ret) {
+>  		dev_err(&indio_dev->dev, "Failed to configure sequence\n");
+> @@ -938,6 +999,7 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev,
+>  				  const struct stm32_adc_info *adc_info)
+>  {
+>  	struct stm32_adc *adc = iio_priv(indio_dev);
+> +	struct stm32_adc_common *common = adc->common;
+>  	struct device_node *node = indio_dev->dev.of_node;
+>  	struct property *prop;
+>  	const __be32 *cur;
+> @@ -945,6 +1007,19 @@ static int stm32_adc_chan_of_init(struct iio_dev *indio_dev,
+>  	int scan_index = 0, num_channels = 0;
+>  	u32 val;
+>  
+> +	if (!common->stm32_chans[adc->id]) {
+> +		/* Allocate extended attributes structure for an instance */
+> +		struct stm32_adc_chan *stm32_chans;
+> +
+> +		stm32_chans = devm_kcalloc(&indio_dev->dev,
+> +					   adc_info->max_channels,
+> +					   sizeof(*stm32_chans), GFP_KERNEL);
+> +		if (!stm32_chans)
+> +			return -ENOMEM;
+> +
+> +		common->stm32_chans[adc->id] = stm32_chans;
+> +	}
+> +
+>  	of_property_for_each_u32(node, "st,adc-channels", prop, cur, val)
+>  		num_channels++;
+>  
+> diff --git a/drivers/iio/adc/stm32/stm32-adc.h b/drivers/iio/adc/stm32/stm32-adc.h
+> index 6c9b70d..8cf1d5c 100644
+> --- a/drivers/iio/adc/stm32/stm32-adc.h
+> +++ b/drivers/iio/adc/stm32/stm32-adc.h
+> @@ -143,6 +143,14 @@ struct stm32_adc_chan_spec {
+>  };
+>  
+>  /**
+> + * struct stm32_adc_chan - Extended specifications of stm32 adc channels
+> + * @smpr: per channel sampling time selection
+> + */
+> +struct stm32_adc_chan {
+> +	unsigned smpr:3;
+> +};
+> +
+> +/**
+>   * struct stm32_adc_trig_info - ADC trigger info
+>   * @extsel:		trigger selection for regular or injected
+>   * @name:		name of the trigger, corresponding to its source
+> @@ -206,6 +214,7 @@ struct stm32_adc_trig_reginfo {
+>   * @jdr:		injected data registers offsets
+>   * @sqr_regs:		Regular sequence registers description
+>   * @jsqr_reg:		Injected sequence register description
+> + * @smpr_regs:		Sampling time registers description
+>   * @trig_reginfo:	regular trigger control registers description
+>   * @jtrig_reginfo:	injected trigger control registers description
+>   */
+> @@ -220,6 +229,7 @@ struct stm32_adc_reginfo {
+>  	u32 jdr[4];
+>  	const struct stm32_adc_regs *sqr_regs;
+>  	const struct stm32_adc_regs *jsqr_reg;
+> +	const struct stm32_adc_regs *smpr_regs;
+>  	const struct stm32_adc_trig_reginfo *trig_reginfo;
+>  	const struct stm32_adc_trig_reginfo *jtrig_reginfo;
+>  };
+> @@ -328,6 +338,7 @@ struct stm32_adc {
+>   * @aclk:		common clock for the analog circuitry
+>   * @vref:		regulator reference
+>   * @vref_mv:		vref voltage (mv)
+> + * @stm32_chans:	stm32 channels extended specification data
+>   * @gpio_descs:		gpio descriptor used to configure EXTi triggers
+>   * @lock:		mutex
+>   */
+> @@ -341,11 +352,21 @@ struct stm32_adc_common {
+>  	struct clk			*aclk;
+>  	struct regulator		*vref;
+>  	int				vref_mv;
+> +	struct stm32_adc_chan		*stm32_chans[STM32_ADC_ID_MAX];
+>  	struct gpio_descs		*gpios;
+>  	struct mutex			lock;	/* read_raw lock */
+>  };
+>  
+>  /* Helper routines */
+> +static inline struct stm32_adc_chan *to_stm32_chan(struct stm32_adc *adc,
+> +						   const struct iio_chan_spec
+> +						   *chan)
+> +{
+> +	struct stm32_adc_chan *stm32_chans = adc->common->stm32_chans[adc->id];
+> +
+> +	return &stm32_chans[chan->channel];
+> +}
+> +
+>  static inline int stm32_adc_start_conv(struct stm32_adc *adc)
+>  {
+>  	return adc->common->data->start_conv(adc);
+> @@ -458,6 +479,10 @@ static inline void stm32_adc_clr_bits(struct stm32_adc *adc, u32 reg, u32 bits)
+>  
+>  /* STM32 common extended attributes */
+>  extern const struct iio_enum stm32_adc_trig_pol;
+> +int stm32_adc_set_smpr(struct iio_dev *indio_dev,
+> +		       const struct iio_chan_spec *chan, unsigned int smpr);
+> +int stm32_adc_get_smpr(struct iio_dev *indio_dev,
+> +		       const struct iio_chan_spec *chan);
+>  int stm32_adc_probe(struct platform_device *pdev);
+>  int stm32_adc_remove(struct platform_device *pdev);
+>  
+> diff --git a/drivers/iio/adc/stm32/stm32f4-adc.c b/drivers/iio/adc/stm32/stm32f4-adc.c
+> index e033a68..e0e6211 100644
+> --- a/drivers/iio/adc/stm32/stm32f4-adc.c
+> +++ b/drivers/iio/adc/stm32/stm32f4-adc.c
+> @@ -330,6 +330,32 @@ enum stm32f4_adc_smpr {
+>  };
+>  
+>  /**
+> + * stm32f4_smpr_regs[] - describe sampling time registers & bit fields
+> + * Sorted so it can be indexed by channel number.
+> + */
+> +static const struct stm32_adc_regs stm32f4_smpr_regs[] = {
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP0_MASK, STM32F4_SMP0_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP1_MASK, STM32F4_SMP1_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP2_MASK, STM32F4_SMP2_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP3_MASK, STM32F4_SMP3_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP4_MASK, STM32F4_SMP4_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP5_MASK, STM32F4_SMP5_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP6_MASK, STM32F4_SMP6_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP7_MASK, STM32F4_SMP7_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP8_MASK, STM32F4_SMP8_SHIFT },
+> +	{ STM32F4_ADCX_SMPR2, STM32F4_SMP9_MASK, STM32F4_SMP9_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP10_MASK, STM32F4_SMP10_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP11_MASK, STM32F4_SMP11_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP12_MASK, STM32F4_SMP12_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP13_MASK, STM32F4_SMP13_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP14_MASK, STM32F4_SMP14_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP15_MASK, STM32F4_SMP15_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP16_MASK, STM32F4_SMP16_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP17_MASK, STM32F4_SMP17_SHIFT },
+> +	{ STM32F4_ADCX_SMPR1, STM32F4_SMP18_MASK, STM32F4_SMP18_SHIFT },
+> +};
+> +
+> +/**
+>   * stm32f4_sqr_regs - describe regular sequence registers
+>   * - L: sequence len (register & bit field)
+>   * - SQ1..SQ16: sequence entries (register & bit field)
+> @@ -407,6 +433,7 @@ enum stm32f4_adc_smpr {
+>  	},
+>  	.sqr_regs = stm32f4_sqr_regs,
+>  	.jsqr_reg = stm32f4_jsqr_reg,
+> +	.smpr_regs = stm32f4_smpr_regs,
+>  	.trig_reginfo = &stm32f4_adc_trig_reginfo,
+>  	.jtrig_reginfo = &stm32f4_adc_jtrig_reginfo,
+>  };
+> @@ -555,7 +582,28 @@ static int stm32f4_adc_clk_sel(struct stm32_adc *adc)
+>  	return 0;
+>  }
+>  
+> +/* stm32f4_smpr_items : Channel-wise programmable sampling time */
+> +static const char * const stm32f4_smpr_items[] = {
+> +	[STM32F4_SMPR_3_CK_CYCLES] = "3_cycles",
+> +	[STM32F4_SMPR_15_CK_CYCLES] = "15_cycles",
+> +	[STM32F4_SMPR_28_CK_CYCLES] = "28_cycles",
+> +	[STM32F4_SMPR_56_CK_CYCLES] = "56_cycles",
+> +	[STM32F4_SMPR_84_CK_CYCLES] = "84_cycles",
+> +	[STM32F4_SMPR_112_CK_CYCLES] = "112_cycles",
+> +	[STM32F4_SMPR_144_CK_CYCLES] = "144_cycles",
+> +	[STM32F4_SMPR_480_CK_CYCLES] = "480_cycles",
+This is a whole level of nasty magic numbers.  Always take real numeric
+values and either provide an _available attribute listing the options,
+or if appropriate round to the next best (probably up here).
+
+Units shouldn't be in cycles as that has no meaning without a deep and
+dirty knowledge of what clocks are being fed to the device.  Stuff that
+is at least tricky for userspace to work out.  THis is a time, so it
+should be in seconds.
 
 
-> On 23/10/16 23:39, Peter Rosin wrote:
-> > Specifically a helper for reading the available maximum raw value of a
-> > channel and a helper for forwarding read_avail requests for raw values
-> > from one iio driver to an iio channel that is consumed.
-> > 
-> > These rather specific helpers are in turn built with generic helpers
-> > making it easy to build more helpers for available values as needed.
-> > 
-> > Signed-off-by: Peter Rosin <peda@axentia.se>
-> Looks good to me.  Just what I was after.
-
-some comments below
- 
-> Jonathan
-> > ---
-> >  drivers/iio/inkern.c         | 97 ++++++++++++++++++++++++++++++++++++++++++++
-> >  include/linux/iio/consumer.h | 29 +++++++++++++
-> >  include/linux/iio/iio.h      | 17 ++++++++
-> >  3 files changed, 143 insertions(+)
-> > 
-> > diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-> > index c4757e6367e7..74808f8a187a 100644
-> > --- a/drivers/iio/inkern.c
-> > +++ b/drivers/iio/inkern.c
-> > @@ -703,6 +703,103 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
-> >  }
-> >  EXPORT_SYMBOL_GPL(iio_read_channel_scale);
-> >  
-> > +static int iio_channel_read_avail(struct iio_channel *chan,
-> > +				  const int **vals, int *type, int *length,
-> > +				  enum iio_chan_info_enum info)
-> > +{
-> > +	if (!iio_channel_has_available(chan->channel, info))
-> > +		return -EINVAL;
-> > +
-> > +	return chan->indio_dev->info->read_avail(chan->indio_dev, chan->channel,
-> > +						 vals, type, length, info);
-> > +}
-> > +
-> > +int iio_read_avail_channel_raw(struct iio_channel *chan,
-> > +			       const int **vals, int *type, int *length)
-> > +{
-> > +	int ret;
-> > +
-> > +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> > +	if (!chan->indio_dev->info) {
-> > +		ret = -ENODEV;
-> > +		goto err_unlock;
-> > +	}
-> > +
-> > +	ret = iio_channel_read_avail(chan,
-> > +				     vals, type, length, IIO_CHAN_INFO_RAW);
-> > +err_unlock:
-> > +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iio_read_avail_channel_raw);
-> > +
-> > +static int iio_channel_read_max(struct iio_channel *chan,
-> > +				int *val, int *val2, int *type,
-> > +				enum iio_chan_info_enum info)
-> > +{
-> > +	int unused;
-> > +	const int *vals;
-> > +	int length;
-> > +	int ret;
-> > +
-> > +	if (!val2)
-> > +		val2 = &unused;
-> > +
-> > +	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
-> > +	switch (ret) {
-> > +	case IIO_AVAIL_RANGE:
-> > +		switch (*type) {
-> > +		case IIO_VAL_INT:
-> > +			*val = vals[2];
-> > +			break;
-> > +		default:
-> > +			*val = vals[4];
-> > +			*val2 = vals[5];
-> > +		}
-> > +		return 0;
-> > +
-> > +	case IIO_AVAIL_LIST:
-> > +		if (length <= 0)
-> > +			return -EINVAL;
-> > +		switch (*type) {
-> > +		case IIO_VAL_INT:
-> > +			*val = vals[--length];
-> > +			while (length) {
-> > +				if (vals[--length] > *val)
-> > +					*val = vals[length];
-> > +			}
-> > +			break;
-> > +		default:
-> > +			/* FIXME: learn about max for other iio values */
-> > +			return -EINVAL;
-> > +		}
-> > +		return 0;
-> > +
-> > +	default:
-> > +		return ret;
-> > +	}
-> > +}
-> > +
-> > +int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
-> > +{
-> > +	int ret;
-> > +	int type;
-> > +
-> > +	mutex_lock(&chan->indio_dev->info_exist_lock);
-> > +	if (!chan->indio_dev->info) {
-> > +		ret = -ENODEV;
-> > +		goto err_unlock;
-> > +	}
-> > +
-> > +	ret = iio_channel_read_max(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
-> > +err_unlock:
-> > +	mutex_unlock(&chan->indio_dev->info_exist_lock);
-> > +
-> > +	return ret;
-> > +}
-> > +EXPORT_SYMBOL_GPL(iio_read_max_channel_raw);
-> > +
-> >  int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
-> >  {
-> >  	int ret = 0;
-> > diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-> > index 9edccfba1ffb..baab5e45734f 100644
-> > --- a/include/linux/iio/consumer.h
-> > +++ b/include/linux/iio/consumer.h
-> > @@ -226,6 +226,35 @@ int iio_read_channel_processed(struct iio_channel *chan, int *val);
-> >  int iio_write_channel_raw(struct iio_channel *chan, int val);
-> >  
-> >  /**
-> > + * iio_read_max_channel_raw() - read maximum available raw value from a given
-> > + *				channel
-> > + * @chan:		The channel being queried.
-> > + * @val:		Value read back.
-> > + *
-> > + * Note raw reads from iio channels are in adc counts and hence
-
-"Note: raw reads..." would be easier...
-here and below
-
-why is there no val2 here?
-
-just reading the documentation ("maximum available raw value") I am not 
-sure what the function does: does it return the maximum value possible? or 
-the maximum value in some internal buffer? maximum value ever seen?
-
-> > + * scale will need to be applied if standard units are required.
-> > + */
-> > +int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
-> > +
-> > +/**
-> > + * iio_read_avail_channel_raw() - read available raw values from a given channel
-> > + * @chan:		The channel being queried.
-> > + * @vals:		Available values read back.
-
-no vals2?
-
-> > + * @type:		Type of available values in vals.
-
-it is not clear what type is
-
-> > + * @length:		Number of entries in vals.
-> > + *
-> > + * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
-> > + *
-> > + * For ranges, three vals are always returned; min, step and max.
-> > + * For lists, all the possible values are enumerated.
-> > + *
-> > + * Note raw available values from iio channels are in adc counts and
-> > + * hence scale will need to be applied if standard units are required.
-> > + */
-> > +int iio_read_avail_channel_raw(struct iio_channel *chan,
-> > +			       const int **vals, int *type, int *length);
-> > +
-> > +/**
-> >   * iio_get_channel_type() - get the type of a channel
-> >   * @channel:		The channel being queried.
-> >   * @type:		The type of the channel.
-> > diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-> > index 45b781084a4b..e565701d13ce 100644
-> > --- a/include/linux/iio/iio.h
-> > +++ b/include/linux/iio/iio.h
-> > @@ -315,6 +315,23 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
-> >  		(chan->info_mask_shared_by_all & BIT(type));
-> >  }
-> >  
-> > +/**
-> > + * iio_channel_has_available() - Checks if a channel has an available attribute
-> > + * @chan: The channel to be queried
-> > + * @type: Type of the available attribute to be checked
-> > + *
-> > + * Returns true if the channels supports reporting available values for the
-
-channel
-
-> > + * given attribute type, false otherwise.
-> > + */
-> > +static inline bool iio_channel_has_available(const struct iio_chan_spec *chan,
-> > +					     enum iio_chan_info_enum type)
-> > +{
-> > +	return (chan->info_mask_separate_available & BIT(type)) |
-> > +		(chan->info_mask_shared_by_type_available & BIT(type)) |
-> > +		(chan->info_mask_shared_by_dir_available & BIT(type)) |
-> > +		(chan->info_mask_shared_by_all_available & BIT(type));
-> > +}
-> > +
-> >  #define IIO_CHAN_SOFT_TIMESTAMP(_si) {					\
-> >  	.type = IIO_TIMESTAMP,						\
-> >  	.channel = -1,							\
-> > 
+> +};
+> +
+> +static const struct iio_enum stm32f4_smpr = {
+> +	.items = stm32f4_smpr_items,
+> +	.num_items = ARRAY_SIZE(stm32f4_smpr_items),
+> +	.get = stm32_adc_get_smpr,
+> +	.set = stm32_adc_set_smpr,
+> +};
+> +
+>  static const struct iio_chan_spec_ext_info stm32f4_adc_ext_info[] = {
+> +	IIO_ENUM("smpr", IIO_SEPARATE, &stm32f4_smpr),
+> +	IIO_ENUM_AVAILABLE("smpr", &stm32f4_smpr),
+>  	IIO_ENUM("trigger_pol", IIO_SHARED_BY_ALL, &stm32_adc_trig_pol),
+>  	{
+>  		.name = "trigger_pol_available",
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
