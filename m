@@ -1,428 +1,410 @@
-Return-Path: <john3909@gmail.com>
-From: John Syne <john3909@gmail.com>
-Message-Id: <6D96BF71-429A-4BB2-B1B6-70EA4E766146@gmail.com>
-Content-Type: multipart/alternative;
- boundary="Apple-Mail=_352FFB9C-A2B4-41EF-A3D4-F47B703FB54F"
-Mime-Version: 1.0 (Mac OS X Mail 10.1 \(3251\))
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to
- 24MHz
-Date: Thu, 27 Oct 2016 14:14:55 -0700
-In-Reply-To: <20161026084811.GI8574@dell>
-Cc: Mugunthan V N <mugunthanvnm@ti.com>,
- linux-iio@vger.kernel.org,
- Tony Lindgren <tony@atomide.com>,
- Jonathan Cameron <jic23@kernel.org>,
- Vignesh R <vigneshr@ti.com>,
- linux-omap@vger.kernel.org,
- linux-arm-kernel@lists.infradead.org,
- linux-kernel@vger.kernel.org,
- Sekhar Nori <nsekhar@ti.com>,
- Peter Ujfalusi <peter.ujfalusi@ti.com>
-To: Lee Jones <lee.jones@linaro.org>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com>
- <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
- <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
- <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
- <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <20161025063847.GD8574@dell>
- <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com> <20161026084811.GI8574@dell>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from ns.pmeerw.net ([84.19.176.92]:38816 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753224AbcJ3Pcm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 30 Oct 2016 11:32:42 -0400
+Date: Sun, 30 Oct 2016 16:32:39 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>
+cc: linux-kernel@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: Re: [PATCH v3 6/8] iio: dpot-dac: DAC driver based on a digital
+ potentiometer
+In-Reply-To: <301ab064-cd90-d99d-a05a-8a50ba759c62@kernel.org>
+Message-ID: <alpine.DEB.2.02.1610301628400.32031@pmeerw.net>
+References: <1477262381-7800-1-git-send-email-peda@axentia.se> <1477262381-7800-7-git-send-email-peda@axentia.se> <301ab064-cd90-d99d-a05a-8a50ba759c62@kernel.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+On Sun, 30 Oct 2016, Jonathan Cameron wrote:
+
+> On 23/10/16 23:39, Peter Rosin wrote:
+> > It is assumed that the dpot is used as a voltage divider between the
+> > current dpot wiper setting and the maximum resistance of the dpot. The
+> > divided voltage is provided by a vref regulator.
+> > 
+> >                   .------.
+> >    .-----------.  |      |
+> >    | vref      |--'    .---.
+> >    | regulator |--.    |   |
+> >    '-----------'  |    | d |
+> >                   |    | p |
+> >                   |    | o |  wiper
+> >                   |    | t |<---------+
+> >                   |    |   |
+> >                   |    '---'       dac output voltage
+> >                   |      |
+> >                   '------+------------+
+> > 
+> > Signed-off-by: Peter Rosin <peda@axentia.se>
+> Only a trivial suggestion to drop the devinfo about max ohms now it's
+> exposed (effectively) via the dpot driver. (really minor though so don't bother
+> respinning for that!)
+> 
+> Jonathan
+> > ---
+> >  .../ABI/testing/sysfs-bus-iio-dac-dpot-dac         |   8 +
+> >  MAINTAINERS                                        |   2 +
+> >  drivers/iio/dac/Kconfig                            |  10 +
+> >  drivers/iio/dac/Makefile                           |   1 +
+> >  drivers/iio/dac/dpot-dac.c                         | 267 +++++++++++++++++++++
+> >  5 files changed, 288 insertions(+)
+> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
+> >  create mode 100644 drivers/iio/dac/dpot-dac.c
+> > 
+> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac b/Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
+> > new file mode 100644
+> > index 000000000000..580e93f373f6
+> > --- /dev/null
+> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
+> > @@ -0,0 +1,8 @@
+> > +What:		/sys/bus/iio/devices/iio:deviceX/out_voltageY_raw_available
+> > +Date:		October 2016
+> > +KernelVersion:	4.9
+> > +Contact:	Peter Rosin <peda@axentia.se>
+> > +Description:
+> > +		The range of available values represented as the minimum value,
+> > +		the step and the maximum value, all enclosed in square brackets.
+> > +		Example: [0 1 256]
+> > diff --git a/MAINTAINERS b/MAINTAINERS
+> > index 6218010128dc..d7375f45ff0f 100644
+> > --- a/MAINTAINERS
+> > +++ b/MAINTAINERS
+> > @@ -6115,7 +6115,9 @@ IIO DIGITAL POTENTIOMETER DAC
+> >  M:	Peter Rosin <peda@axentia.se>
+> >  L:	linux-iio@vger.kernel.org
+> >  S:	Maintained
+> > +F:	Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
+> >  F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+> > +F:	drivers/iio/dac/dpot-dac.c
+> >  
+> >  IIO SUBSYSTEM AND DRIVERS
+> >  M:	Jonathan Cameron <jic23@kernel.org>
+> > diff --git a/drivers/iio/dac/Kconfig b/drivers/iio/dac/Kconfig
+> > index 120b24478469..d3084028905b 100644
+> > --- a/drivers/iio/dac/Kconfig
+> > +++ b/drivers/iio/dac/Kconfig
+> > @@ -200,6 +200,16 @@ config AD8801
+> >  	  To compile this driver as a module choose M here: the module will be called
+> >  	  ad8801.
+> >  
+> > +config DPOT_DAC
+> > +	tristate "DAC emulation using a DPOT"
+> > +	depends on OF
+> > +	help
+> > +	  Say yes here to build support for DAC emulation using a digital
+> > +	  potentiometer.
+> > +
+> > +	  To compile this driver as a module, choose M here: the module will be
+> > +	  called dpot-dac.
+> > +
+> >  config LPC18XX_DAC
+> >  	tristate "NXP LPC18xx DAC driver"
+> >  	depends on ARCH_LPC18XX || COMPILE_TEST
+> > diff --git a/drivers/iio/dac/Makefile b/drivers/iio/dac/Makefile
+> > index 27642bbf75f2..f01bf4a99867 100644
+> > --- a/drivers/iio/dac/Makefile
+> > +++ b/drivers/iio/dac/Makefile
+> > @@ -22,6 +22,7 @@ obj-$(CONFIG_AD5686) += ad5686.o
+> >  obj-$(CONFIG_AD7303) += ad7303.o
+> >  obj-$(CONFIG_AD8801) += ad8801.o
+> >  obj-$(CONFIG_CIO_DAC) += cio-dac.o
+> > +obj-$(CONFIG_DPOT_DAC) += dpot-dac.o
+> >  obj-$(CONFIG_LPC18XX_DAC) += lpc18xx_dac.o
+> >  obj-$(CONFIG_M62332) += m62332.o
+> >  obj-$(CONFIG_MAX517) += max517.o
+> > diff --git a/drivers/iio/dac/dpot-dac.c b/drivers/iio/dac/dpot-dac.c
+> > new file mode 100644
+> > index 000000000000..f227a211d34d
+> > --- /dev/null
+> > +++ b/drivers/iio/dac/dpot-dac.c
+> > @@ -0,0 +1,267 @@
+> > +/*
+> > + * IIO DAC emulation driver using a digital potentiometer
+> > + *
+> > + * Copyright (C) 2016 Axentia Technologies AB
+> > + *
+> > + * Author: Peter Rosin <peda@axentia.se>
+> > + *
+> > + * This program is free software; you can redistribute it and/or modify
+> > + * it under the terms of the GNU General Public License version 2 as
+> > + * published by the Free Software Foundation.
+> > + */
+> > +
+> > +/*
+> > + * It is assumed that the dpot is used as a voltage divider between the
+> > + * current dpot wiper setting and the maximum resistance of the dpot. The
+> > + * divided voltage is provided by a vref regulator.
+> > + *
+> > + *                   .------.
+> > + *    .-----------.  |      |
+> > + *    | vref      |--'    .---.
+> > + *    | regulator |--.    |   |
+> > + *    '-----------'  |    | d |
+> > + *                   |    | p |
+> > + *                   |    | o |  wiper
+> > + *                   |    | t |<---------+
+> > + *                   |    |   |
+> > + *                   |    '---'       dac output voltage
+> > + *                   |      |
+> > + *                   '------+------------+
+> > + */
+> > +
+> > +#include <linux/err.h>
+> > +#include <linux/iio/consumer.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/regulator/consumer.h>
+> > +
+> > +struct dpot_dac {
+> > +	struct regulator *vref;
+> > +	struct iio_channel *dpot;
+> > +	u32 max_ohms;
+> > +};
+> > +
+> > +static const struct iio_chan_spec dpot_dac_iio_channel = {
+> > +	.type = IIO_VOLTAGE,
+> > +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW)
+> > +			    | BIT(IIO_CHAN_INFO_SCALE),
+> > +	.info_mask_separate_available = BIT(IIO_CHAN_INFO_RAW),
+> > +	.output = 1,
+> > +	.indexed = 1,
+> > +};
+> > +
+> > +static int dpot_dac_read_raw(struct iio_dev *indio_dev,
+> > +			     struct iio_chan_spec const *chan,
+> > +			     int *val, int *val2, long mask)
+> > +{
+> > +	struct dpot_dac *dac = iio_priv(indio_dev);
+> > +	int ret;
+> > +	unsigned long long tmp;
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		return iio_read_channel_raw(dac->dpot, val);
+> > +
+> > +	case IIO_CHAN_INFO_SCALE:
+> > +		ret = iio_read_channel_scale(dac->dpot, val, val2);
+> > +		switch (ret) {
+> > +		case IIO_VAL_FRACTIONAL_LOG2:
+> > +			tmp = *val * 1000000000LL;
+> > +			do_div(tmp, dac->max_ohms);
+> > +			tmp *= regulator_get_voltage(dac->vref) / 1000;
+> > +			do_div(tmp, 1000000000LL);
+> > +			*val = tmp;
+> > +			return ret;
+> > +		case IIO_VAL_INT:
+> > +			/*
+> > +			 * Convert integer scale to fractional scale by
+> > +			 * setting the denominator (val2) to one...
+> > +			 */
+> > +			*val2 = 1;
+> > +			ret = IIO_VAL_FRACTIONAL;
+> > +			/* ...and fall through. */
+> > +		case IIO_VAL_FRACTIONAL:
+> > +			*val *= regulator_get_voltage(dac->vref) / 1000;
+> > +			*val2 *= dac->max_ohms;
+> > +			break;
+> > +		}
+> > +
+> > +		return ret;
+> > +	}
+> > +
+> > +	return -EINVAL;
+> > +}
+> > +
+> > +static int dpot_dac_read_avail(struct iio_dev *indio_dev,
+> > +			       struct iio_chan_spec const *chan,
+> > +			       const int **vals, int *type, int *length,
+> > +			       long mask)
+> > +{
+> > +	struct dpot_dac *dac = iio_priv(indio_dev);
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		return iio_read_avail_channel_raw(dac->dpot,
+> > +						  vals, type, length);
+> > +	}
+> > +
+> > +	return -EINVAL;
+> > +}
+> > +
+> > +static int dpot_dac_write_raw(struct iio_dev *indio_dev,
+> > +			      struct iio_chan_spec const *chan,
+> > +			      int val, int val2, long mask)
+> > +{
+> > +	struct dpot_dac *dac = iio_priv(indio_dev);
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		return iio_write_channel_raw(dac->dpot, val);
+> > +	}
+> > +
+> > +	return -EINVAL;
+> > +}
+> > +
+> > +static const struct iio_info dpot_dac_info = {
+> > +	.read_raw = dpot_dac_read_raw,
+> > +	.read_avail = dpot_dac_read_avail,
+> > +	.write_raw = dpot_dac_write_raw,
+> > +	.driver_module = THIS_MODULE,
+> > +};
+> > +
+> > +static int dpot_dac_channel_max_ohms(struct iio_dev *indio_dev)
+> > +{
+> > +	struct device *dev = &indio_dev->dev;
+> > +	struct dpot_dac *dac = iio_priv(indio_dev);
+> > +	unsigned long long tmp;
+> > +	int ret;
+> > +	int val;
+> > +	int val2;
+> > +	int max;
+> > +
+> > +	ret = iio_read_max_channel_raw(dac->dpot, &max);
+> > +	if (ret < 0) {
+> > +		dev_err(dev, "dpot does not indicate its raw maximum value\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	switch (iio_read_channel_scale(dac->dpot, &val, &val2)) {
+> > +	case IIO_VAL_INT:
+> > +		return max * val;
+> > +	case IIO_VAL_FRACTIONAL:
+> > +		tmp = (unsigned long long)max * val;
+> > +		do_div(tmp, val2);
+> > +		return tmp;
+> > +	case IIO_VAL_FRACTIONAL_LOG2:
+> > +		tmp = (s64)val * 1000000000LL * max >> val2;
+
+(s64) necessary?
+or rather unsigned long long?
+
+> > +		do_div(tmp, 1000000000LL);
+> > +		return tmp;
+> > +	default:
+> > +		dev_err(dev, "dpot has a scale that is too weird\n");
+> > +	}
+> > +
+> > +	return -EINVAL;
+> > +}
+> > +
+> > +static int dpot_dac_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *dev = &pdev->dev;
+> > +	struct iio_dev *indio_dev;
+> > +	struct dpot_dac *dac;
+> > +	enum iio_chan_type type;
+> > +	int ret;
+> > +
+> > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*dac));
+> > +	if (!indio_dev)
+> > +		return -ENOMEM;
+> > +
+> > +	platform_set_drvdata(pdev, indio_dev);
+> > +	dac = iio_priv(indio_dev);
+> > +
+> > +	indio_dev->name = dev_name(dev);
+> > +	indio_dev->dev.parent = dev;
+> > +	indio_dev->info = &dpot_dac_info;
+> > +	indio_dev->modes = INDIO_DIRECT_MODE;
+> > +	indio_dev->channels = &dpot_dac_iio_channel;
+> > +	indio_dev->num_channels = 1;
+> > +
+> > +	dac->vref = devm_regulator_get(dev, "vref");
+> > +	if (IS_ERR(dac->vref)) {
+> > +		if (PTR_ERR(dac->dpot) != -EPROBE_DEFER)
+> > +			dev_err(&pdev->dev, "failed to get vref regulator\n");
+> > +		return PTR_ERR(dac->vref);
+> > +	}
+> > +
+> > +	dac->dpot = devm_iio_channel_get(dev, "dpot");
+> > +	if (IS_ERR(dac->dpot)) {
+> > +		if (PTR_ERR(dac->dpot) != -EPROBE_DEFER)
+> > +			dev_err(dev, "failed to get dpot input channel\n");
+> > +		return PTR_ERR(dac->dpot);
+> > +	}
+> > +
+> > +	ret = iio_get_channel_type(dac->dpot, &type);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +
+> > +	if (type != IIO_RESISTANCE) {
+> > +		dev_err(dev, "dpot is of the wrong type\n");
+> > +		return -EINVAL;
+> > +	}
+> > +
+> > +	ret = dpot_dac_channel_max_ohms(indio_dev);
+> > +	if (ret < 0)
+> > +		return ret;
+> > +	dac->max_ohms = ret;
+> > +	dev_info(dev, "dpot max is %d\n", dac->max_ohms);
+> Given we can query this (indirectly) from the dpot itself, I'd drop this now.
+
+max_ohms is u32, so this should be %u not %d?
 
 
---Apple-Mail=_352FFB9C-A2B4-41EF-A3D4-F47B703FB54F
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
+> 
+> > +
+> > +	ret = regulator_enable(dac->vref);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to enable the vref regulator\n");
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret = iio_device_register(indio_dev);
+> > +	if (ret) {
+> > +		dev_err(dev, "failed to register iio device\n");
+> > +		goto disable_reg;
+> > +	}
+> > +
+> > +	return 0;
+> > +
+> > +disable_reg:
+> > +	regulator_disable(dac->vref);
+> > +	return ret;
+> > +}
+> > +
+> > +static int dpot_dac_remove(struct platform_device *pdev)
+> > +{
+> > +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> > +	struct dpot_dac *dac = iio_priv(indio_dev);
+> > +
+> > +	iio_device_unregister(indio_dev);
+> > +	regulator_disable(dac->vref);
+> > +
+> > +	return 0;
+> > +}
+> > +
+> > +static const struct of_device_id dpot_dac_match[] = {
+> > +	{ .compatible = "dpot-dac" },
+> > +	{ /* sentinel */ }
+> > +};
+> > +MODULE_DEVICE_TABLE(of, dpot_dac_match);
+> > +
+> > +static struct platform_driver dpot_dac_driver = {
+> > +	.probe = dpot_dac_probe,
+> > +	.remove = dpot_dac_remove,
+> > +	.driver = {
+> > +		.name = "iio-dpot-dac",
+> > +		.of_match_table = dpot_dac_match,
+> > +	},
+> > +};
+> > +module_platform_driver(dpot_dac_driver);
+> > +
+> > +MODULE_DESCRIPTION("DAC emulation driver using a digital potentiometer");
+> > +MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
+> > +MODULE_LICENSE("GPL v2");
+> > 
+> 
 
->=20
-> On Oct 26, 2016, at 1:48 AM, Lee Jones <lee.jones@linaro.org =
-<mailto:lee.jones@linaro.org>> wrote:
->=20
-> On Tue, 25 Oct 2016, John Syne wrote:
->>> On Oct 24, 2016, at 11:38 PM, Lee Jones <lee.jones@linaro.org =
-<mailto:lee.jones@linaro.org>> wrote:
->>> On Mon, 24 Oct 2016, John Syne wrote:
->>>>> On Oct 24, 2016, at 11:01 PM, John Syne <john3909@gmail.com =
-<mailto:john3909@gmail.com>> wrote:
->>>>>> On Oct 24, 2016, at 10:52 PM, Mugunthan V N <mugunthanvnm@ti.com =
-<mailto:mugunthanvnm@ti.com>> wrote:
->>>>>>=20
->>>>>> On Tuesday 25 October 2016 02:28 AM, John Syne wrote:
->>>>>>>>> On Oct 23, 2016, at 11:02 PM, Mugunthan V N =
-<mugunthanvnm@ti.com <mailto:mugunthanvnm@ti.com>> wrote:
->>>>>>>>>=20
->>>>>>>>> Increase ADC reference clock from 3MHz to 24MHz so that the
->>>>>>>>> sampling rates goes up from 100K samples per second to 800K
->>>>>>>>> samples per second on AM335x and AM437x SoC.
->>>>>>>>>=20
->>>>>>>>> Also increase opendelay for touchscreen configuration to
->>>>>>>>> equalize the increase in ADC reference clock frequency,
->>>>>>>>> which results in the same amount touch events reported via
->>>>>>>>> evtest on AM335x GP EVM.
->>>>>>>>>=20
->>>>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com =
-<mailto:mugunthanvnm@ti.com>>
->>>>>>>>> ---
->>>>>>>>>=20
->>>>>>>>> This patch depends on ADC DMA patch series [1]
->>>>>>>>>=20
->>>>>>>>> Without DMA support, when ADC ref clock is set at 24MHz, I am
->>>>>>>>> seeing fifo overflow as CPU is not able to pull the ADC =
-samples.
->>>>>>>>> This answers that DMA support is must for ADC to consume the
->>>>>>>>> samples generated at 24MHz with no open, step delay or
->>>>>>>>> averaging with patch [2].
->>>>>>>>>=20
->>>>>>>>> Measured the performance with the iio_generic_buffer with the
->>>>>>>>> patch [3] applied
->>>>>>>>>=20
->>>>>>>>> [1] - http://www.spinics.net/lists/devicetree/msg145045.html =
-<http://www.spinics.net/lists/devicetree/msg145045.html>
->>>>>>>>> [2] - http://pastebin.ubuntu.com/23357935/ =
-<http://pastebin.ubuntu.com/23357935/>
->>>>>>>>> [3] - http://pastebin.ubuntu.com/23357939/ =
-<http://pastebin.ubuntu.com/23357939/>
->>>>>>>>>=20
->>>>>>>>> ---
->>>>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
->>>>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>>>>=20
->>>>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h =
-b/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>>>> index b9a53e0..96c4207 100644
->>>>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>>>> @@ -90,7 +90,7 @@
->>>>>>>>> /* Delay register */
->>>>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
->>>>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
->>>>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
->>>>>>> Wouldn=E2=80=99t this be better to add this to the devicetree?
->>>>>>>=20
->>>>>>> 	ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 =
-0x16>;
->>>>>>> 	ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 =
-0x500 0x500 0x500>;
->>>>>>> 	ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 =
-0x0>;
->>>>>>=20
->>>>>> For a touch screen, there is not need to change in these =
-parameter
->>>>>> settings, so my opinion is to keep it as is. Or am I missing =
-something?
->>>>> I was thinking that if you are using this driver as an ADC, you =
-may want the flexibility to make these changes in the DT. I=E2=80=99m =
-doing this by connecting sensors to the ADC inputs. I=E2=80=99m not =
-using this driver for a touchscreen.=20
->>>>=20
->>>> Here is a DT overlay were this gets using on the BeagleBoneBlack. =20=
+-- 
 
->>>>=20
->>>> =
-https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-AD=
-C-00A0.dts =
-<https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-A=
-DC-00A0.dts>
->>>>=20
->>>> Besides, these DT features are already implemented in the driver so =
-it is just a matter of adding these entries to the am33xx.dtsi & =
-am4372.dtsi, which you modified in this patch series.
->>>=20
->>> This looks like configuration, no?
->>>=20
->>> DT should be used to describe the hardware.
->> You may be right, but how is this different to setting the baud rate =
-on a serial channel or sampling rate on a audio channel? Looking through =
-the DT, there are many configuration settings, so I=E2=80=99m not sure =
-what is the correct way to handle this. Surely it is better to handle =
-this in DT vs hard coding these settings?
->=20
-> I think setting the UART baud rate is also an invalid DT entry.
->=20
-> It's okay to list all of the options in DT, but to actually select
-> one, that should be done either in userspace or as a kernel option.
-> Perhaps as a Kconfig selection.
-Yeah, this has been inconsistent for a long time. My only point was that =
-these DT parameters had already been implemented in the ti_am335x_adc KM =
-and I thought that this was better than hard coding these settings. =
-Implementing this in Kconfig means rebuilding the KM, which isn=E2=80=99t =
-desirable. Perhaps this should be done via sysfs attributes so as you =
-say, a userspace app can configure this driver. I guess the DT code in =
-ti_am335x_adc.c should be removed.=20
-
-Regards,
-John
->=20
-> --=20
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org <http://linaro.org/> =E2=94=82 Open source software for ARM =
-SoCs
-> Follow Linaro: Facebook | Twitter | Blog
-
---Apple-Mail=_352FFB9C-A2B4-41EF-A3D4-F47B703FB54F
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html;
-	charset=utf-8
-
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html =
-charset=3Dutf-8"></head><body style=3D"word-wrap: break-word; =
--webkit-nbsp-mode: space; -webkit-line-break: after-white-space;" =
-class=3D""><div style=3D"color: rgb(0, 0, 0); font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; =
-widows: auto; word-spacing: 0px; -webkit-text-size-adjust: auto; =
--webkit-text-stroke-width: 0px;" class=3D""><blockquote type=3D"cite" =
-class=3D""><div class=3D""><br class=3D"Apple-interchange-newline">On =
-Oct 26, 2016, at 1:48 AM, Lee Jones &lt;<a =
-href=3D"mailto:lee.jones@linaro.org" =
-class=3D"">lee.jones@linaro.org</a>&gt; wrote:</div><br =
-class=3D"Apple-interchange-newline"><div class=3D""><span class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px; float: none; display: inline =
-!important;">On Tue, 25 Oct 2016, John Syne wrote:</span><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><blockquote type=3D"cite" class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><blockquote type=3D"cite" class=3D"">On =
-Oct 24, 2016, at 11:38 PM, Lee Jones &lt;<a =
-href=3D"mailto:lee.jones@linaro.org" =
-class=3D"">lee.jones@linaro.org</a>&gt; wrote:<br class=3D"">On Mon, 24 =
-Oct 2016, John Syne wrote:<br class=3D""><blockquote type=3D"cite" =
-class=3D""><blockquote type=3D"cite" class=3D"">On Oct 24, 2016, at =
-11:01 PM, John Syne &lt;<a href=3D"mailto:john3909@gmail.com" =
-class=3D"">john3909@gmail.com</a>&gt; wrote:<br class=3D""><blockquote =
-type=3D"cite" class=3D"">On Oct 24, 2016, at 10:52 PM, Mugunthan V N =
-&lt;<a href=3D"mailto:mugunthanvnm@ti.com" =
-class=3D"">mugunthanvnm@ti.com</a>&gt; wrote:<br class=3D""><br =
-class=3D"">On Tuesday 25 October 2016 02:28 AM, John Syne wrote:<br =
-class=3D""><blockquote type=3D"cite" class=3D""><blockquote type=3D"cite" =
-class=3D""><blockquote type=3D"cite" class=3D"">On Oct 23, 2016, at =
-11:02 PM, Mugunthan V N &lt;<a href=3D"mailto:mugunthanvnm@ti.com" =
-class=3D"">mugunthanvnm@ti.com</a>&gt; wrote:<br class=3D""><br =
-class=3D"">Increase ADC reference clock from 3MHz to 24MHz so that =
-the<br class=3D"">sampling rates goes up from 100K samples per second to =
-800K<br class=3D"">samples per second on AM335x and AM437x SoC.<br =
-class=3D""><br class=3D"">Also increase opendelay for touchscreen =
-configuration to<br class=3D"">equalize the increase in ADC reference =
-clock frequency,<br class=3D"">which results in the same amount touch =
-events reported via<br class=3D"">evtest on AM335x GP EVM.<br =
-class=3D""><br class=3D"">Signed-off-by: Mugunthan V N &lt;<a =
-href=3D"mailto:mugunthanvnm@ti.com" =
-class=3D"">mugunthanvnm@ti.com</a>&gt;<br class=3D"">---<br class=3D""><br=
- class=3D"">This patch depends on ADC DMA patch series [1]<br =
-class=3D""><br class=3D"">Without DMA support, when ADC ref clock is set =
-at 24MHz, I am<br class=3D"">seeing fifo overflow as CPU is not able to =
-pull the ADC samples.<br class=3D"">This answers that DMA support is =
-must for ADC to consume the<br class=3D"">samples generated at 24MHz =
-with no open, step delay or<br class=3D"">averaging with patch [2].<br =
-class=3D""><br class=3D"">Measured the performance with the =
-iio_generic_buffer with the<br class=3D"">patch [3] applied<br =
-class=3D""><br class=3D"">[1] -<span =
-class=3D"Apple-converted-space">&nbsp;</span><a =
-href=3D"http://www.spinics.net/lists/devicetree/msg145045.html" =
-class=3D"">http://www.spinics.net/lists/devicetree/msg145045.html</a><br =
-class=3D"">[2] -<span class=3D"Apple-converted-space">&nbsp;</span><a =
-href=3D"http://pastebin.ubuntu.com/23357935/" =
-class=3D"">http://pastebin.ubuntu.com/23357935/</a><br class=3D"">[3] =
--<span class=3D"Apple-converted-space">&nbsp;</span><a =
-href=3D"http://pastebin.ubuntu.com/23357939/" =
-class=3D"">http://pastebin.ubuntu.com/23357939/</a><br class=3D""><br =
-class=3D"">---<br class=3D"">include/linux/mfd/ti_am335x_tscadc.h | 4 =
-++--<br class=3D"">1 file changed, 2 insertions(+), 2 deletions(-)<br =
-class=3D""><br class=3D"">diff --git =
-a/include/linux/mfd/ti_am335x_tscadc.h =
-b/include/linux/mfd/ti_am335x_tscadc.h<br class=3D"">index =
-b9a53e0..96c4207 100644<br class=3D"">--- =
-a/include/linux/mfd/ti_am335x_tscadc.h<br class=3D"">+++ =
-b/include/linux/mfd/ti_am335x_tscadc.h<br class=3D"">@@ -90,7 +90,7 =
-@@<br class=3D"">/* Delay register */<br class=3D"">#define =
-STEPDELAY_OPEN_MASK<span class=3D"Apple-tab-span" style=3D"white-space: =
-pre;">	</span>(0x3FFFF &lt;&lt; 0)<br class=3D"">#define =
-STEPDELAY_OPEN(val)<span class=3D"Apple-tab-span" style=3D"white-space: =
-pre;">	</span>((val) &lt;&lt; 0)<br class=3D"">-#define =
-STEPCONFIG_OPENDLY<span class=3D"Apple-tab-span" style=3D"white-space: =
-pre;">	</span>STEPDELAY_OPEN(0x098)<br =
-class=3D""></blockquote></blockquote>Wouldn=E2=80=99t this be better to =
-add this to the devicetree?<br class=3D""><br class=3D""><span =
-class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
-</span>ti,chan-step-avg =3D &lt;0x16 0x16 0x16 0x16 0x16 0x16 =
-0x16&gt;;<br class=3D""><span class=3D"Apple-tab-span" =
-style=3D"white-space: pre;">	</span>ti,chan-step-opendelay =3D =
-&lt;0x500 0x500 0x500 0x500 0x500 0x500 0x500&gt;;<br class=3D""><span =
-class=3D"Apple-tab-span" style=3D"white-space: pre;">	=
-</span>ti,chan-step-sampledelay =3D &lt;0x0 0x0 0x0 0x0 0x0 0x0 =
-0x0&gt;;<br class=3D""></blockquote><br class=3D"">For a touch screen, =
-there is not need to change in these parameter<br class=3D"">settings, =
-so my opinion is to keep it as is. Or am I missing something?<br =
-class=3D""></blockquote>I was thinking that if you are using this driver =
-as an ADC, you may want the flexibility to make these changes in the DT. =
-I=E2=80=99m doing this by connecting sensors to the ADC inputs. I=E2=80=99=
-m not using this driver for a touchscreen.<span =
-class=3D"Apple-converted-space">&nbsp;</span><br =
-class=3D""></blockquote><br class=3D"">Here is a DT overlay were this =
-gets using on the BeagleBoneBlack. &nbsp;<br class=3D""><br class=3D""><a =
-href=3D"https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/a=
-rm/BB-ADC-00A0.dts" =
-class=3D"">https://github.com/RobertCNelson/bb.org-overlays/blob/master/sr=
-c/arm/BB-ADC-00A0.dts</a><br class=3D""><br class=3D"">Besides, these DT =
-features are already implemented in the driver so it is just a matter of =
-adding these entries to the am33xx.dtsi &amp; am4372.dtsi, which you =
-modified in this patch series.<br class=3D""></blockquote><br =
-class=3D"">This looks like configuration, no?<br class=3D""><br =
-class=3D"">DT should be used to describe the hardware.<br =
-class=3D""></blockquote>You may be right, but how is this different to =
-setting the baud rate on a serial channel or sampling rate on a audio =
-channel? Looking through the DT, there are many configuration settings, =
-so I=E2=80=99m not sure what is the correct way to handle this. Surely =
-it is better to handle this in DT vs hard coding these settings?<br =
-class=3D""></blockquote><br class=3D"" style=3D"font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; =
-widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;"><span =
-class=3D"" style=3D"font-family: Helvetica; font-size: 12px; font-style: =
-normal; font-variant-caps: normal; font-weight: normal; letter-spacing: =
-normal; orphans: auto; text-align: start; text-indent: 0px; =
-text-transform: none; white-space: normal; widows: auto; word-spacing: =
-0px; -webkit-text-stroke-width: 0px; float: none; display: inline =
-!important;">I think setting the UART baud rate is also an invalid DT =
-entry.</span><br class=3D"" style=3D"font-family: Helvetica; font-size: =
-12px; font-style: normal; font-variant-caps: normal; font-weight: =
-normal; letter-spacing: normal; orphans: auto; text-align: start; =
-text-indent: 0px; text-transform: none; white-space: normal; widows: =
-auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;"><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><span class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-float: none; display: inline !important;">It's okay to list all of the =
-options in DT, but to actually select</span><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><span class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-float: none; display: inline !important;">one, that should be done =
-either in userspace or as a kernel option.</span><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><span class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-float: none; display: inline !important;">Perhaps as a Kconfig =
-selection.</span><br class=3D"" style=3D"font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; =
-widows: auto; word-spacing: 0px; -webkit-text-stroke-width: =
-0px;"></div></blockquote>Yeah, this has been inconsistent for a long =
-time. My only point was that these DT parameters had already been =
-implemented in the ti_am335x_adc KM and I thought that this was better =
-than hard coding these settings. Implementing this in Kconfig means =
-rebuilding the KM, which isn=E2=80=99t desirable. Perhaps this should be =
-done via sysfs attributes so as you say, a userspace app can configure =
-this driver. I guess the DT code in ti_am335x_adc.c should be =
-removed.&nbsp;</div><div style=3D"color: rgb(0, 0, 0); font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-size-adjust: auto; =
--webkit-text-stroke-width: 0px;" class=3D""><br class=3D""></div><div =
-style=3D"color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; =
-font-style: normal; font-variant-caps: normal; font-weight: normal; =
-letter-spacing: normal; orphans: auto; text-align: start; text-indent: =
-0px; text-transform: none; white-space: normal; widows: auto; =
-word-spacing: 0px; -webkit-text-size-adjust: auto; =
--webkit-text-stroke-width: 0px;" class=3D"">Regards,</div><div =
-style=3D"color: rgb(0, 0, 0); font-family: Helvetica; font-size: 12px; =
-font-style: normal; font-variant-caps: normal; font-weight: normal; =
-letter-spacing: normal; orphans: auto; text-align: start; text-indent: =
-0px; text-transform: none; white-space: normal; widows: auto; =
-word-spacing: 0px; -webkit-text-size-adjust: auto; =
--webkit-text-stroke-width: 0px;" class=3D"">John<br class=3D""><blockquote=
- type=3D"cite" class=3D""><div class=3D""><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><span class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-float: none; display: inline !important;">--<span =
-class=3D"Apple-converted-space">&nbsp;</span></span><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><span class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-float: none; display: inline !important;">Lee Jones</span><br class=3D"" =
-style=3D"font-family: Helvetica; font-size: 12px; font-style: normal; =
-font-variant-caps: normal; font-weight: normal; letter-spacing: normal; =
-orphans: auto; text-align: start; text-indent: 0px; text-transform: =
-none; white-space: normal; widows: auto; word-spacing: 0px; =
--webkit-text-stroke-width: 0px;"><span class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; =
-float: none; display: inline !important;">Linaro STMicroelectronics =
-Landing Team Lead</span><br class=3D"" style=3D"font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; =
-widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px;"><a =
-href=3D"http://linaro.org/" class=3D"" style=3D"font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; =
-widows: auto; word-spacing: 0px; -webkit-text-stroke-width: =
-0px;">Linaro.org</a><span class=3D"" style=3D"font-family: Helvetica; =
-font-size: 12px; font-style: normal; font-variant-caps: normal; =
-font-weight: normal; letter-spacing: normal; orphans: auto; text-align: =
-start; text-indent: 0px; text-transform: none; white-space: normal; =
-widows: auto; word-spacing: 0px; -webkit-text-stroke-width: 0px; float: =
-none; display: inline !important;"><span =
-class=3D"Apple-converted-space">&nbsp;</span>=E2=94=82 Open source =
-software for ARM SoCs</span><br class=3D"" style=3D"font-family: =
-Helvetica; font-size: 12px; font-style: normal; font-variant-caps: =
-normal; font-weight: normal; letter-spacing: normal; orphans: auto; =
-text-align: start; text-indent: 0px; text-transform: none; white-space: =
-normal; widows: auto; word-spacing: 0px; -webkit-text-stroke-width: =
-0px;"><span class=3D"" style=3D"font-family: Helvetica; font-size: 12px; =
-font-style: normal; font-variant-caps: normal; font-weight: normal; =
-letter-spacing: normal; orphans: auto; text-align: start; text-indent: =
-0px; text-transform: none; white-space: normal; widows: auto; =
-word-spacing: 0px; -webkit-text-stroke-width: 0px; float: none; display: =
-inline !important;">Follow Linaro: Facebook | Twitter | =
-Blog</span></div></blockquote></div></body></html>=
-
---Apple-Mail=_352FFB9C-A2B4-41EF-A3D4-F47B703FB54F--
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
