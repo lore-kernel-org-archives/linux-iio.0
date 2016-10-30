@@ -1,30 +1,50 @@
-Return-Path: <robherring2@gmail.com>
-Date: Sun, 30 Oct 2016 22:09:39 -0500
-From: Rob Herring <robh@kernel.org>
-To: Paul Kocialkowski <contact@paulk.fr>
-Cc: devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Mark Rutland <mark.rutland@arm.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH] iio: si7020: Add devicetree support and trivial bindings
-Message-ID: <20161031030939.3q6jpuom7jxphl2o@rob-hp-laptop>
-References: <20161025192010.11195-1-contact@paulk.fr>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43333 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756869AbcJ3RuH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:50:07 -0400
+Subject: Re: [PATCH 03/10] staging: iio: tsl2583: return proper error code
+ instead of -1
+To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
+References: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
+ <1477648821-3786-4-git-send-email-masneyb@onstation.org>
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, Mark.Rutland@arm.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5c1b8527-91e9-e5df-8c0a-2e39d405fb15@kernel.org>
+Date: Sun, 30 Oct 2016 17:50:05 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161025192010.11195-1-contact@paulk.fr>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1477648821-3786-4-git-send-email-masneyb@onstation.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Oct 25, 2016 at 09:20:10PM +0200, Paul Kocialkowski wrote:
-> This adds devicetree support for the si7020 iio driver. Since it works
-> well without requiring any additional property, its compatible string is
-> added to the trivial i2c devices bindings list.
+On 28/10/16 11:00, Brian Masney wrote:
+> taos_als_calibrate() has a code path where -1 is returned. This patch
+> changes the code so that a proper error code is returned.
 > 
-> Signed-off-by: Paul Kocialkowski <contact@paulk.fr>
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+Applied to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
+(I'm going to begin to get lazy on this message ;)
 > ---
->  Documentation/devicetree/bindings/i2c/trivial-devices.txt |  1 +
->  drivers/iio/humidity/si7020.c                             | 11 ++++++++++-
->  2 files changed, 11 insertions(+), 1 deletion(-)
+>  drivers/staging/iio/light/tsl2583.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index 35c1696..47fd373 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -373,7 +373,7 @@ static int taos_als_calibrate(struct iio_dev *indio_dev)
+>  			!= (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWR_ON)) {
+>  		dev_err(&chip->client->dev,
+>  			"taos_als_calibrate failed: device not powered on with ADC enabled\n");
+> -		return -1;
+> +		return -EINVAL;
+>  	}
+>  
+>  	ret = i2c_smbus_write_byte(chip->client,
+> 
 
-Acked-by: Rob Herring <robh@kernel.org>
