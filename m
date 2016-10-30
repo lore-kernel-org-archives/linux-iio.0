@@ -1,13 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41935 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41951 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751594AbcJ3N0e (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 09:26:34 -0400
-Subject: Re: [PATCH v3 3/8] iio: mcp4531: provide range of available raw
- values
+        with ESMTP id S1751594AbcJ3N2d (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 09:28:33 -0400
+Subject: Re: [PATCH v3 5/8] dt-bindings: iio: document dpot-dac bindings
 To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
 References: <1477262381-7800-1-git-send-email-peda@axentia.se>
- <1477262381-7800-4-git-send-email-peda@axentia.se>
+ <1477262381-7800-6-git-send-email-peda@axentia.se>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -15,219 +14,91 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1f3a1e6c-6c0c-4def-8a04-e578299da067@kernel.org>
-Date: Sun, 30 Oct 2016 13:26:31 +0000
+Message-ID: <f81f9281-dfeb-306b-757a-2654c7eacc15@kernel.org>
+Date: Sun, 30 Oct 2016 13:28:31 +0000
 MIME-Version: 1.0
-In-Reply-To: <1477262381-7800-4-git-send-email-peda@axentia.se>
+In-Reply-To: <1477262381-7800-6-git-send-email-peda@axentia.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 23/10/16 23:39, Peter Rosin wrote:
-> Example:
-> 
-> $ cat '/sys/bus/iio/devices/iio:device0/out_resistance_raw_available'
-> [0 1 256]
-> 
-> Meaning: min 0, step 1 and max 256.
-> 
 > Signed-off-by: Peter Rosin <peda@axentia.se>
-Looks good. On comment inline, but nothing to change.
+I'm happy with this, but it's odd enough I'd like some devicetree maintainer
+feedback ideally.
 
-This series is likely to just be waiting on some additional review of that first patch!
+Thanks,
 
-J
-
+Jonathan
 > ---
->  .../testing/sysfs-bus-iio-potentiometer-mcp4531    |   8 ++
->  MAINTAINERS                                        |   1 +
->  drivers/iio/potentiometer/mcp4531.c                | 104 ++++++++++++---------
->  3 files changed, 71 insertions(+), 42 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+>  .../devicetree/bindings/iio/dac/dpot-dac.txt       | 41 ++++++++++++++++++++++
+>  MAINTAINERS                                        |  6 ++++
+>  2 files changed, 47 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
 > 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531 b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+> diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
 > new file mode 100644
-> index 000000000000..2a91fbe394fc
+> index 000000000000..fdf47a01bfef
 > --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
-> @@ -0,0 +1,8 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/out_resistance_raw_available
-> +Date:		October 2016
-> +KernelVersion:	4.9
-> +Contact:	Peter Rosin <peda@axentia.se>
-> +Description:
-> +		The range of available values represented as the minimum value,
-> +		the step and the maximum value, all enclosed in square brackets.
-> +		Example: [0 1 256]
-I suspect we'll want to move this out into the main file pretty soon but guess it
-can go here for now.
+> +++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+> @@ -0,0 +1,41 @@
+> +Bindings for DAC emulation using a digital potentiometer
+> +
+> +It is assumed that the dpot is used as a voltage divider between the
+> +current dpot wiper setting and the maximum resistance of the dpot. The
+> +divided voltage is provided by a vref regulator.
+> +
+> +                  .------.
+> +   .-----------.  |      |
+> +   | vref      |--'    .---.
+> +   | regulator |--.    |   |
+> +   '-----------'  |    | d |
+> +                  |    | p |
+> +                  |    | o |  wiper
+> +                  |    | t |<---------+
+> +                  |    |   |
+> +                  |    '---'       dac output voltage
+> +                  |      |
+> +                  '------+------------+
+> +
+> +Required properties:
+> +- compatible: Should be "dpot-dac"
+> +- vref-supply: The regulator supplying the voltage divider.
+> +- io-channels: Channel node of the dpot to be used for the voltage division.
+> +- io-channel-names: Should be "dpot".
+> +
+> +Example:
+> +
+> +	&i2c {
+> +		dpot: mcp4651-503@28 {
+> +			compatible = "microchip,mcp4651-503";
+> +			reg = <0x28>;
+> +			#io-channel-cells = <1>;
+> +		};
+> +	};
+> +
+> +	dac {
+> +		compatible = "dpot-dac";
+> +		vref-supply = <&reg_3v3>;
+> +		io-channels = <&dpot 0>;
+> +		io-channel-names = "dpot";
+> +	};
 > diff --git a/MAINTAINERS b/MAINTAINERS
-> index 1cd38a7e0064..7c65585e1230 100644
+> index 7c65585e1230..6218010128dc 100644
 > --- a/MAINTAINERS
 > +++ b/MAINTAINERS
-> @@ -7694,6 +7694,7 @@ MCP4531 MICROCHIP DIGITAL POTENTIOMETER DRIVER
->  M:	Peter Rosin <peda@axentia.se>
->  L:	linux-iio@vger.kernel.org
+> @@ -6111,6 +6111,12 @@ L:	linux-media@vger.kernel.org
 >  S:	Maintained
-> +F:	Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
->  F:	drivers/iio/potentiometer/mcp4531.c
+>  F:	drivers/media/rc/iguanair.c
 >  
->  MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
-> diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
-> index 13b6ae2fcf7b..0d1bcf89ae17 100644
-> --- a/drivers/iio/potentiometer/mcp4531.c
-> +++ b/drivers/iio/potentiometer/mcp4531.c
-> @@ -38,7 +38,7 @@
->  
->  struct mcp4531_cfg {
->  	int wipers;
-> -	int max_pos;
-> +	int avail[3];
->  	int kohms;
->  };
->  
-> @@ -78,38 +78,38 @@ enum mcp4531_type {
->  };
->  
->  static const struct mcp4531_cfg mcp4531_cfg[] = {
-> -	[MCP453x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
-> -	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
-> -	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
-> -	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
-> -	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
-> -	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
-> -	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
-> -	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
-> -	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
-> -	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
-> -	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
-> -	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
-> -	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
-> -	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
-> -	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
-> -	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
-> -	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
-> -	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
-> -	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
-> -	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
-> -	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
-> -	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
-> -	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
-> -	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
-> -	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
-> -	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
-> -	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
-> -	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
-> -	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
-> -	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
-> -	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
-> -	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
-> +	[MCP453x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-> +	[MCP453x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-> +	[MCP453x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-> +	[MCP453x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-> +	[MCP454x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-> +	[MCP454x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-> +	[MCP454x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-> +	[MCP454x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-> +	[MCP455x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-> +	[MCP455x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-> +	[MCP455x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-> +	[MCP455x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-> +	[MCP456x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-> +	[MCP456x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-> +	[MCP456x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-> +	[MCP456x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-> +	[MCP463x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-> +	[MCP463x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-> +	[MCP463x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-> +	[MCP463x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-> +	[MCP464x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-> +	[MCP464x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-> +	[MCP464x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-> +	[MCP464x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-> +	[MCP465x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-> +	[MCP465x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-> +	[MCP465x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-> +	[MCP465x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
-> +	[MCP466x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-> +	[MCP466x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-> +	[MCP466x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-> +	[MCP466x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
->  };
->  
->  #define MCP4531_WRITE (0 << 2)
-> @@ -124,13 +124,14 @@ struct mcp4531_data {
->  	const struct mcp4531_cfg *cfg;
->  };
->  
-> -#define MCP4531_CHANNEL(ch) {					\
-> -	.type = IIO_RESISTANCE,					\
-> -	.indexed = 1,						\
-> -	.output = 1,						\
-> -	.channel = (ch),					\
-> -	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> -	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +#define MCP4531_CHANNEL(ch) {						\
-> +	.type = IIO_RESISTANCE,						\
-> +	.indexed = 1,							\
-> +	.output = 1,							\
-> +	.channel = (ch),						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-> +	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
->  }
->  
->  static const struct iio_chan_spec mcp4531_channels[] = {
-> @@ -156,13 +157,31 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_SCALE:
->  		*val = 1000 * data->cfg->kohms;
-> -		*val2 = data->cfg->max_pos;
-> +		*val2 = data->cfg->avail[2];
->  		return IIO_VAL_FRACTIONAL;
->  	}
->  
->  	return -EINVAL;
->  }
->  
-> +static int mcp4531_read_avail(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      const int **vals, int *type, int *length,
-> +			      long mask)
-> +{
-> +	struct mcp4531_data *data = iio_priv(indio_dev);
+> +IIO DIGITAL POTENTIOMETER DAC
+> +M:	Peter Rosin <peda@axentia.se>
+> +L:	linux-iio@vger.kernel.org
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
 > +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		*length = ARRAY_SIZE(data->cfg->avail);
-> +		*vals = data->cfg->avail;
-> +		*type = IIO_VAL_INT;
-> +		return IIO_AVAIL_RANGE;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
->  static int mcp4531_write_raw(struct iio_dev *indio_dev,
->  			     struct iio_chan_spec const *chan,
->  			     int val, int val2, long mask)
-> @@ -172,7 +191,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		if (val > data->cfg->max_pos || val < 0)
-> +		if (val > data->cfg->avail[2] || val < 0)
->  			return -EINVAL;
->  		break;
->  	default:
-> @@ -186,6 +205,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
->  
->  static const struct iio_info mcp4531_info = {
->  	.read_raw = mcp4531_read_raw,
-> +	.read_avail = mcp4531_read_avail,
->  	.write_raw = mcp4531_write_raw,
->  	.driver_module = THIS_MODULE,
->  };
+>  IIO SUBSYSTEM AND DRIVERS
+>  M:	Jonathan Cameron <jic23@kernel.org>
+>  R:	Hartmut Knaack <knaack.h@gmx.de>
 > 
 
