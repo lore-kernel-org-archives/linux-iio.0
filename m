@@ -1,47 +1,221 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41778 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41900 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751670AbcJ3Mv7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 08:51:59 -0400
-Subject: Re: Question about submitting patch set against
- staging/iio/light/tsl2583
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-References: <20161026173825.GA21767@basecamp.onstation.org>
+        with ESMTP id S1754273AbcJ3NVH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 09:21:07 -0400
+Subject: Re: [PATCH v3 2/8] iio: inkern: add helpers to query available values
+ from channels
+To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
+References: <1477262381-7800-1-git-send-email-peda@axentia.se>
+ <1477262381-7800-3-git-send-email-peda@axentia.se>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <391f639d-2784-7b9d-46c2-a3570aee33e8@kernel.org>
-Date: Sun, 30 Oct 2016 12:51:54 +0000
+Message-ID: <c7848c84-960b-506f-f2e2-4aadfc5246f9@kernel.org>
+Date: Sun, 30 Oct 2016 13:21:04 +0000
 MIME-Version: 1.0
-In-Reply-To: <20161026173825.GA21767@basecamp.onstation.org>
+In-Reply-To: <1477262381-7800-3-git-send-email-peda@axentia.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/10/16 18:38, Brian Masney wrote:
-> Part of the tsl2583 driver cleanup that I am working on involves adding
-> device tree support to that driver. Based on the isl29018 driver cleanups
-> that I did, I now know that the device tree maintainers should be CCed for
-> any device tree changes. What is the appropriate way to submit my patch
-> set that spans two different subsystems? Should I submit my lone device
-> tree patch to linux-iio and CC the device tree maintainers? Then submit
-> the rest of my patch set to just the linux-iio maintainers? Or should I
-> CC the device tree maintainers with my entire patch set? I'm leaning
-> towards the separate approach to reduce the amount of noise to the
-> device tree list.
-Kind of depends on the balance of device tree to other elements in the series.
-Either way create a whole series with all changes, but then add a Cc: line to the
-patch description for the device tree ones.  git send-email will then pick that
-up and add CCs for those patches only as it sends them.
-
-Sometimes it's easier just to CC the whole lot.  Kernel reviewers get very
-good at rapidly ignoring patch emails that aren't of interest to them!
-
-J
+On 23/10/16 23:39, Peter Rosin wrote:
+> Specifically a helper for reading the available maximum raw value of a
+> channel and a helper for forwarding read_avail requests for raw values
+> from one iio driver to an iio channel that is consumed.
 > 
-> Brian
+> These rather specific helpers are in turn built with generic helpers
+> making it easy to build more helpers for available values as needed.
 > 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Signed-off-by: Peter Rosin <peda@axentia.se>
+Looks good to me.  Just what I was after.
+
+Jonathan
+> ---
+>  drivers/iio/inkern.c         | 97 ++++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/iio/consumer.h | 29 +++++++++++++
+>  include/linux/iio/iio.h      | 17 ++++++++
+>  3 files changed, 143 insertions(+)
+> 
+> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+> index c4757e6367e7..74808f8a187a 100644
+> --- a/drivers/iio/inkern.c
+> +++ b/drivers/iio/inkern.c
+> @@ -703,6 +703,103 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val, int *val2)
+>  }
+>  EXPORT_SYMBOL_GPL(iio_read_channel_scale);
+>  
+> +static int iio_channel_read_avail(struct iio_channel *chan,
+> +				  const int **vals, int *type, int *length,
+> +				  enum iio_chan_info_enum info)
+> +{
+> +	if (!iio_channel_has_available(chan->channel, info))
+> +		return -EINVAL;
+> +
+> +	return chan->indio_dev->info->read_avail(chan->indio_dev, chan->channel,
+> +						 vals, type, length, info);
+> +}
+> +
+> +int iio_read_avail_channel_raw(struct iio_channel *chan,
+> +			       const int **vals, int *type, int *length)
+> +{
+> +	int ret;
+> +
+> +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> +	if (!chan->indio_dev->info) {
+> +		ret = -ENODEV;
+> +		goto err_unlock;
+> +	}
+> +
+> +	ret = iio_channel_read_avail(chan,
+> +				     vals, type, length, IIO_CHAN_INFO_RAW);
+> +err_unlock:
+> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_read_avail_channel_raw);
+> +
+> +static int iio_channel_read_max(struct iio_channel *chan,
+> +				int *val, int *val2, int *type,
+> +				enum iio_chan_info_enum info)
+> +{
+> +	int unused;
+> +	const int *vals;
+> +	int length;
+> +	int ret;
+> +
+> +	if (!val2)
+> +		val2 = &unused;
+> +
+> +	ret = iio_channel_read_avail(chan, &vals, type, &length, info);
+> +	switch (ret) {
+> +	case IIO_AVAIL_RANGE:
+> +		switch (*type) {
+> +		case IIO_VAL_INT:
+> +			*val = vals[2];
+> +			break;
+> +		default:
+> +			*val = vals[4];
+> +			*val2 = vals[5];
+> +		}
+> +		return 0;
+> +
+> +	case IIO_AVAIL_LIST:
+> +		if (length <= 0)
+> +			return -EINVAL;
+> +		switch (*type) {
+> +		case IIO_VAL_INT:
+> +			*val = vals[--length];
+> +			while (length) {
+> +				if (vals[--length] > *val)
+> +					*val = vals[length];
+> +			}
+> +			break;
+> +		default:
+> +			/* FIXME: learn about max for other iio values */
+> +			return -EINVAL;
+> +		}
+> +		return 0;
+> +
+> +	default:
+> +		return ret;
+> +	}
+> +}
+> +
+> +int iio_read_max_channel_raw(struct iio_channel *chan, int *val)
+> +{
+> +	int ret;
+> +	int type;
+> +
+> +	mutex_lock(&chan->indio_dev->info_exist_lock);
+> +	if (!chan->indio_dev->info) {
+> +		ret = -ENODEV;
+> +		goto err_unlock;
+> +	}
+> +
+> +	ret = iio_channel_read_max(chan, val, NULL, &type, IIO_CHAN_INFO_RAW);
+> +err_unlock:
+> +	mutex_unlock(&chan->indio_dev->info_exist_lock);
+> +
+> +	return ret;
+> +}
+> +EXPORT_SYMBOL_GPL(iio_read_max_channel_raw);
+> +
+>  int iio_get_channel_type(struct iio_channel *chan, enum iio_chan_type *type)
+>  {
+>  	int ret = 0;
+> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+> index 9edccfba1ffb..baab5e45734f 100644
+> --- a/include/linux/iio/consumer.h
+> +++ b/include/linux/iio/consumer.h
+> @@ -226,6 +226,35 @@ int iio_read_channel_processed(struct iio_channel *chan, int *val);
+>  int iio_write_channel_raw(struct iio_channel *chan, int val);
+>  
+>  /**
+> + * iio_read_max_channel_raw() - read maximum available raw value from a given
+> + *				channel
+> + * @chan:		The channel being queried.
+> + * @val:		Value read back.
+> + *
+> + * Note raw reads from iio channels are in adc counts and hence
+> + * scale will need to be applied if standard units are required.
+> + */
+> +int iio_read_max_channel_raw(struct iio_channel *chan, int *val);
+> +
+> +/**
+> + * iio_read_avail_channel_raw() - read available raw values from a given channel
+> + * @chan:		The channel being queried.
+> + * @vals:		Available values read back.
+> + * @type:		Type of available values in vals.
+> + * @length:		Number of entries in vals.
+> + *
+> + * Returns an error code, IIO_AVAIL_RANGE or IIO_AVAIL_LIST.
+> + *
+> + * For ranges, three vals are always returned; min, step and max.
+> + * For lists, all the possible values are enumerated.
+> + *
+> + * Note raw available values from iio channels are in adc counts and
+> + * hence scale will need to be applied if standard units are required.
+> + */
+> +int iio_read_avail_channel_raw(struct iio_channel *chan,
+> +			       const int **vals, int *type, int *length);
+> +
+> +/**
+>   * iio_get_channel_type() - get the type of a channel
+>   * @channel:		The channel being queried.
+>   * @type:		The type of the channel.
+> diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
+> index 45b781084a4b..e565701d13ce 100644
+> --- a/include/linux/iio/iio.h
+> +++ b/include/linux/iio/iio.h
+> @@ -315,6 +315,23 @@ static inline bool iio_channel_has_info(const struct iio_chan_spec *chan,
+>  		(chan->info_mask_shared_by_all & BIT(type));
+>  }
+>  
+> +/**
+> + * iio_channel_has_available() - Checks if a channel has an available attribute
+> + * @chan: The channel to be queried
+> + * @type: Type of the available attribute to be checked
+> + *
+> + * Returns true if the channels supports reporting available values for the
+> + * given attribute type, false otherwise.
+> + */
+> +static inline bool iio_channel_has_available(const struct iio_chan_spec *chan,
+> +					     enum iio_chan_info_enum type)
+> +{
+> +	return (chan->info_mask_separate_available & BIT(type)) |
+> +		(chan->info_mask_shared_by_type_available & BIT(type)) |
+> +		(chan->info_mask_shared_by_dir_available & BIT(type)) |
+> +		(chan->info_mask_shared_by_all_available & BIT(type));
+> +}
+> +
+>  #define IIO_CHAN_SOFT_TIMESTAMP(_si) {					\
+>  	.type = IIO_TIMESTAMP,						\
+>  	.channel = -1,							\
 > 
 
