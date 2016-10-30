@@ -1,94 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43354 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42924 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756611AbcJ3Rvz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:51:55 -0400
-Subject: Re: [PATCH 04/10] staging: iio: tsl2583: remove redundant power_state
- sysfs attribute
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-References: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
- <1477648821-3786-5-git-send-email-masneyb@onstation.org>
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
-        robh+dt@kernel.org, Mark.Rutland@arm.com
+        with ESMTP id S932858AbcJ3Qtf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 12:49:35 -0400
+Subject: Re: [PATCH] iio: st_sensors: fix scale configuration for h3lis331dl
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+References: <1477429658-27590-1-git-send-email-lorenzo.bianconi@st.com>
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a689e20d-1f76-cd1d-d3f3-aea3a41dfe0c@kernel.org>
-Date: Sun, 30 Oct 2016 17:51:53 +0000
+Message-ID: <e00b6e06-2e27-ad29-e61a-8e2ffbdab710@kernel.org>
+Date: Sun, 30 Oct 2016 16:49:32 +0000
 MIME-Version: 1.0
-In-Reply-To: <1477648821-3786-5-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1477429658-27590-1-git-send-email-lorenzo.bianconi@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/10/16 11:00, Brian Masney wrote:
-> IIO devices have a /sys/bus/iio/devices/iio:deviceX/power/ directory
-> that allows viewing and controling various power parameters. The tsl2583
-> driver also has an additional custom sysfs attribute named power_state
-> that is not needed. This patch removes the redundant power_state sysfs
-> attribute.
+On 25/10/16 22:07, Lorenzo Bianconi wrote:
+> fix scale configuration/parsing for h3lis331dl accel driver
+> when sensitivity is higher than 1(m/s^2)/digit
 > 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Applied. etc.
+> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+Ideally would have had a fixes tag (I added one hopefully to
+the right patch ;)
+
+Applied to the fixes-togreg branch of iio.git and marked for stable.
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/staging/iio/light/tsl2583.c | 31 -------------------------------
->  1 file changed, 31 deletions(-)
+>  drivers/iio/accel/st_accel_core.c               | 12 ++++++++----
+>  drivers/iio/common/st_sensors/st_sensors_core.c |  8 +++++---
+>  2 files changed, 13 insertions(+), 7 deletions(-)
 > 
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index 47fd373..f8ccb4d 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -511,33 +511,6 @@ static int taos_chip_off(struct iio_dev *indio_dev)
+> diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+> index da3fb06..ce69048 100644
+> --- a/drivers/iio/accel/st_accel_core.c
+> +++ b/drivers/iio/accel/st_accel_core.c
+> @@ -743,8 +743,8 @@ static int st_accel_read_raw(struct iio_dev *indio_dev,
 >  
->  /* Sysfs Interface Functions */
+>  		return IIO_VAL_INT;
+>  	case IIO_CHAN_INFO_SCALE:
+> -		*val = 0;
+> -		*val2 = adata->current_fullscale->gain;
+> +		*val = adata->current_fullscale->gain / 1000000;
+> +		*val2 = adata->current_fullscale->gain % 1000000;
+>  		return IIO_VAL_INT_PLUS_MICRO;
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		*val = adata->odr;
+> @@ -763,9 +763,13 @@ static int st_accel_write_raw(struct iio_dev *indio_dev,
+>  	int err;
 >  
-> -static ssize_t taos_power_state_show(struct device *dev,
-> -				     struct device_attribute *attr, char *buf)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	struct tsl2583_chip *chip = iio_priv(indio_dev);
-> -
-> -	return sprintf(buf, "%d\n", chip->taos_chip_status);
-> -}
-> -
-> -static ssize_t taos_power_state_store(struct device *dev,
-> -				      struct device_attribute *attr,
-> -				      const char *buf, size_t len)
-> -{
-> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> -	int value;
-> -
-> -	if (kstrtoint(buf, 0, &value))
-> -		return -EINVAL;
-> -
-> -	if (!value)
-> -		taos_chip_off(indio_dev);
-> -	else
-> -		taos_chip_on(indio_dev);
-> -
-> -	return len;
-> -}
-> -
->  static ssize_t taos_gain_show(struct device *dev,
->  			      struct device_attribute *attr, char *buf)
+>  	switch (mask) {
+> -	case IIO_CHAN_INFO_SCALE:
+> -		err = st_sensors_set_fullscale_by_gain(indio_dev, val2);
+> +	case IIO_CHAN_INFO_SCALE: {
+> +		int gain;
+> +
+> +		gain = val * 1000000 + val2;
+> +		err = st_sensors_set_fullscale_by_gain(indio_dev, gain);
+>  		break;
+> +	}
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		if (val2)
+>  			return -EINVAL;
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index 285a64a..975a1f1 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -612,7 +612,7 @@ EXPORT_SYMBOL(st_sensors_sysfs_sampling_frequency_avail);
+>  ssize_t st_sensors_sysfs_scale_avail(struct device *dev,
+>  				struct device_attribute *attr, char *buf)
 >  {
-> @@ -785,9 +758,6 @@ static ssize_t taos_luxtable_store(struct device *dev,
->  	return len;
->  }
+> -	int i, len = 0;
+> +	int i, len = 0, q, r;
+>  	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+>  	struct st_sensor_data *sdata = iio_priv(indio_dev);
 >  
-> -static DEVICE_ATTR(power_state, S_IRUGO | S_IWUSR,
-> -		taos_power_state_show, taos_power_state_store);
-> -
->  static DEVICE_ATTR(illuminance0_calibscale, S_IRUGO | S_IWUSR,
->  		taos_gain_show, taos_gain_store);
->  static DEVICE_ATTR(illuminance0_calibscale_available, S_IRUGO,
-> @@ -810,7 +780,6 @@ static DEVICE_ATTR(illuminance0_lux_table, S_IRUGO | S_IWUSR,
->  		taos_luxtable_show, taos_luxtable_store);
+> @@ -621,8 +621,10 @@ ssize_t st_sensors_sysfs_scale_avail(struct device *dev,
+>  		if (sdata->sensor_settings->fs.fs_avl[i].num == 0)
+>  			break;
 >  
->  static struct attribute *sysfs_attrs_ctrl[] = {
-> -	&dev_attr_power_state.attr,
->  	&dev_attr_illuminance0_calibscale.attr,			/* Gain  */
->  	&dev_attr_illuminance0_calibscale_available.attr,
->  	&dev_attr_illuminance0_integration_time.attr,	/* I time*/
+> -		len += scnprintf(buf + len, PAGE_SIZE - len, "0.%06u ",
+> -				sdata->sensor_settings->fs.fs_avl[i].gain);
+> +		q = sdata->sensor_settings->fs.fs_avl[i].gain / 1000000;
+> +		r = sdata->sensor_settings->fs.fs_avl[i].gain % 1000000;
+> +
+> +		len += scnprintf(buf + len, PAGE_SIZE - len, "%u.%06u ", q, r);
+>  	}
+>  	mutex_unlock(&indio_dev->mlock);
+>  	buf[len - 1] = '\n';
 > 
 
