@@ -1,176 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43221 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43089 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753543AbcJ3Rf6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:35:58 -0400
-Subject: Re: [PATCH V3 1/2] iio: adc: spmi-vadc: Update changes to support
- reporting of Raw adc code.
-To: Rama Krishna Phani A <rphani@codeaurora.org>,
+        with ESMTP id S1754204AbcJ3RNt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:13:49 -0400
+Subject: Re: [PATCH V3 2/2] iio: adc: spmi-vadc: Changes to support different
+ scaling
+To: "Phani A, Rama Krishna" <rphani@codeaurora.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org
 References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
- <1477492887-1663-2-git-send-email-rphani@codeaurora.org>
+ <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
+ <8418e7f1-55d9-2dfa-1dc7-5960f9da0305@linaro.org>
+ <be7d758f-1698-1b6d-e6a1-a2910a914737@codeaurora.org>
 Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
         smohanad@codeaurora.org, mgautam@codeaurora.org,
         sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ee44e76a-b7e1-63b2-2251-6247d9e6bb9d@kernel.org>
-Date: Sun, 30 Oct 2016 17:35:53 +0000
+Message-ID: <a96141dc-6ee5-2d7c-868c-7cb282002b89@kernel.org>
+Date: Sun, 30 Oct 2016 17:13:46 +0000
 MIME-Version: 1.0
-In-Reply-To: <1477492887-1663-2-git-send-email-rphani@codeaurora.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <be7d758f-1698-1b6d-e6a1-a2910a914737@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/10/16 15:41, Rama Krishna Phani A wrote:
-> Logic to convert adc code to voltage is generic across all channels.
-> Different scaling can be done on the obtained voltage to report in physical
-> units. Implement separate function for generic conversion logic.
-> Scaling functionality can be changed per channel. Update changes to support
-> reporting of Raw adc code.
-Pleas rewrite this description.  Perhaps give examples of the changes
-it makes to what is read from the various attributes? 
-
-I haven't immediately followed what this change is actually doing.
-
-I 'think' the point here is to not apply the calibration to
-the raw adc counts when a true raw read is requested?
-
-There are several unconnected looking changes in here...
+On 27/10/16 18:37, Phani A, Rama Krishna wrote:
+> Hi Stan,
 > 
-> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
-> ---
->  drivers/iio/adc/qcom-spmi-vadc.c | 54 +++++++++++++++++++++-------------------
->  1 file changed, 28 insertions(+), 26 deletions(-)
+> On 27-Oct-16 4:48 PM, Stanimir Varbanov wrote:
+>> Hi Rama,
+>>
+>> On 10/26/2016 05:41 PM, Rama Krishna Phani A wrote:
+>>> Polling can also be used for End of conversion completion. Implement logic
+>>> to choose either polling or interrupt for End of conversion completion.
+>>> Scaling can be done on the voltage to report adc code in physical units.
+>>> Add changes to support different scale functions to convert adc code to
+>>> physical units.
+>>>
+>>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+>>> ---
+>>>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 ++
+>>>  drivers/iio/adc/qcom-spmi-vadc.c                   | 263 +++++++++++++++++----
+>>>  2 files changed, 236 insertions(+), 41 deletions(-)
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>>> index 0fb4613..39e31c0e 100644
+>>> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>>> @@ -37,6 +37,12 @@ VADC node:
+>>>      Value type: <prop-encoded-array>
+>>>      Definition: End of conversion interrupt.
+>>>
+>>> +- qcom,vadc-poll-eoc:
+>>> +    Usage: optional
+>>> +    Value type: <bool>
+>>> +    Definition: Use polling instead of interrupts for End of Conversion
+>>> +        completion.
+>>
+>> Why you need to add such a flag in DT?
+>>
+>> The DT should describe hardware details not how the driver will choose
+>> pooling vs interrupt.
+>>
+>> On which use-case you would prefer pooling?
+>>
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> index c2babe5..ff4d549 100644
-> --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> @@ -1,5 +1,5 @@
->  /*
-> - * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
->   *
->   * This program is free software; you can redistribute it and/or modify
->   * it under the terms of the GNU General Public License version 2 and
-> @@ -84,7 +84,7 @@
->  #define VADC_MAX_ADC_CODE			0xa800
->  
->  #define VADC_ABSOLUTE_RANGE_UV			625000
-> -#define VADC_RATIOMETRIC_RANGE_UV		1800000
-> +#define VADC_RATIOMETRIC_RANGE			1800
->  
->  #define VADC_DEF_PRESCALING			0 /* 1:1 */
->  #define VADC_DEF_DECIMATION			0 /* 512 */
-> @@ -418,7 +418,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  	u16 read_1, read_2;
->  	int ret;
->  
-> -	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
-> +	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
->  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
->  
->  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-> @@ -468,21 +468,30 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  	return ret;
->  }
->  
-> -static s32 vadc_calibrate(struct vadc_priv *vadc,
-> -			  const struct vadc_channel_prop *prop, u16 adc_code)
-> +static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
-> +			     const struct vadc_channel_prop *prop,
-> +			     s64 *scale_voltage)
->  {
-> -	const struct vadc_prescale_ratio *prescale;
-> -	s64 voltage;
-> +	*scale_voltage = (adc_code -
-> +		vadc->graph[prop->calibration].gnd);
-> +	*scale_voltage *= vadc->graph[prop->calibration].dx;
-> +	*scale_voltage = div64_s64(*scale_voltage,
-> +		vadc->graph[prop->calibration].dy);
-> +	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> +		*scale_voltage +=
-> +		vadc->graph[prop->calibration].dx;
->  
-> -	voltage = adc_code - vadc->graph[prop->calibration].gnd;
-> -	voltage *= vadc->graph[prop->calibration].dx;
-> -	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
-> +	if (*scale_voltage < 0)
-> +		*scale_voltage = 0;
-> +}
->  
-> -	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> -		voltage += vadc->graph[prop->calibration].dx;
-> +static s64 vadc_scale_fn(struct vadc_priv *vadc,
-> +			 const struct vadc_channel_prop *prop, u16 adc_code)
-> +{
-> +	const struct vadc_prescale_ratio *prescale;
-> +	s64 voltage = 0;
->  
-> -	if (voltage < 0)
-> -		voltage = 0;
-> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
->  
->  	prescale = &vadc_prescale_ratios[prop->prescale];
->  
-> @@ -552,11 +561,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->  		if (ret)
->  			break;
->  
-> -		*val = vadc_calibrate(vadc, prop, adc_code);
-> +		*val = vadc_scale_fn(vadc, prop, adc_code);
->  
-> -		/* 2mV/K, return milli Celsius */
-> -		*val /= 2;
-> -		*val -= KELVINMIL_CELSIUSMIL;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_RAW:
->  		prop = &vadc->chan_props[chan->address];
-> @@ -564,12 +570,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->  		if (ret)
->  			break;
->  
-> -		*val = vadc_calibrate(vadc, prop, adc_code);
-> +		*val = (int)adc_code;
->  		return IIO_VAL_INT;
-So this is 'more raw'.
-> -	case IIO_CHAN_INFO_SCALE:
-> -		*val = 0;
-> -		*val2 = 1000;
-> -		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		ret = -EINVAL;
->  		break;
-> @@ -616,8 +618,8 @@ struct vadc_channels {
->  	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
->  
->  #define VADC_CHAN_VOLT(_dname, _pre)					\
-> -	VADC_CHAN(_dname, IIO_VOLTAGE,					\
-> -		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
-> +	VADC_CHAN(_dname, IIO_VOLTAGE,				\
-> +		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
->  		  _pre)							\
-It very unusual to report both raw and processed values.  Please explain
-why that is needed here?  It may be valid to maintain backwards compatibility
-of ABI. Which would be fine. However if I read the above correctly you are
-changing what comes out of reading the raw value so the ABI just changed...
+> Few PMIC's support interrupt functionality for ADC where as few
+> PMIC's dont support. Based on the functionality that is supported in
+> hardware we choose whether to go for polling or for interrupt.
+Can't use the usual trick of an optional interrupt in DT?
+If it's there we try to use it, if not then fall back to polling?
 
 
->  
->  /*
-> @@ -850,9 +852,9 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
->  
->  		iio_chan->channel = prop.channel;
->  		iio_chan->datasheet_name = vadc_chan->datasheet_name;
-> +		iio_chan->extend_name = child->name;
-What's this change?
->  		iio_chan->info_mask_separate = vadc_chan->info_mask;
->  		iio_chan->type = vadc_chan->type;
-> -		iio_chan->indexed = 1;
-Or for that matter this one...
->  		iio_chan->address = index++;
->  
->  		iio_chan++;
+>>> +
+>>>  Channel node properties:
+>>>
+>>>  - reg:
+>>> @@ -92,6 +98,14 @@ Channel node properties:
+>>>              Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+>>>              If property is not found, 1 sample will be used.
+>>>
+>>> +- qcom,scale-function:
+>>> +    Usage: optional
+>>> +    Value type: <u32>
+>>> +    Definition: Scaling function used to convert raw ADC code to
+>>> +    units specific to a given channel. Scaled units can be
+>>> +    microvolts, millidegC.Valid values are: 0, 1, 2, 3, 4.
+>>> +    If property is not found, 0 scaling will be used.
+>>
+>> This shouldn't be in DT binding. Just select the scale function for each
+>> channel in the driver based on compatible property.
+>>
+>>
+> Ok ., Will remove this binding from DT, implement logic in driver and will post next patch.
 > 
+> Thanks,
+> Ramakrishna
+> 
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
