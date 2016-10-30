@@ -1,133 +1,115 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Song, Hongyan" <hongyan.song@intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH] iio: hid-sensors: Increase the precision of scale
-Date: Mon, 31 Oct 2016 00:34:13 +0000
-Message-ID: <1477873875.8025.48.camel@intel.com>
-References: <1477359007-17240-1-git-send-email-hongyan.song@intel.com>
-	 <88ae9a62-24ec-13ba-d1f2-8b8d208cf031@kernel.org>
-In-Reply-To: <88ae9a62-24ec-13ba-d1f2-8b8d208cf031@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43293 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756871AbcJ3Roz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:44:55 -0400
+Subject: Re: [PATCH 01/10] staging: iio: tsl2583: add of_match table for
+ device tree support
+To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
+References: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
+ <1477648821-3786-2-git-send-email-masneyb@onstation.org>
+ <246d8513-3505-31cd-4cfa-4f2c2e9266d8@kernel.org>
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, devicetree@vger.kernel.org,
+        robh+dt@kernel.org, Mark.Rutland@arm.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <f2835bec-c819-cd1d-aaa0-4aef0b42e6f6@kernel.org>
+Date: Sun, 30 Oct 2016 17:44:52 +0000
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <246d8513-3505-31cd-4cfa-4f2c2e9266d8@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE2LTEwLTMwIGF0IDE2OjIyICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiAyNS8xMC8xNiAwMjozMCwgU29uZyBIb25neWFuIHdyb3RlOg0KPiA+IA0KPiA+IFdo
-aWxlIHRlc3RpbmcsIGl0IHdhcyBvYnNlcnZlZCB0aGF0IG9uIHNvbWUgcGxhdGZvcm1zIHRoZSBz
-Y2FsZQ0KPiA+IHZhbHVlDQo+ID4gZnJvbSBpaW8gc3lzZnMgZm9yIGd5cm9zY29wZSBpcyBhbHdh
-eXMgMCAoRS5nLiBZb2dhIDI2MCkuIFRoaXMNCj4gPiByZXN1bHRzDQo+ID4gaW4gdGhlIGZpbmFs
-IGFuZ3VsYXIgdmVsb2NpdHkgY29tcG9uZW50IHZhbHVlcyB0byBiZSB6ZXJvcy4NCj4gPiANCj4g
-PiBUaGlzIGlzIGNhdXNlZCBieSBpbnN1ZmZpY2llbnQgcHJlY2lzaW9uIG9mIHNjYWxlIHZhbHVl
-IGRpc3BsYXllZA0KPiA+IGluIHN5c2ZzLg0KPiA+IElmIHRoZSBwcmVjaXNpb24gaXMgY2hhbmdl
-ZCB0byBuYW5vIGZyb20gY3VycmVudCBtaWNybywgdGhlbiB0aGlzDQo+ID4gaXMNCj4gPiBzdWZm
-aWNpZW50IHRvIGRpc3BsYXkgdGhlIHNjYWxlIHZhbHVlIG9uIHRoaXMgcGxhdGZvcm0uDQo+ID4g
-U2luY2UgdGhpcyBjYW4gYmUgYSBwcm9ibGVtIGZvciBhbGwgb3RoZXIgSElEIHNlbnNvcnMsIGlu
-Y3JlYXNlDQo+ID4gc2NhbGUNCj4gPiBwcmVjaXNpb24gb2YgYWxsIEhJRCBzZW5zb3JzIHRvIG5h
-bm8gZnJvbSBjdXJyZW50IG1pY3JvLg0KPiA+IA0KPiA+IFJlc3VsdHMgb24gWW9nYSAyNjA6DQo+
-ID4gDQo+ID4gbmFtZQkJc2NhbGUgYmVmb3JlCXNjYWxlIG5vdw0KPiA+IC0tLS0tLS0tLS0tLS0t
-LS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQo+ID4gZ3lyb18zZAkJMC4wMDAwMDAJMC4w
-MDAwMDAxNzQNCj4gPiBhbHMJCQkwLjAwMTAwMAkwLjAwMTAwMDAwMA0KPiA+IG1hZ25fM2QJCTAu
-MDAwMDAxCTAuMDAwMDAxMDAwDQo+ID4gYWNjZWxfM2QJCTAuMDAwMDA5CTAuMDAwMDA5ODA2DQo+
-ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogU29uZyBIb25neWFuIDxob25neWFuLnNvbmdAaW50ZWwu
-Y29tPg0KQWNrZWQtYnk6IFNyaW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFzLnBhbmRydXZhZGFA
-bGludXguaW50ZWwuY29tPg0KDQpIaSBKb25hdGhhbiwNCj4gSGkNCj4gDQo+IExvb2tzIHJpZ2h0
-IHRvIG1lLCBTcmluaXZhcywgSSdkIGxpa2UgeW91ciBBY2sgb24gdGhpcyBpZGVhbGx5Lg0KDQpJ
-IGhhdmUgYWRkZWQgbXkgQUNLLg0KDQpUaGFua3MsDQpTcmluaXZhcw0KDQo+IHRoYW5rcywNCj4g
-DQo+IEpvbmF0aGFuDQo+ID4gDQo+ID4gLS0tDQo+ID4gwqAuLi4vaWlvL2NvbW1vbi9oaWQtc2Vu
-c29ycy9oaWQtc2Vuc29yLWF0dHJpYnV0ZXMuYyB8IDU2DQo+ID4gKysrKysrKysrKystLS0tLS0t
-LS0tLQ0KPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDI4IGluc2VydGlvbnMoKyksIDI4IGRlbGV0aW9u
-cygtKQ0KPiA+IA0KPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNv
-cnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMgDQo+ID4gYi9kcml2ZXJzL2lpby9jb21tb24vaGlk
-LXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gPiBpbmRleCBkYzMzYzFkLi5iNWJl
-ZWE1MyAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlk
-LXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNl
-bnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gPiBAQCAtMzAsMjYgKzMwLDI2IEBADQo+
-ID4gwqAJdTMyIHVzYWdlX2lkOw0KPiA+IMKgCWludCB1bml0OyAvKiAwIGZvciBkZWZhdWx0IG90
-aGVycyBmcm9tIEhJRCBzZW5zb3Igc3BlYyAqLw0KPiA+IMKgCWludCBzY2FsZV92YWwwOyAvKiBz
-Y2FsZSwgd2hvbGUgbnVtYmVyICovDQo+ID4gLQlpbnQgc2NhbGVfdmFsMTsgLyogc2NhbGUsIGZy
-YWN0aW9uIGluIG1pY3JvcyAqLw0KPiA+ICsJaW50IHNjYWxlX3ZhbDE7IC8qIHNjYWxlLCBmcmFj
-dGlvbiBpbiBuYW5vcyAqLw0KPiA+IMKgfSB1bml0X2NvbnZlcnNpb25bXSA9IHsNCj4gPiAtCXtI
-SURfVVNBR0VfU0VOU09SX0FDQ0VMXzNELCAwLCA5LCA4MDY2NTB9LA0KPiA+ICsJe0hJRF9VU0FH
-RV9TRU5TT1JfQUNDRUxfM0QsIDAsIDksIDgwNjY1MDAwMH0sDQo+ID4gwqAJe0hJRF9VU0FHRV9T
-RU5TT1JfQUNDRUxfM0QsDQo+ID4gwqAJCUhJRF9VU0FHRV9TRU5TT1JfVU5JVFNfTUVURVJTX1BF
-Ul9TRUNfU1FSRCwgMSwgMH0sDQo+ID4gwqAJe0hJRF9VU0FHRV9TRU5TT1JfQUNDRUxfM0QsDQo+
-ID4gLQkJSElEX1VTQUdFX1NFTlNPUl9VTklUU19HLCA5LCA4MDY2NTB9LA0KPiA+ICsJCUhJRF9V
-U0FHRV9TRU5TT1JfVU5JVFNfRywgOSwgODA2NjUwMDAwfSwNCj4gPiDCoA0KPiA+IC0Je0hJRF9V
-U0FHRV9TRU5TT1JfR1lST18zRCwgMCwgMCwgMTc0NTN9LA0KPiA+ICsJe0hJRF9VU0FHRV9TRU5T
-T1JfR1lST18zRCwgMCwgMCwgMTc0NTMyOTN9LA0KPiA+IMKgCXtISURfVVNBR0VfU0VOU09SX0dZ
-Uk9fM0QsDQo+ID4gwqAJCUhJRF9VU0FHRV9TRU5TT1JfVU5JVFNfUkFESUFOU19QRVJfU0VDT05E
-LCAxLCAwfSwNCj4gPiDCoAl7SElEX1VTQUdFX1NFTlNPUl9HWVJPXzNELA0KPiA+IC0JCUhJRF9V
-U0FHRV9TRU5TT1JfVU5JVFNfREVHUkVFU19QRVJfU0VDT05ELCAwLA0KPiA+IDE3NDUzfSwNCj4g
-PiArCQlISURfVVNBR0VfU0VOU09SX1VOSVRTX0RFR1JFRVNfUEVSX1NFQ09ORCwgMCwNCj4gPiAx
-NzQ1MzI5M30sDQo+ID4gwqANCj4gPiAtCXtISURfVVNBR0VfU0VOU09SX0NPTVBBU1NfM0QsIDAs
-IDAsIDEwMDB9LA0KPiA+ICsJe0hJRF9VU0FHRV9TRU5TT1JfQ09NUEFTU18zRCwgMCwgMCwgMTAw
-MDAwMH0sDQo+ID4gwqAJe0hJRF9VU0FHRV9TRU5TT1JfQ09NUEFTU18zRCwNCj4gPiBISURfVVNB
-R0VfU0VOU09SX1VOSVRTX0dBVVNTLCAxLCAwfSwNCj4gPiDCoA0KPiA+IC0Je0hJRF9VU0FHRV9T
-RU5TT1JfSU5DTElOT01FVEVSXzNELCAwLCAwLCAxNzQ1M30sDQo+ID4gKwl7SElEX1VTQUdFX1NF
-TlNPUl9JTkNMSU5PTUVURVJfM0QsIDAsIDAsIDE3NDUzMjkzfSwNCj4gPiDCoAl7SElEX1VTQUdF
-X1NFTlNPUl9JTkNMSU5PTUVURVJfM0QsDQo+ID4gLQkJSElEX1VTQUdFX1NFTlNPUl9VTklUU19E
-RUdSRUVTLCAwLCAxNzQ1M30sDQo+ID4gKwkJSElEX1VTQUdFX1NFTlNPUl9VTklUU19ERUdSRUVT
-LCAwLCAxNzQ1MzI5M30sDQo+ID4gwqAJe0hJRF9VU0FHRV9TRU5TT1JfSU5DTElOT01FVEVSXzNE
-LA0KPiA+IMKgCQlISURfVVNBR0VfU0VOU09SX1VOSVRTX1JBRElBTlMsIDEsIDB9LA0KPiA+IMKg
-DQo+ID4gQEAgLTU3LDcgKzU3LDcgQEANCj4gPiDCoAl7SElEX1VTQUdFX1NFTlNPUl9BTFMsIEhJ
-RF9VU0FHRV9TRU5TT1JfVU5JVFNfTFVYLCAxLCAwfSwNCj4gPiDCoA0KPiA+IMKgCXtISURfVVNB
-R0VfU0VOU09SX1BSRVNTVVJFLCAwLCAxMDAsIDB9LA0KPiA+IC0Je0hJRF9VU0FHRV9TRU5TT1Jf
-UFJFU1NVUkUsIEhJRF9VU0FHRV9TRU5TT1JfVU5JVFNfUEFTQ0FMLA0KPiA+IDAsIDEwMDB9LA0K
-PiA+ICsJe0hJRF9VU0FHRV9TRU5TT1JfUFJFU1NVUkUsIEhJRF9VU0FHRV9TRU5TT1JfVU5JVFNf
-UEFTQ0FMLA0KPiA+IDAsIDEwMDAwMDB9LA0KPiA+IMKgfTsNCj4gPiDCoA0KPiA+IMKgc3RhdGlj
-IGludCBwb3dfMTAodW5zaWduZWQgcG93ZXIpDQo+ID4gQEAgLTI2NiwxNSArMjY2LDE1IEBAIGlu
-dCBoaWRfc2Vuc29yX3dyaXRlX3Jhd19oeXN0X3ZhbHVlKHN0cnVjdA0KPiA+IGhpZF9zZW5zb3Jf
-Y29tbW9uICpzdCwNCj4gPiDCoC8qDQo+ID4gwqAgKiBUaGlzIGZ1Y3Rpb24gYXBwbGllcyB0aGUg
-dW5pdCBleHBvbmVudCB0byB0aGUgc2NhbGUuDQo+ID4gwqAgKiBGb3IgZXhhbXBsZToNCj4gPiAt
-ICogOS44MDY2NTAgLT5leHA6Mi0+IHZhbDBbOTgwXXZhbDFbNjY1MDAwXQ0KPiA+IC0gKiA5LjAw
-MDgwNiAtPmV4cDoyLT4gdmFsMFs5MDBddmFsMVs4MDYwMF0NCj4gPiAtICogMC4xNzQ1MzUgLT5l
-eHA6Mi0+IHZhbDBbMTdddmFsMVs0NTM1MDBdDQo+ID4gLSAqIDEuMDAxNzQ1IC0+ZXhwOjAtPiB2
-YWwwWzFddmFsMVsxNzQ1XQ0KPiA+IC0gKiAxLjAwMTc0NSAtPmV4cDoyLT4gdmFsMFsxMDBddmFs
-MVsxNzQ1MDBdDQo+ID4gLSAqIDEuMDAxNzQ1IC0+ZXhwOjQtPiB2YWwwWzEwMDE3XXZhbDFbNDUw
-MDAwXQ0KPiA+IC0gKiA5LjgwNjY1MCAtPmV4cDotMi0+IHZhbDBbMF12YWwxWzk4MDY2XQ0KPiA+
-ICsgKiA5LjgwNjY1MDAwMCAtPmV4cDoyLT4gdmFsMFs5ODBddmFsMVs2NjUwMDAwMDBdDQo+ID4g
-KyAqIDkuMDAwODA2MDAwIC0+ZXhwOjItPiB2YWwwWzkwMF12YWwxWzgwNjAwMDAwXQ0KPiA+ICsg
-KiAwLjE3NDUzNTI5MyAtPmV4cDoyLT4gdmFsMFsxN112YWwxWzQ1MzUyOTMwMF0NCj4gPiArICog
-MS4wMDE3NDUzMjkgLT5leHA6MC0+IHZhbDBbMV12YWwxWzE3NDUzMjldDQo+ID4gKyAqIDEuMDAx
-NzQ1MzI5IC0+ZXhwOjItPiB2YWwwWzEwMF12YWwxWzE3NDUzMjkwMF0NCj4gPiArICogMS4wMDE3
-NDUzMjkgLT5leHA6NC0+IHZhbDBbMTAwMTdddmFsMVs0NTMyOTAwMDBdDQo+ID4gKyAqIDkuODA2
-NjUwMDAwIC0+ZXhwOi0yLT4gdmFsMFswXXZhbDFbOTgwNjY1MDBdDQo+ID4gwqAgKi8NCj4gPiAt
-c3RhdGljIHZvaWQgYWRqdXN0X2V4cG9uZW50X21pY3JvKGludCAqdmFsMCwgaW50ICp2YWwxLCBp
-bnQNCj4gPiBzY2FsZTAsDQo+ID4gK3N0YXRpYyB2b2lkIGFkanVzdF9leHBvbmVudF9uYW5vKGlu
-dCAqdmFsMCwgaW50ICp2YWwxLCBpbnQgc2NhbGUwLA0KPiA+IMKgCQkJCcKgwqBpbnQgc2NhbGUx
-LCBpbnQgZXhwKQ0KPiA+IMKgew0KPiA+IMKgCWludCBpOw0KPiA+IEBAIC0yODUsMzIgKzI4NSwz
-MiBAQCBzdGF0aWMgdm9pZCBhZGp1c3RfZXhwb25lbnRfbWljcm8oaW50ICp2YWwwLA0KPiA+IGlu
-dCAqdmFsMSwgaW50IHNjYWxlMCwNCj4gPiDCoAlpZiAoZXhwID4gMCkgew0KPiA+IMKgCQkqdmFs
-MCA9IHNjYWxlMCAqIHBvd18xMChleHApOw0KPiA+IMKgCQlyZXMgPSAwOw0KPiA+IC0JCWlmIChl
-eHAgPiA2KSB7DQo+ID4gKwkJaWYgKGV4cCA+IDkpIHsNCj4gPiDCoAkJCSp2YWwxID0gMDsNCj4g
-PiDCoAkJCXJldHVybjsNCj4gPiDCoAkJfQ0KPiA+IMKgCQlmb3IgKGkgPSAwOyBpIDwgZXhwOyAr
-K2kpIHsNCj4gPiAtCQkJeCA9IHNjYWxlMSAvIHBvd18xMCg1IC0gaSk7DQo+ID4gKwkJCXggPSBz
-Y2FsZTEgLyBwb3dfMTAoOCAtIGkpOw0KPiA+IMKgCQkJcmVzICs9IChwb3dfMTAoZXhwIC0gMSAt
-IGkpICogeCk7DQo+ID4gLQkJCXNjYWxlMSA9IHNjYWxlMSAlIHBvd18xMCg1IC0gaSk7DQo+ID4g
-KwkJCXNjYWxlMSA9IHNjYWxlMSAlIHBvd18xMCg4IC0gaSk7DQo+ID4gwqAJCX0NCj4gPiDCoAkJ
-KnZhbDAgKz0gcmVzOw0KPiA+IMKgCQkJKnZhbDEgPSBzY2FsZTEgKiBwb3dfMTAoZXhwKTsNCj4g
-PiDCoAl9IGVsc2UgaWYgKGV4cCA8IDApIHsNCj4gPiDCoAkJZXhwID0gYWJzKGV4cCk7DQo+ID4g
-LQkJaWYgKGV4cCA+IDYpIHsNCj4gPiArCQlpZiAoZXhwID4gOSkgew0KPiA+IMKgCQkJKnZhbDAg
-PSAqdmFsMSA9IDA7DQo+ID4gwqAJCQlyZXR1cm47DQo+ID4gwqAJCX0NCj4gPiDCoAkJKnZhbDAg
-PSBzY2FsZTAgLyBwb3dfMTAoZXhwKTsNCj4gPiDCoAkJcmVtID0gc2NhbGUwICUgcG93XzEwKGV4
-cCk7DQo+ID4gwqAJCXJlcyA9IDA7DQo+ID4gLQkJZm9yIChpID0gMDsgaSA8ICg2IC0gZXhwKTsg
-KytpKSB7DQo+ID4gLQkJCXggPSBzY2FsZTEgLyBwb3dfMTAoNSAtIGkpOw0KPiA+IC0JCQlyZXMg
-Kz0gKHBvd18xMCg1IC0gZXhwIC0gaSkgKiB4KTsNCj4gPiAtCQkJc2NhbGUxID0gc2NhbGUxICUg
-cG93XzEwKDUgLSBpKTsNCj4gPiArCQlmb3IgKGkgPSAwOyBpIDwgKDkgLSBleHApOyArK2kpIHsN
-Cj4gPiArCQkJeCA9IHNjYWxlMSAvIHBvd18xMCg4IC0gaSk7DQo+ID4gKwkJCXJlcyArPSAocG93
-XzEwKDggLSBleHAgLSBpKSAqIHgpOw0KPiA+ICsJCQlzY2FsZTEgPSBzY2FsZTEgJSBwb3dfMTAo
-OCAtIGkpOw0KPiA+IMKgCQl9DQo+ID4gLQkJKnZhbDEgPSByZW0gKiBwb3dfMTAoNiAtIGV4cCkg
-KyByZXM7DQo+ID4gKwkJKnZhbDEgPSByZW0gKiBwb3dfMTAoOSAtIGV4cCkgKyByZXM7DQo+ID4g
-wqAJfSBlbHNlIHsNCj4gPiDCoAkJKnZhbDAgPSBzY2FsZTA7DQo+ID4gwqAJCSp2YWwxID0gc2Nh
-bGUxOw0KPiA+IEBAIC0zMzIsMTQgKzMzMiwxNCBAQCBpbnQgaGlkX3NlbnNvcl9mb3JtYXRfc2Nh
-bGUodTMyIHVzYWdlX2lkLA0KPiA+IMKgCQkJdW5pdF9jb252ZXJzaW9uW2ldLnVuaXQgPT0gYXR0
-cl9pbmZvLQ0KPiA+ID51bml0cykgew0KPiA+IMKgCQkJZXhwwqDCoD0gaGlkX3NlbnNvcl9jb252
-ZXJ0X2V4cG9uZW50KA0KPiA+IMKgCQkJCQkJYXR0cl9pbmZvLQ0KPiA+ID51bml0X2V4cG8pOw0K
-PiA+IC0JCQlhZGp1c3RfZXhwb25lbnRfbWljcm8odmFsMCwgdmFsMSwNCj4gPiArCQkJYWRqdXN0
-X2V4cG9uZW50X25hbm8odmFsMCwgdmFsMSwNCj4gPiDCoAkJCQkJdW5pdF9jb252ZXJzaW9uW2ld
-LnNjYWxlX3YNCj4gPiBhbDAsDQo+ID4gwqAJCQkJCXVuaXRfY29udmVyc2lvbltpXS5zY2FsZV92
-DQo+ID4gYWwxLCBleHApOw0KPiA+IMKgCQkJYnJlYWs7DQo+ID4gwqAJCX0NCj4gPiDCoAl9DQo+
-ID4gwqANCj4gPiAtCXJldHVybiBJSU9fVkFMX0lOVF9QTFVTX01JQ1JPOw0KPiA+ICsJcmV0dXJu
-IElJT19WQUxfSU5UX1BMVVNfTkFOTzsNCj4gPiDCoH0NCj4gPiDCoEVYUE9SVF9TWU1CT0woaGlk
-X3NlbnNvcl9mb3JtYXRfc2NhbGUpOw0KPiA+IMKgDQo+ID4g
+On 30/10/16 17:43, Jonathan Cameron wrote:
+> On 28/10/16 11:00, Brian Masney wrote:
+>> Add device tree support for the tsl2583 IIO driver with no custom
+>> properties.
+>>
+>> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> Trivial enough that I feel I can take this without an explicit devicetree
+> ack.  Of course one is always welcome if anyone gets a chance to look at it.
+> I won't have it exposed in a non rebasing tree until perhaps the second half
+> of the week.
+oops. Forgot to say - applied to the togreg branch of iio.git - initially pushed
+out as testing for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+>> ---
+>>  .../devicetree/bindings/iio/light/tsl2583.txt      | 26 ++++++++++++++++++++++
+>>  drivers/staging/iio/light/tsl2583.c                | 13 +++++++++++
+>>  2 files changed, 39 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/light/tsl2583.txt b/Documentation/devicetree/bindings/iio/light/tsl2583.txt
+>> new file mode 100644
+>> index 0000000..8e2066c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/light/tsl2583.txt
+>> @@ -0,0 +1,26 @@
+>> +* TAOS TSL 2580/2581/2583 ALS sensor
+>> +
+>> +Required properties:
+>> +
+>> +  - compatible: Should be one of
+>> +		"amstaos,tsl2580"
+>> +		"amstaos,tsl2581"
+>> +		"amstaos,tsl2583"
+>> +  - reg: the I2C address of the device
+>> +
+>> +Optional properties:
+>> +
+>> +  - interrupt-parent: should be the phandle for the interrupt controller
+>> +  - interrupts: the sole interrupt generated by the device
+>> +
+>> +  Refer to interrupt-controller/interrupts.txt for generic interrupt client
+>> +  node bindings.
+>> +
+>> +  - vcc-supply: phandle to the regulator that provides power to the sensor.
+>> +
+>> +Example:
+>> +
+>> +tsl2581@29 {
+>> +	compatible = "amstaos,tsl2581";
+>> +	reg = <0x29>;
+>> +};
+>> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+>> index 08f1583..fd4b6ef 100644
+>> --- a/drivers/staging/iio/light/tsl2583.c
+>> +++ b/drivers/staging/iio/light/tsl2583.c
+>> @@ -947,11 +947,24 @@ static struct i2c_device_id taos_idtable[] = {
+>>  };
+>>  MODULE_DEVICE_TABLE(i2c, taos_idtable);
+>>  
+>> +#ifdef CONFIG_OF
+>> +static const struct of_device_id taos2583_of_match[] = {
+>> +	{ .compatible = "amstaos,tsl2580", },
+>> +	{ .compatible = "amstaos,tsl2581", },
+>> +	{ .compatible = "amstaos,tsl2583", },
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, taos2583_of_match);
+>> +#else
+>> +#define taos2583_of_match NULL
+>> +#endif
+>> +
+>>  /* Driver definition */
+>>  static struct i2c_driver taos_driver = {
+>>  	.driver = {
+>>  		.name = "tsl2583",
+>>  		.pm = TAOS_PM_OPS,
+>> +		.of_match_table = taos2583_of_match,
+>>  	},
+>>  	.id_table = taos_idtable,
+>>  	.probe = taos_probe,
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
