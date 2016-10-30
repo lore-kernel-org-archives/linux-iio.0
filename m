@@ -1,106 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:33389 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S944909AbcJaRIE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Oct 2016 13:08:04 -0400
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH 1/6] staging: iio: set proper supply name to devm_regulator_get()
-Date: Tue,  1 Nov 2016 01:04:30 +0800
-Message-Id: <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
-In-Reply-To: <1477933475-21914-1-git-send-email-eraretuya@gmail.com>
-References: <1477933475-21914-1-git-send-email-eraretuya@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44075 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754065AbcJ3U3R (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 16:29:17 -0400
+In-Reply-To: <20161030200409.GA14808@basecamp.onstation.org>
+References: <1477648821-3786-1-git-send-email-masneyb@onstation.org> <1477648821-3786-8-git-send-email-masneyb@onstation.org> <a0fc532f-f034-d817-00f6-a28ec60daf6a@kernel.org> <20161030200409.GA14808@basecamp.onstation.org>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 07/10] staging: iio: tsl2583: convert illuminance0_calibscale sysfs attr to use iio_chan_spec
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Sun, 30 Oct 2016 20:29:07 +0000
+To: Brian Masney <masneyb@onstation.org>,
+        Jonathan Cameron <jic23@kernel.org>
+CC: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        gregkh@linuxfoundation.org, lars@metafoo.de, pmeerw@pmeerw.net,
+        knaack.h@gmx.de, linux-kernel@vger.kernel.org,
+        devicetree@vger.kernel.org, robh+dt@kernel.org,
+        Mark.Rutland@arm.com
+Message-ID: <AB13BE14-F431-4E0B-8C4C-8EF59CB13720@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The name passed to devm_regulator_get() should match the name of the
-supply as specified in the device datasheet. This makes it clear what
-power supply is being referred to in case of presence of other
-regulators.
 
-Currently, the supply name specified on the affected devices is 'vcc'.
-Use lowercase version of the datasheet name to specify the supply
-voltage.
 
-Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
- drivers/staging/iio/adc/ad7192.c                | 2 +-
- drivers/staging/iio/adc/ad7780.c                | 2 +-
- drivers/staging/iio/frequency/ad9832.c          | 2 +-
- drivers/staging/iio/frequency/ad9834.c          | 2 +-
- drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
- 5 files changed, 5 insertions(+), 5 deletions(-)
+On 30 October 2016 20:04:09 GMT+00:00, Brian Masney <masneyb@onstation.org> wrote:
+>On Sun, Oct 30, 2016 at 06:37:40PM +0000, Jonathan Cameron wrote:
+>> On 28/10/16 11:00, Brian Masney wrote:
+>> > The illuminance0_calibscale sysfs attribute is not currently
+>created by
+>> > the IIO core. This patch adds the appropriate mask to
+>iio_chan_spec,
+>> > along with the appropriate data handling in the read_raw() and
+>> > write_raw() functions, so that the sysfs attribute is created by
+>the IIO
+>> > core. With this change, this sysfs entry will have its prefix
+>changed
+>> > from illuminance0_ to in_illuminance_.
+>> > 
+>> > Signed-off-by: Brian Masney <masneyb@onstation.org>
+>> Hmm. Could probably have computed the mean on the fly but fine as is.
+>
+>Hi Jonathan,
+>   Thanks for your feedback. I'll have another patch set ready for you
+>by next weekend with my next round of cleanups to that driver. I'll
+>change this so that it calculates the mean on the fly unless I hear
+>otherwise from you.
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index bfa12ce..41fb32d 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -633,7 +633,7 @@ static int ad7192_probe(struct spi_device *spi)
- 
- 	st = iio_priv(indio_dev);
- 
--	st->reg = devm_regulator_get(&spi->dev, "vcc");
-+	st->reg = devm_regulator_get(&spi->dev, "avdd");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
-diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-index c9a0c2a..a88236e 100644
---- a/drivers/staging/iio/adc/ad7780.c
-+++ b/drivers/staging/iio/adc/ad7780.c
-@@ -173,7 +173,7 @@ static int ad7780_probe(struct spi_device *spi)
- 
- 	ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
- 
--	st->reg = devm_regulator_get(&spi->dev, "vcc");
-+	st->reg = devm_regulator_get(&spi->dev, "avdd");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
-diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index 358400b..744c8ee 100644
---- a/drivers/staging/iio/frequency/ad9832.c
-+++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -212,7 +212,7 @@ static int ad9832_probe(struct spi_device *spi)
- 		return -ENODEV;
- 	}
- 
--	reg = devm_regulator_get(&spi->dev, "vcc");
-+	reg = devm_regulator_get(&spi->dev, "avdd");
- 	if (!IS_ERR(reg)) {
- 		ret = regulator_enable(reg);
- 		if (ret)
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 6366216..ca3cea6 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -329,7 +329,7 @@ static int ad9834_probe(struct spi_device *spi)
- 		return -ENODEV;
- 	}
- 
--	reg = devm_regulator_get(&spi->dev, "vcc");
-+	reg = devm_regulator_get(&spi->dev, "avdd");
- 	if (!IS_ERR(reg)) {
- 		ret = regulator_enable(reg);
- 		if (ret)
-diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-index 5eecf1c..62f61bc 100644
---- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-+++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-@@ -723,7 +723,7 @@ static int ad5933_probe(struct i2c_client *client,
- 	if (!pdata)
- 		pdata = &ad5933_default_pdata;
- 
--	st->reg = devm_regulator_get(&client->dev, "vcc");
-+	st->reg = devm_regulator_get(&client->dev, "vdd");
- 	if (!IS_ERR(st->reg)) {
- 		ret = regulator_enable(st->reg);
- 		if (ret)
+I don't worry about the mean change. Not worth changing to my mind.
+
+J
+>
+>Brian
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
 -- 
-2.7.4
-
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
