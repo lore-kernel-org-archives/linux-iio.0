@@ -1,148 +1,183 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:35015 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935567AbcJ1I2U (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 28 Oct 2016 04:28:20 -0400
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v3] staging: iio: cdc: ad7746: add additional config defines
-Date: Fri, 28 Oct 2016 16:26:52 +0800
-Message-Id: <1477643212-7200-1-git-send-email-eraretuya@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42789 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757047AbcJ3QWw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 12:22:52 -0400
+Subject: Re: [PATCH] iio: hid-sensors: Increase the precision of scale
+To: Song Hongyan <hongyan.song@intel.com>, linux-iio@vger.kernel.org
+References: <1477359007-17240-1-git-send-email-hongyan.song@intel.com>
+Cc: srinivas.pandruvada@intel.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <88ae9a62-24ec-13ba-d1f2-8b8d208cf031@kernel.org>
+Date: Sun, 30 Oct 2016 16:22:50 +0000
+MIME-Version: 1.0
+In-Reply-To: <1477359007-17240-1-git-send-email-hongyan.song@intel.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Introduce defines for shifting and mask under the config register for
-better readability. Also, introduce helper variables for index
-calculation.
+On 25/10/16 02:30, Song Hongyan wrote:
+> While testing, it was observed that on some platforms the scale value
+> from iio sysfs for gyroscope is always 0 (E.g. Yoga 260). This results
+> in the final angular velocity component values to be zeros.
+> 
+> This is caused by insufficient precision of scale value displayed in sysfs.
+> If the precision is changed to nano from current micro, then this is
+> sufficient to display the scale value on this platform.
+> Since this can be a problem for all other HID sensors, increase scale
+> precision of all HID sensors to nano from current micro.
+> 
+> Results on Yoga 260:
+> 
+> name		scale before	scale now
+> --------------------------------------------
+> gyro_3d		0.000000	0.000000174
+> als			0.001000	0.001000000
+> magn_3d		0.000001	0.000001000
+> accel_3d		0.000009	0.000009806
+> 
+> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+Hi
 
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
-This patch might cause a conflict with this patch:
-staging: iio: cdc/ad7746: fix missing return value
-https://marc.info/?l=linux-driver-devel&m=147741283722806&w=2
-I am waiting to rebase to the branch where this commit is present but
-I was told it was not yet pushed to kernel.org
+Looks right to me, Srinivas, I'd like your Ack on this ideally.
 
-Changes in v3:
-* Make commit message more detailed.
-* Fix incorrect use of GENMASK.
-* Drop the AD7746_CONF_*FS(x) macros and use the mask and direct shifting where
-  needed.
-* With the proper masks set, invert the AND'ng and shifting on the index
-  calculations.
+thanks,
 
-Changes in v2:
-* Use GENMASK to generate both VTFS and CAPFS masks including offset,
-  respectively.
-* Introduce helper variables for index calculation.
-
- drivers/staging/iio/cdc/ad7746.c | 38 ++++++++++++++++++++++----------------
- 1 file changed, 22 insertions(+), 16 deletions(-)
-
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index f41251c..e97658a 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -70,8 +70,10 @@
- #define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
- 
- /* Config Register Bit Designations (AD7746_REG_CFG) */
--#define AD7746_CONF_VTFS(x)		((x) << 6)
--#define AD7746_CONF_CAPFS(x)		((x) << 3)
-+#define AD7746_CONF_VTFS_SHIFT		6
-+#define AD7746_CONF_CAPFS_SHIFT		3
-+#define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
-+#define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
- #define AD7746_CONF_MODE_IDLE		(0 << 0)
- #define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
- #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
-@@ -217,15 +219,16 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
- 			    struct iio_chan_spec const *chan)
- {
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, delay;
-+	int ret, delay, idx;
- 	u8 vt_setup, cap_setup;
- 
- 	switch (chan->type) {
- 	case IIO_CAPACITANCE:
- 		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
- 		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
--		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
--			0x7][1];
-+		idx = (chip->config & AD7746_CONF_CAPFS_MASK) >>
-+			AD7746_CONF_CAPFS_SHIFT;
-+		delay = ad7746_cap_filter_rate_table[idx][1];
- 
- 		if (chip->capdac_set != chan->channel) {
- 			ret = i2c_smbus_write_byte_data(chip->client,
-@@ -246,8 +249,9 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
- 	case IIO_TEMP:
- 		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
- 		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
--		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
--			0x3][1];
-+		idx = (chip->config & AD7746_CONF_VTFS_MASK) >>
-+			AD7746_CONF_VTFS_SHIFT;
-+		delay = ad7746_cap_filter_rate_table[idx][1];
- 		break;
- 	default:
- 		return -EINVAL;
-@@ -369,8 +373,8 @@ static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
- 	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
- 		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
- 
--	chip->config &= ~AD7746_CONF_CAPFS(0x7);
--	chip->config |= AD7746_CONF_CAPFS(i);
-+	chip->config &= ~AD7746_CONF_CAPFS_MASK;
-+	chip->config |= i << AD7746_CONF_CAPFS_SHIFT;
- 
- 	return 0;
- }
-@@ -387,8 +391,8 @@ static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
- 	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
- 		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
- 
--	chip->config &= ~AD7746_CONF_VTFS(0x3);
--	chip->config |= AD7746_CONF_VTFS(i);
-+	chip->config &= ~AD7746_CONF_VTFS_MASK;
-+	chip->config |= i << AD7746_CONF_VTFS_SHIFT;
- 
- 	return 0;
- }
-@@ -527,7 +531,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
- 			   long mask)
- {
- 	struct ad7746_chip_info *chip = iio_priv(indio_dev);
--	int ret, delay;
-+	int ret, delay, idx;
- 	u8 regval, reg;
- 
- 	mutex_lock(&indio_dev->mlock);
-@@ -635,13 +639,15 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		switch (chan->type) {
- 		case IIO_CAPACITANCE:
--			*val = ad7746_cap_filter_rate_table[
--					(chip->config >> 3) & 0x7][0];
-+			idx = (chip->config & AD7746_CONF_CAPFS_MASK) >>
-+				AD7746_CONF_CAPFS_SHIFT;
-+			*val = ad7746_cap_filter_rate_table[idx][0];
- 			ret = IIO_VAL_INT;
- 			break;
- 		case IIO_VOLTAGE:
--			*val = ad7746_vt_filter_rate_table[
--					(chip->config >> 6) & 0x3][0];
-+			idx = (chip->config & AD7746_CONF_VTFS_MASK) >>
-+				AD7746_CONF_VTFS_SHIFT;
-+			*val = ad7746_vt_filter_rate_table[idx][0];
- 			break;
- 		default:
- 			ret = -EINVAL;
--- 
-2.7.4
+Jonathan
+> ---
+>  .../iio/common/hid-sensors/hid-sensor-attributes.c | 56 +++++++++++-----------
+>  1 file changed, 28 insertions(+), 28 deletions(-)
+> 
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index dc33c1d..b5beea53 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -30,26 +30,26 @@
+>  	u32 usage_id;
+>  	int unit; /* 0 for default others from HID sensor spec */
+>  	int scale_val0; /* scale, whole number */
+> -	int scale_val1; /* scale, fraction in micros */
+> +	int scale_val1; /* scale, fraction in nanos */
+>  } unit_conversion[] = {
+> -	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
+> +	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650000},
+>  	{HID_USAGE_SENSOR_ACCEL_3D,
+>  		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
+>  	{HID_USAGE_SENSOR_ACCEL_3D,
+> -		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
+> +		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
+>  
+> -	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
+> +	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453293},
+>  	{HID_USAGE_SENSOR_GYRO_3D,
+>  		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
+>  	{HID_USAGE_SENSOR_GYRO_3D,
+> -		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
+> +		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453293},
+>  
+> -	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+> +	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+>  	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+>  
+> -	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+> +	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+> -		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
+> +		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+>  		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
+>  
+> @@ -57,7 +57,7 @@
+>  	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
+>  
+>  	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
+> -	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000},
+> +	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000000},
+>  };
+>  
+>  static int pow_10(unsigned power)
+> @@ -266,15 +266,15 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
+>  /*
+>   * This fuction applies the unit exponent to the scale.
+>   * For example:
+> - * 9.806650 ->exp:2-> val0[980]val1[665000]
+> - * 9.000806 ->exp:2-> val0[900]val1[80600]
+> - * 0.174535 ->exp:2-> val0[17]val1[453500]
+> - * 1.001745 ->exp:0-> val0[1]val1[1745]
+> - * 1.001745 ->exp:2-> val0[100]val1[174500]
+> - * 1.001745 ->exp:4-> val0[10017]val1[450000]
+> - * 9.806650 ->exp:-2-> val0[0]val1[98066]
+> + * 9.806650000 ->exp:2-> val0[980]val1[665000000]
+> + * 9.000806000 ->exp:2-> val0[900]val1[80600000]
+> + * 0.174535293 ->exp:2-> val0[17]val1[453529300]
+> + * 1.001745329 ->exp:0-> val0[1]val1[1745329]
+> + * 1.001745329 ->exp:2-> val0[100]val1[174532900]
+> + * 1.001745329 ->exp:4-> val0[10017]val1[453290000]
+> + * 9.806650000 ->exp:-2-> val0[0]val1[98066500]
+>   */
+> -static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+> +static void adjust_exponent_nano(int *val0, int *val1, int scale0,
+>  				  int scale1, int exp)
+>  {
+>  	int i;
+> @@ -285,32 +285,32 @@ static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+>  	if (exp > 0) {
+>  		*val0 = scale0 * pow_10(exp);
+>  		res = 0;
+> -		if (exp > 6) {
+> +		if (exp > 9) {
+>  			*val1 = 0;
+>  			return;
+>  		}
+>  		for (i = 0; i < exp; ++i) {
+> -			x = scale1 / pow_10(5 - i);
+> +			x = scale1 / pow_10(8 - i);
+>  			res += (pow_10(exp - 1 - i) * x);
+> -			scale1 = scale1 % pow_10(5 - i);
+> +			scale1 = scale1 % pow_10(8 - i);
+>  		}
+>  		*val0 += res;
+>  			*val1 = scale1 * pow_10(exp);
+>  	} else if (exp < 0) {
+>  		exp = abs(exp);
+> -		if (exp > 6) {
+> +		if (exp > 9) {
+>  			*val0 = *val1 = 0;
+>  			return;
+>  		}
+>  		*val0 = scale0 / pow_10(exp);
+>  		rem = scale0 % pow_10(exp);
+>  		res = 0;
+> -		for (i = 0; i < (6 - exp); ++i) {
+> -			x = scale1 / pow_10(5 - i);
+> -			res += (pow_10(5 - exp - i) * x);
+> -			scale1 = scale1 % pow_10(5 - i);
+> +		for (i = 0; i < (9 - exp); ++i) {
+> +			x = scale1 / pow_10(8 - i);
+> +			res += (pow_10(8 - exp - i) * x);
+> +			scale1 = scale1 % pow_10(8 - i);
+>  		}
+> -		*val1 = rem * pow_10(6 - exp) + res;
+> +		*val1 = rem * pow_10(9 - exp) + res;
+>  	} else {
+>  		*val0 = scale0;
+>  		*val1 = scale1;
+> @@ -332,14 +332,14 @@ int hid_sensor_format_scale(u32 usage_id,
+>  			unit_conversion[i].unit == attr_info->units) {
+>  			exp  = hid_sensor_convert_exponent(
+>  						attr_info->unit_expo);
+> -			adjust_exponent_micro(val0, val1,
+> +			adjust_exponent_nano(val0, val1,
+>  					unit_conversion[i].scale_val0,
+>  					unit_conversion[i].scale_val1, exp);
+>  			break;
+>  		}
+>  	}
+>  
+> -	return IIO_VAL_INT_PLUS_MICRO;
+> +	return IIO_VAL_INT_PLUS_NANO;
+>  }
+>  EXPORT_SYMBOL(hid_sensor_format_scale);
+>  
+> 
 
