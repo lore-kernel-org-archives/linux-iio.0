@@ -1,105 +1,159 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43089 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43260 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754204AbcJ3RNt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:13:49 -0400
-Subject: Re: [PATCH V3 2/2] iio: adc: spmi-vadc: Changes to support different
- scaling
-To: "Phani A, Rama Krishna" <rphani@codeaurora.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
- <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
- <8418e7f1-55d9-2dfa-1dc7-5960f9da0305@linaro.org>
- <be7d758f-1698-1b6d-e6a1-a2910a914737@codeaurora.org>
-Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+        with ESMTP id S1753049AbcJ3Rle (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 13:41:34 -0400
+Subject: Re: [PATCH v3] staging: iio: cdc: ad7746: add additional config
+ defines
+To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+References: <1477643212-7200-1-git-send-email-eraretuya@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a96141dc-6ee5-2d7c-868c-7cb282002b89@kernel.org>
-Date: Sun, 30 Oct 2016 17:13:46 +0000
+Message-ID: <f59b10dc-e273-d147-611c-0fca52ee8bc0@kernel.org>
+Date: Sun, 30 Oct 2016 17:41:32 +0000
 MIME-Version: 1.0
-In-Reply-To: <be7d758f-1698-1b6d-e6a1-a2910a914737@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1477643212-7200-1-git-send-email-eraretuya@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/10/16 18:37, Phani A, Rama Krishna wrote:
-> Hi Stan,
+On 28/10/16 09:26, Eva Rachel Retuya wrote:
+> Introduce defines for shifting and mask under the config register for
+> better readability. Also, introduce helper variables for index
+> calculation.
 > 
-> On 27-Oct-16 4:48 PM, Stanimir Varbanov wrote:
->> Hi Rama,
->>
->> On 10/26/2016 05:41 PM, Rama Krishna Phani A wrote:
->>> Polling can also be used for End of conversion completion. Implement logic
->>> to choose either polling or interrupt for End of conversion completion.
->>> Scaling can be done on the voltage to report adc code in physical units.
->>> Add changes to support different scale functions to convert adc code to
->>> physical units.
->>>
->>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
->>> ---
->>>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 ++
->>>  drivers/iio/adc/qcom-spmi-vadc.c                   | 263 +++++++++++++++++----
->>>  2 files changed, 236 insertions(+), 41 deletions(-)
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>> index 0fb4613..39e31c0e 100644
->>> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>> @@ -37,6 +37,12 @@ VADC node:
->>>      Value type: <prop-encoded-array>
->>>      Definition: End of conversion interrupt.
->>>
->>> +- qcom,vadc-poll-eoc:
->>> +    Usage: optional
->>> +    Value type: <bool>
->>> +    Definition: Use polling instead of interrupts for End of Conversion
->>> +        completion.
->>
->> Why you need to add such a flag in DT?
->>
->> The DT should describe hardware details not how the driver will choose
->> pooling vs interrupt.
->>
->> On which use-case you would prefer pooling?
->>
-> 
-> Few PMIC's support interrupt functionality for ADC where as few
-> PMIC's dont support. Based on the functionality that is supported in
-> hardware we choose whether to go for polling or for interrupt.
-Can't use the usual trick of an optional interrupt in DT?
-If it's there we try to use it, if not then fall back to polling?
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Looks good to me.
 
+Lars could you sanity check this one as well?
 
->>> +
->>>  Channel node properties:
->>>
->>>  - reg:
->>> @@ -92,6 +98,14 @@ Channel node properties:
->>>              Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
->>>              If property is not found, 1 sample will be used.
->>>
->>> +- qcom,scale-function:
->>> +    Usage: optional
->>> +    Value type: <u32>
->>> +    Definition: Scaling function used to convert raw ADC code to
->>> +    units specific to a given channel. Scaled units can be
->>> +    microvolts, millidegC.Valid values are: 0, 1, 2, 3, 4.
->>> +    If property is not found, 0 scaling will be used.
->>
->> This shouldn't be in DT binding. Just select the scale function for each
->> channel in the driver based on compatible property.
->>
->>
-> Ok ., Will remove this binding from DT, implement logic in driver and will post next patch.
+Thanks,
+
+Jonathan
+> ---
+> This patch might cause a conflict with this patch:
+> staging: iio: cdc/ad7746: fix missing return value
+> https://marc.info/?l=linux-driver-devel&m=147741283722806&w=2
+> I am waiting to rebase to the branch where this commit is present but
+> I was told it was not yet pushed to kernel.org
 > 
-> Thanks,
-> Ramakrishna
+> Changes in v3:
+> * Make commit message more detailed.
+> * Fix incorrect use of GENMASK.
+> * Drop the AD7746_CONF_*FS(x) macros and use the mask and direct shifting where
+>   needed.
+> * With the proper masks set, invert the AND'ng and shifting on the index
+>   calculations.
 > 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Changes in v2:
+> * Use GENMASK to generate both VTFS and CAPFS masks including offset,
+>   respectively.
+> * Introduce helper variables for index calculation.
+> 
+>  drivers/staging/iio/cdc/ad7746.c | 38 ++++++++++++++++++++++----------------
+>  1 file changed, 22 insertions(+), 16 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> index f41251c..e97658a 100644
+> --- a/drivers/staging/iio/cdc/ad7746.c
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -70,8 +70,10 @@
+>  #define AD7746_EXCSETUP_EXCLVL(x)	(((x) & 0x3) << 0)
+>  
+>  /* Config Register Bit Designations (AD7746_REG_CFG) */
+> -#define AD7746_CONF_VTFS(x)		((x) << 6)
+> -#define AD7746_CONF_CAPFS(x)		((x) << 3)
+> +#define AD7746_CONF_VTFS_SHIFT		6
+> +#define AD7746_CONF_CAPFS_SHIFT		3
+> +#define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
+> +#define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
+>  #define AD7746_CONF_MODE_IDLE		(0 << 0)
+>  #define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
+>  #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
+> @@ -217,15 +219,16 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+>  			    struct iio_chan_spec const *chan)
+>  {
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> -	int ret, delay;
+> +	int ret, delay, idx;
+>  	u8 vt_setup, cap_setup;
+>  
+>  	switch (chan->type) {
+>  	case IIO_CAPACITANCE:
+>  		cap_setup = (chan->address & 0xFF) | AD7746_CAPSETUP_CAPEN;
+>  		vt_setup = chip->vt_setup & ~AD7746_VTSETUP_VTEN;
+> -		delay = ad7746_cap_filter_rate_table[(chip->config >> 3) &
+> -			0x7][1];
+> +		idx = (chip->config & AD7746_CONF_CAPFS_MASK) >>
+> +			AD7746_CONF_CAPFS_SHIFT;
+> +		delay = ad7746_cap_filter_rate_table[idx][1];
+>  
+>  		if (chip->capdac_set != chan->channel) {
+>  			ret = i2c_smbus_write_byte_data(chip->client,
+> @@ -246,8 +249,9 @@ static int ad7746_select_channel(struct iio_dev *indio_dev,
+>  	case IIO_TEMP:
+>  		vt_setup = (chan->address & 0xFF) | AD7746_VTSETUP_VTEN;
+>  		cap_setup = chip->cap_setup & ~AD7746_CAPSETUP_CAPEN;
+> -		delay = ad7746_cap_filter_rate_table[(chip->config >> 6) &
+> -			0x3][1];
+> +		idx = (chip->config & AD7746_CONF_VTFS_MASK) >>
+> +			AD7746_CONF_VTFS_SHIFT;
+> +		delay = ad7746_cap_filter_rate_table[idx][1];
+>  		break;
+>  	default:
+>  		return -EINVAL;
+> @@ -369,8 +373,8 @@ static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
+>  	if (i >= ARRAY_SIZE(ad7746_cap_filter_rate_table))
+>  		i = ARRAY_SIZE(ad7746_cap_filter_rate_table) - 1;
+>  
+> -	chip->config &= ~AD7746_CONF_CAPFS(0x7);
+> -	chip->config |= AD7746_CONF_CAPFS(i);
+> +	chip->config &= ~AD7746_CONF_CAPFS_MASK;
+> +	chip->config |= i << AD7746_CONF_CAPFS_SHIFT;
+>  
+>  	return 0;
+>  }
+> @@ -387,8 +391,8 @@ static int ad7746_store_vt_filter_rate_setup(struct ad7746_chip_info *chip,
+>  	if (i >= ARRAY_SIZE(ad7746_vt_filter_rate_table))
+>  		i = ARRAY_SIZE(ad7746_vt_filter_rate_table) - 1;
+>  
+> -	chip->config &= ~AD7746_CONF_VTFS(0x3);
+> -	chip->config |= AD7746_CONF_VTFS(i);
+> +	chip->config &= ~AD7746_CONF_VTFS_MASK;
+> +	chip->config |= i << AD7746_CONF_VTFS_SHIFT;
+>  
+>  	return 0;
+>  }
+> @@ -527,7 +531,7 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+>  			   long mask)
+>  {
+>  	struct ad7746_chip_info *chip = iio_priv(indio_dev);
+> -	int ret, delay;
+> +	int ret, delay, idx;
+>  	u8 regval, reg;
+>  
+>  	mutex_lock(&indio_dev->mlock);
+> @@ -635,13 +639,15 @@ static int ad7746_read_raw(struct iio_dev *indio_dev,
+>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>  		switch (chan->type) {
+>  		case IIO_CAPACITANCE:
+> -			*val = ad7746_cap_filter_rate_table[
+> -					(chip->config >> 3) & 0x7][0];
+> +			idx = (chip->config & AD7746_CONF_CAPFS_MASK) >>
+> +				AD7746_CONF_CAPFS_SHIFT;
+> +			*val = ad7746_cap_filter_rate_table[idx][0];
+>  			ret = IIO_VAL_INT;
+>  			break;
+>  		case IIO_VOLTAGE:
+> -			*val = ad7746_vt_filter_rate_table[
+> -					(chip->config >> 6) & 0x3][0];
+> +			idx = (chip->config & AD7746_CONF_VTFS_MASK) >>
+> +				AD7746_CONF_VTFS_SHIFT;
+> +			*val = ad7746_vt_filter_rate_table[idx][0];
+>  			break;
+>  		default:
+>  			ret = -EINVAL;
+> 
 
