@@ -1,116 +1,30 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:51044 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754162AbcJaHNA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Oct 2016 03:13:00 -0400
-Subject: Re: [PATCH V3 2/2] iio: adc: spmi-vadc: Changes to support different
- scaling
-To: Jonathan Cameron <jic23@kernel.org>,
-        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
- <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
- <8418e7f1-55d9-2dfa-1dc7-5960f9da0305@linaro.org>
- <be7d758f-1698-1b6d-e6a1-a2910a914737@codeaurora.org>
- <a96141dc-6ee5-2d7c-868c-7cb282002b89@kernel.org>
-Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-Message-ID: <812bb533-0f19-7abc-1fa1-9e83f1db10f4@codeaurora.org>
-Date: Mon, 31 Oct 2016 12:42:45 +0530
+Return-Path: <robherring2@gmail.com>
+Date: Mon, 31 Oct 2016 01:06:55 -0500
+From: Rob Herring <robh@kernel.org>
+To: Brian Masney <masneyb@onstation.org>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	gregkh@linuxfoundation.org, lars@metafoo.de, pmeerw@pmeerw.net,
+	knaack.h@gmx.de, linux-kernel@vger.kernel.org,
+	devicetree@vger.kernel.org, Mark.Rutland@arm.com
+Subject: Re: [PATCH 01/10] staging: iio: tsl2583: add of_match table for
+ device tree support
+Message-ID: <20161031060655.xhugdvrvuhzu4xjl@rob-hp-laptop>
+References: <1477648821-3786-1-git-send-email-masneyb@onstation.org>
+ <1477648821-3786-2-git-send-email-masneyb@onstation.org>
 MIME-Version: 1.0
-In-Reply-To: <a96141dc-6ee5-2d7c-868c-7cb282002b89@kernel.org>
-Content-Type: text/plain; charset=utf-8; format=flowed
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1477648821-3786-2-git-send-email-masneyb@onstation.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+On Fri, Oct 28, 2016 at 06:00:12AM -0400, Brian Masney wrote:
+> Add device tree support for the tsl2583 IIO driver with no custom
+> properties.
+> 
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> ---
+>  .../devicetree/bindings/iio/light/tsl2583.txt      | 26 ++++++++++++++++++++++
+>  drivers/staging/iio/light/tsl2583.c                | 13 +++++++++++
+>  2 files changed, 39 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/tsl2583.txt
 
-On 30-Oct-16 10:43 PM, Jonathan Cameron wrote:
-> On 27/10/16 18:37, Phani A, Rama Krishna wrote:
->> Hi Stan,
->>
->> On 27-Oct-16 4:48 PM, Stanimir Varbanov wrote:
->>> Hi Rama,
->>>
->>> On 10/26/2016 05:41 PM, Rama Krishna Phani A wrote:
->>>> Polling can also be used for End of conversion completion. Implement logic
->>>> to choose either polling or interrupt for End of conversion completion.
->>>> Scaling can be done on the voltage to report adc code in physical units.
->>>> Add changes to support different scale functions to convert adc code to
->>>> physical units.
->>>>
->>>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
->>>> ---
->>>>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 ++
->>>>  drivers/iio/adc/qcom-spmi-vadc.c                   | 263 +++++++++++++++++----
->>>>  2 files changed, 236 insertions(+), 41 deletions(-)
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>>> index 0fb4613..39e31c0e 100644
->>>> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>>> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
->>>> @@ -37,6 +37,12 @@ VADC node:
->>>>      Value type: <prop-encoded-array>
->>>>      Definition: End of conversion interrupt.
->>>>
->>>> +- qcom,vadc-poll-eoc:
->>>> +    Usage: optional
->>>> +    Value type: <bool>
->>>> +    Definition: Use polling instead of interrupts for End of Conversion
->>>> +        completion.
->>>
->>> Why you need to add such a flag in DT?
->>>
->>> The DT should describe hardware details not how the driver will choose
->>> pooling vs interrupt.
->>>
->>> On which use-case you would prefer pooling?
->>>
->>
->> Few PMIC's support interrupt functionality for ADC where as few
->> PMIC's dont support. Based on the functionality that is supported in
->> hardware we choose whether to go for polling or for interrupt.
-> Can't use the usual trick of an optional interrupt in DT?
-> If it's there we try to use it, if not then fall back to polling?
->
-Ok., Will check this logic for implementation and will post next patch.
-
->
->>>> +
->>>>  Channel node properties:
->>>>
->>>>  - reg:
->>>> @@ -92,6 +98,14 @@ Channel node properties:
->>>>              Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
->>>>              If property is not found, 1 sample will be used.
->>>>
->>>> +- qcom,scale-function:
->>>> +    Usage: optional
->>>> +    Value type: <u32>
->>>> +    Definition: Scaling function used to convert raw ADC code to
->>>> +    units specific to a given channel. Scaled units can be
->>>> +    microvolts, millidegC.Valid values are: 0, 1, 2, 3, 4.
->>>> +    If property is not found, 0 scaling will be used.
->>>
->>> This shouldn't be in DT binding. Just select the scale function for each
->>> channel in the driver based on compatible property.
->>>
->>>
->> Ok ., Will remove this binding from DT, implement logic in driver and will post next patch.
->>
->> Thanks,
->> Ramakrishna
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->
-
----
-This email has been checked for viruses by Avast antivirus software.
-https://www.avast.com/antivirus
-
+Acked-by: Rob Herring <robh@kernel.org>
