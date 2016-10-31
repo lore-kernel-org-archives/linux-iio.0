@@ -1,63 +1,66 @@
-Return-Path: <srinivas.pandruvada@intel.com>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Song, Hongyan" <hongyan.song@intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH] iio: hid-sensor-als: Add realtime data type parse
- support
-Date: Mon, 31 Oct 2016 00:37:57 +0000
-Message-ID: <1477874099.8025.51.camel@intel.com>
-References: <1477617606-29362-1-git-send-email-hongyan.song@intel.com>
-	 <aa4b33a0-01a8-8395-0943-b31aae4904bb@kernel.org>
-In-Reply-To: <aa4b33a0-01a8-8395-0943-b31aae4904bb@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-oi0-f67.google.com ([209.85.218.67]:35184 "EHLO
+        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933170AbcJaDlk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 23:41:40 -0400
+Date: Sun, 30 Oct 2016 22:41:30 -0500
+From: Rob Herring <robh@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org, kernel@pyra-handheld.com
+Subject: Re: [PATCH v6 6/8] drivers:input:ads7846(+tsc2046): add new common
+ binding names, pre-calibration and flipping
+Message-ID: <20161031034130.4gljsgfugnsp4edy@rob-hp-laptop>
+References: <cover.1477557860.git.hns@goldelico.com>
+ <8b04ed29eb6a9ed154380941beb3a12a73a276d0.1477557860.git.hns@goldelico.com>
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <8b04ed29eb6a9ed154380941beb3a12a73a276d0.1477557860.git.hns@goldelico.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU3VuLCAyMDE2LTEwLTMwIGF0IDE2OjI2ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiAyOC8xMC8xNiAwMjoyMCwgU29uZyBIb25neWFuIHdyb3RlOg0KPiA+IA0KPiA+IElu
-IHBhcnNlIHJlcG9ydCBmdW5jdGlvbiBpdCBvbmx5IHN1cHBvcnQgdG8gcGFyc2UgYWJzb2x1dGUg
-ZGF0YQ0KPiA+IHR5cGUNCj4gPiByZXBvcnRlZC4gU29tZSBwbGF0Zm9ybXMgd2hpY2ggcmVwb3J0
-IHJlYWx0aW1lIGRhdGEgY2Fubm90IGJlDQo+ID4gcGFyc2VkLA0KPiA+IHRoZXkgd2lsbCBnZXQg
-IkludmFsaWQgQXJndW1lbnQiIHdoZW4gdHJ5IHRvIGdldCBzZW5zb3IgZGF0YS4NCj4gPiANCj4g
-PiBBZGQgcmVhbHRpbWUgZGF0YSB0eXBlIHN1cHBvcnQgdG8gbWF0Y2ggZGlmZmVyZW50IHBsYXRm
-b3Jtcy4NCj4gSSdtIG5vdCAxMDAlIHN1cmUgdGhhdCByZWwgc3RhbmRzIGZvciByZWFsIHRpbWUg
-aGVyZS4uLg0KPiANCj4gUmVsYXRpdmUgcGVyY2VudD/CoMKgVGhlcmUgaXMgYWxzbyBhIHBlcmNl
-bnQgb2YgcmFuZ2Ugb3B0aW9uIHRob3VnaCBubw0KPiBpZGVhIGlmIGFueSBoYXJkd2FyZSBhY3R1
-YWxseSB1c2VzIHRoYXQuDQo+IA0KPiBTcmluaXZhcywgY291bGQgeW91IHRha2UgYSBsb29rIGF0
-IHRoaXMgb25lIGFzIHdlbGwuDQpJIGFza2VkIEhvbmd5YW4gdG8gcG9zdCB0byBtYWlsaW5nIGxp
-c3QgdG8gc2VlayBzb21lIG9waW5pb24uDQpUaGUgSUlPIEFCSSBoeXN0ZXJlc2lzIGlzIGFic29s
-dXRlIHZhbHVlLCBidXQgdGhpcyB3aWxsIHNwZWNpZnkgYQ0KcmVsYXRpdmUgdmFsdWUgd2l0aCBw
-ZXJjZW50YWdlLg0KSSB0aGluayB3ZSBuZWVkIGEgbmV3IEFCSS4NCg0KVGhhbmtzLA0KU3Jpbml2
-YXMNCg0KDQo+IA0KPiB0aGFua3MsDQo+IA0KPiBKb25hdGhhbg0KPiA+IA0KPiA+IA0KPiA+IFNp
-Z25lZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4gPiAt
-LS0NCj4gPiDCoGRyaXZlcnMvaWlvL2xpZ2h0L2hpZC1zZW5zb3ItYWxzLmMgfCAxMSArKysrKysr
-KysrKw0KPiA+IMKgaW5jbHVkZS9saW51eC9oaWQtc2Vuc29yLWlkcy5owqDCoMKgwqDCoHzCoMKg
-MSArDQo+ID4gwqAyIGZpbGVzIGNoYW5nZWQsIDEyIGluc2VydGlvbnMoKykNCj4gPiANCj4gPiBk
-aWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vbGlnaHQvaGlkLXNlbnNvci1hbHMuYw0KPiA+IGIvZHJp
-dmVycy9paW8vbGlnaHQvaGlkLXNlbnNvci1hbHMuYw0KPiA+IGluZGV4IDhiYjFmOTAuLjNiM2Fh
-NjYgMTAwNjQ0DQo+ID4gLS0tIGEvZHJpdmVycy9paW8vbGlnaHQvaGlkLXNlbnNvci1hbHMuYw0K
-PiA+ICsrKyBiL2RyaXZlcnMvaWlvL2xpZ2h0L2hpZC1zZW5zb3ItYWxzLmMNCj4gPiBAQCAtMjUy
-LDYgKzI1MiwxNyBAQCBzdGF0aWMgaW50IGFsc19wYXJzZV9yZXBvcnQoc3RydWN0DQo+ID4gcGxh
-dGZvcm1fZGV2aWNlICpwZGV2LA0KPiA+IMKgCQkJc3QtPmNvbW1vbl9hdHRyaWJ1dGVzLnNlbnNp
-dGl2aXR5LmluZGV4LA0KPiA+IMKgCQkJc3QtDQo+ID4gPmNvbW1vbl9hdHRyaWJ1dGVzLnNlbnNp
-dGl2aXR5LnJlcG9ydF9pZCk7DQo+ID4gwqAJfQ0KPiA+ICsJaWYgKHN0LT5jb21tb25fYXR0cmli
-dXRlcy5zZW5zaXRpdml0eS5pbmRleCA8IDApIHsNCj4gPiArCQlzZW5zb3JfaHViX2lucHV0X2dl
-dF9hdHRyaWJ1dGVfaW5mbyhoc2RldiwNCj4gPiArCQkJSElEX0ZFQVRVUkVfUkVQT1JULCB1c2Fn
-ZV9pZCwNCj4gPiArCQkJSElEX1VTQUdFX1NFTlNPUl9EQVRBX01PRF9DSEFOR0VfU0VOU0lUSVZJ
-DQo+ID4gVFlfUkVMX1BDVCB8DQo+ID4gKwkJCUhJRF9VU0FHRV9TRU5TT1JfTElHSFRfSUxMVU0s
-DQo+ID4gKwkJCSZzdC0+Y29tbW9uX2F0dHJpYnV0ZXMuc2Vuc2l0aXZpdHkpOw0KPiA+ICsJCWRl
-dl9kYmcoJnBkZXYtPmRldiwgIlNlbnNpdGl2aXR5IGluZGV4OnJlcG9ydA0KPiA+ICVkOiVkXG4i
-LA0KPiA+ICsJCQlzdC0+Y29tbW9uX2F0dHJpYnV0ZXMuc2Vuc2l0aXZpdHkuaW5kZXgsDQo+ID4g
-KwkJCXN0LQ0KPiA+ID5jb21tb25fYXR0cmlidXRlcy5zZW5zaXRpdml0eS5yZXBvcnRfaWQpOw0K
-PiA+ICsJfQ0KPiA+ICsNCj4gPiDCoAlyZXR1cm4gcmV0Ow0KPiA+IMKgfQ0KPiA+IMKgDQo+ID4g
-ZGlmZiAtLWdpdCBhL2luY2x1ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaCBiL2luY2x1ZGUvbGlu
-dXgvaGlkLQ0KPiA+IHNlbnNvci1pZHMuaA0KPiA+IGluZGV4IGYyZWU5MGEuLjc1NWY1ZTIgMTAw
-NjQ0DQo+ID4gLS0tIGEvaW5jbHVkZS9saW51eC9oaWQtc2Vuc29yLWlkcy5oDQo+ID4gKysrIGIv
-aW5jbHVkZS9saW51eC9oaWQtc2Vuc29yLWlkcy5oDQo+ID4gQEAgLTE0MSw2ICsxNDEsNyBAQA0K
-PiA+IMKgLyogUGVyIGRhdGEgZmllbGQgcHJvcGVydGllcyAqLw0KPiA+IMKgI2RlZmluZSBISURf
-VVNBR0VfU0VOU09SX0RBVEFfTU9EX05PTkUJCQkJDQo+ID4gCTB4MDANCj4gPiDCoCNkZWZpbmUg
-SElEX1VTQUdFX1NFTlNPUl9EQVRBX01PRF9DSEFOR0VfU0VOU0lUSVZJVFlfQUJTCQkNCj4gPiAw
-eDEwMDANCj4gPiArI2RlZmluZSBISURfVVNBR0VfU0VOU09SX0RBVEFfTU9EX0NIQU5HRV9TRU5T
-SVRJVklUWV9SRUxfUENUCQ0KPiA+IAkweEUwMDANCj4gPiDCoA0KPiA+IMKgLyogUG93ZXIgc3Rh
-dGUgZW51bWVyYXRpb25zICovDQo+ID4gwqAjZGVmaW5lIEhJRF9VU0FHRV9TRU5TT1JfUFJPUF9Q
-T1dFUl9TVEFURV9VTkRFRklORURfRU5VTQkweA0KPiA+IDIwMDg1MA0KPiA+IA==
+On Thu, Oct 27, 2016 at 10:44:19AM +0200, H. Nikolaus Schaller wrote:
+> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+> introduced common DT bindings for touchscreens [1] and a helper function to
+> parse the DT.
+> 
+> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+> added another helper for parsing axis inversion and swapping
+> and applying them to x and y coordinates.
+> 
+> Both helpers have been integrated to accommodate any orientation of the
+> touch panel in relation to the LCD.
+> 
+> A new feature is to introduce scaling the min/max ADC values to the screen
+> size.
+> 
+> This makes it possible to pre-calibrate the touch so that is (almost)
+> exactly matches the LCD pixel coordinates it is glued onto. This allows to
+> well enough operate the touch before a user space calibration step can
+> improve the precision.
+> 
+> [1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+> 
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+>  .../devicetree/bindings/input/ads7846.txt          |  9 +++-
+>  drivers/input/touchscreen/ads7846.c                | 60 ++++++++++++++++++----
+>  2 files changed, 57 insertions(+), 12 deletions(-)
+
+Acked-by: Rob Herring <robh@kernel.org>
