@@ -1,66 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:35184 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933170AbcJaDlk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 30 Oct 2016 23:41:40 -0400
-Date: Sun, 30 Oct 2016 22:41:30 -0500
-From: Rob Herring <robh@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sangwon Jee <jeesw@melfas.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
-        linux-iio@vger.kernel.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v6 6/8] drivers:input:ads7846(+tsc2046): add new common
- binding names, pre-calibration and flipping
-Message-ID: <20161031034130.4gljsgfugnsp4edy@rob-hp-laptop>
-References: <cover.1477557860.git.hns@goldelico.com>
- <8b04ed29eb6a9ed154380941beb3a12a73a276d0.1477557860.git.hns@goldelico.com>
+Received: from smtp.codeaurora.org ([198.145.29.96]:51044 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754162AbcJaHNA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 31 Oct 2016 03:13:00 -0400
+Subject: Re: [PATCH V3 2/2] iio: adc: spmi-vadc: Changes to support different
+ scaling
+To: Jonathan Cameron <jic23@kernel.org>,
+        Stanimir Varbanov <stanimir.varbanov@linaro.org>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+References: <1477492887-1663-1-git-send-email-rphani@codeaurora.org>
+ <1477492887-1663-3-git-send-email-rphani@codeaurora.org>
+ <8418e7f1-55d9-2dfa-1dc7-5960f9da0305@linaro.org>
+ <be7d758f-1698-1b6d-e6a1-a2910a914737@codeaurora.org>
+ <a96141dc-6ee5-2d7c-868c-7cb282002b89@kernel.org>
+Cc: robh@kernel.org, linux-arm-msm@vger.kernel.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+From: Rama Krishna Phani A <rphani@codeaurora.org>
+Message-ID: <812bb533-0f19-7abc-1fa1-9e83f1db10f4@codeaurora.org>
+Date: Mon, 31 Oct 2016 12:42:45 +0530
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <8b04ed29eb6a9ed154380941beb3a12a73a276d0.1477557860.git.hns@goldelico.com>
+In-Reply-To: <a96141dc-6ee5-2d7c-868c-7cb282002b89@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 27, 2016 at 10:44:19AM +0200, H. Nikolaus Schaller wrote:
-> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
-> introduced common DT bindings for touchscreens [1] and a helper function to
-> parse the DT.
-> 
-> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-> added another helper for parsing axis inversion and swapping
-> and applying them to x and y coordinates.
-> 
-> Both helpers have been integrated to accommodate any orientation of the
-> touch panel in relation to the LCD.
-> 
-> A new feature is to introduce scaling the min/max ADC values to the screen
-> size.
-> 
-> This makes it possible to pre-calibrate the touch so that is (almost)
-> exactly matches the LCD pixel coordinates it is glued onto. This allows to
-> well enough operate the touch before a user space calibration step can
-> improve the precision.
-> 
-> [1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  .../devicetree/bindings/input/ads7846.txt          |  9 +++-
->  drivers/input/touchscreen/ads7846.c                | 60 ++++++++++++++++++----
->  2 files changed, 57 insertions(+), 12 deletions(-)
+Hi Jonathan,
 
-Acked-by: Rob Herring <robh@kernel.org>
+On 30-Oct-16 10:43 PM, Jonathan Cameron wrote:
+> On 27/10/16 18:37, Phani A, Rama Krishna wrote:
+>> Hi Stan,
+>>
+>> On 27-Oct-16 4:48 PM, Stanimir Varbanov wrote:
+>>> Hi Rama,
+>>>
+>>> On 10/26/2016 05:41 PM, Rama Krishna Phani A wrote:
+>>>> Polling can also be used for End of conversion completion. Implement logic
+>>>> to choose either polling or interrupt for End of conversion completion.
+>>>> Scaling can be done on the voltage to report adc code in physical units.
+>>>> Add changes to support different scale functions to convert adc code to
+>>>> physical units.
+>>>>
+>>>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+>>>> ---
+>>>>  .../devicetree/bindings/iio/adc/qcom,spmi-vadc.txt |  14 ++
+>>>>  drivers/iio/adc/qcom-spmi-vadc.c                   | 263 +++++++++++++++++----
+>>>>  2 files changed, 236 insertions(+), 41 deletions(-)
+>>>>
+>>>> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>>>> index 0fb4613..39e31c0e 100644
+>>>> --- a/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>>>> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,spmi-vadc.txt
+>>>> @@ -37,6 +37,12 @@ VADC node:
+>>>>      Value type: <prop-encoded-array>
+>>>>      Definition: End of conversion interrupt.
+>>>>
+>>>> +- qcom,vadc-poll-eoc:
+>>>> +    Usage: optional
+>>>> +    Value type: <bool>
+>>>> +    Definition: Use polling instead of interrupts for End of Conversion
+>>>> +        completion.
+>>>
+>>> Why you need to add such a flag in DT?
+>>>
+>>> The DT should describe hardware details not how the driver will choose
+>>> pooling vs interrupt.
+>>>
+>>> On which use-case you would prefer pooling?
+>>>
+>>
+>> Few PMIC's support interrupt functionality for ADC where as few
+>> PMIC's dont support. Based on the functionality that is supported in
+>> hardware we choose whether to go for polling or for interrupt.
+> Can't use the usual trick of an optional interrupt in DT?
+> If it's there we try to use it, if not then fall back to polling?
+>
+Ok., Will check this logic for implementation and will post next patch.
+
+>
+>>>> +
+>>>>  Channel node properties:
+>>>>
+>>>>  - reg:
+>>>> @@ -92,6 +98,14 @@ Channel node properties:
+>>>>              Valid values are: 1, 2, 4, 8, 16, 32, 64, 128, 256, 512
+>>>>              If property is not found, 1 sample will be used.
+>>>>
+>>>> +- qcom,scale-function:
+>>>> +    Usage: optional
+>>>> +    Value type: <u32>
+>>>> +    Definition: Scaling function used to convert raw ADC code to
+>>>> +    units specific to a given channel. Scaled units can be
+>>>> +    microvolts, millidegC.Valid values are: 0, 1, 2, 3, 4.
+>>>> +    If property is not found, 0 scaling will be used.
+>>>
+>>> This shouldn't be in DT binding. Just select the scale function for each
+>>> channel in the driver based on compatible property.
+>>>
+>>>
+>> Ok ., Will remove this binding from DT, implement logic in driver and will post next patch.
+>>
+>> Thanks,
+>> Ramakrishna
+>>
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+
+---
+This email has been checked for viruses by Avast antivirus software.
+https://www.avast.com/antivirus
+
