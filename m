@@ -1,102 +1,54 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga06.intel.com ([134.134.136.31]:59908 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1033390AbcJ0Xtj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 27 Oct 2016 19:49:39 -0400
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jikos@kernel.org, jic23@kernel.org
-Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] HID: sensor-hub: Fix packing of result buffer for feature report
-Date: Thu, 27 Oct 2016 16:49:20 -0700
-Message-Id: <1477612160-23621-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <eraretuya@gmail.com>
+Date: Mon, 31 Oct 2016 15:49:02 +0800
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+	Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org
+Subject: Re: [PATCH v3] staging: iio: cdc: ad7746: add additional config
+ defines
+Message-ID: <20161031074901.GA2207@Socrates-DK>
+References: <1477643212-7200-1-git-send-email-eraretuya@gmail.com>
+ <f59b10dc-e273-d147-611c-0fca52ee8bc0@kernel.org>
+ <48d88156-88a9-dcc9-48d8-809d992c56e1@metafoo.de>
+ <5ef0f1e1-236c-0698-cdfc-533125b2d2c7@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <5ef0f1e1-236c-0698-cdfc-533125b2d2c7@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-When report count is more than one and report size is not 4 bytes, then we
-need some packing into result buffer from the caller of function
-sensor_hub_get_feature.
-By default the value extracted from a field is 4 bytes from hid core
-(using hid_hw_request(hsdev->hdev, report, HID_REQ_GET_REPORT)), even
-if report size if less than 4 byte. So when we copy data to user buffer in
-sensor_hub_get_feature, we need to only copy report size bytes even
-when report count is more than 1. This is
-not an issue for most of the sensor hub fields as report count will be 1
-where we already copy only report size bytes, but some string fields
-like description, it is a problem as the report count will be more than 1.
-For example:
-    Field(6)
-      Physical(Sensor.OtherCustom)
-      Application(Sensor.Sensor)
-      Usage(11)
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-        Sensor.0306
-      Report Size(16)
-      Report Count(11)
+On Sun, Oct 30, 2016 at 06:49:00PM +0000, Jonathan Cameron wrote:
+> On 30/10/16 17:46, Lars-Peter Clausen wrote:
+> > On 10/30/2016 06:41 PM, Jonathan Cameron wrote:
+> >> On 28/10/16 09:26, Eva Rachel Retuya wrote:
+> >>> Introduce defines for shifting and mask under the config register for
+> >>> better readability. Also, introduce helper variables for index
+> >>> calculation.
+> >>>
+> >>> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+> >> Looks good to me.
+> >>
+> >> Lars could you sanity check this one as well?
+> > 
+> > Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> There was a bit of fun applying this.  Eva, can you check I didn't mess it
+> up?
 
-Here since the report size is 2 bytes, we will have 2 additional bytes of
-0s copied into user buffer, if we directly copy to user buffer from
-report->field[]->value
+It looks fine to me. Thanks!
 
-This change will copy report size bytes into the buffer of caller for each
-usage report->field[]->value. So for example without this change, the
-data displayed for a custom sensor field "sensor-model":
-
-76 00 101 00 110 00 111 00 118 00 111
-(truncated to report count of 11)
-
-With change
-
-76 101 110 111 118 111 32 89 111 103 97
-("Lenovo Yoga" in ASCII )
-
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/hid/hid-sensor-hub.c | 15 ++++++++++++++-
- 1 file changed, 14 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 658a607..c5c3d61 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -251,6 +251,9 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 	struct sensor_hub_data *data = hid_get_drvdata(hsdev->hdev);
- 	int report_size;
- 	int ret = 0;
-+	u8 *val_ptr;
-+	int buffer_index = 0;
-+	int i;
- 
- 	mutex_lock(&data->mutex);
- 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
-@@ -271,7 +274,17 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 		goto done_proc;
- 	}
- 	ret = min(report_size, buffer_size);
--	memcpy(buffer, report->field[field_index]->value, ret);
-+
-+	val_ptr = (u8 *)report->field[field_index]->value;
-+	for (i = 0; i < report->field[field_index]->report_count; ++i) {
-+		if (buffer_index >= ret)
-+			break;
-+
-+		memcpy(&((u8 *)buffer)[buffer_index], val_ptr,
-+		       report->field[field_index]->report_size / 8);
-+		val_ptr += sizeof(__s32);
-+		buffer_index += (report->field[field_index]->report_size / 8);
-+	}
- 
- done_proc:
- 	mutex_unlock(&data->mutex);
--- 
-2.7.4
-
+> 
+> Applied to the togreg branch of iio.git.  Initially pushed out as testing
+> for the autobuilders to play with it. (and this time I remembered to actually
+> do the push!)
+> 
+> thanks,
+> 
+> Jonathan
+> > 
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> > 
+> 
