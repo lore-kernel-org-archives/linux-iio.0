@@ -1,78 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55539 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750871AbcKASfS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Nov 2016 14:35:18 -0400
-Subject: Re: [PATCH v3] staging: iio: cdc: ad7746: add additional config
- defines
-To: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org
-References: <1477643212-7200-1-git-send-email-eraretuya@gmail.com>
- <f59b10dc-e273-d147-611c-0fca52ee8bc0@kernel.org>
- <48d88156-88a9-dcc9-48d8-809d992c56e1@metafoo.de>
- <5ef0f1e1-236c-0698-cdfc-533125b2d2c7@kernel.org>
- <20161031074901.GA2207@Socrates-DK> <20161031080534.GB2207@Socrates-DK>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6d501ea0-aadb-a9d6-1cc9-d6146f1b0076@kernel.org>
-Date: Tue, 1 Nov 2016 18:35:15 +0000
+Received: from mail-qk0-f194.google.com ([209.85.220.194]:33007 "EHLO
+        mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751041AbcKAED6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Nov 2016 00:03:58 -0400
+Received: by mail-qk0-f194.google.com with SMTP id x190so4474990qkb.0
+        for <linux-iio@vger.kernel.org>; Mon, 31 Oct 2016 21:03:58 -0700 (PDT)
 MIME-Version: 1.0
-In-Reply-To: <20161031080534.GB2207@Socrates-DK>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
+References: <1477933475-21914-1-git-send-email-eraretuya@gmail.com> <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
+From: Matt Ranostay <matt@ranostay.consulting>
+Date: Mon, 31 Oct 2016 21:03:57 -0700
+Message-ID: <CAJ_EiSTU_z_fNSLSUSTpzU+v5F5f-JEe7p2fUms3LKEd+wftDw@mail.gmail.com>
+Subject: Re: [PATCH 1/6] staging: iio: set proper supply name to devm_regulator_get()
+To: Eva Rachel Retuya <eraretuya@gmail.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        Linux Kernel <linux-kernel@vger.kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Michael.Hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/10/16 08:05, Eva Rachel Retuya wrote:
-> On Mon, Oct 31, 2016 at 03:49:01PM +0800, Eva Rachel Retuya wrote:
->> On Sun, Oct 30, 2016 at 06:49:00PM +0000, Jonathan Cameron wrote:
->>> On 30/10/16 17:46, Lars-Peter Clausen wrote:
->>>> On 10/30/2016 06:41 PM, Jonathan Cameron wrote:
->>>>> On 28/10/16 09:26, Eva Rachel Retuya wrote:
->>>>>> Introduce defines for shifting and mask under the config register for
->>>>>> better readability. Also, introduce helper variables for index
->>>>>> calculation.
->>>>>>
->>>>>> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
->>>>> Looks good to me.
->>>>>
->>>>> Lars could you sanity check this one as well?
->>>>
->>>> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
->>> There was a bit of fun applying this.  Eva, can you check I didn't mess it
->>> up?
->>
->> It looks fine to me. Thanks!
->>
-> 
-> Have to retract that statement, I rebased and went through the merge
-> conflict. Extra whitespace can be seen after the statement in line 644:
-> 	*val = ad7746_cap_filter_rate_table[idx][0];
-> 
-Err I messed up.  Will fix... Will push out in a mo.
+On Mon, Oct 31, 2016 at 10:04 AM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
+> The name passed to devm_regulator_get() should match the name of the
+> supply as specified in the device datasheet. This makes it clear what
+> power supply is being referred to in case of presence of other
+> regulators.
+>
+> Currently, the supply name specified on the affected devices is 'vcc'.
+> Use lowercase version of the datasheet name to specify the supply
+> voltage.
+>
 
-Jonathan
-> What to do?
-> Eva
-> 
->>>
->>> Applied to the togreg branch of iio.git.  Initially pushed out as testing
->>> for the autobuilders to play with it. (and this time I remembered to actually
->>> do the push!)
->>>
->>> thanks,
->>>
->>> Jonathan
->>>>
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>
->>>
+Aren't we possibly breaking current device tree definitions that
+people may have? We should still check the old name after the new
+datasheet name in my opinion.
+
+> Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+> ---
+>  drivers/staging/iio/adc/ad7192.c                | 2 +-
+>  drivers/staging/iio/adc/ad7780.c                | 2 +-
+>  drivers/staging/iio/frequency/ad9832.c          | 2 +-
+>  drivers/staging/iio/frequency/ad9834.c          | 2 +-
+>  drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
+>  5 files changed, 5 insertions(+), 5 deletions(-)
+>
+> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+> index bfa12ce..41fb32d 100644
+> --- a/drivers/staging/iio/adc/ad7192.c
+> +++ b/drivers/staging/iio/adc/ad7192.c
+> @@ -633,7 +633,7 @@ static int ad7192_probe(struct spi_device *spi)
+>
+>         st = iio_priv(indio_dev);
+>
+> -       st->reg = devm_regulator_get(&spi->dev, "vcc");
+> +       st->reg = devm_regulator_get(&spi->dev, "avdd");
+>         if (!IS_ERR(st->reg)) {
+>                 ret = regulator_enable(st->reg);
+>                 if (ret)
+> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
+> index c9a0c2a..a88236e 100644
+> --- a/drivers/staging/iio/adc/ad7780.c
+> +++ b/drivers/staging/iio/adc/ad7780.c
+> @@ -173,7 +173,7 @@ static int ad7780_probe(struct spi_device *spi)
+>
+>         ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
+>
+> -       st->reg = devm_regulator_get(&spi->dev, "vcc");
+> +       st->reg = devm_regulator_get(&spi->dev, "avdd");
+>         if (!IS_ERR(st->reg)) {
+>                 ret = regulator_enable(st->reg);
+>                 if (ret)
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index 358400b..744c8ee 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+> @@ -212,7 +212,7 @@ static int ad9832_probe(struct spi_device *spi)
+>                 return -ENODEV;
+>         }
+>
+> -       reg = devm_regulator_get(&spi->dev, "vcc");
+> +       reg = devm_regulator_get(&spi->dev, "avdd");
+>         if (!IS_ERR(reg)) {
+>                 ret = regulator_enable(reg);
+>                 if (ret)
+> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
+> index 6366216..ca3cea6 100644
+> --- a/drivers/staging/iio/frequency/ad9834.c
+> +++ b/drivers/staging/iio/frequency/ad9834.c
+> @@ -329,7 +329,7 @@ static int ad9834_probe(struct spi_device *spi)
+>                 return -ENODEV;
+>         }
+>
+> -       reg = devm_regulator_get(&spi->dev, "vcc");
+> +       reg = devm_regulator_get(&spi->dev, "avdd");
+>         if (!IS_ERR(reg)) {
+>                 ret = regulator_enable(reg);
+>                 if (ret)
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index 5eecf1c..62f61bc 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -723,7 +723,7 @@ static int ad5933_probe(struct i2c_client *client,
+>         if (!pdata)
+>                 pdata = &ad5933_default_pdata;
+>
+> -       st->reg = devm_regulator_get(&client->dev, "vcc");
+> +       st->reg = devm_regulator_get(&client->dev, "vdd");
+>         if (!IS_ERR(st->reg)) {
+>                 ret = regulator_enable(st->reg);
+>                 if (ret)
 > --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+> 2.7.4
+>
