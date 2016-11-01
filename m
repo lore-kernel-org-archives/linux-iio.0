@@ -1,119 +1,38 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-Message-ID: <1478284156.14557.22.camel@linux.intel.com>
-Subject: Re: [PATCH] iio: magnetometer: separate the values of attributes
- based on their usage type for HID compass sensor
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: "Ooi, Joyce" <joyce.ooi@intel.com>, Jiri Kosina <jikos@kernel.org>,
-	Jonathan Cameron
-	 <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-input@vger.kernel.org,
- linux-iio@vger.kernel.org,  linux-kernel@vger.kernel.org, Kweh Hock Leong
- <hock.leong.kweh@intel.com>,  Ong Boon Leong <boon.leong.ong@intel.com>,
- Lay Kuan Loon <kuan.loon.lay@intel.com>
-Date: Fri, 04 Nov 2016 11:29:16 -0700
-In-Reply-To: <1478167670-23549-1-git-send-email-joyce.ooi@intel.com>
-References: <1478167670-23549-1-git-send-email-joyce.ooi@intel.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH 1/6] staging: iio: set proper supply name to
+ devm_regulator_get()
+To: Matt Ranostay <matt@ranostay.consulting>,
+ Eva Rachel Retuya <eraretuya@gmail.com>
+References: <1477933475-21914-1-git-send-email-eraretuya@gmail.com>
+ <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
+ <CAJ_EiSTU_z_fNSLSUSTpzU+v5F5f-JEe7p2fUms3LKEd+wftDw@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+ Linux Kernel <linux-kernel@vger.kernel.org>, Michael.Hennerich@analog.com,
+ Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de, pmeerw@pmeerw.net,
+ gregkh@linuxfoundation.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <73bc1e52-d728-a61b-69f3-a567c0b05e28@metafoo.de>
+Date: Tue, 1 Nov 2016 20:58:23 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAJ_EiSTU_z_fNSLSUSTpzU+v5F5f-JEe7p2fUms3LKEd+wftDw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, 2016-11-03 at 18:07 +0800, Ooi, Joyce wrote:
-> There are 2 usage types (Magnetic Flux and Heading data field) for
-> HID
-> compass sensor, thus the values of offset, scale, and sensitivity
-> should
-> be separated according to their respective usage type. The changes
-> made
-> are as below:
-> 1. Hysteresis: A struct hid_sensor_common rot_attributes is created
-> in
-> struct magn_3d_state to contain the sensitivity for IIO_ROT.
-> 2. Scale: scale_pre_decml and scale_post_decml are separated into
-> scale_pre_decml_magn, scale_post_decml_magn, scale_pre_decml_rot, and
-> scale_post_decml_rot.
-> 3. Offset: Same as scale, value_offset is separated into
-> value_offset_magn
-> and value_offset_rot.
+On 11/01/2016 05:03 AM, Matt Ranostay wrote:
+> On Mon, Oct 31, 2016 at 10:04 AM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
+>> The name passed to devm_regulator_get() should match the name of the
+>> supply as specified in the device datasheet. This makes it clear what
+>> power supply is being referred to in case of presence of other
+>> regulators.
+>>
+>> Currently, the supply name specified on the affected devices is 'vcc'.
+>> Use lowercase version of the datasheet name to specify the supply
+>> voltage.
+>>
 > 
-> For sensitivity, HID_USAGE_SENSOR_ORIENT_MAGN_FLUX and
-> HID_USAGE_SENSOR_ORIENT_MAGN_HEADING are used for sensivitity fields
-> based
-> on the HID Sensor Usages specifications. Hence, these changes are
-> added on
-> the sensitivity field.
-> 
-> Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
-> ---
->  .../iio/common/hid-sensors/hid-sensor-attributes.c |   5 +
->  drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 102
-> ++++++++++++++++++---
->  2 files changed, 93 insertions(+), 14 deletions(-)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index c1f8c22..9641a15 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -46,6 +46,11 @@
->  
->  	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
->  	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS,
-> 1, 0},
-> +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, 0, 0, 17453293},
-> +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-> +		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
-> +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-> +		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
->  
->  	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
->  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
-> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> index d8a0c8d..84a59d3 100644
-> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-> @@ -45,6 +45,7 @@ enum magn_3d_channel {
->  struct magn_3d_state {
->  	struct hid_sensor_hub_callbacks callbacks;
->  	struct hid_sensor_common common_attributes;
+> Aren't we possibly breaking current device tree definitions that
+> people may have? We should still check the old name after the new
+> datasheet name in my opinion.
 
-To avoid confusion can we rename the above to something like
-magn_flux_attributes?
-
-
-> +	struct hid_sensor_common rot_attributes;
->  	struct hid_sensor_hub_attribute_info
-> magn[MAGN_3D_CHANNEL_MAX];
->  
->  	/* dynamically sized array to hold sensor values */
-> @@ -52,10 +53,14 @@ struct magn_3d_state {
->  	/* array of pointers to sensor value */
->  	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
->  
-> -	int scale_pre_decml;
-> -	int scale_post_decml;
-> -	int scale_precision;
-> -	int value_offset;
-> +	int scale_pre_decml_magn;
-> +	int scale_post_decml_magn;
-> +	int scale_precision_magn;
-> +	int value_offset_magn;
-> +	int scale_pre_decml_rot;
-> +	int scale_post_decml_rot;
-> +	int scale_precision_rot;
-> +	int value_offset_rot;
-
-Since the above is common can we have a struct with
-{
-	int scale_pre_decml;
-	int scale_post_decml;
-	int scale_precision;> 
-	int value_offset;> 
-};
-
-Then we can have both flux and heading attributes can use instead of
-repeating the field names.
-
-Thanks,
-Srinivas
+None of those drivers have DT bindings, so I think we are OK. And they are
+in staging anyway.
