@@ -1,117 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f194.google.com ([209.85.220.194]:33007 "EHLO
-        mail-qk0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751041AbcKAED6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Nov 2016 00:03:58 -0400
-Received: by mail-qk0-f194.google.com with SMTP id x190so4474990qkb.0
-        for <linux-iio@vger.kernel.org>; Mon, 31 Oct 2016 21:03:58 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
-References: <1477933475-21914-1-git-send-email-eraretuya@gmail.com> <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
-From: Matt Ranostay <matt@ranostay.consulting>
-Date: Mon, 31 Oct 2016 21:03:57 -0700
-Message-ID: <CAJ_EiSTU_z_fNSLSUSTpzU+v5F5f-JEe7p2fUms3LKEd+wftDw@mail.gmail.com>
-Subject: Re: [PATCH 1/6] staging: iio: set proper supply name to devm_regulator_get()
-To: Eva Rachel Retuya <eraretuya@gmail.com>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        Linux Kernel <linux-kernel@vger.kernel.org>,
+Received: from eusmtp01.atmel.com ([212.144.249.242]:52280 "EHLO
+        eusmtp01.atmel.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753888AbcKBCkj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 1 Nov 2016 22:40:39 -0400
+From: Wenyou Yang <wenyou.yang@atmel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Michael.Hennerich@analog.com, Jonathan Cameron <jic23@kernel.org>,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-Content-Type: text/plain; charset=UTF-8
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+CC: <linux-kernel@vger.kernel.org>,
+        Wenyou Yang <wenyou.yang@microchip.com>,
+        <linux-arm-kernel@lists.infradead.org>,
+        Nicolas Ferre <nicolas.ferre@atmel.com>,
+        <linux-iio@vger.kernel.org>, Wenyou Yang <wenyou.yang@atmel.com>
+Subject: [PATCH v1] iio: adc: at91: add suspend and resume callback
+Date: Wed, 2 Nov 2016 10:40:16 +0800
+Message-ID: <1478054417-7520-1-git-send-email-wenyou.yang@atmel.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Oct 31, 2016 at 10:04 AM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
-> The name passed to devm_regulator_get() should match the name of the
-> supply as specified in the device datasheet. This makes it clear what
-> power supply is being referred to in case of presence of other
-> regulators.
->
-> Currently, the supply name specified on the affected devices is 'vcc'.
-> Use lowercase version of the datasheet name to specify the supply
-> voltage.
->
+Add suspend/resume callback, support the pinctrl sleep state when
+the system suspend as well.
 
-Aren't we possibly breaking current device tree definitions that
-people may have? We should still check the old name after the new
-datasheet name in my opinion.
+Signed-off-by: Wenyou Yang <wenyou.yang@atmel.com>
+---
 
-> Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
-> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
-> ---
->  drivers/staging/iio/adc/ad7192.c                | 2 +-
->  drivers/staging/iio/adc/ad7780.c                | 2 +-
->  drivers/staging/iio/frequency/ad9832.c          | 2 +-
->  drivers/staging/iio/frequency/ad9834.c          | 2 +-
->  drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
->  5 files changed, 5 insertions(+), 5 deletions(-)
->
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index bfa12ce..41fb32d 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -633,7 +633,7 @@ static int ad7192_probe(struct spi_device *spi)
->
->         st = iio_priv(indio_dev);
->
-> -       st->reg = devm_regulator_get(&spi->dev, "vcc");
-> +       st->reg = devm_regulator_get(&spi->dev, "avdd");
->         if (!IS_ERR(st->reg)) {
->                 ret = regulator_enable(st->reg);
->                 if (ret)
-> diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> index c9a0c2a..a88236e 100644
-> --- a/drivers/staging/iio/adc/ad7780.c
-> +++ b/drivers/staging/iio/adc/ad7780.c
-> @@ -173,7 +173,7 @@ static int ad7780_probe(struct spi_device *spi)
->
->         ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
->
-> -       st->reg = devm_regulator_get(&spi->dev, "vcc");
-> +       st->reg = devm_regulator_get(&spi->dev, "avdd");
->         if (!IS_ERR(st->reg)) {
->                 ret = regulator_enable(st->reg);
->                 if (ret)
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index 358400b..744c8ee 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -212,7 +212,7 @@ static int ad9832_probe(struct spi_device *spi)
->                 return -ENODEV;
->         }
->
-> -       reg = devm_regulator_get(&spi->dev, "vcc");
-> +       reg = devm_regulator_get(&spi->dev, "avdd");
->         if (!IS_ERR(reg)) {
->                 ret = regulator_enable(reg);
->                 if (ret)
-> diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-> index 6366216..ca3cea6 100644
-> --- a/drivers/staging/iio/frequency/ad9834.c
-> +++ b/drivers/staging/iio/frequency/ad9834.c
-> @@ -329,7 +329,7 @@ static int ad9834_probe(struct spi_device *spi)
->                 return -ENODEV;
->         }
->
-> -       reg = devm_regulator_get(&spi->dev, "vcc");
-> +       reg = devm_regulator_get(&spi->dev, "avdd");
->         if (!IS_ERR(reg)) {
->                 ret = regulator_enable(reg);
->                 if (ret)
-> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> index 5eecf1c..62f61bc 100644
-> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> @@ -723,7 +723,7 @@ static int ad5933_probe(struct i2c_client *client,
->         if (!pdata)
->                 pdata = &ad5933_default_pdata;
->
-> -       st->reg = devm_regulator_get(&client->dev, "vcc");
-> +       st->reg = devm_regulator_get(&client->dev, "vdd");
->         if (!IS_ERR(st->reg)) {
->                 ret = regulator_enable(st->reg);
->                 if (ret)
-> --
-> 2.7.4
->
+ drivers/iio/adc/at91_adc.c | 35 +++++++++++++++++++++++++++++++++++
+ 1 file changed, 35 insertions(+)
+
+diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
+index bbdac07..ffa81a1 100644
+--- a/drivers/iio/adc/at91_adc.c
++++ b/drivers/iio/adc/at91_adc.c
+@@ -30,6 +30,7 @@
+ #include <linux/iio/trigger.h>
+ #include <linux/iio/trigger_consumer.h>
+ #include <linux/iio/triggered_buffer.h>
++#include <linux/pinctrl/consumer.h>
+ 
+ /* Registers */
+ #define AT91_ADC_CR		0x00		/* Control Register */
+@@ -1347,6 +1348,39 @@ static int at91_adc_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
++#ifdef CONFIG_PM
++static int at91_adc_suspend(struct device *dev)
++{
++	struct iio_dev *idev = platform_get_drvdata(to_platform_device(dev));
++	struct at91_adc_state *st = iio_priv(idev);
++
++	pinctrl_pm_select_sleep_state(dev);
++	clk_disable_unprepare(st->clk);
++
++	return 0;
++}
++
++static int at91_adc_resume(struct device *dev)
++{
++	struct iio_dev *idev = platform_get_drvdata(to_platform_device(dev));
++	struct at91_adc_state *st = iio_priv(idev);
++
++	clk_prepare_enable(st->clk);
++	pinctrl_pm_select_default_state(dev);
++
++	return 0;
++}
++
++static const struct dev_pm_ops at91_adc_pm_ops = {
++	.suspend = at91_adc_suspend,
++	.resume = at91_adc_resume,
++};
++
++#define AT91_ADC_PM_OPS (&at91_adc_pm_ops)
++#else
++#define AT91_ADC_PM_OPS NULL
++#endif
++
+ static struct at91_adc_caps at91sam9260_caps = {
+ 	.calc_startup_ticks = calc_startup_ticks_9260,
+ 	.num_channels = 4,
+@@ -1441,6 +1475,7 @@ static struct platform_driver at91_adc_driver = {
+ 	.driver = {
+ 		   .name = DRIVER_NAME,
+ 		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
++		.pm = AT91_ADC_PM_OPS,
+ 	},
+ };
+ 
+-- 
+2.7.4
+
