@@ -1,340 +1,196 @@
-Return-Path: <masneyb@onstation.org>
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org,
-	gregkh@linuxfoundation.org,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org,
-	Jon.Brenner@ams.com
-Subject: [PATCH 7/9] staging: iio: tsl2583: fix issue with changes to calibscale and int_time not being set on the chip
-Date: Thu,  3 Nov 2016 08:56:18 -0400
-Message-Id: <1478177780-28699-8-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
-References: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1478180219.27477.4.camel@linux.intel.com>
+Subject: Re: [PATCH] iio: common: hid-sensors: change the precision of scale
+ values
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: "Ooi, Joyce" <joyce.ooi@intel.com>, Jonathan Cameron <jic23@kernel.org>
+Cc: Song Hongyan <hongyan.song@intel.com>, Hartmut Knaack <knaack.h@gmx.de>,
+  Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+ <pmeerw@pmeerw.net>,  linux-iio@vger.kernel.org,
+ linux-kernel@vger.kernel.org, Kweh Hock Leong <hock.leong.kweh@intel.com>,
+ Ong Boon Leong <boon.leong.ong@intel.com>, Lay Kuan Loon
+ <kuan.loon.lay@intel.com>
+Date: Thu, 03 Nov 2016 06:36:59 -0700
+In-Reply-To: <1478166093-23109-1-git-send-email-joyce.ooi@intel.com>
+References: <1478166093-23109-1-git-send-email-joyce.ooi@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-When updating the in_illuminance_calibscale and
-in_illuminance_integration_time sysfs attributes, these values were not
-actually written to the chip. The chip would continue to use the old
-parameters. Extracted out tsl2583_set_als_gain() and
-tsl2583_set_als_time() functions that are now called when these sysfs
-attributes are updated. The chip initialization now calls these these
-new functions.
+On Thu, 2016-11-03 at 17:41 +0800, Ooi, Joyce wrote:
+> Extension of the scale precision is needed as there are some scale
+> values
+> that exceed 6 decimal points precision. For example, the scale for
+> gyroscope from degrees/second to radians/second is 0.017453. If the
+> unit
+> exponent for gyroscope is -5, it will be
+> 0.017453 -> exp: -5 -> 0.00000017453
+> 
+> However, because the decimal precision is up to 6, the mentioned
+> scale
+> value will be truncated to 0.000000. To avoid this, changes are made
+> to
+> extend the precision to 9 decimal points precision.
+This change is already submitted by
+Song Hongyan <hongyan.song@intel.com>
 
-Rename taos_chip_on() to tsl2583_chip_init() since it is now only called
-during device probing and when the power management code wakes the
-device back up. tsl2583_chip_init() was refactored to use the new
-functions mentioned above.
-
-Previously, the current chip state was represented as a tristate
-(working, suspended, and unknown). The unknown state was not used. The
-chip state is now represented with a single boolean value (suspended).
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/tsl2583.c | 172 ++++++++++++++++--------------------
- 1 file changed, 78 insertions(+), 94 deletions(-)
-
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 7eab17f..1ff90b3 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -48,6 +48,8 @@
- #define TSL258X_TMR_LO			0x18
- #define TSL258X_TMR_HI			0x19
- 
-+#define TSL2583_INTERRUPT_DISABLED	0x00
-+
- /* tsl2583 cmd reg masks */
- #define TSL258X_CMD_REG			0x80
- #define TSL258X_CMD_SPL_FN		0x60
-@@ -55,6 +57,7 @@
- 
- /* tsl2583 cntrl reg masks */
- #define TSL258X_CNTL_ADC_ENBL	0x02
-+#define TSL258X_CNTL_PWR_OFF		0x00
- #define TSL258X_CNTL_PWR_ON		0x01
- 
- /* tsl2583 status reg masks */
-@@ -67,12 +70,6 @@
- #define TSL2583_CHIP_ID			0x90
- #define TSL2583_CHIP_ID_MASK		0xf0
- 
--enum {
--	TSL258X_CHIP_UNKNOWN = 0,
--	TSL258X_CHIP_WORKING = 1,
--	TSL258X_CHIP_SUSPENDED = 2
--};
--
- /* Per-device data */
- struct taos_als_info {
- 	u16 als_ch0;
-@@ -94,19 +91,9 @@ struct tsl2583_chip {
- 	struct taos_settings taos_settings;
- 	int als_time_scale;
- 	int als_saturation;
--	int taos_chip_status;
--	u8 taos_config[8];
-+	bool suspended;
- };
- 
--/*
-- * Initial values for device - this values can/will be changed by driver.
-- * and applications as needed.
-- * These values are dynamic.
-- */
--static const u8 taos_config[8] = {
--		0x00, 0xee, 0x00, 0x03, 0x00, 0xFF, 0xFF, 0x00
--}; /*	cntrl atime intC  Athl0 Athl1 Athh0 Athh1 gain */
--
- struct taos_lux {
- 	unsigned int ratio;
- 	unsigned int ch0;
-@@ -188,13 +175,6 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 	u32 ch0lux = 0;
- 	u32 ch1lux = 0;
- 
--	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
--		/* device is not enabled */
--		dev_err(&chip->client->dev, "taos_get_lux device is not enabled\n");
--		ret = -EBUSY;
--		goto done;
--	}
--
- 	ret = i2c_smbus_read_byte_data(chip->client, TSL258X_CMD_REG);
- 	if (ret < 0) {
- 		dev_err(&chip->client->dev, "taos_get_lux failed to read CMD_REG\n");
-@@ -362,26 +342,10 @@ static int taos_als_calibrate(struct iio_dev *indio_dev)
- 	return (int)gain_trim_val;
- }
- 
--/*
-- * Turn the device on.
-- * Configuration must be set before calling this function.
-- */
--static int taos_chip_on(struct iio_dev *indio_dev)
-+static int tsl2583_set_als_time(struct tsl2583_chip *chip)
- {
--	int i;
--	int ret;
--	u8 *uP;
--	u8 utmp;
--	int als_count;
--	int als_time;
--	struct tsl2583_chip *chip = iio_priv(indio_dev);
--
--	/* and make sure we're not already on */
--	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
--		/* if forcing a register update - turn off, then on */
--		dev_info(&chip->client->dev, "device is already enabled\n");
--		return -EINVAL;
--	}
-+	int als_count, als_time, ret;
-+	u8 val;
- 
- 	/* determine als integration register */
- 	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
-@@ -390,60 +354,82 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 
- 	/* convert back to time (encompasses overrides) */
- 	als_time = (als_count * 27 + 5) / 10;
--	chip->taos_config[TSL258X_ALS_TIME] = 256 - als_count;
- 
--	/* Set the gain based on taos_settings struct */
--	chip->taos_config[TSL258X_GAIN] = chip->taos_settings.als_gain;
-+	val = 256 - als_count;
-+	ret = i2c_smbus_write_byte_data(chip->client,
-+					TSL258X_CMD_REG | TSL258X_ALS_TIME,
-+					val);
-+	if (ret < 0) {
-+		dev_err(&chip->client->dev,
-+			"%s failed to set the als time to %d\n",
-+			__func__, val);
-+		return ret;
-+	}
- 
- 	/* set chip struct re scaling and saturation */
- 	chip->als_saturation = als_count * 922; /* 90% of full scale */
- 	chip->als_time_scale = (als_time + 25) / 50;
- 
--	/* Power on the device; ADC off. */
--	chip->taos_config[TSL258X_CNTRL] = TSL258X_CNTL_PWR_ON;
-+	return ret;
-+}
- 
--	/*
--	 * Use the following shadow copy for our delay before enabling ADC.
--	 * Write all the registers.
--	 */
--	for (i = 0, uP = chip->taos_config; i < TSL258X_REG_MAX; i++) {
--		ret = i2c_smbus_write_byte_data(chip->client,
--						TSL258X_CMD_REG + i,
--						*uP++);
--		if (ret < 0) {
--			dev_err(&chip->client->dev,
--				"taos_chip_on failed on reg %d.\n", i);
--			return ret;
--		}
--	}
-+static int tsl2583_set_als_gain(struct tsl2583_chip *chip)
-+{
-+	int ret;
- 
--	usleep_range(3000, 3500);
--	/*
--	 * NOW enable the ADC
--	 * initialize the desired mode of operation
--	 */
--	utmp = TSL258X_CNTL_PWR_ON | TSL258X_CNTL_ADC_ENBL;
- 	ret = i2c_smbus_write_byte_data(chip->client,
--					TSL258X_CMD_REG | TSL258X_CNTRL,
--					utmp);
--	if (ret < 0) {
--		dev_err(&chip->client->dev, "taos_chip_on failed on 2nd CTRL reg.\n");
--		return ret;
--	}
--	chip->taos_chip_status = TSL258X_CHIP_WORKING;
-+					TSL258X_CMD_REG | TSL258X_GAIN,
-+					chip->taos_settings.als_gain);
-+	if (ret < 0)
-+		dev_err(&chip->client->dev, "%s failed to set the gain to %d\n",
-+			__func__, chip->taos_settings.als_gain);
- 
- 	return ret;
- }
- 
--static int taos_chip_off(struct iio_dev *indio_dev)
-+static int tsl2583_set_power_state(struct tsl2583_chip *chip, u8 state)
- {
--	struct tsl2583_chip *chip = iio_priv(indio_dev);
-+	int ret;
-+
-+	ret = i2c_smbus_write_byte_data(chip->client,
-+					TSL258X_CMD_REG | TSL258X_CNTRL, state);
-+	if (ret < 0)
-+		dev_err(&chip->client->dev, "%s failed to set the power state to %d\n",
-+			__func__, state);
- 
--	/* turn device off */
--	chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
--	return i2c_smbus_write_byte_data(chip->client,
--					TSL258X_CMD_REG | TSL258X_CNTRL,
--					0x00);
-+	return ret;
-+}
-+
-+static int tsl2583_chip_init(struct tsl2583_chip *chip)
-+{
-+	int ret;
-+
-+	ret = tsl2583_set_power_state(chip, TSL258X_CNTL_PWR_ON);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = i2c_smbus_write_byte_data(chip->client,
-+					TSL258X_CMD_REG | TSL258X_INTERRUPT,
-+					TSL2583_INTERRUPT_DISABLED);
-+	if (ret < 0) {
-+		dev_err(&chip->client->dev, "%s failed to disable interrupts\n",
-+			__func__);
-+		return ret;
-+	}
-+
-+	ret = tsl2583_set_als_time(chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	ret = tsl2583_set_als_gain(chip);
-+	if (ret < 0)
-+		return ret;
-+
-+	usleep_range(3000, 3500);
-+
-+	/* Enable the ADC and initialize the desired mode of operation */
-+	return tsl2583_set_power_state(chip, TSL258X_CNTL_PWR_ON |
-+					     TSL258X_CNTL_ADC_ENBL);
- }
- 
- /* Sysfs Interface Functions */
-@@ -616,7 +602,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
-+	if (chip->suspended) {
- 		ret = -EBUSY;
- 		goto read_done;
- 	}
-@@ -693,7 +679,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
-+	if (chip->suspended) {
- 		ret = -EBUSY;
- 		goto write_done;
- 	}
-@@ -716,13 +702,14 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
- 					break;
- 				}
- 			}
-+			ret = tsl2583_set_als_gain(chip);
- 		}
- 		break;
- 	case IIO_CHAN_INFO_INT_TIME:
- 		if (chan->type == IIO_LIGHT && !val && val2 >= 50 &&
- 		    val2 <= 650 && !(val2 % 50)) {
- 			chip->taos_settings.als_time = val2;
--			ret = 0;
-+			ret = tsl2583_set_als_time(chip);
- 		}
- 		break;
- 	default:
-@@ -767,8 +754,7 @@ static int taos_probe(struct i2c_client *clientp,
- 	i2c_set_clientdata(clientp, indio_dev);
- 
- 	mutex_init(&chip->als_mutex);
--	chip->taos_chip_status = TSL258X_CHIP_UNKNOWN;
--	memcpy(chip->taos_config, taos_config, sizeof(chip->taos_config));
-+	chip->suspended = false;
- 
- 	ret = i2c_smbus_read_byte_data(clientp,
- 				       TSL258X_CMD_REG | TSL258X_CHIPID);
-@@ -808,7 +794,7 @@ static int taos_probe(struct i2c_client *clientp,
- 	taos_defaults(chip);
- 
- 	/* Make sure the chip is on */
--	ret = taos_chip_on(indio_dev);
-+	ret = tsl2583_chip_init(chip);
- 	if (ret < 0)
- 		return ret;
- 
-@@ -825,10 +811,8 @@ static int taos_suspend(struct device *dev)
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
--		ret = taos_chip_off(indio_dev);
--		chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
--	}
-+	chip->suspended = true;
-+	ret = tsl2583_set_power_state(chip, TSL258X_CNTL_PWR_OFF);
- 
- 	mutex_unlock(&chip->als_mutex);
- 	return ret;
-@@ -842,8 +826,8 @@ static int taos_resume(struct device *dev)
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status == TSL258X_CHIP_SUSPENDED)
--		ret = taos_chip_on(indio_dev);
-+	chip->suspended = false;
-+	ret = tsl2583_chip_init(chip);
- 
- 	mutex_unlock(&chip->als_mutex);
- 	return ret;
--- 
-2.5.5
+Thanks,
+Srinivas
+> 
+> Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
+> ---
+>  .../iio/common/hid-sensors/hid-sensor-attributes.c | 65 +++++++++++-
+> ----------
+>  1 file changed, 33 insertions(+), 32 deletions(-)
+> 
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index dc33c1d..c1f8c22 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -30,34 +30,34 @@
+>  	u32 usage_id;
+>  	int unit; /* 0 for default others from HID sensor spec */
+>  	int scale_val0; /* scale, whole number */
+> -	int scale_val1; /* scale, fraction in micros */
+> +	int scale_val1; /* scale, fraction in nanos */
+>  } unit_conversion[] = {
+> -	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
+> +	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650000},
+>  	{HID_USAGE_SENSOR_ACCEL_3D,
+>  		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
+>  	{HID_USAGE_SENSOR_ACCEL_3D,
+> -		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
+> +		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
+>  
+> -	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
+> +	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453293},
+>  	{HID_USAGE_SENSOR_GYRO_3D,
+>  		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
+>  	{HID_USAGE_SENSOR_GYRO_3D,
+> -		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0,
+> 17453},
+> +		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0,
+> 17453293},
+>  
+> -	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+> +	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+>  	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS,
+> 1, 0},
+>  
+> -	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+> +	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+> -		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
+> +		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+>  		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
+>  
+>  	{HID_USAGE_SENSOR_ALS, 0, 1, 0},
+>  	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
+>  
+> -	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
+> -	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL,
+> 0, 1000},
+> +	{HID_USAGE_SENSOR_PRESSURE, 0, 100000, 0},
+> +	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL,
+> 0, 1000000},
+>  };
+>  
+>  static int pow_10(unsigned power)
+> @@ -266,16 +266,16 @@ int hid_sensor_write_raw_hyst_value(struct
+> hid_sensor_common *st,
+>  /*
+>   * This fuction applies the unit exponent to the scale.
+>   * For example:
+> - * 9.806650 ->exp:2-> val0[980]val1[665000]
+> - * 9.000806 ->exp:2-> val0[900]val1[80600]
+> - * 0.174535 ->exp:2-> val0[17]val1[453500]
+> - * 1.001745 ->exp:0-> val0[1]val1[1745]
+> - * 1.001745 ->exp:2-> val0[100]val1[174500]
+> - * 1.001745 ->exp:4-> val0[10017]val1[450000]
+> - * 9.806650 ->exp:-2-> val0[0]val1[98066]
+> + * 9.806650000 ->exp:2-> val0[980]val1[665000000]
+> + * 9.000806000 ->exp:2-> val0[900]val1[80600000]
+> + * 0.17453293 ->exp:2-> val0[17]val1[453293000]
+> + * 1.00174532 ->exp:0-> val0[1]val1[1745320]
+> + * 1.00174532 ->exp:2-> val0[100]val1[174532000]
+> + * 1.00174532 ->exp:4-> val0[10017]val1[453200000]
+> + * 9.80665000 ->exp:-2-> val0[0]val1[98066500]
+>   */
+> -static void adjust_exponent_micro(int *val0, int *val1, int scale0,
+> -				  int scale1, int exp)
+> +static void adjust_exponent_nano(int *val0, int *val1, int scale0,
+> +				 int scale1, int exp)
+>  {
+>  	int i;
+>  	int x;
+> @@ -285,32 +285,32 @@ static void adjust_exponent_micro(int *val0,
+> int *val1, int scale0,
+>  	if (exp > 0) {
+>  		*val0 = scale0 * pow_10(exp);
+>  		res = 0;
+> -		if (exp > 6) {
+> +		if (exp > 9) {
+>  			*val1 = 0;
+>  			return;
+>  		}
+>  		for (i = 0; i < exp; ++i) {
+> -			x = scale1 / pow_10(5 - i);
+> +			x = scale1 / pow_10(8 - i);
+>  			res += (pow_10(exp - 1 - i) * x);
+> -			scale1 = scale1 % pow_10(5 - i);
+> +			scale1 = scale1 % pow_10(8 - i);
+>  		}
+>  		*val0 += res;
+>  			*val1 = scale1 * pow_10(exp);
+>  	} else if (exp < 0) {
+>  		exp = abs(exp);
+> -		if (exp > 6) {
+> +		if (exp > 9) {
+>  			*val0 = *val1 = 0;
+>  			return;
+>  		}
+>  		*val0 = scale0 / pow_10(exp);
+>  		rem = scale0 % pow_10(exp);
+>  		res = 0;
+> -		for (i = 0; i < (6 - exp); ++i) {
+> -			x = scale1 / pow_10(5 - i);
+> -			res += (pow_10(5 - exp - i) * x);
+> -			scale1 = scale1 % pow_10(5 - i);
+> +		for (i = 0; i < (9 - exp); ++i) {
+> +			x = scale1 / pow_10(8 - i);
+> +			res += (pow_10(8 - exp - i) * x);
+> +			scale1 = scale1 % pow_10(8 - i);
+>  		}
+> -		*val1 = rem * pow_10(6 - exp) + res;
+> +		*val1 = rem * pow_10(9 - exp) + res;
+>  	} else {
+>  		*val0 = scale0;
+>  		*val1 = scale1;
+> @@ -332,14 +332,15 @@ int hid_sensor_format_scale(u32 usage_id,
+>  			unit_conversion[i].unit == attr_info->units) 
+> {
+>  			exp  = hid_sensor_convert_exponent(
+>  						attr_info-
+> >unit_expo);
+> -			adjust_exponent_micro(val0, val1,
+> -					unit_conversion[i].scale_val
+> 0,
+> -					unit_conversion[i].scale_val
+> 1, exp);
+> +			adjust_exponent_nano(val0, val1,
+> +					     unit_conversion[i].scal
+> e_val0,
+> +					     unit_conversion[i].scal
+> e_val1,
+> +					     exp);
+>  			break;
+>  		}
+>  	}
+>  
+> -	return IIO_VAL_INT_PLUS_MICRO;
+> +	return IIO_VAL_INT_PLUS_NANO;
+>  }
+>  EXPORT_SYMBOL(hid_sensor_format_scale);
+>  
