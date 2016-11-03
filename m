@@ -1,943 +1,783 @@
-Return-Path: <pmeerw@pmeerw.net>
-Date: Thu, 3 Nov 2016 13:09:59 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Marcin Niestroj <m.niestroj@grinn-global.com>
-cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Lars-Peter Clausen <lars@metafoo.de>,
-    Daniel Baluta <daniel.baluta@intel.com>,
-    Gregor Boirie <gregor.boirie@parrot.com>,
-    Sanchayan Maity <maitysanchayan@gmail.com>,
-    Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
-In-Reply-To: <20161103112527.29623-1-m.niestroj@grinn-global.com>
-Message-ID: <alpine.DEB.2.02.1611031252480.11256@pmeerw.net>
-References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from up.free-electrons.com ([163.172.77.33]:33346 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1752172AbcKCKQU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Nov 2016 06:16:20 -0400
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
+        wens@csie.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, dmitry.torokhov@gmail.com, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        antoine.tenart@free-electrons.com,
+        thomas.petazzoni@free-electrons.com,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-input@vger.kernel.org
+Subject: [PATCH v7 3/3] iio: adc: add support for Allwinner SoCs ADC
+Date: Thu,  3 Nov 2016 11:16:01 +0100
+Message-Id: <20161103101601.24529-4-quentin.schulz@free-electrons.com>
+In-Reply-To: <20161103101601.24529-1-quentin.schulz@free-electrons.com>
+References: <20161103101601.24529-1-quentin.schulz@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+The Allwinner SoCs all have an ADC that can also act as a touchscreen
+controller and a thermal sensor. This patch adds the ADC driver which is
+based on the MFD for the same SoCs ADC.
 
-> This patch was developed primarily based on bmc150_accel hardware fifo
-> implementation.
+This also registers the thermal adc channel in the iio map array so
+iio_hwmon could use it without modifying the Device Tree. This registers
+the driver in the thermal framework.
 
-parts of the patch are cleanup and bugfixing; should be separate?
+The thermal sensor requires the IP to be in touchscreen mode to return correct
+values. Therefore, if the user is continuously reading the ADC channel(s), the
+thermal framework in which the thermal sensor is registered will switch the IP
+in touchscreen mode to get a temperature value and requires a delay of 100ms
+(because of the mode switching), then the ADC will switch back to ADC mode and
+requires also a delay of 100ms. If the ADC readings are critical to user and the
+SoC temperature is not, this driver is capable of not registering the thermal
+sensor in the thermal framework and thus, "quicken" the ADC readings.
 
-more comments below
+This driver probes on three different platform_device_id to take into
+account slight differences (registers bit and temperature computation)
+between Allwinner SoCs ADCs.
+
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
+
+v7:
+ - add Kconfig depends on !TOUCHSCREEN_SUN4I,
+ - remove Kconfig selects THERMAL_OF,
+ - do not register thermal sensor if CONFIG_THERMAL_OF is disabled,
+ - disable irq in irq_handler rather than in read_raw,
+ - add delay when switching the IP's mode or channel (delay empirically found),
+ - quicken thermal sensor interrupt period,
+ - add masks for channel bits,
+ - fix deadlock in sun4i_gpadc_read if regmap_read/write fails,
+ - move some logic from sun4i_gpadc_read to sun4i_prepare_for_irq,
+ - mark last busy for runtime_pm only on success in sun4i_gpadc_read,
+ - remove cached values,
+ - increase wait_for_completion_timeout timeout to 1s to be sure to not miss the
+ thermal interrupt,
+ - add voltage scale,
+ - use devm_iio_device_register,
+
+v6:
+ - remove "-mfd" from filenames and variables inside MFD driver,
+ - use DEFINE_RES_IRQ_NAMED instead of setting resources manually,
+ - cosmetic changes,
+ - use IDs and switch over ID to get cells specific to an architecture, instead
+ of using cells direclty, in of_device_id.data,
+ - compute size of mfd_cells array instead of hardcoded one,
+
+v5:
+ - correct mail address,
+
+v4:
+ - rename files and variables from sunxi* to sun4i*,
+ - rename defines from SUNXI_* to SUN4I_* or SUN6I_*,
+ - remove TP in defines name,
+ - rename SUNXI_IRQ_* to SUN4I_GPADC_IRQ_* for consistency,
+ - use devm functions for regmap_add_irq_chip and mfd_add_devices,
+ - remove remove functions (now empty thanks to devm functions),
+
+v3:
+ - use defines in regmap_irq instead of hard coded BITs,
+ - use of_device_id data field to chose which MFD cells to add considering
+   the compatible responsible of the MFD probe,
+ - remove useless initializations,
+ - disable all interrupts before adding them to regmap_irqchip,
+ - add goto error label in probe,
+ - correct wrapping in header license,
+ - move defines from IIO driver to header,
+ - use GENMASK to limit the size of the variable passed to a macro,
+ - prefix register BIT defines with the name of the register,
+ - reorder defines,
+
+v2:
+ - add license headers,
+ - reorder alphabetically includes,
+ - add SUNXI_GPADC_ prefixes for defines,
+
+ drivers/iio/adc/Kconfig           |  17 ++
+ drivers/iio/adc/Makefile          |   1 +
+ drivers/iio/adc/sun4i-gpadc-iio.c | 605 ++++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/sun4i-gpadc.h   |   2 +
+ 4 files changed, 625 insertions(+)
+ create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 7edcf32..9aa3c945 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -434,6 +434,23 @@ config STX104
+ 	  The base port addresses for the devices may be configured via the base
+ 	  array module parameter.
  
-> IRQ handler was added, which for now is responsible only for handling
-> watermark interrupts. The BMI160 chip has two interrupt outputs. By
-> default INT is considered to be connected. If INT2 is used instead, the
-> interrupt-names device-tree property can be used to specify that.
-> 
-> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
-> ---
->  drivers/iio/imu/bmi160/bmi160.h      |   3 +-
->  drivers/iio/imu/bmi160/bmi160_core.c | 633 +++++++++++++++++++++++++++++++++--
->  drivers/iio/imu/bmi160/bmi160_i2c.c  |   7 +-
->  drivers/iio/imu/bmi160/bmi160_spi.c  |   3 +-
->  4 files changed, 618 insertions(+), 28 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/bmi160/bmi160.h b/drivers/iio/imu/bmi160/bmi160.h
-> index d2ae6ed..4a7c10e 100644
-> --- a/drivers/iio/imu/bmi160/bmi160.h
-> +++ b/drivers/iio/imu/bmi160/bmi160.h
-> @@ -4,7 +4,8 @@
->  extern const struct regmap_config bmi160_regmap_config;
->  
->  int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> -		      const char *name, bool use_spi);
-> +		      const char *name, int irq,
-> +		      bool use_spi, bool block_supported);
->  void bmi160_core_remove(struct device *dev);
->  
->  #endif  /* BMI160_H_ */
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index e0251b8..153734c 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -2,6 +2,7 @@
->   * BMI160 - Bosch IMU (accel, gyro plus external magnetometer)
->   *
->   * Copyright (c) 2016, Intel Corporation.
-> + * Copyright (c) 2016, Grinn
->   *
->   * This file is subject to the terms and conditions of version 2 of
->   * the GNU General Public License.  See the file COPYING in the main
-> @@ -9,7 +10,7 @@
->   *
->   * IIO core driver for BMI160, with support for I2C/SPI busses
->   *
-> - * TODO: magnetometer, interrupts, hardware FIFO
-> + * TODO: magnetometer, interrupts
->   */
->  #include <linux/module.h>
->  #include <linux/regmap.h>
-> @@ -22,8 +23,12 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/sysfs.h>
->  
-> +#include <linux/of_irq.h>
-> +
->  #include "bmi160.h"
->  
-> +#define BMI160_IRQ_NAME		"bmi160_event"
-> +
->  #define BMI160_REG_CHIP_ID	0x00
->  #define BMI160_CHIP_ID_VAL	0xD1
->  
-> @@ -34,6 +39,21 @@
->  #define BMI160_REG_DATA_GYRO_XOUT_L	0x0C
->  #define BMI160_REG_DATA_ACCEL_XOUT_L	0x12
->  
-> +#define BMI160_REG_STATUS		0x1B
-> +#define BMI160_STATUS_MAG_MAN_OP	BIT(2)
-> +
-> +#define BMI160_REG_INT_STATUS0		0x1C
-> +
-> +#define BMI160_REG_INT_STATUS1		0x1D
-> +#define BMI160_INT_STATUS_FWM		BIT(6)
-> +
-> +#define BMI160_REG_INT_STATUS2		0x1E
-> +
-> +#define BMI160_REG_INT_STATUS3		0x1F
-> +
-> +#define BMI160_REG_FIFO_LENGTH		0x22
-> +#define BMI160_REG_FIFO_DATA		0x24
-> +
->  #define BMI160_REG_ACCEL_CONFIG		0x40
->  #define BMI160_ACCEL_CONFIG_ODR_MASK	GENMASK(3, 0)
->  #define BMI160_ACCEL_CONFIG_BWP_MASK	GENMASK(6, 4)
-> @@ -55,6 +75,36 @@
->  #define BMI160_GYRO_RANGE_250DPS	0x03
->  #define BMI160_GYRO_RANGE_125DPS	0x04
->  
-> +#define BMI160_REG_FIFO_CONFIG_0	0x46
-> +
-> +#define BMI160_REG_FIFO_CONFIG_1	0x47
-> +#define BMI160_FIFO_GYRO_EN		BIT(7)
-> +#define BMI160_FIFO_ACCEL_EN		BIT(6)
-> +#define BMI160_FIFO_MAGN_EN		BIT(5)
-> +#define BMI160_FIFO_HEADER_EN		BIT(4)
-> +#define BMI160_FIFO_TAG_INT1_EN		BIT(3)
-> +#define BMI160_FIFO_TAG_INT2_EN		BIT(2)
-> +#define BMI160_FIFO_TIME_EN		BIT(1)
-> +
-> +#define BMI160_REG_INT_EN_1		0x51
-> +#define BMI160_INT_FWM_EN		BIT(6)
-> +#define BMI160_INT_FFULL_EN		BIT(5)
-> +#define BMI160_INT_DRDY_EN		BIT(4)
-> +
-> +#define BMI160_REG_INT_OUT_CTRL		0x53
-> +#define BMI160_INT2_OUTPUT_EN		BIT(7)
-> +#define BMI160_INT1_OUTPUT_EN		BIT(3)
-> +
-> +#define BMI160_REG_INT_LATCH		0x54
-> +
-> +#define BMI160_REG_INT_MAP_1		0x56
-> +#define BMI160_INT1_MAP_DRDY		BIT(7)
-> +#define BMI160_INT1_MAP_FWM		BIT(6)
-> +#define BMI160_INT1_MAP_FFULL		BIT(5)
-> +#define BMI160_INT2_MAP_DRDY		BIT(3)
-> +#define BMI160_INT2_MAP_FWM		BIT(2)
-> +#define BMI160_INT2_MAP_FFULL		BIT(1)
-> +
->  #define BMI160_REG_CMD			0x7E
->  #define BMI160_CMD_ACCEL_PM_SUSPEND	0x10
->  #define BMI160_CMD_ACCEL_PM_NORMAL	0x11
-> @@ -66,6 +116,8 @@
->  
->  #define BMI160_REG_DUMMY		0x7F
->  
-> +#define BMI160_FIFO_LENGTH		1024
-> +
->  #define BMI160_ACCEL_PMU_MIN_USLEEP	3200
->  #define BMI160_ACCEL_PMU_MAX_USLEEP	3800
->  #define BMI160_GYRO_PMU_MIN_USLEEP	55000
-> @@ -110,8 +162,33 @@ enum bmi160_sensor_type {
->  	BMI160_NUM_SENSORS /* must be last */
->  };
->  
-> +struct bmi160_irq_data {
-> +	unsigned int map_fwm;
-> +	unsigned int output_en;
-> +};
-> +
-> +static const struct bmi160_irq_data bmi160_irq1_data = {
-> +	.map_fwm = BMI160_INT1_MAP_FWM,
-> +	.output_en = BMI160_INT1_OUTPUT_EN,
-> +};
-> +
-> +static const struct bmi160_irq_data bmi160_irq2_data = {
-> +	.map_fwm = BMI160_INT2_MAP_FWM,
-> +	.output_en = BMI160_INT2_OUTPUT_EN,
-> +};
-> +
->  struct bmi160_data {
->  	struct regmap *regmap;
-> +	struct mutex mutex;
-> +	const struct bmi160_irq_data *irq_data;
-> +	int irq;
-> +	int64_t timestamp;
-> +	int64_t fifo_sample_period;
-> +	bool fifo_enabled;
-> +	unsigned int fifo_config;
-> +	unsigned int fifo_sample_size;
-> +	u8 *fifo_buffer;
-> +	unsigned int watermark;
->  };
->  
->  const struct regmap_config bmi160_regmap_config = {
-> @@ -159,11 +236,11 @@ struct bmi160_pmu_time {
->  static struct bmi160_pmu_time bmi160_pmu_time[] = {
->  	[BMI160_ACCEL] = {
->  		.min = BMI160_ACCEL_PMU_MIN_USLEEP,
-> -		.max = BMI160_ACCEL_PMU_MAX_USLEEP
-> +		.max = BMI160_ACCEL_PMU_MAX_USLEEP,
-
-this is cosmetic cleanup
-
->  	},
->  	[BMI160_GYRO] = {
->  		.min = BMI160_GYRO_PMU_MIN_USLEEP,
-> -		.max = BMI160_GYRO_PMU_MIN_USLEEP,
-
-this looks like bug fixing
-
-> +		.max = BMI160_GYRO_PMU_MAX_USLEEP,
->  	},
->  };
->  
-> @@ -285,7 +362,9 @@ int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
->  	else
->  		cmd = bmi160_regs[t].pmu_cmd_suspend;
->  
-> +	mutex_lock(&data->mutex);
-
-what does the mutex protect?
-is it also needed without the fifo/irq support?
-probably split out as a separate patch
-
->  	ret = regmap_write(data->regmap, BMI160_REG_CMD, cmd);
-> +	mutex_unlock(&data->mutex);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -298,6 +377,7 @@ static
->  int bmi160_set_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
->  		     int uscale)
->  {
-> +	int ret;
->  	int i;
->  
->  	for (i = 0; i < bmi160_scale_table[t].num; i++)
-> @@ -307,8 +387,12 @@ int bmi160_set_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
->  	if (i == bmi160_scale_table[t].num)
->  		return -EINVAL;
->  
-> -	return regmap_write(data->regmap, bmi160_regs[t].range,
-> -			    bmi160_scale_table[t].tbl[i].bits);
-> +	mutex_lock(&data->mutex);
-> +	ret = regmap_write(data->regmap, bmi160_regs[t].range,
-> +			   bmi160_scale_table[t].tbl[i].bits);
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
->  }
->  
->  static
-> @@ -317,7 +401,9 @@ int bmi160_get_scale(struct bmi160_data *data, enum bmi160_sensor_type t,
->  {
->  	int i, ret, val;
->  
-> +	mutex_lock(&data->mutex);
->  	ret = regmap_read(data->regmap, bmi160_regs[t].range, &val);
-> +	mutex_unlock(&data->mutex);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -340,7 +426,9 @@ static int bmi160_get_data(struct bmi160_data *data, int chan_type,
->  
->  	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * sizeof(__le16);
->  
-> +	mutex_lock(&data->mutex);
->  	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(__le16));
-> +	mutex_unlock(&data->mutex);
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -353,6 +441,7 @@ static
->  int bmi160_set_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
->  		   int odr, int uodr)
->  {
-> +	int ret;
->  	int i;
->  
->  	for (i = 0; i < bmi160_odr_table[t].num; i++)
-> @@ -363,20 +452,30 @@ int bmi160_set_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
->  	if (i >= bmi160_odr_table[t].num)
->  		return -EINVAL;
->  
-> -	return regmap_update_bits(data->regmap,
-> -				  bmi160_regs[t].config,
-> -				  bmi160_regs[t].config_odr_mask,
-> -				  bmi160_odr_table[t].tbl[i].bits);
-> +	mutex_lock(&data->mutex);
-> +	ret = regmap_update_bits(data->regmap,
-> +				 bmi160_regs[t].config,
-> +				 bmi160_regs[t].config_odr_mask,
-> +				 bmi160_odr_table[t].tbl[i].bits);
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
->  }
->  
-> -static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
-> -			  int *odr, int *uodr)
-> +static int64_t bmi160_frequency_to_period(int odr, int uodr)
->  {
-> -	int i, val, ret;
-> +	uint64_t period = 1000000000000000;
-> +	int64_t frequency = (int64_t) odr * 1000000 + uodr;
->  
-> -	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
-> -	if (ret < 0)
-> -		return ret;
-> +	do_div(period, frequency);
-> +
-> +	return period;
-> +}
-> +
-> +static const struct bmi160_odr *bmi160_reg_to_odr(enum bmi160_sensor_type t,
-> +						unsigned int val)
-> +{
-> +	int i;
->  
->  	val &= bmi160_regs[t].config_odr_mask;
->  
-> @@ -385,10 +484,52 @@ static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
->  			break;
->  
->  	if (i >= bmi160_odr_table[t].num)
-> -		return -EINVAL;
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	return &bmi160_odr_table[t].tbl[i];
-> +}
-> +
-> +static int bmi160_get_sample_period(struct bmi160_data *data,
-> +				enum bmi160_sensor_type t,
-> +				int64_t *sample_period)
-> +{
-> +	const struct bmi160_odr *odr_entry;
-> +	int ret;
-> +	unsigned int val;
-> +
-
-no mutex here?
-
-> +	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
-> +	if (ret < 0)
-> +		return ret;
->  
-> -	*odr = bmi160_odr_table[t].tbl[i].odr;
-> -	*uodr = bmi160_odr_table[t].tbl[i].uodr;
-> +	odr_entry = bmi160_reg_to_odr(t, val);
-> +	if (IS_ERR(odr_entry))
-> +		return PTR_ERR(odr_entry);
-> +
-> +	*sample_period = bmi160_frequency_to_period(odr_entry->odr,
-> +						odr_entry->uodr);
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmi160_get_odr(struct bmi160_data *data, enum bmi160_sensor_type t,
-> +			  int *odr, int *uodr)
-> +{
-> +	const struct bmi160_odr *odr_entry;
-> +	int ret;
-> +	unsigned int val;
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = regmap_read(data->regmap, bmi160_regs[t].config, &val);
-> +	mutex_unlock(&data->mutex);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	odr_entry = bmi160_reg_to_odr(t, val);
-> +	if (IS_ERR(odr_entry))
-> +		return PTR_ERR(odr_entry);
-> +
-> +	*odr = odr_entry->odr;
-> +	*uodr = odr_entry->uodr;
->  
->  	return 0;
->  }
-> @@ -402,14 +543,18 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->  	int i, ret, j = 0, base = BMI160_REG_DATA_MAGN_XOUT_L;
->  	__le16 sample;
->  
-> +	mutex_lock(&data->mutex);
->  	for_each_set_bit(i, indio_dev->active_scan_mask,
->  			 indio_dev->masklength) {
->  		ret = regmap_bulk_read(data->regmap, base + i * sizeof(__le16),
->  				       &sample, sizeof(__le16));
-> -		if (ret < 0)
-> +		if (ret < 0) {
-> +			mutex_unlock(&data->mutex);
->  			goto done;
-> +		}
->  		buf[j++] = sample;
->  	}
-> +	mutex_unlock(&data->mutex);
->  
->  	iio_push_to_buffers_with_timestamp(indio_dev, buf,
->  					   iio_get_time_ns(indio_dev));
-> @@ -493,11 +638,364 @@ static const struct attribute_group bmi160_attrs_group = {
->  	.attrs = bmi160_attrs,
->  };
->  
-> +static int bmi160_update_sample_period(struct bmi160_data *data,
-> +				enum bmi160_sensor_type sensor_type)
-> +{
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +	int64_t sample_period;
-> +	int ret;
-> +
-> +	ret = bmi160_get_sample_period(data, sensor_type, &sample_period);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	if (data->fifo_sample_period) {
-> +		if (data->fifo_sample_period != sample_period) {
-> +			dev_warn(dev, "Enabled sensors have unequal ODR values\n");
-> +			return -EINVAL;
-> +		}
-> +	} else {
-> +		data->fifo_sample_period = sample_period;
-
-brackets not needed
-
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmi160_fifo_enable(struct iio_dev *indio_dev,
-> +			struct bmi160_data *data)
-> +{
-> +	struct regmap *regmap = data->regmap;
-> +	struct device *dev = regmap_get_device(regmap);
-> +	int ret;
-> +	int i;
-> +	unsigned int val;
-> +	unsigned int fifo_config = 0;
-> +
-> +	/* Set fifo sample size and period */
-> +	for_each_set_bit(i, indio_dev->active_scan_mask,
-> +			indio_dev->masklength) {
-> +		if (i <= BMI160_SCAN_GYRO_Z)
-> +			fifo_config |= BMI160_FIFO_GYRO_EN;
-> +		else if (i <= BMI160_SCAN_ACCEL_Z)
-> +			fifo_config |= BMI160_FIFO_ACCEL_EN;
-> +	}
-> +
-> +	data->fifo_sample_period = 0;
-> +	data->fifo_sample_size = 0;
-> +	if (fifo_config & BMI160_FIFO_GYRO_EN) {
-> +		data->fifo_sample_size += 6;
-> +		ret = bmi160_update_sample_period(data, BMI160_GYRO);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +	if (fifo_config & BMI160_FIFO_ACCEL_EN) {
-> +		data->fifo_sample_size += 6;
-> +		ret = bmi160_update_sample_period(data, BMI160_ACCEL);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	/*
-> +	 * Set watermark level and write real value back, as it will be used
-> +	 * in timestamp calculation.
-> +	 */
-> +	val = data->watermark * data->fifo_sample_size;
-> +	if (val > BMI160_FIFO_LENGTH - 1) {
-> +		val = BMI160_FIFO_LENGTH - 1;
-> +		data->watermark = val / data->fifo_sample_size;
-> +	}
-> +	val = data->watermark * data->fifo_sample_size / 4;
-> +
-> +	ret = regmap_write(regmap, BMI160_REG_FIFO_CONFIG_0, val);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Failed to set watermark\n");
-> +		return ret;
-> +	}
-> +
-> +	/* Enable FIFO channels */
-> +	ret = regmap_write(regmap, BMI160_REG_FIFO_CONFIG_1,
-> +			fifo_config);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Failed to write FIFO_CONFIG_1\n");
-> +		return ret;
-> +	}
-> +
-> +	data->fifo_config = fifo_config;
-> +	data->fifo_enabled = true;
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmi160_fifo_disable(struct bmi160_data *data)
-> +{
-> +	struct regmap *regmap = data->regmap;
-> +	struct device *dev = regmap_get_device(regmap);
-> +	int ret;
-> +
-> +	/* Disable all FIFO channels */
-> +	ret = regmap_write(regmap, BMI160_REG_FIFO_CONFIG_1, 0);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Failed to write FIFO_CONFIG_1\n");
-> +		return ret;
-> +	}
-> +
-> +	data->fifo_enabled = false;
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmi160_buffer_postenable(struct iio_dev *indio_dev)
-> +{
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
-> +		return iio_triggered_buffer_postenable(indio_dev);
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = regmap_update_bits(data->regmap, BMI160_REG_INT_MAP_1,
-> +			data->irq_data->map_fwm, data->irq_data->map_fwm);
-> +	if (ret < 0)
-> +		goto unlock;
-> +
-> +	ret = regmap_update_bits(data->regmap, BMI160_REG_INT_EN_1,
-> +				BMI160_INT_FWM_EN, BMI160_INT_FWM_EN);
-> +	if (ret < 0)
-> +		goto unlock;
-> +
-> +	ret = bmi160_fifo_enable(indio_dev, data);
-> +
-> +unlock:
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static int bmi160_buffer_predisable(struct iio_dev *indio_dev)
-> +{
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	struct regmap *regmap = data->regmap;
-> +	int ret = 0;
-> +
-> +	if (indio_dev->currentmode == INDIO_BUFFER_TRIGGERED)
-> +		return iio_triggered_buffer_predisable(indio_dev);
-> +
-> +	mutex_lock(&data->mutex);
-> +
-> +	ret = regmap_update_bits(regmap, BMI160_REG_INT_EN_1,
-> +				BMI160_INT_FWM_EN, 0);
-> +	if (ret < 0)
-> +		goto unlock;
-> +
-> +	ret = bmi160_fifo_disable(data);
-> +
-> +unlock:
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_buffer_setup_ops bmi160_buffer_ops = {
-> +	.postenable = bmi160_buffer_postenable,
-> +	.predisable = bmi160_buffer_predisable,
-> +};
-> +
-> +static ssize_t bmi160_get_fifo_state(struct device *dev,
-> +				struct device_attribute *attr,
-> +				char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	bool state;
-> +
-> +	mutex_lock(&data->mutex);
-> +	state = data->fifo_enabled;
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return sprintf(buf, "%d\n", (int) state);
-> +}
-> +
-> +static ssize_t bmi160_get_fifo_watermark(struct device *dev,
-> +				struct device_attribute *attr,
-> +				char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	int wm;
-> +
-> +	mutex_lock(&data->mutex);
-> +	wm = data->watermark;
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return sprintf(buf, "%d\n", wm);
-> +}
-> +
-> +static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
-> +static IIO_CONST_ATTR(hwfifo_watermark_max,
-> +		      __stringify(BMI160_FIFO_LENGTH));
-> +static IIO_DEVICE_ATTR(hwfifo_enabled, S_IRUGO,
-> +		       bmi160_get_fifo_state, NULL, 0);
-> +static IIO_DEVICE_ATTR(hwfifo_watermark, S_IRUGO,
-> +		       bmi160_get_fifo_watermark, NULL, 0);
-> +
-> +static const struct attribute *bmi160_fifo_attributes[] = {
-> +	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
-> +	&iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
-> +	&iio_dev_attr_hwfifo_watermark.dev_attr.attr,
-> +	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static int bmi160_set_watermark(struct iio_dev *indio_dev, unsigned int val)
-> +{
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +
-> +	if (val > BMI160_FIFO_LENGTH)
-> +		val = BMI160_FIFO_LENGTH;
-> +
-> +	data->watermark = val;
-> +
-> +	return 0;
-> +}
-> +
-> +static int bmi160_fifo_transfer(struct bmi160_data *data,
-> +				char *buffer, int num_bytes)
-> +{
-> +	struct regmap *regmap = data->regmap;
-> +	struct device *dev = regmap_get_device(regmap);
-> +	size_t step = regmap_get_raw_read_max(regmap);
-> +	int ret = 0;
-> +	int i;
-> +
-> +	if (!step || step > num_bytes)
-> +		step = num_bytes;
-> +	else if (step < num_bytes)
-> +		step = data->fifo_sample_size;
-> +
-> +	for (i = 0; i < num_bytes; i += step) {
-> +		ret = regmap_raw_read(regmap, BMI160_REG_FIFO_DATA,
-> +				&buffer[i], step);
-> +
-> +		if (ret)
-> +			break;
-> +	}
-> +
-> +	if (ret)
-> +		dev_err(dev,
-> +			"Error transferring data from fifo in single steps of %zu\n",
-> +			step);
-> +
-> +	return ret;
-> +}
-> +
-> +static int __bmi160_fifo_flush(struct iio_dev *indio_dev,
-> +			unsigned int samples, bool irq)
-
-what does the __ prefix denote?
-likely that the function is supposed to be called with mutex held -- 
-maybe use that convention elsewhere as well?
-
-> +{
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	struct regmap *regmap = data->regmap;
-> +	struct device *dev = regmap_get_device(regmap);
-> +	int ret;
-> +	__le16 fifo_length;
-> +	unsigned int fifo_samples;
-> +	unsigned int fifo_bytes;
-> +	u8 *buffer = data->fifo_buffer;
-> +	u8 *buffer_iter;
-> +	int64_t last_timestamp, timestamp;
-> +	unsigned int last_samples;
-> +	unsigned int i;
-> +
-> +	/* Get the current FIFO length */
-> +	ret = regmap_bulk_read(regmap, BMI160_REG_FIFO_LENGTH,
-> +			&fifo_length, sizeof(__le16));
-> +	if (ret < 0) {
-> +		dev_err(dev, "Error reading FIFO_LENGTH\n");
-> +		return ret;
-> +	}
-> +
-> +	fifo_bytes = le16_to_cpu(fifo_length);
-> +	fifo_samples = fifo_bytes / data->fifo_sample_size;
-> +
-> +	if (fifo_bytes % data->fifo_sample_size)
-> +		dev_warn(dev, "fifo_bytes %u is not dividable by %u\n",
-> +			fifo_bytes, data->fifo_sample_size);
-> +
-> +	if (!fifo_samples)
-> +		return 0;
-> +
-> +	if (samples && fifo_samples > samples) {
-> +		fifo_samples = samples;
-> +		fifo_bytes = fifo_samples * data->fifo_sample_size;
-> +	}
-> +
-> +	/*
-> +	 * If we are not called from IRQ, it means that we are flushing data
-> +	 * on demand. In that case we do not have latest timestamp saved in
-> +	 * data->timestamp. Get the time now instead.
-> +	 *
-> +	 * In case of IRQ flush, saved timestamp shows the time when number
-> +	 * of samples configured by watermark were ready. Currently there might
-> +	 * be more samples already.
-> +	 * If we are not called from IRQ, than we are getting the current fifo
-> +	 * length, as we are setting timestamp just after getting it.
-> +	 */
-> +	if (!irq) {
-> +		last_timestamp = iio_get_time_ns(indio_dev);
-> +		last_samples = fifo_samples;
-> +	} else {
-> +		last_timestamp = data->timestamp;
-> +		last_samples = data->watermark;
-> +	}
-> +
-> +	/* Get all measurements */
-> +	ret = bmi160_fifo_transfer(data, buffer, fifo_bytes);
-> +	if (ret)
-> +		return ret;
-> +
-> +	/* Handle demux */
-> +	timestamp = last_timestamp - (last_samples * data->fifo_sample_period);
-> +	buffer_iter = buffer;
-> +	for (i = 0; i < fifo_samples; i++) {
-> +		u8 tmp_buf[indio_dev->scan_bytes];
-
-non-constant array size, is this allowed these days?
-
-> +
-> +		memcpy(tmp_buf, buffer_iter, data->fifo_sample_size);
-> +
-> +		timestamp += data->fifo_sample_period;
-> +		iio_push_to_buffers_with_timestamp(indio_dev,
-> +						tmp_buf,
-> +						timestamp);
-> +
-> +		buffer_iter += data->fifo_sample_size;
-> +	}
-> +
-> +	return fifo_samples;
-> +}
-> +
-> +static int bmi160_fifo_flush(struct iio_dev *indio_dev, unsigned int samples)
-> +{
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = __bmi160_fifo_flush(indio_dev, samples, false);
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
->  static const struct iio_info bmi160_info = {
-> -	.driver_module = THIS_MODULE,
-> -	.read_raw = bmi160_read_raw,
-> -	.write_raw = bmi160_write_raw,
-> -	.attrs = &bmi160_attrs_group,
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= bmi160_read_raw,
-> +	.write_raw		= bmi160_write_raw,
-> +	.attrs			= &bmi160_attrs_group,
-> +};
-> +
-> +static const struct iio_info bmi160_info_fifo = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= bmi160_read_raw,
-> +	.write_raw		= bmi160_write_raw,
-> +	.attrs			= &bmi160_attrs_group,
-> +	.hwfifo_set_watermark	= bmi160_set_watermark,
-> +	.hwfifo_flush_to_buffer	= bmi160_fifo_flush,
->  };
->  
->  static const char *bmi160_match_acpi_device(struct device *dev)
-> @@ -561,12 +1059,54 @@ static void bmi160_chip_uninit(struct bmi160_data *data)
->  	bmi160_set_mode(data, BMI160_ACCEL, false);
->  }
->  
-> +static int bmi160_enable_irq(struct bmi160_data *data)
-> +{
-> +	int ret;
-> +
-> +	mutex_lock(&data->mutex);
-> +	ret = regmap_update_bits(data->regmap, BMI160_REG_INT_OUT_CTRL,
-> +				data->irq_data->output_en,
-> +				data->irq_data->output_en);
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return ret;
-> +}
-> +
-> +static irqreturn_t bmi160_irq_thread_handler(int irq, void *p)
-> +{
-> +	struct iio_dev *indio_dev = p;
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +	struct device *dev = regmap_get_device(data->regmap);
-> +
-> +	mutex_lock(&data->mutex);
-> +	if (data->fifo_enabled)
-> +		__bmi160_fifo_flush(indio_dev, BMI160_FIFO_LENGTH, true);
-> +	else
-> +		dev_warn(dev,
-> +			"IRQ has been triggered, but FIFO is not enabled.\n");
-> +	mutex_unlock(&data->mutex);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static irqreturn_t bmi160_irq_handler(int irq, void *p)
-> +{
-> +	struct iio_dev *indio_dev = p;
-> +	struct bmi160_data *data = iio_priv(indio_dev);
-> +
-> +	data->timestamp = iio_get_time_ns(indio_dev);
-> +
-> +	return IRQ_WAKE_THREAD;
-> +}
-> +
->  int bmi160_core_probe(struct device *dev, struct regmap *regmap,
-> -		      const char *name, bool use_spi)
-> +		const char *name, int irq,
-> +		bool use_spi, bool block_supported)
->  {
->  	struct iio_dev *indio_dev;
->  	struct bmi160_data *data;
->  	int ret;
-> +	int irq2;
->  
->  	indio_dev = devm_iio_device_alloc(dev, sizeof(*data));
->  	if (!indio_dev)
-> @@ -574,8 +1114,11 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
->  
->  	data = iio_priv(indio_dev);
->  	dev_set_drvdata(dev, indio_dev);
-> +	data->irq = irq;
->  	data->regmap = regmap;
->  
-> +	mutex_init(&data->mutex);
-> +
->  	ret = bmi160_chip_init(data, use_spi);
->  	if (ret < 0)
->  		return ret;
-> @@ -591,10 +1134,50 @@ int bmi160_core_probe(struct device *dev, struct regmap *regmap,
->  	indio_dev->info = &bmi160_info;
->  
->  	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> -					 bmi160_trigger_handler, NULL);
-> +					 bmi160_trigger_handler,
-> +					 &bmi160_buffer_ops);
->  	if (ret < 0)
->  		goto uninit;
->  
-> +	if (data->irq > 0) {
-> +		/* Check which interrupt pin is connected to our board */
-> +		irq2 = of_irq_get_byname(dev->of_node, "INT2");
-> +		if (irq2 == data->irq) {
-> +			dev_dbg(dev, "Using interrupt line INT2\n");
-> +			data->irq_data = &bmi160_irq2_data;
-> +		} else {
-> +			dev_dbg(dev, "Using interrupt line INT1\n");
-> +			data->irq_data = &bmi160_irq1_data;
-> +		}
-> +
-> +		ret = devm_request_threaded_irq(dev,
-> +						data->irq,
-> +						bmi160_irq_handler,
-> +						bmi160_irq_thread_handler,
-> +						IRQF_ONESHOT,
-> +						BMI160_IRQ_NAME,
-> +						indio_dev);
-> +		if (ret)
-> +			return ret;
-> +
-> +		ret = bmi160_enable_irq(data);
-> +		if (ret < 0)
-> +			goto buffer_cleanup;
-> +
-> +		if (block_supported) {
-> +			indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
-> +			indio_dev->info = &bmi160_info_fifo;
-> +			indio_dev->buffer->attrs = bmi160_fifo_attributes;
-> +			data->fifo_buffer = devm_kmalloc(dev,
-> +							BMI160_FIFO_LENGTH,
-> +							GFP_KERNEL);
-> +			if (!data->fifo_buffer) {
-> +				ret = -ENOMEM;
-
-need to disable irq on failure?
-
-> +				goto buffer_cleanup;
-> +			}
-> +		}
-> +	}
-> +
->  	ret = iio_device_register(indio_dev);
->  	if (ret < 0)
->  		goto buffer_cleanup;
-> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
-> index 07a179d..aa63f89 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_i2c.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
-> @@ -23,6 +23,10 @@ static int bmi160_i2c_probe(struct i2c_client *client,
->  {
->  	struct regmap *regmap;
->  	const char *name = NULL;
-> +	bool block_supported =
-> +		i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
-> +		i2c_check_functionality(client->adapter,
-> +					I2C_FUNC_SMBUS_READ_I2C_BLOCK);
->  
->  	regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
->  	if (IS_ERR(regmap)) {
-> @@ -34,7 +38,8 @@ static int bmi160_i2c_probe(struct i2c_client *client,
->  	if (id)
->  		name = id->name;
->  
-> -	return bmi160_core_probe(&client->dev, regmap, name, false);
-> +	return bmi160_core_probe(&client->dev, regmap, name, client->irq,
-> +				false, block_supported);
->  }
->  
->  static int bmi160_i2c_remove(struct i2c_client *client)
-> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
-> index 1ec8b12..9b57fbe 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_spi.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
-> @@ -25,7 +25,8 @@ static int bmi160_spi_probe(struct spi_device *spi)
->  			(int)PTR_ERR(regmap));
->  		return PTR_ERR(regmap);
->  	}
-> -	return bmi160_core_probe(&spi->dev, regmap, id->name, true);
-> +	return bmi160_core_probe(&spi->dev, regmap, id->name, spi->irq,
-> +				true, true);
->  }
->  
->  static int bmi160_spi_remove(struct spi_device *spi)
-> 
-
++config SUN4I_GPADC
++	tristate "Support for the Allwinner SoCs GPADC"
++	depends on IIO
++	depends on MFD_SUN4I_GPADC
++	depends on !TOUCHSCREEN_SUN4I
++	help
++	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
++	  GPADC. This ADC provides 4 channels which can be used as an ADC or as
++	  a touchscreen input and one channel for thermal sensor.
++
++	  The thermal sensor is activated by default but slows down ADC
++	  readings. You can disable CONFIG_THERMAL_OF to disable the CPU thermal
++	  sensor if you want faster ADC readings.
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called sun4i-gpadc-iio.
++
+ config TI_ADC081C
+ 	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 7a40c04..18ce8d6 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -41,6 +41,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
+ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+ obj-$(CONFIG_STX104) += stx104.o
++obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
+ obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+ obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+ obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+new file mode 100644
+index 0000000..f275ccb
+--- /dev/null
++++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -0,0 +1,605 @@
++/* ADC driver for sunxi platforms' (A10, A13 and A31) GPADC
++ *
++ * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it under
++ * the terms of the GNU General Public License version 2 as published by the
++ * Free Software Foundation.
++ *
++ * The Allwinner SoCs all have an ADC that can also act as a touchscreen
++ * controller and a thermal sensor.
++ * The thermal sensor works only when the ADC acts as a touchscreen controller
++ * and is configured to throw an interrupt every fixed periods of time (let say
++ * every X seconds).
++ * One would be tempted to disable the IP on the hardware side rather than
++ * disabling interrupts to save some power but that resets the internal clock of
++ * the IP, resulting in having to wait X seconds every time we want to read the
++ * value of the thermal sensor.
++ * This is also the reason of using autosuspend in pm_runtime. If there was no
++ * autosuspend, the thermal sensor would need X seconds after every
++ * pm_runtime_get_sync to get a value from the ADC. The autosuspend allows the
++ * thermal sensor to be requested again in a certain time span before it gets
++ * shutdown for not being used.
++ */
++
++#include <linux/completion.h>
++#include <linux/interrupt.h>
++#include <linux/io.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/pm_runtime.h>
++#include <linux/regmap.h>
++#include <linux/thermal.h>
++#include <linux/delay.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/driver.h>
++#include <linux/iio/machine.h>
++#include <linux/mfd/sun4i-gpadc.h>
++
++static unsigned int sun4i_gpadc_chan_select(unsigned int chan)
++{
++	return SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
++}
++
++static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
++{
++	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
++}
++
++struct gpadc_data {
++	int		temp_offset;
++	int		temp_scale;
++	unsigned int	tp_mode_en;
++	unsigned int	tp_adc_select;
++	unsigned int	(*adc_chan_select)(unsigned int chan);
++	unsigned int	adc_chan_mask;
++};
++
++static const struct gpadc_data sun4i_gpadc_data = {
++	.temp_offset = -1932,
++	.temp_scale = 133,
++	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
++	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
++	.adc_chan_select = &sun4i_gpadc_chan_select,
++	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
++};
++
++static const struct gpadc_data sun5i_gpadc_data = {
++	.temp_offset = -1447,
++	.temp_scale = 100,
++	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
++	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
++	.adc_chan_select = &sun4i_gpadc_chan_select,
++	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
++};
++
++static const struct gpadc_data sun6i_gpadc_data = {
++	.temp_offset = -1623,
++	.temp_scale = 167,
++	.tp_mode_en = SUN6I_GPADC_CTRL1_TP_MODE_EN,
++	.tp_adc_select = SUN6I_GPADC_CTRL1_TP_ADC_SELECT,
++	.adc_chan_select = &sun6i_gpadc_chan_select,
++	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
++};
++
++struct sun4i_gpadc_iio {
++	struct iio_dev			*indio_dev;
++	struct completion		completion;
++	int				temp_data;
++	u32				adc_data;
++	struct regmap			*regmap;
++	unsigned int			fifo_data_irq;
++	atomic_t			ignore_fifo_data_irq;
++	unsigned int			temp_data_irq;
++	atomic_t			ignore_temp_data_irq;
++	const struct gpadc_data		*data;
++	/* prevents concurrent reads of temperature and ADC */
++	struct mutex			mutex;
++};
++
++#define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
++	.type = IIO_VOLTAGE,					\
++	.indexed = 1,						\
++	.channel = _channel,					\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
++	.datasheet_name = _name,				\
++}
++
++static struct iio_map sun4i_gpadc_hwmon_maps[] = {
++	{
++		.adc_channel_label = "temp_adc",
++		.consumer_dev_name = "iio_hwmon.0",
++	},
++	{ /* sentinel */ },
++};
++
++static const struct iio_chan_spec sun4i_gpadc_channels[] = {
++	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
++	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
++	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
++	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
++	{
++		.type = IIO_TEMP,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				      BIT(IIO_CHAN_INFO_SCALE) |
++				      BIT(IIO_CHAN_INFO_OFFSET),
++		.datasheet_name = "temp_adc",
++	},
++};
++
++static const struct iio_chan_spec sun4i_gpadc_channels_no_temp[] = {
++	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
++	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
++	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
++	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
++};
++
++static int sun4i_prepare_for_irq(struct iio_dev *indio_dev, int channel,
++				 unsigned int irq)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
++	int ret;
++	u32 reg;
++
++	pm_runtime_get_sync(indio_dev->dev.parent);
++
++	reinit_completion(&info->completion);
++
++	ret = regmap_write(info->regmap, SUN4I_GPADC_INT_FIFOC,
++			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(1) |
++			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH);
++	if (ret)
++		return ret;
++
++	ret = regmap_read(info->regmap, SUN4I_GPADC_CTRL1, &reg);
++	if (ret)
++		return ret;
++
++	if (irq == info->fifo_data_irq) {
++		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
++				   info->data->tp_mode_en |
++				   info->data->tp_adc_select |
++				   info->data->adc_chan_select(channel));
++		/*
++		 * When the IP changes channel, it needs a bit of time to get
++		 * correct values.
++		 */
++		if ((reg & info->data->adc_chan_mask) !=
++			 info->data->adc_chan_select(channel))
++			mdelay(10);
++
++	} else {
++		/*
++		 * The temperature sensor returns valid data only when the ADC
++		 * operates in touchscreen mode.
++		 */
++		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
++				   info->data->tp_mode_en);
++	}
++
++	if (ret)
++		return ret;
++
++	/*
++	 * When the IP changes mode between ADC or touchscreen, it
++	 * needs a bit of time to get correct values.
++	 */
++	if ((reg & info->data->tp_adc_select) != info->data->tp_adc_select)
++		mdelay(100);
++
++	return 0;
++}
++
++static int sun4i_gpadc_read(struct iio_dev *indio_dev, int channel, int *val,
++			    unsigned int irq)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
++	int ret;
++
++	mutex_lock(&info->mutex);
++
++	ret = sun4i_prepare_for_irq(indio_dev, channel, irq);
++	if (ret)
++		goto err;
++
++	enable_irq(irq);
++
++	/*
++	 * The temperature sensor throws an interruption periodically (currently
++	 * set at periods of ~0.6s in sun4i_gpadc_runtime_resume). A 1s delay
++	 * makes sure an interruption occurs in normal conditions. If it doesn't
++	 * occur, then there is a timeout.
++	 */
++	if (!wait_for_completion_timeout(&info->completion,
++					 msecs_to_jiffies(1000))) {
++		ret = -ETIMEDOUT;
++		goto err;
++	}
++
++	if (irq == info->fifo_data_irq)
++		*val = info->adc_data;
++	else
++		*val = info->temp_data;
++
++	ret = 0;
++	pm_runtime_mark_last_busy(indio_dev->dev.parent);
++
++err:
++	pm_runtime_put_autosuspend(indio_dev->dev.parent);
++	mutex_unlock(&info->mutex);
++
++	return ret;
++}
++
++static int sun4i_gpadc_adc_read(struct iio_dev *indio_dev, int channel,
++				int *val)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
++
++	return sun4i_gpadc_read(indio_dev, channel, val, info->fifo_data_irq);
++}
++
++static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
++
++	return sun4i_gpadc_read(indio_dev, 0, val, info->temp_data_irq);
++}
++
++static int sun4i_gpadc_temp_offset(struct iio_dev *indio_dev, int *val)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
++
++	*val = info->data->temp_offset;
++
++	return 0;
++}
++
++static int sun4i_gpadc_temp_scale(struct iio_dev *indio_dev, int *val)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
++
++	*val = info->data->temp_scale;
++
++	return 0;
++}
++
++static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan, int *val,
++				int *val2, long mask)
++{
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_OFFSET:
++		ret = sun4i_gpadc_temp_offset(indio_dev, val);
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_RAW:
++		if (chan->type == IIO_VOLTAGE)
++			ret = sun4i_gpadc_adc_read(indio_dev, chan->channel,
++						   val);
++		else
++			ret = sun4i_gpadc_temp_read(indio_dev, val);
++
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		if (chan->type == IIO_VOLTAGE) {
++			/* 3000mV / 4096 * raw */
++			*val = 0;
++			*val2 = 732421875;
++			return IIO_VAL_INT_PLUS_MICRO;
++		}
++
++		ret = sun4i_gpadc_temp_scale(indio_dev, val);
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info sun4i_gpadc_iio_info = {
++	.read_raw = sun4i_gpadc_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static irqreturn_t sun4i_gpadc_temp_data_irq_handler(int irq, void *dev_id)
++{
++	struct sun4i_gpadc_iio *info = dev_id;
++
++	if (atomic_read(&info->ignore_temp_data_irq))
++		goto out;
++
++	if (!regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, &info->temp_data))
++		complete(&info->completion);
++
++out:
++	disable_irq_nosync(info->temp_data_irq);
++	return IRQ_HANDLED;
++}
++
++static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
++{
++	struct sun4i_gpadc_iio *info = dev_id;
++
++	if (atomic_read(&info->ignore_fifo_data_irq))
++		goto out;
++
++	if (!regmap_read(info->regmap, SUN4I_GPADC_DATA, &info->adc_data))
++		complete(&info->completion);
++
++out:
++	disable_irq_nosync(info->fifo_data_irq);
++	return IRQ_HANDLED;
++}
++
++static int sun4i_gpadc_runtime_suspend(struct device *dev)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
++
++	/* Disable the ADC on IP */
++	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
++	/* Disable temperature sensor on IP */
++	regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
++
++	return 0;
++}
++
++static int sun4i_gpadc_runtime_resume(struct device *dev)
++{
++	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
++
++	/* clkin = 6MHz */
++	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
++		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
++		     SUN4I_GPADC_CTRL0_FS_DIV(7) |
++		     SUN4I_GPADC_CTRL0_T_ACQ(63));
++	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, info->data->tp_mode_en);
++	regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
++		     SUN4I_GPADC_CTRL3_FILTER_EN |
++		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
++	/* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s */
++	regmap_write(info->regmap, SUN4I_GPADC_TPR,
++		     SUN4I_GPADC_TPR_TEMP_ENABLE |
++		     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
++
++	return 0;
++}
++
++static int sun4i_gpadc_get_temp(void *data, int *temp)
++{
++	struct sun4i_gpadc_iio *info = (struct sun4i_gpadc_iio *)data;
++	int val, scale, offset;
++
++	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
++		return -ETIMEDOUT;
++
++	sun4i_gpadc_temp_scale(info->indio_dev, &scale);
++	sun4i_gpadc_temp_offset(info->indio_dev, &offset);
++
++	*temp = (val + offset) * scale;
++
++	return 0;
++}
++
++static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
++	.get_temp = &sun4i_gpadc_get_temp,
++};
++
++static const struct dev_pm_ops sun4i_gpadc_pm_ops = {
++	.runtime_suspend = &sun4i_gpadc_runtime_suspend,
++	.runtime_resume = &sun4i_gpadc_runtime_resume,
++};
++
++static int sun4i_irq_init(struct platform_device *pdev, const char *name,
++			  irq_handler_t handler, const char *devname,
++			  unsigned int *irq, atomic_t *atomic)
++{
++	int ret;
++	struct sun4i_gpadc_dev *mfd_dev = dev_get_drvdata(pdev->dev.parent);
++	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(&pdev->dev));
++
++	/*
++	 * Once the interrupt is activated, the IP continuously performs
++	 * conversions thus throws interrupts. The interrupt is activated right
++	 * after being requested but we want to control when these interrupts
++	 * occur thus we disable it right after being requested. However, an
++	 * interrupt might occur between these two instructions and we have to
++	 * make sure that does not happen, by using atomic flags. We set the
++	 * flag before requesting the interrupt and unset it right after
++	 * disabling the interrupt. When an interrupt occurs between these two
++	 * instructions, reading the atomic flag will tell us to ignore the
++	 * interrupt.
++	 */
++	atomic_set(atomic, 1);
++
++	*irq = platform_get_irq_byname(pdev, name);
++	if (*irq < 0) {
++		dev_err(&pdev->dev, "no %s interrupt registered\n", name);
++		return *irq;
++	}
++
++	*irq = regmap_irq_get_virq(mfd_dev->regmap_irqc, *irq);
++	ret = devm_request_any_context_irq(&pdev->dev, *irq, handler, 0,
++					   devname, info);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "could not request %s interrupt: %d\n",
++			name, ret);
++		return ret;
++	}
++
++	disable_irq(*irq);
++	atomic_set(atomic, 0);
++
++	return 0;
++}
++
++static int sun4i_gpadc_probe(struct platform_device *pdev)
++{
++	struct sun4i_gpadc_iio *info;
++	struct iio_dev *indio_dev;
++	int ret;
++	struct sun4i_gpadc_dev *sun4i_gpadc_dev;
++	struct thermal_zone_device *tzd;
++
++	sun4i_gpadc_dev = dev_get_drvdata(pdev->dev.parent);
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	info = iio_priv(indio_dev);
++	platform_set_drvdata(pdev, indio_dev);
++
++	mutex_init(&info->mutex);
++	info->regmap = sun4i_gpadc_dev->regmap;
++	info->indio_dev = indio_dev;
++	init_completion(&info->completion);
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->info = &sun4i_gpadc_iio_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->num_channels = ARRAY_SIZE(sun4i_gpadc_channels);
++	indio_dev->channels = sun4i_gpadc_channels;
++
++	info->data = (struct gpadc_data *)platform_get_device_id(pdev)->driver_data;
++
++	/*
++	 * Since the thermal sensor needs the IP to be in touchscreen mode and
++	 * there is no register to know if the IP has finished its transition
++	 * between the two modes, a delay is required when switching modes. This
++	 * slows down ADC readings while the latter are critical data to the
++	 * user. Disabling CONFIG_THERMAL_OF in kernel configuration allows the
++	 * user to avoid registering the thermal sensor (thus unavailable) and
++	 * does not switch between modes thus "quicken" the ADC readings.
++	 * The thermal sensor should be enabled by default since the SoC
++	 * temperature is usually more critical than ADC readings.
++	 */
++
++	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
++	/*
++	 * This driver is a child of an MFD which has a node in the DT but not
++	 * its children. Therefore, the resulting devices of this driver do not
++	 * have an of_node variable.
++	 * However, its parent (the MFD driver) has an of_node variable and
++	 * since devm_thermal_zone_of_sensor_register uses its first argument to
++	 * match the phandle defined in the node of the thermal driver with the
++	 * of_node of the device passed as first argument and the third argument
++	 * to call ops from thermal_zone_of_device_ops, the solution is to use
++	 * the parent device as first argument to match the phandle with its
++	 * of_node, and the device from this driver as third argument to return
++	 * the temperature.
++	 */
++		tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0,
++							   info,
++							   &sun4i_ts_tz_ops);
++		if (IS_ERR(tzd)) {
++			dev_err(&pdev->dev,
++				"could not register thermal sensor: %ld\n",
++				PTR_ERR(tzd));
++			goto err;
++		}
++	} else {
++		indio_dev->num_channels =
++			ARRAY_SIZE(sun4i_gpadc_channels_no_temp);
++		indio_dev->channels = sun4i_gpadc_channels_no_temp;
++	}
++
++	pm_runtime_set_autosuspend_delay(&pdev->dev,
++					 SUN4I_GPADC_AUTOSUSPEND_DELAY);
++	pm_runtime_use_autosuspend(&pdev->dev);
++	pm_runtime_set_suspended(&pdev->dev);
++	pm_runtime_enable(&pdev->dev);
++
++	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
++		ret = sun4i_irq_init(pdev, "TEMP_DATA_PENDING",
++				     sun4i_gpadc_temp_data_irq_handler,
++				     "temp_data", &info->temp_data_irq,
++				     &info->ignore_temp_data_irq);
++		if (ret < 0)
++			goto err;
++	}
++
++	ret = sun4i_irq_init(pdev, "FIFO_DATA_PENDING",
++			     sun4i_gpadc_fifo_data_irq_handler, "fifo_data",
++			     &info->fifo_data_irq, &info->ignore_fifo_data_irq);
++	if (ret < 0)
++		goto err;
++
++	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
++		ret = iio_map_array_register(indio_dev, sun4i_gpadc_hwmon_maps);
++		if (ret < 0) {
++			dev_err(&pdev->dev,
++				"failed to register iio map array\n");
++			goto err;
++		}
++	}
++
++	ret = devm_iio_device_register(&pdev->dev, indio_dev);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "could not register the device\n");
++		goto err_map;
++	}
++
++	return 0;
++
++err_map:
++	if (IS_ENABLED(CONFIG_THERMAL_OF))
++		iio_map_array_unregister(indio_dev);
++
++err:
++	pm_runtime_put(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
++
++	return ret;
++}
++
++static int sun4i_gpadc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++
++	pm_runtime_put(&pdev->dev);
++	pm_runtime_disable(&pdev->dev);
++	if (IS_ENABLED(CONFIG_THERMAL_OF))
++		iio_map_array_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct platform_device_id sun4i_gpadc_id[] = {
++	{ "sun4i-a10-gpadc-iio", (kernel_ulong_t)&sun4i_gpadc_data },
++	{ "sun5i-a13-gpadc-iio", (kernel_ulong_t)&sun5i_gpadc_data },
++	{ "sun6i-a31-gpadc-iio", (kernel_ulong_t)&sun6i_gpadc_data },
++	{ /* sentinel */ },
++};
++
++static struct platform_driver sun4i_gpadc_driver = {
++	.driver = {
++		.name = "sun4i-gpadc-iio",
++		.pm = &sun4i_gpadc_pm_ops,
++	},
++	.id_table = sun4i_gpadc_id,
++	.probe = sun4i_gpadc_probe,
++	.remove = sun4i_gpadc_remove,
++};
++
++module_platform_driver(sun4i_gpadc_driver);
++
++MODULE_DESCRIPTION("ADC driver for sunxi platforms");
++MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
+index d7a29f2..509e736 100644
+--- a/include/linux/mfd/sun4i-gpadc.h
++++ b/include/linux/mfd/sun4i-gpadc.h
+@@ -28,6 +28,7 @@
+ #define SUN4I_GPADC_CTRL1_TP_MODE_EN			BIT(4)
+ #define SUN4I_GPADC_CTRL1_TP_ADC_SELECT			BIT(3)
+ #define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) & (x))
++#define SUN4I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(2, 0)
+ 
+ /* TP_CTRL1 bits for sun6i SOCs */
+ #define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
+@@ -35,6 +36,7 @@
+ #define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
+ #define SUN6I_GPADC_CTRL1_TP_ADC_SELECT			BIT(4)
+ #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
++#define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
+ 
+ #define SUN4I_GPADC_CTRL2				0x08
+ 
 -- 
+2.9.3
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
