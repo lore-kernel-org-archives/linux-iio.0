@@ -9,57 +9,49 @@ Cc: devel@driverdev.osuosl.org,
 	knaack.h@gmx.de,
 	linux-kernel@vger.kernel.org,
 	Jon.Brenner@ams.com
-Subject: [PATCH 4/9] staging: iio: tsl2583: remove redundant power off sequence in taos_chip_on()
-Date: Thu,  3 Nov 2016 08:56:15 -0400
-Message-Id: <1478177780-28699-5-git-send-email-masneyb@onstation.org>
+Subject: [PATCH 5/9] staging: iio: tsl2583: don't shutdown chip when updating the lux table
+Date: Thu,  3 Nov 2016 08:56:16 -0400
+Message-Id: <1478177780-28699-6-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
 References: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-taos_chip_on() explicitly turns the sensor power on and then writes the
-8 registers that are stored in taos_config. The first register in
-taos_config is the CONTROL register and the configuration is set to
-turn the power off. The existing state sequence in taos_chip_on() is:
-
-- Turn device power on
-- Turn device power off (via taos_config)
-- Configure other 7 registers (via taos_config)
-- Turn device power on, enable ADC
-
-This patch changes the code so that the device is not powered off via
-taos_config.
-
-Verified that the driver still functions correctly using a TSL2581
-hooked up to a Raspberry Pi 2.
+in_illuminance_lux_table_store() shuts down the chip, updates the
+contents of the lux table, and then turns the chip back on. The values
+in lux table are not used by the chip and are only used internally by
+the driver. It is not necessary to change the power state on the chip.
+This patch removes the calls to taos_chip_off() and taos_chip_on()
+in in_illuminance_lux_table_store().
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 13 ++-----------
- 1 file changed, 2 insertions(+), 11 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 10 ----------
+ 1 file changed, 10 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 709f446..7fb09c6 100644
+index 7fb09c6..af1cf9b 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -410,17 +410,8 @@ static int taos_chip_on(struct iio_dev *indio_dev)
- 	chip->als_saturation = als_count * 922; /* 90% of full scale */
- 	chip->als_time_scale = (als_time + 25) / 50;
+@@ -564,20 +564,10 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
+ 		goto done;
+ 	}
  
--	/*
--	 * TSL258x Specific power-on / adc enable sequence
--	 * Power on the device 1st.
--	 */
--	utmp = TSL258X_CNTL_PWR_ON;
--	ret = i2c_smbus_write_byte_data(chip->client,
--					TSL258X_CMD_REG | TSL258X_CNTRL, utmp);
--	if (ret < 0) {
--		dev_err(&chip->client->dev, "taos_chip_on failed on CNTRL reg.\n");
--		return ret;
+-	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
+-		ret = taos_chip_off(indio_dev);
+-		if (ret < 0)
+-			goto done;
 -	}
-+	/* Power on the device; ADC off. */
-+	chip->taos_config[TSL258X_CNTRL] = TSL258X_CNTL_PWR_ON;
+-
+ 	/* Zero out the table */
+ 	memset(taos_device_lux, 0, sizeof(taos_device_lux));
+ 	memcpy(taos_device_lux, &value[1], (value[0] * 4));
  
- 	/*
- 	 * Use the following shadow copy for our delay before enabling ADC.
+-	ret = taos_chip_on(indio_dev);
+-	if (ret < 0)
+-		goto done;
+-
+ 	ret = len;
+ 
+ done:
 -- 
 2.5.5
