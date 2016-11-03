@@ -1,228 +1,227 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0097.outbound.protection.outlook.com ([104.47.2.97]:22545
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S932183AbcKHTgv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Nov 2016 14:36:51 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Mark Rutland" <mark.rutland@arm.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v4 3/8] iio: mcp4531: provide range of available raw values
-Date: Tue, 8 Nov 2016 12:58:53 +0100
-Message-ID: <1478606339-31253-4-git-send-email-peda@axentia.se>
-In-Reply-To: <1478606339-31253-1-git-send-email-peda@axentia.se>
-References: <1478606339-31253-1-git-send-email-peda@axentia.se>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <joyce.ooi@intel.com>
+From: "Ooi, Joyce" <joyce.ooi@intel.com>
+To: Jiri Kosina <jikos@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-input@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Ooi Joyce <joyce.ooi@intel.com>,
+	Kweh Hock Leong <hock.leong.kweh@intel.com>,
+	Ong Boon Leong <boon.leong.ong@intel.com>,
+	Lay Kuan Loon <kuan.loon.lay@intel.com>
+Subject: [PATCH] iio: magnetometer: separate the values of attributes based on their usage type for HID compass sensor
+Date: Thu,  3 Nov 2016 18:07:50 +0800
+Message-Id: <1478167670-23549-1-git-send-email-joyce.ooi@intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Example:
+There are 2 usage types (Magnetic Flux and Heading data field) for HID
+compass sensor, thus the values of offset, scale, and sensitivity should
+be separated according to their respective usage type. The changes made
+are as below:
+1. Hysteresis: A struct hid_sensor_common rot_attributes is created in
+struct magn_3d_state to contain the sensitivity for IIO_ROT.
+2. Scale: scale_pre_decml and scale_post_decml are separated into
+scale_pre_decml_magn, scale_post_decml_magn, scale_pre_decml_rot, and
+scale_post_decml_rot.
+3. Offset: Same as scale, value_offset is separated into value_offset_magn
+and value_offset_rot.
 
-$ cat '/sys/bus/iio/devices/iio:device0/out_resistance_raw_available'
-[0 1 256]
+For sensitivity, HID_USAGE_SENSOR_ORIENT_MAGN_FLUX and
+HID_USAGE_SENSOR_ORIENT_MAGN_HEADING are used for sensivitity fields based
+on the HID Sensor Usages specifications. Hence, these changes are added on
+the sensitivity field.
 
-Meaning: min 0, step 1 and max 256.
-
-Signed-off-by: Peter Rosin <peda@axentia.se>
+Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
 ---
- .../testing/sysfs-bus-iio-potentiometer-mcp4531    |   8 ++
- MAINTAINERS                                        |   1 +
- drivers/iio/potentiometer/mcp4531.c                | 104 ++++++++++++---------
- 3 files changed, 71 insertions(+), 42 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |   5 +
+ drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 102 ++++++++++++++++++---
+ 2 files changed, 93 insertions(+), 14 deletions(-)
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531 b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
-new file mode 100644
-index 000000000000..2a91fbe394fc
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
-@@ -0,0 +1,8 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/out_resistance_raw_available
-+Date:		October 2016
-+KernelVersion:	4.9
-+Contact:	Peter Rosin <peda@axentia.se>
-+Description:
-+		The range of available values represented as the minimum value,
-+		the step and the maximum value, all enclosed in square brackets.
-+		Example: [0 1 256]
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 411e3b87b8c2..2409e1d79cb6 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -7707,6 +7707,7 @@ MCP4531 MICROCHIP DIGITAL POTENTIOMETER DRIVER
- M:	Peter Rosin <peda@axentia.se>
- L:	linux-iio@vger.kernel.org
- S:	Maintained
-+F:	Documentation/ABI/testing/sysfs-bus-iio-potentiometer-mcp4531
- F:	drivers/iio/potentiometer/mcp4531.c
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index c1f8c22..9641a15 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -46,6 +46,11 @@
  
- MEASUREMENT COMPUTING CIO-DAC IIO DRIVER
-diff --git a/drivers/iio/potentiometer/mcp4531.c b/drivers/iio/potentiometer/mcp4531.c
-index 13b6ae2fcf7b..0d1bcf89ae17 100644
---- a/drivers/iio/potentiometer/mcp4531.c
-+++ b/drivers/iio/potentiometer/mcp4531.c
-@@ -38,7 +38,7 @@
+ 	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+ 	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
++	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, 0, 0, 17453293},
++	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
++		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
++	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
++		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
  
- struct mcp4531_cfg {
- 	int wipers;
--	int max_pos;
-+	int avail[3];
- 	int kohms;
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+ 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+index d8a0c8d..84a59d3 100644
+--- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
++++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+@@ -45,6 +45,7 @@ enum magn_3d_channel {
+ struct magn_3d_state {
+ 	struct hid_sensor_hub_callbacks callbacks;
+ 	struct hid_sensor_common common_attributes;
++	struct hid_sensor_common rot_attributes;
+ 	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
+ 
+ 	/* dynamically sized array to hold sensor values */
+@@ -52,10 +53,14 @@ struct magn_3d_state {
+ 	/* array of pointers to sensor value */
+ 	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
+ 
+-	int scale_pre_decml;
+-	int scale_post_decml;
+-	int scale_precision;
+-	int value_offset;
++	int scale_pre_decml_magn;
++	int scale_post_decml_magn;
++	int scale_precision_magn;
++	int value_offset_magn;
++	int scale_pre_decml_rot;
++	int scale_post_decml_rot;
++	int scale_precision_rot;
++	int value_offset_rot;
  };
  
-@@ -78,38 +78,38 @@ enum mcp4531_type {
- };
- 
- static const struct mcp4531_cfg mcp4531_cfg[] = {
--	[MCP453x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
--	[MCP453x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
--	[MCP453x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
--	[MCP453x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
--	[MCP454x_502] = { .wipers = 1, .max_pos = 128, .kohms =   5, },
--	[MCP454x_103] = { .wipers = 1, .max_pos = 128, .kohms =  10, },
--	[MCP454x_503] = { .wipers = 1, .max_pos = 128, .kohms =  50, },
--	[MCP454x_104] = { .wipers = 1, .max_pos = 128, .kohms = 100, },
--	[MCP455x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
--	[MCP455x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
--	[MCP455x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
--	[MCP455x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
--	[MCP456x_502] = { .wipers = 1, .max_pos = 256, .kohms =   5, },
--	[MCP456x_103] = { .wipers = 1, .max_pos = 256, .kohms =  10, },
--	[MCP456x_503] = { .wipers = 1, .max_pos = 256, .kohms =  50, },
--	[MCP456x_104] = { .wipers = 1, .max_pos = 256, .kohms = 100, },
--	[MCP463x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
--	[MCP463x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
--	[MCP463x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
--	[MCP463x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
--	[MCP464x_502] = { .wipers = 2, .max_pos = 128, .kohms =   5, },
--	[MCP464x_103] = { .wipers = 2, .max_pos = 128, .kohms =  10, },
--	[MCP464x_503] = { .wipers = 2, .max_pos = 128, .kohms =  50, },
--	[MCP464x_104] = { .wipers = 2, .max_pos = 128, .kohms = 100, },
--	[MCP465x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
--	[MCP465x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
--	[MCP465x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
--	[MCP465x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
--	[MCP466x_502] = { .wipers = 2, .max_pos = 256, .kohms =   5, },
--	[MCP466x_103] = { .wipers = 2, .max_pos = 256, .kohms =  10, },
--	[MCP466x_503] = { .wipers = 2, .max_pos = 256, .kohms =  50, },
--	[MCP466x_104] = { .wipers = 2, .max_pos = 256, .kohms = 100, },
-+	[MCP453x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP453x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP453x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP453x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP454x_502] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP454x_103] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP454x_503] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP454x_104] = { .wipers = 1, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP455x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP455x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP455x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP455x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP456x_502] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP456x_103] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP456x_503] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP456x_104] = { .wipers = 1, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP463x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP463x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP463x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP463x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP464x_502] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =   5, },
-+	[MCP464x_103] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  10, },
-+	[MCP464x_503] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms =  50, },
-+	[MCP464x_104] = { .wipers = 2, .avail = { 0, 1, 128 }, .kohms = 100, },
-+	[MCP465x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP465x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP465x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP465x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
-+	[MCP466x_502] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =   5, },
-+	[MCP466x_103] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  10, },
-+	[MCP466x_503] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms =  50, },
-+	[MCP466x_104] = { .wipers = 2, .avail = { 0, 1, 256 }, .kohms = 100, },
- };
- 
- #define MCP4531_WRITE (0 << 2)
-@@ -124,13 +124,14 @@ struct mcp4531_data {
- 	const struct mcp4531_cfg *cfg;
- };
- 
--#define MCP4531_CHANNEL(ch) {					\
--	.type = IIO_RESISTANCE,					\
--	.indexed = 1,						\
--	.output = 1,						\
--	.channel = (ch),					\
--	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
--	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+#define MCP4531_CHANNEL(ch) {						\
-+	.type = IIO_RESISTANCE,						\
-+	.indexed = 1,							\
-+	.output = 1,							\
-+	.channel = (ch),						\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
-+	.info_mask_shared_by_type_available = BIT(IIO_CHAN_INFO_RAW),	\
- }
- 
- static const struct iio_chan_spec mcp4531_channels[] = {
-@@ -156,13 +157,31 @@ static int mcp4531_read_raw(struct iio_dev *indio_dev,
- 		return IIO_VAL_INT;
+ static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
+@@ -182,21 +187,52 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
+ 		ret_type = IIO_VAL_INT;
+ 		break;
  	case IIO_CHAN_INFO_SCALE:
- 		*val = 1000 * data->cfg->kohms;
--		*val2 = data->cfg->max_pos;
-+		*val2 = data->cfg->avail[2];
- 		return IIO_VAL_FRACTIONAL;
- 	}
- 
- 	return -EINVAL;
- }
- 
-+static int mcp4531_read_avail(struct iio_dev *indio_dev,
-+			      struct iio_chan_spec const *chan,
-+			      const int **vals, int *type, int *length,
-+			      long mask)
-+{
-+	struct mcp4531_data *data = iio_priv(indio_dev);
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		*length = ARRAY_SIZE(data->cfg->avail);
-+		*vals = data->cfg->avail;
-+		*type = IIO_VAL_INT;
-+		return IIO_AVAIL_RANGE;
-+	}
-+
-+	return -EINVAL;
-+}
-+
- static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 			     struct iio_chan_spec const *chan,
- 			     int val, int val2, long mask)
-@@ -172,7 +191,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
- 
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (val > data->cfg->max_pos || val < 0)
-+		if (val > data->cfg->avail[2] || val < 0)
- 			return -EINVAL;
+-		*val = magn_state->scale_pre_decml;
+-		*val2 = magn_state->scale_post_decml;
+-		ret_type = magn_state->scale_precision;
++		switch (chan->type) {
++		case IIO_MAGN:
++			*val = magn_state->scale_pre_decml_magn;
++			*val2 = magn_state->scale_post_decml_magn;
++			ret_type = magn_state->scale_precision_magn;
++			break;
++		case IIO_ROT:
++			*val = magn_state->scale_pre_decml_rot;
++			*val2 = magn_state->scale_post_decml_rot;
++			ret_type = magn_state->scale_precision_rot;
++			break;
++		default:
++			ret_type = -EINVAL;
++		}
+ 		break;
+ 	case IIO_CHAN_INFO_OFFSET:
+-		*val = magn_state->value_offset;
+-		ret_type = IIO_VAL_INT;
++		switch (chan->type) {
++		case IIO_MAGN:
++			*val = magn_state->value_offset_magn;
++			ret_type = IIO_VAL_INT;
++			break;
++		case IIO_ROT:
++			*val = magn_state->value_offset_rot;
++			ret_type = IIO_VAL_INT;
++			break;
++		default:
++			ret_type = -EINVAL;
++		}
+ 		break;
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		ret_type = hid_sensor_read_samp_freq_value(
+ 			&magn_state->common_attributes, val, val2);
+ 		break;
+ 	case IIO_CHAN_INFO_HYSTERESIS:
+-		ret_type = hid_sensor_read_raw_hyst_value(
+-			&magn_state->common_attributes, val, val2);
++		switch (chan->type) {
++		case IIO_MAGN:
++			ret_type = hid_sensor_read_raw_hyst_value(
++				&magn_state->common_attributes, val, val2);
++			break;
++		case IIO_ROT:
++			ret_type = hid_sensor_read_raw_hyst_value(
++				&magn_state->rot_attributes, val, val2);
++			break;
++		default:
++			ret_type = -EINVAL;
++		}
  		break;
  	default:
-@@ -186,6 +205,7 @@ static int mcp4531_write_raw(struct iio_dev *indio_dev,
+ 		ret_type = -EINVAL;
+@@ -222,8 +258,18 @@ static int magn_3d_write_raw(struct iio_dev *indio_dev,
+ 				&magn_state->common_attributes, val, val2);
+ 		break;
+ 	case IIO_CHAN_INFO_HYSTERESIS:
+-		ret = hid_sensor_write_raw_hyst_value(
++		switch (chan->type) {
++		case IIO_MAGN:
++			ret = hid_sensor_write_raw_hyst_value(
+ 				&magn_state->common_attributes, val, val2);
++			break;
++		case IIO_ROT:
++			ret = hid_sensor_write_raw_hyst_value(
++				&magn_state->rot_attributes, val, val2);
++			break;
++		default:
++			ret = -EINVAL;
++		}
+ 		break;
+ 	default:
+ 		ret = -EINVAL;
+@@ -389,10 +435,17 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 	dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
+ 			*chan_count);
  
- static const struct iio_info mcp4531_info = {
- 	.read_raw = mcp4531_read_raw,
-+	.read_avail = mcp4531_read_avail,
- 	.write_raw = mcp4531_write_raw,
- 	.driver_module = THIS_MODULE,
- };
+-	st->scale_precision = hid_sensor_format_scale(
++	st->scale_precision_magn = hid_sensor_format_scale(
+ 				HID_USAGE_SENSOR_COMPASS_3D,
+ 				&st->magn[CHANNEL_SCAN_INDEX_X],
+-				&st->scale_pre_decml, &st->scale_post_decml);
++				&st->scale_pre_decml_magn,
++				&st->scale_post_decml_magn);
++	st->scale_precision_rot
++		= hid_sensor_format_scale(
++			HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
++			&st->magn[CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP],
++			&st->scale_pre_decml_rot,
++			&st->scale_post_decml_rot);
+ 
+ 	/* Set Sensitivity field ids, when there is no individual modifier */
+ 	if (st->common_attributes.sensitivity.index < 0) {
+@@ -405,6 +458,26 @@ static int magn_3d_parse_report(struct platform_device *pdev,
+ 			st->common_attributes.sensitivity.index,
+ 			st->common_attributes.sensitivity.report_id);
+ 	}
++	if (st->common_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++			HID_USAGE_SENSOR_ORIENT_MAGN_FLUX,
++			&st->common_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			st->common_attributes.sensitivity.index,
++			st->common_attributes.sensitivity.report_id);
++	}
++	if (st->rot_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++			HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
++			&st->rot_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			st->rot_attributes.sensitivity.index,
++			st->rot_attributes.sensitivity.report_id);
++	}
+ 
+ 	return 0;
+ }
+@@ -438,6 +511,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
+ 		dev_err(&pdev->dev, "failed to setup common attributes\n");
+ 		return ret;
+ 	}
++	magn_state->rot_attributes = magn_state->common_attributes;
+ 
+ 	ret = magn_3d_parse_report(pdev, hsdev,
+ 				&channels, &chan_count,
 -- 
-2.1.4
-
+1.9.1
