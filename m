@@ -1,124 +1,153 @@
-Return-Path: <eraretuya@gmail.com>
-Date: Fri, 4 Nov 2016 18:17:54 +0800
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: Matt Ranostay <matt@ranostay.consulting>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	Linux Kernel <linux-kernel@vger.kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Michael.Hennerich@analog.com,
-	Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-Subject: Re: [PATCH 1/6] staging: iio: set proper supply name to
- devm_regulator_get()
-Message-ID: <20161104101753.GA17800@Socrates-DK>
-References: <1477933475-21914-1-git-send-email-eraretuya@gmail.com>
- <1477933475-21914-2-git-send-email-eraretuya@gmail.com>
- <CAJ_EiSTU_z_fNSLSUSTpzU+v5F5f-JEe7p2fUms3LKEd+wftDw@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39968 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1757084AbcKCLMZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Nov 2016 07:12:25 -0400
+Subject: Re: [PATCH 01/10] Documentation: dt-bindings: Document STM32 ADC DT
+ bindings
+To: Rob Herring <robh@kernel.org>
+References: <1477412722-24061-1-git-send-email-fabrice.gasnier@st.com>
+ <1477412722-24061-2-git-send-email-fabrice.gasnier@st.com>
+ <20161031030222.vjxcxklpaua3o77d@rob-hp-laptop>
+CC: <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
+        <jic23@kernel.org>, <linux@armlinux.org.uk>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <37fc7ac7-8b99-9f21-d9d7-de2e217eb4cd@st.com>
+Date: Thu, 3 Nov 2016 12:11:19 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAJ_EiSTU_z_fNSLSUSTpzU+v5F5f-JEe7p2fUms3LKEd+wftDw@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20161031030222.vjxcxklpaua3o77d@rob-hp-laptop>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hello Matt,
+On 10/31/2016 04:02 AM, Rob Herring wrote:
+> On Tue, Oct 25, 2016 at 06:25:13PM +0200, Fabrice Gasnier wrote:
+>> This patch adds documentation of device tree bindings for the STM32 ADC.
+>>
+>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+>> ---
+>>   .../devicetree/bindings/iio/adc/st,stm32-adc.txt   | 78 ++++++++++++++++++++++
+>>   1 file changed, 78 insertions(+)
+>>   create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+>> new file mode 100644
+>> index 0000000..a9a8b3c
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+>> @@ -0,0 +1,78 @@
+>> +STMicroelectronics STM32 ADC device driver
+>> +
+>> +STM32 ADC is a successive approximation analog-to-digital converter.
+>> +It has several multiplexed input channels. Conversions can be performed
+>> +in single, continuous, scan or discontinuous mode. Result of the ADC is
+>> +stored in a left-aligned or right-aligned 32-bit data register.
+>> +Conversions can be launched in software or using hardware triggers.
+>> +
+>> +The analog watchdog feature allows the application to detect if the input
+>> +voltage goes beyond the user-defined, higher or lower thresholds.
+>> +
+>> +Each STM32 ADC block can have up to 3 ADC instances.
+>> +
+>> +Each instance supports two contexts to manage conversions, each one has its
+>> +own configurable sequence and trigger:
+>> +- regular conversion can be done in sequence, running in background
+>> +- injected conversions have higher priority, and so have the ability to
+>> +  interrupt regular conversion sequence (either triggered in SW or HW).
+>> +  Regular sequence is resumed, in case it has been interrupted.
+>> +
+>> +Required properties:
+>> +- compatible: Should be "st,stm32f4-adc".
+>> +- reg: Offset and length of the ADC block register set.
+>> +- interrupts: Must contain the interrupt for ADC.
+>> +- clocks: Clock for the analog circuitry (common to all ADCs).
+>> +- clock-names: Must be "adc".
+>> +- vref-supply: Phandle to the vref input analog reference voltage.
+>> +- #address-cells = <1>;
+>> +- #size-cells = <0>;
+>> +
+>> +Optional properties:
+>> +- A pinctrl state named "default" for each ADC channel may be defined to set
+>> +  inX ADC pins in mode of operation for analog input on external pin.
+>> +- gpios: Array of gpios that may be configured as EXTi trigger sources.
+>> +
+>> +Example:
+> This should be last.
+Hi Rob,
 
-On Mon, Oct 31, 2016 at 09:03:57PM -0700, Matt Ranostay wrote:
-> On Mon, Oct 31, 2016 at 10:04 AM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
-> > The name passed to devm_regulator_get() should match the name of the
-> > supply as specified in the device datasheet. This makes it clear what
-> > power supply is being referred to in case of presence of other
-> > regulators.
-> >
-> > Currently, the supply name specified on the affected devices is 'vcc'.
-> > Use lowercase version of the datasheet name to specify the supply
-> > voltage.
-> >
-> 
-> Aren't we possibly breaking current device tree definitions that
-> people may have? We should still check the old name after the new
-> datasheet name in my opinion.
-> 
+I'll fix this.
+>
+>> +	adc: adc@40012000 {
+>> +		compatible = "st,stm32f4-adc";
+>> +		reg = <0x40012000 0x400>;
+>> +		interrupts = <18>;
+>> +		clocks = <&rcc 0 168>;
+>> +		clock-names = "adc";
+>> +		vref-supply = <&reg_vref>;
+>> +		pinctrl-names = "default";
+>> +		pinctrl-0 = <&adc3_in8_pin>;
+>> +		gpios = <&gpioa 11 0>,
+>> +			<&gpioa 15 0>;
+>> +
+>> +		#address-cells = <1>;
+>> +		#size-cells = <0>;
+>> +
+>> +		adc1: adc1-master@0 {
+> adc@0 sufficient?
+Yes, if you agree, I'd go for adc1@0, adc2@100, adc3@200, to reflect reg 
+property for child node.
+Is it ok from your point of view ?
 
-I was told it was okay to rename those IIO drivers under staging. I also
-double-checked if there are available DT bindings for these drivers and
-found none.
+>
+>> +			#io-channel-cells = <1>;
+>> +			reg = <0x0>;
+>> +			clocks = <&rcc 0 168>;
+>> +			st,adc-channels = <8>;
+>> +		};
+>> +		...
+>> +		other adc child nodes follow...
+>> +	};
+>> +
+>> +Contents of a stm32 adc child node:
+>> +-----------------------------------
+>> +An ADC block node should contain at least one subnode, representing an
+>> +ADC instance available on the machine.
+>> +
+>> +Required properties:
+>> +- reg: Offset of ADC instance in ADC block (e.g. may be 0x0, 0x100, 0x200).
+>> +- st,adc-channels: List of single-ended channels muxed for this ADC.
+> How many? What are valid values?
+stm32f4 can have up to 19 channels, numbered from 0 to 18 to match with 
+reference manual.
+I'll add this.
+>
+>> +- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers" in
+>> +  Documentation/devicetree/bindings/iio/iio-bindings.txt
+>> +
+>> +Optional properties:
+>> +- clocks: Input clock private to this ADC instance.
+>> +- st,injected: Use injected conversion sequence on an ADC, rather than regular.
+> Not sure about this one. Seems like this would either be a user choice
+> or depend on what's connected to the ADC.
+It's related to ADC sequencer, and the way it's being configured/used 
+(see above paragraph on regular/injected).
+This is not related to what's connected to adc inputs.
+As suggested by Jonathan, I think I'll drop injected support for now, to 
+simplify the driver and review.
 
 Thanks,
-Eva
+Best Regards,
+Fabrice
+>
+>> +- dmas: Phandle to dma channel for this ADC instance, only for regular
+>> +  conversions. See ../../dma/dma.txt for details.
+>> +- dma-names: Must be "rx" when dmas property is being used.
+>> -- 
+>> 1.9.1
+>>
 
-> > Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
-> > Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
-> > ---
-> >  drivers/staging/iio/adc/ad7192.c                | 2 +-
-> >  drivers/staging/iio/adc/ad7780.c                | 2 +-
-> >  drivers/staging/iio/frequency/ad9832.c          | 2 +-
-> >  drivers/staging/iio/frequency/ad9834.c          | 2 +-
-> >  drivers/staging/iio/impedance-analyzer/ad5933.c | 2 +-
-> >  5 files changed, 5 insertions(+), 5 deletions(-)
-> >
-> > diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> > index bfa12ce..41fb32d 100644
-> > --- a/drivers/staging/iio/adc/ad7192.c
-> > +++ b/drivers/staging/iio/adc/ad7192.c
-> > @@ -633,7 +633,7 @@ static int ad7192_probe(struct spi_device *spi)
-> >
-> >         st = iio_priv(indio_dev);
-> >
-> > -       st->reg = devm_regulator_get(&spi->dev, "vcc");
-> > +       st->reg = devm_regulator_get(&spi->dev, "avdd");
-> >         if (!IS_ERR(st->reg)) {
-> >                 ret = regulator_enable(st->reg);
-> >                 if (ret)
-> > diff --git a/drivers/staging/iio/adc/ad7780.c b/drivers/staging/iio/adc/ad7780.c
-> > index c9a0c2a..a88236e 100644
-> > --- a/drivers/staging/iio/adc/ad7780.c
-> > +++ b/drivers/staging/iio/adc/ad7780.c
-> > @@ -173,7 +173,7 @@ static int ad7780_probe(struct spi_device *spi)
-> >
-> >         ad_sd_init(&st->sd, indio_dev, spi, &ad7780_sigma_delta_info);
-> >
-> > -       st->reg = devm_regulator_get(&spi->dev, "vcc");
-> > +       st->reg = devm_regulator_get(&spi->dev, "avdd");
-> >         if (!IS_ERR(st->reg)) {
-> >                 ret = regulator_enable(st->reg);
-> >                 if (ret)
-> > diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> > index 358400b..744c8ee 100644
-> > --- a/drivers/staging/iio/frequency/ad9832.c
-> > +++ b/drivers/staging/iio/frequency/ad9832.c
-> > @@ -212,7 +212,7 @@ static int ad9832_probe(struct spi_device *spi)
-> >                 return -ENODEV;
-> >         }
-> >
-> > -       reg = devm_regulator_get(&spi->dev, "vcc");
-> > +       reg = devm_regulator_get(&spi->dev, "avdd");
-> >         if (!IS_ERR(reg)) {
-> >                 ret = regulator_enable(reg);
-> >                 if (ret)
-> > diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-> > index 6366216..ca3cea6 100644
-> > --- a/drivers/staging/iio/frequency/ad9834.c
-> > +++ b/drivers/staging/iio/frequency/ad9834.c
-> > @@ -329,7 +329,7 @@ static int ad9834_probe(struct spi_device *spi)
-> >                 return -ENODEV;
-> >         }
-> >
-> > -       reg = devm_regulator_get(&spi->dev, "vcc");
-> > +       reg = devm_regulator_get(&spi->dev, "avdd");
-> >         if (!IS_ERR(reg)) {
-> >                 ret = regulator_enable(reg);
-> >                 if (ret)
-> > diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> > index 5eecf1c..62f61bc 100644
-> > --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
-> > +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
-> > @@ -723,7 +723,7 @@ static int ad5933_probe(struct i2c_client *client,
-> >         if (!pdata)
-> >                 pdata = &ad5933_default_pdata;
-> >
-> > -       st->reg = devm_regulator_get(&client->dev, "vcc");
-> > +       st->reg = devm_regulator_get(&client->dev, "vdd");
-> >         if (!IS_ERR(st->reg)) {
-> >                 ret = regulator_enable(st->reg);
-> >                 if (ret)
-> > --
-> > 2.7.4
-> >
