@@ -1,72 +1,65 @@
-Return-Path: <m.niestroj@grinn-global.com>
-From: Marcin Niestroj <m.niestroj@grinn-global.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
-	Sanchayan Maity <maitysanchayan@gmail.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Marcin Niestroj <m.niestroj@grinn-global.com>
-Subject: [PATCH 2/2] Documentation: DT: Add bmi160 imu binding
-Date: Thu,  3 Nov 2016 12:25:27 +0100
-Message-Id: <20161103112527.29623-2-m.niestroj@grinn-global.com>
-In-Reply-To: <20161103112527.29623-1-m.niestroj@grinn-global.com>
-References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
+Return-Path: <masneyb@onstation.org>
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org,
+	linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org,
+	gregkh@linuxfoundation.org,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	knaack.h@gmx.de,
+	linux-kernel@vger.kernel.org,
+	Jon.Brenner@ams.com
+Subject: [PATCH 8/9] staging: iio: tsl2583: check if chip is suspended in in_illuminance_calibrate_store
+Date: Thu,  3 Nov 2016 08:56:19 -0400
+Message-Id: <1478177780-28699-9-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
+References: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
 List-ID: <linux-iio@vger.kernel.org>
 
-This adds documentation for Bosch BMI160 Inertial Measurement Unit
-device-tree bindings.
+in_illuminance_calibrate_store() did not check to see if the chip is
+suspended. This patch adds the proper check. The return value from
+taos_als_calibrate() was also not checked in this function, so the
+proper check was also added while changes are being made here.
 
-Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- .../devicetree/bindings/iio/imu/bmi160.txt         | 34 ++++++++++++++++++++++
- 1 file changed, 34 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+ drivers/staging/iio/light/tsl2583.c | 17 ++++++++++++++---
+ 1 file changed, 14 insertions(+), 3 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-new file mode 100644
-index 0000000..b02ef3e
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-@@ -0,0 +1,34 @@
-+Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
-+and externally connectable Magnetometer
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 1ff90b3..8c8361d 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -473,16 +473,27 @@ static ssize_t in_illuminance_calibrate_store(struct device *dev,
+ {
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+-	int value;
++	int value, ret;
+ 
+ 	if (kstrtoint(buf, 0, &value) || value != 1)
+ 		return -EINVAL;
+ 
+ 	mutex_lock(&chip->als_mutex);
+-	taos_als_calibrate(indio_dev);
 +
-+https://www.bosch-sensortec.com/bst/products/all_products/bmi160
++	if (chip->suspended) {
++		ret = -EBUSY;
++		goto done;
++	}
 +
-+Required properties:
-+ - compatible : should be "bosch,bmi160"
-+ - reg : the I2C address or SPI chip select number of the sensor
-+ - spi-max-frequency : set maximum clock frequency (only for SPI)
++	ret = taos_als_calibrate(indio_dev);
++	if (ret < 0)
++		goto done;
 +
-+Optional properties:
-+ - interrupt-parent : should be the phandle of the interrupt controller
-+ - interrupts : interrupt mapping for GPIO IRQ, must be IRQ_TYPE_LEVEL_LOW
-+ - interrupt-names : set to "INT2" if using INT2 pin
-+
-+Examples:
-+
-+bmi160@68 {
-+	compatible = "bosch,bmi160";
-+	reg = <0x68>;
-+
-+	interrupt-parent = <&gpio4>;
-+	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-+};
-+
-+bmi160@0 {
-+	compatible = "bosch,bmi160";
-+	reg = <0>;
-+	spi-max-frequency = <10000000>;
-+
-+	interrupt-parent = <&gpio2>;
-+	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-+	interrupt-names = "INT2";
-+};
++	ret = len;
++done:
+ 	mutex_unlock(&chip->als_mutex);
+ 
+-	return len;
++	return ret;
+ }
+ 
+ static ssize_t in_illuminance_lux_table_show(struct device *dev,
 -- 
-2.10.1
+2.5.5
