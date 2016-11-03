@@ -1,54 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:39722 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753009AbcKELid (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Nov 2016 07:38:33 -0400
-Received: from localhost (c-98-236-77-125.hsd1.wv.comcast.net [98.236.77.125])
-        (using TLSv1.2 with cipher ECDHE-RSA-AES128-GCM-SHA256 (128/128 bits))
-        (No client certificate requested)
-        (Authenticated sender: masneyb)
-        by onstation.org (Postfix) with ESMTPSA id 5AC43D8D
-        for <linux-iio@vger.kernel.org>; Sat,  5 Nov 2016 11:38:32 +0000 (UTC)
-Date: Sat, 5 Nov 2016 07:38:31 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: linux-iio@vger.kernel.org
-Subject: regmap and i2c_smbus_write_byte question
-Message-ID: <20161105113831.GA6053@basecamp.onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <m.niestroj@grinn-global.com>
+From: Marcin Niestroj <m.niestroj@grinn-global.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Sanchayan Maity <maitysanchayan@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Marcin Niestroj <m.niestroj@grinn-global.com>
+Subject: [PATCH 2/2] Documentation: DT: Add bmi160 imu binding
+Date: Thu,  3 Nov 2016 12:25:27 +0100
+Message-Id: <20161103112527.29623-2-m.niestroj@grinn-global.com>
+In-Reply-To: <20161103112527.29623-1-m.niestroj@grinn-global.com>
+References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-I am investigating converting the tsl2583 staging driver over to use
-the regmap API. I ran into an issue converting the following call to
-i2c_smbus_write_byte() over to the regmap API:
+This adds documentation for Bosch BMI160 Inertial Measurement Unit
+device-tree bindings.
 
-struct tsl2583_chip {
-        struct i2c_client *client;
-        ...
-}
+Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+---
+ .../devicetree/bindings/iio/imu/bmi160.txt         | 34 ++++++++++++++++++++++
+ 1 file changed, 34 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
 
-/*
- * clear status, really interrupt status (interrupts are off), but
- * we use the bit anyway - don't forget 0x80 - this is a command
- */      
-ret = i2c_smbus_write_byte(chip->client,
-                           (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
-                            TSL258X_CMD_ALS_INT_CLR));
-
-I don't see a way to do this in the regmap API.  
-drivers/input/touchscreen/tsc2004.c has this same issue and that code
-directly calls i2c_smbus_write_byte() along with the regmap API. Am I
-missing something? This doesn't feel right to me to bypass the regmap
-API and directly access the i2c client.
-
-The data sheet for the tsl2583 sensor is available here:
-http://media.digikey.com/PDF/Data%20Sheets/Austriamicrosystems%20PDFs/TSL2581,83.pdf
-Page 10 has the table that describes clearing the interrupt bit. The
-sensor will not take additional readings until that bit is cleared
-(even though interrupts are off).
-
-Thanks,
-
-Brian
-
+diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
+new file mode 100644
+index 0000000..b02ef3e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
+@@ -0,0 +1,34 @@
++Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
++and externally connectable Magnetometer
++
++https://www.bosch-sensortec.com/bst/products/all_products/bmi160
++
++Required properties:
++ - compatible : should be "bosch,bmi160"
++ - reg : the I2C address or SPI chip select number of the sensor
++ - spi-max-frequency : set maximum clock frequency (only for SPI)
++
++Optional properties:
++ - interrupt-parent : should be the phandle of the interrupt controller
++ - interrupts : interrupt mapping for GPIO IRQ, must be IRQ_TYPE_LEVEL_LOW
++ - interrupt-names : set to "INT2" if using INT2 pin
++
++Examples:
++
++bmi160@68 {
++	compatible = "bosch,bmi160";
++	reg = <0x68>;
++
++	interrupt-parent = <&gpio4>;
++	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++};
++
++bmi160@0 {
++	compatible = "bosch,bmi160";
++	reg = <0>;
++	spi-max-frequency = <10000000>;
++
++	interrupt-parent = <&gpio2>;
++	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
++	interrupt-names = "INT2";
++};
+-- 
+2.10.1
