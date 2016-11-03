@@ -1,114 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from up.free-electrons.com ([163.172.77.33]:33342 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752464AbcKCKQU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 3 Nov 2016 06:16:20 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-        wens@csie.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, dmitry.torokhov@gmail.com, lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        antoine.tenart@free-electrons.com,
-        thomas.petazzoni@free-electrons.com,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: [PATCH v7 0/3] add support for Allwinner SoCs ADC
-Date: Thu,  3 Nov 2016 11:15:58 +0100
-Message-Id: <20161103101601.24529-1-quentin.schulz@free-electrons.com>
+Received: from mga09.intel.com ([134.134.136.24]:31236 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750970AbcKCKoz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 3 Nov 2016 06:44:55 -0400
+From: "Ooi, Joyce" <joyce.ooi@intel.com>
+To: Jiri Kosina <jikos@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Ooi Joyce <joyce.ooi@intel.com>,
+        Kweh Hock Leong <hock.leong.kweh@intel.com>,
+        Ong Boon Leong <boon.leong.ong@intel.com>,
+        Lay Kuan Loon <kuan.loon.lay@intel.com>
+Subject: [PATCH] iio: light and pressure: change data fields for ambient light and pressure sensor
+Date: Thu,  3 Nov 2016 18:43:34 +0800
+Message-Id: <1478169814-24120-1-git-send-email-joyce.ooi@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen
-controller and a thermal sensor. The first four channels can be used either
-for the ADC or the touchscreen and the fifth channel is used for the
-thermal sensor. We currently have a driver for the two latter functions in
-drivers/input/touchscreen/sun4i-ts.c but we don't have access to the ADC
-feature at all. It is meant to replace the current driver by using MFD and
-subdrivers.
+Sensitivity Percent Relative is added for ambient light sensor as it is
+used based on HID Sensor Usages specifications.
 
-This adds initial support for Allwinner SoCs ADC with all features. Yet,
-the touchscreen is not implemented but will be added later. To switch
-between touchscreen and ADC modes, you need to poke a few bits in registers
-and (de)activate an interrupt (pen-up).
+Other changes include adding HID_USAGE_SENSOR_LIGHT_ILLUM and
+HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE for ambient light and pressure
+sensor respectively to be in sync with HID Sensor Usages specifications.
 
-When changing modes or channels, the IP is in inconsistent mode and has no
-register or interrupt to notify the kernel when it's stable and ready to return
-correct values. Therefore, we add a delay of 100ms when changing modes and 10ms
-when changing channels. These values have been found empirically.
+Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
+---
+ drivers/iio/light/hid-sensor-als.c      | 10 ++++++++++
+ drivers/iio/pressure/hid-sensor-press.c | 10 ++++++++++
+ include/linux/hid-sensor-ids.h          |  1 +
+ 3 files changed, 21 insertions(+)
 
-An MFD is provided to let the input driver activate the pen-up interrupt
-through a virtual interrupt, poke a few bits via regmap and read data from
-the ADC driver while both (and iio_hwmon) are probed by the MFD.
-
-The thermal sensor requires the IP to be in touchscreen mode to return correct
-values. Therefore, if the user is continuously reading the ADC channel(s), the
-thermal framework in which the thermal sensor is registered will switch the IP
-in touchscreen mode to get a temperature value and requires a delay of 100ms
-(because of the mode switching), then the ADC will switch back to ADC mode and
-requires also a delay of 100ms. If the ADC readings are critical to user and the
-SoC temperature is not, this driver is capable of not registering the thermal
-sensor in the thermal framework and thus, "quicken" the ADC readings. In most
-use cases, the SoC temperature is more critical (for cpu throttling for example
-or activating cooling devices) than ADC readings, thus it is enabled by default
-in multi_v7_defconfig and in sunxi_defconfig (default being added in this patch
-series).
-
-There are slight variations between the different SoCs ADC like the address
-of some registers and the scale and offset to apply to raw thermal sensor
-values. These variations are handled by using different platform_device_id,
-passed to the sub-drivers when they are probed by the MFD.
-
-
-
-Removal of proposed patch for iio_hwmon's iio channel's label in v3. The
-patch induces irreversible ABI changes and will be handled as a separate
-patch since I think it is not absolutely necessary to have labels yet in
-iio_hwmon.
-
-Removal of proposed patch for reattaching of_node of the MFD to the MFD
-cell device structure in v3. As Lee Jones said, this patch might cause
-"unintended side-effects for existing drivers.". Moreover, this patch
-introduced a bug of multiple probe of this MFD driver I haven't identified
-yet. This patch aimed at allowing the ADC driver (which is a child of the
-MFD and not present in the DT) to register in the thermal framework. The
-thermal driver has a phandle to the MFD node which is used to match against
-the MFD of_node but since the ADC driver has no node in the DT, could not
-register in the thermal framework. The other solution is to "impersonate"
-the MFD when registering in the thermal framework since the device is only
-used to match the phandle and the of_node, an other structure passed by
-parameter being used to compute temperatures.
-
-(in the ADC driver, probed by the MFD driver) instead of:
-tzd = devm_thermal_zone_of_sensor_register(&pdev->dev, 0, info,
-					   &sun4i_ts_tz_ops);
-we now have:
-tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0, info,
-					   &sun4i_ts_tz_ops);
-
-Removal of proposed patch to use late_initcall for iio_hwmon probe deferring.
-
-Removal of patch for iio_hwmon probe deferring due to being applied to -next by
-Guenter Roeck.
-
-This patch series requires this[1] patch which has already been merged by Lee
-Jones.
-
-[1] https://patchwork.kernel.org/patch/9333547/
-
-Quentin Schulz (3):
-  input: touchscreen: TOUCHSCREEN_SUN4I depends on !SUN4I_GPADC
-  ARM: sunxi_defconfig: Add CONFIG_THERMAL_OF
-  iio: adc: add support for Allwinner SoCs ADC
-
- arch/arm/configs/sunxi_defconfig  |   1 +
- drivers/iio/adc/Kconfig           |  17 ++
- drivers/iio/adc/Makefile          |   1 +
- drivers/iio/adc/sun4i-gpadc-iio.c | 605 ++++++++++++++++++++++++++++++++++++++
- drivers/input/touchscreen/Kconfig |   1 +
- include/linux/mfd/sun4i-gpadc.h   |   2 +
- 6 files changed, 627 insertions(+)
- create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
-
+diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
+index 8bb1f90..6f3ca18 100644
+--- a/drivers/iio/light/hid-sensor-als.c
++++ b/drivers/iio/light/hid-sensor-als.c
+@@ -252,6 +252,16 @@ static int als_parse_report(struct platform_device *pdev,
+ 			st->common_attributes.sensitivity.index,
+ 			st->common_attributes.sensitivity.report_id);
+ 	}
++	if (st->common_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_REL_PCT |
++			HID_USAGE_SENSOR_LIGHT_ILLUM,
++			&st->common_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			st->common_attributes.sensitivity.index,
++			st->common_attributes.sensitivity.report_id);
++	}
+ 	return ret;
+ }
+ 
+diff --git a/drivers/iio/pressure/hid-sensor-press.c b/drivers/iio/pressure/hid-sensor-press.c
+index 6848d8c..4cbbf88 100644
+--- a/drivers/iio/pressure/hid-sensor-press.c
++++ b/drivers/iio/pressure/hid-sensor-press.c
+@@ -249,6 +249,16 @@ static int press_parse_report(struct platform_device *pdev,
+ 			st->common_attributes.sensitivity.index,
+ 			st->common_attributes.sensitivity.report_id);
+ 	}
++	if (st->common_attributes.sensitivity.index < 0) {
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++			HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE,
++			&st->common_attributes.sensitivity);
++		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
++			st->common_attributes.sensitivity.index,
++			st->common_attributes.sensitivity.report_id);
++	}
+ 	return ret;
+ }
+ 
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index f2ee90a..755f5e2 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -141,6 +141,7 @@
+ /* Per data field properties */
+ #define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
+ #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		0x1000
++#define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_REL_PCT		0xE000
+ 
+ /* Power state enumerations */
+ #define HID_USAGE_SENSOR_PROP_POWER_STATE_UNDEFINED_ENUM	0x200850
 -- 
-2.9.3
+1.9.1
 
