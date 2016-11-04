@@ -1,216 +1,119 @@
-Return-Path: <masneyb@onstation.org>
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org,
-	linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org,
-	gregkh@linuxfoundation.org,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	knaack.h@gmx.de,
-	linux-kernel@vger.kernel.org,
-	Jon.Brenner@ams.com,
-	Julia Lawall <julia.lawall@lip6.fr>
-Subject: [PATCH 1/9] staging: iio: tsl2583: i2c_smbus_write_byte() / i2c_smbus_read_byte() migration
-Date: Thu,  3 Nov 2016 08:56:12 -0400
-Message-Id: <1478177780-28699-2-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
-References: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
+Return-Path: <srinivas.pandruvada@linux.intel.com>
+Message-ID: <1478284156.14557.22.camel@linux.intel.com>
+Subject: Re: [PATCH] iio: magnetometer: separate the values of attributes
+ based on their usage type for HID compass sensor
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: "Ooi, Joyce" <joyce.ooi@intel.com>, Jiri Kosina <jikos@kernel.org>,
+	Jonathan Cameron
+	 <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-input@vger.kernel.org,
+ linux-iio@vger.kernel.org,  linux-kernel@vger.kernel.org, Kweh Hock Leong
+ <hock.leong.kweh@intel.com>,  Ong Boon Leong <boon.leong.ong@intel.com>,
+ Lay Kuan Loon <kuan.loon.lay@intel.com>
+Date: Fri, 04 Nov 2016 11:29:16 -0700
+In-Reply-To: <1478167670-23549-1-git-send-email-joyce.ooi@intel.com>
+References: <1478167670-23549-1-git-send-email-joyce.ooi@intel.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 List-ID: <linux-iio@vger.kernel.org>
 
-There were several places where the driver would first call
-i2c_smbus_write_byte() to select the register on the device, and then
-call i2c_smbus_read_byte() to get the contents of that register. The
-code would look roughly like:
+On Thu, 2016-11-03 at 18:07 +0800, Ooi, Joyce wrote:
+> There are 2 usage types (Magnetic Flux and Heading data field) for
+> HID
+> compass sensor, thus the values of offset, scale, and sensitivity
+> should
+> be separated according to their respective usage type. The changes
+> made
+> are as below:
+> 1. Hysteresis: A struct hid_sensor_common rot_attributes is created
+> in
+> struct magn_3d_state to contain the sensitivity for IIO_ROT.
+> 2. Scale: scale_pre_decml and scale_post_decml are separated into
+> scale_pre_decml_magn, scale_post_decml_magn, scale_pre_decml_rot, and
+> scale_post_decml_rot.
+> 3. Offset: Same as scale, value_offset is separated into
+> value_offset_magn
+> and value_offset_rot.
+> 
+> For sensitivity, HID_USAGE_SENSOR_ORIENT_MAGN_FLUX and
+> HID_USAGE_SENSOR_ORIENT_MAGN_HEADING are used for sensivitity fields
+> based
+> on the HID Sensor Usages specifications. Hence, these changes are
+> added on
+> the sensitivity field.
+> 
+> Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
+> ---
+>  .../iio/common/hid-sensors/hid-sensor-attributes.c |   5 +
+>  drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 102
+> ++++++++++++++++++---
+>  2 files changed, 93 insertions(+), 14 deletions(-)
+> 
+> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> index c1f8c22..9641a15 100644
+> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+> @@ -46,6 +46,11 @@
+>  
+>  	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+>  	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS,
+> 1, 0},
+> +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, 0, 0, 17453293},
+> +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
+> +		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+> +	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
+> +		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
+>  
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+> diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> index d8a0c8d..84a59d3 100644
+> --- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> +++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
+> @@ -45,6 +45,7 @@ enum magn_3d_channel {
+>  struct magn_3d_state {
+>  	struct hid_sensor_hub_callbacks callbacks;
+>  	struct hid_sensor_common common_attributes;
 
-/* Select register */
-i2c_smbus_write_byte(client, REGISTER);
+To avoid confusion can we rename the above to something like
+magn_flux_attributes?
 
-/* Read the the last register that was written to */
-int data = i2c_smbus_read_byte(client);
 
-Rewrite this to use i2c_smbus_read_byte_data() to combine the two
-calls into one:
+> +	struct hid_sensor_common rot_attributes;
+>  	struct hid_sensor_hub_attribute_info
+> magn[MAGN_3D_CHANNEL_MAX];
+>  
+>  	/* dynamically sized array to hold sensor values */
+> @@ -52,10 +53,14 @@ struct magn_3d_state {
+>  	/* array of pointers to sensor value */
+>  	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
+>  
+> -	int scale_pre_decml;
+> -	int scale_post_decml;
+> -	int scale_precision;
+> -	int value_offset;
+> +	int scale_pre_decml_magn;
+> +	int scale_post_decml_magn;
+> +	int scale_precision_magn;
+> +	int value_offset_magn;
+> +	int scale_pre_decml_rot;
+> +	int scale_post_decml_rot;
+> +	int scale_precision_rot;
+> +	int value_offset_rot;
 
-int data = i2c_smbus_read_byte_data(chip->client, REGISTER);
+Since the above is common can we have a struct with
+{
+	int scale_pre_decml;
+	int scale_post_decml;
+	int scale_precision;> 
+	int value_offset;> 
+};
 
-Verified that the driver still functions correctly using a TSL2581
-hooked up to a Raspberry Pi 2.
+Then we can have both flux and heading attributes can use instead of
+repeating the field names.
 
-This fixes the following warnings that were found by the
-kbuild test robot that were introduced by commit 8ba355cce3c6 ("staging:
-iio: tsl2583: check for error code from i2c_smbus_read_byte()").
-
-drivers/staging/iio/light/tsl2583.c:365:5-12: WARNING: Unsigned
-expression compared with zero: reg_val < 0
-
-drivers/staging/iio/light/tsl2583.c:388:5-12: WARNING: Unsigned
-expression compared with zero: reg_val < 0
-
-This also removes the need for the taos_i2c_read() function since all
-callers were only calling the function with a length of 1.
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
-Cc: Julia Lawall <julia.lawall@lip6.fr>
----
- drivers/staging/iio/light/tsl2583.c | 85 +++++++------------------------------
- 1 file changed, 16 insertions(+), 69 deletions(-)
-
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 49b19f5..a3a9095 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -155,39 +155,6 @@ static void taos_defaults(struct tsl2583_chip *chip)
- }
- 
- /*
-- * Read a number of bytes starting at register (reg) location.
-- * Return 0, or i2c_smbus_write_byte ERROR code.
-- */
--static int
--taos_i2c_read(struct i2c_client *client, u8 reg, u8 *val, unsigned int len)
--{
--	int i, ret;
--
--	for (i = 0; i < len; i++) {
--		/* select register to write */
--		ret = i2c_smbus_write_byte(client, (TSL258X_CMD_REG | reg));
--		if (ret < 0) {
--			dev_err(&client->dev,
--				"taos_i2c_read failed to write register %x\n",
--				reg);
--			return ret;
--		}
--		/* read the data */
--		ret = i2c_smbus_read_byte(client);
--		if (ret < 0) {
--			dev_err(&client->dev,
--				"%s failed to read byte after writing to register %x\n",
--				__func__, reg);
--			return ret;
--		}
--		*val = ret;
--		val++;
--		reg++;
--	}
--	return 0;
--}
--
--/*
-  * Reads and calculates current lux value.
-  * The raw ch0 and ch1 values of the ambient light sensed in the last
-  * integration cycle are read from the device.
-@@ -220,13 +187,14 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 		goto done;
- 	}
- 
--	ret = taos_i2c_read(chip->client, (TSL258X_CMD_REG), &buf[0], 1);
-+	ret = i2c_smbus_read_byte_data(chip->client, TSL258X_CMD_REG);
- 	if (ret < 0) {
- 		dev_err(&chip->client->dev, "taos_get_lux failed to read CMD_REG\n");
- 		goto done;
- 	}
-+
- 	/* is data new & valid */
--	if (!(buf[0] & TSL258X_STA_ADC_INTR)) {
-+	if (!(ret & TSL258X_STA_ADC_INTR)) {
- 		dev_err(&chip->client->dev, "taos_get_lux data not valid\n");
- 		ret = chip->als_cur_info.lux; /* return LAST VALUE */
- 		goto done;
-@@ -235,13 +203,14 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- 	for (i = 0; i < 4; i++) {
- 		int reg = TSL258X_CMD_REG | (TSL258X_ALS_CHAN0LO + i);
- 
--		ret = taos_i2c_read(chip->client, reg, &buf[i], 1);
-+		ret = i2c_smbus_read_byte_data(chip->client, reg);
- 		if (ret < 0) {
- 			dev_err(&chip->client->dev,
- 				"taos_get_lux failed to read register %x\n",
- 				reg);
- 			goto done;
- 		}
-+		buf[i] = ret;
- 	}
- 
- 	/*
-@@ -343,52 +312,36 @@ static int taos_get_lux(struct iio_dev *indio_dev)
- static int taos_als_calibrate(struct iio_dev *indio_dev)
- {
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
--	u8 reg_val;
- 	unsigned int gain_trim_val;
- 	int ret;
- 	int lux_val;
- 
--	ret = i2c_smbus_write_byte(chip->client,
--				   (TSL258X_CMD_REG | TSL258X_CNTRL));
-+	ret = i2c_smbus_read_byte_data(chip->client,
-+				       TSL258X_CMD_REG | TSL258X_CNTRL);
- 	if (ret < 0) {
- 		dev_err(&chip->client->dev,
--			"taos_als_calibrate failed to reach the CNTRL register, ret=%d\n",
--			ret);
--		return ret;
--	}
--
--	reg_val = i2c_smbus_read_byte(chip->client);
--	if (reg_val < 0) {
--		dev_err(&chip->client->dev,
--			"%s failed to read after writing to the CNTRL register\n",
-+			"%s failed to read from the CNTRL register\n",
- 			__func__);
- 		return ret;
- 	}
- 
--	if ((reg_val & (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWR_ON))
-+	if ((ret & (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWR_ON))
- 			!= (TSL258X_CNTL_ADC_ENBL | TSL258X_CNTL_PWR_ON)) {
- 		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed: device not powered on with ADC enabled\n");
- 		return -EINVAL;
- 	}
- 
--	ret = i2c_smbus_write_byte(chip->client,
--				   (TSL258X_CMD_REG | TSL258X_CNTRL));
-+	ret = i2c_smbus_read_byte_data(chip->client,
-+				       TSL258X_CMD_REG | TSL258X_CNTRL);
- 	if (ret < 0) {
- 		dev_err(&chip->client->dev,
--			"taos_als_calibrate failed to reach the STATUS register, ret=%d\n",
--			ret);
--		return ret;
--	}
--	reg_val = i2c_smbus_read_byte(chip->client);
--	if (reg_val < 0) {
--		dev_err(&chip->client->dev,
--			"%s failed to read after writing to the STATUS register\n",
-+			"%s failed to read from the CNTRL register\n",
- 			__func__);
- 		return ret;
- 	}
- 
--	if ((reg_val & TSL258X_STA_ADC_VALID) != TSL258X_STA_ADC_VALID) {
-+	if ((ret & TSL258X_STA_ADC_VALID) != TSL258X_STA_ADC_VALID) {
- 		dev_err(&chip->client->dev,
- 			"taos_als_calibrate failed: STATUS - ADC not valid.\n");
- 		return -ENODATA;
-@@ -847,15 +800,9 @@ static int taos_probe(struct i2c_client *clientp,
- 	memcpy(chip->taos_config, taos_config, sizeof(chip->taos_config));
- 
- 	for (i = 0; i < TSL258X_MAX_DEVICE_REGS; i++) {
--		ret = i2c_smbus_write_byte(clientp,
--				(TSL258X_CMD_REG | (TSL258X_CNTRL + i)));
--		if (ret < 0) {
--			dev_err(&clientp->dev,
--				"i2c_smbus_write_byte to cmd reg failed in taos_probe(), err = %d\n",
--				ret);
--			return ret;
--		}
--		ret = i2c_smbus_read_byte(clientp);
-+		ret = i2c_smbus_read_byte_data(clientp,
-+					       (TSL258X_CMD_REG |
-+						(TSL258X_CNTRL + i)));
- 		if (ret < 0) {
- 			dev_err(&clientp->dev,
- 				"i2c_smbus_read_byte from reg failed in taos_probe(), err = %d\n",
--- 
-2.5.5
+Thanks,
+Srinivas
