@@ -1,53 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:48592 "EHLO mga01.intel.com"
+Received: from mga01.intel.com ([192.55.52.88]:28154 "EHLO mga01.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S933166AbcKDRtd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 4 Nov 2016 13:49:33 -0400
-Message-ID: <1478281751.14557.8.camel@linux.intel.com>
-Subject: Re: [PATCH] hid: sensor: fix input and feature attributes in HID
- sensor custom sysfs interface
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        "Ooi, Joyce" <joyce.ooi@intel.com>
-Cc: Jiri Kosina <jikos@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Lay Kuan Loon <kuan.loon.lay@intel.com>
-Date: Fri, 04 Nov 2016 10:49:11 -0700
-In-Reply-To: <20161104140308.GC20334@mail.corp.redhat.com>
-References: <1478170515-24436-1-git-send-email-joyce.ooi@intel.com>
-         <20161104140308.GC20334@mail.corp.redhat.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+        id S934840AbcKDRz4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 4 Nov 2016 13:55:56 -0400
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] iio: hid-sensor-attributes: Check
+ sample_frequency/hysteresis write data legitimacy
+Date: Fri, 4 Nov 2016 17:55:54 +0000
+Message-ID: <1478282145.14557.14.camel@intel.com>
+References: <1478133948-16089-1-git-send-email-hongyan.song@intel.com>
+In-Reply-To: <1478133948-16089-1-git-send-email-hongyan.song@intel.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 2016-11-04 at 15:03 +0100, Benjamin Tissoires wrote:
-> On Nov 03 2016 or thereabouts, Ooi, Joyce wrote:
-> > 
-> > User is unable to access to input-X-yyy and feature-X-yyy where
-> > X is a hex value and more than 9 (e.g. input-a-yyy, feature-b-yyy)
-> > in HID
-> > sensor custom sysfs interface.
-> > This is because when creating the attribute, the attribute index is
-> > written to using %x (hex). However, when reading and writing values
-> > into
-> > the attribute, the attribute index is scanned using %d (decimal).
-> > Hence,
-> > user is unable to access to attributes with index in hex values
-> > (e.g. 'a', 'b', 'c') but able to access to attributes with index in
-> > decimal values (e.g. 1, 2, 3,..).
-> > This fix will change input-%d-%x-%s and feature-%d-%x-%s to input-
-> > %x-%x-%s
-> > and feature-%x-%x-%s in show_values() and store_values()
-> > accordingly.
-> > 
-> > Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
-> 
-> Reviewed-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
-Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-
-> 
+T24gVGh1LCAyMDE2LTExLTAzIGF0IDAwOjQ1ICswMDAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
+IA0KPiBOZWl0aGVyIHNhbXBsZSBmcmVxdWVuY3kgdmFsdWUgbm9yIGh5c3RlcmVzaXMgdmFsdWUg
+Y2FuIGJlIHNldCB0byBiZQ0KPiBhDQo+IG5lZ2F0aXZlIG51bWJlciwgY2hlY2sgYW5kIHJldHVy
+biAiSW52YWxpZCBhcmd1bWVudCIgaWYgdGhleSBhcmUNCj4gbmVnYXRpdmUuDQo+IA0KPiBJZiBu
+b3QgZG8gdGhpcyBjaGFuZ2UsIHNhbXBsZV9mcmVxdWVuY3kgd2lsbCBiZSBzZXQgaW50byBzb21l
+IHVua25vd24NCj4gdmFsdWUsIHJlYWQgaHlzdGVyZXNpcyB2YWx1ZSBhZnRlciB3cml0ZSBuZWdh
+dGl2ZSBudW1iZXIgd2lsbCByZXR1cm4NCj4gIkludmFsaWQgYXJndW1lbnQiLg0KPiANCj4gU2ln
+bmVkLW9mZi1ieTogU29uZyBIb25neWFuIDxob25neWFuLnNvbmdAaW50ZWwuY29tPg0KQWNrZWQt
+Ynk6IFNyaW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFzLnBhbmRydXZhZGFAbGludXguaW50ZWwu
+Y29tPg0KDQo+IA0KPiAtLS0NCj4gwqBkcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlk
+LXNlbnNvci1hdHRyaWJ1dGVzLmMgfCA1ICsrKystDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDQgaW5z
+ZXJ0aW9ucygrKSwgMSBkZWxldGlvbigtKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlv
+L2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLWF0dHJpYnV0ZXMuYw0KPiBiL2RyaXZlcnMv
+aWlvL2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLWF0dHJpYnV0ZXMuYw0KPiBpbmRleCBk
+YzMzYzFkLi40NTA5Zjg0NzUgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL2NvbW1vbi9oaWQt
+c2Vuc29ycy9oaWQtc2Vuc29yLWF0dHJpYnV0ZXMuYw0KPiArKysgYi9kcml2ZXJzL2lpby9jb21t
+b24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gQEAgLTIwMSw3ICsyMDEs
+NyBAQCBpbnQgaGlkX3NlbnNvcl93cml0ZV9zYW1wX2ZyZXFfdmFsdWUoc3RydWN0DQo+IGhpZF9z
+ZW5zb3JfY29tbW9uICpzdCwNCj4gwqAJaW50IHJldDsNCj4gwqANCj4gwqAJaWYgKHZhbDEgPCAw
+IHx8IHZhbDIgPCAwKQ0KPiAtCQlyZXQgPSAtRUlOVkFMOw0KPiArCQlyZXR1cm4gLUVJTlZBTDsN
+Cj4gwqANCj4gwqAJdmFsdWUgPSB2YWwxICogcG93XzEwKDYpICsgdmFsMjsNCj4gwqAJaWYgKHZh
+bHVlKSB7DQo+IEBAIC0yNTAsNiArMjUwLDkgQEAgaW50IGhpZF9zZW5zb3Jfd3JpdGVfcmF3X2h5
+c3RfdmFsdWUoc3RydWN0DQo+IGhpZF9zZW5zb3JfY29tbW9uICpzdCwNCj4gwqAJczMyIHZhbHVl
+Ow0KPiDCoAlpbnQgcmV0Ow0KPiDCoA0KPiArCWlmICh2YWwxIDwgMCB8fCB2YWwyIDwgMCkNCj4g
+KwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsNCj4gwqAJdmFsdWUgPSBjb252ZXJ0X3RvX3Z0Zl9mb3Jt
+YXQoc3QtPnNlbnNpdGl2aXR5LnNpemUsDQo+IMKgCQkJCXN0LT5zZW5zaXRpdml0eS51bml0X2V4
+cG8sDQo+IMKgCQkJCXZhbDEsIHZhbDIpOw==
