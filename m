@@ -1,101 +1,224 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51334 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51376 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755089AbcKERpS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 13:45:18 -0400
-Subject: Re: [PATCH 1/4] mfd: ti_am335x_tscadc: store physical address
-To: Lee Jones <lee.jones@linaro.org>
-References: <20160921161134.6951-1-mugunthanvnm@ti.com>
- <20160921161134.6951-2-mugunthanvnm@ti.com> <20160927194045.GK21388@dell>
- <f271b805-82c2-a45e-0de9-39edafd34d2e@ti.com> <20161026121730.GS8574@dell>
- <954adfa7-94d9-f785-aeab-6f20c8f4c3b9@kernel.org>
- <20161031081643.GN13127@dell>
-Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
-        Tony Lindgren <tony@atomide.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Vignesh R <vigneshr@ti.com>, "Andrew F . Davis" <afd@ti.com>,
-        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
+        with ESMTP id S1752918AbcKERwf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 13:52:35 -0400
+Subject: Re: [PATCH] iio: hid-sensors: Increase the precision of scale
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+        "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <1477359007-17240-1-git-send-email-hongyan.song@intel.com>
+ <88ae9a62-24ec-13ba-d1f2-8b8d208cf031@kernel.org>
+ <1477873875.8025.48.camel@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <3f3339b5-3861-832c-a26d-d6fd2d2cfd59@kernel.org>
-Date: Sat, 5 Nov 2016 17:45:14 +0000
+Message-ID: <93c8df93-d4d2-2fb6-2963-00bd7d54360f@kernel.org>
+Date: Sat, 5 Nov 2016 17:52:33 +0000
 MIME-Version: 1.0
-In-Reply-To: <20161031081643.GN13127@dell>
+In-Reply-To: <1477873875.8025.48.camel@intel.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/10/16 08:16, Lee Jones wrote:
-> On Sun, 30 Oct 2016, Jonathan Cameron wrote:
+On 31/10/16 00:34, Pandruvada, Srinivas wrote:
+> On Sun, 2016-10-30 at 16:22 +0000, Jonathan Cameron wrote:
+>> On 25/10/16 02:30, Song Hongyan wrote:
+>>>
+>>> While testing, it was observed that on some platforms the scale
+>>> value
+>>> from iio sysfs for gyroscope is always 0 (E.g. Yoga 260). This
+>>> results
+>>> in the final angular velocity component values to be zeros.
+>>>
+>>> This is caused by insufficient precision of scale value displayed
+>>> in sysfs.
+>>> If the precision is changed to nano from current micro, then this
+>>> is
+>>> sufficient to display the scale value on this platform.
+>>> Since this can be a problem for all other HID sensors, increase
+>>> scale
+>>> precision of all HID sensors to nano from current micro.
+>>>
+>>> Results on Yoga 260:
+>>>
+>>> name		scale before	scale now
+>>> --------------------------------------------
+>>> gyro_3d		0.000000	0.000000174
+>>> als			0.001000	0.001000000
+>>> magn_3d		0.000001	0.000001000
+>>> accel_3d		0.000009	0.000009806
+>>>
+>>> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 > 
->> On 26/10/16 13:17, Lee Jones wrote:
->>> On Fri, 30 Sep 2016, Mugunthan V N wrote:
->>>
->>>> On Wednesday 28 September 2016 01:10 AM, Lee Jones wrote:
->>>>> On Wed, 21 Sep 2016, Mugunthan V N wrote:
->>>>>
->>>>>> store the physical address of the device in its priv to use it
->>>>>> for DMA addressing in the client drivers.
->>>>>>
->>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
->>>>>> ---
->>>>>>  drivers/mfd/ti_am335x_tscadc.c       | 1 +
->>>>>>  include/linux/mfd/ti_am335x_tscadc.h | 1 +
->>>>>>  2 files changed, 2 insertions(+)
->>>>>>
->>>>>> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
->>>>>> index c8f027b..0f3fab4 100644
->>>>>> --- a/drivers/mfd/ti_am335x_tscadc.c
->>>>>> +++ b/drivers/mfd/ti_am335x_tscadc.c
->>>>>> @@ -183,6 +183,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
->>>>>>  		tscadc->irq = err;
->>>>>>  
->>>>>>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>>>>> +	tscadc->tscadc_phys_base = res->start;
->>>>>
->>>>> This is unusual.  Can't you use a virt_to_phys() variant instead?
->>>>>
->>>>
->>>> I tried using virt_to_phys(), but its not working for me.
->>>> Also saw many drivers uses like this to get physical address
->>>> ("git grep -n " res->start;" drivers/*").
->>>
->>> Very well:
->>>
->>> For my own reference:
->>>   Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
->>>
->>> Let me know how you wish this set to be handled.
->> I'm happy to pick up the whole series.  There are some more mfd
->> header changes in patch 2 but as they only add defines, I
->> don't mind that much if I don't an Ack from you on those
->> (btw this got to V3 but as patch 1 didn't change I'll carry
->> your ack forwards).
+> Hi Jonathan,
+>> Hi
 >>
->> Do you want an immutable branch?  Seems unlikely to cause
->> much trouble even if there is a merge issue on all 10ish
->> lines of mfd code in the next merge window.
+>> Looks right to me, Srinivas, I'd like your Ack on this ideally.
 > 
-> Not at the moment, but if you could set things up so it's possible to
-> create one at a later date if things go Pete Tong, that would be
-> great.
-Couldn't think of an easy way to do this without creating a branch
-and merging it into my normal branch.  I'll not push it out to
-kernel.org though unless you tell me you need it.
+> I have added my ACK.
+> 
+Again I've amended the patch title a touch to make it clear this is
+a fix we really want in stable.
 
-Applied to the togreg branch (indirectly ;) of iio.git pushed out
-as testing for the autobuilders to play with it.
+Applied to the togreg branch of iio.git and marked for stable.
 
 Thanks,
 
 Jonathan
-
+> Thanks,
+> Srinivas
 > 
+>> thanks,
+>>
+>> Jonathan
+>>>
+>>> ---
+>>>  .../iio/common/hid-sensors/hid-sensor-attributes.c | 56
+>>> +++++++++++-----------
+>>>  1 file changed, 28 insertions(+), 28 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c 
+>>> b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+>>> index dc33c1d..b5beea53 100644
+>>> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+>>> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+>>> @@ -30,26 +30,26 @@
+>>>  	u32 usage_id;
+>>>  	int unit; /* 0 for default others from HID sensor spec */
+>>>  	int scale_val0; /* scale, whole number */
+>>> -	int scale_val1; /* scale, fraction in micros */
+>>> +	int scale_val1; /* scale, fraction in nanos */
+>>>  } unit_conversion[] = {
+>>> -	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
+>>> +	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650000},
+>>>  	{HID_USAGE_SENSOR_ACCEL_3D,
+>>>  		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
+>>>  	{HID_USAGE_SENSOR_ACCEL_3D,
+>>> -		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
+>>> +		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
+>>>  
+>>> -	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
+>>> +	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453293},
+>>>  	{HID_USAGE_SENSOR_GYRO_3D,
+>>>  		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
+>>>  	{HID_USAGE_SENSOR_GYRO_3D,
+>>> -		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0,
+>>> 17453},
+>>> +		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0,
+>>> 17453293},
+>>>  
+>>> -	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
+>>> +	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
+>>>  	{HID_USAGE_SENSOR_COMPASS_3D,
+>>> HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
+>>>  
+>>> -	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
+>>> +	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
+>>>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+>>> -		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
+>>> +		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
+>>>  	{HID_USAGE_SENSOR_INCLINOMETER_3D,
+>>>  		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
+>>>  
+>>> @@ -57,7 +57,7 @@
+>>>  	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
+>>>  
+>>>  	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
+>>> -	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL,
+>>> 0, 1000},
+>>> +	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL,
+>>> 0, 1000000},
+>>>  };
+>>>  
+>>>  static int pow_10(unsigned power)
+>>> @@ -266,15 +266,15 @@ int hid_sensor_write_raw_hyst_value(struct
+>>> hid_sensor_common *st,
+>>>  /*
+>>>   * This fuction applies the unit exponent to the scale.
+>>>   * For example:
+>>> - * 9.806650 ->exp:2-> val0[980]val1[665000]
+>>> - * 9.000806 ->exp:2-> val0[900]val1[80600]
+>>> - * 0.174535 ->exp:2-> val0[17]val1[453500]
+>>> - * 1.001745 ->exp:0-> val0[1]val1[1745]
+>>> - * 1.001745 ->exp:2-> val0[100]val1[174500]
+>>> - * 1.001745 ->exp:4-> val0[10017]val1[450000]
+>>> - * 9.806650 ->exp:-2-> val0[0]val1[98066]
+>>> + * 9.806650000 ->exp:2-> val0[980]val1[665000000]
+>>> + * 9.000806000 ->exp:2-> val0[900]val1[80600000]
+>>> + * 0.174535293 ->exp:2-> val0[17]val1[453529300]
+>>> + * 1.001745329 ->exp:0-> val0[1]val1[1745329]
+>>> + * 1.001745329 ->exp:2-> val0[100]val1[174532900]
+>>> + * 1.001745329 ->exp:4-> val0[10017]val1[453290000]
+>>> + * 9.806650000 ->exp:-2-> val0[0]val1[98066500]
+>>>   */
+>>> -static void adjust_exponent_micro(int *val0, int *val1, int
+>>> scale0,
+>>> +static void adjust_exponent_nano(int *val0, int *val1, int scale0,
+>>>  				  int scale1, int exp)
+>>>  {
+>>>  	int i;
+>>> @@ -285,32 +285,32 @@ static void adjust_exponent_micro(int *val0,
+>>> int *val1, int scale0,
+>>>  	if (exp > 0) {
+>>>  		*val0 = scale0 * pow_10(exp);
+>>>  		res = 0;
+>>> -		if (exp > 6) {
+>>> +		if (exp > 9) {
+>>>  			*val1 = 0;
+>>>  			return;
+>>>  		}
+>>>  		for (i = 0; i < exp; ++i) {
+>>> -			x = scale1 / pow_10(5 - i);
+>>> +			x = scale1 / pow_10(8 - i);
+>>>  			res += (pow_10(exp - 1 - i) * x);
+>>> -			scale1 = scale1 % pow_10(5 - i);
+>>> +			scale1 = scale1 % pow_10(8 - i);
+>>>  		}
+>>>  		*val0 += res;
+>>>  			*val1 = scale1 * pow_10(exp);
+>>>  	} else if (exp < 0) {
+>>>  		exp = abs(exp);
+>>> -		if (exp > 6) {
+>>> +		if (exp > 9) {
+>>>  			*val0 = *val1 = 0;
+>>>  			return;
+>>>  		}
+>>>  		*val0 = scale0 / pow_10(exp);
+>>>  		rem = scale0 % pow_10(exp);
+>>>  		res = 0;
+>>> -		for (i = 0; i < (6 - exp); ++i) {
+>>> -			x = scale1 / pow_10(5 - i);
+>>> -			res += (pow_10(5 - exp - i) * x);
+>>> -			scale1 = scale1 % pow_10(5 - i);
+>>> +		for (i = 0; i < (9 - exp); ++i) {
+>>> +			x = scale1 / pow_10(8 - i);
+>>> +			res += (pow_10(8 - exp - i) * x);
+>>> +			scale1 = scale1 % pow_10(8 - i);
+>>>  		}
+>>> -		*val1 = rem * pow_10(6 - exp) + res;
+>>> +		*val1 = rem * pow_10(9 - exp) + res;
+>>>  	} else {
+>>>  		*val0 = scale0;
+>>>  		*val1 = scale1;
+>>> @@ -332,14 +332,14 @@ int hid_sensor_format_scale(u32 usage_id,
+>>>  			unit_conversion[i].unit == attr_info-
+>>>> units) {
+>>>  			exp  = hid_sensor_convert_exponent(
+>>>  						attr_info-
+>>>> unit_expo);
+>>> -			adjust_exponent_micro(val0, val1,
+>>> +			adjust_exponent_nano(val0, val1,
+>>>  					unit_conversion[i].scale_v
+>>> al0,
+>>>  					unit_conversion[i].scale_v
+>>> al1, exp);
+>>>  			break;
+>>>  		}
+>>>  	}
+>>>  
+>>> -	return IIO_VAL_INT_PLUS_MICRO;
+>>> +	return IIO_VAL_INT_PLUS_NANO;
+>>>  }
+>>>  EXPORT_SYMBOL(hid_sensor_format_scale);
+>>>  
 
