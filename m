@@ -1,68 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:53205 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752918AbcKEQgb (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Nov 2016 12:36:31 -0400
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Song, Hongyan" <hongyan.song@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH] iio: hid-sensor-attributes: Check
- sample_frequency/hysteresis write data legitimacy
-Date: Sat, 5 Nov 2016 16:36:28 +0000
-Message-ID: <1478363785.3242.0.camel@intel.com>
-References: <1478133948-16089-1-git-send-email-hongyan.song@intel.com>
-         <1478282145.14557.14.camel@intel.com>
-         <3b9b5b27-31ee-dfb7-deef-a93e83399324@kernel.org>
-In-Reply-To: <3b9b5b27-31ee-dfb7-deef-a93e83399324@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51334 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755089AbcKERpS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 13:45:18 -0400
+Subject: Re: [PATCH 1/4] mfd: ti_am335x_tscadc: store physical address
+To: Lee Jones <lee.jones@linaro.org>
+References: <20160921161134.6951-1-mugunthanvnm@ti.com>
+ <20160921161134.6951-2-mugunthanvnm@ti.com> <20160927194045.GK21388@dell>
+ <f271b805-82c2-a45e-0de9-39edafd34d2e@ti.com> <20161026121730.GS8574@dell>
+ <954adfa7-94d9-f785-aeab-6f20c8f4c3b9@kernel.org>
+ <20161031081643.GN13127@dell>
+Cc: Mugunthan V N <mugunthanvnm@ti.com>, linux-iio@vger.kernel.org,
+        Tony Lindgren <tony@atomide.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Vignesh R <vigneshr@ti.com>, "Andrew F . Davis" <afd@ti.com>,
+        linux-omap@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        Sekhar Nori <nsekhar@ti.com>,
+        Peter Ujfalusi <peter.ujfalusi@ti.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3f3339b5-3861-832c-a26d-d6fd2d2cfd59@kernel.org>
+Date: Sat, 5 Nov 2016 17:45:14 +0000
 MIME-Version: 1.0
+In-Reply-To: <20161031081643.GN13127@dell>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gU2F0LCAyMDE2LTExLTA1IGF0IDE2OjMyICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiAwNC8xMS8xNiAxNzo1NSwgUGFuZHJ1dmFkYSwgU3Jpbml2YXMgd3JvdGU6DQo+ID4g
-DQo+ID4gT24gVGh1LCAyMDE2LTExLTAzIGF0IDAwOjQ1ICswMDAwLCBTb25nIEhvbmd5YW4gd3Jv
-dGU6DQo+ID4gPiANCj4gPiA+IA0KPiA+ID4gTmVpdGhlciBzYW1wbGUgZnJlcXVlbmN5IHZhbHVl
-IG5vciBoeXN0ZXJlc2lzIHZhbHVlIGNhbiBiZSBzZXQgdG8NCj4gPiA+IGJlDQo+ID4gPiBhDQo+
-ID4gPiBuZWdhdGl2ZSBudW1iZXIsIGNoZWNrIGFuZCByZXR1cm4gIkludmFsaWQgYXJndW1lbnQi
-IGlmIHRoZXkgYXJlDQo+ID4gPiBuZWdhdGl2ZS4NCj4gPiA+IA0KPiA+ID4gSWYgbm90IGRvIHRo
-aXMgY2hhbmdlLCBzYW1wbGVfZnJlcXVlbmN5IHdpbGwgYmUgc2V0IGludG8gc29tZQ0KPiA+ID4g
-dW5rbm93bg0KPiA+ID4gdmFsdWUsIHJlYWQgaHlzdGVyZXNpcyB2YWx1ZSBhZnRlciB3cml0ZSBu
-ZWdhdGl2ZSBudW1iZXIgd2lsbA0KPiA+ID4gcmV0dXJuDQo+ID4gPiAiSW52YWxpZCBhcmd1bWVu
-dCIuDQo+ID4gPiANCj4gPiA+IFNpZ25lZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lhbi5z
-b25nQGludGVsLmNvbT4NCj4gPiBBY2tlZC1ieTogU3Jpbml2YXMgUGFuZHJ1dmFkYSA8c3Jpbml2
-YXMucGFuZHJ1dmFkYUBsaW51eC5pbnRlbC5jb20+DQo+IEZyb20gdGhlIGRlc2NyaXB0aW9uIEkn
-bSByZWFkaW5nIHRoaXMgYXMgYSBtaW5vciBpc3N1ZSBhbmQgbm90IGENCj4gcmVncmVzc2lvbiAo
-aXQgbmV2ZXIgd29ya2VkIHJpZ2h0KS7CoMKgQXMgc3VjaCB3aXRoIExpbnVzIGdldHRpbmcNCj4g
-aXJyaXRhdGVkIGFib3V0IGZpeGVzIGZvciBzdHVmZiB0aGF0IGhhcyBiZWVuIGxvbmcgYnJva2Vu
-IEknbQ0KPiBnb2luZyB0byB0YWtlIHRoaXMgdGhlIHNsb3cgcm91dGUgKGkuZS4gbmV4dCBtZXJn
-ZSB3aW5kb3cpLg0KPiANClRoaXMgaXMgZmluZS4gVGhpcyBpcyBub3QgdXJnZW50IGZpeC4NCg0K
-VGhhbmtzLA0KU3Jpbml2YXMNCg0KDQoNCj4gQXBwbGllZCB0byB0aGUgdG9ncmVnIGJyYW5jaCBv
-ZiBpaW8uZ2l0LiBXaWxsIGJlIGluaXRpYWxseSBwdXNoZWQgb3V0DQo+IGFzIHRlc3RpbmcgZm9y
-IHRoZSBhdXRvYnVpbGRlcnMgdG8gcGxheSB3aXRoIGl0Lg0KPiANCj4gVGhhbmtzLA0KPiANCj4g
-Sm9uYXRoYW4NCj4gPiANCj4gPiANCj4gPiA+IA0KPiA+ID4gDQo+ID4gPiAtLS0NCj4gPiA+IMKg
-ZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItYXR0cmlidXRlcy5jIHwg
-NSArKysrLQ0KPiA+ID4gwqAxIGZpbGUgY2hhbmdlZCwgNCBpbnNlcnRpb25zKCspLCAxIGRlbGV0
-aW9uKC0pDQo+ID4gPiANCj4gPiA+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9jb21tb24vaGlk
-LXNlbnNvcnMvaGlkLXNlbnNvci0NCj4gPiA+IGF0dHJpYnV0ZXMuYw0KPiA+ID4gYi9kcml2ZXJz
-L2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gPiA+IGlu
-ZGV4IGRjMzNjMWQuLjQ1MDlmODQ3NSAxMDA2NDQNCj4gPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2Nv
-bW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLWF0dHJpYnV0ZXMuYw0KPiA+ID4gKysrIGIvZHJp
-dmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItYXR0cmlidXRlcy5jDQo+ID4g
-PiBAQCAtMjAxLDcgKzIwMSw3IEBAIGludCBoaWRfc2Vuc29yX3dyaXRlX3NhbXBfZnJlcV92YWx1
-ZShzdHJ1Y3QNCj4gPiA+IGhpZF9zZW5zb3JfY29tbW9uICpzdCwNCj4gPiA+IMKgCWludCByZXQ7
-DQo+ID4gPiDCoA0KPiA+ID4gwqAJaWYgKHZhbDEgPCAwIHx8IHZhbDIgPCAwKQ0KPiA+ID4gLQkJ
-cmV0ID0gLUVJTlZBTDsNCj4gPiA+ICsJCXJldHVybiAtRUlOVkFMOw0KPiA+ID4gwqANCj4gPiA+
-IMKgCXZhbHVlID0gdmFsMSAqIHBvd18xMCg2KSArIHZhbDI7DQo+ID4gPiDCoAlpZiAodmFsdWUp
-IHsNCj4gPiA+IEBAIC0yNTAsNiArMjUwLDkgQEAgaW50IGhpZF9zZW5zb3Jfd3JpdGVfcmF3X2h5
-c3RfdmFsdWUoc3RydWN0DQo+ID4gPiBoaWRfc2Vuc29yX2NvbW1vbiAqc3QsDQo+ID4gPiDCoAlz
-MzIgdmFsdWU7DQo+ID4gPiDCoAlpbnQgcmV0Ow0KPiA+ID4gwqANCj4gPiA+ICsJaWYgKHZhbDEg
-PCAwIHx8IHZhbDIgPCAwKQ0KPiA+ID4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ID4gPiArDQo+ID4g
-PiDCoAl2YWx1ZSA9IGNvbnZlcnRfdG9fdnRmX2Zvcm1hdChzdC0+c2Vuc2l0aXZpdHkuc2l6ZSwN
-Cj4gPiA+IMKgCQkJCXN0LT5zZW5zaXRpdml0eS51bml0X2V4cG8sDQo+ID4gPiDCoAkJCQl2YWwx
-LA0KPiA+ID4gdmFsMik7Tu+/ve+/ve+/ve+/ve+/vXLvv73vv71577+977+977+9Yu+/vVjvv73v
-v73Hp3bvv71e77+9Kd66ey5u77+9K++/ve+/ve+/ve+/vXvvv73vv70qIu+/ve+/vV5u77+9cu+/
-ve+/ve+/vXrvv70a77+977+9aO+/ve+/ve+/ve+/vSYNCj4gPiA+IO+/ve+/vR7vv71H77+977+9
-77+9aO+/vQMo77+96ZqO77+93aJqIu+/ve+/vRrvv70bbe+/ve+/ve+/ve+/ve+/vXrvv73elu+/
-ve+/ve+/vWbvv73vv73vv71o77+977+977+9fu+/vW1tbD09DQo+IA==
+On 31/10/16 08:16, Lee Jones wrote:
+> On Sun, 30 Oct 2016, Jonathan Cameron wrote:
+> 
+>> On 26/10/16 13:17, Lee Jones wrote:
+>>> On Fri, 30 Sep 2016, Mugunthan V N wrote:
+>>>
+>>>> On Wednesday 28 September 2016 01:10 AM, Lee Jones wrote:
+>>>>> On Wed, 21 Sep 2016, Mugunthan V N wrote:
+>>>>>
+>>>>>> store the physical address of the device in its priv to use it
+>>>>>> for DMA addressing in the client drivers.
+>>>>>>
+>>>>>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
+>>>>>> ---
+>>>>>>  drivers/mfd/ti_am335x_tscadc.c       | 1 +
+>>>>>>  include/linux/mfd/ti_am335x_tscadc.h | 1 +
+>>>>>>  2 files changed, 2 insertions(+)
+>>>>>>
+>>>>>> diff --git a/drivers/mfd/ti_am335x_tscadc.c b/drivers/mfd/ti_am335x_tscadc.c
+>>>>>> index c8f027b..0f3fab4 100644
+>>>>>> --- a/drivers/mfd/ti_am335x_tscadc.c
+>>>>>> +++ b/drivers/mfd/ti_am335x_tscadc.c
+>>>>>> @@ -183,6 +183,7 @@ static	int ti_tscadc_probe(struct platform_device *pdev)
+>>>>>>  		tscadc->irq = err;
+>>>>>>  
+>>>>>>  	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>>>>>> +	tscadc->tscadc_phys_base = res->start;
+>>>>>
+>>>>> This is unusual.  Can't you use a virt_to_phys() variant instead?
+>>>>>
+>>>>
+>>>> I tried using virt_to_phys(), but its not working for me.
+>>>> Also saw many drivers uses like this to get physical address
+>>>> ("git grep -n " res->start;" drivers/*").
+>>>
+>>> Very well:
+>>>
+>>> For my own reference:
+>>>   Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+>>>
+>>> Let me know how you wish this set to be handled.
+>> I'm happy to pick up the whole series.  There are some more mfd
+>> header changes in patch 2 but as they only add defines, I
+>> don't mind that much if I don't an Ack from you on those
+>> (btw this got to V3 but as patch 1 didn't change I'll carry
+>> your ack forwards).
+>>
+>> Do you want an immutable branch?  Seems unlikely to cause
+>> much trouble even if there is a merge issue on all 10ish
+>> lines of mfd code in the next merge window.
+> 
+> Not at the moment, but if you could set things up so it's possible to
+> create one at a later date if things go Pete Tong, that would be
+> great.
+Couldn't think of an easy way to do this without creating a branch
+and merging it into my normal branch.  I'll not push it out to
+kernel.org though unless you tell me you need it.
+
+Applied to the togreg branch (indirectly ;) of iio.git pushed out
+as testing for the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+
+> 
+
