@@ -1,177 +1,313 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:19707 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752466AbcKCJmg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 3 Nov 2016 05:42:36 -0400
-From: "Ooi, Joyce" <joyce.ooi@intel.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51268 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751438AbcKERdS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 13:33:18 -0400
+Subject: Re: [PATCH v3 2/4] drivers: iio: ti_am335x_adc: add dma support
+To: Peter Ujfalusi <peter.ujfalusi@ti.com>,
+        Mugunthan V N <mugunthanvnm@ti.com>,
+        linux-iio@vger.kernel.org
+References: <20161005090443.24576-1-mugunthanvnm@ti.com>
+ <20161005090443.24576-3-mugunthanvnm@ti.com>
+ <8ff4af23-9e90-535c-0e25-9373d845caab@ti.com>
+Cc: Tony Lindgren <tony@atomide.com>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Ooi Joyce <joyce.ooi@intel.com>,
-        Kweh Hock Leong <hock.leong.kweh@intel.com>,
-        Ong Boon Leong <boon.leong.ong@intel.com>,
-        Lay Kuan Loon <kuan.loon.lay@intel.com>
-Subject: [PATCH] iio: common: hid-sensors: change the precision of scale values
-Date: Thu,  3 Nov 2016 17:41:33 +0800
-Message-Id: <1478166093-23109-1-git-send-email-joyce.ooi@intel.com>
+        Lee Jones <lee.jones@linaro.org>, Vignesh R <vigneshr@ti.com>,
+        "Andrew F . Davis" <afd@ti.com>, linux-omap@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
+        John Syne <john3909@gmail.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <85106d76-7e96-bc82-fef1-247a1793fd18@kernel.org>
+Date: Sat, 5 Nov 2016 17:33:12 +0000
+MIME-Version: 1.0
+In-Reply-To: <8ff4af23-9e90-535c-0e25-9373d845caab@ti.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Extension of the scale precision is needed as there are some scale values
-that exceed 6 decimal points precision. For example, the scale for
-gyroscope from degrees/second to radians/second is 0.017453. If the unit
-exponent for gyroscope is -5, it will be
-0.017453 -> exp: -5 -> 0.00000017453
+On 05/10/16 10:26, Peter Ujfalusi wrote:
+> On 10/05/16 12:04, Mugunthan V N wrote:
+>> This patch adds the required pieces to ti_am335x_adc driver for
+>> DMA support
+>>
+>> Signed-off-by: Mugunthan V N <mugunthanvnm@ti.com>
+Applied to a special branch in iio.git that I'll pull into togreg and then
+push out as testing in a few minutes for the autobuilders to play with it.
+(the special branch is incase Lee needs to later pull this into mfd as well).
 
-However, because the decimal precision is up to 6, the mentioned scale
-value will be truncated to 0.000000. To avoid this, changes are made to
-extend the precision to 9 decimal points precision.
-
-Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
----
- .../iio/common/hid-sensors/hid-sensor-attributes.c | 65 +++++++++++-----------
- 1 file changed, 33 insertions(+), 32 deletions(-)
-
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index dc33c1d..c1f8c22 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -30,34 +30,34 @@
- 	u32 usage_id;
- 	int unit; /* 0 for default others from HID sensor spec */
- 	int scale_val0; /* scale, whole number */
--	int scale_val1; /* scale, fraction in micros */
-+	int scale_val1; /* scale, fraction in nanos */
- } unit_conversion[] = {
--	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650},
-+	{HID_USAGE_SENSOR_ACCEL_3D, 0, 9, 806650000},
- 	{HID_USAGE_SENSOR_ACCEL_3D,
- 		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
- 	{HID_USAGE_SENSOR_ACCEL_3D,
--		HID_USAGE_SENSOR_UNITS_G, 9, 806650},
-+		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
- 
--	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453},
-+	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453293},
- 	{HID_USAGE_SENSOR_GYRO_3D,
- 		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
- 	{HID_USAGE_SENSOR_GYRO_3D,
--		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453},
-+		HID_USAGE_SENSOR_UNITS_DEGREES_PER_SECOND, 0, 17453293},
- 
--	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000},
-+	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
- 	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
- 
--	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453},
-+	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
- 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
--		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453},
-+		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
- 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
- 		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
- 
- 	{HID_USAGE_SENSOR_ALS, 0, 1, 0},
- 	{HID_USAGE_SENSOR_ALS, HID_USAGE_SENSOR_UNITS_LUX, 1, 0},
- 
--	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
--	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000},
-+	{HID_USAGE_SENSOR_PRESSURE, 0, 100000, 0},
-+	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000000},
- };
- 
- static int pow_10(unsigned power)
-@@ -266,16 +266,16 @@ int hid_sensor_write_raw_hyst_value(struct hid_sensor_common *st,
- /*
-  * This fuction applies the unit exponent to the scale.
-  * For example:
-- * 9.806650 ->exp:2-> val0[980]val1[665000]
-- * 9.000806 ->exp:2-> val0[900]val1[80600]
-- * 0.174535 ->exp:2-> val0[17]val1[453500]
-- * 1.001745 ->exp:0-> val0[1]val1[1745]
-- * 1.001745 ->exp:2-> val0[100]val1[174500]
-- * 1.001745 ->exp:4-> val0[10017]val1[450000]
-- * 9.806650 ->exp:-2-> val0[0]val1[98066]
-+ * 9.806650000 ->exp:2-> val0[980]val1[665000000]
-+ * 9.000806000 ->exp:2-> val0[900]val1[80600000]
-+ * 0.17453293 ->exp:2-> val0[17]val1[453293000]
-+ * 1.00174532 ->exp:0-> val0[1]val1[1745320]
-+ * 1.00174532 ->exp:2-> val0[100]val1[174532000]
-+ * 1.00174532 ->exp:4-> val0[10017]val1[453200000]
-+ * 9.80665000 ->exp:-2-> val0[0]val1[98066500]
-  */
--static void adjust_exponent_micro(int *val0, int *val1, int scale0,
--				  int scale1, int exp)
-+static void adjust_exponent_nano(int *val0, int *val1, int scale0,
-+				 int scale1, int exp)
- {
- 	int i;
- 	int x;
-@@ -285,32 +285,32 @@ static void adjust_exponent_micro(int *val0, int *val1, int scale0,
- 	if (exp > 0) {
- 		*val0 = scale0 * pow_10(exp);
- 		res = 0;
--		if (exp > 6) {
-+		if (exp > 9) {
- 			*val1 = 0;
- 			return;
- 		}
- 		for (i = 0; i < exp; ++i) {
--			x = scale1 / pow_10(5 - i);
-+			x = scale1 / pow_10(8 - i);
- 			res += (pow_10(exp - 1 - i) * x);
--			scale1 = scale1 % pow_10(5 - i);
-+			scale1 = scale1 % pow_10(8 - i);
- 		}
- 		*val0 += res;
- 			*val1 = scale1 * pow_10(exp);
- 	} else if (exp < 0) {
- 		exp = abs(exp);
--		if (exp > 6) {
-+		if (exp > 9) {
- 			*val0 = *val1 = 0;
- 			return;
- 		}
- 		*val0 = scale0 / pow_10(exp);
- 		rem = scale0 % pow_10(exp);
- 		res = 0;
--		for (i = 0; i < (6 - exp); ++i) {
--			x = scale1 / pow_10(5 - i);
--			res += (pow_10(5 - exp - i) * x);
--			scale1 = scale1 % pow_10(5 - i);
-+		for (i = 0; i < (9 - exp); ++i) {
-+			x = scale1 / pow_10(8 - i);
-+			res += (pow_10(8 - exp - i) * x);
-+			scale1 = scale1 % pow_10(8 - i);
- 		}
--		*val1 = rem * pow_10(6 - exp) + res;
-+		*val1 = rem * pow_10(9 - exp) + res;
- 	} else {
- 		*val0 = scale0;
- 		*val1 = scale1;
-@@ -332,14 +332,15 @@ int hid_sensor_format_scale(u32 usage_id,
- 			unit_conversion[i].unit == attr_info->units) {
- 			exp  = hid_sensor_convert_exponent(
- 						attr_info->unit_expo);
--			adjust_exponent_micro(val0, val1,
--					unit_conversion[i].scale_val0,
--					unit_conversion[i].scale_val1, exp);
-+			adjust_exponent_nano(val0, val1,
-+					     unit_conversion[i].scale_val0,
-+					     unit_conversion[i].scale_val1,
-+					     exp);
- 			break;
- 		}
- 	}
- 
--	return IIO_VAL_INT_PLUS_MICRO;
-+	return IIO_VAL_INT_PLUS_NANO;
- }
- EXPORT_SYMBOL(hid_sensor_format_scale);
- 
--- 
-1.9.1
+Jonathan
+>> ---
+>>  drivers/iio/adc/ti_am335x_adc.c      | 148 ++++++++++++++++++++++++++++++++++-
+>>  include/linux/mfd/ti_am335x_tscadc.h |   7 ++
+>>  2 files changed, 152 insertions(+), 3 deletions(-)
+> 
+> Reviewed-by: Peter Ujfalusi <peter.ujfalusi@ti.com>
+> 
+>>
+>> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+>> index c3cfacca..ad9dec3 100644
+>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>> @@ -30,10 +30,28 @@
+>>  #include <linux/iio/buffer.h>
+>>  #include <linux/iio/kfifo_buf.h>
+>>  
+>> +#include <linux/dmaengine.h>
+>> +#include <linux/dma-mapping.h>
+>> +
+>> +#define DMA_BUFFER_SIZE		SZ_2K
+>> +
+>> +struct tiadc_dma {
+>> +	struct dma_slave_config	conf;
+>> +	struct dma_chan		*chan;
+>> +	dma_addr_t		addr;
+>> +	dma_cookie_t		cookie;
+>> +	u8			*buf;
+>> +	int			current_period;
+>> +	int			period_size;
+>> +	u8			fifo_thresh;
+>> +};
+>> +
+>>  struct tiadc_device {
+>>  	struct ti_tscadc_dev *mfd_tscadc;
+>> +	struct tiadc_dma dma;
+>>  	struct mutex fifo1_lock; /* to protect fifo access */
+>>  	int channels;
+>> +	int total_ch_enabled;
+>>  	u8 channel_line[8];
+>>  	u8 channel_step[8];
+>>  	int buffer_en_ch_steps;
+>> @@ -198,6 +216,67 @@ static irqreturn_t tiadc_worker_h(int irq, void *private)
+>>  	return IRQ_HANDLED;
+>>  }
+>>  
+>> +static void tiadc_dma_rx_complete(void *param)
+>> +{
+>> +	struct iio_dev *indio_dev = param;
+>> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct tiadc_dma *dma = &adc_dev->dma;
+>> +	u8 *data;
+>> +	int i;
+>> +
+>> +	data = dma->buf + dma->current_period * dma->period_size;
+>> +	dma->current_period = 1 - dma->current_period; /* swap the buffer ID */
+>> +
+>> +	for (i = 0; i < dma->period_size; i += indio_dev->scan_bytes) {
+>> +		iio_push_to_buffers(indio_dev, data);
+>> +		data += indio_dev->scan_bytes;
+>> +	}
+>> +}
+>> +
+>> +static int tiadc_start_dma(struct iio_dev *indio_dev)
+>> +{
+>> +	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct tiadc_dma *dma = &adc_dev->dma;
+>> +	struct dma_async_tx_descriptor *desc;
+>> +
+>> +	dma->current_period = 0; /* We start to fill period 0 */
+>> +	/*
+>> +	 * Make the fifo thresh as the multiple of total number of
+>> +	 * channels enabled, so make sure that cyclic DMA period
+>> +	 * length is also a multiple of total number of channels
+>> +	 * enabled. This ensures that no invalid data is reported
+>> +	 * to the stack via iio_push_to_buffers().
+>> +	 */
+>> +	dma->fifo_thresh = rounddown(FIFO1_THRESHOLD + 1,
+>> +				     adc_dev->total_ch_enabled) - 1;
+>> +	/* Make sure that period length is multiple of fifo thresh level */
+>> +	dma->period_size = rounddown(DMA_BUFFER_SIZE / 2,
+>> +				    (dma->fifo_thresh + 1) * sizeof(u16));
+>> +
+>> +	dma->conf.src_maxburst = dma->fifo_thresh + 1;
+>> +	dmaengine_slave_config(dma->chan, &dma->conf);
+>> +
+>> +	desc = dmaengine_prep_dma_cyclic(dma->chan, dma->addr,
+>> +					 dma->period_size * 2,
+>> +					 dma->period_size, DMA_DEV_TO_MEM,
+>> +					 DMA_PREP_INTERRUPT);
+>> +	if (!desc)
+>> +		return -EBUSY;
+>> +
+>> +	desc->callback = tiadc_dma_rx_complete;
+>> +	desc->callback_param = indio_dev;
+>> +
+>> +	dma->cookie = dmaengine_submit(desc);
+>> +
+>> +	dma_async_issue_pending(dma->chan);
+>> +
+>> +	tiadc_writel(adc_dev, REG_FIFO1THR, dma->fifo_thresh);
+>> +	tiadc_writel(adc_dev, REG_DMA1REQ, dma->fifo_thresh);
+>> +	tiadc_writel(adc_dev, REG_DMAENABLE_SET, DMA_FIFO1);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
+>>  {
+>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> @@ -218,20 +297,30 @@ static int tiadc_buffer_preenable(struct iio_dev *indio_dev)
+>>  static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
+>>  {
+>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct tiadc_dma *dma = &adc_dev->dma;
+>> +	unsigned int irq_enable;
+>>  	unsigned int enb = 0;
+>>  	u8 bit;
+>>  
+>>  	tiadc_step_config(indio_dev);
+>> -	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels)
+>> +	for_each_set_bit(bit, indio_dev->active_scan_mask, adc_dev->channels) {
+>>  		enb |= (get_adc_step_bit(adc_dev, bit) << 1);
+>> +		adc_dev->total_ch_enabled++;
+>> +	}
+>>  	adc_dev->buffer_en_ch_steps = enb;
+>>  
+>> +	if (dma->chan)
+>> +		tiadc_start_dma(indio_dev);
+>> +
+>>  	am335x_tsc_se_set_cache(adc_dev->mfd_tscadc, enb);
+>>  
+>>  	tiadc_writel(adc_dev,  REG_IRQSTATUS, IRQENB_FIFO1THRES
+>>  				| IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW);
+>> -	tiadc_writel(adc_dev,  REG_IRQENABLE, IRQENB_FIFO1THRES
+>> -				| IRQENB_FIFO1OVRRUN);
+>> +
+>> +	irq_enable = IRQENB_FIFO1OVRRUN;
+>> +	if (!dma->chan)
+>> +		irq_enable |= IRQENB_FIFO1THRES;
+>> +	tiadc_writel(adc_dev,  REG_IRQENABLE, irq_enable);
+>>  
+>>  	return 0;
+>>  }
+>> @@ -239,12 +328,18 @@ static int tiadc_buffer_postenable(struct iio_dev *indio_dev)
+>>  static int tiadc_buffer_predisable(struct iio_dev *indio_dev)
+>>  {
+>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct tiadc_dma *dma = &adc_dev->dma;
+>>  	int fifo1count, i, read;
+>>  
+>>  	tiadc_writel(adc_dev, REG_IRQCLR, (IRQENB_FIFO1THRES |
+>>  				IRQENB_FIFO1OVRRUN | IRQENB_FIFO1UNDRFLW));
+>>  	am335x_tsc_se_clr(adc_dev->mfd_tscadc, adc_dev->buffer_en_ch_steps);
+>>  	adc_dev->buffer_en_ch_steps = 0;
+>> +	adc_dev->total_ch_enabled = 0;
+>> +	if (dma->chan) {
+>> +		tiadc_writel(adc_dev, REG_DMAENABLE_CLEAR, 0x2);
+>> +		dmaengine_terminate_async(dma->chan);
+>> +	}
+>>  
+>>  	/* Flush FIFO of leftover data in the time it takes to disable adc */
+>>  	fifo1count = tiadc_readl(adc_dev, REG_FIFO1CNT);
+>> @@ -430,6 +525,41 @@ static const struct iio_info tiadc_info = {
+>>  	.driver_module = THIS_MODULE,
+>>  };
+>>  
+>> +static int tiadc_request_dma(struct platform_device *pdev,
+>> +			     struct tiadc_device *adc_dev)
+>> +{
+>> +	struct tiadc_dma	*dma = &adc_dev->dma;
+>> +	dma_cap_mask_t		mask;
+>> +
+>> +	/* Default slave configuration parameters */
+>> +	dma->conf.direction = DMA_DEV_TO_MEM;
+>> +	dma->conf.src_addr_width = DMA_SLAVE_BUSWIDTH_2_BYTES;
+>> +	dma->conf.src_addr = adc_dev->mfd_tscadc->tscadc_phys_base + REG_FIFO1;
+>> +
+>> +	dma_cap_zero(mask);
+>> +	dma_cap_set(DMA_CYCLIC, mask);
+>> +
+>> +	/* Get a channel for RX */
+>> +	dma->chan = dma_request_chan(adc_dev->mfd_tscadc->dev, "fifo1");
+>> +	if (IS_ERR(dma->chan)) {
+>> +		int ret = PTR_ERR(dma->chan);
+>> +
+>> +		dma->chan = NULL;
+>> +		return ret;
+>> +	}
+>> +
+>> +	/* RX buffer */
+>> +	dma->buf = dma_alloc_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+>> +				      &dma->addr, GFP_KERNEL);
+>> +	if (!dma->buf)
+>> +		goto err;
+>> +
+>> +	return 0;
+>> +err:
+>> +	dma_release_channel(dma->chan);
+>> +	return -ENOMEM;
+>> +}
+>> +
+>>  static int tiadc_parse_dt(struct platform_device *pdev,
+>>  			  struct tiadc_device *adc_dev)
+>>  {
+>> @@ -512,8 +642,14 @@ static int tiadc_probe(struct platform_device *pdev)
+>>  
+>>  	platform_set_drvdata(pdev, indio_dev);
+>>  
+>> +	err = tiadc_request_dma(pdev, adc_dev);
+>> +	if (err && err == -EPROBE_DEFER)
+>> +		goto err_dma;
+>> +
+>>  	return 0;
+>>  
+>> +err_dma:
+>> +	iio_device_unregister(indio_dev);
+>>  err_buffer_unregister:
+>>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>>  err_free_channels:
+>> @@ -525,8 +661,14 @@ static int tiadc_remove(struct platform_device *pdev)
+>>  {
+>>  	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>> +	struct tiadc_dma *dma = &adc_dev->dma;
+>>  	u32 step_en;
+>>  
+>> +	if (dma->chan) {
+>> +		dma_free_coherent(dma->chan->device->dev, DMA_BUFFER_SIZE,
+>> +				  dma->buf, dma->addr);
+>> +		dma_release_channel(dma->chan);
+>> +	}
+>>  	iio_device_unregister(indio_dev);
+>>  	tiadc_iio_buffered_hardware_remove(indio_dev);
+>>  	tiadc_channels_remove(indio_dev);
+>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h b/include/linux/mfd/ti_am335x_tscadc.h
+>> index e45a208..b9a53e0 100644
+>> --- a/include/linux/mfd/ti_am335x_tscadc.h
+>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
+>> @@ -23,6 +23,8 @@
+>>  #define REG_IRQENABLE		0x02C
+>>  #define REG_IRQCLR		0x030
+>>  #define REG_IRQWAKEUP		0x034
+>> +#define REG_DMAENABLE_SET	0x038
+>> +#define REG_DMAENABLE_CLEAR	0x03c
+>>  #define REG_CTRL		0x040
+>>  #define REG_ADCFSM		0x044
+>>  #define REG_CLKDIV		0x04C
+>> @@ -36,6 +38,7 @@
+>>  #define REG_FIFO0THR		0xE8
+>>  #define REG_FIFO1CNT		0xF0
+>>  #define REG_FIFO1THR		0xF4
+>> +#define REG_DMA1REQ		0xF8
+>>  #define REG_FIFO0		0x100
+>>  #define REG_FIFO1		0x200
+>>  
+>> @@ -126,6 +129,10 @@
+>>  #define FIFOREAD_DATA_MASK (0xfff << 0)
+>>  #define FIFOREAD_CHNLID_MASK (0xf << 16)
+>>  
+>> +/* DMA ENABLE/CLEAR Register */
+>> +#define DMA_FIFO0		BIT(0)
+>> +#define DMA_FIFO1		BIT(1)
+>> +
+>>  /* Sequencer Status */
+>>  #define SEQ_STATUS BIT(5)
+>>  #define CHARGE_STEP		0x11
+>>
+> 
+> 
 
