@@ -1,76 +1,148 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:40202 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754306AbcKEO3C (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 5 Nov 2016 10:29:02 -0400
-Date: Sat, 5 Nov 2016 10:29:00 -0400
-From: Brian Masney <masneyb@onstation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: Re: regmap and i2c_smbus_write_byte question
-Message-ID: <20161105142900.GA6844@basecamp.onstation.org>
-References: <20161105113831.GA6053@basecamp.onstation.org>
- <6a764449-63a3-e7a3-8bd4-d20c436bed3f@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50939 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755998AbcKEQWt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 12:22:49 -0400
+Subject: Re: [PATCH 5/6] staging: iio: ad9832: add DVDD regulator
+To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+References: <1477933475-21914-1-git-send-email-eraretuya@gmail.com>
+ <1477933475-21914-6-git-send-email-eraretuya@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <b22be244-5b5c-0cd6-dab3-2be2865a5b8f@kernel.org>
+Date: Sat, 5 Nov 2016 16:22:47 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <6a764449-63a3-e7a3-8bd4-d20c436bed3f@kernel.org>
+In-Reply-To: <1477933475-21914-6-git-send-email-eraretuya@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 05, 2016 at 12:53:02PM +0000, Jonathan Cameron wrote:
-> On 05/11/16 11:38, Brian Masney wrote:
-> > I am investigating converting the tsl2583 staging driver over to use
-> > the regmap API. I ran into an issue converting the following call to
-> > i2c_smbus_write_byte() over to the regmap API:
-> > 
-> > struct tsl2583_chip {
-> >         struct i2c_client *client;
-> >         ...
-> > }
-> > 
-> > /*
-> >  * clear status, really interrupt status (interrupts are off), but
-> >  * we use the bit anyway - don't forget 0x80 - this is a command
-> >  */      
-> > ret = i2c_smbus_write_byte(chip->client,
-> >                            (TSL258X_CMD_REG | TSL258X_CMD_SPL_FN |
-> >                             TSL258X_CMD_ALS_INT_CLR));
-> > 
-> > I don't see a way to do this in the regmap API.  
-> > drivers/input/touchscreen/tsc2004.c has this same issue and that code
-> > directly calls i2c_smbus_write_byte() along with the regmap API. Am I
-> > missing something? This doesn't feel right to me to bypass the regmap
-> > API and directly access the i2c client.
-> > 
-> > The data sheet for the tsl2583 sensor is available here:
-> > http://media.digikey.com/PDF/Data%20Sheets/Austriamicrosystems%20PDFs/TSL2581,83.pdf
-> > Page 10 has the table that describes clearing the interrupt bit. The
-> > sensor will not take additional readings until that bit is cleared
-> > (even though interrupts are off).
-> Bit of a tangential question but why do a regmap conversion for this device?
-> It's i2c only so we don't gain from easy support for multiple bus types.
-> There aren't all that many registers and we don't have reason to
-> often read/write the ones that aren't volatile.
+On 31/10/16 17:04, Eva Rachel Retuya wrote:
+> The AD9832/AD9835 is supplied with two power sources: AVDD as analog
+> supply voltage and DVDD as digital supply voltage.
 > 
-> Hence I'd argue there is little point in doing a regmap conversion in
-> the first place.
+> Attempt to fetch and enable the regulator 'dvdd'. Bail out if any error
+> occurs.
 > 
-> If there is a good reason to do it then there isn't an easy way around
-> these 'odd' diversions from what is otherwise a nice register
-> based interface.
-> 
-> Hence another reason to not do a regmap conversion.
-
-I totally agree that it does not make sense to do the regmap conversion
-for this driver. The only reason that I initially looked into doing it
-was that there are other light drivers in mainline (with few registers)
-that use the regmap API.
-
-My tsl2583 patch set that I sent out a few days ago is still valid even
-though the cover sheet says it lays the ground work for the regmap
-conversion.
+> Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Applied. 
 
 Thanks,
 
-Brian
+Jonathan
+> ---
+>  drivers/staging/iio/frequency/ad9832.c | 33 ++++++++++++++++++++++++---------
+>  drivers/staging/iio/frequency/ad9832.h |  2 ++
+>  2 files changed, 26 insertions(+), 9 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
+> index 7d8dc6c..6a5ab02 100644
+> --- a/drivers/staging/iio/frequency/ad9832.c
+> +++ b/drivers/staging/iio/frequency/ad9832.c
+> @@ -222,10 +222,22 @@ static int ad9832_probe(struct spi_device *spi)
+>  		return ret;
+>  	}
+>  
+> +	st->dvdd = devm_regulator_get(&spi->dev, "dvdd");
+> +	if (IS_ERR(st->dvdd)) {
+> +		ret = PTR_ERR(st->dvdd);
+> +		goto error_disable_reg;
+> +	}
+> +
+> +	ret = regulator_enable(st->dvdd);
+> +	if (ret) {
+> +		dev_err(&spi->dev, "Failed to enable specified DVDD supply\n");
+> +		goto error_disable_reg;
+> +	}
+> +
+>  	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
+>  	if (!indio_dev) {
+>  		ret = -ENOMEM;
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  	}
+>  	spi_set_drvdata(spi, indio_dev);
+>  	st = iio_priv(indio_dev);
+> @@ -280,39 +292,41 @@ static int ad9832_probe(struct spi_device *spi)
+>  	ret = spi_sync(st->spi, &st->msg);
+>  	if (ret) {
+>  		dev_err(&spi->dev, "device init failed\n");
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  	}
+>  
+>  	ret = ad9832_write_frequency(st, AD9832_FREQ0HM, pdata->freq0);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	ret = ad9832_write_frequency(st, AD9832_FREQ1HM, pdata->freq1);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	ret = ad9832_write_phase(st, AD9832_PHASE0H, pdata->phase0);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	ret = ad9832_write_phase(st, AD9832_PHASE1H, pdata->phase1);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	ret = ad9832_write_phase(st, AD9832_PHASE2H, pdata->phase2);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	ret = ad9832_write_phase(st, AD9832_PHASE3H, pdata->phase3);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	ret = iio_device_register(indio_dev);
+>  	if (ret)
+> -		goto error_disable_reg;
+> +		goto error_disable_dvdd;
+>  
+>  	return 0;
+>  
+> +error_disable_dvdd:
+> +	regulator_disable(st->dvdd);
+>  error_disable_reg:
+>  	regulator_disable(reg);
+>  
+> @@ -325,6 +339,7 @@ static int ad9832_remove(struct spi_device *spi)
+>  	struct ad9832_state *st = iio_priv(indio_dev);
+>  
+>  	iio_device_unregister(indio_dev);
+> +	regulator_disable(st->dvdd);
+>  	regulator_disable(st->reg);
+>  
+>  	return 0;
+> diff --git a/drivers/staging/iio/frequency/ad9832.h b/drivers/staging/iio/frequency/ad9832.h
+> index d32323b..eb0e7f2 100644
+> --- a/drivers/staging/iio/frequency/ad9832.h
+> +++ b/drivers/staging/iio/frequency/ad9832.h
+> @@ -59,6 +59,7 @@
+>   * struct ad9832_state - driver instance specific data
+>   * @spi:		spi_device
+>   * @reg:		supply regulator
+> + * @dvdd:		supply regulator for the digital section
+>   * @mclk:		external master clock
+>   * @ctrl_fp:		cached frequency/phase control word
+>   * @ctrl_ss:		cached sync/selsrc control word
+> @@ -77,6 +78,7 @@
+>  struct ad9832_state {
+>  	struct spi_device		*spi;
+>  	struct regulator		*reg;
+> +	struct regulator		*dvdd;
+>  	unsigned long			mclk;
+>  	unsigned short			ctrl_fp;
+>  	unsigned short			ctrl_ss;
+> 
 
