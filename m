@@ -1,91 +1,57 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55804 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751762AbcKFMlR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Nov 2016 07:41:17 -0500
-Subject: Re: [PATCH 2/2] Documentation: DT: Add bmi160 imu binding
-To: Marcin Niestroj <m.niestroj@grinn-global.com>
-References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
- <20161103112527.29623-2-m.niestroj@grinn-global.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sanchayan Maity <maitysanchayan@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e46a4b5e-a347-f268-80f4-0ee1edc77aac@kernel.org>
-Date: Sun, 6 Nov 2016 12:41:14 +0000
+Return-Path: <masneyb@onstation.org>
+Date: Sun, 6 Nov 2016 09:23:25 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	gregkh@linuxfoundation.org, lars@metafoo.de, pmeerw@pmeerw.net,
+	knaack.h@gmx.de, linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: Re: [PATCH 7/9] staging: iio: tsl2583: fix issue with changes to
+ calibscale and int_time not being set on the chip
+Message-ID: <20161106142325.GA13221@basecamp.onstation.org>
+References: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
+ <1478177780-28699-8-git-send-email-masneyb@onstation.org>
+ <16c8bfcb-469f-9dca-2cf4-460aa8172301@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <20161103112527.29623-2-m.niestroj@grinn-global.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <16c8bfcb-469f-9dca-2cf4-460aa8172301@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 03/11/16 11:25, Marcin Niestroj wrote:
-> This adds documentation for Bosch BMI160 Inertial Measurement Unit
-> device-tree bindings.
+On Sun, Nov 06, 2016 at 12:03:53PM +0000, Jonathan Cameron wrote:
+> On 03/11/16 12:56, Brian Masney wrote:
+> > When updating the in_illuminance_calibscale and
+> > in_illuminance_integration_time sysfs attributes, these values were not
+> > actually written to the chip. The chip would continue to use the old
+> > parameters. Extracted out tsl2583_set_als_gain() and
+> > tsl2583_set_als_time() functions that are now called when these sysfs
+> > attributes are updated. The chip initialization now calls these these
+> > new functions.
+> > 
+> > Rename taos_chip_on() to tsl2583_chip_init() since it is now only called
+> > during device probing and when the power management code wakes the
+> > device back up. tsl2583_chip_init() was refactored to use the new
+> > functions mentioned above.
+> > 
+> > Previously, the current chip state was represented as a tristate
+> > (working, suspended, and unknown). The unknown state was not used. The
+> > chip state is now represented with a single boolean value (suspended).
+> Last part should probably have been a separate patch.  Earlier stages could
+> also have been futher broken up I think to make it easier to review.
 > 
-> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
-Unless I missed it in the previous patch we should also have of tables
-added to the i2c and spi files (which is why the various tests haven't
-been screaming at me that this device doesn't have documented bindings).
-
-Otherwise, the use of interrupt names to indicate which pin on the chip
-is a little unusual (if you cribbed this from somewhere I've forgotten
-about then do say so!), so will want a devicetree bindings maintainer
-input on this.
-
-Thanks,
-
-Jonathan
-> ---
->  .../devicetree/bindings/iio/imu/bmi160.txt         | 34 ++++++++++++++++++++++
->  1 file changed, 34 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+> The additional init in the resume path should also protect against suspends
+> which actually cut the power to the chip which is nice.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-> new file mode 100644
-> index 0000000..b02ef3e
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-> @@ -0,0 +1,34 @@
-> +Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
-> +and externally connectable Magnetometer
-> +
-> +https://www.bosch-sensortec.com/bst/products/all_products/bmi160
-> +
-> +Required properties:
-> + - compatible : should be "bosch,bmi160"
-> + - reg : the I2C address or SPI chip select number of the sensor
-> + - spi-max-frequency : set maximum clock frequency (only for SPI)
-> +
-> +Optional properties:
-> + - interrupt-parent : should be the phandle of the interrupt controller
-> + - interrupts : interrupt mapping for GPIO IRQ, must be IRQ_TYPE_LEVEL_LOW
-> + - interrupt-names : set to "INT2" if using INT2 pin
-> +
-> +Examples:
-> +
-> +bmi160@68 {
-> +	compatible = "bosch,bmi160";
-> +	reg = <0x68>;
-> +
-> +	interrupt-parent = <&gpio4>;
-> +	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-> +};
-> +
-> +bmi160@0 {
-> +	compatible = "bosch,bmi160";
-> +	reg = <0>;
-> +	spi-max-frequency = <10000000>;
-> +
-> +	interrupt-parent = <&gpio2>;
-> +	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-> +	interrupt-names = "INT2";
-> +};
-> 
+> Just enough bits and pieces inline that I'd like you to do another pass
+> on this.
 
+No problem, I'll split this one up for you. My next patch series will
+also contain a lot of trivial code cleanups, some documentation updates, and
+a request to move the driver out of staging.
+
+The device tree documentation
+(Documentation/devicetree/bindings/iio/light/tsl2583.txt) has the
+interrupt-parent and interrupts properties as optional, however the
+driver does not support interrupts. Should I remove these properties from
+the device tree documentation? I can add the code to support the
+interrupts but I am hesistant to add that new code if no one will use it.
+
+Brian
