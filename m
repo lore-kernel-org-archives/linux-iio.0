@@ -1,67 +1,78 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51070 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55536 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755486AbcKEQq1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 12:46:27 -0400
-Subject: Re: TODO task for MMA8452 Accelerometer
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mani Sadhasivam <manivannanece23@gmail.com>
-References: <20161102155018.GA5226@mani-Aspire-E5-573>
- <alpine.DEB.2.02.1611021707350.16085@pmeerw.net>
-Cc: martink@posteo.de, linux-iio@vger.kernel.org
+        with ESMTP id S1751629AbcKFLsl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Nov 2016 06:48:41 -0500
+Subject: Re: [PATCH 3/9] staging: iio: tsl2583: fixed ordering of comments
+To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
+References: <1478177780-28699-1-git-send-email-masneyb@onstation.org>
+ <1478177780-28699-4-git-send-email-masneyb@onstation.org>
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c7560cd6-3148-57d5-ad43-ee0ef89b626d@kernel.org>
-Date: Sat, 5 Nov 2016 16:46:24 +0000
+Message-ID: <702bfb8e-25dc-258c-6e69-0c2af7ddf64d@kernel.org>
+Date: Sun, 6 Nov 2016 11:48:39 +0000
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1611021707350.16085@pmeerw.net>
+In-Reply-To: <1478177780-28699-4-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/11/16 16:31, Peter Meerwald-Stadler wrote:
-> Hello Mani,
+On 03/11/16 12:56, Brian Masney wrote:
+> in taos_defaults()
 > 
-> adding linux-iio@
+> The comments in taos_defaults() appear after the line of code
+> that they apply to. This patch moves the comments so that they appear
+> before the code. Some of the comments were updated to be more
+> informative.
 > 
->> This is Mani, working on MMA8452 Accelerometer with Beaglebone black. I 
->> just wanna know whether the TODO : 'Orientation events' task for this 
->> Accelerometer is undergoing or not. If not, can I work on the same under 
->> your mentoring.
->> For your kind info, I'm a recent undergraduate working in a Product 
->> development company called MathWorks. I'm learning Linux Kernel 
->> development as a hobby. Also, I thought taking up this task would be a 
->> good starting point for Linux Kernel Development.
-> 
-> not sure if someone is working on it, I have not seen patches
-> 
->> If this task is already done, kindly suggest me a task to help me get 
->> involved with Linux community.
-> 
-> you have probably chosen a quite involved task; it is not immediately 
-> clear how to realize orientation detection (at least to me :)
-We could do it in a number of different ways.
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+Nice tidying up.
 
-One option to think about would be to do it in a 'clasification sense'
-similar to we do for human activity detection.  There we assign
-a percentage likelihood (scaling is a bit arbitrary) to the various
-possible states.  Might fit well for orientation detection as
-it's not really a binary thing.
+Applied to the togreg branch of iio.git - initially pushed out
+as testing for the autobuilders to play with it.
 
-If we treat it as more of a threshold with hysteresis then a
-more conventional 'event' might fit. For this device it's actually
-nicely defined in the docs for once.  Could be done
-as an event on each of the angle axis with hysteresis. 
-Now the angl type is rather poorly documented right now and there
-is no way of knowing what frame of reference it is measured in so
-there are some loose ends to tie up in that case as well.
-
-As Peter and Martin have said. Non obvious!
-
-So if you want to do this have a good think about possible interfaces
-and propose one for review (perhaps with code implementing it).
+Thanks,
 
 Jonathan
+> ---
+>  drivers/staging/iio/light/tsl2583.c | 19 +++++++++++++------
+>  1 file changed, 13 insertions(+), 6 deletions(-)
 > 
-> regards, p.
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index 388440b..709f446 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -143,16 +143,23 @@ static const struct gainadj gainadj[] = {
+>   */
+>  static void taos_defaults(struct tsl2583_chip *chip)
+>  {
+> -	/* Operational parameters */
+> +	/*
+> +	 * The integration time must be a multiple of 50ms and within the
+> +	 * range [50, 600] ms.
+> +	 */
+>  	chip->taos_settings.als_time = 100;
+> -	/* must be a multiple of 50mS */
+> +
+> +	/*
+> +	 * This is an index into the gainadj table. Assume clear glass as the
+> +	 * default.
+> +	 */
+>  	chip->taos_settings.als_gain = 0;
+> -	/* this is actually an index into the gain table */
+> -	/* assume clear glass as default */
+> +
+> +	/* Default gain trim to account for aperture effects */
+>  	chip->taos_settings.als_gain_trim = 1000;
+> -	/* default gain trim to account for aperture effects */
+> -	chip->taos_settings.als_cal_target = 130;
+> +
+>  	/* Known external ALS reading used for calibration */
+> +	chip->taos_settings.als_cal_target = 130;
+>  }
+>  
+>  /*
 > 
 
