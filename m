@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55441 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55446 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751662AbcKFLeC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Nov 2016 06:34:02 -0500
+        with ESMTP id S1751673AbcKFLfU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Nov 2016 06:35:20 -0500
 Subject: Re: [PATCH 1/9] staging: iio: tsl2583: i2c_smbus_write_byte() /
  i2c_smbus_read_byte() migration
 To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
@@ -13,8 +13,8 @@ Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com,
         Julia Lawall <julia.lawall@lip6.fr>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <71d684c7-3eca-5c69-95be-034b750a81ed@kernel.org>
-Date: Sun, 6 Nov 2016 11:33:57 +0000
+Message-ID: <1bbde6f6-7c35-e0c2-aeb6-49bd0a303fa5@kernel.org>
+Date: Sun, 6 Nov 2016 11:35:18 +0000
 MIME-Version: 1.0
 In-Reply-To: <1478177780-28699-2-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
@@ -56,8 +56,8 @@ On 03/11/16 12:56, Brian Masney wrote:
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
 > Cc: Julia Lawall <julia.lawall@lip6.fr>
-One comment in line.  Good to get rid of the warning that the
-autobuilders have been pinging at me ever time I do a push!
+Forgot to say - applied to the togreg branch of iio.git and pushed
+out as testing to see what we've missed!
 
 Jonathan
 > ---
@@ -218,9 +218,6 @@ Jonathan
 > +		ret = i2c_smbus_read_byte_data(clientp,
 > +					       (TSL258X_CMD_REG |
 > +						(TSL258X_CNTRL + i)));
-Overkill on the brackets here. Clearly that was from the original code
-though so maybe a follow up cleanup to get rid of the extra set around the
-whole statement?
 >  		if (ret < 0) {
 >  			dev_err(&clientp->dev,
 >  				"i2c_smbus_read_byte from reg failed in taos_probe(), err = %d\n",
