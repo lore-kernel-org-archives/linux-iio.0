@@ -1,107 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51003 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57172 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754881AbcKEQds (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 5 Nov 2016 12:33:48 -0400
-Subject: Re: [PATCH v2] iio: adc: at91: add suspend and resume callback
-To: Wenyou Yang <wenyou.yang@atmel.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Wenyou Yang <wenyou.yang@microchip.com>,
-        linux-arm-kernel@lists.infradead.org,
-        Nicolas Ferre <nicolas.ferre@atmel.com>
-References: <1478078508-24541-1-git-send-email-wenyou.yang@atmel.com>
- <20161103141654.7oitq25gxqcy7qna@rfolt0960.corp.atmel.com>
+        with ESMTP id S1750967AbcKFSFU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 6 Nov 2016 13:05:20 -0500
+To: Greg KH <gregkh@linuxfoundation.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] Second set of IIO fixes for the 4.9 cycle.
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f98d5357-d8ca-c0e6-8c3c-379d6dd147b1@kernel.org>
-Date: Sat, 5 Nov 2016 16:33:45 +0000
+Message-ID: <5dd07645-0b93-a9d9-9f91-37382a43af4e@kernel.org>
+Date: Sun, 6 Nov 2016 18:04:46 +0000
 MIME-Version: 1.0
-In-Reply-To: <20161103141654.7oitq25gxqcy7qna@rfolt0960.corp.atmel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 03/11/16 14:16, Ludovic Desroches wrote:
-> On Wed, Nov 02, 2016 at 05:21:48PM +0800, Wenyou Yang wrote:
->> Add suspend/resume callback, support the pinctrl sleep state when
->> the system suspend as well.
->>
->> Signed-off-by: Wenyou Yang <wenyou.yang@atmel.com>
-> Acked-by: Ludovic Desroches <ludovic.desroches@atmel.com>
-Applied to the togreg branch of iio.git. Initially pushed out
-as testing for the autobuilders to play with it.
+The following changes since commit e866dd8aab76b6a0ee8428491e65fa5c83a6ae5a:
 
-Thanks,
+  greybus: fix a leak on error in gb_module_create() (2016-10-24 15:51:00 +0200)
 
-Jonathan
-> 
-> Thanks
-> 
->> ---
->>
->> Changes in v2:
->>  - Use CONFIG_PM_SLEEP.
->>  - Use SIMPLE_DEV_PM_OPS macro.
->>
->>  drivers/iio/adc/at91_adc.c | 28 ++++++++++++++++++++++++++++
->>  1 file changed, 28 insertions(+)
->>
->> diff --git a/drivers/iio/adc/at91_adc.c b/drivers/iio/adc/at91_adc.c
->> index bbdac07..34b928c 100644
->> --- a/drivers/iio/adc/at91_adc.c
->> +++ b/drivers/iio/adc/at91_adc.c
->> @@ -30,6 +30,7 @@
->>  #include <linux/iio/trigger.h>
->>  #include <linux/iio/trigger_consumer.h>
->>  #include <linux/iio/triggered_buffer.h>
->> +#include <linux/pinctrl/consumer.h>
->>  
->>  /* Registers */
->>  #define AT91_ADC_CR		0x00		/* Control Register */
->> @@ -1347,6 +1348,32 @@ static int at91_adc_remove(struct platform_device *pdev)
->>  	return 0;
->>  }
->>  
->> +#ifdef CONFIG_PM_SLEEP
->> +static int at91_adc_suspend(struct device *dev)
->> +{
->> +	struct iio_dev *idev = platform_get_drvdata(to_platform_device(dev));
->> +	struct at91_adc_state *st = iio_priv(idev);
->> +
->> +	pinctrl_pm_select_sleep_state(dev);
->> +	clk_disable_unprepare(st->clk);
->> +
->> +	return 0;
->> +}
->> +
->> +static int at91_adc_resume(struct device *dev)
->> +{
->> +	struct iio_dev *idev = platform_get_drvdata(to_platform_device(dev));
->> +	struct at91_adc_state *st = iio_priv(idev);
->> +
->> +	clk_prepare_enable(st->clk);
->> +	pinctrl_pm_select_default_state(dev);
->> +
->> +	return 0;
->> +}
->> +#endif
->> +
->> +static SIMPLE_DEV_PM_OPS(at91_adc_pm_ops, at91_adc_suspend, at91_adc_resume);
->> +
->>  static struct at91_adc_caps at91sam9260_caps = {
->>  	.calc_startup_ticks = calc_startup_ticks_9260,
->>  	.num_channels = 4,
->> @@ -1441,6 +1468,7 @@ static struct platform_driver at91_adc_driver = {
->>  	.driver = {
->>  		   .name = DRIVER_NAME,
->>  		   .of_match_table = of_match_ptr(at91_adc_dt_ids),
->> +		   .pm = &at91_adc_pm_ops,
->>  	},
->>  };
->>  
->> -- 
->> 2.7.4
->>
+are available in the git repository at:
 
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.9b
+
+for you to fetch changes up to 6f77199e9e4b84340c751c585691d7642a47d226:
+
+  iio: hid-sensors: Increase the precision of scale to fix wrong reading interpretation. (2016-11-05 17:50:56 +0000)
+
+----------------------------------------------------------------
+Second set of IIO fixes for the 4.9 cycle.
+
+Interestingly scale related fixes for accelerometers at both ends of
+the range.  Obviously more varied devices turning up than we've seen before!
+
+* ad5933
+  - fix an uninitialized value in a return case that is winding up GCC.
+* hid sensors
+  - missing pm function prevents hid rotations sensors from working on newer
+  ISH hubs (works by luck on older ones)
+  - increase of scale precision needed to fix a case where on a yoga 260
+  the reported scale is 0 (presumably a high precision but very low g sensor).
+* st_sensors
+  - fix an issue seen with the hs3lis331dl where the range is much greater
+  than previous devices (100's of g) and hence the per bit scale is greater
+  than 1.
+
+----------------------------------------------------------------
+Arnd Bergmann (1):
+      staging: iio: ad5933: avoid uninitialized variable in error case
+
+Lorenzo Bianconi (1):
+      iio: st_sensors: fix scale configuration for h3lis331dl
+
+Song Hongyan (2):
+      iio: orientation: hid-sensor-rotation: Add PM function (fix non working driver)
+      iio: hid-sensors: Increase the precision of scale to fix wrong reading interpretation.
+
+ drivers/iio/accel/st_accel_core.c                  | 12 +++--
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 56 +++++++++++-----------
+ drivers/iio/common/st_sensors/st_sensors_core.c    |  8 ++--
+ drivers/iio/orientation/hid-sensor-rotation.c      |  1 +
+ drivers/staging/iio/impedance-analyzer/ad5933.c    | 17 ++++---
+ 5 files changed, 52 insertions(+), 42 deletions(-)
