@@ -1,133 +1,36 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:33023 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753248AbcKIXxk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 18:53:40 -0500
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 10.1 \(3251\))
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to
- 24MHz
-From: John Syne <john3909@gmail.com>
-In-Reply-To: <d7fadbf6-8026-d821-1ef8-981f536a8fdf@ti.com>
-Date: Wed, 9 Nov 2016 15:53:37 -0800
-Cc: Lee Jones <lee.jones@linaro.org>,
-        Mugunthan V N <mugunthanvnm@ti.com>,
-        linux-iio@vger.kernel.org, Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-omap@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, Sekhar Nori <nsekhar@ti.com>,
-        Peter Ujfalusi <peter.ujfalusi@ti.com>
-Message-Id: <D0AA78D0-9562-4E4D-A949-A771289D7570@gmail.com>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com>
- <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
- <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
- <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
- <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <20161025063847.GD8574@dell>
- <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com> <20161026084811.GI8574@dell>
- <A5F6974F-5793-4E85-BF82-2D9309980991@gmail.com>
- <d7fadbf6-8026-d821-1ef8-981f536a8fdf@ti.com>
-To: Vignesh R <vigneshr@ti.com>
+Received: from mga14.intel.com ([192.55.52.115]:26304 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932778AbcKGRRw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 7 Nov 2016 12:17:52 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] hid: hid-sensor-hub: clear memory to avoid random data
+Date: Mon, 7 Nov 2016 17:17:50 +0000
+Message-ID: <1478539068.13259.11.camel@intel.com>
+References: <1478480644-9160-1-git-send-email-hongyan.song@intel.com>
+In-Reply-To: <1478480644-9160-1-git-send-email-hongyan.song@intel.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-> On Oct 31, 2016, at 4:39 AM, Vignesh R <vigneshr@ti.com> wrote:
->=20
->=20
->=20
-> On Friday 28 October 2016 02:47 AM, John Syne wrote:
->=20
->>>>>>>>>>>=20
->>>>>>>>>>> ---
->>>>>>>>>>> include/linux/mfd/ti_am335x_tscadc.h | 4 ++--
->>>>>>>>>>> 1 file changed, 2 insertions(+), 2 deletions(-)
->>>>>>>>>>>=20
->>>>>>>>>>> diff --git a/include/linux/mfd/ti_am335x_tscadc.h =
-b/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>>>>>> index b9a53e0..96c4207 100644
->>>>>>>>>>> --- a/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>>>>>> +++ b/include/linux/mfd/ti_am335x_tscadc.h
->>>>>>>>>>> @@ -90,7 +90,7 @@
->>>>>>>>>>> /* Delay register */
->>>>>>>>>>> #define STEPDELAY_OPEN_MASK	(0x3FFFF << 0)
->>>>>>>>>>> #define STEPDELAY_OPEN(val)	((val) << 0)
->>>>>>>>>>> -#define STEPCONFIG_OPENDLY	STEPDELAY_OPEN(0x098)
->>>>>>>>> Wouldn=E2=80=99t this be better to add this to the devicetree?
->>>>>>>>>=20
->>>>>>>>> 	ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 =
-0x16>;
->>>>>>>>> 	ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 =
-0x500 0x500 0x500>;
->>>>>>>>> 	ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 =
-0x0>;
->>>>>>>>=20
->>>>>>>> For a touch screen, there is not need to change in these =
-parameter
->>>>>>>> settings, so my opinion is to keep it as is. Or am I missing =
-something?
->>>>>>> I was thinking that if you are using this driver as an ADC, you =
-may want the flexibility to make these changes in the DT. I=E2=80=99m =
-doing this by connecting sensors to the ADC inputs. I=E2=80=99m not =
-using this driver for a touchscreen.=20
->>>>>>=20
->>>>>> Here is a DT overlay were this gets using on the BeagleBoneBlack. =
-=20
->>>>>>=20
->>>>>> =
-https://github.com/RobertCNelson/bb.org-overlays/blob/master/src/arm/BB-AD=
-C-00A0.dts
->>>>>>=20
->>>>>> Besides, these DT features are already implemented in the driver =
-so it is just a matter of adding these entries to the am33xx.dtsi & =
-am4372.dtsi, which you modified in this patch series.
->>>>>=20
->>>>> This looks like configuration, no?
->>>>>=20
->>>>> DT should be used to describe the hardware.
->>>> You may be right, but how is this different to setting the baud =
-rate on a serial channel or sampling rate on a audio channel? Looking =
-through the DT, there are many configuration settings, so I=E2=80=99m =
-not sure what is the correct way to handle this. Surely it is better to =
-handle this in DT vs hard coding these settings?
->>>=20
->>> I think setting the UART baud rate is also an invalid DT entry.
->>>=20
->>> It's okay to list all of the options in DT, but to actually select
->>> one, that should be done either in userspace or as a kernel option.
->>> Perhaps as a Kconfig selection.
->> Yeah, this has been inconsistent for a long time. My only point was =
-that these DT parameters had already been implemented in the =
-ti_am335x_adc KM and I thought that this was better than hard coding =
-these settings. Implementing this in Kconfig means rebuilding the KM, =
-which isn=E2=80=99t desirable.=20
->=20
->> Perhaps this should be done via sysfs attributes so as you say, a =
-userspace app can configure this driver.=20
->=20
-> This was discussed when DT properties were added.  Patches are welcome
-> to add sysfs entries. There is nothing wrong with specifying an =
-initial
-> value in the DT.
->=20
->> I guess the DT code in ti_am335x_adc.c should be removed.=20
->>=20
->=20
-> Removing DT properties is not an option as it will break DT backward
-> compatibility.
-Hi Vignesh,
-
-OK, then back to my original question. Given that these DT properties =
-are supported in the driver, shouldn=E2=80=99t the following be added to =
-am33xx.dtsi and am4372.dtsi?
-
-ti,chan-step-avg =3D <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
-ti,chan-step-opendelay =3D <0x500 0x500 0x500 0x500 0x500 0x500 0x500>;
-ti,chan-step-sampledelay =3D <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
-
-Regards,
-John
->=20
-> --=20
-> Regards
-> Vignesh
-
+T24gTW9uLCAyMDE2LTExLTA3IGF0IDAxOjA0ICswMDAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
+IEluaXRpYWxpemUgdXNlciBidWZmZXIgd2l0aCAwcy4gVGhpcyB3aWxsIGF2b2lkIHJhbmRvbSBk
+YXRhIGluIHRoZQ0KPiBidWZmZXIsDQo+IHdoZW4gdGhlIHVzZXIgYnVmZmVyIHNpemUgaXMgYmln
+Z2VyIHRoYW4gdGhlIGFjdHVhbCByZXBvcnQgc2l6ZS4NCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNv
+bmcgSG9uZ3lhbiA8aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4gLS0tDQo+IMKgZHJpdmVycy9o
+aWQvaGlkLXNlbnNvci1odWIuYyB8IDEgKw0KPiDCoDEgZmlsZSBjaGFuZ2VkLCAxIGluc2VydGlv
+bigrKQ0KPiANCj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMgYi9k
+cml2ZXJzL2hpZC9oaWQtc2Vuc29yLQ0KPiBodWIuYw0KPiBpbmRleCA2NThhNjA3Li45ODA5OTJj
+IDEwMDY0NA0KPiAtLS0gYS9kcml2ZXJzL2hpZC9oaWQtc2Vuc29yLWh1Yi5jDQo+ICsrKyBiL2Ry
+aXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMNCj4gQEAgLTIxMiw2ICsyMTIsNyBAQCBpbnQgc2Vu
+c29yX2h1Yl9zZXRfZmVhdHVyZShzdHJ1Y3QNCj4gaGlkX3NlbnNvcl9odWJfZGV2aWNlICpoc2Rl
+diwgdTMyIHJlcG9ydF9pZCwNCj4gwqAJX19zMzIgdmFsdWU7DQo+IMKgCWludCByZXQgPSAwOw0K
+PiDCoA0KSSB0aGluayB5b3Ugd2FudGVkIHRoaXMgY2hhbmdlIGluwqBzZW5zb3JfaHViX2dldF9m
+ZWF0dXJlDQpub3TCoHNlbnNvcl9odWJfc2V0X2ZlYXR1cmUoKS4NCg0KPiArCW1lbXNldChidWZm
+ZXIsIDAsIGJ1ZmZlcl9zaXplKTsNCj4gwqAJbXV0ZXhfbG9jaygmZGF0YS0+bXV0ZXgpOw0KPiDC
+oAlyZXBvcnQgPSBzZW5zb3JfaHViX3JlcG9ydChyZXBvcnRfaWQsIGhzZGV2LT5oZGV2LA0KPiBI
+SURfRkVBVFVSRV9SRVBPUlQpOw0KPiDCoAlpZiAoIXJlcG9ydCB8fCAoZmllbGRfaW5kZXggPj0g
+cmVwb3J0LT5tYXhmaWVsZCkpIHs=
