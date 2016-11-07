@@ -1,38 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga06.intel.com ([134.134.136.31]:31407 "EHLO mga06.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751255AbcKGBBL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 6 Nov 2016 20:01:11 -0500
-From: Song Hongyan <hongyan.song@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: srinivas.pandruvada@intel.com,
-        Song Hongyan <hongyan.song@intel.com>
-Subject: [PATCH] hid: hid-sensor-hub: clear memory to avoid random data
-Date: Mon,  7 Nov 2016 01:04:04 +0000
-Message-Id: <1478480644-9160-1-git-send-email-hongyan.song@intel.com>
+Received: from mail.linuxfoundation.org ([140.211.169.12]:35030 "EHLO
+        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751537AbcKGIUW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 7 Nov 2016 03:20:22 -0500
+Date: Mon, 7 Nov 2016 09:19:17 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] Second set of IIO new device support and cleanups for the
+ 4.10 cycle.
+Message-ID: <20161107081917.GA21288@kroah.com>
+References: <66401fac-d6f6-f62b-e6c2-540aa11d5688@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <66401fac-d6f6-f62b-e6c2-540aa11d5688@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Initialize user buffer with 0s. This will avoid random data in the buffer,
-when the user buffer size is bigger than the actual report size.
+On Sun, Nov 06, 2016 at 05:55:23PM +0000, Jonathan Cameron wrote:
+> The following changes since commit 49b9137a6002a06f7e44e59ece9b34fd1e4fca4c:
+> 
+>   staging: greybus: audio: remove redundant slot field (2016-10-24 15:48:02 +0200)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.10b
+> 
+> for you to fetch changes up to c2b0d2cfb0317275cf04257fc3f5dfbdd9ffa274:
+> 
+>   staging: iio: tsl2583: remove redudant i2c call in taos_als_calibrate() (2016-11-06 11:54:32 +0000)
 
-Signed-off-by: Song Hongyan <hongyan.song@intel.com>
----
- drivers/hid/hid-sensor-hub.c | 1 +
- 1 file changed, 1 insertion(+)
+Pulled and pushed out, thanks.
 
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 658a607..980992c 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -212,6 +212,7 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 	__s32 value;
- 	int ret = 0;
- 
-+	memset(buffer, 0, buffer_size);
- 	mutex_lock(&data->mutex);
- 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
- 	if (!report || (field_index >= report->maxfield)) {
--- 
-1.9.1
-
+greg k-h
