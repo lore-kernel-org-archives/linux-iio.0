@@ -1,227 +1,102 @@
-Return-Path: <joyce.ooi@intel.com>
-From: "Ooi, Joyce" <joyce.ooi@intel.com>
-To: Jiri Kosina <jikos@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Ooi Joyce <joyce.ooi@intel.com>,
-	Kweh Hock Leong <hock.leong.kweh@intel.com>,
-	Ong Boon Leong <boon.leong.ong@intel.com>,
-	Lay Kuan Loon <kuan.loon.lay@intel.com>
-Subject: [PATCH] iio: magnetometer: separate the values of attributes based on their usage type for HID compass sensor
-Date: Thu,  3 Nov 2016 18:07:50 +0800
-Message-Id: <1478167670-23549-1-git-send-email-joyce.ooi@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:46916 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S933250AbcKHKRB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 Nov 2016 05:17:01 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v2 06/23] staging: iio: tsl2583: change current chip state from a tristate to a bool
+Date: Tue,  8 Nov 2016 05:16:31 -0500
+Message-Id: <1478600208-21153-7-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
+References: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-There are 2 usage types (Magnetic Flux and Heading data field) for HID
-compass sensor, thus the values of offset, scale, and sensitivity should
-be separated according to their respective usage type. The changes made
-are as below:
-1. Hysteresis: A struct hid_sensor_common rot_attributes is created in
-struct magn_3d_state to contain the sensitivity for IIO_ROT.
-2. Scale: scale_pre_decml and scale_post_decml are separated into
-scale_pre_decml_magn, scale_post_decml_magn, scale_pre_decml_rot, and
-scale_post_decml_rot.
-3. Offset: Same as scale, value_offset is separated into value_offset_magn
-and value_offset_rot.
+The current chip state is represented as a tristate (working, suspended,
+and unknown). The unknown state was not used. This patch changes the
+chip state so that it is now represented as a single boolean value
+(suspended).
 
-For sensitivity, HID_USAGE_SENSOR_ORIENT_MAGN_FLUX and
-HID_USAGE_SENSOR_ORIENT_MAGN_HEADING are used for sensivitity fields based
-on the HID Sensor Usages specifications. Hence, these changes are added on
-the sensitivity field.
-
-Signed-off-by: Ooi, Joyce <joyce.ooi@intel.com>
+Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- .../iio/common/hid-sensors/hid-sensor-attributes.c |   5 +
- drivers/iio/magnetometer/hid-sensor-magn-3d.c      | 102 ++++++++++++++++++---
- 2 files changed, 93 insertions(+), 14 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index c1f8c22..9641a15 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -46,6 +46,11 @@
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 3be2213..9880e41 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -67,12 +67,6 @@
+ #define TSL2583_CHIP_ID			0x90
+ #define TSL2583_CHIP_ID_MASK		0xf0
  
- 	{HID_USAGE_SENSOR_COMPASS_3D, 0, 0, 1000000},
- 	{HID_USAGE_SENSOR_COMPASS_3D, HID_USAGE_SENSOR_UNITS_GAUSS, 1, 0},
-+	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH, 0, 0, 17453293},
-+	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-+		HID_USAGE_SENSOR_UNITS_DEGREES, 0, 17453293},
-+	{HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-+		HID_USAGE_SENSOR_UNITS_RADIANS, 1, 0},
- 
- 	{HID_USAGE_SENSOR_INCLINOMETER_3D, 0, 0, 17453293},
- 	{HID_USAGE_SENSOR_INCLINOMETER_3D,
-diff --git a/drivers/iio/magnetometer/hid-sensor-magn-3d.c b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-index d8a0c8d..84a59d3 100644
---- a/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-+++ b/drivers/iio/magnetometer/hid-sensor-magn-3d.c
-@@ -45,6 +45,7 @@ enum magn_3d_channel {
- struct magn_3d_state {
- 	struct hid_sensor_hub_callbacks callbacks;
- 	struct hid_sensor_common common_attributes;
-+	struct hid_sensor_common rot_attributes;
- 	struct hid_sensor_hub_attribute_info magn[MAGN_3D_CHANNEL_MAX];
- 
- 	/* dynamically sized array to hold sensor values */
-@@ -52,10 +53,14 @@ struct magn_3d_state {
- 	/* array of pointers to sensor value */
- 	u32 *magn_val_addr[MAGN_3D_CHANNEL_MAX];
- 
--	int scale_pre_decml;
--	int scale_post_decml;
--	int scale_precision;
--	int value_offset;
-+	int scale_pre_decml_magn;
-+	int scale_post_decml_magn;
-+	int scale_precision_magn;
-+	int value_offset_magn;
-+	int scale_pre_decml_rot;
-+	int scale_post_decml_rot;
-+	int scale_precision_rot;
-+	int value_offset_rot;
+-enum {
+-	TSL258X_CHIP_UNKNOWN = 0,
+-	TSL258X_CHIP_WORKING = 1,
+-	TSL258X_CHIP_SUSPENDED = 2
+-};
+-
+ /* Per-device data */
+ struct taos_als_info {
+ 	u16 als_ch0;
+@@ -94,7 +88,7 @@ struct tsl2583_chip {
+ 	struct taos_settings taos_settings;
+ 	int als_time_scale;
+ 	int als_saturation;
+-	int taos_chip_status;
++	bool suspended;
  };
  
- static const u32 magn_3d_addresses[MAGN_3D_CHANNEL_MAX] = {
-@@ -182,21 +187,52 @@ static int magn_3d_read_raw(struct iio_dev *indio_dev,
- 		ret_type = IIO_VAL_INT;
- 		break;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = magn_state->scale_pre_decml;
--		*val2 = magn_state->scale_post_decml;
--		ret_type = magn_state->scale_precision;
-+		switch (chan->type) {
-+		case IIO_MAGN:
-+			*val = magn_state->scale_pre_decml_magn;
-+			*val2 = magn_state->scale_post_decml_magn;
-+			ret_type = magn_state->scale_precision_magn;
-+			break;
-+		case IIO_ROT:
-+			*val = magn_state->scale_pre_decml_rot;
-+			*val2 = magn_state->scale_post_decml_rot;
-+			ret_type = magn_state->scale_precision_rot;
-+			break;
-+		default:
-+			ret_type = -EINVAL;
-+		}
- 		break;
- 	case IIO_CHAN_INFO_OFFSET:
--		*val = magn_state->value_offset;
--		ret_type = IIO_VAL_INT;
-+		switch (chan->type) {
-+		case IIO_MAGN:
-+			*val = magn_state->value_offset_magn;
-+			ret_type = IIO_VAL_INT;
-+			break;
-+		case IIO_ROT:
-+			*val = magn_state->value_offset_rot;
-+			ret_type = IIO_VAL_INT;
-+			break;
-+		default:
-+			ret_type = -EINVAL;
-+		}
- 		break;
- 	case IIO_CHAN_INFO_SAMP_FREQ:
- 		ret_type = hid_sensor_read_samp_freq_value(
- 			&magn_state->common_attributes, val, val2);
- 		break;
- 	case IIO_CHAN_INFO_HYSTERESIS:
--		ret_type = hid_sensor_read_raw_hyst_value(
--			&magn_state->common_attributes, val, val2);
-+		switch (chan->type) {
-+		case IIO_MAGN:
-+			ret_type = hid_sensor_read_raw_hyst_value(
-+				&magn_state->common_attributes, val, val2);
-+			break;
-+		case IIO_ROT:
-+			ret_type = hid_sensor_read_raw_hyst_value(
-+				&magn_state->rot_attributes, val, val2);
-+			break;
-+		default:
-+			ret_type = -EINVAL;
-+		}
- 		break;
- 	default:
- 		ret_type = -EINVAL;
-@@ -222,8 +258,18 @@ static int magn_3d_write_raw(struct iio_dev *indio_dev,
- 				&magn_state->common_attributes, val, val2);
- 		break;
- 	case IIO_CHAN_INFO_HYSTERESIS:
--		ret = hid_sensor_write_raw_hyst_value(
-+		switch (chan->type) {
-+		case IIO_MAGN:
-+			ret = hid_sensor_write_raw_hyst_value(
- 				&magn_state->common_attributes, val, val2);
-+			break;
-+		case IIO_ROT:
-+			ret = hid_sensor_write_raw_hyst_value(
-+				&magn_state->rot_attributes, val, val2);
-+			break;
-+		default:
-+			ret = -EINVAL;
-+		}
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -389,10 +435,17 @@ static int magn_3d_parse_report(struct platform_device *pdev,
- 	dev_dbg(&pdev->dev, "magn_3d Setup %d IIO channels\n",
- 			*chan_count);
- 
--	st->scale_precision = hid_sensor_format_scale(
-+	st->scale_precision_magn = hid_sensor_format_scale(
- 				HID_USAGE_SENSOR_COMPASS_3D,
- 				&st->magn[CHANNEL_SCAN_INDEX_X],
--				&st->scale_pre_decml, &st->scale_post_decml);
-+				&st->scale_pre_decml_magn,
-+				&st->scale_post_decml_magn);
-+	st->scale_precision_rot
-+		= hid_sensor_format_scale(
-+			HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-+			&st->magn[CHANNEL_SCAN_INDEX_NORTH_MAGN_TILT_COMP],
-+			&st->scale_pre_decml_rot,
-+			&st->scale_post_decml_rot);
- 
- 	/* Set Sensitivity field ids, when there is no individual modifier */
- 	if (st->common_attributes.sensitivity.index < 0) {
-@@ -405,6 +458,26 @@ static int magn_3d_parse_report(struct platform_device *pdev,
- 			st->common_attributes.sensitivity.index,
- 			st->common_attributes.sensitivity.report_id);
- 	}
-+	if (st->common_attributes.sensitivity.index < 0) {
-+		sensor_hub_input_get_attribute_info(hsdev,
-+			HID_FEATURE_REPORT, usage_id,
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-+			HID_USAGE_SENSOR_ORIENT_MAGN_FLUX,
-+			&st->common_attributes.sensitivity);
-+		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
-+			st->common_attributes.sensitivity.index,
-+			st->common_attributes.sensitivity.report_id);
-+	}
-+	if (st->rot_attributes.sensitivity.index < 0) {
-+		sensor_hub_input_get_attribute_info(hsdev,
-+			HID_FEATURE_REPORT, usage_id,
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-+			HID_USAGE_SENSOR_ORIENT_COMP_MAGN_NORTH,
-+			&st->rot_attributes.sensitivity);
-+		dev_dbg(&pdev->dev, "Sensitivity index:report %d:%d\n",
-+			st->rot_attributes.sensitivity.index,
-+			st->rot_attributes.sensitivity.report_id);
-+	}
- 
- 	return 0;
- }
-@@ -438,6 +511,7 @@ static int hid_magn_3d_probe(struct platform_device *pdev)
- 		dev_err(&pdev->dev, "failed to setup common attributes\n");
+ struct taos_lux {
+@@ -441,7 +435,7 @@ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
+ 	if (ret < 0)
  		return ret;
- 	}
-+	magn_state->rot_attributes = magn_state->common_attributes;
  
- 	ret = magn_3d_parse_report(pdev, hsdev,
- 				&channels, &chan_count,
+-	chip->taos_chip_status = TSL258X_CHIP_WORKING;
++	chip->suspended = false;
+ 
+ 	return ret;
+ }
+@@ -627,7 +621,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&chip->als_mutex);
+ 
+-	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
++	if (chip->suspended) {
+ 		ret = -EBUSY;
+ 		goto read_done;
+ 	}
+@@ -704,7 +698,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&chip->als_mutex);
+ 
+-	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
++	if (chip->suspended) {
+ 		ret = -EBUSY;
+ 		goto write_done;
+ 	}
+@@ -778,7 +772,7 @@ static int taos_probe(struct i2c_client *clientp,
+ 	i2c_set_clientdata(clientp, indio_dev);
+ 
+ 	mutex_init(&chip->als_mutex);
+-	chip->taos_chip_status = TSL258X_CHIP_UNKNOWN;
++	chip->suspended = true;
+ 
+ 	ret = i2c_smbus_read_byte_data(clientp,
+ 				       TSL258X_CMD_REG | TSL258X_CHIPID);
+@@ -836,7 +830,7 @@ static int taos_suspend(struct device *dev)
+ 	mutex_lock(&chip->als_mutex);
+ 
+ 	ret = tsl2583_set_power_state(chip, TSL258X_CNTL_PWR_OFF);
+-	chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
++	chip->suspended = true;
+ 
+ 	mutex_unlock(&chip->als_mutex);
+ 	return ret;
 -- 
-1.9.1
+2.7.4
+
