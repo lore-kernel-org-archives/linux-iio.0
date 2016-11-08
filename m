@@ -1,87 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41861 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752640AbcKHUYZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2016 15:24:25 -0500
-Subject: Re: [PATCH] staging: iio: ad9832: allocate data before using
-To: Arnd Bergmann <arnd@arndb.de>
-References: <20161108140115.2250646-1-arnd@arndb.de>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <da8491e9-9730-2f5b-ada7-01588b63a545@kernel.org>
-Date: Tue, 8 Nov 2016 20:24:18 +0000
-MIME-Version: 1.0
-In-Reply-To: <20161108140115.2250646-1-arnd@arndb.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from onstation.org ([52.200.56.107]:46974 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S933275AbcKHKRD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 Nov 2016 05:17:03 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v2 07/23] staging: iio: tsl2583: remove redundant write to the control register in taos_probe()
+Date: Tue,  8 Nov 2016 05:16:32 -0500
+Message-Id: <1478600208-21153-8-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
+References: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/11/16 14:00, Arnd Bergmann wrote:
-> The regulator changes assigned data to an uninitialized pointer:
-> 
-> drivers/staging/iio/frequency/ad9832.c: In function 'ad9832_probe':
-> drivers/staging/iio/frequency/ad9832.c:214:11: error: 'st' may be used uninitialized in this function [-Werror=maybe-uninitialized]
-> 
-> This moves the allocation of the 'st' structure before its first
-> use, as it should have been.
-> 
-> Fixes: 43a07e48af44 ("staging: iio: ad9832: clean-up regulator 'reg'")
-> Fixes: a98461d79ba5 ("staging: iio: ad9832: add DVDD regulator")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-Thanks Arnd.
+taos_probe() calls i2c_smbus_write_byte() to select the control
+register, however there are no subsequent calls to
+i2c_smbus_read_byte(). The write call is unnecessary and is removed by
+this patch.
 
-I think I've gotten too reliant on zero day and clearly am not checking my local
-build warnings closely enough.  Time to go back to doing pre push out checks more
-thoroughly.
+Verified that the driver still functions correctly using a TSL2581
+hooked up to a Raspberry Pi 2.
 
-Anyhow, applied to the togreg branch of iio.git.  Will probably be the weekend
-at least before I send another pull request.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 8 --------
+ 1 file changed, 8 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/frequency/ad9832.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index 639047fade30..a5b2f068168d 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -211,6 +211,13 @@ static int ad9832_probe(struct spi_device *spi)
->  		return -ENODEV;
->  	}
->  
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +	st = iio_priv(indio_dev);
-> +
->  	st->avdd = devm_regulator_get(&spi->dev, "avdd");
->  	if (IS_ERR(st->avdd))
->  		return PTR_ERR(st->avdd);
-> @@ -233,13 +240,6 @@ static int ad9832_probe(struct spi_device *spi)
->  		goto error_disable_avdd;
->  	}
->  
-> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> -	if (!indio_dev) {
-> -		ret = -ENOMEM;
-> -		goto error_disable_dvdd;
-> -	}
-> -	spi_set_drvdata(spi, indio_dev);
-> -	st = iio_priv(indio_dev);
->  	st->mclk = pdata->mclk;
->  	st->spi = spi;
->  
-> 
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 9880e41..0f5f544 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -788,14 +788,6 @@ static int taos_probe(struct i2c_client *clientp,
+ 		return -EINVAL;
+ 	}
+ 
+-	ret = i2c_smbus_write_byte(clientp, (TSL258X_CMD_REG | TSL258X_CNTRL));
+-	if (ret < 0) {
+-		dev_err(&clientp->dev,
+-			"i2c_smbus_write_byte() to cmd reg failed in taos_probe(), err = %d\n",
+-			ret);
+-		return ret;
+-	}
+-
+ 	indio_dev->info = &tsl2583_info;
+ 	indio_dev->channels = tsl2583_channels;
+ 	indio_dev->num_channels = ARRAY_SIZE(tsl2583_channels);
+-- 
+2.7.4
 
