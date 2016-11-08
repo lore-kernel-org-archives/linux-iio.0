@@ -1,49 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0097.outbound.protection.outlook.com ([104.47.2.97]:9546
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751711AbcKHTea (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Nov 2016 14:34:30 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Mark Rutland" <mark.rutland@arm.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v4 4/8] dt-bindings: add axentia to vendor-prefixes
-Date: Tue, 8 Nov 2016 12:58:54 +0100
-Message-ID: <1478606339-31253-5-git-send-email-peda@axentia.se>
-In-Reply-To: <1478606339-31253-1-git-send-email-peda@axentia.se>
-References: <1478606339-31253-1-git-send-email-peda@axentia.se>
+Received: from mga04.intel.com ([192.55.52.120]:35341 "EHLO mga04.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932301AbcKHQvA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 Nov 2016 11:51:00 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH] hid: hid-sensor-hub: clear memory to avoid random data
+Date: Tue, 8 Nov 2016 16:50:58 +0000
+Message-ID: <1478623857.19401.44.camel@intel.com>
+References: <1478566551-14805-1-git-send-email-hongyan.song@intel.com>
+In-Reply-To: <1478566551-14805-1-git-send-email-hongyan.song@intel.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
-index f0a48ea78659..a437120a7eee 100644
---- a/Documentation/devicetree/bindings/vendor-prefixes.txt
-+++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
-@@ -39,6 +39,7 @@ auo	AU Optronics Corporation
- auvidea Auvidea GmbH
- avago	Avago Technologies
- avic	Shanghai AVIC Optoelectronics Co., Ltd.
-+axentia	Axentia Technologies AB
- axis	Axis Communications AB
- boe	BOE Technology Group Co., Ltd.
- bosch	Bosch Sensortec GmbH
--- 
-2.1.4
-
+T24gVHVlLCAyMDE2LTExLTA4IGF0IDAwOjU1ICswMDAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
+IEluaXRpYWxpemUgdXNlciBidWZmZXIgd2l0aCAwcy4gVGhpcyB3aWxsIGF2b2lkIHJhbmRvbSBk
+YXRhIGluIHRoZQ0KPiBidWZmZXIsDQo+IHdoZW4gdGhlIHVzZXIgYnVmZmVyIHNpemUgaXMgYmln
+Z2VyIHRoYW4gdGhlIGFjdHVhbCByZXBvcnQgc2l6ZS4NCj4gDQpZb3Ugc2hvdWxkIGNoYW5nZSBQ
+QVRDSCB2ZXJzaW9uIHdoZW4geW91IHVwZGF0ZSwgb3RoZXJ3aXNlIG1haW50YWluZXJzDQphbmQg
+cmV2aWV3ZXJzIHdpbGwgbm90IGtub3cgd2hpY2ggb25lIHRvIHJldmlldyBhbmQgYXBwbHkuDQoN
+ClNvIGVhY2ggdGltZSB5b3UgdXBkYXRlIGEgY2hhbmdlDQotIFVzZSAtLXN1YmplY3QtcHJlZml4
+IHRvIGluY3JlbWVudCByZXZpc2lvbi4gRS5nLiAtLXN1YmplY3QtDQpwcmVmaXg9IlBBVENIIHYy
+Ig0KDQotIFRoZSBjaGFuZ2UgbG9nOiBJZiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHBhdGNoIGlu
+IGEgcGF0Y2hzZXQgdGhlbg0KdXNlIC0tY292ZXIgb3B0aW9uIGFuZCBhZGQgdG8gY292ZXIgbGV0
+dGVyIGZvciBlYWNoIGluY3JlbWVudGFsDQp2ZXJzaW9uLiBJZiB5b3UgaGF2ZSBhIHNpbmdlIHBh
+dGNoLCB0aGUgY2hhbmdlIGxvZyBjYW4gZ28gYmVsb3cgIi0tLSINCmJlbG93Lg0KDQpBbHNvIHVz
+ZcKgLi9zY3JpcHRzL2dldF9tYWludGFpbmVyLnBsLCBzY3JpcHQgb24gdGhlIHBhdGNoIHRvIGdl
+dCAidG8iDQphbmQgImNjIiBsaXN0Lg0KDQo+IFNpZ25lZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8
+aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4gLS0tDQpDaGFuZ2UgbG9nDQp2MjoNCnh4eHh4eHh4
+eHh4eHh4eA0KDQpUaGFua3MsDQpTcmluaXZhcw0KDQoNCj4gwqBkcml2ZXJzL2hpZC9oaWQtc2Vu
+c29yLWh1Yi5jIHwgMSArDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+IA0K
+PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9oaWQvaGlkLXNlbnNvci1odWIuYyBiL2RyaXZlcnMvaGlk
+L2hpZC1zZW5zb3ItDQo+IGh1Yi5jDQo+IGluZGV4IDY1OGE2MDcuLmI3NGQ5NTQgMTAwNjQ0DQo+
+IC0tLSBhL2RyaXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMNCj4gKysrIGIvZHJpdmVycy9oaWQv
+aGlkLXNlbnNvci1odWIuYw0KPiBAQCAtMjUyLDYgKzI1Miw3IEBAIGludCBzZW5zb3JfaHViX2dl
+dF9mZWF0dXJlKHN0cnVjdA0KPiBoaWRfc2Vuc29yX2h1Yl9kZXZpY2UgKmhzZGV2LCB1MzIgcmVw
+b3J0X2lkLA0KPiDCoAlpbnQgcmVwb3J0X3NpemU7DQo+IMKgCWludCByZXQgPSAwOw0KPiDCoA0K
+PiArCW1lbXNldChidWZmZXIsIDAsIGJ1ZmZlcl9zaXplKTsNCj4gwqAJbXV0ZXhfbG9jaygmZGF0
+YS0+bXV0ZXgpOw0KPiDCoAlyZXBvcnQgPSBzZW5zb3JfaHViX3JlcG9ydChyZXBvcnRfaWQsIGhz
+ZGV2LT5oZGV2LA0KPiBISURfRkVBVFVSRV9SRVBPUlQpOw0KPiDCoAlpZiAoIXJlcG9ydCB8fCAo
+ZmllbGRfaW5kZXggPj0gcmVwb3J0LT5tYXhmaWVsZCkgfHw=
