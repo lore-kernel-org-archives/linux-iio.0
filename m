@@ -1,116 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0107.outbound.protection.outlook.com ([104.47.2.107]:32567
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S933383AbcKHUeu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Nov 2016 15:34:50 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        "Mark Rutland" <mark.rutland@arm.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Slawomir Stepien <sst@poczta.fm>,
-        Thomas Gleixner <tglx@linutronix.de>,
-        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-Subject: [PATCH v4 7/8] dt-bindings: iio: document envelope-detector bindings
-Date: Tue, 8 Nov 2016 12:58:57 +0100
-Message-ID: <1478606339-31253-8-git-send-email-peda@axentia.se>
-In-Reply-To: <1478606339-31253-1-git-send-email-peda@axentia.se>
-References: <1478606339-31253-1-git-send-email-peda@axentia.se>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41970 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932937AbcKHUqk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2016 15:46:40 -0500
+Subject: Re: [PATCH v2 22/23] staging: iio: tsl2583: updated copyright and
+ MODULE_AUTHOR
+To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
+References: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
+ <1478600208-21153-23-git-send-email-masneyb@onstation.org>
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <4649728f-04d9-42d7-c485-f442c13b345a@kernel.org>
+Date: Tue, 8 Nov 2016 20:35:57 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <1478600208-21153-23-git-send-email-masneyb@onstation.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../bindings/iio/adc/envelope-detector.txt         | 54 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 +++
- 2 files changed, 60 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+On 08/11/16 10:16, Brian Masney wrote:
+> Added Brian Masney's copyright to the header and to the MODULE_AUTHOR
+> for all of the staging cleanups that has been done to this driver.
+> 
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+> ---
+>  drivers/staging/iio/light/tsl2583.c | 3 ++-
+>  1 file changed, 2 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index 013e7f6..5cb4ae3 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -3,6 +3,7 @@
+>   * within the TAOS tsl258x family of devices (tsl2580, tsl2581).
+>   *
+>   * Copyright (c) 2011, TAOS Corporation.
+> + * Copyright (c) 2016 Brian Masney <masneyb@onstation.org>
+>   *
+>   * This program is free software; you can redistribute it and/or modify
+>   * it under the terms of the GNU General Public License as published by
+> @@ -910,6 +911,6 @@ static struct i2c_driver tsl2583_driver = {
+>  };
+>  module_i2c_driver(tsl2583_driver);
+>  
+> -MODULE_AUTHOR("J. August Brenner<jbrenner@taosinc.com>");
+> +MODULE_AUTHOR("J. August Brenner <jbrenner@taosinc.com> and Brian Masney <masneyb@onstation.org>");
+IIRC preferred method is multiple MODULE_AUTHOR statements.
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-new file mode 100644
-index 000000000000..27544bdd4478
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-@@ -0,0 +1,54 @@
-+Bindings for ADC envelope detector using a DAC and a comparator
-+
-+The DAC is used to find the peak level of an alternating voltage input
-+signal by a binary search using the output of a comparator wired to
-+an interrupt pin. Like so:
-+                          _
-+                         | \
-+    input +------>-------|+ \
-+                         |   \
-+           .-------.     |    }---.
-+           |       |     |   /    |
-+           |    dac|-->--|- /     |
-+           |       |     |_/      |
-+           |       |              |
-+           |       |              |
-+           |    irq|------<-------'
-+           |       |
-+           '-------'
-+
-+Required properties:
-+- compatible: Should be "axentia,tse850-envelope-detector"
-+- io-channels: Channel node of the dac to be used for comparator input.
-+- io-channel-names: Should be "dac".
-+- interrupt specification for one client interrupt,
-+  see ../../interrupt-controller/interrupts.txt for details.
-+- interrupt-names: Should be "comp".
-+
-+Example:
-+
-+	&i2c {
-+		dpot: mcp4651-104@28 {
-+			compatible = "microchip,mcp4651-104";
-+			reg = <0x28>;
-+			#io-channel-cells = <1>;
-+		};
-+	};
-+
-+	dac: dac {
-+		compatible = "dpot-dac";
-+		vref-supply = <&reg_3v3>;
-+		io-channels = <&dpot 0>;
-+		io-channel-names = "dpot";
-+		#io-channel-cells = <1>;
-+	};
-+
-+	envelope-detector {
-+		compatible = "axentia,tse850-envelope-detector";
-+		io-channels = <&dac 0>;
-+		io-channel-names = "dac";
-+
-+		interrupt-parent = <&gpio>;
-+		interrupts = <3 IRQ_TYPE_EDGE_FALLING>;
-+		interrupt-names = "comp";
-+	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 583c6c93b6f3..0e13066ca3a2 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6132,6 +6132,12 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-dac-dpot-dac
- F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
- F:	drivers/iio/dac/dpot-dac.c
- 
-+IIO ENVELOPE DETECTOR
-+M:	Peter Rosin <peda@axentia.se>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
-+
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
- R:	Hartmut Knaack <knaack.h@gmx.de>
--- 
-2.1.4
+>  MODULE_DESCRIPTION("TAOS tsl2583 ambient light sensor driver");
+>  MODULE_LICENSE("GPL");
+> 
 
