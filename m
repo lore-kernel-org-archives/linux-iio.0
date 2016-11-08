@@ -1,45 +1,93 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga04.intel.com ([192.55.52.120]:35341 "EHLO mga04.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932301AbcKHQvA (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Nov 2016 11:51:00 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Song, Hongyan" <hongyan.song@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PATCH] hid: hid-sensor-hub: clear memory to avoid random data
-Date: Tue, 8 Nov 2016 16:50:58 +0000
-Message-ID: <1478623857.19401.44.camel@intel.com>
-References: <1478566551-14805-1-git-send-email-hongyan.song@intel.com>
-In-Reply-To: <1478566551-14805-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
+	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>, Daniel Baluta
+	<daniel.baluta@intel.com>, Slawomir Stepien <sst@poczta.fm>, Thomas Gleixner
+	<tglx@linutronix.de>, <linux-iio@vger.kernel.org>,
+	<devicetree@vger.kernel.org>
+Subject: [PATCH v4 5/8] dt-bindings: iio: document dpot-dac bindings
+Date: Tue, 8 Nov 2016 12:58:55 +0100
+Message-ID: <1478606339-31253-6-git-send-email-peda@axentia.se>
+In-Reply-To: <1478606339-31253-1-git-send-email-peda@axentia.se>
+References: <1478606339-31253-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gVHVlLCAyMDE2LTExLTA4IGF0IDAwOjU1ICswMDAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
-IEluaXRpYWxpemUgdXNlciBidWZmZXIgd2l0aCAwcy4gVGhpcyB3aWxsIGF2b2lkIHJhbmRvbSBk
-YXRhIGluIHRoZQ0KPiBidWZmZXIsDQo+IHdoZW4gdGhlIHVzZXIgYnVmZmVyIHNpemUgaXMgYmln
-Z2VyIHRoYW4gdGhlIGFjdHVhbCByZXBvcnQgc2l6ZS4NCj4gDQpZb3Ugc2hvdWxkIGNoYW5nZSBQ
-QVRDSCB2ZXJzaW9uIHdoZW4geW91IHVwZGF0ZSwgb3RoZXJ3aXNlIG1haW50YWluZXJzDQphbmQg
-cmV2aWV3ZXJzIHdpbGwgbm90IGtub3cgd2hpY2ggb25lIHRvIHJldmlldyBhbmQgYXBwbHkuDQoN
-ClNvIGVhY2ggdGltZSB5b3UgdXBkYXRlIGEgY2hhbmdlDQotIFVzZSAtLXN1YmplY3QtcHJlZml4
-IHRvIGluY3JlbWVudCByZXZpc2lvbi4gRS5nLiAtLXN1YmplY3QtDQpwcmVmaXg9IlBBVENIIHYy
-Ig0KDQotIFRoZSBjaGFuZ2UgbG9nOiBJZiB5b3UgaGF2ZSBtb3JlIHRoYW4gb25lIHBhdGNoIGlu
-IGEgcGF0Y2hzZXQgdGhlbg0KdXNlIC0tY292ZXIgb3B0aW9uIGFuZCBhZGQgdG8gY292ZXIgbGV0
-dGVyIGZvciBlYWNoIGluY3JlbWVudGFsDQp2ZXJzaW9uLiBJZiB5b3UgaGF2ZSBhIHNpbmdlIHBh
-dGNoLCB0aGUgY2hhbmdlIGxvZyBjYW4gZ28gYmVsb3cgIi0tLSINCmJlbG93Lg0KDQpBbHNvIHVz
-ZcKgLi9zY3JpcHRzL2dldF9tYWludGFpbmVyLnBsLCBzY3JpcHQgb24gdGhlIHBhdGNoIHRvIGdl
-dCAidG8iDQphbmQgImNjIiBsaXN0Lg0KDQo+IFNpZ25lZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8
-aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4gLS0tDQpDaGFuZ2UgbG9nDQp2MjoNCnh4eHh4eHh4
-eHh4eHh4eA0KDQpUaGFua3MsDQpTcmluaXZhcw0KDQoNCj4gwqBkcml2ZXJzL2hpZC9oaWQtc2Vu
-c29yLWh1Yi5jIHwgMSArDQo+IMKgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCspDQo+IA0K
-PiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9oaWQvaGlkLXNlbnNvci1odWIuYyBiL2RyaXZlcnMvaGlk
-L2hpZC1zZW5zb3ItDQo+IGh1Yi5jDQo+IGluZGV4IDY1OGE2MDcuLmI3NGQ5NTQgMTAwNjQ0DQo+
-IC0tLSBhL2RyaXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMNCj4gKysrIGIvZHJpdmVycy9oaWQv
-aGlkLXNlbnNvci1odWIuYw0KPiBAQCAtMjUyLDYgKzI1Miw3IEBAIGludCBzZW5zb3JfaHViX2dl
-dF9mZWF0dXJlKHN0cnVjdA0KPiBoaWRfc2Vuc29yX2h1Yl9kZXZpY2UgKmhzZGV2LCB1MzIgcmVw
-b3J0X2lkLA0KPiDCoAlpbnQgcmVwb3J0X3NpemU7DQo+IMKgCWludCByZXQgPSAwOw0KPiDCoA0K
-PiArCW1lbXNldChidWZmZXIsIDAsIGJ1ZmZlcl9zaXplKTsNCj4gwqAJbXV0ZXhfbG9jaygmZGF0
-YS0+bXV0ZXgpOw0KPiDCoAlyZXBvcnQgPSBzZW5zb3JfaHViX3JlcG9ydChyZXBvcnRfaWQsIGhz
-ZGV2LT5oZGV2LA0KPiBISURfRkVBVFVSRV9SRVBPUlQpOw0KPiDCoAlpZiAoIXJlcG9ydCB8fCAo
-ZmllbGRfaW5kZXggPj0gcmVwb3J0LT5tYXhmaWVsZCkgfHw=
+Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../devicetree/bindings/iio/dac/dpot-dac.txt       | 41 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 ++++
+ 2 files changed, 47 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+new file mode 100644
+index 000000000000..fdf47a01bfef
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
+@@ -0,0 +1,41 @@
++Bindings for DAC emulation using a digital potentiometer
++
++It is assumed that the dpot is used as a voltage divider between the
++current dpot wiper setting and the maximum resistance of the dpot. The
++divided voltage is provided by a vref regulator.
++
++                  .------.
++   .-----------.  |      |
++   | vref      |--'    .---.
++   | regulator |--.    |   |
++   '-----------'  |    | d |
++                  |    | p |
++                  |    | o |  wiper
++                  |    | t |<---------+
++                  |    |   |
++                  |    '---'       dac output voltage
++                  |      |
++                  '------+------------+
++
++Required properties:
++- compatible: Should be "dpot-dac"
++- vref-supply: The regulator supplying the voltage divider.
++- io-channels: Channel node of the dpot to be used for the voltage division.
++- io-channel-names: Should be "dpot".
++
++Example:
++
++	&i2c {
++		dpot: mcp4651-503@28 {
++			compatible = "microchip,mcp4651-503";
++			reg = <0x28>;
++			#io-channel-cells = <1>;
++		};
++	};
++
++	dac {
++		compatible = "dpot-dac";
++		vref-supply = <&reg_3v3>;
++		io-channels = <&dpot 0>;
++		io-channel-names = "dpot";
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 2409e1d79cb6..4ff9c12b1313 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6124,6 +6124,12 @@ L:	linux-media@vger.kernel.org
+ S:	Maintained
+ F:	drivers/media/rc/iguanair.c
+ 
++IIO DIGITAL POTENTIOMETER DAC
++M:	Peter Rosin <peda@axentia.se>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/dac/dpot-dac.txt
++
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+ R:	Hartmut Knaack <knaack.h@gmx.de>
+-- 
+2.1.4
