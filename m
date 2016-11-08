@@ -1,53 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:48072 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932626AbcKHMBB (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2016 07:01:01 -0500
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
-        Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V4 0/2] Changes to support different VADC scaling
-Date: Tue,  8 Nov 2016 17:28:52 +0530
-Message-Id: <1478606334-12394-1-git-send-email-rphani@codeaurora.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <arnd@arndb.de>
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH 1/2] iio: gyro: mpu3050: remove duplicate initializer
+Date: Tue,  8 Nov 2016 14:59:29 +0100
+Message-Id: <20161108135945.2217384-1-arnd@arndb.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-VADC is a 15 bit ADC that measures signals through the Main analog
-multiplexer (AMUX). The driver arbitrates the request to issue ADC
-read requests. These patches adds different scaling functionality
-to convert adc code to physical units.
+The newly added mpu3050 driver has two initializations for the
+module owner, which causes a warning for 'make W=1':
 
-[V4] 
-	1. Remove DT bindings and implement scaling logic with in driver.
-	
-[V3]
-	1. Update the commit text to give more information on the
-	   functionality implemented in the patches.
-   	2. Added Dt maintainers.
+include/linux/export.h:37:21: error: initialized field overwritten [-Werror=override-init]
+drivers/iio/gyro/mpu3050-core.c:749:19: note: in expansion of macro 'THIS_MODULE'
 
-[V2]
-	1. Replaced the do_div with normal division.
-	2. Split the functionality implemented in v1 patch.
-	3. Abstracted out common logic and updated change to report
-	   Raw adc code properly.
-   	4. Change to support different scaling functionality.
-	5. Added support for introducing new bindings in driver.
+This removes one of the two.
 
-[V1]
-	https://lkml.org/lkml/2016/10/25/26
+Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/gyro/mpu3050-core.c | 1 -
+ 1 file changed, 1 deletion(-)
 
-Rama Krishna Phani A (2):
-  iio: adc: spmi-vadc: Update function for generic voltage conversion
-  iio: adc: spmi-vadc: Changes to support different scaling
-
- drivers/iio/adc/qcom-spmi-vadc.c | 480 ++++++++++++++++++++++++++++-----------
- 1 file changed, 350 insertions(+), 130 deletions(-)
-
+diff --git a/drivers/iio/gyro/mpu3050-core.c b/drivers/iio/gyro/mpu3050-core.c
+index ed681c70a7b4..2be2a5d287e6 100644
+--- a/drivers/iio/gyro/mpu3050-core.c
++++ b/drivers/iio/gyro/mpu3050-core.c
+@@ -746,7 +746,6 @@ static const struct iio_info mpu3050_info = {
+ 	.read_raw = mpu3050_read_raw,
+ 	.write_raw = mpu3050_write_raw,
+ 	.attrs = &mpu3050_attribute_group,
+-	.driver_module = THIS_MODULE,
+ };
+ 
+ /**
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
-
+2.9.0
