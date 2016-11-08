@@ -1,72 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.133]:49650 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751134AbcKHOJx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 8 Nov 2016 09:09:53 -0500
-From: Arnd Bergmann <arnd@arndb.de>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Arnd Bergmann <arnd@arndb.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: [PATCH] staging: iio: ad9832: allocate data before using
-Date: Tue,  8 Nov 2016 15:00:49 +0100
-Message-Id: <20161108140115.2250646-1-arnd@arndb.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <linus.walleij@linaro.org>
+MIME-Version: 1.0
+In-Reply-To: <20161108135945.2217384-1-arnd@arndb.de>
+References: <20161108135945.2217384-1-arnd@arndb.de>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue, 8 Nov 2016 16:39:57 +0100
+Message-ID: <CACRpkdaZhdF5UbUp8L4aVuJmeQd2nD0+rLHXjTtJZ64d_S1hFw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] iio: gyro: mpu3050: remove duplicate initializer
+To: Arnd Bergmann <arnd@arndb.de>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-The regulator changes assigned data to an uninitialized pointer:
+On Tue, Nov 8, 2016 at 2:59 PM, Arnd Bergmann <arnd@arndb.de> wrote:
 
-drivers/staging/iio/frequency/ad9832.c: In function 'ad9832_probe':
-drivers/staging/iio/frequency/ad9832.c:214:11: error: 'st' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+> The newly added mpu3050 driver has two initializations for the
+> module owner, which causes a warning for 'make W=1':
+>
+> include/linux/export.h:37:21: error: initialized field overwritten [-Werror=override-init]
+> drivers/iio/gyro/mpu3050-core.c:749:19: note: in expansion of macro 'THIS_MODULE'
+>
+> This removes one of the two.
+>
+> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
+> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
 
-This moves the allocation of the 'st' structure before its first
-use, as it should have been.
+Acked-by: Linus Walleij <linus.walleij@linaro.org>
 
-Fixes: 43a07e48af44 ("staging: iio: ad9832: clean-up regulator 'reg'")
-Fixes: a98461d79ba5 ("staging: iio: ad9832: add DVDD regulator")
-Signed-off-by: Arnd Bergmann <arnd@arndb.de>
----
- drivers/staging/iio/frequency/ad9832.c | 14 +++++++-------
- 1 file changed, 7 insertions(+), 7 deletions(-)
-
-diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-index 639047fade30..a5b2f068168d 100644
---- a/drivers/staging/iio/frequency/ad9832.c
-+++ b/drivers/staging/iio/frequency/ad9832.c
-@@ -211,6 +211,13 @@ static int ad9832_probe(struct spi_device *spi)
- 		return -ENODEV;
- 	}
- 
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+	st = iio_priv(indio_dev);
-+
- 	st->avdd = devm_regulator_get(&spi->dev, "avdd");
- 	if (IS_ERR(st->avdd))
- 		return PTR_ERR(st->avdd);
-@@ -233,13 +240,6 @@ static int ad9832_probe(struct spi_device *spi)
- 		goto error_disable_avdd;
- 	}
- 
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
--	if (!indio_dev) {
--		ret = -ENOMEM;
--		goto error_disable_dvdd;
--	}
--	spi_set_drvdata(spi, indio_dev);
--	st = iio_priv(indio_dev);
- 	st->mclk = pdata->mclk;
- 	st->spi = spi;
- 
--- 
-2.9.0
-
+Yours,
+Linus Walleij
