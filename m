@@ -1,33 +1,49 @@
-Return-Path: <linus.walleij@linaro.org>
-MIME-Version: 1.0
-In-Reply-To: <20161108135945.2217384-1-arnd@arndb.de>
-References: <20161108135945.2217384-1-arnd@arndb.de>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 8 Nov 2016 16:39:57 +0100
-Message-ID: <CACRpkdaZhdF5UbUp8L4aVuJmeQd2nD0+rLHXjTtJZ64d_S1hFw@mail.gmail.com>
-Subject: Re: [PATCH 1/2] iio: gyro: mpu3050: remove duplicate initializer
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:46886 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S933247AbcKHKRB (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 Nov 2016 05:17:01 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v2 04/23] staging: iio: tsl2583: remove unnecessary chip status check in taos_get_lux
+Date: Tue,  8 Nov 2016 05:16:29 -0500
+Message-Id: <1478600208-21153-5-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
+References: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 8, 2016 at 2:59 PM, Arnd Bergmann <arnd@arndb.de> wrote:
+taos_get_lux checks to see if the chip is in a working state. This
+check is not necessary since it is only called from tsl2583_read_raw
+and in_illuminance_calibrate_store (via taos_als_calibrate). The chip
+state is already checked by these functions.
 
-> The newly added mpu3050 driver has two initializations for the
-> module owner, which causes a warning for 'make W=1':
->
-> include/linux/export.h:37:21: error: initialized field overwritten [-Werror=override-init]
-> drivers/iio/gyro/mpu3050-core.c:749:19: note: in expansion of macro 'THIS_MODULE'
->
-> This removes one of the two.
->
-> Fixes: 3904b28efb2c ("iio: gyro: Add driver for the MPU-3050 gyroscope")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 7 -------
+ 1 file changed, 7 deletions(-)
 
-Acked-by: Linus Walleij <linus.walleij@linaro.org>
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 6c46253..2a3db3f 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -178,13 +178,6 @@ static int taos_get_lux(struct iio_dev *indio_dev)
+ 	u32 ch0lux = 0;
+ 	u32 ch1lux = 0;
+ 
+-	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
+-		/* device is not enabled */
+-		dev_err(&chip->client->dev, "taos_get_lux device is not enabled\n");
+-		ret = -EBUSY;
+-		goto done;
+-	}
+-
+ 	ret = i2c_smbus_read_byte_data(chip->client, TSL258X_CMD_REG);
+ 	if (ret < 0) {
+ 		dev_err(&chip->client->dev, "taos_get_lux failed to read CMD_REG\n");
+-- 
+2.7.4
 
-Yours,
-Linus Walleij
