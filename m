@@ -1,116 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:47276 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:47278 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753352AbcKHK1R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S1753327AbcKHK1R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Tue, 8 Nov 2016 05:27:17 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v2 13/23] staging: iio: tsl2583: change newlines to improve readability
-Date: Tue,  8 Nov 2016 05:16:38 -0500
-Message-Id: <1478600208-21153-14-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 14/23] staging: iio: tsl2583: combine sysfs documentation
+Date: Tue,  8 Nov 2016 05:16:39 -0500
+Message-Id: <1478600208-21153-15-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
 References: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add and remove newlines to improve code readability in preparation for
-moving the driver out of staging.
+There are two separate files describing the tsl2583 sysfs attributes.
+Combine the two files into one. Updated the name of the sysfs attributes
+to match the current ABI.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
+Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 ---
- drivers/staging/iio/light/tsl2583.c | 12 ++++++++++--
- 1 file changed, 10 insertions(+), 2 deletions(-)
+ .../Documentation/light/sysfs-bus-iio-light-tsl2583  | 16 +++++++++++++++-
+ .../iio/Documentation/sysfs-bus-iio-light-tsl2583    | 20 --------------------
+ 2 files changed, 15 insertions(+), 21 deletions(-)
+ delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 8be135b..eff59f37 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -202,7 +202,6 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
- 	ret = i2c_smbus_write_byte(chip->client,
- 				   (TSL2583_CMD_REG | TSL2583_CMD_SPL_FN |
- 				    TSL2583_CMD_ALS_INT_CLR));
+diff --git a/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583 b/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
+index 470f7ad..a2e1996 100644
+--- a/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
++++ b/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
+@@ -1,6 +1,20 @@
+-What:		/sys/bus/iio/devices/device[n]/in_illuminance0_calibrate
++What:		/sys/bus/iio/devices/device[n]/in_illuminance_calibrate
+ KernelVersion:	2.6.37
+ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		This property causes an internal calibration of the als gain trim
+ 		value which is later used in calculating illuminance in lux.
++
++What:		/sys/bus/iio/devices/device[n]/in_illuminance_lux_table
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property gets/sets the table of coefficients
++		used in calculating illuminance in lux.
++
++What:		/sys/bus/iio/devices/device[n]/in_illuminance_input_target
++KernelVersion:	2.6.37
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This property is the known externally illuminance (in lux).
++		It is used in the process of calibrating the device accuracy.
+diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583 b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+deleted file mode 100644
+index 660781d..0000000
+--- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
++++ /dev/null
+@@ -1,20 +0,0 @@
+-What:		/sys/bus/iio/devices/device[n]/lux_table
+-KernelVersion:	2.6.37
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This property gets/sets the table of coefficients
+-		used in calculating illuminance in lux.
 -
- 	if (ret < 0) {
- 		dev_err(&chip->client->dev, "%s failed to clear the interrupt bit\n",
- 			__func__);
-@@ -225,8 +224,10 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
- 		chip->als_cur_info.lux = 0;
- 		goto done;
- 	}
-+
- 	/* calculate ratio */
- 	ratio = (ch1 << 15) / ch0;
-+
- 	/* convert to unscaled lux using the pointer to the table */
- 	for (p = (struct tsl2583_lux *)tsl2583_device_lux;
- 	     p->ratio != 0 && p->ratio < ratio; p++)
-@@ -273,6 +274,7 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
- 	lux64 >>= 13;
- 	lux = lux64;
- 	lux = (lux + 500) / 1000;
-+
- 	if (lux > TSL2583_LUX_CALC_OVER_FLOW) { /* check for overflow */
- return_max:
- 		lux = TSL2583_LUX_CALC_OVER_FLOW;
-@@ -318,20 +320,22 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
- 			"%s failed: STATUS - ADC not valid.\n", __func__);
- 		return -ENODATA;
- 	}
-+
- 	lux_val = tsl2583_get_lux(indio_dev);
- 	if (lux_val < 0) {
- 		dev_err(&chip->client->dev, "%s failed to get lux\n", __func__);
- 		return lux_val;
- 	}
-+
- 	gain_trim_val = (unsigned int)(((chip->als_settings.als_cal_target)
- 			* chip->als_settings.als_gain_trim) / lux_val);
+-What:		/sys/bus/iio/devices/device[n]/illuminance0_calibrate
+-KernelVersion:	2.6.37
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This property causes an internal calibration of the als gain trim
+-		value which is later used in calculating illuminance in lux.
 -
- 	if ((gain_trim_val < 250) || (gain_trim_val > 4000)) {
- 		dev_err(&chip->client->dev,
- 			"%s failed: trim_val of %d is not within the range [250, 4000]\n",
- 			__func__, gain_trim_val);
- 		return -ENODATA;
- 	}
-+
- 	chip->als_settings.als_gain_trim = (int)gain_trim_val;
- 
- 	return (int)gain_trim_val;
-@@ -525,6 +529,7 @@ static ssize_t in_illuminance_lux_table_show(struct device *dev,
- 	}
- 
- 	offset += sprintf(buf + offset, "\n");
-+
- 	return offset;
- }
- 
-@@ -772,6 +777,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
- 	indio_dev = devm_iio_device_alloc(&clientp->dev, sizeof(*chip));
- 	if (!indio_dev)
- 		return -ENOMEM;
-+
- 	chip = iio_priv(indio_dev);
- 	chip->client = clientp;
- 	i2c_set_clientdata(clientp, indio_dev);
-@@ -799,6 +805,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
- 	indio_dev->dev.parent = &clientp->dev;
- 	indio_dev->modes = INDIO_DIRECT_MODE;
- 	indio_dev->name = chip->client->name;
-+
- 	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
- 	if (ret) {
- 		dev_err(&clientp->dev, "%s: iio registration failed\n",
-@@ -815,6 +822,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
- 		return ret;
- 
- 	dev_info(&clientp->dev, "Light sensor found.\n");
-+
- 	return 0;
- }
- 
+-What:		/sys/bus/iio/devices/device[n]/illuminance0_input_target
+-KernelVersion:	2.6.37
+-Contact:	linux-iio@vger.kernel.org
+-Description:
+-		This property is the known externally illuminance (in lux).
+-		It is used in the process of calibrating the device accuracy.
 -- 
 2.7.4
 
