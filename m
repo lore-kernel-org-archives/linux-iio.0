@@ -1,74 +1,118 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39513 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S941012AbcKOPdR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 10:33:17 -0500
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-To: <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
-Subject: [PATCH v3 0/6] Add support for STM32 ADC
-Date: Tue, 15 Nov 2016 16:30:55 +0100
-Message-ID: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+Received: from mail-he1eur01on0099.outbound.protection.outlook.com ([104.47.0.99]:26548
+        "EHLO EUR01-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S932247AbcKHViY (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 Nov 2016 16:38:24 -0500
+Subject: Re: [PATCH v4 8/8] iio: envelope-detector: ADC driver based on a DAC
+ and a comparator
+To: Thomas Gleixner <tglx@linutronix.de>
+References: <1478606339-31253-1-git-send-email-peda@axentia.se>
+ <1478606339-31253-9-git-send-email-peda@axentia.se>
+ <alpine.DEB.2.20.1611081630450.3501@nanos>
+CC: <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        "Peter Meerwald-Stadler" <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        "Mark Rutland" <mark.rutland@arm.com>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Slawomir Stepien <sst@poczta.fm>, <linux-iio@vger.kernel.org>,
+        <devicetree@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <d8237286-d2ff-3146-d718-f54d05b0101d@axentia.se>
+Date: Tue, 8 Nov 2016 18:03:04 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <alpine.DEB.2.20.1611081630450.3501@nanos>
+Content-Type: text/plain; charset="windows-1252"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This series adds support for STM32F4 ADC into IIO framework.
-STM32F4 ADC is a 12-bit successive approximation analog-to-digital
-converter with multiplexed input channels. Conversions can
-be performed in single, continuous, scan or discontinuous mode.
-Conversions can be launched in software or using hardware triggers.
+On 2016-11-08 16:59, Thomas Gleixner wrote:
+> On Tue, 8 Nov 2016, Peter Rosin wrote:
+>> +/*
+>> + * The envelope_detector_comp_latch function works together with the compare
+>> + * interrupt service routine below (envelope_detector_comp_isr) as a latch
+>> + * (one-bit memory) for if the interrupt has triggered since last calling
+>> + * this function.
+>> + * The ..._comp_isr function disables the interrupt so that the cpu does not
+>> + * need to service a possible interrupt flood from the comparator when no-one
+>> + * cares anyway, and this ..._comp_latch function reenables them again if
+>> + * needed.
+>> + */
+>> +static int envelope_detector_comp_latch(struct envelope *env)
+>> +{
+>> +	int comp;
+>> +
+>> +	spin_lock_irq(&env->comp_lock);
+>> +	comp = env->comp;
+>> +	env->comp = 0;
+>> +	spin_unlock_irq(&env->comp_lock);
+>> +
+>> +	if (!comp)
+>> +		return 0;
+>> +
+>> +	/*
+>> +	 * The irq was disabled, and is reenabled just now.
+>> +	 * But there might have been a pending irq that
+>> +	 * happened while the irq was disabled that fires
+>> +	 * just as the irq is reenabled. That is not what
+>> +	 * is desired.
+>> +	 */
+>> +	enable_irq(env->comp_irq);
+>> +
+>> +	/* So, synchronize this possibly pending irq... */
+>> +	synchronize_irq(env->comp_irq);
+>> +
+>> +	/* ...and redo the whole dance. */
+>> +	spin_lock_irq(&env->comp_lock);
+>> +	comp = env->comp;
+>> +	env->comp = 0;
+>> +	spin_unlock_irq(&env->comp_lock);
+>> +
+>> +	if (comp)
+>> +		enable_irq(env->comp_irq);
+> 
+> So you need that whole dance including the delayed work because you cannot
+> call iio_write_channel_raw() from hard interrupt context, right?
 
-This driver has been developed and tested on STM32F429 eval board.
-It consist of a core driver, to manage common resources shared
-between up to 3 ADC instances and an ADC driver to manage each adc
-instance.
+It's not the "cannot call from hard irq context" that made me do that, it's...
 
-Changes in v3:
-- Core driver moved to iio/adc.
-- Build fix.
-- Updates following Jonathan's and Lars's remarks.
-- Binding: adc child clock is mandatory.
+> So you might just register a threaded interrupt handler, which should make
+> this whole thing way simpler.
+> 
+>      devm_request_threaded_irq(dev, irq, NULL, your_isr, IRQF_ONESHOT, ...);
+> 
+> The core will mask the interrupt line until the threaded handler is
+> finished. The threaded handler is invoked with preemption enabled, so you
+> can sleep there as long as you want. So you can do everything in your
+> handler and the above dance is just not required.
 
-Changes in v2:
-- Replace single driver model by MFD approach, to handle up to 3 ADCs
-  as separate devices. Each ADC device then registers a unique IIO
-  device.
-- Make driver as simple as possible for the first instance, to ease
-  review. For now, I dropped complexity by removing injected support,
-  triggered buffer mode, dmas.
-- Removed abstraction layer (indirection routines, ops) as only stm32f4
-  is supported.
+...that I couldn't work out how to reenable a oneshot irq once it had fired,
+short of freeing the irq and requesting it again. That seemed entirely
+bogus, the driver shouldn't risk losing a resource like that so I don't know
+what I didn't see? Or maybe it was that I had a hard time resolving the race
+between the irq and the timeout in a nice way. I honestly don't remember
+why exactly I abandoned oneshot irqs, but this enable/sync/enable dance
+was much nicer than what I came up with for the oneshot irq solution I
+originally worked on.
 
-Fabrice Gasnier (6):
-  Documentation: dt-bindings: Document STM32 ADC DT bindings
-  iio: adc: Add support for STM32 ADC core
-  iio: adc: Add support for STM32 ADC
-  ARM: configs: stm32: enable ADC driver
-  ARM: dts: stm32f429: Add adc support
-  ARM: dts: stm32f429: enable adc on eval board
+Or maybe I had problems with the possibly pending irq also when using a
+oneshot irq, but didn't realize it? That was something I discovered quite
+late in the process, some time after moving away from oneshot irqs. Are
+pending irqs cleared when requesting (or reenabling, however that is done)
+a oneshot irq?
 
- .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |  83 ++++
- arch/arm/boot/dts/stm32429i-eval.dts               |  25 +
- arch/arm/boot/dts/stm32f429.dtsi                   |  49 ++
- arch/arm/configs/stm32_defconfig                   |   3 +
- drivers/iio/adc/Kconfig                            |  23 +
- drivers/iio/adc/Makefile                           |   2 +
- drivers/iio/adc/stm32-adc-core.c                   | 303 ++++++++++++
- drivers/iio/adc/stm32-adc-core.h                   |  52 +++
- drivers/iio/adc/stm32-adc.c                        | 518 +++++++++++++++++++++
- 9 files changed, 1058 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
- create mode 100644 drivers/iio/adc/stm32-adc-core.c
- create mode 100644 drivers/iio/adc/stm32-adc-core.h
- create mode 100644 drivers/iio/adc/stm32-adc.c
+Anyway, I do not want the interrupt to be serviced when no one is interested,
+since I'm afraid that nasty input might generate a flood of interrupts that
+might disturb other things that the cpu is doing. Which means that I need
+to enable/disable the interrupt as needed.
 
--- 
-1.9.1
+However, what *I* thought Jonathan wanted input on was the part where the
+interrupt edge/level is flipped when requesting "inverted" signals in
+envelope_store_invert(). That could perhaps be seen as unorthodox and in
+need of more eyes?
 
+Cheers,
+Peter
