@@ -1,85 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:47278 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:47262 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753327AbcKHK1R (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 8 Nov 2016 05:27:17 -0500
+        id S1753096AbcKHK1P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 8 Nov 2016 05:27:15 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v2 14/23] staging: iio: tsl2583: combine sysfs documentation
-Date: Tue,  8 Nov 2016 05:16:39 -0500
-Message-Id: <1478600208-21153-15-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v2 18/23] staging: iio: tsl2583: change tsl2583_als_calibrate() to return 0 on success
+Date: Tue,  8 Nov 2016 05:16:43 -0500
+Message-Id: <1478600208-21153-19-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
 References: <1478600208-21153-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-There are two separate files describing the tsl2583 sysfs attributes.
-Combine the two files into one. Updated the name of the sysfs attributes
-to match the current ABI.
+tsl2583_als_calibrate() returns the newly computed gain_trim if the
+calibration was successful. This function is only called by
+in_illuminance_calibrate_store() and the return value inside that
+sysfs attribute is only checked to see if an error was returned.
+This patch changes tsl2583_als_calibrate() to return 0 on success.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
-Suggested-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 ---
- .../Documentation/light/sysfs-bus-iio-light-tsl2583  | 16 +++++++++++++++-
- .../iio/Documentation/sysfs-bus-iio-light-tsl2583    | 20 --------------------
- 2 files changed, 15 insertions(+), 21 deletions(-)
- delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
+ drivers/staging/iio/light/tsl2583.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583 b/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
-index 470f7ad..a2e1996 100644
---- a/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
-+++ b/drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
-@@ -1,6 +1,20 @@
--What:		/sys/bus/iio/devices/device[n]/in_illuminance0_calibrate
-+What:		/sys/bus/iio/devices/device[n]/in_illuminance_calibrate
- KernelVersion:	2.6.37
- Contact:	linux-iio@vger.kernel.org
- Description:
- 		This property causes an internal calibration of the als gain trim
- 		value which is later used in calculating illuminance in lux.
-+
-+What:		/sys/bus/iio/devices/device[n]/in_illuminance_lux_table
-+KernelVersion:	2.6.37
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This property gets/sets the table of coefficients
-+		used in calculating illuminance in lux.
-+
-+What:		/sys/bus/iio/devices/device[n]/in_illuminance_input_target
-+KernelVersion:	2.6.37
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This property is the known externally illuminance (in lux).
-+		It is used in the process of calibrating the device accuracy.
-diff --git a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583 b/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
-deleted file mode 100644
-index 660781d..0000000
---- a/drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
-+++ /dev/null
-@@ -1,20 +0,0 @@
--What:		/sys/bus/iio/devices/device[n]/lux_table
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		This property gets/sets the table of coefficients
--		used in calculating illuminance in lux.
--
--What:		/sys/bus/iio/devices/device[n]/illuminance0_calibrate
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		This property causes an internal calibration of the als gain trim
--		value which is later used in calculating illuminance in lux.
--
--What:		/sys/bus/iio/devices/device[n]/illuminance0_input_target
--KernelVersion:	2.6.37
--Contact:	linux-iio@vger.kernel.org
--Description:
--		This property is the known externally illuminance (in lux).
--		It is used in the process of calibrating the device accuracy.
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 5cdfe06..f1c9bb9 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -342,7 +342,7 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
+ 
+ 	chip->als_settings.als_gain_trim = (int)gain_trim_val;
+ 
+-	return (int)gain_trim_val;
++	return 0;
+ }
+ 
+ static int tsl2583_set_als_time(struct tsl2583_chip *chip)
 -- 
 2.7.4
 
