@@ -1,57 +1,44 @@
-Return-Path: <dmitry.torokhov@gmail.com>
-Date: Tue, 8 Nov 2016 16:20:32 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: linux@armlinux.org.uk, maxime.ripard@free-electrons.com, wens@csie.org,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, lee.jones@linaro.org,
-	antoine.tenart@free-electrons.com,
-	thomas.petazzoni@free-electrons.com,
-	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-input@vger.kernel.org
-Subject: Re: [PATCH v7 1/3] input: touchscreen: TOUCHSCREEN_SUN4I depends on
- !SUN4I_GPADC
-Message-ID: <20161109002032.GD8719@dtor-ws>
-References: <20161103101601.24529-1-quentin.schulz@free-electrons.com>
- <20161103101601.24529-2-quentin.schulz@free-electrons.com>
+Return-Path: <stefan.wahren@i2se.com>
+Date: Tue, 8 Nov 2016 23:34:07 +0100 (CET)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>, lee.jones@linaro.org
+Cc: linux-input@vger.kernel.org, pmeerw@pmeerw.net, jic23@kernel.org,
+	knaack.h@gmx.de, lars@metafoo.de, dmitry.torokhov@gmail.com,
+	harald@ccbib.org, fabio.estevam@freescale.com,
+	linux-iio@vger.kernel.org, marex@denx.de,
+	linux-kernel@vger.kernel.org
+Message-ID: <1401051818.290769.fabb549c-29f9-4e5c-a868-650c6df97a1d.open-xchange@email.1und1.de>
+In-Reply-To: <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
+References: <cover.1478071676.git.ksenija.stanojevic@gmail.com>
+ <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
+Subject: Re: [PATCH v9 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161103101601.24529-2-quentin.schulz@free-electrons.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Nov 03, 2016 at 11:15:59AM +0100, Quentin Schulz wrote:
-> SUN4I_GPADC and TOUCHSCREEN_SUN4I are incompatible (both are drivers
-> for Allwinner SoCs' ADC). This makes sure TOUCHSCREEN_SUN4I isn't
-> enabled while SUN4I_GPADC is enabled.
+> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 2. November 2016 um
+> 08:38 geschrieben:
 > 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+> 
+> Add core files for low resolution analog-to-digital converter (mxs-lradc)
+> MFD driver.
+> 
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
 
-Acked-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
 
-Please merge with SUN4I_GPADC driver patch.
+for Patch 1 + 2
 
 > ---
-> 
-> added in v7
-> 
->  drivers/input/touchscreen/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
-> index efca013..c618cb9 100644
-> --- a/drivers/input/touchscreen/Kconfig
-> +++ b/drivers/input/touchscreen/Kconfig
-> @@ -1120,6 +1120,7 @@ config TOUCHSCREEN_SUN4I
->  	depends on ARCH_SUNXI || COMPILE_TEST
->  	depends on HWMON
->  	depends on THERMAL || !THERMAL_OF
-> +	depends on !SUN4I_GPADC
->  	help
->  	  This selects support for the resistive touchscreen controller
->  	  found on Allwinner sunxi SoCs.
-> -- 
-> 2.9.3
-> 
+> ...
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index 9834e66..057ca15 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -211,3 +211,4 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
+>  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+>  
+>  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
+> +obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
 
--- 
-Dmitry
+Btw this part won't apply anymore
