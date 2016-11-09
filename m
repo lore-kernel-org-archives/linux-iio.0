@@ -1,97 +1,168 @@
 Return-Path: <m.niestroj@grinn-global.com>
-Subject: Re: [PATCH 2/2] Documentation: DT: Add bmi160 imu binding
-To: Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
- <20161103112527.29623-2-m.niestroj@grinn-global.com>
- <e46a4b5e-a347-f268-80f4-0ee1edc77aac@kernel.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Daniel Baluta <daniel.baluta@intel.com>,
- Gregor Boirie <gregor.boirie@parrot.com>,
+ <alpine.DEB.2.02.1611031252480.11256@pmeerw.net>
+ <eed0df11-6520-c3fa-c6cd-46c13dcddc1f@grinn-global.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, Daniel Baluta
+ <daniel.baluta@intel.com>, Gregor Boirie <gregor.boirie@parrot.com>,
  Sanchayan Maity <maitysanchayan@gmail.com>, Rob Herring
- <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+ <robh+dt@kernel.org>, linux-iio@vger.kernel.org
 From: Marcin Niestroj <m.niestroj@grinn-global.com>
-Message-ID: <d07474fc-e6c9-d529-6a06-0549f3dfad52@grinn-global.com>
-Date: Wed, 9 Nov 2016 16:18:34 +0100
+Message-ID: <48a86354-f566-d162-f1fa-5fe6ba78dde2@grinn-global.com>
+Date: Wed, 9 Nov 2016 18:16:59 +0100
 MIME-Version: 1.0
-In-Reply-To: <e46a4b5e-a347-f268-80f4-0ee1edc77aac@kernel.org>
+In-Reply-To: <eed0df11-6520-c3fa-c6cd-46c13dcddc1f@grinn-global.com>
 Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 06.11.2016 13:41, Jonathan Cameron wrote:
-> On 03/11/16 11:25, Marcin Niestroj wrote:
->> This adds documentation for Bosch BMI160 Inertial Measurement Unit
->> device-tree bindings.
+On 09.11.2016 15:16, Marcin Niestroj wrote:
+> Hi,
+> Thanks for review, below are my comments.
+>
+> On 03.11.2016 13:09, Peter Meerwald-Stadler wrote:
 >>
->> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
-> Unless I missed it in the previous patch we should also have of tables
-> added to the i2c and spi files (which is why the various tests haven't
-> been screaming at me that this device doesn't have documented bindings).
-
-Ok, I will add them.
-
->
-> Otherwise, the use of interrupt names to indicate which pin on the chip
-> is a little unusual (if you cribbed this from somewhere I've forgotten
-> about then do say so!), so will want a devicetree bindings maintainer
-> input on this.
-
-I have used interrupt names similar as in other driver. Please see [1] 
-for it's DT documentation and [2] for implementation.
-
-[1] Documentation/devicetree/bindings/iio/accel/mma8452.txt
-[2] drivers/iio/accel/mma8452.c
-
->
-> Thanks,
->
-> Jonathan
->> ---
->>  .../devicetree/bindings/iio/imu/bmi160.txt         | 34 ++++++++++++++++++++++
->>  1 file changed, 34 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+>>> This patch was developed primarily based on bmc150_accel hardware fifo
+>>> implementation.
 >>
->> diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
->> new file mode 100644
->> index 0000000..b02ef3e
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
->> @@ -0,0 +1,34 @@
->> +Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
->> +and externally connectable Magnetometer
->> +
->> +https://www.bosch-sensortec.com/bst/products/all_products/bmi160
->> +
->> +Required properties:
->> + - compatible : should be "bosch,bmi160"
->> + - reg : the I2C address or SPI chip select number of the sensor
->> + - spi-max-frequency : set maximum clock frequency (only for SPI)
->> +
->> +Optional properties:
->> + - interrupt-parent : should be the phandle of the interrupt controller
->> + - interrupts : interrupt mapping for GPIO IRQ, must be IRQ_TYPE_LEVEL_LOW
->> + - interrupt-names : set to "INT2" if using INT2 pin
->> +
->> +Examples:
->> +
->> +bmi160@68 {
->> +	compatible = "bosch,bmi160";
->> +	reg = <0x68>;
->> +
->> +	interrupt-parent = <&gpio4>;
->> +	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
->> +};
->> +
->> +bmi160@0 {
->> +	compatible = "bosch,bmi160";
->> +	reg = <0>;
->> +	spi-max-frequency = <10000000>;
->> +
->> +	interrupt-parent = <&gpio2>;
->> +	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
->> +	interrupt-names = "INT2";
->> +};
+>> parts of the patch are cleanup and bugfixing; should be separate?
+>>
+>> more comments below
+>>
+>>> IRQ handler was added, which for now is responsible only for handling
+>>> watermark interrupts. The BMI160 chip has two interrupt outputs. By
+>>> default INT is considered to be connected. If INT2 is used instead, the
+>>> interrupt-names device-tree property can be used to specify that.
+>>>
+>>> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+
+<snip>
+
+>>> @@ -574,8 +1114,11 @@ int bmi160_core_probe(struct device *dev,
+>>> struct regmap *regmap,
+>>>
+>>>      data = iio_priv(indio_dev);
+>>>      dev_set_drvdata(dev, indio_dev);
+>>> +    data->irq = irq;
+>>>      data->regmap = regmap;
+>>>
+>>> +    mutex_init(&data->mutex);
+>>> +
+>>>      ret = bmi160_chip_init(data, use_spi);
+>>>      if (ret < 0)
+>>>          return ret;
+>>> @@ -591,10 +1134,50 @@ int bmi160_core_probe(struct device *dev,
+>>> struct regmap *regmap,
+>>>      indio_dev->info = &bmi160_info;
+>>>
+>>>      ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>> -                     bmi160_trigger_handler, NULL);
+>>> +                     bmi160_trigger_handler,
+>>> +                     &bmi160_buffer_ops);
+>>>      if (ret < 0)
+>>>          goto uninit;
+>>>
+>>> +    if (data->irq > 0) {
+>>> +        /* Check which interrupt pin is connected to our board */
+>>> +        irq2 = of_irq_get_byname(dev->of_node, "INT2");
+>>> +        if (irq2 == data->irq) {
+>>> +            dev_dbg(dev, "Using interrupt line INT2\n");
+>>> +            data->irq_data = &bmi160_irq2_data;
+>>> +        } else {
+>>> +            dev_dbg(dev, "Using interrupt line INT1\n");
+>>> +            data->irq_data = &bmi160_irq1_data;
+>>> +        }
+>>> +
+>>> +        ret = devm_request_threaded_irq(dev,
+>>> +                        data->irq,
+>>> +                        bmi160_irq_handler,
+>>> +                        bmi160_irq_thread_handler,
+>>> +                        IRQF_ONESHOT,
+>>> +                        BMI160_IRQ_NAME,
+>>> +                        indio_dev);
+>>> +        if (ret)
+>>> +            return ret;
+
+I just noticed, that there should be a "goto buffer_cleanup" instead.
+
+>>> +
+>>> +        ret = bmi160_enable_irq(data);
+>>> +        if (ret < 0)
+>>> +            goto buffer_cleanup;
+>>> +
+>>> +        if (block_supported) {
+>>> +            indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
+>>> +            indio_dev->info = &bmi160_info_fifo;
+>>> +            indio_dev->buffer->attrs = bmi160_fifo_attributes;
+>>> +            data->fifo_buffer = devm_kmalloc(dev,
+>>> +                            BMI160_FIFO_LENGTH,
+>>> +                            GFP_KERNEL);
+>>> +            if (!data->fifo_buffer) {
+>>> +                ret = -ENOMEM;
+>>
+>> need to disable irq on failure?
+>
+> Yes, I missed that.
+
+I am just wondering now if it is really neccessary. bmi160_enable_irq()
+is just enabling IRQ output on INT1 or INT2 depending on device-tree.
+This alone will not trigger interrupts, as all should be masked at this
+stage.
+
+>
+>>
+>>> +                goto buffer_cleanup;
+>>> +            }
+>>> +        }
+>>> +    }
+>>> +
+>>>      ret = iio_device_register(indio_dev);
+>>>      if (ret < 0)
+>>>          goto buffer_cleanup;
+>>> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c
+>>> b/drivers/iio/imu/bmi160/bmi160_i2c.c
+>>> index 07a179d..aa63f89 100644
+>>> --- a/drivers/iio/imu/bmi160/bmi160_i2c.c
+>>> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+>>> @@ -23,6 +23,10 @@ static int bmi160_i2c_probe(struct i2c_client
+>>> *client,
+>>>  {
+>>>      struct regmap *regmap;
+>>>      const char *name = NULL;
+>>> +    bool block_supported =
+>>> +        i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
+>>> +        i2c_check_functionality(client->adapter,
+>>> +                    I2C_FUNC_SMBUS_READ_I2C_BLOCK);
+>>>
+>>>      regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
+>>>      if (IS_ERR(regmap)) {
+>>> @@ -34,7 +38,8 @@ static int bmi160_i2c_probe(struct i2c_client *client,
+>>>      if (id)
+>>>          name = id->name;
+>>>
+>>> -    return bmi160_core_probe(&client->dev, regmap, name, false);
+>>> +    return bmi160_core_probe(&client->dev, regmap, name, client->irq,
+>>> +                false, block_supported);
+>>>  }
+>>>
+>>>  static int bmi160_i2c_remove(struct i2c_client *client)
+>>> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c
+>>> b/drivers/iio/imu/bmi160/bmi160_spi.c
+>>> index 1ec8b12..9b57fbe 100644
+>>> --- a/drivers/iio/imu/bmi160/bmi160_spi.c
+>>> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+>>> @@ -25,7 +25,8 @@ static int bmi160_spi_probe(struct spi_device *spi)
+>>>              (int)PTR_ERR(regmap));
+>>>          return PTR_ERR(regmap);
+>>>      }
+>>> -    return bmi160_core_probe(&spi->dev, regmap, id->name, true);
+>>> +    return bmi160_core_probe(&spi->dev, regmap, id->name, spi->irq,
+>>> +                true, true);
+>>>  }
+>>>
+>>>  static int bmi160_spi_remove(struct spi_device *spi)
+>>>
 >>
 >
 
