@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f46.google.com ([209.85.215.46]:35256 "EHLO
-        mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933790AbcKIPKN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 10:10:13 -0500
-Received: by mail-lf0-f46.google.com with SMTP id b14so166477420lfg.2
-        for <linux-iio@vger.kernel.org>; Wed, 09 Nov 2016 07:10:11 -0800 (PST)
+Received: from mail-lf0-f43.google.com ([209.85.215.43]:35848 "EHLO
+        mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933758AbcKIPKL (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 10:10:11 -0500
+Received: by mail-lf0-f43.google.com with SMTP id t196so167132132lff.3
+        for <linux-iio@vger.kernel.org>; Wed, 09 Nov 2016 07:10:10 -0800 (PST)
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
 Cc: Giuseppe Barba <giuseppe.barba@st.com>,
@@ -12,9 +12,9 @@ Cc: Giuseppe Barba <giuseppe.barba@st.com>,
         Gregor Boirie <gregor.boirie@parrot.com>,
         Crestez Dan Leonard <leonard.crestez@intel.com>,
         Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 2/4] iio: gyro: st_gyro: inline per-sensor data
-Date: Wed,  9 Nov 2016 16:09:58 +0100
-Message-Id: <1478704200-19046-3-git-send-email-linus.walleij@linaro.org>
+Subject: [PATCH 1/4] iio: accel: st_accel: inline per-sensor data
+Date: Wed,  9 Nov 2016 16:09:57 +0100
+Message-Id: <1478704200-19046-2-git-send-email-linus.walleij@linaro.org>
 In-Reply-To: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
 References: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -42,354 +42,812 @@ This patch is purely syntactic should have no semantic effect.
 
 Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- drivers/iio/gyro/st_gyro_core.c | 205 +++++++++++++---------------------------
- 1 file changed, 66 insertions(+), 139 deletions(-)
+ drivers/iio/accel/st_accel_core.c | 538 +++++++++++++-------------------------
+ 1 file changed, 177 insertions(+), 361 deletions(-)
 
-diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-index aea034d8fe0f..2a42b3d583e8 100644
---- a/drivers/iio/gyro/st_gyro_core.c
-+++ b/drivers/iio/gyro/st_gyro_core.c
-@@ -39,79 +39,6 @@
- #define ST_GYRO_FS_AVL_500DPS			500
- #define ST_GYRO_FS_AVL_2000DPS			2000
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index da3fb069ec5c..d21b2dbe7432 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -43,194 +43,6 @@
+ #define ST_ACCEL_FS_AVL_200G			200
+ #define ST_ACCEL_FS_AVL_400G			400
  
 -/* CUSTOM VALUES FOR SENSOR 1 */
--#define ST_GYRO_1_WAI_EXP			0xd3
--#define ST_GYRO_1_ODR_ADDR			0x20
--#define ST_GYRO_1_ODR_MASK			0xc0
--#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
--#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
--#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
--#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
--#define ST_GYRO_1_PW_ADDR			0x20
--#define ST_GYRO_1_PW_MASK			0x08
--#define ST_GYRO_1_FS_ADDR			0x23
--#define ST_GYRO_1_FS_MASK			0x30
--#define ST_GYRO_1_FS_AVL_250_VAL		0x00
--#define ST_GYRO_1_FS_AVL_500_VAL		0x01
--#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
--#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
--#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
--#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
--#define ST_GYRO_1_BDU_ADDR			0x23
--#define ST_GYRO_1_BDU_MASK			0x80
--#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
--#define ST_GYRO_1_DRDY_IRQ_INT2_MASK		0x08
--#define ST_GYRO_1_MULTIREAD_BIT			true
+-#define ST_ACCEL_1_WAI_EXP			0x33
+-#define ST_ACCEL_1_ODR_ADDR			0x20
+-#define ST_ACCEL_1_ODR_MASK			0xf0
+-#define ST_ACCEL_1_ODR_AVL_1HZ_VAL		0x01
+-#define ST_ACCEL_1_ODR_AVL_10HZ_VAL		0x02
+-#define ST_ACCEL_1_ODR_AVL_25HZ_VAL		0x03
+-#define ST_ACCEL_1_ODR_AVL_50HZ_VAL		0x04
+-#define ST_ACCEL_1_ODR_AVL_100HZ_VAL		0x05
+-#define ST_ACCEL_1_ODR_AVL_200HZ_VAL		0x06
+-#define ST_ACCEL_1_ODR_AVL_400HZ_VAL		0x07
+-#define ST_ACCEL_1_ODR_AVL_1600HZ_VAL		0x08
+-#define ST_ACCEL_1_FS_ADDR			0x23
+-#define ST_ACCEL_1_FS_MASK			0x30
+-#define ST_ACCEL_1_FS_AVL_2_VAL			0x00
+-#define ST_ACCEL_1_FS_AVL_4_VAL			0x01
+-#define ST_ACCEL_1_FS_AVL_8_VAL			0x02
+-#define ST_ACCEL_1_FS_AVL_16_VAL		0x03
+-#define ST_ACCEL_1_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(1000)
+-#define ST_ACCEL_1_FS_AVL_4_GAIN		IIO_G_TO_M_S_2(2000)
+-#define ST_ACCEL_1_FS_AVL_8_GAIN		IIO_G_TO_M_S_2(4000)
+-#define ST_ACCEL_1_FS_AVL_16_GAIN		IIO_G_TO_M_S_2(12000)
+-#define ST_ACCEL_1_BDU_ADDR			0x23
+-#define ST_ACCEL_1_BDU_MASK			0x80
+-#define ST_ACCEL_1_DRDY_IRQ_ADDR		0x22
+-#define ST_ACCEL_1_DRDY_IRQ_INT1_MASK		0x10
+-#define ST_ACCEL_1_DRDY_IRQ_INT2_MASK		0x08
+-#define ST_ACCEL_1_IHL_IRQ_ADDR			0x25
+-#define ST_ACCEL_1_IHL_IRQ_MASK			0x02
+-#define ST_ACCEL_1_MULTIREAD_BIT		true
 -
 -/* CUSTOM VALUES FOR SENSOR 2 */
--#define ST_GYRO_2_WAI_EXP			0xd4
--#define ST_GYRO_2_ODR_ADDR			0x20
--#define ST_GYRO_2_ODR_MASK			0xc0
--#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
--#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
--#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
--#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
--#define ST_GYRO_2_PW_ADDR			0x20
--#define ST_GYRO_2_PW_MASK			0x08
--#define ST_GYRO_2_FS_ADDR			0x23
--#define ST_GYRO_2_FS_MASK			0x30
--#define ST_GYRO_2_FS_AVL_250_VAL		0x00
--#define ST_GYRO_2_FS_AVL_500_VAL		0x01
--#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
--#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
--#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
--#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
--#define ST_GYRO_2_BDU_ADDR			0x23
--#define ST_GYRO_2_BDU_MASK			0x80
--#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
--#define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
--#define ST_GYRO_2_MULTIREAD_BIT			true
+-#define ST_ACCEL_2_WAI_EXP			0x32
+-#define ST_ACCEL_2_ODR_ADDR			0x20
+-#define ST_ACCEL_2_ODR_MASK			0x18
+-#define ST_ACCEL_2_ODR_AVL_50HZ_VAL		0x00
+-#define ST_ACCEL_2_ODR_AVL_100HZ_VAL		0x01
+-#define ST_ACCEL_2_ODR_AVL_400HZ_VAL		0x02
+-#define ST_ACCEL_2_ODR_AVL_1000HZ_VAL		0x03
+-#define ST_ACCEL_2_PW_ADDR			0x20
+-#define ST_ACCEL_2_PW_MASK			0xe0
+-#define ST_ACCEL_2_FS_ADDR			0x23
+-#define ST_ACCEL_2_FS_MASK			0x30
+-#define ST_ACCEL_2_FS_AVL_2_VAL			0X00
+-#define ST_ACCEL_2_FS_AVL_4_VAL			0X01
+-#define ST_ACCEL_2_FS_AVL_8_VAL			0x03
+-#define ST_ACCEL_2_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(1000)
+-#define ST_ACCEL_2_FS_AVL_4_GAIN		IIO_G_TO_M_S_2(2000)
+-#define ST_ACCEL_2_FS_AVL_8_GAIN		IIO_G_TO_M_S_2(3900)
+-#define ST_ACCEL_2_BDU_ADDR			0x23
+-#define ST_ACCEL_2_BDU_MASK			0x80
+-#define ST_ACCEL_2_DRDY_IRQ_ADDR		0x22
+-#define ST_ACCEL_2_DRDY_IRQ_INT1_MASK		0x02
+-#define ST_ACCEL_2_DRDY_IRQ_INT2_MASK		0x10
+-#define ST_ACCEL_2_IHL_IRQ_ADDR			0x22
+-#define ST_ACCEL_2_IHL_IRQ_MASK			0x80
+-#define ST_ACCEL_2_OD_IRQ_ADDR			0x22
+-#define ST_ACCEL_2_OD_IRQ_MASK			0x40
+-#define ST_ACCEL_2_MULTIREAD_BIT		true
 -
 -/* CUSTOM VALUES FOR SENSOR 3 */
--#define ST_GYRO_3_WAI_EXP			0xd7
--#define ST_GYRO_3_ODR_ADDR			0x20
--#define ST_GYRO_3_ODR_MASK			0xc0
--#define ST_GYRO_3_ODR_AVL_95HZ_VAL		0x00
--#define ST_GYRO_3_ODR_AVL_190HZ_VAL		0x01
--#define ST_GYRO_3_ODR_AVL_380HZ_VAL		0x02
--#define ST_GYRO_3_ODR_AVL_760HZ_VAL		0x03
--#define ST_GYRO_3_PW_ADDR			0x20
--#define ST_GYRO_3_PW_MASK			0x08
--#define ST_GYRO_3_FS_ADDR			0x23
--#define ST_GYRO_3_FS_MASK			0x30
--#define ST_GYRO_3_FS_AVL_250_VAL		0x00
--#define ST_GYRO_3_FS_AVL_500_VAL		0x01
--#define ST_GYRO_3_FS_AVL_2000_VAL		0x02
--#define ST_GYRO_3_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
--#define ST_GYRO_3_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
--#define ST_GYRO_3_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
--#define ST_GYRO_3_BDU_ADDR			0x23
--#define ST_GYRO_3_BDU_MASK			0x80
--#define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
--#define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
--#define ST_GYRO_3_MULTIREAD_BIT			true
+-#define ST_ACCEL_3_WAI_EXP			0x40
+-#define ST_ACCEL_3_ODR_ADDR			0x20
+-#define ST_ACCEL_3_ODR_MASK			0xf0
+-#define ST_ACCEL_3_ODR_AVL_3HZ_VAL		0x01
+-#define ST_ACCEL_3_ODR_AVL_6HZ_VAL		0x02
+-#define ST_ACCEL_3_ODR_AVL_12HZ_VAL		0x03
+-#define ST_ACCEL_3_ODR_AVL_25HZ_VAL		0x04
+-#define ST_ACCEL_3_ODR_AVL_50HZ_VAL		0x05
+-#define ST_ACCEL_3_ODR_AVL_100HZ_VAL		0x06
+-#define ST_ACCEL_3_ODR_AVL_200HZ_VAL		0x07
+-#define ST_ACCEL_3_ODR_AVL_400HZ_VAL		0x08
+-#define ST_ACCEL_3_ODR_AVL_800HZ_VAL		0x09
+-#define ST_ACCEL_3_ODR_AVL_1600HZ_VAL		0x0a
+-#define ST_ACCEL_3_FS_ADDR			0x24
+-#define ST_ACCEL_3_FS_MASK			0x38
+-#define ST_ACCEL_3_FS_AVL_2_VAL			0X00
+-#define ST_ACCEL_3_FS_AVL_4_VAL			0X01
+-#define ST_ACCEL_3_FS_AVL_6_VAL			0x02
+-#define ST_ACCEL_3_FS_AVL_8_VAL			0x03
+-#define ST_ACCEL_3_FS_AVL_16_VAL		0x04
+-#define ST_ACCEL_3_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(61)
+-#define ST_ACCEL_3_FS_AVL_4_GAIN		IIO_G_TO_M_S_2(122)
+-#define ST_ACCEL_3_FS_AVL_6_GAIN		IIO_G_TO_M_S_2(183)
+-#define ST_ACCEL_3_FS_AVL_8_GAIN		IIO_G_TO_M_S_2(244)
+-#define ST_ACCEL_3_FS_AVL_16_GAIN		IIO_G_TO_M_S_2(732)
+-#define ST_ACCEL_3_BDU_ADDR			0x20
+-#define ST_ACCEL_3_BDU_MASK			0x08
+-#define ST_ACCEL_3_DRDY_IRQ_ADDR		0x23
+-#define ST_ACCEL_3_DRDY_IRQ_INT1_MASK		0x80
+-#define ST_ACCEL_3_DRDY_IRQ_INT2_MASK		0x00
+-#define ST_ACCEL_3_IHL_IRQ_ADDR			0x23
+-#define ST_ACCEL_3_IHL_IRQ_MASK			0x40
+-#define ST_ACCEL_3_IG1_EN_ADDR			0x23
+-#define ST_ACCEL_3_IG1_EN_MASK			0x08
+-#define ST_ACCEL_3_MULTIREAD_BIT		false
 -
+-/* CUSTOM VALUES FOR SENSOR 4 */
+-#define ST_ACCEL_4_WAI_EXP			0x3a
+-#define ST_ACCEL_4_ODR_ADDR			0x20
+-#define ST_ACCEL_4_ODR_MASK			0x30 /* DF1 and DF0 */
+-#define ST_ACCEL_4_ODR_AVL_40HZ_VAL		0x00
+-#define ST_ACCEL_4_ODR_AVL_160HZ_VAL		0x01
+-#define ST_ACCEL_4_ODR_AVL_640HZ_VAL		0x02
+-#define ST_ACCEL_4_ODR_AVL_2560HZ_VAL		0x03
+-#define ST_ACCEL_4_PW_ADDR			0x20
+-#define ST_ACCEL_4_PW_MASK			0xc0
+-#define ST_ACCEL_4_FS_ADDR			0x21
+-#define ST_ACCEL_4_FS_MASK			0x80
+-#define ST_ACCEL_4_FS_AVL_2_VAL			0X00
+-#define ST_ACCEL_4_FS_AVL_6_VAL			0X01
+-#define ST_ACCEL_4_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(1024)
+-#define ST_ACCEL_4_FS_AVL_6_GAIN		IIO_G_TO_M_S_2(340)
+-#define ST_ACCEL_4_BDU_ADDR			0x21
+-#define ST_ACCEL_4_BDU_MASK			0x40
+-#define ST_ACCEL_4_DRDY_IRQ_ADDR		0x21
+-#define ST_ACCEL_4_DRDY_IRQ_INT1_MASK		0x04
+-#define ST_ACCEL_4_MULTIREAD_BIT		true
 -
- static const struct iio_chan_spec st_gyro_16bit_channels[] = {
- 	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
+-/* CUSTOM VALUES FOR SENSOR 5 */
+-#define ST_ACCEL_5_WAI_EXP			0x3b
+-#define ST_ACCEL_5_ODR_ADDR			0x20
+-#define ST_ACCEL_5_ODR_MASK			0x80
+-#define ST_ACCEL_5_ODR_AVL_100HZ_VAL		0x00
+-#define ST_ACCEL_5_ODR_AVL_400HZ_VAL		0x01
+-#define ST_ACCEL_5_PW_ADDR			0x20
+-#define ST_ACCEL_5_PW_MASK			0x40
+-#define ST_ACCEL_5_FS_ADDR			0x20
+-#define ST_ACCEL_5_FS_MASK			0x20
+-#define ST_ACCEL_5_FS_AVL_2_VAL			0X00
+-#define ST_ACCEL_5_FS_AVL_8_VAL			0X01
+-/* TODO: check these resulting gain settings, these are not in the datsheet */
+-#define ST_ACCEL_5_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(18000)
+-#define ST_ACCEL_5_FS_AVL_8_GAIN		IIO_G_TO_M_S_2(72000)
+-#define ST_ACCEL_5_DRDY_IRQ_ADDR		0x22
+-#define ST_ACCEL_5_DRDY_IRQ_INT1_MASK		0x04
+-#define ST_ACCEL_5_DRDY_IRQ_INT2_MASK		0x20
+-#define ST_ACCEL_5_IHL_IRQ_ADDR			0x22
+-#define ST_ACCEL_5_IHL_IRQ_MASK			0x80
+-#define ST_ACCEL_5_OD_IRQ_ADDR			0x22
+-#define ST_ACCEL_5_OD_IRQ_MASK			0x40
+-#define ST_ACCEL_5_IG1_EN_ADDR			0x21
+-#define ST_ACCEL_5_IG1_EN_MASK			0x08
+-#define ST_ACCEL_5_MULTIREAD_BIT		false
+-
+-/* CUSTOM VALUES FOR SENSOR 6 */
+-#define ST_ACCEL_6_WAI_EXP			0x32
+-#define ST_ACCEL_6_ODR_ADDR			0x20
+-#define ST_ACCEL_6_ODR_MASK			0x18
+-#define ST_ACCEL_6_ODR_AVL_50HZ_VAL		0x00
+-#define ST_ACCEL_6_ODR_AVL_100HZ_VAL		0x01
+-#define ST_ACCEL_6_ODR_AVL_400HZ_VAL		0x02
+-#define ST_ACCEL_6_ODR_AVL_1000HZ_VAL		0x03
+-#define ST_ACCEL_6_PW_ADDR			0x20
+-#define ST_ACCEL_6_PW_MASK			0x20
+-#define ST_ACCEL_6_FS_ADDR			0x23
+-#define ST_ACCEL_6_FS_MASK			0x30
+-#define ST_ACCEL_6_FS_AVL_100_VAL		0x00
+-#define ST_ACCEL_6_FS_AVL_200_VAL		0x01
+-#define ST_ACCEL_6_FS_AVL_400_VAL		0x03
+-#define ST_ACCEL_6_FS_AVL_100_GAIN		IIO_G_TO_M_S_2(49000)
+-#define ST_ACCEL_6_FS_AVL_200_GAIN		IIO_G_TO_M_S_2(98000)
+-#define ST_ACCEL_6_FS_AVL_400_GAIN		IIO_G_TO_M_S_2(195000)
+-#define ST_ACCEL_6_BDU_ADDR			0x23
+-#define ST_ACCEL_6_BDU_MASK			0x80
+-#define ST_ACCEL_6_DRDY_IRQ_ADDR		0x22
+-#define ST_ACCEL_6_DRDY_IRQ_INT1_MASK		0x02
+-#define ST_ACCEL_6_DRDY_IRQ_INT2_MASK		0x10
+-#define ST_ACCEL_6_IHL_IRQ_ADDR			0x22
+-#define ST_ACCEL_6_IHL_IRQ_MASK			0x80
+-#define ST_ACCEL_6_MULTIREAD_BIT		true
+-
+-/* CUSTOM VALUES FOR SENSOR 7 */
+-#define ST_ACCEL_7_ODR_ADDR			0x20
+-#define ST_ACCEL_7_ODR_MASK			0x30
+-#define ST_ACCEL_7_ODR_AVL_280HZ_VAL		0x00
+-#define ST_ACCEL_7_ODR_AVL_560HZ_VAL		0x01
+-#define ST_ACCEL_7_ODR_AVL_1120HZ_VAL		0x02
+-#define ST_ACCEL_7_ODR_AVL_4480HZ_VAL		0x03
+-#define ST_ACCEL_7_PW_ADDR			0x20
+-#define ST_ACCEL_7_PW_MASK			0xc0
+-#define ST_ACCEL_7_FS_AVL_2_GAIN		IIO_G_TO_M_S_2(488)
+-#define ST_ACCEL_7_BDU_ADDR			0x21
+-#define ST_ACCEL_7_BDU_MASK			0x40
+-#define ST_ACCEL_7_DRDY_IRQ_ADDR		0x21
+-#define ST_ACCEL_7_DRDY_IRQ_INT1_MASK		0x04
+-#define ST_ACCEL_7_MULTIREAD_BIT		false
+-
+ static const struct iio_chan_spec st_accel_8bit_channels[] = {
+ 	ST_SENSORS_LSM_CHANNELS(IIO_ACCEL,
  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-@@ -130,7 +57,7 @@ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
+@@ -281,7 +93,7 @@ static const struct iio_chan_spec st_accel_16bit_channels[] = {
  
- static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  	{
--		.wai = ST_GYRO_1_WAI_EXP,
-+		.wai = 0xd3,
+-		.wai = ST_ACCEL_1_WAI_EXP,
++		.wai = 0x33,
  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
  		.sensors_supported = {
- 			[0] = L3G4200D_GYRO_DEV_NAME,
-@@ -138,18 +65,18 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			[0] = LIS3DH_ACCEL_DEV_NAME,
+@@ -294,22 +106,22 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  		},
- 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
  		.odr = {
--			.addr = ST_GYRO_1_ODR_ADDR,
--			.mask = ST_GYRO_1_ODR_MASK,
+-			.addr = ST_ACCEL_1_ODR_ADDR,
+-			.mask = ST_ACCEL_1_ODR_MASK,
 +			.addr = 0x20,
-+			.mask = 0xc0,
++			.mask = 0xf0,
  			.odr_avl = {
--				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
--				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
--				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
--				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
-+				{ .hz = 100, .value = 0x00, },
-+				{ .hz = 200, .value = 0x01, },
+-				{ 1, ST_ACCEL_1_ODR_AVL_1HZ_VAL, },
+-				{ 10, ST_ACCEL_1_ODR_AVL_10HZ_VAL, },
+-				{ 25, ST_ACCEL_1_ODR_AVL_25HZ_VAL, },
+-				{ 50, ST_ACCEL_1_ODR_AVL_50HZ_VAL, },
+-				{ 100, ST_ACCEL_1_ODR_AVL_100HZ_VAL, },
+-				{ 200, ST_ACCEL_1_ODR_AVL_200HZ_VAL, },
+-				{ 400, ST_ACCEL_1_ODR_AVL_400HZ_VAL, },
+-				{ 1600, ST_ACCEL_1_ODR_AVL_1600HZ_VAL, },
++				{ .hz = 1, .value = 0x01, },
++				{ .hz = 10, .value = 0x02, },
++				{ .hz = 25, .value = 0x03, },
++				{ .hz = 50, .value = 0x04, },
++				{ .hz = 100, .value = 0x05, },
++				{ .hz = 200, .value = 0x06, },
++				{ .hz = 400, .value = 0x07, },
++				{ .hz = 1600, .value = 0x08, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_ACCEL_1_ODR_ADDR,
+-			.mask = ST_ACCEL_1_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0xf0,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+ 		.enable_axis = {
+@@ -317,48 +129,48 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_ACCEL_1_FS_ADDR,
+-			.mask = ST_ACCEL_1_FS_MASK,
++			.addr = 0x23,
++			.mask = 0x30,
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_ACCEL_FS_AVL_2G,
+-					.value = ST_ACCEL_1_FS_AVL_2_VAL,
+-					.gain = ST_ACCEL_1_FS_AVL_2_GAIN,
++					.value = 0x00,
++					.gain = IIO_G_TO_M_S_2(1000),
+ 				},
+ 				[1] = {
+ 					.num = ST_ACCEL_FS_AVL_4G,
+-					.value = ST_ACCEL_1_FS_AVL_4_VAL,
+-					.gain = ST_ACCEL_1_FS_AVL_4_GAIN,
++					.value = 0x01,
++					.gain = IIO_G_TO_M_S_2(2000),
+ 				},
+ 				[2] = {
+ 					.num = ST_ACCEL_FS_AVL_8G,
+-					.value = ST_ACCEL_1_FS_AVL_8_VAL,
+-					.gain = ST_ACCEL_1_FS_AVL_8_GAIN,
++					.value = 0x02,
++					.gain = IIO_G_TO_M_S_2(4000),
+ 				},
+ 				[3] = {
+ 					.num = ST_ACCEL_FS_AVL_16G,
+-					.value = ST_ACCEL_1_FS_AVL_16_VAL,
+-					.gain = ST_ACCEL_1_FS_AVL_16_GAIN,
++					.value = 0x03,
++					.gain = IIO_G_TO_M_S_2(12000),
+ 				},
+ 			},
+ 		},
+ 		.bdu = {
+-			.addr = ST_ACCEL_1_BDU_ADDR,
+-			.mask = ST_ACCEL_1_BDU_MASK,
++			.addr = 0x23,
++			.mask = 0x80,
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_ACCEL_1_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_1_DRDY_IRQ_INT1_MASK,
+-			.mask_int2 = ST_ACCEL_1_DRDY_IRQ_INT2_MASK,
+-			.addr_ihl = ST_ACCEL_1_IHL_IRQ_ADDR,
+-			.mask_ihl = ST_ACCEL_1_IHL_IRQ_MASK,
++			.addr = 0x22,
++			.mask_int1 = 0x10,
++			.mask_int2 = 0x08,
++			.addr_ihl = 0x25,
++			.mask_ihl = 0x02,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+-		.multi_read_bit = ST_ACCEL_1_MULTIREAD_BIT,
++		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
+ 	{
+-		.wai = ST_ACCEL_2_WAI_EXP,
++		.wai = 0x32,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = LIS331DLH_ACCEL_DEV_NAME,
+@@ -368,18 +180,18 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+-			.addr = ST_ACCEL_2_ODR_ADDR,
+-			.mask = ST_ACCEL_2_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0x18,
+ 			.odr_avl = {
+-				{ 50, ST_ACCEL_2_ODR_AVL_50HZ_VAL, },
+-				{ 100, ST_ACCEL_2_ODR_AVL_100HZ_VAL, },
+-				{ 400, ST_ACCEL_2_ODR_AVL_400HZ_VAL, },
+-				{ 1000, ST_ACCEL_2_ODR_AVL_1000HZ_VAL, },
++				{ .hz = 50, .value = 0x00, },
++				{ .hz = 100, .value = 0x01, },
 +				{ .hz = 400, .value = 0x02, },
-+				{ .hz = 800, .value = 0x03, },
++				{ .hz = 1000, .value = 0x03, },
  			},
  		},
  		.pw = {
--			.addr = ST_GYRO_1_PW_ADDR,
--			.mask = ST_GYRO_1_PW_MASK,
+-			.addr = ST_ACCEL_2_PW_ADDR,
+-			.mask = ST_ACCEL_2_PW_MASK,
 +			.addr = 0x20,
-+			.mask = 0x08,
++			.mask = 0xe0,
  			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
  			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
  		},
-@@ -158,33 +85,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+@@ -388,69 +200,69 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
  		},
  		.fs = {
--			.addr = ST_GYRO_1_FS_ADDR,
--			.mask = ST_GYRO_1_FS_MASK,
+-			.addr = ST_ACCEL_2_FS_ADDR,
+-			.mask = ST_ACCEL_2_FS_MASK,
 +			.addr = 0x23,
 +			.mask = 0x30,
  			.fs_avl = {
  				[0] = {
- 					.num = ST_GYRO_FS_AVL_250DPS,
--					.value = ST_GYRO_1_FS_AVL_250_VAL,
--					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
+ 					.num = ST_ACCEL_FS_AVL_2G,
+-					.value = ST_ACCEL_2_FS_AVL_2_VAL,
+-					.gain = ST_ACCEL_2_FS_AVL_2_GAIN,
 +					.value = 0x00,
-+					.gain = IIO_DEGREE_TO_RAD(8750),
++					.gain = IIO_G_TO_M_S_2(1000),
  				},
  				[1] = {
- 					.num = ST_GYRO_FS_AVL_500DPS,
--					.value = ST_GYRO_1_FS_AVL_500_VAL,
--					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
+ 					.num = ST_ACCEL_FS_AVL_4G,
+-					.value = ST_ACCEL_2_FS_AVL_4_VAL,
+-					.gain = ST_ACCEL_2_FS_AVL_4_GAIN,
 +					.value = 0x01,
-+					.gain = IIO_DEGREE_TO_RAD(17500),
++					.gain = IIO_G_TO_M_S_2(2000),
  				},
  				[2] = {
- 					.num = ST_GYRO_FS_AVL_2000DPS,
--					.value = ST_GYRO_1_FS_AVL_2000_VAL,
--					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
-+					.value = 0x02,
-+					.gain = IIO_DEGREE_TO_RAD(70000),
+ 					.num = ST_ACCEL_FS_AVL_8G,
+-					.value = ST_ACCEL_2_FS_AVL_8_VAL,
+-					.gain = ST_ACCEL_2_FS_AVL_8_GAIN,
++					.value = 0x03,
++					.gain = IIO_G_TO_M_S_2(3900),
  				},
  			},
  		},
  		.bdu = {
--			.addr = ST_GYRO_1_BDU_ADDR,
--			.mask = ST_GYRO_1_BDU_MASK,
+-			.addr = ST_ACCEL_2_BDU_ADDR,
+-			.mask = ST_ACCEL_2_BDU_MASK,
 +			.addr = 0x23,
 +			.mask = 0x80,
  		},
  		.drdy_irq = {
--			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
--			.mask_int2 = ST_GYRO_1_DRDY_IRQ_INT2_MASK,
+-			.addr = ST_ACCEL_2_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_2_DRDY_IRQ_INT1_MASK,
+-			.mask_int2 = ST_ACCEL_2_DRDY_IRQ_INT2_MASK,
+-			.addr_ihl = ST_ACCEL_2_IHL_IRQ_ADDR,
+-			.mask_ihl = ST_ACCEL_2_IHL_IRQ_MASK,
+-			.addr_od = ST_ACCEL_2_OD_IRQ_ADDR,
+-			.mask_od = ST_ACCEL_2_OD_IRQ_MASK,
 +			.addr = 0x22,
-+			.mask_int2 = 0x08,
- 			/*
- 			 * The sensor has IHL (active low) and open
- 			 * drain settings, but only for INT1 and not
-@@ -192,11 +119,11 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 			 */
++			.mask_int1 = 0x02,
++			.mask_int2 = 0x10,
++			.addr_ihl = 0x22,
++			.mask_ihl = 0x80,
++			.addr_od = 0x22,
++			.mask_od = 0x40,
  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
  		},
--		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
+-		.multi_read_bit = ST_ACCEL_2_MULTIREAD_BIT,
 +		.multi_read_bit = true,
  		.bootime = 2,
  	},
  	{
--		.wai = ST_GYRO_2_WAI_EXP,
-+		.wai = 0xd4,
+-		.wai = ST_ACCEL_3_WAI_EXP,
++		.wai = 0x40,
  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
  		.sensors_supported = {
- 			[0] = L3GD20_GYRO_DEV_NAME,
-@@ -208,18 +135,18 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			[0] = LSM330_ACCEL_DEV_NAME,
  		},
- 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.ch = (struct iio_chan_spec *)st_accel_16bit_channels,
  		.odr = {
--			.addr = ST_GYRO_2_ODR_ADDR,
--			.mask = ST_GYRO_2_ODR_MASK,
+-			.addr = ST_ACCEL_3_ODR_ADDR,
+-			.mask = ST_ACCEL_3_ODR_MASK,
 +			.addr = 0x20,
-+			.mask = 0xc0,
++			.mask = 0xf0,
  			.odr_avl = {
--				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
--				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
--				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
--				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
-+				{ .hz = 95, .value = 0x00, },
-+				{ .hz = 190, .value = 0x01, },
-+				{ .hz = 380, .value = 0x02, },
-+				{ .hz = 760, .value = 0x03, },
+-				{ 3, ST_ACCEL_3_ODR_AVL_3HZ_VAL },
+-				{ 6, ST_ACCEL_3_ODR_AVL_6HZ_VAL, },
+-				{ 12, ST_ACCEL_3_ODR_AVL_12HZ_VAL, },
+-				{ 25, ST_ACCEL_3_ODR_AVL_25HZ_VAL, },
+-				{ 50, ST_ACCEL_3_ODR_AVL_50HZ_VAL, },
+-				{ 100, ST_ACCEL_3_ODR_AVL_100HZ_VAL, },
+-				{ 200, ST_ACCEL_3_ODR_AVL_200HZ_VAL, },
+-				{ 400, ST_ACCEL_3_ODR_AVL_400HZ_VAL, },
+-				{ 800, ST_ACCEL_3_ODR_AVL_800HZ_VAL, },
+-				{ 1600, ST_ACCEL_3_ODR_AVL_1600HZ_VAL, },
++				{ .hz = 3, .value = 0x01, },
++				{ .hz = 6, .value = 0x02, },
++				{ .hz = 12, .value = 0x03, },
++				{ .hz = 25, .value = 0x04, },
++				{ .hz = 50, .value = 0x05, },
++				{ .hz = 100, .value = 0x06, },
++				{ .hz = 200, .value = 0x07, },
++				{ .hz = 400, .value = 0x08, },
++				{ .hz = 800, .value = 0x09, },
++				{ .hz = 1600, .value = 0x0a, },
  			},
  		},
  		.pw = {
--			.addr = ST_GYRO_2_PW_ADDR,
--			.mask = ST_GYRO_2_PW_MASK,
+-			.addr = ST_ACCEL_3_ODR_ADDR,
+-			.mask = ST_ACCEL_3_ODR_MASK,
 +			.addr = 0x20,
-+			.mask = 0x08,
- 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
++			.mask = 0xf0,
  			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
  		},
-@@ -228,33 +155,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 		.enable_axis = {
+@@ -458,75 +270,75 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
  		},
  		.fs = {
--			.addr = ST_GYRO_2_FS_ADDR,
--			.mask = ST_GYRO_2_FS_MASK,
-+			.addr = 0x23,
-+			.mask = 0x30,
+-			.addr = ST_ACCEL_3_FS_ADDR,
+-			.mask = ST_ACCEL_3_FS_MASK,
++			.addr = 0x24,
++			.mask = 0x38,
  			.fs_avl = {
  				[0] = {
- 					.num = ST_GYRO_FS_AVL_250DPS,
--					.value = ST_GYRO_2_FS_AVL_250_VAL,
--					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
+ 					.num = ST_ACCEL_FS_AVL_2G,
+-					.value = ST_ACCEL_3_FS_AVL_2_VAL,
+-					.gain = ST_ACCEL_3_FS_AVL_2_GAIN,
 +					.value = 0x00,
-+					.gain = IIO_DEGREE_TO_RAD(8750),
++					.gain = IIO_G_TO_M_S_2(61),
  				},
  				[1] = {
- 					.num = ST_GYRO_FS_AVL_500DPS,
--					.value = ST_GYRO_2_FS_AVL_500_VAL,
--					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
+ 					.num = ST_ACCEL_FS_AVL_4G,
+-					.value = ST_ACCEL_3_FS_AVL_4_VAL,
+-					.gain = ST_ACCEL_3_FS_AVL_4_GAIN,
 +					.value = 0x01,
-+					.gain = IIO_DEGREE_TO_RAD(17500),
++					.gain = IIO_G_TO_M_S_2(122),
  				},
  				[2] = {
- 					.num = ST_GYRO_FS_AVL_2000DPS,
--					.value = ST_GYRO_2_FS_AVL_2000_VAL,
--					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
+ 					.num = ST_ACCEL_FS_AVL_6G,
+-					.value = ST_ACCEL_3_FS_AVL_6_VAL,
+-					.gain = ST_ACCEL_3_FS_AVL_6_GAIN,
 +					.value = 0x02,
-+					.gain = IIO_DEGREE_TO_RAD(70000),
++					.gain = IIO_G_TO_M_S_2(183),
+ 				},
+ 				[3] = {
+ 					.num = ST_ACCEL_FS_AVL_8G,
+-					.value = ST_ACCEL_3_FS_AVL_8_VAL,
+-					.gain = ST_ACCEL_3_FS_AVL_8_GAIN,
++					.value = 0x03,
++					.gain = IIO_G_TO_M_S_2(244),
+ 				},
+ 				[4] = {
+ 					.num = ST_ACCEL_FS_AVL_16G,
+-					.value = ST_ACCEL_3_FS_AVL_16_VAL,
+-					.gain = ST_ACCEL_3_FS_AVL_16_GAIN,
++					.value = 0x04,
++					.gain = IIO_G_TO_M_S_2(732),
  				},
  			},
  		},
  		.bdu = {
--			.addr = ST_GYRO_2_BDU_ADDR,
--			.mask = ST_GYRO_2_BDU_MASK,
+-			.addr = ST_ACCEL_3_BDU_ADDR,
+-			.mask = ST_ACCEL_3_BDU_MASK,
++			.addr = 0x20,
++			.mask = 0x08,
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_ACCEL_3_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_3_DRDY_IRQ_INT1_MASK,
+-			.mask_int2 = ST_ACCEL_3_DRDY_IRQ_INT2_MASK,
+-			.addr_ihl = ST_ACCEL_3_IHL_IRQ_ADDR,
+-			.mask_ihl = ST_ACCEL_3_IHL_IRQ_MASK,
++			.addr = 0x23,
++			.mask_int1 = 0x80,
++			.mask_int2 = 0x00,
++			.addr_ihl = 0x23,
++			.mask_ihl = 0x40,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 			.ig1 = {
+-				.en_addr = ST_ACCEL_3_IG1_EN_ADDR,
+-				.en_mask = ST_ACCEL_3_IG1_EN_MASK,
++				.en_addr = 0x23,
++				.en_mask = 0x08,
+ 			},
+ 		},
+-		.multi_read_bit = ST_ACCEL_3_MULTIREAD_BIT,
++		.multi_read_bit = false,
+ 		.bootime = 2,
+ 	},
+ 	{
+-		.wai = ST_ACCEL_4_WAI_EXP,
++		.wai = 0x3a,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = LIS3LV02DL_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+-			.addr = ST_ACCEL_4_ODR_ADDR,
+-			.mask = ST_ACCEL_4_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0x30, /* DF1 and DF0 */
+ 			.odr_avl = {
+-				{ 40, ST_ACCEL_4_ODR_AVL_40HZ_VAL },
+-				{ 160, ST_ACCEL_4_ODR_AVL_160HZ_VAL, },
+-				{ 640, ST_ACCEL_4_ODR_AVL_640HZ_VAL, },
+-				{ 2560, ST_ACCEL_4_ODR_AVL_2560HZ_VAL, },
++				{ .hz = 40, .value = 0x00, },
++				{ .hz = 160, .value = 0x01, },
++				{ .hz = 640, .value = 0x02, },
++				{ .hz = 2560, .value = 0x03, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_ACCEL_4_PW_ADDR,
+-			.mask = ST_ACCEL_4_PW_MASK,
++			.addr = 0x20,
++			.mask = 0xc0,
+ 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+@@ -535,51 +347,51 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_ACCEL_4_FS_ADDR,
+-			.mask = ST_ACCEL_4_FS_MASK,
++			.addr = 0x21,
++			.mask = 0x80,
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_ACCEL_FS_AVL_2G,
+-					.value = ST_ACCEL_4_FS_AVL_2_VAL,
+-					.gain = ST_ACCEL_4_FS_AVL_2_GAIN,
++					.value = 0x00,
++					.gain = IIO_G_TO_M_S_2(1024),
+ 				},
+ 				[1] = {
+ 					.num = ST_ACCEL_FS_AVL_6G,
+-					.value = ST_ACCEL_4_FS_AVL_6_VAL,
+-					.gain = ST_ACCEL_4_FS_AVL_6_GAIN,
++					.value = 0x01,
++					.gain = IIO_G_TO_M_S_2(340),
+ 				},
+ 			},
+ 		},
+ 		.bdu = {
+-			.addr = ST_ACCEL_4_BDU_ADDR,
+-			.mask = ST_ACCEL_4_BDU_MASK,
++			.addr = 0x21,
++			.mask = 0x40,
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_ACCEL_4_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_4_DRDY_IRQ_INT1_MASK,
++			.addr = 0x21,
++			.mask_int1 = 0x04,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+-		.multi_read_bit = ST_ACCEL_4_MULTIREAD_BIT,
++		.multi_read_bit = true,
+ 		.bootime = 2, /* guess */
+ 	},
+ 	{
+-		.wai = ST_ACCEL_5_WAI_EXP,
++		.wai = 0x3b,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = LIS331DL_ACCEL_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_8bit_channels,
+ 		.odr = {
+-			.addr = ST_ACCEL_5_ODR_ADDR,
+-			.mask = ST_ACCEL_5_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0x80,
+ 			.odr_avl = {
+-				{ 100, ST_ACCEL_5_ODR_AVL_100HZ_VAL },
+-				{ 400, ST_ACCEL_5_ODR_AVL_400HZ_VAL, },
++				{ .hz = 100, .value = 0x00, },
++				{ .hz = 400, .value = 0x01, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_ACCEL_5_PW_ADDR,
+-			.mask = ST_ACCEL_5_PW_MASK,
++			.addr = 0x20,
++			.mask = 0x40,
+ 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+@@ -588,54 +400,58 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_ACCEL_5_FS_ADDR,
+-			.mask = ST_ACCEL_5_FS_MASK,
++			.addr = 0x20,
++			.mask = 0x20,
++			/*
++			 * TODO: check these resulting gain settings, these are
++			 * not in the datsheet
++			 */
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_ACCEL_FS_AVL_2G,
+-					.value = ST_ACCEL_5_FS_AVL_2_VAL,
+-					.gain = ST_ACCEL_5_FS_AVL_2_GAIN,
++					.value = 0x00,
++					.gain = IIO_G_TO_M_S_2(18000),
+ 				},
+ 				[1] = {
+ 					.num = ST_ACCEL_FS_AVL_8G,
+-					.value = ST_ACCEL_5_FS_AVL_8_VAL,
+-					.gain = ST_ACCEL_5_FS_AVL_8_GAIN,
++					.value = 0x01,
++					.gain = IIO_G_TO_M_S_2(72000),
+ 				},
+ 			},
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_ACCEL_5_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_5_DRDY_IRQ_INT1_MASK,
+-			.mask_int2 = ST_ACCEL_5_DRDY_IRQ_INT2_MASK,
+-			.addr_ihl = ST_ACCEL_5_IHL_IRQ_ADDR,
+-			.mask_ihl = ST_ACCEL_5_IHL_IRQ_MASK,
+-			.addr_od = ST_ACCEL_5_OD_IRQ_ADDR,
+-			.mask_od = ST_ACCEL_5_OD_IRQ_MASK,
++			.addr = 0x22,
++			.mask_int1 = 0x04,
++			.mask_int2 = 0x20,
++			.addr_ihl = 0x22,
++			.mask_ihl = 0x80,
++			.addr_od = 0x22,
++			.mask_od = 0x40,
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+-		.multi_read_bit = ST_ACCEL_5_MULTIREAD_BIT,
++		.multi_read_bit = false,
+ 		.bootime = 2, /* guess */
+ 	},
+ 	{
+-		.wai = ST_ACCEL_6_WAI_EXP,
++		.wai = 0x32,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = H3LIS331DL_DRIVER_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
+ 		.odr = {
+-			.addr = ST_ACCEL_6_ODR_ADDR,
+-			.mask = ST_ACCEL_6_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0x18,
+ 			.odr_avl = {
+-				{ 50, ST_ACCEL_6_ODR_AVL_50HZ_VAL },
+-				{ 100, ST_ACCEL_6_ODR_AVL_100HZ_VAL, },
+-				{ 400, ST_ACCEL_6_ODR_AVL_400HZ_VAL, },
+-				{ 1000, ST_ACCEL_6_ODR_AVL_1000HZ_VAL, },
++				{ .hz = 50, .value = 0x00, },
++				{ .hz = 100, .value = 0x01, },
++				{ .hz = 400, .value = 0x02, },
++				{ .hz = 1000, .value = 0x03, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_ACCEL_6_PW_ADDR,
+-			.mask = ST_ACCEL_6_PW_MASK,
++			.addr = 0x20,
++			.mask = 0x20,
+ 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+@@ -644,38 +460,38 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_ACCEL_6_FS_ADDR,
+-			.mask = ST_ACCEL_6_FS_MASK,
++			.addr = 0x23,
++			.mask = 0x30,
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_ACCEL_FS_AVL_100G,
+-					.value = ST_ACCEL_6_FS_AVL_100_VAL,
+-					.gain = ST_ACCEL_6_FS_AVL_100_GAIN,
++					.value = 0x00,
++					.gain = IIO_G_TO_M_S_2(49000),
+ 				},
+ 				[1] = {
+ 					.num = ST_ACCEL_FS_AVL_200G,
+-					.value = ST_ACCEL_6_FS_AVL_200_VAL,
+-					.gain = ST_ACCEL_6_FS_AVL_200_GAIN,
++					.value = 0x01,
++					.gain = IIO_G_TO_M_S_2(98000),
+ 				},
+ 				[2] = {
+ 					.num = ST_ACCEL_FS_AVL_400G,
+-					.value = ST_ACCEL_6_FS_AVL_400_VAL,
+-					.gain = ST_ACCEL_6_FS_AVL_400_GAIN,
++					.value = 0x03,
++					.gain = IIO_G_TO_M_S_2(195000),
+ 				},
+ 			},
+ 		},
+ 		.bdu = {
+-			.addr = ST_ACCEL_6_BDU_ADDR,
+-			.mask = ST_ACCEL_6_BDU_MASK,
 +			.addr = 0x23,
 +			.mask = 0x80,
  		},
  		.drdy_irq = {
--			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
--			.mask_int2 = ST_GYRO_2_DRDY_IRQ_INT2_MASK,
+-			.addr = ST_ACCEL_6_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_6_DRDY_IRQ_INT1_MASK,
+-			.mask_int2 = ST_ACCEL_6_DRDY_IRQ_INT2_MASK,
+-			.addr_ihl = ST_ACCEL_6_IHL_IRQ_ADDR,
+-			.mask_ihl = ST_ACCEL_6_IHL_IRQ_MASK,
 +			.addr = 0x22,
-+			.mask_int2 = 0x08,
- 			/*
- 			 * The sensor has IHL (active low) and open
- 			 * drain settings, but only for INT1 and not
-@@ -262,29 +189,29 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 			 */
- 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
++			.mask_int1 = 0x02,
++			.mask_int2 = 0x10,
++			.addr_ihl = 0x22,
++			.mask_ihl = 0x80,
  		},
--		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
+-		.multi_read_bit = ST_ACCEL_6_MULTIREAD_BIT,
 +		.multi_read_bit = true,
  		.bootime = 2,
  	},
  	{
--		.wai = ST_GYRO_3_WAI_EXP,
-+		.wai = 0xd7,
- 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
- 		.sensors_supported = {
- 			[0] = L3GD20_GYRO_DEV_NAME,
+@@ -685,18 +501,18 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  		},
- 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.ch = (struct iio_chan_spec *)st_accel_12bit_channels,
  		.odr = {
--			.addr = ST_GYRO_3_ODR_ADDR,
--			.mask = ST_GYRO_3_ODR_MASK,
+-			.addr = ST_ACCEL_7_ODR_ADDR,
+-			.mask = ST_ACCEL_7_ODR_MASK,
 +			.addr = 0x20,
-+			.mask = 0xc0,
++			.mask = 0x30,
  			.odr_avl = {
--				{ 95, ST_GYRO_3_ODR_AVL_95HZ_VAL, },
--				{ 190, ST_GYRO_3_ODR_AVL_190HZ_VAL, },
--				{ 380, ST_GYRO_3_ODR_AVL_380HZ_VAL, },
--				{ 760, ST_GYRO_3_ODR_AVL_760HZ_VAL, },
-+				{ .hz = 95, .value = 0x00, },
-+				{ .hz = 190, .value = 0x01, },
-+				{ .hz = 380, .value = 0x02, },
-+				{ .hz = 760, .value = 0x03, },
+-				{ 280, ST_ACCEL_7_ODR_AVL_280HZ_VAL, },
+-				{ 560, ST_ACCEL_7_ODR_AVL_560HZ_VAL, },
+-				{ 1120, ST_ACCEL_7_ODR_AVL_1120HZ_VAL, },
+-				{ 4480, ST_ACCEL_7_ODR_AVL_4480HZ_VAL, },
++				{ .hz = 280, .value = 0x00, },
++				{ .hz = 560, .value = 0x01, },
++				{ .hz = 1120, .value = 0x02, },
++				{ .hz = 4480, .value = 0x03, },
  			},
  		},
  		.pw = {
--			.addr = ST_GYRO_3_PW_ADDR,
--			.mask = ST_GYRO_3_PW_MASK,
+-			.addr = ST_ACCEL_7_PW_ADDR,
+-			.mask = ST_ACCEL_7_PW_MASK,
 +			.addr = 0x20,
-+			.mask = 0x08,
++			.mask = 0xc0,
  			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
  			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
  		},
-@@ -293,33 +220,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
- 		},
- 		.fs = {
--			.addr = ST_GYRO_3_FS_ADDR,
--			.mask = ST_GYRO_3_FS_MASK,
-+			.addr = 0x23,
-+			.mask = 0x30,
+@@ -708,7 +524,7 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  			.fs_avl = {
  				[0] = {
- 					.num = ST_GYRO_FS_AVL_250DPS,
--					.value = ST_GYRO_3_FS_AVL_250_VAL,
--					.gain = ST_GYRO_3_FS_AVL_250_GAIN,
-+					.value = 0x00,
-+					.gain = IIO_DEGREE_TO_RAD(8750),
- 				},
- 				[1] = {
- 					.num = ST_GYRO_FS_AVL_500DPS,
--					.value = ST_GYRO_3_FS_AVL_500_VAL,
--					.gain = ST_GYRO_3_FS_AVL_500_GAIN,
-+					.value = 0x01,
-+					.gain = IIO_DEGREE_TO_RAD(17500),
- 				},
- 				[2] = {
- 					.num = ST_GYRO_FS_AVL_2000DPS,
--					.value = ST_GYRO_3_FS_AVL_2000_VAL,
--					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
-+					.value = 0x02,
-+					.gain = IIO_DEGREE_TO_RAD(70000),
+ 					.num = ST_ACCEL_FS_AVL_2G,
+-					.gain = ST_ACCEL_7_FS_AVL_2_GAIN,
++					.gain = IIO_G_TO_M_S_2(488),
  				},
  			},
  		},
+@@ -719,11 +535,11 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
  		.bdu = {
--			.addr = ST_GYRO_3_BDU_ADDR,
--			.mask = ST_GYRO_3_BDU_MASK,
-+			.addr = 0x23,
-+			.mask = 0x80,
  		},
  		.drdy_irq = {
--			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
--			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
-+			.addr = 0x22,
-+			.mask_int2 = 0x08,
- 			/*
- 			 * The sensor has IHL (active low) and open
- 			 * drain settings, but only for INT1 and not
-@@ -327,7 +254,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
- 			 */
+-			.addr = ST_ACCEL_7_DRDY_IRQ_ADDR,
+-			.mask_int1 = ST_ACCEL_7_DRDY_IRQ_INT1_MASK,
++			.addr = 0x21,
++			.mask_int1 = 0x04,
  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
  		},
--		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
-+		.multi_read_bit = true,
+-		.multi_read_bit = ST_ACCEL_7_MULTIREAD_BIT,
++		.multi_read_bit = false,
  		.bootime = 2,
  	},
  };
