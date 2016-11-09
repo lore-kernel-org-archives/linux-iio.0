@@ -1,170 +1,101 @@
-Return-Path: <m.niestroj@grinn-global.com>
-Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
- <alpine.DEB.2.02.1611031252480.11256@pmeerw.net>
- <eed0df11-6520-c3fa-c6cd-46c13dcddc1f@grinn-global.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>, Daniel Baluta
- <daniel.baluta@intel.com>, Gregor Boirie <gregor.boirie@parrot.com>,
- Sanchayan Maity <maitysanchayan@gmail.com>, Rob Herring
- <robh+dt@kernel.org>, linux-iio@vger.kernel.org
-From: Marcin Niestroj <m.niestroj@grinn-global.com>
-Message-ID: <48a86354-f566-d162-f1fa-5fe6ba78dde2@grinn-global.com>
-Date: Wed, 9 Nov 2016 18:16:59 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from muru.com ([72.249.23.125]:58476 "EHLO muru.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754111AbcKIW13 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 9 Nov 2016 17:27:29 -0500
+Date: Wed, 9 Nov 2016 15:27:23 -0700
+From: Tony Lindgren <tony@atomide.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?utf-8?B?UGVudHRpbMOk?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org, kernel@pyra-handheld.com
+Subject: Re: [PATCH v6 5/8] DT:omap3+tsc2007: use new common touchscreen
+ bindings
+Message-ID: <20161109222723.GI2428@atomide.com>
+References: <cover.1477557860.git.hns@goldelico.com>
+ <72927a5b3d5b9f33dfd57a68ef1de9cb0a536407.1477557860.git.hns@goldelico.com>
 MIME-Version: 1.0
-In-Reply-To: <eed0df11-6520-c3fa-c6cd-46c13dcddc1f@grinn-global.com>
-Content-Type: text/plain; charset=windows-1252; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <72927a5b3d5b9f33dfd57a68ef1de9cb0a536407.1477557860.git.hns@goldelico.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 09.11.2016 15:16, Marcin Niestroj wrote:
-> Hi,
-> Thanks for review, below are my comments.
->
-> On 03.11.2016 13:09, Peter Meerwald-Stadler wrote:
->>
->>> This patch was developed primarily based on bmc150_accel hardware fifo
->>> implementation.
->>
->> parts of the patch are cleanup and bugfixing; should be separate?
->>
->> more comments below
->>
->>> IRQ handler was added, which for now is responsible only for handling
->>> watermark interrupts. The BMI160 chip has two interrupt outputs. By
->>> default INT is considered to be connected. If INT2 is used instead, the
->>> interrupt-names device-tree property can be used to specify that.
->>>
->>> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+* H. Nikolaus Schaller <hns@goldelico.com> [161027 01:47]:
+> While we fix the GTA04 we add proper pinmux for the
+> penirq gpio.
+> 
+> Tested on: GTA04A4 and Pyra-Handheld
+> 
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 
-<snip>
+This should be safe to merge along with the driver changes:
 
->>> @@ -574,8 +1114,11 @@ int bmi160_core_probe(struct device *dev,
->>> struct regmap *regmap,
->>>
->>>      data = iio_priv(indio_dev);
->>>      dev_set_drvdata(dev, indio_dev);
->>> +    data->irq = irq;
->>>      data->regmap = regmap;
->>>
->>> +    mutex_init(&data->mutex);
->>> +
->>>      ret = bmi160_chip_init(data, use_spi);
->>>      if (ret < 0)
->>>          return ret;
->>> @@ -591,10 +1134,50 @@ int bmi160_core_probe(struct device *dev,
->>> struct regmap *regmap,
->>>      indio_dev->info = &bmi160_info;
->>>
->>>      ret = iio_triggered_buffer_setup(indio_dev, NULL,
->>> -                     bmi160_trigger_handler, NULL);
->>> +                     bmi160_trigger_handler,
->>> +                     &bmi160_buffer_ops);
->>>      if (ret < 0)
->>>          goto uninit;
->>>
->>> +    if (data->irq > 0) {
->>> +        /* Check which interrupt pin is connected to our board */
->>> +        irq2 = of_irq_get_byname(dev->of_node, "INT2");
->>> +        if (irq2 == data->irq) {
->>> +            dev_dbg(dev, "Using interrupt line INT2\n");
->>> +            data->irq_data = &bmi160_irq2_data;
->>> +        } else {
->>> +            dev_dbg(dev, "Using interrupt line INT1\n");
->>> +            data->irq_data = &bmi160_irq1_data;
->>> +        }
->>> +
->>> +        ret = devm_request_threaded_irq(dev,
->>> +                        data->irq,
->>> +                        bmi160_irq_handler,
->>> +                        bmi160_irq_thread_handler,
->>> +                        IRQF_ONESHOT,
->>> +                        BMI160_IRQ_NAME,
->>> +                        indio_dev);
->>> +        if (ret)
->>> +            return ret;
+Acked-by: Tony Lindgren <tony@atomide.com>
 
-I just noticed, that there should be a "goto buffer_cleanup" instead.
-
->>> +
->>> +        ret = bmi160_enable_irq(data);
->>> +        if (ret < 0)
->>> +            goto buffer_cleanup;
->>> +
->>> +        if (block_supported) {
->>> +            indio_dev->modes |= INDIO_BUFFER_SOFTWARE;
->>> +            indio_dev->info = &bmi160_info_fifo;
->>> +            indio_dev->buffer->attrs = bmi160_fifo_attributes;
->>> +            data->fifo_buffer = devm_kmalloc(dev,
->>> +                            BMI160_FIFO_LENGTH,
->>> +                            GFP_KERNEL);
->>> +            if (!data->fifo_buffer) {
->>> +                ret = -ENOMEM;
->>
->> need to disable irq on failure?
->
-> Yes, I missed that.
-
-I am just wondering now if it is really neccessary. bmi160_enable_irq()
-is just enabling IRQ output on INT1 or INT2 depending on device-tree.
-This alone will not trigger interrupts, as all should be masked at this
-stage.
-
->
->>
->>> +                goto buffer_cleanup;
->>> +            }
->>> +        }
->>> +    }
->>> +
->>>      ret = iio_device_register(indio_dev);
->>>      if (ret < 0)
->>>          goto buffer_cleanup;
->>> diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c
->>> b/drivers/iio/imu/bmi160/bmi160_i2c.c
->>> index 07a179d..aa63f89 100644
->>> --- a/drivers/iio/imu/bmi160/bmi160_i2c.c
->>> +++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
->>> @@ -23,6 +23,10 @@ static int bmi160_i2c_probe(struct i2c_client
->>> *client,
->>>  {
->>>      struct regmap *regmap;
->>>      const char *name = NULL;
->>> +    bool block_supported =
->>> +        i2c_check_functionality(client->adapter, I2C_FUNC_I2C) ||
->>> +        i2c_check_functionality(client->adapter,
->>> +                    I2C_FUNC_SMBUS_READ_I2C_BLOCK);
->>>
->>>      regmap = devm_regmap_init_i2c(client, &bmi160_regmap_config);
->>>      if (IS_ERR(regmap)) {
->>> @@ -34,7 +38,8 @@ static int bmi160_i2c_probe(struct i2c_client *client,
->>>      if (id)
->>>          name = id->name;
->>>
->>> -    return bmi160_core_probe(&client->dev, regmap, name, false);
->>> +    return bmi160_core_probe(&client->dev, regmap, name, client->irq,
->>> +                false, block_supported);
->>>  }
->>>
->>>  static int bmi160_i2c_remove(struct i2c_client *client)
->>> diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c
->>> b/drivers/iio/imu/bmi160/bmi160_spi.c
->>> index 1ec8b12..9b57fbe 100644
->>> --- a/drivers/iio/imu/bmi160/bmi160_spi.c
->>> +++ b/drivers/iio/imu/bmi160/bmi160_spi.c
->>> @@ -25,7 +25,8 @@ static int bmi160_spi_probe(struct spi_device *spi)
->>>              (int)PTR_ERR(regmap));
->>>          return PTR_ERR(regmap);
->>>      }
->>> -    return bmi160_core_probe(&spi->dev, regmap, id->name, true);
->>> +    return bmi160_core_probe(&spi->dev, regmap, id->name, spi->irq,
->>> +                true, true);
->>>  }
->>>
->>>  static int bmi160_spi_remove(struct spi_device *spi)
->>>
->>
->
-
--- 
-Marcin Niestroj
+> ---
+>  arch/arm/boot/dts/omap3-gta04.dtsi | 25 +++++++++++++++++++++++--
+>  1 file changed, 23 insertions(+), 2 deletions(-)
+> 
+> diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
+> index b3a8b1f..64d6ee3 100644
+> --- a/arch/arm/boot/dts/omap3-gta04.dtsi
+> +++ b/arch/arm/boot/dts/omap3-gta04.dtsi
+> @@ -273,6 +273,13 @@
+>  			OMAP3_CORE1_IOPAD(0x2134, PIN_INPUT_PULLUP | MUX_MODE4) /* gpio112 */
+>  		>;
+>  	};
+> +
+> +	penirq_pins: pinmux_penirq_pins {
+> +		pinctrl-single,pins = <
+> +			/* here we could enable to wakeup the cpu from suspend by a pen touch */
+> +			OMAP3_CORE1_IOPAD(0x2194, PIN_INPUT_PULLUP | MUX_MODE4) /* gpio160 */
+> +		>;
+> +	};
+>  };
+>  
+>  &omap3_pmx_core2 {
+> @@ -410,10 +417,24 @@
+>  	tsc2007@48 {
+>  		compatible = "ti,tsc2007";
+>  		reg = <0x48>;
+> +		pinctrl-names = "default";
+> +		pinctrl-0 = <&penirq_pins>;
+>  		interrupt-parent = <&gpio6>;
+>  		interrupts = <0 IRQ_TYPE_EDGE_FALLING>; /* GPIO_160 */
+> -		gpios = <&gpio6 0 GPIO_ACTIVE_LOW>;
+> -		ti,x-plate-ohms = <600>;
+> +		gpios = <&gpio6 0 GPIO_ACTIVE_LOW>;	/* GPIO_160 */
+> +		touchscreen-size-x = <480>;
+> +		touchscreen-size-y = <640>;
+> +		touchscreen-max-pressure = <1000>;
+> +		touchscreen-fuzz-x = <3>;
+> +		touchscreen-fuzz-y = <8>;
+> +		touchscreen-fuzz-pressure = <10>;
+> +		touchscreen-inverted-y;
+> +		ti,min-x = <0x100>;
+> +		ti,max-x = <0xf00>;
+> +		ti,min-y = <0x100>;
+> +		ti,max-y = <0xf00>;
+> +		ti,max-rt = <4096>;
+> +		ti,x-plate-ohms = <550>;
+>  	};
+>  
+>  	/* RFID EEPROM */
+> -- 
+> 2.7.3
+> 
