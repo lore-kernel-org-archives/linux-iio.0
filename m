@@ -1,44 +1,88 @@
-Return-Path: <stefan.wahren@i2se.com>
-Date: Tue, 8 Nov 2016 23:34:07 +0100 (CET)
-From: Stefan Wahren <stefan.wahren@i2se.com>
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>, lee.jones@linaro.org
-Cc: linux-input@vger.kernel.org, pmeerw@pmeerw.net, jic23@kernel.org,
-	knaack.h@gmx.de, lars@metafoo.de, dmitry.torokhov@gmail.com,
-	harald@ccbib.org, fabio.estevam@freescale.com,
-	linux-iio@vger.kernel.org, marex@denx.de,
-	linux-kernel@vger.kernel.org
-Message-ID: <1401051818.290769.fabb549c-29f9-4e5c-a868-650c6df97a1d.open-xchange@email.1und1.de>
-In-Reply-To: <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
-References: <cover.1478071676.git.ksenija.stanojevic@gmail.com>
- <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
-Subject: Re: [PATCH v9 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Return-Path: <m.niestroj@grinn-global.com>
+Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
+To: Jonathan Cameron <jic23@kernel.org>
+References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
+ <b7dd5694-b757-c0d1-3400-46e92b8deb58@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Daniel Baluta <daniel.baluta@intel.com>,
+ Gregor Boirie <gregor.boirie@parrot.com>,
+ Sanchayan Maity <maitysanchayan@gmail.com>, Rob Herring
+ <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+From: Marcin Niestroj <m.niestroj@grinn-global.com>
+Message-ID: <1d50ebf1-2f14-2e3f-9b8e-b34a7ebca4c5@grinn-global.com>
+Date: Wed, 9 Nov 2016 15:52:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <b7dd5694-b757-c0d1-3400-46e92b8deb58@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 2. November 2016 um
-> 08:38 geschrieben:
-> 
-> 
-> Add core files for low resolution analog-to-digital converter (mxs-lradc)
-> MFD driver.
-> 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Hi,
+Thanks for review. I agree with all of the comments and will fix these 
+in next patch version. Below is just a comment on hwfifo_* sysfs access.
 
-Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+On 06.11.2016 13:35, Jonathan Cameron wrote:
+> On 03/11/16 11:25, Marcin Niestroj wrote:
+>> This patch was developed primarily based on bmc150_accel hardware fifo
+>> implementation.
+>>
+>> IRQ handler was added, which for now is responsible only for handling
+>> watermark interrupts. The BMI160 chip has two interrupt outputs. By
+>> default INT is considered to be connected. If INT2 is used instead, the
+>> interrupt-names device-tree property can be used to specify that.
+>>
+>> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+> I agree with Peter that there should have been a few precursor patches
+> to this one doing various cleanups and reworking bits that you have
+> in here.  Would have made it easier to review (always a good thing :)
+>
+> In general the resulting code looks good to me.  A few little
+> additional comments inline from me.  Mostly about small code ordering things
+> and function rename suggestions that would make the code more 'obviously'
+> correct.
+>
+> Thanks,
+>
+> Jonathan
+>> ---
+>>  drivers/iio/imu/bmi160/bmi160.h      |   3 +-
+>>  drivers/iio/imu/bmi160/bmi160_core.c | 633 +++++++++++++++++++++++++++++++++--
+>>  drivers/iio/imu/bmi160/bmi160_i2c.c  |   7 +-
+>>  drivers/iio/imu/bmi160/bmi160_spi.c  |   3 +-
+>>  4 files changed, 618 insertions(+), 28 deletions(-)
 
-for Patch 1 + 2
+<snip>
 
-> ---
-> ...
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 9834e66..057ca15 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -211,3 +211,4 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
->  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
->  
->  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
-> +obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
+>> +
+>> +static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
+>> +static IIO_CONST_ATTR(hwfifo_watermark_max,
+>> +		      __stringify(BMI160_FIFO_LENGTH));
+>> +static IIO_DEVICE_ATTR(hwfifo_enabled, S_IRUGO,
+>> +		       bmi160_get_fifo_state, NULL, 0);
+>> +static IIO_DEVICE_ATTR(hwfifo_watermark, S_IRUGO,
+>> +		       bmi160_get_fifo_watermark, NULL, 0);
+>> +
+>> +static const struct attribute *bmi160_fifo_attributes[] = {
+>> +	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
+>> +	&iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
+>> +	&iio_dev_attr_hwfifo_watermark.dev_attr.attr,
+>> +	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
+> There are enough of these drivers now that sometimes soon we should
+> revisit the question of pulling these into the core.  Can certainly
+> concieve of downstream consumer devices (in particular the iio_input
+> bridge when that finally resurfaces - my fault) wanting to be able to
+> manipulate or at least have visibilty of these.
 
-Btw this part won't apply anymore
+One more thing to consider is setting hwfifo_watermark to other value 
+than "userspace" watermark. It would be nice to set hwfifo_watermark to 
+a *safe* value to be able to get all data from hardware to kfifo. By 
+safe I mean that the chance of hardware fifo overflow will be small. On 
+the other hand there might be no reason to have such small watermark for 
+userspace application, so we can save scheduler cycles.
+
+
+<snip>
+
+-- 
+Marcin Niestroj
