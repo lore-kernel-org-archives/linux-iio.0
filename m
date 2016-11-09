@@ -1,49 +1,39 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from Galois.linutronix.de ([146.0.238.70]:58491 "EHLO
-        Galois.linutronix.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932553AbcKIPKE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 10:10:04 -0500
-Date: Wed, 9 Nov 2016 16:06:29 +0100 (CET)
-From: Thomas Gleixner <tglx@linutronix.de>
-To: Peter Rosin <peda@axentia.se>
-cc: linux-kernel@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Slawomir Stepien <sst@poczta.fm>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: Re: [PATCH v4 8/8] iio: envelope-detector: ADC driver based on a
- DAC and a comparator
-In-Reply-To: <ac908a97-77b8-046a-a0e9-74cc97f56c9b@axentia.se>
-Message-ID: <alpine.DEB.2.20.1611091605090.3501@nanos>
-References: <1478606339-31253-1-git-send-email-peda@axentia.se> <1478606339-31253-9-git-send-email-peda@axentia.se> <alpine.DEB.2.20.1611081630450.3501@nanos> <d8237286-d2ff-3146-d718-f54d05b0101d@axentia.se> <alpine.DEB.2.20.1611081809320.3501@nanos>
- <1c104a31-6c66-9537-9b90-ede58c8e1a92@axentia.se> <alpine.DEB.2.20.1611082146560.3501@nanos> <ac908a97-77b8-046a-a0e9-74cc97f56c9b@axentia.se>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+Received: from mail-lf0-f51.google.com ([209.85.215.51]:35219 "EHLO
+        mail-lf0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932553AbcKIPKI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 10:10:08 -0500
+Received: by mail-lf0-f51.google.com with SMTP id b14so166475756lfg.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Nov 2016 07:10:07 -0800 (PST)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 0/4] ST Sensors: inline sensor data
+Date: Wed,  9 Nov 2016 16:09:56 +0100
+Message-Id: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 9 Nov 2016, Peter Rosin wrote:
-> On 2016-11-08 22:47, Thomas Gleixner wrote:
-> > I don't think you need extra race handling with that, but I might be wrong
-> > as usual.
-> 
-> There's obviously no way to determine which of the timeout or the
-> interrupt that happens first without some race handling, so I don't
-> know what you mean? If the timeout happens first, there is also a
-> need to handle late hits from the irq that might come in during the
-> preparation for the next step in the binary search. It gets messy
-> quickly compared to the simplicity of the current implementation.
+Based on a comment from Jonathan that he would not do this kludgy
+define-then-use for all the sensor properties today, refactor all
+the ST sensors by inlining the per-sensor data.
 
-Gah, forgot about that timeout thingy. Fair enough.
+Linus Walleij (4):
+  iio: accel: st_accel: inline per-sensor data
+  iio: gyro: st_gyro: inline per-sensor data
+  iio: magn: st_magn: inline per-sensor data
+  iio: pressure: st_pressure: inline per-sensor data
 
-Feel free to add an 
+ drivers/iio/accel/st_accel_core.c       | 538 +++++++++++---------------------
+ drivers/iio/gyro/st_gyro_core.c         | 205 ++++--------
+ drivers/iio/magnetometer/st_magn_core.c | 376 ++++++++--------------
+ drivers/iio/pressure/st_pressure_core.c | 257 ++++++---------
+ 4 files changed, 460 insertions(+), 916 deletions(-)
 
-Acked-by: Thomas Gleixner <tglx@linutronix.de>
+-- 
+2.7.4
 
-Thanks,
-
-	tglx
