@@ -1,82 +1,398 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f171.google.com ([209.85.216.171]:36832 "EHLO
-        mail-qt0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752567AbcKJDQe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 22:16:34 -0500
-Received: by mail-qt0-f171.google.com with SMTP id w33so139039521qtc.3
-        for <linux-iio@vger.kernel.org>; Wed, 09 Nov 2016 19:16:34 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20161109231231.6223-1-colin.king@canonical.com>
-References: <20161109231231.6223-1-colin.king@canonical.com>
-From: Guenter Roeck <groeck@google.com>
-Date: Wed, 9 Nov 2016 19:16:32 -0800
-Message-ID: <CABXOdTc4Ey+FQ2w9sHxrBirz-fDX9kF2uBi=T5bTQv-NNpZ-8Q@mail.gmail.com>
-Subject: Re: [PATCH] iio: cros_ec_sensors_core: fix unsigned compared less
- than zero on status
-To: Colin King <colin.king@canonical.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Guenter Roeck <groeck@chromium.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-iio@vger.kernel.org,
-        linux-kernel <linux-kernel@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-lf0-f46.google.com ([209.85.215.46]:35256 "EHLO
+        mail-lf0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933790AbcKIPKN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 10:10:13 -0500
+Received: by mail-lf0-f46.google.com with SMTP id b14so166477420lfg.2
+        for <linux-iio@vger.kernel.org>; Wed, 09 Nov 2016 07:10:11 -0800 (PST)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 2/4] iio: gyro: st_gyro: inline per-sensor data
+Date: Wed,  9 Nov 2016 16:09:58 +0100
+Message-Id: <1478704200-19046-3-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
+References: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Nov 9, 2016 at 3:12 PM, Colin King <colin.king@canonical.com> wrote:
-> From: Colin Ian King <colin.king@canonical.com>
->
-> status is a u8 hence the check if status is less than zero has no effect.
-> Fix this by replacing status with int ret so the less than zero compare
-> will correctly detect errors.
->
-> Issue found with static analysis with CoverityScan, CID 1375919
->
-> Signed-off-by: Colin Ian King <colin.king@canonical.com>
+We have #defines for all the individual sensor registers and
+value/mask pairs #defined at the top of the file and used at
+exactly one spot.
 
-Good catch!
+This is usually good if the #defines give a meaning to the
+opaque magic numbers.
 
-Fixes: 974e6f02e27e ("iio: cros_ec_sensors_core: Add common functions
-for the ChromeOS EC Sensor Hub")
-Reviewed-by: Guenter Roeck <groeck@chromium.org>
+However in this case, the semantic meaning is inherent in the
+name of the C99-addressable fields, and that means duplication
+of information, and only makes the code hard to maintain since
+you every time have to add a new #define AND update the site
+where it is to be used.
 
-For the benefit of others, this is in today's linux-next.
+Get rid of the #defines and just open code the values into the
+appropriate struct elements. Make sure to explicitly address
+the .hz and .value fields in the st_sensor_odr_avl struct
+so that the meaning of all values is clear.
 
-Thanks,
-Guenter
+This patch is purely syntactic should have no semantic effect.
 
-> ---
->  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
->
-> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> index a3be799..416cae5 100644
-> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-> @@ -291,15 +291,15 @@ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
->                         return -EIO;
->
->                 /* Read status byte until EC is not busy. */
-> -               status = cros_ec_sensors_read_until_not_busy(st);
-> -               if (status < 0)
-> -                       return status;
-> +               ret = cros_ec_sensors_read_until_not_busy(st);
-> +               if (ret < 0)
-> +                       return ret;
->
->                 /*
->                  * Store the current sample id so that we can compare to the
->                  * sample id after reading the data.
->                  */
-> -               samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
-> +               samp_id = ret & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
->
->                 /* Read all EC data, format it, and store it into data. */
->                 ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
-> --
-> 2.10.2
->
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/gyro/st_gyro_core.c | 205 +++++++++++++---------------------------
+ 1 file changed, 66 insertions(+), 139 deletions(-)
+
+diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
+index aea034d8fe0f..2a42b3d583e8 100644
+--- a/drivers/iio/gyro/st_gyro_core.c
++++ b/drivers/iio/gyro/st_gyro_core.c
+@@ -39,79 +39,6 @@
+ #define ST_GYRO_FS_AVL_500DPS			500
+ #define ST_GYRO_FS_AVL_2000DPS			2000
+ 
+-/* CUSTOM VALUES FOR SENSOR 1 */
+-#define ST_GYRO_1_WAI_EXP			0xd3
+-#define ST_GYRO_1_ODR_ADDR			0x20
+-#define ST_GYRO_1_ODR_MASK			0xc0
+-#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
+-#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
+-#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
+-#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
+-#define ST_GYRO_1_PW_ADDR			0x20
+-#define ST_GYRO_1_PW_MASK			0x08
+-#define ST_GYRO_1_FS_ADDR			0x23
+-#define ST_GYRO_1_FS_MASK			0x30
+-#define ST_GYRO_1_FS_AVL_250_VAL		0x00
+-#define ST_GYRO_1_FS_AVL_500_VAL		0x01
+-#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
+-#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
+-#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
+-#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
+-#define ST_GYRO_1_BDU_ADDR			0x23
+-#define ST_GYRO_1_BDU_MASK			0x80
+-#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
+-#define ST_GYRO_1_DRDY_IRQ_INT2_MASK		0x08
+-#define ST_GYRO_1_MULTIREAD_BIT			true
+-
+-/* CUSTOM VALUES FOR SENSOR 2 */
+-#define ST_GYRO_2_WAI_EXP			0xd4
+-#define ST_GYRO_2_ODR_ADDR			0x20
+-#define ST_GYRO_2_ODR_MASK			0xc0
+-#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
+-#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
+-#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
+-#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
+-#define ST_GYRO_2_PW_ADDR			0x20
+-#define ST_GYRO_2_PW_MASK			0x08
+-#define ST_GYRO_2_FS_ADDR			0x23
+-#define ST_GYRO_2_FS_MASK			0x30
+-#define ST_GYRO_2_FS_AVL_250_VAL		0x00
+-#define ST_GYRO_2_FS_AVL_500_VAL		0x01
+-#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
+-#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
+-#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
+-#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
+-#define ST_GYRO_2_BDU_ADDR			0x23
+-#define ST_GYRO_2_BDU_MASK			0x80
+-#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
+-#define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
+-#define ST_GYRO_2_MULTIREAD_BIT			true
+-
+-/* CUSTOM VALUES FOR SENSOR 3 */
+-#define ST_GYRO_3_WAI_EXP			0xd7
+-#define ST_GYRO_3_ODR_ADDR			0x20
+-#define ST_GYRO_3_ODR_MASK			0xc0
+-#define ST_GYRO_3_ODR_AVL_95HZ_VAL		0x00
+-#define ST_GYRO_3_ODR_AVL_190HZ_VAL		0x01
+-#define ST_GYRO_3_ODR_AVL_380HZ_VAL		0x02
+-#define ST_GYRO_3_ODR_AVL_760HZ_VAL		0x03
+-#define ST_GYRO_3_PW_ADDR			0x20
+-#define ST_GYRO_3_PW_MASK			0x08
+-#define ST_GYRO_3_FS_ADDR			0x23
+-#define ST_GYRO_3_FS_MASK			0x30
+-#define ST_GYRO_3_FS_AVL_250_VAL		0x00
+-#define ST_GYRO_3_FS_AVL_500_VAL		0x01
+-#define ST_GYRO_3_FS_AVL_2000_VAL		0x02
+-#define ST_GYRO_3_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
+-#define ST_GYRO_3_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
+-#define ST_GYRO_3_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
+-#define ST_GYRO_3_BDU_ADDR			0x23
+-#define ST_GYRO_3_BDU_MASK			0x80
+-#define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
+-#define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
+-#define ST_GYRO_3_MULTIREAD_BIT			true
+-
+-
+ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
+ 	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
+ 			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
+@@ -130,7 +57,7 @@ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
+ 
+ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 	{
+-		.wai = ST_GYRO_1_WAI_EXP,
++		.wai = 0xd3,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = L3G4200D_GYRO_DEV_NAME,
+@@ -138,18 +65,18 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.odr = {
+-			.addr = ST_GYRO_1_ODR_ADDR,
+-			.mask = ST_GYRO_1_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0xc0,
+ 			.odr_avl = {
+-				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
+-				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
+-				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
+-				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
++				{ .hz = 100, .value = 0x00, },
++				{ .hz = 200, .value = 0x01, },
++				{ .hz = 400, .value = 0x02, },
++				{ .hz = 800, .value = 0x03, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_GYRO_1_PW_ADDR,
+-			.mask = ST_GYRO_1_PW_MASK,
++			.addr = 0x20,
++			.mask = 0x08,
+ 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+@@ -158,33 +85,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_GYRO_1_FS_ADDR,
+-			.mask = ST_GYRO_1_FS_MASK,
++			.addr = 0x23,
++			.mask = 0x30,
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_GYRO_FS_AVL_250DPS,
+-					.value = ST_GYRO_1_FS_AVL_250_VAL,
+-					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
++					.value = 0x00,
++					.gain = IIO_DEGREE_TO_RAD(8750),
+ 				},
+ 				[1] = {
+ 					.num = ST_GYRO_FS_AVL_500DPS,
+-					.value = ST_GYRO_1_FS_AVL_500_VAL,
+-					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
++					.value = 0x01,
++					.gain = IIO_DEGREE_TO_RAD(17500),
+ 				},
+ 				[2] = {
+ 					.num = ST_GYRO_FS_AVL_2000DPS,
+-					.value = ST_GYRO_1_FS_AVL_2000_VAL,
+-					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
++					.value = 0x02,
++					.gain = IIO_DEGREE_TO_RAD(70000),
+ 				},
+ 			},
+ 		},
+ 		.bdu = {
+-			.addr = ST_GYRO_1_BDU_ADDR,
+-			.mask = ST_GYRO_1_BDU_MASK,
++			.addr = 0x23,
++			.mask = 0x80,
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
+-			.mask_int2 = ST_GYRO_1_DRDY_IRQ_INT2_MASK,
++			.addr = 0x22,
++			.mask_int2 = 0x08,
+ 			/*
+ 			 * The sensor has IHL (active low) and open
+ 			 * drain settings, but only for INT1 and not
+@@ -192,11 +119,11 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			 */
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+-		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
++		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
+ 	{
+-		.wai = ST_GYRO_2_WAI_EXP,
++		.wai = 0xd4,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = L3GD20_GYRO_DEV_NAME,
+@@ -208,18 +135,18 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.odr = {
+-			.addr = ST_GYRO_2_ODR_ADDR,
+-			.mask = ST_GYRO_2_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0xc0,
+ 			.odr_avl = {
+-				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
+-				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
+-				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
+-				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
++				{ .hz = 95, .value = 0x00, },
++				{ .hz = 190, .value = 0x01, },
++				{ .hz = 380, .value = 0x02, },
++				{ .hz = 760, .value = 0x03, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_GYRO_2_PW_ADDR,
+-			.mask = ST_GYRO_2_PW_MASK,
++			.addr = 0x20,
++			.mask = 0x08,
+ 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+@@ -228,33 +155,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_GYRO_2_FS_ADDR,
+-			.mask = ST_GYRO_2_FS_MASK,
++			.addr = 0x23,
++			.mask = 0x30,
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_GYRO_FS_AVL_250DPS,
+-					.value = ST_GYRO_2_FS_AVL_250_VAL,
+-					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
++					.value = 0x00,
++					.gain = IIO_DEGREE_TO_RAD(8750),
+ 				},
+ 				[1] = {
+ 					.num = ST_GYRO_FS_AVL_500DPS,
+-					.value = ST_GYRO_2_FS_AVL_500_VAL,
+-					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
++					.value = 0x01,
++					.gain = IIO_DEGREE_TO_RAD(17500),
+ 				},
+ 				[2] = {
+ 					.num = ST_GYRO_FS_AVL_2000DPS,
+-					.value = ST_GYRO_2_FS_AVL_2000_VAL,
+-					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
++					.value = 0x02,
++					.gain = IIO_DEGREE_TO_RAD(70000),
+ 				},
+ 			},
+ 		},
+ 		.bdu = {
+-			.addr = ST_GYRO_2_BDU_ADDR,
+-			.mask = ST_GYRO_2_BDU_MASK,
++			.addr = 0x23,
++			.mask = 0x80,
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
+-			.mask_int2 = ST_GYRO_2_DRDY_IRQ_INT2_MASK,
++			.addr = 0x22,
++			.mask_int2 = 0x08,
+ 			/*
+ 			 * The sensor has IHL (active low) and open
+ 			 * drain settings, but only for INT1 and not
+@@ -262,29 +189,29 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			 */
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+-		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
++		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
+ 	{
+-		.wai = ST_GYRO_3_WAI_EXP,
++		.wai = 0xd7,
+ 		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+ 		.sensors_supported = {
+ 			[0] = L3GD20_GYRO_DEV_NAME,
+ 		},
+ 		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
+ 		.odr = {
+-			.addr = ST_GYRO_3_ODR_ADDR,
+-			.mask = ST_GYRO_3_ODR_MASK,
++			.addr = 0x20,
++			.mask = 0xc0,
+ 			.odr_avl = {
+-				{ 95, ST_GYRO_3_ODR_AVL_95HZ_VAL, },
+-				{ 190, ST_GYRO_3_ODR_AVL_190HZ_VAL, },
+-				{ 380, ST_GYRO_3_ODR_AVL_380HZ_VAL, },
+-				{ 760, ST_GYRO_3_ODR_AVL_760HZ_VAL, },
++				{ .hz = 95, .value = 0x00, },
++				{ .hz = 190, .value = 0x01, },
++				{ .hz = 380, .value = 0x02, },
++				{ .hz = 760, .value = 0x03, },
+ 			},
+ 		},
+ 		.pw = {
+-			.addr = ST_GYRO_3_PW_ADDR,
+-			.mask = ST_GYRO_3_PW_MASK,
++			.addr = 0x20,
++			.mask = 0x08,
+ 			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
+ 			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
+ 		},
+@@ -293,33 +220,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
+ 		},
+ 		.fs = {
+-			.addr = ST_GYRO_3_FS_ADDR,
+-			.mask = ST_GYRO_3_FS_MASK,
++			.addr = 0x23,
++			.mask = 0x30,
+ 			.fs_avl = {
+ 				[0] = {
+ 					.num = ST_GYRO_FS_AVL_250DPS,
+-					.value = ST_GYRO_3_FS_AVL_250_VAL,
+-					.gain = ST_GYRO_3_FS_AVL_250_GAIN,
++					.value = 0x00,
++					.gain = IIO_DEGREE_TO_RAD(8750),
+ 				},
+ 				[1] = {
+ 					.num = ST_GYRO_FS_AVL_500DPS,
+-					.value = ST_GYRO_3_FS_AVL_500_VAL,
+-					.gain = ST_GYRO_3_FS_AVL_500_GAIN,
++					.value = 0x01,
++					.gain = IIO_DEGREE_TO_RAD(17500),
+ 				},
+ 				[2] = {
+ 					.num = ST_GYRO_FS_AVL_2000DPS,
+-					.value = ST_GYRO_3_FS_AVL_2000_VAL,
+-					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
++					.value = 0x02,
++					.gain = IIO_DEGREE_TO_RAD(70000),
+ 				},
+ 			},
+ 		},
+ 		.bdu = {
+-			.addr = ST_GYRO_3_BDU_ADDR,
+-			.mask = ST_GYRO_3_BDU_MASK,
++			.addr = 0x23,
++			.mask = 0x80,
+ 		},
+ 		.drdy_irq = {
+-			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
+-			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
++			.addr = 0x22,
++			.mask_int2 = 0x08,
+ 			/*
+ 			 * The sensor has IHL (active low) and open
+ 			 * drain settings, but only for INT1 and not
+@@ -327,7 +254,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
+ 			 */
+ 			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+ 		},
+-		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
++		.multi_read_bit = true,
+ 		.bootime = 2,
+ 	},
+ };
+-- 
+2.7.4
+
