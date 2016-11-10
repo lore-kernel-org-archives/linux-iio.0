@@ -1,101 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from muru.com ([72.249.23.125]:58476 "EHLO muru.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754111AbcKIW13 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 9 Nov 2016 17:27:29 -0500
-Date: Wed, 9 Nov 2016 15:27:23 -0700
-From: Tony Lindgren <tony@atomide.com>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        Mika =?utf-8?B?UGVudHRpbMOk?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        Sebastian Reichel <sre@kernel.org>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Sangwon Jee <jeesw@melfas.com>, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
-        linux-iio@vger.kernel.org, kernel@pyra-handheld.com
-Subject: Re: [PATCH v6 5/8] DT:omap3+tsc2007: use new common touchscreen
- bindings
-Message-ID: <20161109222723.GI2428@atomide.com>
-References: <cover.1477557860.git.hns@goldelico.com>
- <72927a5b3d5b9f33dfd57a68ef1de9cb0a536407.1477557860.git.hns@goldelico.com>
+Received: from mail-qt0-f171.google.com ([209.85.216.171]:36832 "EHLO
+        mail-qt0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752567AbcKJDQe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 9 Nov 2016 22:16:34 -0500
+Received: by mail-qt0-f171.google.com with SMTP id w33so139039521qtc.3
+        for <linux-iio@vger.kernel.org>; Wed, 09 Nov 2016 19:16:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <72927a5b3d5b9f33dfd57a68ef1de9cb0a536407.1477557860.git.hns@goldelico.com>
+In-Reply-To: <20161109231231.6223-1-colin.king@canonical.com>
+References: <20161109231231.6223-1-colin.king@canonical.com>
+From: Guenter Roeck <groeck@google.com>
+Date: Wed, 9 Nov 2016 19:16:32 -0800
+Message-ID: <CABXOdTc4Ey+FQ2w9sHxrBirz-fDX9kF2uBi=T5bTQv-NNpZ-8Q@mail.gmail.com>
+Subject: Re: [PATCH] iio: cros_ec_sensors_core: fix unsigned compared less
+ than zero on status
+To: Colin King <colin.king@canonical.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-iio@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-* H. Nikolaus Schaller <hns@goldelico.com> [161027 01:47]:
-> While we fix the GTA04 we add proper pinmux for the
-> penirq gpio.
-> 
-> Tested on: GTA04A4 and Pyra-Handheld
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+On Wed, Nov 9, 2016 at 3:12 PM, Colin King <colin.king@canonical.com> wrote:
+> From: Colin Ian King <colin.king@canonical.com>
+>
+> status is a u8 hence the check if status is less than zero has no effect.
+> Fix this by replacing status with int ret so the less than zero compare
+> will correctly detect errors.
+>
+> Issue found with static analysis with CoverityScan, CID 1375919
+>
+> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 
-This should be safe to merge along with the driver changes:
+Good catch!
 
-Acked-by: Tony Lindgren <tony@atomide.com>
+Fixes: 974e6f02e27e ("iio: cros_ec_sensors_core: Add common functions
+for the ChromeOS EC Sensor Hub")
+Reviewed-by: Guenter Roeck <groeck@chromium.org>
+
+For the benefit of others, this is in today's linux-next.
+
+Thanks,
+Guenter
 
 > ---
->  arch/arm/boot/dts/omap3-gta04.dtsi | 25 +++++++++++++++++++++++--
->  1 file changed, 23 insertions(+), 2 deletions(-)
-> 
-> diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
-> index b3a8b1f..64d6ee3 100644
-> --- a/arch/arm/boot/dts/omap3-gta04.dtsi
-> +++ b/arch/arm/boot/dts/omap3-gta04.dtsi
-> @@ -273,6 +273,13 @@
->  			OMAP3_CORE1_IOPAD(0x2134, PIN_INPUT_PULLUP | MUX_MODE4) /* gpio112 */
->  		>;
->  	};
-> +
-> +	penirq_pins: pinmux_penirq_pins {
-> +		pinctrl-single,pins = <
-> +			/* here we could enable to wakeup the cpu from suspend by a pen touch */
-> +			OMAP3_CORE1_IOPAD(0x2194, PIN_INPUT_PULLUP | MUX_MODE4) /* gpio160 */
-> +		>;
-> +	};
->  };
->  
->  &omap3_pmx_core2 {
-> @@ -410,10 +417,24 @@
->  	tsc2007@48 {
->  		compatible = "ti,tsc2007";
->  		reg = <0x48>;
-> +		pinctrl-names = "default";
-> +		pinctrl-0 = <&penirq_pins>;
->  		interrupt-parent = <&gpio6>;
->  		interrupts = <0 IRQ_TYPE_EDGE_FALLING>; /* GPIO_160 */
-> -		gpios = <&gpio6 0 GPIO_ACTIVE_LOW>;
-> -		ti,x-plate-ohms = <600>;
-> +		gpios = <&gpio6 0 GPIO_ACTIVE_LOW>;	/* GPIO_160 */
-> +		touchscreen-size-x = <480>;
-> +		touchscreen-size-y = <640>;
-> +		touchscreen-max-pressure = <1000>;
-> +		touchscreen-fuzz-x = <3>;
-> +		touchscreen-fuzz-y = <8>;
-> +		touchscreen-fuzz-pressure = <10>;
-> +		touchscreen-inverted-y;
-> +		ti,min-x = <0x100>;
-> +		ti,max-x = <0xf00>;
-> +		ti,min-y = <0x100>;
-> +		ti,max-y = <0xf00>;
-> +		ti,max-rt = <4096>;
-> +		ti,x-plate-ohms = <550>;
->  	};
->  
->  	/* RFID EEPROM */
-> -- 
-> 2.7.3
-> 
+>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 8 ++++----
+>  1 file changed, 4 insertions(+), 4 deletions(-)
+>
+> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+> index a3be799..416cae5 100644
+> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+> @@ -291,15 +291,15 @@ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+>                         return -EIO;
+>
+>                 /* Read status byte until EC is not busy. */
+> -               status = cros_ec_sensors_read_until_not_busy(st);
+> -               if (status < 0)
+> -                       return status;
+> +               ret = cros_ec_sensors_read_until_not_busy(st);
+> +               if (ret < 0)
+> +                       return ret;
+>
+>                 /*
+>                  * Store the current sample id so that we can compare to the
+>                  * sample id after reading the data.
+>                  */
+> -               samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+> +               samp_id = ret & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+>
+>                 /* Read all EC data, format it, and store it into data. */
+>                 ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
+> --
+> 2.10.2
+>
