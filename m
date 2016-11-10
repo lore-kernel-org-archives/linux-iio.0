@@ -1,40 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp1040.oracle.com ([156.151.31.81]:19569 "EHLO
-        userp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934314AbcKJTbA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 14:31:00 -0500
-Date: Thu, 10 Nov 2016 22:30:18 +0300
+Received: from aserp1040.oracle.com ([141.146.126.69]:39201 "EHLO
+        aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S935301AbcKJTkx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 14:40:53 -0500
+Date: Thu, 10 Nov 2016 22:39:57 +0300
 From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+To: Jonathan Cameron <jic23@kernel.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [patch] iio:adc: ad7766: testing the wrong variable in probe
-Message-ID: <20161110193018.GB32533@mwanda>
+        Gwendal Grignou <gwendal@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [patch] iio: cros_ec_sensors_core: signedness bug in
+ cros_ec_sensors_read_lpc()
+Message-ID: <20161110193957.GA18347@mwanda>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-We should be testing "ret" here.
+"status" is a u8 so checking for negatives doesn't work.  We can just
+use "ret" here instead.
 
-Fixes: aa16c6bd0e09 ("iio:adc: Add support for AD7766/AD7767")
+Fixes: 974e6f02e27e ("iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC Sensor Hub.")
 Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
-index d906686..75cca42 100644
---- a/drivers/iio/adc/ad7766.c
-+++ b/drivers/iio/adc/ad7766.c
-@@ -239,8 +239,8 @@ static int ad7766_probe(struct spi_device *spi)
+diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+index a3be799..416cae5 100644
+--- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
++++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+@@ -291,15 +291,15 @@ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+ 			return -EIO;
  
- 	ret = devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
- 		ad7766->reg);
--	if (IS_ERR(ad7766->reg))
--		return PTR_ERR(ad7766->reg);
-+	if (ret)
-+		return ret;
+ 		/* Read status byte until EC is not busy. */
+-		status = cros_ec_sensors_read_until_not_busy(st);
+-		if (status < 0)
+-			return status;
++		ret = cros_ec_sensors_read_until_not_busy(st);
++		if (ret < 0)
++			return ret;
  
- 	ad7766->pd_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
- 		GPIOD_OUT_HIGH);
+ 		/*
+ 		 * Store the current sample id so that we can compare to the
+ 		 * sample id after reading the data.
+ 		 */
+-		samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
++		samp_id = ret & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+ 
+ 		/* Read all EC data, format it, and store it into data. */
+ 		ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
