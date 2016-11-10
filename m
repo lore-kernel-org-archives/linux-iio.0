@@ -1,111 +1,276 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:50330 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754509AbcKJJ0K (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Nov 2016 04:26:10 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v3 00/28] staging: iio: tsl2583: move out of staging
-Date: Thu, 10 Nov 2016 04:25:36 -0500
-Message-Id: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+Received: from mail-lf0-f53.google.com ([209.85.215.53]:34672 "EHLO
+        mail-lf0-f53.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754183AbcKJKTA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 05:19:00 -0500
+Received: by mail-lf0-f53.google.com with SMTP id o141so113540935lff.1
+        for <linux-iio@vger.kernel.org>; Thu, 10 Nov 2016 02:18:59 -0800 (PST)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH 1/2] iio: st_sensors: centralize I2C probe() code
+Date: Thu, 10 Nov 2016 11:18:53 +0100
+Message-Id: <1478773133-23034-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch set continues my work to clean up the tsl2583 driver to move
-it out of staging. Some highlights include:
+The probe() calls for the ST Sensors I2C modules were all doing
+pretty much the same things for the different IIO subsubsystems,
+they were all allocating the same state container struct just
+giving different names to the same variable. Move it all to the
+ommon code in st_sensors_i2c.c to avoid code duplication.
 
-- Eliminated some unnecessary i2c calls to the sensor.
-- Fixed issue with changes to calibscale and int_time not being set on
-  the chip.
-- Moved from a global lux table to a per device lux table.
-- Combined redundant sysfs ABI documentation.
-- Made log messages clearer.
-- Fixes for some return values that were not checked.
-- Chip state is now represented as a boolean instead of a tristate.
-- Removed unnecessary chip status checks.
-- Use a unified prefix for all symbols (tsl2583_).
-- Code style and formatting cleanups.
-- Comment cleanups.
-- Staging graduation.
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/accel/st_accel_i2c.c               | 16 +++-----
+ drivers/iio/common/st_sensors/st_sensors_i2c.c | 53 +++++++++++++++++---------
+ drivers/iio/gyro/st_gyro_i2c.c                 | 16 +++-----
+ drivers/iio/magnetometer/st_magn_i2c.c         | 16 +++-----
+ drivers/iio/pressure/st_pressure_i2c.c         | 16 +++-----
+ include/linux/iio/common/st_sensors_i2c.h      | 15 ++------
+ 6 files changed, 59 insertions(+), 73 deletions(-)
 
-I verified that the driver functions correctly using a TSL2581 hooked
-up to a Raspberry Pi 2.
-
-Changes from V2 to V3
-- Fixed patch #09 to use "%s: <message>", __func__ consistently. Added
-  missing terminating "\n" to one of the log messages. Issues reported
-  by Joe Perches.
-- Fixed issues found by Jonathan Cameron: comment cleanups, improved the
-  wording of two log messages, removed an unnecessary memset call,
-  removed unnecessary variable initialization, and multiple driver
-  authors can be specified with multiple calls to MODULE_AUTHOR().
-- Fixed warning found by make C=1 in the per device lux table:
-  warning: Variable length array is used.
-
-Changes from V1 to V2
-- The first 7 patches in this series contains version 2 of the patches
-  7-9 that I sent out on 2016-11-03. The only change is that the patches
-  are split up further to make the code review easier.
-
-Brian Masney (28):
-  staging: iio: tsl2583: split out functionality of taos_chip_on()
-  staging: iio: tsl2583: fix issue with changes to calibscale and
-    int_time not being set on the chip
-  staging: iio: tsl2583: check if chip is suspended in
-    in_illuminance_calibrate_store
-  staging: iio: tsl2583: remove unnecessary chip status check in
-    taos_get_lux
-  staging: iio: tsl2583: remove unnecessary chip status checks in
-    suspend/resume
-  staging: iio: tsl2583: change current chip state from a tristate to a
-    bool
-  staging: iio: tsl2583: remove redundant write to the control register
-    in taos_probe()
-  staging: iio: tsl2583: remove the FSF's mailing address
-  staging: iio: tsl2583: cleaned up logging
-  staging: iio: tsl2583: unify function and variable prefix to tsl2583_
-  staging: iio: tsl2583: fix alignment of #define values
-  staging: iio: tsl2583: fix comparison between signed and unsigned
-    integers
-  staging: iio: tsl2583: change newlines to improve readability
-  staging: iio: tsl2583: combine sysfs documentation
-  staging: iio: tsl2583: fix multiline comment syntax
-  staging: iio: tsl2583: updated code comment to match what the code
-    does
-  staging: iio: tsl2583: moved code block inside else statement
-  staging: iio: tsl2583: change tsl2583_als_calibrate() to return 0 on
-    success
-  staging: iio: tsl2583: remove unnecessary parentheses
-  staging: iio: tsl2583: don't assume an unsigned int is 32 bits
-  staging: iio: tsl2583: move from a global to a per device lux table
-  staging: iio: tsl2583: add tsl2583 to list of supported devices in the
-    header
-  staging: iio: tsl2583: clarified comment about clearing interrupts
-  staging: iio: tsl2583: remove comment for tsl2583_probe()
-  staging: iio: tsl2583: remove unnecessary memset call
-  staging: iio: tsl2583: remove unnecessary variable initialization
-  staging: iio: tsl2583: add copyright and MODULE_AUTHOR
-  staging: iio: tsl2583: move out of staging
-
- .../ABI/testing/sysfs-bus-iio-light-tsl2583        |  20 +
- drivers/iio/light/Kconfig                          |   7 +
- drivers/iio/light/Makefile                         |   1 +
- drivers/iio/light/tsl2583.c                        | 909 +++++++++++++++++++++
- .../light/sysfs-bus-iio-light-tsl2583              |   6 -
- .../iio/Documentation/sysfs-bus-iio-light-tsl2583  |  20 -
- drivers/staging/iio/light/Kconfig                  |   7 -
- drivers/staging/iio/light/Makefile                 |   1 -
- drivers/staging/iio/light/tsl2583.c                | 883 --------------------
- 9 files changed, 937 insertions(+), 917 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-light-tsl2583
- create mode 100644 drivers/iio/light/tsl2583.c
- delete mode 100644 drivers/staging/iio/Documentation/light/sysfs-bus-iio-light-tsl2583
- delete mode 100644 drivers/staging/iio/Documentation/sysfs-bus-iio-light-tsl2583
- delete mode 100644 drivers/staging/iio/light/tsl2583.c
-
+diff --git a/drivers/iio/accel/st_accel_i2c.c b/drivers/iio/accel/st_accel_i2c.c
+index e9d427a5df7c..1256bb5a59ac 100644
+--- a/drivers/iio/accel/st_accel_i2c.c
++++ b/drivers/iio/accel/st_accel_i2c.c
+@@ -92,23 +92,17 @@ MODULE_DEVICE_TABLE(of, st_accel_of_match);
+ #endif
+ 
+ static int st_accel_i2c_probe(struct i2c_client *client,
+-						const struct i2c_device_id *id)
++			      const struct i2c_device_id *id)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct st_sensor_data *adata;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*adata));
+-	if (!indio_dev)
+-		return -ENOMEM;
+-
+-	adata = iio_priv(indio_dev);
+-	st_sensors_of_i2c_probe(client, st_accel_of_match);
+-
+-	st_sensors_i2c_configure(indio_dev, client, adata);
++	err = st_sensors_i2c_probe(client, st_accel_of_match, &indio_dev);
++	if (err)
++		return err;
+ 
+ 	err = st_accel_common_probe(indio_dev);
+-	if (err < 0)
++	if (err)
+ 		return err;
+ 
+ 	return 0;
+diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+index b43aa36031f8..ed6bd865cc0d 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
++++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+@@ -64,20 +64,6 @@ static const struct st_sensor_transfer_function st_sensors_tf_i2c = {
+ 	.read_multiple_byte = st_sensors_i2c_read_multiple_byte,
+ };
+ 
+-void st_sensors_i2c_configure(struct iio_dev *indio_dev,
+-		struct i2c_client *client, struct st_sensor_data *sdata)
+-{
+-	i2c_set_clientdata(client, indio_dev);
+-
+-	indio_dev->dev.parent = &client->dev;
+-	indio_dev->name = client->name;
+-
+-	sdata->dev = &client->dev;
+-	sdata->tf = &st_sensors_tf_i2c;
+-	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
+-}
+-EXPORT_SYMBOL(st_sensors_i2c_configure);
+-
+ #ifdef CONFIG_OF
+ /**
+  * st_sensors_of_i2c_probe() - device tree probe for ST I2C sensors
+@@ -91,8 +77,8 @@ EXPORT_SYMBOL(st_sensors_i2c_configure);
+  * rely on that name from this point on. I2C client devices will be renamed
+  * to match the internal kernel convention.
+  */
+-void st_sensors_of_i2c_probe(struct i2c_client *client,
+-			     const struct of_device_id *match)
++static void st_sensors_of_i2c_probe(struct i2c_client *client,
++				    const struct of_device_id *match)
+ {
+ 	const struct of_device_id *of_id;
+ 
+@@ -104,9 +90,42 @@ void st_sensors_of_i2c_probe(struct i2c_client *client,
+ 	strncpy(client->name, of_id->data, sizeof(client->name));
+ 	client->name[sizeof(client->name) - 1] = '\0';
+ }
+-EXPORT_SYMBOL(st_sensors_of_i2c_probe);
++#else
++static void st_sensors_of_i2c_probe(struct i2c_client *client,
++				    const struct of_device_id *match)
++{
++}
+ #endif
+ 
++int st_sensors_i2c_probe(struct i2c_client *client,
++			 const struct of_device_id *match,
++			 struct iio_dev **ret_indio_dev)
++{
++	struct iio_dev *indio_dev;
++	struct st_sensor_data *sdata;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*sdata));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	sdata = iio_priv(indio_dev);
++	st_sensors_of_i2c_probe(client, match);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = client->name;
++
++	sdata->dev = &client->dev;
++	sdata->tf = &st_sensors_tf_i2c;
++	sdata->get_irq_data_ready = st_sensors_i2c_get_irq;
++
++	i2c_set_clientdata(client, indio_dev);
++
++	*ret_indio_dev = indio_dev;
++
++	return 0;
++}
++EXPORT_SYMBOL(st_sensors_i2c_probe);
++
+ MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
+ MODULE_DESCRIPTION("STMicroelectronics ST-sensors i2c driver");
+ MODULE_LICENSE("GPL v2");
+diff --git a/drivers/iio/gyro/st_gyro_i2c.c b/drivers/iio/gyro/st_gyro_i2c.c
+index 40056b821036..2fac5c63c8b3 100644
+--- a/drivers/iio/gyro/st_gyro_i2c.c
++++ b/drivers/iio/gyro/st_gyro_i2c.c
+@@ -60,23 +60,17 @@ MODULE_DEVICE_TABLE(of, st_gyro_of_match);
+ #endif
+ 
+ static int st_gyro_i2c_probe(struct i2c_client *client,
+-						const struct i2c_device_id *id)
++			     const struct i2c_device_id *id)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct st_sensor_data *gdata;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*gdata));
+-	if (!indio_dev)
+-		return -ENOMEM;
+-
+-	gdata = iio_priv(indio_dev);
+-	st_sensors_of_i2c_probe(client, st_gyro_of_match);
+-
+-	st_sensors_i2c_configure(indio_dev, client, gdata);
++	err = st_sensors_i2c_probe(client, st_gyro_of_match, &indio_dev);
++	if (err)
++		return err;
+ 
+ 	err = st_gyro_common_probe(indio_dev);
+-	if (err < 0)
++	if (err)
+ 		return err;
+ 
+ 	return 0;
+diff --git a/drivers/iio/magnetometer/st_magn_i2c.c b/drivers/iio/magnetometer/st_magn_i2c.c
+index 8aa37af306ed..7f519d3fa973 100644
+--- a/drivers/iio/magnetometer/st_magn_i2c.c
++++ b/drivers/iio/magnetometer/st_magn_i2c.c
+@@ -48,23 +48,17 @@ MODULE_DEVICE_TABLE(of, st_magn_of_match);
+ #endif
+ 
+ static int st_magn_i2c_probe(struct i2c_client *client,
+-						const struct i2c_device_id *id)
++			     const struct i2c_device_id *id)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct st_sensor_data *mdata;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*mdata));
+-	if (!indio_dev)
+-		return -ENOMEM;
+-
+-	mdata = iio_priv(indio_dev);
+-	st_sensors_of_i2c_probe(client, st_magn_of_match);
+-
+-	st_sensors_i2c_configure(indio_dev, client, mdata);
++	err = st_sensors_i2c_probe(client, st_magn_of_match, &indio_dev);
++	if (err)
++		return err;
+ 
+ 	err = st_magn_common_probe(indio_dev);
+-	if (err < 0)
++	if (err)
+ 		return err;
+ 
+ 	return 0;
+diff --git a/drivers/iio/pressure/st_pressure_i2c.c b/drivers/iio/pressure/st_pressure_i2c.c
+index ed18701c68c9..4d78e39c8a2f 100644
+--- a/drivers/iio/pressure/st_pressure_i2c.c
++++ b/drivers/iio/pressure/st_pressure_i2c.c
+@@ -44,23 +44,17 @@ MODULE_DEVICE_TABLE(of, st_press_of_match);
+ #endif
+ 
+ static int st_press_i2c_probe(struct i2c_client *client,
+-						const struct i2c_device_id *id)
++			      const struct i2c_device_id *id)
+ {
+ 	struct iio_dev *indio_dev;
+-	struct st_sensor_data *press_data;
+ 	int err;
+ 
+-	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*press_data));
+-	if (!indio_dev)
+-		return -ENOMEM;
+-
+-	press_data = iio_priv(indio_dev);
+-	st_sensors_of_i2c_probe(client, st_press_of_match);
+-
+-	st_sensors_i2c_configure(indio_dev, client, press_data);
++	err = st_sensors_i2c_probe(client, st_press_of_match, &indio_dev);
++	if (err)
++		return err;
+ 
+ 	err = st_press_common_probe(indio_dev);
+-	if (err < 0)
++	if (err)
+ 		return err;
+ 
+ 	return 0;
+diff --git a/include/linux/iio/common/st_sensors_i2c.h b/include/linux/iio/common/st_sensors_i2c.h
+index 1796af093368..b0c5342942da 100644
+--- a/include/linux/iio/common/st_sensors_i2c.h
++++ b/include/linux/iio/common/st_sensors_i2c.h
+@@ -15,17 +15,8 @@
+ #include <linux/iio/common/st_sensors.h>
+ #include <linux/of.h>
+ 
+-void st_sensors_i2c_configure(struct iio_dev *indio_dev,
+-		struct i2c_client *client, struct st_sensor_data *sdata);
+-
+-#ifdef CONFIG_OF
+-void st_sensors_of_i2c_probe(struct i2c_client *client,
+-			     const struct of_device_id *match);
+-#else
+-static inline void st_sensors_of_i2c_probe(struct i2c_client *client,
+-					   const struct of_device_id *match)
+-{
+-}
+-#endif
++int st_sensors_i2c_probe(struct i2c_client *client,
++			 const struct of_device_id *match,
++			 struct iio_dev **ret_indio_dev);
+ 
+ #endif /* ST_SENSORS_I2C_H */
 -- 
 2.7.4
 
