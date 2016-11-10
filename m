@@ -1,50 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35308 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933360AbcKLOmN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 09:42:13 -0500
-Subject: Re: [PATCH 2/2] staging: iio: ad7606: move out of staging
-To: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
- <1478846078-22207-3-git-send-email-eraretuya@gmail.com>
- <266c2aad-1938-1dc7-0b22-b2f3b2d80e68@metafoo.de>
- <280ee49f-7217-6dfc-dcc0-a6c8800144cd@kernel.org>
- <20161112143242.GB2214@Socrates-DK>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <423aed08-af36-402b-4a9b-011aaf7ef2e5@kernel.org>
-Date: Sat, 12 Nov 2016 14:42:11 +0000
-MIME-Version: 1.0
-In-Reply-To: <20161112143242.GB2214@Socrates-DK>
-Content-Type: text/plain; charset=windows-1252
+Received: from onstation.org ([52.200.56.107]:50662 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754540AbcKJJ03 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:29 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v3 27/28] staging: iio: tsl2583: add copyright and MODULE_AUTHOR
+Date: Thu, 10 Nov 2016 04:26:03 -0500
+Message-Id: <1478769964-7065-28-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/11/16 14:32, Eva Rachel Retuya wrote:
-> On Sat, Nov 12, 2016 at 02:26:51PM +0000, Jonathan Cameron wrote:
->> On 11/11/16 14:22, Lars-Peter Clausen wrote:
->>> On 11/11/2016 07:34 AM, Eva Rachel Retuya wrote:
->>>> Move the ad7606 driver from staging/iio/adc to iio/adc. Also, update the
->>>> corresponding Makefile and Kconfig associated with the change.
->>>
->>> This is obviously OK, but when you generate a patch that moves files use
->>> `git format-patch -M ...`. This will generate a more compact patch.
->>>
->> I tend to make an exception for staging graduation patches.
->> The mere posting of the whole driver by not using the move detection
->> makes for really easy review of whether we have forgotten something
->> else that needs cleanup before the graduation.
->>
->> Most of the time -M is much more sensible!
->>
->> Jonathan
-> 
-> Should I use this -M on version 2 or still go with the previous method?
-> 
-> Thanks,
-> Eva
-> 
-Go without the no -M option and face the ire of Lars ;)
+Add Brian Masney's copyright to the header and to the MODULE_AUTHOR
+for all of the staging cleanups that has been done to this driver.
 
-J
+The original MODULE_AUTHOR() did not have a space between his name and
+email address. This patch also adds the missing space.
+
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 4 +++-
+ 1 file changed, 3 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 13cf88a..b6da79b 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -3,6 +3,7 @@
+  * within the TAOS tsl258x family of devices (tsl2580, tsl2581, tsl2583).
+  *
+  * Copyright (c) 2011, TAOS Corporation.
++ * Copyright (c) 2016 Brian Masney <masneyb@onstation.org>
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License as published by
+@@ -902,6 +903,7 @@ static struct i2c_driver tsl2583_driver = {
+ };
+ module_i2c_driver(tsl2583_driver);
+ 
+-MODULE_AUTHOR("J. August Brenner<jbrenner@taosinc.com>");
++MODULE_AUTHOR("J. August Brenner <jbrenner@taosinc.com>");
++MODULE_AUTHOR("Brian Masney <masneyb@onstation.org>");
+ MODULE_DESCRIPTION("TAOS tsl2583 ambient light sensor driver");
+ MODULE_LICENSE("GPL");
+-- 
+2.7.4
+
