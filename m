@@ -1,66 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:50378 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:50590 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754968AbcKJJ0M (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Nov 2016 04:26:12 -0500
+        id S1755096AbcKJJ0X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:23 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v3 03/28] staging: iio: tsl2583: check if chip is suspended in in_illuminance_calibrate_store
-Date: Thu, 10 Nov 2016 04:25:39 -0500
-Message-Id: <1478769964-7065-4-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v3 19/28] staging: iio: tsl2583: remove unnecessary parentheses
+Date: Thu, 10 Nov 2016 04:25:55 -0500
+Message-Id: <1478769964-7065-20-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-in_illuminance_calibrate_store() did not check to see if the chip is
-suspended. This patch adds the proper check. The return value from
-taos_als_calibrate() was also not checked in this function, so the
-proper check was also added while changes are being made here.
+in_illuminance_lux_table_store() contains some unnecessary parentheses.
+This patch removes them since they provide no value.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 17 ++++++++++++++---
- 1 file changed, 14 insertions(+), 3 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 1a7be12..eb59ea0 100644
+index ad4ea8a..1b883b5 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -501,16 +501,27 @@ static ssize_t in_illuminance_calibrate_store(struct device *dev,
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
--	int value;
-+	int value, ret;
+@@ -570,7 +570,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
+ 			__func__, TSL2583_MAX_LUX_INTS);
+ 		goto done;
+ 	}
+-	if ((value[(n - 2)] | value[(n - 1)] | value[n]) != 0) {
++	if ((value[n - 2] | value[n - 1] | value[n]) != 0) {
+ 		dev_err(dev, "%s: The last 3 entries in the lux table must be zeros.\n",
+ 			__func__);
+ 		goto done;
+@@ -578,7 +578,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
  
- 	if (kstrtoint(buf, 0, &value) || value != 1)
- 		return -EINVAL;
+ 	/* Zero out the table */
+ 	memset(tsl2583_device_lux, 0, sizeof(tsl2583_device_lux));
+-	memcpy(tsl2583_device_lux, &value[1], (value[0] * 4));
++	memcpy(tsl2583_device_lux, &value[1], value[0] * 4);
  
- 	mutex_lock(&chip->als_mutex);
--	taos_als_calibrate(indio_dev);
-+
-+	if (chip->suspended) {
-+		ret = -EBUSY;
-+		goto done;
-+	}
-+
-+	ret = taos_als_calibrate(indio_dev);
-+	if (ret < 0)
-+		goto done;
-+
-+	ret = len;
-+done:
- 	mutex_unlock(&chip->als_mutex);
+ 	ret = len;
  
--	return len;
-+	return ret;
- }
- 
- static ssize_t in_illuminance_lux_table_show(struct device *dev,
 -- 
 2.7.4
 
