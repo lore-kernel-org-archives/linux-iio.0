@@ -1,52 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f195.google.com ([209.85.192.195]:36752 "EHLO
-        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932806AbcKKGfo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Nov 2016 01:35:44 -0500
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.usuosl.org,
-        linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH 0/2] staging: iio: ad7606: move driver out of staging
-Date: Fri, 11 Nov 2016 14:34:36 +0800
-Message-Id: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
+Received: from onstation.org ([52.200.56.107]:50526 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755078AbcKJJ0W (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:22 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v3 16/28] staging: iio: tsl2583: updated code comment to match what the code does
+Date: Thu, 10 Nov 2016 04:25:52 -0500
+Message-Id: <1478769964-7065-17-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Address the last remaining TODO [1] for this driver and move it from staging
-into mainline.
+If channel 0 does not have any data, then the code sets the lux to zero.
+The corresponding comment says that the last value is returned. This
+updates the comment to correctly reflect what the code does.
 
-[1] https://marc.info/?l=linux-iio&m=147689684332118&w=2 
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Eva Rachel Retuya (2):
-  staging: iio: ad7606: replace range/range_available with corresponding
-    scale
-  staging: iio: ad7606: move out of staging
-
- drivers/iio/adc/Kconfig              |  34 +++
- drivers/iio/adc/Makefile             |   3 +
- drivers/iio/adc/ad7606.c             | 519 +++++++++++++++++++++++++++++++++
- drivers/iio/adc/ad7606.h             |  78 +++++
- drivers/iio/adc/ad7606_par.c         | 112 ++++++++
- drivers/iio/adc/ad7606_spi.c         |  78 +++++
- drivers/staging/iio/adc/Kconfig      |  34 ---
- drivers/staging/iio/adc/Makefile     |   4 -
- drivers/staging/iio/adc/ad7606.c     | 543 -----------------------------------
- drivers/staging/iio/adc/ad7606.h     |  78 -----
- drivers/staging/iio/adc/ad7606_par.c | 112 --------
- drivers/staging/iio/adc/ad7606_spi.c |  78 -----
- 12 files changed, 824 insertions(+), 849 deletions(-)
- create mode 100644 drivers/iio/adc/ad7606.c
- create mode 100644 drivers/iio/adc/ad7606.h
- create mode 100644 drivers/iio/adc/ad7606_par.c
- create mode 100644 drivers/iio/adc/ad7606_spi.c
- delete mode 100644 drivers/staging/iio/adc/ad7606.c
- delete mode 100644 drivers/staging/iio/adc/ad7606.h
- delete mode 100644 drivers/staging/iio/adc/ad7606_par.c
- delete mode 100644 drivers/staging/iio/adc/ad7606_spi.c
-
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 52a39a6..390ff8b 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -221,7 +221,7 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+ 		goto return_max;
+ 
+ 	if (!ch0) {
+-		/* have no data, so return LAST VALUE */
++		/* have no data, so return 0 */
+ 		ret = 0;
+ 		chip->als_cur_info.lux = 0;
+ 		goto done;
 -- 
 2.7.4
 
