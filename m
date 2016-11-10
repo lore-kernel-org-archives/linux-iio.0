@@ -1,79 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:50686 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:50700 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755135AbcKJJ01 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Nov 2016 04:26:27 -0500
+        id S1754874AbcKJJ0X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:23 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v3 17/28] staging: iio: tsl2583: moved code block inside else statement
-Date: Thu, 10 Nov 2016 04:25:53 -0500
-Message-Id: <1478769964-7065-18-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v3 20/28] staging: iio: tsl2583: don't assume an unsigned int is 32 bits
+Date: Thu, 10 Nov 2016 04:25:56 -0500
+Message-Id: <1478769964-7065-21-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The check for ch1lux > ch0lux inside tsl2583_get_lux is only valid if
-the ratio is not equal to zero. Move the code block inside the else
-statement. This does away with the need to initialize the variables to
-zero.
+in_illuminance_lux_table_store assumes that an unsigned int is 32 bits.
+Replace this with sizeof(unsigned int).
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 23 ++++++++++++-----------
- 1 file changed, 12 insertions(+), 11 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 390ff8b..bdd395a 100644
+index 1b883b5..bcee31b 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -167,8 +167,6 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
- 	struct tsl2583_lux *p;
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int i, ret;
--	u32 ch0lux = 0;
--	u32 ch1lux = 0;
+@@ -578,7 +578,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
  
- 	ret = i2c_smbus_read_byte_data(chip->client, TSL2583_CMD_REG);
- 	if (ret < 0) {
-@@ -238,22 +236,25 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
- 	if (p->ratio == 0) {
- 		lux = 0;
- 	} else {
-+		u32 ch0lux, ch1lux;
-+
- 		ch0lux = ((ch0 * p->ch0) +
- 			  (gainadj[chip->als_settings.als_gain].ch0 >> 1))
- 			 / gainadj[chip->als_settings.als_gain].ch0;
- 		ch1lux = ((ch1 * p->ch1) +
- 			  (gainadj[chip->als_settings.als_gain].ch1 >> 1))
- 			 / gainadj[chip->als_settings.als_gain].ch1;
--		lux = ch0lux - ch1lux;
--	}
+ 	/* Zero out the table */
+ 	memset(tsl2583_device_lux, 0, sizeof(tsl2583_device_lux));
+-	memcpy(tsl2583_device_lux, &value[1], value[0] * 4);
++	memcpy(tsl2583_device_lux, &value[1], value[0] * sizeof(unsigned int));
  
--	/* note: lux is 31 bit max at this point */
--	if (ch1lux > ch0lux) {
--		dev_dbg(&chip->client->dev, "%s: No Data - Returning 0\n",
--			__func__);
--		ret = 0;
--		chip->als_cur_info.lux = 0;
--		goto done;
-+		/* note: lux is 31 bit max at this point */
-+		if (ch1lux > ch0lux) {
-+			dev_dbg(&chip->client->dev, "%s: No Data - Returning 0\n",
-+				__func__);
-+			ret = 0;
-+			chip->als_cur_info.lux = 0;
-+			goto done;
-+		}
-+
-+		lux = ch0lux - ch1lux;
- 	}
+ 	ret = len;
  
- 	/* adjust for active time scale */
 -- 
 2.7.4
 
