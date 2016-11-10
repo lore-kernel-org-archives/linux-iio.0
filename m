@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:23170 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S934564AbcKJQUg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 11:20:36 -0500
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:35275 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S934564AbcKJQUd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 11:20:33 -0500
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
 To: <linux-iio@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
@@ -12,90 +12,59 @@ CC: <jic23@kernel.org>, <lee.jones@linaro.org>,
         <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
         <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
         <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
-Subject: [PATCH v2 5/6] ARM: dts: stm32f429: Add adc support
-Date: Thu, 10 Nov 2016 17:18:57 +0100
-Message-ID: <1478794738-28933-6-git-send-email-fabrice.gasnier@st.com>
-In-Reply-To: <1478794738-28933-1-git-send-email-fabrice.gasnier@st.com>
-References: <1478794738-28933-1-git-send-email-fabrice.gasnier@st.com>
+Subject: [PATCH v2 0/6] Add support for STM32 ADC
+Date: Thu, 10 Nov 2016 17:18:52 +0100
+Message-ID: <1478794738-28933-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add adc support & pinctrl analog phandle (adc3_in8) to stm32f429.
+This series adds support for STM32F4 ADC into IIO framework.
+STM32F4 ADC is a 12-bit successive approximation analog-to-digital
+converter with multiplexed input channels. Conversions can
+be performed in single, continuous, scan or discontinuous mode.
+Conversions can be launched in software or using hardware triggers.
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- arch/arm/boot/dts/stm32f429.dtsi | 49 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+This driver has been developed and tested on STM32F429 eval board.
+It consist of a MFD core driver, to manage common resources shared
+between up to 3 ADC instances.
 
-diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
-index 336ee4f..f198132 100644
---- a/arch/arm/boot/dts/stm32f429.dtsi
-+++ b/arch/arm/boot/dts/stm32f429.dtsi
-@@ -172,6 +172,49 @@
- 			status = "disabled";
- 		};
- 
-+		adc: adc@40012000 {
-+			compatible = "st,stm32f4-adc-core";
-+			reg = <0x40012000 0x400>;
-+			interrupts = <18>;
-+			clocks = <&rcc 0 168>;
-+			clock-names = "adc";
-+			interrupt-controller;
-+			#interrupt-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+
-+			adc1: adc@0 {
-+				compatible = "st,stm32f4-adc";
-+				#io-channel-cells = <1>;
-+				reg = <0x0>;
-+				clocks = <&rcc 0 168>;
-+				interrupt-parent = <&adc>;
-+				interrupts = <0>;
-+				status = "disabled";
-+			};
-+
-+			adc2: adc@100 {
-+				compatible = "st,stm32f4-adc";
-+				#io-channel-cells = <1>;
-+				reg = <0x100>;
-+				clocks = <&rcc 0 169>;
-+				interrupt-parent = <&adc>;
-+				interrupts = <1>;
-+				status = "disabled";
-+			};
-+
-+			adc3: adc@200 {
-+				compatible = "st,stm32f4-adc";
-+				#io-channel-cells = <1>;
-+				reg = <0x200>;
-+				clocks = <&rcc 0 170>;
-+				interrupt-parent = <&adc>;
-+				interrupts = <2>;
-+				status = "disabled";
-+			};
-+		};
-+
- 		syscfg: system-config@40013800 {
- 			compatible = "syscon";
- 			reg = <0x40013800 0x400>;
-@@ -332,6 +375,12 @@
- 					slew-rate = <2>;
- 				};
- 			};
-+
-+			adc3_in8_pin: adc@200 {
-+				pins {
-+					pinmux = <STM32F429_PF10_FUNC_ANALOG>;
-+				};
-+			};
- 		};
- 
- 		rcc: rcc@40023810 {
+Changes in v2:
+- Replace single driver model by MFD approach, to handle up to 3 ADCs
+  as separate devices. Each ADC device then registers a unique IIO
+  device.
+- Make driver as simple as possible for the first instance, to ease
+  review. For now, I dropped complexity by removing injected support,
+  triggered buffer mode, dmas.
+- Removed abstraction layer (indirection routines, ops) as only stm32f4
+  is supported.
+
+Fabrice Gasnier (6):
+  Documentation: dt-bindings: Document STM32 ADC DT bindings
+  mfd: stm32-adc: Add support for stm32 ADC
+  iio: adc: Add support for STM32 ADC
+  ARM: configs: stm32: enable ADC driver
+  ARM: dts: stm32f429: Add adc support
+  ARM: dts: stm32f429: enable adc on eval board
+
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |  85 ++++
+ arch/arm/boot/dts/stm32429i-eval.dts               |  25 +
+ arch/arm/boot/dts/stm32f429.dtsi                   |  49 ++
+ arch/arm/configs/stm32_defconfig                   |   3 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/stm32-adc.c                        | 525 +++++++++++++++++++++
+ drivers/mfd/Kconfig                                |  14 +
+ drivers/mfd/Makefile                               |   1 +
+ drivers/mfd/stm32-adc-core.c                       | 301 ++++++++++++
+ include/linux/mfd/stm32-adc-core.h                 |  52 ++
+ 11 files changed, 1066 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+ create mode 100644 drivers/iio/adc/stm32-adc.c
+ create mode 100644 drivers/mfd/stm32-adc-core.c
+ create mode 100644 include/linux/mfd/stm32-adc-core.h
+
 -- 
 1.9.1
 
