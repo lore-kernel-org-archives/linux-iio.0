@@ -1,50 +1,59 @@
-Return-Path: <peda@axentia.se>
-Subject: Re: [PATCH v4 8/8] iio: envelope-detector: ADC driver based on a DAC
- and a comparator
-To: Thomas Gleixner <tglx@linutronix.de>
-References: <1478606339-31253-1-git-send-email-peda@axentia.se>
- <1478606339-31253-9-git-send-email-peda@axentia.se>
- <alpine.DEB.2.20.1611081630450.3501@nanos>
- <d8237286-d2ff-3146-d718-f54d05b0101d@axentia.se>
- <alpine.DEB.2.20.1611081809320.3501@nanos>
- <1c104a31-6c66-9537-9b90-ede58c8e1a92@axentia.se>
- <alpine.DEB.2.20.1611082146560.3501@nanos>
- <ac908a97-77b8-046a-a0e9-74cc97f56c9b@axentia.se>
- <alpine.DEB.2.20.1611091605090.3501@nanos>
-CC: <linux-kernel@vger.kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Rob Herring
-	<robh+dt@kernel.org>, "Mark Rutland" <mark.rutland@arm.com>, Daniel Baluta
-	<daniel.baluta@intel.com>, Slawomir Stepien <sst@poczta.fm>,
-	<linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <9fa01d3d-74ba-a048-52bf-4df959153354@axentia.se>
-Date: Fri, 11 Nov 2016 12:37:14 +0100
-MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1611091605090.3501@nanos>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:50662 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755074AbcKJJ0U (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:20 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v3 11/28] staging: iio: tsl2583: fix alignment of #define values
+Date: Thu, 10 Nov 2016 04:25:47 -0500
+Message-Id: <1478769964-7065-12-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2016-11-09 16:06, Thomas Gleixner wrote:
-> On Wed, 9 Nov 2016, Peter Rosin wrote:
->> On 2016-11-08 22:47, Thomas Gleixner wrote:
->>> I don't think you need extra race handling with that, but I might be wrong
->>> as usual.
->>
->> There's obviously no way to determine which of the timeout or the
->> interrupt that happens first without some race handling, so I don't
->> know what you mean? If the timeout happens first, there is also a
->> need to handle late hits from the irq that might come in during the
->> preparation for the next step in the binary search. It gets messy
->> quickly compared to the simplicity of the current implementation.
-> 
-> Gah, forgot about that timeout thingy. Fair enough.
-> 
-> Feel free to add an 
-> 
-> Acked-by: Thomas Gleixner <tglx@linutronix.de>
+Most of the values in the #defines have their values aligned on a single
+column, but some do not. This changes the remaining defines to use
+consistent alignment with the majority to improve code readability.
 
-Thanks for looking!
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 10 +++++-----
+ 1 file changed, 5 insertions(+), 5 deletions(-)
 
-Cheers,
-Peter
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 5a82a26..d482a84 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -44,19 +44,19 @@
+ /* tsl2583 cmd reg masks */
+ #define TSL2583_CMD_REG			0x80
+ #define TSL2583_CMD_SPL_FN		0x60
+-#define TSL2583_CMD_ALS_INT_CLR	0X01
++#define TSL2583_CMD_ALS_INT_CLR		0x01
+ 
+ /* tsl2583 cntrl reg masks */
+-#define TSL2583_CNTL_ADC_ENBL	0x02
++#define TSL2583_CNTL_ADC_ENBL		0x02
+ #define TSL2583_CNTL_PWR_OFF		0x00
+ #define TSL2583_CNTL_PWR_ON		0x01
+ 
+ /* tsl2583 status reg masks */
+-#define TSL2583_STA_ADC_VALID	0x01
+-#define TSL2583_STA_ADC_INTR	0x10
++#define TSL2583_STA_ADC_VALID		0x01
++#define TSL2583_STA_ADC_INTR		0x10
+ 
+ /* Lux calculation constants */
+-#define	TSL2583_LUX_CALC_OVER_FLOW		65535
++#define	TSL2583_LUX_CALC_OVER_FLOW	65535
+ 
+ #define TSL2583_INTERRUPT_DISABLED	0x00
+ 
+-- 
+2.7.4
+
