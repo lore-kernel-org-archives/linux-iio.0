@@ -1,199 +1,162 @@
-Return-Path: <linus.walleij@linaro.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
-Cc: Giuseppe Barba <giuseppe.barba@st.com>,
-	Denis Ciocca <denis.ciocca@st.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
-	Crestez Dan Leonard <leonard.crestez@intel.com>,
-	Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 2/2] iio: st_sensors: centralize SPI probe() code
-Date: Thu, 10 Nov 2016 11:19:02 +0100
-Message-Id: <1478773142-23081-1-git-send-email-linus.walleij@linaro.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from onstation.org ([52.200.56.107]:50364 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754883AbcKJJ0L (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:11 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v3 02/28] staging: iio: tsl2583: fix issue with changes to calibscale and int_time not being set on the chip
+Date: Thu, 10 Nov 2016 04:25:38 -0500
+Message-Id: <1478769964-7065-3-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The probe() calls for the ST Sensors SPI modules were all doing
-pretty much the same things for the different IIO subsubsystems,
-they were all allocating the same state container struct just
-giving different names to the same variable. Move it all to the
-common code in st_sensors_spi.c to avoid code duplication.
+When updating the in_illuminance_calibscale and
+in_illuminance_integration_time sysfs attributes, these values were not
+actually written to the chip. The chip would continue to use the old
+parameters. Extracted out tsl2583_set_als_gain() and
+tsl2583_set_als_time() functions that are now called when these sysfs
+attributes are updated. The chip initialization also calls these these
+new functions.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/iio/accel/st_accel_spi.c               | 13 ++++---------
- drivers/iio/common/st_sensors/st_sensors_spi.c | 21 +++++++++++++++++----
- drivers/iio/gyro/st_gyro_spi.c                 | 13 ++++---------
- drivers/iio/magnetometer/st_magn_spi.c         | 13 ++++---------
- drivers/iio/pressure/st_pressure_spi.c         | 13 ++++---------
- include/linux/iio/common/st_sensors_spi.h      |  4 ++--
- 6 files changed, 35 insertions(+), 42 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 85 +++++++++++++++++++++++--------------
+ 1 file changed, 52 insertions(+), 33 deletions(-)
 
-diff --git a/drivers/iio/accel/st_accel_spi.c b/drivers/iio/accel/st_accel_spi.c
-index efd43941d45d..35ead37e0077 100644
---- a/drivers/iio/accel/st_accel_spi.c
-+++ b/drivers/iio/accel/st_accel_spi.c
-@@ -21,19 +21,14 @@
- static int st_accel_spi_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
--	struct st_sensor_data *adata;
- 	int err;
- 
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*adata));
--	if (!indio_dev)
--		return -ENOMEM;
--
--	adata = iio_priv(indio_dev);
--
--	st_sensors_spi_configure(indio_dev, spi, adata);
-+	err = st_sensors_spi_probe(spi, &indio_dev);
-+	if (err)
-+		return err;
- 
- 	err = st_accel_common_probe(indio_dev);
--	if (err < 0)
-+	if (err)
- 		return err;
- 
- 	return 0;
-diff --git a/drivers/iio/common/st_sensors/st_sensors_spi.c b/drivers/iio/common/st_sensors/st_sensors_spi.c
-index 5b377373f48d..3f31a29058e1 100644
---- a/drivers/iio/common/st_sensors/st_sensors_spi.c
-+++ b/drivers/iio/common/st_sensors/st_sensors_spi.c
-@@ -103,10 +103,17 @@ static const struct st_sensor_transfer_function st_sensors_tf_spi = {
- 	.read_multiple_byte = st_sensors_spi_read_multiple_byte,
- };
- 
--void st_sensors_spi_configure(struct iio_dev *indio_dev,
--			struct spi_device *spi, struct st_sensor_data *sdata)
-+int st_sensors_spi_probe(struct spi_device *spi,
-+			 struct iio_dev **ret_indio_dev)
- {
--	spi_set_drvdata(spi, indio_dev);
-+	struct iio_dev *indio_dev;
-+	struct st_sensor_data *sdata;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*sdata));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	sdata = iio_priv(indio_dev);
- 
- 	indio_dev->dev.parent = &spi->dev;
- 	indio_dev->name = spi->modalias;
-@@ -114,8 +121,14 @@ void st_sensors_spi_configure(struct iio_dev *indio_dev,
- 	sdata->dev = &spi->dev;
- 	sdata->tf = &st_sensors_tf_spi;
- 	sdata->get_irq_data_ready = st_sensors_spi_get_irq;
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	*ret_indio_dev = indio_dev;
-+
-+	return 0;
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index c196a42..1a7be12 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -352,6 +352,51 @@ static int taos_als_calibrate(struct iio_dev *indio_dev)
+ 	return (int)gain_trim_val;
  }
--EXPORT_SYMBOL(st_sensors_spi_configure);
-+EXPORT_SYMBOL(st_sensors_spi_probe);
  
- MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
- MODULE_DESCRIPTION("STMicroelectronics ST-sensors spi driver");
-diff --git a/drivers/iio/gyro/st_gyro_spi.c b/drivers/iio/gyro/st_gyro_spi.c
-index fbf2faed501c..ce73c55b6b2c 100644
---- a/drivers/iio/gyro/st_gyro_spi.c
-+++ b/drivers/iio/gyro/st_gyro_spi.c
-@@ -21,19 +21,14 @@
- static int st_gyro_spi_probe(struct spi_device *spi)
++static int tsl2583_set_als_time(struct tsl2583_chip *chip)
++{
++	int als_count, als_time, ret;
++	u8 val;
++
++	/* determine als integration register */
++	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
++	if (!als_count)
++		als_count = 1; /* ensure at least one cycle */
++
++	/* convert back to time (encompasses overrides) */
++	als_time = (als_count * 27 + 5) / 10;
++
++	val = 256 - als_count;
++	ret = i2c_smbus_write_byte_data(chip->client,
++					TSL258X_CMD_REG | TSL258X_ALS_TIME,
++					val);
++	if (ret < 0) {
++		dev_err(&chip->client->dev, "%s failed to set the als time to %d\n",
++			__func__, val);
++		return ret;
++	}
++
++	/* set chip struct re scaling and saturation */
++	chip->als_saturation = als_count * 922; /* 90% of full scale */
++	chip->als_time_scale = (als_time + 25) / 50;
++
++	return ret;
++}
++
++static int tsl2583_set_als_gain(struct tsl2583_chip *chip)
++{
++	int ret;
++
++	/* Set the gain based on taos_settings struct */
++	ret = i2c_smbus_write_byte_data(chip->client,
++					TSL258X_CMD_REG | TSL258X_GAIN,
++					chip->taos_settings.als_gain);
++	if (ret < 0)
++		dev_err(&chip->client->dev, "%s failed to set the gain to %d\n",
++			__func__, chip->taos_settings.als_gain);
++
++	return ret;
++}
++
+ static int tsl2583_set_power_state(struct tsl2583_chip *chip, u8 state)
  {
- 	struct iio_dev *indio_dev;
--	struct st_sensor_data *gdata;
- 	int err;
- 
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*gdata));
--	if (!indio_dev)
--		return -ENOMEM;
--
--	gdata = iio_priv(indio_dev);
--
--	st_sensors_spi_configure(indio_dev, spi, gdata);
-+	err = st_sensors_spi_probe(spi, &indio_dev);
-+	if (err)
-+		return err;
- 
- 	err = st_gyro_common_probe(indio_dev);
--	if (err < 0)
-+	if (err)
- 		return err;
- 
- 	return 0;
-diff --git a/drivers/iio/magnetometer/st_magn_spi.c b/drivers/iio/magnetometer/st_magn_spi.c
-index 6325e7dc8e03..c35c4d1135df 100644
---- a/drivers/iio/magnetometer/st_magn_spi.c
-+++ b/drivers/iio/magnetometer/st_magn_spi.c
-@@ -21,19 +21,14 @@
- static int st_magn_spi_probe(struct spi_device *spi)
+ 	int ret;
+@@ -371,10 +416,8 @@ static int tsl2583_set_power_state(struct tsl2583_chip *chip, u8 state)
+  */
+ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
  {
- 	struct iio_dev *indio_dev;
--	struct st_sensor_data *mdata;
- 	int err;
+-	int ret, val;
+-	int als_count;
+-	int als_time;
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
++	int ret;
  
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*mdata));
--	if (!indio_dev)
--		return -ENOMEM;
+ 	/* and make sure we're not already on */
+ 	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
+@@ -397,37 +440,13 @@ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
+ 		return ret;
+ 	}
+ 
+-	/* determine als integration register */
+-	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
+-	if (!als_count)
+-		als_count = 1; /* ensure at least one cycle */
 -
--	mdata = iio_priv(indio_dev);
+-	/* convert back to time (encompasses overrides) */
+-	als_time = (als_count * 27 + 5) / 10;
 -
--	st_sensors_spi_configure(indio_dev, spi, mdata);
-+	err = st_sensors_spi_probe(spi, &indio_dev);
-+	if (err)
-+		return err;
+-	val = 256 - als_count;
+-	ret = i2c_smbus_write_byte_data(chip->client,
+-					TSL258X_CMD_REG | TSL258X_ALS_TIME,
+-					val);
+-	if (ret < 0) {
+-		dev_err(&chip->client->dev, "%s failed to set the als time to %d\n",
+-			__func__, val);
++	ret = tsl2583_set_als_time(chip);
++	if (ret < 0)
+ 		return ret;
+-	}
  
- 	err = st_magn_common_probe(indio_dev);
--	if (err < 0)
-+	if (err)
- 		return err;
- 
- 	return 0;
-diff --git a/drivers/iio/pressure/st_pressure_spi.c b/drivers/iio/pressure/st_pressure_spi.c
-index 550508025af1..d97dcddae064 100644
---- a/drivers/iio/pressure/st_pressure_spi.c
-+++ b/drivers/iio/pressure/st_pressure_spi.c
-@@ -21,19 +21,14 @@
- static int st_press_spi_probe(struct spi_device *spi)
- {
- 	struct iio_dev *indio_dev;
--	struct st_sensor_data *press_data;
- 	int err;
- 
--	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*press_data));
--	if (indio_dev == NULL)
--		return -ENOMEM;
+-	/* Set the gain based on taos_settings struct */
+-	ret = i2c_smbus_write_byte_data(chip->client,
+-					TSL258X_CMD_REG | TSL258X_GAIN,
+-					chip->taos_settings.als_gain);
+-	if (ret < 0) {
+-		dev_err(&chip->client->dev, "%s failed to set the gain to %d\n",
+-			__func__, chip->taos_settings.als_gain);
++	ret = tsl2583_set_als_gain(chip);
++	if (ret < 0)
+ 		return ret;
+-	}
 -
--	press_data = iio_priv(indio_dev);
--
--	st_sensors_spi_configure(indio_dev, spi, press_data);
-+	err = st_sensors_spi_probe(spi, &indio_dev);
-+	if (err)
-+		return err;
+-	/* set chip struct re scaling and saturation */
+-	chip->als_saturation = als_count * 922; /* 90% of full scale */
+-	chip->als_time_scale = (als_time + 25) / 50;
  
- 	err = st_press_common_probe(indio_dev);
--	if (err < 0)
-+	if (err)
- 		return err;
+ 	usleep_range(3000, 3500);
  
- 	return 0;
-diff --git a/include/linux/iio/common/st_sensors_spi.h b/include/linux/iio/common/st_sensors_spi.h
-index d964a3563dc6..ae89c9bbd842 100644
---- a/include/linux/iio/common/st_sensors_spi.h
-+++ b/include/linux/iio/common/st_sensors_spi.h
-@@ -14,7 +14,7 @@
- #include <linux/spi/spi.h>
- #include <linux/iio/common/st_sensors.h>
- 
--void st_sensors_spi_configure(struct iio_dev *indio_dev,
--			struct spi_device *spi, struct st_sensor_data *sdata);
-+int st_sensors_spi_probe(struct spi_device *spi,
-+			 struct iio_dev **ret_indio_dev);
- 
- #endif /* ST_SENSORS_SPI_H */
+@@ -707,7 +726,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
+ 			for (i = 0; i < ARRAY_SIZE(gainadj); i++) {
+ 				if (gainadj[i].mean == val) {
+ 					chip->taos_settings.als_gain = i;
+-					ret = 0;
++					ret = tsl2583_set_als_gain(chip);
+ 					break;
+ 				}
+ 			}
+@@ -717,7 +736,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
+ 		if (chan->type == IIO_LIGHT && !val && val2 >= 50 &&
+ 		    val2 <= 650 && !(val2 % 50)) {
+ 			chip->taos_settings.als_time = val2;
+-			ret = 0;
++			ret = tsl2583_set_als_time(chip);
+ 		}
+ 		break;
+ 	default:
 -- 
 2.7.4
+
