@@ -1,69 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from fllnx209.ext.ti.com ([198.47.19.16]:28531 "EHLO
-        fllnx209.ext.ti.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751634AbcKJGiN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 01:38:13 -0500
-Subject: Re: [PATCH] drivers: mfd: ti_am335x_tscadc: increase ADC ref clock to
- 24MHz
-To: John Syne <john3909@gmail.com>
-References: <20161024060226.4170-1-mugunthanvnm@ti.com>
- <038C6B01-8443-4321-9C65-BAC4095237D3@gmail.com>
- <086ab2fa-63ee-c5ab-2715-b2efd78270d7@ti.com>
- <12725C92-9BB8-4F77-A7B4-F3C3DA9F8B0B@gmail.com>
- <DB09B26E-C5AB-427A-82D5-6FE857E7C218@gmail.com> <20161025063847.GD8574@dell>
- <CC15CFB4-60D0-4A63-A3D3-2079CFA31274@gmail.com> <20161026084811.GI8574@dell>
- <A5F6974F-5793-4E85-BF82-2D9309980991@gmail.com>
- <d7fadbf6-8026-d821-1ef8-981f536a8fdf@ti.com>
- <D0AA78D0-9562-4E4D-A949-A771289D7570@gmail.com>
-CC: Lee Jones <lee.jones@linaro.org>,
-        "N, Mugunthan V" <mugunthanvnm@ti.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Tony Lindgren <tony@atomide.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        "linux-omap@vger.kernel.org" <linux-omap@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        "Nori, Sekhar" <nsekhar@ti.com>,
-        "Ujfalusi, Peter" <peter.ujfalusi@ti.com>
-From: Vignesh R <vigneshr@ti.com>
-Message-ID: <b7232421-10f7-2bac-0ad8-847804126bf2@ti.com>
-Date: Thu, 10 Nov 2016 10:37:12 +0530
-MIME-Version: 1.0
-In-Reply-To: <D0AA78D0-9562-4E4D-A949-A771289D7570@gmail.com>
-Content-Type: text/plain; charset="utf-8"
+Received: from onstation.org ([52.200.56.107]:50526 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754540AbcKJJ0P (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 04:26:15 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v3 06/28] staging: iio: tsl2583: change current chip state from a tristate to a bool
+Date: Thu, 10 Nov 2016 04:25:42 -0500
+Message-Id: <1478769964-7065-7-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+The current chip state is represented as a tristate (working, suspended,
+and unknown). The unknown state was not used. This patch changes the
+chip state so that it is now represented as a single boolean value
+(suspended).
 
-On Thursday 10 November 2016 05:23 AM, John Syne wrote:
-> OK, then back to my original question. Given that these DT properties are supported in the driver
-> 
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 18 ++++++------------
+ 1 file changed, 6 insertions(+), 12 deletions(-)
 
-Below properties are supported by only by ti_am3335x_adc driver and not
-ti_am335x_tsc driver. As author of this patch pointed out in another
-reply, there is no need to change step-opendelay for tsc. AFAIK, I don't
-see a use case where these values needs to be tweaked for tsc channels,
-therefore it does not make sense to be DT properties.
-
-> shouldn’t the following be added to am33xx.dtsi and am4372.dtsi?
-
-Its totally upto board dts files to allocate channels for tsc and adc.
-So, how could these be added to dtsi files?
-
-> ti,chan-step-avg = <0x16 0x16 0x16 0x16 0x16 0x16 0x16>;
-> ti,chan-step-opendelay = <0x500 0x500 0x500 0x500 0x500 0x500 0x500>;
-> ti,chan-step-sampledelay = <0x0 0x0 0x0 0x0 0x0 0x0 0x0>;
-> 
-> Regards,
-> John
->>
->> -- 
->> Regards
->> Vignesh
-> 
-
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 29dd072..5a32102 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -67,12 +67,6 @@
+ #define TSL2583_CHIP_ID			0x90
+ #define TSL2583_CHIP_ID_MASK		0xf0
+ 
+-enum {
+-	TSL258X_CHIP_UNKNOWN = 0,
+-	TSL258X_CHIP_WORKING = 1,
+-	TSL258X_CHIP_SUSPENDED = 2
+-};
+-
+ /* Per-device data */
+ struct taos_als_info {
+ 	u16 als_ch0;
+@@ -94,7 +88,7 @@ struct tsl2583_chip {
+ 	struct taos_settings taos_settings;
+ 	int als_time_scale;
+ 	int als_saturation;
+-	int taos_chip_status;
++	bool suspended;
+ };
+ 
+ struct taos_lux {
+@@ -441,7 +435,7 @@ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	chip->taos_chip_status = TSL258X_CHIP_WORKING;
++	chip->suspended = false;
+ 
+ 	return ret;
+ }
+@@ -627,7 +621,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&chip->als_mutex);
+ 
+-	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
++	if (chip->suspended) {
+ 		ret = -EBUSY;
+ 		goto read_done;
+ 	}
+@@ -704,7 +698,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
+ 
+ 	mutex_lock(&chip->als_mutex);
+ 
+-	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
++	if (chip->suspended) {
+ 		ret = -EBUSY;
+ 		goto write_done;
+ 	}
+@@ -778,7 +772,7 @@ static int taos_probe(struct i2c_client *clientp,
+ 	i2c_set_clientdata(clientp, indio_dev);
+ 
+ 	mutex_init(&chip->als_mutex);
+-	chip->taos_chip_status = TSL258X_CHIP_UNKNOWN;
++	chip->suspended = true;
+ 
+ 	ret = i2c_smbus_read_byte_data(clientp,
+ 				       TSL258X_CMD_REG | TSL258X_CHIPID);
+@@ -835,7 +829,7 @@ static int __maybe_unused taos_suspend(struct device *dev)
+ 	mutex_lock(&chip->als_mutex);
+ 
+ 	ret = tsl2583_set_power_state(chip, TSL258X_CNTL_PWR_OFF);
+-	chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
++	chip->suspended = true;
+ 
+ 	mutex_unlock(&chip->als_mutex);
+ 	return ret;
 -- 
-Regards
-Vignesh
+2.7.4
+
