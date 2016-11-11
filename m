@@ -1,84 +1,47 @@
-Return-Path: <hns@goldelico.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.216]:30584 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934963AbcKKTCW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Nov 2016 14:02:22 -0500
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Sebastian Reichel <sre@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-input@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	letux-kernel@openphoenux.org,
-	linux-iio@vger.kernel.org,
-	kernel@pyra-handheld.com,
-	"H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v7 2/9] drivers:input:tsc2007: send pendown and penup only once like ads7846(+tsc2046) driver does
-Date: Fri, 11 Nov 2016 20:01:59 +0100
-Message-Id: <2c0c66456fbb971db8a3785d82747c2699eaa99c.1478890925.git.hns@goldelico.com>
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: [PATCH v7 7/9] dt-bindings: input: move ads7846 bindings to touchscreen subdirectory
+Date: Fri, 11 Nov 2016 20:02:04 +0100
+Message-Id: <3a0b4f67ae4a40b6fea2f61089ef03cc88f29294.1478890925.git.hns@goldelico.com>
 In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
 References: <cover.1478890925.git.hns@goldelico.com>
 In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
 References: <cover.1478890925.git.hns@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
-
-this should reduce unnecessary input events.
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/input/touchscreen/tsc2007.c | 17 +++++++++++++----
- 1 file changed, 13 insertions(+), 4 deletions(-)
+ Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt | 0
+ 1 file changed, 0 insertions(+), 0 deletions(-)
+ rename Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt (100%)
 
-diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
-index c1d9593..e9d5086 100644
---- a/drivers/input/touchscreen/tsc2007.c
-+++ b/drivers/input/touchscreen/tsc2007.c
-@@ -94,6 +94,7 @@ struct tsc2007 {
- 
- 	wait_queue_head_t	wait;
- 	bool			stopped;
-+	bool			pendown;
- 
- 	int			(*get_pendown_state)(struct device *);
- 	void			(*clear_penirq)(void);
-@@ -227,7 +228,11 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- 				sx, sy, rt);
- 
- 			/* report event */
--			input_report_key(input, BTN_TOUCH, 1);
-+			if (!ts->pendown) {
-+				input_report_key(input, BTN_TOUCH, 1);
-+				ts->pendown = true;
-+			}
-+
- 			touchscreen_report_pos(ts->input, &ts->prop,
- 						(unsigned int) sx,
- 						(unsigned int) sy,
-@@ -250,9 +255,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
- 
- 	dev_dbg(&ts->client->dev, "UP\n");
- 
--	input_report_key(input, BTN_TOUCH, 0);
--	input_report_abs(input, ABS_PRESSURE, 0);
--	input_sync(input);
-+	if (ts->pendown) {
-+		input_report_key(input, BTN_TOUCH, 0);
-+		input_report_abs(input, ABS_PRESSURE, 0);
-+		input_sync(input);
-+
-+		ts->pendown = false;
-+	}
- 
- 	if (ts->clear_penirq)
- 		ts->clear_penirq();
+diff --git a/Documentation/devicetree/bindings/input/ads7846.txt b/Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
+similarity index 100%
+rename from Documentation/devicetree/bindings/input/ads7846.txt
+rename to Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
 -- 
 2.7.3
+
