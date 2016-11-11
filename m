@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.216]:30584 "EHLO
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.220]:32699 "EHLO
         mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934963AbcKKTCW (ORCPT
+        with ESMTP id S935005AbcKKTCW (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Nov 2016 14:02:22 -0500
 From: "H. Nikolaus Schaller" <hns@goldelico.com>
 To: Sebastian Reichel <sre@kernel.org>,
@@ -22,9 +22,9 @@ Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
         letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
         kernel@pyra-handheld.com,
         "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v7 7/9] dt-bindings: input: move ads7846 bindings to touchscreen subdirectory
-Date: Fri, 11 Nov 2016 20:02:04 +0100
-Message-Id: <3a0b4f67ae4a40b6fea2f61089ef03cc88f29294.1478890925.git.hns@goldelico.com>
+Subject: [PATCH v7 9/9] DT:omap3+ads7846: use new common touchscreen bindings
+Date: Fri, 11 Nov 2016 20:02:06 +0100
+Message-Id: <bb3b82c63810026cd6c23a5788c3efc79fa53e60.1478890925.git.hns@goldelico.com>
 In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
 References: <cover.1478890925.git.hns@goldelico.com>
 In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
@@ -32,16 +32,75 @@ References: <cover.1478890925.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The standard touch screen bindings [1] replace the private ti,swap-xy
+with touchscreen-swaped-x-y. And for the Openpandora we use
+touchscreen-size etc. to match the LCD screen size.
+
+[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+Tested with OpenPandora.
+
 Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt | 0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt (100%)
+ arch/arm/boot/dts/omap3-lilly-a83x.dtsi              |  2 +-
+ arch/arm/boot/dts/omap3-pandora-common.dtsi          | 17 +++++++++++++----
+ arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi |  3 ++-
+ 3 files changed, 16 insertions(+), 6 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/input/ads7846.txt b/Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
-similarity index 100%
-rename from Documentation/devicetree/bindings/input/ads7846.txt
-rename to Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
+diff --git a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
+index fa611a5..b8b3864 100644
+--- a/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
++++ b/arch/arm/boot/dts/omap3-lilly-a83x.dtsi
+@@ -325,7 +325,7 @@
+ 		ti,y-max = /bits/ 16 <3600>;
+ 		ti,x-plate-ohms = /bits/ 16 <80>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+-		ti,swap-xy;
++		touchscreen-swapped-x-y;
+ 
+ 		wakeup-source;
+ 	};
+diff --git a/arch/arm/boot/dts/omap3-pandora-common.dtsi b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+index b0d1551..d12008a 100644
+--- a/arch/arm/boot/dts/omap3-pandora-common.dtsi
++++ b/arch/arm/boot/dts/omap3-pandora-common.dtsi
+@@ -700,10 +700,19 @@
+ 		pendown-gpio = <&gpio3 30 GPIO_ACTIVE_HIGH>;
+ 		vcc-supply = <&vaux4>;
+ 
+-		ti,x-min = /bits/ 16 <0>;
+-		ti,x-max = /bits/ 16 <8000>;
+-		ti,y-min = /bits/ 16 <0>;
+-		ti,y-max = /bits/ 16 <4800>;
++		touchscreen-size-x = <800>;
++		touchscreen-size-y = <480>;
++		touchscreen-max-pressure = <1000>;
++		touchscreen-fuzz-x = <16>;
++		touchscreen-fuzz-y = <16>;
++		touchscreen-fuzz-pressure = <10>;
++		touchscreen-inverted-x;
++		touchscreen-inverted-y;
++
++		ti,x-min = /bits/ 16 <160>;
++		ti,x-max = /bits/ 16 <3900>;
++		ti,y-min = /bits/ 16 <220>;
++		ti,y-max = /bits/ 16 <3750>;
+ 		ti,x-plate-ohms = /bits/ 16 <40>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+ 
+diff --git a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
+index 157345b..3627a63 100644
+--- a/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
++++ b/arch/arm/boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi
+@@ -66,6 +66,7 @@
+ 		ti,x-plate-ohms = /bits/ 16 <40>;
+ 		ti,pressure-max = /bits/ 16 <255>;
+ 		ti,swap-xy;
+-		wakeup-source;
++		touchscreen-swapped-x-y;
++		linux,wakeup;
+ 	};
+ };
 -- 
 2.7.3
 
