@@ -1,62 +1,145 @@
-Return-Path: <hns@goldelico.com>
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Sebastian Reichel <sre@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>
-Cc: linux-input@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	letux-kernel@openphoenux.org,
-	linux-iio@vger.kernel.org,
-	kernel@pyra-handheld.com,
-	"H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v7 3/9] drivers:input:tsc2007: check for presence and power down tsc2007 during probe
-Date: Fri, 11 Nov 2016 20:02:00 +0100
-Message-Id: <0c45f364b0231477b81e0c820d20a14211d6c759.1478890925.git.hns@goldelico.com>
-In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
-References: <cover.1478890925.git.hns@goldelico.com>
-In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
-References: <cover.1478890925.git.hns@goldelico.com>
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH 1/2] staging: iio: ad7606: replace range/range_available
+ with corresponding scale
+To: Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
+ devel@driverdev.usuosl.org, linux-kernel@vger.kernel.org
+References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
+ <1478846078-22207-2-git-send-email-eraretuya@gmail.com>
+Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+ pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de>
+Date: Fri, 11 Nov 2016 15:18:37 +0100
+MIME-Version: 1.0
+In-Reply-To: <1478846078-22207-2-git-send-email-eraretuya@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 List-ID: <linux-iio@vger.kernel.org>
 
-1. check if chip is really present and don't succeed if it isn't.
-2. if it succeeds, power down the chip until accessed
+On 11/11/2016 07:34 AM, Eva Rachel Retuya wrote:
+> Eliminate the non-standard attribute in_voltage_range and move its
+> functionality under the scale attribute. read_raw() has been taken care
+> of previously so only write_raw() is handled here.
+> 
+> Additionally, rename the attribute in_voltage_range_available into
+> in_voltage_scale_available.
+> 
+> Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
+> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
----
- drivers/input/touchscreen/tsc2007.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+Hi,
 
-diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
-index e9d5086..5e3c4bf 100644
---- a/drivers/input/touchscreen/tsc2007.c
-+++ b/drivers/input/touchscreen/tsc2007.c
-@@ -538,6 +538,14 @@ static int tsc2007_probe(struct i2c_client *client,
- 
- 	tsc2007_stop(ts);
- 
-+	/* power down the chip (TSC2007_SETUP does not ACK on I2C) */
-+	err = tsc2007_xfer(ts, PWRDOWN);
-+	if (err < 0) {
-+		dev_err(&client->dev,
-+			"Failed to setup chip: %d\n", err);
-+		return err;	/* usually, chip does not respond */
-+	}
-+
- 	err = input_register_device(input_dev);
- 	if (err) {
- 		dev_err(&client->dev,
--- 
-2.7.3
+Thanks for the patch. Unfortunately this is not quite this straight forward.
+
+The scale is what you multiply the raw with to get the value in the standard
+IIO unit. Range as implemented in this driver is the maximum output voltage.
+
+To get the scale we need to look at the transfer function of the ADC [1].
+The transfer function tells us that 1 LSB is 305uV for the 10V range and
+152uV for the 5V range.
+
+More specifically this is $RANGE*2/2**16 (times two since the ADC is bipolar).
+
+Since the default unit for IIO is mV for voltages we need to multiply this
+by 1000.
+
+The other thing we need to handle is the case where the RANGE pin is not
+connected to a GPIO but either hardwired to 1 or 0. Which we need to handle
+somehow.
+
+[1]
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD7606_7606-6_7606-4.pdf#page=23
+(right bottom)
+
+> ---
+>  drivers/staging/iio/adc/ad7606.c | 56 ++++++++++++----------------------------
+>  1 file changed, 16 insertions(+), 40 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+> index 4531908..cceb18c 100644
+> --- a/drivers/staging/iio/adc/ad7606.c
+> +++ b/drivers/staging/iio/adc/ad7606.c
+> @@ -161,42 +161,7 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+>  
+> -static ssize_t ad7606_show_range(struct device *dev,
+> -				 struct device_attribute *attr, char *buf)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7606_state *st = iio_priv(indio_dev);
+> -
+> -	return sprintf(buf, "%u\n", st->range);
+> -}
+> -
+> -static ssize_t ad7606_store_range(struct device *dev,
+> -				  struct device_attribute *attr,
+> -				  const char *buf, size_t count)
+> -{
+> -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+> -	struct ad7606_state *st = iio_priv(indio_dev);
+> -	unsigned long lval;
+> -	int ret;
+> -
+> -	ret = kstrtoul(buf, 10, &lval);
+> -	if (ret)
+> -		return ret;
+> -
+> -	if (!(lval == 5000 || lval == 10000))
+> -		return -EINVAL;
+> -
+> -	mutex_lock(&indio_dev->mlock);
+> -	gpiod_set_value(st->gpio_range, lval == 10000);
+> -	st->range = lval;
+> -	mutex_unlock(&indio_dev->mlock);
+> -
+> -	return count;
+> -}
+> -
+> -static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR,
+> -		       ad7606_show_range, ad7606_store_range, 0);
+> -static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
+> +static IIO_CONST_ATTR(in_voltage_scale_available, "5000 10000");
+>  
+>  static int ad7606_oversampling_get_index(unsigned int val)
+>  {
+> @@ -221,6 +186,19 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+>  	int ret;
+>  
+>  	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		if (val2)
+> +			return -EINVAL;
+> +
+> +		if (!(val == 5000 || val == 10000))
+> +			return -EINVAL;
+> +
+> +		mutex_lock(&indio_dev->mlock);
+> +		gpiod_set_value(st->gpio_range, val == 10000);
+> +		st->range = val;
+> +		mutex_unlock(&indio_dev->mlock);
+> +
+> +		return 0;
+>  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>  		if (val2)
+>  			return -EINVAL;
+> @@ -247,8 +225,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+>  static IIO_CONST_ATTR(oversampling_ratio_available, "1 2 4 8 16 32 64");
+>  
+>  static struct attribute *ad7606_attributes_os_and_range[] = {
+> -	&iio_dev_attr_in_voltage_range.dev_attr.attr,
+> -	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
+> +	&iio_const_attr_in_voltage_scale_available.dev_attr.attr,
+>  	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
+>  	NULL,
+>  };
+> @@ -267,8 +244,7 @@ static const struct attribute_group ad7606_attribute_group_os = {
+>  };
+>  
+>  static struct attribute *ad7606_attributes_range[] = {
+> -	&iio_dev_attr_in_voltage_range.dev_attr.attr,
+> -	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
+> +	&iio_const_attr_in_voltage_scale_available.dev_attr.attr,
+>  	NULL,
+>  };
+>  
+> 
