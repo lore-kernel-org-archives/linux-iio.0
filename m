@@ -1,399 +1,365 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35566 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751643AbcKLPi1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 10:38:27 -0500
-Subject: Re: [PATCH 2/4] iio: gyro: st_gyro: inline per-sensor data
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
- <1478704200-19046-3-git-send-email-linus.walleij@linaro.org>
-Cc: Giuseppe Barba <giuseppe.barba@st.com>,
-        Denis Ciocca <denis.ciocca@st.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d9866ce3-ee66-d8ec-bda3-b3ccbf11a568@kernel.org>
-Date: Sat, 12 Nov 2016 15:38:25 +0000
-MIME-Version: 1.0
-In-Reply-To: <1478704200-19046-3-git-send-email-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hns@goldelico.com>
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Sebastian Reichel <sre@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Michael Welling <mwelling@ieee.org>,
+	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	Igor Grinberg <grinberg@compulab.co.il>,
+	"Andrew F. Davis" <afd@ti.com>,
+	Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>
+Cc: linux-input@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	letux-kernel@openphoenux.org,
+	linux-iio@vger.kernel.org,
+	kernel@pyra-handheld.com,
+	"H. Nikolaus Schaller" <hns@goldelico.com>
+Subject: [PATCH v7 1/9] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
+Date: Fri, 11 Nov 2016 20:01:58 +0100
+Message-Id: <5233cd469d69ef3f1398e75b8934c7b65f6fba77.1478890925.git.hns@goldelico.com>
+In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
+References: <cover.1478890925.git.hns@goldelico.com>
+In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
+References: <cover.1478890925.git.hns@goldelico.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/11/16 15:09, Linus Walleij wrote:
-> We have #defines for all the individual sensor registers and
-> value/mask pairs #defined at the top of the file and used at
-> exactly one spot.
-> 
-> This is usually good if the #defines give a meaning to the
-> opaque magic numbers.
-> 
-> However in this case, the semantic meaning is inherent in the
-> name of the C99-addressable fields, and that means duplication
-> of information, and only makes the code hard to maintain since
-> you every time have to add a new #define AND update the site
-> where it is to be used.
-> 
-> Get rid of the #defines and just open code the values into the
-> appropriate struct elements. Make sure to explicitly address
-> the .hz and .value fields in the st_sensor_odr_avl struct
-> so that the meaning of all values is clear.
-> 
-> This patch is purely syntactic should have no semantic effect.
-> 
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Great and applied.
-> ---
->  drivers/iio/gyro/st_gyro_core.c | 205 +++++++++++++---------------------------
->  1 file changed, 66 insertions(+), 139 deletions(-)
-> 
-> diff --git a/drivers/iio/gyro/st_gyro_core.c b/drivers/iio/gyro/st_gyro_core.c
-> index aea034d8fe0f..2a42b3d583e8 100644
-> --- a/drivers/iio/gyro/st_gyro_core.c
-> +++ b/drivers/iio/gyro/st_gyro_core.c
-> @@ -39,79 +39,6 @@
->  #define ST_GYRO_FS_AVL_500DPS			500
->  #define ST_GYRO_FS_AVL_2000DPS			2000
->  
-> -/* CUSTOM VALUES FOR SENSOR 1 */
-> -#define ST_GYRO_1_WAI_EXP			0xd3
-> -#define ST_GYRO_1_ODR_ADDR			0x20
-> -#define ST_GYRO_1_ODR_MASK			0xc0
-> -#define ST_GYRO_1_ODR_AVL_100HZ_VAL		0x00
-> -#define ST_GYRO_1_ODR_AVL_200HZ_VAL		0x01
-> -#define ST_GYRO_1_ODR_AVL_400HZ_VAL		0x02
-> -#define ST_GYRO_1_ODR_AVL_800HZ_VAL		0x03
-> -#define ST_GYRO_1_PW_ADDR			0x20
-> -#define ST_GYRO_1_PW_MASK			0x08
-> -#define ST_GYRO_1_FS_ADDR			0x23
-> -#define ST_GYRO_1_FS_MASK			0x30
-> -#define ST_GYRO_1_FS_AVL_250_VAL		0x00
-> -#define ST_GYRO_1_FS_AVL_500_VAL		0x01
-> -#define ST_GYRO_1_FS_AVL_2000_VAL		0x02
-> -#define ST_GYRO_1_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-> -#define ST_GYRO_1_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-> -#define ST_GYRO_1_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-> -#define ST_GYRO_1_BDU_ADDR			0x23
-> -#define ST_GYRO_1_BDU_MASK			0x80
-> -#define ST_GYRO_1_DRDY_IRQ_ADDR			0x22
-> -#define ST_GYRO_1_DRDY_IRQ_INT2_MASK		0x08
-> -#define ST_GYRO_1_MULTIREAD_BIT			true
-> -
-> -/* CUSTOM VALUES FOR SENSOR 2 */
-> -#define ST_GYRO_2_WAI_EXP			0xd4
-> -#define ST_GYRO_2_ODR_ADDR			0x20
-> -#define ST_GYRO_2_ODR_MASK			0xc0
-> -#define ST_GYRO_2_ODR_AVL_95HZ_VAL		0x00
-> -#define ST_GYRO_2_ODR_AVL_190HZ_VAL		0x01
-> -#define ST_GYRO_2_ODR_AVL_380HZ_VAL		0x02
-> -#define ST_GYRO_2_ODR_AVL_760HZ_VAL		0x03
-> -#define ST_GYRO_2_PW_ADDR			0x20
-> -#define ST_GYRO_2_PW_MASK			0x08
-> -#define ST_GYRO_2_FS_ADDR			0x23
-> -#define ST_GYRO_2_FS_MASK			0x30
-> -#define ST_GYRO_2_FS_AVL_250_VAL		0x00
-> -#define ST_GYRO_2_FS_AVL_500_VAL		0x01
-> -#define ST_GYRO_2_FS_AVL_2000_VAL		0x02
-> -#define ST_GYRO_2_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-> -#define ST_GYRO_2_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-> -#define ST_GYRO_2_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-> -#define ST_GYRO_2_BDU_ADDR			0x23
-> -#define ST_GYRO_2_BDU_MASK			0x80
-> -#define ST_GYRO_2_DRDY_IRQ_ADDR			0x22
-> -#define ST_GYRO_2_DRDY_IRQ_INT2_MASK		0x08
-> -#define ST_GYRO_2_MULTIREAD_BIT			true
-> -
-> -/* CUSTOM VALUES FOR SENSOR 3 */
-> -#define ST_GYRO_3_WAI_EXP			0xd7
-> -#define ST_GYRO_3_ODR_ADDR			0x20
-> -#define ST_GYRO_3_ODR_MASK			0xc0
-> -#define ST_GYRO_3_ODR_AVL_95HZ_VAL		0x00
-> -#define ST_GYRO_3_ODR_AVL_190HZ_VAL		0x01
-> -#define ST_GYRO_3_ODR_AVL_380HZ_VAL		0x02
-> -#define ST_GYRO_3_ODR_AVL_760HZ_VAL		0x03
-> -#define ST_GYRO_3_PW_ADDR			0x20
-> -#define ST_GYRO_3_PW_MASK			0x08
-> -#define ST_GYRO_3_FS_ADDR			0x23
-> -#define ST_GYRO_3_FS_MASK			0x30
-> -#define ST_GYRO_3_FS_AVL_250_VAL		0x00
-> -#define ST_GYRO_3_FS_AVL_500_VAL		0x01
-> -#define ST_GYRO_3_FS_AVL_2000_VAL		0x02
-> -#define ST_GYRO_3_FS_AVL_250_GAIN		IIO_DEGREE_TO_RAD(8750)
-> -#define ST_GYRO_3_FS_AVL_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-> -#define ST_GYRO_3_FS_AVL_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
-> -#define ST_GYRO_3_BDU_ADDR			0x23
-> -#define ST_GYRO_3_BDU_MASK			0x80
-> -#define ST_GYRO_3_DRDY_IRQ_ADDR			0x22
-> -#define ST_GYRO_3_DRDY_IRQ_INT2_MASK		0x08
-> -#define ST_GYRO_3_MULTIREAD_BIT			true
-> -
-> -
->  static const struct iio_chan_spec st_gyro_16bit_channels[] = {
->  	ST_SENSORS_LSM_CHANNELS(IIO_ANGL_VEL,
->  			BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
-> @@ -130,7 +57,7 @@ static const struct iio_chan_spec st_gyro_16bit_channels[] = {
->  
->  static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  	{
-> -		.wai = ST_GYRO_1_WAI_EXP,
-> +		.wai = 0xd3,
->  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->  		.sensors_supported = {
->  			[0] = L3G4200D_GYRO_DEV_NAME,
-> @@ -138,18 +65,18 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  		},
->  		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->  		.odr = {
-> -			.addr = ST_GYRO_1_ODR_ADDR,
-> -			.mask = ST_GYRO_1_ODR_MASK,
-> +			.addr = 0x20,
-> +			.mask = 0xc0,
->  			.odr_avl = {
-> -				{ 100, ST_GYRO_1_ODR_AVL_100HZ_VAL, },
-> -				{ 200, ST_GYRO_1_ODR_AVL_200HZ_VAL, },
-> -				{ 400, ST_GYRO_1_ODR_AVL_400HZ_VAL, },
-> -				{ 800, ST_GYRO_1_ODR_AVL_800HZ_VAL, },
-> +				{ .hz = 100, .value = 0x00, },
-> +				{ .hz = 200, .value = 0x01, },
-> +				{ .hz = 400, .value = 0x02, },
-> +				{ .hz = 800, .value = 0x03, },
->  			},
->  		},
->  		.pw = {
-> -			.addr = ST_GYRO_1_PW_ADDR,
-> -			.mask = ST_GYRO_1_PW_MASK,
-> +			.addr = 0x20,
-> +			.mask = 0x08,
->  			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
->  			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->  		},
-> @@ -158,33 +85,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
->  		},
->  		.fs = {
-> -			.addr = ST_GYRO_1_FS_ADDR,
-> -			.mask = ST_GYRO_1_FS_MASK,
-> +			.addr = 0x23,
-> +			.mask = 0x30,
->  			.fs_avl = {
->  				[0] = {
->  					.num = ST_GYRO_FS_AVL_250DPS,
-> -					.value = ST_GYRO_1_FS_AVL_250_VAL,
-> -					.gain = ST_GYRO_1_FS_AVL_250_GAIN,
-> +					.value = 0x00,
-> +					.gain = IIO_DEGREE_TO_RAD(8750),
->  				},
->  				[1] = {
->  					.num = ST_GYRO_FS_AVL_500DPS,
-> -					.value = ST_GYRO_1_FS_AVL_500_VAL,
-> -					.gain = ST_GYRO_1_FS_AVL_500_GAIN,
-> +					.value = 0x01,
-> +					.gain = IIO_DEGREE_TO_RAD(17500),
->  				},
->  				[2] = {
->  					.num = ST_GYRO_FS_AVL_2000DPS,
-> -					.value = ST_GYRO_1_FS_AVL_2000_VAL,
-> -					.gain = ST_GYRO_1_FS_AVL_2000_GAIN,
-> +					.value = 0x02,
-> +					.gain = IIO_DEGREE_TO_RAD(70000),
->  				},
->  			},
->  		},
->  		.bdu = {
-> -			.addr = ST_GYRO_1_BDU_ADDR,
-> -			.mask = ST_GYRO_1_BDU_MASK,
-> +			.addr = 0x23,
-> +			.mask = 0x80,
->  		},
->  		.drdy_irq = {
-> -			.addr = ST_GYRO_1_DRDY_IRQ_ADDR,
-> -			.mask_int2 = ST_GYRO_1_DRDY_IRQ_INT2_MASK,
-> +			.addr = 0x22,
-> +			.mask_int2 = 0x08,
->  			/*
->  			 * The sensor has IHL (active low) and open
->  			 * drain settings, but only for INT1 and not
-> @@ -192,11 +119,11 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			 */
->  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
->  		},
-> -		.multi_read_bit = ST_GYRO_1_MULTIREAD_BIT,
-> +		.multi_read_bit = true,
->  		.bootime = 2,
->  	},
->  	{
-> -		.wai = ST_GYRO_2_WAI_EXP,
-> +		.wai = 0xd4,
->  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->  		.sensors_supported = {
->  			[0] = L3GD20_GYRO_DEV_NAME,
-> @@ -208,18 +135,18 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  		},
->  		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->  		.odr = {
-> -			.addr = ST_GYRO_2_ODR_ADDR,
-> -			.mask = ST_GYRO_2_ODR_MASK,
-> +			.addr = 0x20,
-> +			.mask = 0xc0,
->  			.odr_avl = {
-> -				{ 95, ST_GYRO_2_ODR_AVL_95HZ_VAL, },
-> -				{ 190, ST_GYRO_2_ODR_AVL_190HZ_VAL, },
-> -				{ 380, ST_GYRO_2_ODR_AVL_380HZ_VAL, },
-> -				{ 760, ST_GYRO_2_ODR_AVL_760HZ_VAL, },
-> +				{ .hz = 95, .value = 0x00, },
-> +				{ .hz = 190, .value = 0x01, },
-> +				{ .hz = 380, .value = 0x02, },
-> +				{ .hz = 760, .value = 0x03, },
->  			},
->  		},
->  		.pw = {
-> -			.addr = ST_GYRO_2_PW_ADDR,
-> -			.mask = ST_GYRO_2_PW_MASK,
-> +			.addr = 0x20,
-> +			.mask = 0x08,
->  			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
->  			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->  		},
-> @@ -228,33 +155,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
->  		},
->  		.fs = {
-> -			.addr = ST_GYRO_2_FS_ADDR,
-> -			.mask = ST_GYRO_2_FS_MASK,
-> +			.addr = 0x23,
-> +			.mask = 0x30,
->  			.fs_avl = {
->  				[0] = {
->  					.num = ST_GYRO_FS_AVL_250DPS,
-> -					.value = ST_GYRO_2_FS_AVL_250_VAL,
-> -					.gain = ST_GYRO_2_FS_AVL_250_GAIN,
-> +					.value = 0x00,
-> +					.gain = IIO_DEGREE_TO_RAD(8750),
->  				},
->  				[1] = {
->  					.num = ST_GYRO_FS_AVL_500DPS,
-> -					.value = ST_GYRO_2_FS_AVL_500_VAL,
-> -					.gain = ST_GYRO_2_FS_AVL_500_GAIN,
-> +					.value = 0x01,
-> +					.gain = IIO_DEGREE_TO_RAD(17500),
->  				},
->  				[2] = {
->  					.num = ST_GYRO_FS_AVL_2000DPS,
-> -					.value = ST_GYRO_2_FS_AVL_2000_VAL,
-> -					.gain = ST_GYRO_2_FS_AVL_2000_GAIN,
-> +					.value = 0x02,
-> +					.gain = IIO_DEGREE_TO_RAD(70000),
->  				},
->  			},
->  		},
->  		.bdu = {
-> -			.addr = ST_GYRO_2_BDU_ADDR,
-> -			.mask = ST_GYRO_2_BDU_MASK,
-> +			.addr = 0x23,
-> +			.mask = 0x80,
->  		},
->  		.drdy_irq = {
-> -			.addr = ST_GYRO_2_DRDY_IRQ_ADDR,
-> -			.mask_int2 = ST_GYRO_2_DRDY_IRQ_INT2_MASK,
-> +			.addr = 0x22,
-> +			.mask_int2 = 0x08,
->  			/*
->  			 * The sensor has IHL (active low) and open
->  			 * drain settings, but only for INT1 and not
-> @@ -262,29 +189,29 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			 */
->  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
->  		},
-> -		.multi_read_bit = ST_GYRO_2_MULTIREAD_BIT,
-> +		.multi_read_bit = true,
->  		.bootime = 2,
->  	},
->  	{
-> -		.wai = ST_GYRO_3_WAI_EXP,
-> +		.wai = 0xd7,
->  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
->  		.sensors_supported = {
->  			[0] = L3GD20_GYRO_DEV_NAME,
->  		},
->  		.ch = (struct iio_chan_spec *)st_gyro_16bit_channels,
->  		.odr = {
-> -			.addr = ST_GYRO_3_ODR_ADDR,
-> -			.mask = ST_GYRO_3_ODR_MASK,
-> +			.addr = 0x20,
-> +			.mask = 0xc0,
->  			.odr_avl = {
-> -				{ 95, ST_GYRO_3_ODR_AVL_95HZ_VAL, },
-> -				{ 190, ST_GYRO_3_ODR_AVL_190HZ_VAL, },
-> -				{ 380, ST_GYRO_3_ODR_AVL_380HZ_VAL, },
-> -				{ 760, ST_GYRO_3_ODR_AVL_760HZ_VAL, },
-> +				{ .hz = 95, .value = 0x00, },
-> +				{ .hz = 190, .value = 0x01, },
-> +				{ .hz = 380, .value = 0x02, },
-> +				{ .hz = 760, .value = 0x03, },
->  			},
->  		},
->  		.pw = {
-> -			.addr = ST_GYRO_3_PW_ADDR,
-> -			.mask = ST_GYRO_3_PW_MASK,
-> +			.addr = 0x20,
-> +			.mask = 0x08,
->  			.value_on = ST_SENSORS_DEFAULT_POWER_ON_VALUE,
->  			.value_off = ST_SENSORS_DEFAULT_POWER_OFF_VALUE,
->  		},
-> @@ -293,33 +220,33 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			.mask = ST_SENSORS_DEFAULT_AXIS_MASK,
->  		},
->  		.fs = {
-> -			.addr = ST_GYRO_3_FS_ADDR,
-> -			.mask = ST_GYRO_3_FS_MASK,
-> +			.addr = 0x23,
-> +			.mask = 0x30,
->  			.fs_avl = {
->  				[0] = {
->  					.num = ST_GYRO_FS_AVL_250DPS,
-> -					.value = ST_GYRO_3_FS_AVL_250_VAL,
-> -					.gain = ST_GYRO_3_FS_AVL_250_GAIN,
-> +					.value = 0x00,
-> +					.gain = IIO_DEGREE_TO_RAD(8750),
->  				},
->  				[1] = {
->  					.num = ST_GYRO_FS_AVL_500DPS,
-> -					.value = ST_GYRO_3_FS_AVL_500_VAL,
-> -					.gain = ST_GYRO_3_FS_AVL_500_GAIN,
-> +					.value = 0x01,
-> +					.gain = IIO_DEGREE_TO_RAD(17500),
->  				},
->  				[2] = {
->  					.num = ST_GYRO_FS_AVL_2000DPS,
-> -					.value = ST_GYRO_3_FS_AVL_2000_VAL,
-> -					.gain = ST_GYRO_3_FS_AVL_2000_GAIN,
-> +					.value = 0x02,
-> +					.gain = IIO_DEGREE_TO_RAD(70000),
->  				},
->  			},
->  		},
->  		.bdu = {
-> -			.addr = ST_GYRO_3_BDU_ADDR,
-> -			.mask = ST_GYRO_3_BDU_MASK,
-> +			.addr = 0x23,
-> +			.mask = 0x80,
->  		},
->  		.drdy_irq = {
-> -			.addr = ST_GYRO_3_DRDY_IRQ_ADDR,
-> -			.mask_int2 = ST_GYRO_3_DRDY_IRQ_INT2_MASK,
-> +			.addr = 0x22,
-> +			.mask_int2 = 0x08,
->  			/*
->  			 * The sensor has IHL (active low) and open
->  			 * drain settings, but only for INT1 and not
-> @@ -327,7 +254,7 @@ static const struct st_sensor_settings st_gyro_sensors_settings[] = {
->  			 */
->  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
->  		},
-> -		.multi_read_bit = ST_GYRO_3_MULTIREAD_BIT,
-> +		.multi_read_bit = true,
->  		.bootime = 2,
->  	},
->  };
-> 
+commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+introduced common DT bindings for touchscreens [1] and a helper function to
+parse the DT.
 
+commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+added another helper for parsing axis inversion and swapping
+and applying them to x and y coordinates.
+
+Both helpers have been integrated to accommodate any orientation of the
+touch panel in relation to the LCD.
+
+A new feature is to introduce scaling the min/max ADC values to the screen
+size.
+
+This makes it possible to pre-calibrate the touch so that is (almost)
+exactly matches the LCD pixel coordinates it is glued onto. This allows to
+well enough operate the touch before a user space calibration step can
+improve the precision.
+
+Please note that the old ti,fuzz properties have been removed since they
+are replaced by the common bindings touchscreen-fuzz-x/y/z.
+
+Finally, calculate_pressure has been renamed to calculate_resistance
+because that is what it is doing.
+
+[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
+ drivers/input/touchscreen/tsc2007.c                | 120 +++++++++++++++++----
+ include/linux/i2c/tsc2007.h                        |   8 ++
+ 3 files changed, 118 insertions(+), 30 deletions(-)
+
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+index ec365e1..6e9fd55 100644
+--- a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
++++ b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+@@ -6,6 +6,7 @@ Required properties:
+ - ti,x-plate-ohms: X-plate resistance in ohms.
+ 
+ Optional properties:
++- generic touch screen properties: see touchscreen binding [2].
+ - gpios: the interrupt gpio the chip is connected to (trough the penirq pin).
+   The penirq pin goes to low when the panel is touched.
+   (see GPIO binding[1] for more details).
+@@ -13,17 +14,20 @@ Optional properties:
+   (see interrupt binding[0]).
+ - interrupts: (gpio) interrupt to which the chip is connected
+   (see interrupt binding[0]).
+-- ti,max-rt: maximum pressure.
+-- ti,fuzzx: specifies the absolute input fuzz x value.
+-  If set, it will permit noise in the data up to +- the value given to the fuzz
+-  parameter, that is used to filter noise from the event stream.
+-- ti,fuzzy: specifies the absolute input fuzz y value.
+-- ti,fuzzz: specifies the absolute input fuzz z value.
++- ti,max-rt: maximum pressure resistance above which samples are ignored
++  (default: 4095).
++- ti,report-resistance: report resistance (no pressure = max_rt) instead
++  of pressure (no pressure = 0).
++- ti,min-x: minimum value reported by X axis ADC (default 0).
++- ti,max-x: maximum value reported by X axis ADC (default 4095).
++- ti,min-y: minimum value reported by Y axis ADC (default 0).
++- ti,max-y: maximum value reported by Y axis ADC (default 4095).
+ - ti,poll-period: how much time to wait (in milliseconds) before reading again the
+-  values from the tsc2007.
++  values from the tsc2007 (default 1).
+ 
+ [0]: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+ [1]: Documentation/devicetree/bindings/gpio/gpio.txt
++[2]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+ 
+ Example:
+ 	&i2c1 {
+@@ -35,6 +39,8 @@ Example:
+ 			interrupts = <0x0 0x8>;
+ 			gpios = <&gpio4 0 0>;
+ 			ti,x-plate-ohms = <180>;
++			touchscreen-size-x = <640>;
++			touchscreen-size-y = <480>;
+ 		};
+ 
+ 		/* ... */
+diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+index 5d0cd51..c1d9593 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -29,6 +29,7 @@
+ #include <linux/of_device.h>
+ #include <linux/of.h>
+ #include <linux/of_gpio.h>
++#include <linux/input/touchscreen.h>
+ 
+ #define TSC2007_MEASURE_TEMP0		(0x0 << 4)
+ #define TSC2007_MEASURE_AUX		(0x2 << 4)
+@@ -74,6 +75,14 @@ struct tsc2007 {
+ 
+ 	u16			model;
+ 	u16			x_plate_ohms;
++
++	struct touchscreen_properties prop;
++
++	bool			report_resistance;
++	u16			min_x;
++	u16			min_y;
++	u16			max_x;
++	u16			max_y;
+ 	u16			max_rt;
+ 	unsigned long		poll_period; /* in jiffies */
+ 	int			fuzzx;
+@@ -128,7 +137,8 @@ static void tsc2007_read_values(struct tsc2007 *tsc, struct ts_event *tc)
+ 	tsc2007_xfer(tsc, PWRDOWN);
+ }
+ 
+-static u32 tsc2007_calculate_pressure(struct tsc2007 *tsc, struct ts_event *tc)
++static u32 tsc2007_calculate_resistance(struct tsc2007 *tsc,
++					struct ts_event *tc)
+ {
+ 	u32 rt = 0;
+ 
+@@ -177,12 +187,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 	struct ts_event tc;
+ 	u32 rt;
+ 
++	dev_dbg(&ts->client->dev, "soft irq %d\n", irq);
+ 	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
+ 
+ 		/* pen is down, continue with the measurement */
+ 		tsc2007_read_values(ts, &tc);
+ 
+-		rt = tsc2007_calculate_pressure(ts, &tc);
++		rt = tsc2007_calculate_resistance(ts, &tc);
+ 
+ 		if (!rt && !ts->get_pendown_state) {
+ 			/*
+@@ -194,21 +205,41 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 		}
+ 
+ 		if (rt <= ts->max_rt) {
++			int sx, sy;
++
+ 			dev_dbg(&ts->client->dev,
+ 				"DOWN point(%4d,%4d), pressure (%4u)\n",
+ 				tc.x, tc.y, rt);
+ 
++			if (!ts->report_resistance)
++				rt = ts->max_rt - rt;
++
++			/* scale ADC values to desired output range */
++			sx = (ts->prop.max_x * (tc.x - ts->min_x))
++				/ (ts->max_x - ts->min_x);
++			sy = (ts->prop.max_y * (tc.y - ts->min_y))
++				/ (ts->max_y - ts->min_y);
++			rt = (input->absinfo[ABS_PRESSURE].maximum * rt) /
++				ts->max_rt;
++
++			dev_dbg(&ts->client->dev,
++				"Scaled point(%4d,%4d), pressure (%4u)\n",
++				sx, sy, rt);
++
++			/* report event */
+ 			input_report_key(input, BTN_TOUCH, 1);
+-			input_report_abs(input, ABS_X, tc.x);
+-			input_report_abs(input, ABS_Y, tc.y);
++			touchscreen_report_pos(ts->input, &ts->prop,
++						(unsigned int) sx,
++						(unsigned int) sy,
++						false);
+ 			input_report_abs(input, ABS_PRESSURE, rt);
+ 
+ 			input_sync(input);
+ 
+ 		} else {
+ 			/*
+-			 * Sample found inconsistent by debouncing or pressure is
+-			 * beyond the maximum. Don't report it to user space,
++			 * Sample found inconsistent by debouncing or resistance
++			 * is beyond the maximum. Don't report it to user space,
+ 			 * repeat at least once more the measurement.
+ 			 */
+ 			dev_dbg(&ts->client->dev, "ignored pressure %d\n", rt);
+@@ -233,6 +264,7 @@ static irqreturn_t tsc2007_hard_irq(int irq, void *handle)
+ {
+ 	struct tsc2007 *ts = handle;
+ 
++	dev_dbg(&ts->client->dev, "hard irq %d\n", irq);
+ 	if (tsc2007_is_pen_down(ts))
+ 		return IRQ_WAKE_THREAD;
+ 
+@@ -303,14 +335,24 @@ static int tsc2007_probe_dt(struct i2c_client *client, struct tsc2007 *ts)
+ 	else
+ 		ts->max_rt = MAX_12BIT;
+ 
+-	if (!of_property_read_u32(np, "ti,fuzzx", &val32))
+-		ts->fuzzx = val32;
++	ts->report_resistance =
++		       of_property_read_bool(np, "ti,report-resistance");
+ 
+-	if (!of_property_read_u32(np, "ti,fuzzy", &val32))
+-		ts->fuzzy = val32;
++	touchscreen_parse_properties(ts->input, false, &ts->prop);
+ 
+-	if (!of_property_read_u32(np, "ti,fuzzz", &val32))
+-		ts->fuzzz = val32;
++	if (!of_property_read_u32(np, "ti,min-x", &val32))
++		ts->min_x = val32;
++	if (!of_property_read_u32(np, "ti,max-x", &val32))
++		ts->max_x = val32;
++	else
++		ts->max_x = MAX_12BIT;
++
++	if (!of_property_read_u32(np, "ti,min-y", &val32))
++		ts->min_y = val32;
++	if (!of_property_read_u32(np, "ti,max-y", &val32))
++		ts->max_y = val32;
++	else
++		ts->max_y = MAX_12BIT;
+ 
+ 	if (!of_property_read_u64(np, "ti,poll-period", &val64))
+ 		ts->poll_period = msecs_to_jiffies(val64);
+@@ -332,6 +374,22 @@ static int tsc2007_probe_dt(struct i2c_client *client, struct tsc2007 *ts)
+ 			 "GPIO not specified in DT (of_get_gpio returned %d)\n",
+ 			 ts->gpio);
+ 
++	dev_dbg(&client->dev,
++			"min/max_x (%4d,%4d)\n",
++			ts->min_x, ts->max_x);
++	dev_dbg(&client->dev,
++			"min/max_y (%4d,%4d)\n",
++			ts->min_y, ts->max_y);
++	dev_dbg(&client->dev,
++			"max_rt (%4d)\n",
++			ts->max_rt);
++	dev_dbg(&client->dev,
++			"size (%4d,%4d)\n",
++			ts->prop.max_x, ts->prop.max_y);
++	dev_dbg(&client->dev,
++			"ts-gpio: %d\n",
++			ts->gpio);
++
+ 	return 0;
+ }
+ #else
+@@ -349,6 +407,14 @@ static int tsc2007_probe_pdev(struct i2c_client *client, struct tsc2007 *ts,
+ 	ts->model             = pdata->model;
+ 	ts->x_plate_ohms      = pdata->x_plate_ohms;
+ 	ts->max_rt            = pdata->max_rt ? : MAX_12BIT;
++	ts->prop.swap_x_y     = pdata->swap_xy;
++	ts->prop.invert_x     = pdata->invert_x;
++	ts->prop.invert_y     = pdata->invert_y;
++	ts->report_resistance = pdata->report_resistance;
++	ts->min_x             = pdata->min_x ? : 0;
++	ts->min_y             = pdata->min_y ? : 0;
++	ts->max_x             = pdata->max_x ? : MAX_12BIT;
++	ts->max_y             = pdata->max_y ? : MAX_12BIT;
+ 	ts->poll_period       = msecs_to_jiffies(pdata->poll_period ? : 1);
+ 	ts->get_pendown_state = pdata->get_pendown_state;
+ 	ts->clear_penirq      = pdata->clear_penirq;
+@@ -388,13 +454,6 @@ static int tsc2007_probe(struct i2c_client *client,
+ 	if (!ts)
+ 		return -ENOMEM;
+ 
+-	if (pdata)
+-		err = tsc2007_probe_pdev(client, ts, pdata, id);
+-	else
+-		err = tsc2007_probe_dt(client, ts);
+-	if (err)
+-		return err;
+-
+ 	input_dev = devm_input_allocate_device(&client->dev);
+ 	if (!input_dev)
+ 		return -ENOMEM;
+@@ -419,12 +478,25 @@ static int tsc2007_probe(struct i2c_client *client,
+ 	input_set_drvdata(input_dev, ts);
+ 
+ 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
++	input_dev->absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) |
++				BIT_MASK(ABS_PRESSURE);
+ 	input_dev->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+ 
+-	input_set_abs_params(input_dev, ABS_X, 0, MAX_12BIT, ts->fuzzx, 0);
+-	input_set_abs_params(input_dev, ABS_Y, 0, MAX_12BIT, ts->fuzzy, 0);
+-	input_set_abs_params(input_dev, ABS_PRESSURE, 0, MAX_12BIT,
+-			     ts->fuzzz, 0);
++	if (pdata) {
++		err = tsc2007_probe_pdev(client, ts, pdata, id);
++		if (err)
++			return err;
++		input_set_abs_params(input_dev, ABS_X, 0, ts->max_x-ts->min_x,
++							  ts->fuzzx, 0);
++		input_set_abs_params(input_dev, ABS_Y, 0, ts->max_y-ts->min_y,
++							  ts->fuzzy, 0);
++		input_set_abs_params(input_dev, ABS_PRESSURE, 0, ts->max_rt,
++							  ts->fuzzz, 0);
++	} else {
++		err = tsc2007_probe_dt(client, ts);
++		if (err)
++			return err;
++	}
+ 
+ 	if (pdata) {
+ 		if (pdata->exit_platform_hw) {
+@@ -443,6 +515,8 @@ static int tsc2007_probe(struct i2c_client *client,
+ 			pdata->init_platform_hw();
+ 	}
+ 
++	dev_dbg(&client->dev, "request irq %d\n",
++			ts->irq);
+ 	err = devm_request_threaded_irq(&client->dev, ts->irq,
+ 					tsc2007_hard_irq, tsc2007_soft_irq,
+ 					IRQF_ONESHOT,
+diff --git a/include/linux/i2c/tsc2007.h b/include/linux/i2c/tsc2007.h
+index 4f35b6a..632db20 100644
+--- a/include/linux/i2c/tsc2007.h
++++ b/include/linux/i2c/tsc2007.h
+@@ -6,6 +6,14 @@
+ struct tsc2007_platform_data {
+ 	u16	model;				/* 2007. */
+ 	u16	x_plate_ohms;	/* must be non-zero value */
++	bool	swap_xy;	/* swap x and y axis */
++	bool	invert_x;
++	bool	invert_y;
++	bool	report_resistance;
++	u16	min_x;	/* min and max values reported by ADC */
++	u16	min_y;
++	u16	max_x;
++	u16	max_y;
+ 	u16	max_rt; /* max. resistance above which samples are ignored */
+ 	unsigned long poll_period; /* time (in ms) between samples */
+ 	int	fuzzx; /* fuzz factor for X, Y and pressure axes */
+-- 
+2.7.3
