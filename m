@@ -1,53 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:39201 "EHLO
-        aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935301AbcKJTkx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 10 Nov 2016 14:40:53 -0500
-Date: Thu, 10 Nov 2016 22:39:57 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-Subject: [patch] iio: cros_ec_sensors_core: signedness bug in
- cros_ec_sensors_read_lpc()
-Message-ID: <20161110193957.GA18347@mwanda>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Received: from mga09.intel.com ([134.134.136.24]:30913 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755782AbcKKAz4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 10 Nov 2016 19:55:56 -0500
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH v2] hid: hid-sensor-hub: clear memory to avoid random data
+Date: Fri, 11 Nov 2016 00:58:43 +0000
+Message-Id: <1478825923-12153-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-"status" is a u8 so checking for negatives doesn't work.  We can just
-use "ret" here instead.
+Initialize user buffer with 0s. This will avoid random data in the buffer,
+when the user buffer size is bigger than the actual report size.
 
-Fixes: 974e6f02e27e ("iio: cros_ec_sensors_core: Add common functions for the ChromeOS EC Sensor Hub.")
-Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+---
+Changes in v2:
+    -clear memory in get_feature() instead of set_feature()
 
-diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-index a3be799..416cae5 100644
---- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-+++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
-@@ -291,15 +291,15 @@ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
- 			return -EIO;
+ drivers/hid/hid-sensor-hub.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 658a607..b74d954 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -252,6 +252,7 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 	int report_size;
+ 	int ret = 0;
  
- 		/* Read status byte until EC is not busy. */
--		status = cros_ec_sensors_read_until_not_busy(st);
--		if (status < 0)
--			return status;
-+		ret = cros_ec_sensors_read_until_not_busy(st);
-+		if (ret < 0)
-+			return ret;
- 
- 		/*
- 		 * Store the current sample id so that we can compare to the
- 		 * sample id after reading the data.
- 		 */
--		samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
-+		samp_id = ret & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
- 
- 		/* Read all EC data, format it, and store it into data. */
- 		ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
++	memset(buffer, 0, buffer_size);
+ 	mutex_lock(&data->mutex);
+ 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
+ 	if (!report || (field_index >= report->maxfield) ||
+-- 
+1.9.1
+
