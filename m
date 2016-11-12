@@ -1,61 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35277 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35300 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935938AbcKLOgW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 09:36:22 -0500
-Subject: Re: [patch] iio:adc: ad7766: testing the wrong variable in probe
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Dan Carpenter <dan.carpenter@oracle.com>
-References: <20161110193018.GB32533@mwanda>
- <62d0bc7e-45ca-6106-ace7-d33193bf49cb@metafoo.de>
-Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+        with ESMTP id S935938AbcKLOlF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 09:41:05 -0500
+Subject: Re: [PATCH] iio: cros_ec_sensors_core: fix unsigned compared less
+ than zero on status
+To: Guenter Roeck <groeck@google.com>,
+        Colin King <colin.king@canonical.com>
+References: <20161109231231.6223-1-colin.king@canonical.com>
+ <CABXOdTc4Ey+FQ2w9sHxrBirz-fDX9kF2uBi=T5bTQv-NNpZ-8Q@mail.gmail.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+        Guenter Roeck <groeck@chromium.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-iio@vger.kernel.org,
+        linux-kernel <linux-kernel@vger.kernel.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7f4f838b-9861-f294-c7c1-32cf0edaa372@kernel.org>
-Date: Sat, 12 Nov 2016 14:36:16 +0000
+Message-ID: <f754e0f3-a38d-9688-e696-dee2b47e1bbf@kernel.org>
+Date: Sat, 12 Nov 2016 14:40:58 +0000
 MIME-Version: 1.0
-In-Reply-To: <62d0bc7e-45ca-6106-ace7-d33193bf49cb@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CABXOdTc4Ey+FQ2w9sHxrBirz-fDX9kF2uBi=T5bTQv-NNpZ-8Q@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/11/16 13:50, Lars-Peter Clausen wrote:
-> On 11/10/2016 08:30 PM, Dan Carpenter wrote:
->> We should be testing "ret" here.
+On 10/11/16 03:16, Guenter Roeck wrote:
+> On Wed, Nov 9, 2016 at 3:12 PM, Colin King <colin.king@canonical.com> wrote:
+>> From: Colin Ian King <colin.king@canonical.com>
 >>
->> Fixes: aa16c6bd0e09 ("iio:adc: Add support for AD7766/AD7767")
->> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>> status is a u8 hence the check if status is less than zero has no effect.
+>> Fix this by replacing status with int ret so the less than zero compare
+>> will correctly detect errors.
+>>
+>> Issue found with static analysis with CoverityScan, CID 1375919
+>>
+>> Signed-off-by: Colin Ian King <colin.king@canonical.com>
 > 
-> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> Good catch!
 > 
-Applied to the togreg branch of iio.git. Will push out as testing
-later for the autobuilders to play with it.
-
-Thanks,
+> Fixes: 974e6f02e27e ("iio: cros_ec_sensors_core: Add common functions
+> for the ChromeOS EC Sensor Hub")
+> Reviewed-by: Guenter Roeck <groeck@chromium.org>
+Thanks and applied to the togreg branch of iio.git - shortly to be
+pushed out as testing for the autobuilders to take a look at it.
 
 Jonathan
-> Thanks.
 > 
->>
->> diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
->> index d906686..75cca42 100644
->> --- a/drivers/iio/adc/ad7766.c
->> +++ b/drivers/iio/adc/ad7766.c
->> @@ -239,8 +239,8 @@ static int ad7766_probe(struct spi_device *spi)
->>  
->>  	ret = devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
->>  		ad7766->reg);
->> -	if (IS_ERR(ad7766->reg))
->> -		return PTR_ERR(ad7766->reg);
->> +	if (ret)
->> +		return ret;
->>  
->>  	ad7766->pd_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
->>  		GPIOD_OUT_HIGH);
->>
+> For the benefit of others, this is in today's linux-next.
 > 
+> Thanks,
+> Guenter
+> 
+>> ---
+>>  drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c | 8 ++++----
+>>  1 file changed, 4 insertions(+), 4 deletions(-)
+>>
+>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> index a3be799..416cae5 100644
+>> --- a/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_sensors_core.c
+>> @@ -291,15 +291,15 @@ int cros_ec_sensors_read_lpc(struct iio_dev *indio_dev,
+>>                         return -EIO;
+>>
+>>                 /* Read status byte until EC is not busy. */
+>> -               status = cros_ec_sensors_read_until_not_busy(st);
+>> -               if (status < 0)
+>> -                       return status;
+>> +               ret = cros_ec_sensors_read_until_not_busy(st);
+>> +               if (ret < 0)
+>> +                       return ret;
+>>
+>>                 /*
+>>                  * Store the current sample id so that we can compare to the
+>>                  * sample id after reading the data.
+>>                  */
+>> -               samp_id = status & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+>> +               samp_id = ret & EC_MEMMAP_ACC_STATUS_SAMPLE_ID_MASK;
+>>
+>>                 /* Read all EC data, format it, and store it into data. */
+>>                 ret = cros_ec_sensors_read_data_unsafe(indio_dev, scan_mask,
+>> --
+>> 2.10.2
+>>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
