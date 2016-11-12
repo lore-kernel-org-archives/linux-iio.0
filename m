@@ -1,63 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
 Received: from onstation.org ([52.200.56.107]:55932 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966784AbcKLSTt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Nov 2016 13:19:49 -0500
+        id S966751AbcKLSTr (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Nov 2016 13:19:47 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 10/26] staging: iio: tsl2583: fix comparison between signed and unsigned integers
-Date: Sat, 12 Nov 2016 13:19:25 -0500
-Message-Id: <1478974781-1457-11-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v4 06/26] staging: iio: tsl2583: remove the FSF's mailing address
+Date: Sat, 12 Nov 2016 13:19:21 -0500
+Message-Id: <1478974781-1457-7-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixed warning found by make W=2:
+Address warning from checkpatch:
 
-warning: comparison between signed and unsigned integer expressions
-[-Wsign-compare]
+CHECK: Do not include the paragraph about writing to the Free Software
+Foundation's mailing address from the sample GPL notice. The FSF has
+changed addresses in the past, and may do so again. Linux already
+includes a copy of the GPL.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 7 ++++---
- 1 file changed, 4 insertions(+), 3 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 4 ----
+ 1 file changed, 4 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index d482a84..be3cbae 100644
+index 449506b..57279f7 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -510,7 +510,7 @@ static ssize_t in_illuminance_lux_table_show(struct device *dev,
- 					     struct device_attribute *attr,
- 					     char *buf)
- {
--	int i;
-+	unsigned int i;
- 	int offset = 0;
+@@ -13,10 +13,6 @@
+  * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
+  * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
+  * more details.
+- *
+- * You should have received a copy of the GNU General Public License along
+- * with this program; if not, write to the Free Software Foundation, Inc.,
+- * 51 Franklin Street, Fifth Floor, Boston, MA	02110-1301, USA.
+  */
  
- 	for (i = 0; i < ARRAY_SIZE(tsl2583_device_lux); i++) {
-@@ -541,7 +541,8 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
- 	int value[ARRAY_SIZE(tsl2583_device_lux) * 3 + 1];
--	int n, ret = -EINVAL;
-+	int ret = -EINVAL;
-+	unsigned int n;
- 
- 	mutex_lock(&chip->als_mutex);
- 
-@@ -719,7 +720,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
- 		break;
- 	case IIO_CHAN_INFO_CALIBSCALE:
- 		if (chan->type == IIO_LIGHT) {
--			int i;
-+			unsigned int i;
- 
- 			for (i = 0; i < ARRAY_SIZE(gainadj); i++) {
- 				if (gainadj[i].mean == val) {
+ #include <linux/kernel.h>
 -- 
 2.7.4
 
