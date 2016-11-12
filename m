@@ -1,50 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40466 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933391AbcKMMVa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 13 Nov 2016 07:21:30 -0500
-Subject: Re: [PATCH v4 16/26] staging: iio: tsl2583: change
- tsl2583_als_calibrate() to return 0 on success
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
- <1478974781-1457-17-git-send-email-masneyb@onstation.org>
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <eb31f56e-9799-4307-4304-1e91cc536b5e@kernel.org>
-Date: Sun, 13 Nov 2016 12:21:28 +0000
+Return-Path: <tony@atomide.com>
+Date: Sat, 12 Nov 2016 09:56:19 -0800
+From: Tony Lindgren <tony@atomide.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Nicolae Rosia <Nicolae_Rosia@mentor.com>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Subject: Re: [PATCH] iio: twl4030-madc: convert to DT only
+Message-ID: <20161112175619.GE7129@atomide.com>
+References: <1478946096-1314-1-git-send-email-Nicolae_Rosia@mentor.com>
+ <18487c16-04ee-b65a-c773-27a2965db8b3@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <1478974781-1457-17-git-send-email-masneyb@onstation.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <18487c16-04ee-b65a-c773-27a2965db8b3@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/11/16 18:19, Brian Masney wrote:
-> tsl2583_als_calibrate() returns the newly computed gain_trim if the
-> calibration was successful. This function is only called by
-> in_illuminance_calibrate_store() and the return value inside that
-> sysfs attribute is only checked to see if an error was returned.
-> This patch changes tsl2583_als_calibrate() to return 0 on success.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Applied.
-> ---
->  drivers/staging/iio/light/tsl2583.c | 2 +-
->  1 file changed, 1 insertion(+), 1 deletion(-)
-> 
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index bcdf095..fc58074 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -348,7 +348,7 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
->  
->  	chip->als_settings.als_gain_trim = (int)gain_trim_val;
->  
-> -	return (int)gain_trim_val;
-> +	return 0;
->  }
->  
->  static int tsl2583_set_als_time(struct tsl2583_chip *chip)
-> 
+* Jonathan Cameron <jic23@kernel.org> [161112 05:21]:
+> On 12/11/16 10:21, Nicolae Rosia wrote:
+> > All users are DT only and it makes no sense to keep dead code.
+> > twl4030_madc_platform_data is unused and can now be removed
+> > from include/i2c/twl.h
+> > 
+> Whilst we don't 'have' to be nice to out of tree users, the advantage
+> in code reduction here is pretty limited.
+>
+> So I'm doubtful unless Tony confirms that this is a sensible move and that
+> the rest of the elements of twl4030 support are going the same way.
 
+Yeah well mach-omap2 is all device tree only now. We still do have
+the platform_data init around in the unlikely case we still need
+to revert it for some regression. But I'm queuing patches for v4.10
+to drop the rest of the platform_data based init and will merge
+them assuming no problems.
+
+If this helps cleaning up the rest of the twl related code then
+sure makes sense to me. If this is not blocking other clean-up,
+maybe wait until v4.11 merge window to be safe on this one.
+
+Regards,
+
+Tony
