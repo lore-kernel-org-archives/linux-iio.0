@@ -1,52 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:55904 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:55918 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966858AbcKLSTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Nov 2016 13:19:54 -0500
+        id S966846AbcKLSTx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Nov 2016 13:19:53 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 24/26] staging: iio: tsl2583: remove unnecessary variable initialization
-Date: Sat, 12 Nov 2016 13:19:39 -0500
-Message-Id: <1478974781-1457-25-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v4 21/26] staging: iio: tsl2583: clarified comment about clearing interrupts
+Date: Sat, 12 Nov 2016 13:19:36 -0500
+Message-Id: <1478974781-1457-22-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The ret variable in tsl2583_suspend() and tsl2583_resume() was
-initialized to 0. This is not necessary so this patch removes the
-initialization.
+The comment that describes the code that clears the interrupt bit was
+vague and didn't provide much value. This patch adds more detail about
+why that bit needs to be cleared.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+ drivers/staging/iio/light/tsl2583.c | 5 +++--
+ 1 file changed, 3 insertions(+), 2 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 712f753..b787952 100644
+index 806cb0a..727ed49 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -849,7 +849,7 @@ static int __maybe_unused tsl2583_suspend(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
--	int ret = 0;
-+	int ret;
+@@ -205,8 +205,9 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+ 	}
  
- 	mutex_lock(&chip->als_mutex);
- 
-@@ -865,7 +865,7 @@ static int __maybe_unused tsl2583_resume(struct device *dev)
- {
- 	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
- 	struct tsl2583_chip *chip = iio_priv(indio_dev);
--	int ret = 0;
-+	int ret;
- 
- 	mutex_lock(&chip->als_mutex);
- 
+ 	/*
+-	 * clear status, really interrupt status (interrupts are off), but
+-	 * we use the bit anyway - don't forget 0x80 - this is a command
++	 * Clear the pending interrupt status bit on the chip to allow the next
++	 * integration cycle to start. This has to be done even though this
++	 * driver currently does not support interrupts.
+ 	 */
+ 	ret = i2c_smbus_write_byte(chip->client,
+ 				   (TSL2583_CMD_REG | TSL2583_CMD_SPL_FN |
 -- 
 2.7.4
 
