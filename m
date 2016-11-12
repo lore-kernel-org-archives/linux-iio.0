@@ -1,53 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:55918 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:55942 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966863AbcKLSTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        id S966856AbcKLSTy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
         Sat, 12 Nov 2016 13:19:54 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 25/26] staging: iio: tsl2583: add copyright and MODULE_AUTHOR
-Date: Sat, 12 Nov 2016 13:19:40 -0500
-Message-Id: <1478974781-1457-26-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v4 23/26] staging: iio: tsl2583: remove unnecessary memset call
+Date: Sat, 12 Nov 2016 13:19:38 -0500
+Message-Id: <1478974781-1457-24-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add Brian Masney's copyright to the header and to the MODULE_AUTHOR
-for all of the staging cleanups that has been done to this driver.
-
-The original MODULE_AUTHOR() did not have a space between his name and
-email address. This patch also adds the missing space.
+The entries in the lux table (als_device_lux) can be updated via sysfs
+through the function in_illuminance_lux_table_store(). The last row in
+the table must be terminated with values that are zero. The sysfs code
+already ensures that the last row is all zeros. The call to memset to
+clear out the table is not needed so this patch removes the unnecessary
+call.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 4 +++-
- 1 file changed, 3 insertions(+), 1 deletion(-)
+ drivers/staging/iio/light/tsl2583.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index b787952..ca26444 100644
+index 9db191f..712f753 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -3,6 +3,7 @@
-  * within the TAOS tsl258x family of devices (tsl2580, tsl2581, tsl2583).
-  *
-  * Copyright (c) 2011, TAOS Corporation.
-+ * Copyright (c) 2016 Brian Masney <masneyb@onstation.org>
-  *
-  * This program is free software; you can redistribute it and/or modify
-  * it under the terms of the GNU General Public License as published by
-@@ -906,6 +907,7 @@ static struct i2c_driver tsl2583_driver = {
- };
- module_i2c_driver(tsl2583_driver);
+@@ -591,9 +591,6 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
+ 		goto done;
+ 	}
  
--MODULE_AUTHOR("J. August Brenner<jbrenner@taosinc.com>");
-+MODULE_AUTHOR("J. August Brenner <jbrenner@taosinc.com>");
-+MODULE_AUTHOR("Brian Masney <masneyb@onstation.org>");
- MODULE_DESCRIPTION("TAOS tsl2583 ambient light sensor driver");
- MODULE_LICENSE("GPL");
+-	/* Zero out the table */
+-	memset(chip->als_settings.als_device_lux, 0,
+-	       sizeof(chip->als_settings.als_device_lux));
+ 	memcpy(chip->als_settings.als_device_lux, &value[1],
+ 	       value[0] * sizeof(value[1]));
+ 
 -- 
 2.7.4
 
