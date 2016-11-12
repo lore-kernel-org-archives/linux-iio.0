@@ -1,168 +1,578 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:35696 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935938AbcKLOki (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 09:40:38 -0500
-Date: Sat, 12 Nov 2016 22:22:50 +0800
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-Subject: Re: [PATCH 1/2] staging: iio: ad7606: replace range/range_available
- with corresponding scale
-Message-ID: <20161112142245.GA2214@Socrates-DK>
-References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
- <1478846078-22207-2-git-send-email-eraretuya@gmail.com>
- <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35604 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934319AbcKLPpw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 10:45:52 -0500
+Subject: Re: [PATCH 3/4] iio: magn: st_magn: inline per-sensor data
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <1478704200-19046-1-git-send-email-linus.walleij@linaro.org>
+ <1478704200-19046-4-git-send-email-linus.walleij@linaro.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Cc: Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>
+Message-ID: <8aec42ff-ae73-72ca-62fe-d48f80a7e77c@kernel.org>
+Date: Sat, 12 Nov 2016 15:45:44 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de>
+In-Reply-To: <1478704200-19046-4-git-send-email-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello, 
+On 09/11/16 15:09, Linus Walleij wrote:
+> We have #defines for all the individual sensor registers and
+> value/mask pairs #defined at the top of the file and used at
+> exactly one spot.
+> 
+> This is usually good if the #defines give a meaning to the
+> opaque magic numbers.
+> 
+> However in this case, the semantic meaning is inherent in the
+> name of the C99-addressable fields, and that means duplication
+> of information, and only makes the code hard to maintain since
+> you every time have to add a new #define AND update the site
+> where it is to be used.
+> 
+> Get rid of the #defines and just open code the values into the
+> appropriate struct elements. Make sure to explicitly address
+> the .hz and .value fields in the st_sensor_odr_avl struct
+> so that the meaning of all values is clear.
+> 
+> This patch is purely syntactic should have no semantic effect.
+> 
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Looks good and applied.
 
-Thanks for explaining it. Now I understand better why read_raw is
-formatted in that manner. I have some questions in-line:
+Thanks,
 
-On Fri, Nov 11, 2016 at 03:18:37PM +0100, Lars-Peter Clausen wrote:
-> On 11/11/2016 07:34 AM, Eva Rachel Retuya wrote:
-> > Eliminate the non-standard attribute in_voltage_range and move its
-> > functionality under the scale attribute. read_raw() has been taken care
-> > of previously so only write_raw() is handled here.
-> > 
-> > Additionally, rename the attribute in_voltage_range_available into
-> > in_voltage_scale_available.
-> > 
-> > Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
-> > Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Jonathan
+> ---
+>  drivers/iio/magnetometer/st_magn_core.c | 376 +++++++++++---------------------
+>  1 file changed, 125 insertions(+), 251 deletions(-)
 > 
-> Hi,
+> diff --git a/drivers/iio/magnetometer/st_magn_core.c b/drivers/iio/magnetometer/st_magn_core.c
+> index 3e1f06b2224c..8e1b0861fbe4 100644
+> --- a/drivers/iio/magnetometer/st_magn_core.c
+> +++ b/drivers/iio/magnetometer/st_magn_core.c
+> @@ -46,139 +46,12 @@
+>  #define ST_MAGN_FS_AVL_15000MG			15000
+>  #define ST_MAGN_FS_AVL_16000MG			16000
+>  
+> -/* CUSTOM VALUES FOR SENSOR 0 */
+> -#define ST_MAGN_0_ODR_ADDR			0x00
+> -#define ST_MAGN_0_ODR_MASK			0x1c
+> -#define ST_MAGN_0_ODR_AVL_1HZ_VAL		0x00
+> -#define ST_MAGN_0_ODR_AVL_2HZ_VAL		0x01
+> -#define ST_MAGN_0_ODR_AVL_3HZ_VAL		0x02
+> -#define ST_MAGN_0_ODR_AVL_8HZ_VAL		0x03
+> -#define ST_MAGN_0_ODR_AVL_15HZ_VAL		0x04
+> -#define ST_MAGN_0_ODR_AVL_30HZ_VAL		0x05
+> -#define ST_MAGN_0_ODR_AVL_75HZ_VAL		0x06
+> -#define ST_MAGN_0_ODR_AVL_220HZ_VAL		0x07
+> -#define ST_MAGN_0_PW_ADDR			0x02
+> -#define ST_MAGN_0_PW_MASK			0x03
+> -#define ST_MAGN_0_PW_ON				0x00
+> -#define ST_MAGN_0_PW_OFF			0x03
+> -#define ST_MAGN_0_FS_ADDR			0x01
+> -#define ST_MAGN_0_FS_MASK			0xe0
+> -#define ST_MAGN_0_FS_AVL_1300_VAL		0x01
+> -#define ST_MAGN_0_FS_AVL_1900_VAL		0x02
+> -#define ST_MAGN_0_FS_AVL_2500_VAL		0x03
+> -#define ST_MAGN_0_FS_AVL_4000_VAL		0x04
+> -#define ST_MAGN_0_FS_AVL_4700_VAL		0x05
+> -#define ST_MAGN_0_FS_AVL_5600_VAL		0x06
+> -#define ST_MAGN_0_FS_AVL_8100_VAL		0x07
+> -#define ST_MAGN_0_FS_AVL_1300_GAIN_XY		1100
+> -#define ST_MAGN_0_FS_AVL_1900_GAIN_XY		855
+> -#define ST_MAGN_0_FS_AVL_2500_GAIN_XY		670
+> -#define ST_MAGN_0_FS_AVL_4000_GAIN_XY		450
+> -#define ST_MAGN_0_FS_AVL_4700_GAIN_XY		400
+> -#define ST_MAGN_0_FS_AVL_5600_GAIN_XY		330
+> -#define ST_MAGN_0_FS_AVL_8100_GAIN_XY		230
+> -#define ST_MAGN_0_FS_AVL_1300_GAIN_Z		980
+> -#define ST_MAGN_0_FS_AVL_1900_GAIN_Z		760
+> -#define ST_MAGN_0_FS_AVL_2500_GAIN_Z		600
+> -#define ST_MAGN_0_FS_AVL_4000_GAIN_Z		400
+> -#define ST_MAGN_0_FS_AVL_4700_GAIN_Z		355
+> -#define ST_MAGN_0_FS_AVL_5600_GAIN_Z		295
+> -#define ST_MAGN_0_FS_AVL_8100_GAIN_Z		205
+> -#define ST_MAGN_0_MULTIREAD_BIT			false
+> -
+> -/* CUSTOM VALUES FOR SENSOR 1 */
+> -#define ST_MAGN_1_WAI_EXP			0x3c
+> -#define ST_MAGN_1_ODR_ADDR			0x00
+> -#define ST_MAGN_1_ODR_MASK			0x1c
+> -#define ST_MAGN_1_ODR_AVL_1HZ_VAL		0x00
+> -#define ST_MAGN_1_ODR_AVL_2HZ_VAL		0x01
+> -#define ST_MAGN_1_ODR_AVL_3HZ_VAL		0x02
+> -#define ST_MAGN_1_ODR_AVL_8HZ_VAL		0x03
+> -#define ST_MAGN_1_ODR_AVL_15HZ_VAL		0x04
+> -#define ST_MAGN_1_ODR_AVL_30HZ_VAL		0x05
+> -#define ST_MAGN_1_ODR_AVL_75HZ_VAL		0x06
+> -#define ST_MAGN_1_ODR_AVL_220HZ_VAL		0x07
+> -#define ST_MAGN_1_PW_ADDR			0x02
+> -#define ST_MAGN_1_PW_MASK			0x03
+> -#define ST_MAGN_1_PW_ON				0x00
+> -#define ST_MAGN_1_PW_OFF			0x03
+> -#define ST_MAGN_1_FS_ADDR			0x01
+> -#define ST_MAGN_1_FS_MASK			0xe0
+> -#define ST_MAGN_1_FS_AVL_1300_VAL		0x01
+> -#define ST_MAGN_1_FS_AVL_1900_VAL		0x02
+> -#define ST_MAGN_1_FS_AVL_2500_VAL		0x03
+> -#define ST_MAGN_1_FS_AVL_4000_VAL		0x04
+> -#define ST_MAGN_1_FS_AVL_4700_VAL		0x05
+> -#define ST_MAGN_1_FS_AVL_5600_VAL		0x06
+> -#define ST_MAGN_1_FS_AVL_8100_VAL		0x07
+> -#define ST_MAGN_1_FS_AVL_1300_GAIN_XY		909
+> -#define ST_MAGN_1_FS_AVL_1900_GAIN_XY		1169
+> -#define ST_MAGN_1_FS_AVL_2500_GAIN_XY		1492
+> -#define ST_MAGN_1_FS_AVL_4000_GAIN_XY		2222
+> -#define ST_MAGN_1_FS_AVL_4700_GAIN_XY		2500
+> -#define ST_MAGN_1_FS_AVL_5600_GAIN_XY		3030
+> -#define ST_MAGN_1_FS_AVL_8100_GAIN_XY		4347
+> -#define ST_MAGN_1_FS_AVL_1300_GAIN_Z		1020
+> -#define ST_MAGN_1_FS_AVL_1900_GAIN_Z		1315
+> -#define ST_MAGN_1_FS_AVL_2500_GAIN_Z		1666
+> -#define ST_MAGN_1_FS_AVL_4000_GAIN_Z		2500
+> -#define ST_MAGN_1_FS_AVL_4700_GAIN_Z		2816
+> -#define ST_MAGN_1_FS_AVL_5600_GAIN_Z		3389
+> -#define ST_MAGN_1_FS_AVL_8100_GAIN_Z		4878
+> -#define ST_MAGN_1_MULTIREAD_BIT			false
+> -
+> -/* CUSTOM VALUES FOR SENSOR 2 */
+> -#define ST_MAGN_2_WAI_EXP			0x3d
+> -#define ST_MAGN_2_ODR_ADDR			0x20
+> -#define ST_MAGN_2_ODR_MASK			0x1c
+> -#define ST_MAGN_2_ODR_AVL_1HZ_VAL		0x00
+> -#define ST_MAGN_2_ODR_AVL_2HZ_VAL		0x01
+> -#define ST_MAGN_2_ODR_AVL_3HZ_VAL		0x02
+> -#define ST_MAGN_2_ODR_AVL_5HZ_VAL		0x03
+> -#define ST_MAGN_2_ODR_AVL_10HZ_VAL		0x04
+> -#define ST_MAGN_2_ODR_AVL_20HZ_VAL		0x05
+> -#define ST_MAGN_2_ODR_AVL_40HZ_VAL		0x06
+> -#define ST_MAGN_2_ODR_AVL_80HZ_VAL		0x07
+> -#define ST_MAGN_2_PW_ADDR			0x22
+> -#define ST_MAGN_2_PW_MASK			0x03
+> -#define ST_MAGN_2_PW_ON				0x00
+> -#define ST_MAGN_2_PW_OFF			0x03
+> -#define ST_MAGN_2_FS_ADDR			0x21
+> -#define ST_MAGN_2_FS_MASK			0x60
+> -#define ST_MAGN_2_FS_AVL_4000_VAL		0x00
+> -#define ST_MAGN_2_FS_AVL_8000_VAL		0x01
+> -#define ST_MAGN_2_FS_AVL_12000_VAL		0x02
+> -#define ST_MAGN_2_FS_AVL_16000_VAL		0x03
+> -#define ST_MAGN_2_FS_AVL_4000_GAIN		146
+> -#define ST_MAGN_2_FS_AVL_8000_GAIN		292
+> -#define ST_MAGN_2_FS_AVL_12000_GAIN		438
+> -#define ST_MAGN_2_FS_AVL_16000_GAIN		584
+> -#define ST_MAGN_2_MULTIREAD_BIT			false
+> +/* Special L addresses for Sensor 2 */
+>  #define ST_MAGN_2_OUT_X_L_ADDR			0x28
+>  #define ST_MAGN_2_OUT_Y_L_ADDR			0x2a
+>  #define ST_MAGN_2_OUT_Z_L_ADDR			0x2c
+>  
+> -/* CUSTOM VALUES FOR SENSOR 3 */
+> -#define ST_MAGN_3_WAI_ADDR			0x4f
+> -#define ST_MAGN_3_WAI_EXP			0x40
+> -#define ST_MAGN_3_ODR_ADDR			0x60
+> -#define ST_MAGN_3_ODR_MASK			0x0c
+> -#define ST_MAGN_3_ODR_AVL_10HZ_VAL		0x00
+> -#define ST_MAGN_3_ODR_AVL_20HZ_VAL		0x01
+> -#define ST_MAGN_3_ODR_AVL_50HZ_VAL		0x02
+> -#define ST_MAGN_3_ODR_AVL_100HZ_VAL		0x03
+> -#define ST_MAGN_3_PW_ADDR			0x60
+> -#define ST_MAGN_3_PW_MASK			0x03
+> -#define ST_MAGN_3_PW_ON				0x00
+> -#define ST_MAGN_3_PW_OFF			0x03
+> -#define ST_MAGN_3_BDU_ADDR			0x62
+> -#define ST_MAGN_3_BDU_MASK			0x10
+> -#define ST_MAGN_3_DRDY_IRQ_ADDR			0x62
+> -#define ST_MAGN_3_DRDY_INT_MASK			0x01
+> -#define ST_MAGN_3_IHL_IRQ_ADDR			0x63
+> -#define ST_MAGN_3_IHL_IRQ_MASK			0x04
+> -#define ST_MAGN_3_FS_AVL_15000_GAIN		1500
+> -#define ST_MAGN_3_MULTIREAD_BIT			false
+> +/* Special L addresses for sensor 3 */
+>  #define ST_MAGN_3_OUT_X_L_ADDR			0x68
+>  #define ST_MAGN_3_OUT_Y_L_ADDR			0x6a
+>  #define ST_MAGN_3_OUT_Z_L_ADDR			0x6c
+> @@ -240,77 +113,78 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+>  		},
+>  		.ch = (struct iio_chan_spec *)st_magn_16bit_channels,
+>  		.odr = {
+> -			.addr = ST_MAGN_0_ODR_ADDR,
+> -			.mask = ST_MAGN_0_ODR_MASK,
+> +			.addr = 0x00,
+> +			.mask = 0x1c,
+>  			.odr_avl = {
+> -				{ 1, ST_MAGN_0_ODR_AVL_1HZ_VAL, },
+> -				{ 2, ST_MAGN_0_ODR_AVL_2HZ_VAL, },
+> -				{ 3, ST_MAGN_0_ODR_AVL_3HZ_VAL, },
+> -				{ 8, ST_MAGN_0_ODR_AVL_8HZ_VAL, },
+> -				{ 15, ST_MAGN_0_ODR_AVL_15HZ_VAL, },
+> -				{ 30, ST_MAGN_0_ODR_AVL_30HZ_VAL, },
+> -				{ 75, ST_MAGN_0_ODR_AVL_75HZ_VAL, },
+> +				{ .hz = 1, .value = 0x00 },
+> +				{ .hz = 2, .value = 0x01 },
+> +				{ .hz = 3, .value = 0x02 },
+> +				{ .hz = 8, .value = 0x03 },
+> +				{ .hz = 15, .value = 0x04 },
+> +				{ .hz = 30, .value = 0x05 },
+> +				{ .hz = 75, .value = 0x06 },
+> +				/* 220 Hz, 0x07 reportedly exist */
+>  			},
+>  		},
+>  		.pw = {
+> -			.addr = ST_MAGN_0_PW_ADDR,
+> -			.mask = ST_MAGN_0_PW_MASK,
+> -			.value_on = ST_MAGN_0_PW_ON,
+> -			.value_off = ST_MAGN_0_PW_OFF,
+> +			.addr = 0x02,
+> +			.mask = 0x03,
+> +			.value_on = 0x00,
+> +			.value_off = 0x03,
+>  		},
+>  		.fs = {
+> -			.addr = ST_MAGN_0_FS_ADDR,
+> -			.mask = ST_MAGN_0_FS_MASK,
+> +			.addr = 0x01,
+> +			.mask = 0xe0,
+>  			.fs_avl = {
+>  				[0] = {
+>  					.num = ST_MAGN_FS_AVL_1300MG,
+> -					.value = ST_MAGN_0_FS_AVL_1300_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_1300_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_1300_GAIN_Z,
+> +					.value = 0x01,
+> +					.gain = 1100,
+> +					.gain2 = 980,
+>  				},
+>  				[1] = {
+>  					.num = ST_MAGN_FS_AVL_1900MG,
+> -					.value = ST_MAGN_0_FS_AVL_1900_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_1900_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_1900_GAIN_Z,
+> +					.value = 0x02,
+> +					.gain = 855,
+> +					.gain2 = 760,
+>  				},
+>  				[2] = {
+>  					.num = ST_MAGN_FS_AVL_2500MG,
+> -					.value = ST_MAGN_0_FS_AVL_2500_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_2500_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_2500_GAIN_Z,
+> +					.value = 0x03,
+> +					.gain = 670,
+> +					.gain2 = 600,
+>  				},
+>  				[3] = {
+>  					.num = ST_MAGN_FS_AVL_4000MG,
+> -					.value = ST_MAGN_0_FS_AVL_4000_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_4000_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_4000_GAIN_Z,
+> +					.value = 0x04,
+> +					.gain = 450,
+> +					.gain2 = 400,
+>  				},
+>  				[4] = {
+>  					.num = ST_MAGN_FS_AVL_4700MG,
+> -					.value = ST_MAGN_0_FS_AVL_4700_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_4700_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_4700_GAIN_Z,
+> +					.value = 0x05,
+> +					.gain = 400,
+> +					.gain2 = 355,
+>  				},
+>  				[5] = {
+>  					.num = ST_MAGN_FS_AVL_5600MG,
+> -					.value = ST_MAGN_0_FS_AVL_5600_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_5600_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_5600_GAIN_Z,
+> +					.value = 0x06,
+> +					.gain = 330,
+> +					.gain2 = 295,
+>  				},
+>  				[6] = {
+>  					.num = ST_MAGN_FS_AVL_8100MG,
+> -					.value = ST_MAGN_0_FS_AVL_8100_VAL,
+> -					.gain = ST_MAGN_0_FS_AVL_8100_GAIN_XY,
+> -					.gain2 = ST_MAGN_0_FS_AVL_8100_GAIN_Z,
+> +					.value = 0x07,
+> +					.gain = 230,
+> +					.gain2 = 205,
+>  				},
+>  			},
+>  		},
+> -		.multi_read_bit = ST_MAGN_0_MULTIREAD_BIT,
+> +		.multi_read_bit = false,
+>  		.bootime = 2,
+>  	},
+>  	{
+> -		.wai = ST_MAGN_1_WAI_EXP,
+> +		.wai = 0x3c,
+>  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>  		.sensors_supported = {
+>  			[0] = LSM303DLHC_MAGN_DEV_NAME,
+> @@ -318,175 +192,175 @@ static const struct st_sensor_settings st_magn_sensors_settings[] = {
+>  		},
+>  		.ch = (struct iio_chan_spec *)st_magn_16bit_channels,
+>  		.odr = {
+> -			.addr = ST_MAGN_1_ODR_ADDR,
+> -			.mask = ST_MAGN_1_ODR_MASK,
+> +			.addr = 0x00,
+> +			.mask = 0x1c,
+>  			.odr_avl = {
+> -				{ 1, ST_MAGN_1_ODR_AVL_1HZ_VAL, },
+> -				{ 2, ST_MAGN_1_ODR_AVL_2HZ_VAL, },
+> -				{ 3, ST_MAGN_1_ODR_AVL_3HZ_VAL, },
+> -				{ 8, ST_MAGN_1_ODR_AVL_8HZ_VAL, },
+> -				{ 15, ST_MAGN_1_ODR_AVL_15HZ_VAL, },
+> -				{ 30, ST_MAGN_1_ODR_AVL_30HZ_VAL, },
+> -				{ 75, ST_MAGN_1_ODR_AVL_75HZ_VAL, },
+> -				{ 220, ST_MAGN_1_ODR_AVL_220HZ_VAL, },
+> +				{ .hz = 1, .value = 0x00 },
+> +				{ .hz = 2, .value = 0x01 },
+> +				{ .hz = 3, .value = 0x02 },
+> +				{ .hz = 8, .value = 0x03 },
+> +				{ .hz = 15, .value = 0x04 },
+> +				{ .hz = 30, .value = 0x05 },
+> +				{ .hz = 75, .value = 0x06 },
+> +				{ .hz = 220, .value = 0x07 },
+>  			},
+>  		},
+>  		.pw = {
+> -			.addr = ST_MAGN_1_PW_ADDR,
+> -			.mask = ST_MAGN_1_PW_MASK,
+> -			.value_on = ST_MAGN_1_PW_ON,
+> -			.value_off = ST_MAGN_1_PW_OFF,
+> +			.addr = 0x02,
+> +			.mask = 0x03,
+> +			.value_on = 0x00,
+> +			.value_off = 0x03,
+>  		},
+>  		.fs = {
+> -			.addr = ST_MAGN_1_FS_ADDR,
+> -			.mask = ST_MAGN_1_FS_MASK,
+> +			.addr = 0x01,
+> +			.mask = 0xe0,
+>  			.fs_avl = {
+>  				[0] = {
+>  					.num = ST_MAGN_FS_AVL_1300MG,
+> -					.value = ST_MAGN_1_FS_AVL_1300_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_1300_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_1300_GAIN_Z,
+> +					.value = 0x01,
+> +					.gain = 909,
+> +					.gain2 = 1020,
+>  				},
+>  				[1] = {
+>  					.num = ST_MAGN_FS_AVL_1900MG,
+> -					.value = ST_MAGN_1_FS_AVL_1900_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_1900_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_1900_GAIN_Z,
+> +					.value = 0x02,
+> +					.gain = 1169,
+> +					.gain2 = 1315,
+>  				},
+>  				[2] = {
+>  					.num = ST_MAGN_FS_AVL_2500MG,
+> -					.value = ST_MAGN_1_FS_AVL_2500_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_2500_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_2500_GAIN_Z,
+> +					.value = 0x03,
+> +					.gain = 1492,
+> +					.gain2 = 1666,
+>  				},
+>  				[3] = {
+>  					.num = ST_MAGN_FS_AVL_4000MG,
+> -					.value = ST_MAGN_1_FS_AVL_4000_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_4000_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_4000_GAIN_Z,
+> +					.value = 0x04,
+> +					.gain = 2222,
+> +					.gain2 = 2500,
+>  				},
+>  				[4] = {
+>  					.num = ST_MAGN_FS_AVL_4700MG,
+> -					.value = ST_MAGN_1_FS_AVL_4700_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_4700_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_4700_GAIN_Z,
+> +					.value = 0x05,
+> +					.gain = 2500,
+> +					.gain2 = 2816,
+>  				},
+>  				[5] = {
+>  					.num = ST_MAGN_FS_AVL_5600MG,
+> -					.value = ST_MAGN_1_FS_AVL_5600_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_5600_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_5600_GAIN_Z,
+> +					.value = 0x06,
+> +					.gain = 3030,
+> +					.gain2 = 3389,
+>  				},
+>  				[6] = {
+>  					.num = ST_MAGN_FS_AVL_8100MG,
+> -					.value = ST_MAGN_1_FS_AVL_8100_VAL,
+> -					.gain = ST_MAGN_1_FS_AVL_8100_GAIN_XY,
+> -					.gain2 = ST_MAGN_1_FS_AVL_8100_GAIN_Z,
+> +					.value = 0x07,
+> +					.gain = 4347,
+> +					.gain2 = 4878,
+>  				},
+>  			},
+>  		},
+> -		.multi_read_bit = ST_MAGN_1_MULTIREAD_BIT,
+> +		.multi_read_bit = false,
+>  		.bootime = 2,
+>  	},
+>  	{
+> -		.wai = ST_MAGN_2_WAI_EXP,
+> +		.wai = 0x3d,
+>  		.wai_addr = ST_SENSORS_DEFAULT_WAI_ADDRESS,
+>  		.sensors_supported = {
+>  			[0] = LIS3MDL_MAGN_DEV_NAME,
+>  		},
+>  		.ch = (struct iio_chan_spec *)st_magn_2_16bit_channels,
+>  		.odr = {
+> -			.addr = ST_MAGN_2_ODR_ADDR,
+> -			.mask = ST_MAGN_2_ODR_MASK,
+> +			.addr = 0x20,
+> +			.mask = 0x1c,
+>  			.odr_avl = {
+> -				{ 1, ST_MAGN_2_ODR_AVL_1HZ_VAL, },
+> -				{ 2, ST_MAGN_2_ODR_AVL_2HZ_VAL, },
+> -				{ 3, ST_MAGN_2_ODR_AVL_3HZ_VAL, },
+> -				{ 5, ST_MAGN_2_ODR_AVL_5HZ_VAL, },
+> -				{ 10, ST_MAGN_2_ODR_AVL_10HZ_VAL, },
+> -				{ 20, ST_MAGN_2_ODR_AVL_20HZ_VAL, },
+> -				{ 40, ST_MAGN_2_ODR_AVL_40HZ_VAL, },
+> -				{ 80, ST_MAGN_2_ODR_AVL_80HZ_VAL, },
+> +				{ .hz = 1, .value = 0x00 },
+> +				{ .hz = 2, .value = 0x01 },
+> +				{ .hz = 3, .value = 0x02 },
+> +				{ .hz = 5, .value = 0x03 },
+> +				{ .hz = 10, .value = 0x04 },
+> +				{ .hz = 20, .value = 0x05 },
+> +				{ .hz = 40, .value = 0x06 },
+> +				{ .hz = 80, .value = 0x07 },
+>  			},
+>  		},
+>  		.pw = {
+> -			.addr = ST_MAGN_2_PW_ADDR,
+> -			.mask = ST_MAGN_2_PW_MASK,
+> -			.value_on = ST_MAGN_2_PW_ON,
+> -			.value_off = ST_MAGN_2_PW_OFF,
+> +			.addr = 0x22,
+> +			.mask = 0x03,
+> +			.value_on = 0x00,
+> +			.value_off = 0x03,
+>  		},
+>  		.fs = {
+> -			.addr = ST_MAGN_2_FS_ADDR,
+> -			.mask = ST_MAGN_2_FS_MASK,
+> +			.addr = 0x21,
+> +			.mask = 0x60,
+>  			.fs_avl = {
+>  				[0] = {
+>  					.num = ST_MAGN_FS_AVL_4000MG,
+> -					.value = ST_MAGN_2_FS_AVL_4000_VAL,
+> -					.gain = ST_MAGN_2_FS_AVL_4000_GAIN,
+> +					.value = 0x00,
+> +					.gain = 146,
+>  				},
+>  				[1] = {
+>  					.num = ST_MAGN_FS_AVL_8000MG,
+> -					.value = ST_MAGN_2_FS_AVL_8000_VAL,
+> -					.gain = ST_MAGN_2_FS_AVL_8000_GAIN,
+> +					.value = 0x01,
+> +					.gain = 292,
+>  				},
+>  				[2] = {
+>  					.num = ST_MAGN_FS_AVL_12000MG,
+> -					.value = ST_MAGN_2_FS_AVL_12000_VAL,
+> -					.gain = ST_MAGN_2_FS_AVL_12000_GAIN,
+> +					.value = 0x02,
+> +					.gain = 438,
+>  				},
+>  				[3] = {
+>  					.num = ST_MAGN_FS_AVL_16000MG,
+> -					.value = ST_MAGN_2_FS_AVL_16000_VAL,
+> -					.gain = ST_MAGN_2_FS_AVL_16000_GAIN,
+> +					.value = 0x03,
+> +					.gain = 584,
+>  				},
+>  			},
+>  		},
+> -		.multi_read_bit = ST_MAGN_2_MULTIREAD_BIT,
+> +		.multi_read_bit = false,
+>  		.bootime = 2,
+>  	},
+>  	{
+> -		.wai = ST_MAGN_3_WAI_EXP,
+> -		.wai_addr = ST_MAGN_3_WAI_ADDR,
+> +		.wai = 0x40,
+> +		.wai_addr = 0x4f,
+>  		.sensors_supported = {
+>  			[0] = LSM303AGR_MAGN_DEV_NAME,
+>  		},
+>  		.ch = (struct iio_chan_spec *)st_magn_3_16bit_channels,
+>  		.odr = {
+> -			.addr = ST_MAGN_3_ODR_ADDR,
+> -			.mask = ST_MAGN_3_ODR_MASK,
+> +			.addr = 0x60,
+> +			.mask = 0x0c,
+>  			.odr_avl = {
+> -				{ 10, ST_MAGN_3_ODR_AVL_10HZ_VAL, },
+> -				{ 20, ST_MAGN_3_ODR_AVL_20HZ_VAL, },
+> -				{ 50, ST_MAGN_3_ODR_AVL_50HZ_VAL, },
+> -				{ 100, ST_MAGN_3_ODR_AVL_100HZ_VAL, },
+> +				{ .hz = 10, .value = 0x00 },
+> +				{ .hz = 20, .value = 0x01 },
+> +				{ .hz = 50, .value = 0x02 },
+> +				{ .hz = 100, .value = 0x03 },
+>  			},
+>  		},
+>  		.pw = {
+> -			.addr = ST_MAGN_3_PW_ADDR,
+> -			.mask = ST_MAGN_3_PW_MASK,
+> -			.value_on = ST_MAGN_3_PW_ON,
+> -			.value_off = ST_MAGN_3_PW_OFF,
+> +			.addr = 0x60,
+> +			.mask = 0x03,
+> +			.value_on = 0x00,
+> +			.value_off = 0x03,
+>  		},
+>  		.fs = {
+>  			.fs_avl = {
+>  				[0] = {
+>  					.num = ST_MAGN_FS_AVL_15000MG,
+> -					.gain = ST_MAGN_3_FS_AVL_15000_GAIN,
+> +					.gain = 1500,
+>  				},
+>  			},
+>  		},
+>  		.bdu = {
+> -			.addr = ST_MAGN_3_BDU_ADDR,
+> -			.mask = ST_MAGN_3_BDU_MASK,
+> +			.addr = 0x62,
+> +			.mask = 0x10,
+>  		},
+>  		.drdy_irq = {
+> -			.addr = ST_MAGN_3_DRDY_IRQ_ADDR,
+> -			.mask_int1 = ST_MAGN_3_DRDY_INT_MASK,
+> -			.addr_ihl = ST_MAGN_3_IHL_IRQ_ADDR,
+> -			.mask_ihl = ST_MAGN_3_IHL_IRQ_MASK,
+> +			.addr = 0x62,
+> +			.mask_int1 = 0x01,
+> +			.addr_ihl = 0x63,
+> +			.mask_ihl = 0x04,
+>  			.addr_stat_drdy = ST_SENSORS_DEFAULT_STAT_ADDR,
+>  		},
+> -		.multi_read_bit = ST_MAGN_3_MULTIREAD_BIT,
+> +		.multi_read_bit = false,
+>  		.bootime = 2,
+>  	},
+>  };
 > 
-> Thanks for the patch. Unfortunately this is not quite this straight forward.
-> 
-> The scale is what you multiply the raw with to get the value in the standard
-> IIO unit. Range as implemented in this driver is the maximum output voltage.
-> 
-> To get the scale we need to look at the transfer function of the ADC [1].
-> The transfer function tells us that 1 LSB is 305uV for the 10V range and
-> 152uV for the 5V range.
 
-Instead of 10000 and 5000, these will be the values for the
-scale_available attribute?
-
-> 
-> More specifically this is $RANGE*2/2**16 (times two since the ADC is bipolar).
-> 
-> Since the default unit for IIO is mV for voltages we need to multiply this
-> by 1000.
-> 
-> The other thing we need to handle is the case where the RANGE pin is not
-> connected to a GPIO but either hardwired to 1 or 0. Which we need to handle
-> somehow.
-
-Will this be on the same patch or a separate one? Can you please give a
-hint on how to check if it is hardwired?
-
-Eva
-
-> 
-> [1]
-> http://www.analog.com/media/en/technical-documentation/data-sheets/AD7606_7606-6_7606-4.pdf#page=23
-> (right bottom)
-> 
-> > ---
-> >  drivers/staging/iio/adc/ad7606.c | 56 ++++++++++++----------------------------
-> >  1 file changed, 16 insertions(+), 40 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-> > index 4531908..cceb18c 100644
-> > --- a/drivers/staging/iio/adc/ad7606.c
-> > +++ b/drivers/staging/iio/adc/ad7606.c
-> > @@ -161,42 +161,7 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
-> >  	return -EINVAL;
-> >  }
-> >  
-> > -static ssize_t ad7606_show_range(struct device *dev,
-> > -				 struct device_attribute *attr, char *buf)
-> > -{
-> > -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > -	struct ad7606_state *st = iio_priv(indio_dev);
-> > -
-> > -	return sprintf(buf, "%u\n", st->range);
-> > -}
-> > -
-> > -static ssize_t ad7606_store_range(struct device *dev,
-> > -				  struct device_attribute *attr,
-> > -				  const char *buf, size_t count)
-> > -{
-> > -	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > -	struct ad7606_state *st = iio_priv(indio_dev);
-> > -	unsigned long lval;
-> > -	int ret;
-> > -
-> > -	ret = kstrtoul(buf, 10, &lval);
-> > -	if (ret)
-> > -		return ret;
-> > -
-> > -	if (!(lval == 5000 || lval == 10000))
-> > -		return -EINVAL;
-> > -
-> > -	mutex_lock(&indio_dev->mlock);
-> > -	gpiod_set_value(st->gpio_range, lval == 10000);
-> > -	st->range = lval;
-> > -	mutex_unlock(&indio_dev->mlock);
-> > -
-> > -	return count;
-> > -}
-> > -
-> > -static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR,
-> > -		       ad7606_show_range, ad7606_store_range, 0);
-> > -static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
-> > +static IIO_CONST_ATTR(in_voltage_scale_available, "5000 10000");
-> >  
-> >  static int ad7606_oversampling_get_index(unsigned int val)
-> >  {
-> > @@ -221,6 +186,19 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
-> >  	int ret;
-> >  
-> >  	switch (mask) {
-> > +	case IIO_CHAN_INFO_SCALE:
-> > +		if (val2)
-> > +			return -EINVAL;
-> > +
-> > +		if (!(val == 5000 || val == 10000))
-> > +			return -EINVAL;
-> > +
-> > +		mutex_lock(&indio_dev->mlock);
-> > +		gpiod_set_value(st->gpio_range, val == 10000);
-> > +		st->range = val;
-> > +		mutex_unlock(&indio_dev->mlock);
-> > +
-> > +		return 0;
-> >  	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
-> >  		if (val2)
-> >  			return -EINVAL;
-> > @@ -247,8 +225,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
-> >  static IIO_CONST_ATTR(oversampling_ratio_available, "1 2 4 8 16 32 64");
-> >  
-> >  static struct attribute *ad7606_attributes_os_and_range[] = {
-> > -	&iio_dev_attr_in_voltage_range.dev_attr.attr,
-> > -	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
-> > +	&iio_const_attr_in_voltage_scale_available.dev_attr.attr,
-> >  	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
-> >  	NULL,
-> >  };
-> > @@ -267,8 +244,7 @@ static const struct attribute_group ad7606_attribute_group_os = {
-> >  };
-> >  
-> >  static struct attribute *ad7606_attributes_range[] = {
-> > -	&iio_dev_attr_in_voltage_range.dev_attr.attr,
-> > -	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
-> > +	&iio_const_attr_in_voltage_scale_available.dev_attr.attr,
-> >  	NULL,
-> >  };
-> >  
-> > 
-> 
