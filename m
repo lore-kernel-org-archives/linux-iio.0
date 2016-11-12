@@ -1,87 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:33257 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S966663AbcKLTXN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 14:23:13 -0500
-Content-Type: text/plain; charset=windows-1252
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH v7 4/9] drivers:input:tsc2007: add iio interface to read external ADC input and temperature
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <b4d79a26-4353-9860-a884-49c751bbe617@kernel.org>
-Date: Sat, 12 Nov 2016 20:22:59 +0100
-Cc: Sebastian Reichel <sre@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?windows-1252?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?windows-1252?Q?Mika_Penttil=E4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com
-Message-Id: <6219C71A-909F-4915-AACF-66E4D612016A@goldelico.com>
-References: <cover.1478890925.git.hns@goldelico.com> <6c64bb0331ad05840a2886bef6c3cfa64c866cb6.1478890925.git.hns@goldelico.com> <fc901399-0bde-d936-b9e2-4c591549eb55@kernel.org> <b4d79a26-4353-9860-a884-49c751bbe617@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
+Received: from mail-it0-f67.google.com ([209.85.214.67]:33419 "EHLO
+        mail-it0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966722AbcKLTll (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 14:41:41 -0500
+Received: by mail-it0-f67.google.com with SMTP id c20so1561134itb.0
+        for <linux-iio@vger.kernel.org>; Sat, 12 Nov 2016 11:41:41 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <20161112175619.GE7129@atomide.com>
+References: <1478946096-1314-1-git-send-email-Nicolae_Rosia@mentor.com>
+ <18487c16-04ee-b65a-c773-27a2965db8b3@kernel.org> <20161112175619.GE7129@atomide.com>
+From: Nicolae Rosia <nicolae.rosia.oss@gmail.com>
+Date: Sat, 12 Nov 2016 21:41:40 +0200
+Message-ID: <CAKP5S=2fgmTVs8JW2QKcndFSRZWqX=vL4Qa2d2TxCLKaACL8bg@mail.gmail.com>
+Subject: Re: [PATCH] iio: twl4030-madc: convert to DT only
+To: Tony Lindgren <tony@atomide.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Nicolae Rosia <Nicolae_Rosia@mentor.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> Am 12.11.2016 um 15:19 schrieb Jonathan Cameron <jic23@kernel.org>:
-> 
-> On 12/11/16 14:04, Jonathan Cameron wrote:
->> On 11/11/16 19:02, H. Nikolaus Schaller wrote:
->>> The tsc2007 chip not only has a resistive touch screen controller but
->>> also an external AUX adc imput which can be used for an ambient
->>> light sensor, battery voltage monitoring or any general purpose.
->>> 
->>> Additionally it can measure the chip temperature.
->>> 
->>> This extension provides an iio interface for these adc channels.
->>> 
->>> Since it is not wasting much resources and is very straightforward,
->>> we simply provide all other adc channels as optional iio interfaces
->>> as weel. This can be used for debugging or special applications.
->>> 
->>> This patch also splits the tsc2007 driver in several source files:
->>> tsc2007.h -- constants, structs and stubs
->>> tsc2007_core.c -- functional parts of the original driver
->>> tsc2007_iio.c -- the optional iio stuff
->>> 
->>> Makefile magic allows to conditionally link the iio
->>> stuff if CONFIG_IIO=y in a way that it works with
->>> CONFIG_TOUCHSCREEN_TSC2007=m.
->>> 
->> 
->> I ran a quick build test and it blows up in a number of ways related to
->> the #ifdef CONFIG_IIO.
->> 
->> I'm not entirely sure why but
->> #if IS_ENABLED(CONFIG_IIO) works fine.
-> Ah, I'm being sleepy today.  It's because I'm building IIO as a module
-> and the symbol defined would therefore be CONFIG_IIO_MODULE.
-> 
-> The IS_ENABLED macro takes care of both cases.
+> Yeah well mach-omap2 is all device tree only now. We still do have
+> the platform_data init around in the unlikely case we still need
+> to revert it for some regression. But I'm queuing patches for v4.10
+> to drop the rest of the platform_data based init and will merge
+> them assuming no problems.
+>
+> If this helps cleaning up the rest of the twl related code then
+> sure makes sense to me. If this is not blocking other clean-up,
+> maybe wait until v4.11 merge window to be safe on this one.
+I may have rushed with this one then. I will repost it for v4.11, it's
+not a blocker.
 
-Ah, yes. I wasn't aware that CONFIG_IIO is tristate at all.
-We have it as "y" and therefore didn't notice.
-
-I will collect this fix for V8.
-
->> 
->> Otherwise looks good to me
->>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
->> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-
-Will add this as well.
-
-Thanks for the detailled review!
-
-BR,
-Nikolaus
-
-
+Regards,
+Nicolae
