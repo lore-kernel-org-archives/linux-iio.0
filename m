@@ -1,111 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:55904 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966688AbcKLSTq (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Nov 2016 13:19:46 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 04/26] staging: iio: tsl2583: change current chip state from a tristate to a bool
-Date: Sat, 12 Nov 2016 13:19:19 -0500
-Message-Id: <1478974781-1457-5-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
-References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
+Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.163]:33257 "EHLO
+        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966663AbcKLTXN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 14:23:13 -0500
+Content-Type: text/plain; charset=windows-1252
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v7 4/9] drivers:input:tsc2007: add iio interface to read external ADC input and temperature
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <b4d79a26-4353-9860-a884-49c751bbe617@kernel.org>
+Date: Sat, 12 Nov 2016 20:22:59 +0100
+Cc: Sebastian Reichel <sre@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?windows-1252?Q?Beno=EEt_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?windows-1252?Q?Mika_Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Message-Id: <6219C71A-909F-4915-AACF-66E4D612016A@goldelico.com>
+References: <cover.1478890925.git.hns@goldelico.com> <6c64bb0331ad05840a2886bef6c3cfa64c866cb6.1478890925.git.hns@goldelico.com> <fc901399-0bde-d936-b9e2-4c591549eb55@kernel.org> <b4d79a26-4353-9860-a884-49c751bbe617@kernel.org>
+To: Jonathan Cameron <jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The current chip state is represented as a tristate (working, suspended,
-and unknown). The unknown state was not used. This patch changes the
-chip state so that it is now represented as a single boolean value
-(suspended).
+> Am 12.11.2016 um 15:19 schrieb Jonathan Cameron <jic23@kernel.org>:
+> 
+> On 12/11/16 14:04, Jonathan Cameron wrote:
+>> On 11/11/16 19:02, H. Nikolaus Schaller wrote:
+>>> The tsc2007 chip not only has a resistive touch screen controller but
+>>> also an external AUX adc imput which can be used for an ambient
+>>> light sensor, battery voltage monitoring or any general purpose.
+>>> 
+>>> Additionally it can measure the chip temperature.
+>>> 
+>>> This extension provides an iio interface for these adc channels.
+>>> 
+>>> Since it is not wasting much resources and is very straightforward,
+>>> we simply provide all other adc channels as optional iio interfaces
+>>> as weel. This can be used for debugging or special applications.
+>>> 
+>>> This patch also splits the tsc2007 driver in several source files:
+>>> tsc2007.h -- constants, structs and stubs
+>>> tsc2007_core.c -- functional parts of the original driver
+>>> tsc2007_iio.c -- the optional iio stuff
+>>> 
+>>> Makefile magic allows to conditionally link the iio
+>>> stuff if CONFIG_IIO=y in a way that it works with
+>>> CONFIG_TOUCHSCREEN_TSC2007=m.
+>>> 
+>> 
+>> I ran a quick build test and it blows up in a number of ways related to
+>> the #ifdef CONFIG_IIO.
+>> 
+>> I'm not entirely sure why but
+>> #if IS_ENABLED(CONFIG_IIO) works fine.
+> Ah, I'm being sleepy today.  It's because I'm building IIO as a module
+> and the symbol defined would therefore be CONFIG_IIO_MODULE.
+> 
+> The IS_ENABLED macro takes care of both cases.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/tsl2583.c | 20 +++++++-------------
- 1 file changed, 7 insertions(+), 13 deletions(-)
+Ah, yes. I wasn't aware that CONFIG_IIO is tristate at all.
+We have it as "y" and therefore didn't notice.
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 40aa78e..5a32102 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -67,12 +67,6 @@
- #define TSL2583_CHIP_ID			0x90
- #define TSL2583_CHIP_ID_MASK		0xf0
- 
--enum {
--	TSL258X_CHIP_UNKNOWN = 0,
--	TSL258X_CHIP_WORKING = 1,
--	TSL258X_CHIP_SUSPENDED = 2
--};
--
- /* Per-device data */
- struct taos_als_info {
- 	u16 als_ch0;
-@@ -94,7 +88,7 @@ struct tsl2583_chip {
- 	struct taos_settings taos_settings;
- 	int als_time_scale;
- 	int als_saturation;
--	int taos_chip_status;
-+	bool suspended;
- };
- 
- struct taos_lux {
-@@ -441,7 +435,7 @@ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
- 	if (ret < 0)
- 		return ret;
- 
--	chip->taos_chip_status = TSL258X_CHIP_WORKING;
-+	chip->suspended = false;
- 
- 	return ret;
- }
-@@ -494,7 +488,7 @@ static ssize_t in_illuminance_calibrate_store(struct device *dev,
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
-+	if (chip->suspended) {
- 		ret = -EBUSY;
- 		goto done;
- 	}
-@@ -627,7 +621,7 @@ static int tsl2583_read_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
-+	if (chip->suspended) {
- 		ret = -EBUSY;
- 		goto read_done;
- 	}
-@@ -704,7 +698,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
- 
- 	mutex_lock(&chip->als_mutex);
- 
--	if (chip->taos_chip_status != TSL258X_CHIP_WORKING) {
-+	if (chip->suspended) {
- 		ret = -EBUSY;
- 		goto write_done;
- 	}
-@@ -778,7 +772,7 @@ static int taos_probe(struct i2c_client *clientp,
- 	i2c_set_clientdata(clientp, indio_dev);
- 
- 	mutex_init(&chip->als_mutex);
--	chip->taos_chip_status = TSL258X_CHIP_UNKNOWN;
-+	chip->suspended = true;
- 
- 	ret = i2c_smbus_read_byte_data(clientp,
- 				       TSL258X_CMD_REG | TSL258X_CHIPID);
-@@ -835,7 +829,7 @@ static int __maybe_unused taos_suspend(struct device *dev)
- 	mutex_lock(&chip->als_mutex);
- 
- 	ret = tsl2583_set_power_state(chip, TSL258X_CNTL_PWR_OFF);
--	chip->taos_chip_status = TSL258X_CHIP_SUSPENDED;
-+	chip->suspended = true;
- 
- 	mutex_unlock(&chip->als_mutex);
- 	return ret;
--- 
-2.7.4
+I will collect this fix for V8.
+
+>> 
+>> Otherwise looks good to me
+>>> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+>> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+
+Will add this as well.
+
+Thanks for the detailled review!
+
+BR,
+Nikolaus
+
 
