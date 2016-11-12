@@ -1,40 +1,48 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f67.google.com ([209.85.214.67]:33419 "EHLO
-        mail-it0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S966722AbcKLTll (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 14:41:41 -0500
-Received: by mail-it0-f67.google.com with SMTP id c20so1561134itb.0
-        for <linux-iio@vger.kernel.org>; Sat, 12 Nov 2016 11:41:41 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20161112175619.GE7129@atomide.com>
-References: <1478946096-1314-1-git-send-email-Nicolae_Rosia@mentor.com>
- <18487c16-04ee-b65a-c773-27a2965db8b3@kernel.org> <20161112175619.GE7129@atomide.com>
-From: Nicolae Rosia <nicolae.rosia.oss@gmail.com>
-Date: Sat, 12 Nov 2016 21:41:40 +0200
-Message-ID: <CAKP5S=2fgmTVs8JW2QKcndFSRZWqX=vL4Qa2d2TxCLKaACL8bg@mail.gmail.com>
-Subject: Re: [PATCH] iio: twl4030-madc: convert to DT only
-To: Tony Lindgren <tony@atomide.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Nicolae Rosia <Nicolae_Rosia@mentor.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from onstation.org ([52.200.56.107]:55932 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S966806AbcKLSTu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Nov 2016 13:19:50 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+Subject: [PATCH v4 14/26] staging: iio: tsl2583: updated code comment to match what the code does
+Date: Sat, 12 Nov 2016 13:19:29 -0500
+Message-Id: <1478974781-1457-15-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
+References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-> Yeah well mach-omap2 is all device tree only now. We still do have
-> the platform_data init around in the unlikely case we still need
-> to revert it for some regression. But I'm queuing patches for v4.10
-> to drop the rest of the platform_data based init and will merge
-> them assuming no problems.
->
-> If this helps cleaning up the rest of the twl related code then
-> sure makes sense to me. If this is not blocking other clean-up,
-> maybe wait until v4.11 merge window to be safe on this one.
-I may have rushed with this one then. I will repost it for v4.11, it's
-not a blocker.
+If channel 0 does not have any data, then the code sets the lux to zero.
+The corresponding comment says that the last value is returned. This
+updates the comment to correctly reflect what the code does. It also
+clarifies the comment about why 0 is returned.
 
-Regards,
-Nicolae
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/tsl2583.c | 6 +++++-
+ 1 file changed, 5 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+index 52a39a6..dbb7f6a 100644
+--- a/drivers/staging/iio/light/tsl2583.c
++++ b/drivers/staging/iio/light/tsl2583.c
+@@ -221,7 +221,11 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+ 		goto return_max;
+ 
+ 	if (!ch0) {
+-		/* have no data, so return LAST VALUE */
++		/*
++		 * The sensor appears to be in total darkness so set the
++		 * calculated lux to 0 and return early to avoid a division by
++		 * zero below when calculating the ratio.
++		 */
+ 		ret = 0;
+ 		chip->als_cur_info.lux = 0;
+ 		goto done;
+-- 
+2.7.4
+
