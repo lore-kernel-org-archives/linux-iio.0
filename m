@@ -1,45 +1,79 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:55904 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:55942 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966811AbcKLSTv (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Nov 2016 13:19:51 -0500
+        id S966533AbcKLSTu (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 12 Nov 2016 13:19:50 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 16/26] staging: iio: tsl2583: change tsl2583_als_calibrate() to return 0 on success
-Date: Sat, 12 Nov 2016 13:19:31 -0500
-Message-Id: <1478974781-1457-17-git-send-email-masneyb@onstation.org>
+Subject: [PATCH v4 15/26] staging: iio: tsl2583: moved code block inside else statement
+Date: Sat, 12 Nov 2016 13:19:30 -0500
+Message-Id: <1478974781-1457-16-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-tsl2583_als_calibrate() returns the newly computed gain_trim if the
-calibration was successful. This function is only called by
-in_illuminance_calibrate_store() and the return value inside that
-sysfs attribute is only checked to see if an error was returned.
-This patch changes tsl2583_als_calibrate() to return 0 on success.
+The check for ch1lux > ch0lux inside tsl2583_get_lux is only valid if
+the ratio is not equal to zero. Move the code block inside the else
+statement. This does away with the need to initialize the variables to
+zero.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/tsl2583.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ drivers/staging/iio/light/tsl2583.c | 23 ++++++++++++-----------
+ 1 file changed, 12 insertions(+), 11 deletions(-)
 
 diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index bcdf095..fc58074 100644
+index dbb7f6a..bcdf095 100644
 --- a/drivers/staging/iio/light/tsl2583.c
 +++ b/drivers/staging/iio/light/tsl2583.c
-@@ -348,7 +348,7 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
+@@ -167,8 +167,6 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+ 	struct tsl2583_lux *p;
+ 	struct tsl2583_chip *chip = iio_priv(indio_dev);
+ 	int i, ret;
+-	u32 ch0lux = 0;
+-	u32 ch1lux = 0;
  
- 	chip->als_settings.als_gain_trim = (int)gain_trim_val;
+ 	ret = i2c_smbus_read_byte_data(chip->client, TSL2583_CMD_REG);
+ 	if (ret < 0) {
+@@ -242,22 +240,25 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+ 	if (p->ratio == 0) {
+ 		lux = 0;
+ 	} else {
++		u32 ch0lux, ch1lux;
++
+ 		ch0lux = ((ch0 * p->ch0) +
+ 			  (gainadj[chip->als_settings.als_gain].ch0 >> 1))
+ 			 / gainadj[chip->als_settings.als_gain].ch0;
+ 		ch1lux = ((ch1 * p->ch1) +
+ 			  (gainadj[chip->als_settings.als_gain].ch1 >> 1))
+ 			 / gainadj[chip->als_settings.als_gain].ch1;
+-		lux = ch0lux - ch1lux;
+-	}
  
--	return (int)gain_trim_val;
-+	return 0;
- }
+-	/* note: lux is 31 bit max at this point */
+-	if (ch1lux > ch0lux) {
+-		dev_dbg(&chip->client->dev, "%s: No Data - Returning 0\n",
+-			__func__);
+-		ret = 0;
+-		chip->als_cur_info.lux = 0;
+-		goto done;
++		/* note: lux is 31 bit max at this point */
++		if (ch1lux > ch0lux) {
++			dev_dbg(&chip->client->dev, "%s: No Data - Returning 0\n",
++				__func__);
++			ret = 0;
++			chip->als_cur_info.lux = 0;
++			goto done;
++		}
++
++		lux = ch0lux - ch1lux;
+ 	}
  
- static int tsl2583_set_als_time(struct tsl2583_chip *chip)
+ 	/* adjust for active time scale */
 -- 
 2.7.4
 
