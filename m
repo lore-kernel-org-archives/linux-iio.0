@@ -1,76 +1,108 @@
-Return-Path: <eraretuya@gmail.com>
-Date: Wed, 9 Nov 2016 14:51:27 +0800
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: Arnd Bergmann <arnd@arndb.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] staging: iio: ad9832: allocate data before using
-Message-ID: <20161109065125.GB2158@Socrates-DK>
-References: <20161108140115.2250646-1-arnd@arndb.de>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34849 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966172AbcKLNN6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 08:13:58 -0500
+Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
+To: Marcin Niestroj <m.niestroj@grinn-global.com>
+References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
+ <b7dd5694-b757-c0d1-3400-46e92b8deb58@kernel.org>
+ <1d50ebf1-2f14-2e3f-9b8e-b34a7ebca4c5@grinn-global.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sanchayan Maity <maitysanchayan@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <0c4ef1f6-dcac-3025-3f54-dc1aae425ad6@kernel.org>
+Date: Sat, 12 Nov 2016 13:13:52 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161108140115.2250646-1-arnd@arndb.de>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1d50ebf1-2f14-2e3f-9b8e-b34a7ebca4c5@grinn-global.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 08, 2016 at 03:00:49PM +0100, Arnd Bergmann wrote:
-> The regulator changes assigned data to an uninitialized pointer:
+On 09/11/16 14:52, Marcin Niestroj wrote:
+> Hi,
+> Thanks for review. I agree with all of the comments and will fix these in next patch version. Below is just a comment on hwfifo_* sysfs access.
 > 
-> drivers/staging/iio/frequency/ad9832.c: In function 'ad9832_probe':
-> drivers/staging/iio/frequency/ad9832.c:214:11: error: 'st' may be used uninitialized in this function [-Werror=maybe-uninitialized]
+> On 06.11.2016 13:35, Jonathan Cameron wrote:
+>> On 03/11/16 11:25, Marcin Niestroj wrote:
+>>> This patch was developed primarily based on bmc150_accel hardware fifo
+>>> implementation.
+>>>
+>>> IRQ handler was added, which for now is responsible only for handling
+>>> watermark interrupts. The BMI160 chip has two interrupt outputs. By
+>>> default INT is considered to be connected. If INT2 is used instead, the
+>>> interrupt-names device-tree property can be used to specify that.
+>>>
+>>> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+>> I agree with Peter that there should have been a few precursor patches
+>> to this one doing various cleanups and reworking bits that you have
+>> in here.  Would have made it easier to review (always a good thing :)
+>>
+>> In general the resulting code looks good to me.  A few little
+>> additional comments inline from me.  Mostly about small code ordering things
+>> and function rename suggestions that would make the code more 'obviously'
+>> correct.
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/imu/bmi160/bmi160.h      |   3 +-
+>>>  drivers/iio/imu/bmi160/bmi160_core.c | 633 +++++++++++++++++++++++++++++++++--
+>>>  drivers/iio/imu/bmi160/bmi160_i2c.c  |   7 +-
+>>>  drivers/iio/imu/bmi160/bmi160_spi.c  |   3 +-
+>>>  4 files changed, 618 insertions(+), 28 deletions(-)
 > 
-> This moves the allocation of the 'st' structure before its first
-> use, as it should have been.
+> <snip>
 > 
-> Fixes: 43a07e48af44 ("staging: iio: ad9832: clean-up regulator 'reg'")
-> Fixes: a98461d79ba5 ("staging: iio: ad9832: add DVDD regulator")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+>>> +
+>>> +static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
+>>> +static IIO_CONST_ATTR(hwfifo_watermark_max,
+>>> +              __stringify(BMI160_FIFO_LENGTH));
+>>> +static IIO_DEVICE_ATTR(hwfifo_enabled, S_IRUGO,
+>>> +               bmi160_get_fifo_state, NULL, 0);
+>>> +static IIO_DEVICE_ATTR(hwfifo_watermark, S_IRUGO,
+>>> +               bmi160_get_fifo_watermark, NULL, 0);
+>>> +
+>>> +static const struct attribute *bmi160_fifo_attributes[] = {
+>>> +    &iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
+>>> +    &iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
+>>> +    &iio_dev_attr_hwfifo_watermark.dev_attr.attr,
+>>> +    &iio_dev_attr_hwfifo_enabled.dev_attr.attr,
+>> There are enough of these drivers now that sometimes soon we should
+>> revisit the question of pulling these into the core.  Can certainly
+>> concieve of downstream consumer devices (in particular the iio_input
+>> bridge when that finally resurfaces - my fault) wanting to be able to
+>> manipulate or at least have visibilty of these.
+> 
+> One more thing to consider is setting hwfifo_watermark to other value
+> than "userspace" watermark. It would be nice to set hwfifo_watermark
+> to a *safe* value to be able to get all data from hardware to kfifo.
+> By safe I mean that the chance of hardware fifo overflow will be
+> small. On the other hand there might be no reason to have such small
+> watermark for userspace application, so we can save scheduler
+> cycles.
+> 
+This may be worth doing, but I worry we'll end up with too many knobs
+around this feature.  Ultimately there is no point in setting the hardware
+fifo as smaller than the userspace one if the userspace one is small enough.
 
-Thank you, I completely missed this. Will be more careful next time.
+What counts as a safe level is going to be very hardware / load dependant.
+We 'could' try and put this in the devicetree so that a particular setup
+could set it at a level that is 'reasonable'.  It's kind of a hardware
+feature, but will also depend on software constraints (like whether the
+bus controller driver can support dma for example).
 
-Eva
+Non obvious unfortunately. 
 
-> ---
->  drivers/staging/iio/frequency/ad9832.c | 14 +++++++-------
->  1 file changed, 7 insertions(+), 7 deletions(-)
+Jonathan
+> <snip>
 > 
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index 639047fade30..a5b2f068168d 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -211,6 +211,13 @@ static int ad9832_probe(struct spi_device *spi)
->  		return -ENODEV;
->  	}
->  
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +	st = iio_priv(indio_dev);
-> +
->  	st->avdd = devm_regulator_get(&spi->dev, "avdd");
->  	if (IS_ERR(st->avdd))
->  		return PTR_ERR(st->avdd);
-> @@ -233,13 +240,6 @@ static int ad9832_probe(struct spi_device *spi)
->  		goto error_disable_avdd;
->  	}
->  
-> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> -	if (!indio_dev) {
-> -		ret = -ENOMEM;
-> -		goto error_disable_dvdd;
-> -	}
-> -	spi_set_drvdata(spi, indio_dev);
-> -	st = iio_priv(indio_dev);
->  	st->mclk = pdata->mclk;
->  	st->spi = spi;
->  
-> -- 
-> 2.9.0
-> 
+
