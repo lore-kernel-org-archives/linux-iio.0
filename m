@@ -1,73 +1,40 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:11045 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S941003AbcKOPdR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 10:33:17 -0500
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-To: <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
-Subject: [PATCH v3 6/6] ARM: dts: stm32f429: enable adc on eval board
-Date: Tue, 15 Nov 2016 16:31:01 +0100
-Message-ID: <1479223861-21747-7-git-send-email-fabrice.gasnier@st.com>
-In-Reply-To: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
-References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+Return-Path: <eraretuya@gmail.com>
+Date: Sat, 12 Nov 2016 22:32:45 +0800
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org, Michael.Hennerich@analog.com,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Subject: Re: [PATCH 2/2] staging: iio: ad7606: move out of staging
+Message-ID: <20161112143242.GB2214@Socrates-DK>
+References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
+ <1478846078-22207-3-git-send-email-eraretuya@gmail.com>
+ <266c2aad-1938-1dc7-0b22-b2f3b2d80e68@metafoo.de>
+ <280ee49f-7217-6dfc-dcc0-a6c8800144cd@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <280ee49f-7217-6dfc-dcc0-a6c8800144cd@kernel.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Enable analog to digital converter on stm32f429i-eval board.
+On Sat, Nov 12, 2016 at 02:26:51PM +0000, Jonathan Cameron wrote:
+> On 11/11/16 14:22, Lars-Peter Clausen wrote:
+> > On 11/11/2016 07:34 AM, Eva Rachel Retuya wrote:
+> >> Move the ad7606 driver from staging/iio/adc to iio/adc. Also, update the
+> >> corresponding Makefile and Kconfig associated with the change.
+> > 
+> > This is obviously OK, but when you generate a patch that moves files use
+> > `git format-patch -M ...`. This will generate a more compact patch.
+> > 
+> I tend to make an exception for staging graduation patches.
+> The mere posting of the whole driver by not using the move detection
+> makes for really easy review of whether we have forgotten something
+> else that needs cleanup before the graduation.
+> 
+> Most of the time -M is much more sensible!
+> 
+> Jonathan
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
----
- arch/arm/boot/dts/stm32429i-eval.dts | 25 +++++++++++++++++++++++++
- 1 file changed, 25 insertions(+)
+Should I use this -M on version 2 or still go with the previous method?
 
-diff --git a/arch/arm/boot/dts/stm32429i-eval.dts b/arch/arm/boot/dts/stm32429i-eval.dts
-index 6bfc595..c144735 100644
---- a/arch/arm/boot/dts/stm32429i-eval.dts
-+++ b/arch/arm/boot/dts/stm32429i-eval.dts
-@@ -65,6 +65,20 @@
- 		serial0 = &usart1;
- 	};
- 
-+	regulators {
-+		compatible = "simple-bus";
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		reg_vref: regulator@0 {
-+			compatible = "regulator-fixed";
-+			reg = <0>;
-+			regulator-name = "vref";
-+			regulator-min-microvolt = <3300000>;
-+			regulator-max-microvolt = <3300000>;
-+		};
-+	};
-+
- 	leds {
- 		compatible = "gpio-leds";
- 		green {
-@@ -123,3 +137,14 @@
- 	pinctrl-names = "default";
- 	status = "okay";
- };
-+
-+&adc {
-+	pinctrl-names = "default";
-+	pinctrl-0 = <&adc3_in8_pin>;
-+	vref-supply = <&reg_vref>;
-+	status = "okay";
-+	adc3: adc@200 {
-+		st,adc-channels = <8>;
-+		status = "okay";
-+	};
-+};
--- 
-1.9.1
-
+Thanks,
+Eva
