@@ -1,145 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35460 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35814 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752223AbcKLPNr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 10:13:47 -0500
-Subject: Re: [PATCH V4 1/2] iio: adc: spmi-vadc: Update function for generic
- voltage conversion
-To: Rama Krishna Phani A <rphani@codeaurora.org>,
-        linux-iio@vger.kernel.org
-References: <1478606334-12394-1-git-send-email-rphani@codeaurora.org>
- <1478606334-12394-2-git-send-email-rphani@codeaurora.org>
-Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+        with ESMTP id S965364AbcKLQYv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 11:24:51 -0500
+Subject: Re: [PATCH v3 03/28] staging: iio: tsl2583: check if chip is
+ suspended in in_illuminance_calibrate_store
+To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
+References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+ <1478769964-7065-4-git-send-email-masneyb@onstation.org>
+Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
+        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
+        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <38428ee7-5d1b-2b36-99a9-988e0e7d29b5@kernel.org>
-Date: Sat, 12 Nov 2016 15:13:44 +0000
+Message-ID: <36ad2571-c49d-09ca-fbc7-23a13fa15056@kernel.org>
+Date: Sat, 12 Nov 2016 16:24:49 +0000
 MIME-Version: 1.0
-In-Reply-To: <1478606334-12394-2-git-send-email-rphani@codeaurora.org>
+In-Reply-To: <1478769964-7065-4-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/11/16 11:58, Rama Krishna Phani A wrote:
-> Several channels are supported in ADC of PMIC which can be used to
-> measure voltage, temperature, current etc. Hardware provides
-> readings for all channels in adc code. That adc code needs to be
-> converted to voltage. Logic for conversion of adc code to voltage
-> is common for all ADC channels(voltage, temperature, current etc).
-> Implement separate function for generic conversion logic.
+On 10/11/16 09:25, Brian Masney wrote:
+> in_illuminance_calibrate_store() did not check to see if the chip is
+> suspended. This patch adds the proper check. The return value from
+> taos_als_calibrate() was also not checked in this function, so the
+> proper check was also added while changes are being made here.
 > 
-> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
-Looks good to me. Kind of the best we can do with minimal
-ABI changes.
-
-I had applied this but have now backed out to wait for patch 2. 
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+Applied.
 > ---
->  drivers/iio/adc/qcom-spmi-vadc.c | 52 +++++++++++++++++++++-------------------
->  1 file changed, 28 insertions(+), 24 deletions(-)
+>  drivers/staging/iio/light/tsl2583.c | 17 ++++++++++++++---
+>  1 file changed, 14 insertions(+), 3 deletions(-)
 > 
-> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> index c2babe5..93c0639 100644
-> --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> @@ -1,5 +1,5 @@
->  /*
-> - * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
-> + * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
->   *
->   * This program is free software; you can redistribute it and/or modify
->   * it under the terms of the GNU General Public License version 2 and
-> @@ -468,27 +468,38 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  	return ret;
->  }
->  
-> -static s32 vadc_calibrate(struct vadc_priv *vadc,
-> -			  const struct vadc_channel_prop *prop, u16 adc_code)
-> +static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
-> +			     const struct vadc_channel_prop *prop,
-> +			     s64 *scale_voltage)
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index 1a7be12..eb59ea0 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -501,16 +501,27 @@ static ssize_t in_illuminance_calibrate_store(struct device *dev,
 >  {
-> -	const struct vadc_prescale_ratio *prescale;
-> -	s64 voltage;
-> +	*scale_voltage = (adc_code -
-> +		vadc->graph[prop->calibration].gnd);
-> +	*scale_voltage *= vadc->graph[prop->calibration].dx;
-> +	*scale_voltage = div64_s64(*scale_voltage,
-> +		vadc->graph[prop->calibration].dy);
-> +	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> +		*scale_voltage +=
-> +		vadc->graph[prop->calibration].dx;
+>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+> -	int value;
+> +	int value, ret;
 >  
-> -	voltage = adc_code - vadc->graph[prop->calibration].gnd;
-> -	voltage *= vadc->graph[prop->calibration].dx;
-> -	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
-> +	if (*scale_voltage < 0)
-> +		*scale_voltage = 0;
-> +}
+>  	if (kstrtoint(buf, 0, &value) || value != 1)
+>  		return -EINVAL;
 >  
-> -	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> -		voltage += vadc->graph[prop->calibration].dx;
-> +static int vadc_scale_volt(struct vadc_priv *vadc,
-> +			   const struct vadc_channel_prop *prop, u16 adc_code,
-> +			   int *result_uv)
-> +{
-> +	const struct vadc_prescale_ratio *prescale;
-> +	s64 voltage = 0, result = 0;
+>  	mutex_lock(&chip->als_mutex);
+> -	taos_als_calibrate(indio_dev);
+> +
+> +	if (chip->suspended) {
+> +		ret = -EBUSY;
+> +		goto done;
+> +	}
+> +
+> +	ret = taos_als_calibrate(indio_dev);
+> +	if (ret < 0)
+> +		goto done;
+> +
+> +	ret = len;
+> +done:
+>  	mutex_unlock(&chip->als_mutex);
 >  
-> -	if (voltage < 0)
-> -		voltage = 0;
-> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
->  
->  	prescale = &vadc_prescale_ratios[prop->prescale];
-> -
->  	voltage = voltage * prescale->den;
-> +	result = div64_s64(voltage, prescale->num);
-> +	*result_uv = result;
->  
-> -	return div64_s64(voltage, prescale->num);
-> +	return 0;
+> -	return len;
+> +	return ret;
 >  }
 >  
->  static int vadc_decimation_from_dt(u32 value)
-> @@ -552,11 +563,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->  		if (ret)
->  			break;
->  
-> -		*val = vadc_calibrate(vadc, prop, adc_code);
-> +		vadc_scale_volt(vadc, prop, adc_code, val);
->  
-> -		/* 2mV/K, return milli Celsius */
-> -		*val /= 2;
-> -		*val -= KELVINMIL_CELSIUSMIL;
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_RAW:
->  		prop = &vadc->chan_props[chan->address];
-> @@ -564,12 +572,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->  		if (ret)
->  			break;
->  
-> -		*val = vadc_calibrate(vadc, prop, adc_code);
-> +		*val = (int)adc_code;
->  		return IIO_VAL_INT;
-> -	case IIO_CHAN_INFO_SCALE:
-> -		*val = 0;
-> -		*val2 = 1000;
-> -		return IIO_VAL_INT_PLUS_MICRO;
->  	default:
->  		ret = -EINVAL;
->  		break;
-> @@ -617,7 +621,7 @@ struct vadc_channels {
->  
->  #define VADC_CHAN_VOLT(_dname, _pre)					\
->  	VADC_CHAN(_dname, IIO_VOLTAGE,					\
-> -		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
-> +		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
->  		  _pre)							\
-This is still odd, but I guess justifiable from the point of view
-of maintaining backwards compatibility.  The scale was simply wrong
-so not much we can do about that other than drop it!
->  
->  /*
+>  static ssize_t in_illuminance_lux_table_show(struct device *dev,
 > 
 
