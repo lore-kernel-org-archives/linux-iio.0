@@ -1,172 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35803 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35277 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S966397AbcKLQXG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 11:23:06 -0500
-Subject: Re: [PATCH v3 02/28] staging: iio: tsl2583: fix issue with changes to
- calibscale and int_time not being set on the chip
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
- <1478769964-7065-3-git-send-email-masneyb@onstation.org>
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
+        with ESMTP id S935938AbcKLOgW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 09:36:22 -0500
+Subject: Re: [patch] iio:adc: ad7766: testing the wrong variable in probe
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Dan Carpenter <dan.carpenter@oracle.com>
+References: <20161110193018.GB32533@mwanda>
+ <62d0bc7e-45ca-6106-ace7-d33193bf49cb@metafoo.de>
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4c6af7ae-5d94-0cf2-d065-d912024cf890@kernel.org>
-Date: Sat, 12 Nov 2016 16:23:03 +0000
+Message-ID: <7f4f838b-9861-f294-c7c1-32cf0edaa372@kernel.org>
+Date: Sat, 12 Nov 2016 14:36:16 +0000
 MIME-Version: 1.0
-In-Reply-To: <1478769964-7065-3-git-send-email-masneyb@onstation.org>
+In-Reply-To: <62d0bc7e-45ca-6106-ace7-d33193bf49cb@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 10/11/16 09:25, Brian Masney wrote:
-> When updating the in_illuminance_calibscale and
-> in_illuminance_integration_time sysfs attributes, these values were not
-> actually written to the chip. The chip would continue to use the old
-> parameters. Extracted out tsl2583_set_als_gain() and
-> tsl2583_set_als_time() functions that are now called when these sysfs
-> attributes are updated. The chip initialization also calls these these
-> new functions.
+On 11/11/16 13:50, Lars-Peter Clausen wrote:
+> On 11/10/2016 08:30 PM, Dan Carpenter wrote:
+>> We should be testing "ret" here.
+>>
+>> Fixes: aa16c6bd0e09 ("iio:adc: Add support for AD7766/AD7767")
+>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 > 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+> Acked-by: Lars-Peter Clausen <lars@metafoo.de>
+> 
+Applied to the togreg branch of iio.git. Will push out as testing
+later for the autobuilders to play with it.
 
 Thanks,
 
 Jonathan
-> ---
->  drivers/staging/iio/light/tsl2583.c | 85 +++++++++++++++++++++++--------------
->  1 file changed, 52 insertions(+), 33 deletions(-)
+> Thanks.
 > 
-> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-> index c196a42..1a7be12 100644
-> --- a/drivers/staging/iio/light/tsl2583.c
-> +++ b/drivers/staging/iio/light/tsl2583.c
-> @@ -352,6 +352,51 @@ static int taos_als_calibrate(struct iio_dev *indio_dev)
->  	return (int)gain_trim_val;
->  }
->  
-> +static int tsl2583_set_als_time(struct tsl2583_chip *chip)
-> +{
-> +	int als_count, als_time, ret;
-> +	u8 val;
-> +
-> +	/* determine als integration register */
-> +	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
-> +	if (!als_count)
-> +		als_count = 1; /* ensure at least one cycle */
-> +
-> +	/* convert back to time (encompasses overrides) */
-> +	als_time = (als_count * 27 + 5) / 10;
-> +
-> +	val = 256 - als_count;
-> +	ret = i2c_smbus_write_byte_data(chip->client,
-> +					TSL258X_CMD_REG | TSL258X_ALS_TIME,
-> +					val);
-> +	if (ret < 0) {
-> +		dev_err(&chip->client->dev, "%s failed to set the als time to %d\n",
-> +			__func__, val);
-> +		return ret;
-> +	}
-> +
-> +	/* set chip struct re scaling and saturation */
-> +	chip->als_saturation = als_count * 922; /* 90% of full scale */
-> +	chip->als_time_scale = (als_time + 25) / 50;
-> +
-> +	return ret;
-> +}
-> +
-> +static int tsl2583_set_als_gain(struct tsl2583_chip *chip)
-> +{
-> +	int ret;
-> +
-> +	/* Set the gain based on taos_settings struct */
-> +	ret = i2c_smbus_write_byte_data(chip->client,
-> +					TSL258X_CMD_REG | TSL258X_GAIN,
-> +					chip->taos_settings.als_gain);
-> +	if (ret < 0)
-> +		dev_err(&chip->client->dev, "%s failed to set the gain to %d\n",
-> +			__func__, chip->taos_settings.als_gain);
-> +
-> +	return ret;
-> +}
-> +
->  static int tsl2583_set_power_state(struct tsl2583_chip *chip, u8 state)
->  {
->  	int ret;
-> @@ -371,10 +416,8 @@ static int tsl2583_set_power_state(struct tsl2583_chip *chip, u8 state)
->   */
->  static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
->  {
-> -	int ret, val;
-> -	int als_count;
-> -	int als_time;
->  	struct tsl2583_chip *chip = iio_priv(indio_dev);
-> +	int ret;
->  
->  	/* and make sure we're not already on */
->  	if (chip->taos_chip_status == TSL258X_CHIP_WORKING) {
-> @@ -397,37 +440,13 @@ static int tsl2583_chip_init_and_power_on(struct iio_dev *indio_dev)
->  		return ret;
->  	}
->  
-> -	/* determine als integration register */
-> -	als_count = (chip->taos_settings.als_time * 100 + 135) / 270;
-> -	if (!als_count)
-> -		als_count = 1; /* ensure at least one cycle */
-> -
-> -	/* convert back to time (encompasses overrides) */
-> -	als_time = (als_count * 27 + 5) / 10;
-> -
-> -	val = 256 - als_count;
-> -	ret = i2c_smbus_write_byte_data(chip->client,
-> -					TSL258X_CMD_REG | TSL258X_ALS_TIME,
-> -					val);
-> -	if (ret < 0) {
-> -		dev_err(&chip->client->dev, "%s failed to set the als time to %d\n",
-> -			__func__, val);
-> +	ret = tsl2583_set_als_time(chip);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
-> -	/* Set the gain based on taos_settings struct */
-> -	ret = i2c_smbus_write_byte_data(chip->client,
-> -					TSL258X_CMD_REG | TSL258X_GAIN,
-> -					chip->taos_settings.als_gain);
-> -	if (ret < 0) {
-> -		dev_err(&chip->client->dev, "%s failed to set the gain to %d\n",
-> -			__func__, chip->taos_settings.als_gain);
-> +	ret = tsl2583_set_als_gain(chip);
-> +	if (ret < 0)
->  		return ret;
-> -	}
-> -
-> -	/* set chip struct re scaling and saturation */
-> -	chip->als_saturation = als_count * 922; /* 90% of full scale */
-> -	chip->als_time_scale = (als_time + 25) / 50;
->  
->  	usleep_range(3000, 3500);
->  
-> @@ -707,7 +726,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
->  			for (i = 0; i < ARRAY_SIZE(gainadj); i++) {
->  				if (gainadj[i].mean == val) {
->  					chip->taos_settings.als_gain = i;
-> -					ret = 0;
-> +					ret = tsl2583_set_als_gain(chip);
->  					break;
->  				}
->  			}
-> @@ -717,7 +736,7 @@ static int tsl2583_write_raw(struct iio_dev *indio_dev,
->  		if (chan->type == IIO_LIGHT && !val && val2 >= 50 &&
->  		    val2 <= 650 && !(val2 % 50)) {
->  			chip->taos_settings.als_time = val2;
-> -			ret = 0;
-> +			ret = tsl2583_set_als_time(chip);
->  		}
->  		break;
->  	default:
+>>
+>> diff --git a/drivers/iio/adc/ad7766.c b/drivers/iio/adc/ad7766.c
+>> index d906686..75cca42 100644
+>> --- a/drivers/iio/adc/ad7766.c
+>> +++ b/drivers/iio/adc/ad7766.c
+>> @@ -239,8 +239,8 @@ static int ad7766_probe(struct spi_device *spi)
+>>  
+>>  	ret = devm_regulator_bulk_get(&spi->dev, ARRAY_SIZE(ad7766->reg),
+>>  		ad7766->reg);
+>> -	if (IS_ERR(ad7766->reg))
+>> -		return PTR_ERR(ad7766->reg);
+>> +	if (ret)
+>> +		return ret;
+>>  
+>>  	ad7766->pd_gpio = devm_gpiod_get_optional(&spi->dev, "powerdown",
+>>  		GPIOD_OUT_HIGH);
+>>
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
