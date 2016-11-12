@@ -1,71 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p00-ob.smtp.rzone.de ([81.169.146.216]:32507 "EHLO
-        mo4-p00-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934990AbcKKTCW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 11 Nov 2016 14:02:22 -0500
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Sebastian Reichel <sre@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>
-Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com,
-        "H. Nikolaus Schaller" <hns@goldelico.com>
-Subject: [PATCH v7 8/9] drivers:input:ads7846(+tsc2046): fix spi module table
-Date: Fri, 11 Nov 2016 20:02:05 +0100
-Message-Id: <7ef117b4e0f312ecd4d914915edfd55e4327948f.1478890925.git.hns@goldelico.com>
-In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
-References: <cover.1478890925.git.hns@goldelico.com>
-In-Reply-To: <cover.1478890925.git.hns@goldelico.com>
-References: <cover.1478890925.git.hns@goldelico.com>
+Received: from relay1.mentorg.com ([192.94.38.131]:41903 "EHLO
+        relay1.mentorg.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S965111AbcKLKVr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 05:21:47 -0500
+From: Nicolae Rosia <Nicolae_Rosia@mentor.com>
+To: Jonathan Cameron <jic23@kernel.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, Tony Lindgren <tony@atomide.com>,
+        Nicolae Rosia <Nicolae_Rosia@mentor.com>
+Subject: [PATCH] iio: twl4030-madc: convert to DT only
+Date: Sat, 12 Nov 2016 12:21:36 +0200
+Message-ID: <1478946096-1314-1-git-send-email-Nicolae_Rosia@mentor.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix module table so that the driver is loaded if compiled
-as module and requested by DT.
+All users are DT only and it makes no sense to keep dead code.
+twl4030_madc_platform_data is unused and can now be removed
+from include/i2c/twl.h
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+Signed-off-by: Nicolae Rosia <Nicolae_Rosia@mentor.com>
 ---
- drivers/input/touchscreen/ads7846.c | 11 ++++++++++-
- 1 file changed, 10 insertions(+), 1 deletion(-)
+ drivers/iio/adc/Kconfig        |  1 +
+ drivers/iio/adc/twl4030-madc.c | 14 ++++----------
+ 2 files changed, 5 insertions(+), 10 deletions(-)
 
-diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
-index 400e421..50c85d2 100644
---- a/drivers/input/touchscreen/ads7846.c
-+++ b/drivers/input/touchscreen/ads7846.c
-@@ -1532,6 +1532,16 @@ static int ads7846_remove(struct spi_device *spi)
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 99c0514..e7cd9b1 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -528,6 +528,7 @@ config TI_AM335X_ADC
+ config TWL4030_MADC
+ 	tristate "TWL4030 MADC (Monitoring A/D Converter)"
+ 	depends on TWL4030_CORE
++	depends on OF
+ 	help
+ 	  This driver provides support for Triton TWL4030-MADC. The
+ 	  driver supports both RT and SW conversion methods.
+diff --git a/drivers/iio/adc/twl4030-madc.c b/drivers/iio/adc/twl4030-madc.c
+index 0c74869..885dbf2 100644
+--- a/drivers/iio/adc/twl4030-madc.c
++++ b/drivers/iio/adc/twl4030-madc.c
+@@ -745,14 +745,13 @@ static int twl4030_madc_set_power(struct twl4030_madc_data *madc, int on)
+ static int twl4030_madc_probe(struct platform_device *pdev)
+ {
+ 	struct twl4030_madc_data *madc;
+-	struct twl4030_madc_platform_data *pdata = dev_get_platdata(&pdev->dev);
+ 	struct device_node *np = pdev->dev.of_node;
+ 	int irq, ret;
+ 	u8 regval;
+ 	struct iio_dev *iio_dev = NULL;
+ 
+-	if (!pdata && !np) {
+-		dev_err(&pdev->dev, "neither platform data nor Device Tree node available\n");
++	if (!np) {
++		dev_err(&pdev->dev, "no DT info\n");
+ 		return -EINVAL;
+ 	}
+ 
+@@ -778,11 +777,8 @@ static int twl4030_madc_probe(struct platform_device *pdev)
+ 	 * the OMAP. The other one can be connected to the other processor such
+ 	 * as modem. Hence two separate ISR and IMR registers.
+ 	 */
+-	if (pdata)
+-		madc->use_second_irq = (pdata->irq_line != 1);
+-	else
+-		madc->use_second_irq = of_property_read_bool(np,
+-				       "ti,system-uses-second-madc-irq");
++	madc->use_second_irq = of_property_read_bool(np,
++			       "ti,system-uses-second-madc-irq");
+ 
+ 	madc->imr = madc->use_second_irq ? TWL4030_MADC_IMR2 :
+ 					   TWL4030_MADC_IMR1;
+@@ -903,13 +899,11 @@ static int twl4030_madc_remove(struct platform_device *pdev)
  	return 0;
  }
  
-+static const struct spi_device_id ads7846_idtable[] = {
-+	{ "tsc2046", 0 },
-+	{ "ads7843", 0 },
-+	{ "ads7845", 0 },
-+	{ "ads7846", 0 },
-+	{ "ads7873", 0 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, ads7846_idtable);
-+
- static struct spi_driver ads7846_driver = {
- 	.driver = {
- 		.name	= "ads7846",
-@@ -1546,4 +1556,3 @@ module_spi_driver(ads7846_driver);
+-#ifdef CONFIG_OF
+ static const struct of_device_id twl_madc_of_match[] = {
+ 	{ .compatible = "ti,twl4030-madc", },
+ 	{ },
+ };
+ MODULE_DEVICE_TABLE(of, twl_madc_of_match);
+-#endif
  
- MODULE_DESCRIPTION("ADS7846 TouchScreen Driver");
- MODULE_LICENSE("GPL");
--MODULE_ALIAS("spi:ads7846");
+ static struct platform_driver twl4030_madc_driver = {
+ 	.probe = twl4030_madc_probe,
 -- 
-2.7.3
+2.5.5
 
