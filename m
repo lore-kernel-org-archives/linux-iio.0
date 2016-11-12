@@ -1,13 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34849 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34870 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S966172AbcKLNN6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 08:13:58 -0500
-Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
+        with ESMTP id S964936AbcKLNPn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 08:15:43 -0500
+Subject: Re: [PATCH 2/2] Documentation: DT: Add bmi160 imu binding
 To: Marcin Niestroj <m.niestroj@grinn-global.com>
 References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
- <b7dd5694-b757-c0d1-3400-46e92b8deb58@kernel.org>
- <1d50ebf1-2f14-2e3f-9b8e-b34a7ebca4c5@grinn-global.com>
+ <20161103112527.29623-2-m.niestroj@grinn-global.com>
+ <e46a4b5e-a347-f268-80f4-0ee1edc77aac@kernel.org>
+ <d07474fc-e6c9-d529-6a06-0549f3dfad52@grinn-global.com>
 Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -18,91 +19,94 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
         Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
         devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <0c4ef1f6-dcac-3025-3f54-dc1aae425ad6@kernel.org>
-Date: Sat, 12 Nov 2016 13:13:52 +0000
+Message-ID: <884563d1-67a0-d47d-09aa-59af38fdbfe4@kernel.org>
+Date: Sat, 12 Nov 2016 13:15:40 +0000
 MIME-Version: 1.0
-In-Reply-To: <1d50ebf1-2f14-2e3f-9b8e-b34a7ebca4c5@grinn-global.com>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <d07474fc-e6c9-d529-6a06-0549f3dfad52@grinn-global.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/11/16 14:52, Marcin Niestroj wrote:
-> Hi,
-> Thanks for review. I agree with all of the comments and will fix these in next patch version. Below is just a comment on hwfifo_* sysfs access.
-> 
-> On 06.11.2016 13:35, Jonathan Cameron wrote:
+On 09/11/16 15:18, Marcin Niestroj wrote:
+> On 06.11.2016 13:41, Jonathan Cameron wrote:
 >> On 03/11/16 11:25, Marcin Niestroj wrote:
->>> This patch was developed primarily based on bmc150_accel hardware fifo
->>> implementation.
->>>
->>> IRQ handler was added, which for now is responsible only for handling
->>> watermark interrupts. The BMI160 chip has two interrupt outputs. By
->>> default INT is considered to be connected. If INT2 is used instead, the
->>> interrupt-names device-tree property can be used to specify that.
+>>> This adds documentation for Bosch BMI160 Inertial Measurement Unit
+>>> device-tree bindings.
 >>>
 >>> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
->> I agree with Peter that there should have been a few precursor patches
->> to this one doing various cleanups and reworking bits that you have
->> in here.  Would have made it easier to review (always a good thing :)
+>> Unless I missed it in the previous patch we should also have of tables
+>> added to the i2c and spi files (which is why the various tests haven't
+>> been screaming at me that this device doesn't have documented bindings).
+> 
+> Ok, I will add them.
+> 
 >>
->> In general the resulting code looks good to me.  A few little
->> additional comments inline from me.  Mostly about small code ordering things
->> and function rename suggestions that would make the code more 'obviously'
->> correct.
+>> Otherwise, the use of interrupt names to indicate which pin on the chip
+>> is a little unusual (if you cribbed this from somewhere I've forgotten
+>> about then do say so!), so will want a devicetree bindings maintainer
+>> input on this.
+> 
+
+> I have used interrupt names similar as in other driver. Please see
+> [1] for it's DT documentation and [2] for implementation.
+> [1] Documentation/devicetree/bindings/iio/accel/mma8452.txt
+> [2] drivers/iio/accel/mma8452.c
+
+Fair enough.  Just put the INT1 option in the docs as requested and this
+should be fine.
+
+Jonathan
+> 
 >>
 >> Thanks,
 >>
 >> Jonathan
 >>> ---
->>>  drivers/iio/imu/bmi160/bmi160.h      |   3 +-
->>>  drivers/iio/imu/bmi160/bmi160_core.c | 633 +++++++++++++++++++++++++++++++++--
->>>  drivers/iio/imu/bmi160/bmi160_i2c.c  |   7 +-
->>>  drivers/iio/imu/bmi160/bmi160_spi.c  |   3 +-
->>>  4 files changed, 618 insertions(+), 28 deletions(-)
-> 
-> <snip>
-> 
+>>>  .../devicetree/bindings/iio/imu/bmi160.txt         | 34 ++++++++++++++++++++++
+>>>  1 file changed, 34 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
+>>> new file mode 100644
+>>> index 0000000..b02ef3e
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
+>>> @@ -0,0 +1,34 @@
+>>> +Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
+>>> +and externally connectable Magnetometer
 >>> +
->>> +static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
->>> +static IIO_CONST_ATTR(hwfifo_watermark_max,
->>> +              __stringify(BMI160_FIFO_LENGTH));
->>> +static IIO_DEVICE_ATTR(hwfifo_enabled, S_IRUGO,
->>> +               bmi160_get_fifo_state, NULL, 0);
->>> +static IIO_DEVICE_ATTR(hwfifo_watermark, S_IRUGO,
->>> +               bmi160_get_fifo_watermark, NULL, 0);
+>>> +https://www.bosch-sensortec.com/bst/products/all_products/bmi160
 >>> +
->>> +static const struct attribute *bmi160_fifo_attributes[] = {
->>> +    &iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
->>> +    &iio_const_attr_hwfifo_watermark_max.dev_attr.attr,
->>> +    &iio_dev_attr_hwfifo_watermark.dev_attr.attr,
->>> +    &iio_dev_attr_hwfifo_enabled.dev_attr.attr,
->> There are enough of these drivers now that sometimes soon we should
->> revisit the question of pulling these into the core.  Can certainly
->> concieve of downstream consumer devices (in particular the iio_input
->> bridge when that finally resurfaces - my fault) wanting to be able to
->> manipulate or at least have visibilty of these.
-> 
-> One more thing to consider is setting hwfifo_watermark to other value
-> than "userspace" watermark. It would be nice to set hwfifo_watermark
-> to a *safe* value to be able to get all data from hardware to kfifo.
-> By safe I mean that the chance of hardware fifo overflow will be
-> small. On the other hand there might be no reason to have such small
-> watermark for userspace application, so we can save scheduler
-> cycles.
-> 
-This may be worth doing, but I worry we'll end up with too many knobs
-around this feature.  Ultimately there is no point in setting the hardware
-fifo as smaller than the userspace one if the userspace one is small enough.
-
-What counts as a safe level is going to be very hardware / load dependant.
-We 'could' try and put this in the devicetree so that a particular setup
-could set it at a level that is 'reasonable'.  It's kind of a hardware
-feature, but will also depend on software constraints (like whether the
-bus controller driver can support dma for example).
-
-Non obvious unfortunately. 
-
-Jonathan
-> <snip>
+>>> +Required properties:
+>>> + - compatible : should be "bosch,bmi160"
+>>> + - reg : the I2C address or SPI chip select number of the sensor
+>>> + - spi-max-frequency : set maximum clock frequency (only for SPI)
+>>> +
+>>> +Optional properties:
+>>> + - interrupt-parent : should be the phandle of the interrupt controller
+>>> + - interrupts : interrupt mapping for GPIO IRQ, must be IRQ_TYPE_LEVEL_LOW
+>>> + - interrupt-names : set to "INT2" if using INT2 pin
+>>> +
+>>> +Examples:
+>>> +
+>>> +bmi160@68 {
+>>> +    compatible = "bosch,bmi160";
+>>> +    reg = <0x68>;
+>>> +
+>>> +    interrupt-parent = <&gpio4>;
+>>> +    interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
+>>> +};
+>>> +
+>>> +bmi160@0 {
+>>> +    compatible = "bosch,bmi160";
+>>> +    reg = <0>;
+>>> +    spi-max-frequency = <10000000>;
+>>> +
+>>> +    interrupt-parent = <&gpio2>;
+>>> +    interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
+>>> +    interrupt-names = "INT2";
+>>> +};
+>>>
+>>
 > 
 
