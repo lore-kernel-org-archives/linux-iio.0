@@ -1,59 +1,138 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:55918 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966447AbcKLSTs (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Nov 2016 13:19:48 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40382 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933745AbcKMMPE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 13 Nov 2016 07:15:04 -0500
+Subject: Re: [PATCH v4 11/26] staging: iio: tsl2583: change newlines to
+ improve readability
+To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
+References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
+ <1478974781-1457-12-git-send-email-masneyb@onstation.org>
 Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
         lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
         linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 09/26] staging: iio: tsl2583: fix alignment of #define values
-Date: Sat, 12 Nov 2016 13:19:24 -0500
-Message-Id: <1478974781-1457-10-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
-References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <eca28ac2-f624-9a52-cb9b-b3ec55cf24c8@kernel.org>
+Date: Sun, 13 Nov 2016 12:15:02 +0000
+MIME-Version: 1.0
+In-Reply-To: <1478974781-1457-12-git-send-email-masneyb@onstation.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Most of the values in the #defines have their values aligned on a single
-column, but some do not. This changes the remaining defines to use
-consistent alignment with the majority to improve code readability.
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/tsl2583.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
-
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index 5a82a26..d482a84 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -44,19 +44,19 @@
- /* tsl2583 cmd reg masks */
- #define TSL2583_CMD_REG			0x80
- #define TSL2583_CMD_SPL_FN		0x60
--#define TSL2583_CMD_ALS_INT_CLR	0X01
-+#define TSL2583_CMD_ALS_INT_CLR		0x01
- 
- /* tsl2583 cntrl reg masks */
--#define TSL2583_CNTL_ADC_ENBL	0x02
-+#define TSL2583_CNTL_ADC_ENBL		0x02
- #define TSL2583_CNTL_PWR_OFF		0x00
- #define TSL2583_CNTL_PWR_ON		0x01
- 
- /* tsl2583 status reg masks */
--#define TSL2583_STA_ADC_VALID	0x01
--#define TSL2583_STA_ADC_INTR	0x10
-+#define TSL2583_STA_ADC_VALID		0x01
-+#define TSL2583_STA_ADC_INTR		0x10
- 
- /* Lux calculation constants */
--#define	TSL2583_LUX_CALC_OVER_FLOW		65535
-+#define	TSL2583_LUX_CALC_OVER_FLOW	65535
- 
- #define TSL2583_INTERRUPT_DISABLED	0x00
- 
--- 
-2.7.4
+On 12/11/16 18:19, Brian Masney wrote:
+> Add and remove newlines to improve code readability in preparation for
+> moving the driver out of staging.
+> 
+> Signed-off-by: Brian Masney <masneyb@onstation.org>
+Applied
+> ---
+>  drivers/staging/iio/light/tsl2583.c | 14 ++++++++++++--
+>  1 file changed, 12 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
+> index be3cbae..8303753 100644
+> --- a/drivers/staging/iio/light/tsl2583.c
+> +++ b/drivers/staging/iio/light/tsl2583.c
+> @@ -202,7 +202,6 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+>  	ret = i2c_smbus_write_byte(chip->client,
+>  				   (TSL2583_CMD_REG | TSL2583_CMD_SPL_FN |
+>  				    TSL2583_CMD_ALS_INT_CLR));
+> -
+>  	if (ret < 0) {
+>  		dev_err(&chip->client->dev, "%s: failed to clear the interrupt bit\n",
+>  			__func__);
+> @@ -225,8 +224,10 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+>  		chip->als_cur_info.lux = 0;
+>  		goto done;
+>  	}
+> +
+>  	/* calculate ratio */
+>  	ratio = (ch1 << 15) / ch0;
+> +
+>  	/* convert to unscaled lux using the pointer to the table */
+>  	for (p = (struct tsl2583_lux *)tsl2583_device_lux;
+>  	     p->ratio != 0 && p->ratio < ratio; p++)
+> @@ -273,6 +274,7 @@ static int tsl2583_get_lux(struct iio_dev *indio_dev)
+>  	lux64 >>= 13;
+>  	lux = lux64;
+>  	lux = (lux + 500) / 1000;
+> +
+>  	if (lux > TSL2583_LUX_CALC_OVER_FLOW) { /* check for overflow */
+>  return_max:
+>  		lux = TSL2583_LUX_CALC_OVER_FLOW;
+> @@ -319,21 +321,23 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
+>  			__func__);
+>  		return -ENODATA;
+>  	}
+> +
+>  	lux_val = tsl2583_get_lux(indio_dev);
+>  	if (lux_val < 0) {
+>  		dev_err(&chip->client->dev, "%s: failed to get lux\n",
+>  			__func__);
+>  		return lux_val;
+>  	}
+> +
+>  	gain_trim_val = (unsigned int)(((chip->als_settings.als_cal_target)
+>  			* chip->als_settings.als_gain_trim) / lux_val);
+> -
+>  	if ((gain_trim_val < 250) || (gain_trim_val > 4000)) {
+>  		dev_err(&chip->client->dev,
+>  			"%s: trim_val of %d is not within the range [250, 4000]\n",
+>  			__func__, gain_trim_val);
+>  		return -ENODATA;
+>  	}
+> +
+>  	chip->als_settings.als_gain_trim = (int)gain_trim_val;
+>  
+>  	return (int)gain_trim_val;
+> @@ -529,6 +533,7 @@ static ssize_t in_illuminance_lux_table_show(struct device *dev,
+>  	}
+>  
+>  	offset += sprintf(buf + offset, "\n");
+> +
+>  	return offset;
+>  }
+>  
+> @@ -776,6 +781,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
+>  	indio_dev = devm_iio_device_alloc(&clientp->dev, sizeof(*chip));
+>  	if (!indio_dev)
+>  		return -ENOMEM;
+> +
+>  	chip = iio_priv(indio_dev);
+>  	chip->client = clientp;
+>  	i2c_set_clientdata(clientp, indio_dev);
+> @@ -803,6 +809,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
+>  	indio_dev->dev.parent = &clientp->dev;
+>  	indio_dev->modes = INDIO_DIRECT_MODE;
+>  	indio_dev->name = chip->client->name;
+> +
+>  	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
+>  	if (ret) {
+>  		dev_err(&clientp->dev, "%s: iio registration failed\n",
+> @@ -819,6 +826,7 @@ static int tsl2583_probe(struct i2c_client *clientp,
+>  		return ret;
+>  
+>  	dev_info(&clientp->dev, "Light sensor found.\n");
+> +
+>  	return 0;
+>  }
+>  
+> @@ -834,6 +842,7 @@ static int __maybe_unused tsl2583_suspend(struct device *dev)
+>  	chip->suspended = true;
+>  
+>  	mutex_unlock(&chip->als_mutex);
+> +
+>  	return ret;
+>  }
+>  
+> @@ -848,6 +857,7 @@ static int __maybe_unused tsl2583_resume(struct device *dev)
+>  	ret = tsl2583_chip_init_and_power_on(indio_dev);
+>  
+>  	mutex_unlock(&chip->als_mutex);
+> +
+>  	return ret;
+>  }
+>  
+> 
 
