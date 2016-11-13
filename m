@@ -1,42 +1,55 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:55932 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966829AbcKLSTw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 12 Nov 2016 13:19:52 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v4 18/26] staging: iio: tsl2583: don't assume an unsigned int is 32 bits
-Date: Sat, 12 Nov 2016 13:19:33 -0500
-Message-Id: <1478974781-1457-19-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
-References: <1478974781-1457-1-git-send-email-masneyb@onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <srinivas.pandruvada@intel.com>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "Song,
+ Hongyan" <hongyan.song@intel.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "jic23@kernel.org" <jic23@kernel.org>
+CC: "jikos@kernel.org" <jikos@kernel.org>
+Subject: Re: [PATCH v2] hid: hid-sensor-hub: clear memory to avoid random
+ data
+Date: Sun, 13 Nov 2016 14:45:09 +0000
+Message-ID: <1479048126.13439.8.camel@intel.com>
+References: <1478825923-12153-1-git-send-email-hongyan.song@intel.com>
+	 <e64c6b31-739c-a6ab-cd1e-6637809feae4@kernel.org>
+In-Reply-To: <e64c6b31-739c-a6ab-cd1e-6637809feae4@kernel.org>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+List-ID: <linux-iio@vger.kernel.org>
 
-in_illuminance_lux_table_store assumes that an unsigned int is 32 bits.
-Replace this with sizeof(value[1]).
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/tsl2583.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
-
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index fe9d777..78967dc 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -582,7 +582,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
- 
- 	/* Zero out the table */
- 	memset(tsl2583_device_lux, 0, sizeof(tsl2583_device_lux));
--	memcpy(tsl2583_device_lux, &value[1], value[0] * 4);
-+	memcpy(tsl2583_device_lux, &value[1], value[0] * sizeof(value[1]));
- 
- 	ret = len;
- 
--- 
-2.7.4
-
+T24gU2F0LCAyMDE2LTExLTEyIGF0IDE0OjQzICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiAxMS8xMS8xNiAwMDo1OCwgU29uZyBIb25neWFuIHdyb3RlOg0KPiA+IA0KPiA+IElu
+aXRpYWxpemUgdXNlciBidWZmZXIgd2l0aCAwcy4gVGhpcyB3aWxsIGF2b2lkIHJhbmRvbSBkYXRh
+IGluIHRoZQ0KPiA+IGJ1ZmZlciwNCj4gPiB3aGVuIHRoZSB1c2VyIGJ1ZmZlciBzaXplIGlzIGJp
+Z2dlciB0aGFuIHRoZSBhY3R1YWwgcmVwb3J0IHNpemUuDQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1i
+eTogU29uZyBIb25neWFuIDxob25neWFuLnNvbmdAaW50ZWwuY29tPg0KPiBQbGVhc2UgZGVzY3Jp
+YmUgdGhlIHJlc3VsdCBvZiB0aGlzIGJ1ZyBpbiB0aGUgZGVzY3JpcHRpb24uDQo+IFdoeSBkb2Vz
+IGl0IG1hdHRlcj8NCkhvbmd5YW4sDQoNClBsZWFzZSByZXN1Ym1pdC4NCg0KDQoNClRoZSBpc3N1
+ZSBpczoNCg0KV2hlbiB1c2VyIHRyaWVkIHRvIHJlYWQgc29tZSBmaWVsZHMgbGlrZSBoeXN0ZXJl
+c2lzIGZyb20gSUlPIHN5c2ZzIG9uDQpzb21lIHN5c3RlbXMsIGl0IGZhaWxzLiBUaGUgcmVhc29u
+IGlzIHRoYXQgdGhpcyBmaWVsZCBpcyBhIGJ5dGUgZmllbGQNCmFuZCBjYWxsZXIgb2Ygc2Vuc29y
+X2h1Yl9nZXRfZmVhdHVyZSgpIHBhc3NlcyBhIGJ1ZmZlciBvZiA0IGJ5dGVzLiBIZXJlDQp0aGUg
+ZnVuY3Rpb24gc2Vuc29yX2h1Yl9nZXRfZmVhdHVyZSgpIGNvcGllcyB0aGUgc2luZ2xlIGJ5dGUg
+ZnJvbSB0aGUNCnJlcG9ydCB0byB0aGUgY2FsbGVyIGJ1ZmZlciBhbmQgcmV0dXJucyAiMSIgYXMg
+dGhlIG51bWJlciBvZiBieXRlcw0KY29waWVkLiBTbyBjYWxsZXIgY2FuIHVzZSB0aGUgcmV0dXJu
+IHZhbHVlLg0KDQpCdXQgdGhpcyBpcyBkb25lIGJ5IG11bHRpcGxlIGNhbGxlcnMsIHNvIGlmIHdl
+IGp1c3QgY2hhbmdlIHRoZQ0Kc2Vuc29yX2h1Yl9nZXRfZmVhdHVyZSBzbyB0aGF0IGNhbGxlciBi
+dWZmZXIgaXMgaW5pdGlhbGl6ZWQgd2l0aCAwcw0KdGhlbiB3ZSBkb24ndCB0byBjaGFuZ2UgYWxs
+IGZ1bmN0aW9ucy7CoA0KDQoNCg0KPiANCj4gV2l0aG91dCB0aGF0IGluZm8sIGl0J3MgaGFyZCB0
+byBqdWRnZSB3aGF0IHBhdGggdGhpcyBzaG91bGQgdGFrZQ0KPiBpbnRvIG1haW5saW5lIG9yIHdo
+ZXRoZXIgdGhlIGZpeCBuZWVkcyB0byBiZSBtYXJrZWQgZm9yIHN0YWJsZS4NCklNTyB0aGlzIGlz
+IG5vdCBhbiB1cmdlbnQgZml4IGFuZCBxdWV1ZWQgZm9yIG5leHQga2VybmVsIHJlbGVhc2UuDQoN
+Cg0KPiBUaGFua3MsDQo+IA0KPiBKb25hdGhhbg0KPiA+IA0KPiA+IC0tLQ0KPiA+IENoYW5nZXMg
+aW4gdjI6DQo+ID4gwqDCoMKgwqAtY2xlYXIgbWVtb3J5IGluIGdldF9mZWF0dXJlKCkgaW5zdGVh
+ZCBvZiBzZXRfZmVhdHVyZSgpDQpzL2dldF9mZWF0dXJlKCkvc2Vuc29yX2h1Yl9nZXRfZmVhdHVy
+ZSgpDQoNCg0KVGhhbmtzLA0KU3Jpbml2YXMNCg0KPiA+IA0KPiA+IMKgZHJpdmVycy9oaWQvaGlk
+LXNlbnNvci1odWIuYyB8IDEgKw0KPiA+IMKgMSBmaWxlIGNoYW5nZWQsIDEgaW5zZXJ0aW9uKCsp
+DQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMgYi9k
+cml2ZXJzL2hpZC9oaWQtc2Vuc29yLQ0KPiA+IGh1Yi5jDQo+ID4gaW5kZXggNjU4YTYwNy4uYjc0
+ZDk1NCAxMDA2NDQNCj4gPiAtLS0gYS9kcml2ZXJzL2hpZC9oaWQtc2Vuc29yLWh1Yi5jDQo+ID4g
+KysrIGIvZHJpdmVycy9oaWQvaGlkLXNlbnNvci1odWIuYw0KPiA+IEBAIC0yNTIsNiArMjUyLDcg
+QEAgaW50IHNlbnNvcl9odWJfZ2V0X2ZlYXR1cmUoc3RydWN0DQo+ID4gaGlkX3NlbnNvcl9odWJf
+ZGV2aWNlICpoc2RldiwgdTMyIHJlcG9ydF9pZCwNCj4gPiDCoAlpbnQgcmVwb3J0X3NpemU7DQo+
+ID4gwqAJaW50IHJldCA9IDA7DQo+ID4gwqANCj4gPiArCW1lbXNldChidWZmZXIsIDAsIGJ1ZmZl
+cl9zaXplKTsNCj4gPiDCoAltdXRleF9sb2NrKCZkYXRhLT5tdXRleCk7DQo+ID4gwqAJcmVwb3J0
+ID0gc2Vuc29yX2h1Yl9yZXBvcnQocmVwb3J0X2lkLCBoc2Rldi0+aGRldiwNCj4gPiBISURfRkVB
+VFVSRV9SRVBPUlQpOw0KPiA+IMKgCWlmICghcmVwb3J0IHx8IChmaWVsZF9pbmRleCA+PSByZXBv
+cnQtPm1heGZpZWxkKSB8fA0KPiA+IA==
