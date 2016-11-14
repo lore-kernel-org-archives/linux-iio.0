@@ -1,181 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:60843 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933969AbcKNSq6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2016 13:46:58 -0500
-Subject: Re: [PATCH v9 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1478071676.git.ksenija.stanojevic@gmail.com>
- <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        harald@ccbib.org, stefan.wahren@i2se.com,
-        fabio.estevam@freescale.com
-From: Marek Vasut <marex@denx.de>
-Message-ID: <9560d7a2-98b2-732d-c91a-944ae381107c@denx.de>
-Date: Mon, 14 Nov 2016 19:43:44 +0100
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <b59ff168-c82e-26ed-9192-a491d97c5d6d@metafoo.de>
+References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com> <1478846078-22207-2-git-send-email-eraretuya@gmail.com> <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de> <c9a4b2b3-6c4b-4c3c-da79-eba8398a5a0d@kernel.org> <CACRpkdY6dJGGAZtVNrYwV9uBzGYRH40aqCtL6XZkEQS2uaiK4w@mail.gmail.com> <b59ff168-c82e-26ed-9192-a491d97c5d6d@metafoo.de>
 MIME-Version: 1.0
-In-Reply-To: <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 1/2] staging: iio: ad7606: replace range/range_available with corresponding scale
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Mon, 14 Nov 2016 22:15:04 +0000
+To: Lars-Peter Clausen <lars@metafoo.de>,Linus Walleij <linus.walleij@linaro.org>,Jonathan Cameron <jic23@kernel.org>
+CC: Eva Rachel Retuya <eraretuya@gmail.com>,"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,Michael Hennerich <Michael.Hennerich@analog.com>,Hartmut Knaack <knaack.h@gmx.de>,Peter Meerwald <pmeerw@pmeerw.net>,Greg KH <gregkh@linuxfoundation.org>
+Message-ID: <0F7D932A-3232-4F33-9F46-98789442D721@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/02/2016 08:38 AM, Ksenija Stanojevic wrote:
-> Add core files for low resolution analog-to-digital converter (mxs-lradc)
-> MFD driver.
-> 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> ---
-> Changes in v9:
->  - improve commit message.
-> 
-> Changes in v8:
->  - rebase onto 4.9-rc1
-> 
-> Changes in v7:
->  - define macros ADC_CELL and TSC_CELL
->  - remove one cell and dynamically set them in the switch()
->  - fail in the touchscreen driver instead of mfd driver if
->    hardware doesn't contain a touchscreen
-> 
-> Changes in v6:
->  - update copyright
->  - add kernel-doc header for struct mxs-lradc
->  - add error message
->  - change EINVAL to ENODEV
->  - use PLATFORM_DEVID_NONE instead -1
->  - cosmetic fixes
-> 
-> Changes in v5:
->  - use DEFINE_RES_MEM
->  - don't pass ioreammaped adress to platform cells
->  - move comment outside of struct mxs_lradc
->  - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
->    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
-> 
-> Changes in v4:
->  - update copyright
->  - use DEFINE_RES_IRQ_NAMED
->  - remove mxs_lradc_add_device function
->  - use struct mfd_cell in static form
->  - improve spacing
->  - remove unnecessary comment
->  - remove platform_get_irq
->  - remove touch_ret and use ret instead
->  - rename use_touchscreen to touchscreen_wire
->  - use goto statements
->  - remove irq[13], irq_count and irq_name from struct mxs_lradc
->  - remove all defines from inside the struct definition
-> 
-> Changes in v3:
->  - add note to commit message
->  - move switch statement into if(touch_ret == 0) branch
->  - add MODULE_AUTHOR
-> 
-> Changes in v2:
->  - do not change spacing in Kconfig
->  - make struct mfd_cell part of struct mxs_lradc
->  - use switch instead of if in mxs_lradc_irq_mask
->  - use only necessary header files in mxs_lradc.h
->  - use devm_mfd_add_device
->  - use separate function to register mfd device
->  - change licence to GPL
->  - add copyright
-> 
->  drivers/mfd/Kconfig           |  17 +++
->  drivers/mfd/Makefile          |   1 +
->  drivers/mfd/mxs-lradc.c       | 249 ++++++++++++++++++++++++++++++++++++++++++
->  include/linux/mfd/mxs-lradc.h | 203 ++++++++++++++++++++++++++++++++++
->  4 files changed, 470 insertions(+)
->  create mode 100644 drivers/mfd/mxs-lradc.c
->  create mode 100644 include/linux/mfd/mxs-lradc.h
-> 
-> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-> index c6df644..bdd88cf 100644
-> --- a/drivers/mfd/Kconfig
-> +++ b/drivers/mfd/Kconfig
-> @@ -326,6 +326,23 @@ config MFD_MC13XXX_I2C
->  	help
->  	  Select this if your MC13xxx is connected via an I2C bus.
->  
-> +config MFD_MXS_LRADC
-> +	tristate "Freescale i.MX23/i.MX28 LRADC"
-> +	depends on ARCH_MXS || COMPILE_TEST
-> +	select MFD_CORE
-> +	select STMP_DEVICE
-> +	help
-> +	  Say yes here to build support for the Low Resolution
-> +	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
-> +	  processors. This driver provides common support for accessing the
-> +	  device, additional drivers must be enabled in order to use the
-> +	  functionality of the device:
-> +		mxs-lradc-adc for ADC readings
-> +		mxs-lradc-ts  for touchscreen support
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called mxs-lradc.
-> +
->  config MFD_MX25_TSADC
->  	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
->  	select REGMAP_MMIO
-> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-> index 9834e66..057ca15 100644
-> --- a/drivers/mfd/Makefile
-> +++ b/drivers/mfd/Makefile
-> @@ -211,3 +211,4 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
->  obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
->  
->  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
-> +obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
-> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
-> new file mode 100644
-> index 0000000..ffc8f2e
-> --- /dev/null
-> +++ b/drivers/mfd/mxs-lradc.c
-> @@ -0,0 +1,249 @@
-> +/*
-> + * Freescale MXS Low Resolution Analog-to-Digital Converter driver
-> + *
-> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
-> + * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> + *
-> + * Authors:
-> + *  Marek Vasut <marex@denx.de>
-> + *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/clk.h>
-> +#include <linux/device.h>
-> +#include <linux/mfd/core.h>
-> +#include <linux/mfd/mxs-lradc.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +
-> +#define MXS_LRADC_BASE		0x80050000
 
-Just for my understanding, why is this hardware address hard-coded here?
-Shouldn't that be fetched from DT ?
 
-> +#define ADC_CELL		0
-> +#define TSC_CELL		1
+On 14 November 2016 18:53:28 GMT+00:00, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>On 11/14/2016 05:58 PM, Linus Walleij wrote:
+>> On Sat, Nov 12, 2016 at 3:24 PM, Jonathan Cameron <jic23@kernel.org>
+>wrote:
+>> 
+>>> Is it just me who thought, we need a fixed GPI like a fixed
+>regulator?
+Probably didn't help clarity that I described it as an input pin whereas it's kind of like having an 
+output pin whose state you can't change...
 
-[...]
+>>> Would allow this sort of fixed wiring to be simply defined.
+>>>
+>>> Linus, worth exploring?
+>> 
+>> So if fixed regulator is for a voltage provider, this would be
+>> pretty much the inverse: deciding for a voltage range by switching
+>> a GPIO.
+>
+>It's about figuring out the setting of a "GPIO" that can't be changed
+>from
+>software.
+>
+>Devices sometimes, instead of a configuration bus like I2C or SPI, use
+>simple input pins, that can either be set to high or low, to allow
+>software
+>the state of the device. The GPIO API is typically used to configure
+>these pins.
+>
+>This works fine as long as the pin is connected to a GPIO. But
+>sometimes the
+>system designer decides that a settings does not need to be
+>configurable, in
+>this case the pin will be tied to logic low or high directly on the PCB
+>without any GPIO controller being involved.
+>
+>Sometimes a driver wants to know how the pin is wired up so it can
+>report to
+>userspace this part runs in the following mode and the mode can't be
+>changed. In a sense it is like a reverse GPIO hog.
+>
+>Considering that this is a common usecase the question was how this can
+>be
+>implemented in a driver independent way to avoid code duplication and
+>slightly different variations of what is effectively the same DT/ACPI
+>binding.
+>
+>E.g. lets say for a configurable pin you use
+>
+>	range-gpio = <&gpio ...>;
+>
+>and for a static pin
+>
+>	range-gpio-fixed = <1>;
+>
+>Or something similar.
+>
+>--
+>To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>the body of a message to majordomo@vger.kernel.org
+>More majordomo info at  http://vger.kernel.org/majordomo-info.html
 
 -- 
-Best regards,
-Marek Vasut
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
