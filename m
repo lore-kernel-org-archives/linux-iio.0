@@ -1,50 +1,29 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:45259 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753758AbcKNTDM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 14 Nov 2016 14:03:12 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "Song, Hongyan" <hongyan.song@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "jikos@kernel.org" <jikos@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
-Subject: Re: [PATCH v3] hid: hid-sensor-hub: clear memory to avoid random
- data
-Date: Mon, 14 Nov 2016 19:02:57 +0000
-Message-ID: <1479150175.6544.25.camel@intel.com>
-References: <1479089394-30765-1-git-send-email-hongyan.song@intel.com>
-In-Reply-To: <1479089394-30765-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <festevam@gmail.com>
 MIME-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <9560d7a2-98b2-732d-c91a-944ae381107c@denx.de>
+References: <cover.1478071676.git.ksenija.stanojevic@gmail.com>
+ <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
+ <9560d7a2-98b2-732d-c91a-944ae381107c@denx.de>
+From: Fabio Estevam <festevam@gmail.com>
+Date: Mon, 14 Nov 2016 21:39:23 -0200
+Message-ID: <CAOMZO5C_=xNdkpcargLjysr9hkTAVAb6Hb8m5LpH62o0FQYZew@mail.gmail.com>
+Subject: Re: [PATCH v9 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
+To: Marek Vasut <marex@denx.de>
+Cc: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	linux-kernel <linux-kernel@vger.kernel.org>, Lee Jones <lee.jones@linaro.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>, linux-input@vger.kernel.org,
+	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+	Harald Geyer <harald@ccbib.org>, Stefan Wahren <stefan.wahren@i2se.com>,
+	Fabio Estevam <fabio.estevam@freescale.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-T24gTW9uLCAyMDE2LTExLTE0IGF0IDAyOjA5ICswMDAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
-IFdoZW4gdXNlciB0cmllZCB0byByZWFkIHNvbWUgZmllbGRzIGxpa2UgaHlzdGVyZXNpcyBmcm9t
-IElJTyBzeXNmcyBvbg0KPiBzb21lDQo+IHN5c3RlbXMsIGl0IGZhaWxzLiBUaGUgcmVhc29uIGlz
-IHRoYXQgdGhpcyBmaWVsZCBpcyBhIGJ5dGUgZmllbGQgYW5kDQo+IGNhbGxlcg0KPiBvZiBzZW5z
-b3JfaHViX2dldF9mZWF0dXJlKCkgcGFzc2VzIGEgYnVmZmVyIG9mIDQgYnl0ZXMuIEhlcmUgdGhl
-DQo+IGZ1bmN0aW9uDQo+IHNlbnNvcl9odWJfZ2V0X2ZlYXR1cmUoKSBjb3BpZXMgdGhlIHNpbmds
-ZSBieXRlIGZyb20gdGhlIHJlcG9ydCB0bw0KPiB0aGUNCj4gY2FsbGVyIGJ1ZmZlciBhbmQgcmV0
-dXJucyAiMSIgYXMgdGhlIG51bWJlciBvZiBieXRlcyBjb3BpZWQuDQoNCklzIHRoZSBmb2xsb3dp
-bmcgc2VudGVuY2UgYWNjdXJhdGU/DQo+ICBTbyBjYWxsZXINCj4gY2FuIHVzZSB0aGUgcmV0dXJu
-IHZhbHVlLCB3aGljaCBpcyBhY3R1YWxseSBub3QgcmlnaHQuDQpDYWxsZXIgY291bGQgaGF2ZSB1
-c2VkIGEgc2luZ2xlIGJ5dGUgZnJvbSB0aGUgcmVzdWx0IGJ1ZmZlciBhcyB0aGlzIGlzDQp2YWxp
-ZCBkYXRhIGlnbm9yaW5nIG90aGVyIGJ5dGVzLg0KDQoNCj4gU2luY2UgdGhpcyBpcyBkb25lIGJ5
-IG11bHRpcGxlIGNhbGxlcnMsIGlmIHdlIGNoYW5nZSB0aGUNCj4gc2Vuc29yX2h1Yl9nZXRfZmVh
-dHVyZSgpIGNhbiBtYWtlIHN1cmUgdGhlIGNhbGxlciBidWZmZXIgaXMNCj4gaW5pdGlhbGl6ZWQN
-Cj4gd2l0aCAwcyB0aGVuIHdlIGRvbid0IG5lZWQgdG8gY2hhbmdlIGFsbCBmdW5jdGlvbnMuDQo+
-IA0KPiBTaWduZWQtb2ZmLWJ5OiBTb25nIEhvbmd5YW4gPGhvbmd5YW4uc29uZ0BpbnRlbC5jb20+
-DQo+IC0tLQ0KPiDCoGRyaXZlcnMvaGlkL2hpZC1zZW5zb3ItaHViLmMgfCAxICsNCj4gwqAxIGZp
-bGUgY2hhbmdlZCwgMSBpbnNlcnRpb24oKykNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2hp
-ZC9oaWQtc2Vuc29yLWh1Yi5jIGIvZHJpdmVycy9oaWQvaGlkLXNlbnNvci0NCj4gaHViLmMNCj4g
-aW5kZXggNjU4YTYwNy4uYjc0ZDk1NCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9oaWQvaGlkLXNl
-bnNvci1odWIuYw0KPiArKysgYi9kcml2ZXJzL2hpZC9oaWQtc2Vuc29yLWh1Yi5jDQo+IEBAIC0y
-NTIsNiArMjUyLDcgQEAgaW50IHNlbnNvcl9odWJfZ2V0X2ZlYXR1cmUoc3RydWN0DQo+IGhpZF9z
-ZW5zb3JfaHViX2RldmljZSAqaHNkZXYsIHUzMiByZXBvcnRfaWQsDQo+IMKgCWludCByZXBvcnRf
-c2l6ZTsNCj4gwqAJaW50IHJldCA9IDA7DQo+IMKgDQo+ICsJbWVtc2V0KGJ1ZmZlciwgMCwgYnVm
-ZmVyX3NpemUpOw0KPiDCoAltdXRleF9sb2NrKCZkYXRhLT5tdXRleCk7DQo+IMKgCXJlcG9ydCA9
-IHNlbnNvcl9odWJfcmVwb3J0KHJlcG9ydF9pZCwgaHNkZXYtPmhkZXYsDQo+IEhJRF9GRUFUVVJF
-X1JFUE9SVCk7DQo+IMKgCWlmICghcmVwb3J0IHx8IChmaWVsZF9pbmRleCA+PSByZXBvcnQtPm1h
-eGZpZWxkKSB8fA==
+On Mon, Nov 14, 2016 at 4:43 PM, Marek Vasut <marex@denx.de> wrote:
+
+>> +#define MXS_LRADC_BASE               0x80050000
+>
+> Just for my understanding, why is this hardware address hard-coded here?
+> Shouldn't that be fetched from DT ?
+
+Yes, this base address should be retrieved from device tree.
