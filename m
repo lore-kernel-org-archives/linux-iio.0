@@ -1,81 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:50326 "EHLO
+Received: from www381.your-server.de ([78.46.137.84]:51149 "EHLO
         www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751556AbcKNKa4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2016 05:30:56 -0500
-Subject: Re: [PATCH 1/2] staging: iio: ad7606: replace range/range_available
- with corresponding scale
-To: Jonathan Cameron <jic23@kernel.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
- <1478846078-22207-2-git-send-email-eraretuya@gmail.com>
- <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de>
- <c9a4b2b3-6c4b-4c3c-da79-eba8398a5a0d@kernel.org>
-Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org,
-        Linus Walleij <linus.walleij@linaro.org>
+        with ESMTP id S932164AbcKNMMC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2016 07:12:02 -0500
+Subject: Re: [PATCH v2 3/6] iio: adc: Add support for STM32 ADC
+To: Fabrice Gasnier <fabrice.gasnier@st.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1478794738-28933-1-git-send-email-fabrice.gasnier@st.com>
+ <1478794738-28933-4-git-send-email-fabrice.gasnier@st.com>
+Cc: jic23@kernel.org, lee.jones@linaro.org, linux@armlinux.org.uk,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        knaack.h@gmx.de, pmeerw@pmeerw.net
 From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <9765154f-78df-eb0e-9723-28e1057149bf@metafoo.de>
-Date: Mon, 14 Nov 2016 11:30:50 +0100
+Message-ID: <535ffb14-a92f-1556-a4cb-f2be0508289a@metafoo.de>
+Date: Mon, 14 Nov 2016 13:11:54 +0100
 MIME-Version: 1.0
-In-Reply-To: <c9a4b2b3-6c4b-4c3c-da79-eba8398a5a0d@kernel.org>
+In-Reply-To: <1478794738-28933-4-git-send-email-fabrice.gasnier@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/12/2016 03:24 PM, Jonathan Cameron wrote:
-> On 11/11/16 14:18, Lars-Peter Clausen wrote:
->> On 11/11/2016 07:34 AM, Eva Rachel Retuya wrote:
->>> Eliminate the non-standard attribute in_voltage_range and move its
->>> functionality under the scale attribute. read_raw() has been taken care
->>> of previously so only write_raw() is handled here.
->>>
->>> Additionally, rename the attribute in_voltage_range_available into
->>> in_voltage_scale_available.
->>>
->>> Suggested-by: Lars-Peter Clausen <lars@metafoo.de>
->>> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
->>
->> Hi,
->>
->> Thanks for the patch. Unfortunately this is not quite this straight forward.
->>
->> The scale is what you multiply the raw with to get the value in the standard
->> IIO unit. Range as implemented in this driver is the maximum output voltage.
->>
->> To get the scale we need to look at the transfer function of the ADC [1].
->> The transfer function tells us that 1 LSB is 305uV for the 10V range and
->> 152uV for the 5V range.
->>
->> More specifically this is $RANGE*2/2**16 (times two since the ADC is bipolar).
->>
->> Since the default unit for IIO is mV for voltages we need to multiply this
->> by 1000.
->>
->> The other thing we need to handle is the case where the RANGE pin is not
->> connected to a GPIO but either hardwired to 1 or 0. Which we need to handle
->> somehow.
-> Is it just me who thought, we need a fixed GPI like a fixed regulator?
-> Would allow this sort of fixed wiring to be simply defined.
-> 
-> Linus, worth exploring?
-> 
-> I doubt this will be the last case of this particular problem
-> (not exactly unusual to hard wire control lines like these as which range
-> makes sense is often a feature of the device).
-> 
-> Would be a pain to have to add code to every driver to cover the fixed
-> case.
+On 11/10/2016 05:18 PM, Fabrice Gasnier wrote:
+[...]
+> + static int stm32_adc_single_conv(struct iio_dev *indio_dev,
+> +				 const struct iio_chan_spec *chan,
+> +				 int *res)
+> +{
+> +	struct stm32_adc *adc = iio_priv(indio_dev);
+> +	long timeout;
+> +	u32 val;
+> +	u16 result;
+> +	int ret;
+> +
+> +	reinit_completion(&adc->completion);
+> +
+> +	adc->buffer = &result;
+> +
+> +	/* Program chan number in regular sequence */
+> +	val = stm32_adc_readl(adc, STM32F4_ADCX_SQR3);
+> +	val &= ~STM32F4_SQ1_MASK;
+> +	val |= chan->channel << STM32F4_SQ1_SHIFT;
+> +	stm32_adc_writel(adc, STM32F4_ADCX_SQR3, val);
+> +
+> +	/* Set regular sequence len (0 for 1 conversion) */
+> +	stm32_adc_clr_bits(adc, STM32F4_ADCX_SQR1, STM32F4_L_MASK);
+> +
+> +	/* Trigger detection disabled (conversion can be launched in SW) */
+> +	stm32_adc_clr_bits(adc, STM32F4_ADCX_CR2, STM32F4_EXTEN_MASK);
+> +
+> +	stm32_adc_conv_irq_enable(adc);
+> +
+> +	stm32_adc_start_conv(adc);
+> +
+> +	timeout = wait_for_completion_interruptible_timeout(
+> +					&adc->completion, STM32_ADC_TIMEOUT);
+> +	if (timeout == 0) {
+> +		dev_warn(&indio_dev->dev, "Conversion timed out!\n");
 
-We still have to add code to every driver to cover the fixed case since the
-mode of operation is inherently different. But it would be nice to have a
-coherent way of doing so with a standardized interface rather than having
-every device come up with its own code and bindings.
+This should be dev_dbg() at most. This out of band reporting is not
+particular useful for applications as it is impossible to match the error to
+the action that triggered it. And you also report the error through the
+error code, so the applications knows what is going on.
 
-This could either be handled directly by the GPIO API or by a small set of
-helper functions on top of it.
+> +		ret = -ETIMEDOUT;
+> +	} else if (timeout < 0) {
+> +		dev_warn(&indio_dev->dev, "Interrupted conversion!\n");
+> +		ret = -EINTR;
 
-I think the most important part for now is to agree on a standard binding to
-describe hardwired GPIOs. We can still rework the kernel API later on, but
-the DT bindings will be set in stone.
+This should just propagate the error returned by wait_for_completion...().
+This will make sure that the right behavior occurs based on the SA_RESTART
+policy.
+
+> +	} else {
+> +		*res = result;
+> +		ret = IIO_VAL_INT;
+> +	}
+> +
+> +	stm32_adc_stop_conv(adc);
+> +
+> +	stm32_adc_conv_irq_disable(adc);
+> +
+> +	return ret;
+
