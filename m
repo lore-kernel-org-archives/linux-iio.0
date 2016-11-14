@@ -1,486 +1,153 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:10550 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1754813AbcKOKsv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 05:48:51 -0500
-Subject: Re: [PATCH v2 2/6] mfd: stm32-adc: Add support for stm32 ADC
-To: Lee Jones <lee.jones@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>
-References: <1478794738-28933-1-git-send-email-fabrice.gasnier@st.com>
- <1478794738-28933-3-git-send-email-fabrice.gasnier@st.com>
- <9ba617f4-fd3d-2b48-2607-9eec3cc4253a@kernel.org>
- <20161114164701.GA2668@dell>
-CC: <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>,
-        <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <687b2001-c658-d0fb-a205-e5b6743fa9bc@st.com>
-Date: Tue, 15 Nov 2016 11:47:52 +0100
+Received: from smtp.codeaurora.org ([198.145.29.96]:55920 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752230AbcKNLyj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2016 06:54:39 -0500
+Subject: Re: [PATCH V4 1/2] iio: adc: spmi-vadc: Update function for generic
+ voltage conversion
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+References: <1478606334-12394-1-git-send-email-rphani@codeaurora.org>
+ <1478606334-12394-2-git-send-email-rphani@codeaurora.org>
+ <38428ee7-5d1b-2b36-99a9-988e0e7d29b5@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+From: "Phani A, Rama Krishna" <rphani@codeaurora.org>
+Message-ID: <fc55831c-1826-385e-aecd-83ea0b0c47a9@codeaurora.org>
+Date: Mon, 14 Nov 2016 17:17:25 +0530
 MIME-Version: 1.0
-In-Reply-To: <20161114164701.GA2668@dell>
-Content-Type: text/plain; charset="utf-8"; format=flowed
+In-Reply-To: <38428ee7-5d1b-2b36-99a9-988e0e7d29b5@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/14/2016 05:47 PM, Lee Jones wrote:
-> On Sat, 12 Nov 2016, Jonathan Cameron wrote:
->
->> On 10/11/16 16:18, Fabrice Gasnier wrote:
->>> Add core driver for STMicroelectronics STM32 ADC (Analog to Digital
->>> Converter). STM32 ADC can be composed of up to 3 ADCs with shared
->>> resources like clock prescaler, common interrupt line and analog
->>> reference voltage.
->>> This core driver basically manages shared resources.
->>>
->>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->> Looks good to me (other than the build issue obviously ;)
-
 Hi Jonathan,
-Thanks for your review.
-I'll fix build issue, sure ;-)
 
+On 12-Nov-16 8:43 PM, Jonathan Cameron wrote:
+> On 08/11/16 11:58, Rama Krishna Phani A wrote:
+>> Several channels are supported in ADC of PMIC which can be used to
+>> measure voltage, temperature, current etc. Hardware provides
+>> readings for all channels in adc code. That adc code needs to be
+>> converted to voltage. Logic for conversion of adc code to voltage
+>> is common for all ADC channels(voltage, temperature, current etc).
+>> Implement separate function for generic conversion logic.
 >>
->> The fun bit will be trying to keep the whole thing this clean as you
->> add the more 'interesting' functionality.  *fingers crossed*
-Yes... But in the end, splitting shared resources in core driver makes 
-it more simple.
-Not sure there will be more complexity here.
-
+>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+> Looks good to me. Kind of the best we can do with minimal
+> ABI changes.
+>
+> I had applied this but have now backed out to wait for patch 2.
+>> ---
+>>  drivers/iio/adc/qcom-spmi-vadc.c | 52 +++++++++++++++++++++-------------------
+>>  1 file changed, 28 insertions(+), 24 deletions(-)
 >>
->> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> There isn't anything MFD about this driver.
+>> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+>> index c2babe5..93c0639 100644
+>> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+>> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+>> @@ -1,5 +1,5 @@
+>>  /*
+>> - * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
+>> + * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+>>   *
+>>   * This program is free software; you can redistribute it and/or modify
+>>   * it under the terms of the GNU General Public License version 2 and
+>> @@ -468,27 +468,38 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>  	return ret;
+>>  }
+>>
+>> -static s32 vadc_calibrate(struct vadc_priv *vadc,
+>> -			  const struct vadc_channel_prop *prop, u16 adc_code)
+>> +static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
+>> +			     const struct vadc_channel_prop *prop,
+>> +			     s64 *scale_voltage)
+>>  {
+>> -	const struct vadc_prescale_ratio *prescale;
+>> -	s64 voltage;
+>> +	*scale_voltage = (adc_code -
+>> +		vadc->graph[prop->calibration].gnd);
+>> +	*scale_voltage *= vadc->graph[prop->calibration].dx;
+>> +	*scale_voltage = div64_s64(*scale_voltage,
+>> +		vadc->graph[prop->calibration].dy);
+>> +	if (prop->calibration == VADC_CALIB_ABSOLUTE)
+>> +		*scale_voltage +=
+>> +		vadc->graph[prop->calibration].dx;
+>>
+>> -	voltage = adc_code - vadc->graph[prop->calibration].gnd;
+>> -	voltage *= vadc->graph[prop->calibration].dx;
+>> -	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
+>> +	if (*scale_voltage < 0)
+>> +		*scale_voltage = 0;
+>> +}
+>>
+>> -	if (prop->calibration == VADC_CALIB_ABSOLUTE)
+>> -		voltage += vadc->graph[prop->calibration].dx;
+>> +static int vadc_scale_volt(struct vadc_priv *vadc,
+>> +			   const struct vadc_channel_prop *prop, u16 adc_code,
+>> +			   int *result_uv)
+>> +{
+>> +	const struct vadc_prescale_ratio *prescale;
+>> +	s64 voltage = 0, result = 0;
+>>
+>> -	if (voltage < 0)
+>> -		voltage = 0;
+>> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>
+>>  	prescale = &vadc_prescale_ratios[prop->prescale];
+>> -
+>>  	voltage = voltage * prescale->den;
+>> +	result = div64_s64(voltage, prescale->num);
+>> +	*result_uv = result;
+>>
+>> -	return div64_s64(voltage, prescale->num);
+>> +	return 0;
+>>  }
+>>
+>>  static int vadc_decimation_from_dt(u32 value)
+>> @@ -552,11 +563,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+>>  		if (ret)
+>>  			break;
+>>
+>> -		*val = vadc_calibrate(vadc, prop, adc_code);
+>> +		vadc_scale_volt(vadc, prop, adc_code, val);
+>>
+>> -		/* 2mV/K, return milli Celsius */
+>> -		*val /= 2;
+>> -		*val -= KELVINMIL_CELSIUSMIL;
+>>  		return IIO_VAL_INT;
+>>  	case IIO_CHAN_INFO_RAW:
+>>  		prop = &vadc->chan_props[chan->address];
+>> @@ -564,12 +572,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+>>  		if (ret)
+>>  			break;
+>>
+>> -		*val = vadc_calibrate(vadc, prop, adc_code);
+>> +		*val = (int)adc_code;
+>>  		return IIO_VAL_INT;
+>> -	case IIO_CHAN_INFO_SCALE:
+>> -		*val = 0;
+>> -		*val2 = 1000;
+>> -		return IIO_VAL_INT_PLUS_MICRO;
+>>  	default:
+>>  		ret = -EINVAL;
+>>  		break;
+>> @@ -617,7 +621,7 @@ struct vadc_channels {
+>>
+>>  #define VADC_CHAN_VOLT(_dname, _pre)					\
+>>  	VADC_CHAN(_dname, IIO_VOLTAGE,					\
+>> -		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
+>> +		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
+>>  		  _pre)							\
+> This is still odd, but I guess justifiable from the point of view
+> of maintaining backwards compatibility.  The scale was simply wrong
+> so not much we can do about that other than drop it!
+ok., Will retain "IIO_CHAN_INFO_SCALE" to maintain backward 
+compatibility and include support for "IIO_CHAN_INFO_PROCESSED" as well 
+in the next patch.
+>>
+>>  /*
+>>
 >
-> Please move it into IIO.
-
-Hmm, there is no other sub sysbtem that may be used here, ADC driver 
-belongs to IIO.
-Also, of_platform_populate() is being used here. This can perfectly be 
-called from within IIO.
-
-Jonathan, can this "stm32-adc-core" driver be moved to, and live in 
-drivers/iio/adc ?
-(e.g. in addition to stm32-adc iio driver)
-Is it ok for you ?
-
-Please advise,
-Best Regards,
-Fabrice
-
->
->>> ---
->>>   drivers/mfd/Kconfig                |  14 ++
->>>   drivers/mfd/Makefile               |   1 +
->>>   drivers/mfd/stm32-adc-core.c       | 301 +++++++++++++++++++++++++++++++++++++
->>>   include/linux/mfd/stm32-adc-core.h |  52 +++++++
->>>   4 files changed, 368 insertions(+)
->>>   create mode 100644 drivers/mfd/stm32-adc-core.c
->>>   create mode 100644 include/linux/mfd/stm32-adc-core.h
->>>
->>> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
->>> index c6df644..2580cee 100644
->>> --- a/drivers/mfd/Kconfig
->>> +++ b/drivers/mfd/Kconfig
->>> @@ -1152,6 +1152,20 @@ config MFD_PALMAS
->>>   	  If you say yes here you get support for the Palmas
->>>   	  series of PMIC chips from Texas Instruments.
->>>   
->>> +config MFD_STM32_ADC
->>> +	tristate "STMicroelectronics STM32 adc"
->>> +	depends on ARCH_STM32 || COMPILE_TEST
->>> +	depends on OF
->>> +	select MFD_CORE
->>> +	select REGULATOR
->>> +	select REGULATOR_FIXED_VOLTAGE
->>> +	help
->>> +	  Select this option to enable the core driver for STMicroelectronics
->>> +	  STM32 analog-to-digital converter (ADC).
->>> +
->>> +	  This driver can also be built as a module.  If so, the module
->>> +	  will be called stm32-adc-core.
->>> +
->>>   config TPS6105X
->>>   	tristate "TI TPS61050/61052 Boost Converters"
->>>   	depends on I2C
->>> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
->>> index 9834e66..4571506 100644
->>> --- a/drivers/mfd/Makefile
->>> +++ b/drivers/mfd/Makefile
->>> @@ -185,6 +185,7 @@ obj-$(CONFIG_MFD_INTEL_LPSS_PCI)	+= intel-lpss-pci.o
->>>   obj-$(CONFIG_MFD_INTEL_LPSS_ACPI)	+= intel-lpss-acpi.o
->>>   obj-$(CONFIG_MFD_INTEL_MSIC)	+= intel_msic.o
->>>   obj-$(CONFIG_MFD_PALMAS)	+= palmas.o
->>> +obj-$(CONFIG_MFD_STM32_ADC) 	+= stm32-adc-core.o
->>>   obj-$(CONFIG_MFD_VIPERBOARD)    += viperboard.o
->>>   obj-$(CONFIG_MFD_RC5T583)	+= rc5t583.o rc5t583-irq.o
->>>   obj-$(CONFIG_MFD_RK808)		+= rk808.o
->>> diff --git a/drivers/mfd/stm32-adc-core.c b/drivers/mfd/stm32-adc-core.c
->>> new file mode 100644
->>> index 0000000..bcf52fb
->>> --- /dev/null
->>> +++ b/drivers/mfd/stm32-adc-core.c
->>> @@ -0,0 +1,301 @@
->>> +/*
->>> + * This file is part of STM32 ADC driver
->>> + *
->>> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
->>> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
->>> + *
->>> + * Inspired from: fsl-imx25-tsadc
->>> + *
->>> + * License type: GPLv2
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify it
->>> + * under the terms of the GNU General Public License version 2 as published by
->>> + * the Free Software Foundation.
->>> + *
->>> + * This program is distributed in the hope that it will be useful, but
->>> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
->>> + * or FITNESS FOR A PARTICULAR PURPOSE.
->>> + * See the GNU General Public License for more details.
->>> + *
->>> + * You should have received a copy of the GNU General Public License along with
->>> + * this program. If not, see <http://www.gnu.org/licenses/>.
->>> + */
->>> +
->>> +#include <linux/clk.h>
->>> +#include <linux/interrupt.h>
->>> +#include <linux/irqchip/chained_irq.h>
->>> +#include <linux/irqdesc.h>
->>> +#include <linux/irqdomain.h>
->>> +#include <linux/mfd/stm32-adc-core.h>
->>> +#include <linux/module.h>
->>> +#include <linux/of_device.h>
->>> +#include <linux/regulator/consumer.h>
->>> +#include <linux/slab.h>
->>> +
->>> +/* STM32F4 - common registers for all ADC instances: 1, 2 & 3 */
->>> +#define STM32F4_ADC_CSR			(STM32_ADCX_COMN_OFFSET + 0x00)
->>> +#define STM32F4_ADC_CCR			(STM32_ADCX_COMN_OFFSET + 0x04)
->>> +
->>> +/* STM32F4_ADC_CSR - bit fields */
->>> +#define STM32F4_EOC3			BIT(17)
->>> +#define STM32F4_EOC2			BIT(9)
->>> +#define STM32F4_EOC1			BIT(1)
->>> +
->>> +/* STM32F4_ADC_CCR - bit fields */
->>> +#define STM32F4_ADC_ADCPRE_SHIFT	16
->>> +#define STM32F4_ADC_ADCPRE_MASK		GENMASK(17, 16)
->>> +
->>> +/* STM32 F4 maximum analog clock rate (from datasheet) */
->>> +#define STM32F4_ADC_MAX_CLK_RATE	36000000
->>> +
->>> +/**
->>> + * struct stm32_adc_priv - stm32 ADC core private data
->>> + * @irq:		irq for ADC block
->>> + * @domain:		irq domain reference
->>> + * @aclk:		clock reference for the analog circuitry
->>> + * @vref:		regulator reference
->>> + * @common:		common data for all ADC instances
->>> + */
->>> +struct stm32_adc_priv {
->>> +	int				irq;
->>> +	struct irq_domain		*domain;
->>> +	struct clk			*aclk;
->>> +	struct regulator		*vref;
->>> +	struct stm32_adc_common		common;
->>> +};
->>> +
->>> +static struct stm32_adc_priv *to_stm32_adc_priv(struct stm32_adc_common *com)
->>> +{
->>> +	return container_of(com, struct stm32_adc_priv, common);
->>> +}
->>> +
->>> +/* STM32F4 ADC internal common clock prescaler division ratios */
->>> +static int stm32f4_pclk_div[] = {2, 4, 6, 8};
->>> +
->>> +/**
->>> + * stm32f4_adc_clk_sel() - Select stm32f4 ADC common clock prescaler
->>> + * @priv: stm32 ADC core private data
->>> + * Select clock prescaler used for analog conversions, before using ADC.
->>> + */
->>> +static int stm32f4_adc_clk_sel(struct platform_device *pdev,
->>> +			       struct stm32_adc_priv *priv)
->>> +{
->>> +	unsigned long rate;
->>> +	u32 val;
->>> +	int i;
->>> +
->>> +	rate = clk_get_rate(priv->aclk);
->>> +	for (i = 0; i < ARRAY_SIZE(stm32f4_pclk_div); i++) {
->>> +		if ((rate / stm32f4_pclk_div[i]) <= STM32F4_ADC_MAX_CLK_RATE)
->>> +			break;
->>> +	}
->>> +	if (i >= ARRAY_SIZE(stm32f4_pclk_div))
->>> +		return -EINVAL;
->>> +
->>> +	val = readl_relaxed(priv->common.base + STM32F4_ADC_CCR);
->>> +	val &= ~STM32F4_ADC_ADCPRE_MASK;
->>> +	val |= i << STM32F4_ADC_ADCPRE_SHIFT;
->>> +	writel_relaxed(val, priv->common.base + STM32F4_ADC_CCR);
->>> +
->>> +	dev_dbg(&pdev->dev, "Using analog clock source at %ld kHz\n",
->>> +		rate / (stm32f4_pclk_div[i] * 1000));
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +/* ADC common interrupt for all instances */
->>> +static void stm32_adc_irq_handler(struct irq_desc *desc)
->>> +{
->>> +	struct stm32_adc_priv *priv = irq_desc_get_handler_data(desc);
->>> +	struct irq_chip *chip = irq_desc_get_chip(desc);
->>> +	u32 status;
->>> +
->>> +	chained_irq_enter(chip, desc);
->>> +	status = readl_relaxed(priv->common.base + STM32F4_ADC_CSR);
->>> +
->>> +	if (status & STM32F4_EOC1)
->>> +		generic_handle_irq(irq_find_mapping(priv->domain, 0));
->>> +
->>> +	if (status & STM32F4_EOC2)
->>> +		generic_handle_irq(irq_find_mapping(priv->domain, 1));
->>> +
->>> +	if (status & STM32F4_EOC3)
->>> +		generic_handle_irq(irq_find_mapping(priv->domain, 2));
->>> +
->>> +	chained_irq_exit(chip, desc);
->>> +};
->>> +
->>> +static int stm32_adc_domain_map(struct irq_domain *d, unsigned int irq,
->>> +				irq_hw_number_t hwirq)
->>> +{
->>> +	irq_set_chip_data(irq, d->host_data);
->>> +	irq_set_chip_and_handler(irq, &dummy_irq_chip, handle_level_irq);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static void stm32_adc_domain_unmap(struct irq_domain *d, unsigned int irq)
->>> +{
->>> +	irq_set_chip_and_handler(irq, NULL, NULL);
->>> +	irq_set_chip_data(irq, NULL);
->>> +}
->>> +
->>> +static const struct irq_domain_ops stm32_adc_domain_ops = {
->>> +	.map = stm32_adc_domain_map,
->>> +	.unmap  = stm32_adc_domain_unmap,
->>> +	.xlate = irq_domain_xlate_onecell,
->>> +};
->>> +
->>> +static int stm32_adc_irq_probe(struct platform_device *pdev,
->>> +			       struct stm32_adc_priv *priv)
->>> +{
->>> +	struct device_node *np = pdev->dev.of_node;
->>> +
->>> +	priv->irq = platform_get_irq(pdev, 0);
->>> +	if (priv->irq < 0) {
->>> +		dev_err(&pdev->dev, "failed to get irq\n");
->>> +		return priv->irq;
->>> +	}
->>> +
->>> +	priv->domain = irq_domain_add_simple(np, STM32_ADC_MAX_ADCS, 0,
->>> +					     &stm32_adc_domain_ops,
->>> +					     priv);
->>> +	if (!priv->domain) {
->>> +		dev_err(&pdev->dev, "Failed to add irq domain\n");
->>> +		return -ENOMEM;
->>> +	}
->>> +
->>> +	irq_set_chained_handler(priv->irq, stm32_adc_irq_handler);
->>> +	irq_set_handler_data(priv->irq, priv);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static void stm32_adc_irq_remove(struct platform_device *pdev,
->>> +				 struct stm32_adc_priv *priv)
->>> +{
->>> +	int hwirq;
->>> +
->>> +	for (hwirq = 0; hwirq < STM32_ADC_MAX_ADCS; hwirq++)
->>> +		irq_dispose_mapping(irq_find_mapping(priv->domain, hwirq));
->>> +	irq_domain_remove(priv->domain);
->>> +	irq_set_chained_handler(priv->irq, NULL);
->>> +}
->>> +
->>> +static int stm32_adc_probe(struct platform_device *pdev)
->>> +{
->>> +	struct stm32_adc_priv *priv;
->>> +	struct device_node *np = pdev->dev.of_node;
->>> +	struct resource *res;
->>> +	int ret;
->>> +
->>> +	if (!pdev->dev.of_node)
->>> +		return -ENODEV;
->>> +
->>> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
->>> +	if (!priv)
->>> +		return -ENOMEM;
->>> +
->>> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->>> +	priv->common.base = devm_ioremap_resource(&pdev->dev, res);
->>> +	if (IS_ERR(priv->common.base))
->>> +		return PTR_ERR(priv->common.base);
->>> +
->>> +	priv->vref = devm_regulator_get(&pdev->dev, "vref");
->>> +	if (IS_ERR(priv->vref)) {
->>> +		ret = PTR_ERR(priv->vref);
->>> +		dev_err(&pdev->dev, "vref get failed, %d\n", ret);
->>> +		return ret;
->>> +	}
->>> +
->>> +	ret = regulator_enable(priv->vref);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "vref enable failed\n");
->>> +		return ret;
->>> +	}
->>> +
->>> +	ret = regulator_get_voltage(priv->vref);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "vref get voltage failed, %d\n", ret);
->>> +		goto err_regulator_disable;
->>> +	}
->>> +	priv->common.vref_mv = ret / 1000;
->>> +	dev_dbg(&pdev->dev, "vref+=%dmV\n", priv->common.vref_mv);
->>> +
->>> +	priv->aclk = devm_clk_get(&pdev->dev, "adc");
->>> +	if (IS_ERR(priv->aclk)) {
->>> +		ret = PTR_ERR(priv->aclk);
->>> +		dev_err(&pdev->dev, "Can't get 'adc' clock\n");
->>> +		goto err_regulator_disable;
->>> +	}
->>> +
->>> +	ret = clk_prepare_enable(priv->aclk);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "adc clk enable failed\n");
->>> +		goto err_regulator_disable;
->>> +	}
->>> +
->>> +	ret = stm32f4_adc_clk_sel(pdev, priv);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "adc clk selection failed\n");
->>> +		goto err_clk_disable;
->>> +	}
->>> +
->>> +	ret = stm32_adc_irq_probe(pdev, priv);
->>> +	if (ret < 0)
->>> +		goto err_clk_disable;
->>> +
->>> +	platform_set_drvdata(pdev, &priv->common);
->>> +
->>> +	ret = of_platform_populate(np, NULL, NULL, &pdev->dev);
->>> +	if (ret < 0) {
->>> +		dev_err(&pdev->dev, "failed to populate DT children\n");
->>> +		goto err_irq_remove;
->>> +	}
->>> +
->>> +	return 0;
->>> +
->>> +err_irq_remove:
->>> +	stm32_adc_irq_remove(pdev, priv);
->>> +
->>> +err_clk_disable:
->>> +	clk_disable_unprepare(priv->aclk);
->>> +
->>> +err_regulator_disable:
->>> +	regulator_disable(priv->vref);
->>> +
->>> +	return ret;
->>> +}
->>> +
->>> +static int stm32_adc_remove(struct platform_device *pdev)
->>> +{
->>> +	struct stm32_adc_common *common = platform_get_drvdata(pdev);
->>> +	struct stm32_adc_priv *priv = to_stm32_adc_priv(common);
->>> +
->>> +	of_platform_depopulate(&pdev->dev);
->>> +	stm32_adc_irq_remove(pdev, priv);
->>> +	clk_disable_unprepare(priv->aclk);
->>> +	regulator_disable(priv->vref);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static const struct of_device_id stm32_adc_of_match[] = {
->>> +	{ .compatible = "st,stm32f4-adc-core" },
->>> +};
->>> +MODULE_DEVICE_TABLE(of, stm32_adc_of_match);
->>> +
->>> +static struct platform_driver stm32_adc_driver = {
->>> +	.probe = stm32_adc_probe,
->>> +	.remove = stm32_adc_remove,
->>> +	.driver = {
->>> +		.name = "stm32-adc-core",
->>> +		.of_match_table = stm32_adc_of_match,
->>> +	},
->>> +};
->>> +module_platform_driver(stm32_adc_driver);
->>> +
->>> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
->>> +MODULE_DESCRIPTION("STMicroelectronics STM32 ADC MFD driver");
->>> +MODULE_LICENSE("GPL v2");
->>> +MODULE_ALIAS("platform:stm32-adc-core");
->>> diff --git a/include/linux/mfd/stm32-adc-core.h b/include/linux/mfd/stm32-adc-core.h
->>> new file mode 100644
->>> index 0000000..081fa5f
->>> --- /dev/null
->>> +++ b/include/linux/mfd/stm32-adc-core.h
->>> @@ -0,0 +1,52 @@
->>> +/*
->>> + * This file is part of STM32 ADC driver
->>> + *
->>> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
->>> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
->>> + *
->>> + * License type: GPLv2
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify it
->>> + * under the terms of the GNU General Public License version 2 as published by
->>> + * the Free Software Foundation.
->>> + *
->>> + * This program is distributed in the hope that it will be useful, but
->>> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
->>> + * or FITNESS FOR A PARTICULAR PURPOSE.
->>> + * See the GNU General Public License for more details.
->>> + *
->>> + * You should have received a copy of the GNU General Public License along with
->>> + * this program. If not, see <http://www.gnu.org/licenses/>.
->>> + */
->>> +
->>> +#ifndef __STM32_ADC_H
->>> +#define __STM32_ADC_H
->>> +
->>> +/*
->>> + * STM32 - ADC global register map
->>> + * ________________________________________________________
->>> + * | Offset |                 Register                    |
->>> + * --------------------------------------------------------
->>> + * | 0x000  |                Master ADC1                  |
->>> + * --------------------------------------------------------
->>> + * | 0x100  |                Slave ADC2                   |
->>> + * --------------------------------------------------------
->>> + * | 0x200  |                Slave ADC3                   |
->>> + * --------------------------------------------------------
->>> + * | 0x300  |         Master & Slave common regs          |
->>> + * --------------------------------------------------------
->>> + */
->>> +#define STM32_ADC_MAX_ADCS		3
->>> +#define STM32_ADCX_COMN_OFFSET		0x300
->>> +
->>> +/**
->>> + * struct stm32_adc_common - stm32 ADC driver common data (for all instances)
->>> + * @base:		control registers base cpu addr
->>> + * @vref_mv:		vref voltage (mv)
->>> + */
->>> +struct stm32_adc_common {
->>> +	void __iomem			*base;
->>> +	int				vref_mv;
->>> +};
->>> +
->>> +#endif
->>>
-
+Thanks,
+Ramakrishna
