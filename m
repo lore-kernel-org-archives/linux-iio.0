@@ -1,48 +1,77 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga02.intel.com ([134.134.136.20]:59042 "EHLO mga02.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755165AbcKOBID (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 14 Nov 2016 20:08:03 -0500
-From: Song Hongyan <hongyan.song@intel.com>
-To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
-        Song Hongyan <hongyan.song@intel.com>
-Subject: [PATCH V4] hid: hid-sensor-hub: clear memory to avoid random data
-Date: Tue, 15 Nov 2016 01:11:10 +0000
-Message-Id: <1479172270-3684-1-git-send-email-hongyan.song@intel.com>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:37475 "EHLO
+        mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S966694AbcKOKXP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 05:23:15 -0500
+Received: by mail-wm0-f41.google.com with SMTP id t79so158373542wmt.0
+        for <linux-iio@vger.kernel.org>; Tue, 15 Nov 2016 02:23:14 -0800 (PST)
+Date: Tue, 15 Nov 2016 10:26:08 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Ksenija =?utf-8?Q?Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
+Cc: Stefan Wahren <stefan.wahren@i2se.com>,
+        linux-input@vger.kernel.org,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Harald Geyer <harald@ccbib.org>,
+        Fabio Estevam <fabio.estevam@freescale.com>,
+        linux-iio@vger.kernel.org, Marek Vasut <marex@denx.de>,
+        linux-kernel <linux-kernel@vger.kernel.org>
+Subject: Re: [PATCH v9 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Message-ID: <20161115102608.GE4094@dell>
+References: <cover.1478071676.git.ksenija.stanojevic@gmail.com>
+ <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
+ <1401051818.290769.fabb549c-29f9-4e5c-a868-650c6df97a1d.open-xchange@email.1und1.de>
+ <CAL7P5jK1cCZyELUhv61ySpFH4EAaVwUaNXWd5xcmwiHsT_3Ssw@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAL7P5jK1cCZyELUhv61ySpFH4EAaVwUaNXWd5xcmwiHsT_3Ssw@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-When user tried to read some fields like hysteresis from IIO sysfs on some
-systems, it fails. The reason is that this field is a byte field and caller
-of sensor_hub_get_feature() passes a buffer of 4 bytes. Here the function
-sensor_hub_get_feature() copies the single byte from the report to the
-caller buffer and returns "1" as the number of bytes copied. So caller
-can use the return value.
+On Mon, 14 Nov 2016, Ksenija Stanojević wrote:
 
-But this is done by multiple callers, so if we just change the
-sensor_hub_get_feature so that caller buffer is initialized with 0s
-then we don't to change all functions.
+> Hi,
+> 
+> On Tue, Nov 8, 2016 at 11:34 PM, Stefan Wahren <stefan.wahren@i2se.com> wrote:
+> >
+> > > Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 2. November 2016 um
+> > > 08:38 geschrieben:
+> > >
+> > >
+> > > Add core files for low resolution analog-to-digital converter (mxs-lradc)
+> > > MFD driver.
+> > >
+> > > Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> >
+> > Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
+> >
+> > for Patch 1 + 2
+> >
+> > > ---
+> > > ...
+> > > diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> > > index 9834e66..057ca15 100644
+> > > --- a/drivers/mfd/Makefile
+> > > +++ b/drivers/mfd/Makefile
+> > > @@ -211,3 +211,4 @@ obj-$(CONFIG_INTEL_SOC_PMIC)      += intel-soc-pmic.o
+> > >  obj-$(CONFIG_MFD_MT6397)     += mt6397-core.o
+> > >
+> > >  obj-$(CONFIG_MFD_ALTERA_A10SR)       += altera-a10sr.o
+> > > +obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
+> >
+> > Btw this part won't apply anymore
+> 
+> I think now everyone is approving of this patch series.
+> Who will take this patch series, Jonathan or Lee?
+> Should I resend patches?
 
-Signed-off-by: Song Hongyan <hongyan.song@intel.com>
----
-	changes: update comments
+Send patch-set again with all the Acks you've collected.
 
- drivers/hid/hid-sensor-hub.c | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
-index 658a607..b74d954 100644
---- a/drivers/hid/hid-sensor-hub.c
-+++ b/drivers/hid/hid-sensor-hub.c
-@@ -252,6 +252,7 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
- 	int report_size;
- 	int ret = 0;
- 
-+	memset(buffer, 0, buffer_size);
- 	mutex_lock(&data->mutex);
- 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
- 	if (!report || (field_index >= report->maxfield) ||
 -- 
-1.9.1
-
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
