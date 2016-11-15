@@ -1,102 +1,123 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0104.outbound.protection.outlook.com ([104.47.2.104]:39232
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S934156AbcKQGYZ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 17 Nov 2016 01:24:25 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Jonathan Cameron" <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [RFC PATCH 4/7] dt-bindings: iio: iio-mux: document iio-mux bindings
-Date: Thu, 17 Nov 2016 00:48:28 +0100
-Message-ID: <1479340111-1259-5-git-send-email-peda@axentia.se>
-In-Reply-To: <1479340111-1259-1-git-send-email-peda@axentia.se>
-References: <1479340111-1259-1-git-send-email-peda@axentia.se>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:18903 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S941010AbcKOPdR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 10:33:17 -0500
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
+Subject: [PATCH v3 1/6] Documentation: dt-bindings: Document STM32 ADC DT bindings
+Date: Tue, 15 Nov 2016 16:30:56 +0100
+Message-ID: <1479223861-21747-2-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
 Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
----
- .../bindings/iio/multiplexer/iio-mux.txt           | 59 ++++++++++++++++++++++
- 1 file changed, 59 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+This patch adds documentation of device tree bindings for the STM32 ADC.
 
-diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   | 83 ++++++++++++++++++++++
+ 1 file changed, 83 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
 new file mode 100644
-index 000000000000..2f5c7fc35a42
+index 0000000..49ed82e
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-@@ -0,0 +1,59 @@
-+IIO multiplexer bindings
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+@@ -0,0 +1,83 @@
++STMicroelectronics STM32 ADC device driver
 +
-+If a multiplexer is used to select when hardware signal is fed to
-+e.g. an ADC channel, these bindings describe that situation.
++STM32 ADC is a successive approximation analog-to-digital converter.
++It has several multiplexed input channels. Conversions can be performed
++in single, continuous, scan or discontinuous mode. Result of the ADC is
++stored in a left-aligned or right-aligned 32-bit data register.
++Conversions can be launched in software or using hardware triggers.
 +
++The analog watchdog feature allows the application to detect if the input
++voltage goes beyond the user-defined, higher or lower thresholds.
++
++Each STM32 ADC block can have up to 3 ADC instances.
++
++Each instance supports two contexts to manage conversions, each one has its
++own configurable sequence and trigger:
++- regular conversion can be done in sequence, running in background
++- injected conversions have higher priority, and so have the ability to
++  interrupt regular conversion sequence (either triggered in SW or HW).
++  Regular sequence is resumed, in case it has been interrupted.
++
++Contents of a stm32 adc root node:
++-----------------------------------
 +Required properties:
-+- compatible : "iio-mux"
-+- io-channels : Channel node of the parent channel that has multiplexed
-+		input.
-+- io-channel-names : Should be "parent".
-+- control-muxes : Node of the multiplexer that controls the input signal.
-+- control-mux-names : Should be "mux".
++- compatible: Should be "st,stm32f4-adc-core".
++- reg: Offset and length of the ADC block register set.
++- interrupts: Must contain the interrupt for ADC block.
++- clocks: Clock for the analog circuitry (common to all ADCs).
++- clock-names: Must be "adc".
++- interrupt-controller: Identifies the controller node as interrupt-parent
++- vref-supply: Phandle to the vref input analog reference voltage.
++- #interrupt-cells = <1>;
 +- #address-cells = <1>;
 +- #size-cells = <0>;
 +
-+Required properties for iio-mux child nodes:
-+- reg : The multiplexer number.
++Optional properties:
++- A pinctrl state named "default" for each ADC channel may be defined to set
++  inX ADC pins in mode of operation for analog input on external pin.
 +
-+Optional properties for iio-mux child nodes:
-+- iio-ext-info : Array of string pairs, the first item in each pair is the
-+		 iio ext_info attribute name, and the second item in each
-+		 pair is the iio ext_info value for that attribute. The
-+		 mux will write these ext_info values to the corresponding
-+		 ext_info attributes on every multiplexer switch.
++Contents of a stm32 adc child node:
++-----------------------------------
++An ADC block node should contain at least one subnode, representing an
++ADC instance available on the machine.
++
++Required properties:
++- compatible: Should be "st,stm32f4-adc".
++- reg: Offset of ADC instance in ADC block (e.g. may be 0x0, 0x100, 0x200).
++- clocks: Input clock private to this ADC instance.
++- interrupt-parent: Phandle to the parent interrupt controller.
++- interrupts: IRQ Line for the ADC (e.g. may be 0 for adc@0, 1 for adc@100 or
++  2 for adc@200).
++- st,adc-channels: List of single-ended channels muxed for this ADC.
++  It can have up to 16 channels, numbered from 0 to 15 (resp. for in0..in15).
++- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers" in
++  Documentation/devicetree/bindings/iio/iio-bindings.txt
 +
 +Example:
-+	control_adc_mux: control-adc-mux {
-+		compatible = "mux-gpio";
++	adc: adc@40012000 {
++		compatible = "st,stm32f4-adc-core";
++		reg = <0x40012000 0x400>;
++		interrupts = <18>;
++		clocks = <&rcc 0 168>;
++		clock-names = "adc";
++		vref-supply = <&reg_vref>;
++		interrupt-controller;
++		pinctrl-names = "default";
++		pinctrl-0 = <&adc3_in8_pin>;
 +
-+		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+			    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+	};
-+
-+	adc-mux {
-+		compatible = "iio-mux";
-+		io-channels = <&adc 0>;
-+		io-channel-names = "parent";
-+
-+		control-muxes = <&control_adc_mux>;
-+		control-mux-names = "mux";
-+
++		#interrupt-cells = <1>;
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
-+		sync@0 {
-+			reg = <0>;
-+			iio-ext-info = "invert", "1";
++		adc@0 {
++			compatible = "st,stm32f4-adc";
++			#io-channel-cells = <1>;
++			reg = <0x0>;
++			clocks = <&rcc 0 168>;
++			interrupt-parent = <&adc>;
++			interrupts = <0>;
++			st,adc-channels = <8>;
 +		};
-+
-+		in@1 {
-+			reg = <1>;
-+			iio-ext-info = "invert", "1";
-+		};
-+
-+		system-regulator@2 {
-+			reg = <2>;
-+			iio-ext-info = "invert", "0";
-+		};
++		...
++		other adc child nodes follow...
 +	};
 -- 
-2.1.4
+1.9.1
 
