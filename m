@@ -1,45 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:50528 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1755086AbcKJJ0X (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 10 Nov 2016 04:26:23 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: devel@driverdev.osuosl.org, gregkh@linuxfoundation.org,
-        lars@metafoo.de, pmeerw@pmeerw.net, knaack.h@gmx.de,
-        linux-kernel@vger.kernel.org, Jon.Brenner@ams.com
-Subject: [PATCH v3 18/28] staging: iio: tsl2583: change tsl2583_als_calibrate() to return 0 on success
-Date: Thu, 10 Nov 2016 04:25:54 -0500
-Message-Id: <1478769964-7065-19-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
-References: <1478769964-7065-1-git-send-email-masneyb@onstation.org>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:39966 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S940999AbcKOPdR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 10:33:17 -0500
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
+Subject: [PATCH v3 4/6] ARM: configs: stm32: enable ADC driver
+Date: Tue, 15 Nov 2016 16:30:59 +0100
+Message-ID: <1479223861-21747-5-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-tsl2583_als_calibrate() returns the newly computed gain_trim if the
-calibration was successful. This function is only called by
-in_illuminance_calibrate_store() and the return value inside that
-sysfs attribute is only checked to see if an error was returned.
-This patch changes tsl2583_als_calibrate() to return 0 on success.
-
-Signed-off-by: Brian Masney <masneyb@onstation.org>
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
- drivers/staging/iio/light/tsl2583.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+ arch/arm/configs/stm32_defconfig | 3 +++
+ 1 file changed, 3 insertions(+)
 
-diff --git a/drivers/staging/iio/light/tsl2583.c b/drivers/staging/iio/light/tsl2583.c
-index bdd395a..ad4ea8a 100644
---- a/drivers/staging/iio/light/tsl2583.c
-+++ b/drivers/staging/iio/light/tsl2583.c
-@@ -344,7 +344,7 @@ static int tsl2583_als_calibrate(struct iio_dev *indio_dev)
- 
- 	chip->als_settings.als_gain_trim = (int)gain_trim_val;
- 
--	return (int)gain_trim_val;
-+	return 0;
- }
- 
- static int tsl2583_set_als_time(struct tsl2583_chip *chip)
+diff --git a/arch/arm/configs/stm32_defconfig b/arch/arm/configs/stm32_defconfig
+index 1e5ec2a..5d241e0 100644
+--- a/arch/arm/configs/stm32_defconfig
++++ b/arch/arm/configs/stm32_defconfig
+@@ -57,6 +57,9 @@ CONFIG_LEDS_TRIGGERS=y
+ CONFIG_LEDS_TRIGGER_HEARTBEAT=y
+ CONFIG_DMADEVICES=y
+ CONFIG_STM32_DMA=y
++CONFIG_IIO=y
++CONFIG_STM32_ADC_CORE=y
++CONFIG_STM32_ADC=y
+ # CONFIG_FILE_LOCKING is not set
+ # CONFIG_DNOTIFY is not set
+ # CONFIG_INOTIFY_USER is not set
 -- 
-2.7.4
+1.9.1
 
