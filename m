@@ -1,78 +1,73 @@
-Return-Path: <dan.carpenter@oracle.com>
-Date: Tue, 15 Nov 2016 14:02:12 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: eraretuya@gmail.com, Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Subject: [bug report] staging: iio: ad9832: clean-up regulator 'reg'
-Message-ID: <20161115110212.GA776@mwanda>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:11045 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S941003AbcKOPdR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 10:33:17 -0500
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <linux-iio@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
+        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
+        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
+Subject: [PATCH v3 6/6] ARM: dts: stm32f429: enable adc on eval board
+Date: Tue, 15 Nov 2016 16:31:01 +0100
+Message-ID: <1479223861-21747-7-git-send-email-fabrice.gasnier@st.com>
+In-Reply-To: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-[ This patch generates a GCC warning as well...  I have no idea how we
-  failed so badly.  -dan ]
+Enable analog to digital converter on stm32f429i-eval board.
 
-Hello Eva Rachel Retuya,
+Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+---
+ arch/arm/boot/dts/stm32429i-eval.dts | 25 +++++++++++++++++++++++++
+ 1 file changed, 25 insertions(+)
 
-The patch 43a07e48af44: "staging: iio: ad9832: clean-up regulator
-'reg'" from Nov 1, 2016, leads to the following static checker
-warning:
+diff --git a/arch/arm/boot/dts/stm32429i-eval.dts b/arch/arm/boot/dts/stm32429i-eval.dts
+index 6bfc595..c144735 100644
+--- a/arch/arm/boot/dts/stm32429i-eval.dts
++++ b/arch/arm/boot/dts/stm32429i-eval.dts
+@@ -65,6 +65,20 @@
+ 		serial0 = &usart1;
+ 	};
+ 
++	regulators {
++		compatible = "simple-bus";
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		reg_vref: regulator@0 {
++			compatible = "regulator-fixed";
++			reg = <0>;
++			regulator-name = "vref";
++			regulator-min-microvolt = <3300000>;
++			regulator-max-microvolt = <3300000>;
++		};
++	};
++
+ 	leds {
+ 		compatible = "gpio-leds";
+ 		green {
+@@ -123,3 +137,14 @@
+ 	pinctrl-names = "default";
+ 	status = "okay";
+ };
++
++&adc {
++	pinctrl-names = "default";
++	pinctrl-0 = <&adc3_in8_pin>;
++	vref-supply = <&reg_vref>;
++	status = "okay";
++	adc3: adc@200 {
++		st,adc-channels = <8>;
++		status = "okay";
++	};
++};
+-- 
+1.9.1
 
-	drivers/staging/iio/frequency/ad9832.c:214 ad9832_probe()
-	error: potentially dereferencing uninitialized 'st'.
-
-drivers/staging/iio/frequency/ad9832.c
-   202  static int ad9832_probe(struct spi_device *spi)
-   203  {
-   204          struct ad9832_platform_data *pdata = dev_get_platdata(&spi->dev);
-   205          struct iio_dev *indio_dev;
-   206          struct ad9832_state *st;
-   207          int ret;
-   208  
-   209          if (!pdata) {
-   210                  dev_dbg(&spi->dev, "no platform data?\n");
-   211                  return -ENODEV;
-   212          }
-   213  
-   214          st->avdd = devm_regulator_get(&spi->dev, "avdd");
-                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-Oops.
-
-   215          if (IS_ERR(st->avdd))
-   216                  return PTR_ERR(st->avdd);
-   217  
-   218          ret = regulator_enable(st->avdd);
-   219          if (ret) {
-   220                  dev_err(&spi->dev, "Failed to enable specified AVDD supply\n");
-   221                  return ret;
-   222          }
-   223  
-   224          st->dvdd = devm_regulator_get(&spi->dev, "dvdd");
-   225          if (IS_ERR(st->dvdd)) {
-   226                  ret = PTR_ERR(st->dvdd);
-   227                  goto error_disable_avdd;
-   228          }
-   229  
-   230          ret = regulator_enable(st->dvdd);
-   231          if (ret) {
-   232                  dev_err(&spi->dev, "Failed to enable specified DVDD supply\n");
-   233                  goto error_disable_avdd;
-   234          }
-   235  
-   236          indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-   237          if (!indio_dev) {
-   238                  ret = -ENOMEM;
-   239                  goto error_disable_dvdd;
-   240          }
-   241          spi_set_drvdata(spi, indio_dev);
-   242          st = iio_priv(indio_dev);
-                ^^^^^^^^^^^^^^^^^^^^^^^^
-"st" isn't initialized until here.
-
-
-   243          st->mclk = pdata->mclk;
-   244          st->spi = spi;
-
-
-regards,
-dan carpenter
