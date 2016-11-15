@@ -1,46 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f175.google.com ([209.85.220.175]:36704 "EHLO
-        mail-qk0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934858AbcKNQ6j (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 14 Nov 2016 11:58:39 -0500
-Received: by mail-qk0-f175.google.com with SMTP id n21so102820968qka.3
-        for <linux-iio@vger.kernel.org>; Mon, 14 Nov 2016 08:58:39 -0800 (PST)
+Received: from mail-oi0-f66.google.com ([209.85.218.66]:34315 "EHLO
+        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752524AbcKOWQZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 17:16:25 -0500
+Date: Tue, 15 Nov 2016 16:16:21 -0600
+From: Rob Herring <robh@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Sebastian Reichel <sre@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: Re: [PATCH v7 7/9] dt-bindings: input: move ads7846 bindings to
+ touchscreen subdirectory
+Message-ID: <20161115221621.pedbsb5jgskla3av@rob-hp-laptop>
+References: <cover.1478890925.git.hns@goldelico.com>
+ <3a0b4f67ae4a40b6fea2f61089ef03cc88f29294.1478890925.git.hns@goldelico.com>
 MIME-Version: 1.0
-In-Reply-To: <c9a4b2b3-6c4b-4c3c-da79-eba8398a5a0d@kernel.org>
-References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
- <1478846078-22207-2-git-send-email-eraretuya@gmail.com> <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de>
- <c9a4b2b3-6c4b-4c3c-da79-eba8398a5a0d@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 14 Nov 2016 17:58:38 +0100
-Message-ID: <CACRpkdY6dJGGAZtVNrYwV9uBzGYRH40aqCtL6XZkEQS2uaiK4w@mail.gmail.com>
-Subject: Re: [PATCH 1/2] staging: iio: ad7606: replace range/range_available
- with corresponding scale
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Greg KH <gregkh@linuxfoundation.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <3a0b4f67ae4a40b6fea2f61089ef03cc88f29294.1478890925.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 12, 2016 at 3:24 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+On Fri, Nov 11, 2016 at 08:02:04PM +0100, H. Nikolaus Schaller wrote:
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+>  Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt | 0
+>  1 file changed, 0 insertions(+), 0 deletions(-)
+>  rename Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt (100%)
+> 
+> diff --git a/Documentation/devicetree/bindings/input/ads7846.txt b/Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
+> similarity index 100%
+> rename from Documentation/devicetree/bindings/input/ads7846.txt
+> rename to Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
+> -- 
+> 2.7.3
 
-> Is it just me who thought, we need a fixed GPI like a fixed regulator?
-> Would allow this sort of fixed wiring to be simply defined.
->
-> Linus, worth exploring?
-
-So if fixed regulator is for a voltage provider, this would be
-pretty much the inverse: deciding for a voltage range by switching
-a GPIO.
-
-No previous experience with that, it should be outside of the
-GPIO subsystem for sure...
-
-Yours,
-Linus Walleij
+Acked-by: Rob Herring <robh@kernel.org> 
