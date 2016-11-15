@@ -1,64 +1,147 @@
-Return-Path: <masneyb@onstation.org>
-Date: Fri, 18 Nov 2016 09:03:26 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Jon Brenner <jbrenner@taosinc.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
-	kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: tsl2583: off by one in
- in_illuminance_lux_table_store()
-Message-ID: <20161118140326.GA20458@basecamp.onstation.org>
-References: <20161118115153.GC3281@mwanda>
+Return-Path: <stefan.wahren@i2se.com>
+Date: Tue, 15 Nov 2016 20:33:41 +0100 (CET)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+	linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, linux-input@vger.kernel.org, pmeerw@pmeerw.net,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	dmitry.torokhov@gmail.com, harald@ccbib.org,
+	fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+	marex@denx.de
+Message-ID: <657653985.202232.6f7a3a9a-5120-4cc2-a76b-92a516ab6500.open-xchange@email.1und1.de>
+In-Reply-To: <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
+References: <cover.1478071676.git.ksenija.stanojevic@gmail.com>
+ <c18883dfacaaf40ab98cbb4938d5164a95a817d7.1478071676.git.ksenija.stanojevic@gmail.com>
+Subject: Re: [PATCH v9 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161118115153.GC3281@mwanda>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Nov 18, 2016 at 02:51:54PM +0300, Dan Carpenter wrote:
-> The value[] array has "max_ints" elements so this should be >= instead
-> of >.
+Hi Ksenija,
+
+> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 2. November 2016 um
+> 08:38 geschrieben:
 > 
-> Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 > 
-> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-> index 0b87f6a..faef6bd 100644
-> --- a/drivers/iio/light/tsl2583.c
-> +++ b/drivers/iio/light/tsl2583.c
-> @@ -580,7 +580,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
->  	 * and the last table entry is all 0.
->  	 */
->  	n = value[0];
-> -	if ((n % 3) || n < 6 || n > max_ints) {
-> +	if ((n % 3) || n < 6 || n >= max_ints) {
->  		dev_err(dev,
->  			"%s: The number of entries in the lux table must be a multiple of 3 and within the range [6, %d]\n",
->  			__func__, max_ints);
+> Add core files for low resolution analog-to-digital converter (mxs-lradc)
+> MFD driver.
+> 
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> ---
+> Changes in v9:
+>  - improve commit message.
+> 
+> Changes in v8:
+>  - rebase onto 4.9-rc1
+> 
+> Changes in v7:
+>  - define macros ADC_CELL and TSC_CELL
+>  - remove one cell and dynamically set them in the switch()
+>  - fail in the touchscreen driver instead of mfd driver if
+>    hardware doesn't contain a touchscreen
+> 
+> Changes in v6:
+>  - update copyright
+>  - add kernel-doc header for struct mxs-lradc
+>  - add error message
+>  - change EINVAL to ENODEV
+>  - use PLATFORM_DEVID_NONE instead -1
+>  - cosmetic fixes
+> 
+> Changes in v5:
+>  - use DEFINE_RES_MEM
+>  - don't pass ioreammaped adress to platform cells
+>  - move comment outside of struct mxs_lradc
+>  - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
+>    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
+> 
+> Changes in v4:
+>  - update copyright
+>  - use DEFINE_RES_IRQ_NAMED
+>  - remove mxs_lradc_add_device function
+>  - use struct mfd_cell in static form
+>  - improve spacing
+>  - remove unnecessary comment
+>  - remove platform_get_irq
+>  - remove touch_ret and use ret instead
+>  - rename use_touchscreen to touchscreen_wire
+>  - use goto statements
+>  - remove irq[13], irq_count and irq_name from struct mxs_lradc
+>  - remove all defines from inside the struct definition
+> 
+> Changes in v3:
+>  - add note to commit message
+>  - move switch statement into if(touch_ret == 0) branch
+>  - add MODULE_AUTHOR
+> 
+> Changes in v2:
+>  - do not change spacing in Kconfig
+>  - make struct mfd_cell part of struct mxs_lradc
+>  - use switch instead of if in mxs_lradc_irq_mask
+>  - use only necessary header files in mxs_lradc.h
+>  - use devm_mfd_add_device
+>  - use separate function to register mfd device
+>  - change licence to GPL
+>  - add copyright
+> 
+>  drivers/mfd/Kconfig           |  17 +++
+>  drivers/mfd/Makefile          |   1 +
+>  drivers/mfd/mxs-lradc.c       | 249
+> ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/mfd/mxs-lradc.h | 203 ++++++++++++++++++++++++++++++++++
+>  4 files changed, 470 insertions(+)
+>  create mode 100644 drivers/mfd/mxs-lradc.c
+>  create mode 100644 include/linux/mfd/mxs-lradc.h
+> 
+> ...
+> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
+> new file mode 100644
+> index 0000000..ffc8f2e
+> --- /dev/null
+> +++ b/drivers/mfd/mxs-lradc.c
+> @@ -0,0 +1,249 @@
+> ...
+> +
+> +static const struct of_device_id mxs_lradc_dt_ids[] = {
+> +	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
+> +	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
+> +
+> +static int mxs_lradc_probe(struct platform_device *pdev)
+> +{
+> +	const struct of_device_id *of_id;
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+> +	struct mxs_lradc *lradc;
+> +	struct mfd_cell *cells = mxs_cells;
+> +	int ret = 0;
+> +	u32 ts_wires = 0;
+> +
+> +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
+> +	if (!lradc)
+> +		return -ENOMEM;
+> +
+> +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
 
-Hi Dan,
-   Good catch! I believe that this should use a different fix though.
-The definition of value in in_illuminance_lux_table_store() should be
-changed from:
+since you already plan to make a V10, please add a NULL check here.
+So we can avoid a possible NULL pointer dereference in the following line.
 
-int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3];
+Thanks
+Stefan
 
-to:
-
-int value[(TSL2583_MAX_LUX_TABLE_ENTRIES * 3) + 1];
-
-This will allow storing the extra integer from get_options() containing
-the integer count.
-
-Otherwise, with your propsed change, someone would only be able to use
-9 entries in the device lux table rather than the 10 that are set aside.
-
-Also, this may be (well is) nit picking, but I had [6, 33] in the error
-message to mark the range as inclusive on both ends. If it was exclusive
-on the upper end, then the error message should have also been changed
-to be [6, 33).
-
-Brian
+> +	lradc->soc = (enum mxs_lradc_id)of_id->data;
+> +
+> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(lradc->clk)) {
+> +		dev_err(dev, "Failed to get the delay unit clock\n");
+> +		return PTR_ERR(lradc->clk);
+> +	}
+> +
+> +	ret = clk_prepare_enable(lradc->clk);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to enable the delay unit clock\n");
+> +		return ret;
+> +	}
+> +
