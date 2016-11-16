@@ -1,100 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:18737 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S941019AbcKOPdV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 15 Nov 2016 10:33:21 -0500
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-To: <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-CC: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <fabrice.gasnier@st.com>
-Subject: [PATCH v3 5/6] ARM: dts: stm32f429: Add adc support
-Date: Tue, 15 Nov 2016 16:31:00 +0100
-Message-ID: <1479223861-21747-6-git-send-email-fabrice.gasnier@st.com>
-In-Reply-To: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
-References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lorenzo.bianconi83@gmail.com>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	lorenzo.bianconi@st.com
+Subject: [PATCH v2] iio: common: st_sensors: fix channel data parsing
+Date: Wed, 16 Nov 2016 22:15:28 +0100
+Message-Id: <1479330928-7208-1-git-send-email-lorenzo.bianconi@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add adc support & pinctrl analog phandle (adc3_in8) to stm32f429.
+Using realbits as i2c/spi read len, when that value is not byte aligned
+(e.g 12 bits), lead to skip msb part of out data registers.
+Fix this taking into account scan_type.shift in addition to
+scan_type.realbits as read length:
 
-Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+read_len = DIV_ROUND_UP(realbits + shift, 8)
+
+This fix has been tested on 8, 12, 16, 24 bit sensors
+
+Fixes: e7385de5291e ("iio:st_sensors: align on storagebits boundaries")
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
 ---
- arch/arm/boot/dts/stm32f429.dtsi | 49 ++++++++++++++++++++++++++++++++++++++++
- 1 file changed, 49 insertions(+)
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 4 +++-
+ drivers/iio/common/st_sensors/st_sensors_core.c   | 4 +++-
+ 2 files changed, 6 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
-index 336ee4f..f198132 100644
---- a/arch/arm/boot/dts/stm32f429.dtsi
-+++ b/arch/arm/boot/dts/stm32f429.dtsi
-@@ -172,6 +172,49 @@
- 			status = "disabled";
- 		};
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index fe7775b..df40452 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -30,7 +30,9 @@ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
  
-+		adc: adc@40012000 {
-+			compatible = "st,stm32f4-adc-core";
-+			reg = <0x40012000 0x400>;
-+			interrupts = <18>;
-+			clocks = <&rcc 0 168>;
-+			clock-names = "adc";
-+			interrupt-controller;
-+			#interrupt-cells = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+			status = "disabled";
-+
-+			adc1: adc@0 {
-+				compatible = "st,stm32f4-adc";
-+				#io-channel-cells = <1>;
-+				reg = <0x0>;
-+				clocks = <&rcc 0 168>;
-+				interrupt-parent = <&adc>;
-+				interrupts = <0>;
-+				status = "disabled";
-+			};
-+
-+			adc2: adc@100 {
-+				compatible = "st,stm32f4-adc";
-+				#io-channel-cells = <1>;
-+				reg = <0x100>;
-+				clocks = <&rcc 0 169>;
-+				interrupt-parent = <&adc>;
-+				interrupts = <1>;
-+				status = "disabled";
-+			};
-+
-+			adc3: adc@200 {
-+				compatible = "st,stm32f4-adc";
-+				#io-channel-cells = <1>;
-+				reg = <0x200>;
-+				clocks = <&rcc 0 170>;
-+				interrupt-parent = <&adc>;
-+				interrupts = <2>;
-+				status = "disabled";
-+			};
-+		};
-+
- 		syscfg: system-config@40013800 {
- 			compatible = "syscon";
- 			reg = <0x40013800 0x400>;
-@@ -332,6 +375,12 @@
- 					slew-rate = <2>;
- 				};
- 			};
-+
-+			adc3_in8_pin: adc@200 {
-+				pins {
-+					pinmux = <STM32F429_PF10_FUNC_ANALOG>;
-+				};
-+			};
- 		};
+ 	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
+ 		const struct iio_chan_spec *channel = &indio_dev->channels[i];
+-		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
++		unsigned int bytes_to_read =
++			DIV_ROUND_UP(channel->scan_type.realbits +
++				     channel->scan_type.shift, 8);
+ 		unsigned int storage_bytes =
+ 			channel->scan_type.storagebits >> 3;
  
- 		rcc: rcc@40023810 {
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 975a1f1..d5cf7f3 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -483,8 +483,10 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 	int err;
+ 	u8 *outdata;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+-	unsigned int byte_for_channel = ch->scan_type.realbits >> 3;
++	unsigned int byte_for_channel;
+ 
++	byte_for_channel = DIV_ROUND_UP(ch->scan_type.realbits +
++					ch->scan_type.shift, 8);
+ 	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
+ 	if (!outdata)
+ 		return -ENOMEM;
 -- 
-1.9.1
-
+2.7.4
