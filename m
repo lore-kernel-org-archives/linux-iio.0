@@ -1,65 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35647 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938857AbcKLPyd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 12 Nov 2016 10:54:33 -0500
-Subject: Re: [PATCH 1/2] iio: bmi160: Support hardware fifo
-To: Marcin Niestroj <m.niestroj@grinn-global.com>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <20161103112527.29623-1-m.niestroj@grinn-global.com>
- <alpine.DEB.2.02.1611031252480.11256@pmeerw.net>
- <eed0df11-6520-c3fa-c6cd-46c13dcddc1f@grinn-global.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-db5eur01on0136.outbound.protection.outlook.com ([104.47.2.136]:64100
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S938515AbcKPXtJ (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 16 Nov 2016 18:49:09 -0500
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sanchayan Maity <maitysanchayan@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cc8b323a-fd59-703b-cb4b-1ad0a5a96717@kernel.org>
-Date: Sat, 12 Nov 2016 15:53:31 +0000
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>
+Subject: [RFC PATCH 3/7] iio: inkern: api for manipulating ext_info of iio channels
+Date: Thu, 17 Nov 2016 00:48:27 +0100
+Message-ID: <1479340111-1259-4-git-send-email-peda@axentia.se>
+In-Reply-To: <1479340111-1259-1-git-send-email-peda@axentia.se>
+References: <1479340111-1259-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <eed0df11-6520-c3fa-c6cd-46c13dcddc1f@grinn-global.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/11/16 14:16, Marcin Niestroj wrote:
-> Hi,
-> Thanks for review, below are my comments.
-> 
-> On 03.11.2016 13:09, Peter Meerwald-Stadler wrote:
->>
->>> This patch was developed primarily based on bmc150_accel hardware fifo
->>> implementation.
->>
->> parts of the patch are cleanup and bugfixing; should be separate?
->>
->> more comments below
->>
->>> IRQ handler was added, which for now is responsible only for handling
->>> watermark interrupts. The BMI160 chip has two interrupt outputs. By
->>> default INT is considered to be connected. If INT2 is used instead, the
->>> interrupt-names device-tree property can be used to specify that.
->>>
->>> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
->>> ---
-<snip>
->>> +    /* Handle demux */
->>> +    timestamp = last_timestamp - (last_samples * data->fifo_sample_period);
->>> +    buffer_iter = buffer;
->>> +    for (i = 0; i < fifo_samples; i++) {
->>> +        u8 tmp_buf[indio_dev->scan_bytes];
->>
->> non-constant array size, is this allowed these days?
-> 
-> I am not sure if this is permitted in kernel. [1] says that ISO C99 adds arrays of variable length.
-> 
-> The reason I have used it is that iio_push_to_buffers_with_timestamp uses indio_dev->scan_bytes to write timestamp to last element in array.
-> One of the possiblities to get rid of non-constant array size is to determine maximum size. Is that what I should do?
-Yes.
-> 
-> [1] https://gcc.gnu.org/onlinedocs/gcc/Variable-Length.html
-> 
->>
-<snip>
+Extend the inkern api with functions for reading and writing ext_info
+of iio channels.
+---
+ drivers/iio/inkern.c         | 40 ++++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/consumer.h |  5 +++++
+ 2 files changed, 45 insertions(+)
+
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index cfca17ba2535..5348735281ee 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -850,3 +850,43 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iio_write_channel_raw);
++
++int iio_read_channel_ext_info(struct iio_channel *chan,
++			      const char *attr, char *buf)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	if (!chan->channel->ext_info)
++		return -EINVAL;
++
++	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
++		if (strcmp(attr, ext_info->name))
++			continue;
++
++		return ext_info->read(chan->indio_dev, ext_info->private,
++				      chan->channel, buf);
++	}
++
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(iio_read_channel_ext_info);
++
++int iio_write_channel_ext_info(struct iio_channel *chan,
++			       const char *attr, const char *buf, size_t len)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	if (!chan->channel->ext_info)
++		return -EINVAL;
++
++	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
++		if (strcmp(attr, ext_info->name))
++			continue;
++
++		return ext_info->write(chan->indio_dev, ext_info->private,
++				       chan->channel, buf, len);
++	}
++
++	return -EINVAL;
++}
++EXPORT_SYMBOL_GPL(iio_write_channel_ext_info);
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index 9a4f336d8b4a..3859981cea0a 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -299,4 +299,9 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
+ int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+ 	int *processed, unsigned int scale);
+ 
++int iio_read_channel_ext_info(struct iio_channel *chan,
++			      const char *attr, char *buf);
++int iio_write_channel_ext_info(struct iio_channel *chan,
++			       const char *attr, const char *buf, size_t len);
++
+ #endif
+-- 
+2.1.4
+
