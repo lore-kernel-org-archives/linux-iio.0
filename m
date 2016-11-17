@@ -1,31 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:56768 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753033AbcKPQXR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 16 Nov 2016 11:23:17 -0500
-Date: Wed, 16 Nov 2016 17:22:08 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] 3rd set of new drivers, features and cleanups for IIO in
- the 4.10 cycle
-Message-ID: <20161116162208.GA17075@kroah.com>
-References: <f02cb1e1-dc13-8bcc-f12e-1ef10a1ddc82@kernel.org>
+Return-Path: <lars@metafoo.de>
+Subject: Re: [RFC PATCH 4/7] dt-bindings: iio: iio-mux: document iio-mux
+ bindings
+To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
+References: <1479340111-1259-1-git-send-email-peda@axentia.se>
+ <1479340111-1259-5-git-send-email-peda@axentia.se>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>, Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>, Peter Meerwald-Stadler
+ <pmeerw@pmeerw.net>, Arnd Bergmann <arnd@arndb.de>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-i2c@vger.kernel.org,
+ devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <e09b7aa4-8e98-b07c-d0d8-b24d619f9e00@metafoo.de>
+Date: Thu, 17 Nov 2016 12:40:15 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <f02cb1e1-dc13-8bcc-f12e-1ef10a1ddc82@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <1479340111-1259-5-git-send-email-peda@axentia.se>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sun, Nov 13, 2016 at 08:04:51PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 993403b9798123db4eb9d9bba1ab41f388dc1ea1:
+On 11/17/2016 12:48 AM, Peter Rosin wrote:
+> ---
+>  .../bindings/iio/multiplexer/iio-mux.txt           | 59 ++++++++++++++++++++++
+>  1 file changed, 59 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
 > 
->   staging: lustre: fixed shadowed variable in socklnd_cb.c (2016-11-07 11:40:49 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.10c
+> diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+> new file mode 100644
+> index 000000000000..2f5c7fc35a42
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+> @@ -0,0 +1,59 @@
+> +IIO multiplexer bindings
+> +
+> +If a multiplexer is used to select when hardware signal is fed to
+> +e.g. an ADC channel, these bindings describe that situation.
+> +
+> +Required properties:
+> +- compatible : "iio-mux"
+> +- io-channels : Channel node of the parent channel that has multiplexed
+> +		input.
+> +- io-channel-names : Should be "parent".
+> +- control-muxes : Node of the multiplexer that controls the input signal.
+> +- control-mux-names : Should be "mux".
+> +- #address-cells = <1>;
+> +- #size-cells = <0>;
+> +
+> +Required properties for iio-mux child nodes:
+> +- reg : The multiplexer number.
+> +
+> +Optional properties for iio-mux child nodes:
+> +- iio-ext-info : Array of string pairs, the first item in each pair is the
+> +		 iio ext_info attribute name, and the second item in each
+> +		 pair is the iio ext_info value for that attribute. The
+> +		 mux will write these ext_info values to the corresponding
+> +		 ext_info attributes on every multiplexer switch.
 
-Pulled and pushed out, thanks.
-
-greg k-h
+This can't go into the devicetree in its current form as it exposes
+implementation details of the Linux kernel drivers.
