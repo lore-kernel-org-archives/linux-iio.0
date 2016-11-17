@@ -1,83 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46384 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752559AbcKSLYn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 06:24:43 -0500
-Subject: Re: [PATCH] staging: iio: ad9832:
-To: Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
-        lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org, eraretuya@gmail.com
-References: <20161119110834.25025-1-christophe.jaillet@wanadoo.fr>
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, kernel-janitors@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <57c94e39-fbc5-d354-41a7-c1d1a747fc52@kernel.org>
-Date: Sat, 19 Nov 2016 11:24:40 +0000
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
+ Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Jonathan
+ Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Lars-Peter
+ Clausen" <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, "Arnd
+ Bergmann" <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
+Subject: [RFC PATCH v2 6/7] dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
+Date: Thu, 17 Nov 2016 22:48:08 +0100
+Message-ID: <1479419289-17553-7-git-send-email-peda@axentia.se>
+In-Reply-To: <1479419289-17553-1-git-send-email-peda@axentia.se>
+References: <1479419289-17553-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <20161119110834.25025-1-christophe.jaillet@wanadoo.fr>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 19/11/16 11:08, Christophe JAILLET wrote:
-> Commit a98461d79ba5 ("staging: iio: ad9832: add DVDD regulator") and
-> commit 43a07e48af44 ("staging: iio: ad9832: clean-up regulator 'reg'") add
-> some dereference of 'st' which is an un-initialized pointer at this point.
-> 
-> Re-order code and tweak error handling in order to allocate memory and have
-> 'st' be a valid pointer before using it.
-> 
-> Fixes: a98461d79ba5 ("staging: iio: ad9832: add DVDD regulator")
-> Fixes: 43a07e48af44 ("staging: iio: ad9832: clean-up regulator 'reg'")
-> 
-> Signed-off-by: Christophe JAILLET <christophe.jaillet@wanadoo.fr>
-Thanks but fixed already.
-6826fdbd2 "staging: iio: ad9832: allocate data before using
-Arnd Bergmann
+---
+ .../devicetree/bindings/i2c/i2c-mux-simple.txt     | 91 ++++++++++++++++++++++
+ 1 file changed, 91 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
 
-Jonathan  
-> ---
-> Compile tested only
-> ---
->  drivers/staging/iio/frequency/ad9832.c | 19 +++++++++----------
->  1 file changed, 9 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/frequency/ad9832.c b/drivers/staging/iio/frequency/ad9832.c
-> index 639047fade30..16894836f982 100644
-> --- a/drivers/staging/iio/frequency/ad9832.c
-> +++ b/drivers/staging/iio/frequency/ad9832.c
-> @@ -211,6 +211,15 @@ static int ad9832_probe(struct spi_device *spi)
->  		return -ENODEV;
->  	}
->  
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +	st = iio_priv(indio_dev);
-> +	st->mclk = pdata->mclk;
-> +	st->spi = spi;
-> +
->  	st->avdd = devm_regulator_get(&spi->dev, "avdd");
->  	if (IS_ERR(st->avdd))
->  		return PTR_ERR(st->avdd);
-> @@ -233,16 +242,6 @@ static int ad9832_probe(struct spi_device *spi)
->  		goto error_disable_avdd;
->  	}
->  
-> -	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> -	if (!indio_dev) {
-> -		ret = -ENOMEM;
-> -		goto error_disable_dvdd;
-> -	}
-> -	spi_set_drvdata(spi, indio_dev);
-> -	st = iio_priv(indio_dev);
-> -	st->mclk = pdata->mclk;
-> -	st->spi = spi;
-> -
->  	indio_dev->dev.parent = &spi->dev;
->  	indio_dev->name = spi_get_device_id(spi)->name;
->  	indio_dev->info = &ad9832_info;
-> 
-
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+new file mode 100644
+index 000000000000..fec1ab39ad64
+--- /dev/null
++++ b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+@@ -0,0 +1,91 @@
++Simple I2C Bus Mux
++
++This binding describes an I2C bus multiplexer that uses GPIOs to
++route the I2C signals.
++
++                                  .-----.  .-----.
++                                  | dev |  | dev |
++    .------------.                '-----'  '-----'
++    | SoC        |                   |        |
++    |            |          .--------+--------'
++    |   .------. |  .------+    child bus A, on MUX value set to 0
++    |   | I2C  |-|--| Mux  |
++    |   '------' |  '--+---+    child bus B, on MUX value set to 1
++    |   .------. |     |    '----------+--------+--------.
++    |   | MUX- | |     |               |        |        |
++    |   | Ctrl |-|-----+            .-----.  .-----.  .-----.
++    |   '------' |                  | dev |  | dev |  | dev |
++    '------------'                  '-----'  '-----'  '-----'
++
++Required properties:
++- compatible: i2c-mux-simple,mux-locked or i2c-mux-simple,parent-locked
++- i2c-parent: The phandle of the I2C bus that this multiplexer's master-side
++  port is connected to.
++- control-muxes : Node of the multiplexer that controls "Mux".
++- control-mux-names : Should be "mux".
++* Standard I2C mux properties. See i2c-mux.txt in this directory.
++* I2C child bus nodes. See i2c-mux.txt in this directory.
++
++Optional properties:
++- idle-state: value to set the muxer to when idle. When no value is
++  given, it defaults to the last value used.
++
++For each i2c child node, an I2C child bus will be created. They will
++be numbered based on their order in the device tree.
++
++Whenever an access is made to a device on a child bus, the value set
++in the relevant node's reg property will be fed to the mux controller.
++
++If an idle state is defined, using the idle-state (optional) property,
++whenever an access is not being made to a device on a child bus, the
++mux controller will be set according to the idle value.
++
++If an idle state is not defined, the most recently used value will be
++left programmed into hardware whenever no access is being made to a
++device on a child bus.
++
++Example:
++	control_i2c_mux: control-i2c-mux {
++		compatible = "mux-gpio";
++
++		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
++			    <&pioA 1 GPIO_ACTIVE_HIGH>;
++	};
++
++	i2c-mux {
++		compatible = "i2c-mux-simple,mux-locked";
++		i2c-parent = <&i2c1>;
++
++		control-muxes = <&control_i2c_mux>;
++		control-mux-names = "mux";
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		i2c@1 {
++			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			ssd1307: oled@3c {
++				compatible = "solomon,ssd1307fb-i2c";
++				reg = <0x3c>;
++				pwms = <&pwm 4 3000>;
++				reset-gpios = <&gpio2 7 1>;
++				reset-active-low;
++			};
++		};
++
++		i2c@3 {
++			reg = <3>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			pca9555: pca9555@20 {
++				compatible = "nxp,pca9555";
++				gpio-controller;
++				#gpio-cells = <2>;
++				reg = <0x20>;
++			};
++		};
++	};
+-- 
+2.1.4
