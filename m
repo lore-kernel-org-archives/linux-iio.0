@@ -1,110 +1,42 @@
-Return-Path: <srinivas.pandruvada@linux.intel.com>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: accel: hid-sensor-accel-3d: Add timestamp
-Date: Fri, 18 Nov 2016 10:33:49 -0800
-Message-Id: <1479494029-193108-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from aserp1040.oracle.com ([141.146.126.69]:42136 "EHLO
+        aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753076AbcKRLxl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 18 Nov 2016 06:53:41 -0500
+Date: Fri, 18 Nov 2016 14:51:54 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Jon Brenner <jbrenner@taosinc.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Brian Masney <masneyb@onstation.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eva Rachel Retuya <eraretuya@gmail.com>,
+        linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
+Subject: [patch] iio: tsl2583: off by one in in_illuminance_lux_table_store()
+Message-ID: <20161118115153.GC3281@mwanda>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Added timestamp channel. With this change, each sample has a timestamp.
-This timestamp can be from the sensor hub when present or local kernel
-timestamp. HID sensors can send timestamp with input data using usage id
-HID_USAGE_SENSOR_TIME_TIMESTAMP.
+The value[] array has "max_ints" elements so this should be >= instead
+of >.
 
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/accel/hid-sensor-accel-3d.c | 29 +++++++++++++++++++++--------
- include/linux/hid-sensor-ids.h          |  1 +
- 2 files changed, 22 insertions(+), 8 deletions(-)
+Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
+Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index ab1e238..41215b6 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -42,11 +42,13 @@ struct accel_3d_state {
- 	struct hid_sensor_hub_callbacks callbacks;
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info accel[ACCEL_3D_CHANNEL_MAX];
--	u32 accel_val[ACCEL_3D_CHANNEL_MAX];
-+	/* Reserve for 3 channels + padding + timestamp */
-+	u32 accel_val[ACCEL_3D_CHANNEL_MAX + 3];
- 	int scale_pre_decml;
- 	int scale_post_decml;
- 	int scale_precision;
- 	int value_offset;
-+	int64_t timestamp;
- };
- 
- static const u32 accel_3d_addresses[ACCEL_3D_CHANNEL_MAX] = {
-@@ -87,7 +89,8 @@ static const struct iio_chan_spec accel_3d_channels[] = {
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
- 		.scan_index = CHANNEL_SCAN_INDEX_Z,
--	}
-+	},
-+	IIO_CHAN_SOFT_TIMESTAMP(3)
- };
- 
- /* Adjust channel real bits based on report descriptor */
-@@ -192,11 +195,11 @@ static const struct iio_info accel_3d_info = {
- };
- 
- /* Function to push data to buffer */
--static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
--	int len)
-+static void hid_sensor_push_data(struct iio_dev *indio_dev, void *data,
-+				 int len, int64_t timestamp)
- {
- 	dev_dbg(&indio_dev->dev, "hid_sensor_push_data\n");
--	iio_push_to_buffers(indio_dev, data);
-+	iio_push_to_buffers_with_timestamp(indio_dev, data, timestamp);
- }
- 
- /* Callback handler to send event after all samples are received and captured */
-@@ -208,10 +211,17 @@ static int accel_3d_proc_event(struct hid_sensor_hub_device *hsdev,
- 	struct accel_3d_state *accel_state = iio_priv(indio_dev);
- 
- 	dev_dbg(&indio_dev->dev, "accel_3d_proc_event\n");
--	if (atomic_read(&accel_state->common_attributes.data_ready))
-+	if (atomic_read(&accel_state->common_attributes.data_ready)) {
-+		if (!accel_state->timestamp)
-+			accel_state->timestamp = iio_get_time_ns(indio_dev);
-+
- 		hid_sensor_push_data(indio_dev,
--				accel_state->accel_val,
--				sizeof(accel_state->accel_val));
-+				     accel_state->accel_val,
-+				     sizeof(accel_state->accel_val),
-+				     accel_state->timestamp);
-+
-+		accel_state->timestamp = 0;
-+	}
- 
- 	return 0;
- }
-@@ -236,6 +246,9 @@ static int accel_3d_capture_sample(struct hid_sensor_hub_device *hsdev,
- 						*(u32 *)raw_data;
- 		ret = 0;
- 	break;
-+	case HID_USAGE_SENSOR_TIME_TIMESTAMP:
-+		accel_state->timestamp = *(int64_t *)raw_data;
-+	break;
- 	default:
- 		break;
- 	}
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-index f2ee90a..9a3a9db 100644
---- a/include/linux/hid-sensor-ids.h
-+++ b/include/linux/hid-sensor-ids.h
-@@ -95,6 +95,7 @@
- #define HID_USAGE_SENSOR_TIME_HOUR				0x200525
- #define HID_USAGE_SENSOR_TIME_MINUTE				0x200526
- #define HID_USAGE_SENSOR_TIME_SECOND				0x200527
-+#define HID_USAGE_SENSOR_TIME_TIMESTAMP				0x200529
- 
- /* Units */
- #define HID_USAGE_SENSOR_UNITS_NOT_SPECIFIED			0x00
--- 
-2.7.4
+diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+index 0b87f6a..faef6bd 100644
+--- a/drivers/iio/light/tsl2583.c
++++ b/drivers/iio/light/tsl2583.c
+@@ -580,7 +580,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
+ 	 * and the last table entry is all 0.
+ 	 */
+ 	n = value[0];
+-	if ((n % 3) || n < 6 || n > max_ints) {
++	if ((n % 3) || n < 6 || n >= max_ints) {
+ 		dev_err(dev,
+ 			"%s: The number of entries in the lux table must be a multiple of 3 and within the range [6, %d]\n",
+ 			__func__, max_ints);
