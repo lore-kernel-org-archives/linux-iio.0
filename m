@@ -1,54 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46690 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46732 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752444AbcKSM10 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:27:26 -0500
-Subject: Re: [PATCH v2] iio: accel: st_accel: inline per-sensor data
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Linus Walleij <linus.walleij@linaro.org>
-References: <1479119721-17935-1-git-send-email-linus.walleij@linaro.org>
- <CAA2SeNJffygfHO5T4NRP=gP3JvuO_Hfxu+ZH4k2NyeWPEogh4A@mail.gmail.com>
-Cc: linux-iio@vger.kernel.org, Giuseppe Barba <giuseppe.barba@st.com>,
+        with ESMTP id S1752711AbcKSMf1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:35:27 -0500
+Subject: Re: [PATCH 1/2] iio: st_sensors: centralize I2C probe() code
+To: Linus Walleij <linus.walleij@linaro.org>
+References: <1478773133-23034-1-git-send-email-linus.walleij@linaro.org>
+ <3761c454-10e5-ba26-bee3-2cc4df5025e0@kernel.org>
+ <CACRpkdb7T3jm93AeTyg+c6to+8DStKw_DEC56_L9JAYcST8KpQ@mail.gmail.com>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Giuseppe Barba <giuseppe.barba@st.com>,
         Denis Ciocca <denis.ciocca@st.com>,
         Gregor Boirie <gregor.boirie@parrot.com>,
         Crestez Dan Leonard <leonard.crestez@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5b623635-f12f-a044-ade5-dac14e9b618f@kernel.org>
-Date: Sat, 19 Nov 2016 12:27:22 +0000
+Message-ID: <86e5d69d-0a92-bd2f-3c26-ccafe40d69e3@kernel.org>
+Date: Sat, 19 Nov 2016 12:35:24 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAA2SeNJffygfHO5T4NRP=gP3JvuO_Hfxu+ZH4k2NyeWPEogh4A@mail.gmail.com>
+In-Reply-To: <CACRpkdb7T3jm93AeTyg+c6to+8DStKw_DEC56_L9JAYcST8KpQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 16/11/16 09:20, Lorenzo Bianconi wrote:
->> We have #defines for all the individual sensor registers and
->> value/mask pairs #defined at the top of the file and used at
->> exactly one spot.
->>
->> This is usually good if the #defines give a meaning to the
->> opaque magic numbers.
->>
->> However in this case, the semantic meaning is inherent in the
->> name of the C99-addressable fields, and that means duplication
->> of information, and only makes the code hard to maintain since
->> you every time have to add a new #define AND update the site
->> where it is to be used.
->>
->> Get rid of the #defines and just open code the values into the
->> appropriate struct elements. Make sure to explicitly address
->> the .hz and .value fields in the st_sensor_odr_avl struct
->> so that the meaning of all values is clear.
->>
->> This patch is purely syntactic should have no semantic effect.
->>
->> Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
->> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> Acked-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+On 14/11/16 12:25, Linus Walleij wrote:
+> On Sat, Nov 12, 2016 at 5:11 PM, Jonathan Cameron <jic23@kernel.org> wrote:
 > 
-Applied.
+>> Also wondering why we ended up with the divide between generic
+>> and specific where it was rather than as you have it here.
+>> oh well.  Made sense at the time I guess ;)
+> 
+> This is not even all of it. There is still a bunch of code
+> duplicated in all the subdrivers, but I'll try to collect it up
+> and centralize it better.
+Cool.
 
-Thanks.
+Feel free to bump this one if we don't here from Giuseppe or Denis over the next
+week or so and I'll take a view on it as they are probably snowed under!
 
 Jonathan
+> 
+> Yours,
+> Linus Walleij
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
