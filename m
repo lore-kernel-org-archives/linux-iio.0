@@ -1,267 +1,128 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0119.outbound.protection.outlook.com ([104.47.2.119]:18001
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S938670AbcKXS4a (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 24 Nov 2016 13:56:30 -0500
+Return-Path: <peda@axentia.se>
+Subject: Re: [RFC PATCH v2 5/7] iio: multiplexer: new iio category and iio-mux
+ driver
+To: Jonathan Cameron <jic23@kernel.org>, <linux-kernel@vger.kernel.org>
+References: <1479419289-17553-1-git-send-email-peda@axentia.se>
+ <1479419289-17553-6-git-send-email-peda@axentia.se>
+ <e462780e-305b-2cb9-1acd-c66dee312fac@kernel.org>
+CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, Mark
+ Rutland <mark.rutland@arm.com>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Arnd
+ Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>
 From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Jonathan Cameron" <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH v4 7/7] i2c: i2c-mux-simple: new driver
-Date: Thu, 24 Nov 2016 16:18:07 +0100
-Message-ID: <1480000687-5630-8-git-send-email-peda@axentia.se>
-In-Reply-To: <1480000687-5630-1-git-send-email-peda@axentia.se>
-References: <1480000687-5630-1-git-send-email-peda@axentia.se>
+Message-ID: <365eb334-d27a-e91b-7ca7-9e10c7ede9a6@axentia.se>
+Date: Sat, 19 Nov 2016 23:08:19 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <e462780e-305b-2cb9-1acd-c66dee312fac@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-This is a generic simple i2c mux that uses the generic multiplexer
-subsystem to do the muxing.
+On 2016-11-19 16:49, Jonathan Cameron wrote:
+> On 17/11/16 21:48, Peter Rosin wrote:
+>> When a multiplexer changes how an iio device behaves (for example
+>> by feeding different signals to an ADC), this driver can be used
+>> create one virtual iio channel for each multiplexer state.
+>>
+>> Depends on the generic multiplexer driver.
+> I'm not really following what all the ext info stuff in here is about.
+> Could you add a little more description of that?
 
-The user can select if the mux is to be mux-locked and parent-locked
-as described in Documentation/i2c/i2c-topology.
+Certainly. I have two needs for this series. The first one is simple
+when it comes to the iio part and complex because the mux is shared
+between three 8-way muxes on three of the inputs to an ADS-1015 ADC.
+The forth ADC line to the ADS-1015 is not muxed. Those three muxes
+are of course GPIO-controlled and share GPIO pins. And the GPIO
+pins also control an i2c bus that is muxed 8-ways as well. There are
+eight (possible) batteries, and we monitor voltage/current/temp with
+the 3 muxed ADC lines, and 8 chargers sit on i2c behind the i2c mux.
+I guess it felt natural for the HW designer to select battery with
+the GPIO lines, but that do not fit too well with the code as it
+is without this series...
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/i2c/muxes/Kconfig          |  13 +++
- drivers/i2c/muxes/Makefile         |   1 +
- drivers/i2c/muxes/i2c-mux-simple.c | 179 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 193 insertions(+)
- create mode 100644 drivers/i2c/muxes/i2c-mux-simple.c
+For this first need, the iio mux does not need ext_info.
 
-diff --git a/drivers/i2c/muxes/Kconfig b/drivers/i2c/muxes/Kconfig
-index 10b3d17ae3ea..565921e09a96 100644
---- a/drivers/i2c/muxes/Kconfig
-+++ b/drivers/i2c/muxes/Kconfig
-@@ -73,6 +73,19 @@ config I2C_MUX_REG
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called i2c-mux-reg.
- 
-+config I2C_MUX_SIMPLE
-+	tristate "Simple I2C multiplexer"
-+	select MULTIPLEXER
-+	depends on OF
-+	help
-+	  If you say yes to this option, support will be included for a
-+	  simple generic I2C multiplexer. This driver provides access to
-+	  I2C busses connected through a MUX, which is controlled
-+	  by a generic MUX controller.
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called i2c-mux-simple.
-+
- config I2C_DEMUX_PINCTRL
- 	tristate "pinctrl-based I2C demultiplexer"
- 	depends on PINCTRL && OF
-diff --git a/drivers/i2c/muxes/Makefile b/drivers/i2c/muxes/Makefile
-index 9948fa45037f..6821d95c92a3 100644
---- a/drivers/i2c/muxes/Makefile
-+++ b/drivers/i2c/muxes/Makefile
-@@ -11,5 +11,6 @@ obj-$(CONFIG_I2C_MUX_PCA9541)	+= i2c-mux-pca9541.o
- obj-$(CONFIG_I2C_MUX_PCA954x)	+= i2c-mux-pca954x.o
- obj-$(CONFIG_I2C_MUX_PINCTRL)	+= i2c-mux-pinctrl.o
- obj-$(CONFIG_I2C_MUX_REG)	+= i2c-mux-reg.o
-+obj-$(CONFIG_I2C_MUX_SIMPLE)	+= i2c-mux-simple.o
- 
- ccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG
-diff --git a/drivers/i2c/muxes/i2c-mux-simple.c b/drivers/i2c/muxes/i2c-mux-simple.c
-new file mode 100644
-index 000000000000..461d9c21b7db
---- /dev/null
-+++ b/drivers/i2c/muxes/i2c-mux-simple.c
-@@ -0,0 +1,179 @@
-+/*
-+ * Generic simple I2C multiplexer
-+ *
-+ * Copyright (C) 2016 Axentia Technologies AB
-+ *
-+ * Author: Peter Rosin <peda@axentia.se>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/i2c-mux.h>
-+#include <linux/module.h>
-+#include <linux/mux.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+
-+struct mux {
-+	struct mux_control *control;
-+
-+	bool do_not_deselect;
-+};
-+
-+static int i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
-+{
-+	struct mux *mux = i2c_mux_priv(muxc);
-+	int ret;
-+
-+	ret = mux_control_select(mux->control, chan);
-+	mux->do_not_deselect = ret < 0;
-+
-+	return ret;
-+}
-+
-+static int i2c_mux_deselect(struct i2c_mux_core *muxc, u32 chan)
-+{
-+	struct mux *mux = i2c_mux_priv(muxc);
-+
-+	if (mux->do_not_deselect)
-+		return 0;
-+
-+	return mux_control_deselect(mux->control);
-+}
-+
-+static struct i2c_adapter *mux_parent_adapter(struct device *dev)
-+{
-+	struct device_node *np = dev->of_node;
-+	struct device_node *parent_np;
-+	struct i2c_adapter *parent;
-+
-+	parent_np = of_parse_phandle(np, "i2c-parent", 0);
-+	if (!parent_np) {
-+		dev_err(dev, "Cannot parse i2c-parent\n");
-+		return ERR_PTR(-ENODEV);
-+	}
-+	parent = of_find_i2c_adapter_by_node(parent_np);
-+	of_node_put(parent_np);
-+	if (!parent)
-+		return ERR_PTR(-EPROBE_DEFER);
-+
-+	return parent;
-+}
-+
-+static const struct of_device_id i2c_mux_of_match[] = {
-+	{ .compatible = "i2c-mux-simple,parent-locked",
-+	  .data = (void *)0, },
-+	{ .compatible = "i2c-mux-simple,mux-locked",
-+	  .data = (void *)1, },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, i2c_mux_of_match);
-+
-+static int i2c_mux_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct device_node *child;
-+	const struct of_device_id *match;
-+	struct i2c_mux_core *muxc;
-+	struct mux *mux;
-+	struct i2c_adapter *parent;
-+	int children;
-+	int ret;
-+
-+	if (!np)
-+		return -ENODEV;
-+
-+	mux = devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
-+	if (!mux)
-+		return -ENOMEM;
-+
-+	mux->control = devm_mux_control_get(dev);
-+	if (IS_ERR(mux->control)) {
-+		if (PTR_ERR(mux->control) != -EPROBE_DEFER)
-+			dev_err(dev, "failed to get control-mux\n");
-+		return PTR_ERR(mux->control);
-+	}
-+
-+	parent = mux_parent_adapter(dev);
-+	if (IS_ERR(parent)) {
-+		if (PTR_ERR(parent) != -EPROBE_DEFER)
-+			dev_err(dev, "failed to get i2c-parent adapter\n");
-+		return PTR_ERR(parent);
-+	}
-+
-+	children = of_get_child_count(np);
-+
-+	muxc = i2c_mux_alloc(parent, dev, children, 0, 0,
-+			     i2c_mux_select, i2c_mux_deselect);
-+	if (!muxc) {
-+		ret = -ENOMEM;
-+		goto err_parent;
-+	}
-+	muxc->priv = mux;
-+
-+	platform_set_drvdata(pdev, muxc);
-+
-+	match = of_match_device(of_match_ptr(i2c_mux_of_match), dev);
-+	if (match)
-+		muxc->mux_locked = !!of_device_get_match_data(dev);
-+
-+	for_each_child_of_node(np, child) {
-+		u32 chan;
-+
-+		ret = of_property_read_u32(child, "reg", &chan);
-+		if (ret < 0) {
-+			dev_err(dev, "no reg property for node '%s'\n",
-+				child->name);
-+			goto err_children;
-+		}
-+
-+		if (chan >= mux->control->states) {
-+			dev_err(dev, "invalid reg %u\n", chan);
-+			ret = -EINVAL;
-+			goto err_children;
-+		}
-+
-+		ret = i2c_mux_add_adapter(muxc, 0, chan, 0);
-+		if (ret)
-+			goto err_children;
-+	}
-+
-+	dev_info(dev, "%d-port mux on %s adapter\n", children, parent->name);
-+
-+	return 0;
-+
-+err_children:
-+	i2c_mux_del_adapters(muxc);
-+err_parent:
-+	i2c_put_adapter(parent);
-+
-+	return ret;
-+}
-+
-+static int i2c_mux_remove(struct platform_device *pdev)
-+{
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
-+
-+	i2c_mux_del_adapters(muxc);
-+	i2c_put_adapter(muxc->parent);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver i2c_mux_driver = {
-+	.probe	= i2c_mux_probe,
-+	.remove	= i2c_mux_remove,
-+	.driver	= {
-+		.name	= "i2c-mux-simple",
-+		.of_match_table = i2c_mux_of_match,
-+	},
-+};
-+module_platform_driver(i2c_mux_driver);
-+
-+MODULE_DESCRIPTION("Simple I2C multiplexer driver");
-+MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
-+MODULE_LICENSE("GPL v2");
--- 
-2.1.4
+The second need is simple in the mux part but worse in the iio
+department. It's another 8-way mux that simply muxes an ADC line,
+so that is simple. However, the ADC line is the envelope detector
+that just got added to linux-next, and it has two ext_info
+attributes that needs to be set differently for different mux
+states. Two of the states need "invert" to be false, the rest need
+"invert" to be true. And it is also preferable to have different
+values for "compare_interval" for different mux states since the
+signals on the diffrent mux states have the different frequency
+characteristics.
 
+True, I could have the ext-info attributes go straight through
+the mux, and just start by writing values to "invert"
+and "compare_interval", and only then read a sample. But then I
+would need to lock out other users during the duration of this
+transaction. I believe that the best place to put that lock is
+in the iio mux (when it locks its control-mux) and not leave it
+to userspace to solve this in some brittle cooperative manner.
+
+> Perhaps an example of how it is used and what the resulting interface
+> looks like?
+
+The resulting interface is just a copy of the (ext_info) interface
+exposed by the parent channel (with a cache that is rewritten to
+the parent on every iio mux state change). I have plans to add code
+to not rewrite ext_info attributes that have never been changed in
+any mux state.
+
+Below I have an example file listing.
+
+device0 is a dpot (mcp4561).
+device1 is a dac  (dpot-dac, wrapping the above dpot).
+device2 is an adc (envelope-detector, wrapping the above dac)
+device3 is a mux  (iio-mux, wrapping the above adc)
+
+The 8-way iio-mux have no signals attached on mux states 0 and 1, which
+is why the first channel for device 3 is in_altvoltage2.
+
+Ultimately, I would like some knob to hide devices 0, 1 and 2 from
+userspace. They need/should only be visible to in-kernel users. Or
+is there such a knob already?
+
+Cheers,
+Peter
+
+$ ls /sys/bus/iio/devices/iio\:device*
+/sys/bus/iio/devices/iio:device0:
+dev                           out_resistance_raw_available
+name                          out_resistance_scale
+of_node                       power
+out_resistance0_raw           subsystem
+out_resistance1_raw           uevent
+
+/sys/bus/iio/devices/iio:device1:
+dev                         out_voltage0_scale
+name                        power
+of_node                     subsystem
+out_voltage0_raw            uevent
+out_voltage0_raw_available
+
+/sys/bus/iio/devices/iio:device2:
+dev                              name
+in_altvoltage0_compare_interval  of_node
+in_altvoltage0_invert            power
+in_altvoltage0_raw               subsystem
+in_altvoltage0_scale             uevent
+
+/sys/bus/iio/devices/iio:device3:
+dev                              in_altvoltage5_raw
+in_altvoltage2_compare_interval  in_altvoltage5_scale
+in_altvoltage2_invert            in_altvoltage6_compare_interval
+in_altvoltage2_raw               in_altvoltage6_invert
+in_altvoltage2_scale             in_altvoltage6_raw
+in_altvoltage3_compare_interval  in_altvoltage6_scale
+in_altvoltage3_invert            in_altvoltage7_compare_interval
+in_altvoltage3_raw               in_altvoltage7_invert
+in_altvoltage3_scale             in_altvoltage7_raw
+in_altvoltage4_compare_interval  in_altvoltage7_scale
+in_altvoltage4_invert            name
+in_altvoltage4_raw               of_node
+in_altvoltage4_scale             power
+in_altvoltage5_compare_interval  subsystem
+in_altvoltage5_invert            uevent
