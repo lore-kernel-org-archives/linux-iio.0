@@ -1,122 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0105.outbound.protection.outlook.com ([104.47.2.105]:6976
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752256AbcKRBZS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 17 Nov 2016 20:25:18 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Jonathan Cameron" <jic23@kernel.org>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46712 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752694AbcKSMcp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:32:45 -0500
+Subject: Re: [PATCH 1/2] staging: iio: ad7606: replace range/range_available
+ with corresponding scale
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Lars-Peter Clausen <lars@metafoo.de>
+References: <1478846078-22207-1-git-send-email-eraretuya@gmail.com>
+ <1478846078-22207-2-git-send-email-eraretuya@gmail.com>
+ <eef1f86d-a0bf-9c22-4391-aca2680972d5@metafoo.de>
+ <c9a4b2b3-6c4b-4c3c-da79-eba8398a5a0d@kernel.org>
+ <CACRpkdY6dJGGAZtVNrYwV9uBzGYRH40aqCtL6XZkEQS2uaiK4w@mail.gmail.com>
+ <b59ff168-c82e-26ed-9192-a491d97c5d6d@metafoo.de>
+ <CACRpkdbWqxUWc+40AYSY7XX2ZFYSZEBcU3FusOrunG+-GCZGwQ@mail.gmail.com>
+Cc: Eva Rachel Retuya <eraretuya@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "Arnd Bergmann" <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-Subject: [RFC PATCH v2 1/7] dt-bindings: document devicetree bindings for mux-gpio
-Date: Thu, 17 Nov 2016 22:48:03 +0100
-Message-ID: <1479419289-17553-2-git-send-email-peda@axentia.se>
-In-Reply-To: <1479419289-17553-1-git-send-email-peda@axentia.se>
-References: <1479419289-17553-1-git-send-email-peda@axentia.se>
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Greg KH <gregkh@linuxfoundation.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <Mark.Rutland@arm.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <f381ab09-7bad-acea-ead2-a6a370598918@kernel.org>
+Date: Sat, 19 Nov 2016 12:32:42 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <CACRpkdbWqxUWc+40AYSY7XX2ZFYSZEBcU3FusOrunG+-GCZGwQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
----
- .../devicetree/bindings/misc/mux-gpio.txt          | 79 ++++++++++++++++++++++
- 1 file changed, 79 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/mux-gpio.txt
+On 14/11/16 23:12, Linus Walleij wrote:
+> On Mon, Nov 14, 2016 at 7:53 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> 
+>> It's about figuring out the setting of a "GPIO" that can't be changed from
+>> software.
+>>
+>> Devices sometimes, instead of a configuration bus like I2C or SPI, use
+>> simple input pins, that can either be set to high or low, to allow software
+>> the state of the device. The GPIO API is typically used to configure these pins.
+>>
+>> This works fine as long as the pin is connected to a GPIO. But sometimes the
+>> system designer decides that a settings does not need to be configurable, in
+>> this case the pin will be tied to logic low or high directly on the PCB
+>> without any GPIO controller being involved.
+>>
+>> Sometimes a driver wants to know how the pin is wired up so it can report to
+>> userspace this part runs in the following mode and the mode can't be
+>> changed. In a sense it is like a reverse GPIO hog.
+>>
+>> Considering that this is a common usecase the question was how this can be
+>> implemented in a driver independent way to avoid code duplication and
+>> slightly different variations of what is effectively the same DT/ACPI binding.
+>>
+>> E.g. lets say for a configurable pin you use
+>>
+>>         range-gpio = <&gpio ...>;
+>>
+>> and for a static pin
+>>
+>>         range-gpio-fixed = <1>;
+>>
+>> Or something similar.
+> 
+> Aha I understand.
+> 
+> Usually I feel we need not shoehorn stuff into GPIO because it is convenient,
+> it might be best to leave the GPIO optional and if it is not there, look for
+> a custom attribute that represents the "hogging" to 0/1. I think trying
+> to extend GPIO bindings to cover it is overgeneralization, instead go
+> for a local binding for this kind of devices.
+> 
+> But mainly it is a question to the DT bindings maintainers.
+That's a reasonable approach, but I'd certainly like to see a generic binding
+to describe it.  It's a pretty common situation.
 
-diff --git a/Documentation/devicetree/bindings/misc/mux-gpio.txt b/Documentation/devicetree/bindings/misc/mux-gpio.txt
-new file mode 100644
-index 000000000000..73699a37824f
---- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/mux-gpio.txt
-@@ -0,0 +1,79 @@
-+GPIO-based multiplexer controller bindings
-+
-+Define what GPIO pins are used to control a multiplexer. Or several
-+multiplexers, if the same pins control more than one multiplexer.
-+
-+Required properties:
-+- compatible : "mux-gpio"
-+- mux-gpios : list of gpios used to control the multiplexer, least
-+	      significant bit first.
-+
-+Optional properties:
-+- idle-state : if present, the state the mux will have when idle.
-+
-+Example:
-+	control_mux: control-adc-mux {
-+		compatible = "mux-gpio";
-+
-+		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+			    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+	};
-+
-+	adc-mux {
-+		compatible = "iio-mux";
-+		io-channels = <&adc 0>;
-+		io-channel-names = "parent";
-+
-+		control-muxes = <&control_mux>;
-+		control-mux-names = "mux";
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		sync-1@0 {
-+			reg = <0>;
-+		};
-+
-+		in@1 {
-+			reg = <1>;
-+		};
-+
-+		out@2 {
-+			reg = <2>;
-+		};
-+
-+		sync-2@3 {
-+			reg = <3>;
-+		};
-+	};
-+
-+	i2c-mux {
-+		compatible = "i2c-mux-simple,mux-locked";
-+		i2c-parent = <&i2c1>;
-+
-+		control-muxes = <&control_mux>;
-+		control-mux-names = "mux";
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		i2c@0 {
-+			reg = <0>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			ssd1307: oled@3c {
-+				/* ... */
-+			};
-+		};
-+
-+		i2c@3 {
-+			reg = <3>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			pca9555: pca9555@20 {
-+				/* ... */
-+			};
-+		};
-+	};
--- 
-2.1.4
+Seems more likely we'll get a device tree maintainer response if we cc them ;)
+
+So Mark, Rob and thoughts on this?
+
+Thanks,
+
+Jonathan
+> 
+> Yours,
+> Linus Walleij
+> 
 
