@@ -1,51 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46659 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46690 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752651AbcKSMV6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:21:58 -0500
-Subject: Re: [PATCH v3 4/6] ARM: configs: stm32: enable ADC driver
-To: Fabrice Gasnier <fabrice.gasnier@st.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
- <1479223861-21747-5-git-send-email-fabrice.gasnier@st.com>
-Cc: linux@armlinux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net
+        with ESMTP id S1752444AbcKSM10 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:27:26 -0500
+Subject: Re: [PATCH v2] iio: accel: st_accel: inline per-sensor data
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+        Linus Walleij <linus.walleij@linaro.org>
+References: <1479119721-17935-1-git-send-email-linus.walleij@linaro.org>
+ <CAA2SeNJffygfHO5T4NRP=gP3JvuO_Hfxu+ZH4k2NyeWPEogh4A@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org, Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Crestez Dan Leonard <leonard.crestez@intel.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <3f6d8fdd-31ed-06a1-22c0-ce6f06dead81@kernel.org>
-Date: Sat, 19 Nov 2016 12:21:55 +0000
+Message-ID: <5b623635-f12f-a044-ade5-dac14e9b618f@kernel.org>
+Date: Sat, 19 Nov 2016 12:27:22 +0000
 MIME-Version: 1.0
-In-Reply-To: <1479223861-21747-5-git-send-email-fabrice.gasnier@st.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAA2SeNJffygfHO5T4NRP=gP3JvuO_Hfxu+ZH4k2NyeWPEogh4A@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/11/16 15:30, Fabrice Gasnier wrote:
-> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-The driver is now on it's way in.  I'm assuming this and the two device tree patches
-will go via the relevant route to arm-soc.
+On 16/11/16 09:20, Lorenzo Bianconi wrote:
+>> We have #defines for all the individual sensor registers and
+>> value/mask pairs #defined at the top of the file and used at
+>> exactly one spot.
+>>
+>> This is usually good if the #defines give a meaning to the
+>> opaque magic numbers.
+>>
+>> However in this case, the semantic meaning is inherent in the
+>> name of the C99-addressable fields, and that means duplication
+>> of information, and only makes the code hard to maintain since
+>> you every time have to add a new #define AND update the site
+>> where it is to be used.
+>>
+>> Get rid of the #defines and just open code the values into the
+>> appropriate struct elements. Make sure to explicitly address
+>> the .hz and .value fields in the st_sensor_odr_avl struct
+>> so that the meaning of all values is clear.
+>>
+>> This patch is purely syntactic should have no semantic effect.
+>>
+>> Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> Acked-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+> 
+Applied.
 
-Thanks,
+Thanks.
 
 Jonathan
-> ---
->  arch/arm/configs/stm32_defconfig | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/arch/arm/configs/stm32_defconfig b/arch/arm/configs/stm32_defconfig
-> index 1e5ec2a..5d241e0 100644
-> --- a/arch/arm/configs/stm32_defconfig
-> +++ b/arch/arm/configs/stm32_defconfig
-> @@ -57,6 +57,9 @@ CONFIG_LEDS_TRIGGERS=y
->  CONFIG_LEDS_TRIGGER_HEARTBEAT=y
->  CONFIG_DMADEVICES=y
->  CONFIG_STM32_DMA=y
-> +CONFIG_IIO=y
-> +CONFIG_STM32_ADC_CORE=y
-> +CONFIG_STM32_ADC=y
->  # CONFIG_FILE_LOCKING is not set
->  # CONFIG_DNOTIFY is not set
->  # CONFIG_INOTIFY_USER is not set
-> 
 
