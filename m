@@ -1,624 +1,458 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46747 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46621 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752711AbcKSMi2 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:38:28 -0500
-Subject: Re: [PATCH V4 2/2] iio: adc: spmi-vadc: Changes to support different
- scaling
-To: "Phani A, Rama Krishna" <rphani@codeaurora.org>,
-        linux-iio@vger.kernel.org
-References: <1478606334-12394-1-git-send-email-rphani@codeaurora.org>
- <1478606334-12394-3-git-send-email-rphani@codeaurora.org>
- <bc8b56e3-e1bf-3e92-bdca-cf7b0a13dca1@kernel.org>
- <03b97c38-02fb-a727-28a5-298bb240a312@codeaurora.org>
-Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+        with ESMTP id S1752315AbcKSMRM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:17:12 -0500
+Subject: Re: [PATCH v3 2/6] iio: adc: Add support for STM32 ADC core
+To: Fabrice Gasnier <fabrice.gasnier@st.com>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
+ <1479223861-21747-3-git-send-email-fabrice.gasnier@st.com>
+Cc: linux@armlinux.org.uk, robh+dt@kernel.org, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <33f02a43-0542-bad1-8c9a-1aa5cb1cef9f@kernel.org>
-Date: Sat, 19 Nov 2016 12:38:24 +0000
+Message-ID: <09b63f8e-20c8-532e-2d97-2faa6dfe7538@kernel.org>
+Date: Sat, 19 Nov 2016 12:17:08 +0000
 MIME-Version: 1.0
-In-Reply-To: <03b97c38-02fb-a727-28a5-298bb240a312@codeaurora.org>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1479223861-21747-3-git-send-email-fabrice.gasnier@st.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/11/16 11:38, Phani A, Rama Krishna wrote:
-> Hi Jonathan,
+On 15/11/16 15:30, Fabrice Gasnier wrote:
+> Add core driver for STMicroelectronics STM32 ADC (Analog to Digital
+> Converter). STM32 ADC can be composed of up to 3 ADCs with shared
+> resources like clock prescaler, common interrupt line and analog
+> reference voltage.
+> This core driver basically manages shared resources.
 > 
-> On 12-Nov-16 8:32 PM, Jonathan Cameron wrote:
->> On 08/11/16 11:58, Rama Krishna Phani A wrote:
->>> Several ADC channels are supported in PMIC which can be used to
->>> measure voltage, temperature, current etc. Different scaling can be
->>> applied on the obtained voltage to report in physical units. Scaling
->>> functionality can be different per channel. Add scaling support per
->>> channel. Every channel present in adc has an unique conversion formula
->>> for obtained voltage. Add support to report in Raw as well as in
->>> processed format. Scaling is applied when processed read is requested
->>> and is not applied when a Raw read is requested.
->>>
->>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
->>
->> This looks good except for one thing.  If we can't provide a scale,
->> we shouldn't try to provide processed output so it shouldn't be in the
->> info_mask.  Shouldn't take a huge amount of work to tidy this up.
->>
->> I'm backing out patch 1 for now though as if this takes a while we
->> could end up with an intermediate interface actually getting to users
->> which would be even worse than changing once as we are!
->>
->> Thanks,
->>
->> Jonathan
-> Sure ., will include scale support as well in the "info_mask".
->>> ---
->>>  drivers/iio/adc/qcom-spmi-vadc.c | 436 +++++++++++++++++++++++++++++----------
->>>  1 file changed, 326 insertions(+), 110 deletions(-)
->>>
->>> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
->>> index 93c0639..d36ba49 100644
->>> --- a/drivers/iio/adc/qcom-spmi-vadc.c
->>> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
->>> @@ -84,7 +84,7 @@
->>>  #define VADC_MAX_ADC_CODE            0xa800
->>>
->>>  #define VADC_ABSOLUTE_RANGE_UV            625000
->>> -#define VADC_RATIOMETRIC_RANGE_UV        1800000
->>> +#define VADC_RATIOMETRIC_RANGE            1800
->>>
->>>  #define VADC_DEF_PRESCALING            0 /* 1:1 */
->>>  #define VADC_DEF_DECIMATION            0 /* 512 */
->>> @@ -100,9 +100,23 @@
->>>
->>>  #define KELVINMIL_CELSIUSMIL            273150
->>>
->>> +#define PMI_CHG_SCALE_1                -138890
->>> +#define PMI_CHG_SCALE_2                391750000000
->>> +
->>>  #define VADC_CHAN_MIN            VADC_USBIN
->>>  #define VADC_CHAN_MAX            VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
->>>
->>> +/**
->>> + * struct vadc_map_pt - Map the graph representation for ADC channel
->>> + * @x: Represent the ADC digitized code.
->>> + * @y: Represent the physical data which can be temperature, voltage,
->>> + *     resistance.
->>> + */
->>> +struct vadc_map_pt {
->>> +    s32 x;
->>> +    s32 y;
->>> +};
->>> +
->>>  /*
->>>   * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
->>>   * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
->>> @@ -148,6 +162,9 @@ struct vadc_prescale_ratio {
->>>   *    start of conversion.
->>>   * @avg_samples: ability to provide single result from the ADC
->>>   *    that is an average of multiple measurements.
->>> + * @scale_fn: Represents the scaling function to convert voltage
->>> + *    physical units desired by the client for the channel.
->>> + *    Referenced from enum vadc_scale_fn_type.
->>>   */
->>>  struct vadc_channel_prop {
->>>      unsigned int channel;
->>> @@ -156,6 +173,7 @@ struct vadc_channel_prop {
->>>      unsigned int prescale;
->>>      unsigned int hw_settle_time;
->>>      unsigned int avg_samples;
->>> +    unsigned int scale_fn;
->>>  };
->>>
->>>  /**
->>> @@ -186,6 +204,37 @@ struct vadc_priv {
->>>      struct mutex         lock;
->>>  };
->>>
->>> +/**
->>> + * struct vadc_scale_fn - Scaling function prototype
->>> + * @scale: Function pointer to one of the scaling functions
->>> + *    which takes the adc properties, channel properties,
->>> + *    and returns the physical result.
->>> + */
->>> +struct vadc_scale_fn {
->>> +    int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
->>> +             u16, int *);
->>> +};
->>> +
->>> +/**
->>> + * enum vadc_scale_fn_type - Scaling function to convert ADC code to
->>> + *                physical scaled units for the channel.
->>> + * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
->>> + * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
->>> + *                 Uses a mapping table with 100K pullup.
->>> + * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
->>> + * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
->>> + * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
->>> + * SCALE_NONE: Do not use this scaling type.
->>> + */
->>> +enum vadc_scale_fn_type {
->>> +    SCALE_DEFAULT = 0,
->>> +    SCALE_THERM_100K_PULLUP,
->>> +    SCALE_PMIC_THERM,
->>> +    SCALE_XOTHERM,
->>> +    SCALE_PMI_CHG_TEMP,
->>> +    SCALE_NONE,
->>> +};
->>> +
->>>  static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
->>>      {.num =  1, .den =  1},
->>>      {.num =  1, .den =  3},
->>> @@ -197,6 +246,44 @@ struct vadc_priv {
->>>      {.num =  1, .den = 10}
->>>  };
->>>
->>> +/* Voltage to temperature */
->>> +static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
->>> +    {1758,    -40},
->>> +    {1742,    -35},
->>> +    {1719,    -30},
->>> +    {1691,    -25},
->>> +    {1654,    -20},
->>> +    {1608,    -15},
->>> +    {1551,    -10},
->>> +    {1483,    -5},
->>> +    {1404,    0},
->>> +    {1315,    5},
->>> +    {1218,    10},
->>> +    {1114,    15},
->>> +    {1007,    20},
->>> +    {900,    25},
->>> +    {795,    30},
->>> +    {696,    35},
->>> +    {605,    40},
->>> +    {522,    45},
->>> +    {448,    50},
->>> +    {383,    55},
->>> +    {327,    60},
->>> +    {278,    65},
->>> +    {237,    70},
->>> +    {202,    75},
->>> +    {172,    80},
->>> +    {146,    85},
->>> +    {125,    90},
->>> +    {107,    95},
->>> +    {92,    100},
->>> +    {79,    105},
->>> +    {68,    110},
->>> +    {59,    115},
->>> +    {51,    120},
->>> +    {44,    125}
->>> +};
->>> +
->>>  static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
->>>  {
->>>      return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
->>> @@ -418,7 +505,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->>>      u16 read_1, read_2;
->>>      int ret;
->>>
->>> -    vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
->>> +    vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
->>>      vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
->>>
->>>      prop = vadc_get_channel(vadc, VADC_REF_1250MV);
->>> @@ -468,6 +555,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->>>      return ret;
->>>  }
->>>
->>> +static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
->>> +                 u32 tablesize, s32 input, s64 *output)
->>> +{
->>> +    bool descending = 1;
->>> +    u32 i = 0;
->>> +
->>> +    if (!pts)
->>> +        return -EINVAL;
->>> +
->>> +    /* Check if table is descending or ascending */
->>> +    if (tablesize > 1) {
->>> +        if (pts[0].x < pts[1].x)
->>> +            descending = 0;
->>> +    }
->>> +
->>> +    while (i < tablesize) {
->>> +        if ((descending) && (pts[i].x < input)) {
->>> +            /* table entry is less than measured*/
->>> +             /* value and table is descending, stop */
->>> +            break;
->>> +        } else if ((!descending) &&
->>> +                (pts[i].x > input)) {
->>> +            /* table entry is greater than measured*/
->>> +            /*value and table is ascending, stop */
->>> +            break;
->>> +        }
->>> +        i++;
->>> +    }
->>> +
->>> +    if (i == 0) {
->>> +        *output = pts[0].y;
->>> +    } else if (i == tablesize) {
->>> +        *output = pts[tablesize - 1].y;
->>> +    } else {
->>> +        /* result is between search_index and search_index-1 */
->>> +        /* interpolate linearly */
->>> +        *output = (((s32)((pts[i].y - pts[i - 1].y) *
->>> +            (input - pts[i - 1].x)) /
->>> +            (pts[i].x - pts[i - 1].x)) +
->>> +            pts[i - 1].y);
->>> +    }
->>> +
->>> +    return 0;
->>> +}
->>> +
->>>  static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
->>>                   const struct vadc_channel_prop *prop,
->>>                   s64 *scale_voltage)
->>> @@ -502,6 +634,77 @@ static int vadc_scale_volt(struct vadc_priv *vadc,
->>>      return 0;
->>>  }
->>>
->>> +static int vadc_scale_therm(struct vadc_priv *vadc,
->>> +                const struct vadc_channel_prop *prop, u16 adc_code,
->>> +                int *result_mdec)
->>> +{
->>> +    s64 voltage = 0, result = 0;
->>> +
->>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
->>> +
->>> +    if (prop->calibration == VADC_CALIB_ABSOLUTE)
->>> +        voltage /= 1000;
->>> +
->>> +    vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
->>> +                  ARRAY_SIZE(adcmap_100k_104ef_104fb),
->>> +                  voltage, &result);
->>> +    result *= 1000;
->>> +    *result_mdec = result;
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static int vadc_scale_die_temp(struct vadc_priv *vadc,
->>> +                   const struct vadc_channel_prop *prop,
->>> +                   u16 adc_code, int *result_mdec)
->>> +{
->>> +    const struct vadc_prescale_ratio *prescale;
->>> +    s64 voltage = 0;
->>> +
->>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
->>> +
->>> +    if (voltage > 0) {
->>> +        prescale = &vadc_prescale_ratios[prop->prescale];
->>> +        voltage = voltage * prescale->den;
->>> +        voltage /= (prescale->num * 2);
->>> +    } else {
->>> +        voltage = 0;
->>> +    }
->>> +
->>> +    voltage -= KELVINMIL_CELSIUSMIL;
->>> +    *result_mdec = voltage;
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static int vadc_scale_chg_temp(struct vadc_priv *vadc,
->>> +                   const struct vadc_channel_prop *prop,
->>> +                   u16 adc_code, int *result_mdec)
->>> +{
->>> +    const struct vadc_prescale_ratio *prescale;
->>> +    s64 voltage = 0, result = 0;
->>> +
->>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
->>> +
->>> +    prescale = &vadc_prescale_ratios[prop->prescale];
->>> +    voltage = voltage * prescale->den;
->>> +    voltage = div64_s64(voltage, prescale->num);
->>> +    voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
->>> +    voltage = (voltage + PMI_CHG_SCALE_2);
->>> +    result =  div64_s64(voltage, 1000000);
->>> +    *result_mdec = result;
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static int vadc_scale(struct vadc_priv *vadc,
->>> +              const struct vadc_channel_prop *prop, u16 adc_code,
->>> +              int *scale)
->>> +{
->>> +    dev_err(vadc->dev, "Need a scale function\n");
->>> +    return 0;
->>> +}
->>> +
->>>  static int vadc_decimation_from_dt(u32 value)
->>>  {
->>>      if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
->>> @@ -547,6 +750,15 @@ static int vadc_avg_samples_from_dt(u32 value)
->>>      return __ffs64(value);
->>>  }
->>>
->>> +static struct vadc_scale_fn scale_fn[] = {
->>> +    [SCALE_DEFAULT] = {vadc_scale_volt},
->>> +    [SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
->>> +    [SCALE_PMIC_THERM] = {vadc_scale_die_temp},
->>> +    [SCALE_XOTHERM] = {vadc_scale_therm},
->>> +    [SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
->>> +    [SCALE_NONE] = {vadc_scale},
->>> +};
->>> +
->>>  static int vadc_read_raw(struct iio_dev *indio_dev,
->>>               struct iio_chan_spec const *chan, int *val, int *val2,
->>>               long mask)
->>> @@ -563,7 +775,7 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->>>          if (ret)
->>>              break;
->>>
->>> -        vadc_scale_volt(vadc, prop, adc_code, val);
->>> +        scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
->>>
->>>          return IIO_VAL_INT;
->>>      case IIO_CHAN_INFO_RAW:
->>> @@ -606,23 +818,27 @@ struct vadc_channels {
->>>      unsigned int prescale_index;
->>>      enum iio_chan_type type;
->>>      long info_mask;
->>> +    unsigned int scale_fn;
->>>  };
->>>
->>> -#define VADC_CHAN(_dname, _type, _mask, _pre)                \
->>> +#define VADC_CHAN(_dname, _type, _mask, _pre, _scale)            \
->>>      [VADC_##_dname] = {                        \
->>>          .datasheet_name = __stringify(_dname),            \
->>>          .prescale_index = _pre,                    \
->>>          .type = _type,                        \
->>> -        .info_mask = _mask                    \
->>> +        .info_mask = _mask,                    \
->>> +        .scale_fn = _scale                    \
->>>      },                                \
->>>
->>> -#define VADC_CHAN_TEMP(_dname, _pre)                    \
->>> -    VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)    \
->>> +#define VADC_CHAN_TEMP(_dname, _pre, _scale)                \
->>> +    VADC_CHAN(_dname, IIO_TEMP,                    \
->>> +        BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),    \
->>> +        _pre, _scale)                        \
->>>
->>> -#define VADC_CHAN_VOLT(_dname, _pre)                    \
->>> +#define VADC_CHAN_VOLT(_dname, _pre, _scale)                \
->>>      VADC_CHAN(_dname, IIO_VOLTAGE,                    \
->>>            BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
->>> -          _pre)                            \
->>> +          _pre, _scale)                        \
->>>
-> So here., Need to include support for "IIO_CHAN_INFO_SCALE" for
-> "VADC_CHAN_VOLT" to provide backward compatibility and same support
-> for "VADC_CHAN_TEMP" as well. Please correct me otherwise.
-If the scale was simply wrong I don't mind dropping it. Sometimes we have to break
-ABI to remove a bug.  If it was right in the first place we should retain it.
->>>  /*
->>>   * The array represents all possible ADC channels found in the supported PMICs.
->>> @@ -630,106 +846,106 @@ struct vadc_channels {
->>>   * gaps in the array should be treated as reserved channels.
->>>   */
->>>  static const struct vadc_channels vadc_chans[] = {
->>> -    VADC_CHAN_VOLT(USBIN, 4)
->>> -    VADC_CHAN_VOLT(DCIN, 4)
->>> -    VADC_CHAN_VOLT(VCHG_SNS, 3)
->>> -    VADC_CHAN_VOLT(SPARE1_03, 1)
->>> -    VADC_CHAN_VOLT(USB_ID_MV, 1)
->>> -    VADC_CHAN_VOLT(VCOIN, 1)
->>> -    VADC_CHAN_VOLT(VBAT_SNS, 1)
->>> -    VADC_CHAN_VOLT(VSYS, 1)
->>> -    VADC_CHAN_TEMP(DIE_TEMP, 0)
->>> -    VADC_CHAN_VOLT(REF_625MV, 0)
->>> -    VADC_CHAN_VOLT(REF_1250MV, 0)
->>> -    VADC_CHAN_VOLT(CHG_TEMP, 0)
->>> -    VADC_CHAN_VOLT(SPARE1, 0)
->>> -    VADC_CHAN_VOLT(SPARE2, 0)
->>> -    VADC_CHAN_VOLT(GND_REF, 0)
->>> -    VADC_CHAN_VOLT(VDD_VADC, 0)
->>> -
->>> -    VADC_CHAN_VOLT(P_MUX1_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX2_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX3_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX4_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX5_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX6_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX7_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX8_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX9_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX10_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX11_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX12_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX13_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX14_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX15_1_1, 0)
->>> -    VADC_CHAN_VOLT(P_MUX16_1_1, 0)
->>> -
->>> -    VADC_CHAN_VOLT(P_MUX1_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX2_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX3_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX4_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX5_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX6_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX7_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX8_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX9_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX10_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX11_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX12_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX13_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX14_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX15_1_3, 1)
->>> -    VADC_CHAN_VOLT(P_MUX16_1_3, 1)
->>> -
->>> -    VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0)
->>> -    VADC_CHAN_VOLT(AMUX_PU1, 0)
->>> -    VADC_CHAN_VOLT(AMUX_PU2, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
->>> -
->>> -    VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
->>> -
->>> -    VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
->>> -
->>> -    VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
->>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
->>> +    VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
->>> +    VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
->>> +    VADC_CHAN_VOLT(VCHG_SNS, 3, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(SPARE1_03, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(USB_ID_MV, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(VCOIN, 1, SCALE_DEFAULT)
->>> +    VADC_CHAN_VOLT(VBAT_SNS, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(VSYS, 1, SCALE_DEFAULT)
->>> +    VADC_CHAN_TEMP(DIE_TEMP, 0, SCALE_PMIC_THERM)
->>> +    VADC_CHAN_VOLT(REF_625MV, 0, SCALE_DEFAULT)
->>> +    VADC_CHAN_VOLT(REF_1250MV, 0, SCALE_DEFAULT)
->>> +    VADC_CHAN_VOLT(CHG_TEMP, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(SPARE1, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(SPARE2, 0, SCALE_PMI_CHG_TEMP)
->>> +    VADC_CHAN_VOLT(GND_REF, 0, SCALE_DEFAULT)
->>> +    VADC_CHAN_VOLT(VDD_VADC, 0, SCALE_DEFAULT)
->>> +
->>> +    VADC_CHAN_VOLT(P_MUX1_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX2_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX3_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX4_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX5_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX6_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX7_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX8_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX9_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX10_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX11_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX12_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX13_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX14_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX15_1_1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX16_1_1, 0, SCALE_NONE)
->>> +
->>> +    VADC_CHAN_VOLT(P_MUX1_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX2_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX3_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX4_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX5_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX6_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX7_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX8_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX9_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX10_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX11_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX12_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX13_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX14_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX15_1_3, 1, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(P_MUX16_1_3, 1, SCALE_NONE)
->>> +
->>> +    VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(AMUX_PU1, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(AMUX_PU2, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0, SCALE_NONE)
->>> +
->>> +    VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0, SCALE_THERM_100K_PULLUP)
->>> +    VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0, SCALE_THERM_100K_PULLUP)
->>> +    VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0, SCALE_THERM_100K_PULLUP)
->>> +    VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0, SCALE_THERM_100K_PULLUP)
->>> +    VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0, SCALE_THERM_100K_PULLUP)
->>> +    VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0, SCALE_XOTHERM)
->>> +
->>> +    VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0, SCALE_NONE)
->>> +
->>> +    VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0, SCALE_NONE)
->>> +    VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0, SCALE_NONE)
->>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0, SCALE_NONE)
->>>  };
->>>
->>>  static int vadc_get_dt_channel_data(struct device *dev,
->>> @@ -847,7 +1063,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
->>>              of_node_put(child);
->>>              return ret;
->>>          }
->>> -
->> If I was being really fussy... This white space is as valid as it was before this
->> addition so shouldn't really have been removed ;)
-> Sure., Will retain this new line in the next patch.
->>> +        prop.scale_fn = vadc_chans[prop.channel].scale_fn;
->>>          vadc->chan_props[index] = prop;
->>>
->>>          vadc_chan = &vadc_chans[prop.channel];
->>>
->>
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+
+There is nothing in here that demands selecting a fixed regulator.
+I've also switched the select regulator over to depends on inline with
+other drivers in IIO that have a hard dependency on regulators.
+Other than that which showed up during build tests, looks good to me.
+Shout if I've broken anything with this change.
+
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
+
+Thanks,
+
+Jonathan
+> ---
+>  drivers/iio/adc/Kconfig          |  13 ++
+>  drivers/iio/adc/Makefile         |   1 +
+>  drivers/iio/adc/stm32-adc-core.c | 303 +++++++++++++++++++++++++++++++++++++++
+>  drivers/iio/adc/stm32-adc-core.h |  52 +++++++
+>  4 files changed, 369 insertions(+)
+>  create mode 100644 drivers/iio/adc/stm32-adc-core.c
+>  create mode 100644 drivers/iio/adc/stm32-adc-core.h
 > 
-> Thanks,
-> Ramakrishna
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 7edcf32..ff30239 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -419,6 +419,19 @@ config ROCKCHIP_SARADC
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called rockchip_saradc.
+>  
+> +config STM32_ADC_CORE
+> +	tristate "STMicroelectronics STM32 adc core"
+> +	depends on ARCH_STM32 || COMPILE_TEST
+> +	depends on OF
+> +	select REGULATOR
+> +	select REGULATOR_FIXED_VOLTAGE
+> +	help
+> +	  Select this option to enable the core driver for STMicroelectronics
+> +	  STM32 analog-to-digital converter (ADC).
+> +
+> +	  This driver can also be built as a module.  If so, the module
+> +	  will be called stm32-adc-core.
+> +
+>  config STX104
+>  	tristate "Apex Embedded Systems STX104 driver"
+>  	depends on X86 && ISA_BUS_API
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 7a40c04..a1e8f44 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -41,6 +41,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
+>  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>  obj-$(CONFIG_STX104) += stx104.o
+> +obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
+>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+>  obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+> diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
+> new file mode 100644
+> index 0000000..4214b0c
+> --- /dev/null
+> +++ b/drivers/iio/adc/stm32-adc-core.c
+> @@ -0,0 +1,303 @@
+> +/*
+> + * This file is part of STM32 ADC driver
+> + *
+> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
+> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
+> + *
+> + * Inspired from: fsl-imx25-tsadc
+> + *
+> + * License type: GPLv2
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+> + * or FITNESS FOR A PARTICULAR PURPOSE.
+> + * See the GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License along with
+> + * this program. If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/irqchip/chained_irq.h>
+> +#include <linux/irqdesc.h>
+> +#include <linux/irqdomain.h>
+> +#include <linux/module.h>
+> +#include <linux/of_device.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/slab.h>
+> +
+> +#include "stm32-adc-core.h"
+> +
+> +/* STM32F4 - common registers for all ADC instances: 1, 2 & 3 */
+> +#define STM32F4_ADC_CSR			(STM32_ADCX_COMN_OFFSET + 0x00)
+> +#define STM32F4_ADC_CCR			(STM32_ADCX_COMN_OFFSET + 0x04)
+> +
+> +/* STM32F4_ADC_CSR - bit fields */
+> +#define STM32F4_EOC3			BIT(17)
+> +#define STM32F4_EOC2			BIT(9)
+> +#define STM32F4_EOC1			BIT(1)
+> +
+> +/* STM32F4_ADC_CCR - bit fields */
+> +#define STM32F4_ADC_ADCPRE_SHIFT	16
+> +#define STM32F4_ADC_ADCPRE_MASK		GENMASK(17, 16)
+> +
+> +/* STM32 F4 maximum analog clock rate (from datasheet) */
+> +#define STM32F4_ADC_MAX_CLK_RATE	36000000
+> +
+> +/**
+> + * struct stm32_adc_priv - stm32 ADC core private data
+> + * @irq:		irq for ADC block
+> + * @domain:		irq domain reference
+> + * @aclk:		clock reference for the analog circuitry
+> + * @vref:		regulator reference
+> + * @common:		common data for all ADC instances
+> + */
+> +struct stm32_adc_priv {
+> +	int				irq;
+> +	struct irq_domain		*domain;
+> +	struct clk			*aclk;
+> +	struct regulator		*vref;
+> +	struct stm32_adc_common		common;
+> +};
+> +
+> +static struct stm32_adc_priv *to_stm32_adc_priv(struct stm32_adc_common *com)
+> +{
+> +	return container_of(com, struct stm32_adc_priv, common);
+> +}
+> +
+> +/* STM32F4 ADC internal common clock prescaler division ratios */
+> +static int stm32f4_pclk_div[] = {2, 4, 6, 8};
+> +
+> +/**
+> + * stm32f4_adc_clk_sel() - Select stm32f4 ADC common clock prescaler
+> + * @priv: stm32 ADC core private data
+> + * Select clock prescaler used for analog conversions, before using ADC.
+> + */
+> +static int stm32f4_adc_clk_sel(struct platform_device *pdev,
+> +			       struct stm32_adc_priv *priv)
+> +{
+> +	unsigned long rate;
+> +	u32 val;
+> +	int i;
+> +
+> +	rate = clk_get_rate(priv->aclk);
+> +	for (i = 0; i < ARRAY_SIZE(stm32f4_pclk_div); i++) {
+> +		if ((rate / stm32f4_pclk_div[i]) <= STM32F4_ADC_MAX_CLK_RATE)
+> +			break;
+> +	}
+> +	if (i >= ARRAY_SIZE(stm32f4_pclk_div))
+> +		return -EINVAL;
+> +
+> +	val = readl_relaxed(priv->common.base + STM32F4_ADC_CCR);
+> +	val &= ~STM32F4_ADC_ADCPRE_MASK;
+> +	val |= i << STM32F4_ADC_ADCPRE_SHIFT;
+> +	writel_relaxed(val, priv->common.base + STM32F4_ADC_CCR);
+> +
+> +	dev_dbg(&pdev->dev, "Using analog clock source at %ld kHz\n",
+> +		rate / (stm32f4_pclk_div[i] * 1000));
+> +
+> +	return 0;
+> +}
+> +
+> +/* ADC common interrupt for all instances */
+> +static void stm32_adc_irq_handler(struct irq_desc *desc)
+> +{
+> +	struct stm32_adc_priv *priv = irq_desc_get_handler_data(desc);
+> +	struct irq_chip *chip = irq_desc_get_chip(desc);
+> +	u32 status;
+> +
+> +	chained_irq_enter(chip, desc);
+> +	status = readl_relaxed(priv->common.base + STM32F4_ADC_CSR);
+> +
+> +	if (status & STM32F4_EOC1)
+> +		generic_handle_irq(irq_find_mapping(priv->domain, 0));
+> +
+> +	if (status & STM32F4_EOC2)
+> +		generic_handle_irq(irq_find_mapping(priv->domain, 1));
+> +
+> +	if (status & STM32F4_EOC3)
+> +		generic_handle_irq(irq_find_mapping(priv->domain, 2));
+> +
+> +	chained_irq_exit(chip, desc);
+> +};
+> +
+> +static int stm32_adc_domain_map(struct irq_domain *d, unsigned int irq,
+> +				irq_hw_number_t hwirq)
+> +{
+> +	irq_set_chip_data(irq, d->host_data);
+> +	irq_set_chip_and_handler(irq, &dummy_irq_chip, handle_level_irq);
+> +
+> +	return 0;
+> +}
+> +
+> +static void stm32_adc_domain_unmap(struct irq_domain *d, unsigned int irq)
+> +{
+> +	irq_set_chip_and_handler(irq, NULL, NULL);
+> +	irq_set_chip_data(irq, NULL);
+> +}
+> +
+> +static const struct irq_domain_ops stm32_adc_domain_ops = {
+> +	.map = stm32_adc_domain_map,
+> +	.unmap  = stm32_adc_domain_unmap,
+> +	.xlate = irq_domain_xlate_onecell,
+> +};
+> +
+> +static int stm32_adc_irq_probe(struct platform_device *pdev,
+> +			       struct stm32_adc_priv *priv)
+> +{
+> +	struct device_node *np = pdev->dev.of_node;
+> +
+> +	priv->irq = platform_get_irq(pdev, 0);
+> +	if (priv->irq < 0) {
+> +		dev_err(&pdev->dev, "failed to get irq\n");
+> +		return priv->irq;
+> +	}
+> +
+> +	priv->domain = irq_domain_add_simple(np, STM32_ADC_MAX_ADCS, 0,
+> +					     &stm32_adc_domain_ops,
+> +					     priv);
+> +	if (!priv->domain) {
+> +		dev_err(&pdev->dev, "Failed to add irq domain\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	irq_set_chained_handler(priv->irq, stm32_adc_irq_handler);
+> +	irq_set_handler_data(priv->irq, priv);
+> +
+> +	return 0;
+> +}
+> +
+> +static void stm32_adc_irq_remove(struct platform_device *pdev,
+> +				 struct stm32_adc_priv *priv)
+> +{
+> +	int hwirq;
+> +
+> +	for (hwirq = 0; hwirq < STM32_ADC_MAX_ADCS; hwirq++)
+> +		irq_dispose_mapping(irq_find_mapping(priv->domain, hwirq));
+> +	irq_domain_remove(priv->domain);
+> +	irq_set_chained_handler(priv->irq, NULL);
+> +}
+> +
+> +static int stm32_adc_probe(struct platform_device *pdev)
+> +{
+> +	struct stm32_adc_priv *priv;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct resource *res;
+> +	int ret;
+> +
+> +	if (!pdev->dev.of_node)
+> +		return -ENODEV;
+> +
+> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
+> +	if (!priv)
+> +		return -ENOMEM;
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	priv->common.base = devm_ioremap_resource(&pdev->dev, res);
+> +	if (IS_ERR(priv->common.base))
+> +		return PTR_ERR(priv->common.base);
+> +
+> +	priv->vref = devm_regulator_get(&pdev->dev, "vref");
+> +	if (IS_ERR(priv->vref)) {
+> +		ret = PTR_ERR(priv->vref);
+> +		dev_err(&pdev->dev, "vref get failed, %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = regulator_enable(priv->vref);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "vref enable failed\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = regulator_get_voltage(priv->vref);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "vref get voltage failed, %d\n", ret);
+> +		goto err_regulator_disable;
+> +	}
+> +	priv->common.vref_mv = ret / 1000;
+> +	dev_dbg(&pdev->dev, "vref+=%dmV\n", priv->common.vref_mv);
+> +
+> +	priv->aclk = devm_clk_get(&pdev->dev, "adc");
+> +	if (IS_ERR(priv->aclk)) {
+> +		ret = PTR_ERR(priv->aclk);
+> +		dev_err(&pdev->dev, "Can't get 'adc' clock\n");
+> +		goto err_regulator_disable;
+> +	}
+> +
+> +	ret = clk_prepare_enable(priv->aclk);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "adc clk enable failed\n");
+> +		goto err_regulator_disable;
+> +	}
+> +
+> +	ret = stm32f4_adc_clk_sel(pdev, priv);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "adc clk selection failed\n");
+> +		goto err_clk_disable;
+> +	}
+> +
+> +	ret = stm32_adc_irq_probe(pdev, priv);
+> +	if (ret < 0)
+> +		goto err_clk_disable;
+> +
+> +	platform_set_drvdata(pdev, &priv->common);
+> +
+> +	ret = of_platform_populate(np, NULL, NULL, &pdev->dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed to populate DT children\n");
+> +		goto err_irq_remove;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_irq_remove:
+> +	stm32_adc_irq_remove(pdev, priv);
+> +
+> +err_clk_disable:
+> +	clk_disable_unprepare(priv->aclk);
+> +
+> +err_regulator_disable:
+> +	regulator_disable(priv->vref);
+> +
+> +	return ret;
+> +}
+> +
+> +static int stm32_adc_remove(struct platform_device *pdev)
+> +{
+> +	struct stm32_adc_common *common = platform_get_drvdata(pdev);
+> +	struct stm32_adc_priv *priv = to_stm32_adc_priv(common);
+> +
+> +	of_platform_depopulate(&pdev->dev);
+> +	stm32_adc_irq_remove(pdev, priv);
+> +	clk_disable_unprepare(priv->aclk);
+> +	regulator_disable(priv->vref);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id stm32_adc_of_match[] = {
+> +	{ .compatible = "st,stm32f4-adc-core" },
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, stm32_adc_of_match);
+> +
+> +static struct platform_driver stm32_adc_driver = {
+> +	.probe = stm32_adc_probe,
+> +	.remove = stm32_adc_remove,
+> +	.driver = {
+> +		.name = "stm32-adc-core",
+> +		.of_match_table = stm32_adc_of_match,
+> +	},
+> +};
+> +module_platform_driver(stm32_adc_driver);
+> +
+> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
+> +MODULE_DESCRIPTION("STMicroelectronics STM32 ADC core driver");
+> +MODULE_LICENSE("GPL v2");
+> +MODULE_ALIAS("platform:stm32-adc-core");
+> diff --git a/drivers/iio/adc/stm32-adc-core.h b/drivers/iio/adc/stm32-adc-core.h
+> new file mode 100644
+> index 0000000..081fa5f
+> --- /dev/null
+> +++ b/drivers/iio/adc/stm32-adc-core.h
+> @@ -0,0 +1,52 @@
+> +/*
+> + * This file is part of STM32 ADC driver
+> + *
+> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
+> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
+> + *
+> + * License type: GPLv2
+> + *
+> + * This program is free software; you can redistribute it and/or modify it
+> + * under the terms of the GNU General Public License version 2 as published by
+> + * the Free Software Foundation.
+> + *
+> + * This program is distributed in the hope that it will be useful, but
+> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+> + * or FITNESS FOR A PARTICULAR PURPOSE.
+> + * See the GNU General Public License for more details.
+> + *
+> + * You should have received a copy of the GNU General Public License along with
+> + * this program. If not, see <http://www.gnu.org/licenses/>.
+> + */
+> +
+> +#ifndef __STM32_ADC_H
+> +#define __STM32_ADC_H
+> +
+> +/*
+> + * STM32 - ADC global register map
+> + * ________________________________________________________
+> + * | Offset |                 Register                    |
+> + * --------------------------------------------------------
+> + * | 0x000  |                Master ADC1                  |
+> + * --------------------------------------------------------
+> + * | 0x100  |                Slave ADC2                   |
+> + * --------------------------------------------------------
+> + * | 0x200  |                Slave ADC3                   |
+> + * --------------------------------------------------------
+> + * | 0x300  |         Master & Slave common regs          |
+> + * --------------------------------------------------------
+> + */
+> +#define STM32_ADC_MAX_ADCS		3
+> +#define STM32_ADCX_COMN_OFFSET		0x300
+> +
+> +/**
+> + * struct stm32_adc_common - stm32 ADC driver common data (for all instances)
+> + * @base:		control registers base cpu addr
+> + * @vref_mv:		vref voltage (mv)
+> + */
+> +struct stm32_adc_common {
+> +	void __iomem			*base;
+> +	int				vref_mv;
+> +};
+> +
+> +#endif
+> 
 
