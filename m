@@ -1,49 +1,79 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:51384 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S966063AbcKXPsw (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 24 Nov 2016 10:48:52 -0500
-Date: Thu, 24 Nov 2016 10:48:33 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: Dan Carpenter <dan.carpenter@oracle.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: tsl2583: make array large enough
-Message-ID: <20161124154833.GB2118@basecamp.onstation.org>
-References: <20161118140326.GA20458@basecamp.onstation.org>
- <20161124133807.GA32255@mwanda>
+Return-Path: <dmitry.torokhov@gmail.com>
+Date: Sat, 19 Nov 2016 10:18:24 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@armlinux.org.uk>, Arnd Bergmann <arnd@arndb.de>,
+	Michael Welling <mwelling@ieee.org>,
+	Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	Igor Grinberg <grinberg@compulab.co.il>,
+	Sebastian Reichel <sre@kernel.org>, "Andrew F. Davis" <afd@ti.com>,
+	Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hans de Goede <hdegoede@redhat.com>, Sangwon Jee <jeesw@melfas.com>,
+	linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+	letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+	kernel@pyra-handheld.com
+Subject: Re: [PATCH v6 7/8] drivers:input:ads7846(+tsc2046): fix spi module
+ table
+Message-ID: <20161119181824.GB20446@dtor-ws>
+References: <cover.1477557860.git.hns@goldelico.com>
+ <54f282e1adebeeb133687b6c430ecbb6f2fe6d5b.1477557860.git.hns@goldelico.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20161124133807.GA32255@mwanda>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <54f282e1adebeeb133687b6c430ecbb6f2fe6d5b.1477557860.git.hns@goldelico.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Nov 24, 2016 at 04:38:07PM +0300, Dan Carpenter wrote:
-> This array is supposed to have 10 elements.  Smatch complains that with
-> the current code we can have n == max_ints and read beyond the end of
-> the array.
+On Thu, Oct 27, 2016 at 10:44:20AM +0200, H. Nikolaus Schaller wrote:
+> Fix module table so that the driver is loaded if compiled
+> as module and requested by DT.
+
+We really need to fix it between spi/i23c core and module utils instead
+of keeping adding duplicate IDs all over drivers. We already have OF
+module device table containing the same data, we should be able to use
+it.
+
+Thanks.
+
 > 
-> Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
-> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> ---
+>  drivers/input/touchscreen/ads7846.c | 11 ++++++++++-
+>  1 file changed, 10 insertions(+), 1 deletion(-)
 > 
-> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-> index 0b87f6a..a78b602 100644
-> --- a/drivers/iio/light/tsl2583.c
-> +++ b/drivers/iio/light/tsl2583.c
-> @@ -565,7 +565,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
->  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->  	struct tsl2583_chip *chip = iio_priv(indio_dev);
->  	const unsigned int max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3;
-> -	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3];
-> +	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3 + 1];
->  	int ret = -EINVAL;
->  	unsigned int n;
+> diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
+> index 400e421..50c85d2 100644
+> --- a/drivers/input/touchscreen/ads7846.c
+> +++ b/drivers/input/touchscreen/ads7846.c
+> @@ -1532,6 +1532,16 @@ static int ads7846_remove(struct spi_device *spi)
+>  	return 0;
+>  }
 >  
+> +static const struct spi_device_id ads7846_idtable[] = {
+> +	{ "tsc2046", 0 },
+> +	{ "ads7843", 0 },
+> +	{ "ads7845", 0 },
+> +	{ "ads7846", 0 },
+> +	{ "ads7873", 0 },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, ads7846_idtable);
+> +
+>  static struct spi_driver ads7846_driver = {
+>  	.driver = {
+>  		.name	= "ads7846",
+> @@ -1546,4 +1556,3 @@ module_spi_driver(ads7846_driver);
+>  
+>  MODULE_DESCRIPTION("ADS7846 TouchScreen Driver");
+>  MODULE_LICENSE("GPL");
+> -MODULE_ALIAS("spi:ads7846");
+> -- 
+> 2.7.3
+> 
 
-Acked-by: Brian Masney <masneyb@onstation.org>
+-- 
+Dmitry
