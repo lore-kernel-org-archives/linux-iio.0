@@ -1,616 +1,624 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46367 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46747 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752496AbcKSLVj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 06:21:39 -0500
-Subject: Re: [PATCH] iio: adc: New driver for TI ADS79XX chips
-To: David Lechner <david@lechnology.com>
-References: <1479508084-2665-1-git-send-email-david@lechnology.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+        with ESMTP id S1752711AbcKSMi2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 19 Nov 2016 07:38:28 -0500
+Subject: Re: [PATCH V4 2/2] iio: adc: spmi-vadc: Changes to support different
+ scaling
+To: "Phani A, Rama Krishna" <rphani@codeaurora.org>,
+        linux-iio@vger.kernel.org
+References: <1478606334-12394-1-git-send-email-rphani@codeaurora.org>
+ <1478606334-12394-3-git-send-email-rphani@codeaurora.org>
+ <bc8b56e3-e1bf-3e92-bdca-cf7b0a13dca1@kernel.org>
+ <03b97c38-02fb-a727-28a5-298bb240a312@codeaurora.org>
+Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f0034a6c-fb08-3007-54ae-b695cbd1f531@kernel.org>
-Date: Sat, 19 Nov 2016 11:21:33 +0000
+Message-ID: <33f02a43-0542-bad1-8c9a-1aa5cb1cef9f@kernel.org>
+Date: Sat, 19 Nov 2016 12:38:24 +0000
 MIME-Version: 1.0
-In-Reply-To: <1479508084-2665-1-git-send-email-david@lechnology.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <03b97c38-02fb-a727-28a5-298bb240a312@codeaurora.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/11/16 22:28, David Lechner wrote:
-> This adds a new driver for TI ADS79XX ADC chips. These communicate using
-> SPI and come in 8/10/12-bit and 4/8/12/16 channel varieties.
+On 14/11/16 11:38, Phani A, Rama Krishna wrote:
+> Hi Jonathan,
 > 
-> Signed-off-by: David Lechner <david@lechnology.com>
-Hi David,
-
-Nice domain name btw ;)
-
-Anyhow pretty good.  Various style comments and a few places where there
-are utility functions that can replace some boiler plate code.  All fairly
-trivial.
-
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/adc/Kconfig      |  13 ++
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/ti-ads79xx.c | 492 +++++++++++++++++++++++++++++++++++++++++++
-Don't use wild cards in naming.  Just pick a part and name it after that.
-Wild cards have gone wrong far too many times!  Pesky hardware manufacturers
-have a nasty habbit of releasing new parts that don't meet the assumptions.
-
-Same applies to all the prefixes in the drivers.
-
->  3 files changed, 506 insertions(+)
->  create mode 100644 drivers/iio/adc/ti-ads79xx.c
+> On 12-Nov-16 8:32 PM, Jonathan Cameron wrote:
+>> On 08/11/16 11:58, Rama Krishna Phani A wrote:
+>>> Several ADC channels are supported in PMIC which can be used to
+>>> measure voltage, temperature, current etc. Different scaling can be
+>>> applied on the obtained voltage to report in physical units. Scaling
+>>> functionality can be different per channel. Add scaling support per
+>>> channel. Every channel present in adc has an unique conversion formula
+>>> for obtained voltage. Add support to report in Raw as well as in
+>>> processed format. Scaling is applied when processed read is requested
+>>> and is not applied when a Raw read is requested.
+>>>
+>>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+>>
+>> This looks good except for one thing.  If we can't provide a scale,
+>> we shouldn't try to provide processed output so it shouldn't be in the
+>> info_mask.  Shouldn't take a huge amount of work to tidy this up.
+>>
+>> I'm backing out patch 1 for now though as if this takes a while we
+>> could end up with an intermediate interface actually getting to users
+>> which would be even worse than changing once as we are!
+>>
+>> Thanks,
+>>
+>> Jonathan
+> Sure ., will include scale support as well in the "info_mask".
+>>> ---
+>>>  drivers/iio/adc/qcom-spmi-vadc.c | 436 +++++++++++++++++++++++++++++----------
+>>>  1 file changed, 326 insertions(+), 110 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+>>> index 93c0639..d36ba49 100644
+>>> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+>>> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+>>> @@ -84,7 +84,7 @@
+>>>  #define VADC_MAX_ADC_CODE            0xa800
+>>>
+>>>  #define VADC_ABSOLUTE_RANGE_UV            625000
+>>> -#define VADC_RATIOMETRIC_RANGE_UV        1800000
+>>> +#define VADC_RATIOMETRIC_RANGE            1800
+>>>
+>>>  #define VADC_DEF_PRESCALING            0 /* 1:1 */
+>>>  #define VADC_DEF_DECIMATION            0 /* 512 */
+>>> @@ -100,9 +100,23 @@
+>>>
+>>>  #define KELVINMIL_CELSIUSMIL            273150
+>>>
+>>> +#define PMI_CHG_SCALE_1                -138890
+>>> +#define PMI_CHG_SCALE_2                391750000000
+>>> +
+>>>  #define VADC_CHAN_MIN            VADC_USBIN
+>>>  #define VADC_CHAN_MAX            VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
+>>>
+>>> +/**
+>>> + * struct vadc_map_pt - Map the graph representation for ADC channel
+>>> + * @x: Represent the ADC digitized code.
+>>> + * @y: Represent the physical data which can be temperature, voltage,
+>>> + *     resistance.
+>>> + */
+>>> +struct vadc_map_pt {
+>>> +    s32 x;
+>>> +    s32 y;
+>>> +};
+>>> +
+>>>  /*
+>>>   * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
+>>>   * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
+>>> @@ -148,6 +162,9 @@ struct vadc_prescale_ratio {
+>>>   *    start of conversion.
+>>>   * @avg_samples: ability to provide single result from the ADC
+>>>   *    that is an average of multiple measurements.
+>>> + * @scale_fn: Represents the scaling function to convert voltage
+>>> + *    physical units desired by the client for the channel.
+>>> + *    Referenced from enum vadc_scale_fn_type.
+>>>   */
+>>>  struct vadc_channel_prop {
+>>>      unsigned int channel;
+>>> @@ -156,6 +173,7 @@ struct vadc_channel_prop {
+>>>      unsigned int prescale;
+>>>      unsigned int hw_settle_time;
+>>>      unsigned int avg_samples;
+>>> +    unsigned int scale_fn;
+>>>  };
+>>>
+>>>  /**
+>>> @@ -186,6 +204,37 @@ struct vadc_priv {
+>>>      struct mutex         lock;
+>>>  };
+>>>
+>>> +/**
+>>> + * struct vadc_scale_fn - Scaling function prototype
+>>> + * @scale: Function pointer to one of the scaling functions
+>>> + *    which takes the adc properties, channel properties,
+>>> + *    and returns the physical result.
+>>> + */
+>>> +struct vadc_scale_fn {
+>>> +    int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
+>>> +             u16, int *);
+>>> +};
+>>> +
+>>> +/**
+>>> + * enum vadc_scale_fn_type - Scaling function to convert ADC code to
+>>> + *                physical scaled units for the channel.
+>>> + * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
+>>> + * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
+>>> + *                 Uses a mapping table with 100K pullup.
+>>> + * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
+>>> + * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
+>>> + * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
+>>> + * SCALE_NONE: Do not use this scaling type.
+>>> + */
+>>> +enum vadc_scale_fn_type {
+>>> +    SCALE_DEFAULT = 0,
+>>> +    SCALE_THERM_100K_PULLUP,
+>>> +    SCALE_PMIC_THERM,
+>>> +    SCALE_XOTHERM,
+>>> +    SCALE_PMI_CHG_TEMP,
+>>> +    SCALE_NONE,
+>>> +};
+>>> +
+>>>  static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
+>>>      {.num =  1, .den =  1},
+>>>      {.num =  1, .den =  3},
+>>> @@ -197,6 +246,44 @@ struct vadc_priv {
+>>>      {.num =  1, .den = 10}
+>>>  };
+>>>
+>>> +/* Voltage to temperature */
+>>> +static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
+>>> +    {1758,    -40},
+>>> +    {1742,    -35},
+>>> +    {1719,    -30},
+>>> +    {1691,    -25},
+>>> +    {1654,    -20},
+>>> +    {1608,    -15},
+>>> +    {1551,    -10},
+>>> +    {1483,    -5},
+>>> +    {1404,    0},
+>>> +    {1315,    5},
+>>> +    {1218,    10},
+>>> +    {1114,    15},
+>>> +    {1007,    20},
+>>> +    {900,    25},
+>>> +    {795,    30},
+>>> +    {696,    35},
+>>> +    {605,    40},
+>>> +    {522,    45},
+>>> +    {448,    50},
+>>> +    {383,    55},
+>>> +    {327,    60},
+>>> +    {278,    65},
+>>> +    {237,    70},
+>>> +    {202,    75},
+>>> +    {172,    80},
+>>> +    {146,    85},
+>>> +    {125,    90},
+>>> +    {107,    95},
+>>> +    {92,    100},
+>>> +    {79,    105},
+>>> +    {68,    110},
+>>> +    {59,    115},
+>>> +    {51,    120},
+>>> +    {44,    125}
+>>> +};
+>>> +
+>>>  static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
+>>>  {
+>>>      return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
+>>> @@ -418,7 +505,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>>      u16 read_1, read_2;
+>>>      int ret;
+>>>
+>>> -    vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
+>>> +    vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
+>>>      vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+>>>
+>>>      prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+>>> @@ -468,6 +555,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>>      return ret;
+>>>  }
+>>>
+>>> +static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
+>>> +                 u32 tablesize, s32 input, s64 *output)
+>>> +{
+>>> +    bool descending = 1;
+>>> +    u32 i = 0;
+>>> +
+>>> +    if (!pts)
+>>> +        return -EINVAL;
+>>> +
+>>> +    /* Check if table is descending or ascending */
+>>> +    if (tablesize > 1) {
+>>> +        if (pts[0].x < pts[1].x)
+>>> +            descending = 0;
+>>> +    }
+>>> +
+>>> +    while (i < tablesize) {
+>>> +        if ((descending) && (pts[i].x < input)) {
+>>> +            /* table entry is less than measured*/
+>>> +             /* value and table is descending, stop */
+>>> +            break;
+>>> +        } else if ((!descending) &&
+>>> +                (pts[i].x > input)) {
+>>> +            /* table entry is greater than measured*/
+>>> +            /*value and table is ascending, stop */
+>>> +            break;
+>>> +        }
+>>> +        i++;
+>>> +    }
+>>> +
+>>> +    if (i == 0) {
+>>> +        *output = pts[0].y;
+>>> +    } else if (i == tablesize) {
+>>> +        *output = pts[tablesize - 1].y;
+>>> +    } else {
+>>> +        /* result is between search_index and search_index-1 */
+>>> +        /* interpolate linearly */
+>>> +        *output = (((s32)((pts[i].y - pts[i - 1].y) *
+>>> +            (input - pts[i - 1].x)) /
+>>> +            (pts[i].x - pts[i - 1].x)) +
+>>> +            pts[i - 1].y);
+>>> +    }
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>>  static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
+>>>                   const struct vadc_channel_prop *prop,
+>>>                   s64 *scale_voltage)
+>>> @@ -502,6 +634,77 @@ static int vadc_scale_volt(struct vadc_priv *vadc,
+>>>      return 0;
+>>>  }
+>>>
+>>> +static int vadc_scale_therm(struct vadc_priv *vadc,
+>>> +                const struct vadc_channel_prop *prop, u16 adc_code,
+>>> +                int *result_mdec)
+>>> +{
+>>> +    s64 voltage = 0, result = 0;
+>>> +
+>>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>> +
+>>> +    if (prop->calibration == VADC_CALIB_ABSOLUTE)
+>>> +        voltage /= 1000;
+>>> +
+>>> +    vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
+>>> +                  ARRAY_SIZE(adcmap_100k_104ef_104fb),
+>>> +                  voltage, &result);
+>>> +    result *= 1000;
+>>> +    *result_mdec = result;
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static int vadc_scale_die_temp(struct vadc_priv *vadc,
+>>> +                   const struct vadc_channel_prop *prop,
+>>> +                   u16 adc_code, int *result_mdec)
+>>> +{
+>>> +    const struct vadc_prescale_ratio *prescale;
+>>> +    s64 voltage = 0;
+>>> +
+>>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>> +
+>>> +    if (voltage > 0) {
+>>> +        prescale = &vadc_prescale_ratios[prop->prescale];
+>>> +        voltage = voltage * prescale->den;
+>>> +        voltage /= (prescale->num * 2);
+>>> +    } else {
+>>> +        voltage = 0;
+>>> +    }
+>>> +
+>>> +    voltage -= KELVINMIL_CELSIUSMIL;
+>>> +    *result_mdec = voltage;
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static int vadc_scale_chg_temp(struct vadc_priv *vadc,
+>>> +                   const struct vadc_channel_prop *prop,
+>>> +                   u16 adc_code, int *result_mdec)
+>>> +{
+>>> +    const struct vadc_prescale_ratio *prescale;
+>>> +    s64 voltage = 0, result = 0;
+>>> +
+>>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>> +
+>>> +    prescale = &vadc_prescale_ratios[prop->prescale];
+>>> +    voltage = voltage * prescale->den;
+>>> +    voltage = div64_s64(voltage, prescale->num);
+>>> +    voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
+>>> +    voltage = (voltage + PMI_CHG_SCALE_2);
+>>> +    result =  div64_s64(voltage, 1000000);
+>>> +    *result_mdec = result;
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static int vadc_scale(struct vadc_priv *vadc,
+>>> +              const struct vadc_channel_prop *prop, u16 adc_code,
+>>> +              int *scale)
+>>> +{
+>>> +    dev_err(vadc->dev, "Need a scale function\n");
+>>> +    return 0;
+>>> +}
+>>> +
+>>>  static int vadc_decimation_from_dt(u32 value)
+>>>  {
+>>>      if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
+>>> @@ -547,6 +750,15 @@ static int vadc_avg_samples_from_dt(u32 value)
+>>>      return __ffs64(value);
+>>>  }
+>>>
+>>> +static struct vadc_scale_fn scale_fn[] = {
+>>> +    [SCALE_DEFAULT] = {vadc_scale_volt},
+>>> +    [SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
+>>> +    [SCALE_PMIC_THERM] = {vadc_scale_die_temp},
+>>> +    [SCALE_XOTHERM] = {vadc_scale_therm},
+>>> +    [SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
+>>> +    [SCALE_NONE] = {vadc_scale},
+>>> +};
+>>> +
+>>>  static int vadc_read_raw(struct iio_dev *indio_dev,
+>>>               struct iio_chan_spec const *chan, int *val, int *val2,
+>>>               long mask)
+>>> @@ -563,7 +775,7 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+>>>          if (ret)
+>>>              break;
+>>>
+>>> -        vadc_scale_volt(vadc, prop, adc_code, val);
+>>> +        scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
+>>>
+>>>          return IIO_VAL_INT;
+>>>      case IIO_CHAN_INFO_RAW:
+>>> @@ -606,23 +818,27 @@ struct vadc_channels {
+>>>      unsigned int prescale_index;
+>>>      enum iio_chan_type type;
+>>>      long info_mask;
+>>> +    unsigned int scale_fn;
+>>>  };
+>>>
+>>> -#define VADC_CHAN(_dname, _type, _mask, _pre)                \
+>>> +#define VADC_CHAN(_dname, _type, _mask, _pre, _scale)            \
+>>>      [VADC_##_dname] = {                        \
+>>>          .datasheet_name = __stringify(_dname),            \
+>>>          .prescale_index = _pre,                    \
+>>>          .type = _type,                        \
+>>> -        .info_mask = _mask                    \
+>>> +        .info_mask = _mask,                    \
+>>> +        .scale_fn = _scale                    \
+>>>      },                                \
+>>>
+>>> -#define VADC_CHAN_TEMP(_dname, _pre)                    \
+>>> -    VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)    \
+>>> +#define VADC_CHAN_TEMP(_dname, _pre, _scale)                \
+>>> +    VADC_CHAN(_dname, IIO_TEMP,                    \
+>>> +        BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),    \
+>>> +        _pre, _scale)                        \
+>>>
+>>> -#define VADC_CHAN_VOLT(_dname, _pre)                    \
+>>> +#define VADC_CHAN_VOLT(_dname, _pre, _scale)                \
+>>>      VADC_CHAN(_dname, IIO_VOLTAGE,                    \
+>>>            BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
+>>> -          _pre)                            \
+>>> +          _pre, _scale)                        \
+>>>
+> So here., Need to include support for "IIO_CHAN_INFO_SCALE" for
+> "VADC_CHAN_VOLT" to provide backward compatibility and same support
+> for "VADC_CHAN_TEMP" as well. Please correct me otherwise.
+If the scale was simply wrong I don't mind dropping it. Sometimes we have to break
+ABI to remove a bug.  If it was right in the first place we should retain it.
+>>>  /*
+>>>   * The array represents all possible ADC channels found in the supported PMICs.
+>>> @@ -630,106 +846,106 @@ struct vadc_channels {
+>>>   * gaps in the array should be treated as reserved channels.
+>>>   */
+>>>  static const struct vadc_channels vadc_chans[] = {
+>>> -    VADC_CHAN_VOLT(USBIN, 4)
+>>> -    VADC_CHAN_VOLT(DCIN, 4)
+>>> -    VADC_CHAN_VOLT(VCHG_SNS, 3)
+>>> -    VADC_CHAN_VOLT(SPARE1_03, 1)
+>>> -    VADC_CHAN_VOLT(USB_ID_MV, 1)
+>>> -    VADC_CHAN_VOLT(VCOIN, 1)
+>>> -    VADC_CHAN_VOLT(VBAT_SNS, 1)
+>>> -    VADC_CHAN_VOLT(VSYS, 1)
+>>> -    VADC_CHAN_TEMP(DIE_TEMP, 0)
+>>> -    VADC_CHAN_VOLT(REF_625MV, 0)
+>>> -    VADC_CHAN_VOLT(REF_1250MV, 0)
+>>> -    VADC_CHAN_VOLT(CHG_TEMP, 0)
+>>> -    VADC_CHAN_VOLT(SPARE1, 0)
+>>> -    VADC_CHAN_VOLT(SPARE2, 0)
+>>> -    VADC_CHAN_VOLT(GND_REF, 0)
+>>> -    VADC_CHAN_VOLT(VDD_VADC, 0)
+>>> -
+>>> -    VADC_CHAN_VOLT(P_MUX1_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX2_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX3_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX4_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX5_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX6_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX7_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX8_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX9_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX10_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX11_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX12_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX13_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX14_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX15_1_1, 0)
+>>> -    VADC_CHAN_VOLT(P_MUX16_1_1, 0)
+>>> -
+>>> -    VADC_CHAN_VOLT(P_MUX1_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX2_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX3_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX4_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX5_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX6_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX7_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX8_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX9_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX10_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX11_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX12_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX13_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX14_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX15_1_3, 1)
+>>> -    VADC_CHAN_VOLT(P_MUX16_1_3, 1)
+>>> -
+>>> -    VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0)
+>>> -    VADC_CHAN_VOLT(AMUX_PU1, 0)
+>>> -    VADC_CHAN_VOLT(AMUX_PU2, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
+>>> -
+>>> -    VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
+>>> -
+>>> -    VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
+>>> -
+>>> -    VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
+>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
+>>> +    VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
+>>> +    VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
+>>> +    VADC_CHAN_VOLT(VCHG_SNS, 3, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(SPARE1_03, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(USB_ID_MV, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(VCOIN, 1, SCALE_DEFAULT)
+>>> +    VADC_CHAN_VOLT(VBAT_SNS, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(VSYS, 1, SCALE_DEFAULT)
+>>> +    VADC_CHAN_TEMP(DIE_TEMP, 0, SCALE_PMIC_THERM)
+>>> +    VADC_CHAN_VOLT(REF_625MV, 0, SCALE_DEFAULT)
+>>> +    VADC_CHAN_VOLT(REF_1250MV, 0, SCALE_DEFAULT)
+>>> +    VADC_CHAN_VOLT(CHG_TEMP, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(SPARE1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(SPARE2, 0, SCALE_PMI_CHG_TEMP)
+>>> +    VADC_CHAN_VOLT(GND_REF, 0, SCALE_DEFAULT)
+>>> +    VADC_CHAN_VOLT(VDD_VADC, 0, SCALE_DEFAULT)
+>>> +
+>>> +    VADC_CHAN_VOLT(P_MUX1_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX2_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX3_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX4_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX5_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX6_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX7_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX8_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX9_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX10_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX11_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX12_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX13_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX14_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX15_1_1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX16_1_1, 0, SCALE_NONE)
+>>> +
+>>> +    VADC_CHAN_VOLT(P_MUX1_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX2_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX3_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX4_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX5_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX6_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX7_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX8_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX9_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX10_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX11_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX12_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX13_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX14_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX15_1_3, 1, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(P_MUX16_1_3, 1, SCALE_NONE)
+>>> +
+>>> +    VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(AMUX_PU1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(AMUX_PU2, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0, SCALE_NONE)
+>>> +
+>>> +    VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0, SCALE_THERM_100K_PULLUP)
+>>> +    VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0, SCALE_THERM_100K_PULLUP)
+>>> +    VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0, SCALE_THERM_100K_PULLUP)
+>>> +    VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0, SCALE_THERM_100K_PULLUP)
+>>> +    VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0, SCALE_THERM_100K_PULLUP)
+>>> +    VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0, SCALE_XOTHERM)
+>>> +
+>>> +    VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0, SCALE_NONE)
+>>> +
+>>> +    VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0, SCALE_NONE)
+>>> +    VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0, SCALE_NONE)
+>>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0, SCALE_NONE)
+>>>  };
+>>>
+>>>  static int vadc_get_dt_channel_data(struct device *dev,
+>>> @@ -847,7 +1063,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+>>>              of_node_put(child);
+>>>              return ret;
+>>>          }
+>>> -
+>> If I was being really fussy... This white space is as valid as it was before this
+>> addition so shouldn't really have been removed ;)
+> Sure., Will retain this new line in the next patch.
+>>> +        prop.scale_fn = vadc_chans[prop.channel].scale_fn;
+>>>          vadc->chan_props[index] = prop;
+>>>
+>>>          vadc_chan = &vadc_chans[prop.channel];
+>>>
+>>
 > 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 99c0514..e87e8a5 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -503,6 +503,19 @@ config TI_ADS1015
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-ads1015.
->  
-> +config TI_ADS79XX
-> +	tristate "Texas Instruments ADS79XX ADC driver"
-> +	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	help
-> +	  Say yes here to build support for Texas Instruments ADS7950, ADS7951,
-> +	  ADS7952, ADS7953, ADS7954, ADS7955, ADS7956, ADS7957, ADS7958, ADS7959.
-> +	  ADS7960, ADS7961.
-> +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ti-ads79xx.
-> +
->  config TI_ADS8688
->  	tristate "Texas Instruments ADS8688"
->  	depends on SPI && OF
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 7a40c04..8d0659a 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -47,6 +47,7 @@ obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
->  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
->  obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
->  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
-> +obj-$(CONFIG_TI_ADS79XX) += ti-ads79xx.o
->  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
->  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
-> diff --git a/drivers/iio/adc/ti-ads79xx.c b/drivers/iio/adc/ti-ads79xx.c
-> new file mode 100644
-> index 0000000..42cade0
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads79xx.c
-> @@ -0,0 +1,492 @@
-> +/*
-> + * Texas Instruments ADS79XX SPI ADC driver
-> + *
-> + * Copyright 2016 David Lechner <david@lechnology.com>
-> + *
-> + * Based on iio/ad7923.c:
-> + * Copyright 2011 Analog Devices Inc
-> + * Copyright 2012 CS Systemes d'Information
-> + *
-> + * And also on hwmon/ads79xx.c
-> + * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com/
-> + *	Nishanth Menon
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License as
-> + * published by the Free Software Foundation version 2.
-> + *
-> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> + * kind, whether express or implied; without even the implied warranty
-> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/device.h>
-> +#include <linux/kernel.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +#include <linux/spi/spi.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/err.h>
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/interrupt.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +#define ADS79XX_CR_MANUAL	(1 << 12)
-> +#define ADS79XX_CR_WRITE	(1 << 11)
-> +#define ADS79XX_CR_CHAN(ch)	(ch << 7)
-> +#define ADS79XX_CR_RANGE_5V	(1 << 6)
-> +
-> +#define ADS79XX_MAX_CHAN	16
-> +
-> +/* val = value, dec = left shift, bits = number of bits of the mask */
-> +#define EXTRACT(val, dec, bits)		((val >> dec) & ((1 << bits) - 1))
-This has a generic enough name it may one day 'clash' with something in a
-header.  Probably best to prefix it with ADS7950 (or whatever ;) to
-avoid that hitting us later.
-> +
-> +struct ti_ads79xx_state {
-> +	struct spi_device	*spi;
-> +	struct spi_transfer	ring_xfer[ADS79XX_MAX_CHAN+2];
-spaces around the + otherwise I'll get an irritating patch to 'fix' that
-later ;)
-> +	struct spi_transfer	scan_single_xfer[3];
-> +	struct spi_message	ring_msg;
-> +	struct spi_message	scan_single_msg;
-> +
-> +	struct regulator	*reg;
-> +
-> +	unsigned int		settings;
-> +
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	__be16			rx_buf[ADS79XX_MAX_CHAN] ____cacheline_aligned;
-> +	__be16			tx_buf[ADS79XX_MAX_CHAN];
-> +};
-> +
-> +struct ti_ads79xx_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	unsigned int num_channels;
-> +};
-> +
-> +enum ti_ads79xx_id {
-> +	ADS7950,
-> +	ADS7951,
-> +	ADS7952,
-> +	ADS7953,
-> +	ADS7954,
-> +	ADS7955,
-> +	ADS7956,
-> +	ADS7957,
-> +	ADS7958,
-> +	ADS7959,
-> +	ADS7960,
-> +	ADS7961,
-> +};
-> +
-> +#define ADS79XX_V_CHAN(index, bits)				\
-> +{								\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = index,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.address = index,					\
-> +	.datasheet_name = "CH##index",				\
-> +	.scan_index = index,					\
-> +	.scan_type = {						\
-> +		.sign = 'u',					\
-> +		.realbits = (bits),				\
-> +		.storagebits = 16,				\
-> +		.endianness = IIO_BE,				\
-> +	},							\
-> +}
-> +
-> +#define DECLARE_ADS79XX_4_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	ADS79XX_V_CHAN(0, bits), \
-> +	ADS79XX_V_CHAN(1, bits), \
-> +	ADS79XX_V_CHAN(2, bits), \
-> +	ADS79XX_V_CHAN(3, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(4), \
-> +}
-> +
-> +#define DECLARE_ADS79XX_8_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	ADS79XX_V_CHAN(0, bits), \
-> +	ADS79XX_V_CHAN(1, bits), \
-> +	ADS79XX_V_CHAN(2, bits), \
-> +	ADS79XX_V_CHAN(3, bits), \
-> +	ADS79XX_V_CHAN(4, bits), \
-> +	ADS79XX_V_CHAN(5, bits), \
-> +	ADS79XX_V_CHAN(6, bits), \
-> +	ADS79XX_V_CHAN(7, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(8), \
-> +}
-> +
-> +#define DECLARE_ADS79XX_12_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	ADS79XX_V_CHAN(0, bits), \
-> +	ADS79XX_V_CHAN(1, bits), \
-> +	ADS79XX_V_CHAN(2, bits), \
-> +	ADS79XX_V_CHAN(3, bits), \
-> +	ADS79XX_V_CHAN(4, bits), \
-> +	ADS79XX_V_CHAN(5, bits), \
-> +	ADS79XX_V_CHAN(6, bits), \
-> +	ADS79XX_V_CHAN(7, bits), \
-> +	ADS79XX_V_CHAN(8, bits), \
-> +	ADS79XX_V_CHAN(9, bits), \
-> +	ADS79XX_V_CHAN(10, bits), \
-> +	ADS79XX_V_CHAN(11, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(12), \
-> +}
-> +
-> +#define DECLARE_ADS79XX_16_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	ADS79XX_V_CHAN(0, bits), \
-> +	ADS79XX_V_CHAN(1, bits), \
-> +	ADS79XX_V_CHAN(2, bits), \
-> +	ADS79XX_V_CHAN(3, bits), \
-> +	ADS79XX_V_CHAN(4, bits), \
-> +	ADS79XX_V_CHAN(5, bits), \
-> +	ADS79XX_V_CHAN(6, bits), \
-> +	ADS79XX_V_CHAN(7, bits), \
-> +	ADS79XX_V_CHAN(8, bits), \
-> +	ADS79XX_V_CHAN(9, bits), \
-> +	ADS79XX_V_CHAN(10, bits), \
-> +	ADS79XX_V_CHAN(11, bits), \
-> +	ADS79XX_V_CHAN(12, bits), \
-> +	ADS79XX_V_CHAN(13, bits), \
-> +	ADS79XX_V_CHAN(14, bits), \
-> +	ADS79XX_V_CHAN(15, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(16), \
-> +}
-> +
-> +static DECLARE_ADS79XX_4_CHANNELS(ti_ads7950, 12);
-> +static DECLARE_ADS79XX_8_CHANNELS(ti_ads7951, 12);
-> +static DECLARE_ADS79XX_12_CHANNELS(ti_ads7952, 12);
-> +static DECLARE_ADS79XX_16_CHANNELS(ti_ads7953, 12);
-> +static DECLARE_ADS79XX_4_CHANNELS(ti_ads7954, 10);
-> +static DECLARE_ADS79XX_8_CHANNELS(ti_ads7955, 10);
-> +static DECLARE_ADS79XX_12_CHANNELS(ti_ads7956, 10);
-> +static DECLARE_ADS79XX_16_CHANNELS(ti_ads7957, 10);
-> +static DECLARE_ADS79XX_4_CHANNELS(ti_ads7958, 8);
-> +static DECLARE_ADS79XX_8_CHANNELS(ti_ads7959, 8);
-> +static DECLARE_ADS79XX_12_CHANNELS(ti_ads7960, 8);
-> +static DECLARE_ADS79XX_16_CHANNELS(ti_ads7961, 8);
-> +
-> +static const struct ti_ads79xx_chip_info ti_ads79xx_chip_info[] = {
-> +	[ADS7950] = {
-> +		.channels	= ti_ads7950_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7950_channels),
-> +	},
-> +	[ADS7951] = {
-> +		.channels	= ti_ads7951_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7951_channels),
-> +	},
-> +	[ADS7952] = {
-> +		.channels	= ti_ads7952_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7952_channels),
-> +	},
-> +	[ADS7953] = {
-> +		.channels	= ti_ads7953_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7953_channels),
-> +	},
-> +	[ADS7954] = {
-> +		.channels	= ti_ads7954_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7954_channels),
-> +	},
-> +	[ADS7955] = {
-> +		.channels	= ti_ads7955_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7955_channels),
-> +	},
-> +	[ADS7956] = {
-> +		.channels	= ti_ads7956_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7956_channels),
-> +	},
-> +	[ADS7957] = {
-> +		.channels	= ti_ads7957_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7957_channels),
-> +	},
-> +	[ADS7958] = {
-> +		.channels	= ti_ads7958_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7958_channels),
-> +	},
-> +	[ADS7959] = {
-> +		.channels	= ti_ads7959_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7959_channels),
-> +	},
-> +	[ADS7960] = {
-> +		.channels	= ti_ads7960_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7960_channels),
-> +	},
-> +	[ADS7961] = {
-> +		.channels	= ti_ads7961_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7961_channels),
-> +	},
-> +};
-> +
-> +/*
-> + * ti_ads79xx_update_scan_mode() setup the spi transfer buffer for the new
-> + * scan mask
-> + */
-> +static int ti_ads79xx_update_scan_mode(struct iio_dev *indio_dev,
-> +				       const unsigned long *active_scan_mask)
-> +{
-> +	struct ti_ads79xx_state *st = iio_priv(indio_dev);
-> +	int i, cmd, len;
-> +
-> +	len = 0;
-> +	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
-> +		cmd = ADS79XX_CR_WRITE | ADS79XX_CR_CHAN(i) | st->settings;
-> +		st->tx_buf[len++] = cpu_to_be16(cmd);
-> +	}
-> +
-> +	/* build spi ring message */
-> +	spi_message_init(&st->ring_msg);
-I think you could easily reorder this to do using the init and add messages
-call spi provides.  Would be every so slightly cleaner.
-> +
-> +	/* Data for the 1st channel is not retuned until the 3rd transfer */
-> +	len += 2;
-> +	for (i = 0; i < len; i++) {
-> +		if ((i + 2) < len)
-> +			st->ring_xfer[i].tx_buf = &st->tx_buf[i];
-> +		if (i >= 2)
-> +			st->ring_xfer[i].rx_buf = &st->rx_buf[i - 2];
-> +		st->ring_xfer[i].len = 2;
-> +		st->ring_xfer[i].cs_change = 1;
-> +		spi_message_add_tail(&st->ring_xfer[i], &st->ring_msg);
-> +	}
-> +	/* make sure last transfer's cs_change is not set */
-> +	st->ring_xfer[len - 1].cs_change = 0;
-> +
-> +	return 0;
-> +}
-> +
-> +/*
-> + * ti_ads79xx_trigger_handler() bh of trigger launched polling to ring buffer
-> + *
-> + * Currently there is no option in this driver to disable the saving of
-> + * timestamps within the ring.
-
-It should 'just work' as you have registered a timestamp channel.  If you turn
-it off in sysfs it then the iio_push_to_buffers_with_timestamp will 'eat' it.
-
-> + */
-> +static irqreturn_t ti_ads79xx_trigger_handler(int irq, void *p)
-> +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ti_ads79xx_state *st = iio_priv(indio_dev);
-> +	int b_sent;
-> +
-> +	b_sent = spi_sync(st->spi, &st->ring_msg);
-> +	if (b_sent)
-> +		goto done;
-> +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
-> +					   iio_get_time_ns(indio_dev));
-> +
-> +done:
-> +	iio_trigger_notify_done(indio_dev->trig);
-> +
-> +	return IRQ_HANDLED;
-> +}
-> +
-> +static int ti_ads79xx_scan_direct(struct ti_ads79xx_state *st, unsigned ch)
-> +{
-> +	int ret, cmd;
-> +
-> +	cmd = ADS79XX_CR_WRITE | ADS79XX_CR_CHAN(ch) | st->settings;
-> +	st->tx_buf[0] = cpu_to_be16(cmd);
-> +
-> +	ret = spi_sync(st->spi, &st->scan_single_msg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return be16_to_cpu(st->rx_buf[0]);
-> +}
-> +
-> +static int ti_ads79xx_get_range(struct ti_ads79xx_state *st)
-> +{
-> +	int vref;
-> +
-> +	vref = regulator_get_voltage(st->reg);
-> +	if (vref < 0)
-> +		return vref;
-> +
-> +	vref /= 1000;
-> +
-> +	if (st->settings & ADS79XX_CR_RANGE_5V)
-> +		vref *= 2;
-> +
-> +	return vref;
-> +}
-> +
-> +static int ti_ads79xx_read_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int *val, int *val2, long m)
-> +{
-> +	struct ti_ads79xx_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		mutex_lock(&indio_dev->mlock);
-
-Use the iio_device_claim_direct_mode etc helpers to hande this.
-(they haven't been there that long, but do make it a little more obvious what
-is going on in this circumstances).
-
-> +		if (iio_buffer_enabled(indio_dev))
-> +			ret = -EBUSY;
-> +		else
-> +			ret = ti_ads79xx_scan_direct(st, chan->address);
-> +		mutex_unlock(&indio_dev->mlock);
-> +
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		if (chan->address == EXTRACT(ret, 12, 4))
-> +			*val = EXTRACT(ret, 0, 12);
-> +		else
-> +			return -EIO;
-I'd prefer this flipped around.
-if (chan->address != EXTRACT(ret, 12, 4))
-   return -EIO;
-
-Nice to keep the error path as the indented flow.
-
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = ti_ads79xx_get_range(st);
-> +		if (ret < 0)
-> +			return ret;
-> +		*val = ret;
-> +		*val2 = chan->scan_type.realbits;
-Another real nitpick ;) Keep your blank lines consistent by adding
-one here.
-> +		return IIO_VAL_FRACTIONAL_LOG2;
-> +	}
-And here.
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ti_ads79xx_info = {
-> +	.read_raw		= &ti_ads79xx_read_raw,
-> +	.update_scan_mode	= ti_ads79xx_update_scan_mode,
-> +	.driver_module		= THIS_MODULE,
-> +};
-> +
-> +static int ti_ads79xx_probe(struct spi_device *spi)
-> +{
-> +	struct ti_ads79xx_state *st;
-> +	struct iio_dev *indio_dev;
-> +	const struct ti_ads79xx_chip_info *info;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (indio_dev == NULL)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	st->spi = spi;
-> +	st->settings = ADS79XX_CR_MANUAL | ADS79XX_CR_RANGE_5V;
-> +
-> +	info = &ti_ads79xx_chip_info[spi_get_device_id(spi)->driver_data];
-> +
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = info->channels;
-> +	indio_dev->num_channels = info->num_channels;
-> +	indio_dev->info = &ti_ads79xx_info;
-> +
-> +	/*
-> +	 * Setup default message. The chip takes one full cycle to convert a
-> +	 * sample. The conversion process is driven by the SPI clock, which
-> +	 * is why we have 3 transfers. The middle one is just dummy data sent
-> +	 * while the chip is converting the sample from first transfer.
-> +	 */
-> +
-> +	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
-> +	st->scan_single_xfer[0].len = 2;
-> +	st->scan_single_xfer[0].cs_change = 1;
-> +	st->scan_single_xfer[1].tx_buf = &st->tx_buf[0];
-> +	st->scan_single_xfer[1].len = 2;
-> +	st->scan_single_xfer[1].cs_change = 1;
-> +	st->scan_single_xfer[2].rx_buf = &st->rx_buf[0];
-> +	st->scan_single_xfer[2].len = 2;
-> +
-Use spi_message_init_with_transfers (really minor but why not ;)
-> +	spi_message_init(&st->scan_single_msg);
-> +	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
-> +	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
-> +	spi_message_add_tail(&st->scan_single_xfer[2], &st->scan_single_msg);
-> +
-> +	st->reg = devm_regulator_get(&spi->dev, "refin");
-> +	if (IS_ERR(st->reg)) {
-> +		dev_err(&spi->dev, "Failed get get regulator \"refin\"\n");
-> +		return PTR_ERR(st->reg);
-> +	}
-> +
-> +	ret = regulator_enable(st->reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable regulator \"refin\"\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 &ti_ads79xx_trigger_handler, NULL);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
-> +		goto error_disable_reg;
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to register iio device\n");
-> +		goto error_cleanup_ring;
-> +	}
-> +
-Don't bother with this. It's easy to tell from sysfs or the results of the
-probe that it worked or not.  This just puts uninformative noise in the
-logs (different matter if there is a serial number of similar that provides
-additional info!)
-> +	dev_info(&spi->dev, "Registered %s\n", indio_dev->name);
-> +
-> +	return 0;
-> +
-> +error_cleanup_ring:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +error_disable_reg:
-> +	regulator_disable(st->reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ti_ads79xx_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct ti_ads79xx_state *st = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	regulator_disable(st->reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ti_ads79xx_id[] = {
-> +	{"ti-ads7950", ADS7950},
-> +	{"ti-ads7951", ADS7951},
-> +	{"ti-ads7952", ADS7952},
-> +	{"ti-ads7953", ADS7953},
-> +	{"ti-ads7954", ADS7954},
-> +	{"ti-ads7955", ADS7955},
-> +	{"ti-ads7956", ADS7956},
-> +	{"ti-ads7957", ADS7957},
-> +	{"ti-ads7958", ADS7958},
-> +	{"ti-ads7959", ADS7959},
-> +	{"ti-ads7960", ADS7960},
-> +	{"ti-ads7961", ADS7961},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ti_ads79xx_id);
-> +
-> +static struct spi_driver ti_ads79xx_driver = {
-> +	.driver = {
-> +		.name	= "ti-ads79xx",
-> +	},
-> +	.probe		= ti_ads79xx_probe,
-> +	.remove		= ti_ads79xx_remove,
-> +	.id_table	= ti_ads79xx_id,
-> +};
-> +module_spi_driver(ti_ads79xx_driver);
-> +
-> +MODULE_AUTHOR("David Lechner <david@lechnology.com>");
-> +MODULE_DESCRIPTION("TI ADS79XX ADC");
-> +MODULE_LICENSE("GPL v2");
-> 
+> Thanks,
+> Ramakrishna
 
