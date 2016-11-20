@@ -1,48 +1,54 @@
-Return-Path: <martink@posteo.de>
-From: Martin Kepplinger <martink@posteo.de>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	Martin Kepplinger <martink@posteo.de>
-Subject: [PATCH] iio: accel: mma8452: define unsigned return values where appropriate
-Date: Mon, 21 Nov 2016 20:53:54 +0100
-Message-Id: <1479758034-19220-1-git-send-email-martink@posteo.de>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wj0-f195.google.com ([209.85.210.195]:34470 "EHLO
+        mail-wj0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753531AbcKTLMp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 20 Nov 2016 06:12:45 -0500
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v10 0/5] mxs-lradc: Split driver into MFD
+Date: Sun, 20 Nov 2016 11:57:39 +0100
+Message-Id: <cover.1479638191.git.ksenija.stanojevic@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-smatch warned:
-	sval_binop_signed: invalid divide LLONG_MIN/-1
+Split existing driver mxs-lradc into MFD with touchscreen and
+IIO part.
 
-and this fixes it. It's actually good to have, in order to avoid accidental
-checking for negative return values here.
+Tested on I.MX28
 
-Signed-off-by: Martin Kepplinger <martink@posteo.de>
----
- drivers/iio/accel/mma8452.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+Ksenija Stanojevic (5):
+  mfd: mxs-lradc: Add support for mxs-lradc MFD
+  iio: adc: mxs-lradc: Add support for adc driver
+  input: touchscreen: mxs-lradc: Add support for touchscreen
+  iio: adc: mxs-lradc: Remove driver
+  mfd: Move binding document
 
-diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
-index 0e865a1..fba146f 100644
---- a/drivers/iio/accel/mma8452.c
-+++ b/drivers/iio/accel/mma8452.c
-@@ -248,7 +248,7 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
- 	return -EINVAL;
- }
- 
--static int mma8452_get_odr_index(struct mma8452_data *data)
-+static unsigned int mma8452_get_odr_index(struct mma8452_data *data)
- {
- 	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
- 			MMA8452_CTRL_DR_SHIFT;
-@@ -260,7 +260,7 @@ static const int mma8452_samp_freq[8][2] = {
- };
- 
- /* Datasheet table: step time "Relationship with the ODR" (sample frequency) */
--static const int mma8452_transient_time_step_us[4][8] = {
-+static const unsigned int mma8452_transient_time_step_us[4][8] = {
- 	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },  /* normal */
- 	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },  /* l p l n */
- 	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	  /* high res*/
+ .../bindings/{iio/adc => mfd}/mxs-lradc.txt        |    0
+ drivers/iio/adc/Kconfig                            |   27 +-
+ drivers/iio/adc/Makefile                           |    2 +-
+ drivers/iio/adc/mxs-lradc-adc.c                    |  845 ++++++++++
+ drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
+ drivers/input/touchscreen/Kconfig                  |   10 +
+ drivers/input/touchscreen/Makefile                 |    1 +
+ drivers/input/touchscreen/mxs-lradc-ts.c           |  743 +++++++++
+ drivers/mfd/Kconfig                                |   17 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/mxs-lradc.c                            |  261 +++
+ include/linux/mfd/mxs-lradc.h                      |  203 +++
+ 12 files changed, 2095 insertions(+), 1765 deletions(-)
+ rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
+ create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+ delete mode 100644 drivers/iio/adc/mxs-lradc.c
+ create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+ create mode 100644 drivers/mfd/mxs-lradc.c
+ create mode 100644 include/linux/mfd/mxs-lradc.h
+
 -- 
-2.1.4
+1.9.1
+
