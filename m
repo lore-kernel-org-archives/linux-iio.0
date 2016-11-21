@@ -1,265 +1,48 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0098.outbound.protection.outlook.com ([104.47.2.98]:59679
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S932301AbcKUNdp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 21 Nov 2016 08:33:45 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH v3 7/7] i2c: i2c-mux-simple: new driver
-Date: Mon, 21 Nov 2016 14:17:15 +0100
-Message-ID: <1479734235-18837-8-git-send-email-peda@axentia.se>
-In-Reply-To: <1479734235-18837-1-git-send-email-peda@axentia.se>
-References: <1479734235-18837-1-git-send-email-peda@axentia.se>
-MIME-Version: 1.0
-Content-Type: text/plain
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <martink@posteo.de>
+From: Martin Kepplinger <martink@posteo.de>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	Martin Kepplinger <martink@posteo.de>
+Subject: [PATCH] iio: accel: mma8452: define unsigned return values where appropriate
+Date: Mon, 21 Nov 2016 20:53:54 +0100
+Message-Id: <1479758034-19220-1-git-send-email-martink@posteo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-This is a generic simple i2c mux that uses the generic multiplexer
-subsystem to do the muxing.
+smatch warned:
+	sval_binop_signed: invalid divide LLONG_MIN/-1
 
-The user can select if the mux is to be mux-locked and parent-locked
-as described in Documentation/i2c/i2c-topology.
+and this fixes it. It's actually good to have, in order to avoid accidental
+checking for negative return values here.
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
+Signed-off-by: Martin Kepplinger <martink@posteo.de>
 ---
- drivers/i2c/muxes/Kconfig          |  13 +++
- drivers/i2c/muxes/Makefile         |   1 +
- drivers/i2c/muxes/i2c-mux-simple.c | 177 +++++++++++++++++++++++++++++++++++++
- 3 files changed, 191 insertions(+)
- create mode 100644 drivers/i2c/muxes/i2c-mux-simple.c
+ drivers/iio/accel/mma8452.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/i2c/muxes/Kconfig b/drivers/i2c/muxes/Kconfig
-index 96de9ce5669b..fb4f587d822a 100644
---- a/drivers/i2c/muxes/Kconfig
-+++ b/drivers/i2c/muxes/Kconfig
-@@ -73,6 +73,19 @@ config I2C_MUX_REG
- 	  This driver can also be built as a module.  If so, the module
- 	  will be called i2c-mux-reg.
+diff --git a/drivers/iio/accel/mma8452.c b/drivers/iio/accel/mma8452.c
+index 0e865a1..fba146f 100644
+--- a/drivers/iio/accel/mma8452.c
++++ b/drivers/iio/accel/mma8452.c
+@@ -248,7 +248,7 @@ static int mma8452_get_int_plus_micros_index(const int (*vals)[2], int n,
+ 	return -EINVAL;
+ }
  
-+config I2C_MUX_SIMPLE
-+	tristate "Simple I2C multiplexer"
-+	select MULTIPLEXER
-+	depends on OF
-+	help
-+	  If you say yes to this option, support will be included for a
-+	  simple generic I2C multiplexer. This driver provides access to
-+	  I2C busses connected through a MUX, which is controlled
-+	  by a generic MUX controller.
-+
-+	  This driver can also be built as a module.  If so, the module
-+	  will be called i2c-mux-simple.
-+
- config I2C_DEMUX_PINCTRL
- 	tristate "pinctrl-based I2C demultiplexer"
- 	depends on PINCTRL && OF
-diff --git a/drivers/i2c/muxes/Makefile b/drivers/i2c/muxes/Makefile
-index 7c267c29b191..eea1fb9e6466 100644
---- a/drivers/i2c/muxes/Makefile
-+++ b/drivers/i2c/muxes/Makefile
-@@ -10,5 +10,6 @@ obj-$(CONFIG_I2C_MUX_PCA9541)	+= i2c-mux-pca9541.o
- obj-$(CONFIG_I2C_MUX_PCA954x)	+= i2c-mux-pca954x.o
- obj-$(CONFIG_I2C_MUX_PINCTRL)	+= i2c-mux-pinctrl.o
- obj-$(CONFIG_I2C_MUX_REG)	+= i2c-mux-reg.o
-+obj-$(CONFIG_I2C_MUX_SIMPLE)	+= i2c-mux-simple.o
+-static int mma8452_get_odr_index(struct mma8452_data *data)
++static unsigned int mma8452_get_odr_index(struct mma8452_data *data)
+ {
+ 	return (data->ctrl_reg1 & MMA8452_CTRL_DR_MASK) >>
+ 			MMA8452_CTRL_DR_SHIFT;
+@@ -260,7 +260,7 @@ static const int mma8452_samp_freq[8][2] = {
+ };
  
- ccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG
-diff --git a/drivers/i2c/muxes/i2c-mux-simple.c b/drivers/i2c/muxes/i2c-mux-simple.c
-new file mode 100644
-index 000000000000..a2f1dc8a3295
---- /dev/null
-+++ b/drivers/i2c/muxes/i2c-mux-simple.c
-@@ -0,0 +1,177 @@
-+/*
-+ * Generic simple I2C multiplexer
-+ *
-+ * Peter Rosin <peda@axentia.se>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/i2c.h>
-+#include <linux/i2c-mux.h>
-+#include <linux/module.h>
-+#include <linux/mux.h>
-+#include <linux/of_device.h>
-+#include <linux/platform_device.h>
-+
-+struct mux {
-+	struct mux_control *control;
-+
-+	bool do_not_deselect;
-+};
-+
-+static int i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
-+{
-+	struct mux *mux = i2c_mux_priv(muxc);
-+	int ret;
-+
-+	ret = mux_control_select(mux->control, chan);
-+	mux->do_not_deselect = ret < 0;
-+
-+	return ret;
-+}
-+
-+static int i2c_mux_deselect(struct i2c_mux_core *muxc, u32 chan)
-+{
-+	struct mux *mux = i2c_mux_priv(muxc);
-+
-+	if (mux->do_not_deselect)
-+		return 0;
-+
-+	return mux_control_deselect(mux->control);
-+}
-+
-+static struct i2c_adapter *mux_parent_adapter(struct device *dev)
-+{
-+	struct device_node *np = dev->of_node;
-+	struct device_node *parent_np;
-+	struct i2c_adapter *parent;
-+
-+	parent_np = of_parse_phandle(np, "i2c-parent", 0);
-+	if (!parent_np) {
-+		dev_err(dev, "Cannot parse i2c-parent\n");
-+		return ERR_PTR(-ENODEV);
-+	}
-+	parent = of_find_i2c_adapter_by_node(parent_np);
-+	of_node_put(parent_np);
-+	if (!parent)
-+		return ERR_PTR(-EPROBE_DEFER);
-+
-+	return parent;
-+}
-+
-+static const struct of_device_id i2c_mux_of_match[] = {
-+	{ .compatible = "i2c-mux-simple,parent-locked",
-+	  .data = (void *)0, },
-+	{ .compatible = "i2c-mux-simple,mux-locked",
-+	  .data = (void *)1, },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, i2c_mux_of_match);
-+
-+static int i2c_mux_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct device_node *child;
-+	const struct of_device_id *match;
-+	struct i2c_mux_core *muxc;
-+	struct mux *mux;
-+	struct i2c_adapter *parent;
-+	int children;
-+	int ret;
-+
-+	if (!np)
-+		return -ENODEV;
-+
-+	mux = devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
-+	if (!mux)
-+		return -ENOMEM;
-+
-+	mux->control = devm_mux_control_get(dev);
-+	if (IS_ERR(mux->control)) {
-+		if (PTR_ERR(mux->control) != -EPROBE_DEFER)
-+			dev_err(dev, "failed to get control-mux\n");
-+		return PTR_ERR(mux->control);
-+	}
-+
-+	parent = mux_parent_adapter(dev);
-+	if (IS_ERR(parent)) {
-+		if (PTR_ERR(parent) != -EPROBE_DEFER)
-+			dev_err(dev, "failed to get i2c-parent adapter\n");
-+		return PTR_ERR(parent);
-+	}
-+
-+	children = of_get_child_count(np);
-+
-+	muxc = i2c_mux_alloc(parent, dev, children, 0, 0,
-+			     i2c_mux_select, i2c_mux_deselect);
-+	if (!muxc) {
-+		ret = -ENOMEM;
-+		goto err_parent;
-+	}
-+	muxc->priv = mux;
-+
-+	platform_set_drvdata(pdev, muxc);
-+
-+	match = of_match_device(of_match_ptr(i2c_mux_of_match), dev);
-+	if (match)
-+		muxc->mux_locked = !!of_device_get_match_data(dev);
-+
-+	for_each_child_of_node(np, child) {
-+		u32 chan;
-+
-+		ret = of_property_read_u32(child, "reg", &chan);
-+		if (ret < 0) {
-+			dev_err(dev, "no reg property for node '%s'\n",
-+				child->name);
-+			goto err_children;
-+		}
-+
-+		if (chan >= mux->control->states) {
-+			dev_err(dev, "invalid reg %u\n", chan);
-+			ret = -EINVAL;
-+			goto err_children;
-+		}
-+
-+		ret = i2c_mux_add_adapter(muxc, 0, chan, 0);
-+		if (ret)
-+			goto err_children;
-+	}
-+
-+	dev_info(dev, "%d-port mux on %s adapter\n", children, parent->name);
-+
-+	return 0;
-+
-+err_children:
-+	i2c_mux_del_adapters(muxc);
-+err_parent:
-+	i2c_put_adapter(parent);
-+
-+	return ret;
-+}
-+
-+static int i2c_mux_remove(struct platform_device *pdev)
-+{
-+	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
-+
-+	i2c_mux_del_adapters(muxc);
-+	i2c_put_adapter(muxc->parent);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver i2c_mux_driver = {
-+	.probe	= i2c_mux_probe,
-+	.remove	= i2c_mux_remove,
-+	.driver	= {
-+		.name	= "i2c-mux-simple",
-+		.of_match_table = i2c_mux_of_match,
-+	},
-+};
-+module_platform_driver(i2c_mux_driver);
-+
-+MODULE_DESCRIPTION("Simple I2C multiplexer driver");
-+MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
-+MODULE_LICENSE("GPL v2");
+ /* Datasheet table: step time "Relationship with the ODR" (sample frequency) */
+-static const int mma8452_transient_time_step_us[4][8] = {
++static const unsigned int mma8452_transient_time_step_us[4][8] = {
+ 	{ 1250, 2500, 5000, 10000, 20000, 20000, 20000, 20000 },  /* normal */
+ 	{ 1250, 2500, 5000, 10000, 20000, 80000, 80000, 80000 },  /* l p l n */
+ 	{ 1250, 2500, 2500, 2500, 2500, 2500, 2500, 2500 },	  /* high res*/
 -- 
 2.1.4
-
