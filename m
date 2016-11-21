@@ -1,110 +1,132 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
- Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Jonathan
- Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Lars-Peter
- Clausen" <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jonathan Corbet <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-Subject: [PATCH v3 6/7] dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
-Date: Mon, 21 Nov 2016 14:17:14 +0100
-Message-ID: <1479734235-18837-7-git-send-email-peda@axentia.se>
-In-Reply-To: <1479734235-18837-1-git-send-email-peda@axentia.se>
-References: <1479734235-18837-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from vern.gendns.com ([206.190.152.46]:37862 "EHLO vern.gendns.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1754228AbcKUTwg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 21 Nov 2016 14:52:36 -0500
+Subject: Re: [PATCH v2] iio: adc: New driver for TI ADS7950 chips
+To: Jonathan Cameron <jic23@kernel.org>
+References: <1479666484-2582-1-git-send-email-david@lechnology.com>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+From: David Lechner <david@lechnology.com>
+Message-ID: <d1d05bf8-f4e7-0bf1-66a7-56683cb69d65@lechnology.com>
+Date: Mon, 21 Nov 2016 13:52:34 -0600
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1479666484-2582-1-git-send-email-david@lechnology.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../devicetree/bindings/i2c/i2c-mux-simple.txt     | 76 ++++++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+On 11/20/2016 12:28 PM, David Lechner wrote:
+> This adds a new driver for the TI ADS7950 family of ADC chips. These
+> communicate using SPI and come in 8/10/12-bit and 4/8/12/16 channel
+> varieties.
+>
+> Signed-off-by: David Lechner <david@lechnology.com>
+> ---
+>
+> v2 changes:
+>
+> * Got rid of XX wildcards - using ADS7950 everywhere
+> * Fixed some macro parentheses issues
+> * Added TI_ prefix to macros to match ti_ prefixes used elsewhere
+> * Added space in rx_buf for holding timestamp
+> * Use iio_device_claim_direct_mode() and spi_message_init_with_transfers()
+>   helper functions
+> * Don't use dev_info() at end of probe
+> * Minor spelling and code style fixes
+>
+>  drivers/iio/adc/Kconfig      |  13 ++
+>  drivers/iio/adc/Makefile     |   1 +
+>  drivers/iio/adc/ti-ads7950.c | 488 +++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 502 insertions(+)
+>  create mode 100644 drivers/iio/adc/ti-ads7950.c
+>
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
-new file mode 100644
-index 000000000000..decfd742b297
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
-@@ -0,0 +1,76 @@
-+Simple I2C Bus Mux
-+
-+This binding describes an I2C bus multiplexer that uses a mux controller
-+from the mux subsystem to route the I2C signals.
-+
-+                                  .-----.  .-----.
-+                                  | dev |  | dev |
-+    .------------.                '-----'  '-----'
-+    | SoC        |                   |        |
-+    |            |          .--------+--------'
-+    |   .------. |  .------+    child bus A, on MUX value set to 0
-+    |   | I2C  |-|--| Mux  |
-+    |   '------' |  '--+---+    child bus B, on MUX value set to 1
-+    |   .------. |     |    '----------+--------+--------.
-+    |   | MUX- | |     |               |        |        |
-+    |   | Ctrl |-|-----+            .-----.  .-----.  .-----.
-+    |   '------' |                  | dev |  | dev |  | dev |
-+    '------------'                  '-----'  '-----'  '-----'
-+
-+Required properties:
-+- compatible: i2c-mux-simple,mux-locked or i2c-mux-simple,parent-locked
-+- i2c-parent: The phandle of the I2C bus that this multiplexer's master-side
-+  port is connected to.
-+* Standard I2C mux properties. See i2c-mux.txt in this directory.
-+* I2C child bus nodes. See i2c-mux.txt in this directory. The sub-bus number
-+  is also the mux-controller state described in ../misc/mux-controller.txt
-+
-+For each i2c child node, an I2C child bus will be created. They will
-+be numbered based on their order in the device tree.
-+
-+Whenever an access is made to a device on a child bus, the value set
-+in the relevant node's reg property will be set as the state in the
-+mux controller.
-+
-+Example:
-+	mux {
-+		compatible = "mux-gpio";
-+
-+		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+			    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+
-+		i2c-mux {
-+			compatible = "i2c-mux-simple,mux-locked";
-+			i2c-parent = <&i2c1>;
-+
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			i2c@1 {
-+				reg = <1>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				ssd1307: oled@3c {
-+					compatible = "solomon,ssd1307fb-i2c";
-+					reg = <0x3c>;
-+					pwms = <&pwm 4 3000>;
-+					reset-gpios = <&gpio2 7 1>;
-+					reset-active-low;
-+				};
-+			};
-+
-+			i2c@3 {
-+				reg = <3>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				pca9555: pca9555@20 {
-+					compatible = "nxp,pca9555";
-+					gpio-controller;
-+					#gpio-cells = <2>;
-+					reg = <0x20>;
-+				};
-+			};
-+		};
-+	};
--- 
-2.1.4
+...
+
+> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
+> new file mode 100644
+> index 0000000..d0b76bd
+> --- /dev/null
+> +++ b/drivers/iio/adc/ti-ads7950.c
+
+...
+
+> +static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
+> +{
+> +	struct iio_poll_func *pf = p;
+> +	struct iio_dev *indio_dev = pf->indio_dev;
+> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
+> +	int b_sent;
+> +
+> +	b_sent = spi_sync(st->spi, &st->ring_msg);
+
+hmm, I copied this from another driver, but spi_sync() in IRQ handler 
+does not sound like a good idea (spi_sync() can sleep). I will replace 
+it with spi_async().
+
+
+> +	if (b_sent)
+> +		goto done;
+> +
+> +	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
+> +					   iio_get_time_ns(indio_dev));
+> +
+> +done:
+> +	iio_trigger_notify_done(indio_dev->trig);
+> +
+> +	return IRQ_HANDLED;
+> +}
+
+...
+
+> +static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
+> +			       struct iio_chan_spec const *chan,
+> +			       int *val, int *val2, long m)
+> +{
+> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	switch (m) {
+> +	case IIO_CHAN_INFO_RAW:
+> +
+> +		ret = iio_device_claim_direct_mode(indio_dev);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		ret = ti_ads7950_scan_direct(st, chan->address);
+> +		iio_device_release_direct_mode(indio_dev);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
+> +			return -EIO;
+> +
+> +		*val = TI_ADS7950_EXTRACT(ret, 0, 12);
+
+I'm not sure if I am doing this right. There are 8- 10- and 12-bit 
+versions of this chip. The 8- and 10-bit versions still return a 12-bit 
+number where the last 4 or 2 bits are always 0. Should I be shifting the 
+12-bit value here based on the chip being used so that *val is 0-255 for 
+8-bit and 0-1023 for 10-bit? Or should this be *really* raw and not even 
+use TI_ADS7950_EXTRACT() to mask the channel address bits?
+
+> +
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		ret = ti_ads7950_get_range(st);
+> +		if (ret < 0)
+> +			return ret;
+> +
+> +		*val = ret;
+> +		*val2 = chan->scan_type.realbits;
+> +
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	}
+> +
+> +	return -EINVAL;
+> +}
+
