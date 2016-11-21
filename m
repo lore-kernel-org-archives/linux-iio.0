@@ -1,570 +1,652 @@
-Return-Path: <david@lechnology.com>
-From: David Lechner <david@lechnology.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: David Lechner <david@lechnology.com>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: adc: New driver for TI ADS7950 chips
-Date: Sun, 20 Nov 2016 12:28:04 -0600
-Message-Id: <1479666484-2582-1-git-send-email-david@lechnology.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-db5eur01on0137.outbound.protection.outlook.com ([104.47.2.137]:58478
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1753457AbcKUNdC (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 21 Nov 2016 08:33:02 -0500
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v3 2/7] misc: minimal mux subsystem and gpio-based mux controller
+Date: Mon, 21 Nov 2016 14:17:10 +0100
+Message-ID: <1479734235-18837-3-git-send-email-peda@axentia.se>
+In-Reply-To: <1479734235-18837-1-git-send-email-peda@axentia.se>
+References: <1479734235-18837-1-git-send-email-peda@axentia.se>
+MIME-Version: 1.0
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds a new driver for the TI ADS7950 family of ADC chips. These
-communicate using SPI and come in 8/10/12-bit and 4/8/12/16 channel
-varieties.
+Add a new minimalistic subsystem that handles multiplexer controllers.
+When multiplexers are used in various places in the kernel, and the
+same multiplexer controller can be used for several independent things,
+there should be one place to implement support for said multiplexer
+controller.
 
-Signed-off-by: David Lechner <david@lechnology.com>
+A single multiplexer controller can also be used to control several
+parallel multiplexers, that are in turn used by different subsystems
+in the kernel, leading to a need to coordinate multiplexer accesses.
+The multiplexer subsystem handles this coordination.
+
+This new mux controller subsystem comes with a single backend driver
+that controls gpio based multiplexers.
+
+Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
+ Documentation/driver-model/devres.txt |   6 +-
+ MAINTAINERS                           |   2 +
+ drivers/misc/Kconfig                  |  23 +++
+ drivers/misc/Makefile                 |   2 +
+ drivers/misc/mux-core.c               | 325 ++++++++++++++++++++++++++++++++++
+ drivers/misc/mux-gpio.c               | 116 ++++++++++++
+ include/linux/mux.h                   |  55 ++++++
+ 7 files changed, 528 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/mux-core.c
+ create mode 100644 drivers/misc/mux-gpio.c
+ create mode 100644 include/linux/mux.h
 
-v2 changes:
-
-* Got rid of XX wildcards - using ADS7950 everywhere
-* Fixed some macro parentheses issues
-* Added TI_ prefix to macros to match ti_ prefixes used elsewhere
-* Added space in rx_buf for holding timestamp
-* Use iio_device_claim_direct_mode() and spi_message_init_with_transfers()
-  helper functions
-* Don't use dev_info() at end of probe
-* Minor spelling and code style fixes
-
- drivers/iio/adc/Kconfig      |  13 ++
- drivers/iio/adc/Makefile     |   1 +
- drivers/iio/adc/ti-ads7950.c | 488 +++++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 502 insertions(+)
- create mode 100644 drivers/iio/adc/ti-ads7950.c
-
-diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 6bbee0b..26b32f0 100644
---- a/drivers/iio/adc/Kconfig
-+++ b/drivers/iio/adc/Kconfig
-@@ -527,6 +527,19 @@ config TI_ADS1015
- 	  This driver can also be built as a module. If so, the module will be
- 	  called ti-ads1015.
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index 167070895498..947bfcfac9ae 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -330,7 +330,11 @@ MEM
+   devm_kzalloc()
  
-+config TI_ADS7950
-+	tristate "Texas Instruments ADS7950 ADC driver"
-+	depends on SPI
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
+ MFD
+- devm_mfd_add_devices()
++  devm_mfd_add_devices()
++
++MUX
++  devm_mux_control_get()
++  devm_mux_control_put()
+ 
+ PCI
+   pcim_enable_device()	: after success, all PCI ops become managed
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 7d797f087822..37974aeee750 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8248,6 +8248,8 @@ MULTIPLEXER SUBSYSTEM
+ M:	Peter Rosin <peda@axentia.se>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/misc/mux-*
++F:	include/linux/mux.h
++F:	drivers/misc/mux-*
+ 
+ MULTISOUND SOUND DRIVER
+ M:	Andrew Veliath <andrewtv@usa.net>
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 64971baf11fa..a3ca79e082c7 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -766,6 +766,29 @@ config PANEL_BOOT_MESSAGE
+ 	  An empty message will only clear the display at driver init time. Any other
+ 	  printf()-formatted message is valid with newline and escape codes.
+ 
++config MULTIPLEXER
++	tristate "Multiplexer subsystem"
 +	help
-+	  Say yes here to build support for Texas Instruments ADS7950, ADS7951,
-+	  ADS7952, ADS7953, ADS7954, ADS7955, ADS7956, ADS7957, ADS7958, ADS7959.
-+	  ADS7960, ADS7961.
++	  Multiplexer controller subsystem. Multiplexers are used in a
++	  variety of settings, and this subsystem abstracts their use
++	  so that the rest of the kernel sees a common interface. When
++	  multiple parallel multiplexers are controlled by one single
++	  multiplexer controller, this subsystem also coordinates the
++	  multiplexer accesses.
 +
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called ti-ads7950.
++if MULTIPLEXER
 +
- config TI_ADS8688
- 	tristate "Texas Instruments ADS8688"
- 	depends on SPI && OF
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 9391217..1966801 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -49,6 +49,7 @@ obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
- obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
- obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
- obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
-+obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
- obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
- obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
- obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
-diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
++config MUX_GPIO
++	tristate "GPIO-controlled MUX controller"
++	depends on OF && GPIOLIB
++	help
++	  GPIO-controlled MUX controller.
++
++	  To compile this driver as a module, choose M here: the module will
++	  be called mux-gpio.
++
++endif
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index 31983366090a..0befa2bba762 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -53,6 +53,8 @@ obj-$(CONFIG_ECHO)		+= echo/
+ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
+ obj-$(CONFIG_CXL_BASE)		+= cxl/
+ obj-$(CONFIG_PANEL)             += panel.o
++obj-$(CONFIG_MULTIPLEXER)      	+= mux-core.o
++obj-$(CONFIG_MUX_GPIO)		+= mux-gpio.o
+ 
+ lkdtm-$(CONFIG_LKDTM)		+= lkdtm_core.o
+ lkdtm-$(CONFIG_LKDTM)		+= lkdtm_bugs.o
+diff --git a/drivers/misc/mux-core.c b/drivers/misc/mux-core.c
 new file mode 100644
-index 0000000..d0b76bd
+index 000000000000..5142caa19236
 --- /dev/null
-+++ b/drivers/iio/adc/ti-ads7950.c
-@@ -0,0 +1,488 @@
++++ b/drivers/misc/mux-core.c
+@@ -0,0 +1,325 @@
 +/*
-+ * Texas Instruments ADS7950 SPI ADC driver
++ * Multiplexer subsystem
 + *
-+ * Copyright 2016 David Lechner <david@lechnology.com>
++ * Copyright (C) 2016 Axentia Technologies AB
 + *
-+ * Based on iio/ad7923.c:
-+ * Copyright 2011 Analog Devices Inc
-+ * Copyright 2012 CS Systemes d'Information
-+ *
-+ * And also on hwmon/ads79xx.c
-+ * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com/
-+ *	Nishanth Menon
-+ *
-+ * This program is free software; you can redistribute it and/or
-+ * modify it under the terms of the GNU General Public License as
-+ * published by the Free Software Foundation version 2.
-+ *
-+ * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-+ * kind, whether express or implied; without even the implied warranty
-+ * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ * GNU General Public License for more details.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
 + */
 +
-+#include <linux/bitops.h>
++#define pr_fmt(fmt) "mux-core: " fmt
++
 +#include <linux/device.h>
 +#include <linux/err.h>
-+#include <linux/interrupt.h>
-+#include <linux/kernel.h>
++#include <linux/idr.h>
 +#include <linux/module.h>
-+#include <linux/regulator/consumer.h>
++#include <linux/mux.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
 +#include <linux/slab.h>
-+#include <linux/spi/spi.h>
 +
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/iio/triggered_buffer.h>
-+
-+#define TI_ADS7950_CR_MANUAL	BIT(12)
-+#define TI_ADS7950_CR_WRITE	BIT(11)
-+#define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
-+#define TI_ADS7950_CR_RANGE_5V	BIT(6)
-+
-+#define TI_ADS7950_MAX_CHAN	16
-+
-+#define TI_ADS7950_TIMESTAMP_SIZE (sizeof(int64_t) / sizeof(__be16))
-+
-+/* val = value, dec = left shift, bits = number of bits of the mask */
-+#define TI_ADS7950_EXTRACT(val, dec, bits) \
-+	(((val) >> (dec)) & ((1 << (bits)) - 1))
-+
-+struct ti_ads7950_state {
-+	struct spi_device	*spi;
-+	struct spi_transfer	ring_xfer[TI_ADS7950_MAX_CHAN + 2];
-+	struct spi_transfer	scan_single_xfer[3];
-+	struct spi_message	ring_msg;
-+	struct spi_message	scan_single_msg;
-+
-+	struct regulator	*reg;
-+
-+	unsigned int		settings;
-+
-+	/*
-+	 * DMA (thus cache coherency maintenance) requires the
-+	 * transfer buffers to live in their own cache lines.
-+	 */
-+	__be16	rx_buf[TI_ADS7950_MAX_CHAN + TI_ADS7950_TIMESTAMP_SIZE]
-+							____cacheline_aligned;
-+	__be16	tx_buf[TI_ADS7950_MAX_CHAN];
++static struct bus_type mux_bus_type = {
++	.name = "mux",
 +};
 +
-+struct ti_ads7950_chip_info {
-+	const struct iio_chan_spec *channels;
-+	unsigned int num_channels;
++static int __init mux_init(void)
++{
++	return bus_register(&mux_bus_type);
++}
++
++static void __exit mux_exit(void)
++{
++	bus_unregister(&mux_bus_type);
++}
++
++static DEFINE_IDA(mux_ida);
++
++static void mux_control_release(struct device *dev)
++{
++	struct mux_control *mux = to_mux_control(dev);
++
++	ida_simple_remove(&mux_ida, mux->id);
++	kfree(mux);
++}
++
++static struct device_type mux_control_type = {
++	.name = "mux-control",
++	.release = mux_control_release,
 +};
 +
-+enum ti_ads7950_id {
-+	TI_ADS7950,
-+	TI_ADS7951,
-+	TI_ADS7952,
-+	TI_ADS7953,
-+	TI_ADS7954,
-+	TI_ADS7955,
-+	TI_ADS7956,
-+	TI_ADS7957,
-+	TI_ADS7958,
-+	TI_ADS7959,
-+	TI_ADS7960,
-+	TI_ADS7961,
-+};
-+
-+#define TI_ADS7950_V_CHAN(index, bits)				\
-+{								\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.channel = index,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	.address = index,					\
-+	.datasheet_name = "CH##index",				\
-+	.scan_index = index,					\
-+	.scan_type = {						\
-+		.sign = 'u',					\
-+		.realbits = bits,				\
-+		.storagebits = 16,				\
-+		.endianness = IIO_BE,				\
-+	},							\
-+}
-+
-+#define DECLARE_TI_ADS7950_4_CHANNELS(name, bits) \
-+const struct iio_chan_spec name ## _channels[] = { \
-+	TI_ADS7950_V_CHAN(0, bits), \
-+	TI_ADS7950_V_CHAN(1, bits), \
-+	TI_ADS7950_V_CHAN(2, bits), \
-+	TI_ADS7950_V_CHAN(3, bits), \
-+	IIO_CHAN_SOFT_TIMESTAMP(4), \
-+}
-+
-+#define DECLARE_TI_ADS7950_8_CHANNELS(name, bits) \
-+const struct iio_chan_spec name ## _channels[] = { \
-+	TI_ADS7950_V_CHAN(0, bits), \
-+	TI_ADS7950_V_CHAN(1, bits), \
-+	TI_ADS7950_V_CHAN(2, bits), \
-+	TI_ADS7950_V_CHAN(3, bits), \
-+	TI_ADS7950_V_CHAN(4, bits), \
-+	TI_ADS7950_V_CHAN(5, bits), \
-+	TI_ADS7950_V_CHAN(6, bits), \
-+	TI_ADS7950_V_CHAN(7, bits), \
-+	IIO_CHAN_SOFT_TIMESTAMP(8), \
-+}
-+
-+#define DECLARE_TI_ADS7950_12_CHANNELS(name, bits) \
-+const struct iio_chan_spec name ## _channels[] = { \
-+	TI_ADS7950_V_CHAN(0, bits), \
-+	TI_ADS7950_V_CHAN(1, bits), \
-+	TI_ADS7950_V_CHAN(2, bits), \
-+	TI_ADS7950_V_CHAN(3, bits), \
-+	TI_ADS7950_V_CHAN(4, bits), \
-+	TI_ADS7950_V_CHAN(5, bits), \
-+	TI_ADS7950_V_CHAN(6, bits), \
-+	TI_ADS7950_V_CHAN(7, bits), \
-+	TI_ADS7950_V_CHAN(8, bits), \
-+	TI_ADS7950_V_CHAN(9, bits), \
-+	TI_ADS7950_V_CHAN(10, bits), \
-+	TI_ADS7950_V_CHAN(11, bits), \
-+	IIO_CHAN_SOFT_TIMESTAMP(12), \
-+}
-+
-+#define DECLARE_TI_ADS7950_16_CHANNELS(name, bits) \
-+const struct iio_chan_spec name ## _channels[] = { \
-+	TI_ADS7950_V_CHAN(0, bits), \
-+	TI_ADS7950_V_CHAN(1, bits), \
-+	TI_ADS7950_V_CHAN(2, bits), \
-+	TI_ADS7950_V_CHAN(3, bits), \
-+	TI_ADS7950_V_CHAN(4, bits), \
-+	TI_ADS7950_V_CHAN(5, bits), \
-+	TI_ADS7950_V_CHAN(6, bits), \
-+	TI_ADS7950_V_CHAN(7, bits), \
-+	TI_ADS7950_V_CHAN(8, bits), \
-+	TI_ADS7950_V_CHAN(9, bits), \
-+	TI_ADS7950_V_CHAN(10, bits), \
-+	TI_ADS7950_V_CHAN(11, bits), \
-+	TI_ADS7950_V_CHAN(12, bits), \
-+	TI_ADS7950_V_CHAN(13, bits), \
-+	TI_ADS7950_V_CHAN(14, bits), \
-+	TI_ADS7950_V_CHAN(15, bits), \
-+	IIO_CHAN_SOFT_TIMESTAMP(16), \
-+}
-+
-+static DECLARE_TI_ADS7950_4_CHANNELS(ti_ads7950, 12);
-+static DECLARE_TI_ADS7950_8_CHANNELS(ti_ads7951, 12);
-+static DECLARE_TI_ADS7950_12_CHANNELS(ti_ads7952, 12);
-+static DECLARE_TI_ADS7950_16_CHANNELS(ti_ads7953, 12);
-+static DECLARE_TI_ADS7950_4_CHANNELS(ti_ads7954, 10);
-+static DECLARE_TI_ADS7950_8_CHANNELS(ti_ads7955, 10);
-+static DECLARE_TI_ADS7950_12_CHANNELS(ti_ads7956, 10);
-+static DECLARE_TI_ADS7950_16_CHANNELS(ti_ads7957, 10);
-+static DECLARE_TI_ADS7950_4_CHANNELS(ti_ads7958, 8);
-+static DECLARE_TI_ADS7950_8_CHANNELS(ti_ads7959, 8);
-+static DECLARE_TI_ADS7950_12_CHANNELS(ti_ads7960, 8);
-+static DECLARE_TI_ADS7950_16_CHANNELS(ti_ads7961, 8);
-+
-+static const struct ti_ads7950_chip_info ti_ads7950_chip_info[] = {
-+	[TI_ADS7950] = {
-+		.channels	= ti_ads7950_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7950_channels),
-+	},
-+	[TI_ADS7951] = {
-+		.channels	= ti_ads7951_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7951_channels),
-+	},
-+	[TI_ADS7952] = {
-+		.channels	= ti_ads7952_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7952_channels),
-+	},
-+	[TI_ADS7953] = {
-+		.channels	= ti_ads7953_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7953_channels),
-+	},
-+	[TI_ADS7954] = {
-+		.channels	= ti_ads7954_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7954_channels),
-+	},
-+	[TI_ADS7955] = {
-+		.channels	= ti_ads7955_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7955_channels),
-+	},
-+	[TI_ADS7956] = {
-+		.channels	= ti_ads7956_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7956_channels),
-+	},
-+	[TI_ADS7957] = {
-+		.channels	= ti_ads7957_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7957_channels),
-+	},
-+	[TI_ADS7958] = {
-+		.channels	= ti_ads7958_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7958_channels),
-+	},
-+	[TI_ADS7959] = {
-+		.channels	= ti_ads7959_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7959_channels),
-+	},
-+	[TI_ADS7960] = {
-+		.channels	= ti_ads7960_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7960_channels),
-+	},
-+	[TI_ADS7961] = {
-+		.channels	= ti_ads7961_channels,
-+		.num_channels	= ARRAY_SIZE(ti_ads7961_channels),
-+	},
-+};
-+
-+/*
-+ * ti_ads7950_update_scan_mode() setup the spi transfer buffer for the new
-+ * scan mask
++/**
++ * mux_control_alloc - allocate a mux-control
++ * @sizeof_priv: Size of extra memory area for private use by the caller.
++ *
++ * Returns the new mux-control.
 + */
-+static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
-+				       const unsigned long *active_scan_mask)
++struct mux_control *mux_control_alloc(size_t sizeof_priv)
 +{
-+	struct ti_ads7950_state *st = iio_priv(indio_dev);
-+	int i, cmd, len;
++	struct mux_control *mux;
 +
-+	len = 0;
-+	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
-+		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
-+		st->tx_buf[len++] = cpu_to_be16(cmd);
++	mux = kzalloc(sizeof(*mux) + sizeof_priv, GFP_KERNEL);
++	if (!mux)
++		return NULL;
++
++	mux->dev.bus = &mux_bus_type;
++	mux->dev.type = &mux_control_type;
++	device_initialize(&mux->dev);
++	dev_set_drvdata(&mux->dev, mux);
++
++	init_rwsem(&mux->lock);
++
++	mux->id = ida_simple_get(&mux_ida, 0, 0, GFP_KERNEL);
++	if (mux->id < 0) {
++		pr_err("mux-controlX failed to get device id\n");
++		kfree(mux);
++		return NULL;
 +	}
++	dev_set_name(&mux->dev, "mux:control%d", mux->id);
 +
-+	/* Data for the 1st channel is not returned until the 3rd transfer */
-+	len += 2;
-+	for (i = 0; i < len; i++) {
-+		if ((i + 2) < len)
-+			st->ring_xfer[i].tx_buf = &st->tx_buf[i];
-+		if (i >= 2)
-+			st->ring_xfer[i].rx_buf = &st->rx_buf[i - 2];
-+		st->ring_xfer[i].len = 2;
-+		st->ring_xfer[i].cs_change = 1;
-+	}
-+	/* make sure last transfer's cs_change is not set */
-+	st->ring_xfer[len - 1].cs_change = 0;
++	mux->cached_state = -1;
++	mux->idle_state = -1;
 +
-+	spi_message_init_with_transfers(&st->ring_msg, st->ring_xfer, len);
-+
-+	return 0;
++	return mux;
 +}
++EXPORT_SYMBOL_GPL(mux_control_alloc);
 +
-+static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
++/**
++ * mux_control_register - register a mux-control, thus readying it for use
++ * @mux: The mux-control to register.
++ *
++ * Returns zero on success or a negative errno on error.
++ */
++int mux_control_register(struct mux_control *mux)
 +{
-+	struct iio_poll_func *pf = p;
-+	struct iio_dev *indio_dev = pf->indio_dev;
-+	struct ti_ads7950_state *st = iio_priv(indio_dev);
-+	int b_sent;
-+
-+	b_sent = spi_sync(st->spi, &st->ring_msg);
-+	if (b_sent)
-+		goto done;
-+
-+	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
-+					   iio_get_time_ns(indio_dev));
-+
-+done:
-+	iio_trigger_notify_done(indio_dev->trig);
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int ti_ads7950_scan_direct(struct ti_ads7950_state *st, unsigned int ch)
-+{
-+	int ret, cmd;
-+
-+	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
-+	st->tx_buf[0] = cpu_to_be16(cmd);
-+
-+	ret = spi_sync(st->spi, &st->scan_single_msg);
-+	if (ret)
-+		return ret;
-+
-+	return be16_to_cpu(st->rx_buf[0]);
-+}
-+
-+static int ti_ads7950_get_range(struct ti_ads7950_state *st)
-+{
-+	int vref;
-+
-+	vref = regulator_get_voltage(st->reg);
-+	if (vref < 0)
-+		return vref;
-+
-+	vref /= 1000;
-+
-+	if (st->settings & TI_ADS7950_CR_RANGE_5V)
-+		vref *= 2;
-+
-+	return vref;
-+}
-+
-+static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
-+			       struct iio_chan_spec const *chan,
-+			       int *val, int *val2, long m)
-+{
-+	struct ti_ads7950_state *st = iio_priv(indio_dev);
 +	int ret;
 +
-+	switch (m) {
-+	case IIO_CHAN_INFO_RAW:
++	/* If the calling driver did not initialize of_node, do it here */
++	if (!mux->dev.of_node && mux->dev.parent)
++		mux->dev.of_node = mux->dev.parent->of_node;
 +
-+		ret = iio_device_claim_direct_mode(indio_dev);
-+		if (ret < 0)
-+			return ret;
-+
-+		ret = ti_ads7950_scan_direct(st, chan->address);
-+		iio_device_release_direct_mode(indio_dev);
-+		if (ret < 0)
-+			return ret;
-+
-+		if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
-+			return -EIO;
-+
-+		*val = TI_ADS7950_EXTRACT(ret, 0, 12);
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = ti_ads7950_get_range(st);
-+		if (ret < 0)
-+			return ret;
-+
-+		*val = ret;
-+		*val2 = chan->scan_type.realbits;
-+
-+		return IIO_VAL_FRACTIONAL_LOG2;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info ti_ads7950_info = {
-+	.read_raw		= &ti_ads7950_read_raw,
-+	.update_scan_mode	= ti_ads7950_update_scan_mode,
-+	.driver_module		= THIS_MODULE,
-+};
-+
-+static int ti_ads7950_probe(struct spi_device *spi)
-+{
-+	struct ti_ads7950_state *st;
-+	struct iio_dev *indio_dev;
-+	const struct ti_ads7950_chip_info *info;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	st = iio_priv(indio_dev);
-+
-+	spi_set_drvdata(spi, indio_dev);
-+
-+	st->spi = spi;
-+	st->settings = TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_RANGE_5V;
-+
-+	info = &ti_ads7950_chip_info[spi_get_device_id(spi)->driver_data];
-+
-+	indio_dev->name = spi_get_device_id(spi)->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = info->channels;
-+	indio_dev->num_channels = info->num_channels;
-+	indio_dev->info = &ti_ads7950_info;
-+
-+	/*
-+	 * Setup default message. The sample is read at the end of the first
-+	 * transfer, then it takes one full cycle to convert the sample and one
-+	 * more cycle to send the value. The conversion process is driven by
-+	 * the SPI clock, which is why we have 3 transfers. The middle one is
-+	 * just dummy data sent while the chip is converting the sample that
-+	 * was read at the end of the first transfer.
-+	 */
-+
-+	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
-+	st->scan_single_xfer[0].len = 2;
-+	st->scan_single_xfer[0].cs_change = 1;
-+	st->scan_single_xfer[1].tx_buf = &st->tx_buf[0];
-+	st->scan_single_xfer[1].len = 2;
-+	st->scan_single_xfer[1].cs_change = 1;
-+	st->scan_single_xfer[2].rx_buf = &st->rx_buf[0];
-+	st->scan_single_xfer[2].len = 2;
-+
-+	spi_message_init_with_transfers(&st->scan_single_msg,
-+					st->scan_single_xfer, 3);
-+
-+	st->reg = devm_regulator_get(&spi->dev, "refin");
-+	if (IS_ERR(st->reg)) {
-+		dev_err(&spi->dev, "Failed get get regulator \"refin\"\n");
-+		return PTR_ERR(st->reg);
-+	}
-+
-+	ret = regulator_enable(st->reg);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to enable regulator \"refin\"\n");
++	ret = device_add(&mux->dev);
++	if (ret < 0)
 +		return ret;
-+	}
 +
-+	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-+					 &ti_ads7950_trigger_handler, NULL);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
-+		goto error_disable_reg;
-+	}
++	ret = of_platform_populate(mux->dev.of_node, NULL, NULL, &mux->dev);
++	if (ret < 0)
++		device_del(&mux->dev);
 +
-+	ret = iio_device_register(indio_dev);
-+	if (ret) {
-+		dev_err(&spi->dev, "Failed to register iio device\n");
-+		goto error_cleanup_ring;
-+	}
++	return ret;
++}
++EXPORT_SYMBOL_GPL(mux_control_register);
 +
-+	return 0;
++/**
++ * mux_control_unregister - take the mux-control off-line, reversing the
++ *			    effexts of mux_control_register
++ * @mux: the mux-control to unregister.
++ */
++void mux_control_unregister(struct mux_control *mux)
++{
++	of_platform_depopulate(&mux->dev);
++	device_del(&mux->dev);
++}
++EXPORT_SYMBOL_GPL(mux_control_unregister);
 +
-+error_cleanup_ring:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+error_disable_reg:
-+	regulator_disable(st->reg);
++/**
++ * mux_control_put - put away the mux-control for good, reversing the
++ *		     effects of either mux_control_alloc or mux_control_get
++ * @mux: The mux-control to put away.
++ */
++void mux_control_put(struct mux_control *mux)
++{
++	if (!mux)
++		return;
++	put_device(&mux->dev);
++}
++EXPORT_SYMBOL_GPL(mux_control_put);
++
++static int mux_control_set(struct mux_control *mux, int state)
++{
++	int ret = mux->ops->set(mux, state);
++
++	mux->cached_state = ret < 0 ? -1 : state;
 +
 +	return ret;
 +}
 +
-+static int ti_ads7950_remove(struct spi_device *spi)
++/**
++ * mux_control_select - select the given multiplexer state
++ * @mux: The mux-control to request a change of state from.
++ * @state: The new requested state.
++ *
++ * Returns 0 if the requested state was already active, or 1 it the
++ * mux-control state was changed to the requested state. Or a negavive
++ * errno on error.
++ * Note that the difference in return value of zero or one is of
++ * questionable value; especially if the mux-control has several independent
++ * consumers, which is something the consumers should not be making
++ * assumptions about.
++ *
++ * Make sure to call mux_control_deselect when the operation is complete and
++ * the mux-control is free for others to use, but do not call
++ * mux_control_deselect if mux_control_select fails.
++ */
++int mux_control_select(struct mux_control *mux, int state)
 +{
-+	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-+	struct ti_ads7950_state *st = iio_priv(indio_dev);
++	int ret;
 +
-+	iio_device_unregister(indio_dev);
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	regulator_disable(st->reg);
++	if (down_read_trylock(&mux->lock)) {
++		if (mux->cached_state == state)
++			return 0;
++
++		/* Sigh, the mux needs updating... */
++		up_read(&mux->lock);
++	}
++
++	/* ...or it's just contended. */
++	down_write(&mux->lock);
++
++	if (mux->cached_state == state) {
++		/*
++		 * Hmmm, someone else changed the mux to my liking.
++		 * That makes me wonder how long I waited for nothing?
++		 */
++		downgrade_write(&mux->lock);
++		return 0;
++	}
++
++	ret = mux_control_set(mux, state);
++	if (ret < 0) {
++		if (mux->idle_state != -1)
++			mux_control_set(mux, mux->idle_state);
++
++		up_write(&mux->lock);
++		return ret;
++	}
++
++	downgrade_write(&mux->lock);
++
++	return 1;
++}
++EXPORT_SYMBOL_GPL(mux_control_select);
++
++/**
++ * mux_control_deselect - deselect the previously selected multiplexer state
++ * @mux: The mux-control to deselect.
++ *
++ * Returns 0 on success and a negative errno on error. An error can only
++ * occur if the mux has an idle state. Note that even if an error occurs, the
++ * mux-control is unlocked for others to access.
++ */
++int mux_control_deselect(struct mux_control *mux)
++{
++	int ret = 0;
++
++	if (mux->idle_state != -1 && mux->cached_state != mux->idle_state)
++		ret = mux_control_set(mux, mux->idle_state);
++
++	up_read(&mux->lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(mux_control_deselect);
++
++static int of_dev_node_match(struct device *dev, void *data)
++{
++	return dev->of_node == data;
++}
++
++static struct mux_control *of_find_mux_by_node(struct device_node *np)
++{
++	struct device *dev;
++
++	dev = bus_find_device(&mux_bus_type, NULL, np, of_dev_node_match);
++
++	return dev ? to_mux_control(dev) : NULL;
++}
++
++/**
++ * mux_control_get - get the mux-control for a device
++ * @dev: The device that needs a mux-control.
++ *
++ * Returns the mux-control.
++ */
++struct mux_control *mux_control_get(struct device *dev)
++{
++	struct mux_control *mux;
++
++	if (!dev->of_node)
++		return ERR_PTR(-ENODEV);
++
++	mux = of_find_mux_by_node(dev->of_node->parent);
++	if (!mux)
++		return ERR_PTR(-EPROBE_DEFER);
++
++	return mux;
++}
++EXPORT_SYMBOL_GPL(mux_control_get);
++
++static void devm_mux_control_free(struct device *dev, void *res)
++{
++	struct mux_control *mux = *(struct mux_control **)res;
++
++	mux_control_put(mux);
++}
++
++/**
++ * devm_mux_control_get - get the mux-control for a device, with resource
++ *			  management
++ * @dev: The device that needs a mux-control.
++ *
++ * Returns the mux-control.
++ */
++struct mux_control *devm_mux_control_get(struct device *dev)
++{
++	struct mux_control **ptr, *mux;
++
++	ptr = devres_alloc(devm_mux_control_free, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return ERR_PTR(-ENOMEM);
++
++	mux = mux_control_get(dev);
++	if (IS_ERR(mux)) {
++		devres_free(ptr);
++		return mux;
++	}
++
++	*ptr = mux;
++	devres_add(dev, ptr);
++
++	return mux;
++}
++EXPORT_SYMBOL_GPL(devm_mux_control_get);
++
++static int devm_mux_control_match(struct device *dev, void *res, void *data)
++{
++	struct mux_control **r = res;
++
++	if (!r || !*r) {
++		WARN_ON(!r || !*r);
++		return 0;
++	}
++
++	return *r == data;
++}
++
++/**
++ * devm_mux_control_put - resource-managed version mux_control_put
++ * @dev: The device that originally got the mux-control.
++ * @mux: The mux-control to put away.
++ *
++ * Note that you do not normally need to call this function.
++ */
++void devm_mux_control_put(struct device *dev, struct mux_control *mux)
++{
++	WARN_ON(devres_release(dev, devm_mux_control_free,
++			       devm_mux_control_match, mux));
++}
++EXPORT_SYMBOL_GPL(devm_mux_control_put);
++
++subsys_initcall(mux_init);
++module_exit(mux_exit);
++
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
++MODULE_DESCRIPTION("MUX subsystem");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/misc/mux-gpio.c b/drivers/misc/mux-gpio.c
+new file mode 100644
+index 000000000000..e9baca35f400
+--- /dev/null
++++ b/drivers/misc/mux-gpio.c
+@@ -0,0 +1,116 @@
++/*
++ * GPIO-controlled multiplexer driver
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/err.h>
++#include <linux/gpio/consumer.h>
++#include <linux/module.h>
++#include <linux/mux.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++
++struct mux_gpio {
++	struct gpio_descs *gpios;
++};
++
++static int mux_gpio_set(struct mux_control *mux, int val)
++{
++	struct mux_gpio *mux_gpio = mux_control_priv(mux);
++	int i;
++
++	for (i = 0; i < mux_gpio->gpios->ndescs; i++)
++		gpiod_set_value_cansleep(mux_gpio->gpios->desc[i],
++					 val & (1 << i));
 +
 +	return 0;
 +}
 +
-+static const struct spi_device_id ti_ads7950_id[] = {
-+	{"ti-ads7950", TI_ADS7950},
-+	{"ti-ads7951", TI_ADS7951},
-+	{"ti-ads7952", TI_ADS7952},
-+	{"ti-ads7953", TI_ADS7953},
-+	{"ti-ads7954", TI_ADS7954},
-+	{"ti-ads7955", TI_ADS7955},
-+	{"ti-ads7956", TI_ADS7956},
-+	{"ti-ads7957", TI_ADS7957},
-+	{"ti-ads7958", TI_ADS7958},
-+	{"ti-ads7959", TI_ADS7959},
-+	{"ti-ads7960", TI_ADS7960},
-+	{"ti-ads7961", TI_ADS7961},
-+	{ }
++static const struct mux_control_ops mux_gpio_ops = {
++	.set = mux_gpio_set,
 +};
-+MODULE_DEVICE_TABLE(spi, ti_ads7950_id);
 +
-+static struct spi_driver ti_ads7950_driver = {
++static const struct of_device_id mux_gpio_dt_ids[] = {
++	{ .compatible = "mux-gpio", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mux_gpio_dt_ids);
++
++static int mux_gpio_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = pdev->dev.of_node;
++	struct mux_control *mux;
++	struct mux_gpio *mux_gpio;
++	u32 idle_state;
++	int ret;
++
++	if (!np)
++		return -ENODEV;
++
++	mux = mux_control_alloc(sizeof(*mux_gpio));
++	if (!mux)
++		return -ENOMEM;
++	mux_gpio = mux_control_priv(mux);
++	mux->dev.parent = dev;
++	mux->ops = &mux_gpio_ops;
++
++	platform_set_drvdata(pdev, mux);
++
++	mux_gpio->gpios = devm_gpiod_get_array(dev, "mux", GPIOD_OUT_LOW);
++	if (IS_ERR(mux_gpio->gpios)) {
++		if (PTR_ERR(mux_gpio->gpios) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get gpios\n");
++		mux_control_put(mux);
++		return PTR_ERR(mux_gpio->gpios);
++	}
++	mux->states = 1 << mux_gpio->gpios->ndescs;
++
++	ret = of_property_read_u32(np, "idle-state", &idle_state);
++	if (ret >= 0) {
++		if (idle_state >= mux->states) {
++			dev_err(dev, "invalid idle-state %u\n", idle_state);
++			return -EINVAL;
++		}
++		mux->idle_state = idle_state;
++	}
++
++	ret = mux_control_register(mux);
++	if (ret < 0) {
++		dev_err(dev, "failed to register mux_control\n");
++		mux_control_put(mux);
++		return ret;
++	}
++
++	return ret;
++}
++
++static int mux_gpio_remove(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct mux_control *mux = to_mux_control(dev);
++
++	mux_control_unregister(mux);
++	mux_control_put(mux);
++	return 0;
++}
++
++static struct platform_driver mux_gpio_driver = {
 +	.driver = {
-+		.name	= "ti-ads7950",
++		.name = "mux-gpio",
++		.of_match_table	= of_match_ptr(mux_gpio_dt_ids),
 +	},
-+	.probe		= ti_ads7950_probe,
-+	.remove		= ti_ads7950_remove,
-+	.id_table	= ti_ads7950_id,
++	.probe = mux_gpio_probe,
++	.remove = mux_gpio_remove,
 +};
-+module_spi_driver(ti_ads7950_driver);
++module_platform_driver(mux_gpio_driver);
 +
-+MODULE_AUTHOR("David Lechner <david@lechnology.com>");
-+MODULE_DESCRIPTION("TI TI_ADS7950 ADC");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
++MODULE_DESCRIPTION("GPIO-controlled multiplexer driver");
 +MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/mux.h b/include/linux/mux.h
+new file mode 100644
+index 000000000000..2f1472192d6d
+--- /dev/null
++++ b/include/linux/mux.h
+@@ -0,0 +1,55 @@
++/*
++ * mux.h - definitions for the multiplexer interface
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef _LINUX_MUX_H
++#define _LINUX_MUX_H
++
++#include <linux/device.h>
++#include <linux/rwsem.h>
++
++struct mux_control;
++
++struct mux_control_ops {
++	int (*set)(struct mux_control *mux, int reg);
++};
++
++struct mux_control {
++	struct rw_semaphore lock; /* protects the state of the mux */
++
++	struct device dev;
++	int id;
++
++	unsigned int states;
++	int cached_state;
++	int idle_state;
++
++	const struct mux_control_ops *ops;
++};
++
++#define to_mux_control(x) container_of((x), struct mux_control, dev)
++
++static inline void *mux_control_priv(struct mux_control *mux)
++{
++	return mux + 1;
++}
++
++struct mux_control *mux_control_alloc(size_t sizeof_priv);
++int mux_control_register(struct mux_control *mux);
++void mux_control_unregister(struct mux_control *mux);
++void mux_control_put(struct mux_control *mux);
++
++int mux_control_select(struct mux_control *mux, int state);
++int mux_control_deselect(struct mux_control *mux);
++
++struct mux_control *mux_control_get(struct device *dev);
++struct mux_control *devm_mux_control_get(struct device *dev);
++void devm_mux_control_put(struct device *dev, struct mux_control *mux);
++
++#endif /* _LINUX_MUX_H */
 -- 
-2.7.4
+2.1.4
+
