@@ -1,110 +1,136 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0109.outbound.protection.outlook.com ([104.47.2.109]:41772
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1757340AbcKXQyV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 24 Nov 2016 11:54:21 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
+Received: from www381.your-server.de ([78.46.137.84]:49538 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753534AbcKUPpk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2016 10:45:40 -0500
+Subject: Re: [RFC PATCH v2 3/7] iio: inkern: api for manipulating ext_info of
+ iio channels
+To: Jonathan Cameron <jic23@kernel.org>, Peter Rosin <peda@axentia.se>,
+        linux-kernel@vger.kernel.org
+References: <1479419289-17553-1-git-send-email-peda@axentia.se>
+ <1479419289-17553-4-git-send-email-peda@axentia.se>
+ <d5cd7550-2cde-5beb-2cdb-ad6d501fc0ef@kernel.org>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        "Jonathan Cameron" <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>,
         Arnd Bergmann <arnd@arndb.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH v4 4/7] dt-bindings: iio: iio-mux: document iio-mux bindings
-Date: Thu, 24 Nov 2016 16:18:04 +0100
-Message-ID: <1480000687-5630-5-git-send-email-peda@axentia.se>
-In-Reply-To: <1480000687-5630-1-git-send-email-peda@axentia.se>
-References: <1480000687-5630-1-git-send-email-peda@axentia.se>
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <6ea462c2-53ae-0f50-deb9-e500a97f2ac4@metafoo.de>
+Date: Mon, 21 Nov 2016 16:45:29 +0100
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <d5cd7550-2cde-5beb-2cdb-ad6d501fc0ef@kernel.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../bindings/iio/multiplexer/iio-mux.txt           | 47 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 +++
- 2 files changed, 53 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+On 11/19/2016 04:38 PM, Jonathan Cameron wrote:
+> On 17/11/16 21:48, Peter Rosin wrote:
+>> Extend the inkern api with functions for reading and writing ext_info
+>> of iio channels.
+> I'd like Lars' feedback on this one.
+> 
+> Superficially looks fine to me but I am not as familiar with this interface
+> as Lars is ;) (he wrote it IIRC:)
 
-diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-new file mode 100644
-index 000000000000..f5eccdfbed40
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-@@ -0,0 +1,47 @@
-+IIO multiplexer bindings
-+
-+If a multiplexer is used to select which hardware signal is fed to
-+e.g. an ADC channel, these bindings describe that situation.
-+
-+Required properties:
-+- compatible : "iio-mux"
-+- io-channels : Channel node of the parent channel that has multiplexed
-+		input.
-+- io-channel-names : Should be "parent".
-+- #address-cells = <1>;
-+- #size-cells = <0>;
-+
-+Required properties for iio-mux child nodes:
-+- reg : The multiplexer state as described in ../misc/mux-controller.txt
-+
-+For each iio-mux child, an iio channel will be created whose number will
-+match the mux controller state.
-+
-+Example:
-+	adc-mux {
-+		compatible = "iio-mux";
-+		io-channels = <&adc 0>;
-+		io-channel-names = "parent";
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		mux-controller {
-+			compatible = "mux-gpio";
-+
-+			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+				    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		sync@0 {
-+			reg = <0>;
-+		};
-+
-+		in@1 {
-+			reg = <1>;
-+		};
-+
-+		system-regulator@2 {
-+			reg = <2>;
-+		};
-+	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 9635c9708a13..7f02f58dfc37 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6233,6 +6233,12 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
- F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
- F:	drivers/iio/adc/envelope-detector.c
- 
-+IIO MULTIPLEXER
-+M:	Peter Rosin <peda@axentia.se>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-+
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
- R:	Hartmut Knaack <knaack.h@gmx.de>
--- 
-2.1.4
+The implementation looks OK. I'm not necessarily convinced about the concept
+though, but the code is manageable so I guess it is OK.
+
+The final version should add kernel API documentation for the new functions.
+
+>> ---
+>>  drivers/iio/inkern.c         | 55 ++++++++++++++++++++++++++++++++++++++++++++
+>>  include/linux/iio/consumer.h |  6 +++++
+>>  2 files changed, 61 insertions(+)
+>>
+>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+>> index cfca17ba2535..a8099b164222 100644
+>> --- a/drivers/iio/inkern.c
+>> +++ b/drivers/iio/inkern.c
+>> @@ -850,3 +850,58 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
+>>  	return ret;
+>>  }
+>>  EXPORT_SYMBOL_GPL(iio_write_channel_raw);
+>> +
+>> +int iio_get_channel_ext_info_count(struct iio_channel *chan)
+
+should be unsigned.
+
+>> +{
+>> +	const struct iio_chan_spec_ext_info *ext_info;
+>> +	unsigned int i = 0;
+>> +
+>> +	if (!chan->channel->ext_info)
+>> +		return i;
+>> +
+>> +	for (ext_info = chan->channel->ext_info; ext_info->name; ext_info++)
+>> +		++i;
+>> +
+>> +	return i;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_get_channel_ext_info_count);
+>> +
+>> +ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
+>> +				  const char *attr, char *buf)
+>> +{
+>> +	const struct iio_chan_spec_ext_info *ext_info;
+>> +
+>> +	if (!chan->channel->ext_info)
+>> +		return -EINVAL;
+>> +
+>> +	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
+>> +		if (strcmp(attr, ext_info->name))
+>> +			continue;
+
+You could factor the lookup out into a helper function that is used for both
+read and write. And also stop searching once a match was found.
+
+>> +
+>> +		return ext_info->read(chan->indio_dev, ext_info->private,
+>> +				      chan->channel, buf);
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_read_channel_ext_info);
+>> +
+>> +ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
+>> +				   const char *buf, size_t len)
+>> +{
+>> +	const struct iio_chan_spec_ext_info *ext_info;
+>> +
+>> +	if (!chan->channel->ext_info)
+>> +		return -EINVAL;
+>> +
+>> +	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
+>> +		if (strcmp(attr, ext_info->name))
+>> +			continue;
+>> +
+>> +		return ext_info->write(chan->indio_dev, ext_info->private,
+>> +				       chan->channel, buf, len);
+>> +	}
+>> +
+>> +	return -EINVAL;
+>> +}
+>> +EXPORT_SYMBOL_GPL(iio_write_channel_ext_info);
+>> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+>> index 9a4f336d8b4a..471dece8729a 100644
+>> --- a/include/linux/iio/consumer.h
+>> +++ b/include/linux/iio/consumer.h
+>> @@ -299,4 +299,10 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
+>>  int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+>>  	int *processed, unsigned int scale);
+>>  
+>> +int iio_get_channel_ext_info_count(struct iio_channel *chan);
+>> +ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
+>> +				  const char *attr, char *buf);
+>> +ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
+>> +				   const char *buf, size_t len);
+>> +
+>>  #endif
+>>
+> 
 
