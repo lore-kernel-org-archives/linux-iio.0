@@ -1,476 +1,634 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:34826 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1751754AbcKUI4K (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2016 03:56:10 -0500
-Subject: Re: [PATCH v3 2/6] iio: adc: Add support for STM32 ADC core
-To: Jonathan Cameron <jic23@kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1479223861-21747-1-git-send-email-fabrice.gasnier@st.com>
- <1479223861-21747-3-git-send-email-fabrice.gasnier@st.com>
- <09b63f8e-20c8-532e-2d97-2faa6dfe7538@kernel.org>
-CC: <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <mark.rutland@arm.com>, <mcoquelin.stm32@gmail.com>,
-        <alexandre.torgue@st.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <3775e118-ec41-8b09-6be3-6bde579f046d@st.com>
-Date: Mon, 21 Nov 2016 09:54:54 +0100
+Received: from mail-wj0-f180.google.com ([209.85.210.180]:34769 "EHLO
+        mail-wj0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753933AbcKUKyu (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2016 05:54:50 -0500
+Received: by mail-wj0-f180.google.com with SMTP id mp19so25112762wjc.1
+        for <linux-iio@vger.kernel.org>; Mon, 21 Nov 2016 02:54:49 -0800 (PST)
+Date: Mon, 21 Nov 2016 10:49:41 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Cc: linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com
+Subject: Re: [PATCH v10 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Message-ID: <20161121104941.GG32509@dell>
+References: <cover.1479638191.git.ksenija.stanojevic@gmail.com>
+ <54edcb74119825e8c705cd594c864f7c7d30e476.1479638191.git.ksenija.stanojevic@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <09b63f8e-20c8-532e-2d97-2faa6dfe7538@kernel.org>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <54edcb74119825e8c705cd594c864f7c7d30e476.1479638191.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/19/2016 01:17 PM, Jonathan Cameron wrote:
-> On 15/11/16 15:30, Fabrice Gasnier wrote:
->> Add core driver for STMicroelectronics STM32 ADC (Analog to Digital
->> Converter). STM32 ADC can be composed of up to 3 ADCs with shared
->> resources like clock prescaler, common interrupt line and analog
->> reference voltage.
->> This core driver basically manages shared resources.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-> There is nothing in here that demands selecting a fixed regulator.
-> I've also switched the select regulator over to depends on inline with
-> other drivers in IIO that have a hard dependency on regulators.
-> Other than that which showed up during build tests, looks good to me.
-> Shout if I've broken anything with this change.
+On Sun, 20 Nov 2016, Ksenija Stanojevic wrote:
 
-Hi Jonathan, All,
+> Add core files for low resolution analog-to-digital converter (mxs-lradc)
+> MFD driver.
+> 
+> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> ---
+> Changes in v10:
+>  - fetch base address from DT
+>  - add a NULL check for of_match_device
+> 
+> Changes in v9:
+>  - improve commit message.
+> 
+> Changes in v8:
+>  - rebase onto 4.9-rc1
+> 
+> Changes in v7:
+>  - define macros ADC_CELL and TSC_CELL
+>  - remove one cell and dynamically set them in the switch()
+>  - fail in the touchscreen driver instead of mfd driver if
+>    hardware doesn't contain a touchscreen
+> 
+> Changes in v6:
+>  - update copyright
+>  - add kernel-doc header for struct mxs-lradc
+>  - add error message
+>  - change EINVAL to ENODEV
+>  - use PLATFORM_DEVID_NONE instead -1
+>  - cosmetic fixes
+> 
+> Changes in v5:
+>  - use DEFINE_RES_MEM
+>  - don't pass ioreammaped adress to platform cells
+>  - move comment outside of struct mxs_lradc
+>  - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
+>    mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
+> 
+> Changes in v4:
+>  - update copyright
+>  - use DEFINE_RES_IRQ_NAMED
+>  - remove mxs_lradc_add_device function
+>  - use struct mfd_cell in static form
+>  - improve spacing
+>  - remove unnecessary comment
+>  - remove platform_get_irq
+>  - remove touch_ret and use ret instead
+>  - rename use_touchscreen to touchscreen_wire
+>  - use goto statements
+>  - remove irq[13], irq_count and irq_name from struct mxs_lradc
+>  - remove all defines from inside the struct definition
+> 
+> Changes in v3:
+>  - add note to commit message
+>  - move switch statement into if(touch_ret == 0) branch
+>  - add MODULE_AUTHOR
+> 
+> Changes in v2:
+>  - do not change spacing in Kconfig
+>  - make struct mfd_cell part of struct mxs_lradc
+>  - use switch instead of if in mxs_lradc_irq_mask
+>  - use only necessary header files in mxs_lradc.h
+>  - use devm_mfd_add_device
+>  - use separate function to register mfd device
+>  - change licence to GPL
+>  - add copyright
+> 
+>  drivers/mfd/Kconfig           |  17 +++
+>  drivers/mfd/Makefile          |   1 +
+>  drivers/mfd/mxs-lradc.c       | 261 ++++++++++++++++++++++++++++++++++++++++++
+>  include/linux/mfd/mxs-lradc.h | 203 ++++++++++++++++++++++++++++++++
+>  4 files changed, 482 insertions(+)
+>  create mode 100644 drivers/mfd/mxs-lradc.c
+>  create mode 100644 include/linux/mfd/mxs-lradc.h
+> 
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 819dc0a..e5c1289 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -343,6 +343,23 @@ config MFD_MC13XXX_I2C
+>  	help
+>  	  Select this if your MC13xxx is connected via an I2C bus.
+>  
+> +config MFD_MXS_LRADC
+> +	tristate "Freescale i.MX23/i.MX28 LRADC"
+> +	depends on ARCH_MXS || COMPILE_TEST
+> +	select MFD_CORE
+> +	select STMP_DEVICE
+> +	help
+> +	  Say yes here to build support for the Low Resolution
+> +	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
+> +	  processors. This driver provides common support for accessing the
+> +	  device, additional drivers must be enabled in order to use the
+> +	  functionality of the device:
+> +		mxs-lradc-adc for ADC readings
+> +		mxs-lradc-ts  for touchscreen support
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called mxs-lradc.
+> +
+>  config MFD_MX25_TSADC
+>  	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
+>  	select REGMAP_MMIO
+> diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+> index db39377..90e9f36 100644
+> --- a/drivers/mfd/Makefile
+> +++ b/drivers/mfd/Makefile
+> @@ -212,3 +212,4 @@ obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+>  
+>  obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
+>  obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc.o
+> +obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
+> diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
+> new file mode 100644
+> index 0000000..8f56cf9
+> --- /dev/null
+> +++ b/drivers/mfd/mxs-lradc.c
+> @@ -0,0 +1,261 @@
+> +/*
+> + * Freescale MXS Low Resolution Analog-to-Digital Converter driver
+> + *
+> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+> + * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> + *
+> + * Authors:
+> + *  Marek Vasut <marex@denx.de>
+> + *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/clk.h>
+> +#include <linux/device.h>
+> +#include <linux/mfd/core.h>
+> +#include <linux/mfd/mxs-lradc.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/slab.h>
+> +
+> +#define ADC_CELL		0
+> +#define TSC_CELL		1
+> +#define RES_MEM			0
+> +
+> +enum mx23_lradc_irqs {
+> +	MX23_LRADC_TS_IRQ = 0,
+> +	MX23_LRADC_CH0_IRQ,
+> +	MX23_LRADC_CH1_IRQ,
+> +	MX23_LRADC_CH2_IRQ,
+> +	MX23_LRADC_CH3_IRQ,
+> +	MX23_LRADC_CH4_IRQ,
+> +	MX23_LRADC_CH5_IRQ,
+> +	MX23_LRADC_CH6_IRQ,
+> +	MX23_LRADC_CH7_IRQ,
+> +};
+> +
+> +enum mx28_lradc_irqs {
+> +	MX28_LRADC_TS_IRQ = 0,
+> +	MX28_LRADC_TRESH0_IRQ,
+> +	MX28_LRADC_TRESH1_IRQ,
+> +	MX28_LRADC_CH0_IRQ,
+> +	MX28_LRADC_CH1_IRQ,
+> +	MX28_LRADC_CH2_IRQ,
+> +	MX28_LRADC_CH3_IRQ,
+> +	MX28_LRADC_CH4_IRQ,
+> +	MX28_LRADC_CH5_IRQ,
+> +	MX28_LRADC_CH6_IRQ,
+> +	MX28_LRADC_CH7_IRQ,
+> +	MX28_LRADC_BUTTON0_IRQ,
+> +	MX28_LRADC_BUTTON1_IRQ,
+> +};
+> +
+> +static struct resource mx23_adc_resources[] = {
+> +	DEFINE_RES_MEM(0x0, 0x0),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
+> +};
+> +
+> +static struct resource mx23_touchscreen_resources[] = {
+> +	DEFINE_RES_MEM(0x0, 0x0),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
+> +	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
+> +};
+> +
+> +static struct resource mx28_adc_resources[] = {
+> +	DEFINE_RES_MEM(0x0, 0x0),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH0_IRQ, "mxs-lradc-thresh0"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH1_IRQ, "mxs-lradc-thresh1"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON0_IRQ, "mxs-lradc-button0"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON1_IRQ, "mxs-lradc-button1"),
+> +};
+> +
+> +static struct resource mx28_touchscreen_resources[] = {
+> +	DEFINE_RES_MEM(0x0, 0x0),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
+> +	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
+> +};
+> +
+> +static struct mfd_cell mxs_cells[] = {
+> +	{
+> +		.name = "mxs-lradc-adc",
+> +	},
+> +	{
+> +		.name = "mxs-lradc-ts",
+> +	},
+> +};
+> +
+> +static const struct of_device_id mxs_lradc_dt_ids[] = {
+> +	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
+> +	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
+> +
+> +static int mxs_lradc_probe(struct platform_device *pdev)
+> +{
+> +	const struct of_device_id *of_id;
+> +	struct device *dev = &pdev->dev;
+> +	struct device_node *node = dev->of_node;
+> +	struct mxs_lradc *lradc;
+> +	struct mfd_cell *cells = mxs_cells;
+> +	struct resource *res;
+> +	int ret = 0;
+> +	u32 ts_wires = 0;
+> +
+> +	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
+> +	if (!lradc)
+> +		return -ENOMEM;
+> +
+> +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
+> +	if (!of_id)
+> +		return -EINVAL;
+> +
+> +	lradc->soc = (enum mxs_lradc_id)of_id->data;
+> +
+> +	lradc->clk = devm_clk_get(&pdev->dev, NULL);
+> +	if (IS_ERR(lradc->clk)) {
+> +		dev_err(dev, "Failed to get the delay unit clock\n");
+> +		return PTR_ERR(lradc->clk);
+> +	}
+> +
+> +	ret = clk_prepare_enable(lradc->clk);
+> +	if (ret) {
+> +		dev_err(dev, "Failed to enable the delay unit clock\n");
+> +		return ret;
+> +	}
+> +
+> +	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
+> +					 &ts_wires);
+> +
+> +	if (!ret) {
+> +		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
+> +
+> +		switch (ts_wires) {
+> +		case 4:
+> +			lradc->touchscreen_wire = MXS_LRADC_TOUCHSCREEN_4WIRE;
+> +			break;
+> +		case 5:
+> +			if (lradc->soc == IMX28_LRADC) {
+> +				lradc->touchscreen_wire =
+> +					MXS_LRADC_TOUCHSCREEN_5WIRE;
+> +				break;
+> +			}
+> +			/* fall through to an error message for i.MX23 */
+> +		default:
+> +			dev_err(&pdev->dev,
+> +				"Unsupported number of touchscreen wires (%d)\n"
+> +				, ts_wires);
+> +			ret = -EINVAL;
+> +			goto err_clk;
+> +		}
+> +	} else {
+> +		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, lradc);
+> +
+> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	if (!res)
+> +		return -ENOMEM;
+> +
+> +	switch (lradc->soc) {
+> +	case IMX23_LRADC:
+> +		mx23_adc_resources[RES_MEM] = *res;
+> +		mx23_touchscreen_resources[RES_MEM] = *res;
+> +		cells[ADC_CELL].resources = mx23_adc_resources;
+> +		cells[ADC_CELL].num_resources = ARRAY_SIZE(mx23_adc_resources);
+> +		cells[TSC_CELL].resources = mx23_touchscreen_resources;
+> +		cells[TSC_CELL].num_resources =
+> +			ARRAY_SIZE(mx23_touchscreen_resources);
+> +		break;
+> +	case IMX28_LRADC:
+> +		mx28_adc_resources[0] = *res;
+> +		mx28_touchscreen_resources[0] = *res;
+> +		cells[ADC_CELL].resources = mx28_adc_resources;
+> +		cells[ADC_CELL].num_resources = ARRAY_SIZE(mx28_adc_resources);
+> +		cells[TSC_CELL].resources = mx28_touchscreen_resources;
+> +		cells[TSC_CELL].num_resources =
+> +			ARRAY_SIZE(mx28_touchscreen_resources);
+> +		break;
 
-First many thanks.
-This is not a big deal. Only thing is: I think patch 4 of this series 
-(on stm32_defconfig) need to be updated
-to accommodate this change. E.g. :
-+CONFIG_REGULATOR=y
-+CONFIG_REGULATOR_FIXED_VOLTAGE=y
+You only need to do this if some parts of the cells are dynamically
+obtained.  All of these resources are static, so just create static
+'struct mfd_cell's like most other drivers do.
 
-Shall I send a new version of this series (all patches), including your 
-changes, with updated defconfig as well ?
-Or only updated patch on defconfig is enough ?
+> +	default:
+> +		dev_err(dev, "Unsupported SoC\n");
+> +		ret = -ENODEV;
+> +		goto err_clk;
+> +	}
+> +
+> +	cells[ADC_CELL].platform_data = lradc;
+> +	cells[ADC_CELL].pdata_size = sizeof(*lradc);
 
-Please advise,
-Fabrice
->
-> Applied to the togreg branch of iio.git and pushed out as testing for
-> the autobuilders to play with it.
->
-> Thanks,
->
-> Jonathan
->> ---
->>   drivers/iio/adc/Kconfig          |  13 ++
->>   drivers/iio/adc/Makefile         |   1 +
->>   drivers/iio/adc/stm32-adc-core.c | 303 +++++++++++++++++++++++++++++++++++++++
->>   drivers/iio/adc/stm32-adc-core.h |  52 +++++++
->>   4 files changed, 369 insertions(+)
->>   create mode 100644 drivers/iio/adc/stm32-adc-core.c
->>   create mode 100644 drivers/iio/adc/stm32-adc-core.h
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 7edcf32..ff30239 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -419,6 +419,19 @@ config ROCKCHIP_SARADC
->>   	  To compile this driver as a module, choose M here: the
->>   	  module will be called rockchip_saradc.
->>   
->> +config STM32_ADC_CORE
->> +	tristate "STMicroelectronics STM32 adc core"
->> +	depends on ARCH_STM32 || COMPILE_TEST
->> +	depends on OF
->> +	select REGULATOR
->> +	select REGULATOR_FIXED_VOLTAGE
->> +	help
->> +	  Select this option to enable the core driver for STMicroelectronics
->> +	  STM32 analog-to-digital converter (ADC).
->> +
->> +	  This driver can also be built as a module.  If so, the module
->> +	  will be called stm32-adc-core.
->> +
->>   config STX104
->>   	tristate "Apex Embedded Systems STX104 driver"
->>   	depends on X86 && ISA_BUS_API
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index 7a40c04..a1e8f44 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -41,6 +41,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
->>   obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
->>   obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
->>   obj-$(CONFIG_STX104) += stx104.o
->> +obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
->>   obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
->>   obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
->>   obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
->> diff --git a/drivers/iio/adc/stm32-adc-core.c b/drivers/iio/adc/stm32-adc-core.c
->> new file mode 100644
->> index 0000000..4214b0c
->> --- /dev/null
->> +++ b/drivers/iio/adc/stm32-adc-core.c
->> @@ -0,0 +1,303 @@
->> +/*
->> + * This file is part of STM32 ADC driver
->> + *
->> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
->> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
->> + *
->> + * Inspired from: fsl-imx25-tsadc
->> + *
->> + * License type: GPLv2
->> + *
->> + * This program is free software; you can redistribute it and/or modify it
->> + * under the terms of the GNU General Public License version 2 as published by
->> + * the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful, but
->> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
->> + * or FITNESS FOR A PARTICULAR PURPOSE.
->> + * See the GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License along with
->> + * this program. If not, see <http://www.gnu.org/licenses/>.
->> + */
->> +
->> +#include <linux/clk.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/irqchip/chained_irq.h>
->> +#include <linux/irqdesc.h>
->> +#include <linux/irqdomain.h>
->> +#include <linux/module.h>
->> +#include <linux/of_device.h>
->> +#include <linux/regulator/consumer.h>
->> +#include <linux/slab.h>
->> +
->> +#include "stm32-adc-core.h"
->> +
->> +/* STM32F4 - common registers for all ADC instances: 1, 2 & 3 */
->> +#define STM32F4_ADC_CSR			(STM32_ADCX_COMN_OFFSET + 0x00)
->> +#define STM32F4_ADC_CCR			(STM32_ADCX_COMN_OFFSET + 0x04)
->> +
->> +/* STM32F4_ADC_CSR - bit fields */
->> +#define STM32F4_EOC3			BIT(17)
->> +#define STM32F4_EOC2			BIT(9)
->> +#define STM32F4_EOC1			BIT(1)
->> +
->> +/* STM32F4_ADC_CCR - bit fields */
->> +#define STM32F4_ADC_ADCPRE_SHIFT	16
->> +#define STM32F4_ADC_ADCPRE_MASK		GENMASK(17, 16)
->> +
->> +/* STM32 F4 maximum analog clock rate (from datasheet) */
->> +#define STM32F4_ADC_MAX_CLK_RATE	36000000
->> +
->> +/**
->> + * struct stm32_adc_priv - stm32 ADC core private data
->> + * @irq:		irq for ADC block
->> + * @domain:		irq domain reference
->> + * @aclk:		clock reference for the analog circuitry
->> + * @vref:		regulator reference
->> + * @common:		common data for all ADC instances
->> + */
->> +struct stm32_adc_priv {
->> +	int				irq;
->> +	struct irq_domain		*domain;
->> +	struct clk			*aclk;
->> +	struct regulator		*vref;
->> +	struct stm32_adc_common		common;
->> +};
->> +
->> +static struct stm32_adc_priv *to_stm32_adc_priv(struct stm32_adc_common *com)
->> +{
->> +	return container_of(com, struct stm32_adc_priv, common);
->> +}
->> +
->> +/* STM32F4 ADC internal common clock prescaler division ratios */
->> +static int stm32f4_pclk_div[] = {2, 4, 6, 8};
->> +
->> +/**
->> + * stm32f4_adc_clk_sel() - Select stm32f4 ADC common clock prescaler
->> + * @priv: stm32 ADC core private data
->> + * Select clock prescaler used for analog conversions, before using ADC.
->> + */
->> +static int stm32f4_adc_clk_sel(struct platform_device *pdev,
->> +			       struct stm32_adc_priv *priv)
->> +{
->> +	unsigned long rate;
->> +	u32 val;
->> +	int i;
->> +
->> +	rate = clk_get_rate(priv->aclk);
->> +	for (i = 0; i < ARRAY_SIZE(stm32f4_pclk_div); i++) {
->> +		if ((rate / stm32f4_pclk_div[i]) <= STM32F4_ADC_MAX_CLK_RATE)
->> +			break;
->> +	}
->> +	if (i >= ARRAY_SIZE(stm32f4_pclk_div))
->> +		return -EINVAL;
->> +
->> +	val = readl_relaxed(priv->common.base + STM32F4_ADC_CCR);
->> +	val &= ~STM32F4_ADC_ADCPRE_MASK;
->> +	val |= i << STM32F4_ADC_ADCPRE_SHIFT;
->> +	writel_relaxed(val, priv->common.base + STM32F4_ADC_CCR);
->> +
->> +	dev_dbg(&pdev->dev, "Using analog clock source at %ld kHz\n",
->> +		rate / (stm32f4_pclk_div[i] * 1000));
->> +
->> +	return 0;
->> +}
->> +
->> +/* ADC common interrupt for all instances */
->> +static void stm32_adc_irq_handler(struct irq_desc *desc)
->> +{
->> +	struct stm32_adc_priv *priv = irq_desc_get_handler_data(desc);
->> +	struct irq_chip *chip = irq_desc_get_chip(desc);
->> +	u32 status;
->> +
->> +	chained_irq_enter(chip, desc);
->> +	status = readl_relaxed(priv->common.base + STM32F4_ADC_CSR);
->> +
->> +	if (status & STM32F4_EOC1)
->> +		generic_handle_irq(irq_find_mapping(priv->domain, 0));
->> +
->> +	if (status & STM32F4_EOC2)
->> +		generic_handle_irq(irq_find_mapping(priv->domain, 1));
->> +
->> +	if (status & STM32F4_EOC3)
->> +		generic_handle_irq(irq_find_mapping(priv->domain, 2));
->> +
->> +	chained_irq_exit(chip, desc);
->> +};
->> +
->> +static int stm32_adc_domain_map(struct irq_domain *d, unsigned int irq,
->> +				irq_hw_number_t hwirq)
->> +{
->> +	irq_set_chip_data(irq, d->host_data);
->> +	irq_set_chip_and_handler(irq, &dummy_irq_chip, handle_level_irq);
->> +
->> +	return 0;
->> +}
->> +
->> +static void stm32_adc_domain_unmap(struct irq_domain *d, unsigned int irq)
->> +{
->> +	irq_set_chip_and_handler(irq, NULL, NULL);
->> +	irq_set_chip_data(irq, NULL);
->> +}
->> +
->> +static const struct irq_domain_ops stm32_adc_domain_ops = {
->> +	.map = stm32_adc_domain_map,
->> +	.unmap  = stm32_adc_domain_unmap,
->> +	.xlate = irq_domain_xlate_onecell,
->> +};
->> +
->> +static int stm32_adc_irq_probe(struct platform_device *pdev,
->> +			       struct stm32_adc_priv *priv)
->> +{
->> +	struct device_node *np = pdev->dev.of_node;
->> +
->> +	priv->irq = platform_get_irq(pdev, 0);
->> +	if (priv->irq < 0) {
->> +		dev_err(&pdev->dev, "failed to get irq\n");
->> +		return priv->irq;
->> +	}
->> +
->> +	priv->domain = irq_domain_add_simple(np, STM32_ADC_MAX_ADCS, 0,
->> +					     &stm32_adc_domain_ops,
->> +					     priv);
->> +	if (!priv->domain) {
->> +		dev_err(&pdev->dev, "Failed to add irq domain\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	irq_set_chained_handler(priv->irq, stm32_adc_irq_handler);
->> +	irq_set_handler_data(priv->irq, priv);
->> +
->> +	return 0;
->> +}
->> +
->> +static void stm32_adc_irq_remove(struct platform_device *pdev,
->> +				 struct stm32_adc_priv *priv)
->> +{
->> +	int hwirq;
->> +
->> +	for (hwirq = 0; hwirq < STM32_ADC_MAX_ADCS; hwirq++)
->> +		irq_dispose_mapping(irq_find_mapping(priv->domain, hwirq));
->> +	irq_domain_remove(priv->domain);
->> +	irq_set_chained_handler(priv->irq, NULL);
->> +}
->> +
->> +static int stm32_adc_probe(struct platform_device *pdev)
->> +{
->> +	struct stm32_adc_priv *priv;
->> +	struct device_node *np = pdev->dev.of_node;
->> +	struct resource *res;
->> +	int ret;
->> +
->> +	if (!pdev->dev.of_node)
->> +		return -ENODEV;
->> +
->> +	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
->> +	if (!priv)
->> +		return -ENOMEM;
->> +
->> +	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +	priv->common.base = devm_ioremap_resource(&pdev->dev, res);
->> +	if (IS_ERR(priv->common.base))
->> +		return PTR_ERR(priv->common.base);
->> +
->> +	priv->vref = devm_regulator_get(&pdev->dev, "vref");
->> +	if (IS_ERR(priv->vref)) {
->> +		ret = PTR_ERR(priv->vref);
->> +		dev_err(&pdev->dev, "vref get failed, %d\n", ret);
->> +		return ret;
->> +	}
->> +
->> +	ret = regulator_enable(priv->vref);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "vref enable failed\n");
->> +		return ret;
->> +	}
->> +
->> +	ret = regulator_get_voltage(priv->vref);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "vref get voltage failed, %d\n", ret);
->> +		goto err_regulator_disable;
->> +	}
->> +	priv->common.vref_mv = ret / 1000;
->> +	dev_dbg(&pdev->dev, "vref+=%dmV\n", priv->common.vref_mv);
->> +
->> +	priv->aclk = devm_clk_get(&pdev->dev, "adc");
->> +	if (IS_ERR(priv->aclk)) {
->> +		ret = PTR_ERR(priv->aclk);
->> +		dev_err(&pdev->dev, "Can't get 'adc' clock\n");
->> +		goto err_regulator_disable;
->> +	}
->> +
->> +	ret = clk_prepare_enable(priv->aclk);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "adc clk enable failed\n");
->> +		goto err_regulator_disable;
->> +	}
->> +
->> +	ret = stm32f4_adc_clk_sel(pdev, priv);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "adc clk selection failed\n");
->> +		goto err_clk_disable;
->> +	}
->> +
->> +	ret = stm32_adc_irq_probe(pdev, priv);
->> +	if (ret < 0)
->> +		goto err_clk_disable;
->> +
->> +	platform_set_drvdata(pdev, &priv->common);
->> +
->> +	ret = of_platform_populate(np, NULL, NULL, &pdev->dev);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "failed to populate DT children\n");
->> +		goto err_irq_remove;
->> +	}
->> +
->> +	return 0;
->> +
->> +err_irq_remove:
->> +	stm32_adc_irq_remove(pdev, priv);
->> +
->> +err_clk_disable:
->> +	clk_disable_unprepare(priv->aclk);
->> +
->> +err_regulator_disable:
->> +	regulator_disable(priv->vref);
->> +
->> +	return ret;
->> +}
->> +
->> +static int stm32_adc_remove(struct platform_device *pdev)
->> +{
->> +	struct stm32_adc_common *common = platform_get_drvdata(pdev);
->> +	struct stm32_adc_priv *priv = to_stm32_adc_priv(common);
->> +
->> +	of_platform_depopulate(&pdev->dev);
->> +	stm32_adc_irq_remove(pdev, priv);
->> +	clk_disable_unprepare(priv->aclk);
->> +	regulator_disable(priv->vref);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct of_device_id stm32_adc_of_match[] = {
->> +	{ .compatible = "st,stm32f4-adc-core" },
->> +	{},
->> +};
->> +MODULE_DEVICE_TABLE(of, stm32_adc_of_match);
->> +
->> +static struct platform_driver stm32_adc_driver = {
->> +	.probe = stm32_adc_probe,
->> +	.remove = stm32_adc_remove,
->> +	.driver = {
->> +		.name = "stm32-adc-core",
->> +		.of_match_table = stm32_adc_of_match,
->> +	},
->> +};
->> +module_platform_driver(stm32_adc_driver);
->> +
->> +MODULE_AUTHOR("Fabrice Gasnier <fabrice.gasnier@st.com>");
->> +MODULE_DESCRIPTION("STMicroelectronics STM32 ADC core driver");
->> +MODULE_LICENSE("GPL v2");
->> +MODULE_ALIAS("platform:stm32-adc-core");
->> diff --git a/drivers/iio/adc/stm32-adc-core.h b/drivers/iio/adc/stm32-adc-core.h
->> new file mode 100644
->> index 0000000..081fa5f
->> --- /dev/null
->> +++ b/drivers/iio/adc/stm32-adc-core.h
->> @@ -0,0 +1,52 @@
->> +/*
->> + * This file is part of STM32 ADC driver
->> + *
->> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
->> + * Author: Fabrice Gasnier <fabrice.gasnier@st.com>.
->> + *
->> + * License type: GPLv2
->> + *
->> + * This program is free software; you can redistribute it and/or modify it
->> + * under the terms of the GNU General Public License version 2 as published by
->> + * the Free Software Foundation.
->> + *
->> + * This program is distributed in the hope that it will be useful, but
->> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
->> + * or FITNESS FOR A PARTICULAR PURPOSE.
->> + * See the GNU General Public License for more details.
->> + *
->> + * You should have received a copy of the GNU General Public License along with
->> + * this program. If not, see <http://www.gnu.org/licenses/>.
->> + */
->> +
->> +#ifndef __STM32_ADC_H
->> +#define __STM32_ADC_H
->> +
->> +/*
->> + * STM32 - ADC global register map
->> + * ________________________________________________________
->> + * | Offset |                 Register                    |
->> + * --------------------------------------------------------
->> + * | 0x000  |                Master ADC1                  |
->> + * --------------------------------------------------------
->> + * | 0x100  |                Slave ADC2                   |
->> + * --------------------------------------------------------
->> + * | 0x200  |                Slave ADC3                   |
->> + * --------------------------------------------------------
->> + * | 0x300  |         Master & Slave common regs          |
->> + * --------------------------------------------------------
->> + */
->> +#define STM32_ADC_MAX_ADCS		3
->> +#define STM32_ADCX_COMN_OFFSET		0x300
->> +
->> +/**
->> + * struct stm32_adc_common - stm32 ADC driver common data (for all instances)
->> + * @base:		control registers base cpu addr
->> + * @vref_mv:		vref voltage (mv)
->> + */
->> +struct stm32_adc_common {
->> +	void __iomem			*base;
->> +	int				vref_mv;
->> +};
->> +
->> +#endif
->>
+This isn't platform data either, it's driver data.  Use the
+platform_set_drvdata() API for this.
 
+> +	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
+> +				   &cells[ADC_CELL], 1, NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
+> +		goto err_clk;
+> +	}
+> +
+> +	cells[TSC_CELL].platform_data = lradc;
+> +	cells[TSC_CELL].pdata_size = sizeof(*lradc);
+
+Same here.
+
+> +	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
+> +				   &cells[TSC_CELL], 1, NULL, 0, NULL);
+> +	if (ret) {
+> +		dev_err(&pdev->dev,
+> +			"Failed to add the touchscreen subdevice\n");
+> +		goto err_clk;
+> +	}
+> +
+> +	return 0;
+> +
+> +err_clk:
+> +	clk_disable_unprepare(lradc->clk);
+> +
+> +	return ret;
+> +}
+> +
+> +static int mxs_lradc_remove(struct platform_device *pdev)
+> +{
+> +	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
+> +
+> +	clk_disable_unprepare(lradc->clk);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver mxs_lradc_driver = {
+> +	.driver = {
+> +		.name = "mxs-lradc",
+> +		.of_match_table = mxs_lradc_dt_ids,
+> +	},
+> +	.probe = mxs_lradc_probe,
+> +	.remove = mxs_lradc_remove,
+> +};
+> +module_platform_driver(mxs_lradc_driver);
+> +
+> +MODULE_AUTHOR("Ksenija Stanojevic <ksenija.stanojevic@gmail.com>");
+> +MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
+> +MODULE_LICENSE("GPL");
+> +MODULE_ALIAS("platform:mxs-lradc");
+> diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
+> new file mode 100644
+> index 0000000..64140681
+> --- /dev/null
+> +++ b/include/linux/mfd/mxs-lradc.h
+> @@ -0,0 +1,203 @@
+> +/*
+> + * Freescale MXS Low Resolution Analog-to-Digital Converter driver
+> + *
+> + * Copyright (c) 2012 DENX Software Engineering, GmbH.
+> + * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+> + *
+> + * Author: Marek Vasut <marex@denx.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#ifndef __MFD_MXS_LRADC_H
+> +#define __MFD_MXS_LRADC_H
+> +
+> +#include <linux/bitops.h>
+> +#include <linux/io.h>
+> +#include <linux/stmp_device.h>
+> +
+> +#define LRADC_MAX_DELAY_CHANS	4
+> +#define LRADC_MAX_MAPPED_CHANS	8
+> +#define LRADC_MAX_TOTAL_CHANS	16
+> +
+> +#define LRADC_DELAY_TIMER_HZ	2000
+> +
+> +#define LRADC_CTRL0				0x00
+> +# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
+> +# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
+> +# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
+> +# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
+> +# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
+> +# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
+> +# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
+> +# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
+> +
+> +# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
+> +# define LRADC_CTRL0_MX23_YM			BIT(19)
+> +# define LRADC_CTRL0_MX23_XM			BIT(18)
+> +# define LRADC_CTRL0_MX23_YP			BIT(17)
+> +# define LRADC_CTRL0_MX23_XP			BIT(16)
+> +
+> +# define LRADC_CTRL0_MX28_PLATE_MASK \
+> +		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
+> +		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
+> +		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
+> +		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
+> +
+> +# define LRADC_CTRL0_MX23_PLATE_MASK \
+> +		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
+> +		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
+> +		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
+> +
+> +#define LRADC_CTRL1				0x10
+> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
+> +#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
+> +#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
+> +#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
+> +#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
+> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
+> +#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
+> +#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
+> +#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
+> +#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
+> +
+> +#define LRADC_CTRL2				0x20
+> +#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
+> +#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
+> +
+> +#define LRADC_STATUS				0x40
+> +#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
+> +
+> +#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
+> +#define LRADC_CH_ACCUMULATE			BIT(29)
+> +#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
+> +#define LRADC_CH_NUM_SAMPLES_OFFSET		24
+> +#define LRADC_CH_NUM_SAMPLES(x) \
+> +				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
+> +#define LRADC_CH_VALUE_MASK			0x3ffff
+> +#define LRADC_CH_VALUE_OFFSET			0
+> +
+> +#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
+> +#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
+> +#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
+> +#define LRADC_DELAY_TRIGGER(x) \
+> +				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
+> +				LRADC_DELAY_TRIGGER_LRADCS_MASK)
+> +#define LRADC_DELAY_KICK			BIT(20)
+> +#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
+> +#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
+> +#define LRADC_DELAY_TRIGGER_DELAYS(x) \
+> +				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
+> +				LRADC_DELAY_TRIGGER_DELAYS_MASK)
+> +#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
+> +#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
+> +#define LRADC_DELAY_LOOP(x) \
+> +				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
+> +				LRADC_DELAY_LOOP_COUNT_MASK)
+> +#define LRADC_DELAY_DELAY_MASK			0x7ff
+> +#define LRADC_DELAY_DELAY_OFFSET		0
+> +#define LRADC_DELAY_DELAY(x) \
+> +				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
+> +				LRADC_DELAY_DELAY_MASK)
+> +
+> +#define LRADC_CTRL4				0x140
+> +#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
+> +#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
+> +#define LRADC_CTRL4_LRADCSELECT(n, x) \
+> +				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
+> +				LRADC_CTRL4_LRADCSELECT_MASK(n))
+> +
+> +#define LRADC_RESOLUTION			12
+> +#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
+> +
+> +#define BUFFER_VCHANS_LIMITED		0x3f
+> +#define BUFFER_VCHANS_ALL		0xff
+> +
+> +	/*
+> +	 * Certain LRADC channels are shared between touchscreen
+> +	 * and/or touch-buttons and generic LRADC block. Therefore when using
+> +	 * either of these, these channels are not available for the regular
+> +	 * sampling. The shared channels are as follows:
+> +	 *
+> +	 * CH0 -- Touch button #0
+> +	 * CH1 -- Touch button #1
+> +	 * CH2 -- Touch screen XPUL
+> +	 * CH3 -- Touch screen YPLL
+> +	 * CH4 -- Touch screen XNUL
+> +	 * CH5 -- Touch screen YNLR
+> +	 * CH6 -- Touch screen WIPER (5-wire only)
+> +	 *
+> +	 * The bit fields below represents which parts of the LRADC block are
+> +	 * switched into special mode of operation. These channels can not
+> +	 * be sampled as regular LRADC channels. The driver will refuse any
+> +	 * attempt to sample these channels.
+> +	 */
+> +#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
+> +#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
+> +#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
+> +
+> +enum mxs_lradc_id {
+> +	IMX23_LRADC,
+> +	IMX28_LRADC,
+> +};
+> +
+> +enum mxs_lradc_ts_wires {
+> +	MXS_LRADC_TOUCHSCREEN_NONE = 0,
+> +	MXS_LRADC_TOUCHSCREEN_4WIRE,
+> +	MXS_LRADC_TOUCHSCREEN_5WIRE,
+> +};
+> +
+> +/**
+> + * struct mxs_lradc
+> + * @soc: soc type (IMX23 or IMX28)
+> + * @clk: 2 kHz clock for delay units
+> + * @buffer_vchans: channels that can be used during buffered capture
+> + * @touchscreen_wire: touchscreen type (4-wire or 5-wire)
+> + * @use_touchbutton: button state (on or off)
+> + */
+> +struct mxs_lradc {
+> +	enum mxs_lradc_id	soc;
+> +	struct clk		*clk;
+> +	u8			buffer_vchans;
+> +
+> +	enum mxs_lradc_ts_wires	touchscreen_wire;
+> +	bool			use_touchbutton;
+> +};
+> +
+> +static inline void mxs_lradc_reg_set(void __iomem *base, u32 val, u32 reg)
+> +{
+> +	writel(val, base + reg + STMP_OFFSET_REG_SET);
+> +}
+> +
+> +static inline void mxs_lradc_reg_clear(void __iomem *base, u32 val,
+> +				       u32 reg)
+> +{
+> +	writel(val, base + reg + STMP_OFFSET_REG_CLR);
+> +}
+> +
+> +static inline void mxs_lradc_reg_wrt(void __iomem *base, u32 val, u32 reg)
+> +{
+> +	writel(val, base + reg);
+> +}
+
+This type of API is pointless.  Just use the writel() functions
+directly.
+
+> +static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
+> +{
+> +	switch (lradc->soc) {
+> +	case IMX23_LRADC:
+> +		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
+> +	case IMX28_LRADC:
+> +		return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
+> +	default:
+> +		return 0;
+> +	}
+> +}
+
+Use these directly too.
+
+> +#endif /* __MXS_LRADC_H */
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
