@@ -1,40 +1,88 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:49799 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932274AbcKVKuZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Nov 2016 05:50:25 -0500
-Message-ID: <1479811817.13456.18.camel@hadess.net>
-Subject: ACPI DSDT support for mount-matrix?
-From: Bastien Nocera <hadess@hadess.net>
-To: linux-iio@vger.kernel.org
-Cc: Gregor Boirie <gregor.boirie@parrot.com>,
-        faouaz.tenoutit@intel.com, "Rafael J. Wysocki" <rjw@rjwysocki.net>
-Date: Tue, 22 Nov 2016 11:50:17 +0100
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <david@lechnology.com>
+Subject: Re: [PATCH v2] iio: adc: New driver for TI ADS7950 chips
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1479666484-2582-1-git-send-email-david@lechnology.com>
+ <d1d05bf8-f4e7-0bf1-66a7-56683cb69d65@lechnology.com>
+ <alpine.DEB.2.02.1611212350550.15526@pmeerw.net>
+ <04F737B2-EB34-47DB-A913-C7D0A987E9AA@jic23.retrosnub.co.uk>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+ Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org
+From: David Lechner <david@lechnology.com>
+Message-ID: <748ee481-eb9a-28f2-2c8b-214eea63c2b0@lechnology.com>
+Date: Tue, 22 Nov 2016 12:23:46 -0600
+MIME-Version: 1.0
+In-Reply-To: <04F737B2-EB34-47DB-A913-C7D0A987E9AA@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Hey,
+On 11/22/2016 01:23 AM, Jonathan Cameron wrote:
+>
+>
+> On 21 November 2016 22:54:24 GMT+00:00, Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
+>>
+>>>> +static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
+>>>> +			       struct iio_chan_spec const *chan,
+>>>> +			       int *val, int *val2, long m)
+>>>> +{
+>>>> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
+>>>> +	int ret;
+>>>> +
+>>>> +	switch (m) {
+>>>> +	case IIO_CHAN_INFO_RAW:
+>>>> +
+>>>> +		ret = iio_device_claim_direct_mode(indio_dev);
+>>>> +		if (ret < 0)
+>>>> +			return ret;
+>>>> +
+>>>> +		ret = ti_ads7950_scan_direct(st, chan->address);
+>>>> +		iio_device_release_direct_mode(indio_dev);
+>>>> +		if (ret < 0)
+>>>> +			return ret;
+>>>> +
+>>>> +		if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
+>>>> +			return -EIO;
+>>>> +
+>>>> +		*val = TI_ADS7950_EXTRACT(ret, 0, 12);
+>>>
+>>> I'm not sure if I am doing this right. There are 8- 10- and 12-bit
+>> versions of
+>>> this chip. The 8- and 10-bit versions still return a 12-bit number
+>> where the
+>>> last 4 or 2 bits are always 0. Should I be shifting the 12-bit value
+>> here
+>>> based on the chip being used so that *val is 0-255 for 8-bit and
+>> 0-1023 for
+>>> 10-bit? Or should this be *really* raw and not even use
+>> TI_ADS7950_EXTRACT()
+>>> to mask the channel address bits?
+>>
+>> I'd shift and adjust _SCALE so that *val * scale gives mV
+> It would also be fine to not do anything and let userspace deal with shifting and masking for
+> buffered data.  Non buffered obviously still needs shifting and masking though!
 
-Gregor added support for exporting the mount matrix from the Device
-Tree to the IIO accelerometer:
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=dfc57732ad38f93ae6232a3b4e64fd077383a0f1
+I have sent a v3 patch already that does exactly this. Buffered data is 
+untouched and unbuffered data is now correct with shifting and masking.
 
-And Faouaz wanted to add support for exporting the mount matrix from
-the ACPI DSDT to sysfs as well:
-http://www.spinics.net/lists/linux-acpi/msg51540.html
-
-Would it be possible to rework that ACPI patch to export the mount
-matrix through IIO as is done for DeviceTree-based machines?
-
-I'm adding mount-matrix support to iio-sensor-proxy, which currently
-means getting that information from the firmware through the IIO
-device, using udev as a way to override that, if the firmware doesn't
-contain that information. I'd like to avoid having 3 different sources
-for the value.
-
-Cheers
-
-PS: I'd also be interested in that _PLD information to export the
-information to webcams.
+>
+> I'd slightly prefer the doing nothing route but don't really care as both are valid uses of the ABI.
+>
+> Jonathan
+>>
+>>>> +
+>>>> +		return IIO_VAL_INT;
+>>>> +	case IIO_CHAN_INFO_SCALE:
+>>>> +		ret = ti_ads7950_get_range(st);
+>>>> +		if (ret < 0)
+>>>> +			return ret;
+>>>> +
+>>>> +		*val = ret;
+>>>> +		*val2 = chan->scan_type.realbits;
+>>>> +
+>>>> +		return IIO_VAL_FRACTIONAL_LOG2;
+>>>> +	}
+>>>> +
+>>>> +	return -EINVAL;
+>>>> +}
+>
