@@ -1,97 +1,59 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:50668 "EHLO
-        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752458AbcKXCSp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2016 21:18:45 -0500
-Message-ID: <1479953916.1995.3.camel@hadess.net>
-Subject: Re: acpi-als taking over from hwmon for light sensor support?
-From: Bastien Nocera <hadess@hadess.net>
-To: Guenter Roeck <linux@roeck-us.net>
-Cc: Jean Delvare <jdelvare@suse.de>, linux-iio@vger.kernel.org,
-        linux-hwmon@vger.kernel.org
-Date: Thu, 24 Nov 2016 03:18:36 +0100
-In-Reply-To: <20161123213215.GA22924@roeck-us.net>
-References: <1479921689.16940.9.camel@hadess.net>
-         <1479922686.5115.2.camel@chaos.suse> <1479935231.16940.11.camel@hadess.net>
-         <20161123213215.GA22924@roeck-us.net>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <lee.jones@linaro.org>
+Date: Tue, 22 Nov 2016 17:18:20 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>, robh+dt@kernel.org,
+	Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com,
+	devicetree@vger.kernel.org,
+	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+	Thierry Reding <thierry.reding@gmail.com>,
+	linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+	Fabrice Gasnier <fabrice.gasnier@st.com>,
+	Gerald Baeza <gerald.baeza@st.com>,
+	Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+	Linus Walleij <linus.walleij@linaro.org>,
+	Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
+	Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
+Message-ID: <20161122171820.GL10134@dell.home>
+References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
+ <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
+ <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
+ <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, 2016-11-23 at 13:32 -0800, Guenter Roeck wrote:
-> On Wed, Nov 23, 2016 at 10:07:11PM +0100, Bastien Nocera wrote:
-> > On Wed, 2016-11-23 at 18:38 +0100, Jean Delvare wrote:
-> > > On mer., 2016-11-23 at 18:21 +0100, Bastien Nocera wrote:
-> > > > Hey,
-> > > > 
-> > > > I did some work on iio-sensor-proxy[1] those past couple of
-> > > > days, and
-> > > > tested it on a MacBook Pro.
-> > > > 
-> > > > Before that, I had written a (user-space) driver to access the
-> > > > hwmon
-> > > > driver's "light" value, so I was a bit surprised when I saw
-> > > > that iio-
-> > > > sensor-proxy was accessing the light sensor through acpi-als's
-> > > > IIO driver
-> > > > instead of through the hwmon driver.
-> > > > 
-> > > > I looked through the hwmon, iio and applesmc.c logs, and
-> > > > couldn't find any
-> > > > information about how the move from one to the other. Does
-> > > > anyone know?
-> > > > 
-> > > > I'm asking because the applesmc.c hwmon driver is the only one
-> > > > with
-> > > > support for the "light" property, and if that's not used
-> > > > anymore, I might
-> > > > as well remove that code now (or schedule to remove it).
-> > > 
-> > > Light sensors are out of scope of hwmon, they have nothing to do
-> > > with
-> > > hardware monitoring.
-> > 
-> > Why is there still code in applesmc.c to handle the "light" sysfs
-> > property
-> > then?
-> > 
+On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
+
+> [snip]
+> >> +     "st,stm32-iio-timer5"
+> >> +     "st,stm32-iio-timer6"
+> >> +     "st,stm32-iio-timer7"
+> >> +     "st,stm32-iio-timer8"
+> >> +     "st,stm32-iio-timer9"
+> >> +     "st,stm32-iio-timer10"
+> >> +     "st,stm32-iio-timer11"
+> >> +     "st,stm32-iio-timer12"
+> >> +     "st,stm32-iio-timer13"
+> >> +     "st,stm32-iio-timer14"
+> >
+> > We can't do this. This is a binding for a driver, not for the hardware.
+> >
 > 
-> Interesting question. Because no one bothered enough to remove it ?
-> Because
-> other applications may still use it ? Because old apple hardware may
-> not
-> support ACPI0008 ? There can be many reasons.
+> Unfortunately each instance for the hardware IP have little
+> differences like which triggers they could accept or size of the
+> counter register,
+> and I doesn't have value inside the hardware to distinguish them so
+> the only way I found is to use compatible.
 
-All good reasons. The lack of ACPI0008 support would be the main reason
-for me to keep the hwmon driver support in iio-sensor-proxy.
+Can't you represent these as properties?
 
-> If the question is why it is there in the first place, please keep in
-> mind that
-> the driver is quite old. "For historic reasons" may be the best
-> answer to that
-> question.
-
-Oh, I know it's old, I've used it on 2 different Intel-based MacBook
-Airs ;)
-
-> > Also, this doesn't answer my question as to when this switch
-> > happened.  I
-> > don't care one way or the other, but knowing when the switch was
-> > made can
-> > allow me to prepare the hwmon driver in iio-sensor-proxy for
-> > removal.
-> > 
-> 
-> From kernel perspective, it may have been more or less automatic with
-> the addition of acpi-als support to iio. Either case, isn't it up to
-> iio-sensor-proxy to decide which kernel ABI it wants to use ?
-
-In this case, we don't have a choice, the device is getting bound to
-the acpi-als driver and hwmon just doesn't have the light support. In
-any case, iio-sensor-proxy only binds to a single sensor of each type,
-so we're good here.
-
-I'll leave the hwmon support for older Intel Macs in.
-
-Cheers
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
