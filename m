@@ -1,85 +1,52 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:51932 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1754136AbcKXRv3 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 24 Nov 2016 12:51:29 -0500
-Date: Thu, 24 Nov 2016 12:51:26 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: walter harms <wharms@bfs.de>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-Subject: Re: [patch] iio: tsl2583: make array large enough
-Message-ID: <20161124175126.GA3088@basecamp.onstation.org>
-References: <20161118140326.GA20458@basecamp.onstation.org>
- <20161124133807.GA32255@mwanda>
- <20161124154833.GB2118@basecamp.onstation.org>
- <58371B39.30503@bfs.de>
+Return-Path: <lars@metafoo.de>
+Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
+ <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
+ <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
+ <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org,
+ Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com,
+ devicetree@vger.kernel.org,
+ Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+ Thierry Reding <thierry.reding@gmail.com>, linux-pwm@vger.kernel.org,
+ jic23@kernel.org, knaack.h@gmx.de, Peter Meerwald-Stadler
+ <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
+ linux-arm-kernel@lists.infradead.org,
+ Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza
+ <gerald.baeza@st.com>, Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+ Linus Walleij <linus.walleij@linaro.org>,
+ Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
+ Benjamin Gaignard <benjamin.gaignard@st.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <216b3783-9f7f-4ead-81fb-5568c762e90f@metafoo.de>
+Date: Tue, 22 Nov 2016 18:02:42 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <58371B39.30503@bfs.de>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Nov 24, 2016 at 05:54:17PM +0100, walter harms wrote:
+On 11/22/2016 06:01 PM, Benjamin Gaignard wrote:
+> [snip]
+>>> +     "st,stm32-iio-timer5"
+>>> +     "st,stm32-iio-timer6"
+>>> +     "st,stm32-iio-timer7"
+>>> +     "st,stm32-iio-timer8"
+>>> +     "st,stm32-iio-timer9"
+>>> +     "st,stm32-iio-timer10"
+>>> +     "st,stm32-iio-timer11"
+>>> +     "st,stm32-iio-timer12"
+>>> +     "st,stm32-iio-timer13"
+>>> +     "st,stm32-iio-timer14"
+>>
+>> We can't do this. This is a binding for a driver, not for the hardware.
+>>
 > 
-> 
-> Am 24.11.2016 16:48, schrieb Brian Masney:
-> > On Thu, Nov 24, 2016 at 04:38:07PM +0300, Dan Carpenter wrote:
-> >> This array is supposed to have 10 elements.  Smatch complains that with
-> >> the current code we can have n == max_ints and read beyond the end of
-> >> the array.
-> >>
-> >> Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
-> >> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
-> >>
-> >> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
-> >> index 0b87f6a..a78b602 100644
-> >> --- a/drivers/iio/light/tsl2583.c
-> >> +++ b/drivers/iio/light/tsl2583.c
-> >> @@ -565,7 +565,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
-> >>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> >>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
-> >>  	const unsigned int max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3;
-> >> -	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3];
-> >> +	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3 + 1];
-> >>  	int ret = -EINVAL;
-> >>  	unsigned int n;
-> >>  
-> > 
-> 
-> sorry i did not notice that bevor ..
-> there is a
->   max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3
-> 
-> IMHO this should read either:
->    int value[max_ints+1];
+> Unfortunately each instance for the hardware IP have little
+> differences like which triggers they could accept or size of the
+> counter register,
+> and I doesn't have value inside the hardware to distinguish them so
+> the only way I found is to use compatible.
 
-I originally went this route when I refactored the function, however
-running make C=1 yields the following warnings:
-
-drivers/iio/light/tsl2583.c:568:19: warning: Variable length array is
-used.
-drivers/iio/light/tsl2583.c:574:26: error: cannot size expression
-
-That is why I went with the current implementation.
-
-> or
->   max_ints=ARRAY_SIZE(value)-1;
-> 
-> (my personal favorite is dropping max_ints completely).
-
-The max_ints value is also shown in the error message if the user passes
-in too many or too few entries in the per device lux table. I wanted the
-user to see the maximum allowable number without having to dig through
-the kernel source code. Without it, I would have had to duplicate the
-TSL2583_MAX_LUX_TABLE_ENTRIES * 3 statement a third time.
-
-Brian
-
+But IIO is not a piece of hardware, its a software framework in the Linux
+kernel.
