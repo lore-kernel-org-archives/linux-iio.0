@@ -1,54 +1,90 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Mon, 21 Nov 2016 10:50:23 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Cc: linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
-	linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-	linux-iio@vger.kernel.org, harald@ccbib.org, stefan.wahren@i2se.com,
-	fabio.estevam@freescale.com
-Subject: Re: [PATCH v10 5/5] mfd: Move binding document
-Message-ID: <20161121105023.GH32509@dell>
-References: <cover.1479638191.git.ksenija.stanojevic@gmail.com>
- <ed11371e67fb76fc6c6f347ec779e620412a339f.1479638191.git.ksenija.stanojevic@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mxout012.mail.hostpoint.ch ([217.26.49.172]:65336 "EHLO
+        mxout012.mail.hostpoint.ch" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1753695AbcKVBPM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 21 Nov 2016 20:15:12 -0500
+From: Reto Schneider <reto@reto-schneider.ch>
+Subject: [PATCH 1/2] iio: adis1620x: Fix mixed up device descriptions
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org
+To: linux-kernel@vger.kernel.org
+Message-ID: <b9c4b9f8-0c6a-3fb6-18bb-9a325cebeb09@reto-schneider.ch>
+Date: Tue, 22 Nov 2016 01:40:35 +0100
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <ed11371e67fb76fc6c6f347ec779e620412a339f.1479638191.git.ksenija.stanojevic@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 20 Nov 2016, Ksenija Stanojevic wrote:
+From: Reto Schneider <code@reto-schneider.ch>
+Date: Sun, 20 Nov 2016 22:11:24 +0100
+Subject: [PATCH 1/2] iio: adis1620x: Fix mixed up device descriptions
 
-> The bindings, which are now used in MFD, need also to be
-> documented in the MFD binding document.
-> 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-> ---
-> Changes in v10:
->  - none
-> 
-> Changes in v9:
->  - format patch using -M option
-> 
-> Changes in v8:
->  - rebase onto 4.9-rc1
-> 
-> Changes in v7:
->  - add to the patchset
-> 
->  Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt | 0
->  1 file changed, 0 insertions(+), 0 deletions(-)
->  rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
+The module descriptions for the ADIS 16201, 16203 and 16209 drivers do not
+match the actual function of the devices. Update them accordingly to fix
+this.
 
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Reto Schneider <code@reto-schneider.ch>
+---
+ drivers/staging/iio/accel/adis16201_core.c | 4 ++--
+ drivers/staging/iio/accel/adis16203_core.c | 4 ++--
+ drivers/staging/iio/accel/adis16209_core.c | 4 ++--
+ 3 files changed, 6 insertions(+), 6 deletions(-)
 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-> similarity index 100%
-> rename from Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> rename to Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-
+diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
+index 6f3f8ff..7963d4a 100644
+--- a/drivers/staging/iio/accel/adis16201_core.c
++++ b/drivers/staging/iio/accel/adis16201_core.c
+@@ -1,5 +1,5 @@
+ /*
+- * ADIS16201 Programmable Digital Vibration Sensor driver
++ * ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer
+  *
+  * Copyright 2010 Analog Devices Inc.
+  *
+@@ -243,6 +243,6 @@ static struct spi_driver adis16201_driver = {
+ module_spi_driver(adis16201_driver);
+ 
+ MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+-MODULE_DESCRIPTION("Analog Devices ADIS16201 Programmable Digital Vibration Sensor driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16201 Dual-Axis Digital Inclinometer and Accelerometer");
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("spi:adis16201");
+diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+index c706717..f32c900 100644
+--- a/drivers/staging/iio/accel/adis16203_core.c
++++ b/drivers/staging/iio/accel/adis16203_core.c
+@@ -1,5 +1,5 @@
+ /*
+- * ADIS16203 Programmable Digital Vibration Sensor driver
++ * ADIS16203 Programmable 360 Degrees Inclinometer
+  *
+  * Copyright 2030 Analog Devices Inc.
+  *
+@@ -211,6 +211,6 @@ static struct spi_driver adis16203_driver = {
+ module_spi_driver(adis16203_driver);
+ 
+ MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+-MODULE_DESCRIPTION("Analog Devices ADIS16203 Programmable Digital Vibration Sensor driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16203 Programmable 360 Degrees Inclinometer");
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("spi:adis16203");
+diff --git a/drivers/staging/iio/accel/adis16209_core.c b/drivers/staging/iio/accel/adis16209_core.c
+index 8dbad58..a599e19 100644
+--- a/drivers/staging/iio/accel/adis16209_core.c
++++ b/drivers/staging/iio/accel/adis16209_core.c
+@@ -1,5 +1,5 @@
+ /*
+- * ADIS16209 Programmable Digital Vibration Sensor driver
++ * ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer
+  *
+  * Copyright 2010 Analog Devices Inc.
+  *
+@@ -243,6 +243,6 @@ static struct spi_driver adis16209_driver = {
+ module_spi_driver(adis16209_driver);
+ 
+ MODULE_AUTHOR("Barry Song <21cnbao@gmail.com>");
+-MODULE_DESCRIPTION("Analog Devices ADIS16209 Digital Vibration Sensor driver");
++MODULE_DESCRIPTION("Analog Devices ADIS16209 Dual-Axis Digital Inclinometer and Accelerometer");
+ MODULE_LICENSE("GPL v2");
+ MODULE_ALIAS("spi:adis16209");
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.10.2
