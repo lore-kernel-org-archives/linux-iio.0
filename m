@@ -1,408 +1,373 @@
-Return-Path: <benjamin.gaignard@linaro.org>
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org,
-	robh+dt@kernel.org,
-	mark.rutland@arm.com,
-	alexandre.torgue@st.com,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	thierry.reding@gmail.com,
-	linux-pwm@vger.kernel.org,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com,
-	gerald.baeza@st.com,
-	arnaud.pouliquen@st.com,
-	linus.walleij@linaro.org,
-	linaro-kernel@lists.linaro.org,
-	Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH 2/7] add MFD for stm32 timer IP
-Date: Tue, 22 Nov 2016 17:13:22 +0100
-Message-Id: <1479831207-32699-3-git-send-email-benjamin.gaignard@st.com>
-In-Reply-To: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
-References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.178]:26405 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755274AbcKVODA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Nov 2016 09:03:00 -0500
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Sebastian Reichel <sre@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Denis Carikli <denis@eukrea.com>, Petr Cvek <petr.cvek@tul.cz>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: [PATCH v8 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
+Date: Tue, 22 Nov 2016 15:02:28 +0100
+Message-Id: <88a60b6d6537d500997d225bc70a28a8be2016e3.1479823354.git.hns@goldelico.com>
+In-Reply-To: <cover.1479823354.git.hns@goldelico.com>
+References: <cover.1479823354.git.hns@goldelico.com>
+In-Reply-To: <cover.1479823354.git.hns@goldelico.com>
+References: <cover.1479823354.git.hns@goldelico.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This hardware block could at used at same time for PWM generation
-and IIO timer for other IPs like DAC, ADC or other timers.
-PWM and IIO timer configuration are mixed in the same registers
-so we need a MFD to be able to share those registers.
+commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+introduced common DT bindings for touchscreens [1] and a helper function to
+parse the DT.
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+added another helper for parsing axis inversion and swapping
+and applying them to x and y coordinates.
+
+Both helpers have been integrated to accommodate any orientation of the
+touch panel in relation to the LCD.
+
+A new feature is to introduce scaling the min/max ADC values to the screen
+size.
+
+This makes it possible to pre-calibrate the touch so that is (almost)
+exactly matches the LCD pixel coordinates it is glued onto. This allows to
+well enough operate the touch before a user space calibration step can
+improve the precision.
+
+Please note that the old ti,fuzz properties have been removed since they
+are replaced by the common bindings touchscreen-fuzz-x/y/z.
+
+Finally, calculate_pressure has been renamed to calculate_resistance
+because that is what it is doing.
+
+[1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 ---
- drivers/mfd/Kconfig                 |  10 ++
- drivers/mfd/Makefile                |   2 +
- drivers/mfd/stm32-mfd-timer.c       | 236 ++++++++++++++++++++++++++++++++++++
- include/linux/mfd/stm32-mfd-timer.h |  78 ++++++++++++
- 4 files changed, 326 insertions(+)
- create mode 100644 drivers/mfd/stm32-mfd-timer.c
- create mode 100644 include/linux/mfd/stm32-mfd-timer.h
+ .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
+ drivers/input/touchscreen/tsc2007.c                | 120 +++++++++++++++++----
+ include/linux/i2c/tsc2007.h                        |   8 ++
+ 3 files changed, 118 insertions(+), 30 deletions(-)
 
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index c6df644..63aee36 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1607,6 +1607,15 @@ config MFD_STW481X
- 	  in various ST Microelectronics and ST-Ericsson embedded
- 	  Nomadik series.
+diff --git a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+index ec365e1..6e9fd55 100644
+--- a/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
++++ b/Documentation/devicetree/bindings/input/touchscreen/tsc2007.txt
+@@ -6,6 +6,7 @@ Required properties:
+ - ti,x-plate-ohms: X-plate resistance in ohms.
  
-+config MFD_STM32_TIMER
-+	tristate "Support for STM32 multifunctions timer"
-+	select MFD_CORE
-+	select REGMAP
-+	depends on ARCH_STM32
-+	depends on OF
-+	help
-+	  Select multifunction driver (pwm, IIO trigger) for stm32 timers
-+
- menu "Multimedia Capabilities Port drivers"
- 	depends on ARCH_SA1100
+ Optional properties:
++- generic touch screen properties: see touchscreen binding [2].
+ - gpios: the interrupt gpio the chip is connected to (trough the penirq pin).
+   The penirq pin goes to low when the panel is touched.
+   (see GPIO binding[1] for more details).
+@@ -13,17 +14,20 @@ Optional properties:
+   (see interrupt binding[0]).
+ - interrupts: (gpio) interrupt to which the chip is connected
+   (see interrupt binding[0]).
+-- ti,max-rt: maximum pressure.
+-- ti,fuzzx: specifies the absolute input fuzz x value.
+-  If set, it will permit noise in the data up to +- the value given to the fuzz
+-  parameter, that is used to filter noise from the event stream.
+-- ti,fuzzy: specifies the absolute input fuzz y value.
+-- ti,fuzzz: specifies the absolute input fuzz z value.
++- ti,max-rt: maximum pressure resistance above which samples are ignored
++  (default: 4095).
++- ti,report-resistance: report resistance (no pressure = max_rt) instead
++  of pressure (no pressure = 0).
++- ti,min-x: minimum value reported by X axis ADC (default 0).
++- ti,max-x: maximum value reported by X axis ADC (default 4095).
++- ti,min-y: minimum value reported by Y axis ADC (default 0).
++- ti,max-y: maximum value reported by Y axis ADC (default 4095).
+ - ti,poll-period: how much time to wait (in milliseconds) before reading again the
+-  values from the tsc2007.
++  values from the tsc2007 (default 1).
  
-@@ -1644,4 +1653,5 @@ config MFD_VEXPRESS_SYSREG
- 	  on the ARM Ltd. Versatile Express board.
+ [0]: Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+ [1]: Documentation/devicetree/bindings/gpio/gpio.txt
++[2]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
  
- endmenu
-+
- endif
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 9834e66..b348c3e 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -211,3 +211,5 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
- obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+ Example:
+ 	&i2c1 {
+@@ -35,6 +39,8 @@ Example:
+ 			interrupts = <0x0 0x8>;
+ 			gpios = <&gpio4 0 0>;
+ 			ti,x-plate-ohms = <180>;
++			touchscreen-size-x = <640>;
++			touchscreen-size-y = <480>;
+ 		};
  
- obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
+ 		/* ... */
+diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+index 5d0cd51..c1d9593 100644
+--- a/drivers/input/touchscreen/tsc2007.c
++++ b/drivers/input/touchscreen/tsc2007.c
+@@ -29,6 +29,7 @@
+ #include <linux/of_device.h>
+ #include <linux/of.h>
+ #include <linux/of_gpio.h>
++#include <linux/input/touchscreen.h>
+ 
+ #define TSC2007_MEASURE_TEMP0		(0x0 << 4)
+ #define TSC2007_MEASURE_AUX		(0x2 << 4)
+@@ -74,6 +75,14 @@ struct tsc2007 {
+ 
+ 	u16			model;
+ 	u16			x_plate_ohms;
 +
-+obj-$(CONFIG_MFD_STM32_TIMER) 	+= stm32-mfd-timer.o
-diff --git a/drivers/mfd/stm32-mfd-timer.c b/drivers/mfd/stm32-mfd-timer.c
-new file mode 100644
-index 0000000..67e7db3
---- /dev/null
-+++ b/drivers/mfd/stm32-mfd-timer.c
-@@ -0,0 +1,236 @@
-+/*
-+ * stm32-timer.c
-+ *
-+ * Copyright (C) STMicroelectronics 2016
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
++	struct touchscreen_properties prop;
 +
-+#include <linux/device.h>
-+#include <linux/init.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
++	bool			report_resistance;
++	u16			min_x;
++	u16			min_y;
++	u16			max_x;
++	u16			max_y;
+ 	u16			max_rt;
+ 	unsigned long		poll_period; /* in jiffies */
+ 	int			fuzzx;
+@@ -128,7 +137,8 @@ static void tsc2007_read_values(struct tsc2007 *tsc, struct ts_event *tc)
+ 	tsc2007_xfer(tsc, PWRDOWN);
+ }
+ 
+-static u32 tsc2007_calculate_pressure(struct tsc2007 *tsc, struct ts_event *tc)
++static u32 tsc2007_calculate_resistance(struct tsc2007 *tsc,
++					struct ts_event *tc)
+ {
+ 	u32 rt = 0;
+ 
+@@ -177,12 +187,13 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 	struct ts_event tc;
+ 	u32 rt;
+ 
++	dev_dbg(&ts->client->dev, "soft irq %d\n", irq);
+ 	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
+ 
+ 		/* pen is down, continue with the measurement */
+ 		tsc2007_read_values(ts, &tc);
+ 
+-		rt = tsc2007_calculate_pressure(ts, &tc);
++		rt = tsc2007_calculate_resistance(ts, &tc);
+ 
+ 		if (!rt && !ts->get_pendown_state) {
+ 			/*
+@@ -194,21 +205,41 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+ 		}
+ 
+ 		if (rt <= ts->max_rt) {
++			int sx, sy;
 +
-+#include <linux/mfd/stm32-mfd-timer.h>
+ 			dev_dbg(&ts->client->dev,
+ 				"DOWN point(%4d,%4d), pressure (%4u)\n",
+ 				tc.x, tc.y, rt);
+ 
++			if (!ts->report_resistance)
++				rt = ts->max_rt - rt;
 +
-+static const struct stm32_mfd_timer_cfg mfd_cells_cfg[] = {
-+	{
-+		.pwm_name = "pwm1",
-+		.pwm_compatible = "st,stm32-pwm1",
-+		.trigger_name = "iiotimer1",
-+		.trigger_compatible = "st,stm32-iio-timer1",
-+	},
-+	{
-+		.pwm_name = "pwm2",
-+		.pwm_compatible = "st,stm32-pwm2",
-+		.trigger_name = "iiotimer2",
-+		.trigger_compatible = "st,stm32-iio-timer2",
-+	},
-+	{
-+		.pwm_name = "pwm3",
-+		.pwm_compatible = "st,stm32-pwm3",
-+		.trigger_name = "iiotimer3",
-+		.trigger_compatible = "st,stm32-iio-timer3",
-+	},
-+	{
-+		.pwm_name = "pwm4",
-+		.pwm_compatible = "st,stm32-pwm4",
-+		.trigger_name = "iiotimer4",
-+		.trigger_compatible = "st,stm32-iio-timer4",
-+	},
-+	{
-+		.pwm_name = "pwm5",
-+		.pwm_compatible = "st,stm32-pwm5",
-+		.trigger_name = "iiotimer5",
-+		.trigger_compatible = "st,stm32-iio-timer5",
-+	},
-+	{
-+		.trigger_name = "iiotimer6",
-+		.trigger_compatible = "st,stm32-iio-timer6",
-+	},
-+	{
-+		.trigger_name = "iiotimer7",
-+		.trigger_compatible = "st,stm32-iio-timer7",
-+	},
-+	{
-+		.pwm_name = "pwm8",
-+		.pwm_compatible = "st,stm32-pwm8",
-+		.trigger_name = "iiotimer8",
-+		.trigger_compatible = "st,stm32-iio-timer8",
-+	},
-+	{
-+		.pwm_name = "pwm9",
-+		.pwm_compatible = "st,stm32-pwm9",
-+		.trigger_name = "iiotimer9",
-+		.trigger_compatible = "st,stm32-iio-timer9",
-+	},
-+	{
-+		.pwm_name = "pwm10",
-+		.pwm_compatible = "st,stm32-pwm10",
-+	},
-+	{
-+		.pwm_name = "pwm11",
-+		.pwm_compatible = "st,stm32-pwm11",
-+	},
-+	{
-+		.pwm_name = "pwm12",
-+		.pwm_compatible = "st,stm32-pwm12",
-+		.trigger_name = "iiotimer12",
-+		.trigger_compatible = "st,stm32-iio-timer12",
-+	},
-+	{
-+		.pwm_name = "pwm13",
-+		.pwm_compatible = "st,stm32-pwm13",
-+	},
-+	{
-+		.pwm_name = "pwm14",
-+		.pwm_compatible = "st,stm32-pwm14",
-+	},
-+};
++			/* scale ADC values to desired output range */
++			sx = (ts->prop.max_x * (tc.x - ts->min_x))
++				/ (ts->max_x - ts->min_x);
++			sy = (ts->prop.max_y * (tc.y - ts->min_y))
++				/ (ts->max_y - ts->min_y);
++			rt = (input->absinfo[ABS_PRESSURE].maximum * rt) /
++				ts->max_rt;
 +
-+static const struct of_device_id stm32_timer_of_match[] = {
-+	{
-+		.compatible = "st,stm32-mfd-timer1",
-+		.data = &mfd_cells_cfg[0],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer2",
-+		.data = &mfd_cells_cfg[1],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer3",
-+		.data = &mfd_cells_cfg[2],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer4",
-+		.data = &mfd_cells_cfg[3],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer5",
-+		.data = &mfd_cells_cfg[4],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer6",
-+		.data = &mfd_cells_cfg[5],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer7",
-+		.data = &mfd_cells_cfg[6],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer8",
-+		.data = &mfd_cells_cfg[7],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer9",
-+		.data = &mfd_cells_cfg[8],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer10",
-+		.data = &mfd_cells_cfg[9],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer11",
-+		.data = &mfd_cells_cfg[10],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer12",
-+		.data = &mfd_cells_cfg[11],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer13",
-+		.data = &mfd_cells_cfg[12],
-+	},
-+	{
-+		.compatible = "st,stm32-mfd-timer14",
-+		.data = &mfd_cells_cfg[13],
-+	},
-+};
++			dev_dbg(&ts->client->dev,
++				"Scaled point(%4d,%4d), pressure (%4u)\n",
++				sx, sy, rt);
 +
-+static const struct regmap_config stm32_timer_regmap_cfg = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = sizeof(u32),
-+	.max_register = 0x400,
-+	.fast_io = true,
-+};
++			/* report event */
+ 			input_report_key(input, BTN_TOUCH, 1);
+-			input_report_abs(input, ABS_X, tc.x);
+-			input_report_abs(input, ABS_Y, tc.y);
++			touchscreen_report_pos(ts->input, &ts->prop,
++						(unsigned int) sx,
++						(unsigned int) sy,
++						false);
+ 			input_report_abs(input, ABS_PRESSURE, rt);
+ 
+ 			input_sync(input);
+ 
+ 		} else {
+ 			/*
+-			 * Sample found inconsistent by debouncing or pressure is
+-			 * beyond the maximum. Don't report it to user space,
++			 * Sample found inconsistent by debouncing or resistance
++			 * is beyond the maximum. Don't report it to user space,
+ 			 * repeat at least once more the measurement.
+ 			 */
+ 			dev_dbg(&ts->client->dev, "ignored pressure %d\n", rt);
+@@ -233,6 +264,7 @@ static irqreturn_t tsc2007_hard_irq(int irq, void *handle)
+ {
+ 	struct tsc2007 *ts = handle;
+ 
++	dev_dbg(&ts->client->dev, "hard irq %d\n", irq);
+ 	if (tsc2007_is_pen_down(ts))
+ 		return IRQ_WAKE_THREAD;
+ 
+@@ -303,14 +335,24 @@ static int tsc2007_probe_dt(struct i2c_client *client, struct tsc2007 *ts)
+ 	else
+ 		ts->max_rt = MAX_12BIT;
+ 
+-	if (!of_property_read_u32(np, "ti,fuzzx", &val32))
+-		ts->fuzzx = val32;
++	ts->report_resistance =
++		       of_property_read_bool(np, "ti,report-resistance");
+ 
+-	if (!of_property_read_u32(np, "ti,fuzzy", &val32))
+-		ts->fuzzy = val32;
++	touchscreen_parse_properties(ts->input, false, &ts->prop);
+ 
+-	if (!of_property_read_u32(np, "ti,fuzzz", &val32))
+-		ts->fuzzz = val32;
++	if (!of_property_read_u32(np, "ti,min-x", &val32))
++		ts->min_x = val32;
++	if (!of_property_read_u32(np, "ti,max-x", &val32))
++		ts->max_x = val32;
++	else
++		ts->max_x = MAX_12BIT;
 +
-+static int stm32_mfd_timer_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = dev->of_node;
-+	struct stm32_mfd_timer_dev *mfd;
-+	struct resource *res;
-+	int ret, nb_cells = 0;
-+	struct mfd_cell *cell = NULL;
-+	void __iomem *mmio;
++	if (!of_property_read_u32(np, "ti,min-y", &val32))
++		ts->min_y = val32;
++	if (!of_property_read_u32(np, "ti,max-y", &val32))
++		ts->max_y = val32;
++	else
++		ts->max_y = MAX_12BIT;
+ 
+ 	if (!of_property_read_u64(np, "ti,poll-period", &val64))
+ 		ts->poll_period = msecs_to_jiffies(val64);
+@@ -332,6 +374,22 @@ static int tsc2007_probe_dt(struct i2c_client *client, struct tsc2007 *ts)
+ 			 "GPIO not specified in DT (of_get_gpio returned %d)\n",
+ 			 ts->gpio);
+ 
++	dev_dbg(&client->dev,
++			"min/max_x (%4d,%4d)\n",
++			ts->min_x, ts->max_x);
++	dev_dbg(&client->dev,
++			"min/max_y (%4d,%4d)\n",
++			ts->min_y, ts->max_y);
++	dev_dbg(&client->dev,
++			"max_rt (%4d)\n",
++			ts->max_rt);
++	dev_dbg(&client->dev,
++			"size (%4d,%4d)\n",
++			ts->prop.max_x, ts->prop.max_y);
++	dev_dbg(&client->dev,
++			"ts-gpio: %d\n",
++			ts->gpio);
 +
-+	mfd = devm_kzalloc(dev, sizeof(*mfd), GFP_KERNEL);
-+	if (!mfd)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENOMEM;
-+
-+	mmio = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(mmio))
-+		return PTR_ERR(mmio);
-+
-+	mfd->regmap = devm_regmap_init_mmio_clk(dev, "mfd_timer_clk", mmio,
-+						&stm32_timer_regmap_cfg);
-+	if (IS_ERR(mfd->regmap))
-+		return PTR_ERR(mfd->regmap);
-+
-+	mfd->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(mfd->clk))
-+		return PTR_ERR(mfd->clk);
-+
-+	mfd->irq = platform_get_irq(pdev, 0);
-+	if (mfd->irq < 0)
-+		return -EINVAL;
-+
-+	/* populate data structure depending on compatibility */
-+	if (!of_match_node(stm32_timer_of_match, np)->data)
-+		return -EINVAL;
-+
-+	mfd->cfg =
-+	(struct stm32_mfd_timer_cfg *)of_match_node(stm32_timer_of_match, np)->data;
-+
-+	if (mfd->cfg->pwm_name && mfd->cfg->pwm_compatible) {
-+		cell = &mfd->cells[nb_cells++];
-+		cell->name = mfd->cfg->pwm_name;
-+		cell->of_compatible = mfd->cfg->pwm_compatible;
-+		cell->platform_data = mfd;
-+		cell->pdata_size = sizeof(*mfd);
+ 	return 0;
+ }
+ #else
+@@ -349,6 +407,14 @@ static int tsc2007_probe_pdev(struct i2c_client *client, struct tsc2007 *ts,
+ 	ts->model             = pdata->model;
+ 	ts->x_plate_ohms      = pdata->x_plate_ohms;
+ 	ts->max_rt            = pdata->max_rt ? : MAX_12BIT;
++	ts->prop.swap_x_y     = pdata->swap_xy;
++	ts->prop.invert_x     = pdata->invert_x;
++	ts->prop.invert_y     = pdata->invert_y;
++	ts->report_resistance = pdata->report_resistance;
++	ts->min_x             = pdata->min_x ? : 0;
++	ts->min_y             = pdata->min_y ? : 0;
++	ts->max_x             = pdata->max_x ? : MAX_12BIT;
++	ts->max_y             = pdata->max_y ? : MAX_12BIT;
+ 	ts->poll_period       = msecs_to_jiffies(pdata->poll_period ? : 1);
+ 	ts->get_pendown_state = pdata->get_pendown_state;
+ 	ts->clear_penirq      = pdata->clear_penirq;
+@@ -388,13 +454,6 @@ static int tsc2007_probe(struct i2c_client *client,
+ 	if (!ts)
+ 		return -ENOMEM;
+ 
+-	if (pdata)
+-		err = tsc2007_probe_pdev(client, ts, pdata, id);
+-	else
+-		err = tsc2007_probe_dt(client, ts);
+-	if (err)
+-		return err;
+-
+ 	input_dev = devm_input_allocate_device(&client->dev);
+ 	if (!input_dev)
+ 		return -ENOMEM;
+@@ -419,12 +478,25 @@ static int tsc2007_probe(struct i2c_client *client,
+ 	input_set_drvdata(input_dev, ts);
+ 
+ 	input_dev->evbit[0] = BIT_MASK(EV_KEY) | BIT_MASK(EV_ABS);
++	input_dev->absbit[0] = BIT_MASK(ABS_X) | BIT_MASK(ABS_Y) |
++				BIT_MASK(ABS_PRESSURE);
+ 	input_dev->keybit[BIT_WORD(BTN_TOUCH)] = BIT_MASK(BTN_TOUCH);
+ 
+-	input_set_abs_params(input_dev, ABS_X, 0, MAX_12BIT, ts->fuzzx, 0);
+-	input_set_abs_params(input_dev, ABS_Y, 0, MAX_12BIT, ts->fuzzy, 0);
+-	input_set_abs_params(input_dev, ABS_PRESSURE, 0, MAX_12BIT,
+-			     ts->fuzzz, 0);
++	if (pdata) {
++		err = tsc2007_probe_pdev(client, ts, pdata, id);
++		if (err)
++			return err;
++		input_set_abs_params(input_dev, ABS_X, 0, ts->max_x-ts->min_x,
++							  ts->fuzzx, 0);
++		input_set_abs_params(input_dev, ABS_Y, 0, ts->max_y-ts->min_y,
++							  ts->fuzzy, 0);
++		input_set_abs_params(input_dev, ABS_PRESSURE, 0, ts->max_rt,
++							  ts->fuzzz, 0);
++	} else {
++		err = tsc2007_probe_dt(client, ts);
++		if (err)
++			return err;
 +	}
-+
-+	if (mfd->cfg->trigger_name && mfd->cfg->trigger_compatible) {
-+		cell = &mfd->cells[nb_cells++];
-+		cell->name = mfd->cfg->trigger_name;
-+		cell->of_compatible = mfd->cfg->trigger_compatible;
-+		cell->platform_data = mfd;
-+		cell->pdata_size = sizeof(*mfd);
-+	}
-+
-+	ret = devm_mfd_add_devices(&pdev->dev, pdev->id, mfd->cells,
-+				   nb_cells, NULL, 0, NULL);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, mfd);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver stm32_mfd_timer_driver = {
-+	.probe		= stm32_mfd_timer_probe,
-+	.driver	= {
-+		.name	= "stm32-mfd-timer",
-+		.of_match_table = stm32_timer_of_match,
-+	},
-+};
-+module_platform_driver(stm32_mfd_timer_driver);
-+
-+MODULE_DESCRIPTION("STMicroelectronics STM32 Timer MFD");
-+MODULE_LICENSE("GPL");
-diff --git a/include/linux/mfd/stm32-mfd-timer.h b/include/linux/mfd/stm32-mfd-timer.h
-new file mode 100644
-index 0000000..4a79c22
---- /dev/null
-+++ b/include/linux/mfd/stm32-mfd-timer.h
-@@ -0,0 +1,78 @@
-+/*
-+ * stm32-mfd-timer.h
-+ *
-+ * Copyright (C) STMicroelectronics 2016
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com> for STMicroelectronics.
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#ifndef _LINUX_MFD_STM32_TIMER_H_
-+#define _LINUX_MFD_STM32_TIMER_H_
-+
-+#include <linux/clk.h>
-+#include <linux/mfd/core.h>
-+#include <linux/regmap.h>
-+#include <linux/reset.h>
-+
-+#define TIM_CR1		0x00	/* Control Register 1      */
-+#define TIM_CR2		0x04	/* Control Register 2      */
-+#define TIM_SMCR	0x08	/* Slave mode control reg  */
-+#define TIM_DIER	0x0C	/* DMA/interrupt register  */
-+#define TIM_SR		0x10	/* Status register	   */
-+#define TIM_EGR		0x14	/* Event Generation Reg    */
-+#define TIM_CCMR1	0x18	/* Capt/Comp 1 Mode Reg    */
-+#define TIM_CCMR2	0x1C	/* Capt/Comp 2 Mode Reg    */
-+#define TIM_CCER	0x20	/* Capt/Comp Enable Reg    */
-+#define TIM_PSC		0x28	/* Prescaler               */
-+#define TIM_ARR		0x2c	/* Auto-Reload Register    */
-+#define TIM_CCR1	0x34	/* Capt/Comp Register 1    */
-+#define TIM_CCR2	0x38	/* Capt/Comp Register 2    */
-+#define TIM_CCR3	0x3C	/* Capt/Comp Register 3    */
-+#define TIM_CCR4	0x40	/* Capt/Comp Register 4    */
-+#define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
-+
-+#define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
-+#define TIM_CR1_ARPE	BIT(7)	/* Auto-reload Preload Ena */
-+#define TIM_CR2_MMS	(BIT(4) | BIT(5) | BIT(6)) /* Master mode selection */
-+#define TIM_SMCR_SMS	(BIT(0) | BIT(1) | BIT(2)) /* Slave mode selection */
-+#define TIM_SMCR_TS	(BIT(4) | BIT(5) | BIT(6)) /* Trigger selection */
-+#define TIM_DIER_UIE	BIT(0)	/* Update interrupt	   */
-+#define TIM_SR_UIF	BIT(0)	/* Update interrupt flag   */
-+#define TIM_EGR_UG	BIT(0)	/* Update Generation       */
-+#define TIM_CCMR_PE	BIT(3)	/* Channel Preload Enable  */
-+#define TIM_CCMR_M1	(BIT(6) | BIT(5))  /* Channel PWM Mode 1 */
-+#define TIM_CCER_CC1E	BIT(0)	/* Capt/Comp 1  out Ena    */
-+#define TIM_CCER_CC1P	BIT(1)	/* Capt/Comp 1  Polarity   */
-+#define TIM_CCER_CC1NE	BIT(2)	/* Capt/Comp 1N out Ena    */
-+#define TIM_CCER_CC1NP	BIT(3)	/* Capt/Comp 1N Polarity   */
-+#define TIM_CCER_CCXE	(BIT(0) | BIT(4) | BIT(8) | BIT(12))
-+#define TIM_BDTR_BKE	BIT(12) /* Break input enable	   */
-+#define TIM_BDTR_BKP	BIT(13) /* Break input polarity	   */
-+#define TIM_BDTR_AOE	BIT(14)	/* Automatic Output Enable */
-+#define TIM_BDTR_MOE	BIT(15)	/* Main Output Enable      */
-+
-+#define STM32_TIMER_CELLS	2
-+#define MAX_TIM_PSC		0xFFFF
-+
-+struct stm32_mfd_timer_cfg {
-+	const char *pwm_name;
-+	const char *pwm_compatible;
-+	const char *trigger_name;
-+	const char *trigger_compatible;
-+};
-+
-+struct stm32_mfd_timer_dev {
-+	/* Device data */
-+	struct device *dev;
-+	struct clk *clk;
-+	int irq;
-+
-+	/* Registers mapping */
-+	struct regmap *regmap;
-+
-+	/* Private data */
-+	struct mfd_cell cells[STM32_TIMER_CELLS];
-+	struct stm32_mfd_timer_cfg *cfg;
-+};
-+
-+#endif
+ 
+ 	if (pdata) {
+ 		if (pdata->exit_platform_hw) {
+@@ -443,6 +515,8 @@ static int tsc2007_probe(struct i2c_client *client,
+ 			pdata->init_platform_hw();
+ 	}
+ 
++	dev_dbg(&client->dev, "request irq %d\n",
++			ts->irq);
+ 	err = devm_request_threaded_irq(&client->dev, ts->irq,
+ 					tsc2007_hard_irq, tsc2007_soft_irq,
+ 					IRQF_ONESHOT,
+diff --git a/include/linux/i2c/tsc2007.h b/include/linux/i2c/tsc2007.h
+index 4f35b6a..632db20 100644
+--- a/include/linux/i2c/tsc2007.h
++++ b/include/linux/i2c/tsc2007.h
+@@ -6,6 +6,14 @@
+ struct tsc2007_platform_data {
+ 	u16	model;				/* 2007. */
+ 	u16	x_plate_ohms;	/* must be non-zero value */
++	bool	swap_xy;	/* swap x and y axis */
++	bool	invert_x;
++	bool	invert_y;
++	bool	report_resistance;
++	u16	min_x;	/* min and max values reported by ADC */
++	u16	min_y;
++	u16	max_x;
++	u16	max_y;
+ 	u16	max_rt; /* max. resistance above which samples are ignored */
+ 	unsigned long poll_period; /* time (in ms) between samples */
+ 	int	fuzzx; /* fuzz factor for X, Y and pressure axes */
 -- 
-1.9.1
+2.7.3
+
