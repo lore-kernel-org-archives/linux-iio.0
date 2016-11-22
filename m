@@ -1,11 +1,12 @@
 Return-Path: <hns@goldelico.com>
-Content-Type: multipart/alternative; boundary="Apple-Mail=_7969BFBF-B929-4027-8547-E5488650C5F5"
+Content-Type: text/plain; charset=us-ascii
 Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH v6 2/8] drivers:input:tsc2007: send pendown and penup only once like ads7846(+tsc2046) driver does
+Subject: Re: [PATCH v7 4/9] drivers:input:tsc2007: add iio interface to read external ADC input and temperature
 From: H. Nikolaus Schaller <hns@goldelico.com>
-In-Reply-To: <20161119181229.GA20446@dtor-ws>
-Date: Tue, 22 Nov 2016 14:59:43 +0100
-Cc: Rob Herring <robh+dt@kernel.org>,
+In-Reply-To: <14C9094D-F93F-4604-BD5B-B67B236638A8@jic23.retrosnub.co.uk>
+Date: Tue, 22 Nov 2016 15:00:00 +0100
+Cc: Jonathan Cameron <jic23@kernel.org>,
+ Sebastian Reichel <sre@kernel.org>,
  Mark Rutland <mark.rutland@arm.com>,
  =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
  Tony Lindgren <tony@atomide.com>,
@@ -15,109 +16,73 @@ Cc: Rob Herring <robh+dt@kernel.org>,
  =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
  Javier Martinez Canillas <javier@osg.samsung.com>,
  Igor Grinberg <grinberg@compulab.co.il>,
- Sebastian Reichel <sre@kernel.org>,
  "Andrew F. Davis" <afd@ti.com>,
  Mark Brown <broonie@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Hans de Goede <hdegoede@redhat.com>,
- Sangwon Jee <jeesw@melfas.com>,
  linux-input@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-omap@vger.kernel.org,
- letux-kernel@openphoenux.org,
+ devicetree <devicetree@vger.kernel.org>,
+ LKML <linux-kernel@vger.kernel.org>,
+ linux-omap <linux-omap@vger.kernel.org>,
+ Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
  linux-iio@vger.kernel.org,
  kernel@pyra-handheld.com
-Message-Id: <A71FCAEE-6757-42B4-9FDD-3D85316E9FC8@goldelico.com>
-References: <cover.1477557860.git.hns@goldelico.com> <5e961a92f11b1509bd0effb96ef560f19839aa9d.1477557860.git.hns@goldelico.com> <20161119181229.GA20446@dtor-ws>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Message-Id: <8978FA47-2C5E-4BA6-9E99-BBC4C40A48B9@goldelico.com>
+References: <cover.1478890925.git.hns@goldelico.com> <6c64bb0331ad05840a2886bef6c3cfa64c866cb6.1478890925.git.hns@goldelico.com> <fc901399-0bde-d936-b9e2-4c591549eb55@kernel.org> <b4d79a26-4353-9860-a884-49c751bbe617@kernel.org> <20161119183849.GD20446@dtor-ws> <14C9094D-F93F-4604-BD5B-B67B236638A8@jic23.retrosnub.co.uk>
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
+Hi Dmitry and Jonathan,
 
---Apple-Mail=_7969BFBF-B929-4027-8547-E5488650C5F5
-Content-Transfer-Encoding: 7bit
-Content-Type: text/plain;
-	charset=us-ascii
+> Am 19.11.2016 um 21:09 schrieb Jonathan Cameron =
+<jic23@jic23.retrosnub.co.uk>:
+>=20
+>=20
+>=20
+>>>=20
+>>> The IS_ENABLED macro takes care of both cases.
+>>=20
+>> No it doesn't. Have you tried building the driver into the kernel =
+with
+>> IIO as a module?
 
-Hi Dmitry,
+I have tried and it indeed fails to compile.
 
-> Am 19.11.2016 um 19:12 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
-> 
-> On Thu, Oct 27, 2016 at 10:44:15AM +0200, H. Nikolaus Schaller wrote:
->> this should reduce unnecessary input events.
-> 
-> The duplicates will be filtered out by the input core anyway. I like to
-> keep the drivers simple.
+> Fair point. Is there a clean way of handling this?
+>>=20
 
-Well, the idea was copied from the ads7846 driver. But there it is used
-to provide a /sys status.
+This seems to basically work and I have included it in [PATCH v8]:
 
-I have tried to find the code location that really makes sure that the
-BTN_TOUCH is reported only once, but didn't find it.
+obj-$(CONFIG_TOUCHSCREEN_TSC2004)	+=3D tsc2004.o
+obj-$(CONFIG_TOUCHSCREEN_TSC2005)	+=3D tsc2005.o
+tsc2007-y				:=3D tsc2007_core.o
+ifeq ($(CONFIG_IIO),y)
+tsc2007-y				+=3D tsc2007_iio.o
+endif
+ifeq ($(CONFIG_IIO),m)
+tsc2007-y				+=3D tsc2007_iio.o
+endif
+obj-$(CONFIG_TOUCHSCREEN_TSC2007)	+=3D tsc2007.o
+obj-$(CONFIG_TOUCHSCREEN_UCB1400)	+=3D ucb1400_ts.o
+obj-$(CONFIG_TOUCHSCREEN_WACOM_W8001)	+=3D wacom_w8001.o
 
-My thought is that having it here makes me more sure that it is really
-filtered because it does not to rely on functions deeply hidden in the
-input core.
+but still has a problem because it is not possible to
+reference functions from the iio core with CONFIG_IIO=3Dm
+from a driver built into the kernel:
 
-On the other hand we apparently also rely on ABS_X etc. to be filtered
-by core.
+drivers/built-in.o: In function `tsc2007_iio_unconfigure':
+=
+/Users/hns/Sources/System/Kernel/Linux/src/master/drivers/input/touchscree=
+n/tsc2007_iio.c:148: undefined reference to `iio_device_unregister'
+drivers/built-in.o: In function `tsc2007_iio_configure':
+=
+/Users/hns/Sources/System/Kernel/Linux/src/master/drivers/input/touchscree=
+n/tsc2007_iio.c:115: undefined reference to `devm_iio_device_alloc'
+=
+/Users/hns/Sources/System/Kernel/Linux/src/master/drivers/input/touchscree=
+n/tsc2007_iio.c:133: undefined reference to `iio_device_register'
 
-In any case I have tested with and without and it does not make a difference.
-Maybe it was needed when we started to work on this driver some years ago
-before posting the patches here.
-
-So I drop it from v8 which will come in some minutes.
-
-> 
-> Thanks.
+So it would mean that we have to dynamically locate
+and bind iio_device_(un)register and devm_iio_device_alloc.
 
 BR and thanks,
 Nikolaus
-
-
---Apple-Mail=_7969BFBF-B929-4027-8547-E5488650C5F5
-Content-Transfer-Encoding: quoted-printable
-Content-Type: text/html;
-	charset=us-ascii
-
-<html><head><meta http-equiv=3D"Content-Type" content=3D"text/html =
-charset=3Dus-ascii"></head><body style=3D"word-wrap: break-word; =
--webkit-nbsp-mode: space; -webkit-line-break: after-white-space;" =
-class=3D"">Hi Dmitry,<div class=3D""><br class=3D""><blockquote =
-type=3D"cite" class=3D"">Am 19.11.2016 um 19:12 schrieb Dmitry Torokhov =
-&lt;<a href=3D"mailto:dmitry.torokhov@gmail.com" =
-class=3D"">dmitry.torokhov@gmail.com</a>&gt;:<br class=3D""><br =
-class=3D"">On Thu, Oct 27, 2016 at 10:44:15AM +0200, H. Nikolaus =
-Schaller wrote:<br class=3D""><blockquote type=3D"cite" =
-style=3D"font-family: Menlo-Regular; font-size: 11px; font-style: =
-normal; font-variant-caps: normal; font-weight: normal; letter-spacing: =
-normal; orphans: auto; text-align: start; text-indent: 0px; =
-text-transform: none; white-space: normal; widows: auto; word-spacing: =
-0px; -webkit-text-stroke-width: 0px;" class=3D"">this should reduce =
-unnecessary input events.<br class=3D""></blockquote><br class=3D"">The =
-duplicates will be filtered out by the input core anyway. I like to<br =
-class=3D"">keep the drivers simple.<br class=3D""></blockquote><div =
-class=3D""><br class=3D""></div>Well, the idea was copied from the =
-ads7846 driver. But there it is used<div class=3D"">to provide a /sys =
-status.<br class=3D""><div class=3D""><br class=3D""></div><div =
-class=3D"">I have tried to find the code location that really makes sure =
-that the</div><div class=3D"">BTN_TOUCH is reported only once, but =
-didn't find it.</div><div class=3D""><br class=3D""></div><div =
-class=3D"">My thought is that having it here makes me more sure that it =
-is really</div><div class=3D"">filtered because it does not to rely on =
-functions deeply hidden in the</div><div class=3D"">input =
-core.</div><div class=3D""><br class=3D""></div><div class=3D"">On the =
-other hand we apparently also rely on ABS_X etc. to be =
-filtered</div><div class=3D"">by core.</div><div class=3D""><br =
-class=3D""></div><div class=3D"">In any case I have tested with and =
-without and it does not make a difference.<br class=3D"">Maybe it was =
-needed when we started to work on this driver some years ago</div><div =
-class=3D"">before posting the patches here.</div><div class=3D""><br =
-class=3D""></div><div class=3D"">So I drop it from v8 which will come in =
-some minutes.</div><div class=3D""><br class=3D""></div><blockquote =
-type=3D"cite" class=3D""><br class=3D"">Thanks.<br =
-class=3D""></blockquote><br class=3D""></div></div><div class=3D"">BR =
-and thanks,</div><div class=3D"">Nikolaus</div><div class=3D""><br =
-class=3D""></div></body></html>=
-
---Apple-Mail=_7969BFBF-B929-4027-8547-E5488650C5F5--
