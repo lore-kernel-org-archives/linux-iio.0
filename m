@@ -1,88 +1,63 @@
-Return-Path: <david@lechnology.com>
-Subject: Re: [PATCH v2] iio: adc: New driver for TI ADS7950 chips
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-References: <1479666484-2582-1-git-send-email-david@lechnology.com>
- <d1d05bf8-f4e7-0bf1-66a7-56683cb69d65@lechnology.com>
- <alpine.DEB.2.02.1611212350550.15526@pmeerw.net>
- <04F737B2-EB34-47DB-A913-C7D0A987E9AA@jic23.retrosnub.co.uk>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>, linux-kernel@vger.kernel.org,
- linux-iio@vger.kernel.org
-From: David Lechner <david@lechnology.com>
-Message-ID: <748ee481-eb9a-28f2-2c8b-214eea63c2b0@lechnology.com>
-Date: Tue, 22 Nov 2016 12:23:46 -0600
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from www381.your-server.de ([78.46.137.84]:35474 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756789AbcKVU6X (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Nov 2016 15:58:23 -0500
+Subject: Re: [PATCH v3 0/7] mux controller abstraction and iio/i2c muxes
+To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
+References: <1479734235-18837-1-git-send-email-peda@axentia.se>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <b132143c-259b-6ed2-58c5-b223cc2e72df@metafoo.de>
+Date: Tue, 22 Nov 2016 21:58:12 +0100
 MIME-Version: 1.0
-In-Reply-To: <04F737B2-EB34-47DB-A913-C7D0A987E9AA@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1479734235-18837-1-git-send-email-peda@axentia.se>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 11/22/2016 01:23 AM, Jonathan Cameron wrote:
->
->
-> On 21 November 2016 22:54:24 GMT+00:00, Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
->>
->>>> +static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
->>>> +			       struct iio_chan_spec const *chan,
->>>> +			       int *val, int *val2, long m)
->>>> +{
->>>> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
->>>> +	int ret;
->>>> +
->>>> +	switch (m) {
->>>> +	case IIO_CHAN_INFO_RAW:
->>>> +
->>>> +		ret = iio_device_claim_direct_mode(indio_dev);
->>>> +		if (ret < 0)
->>>> +			return ret;
->>>> +
->>>> +		ret = ti_ads7950_scan_direct(st, chan->address);
->>>> +		iio_device_release_direct_mode(indio_dev);
->>>> +		if (ret < 0)
->>>> +			return ret;
->>>> +
->>>> +		if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
->>>> +			return -EIO;
->>>> +
->>>> +		*val = TI_ADS7950_EXTRACT(ret, 0, 12);
->>>
->>> I'm not sure if I am doing this right. There are 8- 10- and 12-bit
->> versions of
->>> this chip. The 8- and 10-bit versions still return a 12-bit number
->> where the
->>> last 4 or 2 bits are always 0. Should I be shifting the 12-bit value
->> here
->>> based on the chip being used so that *val is 0-255 for 8-bit and
->> 0-1023 for
->>> 10-bit? Or should this be *really* raw and not even use
->> TI_ADS7950_EXTRACT()
->>> to mask the channel address bits?
->>
->> I'd shift and adjust _SCALE so that *val * scale gives mV
-> It would also be fine to not do anything and let userspace deal with shifting and masking for
-> buffered data.  Non buffered obviously still needs shifting and masking though!
+On 11/21/2016 02:17 PM, Peter Rosin wrote:
+[...]
+> I have a piece of hardware that is using the same 3 GPIO pins
+> to control four 8-way muxes. Three of them control ADC lines
+> to an ADS1015 chip with an iio driver, and the last one
+> controls the SDA line of an i2c bus. We have some deployed
+> code to handle this, but you do not want to see it or ever
+> hear about it. I'm not sure why I even mention it. Anyway,
+> the situation has nagged me to no end for quite some time.
+> 
+> So, after first getting more intimate with the i2c muxing code
+> and later discovering the drivers/iio/inkern.c file and
+> writing a couple of drivers making use of it, I came up with
+> what I think is an acceptable solution; add a generic mux
+> controller driver (and subsystem) that is shared between all
+> instances, and combine that with an iio mux driver and a new
+> generic i2c mux driver. The new i2c mux I called "simple"
+> since it is only hooking the i2c muxing and the new mux
+> controller (much like the alsa simple card driver does for ASoC).
 
-I have sent a v3 patch already that does exactly this. Buffered data is 
-untouched and unbuffered data is now correct with shifting and masking.
+While abstracting this properly is all nice and good and the way it should
+be done, but it also adds a lot of complexity and the devicetree adds a lot
+of restrictions on what can actually be represented.
 
->
-> I'd slightly prefer the doing nothing route but don't really care as both are valid uses of the ABI.
->
-> Jonathan
->>
->>>> +
->>>> +		return IIO_VAL_INT;
->>>> +	case IIO_CHAN_INFO_SCALE:
->>>> +		ret = ti_ads7950_get_range(st);
->>>> +		if (ret < 0)
->>>> +			return ret;
->>>> +
->>>> +		*val = ret;
->>>> +		*val2 = chan->scan_type.realbits;
->>>> +
->>>> +		return IIO_VAL_FRACTIONAL_LOG2;
->>>> +	}
->>>> +
->>>> +	return -EINVAL;
->>>> +}
->
+There is a certain point where the fabric on a PCB becomes so complex that
+it deserves to be a device on its own (like the audio fabric drivers).
+Especially when the hardware is built with a certain application in mind and
+the driver is supposed to impose policy which reflects this application. The
+latter can often not properly be described with the primitives the
+devicetree can offer.
+
+And I think your setup is very borderline what can be done in a declarative
+way only and it adds a lot of complexity over a more imperative solution in
+form of a driver. I think it is worth investigating about having a driver
+that is specific to your fabric and handles the interdependencies of the
+discrete components.
