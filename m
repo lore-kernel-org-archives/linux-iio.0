@@ -1,95 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51010 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33453 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757276AbcKXUM5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 15:12:57 -0500
-Subject: Re: [patch] iio: tsl2583: make array large enough
-To: Brian Masney <masneyb@onstation.org>, walter harms <wharms@bfs.de>
-References: <20161118140326.GA20458@basecamp.onstation.org>
- <20161124133807.GA32255@mwanda>
- <20161124154833.GB2118@basecamp.onstation.org> <58371B39.30503@bfs.de>
- <20161124175126.GA3088@basecamp.onstation.org>
-Cc: Dan Carpenter <dan.carpenter@oracle.com>,
+        with ESMTP id S1751802AbcKVHX7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 22 Nov 2016 02:23:59 -0500
+In-Reply-To: <alpine.DEB.2.02.1611212350550.15526@pmeerw.net>
+References: <1479666484-2582-1-git-send-email-david@lechnology.com> <d1d05bf8-f4e7-0bf1-66a7-56683cb69d65@lechnology.com> <alpine.DEB.2.02.1611212350550.15526@pmeerw.net>
+MIME-Version: 1.0
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH v2] iio: adc: New driver for TI ADS7950 chips
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Tue, 22 Nov 2016 07:23:13 +0000
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        David Lechner <david@lechnology.com>
+CC: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Eva Rachel Retuya <eraretuya@gmail.com>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-        kernel-janitors@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5b562702-483c-5400-5586-145005817d27@kernel.org>
-Date: Thu, 24 Nov 2016 20:12:52 +0000
-MIME-Version: 1.0
-In-Reply-To: <20161124175126.GA3088@basecamp.onstation.org>
-Content-Type: text/plain; charset=windows-1252
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Message-ID: <04F737B2-EB34-47DB-A913-C7D0A987E9AA@jic23.retrosnub.co.uk>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/11/16 17:51, Brian Masney wrote:
-> On Thu, Nov 24, 2016 at 05:54:17PM +0100, walter harms wrote:
->>
->>
->> Am 24.11.2016 16:48, schrieb Brian Masney:
->>> On Thu, Nov 24, 2016 at 04:38:07PM +0300, Dan Carpenter wrote:
->>>> This array is supposed to have 10 elements.  Smatch complains that with
->>>> the current code we can have n == max_ints and read beyond the end of
->>>> the array.
->>>>
->>>> Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
->>>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
->>>>
->>>> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
->>>> index 0b87f6a..a78b602 100644
->>>> --- a/drivers/iio/light/tsl2583.c
->>>> +++ b/drivers/iio/light/tsl2583.c
->>>> @@ -565,7 +565,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
->>>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
->>>>  	const unsigned int max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3;
->>>> -	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3];
->>>> +	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3 + 1];
->>>>  	int ret = -EINVAL;
->>>>  	unsigned int n;
->>>>  
->>>
->>
->> sorry i did not notice that bevor ..
->> there is a
->>   max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3
->>
->> IMHO this should read either:
->>    int value[max_ints+1];
-> 
-> I originally went this route when I refactored the function, however
-> running make C=1 yields the following warnings:
-> 
-> drivers/iio/light/tsl2583.c:568:19: warning: Variable length array is
-> used.
-> drivers/iio/light/tsl2583.c:574:26: error: cannot size expression
-> 
-> That is why I went with the current implementation.
-> 
->> or
->>   max_ints=ARRAY_SIZE(value)-1;
->>
->> (my personal favorite is dropping max_ints completely).
-> 
-> The max_ints value is also shown in the error message if the user passes
-> in too many or too few entries in the per device lux table. I wanted the
-> user to see the maximum allowable number without having to dig through
-> the kernel source code. Without it, I would have had to duplicate the
-> TSL2583_MAX_LUX_TABLE_ENTRIES * 3 statement a third time.
-> 
-> Brian
-> 
-I'm taking this as is, because it'll just squeeze into my last
-pull request to Greg.  Sorry for not waiting for this discussion
-to finish first!
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to very briefly play with it.
 
-Thanks,
+On 21 November 2016 22:54:24 GMT+00:00, Peter Meerwald-Stadler <pmeerw@pmeerw.net> wrote:
+>
+>> > +static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
+>> > +			       struct iio_chan_spec const *chan,
+>> > +			       int *val, int *val2, long m)
+>> > +{
+>> > +	struct ti_ads7950_state *st = iio_priv(indio_dev);
+>> > +	int ret;
+>> > +
+>> > +	switch (m) {
+>> > +	case IIO_CHAN_INFO_RAW:
+>> > +
+>> > +		ret = iio_device_claim_direct_mode(indio_dev);
+>> > +		if (ret < 0)
+>> > +			return ret;
+>> > +
+>> > +		ret = ti_ads7950_scan_direct(st, chan->address);
+>> > +		iio_device_release_direct_mode(indio_dev);
+>> > +		if (ret < 0)
+>> > +			return ret;
+>> > +
+>> > +		if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
+>> > +			return -EIO;
+>> > +
+>> > +		*val = TI_ADS7950_EXTRACT(ret, 0, 12);
+>> 
+>> I'm not sure if I am doing this right. There are 8- 10- and 12-bit
+>versions of
+>> this chip. The 8- and 10-bit versions still return a 12-bit number
+>where the
+>> last 4 or 2 bits are always 0. Should I be shifting the 12-bit value
+>here
+>> based on the chip being used so that *val is 0-255 for 8-bit and
+>0-1023 for
+>> 10-bit? Or should this be *really* raw and not even use
+>TI_ADS7950_EXTRACT()
+>> to mask the channel address bits?
+>
+>I'd shift and adjust _SCALE so that *val * scale gives mV
+It would also be fine to not do anything and let userspace deal with shifting and masking for
+buffered data.  Non buffered obviously still needs shifting and masking though!
+
+I'd slightly prefer the doing nothing route but don't really care as both are valid uses of the ABI.
 
 Jonathan
+> 
+>> > +
+>> > +		return IIO_VAL_INT;
+>> > +	case IIO_CHAN_INFO_SCALE:
+>> > +		ret = ti_ads7950_get_range(st);
+>> > +		if (ret < 0)
+>> > +			return ret;
+>> > +
+>> > +		*val = ret;
+>> > +		*val2 = chan->scan_type.realbits;
+>> > +
+>> > +		return IIO_VAL_FRACTIONAL_LOG2;
+>> > +	}
+>> > +
+>> > +	return -EINVAL;
+>> > +}
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
