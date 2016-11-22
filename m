@@ -1,154 +1,140 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr30104.outbound.protection.outlook.com ([40.107.3.104]:34852
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1753056AbcKUQIH (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 21 Nov 2016 11:08:07 -0500
-Subject: Re: [RFC PATCH v2 3/7] iio: inkern: api for manipulating ext_info of
- iio channels
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Jonathan Cameron <jic23@kernel.org>,
-        <linux-kernel@vger.kernel.org>
-References: <1479419289-17553-1-git-send-email-peda@axentia.se>
- <1479419289-17553-4-git-send-email-peda@axentia.se>
- <d5cd7550-2cde-5beb-2cdb-ad6d501fc0ef@kernel.org>
- <6ea462c2-53ae-0f50-deb9-e500a97f2ac4@metafoo.de>
-CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <c64f8dc0-9469-17e7-281f-3d723cc5c7dc@axentia.se>
-Date: Mon, 21 Nov 2016 17:07:56 +0100
-MIME-Version: 1.0
-In-Reply-To: <6ea462c2-53ae-0f50-deb9-e500a97f2ac4@metafoo.de>
-Content-Type: text/plain; charset="windows-1252"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <hns@goldelico.com>
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Sebastian Reichel <sre@kernel.org>,
+	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+	Mark Rutland <mark.rutland@arm.com>,
+	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@armlinux.org.uk>,
+	Arnd Bergmann <arnd@arndb.de>,
+	Michael Welling <mwelling@ieee.org>,
+	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	Igor Grinberg <grinberg@compulab.co.il>,
+	"Andrew F. Davis" <afd@ti.com>,
+	Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	"H. Nikolaus Schaller" <hns@goldelico.com>,
+	Alexander Stein <alexander.stein@systec-electronic.com>,
+	Eric Engestrom <eric@engestrom.ch>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+	Denis Carikli <denis@eukrea.com>,
+	Petr Cvek <petr.cvek@tul.cz>
+Cc: linux-input@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	letux-kernel@openphoenux.org,
+	linux-iio@vger.kernel.org,
+	kernel@pyra-handheld.com
+Subject: [PATCH v8 0/8] drivers: touchscreen: tsc2007 and ads7846/tsc2046 improvements (use common touchscreen bindings, pre-calibration, spi fix and provide iio raw values)
+Date: Tue, 22 Nov 2016 15:02:27 +0100
+Message-Id: <cover.1479823354.git.hns@goldelico.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 2016-11-21 16:45, Lars-Peter Clausen wrote:
-> On 11/19/2016 04:38 PM, Jonathan Cameron wrote:
->> On 17/11/16 21:48, Peter Rosin wrote:
->>> Extend the inkern api with functions for reading and writing ext_info
->>> of iio channels.
->> I'd like Lars' feedback on this one.
->>
->> Superficially looks fine to me but I am not as familiar with this interface
->> as Lars is ;) (he wrote it IIRC:)
-> 
-> The implementation looks OK. I'm not necessarily convinced about the concept
-> though, but the code is manageable so I guess it is OK.
-> 
-> The final version should add kernel API documentation for the new functions.
+Changes V8:
+* fix compilation for CONFIG_IIO=m (reported by Jonathan Cameron <jic23@kernel.org>)
+* add some more Reviewed-by: and Acked-by:
+* mutiple improvements suggested by Dmitry Torokhov <dmitry.torokhov@gmail.com>:
+** drop patch "send pendown and penup only once" (input core does take care of it now)
+** remove not necessary EXPORT_SYMBOL
+** remove explicit file names from comment header
+** move tsc2007_iio_configure() to the end of the probe process and simplify the error path again
+** remove unnecessary input_unregister_device() 
+** improvement for compilation with CONFIG_IIO=m and CONFIG_TSC2007=y
 
-I added that in v3 that I sent earlier today.
+2016-11-11 20:02:11: Changes V7:
+* rearranged the include files (asked for by Jonathan Cameron <jic23@kernel.org>)
+* forward reference struct iio_dev * instead of condition in tsc2007.h (asked for by Jonathan Cameron <jic23@kernel.org>)
+* add some Acked-by:
 
->>> ---
->>>  drivers/iio/inkern.c         | 55 ++++++++++++++++++++++++++++++++++++++++++++
->>>  include/linux/iio/consumer.h |  6 +++++
->>>  2 files changed, 61 insertions(+)
->>>
->>> diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
->>> index cfca17ba2535..a8099b164222 100644
->>> --- a/drivers/iio/inkern.c
->>> +++ b/drivers/iio/inkern.c
->>> @@ -850,3 +850,58 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
->>>  	return ret;
->>>  }
->>>  EXPORT_SYMBOL_GPL(iio_write_channel_raw);
->>> +
->>> +int iio_get_channel_ext_info_count(struct iio_channel *chan)
-> 
-> should be unsigned.
+2016-10-27 10:44:29: Changes V6:
+* iio patch (no changes elsewhere)
+	- tsc2007_iio: fix a missing return 0 for non-iio case (found by kbuid test robot)
+	- tsc2007_core: group error return paths so that tsc2007_iio_unconfigure is called at only one place
+	- tsc2007_iio: fix copyright (this file is 100% original work)
 
-Correct, I had a plan to do that change, but it slipped my mind. Thanks
-for catching it!
+2016-10-25 21:26:46: Changes V5:
+* ads7846: remove an empty line (suggested by Andrew F. Davis <afd@ti.com>)
+* ads7846: remove MODULE_ALIAS for SPI (suggested by Andrew F. Davis <afd@ti.com>)
+* tsc2007: fix a bug from swapping patch 3/n and patch 4/n (found by kbuild test robot)
+* refactored tsc2007 into tsc2007_core and tsc2007_iio (asked for by Jonathan Cameron <jic23@kernel.org>)
 
->>> +{
->>> +	const struct iio_chan_spec_ext_info *ext_info;
->>> +	unsigned int i = 0;
->>> +
->>> +	if (!chan->channel->ext_info)
->>> +		return i;
->>> +
->>> +	for (ext_info = chan->channel->ext_info; ext_info->name; ext_info++)
->>> +		++i;
->>> +
->>> +	return i;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iio_get_channel_ext_info_count);
->>> +
->>> +ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
->>> +				  const char *attr, char *buf)
->>> +{
->>> +	const struct iio_chan_spec_ext_info *ext_info;
->>> +
->>> +	if (!chan->channel->ext_info)
->>> +		return -EINVAL;
->>> +
->>> +	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
->>> +		if (strcmp(attr, ext_info->name))
->>> +			continue;
-> 
-> You could factor the lookup out into a helper function that is used for both
-> read and write. And also stop searching once a match was found.
+2016-10-17 16:00:02: Changes V4:
+* fix a merge/squash issue resulting in a non-bisectable patch set (suggested by kbuid test robot)
+* remove some unnecessary #include (suggested by Jonathan Cameron <jic23@kernel.org>)
+* make the iio extension depend on CONFIG_IIO rather than selecting it (suggested by Jonathan Cameron <jic23@kernel.org>)
+* swapped patch 3/n and patch 4/n to remove internal dependency
 
-I'll do a lookup helper for v4. But the stop-searching-thing is already
-done with the return statements at the end of the for-loops.
+2016-09-23 14:41:23: Changes V3:
+* fix an issue with swapping
+* remove hard clipping to min/max rectangle - some systems expect to handle negative coordinates
+* make use of commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
 
-Thanks for looking!
+2015-11-13 21:36:07: Changes V2:
+* add a patch to make drivers still recognise the old "ti,swap-xy" property (suggested by Rob Herring)
 
-Cheers,
-Peter
+2015-11-06 16:14:53: V1: This patch series improves the drivers for the tsc2007 and
+ads7846/tsc2046 touchscreen controllers which are e.g. used by the GTA04
+OpenPandora and Pyra devices.
 
->>> +
->>> +		return ext_info->read(chan->indio_dev, ext_info->private,
->>> +				      chan->channel, buf);
->>> +	}
->>> +
->>> +	return -EINVAL;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iio_read_channel_ext_info);
->>> +
->>> +ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
->>> +				   const char *buf, size_t len)
->>> +{
->>> +	const struct iio_chan_spec_ext_info *ext_info;
->>> +
->>> +	if (!chan->channel->ext_info)
->>> +		return -EINVAL;
->>> +
->>> +	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
->>> +		if (strcmp(attr, ext_info->name))
->>> +			continue;
->>> +
->>> +		return ext_info->write(chan->indio_dev, ext_info->private,
->>> +				       chan->channel, buf, len);
->>> +	}
->>> +
->>> +	return -EINVAL;
->>> +}
->>> +EXPORT_SYMBOL_GPL(iio_write_channel_ext_info);
->>> diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
->>> index 9a4f336d8b4a..471dece8729a 100644
->>> --- a/include/linux/iio/consumer.h
->>> +++ b/include/linux/iio/consumer.h
->>> @@ -299,4 +299,10 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
->>>  int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
->>>  	int *processed, unsigned int scale);
->>>  
->>> +int iio_get_channel_ext_info_count(struct iio_channel *chan);
->>> +ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
->>> +				  const char *attr, char *buf);
->>> +ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
->>> +				   const char *buf, size_t len);
->>> +
->>>  #endif
->>>
->>
-> 
+New common bindings have been defined by
+commit b98abe52fa8e ("Input: add common DT binding for touchscreens"):
 
+	Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+
+which also defines a helper function to parse the DT. These new parameters
+allow to specify the fuzz factors (jitter suppression), inversion of x or y axis and
+swapping of x and y to achieve inversion and rotation so that the touch
+coordinate axes match the natural orientation of the display panel.
+
+Another improvement is to better use the min/max ADC values and
+scale to the screen size as defined by the DT. This allows to coarsely
+calibrate the touch to match the LCD to which it is glued on so that the
+touch can quite precisely be operated before any user-space fine-calibration
+can be (and needs to be) started.
+
+For the adc7846 we fix an issue with the spi module table.
+
+Finally we add an iio interface for the AUX and temperature ADC channels of
+the tsc2007 and also provide the touch screen raw values. This allows to read
+an optional ambient light sensor installed on the gta04 board and improves
+calibration and hardware monitoring.
+
+
+H. Nikolaus Schaller (8):
+  drivers:input:tsc2007: add new common binding names, pre-calibration,
+    flipping and rotation
+  drivers:input:tsc2007: check for presence and power down tsc2007
+    during probe
+  drivers:input:tsc2007: add iio interface to read external ADC input
+    and temperature
+  DT:omap3+tsc2007: use new common touchscreen bindings
+  drivers:input:ads7846(+tsc2046): add new common binding names,
+    pre-calibration and flipping
+  dt-bindings: input: move ads7846 bindings to touchscreen subdirectory
+  drivers:input:ads7846(+tsc2046): fix spi module table
+  DT:omap3+ads7846: use new common touchscreen bindings
+
+ .../bindings/input/{ => touchscreen}/ads7846.txt   |   9 +-
+ .../bindings/input/touchscreen/tsc2007.txt         |  20 +-
+ arch/arm/boot/dts/omap3-gta04.dtsi                 |  25 ++-
+ arch/arm/boot/dts/omap3-lilly-a83x.dtsi            |   2 +-
+ arch/arm/boot/dts/omap3-pandora-common.dtsi        |  17 +-
+ .../boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi    |   3 +-
+ drivers/input/touchscreen/Makefile                 |   7 +
+ drivers/input/touchscreen/ads7846.c                |  71 ++++++--
+ drivers/input/touchscreen/tsc2007.h                | 116 ++++++++++++
+ .../touchscreen/{tsc2007.c => tsc2007_core.c}      | 201 ++++++++++++---------
+ drivers/input/touchscreen/tsc2007_iio.c            | 150 +++++++++++++++
+ include/linux/i2c/tsc2007.h                        |   8 +
+ 12 files changed, 515 insertions(+), 114 deletions(-)
+ rename Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt (90%)
+ create mode 100644 drivers/input/touchscreen/tsc2007.h
+ rename drivers/input/touchscreen/{tsc2007.c => tsc2007_core.c} (74%)
+ create mode 100644 drivers/input/touchscreen/tsc2007_iio.c
+
+-- 
+2.7.3
