@@ -1,158 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f41.google.com ([74.125.82.41]:35266 "EHLO
-        mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S965888AbcKXPPg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 10:15:36 -0500
-Received: by mail-wm0-f41.google.com with SMTP id a197so117572977wmd.0
-        for <linux-iio@vger.kernel.org>; Thu, 24 Nov 2016 07:14:42 -0800 (PST)
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v2 0/7] Add pwm and IIO timer drivers for stm32
-Date: Thu, 24 Nov 2016 16:14:16 +0100
-Message-Id: <1480000463-9625-1-git-send-email-benjamin.gaignard@st.com>
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:58583 "EHLO
+        relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753460AbcKWVHa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2016 16:07:30 -0500
+Message-ID: <1479935231.16940.11.camel@hadess.net>
+Subject: Re: acpi-als taking over from hwmon for light sensor support?
+From: Bastien Nocera <hadess@hadess.net>
+To: Jean Delvare <jdelvare@suse.de>
+Cc: linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org
+Date: Wed, 23 Nov 2016 22:07:11 +0100
+In-Reply-To: <1479922686.5115.2.camel@chaos.suse>
+References: <1479921689.16940.9.camel@hadess.net>
+         <1479922686.5115.2.camel@chaos.suse>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-version 2:
-- keep only one compatible per driver
-- use DT parameters to describe hardware block configuration:
-  - pwm channels, complementary output, counter size, break input
-  - triggers accepted and create by IIO timers
-- change DT to limite use of reference to the node
-- interrupt is now in IIO timer driver
-- rename stm32-mfd-timer to stm32-gptimer (for general purpose timer)
+On Wed, 2016-11-23 at 18:38 +0100, Jean Delvare wrote:
+> On mer., 2016-11-23 at 18:21 +0100, Bastien Nocera wrote:
+> > Hey,
+> > 
+> > I did some work on iio-sensor-proxy[1] those past couple of days,
+> > and
+> > tested it on a MacBook Pro.
+> > 
+> > Before that, I had written a (user-space) driver to access the
+> > hwmon
+> > driver's "light" value, so I was a bit surprised when I saw that
+> > iio-
+> > sensor-proxy was accessing the light sensor through acpi-als's IIO
+> > driver instead of through the hwmon driver.
+> > 
+> > I looked through the hwmon, iio and applesmc.c logs, and couldn't
+> > find
+> > any information about how the move from one to the other. Does
+> > anyone
+> > know?
+> > 
+> > I'm asking because the applesmc.c hwmon driver is the only one with
+> > support for the "light" property, and if that's not used anymore, I
+> > might as well remove that code now (or schedule to remove it).
+> 
+> Light sensors are out of scope of hwmon, they have nothing to do with
+> hardware monitoring.
 
-The following patches enable pwm and IIO Timer features for stm32 platforms.
+Why is there still code in applesmc.c to handle the "light" sysfs
+property then?
 
-Those two features are mixed into the registers of the same hardware block
-(named general purpose timer) which lead to introduce a multifunctions driver 
-on the top of them to be able to share the registers.
+Also, this doesn't answer my question as to when this switch happened.
+I don't care one way or the other, but knowing when the switch was made
+can allow me to prepare the hwmon driver in iio-sensor-proxy for
+removal.
 
-In stm32 14 instances of timer hardware block exist, even if they all have
-the same register mapping they could have a different number of pwm channels
-and/or different triggers capabilities. We use various parameters in DT to 
-describe the differences between hardware blocks
-
-The MFD (stm32-gptimer.c) takes care of clock and register mapping
-by using regmap. stm32_gptimer_dev structure is provided to its sub-node to
-share those information.
-
-PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
-have up to 4 channels, sometime with complementary outputs or 32 bits counter
-instead of 16 bits. Some hardware blocks may also have a break input function
-which allows to stop pwm depending of a level, defined in devicetree, on an
-external pin.
-
-IIO timer driver (stm32-iio-timer.c and stm32-iio-timers.h) define a list of 
-hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
-
-The matrix of possible connections between blocks is quite complex so we use 
-trigger names and is_stm32_iio_timer_trigger() function to be sure that
-triggers are valid and configure the IPs.
-Possible triggers ar listed in include/dt-bindings/iio/timer/st,stm32-iio-timer.h
-
-At run time IIO timer hardware blocks can configure (through "master_mode" 
-IIO device attribute) which internal signal (counter enable, reset,
-comparison block, etc...) is used to generate the trigger.
-
-By using "slave_mode" IIO device attribute timer can also configure on which
-event (level, rising edge) of the block is enabled.
-
-Since we can use trigger from one hardware to control an other block, we can
-use a pwm to control an other one. The following example shows how to configure
-pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
-
-/sys/bus/iio/devices # ls
-iio:device0  iio:device1  trigger0     trigger1
-
-configure timer1 to use pwm1 channel 0 as output trigger
-/sys/bus/iio/devices # echo 4 > iio\:device0/master_mode
-configure timer3 to enable only when input is high
-/sys/bus/iio/devices # echo 5 > iio\:device1/slave_mode
-/sys/bus/iio/devices # cat trigger0/name
-tim1_trgo
-configure timer2 to use timer1 trigger is input
-/sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
-
-configure pwm3 channel 0 to generate a signal with a period of 100ms and a
-duty cycle of 50%
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 0 > export
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 100000000 > pwm0/period
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4# echo 1 > pwm0/enable
-here pwm3 channel 0, as expected, doesn't start because has to be triggered by
-pwm1 channel 0
-
-configure pwm1 channel 0 to generate a signal with a period of 1s and a
-duty cycle of 50%
-/sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 0 > export
-/sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 1000000000 > pwm0/period
-/sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
-/sys/devices/platform/soc/40010000.gptimer1/40010000.gptimer1:pwm1@0/pwm/pwmchip0 # echo 1 > pwm0/enable 
-finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
-
-An other example to use a timer as source of clock for another device.
-Here timer1 is used a source clock for pwm3:
-
-/sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
-/sys/bus/iio/devices # echo tim1_trgo > iio\:device1/trigger/current_trigger 
-/sys/bus/iio/devices # echo 7 > iio\:device1/slave_mode
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 0 > export 
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 1000000 > pwm0/period 
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
-/sys/devices/platform/soc/40000400.gptimer3/40000400.gptimer3:pwm3@0/pwm/pwmchip4 # echo 1 > pwm0/enable 
-
-Benjamin Gaignard (7):
-  MFD: add bindings for stm32 general purpose timer driver
-  MFD: add stm32 general purpose timer driver
-  PWM: add pwm-stm32 DT bindings
-  PWM: add pwm driver for stm32 plaftorm
-  IIO: add bindings for stm32 IIO timer driver
-  IIO: add STM32 IIO timer driver
-  ARM: dts: stm32: add stm32 general purpose timer driver in DT
-
- .../bindings/iio/timer/stm32-iio-timer.txt         |  41 ++
- .../bindings/mfd/stm32-general-purpose-timer.txt   |  43 ++
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  37 ++
- arch/arm/boot/dts/stm32f429.dtsi                   | 305 +++++++++++++-
- arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
- drivers/iio/Kconfig                                |   2 +-
- drivers/iio/Makefile                               |   1 +
- drivers/iio/timer/Kconfig                          |  15 +
- drivers/iio/timer/Makefile                         |   1 +
- drivers/iio/timer/stm32-iio-timer.c                | 448 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |   1 -
- drivers/mfd/Kconfig                                |  10 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/stm32-gptimer.c                        |  73 ++++
- drivers/pwm/Kconfig                                |   8 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32.c                            | 285 +++++++++++++
- include/dt-bindings/iio/timer/st,stm32-iio-timer.h |  23 ++
- include/linux/iio/timer/stm32-iio-timers.h         |  16 +
- include/linux/mfd/stm32-gptimer.h                  |  62 +++
- 20 files changed, 1399 insertions(+), 3 deletions(-)
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-iio-timer.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
- create mode 100644 drivers/iio/timer/Kconfig
- create mode 100644 drivers/iio/timer/Makefile
- create mode 100644 drivers/iio/timer/stm32-iio-timer.c
- create mode 100644 drivers/mfd/stm32-gptimer.c
- create mode 100644 drivers/pwm/pwm-stm32.c
- create mode 100644 include/dt-bindings/iio/timer/st,stm32-iio-timer.h
- create mode 100644 include/linux/iio/timer/stm32-iio-timers.h
- create mode 100644 include/linux/mfd/stm32-gptimer.h
-
--- 
-1.9.1
-
+Cheers
