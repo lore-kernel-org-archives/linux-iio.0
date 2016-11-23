@@ -1,62 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gateway31.websitewelcome.com ([192.185.143.35]:54895 "EHLO
-        gateway31.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1754327AbcKWHpv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2016 02:45:51 -0500
-Received: from cm6.websitewelcome.com (cm6.websitewelcome.com [108.167.139.19])
-        by gateway31.websitewelcome.com (Postfix) with ESMTP id 9DB7F24E047E2
-        for <linux-iio@vger.kernel.org>; Wed, 23 Nov 2016 01:25:25 -0600 (CST)
-From: Boyan Vladinov <nayobix@nayobix.org>
-To: gregkh@linuxfoundation.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Boyan Vladinov <nayobix@nayobix.org>
-Subject: [PATCH] Staging: iio: adc: fix sysfs files modes in ad7192.c
-Date: Tue, 22 Nov 2016 23:25:14 -0800
-Message-Id: <1479885914-17615-1-git-send-email-nayobix@nayobix.org>
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:48403
+        "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S936078AbcKWNWw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2016 08:22:52 -0500
+Subject: Re: [PATCH v6 7/8] drivers:input:ads7846(+tsc2046): fix spi module
+ table
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>
+References: <cover.1477557860.git.hns@goldelico.com>
+ <54f282e1adebeeb133687b6c430ecbb6f2fe6d5b.1477557860.git.hns@goldelico.com>
+ <20161119181824.GB20446@dtor-ws>
+Cc: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Sebastian Reichel <sre@kernel.org>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Sangwon Jee <jeesw@melfas.com>, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+        linux-iio@vger.kernel.org, kernel@pyra-handheld.com
+From: Javier Martinez Canillas <javier@osg.samsung.com>
+Message-ID: <cc450963-16f9-10e6-a8c4-3b4e4771248e@osg.samsung.com>
+Date: Wed, 23 Nov 2016 10:12:06 -0300
+MIME-Version: 1.0
+In-Reply-To: <20161119181824.GB20446@dtor-ws>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fixes sysfs entries user/group modes and coding style warnings
-found by checkpatch.pl tool
+Hello Dmitry,
 
-Signed-off-by: Boyan Vladinov <nayobix@nayobix.org>
----
- drivers/staging/iio/adc/ad7192.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+On 11/19/2016 03:18 PM, Dmitry Torokhov wrote:
+> On Thu, Oct 27, 2016 at 10:44:20AM +0200, H. Nikolaus Schaller wrote:
+>> Fix module table so that the driver is loaded if compiled
+>> as module and requested by DT.
+> 
+> We really need to fix it between spi/i23c core and module utils instead
+> of keeping adding duplicate IDs all over drivers. We already have OF
+> module device table containing the same data, we should be able to use
+> it.
+> 
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 1fb68c01abd5..3f9f54b654f7 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -341,10 +341,10 @@ ad7192_show_scale_available(struct device *dev,
- }
- 
- static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
--			     in_voltage-voltage_scale_available,
--			     S_IRUGO, ad7192_show_scale_available, NULL, 0);
-+			     in_voltage - voltage_scale_available,
-+			     0444, ad7192_show_scale_available, NULL, 0);
- 
--static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
-+static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
- 		       ad7192_show_scale_available, NULL, 0);
- 
- static ssize_t ad7192_show_ac_excitation(struct device *dev,
-@@ -412,11 +412,11 @@ static ssize_t ad7192_set(struct device *dev,
- 	return ret ? ret : len;
- }
- 
--static IIO_DEVICE_ATTR(bridge_switch_en, S_IRUGO | S_IWUSR,
-+static IIO_DEVICE_ATTR(bridge_switch_en, 0444 | 0200,
- 		       ad7192_show_bridge_switch, ad7192_set,
- 		       AD7192_REG_GPOCON);
- 
--static IIO_DEVICE_ATTR(ac_excitation_en, S_IRUGO | S_IWUSR,
-+static IIO_DEVICE_ATTR(ac_excitation_en, 0444 | 0200,
- 		       ad7192_show_ac_excitation, ad7192_set,
- 		       AD7192_REG_MODE);
- 
+Agreed, unfortunately until the I2C and SPI core are changed to properly
+report OF modaliases, we will have to keep adding these duplicated IDs.
+
+And changing the I2C and SPI core isn't trivial since it could break a
+lot of drivers that rely on a platform modalias being reported (i.e: no
+OF device IDs present in the drivers even when are registered via DT).
+
+Best regards,
 -- 
-2.7.4
-
+Javier Martinez Canillas
+Open Source Group
+Samsung Research America
