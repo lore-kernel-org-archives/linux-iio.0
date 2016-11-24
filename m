@@ -1,79 +1,110 @@
-Return-Path: <dmitry.torokhov@gmail.com>
-Date: Sat, 19 Nov 2016 10:18:24 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
-	=?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>, Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	Sebastian Reichel <sre@kernel.org>, "Andrew F. Davis" <afd@ti.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hans de Goede <hdegoede@redhat.com>, Sangwon Jee <jeesw@melfas.com>,
-	linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-	letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-	kernel@pyra-handheld.com
-Subject: Re: [PATCH v6 7/8] drivers:input:ads7846(+tsc2046): fix spi module
- table
-Message-ID: <20161119181824.GB20446@dtor-ws>
-References: <cover.1477557860.git.hns@goldelico.com>
- <54f282e1adebeeb133687b6c430ecbb6f2fe6d5b.1477557860.git.hns@goldelico.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-db5eur01on0109.outbound.protection.outlook.com ([104.47.2.109]:41772
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1757340AbcKXQyV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 24 Nov 2016 11:54:21 -0500
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v4 4/7] dt-bindings: iio: iio-mux: document iio-mux bindings
+Date: Thu, 24 Nov 2016 16:18:04 +0100
+Message-ID: <1480000687-5630-5-git-send-email-peda@axentia.se>
+In-Reply-To: <1480000687-5630-1-git-send-email-peda@axentia.se>
+References: <1480000687-5630-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <54f282e1adebeeb133687b6c430ecbb6f2fe6d5b.1477557860.git.hns@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Oct 27, 2016 at 10:44:20AM +0200, H. Nikolaus Schaller wrote:
-> Fix module table so that the driver is loaded if compiled
-> as module and requested by DT.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../bindings/iio/multiplexer/iio-mux.txt           | 47 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 +++
+ 2 files changed, 53 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
 
-We really need to fix it between spi/i23c core and module utils instead
-of keeping adding duplicate IDs all over drivers. We already have OF
-module device table containing the same data, we should be able to use
-it.
-
-Thanks.
-
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  drivers/input/touchscreen/ads7846.c | 11 ++++++++++-
->  1 file changed, 10 insertions(+), 1 deletion(-)
-> 
-> diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
-> index 400e421..50c85d2 100644
-> --- a/drivers/input/touchscreen/ads7846.c
-> +++ b/drivers/input/touchscreen/ads7846.c
-> @@ -1532,6 +1532,16 @@ static int ads7846_remove(struct spi_device *spi)
->  	return 0;
->  }
->  
-> +static const struct spi_device_id ads7846_idtable[] = {
-> +	{ "tsc2046", 0 },
-> +	{ "ads7843", 0 },
-> +	{ "ads7845", 0 },
-> +	{ "ads7846", 0 },
-> +	{ "ads7873", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ads7846_idtable);
-> +
->  static struct spi_driver ads7846_driver = {
->  	.driver = {
->  		.name	= "ads7846",
-> @@ -1546,4 +1556,3 @@ module_spi_driver(ads7846_driver);
->  
->  MODULE_DESCRIPTION("ADS7846 TouchScreen Driver");
->  MODULE_LICENSE("GPL");
-> -MODULE_ALIAS("spi:ads7846");
-> -- 
-> 2.7.3
-> 
-
+diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+new file mode 100644
+index 000000000000..f5eccdfbed40
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+@@ -0,0 +1,47 @@
++IIO multiplexer bindings
++
++If a multiplexer is used to select which hardware signal is fed to
++e.g. an ADC channel, these bindings describe that situation.
++
++Required properties:
++- compatible : "iio-mux"
++- io-channels : Channel node of the parent channel that has multiplexed
++		input.
++- io-channel-names : Should be "parent".
++- #address-cells = <1>;
++- #size-cells = <0>;
++
++Required properties for iio-mux child nodes:
++- reg : The multiplexer state as described in ../misc/mux-controller.txt
++
++For each iio-mux child, an iio channel will be created whose number will
++match the mux controller state.
++
++Example:
++	adc-mux {
++		compatible = "iio-mux";
++		io-channels = <&adc 0>;
++		io-channel-names = "parent";
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		mux-controller {
++			compatible = "mux-gpio";
++
++			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
++				    <&pioA 1 GPIO_ACTIVE_HIGH>;
++		};
++
++		sync@0 {
++			reg = <0>;
++		};
++
++		in@1 {
++			reg = <1>;
++		};
++
++		system-regulator@2 {
++			reg = <2>;
++		};
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 9635c9708a13..7f02f58dfc37 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6233,6 +6233,12 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+ F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+ F:	drivers/iio/adc/envelope-detector.c
+ 
++IIO MULTIPLEXER
++M:	Peter Rosin <peda@axentia.se>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
++
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+ R:	Hartmut Knaack <knaack.h@gmx.de>
 -- 
-Dmitry
+2.1.4
+
