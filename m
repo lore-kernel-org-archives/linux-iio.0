@@ -1,110 +1,95 @@
-Return-Path: <peda@axentia.se>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
- Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Jonathan
- Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Lars-Peter
- Clausen" <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jonathan Corbet <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>, "Greg
- Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-Subject: [PATCH v4 6/7] dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
-Date: Thu, 24 Nov 2016 16:18:06 +0100
-Message-ID: <1480000687-5630-7-git-send-email-peda@axentia.se>
-In-Reply-To: <1480000687-5630-1-git-send-email-peda@axentia.se>
-References: <1480000687-5630-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51010 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757276AbcKXUM5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 15:12:57 -0500
+Subject: Re: [patch] iio: tsl2583: make array large enough
+To: Brian Masney <masneyb@onstation.org>, walter harms <wharms@bfs.de>
+References: <20161118140326.GA20458@basecamp.onstation.org>
+ <20161124133807.GA32255@mwanda>
+ <20161124154833.GB2118@basecamp.onstation.org> <58371B39.30503@bfs.de>
+ <20161124175126.GA3088@basecamp.onstation.org>
+Cc: Dan Carpenter <dan.carpenter@oracle.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Eva Rachel Retuya <eraretuya@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        kernel-janitors@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <5b562702-483c-5400-5586-145005817d27@kernel.org>
+Date: Thu, 24 Nov 2016 20:12:52 +0000
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20161124175126.GA3088@basecamp.onstation.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- .../devicetree/bindings/i2c/i2c-mux-simple.txt     | 76 ++++++++++++++++++++++
- 1 file changed, 76 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+On 24/11/16 17:51, Brian Masney wrote:
+> On Thu, Nov 24, 2016 at 05:54:17PM +0100, walter harms wrote:
+>>
+>>
+>> Am 24.11.2016 16:48, schrieb Brian Masney:
+>>> On Thu, Nov 24, 2016 at 04:38:07PM +0300, Dan Carpenter wrote:
+>>>> This array is supposed to have 10 elements.  Smatch complains that with
+>>>> the current code we can have n == max_ints and read beyond the end of
+>>>> the array.
+>>>>
+>>>> Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
+>>>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>>>
+>>>> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+>>>> index 0b87f6a..a78b602 100644
+>>>> --- a/drivers/iio/light/tsl2583.c
+>>>> +++ b/drivers/iio/light/tsl2583.c
+>>>> @@ -565,7 +565,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
+>>>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>>>>  	const unsigned int max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3;
+>>>> -	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3];
+>>>> +	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3 + 1];
+>>>>  	int ret = -EINVAL;
+>>>>  	unsigned int n;
+>>>>  
+>>>
+>>
+>> sorry i did not notice that bevor ..
+>> there is a
+>>   max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3
+>>
+>> IMHO this should read either:
+>>    int value[max_ints+1];
+> 
+> I originally went this route when I refactored the function, however
+> running make C=1 yields the following warnings:
+> 
+> drivers/iio/light/tsl2583.c:568:19: warning: Variable length array is
+> used.
+> drivers/iio/light/tsl2583.c:574:26: error: cannot size expression
+> 
+> That is why I went with the current implementation.
+> 
+>> or
+>>   max_ints=ARRAY_SIZE(value)-1;
+>>
+>> (my personal favorite is dropping max_ints completely).
+> 
+> The max_ints value is also shown in the error message if the user passes
+> in too many or too few entries in the per device lux table. I wanted the
+> user to see the maximum allowable number without having to dig through
+> the kernel source code. Without it, I would have had to duplicate the
+> TSL2583_MAX_LUX_TABLE_ENTRIES * 3 statement a third time.
+> 
+> Brian
+> 
+I'm taking this as is, because it'll just squeeze into my last
+pull request to Greg.  Sorry for not waiting for this discussion
+to finish first!
 
-diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
-new file mode 100644
-index 000000000000..ae534a0f87f3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
-@@ -0,0 +1,76 @@
-+Simple I2C Bus Mux
-+
-+This binding describes an I2C bus multiplexer that uses a mux controller
-+from the mux subsystem to route the I2C signals.
-+
-+                                  .-----.  .-----.
-+                                  | dev |  | dev |
-+    .------------.                '-----'  '-----'
-+    | SoC        |                   |        |
-+    |            |          .--------+--------'
-+    |   .------. |  .------+    child bus A, on MUX value set to 0
-+    |   | I2C  |-|--| Mux  |
-+    |   '------' |  '--+---+    child bus B, on MUX value set to 1
-+    |   .------. |     |    '----------+--------+--------.
-+    |   | MUX- | |     |               |        |        |
-+    |   | Ctrl |-|-----+            .-----.  .-----.  .-----.
-+    |   '------' |                  | dev |  | dev |  | dev |
-+    '------------'                  '-----'  '-----'  '-----'
-+
-+Required properties:
-+- compatible: i2c-mux-simple,mux-locked or i2c-mux-simple,parent-locked
-+- i2c-parent: The phandle of the I2C bus that this multiplexer's master-side
-+  port is connected to.
-+* Standard I2C mux properties. See i2c-mux.txt in this directory.
-+* I2C child bus nodes. See i2c-mux.txt in this directory. The sub-bus number
-+  is also the mux-controller state described in ../misc/mux-controller.txt
-+
-+For each i2c child node, an I2C child bus will be created. They will
-+be numbered based on their order in the device tree.
-+
-+Whenever an access is made to a device on a child bus, the value set
-+in the relevant node's reg property will be set as the state in the
-+mux controller.
-+
-+Example:
-+	i2c-mux {
-+		compatible = "i2c-mux-simple,mux-locked";
-+		i2c-parent = <&i2c1>;
-+
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+
-+		mux-controller {
-+			compatible = "mux-gpio";
-+
-+			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+				    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+		};
-+
-+		i2c@1 {
-+			reg = <1>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			ssd1307: oled@3c {
-+				compatible = "solomon,ssd1307fb-i2c";
-+				reg = <0x3c>;
-+				pwms = <&pwm 4 3000>;
-+				reset-gpios = <&gpio2 7 1>;
-+				reset-active-low;
-+			};
-+		};
-+
-+		i2c@3 {
-+			reg = <3>;
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			pca9555: pca9555@20 {
-+				compatible = "nxp,pca9555";
-+				gpio-controller;
-+				#gpio-cells = <2>;
-+				reg = <0x20>;
-+			};
-+		};
-+	};
--- 
-2.1.4
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to very briefly play with it.
+
+Thanks,
+
+Jonathan
