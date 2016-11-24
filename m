@@ -1,67 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:59470 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752680AbcKWHhk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2016 02:37:40 -0500
-Date: Wed, 23 Nov 2016 08:37:00 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Boyan Vladinov <nayobix@nayobix.org>
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] Staging: iio: adc: fix sysfs files modes in ad7192.c
-Message-ID: <20161123073700.GA16431@kroah.com>
-References: <1479885914-17615-1-git-send-email-nayobix@nayobix.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1479885914-17615-1-git-send-email-nayobix@nayobix.org>
+Received: from smtp.codeaurora.org ([198.145.29.96]:50410 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750708AbcKXFbW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 00:31:22 -0500
+From: Rama Krishna Phani A <rphani@codeaurora.org>
+To: linux-iio@vger.kernel.org, jic23@kernel.org
+Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
+        Rama Krishna Phani A <rphani@codeaurora.org>
+Subject: [PATCH V5 0/2] Changes to support different VADC scaling
+Date: Thu, 24 Nov 2016 11:01:03 +0530
+Message-Id: <1479965465-30182-1-git-send-email-rphani@codeaurora.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Nov 22, 2016 at 11:25:14PM -0800, Boyan Vladinov wrote:
-> Fixes sysfs entries user/group modes and coding style warnings
-> found by checkpatch.pl tool
-> 
-> Signed-off-by: Boyan Vladinov <nayobix@nayobix.org>
-> ---
->  drivers/staging/iio/adc/ad7192.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-> index 1fb68c01abd5..3f9f54b654f7 100644
-> --- a/drivers/staging/iio/adc/ad7192.c
-> +++ b/drivers/staging/iio/adc/ad7192.c
-> @@ -341,10 +341,10 @@ ad7192_show_scale_available(struct device *dev,
->  }
->  
->  static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
-> -			     in_voltage-voltage_scale_available,
-> -			     S_IRUGO, ad7192_show_scale_available, NULL, 0);
-> +			     in_voltage - voltage_scale_available,
-> +			     0444, ad7192_show_scale_available, NULL, 0);
+VADC is a 15 bit ADC that measures signals through the Main analog
+multiplexer (AMUX). The driver arbitrates the request to issue ADC
+read requests. These patches adds different scaling functionality
+to convert adc code to physical units.
 
-IIO_DEVICE_ATTR_RO() after fixing up some variable names?
+[V5]
+	1. Retain new line as suggested.
 
->  
-> -static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
-> +static IIO_DEVICE_ATTR(in_voltage_scale_available, 0444,
->  		       ad7192_show_scale_available, NULL, 0);
+[V4] 
+	1. Remove DT bindings and implement scaling logic with in driver.
+	
+[V3]
+	1. Update the commit text to give more information on the
+	   functionality implemented in the patches.
+   	2. Added Dt maintainers.
 
-IIO_DEVICE_ATTR_RO()?
+[V2]
+	1. Replaced the do_div with normal division.
+	2. Split the functionality implemented in v1 patch.
+	3. Abstracted out common logic and updated change to report
+	   Raw adc code properly.
+   	4. Change to support different scaling functionality.
+	5. Added support for introducing new bindings in driver.
 
->  
->  static ssize_t ad7192_show_ac_excitation(struct device *dev,
-> @@ -412,11 +412,11 @@ static ssize_t ad7192_set(struct device *dev,
->  	return ret ? ret : len;
->  }
->  
-> -static IIO_DEVICE_ATTR(bridge_switch_en, S_IRUGO | S_IWUSR,
-> +static IIO_DEVICE_ATTR(bridge_switch_en, 0444 | 0200,
->  		       ad7192_show_bridge_switch, ad7192_set,
->  		       AD7192_REG_GPOCON);
+[V1]
+	https://lkml.org/lkml/2016/10/25/26
 
-IIO_DEVICE_ATTR_RW()?
+Rama Krishna Phani A (2):
+  iio: adc: spmi-vadc: Update function for generic voltage conversion
+  iio: adc: spmi-vadc: Changes to support different scaling
 
-thanks,
+ drivers/iio/adc/qcom-spmi-vadc.c | 479 ++++++++++++++++++++++++++++-----------
+ 1 file changed, 350 insertions(+), 129 deletions(-)
 
-greg k-h
+-- 
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
+
