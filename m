@@ -1,144 +1,173 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51101 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756918AbcKXUfL (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 15:35:11 -0500
-Subject: Re: [PATCH v2] iio: adc: New driver for TI ADS7950 chips
-To: David Lechner <david@lechnology.com>
-References: <1479666484-2582-1-git-send-email-david@lechnology.com>
- <d1d05bf8-f4e7-0bf1-66a7-56683cb69d65@lechnology.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-db5eur01on0134.outbound.protection.outlook.com ([104.47.2.134]:32692
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S941124AbcKXSxG (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 24 Nov 2016 13:53:06 -0500
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <3c1d72a3-ae0e-5de8-5d17-586e5b0c5112@kernel.org>
-Date: Thu, 24 Nov 2016 20:35:07 +0000
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v4 0/7] mux controller abstraction and iio/i2c muxes
+Date: Thu, 24 Nov 2016 16:18:00 +0100
+Message-ID: <1480000687-5630-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <d1d05bf8-f4e7-0bf1-66a7-56683cb69d65@lechnology.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/11/16 19:52, David Lechner wrote:
-> On 11/20/2016 12:28 PM, David Lechner wrote:
->> This adds a new driver for the TI ADS7950 family of ADC chips. These
->> communicate using SPI and come in 8/10/12-bit and 4/8/12/16 channel
->> varieties.
->>
->> Signed-off-by: David Lechner <david@lechnology.com>
->> ---
->>
->> v2 changes:
->>
->> * Got rid of XX wildcards - using ADS7950 everywhere
->> * Fixed some macro parentheses issues
->> * Added TI_ prefix to macros to match ti_ prefixes used elsewhere
->> * Added space in rx_buf for holding timestamp
->> * Use iio_device_claim_direct_mode() and spi_message_init_with_transfers()
->>   helper functions
->> * Don't use dev_info() at end of probe
->> * Minor spelling and code style fixes
->>
->>  drivers/iio/adc/Kconfig      |  13 ++
->>  drivers/iio/adc/Makefile     |   1 +
->>  drivers/iio/adc/ti-ads7950.c | 488 +++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 502 insertions(+)
->>  create mode 100644 drivers/iio/adc/ti-ads7950.c
->>
-> 
-> ...
-> 
->> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
->> new file mode 100644
->> index 0000000..d0b76bd
->> --- /dev/null
->> +++ b/drivers/iio/adc/ti-ads7950.c
-> 
-> ...
-> 
->> +static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
->> +{
->> +    struct iio_poll_func *pf = p;
->> +    struct iio_dev *indio_dev = pf->indio_dev;
->> +    struct ti_ads7950_state *st = iio_priv(indio_dev);
->> +    int b_sent;
->> +
->> +    b_sent = spi_sync(st->spi, &st->ring_msg);
-> 
-> hmm, I copied this from another driver, but spi_sync() in IRQ handler does not sound like a good idea (spi_sync() can sleep). I will replace it with spi_async().
-Umm.. spi_async doesn't make any sense here...
+Hi!
 
-Key thing is that here you are in a threaded interrupt so sleeping is fine and
-here I'd imagine it leads to simpler code.
+v3 -> v4 changes
+- rebased onto next-20161122 (depends on recent _available iio changes).
+- added support for having the mux-controller in a child node of a
+  mux-consumer if it is a sole consumer, to hopefully even further satisfy
+  the complaint from Rob (and later Lars-Peter) about dt complexity.
+- the above came at the cost of some rather horrible refcounting code,
+  please review and suggest how it should be done...
+- changed to register a device class instead of a bus.
+- pass in the parent device into mux_control_alloc and require less
+  work from mux-control drivers.
+- changed device names from mux:control%d to mux%d
+- move kernel-doc from mux-core.c to mux.h (and add some bits).
+- give the gpio driver a chance to update all mux pins at once.
+- factor out iio ext_info lookup into new helper function. /Lars-Peter
+- use an unsigned type for the iio ext_info count. /Lars-Peter
+- unified "brag strings" in the file headers.
 
-It's a bit old but https://lwn.net/Articles/302043/ has a good description.
+v2 -> v3 changes
+- have the mux-controller in the parent node of any mux-controller consumer,
+  to hopefully satisfy complaint from Rob about dt complexity.
+- improve commit message of the mux subsystem commit, making it more
+  general, as requested by Jonathan.
+- remove priv member from struct mux_control and calculate it on the
+  fly. /Jonathan
+- make the function comments in mux-core.c kernel doc. /Jonathan
+- add devm_mux_control_* to Documentation/driver.model/devres.txt. /Jonathan
+- add common dt bindings for mux-controllers, refer to them from the
+  mux-gpio bindings. /Rob
+- clarify how the gpio pins map to the mux state. /Rob
+- separate CONFIG_ variables for the mux core and the mux gpio driver.
+- improve Kconfig help texts.
+- make CONFIG_MUX_GPIO depend on CONFIG_GPIOLIB.
+- keep track of the number of mux states in the mux core.
+- since the iio channel number is used as mux state, it was possible
+  to drop the state member from the mux_child struct.
+- cleanup dt bindings for i2c-mux-simple, it had some of copy-paste
+  problems from ots origin (i2c-mux-gpio).
+- select the mux control subsystem in config for the i2c-mux-simple driver.
+- add entries to MAINTAINERS and my sign-off, I'm now satisfied and know
+  nothing in this to be ashamed of.
 
-> 
-> 
->> +    if (b_sent)
->> +        goto done;
->> +
->> +    iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
->> +                       iio_get_time_ns(indio_dev));
->> +
->> +done:
->> +    iio_trigger_notify_done(indio_dev->trig);
->> +
->> +    return IRQ_HANDLED;
->> +}
-> 
-> ...
-> 
->> +static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
->> +                   struct iio_chan_spec const *chan,
->> +                   int *val, int *val2, long m)
->> +{
->> +    struct ti_ads7950_state *st = iio_priv(indio_dev);
->> +    int ret;
->> +
->> +    switch (m) {
->> +    case IIO_CHAN_INFO_RAW:
->> +
->> +        ret = iio_device_claim_direct_mode(indio_dev);
->> +        if (ret < 0)
->> +            return ret;
->> +
->> +        ret = ti_ads7950_scan_direct(st, chan->address);
->> +        iio_device_release_direct_mode(indio_dev);
->> +        if (ret < 0)
->> +            return ret;
->> +
->> +        if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
->> +            return -EIO;
->> +
->> +        *val = TI_ADS7950_EXTRACT(ret, 0, 12);
-> 
-> I'm not sure if I am doing this right. There are 8- 10- and 12-bit
-> versions of this chip. The 8- and 10-bit versions still return a
-> 12-bit number where the last 4 or 2 bits are always 0. Should I be
-> shifting the 12-bit value here based on the chip being used so that
-> *val is 0-255 for 8-bit and 0-1023 for 10-bit? Or should this be
-> *really* raw and not even use TI_ADS7950_EXTRACT() to mask the
-> channel address bits?
->> +
->> +        return IIO_VAL_INT;
->> +    case IIO_CHAN_INFO_SCALE:
->> +        ret = ti_ads7950_get_range(st);
->> +        if (ret < 0)
->> +            return ret;
->> +
->> +        *val = ret;
->> +        *val2 = chan->scan_type.realbits;
->> +
->> +        return IIO_VAL_FRACTIONAL_LOG2;
->> +    }
->> +
->> +    return -EINVAL;
->> +}
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+v1 -> v2 changes
+- fixup export of mux_control_put reported by kbuild
+- drop devicetree iio-ext-info property as noted by Lars-Peter,
+  and replace the functionality by exposing all ext_info
+  attributes of the parent channel for each of the muxed
+  channels. A cache on top of that and each muxed channel
+  gets its own view of the ext_info of the parent channel.
+- implement idle-state for muxes
+- clear out the cache on failure in order to force a mux
+  update on the following use
+- cleanup the probe of i2c-mux-simple driver
+- fix a bug in the i2c-mux-simple driver, where failure in
+  the selection of the mux caused a deadlock when the mux
+  was later unconditionally deselected.
+
+I have a piece of hardware that is using the same 3 GPIO pins
+to control four 8-way muxes. Three of them control ADC lines
+to an ADS1015 chip with an iio driver, and the last one
+controls the SDA line of an i2c bus. We have some deployed
+code to handle this, but you do not want to see it or ever
+hear about it. I'm not sure why I even mention it. Anyway,
+the situation has nagged me to no end for quite some time.
+
+So, after first getting more intimate with the i2c muxing code
+and later discovering the drivers/iio/inkern.c file and
+writing a couple of drivers making use of it, I came up with
+what I think is an acceptable solution; add a generic mux
+controller driver (and subsystem) that is shared between all
+instances, and combine that with an iio mux driver and a new
+generic i2c mux driver. The new i2c mux I called "simple"
+since it is only hooking the i2c muxing and the new mux
+controller (much like the alsa simple card driver does for ASoC).
+
+One thing that I would like to do, but don't see a solution
+for, is to move the mux control code that is present in
+various drivers in drivers/i2c/muxes to this new minimalistic
+muxing subsystem, thus converting all present i2c muxes (but
+perhaps not gates and arbitrators) to be i2c-mux-simple muxes.
+
+I'm using an rwsem to lock a mux, but that isn't really a
+perfect fit. Is there a better locking primitive that I don't
+know about that fits better? I had a mutex at one point, but
+that didn't allow any concurrent accesses at all. At least
+the rwsem allows concurrent access as long as all users
+agree on the mux state, but I suspect that the rwsem will
+degrade to the mutex situation pretty quickly if there is
+any contention.
+
+Also, the "mux" name feels a bit ambitious, there are many muxes
+in the world, and this tiny bit of code is probably not good
+enough to be a nice fit for all...
+
+Cheers,
+Peter
+
+Peter Rosin (7):
+  dt-bindings: document devicetree bindings for mux-controllers and
+    mux-gpio
+  misc: minimal mux subsystem and gpio-based mux controller
+  iio: inkern: api for manipulating ext_info of iio channels
+  dt-bindings: iio: iio-mux: document iio-mux bindings
+  iio: multiplexer: new iio category and iio-mux driver
+  dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
+  i2c: i2c-mux-simple: new driver
+
+ .../devicetree/bindings/i2c/i2c-mux-simple.txt     |  76 ++++
+ .../bindings/iio/multiplexer/iio-mux.txt           |  47 +++
+ .../devicetree/bindings/misc/mux-controller.txt    | 106 +++++
+ .../devicetree/bindings/misc/mux-gpio.txt          |  78 ++++
+ Documentation/driver-model/devres.txt              |   6 +-
+ MAINTAINERS                                        |  14 +
+ drivers/i2c/muxes/Kconfig                          |  13 +
+ drivers/i2c/muxes/Makefile                         |   1 +
+ drivers/i2c/muxes/i2c-mux-simple.c                 | 179 ++++++++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/inkern.c                               |  60 +++
+ drivers/iio/multiplexer/Kconfig                    |  18 +
+ drivers/iio/multiplexer/Makefile                   |   6 +
+ drivers/iio/multiplexer/iio-mux.c                  | 457 +++++++++++++++++++++
+ drivers/misc/Kconfig                               |  23 ++
+ drivers/misc/Makefile                              |   2 +
+ drivers/misc/mux-core.c                            | 311 ++++++++++++++
+ drivers/misc/mux-gpio.c                            | 124 ++++++
+ include/linux/iio/consumer.h                       |  37 ++
+ include/linux/mux.h                                | 160 ++++++++
+ 21 files changed, 1719 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+ create mode 100644 Documentation/devicetree/bindings/misc/mux-controller.txt
+ create mode 100644 Documentation/devicetree/bindings/misc/mux-gpio.txt
+ create mode 100644 drivers/i2c/muxes/i2c-mux-simple.c
+ create mode 100644 drivers/iio/multiplexer/Kconfig
+ create mode 100644 drivers/iio/multiplexer/Makefile
+ create mode 100644 drivers/iio/multiplexer/iio-mux.c
+ create mode 100644 drivers/misc/mux-core.c
+ create mode 100644 drivers/misc/mux-gpio.c
+ create mode 100644 include/linux/mux.h
+
+-- 
+2.1.4
 
