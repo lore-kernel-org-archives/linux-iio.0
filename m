@@ -1,56 +1,89 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:50410 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750708AbcKXFbW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 00:31:22 -0500
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
-        Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V5 0/2] Changes to support different VADC scaling
-Date: Thu, 24 Nov 2016 11:01:03 +0530
-Message-Id: <1479965465-30182-1-git-send-email-rphani@codeaurora.org>
+Received: from youngberry.canonical.com ([91.189.89.112]:38105 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750720AbcKXFff (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 00:35:35 -0500
+From: Shrirang Bagul <shrirang.bagul@canonical.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        denis.ciocca@st.com, tiberiu.a.breana@intel.com,
+        lorenzo.bianconi83@gmail.com, linus.walleij@linaro.org,
+        gregor.boirie@parrot.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shrirang Bagul <shrirang.bagul@canonical.com>
+Subject: [PATCH 1/3] iio: st_sensors: match sensors using ACPI handle
+Date: Thu, 24 Nov 2016 13:33:43 +0800
+Message-Id: <20161124053345.11254-2-shrirang.bagul@canonical.com>
+In-Reply-To: <20161124053345.11254-1-shrirang.bagul@canonical.com>
+References: <20161124053345.11254-1-shrirang.bagul@canonical.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-VADC is a 15 bit ADC that measures signals through the Main analog
-multiplexer (AMUX). The driver arbitrates the request to issue ADC
-read requests. These patches adds different scaling functionality
-to convert adc code to physical units.
+Add support to match st sensors using information passed from ACPI DST
+tables.
 
-[V5]
-	1. Retain new line as suggested.
+Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
+---
+ drivers/iio/common/st_sensors/st_sensors_i2c.c | 20 ++++++++++++++++++++
+ include/linux/iio/common/st_sensors_i2c.h      |  9 +++++++++
+ 2 files changed, 29 insertions(+)
 
-[V4] 
-	1. Remove DT bindings and implement scaling logic with in driver.
-	
-[V3]
-	1. Update the commit text to give more information on the
-	   functionality implemented in the patches.
-   	2. Added Dt maintainers.
-
-[V2]
-	1. Replaced the do_div with normal division.
-	2. Split the functionality implemented in v1 patch.
-	3. Abstracted out common logic and updated change to report
-	   Raw adc code properly.
-   	4. Change to support different scaling functionality.
-	5. Added support for introducing new bindings in driver.
-
-[V1]
-	https://lkml.org/lkml/2016/10/25/26
-
-Rama Krishna Phani A (2):
-  iio: adc: spmi-vadc: Update function for generic voltage conversion
-  iio: adc: spmi-vadc: Changes to support different scaling
-
- drivers/iio/adc/qcom-spmi-vadc.c | 479 ++++++++++++++++++++++++++++-----------
- 1 file changed, 350 insertions(+), 129 deletions(-)
-
+diff --git a/drivers/iio/common/st_sensors/st_sensors_i2c.c b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+index b43aa36..c83df4d 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_i2c.c
++++ b/drivers/iio/common/st_sensors/st_sensors_i2c.c
+@@ -13,6 +13,7 @@
+ #include <linux/slab.h>
+ #include <linux/iio/iio.h>
+ #include <linux/of_device.h>
++#include <linux/acpi.h>
+ 
+ #include <linux/iio/common/st_sensors_i2c.h>
+ 
+@@ -107,6 +108,25 @@ void st_sensors_of_i2c_probe(struct i2c_client *client,
+ EXPORT_SYMBOL(st_sensors_of_i2c_probe);
+ #endif
+ 
++#ifdef CONFIG_ACPI
++int st_sensors_match_acpi_device(struct device *dev)
++{
++	const struct acpi_device_id *acpi_id;
++	kernel_ulong_t driver_data = 0;
++
++	if (ACPI_HANDLE(dev)) {
++		acpi_id = acpi_match_device(dev->driver->acpi_match_table, dev);
++		if (!acpi_id) {
++			dev_err(dev, "No driver data\n");
++			return -EINVAL;
++		}
++		driver_data = acpi_id->driver_data;
++	}
++	return driver_data;
++}
++EXPORT_SYMBOL(st_sensors_match_acpi_device);
++#endif
++
+ MODULE_AUTHOR("Denis Ciocca <denis.ciocca@st.com>");
+ MODULE_DESCRIPTION("STMicroelectronics ST-sensors i2c driver");
+ MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/iio/common/st_sensors_i2c.h b/include/linux/iio/common/st_sensors_i2c.h
+index 1796af0..254de3c 100644
+--- a/include/linux/iio/common/st_sensors_i2c.h
++++ b/include/linux/iio/common/st_sensors_i2c.h
+@@ -28,4 +28,13 @@ static inline void st_sensors_of_i2c_probe(struct i2c_client *client,
+ }
+ #endif
+ 
++#ifdef CONFIG_ACPI
++int st_sensors_match_acpi_device(struct device *dev);
++#else
++static inline int st_sensors_match_acpi_device(struct device *dev)
++{
++	return -ENODEV;
++}
++#endif
++
+ #endif /* ST_SENSORS_I2C_H */
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+2.9.3
 
