@@ -1,59 +1,61 @@
-Return-Path: <lee.jones@linaro.org>
-Date: Tue, 22 Nov 2016 17:18:20 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>, robh+dt@kernel.org,
-	Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com,
-	devicetree@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-	Thierry Reding <thierry.reding@gmail.com>,
-	linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-	Fabrice Gasnier <fabrice.gasnier@st.com>,
-	Gerald Baeza <gerald.baeza@st.com>,
-	Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-	Linus Walleij <linus.walleij@linaro.org>,
-	Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
-	Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH 5/7] add bindings for stm32 IIO timer drivers
-Message-ID: <20161122171820.GL10134@dell.home>
-References: <1479831207-32699-1-git-send-email-benjamin.gaignard@st.com>
- <1479831207-32699-6-git-send-email-benjamin.gaignard@st.com>
- <b9a82ce7-745a-1c25-f97f-68aaf0551f3b@metafoo.de>
- <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CA+M3ks6ZoOND4VobU65OntEYU-f_XoNCV4wNZZ0_dYoOxy73+w@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from youngberry.canonical.com ([91.189.89.112]:40069 "EHLO
+        youngberry.canonical.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933142AbcKXJIY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 24 Nov 2016 04:08:24 -0500
+From: Shrirang Bagul <shrirang.bagul@canonical.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lorenzo.bianconi83@gmail.com, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        Shrirang Bagul <shrirang.bagul@canonical.com>
+Subject: [PATCH] iio: humidity: Support acpi probe for hts211
+Date: Thu, 24 Nov 2016 17:07:54 +0800
+Message-Id: <20161124090754.20427-1-shrirang.bagul@canonical.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 22 Nov 2016, Benjamin Gaignard wrote:
+Support driver probe by reading unique HID on systems based on ACPI instead
+of DT compatible strings.
 
-> [snip]
-> >> +     "st,stm32-iio-timer5"
-> >> +     "st,stm32-iio-timer6"
-> >> +     "st,stm32-iio-timer7"
-> >> +     "st,stm32-iio-timer8"
-> >> +     "st,stm32-iio-timer9"
-> >> +     "st,stm32-iio-timer10"
-> >> +     "st,stm32-iio-timer11"
-> >> +     "st,stm32-iio-timer12"
-> >> +     "st,stm32-iio-timer13"
-> >> +     "st,stm32-iio-timer14"
-> >
-> > We can't do this. This is a binding for a driver, not for the hardware.
-> >
-> 
-> Unfortunately each instance for the hardware IP have little
-> differences like which triggers they could accept or size of the
-> counter register,
-> and I doesn't have value inside the hardware to distinguish them so
-> the only way I found is to use compatible.
+Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
+---
+ drivers/iio/humidity/hts221_i2c.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-Can't you represent these as properties?
-
+diff --git a/drivers/iio/humidity/hts221_i2c.c b/drivers/iio/humidity/hts221_i2c.c
+index 367ecd5..8333c02 100644
+--- a/drivers/iio/humidity/hts221_i2c.c
++++ b/drivers/iio/humidity/hts221_i2c.c
+@@ -10,6 +10,7 @@
+ 
+ #include <linux/kernel.h>
+ #include <linux/module.h>
++#include <linux/acpi.h>
+ #include <linux/i2c.h>
+ #include <linux/slab.h>
+ #include "hts221.h"
+@@ -83,6 +84,12 @@ static int hts221_i2c_probe(struct i2c_client *client,
+ 	return hts221_probe(iio_dev);
+ }
+ 
++static const struct acpi_device_id hts221_acpi_match[] = {
++	{"SMO9100", 0},
++	{ },
++};
++MODULE_DEVICE_TABLE(acpi, hts221_acpi_match);
++
+ static const struct of_device_id hts221_i2c_of_match[] = {
+ 	{ .compatible = "st,hts221", },
+ 	{},
+@@ -99,6 +106,7 @@ static struct i2c_driver hts221_driver = {
+ 	.driver = {
+ 		.name = "hts221_i2c",
+ 		.of_match_table = of_match_ptr(hts221_i2c_of_match),
++		.acpi_match_table = ACPI_PTR(hts221_acpi_match),
+ 	},
+ 	.probe = hts221_i2c_probe,
+ 	.id_table = hts221_i2c_id_table,
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.9.3
+
