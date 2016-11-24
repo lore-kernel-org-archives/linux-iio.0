@@ -9,9 +9,9 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
  Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<linux-doc@vger.kernel.org>
-Subject: [PATCH v4 1/7] dt-bindings: document devicetree bindings for mux-controllers and mux-gpio
-Date: Thu, 24 Nov 2016 16:18:01 +0100
-Message-ID: <1480000687-5630-2-git-send-email-peda@axentia.se>
+Subject: [PATCH v4 6/7] dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
+Date: Thu, 24 Nov 2016 16:18:06 +0100
+Message-ID: <1480000687-5630-7-git-send-email-peda@axentia.se>
 In-Reply-To: <1480000687-5630-1-git-send-email-peda@axentia.se>
 References: <1480000687-5630-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -20,43 +20,54 @@ List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- .../devicetree/bindings/misc/mux-controller.txt    | 106 +++++++++++++++++++++
- .../devicetree/bindings/misc/mux-gpio.txt          |  78 +++++++++++++++
- MAINTAINERS                                        |   5 +
- 3 files changed, 189 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/misc/mux-controller.txt
- create mode 100644 Documentation/devicetree/bindings/misc/mux-gpio.txt
+ .../devicetree/bindings/i2c/i2c-mux-simple.txt     | 76 ++++++++++++++++++++++
+ 1 file changed, 76 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
 
-diff --git a/Documentation/devicetree/bindings/misc/mux-controller.txt b/Documentation/devicetree/bindings/misc/mux-controller.txt
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
 new file mode 100644
-index 000000000000..8e0733f60a37
+index 000000000000..ae534a0f87f3
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/mux-controller.txt
-@@ -0,0 +1,106 @@
-+Common multiplexer controller bindings
++++ b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+@@ -0,0 +1,76 @@
++Simple I2C Bus Mux
 +
-+A mux controller will have one, or several, consumer devices that uses the
-+mux controller. Thus, a mux controller can possibly control several
-+parallel multiplexers. If there are several consumer devices, the node for
-+a mux controller will have one child node for each consumer of the multiplexer
-+controller. If there is only one consumer of the mux controller, the mux
-+controller node can be the child (with node name 'mux-controller') of the
-+consumer node.
++This binding describes an I2C bus multiplexer that uses a mux controller
++from the mux subsystem to route the I2C signals.
 +
-+A mux controller provides a number of states to its consumers, and the
-+state space is a simple zero-based enumeration. I.e. 0-1 for a 2-way
-+multiplexer, 0-7 for an 8-way multiplexer, etc.
++                                  .-----.  .-----.
++                                  | dev |  | dev |
++    .------------.                '-----'  '-----'
++    | SoC        |                   |        |
++    |            |          .--------+--------'
++    |   .------. |  .------+    child bus A, on MUX value set to 0
++    |   | I2C  |-|--| Mux  |
++    |   '------' |  '--+---+    child bus B, on MUX value set to 1
++    |   .------. |     |    '----------+--------+--------.
++    |   | MUX- | |     |               |        |        |
++    |   | Ctrl |-|-----+            .-----.  .-----.  .-----.
++    |   '------' |                  | dev |  | dev |  | dev |
++    '------------'                  '-----'  '-----'  '-----'
++
++Required properties:
++- compatible: i2c-mux-simple,mux-locked or i2c-mux-simple,parent-locked
++- i2c-parent: The phandle of the I2C bus that this multiplexer's master-side
++  port is connected to.
++* Standard I2C mux properties. See i2c-mux.txt in this directory.
++* I2C child bus nodes. See i2c-mux.txt in this directory. The sub-bus number
++  is also the mux-controller state described in ../misc/mux-controller.txt
++
++For each i2c child node, an I2C child bus will be created. They will
++be numbered based on their order in the device tree.
++
++Whenever an access is made to a device on a child bus, the value set
++in the relevant node's reg property will be set as the state in the
++mux controller.
 +
 +Example:
-+
-+	/*
-+	 * One consumer of a 2-way multiplexer controller by one GPIO-line,
-+	 * with the multiplexer controller as a child node.
-+	 */
-+	adc-mux {
-+		compatible = "iio-mux";
-+		io-channels = <&adc 0>;
-+		io-channel-names = "parent";
++	i2c-mux {
++		compatible = "i2c-mux-simple,mux-locked";
++		i2c-parent = <&i2c1>;
 +
 +		#address-cells = <1>;
 +		#size-cells = <0>;
@@ -64,180 +75,36 @@ index 000000000000..8e0733f60a37
 +		mux-controller {
 +			compatible = "mux-gpio";
 +
-+			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>;
++			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
++				    <&pioA 1 GPIO_ACTIVE_HIGH>;
 +		};
 +
-+		sync-1@0 {
-+			reg = <0>;
-+		};
-+
-+		in@1 {
++		i2c@1 {
 +			reg = <1>;
-+		};
-+	};
-+
-+	/*
-+	 * Two consumers (one for an ADC line and one for an i2c bus) of
-+	 * parallel 4-way multiplexers controlled by the same two GPIO-lines.
-+	 */
-+	mux {
-+		compatible = "mux-gpio";
-+
-+		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+			    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+
-+		adc-mux {
-+			compatible = "iio-mux";
-+			io-channels = <&adc 0>;
-+			io-channel-names = "parent";
-+
 +			#address-cells = <1>;
 +			#size-cells = <0>;
 +
-+			sync-1@0 {
-+				reg = <0>;
-+			};
-+
-+			in@1 {
-+				reg = <1>;
-+			};
-+
-+			out@2 {
-+				reg = <2>;
-+			};
-+
-+			sync-2@3 {
-+				reg = <3>;
++			ssd1307: oled@3c {
++				compatible = "solomon,ssd1307fb-i2c";
++				reg = <0x3c>;
++				pwms = <&pwm 4 3000>;
++				reset-gpios = <&gpio2 7 1>;
++				reset-active-low;
 +			};
 +		};
 +
-+		i2c-mux {
-+			compatible = "i2c-mux-simple,mux-locked";
-+			i2c-parent = <&i2c1>;
-+
++		i2c@3 {
++			reg = <3>;
 +			#address-cells = <1>;
 +			#size-cells = <0>;
 +
-+			i2c@0 {
-+				reg = <0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				ssd1307: oled@3c {
-+					/* ... */
-+				};
-+			};
-+
-+			i2c@3 {
-+				reg = <3>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				pca9555: pca9555@20 {
-+					/* ... */
-+				};
++			pca9555: pca9555@20 {
++				compatible = "nxp,pca9555";
++				gpio-controller;
++				#gpio-cells = <2>;
++				reg = <0x20>;
 +			};
 +		};
 +	};
-diff --git a/Documentation/devicetree/bindings/misc/mux-gpio.txt b/Documentation/devicetree/bindings/misc/mux-gpio.txt
-new file mode 100644
-index 000000000000..23b87913f4b3
---- /dev/null
-+++ b/Documentation/devicetree/bindings/misc/mux-gpio.txt
-@@ -0,0 +1,78 @@
-+GPIO-based multiplexer controller bindings
-+
-+Define what GPIO pins are used to control a multiplexer. Or several
-+multiplexers, if the same pins control more than one multiplexer.
-+
-+Required properties:
-+- compatible : "mux-gpio"
-+- mux-gpios : list of gpios used to control the multiplexer, least
-+	      significant bit first.
-+* Standard mux-controller bindings as decribed in mux-controller.txt
-+
-+Optional properties:
-+- idle-state : if present, the state the mux will have when idle.
-+
-+The multiplexer state is defined as the number represented by the
-+multiplexer GPIO pins, where the first pin is the least significant
-+bit. And active pin is a binary 1, an inactive pin is a binary 0.
-+
-+Example:
-+	mux {
-+		compatible = "mux-gpio";
-+
-+		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-+			    <&pioA 1 GPIO_ACTIVE_HIGH>;
-+
-+		adc {
-+			compatible = "iio-mux";
-+			io-channels = <&adc 0>;
-+			io-channel-names = "parent";
-+
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			sync-1@0 {
-+				reg = <0>;
-+			};
-+
-+			in@1 {
-+				reg = <1>;
-+			};
-+
-+			out@2 {
-+				reg = <2>;
-+			};
-+
-+			sync-2@3 {
-+				reg = <3>;
-+			};
-+		};
-+
-+		i2c-mux {
-+			compatible = "i2c-mux-simple,mux-locked";
-+			i2c-parent = <&i2c1>;
-+
-+			#address-cells = <1>;
-+			#size-cells = <0>;
-+
-+			i2c@0 {
-+				reg = <0>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				ssd1307: oled@3c {
-+					/* ... */
-+				};
-+			};
-+
-+			i2c@3 {
-+				reg = <3>;
-+				#address-cells = <1>;
-+				#size-cells = <0>;
-+
-+				pca9555: pca9555@20 {
-+					/* ... */
-+				};
-+			};
-+		};
-+	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 4ebcd8df29d2..35869ed0a50e 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8402,6 +8402,11 @@ S:	Orphan
- F:	drivers/mmc/host/mmc_spi.c
- F:	include/linux/spi/mmc_spi.h
- 
-+MULTIPLEXER SUBSYSTEM
-+M:	Peter Rosin <peda@axentia.se>
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/misc/mux-*
-+
- MULTISOUND SOUND DRIVER
- M:	Andrew Veliath <andrewtv@usa.net>
- S:	Maintained
 -- 
 2.1.4
