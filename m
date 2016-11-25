@@ -1,75 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41160 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753640AbcK0LM6 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 27 Nov 2016 06:12:58 -0500
-Subject: Re: [PATCH 3/3] iio: st_pressure: Support i2c probe using acpi
-To: Linus Walleij <linus.walleij@linaro.org>,
-        Shrirang Bagul <shrirang.bagul@canonical.com>
-References: <20161124053345.11254-1-shrirang.bagul@canonical.com>
- <20161124053345.11254-4-shrirang.bagul@canonical.com>
- <CACRpkdYJAwDgpuTYuXuTAxu3RBHeATEpbxq_xE3LxrJ7D9CKBQ@mail.gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Denis CIOCCA <denis.ciocca@st.com>,
-        Tiberiu Breana <tiberiu.a.breana@intel.com>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c72ee668-196d-d29b-b58a-f290efe8c2a4@kernel.org>
-Date: Sun, 27 Nov 2016 11:12:54 +0000
+Received: from mx1.redhat.com ([209.132.183.28]:53912 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753197AbcKYM7q (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 25 Nov 2016 07:59:46 -0500
+Date: Fri, 25 Nov 2016 13:59:14 +0100
+From: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+To: Bastien Nocera <hadess@hadess.net>
+Cc: Jiri Kosina <jikos@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 1/2] HID: sensor-hub add quirk for Microsoft Surface 3
+Message-ID: <20161125125914.GY2119@mail.corp.redhat.com>
+References: <1480068224-32224-1-git-send-email-benjamin.tissoires@redhat.com>
+ <1480068224-32224-2-git-send-email-benjamin.tissoires@redhat.com>
+ <1480076165.16940.21.camel@hadess.net>
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYJAwDgpuTYuXuTAxu3RBHeATEpbxq_xE3LxrJ7D9CKBQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1480076165.16940.21.camel@hadess.net>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/11/16 14:28, Linus Walleij wrote:
-> On Thu, Nov 24, 2016 at 6:33 AM, Shrirang Bagul
-> <shrirang.bagul@canonical.com> wrote:
+On Nov 25 2016 or thereabouts, Bastien Nocera wrote:
+> On Fri, 2016-11-25 at 11:03 +0100, Benjamin Tissoires wrote:
+> > One more device requiring a quirk :/
+> > 
+> > Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 > 
->> Compatible strings are not available on ACPI based systems. This patch adds
->> support to use DSDT information read from platform BIOS instead for probing
->> st pressure sensors.
->>
->> Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
-> (...)
->> +#ifdef CONFIG_ACPI
->> +static const struct acpi_device_id st_press_acpi_match[] = {
->> +       {"SNO9210", LPS22HB},
->> +       { },
->> +};
+> Tested-by: Bastien Nocera <hadess@hadess.net>
 > 
-> Same comment. One sensor only supported by ACPI really?
-As demonstrated by this one, they are often registered under effectively random names!
-Digging out those random names and associating them with a particular chip is always
-going to be a non trivial job.
-
-Hence I'm happy to take these as they stand.  We can add more entries when we come
-across them.
+> > ---
+> >  drivers/hid/hid-sensor-hub.c | 3 +++
+> >  1 file changed, 3 insertions(+)
+> > 
+> > diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
+> > hub.c
+> > index 50aad26..f9440b6 100644
+> > --- a/drivers/hid/hid-sensor-hub.c
+> > +++ b/drivers/hid/hid-sensor-hub.c
+> > @@ -798,6 +798,9 @@ static const struct hid_device_id
+> > sensor_hub_devices[] = {
+> >  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> > USB_VENDOR_ID_MICROSOFT,
+> >  			USB_DEVICE_ID_MS_TYPE_COVER_2),
+> >  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> > +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> > USB_VENDOR_ID_MICROSOFT,
+> > +			0x07bd), /* Microsoft Surface 3 TypeCover */
 > 
-> Take a wider look.
-Shirang has done a good job identifying this one and sending it upstream.
-Be nice Linus and don't try to get him to do all the hard work ;)
+> The sensor is not in the TypeCover though, it's in the main device.
 
-As such applied to the togreg branch of iio.git. Will be pushed out as testing for
-the autobuilders to play with it.
+Oops, yes, sorry. I have been traumatised by the type cover apparently
+:)
 
-Note there will be some weeks before I push this out as togreg (given merge window
-is about to open) so plenty of time for others to take a look!
+Benjamin
 
-Thanks,
-
-Jonathan
 > 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+> > +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> >  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> > USB_VENDOR_ID_STM_0,
+> >  			USB_DEVICE_ID_STM_HID_SENSOR),
+> >  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
