@@ -1,108 +1,90 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gateway30.websitewelcome.com ([192.185.145.3]:41119 "EHLO
-        gateway30.websitewelcome.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1752435AbcKZWji (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 26 Nov 2016 17:39:38 -0500
-Received: from cm5.websitewelcome.com (unknown [108.167.139.22])
-        by gateway30.websitewelcome.com (Postfix) with ESMTP id 73DFF7745F2B5
-        for <linux-iio@vger.kernel.org>; Sat, 26 Nov 2016 16:39:35 -0600 (CST)
-From: Boyan Vladinov <nayobix@nayobix.org>
-To: gregkh@linuxfoundation.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com
-Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, Boyan Vladinov <nayobix@nayobix.org>
-Subject: [PATCH v3] Staging: iio: adc: fix sysfs files modes in ad7192.c
-Date: Sat, 26 Nov 2016 14:39:24 -0800
-Message-Id: <1480199964-9554-1-git-send-email-nayobix@nayobix.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <wharms@bfs.de>
+Message-ID: <5837FC09.7010902@bfs.de>
+Date: Fri, 25 Nov 2016 09:53:29 +0100
+From: walter harms <wharms@bfs.de>
+Reply-To: wharms@bfs.de
+MIME-Version: 1.0
+To: Brian Masney <masneyb@onstation.org>
+CC: Dan Carpenter <dan.carpenter@oracle.com>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+ Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+ Eva Rachel Retuya <eraretuya@gmail.com>,
+ linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+ kernel-janitors@vger.kernel.org
+Subject: Re: [patch] iio: tsl2583: make array large enough
+References: <20161118140326.GA20458@basecamp.onstation.org> <20161124133807.GA32255@mwanda> <20161124154833.GB2118@basecamp.onstation.org> <58371B39.30503@bfs.de> <20161124175126.GA3088@basecamp.onstation.org>
+In-Reply-To: <20161124175126.GA3088@basecamp.onstation.org>
+Content-Type: text/plain; charset=ISO-8859-1
+List-ID: <linux-iio@vger.kernel.org>
 
-Fixes warnings found by checkpatch.pl:
-- sysfs entries user/group modes to use their octal representation
-- use the IIO_DEVICE_ATTR_[RO|RW] macroses
-- coding style
 
-Signed-off-by: Boyan Vladinov <nayobix@nayobix.org>
----
- drivers/staging/iio/adc/ad7192.c | 39 ++++++++++++++++++++++++---------------
- 1 file changed, 24 insertions(+), 15 deletions(-)
 
-diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
-index 1fb68c01abd5..29b8a291fb6a 100644
---- a/drivers/staging/iio/adc/ad7192.c
-+++ b/drivers/staging/iio/adc/ad7192.c
-@@ -340,15 +340,21 @@ ad7192_show_scale_available(struct device *dev,
- 	return len;
- }
- 
-+static ssize_t
-+in_voltage_scale_available_show(struct device *dev,
-+				struct device_attribute *attr, char *buf)
-+{
-+	return ad7192_show_scale_available(dev, attr, buf);
-+}
-+
- static IIO_DEVICE_ATTR_NAMED(in_v_m_v_scale_available,
- 			     in_voltage-voltage_scale_available,
--			     S_IRUGO, ad7192_show_scale_available, NULL, 0);
-+			     0444, ad7192_show_scale_available, NULL, 0);
- 
--static IIO_DEVICE_ATTR(in_voltage_scale_available, S_IRUGO,
--		       ad7192_show_scale_available, NULL, 0);
-+static IIO_DEVICE_ATTR_RO(in_voltage_scale_available, 0);
- 
--static ssize_t ad7192_show_ac_excitation(struct device *dev,
--					 struct device_attribute *attr,
-+static ssize_t ac_excitation_en_show(struct device *dev,
-+				     struct device_attribute *attr,
- 					 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-@@ -357,8 +363,8 @@ static ssize_t ad7192_show_ac_excitation(struct device *dev,
- 	return sprintf(buf, "%d\n", !!(st->mode & AD7192_MODE_ACX));
- }
- 
--static ssize_t ad7192_show_bridge_switch(struct device *dev,
--					 struct device_attribute *attr,
-+static ssize_t bridge_switch_en_show(struct device *dev,
-+				     struct device_attribute *attr,
- 					 char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-@@ -367,8 +373,8 @@ static ssize_t ad7192_show_bridge_switch(struct device *dev,
- 	return sprintf(buf, "%d\n", !!(st->gpocon & AD7192_GPOCON_BPDSW));
- }
- 
--static ssize_t ad7192_set(struct device *dev,
--			  struct device_attribute *attr,
-+static ssize_t bridge_switch_en_store(struct device *dev,
-+				      struct device_attribute *attr,
- 			  const char *buf,
- 			  size_t len)
- {
-@@ -412,13 +418,16 @@ static ssize_t ad7192_set(struct device *dev,
- 	return ret ? ret : len;
- }
- 
--static IIO_DEVICE_ATTR(bridge_switch_en, S_IRUGO | S_IWUSR,
--		       ad7192_show_bridge_switch, ad7192_set,
--		       AD7192_REG_GPOCON);
-+static ssize_t ac_excitation_en_store(struct device *dev,
-+				      struct device_attribute *attr,
-+					 const char *buf, size_t len)
-+{
-+	return bridge_switch_en_store(dev, attr, buf, len);
-+}
-+
-+static IIO_DEVICE_ATTR_RW(bridge_switch_en, AD7192_REG_GPOCON);
- 
--static IIO_DEVICE_ATTR(ac_excitation_en, S_IRUGO | S_IWUSR,
--		       ad7192_show_ac_excitation, ad7192_set,
--		       AD7192_REG_MODE);
-+static IIO_DEVICE_ATTR_RW(ac_excitation_en, AD7192_REG_MODE);
- 
- static struct attribute *ad7192_attributes[] = {
- 	&iio_dev_attr_in_v_m_v_scale_available.dev_attr.attr,
--- 
-2.7.4
+Am 24.11.2016 18:51, schrieb Brian Masney:
+> On Thu, Nov 24, 2016 at 05:54:17PM +0100, walter harms wrote:
+>>
+>>
+>> Am 24.11.2016 16:48, schrieb Brian Masney:
+>>> On Thu, Nov 24, 2016 at 04:38:07PM +0300, Dan Carpenter wrote:
+>>>> This array is supposed to have 10 elements.  Smatch complains that with
+>>>> the current code we can have n == max_ints and read beyond the end of
+>>>> the array.
+>>>>
+>>>> Fixes: ac4f6eee8fe8 ("staging: iio: TAOS tsl258x: Device driver")
+>>>> Signed-off-by: Dan Carpenter <dan.carpenter@oracle.com>
+>>>>
+>>>> diff --git a/drivers/iio/light/tsl2583.c b/drivers/iio/light/tsl2583.c
+>>>> index 0b87f6a..a78b602 100644
+>>>> --- a/drivers/iio/light/tsl2583.c
+>>>> +++ b/drivers/iio/light/tsl2583.c
+>>>> @@ -565,7 +565,7 @@ static ssize_t in_illuminance_lux_table_store(struct device *dev,
+>>>>  	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+>>>>  	struct tsl2583_chip *chip = iio_priv(indio_dev);
+>>>>  	const unsigned int max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3;
+>>>> -	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3];
+>>>> +	int value[TSL2583_MAX_LUX_TABLE_ENTRIES * 3 + 1];
+>>>>  	int ret = -EINVAL;
+>>>>  	unsigned int n;
+>>>>  
+>>>
+>>
+>> sorry i did not notice that bevor ..
+>> there is a
+>>   max_ints = TSL2583_MAX_LUX_TABLE_ENTRIES * 3
+>>
+>> IMHO this should read either:
+>>    int value[max_ints+1];
+> 
+> I originally went this route when I refactored the function, however
+> running make C=1 yields the following warnings:
+> 
+> drivers/iio/light/tsl2583.c:568:19: warning: Variable length array is
+> used.
+> drivers/iio/light/tsl2583.c:574:26: error: cannot size expression
+> 
+> That is why I went with the current implementation.
+> 
+>> or
+>>   max_ints=ARRAY_SIZE(value)-1;
+>>
+>> (my personal favorite is dropping max_ints completely).
+> 
+> The max_ints value is also shown in the error message if the user passes
+> in too many or too few entries in the per device lux table. I wanted the
+> user to see the maximum allowable number without having to dig through
+> the kernel source code. Without it, I would have had to duplicate the
+> TSL2583_MAX_LUX_TABLE_ENTRIES * 3 statement a third time.
+> 
+> Brian
+> 
 
+
+Hello Brian, thanks for the replay,
+
+i have no problem when people so such things intentional but some times
+people do this unintentional. When i review code, i see it as part of my
+job to challenge constructs where i get a strange feeling.
+
+re,
+ wh
