@@ -1,56 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay6-d.mail.gandi.net ([217.70.183.198]:58583 "EHLO
+Received: from relay6-d.mail.gandi.net ([217.70.183.198]:46935 "EHLO
         relay6-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753460AbcKWVHa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 23 Nov 2016 16:07:30 -0500
-Message-ID: <1479935231.16940.11.camel@hadess.net>
-Subject: Re: acpi-als taking over from hwmon for light sensor support?
+        with ESMTP id S1753463AbcKYMQM (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 25 Nov 2016 07:16:12 -0500
+Message-ID: <1480076165.16940.21.camel@hadess.net>
+Subject: Re: [PATCH 1/2] HID: sensor-hub add quirk for Microsoft Surface 3
 From: Bastien Nocera <hadess@hadess.net>
-To: Jean Delvare <jdelvare@suse.de>
-Cc: linux-iio@vger.kernel.org, linux-hwmon@vger.kernel.org
-Date: Wed, 23 Nov 2016 22:07:11 +0100
-In-Reply-To: <1479922686.5115.2.camel@chaos.suse>
-References: <1479921689.16940.9.camel@hadess.net>
-         <1479922686.5115.2.camel@chaos.suse>
+To: Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Jiri Kosina <jikos@kernel.org>,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Date: Fri, 25 Nov 2016 13:16:05 +0100
+In-Reply-To: <1480068224-32224-2-git-send-email-benjamin.tissoires@redhat.com>
+References: <1480068224-32224-1-git-send-email-benjamin.tissoires@redhat.com>
+         <1480068224-32224-2-git-send-email-benjamin.tissoires@redhat.com>
 Content-Type: text/plain; charset="UTF-8"
 Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 2016-11-23 at 18:38 +0100, Jean Delvare wrote:
-> On mer., 2016-11-23 at 18:21 +0100, Bastien Nocera wrote:
-> > Hey,
-> > 
-> > I did some work on iio-sensor-proxy[1] those past couple of days,
-> > and
-> > tested it on a MacBook Pro.
-> > 
-> > Before that, I had written a (user-space) driver to access the
-> > hwmon
-> > driver's "light" value, so I was a bit surprised when I saw that
-> > iio-
-> > sensor-proxy was accessing the light sensor through acpi-als's IIO
-> > driver instead of through the hwmon driver.
-> > 
-> > I looked through the hwmon, iio and applesmc.c logs, and couldn't
-> > find
-> > any information about how the move from one to the other. Does
-> > anyone
-> > know?
-> > 
-> > I'm asking because the applesmc.c hwmon driver is the only one with
-> > support for the "light" property, and if that's not used anymore, I
-> > might as well remove that code now (or schedule to remove it).
+On Fri, 2016-11-25 at 11:03 +0100, Benjamin Tissoires wrote:
+> One more device requiring a quirk :/
 > 
-> Light sensors are out of scope of hwmon, they have nothing to do with
-> hardware monitoring.
+> Signed-off-by: Benjamin Tissoires <benjamin.tissoires@redhat.com>
 
-Why is there still code in applesmc.c to handle the "light" sysfs
-property then?
+Tested-by: Bastien Nocera <hadess@hadess.net>
 
-Also, this doesn't answer my question as to when this switch happened.
-I don't care one way or the other, but knowing when the switch was made
-can allow me to prepare the hwmon driver in iio-sensor-proxy for
-removal.
+> ---
+>  drivers/hid/hid-sensor-hub.c | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-
+> hub.c
+> index 50aad26..f9440b6 100644
+> --- a/drivers/hid/hid-sensor-hub.c
+> +++ b/drivers/hid/hid-sensor-hub.c
+> @@ -798,6 +798,9 @@ static const struct hid_device_id
+> sensor_hub_devices[] = {
+>  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_MICROSOFT,
+>  			USB_DEVICE_ID_MS_TYPE_COVER_2),
+>  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+> +	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_MICROSOFT,
+> +			0x07bd), /* Microsoft Surface 3 TypeCover */
 
-Cheers
+The sensor is not in the TypeCover though, it's in the main device.
+
+> +			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
+>  	{ HID_DEVICE(HID_BUS_ANY, HID_GROUP_SENSOR_HUB,
+> USB_VENDOR_ID_STM_0,
+>  			USB_DEVICE_ID_STM_HID_SENSOR),
+>  			.driver_data = HID_SENSOR_HUB_ENUM_QUIRK},
