@@ -1,55 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f196.google.com ([209.85.161.196]:33778 "EHLO
-        mail-yw0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753647AbcK1VXI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 28 Nov 2016 16:23:08 -0500
-Date: Mon, 28 Nov 2016 16:22:44 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: 104-quad-8: Fix index control configuration
-Message-ID: <20161128212244.GA6655@sophia>
+Received: from mx2.suse.de ([195.135.220.15]:38037 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932266AbcK1Ndx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 28 Nov 2016 08:33:53 -0500
+Date: Mon, 28 Nov 2016 14:33:50 +0100 (CET)
+From: Jiri Kosina <jikos@kernel.org>
+To: Benjamin Tissoires <benjamin.tissoires@redhat.com>
+cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: Re: [PATCH 0/2] more quirks for hid-sensor-hub
+In-Reply-To: <1480068224-32224-1-git-send-email-benjamin.tissoires@redhat.com>
+Message-ID: <alpine.LNX.2.00.1611281432530.29400@cbobk.fhfr.pm>
+References: <1480068224-32224-1-git-send-email-benjamin.tissoires@redhat.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The LS7266R1 requires bits 5 & 6 to be high in order to select the Index
-Control Register. This patch fixes a typo that incorrectly selects the
-Input/Output Control Register where the Index Control Register was
-desired.
+On Fri, 25 Nov 2016, Benjamin Tissoires wrote:
 
-Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8")
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- drivers/iio/counter/104-quad-8.c | 4 ++--
- 1 file changed, 2 insertions(+), 2 deletions(-)
+> Hi Jiri,
+> 
+> here are 2 more quirks for the sensor-hub.
 
-diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
-index 2d2ee35..c0a69d7 100644
---- a/drivers/iio/counter/104-quad-8.c
-+++ b/drivers/iio/counter/104-quad-8.c
-@@ -362,7 +362,7 @@ static int quad8_set_synchronous_mode(struct iio_dev *indio_dev,
- 	priv->synchronous_mode[chan->channel] = synchronous_mode;
- 
- 	/* Load Index Control configuration to Index Control Register */
--	outb(0x40 | idr_cfg, base_offset);
-+	outb(0x60 | idr_cfg, base_offset);
- 
- 	return 0;
- }
-@@ -444,7 +444,7 @@ static int quad8_set_index_polarity(struct iio_dev *indio_dev,
- 	priv->index_polarity[chan->channel] = index_polarity;
- 
- 	/* Load Index Control configuration to Index Control Register */
--	outb(0x40 | idr_cfg, base_offset);
-+	outb(0x60 | idr_cfg, base_offset);
- 
- 	return 0;
- }
+Applied to for-4.10/microsoft-surface-3; in case you figure out a way how 
+to auto-detect this behavior, please base such patches on top of this.
+
+Thanks,
+
 -- 
-2.10.2
+Jiri Kosina
+SUSE Labs
 
