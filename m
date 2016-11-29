@@ -9,9 +9,9 @@ CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
  Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
 	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
 	<linux-doc@vger.kernel.org>
-Subject: [PATCH v5 4/9] dt-bindings: iio: iio-mux: document iio-mux bindings
-Date: Tue, 29 Nov 2016 11:10:40 +0100
-Message-ID: <1480414245-14034-5-git-send-email-peda@axentia.se>
+Subject: [PATCH v5 6/9] dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
+Date: Tue, 29 Nov 2016 11:10:42 +0100
+Message-ID: <1480414245-14034-7-git-send-email-peda@axentia.se>
 In-Reply-To: <1480414245-14034-1-git-send-email-peda@axentia.se>
 References: <1480414245-14034-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
@@ -20,36 +20,51 @@ List-ID: <linux-iio@vger.kernel.org>
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- .../bindings/iio/multiplexer/iio-mux.txt           | 51 ++++++++++++++++++++++
- MAINTAINERS                                        |  6 +++
- 2 files changed, 57 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+ .../devicetree/bindings/i2c/i2c-mux-simple.txt     | 81 ++++++++++++++++++++++
+ 1 file changed, 81 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
 new file mode 100644
-index 000000000000..403912631dcf
+index 000000000000..18e023d52933
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-@@ -0,0 +1,51 @@
-+IIO multiplexer bindings
++++ b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+@@ -0,0 +1,81 @@
++Simple I2C Bus Mux
 +
-+If a multiplexer is used to select which hardware signal is fed to
-+e.g. an ADC channel, these bindings describe that situation.
++This binding describes an I2C bus multiplexer that uses a mux controller
++from the mux subsystem to route the I2C signals.
++
++                                  .-----.  .-----.
++                                  | dev |  | dev |
++    .------------.                '-----'  '-----'
++    | SoC        |                   |        |
++    |            |          .--------+--------'
++    |   .------. |  .------+    child bus A, on MUX value set to 0
++    |   | I2C  |-|--| Mux  |
++    |   '------' |  '--+---+    child bus B, on MUX value set to 1
++    |   .------. |     |    '----------+--------+--------.
++    |   | MUX- | |     |               |        |        |
++    |   | Ctrl |-|-----+            .-----.  .-----.  .-----.
++    |   '------' |                  | dev |  | dev |  | dev |
++    '------------'                  '-----'  '-----'  '-----'
 +
 +Required properties:
-+- compatible : "iio-mux"
-+- io-channels : Channel node of the parent channel that has multiplexed
-+		input.
-+- io-channel-names : Should be "parent".
-+- #address-cells = <1>;
-+- #size-cells = <0>;
-+- mux-controls : Mux controller node to use for operating the mux
++- compatible: i2c-mux-simple,mux-locked or i2c-mux-simple,parent-locked
++- i2c-parent: The phandle of the I2C bus that this multiplexer's master-side
++  port is connected to.
++- mux-controls: The phandle of the mux controller to use for operating the
++  mux.
++* Standard I2C mux properties. See i2c-mux.txt in this directory.
++* I2C child bus nodes. See i2c-mux.txt in this directory. The sub-bus number
++  is also the mux-controller state described in ../misc/mux-controller.txt
 +
-+Required properties for iio-mux child nodes:
-+- reg : The multiplexer state as described in ../misc/mux-controller.txt
++For each i2c child node, an I2C child bus will be created. They will
++be numbered based on their order in the device tree.
 +
-+For each iio-mux child, an iio channel will be created whose number will
-+match the mux controller state.
++Whenever an access is made to a device on a child bus, the value set
++in the relevant node's reg property will be set as the state in the
++mux controller.
 +
 +Example:
 +	mux: mux-controller {
@@ -60,44 +75,41 @@ index 000000000000..403912631dcf
 +			    <&pioA 1 GPIO_ACTIVE_HIGH>;
 +	};
 +
-+	adc-mux {
-+		compatible = "iio-mux";
-+		io-channels = <&adc 0>;
-+		io-channel-names = "parent";
++	i2c-mux {
++		compatible = "i2c-mux-simple,mux-locked";
++		i2c-parent = <&i2c1>;
 +
 +		#address-cells = <1>;
 +		#size-cells = <0>;
 +
 +		mux-controls = <&mux>;
 +
-+		sync@0 {
-+			reg = <0>;
-+		};
-+
-+		in@1 {
++		i2c@1 {
 +			reg = <1>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			ssd1307: oled@3c {
++				compatible = "solomon,ssd1307fb-i2c";
++				reg = <0x3c>;
++				pwms = <&pwm 4 3000>;
++				reset-gpios = <&gpio2 7 1>;
++				reset-active-low;
++			};
 +		};
 +
-+		system-regulator@2 {
-+			reg = <2>;
++		i2c@3 {
++			reg = <3>;
++			#address-cells = <1>;
++			#size-cells = <0>;
++
++			pca9555: pca9555@20 {
++				compatible = "nxp,pca9555";
++				gpio-controller;
++				#gpio-cells = <2>;
++				reg = <0x20>;
++			};
 +		};
 +	};
-diff --git a/MAINTAINERS b/MAINTAINERS
-index dc7498682752..77045ae15865 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -6234,6 +6234,12 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
- F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
- F:	drivers/iio/adc/envelope-detector.c
- 
-+IIO MULTIPLEXER
-+M:	Peter Rosin <peda@axentia.se>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-+
- IIO SUBSYSTEM AND DRIVERS
- M:	Jonathan Cameron <jic23@kernel.org>
- R:	Hartmut Knaack <knaack.h@gmx.de>
 -- 
 2.1.4
