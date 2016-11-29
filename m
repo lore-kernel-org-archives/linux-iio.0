@@ -1,31 +1,55 @@
-Return-Path: <peda@axentia.se>
-Subject: Re: [PATCH v6 4/9] dt-bindings: iio: iio-mux: document iio-mux
- bindings
-To: <linux-kernel@vger.kernel.org>
-References: <1480493823-21462-1-git-send-email-peda@axentia.se>
- <1480493823-21462-5-git-send-email-peda@axentia.se>
- <ed072eb4-382d-f2cc-ed95-6a09c3528177@axentia.se>
-CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, Mark
- Rutland <mark.rutland@arm.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut
- Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>, Jonathan Corbet <corbet@lwn.net>, Arnd
- Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <7a3967ef-e754-1fad-441c-d470c5985e18@axentia.se>
-Date: Wed, 30 Nov 2016 09:57:12 +0100
+Return-Path: <vilhelm.gray@gmail.com>
+Date: Tue, 29 Nov 2016 10:51:48 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: 104-quad-8: Fix active level mismatch for the preset
+ enable option
+Message-ID: <20161129155148.GA4193@sophia>
 MIME-Version: 1.0
-In-Reply-To: <ed072eb4-382d-f2cc-ed95-6a09c3528177@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On 2016-11-30 09:52, Peter Rosin wrote:
-> I'm holding off v7 pending more important changes.
+The set_to_preset_on_index sysfs attribute provides a boolean
+configuration option to enable a preset operation on the respective
+channel's counter when Index occurs. However, the corresponding
+configuration bit on the Input/Output Control register must be set low
+to enable the preset operation.
 
-Err, crap. That was ambiguous. I do not know of any important
-changes to make, but please review so that important changes
-can be discovered!
+This patch inverts the internal driver boolean logic exposed via the
+set_to_preset_on_index attribute in order to correctly configure the
+device which expects an active low bit.
 
-Cheers,
-Peter
+Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8")
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/counter/104-quad-8.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+index 2d2ee35..9847221 100644
+--- a/drivers/iio/counter/104-quad-8.c
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -233,7 +233,7 @@ static ssize_t quad8_read_set_to_preset_on_index(struct iio_dev *indio_dev,
+ 	const struct quad8_iio *const priv = iio_priv(indio_dev);
+ 
+ 	return snprintf(buf, PAGE_SIZE, "%u\n",
+-		priv->preset_enable[chan->channel]);
++		!priv->preset_enable[chan->channel]);
+ }
+ 
+ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+@@ -250,6 +250,9 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+ 	if (ret)
+ 		return ret;
+ 
++	/* Preset enable is active low in Input/Output Control register */
++	preset_enable = !preset_enable;
++
+ 	priv->preset_enable[chan->channel] = preset_enable;
+ 
+ 	ior_cfg = priv->ab_enable[chan->channel] |
+-- 
+2.10.2
