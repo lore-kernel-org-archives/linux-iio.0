@@ -1,145 +1,590 @@
-Return-Path: <peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-db5eur01on0098.outbound.protection.outlook.com ([104.47.2.98]:49768
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1757119AbcK2K1N (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 29 Nov 2016 05:27:13 -0500
 From: Peter Rosin <peda@axentia.se>
 To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Rob
- Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan
- Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jonathan Corbet <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>, Greg
- Kroah-Hartman <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-Subject: [PATCH v5 3/9] iio: inkern: api for manipulating ext_info of iio channels
-Date: Tue, 29 Nov 2016 11:10:39 +0100
-Message-ID: <1480414245-14034-4-git-send-email-peda@axentia.se>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v5 5/9] iio: multiplexer: new iio category and iio-mux driver
+Date: Tue, 29 Nov 2016 11:10:41 +0100
+Message-ID: <1480414245-14034-6-git-send-email-peda@axentia.se>
 In-Reply-To: <1480414245-14034-1-git-send-email-peda@axentia.se>
 References: <1480414245-14034-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
 Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Extend the inkern api with functions for reading and writing ext_info
-of iio channels.
+When a multiplexer changes how an iio device behaves (for example
+by feeding different signals to an ADC), this driver can be used
+to create one virtual iio channel for each multiplexer state.
+
+Depends on the generic multiplexer subsystem.
+
+Cache any ext_info values from the parent iio channel, creating a private
+copy of the ext_info attributes for each multiplexer state/channel.
 
 Signed-off-by: Peter Rosin <peda@axentia.se>
 ---
- drivers/iio/inkern.c         | 60 ++++++++++++++++++++++++++++++++++++++++++++
- include/linux/iio/consumer.h | 37 +++++++++++++++++++++++++++
- 2 files changed, 97 insertions(+)
+ MAINTAINERS                       |   1 +
+ drivers/iio/Kconfig               |   1 +
+ drivers/iio/Makefile              |   1 +
+ drivers/iio/multiplexer/Kconfig   |  18 ++
+ drivers/iio/multiplexer/Makefile  |   6 +
+ drivers/iio/multiplexer/iio-mux.c | 457 ++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 484 insertions(+)
+ create mode 100644 drivers/iio/multiplexer/Kconfig
+ create mode 100644 drivers/iio/multiplexer/Makefile
+ create mode 100644 drivers/iio/multiplexer/iio-mux.c
 
-diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
-index b0f4630a163f..4848b8129e6c 100644
---- a/drivers/iio/inkern.c
-+++ b/drivers/iio/inkern.c
-@@ -863,3 +863,63 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
- 	return ret;
- }
- EXPORT_SYMBOL_GPL(iio_write_channel_raw);
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 77045ae15865..16490fbd1721 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6239,6 +6239,7 @@ M:	Peter Rosin <peda@axentia.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
++F:	drivers/iio/multiplexer/iio-mux.c
+ 
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index a918270d6f54..b3c8c6ef0dff 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -83,6 +83,7 @@ source "drivers/iio/humidity/Kconfig"
+ source "drivers/iio/imu/Kconfig"
+ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
++source "drivers/iio/multiplexer/Kconfig"
+ source "drivers/iio/orientation/Kconfig"
+ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 33fa4026f92c..93c769cd99bf 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -28,6 +28,7 @@ obj-y += humidity/
+ obj-y += imu/
+ obj-y += light/
+ obj-y += magnetometer/
++obj-y += multiplexer/
+ obj-y += orientation/
+ obj-y += potentiometer/
+ obj-y += potentiostat/
+diff --git a/drivers/iio/multiplexer/Kconfig b/drivers/iio/multiplexer/Kconfig
+new file mode 100644
+index 000000000000..70a044510686
+--- /dev/null
++++ b/drivers/iio/multiplexer/Kconfig
+@@ -0,0 +1,18 @@
++#
++# Multiplexer drivers
++#
++# When adding new entries keep the list in alphabetical order
 +
-+unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan)
++menu "Multiplexers"
++
++config IIO_MUX
++	tristate "IIO multiplexer driver"
++	select MULTIPLEXER
++	depends on OF
++	help
++	  Say yes here to build support for the IIO multiplexer.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called iio-mux.
++
++endmenu
+diff --git a/drivers/iio/multiplexer/Makefile b/drivers/iio/multiplexer/Makefile
+new file mode 100644
+index 000000000000..68be3c4abd07
+--- /dev/null
++++ b/drivers/iio/multiplexer/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for industrial I/O multiplexer drivers
++#
++
++# When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_IIO_MUX) += iio-mux.o
+diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
+new file mode 100644
+index 000000000000..3ea4acdb45e2
+--- /dev/null
++++ b/drivers/iio/multiplexer/iio-mux.c
+@@ -0,0 +1,457 @@
++/*
++ * IIO multiplexer driver
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/err.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/mux.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++
++struct mux_ext_info_cache {
++	char *data;
++	size_t size;
++};
++
++struct mux_child {
++	struct mux_ext_info_cache *ext_info_cache;
++};
++
++struct mux {
++	int cached_state;
++	struct mux_control *control;
++	struct iio_channel *parent;
++	struct iio_dev *indio_dev;
++	struct iio_chan_spec *chan;
++	struct iio_chan_spec_ext_info *ext_info;
++	struct mux_child *child;
++};
++
++static int iio_mux_select(struct mux *mux, int idx)
 +{
-+	const struct iio_chan_spec_ext_info *ext_info;
-+	unsigned int i = 0;
++	struct mux_child *child = &mux->child[idx];
++	struct iio_chan_spec const *chan = &mux->chan[idx];
++	int ret;
++	int i;
 +
-+	if (!chan->channel->ext_info)
-+		return i;
-+
-+	for (ext_info = chan->channel->ext_info; ext_info->name; ext_info++)
-+		++i;
-+
-+	return i;
-+}
-+EXPORT_SYMBOL_GPL(iio_get_channel_ext_info_count);
-+
-+static const struct iio_chan_spec_ext_info *iio_lookup_ext_info(
-+						const struct iio_channel *chan,
-+						const char *attr)
-+{
-+	const struct iio_chan_spec_ext_info *ext_info;
-+
-+	if (!chan->channel->ext_info)
-+		return NULL;
-+
-+	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
-+		if (!strcmp(attr, ext_info->name))
-+			return ext_info;
++	ret = mux_control_select(mux->control, chan->channel);
++	if (ret < 0) {
++		mux->cached_state = -1;
++		return ret;
 +	}
 +
-+	return NULL;
++	if (mux->cached_state == chan->channel)
++		return 0;
++
++	if (chan->ext_info) {
++		for (i = 0; chan->ext_info[i].name; ++i) {
++			const char *attr = chan->ext_info[i].name;
++			struct mux_ext_info_cache *cache;
++
++			cache = &child->ext_info_cache[i];
++
++			if (cache->size < 0)
++				continue;
++
++			ret = iio_write_channel_ext_info(mux->parent, attr,
++							 cache->data,
++							 cache->size);
++
++			if (ret < 0) {
++				mux_control_deselect(mux->control);
++				mux->cached_state = -1;
++				return ret;
++			}
++		}
++	}
++	mux->cached_state = chan->channel;
++
++	return 0;
 +}
 +
-+ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
-+				  const char *attr, char *buf)
++static void iio_mux_deselect(struct mux *mux)
 +{
-+	const struct iio_chan_spec_ext_info *ext_info;
-+
-+	ext_info = iio_lookup_ext_info(chan, attr);
-+	if (!ext_info)
-+		return -EINVAL;
-+
-+	return ext_info->read(chan->indio_dev, ext_info->private,
-+			      chan->channel, buf);
++	mux_control_deselect(mux->control);
 +}
-+EXPORT_SYMBOL_GPL(iio_read_channel_ext_info);
 +
-+ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
-+				   const char *buf, size_t len)
++static int mux_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
 +{
-+	const struct iio_chan_spec_ext_info *ext_info;
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	int ret;
 +
-+	ext_info = iio_lookup_ext_info(chan, attr);
-+	if (!ext_info)
-+		return -EINVAL;
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
 +
-+	return ext_info->write(chan->indio_dev, ext_info->private,
-+			       chan->channel, buf, len);
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_read_channel_raw(mux->parent, val);
++		break;
++
++	case IIO_CHAN_INFO_SCALE:
++		ret = iio_read_channel_scale(mux->parent, val, val2);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	iio_mux_deselect(mux);
++
++	return ret;
 +}
-+EXPORT_SYMBOL_GPL(iio_write_channel_ext_info);
-diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
-index 47eeec3218b5..5e347a9805fd 100644
---- a/include/linux/iio/consumer.h
-+++ b/include/linux/iio/consumer.h
-@@ -312,4 +312,41 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
- int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
- 	int *processed, unsigned int scale);
- 
-+/**
-+ * iio_get_channel_ext_info_count() - get number of ext_info attributes
-+ *				      connected to the channel.
-+ * @chan:		The channel being queried
-+ *
-+ * Returns the number of ext_info attributes
-+ */
-+unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan);
 +
-+/**
-+ * iio_read_channel_ext_info() - read ext_info attribute from a given channel
-+ * @chan:		The channel being queried.
-+ * @attr:		The ext_info attribute to read.
-+ * @buf:		Where to store the attribute value. Assumed to hold
-+ *			at least PAGE_SIZE bytes.
-+ *
-+ * Returns the number of bytes written to buf (perhaps w/o zero termination;
-+ * it need not even be a string), or an error code.
-+ */
-+ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
-+				  const char *attr, char *buf);
++static int mux_read_avail(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  const int **vals, int *type, int *length,
++			  long mask)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	int ret;
 +
-+/**
-+ * iio_write_channel_ext_info() - write ext_info attribute from a given channel
-+ * @chan:		The channel being queried.
-+ * @attr:		The ext_info attribute to read.
-+ * @buf:		The new attribute value. Strings needs to be zero-
-+ *			terminated, but the terminator should not be included
-+ *			in the below len.
-+ * @len:		The size of the new attribute value.
-+ *
-+ * Returns the number of accepted bytes, which should be the same as len.
-+ * An error code can also be returned.
-+ */
-+ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
-+				   const char *buf, size_t len);
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
 +
- #endif
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*type = IIO_VAL_INT;
++		ret = iio_read_avail_channel_raw(mux->parent, vals, length);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static int mux_write_raw(struct iio_dev *indio_dev,
++			 struct iio_chan_spec const *chan,
++			 int val, int val2, long mask)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	int ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_write_channel_raw(mux->parent, val);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static const struct iio_info mux_info = {
++	.read_raw = mux_read_raw,
++	.read_avail = mux_read_avail,
++	.write_raw = mux_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static ssize_t mux_read_ext_info(struct iio_dev *indio_dev, uintptr_t private,
++				 struct iio_chan_spec const *chan, char *buf)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	ssize_t ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_read_channel_ext_info(mux->parent,
++					mux->ext_info[private].name,
++					buf);
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static ssize_t mux_write_ext_info(struct iio_dev *indio_dev, uintptr_t private,
++				  struct iio_chan_spec const *chan,
++				  const char *buf, size_t len)
++{
++	struct device *dev = indio_dev->dev.parent;
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	char *new;
++	ssize_t ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	new = devm_kmemdup(dev, buf, len + 1, GFP_KERNEL);
++	if (!new) {
++		iio_mux_deselect(mux);
++		return -ENOMEM;
++	}
++
++	new[len] = 0;
++
++	ret = iio_write_channel_ext_info(mux->parent,
++					 mux->ext_info[private].name,
++					 buf, len);
++	if (ret < 0) {
++		iio_mux_deselect(mux);
++		devm_kfree(dev, new);
++		return ret;
++	}
++
++	devm_kfree(dev, mux->child[idx].ext_info_cache[private].data);
++	mux->child[idx].ext_info_cache[private].data = new;
++	mux->child[idx].ext_info_cache[private].size = len;
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static int mux_configure_channel(struct device *dev, struct mux *mux,
++				 struct device_node *child_np, int idx)
++{
++	struct mux_child *child = &mux->child[idx];
++	struct iio_chan_spec *chan = &mux->chan[idx];
++	struct iio_chan_spec const *pchan = mux->parent->channel;
++	u32 state;
++	char *page = NULL;
++	int num_ext_info;
++	int i;
++	int ret;
++
++	chan->indexed = 1;
++	chan->output = pchan->output;
++	chan->datasheet_name = child_np->name;
++	chan->ext_info = mux->ext_info;
++
++	ret = iio_get_channel_type(mux->parent, &chan->type);
++	if (ret < 0) {
++		dev_err(dev, "failed to get parent channel type\n");
++		return ret;
++	}
++
++	if (iio_channel_has_info(pchan, IIO_CHAN_INFO_RAW))
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_RAW);
++	if (iio_channel_has_info(pchan, IIO_CHAN_INFO_SCALE))
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_SCALE);
++
++	if (iio_channel_has_available(pchan, IIO_CHAN_INFO_RAW))
++		chan->info_mask_separate_available |= BIT(IIO_CHAN_INFO_RAW);
++
++	ret = of_property_read_u32(child_np, "reg", &state);
++	if (ret < 0) {
++		dev_err(dev, "no reg property for node '%s'\n", child_np->name);
++		return ret;
++	}
++
++	if (state >= mux->control->states) {
++		dev_err(dev, "invalid reg %u\n", state);
++		return -EINVAL;
++	}
++
++	for (i = 0; i < idx; ++i) {
++		if (mux->chan[i].channel == state) {
++			dev_err(dev, "double use of reg %u\n", state);
++			return -EINVAL;
++		}
++	}
++
++	chan->channel = state;
++
++	num_ext_info = iio_get_channel_ext_info_count(mux->parent);
++	if (num_ext_info) {
++		page = devm_kzalloc(dev, PAGE_SIZE, GFP_KERNEL);
++		if (!page)
++			return -ENOMEM;
++	}
++	child->ext_info_cache = devm_kzalloc(dev,
++					     sizeof(*child->ext_info_cache) *
++					     num_ext_info, GFP_KERNEL);
++	for (i = 0; i < num_ext_info; ++i) {
++		child->ext_info_cache[i].size = -1;
++
++		if (!pchan->ext_info[i].write)
++			continue;
++		if (!pchan->ext_info[i].read)
++			continue;
++
++		ret = iio_read_channel_ext_info(mux->parent,
++						mux->ext_info[i].name,
++						page);
++		if (ret < 0) {
++			dev_err(dev, "failed to get ext_info '%s'\n",
++				pchan->ext_info[i].name);
++			return ret;
++		}
++		if (ret >= PAGE_SIZE) {
++			dev_err(dev, "too large ext_info '%s'\n",
++				pchan->ext_info[i].name);
++			return -EINVAL;
++		}
++
++		child->ext_info_cache[i].data = devm_kmemdup(dev, page, ret + 1,
++							     GFP_KERNEL);
++		child->ext_info_cache[i].data[ret] = 0;
++		child->ext_info_cache[i].size = ret;
++	}
++
++	if (page)
++		devm_kfree(dev, page);
++
++	return 0;
++}
++
++static int mux_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = pdev->dev.of_node;
++	struct device_node *child_np;
++	struct iio_dev *indio_dev;
++	struct iio_channel *parent;
++	struct mux *mux;
++	int sizeof_ext_info;
++	int children;
++	int sizeof_priv;
++	int i;
++	int ret;
++
++	if (!np)
++		return -ENODEV;
++
++	parent = devm_iio_channel_get(dev, "parent");
++	if (IS_ERR(parent)) {
++		if (PTR_ERR(parent) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get parent channel\n");
++		return PTR_ERR(parent);
++	}
++
++	sizeof_ext_info = iio_get_channel_ext_info_count(parent);
++	if (sizeof_ext_info) {
++		sizeof_ext_info += 1; /* one extra entry for the sentinel */
++		sizeof_ext_info *= sizeof(*mux->ext_info);
++	}
++
++	children = 0;
++	for_each_child_of_node(np, child_np) {
++		if (of_get_property(child_np, "reg", NULL))
++			children++;
++	}
++	if (children <= 0) {
++		dev_err(dev, "not even a single child\n");
++		return -EINVAL;
++	}
++
++	sizeof_priv = sizeof(*mux);
++	sizeof_priv += sizeof(*mux->child) * children;
++	sizeof_priv += sizeof(*mux->chan) * children;
++	sizeof_priv += sizeof_ext_info;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof_priv);
++	if (!indio_dev)
++		return -ENOMEM;
++
++	mux = iio_priv(indio_dev);
++	mux->child = (struct mux_child *)(mux + 1);
++	mux->chan = (struct iio_chan_spec *)(mux->child + children);
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	mux->parent = parent;
++	mux->cached_state = -1;
++
++	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &mux_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mux->chan;
++	indio_dev->num_channels = children;
++	if (sizeof_ext_info) {
++		mux->ext_info = devm_kmemdup(dev,
++					     parent->channel->ext_info,
++					     sizeof_ext_info, GFP_KERNEL);
++		if (!mux->ext_info)
++			return -ENOMEM;
++
++		for (i = 0; mux->ext_info[i].name; ++i) {
++			if (parent->channel->ext_info[i].read)
++				mux->ext_info[i].read = mux_read_ext_info;
++			if (parent->channel->ext_info[i].write)
++				mux->ext_info[i].write = mux_write_ext_info;
++			mux->ext_info[i].private = i;
++		}
++	}
++
++	mux->control = devm_mux_control_get(dev, NULL);
++	if (IS_ERR(mux->control)) {
++		if (PTR_ERR(mux->control) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get control-mux\n");
++		return PTR_ERR(mux->control);
++	}
++
++	i = 0;
++	for_each_child_of_node(np, child_np) {
++		if (!of_get_property(child_np, "reg", NULL))
++			continue;
++
++		ret = mux_configure_channel(dev, mux, child_np, i);
++		if (ret < 0)
++			return ret;
++		i++;
++	}
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "failed to register iio device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct of_device_id mux_match[] = {
++	{ .compatible = "iio-mux" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mux_match);
++
++static struct platform_driver mux_driver = {
++	.probe = mux_probe,
++	.driver = {
++		.name = "iio-mux",
++		.of_match_table = mux_match,
++	},
++};
++module_platform_driver(mux_driver);
++
++MODULE_DESCRIPTION("IIO multiplexer driver");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
++MODULE_LICENSE("GPL v2");
 -- 
 2.1.4
+
