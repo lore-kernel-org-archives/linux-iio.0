@@ -1,56 +1,82 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33694 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754978AbcK3UGH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 15:06:07 -0500
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-Subject: [PATCH v2 2/2] Documentation: dt: iio: add st_lsm6dsx sensor device binding
-Date: Wed, 30 Nov 2016 21:05:59 +0100
-Message-Id: <20161130200559.29910-3-lorenzo.bianconi@st.com>
-In-Reply-To: <20161130200559.29910-1-lorenzo.bianconi@st.com>
-References: <20161130200559.29910-1-lorenzo.bianconi@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <peda@axentia.se>
+Subject: Re: [PATCH v5 4/9] dt-bindings: iio: iio-mux: document iio-mux
+ bindings
+To: <linux-kernel@vger.kernel.org>
+References: <1480414245-14034-1-git-send-email-peda@axentia.se>
+ <1480414245-14034-5-git-send-email-peda@axentia.se>
+CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, Mark
+ Rutland <mark.rutland@arm.com>, Jonathan Cameron <jic23@kernel.org>, Hartmut
+ Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
+ Meerwald-Stadler <pmeerw@pmeerw.net>, Jonathan Corbet <corbet@lwn.net>, Arnd
+ Bergmann <arnd@arndb.de>, Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <b00ae997-4466-29b8-b484-3a0970e65386@axentia.se>
+Date: Tue, 29 Nov 2016 16:56:37 +0100
+MIME-Version: 1.0
+In-Reply-To: <1480414245-14034-5-git-send-email-peda@axentia.se>
+Content-Type: text/plain; charset="windows-1252"
+List-ID: <linux-iio@vger.kernel.org>
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+On 2016-11-29 11:10, Peter Rosin wrote:
+> +Example:
+> +	mux: mux-controller {
+> +		compatible = "mux-gpio";
+> +		#mux-control-cells = <0>;
+> +
+> +		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
+> +			    <&pioA 1 GPIO_ACTIVE_HIGH>;
+> +	};
+> +
+> +	adc-mux {
+> +		compatible = "iio-mux";
+> +		io-channels = <&adc 0>;
+> +		io-channel-names = "parent";
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		mux-controls = <&mux>;
+> +
+> +		sync@0 {
+> +			reg = <0>;
+> +		};
+> +
+> +		in@1 {
+> +			reg = <1>;
+> +		};
+> +
+> +		system-regulator@2 {
+> +			reg = <2>;
+> +		};
+> +	};
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-new file mode 100644
-index 0000000..ed3cdac
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-@@ -0,0 +1,24 @@
-+* ST_LSM6DSx driver for STM 6-axis (acc + gyro) imu Mems sensors
-+
-+Required properties:
-+- compatible: must be one of:
-+  "st,lsm6ds3"
-+  "st,lsm6dsm"
-+- reg: i2c address of the sensor / spi cs line
-+
-+Optional properties:
-+- interrupt-parent: should be the phandle for the interrupt controller
-+- interrupts: interrupt mapping for IRQ. It should be configured with
-+  flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING.
-+
-+  Refer to interrupt-controller/interrupts.txt for generic interrupt
-+  client node bindings.
-+
-+Example:
-+
-+lsm6dsm@6b {
-+	compatible = "st,lsm6dsm";
-+	reg = <0x6b>;
-+	interrupt-parent = <&gpio0>;
-+	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+};
--- 
-2.9.3
+Hmmm, a more compact binding would be to just use an array of strings
+instead of a list of children for the mux channels, and use the array
+index as channel number, like so:
 
+	adc-mux {
+		compatible = "iio-mux";
+		io-channels = <&adc 0>;
+		io-channel-names = "parent";
+
+		mux-controls = <&mux>;
+
+		channels = "sync", "in", "system-regulator";
+	};
+
+If you need to skip a low-number channel, you'd just put an empty string
+for that channel. If you need to skip channels at the end, just stop
+short.
+
+Can anyone think of any reason to add anything to the channel nodes
+that makes the string-array ineffective? If so, or if that comes up
+later, it could be optional and in that case you could look for the
+channels property first and then, if not present, iterate over child
+nodes.
+
+Opinions? I like it, it's a lot more compact...
+
+Cheers,
+Peter
