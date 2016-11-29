@@ -1,376 +1,206 @@
-Return-Path: <vilhelm.gray@gmail.com>
-Date: Tue, 29 Nov 2016 15:00:05 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: [PATCH] iio: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
-Message-ID: <20161129195955.GA27766@sophia>
+Return-Path: <peda@axentia.se>
+Subject: Re: [PATCH v3 0/7] mux controller abstraction and iio/i2c muxes
+To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
+	<linux-kernel@vger.kernel.org>
+References: <1479734235-18837-1-git-send-email-peda@axentia.se>
+ <b132143c-259b-6ed2-58c5-b223cc2e72df@metafoo.de>
+ <3870654b-8cf5-30cb-74cd-c5fb1559adba@axentia.se>
+ <d287dc3b-3605-d85d-1aa6-40f3bdcdc72c@kernel.org>
+CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, "Mark
+ Rutland" <mark.rutland@arm.com>, Hartmut Knaack <knaack.h@gmx.de>, "Peter
+ Meerwald-Stadler" <pmeerw@pmeerw.net>, Jonathan Corbet <corbet@lwn.net>,
+	"Arnd Bergmann" <arnd@arndb.de>, Greg Kroah-Hartman
+	<gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+From: Peter Rosin <peda@axentia.se>
+Message-ID: <f649f482-5c1c-dd07-161a-556a9c2b31ff@axentia.se>
+Date: Tue, 29 Nov 2016 17:02:48 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <d287dc3b-3605-d85d-1aa6-40f3bdcdc72c@kernel.org>
+Content-Type: text/plain; charset="windows-1252"
 List-ID: <linux-iio@vger.kernel.org>
 
-The LSI/CSI LS7266R1 chip provides programmable output via the FLG pins.
-When interrupts are enabled on the ACCES 104-QUAD-8, they occur whenever
-FLG1 is active. Four functions are available for the FLG1 signal:
-/Carry, /Compare, /Carry/Borrow, and Index.
+On 2016-11-27 13:00, Jonathan Cameron wrote:
+> On 23/11/16 11:47, Peter Rosin wrote:
+>> On 2016-11-22 21:58, Lars-Peter Clausen wrote:
+>>> On 11/21/2016 02:17 PM, Peter Rosin wrote:
+>>> [...]
+>>>> I have a piece of hardware that is using the same 3 GPIO pins
+>>>> to control four 8-way muxes. Three of them control ADC lines
+>>>> to an ADS1015 chip with an iio driver, and the last one
+>>>> controls the SDA line of an i2c bus. We have some deployed
+>>>> code to handle this, but you do not want to see it or ever
+>>>> hear about it. I'm not sure why I even mention it. Anyway,
+>>>> the situation has nagged me to no end for quite some time.
+>>>>
+>>>> So, after first getting more intimate with the i2c muxing code
+>>>> and later discovering the drivers/iio/inkern.c file and
+>>>> writing a couple of drivers making use of it, I came up with
+>>>> what I think is an acceptable solution; add a generic mux
+>>>> controller driver (and subsystem) that is shared between all
+>>>> instances, and combine that with an iio mux driver and a new
+>>>> generic i2c mux driver. The new i2c mux I called "simple"
+>>>> since it is only hooking the i2c muxing and the new mux
+>>>> controller (much like the alsa simple card driver does for ASoC).
+>>>
+>>> While abstracting this properly is all nice and good and the way it should
+>>> be done, but it also adds a lot of complexity and the devicetree adds a lot
+>>> of restrictions on what can actually be represented.
+>>
+>> This is a characterization without any specifics. But is the
+>> characterization true? You have two complaints, complexity
+>> and restrictions with bindings.
+>>
+>>> There is a certain point where the fabric on a PCB becomes so complex that
+>>> it deserves to be a device on its own (like the audio fabric drivers).
+>>> Especially when the hardware is built with a certain application in mind and
+>>> the driver is supposed to impose policy which reflects this application. The
+>>> latter can often not properly be described with the primitives the
+>>> devicetree can offer.
+>>>
+>>> And I think your setup is very borderline what can be done in a declarative
+>>> way only and it adds a lot of complexity over a more imperative solution in
+>>> form of a driver. I think it is worth investigating about having a driver
+>>> that is specific to your fabric and handles the interdependencies of the
+>>> discrete components.
+>>
+>> So, there are three "new" concepts:
+>>
+>> 1. Sticking a mux in front of an AD-converter. That's not all that
+>> novel, nor complex. Quite the opposite, I'd say. In fact, I find it
+>> a bit amazing that there is no in-kernel support for it.
+> As ever first person who needs it and has the skills to write it gets to do it ;)
+> Congratulations Peter ;)
+>>
+>> 2. Reusing the same GPIO-pins to drive different muxes. There are
+>> obviously chips that work this way (as Jonathan pointed out) and
+>> these will at some point get used in Linux devices. I guess they
+>> already are used, but that people handle them in userspace. Or
+>> something? If this is complex, which I question, it will still need
+>> support at some point. At least that's what I believe.
+>>
+>> 3. Using the same GPIO pins to mux things handled by different
+>> subsystems. Right, this is a bit crazy, and I'd rather not have this
+>> requirement, but this HW is what it is so I'll need to handle it in
+>> some way. It is also what stops me from falling back to a userspace
+>> solution, which is probably connected to why #1 and #2 is not supported
+>> by the kernel; everybody probably does muxing in userspace. Which is
+>> not necessarily a good idea, nor how it's supposed to be done...
+>>
+>> So, the only thing that's out of the ordinary (as I see it), is #3.
+>> The question that then needs an answer is how the in-kernel solution
+>> for #1 and #2 would look if we do not consider #3.
+>>
+>> And I claim that the desired solution to #1 and #2 is pretty close
+>> to my proposal.
+>>
+>> A. You do not want mux-controller drivers in every subsystem that
+>> needs them.
+> Agreed.
+>>
+>> B. You do not want every mux-consumer to know the specifics of how to
+>> operate every kind of mux; there are muxes that are not controlled
+>> with GPIO pins...
+>>
+>> C. When you implement muxing in a subsystem, there will in some cases
+>> be a need to handle parallel muxing, where there is a need to share
+>> mux-controllers.
+>>
+>> It just feels right to separate out the mux-controller and refer to
+>> it from where a mux is needed. It solves #1 and #2. And, of course,
+>> as a bonus #3 is also solved. But my bias is obvious.
+>>
+>> And that leads us to the restrictions with the bindings. And the same
+>> thing happens; the solution for #2 also solves #3.
+>>
+>> So how do you refer to a mux-controller from where it's needed? My
+>> first proposal used a dt phandle, for the second round I put them in
+>> the parent node. It would be super if it was possible for the mux-
+>> consumer to create the mux-controller device from the same dt
+>> node that is already bound to the mux-consumer. The problem is that
+>> the mux-consumer should not hard-code which mux-controller device it
+>> should create. The best I can think of is some kind of 'mux-compatible'
+>> attribute, that works like the standard 'compatible' attribute. That
+>> would simplify the bindings for the normal case (#1) where the mux-
+>> controller isn't shared (#2 and #3). Maybe it's possible to fix this
+>> issue somehow? I simply don't know?
+> As Lars stated, it's marginal.  The question is not at what point do we
+> 'have to' bother with a fabric driver, but rather at what point does it
+> make a our lives easier.
+> 
+> Take you nastiest mux case described earlier.
+> The ideal would be to represent the ADC and 3 muxes as (approximately) a
+> single ADC to userspace that just happens to have somewhere near 23 inputs.
+> 
+> To do that in device tree we need to describe
+> 
+> 1 The adc
+> 2 The three muxes
+> 3 The software representation to pull all of these back into a single device.
+> 
+> That last part to my mind trips the balance to the point where a fabric driver
+> would make sense.  It's not complex.  Just a few lines of code tying all the
+> elements together without ending up with a fairly fiendish setup to describe in
+> device tree.
+> 
+> Also just wait until we have muxes stacked on muxes, with cross overs occuring.
+> Some of the ASoC parts can actually have effective loops if you try all the mux
+> combinations.
+> 
+> So question is do we have a 'simple case description' in device tree or force
+> fabric drivers everywhere?  I think I'm in favour of the simple case - which handles
+> one of your two uses nicely.  The second one to do the the recombining of channels after
+> the muxes, ends up looking to me like it needs a fabric driver.
+> 
+> Note we are only talking about bindings vs code based description here. I agree
+> entirely with the concept of a generic mux subsystem.
 
-	/Carry:
-		Interrupt generated on active low Carry signal. Carry
-		signal toggles every time the respective channel's
-		counter overflows.
+Ok, take the simple case - an adc with a mux in front of it.
 
-	/Compare:
-		Interrupt generated on active low Compare signal.
-		Compare signal toggles every time respective channel's
-		preset register is equal to the respective channel's
-		counter.
+We do not want to build a whole new iio-mux subsystem like the one under
+i2c, so from iio we want to refer to the actual mux controller driver
+which lives under the mux subsystem. Getting this far is what solves my
+"second need" [2] from the v2 thread.
 
-	/Carry/Borrow:
-		Interrupt generated on active low Carry signal and
-		active low Borrow signal. Carry signal toggles every
-		time the respective channel's counter overflows. Borrow
-		signal toggles every time the respective channel's
-		counter underflows.
+Agreed, doing this w/o a fabric driver spills the guts and it might be
+cleaner to build a fabric driver that takes a reference to the dpot and
+the mux controller and just knows the rest. In the end this fabric driver
+requires two things to actually make a difference; some way to instantiate
+drivers without the help of device-tree and some way make those drivers
+only provide in-kernel access (and preferably it should hide the dpot from
+userspace too, while at it).
 
-	Index:
-		Interrupt generated on active high Index signal.
+But doing all that in a fabric driver is not going to change the fact that
+the iio-mux driver is useful on its own. I bet someone else is going to
+reuse it somewhere down the line. Which means that a fabric driver would
+perhaps be nice for my "second need", but not critical, it works pretty
+well to just piggyback on the general solution .
 
-The irq_trig_func sysfs attribute is introduced to allow the selection
-of the desired IRQ trigger function per channel. Interrupts push events
-via the mag_en event sysfs attribute.
+Over to my "first need" [1] from the v2 thread.
 
-This patch adds IRQ support for the ACCES 104-QUAD-8. The interrupt line
-numbers for the devices may be configured via the irq array module
-parameter.
+The above iio-mux driver handles the three muxed adc lines beautifully,
+just refer all three iio-muxes to the same mux controller. Agreed, with
+a fabric driver I could get one device with 25 channels instead of three
+devices with 8 channels each plus one unmuxed line directly from the adc
+device. However, that doesn't bother me at all, I may even think it is
+preferable because otherwise I'd have to come up with some way to
+identify which channel is which in that big 25-channel jungle. Another
+drawback with having a fabric driver here is that it would need to be an
+i2c-mux driver, because one of the key points of doing a fabric driver
+for my first need was to hide the shared mux, right? Instead, I have the
+new i2c-mux-simple driver that builds an i2c-mux using any mux controller
+from the mux subsystem (something that may prove useful to others in the
+future), which in my case is the same mux controller that also muxes the
+three adc lines.
 
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
- .../ABI/testing/sysfs-bus-iio-counter-104-quad-8   |  37 +++++-
- drivers/iio/counter/104-quad-8.c                   | 129 ++++++++++++++++++++-
- drivers/iio/counter/Kconfig                        |   6 +-
- 3 files changed, 163 insertions(+), 9 deletions(-)
+In short, doing fabric drivers buys me almost nothing besides having a
+slightly more distinct device tree. All the components used to describe
+this are either already accepted drivers or usable by others (at least
+the way I see it).
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
-index ba67652..53db967 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
-@@ -51,6 +51,31 @@ Description:
- 			not freeze at the bundary points, but counts
- 			continuously throughout.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/in_countY_irq_trig_func
-+KernelVersion:	4.9
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		IRQ trigger function for channel Y. Four IRQ trigger functions
-+		are available: /Carry, /Compare, /Carry/Borrow, and Index.
-+
-+		/Carry:
-+			Interrupt generated on active low Carry signal. Carry
-+			signal toggles every time channel Y counter overflows.
-+
-+		/Compare:
-+			Interrupt generated on active low Compare signal.
-+			Compare signal toggles every time channel Y preset
-+			register is equal to channel Y counter.
-+
-+		/Carry/Borrow:
-+			Interrupt generated on active low Carry signal and
-+			active low Borrow signal. Carry signal toggles every
-+			time channel Y counter overflows. Borrow signal toggles
-+			every time channel Y counter underflows.
-+
-+		Index:
-+			Interrupt generated on active high Index signal.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_countY_noise_error
- KernelVersion:	4.9
- Contact:	linux-iio@vger.kernel.org
-@@ -93,7 +118,8 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Whether to set channel Y counter with channel Y preset value
- 		when channel Y index input is active, or continuously count.
--		Valid attribute values are boolean.
-+		Valid attribute values are boolean. This attribute is ignored
-+		when channel Y IRQs are disabled.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_index_polarity
- KernelVersion:	4.9
-@@ -123,3 +149,12 @@ Description:
- 			set_to_preset_on_index) is performed synchronously with
- 			the quadrature clock on the active level of the index
- 			input.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/events/in_countY_mag_en
-+KernelVersion:	4.9
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Event generated when a channel Y IRQ occurs. Channel Y IRQs are
-+		triggered as configured by the channel Y irq_trig_func
-+		attribute. Channel Y IRQs are disabled when this attribute is
-+		set to 0.
-diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
-index 2d2ee35..e1ea38c 100644
---- a/drivers/iio/counter/104-quad-8.c
-+++ b/drivers/iio/counter/104-quad-8.c
-@@ -16,10 +16,12 @@
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/errno.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/types.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
-+#include <linux/interrupt.h>
- #include <linux/isa.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -33,6 +35,10 @@ static unsigned int num_quad8;
- module_param_array(base, uint, &num_quad8, 0);
- MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
- 
-+static unsigned int irq[max_num_isa_dev(QUAD8_EXTENT)];
-+module_param_array(irq, uint, NULL, 0000);
-+MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 interrupt line numbers");
-+
- #define QUAD8_NUM_COUNTERS 8
- 
- /**
-@@ -43,6 +49,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
-  * @quadrature_scale:	array of quadrature mode scale configurations
-  * @ab_enable:		array of A and B inputs enable configurations
-  * @preset_enable:	array of set_to_preset_on_index attribute configurations
-+ * @irq_trig_func:	array of IRQ trigger function attribute configurations
-  * @synchronous_mode:	array of index function synchronous mode configurations
-  * @index_polarity:	array of index function polarity configurations
-  * @base:		base port address of the IIO device
-@@ -54,6 +61,7 @@ struct quad8_iio {
- 	unsigned int quadrature_scale[QUAD8_NUM_COUNTERS];
- 	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
- 	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
-+	unsigned int irq_trig_func[QUAD8_NUM_COUNTERS];
- 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
- 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
- 	unsigned int base;
-@@ -150,7 +158,8 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
- 
- 		priv->ab_enable[chan->channel] = val;
- 
--		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
-+		ior_cfg = val | priv->preset_enable[chan->channel] << 1 |
-+			priv->irq_trig_func[chan->channel] << 3;
- 
- 		/* Load I/O control configuration */
- 		outb(0x40 | ior_cfg, base_offset);
-@@ -184,10 +193,39 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int quad8_read_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+	const unsigned int irq_enabled = inb(priv->base + 0x12);
-+
-+	return !!(irq_enabled & BIT(chan->channel));
-+}
-+
-+static int quad8_write_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir, int state)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+	unsigned int irq_enabled = inb(priv->base + 0x12);
-+
-+	if (state)
-+		irq_enabled |= BIT(chan->channel);
-+	else
-+		irq_enabled &= ~BIT(chan->channel);
-+
-+	outb(irq_enabled, priv->base + 0x12);
-+
-+	return 0;
-+}
-+
- static const struct iio_info quad8_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = quad8_read_raw,
--	.write_raw = quad8_write_raw
-+	.write_raw = quad8_write_raw,
-+	.read_event_config = quad8_read_event_config,
-+	.write_event_config = quad8_write_event_config
- };
- 
- static ssize_t quad8_read_preset(struct iio_dev *indio_dev, uintptr_t private,
-@@ -253,7 +291,8 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
- 	priv->preset_enable[chan->channel] = preset_enable;
- 
- 	ior_cfg = priv->ab_enable[chan->channel] |
--		(unsigned int)preset_enable << 1;
-+		(unsigned int)preset_enable << 1 |
-+		priv->irq_trig_func[chan->channel] << 3;
- 
- 	/* Load I/O control configuration to Input / Output Control Register */
- 	outb(0x40 | ior_cfg, base_offset);
-@@ -261,6 +300,44 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
- 	return len;
- }
- 
-+static const char *const quad8_irq_trig_func_modes[] = {
-+	"/Carry",
-+	"/Compare",
-+	"/Carry/Borrow",
-+	"Index"
-+};
-+
-+static int quad8_set_irq_trig_func(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, unsigned int irq_trig_func)
-+{
-+	struct quad8_iio *const priv = iio_priv(indio_dev);
-+	const unsigned int ior_cfg = priv->ab_enable[chan->channel] |
-+		priv->preset_enable[chan->channel] << 1 | irq_trig_func << 3;
-+	const int base_offset = priv->base + 2 * chan->channel + 1;
-+
-+	priv->irq_trig_func[chan->channel] = irq_trig_func;
-+
-+	/* Load I/O control configuration to Input/Output Control Register */
-+	outb(0x40 | ior_cfg, base_offset);
-+
-+	return 0;
-+}
-+
-+static int quad8_get_irq_trig_func(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+
-+	return priv->irq_trig_func[chan->channel];
-+}
-+
-+static const struct iio_enum quad8_irq_trig_func_enum = {
-+	.items = quad8_irq_trig_func_modes,
-+	.num_items = ARRAY_SIZE(quad8_irq_trig_func_modes),
-+	.set = quad8_set_irq_trig_func,
-+	.get = quad8_get_irq_trig_func
-+};
-+
- static const char *const quad8_noise_error_states[] = {
- 	"No excessive noise is present at the count inputs",
- 	"Excessive noise is present at the count inputs"
-@@ -477,6 +554,8 @@ static const struct iio_chan_spec_ext_info quad8_count_ext_info[] = {
- 		.read = quad8_read_set_to_preset_on_index,
- 		.write = quad8_write_set_to_preset_on_index
- 	},
-+	IIO_ENUM("irq_trig_func", IIO_SEPARATE, &quad8_irq_trig_func_enum),
-+	IIO_ENUM_AVAILABLE("irq_trig_func", &quad8_irq_trig_func_enum),
- 	IIO_ENUM("noise_error", IIO_SEPARATE, &quad8_noise_error_enum),
- 	IIO_ENUM_AVAILABLE("noise_error", &quad8_noise_error_enum),
- 	IIO_ENUM("count_direction", IIO_SEPARATE, &quad8_count_direction_enum),
-@@ -497,12 +576,22 @@ static const struct iio_chan_spec_ext_info quad8_index_ext_info[] = {
- 	{}
- };
- 
-+static const struct iio_event_spec quad8_event[] = {
-+	{
-+		.type = IIO_EV_TYPE_MAG,
-+		.dir = IIO_EV_DIR_NONE,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE)
-+	}
-+};
-+
- #define QUAD8_COUNT_CHAN(_chan) {					\
- 	.type = IIO_COUNT,						\
- 	.channel = (_chan),						\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
- 		BIT(IIO_CHAN_INFO_ENABLE) | BIT(IIO_CHAN_INFO_SCALE),	\
- 	.ext_info = quad8_count_ext_info,				\
-+	.event_spec = quad8_event,					\
-+	.num_event_specs = ARRAY_SIZE(quad8_event),			\
- 	.indexed = 1							\
- }
- 
-@@ -525,12 +614,35 @@ static const struct iio_chan_spec quad8_channels[] = {
- 	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
- };
- 
-+static irqreturn_t quad8_irq_handler(int irq, void *indio_dev)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+	unsigned long irq_status;
-+	unsigned long channel;
-+
-+	irq_status = inb(priv->base + 0x10);
-+	if (!irq_status)
-+		return IRQ_NONE;
-+
-+	for_each_set_bit(channel, &irq_status, QUAD8_NUM_COUNTERS)
-+		iio_push_event(indio_dev,
-+			IIO_UNMOD_EVENT_CODE(IIO_COUNT, channel,
-+				IIO_EV_TYPE_MAG, IIO_EV_DIR_NONE),
-+			iio_get_time_ns(indio_dev));
-+
-+	/* Clear pending interrupts on device */
-+	outb(0x10, priv->base + 0x11);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int quad8_probe(struct device *dev, unsigned int id)
- {
- 	struct iio_dev *indio_dev;
- 	struct quad8_iio *priv;
- 	int i, j;
- 	unsigned int base_offset;
-+	int err;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
- 	if (!indio_dev)
-@@ -552,6 +664,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 	priv = iio_priv(indio_dev);
- 	priv->base = base[id];
- 
-+	/* Reset Index/Interrupt Register */
-+	outb(0x00, base[id] + 0x12);
- 	/* Reset all counters and disable interrupt function */
- 	outb(0x01, base[id] + 0x11);
- 	/* Set initial configuration for all counters */
-@@ -573,8 +687,13 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 		/* Disable index function; negative index polarity */
- 		outb(0x60, base_offset + 1);
- 	}
--	/* Enable all counters */
--	outb(0x00, base[id] + 0x11);
-+	/* Enable all counters and enable interrupt function */
-+	outb(0x10, base[id] + 0x11);
-+
-+	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
-+		dev_name(dev), indio_dev);
-+	if (err)
-+		return err;
- 
- 	return devm_iio_device_register(dev, indio_dev);
- }
-diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
-index 44627f6..2cea823 100644
---- a/drivers/iio/counter/Kconfig
-+++ b/drivers/iio/counter/Kconfig
-@@ -15,10 +15,10 @@ config 104_QUAD_8
- 	  Performing a write to a counter's IIO_CHAN_INFO_RAW sets the counter and
- 	  also clears the counter's respective error flag. Although the counters
- 	  have a 25-bit range, only the lower 24 bits may be set, either directly
--	  or via a counter's preset attribute. Interrupts are not supported by
--	  this driver.
-+	  or via a counter's preset attribute.
- 
- 	  The base port addresses for the devices may be configured via the base
--	  array module parameter.
-+	  array module parameter. The interrupt line numbers for the devices may
-+	  be configured via the irq array module parameter.
- 
- endmenu
--- 
-2.10.2
+Cheers,
+Peter
+
+[1] three adc lines and an i2c bus muxed with the same gpio pins
+[2] mcp4561 dpot -> dpot-dac -> envelope-detector-adc -> iio-mux
