@@ -1,405 +1,800 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-io0-f194.google.com ([209.85.223.194]:34242 "EHLO
-        mail-io0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757334AbcK3I5c (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 03:57:32 -0500
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
+ Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Jonathan
+ Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Lars-Peter
+ Clausen" <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Corbet <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+Subject: [PATCH v5 2/9] misc: minimal mux subsystem and gpio-based mux controller
+Date: Tue, 29 Nov 2016 11:10:38 +0100
+Message-ID: <1480414245-14034-3-git-send-email-peda@axentia.se>
+In-Reply-To: <1480414245-14034-1-git-send-email-peda@axentia.se>
+References: <1480414245-14034-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <02a154ef-55b8-6728-5438-3dc9cee04213@kernel.org>
-References: <1480075385-26091-1-git-send-email-enric.balletbo@collabora.com> <02a154ef-55b8-6728-5438-3dc9cee04213@kernel.org>
-From: Enric Balletbo Serra <eballetbo@gmail.com>
-Date: Wed, 30 Nov 2016 09:57:30 +0100
-Message-ID: <CAFqH_50NMb6SBNa65+M712pbmh4wkO2dztLz3VOA3Q6p42nNmQ@mail.gmail.com>
-Subject: Re: [PATCH] iio: cros_ec_light_prox: add ChromeOS EC Light and
- Proximity Sensors
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Hi Jonathan,
+Add a new minimalistic subsystem that handles multiplexer controllers.
+When multiplexers are used in various places in the kernel, and the
+same multiplexer controller can be used for several independent things,
+there should be one place to implement support for said multiplexer
+controller.
 
-Many thanks for the review, I'm preparing v2. One question below.
+A single multiplexer controller can also be used to control several
+parallel multiplexers, that are in turn used by different subsystems
+in the kernel, leading to a need to coordinate multiplexer accesses.
+The multiplexer subsystem handles this coordination.
 
-2016-11-27 11:39 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
-> On 25/11/16 12:03, Enric Balletbo i Serra wrote:
->> From: Gwendal Grignou <gwendal@chromium.org>
->>
->> Handle Light and Proximity sensors presented by the ChromeOS EC Sensor hub.
->> Creates an IIO device for each functions.
->>
->> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
->> Signed-off-by: Guenter Roeck <groeck@chromium.org>
->> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-> A few comments / questions inline.   We've missed the upcoming merge window
-> now anyway so plenty of time to tidy up loose ends.
->
-> Thanks,
->
-> Jonathan
->> ---
->>  drivers/iio/common/cros_ec_sensors/Kconfig         |   8 +
->>  drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
->>  .../common/cros_ec_sensors/cros_ec_light_prox.c    | 278 +++++++++++++++++++++
->>  3 files changed, 287 insertions(+)
->>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
->>
->> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
->> index 135f682..4fd0b87 100644
->> --- a/drivers/iio/common/cros_ec_sensors/Kconfig
->> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
->> @@ -20,3 +20,11 @@ config IIO_CROS_EC_SENSORS
->>         Accelerometers, Gyroscope and Magnetometer that are
->>         presented by the ChromeOS EC Sensor hub.
->>         Creates an IIO device for each functions.
->> +
->> +config IIO_CROS_EC_LIGHT_PROX
->> +     tristate "ChromeOS EC Light and Proximity Sensors"
->> +     select IIO_CROS_EC_SENSORS_CORE
-> As the build bot has pointed out this doesn't work...
-> I'd go with depends on myself as it's simpler than making sure to select
-> the whole tree of things needed.
->
+This new mux controller subsystem initially comes with a single backend
+driver that controls gpio based multiplexers. Even though not needed by
+this initial driver, the mux controller subsystem is prepared to handle
+chips with multiple (independent) mux controllers.
 
-I'll fix this in v2.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ Documentation/driver-model/devres.txt |   6 +-
+ MAINTAINERS                           |   2 +
+ drivers/misc/Kconfig                  |  30 ++++
+ drivers/misc/Makefile                 |   2 +
+ drivers/misc/mux-core.c               | 311 ++++++++++++++++++++++++++++++++++
+ drivers/misc/mux-gpio.c               | 138 +++++++++++++++
+ include/linux/mux.h                   | 197 +++++++++++++++++++++
+ 7 files changed, 685 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/misc/mux-core.c
+ create mode 100644 drivers/misc/mux-gpio.c
+ create mode 100644 include/linux/mux.h
 
->> +     help
->> +       Module to handle Light and Proximity sensors
->> +       presented by the ChromeOS EC Sensor hub.
->> +       Creates an IIO device for each functions.
->> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
->> index ec716ff..7aaf2a2 100644
->> --- a/drivers/iio/common/cros_ec_sensors/Makefile
->> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
->> @@ -4,3 +4,4 @@
->>
->>  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
->>  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
->> +obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
->> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c b/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
->> new file mode 100644
->> index 0000000..40a34de
->> --- /dev/null
->> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
->> @@ -0,0 +1,278 @@
->> +/*
->> + * cros_ec_light_prox - Driver for light and prox sensors behing CrosEC.
->> + *
->> + * Copyright (C) 2016 Google, Inc
->> + *
->> + * This software is licensed under the terms of the GNU General Public
->> + * License version 2, as published by the Free Software Foundation, and
->> + * may be copied, distributed, and modified under those terms.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#include <linux/delay.h>
->> +#include <linux/device.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/kfifo_buf.h>
->> +#include <linux/iio/trigger.h>
->> +#include <linux/iio/triggered_buffer.h>
->> +#include <linux/iio/trigger_consumer.h>
->> +#include <linux/kernel.h>
->> +#include <linux/mfd/cros_ec.h>
->> +#include <linux/mfd/cros_ec_commands.h>
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/slab.h>
->> +#include <linux/sysfs.h>
->> +
->> +#include "cros_ec_sensors_core.h"
->> +
->> +/*
->> + * We only represent one entry for light or proximity. EC is merging different
->> + * light sensors to return the what the eye would see. For proximity, we
->> + * currently support only one light source.
->> + */
->> +#define CROS_EC_LIGHT_PROX_MAX_CHANNELS (1 + 1)
->> +
->> +/* State data for ec_sensors iio driver. */
->> +struct cros_ec_sensors_state {
->> +     /* Shared by all sensors */
->> +     struct cros_ec_sensors_core_state core;
->> +
->> +     struct iio_chan_spec channels[CROS_EC_LIGHT_PROX_MAX_CHANNELS];
->> +};
->> +
->> +static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
->> +                                struct iio_chan_spec const *chan,
->> +                                int *val, int *val2, long mask)
->> +{
->> +     struct cros_ec_sensors_state *st = iio_priv(indio_dev);
->> +     u16 data = 0;
->> +     s64 val64;
->> +     int ret;
->> +     int idx = chan->scan_index;
->> +
->> +     mutex_lock(&st->core.cmd_lock);
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_RAW:
->> +             ret = cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
->> +                                            (s16 *)&data);
-> As I read the code, this is already being output in lux or
->> +             if (ret < 0)
->> +                     break;
->> +             *val = data;
->> +             break;
->> +     case IIO_CHAN_INFO_CALIBBIAS:
->> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
->> +             st->core.param.sensor_offset.flags = 0;
->> +
->> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
->> +             if (ret < 0)
->> +                     break;
->> +
->> +             /* Save values */
->> +             st->core.calib[0] = st->core.resp->sensor_offset.offset[0];
-> Why save the value?  As far as I can tell it's not used anywhere?
->> +
->> +             *val = st->core.calib[idx];
->> +             break;
->> +     case IIO_CHAN_INFO_CALIBSCALE:
->> +             /*
->> +              * RANGE is used for calibration
->> +              * scale is a number x.y, where x is coded on 16bits,
->> +              * y coded on 16 bits, between 0 and 9999.
->> +              */
->> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
->> +             st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
->> +
->> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
->> +             if (ret < 0)
->> +                     break;
->> +
->> +             val64 = st->core.resp->sensor_range.ret;
->> +             *val = val64 >> 16;
->> +             *val2 = (val64 & 0xffff) * 100;
->> +             ret = IIO_VAL_INT_PLUS_MICRO;
->> +             break;
->> +     case IIO_CHAN_INFO_SCALE:
->> +             /*
->> +              * Light: Result in Lux, using calibration multiplier.
-> Hmm? I'm not following this.  The multiplier set here is 1 so 'using' it
-> is a strong way of putting it ;)
->
->> +              * Prox: Result in cm.
-> Ah, base unit should be in the simple SI unit.  Here m.  Just checked and the
-> docs don't actually state a unit for proximity.  Feel free to fix that as well.
->
->> +              */
->> +             *val = 1;
->> +             ret = IIO_VAL_INT;
-> No need to provide this if the scale is 1.  That means the results
-> are 'processed' so shouldn't be using the _raw form at all.
-
-Sorry, I'm still confused with the _raw/_processed details. Just to
-make sure I understand the API, _raw should be only used for the raw
-values of the sensor and _processed if the value is already in the
-simple SI unit, right?
-
-In this case the sensor returns lux for light and cm for proximity
-because the EC (where the sensors are connected) does some
-pre-processing. For light I must not use _raw and directly use
-_processed. For proximity, I must use _processed too, but convert cm
-to m.
-
-What confused me is that  in acpi-als, the ALS sensor returns lux and
-it is using _raw and _processed (though I guess _raw is used only for
-backward compability)
-
-To sum up, if a sensor returns a known SI unit I must use always
-_processed, never _raw, right?
-
-
->> +             break;
->> +     default:
->> +             ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
->> +                                             mask);
->> +             break;
->> +     }
->> +
->> +     mutex_unlock(&st->core.cmd_lock);
->> +
->> +     return ret;
->> +}
->> +
->> +static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
->> +                            struct iio_chan_spec const *chan,
->> +                            int val, int val2, long mask)
->> +{
->> +     struct cros_ec_sensors_state *st = iio_priv(indio_dev);
->> +     int ret;
->> +     int idx = chan->scan_index;
->> +
->> +     mutex_lock(&st->core.cmd_lock);
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_CALIBBIAS:
->> +             st->core.calib[idx] = val;
->> +             /* Send to EC for each axis, even if not complete */
->> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
->> +             st->core.param.sensor_offset.flags = MOTION_SENSE_SET_OFFSET;
->> +             st->core.param.sensor_offset.offset[0] =
->> +                     st->core.calib[0];
->> +             st->core.param.sensor_offset.temp =
->> +                     EC_MOTION_SENSE_INVALID_CALIB_TEMP;
->> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
->> +             break;
->> +     case IIO_CHAN_INFO_CALIBSCALE:
->> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
->> +             st->core.param.sensor_range.data = (val << 16) | (val2 / 100);
->> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
->> +             break;
->> +     default:
->> +             ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
->> +                                              mask);
->> +             break;
->> +     }
->> +
->> +     mutex_unlock(&st->core.cmd_lock);
->> +
->> +     return ret;
->> +}
->> +
->> +static const struct iio_info ec_sensors_info = {
->> +     .read_raw = &cros_ec_light_prox_read,
->> +     .write_raw = &cros_ec_light_prox_write,
->> +     .driver_module = THIS_MODULE,
->> +};
->> +
->> +static int cros_ec_sensors_probe(struct platform_device *pdev)
->> +{
->> +     struct device *dev = &pdev->dev;
->> +     struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
->> +     struct cros_ec_device *ec_device;
->> +     struct iio_dev *indio_dev;
->> +     struct cros_ec_sensors_state *state;
->> +     struct iio_chan_spec *channel;
->> +     int ret;
->> +
->> +     if (!ec_dev || !ec_dev->ec_dev) {
->> +             dev_warn(&pdev->dev, "No CROS EC device found.\n");
->> +             return -EINVAL;
->> +     }
->> +     ec_device = ec_dev->ec_dev;
->> +
->> +     indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
->> +     if (!indio_dev)
->> +             return -ENOMEM;
->> +
->> +     ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
->> +     if (ret)
->> +             return ret;
->> +
->> +     indio_dev->info = &ec_sensors_info;
->> +     state = iio_priv(indio_dev);
->> +     state->core.type = state->core.resp->info.type;
->> +     state->core.loc = state->core.resp->info.location;
->> +     channel = state->channels;
->> +
->> +     /* Common part */
->> +     channel->info_mask_separate =
->> +             BIT(IIO_CHAN_INFO_RAW) |
->> +             BIT(IIO_CHAN_INFO_CALIBBIAS) |
->> +             BIT(IIO_CHAN_INFO_CALIBSCALE);
->> +     channel->info_mask_shared_by_all =
->> +             BIT(IIO_CHAN_INFO_SCALE) |
->> +             BIT(IIO_CHAN_INFO_SAMP_FREQ) |
->> +             BIT(IIO_CHAN_INFO_FREQUENCY);
->> +     channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
->> +     channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
->> +     channel->ext_info = cros_ec_sensors_ext_info;
->> +
->> +     /* Sensor specific */
->> +     switch (state->core.type) {
->> +     case MOTIONSENSE_TYPE_LIGHT:
->> +             channel->type = IIO_LIGHT;
->> +             break;
->> +     case MOTIONSENSE_TYPE_PROX:
->> +             channel->type = IIO_PROXIMITY;
->> +             break;
->> +     default:
->> +             dev_warn(&pdev->dev, "Unknown motion sensor\n");
->> +             return -EINVAL;
->> +     }
->> +
->> +     /* Timestamp */
->> +     channel++;
->> +     channel->type = IIO_TIMESTAMP;
->> +     channel->channel = -1;
->> +     channel->scan_index = 1;
->> +     channel->scan_type.sign = 's';
->> +     channel->scan_type.realbits = 64;
->> +     channel->scan_type.storagebits = 64;
->> +
->> +     indio_dev->channels = state->channels;
->> +
->> +     indio_dev->num_channels = CROS_EC_LIGHT_PROX_MAX_CHANNELS;
->> +
->> +     state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
->> +
->> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
->> +                                      cros_ec_sensors_capture, NULL);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = iio_device_register(indio_dev);
->> +     if (ret)
->> +             iio_triggered_buffer_cleanup(indio_dev);
->> +
->> +     return ret;
->> +}
->> +
->> +static int cros_ec_sensors_remove(struct platform_device *pdev)
->> +{
->> +     struct iio_dev *indio_dev = platform_get_drvdata(pdev);
->> +
->> +     iio_device_unregister(indio_dev);
->> +     iio_triggered_buffer_cleanup(indio_dev);
->
-> You could use the devm versions of register and triggered_buffer_setup
-> and drop this remove entirely.
->
-
-Ok, done in v2.
-
->> +
->> +     return 0;
->> +}
->> +
->> +static const struct platform_device_id cros_ec_sensors_ids[] = {
->> +     {
->> +             .name = "cros-ec-prox",
->> +     },
->> +     {
->> +             .name = "cros-ec-light",
->> +     },
->> +     { /* sentinel */ }
->> +};
->> +MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
->> +
->> +static struct platform_driver cros_ec_sensors_platform_driver = {
->> +     .driver = {
->> +             .name   = "cros-ec-light-prox",
->> +     },
->> +     .probe          = cros_ec_sensors_probe,
->> +     .remove         = cros_ec_sensors_remove,
->> +     .id_table       = cros_ec_sensors_ids,
->> +};
->> +module_platform_driver(cros_ec_sensors_platform_driver);
->> +
->> +MODULE_DESCRIPTION("ChromeOS EC light/proximity sensors driver");
->> +MODULE_LICENSE("GPL v2");
->>
->
+diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
+index ca9d1eb46bc0..d64ede85b61b 100644
+--- a/Documentation/driver-model/devres.txt
++++ b/Documentation/driver-model/devres.txt
+@@ -330,7 +330,11 @@ MEM
+   devm_kzalloc()
+ 
+ MFD
+- devm_mfd_add_devices()
++  devm_mfd_add_devices()
++
++MUX
++  devm_mux_control_get()
++  devm_mux_control_put()
+ 
+ PER-CPU MEM
+   devm_alloc_percpu()
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 3d4d0efc2b64..dc7498682752 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -8407,6 +8407,8 @@ MULTIPLEXER SUBSYSTEM
+ M:	Peter Rosin <peda@axentia.se>
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/misc/mux-*
++F:	include/linux/mux.h
++F:	drivers/misc/mux-*
+ 
+ MULTISOUND SOUND DRIVER
+ M:	Andrew Veliath <andrewtv@usa.net>
+diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
+index 64971baf11fa..2ce675e410c5 100644
+--- a/drivers/misc/Kconfig
++++ b/drivers/misc/Kconfig
+@@ -766,6 +766,36 @@ config PANEL_BOOT_MESSAGE
+ 	  An empty message will only clear the display at driver init time. Any other
+ 	  printf()-formatted message is valid with newline and escape codes.
+ 
++menuconfig MULTIPLEXER
++	bool "Multiplexer subsystem"
++	help
++	  Multiplexer controller subsystem. Multiplexers are used in a
++	  variety of settings, and this subsystem abstracts their use
++	  so that the rest of the kernel sees a common interface. When
++	  multiple parallel multiplexers are controlled by one single
++	  multiplexer controller, this subsystem also coordinates the
++	  multiplexer accesses.
++
++	  If unsure, say no.
++
++if MULTIPLEXER
++
++config MUX_GPIO
++	tristate "GPIO-controlled Multiplexer"
++	depends on OF && GPIOLIB
++	help
++	  GPIO-controlled Multiplexer controller.
++
++	  The driver builds a single multiplexer controller using a number
++	  of gpio pins. For N pins, there will be 2^N possible multiplexer
++	  states. The GPIO pins can be connected (by the hardware) to several
++	  multiplexers, which in that case will be operated in parallel.
++
++	  To compile this driver as a module, choose M here: the module will
++	  be called mux-gpio.
++
++endif
++
+ source "drivers/misc/c2port/Kconfig"
+ source "drivers/misc/eeprom/Kconfig"
+ source "drivers/misc/cb710/Kconfig"
+diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
+index 31983366090a..0befa2bba762 100644
+--- a/drivers/misc/Makefile
++++ b/drivers/misc/Makefile
+@@ -53,6 +53,8 @@ obj-$(CONFIG_ECHO)		+= echo/
+ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
+ obj-$(CONFIG_CXL_BASE)		+= cxl/
+ obj-$(CONFIG_PANEL)             += panel.o
++obj-$(CONFIG_MULTIPLEXER)      	+= mux-core.o
++obj-$(CONFIG_MUX_GPIO)		+= mux-gpio.o
+ 
+ lkdtm-$(CONFIG_LKDTM)		+= lkdtm_core.o
+ lkdtm-$(CONFIG_LKDTM)		+= lkdtm_bugs.o
+diff --git a/drivers/misc/mux-core.c b/drivers/misc/mux-core.c
+new file mode 100644
+index 000000000000..cccaa7261a6e
+--- /dev/null
++++ b/drivers/misc/mux-core.c
+@@ -0,0 +1,311 @@
++/*
++ * Multiplexer subsystem
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#define pr_fmt(fmt) "mux-core: " fmt
++
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/idr.h>
++#include <linux/module.h>
++#include <linux/mux.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/slab.h>
++
++static struct class mux_class = {
++	.name = "mux",
++	.owner = THIS_MODULE,
++};
++
++static int __init mux_init(void)
++{
++	return class_register(&mux_class);
++}
++
++static DEFINE_IDA(mux_ida);
++
++static void mux_chip_release(struct device *dev)
++{
++	struct mux_chip *mux_chip = to_mux_chip(dev);
++
++	ida_simple_remove(&mux_ida, mux_chip->id);
++	kfree(mux_chip);
++}
++
++static struct device_type mux_type = {
++	.name = "mux-chip",
++	.release = mux_chip_release,
++};
++
++struct mux_chip *mux_chip_alloc(struct device *dev,
++				unsigned int controllers, size_t sizeof_priv)
++{
++	struct mux_chip *mux_chip;
++	int i;
++
++	if (!dev || !controllers)
++		return NULL;
++
++	mux_chip = kzalloc(sizeof(*mux_chip) +
++			   controllers * sizeof(*mux_chip->mux) +
++			   sizeof_priv, GFP_KERNEL);
++	if (!mux_chip)
++		return NULL;
++
++	mux_chip->mux = (struct mux_control *)(mux_chip + 1);
++	mux_chip->dev.class = &mux_class;
++	mux_chip->dev.type = &mux_type;
++	mux_chip->dev.parent = dev;
++	mux_chip->dev.of_node = dev->of_node;
++	dev_set_drvdata(&mux_chip->dev, mux_chip);
++
++	mux_chip->id = ida_simple_get(&mux_ida, 0, 0, GFP_KERNEL);
++	if (mux_chip->id < 0) {
++		pr_err("muxchipX failed to get a device id\n");
++		kfree(mux_chip);
++		return NULL;
++	}
++	dev_set_name(&mux_chip->dev, "muxchip%d", mux_chip->id);
++
++	mux_chip->controllers = controllers;
++	for (i = 0; i < controllers; ++i) {
++		struct mux_control *mux = &mux_chip->mux[i];
++
++		mux->chip = mux_chip;
++		init_rwsem(&mux->lock);
++		mux->cached_state = -1;
++		mux->idle_state = -1;
++	}
++
++	device_initialize(&mux_chip->dev);
++
++	return mux_chip;
++}
++EXPORT_SYMBOL_GPL(mux_chip_alloc);
++
++static int mux_control_set(struct mux_control *mux, int state)
++{
++	int ret = mux->chip->ops->set(mux, state);
++
++	mux->cached_state = ret < 0 ? -1 : state;
++
++	return ret;
++}
++
++int mux_chip_register(struct mux_chip *mux_chip)
++{
++	int i;
++	int ret;
++
++	for (i = 0; i < mux_chip->controllers; ++i) {
++		struct mux_control *mux = &mux_chip->mux[i];
++
++		if (mux->idle_state == mux->cached_state)
++			continue;
++
++		ret = mux_control_set(mux, mux->idle_state);
++		if (ret < 0)
++			return ret;
++	}
++
++	return device_add(&mux_chip->dev);
++}
++EXPORT_SYMBOL_GPL(mux_chip_register);
++
++void mux_chip_unregister(struct mux_chip *mux_chip)
++{
++	device_del(&mux_chip->dev);
++}
++EXPORT_SYMBOL_GPL(mux_chip_unregister);
++
++void mux_chip_free(struct mux_chip *mux_chip)
++{
++	if (!mux_chip)
++		return;
++	put_device(&mux_chip->dev);
++}
++EXPORT_SYMBOL_GPL(mux_chip_free);
++
++int mux_control_select(struct mux_control *mux, int state)
++{
++	int ret;
++
++	if (down_read_trylock(&mux->lock)) {
++		if (mux->cached_state == state)
++			return 0;
++
++		/* Sigh, the mux needs updating... */
++		up_read(&mux->lock);
++	}
++
++	/* ...or it's just contended. */
++	down_write(&mux->lock);
++
++	if (mux->cached_state == state) {
++		/*
++		 * Hmmm, someone else changed the mux to my liking.
++		 * That makes me wonder how long I waited for nothing?
++		 */
++		downgrade_write(&mux->lock);
++		return 0;
++	}
++
++	ret = mux_control_set(mux, state);
++	if (ret < 0) {
++		if (mux->idle_state != -1)
++			mux_control_set(mux, mux->idle_state);
++
++		up_write(&mux->lock);
++		return ret;
++	}
++
++	downgrade_write(&mux->lock);
++
++	return 1;
++}
++EXPORT_SYMBOL_GPL(mux_control_select);
++
++int mux_control_deselect(struct mux_control *mux)
++{
++	int ret = 0;
++
++	if (mux->idle_state != -1 && mux->cached_state != mux->idle_state)
++		ret = mux_control_set(mux, mux->idle_state);
++
++	up_read(&mux->lock);
++
++	return ret;
++}
++EXPORT_SYMBOL_GPL(mux_control_deselect);
++
++static int of_dev_node_match(struct device *dev, const void *data)
++{
++	return dev->of_node == data;
++}
++
++static struct mux_chip *of_find_mux_chip_by_node(struct device_node *np)
++{
++	struct device *dev;
++
++	dev = class_find_device(&mux_class, NULL, np, of_dev_node_match);
++
++	return dev ? to_mux_chip(dev) : NULL;
++}
++
++struct mux_control *mux_control_get(struct device *dev, const char *mux_name)
++{
++	struct device_node *np = dev->of_node;
++	struct of_phandle_args args;
++	struct mux_chip *mux_chip;
++	unsigned int controller;
++	int index = 0;
++	int ret;
++
++	if (mux_name) {
++		index = of_property_match_string(np, "mux-control-names",
++						 mux_name);
++		if (index < 0)
++			return ERR_PTR(index);
++	}
++
++	ret = of_parse_phandle_with_args(np,
++					 "mux-controls", "#mux-control-cells",
++					 index, &args);
++	if (ret) {
++		dev_err(dev, "%s: failed to get mux-control %s(%i)\n",
++			np->full_name, mux_name ?: "", index);
++		return ERR_PTR(ret);
++	}
++
++	mux_chip = of_find_mux_chip_by_node(args.np);
++	of_node_put(args.np);
++	if (!mux_chip)
++		return ERR_PTR(-EPROBE_DEFER);
++
++	if (args.args_count > 1 ||
++	    (!args.args_count && (mux_chip->controllers > 1))) {
++		dev_err(dev, "%s: wrong #mux-control-cells for %s\n",
++			np->full_name, args.np->full_name);
++		return ERR_PTR(-EINVAL);
++	}
++
++	controller = 0;
++	if (args.args_count)
++		controller = args.args[0];
++
++	if (controller >= mux_chip->controllers)
++		return ERR_PTR(-EINVAL);
++
++	get_device(&mux_chip->dev);
++	return &mux_chip->mux[controller];
++}
++EXPORT_SYMBOL_GPL(mux_control_get);
++
++void mux_control_put(struct mux_control *mux)
++{
++	put_device(&mux->chip->dev);
++}
++EXPORT_SYMBOL_GPL(mux_control_put);
++
++static void devm_mux_control_release(struct device *dev, void *res)
++{
++	struct mux_control *mux = *(struct mux_control **)res;
++
++	mux_control_put(mux);
++}
++
++struct mux_control *devm_mux_control_get(struct device *dev,
++					 const char *mux_name)
++{
++	struct mux_control **ptr, *mux;
++
++	ptr = devres_alloc(devm_mux_control_release, sizeof(*ptr), GFP_KERNEL);
++	if (!ptr)
++		return ERR_PTR(-ENOMEM);
++
++	mux = mux_control_get(dev, mux_name);
++	if (IS_ERR(mux)) {
++		devres_free(ptr);
++		return mux;
++	}
++
++	*ptr = mux;
++	devres_add(dev, ptr);
++
++	return mux;
++}
++EXPORT_SYMBOL_GPL(devm_mux_control_get);
++
++static int devm_mux_control_match(struct device *dev, void *res, void *data)
++{
++	struct mux_control **r = res;
++
++	if (!r || !*r) {
++		WARN_ON(!r || !*r);
++		return 0;
++	}
++
++	return *r == data;
++}
++
++void devm_mux_control_put(struct device *dev, struct mux_control *mux)
++{
++	WARN_ON(devres_release(dev, devm_mux_control_release,
++			       devm_mux_control_match, mux));
++}
++EXPORT_SYMBOL_GPL(devm_mux_control_put);
++
++subsys_initcall(mux_init);
++
++MODULE_DESCRIPTION("Multiplexer subsystem");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/misc/mux-gpio.c b/drivers/misc/mux-gpio.c
+new file mode 100644
+index 000000000000..b50d6b871895
+--- /dev/null
++++ b/drivers/misc/mux-gpio.c
+@@ -0,0 +1,138 @@
++/*
++ * GPIO-controlled multiplexer driver
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/err.h>
++#include <linux/gpio/consumer.h>
++#include <linux/module.h>
++#include <linux/mux.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++
++struct mux_gpio {
++	struct gpio_descs *gpios;
++	int *val;
++};
++
++static int mux_gpio_set(struct mux_control *mux, int state)
++{
++	struct mux_gpio *mux_gpio = mux_chip_priv(mux->chip);
++	int i;
++
++	for (i = 0; i < mux_gpio->gpios->ndescs; i++)
++		mux_gpio->val[i] = (state >> i) & 1;
++
++	gpiod_set_array_value_cansleep(mux_gpio->gpios->ndescs,
++				       mux_gpio->gpios->desc,
++				       mux_gpio->val);
++
++	return 0;
++}
++
++static const struct mux_control_ops mux_gpio_ops = {
++	.set = mux_gpio_set,
++};
++
++static const struct of_device_id mux_gpio_dt_ids[] = {
++	{ .compatible = "mux-gpio", },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mux_gpio_dt_ids);
++
++static int mux_gpio_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = pdev->dev.of_node;
++	struct mux_chip *mux_chip;
++	struct mux_gpio *mux_gpio;
++	int pins;
++	u32 idle_state;
++	int ret;
++
++	if (!np)
++		return -ENODEV;
++
++	pins = gpiod_count(dev, "mux");
++	if (pins < 0)
++		return pins;
++
++	mux_chip = mux_chip_alloc(dev, 1, sizeof(*mux_gpio) +
++				  pins * sizeof(*mux_gpio->val));
++	if (!mux_chip)
++		return -ENOMEM;
++
++	mux_gpio = mux_chip_priv(mux_chip);
++	mux_gpio->val = (int *)(mux_gpio + 1);
++	mux_chip->ops = &mux_gpio_ops;
++
++	platform_set_drvdata(pdev, mux_chip);
++
++	mux_gpio->gpios = devm_gpiod_get_array(dev, "mux", GPIOD_OUT_LOW);
++	if (IS_ERR(mux_gpio->gpios)) {
++		ret = PTR_ERR(mux_gpio->gpios);
++		if (ret != -EPROBE_DEFER)
++			dev_err(dev, "failed to get gpios\n");
++		goto free_mux_chip;
++	}
++	WARN_ON(pins != mux_gpio->gpios->ndescs);
++	mux_chip->mux->states = 1 << pins;
++
++	ret = of_property_read_u32(np, "idle-state", &idle_state);
++	if (ret >= 0) {
++		if (idle_state >= mux_chip->mux->states) {
++			dev_err(dev, "invalid idle-state %u\n", idle_state);
++			ret = -EINVAL;
++			goto free_mux_chip;
++		}
++
++		mux_chip->mux->idle_state = idle_state;
++	}
++
++	ret = mux_chip_register(mux_chip);
++	if (ret < 0) {
++		dev_err(dev, "failed to register mux-chip\n");
++		goto free_mux_chip;
++	}
++
++	dev_info(dev, "%u-way mux-controller registered\n",
++		 mux_chip->mux->states);
++
++	return 0;
++
++free_mux_chip:
++	mux_chip_free(mux_chip);
++	return ret;
++}
++
++static int mux_gpio_remove(struct platform_device *pdev)
++{
++	struct mux_chip *mux_chip = to_mux_chip(&pdev->dev);
++
++	mux_chip_unregister(mux_chip);
++	mux_chip_free(mux_chip);
++
++	return 0;
++}
++
++static struct platform_driver mux_gpio_driver = {
++	.driver = {
++		.name = "mux-gpio",
++		.of_match_table	= of_match_ptr(mux_gpio_dt_ids),
++	},
++	.probe = mux_gpio_probe,
++	.remove = mux_gpio_remove,
++};
++module_platform_driver(mux_gpio_driver);
++
++MODULE_DESCRIPTION("GPIO-controlled multiplexer driver");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
++MODULE_LICENSE("GPL v2");
+diff --git a/include/linux/mux.h b/include/linux/mux.h
+new file mode 100644
+index 000000000000..d52a651660ff
+--- /dev/null
++++ b/include/linux/mux.h
+@@ -0,0 +1,197 @@
++/*
++ * mux.h - definitions for the multiplexer interface
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#ifndef _LINUX_MUX_H
++#define _LINUX_MUX_H
++
++#include <linux/device.h>
++#include <linux/rwsem.h>
++
++struct mux_chip;
++struct mux_control;
++struct platform_device;
++
++struct mux_control_ops {
++	int (*set)(struct mux_control *mux, int state);
++};
++
++/**
++ * struct mux_control - Represents a mux controller.
++ * @lock:		Protects the mux controller state.
++ * @chip:		The mux chip that is handling this mux controller.
++ * @states:		The number of mux controller states.
++ * @cached_state:	The current mux controller state, or -1 if none.
++ * @idle_state:		The mux controller state to use when inactive, or -1
++ *			for none.
++ */
++struct mux_control {
++	struct rw_semaphore lock; /* protects the state of the mux */
++
++	struct mux_chip *chip;
++
++	unsigned int states;
++	int cached_state;
++	int idle_state;
++};
++
++/**
++ * struct mux_chip -	Represents a chip holding mux controllers.
++ * @controllers:	Number of mux controllers handled by the chip.
++ * @mux:		Array of mux controllers that is handled.
++ * @dev:		Device structure.
++ * @id:			Used to identify the device internally.
++ * @ops:		Mux controller operations.
++ */
++struct mux_chip {
++	unsigned int controllers;
++	struct mux_control *mux;
++	struct device dev;
++	int id;
++
++	const struct mux_control_ops *ops;
++};
++
++#define to_mux_chip(x) container_of((x), struct mux_chip, dev)
++
++/**
++ * mux_chip_priv() - Get the extra memory reserved by mux_chip_alloc().
++ * @mux_chip: The mux-chip to get the private memory from.
++ *
++ * Return: Pointer to the private memory reserved by the allocator.
++ */
++static inline void *mux_chip_priv(struct mux_chip *mux_chip)
++{
++	return mux_chip + 1;
++}
++
++/**
++ * mux_chip_alloc() - Allocate a mux-chip.
++ * @dev: The parent device implementing the mux interface.
++ * @controllers: The number of mux controllers to allocate for this chip.
++ * @sizeof_priv: Size of extra memory area for private use by the caller.
++ *
++ * Return: A pointer to the new mux-chip, NULL on failure.
++ */
++struct mux_chip *mux_chip_alloc(struct device *dev,
++				unsigned int controllers, size_t sizeof_priv);
++
++/**
++ * mux_chip_register() - Register a mux-chip, thus readying the controllers
++ *			 for use.
++ * @mux_chip: The mux-chip to register.
++ *
++ * Do not retry registration of the same mux-chip on failure. You should
++ * instead put it away with mux_chip_free() and allocate a new one, if you
++ * for some reason would like to retry registration.
++ *
++ * Return: Zero on success or a negative errno on error.
++ */
++int mux_chip_register(struct mux_chip *mux_chip);
++
++/**
++ * mux_chip_unregister() - Take the mux-chip off-line.
++ * @mux_chip: The mux-chip to unregister.
++ *
++ * mux_chip_unregister() reverses the effects of mux_chip_register().
++ * But not completely, you should not try to call mux_chip_register()
++ * on a mux-chip that has been registered before.
++ */
++void mux_chip_unregister(struct mux_chip *mux_chip);
++
++/**
++ * mux_chip_free() - Free the mux-chip for good.
++ * @mux_chip: The mux-chip to free.
++ *
++ * mux_chip_free() reverses the effects of mux_chip_alloc().
++ */
++void mux_chip_free(struct mux_chip *mux_chip);
++
++/**
++ * mux_control_select() - Select the given multiplexer state.
++ * @mux: The mux-control to request a change of state from.
++ * @state: The new requested state.
++ *
++ * Make sure to call mux_control_deselect() when the operation is complete and
++ * the mux-control is free for others to use, but do not call
++ * mux_control_deselect() if mux_control_select() fails.
++ *
++ * Return: 0 if the requested state was already active, or 1 it the
++ * mux-control state was changed to the requested state. Or a negavive
++ * errno on error.
++ *
++ * Note that the difference in return value of zero or one is of
++ * questionable value; especially if the mux-control has several independent
++ * consumers, which is something the consumers should perhaps not be making
++ * assumptions about.
++ */
++int mux_control_select(struct mux_control *mux, int state);
++
++/**
++ * mux_control_deselect() - Deselect the previously selected multiplexer state.
++ * @mux: The mux-control to deselect.
++ *
++ * Return: 0 on success and a negative errno on error. An error can only
++ * occur if the mux has an idle state. Note that even if an error occurs, the
++ * mux-control is unlocked for others to access.
++ */
++int mux_control_deselect(struct mux_control *mux);
++
++/**
++ * mux_control_get_index() - Get the index of the given mux controller
++ * @mux: The mux-control to the the index for.
++ *
++ * Return: The index of the mux controller within the mux chip the mux
++ * controller is a part of.
++ */
++static inline unsigned int mux_control_get_index(struct mux_control *mux)
++{
++	return mux - mux->chip->mux;
++}
++
++/**
++ * mux_control_get() - Get the mux-control for a device.
++ * @dev: The device that needs a mux-control.
++ * @mux_name: The name identifying the mux-control.
++ *
++ * Return: A pointer to the mux-control, or an ERR_PTR with a negative errno.
++ */
++struct mux_control *mux_control_get(struct device *dev, const char *mux_name);
++
++/**
++ * mux_control_put() - Put away the mux-control for good.
++ * @mux: The mux-control to put away.
++ *
++ * mux_control_put() reverses the effects of mux_control_get().
++ */
++void mux_control_put(struct mux_control *mux);
++
++/**
++ * devm_mux_control_get() - Get the mux-control for a device, with resource
++ *			    management.
++ * @dev: The device that needs a mux-control.
++ * @mux_name: The name identifying the mux-control.
++ *
++ * Return: Pointer to the mux-control, or an ERR_PTR with a negative errno.
++ */
++struct mux_control *devm_mux_control_get(struct device *dev,
++					 const char *mux_name);
++
++/**
++ * devm_mux_control_put() - Resource-managed version mux_control_put().
++ * @dev: The device that originally got the mux-control.
++ * @mux: The mux-control to put away.
++ *
++ * Note that you do not normally need to call this function.
++ */
++void devm_mux_control_put(struct device *dev, struct mux_control *mux);
++
++#endif /* _LINUX_MUX_H */
+-- 
+2.1.4
