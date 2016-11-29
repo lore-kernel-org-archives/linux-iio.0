@@ -1,31 +1,42 @@
-Return-Path: <linus.walleij@linaro.org>
+Return-Path: <bgolaszewski@baylibre.com>
 MIME-Version: 1.0
-In-Reply-To: <1480393503.3233.5.camel@canonical.com>
-References: <20161124053345.11254-1-shrirang.bagul@canonical.com>
- <20161124053345.11254-4-shrirang.bagul@canonical.com> <CACRpkdYJAwDgpuTYuXuTAxu3RBHeATEpbxq_xE3LxrJ7D9CKBQ@mail.gmail.com>
- <c72ee668-196d-d29b-b58a-f290efe8c2a4@kernel.org> <1480393503.3233.5.camel@canonical.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Wed, 30 Nov 2016 14:04:10 +0100
-Message-ID: <CACRpkdaxdqr0vuazDvFkFYmJRnEOdrXfpGeeZAukqUHUFSNT-A@mail.gmail.com>
-Subject: Re: [PATCH 3/3] iio: st_pressure: Support i2c probe using acpi
-To: Shrirang Bagul <shrirang.bagul@canonical.com>
+In-Reply-To: <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de>
+References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com> <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date: Tue, 29 Nov 2016 16:35:00 +0100
+Message-ID: <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: misc: add a generic regulator driver
+To: Lars-Peter Clausen <lars@metafoo.de>
 Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>, Denis CIOCCA <denis.ciocca@st.com>,
-	Tiberiu Breana <tiberiu.a.breana@intel.com>,
-	Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>, Gregor Boirie <gregor.boirie@parrot.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+	linux-devicetree <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
+	Kevin Hilman <khilman@baylibre.com>, Patrick Titiano <ptitiano@baylibre.com>,
+	Neil Armstrong <narmstrong@baylibre.com>
 Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Nov 29, 2016 at 5:25 AM, Shrirang Bagul
-<shrirang.bagul@canonical.com> wrote:
+2016-11-29 16:30 GMT+01:00 Lars-Peter Clausen <lars@metafoo.de>:
+> On 11/29/2016 04:22 PM, Bartosz Golaszewski wrote:
+> [...]
+>> diff --git a/Documentation/devicetree/bindings/iio/misc/iio-regulator.txt b/Documentation/devicetree/bindings/iio/misc/iio-regulator.txt
+>> new file mode 100644
+>> index 0000000..147458f
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/misc/iio-regulator.txt
+>> @@ -0,0 +1,18 @@
+>> +Industrial IO regulator device driver
+>> +-------------------------------------
+>> +
+>> +This document describes the bindings for the iio-regulator - a dummy device
+>> +driver representing a physical regulator within the iio framework.
+>
+> No bindings for drivers, only for hardware. So this wont work.
+>
 
-> Thank you Jonathan. I'll follow-up on Linus's suggestion and try and identify
-> more of these sensors on some of the hardware we have in the lab. and try to add
-> support for some more devices.
+What about exporting regulator attributes analogous to the one in this
+patch from the iio-core when a *-supply property is specified for a
+node?
 
-Thanks Shrirang, appreciated!
-
-Yours,
-Linus Walleij
+Thanks,
+Bartosz
