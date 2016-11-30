@@ -1,54 +1,92 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f68.google.com ([74.125.82.68]:36012 "EHLO
-        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751583AbcK3UGF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 15:06:05 -0500
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-Subject: [PATCH v2 0/2] add support to STM LSM6DS3-LSM6DSM 6-axis Mems sensor
-Date: Wed, 30 Nov 2016 21:05:57 +0100
-Message-Id: <20161130200559.29910-1-lorenzo.bianconi@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <peda@axentia.se>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
+ Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Jonathan
+ Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Lars-Peter
+ Clausen" <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Corbet <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>, "Greg
+ Kroah-Hartman" <gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>
+Subject: [PATCH v6 4/9] dt-bindings: iio: iio-mux: document iio-mux bindings
+Date: Wed, 30 Nov 2016 09:16:58 +0100
+Message-ID: <1480493823-21462-5-git-send-email-peda@axentia.se>
+In-Reply-To: <1480493823-21462-1-git-send-email-peda@axentia.se>
+References: <1480493823-21462-1-git-send-email-peda@axentia.se>
+MIME-Version: 1.0
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-Changes since v1:
-- add sw fifo support
-- drop trigger dependency
-- use iio_claim_direct_mode() routine instead of grabbing the mutex directly
-- use more unique prefix for all defines
-- use info_mask_shared_by_all element for sampling_frequency
-- use devm_iio_* routines
-- use of_match_ptr instead of access directly to of_match_table
-- fix device tree binding
-- rename st_lsm6dsx_dev in st_lsm6dsx_hw
-- cosmetics
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../bindings/iio/multiplexer/iio-mux.txt           | 40 ++++++++++++++++++++++
+ MAINTAINERS                                        |  6 ++++
+ 2 files changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
 
-Lorenzo Bianconi (2):
-  iio: imu: add support to lsm6dsx driver
-  Documentation: dt: iio: add st_lsm6dsx sensor device binding
-
- .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     |  24 +
- drivers/iio/imu/Kconfig                            |   1 +
- drivers/iio/imu/Makefile                           |   2 +
- drivers/iio/imu/st_lsm6dsx/Kconfig                 |  23 +
- drivers/iio/imu/st_lsm6dsx/Makefile                |   6 +
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            | 107 ++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       | 696 +++++++++++++++++++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c        | 111 ++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_ring.c       | 401 ++++++++++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c        | 129 ++++
- 10 files changed, 1500 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
- create mode 100644 drivers/iio/imu/st_lsm6dsx/Kconfig
- create mode 100644 drivers/iio/imu/st_lsm6dsx/Makefile
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_ring.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
-
+diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+new file mode 100644
+index 000000000000..8080cf790d82
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+@@ -0,0 +1,40 @@
++IIO multiplexer bindings
++
++If a multiplexer is used to select which hardware signal is fed to
++e.g. an ADC channel, these bindings describe that situation.
++
++Required properties:
++- compatible : "iio-mux"
++- io-channels : Channel node of the parent channel that has multiplexed
++		input.
++- io-channel-names : Should be "parent".
++- #address-cells = <1>;
++- #size-cells = <0>;
++- mux-controls : Mux controller node to use for operating the mux
++- channels : List of strings, labeling the mux controller states.
++
++The multiplexer state as described in ../misc/mux-controller.txt
++
++For each non-empty string in the channels property, an iio channel will
++be created. The number of this iio channel is the same as the index into
++the list of strings in the channels property, and also matches the mux
++controller state.
++
++Example:
++	mux: mux-controller {
++		compatible = "mux-gpio";
++		#mux-control-cells = <0>;
++
++		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
++			    <&pioA 1 GPIO_ACTIVE_HIGH>;
++	};
++
++	adc-mux {
++		compatible = "iio-mux";
++		io-channels = <&adc 0>;
++		io-channel-names = "parent";
++
++		mux-controls = <&mux>;
++
++		channels = "sync", "in", system-regulator";
++	};
+diff --git a/MAINTAINERS b/MAINTAINERS
+index dc7498682752..77045ae15865 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6234,6 +6234,12 @@ F:	Documentation/ABI/testing/sysfs-bus-iio-adc-envelope-detector
+ F:	Documentation/devicetree/bindings/iio/adc/envelope-detector.txt
+ F:	drivers/iio/adc/envelope-detector.c
+ 
++IIO MULTIPLEXER
++M:	Peter Rosin <peda@axentia.se>
++L:	linux-iio@vger.kernel.org
++S:	Maintained
++F:	Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
++
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+ R:	Hartmut Knaack <knaack.h@gmx.de>
 -- 
-2.9.3
-
+2.1.4
