@@ -1,206 +1,207 @@
-Return-Path: <peda@axentia.se>
-Subject: Re: [PATCH v3 0/7] mux controller abstraction and iio/i2c muxes
-To: Jonathan Cameron <jic23@kernel.org>, Lars-Peter Clausen <lars@metafoo.de>,
-	<linux-kernel@vger.kernel.org>
-References: <1479734235-18837-1-git-send-email-peda@axentia.se>
- <b132143c-259b-6ed2-58c5-b223cc2e72df@metafoo.de>
- <3870654b-8cf5-30cb-74cd-c5fb1559adba@axentia.se>
- <d287dc3b-3605-d85d-1aa6-40f3bdcdc72c@kernel.org>
-CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, "Mark
- Rutland" <mark.rutland@arm.com>, Hartmut Knaack <knaack.h@gmx.de>, "Peter
- Meerwald-Stadler" <pmeerw@pmeerw.net>, Jonathan Corbet <corbet@lwn.net>,
-	"Arnd Bergmann" <arnd@arndb.de>, Greg Kroah-Hartman
-	<gregkh@linuxfoundation.org>, <linux-i2c@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-eopbgr10109.outbound.protection.outlook.com ([40.107.1.109]:54400
+        "EHLO EUR02-HE1-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1757208AbcK3Nth (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 30 Nov 2016 08:49:37 -0500
 From: Peter Rosin <peda@axentia.se>
-Message-ID: <f649f482-5c1c-dd07-161a-556a9c2b31ff@axentia.se>
-Date: Tue, 29 Nov 2016 17:02:48 +0100
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v6 0/9] mux controller abstraction and iio/i2c muxes
+Date: Wed, 30 Nov 2016 09:16:54 +0100
+Message-ID: <1480493823-21462-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <d287dc3b-3605-d85d-1aa6-40f3bdcdc72c@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2016-11-27 13:00, Jonathan Cameron wrote:
-> On 23/11/16 11:47, Peter Rosin wrote:
->> On 2016-11-22 21:58, Lars-Peter Clausen wrote:
->>> On 11/21/2016 02:17 PM, Peter Rosin wrote:
->>> [...]
->>>> I have a piece of hardware that is using the same 3 GPIO pins
->>>> to control four 8-way muxes. Three of them control ADC lines
->>>> to an ADS1015 chip with an iio driver, and the last one
->>>> controls the SDA line of an i2c bus. We have some deployed
->>>> code to handle this, but you do not want to see it or ever
->>>> hear about it. I'm not sure why I even mention it. Anyway,
->>>> the situation has nagged me to no end for quite some time.
->>>>
->>>> So, after first getting more intimate with the i2c muxing code
->>>> and later discovering the drivers/iio/inkern.c file and
->>>> writing a couple of drivers making use of it, I came up with
->>>> what I think is an acceptable solution; add a generic mux
->>>> controller driver (and subsystem) that is shared between all
->>>> instances, and combine that with an iio mux driver and a new
->>>> generic i2c mux driver. The new i2c mux I called "simple"
->>>> since it is only hooking the i2c muxing and the new mux
->>>> controller (much like the alsa simple card driver does for ASoC).
->>>
->>> While abstracting this properly is all nice and good and the way it should
->>> be done, but it also adds a lot of complexity and the devicetree adds a lot
->>> of restrictions on what can actually be represented.
->>
->> This is a characterization without any specifics. But is the
->> characterization true? You have two complaints, complexity
->> and restrictions with bindings.
->>
->>> There is a certain point where the fabric on a PCB becomes so complex that
->>> it deserves to be a device on its own (like the audio fabric drivers).
->>> Especially when the hardware is built with a certain application in mind and
->>> the driver is supposed to impose policy which reflects this application. The
->>> latter can often not properly be described with the primitives the
->>> devicetree can offer.
->>>
->>> And I think your setup is very borderline what can be done in a declarative
->>> way only and it adds a lot of complexity over a more imperative solution in
->>> form of a driver. I think it is worth investigating about having a driver
->>> that is specific to your fabric and handles the interdependencies of the
->>> discrete components.
->>
->> So, there are three "new" concepts:
->>
->> 1. Sticking a mux in front of an AD-converter. That's not all that
->> novel, nor complex. Quite the opposite, I'd say. In fact, I find it
->> a bit amazing that there is no in-kernel support for it.
-> As ever first person who needs it and has the skills to write it gets to do it ;)
-> Congratulations Peter ;)
->>
->> 2. Reusing the same GPIO-pins to drive different muxes. There are
->> obviously chips that work this way (as Jonathan pointed out) and
->> these will at some point get used in Linux devices. I guess they
->> already are used, but that people handle them in userspace. Or
->> something? If this is complex, which I question, it will still need
->> support at some point. At least that's what I believe.
->>
->> 3. Using the same GPIO pins to mux things handled by different
->> subsystems. Right, this is a bit crazy, and I'd rather not have this
->> requirement, but this HW is what it is so I'll need to handle it in
->> some way. It is also what stops me from falling back to a userspace
->> solution, which is probably connected to why #1 and #2 is not supported
->> by the kernel; everybody probably does muxing in userspace. Which is
->> not necessarily a good idea, nor how it's supposed to be done...
->>
->> So, the only thing that's out of the ordinary (as I see it), is #3.
->> The question that then needs an answer is how the in-kernel solution
->> for #1 and #2 would look if we do not consider #3.
->>
->> And I claim that the desired solution to #1 and #2 is pretty close
->> to my proposal.
->>
->> A. You do not want mux-controller drivers in every subsystem that
->> needs them.
-> Agreed.
->>
->> B. You do not want every mux-consumer to know the specifics of how to
->> operate every kind of mux; there are muxes that are not controlled
->> with GPIO pins...
->>
->> C. When you implement muxing in a subsystem, there will in some cases
->> be a need to handle parallel muxing, where there is a need to share
->> mux-controllers.
->>
->> It just feels right to separate out the mux-controller and refer to
->> it from where a mux is needed. It solves #1 and #2. And, of course,
->> as a bonus #3 is also solved. But my bias is obvious.
->>
->> And that leads us to the restrictions with the bindings. And the same
->> thing happens; the solution for #2 also solves #3.
->>
->> So how do you refer to a mux-controller from where it's needed? My
->> first proposal used a dt phandle, for the second round I put them in
->> the parent node. It would be super if it was possible for the mux-
->> consumer to create the mux-controller device from the same dt
->> node that is already bound to the mux-consumer. The problem is that
->> the mux-consumer should not hard-code which mux-controller device it
->> should create. The best I can think of is some kind of 'mux-compatible'
->> attribute, that works like the standard 'compatible' attribute. That
->> would simplify the bindings for the normal case (#1) where the mux-
->> controller isn't shared (#2 and #3). Maybe it's possible to fix this
->> issue somehow? I simply don't know?
-> As Lars stated, it's marginal.  The question is not at what point do we
-> 'have to' bother with a fabric driver, but rather at what point does it
-> make a our lives easier.
-> 
-> Take you nastiest mux case described earlier.
-> The ideal would be to represent the ADC and 3 muxes as (approximately) a
-> single ADC to userspace that just happens to have somewhere near 23 inputs.
-> 
-> To do that in device tree we need to describe
-> 
-> 1 The adc
-> 2 The three muxes
-> 3 The software representation to pull all of these back into a single device.
-> 
-> That last part to my mind trips the balance to the point where a fabric driver
-> would make sense.  It's not complex.  Just a few lines of code tying all the
-> elements together without ending up with a fairly fiendish setup to describe in
-> device tree.
-> 
-> Also just wait until we have muxes stacked on muxes, with cross overs occuring.
-> Some of the ASoC parts can actually have effective loops if you try all the mux
-> combinations.
-> 
-> So question is do we have a 'simple case description' in device tree or force
-> fabric drivers everywhere?  I think I'm in favour of the simple case - which handles
-> one of your two uses nicely.  The second one to do the the recombining of channels after
-> the muxes, ends up looking to me like it needs a fabric driver.
-> 
-> Note we are only talking about bindings vs code based description here. I agree
-> entirely with the concept of a generic mux subsystem.
+Hi!
 
-Ok, take the simple case - an adc with a mux in front of it.
+v5 -> v6 changes
+- fix stupidity in mux_chip_priv, mux_gpio_remove and adg792a_remove.
+- change the devicetree bindings for the iio-mux to use a list of strings
+  (channels property) instead of a list children.
 
-We do not want to build a whole new iio-mux subsystem like the one under
-i2c, so from iio we want to refer to the actual mux controller driver
-which lives under the mux subsystem. Getting this far is what solves my
-"second need" [2] from the v2 thread.
+v4 -> v5 changes
+- remove support for fancier dt layouts and go back to the phandle
+  approach from v2 and before, killing the horrible non-working
+  refcounting crap from v4 and avoiding a bunch of life-time issues
+  in v3.
+- introduce the concept of a mux-chip, that can hold one or more
+  mux-controllers (inspired by the pwm subsystem).
+- add dt #mux-control-cells property needed to get to the desired
+  mux controller if a mux chip provides more than one.
+- take away the option to build the mux-core as a module.
+- if the mux controller has an idle state, make sure the mux controller
+  is set up in the idle state initially (when it should be idle).
+- do not use a variable length array on the stack in mux_gpio_set to
+  temporarily store the gpio state, preallocate space instead.
+- fix resource leak on one failure path in mux_gpio_probe.
+- driver for Analog Devices ADG792A/G, literally the first mux chip
+  I found on the Internet with an i2c interface (that was not a
+  dedicated i2c multiplexer like PCA9547) which I used to verify
+  that the abstractions in the mux core are up to the task. Untested,
+  just proof of concept that at least looks pretty and compiles...
+- various touch-ups.
 
-Agreed, doing this w/o a fabric driver spills the guts and it might be
-cleaner to build a fabric driver that takes a reference to the dpot and
-the mux controller and just knows the rest. In the end this fabric driver
-requires two things to actually make a difference; some way to instantiate
-drivers without the help of device-tree and some way make those drivers
-only provide in-kernel access (and preferably it should hide the dpot from
-userspace too, while at it).
+v3 -> v4 changes
+- rebased onto next-20161122 (depends on recent _available iio changes).
+- added support for having the mux-controller in a child node of a
+  mux-consumer if it is a sole consumer, to hopefully even further satisfy
+  the complaint from Rob (and later Lars-Peter) about dt complexity.
+- the above came at the cost of some rather horrible refcounting code,
+  please review and suggest how it should be done...
+- changed to register a device class instead of a bus.
+- pass in the parent device into mux_control_alloc and require less
+  work from mux-control drivers.
+- changed device names from mux:control%d to mux%d
+- move kernel-doc from mux-core.c to mux.h (and add some bits).
+- give the gpio driver a chance to update all mux pins at once.
+- factor out iio ext_info lookup into new helper function. /Lars-Peter
+- use an unsigned type for the iio ext_info count. /Lars-Peter
+- unified "brag strings" in the file headers.
 
-But doing all that in a fabric driver is not going to change the fact that
-the iio-mux driver is useful on its own. I bet someone else is going to
-reuse it somewhere down the line. Which means that a fabric driver would
-perhaps be nice for my "second need", but not critical, it works pretty
-well to just piggyback on the general solution .
+v2 -> v3 changes
+- have the mux-controller in the parent node of any mux-controller consumer,
+  to hopefully satisfy complaint from Rob about dt complexity.
+- improve commit message of the mux subsystem commit, making it more
+  general, as requested by Jonathan.
+- remove priv member from struct mux_control and calculate it on the
+  fly. /Jonathan
+- make the function comments in mux-core.c kernel doc. /Jonathan
+- add devm_mux_control_* to Documentation/driver.model/devres.txt. /Jonathan
+- add common dt bindings for mux-controllers, refer to them from the
+  mux-gpio bindings. /Rob
+- clarify how the gpio pins map to the mux state. /Rob
+- separate CONFIG_ variables for the mux core and the mux gpio driver.
+- improve Kconfig help texts.
+- make CONFIG_MUX_GPIO depend on CONFIG_GPIOLIB.
+- keep track of the number of mux states in the mux core.
+- since the iio channel number is used as mux state, it was possible
+  to drop the state member from the mux_child struct.
+- cleanup dt bindings for i2c-mux-simple, it had some of copy-paste
+  problems from ots origin (i2c-mux-gpio).
+- select the mux control subsystem in config for the i2c-mux-simple driver.
+- add entries to MAINTAINERS and my sign-off, I'm now satisfied and know
+  nothing in this to be ashamed of.
 
-Over to my "first need" [1] from the v2 thread.
+v1 -> v2 changes
+- fixup export of mux_control_put reported by kbuild
+- drop devicetree iio-ext-info property as noted by Lars-Peter,
+  and replace the functionality by exposing all ext_info
+  attributes of the parent channel for each of the muxed
+  channels. A cache on top of that and each muxed channel
+  gets its own view of the ext_info of the parent channel.
+- implement idle-state for muxes
+- clear out the cache on failure in order to force a mux
+  update on the following use
+- cleanup the probe of i2c-mux-simple driver
+- fix a bug in the i2c-mux-simple driver, where failure in
+  the selection of the mux caused a deadlock when the mux
+  was later unconditionally deselected.
 
-The above iio-mux driver handles the three muxed adc lines beautifully,
-just refer all three iio-muxes to the same mux controller. Agreed, with
-a fabric driver I could get one device with 25 channels instead of three
-devices with 8 channels each plus one unmuxed line directly from the adc
-device. However, that doesn't bother me at all, I may even think it is
-preferable because otherwise I'd have to come up with some way to
-identify which channel is which in that big 25-channel jungle. Another
-drawback with having a fabric driver here is that it would need to be an
-i2c-mux driver, because one of the key points of doing a fabric driver
-for my first need was to hide the shared mux, right? Instead, I have the
-new i2c-mux-simple driver that builds an i2c-mux using any mux controller
-from the mux subsystem (something that may prove useful to others in the
-future), which in my case is the same mux controller that also muxes the
-three adc lines.
+I have a piece of hardware that is using the same 3 GPIO pins
+to control four 8-way muxes. Three of them control ADC lines
+to an ADS1015 chip with an iio driver, and the last one
+controls the SDA line of an i2c bus. We have some deployed
+code to handle this, but you do not want to see it or ever
+hear about it. I'm not sure why I even mention it. Anyway,
+the situation has nagged me to no end for quite some time.
 
-In short, doing fabric drivers buys me almost nothing besides having a
-slightly more distinct device tree. All the components used to describe
-this are either already accepted drivers or usable by others (at least
-the way I see it).
+So, after first getting more intimate with the i2c muxing code
+and later discovering the drivers/iio/inkern.c file and
+writing a couple of drivers making use of it, I came up with
+what I think is an acceptable solution; add a generic mux
+controller driver (and subsystem) that is shared between all
+instances, and combine that with an iio mux driver and a new
+generic i2c mux driver. The new i2c mux I called "simple"
+since it is only hooking the i2c muxing and the new mux
+controller (much like the alsa simple card driver does for ASoC).
+
+One thing that I would like to do, but don't see a solution
+for, is to move the mux control code that is present in
+various drivers in drivers/i2c/muxes to this new minimalistic
+muxing subsystem, thus converting all present i2c muxes (but
+perhaps not gates and arbitrators) to be i2c-mux-simple muxes.
+
+I'm using an rwsem to lock a mux, but that isn't really a
+perfect fit. Is there a better locking primitive that I don't
+know about that fits better? I had a mutex at one point, but
+that didn't allow any concurrent accesses at all. At least
+the rwsem allows concurrent access as long as all users
+agree on the mux state, but I suspect that the rwsem will
+degrade to the mutex situation pretty quickly if there is
+any contention.
+
+Also, the "mux" name feels a bit ambitious, there are many muxes
+in the world, and this tiny bit of code is probably not good
+enough to be a nice fit for all...
 
 Cheers,
 Peter
 
-[1] three adc lines and an i2c bus muxed with the same gpio pins
-[2] mcp4561 dpot -> dpot-dac -> envelope-detector-adc -> iio-mux
+Peter Rosin (9):
+  dt-bindings: document devicetree bindings for mux-controllers and
+    mux-gpio
+  misc: minimal mux subsystem and gpio-based mux controller
+  iio: inkern: api for manipulating ext_info of iio channels
+  dt-bindings: iio: iio-mux: document iio-mux bindings
+  iio: multiplexer: new iio category and iio-mux driver
+  dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
+  i2c: i2c-mux-simple: new driver
+  dt-bindings: mux-adg792a: document devicetree bindings for ADG792A/G
+    mux
+  misc: mux-adg792a: add mux controller driver for ADG792A/G
+
+ .../devicetree/bindings/i2c/i2c-mux-simple.txt     |  81 ++++
+ .../bindings/iio/multiplexer/iio-mux.txt           |  40 ++
+ .../devicetree/bindings/misc/mux-adg792a.txt       |  64 +++
+ .../devicetree/bindings/misc/mux-controller.txt    | 127 ++++++
+ .../devicetree/bindings/misc/mux-gpio.txt          |  68 +++
+ Documentation/driver-model/devres.txt              |   6 +-
+ MAINTAINERS                                        |  14 +
+ drivers/i2c/muxes/Kconfig                          |  13 +
+ drivers/i2c/muxes/Makefile                         |   1 +
+ drivers/i2c/muxes/i2c-mux-simple.c                 | 179 ++++++++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/inkern.c                               |  60 +++
+ drivers/iio/multiplexer/Kconfig                    |  18 +
+ drivers/iio/multiplexer/Makefile                   |   6 +
+ drivers/iio/multiplexer/iio-mux.c                  | 456 +++++++++++++++++++++
+ drivers/misc/Kconfig                               |  42 ++
+ drivers/misc/Makefile                              |   3 +
+ drivers/misc/mux-adg792a.c                         | 154 +++++++
+ drivers/misc/mux-core.c                            | 311 ++++++++++++++
+ drivers/misc/mux-gpio.c                            | 138 +++++++
+ include/linux/iio/consumer.h                       |  37 ++
+ include/linux/mux.h                                | 197 +++++++++
+ 23 files changed, 2016 insertions(+), 1 deletion(-)
+ create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+ create mode 100644 Documentation/devicetree/bindings/misc/mux-adg792a.txt
+ create mode 100644 Documentation/devicetree/bindings/misc/mux-controller.txt
+ create mode 100644 Documentation/devicetree/bindings/misc/mux-gpio.txt
+ create mode 100644 drivers/i2c/muxes/i2c-mux-simple.c
+ create mode 100644 drivers/iio/multiplexer/Kconfig
+ create mode 100644 drivers/iio/multiplexer/Makefile
+ create mode 100644 drivers/iio/multiplexer/iio-mux.c
+ create mode 100644 drivers/misc/mux-adg792a.c
+ create mode 100644 drivers/misc/mux-core.c
+ create mode 100644 drivers/misc/mux-gpio.c
+ create mode 100644 include/linux/mux.h
+
+-- 
+2.1.4
+
