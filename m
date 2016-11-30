@@ -1,87 +1,54 @@
-Return-Path: <shrirang.bagul@canonical.com>
-Message-ID: <1480393503.3233.5.camel@canonical.com>
-Subject: Re: [PATCH 3/3] iio: st_pressure: Support i2c probe using acpi
-From: Shrirang Bagul <shrirang.bagul@canonical.com>
-To: Jonathan Cameron <jic23@kernel.org>, Linus Walleij
-	 <linus.walleij@linaro.org>
-Cc: Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, Denis CIOCCA <denis.ciocca@st.com>,
- Tiberiu Breana <tiberiu.a.breana@intel.com>, Lorenzo Bianconi
- <lorenzo.bianconi83@gmail.com>,  Gregor Boirie <gregor.boirie@parrot.com>,
- "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
- "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Date: Tue, 29 Nov 2016 12:25:03 +0800
-In-Reply-To: <c72ee668-196d-d29b-b58a-f290efe8c2a4@kernel.org>
-References: <20161124053345.11254-1-shrirang.bagul@canonical.com>
-	 <20161124053345.11254-4-shrirang.bagul@canonical.com>
-	 <CACRpkdYJAwDgpuTYuXuTAxu3RBHeATEpbxq_xE3LxrJ7D9CKBQ@mail.gmail.com>
-	 <c72ee668-196d-d29b-b58a-f290efe8c2a4@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:36012 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751583AbcK3UGF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 15:06:05 -0500
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        lorenzo.bianconi@st.com
+Subject: [PATCH v2 0/2] add support to STM LSM6DS3-LSM6DSM 6-axis Mems sensor
+Date: Wed, 30 Nov 2016 21:05:57 +0100
+Message-Id: <20161130200559.29910-1-lorenzo.bianconi@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, 2016-11-27 at 11:12 +0000, Jonathan Cameron wrote:
-> On 24/11/16 14:28, Linus Walleij wrote:
-> > On Thu, Nov 24, 2016 at 6:33 AM, Shrirang Bagul
-> > <shrirang.bagul@canonical.com> wrote:
-> > 
-> > > Compatible strings are not available on ACPI based systems. This patch
-> > > adds
-> > > support to use DSDT information read from platform BIOS instead for
-> > > probing
-> > > st pressure sensors.
-> > > 
-> > > Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
-> > 
-> > (...)
-> > > +#ifdef CONFIG_ACPI
-> > > +static const struct acpi_device_id st_press_acpi_match[] = {
-> > > +       {"SNO9210", LPS22HB},
-> > > +       { },
-> > > +};
-> > 
-> > Same comment. One sensor only supported by ACPI really?
-> 
-> As demonstrated by this one, they are often registered under effectively
-> random names!
-> Digging out those random names and associating them with a particular chip is
-> always
-> going to be a non trivial job.
-> 
-> Hence I'm happy to take these as they stand.  We can add more entries when we
-> come
-> across them.
-> > 
-> > Take a wider look.
-Yes, I will.
-> 
-> Shirang has done a good job identifying this one and sending it upstream.
-> Be nice Linus and don't try to get him to do all the hard work ;)
-> 
-> As such applied to the togreg branch of iio.git. Will be pushed out as testing
-> for
-> the autobuilders to play with it.
-> 
-> Note there will be some weeks before I push this out as togreg (given merge
-> window
-> is about to open) so plenty of time for others to take a look!
-> 
-> Thanks,
-> 
-> Jonathan
-Thank you Jonathan. I'll follow-up on Linus's suggestion and try and identify
-more of these sensors on some of the hardware we have in the lab. and try to add
-support for some more devices.
+Changes since v1:
+- add sw fifo support
+- drop trigger dependency
+- use iio_claim_direct_mode() routine instead of grabbing the mutex directly
+- use more unique prefix for all defines
+- use info_mask_shared_by_all element for sampling_frequency
+- use devm_iio_* routines
+- use of_match_ptr instead of access directly to of_match_table
+- fix device tree binding
+- rename st_lsm6dsx_dev in st_lsm6dsx_hw
+- cosmetics
 
-Thanks,
-Shrirang
-> > 
-> > Yours,
-> > Linus Walleij
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> > 
-> 
-> 
+Lorenzo Bianconi (2):
+  iio: imu: add support to lsm6dsx driver
+  Documentation: dt: iio: add st_lsm6dsx sensor device binding
+
+ .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     |  24 +
+ drivers/iio/imu/Kconfig                            |   1 +
+ drivers/iio/imu/Makefile                           |   2 +
+ drivers/iio/imu/st_lsm6dsx/Kconfig                 |  23 +
+ drivers/iio/imu/st_lsm6dsx/Makefile                |   6 +
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            | 107 ++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       | 696 +++++++++++++++++++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c        | 111 ++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_ring.c       | 401 ++++++++++++
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c        | 129 ++++
+ 10 files changed, 1500 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/Kconfig
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/Makefile
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_ring.c
+ create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+
+-- 
+2.9.3
+
