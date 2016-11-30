@@ -1,629 +1,589 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:33986 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751150AbcK3MNo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 07:13:44 -0500
-Subject: Re: [PATCH V5 2/2] iio: adc: spmi-vadc: Changes to support different
- scaling
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-References: <1479965465-30182-1-git-send-email-rphani@codeaurora.org>
- <1479965465-30182-3-git-send-email-rphani@codeaurora.org>
- <13ba4983-db04-4ea3-73c0-6b82a319322b@kernel.org>
-Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
-From: "Phani A, Rama Krishna" <rphani@codeaurora.org>
-Message-ID: <d455e681-ee8e-ad1a-1f20-d6285d033547@codeaurora.org>
-Date: Wed, 30 Nov 2016 14:37:32 +0530
+Received: from mail-db5eur01on0109.outbound.protection.outlook.com ([104.47.2.109]:49504
+        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1753936AbcK3Jtm (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 30 Nov 2016 04:49:42 -0500
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
+        "Rob Herring" <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "Jonathan Cameron" <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        "Lars-Peter Clausen" <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
+        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v6 5/9] iio: multiplexer: new iio category and iio-mux driver
+Date: Wed, 30 Nov 2016 09:16:59 +0100
+Message-ID: <1480493823-21462-6-git-send-email-peda@axentia.se>
+In-Reply-To: <1480493823-21462-1-git-send-email-peda@axentia.se>
+References: <1480493823-21462-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <13ba4983-db04-4ea3-73c0-6b82a319322b@kernel.org>
-Content-Type: text/plain; charset=UTF-8; format=flowed
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Jonathan,
+When a multiplexer changes how an iio device behaves (for example
+by feeding different signals to an ADC), this driver can be used
+to create one virtual iio channel for each multiplexer state.
 
-On 27-Nov-16 9:18 PM, Jonathan Cameron wrote:
-> On 24/11/16 05:31, Rama Krishna Phani A wrote:
->> Several ADC channels are supported in PMIC which can be used to
->> measure voltage, temperature, current etc. Different scaling can be
->> applied on the obtained voltage to report in physical units. Scaling
->> functionality can be different per channel. Add scaling support per
->> channel. Every channel present in adc has an unique conversion formula
->> for obtained voltage. Add support to report in Raw as well as in
->> processed format. Scaling is applied when processed read is requested
->> and is not applied when a Raw read is requested.
->>
->> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
-> I obviously didn't make it clear enough in last review.
->
-> If you can't return a value in response to reading a sysfs attribute, the
-> attribute should not exist.  See below for a suggestion on this.
-Agree., Even here we never expose a channel in sysfs if we dont know the 
-response. Channels in sysfs are populated based on list available from 
-DT. Provided more explanation below.
->
-> Jonathan
->> ---
->>  drivers/iio/adc/qcom-spmi-vadc.c | 435 +++++++++++++++++++++++++++++----------
->>  1 file changed, 326 insertions(+), 109 deletions(-)
->>
->> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
->> index 93c0639..a4e5405 100644
->> --- a/drivers/iio/adc/qcom-spmi-vadc.c
->> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
->> @@ -84,7 +84,7 @@
->>  #define VADC_MAX_ADC_CODE			0xa800
->>
->>  #define VADC_ABSOLUTE_RANGE_UV			625000
->> -#define VADC_RATIOMETRIC_RANGE_UV		1800000
->> +#define VADC_RATIOMETRIC_RANGE			1800
->>
->>  #define VADC_DEF_PRESCALING			0 /* 1:1 */
->>  #define VADC_DEF_DECIMATION			0 /* 512 */
->> @@ -100,9 +100,23 @@
->>
->>  #define KELVINMIL_CELSIUSMIL			273150
->>
->> +#define PMI_CHG_SCALE_1				-138890
->> +#define PMI_CHG_SCALE_2				391750000000
->> +
->>  #define VADC_CHAN_MIN			VADC_USBIN
->>  #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
->>
->> +/**
->> + * struct vadc_map_pt - Map the graph representation for ADC channel
->> + * @x: Represent the ADC digitized code.
->> + * @y: Represent the physical data which can be temperature, voltage,
->> + *     resistance.
->> + */
->> +struct vadc_map_pt {
->> +	s32 x;
->> +	s32 y;
->> +};
->> +
->>  /*
->>   * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
->>   * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
->> @@ -148,6 +162,9 @@ struct vadc_prescale_ratio {
->>   *	start of conversion.
->>   * @avg_samples: ability to provide single result from the ADC
->>   *	that is an average of multiple measurements.
->> + * @scale_fn: Represents the scaling function to convert voltage
->> + *	physical units desired by the client for the channel.
->> + *	Referenced from enum vadc_scale_fn_type.
->>   */
->>  struct vadc_channel_prop {
->>  	unsigned int channel;
->> @@ -156,6 +173,7 @@ struct vadc_channel_prop {
->>  	unsigned int prescale;
->>  	unsigned int hw_settle_time;
->>  	unsigned int avg_samples;
->> +	unsigned int scale_fn;
->>  };
->>
->>  /**
->> @@ -186,6 +204,37 @@ struct vadc_priv {
->>  	struct mutex		 lock;
->>  };
->>
->> +/**
->> + * struct vadc_scale_fn - Scaling function prototype
->> + * @scale: Function pointer to one of the scaling functions
->> + *	which takes the adc properties, channel properties,
->> + *	and returns the physical result.
->> + */
->> +struct vadc_scale_fn {
->> +	int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
->> +		     u16, int *);
->> +};
->> +
->> +/**
->> + * enum vadc_scale_fn_type - Scaling function to convert ADC code to
->> + *				physical scaled units for the channel.
->> + * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
->> + * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
->> + *				 Uses a mapping table with 100K pullup.
->> + * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
->> + * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
->> + * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
->> + * SCALE_NONE: Do not use this scaling type.
->> + */
->> +enum vadc_scale_fn_type {
->> +	SCALE_DEFAULT = 0,
->> +	SCALE_THERM_100K_PULLUP,
->> +	SCALE_PMIC_THERM,
->> +	SCALE_XOTHERM,
->> +	SCALE_PMI_CHG_TEMP,
->> +	SCALE_NONE,
->> +};
->> +
->>  static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
->>  	{.num =  1, .den =  1},
->>  	{.num =  1, .den =  3},
->> @@ -197,6 +246,44 @@ struct vadc_priv {
->>  	{.num =  1, .den = 10}
->>  };
->>
->> +/* Voltage to temperature */
->> +static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
->> +	{1758,	-40},
->> +	{1742,	-35},
->> +	{1719,	-30},
->> +	{1691,	-25},
->> +	{1654,	-20},
->> +	{1608,	-15},
->> +	{1551,	-10},
->> +	{1483,	-5},
->> +	{1404,	0},
->> +	{1315,	5},
->> +	{1218,	10},
->> +	{1114,	15},
->> +	{1007,	20},
->> +	{900,	25},
->> +	{795,	30},
->> +	{696,	35},
->> +	{605,	40},
->> +	{522,	45},
->> +	{448,	50},
->> +	{383,	55},
->> +	{327,	60},
->> +	{278,	65},
->> +	{237,	70},
->> +	{202,	75},
->> +	{172,	80},
->> +	{146,	85},
->> +	{125,	90},
->> +	{107,	95},
->> +	{92,	100},
->> +	{79,	105},
->> +	{68,	110},
->> +	{59,	115},
->> +	{51,	120},
->> +	{44,	125}
->> +};
->> +
->>  static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
->>  {
->>  	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
->> @@ -418,7 +505,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->>  	u16 read_1, read_2;
->>  	int ret;
->>
->> -	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
->> +	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
->>  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
->>
->>  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
->> @@ -468,6 +555,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->>  	return ret;
->>  }
->>
->> +static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
->> +				 u32 tablesize, s32 input, s64 *output)
->> +{
->> +	bool descending = 1;
->> +	u32 i = 0;
->> +
->> +	if (!pts)
->> +		return -EINVAL;
->> +
->> +	/* Check if table is descending or ascending */
->> +	if (tablesize > 1) {
->> +		if (pts[0].x < pts[1].x)
->> +			descending = 0;
->> +	}
->> +
->> +	while (i < tablesize) {
->> +		if ((descending) && (pts[i].x < input)) {
->> +			/* table entry is less than measured*/
->> +			 /* value and table is descending, stop */
->> +			break;
->> +		} else if ((!descending) &&
->> +				(pts[i].x > input)) {
->> +			/* table entry is greater than measured*/
->> +			/*value and table is ascending, stop */
->> +			break;
->> +		}
->> +		i++;
->> +	}
->> +
->> +	if (i == 0) {
->> +		*output = pts[0].y;
->> +	} else if (i == tablesize) {
->> +		*output = pts[tablesize - 1].y;
->> +	} else {
->> +		/* result is between search_index and search_index-1 */
->> +		/* interpolate linearly */
->> +		*output = (((s32)((pts[i].y - pts[i - 1].y) *
->> +			(input - pts[i - 1].x)) /
->> +			(pts[i].x - pts[i - 1].x)) +
->> +			pts[i - 1].y);
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->>  static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
->>  			     const struct vadc_channel_prop *prop,
->>  			     s64 *scale_voltage)
->> @@ -502,6 +634,77 @@ static int vadc_scale_volt(struct vadc_priv *vadc,
->>  	return 0;
->>  }
->>
->> +static int vadc_scale_therm(struct vadc_priv *vadc,
->> +			    const struct vadc_channel_prop *prop, u16 adc_code,
->> +			    int *result_mdec)
->> +{
->> +	s64 voltage = 0, result = 0;
->> +
->> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
->> +
->> +	if (prop->calibration == VADC_CALIB_ABSOLUTE)
->> +		voltage /= 1000;
->> +
->> +	vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
->> +			      ARRAY_SIZE(adcmap_100k_104ef_104fb),
->> +			      voltage, &result);
->> +	result *= 1000;
->> +	*result_mdec = result;
->> +
->> +	return 0;
->> +}
->> +
->> +static int vadc_scale_die_temp(struct vadc_priv *vadc,
->> +			       const struct vadc_channel_prop *prop,
->> +			       u16 adc_code, int *result_mdec)
->> +{
->> +	const struct vadc_prescale_ratio *prescale;
->> +	s64 voltage = 0;
->> +
->> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
->> +
->> +	if (voltage > 0) {
->> +		prescale = &vadc_prescale_ratios[prop->prescale];
->> +		voltage = voltage * prescale->den;
->> +		voltage /= (prescale->num * 2);
->> +	} else {
->> +		voltage = 0;
->> +	}
->> +
->> +	voltage -= KELVINMIL_CELSIUSMIL;
->> +	*result_mdec = voltage;
->> +
->> +	return 0;
->> +}
->> +
->> +static int vadc_scale_chg_temp(struct vadc_priv *vadc,
->> +			       const struct vadc_channel_prop *prop,
->> +			       u16 adc_code, int *result_mdec)
->> +{
->> +	const struct vadc_prescale_ratio *prescale;
->> +	s64 voltage = 0, result = 0;
->> +
->> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
->> +
->> +	prescale = &vadc_prescale_ratios[prop->prescale];
->> +	voltage = voltage * prescale->den;
->> +	voltage = div64_s64(voltage, prescale->num);
->> +	voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
->> +	voltage = (voltage + PMI_CHG_SCALE_2);
->> +	result =  div64_s64(voltage, 1000000);
->> +	*result_mdec = result;
->> +
->> +	return 0;
->> +}
->> +
->> +static int vadc_scale(struct vadc_priv *vadc,
->> +		      const struct vadc_channel_prop *prop, u16 adc_code,
->> +		      int *scale)
->> +{
->> +	dev_err(vadc->dev, "Need a scale function\n");
->> +	return 0;
->> +}
->> +
->>  static int vadc_decimation_from_dt(u32 value)
->>  {
->>  	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
->> @@ -547,6 +750,15 @@ static int vadc_avg_samples_from_dt(u32 value)
->>  	return __ffs64(value);
->>  }
->>
->> +static struct vadc_scale_fn scale_fn[] = {
->> +	[SCALE_DEFAULT] = {vadc_scale_volt},
->> +	[SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
->> +	[SCALE_PMIC_THERM] = {vadc_scale_die_temp},
->> +	[SCALE_XOTHERM] = {vadc_scale_therm},
->> +	[SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
->> +	[SCALE_NONE] = {vadc_scale},
->> +};
->> +
->>  static int vadc_read_raw(struct iio_dev *indio_dev,
->>  			 struct iio_chan_spec const *chan, int *val, int *val2,
->>  			 long mask)
->> @@ -563,7 +775,7 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->>  		if (ret)
->>  			break;
->>
->> -		vadc_scale_volt(vadc, prop, adc_code, val);
->> +		scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
->>
->>  		return IIO_VAL_INT;
->>  	case IIO_CHAN_INFO_RAW:
->> @@ -606,23 +818,27 @@ struct vadc_channels {
->>  	unsigned int prescale_index;
->>  	enum iio_chan_type type;
->>  	long info_mask;
->> +	unsigned int scale_fn;
->>  };
->>
->> -#define VADC_CHAN(_dname, _type, _mask, _pre)				\
->> +#define VADC_CHAN(_dname, _type, _mask, _pre, _scale)			\
->>  	[VADC_##_dname] = {						\
->>  		.datasheet_name = __stringify(_dname),			\
->>  		.prescale_index = _pre,					\
->>  		.type = _type,						\
->> -		.info_mask = _mask					\
->> +		.info_mask = _mask,					\
->> +		.scale_fn = _scale					\
->>  	},								\
->>
->> -#define VADC_CHAN_TEMP(_dname, _pre)					\
->> -	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
->> +#define VADC_CHAN_TEMP(_dname, _pre, _scale)				\
->> +	VADC_CHAN(_dname, IIO_TEMP,					\
->> +		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),	\
->> +		_pre, _scale)						\
->>
->> -#define VADC_CHAN_VOLT(_dname, _pre)					\
->> +#define VADC_CHAN_VOLT(_dname, _pre, _scale)				\
->>  	VADC_CHAN(_dname, IIO_VOLTAGE,					\
->>  		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
->> -		  _pre)							\
->> +		  _pre, _scale)						\
-> In the SCALE_NONE case you are still creating the sysfs attributes to provide
-> processed.  Just have a variant of this macro that doesn't do this.
->
-> That way we don't end up with a sysfs attribute that always results in
-> an error!
->
-> #define VADC_CHAN_VOLT_NO_KNOWN_SCALEE(_dname, _pre) \
-> 	VADC_CHAN(_dname, IIO_VOLTAGE, BIT(IIO_CHAN_INFO_RAW), _pre);
->
-sysfs attributes will be created only for the channels that are 
-populated from DT. Here we are just mapping a function that needs to be 
-invoked in case the channel is available.
+Depends on the generic multiplexer subsystem.
 
-None of the channels are exposed in sysfs unconditionally. Channels with 
-DT entry only will get exposed in sysfs.
+Cache any ext_info values from the parent iio channel, creating a private
+copy of the ext_info attributes for each multiplexer state/channel.
 
-For SCALE_NONE .., none of these channels will get exposed in sysfs.
-Even for other SCALE_* ., the channels will be shown in sysfs only if 
-there is any corresponding DT entry for that channel.
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ MAINTAINERS                       |   1 +
+ drivers/iio/Kconfig               |   1 +
+ drivers/iio/Makefile              |   1 +
+ drivers/iio/multiplexer/Kconfig   |  18 ++
+ drivers/iio/multiplexer/Makefile  |   6 +
+ drivers/iio/multiplexer/iio-mux.c | 456 ++++++++++++++++++++++++++++++++++++++
+ 6 files changed, 483 insertions(+)
+ create mode 100644 drivers/iio/multiplexer/Kconfig
+ create mode 100644 drivers/iio/multiplexer/Makefile
+ create mode 100644 drivers/iio/multiplexer/iio-mux.c
 
-If an entry is created for channels with SCALE_NONE in DT ., then the 
-corresponding SCALE_* function needs to be implemented by removing 
-SCALE_NONE.
->>
->>  /*
->>   * The array represents all possible ADC channels found in the supported PMICs.
->> @@ -630,106 +846,106 @@ struct vadc_channels {
->>   * gaps in the array should be treated as reserved channels.
->>   */
->>  static const struct vadc_channels vadc_chans[] = {
->> -	VADC_CHAN_VOLT(USBIN, 4)
->> -	VADC_CHAN_VOLT(DCIN, 4)
->> -	VADC_CHAN_VOLT(VCHG_SNS, 3)
->> -	VADC_CHAN_VOLT(SPARE1_03, 1)
->> -	VADC_CHAN_VOLT(USB_ID_MV, 1)
->> -	VADC_CHAN_VOLT(VCOIN, 1)
->> -	VADC_CHAN_VOLT(VBAT_SNS, 1)
->> -	VADC_CHAN_VOLT(VSYS, 1)
->> -	VADC_CHAN_TEMP(DIE_TEMP, 0)
->> -	VADC_CHAN_VOLT(REF_625MV, 0)
->> -	VADC_CHAN_VOLT(REF_1250MV, 0)
->> -	VADC_CHAN_VOLT(CHG_TEMP, 0)
->> -	VADC_CHAN_VOLT(SPARE1, 0)
->> -	VADC_CHAN_VOLT(SPARE2, 0)
->> -	VADC_CHAN_VOLT(GND_REF, 0)
->> -	VADC_CHAN_VOLT(VDD_VADC, 0)
->> -
->> -	VADC_CHAN_VOLT(P_MUX1_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX2_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX3_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX4_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX5_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX6_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX7_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX8_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX9_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX10_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX11_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX12_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX13_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX14_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX15_1_1, 0)
->> -	VADC_CHAN_VOLT(P_MUX16_1_1, 0)
->> -
->> -	VADC_CHAN_VOLT(P_MUX1_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX2_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX3_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX4_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX5_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX6_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX7_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX8_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX9_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX10_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX11_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX12_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX13_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX14_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX15_1_3, 1)
->> -	VADC_CHAN_VOLT(P_MUX16_1_3, 1)
->> -
->> -	VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0)
->> -	VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0)
->> -	VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0)
->> -	VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0)
->> -	VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0)
->> -	VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0)
->> -	VADC_CHAN_VOLT(AMUX_PU1, 0)
->> -	VADC_CHAN_VOLT(AMUX_PU2, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
->> -
->> -	VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
->> -	VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
->> -	VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
->> -	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
->> -	VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
->> -	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
->> -
->> -	VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
->> -	VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
->> -	VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
->> -	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
->  -	VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
->> -	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
->> -
->> -	VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
->> -	VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
->> -	VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
->> -	VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
->> -	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
->> -	VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
->> -	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
->> -	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
->> +	VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
->> +	VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
->> +	VADC_CHAN_VOLT(VCHG_SNS, 3, SCALE_NONE)
->> +	VADC_CHAN_VOLT(SPARE1_03, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(USB_ID_MV, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(VCOIN, 1, SCALE_DEFAULT)
->> +	VADC_CHAN_VOLT(VBAT_SNS, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(VSYS, 1, SCALE_DEFAULT)
->> +	VADC_CHAN_TEMP(DIE_TEMP, 0, SCALE_PMIC_THERM)
->> +	VADC_CHAN_VOLT(REF_625MV, 0, SCALE_DEFAULT)
->> +	VADC_CHAN_VOLT(REF_1250MV, 0, SCALE_DEFAULT)
->> +	VADC_CHAN_VOLT(CHG_TEMP, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(SPARE1, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(SPARE2, 0, SCALE_PMI_CHG_TEMP)
->> +	VADC_CHAN_VOLT(GND_REF, 0, SCALE_DEFAULT)
->> +	VADC_CHAN_VOLT(VDD_VADC, 0, SCALE_DEFAULT)
->> +
->> +	VADC_CHAN_VOLT(P_MUX1_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX2_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX3_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX4_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX5_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX6_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX7_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX8_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX9_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX10_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX11_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX12_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX13_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX14_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX15_1_1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX16_1_1, 0, SCALE_NONE)
->> +
->> +	VADC_CHAN_VOLT(P_MUX1_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX2_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX3_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX4_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX5_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX6_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX7_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX8_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX9_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX10_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX11_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX12_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX13_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX14_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX15_1_3, 1, SCALE_NONE)
->> +	VADC_CHAN_VOLT(P_MUX16_1_3, 1, SCALE_NONE)
->> +
->> +	VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(AMUX_PU1, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(AMUX_PU2, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0, SCALE_NONE)
->> +
->> +	VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0, SCALE_THERM_100K_PULLUP)
->> +	VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0, SCALE_THERM_100K_PULLUP)
->> +	VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0, SCALE_THERM_100K_PULLUP)
->> +	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0, SCALE_THERM_100K_PULLUP)
->> +	VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0, SCALE_THERM_100K_PULLUP)
->> +	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0, SCALE_XOTHERM)
->> +
->> +	VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0, SCALE_NONE)
->> +
->> +	VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0, SCALE_NONE)
->> +	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0, SCALE_NONE)
->> +	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0, SCALE_NONE)
->>  };
->>
->>  static int vadc_get_dt_channel_data(struct device *dev,
->> @@ -848,6 +1064,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
->>  			return ret;
->>  		}
->>
->> +		prop.scale_fn = vadc_chans[prop.channel].scale_fn;
->>  		vadc->chan_props[index] = prop;
->>
->>  		vadc_chan = &vadc_chans[prop.channel];
->>
->
-Thanks,
-Ramakrishna
+diff --git a/MAINTAINERS b/MAINTAINERS
+index 77045ae15865..16490fbd1721 100644
+--- a/MAINTAINERS
++++ b/MAINTAINERS
+@@ -6239,6 +6239,7 @@ M:	Peter Rosin <peda@axentia.se>
+ L:	linux-iio@vger.kernel.org
+ S:	Maintained
+ F:	Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
++F:	drivers/iio/multiplexer/iio-mux.c
+ 
+ IIO SUBSYSTEM AND DRIVERS
+ M:	Jonathan Cameron <jic23@kernel.org>
+diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
+index a918270d6f54..b3c8c6ef0dff 100644
+--- a/drivers/iio/Kconfig
++++ b/drivers/iio/Kconfig
+@@ -83,6 +83,7 @@ source "drivers/iio/humidity/Kconfig"
+ source "drivers/iio/imu/Kconfig"
+ source "drivers/iio/light/Kconfig"
+ source "drivers/iio/magnetometer/Kconfig"
++source "drivers/iio/multiplexer/Kconfig"
+ source "drivers/iio/orientation/Kconfig"
+ if IIO_TRIGGER
+    source "drivers/iio/trigger/Kconfig"
+diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
+index 33fa4026f92c..93c769cd99bf 100644
+--- a/drivers/iio/Makefile
++++ b/drivers/iio/Makefile
+@@ -28,6 +28,7 @@ obj-y += humidity/
+ obj-y += imu/
+ obj-y += light/
+ obj-y += magnetometer/
++obj-y += multiplexer/
+ obj-y += orientation/
+ obj-y += potentiometer/
+ obj-y += potentiostat/
+diff --git a/drivers/iio/multiplexer/Kconfig b/drivers/iio/multiplexer/Kconfig
+new file mode 100644
+index 000000000000..70a044510686
+--- /dev/null
++++ b/drivers/iio/multiplexer/Kconfig
+@@ -0,0 +1,18 @@
++#
++# Multiplexer drivers
++#
++# When adding new entries keep the list in alphabetical order
++
++menu "Multiplexers"
++
++config IIO_MUX
++	tristate "IIO multiplexer driver"
++	select MULTIPLEXER
++	depends on OF
++	help
++	  Say yes here to build support for the IIO multiplexer.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called iio-mux.
++
++endmenu
+diff --git a/drivers/iio/multiplexer/Makefile b/drivers/iio/multiplexer/Makefile
+new file mode 100644
+index 000000000000..68be3c4abd07
+--- /dev/null
++++ b/drivers/iio/multiplexer/Makefile
+@@ -0,0 +1,6 @@
++#
++# Makefile for industrial I/O multiplexer drivers
++#
++
++# When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_IIO_MUX) += iio-mux.o
+diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
+new file mode 100644
+index 000000000000..92dfee2dfed1
+--- /dev/null
++++ b/drivers/iio/multiplexer/iio-mux.c
+@@ -0,0 +1,456 @@
++/*
++ * IIO multiplexer driver
++ *
++ * Copyright (C) 2016 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/err.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/mutex.h>
++#include <linux/mux.h>
++#include <linux/of.h>
++#include <linux/platform_device.h>
++
++struct mux_ext_info_cache {
++	char *data;
++	size_t size;
++};
++
++struct mux_child {
++	struct mux_ext_info_cache *ext_info_cache;
++};
++
++struct mux {
++	int cached_state;
++	struct mux_control *control;
++	struct iio_channel *parent;
++	struct iio_dev *indio_dev;
++	struct iio_chan_spec *chan;
++	struct iio_chan_spec_ext_info *ext_info;
++	struct mux_child *child;
++};
++
++static int iio_mux_select(struct mux *mux, int idx)
++{
++	struct mux_child *child = &mux->child[idx];
++	struct iio_chan_spec const *chan = &mux->chan[idx];
++	int ret;
++	int i;
++
++	ret = mux_control_select(mux->control, chan->channel);
++	if (ret < 0) {
++		mux->cached_state = -1;
++		return ret;
++	}
++
++	if (mux->cached_state == chan->channel)
++		return 0;
++
++	if (chan->ext_info) {
++		for (i = 0; chan->ext_info[i].name; ++i) {
++			const char *attr = chan->ext_info[i].name;
++			struct mux_ext_info_cache *cache;
++
++			cache = &child->ext_info_cache[i];
++
++			if (cache->size < 0)
++				continue;
++
++			ret = iio_write_channel_ext_info(mux->parent, attr,
++							 cache->data,
++							 cache->size);
++
++			if (ret < 0) {
++				mux_control_deselect(mux->control);
++				mux->cached_state = -1;
++				return ret;
++			}
++		}
++	}
++	mux->cached_state = chan->channel;
++
++	return 0;
++}
++
++static void iio_mux_deselect(struct mux *mux)
++{
++	mux_control_deselect(mux->control);
++}
++
++static int mux_read_raw(struct iio_dev *indio_dev,
++			struct iio_chan_spec const *chan,
++			int *val, int *val2, long mask)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	int ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_read_channel_raw(mux->parent, val);
++		break;
++
++	case IIO_CHAN_INFO_SCALE:
++		ret = iio_read_channel_scale(mux->parent, val, val2);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static int mux_read_avail(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  const int **vals, int *type, int *length,
++			  long mask)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	int ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		*type = IIO_VAL_INT;
++		ret = iio_read_avail_channel_raw(mux->parent, vals, length);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static int mux_write_raw(struct iio_dev *indio_dev,
++			 struct iio_chan_spec const *chan,
++			 int val, int val2, long mask)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	int ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_write_channel_raw(mux->parent, val);
++		break;
++
++	default:
++		ret = -EINVAL;
++	}
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static const struct iio_info mux_info = {
++	.read_raw = mux_read_raw,
++	.read_avail = mux_read_avail,
++	.write_raw = mux_write_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static ssize_t mux_read_ext_info(struct iio_dev *indio_dev, uintptr_t private,
++				 struct iio_chan_spec const *chan, char *buf)
++{
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	ssize_t ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	ret = iio_read_channel_ext_info(mux->parent,
++					mux->ext_info[private].name,
++					buf);
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static ssize_t mux_write_ext_info(struct iio_dev *indio_dev, uintptr_t private,
++				  struct iio_chan_spec const *chan,
++				  const char *buf, size_t len)
++{
++	struct device *dev = indio_dev->dev.parent;
++	struct mux *mux = iio_priv(indio_dev);
++	int idx = chan - mux->chan;
++	char *new;
++	ssize_t ret;
++
++	ret = iio_mux_select(mux, idx);
++	if (ret < 0)
++		return ret;
++
++	new = devm_kmemdup(dev, buf, len + 1, GFP_KERNEL);
++	if (!new) {
++		iio_mux_deselect(mux);
++		return -ENOMEM;
++	}
++
++	new[len] = 0;
++
++	ret = iio_write_channel_ext_info(mux->parent,
++					 mux->ext_info[private].name,
++					 buf, len);
++	if (ret < 0) {
++		iio_mux_deselect(mux);
++		devm_kfree(dev, new);
++		return ret;
++	}
++
++	devm_kfree(dev, mux->child[idx].ext_info_cache[private].data);
++	mux->child[idx].ext_info_cache[private].data = new;
++	mux->child[idx].ext_info_cache[private].size = len;
++
++	iio_mux_deselect(mux);
++
++	return ret;
++}
++
++static int mux_configure_channel(struct device *dev, struct mux *mux,
++				 u32 state, const char *label, int idx)
++{
++	struct mux_child *child = &mux->child[idx];
++	struct iio_chan_spec *chan = &mux->chan[idx];
++	struct iio_chan_spec const *pchan = mux->parent->channel;
++	char *page = NULL;
++	int num_ext_info;
++	int i;
++	int ret;
++
++	chan->indexed = 1;
++	chan->output = pchan->output;
++	chan->datasheet_name = label;
++	chan->ext_info = mux->ext_info;
++
++	ret = iio_get_channel_type(mux->parent, &chan->type);
++	if (ret < 0) {
++		dev_err(dev, "failed to get parent channel type\n");
++		return ret;
++	}
++
++	if (iio_channel_has_info(pchan, IIO_CHAN_INFO_RAW))
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_RAW);
++	if (iio_channel_has_info(pchan, IIO_CHAN_INFO_SCALE))
++		chan->info_mask_separate |= BIT(IIO_CHAN_INFO_SCALE);
++
++	if (iio_channel_has_available(pchan, IIO_CHAN_INFO_RAW))
++		chan->info_mask_separate_available |= BIT(IIO_CHAN_INFO_RAW);
++
++	if (state >= mux->control->states) {
++		dev_err(dev, "too many channels\n");
++		return -EINVAL;
++	}
++
++	chan->channel = state;
++
++	num_ext_info = iio_get_channel_ext_info_count(mux->parent);
++	if (num_ext_info) {
++		page = devm_kzalloc(dev, PAGE_SIZE, GFP_KERNEL);
++		if (!page)
++			return -ENOMEM;
++	}
++	child->ext_info_cache = devm_kzalloc(dev,
++					     sizeof(*child->ext_info_cache) *
++					     num_ext_info, GFP_KERNEL);
++	for (i = 0; i < num_ext_info; ++i) {
++		child->ext_info_cache[i].size = -1;
++
++		if (!pchan->ext_info[i].write)
++			continue;
++		if (!pchan->ext_info[i].read)
++			continue;
++
++		ret = iio_read_channel_ext_info(mux->parent,
++						mux->ext_info[i].name,
++						page);
++		if (ret < 0) {
++			dev_err(dev, "failed to get ext_info '%s'\n",
++				pchan->ext_info[i].name);
++			return ret;
++		}
++		if (ret >= PAGE_SIZE) {
++			dev_err(dev, "too large ext_info '%s'\n",
++				pchan->ext_info[i].name);
++			return -EINVAL;
++		}
++
++		child->ext_info_cache[i].data = devm_kmemdup(dev, page, ret + 1,
++							     GFP_KERNEL);
++		child->ext_info_cache[i].data[ret] = 0;
++		child->ext_info_cache[i].size = ret;
++	}
++
++	if (page)
++		devm_kfree(dev, page);
++
++	return 0;
++}
++
++/*
++ * Same as of_property_for_each_string(), but also keeps track of the
++ * index of each string.
++ */
++#define of_property_for_each_string_index(np, propname, prop, s, i)	\
++	for (prop = of_find_property(np, propname, NULL),		\
++	     s = of_prop_next_string(prop, NULL),			\
++	     i = 0;							\
++	     s;								\
++	     s = of_prop_next_string(prop, s),				\
++	     i++)
++
++static int mux_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = pdev->dev.of_node;
++	struct iio_dev *indio_dev;
++	struct iio_channel *parent;
++	struct mux *mux;
++	struct property *prop;
++	const char *label;
++	u32 state;
++	int sizeof_ext_info;
++	int children;
++	int sizeof_priv;
++	int i;
++	int ret;
++
++	if (!np)
++		return -ENODEV;
++
++	parent = devm_iio_channel_get(dev, "parent");
++	if (IS_ERR(parent)) {
++		if (PTR_ERR(parent) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get parent channel\n");
++		return PTR_ERR(parent);
++	}
++
++	sizeof_ext_info = iio_get_channel_ext_info_count(parent);
++	if (sizeof_ext_info) {
++		sizeof_ext_info += 1; /* one extra entry for the sentinel */
++		sizeof_ext_info *= sizeof(*mux->ext_info);
++	}
++
++	children = 0;
++	of_property_for_each_string(np, "channels", prop, label) {
++		if (*label)
++			children++;
++	}
++	if (children <= 0) {
++		dev_err(dev, "not even a single child\n");
++		return -EINVAL;
++	}
++
++	sizeof_priv = sizeof(*mux);
++	sizeof_priv += sizeof(*mux->child) * children;
++	sizeof_priv += sizeof(*mux->chan) * children;
++	sizeof_priv += sizeof_ext_info;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof_priv);
++	if (!indio_dev)
++		return -ENOMEM;
++
++	mux = iio_priv(indio_dev);
++	mux->child = (struct mux_child *)(mux + 1);
++	mux->chan = (struct iio_chan_spec *)(mux->child + children);
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	mux->parent = parent;
++	mux->cached_state = -1;
++
++	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &mux_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = mux->chan;
++	indio_dev->num_channels = children;
++	if (sizeof_ext_info) {
++		mux->ext_info = devm_kmemdup(dev,
++					     parent->channel->ext_info,
++					     sizeof_ext_info, GFP_KERNEL);
++		if (!mux->ext_info)
++			return -ENOMEM;
++
++		for (i = 0; mux->ext_info[i].name; ++i) {
++			if (parent->channel->ext_info[i].read)
++				mux->ext_info[i].read = mux_read_ext_info;
++			if (parent->channel->ext_info[i].write)
++				mux->ext_info[i].write = mux_write_ext_info;
++			mux->ext_info[i].private = i;
++		}
++	}
++
++	mux->control = devm_mux_control_get(dev, NULL);
++	if (IS_ERR(mux->control)) {
++		if (PTR_ERR(mux->control) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get control-mux\n");
++		return PTR_ERR(mux->control);
++	}
++
++	i = 0;
++	of_property_for_each_string_index(np, "channels", prop, label, state) {
++		if (!*label)
++			continue;
++
++		ret = mux_configure_channel(dev, mux, state, label, i++);
++		if (ret < 0)
++			return ret;
++	}
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret) {
++		dev_err(dev, "failed to register iio device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static const struct of_device_id mux_match[] = {
++	{ .compatible = "iio-mux" },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mux_match);
++
++static struct platform_driver mux_driver = {
++	.probe = mux_probe,
++	.driver = {
++		.name = "iio-mux",
++		.of_match_table = mux_match,
++	},
++};
++module_platform_driver(mux_driver);
++
++MODULE_DESCRIPTION("IIO multiplexer driver");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
+
