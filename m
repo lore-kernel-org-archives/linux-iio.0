@@ -1,811 +1,629 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ve1eur01on0097.outbound.protection.outlook.com ([104.47.1.97]:44400
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1757409AbcK3Osp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 30 Nov 2016 09:48:45 -0500
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>,
-        "Rob Herring" <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "Jonathan Cameron" <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        "Lars-Peter Clausen" <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Greg Kroah-Hartman" <gregkh@linuxfoundation.org>,
-        <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-        <linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
-Subject: [PATCH v6 2/9] misc: minimal mux subsystem and gpio-based mux controller
-Date: Wed, 30 Nov 2016 09:16:56 +0100
-Message-ID: <1480493823-21462-3-git-send-email-peda@axentia.se>
-In-Reply-To: <1480493823-21462-1-git-send-email-peda@axentia.se>
-References: <1480493823-21462-1-git-send-email-peda@axentia.se>
+Received: from smtp.codeaurora.org ([198.145.29.96]:33986 "EHLO
+        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751150AbcK3MNo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 07:13:44 -0500
+Subject: Re: [PATCH V5 2/2] iio: adc: spmi-vadc: Changes to support different
+ scaling
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+References: <1479965465-30182-1-git-send-email-rphani@codeaurora.org>
+ <1479965465-30182-3-git-send-email-rphani@codeaurora.org>
+ <13ba4983-db04-4ea3-73c0-6b82a319322b@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
+        smohanad@codeaurora.org, mgautam@codeaurora.org,
+        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+From: "Phani A, Rama Krishna" <rphani@codeaurora.org>
+Message-ID: <d455e681-ee8e-ad1a-1f20-d6285d033547@codeaurora.org>
+Date: Wed, 30 Nov 2016 14:37:32 +0530
 MIME-Version: 1.0
-Content-Type: text/plain
+In-Reply-To: <13ba4983-db04-4ea3-73c0-6b82a319322b@kernel.org>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add a new minimalistic subsystem that handles multiplexer controllers.
-When multiplexers are used in various places in the kernel, and the
-same multiplexer controller can be used for several independent things,
-there should be one place to implement support for said multiplexer
-controller.
+Hi Jonathan,
 
-A single multiplexer controller can also be used to control several
-parallel multiplexers, that are in turn used by different subsystems
-in the kernel, leading to a need to coordinate multiplexer accesses.
-The multiplexer subsystem handles this coordination.
+On 27-Nov-16 9:18 PM, Jonathan Cameron wrote:
+> On 24/11/16 05:31, Rama Krishna Phani A wrote:
+>> Several ADC channels are supported in PMIC which can be used to
+>> measure voltage, temperature, current etc. Different scaling can be
+>> applied on the obtained voltage to report in physical units. Scaling
+>> functionality can be different per channel. Add scaling support per
+>> channel. Every channel present in adc has an unique conversion formula
+>> for obtained voltage. Add support to report in Raw as well as in
+>> processed format. Scaling is applied when processed read is requested
+>> and is not applied when a Raw read is requested.
+>>
+>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+> I obviously didn't make it clear enough in last review.
+>
+> If you can't return a value in response to reading a sysfs attribute, the
+> attribute should not exist.  See below for a suggestion on this.
+Agree., Even here we never expose a channel in sysfs if we dont know the 
+response. Channels in sysfs are populated based on list available from 
+DT. Provided more explanation below.
+>
+> Jonathan
+>> ---
+>>  drivers/iio/adc/qcom-spmi-vadc.c | 435 +++++++++++++++++++++++++++++----------
+>>  1 file changed, 326 insertions(+), 109 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+>> index 93c0639..a4e5405 100644
+>> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+>> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+>> @@ -84,7 +84,7 @@
+>>  #define VADC_MAX_ADC_CODE			0xa800
+>>
+>>  #define VADC_ABSOLUTE_RANGE_UV			625000
+>> -#define VADC_RATIOMETRIC_RANGE_UV		1800000
+>> +#define VADC_RATIOMETRIC_RANGE			1800
+>>
+>>  #define VADC_DEF_PRESCALING			0 /* 1:1 */
+>>  #define VADC_DEF_DECIMATION			0 /* 512 */
+>> @@ -100,9 +100,23 @@
+>>
+>>  #define KELVINMIL_CELSIUSMIL			273150
+>>
+>> +#define PMI_CHG_SCALE_1				-138890
+>> +#define PMI_CHG_SCALE_2				391750000000
+>> +
+>>  #define VADC_CHAN_MIN			VADC_USBIN
+>>  #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
+>>
+>> +/**
+>> + * struct vadc_map_pt - Map the graph representation for ADC channel
+>> + * @x: Represent the ADC digitized code.
+>> + * @y: Represent the physical data which can be temperature, voltage,
+>> + *     resistance.
+>> + */
+>> +struct vadc_map_pt {
+>> +	s32 x;
+>> +	s32 y;
+>> +};
+>> +
+>>  /*
+>>   * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
+>>   * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
+>> @@ -148,6 +162,9 @@ struct vadc_prescale_ratio {
+>>   *	start of conversion.
+>>   * @avg_samples: ability to provide single result from the ADC
+>>   *	that is an average of multiple measurements.
+>> + * @scale_fn: Represents the scaling function to convert voltage
+>> + *	physical units desired by the client for the channel.
+>> + *	Referenced from enum vadc_scale_fn_type.
+>>   */
+>>  struct vadc_channel_prop {
+>>  	unsigned int channel;
+>> @@ -156,6 +173,7 @@ struct vadc_channel_prop {
+>>  	unsigned int prescale;
+>>  	unsigned int hw_settle_time;
+>>  	unsigned int avg_samples;
+>> +	unsigned int scale_fn;
+>>  };
+>>
+>>  /**
+>> @@ -186,6 +204,37 @@ struct vadc_priv {
+>>  	struct mutex		 lock;
+>>  };
+>>
+>> +/**
+>> + * struct vadc_scale_fn - Scaling function prototype
+>> + * @scale: Function pointer to one of the scaling functions
+>> + *	which takes the adc properties, channel properties,
+>> + *	and returns the physical result.
+>> + */
+>> +struct vadc_scale_fn {
+>> +	int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
+>> +		     u16, int *);
+>> +};
+>> +
+>> +/**
+>> + * enum vadc_scale_fn_type - Scaling function to convert ADC code to
+>> + *				physical scaled units for the channel.
+>> + * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
+>> + * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
+>> + *				 Uses a mapping table with 100K pullup.
+>> + * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
+>> + * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
+>> + * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
+>> + * SCALE_NONE: Do not use this scaling type.
+>> + */
+>> +enum vadc_scale_fn_type {
+>> +	SCALE_DEFAULT = 0,
+>> +	SCALE_THERM_100K_PULLUP,
+>> +	SCALE_PMIC_THERM,
+>> +	SCALE_XOTHERM,
+>> +	SCALE_PMI_CHG_TEMP,
+>> +	SCALE_NONE,
+>> +};
+>> +
+>>  static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
+>>  	{.num =  1, .den =  1},
+>>  	{.num =  1, .den =  3},
+>> @@ -197,6 +246,44 @@ struct vadc_priv {
+>>  	{.num =  1, .den = 10}
+>>  };
+>>
+>> +/* Voltage to temperature */
+>> +static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
+>> +	{1758,	-40},
+>> +	{1742,	-35},
+>> +	{1719,	-30},
+>> +	{1691,	-25},
+>> +	{1654,	-20},
+>> +	{1608,	-15},
+>> +	{1551,	-10},
+>> +	{1483,	-5},
+>> +	{1404,	0},
+>> +	{1315,	5},
+>> +	{1218,	10},
+>> +	{1114,	15},
+>> +	{1007,	20},
+>> +	{900,	25},
+>> +	{795,	30},
+>> +	{696,	35},
+>> +	{605,	40},
+>> +	{522,	45},
+>> +	{448,	50},
+>> +	{383,	55},
+>> +	{327,	60},
+>> +	{278,	65},
+>> +	{237,	70},
+>> +	{202,	75},
+>> +	{172,	80},
+>> +	{146,	85},
+>> +	{125,	90},
+>> +	{107,	95},
+>> +	{92,	100},
+>> +	{79,	105},
+>> +	{68,	110},
+>> +	{59,	115},
+>> +	{51,	120},
+>> +	{44,	125}
+>> +};
+>> +
+>>  static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
+>>  {
+>>  	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
+>> @@ -418,7 +505,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>  	u16 read_1, read_2;
+>>  	int ret;
+>>
+>> -	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
+>> +	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
+>>  	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+>>
+>>  	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+>> @@ -468,6 +555,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>  	return ret;
+>>  }
+>>
+>> +static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
+>> +				 u32 tablesize, s32 input, s64 *output)
+>> +{
+>> +	bool descending = 1;
+>> +	u32 i = 0;
+>> +
+>> +	if (!pts)
+>> +		return -EINVAL;
+>> +
+>> +	/* Check if table is descending or ascending */
+>> +	if (tablesize > 1) {
+>> +		if (pts[0].x < pts[1].x)
+>> +			descending = 0;
+>> +	}
+>> +
+>> +	while (i < tablesize) {
+>> +		if ((descending) && (pts[i].x < input)) {
+>> +			/* table entry is less than measured*/
+>> +			 /* value and table is descending, stop */
+>> +			break;
+>> +		} else if ((!descending) &&
+>> +				(pts[i].x > input)) {
+>> +			/* table entry is greater than measured*/
+>> +			/*value and table is ascending, stop */
+>> +			break;
+>> +		}
+>> +		i++;
+>> +	}
+>> +
+>> +	if (i == 0) {
+>> +		*output = pts[0].y;
+>> +	} else if (i == tablesize) {
+>> +		*output = pts[tablesize - 1].y;
+>> +	} else {
+>> +		/* result is between search_index and search_index-1 */
+>> +		/* interpolate linearly */
+>> +		*output = (((s32)((pts[i].y - pts[i - 1].y) *
+>> +			(input - pts[i - 1].x)) /
+>> +			(pts[i].x - pts[i - 1].x)) +
+>> +			pts[i - 1].y);
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>>  static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
+>>  			     const struct vadc_channel_prop *prop,
+>>  			     s64 *scale_voltage)
+>> @@ -502,6 +634,77 @@ static int vadc_scale_volt(struct vadc_priv *vadc,
+>>  	return 0;
+>>  }
+>>
+>> +static int vadc_scale_therm(struct vadc_priv *vadc,
+>> +			    const struct vadc_channel_prop *prop, u16 adc_code,
+>> +			    int *result_mdec)
+>> +{
+>> +	s64 voltage = 0, result = 0;
+>> +
+>> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>> +
+>> +	if (prop->calibration == VADC_CALIB_ABSOLUTE)
+>> +		voltage /= 1000;
+>> +
+>> +	vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
+>> +			      ARRAY_SIZE(adcmap_100k_104ef_104fb),
+>> +			      voltage, &result);
+>> +	result *= 1000;
+>> +	*result_mdec = result;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int vadc_scale_die_temp(struct vadc_priv *vadc,
+>> +			       const struct vadc_channel_prop *prop,
+>> +			       u16 adc_code, int *result_mdec)
+>> +{
+>> +	const struct vadc_prescale_ratio *prescale;
+>> +	s64 voltage = 0;
+>> +
+>> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>> +
+>> +	if (voltage > 0) {
+>> +		prescale = &vadc_prescale_ratios[prop->prescale];
+>> +		voltage = voltage * prescale->den;
+>> +		voltage /= (prescale->num * 2);
+>> +	} else {
+>> +		voltage = 0;
+>> +	}
+>> +
+>> +	voltage -= KELVINMIL_CELSIUSMIL;
+>> +	*result_mdec = voltage;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int vadc_scale_chg_temp(struct vadc_priv *vadc,
+>> +			       const struct vadc_channel_prop *prop,
+>> +			       u16 adc_code, int *result_mdec)
+>> +{
+>> +	const struct vadc_prescale_ratio *prescale;
+>> +	s64 voltage = 0, result = 0;
+>> +
+>> +	vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>> +
+>> +	prescale = &vadc_prescale_ratios[prop->prescale];
+>> +	voltage = voltage * prescale->den;
+>> +	voltage = div64_s64(voltage, prescale->num);
+>> +	voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
+>> +	voltage = (voltage + PMI_CHG_SCALE_2);
+>> +	result =  div64_s64(voltage, 1000000);
+>> +	*result_mdec = result;
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int vadc_scale(struct vadc_priv *vadc,
+>> +		      const struct vadc_channel_prop *prop, u16 adc_code,
+>> +		      int *scale)
+>> +{
+>> +	dev_err(vadc->dev, "Need a scale function\n");
+>> +	return 0;
+>> +}
+>> +
+>>  static int vadc_decimation_from_dt(u32 value)
+>>  {
+>>  	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
+>> @@ -547,6 +750,15 @@ static int vadc_avg_samples_from_dt(u32 value)
+>>  	return __ffs64(value);
+>>  }
+>>
+>> +static struct vadc_scale_fn scale_fn[] = {
+>> +	[SCALE_DEFAULT] = {vadc_scale_volt},
+>> +	[SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
+>> +	[SCALE_PMIC_THERM] = {vadc_scale_die_temp},
+>> +	[SCALE_XOTHERM] = {vadc_scale_therm},
+>> +	[SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
+>> +	[SCALE_NONE] = {vadc_scale},
+>> +};
+>> +
+>>  static int vadc_read_raw(struct iio_dev *indio_dev,
+>>  			 struct iio_chan_spec const *chan, int *val, int *val2,
+>>  			 long mask)
+>> @@ -563,7 +775,7 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+>>  		if (ret)
+>>  			break;
+>>
+>> -		vadc_scale_volt(vadc, prop, adc_code, val);
+>> +		scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
+>>
+>>  		return IIO_VAL_INT;
+>>  	case IIO_CHAN_INFO_RAW:
+>> @@ -606,23 +818,27 @@ struct vadc_channels {
+>>  	unsigned int prescale_index;
+>>  	enum iio_chan_type type;
+>>  	long info_mask;
+>> +	unsigned int scale_fn;
+>>  };
+>>
+>> -#define VADC_CHAN(_dname, _type, _mask, _pre)				\
+>> +#define VADC_CHAN(_dname, _type, _mask, _pre, _scale)			\
+>>  	[VADC_##_dname] = {						\
+>>  		.datasheet_name = __stringify(_dname),			\
+>>  		.prescale_index = _pre,					\
+>>  		.type = _type,						\
+>> -		.info_mask = _mask					\
+>> +		.info_mask = _mask,					\
+>> +		.scale_fn = _scale					\
+>>  	},								\
+>>
+>> -#define VADC_CHAN_TEMP(_dname, _pre)					\
+>> -	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
+>> +#define VADC_CHAN_TEMP(_dname, _pre, _scale)				\
+>> +	VADC_CHAN(_dname, IIO_TEMP,					\
+>> +		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),	\
+>> +		_pre, _scale)						\
+>>
+>> -#define VADC_CHAN_VOLT(_dname, _pre)					\
+>> +#define VADC_CHAN_VOLT(_dname, _pre, _scale)				\
+>>  	VADC_CHAN(_dname, IIO_VOLTAGE,					\
+>>  		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
+>> -		  _pre)							\
+>> +		  _pre, _scale)						\
+> In the SCALE_NONE case you are still creating the sysfs attributes to provide
+> processed.  Just have a variant of this macro that doesn't do this.
+>
+> That way we don't end up with a sysfs attribute that always results in
+> an error!
+>
+> #define VADC_CHAN_VOLT_NO_KNOWN_SCALEE(_dname, _pre) \
+> 	VADC_CHAN(_dname, IIO_VOLTAGE, BIT(IIO_CHAN_INFO_RAW), _pre);
+>
+sysfs attributes will be created only for the channels that are 
+populated from DT. Here we are just mapping a function that needs to be 
+invoked in case the channel is available.
 
-This new mux controller subsystem initially comes with a single backend
-driver that controls gpio based multiplexers. Even though not needed by
-this initial driver, the mux controller subsystem is prepared to handle
-chips with multiple (independent) mux controllers.
+None of the channels are exposed in sysfs unconditionally. Channels with 
+DT entry only will get exposed in sysfs.
 
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- Documentation/driver-model/devres.txt |   6 +-
- MAINTAINERS                           |   2 +
- drivers/misc/Kconfig                  |  30 ++++
- drivers/misc/Makefile                 |   2 +
- drivers/misc/mux-core.c               | 311 ++++++++++++++++++++++++++++++++++
- drivers/misc/mux-gpio.c               | 138 +++++++++++++++
- include/linux/mux.h                   | 197 +++++++++++++++++++++
- 7 files changed, 685 insertions(+), 1 deletion(-)
- create mode 100644 drivers/misc/mux-core.c
- create mode 100644 drivers/misc/mux-gpio.c
- create mode 100644 include/linux/mux.h
+For SCALE_NONE .., none of these channels will get exposed in sysfs.
+Even for other SCALE_* ., the channels will be shown in sysfs only if 
+there is any corresponding DT entry for that channel.
 
-diff --git a/Documentation/driver-model/devres.txt b/Documentation/driver-model/devres.txt
-index ca9d1eb46bc0..d64ede85b61b 100644
---- a/Documentation/driver-model/devres.txt
-+++ b/Documentation/driver-model/devres.txt
-@@ -330,7 +330,11 @@ MEM
-   devm_kzalloc()
- 
- MFD
-- devm_mfd_add_devices()
-+  devm_mfd_add_devices()
-+
-+MUX
-+  devm_mux_control_get()
-+  devm_mux_control_put()
- 
- PER-CPU MEM
-   devm_alloc_percpu()
-diff --git a/MAINTAINERS b/MAINTAINERS
-index 3d4d0efc2b64..dc7498682752 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -8407,6 +8407,8 @@ MULTIPLEXER SUBSYSTEM
- M:	Peter Rosin <peda@axentia.se>
- S:	Maintained
- F:	Documentation/devicetree/bindings/misc/mux-*
-+F:	include/linux/mux.h
-+F:	drivers/misc/mux-*
- 
- MULTISOUND SOUND DRIVER
- M:	Andrew Veliath <andrewtv@usa.net>
-diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
-index 64971baf11fa..2ce675e410c5 100644
---- a/drivers/misc/Kconfig
-+++ b/drivers/misc/Kconfig
-@@ -766,6 +766,36 @@ config PANEL_BOOT_MESSAGE
- 	  An empty message will only clear the display at driver init time. Any other
- 	  printf()-formatted message is valid with newline and escape codes.
- 
-+menuconfig MULTIPLEXER
-+	bool "Multiplexer subsystem"
-+	help
-+	  Multiplexer controller subsystem. Multiplexers are used in a
-+	  variety of settings, and this subsystem abstracts their use
-+	  so that the rest of the kernel sees a common interface. When
-+	  multiple parallel multiplexers are controlled by one single
-+	  multiplexer controller, this subsystem also coordinates the
-+	  multiplexer accesses.
-+
-+	  If unsure, say no.
-+
-+if MULTIPLEXER
-+
-+config MUX_GPIO
-+	tristate "GPIO-controlled Multiplexer"
-+	depends on OF && GPIOLIB
-+	help
-+	  GPIO-controlled Multiplexer controller.
-+
-+	  The driver builds a single multiplexer controller using a number
-+	  of gpio pins. For N pins, there will be 2^N possible multiplexer
-+	  states. The GPIO pins can be connected (by the hardware) to several
-+	  multiplexers, which in that case will be operated in parallel.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called mux-gpio.
-+
-+endif
-+
- source "drivers/misc/c2port/Kconfig"
- source "drivers/misc/eeprom/Kconfig"
- source "drivers/misc/cb710/Kconfig"
-diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
-index 31983366090a..0befa2bba762 100644
---- a/drivers/misc/Makefile
-+++ b/drivers/misc/Makefile
-@@ -53,6 +53,8 @@ obj-$(CONFIG_ECHO)		+= echo/
- obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
- obj-$(CONFIG_CXL_BASE)		+= cxl/
- obj-$(CONFIG_PANEL)             += panel.o
-+obj-$(CONFIG_MULTIPLEXER)      	+= mux-core.o
-+obj-$(CONFIG_MUX_GPIO)		+= mux-gpio.o
- 
- lkdtm-$(CONFIG_LKDTM)		+= lkdtm_core.o
- lkdtm-$(CONFIG_LKDTM)		+= lkdtm_bugs.o
-diff --git a/drivers/misc/mux-core.c b/drivers/misc/mux-core.c
-new file mode 100644
-index 000000000000..cccaa7261a6e
---- /dev/null
-+++ b/drivers/misc/mux-core.c
-@@ -0,0 +1,311 @@
-+/*
-+ * Multiplexer subsystem
-+ *
-+ * Copyright (C) 2016 Axentia Technologies AB
-+ *
-+ * Author: Peter Rosin <peda@axentia.se>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#define pr_fmt(fmt) "mux-core: " fmt
-+
-+#include <linux/device.h>
-+#include <linux/err.h>
-+#include <linux/idr.h>
-+#include <linux/module.h>
-+#include <linux/mux.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/slab.h>
-+
-+static struct class mux_class = {
-+	.name = "mux",
-+	.owner = THIS_MODULE,
-+};
-+
-+static int __init mux_init(void)
-+{
-+	return class_register(&mux_class);
-+}
-+
-+static DEFINE_IDA(mux_ida);
-+
-+static void mux_chip_release(struct device *dev)
-+{
-+	struct mux_chip *mux_chip = to_mux_chip(dev);
-+
-+	ida_simple_remove(&mux_ida, mux_chip->id);
-+	kfree(mux_chip);
-+}
-+
-+static struct device_type mux_type = {
-+	.name = "mux-chip",
-+	.release = mux_chip_release,
-+};
-+
-+struct mux_chip *mux_chip_alloc(struct device *dev,
-+				unsigned int controllers, size_t sizeof_priv)
-+{
-+	struct mux_chip *mux_chip;
-+	int i;
-+
-+	if (!dev || !controllers)
-+		return NULL;
-+
-+	mux_chip = kzalloc(sizeof(*mux_chip) +
-+			   controllers * sizeof(*mux_chip->mux) +
-+			   sizeof_priv, GFP_KERNEL);
-+	if (!mux_chip)
-+		return NULL;
-+
-+	mux_chip->mux = (struct mux_control *)(mux_chip + 1);
-+	mux_chip->dev.class = &mux_class;
-+	mux_chip->dev.type = &mux_type;
-+	mux_chip->dev.parent = dev;
-+	mux_chip->dev.of_node = dev->of_node;
-+	dev_set_drvdata(&mux_chip->dev, mux_chip);
-+
-+	mux_chip->id = ida_simple_get(&mux_ida, 0, 0, GFP_KERNEL);
-+	if (mux_chip->id < 0) {
-+		pr_err("muxchipX failed to get a device id\n");
-+		kfree(mux_chip);
-+		return NULL;
-+	}
-+	dev_set_name(&mux_chip->dev, "muxchip%d", mux_chip->id);
-+
-+	mux_chip->controllers = controllers;
-+	for (i = 0; i < controllers; ++i) {
-+		struct mux_control *mux = &mux_chip->mux[i];
-+
-+		mux->chip = mux_chip;
-+		init_rwsem(&mux->lock);
-+		mux->cached_state = -1;
-+		mux->idle_state = -1;
-+	}
-+
-+	device_initialize(&mux_chip->dev);
-+
-+	return mux_chip;
-+}
-+EXPORT_SYMBOL_GPL(mux_chip_alloc);
-+
-+static int mux_control_set(struct mux_control *mux, int state)
-+{
-+	int ret = mux->chip->ops->set(mux, state);
-+
-+	mux->cached_state = ret < 0 ? -1 : state;
-+
-+	return ret;
-+}
-+
-+int mux_chip_register(struct mux_chip *mux_chip)
-+{
-+	int i;
-+	int ret;
-+
-+	for (i = 0; i < mux_chip->controllers; ++i) {
-+		struct mux_control *mux = &mux_chip->mux[i];
-+
-+		if (mux->idle_state == mux->cached_state)
-+			continue;
-+
-+		ret = mux_control_set(mux, mux->idle_state);
-+		if (ret < 0)
-+			return ret;
-+	}
-+
-+	return device_add(&mux_chip->dev);
-+}
-+EXPORT_SYMBOL_GPL(mux_chip_register);
-+
-+void mux_chip_unregister(struct mux_chip *mux_chip)
-+{
-+	device_del(&mux_chip->dev);
-+}
-+EXPORT_SYMBOL_GPL(mux_chip_unregister);
-+
-+void mux_chip_free(struct mux_chip *mux_chip)
-+{
-+	if (!mux_chip)
-+		return;
-+	put_device(&mux_chip->dev);
-+}
-+EXPORT_SYMBOL_GPL(mux_chip_free);
-+
-+int mux_control_select(struct mux_control *mux, int state)
-+{
-+	int ret;
-+
-+	if (down_read_trylock(&mux->lock)) {
-+		if (mux->cached_state == state)
-+			return 0;
-+
-+		/* Sigh, the mux needs updating... */
-+		up_read(&mux->lock);
-+	}
-+
-+	/* ...or it's just contended. */
-+	down_write(&mux->lock);
-+
-+	if (mux->cached_state == state) {
-+		/*
-+		 * Hmmm, someone else changed the mux to my liking.
-+		 * That makes me wonder how long I waited for nothing?
-+		 */
-+		downgrade_write(&mux->lock);
-+		return 0;
-+	}
-+
-+	ret = mux_control_set(mux, state);
-+	if (ret < 0) {
-+		if (mux->idle_state != -1)
-+			mux_control_set(mux, mux->idle_state);
-+
-+		up_write(&mux->lock);
-+		return ret;
-+	}
-+
-+	downgrade_write(&mux->lock);
-+
-+	return 1;
-+}
-+EXPORT_SYMBOL_GPL(mux_control_select);
-+
-+int mux_control_deselect(struct mux_control *mux)
-+{
-+	int ret = 0;
-+
-+	if (mux->idle_state != -1 && mux->cached_state != mux->idle_state)
-+		ret = mux_control_set(mux, mux->idle_state);
-+
-+	up_read(&mux->lock);
-+
-+	return ret;
-+}
-+EXPORT_SYMBOL_GPL(mux_control_deselect);
-+
-+static int of_dev_node_match(struct device *dev, const void *data)
-+{
-+	return dev->of_node == data;
-+}
-+
-+static struct mux_chip *of_find_mux_chip_by_node(struct device_node *np)
-+{
-+	struct device *dev;
-+
-+	dev = class_find_device(&mux_class, NULL, np, of_dev_node_match);
-+
-+	return dev ? to_mux_chip(dev) : NULL;
-+}
-+
-+struct mux_control *mux_control_get(struct device *dev, const char *mux_name)
-+{
-+	struct device_node *np = dev->of_node;
-+	struct of_phandle_args args;
-+	struct mux_chip *mux_chip;
-+	unsigned int controller;
-+	int index = 0;
-+	int ret;
-+
-+	if (mux_name) {
-+		index = of_property_match_string(np, "mux-control-names",
-+						 mux_name);
-+		if (index < 0)
-+			return ERR_PTR(index);
-+	}
-+
-+	ret = of_parse_phandle_with_args(np,
-+					 "mux-controls", "#mux-control-cells",
-+					 index, &args);
-+	if (ret) {
-+		dev_err(dev, "%s: failed to get mux-control %s(%i)\n",
-+			np->full_name, mux_name ?: "", index);
-+		return ERR_PTR(ret);
-+	}
-+
-+	mux_chip = of_find_mux_chip_by_node(args.np);
-+	of_node_put(args.np);
-+	if (!mux_chip)
-+		return ERR_PTR(-EPROBE_DEFER);
-+
-+	if (args.args_count > 1 ||
-+	    (!args.args_count && (mux_chip->controllers > 1))) {
-+		dev_err(dev, "%s: wrong #mux-control-cells for %s\n",
-+			np->full_name, args.np->full_name);
-+		return ERR_PTR(-EINVAL);
-+	}
-+
-+	controller = 0;
-+	if (args.args_count)
-+		controller = args.args[0];
-+
-+	if (controller >= mux_chip->controllers)
-+		return ERR_PTR(-EINVAL);
-+
-+	get_device(&mux_chip->dev);
-+	return &mux_chip->mux[controller];
-+}
-+EXPORT_SYMBOL_GPL(mux_control_get);
-+
-+void mux_control_put(struct mux_control *mux)
-+{
-+	put_device(&mux->chip->dev);
-+}
-+EXPORT_SYMBOL_GPL(mux_control_put);
-+
-+static void devm_mux_control_release(struct device *dev, void *res)
-+{
-+	struct mux_control *mux = *(struct mux_control **)res;
-+
-+	mux_control_put(mux);
-+}
-+
-+struct mux_control *devm_mux_control_get(struct device *dev,
-+					 const char *mux_name)
-+{
-+	struct mux_control **ptr, *mux;
-+
-+	ptr = devres_alloc(devm_mux_control_release, sizeof(*ptr), GFP_KERNEL);
-+	if (!ptr)
-+		return ERR_PTR(-ENOMEM);
-+
-+	mux = mux_control_get(dev, mux_name);
-+	if (IS_ERR(mux)) {
-+		devres_free(ptr);
-+		return mux;
-+	}
-+
-+	*ptr = mux;
-+	devres_add(dev, ptr);
-+
-+	return mux;
-+}
-+EXPORT_SYMBOL_GPL(devm_mux_control_get);
-+
-+static int devm_mux_control_match(struct device *dev, void *res, void *data)
-+{
-+	struct mux_control **r = res;
-+
-+	if (!r || !*r) {
-+		WARN_ON(!r || !*r);
-+		return 0;
-+	}
-+
-+	return *r == data;
-+}
-+
-+void devm_mux_control_put(struct device *dev, struct mux_control *mux)
-+{
-+	WARN_ON(devres_release(dev, devm_mux_control_release,
-+			       devm_mux_control_match, mux));
-+}
-+EXPORT_SYMBOL_GPL(devm_mux_control_put);
-+
-+subsys_initcall(mux_init);
-+
-+MODULE_DESCRIPTION("Multiplexer subsystem");
-+MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/misc/mux-gpio.c b/drivers/misc/mux-gpio.c
-new file mode 100644
-index 000000000000..a107a9b96854
---- /dev/null
-+++ b/drivers/misc/mux-gpio.c
-@@ -0,0 +1,138 @@
-+/*
-+ * GPIO-controlled multiplexer driver
-+ *
-+ * Copyright (C) 2016 Axentia Technologies AB
-+ *
-+ * Author: Peter Rosin <peda@axentia.se>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/module.h>
-+#include <linux/mux.h>
-+#include <linux/of.h>
-+#include <linux/of_platform.h>
-+#include <linux/platform_device.h>
-+
-+struct mux_gpio {
-+	struct gpio_descs *gpios;
-+	int *val;
-+};
-+
-+static int mux_gpio_set(struct mux_control *mux, int state)
-+{
-+	struct mux_gpio *mux_gpio = mux_chip_priv(mux->chip);
-+	int i;
-+
-+	for (i = 0; i < mux_gpio->gpios->ndescs; i++)
-+		mux_gpio->val[i] = (state >> i) & 1;
-+
-+	gpiod_set_array_value_cansleep(mux_gpio->gpios->ndescs,
-+				       mux_gpio->gpios->desc,
-+				       mux_gpio->val);
-+
-+	return 0;
-+}
-+
-+static const struct mux_control_ops mux_gpio_ops = {
-+	.set = mux_gpio_set,
-+};
-+
-+static const struct of_device_id mux_gpio_dt_ids[] = {
-+	{ .compatible = "mux-gpio", },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mux_gpio_dt_ids);
-+
-+static int mux_gpio_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct device_node *np = pdev->dev.of_node;
-+	struct mux_chip *mux_chip;
-+	struct mux_gpio *mux_gpio;
-+	int pins;
-+	u32 idle_state;
-+	int ret;
-+
-+	if (!np)
-+		return -ENODEV;
-+
-+	pins = gpiod_count(dev, "mux");
-+	if (pins < 0)
-+		return pins;
-+
-+	mux_chip = mux_chip_alloc(dev, 1, sizeof(*mux_gpio) +
-+				  pins * sizeof(*mux_gpio->val));
-+	if (!mux_chip)
-+		return -ENOMEM;
-+
-+	mux_gpio = mux_chip_priv(mux_chip);
-+	mux_gpio->val = (int *)(mux_gpio + 1);
-+	mux_chip->ops = &mux_gpio_ops;
-+
-+	platform_set_drvdata(pdev, mux_chip);
-+
-+	mux_gpio->gpios = devm_gpiod_get_array(dev, "mux", GPIOD_OUT_LOW);
-+	if (IS_ERR(mux_gpio->gpios)) {
-+		ret = PTR_ERR(mux_gpio->gpios);
-+		if (ret != -EPROBE_DEFER)
-+			dev_err(dev, "failed to get gpios\n");
-+		goto free_mux_chip;
-+	}
-+	WARN_ON(pins != mux_gpio->gpios->ndescs);
-+	mux_chip->mux->states = 1 << pins;
-+
-+	ret = of_property_read_u32(np, "idle-state", &idle_state);
-+	if (ret >= 0) {
-+		if (idle_state >= mux_chip->mux->states) {
-+			dev_err(dev, "invalid idle-state %u\n", idle_state);
-+			ret = -EINVAL;
-+			goto free_mux_chip;
-+		}
-+
-+		mux_chip->mux->idle_state = idle_state;
-+	}
-+
-+	ret = mux_chip_register(mux_chip);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to register mux-chip\n");
-+		goto free_mux_chip;
-+	}
-+
-+	dev_info(dev, "%u-way mux-controller registered\n",
-+		 mux_chip->mux->states);
-+
-+	return 0;
-+
-+free_mux_chip:
-+	mux_chip_free(mux_chip);
-+	return ret;
-+}
-+
-+static int mux_gpio_remove(struct platform_device *pdev)
-+{
-+	struct mux_chip *mux_chip = platform_get_drvdata(pdev);
-+
-+	mux_chip_unregister(mux_chip);
-+	mux_chip_free(mux_chip);
-+
-+	return 0;
-+}
-+
-+static struct platform_driver mux_gpio_driver = {
-+	.driver = {
-+		.name = "mux-gpio",
-+		.of_match_table	= of_match_ptr(mux_gpio_dt_ids),
-+	},
-+	.probe = mux_gpio_probe,
-+	.remove = mux_gpio_remove,
-+};
-+module_platform_driver(mux_gpio_driver);
-+
-+MODULE_DESCRIPTION("GPIO-controlled multiplexer driver");
-+MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mux.h b/include/linux/mux.h
-new file mode 100644
-index 000000000000..88d607b7fde7
---- /dev/null
-+++ b/include/linux/mux.h
-@@ -0,0 +1,197 @@
-+/*
-+ * mux.h - definitions for the multiplexer interface
-+ *
-+ * Copyright (C) 2016 Axentia Technologies AB
-+ *
-+ * Author: Peter Rosin <peda@axentia.se>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#ifndef _LINUX_MUX_H
-+#define _LINUX_MUX_H
-+
-+#include <linux/device.h>
-+#include <linux/rwsem.h>
-+
-+struct mux_chip;
-+struct mux_control;
-+struct platform_device;
-+
-+struct mux_control_ops {
-+	int (*set)(struct mux_control *mux, int state);
-+};
-+
-+/**
-+ * struct mux_control - Represents a mux controller.
-+ * @lock:		Protects the mux controller state.
-+ * @chip:		The mux chip that is handling this mux controller.
-+ * @states:		The number of mux controller states.
-+ * @cached_state:	The current mux controller state, or -1 if none.
-+ * @idle_state:		The mux controller state to use when inactive, or -1
-+ *			for none.
-+ */
-+struct mux_control {
-+	struct rw_semaphore lock; /* protects the state of the mux */
-+
-+	struct mux_chip *chip;
-+
-+	unsigned int states;
-+	int cached_state;
-+	int idle_state;
-+};
-+
-+/**
-+ * struct mux_chip -	Represents a chip holding mux controllers.
-+ * @controllers:	Number of mux controllers handled by the chip.
-+ * @mux:		Array of mux controllers that is handled.
-+ * @dev:		Device structure.
-+ * @id:			Used to identify the device internally.
-+ * @ops:		Mux controller operations.
-+ */
-+struct mux_chip {
-+	unsigned int controllers;
-+	struct mux_control *mux;
-+	struct device dev;
-+	int id;
-+
-+	const struct mux_control_ops *ops;
-+};
-+
-+#define to_mux_chip(x) container_of((x), struct mux_chip, dev)
-+
-+/**
-+ * mux_chip_priv() - Get the extra memory reserved by mux_chip_alloc().
-+ * @mux_chip: The mux-chip to get the private memory from.
-+ *
-+ * Return: Pointer to the private memory reserved by the allocator.
-+ */
-+static inline void *mux_chip_priv(struct mux_chip *mux_chip)
-+{
-+	return &mux_chip->mux[mux_chip->controllers];
-+}
-+
-+/**
-+ * mux_chip_alloc() - Allocate a mux-chip.
-+ * @dev: The parent device implementing the mux interface.
-+ * @controllers: The number of mux controllers to allocate for this chip.
-+ * @sizeof_priv: Size of extra memory area for private use by the caller.
-+ *
-+ * Return: A pointer to the new mux-chip, NULL on failure.
-+ */
-+struct mux_chip *mux_chip_alloc(struct device *dev,
-+				unsigned int controllers, size_t sizeof_priv);
-+
-+/**
-+ * mux_chip_register() - Register a mux-chip, thus readying the controllers
-+ *			 for use.
-+ * @mux_chip: The mux-chip to register.
-+ *
-+ * Do not retry registration of the same mux-chip on failure. You should
-+ * instead put it away with mux_chip_free() and allocate a new one, if you
-+ * for some reason would like to retry registration.
-+ *
-+ * Return: Zero on success or a negative errno on error.
-+ */
-+int mux_chip_register(struct mux_chip *mux_chip);
-+
-+/**
-+ * mux_chip_unregister() - Take the mux-chip off-line.
-+ * @mux_chip: The mux-chip to unregister.
-+ *
-+ * mux_chip_unregister() reverses the effects of mux_chip_register().
-+ * But not completely, you should not try to call mux_chip_register()
-+ * on a mux-chip that has been registered before.
-+ */
-+void mux_chip_unregister(struct mux_chip *mux_chip);
-+
-+/**
-+ * mux_chip_free() - Free the mux-chip for good.
-+ * @mux_chip: The mux-chip to free.
-+ *
-+ * mux_chip_free() reverses the effects of mux_chip_alloc().
-+ */
-+void mux_chip_free(struct mux_chip *mux_chip);
-+
-+/**
-+ * mux_control_select() - Select the given multiplexer state.
-+ * @mux: The mux-control to request a change of state from.
-+ * @state: The new requested state.
-+ *
-+ * Make sure to call mux_control_deselect() when the operation is complete and
-+ * the mux-control is free for others to use, but do not call
-+ * mux_control_deselect() if mux_control_select() fails.
-+ *
-+ * Return: 0 if the requested state was already active, or 1 it the
-+ * mux-control state was changed to the requested state. Or a negavive
-+ * errno on error.
-+ *
-+ * Note that the difference in return value of zero or one is of
-+ * questionable value; especially if the mux-control has several independent
-+ * consumers, which is something the consumers should perhaps not be making
-+ * assumptions about.
-+ */
-+int mux_control_select(struct mux_control *mux, int state);
-+
-+/**
-+ * mux_control_deselect() - Deselect the previously selected multiplexer state.
-+ * @mux: The mux-control to deselect.
-+ *
-+ * Return: 0 on success and a negative errno on error. An error can only
-+ * occur if the mux has an idle state. Note that even if an error occurs, the
-+ * mux-control is unlocked for others to access.
-+ */
-+int mux_control_deselect(struct mux_control *mux);
-+
-+/**
-+ * mux_control_get_index() - Get the index of the given mux controller
-+ * @mux: The mux-control to the the index for.
-+ *
-+ * Return: The index of the mux controller within the mux chip the mux
-+ * controller is a part of.
-+ */
-+static inline unsigned int mux_control_get_index(struct mux_control *mux)
-+{
-+	return mux - mux->chip->mux;
-+}
-+
-+/**
-+ * mux_control_get() - Get the mux-control for a device.
-+ * @dev: The device that needs a mux-control.
-+ * @mux_name: The name identifying the mux-control.
-+ *
-+ * Return: A pointer to the mux-control, or an ERR_PTR with a negative errno.
-+ */
-+struct mux_control *mux_control_get(struct device *dev, const char *mux_name);
-+
-+/**
-+ * mux_control_put() - Put away the mux-control for good.
-+ * @mux: The mux-control to put away.
-+ *
-+ * mux_control_put() reverses the effects of mux_control_get().
-+ */
-+void mux_control_put(struct mux_control *mux);
-+
-+/**
-+ * devm_mux_control_get() - Get the mux-control for a device, with resource
-+ *			    management.
-+ * @dev: The device that needs a mux-control.
-+ * @mux_name: The name identifying the mux-control.
-+ *
-+ * Return: Pointer to the mux-control, or an ERR_PTR with a negative errno.
-+ */
-+struct mux_control *devm_mux_control_get(struct device *dev,
-+					 const char *mux_name);
-+
-+/**
-+ * devm_mux_control_put() - Resource-managed version mux_control_put().
-+ * @dev: The device that originally got the mux-control.
-+ * @mux: The mux-control to put away.
-+ *
-+ * Note that you do not normally need to call this function.
-+ */
-+void devm_mux_control_put(struct device *dev, struct mux_control *mux);
-+
-+#endif /* _LINUX_MUX_H */
--- 
-2.1.4
-
+If an entry is created for channels with SCALE_NONE in DT ., then the 
+corresponding SCALE_* function needs to be implemented by removing 
+SCALE_NONE.
+>>
+>>  /*
+>>   * The array represents all possible ADC channels found in the supported PMICs.
+>> @@ -630,106 +846,106 @@ struct vadc_channels {
+>>   * gaps in the array should be treated as reserved channels.
+>>   */
+>>  static const struct vadc_channels vadc_chans[] = {
+>> -	VADC_CHAN_VOLT(USBIN, 4)
+>> -	VADC_CHAN_VOLT(DCIN, 4)
+>> -	VADC_CHAN_VOLT(VCHG_SNS, 3)
+>> -	VADC_CHAN_VOLT(SPARE1_03, 1)
+>> -	VADC_CHAN_VOLT(USB_ID_MV, 1)
+>> -	VADC_CHAN_VOLT(VCOIN, 1)
+>> -	VADC_CHAN_VOLT(VBAT_SNS, 1)
+>> -	VADC_CHAN_VOLT(VSYS, 1)
+>> -	VADC_CHAN_TEMP(DIE_TEMP, 0)
+>> -	VADC_CHAN_VOLT(REF_625MV, 0)
+>> -	VADC_CHAN_VOLT(REF_1250MV, 0)
+>> -	VADC_CHAN_VOLT(CHG_TEMP, 0)
+>> -	VADC_CHAN_VOLT(SPARE1, 0)
+>> -	VADC_CHAN_VOLT(SPARE2, 0)
+>> -	VADC_CHAN_VOLT(GND_REF, 0)
+>> -	VADC_CHAN_VOLT(VDD_VADC, 0)
+>> -
+>> -	VADC_CHAN_VOLT(P_MUX1_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX2_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX3_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX4_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX5_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX6_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX7_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX8_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX9_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX10_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX11_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX12_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX13_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX14_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX15_1_1, 0)
+>> -	VADC_CHAN_VOLT(P_MUX16_1_1, 0)
+>> -
+>> -	VADC_CHAN_VOLT(P_MUX1_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX2_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX3_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX4_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX5_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX6_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX7_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX8_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX9_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX10_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX11_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX12_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX13_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX14_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX15_1_3, 1)
+>> -	VADC_CHAN_VOLT(P_MUX16_1_3, 1)
+>> -
+>> -	VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0)
+>> -	VADC_CHAN_VOLT(AMUX_PU1, 0)
+>> -	VADC_CHAN_VOLT(AMUX_PU2, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
+>> -
+>> -	VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
+>> -
+>> -	VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
+>  -	VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
+>> -
+>> -	VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
+>> -	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
+>> +	VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
+>> +	VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
+>> +	VADC_CHAN_VOLT(VCHG_SNS, 3, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(SPARE1_03, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(USB_ID_MV, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(VCOIN, 1, SCALE_DEFAULT)
+>> +	VADC_CHAN_VOLT(VBAT_SNS, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(VSYS, 1, SCALE_DEFAULT)
+>> +	VADC_CHAN_TEMP(DIE_TEMP, 0, SCALE_PMIC_THERM)
+>> +	VADC_CHAN_VOLT(REF_625MV, 0, SCALE_DEFAULT)
+>> +	VADC_CHAN_VOLT(REF_1250MV, 0, SCALE_DEFAULT)
+>> +	VADC_CHAN_VOLT(CHG_TEMP, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(SPARE1, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(SPARE2, 0, SCALE_PMI_CHG_TEMP)
+>> +	VADC_CHAN_VOLT(GND_REF, 0, SCALE_DEFAULT)
+>> +	VADC_CHAN_VOLT(VDD_VADC, 0, SCALE_DEFAULT)
+>> +
+>> +	VADC_CHAN_VOLT(P_MUX1_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX2_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX3_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX4_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX5_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX6_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX7_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX8_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX9_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX10_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX11_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX12_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX13_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX14_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX15_1_1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX16_1_1, 0, SCALE_NONE)
+>> +
+>> +	VADC_CHAN_VOLT(P_MUX1_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX2_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX3_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX4_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX5_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX6_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX7_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX8_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX9_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX10_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX11_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX12_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX13_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX14_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX15_1_3, 1, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(P_MUX16_1_3, 1, SCALE_NONE)
+>> +
+>> +	VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(AMUX_PU1, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(AMUX_PU2, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0, SCALE_NONE)
+>> +
+>> +	VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0, SCALE_THERM_100K_PULLUP)
+>> +	VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0, SCALE_THERM_100K_PULLUP)
+>> +	VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0, SCALE_THERM_100K_PULLUP)
+>> +	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0, SCALE_THERM_100K_PULLUP)
+>> +	VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0, SCALE_THERM_100K_PULLUP)
+>> +	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0, SCALE_XOTHERM)
+>> +
+>> +	VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0, SCALE_NONE)
+>> +
+>> +	VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0, SCALE_NONE)
+>> +	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0, SCALE_NONE)
+>> +	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0, SCALE_NONE)
+>>  };
+>>
+>>  static int vadc_get_dt_channel_data(struct device *dev,
+>> @@ -848,6 +1064,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+>>  			return ret;
+>>  		}
+>>
+>> +		prop.scale_fn = vadc_chans[prop.channel].scale_fn;
+>>  		vadc->chan_props[index] = prop;
+>>
+>>  		vadc_chan = &vadc_chans[prop.channel];
+>>
+>
+Thanks,
+Ramakrishna
