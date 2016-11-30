@@ -1,45 +1,99 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:60118 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753195AbcK3Nf7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 30 Nov 2016 08:35:59 -0500
-Subject: Re: [PATCH] IIO: Change msleep to usleep_range for small msecs
-To: Jonathan Cameron <jic23@kernel.org>,
-        Aniroop Mathur <a.mathur@samsung.com>, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-References: <1480132046-5406-1-git-send-email-a.mathur@samsung.com>
- <fc667b4b-6d40-db6e-3855-7a181fa97458@kernel.org>
-Cc: s.samuel@samsung.com, r.mahale@samsung.com,
-        aniroop.mathur@gmail.com,
-        Naveen Krishna Chatradhi <ch.naveen@samsung.com>,
-        Linus Walleij <linus.walleij@stericsson.com>,
-        Vlad Dogaru <vlad.dogaru@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <d6278e93-54fd-62a1-0276-562345d36562@metafoo.de>
-Date: Wed, 30 Nov 2016 14:35:47 +0100
+Return-Path: <jic23@jic23.retrosnub.co.uk>
+In-Reply-To: <1480393503.3233.5.camel@canonical.com>
+References: <20161124053345.11254-1-shrirang.bagul@canonical.com> <20161124053345.11254-4-shrirang.bagul@canonical.com> <CACRpkdYJAwDgpuTYuXuTAxu3RBHeATEpbxq_xE3LxrJ7D9CKBQ@mail.gmail.com> <c72ee668-196d-d29b-b58a-f290efe8c2a4@kernel.org> <1480393503.3233.5.camel@canonical.com>
 MIME-Version: 1.0
-In-Reply-To: <fc667b4b-6d40-db6e-3855-7a181fa97458@kernel.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH 3/3] iio: st_pressure: Support i2c probe using acpi
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Wed, 30 Nov 2016 17:20:45 +0000
+To: Shrirang Bagul <shrirang.bagul@canonical.com>,Jonathan Cameron <jic23@kernel.org>,Linus Walleij <linus.walleij@linaro.org>
+CC: Hartmut Knaack <knaack.h@gmx.de>,Lars-Peter Clausen <lars@metafoo.de>,Peter Meerwald <pmeerw@pmeerw.net>,Denis CIOCCA <denis.ciocca@st.com>,Tiberiu Breana <tiberiu.a.breana@intel.com>,Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,Gregor Boirie <gregor.boirie@parrot.com>,"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Message-ID: <D9A97E68-AB9C-4DB5-B03A-D77801C09F12@jic23.retrosnub.co.uk>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/27/2016 11:51 AM, Jonathan Cameron wrote:
-> On 26/11/16 03:47, Aniroop Mathur wrote:
->> msleep(1~20) may not do what the caller intends, and will often sleep longer.
->> (~20 ms actual sleep for any value given in the 1~20ms range)
->> This is not the desired behaviour for many cases like device resume time,
->> device suspend time, device enable time, data reading time, etc.
->> Thus, change msleep to usleep_range for precise wakeups.
->>
->> Signed-off-by: Aniroop Mathur <a.mathur@samsung.com>
-> As these need individual review by the various original authors and driver maintainers to
-> establish the intent of the sleep, it would have been better to have done a series of
-> patches (one per driver) with the relevant maintainers cc'd on the ones that they care about.
-> 
-> Most of these are ADI parts looked after by Lars though so perhaps wait for his comments
-> before respining.
 
-I agree with what Jonathan said. For most of these extending the maximum
-sleep time a bit further is ok.
 
+On 29 November 2016 04:25:03 GMT+00:00, Shrirang Bagul <shrirang.bagul@canonical.com> wrote:
+>On Sun, 2016-11-27 at 11:12 +0000, Jonathan Cameron wrote:
+>> On 24/11/16 14:28, Linus Walleij wrote:
+>> > On Thu, Nov 24, 2016 at 6:33 AM, Shrirang Bagul
+>> > <shrirang.bagul@canonical.com> wrote:
+>> > 
+>> > > Compatible strings are not available on ACPI based systems. This
+>patch
+>> > > adds
+>> > > support to use DSDT information read from platform BIOS instead
+>for
+>> > > probing
+>> > > st pressure sensors.
+>> > > 
+>> > > Signed-off-by: Shrirang Bagul <shrirang.bagul@canonical.com>
+>> > 
+>> > (...)
+>> > > +#ifdef CONFIG_ACPI
+>> > > +static const struct acpi_device_id st_press_acpi_match[] = {
+>> > > +       {"SNO9210", LPS22HB},
+>> > > +       { },
+>> > > +};
+>> > 
+>> > Same comment. One sensor only supported by ACPI really?
+>> 
+>> As demonstrated by this one, they are often registered under
+>effectively
+>> random names!
+>> Digging out those random names and associating them with a particular
+>chip is
+>> always
+>> going to be a non trivial job.
+>> 
+>> Hence I'm happy to take these as they stand.  We can add more entries
+>when we
+>> come
+>> across them.
+>> > 
+>> > Take a wider look.
+>Yes, I will.
+>> 
+>> Shirang has done a good job identifying this one and sending it
+>upstream.
+>> Be nice Linus and don't try to get him to do all the hard work ;)
+>> 
+>> As such applied to the togreg branch of iio.git. Will be pushed out
+>as testing
+>> for
+>> the autobuilders to play with it.
+>> 
+>> Note there will be some weeks before I push this out as togreg (given
+>merge
+>> window
+>> is about to open) so plenty of time for others to take a look!
+>> 
+>> Thanks,
+>> 
+>> Jonathan
+>Thank you Jonathan. I'll follow-up on Linus's suggestion and try and
+>identify
+>more of these sensors on some of the hardware we have in the lab. and
+>try to add
+>support for some more devices.
+Great! Thanks for looking into this.
+
+J
+>
+>Thanks,
+>Shrirang
+>> > 
+>> > Yours,
+>> > Linus Walleij
+>> > --
+>> > To unsubscribe from this list: send the line "unsubscribe
+>linux-iio" in
+>> > the body of a message to majordomo@vger.kernel.org
+>> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>> > 
+>> 
+>> 
+
+-- 
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
