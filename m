@@ -1,79 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f180.google.com ([209.85.217.180]:36198 "EHLO
-        mail-ua0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754732AbcLAMHu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 1 Dec 2016 07:07:50 -0500
-Received: by mail-ua0-f180.google.com with SMTP id b35so244913426uaa.3
-        for <linux-iio@vger.kernel.org>; Thu, 01 Dec 2016 04:07:07 -0800 (PST)
+Received: from mx1.redhat.com ([209.132.183.28]:42474 "EHLO mx1.redhat.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932557AbcLAMa6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 1 Dec 2016 07:30:58 -0500
+Subject: [PATCH 10/39] Annotate hardware config module parameters in
+ drivers/iio/
+From: David Howells <dhowells@redhat.com>
+To: linux-kernel@vger.kernel.org
+Cc: gnomes@lxorguk.ukuu.org.uk, minyard@acm.org,
+        linux-iio@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>,
+        dhowells@redhat.com, linux-security-module@vger.kernel.org,
+        keyrings@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
+Date: Thu, 01 Dec 2016 12:30:55 +0000
+Message-ID: <148059545558.31612.1279403857733187213.stgit@warthog.procyon.org.uk>
+In-Reply-To: <148059537897.31612.9461043954611464597.stgit@warthog.procyon.org.uk>
+References: <148059537897.31612.9461043954611464597.stgit@warthog.procyon.org.uk>
 MIME-Version: 1.0
-In-Reply-To: <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de>
-References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
- <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de> <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
- <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de>
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date: Thu, 1 Dec 2016 13:07:06 +0100
-Message-ID: <CAMpxmJV=2xK4tDFfyVfWy7xhbAOcTxhG-hSVeKXW=eavdRmerA@mail.gmail.com>
-Subject: Re: [PATCH] iio: misc: add a generic regulator driver
-To: Lars-Peter Clausen <lars@metafoo.de>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        linux-devicetree <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Patrick Titiano <ptitiano@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: text/plain; charset="utf-8"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2016-11-30 11:10 GMT+01:00 Lars-Peter Clausen <lars@metafoo.de>:
-> On 11/29/2016 04:35 PM, Bartosz Golaszewski wrote:
->> 2016-11-29 16:30 GMT+01:00 Lars-Peter Clausen <lars@metafoo.de>:
->>> On 11/29/2016 04:22 PM, Bartosz Golaszewski wrote:
->>> [...]
->>>> diff --git a/Documentation/devicetree/bindings/iio/misc/iio-regulator.txt b/Documentation/devicetree/bindings/iio/misc/iio-regulator.txt
->>>> new file mode 100644
->>>> index 0000000..147458f
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iio/misc/iio-regulator.txt
->>>> @@ -0,0 +1,18 @@
->>>> +Industrial IO regulator device driver
->>>> +-------------------------------------
->>>> +
->>>> +This document describes the bindings for the iio-regulator - a dummy device
->>>> +driver representing a physical regulator within the iio framework.
->>>
->>> No bindings for drivers, only for hardware. So this wont work.
->>>
->>
->> What about exporting regulator attributes analogous to the one in this
->> patch from the iio-core when a *-supply property is specified for a
->> node?
->
-> The problem with exposing direct control to the regulator is that it allows
-> to modify the hardware state without the drivers knowledge. If you
-> power-cycle a device all previous configuration that has been written to the
-> device is reset. The device driver needs to be aware of this otherwise its
-> assumed state and the actual device state can divert which will result in
-> undefined behavior. Also access to the device will fail unexpectedly when
-> the regulator is turned off. So I think generally the driver should
-> explicitly control the regulator, power-up when needed, power-down when not.
->
-> - Lars
->
+When the kernel is running in secure boot mode, we lock down the kernel to
+prevent userspace from modifying the running kernel image.  Whilst this
+includes prohibiting access to things like /dev/mem, it must also prevent
+access by means of configuring driver modules in such a way as to cause a
+device to access or modify the kernel image.
 
-I missed the fact that - unlike hwmon - the iio version of the ina2xx
-driver is not capable of detecting a bad state and re-initializing
-itself. But you're right in general of course.
+To this end, annotate module_param* statements that refer to hardware
+configuration and indicate for future reference what type of parameter they
+specify.  The parameter parser in the core sees this information and can
+skip such parameters with an error message if the kernel is locked down.
+The module initialisation then runs as normal, but just sees whatever the
+default values for those parameters is.
 
-Still, it made me think: what if we implement the suspend/resume
-callbacks in struct device_driver to store/resume the state when
-power-cycling? The core iio module would then call the suspend
-callback before disabling the regulator. We wouldn't need to duplicate
-similar code and DT bindings in every iio driver.
+Note that we do still need to do the module initialisation because some
+drivers have viable defaults set in case parameters aren't specified and
+some drivers support automatic configuration (e.g. PNP or PCI) in addition
+to manually coded parameters.
 
-Best regards,
-Bartosz Golaszewski
+This patch annotates drivers in drivers/iio/.
+
+Suggested-by: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+Signed-off-by: David Howells <dhowells@redhat.com>
+cc: William Breathitt Gray <vilhelm.gray@gmail.com>
+cc: Jonathan Cameron <jic23@kernel.org>
+cc: linux-iio@vger.kernel.org
+---
+
+ drivers/iio/adc/stx104.c  |    2 +-
+ drivers/iio/dac/cio-dac.c |    2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
+index 7e3645749eaf..a805bd543acb 100644
+--- a/drivers/iio/adc/stx104.c
++++ b/drivers/iio/adc/stx104.c
+@@ -49,7 +49,7 @@
+ 
+ static unsigned int base[max_num_isa_dev(STX104_EXTENT)];
+ static unsigned int num_stx104;
+-module_param_array(base, uint, &num_stx104, 0);
++module_param_hw_array(base, uint, ioport, &num_stx104, 0);
+ MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+ 
+ /**
+diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
+index 5a743e2a779d..dac086129edf 100644
+--- a/drivers/iio/dac/cio-dac.c
++++ b/drivers/iio/dac/cio-dac.c
+@@ -39,7 +39,7 @@
+ 
+ static unsigned int base[max_num_isa_dev(CIO_DAC_EXTENT)];
+ static unsigned int num_cio_dac;
+-module_param_array(base, uint, &num_cio_dac, 0);
++module_param_hw_array(base, uint, ioport, &num_cio_dac, 0);
+ MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
+ 
+ /**
+
