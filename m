@@ -1,94 +1,101 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f180.google.com ([209.85.210.180]:33360 "EHLO
-        mail-wj0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759408AbcLBKRm (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Dec 2016 05:17:42 -0500
-Received: by mail-wj0-f180.google.com with SMTP id xy5so227828231wjc.0
-        for <linux-iio@vger.kernel.org>; Fri, 02 Dec 2016 02:17:41 -0800 (PST)
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v3 1/7] MFD: add bindings for stm32 general purpose timer driver
-Date: Fri,  2 Dec 2016 11:17:16 +0100
-Message-Id: <1480673842-20804-2-git-send-email-benjamin.gaignard@st.com>
-In-Reply-To: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
+Return-Path: <SRS0=Dd8l=XR=linaro.org=lee.jones@kernel.org>
+Date: Fri, 2 Dec 2016 13:59:04 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
+	gerald.baeza@st.com, arnaud.pouliquen@st.com,
+	linus.walleij@linaro.org, linaro-kernel@lists.linaro.org,
+	Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: Re: [PATCH v3 5/7] IIO: add bindings for stm32 timer trigger driver
+Message-ID: <20161202135904.GN2683@dell>
 References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ <1480673842-20804-6-git-send-email-benjamin.gaignard@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <1480673842-20804-6-git-send-email-benjamin.gaignard@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add bindings information for stm32 general purpose timer
+On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
 
-version 2:
-- rename stm32-mfd-timer to stm32-gptimer
-- only keep one compatible string
+> Define bindings for stm32 timer trigger
+> 
+> version 3:
+> - change file name
+> - add cross reference with mfd bindings
+> 
+> version 2:
+> - only keep one compatible
+> - add DT parameters to set lists of the triggers:
+>   one list describe the triggers created by the device
+>   another one give the triggers accepted by the device
+> 
+> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> ---
+>  .../bindings/iio/timer/stm32-timer-trigger.txt     | 39 ++++++++++++++++++++++
+>  1 file changed, 39 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+> new file mode 100644
+> index 0000000..858816d
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+> @@ -0,0 +1,39 @@
+> +timer trigger bindings for STM32
+> +
+> +Must be a sub-node of STM32 general purpose timer driver
+> +Parent node properties are describe in ../mfd/stm32-general-purpose-timer.txt
+> +
+> +Required parameters:
+> +- compatible:		must be "st,stm32-iio-timer"
+> +- interrupts:		Interrupt for this device
+> +			See ../interrupt-controller/st,stm32-exti.txt
+> +
+> +Optional parameters:
+> +- st,input-triggers-names:	List of the possible input triggers for
+> +				the device
+> +- st,output-triggers-names:	List of the possible output triggers for
+> +				the device
+> +
+> +Possible triggers are defined in include/dt-bindings/iio/timer/st,stm32-timer-trigger.h
+> +
+> +Example:
+> +	gptimer1: gptimer1@40010000 {
+> +		compatible = "st,stm32-gptimer";
+> +		reg = <0x40010000 0x400>;
+> +		clocks = <&rcc 0 160>;
+> +		clock-names = "clk_int";
+> +
+> +		timer1@0 {
+> +			compatible = "st,stm32-timer-trigger";
+> +			interrupts = <27>;
+> +			st,input-triggers-names = TIM5_TRGO,
+> +						  TIM2_TRGO,
+> +						  TIM4_TRGO,
+> +						  TIM3_TRGO;
+> +			st,output-triggers-names = TIM1_TRGO,
+> +						   TIM1_CH1,
+> +						   TIM1_CH2,
+> +						   TIM1_CH3,
+> +						   TIM1_CH4;
 
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- .../bindings/mfd/stm32-general-purpose-timer.txt   | 47 ++++++++++++++++++++++
- 1 file changed, 47 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+I see why you've done it like this now ... because it makes things
+easier for you in the driver, since the IIO subsystem matches on names
+such as these.
 
-diff --git a/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
-new file mode 100644
-index 0000000..4fc55d1
---- /dev/null
-+++ b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
-@@ -0,0 +1,47 @@
-+STM32 general purpose timer driver
-+
-+Required parameters:
-+- compatible: must be "st,stm32-gptimer"
-+
-+- reg:			Physical base address and length of the controller's
-+			registers.
-+- clock-names: 		Set to "clk_int".
-+- clocks: 		Phandle to the clock used by the timer module.
-+			For Clk properties, please refer to ../clock/clock-bindings.txt
-+
-+Optional parameters:
-+- resets:		Phandle to the parent reset controller.
-+			See ../reset/st,stm32-rcc.txt
-+
-+Optional subnodes:
-+- pwm:			See ../pwm/pwm-stm32.txt
-+- timer:		See ../iio/timer/stm32-timer-trigger.txt
-+
-+Example:
-+	gptimer1: gptimer1@40010000 {
-+		compatible = "st,stm32-gptimer";
-+		reg = <0x40010000 0x400>;
-+		clocks = <&rcc 0 160>;
-+		clock-names = "clk_int";
-+
-+		pwm1@0 {
-+			compatible = "st,stm32-pwm";
-+			st,pwm-num-chan = <4>;
-+			st,breakinput;
-+			st,complementary;
-+		};
-+
-+		timer1@0 {
-+			compatible = "st,stm32-timer-trigger";
-+			interrupts = <27>;
-+			st,input-triggers-names = TIM5_TRGO,
-+						  TIM2_TRGO,
-+						  TIM4_TRGO,
-+						  TIM3_TRGO;
-+			st,output-triggers-names = TIM1_TRGO,
-+						   TIM1_CH1,
-+						   TIM1_CH2,
-+						   TIM1_CH3,
-+						   TIM1_CH4;
-+		};
-+	};
+BUT, this is a Linux-implementation-ism.  Just use pairs of integers
+and create the Linux-ism strings in the driver.
+
+> +		};
+> +	};
+
 -- 
-1.9.1
-
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
