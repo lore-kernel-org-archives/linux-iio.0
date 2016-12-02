@@ -1,51 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f48.google.com ([74.125.82.48]:38121 "EHLO
-        mail-wm0-f48.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758978AbcLBNTo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Dec 2016 08:19:44 -0500
-Received: by mail-wm0-f48.google.com with SMTP id f82so15549557wmf.1
-        for <linux-iio@vger.kernel.org>; Fri, 02 Dec 2016 05:19:43 -0800 (PST)
-Date: Fri, 2 Dec 2016 13:22:51 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
-        gerald.baeza@st.com, arnaud.pouliquen@st.com,
-        linus.walleij@linaro.org, linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:54142 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1750888AbcLBNmG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 2 Dec 2016 08:42:06 -0500
 Subject: Re: [PATCH v3 7/7] ARM: dts: stm32: add stm32 general purpose timer
  driver in DT
-Message-ID: <20161202132251.GL2683@dell>
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        <lee.jones@linaro.org>, <robh+dt@kernel.org>,
+        <mark.rutland@arm.com>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <thierry.reding@gmail.com>,
+        <linux-pwm@vger.kernel.org>, <jic23@kernel.org>, <knaack.h@gmx.de>,
+        <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <linux-iio@vger.kernel.org>, <linux-arm-kernel@lists.infradead.org>
 References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
  <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
+CC: <fabrice.gasnier@st.com>, <gerald.baeza@st.com>,
+        <arnaud.pouliquen@st.com>, <linus.walleij@linaro.org>,
+        <linaro-kernel@lists.linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+From: Alexandre Torgue <alexandre.torgue@st.com>
+Message-ID: <f26f5ea7-6ed8-96e2-6e06-0285ccd531b1@st.com>
+Date: Fri, 2 Dec 2016 14:41:02 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
 In-Reply-To: <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
+Content-Type: text/plain; charset="windows-1252"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
+Hi Benjamin,
 
+On 12/02/2016 11:17 AM, Benjamin Gaignard wrote:
 > Add general purpose timers and it sub-nodes into DT for stm32f4.
 > Define and enable pwm1 and pwm3 for stm32f469 discovery board
-> 
+>
 > version 3:
 > - use "st,stm32-timer-trigger" in DT
-> 
+>
 > version 2:
 > - use parameters to describe hardware capabilities
 > - do not use references for pwm and iio timer subnodes
-> 
+>
 > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 > ---
 >  arch/arm/boot/dts/stm32f429.dtsi      | 333 +++++++++++++++++++++++++++++++++-
 >  arch/arm/boot/dts/stm32f469-disco.dts |  28 +++
 >  2 files changed, 360 insertions(+), 1 deletion(-)
-> 
+>
 > diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
 > index bca491d..8c50d03 100644
 > --- a/arch/arm/boot/dts/stm32f429.dtsi
@@ -79,7 +79,7 @@ On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
 > +				};
 > +			};
 >  		};
->  
+>
 >  		rcc: rcc@40023810 {
 > @@ -426,6 +441,322 @@
 >  			interrupts = <80>;
@@ -88,13 +88,7 @@ On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
 > +
 > +		gptimer1: gptimer1@40010000 {
 
-timer@xxxxxxx
-
-Node names should be generic and not numbered.
-
-I suggest that this isn't actually a timer either.  Is contains a
-timer (and a PWM), but in it's completeness it is not a timer per
-say.
+Currently, nodes are ordered following base address.
 
 > +			compatible = "st,stm32-gptimer";
 > +			reg = <0x40010000 0x400>;
@@ -117,11 +111,6 @@ say.
 > +							  TIM2_TRGO,
 > +							  TIM4_TRGO,
 > +							  TIM3_TRGO;
-
-I'm still dubious with matching by strings.
-
-I'll take a look at the C code to see what the alternatives could be.
-
 > +				st,output-triggers-names = TIM1_TRGO,
 > +							   TIM1_CH1,
 > +							   TIM1_CH2,
@@ -417,7 +406,7 @@ I'll take a look at the C code to see what the alternatives could be.
 > +		};
 >  	};
 >  };
->  
+>
 > diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
 > index 8a163d7..df4ca7e 100644
 > --- a/arch/arm/boot/dts/stm32f469-disco.dts
@@ -440,11 +429,7 @@ I'll take a look at the C code to see what the alternatives could be.
 > +		status = "okay";
 > +	};
 > +};
-
-This is a much *better* format than before.
-
-I still don't like the '&' syntax though.
-
+> +
 > +&gptimer3 {
 > +	status = "okay";
 > +
@@ -458,9 +443,4 @@ I still don't like the '&' syntax though.
 > +		status = "okay";
 > +	};
 > +};
-
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+>
