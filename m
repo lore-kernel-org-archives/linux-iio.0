@@ -1,595 +1,411 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57190 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57238 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753501AbcLCOlv (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 09:41:51 -0500
-Subject: Re: [PATCH v4] iio: adc: New driver for TI ADS7950 chips
-To: David Lechner <david@lechnology.com>
-References: <1480352295-1314-1-git-send-email-david@lechnology.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        with ESMTP id S1753553AbcLCOlx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 09:41:53 -0500
+Subject: Re: [PATCH] iio: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
+To: William Breathitt Gray <vilhelm.gray@gmail.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <20161129195955.GA27766@sophia>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <500a53b2-d597-c8b0-7f3d-9cad91d0c1b0@kernel.org>
-Date: Sat, 3 Dec 2016 09:58:53 +0000
+Message-ID: <17224a84-e933-6070-ee86-fedc4e0f4914@kernel.org>
+Date: Sat, 3 Dec 2016 10:21:58 +0000
 MIME-Version: 1.0
-In-Reply-To: <1480352295-1314-1-git-send-email-david@lechnology.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <20161129195955.GA27766@sophia>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/11/16 16:58, David Lechner wrote:
-> This adds a new driver for the TI ADS7950 family of ADC chips. These
-> communicate using SPI and come in 8/10/12-bit and 4/8/12/16 channel
-> varieties.
+On 29/11/16 20:00, William Breathitt Gray wrote:
+> The LSI/CSI LS7266R1 chip provides programmable output via the FLG pins.
+> When interrupts are enabled on the ACCES 104-QUAD-8, they occur whenever
+> FLG1 is active. Four functions are available for the FLG1 signal:
+> /Carry, /Compare, /Carry/Borrow, and Index.
 > 
-> Signed-off-by: David Lechner <david@lechnology.com>
-Very nice. Applied to the togreg branch of iio.git - initially pushed
-out as testing when I next have an internet connection....
+> 	/Carry:
+> 		Interrupt generated on active low Carry signal. Carry
+> 		signal toggles every time the respective channel's
+> 		counter overflows.
+This one is kind of a rising threshold with the threshold set to 0
+(as the counter is cyclic)
 
-thanks,
+> 
+> 	/Compare:
+> 		Interrupt generated on active low Compare signal.
+> 		Compare signal toggles every time respective channel's
+> 		preset register is equal to the respective channel's
+> 		counter.
+So this one is a kind of cycling threshold (in either direction).
+> 
+> 	/Carry/Borrow:
+> 		Interrupt generated on active low Carry signal and
+> 		active low Borrow signal. Carry signal toggles every
+> 		time the respective channel's counter overflows. Borrow
+> 		signal toggles every time the respective channel's
+> 		counter underflows.
+This is kind of a bi directional version of the Carry case.
+> 
+> 	Index:
+> 		Interrupt generated on active high Index signal.
+Kind of threshold against a physical thing which we don't know.  Might want
+a new event type for this, or at least an  extra attribute to make this clear...
+(just thinking through this as I read)
 
-Jonathan
+I think I'm going to want to think this over for a it.  Give me a poke
+if I don't come back to you.  The interface as it stands is very
+device specific and it feels like we should be able to generalize it
+rather better than this.
+
+Presumably this patch won't apply anyway until the others have worked there
+way through mainline and back through staging-next so it'll be at least a
+few weeks.
+
+> 
+> The irq_trig_func sysfs attribute is introduced to allow the selection
+> of the desired IRQ trigger function per channel. Interrupts push events
+> via the mag_en event sysfs attribute.
+hmm. We really need to rework the events support to allow more than one
+of a given type of event.  It's ugly as we will need to find space in the
+event code without breaking existing userspace.  Ah well, yet another thing
+we got slightly wrong a long time ago!
+> 
+> This patch adds IRQ support for the ACCES 104-QUAD-8. The interrupt line
+> numbers for the devices may be configured via the irq array module
+> parameter.
+> 
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 > ---
+>  .../ABI/testing/sysfs-bus-iio-counter-104-quad-8   |  37 +++++-
+>  drivers/iio/counter/104-quad-8.c                   | 129 ++++++++++++++++++++-
+>  drivers/iio/counter/Kconfig                        |   6 +-
+>  3 files changed, 163 insertions(+), 9 deletions(-)
 > 
-> v4 changes:
-> * Change spi_async() back to spi_sync(). (I have learned that this is in a
->   threaded interrupt handler, so sleeping is OK.)
-> 
-> v3 changes:
-> 
-> * Use spi_async() instead of spi_sync() in ti_ads7950_trigger_handler()
-> * Fix scaling in ti_ads7950_read_raw()
-> 
-> v2 changes:
-> 
-> * Got rid of XX wildcards - using ADS7950 everywhere
-> * Fixed some macro parentheses issues
-> * Added TI_ prefix to macros to match ti_ prefixes used elsewhere
-> * Added space in rx_buf for holding timestamp
-> * Use iio_device_claim_direct_mode() and spi_message_init_with_transfers()
->   helper functions
-> * Don't use dev_info() at end of probe
-> * Minor spelling and code style fixes
-> 
->  drivers/iio/adc/Kconfig      |  13 ++
->  drivers/iio/adc/Makefile     |   1 +
->  drivers/iio/adc/ti-ads7950.c | 490 +++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 504 insertions(+)
->  create mode 100644 drivers/iio/adc/ti-ads7950.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 6bbee0b..26b32f0 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -527,6 +527,19 @@ config TI_ADS1015
->  	  This driver can also be built as a module. If so, the module will be
->  	  called ti-ads1015.
+> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+> index ba67652..53db967 100644
+> --- a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+> +++ b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+> @@ -51,6 +51,31 @@ Description:
+>  			not freeze at the bundary points, but counts
+>  			continuously throughout.
 >  
-> +config TI_ADS7950
-> +	tristate "Texas Instruments ADS7950 ADC driver"
-> +	depends on SPI
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	help
-> +	  Say yes here to build support for Texas Instruments ADS7950, ADS7951,
-> +	  ADS7952, ADS7953, ADS7954, ADS7955, ADS7956, ADS7957, ADS7958, ADS7959.
-> +	  ADS7960, ADS7961.
+> +What:		/sys/bus/iio/devices/iio:deviceX/in_countY_irq_trig_func
+> +KernelVersion:	4.9
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		IRQ trigger function for channel Y. Four IRQ trigger functions
+> +		are available: /Carry, /Compare, /Carry/Borrow, and Index.
 > +
-> +	  To compile this driver as a module, choose M here: the
-> +	  module will be called ti-ads7950.
+> +		/Carry:
+> +			Interrupt generated on active low Carry signal. Carry
+> +			signal toggles every time channel Y counter overflows.
+Why the /s?
 > +
->  config TI_ADS8688
->  	tristate "Texas Instruments ADS8688"
->  	depends on SPI && OF
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 9391217..1966801 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -49,6 +49,7 @@ obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
->  obj-$(CONFIG_TI_ADC128S052) += ti-adc128s052.o
->  obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
->  obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
-> +obj-$(CONFIG_TI_ADS7950) += ti-ads7950.o
->  obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
->  obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
->  obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
-> diff --git a/drivers/iio/adc/ti-ads7950.c b/drivers/iio/adc/ti-ads7950.c
-> new file mode 100644
-> index 0000000..0330361
-> --- /dev/null
-> +++ b/drivers/iio/adc/ti-ads7950.c
-> @@ -0,0 +1,490 @@
-> +/*
-> + * Texas Instruments ADS7950 SPI ADC driver
-> + *
-> + * Copyright 2016 David Lechner <david@lechnology.com>
-> + *
-> + * Based on iio/ad7923.c:
-> + * Copyright 2011 Analog Devices Inc
-> + * Copyright 2012 CS Systemes d'Information
-> + *
-> + * And also on hwmon/ads79xx.c
-> + * Copyright (C) 2013 Texas Instruments Incorporated - http://www.ti.com/
-> + *	Nishanth Menon
-> + *
-> + * This program is free software; you can redistribute it and/or
-> + * modify it under the terms of the GNU General Public License as
-> + * published by the Free Software Foundation version 2.
-> + *
-> + * This program is distributed "as is" WITHOUT ANY WARRANTY of any
-> + * kind, whether express or implied; without even the implied warranty
-> + * of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
+> +		/Compare:
+> +			Interrupt generated on active low Compare signal.
+> +			Compare signal toggles every time channel Y preset
+> +			register is equal to channel Y counter.
 > +
-> +#include <linux/bitops.h>
-> +#include <linux/device.h>
-> +#include <linux/err.h>
+> +		/Carry/Borrow:
+> +			Interrupt generated on active low Carry signal and
+> +			active low Borrow signal. Carry signal toggles every
+> +			time channel Y counter overflows. Borrow signal toggles
+> +			every time channel Y counter underflows.
+> +
+> +		Index:
+> +			Interrupt generated on active high Index signal.
+> +
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_countY_noise_error
+>  KernelVersion:	4.9
+>  Contact:	linux-iio@vger.kernel.org
+> @@ -93,7 +118,8 @@ Contact:	linux-iio@vger.kernel.org
+>  Description:
+>  		Whether to set channel Y counter with channel Y preset value
+>  		when channel Y index input is active, or continuously count.
+> -		Valid attribute values are boolean.
+> +		Valid attribute values are boolean. This attribute is ignored
+> +		when channel Y IRQs are disabled.
+>  
+>  What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_index_polarity
+>  KernelVersion:	4.9
+> @@ -123,3 +149,12 @@ Description:
+>  			set_to_preset_on_index) is performed synchronously with
+>  			the quadrature clock on the active level of the index
+>  			input.
+> +
+> +What:		/sys/bus/iio/devices/iio:deviceX/events/in_countY_mag_en
+These aren't magnitude events (there isn't a concept of negative so it doesn't
+really make difference).  I'd argue they are thresh events however with both
+directions.
+> +KernelVersion:	4.9
+> +Contact:	linux-iio@vger.kernel.org
+> +Description:
+> +		Event generated when a channel Y IRQ occurs. Channel Y IRQs are
+> +		triggered as configured by the channel Y irq_trig_func
+> +		attribute. Channel Y IRQs are disabled when this attribute is
+> +		set to 0.
+> diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+> index 2d2ee35..e1ea38c 100644
+> --- a/drivers/iio/counter/104-quad-8.c
+> +++ b/drivers/iio/counter/104-quad-8.c
+> @@ -16,10 +16,12 @@
+>  #include <linux/bitops.h>
+>  #include <linux/device.h>
+>  #include <linux/errno.h>
+> +#include <linux/iio/events.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/types.h>
+>  #include <linux/io.h>
+>  #include <linux/ioport.h>
 > +#include <linux/interrupt.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/regulator/consumer.h>
-> +#include <linux/slab.h>
-> +#include <linux/spi/spi.h>
+>  #include <linux/isa.h>
+>  #include <linux/kernel.h>
+>  #include <linux/module.h>
+> @@ -33,6 +35,10 @@ static unsigned int num_quad8;
+>  module_param_array(base, uint, &num_quad8, 0);
+>  MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+>  
+> +static unsigned int irq[max_num_isa_dev(QUAD8_EXTENT)];
+> +module_param_array(irq, uint, NULL, 0000);
+> +MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 interrupt line numbers");
 > +
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +
-> +#define TI_ADS7950_CR_MANUAL	BIT(12)
-> +#define TI_ADS7950_CR_WRITE	BIT(11)
-> +#define TI_ADS7950_CR_CHAN(ch)	((ch) << 7)
-> +#define TI_ADS7950_CR_RANGE_5V	BIT(6)
-> +
-> +#define TI_ADS7950_MAX_CHAN	16
-> +
-> +#define TI_ADS7950_TIMESTAMP_SIZE (sizeof(int64_t) / sizeof(__be16))
-> +
-> +/* val = value, dec = left shift, bits = number of bits of the mask */
-> +#define TI_ADS7950_EXTRACT(val, dec, bits) \
-> +	(((val) >> (dec)) & ((1 << (bits)) - 1))
-> +
-> +struct ti_ads7950_state {
-> +	struct spi_device	*spi;
-> +	struct spi_transfer	ring_xfer[TI_ADS7950_MAX_CHAN + 2];
-> +	struct spi_transfer	scan_single_xfer[3];
-> +	struct spi_message	ring_msg;
-> +	struct spi_message	scan_single_msg;
-> +
-> +	struct regulator	*reg;
-> +
-> +	unsigned int		settings;
-> +
-> +	/*
-> +	 * DMA (thus cache coherency maintenance) requires the
-> +	 * transfer buffers to live in their own cache lines.
-> +	 */
-> +	__be16	rx_buf[TI_ADS7950_MAX_CHAN + TI_ADS7950_TIMESTAMP_SIZE]
-> +							____cacheline_aligned;
-> +	__be16	tx_buf[TI_ADS7950_MAX_CHAN];
-> +};
-> +
-> +struct ti_ads7950_chip_info {
-> +	const struct iio_chan_spec *channels;
-> +	unsigned int num_channels;
-> +};
-> +
-> +enum ti_ads7950_id {
-> +	TI_ADS7950,
-> +	TI_ADS7951,
-> +	TI_ADS7952,
-> +	TI_ADS7953,
-> +	TI_ADS7954,
-> +	TI_ADS7955,
-> +	TI_ADS7956,
-> +	TI_ADS7957,
-> +	TI_ADS7958,
-> +	TI_ADS7959,
-> +	TI_ADS7960,
-> +	TI_ADS7961,
-> +};
-> +
-> +#define TI_ADS7950_V_CHAN(index, bits)				\
-> +{								\
-> +	.type = IIO_VOLTAGE,					\
-> +	.indexed = 1,						\
-> +	.channel = index,					\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +	.address = index,					\
-> +	.datasheet_name = "CH##index",				\
-> +	.scan_index = index,					\
-> +	.scan_type = {						\
-> +		.sign = 'u',					\
-> +		.realbits = bits,				\
-> +		.storagebits = 16,				\
-> +		.shift = 12 - (bits),				\
-> +		.endianness = IIO_BE,				\
-> +	},							\
-> +}
-> +
-> +#define DECLARE_TI_ADS7950_4_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	TI_ADS7950_V_CHAN(0, bits), \
-> +	TI_ADS7950_V_CHAN(1, bits), \
-> +	TI_ADS7950_V_CHAN(2, bits), \
-> +	TI_ADS7950_V_CHAN(3, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(4), \
-> +}
-> +
-> +#define DECLARE_TI_ADS7950_8_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	TI_ADS7950_V_CHAN(0, bits), \
-> +	TI_ADS7950_V_CHAN(1, bits), \
-> +	TI_ADS7950_V_CHAN(2, bits), \
-> +	TI_ADS7950_V_CHAN(3, bits), \
-> +	TI_ADS7950_V_CHAN(4, bits), \
-> +	TI_ADS7950_V_CHAN(5, bits), \
-> +	TI_ADS7950_V_CHAN(6, bits), \
-> +	TI_ADS7950_V_CHAN(7, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(8), \
-> +}
-> +
-> +#define DECLARE_TI_ADS7950_12_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	TI_ADS7950_V_CHAN(0, bits), \
-> +	TI_ADS7950_V_CHAN(1, bits), \
-> +	TI_ADS7950_V_CHAN(2, bits), \
-> +	TI_ADS7950_V_CHAN(3, bits), \
-> +	TI_ADS7950_V_CHAN(4, bits), \
-> +	TI_ADS7950_V_CHAN(5, bits), \
-> +	TI_ADS7950_V_CHAN(6, bits), \
-> +	TI_ADS7950_V_CHAN(7, bits), \
-> +	TI_ADS7950_V_CHAN(8, bits), \
-> +	TI_ADS7950_V_CHAN(9, bits), \
-> +	TI_ADS7950_V_CHAN(10, bits), \
-> +	TI_ADS7950_V_CHAN(11, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(12), \
-> +}
-> +
-> +#define DECLARE_TI_ADS7950_16_CHANNELS(name, bits) \
-> +const struct iio_chan_spec name ## _channels[] = { \
-> +	TI_ADS7950_V_CHAN(0, bits), \
-> +	TI_ADS7950_V_CHAN(1, bits), \
-> +	TI_ADS7950_V_CHAN(2, bits), \
-> +	TI_ADS7950_V_CHAN(3, bits), \
-> +	TI_ADS7950_V_CHAN(4, bits), \
-> +	TI_ADS7950_V_CHAN(5, bits), \
-> +	TI_ADS7950_V_CHAN(6, bits), \
-> +	TI_ADS7950_V_CHAN(7, bits), \
-> +	TI_ADS7950_V_CHAN(8, bits), \
-> +	TI_ADS7950_V_CHAN(9, bits), \
-> +	TI_ADS7950_V_CHAN(10, bits), \
-> +	TI_ADS7950_V_CHAN(11, bits), \
-> +	TI_ADS7950_V_CHAN(12, bits), \
-> +	TI_ADS7950_V_CHAN(13, bits), \
-> +	TI_ADS7950_V_CHAN(14, bits), \
-> +	TI_ADS7950_V_CHAN(15, bits), \
-> +	IIO_CHAN_SOFT_TIMESTAMP(16), \
-> +}
-> +
-> +static DECLARE_TI_ADS7950_4_CHANNELS(ti_ads7950, 12);
-> +static DECLARE_TI_ADS7950_8_CHANNELS(ti_ads7951, 12);
-> +static DECLARE_TI_ADS7950_12_CHANNELS(ti_ads7952, 12);
-> +static DECLARE_TI_ADS7950_16_CHANNELS(ti_ads7953, 12);
-> +static DECLARE_TI_ADS7950_4_CHANNELS(ti_ads7954, 10);
-> +static DECLARE_TI_ADS7950_8_CHANNELS(ti_ads7955, 10);
-> +static DECLARE_TI_ADS7950_12_CHANNELS(ti_ads7956, 10);
-> +static DECLARE_TI_ADS7950_16_CHANNELS(ti_ads7957, 10);
-> +static DECLARE_TI_ADS7950_4_CHANNELS(ti_ads7958, 8);
-> +static DECLARE_TI_ADS7950_8_CHANNELS(ti_ads7959, 8);
-> +static DECLARE_TI_ADS7950_12_CHANNELS(ti_ads7960, 8);
-> +static DECLARE_TI_ADS7950_16_CHANNELS(ti_ads7961, 8);
-> +
-> +static const struct ti_ads7950_chip_info ti_ads7950_chip_info[] = {
-> +	[TI_ADS7950] = {
-> +		.channels	= ti_ads7950_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7950_channels),
-> +	},
-> +	[TI_ADS7951] = {
-> +		.channels	= ti_ads7951_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7951_channels),
-> +	},
-> +	[TI_ADS7952] = {
-> +		.channels	= ti_ads7952_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7952_channels),
-> +	},
-> +	[TI_ADS7953] = {
-> +		.channels	= ti_ads7953_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7953_channels),
-> +	},
-> +	[TI_ADS7954] = {
-> +		.channels	= ti_ads7954_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7954_channels),
-> +	},
-> +	[TI_ADS7955] = {
-> +		.channels	= ti_ads7955_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7955_channels),
-> +	},
-> +	[TI_ADS7956] = {
-> +		.channels	= ti_ads7956_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7956_channels),
-> +	},
-> +	[TI_ADS7957] = {
-> +		.channels	= ti_ads7957_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7957_channels),
-> +	},
-> +	[TI_ADS7958] = {
-> +		.channels	= ti_ads7958_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7958_channels),
-> +	},
-> +	[TI_ADS7959] = {
-> +		.channels	= ti_ads7959_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7959_channels),
-> +	},
-> +	[TI_ADS7960] = {
-> +		.channels	= ti_ads7960_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7960_channels),
-> +	},
-> +	[TI_ADS7961] = {
-> +		.channels	= ti_ads7961_channels,
-> +		.num_channels	= ARRAY_SIZE(ti_ads7961_channels),
-> +	},
-> +};
-> +
-> +/*
-> + * ti_ads7950_update_scan_mode() setup the spi transfer buffer for the new
-> + * scan mask
-> + */
-> +static int ti_ads7950_update_scan_mode(struct iio_dev *indio_dev,
-> +				       const unsigned long *active_scan_mask)
+>  #define QUAD8_NUM_COUNTERS 8
+>  
+>  /**
+> @@ -43,6 +49,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+>   * @quadrature_scale:	array of quadrature mode scale configurations
+>   * @ab_enable:		array of A and B inputs enable configurations
+>   * @preset_enable:	array of set_to_preset_on_index attribute configurations
+> + * @irq_trig_func:	array of IRQ trigger function attribute configurations
+>   * @synchronous_mode:	array of index function synchronous mode configurations
+>   * @index_polarity:	array of index function polarity configurations
+>   * @base:		base port address of the IIO device
+> @@ -54,6 +61,7 @@ struct quad8_iio {
+>  	unsigned int quadrature_scale[QUAD8_NUM_COUNTERS];
+>  	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
+>  	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
+> +	unsigned int irq_trig_func[QUAD8_NUM_COUNTERS];
+>  	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
+>  	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
+>  	unsigned int base;
+> @@ -150,7 +158,8 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+>  
+>  		priv->ab_enable[chan->channel] = val;
+>  
+> -		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
+> +		ior_cfg = val | priv->preset_enable[chan->channel] << 1 |
+> +			priv->irq_trig_func[chan->channel] << 3;
+>  
+>  		/* Load I/O control configuration */
+>  		outb(0x40 | ior_cfg, base_offset);
+> @@ -184,10 +193,39 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+>  	return -EINVAL;
+>  }
+>  
+> +static int quad8_read_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir)
 > +{
-> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
-> +	int i, cmd, len;
+> +	const struct quad8_iio *const priv = iio_priv(indio_dev);
+> +	const unsigned int irq_enabled = inb(priv->base + 0x12);
 > +
-> +	len = 0;
-> +	for_each_set_bit(i, active_scan_mask, indio_dev->num_channels) {
-> +		cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(i) | st->settings;
-> +		st->tx_buf[len++] = cpu_to_be16(cmd);
-> +	}
+> +	return !!(irq_enabled & BIT(chan->channel));
+> +}
 > +
-> +	/* Data for the 1st channel is not returned until the 3rd transfer */
-> +	len += 2;
-> +	for (i = 0; i < len; i++) {
-> +		if ((i + 2) < len)
-> +			st->ring_xfer[i].tx_buf = &st->tx_buf[i];
-> +		if (i >= 2)
-> +			st->ring_xfer[i].rx_buf = &st->rx_buf[i - 2];
-> +		st->ring_xfer[i].len = 2;
-> +		st->ring_xfer[i].cs_change = 1;
-> +	}
-> +	/* make sure last transfer's cs_change is not set */
-> +	st->ring_xfer[len - 1].cs_change = 0;
+> +static int quad8_write_event_config(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, enum iio_event_type type,
+> +	enum iio_event_direction dir, int state)
+> +{
+> +	const struct quad8_iio *const priv = iio_priv(indio_dev);
+> +	unsigned int irq_enabled = inb(priv->base + 0x12);
 > +
-> +	spi_message_init_with_transfers(&st->ring_msg, st->ring_xfer, len);
+> +	if (state)
+> +		irq_enabled |= BIT(chan->channel);
+> +	else
+> +		irq_enabled &= ~BIT(chan->channel);
+> +
+> +	outb(irq_enabled, priv->base + 0x12);
 > +
 > +	return 0;
 > +}
 > +
-> +static irqreturn_t ti_ads7950_trigger_handler(int irq, void *p)
+>  static const struct iio_info quad8_info = {
+>  	.driver_module = THIS_MODULE,
+>  	.read_raw = quad8_read_raw,
+> -	.write_raw = quad8_write_raw
+> +	.write_raw = quad8_write_raw,
+> +	.read_event_config = quad8_read_event_config,
+> +	.write_event_config = quad8_write_event_config
+>  };
+>  
+>  static ssize_t quad8_read_preset(struct iio_dev *indio_dev, uintptr_t private,
+> @@ -253,7 +291,8 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+>  	priv->preset_enable[chan->channel] = preset_enable;
+>  
+>  	ior_cfg = priv->ab_enable[chan->channel] |
+> -		(unsigned int)preset_enable << 1;
+> +		(unsigned int)preset_enable << 1 |
+> +		priv->irq_trig_func[chan->channel] << 3;
+>  
+>  	/* Load I/O control configuration to Input / Output Control Register */
+>  	outb(0x40 | ior_cfg, base_offset);
+> @@ -261,6 +300,44 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+>  	return len;
+>  }
+>  
+> +static const char *const quad8_irq_trig_func_modes[] = {
+> +	"/Carry",
+> +	"/Compare",
+> +	"/Carry/Borrow",
+> +	"Index"
+> +};
+> +
+> +static int quad8_set_irq_trig_func(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan, unsigned int irq_trig_func)
 > +{
-> +	struct iio_poll_func *pf = p;
-> +	struct iio_dev *indio_dev = pf->indio_dev;
-> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
-> +	int ret;
+> +	struct quad8_iio *const priv = iio_priv(indio_dev);
+> +	const unsigned int ior_cfg = priv->ab_enable[chan->channel] |
+> +		priv->preset_enable[chan->channel] << 1 | irq_trig_func << 3;
+> +	const int base_offset = priv->base + 2 * chan->channel + 1;
 > +
-> +	ret = spi_sync(st->spi, &st->ring_msg);
-> +	if (ret < 0)
-> +		goto out;
+> +	priv->irq_trig_func[chan->channel] = irq_trig_func;
 > +
-> +	iio_push_to_buffers_with_timestamp(indio_dev, st->rx_buf,
-> +					   iio_get_time_ns(indio_dev));
+> +	/* Load I/O control configuration to Input/Output Control Register */
+> +	outb(0x40 | ior_cfg, base_offset);
 > +
-> +out:
-> +	iio_trigger_notify_done(indio_dev->trig);
+> +	return 0;
+> +}
+> +
+> +static int quad8_get_irq_trig_func(struct iio_dev *indio_dev,
+> +	const struct iio_chan_spec *chan)
+> +{
+> +	const struct quad8_iio *const priv = iio_priv(indio_dev);
+> +
+> +	return priv->irq_trig_func[chan->channel];
+> +}
+> +
+> +static const struct iio_enum quad8_irq_trig_func_enum = {
+> +	.items = quad8_irq_trig_func_modes,
+> +	.num_items = ARRAY_SIZE(quad8_irq_trig_func_modes),
+> +	.set = quad8_set_irq_trig_func,
+> +	.get = quad8_get_irq_trig_func
+> +};
+> +
+>  static const char *const quad8_noise_error_states[] = {
+>  	"No excessive noise is present at the count inputs",
+>  	"Excessive noise is present at the count inputs"
+> @@ -477,6 +554,8 @@ static const struct iio_chan_spec_ext_info quad8_count_ext_info[] = {
+>  		.read = quad8_read_set_to_preset_on_index,
+>  		.write = quad8_write_set_to_preset_on_index
+>  	},
+> +	IIO_ENUM("irq_trig_func", IIO_SEPARATE, &quad8_irq_trig_func_enum),
+> +	IIO_ENUM_AVAILABLE("irq_trig_func", &quad8_irq_trig_func_enum),
+>  	IIO_ENUM("noise_error", IIO_SEPARATE, &quad8_noise_error_enum),
+>  	IIO_ENUM_AVAILABLE("noise_error", &quad8_noise_error_enum),
+>  	IIO_ENUM("count_direction", IIO_SEPARATE, &quad8_count_direction_enum),
+> @@ -497,12 +576,22 @@ static const struct iio_chan_spec_ext_info quad8_index_ext_info[] = {
+>  	{}
+>  };
+>  
+> +static const struct iio_event_spec quad8_event[] = {
+> +	{
+> +		.type = IIO_EV_TYPE_MAG,
+> +		.dir = IIO_EV_DIR_NONE,
+> +		.mask_separate = BIT(IIO_EV_INFO_ENABLE)
+> +	}
+> +};
+> +
+>  #define QUAD8_COUNT_CHAN(_chan) {					\
+>  	.type = IIO_COUNT,						\
+>  	.channel = (_chan),						\
+>  	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+>  		BIT(IIO_CHAN_INFO_ENABLE) | BIT(IIO_CHAN_INFO_SCALE),	\
+>  	.ext_info = quad8_count_ext_info,				\
+> +	.event_spec = quad8_event,					\
+> +	.num_event_specs = ARRAY_SIZE(quad8_event),			\
+>  	.indexed = 1							\
+>  }
+>  
+> @@ -525,12 +614,35 @@ static const struct iio_chan_spec quad8_channels[] = {
+>  	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
+>  };
+>  
+> +static irqreturn_t quad8_irq_handler(int irq, void *indio_dev)
+> +{
+> +	const struct quad8_iio *const priv = iio_priv(indio_dev);
+> +	unsigned long irq_status;
+> +	unsigned long channel;
+> +
+> +	irq_status = inb(priv->base + 0x10);
+> +	if (!irq_status)
+> +		return IRQ_NONE;
+> +
+> +	for_each_set_bit(channel, &irq_status, QUAD8_NUM_COUNTERS)
+> +		iio_push_event(indio_dev,
+> +			IIO_UNMOD_EVENT_CODE(IIO_COUNT, channel,
+> +				IIO_EV_TYPE_MAG, IIO_EV_DIR_NONE),
+> +			iio_get_time_ns(indio_dev));
+> +
+> +	/* Clear pending interrupts on device */
+> +	outb(0x10, priv->base + 0x11);
 > +
 > +	return IRQ_HANDLED;
 > +}
 > +
-> +static int ti_ads7950_scan_direct(struct ti_ads7950_state *st, unsigned int ch)
-> +{
-> +	int ret, cmd;
+>  static int quad8_probe(struct device *dev, unsigned int id)
+>  {
+>  	struct iio_dev *indio_dev;
+>  	struct quad8_iio *priv;
+>  	int i, j;
+>  	unsigned int base_offset;
+> +	int err;
+>  
+>  	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+>  	if (!indio_dev)
+> @@ -552,6 +664,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
+>  	priv = iio_priv(indio_dev);
+>  	priv->base = base[id];
+>  
+> +	/* Reset Index/Interrupt Register */
+> +	outb(0x00, base[id] + 0x12);
+>  	/* Reset all counters and disable interrupt function */
+>  	outb(0x01, base[id] + 0x11);
+>  	/* Set initial configuration for all counters */
+> @@ -573,8 +687,13 @@ static int quad8_probe(struct device *dev, unsigned int id)
+>  		/* Disable index function; negative index polarity */
+>  		outb(0x60, base_offset + 1);
+>  	}
+> -	/* Enable all counters */
+> -	outb(0x00, base[id] + 0x11);
+> +	/* Enable all counters and enable interrupt function */
+> +	outb(0x10, base[id] + 0x11);
 > +
-> +	cmd = TI_ADS7950_CR_WRITE | TI_ADS7950_CR_CHAN(ch) | st->settings;
-> +	st->tx_buf[0] = cpu_to_be16(cmd);
-> +
-> +	ret = spi_sync(st->spi, &st->scan_single_msg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return be16_to_cpu(st->rx_buf[0]);
-> +}
-> +
-> +static int ti_ads7950_get_range(struct ti_ads7950_state *st)
-> +{
-> +	int vref;
-> +
-> +	vref = regulator_get_voltage(st->reg);
-> +	if (vref < 0)
-> +		return vref;
-> +
-> +	vref /= 1000;
-> +
-> +	if (st->settings & TI_ADS7950_CR_RANGE_5V)
-> +		vref *= 2;
-> +
-> +	return vref;
-> +}
-> +
-> +static int ti_ads7950_read_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int *val, int *val2, long m)
-> +{
-> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (m) {
-> +	case IIO_CHAN_INFO_RAW:
-> +
-> +		ret = iio_device_claim_direct_mode(indio_dev);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		ret = ti_ads7950_scan_direct(st, chan->address);
-> +		iio_device_release_direct_mode(indio_dev);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		if (chan->address != TI_ADS7950_EXTRACT(ret, 12, 4))
-> +			return -EIO;
-> +
-> +		*val = TI_ADS7950_EXTRACT(ret, chan->scan_type.shift,
-> +					  chan->scan_type.realbits);
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		ret = ti_ads7950_get_range(st);
-> +		if (ret < 0)
-> +			return ret;
-> +
-> +		*val = ret;
-> +		*val2 = (1 << chan->scan_type.realbits) - 1;
-> +
-> +		return IIO_VAL_FRACTIONAL;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info ti_ads7950_info = {
-> +	.read_raw		= &ti_ads7950_read_raw,
-> +	.update_scan_mode	= ti_ads7950_update_scan_mode,
-> +	.driver_module		= THIS_MODULE,
-> +};
-> +
-> +static int ti_ads7950_probe(struct spi_device *spi)
-> +{
-> +	struct ti_ads7950_state *st;
-> +	struct iio_dev *indio_dev;
-> +	const struct ti_ads7950_chip_info *info;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	st = iio_priv(indio_dev);
-> +
-> +	spi_set_drvdata(spi, indio_dev);
-> +
-> +	st->spi = spi;
-> +	st->settings = TI_ADS7950_CR_MANUAL | TI_ADS7950_CR_RANGE_5V;
-> +
-> +	info = &ti_ads7950_chip_info[spi_get_device_id(spi)->driver_data];
-> +
-> +	indio_dev->name = spi_get_device_id(spi)->name;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->channels = info->channels;
-> +	indio_dev->num_channels = info->num_channels;
-> +	indio_dev->info = &ti_ads7950_info;
-> +
-> +	/*
-> +	 * Setup default message. The sample is read at the end of the first
-> +	 * transfer, then it takes one full cycle to convert the sample and one
-> +	 * more cycle to send the value. The conversion process is driven by
-> +	 * the SPI clock, which is why we have 3 transfers. The middle one is
-> +	 * just dummy data sent while the chip is converting the sample that
-> +	 * was read at the end of the first transfer.
-> +	 */
-> +
-> +	st->scan_single_xfer[0].tx_buf = &st->tx_buf[0];
-> +	st->scan_single_xfer[0].len = 2;
-> +	st->scan_single_xfer[0].cs_change = 1;
-> +	st->scan_single_xfer[1].tx_buf = &st->tx_buf[0];
-> +	st->scan_single_xfer[1].len = 2;
-> +	st->scan_single_xfer[1].cs_change = 1;
-> +	st->scan_single_xfer[2].rx_buf = &st->rx_buf[0];
-> +	st->scan_single_xfer[2].len = 2;
-> +
-> +	spi_message_init_with_transfers(&st->scan_single_msg,
-> +					st->scan_single_xfer, 3);
-> +
-> +	st->reg = devm_regulator_get(&spi->dev, "refin");
-> +	if (IS_ERR(st->reg)) {
-> +		dev_err(&spi->dev, "Failed get get regulator \"refin\"\n");
-> +		return PTR_ERR(st->reg);
-> +	}
-> +
-> +	ret = regulator_enable(st->reg);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to enable regulator \"refin\"\n");
-> +		return ret;
-> +	}
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, NULL,
-> +					 &ti_ads7950_trigger_handler, NULL);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to setup triggered buffer\n");
-> +		goto error_disable_reg;
-> +	}
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret) {
-> +		dev_err(&spi->dev, "Failed to register iio device\n");
-> +		goto error_cleanup_ring;
-> +	}
-> +
-> +	return 0;
-> +
-> +error_cleanup_ring:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +error_disable_reg:
-> +	regulator_disable(st->reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int ti_ads7950_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct ti_ads7950_state *st = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	regulator_disable(st->reg);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct spi_device_id ti_ads7950_id[] = {
-> +	{"ti-ads7950", TI_ADS7950},
-> +	{"ti-ads7951", TI_ADS7951},
-> +	{"ti-ads7952", TI_ADS7952},
-> +	{"ti-ads7953", TI_ADS7953},
-> +	{"ti-ads7954", TI_ADS7954},
-> +	{"ti-ads7955", TI_ADS7955},
-> +	{"ti-ads7956", TI_ADS7956},
-> +	{"ti-ads7957", TI_ADS7957},
-> +	{"ti-ads7958", TI_ADS7958},
-> +	{"ti-ads7959", TI_ADS7959},
-> +	{"ti-ads7960", TI_ADS7960},
-> +	{"ti-ads7961", TI_ADS7961},
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, ti_ads7950_id);
-> +
-> +static struct spi_driver ti_ads7950_driver = {
-> +	.driver = {
-> +		.name	= "ti-ads7950",
-> +	},
-> +	.probe		= ti_ads7950_probe,
-> +	.remove		= ti_ads7950_remove,
-> +	.id_table	= ti_ads7950_id,
-> +};
-> +module_spi_driver(ti_ads7950_driver);
-> +
-> +MODULE_AUTHOR("David Lechner <david@lechnology.com>");
-> +MODULE_DESCRIPTION("TI TI_ADS7950 ADC");
-> +MODULE_LICENSE("GPL v2");
+> +	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
+> +		dev_name(dev), indio_dev);
+> +	if (err)
+> +		return err;
+>  
+>  	return devm_iio_device_register(dev, indio_dev);
+>  }
+> diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+> index 44627f6..2cea823 100644
+> --- a/drivers/iio/counter/Kconfig
+> +++ b/drivers/iio/counter/Kconfig
+> @@ -15,10 +15,10 @@ config 104_QUAD_8
+>  	  Performing a write to a counter's IIO_CHAN_INFO_RAW sets the counter and
+>  	  also clears the counter's respective error flag. Although the counters
+>  	  have a 25-bit range, only the lower 24 bits may be set, either directly
+> -	  or via a counter's preset attribute. Interrupts are not supported by
+> -	  this driver.
+> +	  or via a counter's preset attribute.
+>  
+>  	  The base port addresses for the devices may be configured via the base
+> -	  array module parameter.
+> +	  array module parameter. The interrupt line numbers for the devices may
+> +	  be configured via the irq array module parameter.
+>  
+>  endmenu
 > 
 
