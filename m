@@ -1,100 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57088 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57090 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751164AbcLCOjU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 09:39:20 -0500
-Subject: Re: [PATCH] IIO: Change msleep to usleep_range for small msecs
-To: Aniroop Mathur <aniroop.mathur@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Linus Walleij <linus.walleij@linaro.org>
-References: <1480132046-5406-1-git-send-email-a.mathur@samsung.com>
- <fc667b4b-6d40-db6e-3855-7a181fa97458@kernel.org>
- <CGME20161130133557epcas2p2caca5d58770bf31614812d14b809fe8f@epcas2p2.samsung.com>
- <20161130144345epcms5p24751680d9fec0f33d5283db9e09410ca@epcms5p2>
- <CADYu30_bwMKDAW8MMFvZ_ERhOWhsOQy=Vj1E7Z8YnuRgqzcbdg@mail.gmail.com>
-Cc: "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        SAMUEL SEQUEIRA <s.samuel@samsung.com>,
-        Rahul Mahale <r.mahale@samsung.com>, a.mathur@samsung.com
+        with ESMTP id S1752016AbcLCOj0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 09:39:26 -0500
+Subject: Re: [PATCH 10/39] Annotate hardware config module parameters in
+ drivers/iio/
+To: William Breathitt Gray <vilhelm.gray@gmail.com>,
+        David Howells <dhowells@redhat.com>
+References: <148059537897.31612.9461043954611464597.stgit@warthog.procyon.org.uk>
+ <148059545558.31612.1279403857733187213.stgit@warthog.procyon.org.uk>
+ <20161201135025.GB30135@sophia>
+Cc: linux-kernel@vger.kernel.org, gnomes@lxorguk.ukuu.org.uk,
+        minyard@acm.org, linux-iio@vger.kernel.org,
+        linux-security-module@vger.kernel.org, keyrings@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <37304261-5b26-c63e-2387-c13e3032ad0c@kernel.org>
-Date: Sat, 3 Dec 2016 09:00:46 +0000
+Message-ID: <627966ae-2071-e755-5506-6b98b97e0f8f@kernel.org>
+Date: Sat, 3 Dec 2016 09:05:05 +0000
 MIME-Version: 1.0
-In-Reply-To: <CADYu30_bwMKDAW8MMFvZ_ERhOWhsOQy=Vj1E7Z8YnuRgqzcbdg@mail.gmail.com>
+In-Reply-To: <20161201135025.GB30135@sophia>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/12/16 19:07, Aniroop Mathur wrote:
-> On Wed, Nov 30, 2016 at 8:13 PM, Aniroop Mathur <a.mathur@samsung.com> wrote:
->> On 30 Nov 2016 19:05, "Lars-Peter Clausen" <lars@metafoo.de> wrote:
->>  >
->>  > On 11/27/2016 11:51 AM, Jonathan Cameron wrote:
->>  > > On 26/11/16 03:47, Aniroop Mathur wrote:
->>  > >> msleep(1~20) may not do what the caller intends, and will often sleep longer.
->>  > >> (~20 ms actual sleep for any value given in the 1~20ms range)
->>  > >> This is not the desired behaviour for many cases like device resume time,
->>  > >> device suspend time, device enable time, data reading time, etc.
->>  > >> Thus, change msleep to usleep_range for precise wakeups.
->>  > >>
->>  > >> Signed-off-by: Aniroop Mathur <a.mathur@samsung.com>
->>  > > As these need individual review by the various original authors and driver maintainers to
->>  > > establish the intent of the sleep, it would have been better to have done a series of
->>  > > patches (one per driver) with the relevant maintainers cc'd on the ones that they care about.
->>  > >
->>  > > Most of these are ADI parts looked after by Lars though so perhaps wait for his comments
->>  > > before respining.
->>  >
->>  > I agree with what Jonathan said. For most of these extending the maximum
->>  > sleep time a bit further is ok.
->>  >
+On 01/12/16 13:50, William Breathitt Gray wrote:
+> On Thu, Dec 01, 2016 at 12:30:55PM +0000, David Howells wrote:
+>> When the kernel is running in secure boot mode, we lock down the kernel to
+>> prevent userspace from modifying the running kernel image.  Whilst this
+>> includes prohibiting access to things like /dev/mem, it must also prevent
+>> access by means of configuring driver modules in such a way as to cause a
+>> device to access or modify the kernel image.
 >>
->> Well, its right that sleep a bit further is okay but this patch is not trying
->> to solve any major bug. This patch is only trying to make the wake up more
->> precise than before. So like with msleep(1), process could sleep for 20 ms
->> so this patch only making the making the process to sleep for 1 ms as
->> mentioned in the parameter. So I think, changing to usleep_range is only
->> advantageous and does not cause any harm here.
->> We have also applied the same change in enable/disable/suspend/resume
->> functions in accel, gyro, mag, etc drivers and found decent results like the
->> first sesor data is generated much faster than before so response time
->> increased. This is critical as  sensor can run at a rate of 200Hz / 5ms or
->> even more now a days in new devices. We even applied in probe as doing the
->> same in many drivers contribute to a little saving overall in kernel boot up.
->> Also, it is recommended and mentioned in kernel documentation to use
->> usleep_range for 1-10 ms.
->> Sources -
->> https://www.kernel.org/doc/Documentation/timers/timers-howto.txt
->> https://lkml.org/lkml/2007/8/3/250
+>> To this end, annotate module_param* statements that refer to hardware
+>> configuration and indicate for future reference what type of parameter they
+>> specify.  The parameter parser in the core sees this information and can
+>> skip such parameters with an error message if the kernel is locked down.
+>> The module initialisation then runs as normal, but just sees whatever the
+>> default values for those parameters is.
 >>
+>> Note that we do still need to do the module initialisation because some
+>> drivers have viable defaults set in case parameters aren't specified and
+>> some drivers support automatic configuration (e.g. PNP or PCI) in addition
+>> to manually coded parameters.
+>>
+>> This patch annotates drivers in drivers/iio/.
+>>
+>> Suggested-by: One Thousand Gnomes <gnomes@lxorguk.ukuu.org.uk>
+>> Signed-off-by: David Howells <dhowells@redhat.com>
+>> cc: William Breathitt Gray <vilhelm.gray@gmail.com>
+>> cc: Jonathan Cameron <jic23@kernel.org>
+>> cc: linux-iio@vger.kernel.org
 > 
-> 
-> Hello Mr. Jonathan / Mr. Lars / All,
-> 
-> 
-> Would you kindly update further about this change?
-Hi Aniroop,
+> Acked-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+Hi David,
 
-Quite a few of us only manage to get to kernel patches once or twice a week
-(in my case only on weekends most weeks).
+I'm on a train so can't check the original thread right now (and will probably
+forget to do so later!). I am guessing the new functions are introduced
+earlier in the series?  Hence for now I'll assume you want to merge
+this lot in one go.
 
-Anyhow, I've applied this patch as is.  I don't necessarily think the change
-is that important in the probe paths, but as you said it does little harm.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
 
-So what the heck ;)
-
-Applied to the togreg branch of iio.git which I'll push out as testing
-once I have a net connection (currently on a train).
+Shout if you want me to take this via the IIO tree after the merge window
+closes.
 
 Thanks,
 
 Jonathan
 > 
-> 
->> Thanks.
+>> ---
 >>
->> BR,
->> Aniroop Mathur
+>> drivers/iio/adc/stx104.c  |    2 +-
+>> drivers/iio/dac/cio-dac.c |    2 +-
+>> 2 files changed, 2 insertions(+), 2 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
+>> index 7e3645749eaf..a805bd543acb 100644
+>> --- a/drivers/iio/adc/stx104.c
+>> +++ b/drivers/iio/adc/stx104.c
+>> @@ -49,7 +49,7 @@
+>>
+>> static unsigned int base[max_num_isa_dev(STX104_EXTENT)];
+>> static unsigned int num_stx104;
+>> -module_param_array(base, uint, &num_stx104, 0);
+>> +module_param_hw_array(base, uint, ioport, &num_stx104, 0);
+>> MODULE_PARM_DESC(base, "Apex Embedded Systems STX104 base addresses");
+>>
+>> /**
+>> diff --git a/drivers/iio/dac/cio-dac.c b/drivers/iio/dac/cio-dac.c
+>> index 5a743e2a779d..dac086129edf 100644
+>> --- a/drivers/iio/dac/cio-dac.c
+>> +++ b/drivers/iio/dac/cio-dac.c
+>> @@ -39,7 +39,7 @@
+>>
+>> static unsigned int base[max_num_isa_dev(CIO_DAC_EXTENT)];
+>> static unsigned int num_cio_dac;
+>> -module_param_array(base, uint, &num_cio_dac, 0);
+>> +module_param_hw_array(base, uint, ioport, &num_cio_dac, 0);
+>> MODULE_PARM_DESC(base, "Measurement Computing CIO-DAC base addresses");
+>>
+>> /**
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
