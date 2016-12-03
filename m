@@ -1,80 +1,106 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:46864 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751949AbcLDCUU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Dec 2016 21:20:20 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-kernel@vger.kernel.org, ldewangan@nvidia.com
-Subject: [PATCH 00/19] staging: iio: isl29028: staging cleanups
-Date: Sat,  3 Dec 2016 21:19:24 -0500
-Message-Id: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34148 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752833AbcLCPnw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 10:43:52 -0500
+MIME-Version: 1.0
+In-Reply-To: <37304261-5b26-c63e-2387-c13e3032ad0c@kernel.org>
+References: <1480132046-5406-1-git-send-email-a.mathur@samsung.com>
+ <fc667b4b-6d40-db6e-3855-7a181fa97458@kernel.org> <CGME20161130133557epcas2p2caca5d58770bf31614812d14b809fe8f@epcas2p2.samsung.com>
+ <20161130144345epcms5p24751680d9fec0f33d5283db9e09410ca@epcms5p2>
+ <CADYu30_bwMKDAW8MMFvZ_ERhOWhsOQy=Vj1E7Z8YnuRgqzcbdg@mail.gmail.com> <37304261-5b26-c63e-2387-c13e3032ad0c@kernel.org>
+From: Aniroop Mathur <aniroop.mathur@gmail.com>
+Date: Sat, 3 Dec 2016 21:13:25 +0530
+Message-ID: <CADYu30_=u6A1vOwB10gHDxVgZb+c3k0VE4sXDStbpDbDu6WK=w@mail.gmail.com>
+Subject: Re: [PATCH] IIO: Change msleep to usleep_range for small msecs
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        SAMUEL SEQUEIRA <s.samuel@samsung.com>,
+        Rahul Mahale <r.mahale@samsung.com>, a.mathur@samsung.com
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This is my first round of cleanups to the isl29028 light driver in
-preparation for moving the driver out of staging. The main feature
-introduced by this patch set is support for power management. The
-rest of the patches are minor improvements, mostly style.
+On Sat, Dec 3, 2016 at 2:30 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 02/12/16 19:07, Aniroop Mathur wrote:
+>> On Wed, Nov 30, 2016 at 8:13 PM, Aniroop Mathur <a.mathur@samsung.com> wrote:
+>>> On 30 Nov 2016 19:05, "Lars-Peter Clausen" <lars@metafoo.de> wrote:
+>>>  >
+>>>  > On 11/27/2016 11:51 AM, Jonathan Cameron wrote:
+>>>  > > On 26/11/16 03:47, Aniroop Mathur wrote:
+>>>  > >> msleep(1~20) may not do what the caller intends, and will often sleep longer.
+>>>  > >> (~20 ms actual sleep for any value given in the 1~20ms range)
+>>>  > >> This is not the desired behaviour for many cases like device resume time,
+>>>  > >> device suspend time, device enable time, data reading time, etc.
+>>>  > >> Thus, change msleep to usleep_range for precise wakeups.
+>>>  > >>
+>>>  > >> Signed-off-by: Aniroop Mathur <a.mathur@samsung.com>
+>>>  > > As these need individual review by the various original authors and driver maintainers to
+>>>  > > establish the intent of the sleep, it would have been better to have done a series of
+>>>  > > patches (one per driver) with the relevant maintainers cc'd on the ones that they care about.
+>>>  > >
+>>>  > > Most of these are ADI parts looked after by Lars though so perhaps wait for his comments
+>>>  > > before respining.
+>>>  >
+>>>  > I agree with what Jonathan said. For most of these extending the maximum
+>>>  > sleep time a bit further is ok.
+>>>  >
+>>>
+>>> Well, its right that sleep a bit further is okay but this patch is not trying
+>>> to solve any major bug. This patch is only trying to make the wake up more
+>>> precise than before. So like with msleep(1), process could sleep for 20 ms
+>>> so this patch only making the making the process to sleep for 1 ms as
+>>> mentioned in the parameter. So I think, changing to usleep_range is only
+>>> advantageous and does not cause any harm here.
+>>> We have also applied the same change in enable/disable/suspend/resume
+>>> functions in accel, gyro, mag, etc drivers and found decent results like the
+>>> first sesor data is generated much faster than before so response time
+>>> increased. This is critical as  sensor can run at a rate of 200Hz / 5ms or
+>>> even more now a days in new devices. We even applied in probe as doing the
+>>> same in many drivers contribute to a little saving overall in kernel boot up.
+>>> Also, it is recommended and mentioned in kernel documentation to use
+>>> usleep_range for 1-10 ms.
+>>> Sources -
+>>> https://www.kernel.org/doc/Documentation/timers/timers-howto.txt
+>>> https://lkml.org/lkml/2007/8/3/250
+>>>
+>>
+>>
+>> Hello Mr. Jonathan / Mr. Lars / All,
+>>
+>>
+>> Would you kindly update further about this change?
+> Hi Aniroop,
+>
+> Quite a few of us only manage to get to kernel patches once or twice a week
+> (in my case only on weekends most weeks).
+>
+> Anyhow, I've applied this patch as is.  I don't necessarily think the change
+> is that important in the probe paths, but as you said it does little harm.
+>
+> So what the heck ;)
+>
+> Applied to the togreg branch of iio.git which I'll push out as testing
+> once I have a net connection (currently on a train).
+>
 
-I have one of these devices from
-https://www.digikey.com/product-detail/en/intersil/ISL29028AIROZ-T7/ISL29028AIROZ-T7CT-ND/2639604
-mounted on a breakout board hooked up to a Raspberry Pi 2. The IR and
-light sensor are functioning, however I can't get the proximity sensor
-to work. I hooked an oscilloscope up to the IRDR pin and +3V to verify
-that the pin state begins pulsing when proximity mode is enabled on the
-chip. According to page 9 of the datasheet
-http://www.intersil.com/content/dam/Intersil/documents/isl2/isl29028.pdf,
-the chip has a noise reduction feature where it will take an IR reading
-with the IR LED off to get the baseline, drive the IR LED for 0.1ms, take
-another IR reading, and subtract the two readings. My hunch about the
-cause of my issue is the 5mm IR LED that I am using is still emitting IR
-light during the brief time that the IRDR has no power. The LED is huge
-size wise compared to the size of the chip. Replacing the IR LED with a
-visible light LED causes the visible light LED to become illuminated
-dimly when the IRDR pin begins pulsing.
+This sounds great !! Thanks a lot :)
 
-Any suggestions are welcome. Ideally, I'd like to verify that the
-proximity sensing works before submitting a patch moving the driver out
-of staging. Looking through the data sheet, and the git commits since
-the driver was first introduced into staging, everything in the driver
-looks correct so I think this is operator error on my part.
+BR,
+Aniroop Mathur
 
-Brian Masney (19):
-  staging: iio: isl29028: remove nested if statements
-  staging: iio: isl29028: remove enable flag from
-    isl29028_enable_proximity()
-  staging: iio: isl29028: remove chip test and defaults from
-    isl29028_chip_init()
-  staging: iio: isl29028: add power management support
-  staging: iio: isl29028: made alignment of #defines consistent
-  staging: iio: isl29028: made alignment of variables in struct
-    isl29028_chip consistent
-  staging: iio: isl29028: fix alignment of function arguments
-  staging: iio: isl29028: combine isl29028_proxim_get() and
-    isl29028_read_proxim()
-  staging: iio: isl29028: change newlines to improve readability
-  staging: iio: isl29028: remove unused define ISL29028_DEV_ATTR
-  staging: iio: isl29028: made column alignment in isl29028_channels
-    consistent
-  staging: iio: isl29028: fix comparison between signed and unsigned
-    integers
-  staging: iio: isl29028: move failure logging into
-    isl29028_set_proxim_sampling()
-  staging: iio: isl29028: move failure logging into
-    isl29028_set_als_scale()
-  staging: iio: isl29028: made error messages consistent
-  staging: iio: isl29028: remove unnecessary error logging in
-    isl29028_chip_init_and_power_on()
-  staging: iio: isl29028: remove out of memory log message
-  staging: iio: isl29028: remove unnecessary parenthesis
-  staging: iio: isl29028: remove legacy device tree binding
-
- drivers/staging/iio/light/isl29028.c | 358 +++++++++++++++++++++--------------
- 1 file changed, 215 insertions(+), 143 deletions(-)
-
--- 
-2.7.4
-
+> Thanks,
+>
+> Jonathan
+>>
+>>
+>>> Thanks.
+>>>
+>>> BR,
+>>> Aniroop Mathur
+>
