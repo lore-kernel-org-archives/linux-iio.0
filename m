@@ -1,468 +1,435 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57157 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57183 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753129AbcLCOkh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 09:40:37 -0500
-Subject: Re: [PATCH v3 7/7] ARM: dts: stm32: add stm32 general purpose timer
- driver in DT
-To: Lee Jones <lee.jones@linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>
-References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
- <20161202132251.GL2683@dell>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
+        with ESMTP id S1753485AbcLCOlv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 3 Dec 2016 09:41:51 -0500
+Subject: Re: [PATCH] iio: cros_ec_light_prox: add ChromeOS EC Light and
+ Proximity Sensors
+To: Enric Balletbo Serra <eballetbo@gmail.com>
+References: <1480075385-26091-1-git-send-email-enric.balletbo@collabora.com>
+ <02a154ef-55b8-6728-5438-3dc9cee04213@kernel.org>
+ <CAFqH_50NMb6SBNa65+M712pbmh4wkO2dztLz3VOA3Q6p42nNmQ@mail.gmail.com>
+Cc: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Guenter Roeck <groeck@chromium.org>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <14837e15-07bb-39e5-b5b6-39a7dfb9130f@kernel.org>
-Date: Sat, 3 Dec 2016 09:42:50 +0000
+Message-ID: <d6c0c3f9-b054-4a4d-4adb-00327a9764c9@kernel.org>
+Date: Sat, 3 Dec 2016 09:54:07 +0000
 MIME-Version: 1.0
-In-Reply-To: <20161202132251.GL2683@dell>
+In-Reply-To: <CAFqH_50NMb6SBNa65+M712pbmh4wkO2dztLz3VOA3Q6p42nNmQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/12/16 13:22, Lee Jones wrote:
-> On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
+On 30/11/16 08:57, Enric Balletbo Serra wrote:
+> Hi Jonathan,
 > 
->> Add general purpose timers and it sub-nodes into DT for stm32f4.
->> Define and enable pwm1 and pwm3 for stm32f469 discovery board
->>
->> version 3:
->> - use "st,stm32-timer-trigger" in DT
->>
->> version 2:
->> - use parameters to describe hardware capabilities
->> - do not use references for pwm and iio timer subnodes
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->> ---
->>  arch/arm/boot/dts/stm32f429.dtsi      | 333 +++++++++++++++++++++++++++++++++-
->>  arch/arm/boot/dts/stm32f469-disco.dts |  28 +++
->>  2 files changed, 360 insertions(+), 1 deletion(-)
->>
->> diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
->> index bca491d..8c50d03 100644
->> --- a/arch/arm/boot/dts/stm32f429.dtsi
->> +++ b/arch/arm/boot/dts/stm32f429.dtsi
->> @@ -48,7 +48,7 @@
->>  #include "skeleton.dtsi"
->>  #include "armv7-m.dtsi"
->>  #include <dt-bindings/pinctrl/stm32f429-pinfunc.h>
->> -
->> +#include <dt-bindings/iio/timer/st,stm32-timer-triggers.h>
->>  / {
->>  	clocks {
->>  		clk_hse: clk-hse {
->> @@ -355,6 +355,21 @@
->>  					slew-rate = <2>;
->>  				};
->>  			};
->> +
->> +			pwm1_pins: pwm@1 {
->> +				pins {
->> +					pinmux = <STM32F429_PA8_FUNC_TIM1_CH1>,
->> +						 <STM32F429_PB13_FUNC_TIM1_CH1N>,
->> +						 <STM32F429_PB12_FUNC_TIM1_BKIN>;
->> +				};
->> +			};
->> +
->> +			pwm3_pins: pwm@3 {
->> +				pins {
->> +					pinmux = <STM32F429_PB4_FUNC_TIM3_CH1>,
->> +						 <STM32F429_PB5_FUNC_TIM3_CH2>;
->> +				};
->> +			};
->>  		};
->>  
->>  		rcc: rcc@40023810 {
->> @@ -426,6 +441,322 @@
->>  			interrupts = <80>;
->>  			clocks = <&rcc 0 38>;
->>  		};
->> +
->> +		gptimer1: gptimer1@40010000 {
+> Many thanks for the review, I'm preparing v2. One question below.
 > 
-> timer@xxxxxxx
+> 2016-11-27 11:39 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
+>> On 25/11/16 12:03, Enric Balletbo i Serra wrote:
+>>> From: Gwendal Grignou <gwendal@chromium.org>
+>>>
+>>> Handle Light and Proximity sensors presented by the ChromeOS EC Sensor hub.
+>>> Creates an IIO device for each functions.
+>>>
+>>> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+>>> Signed-off-by: Guenter Roeck <groeck@chromium.org>
+>>> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+>> A few comments / questions inline.   We've missed the upcoming merge window
+>> now anyway so plenty of time to tidy up loose ends.
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/common/cros_ec_sensors/Kconfig         |   8 +
+>>>  drivers/iio/common/cros_ec_sensors/Makefile        |   1 +
+>>>  .../common/cros_ec_sensors/cros_ec_light_prox.c    | 278 +++++++++++++++++++++
+>>>  3 files changed, 287 insertions(+)
+>>>  create mode 100644 drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
+>>>
+>>> diff --git a/drivers/iio/common/cros_ec_sensors/Kconfig b/drivers/iio/common/cros_ec_sensors/Kconfig
+>>> index 135f682..4fd0b87 100644
+>>> --- a/drivers/iio/common/cros_ec_sensors/Kconfig
+>>> +++ b/drivers/iio/common/cros_ec_sensors/Kconfig
+>>> @@ -20,3 +20,11 @@ config IIO_CROS_EC_SENSORS
+>>>         Accelerometers, Gyroscope and Magnetometer that are
+>>>         presented by the ChromeOS EC Sensor hub.
+>>>         Creates an IIO device for each functions.
+>>> +
+>>> +config IIO_CROS_EC_LIGHT_PROX
+>>> +     tristate "ChromeOS EC Light and Proximity Sensors"
+>>> +     select IIO_CROS_EC_SENSORS_CORE
+>> As the build bot has pointed out this doesn't work...
+>> I'd go with depends on myself as it's simpler than making sure to select
+>> the whole tree of things needed.
+>>
 > 
-> Node names should be generic and not numbered.
+> I'll fix this in v2.
 > 
-> I suggest that this isn't actually a timer either.  Is contains a
-> timer (and a PWM), but in it's completeness it is not a timer per
-> say.
-That's just mean ;)  At least suggest an alternative?
+>>> +     help
+>>> +       Module to handle Light and Proximity sensors
+>>> +       presented by the ChromeOS EC Sensor hub.
+>>> +       Creates an IIO device for each functions.
+>>> diff --git a/drivers/iio/common/cros_ec_sensors/Makefile b/drivers/iio/common/cros_ec_sensors/Makefile
+>>> index ec716ff..7aaf2a2 100644
+>>> --- a/drivers/iio/common/cros_ec_sensors/Makefile
+>>> +++ b/drivers/iio/common/cros_ec_sensors/Makefile
+>>> @@ -4,3 +4,4 @@
+>>>
+>>>  obj-$(CONFIG_IIO_CROS_EC_SENSORS_CORE) += cros_ec_sensors_core.o
+>>>  obj-$(CONFIG_IIO_CROS_EC_SENSORS) += cros_ec_sensors.o
+>>> +obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
+>>> diff --git a/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c b/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
+>>> new file mode 100644
+>>> index 0000000..40a34de
+>>> --- /dev/null
+>>> +++ b/drivers/iio/common/cros_ec_sensors/cros_ec_light_prox.c
+>>> @@ -0,0 +1,278 @@
+>>> +/*
+>>> + * cros_ec_light_prox - Driver for light and prox sensors behing CrosEC.
+>>> + *
+>>> + * Copyright (C) 2016 Google, Inc
+>>> + *
+>>> + * This software is licensed under the terms of the GNU General Public
+>>> + * License version 2, as published by the Free Software Foundation, and
+>>> + * may be copied, distributed, and modified under those terms.
+>>> + *
+>>> + * This program is distributed in the hope that it will be useful,
+>>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>>> + * GNU General Public License for more details.
+>>> + */
+>>> +
+>>> +#include <linux/delay.h>
+>>> +#include <linux/device.h>
+>>> +#include <linux/iio/buffer.h>
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/kfifo_buf.h>
+>>> +#include <linux/iio/trigger.h>
+>>> +#include <linux/iio/triggered_buffer.h>
+>>> +#include <linux/iio/trigger_consumer.h>
+>>> +#include <linux/kernel.h>
+>>> +#include <linux/mfd/cros_ec.h>
+>>> +#include <linux/mfd/cros_ec_commands.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/platform_device.h>
+>>> +#include <linux/slab.h>
+>>> +#include <linux/sysfs.h>
+>>> +
+>>> +#include "cros_ec_sensors_core.h"
+>>> +
+>>> +/*
+>>> + * We only represent one entry for light or proximity. EC is merging different
+>>> + * light sensors to return the what the eye would see. For proximity, we
+>>> + * currently support only one light source.
+>>> + */
+>>> +#define CROS_EC_LIGHT_PROX_MAX_CHANNELS (1 + 1)
+>>> +
+>>> +/* State data for ec_sensors iio driver. */
+>>> +struct cros_ec_sensors_state {
+>>> +     /* Shared by all sensors */
+>>> +     struct cros_ec_sensors_core_state core;
+>>> +
+>>> +     struct iio_chan_spec channels[CROS_EC_LIGHT_PROX_MAX_CHANNELS];
+>>> +};
+>>> +
+>>> +static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
+>>> +                                struct iio_chan_spec const *chan,
+>>> +                                int *val, int *val2, long mask)
+>>> +{
+>>> +     struct cros_ec_sensors_state *st = iio_priv(indio_dev);
+>>> +     u16 data = 0;
+>>> +     s64 val64;
+>>> +     int ret;
+>>> +     int idx = chan->scan_index;
+>>> +
+>>> +     mutex_lock(&st->core.cmd_lock);
+>>> +
+>>> +     switch (mask) {
+>>> +     case IIO_CHAN_INFO_RAW:
+>>> +             ret = cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
+>>> +                                            (s16 *)&data);
+>> As I read the code, this is already being output in lux or
+>>> +             if (ret < 0)
+>>> +                     break;
+>>> +             *val = data;
+>>> +             break;
+>>> +     case IIO_CHAN_INFO_CALIBBIAS:
+>>> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
+>>> +             st->core.param.sensor_offset.flags = 0;
+>>> +
+>>> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+>>> +             if (ret < 0)
+>>> +                     break;
+>>> +
+>>> +             /* Save values */
+>>> +             st->core.calib[0] = st->core.resp->sensor_offset.offset[0];
+>> Why save the value?  As far as I can tell it's not used anywhere?
+>>> +
+>>> +             *val = st->core.calib[idx];
+>>> +             break;
+>>> +     case IIO_CHAN_INFO_CALIBSCALE:
+>>> +             /*
+>>> +              * RANGE is used for calibration
+>>> +              * scale is a number x.y, where x is coded on 16bits,
+>>> +              * y coded on 16 bits, between 0 and 9999.
+>>> +              */
+>>> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
+>>> +             st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
+>>> +
+>>> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+>>> +             if (ret < 0)
+>>> +                     break;
+>>> +
+>>> +             val64 = st->core.resp->sensor_range.ret;
+>>> +             *val = val64 >> 16;
+>>> +             *val2 = (val64 & 0xffff) * 100;
+>>> +             ret = IIO_VAL_INT_PLUS_MICRO;
+>>> +             break;
+>>> +     case IIO_CHAN_INFO_SCALE:
+>>> +             /*
+>>> +              * Light: Result in Lux, using calibration multiplier.
+>> Hmm? I'm not following this.  The multiplier set here is 1 so 'using' it
+>> is a strong way of putting it ;)
+>>
+>>> +              * Prox: Result in cm.
+>> Ah, base unit should be in the simple SI unit.  Here m.  Just checked and the
+>> docs don't actually state a unit for proximity.  Feel free to fix that as well.
+>>
+>>> +              */
+>>> +             *val = 1;
+>>> +             ret = IIO_VAL_INT;
+>> No need to provide this if the scale is 1.  That means the results
+>> are 'processed' so shouldn't be using the _raw form at all.
+> 
+> Sorry, I'm still confused with the _raw/_processed details. Just to
+> make sure I understand the API, _raw should be only used for the raw
+> values of the sensor and _processed if the value is already in the
+> simple SI unit, right?
+Yes. Generally if the value reported by the hardware is not already
+in the relevant units and the conversion is linear then we do it
+as raw with offset and scale.  If units happen to be right or the
+conversion is complex then we just provide the processed form 
+> 
+> In this case the sensor returns lux for light and cm for proximity
+> because the EC (where the sensors are connected) does some
+> pre-processing. For light I must not use _raw and directly use
+> _processed. For proximity, I must use _processed too, but convert cm
+> to m.
+> 
+> What confused me is that  in acpi-als, the ALS sensor returns lux and
+> it is using _raw and _processed (though I guess _raw is used only for
+> backward compability)
+Yeah, this was wrong in the initial driver, but we didn't pick up
+on it until much later.  By then it was ABI so we had to leave
+it there for any userspace code already relying on it
+(no way of knowing what is out there!)
+> 
+> To sum up, if a sensor returns a known SI unit I must use always
+> _processed, never _raw, right?
+Almost.  For historical reasons (was a bad idea) we match units
+with hwmon for some types of channel.  Some of these are not
+in the basic SI unit, but rather for example in milli units
+(mV) for voltage for example. 
 
-stm32-gptimerish-magic?
+Check the docs in Documentation/ABI/testing/sysfs-bus-iio* and
+if it isn't specified, feel free to query and we'll fix it.
 
+Where possible we stick to the raw SI unit.  So distances should be
+in m.
 
+Docs should state that though so please send a patch adding that if you
+would like to.
 > 
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40010000 0x400>;
->> +			clocks = <&rcc 0 160>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm1@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <4>;
->> +				st,breakinput;
->> +				st,complementary;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer1@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <27>;
->> +				st,input-triggers-names = TIM5_TRGO,
->> +							  TIM2_TRGO,
->> +							  TIM4_TRGO,
->> +							  TIM3_TRGO;
 > 
-> I'm still dubious with matching by strings.
+>>> +             break;
+>>> +     default:
+>>> +             ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
+>>> +                                             mask);
+>>> +             break;
+>>> +     }
+>>> +
+>>> +     mutex_unlock(&st->core.cmd_lock);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
+>>> +                            struct iio_chan_spec const *chan,
+>>> +                            int val, int val2, long mask)
+>>> +{
+>>> +     struct cros_ec_sensors_state *st = iio_priv(indio_dev);
+>>> +     int ret;
+>>> +     int idx = chan->scan_index;
+>>> +
+>>> +     mutex_lock(&st->core.cmd_lock);
+>>> +
+>>> +     switch (mask) {
+>>> +     case IIO_CHAN_INFO_CALIBBIAS:
+>>> +             st->core.calib[idx] = val;
+>>> +             /* Send to EC for each axis, even if not complete */
+>>> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
+>>> +             st->core.param.sensor_offset.flags = MOTION_SENSE_SET_OFFSET;
+>>> +             st->core.param.sensor_offset.offset[0] =
+>>> +                     st->core.calib[0];
+>>> +             st->core.param.sensor_offset.temp =
+>>> +                     EC_MOTION_SENSE_INVALID_CALIB_TEMP;
+>>> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+>>> +             break;
+>>> +     case IIO_CHAN_INFO_CALIBSCALE:
+>>> +             st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
+>>> +             st->core.param.sensor_range.data = (val << 16) | (val2 / 100);
+>>> +             ret = cros_ec_motion_send_host_cmd(&st->core, 0);
+>>> +             break;
+>>> +     default:
+>>> +             ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
+>>> +                                              mask);
+>>> +             break;
+>>> +     }
+>>> +
+>>> +     mutex_unlock(&st->core.cmd_lock);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static const struct iio_info ec_sensors_info = {
+>>> +     .read_raw = &cros_ec_light_prox_read,
+>>> +     .write_raw = &cros_ec_light_prox_write,
+>>> +     .driver_module = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static int cros_ec_sensors_probe(struct platform_device *pdev)
+>>> +{
+>>> +     struct device *dev = &pdev->dev;
+>>> +     struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
+>>> +     struct cros_ec_device *ec_device;
+>>> +     struct iio_dev *indio_dev;
+>>> +     struct cros_ec_sensors_state *state;
+>>> +     struct iio_chan_spec *channel;
+>>> +     int ret;
+>>> +
+>>> +     if (!ec_dev || !ec_dev->ec_dev) {
+>>> +             dev_warn(&pdev->dev, "No CROS EC device found.\n");
+>>> +             return -EINVAL;
+>>> +     }
+>>> +     ec_device = ec_dev->ec_dev;
+>>> +
+>>> +     indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*state));
+>>> +     if (!indio_dev)
+>>> +             return -ENOMEM;
+>>> +
+>>> +     ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     indio_dev->info = &ec_sensors_info;
+>>> +     state = iio_priv(indio_dev);
+>>> +     state->core.type = state->core.resp->info.type;
+>>> +     state->core.loc = state->core.resp->info.location;
+>>> +     channel = state->channels;
+>>> +
+>>> +     /* Common part */
+>>> +     channel->info_mask_separate =
+>>> +             BIT(IIO_CHAN_INFO_RAW) |
+>>> +             BIT(IIO_CHAN_INFO_CALIBBIAS) |
+>>> +             BIT(IIO_CHAN_INFO_CALIBSCALE);
+>>> +     channel->info_mask_shared_by_all =
+>>> +             BIT(IIO_CHAN_INFO_SCALE) |
+>>> +             BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>>> +             BIT(IIO_CHAN_INFO_FREQUENCY);
+>>> +     channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
+>>> +     channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
+>>> +     channel->ext_info = cros_ec_sensors_ext_info;
+>>> +
+>>> +     /* Sensor specific */
+>>> +     switch (state->core.type) {
+>>> +     case MOTIONSENSE_TYPE_LIGHT:
+>>> +             channel->type = IIO_LIGHT;
+>>> +             break;
+>>> +     case MOTIONSENSE_TYPE_PROX:
+>>> +             channel->type = IIO_PROXIMITY;
+>>> +             break;
+>>> +     default:
+>>> +             dev_warn(&pdev->dev, "Unknown motion sensor\n");
+>>> +             return -EINVAL;
+>>> +     }
+>>> +
+>>> +     /* Timestamp */
+>>> +     channel++;
+>>> +     channel->type = IIO_TIMESTAMP;
+>>> +     channel->channel = -1;
+>>> +     channel->scan_index = 1;
+>>> +     channel->scan_type.sign = 's';
+>>> +     channel->scan_type.realbits = 64;
+>>> +     channel->scan_type.storagebits = 64;
+>>> +
+>>> +     indio_dev->channels = state->channels;
+>>> +
+>>> +     indio_dev->num_channels = CROS_EC_LIGHT_PROX_MAX_CHANNELS;
+>>> +
+>>> +     state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+>>> +
+>>> +     ret = iio_triggered_buffer_setup(indio_dev, NULL,
+>>> +                                      cros_ec_sensors_capture, NULL);
+>>> +     if (ret)
+>>> +             return ret;
+>>> +
+>>> +     ret = iio_device_register(indio_dev);
+>>> +     if (ret)
+>>> +             iio_triggered_buffer_cleanup(indio_dev);
+>>> +
+>>> +     return ret;
+>>> +}
+>>> +
+>>> +static int cros_ec_sensors_remove(struct platform_device *pdev)
+>>> +{
+>>> +     struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>> +
+>>> +     iio_device_unregister(indio_dev);
+>>> +     iio_triggered_buffer_cleanup(indio_dev);
+>>
+>> You could use the devm versions of register and triggered_buffer_setup
+>> and drop this remove entirely.
+>>
 > 
-> I'll take a look at the C code to see what the alternatives could be.
+> Ok, done in v2.
 > 
->> +				st,output-triggers-names = TIM1_TRGO,
->> +							   TIM1_CH1,
->> +							   TIM1_CH2,
->> +							   TIM1_CH3,
->> +							   TIM1_CH4;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer2: gptimer2@40000000 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40000000 0x400>;
->> +			clocks = <&rcc 0 128>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm2@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <4>;
->> +				st,32bits-counter;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer2@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <28>;
->> +				st,input-triggers-names = TIM1_TRGO,
->> +							  TIM8_TRGO,
->> +							  TIM3_TRGO,
->> +							  TIM4_TRGO;
->> +				st,output-triggers-names = TIM2_TRGO,
->> +							   TIM2_CH1,
->> +							   TIM2_CH2,
->> +							   TIM2_CH3,
->> +							   TIM2_CH4;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer3: gptimer3@40000400 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40000400 0x400>;
->> +			clocks = <&rcc 0 129>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm3@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <4>;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer3@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <29>;
->> +				st,input-triggers-names = TIM1_TRGO,
->> +							  TIM8_TRGO,
->> +							  TIM5_TRGO,
->> +							  TIM4_TRGO;
->> +				st,output-triggers-names = TIM3_TRGO,
->> +							   TIM3_CH1,
->> +							   TIM3_CH2,
->> +							   TIM3_CH3,
->> +							   TIM3_CH4;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer4: gptimer4@40000800 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40000800 0x400>;
->> +			clocks = <&rcc 0 130>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm4@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <4>;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer4@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <30>;
->> +				st,input-triggers-names = TIM1_TRGO,
->> +							  TIM2_TRGO,
->> +							  TIM3_TRGO,
->> +							  TIM8_TRGO;
->> +				st,output-triggers-names = TIM4_TRGO,
->> +							   TIM4_CH1,
->> +							   TIM4_CH2,
->> +							   TIM4_CH3,
->> +							   TIM4_CH4;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer5: gptimer5@40000C00 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40000C00 0x400>;
->> +			clocks = <&rcc 0 131>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm5@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <4>;
->> +				st,32bits-counter;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer5@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <50>;
->> +				st,input-triggers-names = TIM2_TRGO,
->> +							  TIM3_TRGO,
->> +							  TIM4_TRGO,
->> +							  TIM8_TRGO;
->> +				st,output-triggers-names = TIM5_TRGO,
->> +							   TIM5_CH1,
->> +							   TIM5_CH2,
->> +							   TIM5_CH3,
->> +							   TIM5_CH4;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer6: gptimer6@40001000 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40001000 0x400>;
->> +			clocks = <&rcc 0 132>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			timer6@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <54>;
->> +				st,output-triggers-names = TIM6_TRGO;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer7: gptimer7@40001400 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40001400 0x400>;
->> +			clocks = <&rcc 0 133>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			timer7@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <55>;
->> +				st,output-triggers-names = TIM7_TRGO;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer8: gptimer8@40010400 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40010400 0x400>;
->> +			clocks = <&rcc 0 161>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm8@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <4>;
->> +				st,complementary;
->> +				st,breakinput;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer8@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <46>;
->> +				st,input-triggers-names = TIM1_TRGO,
->> +							  TIM2_TRGO,
->> +							  TIM4_TRGO,
->> +							  TIM5_TRGO;
->> +				st,output-triggers-names = TIM8_TRGO,
->> +							   TIM8_CH1,
->> +							   TIM8_CH2,
->> +							   TIM8_CH3,
->> +							   TIM8_CH4;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer9: gptimer9@40014000 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40014000 0x400>;
->> +			clocks = <&rcc 0 176>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm9@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <2>;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer9@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <24>;
->> +				st,input-triggers-names = TIM2_TRGO,
->> +							  TIM3_TRGO;
->> +				st,output-triggers-names = TIM9_TRGO,
->> +							   TIM9_CH1,
->> +							   TIM9_CH2;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer10: gptimer10@40014400 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40014400 0x400>;
->> +			clocks = <&rcc 0 177>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm10@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <1>;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer11: gptimer11@40014800 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40014800 0x400>;
->> +			clocks = <&rcc 0 178>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm11@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <1>;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer12: gptimer12@40001800 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40001800 0x400>;
->> +			clocks = <&rcc 0 134>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm12@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <2>;
->> +				status = "disabled";
->> +			};
->> +
->> +			timer12@0 {
->> +				compatible = "st,stm32-timer-trigger";
->> +				interrupts = <43>;
->> +				st,input-triggers-names = TIM4_TRGO,
->> +							  TIM5_TRGO;
->> +				st,output-triggers-names = TIM12_TRGO,
->> +							   TIM12_CH1,
->> +							   TIM12_CH2;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer13: gptimer13@40001C00 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40001C00 0x400>;
->> +			clocks = <&rcc 0 135>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm13@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <1>;
->> +				status = "disabled";
->> +			};
->> +		};
->> +
->> +		gptimer14: gptimer14@40002000 {
->> +			compatible = "st,stm32-gptimer";
->> +			reg = <0x40002000 0x400>;
->> +			clocks = <&rcc 0 136>;
->> +			clock-names = "clk_int";
->> +			status = "disabled";
->> +
->> +			pwm14@0 {
->> +				compatible = "st,stm32-pwm";
->> +				st,pwm-num-chan = <1>;
->> +				status = "disabled";
->> +			};
->> +		};
->>  	};
->>  };
->>  
->> diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
->> index 8a163d7..df4ca7e 100644
->> --- a/arch/arm/boot/dts/stm32f469-disco.dts
->> +++ b/arch/arm/boot/dts/stm32f469-disco.dts
->> @@ -81,3 +81,31 @@
->>  &usart3 {
->>  	status = "okay";
->>  };
->> +
->> +&gptimer1 {
->> +	status = "okay";
->> +
->> +	pwm1@0 {
->> +		pinctrl-0	= <&pwm1_pins>;
->> +		pinctrl-names	= "default";
->> +		status = "okay";
->> +	};
->> +
->> +	timer1@0 {
->> +		status = "okay";
->> +	};
->> +};
-> 
-> This is a much *better* format than before.
-> 
-> I still don't like the '&' syntax though.
-> 
->> +&gptimer3 {
->> +	status = "okay";
->> +
->> +	pwm3@0 {
->> +		pinctrl-0	= <&pwm3_pins>;
->> +		pinctrl-names	= "default";
->> +		status = "okay";
->> +	};
->> +
->> +	timer3@0 {
->> +		status = "okay";
->> +	};
->> +};
+>>> +
+>>> +     return 0;
+>>> +}
+>>> +
+>>> +static const struct platform_device_id cros_ec_sensors_ids[] = {
+>>> +     {
+>>> +             .name = "cros-ec-prox",
+>>> +     },
+>>> +     {
+>>> +             .name = "cros-ec-light",
+>>> +     },
+>>> +     { /* sentinel */ }
+>>> +};
+>>> +MODULE_DEVICE_TABLE(platform, cros_ec_sensors_ids);
+>>> +
+>>> +static struct platform_driver cros_ec_sensors_platform_driver = {
+>>> +     .driver = {
+>>> +             .name   = "cros-ec-light-prox",
+>>> +     },
+>>> +     .probe          = cros_ec_sensors_probe,
+>>> +     .remove         = cros_ec_sensors_remove,
+>>> +     .id_table       = cros_ec_sensors_ids,
+>>> +};
+>>> +module_platform_driver(cros_ec_sensors_platform_driver);
+>>> +
+>>> +MODULE_DESCRIPTION("ChromeOS EC light/proximity sensors driver");
+>>> +MODULE_LICENSE("GPL v2");
+>>>
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
