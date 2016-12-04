@@ -1,94 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:47164 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:47172 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752022AbcLDCUV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Dec 2016 21:20:21 -0500
+        id S1752198AbcLDCUW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Dec 2016 21:20:22 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-kernel@vger.kernel.org, ldewangan@nvidia.com
-Subject: [PATCH 05/19] staging: iio: isl29028: made alignment of #defines consistent
-Date: Sat,  3 Dec 2016 21:19:29 -0500
-Message-Id: <1480817983-32359-6-git-send-email-masneyb@onstation.org>
+Subject: [PATCH 10/19] staging: iio: isl29028: remove unused define ISL29028_DEV_ATTR
+Date: Sat,  3 Dec 2016 21:19:34 -0500
+Message-Id: <1480817983-32359-11-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
 References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The alignment of the #defines at the top of the file is not consistent.
-This changes all of the defines to use consistent alignment to improve
-the code readability.
+The #define ISL29028_DEV_ATTR was not used so this patch removes the
+unnecessary code.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/isl29028.c | 42 ++++++++++++++++++------------------
- 1 file changed, 21 insertions(+), 21 deletions(-)
+ drivers/staging/iio/light/isl29028.c | 1 -
+ 1 file changed, 1 deletion(-)
 
 diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index e96a8cb..d5b069e 100644
+index 8f9295f..0e727ba 100644
 --- a/drivers/staging/iio/light/isl29028.c
 +++ b/drivers/staging/iio/light/isl29028.c
-@@ -27,38 +27,38 @@
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
+@@ -404,7 +404,6 @@ static IIO_CONST_ATTR(in_proximity_sampling_frequency_available,
+ 				"1 3 5 10 13 20 83 100");
+ static IIO_CONST_ATTR(in_illuminance_scale_available, "125 2000");
  
--#define ISL29028_CONV_TIME_MS		100
-+#define ISL29028_CONV_TIME_MS			100
- 
--#define ISL29028_REG_CONFIGURE		0x01
-+#define ISL29028_REG_CONFIGURE			0x01
- 
--#define ISL29028_CONF_ALS_IR_MODE_ALS	0
--#define ISL29028_CONF_ALS_IR_MODE_IR	BIT(0)
--#define ISL29028_CONF_ALS_IR_MODE_MASK	BIT(0)
-+#define ISL29028_CONF_ALS_IR_MODE_ALS		0
-+#define ISL29028_CONF_ALS_IR_MODE_IR		BIT(0)
-+#define ISL29028_CONF_ALS_IR_MODE_MASK		BIT(0)
- 
--#define ISL29028_CONF_ALS_RANGE_LOW_LUX	0
-+#define ISL29028_CONF_ALS_RANGE_LOW_LUX		0
- #define ISL29028_CONF_ALS_RANGE_HIGH_LUX	BIT(1)
--#define ISL29028_CONF_ALS_RANGE_MASK	BIT(1)
-+#define ISL29028_CONF_ALS_RANGE_MASK		BIT(1)
- 
--#define ISL29028_CONF_ALS_DIS		0
--#define ISL29028_CONF_ALS_EN		BIT(2)
--#define ISL29028_CONF_ALS_EN_MASK	BIT(2)
-+#define ISL29028_CONF_ALS_DIS			0
-+#define ISL29028_CONF_ALS_EN			BIT(2)
-+#define ISL29028_CONF_ALS_EN_MASK		BIT(2)
- 
--#define ISL29028_CONF_PROX_SLP_SH	4
--#define ISL29028_CONF_PROX_SLP_MASK	(7 << ISL29028_CONF_PROX_SLP_SH)
-+#define ISL29028_CONF_PROX_SLP_SH		4
-+#define ISL29028_CONF_PROX_SLP_MASK		(7 << ISL29028_CONF_PROX_SLP_SH)
- 
--#define ISL29028_CONF_PROX_EN		BIT(7)
--#define ISL29028_CONF_PROX_EN_MASK	BIT(7)
-+#define ISL29028_CONF_PROX_EN			BIT(7)
-+#define ISL29028_CONF_PROX_EN_MASK		BIT(7)
- 
--#define ISL29028_REG_INTERRUPT		0x02
-+#define ISL29028_REG_INTERRUPT			0x02
- 
--#define ISL29028_REG_PROX_DATA		0x08
--#define ISL29028_REG_ALSIR_L		0x09
--#define ISL29028_REG_ALSIR_U		0x0A
-+#define ISL29028_REG_PROX_DATA			0x08
-+#define ISL29028_REG_ALSIR_L			0x09
-+#define ISL29028_REG_ALSIR_U			0x0A
- 
--#define ISL29028_REG_TEST1_MODE		0x0E
--#define ISL29028_REG_TEST2_MODE		0x0F
-+#define ISL29028_REG_TEST1_MODE			0x0E
-+#define ISL29028_REG_TEST2_MODE			0x0F
- 
--#define ISL29028_NUM_REGS		(ISL29028_REG_TEST2_MODE + 1)
-+#define ISL29028_NUM_REGS			(ISL29028_REG_TEST2_MODE + 1)
- 
- enum isl29028_als_ir_mode {
- 	ISL29028_MODE_NONE = 0,
+-#define ISL29028_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
+ #define ISL29028_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
+ static struct attribute *isl29028_attributes[] = {
+ 	ISL29028_CONST_ATTR(in_proximity_sampling_frequency_available),
 -- 
 2.7.4
 
