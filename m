@@ -1,41 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:47172 "EHLO onstation.org"
+Received: from onstation.org ([52.200.56.107]:47178 "EHLO onstation.org"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752198AbcLDCUW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Dec 2016 21:20:22 -0500
+        id S1752387AbcLDCUX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 3 Dec 2016 21:20:23 -0500
 From: Brian Masney <masneyb@onstation.org>
 To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-kernel@vger.kernel.org, ldewangan@nvidia.com
-Subject: [PATCH 10/19] staging: iio: isl29028: remove unused define ISL29028_DEV_ATTR
-Date: Sat,  3 Dec 2016 21:19:34 -0500
-Message-Id: <1480817983-32359-11-git-send-email-masneyb@onstation.org>
+Subject: [PATCH 14/19] staging: iio: isl29028: move failure logging into isl29028_set_als_scale()
+Date: Sat,  3 Dec 2016 21:19:38 -0500
+Message-Id: <1480817983-32359-15-git-send-email-masneyb@onstation.org>
 In-Reply-To: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
 References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The #define ISL29028_DEV_ATTR was not used so this patch removes the
-unnecessary code.
+When isl29028_set_als_scale() fails, it was up to both callers to log
+the failure message. This patch moves the logging into
+isl29028_set_als_scale() to reduce the overall amount of code in the
+driver.
 
 Signed-off-by: Brian Masney <masneyb@onstation.org>
 ---
- drivers/staging/iio/light/isl29028.c | 1 -
- 1 file changed, 1 deletion(-)
+ drivers/staging/iio/light/isl29028.c | 23 +++++++++++++----------
+ 1 file changed, 13 insertions(+), 10 deletions(-)
 
 diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index 8f9295f..0e727ba 100644
+index 0c8a878..11e1673 100644
 --- a/drivers/staging/iio/light/isl29028.c
 +++ b/drivers/staging/iio/light/isl29028.c
-@@ -404,7 +404,6 @@ static IIO_CONST_ATTR(in_proximity_sampling_frequency_available,
- 				"1 3 5 10 13 20 83 100");
- static IIO_CONST_ATTR(in_illuminance_scale_available, "125 2000");
+@@ -121,11 +121,21 @@ static int isl29028_enable_proximity(struct isl29028_chip *chip)
  
--#define ISL29028_DEV_ATTR(name) (&iio_dev_attr_##name.dev_attr.attr)
- #define ISL29028_CONST_ATTR(name) (&iio_const_attr_##name.dev_attr.attr)
- static struct attribute *isl29028_attributes[] = {
- 	ISL29028_CONST_ATTR(in_proximity_sampling_frequency_available),
+ static int isl29028_set_als_scale(struct isl29028_chip *chip, int lux_scale)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int val = (lux_scale == 2000) ? ISL29028_CONF_ALS_RANGE_HIGH_LUX :
+ 					ISL29028_CONF_ALS_RANGE_LOW_LUX;
++	int ret;
++
++	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
++				 ISL29028_CONF_ALS_RANGE_MASK, val);
++	if (ret < 0)
++		dev_err(dev,
++			"%s(): Error %d setting the ALS scale\n", __func__,
++			ret);
++	else
++		chip->lux_scale = lux_scale;
+ 
+-	return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-				  ISL29028_CONF_ALS_RANGE_MASK, val);
++	return ret;
+ }
+ 
+ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
+@@ -322,13 +332,6 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 		}
+ 
+ 		ret = isl29028_set_als_scale(chip, val);
+-		if (ret < 0) {
+-			dev_err(dev,
+-				"Setting lux scale fail with error %d\n", ret);
+-			break;
+-		}
+-
+-		chip->lux_scale = val;
+ 		break;
+ 	default:
+ 		dev_err(dev, "Unsupported channel type\n");
+@@ -459,7 +462,7 @@ static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
+ 
+ 	ret = isl29028_set_als_scale(chip, chip->lux_scale);
+ 	if (ret < 0)
+-		dev_err(dev, "setting als scale failed, err = %d\n", ret);
++		return ret;
+ 
+ 	chip->suspended = false;
+ 
 -- 
 2.7.4
 
