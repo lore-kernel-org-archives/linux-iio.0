@@ -1,154 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from onstation.org ([52.200.56.107]:46934 "EHLO onstation.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752005AbcLDCUU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 3 Dec 2016 21:20:20 -0500
-From: Brian Masney <masneyb@onstation.org>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-kernel@vger.kernel.org, ldewangan@nvidia.com
-Subject: [PATCH 04/19] staging: iio: isl29028: add power management support
-Date: Sat,  3 Dec 2016 21:19:28 -0500
-Message-Id: <1480817983-32359-5-git-send-email-masneyb@onstation.org>
-In-Reply-To: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
-References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34154 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751195AbcLDK5G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2016 05:57:06 -0500
+Subject: Re: [PATCH 1/1] iio: light: fix improper return value
+To: Pan Bian <bianpan2016@163.com>,
+        Kevin Tsai <ktsai@capellamicro.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org
+References: <1480757057-3828-1-git-send-email-bianpan2016@163.com>
+Cc: linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3c0b6176-65e8-0785-2259-5f2aac47d304@kernel.org>
+Date: Sun, 4 Dec 2016 10:57:02 +0000
+MIME-Version: 1.0
+In-Reply-To: <1480757057-3828-1-git-send-email-bianpan2016@163.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds power management support to the isl29028 driver.
+On 03/12/16 09:24, Pan Bian wrote:
+> In function cm3232_reg_init(), it returns 0 even if the last call to
+> i2c_smbus_write_byte_data() returns a negative value (indicates error).
+> As a result, the return value may be inconsistent with the execution
+> status, and the caller of cm3232_reg_init() will not be able to detect
+> the error. This patch fixes the bug.
+> 
+> Bugzilla: https://bugzilla.kernel.org/show_bug.cgi?id=188641
+> 
+> Signed-off-by: Pan Bian <bianpan2016@163.com>
+Applied to the togreg branch of iio.git and pushed out as testing for the
+autobuilders to play with it.
 
-Signed-off-by: Brian Masney <masneyb@onstation.org>
----
- drivers/staging/iio/light/isl29028.c | 59 ++++++++++++++++++++++++++++++++++++
- 1 file changed, 59 insertions(+)
+Thanks,
 
-diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-index 4f819a8..e96a8cb 100644
---- a/drivers/staging/iio/light/isl29028.c
-+++ b/drivers/staging/iio/light/isl29028.c
-@@ -75,6 +75,7 @@ struct isl29028_chip {
- 
- 	int			lux_scale;
- 	enum isl29028_als_ir_mode	als_ir_mode;
-+	bool				suspended;
- };
- 
- static int isl29028_set_proxim_sampling(struct isl29028_chip *chip,
-@@ -274,6 +275,12 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
- 	int ret = -EINVAL;
- 
- 	mutex_lock(&chip->lock);
-+
-+	if (chip->suspended) {
-+		ret = -EBUSY;
-+		goto write_done;
-+	}
-+
- 	switch (chan->type) {
- 	case IIO_PROXIMITY:
- 		if (mask != IIO_CHAN_INFO_SAMP_FREQ) {
-@@ -322,6 +329,8 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
- 		dev_err(dev, "Unsupported channel type\n");
- 		break;
- 	}
-+
-+write_done:
- 	mutex_unlock(&chip->lock);
- 	return ret;
- }
-@@ -335,6 +344,12 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
- 	int ret = -EINVAL;
- 
- 	mutex_lock(&chip->lock);
-+
-+	if (chip->suspended) {
-+		ret = -EBUSY;
-+		goto read_done;
-+	}
-+
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 	case IIO_CHAN_INFO_PROCESSED:
-@@ -374,6 +389,8 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
- 		dev_err(dev, "mask value 0x%08lx not supported\n", mask);
- 		break;
- 	}
-+
-+read_done:
- 	mutex_unlock(&chip->lock);
- 	return ret;
- }
-@@ -437,6 +454,9 @@ static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
- 	ret = isl29028_set_als_scale(chip, chip->lux_scale);
- 	if (ret < 0)
- 		dev_err(dev, "setting als scale failed, err = %d\n", ret);
-+
-+	chip->suspended = false;
-+
- 	return ret;
- }
- 
-@@ -479,6 +499,7 @@ static int isl29028_probe(struct i2c_client *client,
- 
- 	i2c_set_clientdata(client, indio_dev);
- 	mutex_init(&chip->lock);
-+	chip->suspended = true;
- 
- 	chip->regmap = devm_regmap_init_i2c(client, &isl29028_regmap_config);
- 	if (IS_ERR(chip->regmap)) {
-@@ -530,6 +551,43 @@ static int isl29028_probe(struct i2c_client *client,
- 	return 0;
- }
- 
-+static int __maybe_unused isl29028_suspend(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct isl29028_chip *chip = iio_priv(indio_dev);
-+	int ret;
-+
-+	mutex_lock(&chip->lock);
-+
-+	ret = regmap_write(chip->regmap, ISL29028_REG_CONFIGURE, 0x0);
-+	if (ret < 0)
-+		dev_err(dev, "%s(): Error %d turning off chip\n", __func__,
-+			ret);
-+
-+	chip->suspended = true;
-+
-+	mutex_unlock(&chip->lock);
-+
-+	return ret;
-+}
-+
-+static int __maybe_unused isl29028_resume(struct device *dev)
-+{
-+	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
-+	struct isl29028_chip *chip = iio_priv(indio_dev);
-+	int ret;
-+
-+	mutex_lock(&chip->lock);
-+
-+	ret = isl29028_chip_init_and_power_on(chip);
-+
-+	mutex_unlock(&chip->lock);
-+
-+	return ret;
-+}
-+
-+static SIMPLE_DEV_PM_OPS(isl29028_pm_ops, isl29028_suspend, isl29028_resume);
-+
- static const struct i2c_device_id isl29028_id[] = {
- 	{"isl29028", 0},
- 	{}
-@@ -546,6 +604,7 @@ MODULE_DEVICE_TABLE(of, isl29028_of_match);
- static struct i2c_driver isl29028_driver = {
- 	.driver  = {
- 		.name = "isl29028",
-+		.pm = &isl29028_pm_ops,
- 		.of_match_table = isl29028_of_match,
- 	},
- 	.probe	 = isl29028_probe,
--- 
-2.7.4
+Jonathan
+> ---
+>  drivers/iio/light/cm3232.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/light/cm3232.c b/drivers/iio/light/cm3232.c
+> index fe89b68..263e972 100644
+> --- a/drivers/iio/light/cm3232.c
+> +++ b/drivers/iio/light/cm3232.c
+> @@ -119,7 +119,7 @@ static int cm3232_reg_init(struct cm3232_chip *chip)
+>  	if (ret < 0)
+>  		dev_err(&chip->client->dev, "Error writing reg_cmd\n");
+>  
+> -	return 0;
+> +	return ret;
+>  }
+>  
+>  /**
+> 
 
