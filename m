@@ -1,69 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42807 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42812 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934482AbdAHJnO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 04:43:14 -0500
-Subject: Re: [PATCH 02/19] staging: iio: isl29028: remove enable flag from
- isl29028_enable_proximity()
+        with ESMTP id S938198AbdAHJne (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 04:43:34 -0500
+Subject: Re: [PATCH 03/19] staging: iio: isl29028: remove chip test and
+ defaults from isl29028_chip_init()
 To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
 References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
- <1480817983-32359-3-git-send-email-masneyb@onstation.org>
+ <1480817983-32359-4-git-send-email-masneyb@onstation.org>
 Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-kernel@vger.kernel.org, ldewangan@nvidia.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c578b88b-9b8a-b3a3-ae05-bfd6f7522871@kernel.org>
-Date: Sun, 4 Dec 2016 11:16:04 +0000
+Message-ID: <93242211-c8cd-4369-c262-03ef0ca85d3e@kernel.org>
+Date: Sun, 4 Dec 2016 11:23:44 +0000
 MIME-Version: 1.0
-In-Reply-To: <1480817983-32359-3-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1480817983-32359-4-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 04/12/16 02:19, Brian Masney wrote:
-> isl29028_enable_proximity() has a boolean argument named enable. This
-> function is only called once and the enable flag is set to true in that
-> call. This patch removes the enable parameter from that function.
+> isl29028_chip_init() contains the device driver defaults and
+> two I2C calls that detect the presence of the chip. This patch
+> moves these into isl29028_probe() so that this function can
+> be used by the power management runtinme in a followup patch. This
+> patch also renames isl29028_chip_init() to
+> isl29028_chip_init_and_power_on().
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
-On second thoughts (stupid email is hiding somewhere to be sent when I have wifi
-so can't reply to it) perhaps this is a coarse way of only turning proximity on if
-the LED is present?  Not sure...
+I've skipped patch 2 for now but will carry on applying until they stop going in
+cleanly.
+
+Applied to the togreg branch of iio.git.
+
+Thanks,
+
+Jonathan
 > ---
->  drivers/staging/iio/light/isl29028.c | 10 ++++------
->  1 file changed, 4 insertions(+), 6 deletions(-)
+>  drivers/staging/iio/light/isl29028.c | 42 +++++++++++++++++++-----------------
+>  1 file changed, 22 insertions(+), 20 deletions(-)
 > 
 > diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-> index 4e35d00..c8e234d 100644
+> index c8e234d..4f819a8 100644
 > --- a/drivers/staging/iio/light/isl29028.c
 > +++ b/drivers/staging/iio/light/isl29028.c
-> @@ -93,15 +93,13 @@ static int isl29028_set_proxim_sampling(struct isl29028_chip *chip,
->  				  sel << ISL29028_CONF_PROX_SLP_SH);
->  }
+> @@ -416,29 +416,11 @@ static const struct iio_info isl29028_info = {
+>  	.write_raw = isl29028_write_raw,
+>  };
 >  
-> -static int isl29028_enable_proximity(struct isl29028_chip *chip, bool enable)
-> +static int isl29028_enable_proximity(struct isl29028_chip *chip)
+> -static int isl29028_chip_init(struct isl29028_chip *chip)
+> +static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
 >  {
+>  	struct device *dev = regmap_get_device(chip->regmap);
 >  	int ret;
-> -	int val = 0;
 >  
-> -	if (enable)
-> -		val = ISL29028_CONF_PROX_EN;
->  	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
-> -				 ISL29028_CONF_PROX_EN_MASK, val);
-> +				 ISL29028_CONF_PROX_EN_MASK,
-> +				 ISL29028_CONF_PROX_EN);
->  	if (ret < 0)
+> -	chip->enable_prox  = false;
+> -	chip->prox_sampling = 20;
+> -	chip->lux_scale = 2000;
+> -	chip->als_ir_mode = ISL29028_MODE_NONE;
+> -
+> -	ret = regmap_write(chip->regmap, ISL29028_REG_TEST1_MODE, 0x0);
+> -	if (ret < 0) {
+> -		dev_err(dev, "%s(): write to reg %d failed, err = %d\n",
+> -			__func__, ISL29028_REG_TEST1_MODE, ret);
+> -		return ret;
+> -	}
+> -	ret = regmap_write(chip->regmap, ISL29028_REG_TEST2_MODE, 0x0);
+> -	if (ret < 0) {
+> -		dev_err(dev, "%s(): write to reg %d failed, err = %d\n",
+> -			__func__, ISL29028_REG_TEST2_MODE, ret);
+> -		return ret;
+> -	}
+> -
+>  	ret = regmap_write(chip->regmap, ISL29028_REG_CONFIGURE, 0x0);
+>  	if (ret < 0) {
+>  		dev_err(dev, "%s(): write to reg %d failed, err = %d\n",
+> @@ -506,7 +488,27 @@ static int isl29028_probe(struct i2c_client *client,
 >  		return ret;
+>  	}
 >  
-> @@ -215,7 +213,7 @@ static int isl29028_proxim_get(struct isl29028_chip *chip, int *prox_data)
->  	int ret;
->  
->  	if (!chip->enable_prox) {
-> -		ret = isl29028_enable_proximity(chip, true);
-> +		ret = isl29028_enable_proximity(chip);
->  		if (ret < 0)
->  			return ret;
->  		chip->enable_prox = true;
+> -	ret = isl29028_chip_init(chip);
+> +	chip->enable_prox  = false;
+> +	chip->prox_sampling = 20;
+> +	chip->lux_scale = 2000;
+> +	chip->als_ir_mode = ISL29028_MODE_NONE;
+> +
+> +	ret = regmap_write(chip->regmap, ISL29028_REG_TEST1_MODE, 0x0);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev,
+> +			"%s(): write to reg %d failed, err = %d\n", __func__,
+> +			ISL29028_REG_TEST1_MODE, ret);
+> +		return ret;
+> +	}
+> +	ret = regmap_write(chip->regmap, ISL29028_REG_TEST2_MODE, 0x0);
+> +	if (ret < 0) {
+> +		dev_err(&client->dev,
+> +			"%s(): write to reg %d failed, err = %d\n", __func__,
+> +			ISL29028_REG_TEST2_MODE, ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = isl29028_chip_init_and_power_on(chip);
+>  	if (ret < 0) {
+>  		dev_err(&client->dev, "chip initialization failed: %d\n", ret);
+>  		return ret;
 > 
 
