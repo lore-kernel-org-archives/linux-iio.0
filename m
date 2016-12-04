@@ -1,106 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34202 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750804AbcLDLB5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2016 06:01:57 -0500
-Subject: Re: [PATCH 01/19] staging: iio: isl29028: remove nested if statements
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
- <1480817983-32359-2-git-send-email-masneyb@onstation.org>
-Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        linux-kernel@vger.kernel.org, ldewangan@nvidia.com
+Received: from tarvos.retrosnub.co.uk ([217.168.153.95]:37037 "EHLO
+        tarvos.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750917AbcLDVFi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 4 Dec 2016 16:05:38 -0500
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f87a3ff0-ee9d-f1f8-3262-696e0f4edea5@kernel.org>
-Date: Sun, 4 Dec 2016 11:01:53 +0000
-MIME-Version: 1.0
-In-Reply-To: <1480817983-32359-2-git-send-email-masneyb@onstation.org>
-Content-Type: text/plain; charset=windows-1252
+To: linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
+Cc: daniel.baluta@intel.com, Jonathan Cameron <jic23@kernel.org>
+Subject: [RFC PATCH] docs: IIO documentation conversion from DocBook
+Date: Sun,  4 Dec 2016 20:49:05 +0000
+Message-Id: <20161204204906.27327-1-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/12/16 02:19, Brian Masney wrote:
-> There are two callers to the function isl29028_set_als_ir_mode() and
-> both instances use a nested if statement to only change the chip state
-> if it is not in the proper mode. This patch moves this check into the
-> isl29028_set_als_ir_mode() function to remove the nested if
-> statements.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-Sensible little clean up.
+I had a long train journey today so finished off an initial cut of a
+conversion of the existing IIO DocBook over to Sphinx.
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it. (If I can get a push out in the last 3 mins
-of my free 15 of wifi on this train!)
+There are various issues with the kernel doc in some of our source files
+that need cleaning up, but thought I'd get this out for people to be able
+to take a first look.
 
-Thanks,
+For now I've basically left any editorial work out.  This is just format
+conversion (with simple stuff like cross references added as I went along).
+
+I did it by hand because I wanted to get to know the new syntax - that may
+well have meant I made different decisions on some of the formatting!
+
+One thing I would love, would be cross referencing to structure members.
+A lot of IIO stuff is done by assigning these members of some really quite
+large structures.
+
+Note whilst Daniel did a great job on these initial docs, they are far from
+complete - so I'd envision adding at least sections on:
+
+1) A structural overview - probably diagrams of how the whole thing fits
+together.
+2) in kernel interface description
+3) Illustrations of 'exceptions' to the standard way of doing things (e.g.
+buffers without triggers)
+4) DMA buffers etc.
+5) Events
 
 Jonathan
-> ---
->  drivers/staging/iio/light/isl29028.c | 30 ++++++++++++++----------------
->  1 file changed, 14 insertions(+), 16 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-> index aa413e5..4e35d00 100644
-> --- a/drivers/staging/iio/light/isl29028.c
-> +++ b/drivers/staging/iio/light/isl29028.c
-> @@ -124,6 +124,9 @@ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
->  {
->  	int ret = 0;
->  
-> +	if (chip->als_ir_mode == mode)
-> +		return 0;
-> +
->  	switch (mode) {
->  	case ISL29028_MODE_ALS:
->  		ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
-> @@ -160,6 +163,9 @@ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
->  
->  	/* Need to wait for conversion time if ALS/IR mode enabled */
->  	mdelay(ISL29028_CONV_TIME_MS);
-> +
-> +	chip->als_ir_mode = mode;
-> +
->  	return 0;
->  }
->  
-> @@ -223,14 +229,10 @@ static int isl29028_als_get(struct isl29028_chip *chip, int *als_data)
->  	int ret;
->  	int als_ir_data;
->  
-> -	if (chip->als_ir_mode != ISL29028_MODE_ALS) {
-> -		ret = isl29028_set_als_ir_mode(chip, ISL29028_MODE_ALS);
-> -		if (ret < 0) {
-> -			dev_err(dev,
-> -				"Error in enabling ALS mode err %d\n", ret);
-> -			return ret;
-> -		}
-> -		chip->als_ir_mode = ISL29028_MODE_ALS;
-> +	ret = isl29028_set_als_ir_mode(chip, ISL29028_MODE_ALS);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Error in enabling ALS mode err %d\n", ret);
-> +		return ret;
->  	}
->  
->  	ret = isl29028_read_als_ir(chip, &als_ir_data);
-> @@ -256,14 +258,10 @@ static int isl29028_ir_get(struct isl29028_chip *chip, int *ir_data)
->  	struct device *dev = regmap_get_device(chip->regmap);
->  	int ret;
->  
-> -	if (chip->als_ir_mode != ISL29028_MODE_IR) {
-> -		ret = isl29028_set_als_ir_mode(chip, ISL29028_MODE_IR);
-> -		if (ret < 0) {
-> -			dev_err(dev,
-> -				"Error in enabling IR mode err %d\n", ret);
-> -			return ret;
-> -		}
-> -		chip->als_ir_mode = ISL29028_MODE_IR;
-> +	ret = isl29028_set_als_ir_mode(chip, ISL29028_MODE_IR);
-> +	if (ret < 0) {
-> +		dev_err(dev, "Error in enabling IR mode err %d\n", ret);
-> +		return ret;
->  	}
->  	return isl29028_read_als_ir(chip, ir_data);
->  }
-> 
+
+Jonathan Cameron (1):
+  docs: IIO documentation
+
+ Documentation/driver-api/iio/buffers.rst           | 127 +++++++++++++++
+ Documentation/driver-api/iio/core.rst              | 180 +++++++++++++++++++++
+ Documentation/driver-api/iio/index.rst             |  15 ++
+ Documentation/driver-api/iio/intro.rst             |  23 +++
+ Documentation/driver-api/iio/triggered-buffers.rst |  70 ++++++++
+ Documentation/driver-api/iio/triggers.rst          |  78 +++++++++
+ Documentation/driver-api/index.rst                 |   1 +
+ 7 files changed, 494 insertions(+)
+ create mode 100644 Documentation/driver-api/iio/buffers.rst
+ create mode 100644 Documentation/driver-api/iio/core.rst
+ create mode 100644 Documentation/driver-api/iio/index.rst
+ create mode 100644 Documentation/driver-api/iio/intro.rst
+ create mode 100644 Documentation/driver-api/iio/triggered-buffers.rst
+ create mode 100644 Documentation/driver-api/iio/triggers.rst
+
+-- 
+2.10.2
 
