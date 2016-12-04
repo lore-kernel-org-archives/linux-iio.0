@@ -1,101 +1,167 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42849 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:42824 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938769AbdAHJni (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 04:43:38 -0500
-Subject: Re: [PATCH 13/19] staging: iio: isl29028: move failure logging into
- isl29028_set_proxim_sampling()
+        with ESMTP id S937197AbdAHJng (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 04:43:36 -0500
+Subject: Re: [PATCH 04/19] staging: iio: isl29028: add power management
+ support
 To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
 References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
- <1480817983-32359-14-git-send-email-masneyb@onstation.org>
+ <1480817983-32359-5-git-send-email-masneyb@onstation.org>
 Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-kernel@vger.kernel.org, ldewangan@nvidia.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b06942c2-623e-49a4-811d-be292c743725@kernel.org>
-Date: Sun, 4 Dec 2016 11:50:05 +0000
+Message-ID: <299bdab4-0cbb-3581-014f-9bb10fd86e81@kernel.org>
+Date: Sun, 4 Dec 2016 11:37:59 +0000
 MIME-Version: 1.0
-In-Reply-To: <1480817983-32359-14-git-send-email-masneyb@onstation.org>
+In-Reply-To: <1480817983-32359-5-git-send-email-masneyb@onstation.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 On 04/12/16 02:19, Brian Masney wrote:
-> When isl29028_set_proxim_sampling() fails, it was up to both callers to
-> log the failure message. This patch moves the logging into
-> isl29028_set_proxim_sampling() to reduce the overall amount of code in
-> the driver.
+> This patch adds power management support to the isl29028 driver.
 > 
 > Signed-off-by: Brian Masney <masneyb@onstation.org>
-Minor point inline.
+Hmm. I'm not sure why we need the suspended boolean.
+
+I 'think' it's impossible to have a sysfs read in progress during suspend or resume.
+At least I hope it is as a lot of drivers will be broken otherwise :(
+
+Looks like this particular corner is only really present in light sensor drivers...
+
+Jonathan
+
 > ---
->  drivers/staging/iio/light/isl29028.c | 28 ++++++++++++++--------------
->  1 file changed, 14 insertions(+), 14 deletions(-)
+>  drivers/staging/iio/light/isl29028.c | 59 ++++++++++++++++++++++++++++++++++++
+>  1 file changed, 59 insertions(+)
 > 
 > diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-> index 23a4db8..0c8a878 100644
+> index 4f819a8..e96a8cb 100644
 > --- a/drivers/staging/iio/light/isl29028.c
 > +++ b/drivers/staging/iio/light/isl29028.c
-> @@ -79,18 +79,28 @@ struct isl29028_chip {
+> @@ -75,6 +75,7 @@ struct isl29028_chip {
+>  
+>  	int			lux_scale;
+>  	enum isl29028_als_ir_mode	als_ir_mode;
+> +	bool				suspended;
+>  };
+>  
 >  static int isl29028_set_proxim_sampling(struct isl29028_chip *chip,
->  					unsigned int sampling)
->  {
-> +	struct device *dev = regmap_get_device(chip->regmap);
->  	static unsigned int prox_period[] = {800, 400, 200, 100, 75, 50, 12, 0};
->  	unsigned int sel;
->  	unsigned int period = DIV_ROUND_UP(1000, sampling);
-> +	int ret;
+> @@ -274,6 +275,12 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+>  	int ret = -EINVAL;
 >  
->  	for (sel = 0; sel < ARRAY_SIZE(prox_period); ++sel) {
->  		if (period >= prox_period[sel])
->  			break;
->  	}
->  
-> -	return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
-> -				  ISL29028_CONF_PROX_SLP_MASK,
-> -				  sel << ISL29028_CONF_PROX_SLP_SH);
-> +	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
-> +				 ISL29028_CONF_PROX_SLP_MASK,
-> +				 sel << ISL29028_CONF_PROX_SLP_SH);
-> +	if (ret < 0)
-> +		dev_err(dev,
-> +			"%s(): Error %d setting the proximity sampling\n",
-> +			__func__, ret);
-I'd prefer the cleaner style or a return inside this if statement and dropping the
-else.
-> +	else
-> +		chip->prox_sampling = sampling;
+>  	mutex_lock(&chip->lock);
 > +
-> +	return ret;
->  }
->  
->  static int isl29028_enable_proximity(struct isl29028_chip *chip)
-> @@ -296,14 +306,6 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
->  		}
->  
->  		ret = isl29028_set_proxim_sampling(chip, val);
-> -		if (ret < 0) {
-> -			dev_err(dev,
-> -				"Setting proximity samp_freq fail, err %d\n",
-> -				ret);
-> -			break;
-> -		}
-> -
-> -		chip->prox_sampling = val;
+> +	if (chip->suspended) {
+> +		ret = -EBUSY;
+> +		goto write_done;
+> +	}
+> +
+>  	switch (chan->type) {
+>  	case IIO_PROXIMITY:
+>  		if (mask != IIO_CHAN_INFO_SAMP_FREQ) {
+> @@ -322,6 +329,8 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+>  		dev_err(dev, "Unsupported channel type\n");
 >  		break;
->  	case IIO_LIGHT:
->  		if (mask != IIO_CHAN_INFO_SCALE) {
-> @@ -452,10 +454,8 @@ static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
 >  	}
+> +
+> +write_done:
+>  	mutex_unlock(&chip->lock);
+>  	return ret;
+>  }
+> @@ -335,6 +344,12 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
+>  	int ret = -EINVAL;
 >  
->  	ret = isl29028_set_proxim_sampling(chip, chip->prox_sampling);
-> -	if (ret < 0) {
-> -		dev_err(dev, "setting the proximity, err = %d\n", ret);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
+>  	mutex_lock(&chip->lock);
+> +
+> +	if (chip->suspended) {
+> +		ret = -EBUSY;
+> +		goto read_done;
+> +	}
+> +
+>  	switch (mask) {
+>  	case IIO_CHAN_INFO_RAW:
+>  	case IIO_CHAN_INFO_PROCESSED:
+> @@ -374,6 +389,8 @@ static int isl29028_read_raw(struct iio_dev *indio_dev,
+>  		dev_err(dev, "mask value 0x%08lx not supported\n", mask);
+>  		break;
+>  	}
+> +
+> +read_done:
+>  	mutex_unlock(&chip->lock);
+>  	return ret;
+>  }
+> @@ -437,6 +454,9 @@ static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
 >  	ret = isl29028_set_als_scale(chip, chip->lux_scale);
 >  	if (ret < 0)
+>  		dev_err(dev, "setting als scale failed, err = %d\n", ret);
+> +
+> +	chip->suspended = false;
+> +
+>  	return ret;
+>  }
+>  
+> @@ -479,6 +499,7 @@ static int isl29028_probe(struct i2c_client *client,
+>  
+>  	i2c_set_clientdata(client, indio_dev);
+>  	mutex_init(&chip->lock);
+> +	chip->suspended = true;
+>  
+>  	chip->regmap = devm_regmap_init_i2c(client, &isl29028_regmap_config);
+>  	if (IS_ERR(chip->regmap)) {
+> @@ -530,6 +551,43 @@ static int isl29028_probe(struct i2c_client *client,
+>  	return 0;
+>  }
+>  
+> +static int __maybe_unused isl29028_suspend(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct isl29028_chip *chip = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&chip->lock);
+> +
+> +	ret = regmap_write(chip->regmap, ISL29028_REG_CONFIGURE, 0x0);
+> +	if (ret < 0)
+> +		dev_err(dev, "%s(): Error %d turning off chip\n", __func__,
+> +			ret);
+> +
+> +	chip->suspended = true;
+> +
+> +	mutex_unlock(&chip->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int __maybe_unused isl29028_resume(struct device *dev)
+> +{
+> +	struct iio_dev *indio_dev = i2c_get_clientdata(to_i2c_client(dev));
+> +	struct isl29028_chip *chip = iio_priv(indio_dev);
+> +	int ret;
+> +
+> +	mutex_lock(&chip->lock);
+> +
+> +	ret = isl29028_chip_init_and_power_on(chip);
+> +
+> +	mutex_unlock(&chip->lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static SIMPLE_DEV_PM_OPS(isl29028_pm_ops, isl29028_suspend, isl29028_resume);
+> +
+>  static const struct i2c_device_id isl29028_id[] = {
+>  	{"isl29028", 0},
+>  	{}
+> @@ -546,6 +604,7 @@ MODULE_DEVICE_TABLE(of, isl29028_of_match);
+>  static struct i2c_driver isl29028_driver = {
+>  	.driver  = {
+>  		.name = "isl29028",
+> +		.pm = &isl29028_pm_ops,
+>  		.of_match_table = isl29028_of_match,
+>  	},
+>  	.probe	 = isl29028_probe,
 > 
 
