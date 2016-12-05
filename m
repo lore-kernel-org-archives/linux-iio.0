@@ -1,185 +1,109 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f169.google.com ([209.85.210.169]:33310 "EHLO
-        mail-wj0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752522AbcLGKq4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2016 05:46:56 -0500
-Received: by mail-wj0-f169.google.com with SMTP id xy5so356752685wjc.0
-        for <linux-iio@vger.kernel.org>; Wed, 07 Dec 2016 02:46:55 -0800 (PST)
-Date: Wed, 7 Dec 2016 10:50:02 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Gerald Baeza <gerald.baeza@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v4 6/7] IIO: add STM32 timer trigger driver
-Message-ID: <20161207105002.GA3625@dell.home>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
- <1481027929-13704-7-git-send-email-benjamin.gaignard@st.com>
- <20161206131635.GJ25385@dell.home>
- <CA+M3ks6fxCucmaY0OgpMb_opA=YLrowijJ0YQ+imeprhWg6N_w@mail.gmail.com>
+Return-Path: <SRS0=U0ul=XU=lwn.net=corbet@kernel.org>
+Date: Mon, 5 Dec 2016 14:31:43 -0700
+From: Jonathan Corbet <corbet@lwn.net>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, linux-doc@vger.kernel.org,
+ daniel.baluta@intel.com
+Subject: Re: [PATCH] docs: IIO documentation
+Message-ID: <20161205143143.177a9570@lwn.net>
+In-Reply-To: <20161204204906.27327-2-jic23@kernel.org>
+References: <20161204204906.27327-1-jic23@kernel.org>
+	<20161204204906.27327-2-jic23@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <CA+M3ks6fxCucmaY0OgpMb_opA=YLrowijJ0YQ+imeprhWg6N_w@mail.gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, 06 Dec 2016, Benjamin Gaignard wrote:
+On Sun,  4 Dec 2016 20:49:06 +0000
+Jonathan Cameron <jic23@kernel.org> wrote:
 
-> [snip]
-> >> +
-> >> +static const char * const triggers0[] = {
-> >> +     TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers1[] = {
-> >> +     TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers2[] = {
-> >> +     TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers3[] = {
-> >> +     TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers4[] = {
-> >> +     TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers5[] = {
-> >> +     TIM6_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers6[] = {
-> >> +     TIM7_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers7[] = {
-> >> +     TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers8[] = {
-> >> +     TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,
-> >> +};
-> >> +
-> >> +static const char * const triggers9[] = {
-> >> +     TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,
-> >> +};
-> >> +
-> >> +static const void *triggers_table[] = {
-> >> +     triggers0,
-> >> +     triggers1,
-> >> +     triggers2,
-> >> +     triggers3,
-> >> +     triggers4,
-> >> +     triggers5,
-> >> +     triggers6,
-> >> +     triggers7,
-> >> +     triggers8,
-> >> +     triggers9,
-> >> +};
-> >
-> > What about:
-> >
-> > static const char * const triggers[][] = {
-> >         { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL },
-> >         { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL },
-> >         { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL },
-> >         { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL },
-> >         { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL },
-> >         { TIM6_TRGO, NULL },
-> >         { TIM7_TRGO, NULL },
-> >         { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL },
-> >         { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL },
-> >         { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL }
-> > };
-> 
-> I can't because the second dimension of the array isn't fix.
-> I could have between 2 and 6 elements per row... to create a dual dimension
-> array I would have to add NULL entries like that:
-> 
-> #define MAX_TRIGGERS 6
-> 
-> static const void *triggers_table[][MAX_TRIGGERS] = {
-> { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,},
-> { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,},
-> { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,},
-> { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,},
-> { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,},
-> { TIM6_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
-> { TIM7_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
-> { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,},
-> { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,     NULL,     NULL,},
-> { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,  NULL,     NULL,},
-> };
+> This is a manual conversion of the existing DocBook documentation
+> for IIO.  The intent is not to substantially change any of the
+> content in this patch, but to give a base to build upon.
 
-It was just an idea, not a tested implementation.
+Looks mostly good, a couple of brief notes below.
 
-I don't understand why you have to pad with NULLs, but either way, it
-looks much better than before and saves lots of lines of code.
+> Signed-off-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  Documentation/driver-api/iio/buffers.rst           | 127 +++++++++++++++
+>  Documentation/driver-api/iio/core.rst              | 180 +++++++++++++++++++++
+>  Documentation/driver-api/iio/index.rst             |  15 ++
+>  Documentation/driver-api/iio/intro.rst             |  23 +++
+>  Documentation/driver-api/iio/triggered-buffers.rst |  70 ++++++++
+>  Documentation/driver-api/iio/triggers.rst          |  78 +++++++++
+>  Documentation/driver-api/index.rst                 |   1 +
+>  7 files changed, 494 insertions(+)
 
-> >> +static const char * const valids0[] = {
-> >> +     TIM5_TRGO, TIM2_TRGO, TIM4_TRGO, TIM3_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const valids1[] = {
-> >> +     TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const valids2[] = {
-> >> +     TIM1_TRGO, TIM8_TRGO, TIM5_TRGO, TIM4_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const valids3[] = {
-> >> +     TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char *const valids4[] = {
-> >> +     TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const valids7[] = {
-> >> +     TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const valids8[] = {
-> >> +     TIM2_TRGO, TIM3_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const char * const valids9[] = {
-> >> +     TIM4_TRGO, TIM5_TRGO, NULL,
-> >> +};
-> >> +
-> >> +static const void *valids_table[] = {
-> >> +     valids0,
-> >> +     valids1,
-> >> +     valids2,
-> >> +     valids3,
-> >> +     valids4,
-> >> +     NULL,
-> >> +     NULL,
-> >> +     valids7,
-> >> +     valids8,
-> >> +     valids9,
-> >> +};
-> >
-> > Same here.
-> >
+Please go ahead and remove iio.tmpl when you do this conversion, there's no
+reason to keep it around afterward.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+> diff --git a/Documentation/driver-api/iio/buffers.rst b/Documentation/driver-api/iio/buffers.rst
+> new file mode 100644
+> index 000000000000..559256b8e607
+> --- /dev/null
+> +++ b/Documentation/driver-api/iio/buffers.rst
+> @@ -0,0 +1,127 @@
+> +======================
+> +Industrial I/O Buffers
+> +======================
+> +
+> +* struct :c:type:`iio_buffer` — general buffer structure
+> +* :c:func:`iio_validate_scan_mask_onehot` — Validates that exactly one channel
+> +  is selected
+> +* :c:func:`iio_buffer_get` — Grab a reference to the buffer
+> +* :c:func:`iio_buffer_put` — Release the reference to the buffer
+> +
+> +The Industrial I/O core offers a way for continuous data capture based on a
+> +trigger source. Multiple data channels can be read at once from
+> +*/dev/iio:deviceX* character device node, thus reducing the CPU load.
+> +
+> +IIO buffer sysfs interface
+> +==========================
+> +An IIO buffer has an associated attributes directory under
+> +*/sys/bus/iio/iio:deviceX/buffer/*. Here are the existing attributes:
+> +
+> +* *length*, the total number of data samples (capacity) that can be stored by
+> +  the buffer.
+> +* *enable*, activate buffer capture.
+> +
+> +IIO buffer setup
+> +================
+> +
+> +The meta information associated with a channel reading placed in a buffer is
+> +called a scan element . The important bits configuring scan elements are
+> +exposed to userspace applications via the
+> +*/sys/bus/iio/iio:deviceX/scan_elements/* directory. This file contains
+> +attributes of the following form:
+> +
+> +* *enable*, used for enabling a channel. If and only if its attribute is non
+> +  *zero*, then a triggered capture will contain data samples for this channel.
+> +* *type*, description of the scan element data storage within the buffer and
+> +  hence the form in which it is read from user space.
+> +  Format is [be|le]:[s|u]bits/storagebitsXrepeat[>>shift] .
+> +  * *be* or *le*, specifies big or little endian.
+> +  * *s* or *u*, specifies if signed (2's complement) or unsigned.
+> +  * *bits*, is the number of valid data bits.
+> +  * *storagebits*, is the number of bits (after padding) that it occupies in the
+> +  buffer.
+> +  * *shift*, if specified, is the shift that needs to be applied prior to
+> +  masking out unused bits.
+> +  * *repeat*, specifies the number of bits/storagebits repetitions. When the
+> +  repeat element is 0 or 1, then the repeat value is omitted.
+> +
+> +For example, a driver for a 3-axis accelerometer with 12 bit resolution where data is stored in two 8-bits registers as follows:
+> +
+> +::
+
+It would be nice to break the really long lines for future editing comfort.
+
+Also worth noting: you can put the double colon at the end of the leading
+line, i.e.:
+
+      data is stored in two 8-bit registers as follows::
+
+        <ascii art here>
+
+Doing it that way makes the RST file a bit more readable, IMO.
+
+Thanks for doing this,
+
+jon
