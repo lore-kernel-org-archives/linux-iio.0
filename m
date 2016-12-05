@@ -1,111 +1,142 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f181.google.com ([209.85.210.181]:34723 "EHLO
-        mail-wj0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751672AbcLFJpZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 04:45:25 -0500
-Received: by mail-wj0-f181.google.com with SMTP id tg4so58012151wjb.1
-        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 01:45:25 -0800 (PST)
-Date: Tue, 6 Dec 2016 09:48:35 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Alexandre Torgue <alexandre.torgue@st.com>
-Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
-        gerald.baeza@st.com, arnaud.pouliquen@st.com,
-        linus.walleij@linaro.org, linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v3 7/7] ARM: dts: stm32: add stm32 general purpose timer
- driver in DT
-Message-ID: <20161206094835.GB25385@dell.home>
-References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-8-git-send-email-benjamin.gaignard@st.com>
- <20161202132251.GL2683@dell>
- <e15186cb-a93e-c2e7-13bb-6704be5e8949@st.com>
+Received: from mail-qk0-f175.google.com ([209.85.220.175]:34221 "EHLO
+        mail-qk0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751096AbcLELIj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2016 06:08:39 -0500
+Received: by mail-qk0-f175.google.com with SMTP id q130so154313749qke.1
+        for <linux-iio@vger.kernel.org>; Mon, 05 Dec 2016 03:08:34 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <e15186cb-a93e-c2e7-13bb-6704be5e8949@st.com>
+In-Reply-To: <20161205065350.GA18069@ulmo.ba.sec>
+References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
+ <1480673842-20804-4-git-send-email-benjamin.gaignard@st.com> <20161205065350.GA18069@ulmo.ba.sec>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Date: Mon, 5 Dec 2016 12:08:32 +0100
+Message-ID: <CA+M3ks4-JQNGYtdiXNj1J701x0njKD0_bf4yN1mLSjEcT2Z=6A@mail.gmail.com>
+Subject: Re: [PATCH v3 3/7] PWM: add pwm-stm32 DT bindings
+To: Thierry Reding <thierry.reding@gmail.com>
+Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org,
+        Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, 05 Dec 2016, Alexandre Torgue wrote:
-> On 12/02/2016 02:22 PM, Lee Jones wrote:
-> > On Fri, 02 Dec 2016, Benjamin Gaignard wrote:
-> > 
-> > > Add general purpose timers and it sub-nodes into DT for stm32f4.
-> > > Define and enable pwm1 and pwm3 for stm32f469 discovery board
-> > > 
-> > > version 3:
-> > > - use "st,stm32-timer-trigger" in DT
-> > > 
-> > > version 2:
-> > > - use parameters to describe hardware capabilities
-> > > - do not use references for pwm and iio timer subnodes
-> > > 
-> > > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> > > ---
-> > >  arch/arm/boot/dts/stm32f429.dtsi      | 333 +++++++++++++++++++++++++++++++++-
-> > >  arch/arm/boot/dts/stm32f469-disco.dts |  28 +++
-> > >  2 files changed, 360 insertions(+), 1 deletion(-)
+2016-12-05 7:53 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
+> On Fri, Dec 02, 2016 at 11:17:18AM +0100, Benjamin Gaignard wrote:
+>> Define bindings for pwm-stm32
+>>
+>> version 2:
+>> - use parameters instead of compatible of handle the hardware configuration
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> ---
+>>  .../devicetree/bindings/pwm/pwm-stm32.txt          | 38 ++++++++++++++++++++++
+>>  1 file changed, 38 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>> new file mode 100644
+>> index 0000000..575b9fb
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+>> @@ -0,0 +1,38 @@
+>> +STMicroelectronics PWM driver bindings for STM32
+>
+> Technically this bindings describe devices, so "driver binding" is a
+> somewhat odd wording. Perhaps:
+>
+>         STMicroelectronics STM32 General Purpose Timer PWM bindings
+>
+> ?
+ done
 
-[...]
+>
+>> +
+>> +Must be a sub-node of STM32 general purpose timer driver
+>> +Parent node properties are describe in ../mfd/stm32-general-purpose-timer.txt
+>
+> Again, "driver parent node" is odd. Perhaps:
+>
+>         Must be a sub-node of an STM32 General Purpose Timer device tree
+>         node. See ../mfd/stm32-general-purpose-timer.txt for details about
+>         the parent node.
+>
+> ?
 
-If you're only commenting on a little piece of the patch, it's always
-a good idea to trim the rest.
+done
 
-> > > diff --git a/arch/arm/boot/dts/stm32f469-disco.dts b/arch/arm/boot/dts/stm32f469-disco.dts
-> > > index 8a163d7..df4ca7e 100644
-> > > --- a/arch/arm/boot/dts/stm32f469-disco.dts
-> > > +++ b/arch/arm/boot/dts/stm32f469-disco.dts
-> > > @@ -81,3 +81,31 @@
-> > >  &usart3 {
-> > >  	status = "okay";
-> > >  };
-> > > +
-> > > +&gptimer1 {
-> > > +	status = "okay";
-> > > +
-> > > +	pwm1@0 {
-> > > +		pinctrl-0	= <&pwm1_pins>;
-> > > +		pinctrl-names	= "default";
-> > > +		status = "okay";
-> > > +	};
-> > > +
-> > > +	timer1@0 {
-> > > +		status = "okay";
-> > > +	};
-> > > +};
-> > 
-> > This is a much *better* format than before.
-> > 
-> > I still don't like the '&' syntax though.
-> 
-> Please keep "&" format to match with existing nodes.
+>
+>> +Required parameters:
+>> +- compatible:                Must be "st,stm32-pwm"
+>> +- pinctrl-names:     Set to "default".
+>> +- pinctrl-0:                 List of phandles pointing to pin configuration nodes
+>> +                     for PWM module.
+>> +                     For Pinctrl properties, please refer to [1].
+>
+> Your indentation and capitalization are inconsistent. Also, please refer
+> to the pinctrl bindings by relative path and inline, rather than as a
+> footnote reference.
 
-Right.  I wasn't suggesting that he differs from the current format in
-*this* set.  I am suggesting that we change the format in a subsequent
-set though.
+OK
 
-> > > +&gptimer3 {
-> > > +	status = "okay";
-> > > +
-> > > +	pwm3@0 {
-> > > +		pinctrl-0	= <&pwm3_pins>;
-> > > +		pinctrl-names	= "default";
-> > > +		status = "okay";
-> > > +	};
-> > > +
-> > > +	timer3@0 {
-> > > +		status = "okay";
-> > > +	};
-> > > +};
-> > 
+>
+>> +
+>> +Optional parameters:
+>> +- st,breakinput:     Set if the hardware have break input capabilities
+>> +- st,breakinput-polarity: Set break input polarity. Default is 0
+>> +                      The value define the active polarity:
+>> +                       - 0 (active LOW)
+>> +                       - 1 (active HIGH)
+>
+> Could we fold these into a single property? If st,breakinput-polarity is
+> not present it could simply mean that there is no break input, and if it
+> is present you don't have to rely on a default.
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+I need to know if I have to activate breakinput feature and on which level
+I will rewrite it like that:
+Optional parameters:
+- st,breakinput-polarity-high: Set if break input polarity is active
+on high level.
+- st,breakinput-polarity-high: Set if break input polarity is active
+on low level.
+
+>> +- st,pwm-num-chan:   Number of available PWM channels.  Default is 0.
+>
+> The pwm- prefix is rather redundant since the node is already named pwm.
+> Why not simply st,channels? Or simply channels, since it's not really
+> anything specific to this hardware.
+>
+> Come to think of it, might be worth having a discussion with our DT
+> gurus about what their stance is on using the # as prefix for numbers
+> (such as in #address-cells or #size-cells). This could be #channels to
+> mark it more explicitly as representing a count.
+>
+>> +- st,32bits-counter: Set if the hardware have a 32 bits counter
+>> +- st,complementary:  Set if the hardware have complementary output channels
+>
+> "hardware has" and also maybe mention explicitly that this is a boolean
+> property. Otherwise people might be left wondering what it should be set
+> to. Or maybe word this differently to imply that it's boolean:
+>
+>         - st,32bits-counter: if present, the hardware has a 32 bit counter
+>         - st,complementary: if present, the hardware has a complementary
+>                             output channel
+
+I found a way to detect, at probe time, the number of channels, counter size,
+break input capability and complementary channels so I will remove
+"st,breakinput", "st,32bits-counter", "st,complementary" and "st,pwm-num-chan"
+parameters
+
+>
+> Thierry
