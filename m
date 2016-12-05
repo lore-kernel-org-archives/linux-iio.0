@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f67.google.com ([74.125.83.67]:34519 "EHLO
-        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750849AbcLELey (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2016 06:34:54 -0500
-Date: Mon, 5 Dec 2016 12:30:58 +0100
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:34364 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750998AbcLEMV5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2016 07:21:57 -0500
+Date: Mon, 5 Dec 2016 13:21:24 +0100
 From: Thierry Reding <thierry.reding@gmail.com>
 To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
 Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org,
@@ -20,158 +20,171 @@ Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org,
         Linus Walleij <linus.walleij@linaro.org>,
         Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
         Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v3 4/7] PWM: add pwm driver for stm32 plaftorm
-Message-ID: <20161205113058.GG19891@ulmo.ba.sec>
+Subject: Re: [PATCH v3 3/7] PWM: add pwm-stm32 DT bindings
+Message-ID: <20161205122124.GA20856@ulmo.ba.sec>
 References: <1480673842-20804-1-git-send-email-benjamin.gaignard@st.com>
- <1480673842-20804-5-git-send-email-benjamin.gaignard@st.com>
- <20161205072357.GB18069@ulmo.ba.sec>
- <CA+M3ks7_utdw1c0A0m+RzuPTfvFAv5d8HoQvQDzXwHR8M6RKJA@mail.gmail.com>
+ <1480673842-20804-4-git-send-email-benjamin.gaignard@st.com>
+ <20161205065350.GA18069@ulmo.ba.sec>
+ <CA+M3ks4-JQNGYtdiXNj1J701x0njKD0_bf4yN1mLSjEcT2Z=6A@mail.gmail.com>
+ <20161205112347.GF19891@ulmo.ba.sec>
+ <CA+M3ks5j2e-EQEf74YSduboNnCiWC7+e_PD5aAz5XdFA1tGztQ@mail.gmail.com>
 MIME-Version: 1.0
 Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="eMnpOGXCMazMAbfp"
-In-Reply-To: <CA+M3ks7_utdw1c0A0m+RzuPTfvFAv5d8HoQvQDzXwHR8M6RKJA@mail.gmail.com>
+        protocol="application/pgp-signature"; boundary="ibTvN161/egqYuK8"
+In-Reply-To: <CA+M3ks5j2e-EQEf74YSduboNnCiWC7+e_PD5aAz5XdFA1tGztQ@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---eMnpOGXCMazMAbfp
+--ibTvN161/egqYuK8
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
 
-On Mon, Dec 05, 2016 at 12:02:45PM +0100, Benjamin Gaignard wrote:
-> 2016-12-05 8:23 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
-> > On Fri, Dec 02, 2016 at 11:17:19AM +0100, Benjamin Gaignard wrote:
-> >> This driver add support for pwm driver on stm32 platform.
-> >
-> > "adds". Also please use PWM in prose because it's an abbreviation.
-> >
-> >> The SoC have multiple instances of the hardware IP and each
-> >> of them could have small differences: number of channels,
-> >> complementary output, counter register size...
-> >> Use DT parameters to handle those differentes configuration
-> >
-> > "different configurations"
->=20
-> ok
->=20
-> >
+On Mon, Dec 05, 2016 at 01:12:25PM +0100, Benjamin Gaignard wrote:
+> 2016-12-05 12:23 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
+> > On Mon, Dec 05, 2016 at 12:08:32PM +0100, Benjamin Gaignard wrote:
+> >> 2016-12-05 7:53 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
+> >> > On Fri, Dec 02, 2016 at 11:17:18AM +0100, Benjamin Gaignard wrote:
+> >> >> Define bindings for pwm-stm32
+> >> >>
+> >> >> version 2:
+> >> >> - use parameters instead of compatible of handle the hardware confi=
+guration
+> >> >>
+> >> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> >> >> ---
+> >> >>  .../devicetree/bindings/pwm/pwm-stm32.txt          | 38 ++++++++++=
+++++++++++++
+> >> >>  1 file changed, 38 insertions(+)
+> >> >>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32=
+=2Etxt
+> >> >>
+> >> >> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/=
+Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> >> >> new file mode 100644
+> >> >> index 0000000..575b9fb
+> >> >> --- /dev/null
+> >> >> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> >> >> @@ -0,0 +1,38 @@
+> >> >> +STMicroelectronics PWM driver bindings for STM32
+> >> >
+> >> > Technically this bindings describe devices, so "driver binding" is a
+> >> > somewhat odd wording. Perhaps:
+> >> >
+> >> >         STMicroelectronics STM32 General Purpose Timer PWM bindings
+> >> >
+> >> > ?
+> >>  done
 > >>
-> >> version 2:
-> >> - only keep one comptatible
-> >> - use DT paramaters to discover hardware block configuration
-> >
-> > "parameters"
->=20
-> ok
->=20
-> >
+> >> >
+> >> >> +
+> >> >> +Must be a sub-node of STM32 general purpose timer driver
+> >> >> +Parent node properties are describe in ../mfd/stm32-general-purpos=
+e-timer.txt
+> >> >
+> >> > Again, "driver parent node" is odd. Perhaps:
+> >> >
+> >> >         Must be a sub-node of an STM32 General Purpose Timer device =
+tree
+> >> >         node. See ../mfd/stm32-general-purpose-timer.txt for details=
+ about
+> >> >         the parent node.
+> >> >
+> >> > ?
 > >>
-> >> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> >> ---
-> >>  drivers/pwm/Kconfig     |   8 ++
-> >>  drivers/pwm/Makefile    |   1 +
-> >>  drivers/pwm/pwm-stm32.c | 285 +++++++++++++++++++++++++++++++++++++++=
-+++++++++
-> >>  3 files changed, 294 insertions(+)
-> >>  create mode 100644 drivers/pwm/pwm-stm32.c
+> >> done
 > >>
-> >> diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
-> >> index bf01288..a89fdba 100644
-> >> --- a/drivers/pwm/Kconfig
-> >> +++ b/drivers/pwm/Kconfig
-> >> @@ -388,6 +388,14 @@ config PWM_STI
-> >>         To compile this driver as a module, choose M here: the module
-> >>         will be called pwm-sti.
+> >> >
+> >> >> +Required parameters:
+> >> >> +- compatible:                Must be "st,stm32-pwm"
+> >> >> +- pinctrl-names:     Set to "default".
+> >> >> +- pinctrl-0:                 List of phandles pointing to pin conf=
+iguration nodes
+> >> >> +                     for PWM module.
+> >> >> +                     For Pinctrl properties, please refer to [1].
+> >> >
+> >> > Your indentation and capitalization are inconsistent. Also, please r=
+efer
+> >> > to the pinctrl bindings by relative path and inline, rather than as a
+> >> > footnote reference.
 > >>
-> >> +config PWM_STM32
-> >> +     bool "STMicroelectronics STM32 PWM"
-> >> +     depends on ARCH_STM32
-> >> +     depends on OF
-> >> +     select MFD_STM32_GP_TIMER
+> >> OK
+> >>
+> >> >
+> >> >> +
+> >> >> +Optional parameters:
+> >> >> +- st,breakinput:     Set if the hardware have break input capabili=
+ties
+> >> >> +- st,breakinput-polarity: Set break input polarity. Default is 0
+> >> >> +                      The value define the active polarity:
+> >> >> +                       - 0 (active LOW)
+> >> >> +                       - 1 (active HIGH)
+> >> >
+> >> > Could we fold these into a single property? If st,breakinput-polarit=
+y is
+> >> > not present it could simply mean that there is no break input, and i=
+f it
+> >> > is present you don't have to rely on a default.
+> >>
+> >> I need to know if I have to activate breakinput feature and on which l=
+evel
+> >> I will rewrite it like that:
+> >> Optional parameters:
+> >> - st,breakinput-polarity-high: Set if break input polarity is active
+> >> on high level.
+> >> - st,breakinput-polarity-high: Set if break input polarity is active
+> >> on low level.
 > >
-> > Should that be a "depends on"?
+> > How is that different from a single property:
+> >
+> >         Optional properties:
+> >         - st,breakinput-polarity: If present, a break input is available
+> >             for the channel. In that case the property value denotes the
+> >             polarity of the break input:
+> >             - 0: active low
+> >             - 1: active high
+> >
+> > ?
 >=20
-> I think select is fine because the wanted feature is PWM not the mfd part
-
-I think in that case you may want to hide the MFD Kconfig option. See
-Documentation/kbuild/kconfig-language.txt (notes about select) for the
-details.
-
-[...]
-> >> +};
-> >> +
-> >> +#define to_stm32_pwm_dev(x) container_of(chip, struct stm32_pwm_dev, =
-chip)
-> >
-> > Please turn this into a static inline.
+> For break input feature I need two information: do I have to active it
+> and if activated
+> on which level.
+> I have two solutions:
+> - one parameter with a value (0 or 1) -> st,breakinput-polarity
+> - two parameters without value -> st,breakinput-active-high and
+> st,breakinput-active-low
 >=20
-> with putting struct pwm_chip as first filed I will just cast the structure
+> By default break input feature is disabled
 
-Don't do that, please. container_of() is still preferred because it is
-correct and won't break even if you (or somebody else) changes the order
-in the future. The fact that it might be optimized away is a detail, or
-a micro-optimization. Force-casting is a bad idea because it won't catch
-errors if for some reason the field doesn't remain in the first position
-forever.
+Right, what I was suggesting is that you use the first solution because
+it's the typical way to use for tristate options. It's also much easier
+to test for in practice because for the second solution you have to
+parse two properties before you know whether it is active or not.
 
-> >> +static void stm32_pwm_disable(struct pwm_chip *chip, struct pwm_devic=
-e *pwm)
-> >> +{
-> >> +     u32 mask;
-> >> +     struct stm32_pwm_dev *dev =3D to_stm32_pwm_dev(chip);
-> >> +
-> >> +     /* Disable channel */
-> >> +     mask =3D TIM_CCER_CC1E << (pwm->hwpwm * 4);
-> >> +     if (dev->caps & CAP_COMPLEMENTARY)
-> >> +             mask |=3D TIM_CCER_CC1NE << (pwm->hwpwm * 4);
-> >> +
-> >> +     regmap_update_bits(dev->regmap, TIM_CCER, mask, 0);
-> >> +
-> >> +     /* When all channels are disabled, we can disable the controller=
- */
-> >> +     if (!__active_channels(dev))
-> >> +             regmap_update_bits(dev->regmap, TIM_CR1, TIM_CR1_CEN, 0);
-> >> +
-> >> +     clk_disable(dev->clk);
-> >> +}
-> >
-> > All of the above can be folded into the ->apply() hook for atomic PWM
-> > support.
-> >
-> > Also, in the above you use clk_enable() in the ->enable() callback and
-> > clk_disable() in ->disable(). If you need the clock to access registers
-> > you'll have to enabled it in the others as well because there are no
-> > guarantees that configuration will only happen between ->enable() and
-> > ->disable(). Atomic PWM simplifies this a bit, but you still need to be
-> > careful about when to enable the clock in your ->apply() hook.
->=20
-> I have used regmap functions enable/disable clk for me when accessing to
-> the registers.
-> I only have to take care of clk enable/disable when PWM state change.
-
-Okay, that's fine then.
+The second is typically the solution for required properties where only
+one of the properties is used to override the default.
 
 Thierry
 
---eMnpOGXCMazMAbfp
+--ibTvN161/egqYuK8
 Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAABCAAGBQJYRU/xAAoJEN0jrNd/PrOhQ7gP/2H7UMJDOuzZrL6tqJuU6ehw
-eeDhPWXMt1fTjsCf1gu2j/pz+Fh+CSmZ9Mgihm9GMNy9IHDPcSSPOgHsJ/HsVEnv
-MQnJXrngiZ8e05+tuPuyg5g5VvDMUqtfj9Wiit/Lxsh0/QxnuAUOAJpAjiKsNswF
-uBH7lOWeohq8hNe+EOG+0SNaHJSXoOra8UIk5R4KzBiMEhqIVEWlyTo7Ikeh+0ed
-UL99+epSSO4sO6vJt2ku/az9jJ0rpGrTNYeaylNKT/0FSpkoCgls9fXsE32RSKTT
-IJxgbSHxOKI0cy6u0GtHXV5dq+3lFwJw33mIBUfm4aoN04giak/j7qBFi/k1XWb9
-H3h2npyFaDvzNnJdEmf7LDDrKOsstN/MqqThrICF40XTQnBNmIjLZb9eGBYxSNky
-7BSAJ0GaCSmeLEPqleL+T7vsem2e/u8+sFfsGOuhj/zEF8UfTq1pVg4h1PVbac3s
-/rUaX+Ap9ThmXiP94NjBi+EyUgfnREgb6N3WZeAEoZqz4TKKynHT3N0/fu89dywQ
-aMpW61FHUaJbISXr+Ufn9MtjHTPWs5Nqu2m4ozimgIAdtl2tThmFbFFI5SOkL8Yz
-W/E7k4dPR+0BUfpONDaGqpa/Q/g7KZTdMclyELtCIC5G8cpaloNQgrhlT4Qldo9L
-/25TK7UBw2TSyDMCqebR
-=llJ+
+iQIcBAABCAAGBQJYRVvCAAoJEN0jrNd/PrOhujwP/1w8e4ZwTw+PKUVyCuMAieJ/
+N7SeawE7FJdQlSSwp88c0WUvU3YqFp1YmUSl5d31g7GFcexV604PAqIqVbLAXSwY
+ciCNoq9HEERpi6oIeJLet0h3PNSh5unLD/klVDSSVVAT5lMoUz8IuLtRnkjp8W/f
+92Dem5Bb/61ewdpmjS9LeYyf6xHQV15yKHkuwRbNsnRWDrHa2LG4gjcwUVW9kQgr
+5DTwAnszymhpj0AkXe6Zq58Oni2s7cZJ9xFHjwSaFeXzx8EsS24ZuqZpm7OgkcaX
+4K/isEnx6+3YU7NenLolWsCMn69yhaaOOilK8a36P3nAJZWtSdls+798NDCVgghE
+gfKXzQC9Lf4kJSthvJfgcULSOWrzJ4fUsXLmm7o7Z7/vMKSoU2FGadPuSW4Seezl
+S7fAbn1k7o72Li+E3SdfT9s2jVvJn42Nmts//d+8sHFLH0CNS61Cuga52SPf0evd
++uwx0jIOqycsaJkCtTMiAfmeTJpRGf+2ilb1JFGnF4tVX2XExR0ET4mC9dMH/vte
+bKE6DRrN8b1IZoN7VAWH6PCtux8meW0Fy7UnxA/NRmsYp+W2wwhaAEwUq0xi92wF
+uhtjJM0fG/YEoUkqi2bhwlGxkOxljdQIE+TeG9PNfOG/uT1OaobEk0kT93d5joMT
+CIJh3qnl/AsPpPr6+YXj
+=iCYg
 -----END PGP SIGNATURE-----
 
---eMnpOGXCMazMAbfp--
+--ibTvN161/egqYuK8--
