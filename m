@@ -1,147 +1,208 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f42.google.com ([74.125.82.42]:35891 "EHLO
-        mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751675AbcLGMCZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2016 07:02:25 -0500
-Received: by mail-wm0-f42.google.com with SMTP id g23so164501002wme.1
-        for <linux-iio@vger.kernel.org>; Wed, 07 Dec 2016 04:01:54 -0800 (PST)
-Subject: Re: [PATCH v4 6/7] IIO: add STM32 timer trigger driver
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Lee Jones <lee.jones@linaro.org>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
- <1481027929-13704-7-git-send-email-benjamin.gaignard@st.com>
- <20161206131635.GJ25385@dell.home>
- <CA+M3ks6fxCucmaY0OgpMb_opA=YLrowijJ0YQ+imeprhWg6N_w@mail.gmail.com>
- <20161207105002.GA3625@dell.home>
- <CA+M3ks4VbV6z6t7aORKGmduZfFF+Ls7Sq8umWRFyo3sn8WZt7g@mail.gmail.com>
-Cc: robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Gerald Baeza <gerald.baeza@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-From: Daniel Thompson <daniel.thompson@linaro.org>
-Message-ID: <5dcec09c-8b4b-4cc2-ce3f-fde86366ec05@linaro.org>
-Date: Wed, 7 Dec 2016 12:01:52 +0000
-MIME-Version: 1.0
-In-Reply-To: <CA+M3ks4VbV6z6t7aORKGmduZfFF+Ls7Sq8umWRFyo3sn8WZt7g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
+Received: from mail-wj0-f173.google.com ([209.85.210.173]:35526 "EHLO
+        mail-wj0-f173.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752952AbcLFNvH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 08:51:07 -0500
+Received: by mail-wj0-f173.google.com with SMTP id v7so321590496wjy.2
+        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 05:51:06 -0800 (PST)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
+        Andy Gross <andy.gross@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@codeaurora.org>
+Subject: [PATCH 1/3] iio: adc: add device tree bindings for Qualcomm PM8xxx ADCs
+Date: Tue,  6 Dec 2016 14:50:53 +0100
+Message-Id: <1481032253-27019-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 07/12/16 11:00, Benjamin Gaignard wrote:
-> 2016-12-07 11:50 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
->> On Tue, 06 Dec 2016, Benjamin Gaignard wrote:
->>
->>> [snip]
->>>>> +
->>>>> +static const char * const triggers0[] = {
->>>>> +     TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers1[] = {
->>>>> +     TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers2[] = {
->>>>> +     TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers3[] = {
->>>>> +     TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers4[] = {
->>>>> +     TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers5[] = {
->>>>> +     TIM6_TRGO, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers6[] = {
->>>>> +     TIM7_TRGO, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers7[] = {
->>>>> +     TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers8[] = {
->>>>> +     TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,
->>>>> +};
->>>>> +
->>>>> +static const char * const triggers9[] = {
->>>>> +     TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,
->>>>> +};
->>>>> +
->>>>> +static const void *triggers_table[] = {
->>>>> +     triggers0,
->>>>> +     triggers1,
->>>>> +     triggers2,
->>>>> +     triggers3,
->>>>> +     triggers4,
->>>>> +     triggers5,
->>>>> +     triggers6,
->>>>> +     triggers7,
->>>>> +     triggers8,
->>>>> +     triggers9,
->>>>> +};
->>>>
->>>> What about:
->>>>
->>>> static const char * const triggers[][] = {
->>>>         { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL },
->>>>         { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL },
->>>>         { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL },
->>>>         { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL },
->>>>         { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL },
->>>>         { TIM6_TRGO, NULL },
->>>>         { TIM7_TRGO, NULL },
->>>>         { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL },
->>>>         { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL },
->>>>         { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL }
->>>> };
->>>
->>> I can't because the second dimension of the array isn't fix.
->>> I could have between 2 and 6 elements per row... to create a dual dimension
->>> array I would have to add NULL entries like that:
->>>
->>> #define MAX_TRIGGERS 6
->>>
->>> static const void *triggers_table[][MAX_TRIGGERS] = {
->>> { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,},
->>> { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,},
->>> { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,},
->>> { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,},
->>> { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,},
->>> { TIM6_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
->>> { TIM7_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
->>> { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,},
->>> { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,     NULL,     NULL,},
->>> { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,  NULL,     NULL,},
->>> };
->>
->> It was just an idea, not a tested implementation.
->>
->> I don't understand why you have to pad with NULLs, but either way, it
->> looks much better than before and saves lots of lines of code.
->
-> I have tested it this morning and it works fine so I will include it in v5.
-> I use NULL as limit when iterate in the table and for table padding too.
+This adds the device tree bindings for the Qualcomm PM8xxx
+ADCs. This is based on the existing DT bindings for the
+SPMI ADC so there are hopefully no controversial features.
 
-If the initializer is shorter than the array then the array will be 
-implicitly zero/NULL padded. I don't think there is any need to type out 
-all the NULLs (not even at -Wall).
+Cc: devicetree@vger.kernel.org
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-msm@vger.kernel.org
+Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
+Cc: Andy Gross <andy.gross@linaro.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Stephen Boyd <sboyd@codeaurora.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 160 +++++++++++++++++++++
+ 1 file changed, 160 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
 
-
-Daniel.
+diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+new file mode 100644
+index 000000000000..6e51e3e74b88
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+@@ -0,0 +1,160 @@
++Qualcomm's PM8xxx voltage XOADC
++
++The Qualcomm PM8xxx PMICs contain a HK/XO ADC (Housekeeping/Chrystal
++oscillator ADC) encompass PM8018, PM8038, PM8058, PM8917 and PM8921.
++
++Required properties:
++
++- compatible: should be one of:
++  "qcom,pm8018-adc"
++  "qcom,pm8038-adc"
++  "qcom,pm8058-adc"
++  "qcom,pm8917-adc"
++  "qcom,pm8921-adc"
++
++- reg: should contain the ADC base address in the PMIC, typically
++  0x197.
++
++The following required properties are standard for IO channels, see
++iio-bindings.txt for more details:
++
++- #address-cells: should be set to <1>
++
++- #size-cells: should be set to <0>
++
++- #io-channel-cells: should be set to <1>
++
++- interrupts: should refer to the parent PMIC interrupt controller
++  and reference the proper ADC interrupt.
++
++Required subnodes:
++
++The ADC channels are configured as subnodes of the ADC. Since some of
++them are used for calibrating the ADC, these nodes are compulsory:
++
++ref_625mv {
++	reg = <0x0c>;
++};
++
++ref_1250mv {
++	reg = <0x0d>;
++};
++
++ref_muxoff {
++	reg = <0x0f>;
++};
++
++These three nodes are used for absolute and ratiometric calibration
++and only need to have these reg values: they are by hardware defined
++to be 1:1 ratio converters that sample 625, 1250 and 0 V and create
++an interpolation calibration for all other ADCs.
++
++Optional subnodes: any channels other than channel 0x0c, 0x0d and
++0x0f are optional.
++
++Required channel node properties:
++
++- reg: should contain the hardware channel number in the range
++  0 .. 0x0f (4 bits). The hardware only supports 16 channels.
++
++Optional channel node properties:
++
++- qcom,decimation:
++  Value type: <u32>
++  Definition: This parameter is used to decrease ADC sampling rate.
++          Quicker measurements can be made by reducing decimation ratio.
++          Valid values are 512, 1024, 2048, 4096.
++          If property is not found, default value of 512 will be used.
++
++- qcom,ratiometric:
++  Value type: <empty>
++  Definition: Channel calibration type. If this property is specified
++          VADC will use the VDD reference (1.8V) and GND for channel
++          calibration. If property is not found, channel will be
++          calibrated with 0.625V and 1.25V reference channels, also
++          known as absolute calibration.
++
++- qcom,ratiometric-ref:
++  Value type: <u32>
++  Definition: The reference voltage pair when using ratiometric
++          calibration:
++	  0 = XO_IN/XOADC_GND
++	  1 = PMIC_IN/XOADC_GND
++	  2 = PMIC_IN/BMS_CSP
++	  3 (invalid)
++	  4 = XOADC_GND/XOADC_GND
++	  5 = XOADC_VREF/XOADC_GND
++
++Example:
++
++xoadc: xoadc@197 {
++	compatible = "qcom,pm8058-adc";
++	reg = <0x197>;
++	interrupt-parent = <&pm8058>;
++	interrupts = <76 1>;
++	#address-cells = <1>;
++	#size-cells = <0>;
++	#io-channel-cells = <1>;
++
++	vcoin {
++		reg = <0x00>;
++	};
++	vbat {
++		reg = <0x01>;
++	};
++	dcin {
++		reg = <0x02>;
++	};
++	ichg {
++		reg = <0x03>;
++	};
++	vph_pwr {
++		reg = <0x04>;
++	};
++	mpp5 {
++		reg = <0x05>;
++	};
++	mpp6 {
++		reg = <0x06>;
++	};
++	mpp7 {
++		reg = <0x07>;
++	};
++	mpp8 {
++		reg = <0x08>;
++	};
++	mpp9 {
++		reg = <0x09>;
++	};
++	usb_vbus {
++		reg = <0x0a>;
++	};
++	die_temp {
++		reg = <0x0b>;
++	};
++	ref_625mv {
++		reg = <0x0c>;
++	};
++	ref_1250mv {
++		reg = <0x0d>;
++	};
++	ref_325mv {
++		reg = <0x0e>;
++	};
++	ref_muxoff {
++		reg = <0x0f>;
++	};
++};
++
++
++/* IIO client node */
++iio-hwmon {
++	compatible = "iio-hwmon";
++	io-channels = <&xoadc 0x01>, /* Battery */
++		    <&xoadc 0x02>, /* DC in (charger) */
++		    <&xoadc 0x04>, /* VPH the main system voltage */
++		    <&xoadc 0x0b>, /* Die temperature */
++		    <&xoadc 0x0c>, /* Reference voltage 1.25V */
++		    <&xoadc 0x0d>, /* Reference voltage 0.625V */
++		    <&xoadc 0x0e>; /* Reference voltage 0.325V */
++};
+-- 
+2.7.4
 
