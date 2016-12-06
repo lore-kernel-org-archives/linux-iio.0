@@ -1,60 +1,66 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f51.google.com ([74.125.82.51]:37753 "EHLO
-        mail-wm0-f51.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751645AbcLFMyP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 07:54:15 -0500
-Received: by mail-wm0-f51.google.com with SMTP id t79so124435282wmt.0
-        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 04:54:14 -0800 (PST)
-Date: Tue, 6 Dec 2016 12:57:25 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
-        gerald.baeza@st.com, arnaud.pouliquen@st.com,
-        linus.walleij@linaro.org, linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v4 7/7] ARM: dts: stm32: add STM32 General Purpose Timer
- driver in DT
-Message-ID: <20161206125725.GG25385@dell.home>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
- <1481027929-13704-8-git-send-email-benjamin.gaignard@st.com>
+Received: from ns.pmeerw.net ([84.19.176.92]:48686 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753296AbcLFLZ7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 6 Dec 2016 06:25:59 -0500
+Date: Tue, 6 Dec 2016 12:25:49 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Thierry Escande <thierry.escande@collabora.com>
+cc: Jonathan Cameron <jic23@kernel.org>,
+        Gwendal Grignou <gwendal@chromium.org>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: Re: [PATCH 2/3] iio: core: Add double tap as possible gesture
+In-Reply-To: <1480929198-13671-3-git-send-email-thierry.escande@collabora.com>
+Message-ID: <alpine.DEB.2.02.1612061223550.29508@pmeerw.net>
+References: <1480929198-13671-1-git-send-email-thierry.escande@collabora.com> <1480929198-13671-3-git-send-email-thierry.escande@collabora.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1481027929-13704-8-git-send-email-benjamin.gaignard@st.com>
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, 06 Dec 2016, Benjamin Gaignard wrote:
 
-> Add General Purpose Timers and it sub-nodes into DT for stm32f4.
-> Define and enable pwm1 and pwm3 for stm32f469 discovery board
-> 
-> version 4:
-> - remove unwanted indexing in pwm@ and timer@ node name
-> - use "reg" instead of additional parameters to set timer
->   configuration
-> 
-> version 3:
-> - use "st,stm32-timer-trigger" in DT
-> 
-> version 2:
-> - use parameters to describe hardware capabilities
-> - do not use references for pwm and iio timer subnodes
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> This adds the IIO_MOD_DOUBLE_TAP entry to the iio_modifier enum and the
+> corresponding "double_tap" string to the iio_modifier_names array.
+
+I don't think we should have gestures as channel modifiers
+
+probably a middle layer between IIO and input subsystem is needed (could 
+be in userspace?)
+ 
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
 > ---
->  arch/arm/boot/dts/stm32f429.dtsi      | 276 +++++++++++++++++++++++++++++++++-
->  arch/arm/boot/dts/stm32f469-disco.dts |  28 ++++
->  2 files changed, 303 insertions(+), 1 deletion(-)
-
-This now looks really neat.
+>  drivers/iio/industrialio-core.c | 1 +
+>  include/uapi/linux/iio/types.h  | 1 +
+>  2 files changed, 2 insertions(+)
+> 
+> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+> index fc340ed..82ce05f 100644
+> --- a/drivers/iio/industrialio-core.c
+> +++ b/drivers/iio/industrialio-core.c
+> @@ -120,6 +120,7 @@ static const char * const iio_modifier_names[] = {
+>  	[IIO_MOD_Q] = "q",
+>  	[IIO_MOD_CO2] = "co2",
+>  	[IIO_MOD_VOC] = "voc",
+> +	[IIO_MOD_DOUBLE_TAP] = "double_tap",
+>  };
+>  
+>  /* relies on pairs of these shared then separate */
+> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+> index 22e5e58..47d2768 100644
+> --- a/include/uapi/linux/iio/types.h
+> +++ b/include/uapi/linux/iio/types.h
+> @@ -80,6 +80,7 @@ enum iio_modifier {
+>  	IIO_MOD_CO2,
+>  	IIO_MOD_VOC,
+>  	IIO_MOD_LIGHT_UV,
+> +	IIO_MOD_DOUBLE_TAP,
+>  };
+>  
+>  enum iio_event_type {
+> 
 
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
