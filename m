@@ -1,230 +1,172 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:33942 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751948AbcLFOA4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 6 Dec 2016 09:00:56 -0500
-Date: Tue, 6 Dec 2016 15:00:53 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Linus Walleij <linus.walleij@linaro.org>
-cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
-        Andy Gross <andy.gross@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>
-Subject: Re: [PATCH 1/3] iio: adc: add device tree bindings for Qualcomm
- PM8xxx ADCs
-In-Reply-To: <1481032253-27019-1-git-send-email-linus.walleij@linaro.org>
-Message-ID: <alpine.DEB.2.02.1612061455400.29508@pmeerw.net>
-References: <1481032253-27019-1-git-send-email-linus.walleij@linaro.org>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:37794 "EHLO
+        mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751953AbcLFMkJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 07:40:09 -0500
+Received: by mail-wm0-f52.google.com with SMTP id t79so123991306wmt.0
+        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 04:39:42 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
+        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
+        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v4 0/7] Add PWM and IIO timer drivers for STM32
+Date: Tue,  6 Dec 2016 13:38:42 +0100
+Message-Id: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+version 4:
+- fix comments done on version 3
+- don't use interrupts anymore in IIO timer
+- detect hardware capabilities at probe time to simplify binding
 
-> This adds the device tree bindings for the Qualcomm PM8xxx
-> ADCs. This is based on the existing DT bindings for the
-> SPMI ADC so there are hopefully no controversial features.
+version 3:
+- no change on mfd and pwm divers patches
+- add cross reference between bindings
+- change compatible to "st,stm32-timer-trigger"
+- fix attributes access rights
+- use string instead of int for master_mode and slave_mode
+- document device attributes in sysfs-bus-iio-timer-stm32
+- udpate DT with the new compatible
 
-nitpicking below
- 
-> Cc: devicetree@vger.kernel.org
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-arm-msm@vger.kernel.org
-> Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
-> Cc: Andy Gross <andy.gross@linaro.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Stephen Boyd <sboyd@codeaurora.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 160 +++++++++++++++++++++
->  1 file changed, 160 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
-> new file mode 100644
-> index 000000000000..6e51e3e74b88
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
-> @@ -0,0 +1,160 @@
-> +Qualcomm's PM8xxx voltage XOADC
-> +
-> +The Qualcomm PM8xxx PMICs contain a HK/XO ADC (Housekeeping/Chrystal
+version 2:
+- keep only one compatible per driver
+- use DT parameters to describe hardware block configuration:
+  - pwm channels, complementary output, counter size, break input
+  - triggers accepted and create by IIO timers
+- change DT to limite use of reference to the node
+- interrupt is now in IIO timer driver
+- rename stm32-mfd-timer to stm32-gptimer (for general purpose timer)
 
-crystal
+The following patches enable PWM and IIO Timer features for STM32 platforms.
 
-> +oscillator ADC) encompass PM8018, PM8038, PM8058, PM8917 and PM8921.
+Those two features are mixed into the registers of the same hardware block
+(named general purpose timer) which lead to introduce a multifunctions driver 
+on the top of them to be able to share the registers.
 
-encompassing
+In STM32 14 instances of timer hardware block exist, even if they all have
+the same register mapping they could have a different number of pwm channels
+and/or different triggers capabilities. We use various parameters in DT to 
+describe the differences between hardware blocks
 
-> +
-> +Required properties:
-> +
-> +- compatible: should be one of:
-> +  "qcom,pm8018-adc"
-> +  "qcom,pm8038-adc"
-> +  "qcom,pm8058-adc"
-> +  "qcom,pm8917-adc"
-> +  "qcom,pm8921-adc"
-> +
-> +- reg: should contain the ADC base address in the PMIC, typically
-> +  0x197.
-> +
-> +The following required properties are standard for IO channels, see
-> +iio-bindings.txt for more details:
-> +
-> +- #address-cells: should be set to <1>
-> +
-> +- #size-cells: should be set to <0>
-> +
-> +- #io-channel-cells: should be set to <1>
-> +
-> +- interrupts: should refer to the parent PMIC interrupt controller
-> +  and reference the proper ADC interrupt.
-> +
-> +Required subnodes:
-> +
-> +The ADC channels are configured as subnodes of the ADC. Since some of
-> +them are used for calibrating the ADC, these nodes are compulsory:
-> +
-> +ref_625mv {
-> +	reg = <0x0c>;
-> +};
-> +
-> +ref_1250mv {
-> +	reg = <0x0d>;
-> +};
-> +
-> +ref_muxoff {
-> +	reg = <0x0f>;
-> +};
-> +
-> +These three nodes are used for absolute and ratiometric calibration
-> +and only need to have these reg values: they are by hardware defined
+The MFD (stm32-gptimer.c) takes care of clock and register mapping
+by using regmap. stm32_gptimer_dev structure is provided to its sub-node to
+share those information.
 
-they are by hardware definition 1:1 ratio converters that sample ...
+PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
+have up to 4 channels, sometime with complementary outputs or 32 bits counter
+instead of 16 bits. Some hardware blocks may also have a break input function
+which allows to stop pwm depending of a level, defined in devicetree, on an
+external pin.
 
-> +to be 1:1 ratio converters that sample 625, 1250 and 0 V and create
+IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
+of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
 
-milliV
-or 0.625, 1.250 V
+The matrix of possible connections between blocks is quite complex so we use 
+trigger names and is_stm32_iio_timer_trigger() function to be sure that
+triggers are valid and configure the IPs.
 
-> +an interpolation calibration for all other ADCs.
-> +
-> +Optional subnodes: any channels other than channel 0x0c, 0x0d and
-> +0x0f are optional.
-> +
-> +Required channel node properties:
-> +
-> +- reg: should contain the hardware channel number in the range
-> +  0 .. 0x0f (4 bits). The hardware only supports 16 channels.
-> +
-> +Optional channel node properties:
-> +
-> +- qcom,decimation:
-> +  Value type: <u32>
-> +  Definition: This parameter is used to decrease ADC sampling rate.
-> +          Quicker measurements can be made by reducing decimation ratio.
-> +          Valid values are 512, 1024, 2048, 4096.
-> +          If property is not found, default value of 512 will be used.
-> +
-> +- qcom,ratiometric:
-> +  Value type: <empty>
-> +  Definition: Channel calibration type. If this property is specified
-> +          VADC will use the VDD reference (1.8V) and GND for channel
-> +          calibration. If property is not found, channel will be
-> +          calibrated with 0.625V and 1.25V reference channels, also
-> +          known as absolute calibration.
-> +
-> +- qcom,ratiometric-ref:
-> +  Value type: <u32>
-> +  Definition: The reference voltage pair when using ratiometric
-> +          calibration:
-> +	  0 = XO_IN/XOADC_GND
-> +	  1 = PMIC_IN/XOADC_GND
-> +	  2 = PMIC_IN/BMS_CSP
-> +	  3 (invalid)
-> +	  4 = XOADC_GND/XOADC_GND
-> +	  5 = XOADC_VREF/XOADC_GND
-> +
-> +Example:
-> +
-> +xoadc: xoadc@197 {
-> +	compatible = "qcom,pm8058-adc";
-> +	reg = <0x197>;
-> +	interrupt-parent = <&pm8058>;
-> +	interrupts = <76 1>;
-> +	#address-cells = <1>;
-> +	#size-cells = <0>;
-> +	#io-channel-cells = <1>;
-> +
-> +	vcoin {
-> +		reg = <0x00>;
-> +	};
-> +	vbat {
-> +		reg = <0x01>;
-> +	};
-> +	dcin {
-> +		reg = <0x02>;
-> +	};
-> +	ichg {
-> +		reg = <0x03>;
-> +	};
-> +	vph_pwr {
-> +		reg = <0x04>;
-> +	};
-> +	mpp5 {
-> +		reg = <0x05>;
-> +	};
-> +	mpp6 {
-> +		reg = <0x06>;
-> +	};
-> +	mpp7 {
-> +		reg = <0x07>;
-> +	};
-> +	mpp8 {
-> +		reg = <0x08>;
-> +	};
-> +	mpp9 {
-> +		reg = <0x09>;
-> +	};
-> +	usb_vbus {
-> +		reg = <0x0a>;
-> +	};
-> +	die_temp {
-> +		reg = <0x0b>;
-> +	};
-> +	ref_625mv {
-> +		reg = <0x0c>;
-> +	};
-> +	ref_1250mv {
-> +		reg = <0x0d>;
-> +	};
-> +	ref_325mv {
-> +		reg = <0x0e>;
-> +	};
-> +	ref_muxoff {
-> +		reg = <0x0f>;
-> +	};
-> +};
-> +
-> +
-> +/* IIO client node */
-> +iio-hwmon {
-> +	compatible = "iio-hwmon";
-> +	io-channels = <&xoadc 0x01>, /* Battery */
-> +		    <&xoadc 0x02>, /* DC in (charger) */
-> +		    <&xoadc 0x04>, /* VPH the main system voltage */
-> +		    <&xoadc 0x0b>, /* Die temperature */
-> +		    <&xoadc 0x0c>, /* Reference voltage 1.25V */
-> +		    <&xoadc 0x0d>, /* Reference voltage 0.625V */
-> +		    <&xoadc 0x0e>; /* Reference voltage 0.325V */
-> +};
-> 
+At run time IIO timer hardware blocks can configure (through "master_mode" 
+IIO device attribute) which internal signal (counter enable, reset,
+comparison block, etc...) is used to generate the trigger.
+
+By using "slave_mode" IIO device attribute timer can also configure on which
+event (level, rising edge) of the block is enabled.
+
+Since we can use trigger from one hardware to control an other block, we can
+use a pwm to control an other one. The following example shows how to configure
+pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
+
+/sys/bus/iio/devices # ls
+iio:device0  iio:device1  trigger0     trigger1
+
+configure timer1 to use pwm1 channel 0 as output trigger
+/sys/bus/iio/devices # echo 'OC1REF' > iio\:device0/master_mode
+configure timer3 to enable only when input is high
+/sys/bus/iio/devices # echo 'gated' > iio\:device1/slave_mode
+/sys/bus/iio/devices # cat trigger0/name
+tim1_trgo
+configure timer2 to use timer1 trigger is input
+/sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
+
+configure pwm3 channel 0 to generate a signal with a period of 100ms and a
+duty cycle of 50%
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 0 > export
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 100000000 > pwm0/period
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4# echo 1 > pwm0/enable
+here pwm3 channel 0, as expected, doesn't start because has to be triggered by
+pwm1 channel 0
+
+configure pwm1 channel 0 to generate a signal with a period of 1s and a
+duty cycle of 50%
+/sys/devices/platform/soc/40010000.gptimer/40010000.gptimer:pwm@0/pwm/pwmchip0 # echo 0 > export
+/sys/devices/platform/soc/40010000.gptimer/40010000.gptimer:pwm@0/pwm/pwmchip0 # echo 1000000000 > pwm0/period
+/sys/devices/platform/soc/40010000.gptimer/40010000.gptimer:pwm@0/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
+/sys/devices/platform/soc/40010000.gptimer/40010000.gptimer:pwm@0/pwm/pwmchip0 # echo 1 > pwm0/enable 
+finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
+
+An other example to use a timer as source of clock for another device.
+Here timer1 is used a source clock for pwm3:
+
+/sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
+/sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger 
+/sys/bus/iio/devices # echo 'external_clock' > iio\:device1/slave_mode
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 0 > export 
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 1000000 > pwm0/period 
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
+/sys/devices/platform/soc/40000400.gptimer/40000400.gptimer:pwm@0/pwm/pwmchip4 # echo 1 > pwm0/enable 
+
+
+Benjamin Gaignard (7):
+  MFD: add bindings for STM32 General Purpose Timer driver
+  MFD: add STM32 General Purpose Timer driver
+  PWM: add pwm-stm32 DT bindings
+  PWM: add PWM driver for STM32 plaftorm
+  IIO: add bindings for STM32 timer trigger driver
+  IIO: add STM32 timer trigger driver
+  ARM: dts: stm32: add STM32 General Purpose Timer driver in DT
+
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
+ .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 +
+ .../bindings/mfd/stm32-general-purpose-timer.txt   |  39 ++
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
+ arch/arm/boot/dts/stm32f429.dtsi                   | 276 ++++++++++-
+ arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+ drivers/iio/Kconfig                                |   2 +-
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/timer/Kconfig                          |  15 +
+ drivers/iio/timer/Makefile                         |   1 +
+ drivers/iio/timer/stm32-timer-trigger.c            | 526 +++++++++++++++++++++
+ drivers/iio/trigger/Kconfig                        |   1 -
+ drivers/mfd/Kconfig                                |  11 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/stm32-gptimer.c                        |  82 ++++
+ drivers/pwm/Kconfig                                |  11 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-stm32.c                            | 363 ++++++++++++++
+ include/linux/iio/timer/stm32-timer-trigger.h      |  61 +++
+ include/linux/mfd/stm32-gptimer.h                  |  63 +++
+ 20 files changed, 1591 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ create mode 100644 drivers/iio/timer/Kconfig
+ create mode 100644 drivers/iio/timer/Makefile
+ create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
+ create mode 100644 drivers/mfd/stm32-gptimer.c
+ create mode 100644 drivers/pwm/pwm-stm32.c
+ create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
+ create mode 100644 include/linux/mfd/stm32-gptimer.h
 
 -- 
+1.9.1
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
