@@ -1,242 +1,230 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:38652 "EHLO
-        mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752200AbcLFMkJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 07:40:09 -0500
-Received: by mail-wm0-f45.google.com with SMTP id f82so124223214wmf.1
-        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 04:39:49 -0800 (PST)
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v4 2/7] MFD: add STM32 General Purpose Timer driver
-Date: Tue,  6 Dec 2016 13:38:44 +0100
-Message-Id: <1481027929-13704-3-git-send-email-benjamin.gaignard@st.com>
-In-Reply-To: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
+Received: from ns.pmeerw.net ([84.19.176.92]:33942 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751948AbcLFOA4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 6 Dec 2016 09:00:56 -0500
+Date: Tue, 6 Dec 2016 15:00:53 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Linus Walleij <linus.walleij@linaro.org>
+cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
+        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
+        Andy Gross <andy.gross@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@codeaurora.org>
+Subject: Re: [PATCH 1/3] iio: adc: add device tree bindings for Qualcomm
+ PM8xxx ADCs
+In-Reply-To: <1481032253-27019-1-git-send-email-linus.walleij@linaro.org>
+Message-ID: <alpine.DEB.2.02.1612061455400.29508@pmeerw.net>
+References: <1481032253-27019-1-git-send-email-linus.walleij@linaro.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This hardware block could at used at same time for PWM generation
-and IIO timers.
-PWM and IIO timer configuration are mixed in the same registers
-so we need a multi fonction driver to be able to share those registers.
 
-version 4:
-- add a function to detect Auto Reload Register (ARR) size
-- rename the structure shared with other drivers
+> This adds the device tree bindings for the Qualcomm PM8xxx
+> ADCs. This is based on the existing DT bindings for the
+> SPMI ADC so there are hopefully no controversial features.
 
-version 2:
-- rename driver "stm32-gptimer" to be align with SoC documentation
-- only keep one compatible
-- use of_platform_populate() instead of devm_mfd_add_devices()
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- drivers/mfd/Kconfig               | 11 ++++++
- drivers/mfd/Makefile              |  2 +
- drivers/mfd/stm32-gptimer.c       | 82 +++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/stm32-gptimer.h | 63 ++++++++++++++++++++++++++++++
- 4 files changed, 158 insertions(+)
- create mode 100644 drivers/mfd/stm32-gptimer.c
- create mode 100644 include/linux/mfd/stm32-gptimer.h
-
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index c6df644..a00f6b3 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -1607,6 +1607,17 @@ config MFD_STW481X
- 	  in various ST Microelectronics and ST-Ericsson embedded
- 	  Nomadik series.
+nitpicking below
  
-+config MFD_STM32_GP_TIMER
-+	tristate "Support for STM32 General Purpose Timer"
-+	select MFD_CORE
-+	select REGMAP
-+	depends on ARCH_STM32 || COMPILE_TEST
-+	depends on OF
-+	help
-+	  Select this option to enable STM32 general purpose timer
-+	  driver used for PWM and IIO Timer. This driver allow to
-+	  share the registers between the others drivers.
-+
- menu "Multimedia Capabilities Port drivers"
- 	depends on ARCH_SA1100
- 
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index 9834e66..86353b9 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -211,3 +211,5 @@ obj-$(CONFIG_INTEL_SOC_PMIC)	+= intel-soc-pmic.o
- obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
- 
- obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
-+
-+obj-$(CONFIG_MFD_STM32_GP_TIMER) 	+= stm32-gptimer.o
-diff --git a/drivers/mfd/stm32-gptimer.c b/drivers/mfd/stm32-gptimer.c
-new file mode 100644
-index 0000000..6747fcb
---- /dev/null
-+++ b/drivers/mfd/stm32-gptimer.c
-@@ -0,0 +1,82 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ *
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/of_platform.h>
-+#include <linux/reset.h>
-+
-+#include <linux/mfd/stm32-gptimer.h>
-+
-+static const struct regmap_config stm32_gptimer_regmap_cfg = {
-+	.reg_bits = 32,
-+	.val_bits = 32,
-+	.reg_stride = sizeof(u32),
-+	.max_register = 0x400,
-+};
-+
-+static u32 stm32_gptimer_get_arr_size(struct regmap *regmap)
-+{
-+	u32 max_arr;
-+
-+	/* Only the available bits will be written so when readback
-+	 * we get the maximum value of auto reload register
-+	 */
-+	regmap_write(regmap, TIM_ARR, ~0L);
-+	regmap_read(regmap, TIM_ARR, &max_arr);
-+	regmap_write(regmap, TIM_ARR, 0x0);
-+
-+	return max_arr;
-+}
-+
-+static int stm32_gptimer_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct stm32_gptimer *ddata;
-+	struct resource *res;
-+	void __iomem *mmio;
-+
-+	ddata = devm_kzalloc(dev, sizeof(*ddata), GFP_KERNEL);
-+	if (!ddata)
-+		return -ENOMEM;
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	mmio = devm_ioremap_resource(dev, res);
-+	if (IS_ERR(mmio))
-+		return PTR_ERR(mmio);
-+
-+	ddata->regmap = devm_regmap_init_mmio_clk(dev, "clk_int", mmio,
-+						  &stm32_gptimer_regmap_cfg);
-+	if (IS_ERR(ddata->regmap))
-+		return PTR_ERR(ddata->regmap);
-+
-+	ddata->clk = devm_clk_get(dev, NULL);
-+	if (IS_ERR(ddata->clk))
-+		return PTR_ERR(ddata->clk);
-+
-+	ddata->max_arr = stm32_gptimer_get_arr_size(ddata->regmap);
-+
-+	platform_set_drvdata(pdev, ddata);
-+
-+	return of_platform_populate(pdev->dev.of_node, NULL, NULL, &pdev->dev);
-+}
-+
-+static const struct of_device_id stm32_gptimer_of_match[] = {
-+	{ .compatible = "st,stm32-gptimer" },
-+};
-+MODULE_DEVICE_TABLE(of, stm32_gptimer_of_match);
-+
-+static struct platform_driver stm32_gptimer_driver = {
-+	.probe = stm32_gptimer_probe,
-+	.driver	= {
-+		.name = "stm32-gptimer",
-+		.of_match_table = stm32_gptimer_of_match,
-+	},
-+};
-+module_platform_driver(stm32_gptimer_driver);
-+
-+MODULE_DESCRIPTION("STMicroelectronics STM32 General Purpose Timer");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mfd/stm32-gptimer.h b/include/linux/mfd/stm32-gptimer.h
-new file mode 100644
-index 0000000..bf0a595
---- /dev/null
-+++ b/include/linux/mfd/stm32-gptimer.h
-@@ -0,0 +1,63 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ *
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#ifndef _LINUX_STM32_GPTIMER_H_
-+#define _LINUX_STM32_GPTIMER_H_
-+
-+#include <linux/clk.h>
-+#include <linux/regmap.h>
-+
-+#define TIM_CR1		0x00	/* Control Register 1      */
-+#define TIM_CR2		0x04	/* Control Register 2      */
-+#define TIM_SMCR	0x08	/* Slave mode control reg  */
-+#define TIM_DIER	0x0C	/* DMA/interrupt register  */
-+#define TIM_SR		0x10	/* Status register	   */
-+#define TIM_EGR		0x14	/* Event Generation Reg    */
-+#define TIM_CCMR1	0x18	/* Capt/Comp 1 Mode Reg    */
-+#define TIM_CCMR2	0x1C	/* Capt/Comp 2 Mode Reg    */
-+#define TIM_CCER	0x20	/* Capt/Comp Enable Reg    */
-+#define TIM_PSC		0x28	/* Prescaler               */
-+#define TIM_ARR		0x2c	/* Auto-Reload Register    */
-+#define TIM_CCR1	0x34	/* Capt/Comp Register 1    */
-+#define TIM_CCR2	0x38	/* Capt/Comp Register 2    */
-+#define TIM_CCR3	0x3C	/* Capt/Comp Register 3    */
-+#define TIM_CCR4	0x40	/* Capt/Comp Register 4    */
-+#define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
-+
-+#define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
-+#define TIM_CR1_ARPE	BIT(7)	/* Auto-reload Preload Ena */
-+#define TIM_CR2_MMS	(BIT(4) | BIT(5) | BIT(6)) /* Master mode selection */
-+#define TIM_SMCR_SMS	(BIT(0) | BIT(1) | BIT(2)) /* Slave mode selection */
-+#define TIM_SMCR_TS	(BIT(4) | BIT(5) | BIT(6)) /* Trigger selection */
-+#define TIM_DIER_UIE	BIT(0)	/* Update interrupt	   */
-+#define TIM_SR_UIF	BIT(0)	/* Update interrupt flag   */
-+#define TIM_EGR_UG	BIT(0)	/* Update Generation       */
-+#define TIM_CCMR_PE	BIT(3)	/* Channel Preload Enable  */
-+#define TIM_CCMR_M1	(BIT(6) | BIT(5))  /* Channel PWM Mode 1 */
-+#define TIM_CCER_CC1E	BIT(0)	/* Capt/Comp 1  out Ena    */
-+#define TIM_CCER_CC1P	BIT(1)	/* Capt/Comp 1  Polarity   */
-+#define TIM_CCER_CC1NE	BIT(2)	/* Capt/Comp 1N out Ena    */
-+#define TIM_CCER_CC1NP	BIT(3)	/* Capt/Comp 1N Polarity   */
-+#define TIM_CCER_CC2E	BIT(4)	/* Capt/Comp 2  out Ena    */
-+#define TIM_CCER_CC3E	BIT(8)	/* Capt/Comp 3  out Ena    */
-+#define TIM_CCER_CC4E	BIT(12)	/* Capt/Comp 4  out Ena    */
-+#define TIM_CCER_CCXE	(BIT(0) | BIT(4) | BIT(8) | BIT(12))
-+#define TIM_BDTR_BKE	BIT(12) /* Break input enable	   */
-+#define TIM_BDTR_BKP	BIT(13) /* Break input polarity	   */
-+#define TIM_BDTR_AOE	BIT(14)	/* Automatic Output Enable */
-+#define TIM_BDTR_MOE	BIT(15)	/* Main Output Enable      */
-+
-+#define MAX_TIM_PSC		0xFFFF
-+#define TIM_CR2_MMS_SHIFT	4
-+#define TIM_SMCR_TS_SHIFT	4
-+
-+struct stm32_gptimer {
-+	struct clk *clk;
-+	struct regmap *regmap;
-+	u32 max_arr;
-+};
-+#endif
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
+> Cc: Andy Gross <andy.gross@linaro.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Stephen Boyd <sboyd@codeaurora.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 160 +++++++++++++++++++++
+>  1 file changed, 160 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+> new file mode 100644
+> index 000000000000..6e51e3e74b88
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
+> @@ -0,0 +1,160 @@
+> +Qualcomm's PM8xxx voltage XOADC
+> +
+> +The Qualcomm PM8xxx PMICs contain a HK/XO ADC (Housekeeping/Chrystal
+
+crystal
+
+> +oscillator ADC) encompass PM8018, PM8038, PM8058, PM8917 and PM8921.
+
+encompassing
+
+> +
+> +Required properties:
+> +
+> +- compatible: should be one of:
+> +  "qcom,pm8018-adc"
+> +  "qcom,pm8038-adc"
+> +  "qcom,pm8058-adc"
+> +  "qcom,pm8917-adc"
+> +  "qcom,pm8921-adc"
+> +
+> +- reg: should contain the ADC base address in the PMIC, typically
+> +  0x197.
+> +
+> +The following required properties are standard for IO channels, see
+> +iio-bindings.txt for more details:
+> +
+> +- #address-cells: should be set to <1>
+> +
+> +- #size-cells: should be set to <0>
+> +
+> +- #io-channel-cells: should be set to <1>
+> +
+> +- interrupts: should refer to the parent PMIC interrupt controller
+> +  and reference the proper ADC interrupt.
+> +
+> +Required subnodes:
+> +
+> +The ADC channels are configured as subnodes of the ADC. Since some of
+> +them are used for calibrating the ADC, these nodes are compulsory:
+> +
+> +ref_625mv {
+> +	reg = <0x0c>;
+> +};
+> +
+> +ref_1250mv {
+> +	reg = <0x0d>;
+> +};
+> +
+> +ref_muxoff {
+> +	reg = <0x0f>;
+> +};
+> +
+> +These three nodes are used for absolute and ratiometric calibration
+> +and only need to have these reg values: they are by hardware defined
+
+they are by hardware definition 1:1 ratio converters that sample ...
+
+> +to be 1:1 ratio converters that sample 625, 1250 and 0 V and create
+
+milliV
+or 0.625, 1.250 V
+
+> +an interpolation calibration for all other ADCs.
+> +
+> +Optional subnodes: any channels other than channel 0x0c, 0x0d and
+> +0x0f are optional.
+> +
+> +Required channel node properties:
+> +
+> +- reg: should contain the hardware channel number in the range
+> +  0 .. 0x0f (4 bits). The hardware only supports 16 channels.
+> +
+> +Optional channel node properties:
+> +
+> +- qcom,decimation:
+> +  Value type: <u32>
+> +  Definition: This parameter is used to decrease ADC sampling rate.
+> +          Quicker measurements can be made by reducing decimation ratio.
+> +          Valid values are 512, 1024, 2048, 4096.
+> +          If property is not found, default value of 512 will be used.
+> +
+> +- qcom,ratiometric:
+> +  Value type: <empty>
+> +  Definition: Channel calibration type. If this property is specified
+> +          VADC will use the VDD reference (1.8V) and GND for channel
+> +          calibration. If property is not found, channel will be
+> +          calibrated with 0.625V and 1.25V reference channels, also
+> +          known as absolute calibration.
+> +
+> +- qcom,ratiometric-ref:
+> +  Value type: <u32>
+> +  Definition: The reference voltage pair when using ratiometric
+> +          calibration:
+> +	  0 = XO_IN/XOADC_GND
+> +	  1 = PMIC_IN/XOADC_GND
+> +	  2 = PMIC_IN/BMS_CSP
+> +	  3 (invalid)
+> +	  4 = XOADC_GND/XOADC_GND
+> +	  5 = XOADC_VREF/XOADC_GND
+> +
+> +Example:
+> +
+> +xoadc: xoadc@197 {
+> +	compatible = "qcom,pm8058-adc";
+> +	reg = <0x197>;
+> +	interrupt-parent = <&pm8058>;
+> +	interrupts = <76 1>;
+> +	#address-cells = <1>;
+> +	#size-cells = <0>;
+> +	#io-channel-cells = <1>;
+> +
+> +	vcoin {
+> +		reg = <0x00>;
+> +	};
+> +	vbat {
+> +		reg = <0x01>;
+> +	};
+> +	dcin {
+> +		reg = <0x02>;
+> +	};
+> +	ichg {
+> +		reg = <0x03>;
+> +	};
+> +	vph_pwr {
+> +		reg = <0x04>;
+> +	};
+> +	mpp5 {
+> +		reg = <0x05>;
+> +	};
+> +	mpp6 {
+> +		reg = <0x06>;
+> +	};
+> +	mpp7 {
+> +		reg = <0x07>;
+> +	};
+> +	mpp8 {
+> +		reg = <0x08>;
+> +	};
+> +	mpp9 {
+> +		reg = <0x09>;
+> +	};
+> +	usb_vbus {
+> +		reg = <0x0a>;
+> +	};
+> +	die_temp {
+> +		reg = <0x0b>;
+> +	};
+> +	ref_625mv {
+> +		reg = <0x0c>;
+> +	};
+> +	ref_1250mv {
+> +		reg = <0x0d>;
+> +	};
+> +	ref_325mv {
+> +		reg = <0x0e>;
+> +	};
+> +	ref_muxoff {
+> +		reg = <0x0f>;
+> +	};
+> +};
+> +
+> +
+> +/* IIO client node */
+> +iio-hwmon {
+> +	compatible = "iio-hwmon";
+> +	io-channels = <&xoadc 0x01>, /* Battery */
+> +		    <&xoadc 0x02>, /* DC in (charger) */
+> +		    <&xoadc 0x04>, /* VPH the main system voltage */
+> +		    <&xoadc 0x0b>, /* Die temperature */
+> +		    <&xoadc 0x0c>, /* Reference voltage 1.25V */
+> +		    <&xoadc 0x0d>, /* Reference voltage 0.625V */
+> +		    <&xoadc 0x0e>; /* Reference voltage 0.325V */
+> +};
+> 
+
 -- 
-1.9.1
 
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
