@@ -1,311 +1,308 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f169.google.com ([209.85.210.169]:36604 "EHLO
-        mail-wj0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753162AbcLFNvR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 08:51:17 -0500
-Received: by mail-wj0-f169.google.com with SMTP id tk12so26675450wjb.3
-        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 05:51:15 -0800 (PST)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
-        Andy Gross <andy.gross@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>
-Subject: [PATCH 2/3] iio: adc: break out common code from SPMI VADC
-Date: Tue,  6 Dec 2016 14:51:09 +0100
-Message-Id: <1481032269-27067-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=VsNg=XV=pmeerw.net=pmeerw@kernel.org>
+Date: Tue, 6 Dec 2016 22:00:12 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Jacopo Mondi <jacopo@jmondi.org>
+cc: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com, jic23@kernel.org,
+    knaack.h@gmx.de, lars@metafoo.de, linux-iio@vger.kernel.org,
+    linux-renesas-soc@vger.kernel.org
+Subject: Re: [PATCH] iio: Add Maxim MAX11100 driver
+In-Reply-To: <1481041823-18382-1-git-send-email-jacopo@jmondi.org>
+Message-ID: <alpine.DEB.2.02.1612062143480.10644@pmeerw.net>
+References: <1481041823-18382-1-git-send-email-jacopo@jmondi.org>
+MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
+List-ID: <linux-iio@vger.kernel.org>
 
-The SPMI VADC and the earlier XOADC share a subset of
-common code, so to be able to use the same code in both
-drivers, we break out a separate file with the common code,
-prefix exported functions that are no longer static with
-qcom_* and bake an object qcom-vadc.o that contains both
-files: qcom-vadc-common.o and qcom-spmi-vadc.o.
+On Tue, 6 Dec 2016, Jacopo Mondi wrote:
 
-Cc: linux-arm-kernel@lists.infradead.org
-Cc: linux-arm-msm@vger.kernel.org
-Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
-Cc: Andy Gross <andy.gross@linaro.org>
-Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Stephen Boyd <sboyd@codeaurora.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- drivers/iio/adc/Makefile           |  3 +-
- drivers/iio/adc/qcom-spmi-vadc.c   | 95 +++-----------------------------------
- drivers/iio/adc/qcom-vadc-common.c | 38 +++++++++++++++
- drivers/iio/adc/qcom-vadc-common.h | 69 +++++++++++++++++++++++++++
- 4 files changed, 116 insertions(+), 89 deletions(-)
- create mode 100644 drivers/iio/adc/qcom-vadc-common.c
- create mode 100644 drivers/iio/adc/qcom-vadc-common.h
+> Add IIO driver for Maxim MAX11100 single-channel ADC.
+> Support raw_read mode only.
 
-diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 7a40c04c311f..f9468d228b1e 100644
---- a/drivers/iio/adc/Makefile
-+++ b/drivers/iio/adc/Makefile
-@@ -38,7 +38,8 @@ obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
- obj-$(CONFIG_NAU7802) += nau7802.o
- obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
- obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
--obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
-+qcom-vadc-y := qcom-vadc-common.o
-+obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-vadc.o qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_STX104) += stx104.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index c2babe50a0d8..74d21afa34a9 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -28,6 +28,8 @@
+comments below; very minimal driver, but several easy issues...
+
+the read_raw() is supposed to return millivolts (after application of 
+offset and scale); maybe need _SCALE?
  
- #include <dt-bindings/iio/qcom,spmi-vadc.h>
- 
-+#include "qcom-vadc-common.h"
-+
- /* VADC register and bit definitions */
- #define VADC_REVISION2				0x1
- #define VADC_REVISION2_SUPPORTED_VADC		1
-@@ -75,69 +77,9 @@
- 
- #define VADC_DATA				0x60	/* 16 bits */
- 
--#define VADC_CONV_TIME_MIN_US			2000
--#define VADC_CONV_TIME_MAX_US			2100
--
--/* Min ADC code represents 0V */
--#define VADC_MIN_ADC_CODE			0x6000
--/* Max ADC code represents full-scale range of 1.8V */
--#define VADC_MAX_ADC_CODE			0xa800
--
--#define VADC_ABSOLUTE_RANGE_UV			625000
--#define VADC_RATIOMETRIC_RANGE_UV		1800000
--
--#define VADC_DEF_PRESCALING			0 /* 1:1 */
--#define VADC_DEF_DECIMATION			0 /* 512 */
--#define VADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
--#define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
--#define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
--
--#define VADC_DECIMATION_MIN			512
--#define VADC_DECIMATION_MAX			4096
--
--#define VADC_HW_SETTLE_DELAY_MAX		10000
--#define VADC_AVG_SAMPLES_MAX			512
--
--#define KELVINMIL_CELSIUSMIL			273150
--
- #define VADC_CHAN_MIN			VADC_USBIN
- #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
- 
--/*
-- * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-- * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-- * calibration.
-- */
--enum vadc_calibration {
--	VADC_CALIB_ABSOLUTE = 0,
--	VADC_CALIB_RATIOMETRIC
--};
--
--/**
-- * struct vadc_linear_graph - Represent ADC characteristics.
-- * @dy: numerator slope to calculate the gain.
-- * @dx: denominator slope to calculate the gain.
-- * @gnd: A/D word of the ground reference used for the channel.
-- *
-- * Each ADC device has different offset and gain parameters which are
-- * computed to calibrate the device.
-- */
--struct vadc_linear_graph {
--	s32 dy;
--	s32 dx;
--	s32 gnd;
--};
--
--/**
-- * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-- * @num: the inverse numerator of the gain applied to the input channel.
-- * @den: the inverse denominator of the gain applied to the input channel.
-- */
--struct vadc_prescale_ratio {
--	u32 num;
--	u32 den;
--};
--
- /**
-  * struct vadc_channel_prop - VADC channel property.
-  * @channel: channel number, refer to the channel list.
-@@ -471,33 +413,10 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- static s32 vadc_calibrate(struct vadc_priv *vadc,
- 			  const struct vadc_channel_prop *prop, u16 adc_code)
- {
--	const struct vadc_prescale_ratio *prescale;
--	s64 voltage;
--
--	voltage = adc_code - vadc->graph[prop->calibration].gnd;
--	voltage *= vadc->graph[prop->calibration].dx;
--	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
--
--	if (prop->calibration == VADC_CALIB_ABSOLUTE)
--		voltage += vadc->graph[prop->calibration].dx;
--
--	if (voltage < 0)
--		voltage = 0;
--
--	prescale = &vadc_prescale_ratios[prop->prescale];
--
--	voltage = voltage * prescale->den;
--
--	return div64_s64(voltage, prescale->num);
--}
--
--static int vadc_decimation_from_dt(u32 value)
--{
--	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
--	    value > VADC_DECIMATION_MAX)
--		return -EINVAL;
--
--	return __ffs64(value / VADC_DECIMATION_MIN);
-+	return qcom_vadc_calibrate(&vadc_prescale_ratios[prop->prescale],
-+				   &vadc->graph[prop->calibration],
-+				   (prop->calibration == VADC_CALIB_ABSOLUTE),
-+				   adc_code);
- }
- 
- static int vadc_prescaling_from_dt(u32 num, u32 den)
-@@ -752,7 +671,7 @@ static int vadc_get_dt_channel_data(struct device *dev,
- 
- 	ret = of_property_read_u32(node, "qcom,decimation", &value);
- 	if (!ret) {
--		ret = vadc_decimation_from_dt(value);
-+		ret = qcom_vadc_decimation_from_dt(value);
- 		if (ret < 0) {
- 			dev_err(dev, "%02x invalid decimation %d\n",
- 				chan, value);
-diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
-new file mode 100644
-index 000000000000..f67fc5e2a702
---- /dev/null
-+++ b/drivers/iio/adc/qcom-vadc-common.c
-@@ -0,0 +1,38 @@
-+#include <linux/kernel.h>
-+#include <linux/bitops.h>
-+#include <linux/math64.h>
-+#include <linux/log2.h>
-+#include <linux/err.h>
-+
-+#include "qcom-vadc-common.h"
-+
-+s32 qcom_vadc_calibrate(const struct vadc_prescale_ratio *prescale,
-+			const struct vadc_linear_graph *graph,
-+			bool absolute,
-+			u16 adc_code)
-+{
-+	s64 voltage;
-+
-+	voltage = adc_code - graph->gnd;
-+	voltage *= graph->dx;
-+	voltage = div64_s64(voltage, graph->dy);
-+
-+	if (absolute)
-+		voltage += graph->dx;
-+
-+	if (voltage < 0)
-+		voltage = 0;
-+
-+	voltage = voltage * prescale->den;
-+
-+	return div64_s64(voltage, prescale->num);
-+}
-+
-+int qcom_vadc_decimation_from_dt(u32 value)
-+{
-+	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
-+	    value > VADC_DECIMATION_MAX)
-+		return -EINVAL;
-+
-+	return __ffs64(value / VADC_DECIMATION_MIN);
-+}
-diff --git a/drivers/iio/adc/qcom-vadc-common.h b/drivers/iio/adc/qcom-vadc-common.h
-new file mode 100644
-index 000000000000..b41cb501eef8
---- /dev/null
-+++ b/drivers/iio/adc/qcom-vadc-common.h
-@@ -0,0 +1,69 @@
-+/*
-+ * Code shared between the different Qualcomm PMIC voltage ADCs
-+ */
-+
-+#define VADC_CONV_TIME_MIN_US			2000
-+#define VADC_CONV_TIME_MAX_US			2100
-+
-+/* Min ADC code represents 0V */
-+#define VADC_MIN_ADC_CODE			0x6000
-+/* Max ADC code represents full-scale range of 1.8V */
-+#define VADC_MAX_ADC_CODE			0xa800
-+
-+#define VADC_ABSOLUTE_RANGE_UV			625000
-+#define VADC_RATIOMETRIC_RANGE_UV		1800000
-+
-+#define VADC_DEF_PRESCALING			0 /* 1:1 */
-+#define VADC_DEF_DECIMATION			0 /* 512 */
-+#define VADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
-+#define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
-+#define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
-+
-+#define VADC_DECIMATION_MIN			512
-+#define VADC_DECIMATION_MAX			4096
-+
-+#define VADC_HW_SETTLE_DELAY_MAX		10000
-+#define VADC_AVG_SAMPLES_MAX			512
-+
-+#define KELVINMIL_CELSIUSMIL			273150
-+
-+/*
-+ * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-+ * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-+ * calibration.
-+ */
-+enum vadc_calibration {
-+	VADC_CALIB_ABSOLUTE = 0,
-+	VADC_CALIB_RATIOMETRIC
-+};
-+
-+/**
-+ * struct vadc_linear_graph - Represent ADC characteristics.
-+ * @dy: numerator slope to calculate the gain.
-+ * @dx: denominator slope to calculate the gain.
-+ * @gnd: A/D word of the ground reference used for the channel.
-+ *
-+ * Each ADC device has different offset and gain parameters which are
-+ * computed to calibrate the device.
-+ */
-+struct vadc_linear_graph {
-+	s32 dy;
-+	s32 dx;
-+	s32 gnd;
-+};
-+
-+/**
-+ * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-+ * @num: the inverse numerator of the gain applied to the input channel.
-+ * @den: the inverse denominator of the gain applied to the input channel.
-+ */
-+struct vadc_prescale_ratio {
-+	u32 num;
-+	u32 den;
-+};
-+
-+s32 qcom_vadc_calibrate(const struct vadc_prescale_ratio *prescale,
-+			const struct vadc_linear_graph *graph,
-+			bool absolute,
-+			u16 adc_code);
-+int qcom_vadc_decimation_from_dt(u32 value);
+> Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
+> ---
+>  drivers/iio/adc/Kconfig    |   9 +++
+>  drivers/iio/adc/Makefile   |   1 +
+>  drivers/iio/adc/max11100.c | 165 +++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 175 insertions(+)
+>  create mode 100644 drivers/iio/adc/max11100.c
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 99c0514..e2f3340 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -285,6 +285,15 @@ config MAX1027
+>  	  To compile this driver as a module, choose M here: the module will be
+>  	  called max1027.
+>  
+> +config MAX11100
+> +	tristate "Maxim max11100 ADC driver"
+> +	depends on SPI
+> +	help
+> +	  Say yes here to build support for Maxim 11100 SPI ADC
+
+Maxim max11100
+
+> +
+> +	  To compile this driver as a module, choose M here: the module will be
+> +	  called max11100.
+> +
+>  config MAX1363
+>  	tristate "Maxim max1363 ADC driver"
+>  	depends on I2C
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 7a40c04..1463044 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -29,6 +29,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+>  obj-$(CONFIG_LTC2485) += ltc2485.o
+>  obj-$(CONFIG_MAX1027) += max1027.o
+> +obj-$(CONFIG_MAX11100) += max11100.o
+>  obj-$(CONFIG_MAX1363) += max1363.o
+>  obj-$(CONFIG_MCP320X) += mcp320x.o
+>  obj-$(CONFIG_MCP3422) += mcp3422.o
+> diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+> new file mode 100644
+> index 0000000..fbce287
+> --- /dev/null
+> +++ b/drivers/iio/adc/max11100.c
+> @@ -0,0 +1,165 @@
+> +/*
+> + * iio/adc/max11100.c
+> + * Maxim MAX11100 ADC Driver with IIO interface
+
+MAX11100 or max11100
+
+> + *
+> + * Copyright (C) 2016 Renesas Electronics Corporation
+> + * Copyright (C) 2016 Jacopo Mondi
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License version 2 as
+> + * published by the Free Software Foundation.
+> + */
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/spi/spi.h>
+> +#include <linux/delay.h>
+> +
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/buffer.h>
+> +
+> +struct max11100_state {
+> +	const struct max11100_chip_desc *desc;
+> +	struct spi_device *spi;
+> +	struct mutex lock;
+> +};
+> +
+> +static struct iio_chan_spec max11100_channels[] = {
+> +	{ /* [0] */
+> +		.type = IIO_VOLTAGE,
+> +		.channel = 0,
+
+not indexed, so channel = 0 not needed
+
+> +		.address = 0,
+
+address not needed (and no need to initialize to 0 anyway)
+
+> +		.scan_index = 0,
+
+scan_index and scan_type not needed since no buffered support (yet); add 
+this when needed
+
+> +		.scan_type = {
+> +			.sign = 'u',
+> +			.realbits = 16,
+> +			.storagebits = 24,
+> +			.shift = 8,
+> +			.repeat = 1,
+> +			.endianness = IIO_BE,
+> +		},
+> +		.output = 1,
+
+no, ADC is typically not an output channel 
+
+> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+> +	},
+> +};
+> +
+> +static const unsigned long max11100_scan_masks[] = {
+
+scan_masks not needed since no buffered support
+
+> +	0xffff,
+> +};
+> +
+> +static struct max11100_chip_desc {
+> +	uint32_t num_chan;
+
+why not just unsigned?
+
+> +	const unsigned long *scanmasks;
+
+not needed (yet)
+
+> +	const struct iio_chan_spec *channels;
+> +} max11100_desc = {
+> +	.num_chan = 1,
+
+ARRAY_SIZE(max11100_channels)
+
+> +	.scanmasks = max11100_scan_masks,
+> +	.channels = max11100_channels,
+> +};
+> +
+> +static int max11100_read_raw(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	int ret;
+> +	struct max11100_state *state = iio_priv(indio_dev);
+> +	uint8_t buffer[3] = { 0, 0, 0 };
+
+no need to initialize buffer; consider alignment requirements for SPI
+
+> +
+> +	mutex_lock(&state->lock);
+
+what is the mutex protecting?
+must the spi_read() by protected? then the unlock can be placed right 
+after the call...
+
+> +
+> +	ret = spi_read(state->spi, (void *) buffer, 3);
+
+sizeof(buffer)
+
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "SPI transfer failed\n");
+
+mutex_unlock()!?
+
+> +		return ret;
+> +	}
+> +
+> +	dev_dbg(&indio_dev->dev, "ADC output values: "	\
+> +		"[0]: 0x%2x [1]: 0x%2x [2]: 0x%2x\n",
+
+probably 0x%02x if really needed
+
+> +		buffer[0], buffer[1], buffer[2]);
+> +
+> +	/* the first 8 bits sent out from ADC must be 0s */
+> +	if (buffer[0]) {
+> +		dev_err(&indio_dev->dev, "Invalid value: buffer[0] != 0\n");
+
+mutex_unlock()!?
+
+> +		return -EINVAL;
+> +	}
+> +
+> +	*val = (buffer[1] << 8) | buffer[2];
+> +	mutex_unlock(&state->lock);
+> +
+
+shouldn't this return IIO_VAL_INT?
+
+> +	return 0;
+> +}
+> +
+> +static const struct iio_info max11100_info = {
+> +	.driver_module = THIS_MODULE,
+> +	.read_raw = max11100_read_raw,
+> +};
+> +
+> +static int max11100_probe(struct spi_device *spi)
+> +{
+> +	int ret;
+> +	struct iio_dev *indio_dev;
+> +	struct max11100_state *state;
+> +
+> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+> +	if (!indio_dev) {
+> +		pr_err("Can't allocate iio device\n");
+
+error message really needed?
+
+> +		return -ENOMEM;
+> +	}
+> +	dev_dbg(&indio_dev->dev, "probe max11100 IIO SPI\n");
+
+message really needed?
+
+> +
+> +	spi_set_drvdata(spi, indio_dev);
+> +
+> +	state = iio_priv(indio_dev);
+> +	state->spi = spi;
+> +	state->desc = &max11100_desc;
+> +
+> +	mutex_init(&state->lock);
+> +
+> +	indio_dev->dev.parent = &spi->dev;
+> +	indio_dev->dev.of_node = spi->dev.of_node;
+> +	indio_dev->info = &max11100_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = state->desc->channels;
+> +	indio_dev->num_channels = state->desc->num_chan;
+> +	indio_dev->available_scan_masks = state->desc->scanmasks;
+> +
+> +	ret = iio_device_register(indio_dev);
+
+could use devm_ variant...
+
+> +	if (ret) {
+> +		dev_err(&indio_dev->dev, "Failed to register iio device\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int max11100_remove(struct spi_device *spi)
+
+function not needed if using devm_iio_device_register()
+
+> +{
+> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+> +
+> +	dev_dbg(&indio_dev->dev, "remove max11100 IIO SPI\n");
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static const struct of_device_id max11100_ids[] = {
+> +	{.compatible = "maxim,max11100"},
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, max11100_ids);
+> +
+> +static struct spi_driver max11100_driver = {
+> +	.driver = {
+> +		.name	= "max11100",
+> +		.owner	= THIS_MODULE,
+> +		.of_match_table = of_match_ptr(max11100_ids),
+> +	},
+> +	.probe		= max11100_probe,
+> +	.remove		= max11100_remove,
+> +};
+> +
+> +module_spi_driver(max11100_driver);
+> +
+> +MODULE_AUTHOR("Jacopo Mondi <jacopo@jmondi.org>");
+> +MODULE_DESCRIPTION("Maxim MAX11100 ADC Driver");
+> +MODULE_LICENSE("GPL v2");
+> 
+
 -- 
-2.7.4
 
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
