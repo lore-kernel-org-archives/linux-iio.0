@@ -1,153 +1,454 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-eopbgr30106.outbound.protection.outlook.com ([40.107.3.106]:39436
-        "EHLO EUR03-AM5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752288AbcLFTbO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 6 Dec 2016 14:31:14 -0500
-Subject: Re: [PATCH v6 4/9] dt-bindings: iio: iio-mux: document iio-mux
- bindings
-To: Rob Herring <robh@kernel.org>
-References: <1480493823-21462-1-git-send-email-peda@axentia.se>
- <1480493823-21462-5-git-send-email-peda@axentia.se>
- <20161205232624.5wjvmchd6jxd24ir@rob-hp-laptop>
-Cc: linux-kernel@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <ea58cfe1-88ed-f215-59df-e9ffba485eaa@axentia.se>
-Date: Tue, 6 Dec 2016 10:18:53 +0100
-MIME-Version: 1.0
-In-Reply-To: <20161205232624.5wjvmchd6jxd24ir@rob-hp-laptop>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-wj0-f182.google.com ([209.85.210.182]:34314 "EHLO
+        mail-wj0-f182.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752480AbcLFMkK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 07:40:10 -0500
+Received: by mail-wj0-f182.google.com with SMTP id tg4so63881844wjb.1
+        for <linux-iio@vger.kernel.org>; Tue, 06 Dec 2016 04:39:56 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
+        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
+        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v4 4/7] PWM: add PWM driver for STM32 plaftorm
+Date: Tue,  6 Dec 2016 13:38:46 +0100
+Message-Id: <1481027929-13704-5-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
+References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 2016-12-06 00:26, Rob Herring wrote:
-> On Wed, Nov 30, 2016 at 09:16:58AM +0100, Peter Rosin wrote:
->> Signed-off-by: Peter Rosin <peda@axentia.se>
->> ---
->>  .../bindings/iio/multiplexer/iio-mux.txt           | 40 ++++++++++++++++++++++
->>  MAINTAINERS                                        |  6 ++++
->>  2 files changed, 46 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
-> 
-> I'm still not convinced about this binding, but don't really have more 
-> comments ATM. Sending 6 versions in 2 weeks or so doesn't really help 
-> either.
+This driver adds support for PWM driver on STM32 platform.
+The SoC have multiple instances of the hardware IP and each
+of them could have small differences: number of channels,
+complementary output, auto reload register size...
 
-Sorry about the noise, I'll try to be more careful going forward. On
-the flip side, I haven't touched the code since v6.
+version 4:
+- detect at probe time hardware capabilities
+- fix comments done on v2 and v3
+- use PWM atomic ops
 
-I don't see how bindings that are as flexible as the current (and
-original) phandle link between the mux consumer and the mux controller
-would look, and at the same time be simpler to understand. You need
-to be able to refer to a mux controller from several mux consumers, and
-you need to support several mux controllers in one node (the ADG792A
-case). And, AFAICT, the complex case wasn't really the problem, it was
-that it is overly complex to describe the simple case of one mux
-consumer and one mux controller. But in your comment for v2 [1] you
-said that I was working around limitations with shared GPIO pins. But
-solving that in the GPIO subsystem would not solve all that the
-phandle approach is solving, since you would not have support for
-ADG792A (or other non-GPIO controlled muxes). So, I think listing
-the gpio pins inside the mux consumer node is a non-starter, the mux
-controller has to live in its own node with its own compatible.
+version 2:
+- only keep one comptatible
+- use DT parameters to discover hardware block configuration
 
-Would you be happier if I managed to marry the phandle approach with
-the option of having the mux controller as a child node of the mux
-consumer for the simple case?
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+---
+ drivers/pwm/Kconfig     |  11 ++
+ drivers/pwm/Makefile    |   1 +
+ drivers/pwm/pwm-stm32.c | 363 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 375 insertions(+)
+ create mode 100644 drivers/pwm/pwm-stm32.c
 
-I added an example at the end of this message (the same as the first
-example in v4 [2], at least in principle) for easy comparison between
-the phandle and the controller-in-child-node approaches. I can't say
-that I personally find the difference all that significant, and do not
-think it is worth it. As I see it, the "simple option" would just muddy
-the waters...
-
-[1] http://marc.info/?l=linux-kernel&m=147948334204795&w=2
-[2] http://marc.info/?l=linux-kernel&m=148001364904240&w=2
-
->> diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
->> new file mode 100644
->> index 000000000000..8080cf790d82
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
->> @@ -0,0 +1,40 @@
->> +IIO multiplexer bindings
->> +
->> +If a multiplexer is used to select which hardware signal is fed to
->> +e.g. an ADC channel, these bindings describe that situation.
->> +
->> +Required properties:
->> +- compatible : "iio-mux"
-> 
-> This is a Linuxism. perhaps "adc-mux".
-
-No, that's not general enough, it could just as well be used to mux a
-temperature sensor. Or whatever. Hmmm, given that "iio-mux" is bad, perhaps
-"io-channel-mux" is better? That matches the io-channels property used to
-refer to the parent channel.
-
->> +- io-channels : Channel node of the parent channel that has multiplexed
->> +		input.
->> +- io-channel-names : Should be "parent".
->> +- #address-cells = <1>;
->> +- #size-cells = <0>;
->> +- mux-controls : Mux controller node to use for operating the mux
->> +- channels : List of strings, labeling the mux controller states.
->> +
->> +The multiplexer state as described in ../misc/mux-controller.txt
->> +
->> +For each non-empty string in the channels property, an iio channel will
->> +be created. The number of this iio channel is the same as the index into
->> +the list of strings in the channels property, and also matches the mux
->> +controller state.
->> +
->> +Example:
->> +	mux: mux-controller {
->> +		compatible = "mux-gpio";
->> +		#mux-control-cells = <0>;
->> +
->> +		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
->> +			    <&pioA 1 GPIO_ACTIVE_HIGH>;
->> +	};
->> +
->> +	adc-mux {
->> +		compatible = "iio-mux";
->> +		io-channels = <&adc 0>;
->> +		io-channel-names = "parent";
->> +
->> +		mux-controls = <&mux>;
->> +
->> +		channels = "sync", "in", system-regulator";
->> +	};
-
-Describing the same as above, but with the mux controller as a child
-node.
-
-	adc-mux {
-		compatible = "iio-mux";
-		io-channels = <&adc 0>;
-		io-channel-names = "parent";
-
-		channels = "sync", "in", system-regulator";
-
-		mux-controller {
-			compatible = "mux-gpio";
-
-			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
-				    <&pioA 1 GPIO_ACTIVE_HIGH>;
-		};
-	};
-
-Cheers,
-Peter
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index bf01288..95c9f04 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -388,6 +388,17 @@ config PWM_STI
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-sti.
+ 
++config PWM_STM32
++	bool "STMicroelectronics STM32 PWM"
++	depends on ARCH_STM32 || COMPILE_TEST
++	depends on OF
++	depends on MFD_STM32_GP_TIMER
++	help
++	  Generic PWM framework driver for STM32 SoCs.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-stm32.
++
+ config PWM_STMPE
+ 	bool "STMPE expander PWM export"
+ 	depends on MFD_STMPE
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index 1194c54..5aa9308 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -37,6 +37,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
+ obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+ obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+ obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
++obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+ obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+ obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+new file mode 100644
+index 0000000..319fd77
+--- /dev/null
++++ b/drivers/pwm/pwm-stm32.c
+@@ -0,0 +1,363 @@
++/*
++ * Copyright (C) STMicroelectronics 2016
++ *
++ * Author: Gerald Baeza <gerald.baeza@st.com>
++ * License terms: GNU General Public License (GPL), version 2
++ *
++ * Inspired by timer-stm32.c from Maxime Coquelin
++ *             pwm-atmel.c from Bo Shen
++ */
++
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/of.h>
++
++#include <linux/mfd/stm32-gptimer.h>
++
++#define CCMR_CHANNEL_SHIFT 8
++#define CCMR_CHANNEL_MASK  0xFF
++
++struct stm32_pwm {
++	struct pwm_chip chip;
++	struct device *dev;
++	struct clk *clk;
++	struct regmap *regmap;
++	unsigned int caps;
++	unsigned int npwm;
++	u32 breakinput_polarity;
++	u32 max_arr;
++	bool have_complementary_output;
++	bool have_breakinput;
++	bool use_breakinput;
++};
++
++#define to_stm32_pwm_dev(x) container_of(chip, struct stm32_pwm, chip)
++
++static u32 active_channels(struct stm32_pwm *dev)
++{
++	u32 ccer;
++
++	regmap_read(dev->regmap, TIM_CCER, &ccer);
++
++	return ccer & TIM_CCER_CCXE;
++}
++
++static int write_ccrx(struct stm32_pwm *dev, struct pwm_device *pwm,
++		      u32 value)
++{
++	switch (pwm->hwpwm) {
++	case 0:
++		return regmap_write(dev->regmap, TIM_CCR1, value);
++	case 1:
++		return regmap_write(dev->regmap, TIM_CCR2, value);
++	case 2:
++		return regmap_write(dev->regmap, TIM_CCR3, value);
++	case 3:
++		return regmap_write(dev->regmap, TIM_CCR4, value);
++	}
++	return -EINVAL;
++}
++
++static int stm32_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			    int duty_ns, int period_ns)
++{
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++	unsigned long long prd, div, dty;
++	unsigned int prescaler = 0;
++	u32 ccmr, mask, shift, bdtr;
++
++	/* Period and prescaler values depends on clock rate */
++	div = (unsigned long long)clk_get_rate(priv->clk) * period_ns;
++
++	do_div(div, NSEC_PER_SEC);
++	prd = div;
++
++	while (div > priv->max_arr) {
++		prescaler++;
++		div = prd;
++		do_div(div, (prescaler + 1));
++	}
++
++	prd = div;
++
++	if (prescaler > MAX_TIM_PSC) {
++		dev_err(chip->dev, "prescaler exceeds the maximum value\n");
++		return -EINVAL;
++	}
++
++	/*
++	 * All channels share the same prescaler and counter so when two
++	 * channels are active at the same we can't change them
++	 */
++	if (active_channels(priv) & ~(1 << pwm->hwpwm * 4)) {
++		u32 psc, arr;
++
++		regmap_read(priv->regmap, TIM_PSC, &psc);
++		regmap_read(priv->regmap, TIM_ARR, &arr);
++
++		if ((psc != prescaler) || (arr != prd - 1))
++			return -EBUSY;
++	}
++
++	regmap_write(priv->regmap, TIM_PSC, prescaler);
++	regmap_write(priv->regmap, TIM_ARR, prd - 1);
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
++
++	/* Calculate the duty cycles */
++	dty = prd * duty_ns;
++	do_div(dty, period_ns);
++
++	write_ccrx(priv, pwm, dty);
++
++	/* Configure output mode */
++	shift = (pwm->hwpwm & 0x1) * CCMR_CHANNEL_SHIFT;
++	ccmr = (TIM_CCMR_PE | TIM_CCMR_M1) << shift;
++	mask = CCMR_CHANNEL_MASK << shift;
++
++	if (pwm->hwpwm < 2)
++		regmap_update_bits(priv->regmap, TIM_CCMR1, mask, ccmr);
++	else
++		regmap_update_bits(priv->regmap, TIM_CCMR2, mask, ccmr);
++
++	if (!priv->have_breakinput)
++		return 0;
++
++	bdtr = TIM_BDTR_MOE | TIM_BDTR_AOE;
++
++	if (priv->use_breakinput)
++		bdtr |= TIM_BDTR_BKE;
++
++	if (priv->breakinput_polarity)
++		bdtr |= TIM_BDTR_BKP;
++
++	regmap_update_bits(priv->regmap, TIM_BDTR,
++			   TIM_BDTR_MOE | TIM_BDTR_AOE |
++			   TIM_BDTR_BKP | TIM_BDTR_BKE,
++			   bdtr);
++
++	return 0;
++}
++
++static int stm32_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
++				  enum pwm_polarity polarity)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	mask = TIM_CCER_CC1P << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NP << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask,
++			   polarity == PWM_POLARITY_NORMAL ? 0 : mask);
++
++	return 0;
++}
++
++static int stm32_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	clk_enable(priv->clk);
++
++	/* Enable channel */
++	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask, mask);
++
++	/* Make sure that registers are updated */
++	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
++
++	/* Enable controller */
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
++
++	return 0;
++}
++
++static void stm32_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	/* Disable channel */
++	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask, 0);
++
++	/* When all channels are disabled, we can disable the controller */
++	if (!active_channels(priv))
++		regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
++
++	clk_disable(priv->clk);
++}
++
++static int stm32_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			   struct pwm_state *state)
++{
++	struct pwm_state curstate;
++	bool enabled;
++	int ret;
++
++	pwm_get_state(pwm, &curstate);
++	enabled = curstate.enabled;
++
++	if (enabled && !state->enabled) {
++		stm32_pwm_disable(chip, pwm);
++		return 0;
++	}
++
++	if (state->polarity != curstate.polarity && enabled)
++		stm32_pwm_set_polarity(chip, pwm, state->polarity);
++
++	ret = stm32_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	if (ret)
++		return ret;
++
++	if (!enabled && state->enabled)
++		ret = stm32_pwm_enable(chip, pwm);
++
++	return ret;
++}
++
++static const struct pwm_ops stm32pwm_ops = {
++	.owner = THIS_MODULE,
++	.apply = stm32_pwm_apply,
++};
++
++static bool stm32_pwm_detect_breakinput(struct regmap *regmap)
++{
++	u32 bdtr;
++
++	/*
++	 * If breakinput enable bit doesn't exist writing 1 will have no
++	 * effect so we can detect it.
++	 */
++	regmap_update_bits(regmap, TIM_BDTR, TIM_BDTR_BKE, TIM_BDTR_BKE);
++	regmap_read(regmap, TIM_BDTR, &bdtr);
++	regmap_update_bits(regmap, TIM_BDTR, TIM_BDTR_BKE, 0);
++
++	return (bdtr != 0);
++}
++
++static bool stm32_pwm_detect_complementary(struct regmap *regmap)
++{
++	u32 ccer;
++
++	/*
++	 * If complementary bit doesn't exist writing 1 will have no
++	 * effect so we can detect it.
++	 */
++	regmap_update_bits(regmap, TIM_CCER, TIM_CCER_CC1NE, TIM_CCER_CC1NE);
++	regmap_read(regmap, TIM_CCER, &ccer);
++	regmap_update_bits(regmap, TIM_CCER, TIM_CCER_CCXE, 0);
++
++	return (ccer != 0);
++}
++
++static int stm32_pwm_detect_channels(struct regmap *regmap)
++{
++	int channels = 0;
++	u32 ccer;
++
++	/*
++	 * If channels enable bits don't exist writing 1 will have no
++	 * effect so we can detect and count them.
++	 */
++	regmap_update_bits(regmap, TIM_CCER, TIM_CCER_CCXE, TIM_CCER_CCXE);
++	regmap_read(regmap, TIM_CCER, &ccer);
++	regmap_update_bits(regmap, TIM_CCER, TIM_CCER_CCXE, 0);
++
++	if (ccer & TIM_CCER_CC1E)
++		channels++;
++
++	if (ccer & TIM_CCER_CC2E)
++		channels++;
++
++	if (ccer & TIM_CCER_CC3E)
++		channels++;
++
++	if (ccer & TIM_CCER_CC4E)
++		channels++;
++
++	return channels;
++}
++
++static int stm32_pwm_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct stm32_gptimer *ddata = dev_get_drvdata(pdev->dev.parent);
++	struct stm32_pwm *priv;
++	int ret;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->regmap = ddata->regmap;
++	priv->clk = ddata->clk;
++	priv->max_arr = ddata->max_arr;
++
++	if (!priv->regmap || !priv->clk)
++		return -EINVAL;
++
++	priv->have_breakinput = stm32_pwm_detect_breakinput(priv->regmap);
++	priv->have_complementary_output =
++		stm32_pwm_detect_complementary(priv->regmap);
++	priv->npwm = stm32_pwm_detect_channels(priv->regmap);
++
++	if (!of_property_read_u32(np, "st,breakinput-polarity",
++				  &priv->breakinput_polarity))
++		priv->use_breakinput = true;
++
++	priv->chip.base = -1;
++	priv->chip.dev = dev;
++	priv->chip.ops = &stm32pwm_ops;
++	priv->chip.npwm = priv->npwm;
++
++	ret = pwmchip_add(&priv->chip);
++	if (ret < 0)
++		return ret;
++
++	platform_set_drvdata(pdev, priv);
++
++	return 0;
++}
++
++static int stm32_pwm_remove(struct platform_device *pdev)
++{
++	struct stm32_pwm *priv = platform_get_drvdata(pdev);
++	unsigned int i;
++
++	for (i = 0; i < priv->npwm; i++)
++		pwm_disable(&priv->chip.pwms[i]);
++
++	pwmchip_remove(&priv->chip);
++
++	return 0;
++}
++
++static const struct of_device_id stm32_pwm_of_match[] = {
++	{ .compatible = "st,stm32-pwm",	}
++};
++MODULE_DEVICE_TABLE(of, stm32_pwm_of_match);
++
++static struct platform_driver stm32_pwm_driver = {
++	.probe	= stm32_pwm_probe,
++	.remove	= stm32_pwm_remove,
++	.driver	= {
++		.name = "stm32-pwm",
++		.of_match_table = stm32_pwm_of_match,
++	},
++};
++module_platform_driver(stm32_pwm_driver);
++
++MODULE_ALIAS("platform: stm32-pwm");
++MODULE_DESCRIPTION("STMicroelectronics STM32 PWM driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
