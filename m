@@ -1,93 +1,236 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.megiteam.pl ([31.186.83.105]:57263 "EHLO smtp.megiteam.pl"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753572AbcLHO7N (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 8 Dec 2016 09:59:13 -0500
-From: Marcin Niestroj <m.niestroj@grinn-global.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sanchayan Maity <maitysanchayan@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Marcin Niestroj <m.niestroj@grinn-global.com>
-Subject: [PATCH v2 5/6] iio: bmi160: Fix time needed to sleep after command execution
-Date: Thu,  8 Dec 2016 15:22:58 +0100
-Message-Id: <20161208142259.26230-6-m.niestroj@grinn-global.com>
-In-Reply-To: <20161208142259.26230-1-m.niestroj@grinn-global.com>
-References: <20161208142259.26230-1-m.niestroj@grinn-global.com>
+Received: from 2.mo178.mail-out.ovh.net ([46.105.39.61]:41190 "EHLO
+        2.mo178.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753895AbcLFS4P (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 6 Dec 2016 13:56:15 -0500
+Received: from player793.ha.ovh.net (b9.ovh.net [213.186.33.59])
+        by mo178.mail-out.ovh.net (Postfix) with ESMTP id 3A471A37B
+        for <linux-iio@vger.kernel.org>; Tue,  6 Dec 2016 17:30:42 +0100 (CET)
+From: Jacopo Mondi <jacopo@jmondi.org>
+To: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+Subject: [PATCH] iio: Add Maxim MAX11100 driver
+Date: Tue,  6 Dec 2016 17:30:23 +0100
+Message-Id: <1481041823-18382-1-git-send-email-jacopo@jmondi.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Datasheet specifies typical and maximum execution times for which CMD
-register is occupied after previous command execution. We took these
-values as minimum and maximum time for usleep_range() call before making
-a new command execution.
+Add IIO driver for Maxim MAX11100 single-channel ADC.
+Support raw_read mode only.
 
-To be sure, that the CMD register is no longer occupied we need to wait
-*at least* the maximum time specified by datasheet.
-
-Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
 ---
-Patch introduced in v2
+ drivers/iio/adc/Kconfig    |   9 +++
+ drivers/iio/adc/Makefile   |   1 +
+ drivers/iio/adc/max11100.c | 165 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 175 insertions(+)
+ create mode 100644 drivers/iio/adc/max11100.c
 
- drivers/iio/imu/bmi160/bmi160_core.c | 25 ++++++-------------------
- 1 file changed, 6 insertions(+), 19 deletions(-)
-
-diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-index 095533c..88bcf3f 100644
---- a/drivers/iio/imu/bmi160/bmi160_core.c
-+++ b/drivers/iio/imu/bmi160/bmi160_core.c
-@@ -67,10 +67,8 @@
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 99c0514..e2f3340 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -285,6 +285,15 @@ config MAX1027
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called max1027.
  
- #define BMI160_REG_DUMMY		0x7F
- 
--#define BMI160_ACCEL_PMU_MIN_USLEEP	3200
--#define BMI160_ACCEL_PMU_MAX_USLEEP	3800
--#define BMI160_GYRO_PMU_MIN_USLEEP	55000
--#define BMI160_GYRO_PMU_MAX_USLEEP	80000
-+#define BMI160_ACCEL_PMU_MIN_USLEEP	3800
-+#define BMI160_GYRO_PMU_MIN_USLEEP	80000
- #define BMI160_SOFTRESET_USLEEP		1000
- 
- #define BMI160_CHANNEL(_type, _axis, _index) {			\
-@@ -153,20 +151,9 @@ static struct bmi160_regs bmi160_regs[] = {
- 	},
- };
- 
--struct bmi160_pmu_time {
--	unsigned long min;
--	unsigned long max;
--};
--
--static struct bmi160_pmu_time bmi160_pmu_time[] = {
--	[BMI160_ACCEL] = {
--		.min = BMI160_ACCEL_PMU_MIN_USLEEP,
--		.max = BMI160_ACCEL_PMU_MAX_USLEEP
--	},
--	[BMI160_GYRO] = {
--		.min = BMI160_GYRO_PMU_MIN_USLEEP,
--		.max = BMI160_GYRO_PMU_MIN_USLEEP,
--	},
-+static unsigned long bmi160_pmu_time[] = {
-+	[BMI160_ACCEL] = BMI160_ACCEL_PMU_MIN_USLEEP,
-+	[BMI160_GYRO] = BMI160_GYRO_PMU_MIN_USLEEP,
- };
- 
- struct bmi160_scale {
-@@ -293,7 +280,7 @@ int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
- 	if (ret < 0)
- 		return ret;
- 
--	usleep_range(bmi160_pmu_time[t].min, bmi160_pmu_time[t].max);
-+	usleep_range(bmi160_pmu_time[t], bmi160_pmu_time[t] + 1000);
- 
- 	return 0;
- }
++config MAX11100
++	tristate "Maxim max11100 ADC driver"
++	depends on SPI
++	help
++	  Say yes here to build support for Maxim 11100 SPI ADC
++
++	  To compile this driver as a module, choose M here: the module will be
++	  called max11100.
++
+ config MAX1363
+ 	tristate "Maxim max1363 ADC driver"
+ 	depends on I2C
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 7a40c04..1463044 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -29,6 +29,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+ obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+ obj-$(CONFIG_LTC2485) += ltc2485.o
+ obj-$(CONFIG_MAX1027) += max1027.o
++obj-$(CONFIG_MAX11100) += max11100.o
+ obj-$(CONFIG_MAX1363) += max1363.o
+ obj-$(CONFIG_MCP320X) += mcp320x.o
+ obj-$(CONFIG_MCP3422) += mcp3422.o
+diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+new file mode 100644
+index 0000000..fbce287
+--- /dev/null
++++ b/drivers/iio/adc/max11100.c
+@@ -0,0 +1,165 @@
++/*
++ * iio/adc/max11100.c
++ * Maxim MAX11100 ADC Driver with IIO interface
++ *
++ * Copyright (C) 2016 Renesas Electronics Corporation
++ * Copyright (C) 2016 Jacopo Mondi
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/spi/spi.h>
++#include <linux/delay.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/buffer.h>
++
++struct max11100_state {
++	const struct max11100_chip_desc *desc;
++	struct spi_device *spi;
++	struct mutex lock;
++};
++
++static struct iio_chan_spec max11100_channels[] = {
++	{ /* [0] */
++		.type = IIO_VOLTAGE,
++		.channel = 0,
++		.address = 0,
++		.scan_index = 0,
++		.scan_type = {
++			.sign = 'u',
++			.realbits = 16,
++			.storagebits = 24,
++			.shift = 8,
++			.repeat = 1,
++			.endianness = IIO_BE,
++		},
++		.output = 1,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	},
++};
++
++static const unsigned long max11100_scan_masks[] = {
++	0xffff,
++};
++
++static struct max11100_chip_desc {
++	uint32_t num_chan;
++	const unsigned long *scanmasks;
++	const struct iio_chan_spec *channels;
++} max11100_desc = {
++	.num_chan = 1,
++	.scanmasks = max11100_scan_masks,
++	.channels = max11100_channels,
++};
++
++static int max11100_read_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	int ret;
++	struct max11100_state *state = iio_priv(indio_dev);
++	uint8_t buffer[3] = { 0, 0, 0 };
++
++	mutex_lock(&state->lock);
++
++	ret = spi_read(state->spi, (void *) buffer, 3);
++	if (ret) {
++		dev_err(&indio_dev->dev, "SPI transfer failed\n");
++		return ret;
++	}
++
++	dev_dbg(&indio_dev->dev, "ADC output values: "	\
++		"[0]: 0x%2x [1]: 0x%2x [2]: 0x%2x\n",
++		buffer[0], buffer[1], buffer[2]);
++
++	/* the first 8 bits sent out from ADC must be 0s */
++	if (buffer[0]) {
++		dev_err(&indio_dev->dev, "Invalid value: buffer[0] != 0\n");
++		return -EINVAL;
++	}
++
++	*val = (buffer[1] << 8) | buffer[2];
++	mutex_unlock(&state->lock);
++
++	return 0;
++}
++
++static const struct iio_info max11100_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = max11100_read_raw,
++};
++
++static int max11100_probe(struct spi_device *spi)
++{
++	int ret;
++	struct iio_dev *indio_dev;
++	struct max11100_state *state;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
++	if (!indio_dev) {
++		pr_err("Can't allocate iio device\n");
++		return -ENOMEM;
++	}
++	dev_dbg(&indio_dev->dev, "probe max11100 IIO SPI\n");
++
++	spi_set_drvdata(spi, indio_dev);
++
++	state = iio_priv(indio_dev);
++	state->spi = spi;
++	state->desc = &max11100_desc;
++
++	mutex_init(&state->lock);
++
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->dev.of_node = spi->dev.of_node;
++	indio_dev->info = &max11100_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = state->desc->channels;
++	indio_dev->num_channels = state->desc->num_chan;
++	indio_dev->available_scan_masks = state->desc->scanmasks;
++
++	ret = iio_device_register(indio_dev);
++	if (ret) {
++		dev_err(&indio_dev->dev, "Failed to register iio device\n");
++		return ret;
++	}
++
++	return 0;
++}
++
++static int max11100_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++
++	dev_dbg(&indio_dev->dev, "remove max11100 IIO SPI\n");
++
++	iio_device_unregister(indio_dev);
++
++	return 0;
++}
++
++static const struct of_device_id max11100_ids[] = {
++	{.compatible = "maxim,max11100"},
++	{ },
++};
++MODULE_DEVICE_TABLE(of, max11100_ids);
++
++static struct spi_driver max11100_driver = {
++	.driver = {
++		.name	= "max11100",
++		.owner	= THIS_MODULE,
++		.of_match_table = of_match_ptr(max11100_ids),
++	},
++	.probe		= max11100_probe,
++	.remove		= max11100_remove,
++};
++
++module_spi_driver(max11100_driver);
++
++MODULE_AUTHOR("Jacopo Mondi <jacopo@jmondi.org>");
++MODULE_DESCRIPTION("Maxim MAX11100 ADC Driver");
++MODULE_LICENSE("GPL v2");
 -- 
-2.10.2
+2.7.4
 
