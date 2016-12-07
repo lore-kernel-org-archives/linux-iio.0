@@ -1,80 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f172.google.com ([209.85.210.172]:34596 "EHLO
-        mail-wj0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932360AbcLHM36 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2016 07:29:58 -0500
-Received: by mail-wj0-f172.google.com with SMTP id tg4so131923626wjb.1
-        for <linux-iio@vger.kernel.org>; Thu, 08 Dec 2016 04:29:57 -0800 (PST)
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v5 5/7] IIO: add bindings for STM32 timer trigger driver
-Date: Thu,  8 Dec 2016 13:20:48 +0100
-Message-Id: <1481199650-22484-6-git-send-email-benjamin.gaignard@st.com>
-In-Reply-To: <1481199650-22484-1-git-send-email-benjamin.gaignard@st.com>
-References: <1481199650-22484-1-git-send-email-benjamin.gaignard@st.com>
+Received: from mail-wm0-f43.google.com ([74.125.82.43]:35001 "EHLO
+        mail-wm0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751654AbcLGNt0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2016 08:49:26 -0500
+Received: by mail-wm0-f43.google.com with SMTP id a197so168726710wmd.0
+        for <linux-iio@vger.kernel.org>; Wed, 07 Dec 2016 05:49:25 -0800 (PST)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        devicetree@vger.kernel.org,
+        Capella Microsystems <capellamicro@gmail.com>,
+        Kevin Tsai <ktsai@capellamicro.com>
+Subject: [PATCH 1/2] iio: light: add DT bindings for Capella CM3605
+Date: Wed,  7 Dec 2016 14:49:18 +0100
+Message-Id: <1481118558-8016-1-git-send-email-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Define bindings for STM32 timer trigger
+This adds device tree bindings for the Capella Microsystems CM3605
+ambient light sensor and short range proximity sensor.
 
-version 4:
-- remove triggers enumeration from DT
-- add reg parameter
-
-version 3:
-- change file name
-- add cross reference with mfd bindings
-
-version 2:
-- only keep one compatible
-- add DT parameters to set lists of the triggers:
-  one list describe the triggers created by the device
-  another one give the triggers accepted by the device
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+Cc: devicetree@vger.kernel.org
+Cc: Capella Microsystems <capellamicro@gmail.com>
+Cc: Kevin Tsai <ktsai@capellamicro.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
- .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
- 1 file changed, 23 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+ .../devicetree/bindings/iio/light/cm3605.txt       | 41 ++++++++++++++++++++++
+ 1 file changed, 41 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/cm3605.txt
 
-diff --git a/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+diff --git a/Documentation/devicetree/bindings/iio/light/cm3605.txt b/Documentation/devicetree/bindings/iio/light/cm3605.txt
 new file mode 100644
-index 0000000..8c483e4
+index 000000000000..f0152559bdb9
 --- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
-@@ -0,0 +1,23 @@
-+STMicroelectronics STM32 General Purpose Timer IIO timer bindings
++++ b/Documentation/devicetree/bindings/iio/light/cm3605.txt
+@@ -0,0 +1,41 @@
++Capella Microsystems CM3605
++Ambient Light and Short Distance Proximity Sensor
 +
-+Must be a sub-node of an STM32 General Purpose Timer device tree node.
-+See ../mfd/stm32-general-purpose-timer.txt for details about the parent node.
++The CM3605 is an entirely analog part which however require quite a bit of
++software logic to interface a host operating system.
 +
-+Required parameters:
-+- compatible:	Must be "st,stm32-timer-trigger".
-+- reg:		Define triggers configuration of the hardware IP.
++This ALS and proximity sensor was one of the very first deployed in mobile
++handsets, notably it is used in the very first Nexus One Android phone from
++2010.
++
++Required properties:
++- compatible: must be: "capella,cm3605"
++- aset-gpios: GPIO line controlling the ASET line (drive low
++  to activate the ALS, should be flagged GPIO_ACTIVE_LOW)
++- interrupts: the IRQ line (such as a GPIO) that is connected to
++  the POUT (proximity sensor out) line. The edge detection must
++  be set to IRQ_TYPE_EDGE_BOTH so as to detect movements toward
++  and away from the proximity sensor.
++- io-channels: the ADC channel used for converting the voltage from
++  AOUT to a digital representation.
++- io-channel-names: must be "aout"
++
++Optional properties:
++- vdd-supply: regulator supplying VDD power to the component.
++- capella,aset-resistance: the sensitivity calibration resistance,
++  in Ohms. Valid values are: 50000, 100000, 300000 and 600000,
++  as these are the resistance values that we are supplied with
++  calibration curves for. If not supplied, 100 kOhm will be assumed
++  but it is strongly recommended to supply this.
 +
 +Example:
-+	timers@40010000 {
-+		#address-cells = <1>;
-+		#size-cells = <0>;
-+		compatible = "st,stm32-gptimer";
-+		reg = <0x40010000 0x400>;
-+		clocks = <&rcc 0 160>;
-+		clock-names = "clk_int";
 +
-+		timer@0 {
-+			compatible = "st,stm32-timer-trigger";
-+			reg = <0>;
-+		};
-+	};
++cm3605 {
++	compatible = "capella,cm3605";
++	vdd-supply = <&foo_reg>;
++	aset-gpios = <&foo_gpio 1 GPIO_ACTIVE_LOW>;
++	capella,aset-resistance = <100000>; // Ohms
++	interrupts = <1 IRQ_TYPE_EDGE_BOTH>;
++	io-channels = <&adc 0x01>;
++	io-channel-names = "aout";
++};
 -- 
-1.9.1
+2.7.4
 
