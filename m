@@ -1,66 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:48686 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753296AbcLFLZ7 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 6 Dec 2016 06:25:59 -0500
-Date: Tue, 6 Dec 2016 12:25:49 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Thierry Escande <thierry.escande@collabora.com>
-cc: Jonathan Cameron <jic23@kernel.org>,
-        Gwendal Grignou <gwendal@chromium.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH 2/3] iio: core: Add double tap as possible gesture
-In-Reply-To: <1480929198-13671-3-git-send-email-thierry.escande@collabora.com>
-Message-ID: <alpine.DEB.2.02.1612061223550.29508@pmeerw.net>
-References: <1480929198-13671-1-git-send-email-thierry.escande@collabora.com> <1480929198-13671-3-git-send-email-thierry.escande@collabora.com>
+Return-Path: <SRS0=5DSi=XW=gmail.com=geert.uytterhoeven@kernel.org>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Sender: geert.uytterhoeven@gmail.com
+In-Reply-To: <alpine.DEB.2.02.1612062143480.10644@pmeerw.net>
+References: <1481041823-18382-1-git-send-email-jacopo@jmondi.org> <alpine.DEB.2.02.1612062143480.10644@pmeerw.net>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Wed, 7 Dec 2016 09:15:31 +0100
+Message-ID: <CAMuHMdXfUiN5m7F7oJzZOwPXQgEe0oE22wO_jsNgj7h_hg09UA@mail.gmail.com>
+Subject: Re: [PATCH] iio: Add Maxim MAX11100 driver
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: Jacopo Mondi <jacopo@jmondi.org>, Wolfram Sang <wsa+renesas@sang-engineering.com>,
+	Magnus Damm <magnus.damm@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org,
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
+On Tue, Dec 6, 2016 at 10:00 PM, Peter Meerwald-Stadler
+<pmeerw@pmeerw.net> wrote:
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
 
-> This adds the IIO_MOD_DOUBLE_TAP entry to the iio_modifier enum and the
-> corresponding "double_tap" string to the iio_modifier_names array.
+>> +static int max11100_read_raw(struct iio_dev *indio_dev,
+>> +                          struct iio_chan_spec const *chan,
+>> +                          int *val, int *val2, long mask)
+>> +{
+>> +     int ret;
+>> +     struct max11100_state *state = iio_priv(indio_dev);
+>> +     uint8_t buffer[3] = { 0, 0, 0 };
 
-I don't think we should have gestures as channel modifiers
+>> +     ret = spi_read(state->spi, (void *) buffer, 3);
 
-probably a middle layer between IIO and input subsystem is needed (could 
-be in userspace?)
- 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Thierry Escande <thierry.escande@collabora.com>
-> ---
->  drivers/iio/industrialio-core.c | 1 +
->  include/uapi/linux/iio/types.h  | 1 +
->  2 files changed, 2 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-> index fc340ed..82ce05f 100644
-> --- a/drivers/iio/industrialio-core.c
-> +++ b/drivers/iio/industrialio-core.c
-> @@ -120,6 +120,7 @@ static const char * const iio_modifier_names[] = {
->  	[IIO_MOD_Q] = "q",
->  	[IIO_MOD_CO2] = "co2",
->  	[IIO_MOD_VOC] = "voc",
-> +	[IIO_MOD_DOUBLE_TAP] = "double_tap",
->  };
->  
->  /* relies on pairs of these shared then separate */
-> diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
-> index 22e5e58..47d2768 100644
-> --- a/include/uapi/linux/iio/types.h
-> +++ b/include/uapi/linux/iio/types.h
-> @@ -80,6 +80,7 @@ enum iio_modifier {
->  	IIO_MOD_CO2,
->  	IIO_MOD_VOC,
->  	IIO_MOD_LIGHT_UV,
-> +	IIO_MOD_DOUBLE_TAP,
->  };
->  
->  enum iio_event_type {
-> 
+Cast not needed.
 
--- 
+>> +static int max11100_probe(struct spi_device *spi)
+>> +{
+>> +     int ret;
+>> +     struct iio_dev *indio_dev;
+>> +     struct max11100_state *state;
+>> +
+>> +     indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+>> +     if (!indio_dev) {
+>> +             pr_err("Can't allocate iio device\n");
+>
+> error message really needed?
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+No, OOM will scream anyway.
+
+>
+>> +             return -ENOMEM;
+>> +     }
+
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
