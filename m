@@ -1,194 +1,191 @@
-Return-Path: <SRS0=WIgL=XW=intel.com=hongyan.song@kernel.org>
-From: Song Hongyan <hongyan.song@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org,
-	jikos@kernel.org,
-	srinivas.pandruvada@intel.com,
-	Song Hongyan <hongyan.song@intel.com>
-Subject: [RFC PATCH 2/2] iio: Add gravity sensor support
-Date: Wed,  7 Dec 2016 18:14:35 +0800
-Message-Id: <1481105675-27431-2-git-send-email-hongyan.song@intel.com>
-In-Reply-To: <1481105675-27431-1-git-send-email-hongyan.song@intel.com>
-References: <1481105675-27431-1-git-send-email-hongyan.song@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f181.google.com ([209.85.220.181]:36658 "EHLO
+        mail-qk0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751962AbcLGLAp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2016 06:00:45 -0500
+Received: by mail-qk0-f181.google.com with SMTP id n21so409543753qka.3
+        for <linux-iio@vger.kernel.org>; Wed, 07 Dec 2016 03:00:22 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <20161207105002.GA3625@dell.home>
+References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
+ <1481027929-13704-7-git-send-email-benjamin.gaignard@st.com>
+ <20161206131635.GJ25385@dell.home> <CA+M3ks6fxCucmaY0OgpMb_opA=YLrowijJ0YQ+imeprhWg6N_w@mail.gmail.com>
+ <20161207105002.GA3625@dell.home>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Date: Wed, 7 Dec 2016 12:00:21 +0100
+Message-ID: <CA+M3ks4VbV6z6t7aORKGmduZfFF+Ls7Sq8umWRFyo3sn8WZt7g@mail.gmail.com>
+Subject: Re: [PATCH v4 6/7] IIO: add STM32 timer trigger driver
+To: Lee Jones <lee.jones@linaro.org>
+Cc: robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Gravity sensor and accelerometer have similar channels and
-share channel usage ids. So the most of the code for accel_3d
-can be reused.
+2016-12-07 11:50 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
+> On Tue, 06 Dec 2016, Benjamin Gaignard wrote:
+>
+>> [snip]
+>> >> +
+>> >> +static const char * const triggers0[] =3D {
+>> >> +     TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers1[] =3D {
+>> >> +     TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers2[] =3D {
+>> >> +     TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers3[] =3D {
+>> >> +     TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers4[] =3D {
+>> >> +     TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers5[] =3D {
+>> >> +     TIM6_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers6[] =3D {
+>> >> +     TIM7_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers7[] =3D {
+>> >> +     TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers8[] =3D {
+>> >> +     TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const triggers9[] =3D {
+>> >> +     TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,
+>> >> +};
+>> >> +
+>> >> +static const void *triggers_table[] =3D {
+>> >> +     triggers0,
+>> >> +     triggers1,
+>> >> +     triggers2,
+>> >> +     triggers3,
+>> >> +     triggers4,
+>> >> +     triggers5,
+>> >> +     triggers6,
+>> >> +     triggers7,
+>> >> +     triggers8,
+>> >> +     triggers9,
+>> >> +};
+>> >
+>> > What about:
+>> >
+>> > static const char * const triggers[][] =3D {
+>> >         { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL },
+>> >         { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL },
+>> >         { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL },
+>> >         { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL },
+>> >         { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL },
+>> >         { TIM6_TRGO, NULL },
+>> >         { TIM7_TRGO, NULL },
+>> >         { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL },
+>> >         { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL },
+>> >         { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL }
+>> > };
+>>
+>> I can't because the second dimension of the array isn't fix.
+>> I could have between 2 and 6 elements per row... to create a dual dimens=
+ion
+>> array I would have to add NULL entries like that:
+>>
+>> #define MAX_TRIGGERS 6
+>>
+>> static const void *triggers_table[][MAX_TRIGGERS] =3D {
+>> { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,},
+>> { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,},
+>> { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,},
+>> { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,},
+>> { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,},
+>> { TIM6_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
+>> { TIM7_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
+>> { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,},
+>> { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,     NULL,     NULL,},
+>> { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,  NULL,     NULL,},
+>> };
+>
+> It was just an idea, not a tested implementation.
+>
+> I don't understand why you have to pad with NULLs, but either way, it
+> looks much better than before and saves lots of lines of code.
 
-Signed-off-by: Song Hongyan <hongyan.song@intel.com>
----
- drivers/iio/accel/hid-sensor-accel-3d.c | 74 +++++++++++++++++++++++++++------
- include/linux/hid-sensor-ids.h          |  3 ++
- 2 files changed, 64 insertions(+), 13 deletions(-)
+I have tested it this morning and it works fine so I will include it in v5.
+I use NULL as limit when iterate in the table and for table padding too.
 
-diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
-index ab1e238..9edd574 100644
---- a/drivers/iio/accel/hid-sensor-accel-3d.c
-+++ b/drivers/iio/accel/hid-sensor-accel-3d.c
-@@ -90,6 +90,41 @@ struct accel_3d_state {
- 	}
- };
- 
-+/* Channel definitions */
-+static const struct iio_chan_spec gravity_channels[] = {
-+	{
-+		.type = IIO_GRAVITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_X,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_index = CHANNEL_SCAN_INDEX_X,
-+	}, {
-+		.type = IIO_GRAVITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Y,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_index = CHANNEL_SCAN_INDEX_Y,
-+	}, {
-+		.type = IIO_GRAVITY,
-+		.modified = 1,
-+		.channel2 = IIO_MOD_Z,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_index = CHANNEL_SCAN_INDEX_Z,
-+	}
-+};
-+
- /* Adjust channel real bits based on report descriptor */
- static void accel_3d_adjust_channel_bit_mask(struct iio_chan_spec *channels,
- 						int channel, int size)
-@@ -111,6 +146,8 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
- 	int report_id = -1;
- 	u32 address;
- 	int ret_type;
-+	struct hid_sensor_hub_device *hsdev =
-+					accel_state->common_attributes.hsdev;
- 
- 	*val = 0;
- 	*val2 = 0;
-@@ -122,8 +159,7 @@ static int accel_3d_read_raw(struct iio_dev *indio_dev,
- 		if (report_id >= 0)
- 			*val = sensor_hub_input_attr_get_raw_value(
- 					accel_state->common_attributes.hsdev,
--					HID_USAGE_SENSOR_ACCEL_3D, address,
--					report_id,
-+					hsdev->usage, address, report_id,
- 					SENSOR_HUB_SYNC);
- 		else {
- 			*val = 0;
-@@ -272,7 +308,7 @@ static int accel_3d_parse_report(struct platform_device *pdev,
- 			st->accel[2].index, st->accel[2].report_id);
- 
- 	st->scale_precision = hid_sensor_format_scale(
--				HID_USAGE_SENSOR_ACCEL_3D,
-+				hsdev->usage,
- 				&st->accel[CHANNEL_SCAN_INDEX_X],
- 				&st->scale_pre_decml, &st->scale_post_decml);
- 
-@@ -295,9 +331,12 @@ static int accel_3d_parse_report(struct platform_device *pdev,
- static int hid_accel_3d_probe(struct platform_device *pdev)
- {
- 	int ret = 0;
--	static const char *name = "accel_3d";
-+	static const char *name;
- 	struct iio_dev *indio_dev;
- 	struct accel_3d_state *accel_state;
-+	const struct iio_chan_spec *channel_spec;
-+	int channel_size;
-+
- 	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
- 
- 	indio_dev = devm_iio_device_alloc(&pdev->dev,
-@@ -311,24 +350,30 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 	accel_state->common_attributes.hsdev = hsdev;
- 	accel_state->common_attributes.pdev = pdev;
- 
--	ret = hid_sensor_parse_common_attributes(hsdev,
--					HID_USAGE_SENSOR_ACCEL_3D,
-+	if (hsdev->usage == HID_USAGE_SENSOR_ACCEL_3D) {
-+		name = "accel_3d";
-+		channel_spec = accel_3d_channels;
-+		channel_size = sizeof(accel_3d_channels);
-+	} else {
-+		name = "gravity";
-+		channel_spec = gravity_channels;
-+		channel_size = sizeof(gravity_channels);
-+	}
-+	ret = hid_sensor_parse_common_attributes(hsdev, hsdev->usage,
- 					&accel_state->common_attributes);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup common attributes\n");
- 		return ret;
- 	}
-+	indio_dev->channels = kmemdup(channel_spec, channel_size, GFP_KERNEL);
- 
--	indio_dev->channels = kmemdup(accel_3d_channels,
--				      sizeof(accel_3d_channels), GFP_KERNEL);
- 	if (!indio_dev->channels) {
- 		dev_err(&pdev->dev, "failed to duplicate channels\n");
- 		return -ENOMEM;
- 	}
--
- 	ret = accel_3d_parse_report(pdev, hsdev,
--				    (struct iio_chan_spec *)indio_dev->channels,
--				    HID_USAGE_SENSOR_ACCEL_3D, accel_state);
-+				(struct iio_chan_spec *)indio_dev->channels,
-+				hsdev->usage, accel_state);
- 	if (ret) {
- 		dev_err(&pdev->dev, "failed to setup attributes\n");
- 		goto error_free_dev_mem;
-@@ -363,7 +408,7 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
- 	accel_state->callbacks.send_event = accel_3d_proc_event;
- 	accel_state->callbacks.capture_sample = accel_3d_capture_sample;
- 	accel_state->callbacks.pdev = pdev;
--	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_ACCEL_3D,
-+	ret = sensor_hub_register_callback(hsdev, hsdev->usage,
- 					&accel_state->callbacks);
- 	if (ret < 0) {
- 		dev_err(&pdev->dev, "callback reg failed\n");
-@@ -390,7 +435,7 @@ static int hid_accel_3d_remove(struct platform_device *pdev)
- 	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
- 	struct accel_3d_state *accel_state = iio_priv(indio_dev);
- 
--	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_ACCEL_3D);
-+	sensor_hub_remove_callback(hsdev, hsdev->usage);
- 	iio_device_unregister(indio_dev);
- 	hid_sensor_remove_trigger(&accel_state->common_attributes);
- 	iio_triggered_buffer_cleanup(indio_dev);
-@@ -404,6 +449,9 @@ static int hid_accel_3d_remove(struct platform_device *pdev)
- 		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
- 		.name = "HID-SENSOR-200073",
- 	},
-+	{	/* gravity sensor */
-+		.name = "HID-SENSOR-20007b",
-+	},
- 	{ /* sentinel */ }
- };
- MODULE_DEVICE_TABLE(platform, hid_accel_3d_ids);
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-index f2ee90a..b6778fd2 100644
---- a/include/linux/hid-sensor-ids.h
-+++ b/include/linux/hid-sensor-ids.h
-@@ -52,6 +52,9 @@
- #define HID_USAGE_SENSOR_ANGL_VELOCITY_Y_AXIS			0x200458
- #define HID_USAGE_SENSOR_ANGL_VELOCITY_Z_AXIS			0x200459
- 
-+/* Gravity vector */
-+#define HID_USAGE_SENSOR_GRAVITY_VECTOR				0x20007B
-+
- /* ORIENTATION: Compass 3D: (200083) */
- #define HID_USAGE_SENSOR_COMPASS_3D				0x200083
- #define HID_USAGE_SENSOR_DATA_ORIENTATION			0x200470
--- 
-1.9.1
+>
+>> >> +static const char * const valids0[] =3D {
+>> >> +     TIM5_TRGO, TIM2_TRGO, TIM4_TRGO, TIM3_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const valids1[] =3D {
+>> >> +     TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const valids2[] =3D {
+>> >> +     TIM1_TRGO, TIM8_TRGO, TIM5_TRGO, TIM4_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const valids3[] =3D {
+>> >> +     TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char *const valids4[] =3D {
+>> >> +     TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const valids7[] =3D {
+>> >> +     TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const valids8[] =3D {
+>> >> +     TIM2_TRGO, TIM3_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const char * const valids9[] =3D {
+>> >> +     TIM4_TRGO, TIM5_TRGO, NULL,
+>> >> +};
+>> >> +
+>> >> +static const void *valids_table[] =3D {
+>> >> +     valids0,
+>> >> +     valids1,
+>> >> +     valids2,
+>> >> +     valids3,
+>> >> +     valids4,
+>> >> +     NULL,
+>> >> +     NULL,
+>> >> +     valids7,
+>> >> +     valids8,
+>> >> +     valids9,
+>> >> +};
+>> >
+>> > Same here.
+>> >
+>
+> --
+> Lee Jones
+> Linaro STMicroelectronics Landing Team Lead
+> Linaro.org =E2=94=82 Open source software for ARM SoCs
+> Follow Linaro: Facebook | Twitter | Blog
