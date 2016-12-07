@@ -1,325 +1,329 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from da1vs01.rockwellcollins.com ([205.175.227.27]:9978 "EHLO
-        da1vs01.rockwellcollins.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S932568AbcLGSxb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 7 Dec 2016 13:53:31 -0500
-From: Matt Weber <matthew.weber@rockwellcollins.com>
-To: linux-iio@vger.kernel.org
-Cc: jic23@kernel.org, cristina.moraru09@gmail.com,
-        Matt Weber <matthew.weber@rockwellcollins.com>,
-        Maury Anderson <maury.anderson@rockwellcollins.com>
-Subject: [PATCH] iio: max5481: Add support for Maxim digital potentiometers
-Date: Wed,  7 Dec 2016 12:40:52 -0600
-Message-Id: <1481136052-1660-1-git-send-email-matthew.weber@rockwellcollins.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=CWCI=XW=jmondi.org=jacopo@kernel.org>
+Subject: Re: [PATCH] iio: Add Maxim MAX11100 driver
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1481041823-18382-1-git-send-email-jacopo@jmondi.org>
+ <alpine.DEB.2.02.1612062143480.10644@pmeerw.net>
+Cc: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+ jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+ linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+From: "jacopo@jmondi.org" <jacopo@jmondi.org>
+Message-ID: <adc93632-e487-0251-1d27-a56e9215e9f6@jmondi.org>
+Date: Wed, 7 Dec 2016 09:29:16 +0100
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.02.1612062143480.10644@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Add implementation for Maxim Integrated 5481, 5482, 5483,
-and 5484 digital potentiometer devices.
+Hi Peter,
+    thanks for review
 
-Datasheet:
-http://datasheets.maximintegrated.com/en/ds/MAX5481-MAX5484.pdf
+On 06/12/2016 22:00, Peter Meerwald-Stadler wrote:
+> On Tue, 6 Dec 2016, Jacopo Mondi wrote:
+>
+>> Add IIO driver for Maxim MAX11100 single-channel ADC.
+>> Support raw_read mode only.
+>
+> comments below; very minimal driver, but several easy issues...
+>
+> the read_raw() is supposed to return millivolts (after application of
+> offset and scale); maybe need _SCALE?
 
-Signed-off-by: Maury Anderson <maury.anderson@rockwellcollins.com>
-Signed-off-by: Matthew Weber <matthew.weber@rockwellcollins.com>
----
+How can I return millivolts here? They vary in function of the supplied 
+Vref as ( V = val * Vref / (2 ^ 16 - 1)) where "val" is digital value 
+output by the ADC.
+Since Vref can range from 3.8V to 5.25V, while it's typically 4.096V, 
+isn't it more appropriate to let userspace perform conversion to 
+millivolts, as it knows what Vref value is supplied to the ADC?
 
-This patch is a proposed implementation which compiles and
-is based on the 5487 part.  The integration of the component
-was cancelled but we wanted to still share this work hoping
-that others might pick it up.
+>
+>> Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
+>> ---
+>>  drivers/iio/adc/Kconfig    |   9 +++
+>>  drivers/iio/adc/Makefile   |   1 +
+>>  drivers/iio/adc/max11100.c | 165 +++++++++++++++++++++++++++++++++++++++++++++
+>>  3 files changed, 175 insertions(+)
+>>  create mode 100644 drivers/iio/adc/max11100.c
+>>
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 99c0514..e2f3340 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -285,6 +285,15 @@ config MAX1027
+>>  	  To compile this driver as a module, choose M here: the module will be
+>>  	  called max1027.
+>>
+>> +config MAX11100
+>> +	tristate "Maxim max11100 ADC driver"
+>> +	depends on SPI
+>> +	help
+>> +	  Say yes here to build support for Maxim 11100 SPI ADC
+>
+> Maxim max11100
+>
+>> +
+>> +	  To compile this driver as a module, choose M here: the module will be
+>> +	  called max11100.
+>> +
+>>  config MAX1363
+>>  	tristate "Maxim max1363 ADC driver"
+>>  	depends on I2C
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 7a40c04..1463044 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -29,6 +29,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>>  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+>>  obj-$(CONFIG_LTC2485) += ltc2485.o
+>>  obj-$(CONFIG_MAX1027) += max1027.o
+>> +obj-$(CONFIG_MAX11100) += max11100.o
+>>  obj-$(CONFIG_MAX1363) += max1363.o
+>>  obj-$(CONFIG_MCP320X) += mcp320x.o
+>>  obj-$(CONFIG_MCP3422) += mcp3422.o
+>> diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+>> new file mode 100644
+>> index 0000000..fbce287
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/max11100.c
+>> @@ -0,0 +1,165 @@
+>> +/*
+>> + * iio/adc/max11100.c
+>> + * Maxim MAX11100 ADC Driver with IIO interface
+>
+> MAX11100 or max11100
+>
+>> + *
+>> + * Copyright (C) 2016 Renesas Electronics Corporation
+>> + * Copyright (C) 2016 Jacopo Mondi
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + */
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/spi/spi.h>
+>> +#include <linux/delay.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +
+>> +struct max11100_state {
+>> +	const struct max11100_chip_desc *desc;
+>> +	struct spi_device *spi;
+>> +	struct mutex lock;
+>> +};
+>> +
+>> +static struct iio_chan_spec max11100_channels[] = {
+>> +	{ /* [0] */
+>> +		.type = IIO_VOLTAGE,
+>> +		.channel = 0,
+>
+> not indexed, so channel = 0 not needed
+>
+>> +		.address = 0,
+>
+> address not needed (and no need to initialize to 0 anyway)
+>
+>> +		.scan_index = 0,
+>
+> scan_index and scan_type not needed since no buffered support (yet); add
+> this when needed
+>
+>> +		.scan_type = {
+>> +			.sign = 'u',
+>> +			.realbits = 16,
+>> +			.storagebits = 24,
+>> +			.shift = 8,
+>> +			.repeat = 1,
+>> +			.endianness = IIO_BE,
+>> +		},
+>> +		.output = 1,
+>
+> no, ADC is typically not an output channel
+>
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +	},
+>> +};
+>> +
+>> +static const unsigned long max11100_scan_masks[] = {
+>
+> scan_masks not needed since no buffered support
+>
+>> +	0xffff,
+>> +};
+>> +
+>> +static struct max11100_chip_desc {
+>> +	uint32_t num_chan;
+>
+> why not just unsigned?
+>
+>> +	const unsigned long *scanmasks;
+>
+> not needed (yet)
+>
+>> +	const struct iio_chan_spec *channels;
+>> +} max11100_desc = {
+>> +	.num_chan = 1,
+>
+> ARRAY_SIZE(max11100_channels)
+>
+>> +	.scanmasks = max11100_scan_masks,
+>> +	.channels = max11100_channels,
+>> +};
+>> +
+>> +static int max11100_read_raw(struct iio_dev *indio_dev,
+>> +			     struct iio_chan_spec const *chan,
+>> +			     int *val, int *val2, long mask)
+>> +{
+>> +	int ret;
+>> +	struct max11100_state *state = iio_priv(indio_dev);
+>> +	uint8_t buffer[3] = { 0, 0, 0 };
+>
+> no need to initialize buffer; consider alignment requirements for SPI
+>
+>> +
+>> +	mutex_lock(&state->lock);
+>
+> what is the mutex protecting?
+> must the spi_read() by protected? then the unlock can be placed right
+> after the call...
+>
+>> +
+>> +	ret = spi_read(state->spi, (void *) buffer, 3);
+>
+> sizeof(buffer)
+>
+>> +	if (ret) {
+>> +		dev_err(&indio_dev->dev, "SPI transfer failed\n");
+>
+> mutex_unlock()!?
+>
+>> +		return ret;
+>> +	}
+>> +
+>> +	dev_dbg(&indio_dev->dev, "ADC output values: "	\
+>> +		"[0]: 0x%2x [1]: 0x%2x [2]: 0x%2x\n",
+>
+> probably 0x%02x if really needed
+>
+>> +		buffer[0], buffer[1], buffer[2]);
+>> +
+>> +	/* the first 8 bits sent out from ADC must be 0s */
+>> +	if (buffer[0]) {
+>> +		dev_err(&indio_dev->dev, "Invalid value: buffer[0] != 0\n");
+>
+> mutex_unlock()!?
 
----
- .../bindings/iio/potentiometer/max5481.txt         |  23 +++
- drivers/iio/potentiometer/Kconfig                  |  12 ++
- drivers/iio/potentiometer/Makefile                 |   1 +
- drivers/iio/potentiometer/max5481.c                | 212 +++++++++++++++++++++
- 4 files changed, 248 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
- create mode 100644 drivers/iio/potentiometer/max5481.c
+This is embarrassing. It got lost during last rebase, sorry about that.
 
-diff --git a/Documentation/devicetree/bindings/iio/potentiometer/max5481.txt b/Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
-new file mode 100644
-index 0000000..3bc59b4
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
-@@ -0,0 +1,23 @@
-+* Maxim Linear-Taper Digital Potentiometer MAX5481-MAX5484
-+
-+The node for this driver must be a child node of a SPI controller, hence
-+all mandatory properties described in
-+
-+        Documentation/devicetree/bindings/spi/spi-bus.txt
-+
-+must be specified.
-+
-+Required properties:
-+	- compatible:  	Must be one of the following, depending on the
-+			model:
-+			"maxim,max5481"
-+			"maxim,max5482"
-+			"maxim,max5483"
-+			"maxim,max5484"
-+
-+Example:
-+max548x: max548x@0 {
-+	compatible = "maxim,max5482";
-+	spi-max-frequency = <7000000``>;
-+	reg = <0>; /* chip-select */
-+};
-diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-index 2e9da1c..872b25b 100644
---- a/drivers/iio/potentiometer/Kconfig
-+++ b/drivers/iio/potentiometer/Kconfig
-@@ -15,6 +15,18 @@ config DS1803
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called ds1803.
- 
-+config MAX5481
-+        tristate "Maxim MAX5481-MAX5484 Digital Potentiometer driver"
-+        depends on SPI
-+        help
-+          Say yes here to build support for the Maxim
-+          MAX5481, MAX5482, MAX5483, MAX5484 digital potentiometer
-+          chips.
-+
-+          To compile this driver as a module, choose M here: the
-+          module will be called max5481.
-+
-+c
- config MAX5487
-         tristate "Maxim MAX5487/MAX5488/MAX5489 Digital Potentiometer driver"
-         depends on SPI
-diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-index 8adb58f..2260d40 100644
---- a/drivers/iio/potentiometer/Makefile
-+++ b/drivers/iio/potentiometer/Makefile
-@@ -4,6 +4,7 @@
- 
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_DS1803) += ds1803.o
-+obj-$(CONFIG_MAX5481) += max5481.o
- obj-$(CONFIG_MAX5487) += max5487.o
- obj-$(CONFIG_MCP4131) += mcp4131.o
- obj-$(CONFIG_MCP4531) += mcp4531.o
-diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
-new file mode 100644
-index 0000000..f3feefc
---- /dev/null
-+++ b/drivers/iio/potentiometer/max5481.c
-@@ -0,0 +1,212 @@
-+/*
-+ * Maxim Integrated MAX5481-MAX5484 digital potentiometer driver
-+ * Copyright 2016 Rockwell Collins
-+ *
-+ * Datasheet:
-+ * http://datasheets.maximintegrated.com/en/ds/MAX5481-MAX5484.pdf
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the gnu general public license version 2 as
-+ * published by the free software foundation.
-+ *
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/spi/spi.h>
-+#include <linux/of.h>
-+#include <linux/acpi.h>
-+
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/iio.h>
-+
-+/* write wiper reg */
-+#define MAX5481_WRITE_WIPER (0 << 4)
-+/* copy wiper reg to NV reg */
-+#define MAX5481_COPY_AB_TO_NV (2 << 4)
-+/* copy NV reg to wiper reg */
-+#define MAX5481_COPY_NV_TO_AB (3 << 4)
-+
-+#define MAX5481_MAX_POS    1023
-+
-+enum max5481_variant {
-+	max5481,
-+	max5482,
-+	max5483,
-+	max5484
-+};
-+
-+struct max5481_cfg {
-+	int kohms;
-+	int maxpos;
-+};
-+
-+static const struct max5481_cfg max5481_cfg[] = {
-+	[max5481] = { .kohms =  10, .maxpos = MAX5481_MAX_POS },
-+	[max5482] = { .kohms =  50, .maxpos = MAX5481_MAX_POS },
-+	[max5483] = { .kohms =  10, .maxpos = MAX5481_MAX_POS },
-+	[max5484] = { .kohms =  50, .maxpos = MAX5481_MAX_POS },
-+};
-+
-+struct max5481_data {
-+	struct spi_device *spi;
-+	const struct max5481_cfg *cfg;
-+};
-+
-+#define max5481_CHANNEL(ch) {					\
-+	.type = IIO_RESISTANCE,					\
-+	.indexed = 1,						\
-+	.output = 1,						\
-+	.channel = (ch),					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+}
-+
-+static const struct iio_chan_spec max5481_channels[] = {
-+	max5481_CHANNEL(0),
-+};
-+
-+static int max5481_write_cmd(struct spi_device *spi, int cmd, int val)
-+{
-+	/* SPI Format from MAX5481-MAX5484 (19-3708; Rev 5; 4/10) pg 15 */
-+	u8 msg[3] = {
-+		(u8)cmd,
-+		(u8)((u16)val >> 2),
-+		(u8)(val & 0x3) << 6
-+	};
-+
-+	return spi_write(spi, msg, (cmd == MAX5481_WRITE_WIPER) ? sizeof(msg) : sizeof(u8));
-+}
-+
-+static int max5481_read_raw(struct iio_dev *indio_dev,
-+		struct iio_chan_spec const *chan,
-+		int *val, int *val2, long mask)
-+{
-+	struct max5481_data *data = iio_priv(indio_dev);
-+
-+	if (mask != IIO_CHAN_INFO_SCALE)
-+		return -EINVAL;
-+
-+	*val = 1000 * data->cfg->kohms;
-+	*val2 = data->cfg->maxpos;
-+
-+	return IIO_VAL_FRACTIONAL;
-+}
-+
-+static int max5481_write_raw(struct iio_dev *indio_dev,
-+		struct iio_chan_spec const *chan,
-+		int val, int val2, long mask)
-+{
-+	struct max5481_data *data = iio_priv(indio_dev);
-+
-+	if (mask != IIO_CHAN_INFO_RAW)
-+		return -EINVAL;
-+
-+	if (val < 0 || val > data->cfg->maxpos)
-+		return -EINVAL;
-+
-+	return max5481_write_cmd(data->spi, MAX5481_WRITE_WIPER, val);
-+}
-+
-+static const struct iio_info max5481_info = {
-+	.read_raw = max5481_read_raw,
-+	.write_raw = max5481_write_raw,
-+	.driver_module = THIS_MODULE,
-+};
-+
-+static int max5481_probe(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev;
-+	struct max5481_data *data;
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	dev_set_drvdata(&spi->dev, indio_dev);
-+	data = iio_priv(indio_dev);
-+
-+	data->spi = spi;
-+	data->cfg = &max5481_cfg[id->driver_data];
-+
-+	indio_dev->name = id->name;
-+	indio_dev->dev.parent = &spi->dev;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	/* variant specific configuration */
-+	indio_dev->info = &max5481_info;
-+	indio_dev->channels = max5481_channels;
-+	indio_dev->num_channels = ARRAY_SIZE(max5481_channels);
-+
-+	/* restore wiper from NV */
-+	ret = max5481_write_cmd(data->spi, MAX5481_COPY_NV_TO_AB, 0);
-+	if (ret < 0)
-+		return ret;
-+
-+	return iio_device_register(indio_dev);
-+}
-+
-+static int max5481_remove(struct spi_device *spi)
-+{
-+	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
-+	int ret;
-+
-+	/* save wiper reg to NV reg */
-+	ret = max5481_write_cmd(spi, MAX5481_COPY_AB_TO_NV, 0);
-+
-+	iio_device_unregister(indio_dev);
-+
-+	return ret;
-+}
-+
-+static const struct spi_device_id max5481_id_table[] = {
-+	{ "MAX5481", max5481 },
-+	{ "MAX5482", max5482 },
-+	{ "MAX5483", max5483 },
-+	{ "MAX5484", max5484 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(spi, max5481_id_table);
-+
-+#if defined(CONFIG_OF)
-+static const struct of_device_id max5481_match[] = {
-+	{ .compatible = "maxim,max5481", .data = &max5481_cfg[max5481] },
-+	{ .compatible = "maxim,max5482", .data = &max5481_cfg[max5482] },
-+	{ .compatible = "maxim,max5483", .data = &max5481_cfg[max5483] },
-+	{ .compatible = "maxim,max5484", .data = &max5481_cfg[max5484] },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(of, max5481_match);
-+#endif
-+
-+#if defined(CONFIG_ACPI)
-+static const struct acpi_device_id max5481_acpi_match[] = {
-+	{ "MAX5481", max5481 },
-+	{ "MAX5482", max5482 },
-+	{ "MAX5483", max5483 },
-+	{ "MAX5484", max5484 },
-+	{ }
-+};
-+MODULE_DEVICE_TABLE(acpi, max5481_acpi_match);
-+#endif
-+
-+static struct spi_driver max5481_driver =
-+{
-+	.driver =
-+	{
-+		.name  = "max5481",
-+		.owner = THIS_MODULE,
-+		.of_match_table = of_match_ptr(max5481_match),
-+		.acpi_match_table = ACPI_PTR(max5481_acpi_match),
-+	},
-+	.probe = max5481_probe,
-+	.remove = max5481_remove,
-+	.id_table = max5481_id_table,
-+};
-+
-+module_spi_driver(max5481_driver);
-+
-+MODULE_AUTHOR("Maury Anderson <maury.anderson@rockwellcollins.com>");
-+MODULE_DESCRIPTION("max5481 SPI driver");
-+MODULE_LICENSE("GPL v2");
--- 
-1.9.1
+>
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	*val = (buffer[1] << 8) | buffer[2];
+>> +	mutex_unlock(&state->lock);
+>> +
+>
+> shouldn't this return IIO_VAL_INT?
+>
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct iio_info max11100_info = {
+>> +	.driver_module = THIS_MODULE,
+>> +	.read_raw = max11100_read_raw,
+>> +};
+>> +
+>> +static int max11100_probe(struct spi_device *spi)
+>> +{
+>> +	int ret;
+>> +	struct iio_dev *indio_dev;
+>> +	struct max11100_state *state;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+>> +	if (!indio_dev) {
+>> +		pr_err("Can't allocate iio device\n");
+>
+> error message really needed?
+>
+>> +		return -ENOMEM;
+>> +	}
+>> +	dev_dbg(&indio_dev->dev, "probe max11100 IIO SPI\n");
+>
+> message really needed?
+>
+>> +
+>> +	spi_set_drvdata(spi, indio_dev);
+>> +
+>> +	state = iio_priv(indio_dev);
+>> +	state->spi = spi;
+>> +	state->desc = &max11100_desc;
+>> +
+>> +	mutex_init(&state->lock);
+>> +
+>> +	indio_dev->dev.parent = &spi->dev;
+>> +	indio_dev->dev.of_node = spi->dev.of_node;
+>> +	indio_dev->info = &max11100_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = state->desc->channels;
+>> +	indio_dev->num_channels = state->desc->num_chan;
+>> +	indio_dev->available_scan_masks = state->desc->scanmasks;
+>> +
+>> +	ret = iio_device_register(indio_dev);
+>
+> could use devm_ variant...
+>
+>> +	if (ret) {
+>> +		dev_err(&indio_dev->dev, "Failed to register iio device\n");
+>> +		return ret;
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static int max11100_remove(struct spi_device *spi)
+>
+> function not needed if using devm_iio_device_register()
+>
+>> +{
+>> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>> +
+>> +	dev_dbg(&indio_dev->dev, "remove max11100 IIO SPI\n");
+>> +
+>> +	iio_device_unregister(indio_dev);
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static const struct of_device_id max11100_ids[] = {
+>> +	{.compatible = "maxim,max11100"},
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, max11100_ids);
+>> +
+>> +static struct spi_driver max11100_driver = {
+>> +	.driver = {
+>> +		.name	= "max11100",
+>> +		.owner	= THIS_MODULE,
+>> +		.of_match_table = of_match_ptr(max11100_ids),
+>> +	},
+>> +	.probe		= max11100_probe,
+>> +	.remove		= max11100_remove,
+>> +};
+>> +
+>> +module_spi_driver(max11100_driver);
+>> +
+>> +MODULE_AUTHOR("Jacopo Mondi <jacopo@jmondi.org>");
+>> +MODULE_DESCRIPTION("Maxim MAX11100 ADC Driver");
+>> +MODULE_LICENSE("GPL v2");
+>>
+>
 
+This driver is so minimal, I wonder if there are not drivers for similar 
+devices to which I can add support for MAX11100 instead of writing a new 
+one from scratch.
+Anyone with more expertise than me in IIO codebase maybe can suggest 
+something here...
+
+Thanks
+    j
