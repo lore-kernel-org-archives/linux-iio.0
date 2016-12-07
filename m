@@ -1,604 +1,444 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33716 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752444AbcLHW1W (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2016 17:27:22 -0500
-From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH v11 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
-Date: Thu,  8 Dec 2016 23:27:07 +0100
-Message-Id: <7122f136e4735fe18c8b431006e6d6314b3c7e41.1481234322.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
-References: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
-References: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=4EDY=XW=linaro.org=linus.walleij@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Capella Microsystems <capellamicro@gmail.com>,
+	Kevin Tsai <ktsai@capellamicro.com>
+Subject: [PATCH 2/2] iio: light: add driver for Capella CM3605
+Date: Wed,  7 Dec 2016 14:49:28 +0100
+Message-Id: <1481118568-8064-1-git-send-email-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-Add core files for low resolution analog-to-digital converter (mxs-lradc)
-MFD driver.
+This adds a driver for the Capella Microsystems CM3605 Ambient
+Light Sensor and proximity sensor. This is a pretty simple entirely
+analog device that is interfaced with the target system using
+the POUT (proximity out) and AOUT (ambient light out) signals.
 
-Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+The POUT signal is a simple high/low signal that indicates whether
+an object is in proximity, most typically used to detect a face
+in front of a mobile device. The signal requires that an infrared
+LED is mounted next to the device, making IR light reflect off
+the object in proximity and triggering the POUT signal. We grab
+a GPIO pin to handle the POUT signal as an interrupt line and
+register this as an event channel for the sensor.
+
+Since the proximity sensor requires an IR LED, we add a LED trigger
+named "cm3605" so that the infrared LED can just associate with
+this trigger to be sure it is always on when the proximity sensor
+needs it.
+
+The AOUT is an analog voltage between 0 and 1550 mV that indicate
+the LUX value in the ambient light: this is orthogonal to the
+proximity sensor functionality. Since this analog voltage needs
+to be converted into a digital value, the driver grabs an IIO
+channel named "aout" associated with the device.
+
+This patch created a combined ALS and proximity sensor driver.
+The former supports raw reads of the LUX value and the latter
+will generate proximity events.
+
+To integrate this properly with Linux we also add a supply
+regulator for the VDD pin (driving both functions) and add device
+tree bindings to define the RSET resistor that in turn configures
+the luminosity range of the ALS sensor.
+
+Since the sensor needs to be on more or less constantly, we
+restrict the power management to system suspend/resume: we
+disable the IR LED and disable the regulator for VDD on suspend
+and take them back up on resume.
+
+Tests:
+cd /sys/bus/iio/devices/iio:device1
+cat in_illuminance_raw
+304
+(hold hand over sensor)
+cat in_illuminance_raw
+17
+iio_event_monitor cm3605
+Found IIO device with name cm3605 with device number 1
+(hold hand over sensor)
+Event: time: 2444842301447, type: proximity, channel: 0,
+  evtype: thresh, direction: falling
+(remove hand over sensor)
+Event: time: 2445583440706, type: proximity, channel: 0,
+  evtype: thresh, direction: rising
+
+Cc: Capella Microsystems <capellamicro@gmail.com>
+Cc: Kevin Tsai <ktsai@capellamicro.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
 ---
-Changes in v11:
- - create static struct mfd_cells
- - don't set platform data in mfd cells, set driver data instead
- - remove mxs_lradc_reg_* functions, use writel function instead
+ drivers/iio/light/Kconfig  |  10 ++
+ drivers/iio/light/Makefile |   1 +
+ drivers/iio/light/cm3605.c | 327 +++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 338 insertions(+)
+ create mode 100644 drivers/iio/light/cm3605.c
 
-Changes in v10:
- - fetch base address from DT
- - add a NULL check for of_match_device
-
-Changes in v9:
- - improve commit message.
-
-Changes in v8:
- - rebase onto 4.9-rc1
-
-Changes in v7:
- - define macros ADC_CELL and TSC_CELL
- - remove one cell and dynamically set them in the switch()
- - fail in the touchscreen driver instead of mfd driver if
-   hardware doesn't contain a touchscreen
-
-Changes in v6:
- - update copyright
- - add kernel-doc header for struct mxs-lradc
- - add error message
- - change EINVAL to ENODEV
- - use PLATFORM_DEVID_NONE instead -1
- - cosmetic fixes
-
-Changes in v5:
- - use DEFINE_RES_MEM
- - don't pass ioreammaped adress to platform cells
- - move comment outside of struct mxs_lradc
- - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
-   mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
-
-Changes in v4:
- - update copyright
- - use DEFINE_RES_IRQ_NAMED
- - remove mxs_lradc_add_device function
- - use struct mfd_cell in static form
- - improve spacing
- - remove unnecessary comment
- - remove platform_get_irq
- - remove touch_ret and use ret instead
- - rename use_touchscreen to touchscreen_wire
- - use goto statements
- - remove irq[13], irq_count and irq_name from struct mxs_lradc
- - remove all defines from inside the struct definition
-
-Changes in v3:
- - add note to commit message
- - move switch statement into if(touch_ret == 0) branch
- - add MODULE_AUTHOR
-
-Changes in v2:
- - do not change spacing in Kconfig
- - make struct mfd_cell part of struct mxs_lradc
- - use switch instead of if in mxs_lradc_irq_mask
- - use only necessary header files in mxs_lradc.h
- - use devm_mfd_add_device
- - use separate function to register mfd device
- - change licence to GPL
- - add copyright
-
- drivers/mfd/Kconfig           |  17 +++
- drivers/mfd/Makefile          |   1 +
- drivers/mfd/mxs-lradc.c       | 264 ++++++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/mxs-lradc.h | 187 ++++++++++++++++++++++++++++++
- 4 files changed, 469 insertions(+)
- create mode 100644 drivers/mfd/mxs-lradc.c
- create mode 100644 include/linux/mfd/mxs-lradc.h
-
-diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
-index 819dc0a..e5c1289 100644
---- a/drivers/mfd/Kconfig
-+++ b/drivers/mfd/Kconfig
-@@ -343,6 +343,23 @@ config MFD_MC13XXX_I2C
- 	help
- 	  Select this if your MC13xxx is connected via an I2C bus.
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index ba2e64d7ee58..d816ea958cc1 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -115,6 +115,16 @@ config CM3323
+ 	 To compile this driver as a module, choose M here: the module will
+ 	 be called cm3323.
  
-+config MFD_MXS_LRADC
-+	tristate "Freescale i.MX23/i.MX28 LRADC"
-+	depends on ARCH_MXS || COMPILE_TEST
-+	select MFD_CORE
-+	select STMP_DEVICE
++config CM3605
++	tristate "Capella CM3605 ambient light and proximity sensor"
++	depends on OF
 +	help
-+	  Say yes here to build support for the Low Resolution
-+	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
-+	  processors. This driver provides common support for accessing the
-+	  device, additional drivers must be enabled in order to use the
-+	  functionality of the device:
-+		mxs-lradc-adc for ADC readings
-+		mxs-lradc-ts  for touchscreen support
++	 Say Y here if you want to build a driver for Capella CM3605
++	 ambient light and short range proximity sensor.
 +
-+	  This driver can also be built as a module. If so, the module will be
-+	  called mxs-lradc.
++	 To compile this driver as a module, choose M here: the module will
++	 be called cm3605.
 +
- config MFD_MX25_TSADC
- 	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
- 	select REGMAP_MMIO
-diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
-index db39377..90e9f36 100644
---- a/drivers/mfd/Makefile
-+++ b/drivers/mfd/Makefile
-@@ -212,3 +212,4 @@ obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
- 
- obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
- obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc.o
-+obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
-diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
+ config CM36651
+ 	depends on I2C
+ 	tristate "CM36651 driver"
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index c5768df87a17..eff0fcc9e930 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -13,6 +13,7 @@ obj-$(CONFIG_BH1780)		+= bh1780.o
+ obj-$(CONFIG_CM32181)		+= cm32181.o
+ obj-$(CONFIG_CM3232)		+= cm3232.o
+ obj-$(CONFIG_CM3323)		+= cm3323.o
++obj-$(CONFIG_CM3605)		+= cm3605.o
+ obj-$(CONFIG_CM36651)		+= cm36651.o
+ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
+ obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
+diff --git a/drivers/iio/light/cm3605.c b/drivers/iio/light/cm3605.c
 new file mode 100644
-index 0000000..e29ff55
+index 000000000000..ec9e59688cd8
 --- /dev/null
-+++ b/drivers/mfd/mxs-lradc.c
-@@ -0,0 +1,264 @@
++++ b/drivers/iio/light/cm3605.c
+@@ -0,0 +1,327 @@
 +/*
-+ * Freescale MXS Low Resolution Analog-to-Digital Converter driver
++ * CM3605 Ambient Light and Proximity Sensor
 + *
-+ * Copyright (c) 2012 DENX Software Engineering, GmbH.
-+ * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
++ * Copyright (C) 2016 Linaro Ltd.
++ * Author: Linus Walleij <linus.walleij@linaro.org>
 + *
-+ * Authors:
-+ *  Marek Vasut <marex@denx.de>
-+ *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
++ * This hardware was found in the very first Nexus One handset from Google/HTC
++ * and an early endavour into mobile light and proximity sensors.
 + */
 +
-+#include <linux/clk.h>
-+#include <linux/device.h>
-+#include <linux/mfd/core.h>
-+#include <linux/mfd/mxs-lradc.h>
 +#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/of_device.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/events.h>
++#include <linux/iio/consumer.h> /* To get our ADC channel */
++#include <linux/iio/types.h> /* To deal with our ADC channel */
++#include <linux/init.h>
++#include <linux/leds.h>
 +#include <linux/platform_device.h>
-+#include <linux/slab.h>
++#include <linux/of.h>
++#include <linux/regulator/consumer.h>
++#include <linux/gpio/consumer.h>
++#include <linux/interrupt.h>
++#include <linux/math64.h>
++#include <linux/pm.h>
 +
-+#define ADC_CELL		0
-+#define TSC_CELL		1
-+#define RES_MEM			0
++#define CM3605_PROX_CHANNEL 0
++#define CM3605_ALS_CHANNEL 1
++#define CM3605_AOUT_TYP_MAX_MV 1550
++/* It should not go above 1.650V according to the data sheet */
++#define CM3605_AOUT_MAX_MV 1650
 +
-+enum mx23_lradc_irqs {
-+	MX23_LRADC_TS_IRQ = 0,
-+	MX23_LRADC_CH0_IRQ,
-+	MX23_LRADC_CH1_IRQ,
-+	MX23_LRADC_CH2_IRQ,
-+	MX23_LRADC_CH3_IRQ,
-+	MX23_LRADC_CH4_IRQ,
-+	MX23_LRADC_CH5_IRQ,
-+	MX23_LRADC_CH6_IRQ,
-+	MX23_LRADC_CH7_IRQ,
++/**
++ * struct cm3605 - CM3605 state
++ * @dev: pointer to parent device
++ * @vdd: regulator controlling VDD
++ * @aset: sleep enable GPIO, high = sleep
++ * @aout: IIO ADC channel to convert the AOUT signal
++ * @als_max: maximun LUX detection (depends on RSET)
++ * @dir: proximity direction: start as FALLING
++ * @led: trigger for the infrared LED used by the proximity sensor
++ */
++struct cm3605 {
++	struct device *dev;
++	struct regulator *vdd;
++	struct gpio_desc *aset;
++	struct iio_channel *aout;
++	s32 als_max;
++	enum iio_event_direction dir;
++	struct led_trigger *led;
 +};
 +
-+enum mx28_lradc_irqs {
-+	MX28_LRADC_TS_IRQ = 0,
-+	MX28_LRADC_TRESH0_IRQ,
-+	MX28_LRADC_TRESH1_IRQ,
-+	MX28_LRADC_CH0_IRQ,
-+	MX28_LRADC_CH1_IRQ,
-+	MX28_LRADC_CH2_IRQ,
-+	MX28_LRADC_CH3_IRQ,
-+	MX28_LRADC_CH4_IRQ,
-+	MX28_LRADC_CH5_IRQ,
-+	MX28_LRADC_CH6_IRQ,
-+	MX28_LRADC_CH7_IRQ,
-+	MX28_LRADC_BUTTON0_IRQ,
-+	MX28_LRADC_BUTTON1_IRQ,
-+};
-+
-+static struct resource mx23_adc_resources[] = {
-+	DEFINE_RES_MEM(0x0, 0x0),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
-+};
-+
-+static struct resource mx23_touchscreen_resources[] = {
-+	DEFINE_RES_MEM(0x0, 0x0),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
-+	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
-+};
-+
-+static struct resource mx28_adc_resources[] = {
-+	DEFINE_RES_MEM(0x0, 0x0),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH0_IRQ, "mxs-lradc-thresh0"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH1_IRQ, "mxs-lradc-thresh1"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON0_IRQ, "mxs-lradc-button0"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON1_IRQ, "mxs-lradc-button1"),
-+};
-+
-+static struct resource mx28_touchscreen_resources[] = {
-+	DEFINE_RES_MEM(0x0, 0x0),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
-+	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
-+};
-+
-+static struct mfd_cell mx23_cells[] = {
-+	{
-+		.name = "mxs-lradc-adc",
-+		.resources = mx23_adc_resources,
-+		.num_resources = ARRAY_SIZE(mx23_adc_resources),
-+	},
-+	{
-+		.name = "mxs-lradc-ts",
-+		.resources = mx23_touchscreen_resources,
-+		.num_resources = ARRAY_SIZE(mx23_touchscreen_resources),
-+	},
-+};
-+
-+static struct mfd_cell mx28_cells[] = {
-+	{
-+		.name = "mxs-lradc-adc",
-+		.resources = mx28_adc_resources,
-+		.num_resources = ARRAY_SIZE(mx28_adc_resources),
-+	},
-+	{
-+		.name = "mxs-lradc-ts",
-+		.resources = mx28_touchscreen_resources,
-+		.num_resources = ARRAY_SIZE(mx28_touchscreen_resources),
-+	}
-+};
-+
-+static const struct of_device_id mxs_lradc_dt_ids[] = {
-+	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
-+	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
-+
-+static int mxs_lradc_probe(struct platform_device *pdev)
++static irqreturn_t cm3605_prox_irq(int irq, void *d)
 +{
-+	const struct of_device_id *of_id;
-+	struct device *dev = &pdev->dev;
-+	struct device_node *node = dev->of_node;
-+	struct mxs_lradc *lradc;
-+	struct mfd_cell *cells = NULL;
-+	struct resource *res;
-+	int ret = 0;
-+	u32 ts_wires = 0;
++	struct iio_dev *indio_dev = d;
++	struct cm3605 *cm3605 = iio_priv(indio_dev);
++	u64 ev;
 +
-+	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
-+	if (!lradc)
-+		return -ENOMEM;
++	ev = IIO_UNMOD_EVENT_CODE(IIO_PROXIMITY, CM3605_PROX_CHANNEL,
++				  IIO_EV_TYPE_THRESH, cm3605->dir);
++	iio_push_event(indio_dev, ev, iio_get_time_ns(indio_dev));
 +
-+	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-+	if (!of_id)
++	/* Invert the edge for each event */
++	if (cm3605->dir == IIO_EV_DIR_RISING)
++		cm3605->dir = IIO_EV_DIR_FALLING;
++	else
++		cm3605->dir = IIO_EV_DIR_RISING;
++
++	return IRQ_HANDLED;
++}
++
++static int cm3605_get_lux(struct cm3605 *cm3605)
++{
++	int ret, res;
++	s64 lux;
++
++	ret = iio_read_channel_processed(cm3605->aout, &res);
++	if (ret < 0)
++		return ret;
++
++	dev_dbg(cm3605->dev, "read %d mV from ADC\n", res);
++
++	/*
++	 * AOUT has an offset of ~30mV then linear at dark
++	 * then goes from 2.54 up to 650 LUX yielding 1.55V
++	 * (1550 mV) so scale the returned value to this interval
++	 * using simple linear interpolation.
++	 */
++	if (res < 30)
++		return 0;
++	if (res > CM3605_AOUT_MAX_MV)
++		dev_err(cm3605->dev, "device out of range\n");
++
++	/* Remove bias */
++	lux = res - 30;
++
++	/* Linear interpolation between 0 and ALS typ max */
++	lux *= cm3605->als_max;
++	lux = div64_s64(lux, CM3605_AOUT_TYP_MAX_MV);
++
++	return lux;
++}
++
++static int cm3605_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct cm3605 *cm3605 = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			ret = cm3605_get_lux(cm3605);
++			if (ret < 0)
++				return ret;
++			*val = ret;
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
++		}
++	default:
 +		return -EINVAL;
++	}
++}
 +
-+	lradc->soc = (enum mxs_lradc_id)of_id->data;
++static const struct iio_info cm3605_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = cm3605_read_raw,
++};
 +
-+	lradc->clk = devm_clk_get(&pdev->dev, NULL);
-+	if (IS_ERR(lradc->clk)) {
-+		dev_err(dev, "Failed to get the delay unit clock\n");
-+		return PTR_ERR(lradc->clk);
++static const struct iio_event_spec cm3605_events[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_EITHER,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE),
++	},
++};
++
++static const struct iio_chan_spec cm3605_channels[] = {
++	{
++		.type = IIO_PROXIMITY,
++		.channel = CM3605_PROX_CHANNEL,
++		.event_spec = cm3605_events,
++		.num_event_specs = ARRAY_SIZE(cm3605_events),
++	},
++	{
++		.type = IIO_LIGHT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.channel = CM3605_ALS_CHANNEL,
++	},
++};
++
++static int cm3605_probe(struct platform_device *pdev)
++{
++	struct cm3605 *cm3605;
++	struct iio_dev *indio_dev;
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	enum iio_chan_type ch_type;
++	u32 rset;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*cm3605));
++	if (!indio_dev)
++		return -ENOMEM;
++	platform_set_drvdata(pdev, indio_dev);
++
++	cm3605 = iio_priv(indio_dev);
++	cm3605->dev = dev;
++	cm3605->dir = IIO_EV_DIR_FALLING;
++
++	ret = of_property_read_u32(np, "capella,aset-resistance", &rset);
++	if (ret) {
++		dev_info(dev, "no RSET specified, assuming 100K\n");
++		rset = 100000;
++	}
++	switch (rset) {
++	case 50000:
++		cm3605->als_max = 650;
++		break;
++	case 100000:
++		cm3605->als_max = 300;
++		break;
++	case 300000:
++		cm3605->als_max = 100;
++		break;
++	case 600000:
++		cm3605->als_max = 50;
++		break;
++	default:
++		dev_info(dev, "non-standard resistance\n");
++		return -EINVAL;
 +	}
 +
-+	ret = clk_prepare_enable(lradc->clk);
++	cm3605->aout = devm_iio_channel_get(dev, "aout");
++	if (IS_ERR(cm3605->aout)) {
++		if (PTR_ERR(cm3605->aout) == -ENODEV) {
++			dev_err(dev, "no ADC, deferring...\n");
++			return -EPROBE_DEFER;
++		}
++		dev_err(dev, "failed to get AOUT ADC channel\n");
++		return PTR_ERR(cm3605->aout);
++	}
++	ret = iio_get_channel_type(cm3605->aout, &ch_type);
++	if (ret < 0)
++		return ret;
++	if (ch_type != IIO_VOLTAGE) {
++		dev_err(dev, "wrong type of IIO channel specified for AOUT\n");
++		return -EINVAL;
++	}
++
++	cm3605->vdd = devm_regulator_get(dev, "vdd");
++	if (IS_ERR(cm3605->vdd)) {
++		dev_err(dev, "failed to get VDD regulator\n");
++		return PTR_ERR(cm3605->vdd);
++	}
++	ret = regulator_enable(cm3605->vdd);
 +	if (ret) {
-+		dev_err(dev, "Failed to enable the delay unit clock\n");
++		dev_err(dev, "failed to enable VDD regulator\n");
 +		return ret;
 +	}
 +
-+	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
-+					 &ts_wires);
-+
-+	if (!ret) {
-+		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
-+
-+		switch (ts_wires) {
-+		case 4:
-+			lradc->touchscreen_wire = MXS_LRADC_TOUCHSCREEN_4WIRE;
-+			break;
-+		case 5:
-+			if (lradc->soc == IMX28_LRADC) {
-+				lradc->touchscreen_wire =
-+					MXS_LRADC_TOUCHSCREEN_5WIRE;
-+				break;
-+			}
-+			/* fall through to an error message for i.MX23 */
-+		default:
-+			dev_err(&pdev->dev,
-+				"Unsupported number of touchscreen wires (%d)\n"
-+				, ts_wires);
-+			ret = -EINVAL;
-+			goto err_clk;
-+		}
-+	} else {
-+		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
++	cm3605->aset = devm_gpiod_get(dev, "aset", GPIOD_OUT_HIGH);
++	if (IS_ERR(cm3605->aset)) {
++		dev_err(dev, "no ASET GPIO\n");
++		ret = PTR_ERR(cm3605->aset);
++		goto out_disable_vdd;
 +	}
 +
-+	platform_set_drvdata(pdev, lradc);
-+
-+	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-+	if (!res)
-+		return -ENOMEM;
-+
-+	switch (lradc->soc) {
-+	case IMX23_LRADC:
-+		mx23_adc_resources[RES_MEM] = *res;
-+		mx23_touchscreen_resources[RES_MEM] = *res;
-+		cells = mx23_cells;
-+		break;
-+	case IMX28_LRADC:
-+		mx28_adc_resources[RES_MEM] = *res;
-+		mx28_touchscreen_resources[RES_MEM] = *res;
-+		cells = mx28_cells;
-+		break;
-+	default:
-+		dev_err(dev, "Unsupported SoC\n");
-+		ret = -ENODEV;
-+		goto err_clk;
-+	}
-+
-+	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
-+				   &cells[ADC_CELL], 1, NULL, 0, NULL);
++	ret = devm_request_threaded_irq(dev, platform_get_irq(pdev, 0),
++			cm3605_prox_irq, NULL, 0, "cm3605", indio_dev);
 +	if (ret) {
-+		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
-+		goto err_clk;
++		dev_err(dev, "unable to request IRQ\n");
++		goto out_disable_aset;
 +	}
 +
-+	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
-+				   &cells[TSC_CELL], 1, NULL, 0, NULL);
-+	if (ret) {
-+		dev_err(&pdev->dev,
-+			"Failed to add the touchscreen subdevice\n");
-+		goto err_clk;
-+	}
++	/* Just name the trigger the same as the driver */
++	led_trigger_register_simple("cm3605", &cm3605->led);
++	led_trigger_event(cm3605->led, LED_FULL);
++
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &cm3605_info;
++	indio_dev->name = "cm3605";
++	indio_dev->channels = cm3605_channels;
++	indio_dev->num_channels = ARRAY_SIZE(cm3605_channels);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto out_disable_aset;
++	dev_info(dev, "Capella Microsystems CM3605 enabled range 0..%d LUX\n",
++		 cm3605->als_max);
 +
 +	return 0;
 +
-+err_clk:
-+	clk_disable_unprepare(lradc->clk);
-+
++out_disable_aset:
++	gpiod_set_value_cansleep(cm3605->aset, 1);
++out_disable_vdd:
++	regulator_disable(cm3605->vdd);
 +	return ret;
 +}
 +
-+static int mxs_lradc_remove(struct platform_device *pdev)
++static int cm3605_remove(struct platform_device *pdev)
 +{
-+	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct cm3605 *cm3605 = iio_priv(indio_dev);
 +
-+	clk_disable_unprepare(lradc->clk);
++	led_trigger_event(cm3605->led, LED_OFF);
++	led_trigger_unregister_simple(cm3605->led);
++	iio_device_unregister(indio_dev);
++	regulator_disable(cm3605->vdd);
 +
 +	return 0;
 +}
 +
-+static struct platform_driver mxs_lradc_driver = {
-+	.driver = {
-+		.name = "mxs-lradc",
-+		.of_match_table = mxs_lradc_dt_ids,
-+	},
-+	.probe = mxs_lradc_probe,
-+	.remove = mxs_lradc_remove,
-+};
-+module_platform_driver(mxs_lradc_driver);
-+
-+MODULE_AUTHOR("Ksenija Stanojevic <ksenija.stanojevic@gmail.com>");
-+MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:mxs-lradc");
-diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
-new file mode 100644
-index 0000000..7bb924d
---- /dev/null
-+++ b/include/linux/mfd/mxs-lradc.h
-@@ -0,0 +1,187 @@
-+/*
-+ * Freescale MXS Low Resolution Analog-to-Digital Converter driver
-+ *
-+ * Copyright (c) 2012 DENX Software Engineering, GmbH.
-+ * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-+ *
-+ * Author: Marek Vasut <marex@denx.de>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ */
-+
-+#ifndef __MFD_MXS_LRADC_H
-+#define __MFD_MXS_LRADC_H
-+
-+#include <linux/bitops.h>
-+#include <linux/io.h>
-+#include <linux/stmp_device.h>
-+
-+#define LRADC_MAX_DELAY_CHANS	4
-+#define LRADC_MAX_MAPPED_CHANS	8
-+#define LRADC_MAX_TOTAL_CHANS	16
-+
-+#define LRADC_DELAY_TIMER_HZ	2000
-+
-+#define LRADC_CTRL0				0x00
-+# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
-+# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
-+# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
-+# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
-+# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
-+# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
-+# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
-+# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
-+
-+# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
-+# define LRADC_CTRL0_MX23_YM			BIT(19)
-+# define LRADC_CTRL0_MX23_XM			BIT(18)
-+# define LRADC_CTRL0_MX23_YP			BIT(17)
-+# define LRADC_CTRL0_MX23_XP			BIT(16)
-+
-+# define LRADC_CTRL0_MX28_PLATE_MASK \
-+		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
-+		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
-+		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
-+		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
-+
-+# define LRADC_CTRL0_MX23_PLATE_MASK \
-+		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
-+		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
-+		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
-+
-+#define LRADC_CTRL1				0x10
-+#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
-+#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
-+#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
-+#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
-+#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
-+#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
-+#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
-+#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
-+#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
-+#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
-+
-+#define LRADC_CTRL2				0x20
-+#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
-+#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
-+
-+#define LRADC_STATUS				0x40
-+#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
-+
-+#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
-+#define LRADC_CH_ACCUMULATE			BIT(29)
-+#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
-+#define LRADC_CH_NUM_SAMPLES_OFFSET		24
-+#define LRADC_CH_NUM_SAMPLES(x) \
-+				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
-+#define LRADC_CH_VALUE_MASK			0x3ffff
-+#define LRADC_CH_VALUE_OFFSET			0
-+
-+#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
-+#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
-+#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
-+#define LRADC_DELAY_TRIGGER(x) \
-+				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
-+				LRADC_DELAY_TRIGGER_LRADCS_MASK)
-+#define LRADC_DELAY_KICK			BIT(20)
-+#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
-+#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
-+#define LRADC_DELAY_TRIGGER_DELAYS(x) \
-+				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
-+				LRADC_DELAY_TRIGGER_DELAYS_MASK)
-+#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
-+#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
-+#define LRADC_DELAY_LOOP(x) \
-+				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
-+				LRADC_DELAY_LOOP_COUNT_MASK)
-+#define LRADC_DELAY_DELAY_MASK			0x7ff
-+#define LRADC_DELAY_DELAY_OFFSET		0
-+#define LRADC_DELAY_DELAY(x) \
-+				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
-+				LRADC_DELAY_DELAY_MASK)
-+
-+#define LRADC_CTRL4				0x140
-+#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
-+#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
-+#define LRADC_CTRL4_LRADCSELECT(n, x) \
-+				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
-+				LRADC_CTRL4_LRADCSELECT_MASK(n))
-+
-+#define LRADC_RESOLUTION			12
-+#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
-+
-+#define BUFFER_VCHANS_LIMITED		0x3f
-+#define BUFFER_VCHANS_ALL		0xff
-+
-+	/*
-+	 * Certain LRADC channels are shared between touchscreen
-+	 * and/or touch-buttons and generic LRADC block. Therefore when using
-+	 * either of these, these channels are not available for the regular
-+	 * sampling. The shared channels are as follows:
-+	 *
-+	 * CH0 -- Touch button #0
-+	 * CH1 -- Touch button #1
-+	 * CH2 -- Touch screen XPUL
-+	 * CH3 -- Touch screen YPLL
-+	 * CH4 -- Touch screen XNUL
-+	 * CH5 -- Touch screen YNLR
-+	 * CH6 -- Touch screen WIPER (5-wire only)
-+	 *
-+	 * The bit fields below represents which parts of the LRADC block are
-+	 * switched into special mode of operation. These channels can not
-+	 * be sampled as regular LRADC channels. The driver will refuse any
-+	 * attempt to sample these channels.
-+	 */
-+#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
-+#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
-+#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
-+
-+enum mxs_lradc_id {
-+	IMX23_LRADC,
-+	IMX28_LRADC,
-+};
-+
-+enum mxs_lradc_ts_wires {
-+	MXS_LRADC_TOUCHSCREEN_NONE = 0,
-+	MXS_LRADC_TOUCHSCREEN_4WIRE,
-+	MXS_LRADC_TOUCHSCREEN_5WIRE,
-+};
-+
-+/**
-+ * struct mxs_lradc
-+ * @soc: soc type (IMX23 or IMX28)
-+ * @clk: 2 kHz clock for delay units
-+ * @buffer_vchans: channels that can be used during buffered capture
-+ * @touchscreen_wire: touchscreen type (4-wire or 5-wire)
-+ * @use_touchbutton: button state (on or off)
-+ */
-+struct mxs_lradc {
-+	enum mxs_lradc_id	soc;
-+	struct clk		*clk;
-+	u8			buffer_vchans;
-+
-+	enum mxs_lradc_ts_wires	touchscreen_wire;
-+	bool			use_touchbutton;
-+};
-+
-+static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
++static int cm3605_pm_suspend(struct device *dev)
 +{
-+	switch (lradc->soc) {
-+	case IMX23_LRADC:
-+		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
-+	case IMX28_LRADC:
-+		return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
-+	default:
-+		return 0;
-+	}
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct cm3605 *cm3605 = iio_priv(indio_dev);
++
++	led_trigger_event(cm3605->led, LED_OFF);
++	regulator_disable(cm3605->vdd);
++
++	return 0;
 +}
 +
-+#endif /* __MXS_LRADC_H */
++static int cm3605_pm_resume(struct device *dev)
++{
++	struct iio_dev *indio_dev = dev_get_drvdata(dev);
++	struct cm3605 *cm3605 = iio_priv(indio_dev);
++	int ret;
++
++	ret = regulator_enable(cm3605->vdd);
++	if (ret)
++		dev_err(dev, "failed to enable regulator in resume path\n");
++	led_trigger_event(cm3605->led, LED_FULL);
++
++	return 0;
++}
++
++static const struct dev_pm_ops cm3605_dev_pm_ops = {
++	SET_SYSTEM_SLEEP_PM_OPS(cm3605_pm_suspend,
++				cm3605_pm_resume)
++};
++
++static const struct of_device_id cm3605_of_match[] = {
++	{.compatible = "capella,cm3605"},
++	{ },
++};
++MODULE_DEVICE_TABLE(of, cm3605_of_match);
++
++static struct platform_driver cm3605_driver = {
++	.driver = {
++		.name = "cm3605",
++		.of_match_table = cm3605_of_match,
++		.pm = &cm3605_dev_pm_ops,
++	},
++	.probe = cm3605_probe,
++	.remove = cm3605_remove,
++};
++module_platform_driver(cm3605_driver);
++
++MODULE_AUTHOR("Linus Walleij <linus.walleij@linaro.org>");
++MODULE_DESCRIPTION("CM3605 ambient light and proximity sensor driver");
++MODULE_LICENSE("GPL");
 -- 
-1.9.1
-
+2.7.4
