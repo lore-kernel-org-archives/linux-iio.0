@@ -1,38 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from aserp1040.oracle.com ([141.146.126.69]:51229 "EHLO
-        aserp1040.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751951AbcLEUyT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 5 Dec 2016 15:54:19 -0500
-Date: Mon, 5 Dec 2016 23:53:39 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Brian Masney <masneyb@onstation.org>
-Cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, lars@metafoo.de,
-        gregkh@linuxfoundation.org, linux-kernel@vger.kernel.org,
-        ldewangan@nvidia.com, pmeerw@pmeerw.net, knaack.h@gmx.de
-Subject: Re: [PATCH 12/19] staging: iio: isl29028: fix comparison between
- signed and unsigned integers
-Message-ID: <20161205205339.GC31243@mwanda>
-References: <1480817983-32359-1-git-send-email-masneyb@onstation.org>
- <1480817983-32359-13-git-send-email-masneyb@onstation.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1480817983-32359-13-git-send-email-masneyb@onstation.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=7pCU=XW=gmail.com=nizamhaider786@kernel.org>
+From: Nizam Haider <nizamhaider786@gmail.com>
+To: pmeerw@pmeerw.net
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org,
+	Nizam Haider <nizamhaider786@gmail.com>,
+	Nizam Haider <nijam.h@hcl.com>
+Subject: [PATCH] Staging: iio: impedance-analyzer: ad5933: fix wrong comments
+Date: Wed,  7 Dec 2016 23:14:47 +0530
+Message-Id: <20161207174447.24128-1-nizamhaider786@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Dec 03, 2016 at 09:19:36PM -0500, Brian Masney wrote:
-> Fixed warning found by make W=2 to reduce the amount of build noise:
-> 
-> warning: comparison between signed and unsigned integer expressions
-> [-Wsign-compare]
+according to datasheet complete control register is of 2 bytes.
+http://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
 
-Ugh...  Please don't do work arounds for nonsense warnings.  W=2 is so
-stupid.  Better to just grep -v this warning instead of trying to please
-a broken static analysis.  Warnings like this are why it's disabled by
-default.
+Signed-off-by: Nizam Haider <nijam.h@hcl.com>
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-regards,
-dan carpenter
-
-
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 3892a74..f39e03a 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -23,8 +23,8 @@
+ #include <linux/iio/kfifo_buf.h>
+ 
+ /* AD5933/AD5934 Registers */
+-#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 2 bytes */
+-#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 2 bytes */
++#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
++#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 1 byte */
+ #define AD5933_REG_FREQ_START		0x82	/* R/W, 3 bytes */
+ #define AD5933_REG_FREQ_INC		0x85	/* R/W, 3 bytes */
+ #define AD5933_REG_INC_NUM		0x88	/* R/W, 2 bytes, 9 bit */
+-- 
+2.10.1
