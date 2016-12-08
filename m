@@ -1,64 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:60617 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753500AbcLHXDf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2016 18:03:35 -0500
-Subject: Re: [PATCH v11 0/5] mxs-lradc: Split driver into MFD
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        harald@ccbib.org, stefan.wahren@i2se.com,
-        fabio.estevam@freescale.com
-From: Marek Vasut <marex@denx.de>
-Message-ID: <51d581e9-a99a-cec4-efe9-3e5c896780da@denx.de>
-Date: Fri, 9 Dec 2016 00:02:04 +0100
-MIME-Version: 1.0
-In-Reply-To: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=LqQa=XX=grinn-global.com=m.niestroj@kernel.org>
+From: Marcin Niestroj <m.niestroj@grinn-global.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Daniel Baluta <daniel.baluta@intel.com>,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Sanchayan Maity <maitysanchayan@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Marcin Niestroj <m.niestroj@grinn-global.com>
+Subject: [PATCH v2 1/6] iio: bmi160: Add of device table for i2c
+Date: Thu,  8 Dec 2016 15:22:54 +0100
+Message-Id: <20161208142259.26230-2-m.niestroj@grinn-global.com>
+In-Reply-To: <20161208142259.26230-1-m.niestroj@grinn-global.com>
+References: <20161208142259.26230-1-m.niestroj@grinn-global.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 12/08/2016 11:27 PM, Ksenija Stanojevic wrote:
-> Split existing driver mxs-lradc into MFD with touchscreen and
-> IIO part.
-> 
-> Tested on I.MX28
-> 
-> Ksenija Stanojevic (5):
->   mfd: mxs-lradc: Add support for mxs-lradc MFD
->   iio: adc: mxs-lradc: Add support for adc driver
->   input: touchscreen: mxs-lradc: Add support for touchscreen
->   iio: adc: mxs-lradc: Remove driver
->   mfd: Move binding document
-> 
->  .../bindings/{iio/adc => mfd}/mxs-lradc.txt        |    0
->  drivers/iio/adc/Kconfig                            |   27 +-
->  drivers/iio/adc/Makefile                           |    2 +-
->  drivers/iio/adc/mxs-lradc-adc.c                    |  843 ++++++++++
->  drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
->  drivers/input/touchscreen/Kconfig                  |   10 +
->  drivers/input/touchscreen/Makefile                 |    1 +
->  drivers/input/touchscreen/mxs-lradc-ts.c           |  739 +++++++++
->  drivers/mfd/Kconfig                                |   17 +
->  drivers/mfd/Makefile                               |    1 +
->  drivers/mfd/mxs-lradc.c                            |  264 +++
->  include/linux/mfd/mxs-lradc.h                      |  187 +++
->  12 files changed, 2076 insertions(+), 1765 deletions(-)
->  rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
->  create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
->  delete mode 100644 drivers/iio/adc/mxs-lradc.c
->  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
->  create mode 100644 drivers/mfd/mxs-lradc.c
->  create mode 100644 include/linux/mfd/mxs-lradc.h
-> 
+>From now on we can add bmi160 device to device-tree by specifying
+compatible string.
 
-Except minor nit in 1/5, the whole series is:
+Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+---
+Patch introduced in v2
 
-Reviewed-by: Marek Vasut <marex@denx.de>
+ drivers/iio/imu/bmi160/bmi160_i2c.c | 14 ++++++++++++--
+ 1 file changed, 12 insertions(+), 2 deletions(-)
 
+diff --git a/drivers/iio/imu/bmi160/bmi160_i2c.c b/drivers/iio/imu/bmi160/bmi160_i2c.c
+index 07a179d..155a31f 100644
+--- a/drivers/iio/imu/bmi160/bmi160_i2c.c
++++ b/drivers/iio/imu/bmi160/bmi160_i2c.c
+@@ -11,10 +11,11 @@
+  *      - 0x68 if SDO is pulled to GND
+  *      - 0x69 if SDO is pulled to VDDIO
+  */
+-#include <linux/module.h>
++#include <linux/acpi.h>
+ #include <linux/i2c.h>
++#include <linux/module.h>
++#include <linux/of.h>
+ #include <linux/regmap.h>
+-#include <linux/acpi.h>
+ 
+ #include "bmi160.h"
+ 
+@@ -56,10 +57,19 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id bmi160_of_match[] = {
++	{ .compatible = "bosch,bmi160" },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, bmi160_of_match);
++#endif
++
+ static struct i2c_driver bmi160_i2c_driver = {
+ 	.driver = {
+ 		.name			= "bmi160_i2c",
+ 		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
++		.of_match_table		= of_match_ptr(bmi160_of_match),
+ 	},
+ 	.probe		= bmi160_i2c_probe,
+ 	.remove		= bmi160_i2c_remove,
 -- 
-Best regards,
-Marek Vasut
+2.10.2
