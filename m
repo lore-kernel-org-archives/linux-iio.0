@@ -1,78 +1,81 @@
-Return-Path: <SRS0=LqQa=XX=grinn-global.com=m.niestroj@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp.megiteam.pl ([31.186.83.105]:40829 "EHLO smtp.megiteam.pl"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752016AbcLHO7A (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 8 Dec 2016 09:59:00 -0500
 From: Marcin Niestroj <m.niestroj@grinn-global.com>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Daniel Baluta <daniel.baluta@intel.com>,
-	Gregor Boirie <gregor.boirie@parrot.com>,
-	Sanchayan Maity <maitysanchayan@gmail.com>,
-	Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	linux-iio@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	Marcin Niestroj <m.niestroj@grinn-global.com>
-Subject: [PATCH v2 3/6] Documentation: DT: Add bmi160 imu binding
-Date: Thu,  8 Dec 2016 15:22:56 +0100
-Message-Id: <20161208142259.26230-4-m.niestroj@grinn-global.com>
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sanchayan Maity <maitysanchayan@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org,
+        Marcin Niestroj <m.niestroj@grinn-global.com>
+Subject: [PATCH v2 2/6] iio: bmi160: Add of device table for spi
+Date: Thu,  8 Dec 2016 15:22:55 +0100
+Message-Id: <20161208142259.26230-3-m.niestroj@grinn-global.com>
 In-Reply-To: <20161208142259.26230-1-m.niestroj@grinn-global.com>
 References: <20161208142259.26230-1-m.niestroj@grinn-global.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-This adds documentation for Bosch BMI160 Inertial Measurement Unit
-device-tree bindings.
+>From now on we can add bmi160 device to device-tree by specifying
+compatible string.
 
 Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
 ---
-Changes v1 -> v2 (suggested by Rob):
- * remove "gpio" keyword from interrupts property description
- * describe "INT1" and "INT2" cases for interrupt-names property
+Patch introduced in v2
 
- .../devicetree/bindings/iio/imu/bmi160.txt         | 36 ++++++++++++++++++++++
- 1 file changed, 36 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+ drivers/iio/imu/bmi160/bmi160_spi.c | 18 ++++++++++++++----
+ 1 file changed, 14 insertions(+), 4 deletions(-)
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/bmi160.txt b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-new file mode 100644
-index 0000000..ae0112c
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/bmi160.txt
-@@ -0,0 +1,36 @@
-+Bosch BMI160 - Inertial Measurement Unit with Accelerometer, Gyroscope
-+and externally connectable Magnetometer
-+
-+https://www.bosch-sensortec.com/bst/products/all_products/bmi160
-+
-+Required properties:
-+ - compatible : should be "bosch,bmi160"
-+ - reg : the I2C address or SPI chip select number of the sensor
-+ - spi-max-frequency : set maximum clock frequency (only for SPI)
-+
-+Optional properties:
-+ - interrupt-parent : should be the phandle of the interrupt controller
-+ - interrupts : interrupt mapping for IRQ, must be IRQ_TYPE_LEVEL_LOW
-+ - interrupt-names : set to "INT1" if INT1 pin should be used as interrupt
-+   input, set to "INT2" if INT2 pin should be used instead
-+
-+Examples:
-+
-+bmi160@68 {
-+	compatible = "bosch,bmi160";
-+	reg = <0x68>;
-+
-+	interrupt-parent = <&gpio4>;
-+	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-+	interrupt-names = "INT1";
+diff --git a/drivers/iio/imu/bmi160/bmi160_spi.c b/drivers/iio/imu/bmi160/bmi160_spi.c
+index 1ec8b12..d34dfdf 100644
+--- a/drivers/iio/imu/bmi160/bmi160_spi.c
++++ b/drivers/iio/imu/bmi160/bmi160_spi.c
+@@ -7,10 +7,11 @@
+  * the GNU General Public License.  See the file COPYING in the main
+  * directory of this archive for more details.
+  */
++#include <linux/acpi.h>
+ #include <linux/module.h>
+-#include <linux/spi/spi.h>
++#include <linux/of.h>
+ #include <linux/regmap.h>
+-#include <linux/acpi.h>
++#include <linux/spi/spi.h>
+ 
+ #include "bmi160.h"
+ 
+@@ -47,13 +48,22 @@ static const struct acpi_device_id bmi160_acpi_match[] = {
+ };
+ MODULE_DEVICE_TABLE(acpi, bmi160_acpi_match);
+ 
++#ifdef CONFIG_OF
++static const struct of_device_id bmi160_of_match[] = {
++	{ .compatible = "bosch,bmi160" },
++	{ },
 +};
++MODULE_DEVICE_TABLE(of, bmi160_of_match);
++#endif
 +
-+bmi160@0 {
-+	compatible = "bosch,bmi160";
-+	reg = <0>;
-+	spi-max-frequency = <10000000>;
-+
-+	interrupt-parent = <&gpio2>;
-+	interrupts = <12 IRQ_TYPE_LEVEL_LOW>;
-+	interrupt-names = "INT2";
-+};
+ static struct spi_driver bmi160_spi_driver = {
+ 	.probe		= bmi160_spi_probe,
+ 	.remove		= bmi160_spi_remove,
+ 	.id_table	= bmi160_spi_id,
+ 	.driver = {
+-		.acpi_match_table = ACPI_PTR(bmi160_acpi_match),
+-		.name	= "bmi160_spi",
++		.acpi_match_table	= ACPI_PTR(bmi160_acpi_match),
++		.of_match_table		= of_match_ptr(bmi160_of_match),
++		.name			= "bmi160_spi",
+ 	},
+ };
+ module_spi_driver(bmi160_spi_driver);
 -- 
 2.10.2
+
