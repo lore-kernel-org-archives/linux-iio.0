@@ -1,747 +1,631 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f45.google.com ([74.125.82.45]:34850 "EHLO
-        mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933374AbcLIOQg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 09:16:36 -0500
-Received: by mail-wm0-f45.google.com with SMTP id a197so28329854wmd.0
-        for <linux-iio@vger.kernel.org>; Fri, 09 Dec 2016 06:16:35 -0800 (PST)
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v6 6/8] IIO: add STM32 timer trigger driver
-Date: Fri,  9 Dec 2016 15:15:17 +0100
-Message-Id: <1481292919-26587-7-git-send-email-benjamin.gaignard@st.com>
-In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
-References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=D+Aj=XY=codeaurora.org=rphani@kernel.org>
+Subject: Re: [PATCH V5 2/2] iio: adc: spmi-vadc: Changes to support different
+ scaling
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
+References: <1479965465-30182-1-git-send-email-rphani@codeaurora.org>
+ <1479965465-30182-3-git-send-email-rphani@codeaurora.org>
+ <13ba4983-db04-4ea3-73c0-6b82a319322b@kernel.org>
+ <d455e681-ee8e-ad1a-1f20-d6285d033547@codeaurora.org>
+ <4bd45f1b-d2c2-a7e6-d0f4-0cfbb196f805@kernel.org>
+Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
+ smohanad@codeaurora.org, mgautam@codeaurora.org, sivaa@codeaurora.org,
+ knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, Julia.Lawall@lip6.fr
+From: "Phani A, Rama Krishna" <rphani@codeaurora.org>
+Message-ID: <4332e164-e4a7-31e2-356f-dc6d409e9f8d@codeaurora.org>
+Date: Fri, 9 Dec 2016 20:10:54 +0530
+MIME-Version: 1.0
+In-Reply-To: <4bd45f1b-d2c2-a7e6-d0f4-0cfbb196f805@kernel.org>
+Content-Type: text/plain; charset=utf-8; format=flowed
+List-ID: <linux-iio@vger.kernel.org>
 
-Timers IPs can be used to generate triggers for other IPs like
-DAC, ADC or other timers.
-Each trigger may result of timer internals signals like counter enable,
-reset or edge, this configuration could be done through "master_mode"
-device attribute.
+Hi Jonathan,
 
-A timer device could be triggered by other timers, we use the trigger
-name and is_stm32_iio_timer_trigger() function to distinguish them
-and configure IP input switch.
-
-Timer may also decide on which event (edge, level) they could
-be activated by a trigger, this configuration is done by writing in
-"slave_mode" device attribute.
-
-Since triggers could also be used by DAC or ADC their names are defined
-in include/ nux/iio/timer/stm32-timer-trigger.h so those IPs will be able
-to configure themselves in valid_trigger function
-
-Trigger have a "sampling_frequency" attribute which allow to configure
-timer sampling frequency without using PWM interface
-
-version 5:
-- simplify tables of triggers
-- only create an IIO device when needed
-
-version 4:
-- get triggers configuration from "reg" in DT
-- add tables of triggers
-- sampling frequency is enable/disable when writing in trigger
-  sampling_frequency attribute
-- no more use of interruptions
-
-version 3:
-- change compatible to "st,stm32-timer-trigger"
-- fix attributes access right
-- use string instead of int for master_mode and slave_mode
-- document device attributes in sysfs-bus-iio-timer-stm32
-
-version 2:
-- keep only one compatible
-- use st,input-triggers-names and st,output-triggers-names
-  to know which triggers are accepted and/or create by the device
-
-Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
----
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
- drivers/iio/Kconfig                                |   2 +-
- drivers/iio/Makefile                               |   1 +
- drivers/iio/timer/Kconfig                          |  13 +
- drivers/iio/timer/Makefile                         |   1 +
- drivers/iio/timer/stm32-timer-trigger.c            | 466 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |   1 -
- include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
- 8 files changed, 599 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 drivers/iio/timer/Kconfig
- create mode 100644 drivers/iio/timer/Makefile
- create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-new file mode 100644
-index 0000000..26583dd
---- /dev/null
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-@@ -0,0 +1,55 @@
-+What:		/sys/bus/iio/devices/iio:deviceX/master_mode_available
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Reading returns the list possible master modes which are:
-+		- "reset"     :	The UG bit from the TIMx_EGR register is used as trigger output (TRGO).
-+		- "enable"    : The Counter Enable signal CNT_EN is used as trigger output.
-+		- "update"    : The update event is selected as trigger output.
-+				For instance a master timer can then be used as a prescaler for a slave timer.
-+		- "compare_pulse" : The trigger output send a positive pulse when the CC1IF flag is to be set.
-+		- "OC1REF"    : OC1REF signal is used as trigger output.
-+		- "OC2REF"    : OC2REF signal is used as trigger output.
-+		- "OC3REF"    : OC3REF signal is used as trigger output.
-+		- "OC4REF"    : OC4REF signal is used as trigger output.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/master_mode
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Reading returns the current master modes.
-+		Writing set the master mode
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/slave_mode_available
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Reading returns the list possible slave modes which are:
-+		- "disabled"  : The prescaler is clocked directly by the internal clock.
-+		- "encoder_1" : Counter counts up/down on TI2FP1 edge depending on TI1FP2 level.
-+		- "encoder_2" : Counter counts up/down on TI1FP2 edge depending on TI2FP1 level.
-+		- "encoder_3" : Counter counts up/down on both TI1FP1 and TI2FP2 edges depending
-+				on the level of the other input.
-+		- "reset"     : Rising edge of the selected trigger input reinitializes the counter
-+				and generates an update of the registers.
-+		- "gated"     : The counter clock is enabled when the trigger input is high.
-+				The counter stops (but is not reset) as soon as the trigger becomes low.
-+				Both start and stop of the counter are controlled.
-+		- "trigger"   : The counter starts at a rising edge of the trigger TRGI (but it is not
-+				reset). Only the start of the counter is controlled.
-+		- "external_clock": Rising edges of the selected trigger (TRGI) clock the counter.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/slave_mode
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Reading returns the current slave mode.
-+		Writing set the slave mode
-+
-+What:		/sys/bus/iio/devices/triggerX/sampling_frequency
-+KernelVersion:	4.10
-+Contact:	benjamin.gaignard@st.com
-+Description:
-+		Reading returns the current sampling frequency.
-+		Writing an value different of 0 set and start sampling.
-+		Writing 0 stop sampling.
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 6743b18..2de2a80 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -90,5 +90,5 @@ source "drivers/iio/potentiometer/Kconfig"
- source "drivers/iio/pressure/Kconfig"
- source "drivers/iio/proximity/Kconfig"
- source "drivers/iio/temperature/Kconfig"
--
-+source "drivers/iio/timer/Kconfig"
- endif # IIO
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 87e4c43..b797c08 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -32,4 +32,5 @@ obj-y += potentiometer/
- obj-y += pressure/
- obj-y += proximity/
- obj-y += temperature/
-+obj-y += timer/
- obj-y += trigger/
-diff --git a/drivers/iio/timer/Kconfig b/drivers/iio/timer/Kconfig
-new file mode 100644
-index 0000000..e3c21f2
---- /dev/null
-+++ b/drivers/iio/timer/Kconfig
-@@ -0,0 +1,13 @@
-+#
-+# Timers drivers
-+
-+menu "Timers"
-+
-+config IIO_STM32_TIMER_TRIGGER
-+	tristate "STM32 Timer Trigger"
-+	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
-+	select IIO_TRIGGERED_EVENT
-+	help
-+	  Select this option to enable STM32 Timer Trigger
-+
-+endmenu
-diff --git a/drivers/iio/timer/Makefile b/drivers/iio/timer/Makefile
-new file mode 100644
-index 0000000..4ad95ec9
---- /dev/null
-+++ b/drivers/iio/timer/Makefile
-@@ -0,0 +1 @@
-+obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
-diff --git a/drivers/iio/timer/stm32-timer-trigger.c b/drivers/iio/timer/stm32-timer-trigger.c
-new file mode 100644
-index 0000000..8d16e8f
---- /dev/null
-+++ b/drivers/iio/timer/stm32-timer-trigger.c
-@@ -0,0 +1,466 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ *
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-+ *
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/iio/timer/stm32-timer-trigger.h>
-+#include <linux/iio/trigger.h>
-+#include <linux/iio/triggered_event.h>
-+#include <linux/interrupt.h>
-+#include <linux/mfd/stm32-timers.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+
-+#define MAX_TRIGGERS 6
-+#define MAX_VALIDS 5
-+
-+/* List the triggers created by each timer */
-+static const void *triggers_table[][MAX_TRIGGERS] = {
-+	{ TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4,},
-+	{ TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4,},
-+	{ TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4,},
-+	{ TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4,},
-+	{ TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4,},
-+	{ TIM6_TRGO,},
-+	{ TIM7_TRGO,},
-+	{ TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4,},
-+	{ TIM9_TRGO, TIM9_CH1, TIM9_CH2,},
-+	{ TIM12_TRGO, TIM12_CH1, TIM12_CH2,},
-+};
-+
-+/* List the triggers accepted by each timer */
-+static const void *valids_table[][MAX_VALIDS] = {
-+	{ TIM5_TRGO, TIM2_TRGO, TIM4_TRGO, TIM3_TRGO,},
-+	{ TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
-+	{ TIM1_TRGO, TIM8_TRGO, TIM5_TRGO, TIM4_TRGO,},
-+	{ TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
-+	{ TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO,},
-+	{ }, /* timer 6 */
-+	{ }, /* timer 7 */
-+	{ TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
-+	{ TIM2_TRGO, TIM3_TRGO,},
-+	{ TIM4_TRGO, TIM5_TRGO,},
-+};
-+
-+struct stm32_timer_trigger {
-+	struct device *dev;
-+	struct regmap *regmap;
-+	struct clk *clk;
-+	u32 max_arr;
-+	const void *triggers;
-+	const void *valids;
-+};
-+
-+static int stm32_timer_start(struct stm32_timer_trigger *priv,
-+			     unsigned int frequency)
-+{
-+	unsigned long long prd, div;
-+	int prescaler = 0;
-+	u32 ccer, cr1;
-+
-+	/* Period and prescaler values depends of clock rate */
-+	div = (unsigned long long)clk_get_rate(priv->clk);
-+
-+	do_div(div, frequency);
-+
-+	prd = div;
-+
-+	/*
-+	 * Increase prescaler value until we get a result that fit
-+	 * with auto reload register maximum value.
-+	 */
-+	while (div > priv->max_arr) {
-+		prescaler++;
-+		div = prd;
-+		do_div(div, (prescaler + 1));
-+	}
-+	prd = div;
-+
-+	if (prescaler > MAX_TIM_PSC) {
-+		dev_err(priv->dev, "prescaler exceeds the maximum value\n");
-+		return -EINVAL;
-+	}
-+
-+	/* Check if nobody else use the timer */
-+	regmap_read(priv->regmap, TIM_CCER, &ccer);
-+	if (ccer & TIM_CCER_CCXE)
-+		return -EBUSY;
-+
-+	regmap_read(priv->regmap, TIM_CR1, &cr1);
-+	if (!(cr1 & TIM_CR1_CEN))
-+		clk_enable(priv->clk);
-+
-+	regmap_write(priv->regmap, TIM_PSC, prescaler);
-+	regmap_write(priv->regmap, TIM_ARR, prd - 1);
-+	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
-+
-+	/* Force master mode to update mode */
-+	regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS, 0x20);
-+
-+	/* Make sure that registers are updated */
-+	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
-+
-+	/* Enable controller */
-+	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
-+
-+	return 0;
-+}
-+
-+static void stm32_timer_stop(struct stm32_timer_trigger *priv)
-+{
-+	u32 ccer, cr1;
-+
-+	regmap_read(priv->regmap, TIM_CCER, &ccer);
-+	if (ccer & TIM_CCER_CCXE)
-+		return;
-+
-+	regmap_read(priv->regmap, TIM_CR1, &cr1);
-+	if (cr1 & TIM_CR1_CEN)
-+		clk_disable(priv->clk);
-+
-+	/* Stop timer */
-+	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
-+	regmap_write(priv->regmap, TIM_PSC, 0);
-+	regmap_write(priv->regmap, TIM_ARR, 0);
-+}
-+
-+static ssize_t stm32_tt_store_frequency(struct device *dev,
-+					struct device_attribute *attr,
-+					const char *buf, size_t len)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct stm32_timer_trigger *priv = iio_trigger_get_drvdata(trig);
-+	unsigned int freq;
-+	int ret;
-+
-+	ret = kstrtouint(buf, 10, &freq);
-+	if (ret)
-+		return ret;
-+
-+	if (freq == 0) {
-+		stm32_timer_stop(priv);
-+	} else {
-+		ret = stm32_timer_start(priv, freq);
-+		if (ret)
-+			return ret;
-+	}
-+
-+	return len;
-+}
-+
-+static ssize_t stm32_tt_read_frequency(struct device *dev,
-+				       struct device_attribute *attr, char *buf)
-+{
-+	struct iio_trigger *trig = to_iio_trigger(dev);
-+	struct stm32_timer_trigger *priv = iio_trigger_get_drvdata(trig);
-+	u32 psc, arr, cr1;
-+	unsigned long long freq = 0;
-+
-+	regmap_read(priv->regmap, TIM_CR1, &cr1);
-+	regmap_read(priv->regmap, TIM_PSC, &psc);
-+	regmap_read(priv->regmap, TIM_ARR, &arr);
-+
-+	if (psc && arr && (cr1 & TIM_CR1_CEN)) {
-+		freq = (unsigned long long)clk_get_rate(priv->clk);
-+		do_div(freq, psc);
-+		do_div(freq, arr);
-+	}
-+
-+	return sprintf(buf, "%d\n", (unsigned int)freq);
-+}
-+
-+static IIO_DEV_ATTR_SAMP_FREQ(0660,
-+			      stm32_tt_read_frequency,
-+			      stm32_tt_store_frequency);
-+
-+static struct attribute *stm32_trigger_attrs[] = {
-+	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group stm32_trigger_attr_group = {
-+	.attrs = stm32_trigger_attrs,
-+};
-+
-+static const struct attribute_group *stm32_trigger_attr_groups[] = {
-+	&stm32_trigger_attr_group,
-+	NULL,
-+};
-+
-+static char *master_mode_table[] = {
-+	"reset",
-+	"enable",
-+	"update",
-+	"compare_pulse",
-+	"OC1REF",
-+	"OC2REF",
-+	"OC3REF",
-+	"OC4REF"
-+};
-+
-+static ssize_t stm32_tt_show_master_mode(struct device *dev,
-+					 struct device_attribute *attr,
-+					 char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-+	u32 cr2;
-+
-+	regmap_read(priv->regmap, TIM_CR2, &cr2);
-+	cr2 = (cr2 & TIM_CR2_MMS) >> TIM_CR2_MMS_SHIFT;
-+
-+	return snprintf(buf, PAGE_SIZE, "%s\n", master_mode_table[cr2]);
-+}
-+
-+static ssize_t stm32_tt_store_master_mode(struct device *dev,
-+					  struct device_attribute *attr,
-+					  const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(master_mode_table); i++) {
-+		if (!strncmp(master_mode_table[i], buf,
-+			     strlen(master_mode_table[i]))) {
-+			regmap_update_bits(priv->regmap, TIM_CR2,
-+					   TIM_CR2_MMS, i << TIM_CR2_MMS_SHIFT);
-+			return len;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_CONST_ATTR(master_mode_available,
-+	"reset enable update compare_pulse OC1REF OC2REF OC3REF OC4REF");
-+
-+static IIO_DEVICE_ATTR(master_mode, 0660,
-+		       stm32_tt_show_master_mode,
-+		       stm32_tt_store_master_mode,
-+		       0);
-+
-+static char *slave_mode_table[] = {
-+	"disabled",
-+	"encoder_1",
-+	"encoder_2",
-+	"encoder_3",
-+	"reset",
-+	"gated",
-+	"trigger",
-+	"external_clock",
-+};
-+
-+static ssize_t stm32_tt_show_slave_mode(struct device *dev,
-+					struct device_attribute *attr,
-+					char *buf)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-+	u32 smcr;
-+
-+	regmap_read(priv->regmap, TIM_SMCR, &smcr);
-+	smcr &= TIM_SMCR_SMS;
-+
-+	return snprintf(buf, PAGE_SIZE, "%s\n", slave_mode_table[smcr]);
-+}
-+
-+static ssize_t stm32_tt_store_slave_mode(struct device *dev,
-+					 struct device_attribute *attr,
-+					 const char *buf, size_t len)
-+{
-+	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-+	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-+	int i;
-+
-+	for (i = 0; i < ARRAY_SIZE(slave_mode_table); i++) {
-+		if (!strncmp(slave_mode_table[i], buf,
-+			     strlen(slave_mode_table[i]))) {
-+			regmap_update_bits(priv->regmap,
-+					   TIM_SMCR, TIM_SMCR_SMS, i);
-+			return len;
-+		}
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static IIO_CONST_ATTR(slave_mode_available,
-+"disabled encoder_1 encoder_2 encoder_3 reset gated trigger external_clock");
-+
-+static IIO_DEVICE_ATTR(slave_mode, 0660,
-+		       stm32_tt_show_slave_mode,
-+		       stm32_tt_store_slave_mode,
-+		       0);
-+
-+static struct attribute *stm32_timer_attrs[] = {
-+	&iio_dev_attr_master_mode.dev_attr.attr,
-+	&iio_const_attr_master_mode_available.dev_attr.attr,
-+	&iio_dev_attr_slave_mode.dev_attr.attr,
-+	&iio_const_attr_slave_mode_available.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group stm32_timer_attr_group = {
-+	.attrs = stm32_timer_attrs,
-+};
-+
-+static const struct iio_trigger_ops timer_trigger_ops = {
-+	.owner = THIS_MODULE,
-+};
-+
-+static int stm32_setup_iio_triggers(struct stm32_timer_trigger *priv)
-+{
-+	int ret;
-+	const char * const *cur = priv->triggers;
-+
-+	while (cur && *cur) {
-+		struct iio_trigger *trig;
-+
-+		trig = devm_iio_trigger_alloc(priv->dev, "%s", *cur);
-+		if  (!trig)
-+			return -ENOMEM;
-+
-+		trig->dev.parent = priv->dev->parent;
-+		trig->ops = &timer_trigger_ops;
-+		trig->dev.groups = stm32_trigger_attr_groups;
-+		iio_trigger_set_drvdata(trig, priv);
-+
-+		ret = devm_iio_trigger_register(priv->dev, trig);
-+		if (ret)
-+			return ret;
-+		cur++;
-+	}
-+
-+	return 0;
-+}
-+
-+/**
-+ * is_stm32_timer_trigger
-+ * @trig: trigger to be checked
-+ *
-+ * return true if the trigger is a valid stm32 iio timer trigger
-+ * either return false
-+ */
-+bool is_stm32_timer_trigger(struct iio_trigger *trig)
-+{
-+	return (trig->ops == &timer_trigger_ops);
-+}
-+EXPORT_SYMBOL(is_stm32_timer_trigger);
-+
-+static int stm32_validate_trigger(struct iio_dev *indio_dev,
-+				  struct iio_trigger *trig)
-+{
-+	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-+	const char * const *cur = priv->valids;
-+	unsigned int i = 0;
-+
-+	if (!is_stm32_timer_trigger(trig))
-+		return -EINVAL;
-+
-+	while (cur && *cur) {
-+		if (!strncmp(trig->name, *cur, strlen(trig->name))) {
-+			regmap_update_bits(priv->regmap,
-+					   TIM_SMCR, TIM_SMCR_TS,
-+					   i << TIM_SMCR_TS_SHIFT);
-+			return 0;
-+		}
-+		cur++;
-+		i++;
-+	}
-+
-+	return -EINVAL;
-+}
-+
-+static const struct iio_info stm32_trigger_info = {
-+	.driver_module = THIS_MODULE,
-+	.validate_trigger = stm32_validate_trigger,
-+	.attrs = &stm32_timer_attr_group,
-+};
-+
-+static struct stm32_timer_trigger *stm32_setup_iio_device(struct device *dev)
-+{
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev,
-+					  sizeof(struct stm32_timer_trigger));
-+	if (!indio_dev)
-+		return NULL;
-+
-+	indio_dev->name = dev_name(dev);
-+	indio_dev->dev.parent = dev;
-+	indio_dev->info = &stm32_trigger_info;
-+	indio_dev->modes = INDIO_EVENT_TRIGGERED;
-+	indio_dev->num_channels = 0;
-+	indio_dev->dev.of_node = dev->of_node;
-+
-+	ret = devm_iio_device_register(dev, indio_dev);
-+	if (ret)
-+		return NULL;
-+
-+	return iio_priv(indio_dev);
-+}
-+
-+static int stm32_timer_trigger_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct stm32_timer_trigger *priv;
-+	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
-+	unsigned int index;
-+	int ret;
-+
-+	if (of_property_read_u32(dev->of_node, "reg", &index))
-+		return -EINVAL;
-+
-+	if (index >= ARRAY_SIZE(triggers_table))
-+		return -EINVAL;
-+
-+	/* Create an IIO device only if we have triggers to be validated */
-+	if (*valids_table[index])
-+		priv = stm32_setup_iio_device(dev);
-+	else
-+		priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-+
-+	if (!priv)
-+		return -ENOMEM;
-+
-+	priv->dev = dev;
-+	priv->regmap = ddata->regmap;
-+	priv->clk = ddata->clk;
-+	priv->max_arr = ddata->max_arr;
-+	priv->triggers = triggers_table[index];
-+	priv->valids = valids_table[index];
-+
-+	ret = stm32_setup_iio_triggers(priv);
-+	if (ret)
-+		return ret;
-+
-+	platform_set_drvdata(pdev, priv);
-+
-+	return 0;
-+}
-+
-+static const struct of_device_id stm32_trig_of_match[] = {
-+	{ .compatible = "st,stm32-timer-trigger", },
-+	{ /* end node */ },
-+};
-+MODULE_DEVICE_TABLE(of, stm32_trig_of_match);
-+
-+static struct platform_driver stm32_timer_trigger_driver = {
-+	.probe = stm32_timer_trigger_probe,
-+	.driver = {
-+		.name = "stm32-timer-trigger",
-+		.of_match_table = stm32_trig_of_match,
-+	},
-+};
-+module_platform_driver(stm32_timer_trigger_driver);
-+
-+MODULE_ALIAS("platform: stm32-timer-trigger");
-+MODULE_DESCRIPTION("STMicroelectronics STM32 Timer Trigger driver");
-+MODULE_LICENSE("GPL v2");
-diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-index 809b2e7..f2af4fe 100644
---- a/drivers/iio/trigger/Kconfig
-+++ b/drivers/iio/trigger/Kconfig
-@@ -46,5 +46,4 @@ config IIO_SYSFS_TRIGGER
- 
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called iio-trig-sysfs.
--
- endmenu
-diff --git a/include/linux/iio/timer/stm32-timer-trigger.h b/include/linux/iio/timer/stm32-timer-trigger.h
-new file mode 100644
-index 0000000..55535ae
---- /dev/null
-+++ b/include/linux/iio/timer/stm32-timer-trigger.h
-@@ -0,0 +1,62 @@
-+/*
-+ * Copyright (C) STMicroelectronics 2016
-+ *
-+ * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-+ *
-+ * License terms:  GNU General Public License (GPL), version 2
-+ */
-+
-+#ifndef _STM32_TIMER_TRIGGER_H_
-+#define _STM32_TIMER_TRIGGER_H_
-+
-+#define TIM1_TRGO	"tim1_trgo"
-+#define TIM1_CH1	"tim1_ch1"
-+#define TIM1_CH2	"tim1_ch2"
-+#define TIM1_CH3	"tim1_ch3"
-+#define TIM1_CH4	"tim1_ch4"
-+
-+#define TIM2_TRGO	"tim2_trgo"
-+#define TIM2_CH1	"tim2_ch1"
-+#define TIM2_CH2	"tim2_ch2"
-+#define TIM2_CH3	"tim2_ch3"
-+#define TIM2_CH4	"tim2_ch4"
-+
-+#define TIM3_TRGO	"tim3_trgo"
-+#define TIM3_CH1	"tim3_ch1"
-+#define TIM3_CH2	"tim3_ch2"
-+#define TIM3_CH3	"tim3_ch3"
-+#define TIM3_CH4	"tim3_ch4"
-+
-+#define TIM4_TRGO	"tim4_trgo"
-+#define TIM4_CH1	"tim4_ch1"
-+#define TIM4_CH2	"tim4_ch2"
-+#define TIM4_CH3	"tim4_ch3"
-+#define TIM4_CH4	"tim4_ch4"
-+
-+#define TIM5_TRGO	"tim5_trgo"
-+#define TIM5_CH1	"tim5_ch1"
-+#define TIM5_CH2	"tim5_ch2"
-+#define TIM5_CH3	"tim5_ch3"
-+#define TIM5_CH4	"tim5_ch4"
-+
-+#define TIM6_TRGO	"tim6_trgo"
-+
-+#define TIM7_TRGO	"tim7_trgo"
-+
-+#define TIM8_TRGO	"tim8_trgo"
-+#define TIM8_CH1	"tim8_ch1"
-+#define TIM8_CH2	"tim8_ch2"
-+#define TIM8_CH3	"tim8_ch3"
-+#define TIM8_CH4	"tim8_ch4"
-+
-+#define TIM9_TRGO	"tim9_trgo"
-+#define TIM9_CH1	"tim9_ch1"
-+#define TIM9_CH2	"tim9_ch2"
-+
-+#define TIM12_TRGO	"tim12_trgo"
-+#define TIM12_CH1	"tim12_ch1"
-+#define TIM12_CH2	"tim12_ch2"
-+
-+bool is_stm32_timer_trigger(struct iio_trigger *trig);
-+
-+#endif
--- 
-1.9.1
-
+On 03-Dec-16 3:19 PM, Jonathan Cameron wrote:
+> On 30/11/16 09:07, Phani A, Rama Krishna wrote:
+>> Hi Jonathan,
+>>
+>> On 27-Nov-16 9:18 PM, Jonathan Cameron wrote:
+>>> On 24/11/16 05:31, Rama Krishna Phani A wrote:
+>>>> Several ADC channels are supported in PMIC which can be used to
+>>>> measure voltage, temperature, current etc. Different scaling can be
+>>>> applied on the obtained voltage to report in physical units. Scaling
+>>>> functionality can be different per channel. Add scaling support per
+>>>> channel. Every channel present in adc has an unique conversion formula
+>>>> for obtained voltage. Add support to report in Raw as well as in
+>>>> processed format. Scaling is applied when processed read is requested
+>>>> and is not applied when a Raw read is requested.
+>>>>
+>>>> Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+>>> I obviously didn't make it clear enough in last review.
+>>>
+>>> If you can't return a value in response to reading a sysfs attribute, the
+>>> attribute should not exist.  See below for a suggestion on this.
+>> Agree., Even here we never expose a channel in sysfs if we dont know the response. Channels in sysfs are populated based on list available from DT. Provided more explanation below.
+>>>
+>>> Jonathan
+>>>> ---
+>>>>  drivers/iio/adc/qcom-spmi-vadc.c | 435 +++++++++++++++++++++++++++++----------
+>>>>  1 file changed, 326 insertions(+), 109 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+>>>> index 93c0639..a4e5405 100644
+>>>> --- a/drivers/iio/adc/qcom-spmi-vadc.c
+>>>> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
+>>>> @@ -84,7 +84,7 @@
+>>>>  #define VADC_MAX_ADC_CODE            0xa800
+>>>>
+>>>>  #define VADC_ABSOLUTE_RANGE_UV            625000
+>>>> -#define VADC_RATIOMETRIC_RANGE_UV        1800000
+>>>> +#define VADC_RATIOMETRIC_RANGE            1800
+>>>>
+>>>>  #define VADC_DEF_PRESCALING            0 /* 1:1 */
+>>>>  #define VADC_DEF_DECIMATION            0 /* 512 */
+>>>> @@ -100,9 +100,23 @@
+>>>>
+>>>>  #define KELVINMIL_CELSIUSMIL            273150
+>>>>
+>>>> +#define PMI_CHG_SCALE_1                -138890
+>>>> +#define PMI_CHG_SCALE_2                391750000000
+>>>> +
+>>>>  #define VADC_CHAN_MIN            VADC_USBIN
+>>>>  #define VADC_CHAN_MAX            VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
+>>>>
+>>>> +/**
+>>>> + * struct vadc_map_pt - Map the graph representation for ADC channel
+>>>> + * @x: Represent the ADC digitized code.
+>>>> + * @y: Represent the physical data which can be temperature, voltage,
+>>>> + *     resistance.
+>>>> + */
+>>>> +struct vadc_map_pt {
+>>>> +    s32 x;
+>>>> +    s32 y;
+>>>> +};
+>>>> +
+>>>>  /*
+>>>>   * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
+>>>>   * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
+>>>> @@ -148,6 +162,9 @@ struct vadc_prescale_ratio {
+>>>>   *    start of conversion.
+>>>>   * @avg_samples: ability to provide single result from the ADC
+>>>>   *    that is an average of multiple measurements.
+>>>> + * @scale_fn: Represents the scaling function to convert voltage
+>>>> + *    physical units desired by the client for the channel.
+>>>> + *    Referenced from enum vadc_scale_fn_type.
+>>>>   */
+>>>>  struct vadc_channel_prop {
+>>>>      unsigned int channel;
+>>>> @@ -156,6 +173,7 @@ struct vadc_channel_prop {
+>>>>      unsigned int prescale;
+>>>>      unsigned int hw_settle_time;
+>>>>      unsigned int avg_samples;
+>>>> +    unsigned int scale_fn;
+>>>>  };
+>>>>
+>>>>  /**
+>>>> @@ -186,6 +204,37 @@ struct vadc_priv {
+>>>>      struct mutex         lock;
+>>>>  };
+>>>>
+>>>> +/**
+>>>> + * struct vadc_scale_fn - Scaling function prototype
+>>>> + * @scale: Function pointer to one of the scaling functions
+>>>> + *    which takes the adc properties, channel properties,
+>>>> + *    and returns the physical result.
+>>>> + */
+>>>> +struct vadc_scale_fn {
+>>>> +    int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
+>>>> +             u16, int *);
+>>>> +};
+>>>> +
+>>>> +/**
+>>>> + * enum vadc_scale_fn_type - Scaling function to convert ADC code to
+>>>> + *                physical scaled units for the channel.
+>>>> + * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
+>>>> + * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
+>>>> + *                 Uses a mapping table with 100K pullup.
+>>>> + * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
+>>>> + * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
+>>>> + * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
+>>>> + * SCALE_NONE: Do not use this scaling type.
+>>>> + */
+>>>> +enum vadc_scale_fn_type {
+>>>> +    SCALE_DEFAULT = 0,
+>>>> +    SCALE_THERM_100K_PULLUP,
+>>>> +    SCALE_PMIC_THERM,
+>>>> +    SCALE_XOTHERM,
+>>>> +    SCALE_PMI_CHG_TEMP,
+>>>> +    SCALE_NONE,
+>>>> +};
+>>>> +
+>>>>  static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
+>>>>      {.num =  1, .den =  1},
+>>>>      {.num =  1, .den =  3},
+>>>> @@ -197,6 +246,44 @@ struct vadc_priv {
+>>>>      {.num =  1, .den = 10}
+>>>>  };
+>>>>
+>>>> +/* Voltage to temperature */
+>>>> +static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
+>>>> +    {1758,    -40},
+>>>> +    {1742,    -35},
+>>>> +    {1719,    -30},
+>>>> +    {1691,    -25},
+>>>> +    {1654,    -20},
+>>>> +    {1608,    -15},
+>>>> +    {1551,    -10},
+>>>> +    {1483,    -5},
+>>>> +    {1404,    0},
+>>>> +    {1315,    5},
+>>>> +    {1218,    10},
+>>>> +    {1114,    15},
+>>>> +    {1007,    20},
+>>>> +    {900,    25},
+>>>> +    {795,    30},
+>>>> +    {696,    35},
+>>>> +    {605,    40},
+>>>> +    {522,    45},
+>>>> +    {448,    50},
+>>>> +    {383,    55},
+>>>> +    {327,    60},
+>>>> +    {278,    65},
+>>>> +    {237,    70},
+>>>> +    {202,    75},
+>>>> +    {172,    80},
+>>>> +    {146,    85},
+>>>> +    {125,    90},
+>>>> +    {107,    95},
+>>>> +    {92,    100},
+>>>> +    {79,    105},
+>>>> +    {68,    110},
+>>>> +    {59,    115},
+>>>> +    {51,    120},
+>>>> +    {44,    125}
+>>>> +};
+>>>> +
+>>>>  static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
+>>>>  {
+>>>>      return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
+>>>> @@ -418,7 +505,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>>>      u16 read_1, read_2;
+>>>>      int ret;
+>>>>
+>>>> -    vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
+>>>> +    vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
+>>>>      vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
+>>>>
+>>>>      prop = vadc_get_channel(vadc, VADC_REF_1250MV);
+>>>> @@ -468,6 +555,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+>>>>      return ret;
+>>>>  }
+>>>>
+>>>> +static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
+>>>> +                 u32 tablesize, s32 input, s64 *output)
+>>>> +{
+>>>> +    bool descending = 1;
+>>>> +    u32 i = 0;
+>>>> +
+>>>> +    if (!pts)
+>>>> +        return -EINVAL;
+>>>> +
+>>>> +    /* Check if table is descending or ascending */
+>>>> +    if (tablesize > 1) {
+>>>> +        if (pts[0].x < pts[1].x)
+>>>> +            descending = 0;
+>>>> +    }
+>>>> +
+>>>> +    while (i < tablesize) {
+>>>> +        if ((descending) && (pts[i].x < input)) {
+>>>> +            /* table entry is less than measured*/
+>>>> +             /* value and table is descending, stop */
+>>>> +            break;
+>>>> +        } else if ((!descending) &&
+>>>> +                (pts[i].x > input)) {
+>>>> +            /* table entry is greater than measured*/
+>>>> +            /*value and table is ascending, stop */
+>>>> +            break;
+>>>> +        }
+>>>> +        i++;
+>>>> +    }
+>>>> +
+>>>> +    if (i == 0) {
+>>>> +        *output = pts[0].y;
+>>>> +    } else if (i == tablesize) {
+>>>> +        *output = pts[tablesize - 1].y;
+>>>> +    } else {
+>>>> +        /* result is between search_index and search_index-1 */
+>>>> +        /* interpolate linearly */
+>>>> +        *output = (((s32)((pts[i].y - pts[i - 1].y) *
+>>>> +            (input - pts[i - 1].x)) /
+>>>> +            (pts[i].x - pts[i - 1].x)) +
+>>>> +            pts[i - 1].y);
+>>>> +    }
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>>  static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
+>>>>                   const struct vadc_channel_prop *prop,
+>>>>                   s64 *scale_voltage)
+>>>> @@ -502,6 +634,77 @@ static int vadc_scale_volt(struct vadc_priv *vadc,
+>>>>      return 0;
+>>>>  }
+>>>>
+>>>> +static int vadc_scale_therm(struct vadc_priv *vadc,
+>>>> +                const struct vadc_channel_prop *prop, u16 adc_code,
+>>>> +                int *result_mdec)
+>>>> +{
+>>>> +    s64 voltage = 0, result = 0;
+>>>> +
+>>>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>>> +
+>>>> +    if (prop->calibration == VADC_CALIB_ABSOLUTE)
+>>>> +        voltage /= 1000;
+>>>> +
+>>>> +    vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
+>>>> +                  ARRAY_SIZE(adcmap_100k_104ef_104fb),
+>>>> +                  voltage, &result);
+>>>> +    result *= 1000;
+>>>> +    *result_mdec = result;
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int vadc_scale_die_temp(struct vadc_priv *vadc,
+>>>> +                   const struct vadc_channel_prop *prop,
+>>>> +                   u16 adc_code, int *result_mdec)
+>>>> +{
+>>>> +    const struct vadc_prescale_ratio *prescale;
+>>>> +    s64 voltage = 0;
+>>>> +
+>>>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>>> +
+>>>> +    if (voltage > 0) {
+>>>> +        prescale = &vadc_prescale_ratios[prop->prescale];
+>>>> +        voltage = voltage * prescale->den;
+>>>> +        voltage /= (prescale->num * 2);
+>>>> +    } else {
+>>>> +        voltage = 0;
+>>>> +    }
+>>>> +
+>>>> +    voltage -= KELVINMIL_CELSIUSMIL;
+>>>> +    *result_mdec = voltage;
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int vadc_scale_chg_temp(struct vadc_priv *vadc,
+>>>> +                   const struct vadc_channel_prop *prop,
+>>>> +                   u16 adc_code, int *result_mdec)
+>>>> +{
+>>>> +    const struct vadc_prescale_ratio *prescale;
+>>>> +    s64 voltage = 0, result = 0;
+>>>> +
+>>>> +    vadc_scale_calib(vadc, adc_code, prop, &voltage);
+>>>> +
+>>>> +    prescale = &vadc_prescale_ratios[prop->prescale];
+>>>> +    voltage = voltage * prescale->den;
+>>>> +    voltage = div64_s64(voltage, prescale->num);
+>>>> +    voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
+>>>> +    voltage = (voltage + PMI_CHG_SCALE_2);
+>>>> +    result =  div64_s64(voltage, 1000000);
+>>>> +    *result_mdec = result;
+>>>> +
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>> +static int vadc_scale(struct vadc_priv *vadc,
+>>>> +              const struct vadc_channel_prop *prop, u16 adc_code,
+>>>> +              int *scale)
+>>>> +{
+>>>> +    dev_err(vadc->dev, "Need a scale function\n");
+>>>> +    return 0;
+>>>> +}
+>>>> +
+>>>>  static int vadc_decimation_from_dt(u32 value)
+>>>>  {
+>>>>      if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
+>>>> @@ -547,6 +750,15 @@ static int vadc_avg_samples_from_dt(u32 value)
+>>>>      return __ffs64(value);
+>>>>  }
+>>>>
+>>>> +static struct vadc_scale_fn scale_fn[] = {
+>>>> +    [SCALE_DEFAULT] = {vadc_scale_volt},
+>>>> +    [SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
+>>>> +    [SCALE_PMIC_THERM] = {vadc_scale_die_temp},
+>>>> +    [SCALE_XOTHERM] = {vadc_scale_therm},
+>>>> +    [SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
+>>>> +    [SCALE_NONE] = {vadc_scale},
+>>>> +};
+>>>> +
+>>>>  static int vadc_read_raw(struct iio_dev *indio_dev,
+>>>>               struct iio_chan_spec const *chan, int *val, int *val2,
+>>>>               long mask)
+>>>> @@ -563,7 +775,7 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+>>>>          if (ret)
+>>>>              break;
+>>>>
+>>>> -        vadc_scale_volt(vadc, prop, adc_code, val);
+>>>> +        scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
+>>>>
+>>>>          return IIO_VAL_INT;
+>>>>      case IIO_CHAN_INFO_RAW:
+>>>> @@ -606,23 +818,27 @@ struct vadc_channels {
+>>>>      unsigned int prescale_index;
+>>>>      enum iio_chan_type type;
+>>>>      long info_mask;
+>>>> +    unsigned int scale_fn;
+>>>>  };
+>>>>
+>>>> -#define VADC_CHAN(_dname, _type, _mask, _pre)                \
+>>>> +#define VADC_CHAN(_dname, _type, _mask, _pre, _scale)            \
+>>>>      [VADC_##_dname] = {                        \
+>>>>          .datasheet_name = __stringify(_dname),            \
+>>>>          .prescale_index = _pre,                    \
+>>>>          .type = _type,                        \
+>>>> -        .info_mask = _mask                    \
+>>>> +        .info_mask = _mask,                    \
+>>>> +        .scale_fn = _scale                    \
+>>>>      },                                \
+>>>>
+>>>> -#define VADC_CHAN_TEMP(_dname, _pre)                    \
+>>>> -    VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)    \
+>>>> +#define VADC_CHAN_TEMP(_dname, _pre, _scale)                \
+>>>> +    VADC_CHAN(_dname, IIO_TEMP,                    \
+>>>> +        BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),    \
+>>>> +        _pre, _scale)                        \
+>>>>
+>>>> -#define VADC_CHAN_VOLT(_dname, _pre)                    \
+>>>> +#define VADC_CHAN_VOLT(_dname, _pre, _scale)                \
+>>>>      VADC_CHAN(_dname, IIO_VOLTAGE,                    \
+>>>>            BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
+>>>> -          _pre)                            \
+>>>> +          _pre, _scale)                        \
+>>> In the SCALE_NONE case you are still creating the sysfs attributes to provide
+>>> processed.  Just have a variant of this macro that doesn't do this.
+>>>
+>>> That way we don't end up with a sysfs attribute that always results in
+>>> an error!
+>>>
+>>> #define VADC_CHAN_VOLT_NO_KNOWN_SCALEE(_dname, _pre) \
+>>>     VADC_CHAN(_dname, IIO_VOLTAGE, BIT(IIO_CHAN_INFO_RAW), _pre);
+>>>
+>> sysfs attributes will be created only for the channels that are populated from DT. Here we are just mapping a function that needs to be invoked in case the channel is available.
+>>
+>> None of the channels are exposed in sysfs unconditionally. Channels with DT entry only will get exposed in sysfs.
+>>
+>> For SCALE_NONE .., none of these channels will get exposed in sysfs.
+>> Even for other SCALE_* ., the channels will be shown in sysfs only if there is any corresponding DT entry for that channel.
+> But if someone does write a DT that specifies those channels then it'll be wrong.
+> The fix is easy. Fix it in here.
+Sure ., Will fix this and will post next patch.
+>>
+>> If an entry is created for channels with SCALE_NONE in DT ., then the corresponding SCALE_* function needs to be implemented by removing SCALE_NONE.
+>>>>
+>>>>  /*
+>>>>   * The array represents all possible ADC channels found in the supported PMICs.
+>>>> @@ -630,106 +846,106 @@ struct vadc_channels {
+>>>>   * gaps in the array should be treated as reserved channels.
+>>>>   */
+>>>>  static const struct vadc_channels vadc_chans[] = {
+>>>> -    VADC_CHAN_VOLT(USBIN, 4)
+>>>> -    VADC_CHAN_VOLT(DCIN, 4)
+>>>> -    VADC_CHAN_VOLT(VCHG_SNS, 3)
+>>>> -    VADC_CHAN_VOLT(SPARE1_03, 1)
+>>>> -    VADC_CHAN_VOLT(USB_ID_MV, 1)
+>>>> -    VADC_CHAN_VOLT(VCOIN, 1)
+>>>> -    VADC_CHAN_VOLT(VBAT_SNS, 1)
+>>>> -    VADC_CHAN_VOLT(VSYS, 1)
+>>>> -    VADC_CHAN_TEMP(DIE_TEMP, 0)
+>>>> -    VADC_CHAN_VOLT(REF_625MV, 0)
+>>>> -    VADC_CHAN_VOLT(REF_1250MV, 0)
+>>>> -    VADC_CHAN_VOLT(CHG_TEMP, 0)
+>>>> -    VADC_CHAN_VOLT(SPARE1, 0)
+>>>> -    VADC_CHAN_VOLT(SPARE2, 0)
+>>>> -    VADC_CHAN_VOLT(GND_REF, 0)
+>>>> -    VADC_CHAN_VOLT(VDD_VADC, 0)
+>>>> -
+>>>> -    VADC_CHAN_VOLT(P_MUX1_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX2_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX3_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX4_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX5_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX6_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX7_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX8_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX9_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX10_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX11_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX12_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX13_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX14_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX15_1_1, 0)
+>>>> -    VADC_CHAN_VOLT(P_MUX16_1_1, 0)
+>>>> -
+>>>> -    VADC_CHAN_VOLT(P_MUX1_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX2_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX3_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX4_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX5_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX6_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX7_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX8_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX9_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX10_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX11_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX12_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX13_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX14_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX15_1_3, 1)
+>>>> -    VADC_CHAN_VOLT(P_MUX16_1_3, 1)
+>>>> -
+>>>> -    VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0)
+>>>> -    VADC_CHAN_VOLT(AMUX_PU1, 0)
+>>>> -    VADC_CHAN_VOLT(AMUX_PU2, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
+>>>> -
+>>>> -    VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
+>>>> -
+>>>> -    VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
+>>>  -    VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
+>>>> -
+>>>> -    VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
+>>>> -    VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
+>>>> +    VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_VOLT(VCHG_SNS, 3, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(SPARE1_03, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(USB_ID_MV, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(VCOIN, 1, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_VOLT(VBAT_SNS, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(VSYS, 1, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_TEMP(DIE_TEMP, 0, SCALE_PMIC_THERM)
+>>>> +    VADC_CHAN_VOLT(REF_625MV, 0, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_VOLT(REF_1250MV, 0, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_VOLT(CHG_TEMP, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(SPARE1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(SPARE2, 0, SCALE_PMI_CHG_TEMP)
+>>>> +    VADC_CHAN_VOLT(GND_REF, 0, SCALE_DEFAULT)
+>>>> +    VADC_CHAN_VOLT(VDD_VADC, 0, SCALE_DEFAULT)
+>>>> +
+>>>> +    VADC_CHAN_VOLT(P_MUX1_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX2_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX3_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX4_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX5_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX6_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX7_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX8_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX9_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX10_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX11_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX12_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX13_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX14_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX15_1_1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX16_1_1, 0, SCALE_NONE)
+>>>> +
+>>>> +    VADC_CHAN_VOLT(P_MUX1_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX2_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX3_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX4_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX5_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX6_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX7_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX8_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX9_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX10_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX11_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX12_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX13_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX14_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX15_1_3, 1, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(P_MUX16_1_3, 1, SCALE_NONE)
+>>>> +
+>>>> +    VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(AMUX_PU1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(AMUX_PU2, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0, SCALE_NONE)
+>>>> +
+>>>> +    VADC_CHAN_TEMP(LR_MUX1_PU1_BAT_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX3_PU1_XO_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0, SCALE_THERM_100K_PULLUP)
+>>>> +    VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0, SCALE_THERM_100K_PULLUP)
+>>>> +    VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0, SCALE_THERM_100K_PULLUP)
+>>>> +    VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0, SCALE_THERM_100K_PULLUP)
+>>>> +    VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0, SCALE_THERM_100K_PULLUP)
+>>>> +    VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0, SCALE_XOTHERM)
+>>>> +
+>>>> +    VADC_CHAN_TEMP(LR_MUX1_PU2_BAT_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX3_PU2_XO_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX4_PU2_AMUX_THM1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX5_PU2_AMUX_THM2, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX6_PU2_AMUX_THM3, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX8_PU2_AMUX_THM4, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX9_PU2_AMUX_THM5, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU2_XO_THERM, 0, SCALE_NONE)
+>>>> +
+>>>> +    VADC_CHAN_TEMP(LR_MUX1_PU1_PU2_BAT_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX3_PU1_PU2_XO_THERM, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX4_PU1_PU2_AMUX_THM1, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX5_PU1_PU2_AMUX_THM2, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX6_PU1_PU2_AMUX_THM3, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX8_PU1_PU2_AMUX_THM4, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX9_PU1_PU2_AMUX_THM5, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0, SCALE_NONE)
+>>>> +    VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0, SCALE_NONE)
+>>>>  };
+>>>>
+>>>>  static int vadc_get_dt_channel_data(struct device *dev,
+>>>> @@ -848,6 +1064,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
+>>>>              return ret;
+>>>>          }
+>>>>
+>>>> +        prop.scale_fn = vadc_chans[prop.channel].scale_fn;
+>>>>          vadc->chan_props[index] = prop;
+>>>>
+>>>>          vadc_chan = &vadc_chans[prop.channel];
+>>>>
+>>>
+>> Thanks,
+>> Ramakrishna
+>> --
+>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+>> the body of a message to majordomo@vger.kernel.org
+>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>
+Thanks,
+Ramakrishna
