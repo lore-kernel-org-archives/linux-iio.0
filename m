@@ -1,183 +1,608 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f174.google.com ([209.85.210.174]:33396 "EHLO
-        mail-wj0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753592AbcLIOQS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 09:16:18 -0500
-Received: by mail-wj0-f174.google.com with SMTP id xy5so15769733wjc.0
-        for <linux-iio@vger.kernel.org>; Fri, 09 Dec 2016 06:16:17 -0800 (PST)
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v6 0/8] Add PWM and IIO timer drivers for STM32
-Date: Fri,  9 Dec 2016 15:15:11 +0100
-Message-Id: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+Received: from mail-wj0-f194.google.com ([209.85.210.194]:33072 "EHLO
+        mail-wj0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753211AbcLIVJD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 16:09:03 -0500
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v12 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
+Date: Fri,  9 Dec 2016 22:08:49 +0100
+Message-Id: <48059c9a5a73d2cf6e92e3eb65844d2ad226f8a0.1481315766.git.ksenija.stanojevic@gmail.com>
+In-Reply-To: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
+References: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
+In-Reply-To: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
+References: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-version 6:
-- rename stm32-gptimer in stm32-timers.
-- change "st,stm32-gptimer" compatible to "st,stm32-timers".
-- modify "st,breakinput" parameter in pwm part.
-- split DT patch in 2
+Add core files for low resolution analog-to-digital converter (mxs-lradc)
+MFD driver.
 
-version 5:
-- fix comments done on version 4
-- rebased on kernel 4.9-rc8
-- change nodes names and re-order then by addresses
+Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Reviewed-by: Marek Vasut <marex@denx.de>
+---
+Changes in v12:
+ - use BIT macro
 
-version 4:
-- fix comments done on version 3
-- don't use interrupts anymore in IIO timer
-- detect hardware capabilities at probe time to simplify binding
+Changes in v11:
+ - create static struct mfd_cells
+ - don't set platform data in mfd cells, set driver data instead
+ - remove mxs_lradc_reg_* functions, use writel function instead
 
-version 3:
-- no change on mfd and pwm divers patches
-- add cross reference between bindings
-- change compatible to "st,stm32-timer-trigger"
-- fix attributes access rights
-- use string instead of int for master_mode and slave_mode
-- document device attributes in sysfs-bus-iio-timer-stm32
-- update DT with the new compatible
+Changes in v10:
+ - fetch base address from DT
+ - add a NULL check for of_match_device
 
-version 2:
-- keep only one compatible per driver
-- use DT parameters to describe hardware block configuration:
-  - pwm channels, complementary output, counter size, break input
-  - triggers accepted and create by IIO timers
-- change DT to limite use of reference to the node
-- interrupt is now in IIO timer driver
-- rename stm32-mfd-timer to stm32-timers (for general purpose timer)
+Changes in v9:
+ - improve commit message.
 
-The following patches enable PWM and IIO Timer features for STM32 platforms.
+Changes in v8:
+ - rebase onto 4.9-rc1
 
-Those two features are mixed into the registers of the same hardware block
-(named general purpose timer) which lead to introduce a multifunctions driver 
-on the top of them to be able to share the registers.
+Changes in v7:
+ - define macros ADC_CELL and TSC_CELL
+ - remove one cell and dynamically set them in the switch()
+ - fail in the touchscreen driver instead of mfd driver if
+   hardware doesn't contain a touchscreen
 
-In STM32f4 14 instances of timer hardware block exist, even if they all have
-the same register mapping they could have a different number of pwm channels
-and/or different triggers capabilities. We use various parameters in DT to 
-describe the differences between hardware blocks
+Changes in v6:
+ - update copyright
+ - add kernel-doc header for struct mxs-lradc
+ - add error message
+ - change EINVAL to ENODEV
+ - use PLATFORM_DEVID_NONE instead -1
+ - cosmetic fixes
 
-The MFD (stm32-timers.c) takes care of clock and register mapping
-by using regmap. stm32_timers structure is provided to its sub-node to
-share those information.
+Changes in v5:
+ - use DEFINE_RES_MEM
+ - don't pass ioreammaped adress to platform cells
+ - move comment outside of struct mxs_lradc
+ - change type of argument in mxs_lradc_reg_set, mxs_lradc_reg_clear,
+   mxs_lradc_reg_wrt (struct mxs_lradc * -> void __iomem *)
 
-PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
-have up to 4 channels, sometime with complementary outputs or 32 bits counter
-instead of 16 bits. Some hardware blocks may also have a break input function
-which allows to stop pwm depending of a level, defined in devicetree, on an
-external pin.
+Changes in v4:
+ - update copyright
+ - use DEFINE_RES_IRQ_NAMED
+ - remove mxs_lradc_add_device function
+ - use struct mfd_cell in static form
+ - improve spacing
+ - remove unnecessary comment
+ - remove platform_get_irq
+ - remove touch_ret and use ret instead
+ - rename use_touchscreen to touchscreen_wire
+ - use goto statements
+ - remove irq[13], irq_count and irq_name from struct mxs_lradc
+ - remove all defines from inside the struct definition
 
-IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
-of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
+Changes in v3:
+ - add note to commit message
+ - move switch statement into if(touch_ret == 0) branch
+ - add MODULE_AUTHOR
 
-The matrix of possible connections between blocks is quite complex so we use 
-trigger names and is_stm32_iio_timer_trigger() function to be sure that
-triggers are valid and configure the IPs.
+Changes in v2:
+ - do not change spacing in Kconfig
+ - make struct mfd_cell part of struct mxs_lradc
+ - use switch instead of if in mxs_lradc_irq_mask
+ - use only necessary header files in mxs_lradc.h
+ - use devm_mfd_add_device
+ - use separate function to register mfd device
+ - change licence to GPL
+ - add copyright
 
-At run time IIO timer hardware blocks can configure (through "master_mode" 
-IIO device attribute) which internal signal (counter enable, reset,
-comparison block, etc...) is used to generate the trigger.
+ drivers/mfd/Kconfig           |  17 +++
+ drivers/mfd/Makefile          |   1 +
+ drivers/mfd/mxs-lradc.c       | 264 ++++++++++++++++++++++++++++++++++++++++++
+ include/linux/mfd/mxs-lradc.h | 187 ++++++++++++++++++++++++++++++
+ 4 files changed, 469 insertions(+)
+ create mode 100644 drivers/mfd/mxs-lradc.c
+ create mode 100644 include/linux/mfd/mxs-lradc.h
 
-By using "slave_mode" IIO device attribute timer can also configure on which
-event (level, rising edge) of the block is enabled.
-
-Since we can use trigger from one hardware to control an other block, we can
-use a pwm to control an other one. The following example shows how to configure
-pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
-
-/sys/bus/iio/devices # ls
-iio:device0  iio:device1  trigger0     trigger1
-
-configure timer1 to use pwm1 channel 0 as output trigger
-/sys/bus/iio/devices # echo 'OC1REF' > iio\:device0/master_mode
-configure timer3 to enable only when input is high
-/sys/bus/iio/devices # echo 'gated' > iio\:device1/slave_mode
-/sys/bus/iio/devices # cat trigger0/name
-tim1_trgo
-configure timer2 to use timer1 trigger is input
-/sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
-
-configure pwm3 channel 0 to generate a signal with a period of 100ms and a
-duty cycle of 50%
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 100000000 > pwm0/period
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
-here pwm3 channel 0, as expected, doesn't start because has to be triggered by
-pwm1 channel 0
-
-configure pwm1 channel 0 to generate a signal with a period of 1s and a
-duty cycle of 50%
-/sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 0 > export
-/sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1000000000 > pwm0/period
-/sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
-/sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1 > pwm0/enable 
-finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
-
-An other example to use a timer as source of clock for another device.
-Here timer1 is used a source clock for pwm3:
-
-/sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
-/sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger 
-/sys/bus/iio/devices # echo 'external_clock' > iio\:device1/slave_mode
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export 
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1000000 > pwm0/period 
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
-/sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
-
-Benjamin Gaignard (8):
-  MFD: add bindings for STM32 Timers driver
-  MFD: add STM32 Timers driver
-  PWM: add pwm-stm32 DT bindings
-  PWM: add PWM driver for STM32 plaftorm
-  IIO: add bindings for STM32 timer trigger driver
-  IIO: add STM32 timer trigger driver
-  ARM: dts: stm32: add Timers driver for stm32f429 MCU
-  ARM: dts: stm32: Enable pw1 and pwm3 for stm32f469-disco
-
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
- .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 +
- .../devicetree/bindings/mfd/stm32-timers.txt       |  46 ++
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
- arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++
- arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
- drivers/iio/Kconfig                                |   2 +-
- drivers/iio/Makefile                               |   1 +
- drivers/iio/timer/Kconfig                          |  13 +
- drivers/iio/timer/Makefile                         |   1 +
- drivers/iio/timer/stm32-timer-trigger.c            | 466 +++++++++++++++++++++
- drivers/iio/trigger/Kconfig                        |   1 -
- drivers/mfd/Kconfig                                |  11 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/stm32-timers.c                         |  80 ++++
- drivers/pwm/Kconfig                                |   9 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32.c                            | 434 +++++++++++++++++++
- include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
- include/linux/mfd/stm32-timers.h                   |  71 ++++
- 20 files changed, 1612 insertions(+), 2 deletions(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
- create mode 100644 drivers/iio/timer/Kconfig
- create mode 100644 drivers/iio/timer/Makefile
- create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
- create mode 100644 drivers/mfd/stm32-timers.c
- create mode 100644 drivers/pwm/pwm-stm32.c
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
- create mode 100644 include/linux/mfd/stm32-timers.h
-
+diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+index 819dc0a..e5c1289 100644
+--- a/drivers/mfd/Kconfig
++++ b/drivers/mfd/Kconfig
+@@ -343,6 +343,23 @@ config MFD_MC13XXX_I2C
+ 	help
+ 	  Select this if your MC13xxx is connected via an I2C bus.
+ 
++config MFD_MXS_LRADC
++	tristate "Freescale i.MX23/i.MX28 LRADC"
++	depends on ARCH_MXS || COMPILE_TEST
++	select MFD_CORE
++	select STMP_DEVICE
++	help
++	  Say yes here to build support for the Low Resolution
++	  Analog-to-Digital Converter (LRADC) found on the i.MX23 and i.MX28
++	  processors. This driver provides common support for accessing the
++	  device, additional drivers must be enabled in order to use the
++	  functionality of the device:
++		mxs-lradc-adc for ADC readings
++		mxs-lradc-ts  for touchscreen support
++
++	  This driver can also be built as a module. If so, the module will be
++	  called mxs-lradc.
++
+ config MFD_MX25_TSADC
+ 	tristate "Freescale i.MX25 integrated Touchscreen and ADC unit"
+ 	select REGMAP_MMIO
+diff --git a/drivers/mfd/Makefile b/drivers/mfd/Makefile
+index db39377..90e9f36 100644
+--- a/drivers/mfd/Makefile
++++ b/drivers/mfd/Makefile
+@@ -212,3 +212,4 @@ obj-$(CONFIG_MFD_MT6397)	+= mt6397-core.o
+ 
+ obj-$(CONFIG_MFD_ALTERA_A10SR)	+= altera-a10sr.o
+ obj-$(CONFIG_MFD_SUN4I_GPADC)	+= sun4i-gpadc.o
++obj-$(CONFIG_MFD_MXS_LRADC)     += mxs-lradc.o
+diff --git a/drivers/mfd/mxs-lradc.c b/drivers/mfd/mxs-lradc.c
+new file mode 100644
+index 0000000..e29ff55
+--- /dev/null
++++ b/drivers/mfd/mxs-lradc.c
+@@ -0,0 +1,264 @@
++/*
++ * Freescale MXS Low Resolution Analog-to-Digital Converter driver
++ *
++ * Copyright (c) 2012 DENX Software Engineering, GmbH.
++ * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
++ *
++ * Authors:
++ *  Marek Vasut <marex@denx.de>
++ *  Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/clk.h>
++#include <linux/device.h>
++#include <linux/mfd/core.h>
++#include <linux/mfd/mxs-lradc.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#define ADC_CELL		0
++#define TSC_CELL		1
++#define RES_MEM			0
++
++enum mx23_lradc_irqs {
++	MX23_LRADC_TS_IRQ = 0,
++	MX23_LRADC_CH0_IRQ,
++	MX23_LRADC_CH1_IRQ,
++	MX23_LRADC_CH2_IRQ,
++	MX23_LRADC_CH3_IRQ,
++	MX23_LRADC_CH4_IRQ,
++	MX23_LRADC_CH5_IRQ,
++	MX23_LRADC_CH6_IRQ,
++	MX23_LRADC_CH7_IRQ,
++};
++
++enum mx28_lradc_irqs {
++	MX28_LRADC_TS_IRQ = 0,
++	MX28_LRADC_TRESH0_IRQ,
++	MX28_LRADC_TRESH1_IRQ,
++	MX28_LRADC_CH0_IRQ,
++	MX28_LRADC_CH1_IRQ,
++	MX28_LRADC_CH2_IRQ,
++	MX28_LRADC_CH3_IRQ,
++	MX28_LRADC_CH4_IRQ,
++	MX28_LRADC_CH5_IRQ,
++	MX28_LRADC_CH6_IRQ,
++	MX28_LRADC_CH7_IRQ,
++	MX28_LRADC_BUTTON0_IRQ,
++	MX28_LRADC_BUTTON1_IRQ,
++};
++
++static struct resource mx23_adc_resources[] = {
++	DEFINE_RES_MEM(0x0, 0x0),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
++};
++
++static struct resource mx23_touchscreen_resources[] = {
++	DEFINE_RES_MEM(0x0, 0x0),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
++	DEFINE_RES_IRQ_NAMED(MX23_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
++};
++
++static struct resource mx28_adc_resources[] = {
++	DEFINE_RES_MEM(0x0, 0x0),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH0_IRQ, "mxs-lradc-thresh0"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TRESH1_IRQ, "mxs-lradc-thresh1"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH0_IRQ, "mxs-lradc-channel0"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH1_IRQ, "mxs-lradc-channel1"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH2_IRQ, "mxs-lradc-channel2"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH3_IRQ, "mxs-lradc-channel3"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH4_IRQ, "mxs-lradc-channel4"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH5_IRQ, "mxs-lradc-channel5"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON0_IRQ, "mxs-lradc-button0"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_BUTTON1_IRQ, "mxs-lradc-button1"),
++};
++
++static struct resource mx28_touchscreen_resources[] = {
++	DEFINE_RES_MEM(0x0, 0x0),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_TS_IRQ, "mxs-lradc-touchscreen"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH6_IRQ, "mxs-lradc-channel6"),
++	DEFINE_RES_IRQ_NAMED(MX28_LRADC_CH7_IRQ, "mxs-lradc-channel7"),
++};
++
++static struct mfd_cell mx23_cells[] = {
++	{
++		.name = "mxs-lradc-adc",
++		.resources = mx23_adc_resources,
++		.num_resources = ARRAY_SIZE(mx23_adc_resources),
++	},
++	{
++		.name = "mxs-lradc-ts",
++		.resources = mx23_touchscreen_resources,
++		.num_resources = ARRAY_SIZE(mx23_touchscreen_resources),
++	},
++};
++
++static struct mfd_cell mx28_cells[] = {
++	{
++		.name = "mxs-lradc-adc",
++		.resources = mx28_adc_resources,
++		.num_resources = ARRAY_SIZE(mx28_adc_resources),
++	},
++	{
++		.name = "mxs-lradc-ts",
++		.resources = mx28_touchscreen_resources,
++		.num_resources = ARRAY_SIZE(mx28_touchscreen_resources),
++	}
++};
++
++static const struct of_device_id mxs_lradc_dt_ids[] = {
++	{ .compatible = "fsl,imx23-lradc", .data = (void *)IMX23_LRADC, },
++	{ .compatible = "fsl,imx28-lradc", .data = (void *)IMX28_LRADC, },
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, mxs_lradc_dt_ids);
++
++static int mxs_lradc_probe(struct platform_device *pdev)
++{
++	const struct of_device_id *of_id;
++	struct device *dev = &pdev->dev;
++	struct device_node *node = dev->of_node;
++	struct mxs_lradc *lradc;
++	struct mfd_cell *cells = NULL;
++	struct resource *res;
++	int ret = 0;
++	u32 ts_wires = 0;
++
++	lradc = devm_kzalloc(&pdev->dev, sizeof(*lradc), GFP_KERNEL);
++	if (!lradc)
++		return -ENOMEM;
++
++	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
++	if (!of_id)
++		return -EINVAL;
++
++	lradc->soc = (enum mxs_lradc_id)of_id->data;
++
++	lradc->clk = devm_clk_get(&pdev->dev, NULL);
++	if (IS_ERR(lradc->clk)) {
++		dev_err(dev, "Failed to get the delay unit clock\n");
++		return PTR_ERR(lradc->clk);
++	}
++
++	ret = clk_prepare_enable(lradc->clk);
++	if (ret) {
++		dev_err(dev, "Failed to enable the delay unit clock\n");
++		return ret;
++	}
++
++	ret = of_property_read_u32(node, "fsl,lradc-touchscreen-wires",
++					 &ts_wires);
++
++	if (!ret) {
++		lradc->buffer_vchans = BUFFER_VCHANS_LIMITED;
++
++		switch (ts_wires) {
++		case 4:
++			lradc->touchscreen_wire = MXS_LRADC_TOUCHSCREEN_4WIRE;
++			break;
++		case 5:
++			if (lradc->soc == IMX28_LRADC) {
++				lradc->touchscreen_wire =
++					MXS_LRADC_TOUCHSCREEN_5WIRE;
++				break;
++			}
++			/* fall through to an error message for i.MX23 */
++		default:
++			dev_err(&pdev->dev,
++				"Unsupported number of touchscreen wires (%d)\n"
++				, ts_wires);
++			ret = -EINVAL;
++			goto err_clk;
++		}
++	} else {
++		lradc->buffer_vchans = BUFFER_VCHANS_ALL;
++	}
++
++	platform_set_drvdata(pdev, lradc);
++
++	res = platform_get_resource(pdev, IORESOURCE_MEM, 0);
++	if (!res)
++		return -ENOMEM;
++
++	switch (lradc->soc) {
++	case IMX23_LRADC:
++		mx23_adc_resources[RES_MEM] = *res;
++		mx23_touchscreen_resources[RES_MEM] = *res;
++		cells = mx23_cells;
++		break;
++	case IMX28_LRADC:
++		mx28_adc_resources[RES_MEM] = *res;
++		mx28_touchscreen_resources[RES_MEM] = *res;
++		cells = mx28_cells;
++		break;
++	default:
++		dev_err(dev, "Unsupported SoC\n");
++		ret = -ENODEV;
++		goto err_clk;
++	}
++
++	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
++				   &cells[ADC_CELL], 1, NULL, 0, NULL);
++	if (ret) {
++		dev_err(&pdev->dev, "Failed to add the ADC subdevice\n");
++		goto err_clk;
++	}
++
++	ret = devm_mfd_add_devices(&pdev->dev, PLATFORM_DEVID_NONE,
++				   &cells[TSC_CELL], 1, NULL, 0, NULL);
++	if (ret) {
++		dev_err(&pdev->dev,
++			"Failed to add the touchscreen subdevice\n");
++		goto err_clk;
++	}
++
++	return 0;
++
++err_clk:
++	clk_disable_unprepare(lradc->clk);
++
++	return ret;
++}
++
++static int mxs_lradc_remove(struct platform_device *pdev)
++{
++	struct mxs_lradc *lradc = platform_get_drvdata(pdev);
++
++	clk_disable_unprepare(lradc->clk);
++
++	return 0;
++}
++
++static struct platform_driver mxs_lradc_driver = {
++	.driver = {
++		.name = "mxs-lradc",
++		.of_match_table = mxs_lradc_dt_ids,
++	},
++	.probe = mxs_lradc_probe,
++	.remove = mxs_lradc_remove,
++};
++module_platform_driver(mxs_lradc_driver);
++
++MODULE_AUTHOR("Ksenija Stanojevic <ksenija.stanojevic@gmail.com>");
++MODULE_DESCRIPTION("Freescale i.MX23/i.MX28 LRADC driver");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:mxs-lradc");
+diff --git a/include/linux/mfd/mxs-lradc.h b/include/linux/mfd/mxs-lradc.h
+new file mode 100644
+index 0000000..661a452
+--- /dev/null
++++ b/include/linux/mfd/mxs-lradc.h
+@@ -0,0 +1,187 @@
++/*
++ * Freescale MXS Low Resolution Analog-to-Digital Converter driver
++ *
++ * Copyright (c) 2012 DENX Software Engineering, GmbH.
++ * Copyright (c) 2016 Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
++ *
++ * Author: Marek Vasut <marex@denx.de>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ */
++
++#ifndef __MFD_MXS_LRADC_H
++#define __MFD_MXS_LRADC_H
++
++#include <linux/bitops.h>
++#include <linux/io.h>
++#include <linux/stmp_device.h>
++
++#define LRADC_MAX_DELAY_CHANS	4
++#define LRADC_MAX_MAPPED_CHANS	8
++#define LRADC_MAX_TOTAL_CHANS	16
++
++#define LRADC_DELAY_TIMER_HZ	2000
++
++#define LRADC_CTRL0				0x00
++# define LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE	BIT(23)
++# define LRADC_CTRL0_MX28_TOUCH_SCREEN_TYPE	BIT(22)
++# define LRADC_CTRL0_MX28_YNNSW /* YM */	BIT(21)
++# define LRADC_CTRL0_MX28_YPNSW /* YP */	BIT(20)
++# define LRADC_CTRL0_MX28_YPPSW /* YP */	BIT(19)
++# define LRADC_CTRL0_MX28_XNNSW /* XM */	BIT(18)
++# define LRADC_CTRL0_MX28_XNPSW /* XM */	BIT(17)
++# define LRADC_CTRL0_MX28_XPPSW /* XP */	BIT(16)
++
++# define LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE	BIT(20)
++# define LRADC_CTRL0_MX23_YM			BIT(19)
++# define LRADC_CTRL0_MX23_XM			BIT(18)
++# define LRADC_CTRL0_MX23_YP			BIT(17)
++# define LRADC_CTRL0_MX23_XP			BIT(16)
++
++# define LRADC_CTRL0_MX28_PLATE_MASK \
++		(LRADC_CTRL0_MX28_TOUCH_DETECT_ENABLE | \
++		LRADC_CTRL0_MX28_YNNSW | LRADC_CTRL0_MX28_YPNSW | \
++		LRADC_CTRL0_MX28_YPPSW | LRADC_CTRL0_MX28_XNNSW | \
++		LRADC_CTRL0_MX28_XNPSW | LRADC_CTRL0_MX28_XPPSW)
++
++# define LRADC_CTRL0_MX23_PLATE_MASK \
++		(LRADC_CTRL0_MX23_TOUCH_DETECT_ENABLE | \
++		LRADC_CTRL0_MX23_YM | LRADC_CTRL0_MX23_XM | \
++		LRADC_CTRL0_MX23_YP | LRADC_CTRL0_MX23_XP)
++
++#define LRADC_CTRL1				0x10
++#define LRADC_CTRL1_TOUCH_DETECT_IRQ_EN		BIT(24)
++#define LRADC_CTRL1_LRADC_IRQ_EN(n)		(1 << ((n) + 16))
++#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
++#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
++#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
++#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
++#define LRADC_CTRL1_LRADC_IRQ(n)		BIT(n)
++#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
++#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
++#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
++
++#define LRADC_CTRL2				0x20
++#define LRADC_CTRL2_DIVIDE_BY_TWO_OFFSET	24
++#define LRADC_CTRL2_TEMPSENSE_PWD		BIT(15)
++
++#define LRADC_STATUS				0x40
++#define LRADC_STATUS_TOUCH_DETECT_RAW		BIT(0)
++
++#define LRADC_CH(n)				(0x50 + (0x10 * (n)))
++#define LRADC_CH_ACCUMULATE			BIT(29)
++#define LRADC_CH_NUM_SAMPLES_MASK		(0x1f << 24)
++#define LRADC_CH_NUM_SAMPLES_OFFSET		24
++#define LRADC_CH_NUM_SAMPLES(x) \
++				((x) << LRADC_CH_NUM_SAMPLES_OFFSET)
++#define LRADC_CH_VALUE_MASK			0x3ffff
++#define LRADC_CH_VALUE_OFFSET			0
++
++#define LRADC_DELAY(n)				(0xd0 + (0x10 * (n)))
++#define LRADC_DELAY_TRIGGER_LRADCS_MASK		(0xffUL << 24)
++#define LRADC_DELAY_TRIGGER_LRADCS_OFFSET	24
++#define LRADC_DELAY_TRIGGER(x) \
++				(((x) << LRADC_DELAY_TRIGGER_LRADCS_OFFSET) & \
++				LRADC_DELAY_TRIGGER_LRADCS_MASK)
++#define LRADC_DELAY_KICK			BIT(20)
++#define LRADC_DELAY_TRIGGER_DELAYS_MASK		(0xf << 16)
++#define LRADC_DELAY_TRIGGER_DELAYS_OFFSET	16
++#define LRADC_DELAY_TRIGGER_DELAYS(x) \
++				(((x) << LRADC_DELAY_TRIGGER_DELAYS_OFFSET) & \
++				LRADC_DELAY_TRIGGER_DELAYS_MASK)
++#define LRADC_DELAY_LOOP_COUNT_MASK		(0x1f << 11)
++#define LRADC_DELAY_LOOP_COUNT_OFFSET		11
++#define LRADC_DELAY_LOOP(x) \
++				(((x) << LRADC_DELAY_LOOP_COUNT_OFFSET) & \
++				LRADC_DELAY_LOOP_COUNT_MASK)
++#define LRADC_DELAY_DELAY_MASK			0x7ff
++#define LRADC_DELAY_DELAY_OFFSET		0
++#define LRADC_DELAY_DELAY(x) \
++				(((x) << LRADC_DELAY_DELAY_OFFSET) & \
++				LRADC_DELAY_DELAY_MASK)
++
++#define LRADC_CTRL4				0x140
++#define LRADC_CTRL4_LRADCSELECT_MASK(n)		(0xf << ((n) * 4))
++#define LRADC_CTRL4_LRADCSELECT_OFFSET(n)	((n) * 4)
++#define LRADC_CTRL4_LRADCSELECT(n, x) \
++				(((x) << LRADC_CTRL4_LRADCSELECT_OFFSET(n)) & \
++				LRADC_CTRL4_LRADCSELECT_MASK(n))
++
++#define LRADC_RESOLUTION			12
++#define LRADC_SINGLE_SAMPLE_MASK		((1 << LRADC_RESOLUTION) - 1)
++
++#define BUFFER_VCHANS_LIMITED		0x3f
++#define BUFFER_VCHANS_ALL		0xff
++
++	/*
++	 * Certain LRADC channels are shared between touchscreen
++	 * and/or touch-buttons and generic LRADC block. Therefore when using
++	 * either of these, these channels are not available for the regular
++	 * sampling. The shared channels are as follows:
++	 *
++	 * CH0 -- Touch button #0
++	 * CH1 -- Touch button #1
++	 * CH2 -- Touch screen XPUL
++	 * CH3 -- Touch screen YPLL
++	 * CH4 -- Touch screen XNUL
++	 * CH5 -- Touch screen YNLR
++	 * CH6 -- Touch screen WIPER (5-wire only)
++	 *
++	 * The bit fields below represents which parts of the LRADC block are
++	 * switched into special mode of operation. These channels can not
++	 * be sampled as regular LRADC channels. The driver will refuse any
++	 * attempt to sample these channels.
++	 */
++#define CHAN_MASK_TOUCHBUTTON		(BIT(1) | BIT(0))
++#define CHAN_MASK_TOUCHSCREEN_4WIRE	(0xf << 2)
++#define CHAN_MASK_TOUCHSCREEN_5WIRE	(0x1f << 2)
++
++enum mxs_lradc_id {
++	IMX23_LRADC,
++	IMX28_LRADC,
++};
++
++enum mxs_lradc_ts_wires {
++	MXS_LRADC_TOUCHSCREEN_NONE = 0,
++	MXS_LRADC_TOUCHSCREEN_4WIRE,
++	MXS_LRADC_TOUCHSCREEN_5WIRE,
++};
++
++/**
++ * struct mxs_lradc
++ * @soc: soc type (IMX23 or IMX28)
++ * @clk: 2 kHz clock for delay units
++ * @buffer_vchans: channels that can be used during buffered capture
++ * @touchscreen_wire: touchscreen type (4-wire or 5-wire)
++ * @use_touchbutton: button state (on or off)
++ */
++struct mxs_lradc {
++	enum mxs_lradc_id	soc;
++	struct clk		*clk;
++	u8			buffer_vchans;
++
++	enum mxs_lradc_ts_wires	touchscreen_wire;
++	bool			use_touchbutton;
++};
++
++static inline u32 mxs_lradc_irq_mask(struct mxs_lradc *lradc)
++{
++	switch (lradc->soc) {
++	case IMX23_LRADC:
++		return LRADC_CTRL1_MX23_LRADC_IRQ_MASK;
++	case IMX28_LRADC:
++		return LRADC_CTRL1_MX28_LRADC_IRQ_MASK;
++	default:
++		return 0;
++	}
++}
++
++#endif /* __MXS_LRADC_H */
 -- 
 1.9.1
 
