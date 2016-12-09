@@ -1,140 +1,118 @@
-Return-Path: <SRS0=8KPB=XY=linaro.org=benjamin.gaignard@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <20161209085331.GB3625@dell.home>
-References: <1481199650-22484-1-git-send-email-benjamin.gaignard@st.com>
- <1481199650-22484-2-git-send-email-benjamin.gaignard@st.com> <20161209085331.GB3625@dell.home>
-From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Date: Fri, 9 Dec 2016 13:40:16 +0100
-Message-ID: <CA+M3ks4AKfj9_uXo9AiW22TnB8WUzDV1NnmsO1yJ3hZfHUvoJw@mail.gmail.com>
-Subject: Re: [PATCH v5 1/7] MFD: add bindings for STM32 General Purpose Timer driver
-To: Lee Jones <lee.jones@linaro.org>
-Cc: robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com,
-	devicetree@vger.kernel.org,
-	Linux Kernel Mailing List <linux-kernel@vger.kernel.org>, Thierry Reding <thierry.reding@gmail.com>,
-	linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org,
-	Fabrice Gasnier <fabrice.gasnier@st.com>, Gerald Baeza <gerald.baeza@st.com>,
-	Arnaud Pouliquen <arnaud.pouliquen@st.com>, Linus Walleij <linus.walleij@linaro.org>,
-	Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
-	Benjamin Gaignard <benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([62.4.15.54]:36953 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932976AbcLIKXW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 05:23:22 -0500
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
+        wens@csie.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
+        thomas.petazzoni@free-electrons.com
+Subject: [PATCH v8 0/3] add support for Allwinner SoCs ADC
+Date: Fri,  9 Dec 2016 11:22:33 +0100
+Message-Id: <20161209102236.17655-1-quentin.schulz@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-2016-12-09 9:53 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
-> Sorry to do this Ben.  Not much to do now though!
->
->> Add bindings information for STM32 General Purpose Timer
->>
->> version 2:
->> - rename stm32-mfd-timer to stm32-gptimer
->> - only keep one compatible string
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->> ---
->>  .../bindings/mfd/stm32-general-purpose-timer.txt   | 39 +++++++++++++++=
-+++++++
->>  1 file changed, 39 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-general-=
-purpose-timer.txt
->>
->> diff --git a/Documentation/devicetree/bindings/mfd/stm32-general-purpose=
--timer.txt b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-ti=
-mer.txt
->> new file mode 100644
->> index 0000000..ce67755
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/mfd/stm32-general-purpose-timer.=
-txt
->> @@ -0,0 +1,39 @@
->> +STM32 General Purpose Timer driver bindings
->
-> This is a great place to describe what we're *actually* trying to
-> achieve with this driver, and the worst place to use the term "general
-> purpose", since this IP is so much more than that.
->
->
-> "STM32 Timers
->
-> This IP provides 3 types of timer along with PWM functionality.
->
-> [...]"
->
-> ... then go on to explain what the 3 types are and how they can be
-> used.
->
->> +Required parameters:
->> +- compatible: must be "st,stm32-gptimer"
->
-> I vehemently disagree that this entire IP is a GP Timer.  It contains
-> GP timers, sure, but it also contains Advanced and Basic timers.
->
-> IMHO this compatible should be "st,stm32-timers".
->
-> And the file name of both this and the *.c file should reflect that
-> too.
+The Allwinner SoCs all have an ADC that can also act as a touchscreen
+controller and a thermal sensor. The first four channels can be used
+either for the ADC or the touchscreen and the fifth channel is used for
+the thermal sensor. We currently have a driver for the two latter
+functions in drivers/input/touchscreen/sun4i-ts.c but we don't have
+access to the ADC feature at all. It is meant to replace the current
+driver by using MFD and subdrivers.
 
-I will do those name changes in v6.
+This adds initial support for Allwinner SoCs ADC with all features. Yet,
+the touchscreen is not implemented but will be added later. To switch
+between touchscreen and ADC modes, you need to poke a few bits in
+registers and (de)activate an interrupt (pen-up).
 
->
-> Remainder looks nice.
->
->> +- reg:                       Physical base address and length of the co=
-ntroller's
->> +                     registers.
->> +- clock-names:               Set to "clk_int".
->> +- clocks:            Phandle to the clock used by the timer module.
->> +                     For Clk properties, please refer to ../clock/clock=
--bindings.txt
->> +
->> +Optional parameters:
->> +- resets:            Phandle to the parent reset controller.
->> +                     See ../reset/st,stm32-rcc.txt
->> +
->> +Optional subnodes:
->> +- pwm:                       See ../pwm/pwm-stm32.txt
->> +- timer:             See ../iio/timer/stm32-timer-trigger.txt
->> +
->> +Example:
->> +     timers@40010000 {
->> +             #address-cells =3D <1>;
->> +             #size-cells =3D <0>;
->> +             compatible =3D "st,stm32-gptimer";
->> +             reg =3D <0x40010000 0x400>;
->> +             clocks =3D <&rcc 0 160>;
->> +             clock-names =3D "clk_int";
->> +
->> +             pwm@0 {
->
-> Out of interest, do you use the "@0", "@1" for anything now?
+When changing modes or channels, the IP is in inconsistent mode and has
+no register or interrupt to notify the kernel when it's stable and ready
+to return correct values. Therefore, we add a delay of 100ms when
+changing modes and 10ms when changing channels. These values have been
+found empirically.
 
-No I don't use them so I will remove them in v6
+An MFD is provided to let the input driver activate the pen-up interrupt
+through a virtual interrupt, poke a few bits via regmap and read data
+from the ADC driver while both (and iio_hwmon) are probed by the MFD.
 
->
->> +                     compatible =3D "st,stm32-pwm";
->> +                     pinctrl-0       =3D <&pwm1_pins>;
->> +                     pinctrl-names   =3D "default";
->> +             };
->> +
->> +             timer@0 {
->> +                     compatible =3D "st,stm32-timer-trigger";
->> +                     reg =3D <0>;
->> +             };
->> +     };
->
-> --
-> Lee Jones
-> Linaro STMicroelectronics Landing Team Lead
-> Linaro.org =E2=94=82 Open source software for ARM SoCs
-> Follow Linaro: Facebook | Twitter | Blog
+The thermal sensor requires the IP to be in touchscreen mode to return
+correct values. Therefore, if the user is continuously reading the ADC
+channel(s), the thermal framework in which the thermal sensor is
+registered will switch the IP in touchscreen mode to get a temperature
+value and requires a delay of 100ms (because of the mode switching),
+then the ADC will switch back to ADC mode and requires also a delay of
+100ms. If the ADC readings are critical to user and the SoC temperature
+is not, this driver is capable of not registering the thermal sensor in
+the thermal framework and thus, "quicken" the ADC readings. In most use
+cases, the SoC temperature is more critical (for cpu throttling for
+example or activating cooling devices) than ADC readings, thus it is
+enabled by default in multi_v7_defconfig and in sunxi_defconfig (default
+being added in this patch series).
+
+There are slight variations between the different SoCs ADC like the
+address of some registers and the scale and offset to apply to raw
+thermal sensor values. These variations are handled by using different
+platform_device_id, passed to the sub-drivers when they are probed by
+the MFD.
 
 
 
---=20
-Benjamin Gaignard
+Removal of proposed patch for iio_hwmon's iio channel's label in v3. The
+patch induces irreversible ABI changes and will be handled as a separate
+patch since I think it is not absolutely necessary to have labels yet in
+iio_hwmon.
 
-Graphic Study Group
+Removal of proposed patch for reattaching of_node of the MFD to the MFD
+cell device structure in v3. As Lee Jones said, this patch might cause
+"unintended side-effects for existing drivers.". Moreover, this patch
+introduced a bug of multiple probe of this MFD driver I haven't
+identified yet. This patch aimed at allowing the ADC driver (which is a
+child of the MFD and not present in the DT) to register in the thermal
+framework. The thermal driver has a phandle to the MFD node which is
+used to match against the MFD of_node but since the ADC driver has no
+node in the DT, could not register in the thermal framework. The other
+solution is to "impersonate" the MFD when registering in the thermal
+framework since the device is only used to match the phandle and the
+of_node, an other structure passed by parameter being used to compute
+temperatures.
 
-Linaro.org =E2=94=82 Open source software for ARM SoCs
+(in the ADC driver, probed by the MFD driver) instead of:
+tzd = devm_thermal_zone_of_sensor_register(&pdev->dev, 0, info,
+					   &sun4i_ts_tz_ops);
+we now have:
+tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0, info,
+					   &sun4i_ts_tz_ops);
 
-Follow Linaro: Facebook | Twitter | Blog
+Removal of proposed patch to use late_initcall for iio_hwmon probe
+deferring.
+
+Removal of patch for iio_hwmon probe deferring due to being applied to
+ -next by Guenter Roeck.
+
+This patch series requires this[1] patch which has already been merged
+by Lee Jones.
+
+[1] https://patchwork.kernel.org/patch/9333547/
+
+Quentin Schulz (3):
+  ARM: sunxi_defconfig: Add CONFIG_THERMAL_OF
+  mfd: Kconfig: MFD_SUN4I_GPADC depends on !TOUCHSCREN_SUN4I_GPADC
+  iio: adc: add support for Allwinner SoCs ADC
+
+ arch/arm/configs/sunxi_defconfig  |   1 +
+ drivers/iio/adc/Kconfig           |  16 +
+ drivers/iio/adc/Makefile          |   1 +
+ drivers/iio/adc/sun4i-gpadc-iio.c | 612 ++++++++++++++++++++++++++++++++++++++
+ drivers/mfd/Kconfig               |   1 +
+ include/linux/mfd/sun4i-gpadc.h   |   2 +
+ 6 files changed, 633 insertions(+)
+ create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
+
+-- 
+2.9.3
+
