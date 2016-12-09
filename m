@@ -1,59 +1,98 @@
-Return-Path: <SRS0=D+Aj=XY=codeaurora.org=rphani@kernel.org>
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org,
-	jic23@kernel.org
-Cc: linux-arm-msm@vger.kernel.org,
-	cdevired@codeaurora.org,
-	smohanad@codeaurora.org,
-	mgautam@codeaurora.org,
-	sivaa@codeaurora.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net,
-	Julia.Lawall@lip6.fr,
-	Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V6 0/2] Changes to support different VADC scaling 
-Date: Fri,  9 Dec 2016 20:31:48 +0530
-Message-Id: <1481295710-22931-1-git-send-email-rphani@codeaurora.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f45.google.com ([74.125.82.45]:34087 "EHLO
+        mail-wm0-f45.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932777AbcLIOQV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 09:16:21 -0500
+Received: by mail-wm0-f45.google.com with SMTP id u144so13761705wmu.1
+        for <linux-iio@vger.kernel.org>; Fri, 09 Dec 2016 06:16:20 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
+        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
+        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v6 1/8] MFD: add bindings for STM32 Timers driver
+Date: Fri,  9 Dec 2016 15:15:12 +0100
+Message-Id: <1481292919-26587-2-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-VADC is a 15 bit ADC that measures signals through the Main analog
-multiplexer (AMUX). The driver arbitrates the request to issue ADC
-read requests. These patches adds different scaling functionality
-to convert adc code to physical units.
+Add bindings information for STM32 Timers
 
-[V6]
-	1. Remove processed sysfs attributes for SCALE_NONE.
+version 6:
+- rename stm32-gtimer to stm32-timers
+- change compatible
+- add description about the IPs
 
-[V5]
-	1. Retain new line as suggested.
+version 2:
+- rename stm32-mfd-timer to stm32-gptimer
+- only keep one compatible string
 
-[V4] 
-	1. Remove DT bindings and implement scaling logic with in driver.
-	
-[V3]
-	1. Update the commit text to give more information on the
-	   functionality implemented in the patches.
-   	2. Added Dt maintainers.
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+---
+ .../devicetree/bindings/mfd/stm32-timers.txt       | 46 ++++++++++++++++++++++
+ 1 file changed, 46 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
 
-[V2]
-	1. Replaced the do_div with normal division.
-	2. Split the functionality implemented in v1 patch.
-	3. Abstracted out common logic and updated change to report
-	   Raw adc code properly.
-   	4. Change to support different scaling functionality.
-	5. Added support for introducing new bindings in driver.
-
-[V1]
-	https://lkml.org/lkml/2016/10/25/26
-
-Rama Krishna Phani A (2):
-  iio: adc: spmi-vadc: Update function for generic voltage conversion
-  iio: adc: spmi-vadc: Changes to support different scaling
-
- drivers/iio/adc/qcom-spmi-vadc.c | 479 ++++++++++++++++++++++++++++-----------
- 1 file changed, 351 insertions(+), 128 deletions(-)
-
+diff --git a/Documentation/devicetree/bindings/mfd/stm32-timers.txt b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+new file mode 100644
+index 0000000..b30868e
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/stm32-timers.txt
+@@ -0,0 +1,46 @@
++STM32 Timers driver bindings
++
++This IP provides 3 types of timer along with PWM functionality:
++- advanced-control timers consist of a 16-bit auto-reload counter driven by a programmable
++  prescaler, break input feature, PWM outputs and complementary PWM ouputs channels.
++- general-purpose timers consist of a 16-bit or 32-bit auto-reload counter driven by a
++  programmable prescaler and PWM outputs.
++- basic timers consist of a 16-bit auto-reload counter driven by a programmable prescaler.
++
++Required parameters:
++- compatible: must be "st,stm32-timers"
++
++- reg:			Physical base address and length of the controller's
++			registers.
++- clock-names: 		Set to "clk_int".
++- clocks: 		Phandle to the clock used by the timer module.
++			For Clk properties, please refer to ../clock/clock-bindings.txt
++
++Optional parameters:
++- resets:		Phandle to the parent reset controller.
++			See ../reset/st,stm32-rcc.txt
++
++Optional subnodes:
++- pwm:			See ../pwm/pwm-stm32.txt
++- timer:		See ../iio/timer/stm32-timer-trigger.txt
++
++Example:
++	timers@40010000 {
++		#address-cells = <1>;
++		#size-cells = <0>;
++		compatible = "st,stm32-timers";
++		reg = <0x40010000 0x400>;
++		clocks = <&rcc 0 160>;
++		clock-names = "clk_int";
++
++		pwm {
++			compatible = "st,stm32-pwm";
++			pinctrl-0	= <&pwm1_pins>;
++			pinctrl-names	= "default";
++		};
++
++		timer {
++			compatible = "st,stm32-timer-trigger";
++			reg = <0>;
++		};
++	};
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+1.9.1
+
