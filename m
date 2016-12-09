@@ -1,589 +1,349 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtp.codeaurora.org ([198.145.29.96]:52162 "EHLO
-        smtp.codeaurora.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933723AbcLIPC1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 10:02:27 -0500
-From: Rama Krishna Phani A <rphani@codeaurora.org>
-To: linux-iio@vger.kernel.org, jic23@kernel.org
-Cc: linux-arm-msm@vger.kernel.org, cdevired@codeaurora.org,
-        smohanad@codeaurora.org, mgautam@codeaurora.org,
-        sivaa@codeaurora.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, Julia.Lawall@lip6.fr,
-        Rama Krishna Phani A <rphani@codeaurora.org>
-Subject: [PATCH V6 2/2] iio: adc: spmi-vadc: Changes to support different scaling
-Date: Fri,  9 Dec 2016 20:31:50 +0530
-Message-Id: <1481295710-22931-3-git-send-email-rphani@codeaurora.org>
-In-Reply-To: <1481295710-22931-1-git-send-email-rphani@codeaurora.org>
-References: <1481295710-22931-1-git-send-email-rphani@codeaurora.org>
+Received: from mail-wm0-f46.google.com ([74.125.82.46]:37909 "EHLO
+        mail-wm0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933397AbcLIOQj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 09:16:39 -0500
+Received: by mail-wm0-f46.google.com with SMTP id f82so28560540wmf.1
+        for <linux-iio@vger.kernel.org>; Fri, 09 Dec 2016 06:16:38 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
+        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
+        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v6 7/8] ARM: dts: stm32: add Timers driver for stm32f429 MCU
+Date: Fri,  9 Dec 2016 15:15:18 +0100
+Message-Id: <1481292919-26587-8-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Several ADC channels are supported in PMIC which can be used to
-measure voltage, temperature, current etc. Different scaling can be
-applied on the obtained voltage to report in physical units. Scaling
-functionality can be different per channel. Add scaling support per
-channel. Every channel present in adc has an unique conversion formula
-for obtained voltage. Add support to report in Raw as well as in
-processed format. Scaling is applied when processed read is requested
-and is not applied when a Raw read is requested.
+Add Timers and it sub-nodes into DT for stm32f429 family.
 
-Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
+version 6:
+- split patch in two: one for SoC family and one for stm32f469
+  discovery board.
+
+version 5:
+- rename gptimer node to timers
+- re-order timers node par addresses
+
+version 4:
+- remove unwanted indexing in pwm@ and timer@ node name
+- use "reg" instead of additional parameters to set timer
+  configuration
+
+version 3:
+- use "st,stm32-timer-trigger" in DT
+
+version 2:
+- use parameters to describe hardware capabilities
+- do not use references for pwm and iio timer subnodes
+
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 ---
- drivers/iio/adc/qcom-spmi-vadc.c | 435 +++++++++++++++++++++++++++++----------
- 1 file changed, 327 insertions(+), 108 deletions(-)
+ arch/arm/boot/dts/stm32f429.dtsi | 275 +++++++++++++++++++++++++++++++++++++++
+ 1 file changed, 275 insertions(+)
 
-diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-index 93c0639..aaf4caf 100644
---- a/drivers/iio/adc/qcom-spmi-vadc.c
-+++ b/drivers/iio/adc/qcom-spmi-vadc.c
-@@ -84,7 +84,7 @@
- #define VADC_MAX_ADC_CODE			0xa800
- 
- #define VADC_ABSOLUTE_RANGE_UV			625000
--#define VADC_RATIOMETRIC_RANGE_UV		1800000
-+#define VADC_RATIOMETRIC_RANGE			1800
- 
- #define VADC_DEF_PRESCALING			0 /* 1:1 */
- #define VADC_DEF_DECIMATION			0 /* 512 */
-@@ -100,9 +100,23 @@
- 
- #define KELVINMIL_CELSIUSMIL			273150
- 
-+#define PMI_CHG_SCALE_1				-138890
-+#define PMI_CHG_SCALE_2				391750000000
+diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f429.dtsi
+index bca491d..d0fb9cc 100644
+--- a/arch/arm/boot/dts/stm32f429.dtsi
++++ b/arch/arm/boot/dts/stm32f429.dtsi
+@@ -355,6 +355,21 @@
+ 					slew-rate = <2>;
+ 				};
+ 			};
 +
- #define VADC_CHAN_MIN			VADC_USBIN
- #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
- 
-+/**
-+ * struct vadc_map_pt - Map the graph representation for ADC channel
-+ * @x: Represent the ADC digitized code.
-+ * @y: Represent the physical data which can be temperature, voltage,
-+ *     resistance.
-+ */
-+struct vadc_map_pt {
-+	s32 x;
-+	s32 y;
-+};
++			pwm1_pins: pwm@1 {
++				pins {
++					pinmux = <STM32F429_PA8_FUNC_TIM1_CH1>,
++						 <STM32F429_PB13_FUNC_TIM1_CH1N>,
++						 <STM32F429_PB12_FUNC_TIM1_BKIN>;
++				};
++			};
 +
- /*
-  * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-  * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-@@ -148,6 +162,9 @@ struct vadc_prescale_ratio {
-  *	start of conversion.
-  * @avg_samples: ability to provide single result from the ADC
-  *	that is an average of multiple measurements.
-+ * @scale_fn: Represents the scaling function to convert voltage
-+ *	physical units desired by the client for the channel.
-+ *	Referenced from enum vadc_scale_fn_type.
-  */
- struct vadc_channel_prop {
- 	unsigned int channel;
-@@ -156,6 +173,7 @@ struct vadc_channel_prop {
- 	unsigned int prescale;
- 	unsigned int hw_settle_time;
- 	unsigned int avg_samples;
-+	unsigned int scale_fn;
++			pwm3_pins: pwm@3 {
++				pins {
++					pinmux = <STM32F429_PB4_FUNC_TIM3_CH1>,
++						 <STM32F429_PB5_FUNC_TIM3_CH2>;
++				};
++			};
+ 		};
+ 
+ 		rcc: rcc@40023810 {
+@@ -426,6 +441,266 @@
+ 			interrupts = <80>;
+ 			clocks = <&rcc 0 38>;
+ 		};
++
++		timers2: timers@40000000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000000 0x400>;
++			clocks = <&rcc 0 128>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <1>;
++				status = "disabled";
++			};
++		};
++
++		timers3: timers@40000400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000400 0x400>;
++			clocks = <&rcc 0 129>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <2>;
++				status = "disabled";
++			};
++		};
++
++		timers4: timers@40000800 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000800 0x400>;
++			clocks = <&rcc 0 130>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <3>;
++				status = "disabled";
++			};
++		};
++
++		timers5: timers@40000C00 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40000C00 0x400>;
++			clocks = <&rcc 0 131>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <4>;
++				status = "disabled";
++			};
++		};
++
++		timers6: timers@40001000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001000 0x400>;
++			clocks = <&rcc 0 132>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <5>;
++				status = "disabled";
++			};
++		};
++
++		timers7: timers@40001400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001400 0x400>;
++			clocks = <&rcc 0 133>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <6>;
++				status = "disabled";
++			};
++		};
++
++		timers12: timers@40001800 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001800 0x400>;
++			clocks = <&rcc 0 134>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <9>;
++				status = "disabled";
++			};
++		};
++
++		timers13: timers@40001C00 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40001C00 0x400>;
++			clocks = <&rcc 0 135>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
++
++		timers14: timers@40002000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40002000 0x400>;
++			clocks = <&rcc 0 136>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
++
++		timers1: timers@40010000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40010000 0x400>;
++			clocks = <&rcc 0 160>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <0>;
++				status = "disabled";
++			};
++		};
++
++		timers8: timers@40010400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40010400 0x400>;
++			clocks = <&rcc 0 161>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <7>;
++				status = "disabled";
++			};
++		};
++
++		timers9: timers@40014000 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40014000 0x400>;
++			clocks = <&rcc 0 176>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++
++			timer {
++				compatible = "st,stm32-timer-trigger";
++				reg = <8>;
++				status = "disabled";
++			};
++		};
++
++		timers10: timers@40014400 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40014400 0x400>;
++			clocks = <&rcc 0 177>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
++
++		timers11: timers@40014800 {
++			#address-cells = <1>;
++			#size-cells = <0>;
++			compatible = "st,stm32-timers";
++			reg = <0x40014800 0x400>;
++			clocks = <&rcc 0 178>;
++			clock-names = "clk_int";
++			status = "disabled";
++
++			pwm {
++				compatible = "st,stm32-pwm";
++				status = "disabled";
++			};
++		};
+ 	};
  };
  
- /**
-@@ -186,6 +204,35 @@ struct vadc_priv {
- 	struct mutex		 lock;
- };
- 
-+/**
-+ * struct vadc_scale_fn - Scaling function prototype
-+ * @scale: Function pointer to one of the scaling functions
-+ *	which takes the adc properties, channel properties,
-+ *	and returns the physical result.
-+ */
-+struct vadc_scale_fn {
-+	int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
-+		     u16, int *);
-+};
-+
-+/**
-+ * enum vadc_scale_fn_type - Scaling function to convert ADC code to
-+ *				physical scaled units for the channel.
-+ * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
-+ * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
-+ *				 Uses a mapping table with 100K pullup.
-+ * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
-+ * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
-+ * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
-+ */
-+enum vadc_scale_fn_type {
-+	SCALE_DEFAULT = 0,
-+	SCALE_THERM_100K_PULLUP,
-+	SCALE_PMIC_THERM,
-+	SCALE_XOTHERM,
-+	SCALE_PMI_CHG_TEMP,
-+};
-+
- static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
- 	{.num =  1, .den =  1},
- 	{.num =  1, .den =  3},
-@@ -197,6 +244,44 @@ struct vadc_priv {
- 	{.num =  1, .den = 10}
- };
- 
-+/* Voltage to temperature */
-+static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
-+	{1758,	-40},
-+	{1742,	-35},
-+	{1719,	-30},
-+	{1691,	-25},
-+	{1654,	-20},
-+	{1608,	-15},
-+	{1551,	-10},
-+	{1483,	-5},
-+	{1404,	0},
-+	{1315,	5},
-+	{1218,	10},
-+	{1114,	15},
-+	{1007,	20},
-+	{900,	25},
-+	{795,	30},
-+	{696,	35},
-+	{605,	40},
-+	{522,	45},
-+	{448,	50},
-+	{383,	55},
-+	{327,	60},
-+	{278,	65},
-+	{237,	70},
-+	{202,	75},
-+	{172,	80},
-+	{146,	85},
-+	{125,	90},
-+	{107,	95},
-+	{92,	100},
-+	{79,	105},
-+	{68,	110},
-+	{59,	115},
-+	{51,	120},
-+	{44,	125}
-+};
-+
- static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
- {
- 	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
-@@ -418,7 +503,7 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	u16 read_1, read_2;
- 	int ret;
- 
--	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE_UV;
-+	vadc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
- 	vadc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
- 
- 	prop = vadc_get_channel(vadc, VADC_REF_1250MV);
-@@ -468,6 +553,51 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
- 	return ret;
- }
- 
-+static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
-+				 u32 tablesize, s32 input, s64 *output)
-+{
-+	bool descending = 1;
-+	u32 i = 0;
-+
-+	if (!pts)
-+		return -EINVAL;
-+
-+	/* Check if table is descending or ascending */
-+	if (tablesize > 1) {
-+		if (pts[0].x < pts[1].x)
-+			descending = 0;
-+	}
-+
-+	while (i < tablesize) {
-+		if ((descending) && (pts[i].x < input)) {
-+			/* table entry is less than measured*/
-+			 /* value and table is descending, stop */
-+			break;
-+		} else if ((!descending) &&
-+				(pts[i].x > input)) {
-+			/* table entry is greater than measured*/
-+			/*value and table is ascending, stop */
-+			break;
-+		}
-+		i++;
-+	}
-+
-+	if (i == 0) {
-+		*output = pts[0].y;
-+	} else if (i == tablesize) {
-+		*output = pts[tablesize - 1].y;
-+	} else {
-+		/* result is between search_index and search_index-1 */
-+		/* interpolate linearly */
-+		*output = (((s32)((pts[i].y - pts[i - 1].y) *
-+			(input - pts[i - 1].x)) /
-+			(pts[i].x - pts[i - 1].x)) +
-+			pts[i - 1].y);
-+	}
-+
-+	return 0;
-+}
-+
- static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
- 			     const struct vadc_channel_prop *prop,
- 			     s64 *scale_voltage)
-@@ -502,6 +632,69 @@ static int vadc_scale_volt(struct vadc_priv *vadc,
- 	return 0;
- }
- 
-+static int vadc_scale_therm(struct vadc_priv *vadc,
-+			    const struct vadc_channel_prop *prop, u16 adc_code,
-+			    int *result_mdec)
-+{
-+	s64 voltage = 0, result = 0;
-+
-+	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-+		voltage /= 1000;
-+
-+	vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
-+			      ARRAY_SIZE(adcmap_100k_104ef_104fb),
-+			      voltage, &result);
-+	result *= 1000;
-+	*result_mdec = result;
-+
-+	return 0;
-+}
-+
-+static int vadc_scale_die_temp(struct vadc_priv *vadc,
-+			       const struct vadc_channel_prop *prop,
-+			       u16 adc_code, int *result_mdec)
-+{
-+	const struct vadc_prescale_ratio *prescale;
-+	s64 voltage = 0;
-+
-+	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+	if (voltage > 0) {
-+		prescale = &vadc_prescale_ratios[prop->prescale];
-+		voltage = voltage * prescale->den;
-+		voltage /= (prescale->num * 2);
-+	} else {
-+		voltage = 0;
-+	}
-+
-+	voltage -= KELVINMIL_CELSIUSMIL;
-+	*result_mdec = voltage;
-+
-+	return 0;
-+}
-+
-+static int vadc_scale_chg_temp(struct vadc_priv *vadc,
-+			       const struct vadc_channel_prop *prop,
-+			       u16 adc_code, int *result_mdec)
-+{
-+	const struct vadc_prescale_ratio *prescale;
-+	s64 voltage = 0, result = 0;
-+
-+	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-+
-+	prescale = &vadc_prescale_ratios[prop->prescale];
-+	voltage = voltage * prescale->den;
-+	voltage = div64_s64(voltage, prescale->num);
-+	voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
-+	voltage = (voltage + PMI_CHG_SCALE_2);
-+	result =  div64_s64(voltage, 1000000);
-+	*result_mdec = result;
-+
-+	return 0;
-+}
-+
- static int vadc_decimation_from_dt(u32 value)
- {
- 	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
-@@ -547,6 +740,14 @@ static int vadc_avg_samples_from_dt(u32 value)
- 	return __ffs64(value);
- }
- 
-+static struct vadc_scale_fn scale_fn[] = {
-+	[SCALE_DEFAULT] = {vadc_scale_volt},
-+	[SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
-+	[SCALE_PMIC_THERM] = {vadc_scale_die_temp},
-+	[SCALE_XOTHERM] = {vadc_scale_therm},
-+	[SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
-+};
-+
- static int vadc_read_raw(struct iio_dev *indio_dev,
- 			 struct iio_chan_spec const *chan, int *val, int *val2,
- 			 long mask)
-@@ -563,7 +764,7 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
- 		if (ret)
- 			break;
- 
--		vadc_scale_volt(vadc, prop, adc_code, val);
-+		scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
- 
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_RAW:
-@@ -606,22 +807,39 @@ struct vadc_channels {
- 	unsigned int prescale_index;
- 	enum iio_chan_type type;
- 	long info_mask;
-+	unsigned int scale_fn;
- };
- 
--#define VADC_CHAN(_dname, _type, _mask, _pre)				\
-+#define VADC_CHAN(_dname, _type, _mask, _pre, _scale)			\
- 	[VADC_##_dname] = {						\
- 		.datasheet_name = __stringify(_dname),			\
- 		.prescale_index = _pre,					\
- 		.type = _type,						\
--		.info_mask = _mask					\
-+		.info_mask = _mask,					\
-+		.scale_fn = _scale					\
- 	},								\
- 
--#define VADC_CHAN_TEMP(_dname, _pre)					\
--	VADC_CHAN(_dname, IIO_TEMP, BIT(IIO_CHAN_INFO_PROCESSED), _pre)	\
-+#define VADC_NO_CHAN(_dname, _type, _mask, _pre)			\
-+	[VADC_##_dname] = {						\
-+		.datasheet_name = __stringify(_dname),			\
-+		.prescale_index = _pre,					\
-+		.type = _type,						\
-+		.info_mask = _mask					\
-+	},
- 
--#define VADC_CHAN_VOLT(_dname, _pre)					\
-+#define VADC_CHAN_TEMP(_dname, _pre, _scale)				\
-+	VADC_CHAN(_dname, IIO_TEMP,					\
-+		BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),	\
-+		_pre, _scale)						\
-+
-+#define VADC_CHAN_VOLT(_dname, _pre, _scale)				\
- 	VADC_CHAN(_dname, IIO_VOLTAGE,					\
- 		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
-+		  _pre, _scale)						\
-+
-+#define VADC_CHAN_NO_SCALE(_dname, _pre)				\
-+	VADC_NO_CHAN(_dname, IIO_VOLTAGE,				\
-+		  BIT(IIO_CHAN_INFO_RAW),				\
- 		  _pre)							\
- 
- /*
-@@ -630,106 +848,106 @@ struct vadc_channels {
-  * gaps in the array should be treated as reserved channels.
-  */
- static const struct vadc_channels vadc_chans[] = {
--	VADC_CHAN_VOLT(USBIN, 4)
--	VADC_CHAN_VOLT(DCIN, 4)
--	VADC_CHAN_VOLT(VCHG_SNS, 3)
--	VADC_CHAN_VOLT(SPARE1_03, 1)
--	VADC_CHAN_VOLT(USB_ID_MV, 1)
--	VADC_CHAN_VOLT(VCOIN, 1)
--	VADC_CHAN_VOLT(VBAT_SNS, 1)
--	VADC_CHAN_VOLT(VSYS, 1)
--	VADC_CHAN_TEMP(DIE_TEMP, 0)
--	VADC_CHAN_VOLT(REF_625MV, 0)
--	VADC_CHAN_VOLT(REF_1250MV, 0)
--	VADC_CHAN_VOLT(CHG_TEMP, 0)
--	VADC_CHAN_VOLT(SPARE1, 0)
--	VADC_CHAN_VOLT(SPARE2, 0)
--	VADC_CHAN_VOLT(GND_REF, 0)
--	VADC_CHAN_VOLT(VDD_VADC, 0)
--
--	VADC_CHAN_VOLT(P_MUX1_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX2_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX3_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX4_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX5_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX6_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX7_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX8_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX9_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX10_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX11_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX12_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX13_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX14_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX15_1_1, 0)
--	VADC_CHAN_VOLT(P_MUX16_1_1, 0)
--
--	VADC_CHAN_VOLT(P_MUX1_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX2_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX3_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX4_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX5_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX6_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX7_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX8_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX9_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX10_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX11_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX12_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX13_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX14_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX15_1_3, 1)
--	VADC_CHAN_VOLT(P_MUX16_1_3, 1)
--
--	VADC_CHAN_VOLT(LR_MUX1_BAT_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_AMUX_THM3, 0)
--	VADC_CHAN_VOLT(LR_MUX7_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_AMUX_THM5, 0)
--	VADC_CHAN_VOLT(LR_MUX10_USB_ID, 0)
--	VADC_CHAN_VOLT(AMUX_PU1, 0)
--	VADC_CHAN_VOLT(AMUX_PU2, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_XO_THERM, 0)
--
--	VADC_CHAN_VOLT(LR_MUX1_PU1_BAT_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX2_PU1_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU1_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU1_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU1_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU1_AMUX_THM3, 0)
--	VADC_CHAN_VOLT(LR_MUX7_PU1_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU1_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU1_AMUX_THM5, 0)
--	VADC_CHAN_VOLT(LR_MUX10_PU1_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_XO_THERM, 0)
--
--	VADC_CHAN_VOLT(LR_MUX1_PU2_BAT_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX2_PU2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU2_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU2_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU2_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU2_AMUX_THM3, 0)
--	VADC_CHAN_VOLT(LR_MUX7_PU2_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU2_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU2_AMUX_THM5, 0)
--	VADC_CHAN_VOLT(LR_MUX10_PU2_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU2_XO_THERM, 0)
--
--	VADC_CHAN_VOLT(LR_MUX1_PU1_PU2_BAT_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX2_PU1_PU2_BAT_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_PU1_PU2_XO_THERM, 0)
--	VADC_CHAN_VOLT(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
--	VADC_CHAN_VOLT(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
--	VADC_CHAN_VOLT(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
--	VADC_CHAN_VOLT(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
--	VADC_CHAN_VOLT(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
--	VADC_CHAN_VOLT(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
--	VADC_CHAN_VOLT(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
-+	VADC_CHAN_VOLT(USBIN, 4, SCALE_DEFAULT)
-+	VADC_CHAN_VOLT(DCIN, 4, SCALE_DEFAULT)
-+	VADC_CHAN_NO_SCALE(VCHG_SNS, 3)
-+	VADC_CHAN_NO_SCALE(SPARE1_03, 1)
-+	VADC_CHAN_NO_SCALE(USB_ID_MV, 1)
-+	VADC_CHAN_VOLT(VCOIN, 1, SCALE_DEFAULT)
-+	VADC_CHAN_NO_SCALE(VBAT_SNS, 1)
-+	VADC_CHAN_VOLT(VSYS, 1, SCALE_DEFAULT)
-+	VADC_CHAN_TEMP(DIE_TEMP, 0, SCALE_PMIC_THERM)
-+	VADC_CHAN_VOLT(REF_625MV, 0, SCALE_DEFAULT)
-+	VADC_CHAN_VOLT(REF_1250MV, 0, SCALE_DEFAULT)
-+	VADC_CHAN_NO_SCALE(CHG_TEMP, 0)
-+	VADC_CHAN_NO_SCALE(SPARE1, 0)
-+	VADC_CHAN_TEMP(SPARE2, 0, SCALE_PMI_CHG_TEMP)
-+	VADC_CHAN_VOLT(GND_REF, 0, SCALE_DEFAULT)
-+	VADC_CHAN_VOLT(VDD_VADC, 0, SCALE_DEFAULT)
-+
-+	VADC_CHAN_NO_SCALE(P_MUX1_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX2_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX3_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX4_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX5_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX6_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX7_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX8_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX9_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX10_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX11_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX12_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX13_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX14_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX15_1_1, 0)
-+	VADC_CHAN_NO_SCALE(P_MUX16_1_1, 0)
-+
-+	VADC_CHAN_NO_SCALE(P_MUX1_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX2_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX3_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX4_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX5_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX6_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX7_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX8_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX9_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX10_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX11_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX12_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX13_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX14_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX15_1_3, 1)
-+	VADC_CHAN_NO_SCALE(P_MUX16_1_3, 1)
-+
-+	VADC_CHAN_NO_SCALE(LR_MUX1_BAT_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX2_BAT_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_XO_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX4_AMUX_THM1, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX5_AMUX_THM2, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX6_AMUX_THM3, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX7_HW_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX8_AMUX_THM4, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX9_AMUX_THM5, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX10_USB_ID, 0)
-+	VADC_CHAN_NO_SCALE(AMUX_PU1, 0)
-+	VADC_CHAN_NO_SCALE(AMUX_PU2, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_BUF_XO_THERM, 0)
-+
-+	VADC_CHAN_NO_SCALE(LR_MUX1_PU1_BAT_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX2_PU1_BAT_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_PU1_XO_THERM, 0)
-+	VADC_CHAN_TEMP(LR_MUX4_PU1_AMUX_THM1, 0, SCALE_THERM_100K_PULLUP)
-+	VADC_CHAN_TEMP(LR_MUX5_PU1_AMUX_THM2, 0, SCALE_THERM_100K_PULLUP)
-+	VADC_CHAN_TEMP(LR_MUX6_PU1_AMUX_THM3, 0, SCALE_THERM_100K_PULLUP)
-+	VADC_CHAN_NO_SCALE(LR_MUX7_PU1_AMUX_HW_ID, 0)
-+	VADC_CHAN_TEMP(LR_MUX8_PU1_AMUX_THM4, 0, SCALE_THERM_100K_PULLUP)
-+	VADC_CHAN_TEMP(LR_MUX9_PU1_AMUX_THM5, 0, SCALE_THERM_100K_PULLUP)
-+	VADC_CHAN_NO_SCALE(LR_MUX10_PU1_AMUX_USB_ID, 0)
-+	VADC_CHAN_TEMP(LR_MUX3_BUF_PU1_XO_THERM, 0, SCALE_XOTHERM)
-+
-+	VADC_CHAN_NO_SCALE(LR_MUX1_PU2_BAT_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX2_PU2_BAT_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_PU2_XO_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX4_PU2_AMUX_THM1, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX5_PU2_AMUX_THM2, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX6_PU2_AMUX_THM3, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX7_PU2_AMUX_HW_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX8_PU2_AMUX_THM4, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX9_PU2_AMUX_THM5, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX10_PU2_AMUX_USB_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_BUF_PU2_XO_THERM, 0)
-+
-+	VADC_CHAN_NO_SCALE(LR_MUX1_PU1_PU2_BAT_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX2_PU1_PU2_BAT_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_PU1_PU2_XO_THERM, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX4_PU1_PU2_AMUX_THM1, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX5_PU1_PU2_AMUX_THM2, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX6_PU1_PU2_AMUX_THM3, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX7_PU1_PU2_AMUX_HW_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX8_PU1_PU2_AMUX_THM4, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX9_PU1_PU2_AMUX_THM5, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX10_PU1_PU2_AMUX_USB_ID, 0)
-+	VADC_CHAN_NO_SCALE(LR_MUX3_BUF_PU1_PU2_XO_THERM, 0)
- };
- 
- static int vadc_get_dt_channel_data(struct device *dev,
-@@ -848,6 +1066,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
- 			return ret;
- 		}
- 
-+		prop.scale_fn = vadc_chans[prop.channel].scale_fn;
- 		vadc->chan_props[index] = prop;
- 
- 		vadc_chan = &vadc_chans[prop.channel];
 -- 
-The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
-a Linux Foundation Collaborative Project
+1.9.1
 
