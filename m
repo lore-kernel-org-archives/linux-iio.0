@@ -1,58 +1,135 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f193.google.com ([209.85.210.193]:34950 "EHLO
-        mail-wj0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753622AbcLIVJN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 16:09:13 -0500
-From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH v12 5/5] mfd: Move binding document
-Date: Fri,  9 Dec 2016 22:08:53 +0100
-Message-Id: <cf10e4734af2bd14c7b92b42aad6a2626e47b7e9.1481315766.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
-References: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
-References: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=D+Aj=XY=codeaurora.org=rphani@kernel.org>
+From: Rama Krishna Phani A <rphani@codeaurora.org>
+To: linux-iio@vger.kernel.org,
+	jic23@kernel.org
+Cc: linux-arm-msm@vger.kernel.org,
+	cdevired@codeaurora.org,
+	smohanad@codeaurora.org,
+	mgautam@codeaurora.org,
+	sivaa@codeaurora.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	Julia.Lawall@lip6.fr,
+	Rama Krishna Phani A <rphani@codeaurora.org>
+Subject: [PATCH V6 1/2] iio: adc: spmi-vadc: Update function for generic voltage conversion
+Date: Fri,  9 Dec 2016 20:31:49 +0530
+Message-Id: <1481295710-22931-2-git-send-email-rphani@codeaurora.org>
+In-Reply-To: <1481295710-22931-1-git-send-email-rphani@codeaurora.org>
+References: <1481295710-22931-1-git-send-email-rphani@codeaurora.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-The bindings, which are now used in MFD, need also to be
-documented in the MFD binding document.
+Several channels are supported in ADC of PMIC which can be used to
+measure voltage, temperature, current etc., Hardware provides
+readings for all channels in adc code. That adc code needs to be
+converted to voltage. Logic for conversion of adc code to voltage
+is common for all ADC channels(voltage, temperature, current
+.,etc). Implement separate function for generic conversion logic.
 
-Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Reviewed-by: Marek Vasut <marex@denx.de>
+Signed-off-by: Rama Krishna Phani A <rphani@codeaurora.org>
 ---
-Changes in v12:
- - none
+ drivers/iio/adc/qcom-spmi-vadc.c | 52 +++++++++++++++++++++-------------------
+ 1 file changed, 28 insertions(+), 24 deletions(-)
 
-Changes in v11:
- - none
-
-Changes in v10:
- - none
-
-Changes in v9:
- - format patch using -M option
-
-Changes in v8:
- - rebase onto 4.9-rc1
-
-Changes in v7:
- - add to the patchset
-
- Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt | 0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-similarity index 100%
-rename from Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-rename to Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
+index c2babe5..93c0639 100644
+--- a/drivers/iio/adc/qcom-spmi-vadc.c
++++ b/drivers/iio/adc/qcom-spmi-vadc.c
+@@ -1,5 +1,5 @@
+ /*
+- * Copyright (c) 2012-2014, The Linux Foundation. All rights reserved.
++ * Copyright (c) 2012-2016, The Linux Foundation. All rights reserved.
+  *
+  * This program is free software; you can redistribute it and/or modify
+  * it under the terms of the GNU General Public License version 2 and
+@@ -468,27 +468,38 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
+ 	return ret;
+ }
+ 
+-static s32 vadc_calibrate(struct vadc_priv *vadc,
+-			  const struct vadc_channel_prop *prop, u16 adc_code)
++static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
++			     const struct vadc_channel_prop *prop,
++			     s64 *scale_voltage)
+ {
+-	const struct vadc_prescale_ratio *prescale;
+-	s64 voltage;
++	*scale_voltage = (adc_code -
++		vadc->graph[prop->calibration].gnd);
++	*scale_voltage *= vadc->graph[prop->calibration].dx;
++	*scale_voltage = div64_s64(*scale_voltage,
++		vadc->graph[prop->calibration].dy);
++	if (prop->calibration == VADC_CALIB_ABSOLUTE)
++		*scale_voltage +=
++		vadc->graph[prop->calibration].dx;
+ 
+-	voltage = adc_code - vadc->graph[prop->calibration].gnd;
+-	voltage *= vadc->graph[prop->calibration].dx;
+-	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
++	if (*scale_voltage < 0)
++		*scale_voltage = 0;
++}
+ 
+-	if (prop->calibration == VADC_CALIB_ABSOLUTE)
+-		voltage += vadc->graph[prop->calibration].dx;
++static int vadc_scale_volt(struct vadc_priv *vadc,
++			   const struct vadc_channel_prop *prop, u16 adc_code,
++			   int *result_uv)
++{
++	const struct vadc_prescale_ratio *prescale;
++	s64 voltage = 0, result = 0;
+ 
+-	if (voltage < 0)
+-		voltage = 0;
++	vadc_scale_calib(vadc, adc_code, prop, &voltage);
+ 
+ 	prescale = &vadc_prescale_ratios[prop->prescale];
+-
+ 	voltage = voltage * prescale->den;
++	result = div64_s64(voltage, prescale->num);
++	*result_uv = result;
+ 
+-	return div64_s64(voltage, prescale->num);
++	return 0;
+ }
+ 
+ static int vadc_decimation_from_dt(u32 value)
+@@ -552,11 +563,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			break;
+ 
+-		*val = vadc_calibrate(vadc, prop, adc_code);
++		vadc_scale_volt(vadc, prop, adc_code, val);
+ 
+-		/* 2mV/K, return milli Celsius */
+-		*val /= 2;
+-		*val -= KELVINMIL_CELSIUSMIL;
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_RAW:
+ 		prop = &vadc->chan_props[chan->address];
+@@ -564,12 +572,8 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
+ 		if (ret)
+ 			break;
+ 
+-		*val = vadc_calibrate(vadc, prop, adc_code);
++		*val = (int)adc_code;
+ 		return IIO_VAL_INT;
+-	case IIO_CHAN_INFO_SCALE:
+-		*val = 0;
+-		*val2 = 1000;
+-		return IIO_VAL_INT_PLUS_MICRO;
+ 	default:
+ 		ret = -EINVAL;
+ 		break;
+@@ -617,7 +621,7 @@ struct vadc_channels {
+ 
+ #define VADC_CHAN_VOLT(_dname, _pre)					\
+ 	VADC_CHAN(_dname, IIO_VOLTAGE,					\
+-		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),	\
++		  BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_PROCESSED),\
+ 		  _pre)							\
+ 
+ /*
 -- 
-1.9.1
-
+The Qualcomm Innovation Center, Inc. is a member of the Code Aurora Forum,
+a Linux Foundation Collaborative Project
