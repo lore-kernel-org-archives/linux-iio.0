@@ -1,55 +1,43 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:47519 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752295AbcLHXDd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 8 Dec 2016 18:03:33 -0500
-Subject: Re: [PATCH v11 1/5] mfd: mxs-lradc: Add support for mxs-lradc MFD
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        linux-kernel@vger.kernel.org
-References: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
- <7122f136e4735fe18c8b431006e6d6314b3c7e41.1481234322.git.ksenija.stanojevic@gmail.com>
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        harald@ccbib.org, stefan.wahren@i2se.com,
-        fabio.estevam@freescale.com
-From: Marek Vasut <marex@denx.de>
-Message-ID: <8b5ad884-ed94-c776-043d-1dbdd64182d2@denx.de>
-Date: Thu, 8 Dec 2016 23:56:28 +0100
-MIME-Version: 1.0
-In-Reply-To: <7122f136e4735fe18c8b431006e6d6314b3c7e41.1481234322.git.ksenija.stanojevic@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-wj0-f194.google.com ([209.85.210.194]:33701 "EHLO
+        mail-wj0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932948AbcLIKau (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 05:30:50 -0500
+From: Marcus Folkesson <marcus.folkesson@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Matt Ranostay <mranostay@gmail.com>,
+        Sandhya Bankar <bankarsandhya512@gmail.com>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Marcus Folkesson <marcus.folkesson@gmail.com>
+Subject: [PATCH] iio: adc: max1027: allocate DMA-safe buffer
+Date: Fri,  9 Dec 2016 11:24:35 +0100
+Message-Id: <20161209102435.30638-1-marcus.folkesson@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 12/08/2016 11:27 PM, Ksenija Stanojevic wrote:
-> Add core files for low resolution analog-to-digital converter (mxs-lradc)
-> MFD driver.
-> 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+The buffer needs to be DMA-safe when used with spi_read()
 
-Just a nit below.
+Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+---
+ drivers/iio/adc/max1027.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-> +++ b/include/linux/mfd/mxs-lradc.h
-> @@ -0,0 +1,187 @@
-> +/*
-
-[...]
-
-> +#define LRADC_CTRL1_MX28_LRADC_IRQ_EN_MASK	(0x1fff << 16)
-> +#define LRADC_CTRL1_MX23_LRADC_IRQ_EN_MASK	(0x01ff << 16)
-> +#define LRADC_CTRL1_LRADC_IRQ_EN_OFFSET		16
-> +#define LRADC_CTRL1_TOUCH_DETECT_IRQ		BIT(8)
-> +#define LRADC_CTRL1_LRADC_IRQ(n)		(1 << (n))
-
-This would turn into BIT(n) , no ?
-
-> +#define LRADC_CTRL1_MX28_LRADC_IRQ_MASK		0x1fff
-> +#define LRADC_CTRL1_MX23_LRADC_IRQ_MASK		0x01ff
-> +#define LRADC_CTRL1_LRADC_IRQ_OFFSET		0
-
-[...]
-
+diff --git a/drivers/iio/adc/max1027.c b/drivers/iio/adc/max1027.c
+index 712fbd2b1f16..ff1f1f15a873 100644
+--- a/drivers/iio/adc/max1027.c
++++ b/drivers/iio/adc/max1027.c
+@@ -435,7 +435,7 @@ static int max1027_probe(struct spi_device *spi)
+ 
+ 	st->buffer = devm_kmalloc(&indio_dev->dev,
+ 				  indio_dev->num_channels * 2,
+-				  GFP_KERNEL);
++				  GFP_KERNEL | GFP_DMA);
+ 	if (st->buffer == NULL) {
+ 		dev_err(&indio_dev->dev, "Can't allocate buffer\n");
+ 		return -ENOMEM;
 -- 
-Best regards,
-Marek Vasut
+2.11.0.rc2
+
