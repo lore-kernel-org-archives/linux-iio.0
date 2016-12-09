@@ -1,17 +1,17 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:34264 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752117AbcLINam (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 08:30:42 -0500
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:35680 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752117AbcLINav (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 08:30:51 -0500
 From: Eva Rachel Retuya <eraretuya@gmail.com>
 To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
 Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
         knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
         Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v2 1/2] staging: iio: ad7606: replace range/range_available with corresponding scale
-Date: Fri,  9 Dec 2016 21:30:01 +0800
-Message-Id: <283f3a0338e0227e03aa893418e134aaed79788e.1481289277.git.eraretuya@gmail.com>
+Subject: [PATCH v2 2/2] staging: iio: ad7606: move out of staging
+Date: Fri,  9 Dec 2016 21:30:02 +0800
+Message-Id: <640c11015fc48294bf99b32e4af2b482e42c5b7e.1481289277.git.eraretuya@gmail.com>
 In-Reply-To: <cover.1481289277.git.eraretuya@gmail.com>
 References: <cover.1481289277.git.eraretuya@gmail.com>
 In-Reply-To: <cover.1481289277.git.eraretuya@gmail.com>
@@ -19,223 +19,160 @@ References: <cover.1481289277.git.eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Eliminate the non-standard attributes in_voltage_range and
-in_voltage_range_available. Implement in_voltage_scale_available in place
-of these attributes and update the SCALE accordingly. The array
-scale_avail is introduced to hold the available scale values.
+Move the ad7606 driver from staging/iio/adc to iio/adc. Also, update the
+corresponding Makefile and Kconfig associated with the change.
 
 Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
 ---
-Changes in v2:
-* Update commit message to reflect changes.
-* Introduce scale_avail[] array to hold the available scales.
-* Rewrite read_raw's SCALE to make use of the scale_avail[].
-* Provide write_raw and write_raw_get_fmt for implementing SCALE.
-* Populate the scale_avail[] with values in probe().
+ drivers/iio/adc/Kconfig                    | 34 ++++++++++++++++++++++++++++++
+ drivers/iio/adc/Makefile                   |  3 +++
+ drivers/{staging => }/iio/adc/ad7606.c     |  0
+ drivers/{staging => }/iio/adc/ad7606.h     |  0
+ drivers/{staging => }/iio/adc/ad7606_par.c |  0
+ drivers/{staging => }/iio/adc/ad7606_spi.c |  0
+ drivers/staging/iio/adc/Kconfig            | 34 ------------------------------
+ drivers/staging/iio/adc/Makefile           |  4 ----
+ 8 files changed, 37 insertions(+), 38 deletions(-)
+ rename drivers/{staging => }/iio/adc/ad7606.c (100%)
+ rename drivers/{staging => }/iio/adc/ad7606.h (100%)
+ rename drivers/{staging => }/iio/adc/ad7606_par.c (100%)
+ rename drivers/{staging => }/iio/adc/ad7606_spi.c (100%)
 
- drivers/staging/iio/adc/ad7606.c | 99 ++++++++++++++++++++++++----------------
- drivers/staging/iio/adc/ad7606.h |  1 +
- 2 files changed, 61 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index 4531908..7a9471d 100644
---- a/drivers/staging/iio/adc/ad7606.c
-+++ b/drivers/staging/iio/adc/ad7606.c
-@@ -151,9 +151,9 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
- 		*val = (short)ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->range * 2;
--		*val2 = st->chip_info->channels[0].scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		*val = st->scale_avail[st->range][0];
-+		*val2 = st->scale_avail[st->range][1];
-+		return IIO_VAL_INT_PLUS_NANO;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		*val = st->oversampling;
- 		return IIO_VAL_INT;
-@@ -161,42 +161,24 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index be81ba3..3fa2c60 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -58,6 +58,40 @@ config AD7476
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7476.
  
--static ssize_t ad7606_show_range(struct device *dev,
--				 struct device_attribute *attr, char *buf)
-+static ssize_t in_voltage_scale_available_show(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7606_state *st = iio_priv(indio_dev);
-+	int i, len = 0;
++config AD7606
++	tristate "Analog Devices AD7606 ADC driver"
++	depends on GPIOLIB || COMPILE_TEST
++	depends on HAS_IOMEM
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for Analog Devices:
++	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7606.
++
++config AD7606_IFACE_PARALLEL
++	tristate "parallel interface support"
++	depends on AD7606
++	help
++	  Say yes here to include parallel interface support on the AD7606
++	  ADC driver.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7606_parallel.
++
++config AD7606_IFACE_SPI
++	tristate "spi interface support"
++	depends on AD7606
++	depends on SPI
++	help
++	  Say yes here to include parallel interface support on the AD7606
++	  ADC driver.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7606_spi.
++
+ config AD7766
+ 	tristate "Analog Devices AD7766/AD7767 ADC driver"
+ 	depends on SPI_MASTER
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index f8e1218..dfe7dea 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -9,6 +9,9 @@ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7923) += ad7923.o
+ obj-$(CONFIG_AD7476) += ad7476.o
++obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
++obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
++obj-$(CONFIG_AD7606) += ad7606.o
+ obj-$(CONFIG_AD7766) += ad7766.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606.c
+rename to drivers/iio/adc/ad7606.c
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606.h
+rename to drivers/iio/adc/ad7606.h
+diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/iio/adc/ad7606_par.c
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606_par.c
+rename to drivers/iio/adc/ad7606_par.c
+diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/iio/adc/ad7606_spi.c
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606_spi.c
+rename to drivers/iio/adc/ad7606_spi.c
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index deff899..995867b 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -3,40 +3,6 @@
+ #
+ menu "Analog to digital converters"
  
--	return sprintf(buf, "%u\n", st->range);
--}
+-config AD7606
+-	tristate "Analog Devices AD7606 ADC driver"
+-	depends on GPIOLIB || COMPILE_TEST
+-	depends on HAS_IOMEM
+-	select IIO_BUFFER
+-	select IIO_TRIGGERED_BUFFER
+-	help
+-	  Say yes here to build support for Analog Devices:
+-	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
 -
--static ssize_t ad7606_store_range(struct device *dev,
--				  struct device_attribute *attr,
--				  const char *buf, size_t count)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7606_state *st = iio_priv(indio_dev);
--	unsigned long lval;
--	int ret;
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606.
 -
--	ret = kstrtoul(buf, 10, &lval);
--	if (ret)
--		return ret;
+-config AD7606_IFACE_PARALLEL
+-	tristate "parallel interface support"
+-	depends on AD7606
+-	help
+-	  Say yes here to include parallel interface support on the AD7606
+-	  ADC driver.
 -
--	if (!(lval == 5000 || lval == 10000))
--		return -EINVAL;
-+	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%09u ",
-+				 st->scale_avail[i][0], st->scale_avail[i][1]);
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606_parallel.
+-
+-config AD7606_IFACE_SPI
+-	tristate "spi interface support"
+-	depends on AD7606
+-	depends on SPI
+-	help
+-	  Say yes here to include parallel interface support on the AD7606
+-	  ADC driver.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606_spi.
+-
+ config AD7780
+ 	tristate "Analog Devices AD7780 and similar ADCs driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index ac09485..549032b 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -2,10 +2,6 @@
+ # Makefile for industrial I/O ADC drivers
+ #
  
--	mutex_lock(&indio_dev->mlock);
--	gpiod_set_value(st->gpio_range, lval == 10000);
--	st->range = lval;
--	mutex_unlock(&indio_dev->mlock);
-+	buf[len - 1] = '\n';
- 
--	return count;
-+	return len;
- }
- 
--static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR,
--		       ad7606_show_range, ad7606_store_range, 0);
--static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
-+static IIO_DEVICE_ATTR_RO(in_voltage_scale_available, 0);
- 
- static int ad7606_oversampling_get_index(unsigned int val)
- {
-@@ -218,9 +200,23 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
- {
- 	struct ad7606_state *st = iio_priv(indio_dev);
- 	int values[3];
--	int ret;
-+	int ret, i;
- 
- 	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = -EINVAL;
-+		mutex_lock(&indio_dev->mlock);
-+		for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
-+			if (val2 == st->scale_avail[i][1]) {
-+				gpiod_set_value(st->gpio_range, i);
-+				st->range = i;
-+
-+				ret = 0;
-+				break;
-+			}
-+		mutex_unlock(&indio_dev->mlock);
-+
-+		return ret;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		if (val2)
- 			return -EINVAL;
-@@ -244,11 +240,22 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int ad7606_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static IIO_CONST_ATTR(oversampling_ratio_available, "1 2 4 8 16 32 64");
- 
- static struct attribute *ad7606_attributes_os_and_range[] = {
--	&iio_dev_attr_in_voltage_range.dev_attr.attr,
--	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
- 	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
- 	NULL,
- };
-@@ -267,8 +274,7 @@ static const struct attribute_group ad7606_attribute_group_os = {
- };
- 
- static struct attribute *ad7606_attributes_range[] = {
--	&iio_dev_attr_in_voltage_range.dev_attr.attr,
--	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -384,6 +390,7 @@ static const struct iio_info ad7606_info_os_and_range = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7606_read_raw,
- 	.write_raw = &ad7606_write_raw,
-+	.write_raw_get_fmt = &ad7606_write_raw_get_fmt,
- 	.attrs = &ad7606_attribute_group_os_and_range,
- };
- 
-@@ -397,6 +404,8 @@ static const struct iio_info ad7606_info_os = {
- static const struct iio_info ad7606_info_range = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7606_read_raw,
-+	.write_raw = &ad7606_write_raw,
-+	.write_raw_get_fmt = &ad7606_write_raw_get_fmt,
- 	.attrs = &ad7606_attribute_group_range,
- };
- 
-@@ -405,7 +414,8 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 		 const struct ad7606_bus_ops *bops)
- {
- 	struct ad7606_state *st;
--	int ret;
-+	unsigned int scale, range;
-+	int ret, i, j;
- 	struct iio_dev *indio_dev;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-@@ -417,8 +427,19 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 	st->dev = dev;
- 	st->bops = bops;
- 	st->base_address = base_address;
--	st->range = 5000;
-+	/* tied to logic low, analog input range is +/- 5V */
-+	st->range = 0;
- 	st->oversampling = 1;
-+	/* Populate the scales, 2.5/2**16 then 5/2**16 */
-+	range = 5000;
-+	for (i = 0, j = 1; i < ARRAY_SIZE(st->scale_avail); i++, j--) {
-+		scale = ((u64)range * 100000000) >>
-+			ad7606_channels[1].scan_type.realbits;
-+		scale >>= j;
-+
-+		st->scale_avail[i][1] = do_div(scale, 100000000) * 10;
-+		st->scale_avail[i][0] = scale;
-+	}
- 	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
- 
- 	st->reg = devm_regulator_get(dev, "avcc");
-@@ -525,7 +546,7 @@ static int ad7606_resume(struct device *dev)
- 	struct ad7606_state *st = iio_priv(indio_dev);
- 
- 	if (st->gpio_standby) {
--		gpiod_set_value(st->gpio_range, st->range == 10000);
-+		gpiod_set_value(st->gpio_range, st->range);
- 		gpiod_set_value(st->gpio_standby, 1);
- 		ad7606_reset(st);
- 	}
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 746f955..671c456 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -34,6 +34,7 @@ struct ad7606_state {
- 	const struct ad7606_bus_ops	*bops;
- 	unsigned int			range;
- 	unsigned int			oversampling;
-+	unsigned int			scale_avail[2][2];
- 	bool				done;
- 	void __iomem			*base_address;
- 
+-obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+-obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+-obj-$(CONFIG_AD7606) += ad7606.o
+-
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_AD7192) += ad7192.o
 -- 
 2.7.4
 
