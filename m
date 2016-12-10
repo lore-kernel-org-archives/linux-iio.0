@@ -1,51 +1,74 @@
-Return-Path: <SRS0=4Pt3=X2=gmail.com=eraretuya@kernel.org>
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org,
-	linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de,
-	Michael.Hennerich@analog.com,
-	jic23@kernel.org,
-	knaack.h@gmx.de,
-	pmeerw@pmeerw.net,
-	gregkh@linuxfoundation.org,
-	daniel.baluta@gmail.com,
-	amsfield22@gmail.com,
-	Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v3 0/2] staging: iio: ad7606: move driver out of staging
-Date: Sun, 11 Dec 2016 10:47:47 +0800
-Message-Id: <cover.1481424136.git.eraretuya@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48656 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932088AbcLJRsy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 12:48:54 -0500
+Subject: Re: [PATCH v12 0/5] mxs-lradc: Split driver into MFD
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+        linux-kernel@vger.kernel.org
+References: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, marex@denx.de, linux-iio@vger.kernel.org,
+        harald@ccbib.org, stefan.wahren@i2se.com,
+        fabio.estevam@freescale.com
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <a1034bb5-a4e9-dcc4-d082-fe597941eca1@kernel.org>
+Date: Sat, 10 Dec 2016 17:48:48 +0000
+MIME-Version: 1.0
+In-Reply-To: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Address the last remaining TODO [1] for this driver and move it from staging
-into mainline.
+On 09/12/16 21:08, Ksenija Stanojevic wrote:
+> Split existing driver mxs-lradc into MFD with touchscreen and
+> IIO part.
+> 
+> Tested on I.MX28
+Hi All,
 
-[1] https://marc.info/?l=linux-iio&m=147689684332118&w=2 
+At first glance it looks like this is over to Dmitry and Lee.
+If they are both happy...
 
-Change in v3:
-* Fix incorrect type of 'scale'. (Pointed out by kbuild test robot)
+Lee, I'm assuming this whole lot will go through MFD.  Please work your
+magic with an immutable branch as I guess my Dmitry and I may well want
+to pull this in at some point over the coming cycle as well.
 
-Change in v2:
-* Address the incorrect way of implementing the scale. (Pointed out by Lars)
+If for whatever reason you would prefer I pick it up in the first instance
+and do a branch for you and Dmitry, give me a shout.
 
-Eva Rachel Retuya (2):
-  staging: iio: ad7606: replace range/range_available with corresponding
-    scale
-  staging: iio: ad7606: move out of staging
+Coming together very nicely and will be good to finally get this sorted!
 
- drivers/iio/adc/Kconfig                    |  34 ++++++++++
- drivers/iio/adc/Makefile                   |   3 +
- drivers/{staging => }/iio/adc/ad7606.c     | 100 ++++++++++++++++++-----------
- drivers/{staging => }/iio/adc/ad7606.h     |   1 +
- drivers/{staging => }/iio/adc/ad7606_par.c |   0
- drivers/{staging => }/iio/adc/ad7606_spi.c |   0
- drivers/staging/iio/adc/Kconfig            |  34 ----------
- drivers/staging/iio/adc/Makefile           |   4 --
- 8 files changed, 99 insertions(+), 77 deletions(-)
- rename drivers/{staging => }/iio/adc/ad7606.c (86%)
- rename drivers/{staging => }/iio/adc/ad7606.h (98%)
- rename drivers/{staging => }/iio/adc/ad7606_par.c (100%)
- rename drivers/{staging => }/iio/adc/ad7606_spi.c (100%)
+Thanks,
 
--- 
-2.7.4
+Jonathan
+> 
+> Ksenija Stanojevic (5):
+>   mfd: mxs-lradc: Add support for mxs-lradc MFD
+>   iio: adc: mxs-lradc: Add support for adc driver
+>   input: touchscreen: mxs-lradc: Add support for touchscreen
+>   iio: adc: mxs-lradc: Remove driver
+>   mfd: Move binding document
+> 
+>  .../bindings/{iio/adc => mfd}/mxs-lradc.txt        |    0
+>  drivers/iio/adc/Kconfig                            |   27 +-
+>  drivers/iio/adc/Makefile                           |    2 +-
+>  drivers/iio/adc/mxs-lradc-adc.c                    |  843 ++++++++++
+>  drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
+>  drivers/input/touchscreen/Kconfig                  |   10 +
+>  drivers/input/touchscreen/Makefile                 |    1 +
+>  drivers/input/touchscreen/mxs-lradc-ts.c           |  739 +++++++++
+>  drivers/mfd/Kconfig                                |   17 +
+>  drivers/mfd/Makefile                               |    1 +
+>  drivers/mfd/mxs-lradc.c                            |  264 +++
+>  include/linux/mfd/mxs-lradc.h                      |  187 +++
+>  12 files changed, 2076 insertions(+), 1765 deletions(-)
+>  rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
+>  create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+>  delete mode 100644 drivers/iio/adc/mxs-lradc.c
+>  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+>  create mode 100644 drivers/mfd/mxs-lradc.c
+>  create mode 100644 include/linux/mfd/mxs-lradc.h
+> 
+
