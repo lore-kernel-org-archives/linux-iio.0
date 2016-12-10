@@ -1,246 +1,161 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:32871 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752516AbcLKCsf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 21:48:35 -0500
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org
-Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        daniel.baluta@gmail.com, amsfield22@gmail.com,
-        Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v3 1/2] staging: iio: ad7606: replace range/range_available with corresponding scale
-Date: Sun, 11 Dec 2016 10:47:48 +0800
-Message-Id: <1165e7a84c82705ea10acecd712dec66fbbbc72f.1481424136.git.eraretuya@gmail.com>
-In-Reply-To: <cover.1481424136.git.eraretuya@gmail.com>
-References: <cover.1481424136.git.eraretuya@gmail.com>
-In-Reply-To: <cover.1481424136.git.eraretuya@gmail.com>
-References: <cover.1481424136.git.eraretuya@gmail.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48832 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751966AbcLJSVp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 13:21:45 -0500
+Subject: Re: [PATCH v6 4/9] dt-bindings: iio: iio-mux: document iio-mux
+ bindings
+To: Peter Rosin <peda@axentia.se>, Rob Herring <robh@kernel.org>
+References: <1480493823-21462-1-git-send-email-peda@axentia.se>
+ <1480493823-21462-5-git-send-email-peda@axentia.se>
+ <20161205232624.5wjvmchd6jxd24ir@rob-hp-laptop>
+ <ea58cfe1-88ed-f215-59df-e9ffba485eaa@axentia.se>
+Cc: linux-kernel@vger.kernel.org, Wolfram Sang <wsa@the-dreams.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <d2726499-4034-8d5d-4cff-61da86af5add@kernel.org>
+Date: Sat, 10 Dec 2016 18:21:41 +0000
+MIME-Version: 1.0
+In-Reply-To: <ea58cfe1-88ed-f215-59df-e9ffba485eaa@axentia.se>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Eliminate the non-standard attributes in_voltage_range and
-in_voltage_range_available. Implement in_voltage_scale_available in place
-of these attributes and update the SCALE accordingly. The array
-scale_avail is introduced to hold the available scale values.
-
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
-Change in v3:
-* Change incorrect type of 'scale' from unsigned int to unsigned long long
-
-Changes in v2:
-* Update commit message to reflect changes.
-* Introduce scale_avail[] array to hold the available scales.
-* Rewrite read_raw's SCALE to make use of the scale_avail[].
-* Provide write_raw and write_raw_get_fmt for implementing SCALE.
-* Populate the scale_avail[] with values in probe().
-
- drivers/staging/iio/adc/ad7606.c | 100 ++++++++++++++++++++++++---------------
- drivers/staging/iio/adc/ad7606.h |   1 +
- 2 files changed, 62 insertions(+), 39 deletions(-)
-
-diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
-index 4531908..b878664 100644
---- a/drivers/staging/iio/adc/ad7606.c
-+++ b/drivers/staging/iio/adc/ad7606.c
-@@ -151,9 +151,9 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
- 		*val = (short)ret;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_SCALE:
--		*val = st->range * 2;
--		*val2 = st->chip_info->channels[0].scan_type.realbits;
--		return IIO_VAL_FRACTIONAL_LOG2;
-+		*val = st->scale_avail[st->range][0];
-+		*val2 = st->scale_avail[st->range][1];
-+		return IIO_VAL_INT_PLUS_NANO;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		*val = st->oversampling;
- 		return IIO_VAL_INT;
-@@ -161,42 +161,24 @@ static int ad7606_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
--static ssize_t ad7606_show_range(struct device *dev,
--				 struct device_attribute *attr, char *buf)
-+static ssize_t in_voltage_scale_available_show(struct device *dev,
-+					       struct device_attribute *attr,
-+					       char *buf)
- {
- 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
- 	struct ad7606_state *st = iio_priv(indio_dev);
-+	int i, len = 0;
- 
--	return sprintf(buf, "%u\n", st->range);
--}
--
--static ssize_t ad7606_store_range(struct device *dev,
--				  struct device_attribute *attr,
--				  const char *buf, size_t count)
--{
--	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
--	struct ad7606_state *st = iio_priv(indio_dev);
--	unsigned long lval;
--	int ret;
--
--	ret = kstrtoul(buf, 10, &lval);
--	if (ret)
--		return ret;
--
--	if (!(lval == 5000 || lval == 10000))
--		return -EINVAL;
-+	for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
-+		len += scnprintf(buf + len, PAGE_SIZE - len, "%d.%09u ",
-+				 st->scale_avail[i][0], st->scale_avail[i][1]);
- 
--	mutex_lock(&indio_dev->mlock);
--	gpiod_set_value(st->gpio_range, lval == 10000);
--	st->range = lval;
--	mutex_unlock(&indio_dev->mlock);
-+	buf[len - 1] = '\n';
- 
--	return count;
-+	return len;
- }
- 
--static IIO_DEVICE_ATTR(in_voltage_range, S_IRUGO | S_IWUSR,
--		       ad7606_show_range, ad7606_store_range, 0);
--static IIO_CONST_ATTR(in_voltage_range_available, "5000 10000");
-+static IIO_DEVICE_ATTR_RO(in_voltage_scale_available, 0);
- 
- static int ad7606_oversampling_get_index(unsigned int val)
- {
-@@ -218,9 +200,23 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
- {
- 	struct ad7606_state *st = iio_priv(indio_dev);
- 	int values[3];
--	int ret;
-+	int ret, i;
- 
- 	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		ret = -EINVAL;
-+		mutex_lock(&indio_dev->mlock);
-+		for (i = 0; i < ARRAY_SIZE(st->scale_avail); i++)
-+			if (val2 == st->scale_avail[i][1]) {
-+				gpiod_set_value(st->gpio_range, i);
-+				st->range = i;
-+
-+				ret = 0;
-+				break;
-+			}
-+		mutex_unlock(&indio_dev->mlock);
-+
-+		return ret;
- 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
- 		if (val2)
- 			return -EINVAL;
-@@ -244,11 +240,22 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
- 	}
- }
- 
-+static int ad7606_write_raw_get_fmt(struct iio_dev *indio_dev,
-+				    struct iio_chan_spec const *chan,
-+				    long mask)
-+{
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SCALE:
-+		return IIO_VAL_INT_PLUS_NANO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
- static IIO_CONST_ATTR(oversampling_ratio_available, "1 2 4 8 16 32 64");
- 
- static struct attribute *ad7606_attributes_os_and_range[] = {
--	&iio_dev_attr_in_voltage_range.dev_attr.attr,
--	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
- 	&iio_const_attr_oversampling_ratio_available.dev_attr.attr,
- 	NULL,
- };
-@@ -267,8 +274,7 @@ static const struct attribute_group ad7606_attribute_group_os = {
- };
- 
- static struct attribute *ad7606_attributes_range[] = {
--	&iio_dev_attr_in_voltage_range.dev_attr.attr,
--	&iio_const_attr_in_voltage_range_available.dev_attr.attr,
-+	&iio_dev_attr_in_voltage_scale_available.dev_attr.attr,
- 	NULL,
- };
- 
-@@ -384,6 +390,7 @@ static const struct iio_info ad7606_info_os_and_range = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7606_read_raw,
- 	.write_raw = &ad7606_write_raw,
-+	.write_raw_get_fmt = &ad7606_write_raw_get_fmt,
- 	.attrs = &ad7606_attribute_group_os_and_range,
- };
- 
-@@ -397,6 +404,8 @@ static const struct iio_info ad7606_info_os = {
- static const struct iio_info ad7606_info_range = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = &ad7606_read_raw,
-+	.write_raw = &ad7606_write_raw,
-+	.write_raw_get_fmt = &ad7606_write_raw_get_fmt,
- 	.attrs = &ad7606_attribute_group_range,
- };
- 
-@@ -405,7 +414,9 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 		 const struct ad7606_bus_ops *bops)
- {
- 	struct ad7606_state *st;
--	int ret;
-+	unsigned int range;
-+	unsigned long long scale;
-+	int ret, i, j;
- 	struct iio_dev *indio_dev;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*st));
-@@ -417,8 +428,19 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
- 	st->dev = dev;
- 	st->bops = bops;
- 	st->base_address = base_address;
--	st->range = 5000;
-+	/* tied to logic low, analog input range is +/- 5V */
-+	st->range = 0;
- 	st->oversampling = 1;
-+	/* Populate the scales, 2.5/2**16 then 5/2**16 */
-+	range = 5000;
-+	for (i = 0, j = 1; i < ARRAY_SIZE(st->scale_avail); i++, j--) {
-+		scale = ((u64)range * 100000000) >>
-+			ad7606_channels[1].scan_type.realbits;
-+		scale >>= j;
-+
-+		st->scale_avail[i][1] = do_div(scale, 100000000) * 10;
-+		st->scale_avail[i][0] = scale;
-+	}
- 	INIT_WORK(&st->poll_work, &ad7606_poll_bh_to_ring);
- 
- 	st->reg = devm_regulator_get(dev, "avcc");
-@@ -525,7 +547,7 @@ static int ad7606_resume(struct device *dev)
- 	struct ad7606_state *st = iio_priv(indio_dev);
- 
- 	if (st->gpio_standby) {
--		gpiod_set_value(st->gpio_range, st->range == 10000);
-+		gpiod_set_value(st->gpio_range, st->range);
- 		gpiod_set_value(st->gpio_standby, 1);
- 		ad7606_reset(st);
- 	}
-diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
-index 746f955..671c456 100644
---- a/drivers/staging/iio/adc/ad7606.h
-+++ b/drivers/staging/iio/adc/ad7606.h
-@@ -34,6 +34,7 @@ struct ad7606_state {
- 	const struct ad7606_bus_ops	*bops;
- 	unsigned int			range;
- 	unsigned int			oversampling;
-+	unsigned int			scale_avail[2][2];
- 	bool				done;
- 	void __iomem			*base_address;
- 
--- 
-2.7.4
+On 06/12/16 09:18, Peter Rosin wrote:
+> On 2016-12-06 00:26, Rob Herring wrote:
+>> On Wed, Nov 30, 2016 at 09:16:58AM +0100, Peter Rosin wrote:
+>>> Signed-off-by: Peter Rosin <peda@axentia.se>
+>>> ---
+>>>  .../bindings/iio/multiplexer/iio-mux.txt           | 40 ++++++++++++++++++++++
+>>>  MAINTAINERS                                        |  6 ++++
+>>>  2 files changed, 46 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+>>
+>> I'm still not convinced about this binding, but don't really have more 
+>> comments ATM. Sending 6 versions in 2 weeks or so doesn't really help 
+>> either.
+> 
+> Sorry about the noise, I'll try to be more careful going forward. On
+> the flip side, I haven't touched the code since v6.
+> 
+> I don't see how bindings that are as flexible as the current (and
+> original) phandle link between the mux consumer and the mux controller
+> would look, and at the same time be simpler to understand. You need
+> to be able to refer to a mux controller from several mux consumers, and
+> you need to support several mux controllers in one node (the ADG792A
+> case). And, AFAICT, the complex case wasn't really the problem, it was
+> that it is overly complex to describe the simple case of one mux
+> consumer and one mux controller. But in your comment for v2 [1] you
+> said that I was working around limitations with shared GPIO pins. But
+> solving that in the GPIO subsystem would not solve all that the
+> phandle approach is solving, since you would not have support for
+> ADG792A (or other non-GPIO controlled muxes). So, I think listing
+> the gpio pins inside the mux consumer node is a non-starter, the mux
+> controller has to live in its own node with its own compatible.
+> 
+> Would you be happier if I managed to marry the phandle approach with
+> the option of having the mux controller as a child node of the mux
+> consumer for the simple case?
+> 
+> I added an example at the end of this message (the same as the first
+> example in v4 [2], at least in principle) for easy comparison between
+> the phandle and the controller-in-child-node approaches. I can't say
+> that I personally find the difference all that significant, and do not
+> think it is worth it. As I see it, the "simple option" would just muddy
+> the waters...
+> 
+> [1] http://marc.info/?l=linux-kernel&m=147948334204795&w=2
+> [2] http://marc.info/?l=linux-kernel&m=148001364904240&w=2
+> 
+>>> diff --git a/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+>>> new file mode 100644
+>>> index 000000000000..8080cf790d82
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+>>> @@ -0,0 +1,40 @@
+>>> +IIO multiplexer bindings
+>>> +
+>>> +If a multiplexer is used to select which hardware signal is fed to
+>>> +e.g. an ADC channel, these bindings describe that situation.
+>>> +
+>>> +Required properties:
+>>> +- compatible : "iio-mux"
+>>
+>> This is a Linuxism. perhaps "adc-mux".
+> 
+> No, that's not general enough, it could just as well be used to mux a
+> temperature sensor. Or whatever. Hmmm, given that "iio-mux" is bad, perhaps
+> "io-channel-mux" is better? That matches the io-channels property used to
+> refer to the parent channel.
+analog-mux maybe? Makes more sense out of context (though with io-channels defined on
+the next line you have plenty of context here ;)
+> 
+>>> +- io-channels : Channel node of the parent channel that has multiplexed
+>>> +		input.
+>>> +- io-channel-names : Should be "parent".
+>>> +- #address-cells = <1>;
+>>> +- #size-cells = <0>;
+>>> +- mux-controls : Mux controller node to use for operating the mux
+>>> +- channels : List of strings, labeling the mux controller states.
+>>> +
+>>> +The multiplexer state as described in ../misc/mux-controller.txt
+>>> +
+>>> +For each non-empty string in the channels property, an iio channel will
+>>> +be created. The number of this iio channel is the same as the index into
+>>> +the list of strings in the channels property, and also matches the mux
+>>> +controller state.
+>>> +
+>>> +Example:
+>>> +	mux: mux-controller {
+>>> +		compatible = "mux-gpio";
+>>> +		#mux-control-cells = <0>;
+>>> +
+>>> +		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
+>>> +			    <&pioA 1 GPIO_ACTIVE_HIGH>;
+>>> +	};
+>>> +
+>>> +	adc-mux {
+>>> +		compatible = "iio-mux";
+>>> +		io-channels = <&adc 0>;
+>>> +		io-channel-names = "parent";
+>>> +
+>>> +		mux-controls = <&mux>;
+>>> +
+>>> +		channels = "sync", "in", system-regulator";
+>>> +	};
+> 
+> Describing the same as above, but with the mux controller as a child
+> node.
+> 
+> 	adc-mux {
+> 		compatible = "iio-mux";
+> 		io-channels = <&adc 0>;
+> 		io-channel-names = "parent";
+> 
+> 		channels = "sync", "in", system-regulator";
+> 
+> 		mux-controller {
+> 			compatible = "mux-gpio";
+> 
+> 			mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
+> 				    <&pioA 1 GPIO_ACTIVE_HIGH>;
+> 		};
+> 	};
+> 
+> Cheers,
+> Peter
+> 
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
