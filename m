@@ -1,90 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ua0-f169.google.com ([209.85.217.169]:34688 "EHLO
-        mail-ua0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754056AbcLKWXC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Dec 2016 17:23:02 -0500
-Received: by mail-ua0-f169.google.com with SMTP id 51so66333737uai.1
-        for <linux-iio@vger.kernel.org>; Sun, 11 Dec 2016 14:23:01 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <c028b2fc-7ed1-772c-82e3-b98a25f58ffb@kernel.org>
-References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
- <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de> <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
- <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de> <bf3dde7e-cee8-c54c-db93-447ffa063116@kernel.org>
- <CAMpxmJVJ+y9tRbRBsVg+i0EJO_6EFuvrypwC=ETnBWbMnxRFyg@mail.gmail.com> <c028b2fc-7ed1-772c-82e3-b98a25f58ffb@kernel.org>
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date: Sun, 11 Dec 2016 23:23:00 +0100
-Message-ID: <CAMpxmJVoOkwPwF3fdERtJXFjhFgR7cFmvQs88ybJScMAKxw6mg@mail.gmail.com>
-Subject: Re: [PATCH] iio: misc: add a generic regulator driver
+Received: from mail-lf0-f65.google.com ([209.85.215.65]:36094 "EHLO
+        mail-lf0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752094AbcLJU7l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 15:59:41 -0500
+Date: Sat, 10 Dec 2016 21:53:33 +0100
+From: Marcus Folkesson <marcus.folkesson@gmail.com>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        linux-devicetree <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Patrick Titiano <ptitiano@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+        Matt Ranostay <mranostay@gmail.com>,
+        Sandhya Bankar <bankarsandhya512@gmail.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: Re: [PATCH] iio: adc: max1027: allocate DMA-safe buffer
+Message-ID: <20161210205333.24gjh6vccyqdo5ll@gmail.com>
+References: <20161209102435.30638-1-marcus.folkesson@gmail.com>
+ <915bf030-49c3-5d56-73c2-9c3da3f1a02e@kernel.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <915bf030-49c3-5d56-73c2-9c3da3f1a02e@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2016-12-10 19:17 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
-> On 06/12/16 11:12, Bartosz Golaszewski wrote:
->>
->> I wrote the initial patch quickly and didn't give it much of a
->> thought. Now I realized I completely missed the point and managed to
->> confuse everybody - myself included.
->>
->> So the problem we have is not power-cycling the adc - it's
->> power-cycling the device connected to a probe on which there's an adc.
->> What I was trying to do was adding support for the power-switch on
->> baylibre-acme[1] probes.
->>
->> For example: we have a USB probe on which the VBUS signal goes through
->> a power load switch and than through the adc. The adc (in this case
->> ina226) is always powered on, while the fixed regulator I wanted to
->> enable/disable actually drives the power switch to cut/restore power
->> to the connected USB device i.e. there's no real regulator - just a
->> GPIO driving the power switch.
->>
->> A typical use case is measuring the power consumption of development
->> boards[2]. Rebooting them remotely using acme probes is already done,
->> but we're using the obsolete /sys/class/gpio interface.
->>
->> We're already using libiio to read the measured data from the power
->> monitor, that's why we'd like to use the iio framework for
->> power-cycling the devices as well. My question is: would bridging the
->> regulator framework be the right solution? Should we look for
->> something else? Bridge the GPIO framework instead?
->
-> Definitely doesn't fit inside standard scope of IIO - though I can see
-> why you were thinking along these lines.
->
+On Sat, Dec 10, 2016 at 05:36:34PM +0000, Jonathan Cameron wrote:
+> On 09/12/16 10:24, Marcus Folkesson wrote:
+> > The buffer needs to be DMA-safe when used with spi_read()
+> > 
+> > Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
+> Please read the documentation in include/linux/gfp.h about GFP_DMA.
+> 
+> Specifically:
+> 220  * GFP_DMA exists for historical reasons and should be avoided where possible.
+> 221  *   The flags indicates that the caller requires that the lowest zone be
+> 222  *   used (ZONE_DMA or 16M on x86-64). Ideally, this would be removed but
+> 223  *   it would require careful auditing as some users really require it and
+> 224  *   others use the flag to avoid lowmem reserves in ZONE_DMA and treat the
+> 225  *   lowest zone as a type of emergency reserve.
+> 
+> Seems unlikely this applies!  This caught me by surprise as I didn't even know
+> that flag existed - hence I went digging.
+> 
+> Jonathan
 
-Well, it's industrial INPUT/output right? I guess we can consider
-power-cycling input in this case. :)
+Always learn something!
+I did not know it was depricated, seems like the comment about GFP_DMA was
+commited just a year ago.
 
-In our particular use case, the main reason for using IIO is having a
-single interface (libiio) instead of introducing a new one just for
-that (in the form of random sysfs attributes for example), but I'm
-sure such power switches could find application elsewhere too
-(measuring temperature, while power-cycling some cooling mechanism is
-the first thing that comes to mind).
+I had a problem with a driver on my own that by using a non
+DMA-safe buffer, so I was digging around looking for similiar cases in
+the kernel.
 
-> Mark Brown, any thoughts?
->
-> Effectively we are are looking at something that (in general form) might
-> be the equivalent of controlling a lab bench supply... So regulators
-> at the edge of the known world, with no visibility of what lies beyond.
->
+I thought other drivers (iio/common/ssp_sensors/sspi_spi.c,
+input/rmi4/rmi_spi.c) was using GFP_DMA for this purpose.
 
-Please consider the two patches I just sent. Instead of regulators,
-they add DT bindings for gpio power switches and introduce a simple
-iio driver using the gpio consumer API.
+Anyway, thanks.
 
-Best regards,
-Bartosz Golaszewski
+Cheers,
+Marcus Folkesson 
