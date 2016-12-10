@@ -1,56 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f194.google.com ([209.85.210.194]:33406 "EHLO
-        mail-wj0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752180AbcLJJC1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 04:02:27 -0500
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-Subject: [PATCH v3 2/2] Documentation: dt: iio: add st_lsm6dsx sensor device binding
-Date: Sat, 10 Dec 2016 10:02:18 +0100
-Message-Id: <20161210090218.4609-3-lorenzo.bianconi@st.com>
-In-Reply-To: <20161210090218.4609-1-lorenzo.bianconi@st.com>
-References: <20161210090218.4609-1-lorenzo.bianconi@st.com>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48672 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752418AbcLJRvK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 12:51:10 -0500
+Subject: Re: [PATCH] Staging: iio: impedance-analyzer: ad5933: fix wrong
+ comments
+To: Nizam Haider <nizamhaider786@gmail.com>, pmeerw@pmeerw.net
+References: <20161207174447.24128-1-nizamhaider786@gmail.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
+        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
+        Nizam Haider <nijam.h@hcl.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <1eda9a06-063e-e865-9032-2883b4d26584@kernel.org>
+Date: Sat, 10 Dec 2016 17:51:07 +0000
+MIME-Version: 1.0
+In-Reply-To: <20161207174447.24128-1-nizamhaider786@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     | 24 ++++++++++++++++++++++
- 1 file changed, 24 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+On 07/12/16 17:44, Nizam Haider wrote:
+> according to datasheet complete control register is of 2 bytes.
+> http://www.analog.com/media/en/technical-documentation/data-sheets/AD5933.pdf
+> 
+> Signed-off-by: Nizam Haider <nijam.h@hcl.com>
+Applied to the togreg branch of iio.git - initially pushed out as testing so the
+autobuilders can completely ignore this patch ;)
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-new file mode 100644
-index 0000000..ed3cdac
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-@@ -0,0 +1,24 @@
-+* ST_LSM6DSx driver for STM 6-axis (acc + gyro) imu Mems sensors
-+
-+Required properties:
-+- compatible: must be one of:
-+  "st,lsm6ds3"
-+  "st,lsm6dsm"
-+- reg: i2c address of the sensor / spi cs line
-+
-+Optional properties:
-+- interrupt-parent: should be the phandle for the interrupt controller
-+- interrupts: interrupt mapping for IRQ. It should be configured with
-+  flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING.
-+
-+  Refer to interrupt-controller/interrupts.txt for generic interrupt
-+  client node bindings.
-+
-+Example:
-+
-+lsm6dsm@6b {
-+	compatible = "st,lsm6dsm";
-+	reg = <0x6b>;
-+	interrupt-parent = <&gpio0>;
-+	interrupts = <0 IRQ_TYPE_EDGE_RISING>;
-+};
--- 
-2.9.3
+Jonathan
+> ---
+>  drivers/staging/iio/impedance-analyzer/ad5933.c | 4 ++--
+>  1 file changed, 2 insertions(+), 2 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> index 3892a74..f39e03a 100644
+> --- a/drivers/staging/iio/impedance-analyzer/ad5933.c
+> +++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+> @@ -23,8 +23,8 @@
+>  #include <linux/iio/kfifo_buf.h>
+>  
+>  /* AD5933/AD5934 Registers */
+> -#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 2 bytes */
+> -#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 2 bytes */
+> +#define AD5933_REG_CONTROL_HB		0x80	/* R/W, 1 byte */
+> +#define AD5933_REG_CONTROL_LB		0x81	/* R/W, 1 byte */
+>  #define AD5933_REG_FREQ_START		0x82	/* R/W, 3 bytes */
+>  #define AD5933_REG_FREQ_INC		0x85	/* R/W, 3 bytes */
+>  #define AD5933_REG_INC_NUM		0x88	/* R/W, 2 bytes, 9 bit */
+> 
 
