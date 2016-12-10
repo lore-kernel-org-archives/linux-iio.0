@@ -1,154 +1,342 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f174.google.com ([209.85.210.174]:34916 "EHLO
-        mail-wj0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932146AbcLII4B (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 9 Dec 2016 03:56:01 -0500
-Received: by mail-wj0-f174.google.com with SMTP id v7so8963367wjy.2
-        for <linux-iio@vger.kernel.org>; Fri, 09 Dec 2016 00:56:00 -0800 (PST)
-Date: Fri, 9 Dec 2016 08:59:15 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Daniel Thompson <daniel.thompson@linaro.org>
-Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        robh+dt@kernel.org, Mark Rutland <mark.rutland@arm.com>,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Thierry Reding <thierry.reding@gmail.com>,
-        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Gerald Baeza <gerald.baeza@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v4 6/7] IIO: add STM32 timer trigger driver
-Message-ID: <20161209085915.GD3625@dell.home>
-References: <1481027929-13704-1-git-send-email-benjamin.gaignard@st.com>
- <1481027929-13704-7-git-send-email-benjamin.gaignard@st.com>
- <20161206131635.GJ25385@dell.home>
- <CA+M3ks6fxCucmaY0OgpMb_opA=YLrowijJ0YQ+imeprhWg6N_w@mail.gmail.com>
- <20161207105002.GA3625@dell.home>
- <CA+M3ks4VbV6z6t7aORKGmduZfFF+Ls7Sq8umWRFyo3sn8WZt7g@mail.gmail.com>
- <5dcec09c-8b4b-4cc2-ce3f-fde86366ec05@linaro.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48740 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752396AbcLJSEO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 13:04:14 -0500
+Subject: Re: [PATCH] iio: Add Maxim MAX11100 driver
+To: "jacopo@jmondi.org" <jacopo@jmondi.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1481041823-18382-1-git-send-email-jacopo@jmondi.org>
+ <alpine.DEB.2.02.1612062143480.10644@pmeerw.net>
+ <adc93632-e487-0251-1d27-a56e9215e9f6@jmondi.org>
+Cc: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+        knaack.h@gmx.de, lars@metafoo.de, linux-iio@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <b9a7ac4d-4c48-b540-bfe9-91529567371a@kernel.org>
+Date: Sat, 10 Dec 2016 18:04:11 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <5dcec09c-8b4b-4cc2-ce3f-fde86366ec05@linaro.org>
+In-Reply-To: <adc93632-e487-0251-1d27-a56e9215e9f6@jmondi.org>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, 07 Dec 2016, Daniel Thompson wrote:
-
-> On 07/12/16 11:00, Benjamin Gaignard wrote:
-> > 2016-12-07 11:50 GMT+01:00 Lee Jones <lee.jones@linaro.org>:
-> > > On Tue, 06 Dec 2016, Benjamin Gaignard wrote:
-> > > 
-> > > > [snip]
-> > > > > > +
-> > > > > > +static const char * const triggers0[] = {
-> > > > > > +     TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers1[] = {
-> > > > > > +     TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers2[] = {
-> > > > > > +     TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers3[] = {
-> > > > > > +     TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers4[] = {
-> > > > > > +     TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers5[] = {
-> > > > > > +     TIM6_TRGO, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers6[] = {
-> > > > > > +     TIM7_TRGO, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers7[] = {
-> > > > > > +     TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers8[] = {
-> > > > > > +     TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const char * const triggers9[] = {
-> > > > > > +     TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,
-> > > > > > +};
-> > > > > > +
-> > > > > > +static const void *triggers_table[] = {
-> > > > > > +     triggers0,
-> > > > > > +     triggers1,
-> > > > > > +     triggers2,
-> > > > > > +     triggers3,
-> > > > > > +     triggers4,
-> > > > > > +     triggers5,
-> > > > > > +     triggers6,
-> > > > > > +     triggers7,
-> > > > > > +     triggers8,
-> > > > > > +     triggers9,
-> > > > > > +};
-> > > > > 
-> > > > > What about:
-> > > > > 
-> > > > > static const char * const triggers[][] = {
-> > > > >         { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL },
-> > > > >         { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL },
-> > > > >         { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL },
-> > > > >         { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL },
-> > > > >         { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL },
-> > > > >         { TIM6_TRGO, NULL },
-> > > > >         { TIM7_TRGO, NULL },
-> > > > >         { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL },
-> > > > >         { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL },
-> > > > >         { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL }
-> > > > > };
-> > > > 
-> > > > I can't because the second dimension of the array isn't fix.
-> > > > I could have between 2 and 6 elements per row... to create a dual dimension
-> > > > array I would have to add NULL entries like that:
-> > > > 
-> > > > #define MAX_TRIGGERS 6
-> > > > 
-> > > > static const void *triggers_table[][MAX_TRIGGERS] = {
-> > > > { TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4, NULL,},
-> > > > { TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4, NULL,},
-> > > > { TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4, NULL,},
-> > > > { TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4, NULL,},
-> > > > { TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4, NULL,},
-> > > > { TIM6_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
-> > > > { TIM7_TRGO, NULL,     NULL,     NULL,     NULL,     NULL,},
-> > > > { TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4, NULL,},
-> > > > { TIM9_TRGO, TIM9_CH1, TIM9_CH2, NULL,     NULL,     NULL,},
-> > > > { TIM12_TRGO, TIM12_CH1, TIM12_CH2, NULL,  NULL,     NULL,},
-> > > > };
-> > > 
-> > > It was just an idea, not a tested implementation.
-> > > 
-> > > I don't understand why you have to pad with NULLs, but either way, it
-> > > looks much better than before and saves lots of lines of code.
-> > 
-> > I have tested it this morning and it works fine so I will include it in v5.
-> > I use NULL as limit when iterate in the table and for table padding too.
+On 07/12/16 08:29, jacopo@jmondi.org wrote:
+> Hi Peter,
+>    thanks for review
 > 
-> If the initializer is shorter than the array then the array will be
-> implicitly zero/NULL padded. I don't think there is any need to type out all
-> the NULLs (not even at -Wall).
+> On 06/12/2016 22:00, Peter Meerwald-Stadler wrote:
+>> On Tue, 6 Dec 2016, Jacopo Mondi wrote:
+>>
+>>> Add IIO driver for Maxim MAX11100 single-channel ADC.
+>>> Support raw_read mode only.
+>>
+>> comments below; very minimal driver, but several easy issues...
+>>
+>> the read_raw() is supposed to return millivolts (after application of
+>> offset and scale); maybe need _SCALE?
+> 
+> How can I return millivolts here? They vary in function of the supplied Vref as ( V = val * Vref / (2 ^ 16 - 1)) where "val" is digital value output by the ADC.
+> Since Vref can range from 3.8V to 5.25V, while it's typically 4.096V, isn't it more appropriate to let userspace perform conversion to millivolts, as it knows what Vref value is supplied to the ADC?
+> 
+>>
+>>> Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
+>>> ---
+>>>  drivers/iio/adc/Kconfig    |   9 +++
+>>>  drivers/iio/adc/Makefile   |   1 +
+>>>  drivers/iio/adc/max11100.c | 165 +++++++++++++++++++++++++++++++++++++++++++++
+>>>  3 files changed, 175 insertions(+)
+>>>  create mode 100644 drivers/iio/adc/max11100.c
+>>>
+>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>> index 99c0514..e2f3340 100644
+>>> --- a/drivers/iio/adc/Kconfig
+>>> +++ b/drivers/iio/adc/Kconfig
+>>> @@ -285,6 +285,15 @@ config MAX1027
+>>>        To compile this driver as a module, choose M here: the module will be
+>>>        called max1027.
+>>>
+>>> +config MAX11100
+>>> +    tristate "Maxim max11100 ADC driver"
+>>> +    depends on SPI
+>>> +    help
+>>> +      Say yes here to build support for Maxim 11100 SPI ADC
+>>
+>> Maxim max11100
+>>
+>>> +
+>>> +      To compile this driver as a module, choose M here: the module will be
+>>> +      called max11100.
+>>> +
+>>>  config MAX1363
+>>>      tristate "Maxim max1363 ADC driver"
+>>>      depends on I2C
+>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>>> index 7a40c04..1463044 100644
+>>> --- a/drivers/iio/adc/Makefile
+>>> +++ b/drivers/iio/adc/Makefile
+>>> @@ -29,6 +29,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>>>  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+>>>  obj-$(CONFIG_LTC2485) += ltc2485.o
+>>>  obj-$(CONFIG_MAX1027) += max1027.o
+>>> +obj-$(CONFIG_MAX11100) += max11100.o
+>>>  obj-$(CONFIG_MAX1363) += max1363.o
+>>>  obj-$(CONFIG_MCP320X) += mcp320x.o
+>>>  obj-$(CONFIG_MCP3422) += mcp3422.o
+>>> diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+>>> new file mode 100644
+>>> index 0000000..fbce287
+>>> --- /dev/null
+>>> +++ b/drivers/iio/adc/max11100.c
+>>> @@ -0,0 +1,165 @@
+>>> +/*
+>>> + * iio/adc/max11100.c
+>>> + * Maxim MAX11100 ADC Driver with IIO interface
+>>
+>> MAX11100 or max11100
+>>
+>>> + *
+>>> + * Copyright (C) 2016 Renesas Electronics Corporation
+>>> + * Copyright (C) 2016 Jacopo Mondi
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify
+>>> + * it under the terms of the GNU General Public License version 2 as
+>>> + * published by the Free Software Foundation.
+>>> + */
+>>> +#include <linux/kernel.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/spi/spi.h>
+>>> +#include <linux/delay.h>
+>>> +
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/buffer.h>
+>>> +
+>>> +struct max11100_state {
+>>> +    const struct max11100_chip_desc *desc;
+>>> +    struct spi_device *spi;
+>>> +    struct mutex lock;
+>>> +};
+>>> +
+>>> +static struct iio_chan_spec max11100_channels[] = {
+>>> +    { /* [0] */
+>>> +        .type = IIO_VOLTAGE,
+>>> +        .channel = 0,
+>>
+>> not indexed, so channel = 0 not needed
+>>
+>>> +        .address = 0,
+>>
+>> address not needed (and no need to initialize to 0 anyway)
+>>
+>>> +        .scan_index = 0,
+>>
+>> scan_index and scan_type not needed since no buffered support (yet); add
+>> this when needed
+>>
+>>> +        .scan_type = {
+>>> +            .sign = 'u',
+>>> +            .realbits = 16,
+>>> +            .storagebits = 24,
+>>> +            .shift = 8,
+>>> +            .repeat = 1,
+>>> +            .endianness = IIO_BE,
+>>> +        },
+>>> +        .output = 1,
+>>
+>> no, ADC is typically not an output channel
+>>
+>>> +        .info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>>> +    },
+>>> +};
+>>> +
+>>> +static const unsigned long max11100_scan_masks[] = {
+>>
+>> scan_masks not needed since no buffered support
+>>
+>>> +    0xffff,
+>>> +};
+>>> +
+>>> +static struct max11100_chip_desc {
+>>> +    uint32_t num_chan;
+>>
+>> why not just unsigned?
+>>
+>>> +    const unsigned long *scanmasks;
+>>
+>> not needed (yet)
+>>
+>>> +    const struct iio_chan_spec *channels;
+>>> +} max11100_desc = {
+>>> +    .num_chan = 1,
+>>
+>> ARRAY_SIZE(max11100_channels)
+>>
+>>> +    .scanmasks = max11100_scan_masks,
+>>> +    .channels = max11100_channels,
+>>> +};
+>>> +
+>>> +static int max11100_read_raw(struct iio_dev *indio_dev,
+>>> +                 struct iio_chan_spec const *chan,
+>>> +                 int *val, int *val2, long mask)
+>>> +{
+>>> +    int ret;
+>>> +    struct max11100_state *state = iio_priv(indio_dev);
+>>> +    uint8_t buffer[3] = { 0, 0, 0 };
+>>
+>> no need to initialize buffer; consider alignment requirements for SPI
+>>
+>>> +
+>>> +    mutex_lock(&state->lock);
+>>
+>> what is the mutex protecting?
+>> must the spi_read() by protected? then the unlock can be placed right
+>> after the call...
+>>
+>>> +
+>>> +    ret = spi_read(state->spi, (void *) buffer, 3);
+>>
+>> sizeof(buffer)
+>>
+>>> +    if (ret) {
+>>> +        dev_err(&indio_dev->dev, "SPI transfer failed\n");
+>>
+>> mutex_unlock()!?
+>>
+>>> +        return ret;
+>>> +    }
+>>> +
+>>> +    dev_dbg(&indio_dev->dev, "ADC output values: "    \
+>>> +        "[0]: 0x%2x [1]: 0x%2x [2]: 0x%2x\n",
+>>
+>> probably 0x%02x if really needed
+>>
+>>> +        buffer[0], buffer[1], buffer[2]);
+>>> +
+>>> +    /* the first 8 bits sent out from ADC must be 0s */
+>>> +    if (buffer[0]) {
+>>> +        dev_err(&indio_dev->dev, "Invalid value: buffer[0] != 0\n");
+>>
+>> mutex_unlock()!?
+> 
+> This is embarrassing. It got lost during last rebase, sorry about that.
+> 
+>>
+>>> +        return -EINVAL;
+>>> +    }
+>>> +
+>>> +    *val = (buffer[1] << 8) | buffer[2];
+>>> +    mutex_unlock(&state->lock);
+>>> +
+>>
+>> shouldn't this return IIO_VAL_INT?
+>>
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static const struct iio_info max11100_info = {
+>>> +    .driver_module = THIS_MODULE,
+>>> +    .read_raw = max11100_read_raw,
+>>> +};
+>>> +
+>>> +static int max11100_probe(struct spi_device *spi)
+>>> +{
+>>> +    int ret;
+>>> +    struct iio_dev *indio_dev;
+>>> +    struct max11100_state *state;
+>>> +
+>>> +    indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+>>> +    if (!indio_dev) {
+>>> +        pr_err("Can't allocate iio device\n");
+>>
+>> error message really needed?
+>>
+>>> +        return -ENOMEM;
+>>> +    }
+>>> +    dev_dbg(&indio_dev->dev, "probe max11100 IIO SPI\n");
+>>
+>> message really needed?
+>>
+>>> +
+>>> +    spi_set_drvdata(spi, indio_dev);
+>>> +
+>>> +    state = iio_priv(indio_dev);
+>>> +    state->spi = spi;
+>>> +    state->desc = &max11100_desc;
+>>> +
+>>> +    mutex_init(&state->lock);
+>>> +
+>>> +    indio_dev->dev.parent = &spi->dev;
+>>> +    indio_dev->dev.of_node = spi->dev.of_node;
+>>> +    indio_dev->info = &max11100_info;
+>>> +    indio_dev->modes = INDIO_DIRECT_MODE;
+>>> +    indio_dev->channels = state->desc->channels;
+>>> +    indio_dev->num_channels = state->desc->num_chan;
+>>> +    indio_dev->available_scan_masks = state->desc->scanmasks;
+>>> +
+>>> +    ret = iio_device_register(indio_dev);
+>>
+>> could use devm_ variant...
+>>
+>>> +    if (ret) {
+>>> +        dev_err(&indio_dev->dev, "Failed to register iio device\n");
+>>> +        return ret;
+>>> +    }
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static int max11100_remove(struct spi_device *spi)
+>>
+>> function not needed if using devm_iio_device_register()
+>>
+>>> +{
+>>> +    struct iio_dev *indio_dev = spi_get_drvdata(spi);
+>>> +
+>>> +    dev_dbg(&indio_dev->dev, "remove max11100 IIO SPI\n");
+>>> +
+>>> +    iio_device_unregister(indio_dev);
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static const struct of_device_id max11100_ids[] = {
+>>> +    {.compatible = "maxim,max11100"},
+>>> +    { },
+>>> +};
+>>> +MODULE_DEVICE_TABLE(of, max11100_ids);
+>>> +
+>>> +static struct spi_driver max11100_driver = {
+>>> +    .driver = {
+>>> +        .name    = "max11100",
+>>> +        .owner    = THIS_MODULE,
+>>> +        .of_match_table = of_match_ptr(max11100_ids),
+>>> +    },
+>>> +    .probe        = max11100_probe,
+>>> +    .remove        = max11100_remove,
+>>> +};
+>>> +
+>>> +module_spi_driver(max11100_driver);
+>>> +
+>>> +MODULE_AUTHOR("Jacopo Mondi <jacopo@jmondi.org>");
+>>> +MODULE_DESCRIPTION("Maxim MAX11100 ADC Driver");
+>>> +MODULE_LICENSE("GPL v2");
+>>>
+>>
+> 
+> This driver is so minimal, I wonder if there are not drivers for
+> similar devices to which I can add support for MAX11100 instead of
+> writing a new one from scratch. Anyone with more expertise than me in
+> IIO codebase maybe can suggest something here...
+Could possibly blugeon it into the ad7476 code, but it wouldn't be pretty...
+Some of the SPI TI parts perhaps, but again you'll end up with a fair refactoring of
+the existing drivers to get it in.
 
-+1.  My point precisely.
+Seems simple I agree, but somehow there are an awful lot of simple ways to interface
+and ADC via a couple of spi transfers!
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+Jonathan
+> Thanks
+>    j
+> 
+> 
+
