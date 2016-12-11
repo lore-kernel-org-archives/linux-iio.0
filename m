@@ -1,80 +1,69 @@
-Return-Path: <SRS0=55s9=X3=metafoo.de=lars@kernel.org>
-Subject: Re: [PATCH] iio: adc: max1027: allocate DMA-safe buffer
-To: Marcus Folkesson <marcus.folkesson@gmail.com>,
- Jonathan Cameron <jic23@kernel.org>
-References: <20161209102435.30638-1-marcus.folkesson@gmail.com>
- <915bf030-49c3-5d56-73c2-9c3da3f1a02e@kernel.org>
- <20161210205333.24gjh6vccyqdo5ll@gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
- Matt Ranostay <mranostay@gmail.com>,
- Sandhya Bankar <bankarsandhya512@gmail.com>, linux-iio@vger.kernel.org,
- linux-kernel@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <aea77156-d264-9066-4fca-914721bba400@metafoo.de>
-Date: Mon, 12 Dec 2016 18:31:57 +0100
-MIME-Version: 1.0
-In-Reply-To: <20161210205333.24gjh6vccyqdo5ll@gmail.com>
-Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:36889 "EHLO
+        mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753944AbcLKWWt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Dec 2016 17:22:49 -0500
+Received: by mail-wm0-f52.google.com with SMTP id t79so41542225wmt.0
+        for <linux-iio@vger.kernel.org>; Sun, 11 Dec 2016 14:22:49 -0800 (PST)
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        linux-gpio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
+        linux-pm@vger.kernel.org, Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Subject: [PATCH 0/2] iio: GPIO power switch support
+Date: Sun, 11 Dec 2016 23:21:43 +0100
+Message-Id: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 12/10/2016 09:53 PM, Marcus Folkesson wrote:
-> On Sat, Dec 10, 2016 at 05:36:34PM +0000, Jonathan Cameron wrote:
->> On 09/12/16 10:24, Marcus Folkesson wrote:
->>> The buffer needs to be DMA-safe when used with spi_read()
->>>
->>> Signed-off-by: Marcus Folkesson <marcus.folkesson@gmail.com>
->> Please read the documentation in include/linux/gfp.h about GFP_DMA.
->>
->> Specifically:
->> 220  * GFP_DMA exists for historical reasons and should be avoided where possible.
->> 221  *   The flags indicates that the caller requires that the lowest zone be
->> 222  *   used (ZONE_DMA or 16M on x86-64). Ideally, this would be removed but
->> 223  *   it would require careful auditing as some users really require it and
->> 224  *   others use the flag to avoid lowmem reserves in ZONE_DMA and treat the
->> 225  *   lowest zone as a type of emergency reserve.
->>
->> Seems unlikely this applies!  This caught me by surprise as I didn't even know
->> that flag existed - hence I went digging.
->>
->> Jonathan
-> 
-> Always learn something!
-> I did not know it was depricated, seems like the comment about GFP_DMA was
-> commited just a year ago.
+This series is aimed at improving the support for baylibre-acme[1]
+power measurement capes. 
 
-GFP_DMA is the lowest common denominator when it comes to allocating
-buffers. Using GFP_DMA will allocate the buffer at an address that is
-accessible by all DMA hardware. But for most (and pretty much all modern)
-hardware this is simply not necessary since the addressable range is much
-larger. On the other hand the downside of using GFP_DMA is that there is
-only a very limited amount (16M at most) of memory available for GFP_DMA
-allocations. This is why it is not recommend to be used for new drivers.
+We would like to add support for power-cycling of devices measured
+using TI INA226 ADCs. An example use case would be measuring the power
+consumption of a development board during boot and power-cycling it
+remotely using a GPIO power switch.
 
-The problem is that when the buffer is allocated in the IIO driver we do not
-know the buffer address restrictions of the SPI device. And often the DMA is
-not even done by the SPI controller but a dedicated separate DMA controller.
+The first patch proposes to add a new DT binding for describing simple
+power switches.
 
-Ideally there would be some kind of helper function that allows to allocate
-a DMA-able transfer buffer for a specific SPI device.
+The second adds a simple IIO driver exposing a single attribute.
 
-> 
-> I had a problem with a driver on my own that by using a non
-> DMA-safe buffer, so I was digging around looking for similiar cases in
-> the kernel.
+The motivation for using the IIO framework is the fact that we already
+use it for reading the data from the ADC and that power-cycling the
+measured devices is an integral part of our use case. Users would find
+it convenient to be able to use libiio as the single interface.
 
-What kind of issue was this?
+[1] http://baylibre.com/acme/
 
-> 
-> I thought other drivers (iio/common/ssp_sensors/sspi_spi.c,
-> input/rmi4/rmi_spi.c) was using GFP_DMA for this purpose.
-> 
-> Anyway, thanks.
-> 
-> Cheers,
-> Marcus Folkesson 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Bartosz Golaszewski (2):
+  devicetree: power: add bindings for GPIO-driven power switches
+  iio: misc: add support for GPIO power switches
+
+ .../bindings/power/gpio-power-switch.txt           |  25 ++++
+ drivers/iio/Kconfig                                |   1 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/misc/Kconfig                           |  17 +++
+ drivers/iio/misc/Makefile                          |   6 +
+ drivers/iio/misc/gpio-power-switch.c               | 127 +++++++++++++++++++++
+ 6 files changed, 177 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/gpio-power-switch.txt
+ create mode 100644 drivers/iio/misc/Kconfig
+ create mode 100644 drivers/iio/misc/Makefile
+ create mode 100644 drivers/iio/misc/gpio-power-switch.c
+
+-- 
+2.9.3
+
