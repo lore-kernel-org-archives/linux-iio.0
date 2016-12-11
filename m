@@ -1,74 +1,179 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48656 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932088AbcLJRsy (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 12:48:54 -0500
-Subject: Re: [PATCH v12 0/5] mxs-lradc: Split driver into MFD
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:36333 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753189AbcLKCsi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 21:48:38 -0500
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
-References: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, marex@denx.de, linux-iio@vger.kernel.org,
-        harald@ccbib.org, stefan.wahren@i2se.com,
-        fabio.estevam@freescale.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a1034bb5-a4e9-dcc4-d082-fe597941eca1@kernel.org>
-Date: Sat, 10 Dec 2016 17:48:48 +0000
-MIME-Version: 1.0
-In-Reply-To: <cover.1481315766.git.ksenija.stanojevic@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        daniel.baluta@gmail.com, amsfield22@gmail.com,
+        Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v3 2/2] staging: iio: ad7606: move out of staging
+Date: Sun, 11 Dec 2016 10:47:49 +0800
+Message-Id: <406fd6f60db88f051b36bf6f28cfe8fc8b1acb32.1481424136.git.eraretuya@gmail.com>
+In-Reply-To: <cover.1481424136.git.eraretuya@gmail.com>
+References: <cover.1481424136.git.eraretuya@gmail.com>
+In-Reply-To: <cover.1481424136.git.eraretuya@gmail.com>
+References: <cover.1481424136.git.eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/12/16 21:08, Ksenija Stanojevic wrote:
-> Split existing driver mxs-lradc into MFD with touchscreen and
-> IIO part.
-> 
-> Tested on I.MX28
-Hi All,
+Move the ad7606 driver from staging/iio/adc to iio/adc. Also, update the
+corresponding Makefile and Kconfig associated with the change.
 
-At first glance it looks like this is over to Dmitry and Lee.
-If they are both happy...
+Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+---
+ drivers/iio/adc/Kconfig                    | 34 ++++++++++++++++++++++++++++++
+ drivers/iio/adc/Makefile                   |  3 +++
+ drivers/{staging => }/iio/adc/ad7606.c     |  0
+ drivers/{staging => }/iio/adc/ad7606.h     |  0
+ drivers/{staging => }/iio/adc/ad7606_par.c |  0
+ drivers/{staging => }/iio/adc/ad7606_spi.c |  0
+ drivers/staging/iio/adc/Kconfig            | 34 ------------------------------
+ drivers/staging/iio/adc/Makefile           |  4 ----
+ 8 files changed, 37 insertions(+), 38 deletions(-)
+ rename drivers/{staging => }/iio/adc/ad7606.c (100%)
+ rename drivers/{staging => }/iio/adc/ad7606.h (100%)
+ rename drivers/{staging => }/iio/adc/ad7606_par.c (100%)
+ rename drivers/{staging => }/iio/adc/ad7606_spi.c (100%)
 
-Lee, I'm assuming this whole lot will go through MFD.  Please work your
-magic with an immutable branch as I guess my Dmitry and I may well want
-to pull this in at some point over the coming cycle as well.
-
-If for whatever reason you would prefer I pick it up in the first instance
-and do a branch for you and Dmitry, give me a shout.
-
-Coming together very nicely and will be good to finally get this sorted!
-
-Thanks,
-
-Jonathan
-> 
-> Ksenija Stanojevic (5):
->   mfd: mxs-lradc: Add support for mxs-lradc MFD
->   iio: adc: mxs-lradc: Add support for adc driver
->   input: touchscreen: mxs-lradc: Add support for touchscreen
->   iio: adc: mxs-lradc: Remove driver
->   mfd: Move binding document
-> 
->  .../bindings/{iio/adc => mfd}/mxs-lradc.txt        |    0
->  drivers/iio/adc/Kconfig                            |   27 +-
->  drivers/iio/adc/Makefile                           |    2 +-
->  drivers/iio/adc/mxs-lradc-adc.c                    |  843 ++++++++++
->  drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
->  drivers/input/touchscreen/Kconfig                  |   10 +
->  drivers/input/touchscreen/Makefile                 |    1 +
->  drivers/input/touchscreen/mxs-lradc-ts.c           |  739 +++++++++
->  drivers/mfd/Kconfig                                |   17 +
->  drivers/mfd/Makefile                               |    1 +
->  drivers/mfd/mxs-lradc.c                            |  264 +++
->  include/linux/mfd/mxs-lradc.h                      |  187 +++
->  12 files changed, 2076 insertions(+), 1765 deletions(-)
->  rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
->  create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
->  delete mode 100644 drivers/iio/adc/mxs-lradc.c
->  create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
->  create mode 100644 drivers/mfd/mxs-lradc.c
->  create mode 100644 include/linux/mfd/mxs-lradc.h
-> 
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index be81ba3..3fa2c60 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -58,6 +58,40 @@ config AD7476
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called ad7476.
+ 
++config AD7606
++	tristate "Analog Devices AD7606 ADC driver"
++	depends on GPIOLIB || COMPILE_TEST
++	depends on HAS_IOMEM
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for Analog Devices:
++	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7606.
++
++config AD7606_IFACE_PARALLEL
++	tristate "parallel interface support"
++	depends on AD7606
++	help
++	  Say yes here to include parallel interface support on the AD7606
++	  ADC driver.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7606_parallel.
++
++config AD7606_IFACE_SPI
++	tristate "spi interface support"
++	depends on AD7606
++	depends on SPI
++	help
++	  Say yes here to include parallel interface support on the AD7606
++	  ADC driver.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called ad7606_spi.
++
+ config AD7766
+ 	tristate "Analog Devices AD7766/AD7767 ADC driver"
+ 	depends on SPI_MASTER
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index f8e1218..dfe7dea 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -9,6 +9,9 @@ obj-$(CONFIG_AD7291) += ad7291.o
+ obj-$(CONFIG_AD7298) += ad7298.o
+ obj-$(CONFIG_AD7923) += ad7923.o
+ obj-$(CONFIG_AD7476) += ad7476.o
++obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
++obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
++obj-$(CONFIG_AD7606) += ad7606.o
+ obj-$(CONFIG_AD7766) += ad7766.o
+ obj-$(CONFIG_AD7791) += ad7791.o
+ obj-$(CONFIG_AD7793) += ad7793.o
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/iio/adc/ad7606.c
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606.c
+rename to drivers/iio/adc/ad7606.c
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/iio/adc/ad7606.h
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606.h
+rename to drivers/iio/adc/ad7606.h
+diff --git a/drivers/staging/iio/adc/ad7606_par.c b/drivers/iio/adc/ad7606_par.c
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606_par.c
+rename to drivers/iio/adc/ad7606_par.c
+diff --git a/drivers/staging/iio/adc/ad7606_spi.c b/drivers/iio/adc/ad7606_spi.c
+similarity index 100%
+rename from drivers/staging/iio/adc/ad7606_spi.c
+rename to drivers/iio/adc/ad7606_spi.c
+diff --git a/drivers/staging/iio/adc/Kconfig b/drivers/staging/iio/adc/Kconfig
+index deff899..995867b 100644
+--- a/drivers/staging/iio/adc/Kconfig
++++ b/drivers/staging/iio/adc/Kconfig
+@@ -3,40 +3,6 @@
+ #
+ menu "Analog to digital converters"
+ 
+-config AD7606
+-	tristate "Analog Devices AD7606 ADC driver"
+-	depends on GPIOLIB || COMPILE_TEST
+-	depends on HAS_IOMEM
+-	select IIO_BUFFER
+-	select IIO_TRIGGERED_BUFFER
+-	help
+-	  Say yes here to build support for Analog Devices:
+-	  ad7606, ad7606-6, ad7606-4 analog to digital converters (ADC).
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606.
+-
+-config AD7606_IFACE_PARALLEL
+-	tristate "parallel interface support"
+-	depends on AD7606
+-	help
+-	  Say yes here to include parallel interface support on the AD7606
+-	  ADC driver.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606_parallel.
+-
+-config AD7606_IFACE_SPI
+-	tristate "spi interface support"
+-	depends on AD7606
+-	depends on SPI
+-	help
+-	  Say yes here to include parallel interface support on the AD7606
+-	  ADC driver.
+-
+-	  To compile this driver as a module, choose M here: the
+-	  module will be called ad7606_spi.
+-
+ config AD7780
+ 	tristate "Analog Devices AD7780 and similar ADCs driver"
+ 	depends on SPI
+diff --git a/drivers/staging/iio/adc/Makefile b/drivers/staging/iio/adc/Makefile
+index ac09485..549032b 100644
+--- a/drivers/staging/iio/adc/Makefile
++++ b/drivers/staging/iio/adc/Makefile
+@@ -2,10 +2,6 @@
+ # Makefile for industrial I/O ADC drivers
+ #
+ 
+-obj-$(CONFIG_AD7606_IFACE_PARALLEL) += ad7606_par.o
+-obj-$(CONFIG_AD7606_IFACE_SPI) += ad7606_spi.o
+-obj-$(CONFIG_AD7606) += ad7606.o
+-
+ obj-$(CONFIG_AD7780) += ad7780.o
+ obj-$(CONFIG_AD7816) += ad7816.o
+ obj-$(CONFIG_AD7192) += ad7192.o
+-- 
+2.7.4
 
