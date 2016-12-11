@@ -1,63 +1,51 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f195.google.com ([209.85.210.195]:33398 "EHLO
-        mail-wj0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751639AbcLJJCY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 10 Dec 2016 04:02:24 -0500
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-Subject: [PATCH v3 0/2] add support to STM LSM6DS3-LSM6DSM 6-axis Mems sensor
-Date: Sat, 10 Dec 2016 10:02:16 +0100
-Message-Id: <20161210090218.4609-1-lorenzo.bianconi@st.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=4Pt3=X2=gmail.com=eraretuya@kernel.org>
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Cc: lars@metafoo.de,
+	Michael.Hennerich@analog.com,
+	jic23@kernel.org,
+	knaack.h@gmx.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	daniel.baluta@gmail.com,
+	amsfield22@gmail.com,
+	Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v3 0/2] staging: iio: ad7606: move driver out of staging
+Date: Sun, 11 Dec 2016 10:47:47 +0800
+Message-Id: <cover.1481424136.git.eraretuya@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-Changes since v2:
-- improve code documentation
-- improve code readability
-- use spi_write() instead of spi_sync_transfer() in st_lsm6dsx_spi_write()
-- use SMBus commands instead of I2C protocol
-- use fifo_lock mutex to prevent concurrent access to hw FIFO instead of
-  disabling/enabling irq line in st_lsm6dsx_flush_fifo()
-- rename ring occurrences in buffer ones
+Address the last remaining TODO [1] for this driver and move it from staging
+into mainline.
 
-Changes since v1:
-- add sw fifo support
-- drop trigger dependency
-- use iio_claim_direct_mode() routine instead of grabbing the mutex directly
-- use more unique prefix for all defines
-- use info_mask_shared_by_all element for sampling_frequency
-- use devm_iio_* routines
-- use of_match_ptr instead of access directly to of_match_table
-- fix device tree binding
-- rename st_lsm6dsx_dev in st_lsm6dsx_hw
-- cosmetics
+[1] https://marc.info/?l=linux-iio&m=147689684332118&w=2 
 
-Lorenzo Bianconi (2):
-  iio: imu: add support to lsm6dsx driver
-  Documentation: dt: iio: add st_lsm6dsx sensor device binding
+Change in v3:
+* Fix incorrect type of 'scale'. (Pointed out by kbuild test robot)
 
- .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     |  24 +
- drivers/iio/imu/Kconfig                            |   1 +
- drivers/iio/imu/Makefile                           |   2 +
- drivers/iio/imu/st_lsm6dsx/Kconfig                 |  23 +
- drivers/iio/imu/st_lsm6dsx/Makefile                |   5 +
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h            | 133 +++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c     | 437 ++++++++++++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c       | 655 +++++++++++++++++++++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c        |  88 +++
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c        | 126 ++++
- 10 files changed, 1494 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
- create mode 100644 drivers/iio/imu/st_lsm6dsx/Kconfig
- create mode 100644 drivers/iio/imu/st_lsm6dsx/Makefile
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx.h
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_i2c.c
- create mode 100644 drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_spi.c
+Change in v2:
+* Address the incorrect way of implementing the scale. (Pointed out by Lars)
+
+Eva Rachel Retuya (2):
+  staging: iio: ad7606: replace range/range_available with corresponding
+    scale
+  staging: iio: ad7606: move out of staging
+
+ drivers/iio/adc/Kconfig                    |  34 ++++++++++
+ drivers/iio/adc/Makefile                   |   3 +
+ drivers/{staging => }/iio/adc/ad7606.c     | 100 ++++++++++++++++++-----------
+ drivers/{staging => }/iio/adc/ad7606.h     |   1 +
+ drivers/{staging => }/iio/adc/ad7606_par.c |   0
+ drivers/{staging => }/iio/adc/ad7606_spi.c |   0
+ drivers/staging/iio/adc/Kconfig            |  34 ----------
+ drivers/staging/iio/adc/Makefile           |   4 --
+ 8 files changed, 99 insertions(+), 77 deletions(-)
+ rename drivers/{staging => }/iio/adc/ad7606.c (86%)
+ rename drivers/{staging => }/iio/adc/ad7606.h (98%)
+ rename drivers/{staging => }/iio/adc/ad7606_par.c (100%)
+ rename drivers/{staging => }/iio/adc/ad7606_spi.c (100%)
 
 -- 
-2.9.3
-
+2.7.4
