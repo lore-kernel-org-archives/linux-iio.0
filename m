@@ -1,120 +1,24 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx1.redhat.com ([209.132.183.28]:40580 "EHLO mx1.redhat.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753463AbcLNNza (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 14 Dec 2016 08:55:30 -0500
-From: Hans de Goede <hdegoede@redhat.com>
-To: Jonathan Cameron <jic23@kernel.org>, Chen-Yu Tsai <wens@csie.org>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "russianneuromancer @ ya . ru" <russianneuromancer@ya.ru>,
-        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Hans de Goede <hdegoede@redhat.com>
-Subject: [PATCH] iio: adc: axp288: Drop bogus AXP288_ADC_TS_PIN_CTRL register modifications
-Date: Wed, 14 Dec 2016 14:55:25 +0100
-Message-Id: <20161214135525.16477-1-hdegoede@redhat.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=9ELY=X4=gmail.com=robherring2@kernel.org>
+Date: Tue, 13 Dec 2016 13:03:13 -0600
+From: Rob Herring <robh@kernel.org>
+To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+Cc: jic23@kernel.org, linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	lorenzo.bianconi@st.com
+Subject: Re: [PATCH v3 2/2] Documentation: dt: iio: add st_lsm6dsx sensor
+ device binding
+Message-ID: <20161213190313.22kexw56cvzznw3s@rob-hp-laptop>
+References: <20161210090218.4609-1-lorenzo.bianconi@st.com>
+ <20161210090218.4609-3-lorenzo.bianconi@st.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20161210090218.4609-3-lorenzo.bianconi@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-For some reason the axp288_adc driver was modifying the
-AXP288_ADC_TS_PIN_CTRL register, changing bits 0-1 depending on
-whether the GP_ADC channel or another channel was written.
+On Sat, Dec 10, 2016 at 10:02:18AM +0100, Lorenzo Bianconi wrote:
+> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+> ---
+>  .../devicetree/bindings/iio/imu/st_lsm6dsx.txt     | 24 ++++++++++++++++++++++
+>  1 file changed, 24 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
 
-These bits control when a bias current is send to the TS_PIN, the
-GP_ADC has its own pin and a separate bit in another register to
-control the bias current.
-
-Not only does changing when to enable the TS_PIN bias current
-(always or only when sampling) when reading the GP_ADC make no sense
-at all, the code is modifying these bits is writing the entire register,
-assuming that all the other bits have their default value.
-
-So if the firmware has configured a different bias-current for either
-pin, then that change gets clobbered by the write, likewise if the
-firmware has set bit 2 to indicate that the battery has no thermal sensor,
-this will get clobbered by the write.
-
-This commit fixes all this, by simply removing all writes to the
-AXP288_ADC_TS_PIN_CTRL register, they are not needed to read the
-GP_ADC pin, and can actually be harmful.
-
-Signed-off-by: Hans de Goede <hdegoede@redhat.com>
----
- drivers/iio/adc/axp288_adc.c | 32 +-------------------------------
- 1 file changed, 1 insertion(+), 31 deletions(-)
-
-diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-index 7fd2494..64799ad 100644
---- a/drivers/iio/adc/axp288_adc.c
-+++ b/drivers/iio/adc/axp288_adc.c
-@@ -28,8 +28,6 @@
- #include <linux/iio/driver.h>
- 
- #define AXP288_ADC_EN_MASK		0xF1
--#define AXP288_ADC_TS_PIN_GPADC		0xF2
--#define AXP288_ADC_TS_PIN_ON		0xF3
- 
- enum axp288_adc_id {
- 	AXP288_ADC_TS,
-@@ -123,16 +121,6 @@ static int axp288_adc_read_channel(int *val, unsigned long address,
- 	return IIO_VAL_INT;
- }
- 
--static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
--				unsigned long address)
--{
--	/* channels other than GPADC do not need to switch TS pin */
--	if (address != AXP288_GP_ADC_H)
--		return 0;
--
--	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
--}
--
- static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 			struct iio_chan_spec const *chan,
- 			int *val, int *val2, long mask)
-@@ -143,16 +131,7 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 	mutex_lock(&indio_dev->mlock);
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
--		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
--					chan->address)) {
--			dev_err(&indio_dev->dev, "GPADC mode\n");
--			ret = -EINVAL;
--			break;
--		}
- 		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
--		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
--						chan->address))
--			dev_err(&indio_dev->dev, "TS pin restore\n");
- 		break;
- 	default:
- 		ret = -EINVAL;
-@@ -162,15 +141,6 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
- 	return ret;
- }
- 
--static int axp288_adc_set_state(struct regmap *regmap)
--{
--	/* ADC should be always enabled for internal FG to function */
--	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
--		return -EIO;
--
--	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
--}
--
- static const struct iio_info axp288_adc_iio_info = {
- 	.read_raw = &axp288_adc_read_raw,
- 	.driver_module = THIS_MODULE,
-@@ -199,7 +169,7 @@ static int axp288_adc_probe(struct platform_device *pdev)
- 	 * Set ADC to enabled state at all time, including system suspend.
- 	 * otherwise internal fuel gauge functionality may be affected.
- 	 */
--	ret = axp288_adc_set_state(axp20x->regmap);
-+	ret = regmap_write(info->regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
- 	if (ret) {
- 		dev_err(&pdev->dev, "unable to enable ADC device\n");
- 		return ret;
--- 
-2.9.3
-
+Acked-by: Rob Herring <robh@kernel.org>
