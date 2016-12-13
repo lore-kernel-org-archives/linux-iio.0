@@ -1,62 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.134]:51508 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755084AbcLNJ7s (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2016 04:59:48 -0500
-Date: Wed, 14 Dec 2016 10:59:13 +0100
-From: Andreas Klinger <ak@it-klinger.de>
-To: devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        pawel.moll@arm.com, mark.rutland@arm.com,
-        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, ak@it-klinger.de
-Subject: [PATCH v2 0/2] iio: adc: hx711: Add IIO driver for AVIA HX711 ADC
-Message-ID: <20161214095913.GA26500@andreas>
+Received: from ns.pmeerw.net ([84.19.176.92]:39587 "EHLO pmeerw.net"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S934486AbcLMULX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 13 Dec 2016 15:11:23 -0500
+Date: Tue, 13 Dec 2016 21:11:20 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: Andreas Klinger <ak@it-klinger.de>
+cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org, jic23@kernel.org
+Subject: Re: [PATCH 1/2] iio: adc: hx711: Add DT binding for avia,hx711
+In-Reply-To: <20161213180142.GA3162@andreas>
+Message-ID: <alpine.DEB.2.02.1612132110240.8653@pmeerw.net>
+References: <20161213180142.GA3162@andreas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This series adds IIO driver support for the AVIA HX711 ADC which is 
-mostly used in weighting cells.
 
-The first patch adds the new DT binding for which a new vendor avia
-was also added.
+> Add DT bindings for avia,hx711
+> Add vendor avia to vendor list
+> 
+> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> ---
+>  .../devicetree/bindings/iio/adc/avia-hx711.txt     | 23 ++++++++++++++++++++++
+>  .../devicetree/bindings/vendor-prefixes.txt        |  1 +
+>  2 files changed, 24 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+> new file mode 100644
+> index 000000000000..d56f95705fd2
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+> @@ -0,0 +1,23 @@
+> +* AVIA HX711 ADC chip for weight cells
+> +  Bit-banging driver
+> +
+> +Required properties:
+> + - compatible: Should be "avia,hx711"
+> + - sck-gpios:	Definition of the GPIO for the clock
+> + - dout-gpios:	Definition of the GPIO for Data-Out
 
-The second patch is the simple IIO driver implemented as ADC.
-The protocol is specific to this device and implemented using GPIO's.
-Documentation of the chip can be found here:
+data-out (lowercase)
 
-https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
 
-Changes:
-Lots of updates thanks to Peters review.
+> +		See Documentation/devicetree/bindings/gpio/gpio.txt
+> +
+> +Recommended properties:
+> + - gain:	Gain select, can be 32, 64 or 128
+> +		default is 128
+> +
+> +Optional properties:
 
-* Patch 1: "iio: adc: hx711: Add DT binding for avia,hx711"
-  - typo
-  - removed unneded section
+maybe delete this empty section?
 
-* Patch 2: "iio: adc: hx711: Add IIO driver for AVIA HX711"
-  - updated help text in Kconfig
-  - removed dead code
-  - removed unused power management
-  - reduced channel spec to what is actually used
-  - added error handling in case reset of chip not possible
-
-Andreas Klinger (2):
-  iio: adc: hx711: Add DT binding for avia,hx711
-  iio: adc: hx711: Add IIO driver for AVIA HX711
-
- .../devicetree/bindings/iio/adc/avia-hx711.txt     |  21 ++
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/adc/Kconfig                            |  18 ++
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/hx711.c                            | 231 +++++++++++++++++++++
- 5 files changed, 272 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
- create mode 100644 drivers/iio/adc/hx711.c
+> +
+> +Example:
+> +weight@0 {
+> +	compatible = "avia,hx711";
+> +	sck-gpios = <&gpio3 10 GPIO_ACTIVE_HIGH>;
+> +	dout-gpios = <&gpio0 7 GPIO_ACTIVE_HIGH>;
+> +	gain = <32>
+> +};
+> +
+> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> index 44ddc980b085..4696bb5c2198 100644
+> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
+> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+> @@ -32,6 +32,7 @@ atlas	Atlas Scientific LLC
+>  atmel	Atmel Corporation
+>  auo	AU Optronics Corporation
+>  avago	Avago Technologies
+> +avia	avia semiconductor
+>  avic	Shanghai AVIC Optoelectronics Co., Ltd.
+>  axis	Axis Communications AB
+>  boe	BOE Technology Group Co., Ltd.
+> 
 
 -- 
-2.1.4
 
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
