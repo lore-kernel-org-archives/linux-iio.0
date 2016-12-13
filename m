@@ -1,188 +1,398 @@
-Return-Path: <SRS0=2mJi=X3=linaro.org=lee.jones@kernel.org>
-Date: Mon, 12 Dec 2016 07:48:17 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, alexandre.torgue@st.com,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
-	gerald.baeza@st.com, arnaud.pouliquen@st.com,
-	linus.walleij@linaro.org, linaro-kernel@lists.linaro.org,
-	Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [PATCH v6 0/8] Add PWM and IIO timer drivers for STM32
-Message-ID: <20161212074817.GQ3625@dell.home>
-References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f180.google.com ([209.85.220.180]:32918 "EHLO
+        mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932431AbcLMJPX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Dec 2016 04:15:23 -0500
+Received: by mail-qk0-f180.google.com with SMTP id x190so110095327qkb.0
+        for <linux-iio@vger.kernel.org>; Tue, 13 Dec 2016 01:15:22 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20161212185943.ph7njaqb2lxtgdn4@rob-hp-laptop>
+References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+ <1481292919-26587-8-git-send-email-benjamin.gaignard@st.com> <20161212185943.ph7njaqb2lxtgdn4@rob-hp-laptop>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Date: Tue, 13 Dec 2016 10:15:21 +0100
+Message-ID: <CA+M3ks6hMDVqDkjn_vcu-d2YkJkiAmCS44Nc7rtfgAkD09LNFA@mail.gmail.com>
+Subject: Re: [PATCH v6 7/8] ARM: dts: stm32: add Timers driver for stm32f429 MCU
+To: Rob Herring <robh@kernel.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>, alexandre.torgue@st.com,
+        devicetree@vger.kernel.org,
+        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        linux-pwm@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
+        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Fri, 09 Dec 2016, Benjamin Gaignard wrote:
+2016-12-12 19:59 GMT+01:00 Rob Herring <robh@kernel.org>:
+> On Fri, Dec 09, 2016 at 03:15:18PM +0100, Benjamin Gaignard wrote:
+>> Add Timers and it sub-nodes into DT for stm32f429 family.
+>>
+>> version 6:
+>> - split patch in two: one for SoC family and one for stm32f469
+>>   discovery board.
+>>
+>> version 5:
+>> - rename gptimer node to timers
+>> - re-order timers node par addresses
+>>
+>> version 4:
+>> - remove unwanted indexing in pwm@ and timer@ node name
+>> - use "reg" instead of additional parameters to set timer
+>>   configuration
+>>
+>> version 3:
+>> - use "st,stm32-timer-trigger" in DT
+>>
+>> version 2:
+>> - use parameters to describe hardware capabilities
+>> - do not use references for pwm and iio timer subnodes
+>>
+>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> ---
+>>  arch/arm/boot/dts/stm32f429.dtsi | 275 ++++++++++++++++++++++++++++++++=
++++++++
+>>  1 file changed, 275 insertions(+)
+>>
+>> diff --git a/arch/arm/boot/dts/stm32f429.dtsi b/arch/arm/boot/dts/stm32f=
+429.dtsi
+>> index bca491d..d0fb9cc 100644
+>> --- a/arch/arm/boot/dts/stm32f429.dtsi
+>> +++ b/arch/arm/boot/dts/stm32f429.dtsi
+>> @@ -355,6 +355,21 @@
+>>                                       slew-rate =3D <2>;
+>>                               };
+>>                       };
+>> +
+>> +                     pwm1_pins: pwm@1 {
+>
+> No reg prop, so should not have a unit-address. Given the names in the
+> define below, seems like "timer1" would be appropriate.
+>
+>> +                             pins {
+>> +                                     pinmux =3D <STM32F429_PA8_FUNC_TIM=
+1_CH1>,
+>> +                                              <STM32F429_PB13_FUNC_TIM1=
+_CH1N>,
+>> +                                              <STM32F429_PB12_FUNC_TIM1=
+_BKIN>;
+>> +                             };
+>> +                     };
+>> +
+>> +                     pwm3_pins: pwm@3 {
+>> +                             pins {
+>> +                                     pinmux =3D <STM32F429_PB4_FUNC_TIM=
+3_CH1>,
+>> +                                              <STM32F429_PB5_FUNC_TIM3_=
+CH2>;
+>> +                             };
+>> +                     };
+>>               };
+>>
+>>               rcc: rcc@40023810 {
+>> @@ -426,6 +441,266 @@
+>>                       interrupts =3D <80>;
+>>                       clocks =3D <&rcc 0 38>;
+>>               };
+>> +
+>> +             timers2: timers@40000000 {
+>
+> timer@...
+>
+> It may be more than just a timer, there's not a better generic name.
+>
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000000 0x400>;
+>> +                     clocks =3D <&rcc 0 128>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <1>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers3: timers@40000400 {
+>
+> ditto
+>
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000400 0x400>;
+>> +                     clocks =3D <&rcc 0 129>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <2>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers4: timers@40000800 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000800 0x400>;
+>> +                     clocks =3D <&rcc 0 130>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <3>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers5: timers@40000C00 {
+>
+> timer@...
+>
+> And use lowercase hex.
+>
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40000C00 0x400>;
+>
+> ditto
+>
+>> +                     clocks =3D <&rcc 0 131>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <4>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers6: timers@40001000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001000 0x400>;
+>> +                     clocks =3D <&rcc 0 132>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <5>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers7: timers@40001400 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001400 0x400>;
+>> +                     clocks =3D <&rcc 0 133>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <6>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers12: timers@40001800 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001800 0x400>;
+>> +                     clocks =3D <&rcc 0 134>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <9>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers13: timers@40001C00 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40001C00 0x400>;
+>> +                     clocks =3D <&rcc 0 135>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers14: timers@40002000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40002000 0x400>;
+>> +                     clocks =3D <&rcc 0 136>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers1: timers@40010000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40010000 0x400>;
+>> +                     clocks =3D <&rcc 0 160>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <0>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers8: timers@40010400 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40010400 0x400>;
+>> +                     clocks =3D <&rcc 0 161>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <7>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers9: timers@40014000 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40014000 0x400>;
+>> +                     clocks =3D <&rcc 0 176>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +
+>> +                     timer {
+>> +                             compatible =3D "st,stm32-timer-trigger";
+>> +                             reg =3D <8>;
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers10: timers@40014400 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40014400 0x400>;
+>> +                     clocks =3D <&rcc 0 177>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>> +
+>> +             timers11: timers@40014800 {
+>> +                     #address-cells =3D <1>;
+>> +                     #size-cells =3D <0>;
+>> +                     compatible =3D "st,stm32-timers";
+>> +                     reg =3D <0x40014800 0x400>;
+>> +                     clocks =3D <&rcc 0 178>;
+>> +                     clock-names =3D "clk_int";
+>> +                     status =3D "disabled";
+>> +
+>> +                     pwm {
+>> +                             compatible =3D "st,stm32-pwm";
+>> +                             status =3D "disabled";
+>> +                     };
+>> +             };
+>>       };
+>>  };
+>>
+>> --
+>> 1.9.1
+>>
 
-> version 6:
-> - rename stm32-gptimer in stm32-timers.
-> - change "st,stm32-gptimer" compatible to "st,stm32-timers".
-> - modify "st,breakinput" parameter in pwm part.
-> - split DT patch in 2
-> 
-> version 5:
-> - fix comments done on version 4
-> - rebased on kernel 4.9-rc8
-> - change nodes names and re-order then by addresses
-> 
-> version 4:
-> - fix comments done on version 3
-> - don't use interrupts anymore in IIO timer
-> - detect hardware capabilities at probe time to simplify binding
-> 
-> version 3:
-> - no change on mfd and pwm divers patches
-> - add cross reference between bindings
-> - change compatible to "st,stm32-timer-trigger"
-> - fix attributes access rights
-> - use string instead of int for master_mode and slave_mode
-> - document device attributes in sysfs-bus-iio-timer-stm32
-> - update DT with the new compatible
-> 
-> version 2:
-> - keep only one compatible per driver
-> - use DT parameters to describe hardware block configuration:
->   - pwm channels, complementary output, counter size, break input
->   - triggers accepted and create by IIO timers
-> - change DT to limite use of reference to the node
-> - interrupt is now in IIO timer driver
-> - rename stm32-mfd-timer to stm32-timers (for general purpose timer)
-> 
-> The following patches enable PWM and IIO Timer features for STM32 platforms.
-> 
-> Those two features are mixed into the registers of the same hardware block
-> (named general purpose timer) which lead to introduce a multifunctions driver 
-> on the top of them to be able to share the registers.
-> 
-> In STM32f4 14 instances of timer hardware block exist, even if they all have
-> the same register mapping they could have a different number of pwm channels
-> and/or different triggers capabilities. We use various parameters in DT to 
-> describe the differences between hardware blocks
-> 
-> The MFD (stm32-timers.c) takes care of clock and register mapping
-> by using regmap. stm32_timers structure is provided to its sub-node to
-> share those information.
-> 
-> PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
-> have up to 4 channels, sometime with complementary outputs or 32 bits counter
-> instead of 16 bits. Some hardware blocks may also have a break input function
-> which allows to stop pwm depending of a level, defined in devicetree, on an
-> external pin.
-> 
-> IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
-> of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
-> 
-> The matrix of possible connections between blocks is quite complex so we use 
-> trigger names and is_stm32_iio_timer_trigger() function to be sure that
-> triggers are valid and configure the IPs.
-> 
-> At run time IIO timer hardware blocks can configure (through "master_mode" 
-> IIO device attribute) which internal signal (counter enable, reset,
-> comparison block, etc...) is used to generate the trigger.
-> 
-> By using "slave_mode" IIO device attribute timer can also configure on which
-> event (level, rising edge) of the block is enabled.
-> 
-> Since we can use trigger from one hardware to control an other block, we can
-> use a pwm to control an other one. The following example shows how to configure
-> pwm1 and pwm3 to make pwm3 generate pulse only when pwm1 pulse level is high.
-> 
-> /sys/bus/iio/devices # ls
-> iio:device0  iio:device1  trigger0     trigger1
-> 
-> configure timer1 to use pwm1 channel 0 as output trigger
-> /sys/bus/iio/devices # echo 'OC1REF' > iio\:device0/master_mode
-> configure timer3 to enable only when input is high
-> /sys/bus/iio/devices # echo 'gated' > iio\:device1/slave_mode
-> /sys/bus/iio/devices # cat trigger0/name
-> tim1_trgo
-> configure timer2 to use timer1 trigger is input
-> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger
-> 
-> configure pwm3 channel 0 to generate a signal with a period of 100ms and a
-> duty cycle of 50%
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 100000000 > pwm0/period
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 50000000 > pwm0/duty_cycle
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
-> here pwm3 channel 0, as expected, doesn't start because has to be triggered by
-> pwm1 channel 0
-> 
-> configure pwm1 channel 0 to generate a signal with a period of 1s and a
-> duty cycle of 50%
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 0 > export
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1000000000 > pwm0/period
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 500000000 > pwm0/duty_cycle
-> /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip0 # echo 1 > pwm0/enable 
-> finally pwm1 starts and pwm3 only generates pulse when pwm1 signal is high
-> 
-> An other example to use a timer as source of clock for another device.
-> Here timer1 is used a source clock for pwm3:
-> 
-> /sys/bus/iio/devices # echo 100000 > trigger0/sampling_frequency 
-> /sys/bus/iio/devices # echo "tim1_trgo" > iio\:device1/trigger/current_trigger 
-> /sys/bus/iio/devices # echo 'external_clock' > iio\:device1/slave_mode
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 0 > export 
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1000000 > pwm0/period 
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 500000 > pwm0/duty_cycle 
-> /sys/devices/platform/soc/40000400.timers/40000400.timers:pwm/pwm/pwmchip4 # echo 1 > pwm0/enable
-> 
-> Benjamin Gaignard (8):
->   MFD: add bindings for STM32 Timers driver
->   MFD: add STM32 Timers driver
->   PWM: add pwm-stm32 DT bindings
->   PWM: add PWM driver for STM32 plaftorm
->   IIO: add bindings for STM32 timer trigger driver
->   IIO: add STM32 timer trigger driver
->   ARM: dts: stm32: add Timers driver for stm32f429 MCU
->   ARM: dts: stm32: Enable pw1 and pwm3 for stm32f469-disco
-> 
->  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
->  .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 +
->  .../devicetree/bindings/mfd/stm32-timers.txt       |  46 ++
->  .../devicetree/bindings/pwm/pwm-stm32.txt          |  33 ++
->  arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++
->  arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
->  drivers/iio/Kconfig                                |   2 +-
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/timer/Kconfig                          |  13 +
->  drivers/iio/timer/Makefile                         |   1 +
->  drivers/iio/timer/stm32-timer-trigger.c            | 466 +++++++++++++++++++++
->  drivers/iio/trigger/Kconfig                        |   1 -
->  drivers/mfd/Kconfig                                |  11 +
->  drivers/mfd/Makefile                               |   2 +
->  drivers/mfd/stm32-timers.c                         |  80 ++++
->  drivers/pwm/Kconfig                                |   9 +
->  drivers/pwm/Makefile                               |   1 +
->  drivers/pwm/pwm-stm32.c                            | 434 +++++++++++++++++++
->  include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
->  include/linux/mfd/stm32-timers.h                   |  71 ++++
->  20 files changed, 1612 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->  create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
->  create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
->  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->  create mode 100644 drivers/iio/timer/Kconfig
->  create mode 100644 drivers/iio/timer/Makefile
->  create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
->  create mode 100644 drivers/mfd/stm32-timers.c
->  create mode 100644 drivers/pwm/pwm-stm32.c
->  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
->  create mode 100644 include/linux/mfd/stm32-timers.h
 
-This has really come together nicely.
 
-Great work Benjamin.
+--=20
+Benjamin Gaignard
 
--- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
+Graphic Study Group
+
+Linaro.org =E2=94=82 Open source software for ARM SoCs
+
 Follow Linaro: Facebook | Twitter | Blog
