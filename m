@@ -1,78 +1,64 @@
-Return-Path: <SRS0=VaGG=X4=baylibre.com=bgolaszewski@kernel.org>
+Return-Path: <SRS0=Psgw=X4=free-electrons.com=maxime.ripard@kernel.org>
+Date: Tue, 13 Dec 2016 16:41:37 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: linux@armlinux.org.uk, wens@csie.org, jic23@kernel.org, knaack.h@gmx.de,
+	lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
+	linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
+	thomas.petazzoni@free-electrons.com
+Subject: Re: [PATCH v9 2/3] mfd: Kconfig: MFD_SUN4I_GPADC depends on
+ !TOUCHSCREN_SUN4I_GPADC
+Message-ID: <20161213154137.spsu3rnmy3xi3toq@lukather>
+References: <20161213143332.24988-1-quentin.schulz@free-electrons.com>
+ <20161213143332.24988-3-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de>
-References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
- <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de> <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
- <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de> <bf3dde7e-cee8-c54c-db93-447ffa063116@kernel.org>
- <CAMpxmJVJ+y9tRbRBsVg+i0EJO_6EFuvrypwC=ETnBWbMnxRFyg@mail.gmail.com> <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de>
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Date: Tue, 13 Dec 2016 15:28:22 +0100
-Message-ID: <CAMpxmJVpj57s-m_FS58J+QWvu-MnVmaZP-6ECnYHeRVSCfd-Fw@mail.gmail.com>
-Subject: Re: [PATCH] iio: misc: add a generic regulator driver
-To: Lars-Peter Clausen <lars@metafoo.de>, Linus Walleij <linus.walleij@linaro.org>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Rob Herring <robh+dt@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-	linux-devicetree <devicetree@vger.kernel.org>, LKML <linux-kernel@vger.kernel.org>,
-	Kevin Hilman <khilman@baylibre.com>, Patrick Titiano <ptitiano@baylibre.com>,
-	Neil Armstrong <narmstrong@baylibre.com>, Liam Girdwood <lgirdwood@gmail.com>,
-	Mark Brown <broonie@kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="ptembrjezy2nfome"
+In-Reply-To: <20161213143332.24988-3-quentin.schulz@free-electrons.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-2016-12-12 18:15 GMT+01:00 Lars-Peter Clausen <lars@metafoo.de>:
-> On 12/06/2016 12:12 PM, Bartosz Golaszewski wrote:
 
-[snip!]
+--ptembrjezy2nfome
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
->>
->> So the problem we have is not power-cycling the adc - it's
->> power-cycling the device connected to a probe on which there's an adc.
->> What I was trying to do was adding support for the power-switch on
->> baylibre-acme[1] probes.
->>
->> For example: we have a USB probe on which the VBUS signal goes through
->> a power load switch and than through the adc. The adc (in this case
->> ina226) is always powered on, while the fixed regulator I wanted to
->> enable/disable actually drives the power switch to cut/restore power
->> to the connected USB device i.e. there's no real regulator - just a
->> GPIO driving the power switch.
->>
->> A typical use case is measuring the power consumption of development
->> boards[2]. Rebooting them remotely using acme probes is already done,
->> but we're using the obsolete /sys/class/gpio interface.
->>
->> We're already using libiio to read the measured data from the power
->> monitor, that's why we'd like to use the iio framework for
->> power-cycling the devices as well. My question is: would bridging the
->> regulator framework be the right solution? Should we look for
->> something else? Bridge the GPIO framework instead?
->
-> I wouldn't necessaries create bridge, but instead just use the GPIO
-> framework directly.
->
-> We now have the GPIO chardev interface which meant to be used to support
-> application specific logic that control the GPIOs, but where you don't want
-> to write a kernel driver.
->
-> My idea was to add GPIOs and GPIO chips as high level object inside libiio
-> that can be accessed through the same context as the IIO devices. Similar to
-> the current IIO API you have a API for gpios that allows to enumerate the
-> GPIO devices and their pins as well as modify the pin state.
->
+On Tue, Dec 13, 2016 at 03:33:31PM +0100, Quentin Schulz wrote:
+> MFD_SUN4I_GPADC and TOUCHSCREEN_SUN4I are incompatible (both are drivers
+> for Allwinner SoCs' ADC). This makes sure TOUCHSCREEN_SUN4I isn't
+> enabled while MFD_SUN4I_GPADC is enabled.
+>=20
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 
-+ Linus
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
 
-While the new GPIO interface would be very convenient - in our case we
-could simply name the lines appropriately in the device tree - I'm not
-sure this would be the correct approach.
+Thanks,
+Maxime
 
->From this year's ELCE in Berlin I remember Linus suggested during his
-talk that it's always better to write a kernel driver. Also: this way
-the relevant GPIO lines would not be reserved for exclusive use by
-power switches.
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
 
-Linus - do you have any thoughts/suggestions on that subject?
+--ptembrjezy2nfome
+Content-Type: application/pgp-signature; name="signature.asc"
 
-Best regards,
-Bartosz Golaszewski
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYUBaxAAoJEBx+YmzsjxAgCDIP/3sfUN8LDbNxK/fcoUqXCcoy
+tPQCPnWmg5hmPrNOcFpRpr7Rsr9UW/fsp6MV0wOiv4Gahb+s+GjBmgUEWPruGRrD
+OUiwcKtZANvxUu7irpeja2DttmVagxA2sBMwck7/pOJynAUf6nCp4r81fp9DFX5w
+IyP5+f0Oo2Heb+bksGg8TD4ZO+62s1aY4VWQyBPWSHmm1nlSZvUqOmzM3JbW3+rI
+WGrIT0UHLQ0shgKNKB17fe2OzQ/xbEVZqeqxAiczAJMub+Ir+YruUwA6mLLEsVB4
+Ym7p6KQDtSVpYnpY/hYJiAvOocQGTyrIcXQRwnLOBeUUl7Hl+Fu+1HSB3qN91z/N
+8ZlCreHzhWmvoCK1INGGJOwfINskFSr7B+YVUznuwnA1nBZ8p5voBJoo2UnYQYnp
+njxknQHhZq6bxXB+d9Nt6NuVQtlfy/5VoICtB9Z6a9XidgMhBfUcRy1am5+TPs+J
+hYPlpLTkYnGyC/Z2eIjuO0V+9eUhPY/tP7SMmS+M3IFpJtoD85O/JiXgjGvv2HUV
+XGhuY0Fmq97aso1l9zeeEm7gy9OPf/eZj7SKRoupJDbbosqkb/lCx4AhdvAWUMz/
+t2Yk3IbCtvwqAF1IYHn7xnGRNmnIO2wbq+LOt3AvWdXZzO3OICQ4Qpo5/oLz10w2
+y/yaf1ZIEbxqCUl+jpTB
+=QvVe
+-----END PGP SIGNATURE-----
+
+--ptembrjezy2nfome--
