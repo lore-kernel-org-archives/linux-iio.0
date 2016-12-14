@@ -1,249 +1,314 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f169.google.com ([209.85.210.169]:33693 "EHLO
-        mail-wj0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754029AbcLKWWz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 11 Dec 2016 17:22:55 -0500
-Received: by mail-wj0-f169.google.com with SMTP id xy5so57575894wjc.0
-        for <linux-iio@vger.kernel.org>; Sun, 11 Dec 2016 14:22:54 -0800 (PST)
-From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, Kevin Hilman <khilman@baylibre.com>,
-        Patrick Titiano <ptitiano@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        linux-gpio@vger.kernel.org, Sebastian Reichel <sre@kernel.org>,
-        linux-pm@vger.kernel.org, Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>
-Subject: [PATCH 2/2] iio: misc: add support for GPIO power switches
-Date: Sun, 11 Dec 2016 23:21:45 +0100
-Message-Id: <1481494905-18037-3-git-send-email-bgolaszewski@baylibre.com>
-In-Reply-To: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
-References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+Received: from mo3.mail-out.ovh.net ([178.32.228.3]:54987 "EHLO
+        mo3.mail-out.ovh.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756086AbcLNOfK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2016 09:35:10 -0500
+Received: from player797.ha.ovh.net (b9.ovh.net [213.186.33.59])
+        by mo3.mail-out.ovh.net (Postfix) with ESMTP id A27DE67422
+        for <linux-iio@vger.kernel.org>; Wed, 14 Dec 2016 13:00:33 +0100 (CET)
+Subject: Re: [PATCHv2] iio: adc: Add Maxim MAX11100 driver
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <1481041823-18382-1-git-send-email-jacopo@jmondi.org>
+ <1481632629-18826-1-git-send-email-jacopo@jmondi.org>
+ <alpine.DEB.2.02.1612132128010.8653@pmeerw.net>
+Cc: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org
+From: "jacopo@jmondi.org" <jacopo@jmondi.org>
+Message-ID: <c63a1544-5d04-cce9-3103-e05bcacbe530@jmondi.org>
+Date: Wed, 14 Dec 2016 13:00:25 +0100
+MIME-Version: 1.0
+In-Reply-To: <alpine.DEB.2.02.1612132128010.8653@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Some power-measuring ADCs work together with power load switches which
-allow to power-cycle measured devices.
+Hello Peter,
+    thanks for review
 
-An example use case would be measuring the power consumption of a
-development board during boot using a power monitor such as TI INA226
-and power-cycling the board remotely using a TPS229* power switch.
+On 13/12/2016 21:33, Peter Meerwald-Stadler wrote:
+>
+>> Add IIO driver for Maxim MAX11100 single-channel ADC.
+>> Add DT bindings documentation.
+>
+> some more comments
+>
+>> Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
+>> ---
+>>
+>> v1 -> v2:
+>>     - incorporated pmeerw's review comments
+>>     - retrieve vref from dts and use that to convert read_raw result
+>>       to mV
+>>     - add device tree bindings documentation
+>>
+>> ---
+>>  .../devicetree/bindings/iio/adc/max11100.txt       |  17 +++
+>>  drivers/iio/adc/Kconfig                            |   9 ++
+>>  drivers/iio/adc/Makefile                           |   1 +
+>>  drivers/iio/adc/max11100.c                         | 166 +++++++++++++++++++++
+>>  4 files changed, 193 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/max11100.txt
+>>  create mode 100644 drivers/iio/adc/max11100.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/max11100.txt b/Documentation/devicetree/bindings/iio/adc/max11100.txt
+>> new file mode 100644
+>> index 0000000..6877c11
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/max11100.txt
+>> @@ -0,0 +1,17 @@
+>> +* Maxim max11100 Analog to Digital Converter (ADC)
+>> +
+>> +Required properties:
+>> +  - compatible: Should be "maxim,max11100"
+>> +  - vref-supply: phandle to the regulator that provides reference voltage
+>> +
+>> +Optional properties:
+>> +  - spi-max-frequency: SPI maximum frequency
+>> +
+>> +Example:
+>> +
+>> +adc0: max11100@0 {
+>> +        compatible = "maxim,max11100";
+>> +        vref-supply = <&adc0_vref>;
+>> +        spi-max-frequency = <240000>;
+>> +};
+>> +
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>> index 99c0514..a909484 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -285,6 +285,15 @@ config MAX1027
+>>  	  To compile this driver as a module, choose M here: the module will be
+>>  	  called max1027.
+>>
+>> +config MAX11100
+>> +	tristate "Maxim max11100 ADC driver"
+>> +	depends on SPI
+>
+> SPI_MASTER is more precise I think
+>
+>> +	help
+>> +	  Say yes here to build support for Maxim max11100 SPI ADC
+>> +
+>> +	  To compile this driver as a module, choose M here: the module will be
+>> +	  called max11100.
+>> +
+>>  config MAX1363
+>>  	tristate "Maxim max1363 ADC driver"
+>>  	depends on I2C
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>> index 7a40c04..1463044 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -29,6 +29,7 @@ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>>  obj-$(CONFIG_LPC18XX_ADC) += lpc18xx_adc.o
+>>  obj-$(CONFIG_LTC2485) += ltc2485.o
+>>  obj-$(CONFIG_MAX1027) += max1027.o
+>> +obj-$(CONFIG_MAX11100) += max11100.o
+>>  obj-$(CONFIG_MAX1363) += max1363.o
+>>  obj-$(CONFIG_MCP320X) += mcp320x.o
+>>  obj-$(CONFIG_MCP3422) += mcp3422.o
+>> diff --git a/drivers/iio/adc/max11100.c b/drivers/iio/adc/max11100.c
+>> new file mode 100644
+>> index 0000000..f372ad8
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/max11100.c
+>> @@ -0,0 +1,166 @@
+>> +/*
+>> + * iio/adc/max11100.c
+>> + * Maxim max11100 ADC Driver with IIO interface
+>> + *
+>> + * Copyright (C) 2016 Renesas Electronics Corporation
+>> + * Copyright (C) 2016 Jacopo Mondi
+>> + *
+>> + * This program is free software; you can redistribute it and/or modify
+>> + * it under the terms of the GNU General Public License version 2 as
+>> + * published by the Free Software Foundation.
+>> + */
+>> +#include <linux/delay.h>
+>> +#include <linux/kernel.h>
+>> +#include <linux/module.h>
+>> +#include <linux/regulator/consumer.h>
+>> +#include <linux/spi/spi.h>
+>> +
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/driver.h>
+>> +
+>> +/*
+>> + * LSB is the ADC single digital step
+>> + * 1 LSB = (vref / 2 ^ 16)
+>> + * AIN = (DIN * LSB)
+>> + */
+>> +#define MAX11100_LSB_DIV		(1 << 16)
+>> +#define MAX11100_LSB(vref) 		(vref / MAX11100_LSB_DIV)
+>
+> maybe parenthesis around vref
+>
+>> +
+>> +struct max11100_state {
+>> +	const struct max11100_chip_desc *desc;
+>> +	struct spi_device *spi;
+>> +	int vref_uv;
+>> +	struct mutex lock;
+>> +};
+>> +
+>> +static struct iio_chan_spec max11100_channels[] = {
+>> +	{ /* [0] */
+>> +		.type = IIO_VOLTAGE,
+>> +		.scan_type = {
+>
+> scan_type not needed since driver does not support buffered reads
+>
+>> +			.sign = 'u',
+>> +			.realbits = 16,
+>> +			.storagebits = 24,
+>> +			.shift = 8,
+>> +			.repeat = 1,
+>> +			.endianness = IIO_BE,
+>> +		},
+>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
+>> +	},
+>> +};
+>> +
+>> +static struct max11100_chip_desc {
+>> +	unsigned int num_chan;
+>> +	const struct iio_chan_spec *channels;
+>> +} max11100_desc = {
+>> +	.num_chan = ARRAY_SIZE(max11100_channels),
+>> +	.channels = max11100_channels,
+>> +};
+>> +
+>> +static int max11100_read_raw(struct iio_dev *indio_dev,
+>> +			     struct iio_chan_spec const *chan,
+>> +			     int *val, int *val2, long mask)
+>> +{
+>> +	int ret;
+>> +	struct max11100_state *state = iio_priv(indio_dev);
+>> +	uint8_t buffer[3];
+>> +
+>> +	mutex_lock(&state->lock);
+>> +
+>> +	ret = spi_read(state->spi, buffer, sizeof(buffer));
+>> +	if (ret) {
+>> +		mutex_unlock(&state->lock);
+>> +		dev_err(&indio_dev->dev, "SPI transfer failed\n");
+>> +		return ret;
+>> +	}
+>> +	mutex_unlock(&state->lock);
+>> +
+>> +	/* the first 8 bits sent out from ADC must be 0s */
+>> +	if (buffer[0]) {
+>> +		dev_err(&indio_dev->dev, "Invalid value: buffer[0] != 0\n");
+>> +		return -EINVAL;
+>> +	}
+>> +
+>> +	*val = be16_to_cpu(*(uint16_t *)&buffer[1]);
+>> +	*val = *val * MAX11100_LSB(state->vref_uv) / 1000;
+>
+> no, INFO_RAW shall not perform such scaling, use _PROCESSED or add an
+> INFO_SCALE to indicate the scaling
 
-Add an iio driver for simple GPIO power switches and expose a sysfs
-attribute allowing to toggle their state.
+Here I am not scaling the result, just converting the digital value read 
+from ADC into millivolts.
+The transfer function from Din to Ain depends on vref, in the form 
+reported in comments in file header:
 
-Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
----
- drivers/iio/Kconfig                  |   1 +
- drivers/iio/Makefile                 |   1 +
- drivers/iio/misc/Kconfig             |  17 +++++
- drivers/iio/misc/Makefile            |   6 ++
- drivers/iio/misc/gpio-power-switch.c | 127 +++++++++++++++++++++++++++++++++++
- 5 files changed, 152 insertions(+)
- create mode 100644 drivers/iio/misc/Kconfig
- create mode 100644 drivers/iio/misc/Makefile
- create mode 100644 drivers/iio/misc/gpio-power-switch.c
+Ain = Din * (vref / 2^16)
 
-diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-index 6743b18..2e896e0 100644
---- a/drivers/iio/Kconfig
-+++ b/drivers/iio/Kconfig
-@@ -80,6 +80,7 @@ source "drivers/iio/gyro/Kconfig"
- source "drivers/iio/health/Kconfig"
- source "drivers/iio/humidity/Kconfig"
- source "drivers/iio/imu/Kconfig"
-+source "drivers/iio/misc/Kconfig"
- source "drivers/iio/light/Kconfig"
- source "drivers/iio/magnetometer/Kconfig"
- source "drivers/iio/orientation/Kconfig"
-diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-index 87e4c43..4008d5a 100644
---- a/drivers/iio/Makefile
-+++ b/drivers/iio/Makefile
-@@ -25,6 +25,7 @@ obj-y += frequency/
- obj-y += health/
- obj-y += humidity/
- obj-y += imu/
-+obj-y += misc/
- obj-y += light/
- obj-y += magnetometer/
- obj-y += orientation/
-diff --git a/drivers/iio/misc/Kconfig b/drivers/iio/misc/Kconfig
-new file mode 100644
-index 0000000..8d73751
---- /dev/null
-+++ b/drivers/iio/misc/Kconfig
-@@ -0,0 +1,17 @@
-+#
-+# Miscellaneous iio drivers
-+#
-+# When adding new entries keep the list in alphabetical order
-+
-+menu "Miscellaneous iio drivers"
-+
-+config GPIO_POWER_SWITCH
-+	tristate "GPIO power switch driver"
-+	depends on GPIOLIB
-+	help
-+	  Say yes here to build support for gpio power switches.
-+
-+	  To compile this driver as a module, choose M here: the module will
-+	  be called gpio-power-switch.
-+
-+endmenu
-diff --git a/drivers/iio/misc/Makefile b/drivers/iio/misc/Makefile
-new file mode 100644
-index 0000000..cebd0c4
---- /dev/null
-+++ b/drivers/iio/misc/Makefile
-@@ -0,0 +1,6 @@
-+#
-+# Makefile for IIO misc drivers
-+#
-+
-+# When adding new entries keep the list in alphabetical order
-+obj-$(CONFIG_GPIO_POWER_SWITCH) += gpio-power-switch.o
-diff --git a/drivers/iio/misc/gpio-power-switch.c b/drivers/iio/misc/gpio-power-switch.c
-new file mode 100644
-index 0000000..25fbeb7
---- /dev/null
-+++ b/drivers/iio/misc/gpio-power-switch.c
-@@ -0,0 +1,127 @@
-+/*
-+ * GPIO power switch driver using the industrial IO framework.
-+ *
-+ * Copyright (C) 2016 BayLibre SAS
-+ *
-+ * Author:
-+ *   Bartosz Golaszewski <bgolaszewski@baylibre.com.com>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License version 2 as
-+ * published by the Free Software Foundation.
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+#include <linux/gpio/consumer.h>
-+
-+struct gpio_pwrsw_context {
-+	struct gpio_desc *gpio;
-+};
-+
-+static ssize_t gpio_pwrsw_enable_show(struct device *dev,
-+				      struct device_attribute *attr,
-+				      char *buf)
-+{
-+	struct gpio_pwrsw_context *ctx = iio_priv(dev_to_iio_dev(dev));
-+	int val;
-+
-+	val = gpiod_get_value_cansleep(ctx->gpio);
-+	if (val < 0)
-+		return val;
-+
-+	return sprintf(buf, "%d\n", val);
-+}
-+
-+static ssize_t gpio_pwrsw_enable_store(struct device *dev,
-+				       struct device_attribute *attr,
-+				       const char *buf, size_t len)
-+{
-+	struct gpio_pwrsw_context *ctx = iio_priv(dev_to_iio_dev(dev));
-+	bool val;
-+	int ret;
-+
-+	ret = strtobool(buf, &val);
-+	if (ret)
-+		return ret;
-+
-+	gpiod_set_value_cansleep(ctx->gpio, val ? 1 : 0);
-+
-+	return len;
-+}
-+
-+static IIO_DEVICE_ATTR(in_active, 0644,
-+		       gpio_pwrsw_enable_show,
-+		       gpio_pwrsw_enable_store, 0);
-+
-+static struct attribute *gpio_pwrsw_attributes[] = {
-+	&iio_dev_attr_in_active.dev_attr.attr,
-+	NULL,
-+};
-+
-+static const struct attribute_group gpio_pwrsw_attribute_group = {
-+	.attrs = gpio_pwrsw_attributes,
-+};
-+
-+static const struct iio_info gpio_pwrsw_info = {
-+	.driver_module = THIS_MODULE,
-+	.attrs = &gpio_pwrsw_attribute_group,
-+};
-+
-+static int gpio_pwrsw_probe(struct platform_device *pdev)
-+{
-+	struct gpio_pwrsw_context *ctx;
-+	struct iio_dev *iio_dev;
-+	const char *name = NULL;
-+	struct device *dev;
-+	bool init_state;
-+	int gpio_flags;
-+
-+	dev = &pdev->dev;
-+
-+	iio_dev = devm_iio_device_alloc(dev, sizeof(*ctx));
-+	if (!iio_dev)
-+		return -ENOMEM;
-+
-+	ctx = iio_priv(iio_dev);
-+
-+	init_state = of_property_read_bool(dev->of_node, "power-switch-on");
-+	gpio_flags = init_state ? GPIOD_OUT_HIGH : GPIOD_OUT_LOW;
-+
-+	ctx->gpio = devm_gpiod_get(dev, "power", gpio_flags);
-+	if (IS_ERR(ctx->gpio)) {
-+		dev_err(dev, "unable to get the power switch gpio: %ld\n",
-+			PTR_ERR(ctx->gpio));
-+		return PTR_ERR(ctx->gpio);
-+	}
-+
-+	of_property_read_string(dev->of_node, "power-switch-name", &name);
-+
-+	iio_dev->dev.parent = dev;
-+	iio_dev->dev.of_node = dev->of_node;
-+	iio_dev->name = name ? name : dev->driver->name;
-+	iio_dev->info = &gpio_pwrsw_info;
-+
-+	return devm_iio_device_register(dev, iio_dev);
-+}
-+
-+static const struct of_device_id gpio_pwrsw_of_match[] = {
-+	{ .compatible = "gpio-power-switch", },
-+	{ },
-+};
-+
-+static struct platform_driver gpio_pwrsw_platform_driver = {
-+	.probe = gpio_pwrsw_probe,
-+	.driver = {
-+		.name = "gpio-power-switch",
-+		.of_match_table = gpio_pwrsw_of_match,
-+	},
-+};
-+module_platform_driver(gpio_pwrsw_platform_driver);
-+
-+MODULE_AUTHOR("Bartosz Golaszewski <bgolaszewski@baylibre.com>");
-+MODULE_DESCRIPTION("GPIO power switch driver for iio");
-+MODULE_LICENSE("GPL v2");
--- 
-2.9.3
+I am using microvolts as "vref" unit otherwise I would have been forced 
+to deal with floating point arithmetic.
+
+Thanks
+    j
+
+>
+>> +
+>> +	return IIO_VAL_INT;
+>> +}
+>> +
+>> +static const struct iio_info max11100_info = {
+>> +	.driver_module = THIS_MODULE,
+>> +	.read_raw = max11100_read_raw,
+>> +};
+>> +
+>> +static int max11100_probe(struct spi_device *spi)
+>> +{
+>> +	int ret;
+>> +	struct iio_dev *indio_dev;
+>> +	struct regulator *vref_reg;
+>> +	struct max11100_state *state;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*state));
+>> +	if (!indio_dev)
+>> +		return -ENOMEM;
+>> +
+>> +	spi_set_drvdata(spi, indio_dev);
+>> +
+>> +	state = iio_priv(indio_dev);
+>> +	state->spi = spi;
+>> +	state->desc = &max11100_desc;
+>> +
+>> +	mutex_init(&state->lock);
+>> +
+>> +	indio_dev->dev.parent = &spi->dev;
+>> +	indio_dev->dev.of_node = spi->dev.of_node;
+>> +	indio_dev->info = &max11100_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +	indio_dev->channels = state->desc->channels;
+>> +	indio_dev->num_channels = state->desc->num_chan;
+>> +
+>> +	vref_reg = devm_regulator_get(&spi->dev, "vref");
+>> +	if (IS_ERR(vref_reg))
+>> +		return PTR_ERR(vref_reg);
+>> +
+>> +	ret = regulator_enable(vref_reg);
+>> +	if (ret)
+>> +		return ret;
+>> +
+>> +	state->vref_uv = regulator_get_voltage(vref_reg);
+>> +	if (state->vref_uv < 0) {
+>> +		/* dummy regulator "get_voltage" returns -EINVAL as well */
+>> +		ret = -EINVAL;
+>> +		goto disable_regulator;
+>> +	}
+>> +
+>> +	ret = devm_iio_device_register(&spi->dev, indio_dev);
+>
+> the regulator needs to be disabled in a _remove() function and since you
+> need a remove function, devm_iio_device_register() should not be used
+>
+>> +	if (ret)
+>> +		goto disable_regulator;
+>> +
+>> +	return 0;
+>> +
+>> +disable_regulator:
+>> +	regulator_disable(vref_reg);
+>> +	return ret;
+>> +}
+>> +
+>> +static const struct of_device_id max11100_ids[] = {
+>> +	{.compatible = "maxim,max11100"},
+>> +	{ },
+>> +};
+>> +MODULE_DEVICE_TABLE(of, max11100_ids);
+>> +
+>> +static struct spi_driver max11100_driver = {
+>> +	.driver = {
+>> +		.name	= "max11100",
+>> +		.owner	= THIS_MODULE,
+>> +		.of_match_table = of_match_ptr(max11100_ids),
+>> +	},
+>> +	.probe		= max11100_probe,
+>> +};
+>> +
+>> +module_spi_driver(max11100_driver);
+>> +
+>> +MODULE_AUTHOR("Jacopo Mondi <jacopo@jmondi.org>");
+>> +MODULE_DESCRIPTION("Maxim max11100 ADC Driver");
+>> +MODULE_LICENSE("GPL v2");
+>>
+>
 
