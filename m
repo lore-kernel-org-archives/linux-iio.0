@@ -1,45 +1,56 @@
-Return-Path: <SRS0=w8w5=X5=csie.org=wens@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-io0-f180.google.com ([209.85.223.180]:36674 "EHLO
+        mail-io0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755857AbcLNQ6c (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2016 11:58:32 -0500
+Received: by mail-io0-f180.google.com with SMTP id 136so45314868iou.3
+        for <linux-iio@vger.kernel.org>; Wed, 14 Dec 2016 08:58:22 -0800 (PST)
 MIME-Version: 1.0
-In-Reply-To: <20161214135525.16477-1-hdegoede@redhat.com>
-References: <20161214135525.16477-1-hdegoede@redhat.com>
-From: Chen-Yu Tsai <wens@csie.org>
-Date: Wed, 14 Dec 2016 23:00:07 +0800
-Message-ID: <CAGb2v66GwmLHL3HKteyhiWX7e+SAHDS9KFku8iJaQ5B0Lrk98A@mail.gmail.com>
-Subject: Re: [PATCH] iio: adc: axp288: Drop bogus AXP288_ADC_TS_PIN_CTRL
- register modifications
-To: Hans de Goede <hdegoede@redhat.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Chen-Yu Tsai <wens@csie.org>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	"russianneuromancer @ ya . ru" <russianneuromancer@ya.ru>, linux-iio@vger.kernel.org,
-	linux-i2c@vger.kernel.org
+In-Reply-To: <20161213192712.gbaw4t4awayybnta@rob-hp-laptop>
+References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+ <1481494905-18037-2-git-send-email-bgolaszewski@baylibre.com> <20161213192712.gbaw4t4awayybnta@rob-hp-laptop>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date: Wed, 14 Dec 2016 17:58:21 +0100
+Message-ID: <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] devicetree: power: add bindings for GPIO-driven power switches
+To: Rob Herring <robh@kernel.org>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-pm <linux-pm@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Wed, Dec 14, 2016 at 9:55 PM, Hans de Goede <hdegoede@redhat.com> wrote:
-> For some reason the axp288_adc driver was modifying the
-> AXP288_ADC_TS_PIN_CTRL register, changing bits 0-1 depending on
-> whether the GP_ADC channel or another channel was written.
+2016-12-13 20:27 GMT+01:00 Rob Herring <robh@kernel.org>:
+> On Sun, Dec 11, 2016 at 11:21:44PM +0100, Bartosz Golaszewski wrote:
+>> Some boards are equipped with simple, GPIO-driven power load switches.
+>> An example of such ICs is the TI tps229* series.
 >
-> These bits control when a bias current is send to the TS_PIN, the
-> GP_ADC has its own pin and a separate bit in another register to
-> control the bias current.
+> How is this different than a GPIO regulator? The input and output
+> voltages just happen to be the same. I could be convinced this is
+> different enough to have a different compatible, but it somewhat seems
+> you want to use this for IIO, so you are creating a different binding
+> for that usecase.
 >
-> Not only does changing when to enable the TS_PIN bias current
-> (always or only when sampling) when reading the GP_ADC make no sense
-> at all, the code is modifying these bits is writing the entire register,
-> assuming that all the other bits have their default value.
->
-> So if the firmware has configured a different bias-current for either
-> pin, then that change gets clobbered by the write, likewise if the
-> firmware has set bit 2 to indicate that the battery has no thermal sensor,
-> this will get clobbered by the write.
->
-> This commit fixes all this, by simply removing all writes to the
-> AXP288_ADC_TS_PIN_CTRL register, they are not needed to read the
-> GP_ADC pin, and can actually be harmful.
->
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
 
-Acked-by: Chen-Yu Tsai <wens@csie.org>
+It's more of a fixed regulator I suppose. Do you mean adding a new
+compatible to the fixed-regulator binding (e.g. "gpio-power-switch" or
+"simple-power-switch") and then providing an iio driver for toggling
+the switch?
 
-Note that I do not have hardware to test this.
+Thanks,
+Bartosz
