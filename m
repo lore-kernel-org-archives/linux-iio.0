@@ -1,811 +1,318 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:57527 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933030AbcLMOdk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 13 Dec 2016 09:33:40 -0500
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-        wens@csie.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
-        thomas.petazzoni@free-electrons.com
-Subject: [PATCH v9 3/3] iio: adc: add support for Allwinner SoCs ADC
-Date: Tue, 13 Dec 2016 15:33:32 +0100
-Message-Id: <20161213143332.24988-4-quentin.schulz@free-electrons.com>
-In-Reply-To: <20161213143332.24988-1-quentin.schulz@free-electrons.com>
-References: <20161213143332.24988-1-quentin.schulz@free-electrons.com>
+Received: from mout.kundenserver.de ([212.227.126.133]:65435 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932171AbcLNKAr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 14 Dec 2016 05:00:47 -0500
+Date: Wed, 14 Dec 2016 11:00:21 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        pawel.moll@arm.com, mark.rutland@arm.com,
+        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, ak@it-klinger.de
+Subject: [PATCH v2 2/2] iio: adc: hx711: Add IIO driver for AVIA HX711
+Message-ID: <20161214100021.GA26522@andreas>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Allwinner SoCs all have an ADC that can also act as a touchscreen
-controller and a thermal sensor. This patch adds the ADC driver which is
-based on the MFD for the same SoCs ADC.
+This is the IIO driver for AVIA HX711 ADC which ist mostly used in weighting
+cells.
 
-This also registers the thermal adc channel in the iio map array so
-iio_hwmon could use it without modifying the Device Tree. This registers
-the driver in the thermal framework.
+The protocol is quite simple and using GPIO's:
+One GPIO is used as clock (SCK) while another GPIO is read (DOUT)
 
-The thermal sensor requires the IP to be in touchscreen mode to return
-correct values. Therefore, if the user is continuously reading the ADC
-channel(s), the thermal framework in which the thermal sensor is
-registered will switch the IP in touchscreen mode to get a temperature
-value and requires a delay of 100ms (because of the mode switching),
-then the ADC will switch back to ADC mode and requires also a delay of
-100ms. If the ADC readings are critical to user and the SoC temperature
-is not, this driver is capable of not registering the thermal sensor in
-the thermal framework and thus, "quicken" the ADC readings.
+The raw value read from the chip is delivered. 
+To get a weight one needs to subtract the zero offset and scale it.
 
-This driver probes on three different platform_device_id to take into
-account slight differences (registers bit and temperature computation)
-between Allwinner SoCs ADCs.
-
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
-Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
 ---
-
-v9:
- - clarify comment on why we have to use the parent node as node for
- registering in thermal framework, (backward compatibility)
- - clarify comment on why we can disable CONFIG_THERMAL_OF,
- - clarify Kconfig help to say that CONFIG_THERMAL_OF can be disabled
- but should not in most cases,
- - make return value of devm_thermal_zone_of_sensor_register a local
- variable of the condition block,
- - correct scale from _PLUS_MICRO to _PLUS_NANO for ADC raw readings
- scale,
-
-v8:
- - remove Kconfig depends on !TOUCHSCREEN_SUN4I (moved to
-MFD_SUN4I_GPADC),
- - fix return values of regmap_irq_get_virq and platform_get_irq_byname
-stored in an unsigned int and then check if negative,
- - fix uninitialized ret value when an error occurs while registering
-the thermal sensor in the framework,
-
-v7:
- - add Kconfig depends on !TOUCHSCREEN_SUN4I,
- - remove Kconfig selects THERMAL_OF,
- - do not register thermal sensor if CONFIG_THERMAL_OF is disabled,
- - disable irq in irq_handler rather than in read_raw,
- - add delay when switching the IP's mode or channel (delay empirically found),
- - quicken thermal sensor interrupt period,
- - add masks for channel bits,
- - fix deadlock in sun4i_gpadc_read if regmap_read/write fails,
- - move some logic from sun4i_gpadc_read to sun4i_prepare_for_irq,
- - mark last busy for runtime_pm only on success in sun4i_gpadc_read,
- - remove cached values,
- - increase wait_for_completion_timeout timeout to 1s to be sure to not miss the
- thermal interrupt,
- - add voltage scale,
- - use devm_iio_device_register,
-
-v6:
- - remove "-mfd" from filenames and variables inside MFD driver,
- - use DEFINE_RES_IRQ_NAMED instead of setting resources manually,
- - cosmetic changes,
- - use IDs and switch over ID to get cells specific to an architecture, instead
- of using cells direclty, in of_device_id.data,
- - compute size of mfd_cells array instead of hardcoded one,
-
-v5:
- - correct mail address,
-
-v4:
- - rename files and variables from sunxi* to sun4i*,
- - rename defines from SUNXI_* to SUN4I_* or SUN6I_*,
- - remove TP in defines name,
- - rename SUNXI_IRQ_* to SUN4I_GPADC_IRQ_* for consistency,
- - use devm functions for regmap_add_irq_chip and mfd_add_devices,
- - remove remove functions (now empty thanks to devm functions),
-
-v3:
- - use defines in regmap_irq instead of hard coded BITs,
- - use of_device_id data field to chose which MFD cells to add considering
-   the compatible responsible of the MFD probe,
- - remove useless initializations,
- - disable all interrupts before adding them to regmap_irqchip,
- - add goto error label in probe,
- - correct wrapping in header license,
- - move defines from IIO driver to header,
- - use GENMASK to limit the size of the variable passed to a macro,
- - prefix register BIT defines with the name of the register,
- - reorder defines,
-
-v2:
- - add license headers,
- - reorder alphabetically includes,
- - add SUNXI_GPADC_ prefixes for defines,
-
- drivers/iio/adc/Kconfig           |  17 ++
- drivers/iio/adc/Makefile          |   1 +
- drivers/iio/adc/sun4i-gpadc-iio.c | 613 ++++++++++++++++++++++++++++++++++++++
- include/linux/mfd/sun4i-gpadc.h   |   2 +
- 4 files changed, 633 insertions(+)
- create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
+ drivers/iio/adc/Kconfig  |  18 ++++
+ drivers/iio/adc/Makefile |   1 +
+ drivers/iio/adc/hx711.c  | 231 +++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 250 insertions(+)
+ create mode 100644 drivers/iio/adc/hx711.c
 
 diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-index 99c0514..6a6d369 100644
+index 932de1f9d1e7..918f582288c9 100644
 --- a/drivers/iio/adc/Kconfig
 +++ b/drivers/iio/adc/Kconfig
-@@ -434,6 +434,23 @@ config STX104
- 	  The base port addresses for the devices may be configured via the base
- 	  array module parameter.
+@@ -205,6 +205,24 @@ config HI8435
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called hi8435.
  
-+config SUN4I_GPADC
-+	tristate "Support for the Allwinner SoCs GPADC"
-+	depends on IIO
-+	depends on MFD_SUN4I_GPADC
++config HX711
++	tristate "AVIA HX711 ADC for weight cells"
++	depends on GPIOLIB
 +	help
-+	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
-+	  GPADC. This ADC provides 4 channels which can be used as an ADC or as
-+	  a touchscreen input and one channel for thermal sensor.
++	  If you say yes here you get support for AVIA HX711 ADC which is used
++	  for weight cells
 +
-+	  The thermal sensor slows down ADC readings and can be disabled by
-+	  disabling CONFIG_THERMAL_OF. However, the thermal sensor should be
-+	  enabled by default since the SoC temperature is usually more critical
-+	  than ADC readings.
++	  This driver uses two GPIOs, one for setting the clock and the other
++	  one for getting the data
 +
-+	  To compile this driver as a module, choose M here: the module will be
-+	  called sun4i-gpadc-iio.
++	  Currently the raw value is read from the chip and delivered.
++	  For getting an actual weight one needs to subtract the
++	  zero offset and multiply by a scale factor.
++	  This should be done in userspace.
 +
- config TI_ADC081C
- 	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
- 	depends on I2C
++	  This driver can also be built as a module. If so, the module will be
++	  called hx711.
++
+ config INA2XX_ADC
+ 	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+ 	depends on I2C && !SENSORS_INA2XX
 diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-index 7a40c04..18ce8d6 100644
+index b1aa456e6af3..d46e289900ef 100644
 --- a/drivers/iio/adc/Makefile
 +++ b/drivers/iio/adc/Makefile
-@@ -41,6 +41,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
- obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
- obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
- obj-$(CONFIG_STX104) += stx104.o
-+obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
- obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
- obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
- obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
-diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c b/drivers/iio/adc/sun4i-gpadc-iio.c
+@@ -21,6 +21,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+ obj-$(CONFIG_HI8435) += hi8435.o
++obj-$(CONFIG_HX711) += hx711.o
+ obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+ obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+ obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
 new file mode 100644
-index 0000000..a8e134f
+index 000000000000..420f9451f3d1
 --- /dev/null
-+++ b/drivers/iio/adc/sun4i-gpadc-iio.c
-@@ -0,0 +1,613 @@
-+/* ADC driver for sunxi platforms' (A10, A13 and A31) GPADC
++++ b/drivers/iio/adc/hx711.c
+@@ -0,0 +1,231 @@
++/*
++ * HX711: analog to digital converter for weight sensor module
 + *
-+ * Copyright (c) 2016 Quentin Schulz <quentin.schulz@free-electrons.com>
++ * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
 + *
-+ * This program is free software; you can redistribute it and/or modify it under
-+ * the terms of the GNU General Public License version 2 as published by the
-+ * Free Software Foundation.
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License as published by
++ * the Free Software Foundation; either version 2 of the License, or
++ * (at your option) any later version.
 + *
-+ * The Allwinner SoCs all have an ADC that can also act as a touchscreen
-+ * controller and a thermal sensor.
-+ * The thermal sensor works only when the ADC acts as a touchscreen controller
-+ * and is configured to throw an interrupt every fixed periods of time (let say
-+ * every X seconds).
-+ * One would be tempted to disable the IP on the hardware side rather than
-+ * disabling interrupts to save some power but that resets the internal clock of
-+ * the IP, resulting in having to wait X seconds every time we want to read the
-+ * value of the thermal sensor.
-+ * This is also the reason of using autosuspend in pm_runtime. If there was no
-+ * autosuspend, the thermal sensor would need X seconds after every
-+ * pm_runtime_get_sync to get a value from the ADC. The autosuspend allows the
-+ * thermal sensor to be requested again in a certain time span before it gets
-+ * shutdown for not being used.
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ *
 + */
-+
-+#include <linux/completion.h>
-+#include <linux/interrupt.h>
-+#include <linux/io.h>
++#include <linux/err.h>
++#include <linux/gpio.h>
++#include <linux/gpio/consumer.h>
++#include <linux/kernel.h>
 +#include <linux/module.h>
 +#include <linux/of.h>
-+#include <linux/of_device.h>
 +#include <linux/platform_device.h>
-+#include <linux/pm_runtime.h>
-+#include <linux/regmap.h>
-+#include <linux/thermal.h>
++#include <linux/property.h>
++#include <linux/slab.h>
++#include <linux/sched.h>
 +#include <linux/delay.h>
-+
 +#include <linux/iio/iio.h>
-+#include <linux/iio/driver.h>
-+#include <linux/iio/machine.h>
-+#include <linux/mfd/sun4i-gpadc.h>
 +
-+static unsigned int sun4i_gpadc_chan_select(unsigned int chan)
++#define HX711_GAIN_32		2	/* gain = 32 for channel B  */
++#define HX711_GAIN_64		3	/* gain = 64 for channel A  */
++#define HX711_GAIN_128		1	/* gain = 128 for channel A */
++
++struct hx711_data {
++	struct device		*dev;
++	struct gpio_desc	*gpiod_sck;
++	struct gpio_desc	*gpiod_dout;
++	int			gain_pulse;
++	struct mutex		lock;
++};
++
++static int hx711_reset(struct hx711_data *hx711_data)
 +{
-+	return SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
-+}
++	int i, val;
 +
-+static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
-+{
-+	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
-+}
++	val = gpiod_get_value(hx711_data->gpiod_dout);
++	if (val) {
++		gpiod_set_value(hx711_data->gpiod_sck, 1);
++		udelay(80);
++		gpiod_set_value(hx711_data->gpiod_sck, 0);
 +
-+struct gpadc_data {
-+	int		temp_offset;
-+	int		temp_scale;
-+	unsigned int	tp_mode_en;
-+	unsigned int	tp_adc_select;
-+	unsigned int	(*adc_chan_select)(unsigned int chan);
-+	unsigned int	adc_chan_mask;
-+};
-+
-+static const struct gpadc_data sun4i_gpadc_data = {
-+	.temp_offset = -1932,
-+	.temp_scale = 133,
-+	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
-+	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
-+	.adc_chan_select = &sun4i_gpadc_chan_select,
-+	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
-+};
-+
-+static const struct gpadc_data sun5i_gpadc_data = {
-+	.temp_offset = -1447,
-+	.temp_scale = 100,
-+	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
-+	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
-+	.adc_chan_select = &sun4i_gpadc_chan_select,
-+	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
-+};
-+
-+static const struct gpadc_data sun6i_gpadc_data = {
-+	.temp_offset = -1623,
-+	.temp_scale = 167,
-+	.tp_mode_en = SUN6I_GPADC_CTRL1_TP_MODE_EN,
-+	.tp_adc_select = SUN6I_GPADC_CTRL1_TP_ADC_SELECT,
-+	.adc_chan_select = &sun6i_gpadc_chan_select,
-+	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
-+};
-+
-+struct sun4i_gpadc_iio {
-+	struct iio_dev			*indio_dev;
-+	struct completion		completion;
-+	int				temp_data;
-+	u32				adc_data;
-+	struct regmap			*regmap;
-+	unsigned int			fifo_data_irq;
-+	atomic_t			ignore_fifo_data_irq;
-+	unsigned int			temp_data_irq;
-+	atomic_t			ignore_temp_data_irq;
-+	const struct gpadc_data		*data;
-+	/* prevents concurrent reads of temperature and ADC */
-+	struct mutex			mutex;
-+};
-+
-+#define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
-+	.type = IIO_VOLTAGE,					\
-+	.indexed = 1,						\
-+	.channel = _channel,					\
-+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-+	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-+	.datasheet_name = _name,				\
-+}
-+
-+static struct iio_map sun4i_gpadc_hwmon_maps[] = {
-+	{
-+		.adc_channel_label = "temp_adc",
-+		.consumer_dev_name = "iio_hwmon.0",
-+	},
-+	{ /* sentinel */ },
-+};
-+
-+static const struct iio_chan_spec sun4i_gpadc_channels[] = {
-+	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
-+	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
-+	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
-+	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-+				      BIT(IIO_CHAN_INFO_SCALE) |
-+				      BIT(IIO_CHAN_INFO_OFFSET),
-+		.datasheet_name = "temp_adc",
-+	},
-+};
-+
-+static const struct iio_chan_spec sun4i_gpadc_channels_no_temp[] = {
-+	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
-+	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
-+	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
-+	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
-+};
-+
-+static int sun4i_prepare_for_irq(struct iio_dev *indio_dev, int channel,
-+				 unsigned int irq)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
-+	int ret;
-+	u32 reg;
-+
-+	pm_runtime_get_sync(indio_dev->dev.parent);
-+
-+	reinit_completion(&info->completion);
-+
-+	ret = regmap_write(info->regmap, SUN4I_GPADC_INT_FIFOC,
-+			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(1) |
-+			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH);
-+	if (ret)
-+		return ret;
-+
-+	ret = regmap_read(info->regmap, SUN4I_GPADC_CTRL1, &reg);
-+	if (ret)
-+		return ret;
-+
-+	if (irq == info->fifo_data_irq) {
-+		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
-+				   info->data->tp_mode_en |
-+				   info->data->tp_adc_select |
-+				   info->data->adc_chan_select(channel));
-+		/*
-+		 * When the IP changes channel, it needs a bit of time to get
-+		 * correct values.
-+		 */
-+		if ((reg & info->data->adc_chan_mask) !=
-+			 info->data->adc_chan_select(channel))
-+			mdelay(10);
-+
-+	} else {
-+		/*
-+		 * The temperature sensor returns valid data only when the ADC
-+		 * operates in touchscreen mode.
-+		 */
-+		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
-+				   info->data->tp_mode_en);
++		for (i = 0; i < 1000; i++) {
++			val = gpiod_get_value(hx711_data->gpiod_dout);
++			if (!val)
++				break;
++			/* sleep at least 1 ms */
++			msleep(1);
++		}
 +	}
 +
-+	if (ret)
-+		return ret;
-+
-+	/*
-+	 * When the IP changes mode between ADC or touchscreen, it
-+	 * needs a bit of time to get correct values.
-+	 */
-+	if ((reg & info->data->tp_adc_select) != info->data->tp_adc_select)
-+		mdelay(100);
-+
-+	return 0;
++	return val;
 +}
 +
-+static int sun4i_gpadc_read(struct iio_dev *indio_dev, int channel, int *val,
-+			    unsigned int irq)
++static int hx711_cycle(struct hx711_data *hx711_data)
 +{
-+	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
-+	int ret;
++	int val;
 +
-+	mutex_lock(&info->mutex);
-+
-+	ret = sun4i_prepare_for_irq(indio_dev, channel, irq);
-+	if (ret)
-+		goto err;
-+
-+	enable_irq(irq);
-+
-+	/*
-+	 * The temperature sensor throws an interruption periodically (currently
-+	 * set at periods of ~0.6s in sun4i_gpadc_runtime_resume). A 1s delay
-+	 * makes sure an interruption occurs in normal conditions. If it doesn't
-+	 * occur, then there is a timeout.
++	/* if preempted for more then 60us while SCK is high:
++	 * hx711 is going in reset
++	 * ==> measuring is false
 +	 */
-+	if (!wait_for_completion_timeout(&info->completion,
-+					 msecs_to_jiffies(1000))) {
-+		ret = -ETIMEDOUT;
-+		goto err;
++	preempt_disable();
++	gpiod_set_value(hx711_data->gpiod_sck, 1);
++	val = gpiod_get_value(hx711_data->gpiod_dout);
++	gpiod_set_value(hx711_data->gpiod_sck, 0);
++	preempt_enable();
++
++	return val;
++}
++
++static int hx711_read(struct hx711_data *hx711_data)
++{
++	int i, ret;
++	int value = 0;
++
++	if (hx711_reset(hx711_data)) {
++		dev_err(hx711_data->dev, "reset failed!");
++		return -1;
 +	}
 +
-+	if (irq == info->fifo_data_irq)
-+		*val = info->adc_data;
-+	else
-+		*val = info->temp_data;
++	for (i = 0; i < 24; i++) {
++		value <<= 1;
++		ret = hx711_cycle(hx711_data);
++		if (ret)
++			value++;
++	}
 +
-+	ret = 0;
-+	pm_runtime_mark_last_busy(indio_dev->dev.parent);
++	value ^= 0x800000;
 +
-+err:
-+	pm_runtime_put_autosuspend(indio_dev->dev.parent);
-+	mutex_unlock(&info->mutex);
++	for (i = 0; i < hx711_data->gain_pulse; i++)
++		ret = hx711_cycle(hx711_data);
 +
-+	return ret;
++	return value;
 +}
 +
-+static int sun4i_gpadc_adc_read(struct iio_dev *indio_dev, int channel,
-+				int *val)
++static int hx711_read_raw(struct iio_dev *iio_dev,
++				const struct iio_chan_spec *chan,
++				int *val, int *val2, long mask)
 +{
-+	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
-+
-+	return sun4i_gpadc_read(indio_dev, channel, val, info->fifo_data_irq);
-+}
-+
-+static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
-+
-+	return sun4i_gpadc_read(indio_dev, 0, val, info->temp_data_irq);
-+}
-+
-+static int sun4i_gpadc_temp_offset(struct iio_dev *indio_dev, int *val)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
-+
-+	*val = info->data->temp_offset;
-+
-+	return 0;
-+}
-+
-+static int sun4i_gpadc_temp_scale(struct iio_dev *indio_dev, int *val)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
-+
-+	*val = info->data->temp_scale;
-+
-+	return 0;
-+}
-+
-+static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan, int *val,
-+				int *val2, long mask)
-+{
-+	int ret;
++	struct hx711_data *hx711_data = iio_priv(iio_dev);
 +
 +	switch (mask) {
-+	case IIO_CHAN_INFO_OFFSET:
-+		ret = sun4i_gpadc_temp_offset(indio_dev, val);
-+		if (ret)
-+			return ret;
-+
-+		return IIO_VAL_INT;
 +	case IIO_CHAN_INFO_RAW:
-+		if (chan->type == IIO_VOLTAGE)
-+			ret = sun4i_gpadc_adc_read(indio_dev, chan->channel,
-+						   val);
-+		else
-+			ret = sun4i_gpadc_temp_read(indio_dev, val);
-+
-+		if (ret)
-+			return ret;
-+
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		if (chan->type == IIO_VOLTAGE) {
-+			/* 3000mV / 4096 * raw */
-+			*val = 0;
-+			*val2 = 732421875;
-+			return IIO_VAL_INT_PLUS_NANO;
++		switch (chan->type) {
++		case IIO_VOLTAGE:
++			mutex_lock(&hx711_data->lock);
++			*val = hx711_read(hx711_data);
++			mutex_unlock(&hx711_data->lock);
++			return IIO_VAL_INT;
++		default:
++			return -EINVAL;
 +		}
-+
-+		ret = sun4i_gpadc_temp_scale(indio_dev, val);
-+		if (ret)
-+			return ret;
-+
-+		return IIO_VAL_INT;
 +	default:
 +		return -EINVAL;
 +	}
-+
-+	return -EINVAL;
 +}
 +
-+static const struct iio_info sun4i_gpadc_iio_info = {
-+	.read_raw = sun4i_gpadc_read_raw,
-+	.driver_module = THIS_MODULE,
++static const struct iio_info hx711_iio_info = {
++	.driver_module		= THIS_MODULE,
++	.read_raw		= hx711_read_raw,
 +};
 +
-+static irqreturn_t sun4i_gpadc_temp_data_irq_handler(int irq, void *dev_id)
-+{
-+	struct sun4i_gpadc_iio *info = dev_id;
-+
-+	if (atomic_read(&info->ignore_temp_data_irq))
-+		goto out;
-+
-+	if (!regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, &info->temp_data))
-+		complete(&info->completion);
-+
-+out:
-+	disable_irq_nosync(info->temp_data_irq);
-+	return IRQ_HANDLED;
-+}
-+
-+static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void *dev_id)
-+{
-+	struct sun4i_gpadc_iio *info = dev_id;
-+
-+	if (atomic_read(&info->ignore_fifo_data_irq))
-+		goto out;
-+
-+	if (!regmap_read(info->regmap, SUN4I_GPADC_DATA, &info->adc_data))
-+		complete(&info->completion);
-+
-+out:
-+	disable_irq_nosync(info->fifo_data_irq);
-+	return IRQ_HANDLED;
-+}
-+
-+static int sun4i_gpadc_runtime_suspend(struct device *dev)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
-+
-+	/* Disable the ADC on IP */
-+	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
-+	/* Disable temperature sensor on IP */
-+	regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
-+
-+	return 0;
-+}
-+
-+static int sun4i_gpadc_runtime_resume(struct device *dev)
-+{
-+	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
-+
-+	/* clkin = 6MHz */
-+	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
-+		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
-+		     SUN4I_GPADC_CTRL0_FS_DIV(7) |
-+		     SUN4I_GPADC_CTRL0_T_ACQ(63));
-+	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, info->data->tp_mode_en);
-+	regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
-+		     SUN4I_GPADC_CTRL3_FILTER_EN |
-+		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
-+	/* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s */
-+	regmap_write(info->regmap, SUN4I_GPADC_TPR,
-+		     SUN4I_GPADC_TPR_TEMP_ENABLE |
-+		     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
-+
-+	return 0;
-+}
-+
-+static int sun4i_gpadc_get_temp(void *data, int *temp)
-+{
-+	struct sun4i_gpadc_iio *info = (struct sun4i_gpadc_iio *)data;
-+	int val, scale, offset;
-+
-+	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
-+		return -ETIMEDOUT;
-+
-+	sun4i_gpadc_temp_scale(info->indio_dev, &scale);
-+	sun4i_gpadc_temp_offset(info->indio_dev, &offset);
-+
-+	*temp = (val + offset) * scale;
-+
-+	return 0;
-+}
-+
-+static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
-+	.get_temp = &sun4i_gpadc_get_temp,
-+};
-+
-+static const struct dev_pm_ops sun4i_gpadc_pm_ops = {
-+	.runtime_suspend = &sun4i_gpadc_runtime_suspend,
-+	.runtime_resume = &sun4i_gpadc_runtime_resume,
-+};
-+
-+static int sun4i_irq_init(struct platform_device *pdev, const char *name,
-+			  irq_handler_t handler, const char *devname,
-+			  unsigned int *irq, atomic_t *atomic)
-+{
-+	int ret;
-+	struct sun4i_gpadc_dev *mfd_dev = dev_get_drvdata(pdev->dev.parent);
-+	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(&pdev->dev));
-+
-+	/*
-+	 * Once the interrupt is activated, the IP continuously performs
-+	 * conversions thus throws interrupts. The interrupt is activated right
-+	 * after being requested but we want to control when these interrupts
-+	 * occur thus we disable it right after being requested. However, an
-+	 * interrupt might occur between these two instructions and we have to
-+	 * make sure that does not happen, by using atomic flags. We set the
-+	 * flag before requesting the interrupt and unset it right after
-+	 * disabling the interrupt. When an interrupt occurs between these two
-+	 * instructions, reading the atomic flag will tell us to ignore the
-+	 * interrupt.
-+	 */
-+	atomic_set(atomic, 1);
-+
-+	ret = platform_get_irq_byname(pdev, name);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "no %s interrupt registered\n", name);
-+		return ret;
-+	}
-+
-+	ret = regmap_irq_get_virq(mfd_dev->regmap_irqc, ret);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "failed to get virq for irq %s\n", name);
-+		return ret;
-+	}
-+
-+	*irq = ret;
-+	ret = devm_request_any_context_irq(&pdev->dev, *irq, handler, 0,
-+					   devname, info);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "could not request %s interrupt: %d\n",
-+			name, ret);
-+		return ret;
-+	}
-+
-+	disable_irq(*irq);
-+	atomic_set(atomic, 0);
-+
-+	return 0;
-+}
-+
-+static int sun4i_gpadc_probe(struct platform_device *pdev)
-+{
-+	struct sun4i_gpadc_iio *info;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+	struct sun4i_gpadc_dev *sun4i_gpadc_dev;
-+
-+	sun4i_gpadc_dev = dev_get_drvdata(pdev->dev.parent);
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	info = iio_priv(indio_dev);
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	mutex_init(&info->mutex);
-+	info->regmap = sun4i_gpadc_dev->regmap;
-+	info->indio_dev = indio_dev;
-+	init_completion(&info->completion);
-+	indio_dev->name = dev_name(&pdev->dev);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->dev.of_node = pdev->dev.of_node;
-+	indio_dev->info = &sun4i_gpadc_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->num_channels = ARRAY_SIZE(sun4i_gpadc_channels);
-+	indio_dev->channels = sun4i_gpadc_channels;
-+
-+	info->data = (struct gpadc_data *)platform_get_device_id(pdev)->driver_data;
-+
-+	/*
-+	 * Since the controller needs to be in touchscreen mode for its thermal
-+	 * sensor to operate properly, and that switching between the two modes
-+	 * needs a delay, always registering in the thermal framework will
-+	 * significantly slow down the conversion rate of the ADCs.
-+	 *
-+	 * Therefore, instead of depending on THERMAL_OF in Kconfig, we only
-+	 * register the sensor if that option is enabled, eventually leaving
-+	 * that choice to the user.
-+	 */
-+
-+	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
-+		/*
-+		 * This driver is a child of an MFD which has a node in the DT
-+		 * but not its children, because of DT backward compatibility
-+		 * for A10, A13 and A31 SoCs. Therefore, the resulting devices
-+		 * of this driver do not have an of_node variable.
-+		 * However, its parent (the MFD driver) has an of_node variable
-+		 * and since devm_thermal_zone_of_sensor_register uses its first
-+		 * argument to match the phandle defined in the node of the
-+		 * thermal driver with the of_node of the device passed as first
-+		 * argument and the third argument to call ops from
-+		 * thermal_zone_of_device_ops, the solution is to use the parent
-+		 * device as first argument to match the phandle with its
-+		 * of_node, and the device from this driver as third argument to
-+		 * return the temperature.
-+		 */
-+		struct thermal_zone_device *tzd;
-+		tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0,
-+							   info,
-+							   &sun4i_ts_tz_ops);
-+		if (IS_ERR(tzd)) {
-+			dev_err(&pdev->dev,
-+				"could not register thermal sensor: %ld\n",
-+				PTR_ERR(tzd));
-+			ret = PTR_ERR(tzd);
-+			goto err;
-+		}
-+	} else {
-+		indio_dev->num_channels =
-+			ARRAY_SIZE(sun4i_gpadc_channels_no_temp);
-+		indio_dev->channels = sun4i_gpadc_channels_no_temp;
-+	}
-+
-+	pm_runtime_set_autosuspend_delay(&pdev->dev,
-+					 SUN4I_GPADC_AUTOSUSPEND_DELAY);
-+	pm_runtime_use_autosuspend(&pdev->dev);
-+	pm_runtime_set_suspended(&pdev->dev);
-+	pm_runtime_enable(&pdev->dev);
-+
-+	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
-+		ret = sun4i_irq_init(pdev, "TEMP_DATA_PENDING",
-+				     sun4i_gpadc_temp_data_irq_handler,
-+				     "temp_data", &info->temp_data_irq,
-+				     &info->ignore_temp_data_irq);
-+		if (ret < 0)
-+			goto err;
-+	}
-+
-+	ret = sun4i_irq_init(pdev, "FIFO_DATA_PENDING",
-+			     sun4i_gpadc_fifo_data_irq_handler, "fifo_data",
-+			     &info->fifo_data_irq, &info->ignore_fifo_data_irq);
-+	if (ret < 0)
-+		goto err;
-+
-+	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
-+		ret = iio_map_array_register(indio_dev, sun4i_gpadc_hwmon_maps);
-+		if (ret < 0) {
-+			dev_err(&pdev->dev,
-+				"failed to register iio map array\n");
-+			goto err;
-+		}
-+	}
-+
-+	ret = devm_iio_device_register(&pdev->dev, indio_dev);
-+	if (ret < 0) {
-+		dev_err(&pdev->dev, "could not register the device\n");
-+		goto err_map;
-+	}
-+
-+	return 0;
-+
-+err_map:
-+	if (IS_ENABLED(CONFIG_THERMAL_OF))
-+		iio_map_array_unregister(indio_dev);
-+
-+err:
-+	pm_runtime_put(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+
-+	return ret;
-+}
-+
-+static int sun4i_gpadc_remove(struct platform_device *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+
-+	pm_runtime_put(&pdev->dev);
-+	pm_runtime_disable(&pdev->dev);
-+	if (IS_ENABLED(CONFIG_THERMAL_OF))
-+		iio_map_array_unregister(indio_dev);
-+
-+	return 0;
-+}
-+
-+static const struct platform_device_id sun4i_gpadc_id[] = {
-+	{ "sun4i-a10-gpadc-iio", (kernel_ulong_t)&sun4i_gpadc_data },
-+	{ "sun5i-a13-gpadc-iio", (kernel_ulong_t)&sun5i_gpadc_data },
-+	{ "sun6i-a31-gpadc-iio", (kernel_ulong_t)&sun6i_gpadc_data },
-+	{ /* sentinel */ },
-+};
-+
-+static struct platform_driver sun4i_gpadc_driver = {
-+	.driver = {
-+		.name = "sun4i-gpadc-iio",
-+		.pm = &sun4i_gpadc_pm_ops,
++static const struct iio_chan_spec hx711_chan_spec[] = {
++	{ .type = IIO_VOLTAGE,
++		.info_mask_separate =
++			BIT(IIO_CHAN_INFO_RAW),
 +	},
-+	.id_table = sun4i_gpadc_id,
-+	.probe = sun4i_gpadc_probe,
-+	.remove = sun4i_gpadc_remove,
 +};
 +
-+module_platform_driver(sun4i_gpadc_driver);
++static int hx711_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *node = dev->of_node;
++	struct hx711_data *hx711_data = NULL;
++	struct iio_dev *iio;
++	int ret = 0, ival;
 +
-+MODULE_DESCRIPTION("ADC driver for sunxi platforms");
-+MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/mfd/sun4i-gpadc.h b/include/linux/mfd/sun4i-gpadc.h
-index d7a29f2..509e736 100644
---- a/include/linux/mfd/sun4i-gpadc.h
-+++ b/include/linux/mfd/sun4i-gpadc.h
-@@ -28,6 +28,7 @@
- #define SUN4I_GPADC_CTRL1_TP_MODE_EN			BIT(4)
- #define SUN4I_GPADC_CTRL1_TP_ADC_SELECT			BIT(3)
- #define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) & (x))
-+#define SUN4I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(2, 0)
- 
- /* TP_CTRL1 bits for sun6i SOCs */
- #define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
-@@ -35,6 +36,7 @@
- #define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
- #define SUN6I_GPADC_CTRL1_TP_ADC_SELECT			BIT(4)
- #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) & BIT(x))
-+#define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
- 
- #define SUN4I_GPADC_CTRL2				0x08
- 
++	iio = devm_iio_device_alloc(dev, sizeof(struct hx711_data));
++	if (!iio) {
++		dev_err(dev, "failed to allocate IIO device\n");
++		return -ENOMEM;
++	}
++
++	hx711_data = iio_priv(iio);
++	hx711_data->dev = dev;
++
++	mutex_init(&hx711_data->lock);
++
++	hx711_data->gpiod_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_HIGH);
++	if (IS_ERR(hx711_data->gpiod_sck)) {
++		dev_err(dev, "failed to get sck-gpiod: err=%ld\n",
++					PTR_ERR(hx711_data->gpiod_sck));
++		return PTR_ERR(hx711_data->gpiod_sck);
++	}
++
++	hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_OUT_HIGH);
++	if (IS_ERR(hx711_data->gpiod_dout)) {
++		dev_err(dev, "failed to get dout-gpiod: err=%ld\n",
++					PTR_ERR(hx711_data->gpiod_dout));
++		return PTR_ERR(hx711_data->gpiod_dout);
++	}
++
++	of_property_read_u32 (node, "gain", &ival);
++	switch (ival) {
++	case 32:
++		hx711_data->gain_pulse = HX711_GAIN_32;
++		break;
++	case 64:
++		hx711_data->gain_pulse = HX711_GAIN_64;
++		break;
++	default:
++		hx711_data->gain_pulse = HX711_GAIN_128;
++	}
++	dev_dbg(hx711_data->dev, "gain: %d\n", hx711_data->gain_pulse);
++
++	ret = gpiod_direction_input(hx711_data->gpiod_dout);
++	if (ret < 0) {
++		dev_err(hx711_data->dev, "gpiod_direction_input: %d\n", ret);
++		return ret;
++	}
++
++	ret = gpiod_direction_output(hx711_data->gpiod_sck, 0);
++	if (ret < 0) {
++		dev_err(hx711_data->dev, "gpiod_direction_output: %d\n", ret);
++		return ret;
++	}
++
++	platform_set_drvdata(pdev, iio);
++
++	iio->name = pdev->name;
++	iio->dev.parent = &pdev->dev;
++	iio->info = &hx711_iio_info;
++	iio->modes = INDIO_DIRECT_MODE;
++	iio->channels = hx711_chan_spec;
++	iio->num_channels = ARRAY_SIZE(hx711_chan_spec);
++
++	return devm_iio_device_register(dev, iio);
++}
++
++static const struct of_device_id of_hx711_match[] = {
++	{ .compatible = "avia,hx711", },
++	{},
++};
++
++MODULE_DEVICE_TABLE(of, of_hx711_match);
++
++static struct platform_driver hx711_driver = {
++	.probe		= hx711_probe,
++	.driver		= {
++		.name		= "hx711-gpio",
++		.of_match_table	= of_hx711_match,
++	},
++};
++
++module_platform_driver(hx711_driver);
++
++MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
++MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
++MODULE_LICENSE("GPL");
++MODULE_ALIAS("platform:hx711-gpio");
++
 -- 
-2.9.3
+2.1.4
 
