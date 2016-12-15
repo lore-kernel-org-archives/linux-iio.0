@@ -1,85 +1,84 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f47.google.com ([209.85.215.47]:36226 "EHLO
-        mail-lf0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753830AbcLRV4D (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 18 Dec 2016 16:56:03 -0500
-Received: by mail-lf0-f47.google.com with SMTP id t196so42384201lff.3
-        for <linux-iio@vger.kernel.org>; Sun, 18 Dec 2016 13:56:02 -0800 (PST)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-Cc: Linus Walleij <linus.walleij@linaro.org>,
-        devicetree@vger.kernel.org,
-        Capella Microsystems <capellamicro@gmail.com>,
-        Kevin Tsai <ktsai@capellamicro.com>
-Subject: [PATCH 1/2 v2] iio: light: add DT bindings for Capella CM3605
-Date: Sun, 18 Dec 2016 22:55:55 +0100
-Message-Id: <1482098155-16148-1-git-send-email-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <bgolaszewski@baylibre.com>
+MIME-Version: 1.0
+In-Reply-To: <54679B04-3A57-4F0E-8EE6-BB37785F8E10@jic23.retrosnub.co.uk>
+References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+ <1481494905-18037-2-git-send-email-bgolaszewski@baylibre.com>
+ <20161213192712.gbaw4t4awayybnta@rob-hp-laptop> <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
+ <54679B04-3A57-4F0E-8EE6-BB37785F8E10@jic23.retrosnub.co.uk>
+From: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Date: Thu, 15 Dec 2016 11:57:18 +0100
+Message-ID: <CAMpxmJVwgHGrywDFnE9dNfB9UL89hLyiRO2He7uyiRgBpEfjkg@mail.gmail.com>
+Subject: Re: [PATCH 1/2] devicetree: power: add bindings for GPIO-driven power switches
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Cc: Rob Herring <robh@kernel.org>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mark Rutland <mark.rutland@arm.com>,
+	linux-iio@vger.kernel.org, linux-devicetree <devicetree@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>, Kevin Hilman <khilman@baylibre.com>,
+	Patrick Titiano <ptitiano@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>,
+	Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>,
+	linux-gpio <linux-gpio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	linux-pm <linux-pm@vger.kernel.org>, Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-This adds device tree bindings for the Capella Microsystems CM3605
-ambient light sensor and short range proximity sensor.
+2016-12-14 18:36 GMT+01:00 Jonathan Cameron <jic23@jic23.retrosnub.co.uk>:
+>
+>
+> On 14 December 2016 16:58:21 GMT+00:00, Bartosz Golaszewski
+> <bgolaszewski@baylibre.com> wrote:
+>>2016-12-13 20:27 GMT+01:00 Rob Herring <robh@kernel.org>:
+>>> On Sun, Dec 11, 2016 at 11:21:44PM +0100, Bartosz Golaszewski wrote:
+>>>> Some boards are equipped with simple, GPIO-driven power load
+>>switches.
+>>>> An example of such ICs is the TI tps229* series.
+>>>
+>>> How is this different than a GPIO regulator? The input and output
+>>> voltages just happen to be the same. I could be convinced this is
+>>> different enough to have a different compatible, but it somewhat
+>>seems
+>>> you want to use this for IIO, so you are creating a different binding
+>>> for that usecase.
+>>>
+>>
+>>It's more of a fixed regulator I suppose. Do you mean adding a new
+>>compatible to the fixed-regulator binding (e.g. "gpio-power-switch" or
+>>"simple-power-switch") and then providing an iio driver for toggling
+>>the switch?
+>
+> I am rather torn on whether the IIO interface makes any sense beyond that of
+> convenience.
+>
 
-Cc: devicetree@vger.kernel.org
-Cc: Capella Microsystems <capellamicro@gmail.com>
-Cc: Kevin Tsai <ktsai@capellamicro.com>
-Acked-by: Rob Herring <robh@kernel.org>
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
-ChangeLog v1->v2:
-- Rename aset-resistance to aset-resistance-ohms
----
- .../devicetree/bindings/iio/light/cm3605.txt       | 41 ++++++++++++++++++++++
- 1 file changed, 41 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/light/cm3605.txt
+The question is: will the iio maintainers be ok with adding support
+for interfaces different than iio (I guess so since Lars already
+mentioned wanting to support the GPIO chardev)? If so, I'm ok with not
+using the iio framework in the kernel.
 
-diff --git a/Documentation/devicetree/bindings/iio/light/cm3605.txt b/Documentation/devicetree/bindings/iio/light/cm3605.txt
-new file mode 100644
-index 000000000000..56331a79f9ab
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/light/cm3605.txt
-@@ -0,0 +1,41 @@
-+Capella Microsystems CM3605
-+Ambient Light and Short Distance Proximity Sensor
-+
-+The CM3605 is an entirely analog part which however require quite a bit of
-+software logic to interface a host operating system.
-+
-+This ALS and proximity sensor was one of the very first deployed in mobile
-+handsets, notably it is used in the very first Nexus One Android phone from
-+2010.
-+
-+Required properties:
-+- compatible: must be: "capella,cm3605"
-+- aset-gpios: GPIO line controlling the ASET line (drive low
-+  to activate the ALS, should be flagged GPIO_ACTIVE_LOW)
-+- interrupts: the IRQ line (such as a GPIO) that is connected to
-+  the POUT (proximity sensor out) line. The edge detection must
-+  be set to IRQ_TYPE_EDGE_BOTH so as to detect movements toward
-+  and away from the proximity sensor.
-+- io-channels: the ADC channel used for converting the voltage from
-+  AOUT to a digital representation.
-+- io-channel-names: must be "aout"
-+
-+Optional properties:
-+- vdd-supply: regulator supplying VDD power to the component.
-+- capella,aset-resistance-ohms: the sensitivity calibration resistance,
-+  in Ohms. Valid values are: 50000, 100000, 300000 and 600000,
-+  as these are the resistance values that we are supplied with
-+  calibration curves for. If not supplied, 100 kOhm will be assumed
-+  but it is strongly recommended to supply this.
-+
-+Example:
-+
-+cm3605 {
-+	compatible = "capella,cm3605";
-+	vdd-supply = <&foo_reg>;
-+	aset-gpios = <&foo_gpio 1 GPIO_ACTIVE_LOW>;
-+	capella,aset-resistance-ohms = <100000>;
-+	interrupts = <1 IRQ_TYPE_EDGE_BOTH>;
-+	io-channels = <&adc 0x01>;
-+	io-channel-names = "aout";
-+};
--- 
-2.7.4
+> A bridge to a regulator in general might make sense to cover the case of a
+> reg effectively
+> acting as a DAC at the edge of the known hardware.
+>
+> Lars' point about perhaps adding support for the new gpio userspace stuff to
+> libiio would in
+> this case also be rather papering over the issue.
+> There is known hardware there so we should describe it!
+>
+> I think we should be considering this as the general case of the Linux
+> controlled power supply.
+> How do we want to represent that?
+> Ultimately does a general regulator userspace interface make sense?
+>
+> Classic case of people cutting our hardware in half and making boundaries
+> beyond which lie dragons.
+>
+> I would love to see the general case covered.
+>
 
+It seems as if this is already covered by the userspace-consumer
+regulator driver, but it doesn't speak device tree yet. I guess we
+could reuse it by merging the proposed gpio-power-switch binding and
+extending it to parse DT.
+
+Best regards,
+Bartosz Golaszewski
