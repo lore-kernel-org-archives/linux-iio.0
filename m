@@ -1,104 +1,49 @@
-Return-Path: <SRS0=qK+x=X6=linux.intel.com=srinivas.pandruvada@kernel.org>
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: jic23@kernel.org
-Cc: knaack.h@gmx.de,
-	lars@metafoo.de,
-	linux-iio@vger.kernel.org,
-	"Kweh, Hock Leong" <hock.leong.kweh@intel.com>,
-	Kweh,
-	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Subject: [PATCH] iio: light: hid-sensor-als: Add duplicate IIO_LIGHT channel
-Date: Thu, 15 Dec 2016 13:48:21 -0800
-Message-Id: <1481838501-3033-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Return-Path: <robh@kernel.org>
+MIME-Version: 1.0
+In-Reply-To: <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
+References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+ <1481494905-18037-2-git-send-email-bgolaszewski@baylibre.com>
+ <20161213192712.gbaw4t4awayybnta@rob-hp-laptop> <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
+From: Rob Herring <robh@kernel.org>
+Date: Thu, 15 Dec 2016 09:05:23 -0600
+Message-ID: <CAL_JsqLwS51MhOJQb-Lmo=osHiYKcAcCJaxKJFdSvZBpafz7Gw@mail.gmail.com>
+Subject: Re: [PATCH 1/2] devicetree: power: add bindings for GPIO-driven power switches
+To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mark Rutland <mark.rutland@arm.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, linux-devicetree <devicetree@vger.kernel.org>,
+	LKML <linux-kernel@vger.kernel.org>, Kevin Hilman <khilman@baylibre.com>,
+	Patrick Titiano <ptitiano@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>,
+	Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>,
+	linux-gpio <linux-gpio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
+	linux-pm <linux-pm@vger.kernel.org>, Mark Brown <broonie@kernel.org>,
+	Liam Girdwood <lgirdwood@gmail.com>
+Content-Type: text/plain; charset=UTF-8
 List-ID: <linux-iio@vger.kernel.org>
 
-From: "Kweh, Hock Leong" <hock.leong.kweh@intel.com>
+On Wed, Dec 14, 2016 at 10:58 AM, Bartosz Golaszewski
+<bgolaszewski@baylibre.com> wrote:
+> 2016-12-13 20:27 GMT+01:00 Rob Herring <robh@kernel.org>:
+>> On Sun, Dec 11, 2016 at 11:21:44PM +0100, Bartosz Golaszewski wrote:
+>>> Some boards are equipped with simple, GPIO-driven power load switches.
+>>> An example of such ICs is the TI tps229* series.
+>>
+>> How is this different than a GPIO regulator? The input and output
+>> voltages just happen to be the same. I could be convinced this is
+>> different enough to have a different compatible, but it somewhat seems
+>> you want to use this for IIO, so you are creating a different binding
+>> for that usecase.
+>>
+>
+> It's more of a fixed regulator I suppose. Do you mean adding a new
+> compatible to the fixed-regulator binding (e.g. "gpio-power-switch" or
+> "simple-power-switch") and then providing an iio driver for toggling
+> the switch?
 
-There is one light sensor type defined in the sensor hub specification,
-which has one Illuminance field. It doesn't distinguish between ambient
-light sensor or color sensor. Currently it is presented as IIO_INTENSITY
-channel. There are some user spaces specifically looking for IIO_LIGHT
-channel.
-To satisfy such user spaces this change also add a duplicate IIO_LIGHT
-channel. The units of measurement of Illuminance field is Lux, so it is
-still compatible to IIO ABI.
+Yes, at least the first part. I view the switch as just a more
+specific subtype of a fixed-regulator. Whether an IIO driver is a
+separate discussion which is happening.
 
-Signed-off-by: Kweh, Hock Leong <hock.leong.kweh@intel.com>
-Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
----
- drivers/iio/light/hid-sensor-als.c | 24 +++++++++++++++++++++---
- 1 file changed, 21 insertions(+), 3 deletions(-)
+Rob
 
-diff --git a/drivers/iio/light/hid-sensor-als.c b/drivers/iio/light/hid-sensor-als.c
-index 8bb1f90..059d964 100644
---- a/drivers/iio/light/hid-sensor-als.c
-+++ b/drivers/iio/light/hid-sensor-als.c
-@@ -31,13 +31,17 @@
- #include <linux/iio/triggered_buffer.h>
- #include "../common/hid-sensors/hid-sensor-trigger.h"
- 
--#define CHANNEL_SCAN_INDEX_ILLUM 0
-+enum {
-+	CHANNEL_SCAN_INDEX_INTENSITY = 0,
-+	CHANNEL_SCAN_INDEX_ILLUM = 1,
-+	CHANNEL_SCAN_INDEX_MAX
-+};
- 
- struct als_state {
- 	struct hid_sensor_hub_callbacks callbacks;
- 	struct hid_sensor_common common_attributes;
- 	struct hid_sensor_hub_attribute_info als_illum;
--	u32 illum;
-+	u32 illum[CHANNEL_SCAN_INDEX_MAX];
- 	int scale_pre_decml;
- 	int scale_post_decml;
- 	int scale_precision;
-@@ -55,6 +59,15 @@ static const struct iio_chan_spec als_channels[] = {
- 		BIT(IIO_CHAN_INFO_SCALE) |
- 		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
- 		BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_index = CHANNEL_SCAN_INDEX_INTENSITY,
-+	},
-+	{
-+		.type = IIO_LIGHT,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+		BIT(IIO_CHAN_INFO_SCALE) |
-+		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+		BIT(IIO_CHAN_INFO_HYSTERESIS),
- 		.scan_index = CHANNEL_SCAN_INDEX_ILLUM,
- 	}
- };
-@@ -86,6 +99,7 @@ static int als_read_raw(struct iio_dev *indio_dev,
- 	switch (mask) {
- 	case 0:
- 		switch (chan->scan_index) {
-+		case  CHANNEL_SCAN_INDEX_INTENSITY:
- 		case  CHANNEL_SCAN_INDEX_ILLUM:
- 			report_id = als_state->als_illum.report_id;
- 			address =
-@@ -202,10 +216,12 @@ static int als_capture_sample(struct hid_sensor_hub_device *hsdev,
- 	struct iio_dev *indio_dev = platform_get_drvdata(priv);
- 	struct als_state *als_state = iio_priv(indio_dev);
- 	int ret = -EINVAL;
-+	u32 sample_data = *(u32 *)raw_data;
- 
- 	switch (usage_id) {
- 	case HID_USAGE_SENSOR_LIGHT_ILLUM:
--		als_state->illum = *(u32 *)raw_data;
-+		als_state->illum[CHANNEL_SCAN_INDEX_INTENSITY] = sample_data;
-+		als_state->illum[CHANNEL_SCAN_INDEX_ILLUM] = sample_data;
- 		ret = 0;
- 		break;
- 	default:
-@@ -230,6 +246,8 @@ static int als_parse_report(struct platform_device *pdev,
- 			&st->als_illum);
- 	if (ret < 0)
- 		return ret;
-+	als_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_INTENSITY,
-+				    st->als_illum.size);
- 	als_adjust_channel_bit_mask(channels, CHANNEL_SCAN_INDEX_ILLUM,
- 					st->als_illum.size);
- 
--- 
-2.7.4
+P.S. I really don't like compatibles with "simple".
