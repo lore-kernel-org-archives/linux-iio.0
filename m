@@ -1,62 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-cys01nam02on0068.outbound.protection.outlook.com ([104.47.37.68]:13661
-        "EHLO NAM02-CY1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1752073AbcLSMm6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 19 Dec 2016 07:42:58 -0500
-From: <michael.hennerich@analog.com>
-To: <linux-iio@vger.kernel.org>, <jic23@kernel.org>
-CC: Michael Hennerich <michael.hennerich@analog.com>
-Subject: [PATCH 2/2] iio: dac: ad5593r: Add ACPI support
-Date: Mon, 19 Dec 2016 13:10:39 +0100
-Message-ID: <1482149439-16327-2-git-send-email-michael.hennerich@analog.com>
-In-Reply-To: <1482149439-16327-1-git-send-email-michael.hennerich@analog.com>
-References: <1482149439-16327-1-git-send-email-michael.hennerich@analog.com>
+Received: from mail-wj0-f176.google.com ([209.85.210.176]:32776 "EHLO
+        mail-wj0-f176.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755247AbcLSMw2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Dec 2016 07:52:28 -0500
+Received: by mail-wj0-f176.google.com with SMTP id xy5so148028251wjc.0
+        for <linux-iio@vger.kernel.org>; Mon, 19 Dec 2016 04:52:27 -0800 (PST)
+Date: Mon, 19 Dec 2016 12:55:52 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Rob Herring <robh@kernel.org>
+Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Thierry Reding <thierry.reding@gmail.com>,
+        Linux PWM List <linux-pwm@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+        <linux-arm-kernel@lists.infradead.org>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Gerald Baeza <gerald.baeza@st.com>,
+        Arnaud POULIQUEN <arnaud.pouliquen@st.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        "linaro-kernel@lists.linaro.org" <linaro-kernel@lists.linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: Re: [PATCH v6 3/8] PWM: add pwm-stm32 DT bindings
+Message-ID: <20161219125552.GD23486@dell>
+References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
+ <1481292919-26587-4-git-send-email-benjamin.gaignard@st.com>
+ <20161212190205.b5t3x6i2o7igldlo@rob-hp-laptop>
+ <20161213111137.GW3625@dell.home>
+ <CAL_JsqL8pJSFb8LbABAYJOQ0URaMpyupbFryk_mS2ToN1kStdA@mail.gmail.com>
 MIME-Version: 1.0
-Content-Type: text/plain
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CAL_JsqL8pJSFb8LbABAYJOQ0URaMpyupbFryk_mS2ToN1kStdA@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Michael Hennerich <michael.hennerich@analog.com>
+On Tue, 13 Dec 2016, Rob Herring wrote:
+> On Tue, Dec 13, 2016 at 5:11 AM, Lee Jones <lee.jones@linaro.org> wrote:
+> > On Mon, 12 Dec 2016, Rob Herring wrote:
+> >
+> >> On Fri, Dec 09, 2016 at 03:15:14PM +0100, Benjamin Gaignard wrote:
+> >> > Define bindings for pwm-stm32
+> >> >
+> >> > version 6:
+> >> > - change st,breakinput parameter format to make it usuable on stm32f7 too.
+> >> >
+> >> > version 2:
+> >> > - use parameters instead of compatible of handle the hardware configuration
+> >> >
+> >> > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+> >> > ---
+> >> >  .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 ++++++++++++++++++++++
+> >> >  1 file changed, 33 insertions(+)
+> >> >  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> >> >
+> >> > diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> >> > new file mode 100644
+> >> > index 0000000..866f222
+> >> > --- /dev/null
+> >> > +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+> >> > @@ -0,0 +1,33 @@
+> >> > +STMicroelectronics STM32 Timers PWM bindings
+> >> > +
+> >> > +Must be a sub-node of an STM32 Timers device tree node.
+> >> > +See ../mfd/stm32-timers.txt for details about the parent node.
+> >> > +
+> >> > +Required parameters:
+> >> > +- compatible:              Must be "st,stm32-pwm".
+> >> > +- pinctrl-names:   Set to "default".
+> >> > +- pinctrl-0:               List of phandles pointing to pin configuration nodes for PWM module.
+> >> > +                   For Pinctrl properties see ../pinctrl/pinctrl-bindings.txt
+> >> > +
+> >> > +Optional parameters:
+> >> > +- st,breakinput:   Arrays of three u32 <index level filter> to describe break input configurations.
+> >> > +                   "index" indicates on which break input the configuration should be applied.
+> >> > +                   "level" gives the active level (0=low or 1=high) for this configuration.
+> >> > +                   "filter" gives the filtering value to be applied.
+> >> > +
+> >> > +Example:
+> >> > +   timers@40010000 {
+> >>
+> >> timer@...
+> >
+> > No, it should be timers.
+> 
+> Read the spec. "timer" is a generic node name. "timers" is not. How
+> many is not relevant.
 
-This patch adds the ACPI/PNP ID. The AD5592/3 driver core is already
-designed around the unified device property API.
+It's not the amount of timers that there are, it's the different types
+of timers which this one IP contains.
 
-Signed-off-by: Michael Hennerich <michael.hennerich@analog.com>
----
- drivers/iio/dac/ad5593r.c | 8 ++++++++
- 1 file changed, 8 insertions(+)
+In MFD we usually list the part number or IP name, however in this
+case its difficult because the same IP doesn't have a specific name
+listed, and provides; advanced, general purpose and basic timers, as
+well as PWM functionality.
 
-diff --git a/drivers/iio/dac/ad5593r.c b/drivers/iio/dac/ad5593r.c
-index dca158a..fc11ea0 100644
---- a/drivers/iio/dac/ad5593r.c
-+++ b/drivers/iio/dac/ad5593r.c
-@@ -13,6 +13,7 @@
- #include <linux/i2c.h>
- #include <linux/module.h>
- #include <linux/of.h>
-+#include <linux/acpi.h>
- 
- #define AD5593R_MODE_CONF		(0 << 4)
- #define AD5593R_MODE_DAC_WRITE		(1 << 4)
-@@ -115,10 +116,17 @@ static const struct of_device_id ad5593r_of_match[] = {
- };
- MODULE_DEVICE_TABLE(of, ad5593r_of_match);
- 
-+static const struct acpi_device_id ad5593r_acpi_match[] = {
-+	{"ADS5593", },
-+	{ },
-+};
-+MODULE_DEVICE_TABLE(acpi, ad5593r_acpi_match);
-+
- static struct i2c_driver ad5593r_driver = {
- 	.driver = {
- 		.name = "ad5593r",
- 		.of_match_table = of_match_ptr(ad5593r_of_match),
-+		.acpi_match_table = ACPI_PTR(ad5593r_acpi_match),
- 	},
- 	.probe = ad5593r_i2c_probe,
- 	.remove = ad5593r_i2c_remove,
+This IP is not a timer (although one of its children is one).  It's
+the parent device of many different types of timer.
+
+timer {
+      timer {
+      };
+
+      pwm {
+      };
+};
+
+... looks weird.
+
+"timer" is not right for the parent IP.  Happy for you to provide an
+alternative to "timers" though?
+
+> > The 's' is intentional, since this parent (MFD) device houses 3
+> > different types of timers.  The "timer" node is a child of this one.
+
 -- 
-2.7.4
-
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
