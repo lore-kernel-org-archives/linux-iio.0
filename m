@@ -1,388 +1,408 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.126.130]:50936 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754122AbcLSJ1E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Dec 2016 04:27:04 -0500
-Date: Mon, 19 Dec 2016 10:26:33 +0100
-From: Andreas Klinger <ak@it-klinger.de>
-To: Matt Ranostay <matt.ranostay@konsulko.com>
-Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51623 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751180AbcLSUuD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 19 Dec 2016 15:50:03 -0500
+Subject: Re: [PATCH v3 2/2] iio: adc: hx711: Add IIO driver for AVIA HX711
+To: Andreas Klinger <ak@it-klinger.de>, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org
+References: <20161214161740.GA13896@andreas>
+Cc: linux-kernel@vger.kernel.org, robh+dt@kernel.org,
         pawel.moll@arm.com, mark.rutland@arm.com,
         ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Subject: Re: [PATCH 2/2] iio: adc: hx711: Add IIO driver for AVIA HX711
-Message-ID: <20161219092633.GA6103@andreas>
-References: <20161213180254.GA3185@andreas>
- <CAJCx=g=--vuGHRi1HUjJgzV_Hwj0-6bO+oakCNN_LZQVbwn5_A@mail.gmail.com>
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <8f63c685-ec8a-2aaa-afd8-e944fa69d0b4@kernel.org>
+Date: Mon, 19 Dec 2016 20:49:58 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAJCx=g=--vuGHRi1HUjJgzV_Hwj0-6bO+oakCNN_LZQVbwn5_A@mail.gmail.com>
+In-Reply-To: <20161214161740.GA13896@andreas>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Matt,
+On 14/12/16 16:17, Andreas Klinger wrote:
+> This is the IIO driver for AVIA HX711 ADC which ist mostly used in weighting
+> cells.
+> 
+> The protocol is quite simple and using GPIOs:
+> One GPIO is used as clock (SCK) while another GPIO is read (DOUT)
+Youch. Controlling the next conversion via the number of clocks is hideous!
+Oh well, guess it's one solution that limits the number of wires needed.
 
-thank you for your suggestions. See below.
+Still not as hideous as some ;) (sht15 I'm looking at you :)
 
+Few comments inline.
 
-Matt Ranostay <matt.ranostay@konsulko.com> schrieb am Sat, 17. Dec 00:53:
-> On Tue, Dec 13, 2016 at 10:02 AM, Andreas Klinger <ak@it-klinger.de> wrote:
-> > This is the IIO driver for AVIA HX711 ADC which ist mostly used in weighting
-> > cells.
+Jonathan
+
 > 
-> First off cool that this is finally getting a driver... I'll have to
-> get the SparkFun breakout and really cheap scale to test :).
+> The raw value read from the chip is delivered. 
+> To get a weight one needs to subtract the zero offset and scale it.
 > 
-> >
-> > The protocol is quite simple and using GPIO's:
-> > One GPIO is used as clock (SCK) while another GPIO is read (DOUT)
-> >
-> > Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> > ---
-> >  drivers/iio/adc/Kconfig  |  13 +++
-> >  drivers/iio/adc/Makefile |   1 +
-> >  drivers/iio/adc/hx711.c  | 269 +++++++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 283 insertions(+)
-> >  create mode 100644 drivers/iio/adc/hx711.c
-> >
-> > diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> > index 932de1f9d1e7..7902b50fcf32 100644
-> > --- a/drivers/iio/adc/Kconfig
-> > +++ b/drivers/iio/adc/Kconfig
-> > @@ -205,6 +205,19 @@ config HI8435
-> >           This driver can also be built as a module. If so, the module will be
-> >           called hi8435.
-> >
-> > +config HX711
-> > +       tristate "AVIA HX711 ADC for weight cells"
-> > +       depends on GPIOLIB
-> > +       help
-> > +         If you say yes here you get support for AVIA HX711 ADC which is used
-> > +         for weight cells
-> > +
-> > +         This driver uses two GPIO's, one for setting the clock and the other
-> > +         one for getting the data
-> > +
-> > +         This driver can also be built as a module. If so, the module will be
-> > +         called hx711.
-> > +
-> >  config INA2XX_ADC
-> >         tristate "Texas Instruments INA2xx Power Monitors IIO driver"
-> >         depends on I2C && !SENSORS_INA2XX
-> > diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> > index b1aa456e6af3..d46e289900ef 100644
-> > --- a/drivers/iio/adc/Makefile
-> > +++ b/drivers/iio/adc/Makefile
-> > @@ -21,6 +21,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
-> >  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
-> >  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
-> >  obj-$(CONFIG_HI8435) += hi8435.o
-> > +obj-$(CONFIG_HX711) += hx711.o
-> >  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
-> >  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
-> >  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-> > diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> > new file mode 100644
-> > index 000000000000..cbc89e467985
-> > --- /dev/null
-> > +++ b/drivers/iio/adc/hx711.c
-> > @@ -0,0 +1,269 @@
-> > +/*
-> > + * HX711: analog to digital converter for weight sensor module
-> > + *
-> > + * Copyright (c) Andreas Klinger <ak@it-klinger.de>
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify
-> > + * it under the terms of the GNU General Public License as published by
-> > + * the Free Software Foundation; either version 2 of the License, or
-> > + * (at your option) any later version.
-> > + *
-> > + * This program is distributed in the hope that it will be useful,
-> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> > + * GNU General Public License for more details.
-> > + *
-> > + */
-> > +#include <linux/err.h>
-> > +#include <linux/gpio.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/kernel.h>
-> > +#include <linux/module.h>
-> > +#include <linux/of.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/property.h>
-> > +#include <linux/slab.h>
-> > +#include <linux/sched.h>
-> > +#include <linux/delay.h>
-> > +#include <linux/iio/iio.h>
-> > +
-> > +#define HX711_GAIN_32          2       /* gain = 32 for channel B  */
-> > +#define HX711_GAIN_64          3       /* gain = 64 for channel A  */
-> > +#define HX711_GAIN_128         1       /* gain = 128 for channel A */
-> > +
-> > +
-> > +struct hx711_data {
-> > +       struct device           *dev;
-> > +       dev_t                   devt;
-> > +       struct gpio_desc        *gpiod_sck;
-> > +       struct gpio_desc        *gpiod_dout;
-> > +       int                     gain_pulse;
-> > +       struct mutex            lock;
-> > +};
-> > +
-> > +static void hx711_reset(struct hx711_data *hx711_data)
-> > +{
-> > +       int val;
-> > +       int i;
-> > +
-> > +       val = gpiod_get_value(hx711_data->gpiod_dout);
+> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+> ---
+>  drivers/iio/adc/Kconfig  |  18 +++
+>  drivers/iio/adc/Makefile |   1 +
+>  drivers/iio/adc/hx711.c  | 292 +++++++++++++++++++++++++++++++++++++++++++++++
+>  3 files changed, 311 insertions(+)
+>  create mode 100644 drivers/iio/adc/hx711.c
 > 
-> could move the val assignment here to the initialization don't think
-> it will hit 80 chars
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 932de1f9d1e7..918f582288c9 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -205,6 +205,24 @@ config HI8435
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called hi8435.
+>  
+> +config HX711
+> +	tristate "AVIA HX711 ADC for weight cells"
+> +	depends on GPIOLIB
+> +	help
+> +	  If you say yes here you get support for AVIA HX711 ADC which is used
+> +	  for weight cells
+Typically just called weigh cells rather than weight cells.
+One of those ugly bits of English.
+> +
+> +	  This driver uses two GPIOs, one for setting the clock and the other
+> +	  one for getting the data
+This driver uses two GPIOs, one acts as the clock and controls the channel
+selection and gain, the other is used for the measurement data
+(or something like that).
+> +
+> +	  Currently the raw value is read from the chip and delivered.
+> +	  For getting an actual weight one needs to subtract the
+To get an actual weight...
+> +	  zero offset and multiply by a scale factor.
+> +	  This should be done in userspace.
+> +
+> +	  This driver can also be built as a module. If so, the module will be
+> +	  called hx711.
+> +
+>  config INA2XX_ADC
+>  	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+>  	depends on I2C && !SENSORS_INA2XX
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index b1aa456e6af3..d46e289900ef 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -21,6 +21,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
+>  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_HI8435) += hi8435.o
+> +obj-$(CONFIG_HX711) += hx711.o
+>  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+>  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
+> new file mode 100644
+> index 000000000000..700281932ff0
+> --- /dev/null
+> +++ b/drivers/iio/adc/hx711.c
+> @@ -0,0 +1,292 @@
+> +/*
+> + * HX711: analog to digital converter for weight sensor module
+> + *
+> + * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+> + * GNU General Public License for more details.
+> + *
+No need for this blank line.
+> + */
+> +#include <linux/err.h>
+> +#include <linux/gpio.h>
+> +#include <linux/gpio/consumer.h>
+> +#include <linux/kernel.h>
+> +#include <linux/module.h>
+> +#include <linux/of.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/property.h>
+> +#include <linux/slab.h>
+> +#include <linux/sched.h>
+> +#include <linux/delay.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/sysfs.h>
+> +
+> +#define HX711_GAIN_32		2	/* gain = 32 for channel B  */
+> +#define HX711_GAIN_64		3	/* gain = 64 for channel A  */
+> +#define HX711_GAIN_128		1	/* gain = 128 for channel A */
+> +
+> +struct hx711_data {
+> +	struct device		*dev;
+> +	struct gpio_desc	*gpiod_sck;
+> +	struct gpio_desc	*gpiod_dout;
+> +	int			gain_pulse;
+> +	struct mutex		lock;
+> +};
+> +
+> +static int hx711_reset(struct hx711_data *hx711_data)
+> +{
+> +	int i, val;
+> +
+> +	val = gpiod_get_value(hx711_data->gpiod_dout);
+> +	if (val) {
+> +		gpiod_set_value(hx711_data->gpiod_sck, 1);
+> +		udelay(80);
+a comment here on why 80 would be good (it's bigger than 60?)
+> +		gpiod_set_value(hx711_data->gpiod_sck, 0);
+> +
+> +		for (i = 0; i < 1000; i++) {
+> +			val = gpiod_get_value(hx711_data->gpiod_dout);
+> +			if (!val)
+> +				break;
+> +			/* sleep at least 1 ms */
+> +			msleep(1);
+> +		}
+> +	}
+> +
+> +	return val;
+> +}
+> +
+> +static int hx711_cycle(struct hx711_data *hx711_data)
+> +{
+> +	int val;
+> +
+/*
+ * if pre...
+> +	/* if preempted for more then 60us while SCK is high:
+> +	 * hx711 is going in reset
+> +	 * ==> measuring is false
+> +	 */
+> +	preempt_disable();
+> +	gpiod_set_value(hx711_data->gpiod_sck, 1);
+I'm reading the datasheet as suggesting you need to wait at least 0.1 microsecs
+here...
+> +	val = gpiod_get_value(hx711_data->gpiod_dout);
+> +	gpiod_set_value(hx711_data->gpiod_sck, 0);
+> +	preempt_enable();
+> +
+> +	return val;
+> +}
+> +
+> +static int hx711_read(struct hx711_data *hx711_data)
+> +{
+> +	int i, ret;
+> +	int value = 0;
+> +
+> +	mutex_lock(&hx711_data->lock);
+> +
+> +	if (hx711_reset(hx711_data)) {
+> +		dev_err(hx711_data->dev, "reset failed!");
+> +		mutex_unlock(&hx711_data->lock);
+> +		return -1;
+> +	}
+> +
+> +	for (i = 0; i < 24; i++) {
+> +		value <<= 1;
+> +		ret = hx711_cycle(hx711_data);
+> +		if (ret)
+> +			value++;
+> +	}
+> +
+> +	value ^= 0x800000;
+> +
+> +	for (i = 0; i < hx711_data->gain_pulse; i++)
+> +		ret = hx711_cycle(hx711_data);
+> +
+> +	mutex_unlock(&hx711_data->lock);
+> +
+> +	return value;
+> +}
+> +
+> +static int hx711_read_raw(struct iio_dev *iio_dev,
+> +				const struct iio_chan_spec *chan,
+> +				int *val, int *val2, long mask)
+> +{
+> +	struct hx711_data *hx711_data = iio_priv(iio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		switch (chan->type) {
+> +		case IIO_VOLTAGE:
+> +			*val = hx711_read(hx711_data);
+> +			return IIO_VAL_INT;
+> +		default:
+> +			return -EINVAL;
+> +		}
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static ssize_t hx711_gain_show(struct device *dev,
+> +				struct device_attribute *attr,
+> +				char *buf)
+> +{
+> +	struct hx711_data *hx711_data = iio_priv(dev_to_iio_dev(dev));
+> +	int val;
+> +
+> +	switch (hx711_data->gain_pulse) {
+> +	case HX711_GAIN_32:
+> +		val = 32;
+> +		break;
+> +	case HX711_GAIN_64:
+> +		val = 64;
+> +		break;
+> +	default:
+> +		val = 128;
+> +	}
+> +
+> +	return sprintf(buf, "%d\n", val);
+> +}
+> +
+> +static ssize_t hx711_gain_store(struct device *dev,
+> +				struct device_attribute *attr,
+> +				const char *buf, size_t len)
+> +{
+> +	struct hx711_data *hx711_data = iio_priv(dev_to_iio_dev(dev));
+> +	int ret, val;
+> +	int gain_save = hx711_data->gain_pulse;
+> +
+> +	ret = kstrtoint((const char *) buf, 10, &val);
+> +	if (ret)
+> +		return -EINVAL;
+> +
+> +	switch (val) {
+> +	case 32:
+> +		hx711_data->gain_pulse = HX711_GAIN_32;
+> +		break;
+> +	case 64:
+> +		hx711_data->gain_pulse = HX711_GAIN_64;
+> +		break;
+> +	case 128:
+> +		hx711_data->gain_pulse = HX711_GAIN_128;
+> +		break;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +
+> +	dev_dbg(hx711_data->dev, "gain_pulse: %d\n", hx711_data->gain_pulse);
+> +
+> +	/* if gain has changed do a fake read for the new gain to be set
+> +	 *   for the next read
+> +	 */
+> +	if (gain_save != hx711_data->gain_pulse)
+> +		hx711_read(hx711_data);
+> +
+> +	return len;
+> +}
+> +
+> +static IIO_DEVICE_ATTR(gain, S_IRUGO | S_IWUSR,
+> +	hx711_gain_show, hx711_gain_store, 0);
+> +
+> +static struct attribute *hx711_attributes[] = {
+> +	&iio_dev_attr_gain.dev_attr.attr,
+> +	NULL,
+> +};
+> +
+As Lars suggested, please use standard ABI (easier if you use the info_mask
+elements and do it through read raw...
+> +static struct attribute_group hx711_attribute_group = {
+> +	.attrs = hx711_attributes,
+> +};
+> +
+> +static const struct iio_info hx711_iio_info = {
+> +	.driver_module		= THIS_MODULE,
+> +	.read_raw		= hx711_read_raw,
+> +	.attrs			= &hx711_attribute_group,
+> +};
+> +
+> +static const struct iio_chan_spec hx711_chan_spec[] = {
+> +	{
+new line here is slightly nicer to read.
+>.type = IIO_VOLTAGE,
+> +		.info_mask_separate =
+> +			BIT(IIO_CHAN_INFO_RAW),
+> +	},
+> +};
+> +
+> +static int hx711_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct hx711_data *hx711_data = NULL;
+> +	struct iio_dev *iio;
+> +	int ret = 0;
+> +
+> +	iio = devm_iio_device_alloc(dev, sizeof(struct hx711_data));
+> +	if (!iio) {
+> +		dev_err(dev, "failed to allocate IIO device\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	hx711_data = iio_priv(iio);
+> +	hx711_data->dev = dev;
+> +
+> +	mutex_init(&hx711_data->lock);
+> +
+> +	hx711_data->gpiod_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_HIGH);
+> +	if (IS_ERR(hx711_data->gpiod_sck)) {
+> +		dev_err(dev, "failed to get sck-gpiod: err=%ld\n",
+> +					PTR_ERR(hx711_data->gpiod_sck));
+> +		return PTR_ERR(hx711_data->gpiod_sck);
+> +	}
+> +
+> +	hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_OUT_HIGH);
+If there is a reason for getting an input as an output then it wants a comment!
+> +	if (IS_ERR(hx711_data->gpiod_dout)) {
+> +		dev_err(dev, "failed to get dout-gpiod: err=%ld\n",
+> +					PTR_ERR(hx711_data->gpiod_dout));
+> +		return PTR_ERR(hx711_data->gpiod_dout);
+> +	}
+> +
+> +	ret = gpiod_direction_input(hx711_data->gpiod_dout);
+> +	if (ret < 0) {
+> +		dev_err(hx711_data->dev, "gpiod_direction_input: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	ret = gpiod_direction_output(hx711_data->gpiod_sck, 0);
+Doesn't the flag above already mean we are in output mode for this pin?
+> +	if (ret < 0) {
+> +		dev_err(hx711_data->dev, "gpiod_direction_output: %d\n", ret);
+> +		return ret;
+> +	}
+> +
+> +	platform_set_drvdata(pdev, iio);
+> +
+> +	iio->name = pdev->name;
+> +	iio->dev.parent = &pdev->dev;
+> +	iio->info = &hx711_iio_info;
+> +	iio->modes = INDIO_DIRECT_MODE;
+> +	iio->channels = hx711_chan_spec;
+> +	iio->num_channels = ARRAY_SIZE(hx711_chan_spec);
+> +
+> +	return devm_iio_device_register(dev, iio);
+> +}
+> +
+> +static const struct of_device_id of_hx711_match[] = {
+> +	{ .compatible = "avia,hx711", },
+> +	{},
+> +};
+> +
+> +MODULE_DEVICE_TABLE(of, of_hx711_match);
+> +
+> +static struct platform_driver hx711_driver = {
+> +	.probe		= hx711_probe,
+> +	.driver		= {
+> +		.name		= "hx711-gpio",
+> +		.of_match_table	= of_hx711_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(hx711_driver);
+> +
+> +MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
+> +MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
+> +MODULE_LICENSE("GPL");
+> +MODULE_ALIAS("platform:hx711-gpio");
+> +
 > 
 
-I'll change this.
-
-> > +       if (val) {
-> 
-> move "int i" here to avoid compiler initialization warnings
-> 
-> > +               dev_warn(hx711_data->dev, "RESET-HX711\n");
-> > +
-> > +               gpiod_set_value(hx711_data->gpiod_sck, 1);
-> > +               udelay(80);
-> 
-> IIRC this chip has quite a bit of latency thresholds, can't use
-> usleep_range? Single core embedded systems could have an issue with
-> continuous  polling.
->
-
-That's a good suggestion. We don't need udelay so i'll change to usleep_range
-for the next version
-
-> > +               gpiod_set_value(hx711_data->gpiod_sck, 0);
-> > +
-> > +               for (i = 0; i < 1000; i++) {
-> > +                       val = gpiod_get_value(hx711_data->gpiod_dout);
-> > +                       if (!val)
-> > +                               break;
-> > +                       /* sleep at least 1 ms*/
-> > +                       msleep(1);
-> > +               }
-> > +       }
-> > +}
-> > +
-> > +static int hx711_cycle(struct hx711_data *hx711_data)
-> > +{
-> > +       int val;
-> > +
-> > +       /* if preempted for more then 60us while SCK is high:
-> > +        * hx711 is going in reset
-> > +        * ==> measuring is false
-> > +        */
-> > +       preempt_disable();
-> > +       gpiod_set_value(hx711_data->gpiod_sck, 1);
-> > +       val = gpiod_get_value(hx711_data->gpiod_dout);
-> > +       gpiod_set_value(hx711_data->gpiod_sck, 0);
-> > +       preempt_enable();
-> > +
-> > +       return val;
-> > +}
-> > +
-> > +static unsigned int hx711_read(struct hx711_data *hx711_data)
-> > +{
-> > +       int i;
-> > +       int ret;
-> > +       int wert = 0;
-> > +
-> > +       hx711_reset(hx711_data);
-> > +
-> > +       for (i = 0; i < 24; i++) {
-> > +               wert <<= 1;
-> > +               ret = hx711_cycle(hx711_data);
-> > +               if (ret)
-> > +                       wert++;
-> > +       }
-> > +
-> > +       wert ^= 0x800000;
-> > +
-> > +       for (i = 0; i < hx711_data->gain_pulse; i++)
-> > +               ret = hx711_cycle(hx711_data);
-> 
-> What is ret used for here?
-> > +
-> > +       return wert;
-> > +}
-> > +
-> > +
-> > +static int hx711_read_raw(struct iio_dev *iio_dev,
-> > +                               const struct iio_chan_spec *chan,
-> > +                               int *val, int *val2, long mask)
-> > +{
-> > +       struct hx711_data *hx711_data = iio_priv(iio_dev);
-> > +       int ret;
-> > +
-> > +       switch (mask) {
-> > +       case IIO_CHAN_INFO_RAW:
-> > +               switch (chan->type) {
-> > +               case IIO_VOLTAGE:
-> > +                       mutex_lock(&hx711_data->lock);
-> > +                       *val = (int)hx711_read(hx711_data);
-> > +                       mutex_unlock(&hx711_data->lock);
-> > +                       ret = IIO_VAL_INT;
-> > +                       break;
-> > +               default:
-> > +                       return -EINVAL;
-> > +               }
-> > +               return ret;
-> > +       default:
-> > +               return -EINVAL;
-> > +       }
-> > +
-> > +       return ret;
-> > +}
-> > +
-> > +static const struct iio_info hx711_iio_info = {
-> > +       .driver_module          = THIS_MODULE,
-> > +       .read_raw               = hx711_read_raw,
-> > +};
-> > +
-> > +static const struct iio_chan_spec hx711_chan_spec[] = {
-> > +       { .type = IIO_VOLTAGE,
-> > +               .channel = 0,
-> > +               .info_mask_separate =
-> > +                       BIT(IIO_CHAN_INFO_RAW),
-> > +               .scan_type = {
-> > +                       .sign = 'u',
-> > +                       .realbits = 24,
-> > +                       .storagebits = 32,
-> > +                       .shift = 0,
-> > +               }
-> > +       },
-> > +};
-> > +
-> > +static int hx711_probe(struct platform_device *pdev)
-> > +{
-> > +       struct device *dev = &pdev->dev;
-> > +       struct device_node *node = dev->of_node;
-> > +       struct hx711_data *hx711_data = NULL;
-> > +       struct iio_dev *iio;
-> > +       int ret = 0, ival;
-> > +
-> > +       iio = devm_iio_device_alloc(dev, sizeof(struct hx711_data));
-> > +       if (!iio) {
-> > +               dev_err(dev, "failed to allocate IIO device\n");
-> > +               return -ENOMEM;
-> > +       }
-> > +
-> > +       hx711_data = iio_priv(iio);
-> > +       hx711_data->dev = dev;
-> > +
-> > +       mutex_init(&hx711_data->lock);
-> > +
-> > +       hx711_data->gpiod_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_HIGH);
-> > +       if (IS_ERR(hx711_data->gpiod_sck)) {
-> > +               ret = PTR_ERR(hx711_data->gpiod_sck);
-> > +               goto err;
-> > +       }
-> > +
-> > +       hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_OUT_HIGH);
-> > +       if (IS_ERR(hx711_data->gpiod_dout)) {
-> > +               ret = PTR_ERR(hx711_data->gpiod_dout);
-> > +               goto err;
-> > +       }
-> > +
-> > +       ret = of_property_read_u32 (node, "gain", &ival);
-> > +       if (!ret) {
-> > +               switch (ival) {
-> > +               case 32:
-> > +                       hx711_data->gain_pulse = HX711_GAIN_32;
-> > +                       break;
-> > +               case 64:
-> > +                       hx711_data->gain_pulse = HX711_GAIN_64;
-> > +                       break;
-> > +               case 128:
-> > +                       hx711_data->gain_pulse = HX711_GAIN_128;
-> > +                       break;
-> > +               default:
-> > +                       hx711_data->gain_pulse = HX711_GAIN_128;
-> > +               }
-> > +       } else
-> > +               hx711_data->gain_pulse = HX711_GAIN_128;
-> > +       dev_dbg(hx711_data->dev, "gain: %d\n", hx711_data->gain_pulse);
-> > +
-> > +       ret = gpiod_direction_input(hx711_data->gpiod_dout);
-> > +       if (ret < 0) {
-> > +               dev_err(hx711_data->dev, "gpiod_direction_input: %d\n", ret);
-> > +               goto err;
-> > +       }
-> > +
-> > +       ret = gpiod_direction_output(hx711_data->gpiod_sck, 0);
-> > +       if (ret < 0) {
-> > +               dev_err(hx711_data->dev, "gpiod_direction_output: %d\n", ret);
-> > +               goto err;
-> > +       }
-> > +
-> > +       platform_set_drvdata(pdev, iio);
-> > +
-> > +       iio->name = pdev->name;
-> > +       iio->dev.parent = &pdev->dev;
-> > +       iio->info = &hx711_iio_info;
-> > +       iio->modes = INDIO_DIRECT_MODE;
-> > +       iio->channels = hx711_chan_spec;
-> > +       iio->num_channels = ARRAY_SIZE(hx711_chan_spec);
-> > +
-> > +       dev_err(hx711_data->dev, "initialized\n");
-> > +
-> > +       return devm_iio_device_register(dev, iio);
-> > +
-> > +err:
-> > +       return ret;
-> > +}
-> > +
-> > +
-> > +static int hx711_suspend(struct device *dev)
-> > +{
-> > +       return 0;
-> > +}
-> > +
-> > +static int hx711_resume(struct device *dev)
-> > +{
-> > +       return 0;
-> > +}
-> > +
-> > +static SIMPLE_DEV_PM_OPS(hx711_pm_ops, hx711_suspend, hx711_resume);
-> > +
-> > +
-> > +static const struct of_device_id of_hx711_match[] = {
-> > +       { .compatible = "avia,hx711", },
-> > +       {},
-> > +};
-> > +
-> > +MODULE_DEVICE_TABLE(of, of_hx711_match);
-> > +
-> > +static struct platform_driver hx711_driver = {
-> > +       .probe          = hx711_probe,
-> > +       .driver         = {
-> > +               .name           = "hx711-gpio",
-> > +               .pm             = &hx711_pm_ops,
-> > +               .of_match_table = of_hx711_match,
-> > +       },
-> > +};
-> > +
-> > +module_platform_driver(hx711_driver);
-> > +
-> > +MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-> > +MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
-> > +MODULE_LICENSE("GPL");
-> > +MODULE_ALIAS("platform:hx711-gpio");
-> > +
-> > --
-> > 2.1.4
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
