@@ -1,170 +1,256 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:53673 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752747AbcLUJJW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Dec 2016 04:09:22 -0500
-Date: Wed, 21 Dec 2016 10:09:09 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, lee.jones@linaro.org, linux@armlinux.org.uk,
-        stefan.mavrodiev@gmail.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@free-electrons.com
-Subject: Re: [PATCH 3/7] iio: adc: sun4i-gpadc-iio: add support for A33
- thermal sensor
-Message-ID: <20161221090909.e34jdythb4rsdu57@lukather>
-References: <20161220102709.9504-1-quentin.schulz@free-electrons.com>
- <20161220102709.9504-4-quentin.schulz@free-electrons.com>
- <20161220144434.2u6ivige6kdto6an@lukather>
- <b668c7f1-99ac-f2ba-eaab-f3c0f9e1cfb2@free-electrons.com>
+Received: from mout.kundenserver.de ([217.72.192.74]:51482 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753826AbcLTKa5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 20 Dec 2016 05:30:57 -0500
+Date: Tue, 20 Dec 2016 11:33:47 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org, robh+dt@kernel.org,
+        pawel.moll@arm.com, mark.rutland@arm.com,
+        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+        jic23@kernel.org, knaack.h@gmx.de, pmeerw@pmeerw.net
+Subject: Re: [PATCH v3 2/2] iio: adc: hx711: Add IIO driver for AVIA HX711
+Message-ID: <20161220103346.GA1318@imap.1und1.de>
+References: <20161214161740.GA13896@andreas>
+ <78dfc4c0-f792-12b4-ca07-0242e95f7ee5@metafoo.de>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="sxgan5ms4fxhl5oy"
-In-Reply-To: <b668c7f1-99ac-f2ba-eaab-f3c0f9e1cfb2@free-electrons.com>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <78dfc4c0-f792-12b4-ca07-0242e95f7ee5@metafoo.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hello Lars,
 
---sxgan5ms4fxhl5oy
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+thank you for the thorough review.
 
-Hi,
+I have some questions. See below.
 
-On Tue, Dec 20, 2016 at 04:20:04PM +0100, Quentin Schulz wrote:
-> >> +	select MFD_SUN4I_GPADC if MACH_SUN4I || MACH_SUN5I || MACH_SUN6I
-> >=20
-> > Why did you change the depends on to a select?
-> >=20
->=20
-> The "depends on" does not have an if condition but "select" has. See:
-> https://www.kernel.org/doc/Documentation/kbuild/kconfig-language.txt
+Thanks,
 
-I think something like that should work:
+Andreas
 
-depends on (MFD_SUN4I_GPADC && MACH_SUN4I) || MACH_SUN8I
 
-> >> +	depends on THERMAL_OF || MACH_SUN4I || MACH_SUN5I || MACH_SUN6I
-> >=20
-> > So you can't disable THERMAL_OF on MACH_SUN8I?
-> >=20
->=20
-> Not in the current state. devm_thermal_zone_of_sensor_register from
-> sun4i_gpadc_probe_dt returns an error if THERMAL_OF is disabled and
-> thus, the probe fails. Maybe it should rather fail silently and let the
-> user choose whether (s)he wants the thermal framework to be able to read
-> data from this driver?
+Lars-Peter Clausen <lars@metafoo.de> schrieb am Mon, 19. Dec 17:28:
+> On 12/14/2016 05:17 PM, Andreas Klinger wrote:
+> [...]
+> > +#include <linux/err.h>
+> > +#include <linux/gpio.h>
+> 
+> Since you used the consumer API linux/gpio.h is not needed.
+> 
+> > +#include <linux/gpio/consumer.h>
+> > +#include <linux/kernel.h>
+> > +#include <linux/module.h>
+> > +#include <linux/of.h>
+> > +#include <linux/platform_device.h>
+> > +#include <linux/property.h>
+> > +#include <linux/slab.h>
+> > +#include <linux/sched.h>
+> > +#include <linux/delay.h>
+> > +#include <linux/iio/iio.h>
+> > +#include <linux/iio/sysfs.h>
+> > +
+> > +#define HX711_GAIN_32		2	/* gain = 32 for channel B  */
+> > +#define HX711_GAIN_64		3	/* gain = 64 for channel A  */
+> > +#define HX711_GAIN_128		1	/* gain = 128 for channel A */
+> > +
+> > +struct hx711_data {
+> > +	struct device		*dev;
+> > +	struct gpio_desc	*gpiod_sck;
+> > +	struct gpio_desc	*gpiod_dout;
+> > +	int			gain_pulse;
+> > +	struct mutex		lock;
+> > +};
+> > +
+> > +static int hx711_read(struct hx711_data *hx711_data)
+> > +{
+> > +	int i, ret;
+> > +	int value = 0;
+> > +
+> > +	mutex_lock(&hx711_data->lock);
+> > +
+> > +	if (hx711_reset(hx711_data)) {
+> 
+> If you reset the device before each conversion wont this clear the channel
+> and gain selection? Wouldn't the driver always read from channel A at 128
+> gain regardless of what has been selected?
+>
 
-I'm usually not a big fan of inconsistencies in the behaviour of
-drivers, but let's wait for the second version to discuss that.
+This is a bug, i need to fix. Thank you.
 
-> >> +	depends on !TOUCHSCREEN_SUN4I
-> >=20
-> > This should be a different patch.
-> >=20
-> >> +	help
-> >> +	  Say yes here to build support for Allwinner (A10, A13, A31 and A33)
-> >> +	  SoCs GPADC.
-> >> +
-> >> +	  The ADC on A10, A13 and A31 provides 4 channels which can be used =
-as
-> >> +	  an ADC or as a touchscreen input and one channel for thermal senso=
-r.
-> >> +	  Their thermal sensor slows down ADC readings and can be disabled by
-> >=20
-> > Again, I'm not sure putting all those details in the Kconfig help
-> > really helps. This is only going to grow with more and more cases, and
-> > this isn't something really helpful anyway.
-> >=20
->=20
-> Are you suggesting to remove completely the paragraph on why it is
-> possible to disable CONFIG_THERMAL_OF for the A10, A13 and A31 or only
-> to remove the mention to SoCs?
+> > +		dev_err(hx711_data->dev, "reset failed!");
+> > +		mutex_unlock(&hx711_data->lock);
+> > +		return -1;
+> 
+> If there is an error it should be propagated to the higher layers. At the
+> moment you only return a bogus conversion value.
+> 
+> > +	}
+> > +
+> > +	for (i = 0; i < 24; i++) {
+> > +		value <<= 1;
+> > +		ret = hx711_cycle(hx711_data);
+> > +		if (ret)
+> > +			value++;
+> > +	}
+> > +
+> > +	value ^= 0x800000;
+> > +
+> > +	for (i = 0; i < hx711_data->gain_pulse; i++)
+> > +		ret = hx711_cycle(hx711_data);
+> > +
+> > +	mutex_unlock(&hx711_data->lock);
+> > +
+> > +	return value;
+> > +}
+> > +
+> > +static int hx711_read_raw(struct iio_dev *iio_dev,
+> > +				const struct iio_chan_spec *chan,
+> > +				int *val, int *val2, long mask)
+> > +{
+> > +	struct hx711_data *hx711_data = iio_priv(iio_dev);
+> > +
+> > +	switch (mask) {
+> > +	case IIO_CHAN_INFO_RAW:
+> > +		switch (chan->type) {
+> > +		case IIO_VOLTAGE:
+> > +			*val = hx711_read(hx711_data);
+> > +			return IIO_VAL_INT;
+> > +		default:
+> > +			return -EINVAL;
+> > +		}
+> > +	default:
+> > +		return -EINVAL;
+> > +	}
+> > +}
+> [...]
+> > +static struct attribute *hx711_attributes[] = {
+> > +	&iio_dev_attr_gain.dev_attr.attr,
+> 
+> For IIO devices the gain is typically expressed through the scale attribute.
+> Which is kind of the inverse of gain. It would be good if this driver
+> follows this standard notation. The scale is the value of 1LSB in mV. So
+> this includes the resolution of the ADC, the reference voltage and any gain
+> that is applied to the input signal.
+> 
+> The possible values can be listed in the scale_available attribute.
+> 
 
-Both actually :)
+The reference voltage is in the hardware. 
+Should i use a DT entry for the reference voltage? 
+Or is it better to use a buildin scale and make it changeable?
 
-> >> @@ -246,6 +269,19 @@ static int sun4i_gpadc_adc_read(struct iio_dev *i=
-ndio_dev, int channel,
-> >>  static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int *val)
-> >>  {
-> >>  	struct sun4i_gpadc_iio *info =3D iio_priv(indio_dev);
-> >> +	int ret;
-> >> +
-> >> +	if (info->use_dt) {
-> >> +		pm_runtime_get_sync(indio_dev->dev.parent);
-> >> +
-> >> +		ret =3D regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA, val);
-> >> +		if (!ret)
-> >> +			pm_runtime_mark_last_busy(indio_dev->dev.parent);
-> >> +
-> >> +		pm_runtime_put_autosuspend(indio_dev->dev.parent);
-> >> +
-> >> +		return 0;
-> >> +	}
-> >=20
-> > Why is runtime_pm linked to the DT support or not?
-> >=20
-> >> =20
-> >>  	return sun4i_gpadc_read(indio_dev, 0, val, info->temp_data_irq);
-> >>  }
->=20
-> The same runtime_pm functions are called when the driver is not probed
-> from DT.
->=20
-> sun4i_gpadc_read will call sun4i_prepare_for_irq which does a
-> pm_runtime_get_sync and then at the end of sun4i_gpadc_read,
-> pm_runtime_mark_last_busy and pm_runtime_put_autosuspend are called.
->=20
-> I just noticed I forgot to add a comment on this one. The A33
-> documentation tells us there is an interrupt for the thermal sensor but
-> after struggling with it, it is just false. I validated my guess with
-> Allwinner Linux kernel which does not wait an interrupt to read the data
-> register of the thermal sensor.
->=20
-> sun4i_gpadc_read always wait for an interrupt before reading data regs,
-> so I'm just not calling it and doing the "logic" (reading the data reg
-> and interfacing with runtime_pm) directly here in sun4i_gpadc_temp.
->=20
-> I'll add a comment on this one. Maybe I should create a function just
-> for the "logic" of the A33 thermal sensor, so it is less weird than
-> currently.
 
-Ok. So this is not really about using the DT or not, but rather
-whether you're on an A33 or not. You could probably add a broken_irq
-field to test against that.
+> > +	NULL,
+> > +};
+> > +
+> > +static struct attribute_group hx711_attribute_group = {
+> > +	.attrs = hx711_attributes,
+> > +};
+> > +
+> > +static const struct iio_info hx711_iio_info = {
+> > +	.driver_module		= THIS_MODULE,
+> > +	.read_raw		= hx711_read_raw,
+> > +	.attrs			= &hx711_attribute_group,
+> > +};
+> > +
+> > +static const struct iio_chan_spec hx711_chan_spec[] = {
+> > +	{ .type = IIO_VOLTAGE,
+> > +		.info_mask_separate =
+> > +			BIT(IIO_CHAN_INFO_RAW),
+> 
+> Given that there are two separate physical input channels this should be
+> expressed here and there should be two IIO channels for the device.
+> 
 
-You should probably share the pm_runtim calls too between the two
-cases.
+One who is toggling between channel A and B will cause a dummy read
+additional to every normal read. 
 
-Thanks!
-Maxime
+Should i offer a "toggling mode" which means that after reading
+channel A the channel B is selected for the next read and after
+reading channel B channel A is selected? Simply expecting the channel
+is toggled on every read. If it's not toggled there need to be a dummy 
+read, of course. This should be an attribute, right?
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
 
---sxgan5ms4fxhl5oy
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYWkawAAoJEBx+YmzsjxAgix4P/2v/Oqpy3rF9Vs723MInJy2Z
-9gqdkfs/RRg0raDg/8ajT4+yhaTm4lF8BD6KTebdhjs36FjVNRYd6+0LYoui6Ujn
-K8VwEo7ECMhFo+owC1bIE9sxfIbCxMQ9kXi/Qcr2HCEyufz0efAq4y0hT1Esx5MV
-o74d9I2e4rZUTQyyaV3l3uAxsoVfgU0+oQO+Io0yPFwAqvLS2sKwnY4IJINXDans
-kr+/IFmih0f3t8PTlruimeK4hG4Q9fteQq7v2351DYWpBgV+rSgELYjp14dDw1RQ
-M4YUrnkNRNSGwUjVpgMqvoJKI/bFj1dA+mv6V9NJLOvUO+Y4/UCvvwD2H9rvEv/X
-sO8+YDNRk/NMIKb2lTYy0K5Uz6+nexwWw6ppQyCmvBzspr/UWHsMdHP82rxKm0Kz
-asD/9Pozt/PIR6qZ7aqM3VqLBNb6zdkD3gajo0/1HBFjYHrGHR3v8LZdWQ2K6+BR
-9a4iSgN1DC18Zcf7hi6Kh5GDbVbwxt0h0cEr74PDJUxkbSD2mZPlmSpBjWOLzA6K
-EkQGil4dEAkohhvFG7eSxHD80hqzIlCKRdTWZCkdHiKALCUXsQXKkOPFtpP6vU9i
-hDqmcGmEUO7+wj1AtZ4e6tIWOCKPv6D4Sq8jmgJYs1VD7psxMCTkAhFy9+CAnQP0
-cRwLWtzCcYpMurS+r3YA
-=e+BC
------END PGP SIGNATURE-----
-
---sxgan5ms4fxhl5oy--
+> > +	},
+> > +};
+> > +
+> > +static int hx711_probe(struct platform_device *pdev)
+> > +{
+> > +	struct device *dev = &pdev->dev;
+> > +	struct hx711_data *hx711_data = NULL;
+> 
+> The = NULL is not needed as it is overwritten a few lines below.
+> 
+> > +	struct iio_dev *iio;
+> > +	int ret = 0;
+> 
+> Again = 0 no needed.
+> 
+> > +
+> > +	iio = devm_iio_device_alloc(dev, sizeof(struct hx711_data));
+> > +	if (!iio) {
+> > +		dev_err(dev, "failed to allocate IIO device\n");
+> > +		return -ENOMEM;
+> > +	}
+> > +
+> > +	hx711_data = iio_priv(iio);
+> > +	hx711_data->dev = dev;
+> > +
+> > +	mutex_init(&hx711_data->lock);
+> > +
+> > +	hx711_data->gpiod_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_HIGH);
+> > +	if (IS_ERR(hx711_data->gpiod_sck)) {
+> > +		dev_err(dev, "failed to get sck-gpiod: err=%ld\n",
+> > +					PTR_ERR(hx711_data->gpiod_sck));
+> > +		return PTR_ERR(hx711_data->gpiod_sck);
+> > +	}
+> > +
+> > +	hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_OUT_HIGH);
+> > +	if (IS_ERR(hx711_data->gpiod_dout)) {
+> > +		dev_err(dev, "failed to get dout-gpiod: err=%ld\n",
+> > +					PTR_ERR(hx711_data->gpiod_dout));
+> > +		return PTR_ERR(hx711_data->gpiod_dout);
+> > +	}
+> > +
+> > +	ret = gpiod_direction_input(hx711_data->gpiod_dout);
+> 
+> If dout is used as a input GPIO you should request it with GPIOD_IN. In that
+> case you can remove the gpiod_direction_input() call.
+> 
+> > +	if (ret < 0) {
+> > +		dev_err(hx711_data->dev, "gpiod_direction_input: %d\n", ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	ret = gpiod_direction_output(hx711_data->gpiod_sck, 0);
+> 
+> Similar to above. If you want this to be a output GPIO with the default
+> value of 0 request it with GPIOD_OUT_LOW.
+> 
+> > +	if (ret < 0) {
+> > +		dev_err(hx711_data->dev, "gpiod_direction_output: %d\n", ret);
+> > +		return ret;
+> > +	}
+> > +
+> > +	platform_set_drvdata(pdev, iio);
+> 
+> There is no matching platform_get_drvdata() so this can probably be removed.
+> 
+> > +
+> > +	iio->name = pdev->name;
+> 
+> This should be the part name. E.g. "hx711" in this case.
+> 
+> > +	iio->dev.parent = &pdev->dev;
+> > +	iio->info = &hx711_iio_info;
+> > +	iio->modes = INDIO_DIRECT_MODE;
+> > +	iio->channels = hx711_chan_spec;
+> > +	iio->num_channels = ARRAY_SIZE(hx711_chan_spec);
+> > +
+> > +	return devm_iio_device_register(dev, iio);
+> > +}
+> 
