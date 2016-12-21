@@ -1,55 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:34032 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S932609AbcLTQaX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 20 Dec 2016 11:30:23 -0500
-Date: Tue, 20 Dec 2016 17:30:21 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Matthias Klumpp <matthias@tenstral.net>
-cc: linux-iio@vger.kernel.org
-Subject: Re: Problems with using IIO buffers
-In-Reply-To: <CAKNHny_yV-FV9smGfrX2wR-T7M5uCk9WWG4xNGBMXrAuwVy2ZA@mail.gmail.com>
-Message-ID: <alpine.DEB.2.02.1612201720550.9386@pmeerw.net>
-References: <CAKNHny-B-tyZ3GszV-DLxRKzhhCuqELUc6MsiPs=76GYghO58g@mail.gmail.com> <alpine.DEB.2.02.1612201144140.4422@pmeerw.net> <CAKNHny_yV-FV9smGfrX2wR-T7M5uCk9WWG4xNGBMXrAuwVy2ZA@mail.gmail.com>
+Received: from mail.free-electrons.com ([62.4.15.54]:58207 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S934085AbcLUMUW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Dec 2016 07:20:22 -0500
+Date: Wed, 21 Dec 2016 13:20:09 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        wens@csie.org, lee.jones@linaro.org, linux@armlinux.org.uk,
+        stefan.mavrodiev@gmail.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, thomas.petazzoni@free-electrons.com
+Subject: Re: [PATCH 1/7] Documentation: DT: bindings: iio: adc: add
+ documentation for Allwinner SoCs' GPADC driver
+Message-ID: <20161221122009.2gcidvhnmomsiagc@lukather>
+References: <20161220102709.9504-1-quentin.schulz@free-electrons.com>
+ <20161220102709.9504-2-quentin.schulz@free-electrons.com>
+ <20161220142554.rcocnculfehiwhpn@lukather>
+ <61dc140a-5ef1-f55d-e749-cb816a014705@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="wkx6ljrqmdcah546"
+In-Reply-To: <61dc140a-5ef1-f55d-e749-cb816a014705@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello,
 
-> >> I am having troubles getting buffers to work with IIO. Querying raw
-> >> data from devices works well via sysfs, but buffered input from ADCs
-> >> does not work.
-> >
-> > how do you setup the buffer from userspace? see e.g.
-> > http://events.linuxfoundation.org/sites/events/files/slides/lceu15_baluta.pdf,
-> > page 21
-> 
-> I used what iio_readdev does, but setting up the buffer manually on
-> sysfs (using a sysfs trigger as current_trigger), I get
-> "echo: write error: Invalid argument" when trying to enable the buffer
-> (writing 1 to buffer/enable).
-> 
-> I tried this on the iio_dummy module, enabling the in_voltage0 channel.
+--wkx6ljrqmdcah546
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-this is what I use (Ubuntu, Linux 4.4) and it works; maybe the trigger 
-name you use is incorrect?
+Hi,
 
-modprobe iio_trig_sysfs
-modprobe iio_dummy (make sure CONFIG_IIO_SIMPLE_DUMMY_BUFFER is #defined)
-cd /sys/bus/iio/devices/iio_sysfs_trigger
-echo 123 > add_trigger
-cd /sys/bus/iio/devices/trigger0
-cat name # should give sysfstrig123
-cd /sys/bus/iio/devices/iio:device0
-echo sysfstrig123 > trigger/current_trigger
-echo 1 > scan_elements/in_voltage0_en
-echo 1 > buffer/enable
+On Tue, Dec 20, 2016 at 04:43:58PM +0100, Quentin Schulz wrote:
+> >> +
+> >> +Optional properties:
+> >> +(for use with thermal framework for CPU thermal throttling for exampl=
+e, and/or
+> >> + IIO consumers)
+> >> + - #thermal-sensor-cells =3D <0>; (see
+> >> +Documentation/devicetree/bindings/thermal/thermal.txt)
+> >> + - #io-channel-cells =3D <0>; (see
+> >> +Documentation/devicetree/bindings/iio/iio-bindings.txt)
+> >=20
+> > I wouldn't list that as optional.
+>=20
+> In what sense? Do you mean you wouldn't put them here at all or you
+> would require them?
 
-regards, p.
+I would require them.
 
--- 
+Maxime
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+--=20
+Maxime Ripard, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
+
+--wkx6ljrqmdcah546
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYWnN1AAoJEBx+YmzsjxAgxloP/3SLcMQYmhgpvsPH/8Ec47ry
+gc3WnVanuSAdN6Bl/ul9tYFiRivRAOGL5ablSPquMfGXCiLO+L1Euy/mGvDQ1Ryc
+RgG+Djl1w5783nQBPFmnywg/w1ah60+LKi5uiJTJ+jFKvHmZTVHhLk92oLAnAItA
+ircElhr1Xr0+0R/njW1HRWy3cXHXPOApGghao1lsGcVrUkJTEJqfIhy3ERG/BoQk
+dOF+z5QXicaC0lXGd8ginsXGE1/Uo3svPR5F9Aa+55IVk8+r1RcpJPLYR7JstA9d
+1o2kgGU2yddWzL0/lQ5U5PESUWRuXhytCcCjM2xO7PznZN5zpB5prro2QvilYWzh
+5YHAn7STCZtft1W/F50+zA1DeNSGtbgIPRnILF5Mk2czE/713WBTR7He5u8Q7oYz
+jV/jbWiygcq56ISpJFcSnxKF0j9aLgbZB/VY5udcXD0GT0KAo/4sFFipV7rGqLWw
+ASUCUyQ/s9JgYiip0dQ+JqknsdZT8/SDfUtHrO+C/1PM3oBeJw8/M8PajKiBxMR6
+h3yRPrhlBuMOOmQk0xaVJ57hQO7jsUG+bkRbGXodx2JBcBdSYfz+/SIfrUPAXG+o
+yFtdntczufEaiPCFvRhdHqWrP8Ci5Rfqe9/ZgrCv4U3g2DutfgTMUvu3FZDo6YLD
+rt5cqfqe5Z+bzUCm6gpQ
+=6z6F
+-----END PGP SIGNATURE-----
+
+--wkx6ljrqmdcah546--
