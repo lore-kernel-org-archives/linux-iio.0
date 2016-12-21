@@ -1,82 +1,127 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:58207 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934085AbcLUMUW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Dec 2016 07:20:22 -0500
-Date: Wed, 21 Dec 2016 13:20:09 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, lee.jones@linaro.org, linux@armlinux.org.uk,
-        stefan.mavrodiev@gmail.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, thomas.petazzoni@free-electrons.com
-Subject: Re: [PATCH 1/7] Documentation: DT: bindings: iio: adc: add
- documentation for Allwinner SoCs' GPADC driver
-Message-ID: <20161221122009.2gcidvhnmomsiagc@lukather>
-References: <20161220102709.9504-1-quentin.schulz@free-electrons.com>
- <20161220102709.9504-2-quentin.schulz@free-electrons.com>
- <20161220142554.rcocnculfehiwhpn@lukather>
- <61dc140a-5ef1-f55d-e749-cb816a014705@free-electrons.com>
+Received: from mail-bl2nam02on0086.outbound.protection.outlook.com ([104.47.38.86]:54080
+        "EHLO NAM02-BL2-obe.outbound.protection.outlook.com"
+        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
+        id S1756041AbcLURTx (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 21 Dec 2016 12:19:53 -0500
+From: "Cercueil, Paul" <Paul.Cercueil@analog.com>
+To: "lars@metafoo.de" <lars@metafoo.de>,
+        "geert@linux-m68k.org" <geert@linux-m68k.org>
+CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PATCH libiio] iio-monitor: Add support for current and power
+Date: Wed, 21 Dec 2016 17:04:41 +0000
+Message-ID: <1482339881.2295.1.camel@analog.com>
+References: <1482329419-12442-1-git-send-email-geert@linux-m68k.org>
+In-Reply-To: <1482329419-12442-1-git-send-email-geert@linux-m68k.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="=-loMkCzm1ts97g5XvYGa1"
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="wkx6ljrqmdcah546"
-In-Reply-To: <61dc140a-5ef1-f55d-e749-cb816a014705@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
---wkx6ljrqmdcah546
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--=-loMkCzm1ts97g5XvYGa1
+Content-Type: text/plain; charset="UTF-8"
 Content-Transfer-Encoding: quoted-printable
 
 Hi,
-
-On Tue, Dec 20, 2016 at 04:43:58PM +0100, Quentin Schulz wrote:
-> >> +
-> >> +Optional properties:
-> >> +(for use with thermal framework for CPU thermal throttling for exampl=
-e, and/or
-> >> + IIO consumers)
-> >> + - #thermal-sensor-cells =3D <0>; (see
-> >> +Documentation/devicetree/bindings/thermal/thermal.txt)
-> >> + - #io-channel-cells =3D <0>; (see
-> >> +Documentation/devicetree/bindings/iio/iio-bindings.txt)
-> >=20
-> > I wouldn't list that as optional.
+Le mercredi 21 d=C3=A9cembre 2016 =C3=A0 15:10 +0100, Geert Uytterhoeven a
+=C3=A9crit=C2=A0:
+> Currently iio-monitor supports temperature and voltage values only.
+> Everything else is treated like a voltage.
 >=20
-> In what sense? Do you mean you wouldn't put them here at all or you
-> would require them?
+> Add support for common values like current and power.
+>=20
+> Signed-off-by: Geert Uytterhoeven <geert@linux-m68k.org>
+> ---
+> =C2=A0examples/iio-monitor.c | 31 +++++++++++++++++++++++++++----
+> =C2=A01 file changed, 27 insertions(+), 4 deletions(-)
+>=20
+> diff --git a/examples/iio-monitor.c b/examples/iio-monitor.c
+> index 558c0f33a36ef7b9..b508049fdb5dfc3f 100644
+> --- a/examples/iio-monitor.c
+> +++ b/examples/iio-monitor.c
+> @@ -93,6 +93,29 @@ static double get_channel_value(struct iio_channel
+> *chn)
+> =C2=A0	return val / 1000.0;
+> =C2=A0}
+> =C2=A0
+> +static struct {
+> +	const char *id;
+> +	const char *unit;
+> +} map[] =3D {
+> +	{ "current",	"A" },
+> +	{ "power",	"W" },
+> +	{ "temp",	"=C2=B0C" },
+> +	{ "voltage",	"V" },
+> +	{ 0, },
+> +};
+> +
+> +static const char *id_to_unit(const char *id)
+> +{
+> +	unsigned int i;
+> +
+> +	for (i =3D 0; map[i].id; i++) {
+> +		if (!strncmp(id, map[i].id, strlen(map[i].id)))
+> +			return map[i].unit;
+> +	}
+> +
+> +	return "";
+> +}
+> +
+> =C2=A0static void * read_thd(void *d)
+> =C2=A0{
+> =C2=A0	struct iio_context *ctx =3D d;
+> @@ -131,7 +154,7 @@ static void * read_thd(void *d)
+> =C2=A0		nb_channels =3D iio_device_get_channels_count(dev);
+> =C2=A0		for (i =3D 0; i < nb_channels; i++) {
+> =C2=A0			const char *id;
+> -			bool is_temp =3D false;
+> +			const char *unit;
+> =C2=A0			struct iio_channel *chn =3D
+> =C2=A0				iio_device_get_channel(dev, i);
+> =C2=A0			if (!is_valid_channel(chn))
+> @@ -142,7 +165,7 @@ static void * read_thd(void *d)
+> =C2=A0			id =3D iio_channel_get_id(chn);
+> =C2=A0			if (!name)
+> =C2=A0				name =3D id;
+> -			is_temp =3D !strncmp(id, "temp", 4);
+> +			unit =3D id_to_unit(id);
+> =C2=A0
+> =C2=A0			sprintf(buf, "</%u></B>%s<!B><!%u>",
+> =C2=A0					BLUE, name, BLUE);
+> @@ -152,8 +175,8 @@ static void * read_thd(void *d)
+> =C2=A0			freeChtype(str);
+> =C2=A0
+> =C2=A0			sprintf(buf, "</%u></B>%.3lf %s<!B><!%u>",
+> -					YELLOW,
+> get_channel_value(chn),
+> -					is_temp ? "=C2=B0C" : "V",
+> YELLOW);
+> +					YELLOW,
+> get_channel_value(chn), unit,
+> +					YELLOW);
+> =C2=A0			str =3D char2Chtype(buf, &len, &align);
+> =C2=A0			writeChtype(right, col / 2, line++,
+> =C2=A0					str, HORIZONTAL, 0, len);
 
-I would require them.
+Applied. Thanks!
 
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---wkx6ljrqmdcah546
+-Paul
+--=-loMkCzm1ts97g5XvYGa1
 Content-Type: application/pgp-signature; name="signature.asc"
+Content-Description: This is a digitally signed message part
+Content-Transfer-Encoding: 7bit
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAEBCAAGBQJYWnN1AAoJEBx+YmzsjxAgxloP/3SLcMQYmhgpvsPH/8Ec47ry
-gc3WnVanuSAdN6Bl/ul9tYFiRivRAOGL5ablSPquMfGXCiLO+L1Euy/mGvDQ1Ryc
-RgG+Djl1w5783nQBPFmnywg/w1ah60+LKi5uiJTJ+jFKvHmZTVHhLk92oLAnAItA
-ircElhr1Xr0+0R/njW1HRWy3cXHXPOApGghao1lsGcVrUkJTEJqfIhy3ERG/BoQk
-dOF+z5QXicaC0lXGd8ginsXGE1/Uo3svPR5F9Aa+55IVk8+r1RcpJPLYR7JstA9d
-1o2kgGU2yddWzL0/lQ5U5PESUWRuXhytCcCjM2xO7PznZN5zpB5prro2QvilYWzh
-5YHAn7STCZtft1W/F50+zA1DeNSGtbgIPRnILF5Mk2czE/713WBTR7He5u8Q7oYz
-jV/jbWiygcq56ISpJFcSnxKF0j9aLgbZB/VY5udcXD0GT0KAo/4sFFipV7rGqLWw
-ASUCUyQ/s9JgYiip0dQ+JqknsdZT8/SDfUtHrO+C/1PM3oBeJw8/M8PajKiBxMR6
-h3yRPrhlBuMOOmQk0xaVJ57hQO7jsUG+bkRbGXodx2JBcBdSYfz+/SIfrUPAXG+o
-yFtdntczufEaiPCFvRhdHqWrP8Ci5Rfqe9/ZgrCv4U3g2DutfgTMUvu3FZDo6YLD
-rt5cqfqe5Z+bzUCm6gpQ
-=6z6F
+iQEzBAABCgAdFiEEGbFCOixy2Cq633QzA8i1+8SbJU4FAlhatikACgkQA8i1+8Sb
+JU6DXwf8DvV801L8wwahnUWV3vgq3XK1oJLBK/kuqWvWFuV1kbIbNq9xSTTF8LWk
+csgpH/iPI/gbGWsmi8tNntrOHMEx4nJKr0tQuYT5L+UVcKdil7SOH2/Ldq6Eu1Im
+x4afP0Uh2TPNsNOo4FUjZ6aNQqA6GaOHVBnnYpF0mhStkz+QQRNsS8yhQ71jkrme
+qHlPlMXWtZSEfKfM3zpSVmaExYm5p/XtmfXAulSxOtsRgNEFV75EnMIyUmNlMBEq
+CYD6645TO08MfRT03FN0Xp8QwPUnLQ7ySWbvZoo9gNCogorGGig14apxAoGShB6P
+woJ/6d4JsYc7LiF5rtAf/KCdzQ0LzA==
+=kbKi
 -----END PGP SIGNATURE-----
 
---wkx6ljrqmdcah546--
+--=-loMkCzm1ts97g5XvYGa1--
