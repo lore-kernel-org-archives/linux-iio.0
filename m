@@ -1,92 +1,98 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:49387 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757632AbcLUPYp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Dec 2016 10:24:45 -0500
-Date: Wed, 21 Dec 2016 16:24:14 +0100
-From: Andreas Klinger <ak@it-klinger.de>
-To: devicetree@vger.kernel.org, linux-iio@vger.kernel.org
-Cc: linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        pawel.moll@arm.com, mark.rutland@arm.com,
-        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, ak@it-klinger.de
-Subject: [PATCH v4 0/2] iio: adc: hx711: Add IIO driver for AVIA HX711 ADC
-Message-ID: <20161221152414.GA14532@andreas>
+Received: from mail-oi0-f66.google.com ([209.85.218.66]:36012 "EHLO
+        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932518AbcLVBC0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 21 Dec 2016 20:02:26 -0500
+Received: by mail-oi0-f66.google.com with SMTP id u15so30530508oie.3
+        for <linux-iio@vger.kernel.org>; Wed, 21 Dec 2016 17:02:24 -0800 (PST)
+Subject: Re: [PATCH] indention and space fixes to align with linux style
+To: Joe Perches <joe@perches.com>, gregkh@linuxfoundation.org
+References: <1482289187-7276-1-git-send-email-scott@matheina.com>
+ <1482290625.1984.33.camel@perches.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+From: Scott Matheina <scott@matheina.com>
+Message-ID: <518f5c19-26f3-9896-64c8-ec2a2b592c5c@matheina.com>
+Date: Wed, 21 Dec 2016 19:02:22 -0600
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1482290625.1984.33.camel@perches.com>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This series adds IIO driver support for the AVIA HX711 ADC which is 
-mostly used in weighting cells.
 
-The first patch adds the new DT binding for which a new vendor avia
-was also added.
 
-The second patch is the simple IIO driver implemented as ADC.
-The protocol is specific to this device and implemented using GPIOs.
-
-Documentation of the chip can be found here:
-
-https://cdn.sparkfun.com/datasheets/Sensors/ForceFlex/hx711_english.pdf
-
-Changes in v4:
-Thanks to the thorough reviews and suggestions of Jonathan and Lars-Peter
-the driver was reworked to better meet the standard ABI of IIO. 
-
-* Patch 1: "iio: adc: hx711: Add DT binding for avia,hx711"
-  - added attribute for regulator
-
-* Patch 2: "iio: adc: hx711: Add IIO driver for AVIA HX711"
-  - two read channels for physical channels A and B
-  - remove gain attribute and use scale as read raw
-  - offer scale_available attribute
-  - introduced regulator as analog supply; mainly needed for calculating
-    the scale
-  - simplyfied use of GPIOs
-  - measuring input and output with oszilloscope and revised timing behavior
-  - many minor changes
-
-Changes in v3:
-moved gain from devicetree to sysfs, according to comment of Lars-Peter
-Thanks for reviewing and giving suggestions
-
-* Patch 1: "iio: adc: hx711: Add DT binding for avia,hx711"
-  - removed property gain
-
-* Patch 2: "iio: adc: hx711: Add IIO driver for AVIA HX711"
-  - removed property gain from devicetree
-  - added device attribute (rw) for gain
-  - support reading from both channels now
-
-Changes in v2:
-Lots of updates thanks to Peters review.
-
-* Patch 1: "iio: adc: hx711: Add DT binding for avia,hx711"
-  - typo
-  - removed unneded section
-
-* Patch 2: "iio: adc: hx711: Add IIO driver for AVIA HX711"
-  - updated help text in Kconfig
-  - removed dead code
-  - removed unused power management
-  - reduced channel spec to what is actually used
-  - added error handling in case reset of chip not possible
-
-Andreas Klinger (2):
-  iio: adc: hx711: Add DT binding for avia,hx711
-  iio: adc: hx711: Add IIO driver for AVIA HX711
-
- .../devicetree/bindings/iio/adc/avia-hx711.txt     |  18 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/adc/Kconfig                            |  19 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/hx711.c                            | 466 +++++++++++++++++++++
- 5 files changed, 505 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
- create mode 100644 drivers/iio/adc/hx711.c
-
--- 
-2.1.4
+On 12/20/2016 09:23 PM, Joe Perches wrote:
+> On Tue, 2016-12-20 at 20:58 -0600, Scott Matheina wrote:
+>> Fixed indention and space issues to align the code with the linux style guide.
+> []
+>> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
+> []
+>> @@ -176,16 +176,16 @@
+>>    */
+>>
+>>   struct adt7316_chip_info {
+>> -	struct adt7316_bus	bus;
+>> -	u16			ldac_pin;
+>> -	u16			int_mask;	/* 0x2f */
+>> -	u8			config1;
+>> -	u8			config2;
+>> -	u8			config3;
+>> -	u8			dac_config;	/* DAC config */
+>> -	u8			ldac_config;	/* LDAC config */
+>> -	u8			dac_bits;	/* 8, 10, 12 */
+>> -	u8			id;		/* chip id */
+>> +	struct adt7316_bus bus;
+>> +	u16 ldac_pin;
+>> +	u16 int_mask;		/* 0x2f */
+>> +	u8 config1;
+>> +	u8 config2;
+>> +	u8 config3;
+>> +	u8 dac_config;		/* DAC config */
+>> +	u8 ldac_config;		/* LDAC config */
+>> +	u8 dac_bits;		/* 8, 10, 12 */
+>> +	u8 id;			/* chip id */
+>>   };
+> Hello Scott.
+>
+> I believe you're relatively new at this
+> patch submission stuff.
+>
+> The style above is fine and doesn't need
+> to be changed.  It is not in CodingStyle
+> as preferred one way or the other.
+>
+>>   /*
+>> @@ -212,13 +212,12 @@ struct adt7316_chip_info {
+>>    */
+>>
+>>   struct adt7316_limit_regs {
+>> -	u16	data_high;
+>> -	u16	data_low;
+>> +	u16 data_high;
+>> +	u16 data_low;
+>>   };
+>>
+>>   static ssize_t adt7316_show_enabled(struct device *dev,
+>> -		struct device_attribute *attr,
+>> -		char *buf)
+>> +				    struct device_attribute *attr, char *buf)
+> This one isn't either but it is a very common
+> style in net/, drivers/net, and drivers/staging
+> though.
+>
+The problem I'm running into is when I use Lindent, it automatically 
+makes the
+change above, so I can't use that tool for the file. Even when I correct 
+the changes
+in the file git diff still shows the non-change, so I'm just trying to 
+figure out how
+to use the given tools without having these issues. I'm going to just go 
+manual with
+my future changes is suppose.
 
