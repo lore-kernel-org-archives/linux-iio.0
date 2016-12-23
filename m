@@ -1,104 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.176]:24783 "EHLO
-        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751576AbcL1Oxg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2016 09:53:36 -0500
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Sebastian Reichel <sre@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+Received: from www381.your-server.de ([78.46.137.84]:53886 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752952AbcLWLlA (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2016 06:41:00 -0500
+Subject: Re: [PATCH 1/2] devicetree: power: add bindings for GPIO-driven power
+ switches
+To: Geert Uytterhoeven <geert@linux-m68k.org>,
+        Rob Herring <robh@kernel.org>
+References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+ <1481494905-18037-2-git-send-email-bgolaszewski@baylibre.com>
+ <20161213192712.gbaw4t4awayybnta@rob-hp-laptop>
+ <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
+ <CAL_JsqLwS51MhOJQb-Lmo=osHiYKcAcCJaxKJFdSvZBpafz7Gw@mail.gmail.com>
+ <CAMuHMdWfAwPE2N-_0WhW5+EEK3bqWoo9HpQZTgLzRRutCg++qg@mail.gmail.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Alexander Stein <alexander.stein@systec-electronic.com>,
-        Eric Engestrom <eric@engestrom.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Petr Cvek <petr.cvek@tul.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Nick Dyer <nick@shmanahar.org>,
-        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
-        Michel Verlaan <michel.verl@gmail.com>
-Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com
-Subject: [PATCH v9 3/8] DT:omap3+tsc2007: use new common touchscreen bindings
-Date: Wed, 28 Dec 2016 15:53:18 +0100
-Message-Id: <17745d35ab0966aca17a0aee431efc662d7cd0e5.1482936802.git.hns@goldelico.com>
-In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com>
-In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com>
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        linux-gpio <linux-gpio@vger.kernel.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        linux-pm <linux-pm@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <505b7c02-e7dd-b0a5-8009-dca9101b0dd4@metafoo.de>
+Date: Fri, 23 Dec 2016 12:40:53 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAMuHMdWfAwPE2N-_0WhW5+EEK3bqWoo9HpQZTgLzRRutCg++qg@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-While we fix the GTA04 we add proper pinmux for the
-penirq gpio.
+On 12/23/2016 10:07 AM, Geert Uytterhoeven wrote:
+> BTW, I'm not an IIO expert, but from my limited knowledge, it looks like "O"
+> support in IIO is limited to DACs?
 
-Tested on: GTA04A4 and Pyra-Handheld
-
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Acked-by: Tony Lindgren <tony@atomide.com>
----
- arch/arm/boot/dts/omap3-gta04.dtsi | 25 +++++++++++++++++++++++--
- 1 file changed, 23 insertions(+), 2 deletions(-)
-
-diff --git a/arch/arm/boot/dts/omap3-gta04.dtsi b/arch/arm/boot/dts/omap3-gta04.dtsi
-index b3a8b1f..64d6ee3 100644
---- a/arch/arm/boot/dts/omap3-gta04.dtsi
-+++ b/arch/arm/boot/dts/omap3-gta04.dtsi
-@@ -273,6 +273,13 @@
- 			OMAP3_CORE1_IOPAD(0x2134, PIN_INPUT_PULLUP | MUX_MODE4) /* gpio112 */
- 		>;
- 	};
-+
-+	penirq_pins: pinmux_penirq_pins {
-+		pinctrl-single,pins = <
-+			/* here we could enable to wakeup the cpu from suspend by a pen touch */
-+			OMAP3_CORE1_IOPAD(0x2194, PIN_INPUT_PULLUP | MUX_MODE4) /* gpio160 */
-+		>;
-+	};
- };
- 
- &omap3_pmx_core2 {
-@@ -410,10 +417,24 @@
- 	tsc2007@48 {
- 		compatible = "ti,tsc2007";
- 		reg = <0x48>;
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&penirq_pins>;
- 		interrupt-parent = <&gpio6>;
- 		interrupts = <0 IRQ_TYPE_EDGE_FALLING>; /* GPIO_160 */
--		gpios = <&gpio6 0 GPIO_ACTIVE_LOW>;
--		ti,x-plate-ohms = <600>;
-+		gpios = <&gpio6 0 GPIO_ACTIVE_LOW>;	/* GPIO_160 */
-+		touchscreen-size-x = <480>;
-+		touchscreen-size-y = <640>;
-+		touchscreen-max-pressure = <1000>;
-+		touchscreen-fuzz-x = <3>;
-+		touchscreen-fuzz-y = <8>;
-+		touchscreen-fuzz-pressure = <10>;
-+		touchscreen-inverted-y;
-+		ti,min-x = <0x100>;
-+		ti,max-x = <0xf00>;
-+		ti,min-y = <0x100>;
-+		ti,max-y = <0xf00>;
-+		ti,max-rt = <4096>;
-+		ti,x-plate-ohms = <550>;
- 	};
- 
- 	/* RFID EEPROM */
--- 
-2.7.3
-
+Depends on what you categorize as DACs. There are also
+potentiometer/rheostat drivers. They are kind of like DACs but the unit you
+control are ohm, rather than current or voltage.
