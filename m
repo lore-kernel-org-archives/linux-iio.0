@@ -1,64 +1,64 @@
-Return-Path: <SRS0=8Gsf=YG=gmail.com=geert.uytterhoeven@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-it0-f66.google.com ([209.85.214.66]:34222 "EHLO
+        mail-it0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1759508AbcLWKAV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2016 05:00:21 -0500
 MIME-Version: 1.0
-Sender: geert.uytterhoeven@gmail.com
-In-Reply-To: <CAL_JsqLwS51MhOJQb-Lmo=osHiYKcAcCJaxKJFdSvZBpafz7Gw@mail.gmail.com>
-References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
- <1481494905-18037-2-git-send-email-bgolaszewski@baylibre.com>
- <20161213192712.gbaw4t4awayybnta@rob-hp-laptop> <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
- <CAL_JsqLwS51MhOJQb-Lmo=osHiYKcAcCJaxKJFdSvZBpafz7Gw@mail.gmail.com>
+In-Reply-To: <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de>
+References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
+ <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de> <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
+ <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de> <bf3dde7e-cee8-c54c-db93-447ffa063116@kernel.org>
+ <CAMpxmJVJ+y9tRbRBsVg+i0EJO_6EFuvrypwC=ETnBWbMnxRFyg@mail.gmail.com> <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de>
 From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Fri, 23 Dec 2016 10:07:16 +0100
-Message-ID: <CAMuHMdWfAwPE2N-_0WhW5+EEK3bqWoo9HpQZTgLzRRutCg++qg@mail.gmail.com>
-Subject: Re: [PATCH 1/2] devicetree: power: add bindings for GPIO-driven power switches
-To: Rob Herring <robh@kernel.org>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Mark Rutland <mark.rutland@arm.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, linux-devicetree <devicetree@vger.kernel.org>,
-	LKML <linux-kernel@vger.kernel.org>, Kevin Hilman <khilman@baylibre.com>,
-	Patrick Titiano <ptitiano@baylibre.com>, Neil Armstrong <narmstrong@baylibre.com>,
-	Linus Walleij <linus.walleij@linaro.org>, Alexandre Courbot <gnurou@gmail.com>,
-	linux-gpio <linux-gpio@vger.kernel.org>, Sebastian Reichel <sre@kernel.org>,
-	linux-pm <linux-pm@vger.kernel.org>, Mark Brown <broonie@kernel.org>,
-	Liam Girdwood <lgirdwood@gmail.com>
+Date: Fri, 23 Dec 2016 11:00:13 +0100
+Message-ID: <CAMuHMdX3u4cb2Yq2+VV_eDUaw2EqiOjN2TorW+F5-39Mm=mXmQ@mail.gmail.com>
+Subject: Re: [PATCH] iio: misc: add a generic regulator driver
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, Dec 15, 2016 at 4:05 PM, Rob Herring <robh@kernel.org> wrote:
-> On Wed, Dec 14, 2016 at 10:58 AM, Bartosz Golaszewski
-> <bgolaszewski@baylibre.com> wrote:
->> 2016-12-13 20:27 GMT+01:00 Rob Herring <robh@kernel.org>:
->>> On Sun, Dec 11, 2016 at 11:21:44PM +0100, Bartosz Golaszewski wrote:
->>>> Some boards are equipped with simple, GPIO-driven power load switches.
->>>> An example of such ICs is the TI tps229* series.
->>>
->>> How is this different than a GPIO regulator? The input and output
->>> voltages just happen to be the same. I could be convinced this is
->>> different enough to have a different compatible, but it somewhat seems
->>> you want to use this for IIO, so you are creating a different binding
->>> for that usecase.
->>
->> It's more of a fixed regulator I suppose. Do you mean adding a new
->> compatible to the fixed-regulator binding (e.g. "gpio-power-switch" or
->> "simple-power-switch") and then providing an iio driver for toggling
->> the switch?
+Hi Lars,
+
+On Mon, Dec 12, 2016 at 6:15 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 12/06/2016 12:12 PM, Bartosz Golaszewski wrote:
+>> We're already using libiio to read the measured data from the power
+>> monitor, that's why we'd like to use the iio framework for
+>> power-cycling the devices as well. My question is: would bridging the
+>> regulator framework be the right solution? Should we look for
+>> something else? Bridge the GPIO framework instead?
 >
-> Yes, at least the first part. I view the switch as just a more
-> specific subtype of a fixed-regulator. Whether an IIO driver is a
-> separate discussion which is happening.
+> I wouldn't necessaries create bridge, but instead just use the GPIO
+> framework directly.
+>
+> We now have the GPIO chardev interface which meant to be used to support
+> application specific logic that control the GPIOs, but where you don't want
+> to write a kernel driver.
+>
+> My idea was to add GPIOs and GPIO chips as high level object inside libiio
+> that can be accessed through the same context as the IIO devices. Similar to
+> the current IIO API you have a API for gpios that allows to enumerate the
+> GPIO devices and their pins as well as modify the pin state.
 
-The switch could also be an opto-isolator (for which I could use gpio-leds,
-too, although also without libiio control ;-) or a relay.
+That would mean libiio has access to all GPIOs, allowing a remote person
+to not only control through iiod the GPIOs for industrial control, but also the
+GPIOs not intended for export, right?
 
-While I agree a switch is a degenerate regulator, modelling it as a regulator
-feels a bit weird to me. Switches could be extended to e.g. double throw
-relays, or H-bridges using 4 GPIOs.
-
-BTW, I'm not an IIO expert, but from my limited knowledge, it looks like "O"
-support in IIO is limited to DACs?
-
-P.S. My motiviation is using libiio to control my board farm, which has a bank
-     of opto-isolators in addition to BayLibre's ACME.
+Having a separate GPIO switch driver avoids that, as DT (or some other means)
+can be used to specify and label the GPIOs for IIO use.
 
 Gr{oetje,eeting}s,
 
