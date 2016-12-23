@@ -1,258 +1,90 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:36116 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750976AbcL1Rhr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2016 12:37:47 -0500
-Received: by mail-pf0-f194.google.com with SMTP id c4so19759467pfb.3
-        for <linux-iio@vger.kernel.org>; Wed, 28 Dec 2016 09:37:46 -0800 (PST)
-Message-ID: <1482946633.12558.1.camel@researchut.com>
-Subject: Re: sensor-hub: Move the memset to sensor_hub_get_feature()
-From: Ritesh Raj Sarraf <rrs@researchut.com>
-Reply-To: rrs@researchut.com
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-iio <linux-iio@vger.kernel.org>
-Date: Wed, 28 Dec 2016 23:07:13 +0530
-In-Reply-To: <1482945855.8484.8.camel@researchut.com>
-References: <1482925101.8484.1.camel@researchut.com>
-         <1482931381.8484.3.camel@researchut.com>
-         <1482943685.4497.19.camel@linux.intel.com>
-         <1482945855.8484.8.camel@researchut.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from www381.your-server.de ([78.46.137.84]:53228 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1759318AbcLWLfY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2016 06:35:24 -0500
+Subject: Re: [PATCH] iio: misc: add a generic regulator driver
+To: Geert Uytterhoeven <geert@linux-m68k.org>
+References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
+ <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de>
+ <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
+ <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de>
+ <bf3dde7e-cee8-c54c-db93-447ffa063116@kernel.org>
+ <CAMpxmJVJ+y9tRbRBsVg+i0EJO_6EFuvrypwC=ETnBWbMnxRFyg@mail.gmail.com>
+ <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de>
+ <CAMuHMdX3u4cb2Yq2+VV_eDUaw2EqiOjN2TorW+F5-39Mm=mXmQ@mail.gmail.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <9609b56b-194c-9899-1142-ff2ee285c6bd@metafoo.de>
+Date: Fri, 23 Dec 2016 12:35:08 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAMuHMdX3u4cb2Yq2+VV_eDUaw2EqiOjN2TorW+F5-39Mm=mXmQ@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+On 12/23/2016 11:00 AM, Geert Uytterhoeven wrote:
+> Hi Lars,
+> 
+> On Mon, Dec 12, 2016 at 6:15 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+>> On 12/06/2016 12:12 PM, Bartosz Golaszewski wrote:
+>>> We're already using libiio to read the measured data from the power
+>>> monitor, that's why we'd like to use the iio framework for
+>>> power-cycling the devices as well. My question is: would bridging the
+>>> regulator framework be the right solution? Should we look for
+>>> something else? Bridge the GPIO framework instead?
+>>
+>> I wouldn't necessaries create bridge, but instead just use the GPIO
+>> framework directly.
+>>
+>> We now have the GPIO chardev interface which meant to be used to support
+>> application specific logic that control the GPIOs, but where you don't want
+>> to write a kernel driver.
+>>
+>> My idea was to add GPIOs and GPIO chips as high level object inside libiio
+>> that can be accessed through the same context as the IIO devices. Similar to
+>> the current IIO API you have a API for gpios that allows to enumerate the
+>> GPIO devices and their pins as well as modify the pin state.
+> 
+> That would mean libiio has access to all GPIOs, allowing a remote person
+> to not only control through iiod the GPIOs for industrial control, but also the
+> GPIOs not intended for export, right?
 
-On Wed, 2016-12-28 at 22:54 +0530, Ritesh Raj Sarraf wrote:
-> Device4, for which there are no x, y, z attributes, reports the name
-> "dev_rotation".
-> Even for the other devices, I see no change in the reported values.
+Well, it is a policy question. Who gets access to what. Right now it is all
+or nothing, a privileged application gets access to all devices/GPIOs, a
+unprivileged application gets access to nothing. Same for GPIOs as well as
+IIO devices.
 
-On the 4.8 kernel, the values do change. The iio-sensor-proxy still does not do
-the rotation.
+iiod at the moment does not have any access control at all, which in itself
+is a problem. We need to add support for that at some point. I don't see an
+issue with implementing a finer grained access scheme when we do so. E.g.
+unprivileged applications only get access to certain pins.
 
-rrs@learner:/sys/bus/iio/devices$ while true; do for x in iio*; do echo -en
-"Device: $x\t `cat $x/*[x-z]_raw`\n"; done; echo -en "sleep 2 secs\n\n"; sleep
-2;  done
-Device: iio:device0	 616
-6
-3570
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 111905
-- -44762
-- -22381
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1625000
-402343
-- -2531250
-sleep 2 secs
+> Having a separate GPIO switch driver avoids that, as DT (or some other means)
+> can be used to specify and label the GPIOs for IIO use.
 
-Device: iio:device0	 616
-6
-3570
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 22381
-0
-0
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1632812
-402343
-- -2531250
-sleep 2 secs
-
-Device: iio:device0	 542
-65503
-3599
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 -111905
-- -2887161
-4274790
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1625000
-429687
-- -2511718
-sleep 2 secs
-
-Device: iio:device0	 94
-64699
-425
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 693814
-- -223811
-1589058
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1539062
-492187
-- -2523437
-sleep 2 secs
-
-Device: iio:device0	 145
-893
-2676
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 -738576
-872862
-- -6065278
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1503906
-230468
-- -2609375
-sleep 2 secs
-
-Device: iio:device0	 488
-808
-2692
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 2551445
-- -3536213
-14592477
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1597656
-222656
-- -2621093
-sleep 2 secs
-
-Device: iio:device0	 64240
-750
-2437
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 2663350
-- -581908
-3021448
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1488281
-347656
-- -2601562
-sleep 2 secs
-
-Device: iio:device0	 63984
-891
-2470
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 -358097
-402859
-- -828100
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1468750
-375000
-- -2601562
-sleep 2 secs
-
-Device: iio:device0	 1637
-64842
-524
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 11548647
-2663350
-- -16606776
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1441406
-50781
-- -2585937
-sleep 2 secs
-
-Device: iio:device0	 649
-642
-2564
-cat: 'iio:device1/*[x-z]_raw': No such file or directory
-Device: iio:device1	 
-Device: iio:device2	 -5237177
-- -2126204
-19225364
-cat: 'iio:device3/*[x-z]_raw': No such file or directory
-Device: iio:device3	 
-Device: iio:device4	 27
-64861
-65298
-Device: iio:device5	 -1652343
-210937
-- -2570312
-sleep 2 secs
-
-^C
-2016-12-28 / 23:01:36 ♒♒♒  ☹  => 130  
-(reverse-i-search)`name': quilt rename data-Fix-compass-property-^Cme.patch2016-
-12-28 / 23:01:54 ♒♒♒  ☹  => 130  
-
-rrs@learner:/sys/bus/iio/devices$ cat iio\:device*/name
-incli_3d
-als
-gyro_3d
-dev_rotation
-accel_3d
-magn_3d
-2016-12-28 / 23:02:35 ♒♒♒  ☺  
-
-rrs@learner:/sys/bus/iio/devices$ uname -a
-Linux learner 4.8.15+ #47 SMP Wed Dec 21 14:19:46 IST 2016 x86_64 GNU/Linux
-2016-12-28 / 23:02:41 ♒♒♒  ☺  
-
-
-- -- 
-Ritesh Raj Sarraf
-RESEARCHUT - http://www.researchut.com
-"Necessity is the mother of invention."
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEQCVDstmIVAB/Yn02pjpYo/LhdWkFAlhj+EkACgkQpjpYo/Lh
-dWlAFhAAk882ZoICevpQH3kZ47WJKE/yrtOVQwmyxrkHa7kxWZVAfbZcr+Vlhktt
-GIa8zM/rZ7TXwy794iEZMvTR5f6ZGMojHLuKRBdvnEr7lYHg/7396Rrw5mlOWhmS
-/8B99ERQnDzmKExXcLts+4V6WbsWxJJlI4oNsaLn8vybZEImniDySqIehhKUEPtX
-escMhgAdgcpmbps2oJYfQ6Oa4kOQjx34KeTPIUBaLHyd89jYYwygWG0K8oQpfMuG
-tLcPrXOpgNBvyr4FHsHWhC9IYHIUArmKzyADnkaRJSbKjH/vh5lFw2FsjFNK2V2f
-/fyy0hO5AqLluE1/dDERejekm+0uQ9TAlWouvRfvgtaSeoTgTuFmce51tp8An/wq
-nzFBJJl085EgBby1NO2NJQwOd/Uh4TD3UBHIb5D8azlVXeN0his6ETWPQs00HHvn
-PUNQVYXxEXtzZPkWrUCMNFVktRS8kCNmp/Hty655Wkj+jNF54/JHAb/1jD1ak9nQ
-N0eTEBqHsthcZuSStmtsEfIZ0MybCY6xrqFc+uyoYvp3crqi4IPi96tlblU2lDiJ
-loceFx+Ks+Y1Kj31D/zKvIKuYDEtQH6VZMzbvDaCgmCDnhoHctXVIfT8hhbSur5V
-ubhHAx72xu5BFVzxJ3/0S685hVC1oBWq8fx/1lFsqA4GJILylJI=
-=dKU5
------END PGP SIGNATURE-----
-
+Sure, functionally this would be equivalent, but we have to ask whether this
+is the right way to use the DT. Is access policy specification part of the
+hardware description? In my opinion the answer is no. At the hardware
+description level there is no operating system, there is no userspace or
+kernelspace, there is are no access levels. Putting the distinction between
+a switch/regulator that can be controlled from userspace or can only be
+controlled from kernel space into the DT would be a layering violation. It
+is analogous to why we don't have spidev DT bindings. This is an issue that
+needs to be solved at a higher level. In my opinion this level is a
+cooperation between kernel- and userspace. Kernelspace offering an interface
+to export a device for userspace access and userspace making use of that
+interface to request access to a device. In a similar way to how vfio is
+structured.
