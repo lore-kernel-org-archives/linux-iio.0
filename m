@@ -1,48 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f68.google.com ([209.85.218.68]:32930 "EHLO
-        mail-oi0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932566AbcLYTmJ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Dec 2016 14:42:09 -0500
-Received: by mail-oi0-f68.google.com with SMTP id f201so43085539oib.0
-        for <linux-iio@vger.kernel.org>; Sun, 25 Dec 2016 11:42:09 -0800 (PST)
-From: Scott Matheina <scott@matheina.com>
-To: linux-kernel@vger.kernel.org
-Cc: Scott Matheina <scott@matheina.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: [PATCHv4 1/8] fixed long description text exceeding 80 characters
-Date: Sun, 25 Dec 2016 13:41:05 -0600
-Message-Id: <1482694902-7400-2-git-send-email-scott@matheina.com>
-In-Reply-To: <1482694902-7400-1-git-send-email-scott@matheina.com>
-References: <1482694902-7400-1-git-send-email-scott@matheina.com>
+Received: from mail.ispras.ru ([83.149.199.45]:34068 "EHLO mail.ispras.ru"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751936AbcLWWPe (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 23 Dec 2016 17:15:34 -0500
+From: Alexey Khoroshilov <khoroshilov@ispras.ru>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Stefan Wahren <stefan.wahren@i2se.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: Alexey Khoroshilov <khoroshilov@ispras.ru>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        ldv-project@linuxtesting.org
+Subject: [PATCH] iio: mxs-lradc: fix error handling in mxs_lradc_probe()
+Date: Sat, 24 Dec 2016 01:15:19 +0300
+Message-Id: <1482531319-26935-1-git-send-email-khoroshilov@ispras.ru>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The description was split into 2 lines due to the line greatly
-exceeding the 80 character soft limit.
+During transition to using devm_input_allocate_device()
+goto to resource deallocation block was replaced by return
+in case of error in iio_device_register().
+That is wrong since resources are left undeallocated.
 
-Signed-off-by: Scott Matheina <scott@matheina.com>
+Found by Linux Driver Verification project (linuxtesting.org).
+
+Signed-off-by: Alexey Khoroshilov <khoroshilov@ispras.ru>
+Fixes: 962ed43a3eac ("iio: mxs-lradc: remove mxs_lradc_ts_unregister")
 ---
- drivers/staging/iio/addac/adt7316.c | 3 ++-
- 1 file changed, 2 insertions(+), 1 deletion(-)
+ drivers/iio/adc/mxs-lradc.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index a7d90c8..08413a8 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -2181,5 +2181,6 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
- EXPORT_SYMBOL(adt7316_probe);
+diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
+index b84d37c80a94..1ab0caeb3577 100644
+--- a/drivers/iio/adc/mxs-lradc.c
++++ b/drivers/iio/adc/mxs-lradc.c
+@@ -1702,7 +1702,7 @@ static int mxs_lradc_probe(struct platform_device *pdev)
+ 	ret = iio_device_register(iio);
+ 	if (ret) {
+ 		dev_err(dev, "Failed to register IIO device\n");
+-		return ret;
++		goto err_ts_register;
+ 	}
  
- MODULE_AUTHOR("Sonic Zhang <sonic.zhang@analog.com>");
--MODULE_DESCRIPTION("Analog Devices ADT7316/7/8 and ADT7516/7/9 digital temperature sensor, ADC and DAC driver");
-+MODULE_DESCRIPTION("Analog Devices ADT7316/7/8 and ADT7516/7/9 digital\n"
-+		   "temperature sensor, ADC and DAC driver");
- MODULE_LICENSE("GPL v2");
+ 	return 0;
 -- 
 2.7.4
 
