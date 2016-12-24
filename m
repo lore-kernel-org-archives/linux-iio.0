@@ -1,572 +1,497 @@
-Return-Path: <SRS0=y229=YE=pmeerw.net=pmeerw@kernel.org>
-Date: Wed, 21 Dec 2016 19:16:45 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Andreas Klinger <ak@it-klinger.de>
-cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org, jic23@kernel.org,
-    knaack.h@gmx.de, lars@metafoo.de
-Subject: Re: [PATCH v4 2/2] iio: adc: hx711: Add IIO driver for AVIA HX711
-In-Reply-To: <20161221152514.GA14554@andreas>
-Message-ID: <alpine.DEB.2.02.1612211904250.3893@pmeerw.net>
-References: <20161221152514.GA14554@andreas>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50014 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750857AbcLXLqW (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 24 Dec 2016 06:46:22 -0500
+In-Reply-To: <1482544497-136656-1-git-send-email-liurenzhong@hisilicon.com>
+References: <1482544497-136656-1-git-send-email-liurenzhong@hisilicon.com>
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain;
+ charset=UTF-8
+Subject: Re: [PATCH] adc: add adc driver for Hisilicon BVT SOCs
+From: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
+Date: Sat, 24 Dec 2016 11:46:13 +0000
+To: Allen Liu <liurenzhong@hisilicon.com>, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, mark.rutland@arm.com
+CC: akinobu.mita@gmail.com, ludovic.desroches@atmel.com,
+        krzk@kernel.org, vilhelm.gray@gmail.com,
+        ksenija.stanojevic@gmail.com, zhiyong.tao@mediatek.com,
+        daniel.baluta@intel.com, leonard.crestez@intel.com,
+        ray.jui@broadcom.com, raveendra.padasalagi@broadcom.com,
+        mranostay@gmail.com, amsfield22@gmail.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, xuejiancheng@hisilicon.com,
+        kevin.lixu@hisilicon.com
+Message-ID: <951BC246-0676-4DBF-856B-832E0F977ACB@jic23.retrosnub.co.uk>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
-> This is the IIO driver for AVIA HX711 ADC which ist mostly used in weighting
-> cells.
 
-comments below
+On 24 December 2016 01:54:57 GMT+00:00, Allen Liu <liurenzhong@hisilicon.com> wrote:
+>Add ADC driver for the ADC controller found on HiSilicon BVT SOCs, like
+>Hi3516CV300, etc.
+>The ADC controller is primarily in charge of detecting voltage.
+>
+>Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+>Signed-off-by: Allen Liu <liurenzhong@hisilicon.com>
+Reading on phone so may not be that thorough!
 
-> The protocol is quite simple and using GPIOs:
-> One GPIO is used as clock (SCK) while another GPIO is read (DOUT)
+Looks pretty good. The device abstraction makes it slightly more complicated than it needs
+to be.  If you aren't going to follow up quickly with other device support please drop the
+ abstraction. It can be easily readded when needed. 
+
+Various little things inline.
+
+Thanks
+
+Jonathan
+>---
+> .../devicetree/bindings/iio/adc/hibvt-lsadc.txt    |  26 ++
+> drivers/iio/adc/Kconfig                            |  10 +
+> drivers/iio/adc/Makefile                           |   1 +
+>drivers/iio/adc/hibvt_lsadc.c                      | 344
+>+++++++++++++++++++++
+> 4 files changed, 381 insertions(+)
+>create mode 100644
+>Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+> create mode 100644 drivers/iio/adc/hibvt_lsadc.c
+>
+>diff --git a/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>new file mode 100644
+>index 0000000..63de46e
+>--- /dev/null
+>+++ b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>@@ -0,0 +1,26 @@
+>+Hisilicon BVT Low Speed (LS) A/D Converter bindings
+>+
+>+Required properties:
+>+- compatible: should be "hisilicon,<name>-lsadc"
+>+   - "hisilicon,hibvt-lsadc": for hi3516cv300
+>+
+>+- reg: physical base address of the controller and length of memory
+>mapped
+>+       region.
+>+- interrupts: The interrupt number to the cpu. The interrupt specifier
+>format
+>+              depends on the interrupt controller.
+A cross reference to the interrupt bindings doc always good to add.
+>+- #io-channel-cells: Should be 1, see ../iio-bindings.txt
+>+
+>+Optional properties:
+>+- resets: Must contain an entry for each entry in reset-names if need
+>support
+>+	  this option. See ../reset/reset.txt for details.
+>+- reset-names: Must include the name "saradc-apb".
+>+
+>+Example:
+>+	lsadc: hibvt-lsadc@120e0000 {
+>+			compatible = "hisilicon,hibvt-lsadc";
+>+			reg = <0x120e0000 0x1000>;
+>+			interrupts = <19>;
+>+			resets = <&crg 0x7c 3>;
+>+			reset-names = "lsadc-crg";
+Doesn't contain saradc-apb which docs say it must...
+>+			status = "disabled";
+Not documented...
+>+	};
+>diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>index 99c0514..0443f51 100644
+>--- a/drivers/iio/adc/Kconfig
+>+++ b/drivers/iio/adc/Kconfig
+>@@ -225,6 +225,16 @@ config HI8435
+>	  This driver can also be built as a module. If so, the module will be
+> 	  called hi8435.
 > 
-> The raw value read from the chip is delivered. 
-> To get a weight one needs to subtract the zero offset and scale it.
-> 
-> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> ---
->  drivers/iio/adc/Kconfig  |  19 ++
->  drivers/iio/adc/Makefile |   1 +
->  drivers/iio/adc/hx711.c  | 466 +++++++++++++++++++++++++++++++++++++++++++++++
->  3 files changed, 486 insertions(+)
->  create mode 100644 drivers/iio/adc/hx711.c
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index 932de1f9d1e7..1dcf2ace1697 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -205,6 +205,25 @@ config HI8435
->  	  This driver can also be built as a module. If so, the module will be
->  	  called hi8435.
->  
-> +config HX711
-> +	tristate "AVIA HX711 ADC for weight cells"
-> +	depends on GPIOLIB
-> +	help
-> +	  If you say yes here you get support for AVIA HX711 ADC which is used
-> +	  for weigh cells
-> +
-> +	  This driver uses two GPIOs, one acts as the clock and controls the
-> +	  channel selection and gain, the other one is used for the measurement
-> +          data
-> +
-> +	  Currently the raw value is read from the chip and delivered.
-> +	  To get an actual weight one needs to subtract the
-> +	  zero offset and multiply by a scale factor.
-> +	  This should be done in userspace.
-> +
-> +	  This driver can also be built as a module. If so, the module will be
-> +	  called hx711.
-> +
->  config INA2XX_ADC
->  	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
->  	depends on I2C && !SENSORS_INA2XX
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index b1aa456e6af3..d46e289900ef 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -21,6 +21,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->  obj-$(CONFIG_HI8435) += hi8435.o
-> +obj-$(CONFIG_HX711) += hx711.o
->  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
->  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
-> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
-> new file mode 100644
-> index 000000000000..f4b5f587e9c0
-> --- /dev/null
-> +++ b/drivers/iio/adc/hx711.c
-> @@ -0,0 +1,466 @@
-> +/*
-> + * HX711: analog to digital converter for weight sensor module
-> + *
-> + * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the GNU General Public License as published by
-> + * the Free Software Foundation; either version 2 of the License, or
-> + * (at your option) any later version.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> + * GNU General Public License for more details.
-> + */
-> +#include <linux/err.h>
-> +#include <linux/kernel.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/property.h>
-> +#include <linux/slab.h>
-> +#include <linux/sched.h>
-> +#include <linux/delay.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/gpio/consumer.h>
-> +#include <linux/regulator/consumer.h>
-> +
-> +/*
-> + * gain to pulse and scale conversion
-> + */
-> +#define HX711_CHAN_A		0	/* channel id for A  */
-> +#define HX711_CHAN_B		1	/* channel id for B  */
-> +
-> +#define HX711_GAIN_MAX		3
-> +
-> +struct hx711_gain_to_scale {
-> +	int			gain;
-> +	int			gain_pulse;
-> +	int			scale;
-> +	int			channel;
-> +};
-> +
-> +static struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
-> +	{ 128, 1, 0, HX711_CHAN_A },
-> +	{  32, 2, 0, HX711_CHAN_B },
-> +	{  64, 3, 0, HX711_CHAN_A }
-> +};
-> +
-> +static int hx711_get_gain_to_pulse(int gain)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < HX711_GAIN_MAX; i++)
-> +		if (hx711_gain_to_scale[i].gain == gain)
-> +			return hx711_gain_to_scale[i].gain_pulse;
-> +	return 1;
-> +}
-> +
-> +static int hx711_get_gain_to_scale(int gain)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < HX711_GAIN_MAX; i++)
-> +		if (hx711_gain_to_scale[i].gain == gain)
-> +			return hx711_gain_to_scale[i].scale;
-
-.scale is set in _probe(), this was not obvious at first; maybe a comment?
-
-> +	return 0;
-> +}
-> +
-> +static int hx711_get_scale_to_gain(int scale)
-> +{
-> +	int i;
-> +
-> +	for (i = 0; i < HX711_GAIN_MAX; i++)
-> +		if (hx711_gain_to_scale[i].scale == scale)
-> +			return hx711_gain_to_scale[i].gain;
-> +	return -EINVAL;
-> +}
-> +
-> +struct hx711_data {
-> +	struct device		*dev;
-> +	struct gpio_desc	*gpiod_pd_sck;
-> +	struct gpio_desc	*gpiod_dout;
-> +	struct regulator	*reg_avdd;
-> +	int			gain_set;	/* gain set on device */
-> +	int			gain_chan_a;	/* gain for channel A */
-> +	struct mutex		lock;
-> +};
-> +
-> +static int hx711_read(struct hx711_data *hx711_data);
-> +
-> +static int hx711_reset(struct hx711_data *hx711_data)
-> +{
-> +	int ret;
-> +	int val = gpiod_get_value(hx711_data->gpiod_dout);
-> +
-> +	if (val) {
-> +		int i;
-> +
-> +		/*
-> +		 * an examination with the oszilloscope indicated
-> +		 * that the first value read after the reset is not stable
-> +		 * if we reset too short;
-> +		 * the shorter the reset cycle
-> +		 * the less reliable the first value after reset is;
-> +		 * there were no problems encountered with a value
-> +		 * of 10 ms or higher
-> +		 */
-> +		gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
-> +		msleep(10);
-> +		gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
-> +
-> +		/*
-> +		 * a maximum reset cycle time of 56 ms was measured.
-> +		 * we round it up to 100 ms
-> +		 */
-> +		for (i = 0; i < 100; i++) {
-> +			val = gpiod_get_value(hx711_data->gpiod_dout);
-> +			if (!val)
-> +				break;
-> +			/* sleep at least 1 ms */
-> +			msleep(1);
-> +		}
-> +
-> +		/*
-> +		 * after a reset the gain is 128 so we do a dummy read
-> +		 *   to set the gain for the next read
-> +		 */
-> +		ret = hx711_read(hx711_data);
-> +		if (ret < 0)
-> +			return ret;
-> +	}
-> +
-> +	return val;
-> +}
-> +
-> +static int hx711_cycle(struct hx711_data *hx711_data)
-> +{
-> +	int val;
-> +
-> +	/*
-> +	 * if preempted for more then 60us while PD_SCK is high:
-> +	 * hx711 is going in reset
-> +	 * ==> measuring is false
-> +	 */
-> +	preempt_disable();
-> +	gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
-> +	val = gpiod_get_value(hx711_data->gpiod_dout);
-> +	/*
-> +	 * here we are not waiting for 0.2 us as suggested by the datasheet,
-> +	 * because the oszilloscope showed in a test scenario
-> +	 * at least 1.15 us for PD_SCK high (T3 in datasheet)
-> +	 * and 0.56 us for PD_SCK low on TI Sitara with 800 MHz
-> +	 */
-> +	gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
-> +	preempt_enable();
-> +
-> +	return val;
-> +}
-> +
-> +static int hx711_read(struct hx711_data *hx711_data)
-> +{
-> +	int i, ret;
-> +	int value = 0;
-> +
-> +	if (hx711_reset(hx711_data)) {
-> +		dev_err(hx711_data->dev, "reset failed!");
-> +		return -EIO;
-> +	}
-> +
-> +	for (i = 0; i < 24; i++) {
-> +		value <<= 1;
-> +		ret = hx711_cycle(hx711_data);
-> +		if (ret)
-> +			value++;
-> +	}
-> +
-> +	value ^= 0x800000;
-> +
-> +	for (i = 0; i < hx711_get_gain_to_pulse(hx711_data->gain_set); i++)
-> +		hx711_cycle(hx711_data);
-> +
-> +	return value;
-> +}
-> +
-> +static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
-> +{
-> +	int ret;
-> +
-> +	if (chan == HX711_CHAN_A) {
-> +		if (hx711_data->gain_set == 32) {
-> +			hx711_data->gain_set = hx711_data->gain_chan_a;
-> +
-> +			ret = hx711_read(hx711_data);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +	} else {
-> +		if (hx711_data->gain_set != 32) {
-> +			hx711_data->gain_set = 32;
-> +
-> +			ret = hx711_read(hx711_data);
-> +			if (ret < 0)
-> +				return ret;
-> +		}
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int hx711_read_raw(struct iio_dev *iio_dev,
-> +				const struct iio_chan_spec *chan,
-> +				int *val, int *val2, long mask)
-> +{
-> +	struct hx711_data *hx711_data = iio_priv(iio_dev);
-> +	int ret;
-> +
-> +	mutex_lock(&hx711_data->lock);
-
-I suggest to move the locking into the case blocks where it is needed...
-
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		ret = hx711_set_gain_for_channel(hx711_data, chan->channel);
-> +		if (ret < 0) {
-> +			mutex_unlock(&hx711_data->lock);
-> +			return ret;
-> +		}
-> +
-> +		*val = hx711_read(hx711_data);
-> +		mutex_unlock(&hx711_data->lock);
-> +		if (*val < 0)
-> +			return *val;
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 0;
-> +		*val2 = hx711_get_gain_to_scale(hx711_data->gain_set);
-> +		mutex_unlock(&hx711_data->lock);
-> +		return IIO_VAL_INT_PLUS_NANO;
-> +	default:
-> +		mutex_unlock(&hx711_data->lock);
-
-... this is quite ugly 
-
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +static int hx711_write_raw(struct iio_dev *iio_dev,
-> +				struct iio_chan_spec const *chan,
-> +				int val,
-> +				int val2,
-> +				long mask)
-> +{
-> +	struct hx711_data *hx711_data = iio_priv(iio_dev);
-> +	int ret;
-> +	int gain;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		/*
-> +		 * a scale greater than 1 mV per LSB is not possible
-> +		 * with the HX711, therefore val must be 0
-> +		 */
-> +		if (val != 0)
-> +			return -EINVAL;
-> +
-> +		mutex_lock(&hx711_data->lock);
-> +
-> +		gain = hx711_get_scale_to_gain(val2);
-> +		if (gain < 0) {
-> +			mutex_unlock(&hx711_data->lock);
-> +			return gain;
-> +		}
-> +
-> +		if (gain != hx711_data->gain_set) {
-> +			hx711_data->gain_set = gain;
-> +			if (gain != 32)
-> +				hx711_data->gain_chan_a = gain;
-> +
-> +			ret = hx711_read(hx711_data);
-> +			if (ret < 0) {
-> +				mutex_unlock(&hx711_data->lock);
-> +				return ret;
-> +			}
-> +		}
-> +
-> +		mutex_unlock(&hx711_data->lock);
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static int hx711_write_raw_get_fmt(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		long mask)
-> +{
-> +	return IIO_VAL_INT_PLUS_NANO;
-> +}
-> +
-> +static ssize_t hx711_scale_available_show(struct device *dev,
-> +				struct device_attribute *attr,
-> +				char *buf)
-> +{
-> +	return sprintf(buf, "0.%09d 0.%09d 0.%09d\n",
-> +			hx711_gain_to_scale[0].scale,
-> +			hx711_gain_to_scale[2].scale,
-> +			hx711_gain_to_scale[1].scale);
-> +}
-> +
-> +static IIO_DEVICE_ATTR(scale_available, S_IRUGO,
-> +	hx711_scale_available_show, NULL, 0);
-> +
-> +static struct attribute *hx711_attributes[] = {
-> +	&iio_dev_attr_scale_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static struct attribute_group hx711_attribute_group = {
-> +	.attrs = hx711_attributes,
-> +};
-> +
-> +static const struct iio_info hx711_iio_info = {
-> +	.driver_module		= THIS_MODULE,
-> +	.read_raw		= hx711_read_raw,
-> +	.write_raw		= hx711_write_raw,
-> +	.write_raw_get_fmt	= hx711_write_raw_get_fmt,
-> +	.attrs			= &hx711_attribute_group,
-> +};
-> +
-> +static const struct iio_chan_spec hx711_chan_spec[] = {
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.channel = HX711_CHAN_A,
-> +		.indexed = 1,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +	{
-> +		.type = IIO_VOLTAGE,
-> +		.channel = HX711_CHAN_B,
-> +		.indexed = 1,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
-> +	},
-> +};
-> +
-> +static int hx711_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct hx711_data *hx711_data;
-> +	struct iio_dev *iio;
-> +	int ret;
-> +	int i;
-> +
-> +	iio = devm_iio_device_alloc(dev, sizeof(struct hx711_data));
-> +	if (!iio) {
-> +		dev_err(dev, "failed to allocate IIO device\n");
-> +		return -ENOMEM;
-> +	}
-> +
-> +	hx711_data = iio_priv(iio);
-> +	hx711_data->dev = dev;
-> +
-> +	mutex_init(&hx711_data->lock);
-> +
-> +	/* PD_SCK stands for power down and serial clock input of HX711
-> +	 * in the driver it is an output
-> +	 */
-> +	hx711_data->gpiod_pd_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_LOW);
-> +	if (IS_ERR(hx711_data->gpiod_pd_sck)) {
-> +		dev_err(dev, "failed to get sck-gpiod: err=%ld\n",
-> +					PTR_ERR(hx711_data->gpiod_pd_sck));
-> +		return PTR_ERR(hx711_data->gpiod_pd_sck);
-> +	}
-> +
-> +	/* DOUT stands for serial data output of HX711
-> +	 * for the driver it is an input
-> +	 */
-> +	hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_IN);
-> +	if (IS_ERR(hx711_data->gpiod_dout)) {
-> +		dev_err(dev, "failed to get dout-gpiod: err=%ld\n",
-> +					PTR_ERR(hx711_data->gpiod_dout));
-> +		return PTR_ERR(hx711_data->gpiod_dout);
-> +	}
-> +
-> +	hx711_data->reg_avdd = devm_regulator_get(dev, "avdd");
-> +	if (IS_ERR(hx711_data->reg_avdd))
-> +		return PTR_ERR(hx711_data->reg_avdd);
-> +
-> +	ret = regulator_enable(hx711_data->reg_avdd);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/*
-> +	 * with
-> +	 * full scale differential input range: AVDD / GAIN
-> +	 * full scale output data: 2^24
-> +	 * we can say:
-> +	 *     AVDD / GAIN = 2^24
-> +	 * therefore:
-> +	 *     1 LSB = AVDD / GAIN / 2^24
-> +	 * AVDD is in uV, but we need 10^-9 mV
-> +	 * approximately to fit into a 32 bit number:
-> +	 * 1 LSB = (AVDD * 100) / GAIN / 1678 [10^-9 mV]
-> +	 */
-> +	ret = regulator_get_voltage(hx711_data->reg_avdd);
-> +	if (ret < 0)
-
-disable regulator
-
-> +		return ret;
-> +	/* we need 10^-9 mV */
-> +	ret *= 100;
-> +
-> +	for (i = 0; i < HX711_GAIN_MAX; i++)
-> +		hx711_gain_to_scale[i].scale =
-> +			ret / hx711_gain_to_scale[i].gain / 1678;
-> +
-> +	hx711_data->gain_set = 128;
-> +	hx711_data->gain_chan_a = 128;
-> +
-> +	platform_set_drvdata(pdev, iio);
-> +
-> +	iio->name = "hx711";
-> +	iio->dev.parent = &pdev->dev;
-> +	iio->info = &hx711_iio_info;
-> +	iio->modes = INDIO_DIRECT_MODE;
-> +	iio->channels = hx711_chan_spec;
-> +	iio->num_channels = ARRAY_SIZE(hx711_chan_spec);
-> +
-> +	return devm_iio_device_register(dev, iio);
-
-disable regulator if this fails
-
-> +}
-> +
-> +static int hx711_remove(struct platform_device *pdev)
-> +{
-> +	struct hx711_data *hx711_data;
-> +	struct iio_dev *iio;
-> +
-> +	iio = platform_get_drvdata(pdev);
-> +	hx711_data = iio_priv(iio);
-> +
-
-devm_iio_device_register and _remove() doesn't mix
-
-> +	regulator_disable(hx711_data->reg_avdd);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id of_hx711_match[] = {
-> +	{ .compatible = "avia,hx711", },
-> +	{},
-> +};
-> +
-> +MODULE_DEVICE_TABLE(of, of_hx711_match);
-> +
-> +static struct platform_driver hx711_driver = {
-> +	.probe		= hx711_probe,
-> +	.remove		= hx711_remove,
-> +	.driver		= {
-> +		.name		= "hx711-gpio",
-> +		.of_match_table	= of_hx711_match,
-> +	},
-> +};
-> +
-> +module_platform_driver(hx711_driver);
-> +
-> +MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-> +MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
-> +MODULE_LICENSE("GPL");
-> +MODULE_ALIAS("platform:hx711-gpio");
-> +
-> 
+>+config HIBVT_LSADC
+>+	tristate "HIBVT LSADC driver"
+>+	depends on ARCH_HISI || COMPILE_TEST
+>+	help
+>+	  Say yes here to build support for the LSADC found in SoCs from
+>+	  hisilicon BVT chip.
+>+
+>+	  To compile this driver as a module, choose M here: the
+>+	  module will be called hibvt_lsadc.
+>+
+> config INA2XX_ADC
+> 	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+> 	depends on I2C && !SENSORS_INA2XX
+>diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>index 7a40c04..6554d92 100644
+>--- a/drivers/iio/adc/Makefile
+>+++ b/drivers/iio/adc/Makefile
+>@@ -23,6 +23,7 @@ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+> obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+> obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
+> obj-$(CONFIG_HI8435) += hi8435.o
+>+obj-$(CONFIG_HIBVT_LSADC) += hibvt_lsadc.o
+> obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+> obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+> obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+>diff --git a/drivers/iio/adc/hibvt_lsadc.c
+>b/drivers/iio/adc/hibvt_lsadc.c
+>new file mode 100644
+>index 0000000..a20afe8
+>--- /dev/null
+>+++ b/drivers/iio/adc/hibvt_lsadc.c
+>@@ -0,0 +1,344 @@
+>+/*
+>+ * Hisilicon BVT Low Speed (LS) A/D Converter
+>+ * Copyright (C) 2016 HiSilicon Technologies Co., Ltd.
+>+ *
+>+ * This program is free software; you can redistribute it and/or
+>modify
+>+ * it under the terms of the GNU General Public License as published
+>by
+>+ * the Free Software Foundation; either version 2 of the License, or
+>+ * (at your option) any later version.
+>+ *
+>+ * This program is distributed in the hope that it will be useful,
+>+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>+ * GNU General Public License for more details.
+>+ */
+>+
+>+#include <linux/module.h>
+>+#include <linux/platform_device.h>
+>+#include <linux/interrupt.h>
+>+#include <linux/io.h>
+>+#include <linux/of.h>
+>+#include <linux/of_device.h>
+>+#include <linux/clk.h>
+>+#include <linux/completion.h>
+>+#include <linux/delay.h>
+>+#include <linux/reset.h>
+>+#include <linux/regulator/consumer.h>
+>+#include <linux/iio/iio.h>
+>+
+>+/* hisilicon bvt adc registers definitions */
+>+#define LSADC_CONFIG		0x00
+>+#define CONFIG_DEGLITCH		BIT(17)
+Please add a driver specific prefix to all defines to keep them in their own namespace.
+>+#define CONFIG_RESET		BIT(15)
+>+#define CONFIG_POWERDOWN	BIT(14)
+>+#define CONFIG_MODE			BIT(13)
+>+#define CONFIG_CHC_VALID	BIT(10)
+>+#define CONFIG_CHB_VALID	BIT(9)
+>+#define CONFIG_CHA_VALID	BIT(8)
+>+
+>+#define LSADC_TIMESCAN		0x08
+Lsadc is perhaps to generic a prefix. Clash chances are a bit high
+>+#define LSADC_INTEN			0x10
+>+#define LSADC_INTSTATUS		0x14
+>+#define LSADC_INTCLR		0x18
+>+#define LSADC_START			0x1C
+>+#define LSADC_STOP			0x20
+>+#define LSADC_ACTBIT		0x24
+>+#define LSADC_CHNDATA		0x2C
+>+
+>+#define ADC_CON_EN			(1u << 0)
+>+#define ADC_CON_DEN			(0u << 0)
+>+
+>+#define ADC_NUM_BITS		10
+>+
+>+/* fix clk:3000000, default tscan set 10ms */
+>+#define DEF_ADC_TSCAN_MS	(10*3000)
+>+
+>+#define LSADC_CHN_MASK		0x7
+>+
+>+#define LSADC_TIMEOUT		msecs_to_jiffies(100)
+>+
+>+/* default voltage scale for every channel <mv> */
+>+static int g_voltage[] = {
+>+	3300, 3300, 3300
+>+};
+Prefix these as well.
+>+
+>+struct hibvt_lsadc {
+>+	void __iomem		*regs;
+>+	struct completion	completion;
+>+	struct reset_control	*reset;
+>+	const struct hibvt_lsadc_data	*data;
+>+	unsigned int		cur_chn;
+>+	unsigned int		value;
+>+};
+>+
+>+struct hibvt_lsadc_data {
+>+	int				num_bits;
+>+	const struct iio_chan_spec	*channels;
+>+	int				num_channels;
+>+
+>+	void (*clear_irq)(struct hibvt_lsadc *info, int mask);
+>+	void (*start_conv)(struct hibvt_lsadc *info);
+>+	void (*stop_conv)(struct hibvt_lsadc *info);
+>+};
+>+
+>+static int hibvt_lsadc_read_raw(struct iio_dev *indio_dev,
+>+				    struct iio_chan_spec const *chan,
+>+				    int *val, int *val2, long mask)
+>+{
+>+	struct hibvt_lsadc *info = iio_priv(indio_dev);
+>+
+>+	switch (mask) {
+>+	case IIO_CHAN_INFO_RAW:
+>+		mutex_lock(&indio_dev->mlock);
+>+
+>+		reinit_completion(&info->completion);
+>+
+>+		/* Select the channel to be used */
+>+		info->cur_chn = chan->channel;
+>+
+>+		if (info->data->start_conv)
+>+			info->data->start_conv(info);
+>+
+>+		if (!wait_for_completion_timeout(&info->completion,
+>+							LSADC_TIMEOUT)) {
+>+			if (info->data->stop_conv)
+>+				info->data->stop_conv(info);
+>+			mutex_unlock(&indio_dev->mlock);
+>+			return -ETIMEDOUT;
+>+		}
+>+
+>+		*val = info->value;
+>+		mutex_unlock(&indio_dev->mlock);
+>+		return IIO_VAL_INT;
+>+	case IIO_CHAN_INFO_SCALE:
+>+		*val = g_voltage[chan->channel];
+>+		*val2 = info->data->num_bits;
+>+		return IIO_VAL_FRACTIONAL_LOG2;
+>+	default:
+>+		return -EINVAL;
+>+	}
+>+}
+>+
+>+static irqreturn_t hibvt_lsadc_isr(int irq, void *dev_id)
+>+{
+>+	struct hibvt_lsadc *info = (struct hibvt_lsadc *)dev_id;
+>+	int mask;
+>+
+>+	mask = readl(info->regs + LSADC_INTSTATUS);
+>+	mask &= LSADC_CHN_MASK;
+>+
+>+	/* Clear irq */
+>+	if (info->data->clear_irq)
+>+		info->data->clear_irq(info, mask);
+>+
+>+	/* Read value */
+>+	info->value = readl(info->regs + LSADC_CHNDATA + (info->cur_chn <<
+>2));
+>+	info->value &= GENMASK(info->data->num_bits - 1, 0);
+>+
+>+	/* stop adc */
+>+	if (info->data->stop_conv)
+>+		info->data->stop_conv(info);
+>+
+>+	complete(&info->completion);
+>+
+>+	return IRQ_HANDLED;
+>+}
+>+
+>+static const struct iio_info hibvt_lsadc_iio_info = {
+>+	.read_raw = hibvt_lsadc_read_raw,
+>+	.driver_module = THIS_MODULE,
+>+};
+>+
+>+#define ADC_CHANNEL(_index, _id) {      \
+Prefix this define. 
+>+	.type = IIO_VOLTAGE,                \
+>+	.indexed = 1,						\
+>+	.channel = _index,					\
+>+	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
+>+			BIT(IIO_CHAN_INFO_SCALE),   \
+>+	.datasheet_name = _id,              \
+>+}
+>+
+>+static const struct iio_chan_spec hibvt_lsadc_iio_channels[] = {
+>+	ADC_CHANNEL(0, "adc0"),
+>+	ADC_CHANNEL(1, "adc1"),
+>+	ADC_CHANNEL(2, "adc2"),
+>+};
+>+
+>+static void hibvt_lsadc_clear_irq(struct hibvt_lsadc *info, int mask)
+>+{
+>+	writel(mask, info->regs + LSADC_INTCLR);
+>+}
+>+
+>+static void hibvt_lsadc_start_conv(struct hibvt_lsadc *info)
+>+{
+>+	unsigned int con;
+>+
+>+	/* set number bit */
+>+	con = GENMASK(info->data->num_bits - 1, 0);
+>+	writel(con, (info->regs + LSADC_ACTBIT));
+>+
+>+    /* config */
+>+	con = readl(info->regs + LSADC_CONFIG);
+>+	con &= ~CONFIG_RESET;
+>+	con |= (CONFIG_POWERDOWN | CONFIG_DEGLITCH | CONFIG_MODE);
+>+	con &= ~(CONFIG_CHA_VALID | CONFIG_CHB_VALID | CONFIG_CHC_VALID);
+>+	con |= (CONFIG_CHA_VALID << info->cur_chn);
+>+	writel(con, (info->regs + LSADC_CONFIG));
+>+
+>+	/* set timescan */
+>+	writel(DEF_ADC_TSCAN_MS, (info->regs + LSADC_TIMESCAN));
+>+
+>+	/* clear interrupt */
+>+	writel(LSADC_CHN_MASK, info->regs + LSADC_INTCLR);
+>+
+>+	/* enable interrupt */
+>+	writel(ADC_CON_EN, (info->regs + LSADC_INTEN));
+>+
+>+	/* start scan */
+>+	writel(ADC_CON_EN, (info->regs + LSADC_START));
+>+}
+>+
+>+static void hibvt_lsadc_stop_conv(struct hibvt_lsadc *info)
+>+{
+>+	/* reset the timescan */
+>+	writel(ADC_CON_DEN, (info->regs + LSADC_TIMESCAN));
+>+
+>+	/* disable interrupt */
+>+	writel(ADC_CON_DEN, (info->regs + LSADC_INTEN));
+>+
+>+	/* stop scan */
+>+	writel(ADC_CON_EN, (info->regs + LSADC_STOP));
+>+}
+>+
+>+static const struct hibvt_lsadc_data lsadc_data = {
+>+	.num_bits = ADC_NUM_BITS,
+>+	.channels = hibvt_lsadc_iio_channels,
+>+	.num_channels = ARRAY_SIZE(hibvt_lsadc_iio_channels),
+>+
+>+	.clear_irq	= hibvt_lsadc_clear_irq,
+>+	.start_conv	= hibvt_lsadc_start_conv,
+>+	.stop_conv = hibvt_lsadc_stop_conv,
+>+};
+Usual convention is to only introduce a device type specific structure when more than one device is supported.  If you are going to follow up
+ shortly with more device support then leave it but add a note to the patch description. If not please drop this abstraction.
+>+
+>+static const struct of_device_id hibvt_lsadc_match[] = {
+>+	{
+>+		.compatible = "hisilicon,hibvt-lsadc",
+>+		.data = &lsadc_data,
+>+	},
+>+	{},
+>+};
+>+MODULE_DEVICE_TABLE(of, hibvt_lsadc_match);
+>+
+>+/**
+>+ * Reset LSADC Controller.
+Single line comment syntax please.
+>+ */
+>+static void hibvt_lsadc_reset_controller(struct reset_control *reset)
+>+{
+>+	reset_control_assert(reset);
+>+	usleep_range(10, 20);
+>+	reset_control_deassert(reset);
+>+}
+>+
+>+static int hibvt_lsadc_probe(struct platform_device *pdev)
+>+{
+>+	struct hibvt_lsadc *info = NULL;
+>+	struct device_node *np = pdev->dev.of_node;
+>+	struct iio_dev *indio_dev = NULL;
+>+	struct resource	*mem;
+>+	const struct of_device_id *match;
+>+	int ret;
+>+	int irq;
+>+
+>+	if (!np)
+>+		return -ENODEV;
+>+
+>+	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+>+	if (!indio_dev) {
+>+		dev_err(&pdev->dev, "failed allocating iio device\n");
+>+		return -ENOMEM;
+>+	}
+>+	info = iio_priv(indio_dev);
+>+
+>+	match = of_match_device(hibvt_lsadc_match, &pdev->dev);
+>+	info->data = match->data;
+>+
+>+	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>+	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>+	if (IS_ERR(info->regs))
+>+		return PTR_ERR(info->regs);
+>+
+>+	/*
+>+	 * The reset should be an optional property, as it should work
+>+	 * with old devicetrees as well
+>+	 */
+>+	info->reset = devm_reset_control_get(&pdev->dev, "lsadc-crg");
+>+	if (IS_ERR(info->reset)) {
+>+		ret = PTR_ERR(info->reset);
+>+		if (ret != -ENOENT)
+>+			return ret;
+>+
+>+		dev_dbg(&pdev->dev, "no reset control found\n");
+>+		info->reset = NULL;
+>+	}
+>+
+>+	init_completion(&info->completion);
+>+
+>+	irq = platform_get_irq(pdev, 0);
+>+	if (irq < 0) {
+>+		dev_err(&pdev->dev, "no irq resource?\n");
+>+		return irq;
+>+	}
+>+
+>+	ret = devm_request_irq(&pdev->dev, irq, hibvt_lsadc_isr,
+>+			       0, dev_name(&pdev->dev), info);
+>+	if (ret < 0) {
+>+		dev_err(&pdev->dev, "failed requesting irq %d\n", irq);
+>+		return ret;
+>+	}
+>+
+>+	if (info->reset)
+>+		hibvt_lsadc_reset_controller(info->reset);
+>+
+>+	platform_set_drvdata(pdev, indio_dev);
+>+
+>+	indio_dev->name = dev_name(&pdev->dev);
+>+	indio_dev->dev.parent = &pdev->dev;
+>+	indio_dev->dev.of_node = pdev->dev.of_node;
+>+	indio_dev->info = &hibvt_lsadc_iio_info;
+>+	indio_dev->modes = INDIO_DIRECT_MODE;
+>+
+>+	indio_dev->channels = info->data->channels;
+>+	indio_dev->num_channels = info->data->num_channels;
+>+
+>+	ret = iio_device_register(indio_dev);
+>+	if (ret < 0) {
+>+		dev_err(&pdev->dev, "failed register iio device\n");
+>+		return ret;
+>+	}
+>+
+>+	return 0;
+>+}
+>+
+>+static int hibvt_lsadc_remove(struct platform_device *pdev)
+>+{
+>+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>+
+>+	iio_device_unregister(indio_dev);
+As nothing else here can use devm version of register and drop remove entirely.
+>+
+>+	return 0;
+>+}
+>+
+>+static struct platform_driver hibvt_lsadc_driver = {
+>+	.probe		= hibvt_lsadc_probe,
+>+	.remove		= hibvt_lsadc_remove,
+>+	.driver		= {
+>+		.name	= "hibvt-lsadc",
+>+		.of_match_table = hibvt_lsadc_match,
+>+	},
+>+};
+>+
+>+module_platform_driver(hibvt_lsadc_driver);
+>+
+>+MODULE_AUTHOR("Allen Liu <liurenzhong@hisilicon.com>");
+>+MODULE_DESCRIPTION("hisilicon BVT LSADC driver");
+>+MODULE_LICENSE("GPL v2");
 
 -- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
+Sent from my Android device with K-9 Mail. Please excuse my brevity.
