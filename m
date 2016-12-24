@@ -1,554 +1,469 @@
-Return-Path: <SRS0=yNKi=YI=matheina.com=scott@kernel.org>
-From: Scott Matheina <scott@matheina.com>
-To: linux-kernel@vger.kernel.org
-Cc: Scott Matheina <scott@matheina.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org,
-	devel@driverdev.osuosl.org
-Subject: [PATCHv4 7/8] Changed code to align with coding style of using octat
-Date: Sun, 25 Dec 2016 13:56:45 -0600
-Message-Id: <1482696216-8013-8-git-send-email-scott@matheina.com>
-In-Reply-To: <1482696216-8013-1-git-send-email-scott@matheina.com>
-References: <1482696216-8013-1-git-send-email-scott@matheina.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from szxga02-in.huawei.com ([119.145.14.65]:56685 "EHLO
+        szxga02-in.huawei.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757338AbcLXCdT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 23 Dec 2016 21:33:19 -0500
+Subject: Re: [PATCH] adc: add adc driver for Hisilicon BVT SOCs
+To: Allen Liu <liurenzhong@hisilicon.com>, <jic23@kernel.org>,
+        <knaack.h@gmx.de>, <lars@metafoo.de>, <pmeerw@pmeerw.net>,
+        <robh+dt@kernel.org>, <mark.rutland@arm.com>
+References: <1482544497-136656-1-git-send-email-liurenzhong@hisilicon.com>
+CC: <yanhaifeng@hisilicon.com>, <hermit.wangheming@hisilicon.com>,
+        <akinobu.mita@gmail.com>, <ludovic.desroches@atmel.com>,
+        <krzk@kernel.org>, <vilhelm.gray@gmail.com>,
+        <ksenija.stanojevic@gmail.com>, <zhiyong.tao@mediatek.com>,
+        <daniel.baluta@intel.com>, <leonard.crestez@intel.com>,
+        <ray.jui@broadcom.com>, <raveendra.padasalagi@broadcom.com>,
+        <mranostay@gmail.com>, <amsfield22@gmail.com>,
+        <linux-iio@vger.kernel.org>, <devicetree@vger.kernel.org>,
+        <linux-kernel@vger.kernel.org>, <kevin.lixu@hisilicon.com>
+From: Jiancheng Xue <xuejiancheng@hisilicon.com>
+Message-ID: <ca1f0010-4ac7-9a0f-6fad-f1c55626400e@hisilicon.com>
+Date: Sat, 24 Dec 2016 10:31:47 +0800
+MIME-Version: 1.0
+In-Reply-To: <1482544497-136656-1-git-send-email-liurenzhong@hisilicon.com>
+Content-Type: text/plain; charset="windows-1252"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The permmission code was changed to reflect octat (0644/0444) for required permissions.
 
-Signed-off-by: Scott Matheina <scott@matheina.com>
----
- drivers/staging/iio/addac/adt7316.c | 264 ++++++++++++++----------------------
- 1 file changed, 101 insertions(+), 163 deletions(-)
 
-diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-index 91ac222..e8e58d5 100644
---- a/drivers/staging/iio/addac/adt7316.c
-+++ b/drivers/staging/iio/addac/adt7316.c
-@@ -267,10 +267,8 @@ static ssize_t adt7316_store_enabled(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(enabled, S_IRUGO | S_IWUSR,
--		adt7316_show_enabled,
--		adt7316_store_enabled,
--		0);
-+static iio_device_attr(enabled, 0644, adt7316_show_enabled,
-+		       adt7316_store_enabled, 0);
- 
- static ssize_t adt7316_show_select_ex_temp(struct device *dev,
- 		struct device_attribute *attr,
-@@ -311,10 +309,8 @@ static ssize_t adt7316_store_select_ex_temp(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(select_ex_temp, S_IRUGO | S_IWUSR,
--		adt7316_show_select_ex_temp,
--		adt7316_store_select_ex_temp,
--		0);
-+static iio_device_attr(select_ex_temp, 0644, adt7316_show_select_ex_temp,
-+		       adt7316_store_select_ex_temp, 0);
- 
- static ssize_t adt7316_show_mode(struct device *dev,
- 				 struct device_attribute *attr,
-@@ -352,10 +348,7 @@ static ssize_t adt7316_store_mode(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
--		adt7316_show_mode,
--		adt7316_store_mode,
--		0);
-+static iio_device_attr(mode, 0644, adt7316_show_mode, adt7316_store_mode, 0);
- 
- static ssize_t adt7316_show_all_modes(struct device *dev,
- 				      struct device_attribute *attr,
-@@ -364,7 +357,7 @@ static ssize_t adt7316_show_all_modes(struct device *dev,
- 	return sprintf(buf, "single_channel\nround_robin\n");
- }
- 
--static IIO_DEVICE_ATTR(all_modes, S_IRUGO, adt7316_show_all_modes, NULL, 0);
-+static iio_device_attr(all_modes, 0444, adt7316_show_all_modes, NULL, 0);
- 
- static ssize_t adt7316_show_ad_channel(struct device *dev,
- 				       struct device_attribute *attr,
-@@ -445,10 +438,8 @@ static ssize_t adt7316_store_ad_channel(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(ad_channel, S_IRUGO | S_IWUSR,
--		adt7316_show_ad_channel,
--		adt7316_store_ad_channel,
--		0);
-+static iio_device_attr(ad_channel, 0644, adt7316_show_ad_channel,
-+		       adt7316_store_ad_channel, 0);
- 
- static ssize_t adt7316_show_all_ad_channels(struct device *dev,
- 					    struct device_attribute *attr,
-@@ -468,8 +459,8 @@ static ssize_t adt7316_show_all_ad_channels(struct device *dev,
- 			"2 - External Temperature\n");
- }
- 
--static IIO_DEVICE_ATTR(all_ad_channels, S_IRUGO,
--		adt7316_show_all_ad_channels, NULL, 0);
-+static iio_device_attr(all_ad_channels, 0444, adt7316_show_all_ad_channels,
-+		       NULL, 0);
- 
- static ssize_t adt7316_show_disable_averaging(struct device *dev,
- 					      struct device_attribute *attr,
-@@ -505,10 +496,8 @@ static ssize_t adt7316_store_disable_averaging(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(disable_averaging, S_IRUGO | S_IWUSR,
--		adt7316_show_disable_averaging,
--		adt7316_store_disable_averaging,
--		0);
-+static iio_device_attr(disable_averaging, 0644, adt7316_show_disable_averaging,
-+		       adt7316_store_disable_averaging, 0);
- 
- static ssize_t adt7316_show_enable_smbus_timeout(struct device *dev,
- 						 struct device_attribute *attr,
-@@ -544,10 +533,9 @@ static ssize_t adt7316_store_enable_smbus_timeout(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(enable_smbus_timeout, S_IRUGO | S_IWUSR,
--		adt7316_show_enable_smbus_timeout,
--		adt7316_store_enable_smbus_timeout,
--		0);
-+static iio_device_attr(enable_smbus_timeout, 0644,
-+		       adt7316_show_enable_smbus_timeout,
-+		       adt7316_store_enable_smbus_timeout, 0);
- 
- static ssize_t adt7316_show_powerdown(struct device *dev,
- 				      struct device_attribute *attr,
-@@ -582,10 +570,8 @@ static ssize_t adt7316_store_powerdown(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(powerdown, S_IRUGO | S_IWUSR,
--		adt7316_show_powerdown,
--		adt7316_store_powerdown,
--		0);
-+static iio_device_attr(powerdown, 0644, adt7316_show_powerdown,
-+		       adt7316_store_powerdown, 0);
- 
- static ssize_t adt7316_show_fast_ad_clock(struct device *dev,
- 					  struct device_attribute *attr,
-@@ -620,10 +606,8 @@ static ssize_t adt7316_store_fast_ad_clock(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(fast_ad_clock, S_IRUGO | S_IWUSR,
--		adt7316_show_fast_ad_clock,
--		adt7316_store_fast_ad_clock,
--		0);
-+static iio_device_attr(fast_ad_clock, 0644, adt7316_show_fast_ad_clock,
-+		       adt7316_store_fast_ad_clock, 0);
- 
- static ssize_t adt7316_show_da_high_resolution(struct device *dev,
- 		struct device_attribute *attr,
-@@ -673,10 +657,9 @@ static ssize_t adt7316_store_da_high_resolution(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(da_high_resolution, S_IRUGO | S_IWUSR,
--		adt7316_show_da_high_resolution,
--		adt7316_store_da_high_resolution,
--		0);
-+static iio_device_attr(da_high_resolution, 0644,
-+		       adt7316_show_da_high_resolution,
-+		       adt7316_store_da_high_resolution, 0);
- 
- static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
- 		struct device_attribute *attr,
-@@ -719,10 +702,9 @@ static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(AIN_internal_Vref, S_IRUGO | S_IWUSR,
--		adt7316_show_AIN_internal_Vref,
--		adt7316_store_AIN_internal_Vref,
--		0);
-+static iio_device_attr(ain_internal_vref, 0644,
-+		       adt7316_show_ain_internal_vref,
-+		       adt7316_store_ain_internal_vref, 0);
- 
- 
- static ssize_t adt7316_show_enable_prop_DACA(struct device *dev,
-@@ -759,10 +741,9 @@ static ssize_t adt7316_store_enable_prop_DACA(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(enable_proportion_DACA, S_IRUGO | S_IWUSR,
--		adt7316_show_enable_prop_DACA,
--		adt7316_store_enable_prop_DACA,
--		0);
-+static iio_device_attr(enable_proportion_daca, 0644,
-+		       adt7316_show_enable_prop_daca,
-+		       adt7316_store_enable_prop_daca, 0);
- 
- static ssize_t adt7316_show_enable_prop_DACB(struct device *dev,
- 		struct device_attribute *attr,
-@@ -798,10 +779,9 @@ static ssize_t adt7316_store_enable_prop_DACB(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(enable_proportion_DACB, S_IRUGO | S_IWUSR,
--		adt7316_show_enable_prop_DACB,
--		adt7316_store_enable_prop_DACB,
--		0);
-+static iio_device_attr(enable_proportion_dacb, 0644,
-+		       adt7316_show_enable_prop_dacb,
-+		       adt7316_store_enable_prop_dacb, 0);
- 
- static ssize_t adt7316_show_DAC_2Vref_ch_mask(struct device *dev,
- 		struct device_attribute *attr,
-@@ -841,10 +821,9 @@ static ssize_t adt7316_store_DAC_2Vref_ch_mask(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(DAC_2Vref_channels_mask, S_IRUGO | S_IWUSR,
--		adt7316_show_DAC_2Vref_ch_mask,
--		adt7316_store_DAC_2Vref_ch_mask,
--		0);
-+static iio_device_attr(dac_2vref_channels_mask, 0644,
-+		       adt7316_show_dac_2vref_ch_mask,
-+		       adt7316_store_dac_2vref_ch_mask, 0);
- 
- static ssize_t adt7316_show_DAC_update_mode(struct device *dev,
- 		struct device_attribute *attr,
-@@ -901,10 +880,8 @@ static ssize_t adt7316_store_DAC_update_mode(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(DAC_update_mode, S_IRUGO | S_IWUSR,
--		adt7316_show_DAC_update_mode,
--		adt7316_store_DAC_update_mode,
--		0);
-+static iio_device_attr(DAC_update_mode, 0644, adt7316_show_dac_update_mode,
-+		       adt7316_store_dac_update_mode, 0);
- 
- static ssize_t adt7316_show_all_DAC_update_modes(struct device *dev,
- 		struct device_attribute *attr,
-@@ -921,9 +898,8 @@ static ssize_t adt7316_show_all_DAC_update_modes(struct device *dev,
- 	return sprintf(buf, "manual\n");
- }
- 
--static IIO_DEVICE_ATTR(all_DAC_update_modes, S_IRUGO,
--		adt7316_show_all_DAC_update_modes, NULL, 0);
--
-+static iio_device_attr(all_dac_update_modes, 0444,
-+		       adt7316_show_all_dac_update_modes, NULL, 0);
- 
- static ssize_t adt7316_store_update_DAC(struct device *dev,
- 		struct device_attribute *attr,
-@@ -960,10 +936,7 @@ static ssize_t adt7316_store_update_DAC(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(update_DAC, S_IRUGO | S_IWUSR,
--		NULL,
--		adt7316_store_update_DAC,
--		0);
-+static iio_device_attr(update_dac, 0644, NULL, adt7316_store_update_dac, 0);
- 
- static ssize_t adt7316_show_DA_AB_Vref_bypass(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1005,10 +978,8 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(DA_AB_Vref_bypass, S_IRUGO | S_IWUSR,
--		adt7316_show_DA_AB_Vref_bypass,
--		adt7316_store_DA_AB_Vref_bypass,
--		0);
-+static iio_device_attr(da_ab_vref_bypass, 0644, adt7316_show_da_ab_vref_bypass,
-+		       adt7316_store_da_ab_vref_bypass, 0);
- 
- static ssize_t adt7316_show_DA_CD_Vref_bypass(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1050,10 +1021,8 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(DA_CD_Vref_bypass, S_IRUGO | S_IWUSR,
--		adt7316_show_DA_CD_Vref_bypass,
--		adt7316_store_DA_CD_Vref_bypass,
--		0);
-+static iio_device_attr(da_cd_vref_bypass, 0644, adt7316_show_da_cd_vref_bypass,
-+		       adt7316_store_da_cd_vref_bypass, 0);
- 
- static ssize_t adt7316_show_DAC_internal_Vref(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1111,10 +1080,8 @@ static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(DAC_internal_Vref, S_IRUGO | S_IWUSR,
--		adt7316_show_DAC_internal_Vref,
--		adt7316_store_DAC_internal_Vref,
--		0);
-+static iio_device_attr(dac_internal_vref, 0644, adt7316_show_dac_internal_vref,
-+		       adt7316_store_dac_internal_vref, 0);
- 
- static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
- 		int channel, char *buf)
-@@ -1200,7 +1167,8 @@ static ssize_t adt7316_show_VDD(struct device *dev,
- 
- 	return adt7316_show_ad(chip, ADT7316_AD_SINGLE_CH_VDD, buf);
- }
--static IIO_DEVICE_ATTR(VDD, S_IRUGO, adt7316_show_VDD, NULL, 0);
-+
-+static iio_device_attr(VDD, 0444, adt7316_show_VDD, NULL, 0);
- 
- static ssize_t adt7316_show_in_temp(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1212,7 +1180,7 @@ static ssize_t adt7316_show_in_temp(struct device *dev,
- 	return adt7316_show_ad(chip, ADT7316_AD_SINGLE_CH_IN, buf);
- }
- 
--static IIO_DEVICE_ATTR(in_temp, S_IRUGO, adt7316_show_in_temp, NULL, 0);
-+static iio_device_attr(in_temp, 0444, adt7316_show_in_temp, NULL, 0);
- 
- static ssize_t adt7316_show_ex_temp_AIN1(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1224,9 +1192,9 @@ static ssize_t adt7316_show_ex_temp_AIN1(struct device *dev,
- 	return adt7316_show_ad(chip, ADT7316_AD_SINGLE_CH_EX, buf);
- }
- 
--static IIO_DEVICE_ATTR(ex_temp_AIN1, S_IRUGO, adt7316_show_ex_temp_AIN1,
--		NULL, 0);
--static IIO_DEVICE_ATTR(ex_temp, S_IRUGO, adt7316_show_ex_temp_AIN1, NULL, 0);
-+static iio_device_attr(ex_temp_ain1, 0444, adt7316_show_ex_temp_ain1, NULL, 0);
-+
-+static iio_device_attr(ex_temp, 0444, adt7316_show_ex_temp_ain1, NULL, 0);
- 
- static ssize_t adt7316_show_AIN2(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1237,29 +1205,32 @@ static ssize_t adt7316_show_AIN2(struct device *dev,
- 
- 	return adt7316_show_ad(chip, ADT7516_AD_SINGLE_CH_AIN2, buf);
- }
--static IIO_DEVICE_ATTR(AIN2, S_IRUGO, adt7316_show_AIN2, NULL, 0);
- 
--static ssize_t adt7316_show_AIN3(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+static iio_device_attr(ain2, 0444, adt7316_show_AIN2, NULL, 0);
-+
-+static ssize_t adt7316_show_ain3(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
- {
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 
- 	return adt7316_show_ad(chip, ADT7516_AD_SINGLE_CH_AIN3, buf);
- }
--static IIO_DEVICE_ATTR(AIN3, S_IRUGO, adt7316_show_AIN3, NULL, 0);
- 
--static ssize_t adt7316_show_AIN4(struct device *dev,
--		struct device_attribute *attr,
--		char *buf)
-+static iio_device_attr(ain3, 0444, adt7316_show_ain3, NULL, 0);
-+
-+static ssize_t adt7316_show_ain4(struct device *dev,
-+				 struct device_attribute *attr,
-+				 char *buf)
- {
- 	struct iio_dev *dev_info = dev_to_iio_dev(dev);
- 	struct adt7316_chip_info *chip = iio_priv(dev_info);
- 
- 	return adt7316_show_ad(chip, ADT7516_AD_SINGLE_CH_AIN4, buf);
- }
--static IIO_DEVICE_ATTR(AIN4, S_IRUGO, adt7316_show_AIN4, NULL, 0);
-+
-+static iio_device_attr(ain4, 0444, adt7316_show_ain4, NULL, 0);
- 
- static ssize_t adt7316_show_temp_offset(struct adt7316_chip_info *chip,
- 		int offset_addr, char *buf)
-@@ -1324,9 +1295,8 @@ static ssize_t adt7316_store_in_temp_offset(struct device *dev,
- 			len);
- }
- 
--static IIO_DEVICE_ATTR(in_temp_offset, S_IRUGO | S_IWUSR,
--		adt7316_show_in_temp_offset,
--		adt7316_store_in_temp_offset, 0);
-+static iio_device_attr(in_temp_offset, 0644, adt7316_show_in_temp_offset,
-+		       adt7316_store_in_temp_offset, 0);
- 
- static ssize_t adt7316_show_ex_temp_offset(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1404,7 +1374,7 @@ static ssize_t adt7316_store_ex_analog_temp_offset(struct device *dev,
- 			ADT7316_EX_ANALOG_TEMP_OFFSET, buf, len);
- }
- 
--static IIO_DEVICE_ATTR(ex_analog_temp_offset, S_IRUGO | S_IWUSR,
-+static iio_device_attr(ex_analog_temp_offset, 0644,
- 		adt7316_show_ex_analog_temp_offset,
- 		adt7316_store_ex_analog_temp_offset, 0);
- 
-@@ -1499,8 +1469,7 @@ static ssize_t adt7316_store_DAC_A(struct device *dev,
- 	return adt7316_store_dac(chip, 0, buf, len);
- }
- 
--static IIO_DEVICE_ATTR(DAC_A, S_IRUGO | S_IWUSR, adt7316_show_DAC_A,
--		adt7316_store_DAC_A, 0);
-+static iio_device_attr(dac_a, 0644, adt7316_show_dac_a, adt7316_store_dac_a, 0);
- 
- static ssize_t adt7316_show_DAC_B(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1523,8 +1492,7 @@ static ssize_t adt7316_store_DAC_B(struct device *dev,
- 	return adt7316_store_dac(chip, 1, buf, len);
- }
- 
--static IIO_DEVICE_ATTR(DAC_B, S_IRUGO | S_IWUSR, adt7316_show_DAC_B,
--		adt7316_store_DAC_B, 0);
-+static iio_device_attr(dac_b, 0644, adt7316_show_dac_b, adt7316_store_dac_b, 0);
- 
- static ssize_t adt7316_show_DAC_C(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1547,8 +1515,7 @@ static ssize_t adt7316_store_DAC_C(struct device *dev,
- 	return adt7316_store_dac(chip, 2, buf, len);
- }
- 
--static IIO_DEVICE_ATTR(DAC_C, S_IRUGO | S_IWUSR, adt7316_show_DAC_C,
--		adt7316_store_DAC_C, 0);
-+static iio_device_attr(DAC_C, 0644, adt7316_show_dac_c, adt7316_store_dac_c, 0);
- 
- static ssize_t adt7316_show_DAC_D(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1571,8 +1538,7 @@ static ssize_t adt7316_store_DAC_D(struct device *dev,
- 	return adt7316_store_dac(chip, 3, buf, len);
- }
- 
--static IIO_DEVICE_ATTR(DAC_D, S_IRUGO | S_IWUSR, adt7316_show_DAC_D,
--		adt7316_store_DAC_D, 0);
-+static iio_device_attr(DAC_D, 0644, adt7316_show_dac_d, adt7316_store_dac_d, 0);
- 
- static ssize_t adt7316_show_device_id(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1608,8 +1574,8 @@ static ssize_t adt7316_show_manufactorer_id(struct device *dev,
- 	return sprintf(buf, "%d\n", id);
- }
- 
--static IIO_DEVICE_ATTR(manufactorer_id, S_IRUGO,
--		adt7316_show_manufactorer_id, NULL, 0);
-+static iio_device_attr(manufactorer_id, 0444, adt7316_show_manufactorer_id,
-+		       NULL, 0);
- 
- static ssize_t adt7316_show_device_rev(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1627,7 +1593,7 @@ static ssize_t adt7316_show_device_rev(struct device *dev,
- 	return sprintf(buf, "%d\n", rev);
- }
- 
--static IIO_DEVICE_ATTR(device_rev, S_IRUGO, adt7316_show_device_rev, NULL, 0);
-+static iio_device_attr(device_rev, 0444, adt7316_show_device_rev, NULL, 0);
- 
- static ssize_t adt7316_show_bus_type(struct device *dev,
- 		struct device_attribute *attr,
-@@ -1648,7 +1614,7 @@ static ssize_t adt7316_show_bus_type(struct device *dev,
- 	return sprintf(buf, "i2c\n");
- }
- 
--static IIO_DEVICE_ATTR(bus_type, S_IRUGO, adt7316_show_bus_type, NULL, 0);
-+static iio_device_attr(bus_type, 0444, adt7316_show_bus_type, NULL, 0);
- 
- static struct attribute *adt7316_attributes[] = {
- 	&iio_dev_attr_all_modes.dev_attr.attr,
-@@ -1970,63 +1936,35 @@ static ssize_t adt7316_set_int_enabled(struct device *dev,
- 	return len;
- }
- 
--static IIO_DEVICE_ATTR(int_mask,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_int_mask, adt7316_set_int_mask,
--		       0);
--static IIO_DEVICE_ATTR(in_temp_high_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7316_IN_TEMP_HIGH);
--static IIO_DEVICE_ATTR(in_temp_low_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7316_IN_TEMP_LOW);
--static IIO_DEVICE_ATTR(ex_temp_high_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7316_EX_TEMP_HIGH);
--static IIO_DEVICE_ATTR(ex_temp_low_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7316_EX_TEMP_LOW);
-+static iio_device_attr(int_mask, 0644, adt7316_show_int_mask,
-+		       adt7316_set_int_mask, 0);
-+static iio_device_attr(in_temp_high_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7316_IN_TEMP_HIGH);
-+static iio_device_attr(in_temp_low_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7316_IN_TEMP_LOW);
-+static iio_device_attr(ex_temp_high_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7316_EX_TEMP_HIGH);
-+static iio_device_attr(ex_temp_low_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7316_EX_TEMP_LOW);
- 
- /* NASTY duplication to be fixed */
--static IIO_DEVICE_ATTR(ex_temp_ain1_high_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7316_EX_TEMP_HIGH);
--static IIO_DEVICE_ATTR(ex_temp_ain1_low_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7316_EX_TEMP_LOW);
--static IIO_DEVICE_ATTR(ain2_high_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7516_AIN2_HIGH);
--static IIO_DEVICE_ATTR(ain2_low_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7516_AIN2_LOW);
--static IIO_DEVICE_ATTR(ain3_high_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7516_AIN3_HIGH);
--static IIO_DEVICE_ATTR(ain3_low_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7516_AIN3_LOW);
--static IIO_DEVICE_ATTR(ain4_high_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7516_AIN4_HIGH);
--static IIO_DEVICE_ATTR(ain4_low_value,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_ad_bound, adt7316_set_ad_bound,
--		       ADT7516_AIN4_LOW);
--static IIO_DEVICE_ATTR(int_enabled,
--		       S_IRUGO | S_IWUSR,
--		       adt7316_show_int_enabled,
-+static iio_device_attr(ex_temp_ain1_high_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7316_EX_TEMP_HIGH);
-+static iio_device_attr(ex_temp_ain1_low_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7316_EX_TEMP_LOW);
-+static iio_device_attr(ain2_high_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7516_AIN2_HIGH);
-+static iio_device_attr(ain2_low_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7516_AIN2_LOW);
-+static iio_device_attr(ain3_high_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7516_AIN3_HIGH);
-+static iio_device_attr(ain3_low_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7516_AIN3_LOW);
-+static iio_device_attr(ain4_high_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7516_AIN4_HIGH);
-+static iio_device_attr(ain4_low_value, 0644, adt7316_show_ad_bound,
-+		       adt7316_set_ad_bound, ADT7516_AIN4_LOW);
-+static iio_device_attr(int_enabled, 0644, adt7316_show_int_enabled,
- 		       adt7316_set_int_enabled, 0);
- 
- static struct attribute *adt7316_event_attributes[] = {
--- 
-2.7.4
+On 2016/12/24 9:54, Allen Liu wrote:
+> Add ADC driver for the ADC controller found on HiSilicon BVT SOCs, like Hi3516CV300, etc.
+> The ADC controller is primarily in charge of detecting voltage.
+> 
+> Reviewed-by: Jiancheng Xue <xuejiancheng@hisilicon.com>
+Hi
+
+Sorry. I haven't reviewed this patch. Please remove this line. Thank you!
+
+Regards,
+Jiancheng
+
+> Signed-off-by: Allen Liu <liurenzhong@hisilicon.com>
+> ---
+>  .../devicetree/bindings/iio/adc/hibvt-lsadc.txt    |  26 ++
+>  drivers/iio/adc/Kconfig                            |  10 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/hibvt_lsadc.c                      | 344 +++++++++++++++++++++
+>  4 files changed, 381 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>  create mode 100644 drivers/iio/adc/hibvt_lsadc.c
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+> new file mode 100644
+> index 0000000..63de46e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+> @@ -0,0 +1,26 @@
+> +Hisilicon BVT Low Speed (LS) A/D Converter bindings
+> +
+> +Required properties:
+> +- compatible: should be "hisilicon,<name>-lsadc"
+> +   - "hisilicon,hibvt-lsadc": for hi3516cv300
+> +
+> +- reg: physical base address of the controller and length of memory mapped
+> +       region.
+> +- interrupts: The interrupt number to the cpu. The interrupt specifier format
+> +              depends on the interrupt controller.
+> +- #io-channel-cells: Should be 1, see ../iio-bindings.txt
+> +
+> +Optional properties:
+> +- resets: Must contain an entry for each entry in reset-names if need support
+> +	  this option. See ../reset/reset.txt for details.
+> +- reset-names: Must include the name "saradc-apb".
+> +
+> +Example:
+> +	lsadc: hibvt-lsadc@120e0000 {
+> +			compatible = "hisilicon,hibvt-lsadc";
+> +			reg = <0x120e0000 0x1000>;
+> +			interrupts = <19>;
+> +			resets = <&crg 0x7c 3>;
+> +			reset-names = "lsadc-crg";
+> +			status = "disabled";
+> +	};
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 99c0514..0443f51 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -225,6 +225,16 @@ config HI8435
+>  	  This driver can also be built as a module. If so, the module will be
+>  	  called hi8435.
+>  
+> +config HIBVT_LSADC
+> +	tristate "HIBVT LSADC driver"
+> +	depends on ARCH_HISI || COMPILE_TEST
+> +	help
+> +	  Say yes here to build support for the LSADC found in SoCs from
+> +	  hisilicon BVT chip.
+> +
+> +	  To compile this driver as a module, choose M here: the
+> +	  module will be called hibvt_lsadc.
+> +
+>  config INA2XX_ADC
+>  	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+>  	depends on I2C && !SENSORS_INA2XX
+> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+> index 7a40c04..6554d92 100644
+> --- a/drivers/iio/adc/Makefile
+> +++ b/drivers/iio/adc/Makefile
+> @@ -23,6 +23,7 @@ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>  obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
+>  obj-$(CONFIG_HI8435) += hi8435.o
+> +obj-$(CONFIG_HIBVT_LSADC) += hibvt_lsadc.o
+>  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+>  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
+> diff --git a/drivers/iio/adc/hibvt_lsadc.c b/drivers/iio/adc/hibvt_lsadc.c
+> new file mode 100644
+> index 0000000..a20afe8
+> --- /dev/null
+> +++ b/drivers/iio/adc/hibvt_lsadc.c
+> @@ -0,0 +1,344 @@
+> +/*
+> + * Hisilicon BVT Low Speed (LS) A/D Converter
+> + * Copyright (C) 2016 HiSilicon Technologies Co., Ltd.
+> + *
+> + * This program is free software; you can redistribute it and/or modify
+> + * it under the terms of the GNU General Public License as published by
+> + * the Free Software Foundation; either version 2 of the License, or
+> + * (at your option) any later version.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/module.h>
+> +#include <linux/platform_device.h>
+> +#include <linux/interrupt.h>
+> +#include <linux/io.h>
+> +#include <linux/of.h>
+> +#include <linux/of_device.h>
+> +#include <linux/clk.h>
+> +#include <linux/completion.h>
+> +#include <linux/delay.h>
+> +#include <linux/reset.h>
+> +#include <linux/regulator/consumer.h>
+> +#include <linux/iio/iio.h>
+> +
+> +/* hisilicon bvt adc registers definitions */
+> +#define LSADC_CONFIG		0x00
+> +#define CONFIG_DEGLITCH		BIT(17)
+> +#define CONFIG_RESET		BIT(15)
+> +#define CONFIG_POWERDOWN	BIT(14)
+> +#define CONFIG_MODE			BIT(13)
+> +#define CONFIG_CHC_VALID	BIT(10)
+> +#define CONFIG_CHB_VALID	BIT(9)
+> +#define CONFIG_CHA_VALID	BIT(8)
+> +
+> +#define LSADC_TIMESCAN		0x08
+> +#define LSADC_INTEN			0x10
+> +#define LSADC_INTSTATUS		0x14
+> +#define LSADC_INTCLR		0x18
+> +#define LSADC_START			0x1C
+> +#define LSADC_STOP			0x20
+> +#define LSADC_ACTBIT		0x24
+> +#define LSADC_CHNDATA		0x2C
+> +
+> +#define ADC_CON_EN			(1u << 0)
+> +#define ADC_CON_DEN			(0u << 0)
+> +
+> +#define ADC_NUM_BITS		10
+> +
+> +/* fix clk:3000000, default tscan set 10ms */
+> +#define DEF_ADC_TSCAN_MS	(10*3000)
+> +
+> +#define LSADC_CHN_MASK		0x7
+> +
+> +#define LSADC_TIMEOUT		msecs_to_jiffies(100)
+> +
+> +/* default voltage scale for every channel <mv> */
+> +static int g_voltage[] = {
+> +	3300, 3300, 3300
+> +};
+> +
+> +struct hibvt_lsadc {
+> +	void __iomem		*regs;
+> +	struct completion	completion;
+> +	struct reset_control	*reset;
+> +	const struct hibvt_lsadc_data	*data;
+> +	unsigned int		cur_chn;
+> +	unsigned int		value;
+> +};
+> +
+> +struct hibvt_lsadc_data {
+> +	int				num_bits;
+> +	const struct iio_chan_spec	*channels;
+> +	int				num_channels;
+> +
+> +	void (*clear_irq)(struct hibvt_lsadc *info, int mask);
+> +	void (*start_conv)(struct hibvt_lsadc *info);
+> +	void (*stop_conv)(struct hibvt_lsadc *info);
+> +};
+> +
+> +static int hibvt_lsadc_read_raw(struct iio_dev *indio_dev,
+> +				    struct iio_chan_spec const *chan,
+> +				    int *val, int *val2, long mask)
+> +{
+> +	struct hibvt_lsadc *info = iio_priv(indio_dev);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		mutex_lock(&indio_dev->mlock);
+> +
+> +		reinit_completion(&info->completion);
+> +
+> +		/* Select the channel to be used */
+> +		info->cur_chn = chan->channel;
+> +
+> +		if (info->data->start_conv)
+> +			info->data->start_conv(info);
+> +
+> +		if (!wait_for_completion_timeout(&info->completion,
+> +							LSADC_TIMEOUT)) {
+> +			if (info->data->stop_conv)
+> +				info->data->stop_conv(info);
+> +			mutex_unlock(&indio_dev->mlock);
+> +			return -ETIMEDOUT;
+> +		}
+> +
+> +		*val = info->value;
+> +		mutex_unlock(&indio_dev->mlock);
+> +		return IIO_VAL_INT;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		*val = g_voltage[chan->channel];
+> +		*val2 = info->data->num_bits;
+> +		return IIO_VAL_FRACTIONAL_LOG2;
+> +	default:
+> +		return -EINVAL;
+> +	}
+> +}
+> +
+> +static irqreturn_t hibvt_lsadc_isr(int irq, void *dev_id)
+> +{
+> +	struct hibvt_lsadc *info = (struct hibvt_lsadc *)dev_id;
+> +	int mask;
+> +
+> +	mask = readl(info->regs + LSADC_INTSTATUS);
+> +	mask &= LSADC_CHN_MASK;
+> +
+> +	/* Clear irq */
+> +	if (info->data->clear_irq)
+> +		info->data->clear_irq(info, mask);
+> +
+> +	/* Read value */
+> +	info->value = readl(info->regs + LSADC_CHNDATA + (info->cur_chn << 2));
+> +	info->value &= GENMASK(info->data->num_bits - 1, 0);
+> +
+> +	/* stop adc */
+> +	if (info->data->stop_conv)
+> +		info->data->stop_conv(info);
+> +
+> +	complete(&info->completion);
+> +
+> +	return IRQ_HANDLED;
+> +}
+> +
+> +static const struct iio_info hibvt_lsadc_iio_info = {
+> +	.read_raw = hibvt_lsadc_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +#define ADC_CHANNEL(_index, _id) {      \
+> +	.type = IIO_VOLTAGE,                \
+> +	.indexed = 1,						\
+> +	.channel = _index,					\
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
+> +			BIT(IIO_CHAN_INFO_SCALE),   \
+> +	.datasheet_name = _id,              \
+> +}
+> +
+> +static const struct iio_chan_spec hibvt_lsadc_iio_channels[] = {
+> +	ADC_CHANNEL(0, "adc0"),
+> +	ADC_CHANNEL(1, "adc1"),
+> +	ADC_CHANNEL(2, "adc2"),
+> +};
+> +
+> +static void hibvt_lsadc_clear_irq(struct hibvt_lsadc *info, int mask)
+> +{
+> +	writel(mask, info->regs + LSADC_INTCLR);
+> +}
+> +
+> +static void hibvt_lsadc_start_conv(struct hibvt_lsadc *info)
+> +{
+> +	unsigned int con;
+> +
+> +	/* set number bit */
+> +	con = GENMASK(info->data->num_bits - 1, 0);
+> +	writel(con, (info->regs + LSADC_ACTBIT));
+> +
+> +    /* config */
+> +	con = readl(info->regs + LSADC_CONFIG);
+> +	con &= ~CONFIG_RESET;
+> +	con |= (CONFIG_POWERDOWN | CONFIG_DEGLITCH | CONFIG_MODE);
+> +	con &= ~(CONFIG_CHA_VALID | CONFIG_CHB_VALID | CONFIG_CHC_VALID);
+> +	con |= (CONFIG_CHA_VALID << info->cur_chn);
+> +	writel(con, (info->regs + LSADC_CONFIG));
+> +
+> +	/* set timescan */
+> +	writel(DEF_ADC_TSCAN_MS, (info->regs + LSADC_TIMESCAN));
+> +
+> +	/* clear interrupt */
+> +	writel(LSADC_CHN_MASK, info->regs + LSADC_INTCLR);
+> +
+> +	/* enable interrupt */
+> +	writel(ADC_CON_EN, (info->regs + LSADC_INTEN));
+> +
+> +	/* start scan */
+> +	writel(ADC_CON_EN, (info->regs + LSADC_START));
+> +}
+> +
+> +static void hibvt_lsadc_stop_conv(struct hibvt_lsadc *info)
+> +{
+> +	/* reset the timescan */
+> +	writel(ADC_CON_DEN, (info->regs + LSADC_TIMESCAN));
+> +
+> +	/* disable interrupt */
+> +	writel(ADC_CON_DEN, (info->regs + LSADC_INTEN));
+> +
+> +	/* stop scan */
+> +	writel(ADC_CON_EN, (info->regs + LSADC_STOP));
+> +}
+> +
+> +static const struct hibvt_lsadc_data lsadc_data = {
+> +	.num_bits = ADC_NUM_BITS,
+> +	.channels = hibvt_lsadc_iio_channels,
+> +	.num_channels = ARRAY_SIZE(hibvt_lsadc_iio_channels),
+> +
+> +	.clear_irq	= hibvt_lsadc_clear_irq,
+> +	.start_conv	= hibvt_lsadc_start_conv,
+> +	.stop_conv = hibvt_lsadc_stop_conv,
+> +};
+> +
+> +static const struct of_device_id hibvt_lsadc_match[] = {
+> +	{
+> +		.compatible = "hisilicon,hibvt-lsadc",
+> +		.data = &lsadc_data,
+> +	},
+> +	{},
+> +};
+> +MODULE_DEVICE_TABLE(of, hibvt_lsadc_match);
+> +
+> +/**
+> + * Reset LSADC Controller.
+> + */
+> +static void hibvt_lsadc_reset_controller(struct reset_control *reset)
+> +{
+> +	reset_control_assert(reset);
+> +	usleep_range(10, 20);
+> +	reset_control_deassert(reset);
+> +}
+> +
+> +static int hibvt_lsadc_probe(struct platform_device *pdev)
+> +{
+> +	struct hibvt_lsadc *info = NULL;
+> +	struct device_node *np = pdev->dev.of_node;
+> +	struct iio_dev *indio_dev = NULL;
+> +	struct resource	*mem;
+> +	const struct of_device_id *match;
+> +	int ret;
+> +	int irq;
+> +
+> +	if (!np)
+> +		return -ENODEV;
+> +
+> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+> +	if (!indio_dev) {
+> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+> +		return -ENOMEM;
+> +	}
+> +	info = iio_priv(indio_dev);
+> +
+> +	match = of_match_device(hibvt_lsadc_match, &pdev->dev);
+> +	info->data = match->data;
+> +
+> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+> +	if (IS_ERR(info->regs))
+> +		return PTR_ERR(info->regs);
+> +
+> +	/*
+> +	 * The reset should be an optional property, as it should work
+> +	 * with old devicetrees as well
+> +	 */
+> +	info->reset = devm_reset_control_get(&pdev->dev, "lsadc-crg");
+> +	if (IS_ERR(info->reset)) {
+> +		ret = PTR_ERR(info->reset);
+> +		if (ret != -ENOENT)
+> +			return ret;
+> +
+> +		dev_dbg(&pdev->dev, "no reset control found\n");
+> +		info->reset = NULL;
+> +	}
+> +
+> +	init_completion(&info->completion);
+> +
+> +	irq = platform_get_irq(pdev, 0);
+> +	if (irq < 0) {
+> +		dev_err(&pdev->dev, "no irq resource?\n");
+> +		return irq;
+> +	}
+> +
+> +	ret = devm_request_irq(&pdev->dev, irq, hibvt_lsadc_isr,
+> +			       0, dev_name(&pdev->dev), info);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed requesting irq %d\n", irq);
+> +		return ret;
+> +	}
+> +
+> +	if (info->reset)
+> +		hibvt_lsadc_reset_controller(info->reset);
+> +
+> +	platform_set_drvdata(pdev, indio_dev);
+> +
+> +	indio_dev->name = dev_name(&pdev->dev);
+> +	indio_dev->dev.parent = &pdev->dev;
+> +	indio_dev->dev.of_node = pdev->dev.of_node;
+> +	indio_dev->info = &hibvt_lsadc_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +
+> +	indio_dev->channels = info->data->channels;
+> +	indio_dev->num_channels = info->data->num_channels;
+> +
+> +	ret = iio_device_register(indio_dev);
+> +	if (ret < 0) {
+> +		dev_err(&pdev->dev, "failed register iio device\n");
+> +		return ret;
+> +	}
+> +
+> +	return 0;
+> +}
+> +
+> +static int hibvt_lsadc_remove(struct platform_device *pdev)
+> +{
+> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+> +
+> +	iio_device_unregister(indio_dev);
+> +
+> +	return 0;
+> +}
+> +
+> +static struct platform_driver hibvt_lsadc_driver = {
+> +	.probe		= hibvt_lsadc_probe,
+> +	.remove		= hibvt_lsadc_remove,
+> +	.driver		= {
+> +		.name	= "hibvt-lsadc",
+> +		.of_match_table = hibvt_lsadc_match,
+> +	},
+> +};
+> +
+> +module_platform_driver(hibvt_lsadc_driver);
+> +
+> +MODULE_AUTHOR("Allen Liu <liurenzhong@hisilicon.com>");
+> +MODULE_DESCRIPTION("hisilicon BVT LSADC driver");
+> +MODULE_LICENSE("GPL v2");
+> 
+
