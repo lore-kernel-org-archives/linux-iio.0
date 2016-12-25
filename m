@@ -1,25 +1,22 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f68.google.com ([209.85.218.68]:34030 "EHLO
+Received: from mail-oi0-f68.google.com ([209.85.218.68]:33462 "EHLO
         mail-oi0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932666AbcLYTmP (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Dec 2016 14:42:15 -0500
-Received: by mail-oi0-f68.google.com with SMTP id 3so14379574oih.1
-        for <linux-iio@vger.kernel.org>; Sun, 25 Dec 2016 11:42:14 -0800 (PST)
+        with ESMTP id S1754008AbcLYUEh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 25 Dec 2016 15:04:37 -0500
+Received: by mail-oi0-f68.google.com with SMTP id f201so43119460oib.0
+        for <linux-iio@vger.kernel.org>; Sun, 25 Dec 2016 12:04:37 -0800 (PST)
 From: Scott Matheina <scott@matheina.com>
 To: linux-kernel@vger.kernel.org
 Cc: Scott Matheina <scott@matheina.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
 Subject: [PATCHv4 2/8] Fixed variables not being consistently lower case
-Date: Sun, 25 Dec 2016 13:41:06 -0600
-Message-Id: <1482694902-7400-3-git-send-email-scott@matheina.com>
-In-Reply-To: <1482694902-7400-1-git-send-email-scott@matheina.com>
-References: <1482694902-7400-1-git-send-email-scott@matheina.com>
+Date: Sun, 25 Dec 2016 13:56:40 -0600
+Message-Id: <1482696216-8013-3-git-send-email-scott@matheina.com>
+In-Reply-To: <1482696216-8013-1-git-send-email-scott@matheina.com>
+References: <1482696216-8013-1-git-send-email-scott@matheina.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
