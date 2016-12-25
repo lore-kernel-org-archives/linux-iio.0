@@ -1,22 +1,23 @@
 Return-Path: <SRS0=1M/S=YI=intel.com=fengguang.wu@kernel.org>
-Date: Mon, 26 Dec 2016 04:31:23 +0800
+Date: Mon, 26 Dec 2016 04:41:08 +0800
 From: kbuild test robot <lkp@intel.com>
 To: Scott Matheina <scott@matheina.com>
 Cc: kbuild-all@01.org, linux-kernel@vger.kernel.org,
-	Scott Matheina <scott@matheina.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
+	devel@driverdev.osuosl.org, Scott Matheina <scott@matheina.com>,
+	linux-iio@vger.kernel.org,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCHv4 2/8] Fixed variables not being consistently lower case
-Message-ID: <201612260448.SvN0rjhT%fengguang.wu@intel.com>
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCHv4 7/8] Changed code to align with coding style of using
+ octat
+Message-ID: <201612260419.rWTHXTVh%fengguang.wu@intel.com>
 MIME-Version: 1.0
-Content-Type: multipart/mixed; boundary="tKW2IUtsqtDRztdT"
-In-Reply-To: <1482696216-8013-3-git-send-email-scott@matheina.com>
+Content-Type: multipart/mixed; boundary="4Ckj6UjgE2iN1+kY"
+In-Reply-To: <1482696216-8013-8-git-send-email-scott@matheina.com>
 List-ID: <linux-iio@vger.kernel.org>
 
 
---tKW2IUtsqtDRztdT
+--4Ckj6UjgE2iN1+kY
 Content-Type: text/plain; charset=us-ascii
 Content-Disposition: inline
 
@@ -36,80 +37,362 @@ reproduce:
 
 All errors (new ones prefixed by >>):
 
-   drivers/staging/iio/addac/adt7316.c: In function 'adt7316_event_handler':
->> drivers/staging/iio/addac/adt7316.c:1758:12: error: implicit declaration of function 'iio_unmod_event_code' [-Werror=implicit-function-declaration]
-               iio_unmod_event_code(iio_temp, 0,
-               ^~~~~~~~~~~~~~~~~~~~
->> drivers/staging/iio/addac/adt7316.c:1758:33: error: 'iio_temp' undeclared (first use in this function)
-               iio_unmod_event_code(iio_temp, 0,
-                                    ^~~~~~~~
-   drivers/staging/iio/addac/adt7316.c:1758:33: note: each undeclared identifier is reported only once for each function it appears in
->> drivers/staging/iio/addac/adt7316.c:1759:12: error: 'iio_ev_type_thresh' undeclared (first use in this function)
-               iio_ev_type_thresh,
-               ^~~~~~~~~~~~~~~~~~
->> drivers/staging/iio/addac/adt7316.c:1760:12: error: 'iio_ev_dir_rising' undeclared (first use in this function)
-               iio_ev_dir_rising),
-               ^~~~~~~~~~~~~~~~~
->> drivers/staging/iio/addac/adt7316.c:1766:12: error: 'iio_ev_dir_falling' undeclared (first use in this function)
-               iio_ev_dir_falling),
-               ^~~~~~~~~~~~~~~~~~
->> drivers/staging/iio/addac/adt7316.c:1782:33: error: 'iio_voltage' undeclared (first use in this function)
-               iio_unmod_event_code(iio_voltage, 1,
-                                    ^~~~~~~~~~~
->> drivers/staging/iio/addac/adt7316.c:1784:12: error: 'iio_ev_dir_either' undeclared (first use in this function)
-               iio_ev_dir_either),
-               ^~~~~~~~~~~~~~~~~
-   cc1: some warnings being treated as errors
+>> drivers/staging/iio/addac/adt7316.c:270:33: error: expected ')' before numeric constant
+    static iio_device_attr(enabled, 0644, adt7316_show_enabled,
+                                    ^~~~
+   drivers/staging/iio/addac/adt7316.c:312:40: error: expected ')' before numeric constant
+    static iio_device_attr(select_ex_temp, 0644, adt7316_show_select_ex_temp,
+                                           ^~~~
+   drivers/staging/iio/addac/adt7316.c:351:30: error: expected ')' before numeric constant
+    static iio_device_attr(mode, 0644, adt7316_show_mode, adt7316_store_mode, 0);
+                                 ^~~~
+   drivers/staging/iio/addac/adt7316.c:360:35: error: expected ')' before numeric constant
+    static iio_device_attr(all_modes, 0444, adt7316_show_all_modes, NULL, 0);
+                                      ^~~~
+   drivers/staging/iio/addac/adt7316.c:441:36: error: expected ')' before numeric constant
+    static iio_device_attr(ad_channel, 0644, adt7316_show_ad_channel,
+                                       ^~~~
+   drivers/staging/iio/addac/adt7316.c:462:41: error: expected ')' before numeric constant
+    static iio_device_attr(all_ad_channels, 0444, adt7316_show_all_ad_channels,
+                                            ^~~~
+   drivers/staging/iio/addac/adt7316.c:499:43: error: expected ')' before numeric constant
+    static iio_device_attr(disable_averaging, 0644, adt7316_show_disable_averaging,
+                                              ^~~~
+   drivers/staging/iio/addac/adt7316.c:536:46: error: expected ')' before numeric constant
+    static iio_device_attr(enable_smbus_timeout, 0644,
+                                                 ^~~~
+   drivers/staging/iio/addac/adt7316.c:573:35: error: expected ')' before numeric constant
+    static iio_device_attr(powerdown, 0644, adt7316_show_powerdown,
+                                      ^~~~
+   drivers/staging/iio/addac/adt7316.c:609:39: error: expected ')' before numeric constant
+    static iio_device_attr(fast_ad_clock, 0644, adt7316_show_fast_ad_clock,
+                                          ^~~~
+   drivers/staging/iio/addac/adt7316.c:660:44: error: expected ')' before numeric constant
+    static iio_device_attr(da_high_resolution, 0644,
+                                               ^~~~
+   drivers/staging/iio/addac/adt7316.c:705:43: error: expected ')' before numeric constant
+    static iio_device_attr(ain_internal_vref, 0644,
+                                              ^~~~
+   drivers/staging/iio/addac/adt7316.c:744:48: error: expected ')' before numeric constant
+    static iio_device_attr(enable_proportion_daca, 0644,
+                                                   ^~~~
+   drivers/staging/iio/addac/adt7316.c:782:48: error: expected ')' before numeric constant
+    static iio_device_attr(enable_proportion_dacb, 0644,
+                                                   ^~~~
+   drivers/staging/iio/addac/adt7316.c:824:49: error: expected ')' before numeric constant
+    static iio_device_attr(dac_2vref_channels_mask, 0644,
+                                                    ^~~~
+   drivers/staging/iio/addac/adt7316.c:883:41: error: expected ')' before numeric constant
+    static iio_device_attr(DAC_update_mode, 0644, adt7316_show_dac_update_mode,
+                                            ^~~~
+   drivers/staging/iio/addac/adt7316.c:901:46: error: expected ')' before numeric constant
+    static iio_device_attr(all_dac_update_modes, 0444,
+                                                 ^~~~
+   drivers/staging/iio/addac/adt7316.c:939:36: error: expected ')' before numeric constant
+    static iio_device_attr(update_dac, 0644, NULL, adt7316_store_update_dac, 0);
+                                       ^~~~
+   drivers/staging/iio/addac/adt7316.c:981:43: error: expected ')' before numeric constant
+    static iio_device_attr(da_ab_vref_bypass, 0644, adt7316_show_da_ab_vref_bypass,
+                                              ^~~~
+   drivers/staging/iio/addac/adt7316.c:1024:43: error: expected ')' before numeric constant
+    static iio_device_attr(da_cd_vref_bypass, 0644, adt7316_show_da_cd_vref_bypass,
+                                              ^~~~
+   drivers/staging/iio/addac/adt7316.c:1083:43: error: expected ')' before numeric constant
+    static iio_device_attr(dac_internal_vref, 0644, adt7316_show_dac_internal_vref,
+                                              ^~~~
+   drivers/staging/iio/addac/adt7316.c:1171:29: error: expected ')' before numeric constant
+    static iio_device_attr(VDD, 0444, adt7316_show_VDD, NULL, 0);
+                                ^~~~
+   drivers/staging/iio/addac/adt7316.c:1183:33: error: expected ')' before numeric constant
+    static iio_device_attr(in_temp, 0444, adt7316_show_in_temp, NULL, 0);
+                                    ^~~~
+   drivers/staging/iio/addac/adt7316.c:1195:38: error: expected ')' before numeric constant
+    static iio_device_attr(ex_temp_ain1, 0444, adt7316_show_ex_temp_ain1, NULL, 0);
+                                         ^~~~
+   drivers/staging/iio/addac/adt7316.c:1197:33: error: expected ')' before numeric constant
+    static iio_device_attr(ex_temp, 0444, adt7316_show_ex_temp_ain1, NULL, 0);
+                                    ^~~~
+   drivers/staging/iio/addac/adt7316.c:1209:30: error: expected ')' before numeric constant
+    static iio_device_attr(ain2, 0444, adt7316_show_AIN2, NULL, 0);
+                                 ^~~~
+   drivers/staging/iio/addac/adt7316.c:1221:30: error: expected ')' before numeric constant
+    static iio_device_attr(ain3, 0444, adt7316_show_ain3, NULL, 0);
+                                 ^~~~
+   drivers/staging/iio/addac/adt7316.c:1233:30: error: expected ')' before numeric constant
+    static iio_device_attr(ain4, 0444, adt7316_show_ain4, NULL, 0);
+                                 ^~~~
+   drivers/staging/iio/addac/adt7316.c:1298:40: error: expected ')' before numeric constant
+    static iio_device_attr(in_temp_offset, 0644, adt7316_show_in_temp_offset,
+                                           ^~~~
+   drivers/staging/iio/addac/adt7316.c:1377:47: error: expected ')' before numeric constant
+    static iio_device_attr(ex_analog_temp_offset, 0644,
+                                                  ^~~~
+   drivers/staging/iio/addac/adt7316.c: In function 'adt7316_show_DAC_A':
+   drivers/staging/iio/addac/adt7316.c:1458:9: error: implicit declaration of function 'adt7316_show_dac' [-Werror=implicit-function-declaration]
+     return adt7316_show_dac(chip, 0, buf);
+            ^~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c: In function 'adt7316_store_DAC_A':
+   drivers/staging/iio/addac/adt7316.c:1469:9: error: implicit declaration of function 'adt7316_store_dac' [-Werror=implicit-function-declaration]
+     return adt7316_store_dac(chip, 0, buf, len);
+            ^~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c: At top level:
+   drivers/staging/iio/addac/adt7316.c:1472:31: error: expected ')' before numeric constant
+    static iio_device_attr(dac_a, 0644, adt7316_show_dac_a, adt7316_store_dac_a, 0);
+                                  ^~~~
+   drivers/staging/iio/addac/adt7316.c:1495:31: error: expected ')' before numeric constant
+    static iio_device_attr(dac_b, 0644, adt7316_show_dac_b, adt7316_store_dac_b, 0);
+                                  ^~~~
+   drivers/staging/iio/addac/adt7316.c:1518:31: error: expected ')' before numeric constant
+    static iio_device_attr(DAC_C, 0644, adt7316_show_dac_c, adt7316_store_dac_c, 0);
+                                  ^~~~
+   drivers/staging/iio/addac/adt7316.c:1541:31: error: expected ')' before numeric constant
+    static iio_device_attr(DAC_D, 0644, adt7316_show_dac_d, adt7316_store_dac_d, 0);
+                                  ^~~~
+   drivers/staging/iio/addac/adt7316.c:1577:41: error: expected ')' before numeric constant
+    static iio_device_attr(manufactorer_id, 0444, adt7316_show_manufactorer_id,
+                                            ^~~~
+   drivers/staging/iio/addac/adt7316.c:1596:36: error: expected ')' before numeric constant
+    static iio_device_attr(device_rev, 0444, adt7316_show_device_rev, NULL, 0);
+                                       ^~~~
+   drivers/staging/iio/addac/adt7316.c:1617:34: error: expected ')' before numeric constant
+    static iio_device_attr(bus_type, 0444, adt7316_show_bus_type, NULL, 0);
+                                     ^~~~
+>> drivers/staging/iio/addac/adt7316.c:1620:3: error: 'iio_dev_attr_all_modes' undeclared here (not in a function)
+     &iio_dev_attr_all_modes.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1621:3: error: 'iio_dev_attr_mode' undeclared here (not in a function)
+     &iio_dev_attr_mode.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1622:3: error: 'iio_dev_attr_enabled' undeclared here (not in a function)
+     &iio_dev_attr_enabled.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1623:3: error: 'iio_dev_attr_ad_channel' undeclared here (not in a function)
+     &iio_dev_attr_ad_channel.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1624:3: error: 'iio_dev_attr_all_ad_channels' undeclared here (not in a function)
+     &iio_dev_attr_all_ad_channels.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1625:3: error: 'iio_dev_attr_disable_averaging' undeclared here (not in a function)
+     &iio_dev_attr_disable_averaging.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1626:3: error: 'iio_dev_attr_enable_smbus_timeout' undeclared here (not in a function)
+     &iio_dev_attr_enable_smbus_timeout.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1627:3: error: 'iio_dev_attr_powerdown' undeclared here (not in a function)
+     &iio_dev_attr_powerdown.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1628:3: error: 'iio_dev_attr_fast_ad_clock' undeclared here (not in a function)
+     &iio_dev_attr_fast_ad_clock.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1629:3: error: 'iio_dev_attr_da_high_resolution' undeclared here (not in a function)
+     &iio_dev_attr_da_high_resolution.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1630:3: error: 'iio_dev_attr_enable_proportion_daca' undeclared here (not in a function)
+     &iio_dev_attr_enable_proportion_daca.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1631:3: error: 'iio_dev_attr_enable_proportion_dacb' undeclared here (not in a function)
+     &iio_dev_attr_enable_proportion_dacb.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1632:3: error: 'iio_dev_attr_dac_2vref_channels_mask' undeclared here (not in a function)
+     &iio_dev_attr_dac_2vref_channels_mask.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1633:3: error: 'iio_dev_attr_dac_internal_vref' undeclared here (not in a function)
+     &iio_dev_attr_dac_internal_vref.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1634:3: error: 'iio_dev_attr_all_dac_update_modes' undeclared here (not in a function)
+     &iio_dev_attr_all_dac_update_modes.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1635:3: error: 'iio_dev_attr_update_dac' undeclared here (not in a function)
+     &iio_dev_attr_update_dac.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1636:3: error: 'iio_dev_attr_da_ab_vref_bypass' undeclared here (not in a function)
+     &iio_dev_attr_da_ab_vref_bypass.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1637:3: error: 'iio_dev_attr_da_cd_vref_bypass' undeclared here (not in a function)
+     &iio_dev_attr_da_cd_vref_bypass.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1639:3: error: 'iio_dev_attr_vdd' undeclared here (not in a function)
+     &iio_dev_attr_vdd.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1640:3: error: 'iio_dev_attr_in_temp' undeclared here (not in a function)
+     &iio_dev_attr_in_temp.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1641:3: error: 'iio_dev_attr_ex_temp' undeclared here (not in a function)
+     &iio_dev_attr_ex_temp.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1642:3: error: 'iio_dev_attr_in_temp_offset' undeclared here (not in a function)
+     &iio_dev_attr_in_temp_offset.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1645:3: error: 'iio_dev_attr_ex_analog_temp_offset' undeclared here (not in a function)
+     &iio_dev_attr_ex_analog_temp_offset.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1646:3: error: 'iio_dev_attr_dac_a' undeclared here (not in a function)
+     &iio_dev_attr_dac_a.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1647:3: error: 'iio_dev_attr_dac_b' undeclared here (not in a function)
+     &iio_dev_attr_dac_b.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1648:3: error: 'iio_dev_attr_dac_c' undeclared here (not in a function)
+     &iio_dev_attr_dac_c.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1649:3: error: 'iio_dev_attr_dac_d' undeclared here (not in a function)
+     &iio_dev_attr_dac_d.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1651:3: error: 'iio_dev_attr_manufactorer_id' undeclared here (not in a function)
+     &iio_dev_attr_manufactorer_id.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1652:3: error: 'iio_dev_attr_device_rev' undeclared here (not in a function)
+     &iio_dev_attr_device_rev.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~
+>> drivers/staging/iio/addac/adt7316.c:1653:3: error: 'iio_dev_attr_bus_type' undeclared here (not in a function)
+     &iio_dev_attr_bus_type.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1662:25: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_all_modes.dev_attr.attr,
+                            ^
+   drivers/staging/iio/addac/adt7316.c:1662:34: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_all_modes.dev_attr.attr,
+                                     ^
+   drivers/staging/iio/addac/adt7316.c:1662:2: error: initializer element is not constant
+     &iio_dev_attr_all_modes.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1662:2: note: (near initialization for 'adt7516_attributes[0]')
+   drivers/staging/iio/addac/adt7316.c:1663:20: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_mode.dev_attr.attr,
+                       ^
+   drivers/staging/iio/addac/adt7316.c:1663:29: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_mode.dev_attr.attr,
+                                ^
+   drivers/staging/iio/addac/adt7316.c:1663:2: error: initializer element is not constant
+     &iio_dev_attr_mode.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1663:2: note: (near initialization for 'adt7516_attributes[1]')
+>> drivers/staging/iio/addac/adt7316.c:1664:3: error: 'iio_dev_attr_select_ex_temp' undeclared here (not in a function)
+     &iio_dev_attr_select_ex_temp.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1664:30: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_select_ex_temp.dev_attr.attr,
+                                 ^
+   drivers/staging/iio/addac/adt7316.c:1664:39: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_select_ex_temp.dev_attr.attr,
+                                          ^
+   drivers/staging/iio/addac/adt7316.c:1664:2: error: initializer element is not constant
+     &iio_dev_attr_select_ex_temp.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1664:2: note: (near initialization for 'adt7516_attributes[2]')
+   drivers/staging/iio/addac/adt7316.c:1665:23: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_enabled.dev_attr.attr,
+                          ^
+   drivers/staging/iio/addac/adt7316.c:1665:32: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_enabled.dev_attr.attr,
+                                   ^
+   drivers/staging/iio/addac/adt7316.c:1665:2: error: initializer element is not constant
+     &iio_dev_attr_enabled.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1665:2: note: (near initialization for 'adt7516_attributes[3]')
+   drivers/staging/iio/addac/adt7316.c:1666:26: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_ad_channel.dev_attr.attr,
+                             ^
+   drivers/staging/iio/addac/adt7316.c:1666:35: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_ad_channel.dev_attr.attr,
+                                      ^
+   drivers/staging/iio/addac/adt7316.c:1666:2: error: initializer element is not constant
+     &iio_dev_attr_ad_channel.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1666:2: note: (near initialization for 'adt7516_attributes[4]')
+   drivers/staging/iio/addac/adt7316.c:1667:31: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_all_ad_channels.dev_attr.attr,
+                                  ^
+   drivers/staging/iio/addac/adt7316.c:1667:40: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_all_ad_channels.dev_attr.attr,
+                                           ^
+   drivers/staging/iio/addac/adt7316.c:1667:2: error: initializer element is not constant
+     &iio_dev_attr_all_ad_channels.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1667:2: note: (near initialization for 'adt7516_attributes[5]')
+   drivers/staging/iio/addac/adt7316.c:1668:33: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_disable_averaging.dev_attr.attr,
+                                    ^
+   drivers/staging/iio/addac/adt7316.c:1668:42: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_disable_averaging.dev_attr.attr,
+                                             ^
+   drivers/staging/iio/addac/adt7316.c:1668:2: error: initializer element is not constant
+     &iio_dev_attr_disable_averaging.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1668:2: note: (near initialization for 'adt7516_attributes[6]')
+   drivers/staging/iio/addac/adt7316.c:1669:36: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_enable_smbus_timeout.dev_attr.attr,
+                                       ^
+   drivers/staging/iio/addac/adt7316.c:1669:45: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_enable_smbus_timeout.dev_attr.attr,
+                                                ^
+   drivers/staging/iio/addac/adt7316.c:1669:2: error: initializer element is not constant
+     &iio_dev_attr_enable_smbus_timeout.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1669:2: note: (near initialization for 'adt7516_attributes[7]')
+   drivers/staging/iio/addac/adt7316.c:1670:25: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_powerdown.dev_attr.attr,
+                            ^
+   drivers/staging/iio/addac/adt7316.c:1670:34: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_powerdown.dev_attr.attr,
+                                     ^
+   drivers/staging/iio/addac/adt7316.c:1670:2: error: initializer element is not constant
+     &iio_dev_attr_powerdown.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1670:2: note: (near initialization for 'adt7516_attributes[8]')
+   drivers/staging/iio/addac/adt7316.c:1671:29: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_fast_ad_clock.dev_attr.attr,
+                                ^
+   drivers/staging/iio/addac/adt7316.c:1671:38: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_fast_ad_clock.dev_attr.attr,
+                                         ^
+   drivers/staging/iio/addac/adt7316.c:1671:2: error: initializer element is not constant
+     &iio_dev_attr_fast_ad_clock.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1671:2: note: (near initialization for 'adt7516_attributes[9]')
+   drivers/staging/iio/addac/adt7316.c:1672:3: error: 'iio_dev_attr_ain_internal_vref' undeclared here (not in a function)
+     &iio_dev_attr_ain_internal_vref.dev_attr.attr,
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+   drivers/staging/iio/addac/adt7316.c:1672:33: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_ain_internal_vref.dev_attr.attr,
+                                    ^
+   drivers/staging/iio/addac/adt7316.c:1672:42: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_ain_internal_vref.dev_attr.attr,
+                                             ^
+   drivers/staging/iio/addac/adt7316.c:1672:2: error: initializer element is not constant
+     &iio_dev_attr_ain_internal_vref.dev_attr.attr,
+     ^
+   drivers/staging/iio/addac/adt7316.c:1672:2: note: (near initialization for 'adt7516_attributes[10]')
+   drivers/staging/iio/addac/adt7316.c:1673:34: error: request for member 'dev_attr' in something not a structure or union
+     &iio_dev_attr_da_high_resolution.dev_attr.attr,
+                                     ^
+   drivers/staging/iio/addac/adt7316.c:1673:43: error: request for member 'attr' in something not a structure or union
+     &iio_dev_attr_da_high_resolution.dev_attr.attr,
+..
 
-vim +/iio_unmod_event_code +1758 drivers/staging/iio/addac/adt7316.c
+vim +270 drivers/staging/iio/addac/adt7316.c
 
-  1752			if ((chip->id & ID_FAMILY_MASK) != ID_ADT75XX)
-  1753				stat1 &= 0x1F;
-  1754	
-  1755			time = iio_get_time_ns(indio_dev);
-  1756			if (stat1 & BIT(0))
-  1757				iio_push_event(indio_dev,
-> 1758					       iio_unmod_event_code(iio_temp, 0,
-> 1759								    iio_ev_type_thresh,
-> 1760								    iio_ev_dir_rising),
-  1761					       time);
-  1762			if (stat1 & BIT(1))
-  1763				iio_push_event(indio_dev,
-  1764					       iio_unmod_event_code(iio_temp, 0,
-  1765								    iio_ev_type_thresh,
-> 1766								    iio_ev_dir_falling),
-  1767					       time);
-  1768			if (stat1 & BIT(2))
-  1769				iio_push_event(indio_dev,
-  1770					       iio_unmod_event_code(iio_temp, 1,
-  1771								    iio_ev_type_thresh,
-  1772								    iio_ev_dir_rising),
-  1773					       time);
-  1774			if (stat1 & BIT(3))
-  1775				iio_push_event(indio_dev,
-  1776					       iio_unmod_event_code(iio_temp, 1,
-  1777								    iio_ev_type_thresh,
-  1778								    iio_ev_dir_falling),
-  1779					       time);
-  1780			if (stat1 & BIT(5))
-  1781				iio_push_event(indio_dev,
-> 1782					       iio_unmod_event_code(iio_voltage, 1,
-  1783								    iio_ev_type_thresh,
-> 1784								    iio_ev_dir_either),
-  1785					       time);
-  1786			if (stat1 & BIT(6))
-  1787				iio_push_event(indio_dev,
+   264		if (_adt7316_store_enabled(chip, enable) < 0)
+   265			return -EIO;
+   266	
+   267		return len;
+   268	}
+   269	
+ > 270	static iio_device_attr(enabled, 0644, adt7316_show_enabled,
+   271			       adt7316_store_enabled, 0);
+   272	
+   273	static ssize_t adt7316_show_select_ex_temp(struct device *dev,
 
 ---
 0-DAY kernel test infrastructure                Open Source Technology Center
 https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
 
---tKW2IUtsqtDRztdT
+--4Ckj6UjgE2iN1+kY
 Content-Type: application/gzip
 Content-Disposition: attachment; filename=".config.gz"
 Content-Transfer-Encoding: base64
 
-H4sICM4qYFgAAy5jb25maWcAlFxLd9y2kt7nV/RxZnHvIrEetuKcOVqAINhEmiBoAOyHNjyy
+H4sICCErYFgAAy5jb25maWcAlFxLd9y2kt7nV/RxZnHvIrEetuKcOVqAINhEmiBoAOyHNjyy
 1I51IksedSs3/vdTBZBNAA22Z7JI0qjCu1D11YP6+aefZ+R1//z1dv9wd/v4+H325/Zp+3K7
 397PPj88bv97lstZLc2M5dz8CszVw9PrP28fLj9czd79+vuvZ7+83L2fLbYvT9vHGX1++vzw
 5yv0fnh++uln4KayLvi8u3qXcTN72M2envez3Xb/U9++/nDVXV5cf/d+jz94rY1qqeGy7nJG
@@ -587,4 +870,4 @@ VneWsaLIuFAiSMsqyRwDIMxfNdfdcOmWBMdMjScD9HGi19QHV57FWeD/R0zQNDYBp3YmxDVc
 i+EQMhkKL9dGGFKmHCEfYFPolJ/kwrv/nbBfZyIElwuh5KnTA/MMdF9zrubebqLoZKgn8M9+
 z3pvmP0ee9p6AX5AMSkrCojDz9zQQitJFaJNIgSkry/Ux4hOG82R/+df/wEJ7Oo6UokBAA==
 
---tKW2IUtsqtDRztdT--
+--4Ckj6UjgE2iN1+kY--
