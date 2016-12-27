@@ -1,34 +1,55 @@
-Return-Path: <SRS0=xaim=YI=ftp.linux.org.uk=viro@kernel.org>
-Date: Sun, 25 Dec 2016 20:14:09 +0000
-From: Al Viro <viro@ZenIV.linux.org.uk>
-To: Scott Matheina <scott@matheina.com>
-Cc: linux-kernel@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCHv4 2/8] Fixed variables not being consistently lower case
-Message-ID: <20161225201409.GL1555@ZenIV.linux.org.uk>
-References: <1482694902-7400-1-git-send-email-scott@matheina.com>
- <1482694902-7400-3-git-send-email-scott@matheina.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1482694902-7400-3-git-send-email-scott@matheina.com>
-Sender: Al Viro <viro@ftp.linux.org.uk>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga05.intel.com ([192.55.52.43]:28827 "EHLO mga05.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S933027AbcL0Q6N (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 27 Dec 2016 11:58:13 -0500
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jikos@kernel.org, jic23@kernel.org
+Cc: linux-input@vger.kernel.org, linux-iio@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
+        Stable <stable@vger.kernel.org#4.9+>
+Subject: [PATCH] HID: sensor-hub: Move the memset to sensor_hub_get_feature()
+Date: Tue, 27 Dec 2016 08:57:59 -0800
+Message-Id: <1482857879-161873-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Dec 25, 2016 at 01:41:06PM -0600, Scott Matheina wrote:
-> Across the file, variables were sometimes upper case, some times
-> lower case, this fix addresses a few of the instances with this
-> inconsistency.
+While applying patch d443a0aa3a29: "HID: hid-sensor-hub: clear memory to
+avoid random data", there was some issues in applying correct version of
+the patch. This resulted in the breakage of sensor functions as all
+request like power-up will be reset by the memset() in the function
+sensor_hub_set_feature().
+The reset of caller buffer should be in the function
+sensor_hub_get_feature(), not in the sensor_hub_set_feature().
 
-NAK.  Go learn C and don't come back until you've done that.  If somebody
-has told you that you can contribute without knowing the language, they'd
-lied - you really can't.  And I would *STRONGLY* recommend to stay away
-from drivers/staging while you are learning C - it's like trying to use
-a public restroom wall as a sex-ed textbook.
+Fixes: d443a0aa3a29 ("HID: hid-sensor-hub: clear memory to avoid random data")
+Cc: Stable <stable@vger.kernel.org> # 4.9+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ drivers/hid/hid-sensor-hub.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
 
-While we are at it, it might be a good idea to check if the kernel
-builds after your changes and see what errors are produced.
+diff --git a/drivers/hid/hid-sensor-hub.c b/drivers/hid/hid-sensor-hub.c
+index 5c92522..4ef7337 100644
+--- a/drivers/hid/hid-sensor-hub.c
++++ b/drivers/hid/hid-sensor-hub.c
+@@ -212,7 +212,6 @@ int sensor_hub_set_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 	__s32 value;
+ 	int ret = 0;
+ 
+-	memset(buffer, 0, buffer_size);
+ 	mutex_lock(&data->mutex);
+ 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
+ 	if (!report || (field_index >= report->maxfield)) {
+@@ -256,6 +255,8 @@ int sensor_hub_get_feature(struct hid_sensor_hub_device *hsdev, u32 report_id,
+ 	int buffer_index = 0;
+ 	int i;
+ 
++	memset(buffer, 0, buffer_size);
++
+ 	mutex_lock(&data->mutex);
+ 	report = sensor_hub_report(report_id, hsdev->hdev, HID_FEATURE_REPORT);
+ 	if (!report || (field_index >= report->maxfield) ||
+-- 
+2.7.4
+
