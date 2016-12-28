@@ -1,68 +1,82 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:41944 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751667AbcL0K4V (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 27 Dec 2016 05:56:21 -0500
-Date: Tue, 27 Dec 2016 11:46:30 +0100
-From: Pavel Machek <pavel@ucw.cz>
-To: Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Lee Jones <lee.jones@linaro.org>,
-        Jingoo Han <jingoohan1@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.179]:25718 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751587AbcL1Oxh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2016 09:53:37 -0500
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+To: Sebastian Reichel <sre@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
         Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Richard Purdie <rpurdie@rpsys.net>,
-        Jacek Anaszewski <j.anaszewski@samsung.com>,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, linux-leds@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@sonymobile.com>
-Subject: Re: [PATCH v4 3/5] backlight: lm3533: Support initialization from
- Device Tree
-Message-ID: <20161227104630.GA15452@amd>
-References: <20161226181153.11271-1-bjorn.andersson@linaro.org>
- <20161226181153.11271-3-bjorn.andersson@linaro.org>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="fUYQa+Pmc3FrFX/N"
-In-Reply-To: <20161226181153.11271-3-bjorn.andersson@linaro.org>
+        Rob Herring <robh+dt@kernel.org>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Petr Cvek <petr.cvek@tul.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Michel Verlaan <michel.verl@gmail.com>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: [PATCH v9 6/8] drivers:input:ads7846(+tsc2046): fix spi module table
+Date: Wed, 28 Dec 2016 15:53:21 +0100
+Message-Id: <c79bdd79a22dab877b8a80136ac253c951698745.1482936802.git.hns@goldelico.com>
+In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
+References: <cover.1482936802.git.hns@goldelico.com>
+In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
+References: <cover.1482936802.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Fix module table so that the driver is loaded if compiled
+as module and requested by DT.
 
---fUYQa+Pmc3FrFX/N
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+---
+ drivers/input/touchscreen/ads7846.c | 11 ++++++++++-
+ 1 file changed, 10 insertions(+), 1 deletion(-)
 
-On Mon 2016-12-26 10:11:51, Bjorn Andersson wrote:
-> From: Bjorn Andersson <bjorn.andersson@sonymobile.com>
->=20
-> Implement support for initialization of the lm3533 backlight from Device
-> Tree.
->=20
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
-> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+diff --git a/drivers/input/touchscreen/ads7846.c b/drivers/input/touchscreen/ads7846.c
+index 400e421..50c85d2 100644
+--- a/drivers/input/touchscreen/ads7846.c
++++ b/drivers/input/touchscreen/ads7846.c
+@@ -1532,6 +1532,16 @@ static int ads7846_remove(struct spi_device *spi)
+ 	return 0;
+ }
+ 
++static const struct spi_device_id ads7846_idtable[] = {
++	{ "tsc2046", 0 },
++	{ "ads7843", 0 },
++	{ "ads7845", 0 },
++	{ "ads7846", 0 },
++	{ "ads7873", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(spi, ads7846_idtable);
++
+ static struct spi_driver ads7846_driver = {
+ 	.driver = {
+ 		.name	= "ads7846",
+@@ -1546,4 +1556,3 @@ module_spi_driver(ads7846_driver);
+ 
+ MODULE_DESCRIPTION("ADS7846 TouchScreen Driver");
+ MODULE_LICENSE("GPL");
+-MODULE_ALIAS("spi:ads7846");
+-- 
+2.7.3
 
-Acked-by: Pavel Machek <pavel@ucw.cz>
-
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
-
---fUYQa+Pmc3FrFX/N
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlhiRoUACgkQMOfwapXb+vJDjgCgi6bICpEjaRq42bmLuPRc75Oe
-SrAAmwdDeqqk0G3787fdEvADdf/pGr2T
-=GHW8
------END PGP SIGNATURE-----
-
---fUYQa+Pmc3FrFX/N--
