@@ -1,80 +1,76 @@
-Return-Path: <viro@ftp.linux.org.uk>
-Date: Mon, 26 Dec 2016 00:13:56 +0000
-From: Al Viro <viro@ZenIV.linux.org.uk>
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>
-Cc: Scott Matheina <scott@matheina.com>, linux-kernel@vger.kernel.org,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
-Subject: Re: [PATCHv4 2/8] Fixed variables not being consistently lower case
-Message-ID: <20161226001356.GM1555@ZenIV.linux.org.uk>
-References: <1482694902-7400-1-git-send-email-scott@matheina.com>
- <1482694902-7400-3-git-send-email-scott@matheina.com>
- <20161225201409.GL1555@ZenIV.linux.org.uk>
- <A813EAC4-FE7C-4A1A-AB60-FCF699194E7B@jic23.retrosnub.co.uk>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f171.google.com ([209.85.220.171]:36346 "EHLO
+        mail-qk0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751432AbcL1NIF (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2016 08:08:05 -0500
+Received: by mail-qk0-f171.google.com with SMTP id n21so239611907qka.3
+        for <linux-iio@vger.kernel.org>; Wed, 28 Dec 2016 05:08:05 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <A813EAC4-FE7C-4A1A-AB60-FCF699194E7B@jic23.retrosnub.co.uk>
-Sender: Al Viro <viro@ftp.linux.org.uk>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <9609b56b-194c-9899-1142-ff2ee285c6bd@metafoo.de>
+References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
+ <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de> <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
+ <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de> <bf3dde7e-cee8-c54c-db93-447ffa063116@kernel.org>
+ <CAMpxmJVJ+y9tRbRBsVg+i0EJO_6EFuvrypwC=ETnBWbMnxRFyg@mail.gmail.com>
+ <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de> <CAMuHMdX3u4cb2Yq2+VV_eDUaw2EqiOjN2TorW+F5-39Mm=mXmQ@mail.gmail.com>
+ <9609b56b-194c-9899-1142-ff2ee285c6bd@metafoo.de>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 28 Dec 2016 14:08:04 +0100
+Message-ID: <CACRpkdY11qxZuYsXXJJ5St7S_oYf_EUOzicm9vXoxYCHkVp4Lw@mail.gmail.com>
+Subject: Re: [PATCH] iio: misc: add a generic regulator driver
+To: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Geert Uytterhoeven <geert@linux-m68k.org>,
+        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Dec 25, 2016 at 10:34:54PM +0000, Jonathan Cameron wrote:
-> 
-> 
-> On 25 December 2016 20:14:09 GMT+00:00, Al Viro <viro@ZenIV.linux.org.uk> wrote:
-> >On Sun, Dec 25, 2016 at 01:41:06PM -0600, Scott Matheina wrote:
-> >> Across the file, variables were sometimes upper case, some times
-> >> lower case, this fix addresses a few of the instances with this
-> >> inconsistency.
-> >
-> >NAK.  Go learn C and don't come back until you've done that.  If
-> >somebody
-> >has told you that you can contribute without knowing the language,
-> >they'd
-> >lied - you really can't.  And I would *STRONGLY* recommend to stay away
-> >from drivers/staging while you are learning C - it's like trying to use
-> >a public restroom wall as a sex-ed textbook.
-> 
-> Please can we keep things polite.
+On Fri, Dec 23, 2016 at 12:35 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
+> On 12/23/2016 11:00 AM, Geert Uytterhoeven wrote:
 
-In case you have not realized it,
-	* Scott is -><- that close to joining the select group of kooks who
-get filtered out within days of getting a new account.  At this point he
-probably still can spend a while learning what needs to be learnt and
-reappear with less inane patches after a while, with everything getting
-forgotten.  A week more of the same kind of postings will almost certainly
-cement the reputation of clue-resistant noise source beyond any chance of
-repair.
-	* I am 100% sure that he has not learnt C - hadn't even started doing
-so.  This, BTW, is not a value judgement of any kind; it's just a highly
-likely conclusion based on what he'd been posting.  This particular patch,
-for example, changes identifiers in a bunch of places, none of which happens
-to be a declaration.  The reasons why that cannot be correct become obvious
-to anyone who had opened _any_ textbook after a few pages.  Or tried to
-write and run any program in C.  Again, it's not "should" - it's really one
-of the first things that gets learnt ("you need to declare all variables
-explicitly and the names are case-sensitive").
-	* One really cannot produce any useful patches without understanding
-the language.  As this (and previous) patch series sent by Scott has
-demonstrated, BTW.  Learning C is a hard prerequisite for doing any development
-in a project written in C, including the kernel.  Fortunately, it is not
-hard to do.
-	* Trying to do that purely by osmosis is not the best way, but it's
-doable.  HOWEVER, trying to do that by osmosis when swimming in drivers/staging
-is really on par with using a WC wall as sex ed tutorial.  Results will be
-awkward, painful and won't satisfy anybody.  Very odd ideas of how the things
-work are also practically guaranteed.
+> Well, it is a policy question. Who gets access to what. Right now it is all
+> or nothing, a privileged application gets access to all devices/GPIOs, a
+> unprivileged application gets access to nothing. Same for GPIOs as well as
+> IIO devices.
+>
+> iiod at the moment does not have any access control at all, which in itself
+> is a problem. We need to add support for that at some point. I don't see an
+> issue with implementing a finer grained access scheme when we do so. E.g.
+> unprivileged applications only get access to certain pins.
 
-	drivers/staging can serve as a playground for learning how to
-produce patches, but only if you already know the language.  Otherwise
-it really, really must be avoided - it's full of unidiomatic and very
-badly written C.  It serves as quarantine barracks for much more serious
-reasons than anything checkpatch.pl is capable of picking.  Directing the
-folks new to kernel development towards that pile of code is not particularly
-kind, but potentially useful.  Doing that to those who are still learning C
-goes far beyond "not kind".  I can't stress it enough - don't go there if
-you are still learning the language.
+I don't know why this is percieved as such a big practical problem.
+
+It seems to me as more of a theoretical exploit path than a practical one.
+(Famous last words...)
+
+We have per-device and not per-line GPIO access restrictions.
+/dev/gpiochip0
+/dev/gpiochip1
+etc
+can all have per-device access restrictions.
+
+This is no different from /dev/sda for example. You do not have
+per-sector control of the block device, because it doesn't make sense.
+Either you access all of the device, or nothing.
+The same goes for IIO devices.
+
+This pattern is very clear. You get access to a whole device or none
+of it.
+
+As with disks and IIO devices, if you want more granular access
+restrictions, that is policy, and should reside in userspace.
+
+Yours,
+Linus Walleij
