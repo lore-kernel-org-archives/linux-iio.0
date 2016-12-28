@@ -1,73 +1,69 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f175.google.com ([209.85.192.175]:34140 "EHLO
-        mail-pf0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751338AbcL1Lii (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2016 06:38:38 -0500
-Received: by mail-pf0-f175.google.com with SMTP id c4so58721340pfb.1
-        for <linux-iio@vger.kernel.org>; Wed, 28 Dec 2016 03:38:38 -0800 (PST)
-Message-ID: <1482925101.8484.1.camel@researchut.com>
-Subject: sensor-hub: Move the memset to sensor_hub_get_feature()
-From: Ritesh Raj Sarraf <rrs@researchut.com>
-Reply-To: rrs@researchut.com
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-iio <linux-iio@vger.kernel.org>
-Date: Wed, 28 Dec 2016 17:08:21 +0530
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mail-qt0-f171.google.com ([209.85.216.171]:34234 "EHLO
+        mail-qt0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751512AbcL1NBa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 28 Dec 2016 08:01:30 -0500
+Received: by mail-qt0-f171.google.com with SMTP id d45so127091456qta.1
+        for <linux-iio@vger.kernel.org>; Wed, 28 Dec 2016 05:00:59 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <CAMpxmJVpj57s-m_FS58J+QWvu-MnVmaZP-6ECnYHeRVSCfd-Fw@mail.gmail.com>
+References: <1480432969-20913-1-git-send-email-bgolaszewski@baylibre.com>
+ <44cce3d5-f65e-1a35-20a4-5eb9fda42312@metafoo.de> <CAMpxmJWDWk-mXUHHGEKm-VVwzqEGLDQjc274Xq+Qwc2eN=YbsQ@mail.gmail.com>
+ <d4c7f1ca-49d4-7abe-bfc9-e1728f62a9fb@metafoo.de> <bf3dde7e-cee8-c54c-db93-447ffa063116@kernel.org>
+ <CAMpxmJVJ+y9tRbRBsVg+i0EJO_6EFuvrypwC=ETnBWbMnxRFyg@mail.gmail.com>
+ <c670d597-46b6-235f-545f-7136a3abff7f@metafoo.de> <CAMpxmJVpj57s-m_FS58J+QWvu-MnVmaZP-6ECnYHeRVSCfd-Fw@mail.gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Wed, 28 Dec 2016 14:00:58 +0100
+Message-ID: <CACRpkdYam=VTXHh--fnnC+R7g=7z_4wGT8bg+=n01gEMSa5Buw@mail.gmail.com>
+Subject: Re: [PATCH] iio: misc: add a generic regulator driver
+To: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        linux-devicetree <devicetree@vger.kernel.org>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+On Tue, Dec 13, 2016 at 3:28 PM, Bartosz Golaszewski
+<bgolaszewski@baylibre.com> wrote:
 
-Hello Srini,
+> + Linus
+>
+> While the new GPIO interface would be very convenient - in our case we
+> could simply name the lines appropriately in the device tree - I'm not
+> sure this would be the correct approach.
+>
+> From this year's ELCE in Berlin I remember Linus suggested during his
+> talk that it's always better to write a kernel driver. Also: this way
+> the relevant GPIO lines would not be reserved for exclusive use by
+> power switches.
+>
+> Linus - do you have any thoughts/suggestions on that subject?
 
-Regarding: https://www.spinics.net/lists/linux-input/msg48540.html
+If the probe you are power cycling has its own DT node and is
+described as a device per se in the system, then it should have
+a device driver grabbing and toggling its own GPIO line.
 
-This patch does not seem to fix the issue entirely. On my machine, where on
-previous kernels from 4.7 and 4.8 worked fine, this patch hasn't made much
-difference on 4.9.
+If the probe is only really known in userspace, and driven
+from userspace, it's GPIO reset line should also be driven
+from userspace, using the chardev ABI as you describe.
 
-rrs@learner:~$ lspci
-00:02.0 VGA compatible controller: Intel Corporation Haswell-ULT Integrated
-Graphics Controller (rev 0b)
-00:03.0 Audio device: Intel Corporation Haswell-ULT HD Audio Controller (rev 0b)
-00:14.0 USB controller: Intel Corporation 8 Series USB xHCI HC (rev 04)
-00:16.0 Communication controller: Intel Corporation 8 Series HECI #0 (rev 04)
-00:1b.0 Audio device: Intel Corporation 8 Series HD Audio Controller (rev 04)
-00:1c.0 PCI bridge: Intel Corporation 8 Series PCI Express Root Port 4 (rev e4)
-00:1d.0 USB controller: Intel Corporation 8 Series USB EHCI #1 (rev 04)
-00:1f.0 ISA bridge: Intel Corporation 8 Series LPC Controller (rev 04)
-00:1f.2 SATA controller: Intel Corporation 8 Series SATA Controller 1 [AHCI
-mode] (rev 04)
-00:1f.3 SMBus: Intel Corporation 8 Series SMBus Controller (rev 04)
-01:00.0 Network controller: Realtek Semiconductor Co., Ltd. RTL8723BE PCIe
-Wireless Network Adapter
-2016-12-28 / 17:07:16 ♒♒♒  ☺  
-rrs@learner:~$ uname -a
-Linux learner 4.9.0+ #1 SMP Mon Dec 26 14:20:36 IST 2016 x86_64 GNU/Linux
-2016-12-28 / 17:07:24 ♒♒♒  ☺  
+Whether something should have a userspace or kernelspace
+driver is a gray area, admittedly. There are cases for both.
+The general consideration would be reuse and deployment.
+If you expect all users of this probe to always use libiio and
+some other userspace, I guess userspace-only makes sense?
 
-
-
-- -- 
-Ritesh Raj Sarraf
-RESEARCHUT - http://www.researchut.com
-"Necessity is the mother of invention."
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEQCVDstmIVAB/Yn02pjpYo/LhdWkFAlhjpC0ACgkQpjpYo/Lh
-dWmnbBAAnzCzilRkwE1Oa0nANMvKC/YQJVV+dJeJq5XGAOks3Fe2goMTB4vcOSIj
-Crt1f3JD+0H6aC7+JqdByPa6oxtXMCX8sX8zwhFkLkS6ExAheTtyuUFpZeGytU4G
-e3Jm7dzWW6fa6MRTpSq8OwtdiMwBb3g6fe072npEheRuHEj5uex2AxzcHmP/DOiD
-ErTTLxY4ItcvZQURybWdsdOrVoWdh7uZj+KiQcBfNQvzQLpdDdL2ZfxGnt2Dsk2e
-PPNI7qyq2rYb+iA9U+65zKLQr8k6Q8y+MM9NqDKWDmhF6Jft9AKZIylwpUeN9/B/
-m5g6b7NmwPQo8vdJdwfCJKusHrUp6WQ9Y2SOVJN9k4D8/lJepSfbL5MdX2A9KS1z
-clYwTDKVEWNsAWlahdDraZRujLhx3vBoMMESDGia/j4xrEMfOe26XclTp1rynopD
-oCW62UDugIm+l6GRjAfehYoPXtDSyBKTauW3LAZvUAELOvZX5T0SZqKJjbJmsp5m
-Wpwva9XNlX4N8g36BdUv04hbWxqbbNANGu8dO8Y+MSmMZRmYC2f2f+qY7s2711Dt
-Bc/5g8nLv602tkQbXm8hr66H/QKpivxn0oSbST3UHFzRlHUt9+k5LEIdezJwQ1RL
-1fp6+9jc507TXMbId5GarYOwQHkLoBEIDPxQ6eTAEdo0rnQ7/PI=
-=bCkL
------END PGP SIGNATURE-----
-
+Yours,
+Linus Walleij
