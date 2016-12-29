@@ -1,47 +1,97 @@
-Return-Path: <SRS0=gZRN=YN=linaro.org=linus.walleij@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.136]:60748 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752820AbcL2Q31 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 29 Dec 2016 11:29:27 -0500
+Date: Thu, 29 Dec 2016 17:29:20 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
+Subject: Re: [PATCH 2/2] iio: misc: add support for GPIO power switches
+Message-ID: <20161229162919.j2ej2cyeuoqnxykf@earth>
+References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+ <1481494905-18037-3-git-send-email-bgolaszewski@baylibre.com>
+ <CACRpkdZ7JrNfCKPuuCmkZd_7+NV0QLUN8ZMukFA0TcqS9SYXcQ@mail.gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdabHPxr1J3MHY-kVZCnb42cxndmJNTXd0f2SBbE+M-UgQ@mail.gmail.com>
-References: <1479330928-7208-1-git-send-email-lorenzo.bianconi@st.com>
- <c773de82-3e67-871e-93fd-18b3cfe3a492@kernel.org> <CACRpkdabHPxr1J3MHY-kVZCnb42cxndmJNTXd0f2SBbE+M-UgQ@mail.gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 30 Dec 2016 21:49:46 +0100
-Message-ID: <CACRpkdb--6YpW_+WnXXLU7nGw26=5vTBzkqcVJ2sq-t3Vbk+fg@mail.gmail.com>
-Subject: Re: [PATCH v2] iio: common: st_sensors: fix channel data parsing
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, lorenzo.bianconi@st.com,
-	Gregor Boirie <gregor.boirie@parrot.com>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="lb4vfyzhy2tybpcz"
+In-Reply-To: <CACRpkdZ7JrNfCKPuuCmkZd_7+NV0QLUN8ZMukFA0TcqS9SYXcQ@mail.gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sat, Nov 19, 2016 at 4:18 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
-> On Sat, Nov 19, 2016 at 2:07 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 16/11/16 21:15, Lorenzo Bianconi wrote:
->>> Using realbits as i2c/spi read len, when that value is not byte aligned
->>> (e.g 12 bits), lead to skip msb part of out data registers.
->>> Fix this taking into account scan_type.shift in addition to
->>> scan_type.realbits as read length:
->>>
->>> read_len = DIV_ROUND_UP(realbits + shift, 8)
->>>
->>> This fix has been tested on 8, 12, 16, 24 bit sensors
->>>
->>> Fixes: e7385de5291e ("iio:st_sensors: align on storagebits boundaries")
->>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
->>
->> Do highlight (typically below the --) what changes have occurred.  I'm guessing this
->> was mostly about testing on the 24 bit sensor and the additions in the core file.
->>
->> Applied to the fixes-togreg and marked for stable.  I will probably sit on this one
->> for a few days before sending upstream if anyone has any final comments on it.
->
-> Makes all kind of sense.
-> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-After making my 12bit LIS3LV02 work again it is also:
-Tested-by: Linus Walleij <linus.walleij@linaro.org>
+--lb4vfyzhy2tybpcz
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-And I think it should be tagged for stable.
+Hi Linux,
 
-Yours,
-Linus Walleij
+On Wed, Dec 28, 2016 at 01:50:17PM +0100, Linus Walleij wrote:
+> On Sun, Dec 11, 2016 at 11:21 PM, Bartosz Golaszewski
+> <bgolaszewski@baylibre.com> wrote:
+>=20
+> > Some power-measuring ADCs work together with power load switches which
+> > allow to power-cycle measured devices.
+> >
+> > An example use case would be measuring the power consumption of a
+> > development board during boot using a power monitor such as TI INA226
+> > and power-cycling the board remotely using a TPS229* power switch.
+> >
+> > Add an iio driver for simple GPIO power switches and expose a sysfs
+> > attribute allowing to toggle their state.
+> >
+> > Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+>=20
+> I don't get this, isn't this doing the same as
+> drivers/power/reset/gpio-poweroff.c
+> ?
+>=20
+> With the only difference that the latter uses the standard syscall
+> from pm_power_off to reboot the system instead of some random
+> sysfs file.
+
+As far as I understand it, the TPS229 is used by Barzosz to poweroff
+a remote system. The gpio-poweroff driver is used to poweroff the
+local system.
+
+-- Sebastian
+
+--lb4vfyzhy2tybpcz
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlhlOd8ACgkQ2O7X88g7
++poLnA/+PczlGKFDmT/RhKMoBhYGAKqa02N/XFLAqeAHHijUHnkynyQuJCy4Z+du
+zN83tRGzpGNGNivQrQ7+50ClROqR6Qg/IJUueK/ma8kR3UM8xzW7hylyfxo978Iu
+sjquC1lgS2J7FCBUoP3x+W7XC/ScGwit6ANpso/43BaSAghSNKs7ypI0bQvOzURS
+eKgiFBXkVU1NIUbcXI91hZB/gBsrCI6DGj48eW1+WKrFze+NwW6VenuXs3OrqruU
+mtiZmlxBtlhjIczwhxTN/TyGbRIXaKewj2fs45uDOM15SMVmA7sd9H/kzfkO3vLt
+w7YDNkbnKuKS4ptB9dVeOsFHruTJKWJloQmxhyAX8RQq/MU39xTxxpJVJpyZXxVj
++GP9c+T++OVhKJHkL3JZ03EcFpFlZshNS9KzpUqAokZ6YTZ0sKJs9YfMxrXEz694
+xTifMSKbhELgCevzFldXGDoknJa8JmJuZ3LxxpJq/caLDxa9KjIG2V5ykVw6me4E
+8nvRZnLVSgYFCgC1wJblnkgFa40XGSWMieuaz1ucb2+CynIQtbwD0j6XgVTeUdQM
+qN93281DJT0dmQ0n/dtDcZcGu32qhXx9WSPmZJpptuV9cusMZsUklUaP3nKhNVYO
+YVaV7x3ohxPYmiarJfVRCA+kXnXUSHnMD6jCRoqmGSB7TRNaq6c=
+=eV4Y
+-----END PGP SIGNATURE-----
+
+--lb4vfyzhy2tybpcz--
