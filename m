@@ -1,57 +1,41 @@
-Return-Path: <SRS0=VrEV=YL=goldelico.com=hns@kernel.org>
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-To: Sebastian Reichel <sre@kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Mark Rutland <mark.rutland@arm.com>,
-	=?UTF-8?q?Beno=C3=AEt=20Cousson?= <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>,
-	Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	=?UTF-8?q?Mika=20Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	"Andrew F. Davis" <afd@ti.com>,
-	Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	"H. Nikolaus Schaller" <hns@goldelico.com>,
-	Alexander Stein <alexander.stein@systec-electronic.com>,
-	Eric Engestrom <eric@engestrom.ch>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-	Petr Cvek <petr.cvek@tul.cz>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Nick Dyer <nick@shmanahar.org>,
-	Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
-	Michel Verlaan <michel.verl@gmail.com>
-Cc: linux-input@vger.kernel.org,
-	devicetree@vger.kernel.org,
-	linux-kernel@vger.kernel.org,
-	linux-omap@vger.kernel.org,
-	letux-kernel@openphoenux.org,
-	linux-iio@vger.kernel.org,
-	kernel@pyra-handheld.com
-Subject: [PATCH v9 5/8] dt-bindings: input: move ads7846 bindings to touchscreen subdirectory
-Date: Wed, 28 Dec 2016 15:53:20 +0100
-Message-Id: <07298be658b70f006e6598e7888dd5b5f304f65c.1482936802.git.hns@goldelico.com>
-In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com>
-In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f181.google.com ([209.85.192.181]:36413 "EHLO
+        mail-pf0-f181.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751158AbcL2FNZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 29 Dec 2016 00:13:25 -0500
+Received: by mail-pf0-f181.google.com with SMTP id 189so61218604pfz.3
+        for <linux-iio@vger.kernel.org>; Wed, 28 Dec 2016 21:13:24 -0800 (PST)
+From: Matt Ranostay <matt@ranostay.consulting>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: jic23@kernel.org, Matt Ranostay <matt@ranostay.consulting>,
+        Rob Herring <robh@kernel.org>
+Subject: [PATCH v2 1/2] devicetree: add Garmin vendor prefix
+Date: Wed, 28 Dec 2016 21:13:05 -0800
+Message-Id: <20161229051306.28547-1-matt@ranostay.consulting>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-Acked-by: Rob Herring <robh@kernel.org>
+Cc: Rob Herring <robh@kernel.org>
+Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
 ---
- Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt | 0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/devicetree/bindings/input/{ => touchscreen}/ads7846.txt (100%)
+Changes from v1:
+* switch to stock ticker for Garmin Limited
 
-diff --git a/Documentation/devicetree/bindings/input/ads7846.txt b/Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
-similarity index 100%
-rename from Documentation/devicetree/bindings/input/ads7846.txt
-rename to Documentation/devicetree/bindings/input/touchscreen/ads7846.txt
+ Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
+index 16d3b5e7f5d1..5749bfc5fc5b 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -107,6 +107,7 @@ firefly	Firefly
+ focaltech	FocalTech Systems Co.,Ltd
+ friendlyarm	Guangzhou FriendlyARM Computer Tech Co., Ltd
+ fsl	Freescale Semiconductor
++grmn	Garmin Limited
+ ge	General Electric Company
+ geekbuying	GeekBuying
+ gef	GE Fanuc Intelligent Platforms Embedded Systems, Inc.
 -- 
-2.7.3
+2.10.2
+
