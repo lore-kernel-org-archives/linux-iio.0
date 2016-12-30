@@ -1,45 +1,47 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f179.google.com ([209.85.216.179]:33652 "EHLO
-        mail-qt0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753374AbcL3Ure (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 15:47:34 -0500
-Received: by mail-qt0-f179.google.com with SMTP id p16so399546777qta.0
-        for <linux-iio@vger.kernel.org>; Fri, 30 Dec 2016 12:47:34 -0800 (PST)
+Return-Path: <SRS0=gZRN=YN=linaro.org=linus.walleij@kernel.org>
 MIME-Version: 1.0
-In-Reply-To: <7ccb6107-d7af-2240-5000-800d3cd64205@kernel.org>
-References: <20161230173620.30851-1-linus.walleij@linaro.org> <7ccb6107-d7af-2240-5000-800d3cd64205@kernel.org>
+In-Reply-To: <CACRpkdabHPxr1J3MHY-kVZCnb42cxndmJNTXd0f2SBbE+M-UgQ@mail.gmail.com>
+References: <1479330928-7208-1-git-send-email-lorenzo.bianconi@st.com>
+ <c773de82-3e67-871e-93fd-18b3cfe3a492@kernel.org> <CACRpkdabHPxr1J3MHY-kVZCnb42cxndmJNTXd0f2SBbE+M-UgQ@mail.gmail.com>
 From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 30 Dec 2016 21:47:33 +0100
-Message-ID: <CACRpkdYGptxWg4Vky-5dADSamY_L6_qJ7S0k02tvSKxktNhzrQ@mail.gmail.com>
-Subject: Re: [PATCH] Revert "iio:st_sensors: align on storagebits boundaries"
+Date: Fri, 30 Dec 2016 21:49:46 +0100
+Message-ID: <CACRpkdb--6YpW_+WnXXLU7nGw26=5vTBzkqcVJ2sq-t3Vbk+fg@mail.gmail.com>
+Subject: Re: [PATCH v2] iio: common: st_sensors: fix channel data parsing
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        stable <stable@vger.kernel.org>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Giuseppe Barba <giuseppe.barba@st.com>,
-        Denis Ciocca <denis.ciocca@st.com>
+Cc: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, lorenzo.bianconi@st.com,
+	Gregor Boirie <gregor.boirie@parrot.com>
 Content-Type: text/plain; charset=UTF-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, Dec 30, 2016 at 7:31 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 30/12/16 17:36, Linus Walleij wrote:
-
->> This reverts commit e7385de5291e347f5bc85985acdce3a3f5096667.
-(...)
-> It's the last (and infact only fix) in my fixes-togreg branch.
+On Sat, Nov 19, 2016 at 4:18 PM, Linus Walleij <linus.walleij@linaro.org> wrote:
+> On Sat, Nov 19, 2016 at 2:07 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+>> On 16/11/16 21:15, Lorenzo Bianconi wrote:
+>>> Using realbits as i2c/spi read len, when that value is not byte aligned
+>>> (e.g 12 bits), lead to skip msb part of out data registers.
+>>> Fix this taking into account scan_type.shift in addition to
+>>> scan_type.realbits as read length:
+>>>
+>>> read_len = DIV_ROUND_UP(realbits + shift, 8)
+>>>
+>>> This fix has been tested on 8, 12, 16, 24 bit sensors
+>>>
+>>> Fixes: e7385de5291e ("iio:st_sensors: align on storagebits boundaries")
+>>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+>>
+>> Do highlight (typically below the --) what changes have occurred.  I'm guessing this
+>> was mostly about testing on the 24 bit sensor and the additions in the core file.
+>>
+>> Applied to the fixes-togreg and marked for stable.  I will probably sit on this one
+>> for a few days before sending upstream if anyone has any final comments on it.
 >
-> iio: common: st_sensors: fix channel data parsing
->
-> With combination of end of year / xmas plus merge window I haven't gotten it
-> out yet. Will fix that in the next day or so.
->
-> Could you test and see if it fixes what you are seeing?
-> At least superficially sounds like the same issue.
+> Makes all kind of sense.
+> Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-You're absolutely right, this fix nails it.
+After making my 12bit LIS3LV02 work again it is also:
+Tested-by: Linus Walleij <linus.walleij@linaro.org>
 
-I'll reply to the original patch with my Tested-by.
+And I think it should be tagged for stable.
 
 Yours,
 Linus Walleij
