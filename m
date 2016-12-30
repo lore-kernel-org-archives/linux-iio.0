@@ -1,78 +1,120 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f52.google.com ([74.125.83.52]:35634 "EHLO
-        mail-pg0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751820AbcL3KrX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 05:47:23 -0500
-Received: by mail-pg0-f52.google.com with SMTP id i5so111682674pgh.2
-        for <linux-iio@vger.kernel.org>; Fri, 30 Dec 2016 02:47:23 -0800 (PST)
-Message-ID: <1483094837.11693.3.camel@researchut.com>
-Subject: Re: sensor-hub: Move the memset to sensor_hub_get_feature()
-From: Ritesh Raj Sarraf <rrs@researchut.com>
-Reply-To: rrs@researchut.com
-To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
-        linux-iio <linux-iio@vger.kernel.org>
-Date: Fri, 30 Dec 2016 16:17:17 +0530
-In-Reply-To: <1483032694.3173.3.camel@researchut.com>
-References: <1482925101.8484.1.camel@researchut.com>
-         <1482931381.8484.3.camel@researchut.com>
-         <1482943685.4497.19.camel@linux.intel.com>
-         <1482945855.8484.8.camel@researchut.com>
-         <1482946633.12558.1.camel@researchut.com>
-         <1482947598.21657.1.camel@researchut.com>
-         <1483032127.27585.13.camel@linux.intel.com>
-         <1483032694.3173.3.camel@researchut.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mga03.intel.com ([134.134.136.65]:44378 "EHLO mga03.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751333AbcL3BAp (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 29 Dec 2016 20:00:45 -0500
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH 2/4] iio: hid-sensors: API add max_sample_frequency
+Date: Fri, 30 Dec 2016 17:23:10 +0800
+Message-Id: <1483089792-11324-2-git-send-email-hongyan.song@intel.com>
+In-Reply-To: <1483089792-11324-1-git-send-email-hongyan.song@intel.com>
+References: <1483089792-11324-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
------BEGIN PGP SIGNED MESSAGE-----
-Hash: SHA512
+This interface is used to help user to set sampling
+frequency to an acceptable range.
 
-Hello Srini,
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+---
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 35 ++++++++++++++++++++--
+ include/linux/hid-sensor-hub.h                     |  4 ++-
+ include/linux/hid-sensor-ids.h                     |  1 +
+ 3 files changed, 37 insertions(+), 3 deletions(-)
 
-On Thu, 2016-12-29 at 23:01 +0530, Ritesh Raj Sarraf wrote:
-> On Thu, 2016-12-29 at 09:22 -0800, Srinivas Pandruvada wrote:
-> > > If you need more information, please tell me.
-> > 
-> > I tried on couple of systems with the patch. It seems to fix the issue.
-> > It is possible some low level power related changes have impacted this.
-> > Can you do bisect? I suggest just try 4.9-rc1. I think it will not work
-> > there probably.
-> 
-> Okay. Let me do a bisect on it. I'll ping back on this thread soon.
-
-Since yesterday's attempts, I haven't been able to reproduce the bug again, so
-far. Apart from re-building the kernel, I have also blacklisted the particular
-USB device from power savings (based on your hint). I don't know if disabling
-the power savings for that USB device is the cause for not seeing the issue, but
-so far, the device seems to report data.
-
-Do you think power savings mode can impact these devices ? I know of USB plugged
-keyboard/mice to generally break, when enabling power savings mode. But I had
-hoped that in-built USB devices were immune to it.
-
-Thanks,
-Ritesh
-
-- -- 
-Ritesh Raj Sarraf
-RESEARCHUT - http://www.researchut.com
-"Necessity is the mother of invention."
------BEGIN PGP SIGNATURE-----
-
-iQIzBAEBCgAdFiEEQCVDstmIVAB/Yn02pjpYo/LhdWkFAlhmOzUACgkQpjpYo/Lh
-dWndcw/+J2WQhL6BrK1l1o2PraJtEKxnBbonOX7qZJOWnAvwX6/uH95N0u2fv9xU
-SR4yMLugXM/iKlPpGCk8QmSWuQaJPjCOBole/gq4d4qCoda5z7zqnaSnCUuZgQvO
-Ffn8uTPmctwtyWHh7NSWNc2yCsWJ4Auv4gRznFfxa27x0VlY9KqGBjz8oM2P0qUf
-Xr3Da0oxxEdeZykkeyFa2LSESFwXCNf405nL/MuSRzJ49wUeG25ctSyE1HL3RmG/
-hVoFmh6XTYiKIXjznH/upqCxvEMI46ObZKHIMJgx71kygx5uqWlS4D0/D5oNL1D5
-OsVCuccfxvInRjL93+goCWpFFaD7czzpAdHgBGJArABl3/aG9SdjkDaKdNW6HmyX
-E0FOQdJEgQ6dAkRcjxuEGqsfLqDNr7DPDJHH4yvoxqHWBS5S35IZisCjaF5h97z3
-+qSHm8BUNAYR2LmQ5YwpispzrZGydj6ZEUt4Fhv/Wh2V3uK5fTTTEsSWfFndphsG
-Ux3gMdREXNPrsj0p+9KDeuv2co+zpXIapLctHvGvsLddDOfj39Q/+KQPS9vsct3F
-S8L4RrBTnTyyudsWNyPf9SUZmRK8KucbcpRE7gGJDpAHJBf6nmtD0QhB3RIfvYh0
-duRGENCF7k2L7de4c9XVS3x5gWLYMV2dIx/aRC1nQsCZRkt0ORs=
-=wtYI
------END PGP SIGNATURE-----
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index b5beea53..ad30814 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -194,6 +194,30 @@ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+ }
+ EXPORT_SYMBOL(hid_sensor_read_samp_freq_value);
+ 
++int hid_sensor_read_max_samp_freq_value(struct hid_sensor_common *st,
++				int *val1, int *val2)
++{
++	s32 value;
++	int ret;
++
++	ret = sensor_hub_get_feature(st->hsdev,
++				st->min_report_inter.report_id,
++				st->min_report_inter.index, sizeof(value),
++				&value);
++	if (ret < 0 || value < 0)
++		return -EINVAL;
++
++	if (st->poll.units == HID_USAGE_SENSOR_UNITS_MILLISECOND)
++		simple_div(1000, value, val1, val2);
++	else if (st->poll.units == HID_USAGE_SENSOR_UNITS_SECOND)
++		simple_div(1, value, val1, val2);
++	else
++		return -EINVAL;
++
++	return IIO_VAL_INT_PLUS_MICRO;
++}
++EXPORT_SYMBOL(hid_sensor_read_max_samp_freq_value);
++
+ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 				int val1, int val2)
+ {
+@@ -382,11 +406,18 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 			HID_USAGE_SENSOR_PROP_SENSITIVITY_ABS,
+ 			 &st->sensitivity);
+ 
+-	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x\n",
++	sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_PROP_MIN_REPORT_INTER,
++			&st->min_report_inter);
++
++	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x, %x:%x\n",
+ 			st->poll.index, st->poll.report_id,
+ 			st->report_state.index, st->report_state.report_id,
+ 			st->power_state.index, st->power_state.report_id,
+-			st->sensitivity.index, st->sensitivity.report_id);
++			st->sensitivity.index, st->sensitivity.report_id,
++			st->min_report_inter.index,
++			st->min_report_inter.report_id);
+ 
+ 	return 0;
+ }
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index dd85f35..3410777 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -236,6 +236,7 @@ struct hid_sensor_common {
+ 	struct hid_sensor_hub_attribute_info report_state;
+ 	struct hid_sensor_hub_attribute_info power_state;
+ 	struct hid_sensor_hub_attribute_info sensitivity;
++	struct hid_sensor_hub_attribute_info min_report_inter;
+ 	struct work_struct work;
+ };
+ 
+@@ -261,7 +262,8 @@ int hid_sensor_write_samp_freq_value(struct hid_sensor_common *st,
+ 					int val1, int val2);
+ int hid_sensor_read_samp_freq_value(struct hid_sensor_common *st,
+ 					int *val1, int *val2);
+-
++int hid_sensor_read_max_samp_freq_value(struct hid_sensor_common *st,
++					int *val1, int *val2);
+ int hid_sensor_get_usage_index(struct hid_sensor_hub_device *hsdev,
+ 				u32 report_id, int field_index, u32 usage_id);
+ 
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index b6778fd2..3e56e50 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -140,6 +140,7 @@
+ #define HID_USAGE_SENSOR_PROP_RANGE_MINIMUM			0x200315
+ #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
+ #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
++#define HID_USAGE_SENSOR_PROP_MIN_REPORT_INTER			0x200304
+ 
+ /* Per data field properties */
+ #define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
+-- 
+1.9.1
 
