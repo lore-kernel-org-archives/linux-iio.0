@@ -1,788 +1,147 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53401 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753543AbcL3VMs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 16:12:48 -0500
-Subject: Re: [PATCH v6 6/8] IIO: add STM32 timer trigger driver
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
-References: <1481292919-26587-1-git-send-email-benjamin.gaignard@st.com>
- <1481292919-26587-7-git-send-email-benjamin.gaignard@st.com>
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <70f15b07-55d9-bd0d-25c7-712363e30974@kernel.org>
-Date: Fri, 30 Dec 2016 21:12:44 +0000
-MIME-Version: 1.0
-In-Reply-To: <1481292919-26587-7-git-send-email-benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=gZRN=YN=linaro.org=linus.walleij@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	Lorenzo Bianconi <lorenzo.bianconi@st.com>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH] iio: accel: st_accel: fix LIS3LV02 reading and scaling
+Date: Fri, 30 Dec 2016 23:54:18 +0100
+Message-Id: <20161230225418.11733-1-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 09/12/16 14:15, Benjamin Gaignard wrote:
-> Timers IPs can be used to generate triggers for other IPs like
-> DAC, ADC or other timers.
-> Each trigger may result of timer internals signals like counter enable,
-> reset or edge, this configuration could be done through "master_mode"
-> device attribute.
-> 
-> A timer device could be triggered by other timers, we use the trigger
-> name and is_stm32_iio_timer_trigger() function to distinguish them
-> and configure IP input switch.
-> 
-> Timer may also decide on which event (edge, level) they could
-> be activated by a trigger, this configuration is done by writing in
-> "slave_mode" device attribute.
-> 
-> Since triggers could also be used by DAC or ADC their names are defined
-> in include/ nux/iio/timer/stm32-timer-trigger.h so those IPs will be able
-> to configure themselves in valid_trigger function
-> 
-> Trigger have a "sampling_frequency" attribute which allow to configure
-> timer sampling frequency without using PWM interface
-> 
-> version 5:
-> - simplify tables of triggers
-> - only create an IIO device when needed
-> 
-> version 4:
-> - get triggers configuration from "reg" in DT
-> - add tables of triggers
-> - sampling frequency is enable/disable when writing in trigger
->   sampling_frequency attribute
-> - no more use of interruptions
-> 
-> version 3:
-> - change compatible to "st,stm32-timer-trigger"
-> - fix attributes access right
-> - use string instead of int for master_mode and slave_mode
-> - document device attributes in sysfs-bus-iio-timer-stm32
-> 
-> version 2:
-> - keep only one compatible
-> - use st,input-triggers-names and st,output-triggers-names
->   to know which triggers are accepted and/or create by the device
-Firstly, sorry it has taken me so long to get back to this.
+The LIS3LV02 has a special bit that need to be set to get the
+read values left aligned. Before this patch we get gibberish
+like this:
 
-I'm still not keen on this use of iio_device elements just to act as
-glue between triggers.  I think we need to work out a more light weight
-way to do this.  As you are only using them for validation and to provide
-somewhere to hang the control attibutes off, there is nothing stopping us
-moving that over to the iio_trigger instead which would avoid the messy
-duality going on here.
+iio_generic_buffer -a -c10 -n lis3lv02dl_accel
+(...)
+0.000000 -0.010042 -0.642688 19155832931907
+0.000000 -0.010042 -0.642688 19155858751073
 
-I might still be missing something though!
+Which is because we read a raw value for 1g as 64 which is
+the nominal 1024 for 1g shifted 4 bits to the left by being
+right-aligned rather than left aligned.
 
-You would only I think need 3 attributes
+Since all other sensors are left aligned, add some code to
+set the special DAS (data alignment setting) bit to 1 so that
+the right value is now read like this:
 
-parrent_trigger
-and something like your master_mode and slave_mode attributes.
+iio_generic_buffer -a -c10 -n lis3lv02dl_accel
+(...)
+0.000000 -0.147095 -10.120135 24761614364956
+-0.029419 -0.176514 -10.120135 24761631624540
 
-The parrent_trigger would need some validation etc, but if we keep it
-within this driver initially that won't be hard to do. Checking the device
-parent matches will do most of it.
+The scaling was weird as well: we have a gain of 1000 for 1g
+and 3000 for 6g. I don't even remember how I came up with the
+old values but they are wrong.
 
-Jonathan
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-> ---
->  .../ABI/testing/sysfs-bus-iio-timer-stm32          |  55 +++
->  drivers/iio/Kconfig                                |   2 +-
->  drivers/iio/Makefile                               |   1 +
->  drivers/iio/timer/Kconfig                          |  13 +
->  drivers/iio/timer/Makefile                         |   1 +
->  drivers/iio/timer/stm32-timer-trigger.c            | 466 +++++++++++++++++++++
->  drivers/iio/trigger/Kconfig                        |   1 -
->  include/linux/iio/timer/stm32-timer-trigger.h      |  62 +++
->  8 files changed, 599 insertions(+), 2 deletions(-)
->  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
->  create mode 100644 drivers/iio/timer/Kconfig
->  create mode 100644 drivers/iio/timer/Makefile
->  create mode 100644 drivers/iio/timer/stm32-timer-trigger.c
->  create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> new file mode 100644
-> index 0000000..26583dd
-> --- /dev/null
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
-> @@ -0,0 +1,55 @@
-> +What:		/sys/bus/iio/devices/iio:deviceX/master_mode_available
-> +KernelVersion:	4.10
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Reading returns the list possible master modes which are:
-> +		- "reset"     :	The UG bit from the TIMx_EGR register is used as trigger output (TRGO).
-> +		- "enable"    : The Counter Enable signal CNT_EN is used as trigger output.
-> +		- "update"    : The update event is selected as trigger output.
-> +				For instance a master timer can then be used as a prescaler for a slave timer.
-> +		- "compare_pulse" : The trigger output send a positive pulse when the CC1IF flag is to be set.
-> +		- "OC1REF"    : OC1REF signal is used as trigger output.
-> +		- "OC2REF"    : OC2REF signal is used as trigger output.
-> +		- "OC3REF"    : OC3REF signal is used as trigger output.
-> +		- "OC4REF"    : OC4REF signal is used as trigger output.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/master_mode
-> +KernelVersion:	4.10
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Reading returns the current master modes.
-> +		Writing set the master mode
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/slave_mode_available
-> +KernelVersion:	4.10
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Reading returns the list possible slave modes which are:
-> +		- "disabled"  : The prescaler is clocked directly by the internal clock.
-> +		- "encoder_1" : Counter counts up/down on TI2FP1 edge depending on TI1FP2 level.
-> +		- "encoder_2" : Counter counts up/down on TI1FP2 edge depending on TI2FP1 level.
-> +		- "encoder_3" : Counter counts up/down on both TI1FP1 and TI2FP2 edges depending
-> +				on the level of the other input.
-> +		- "reset"     : Rising edge of the selected trigger input reinitializes the counter
-> +				and generates an update of the registers.
-> +		- "gated"     : The counter clock is enabled when the trigger input is high.
-> +				The counter stops (but is not reset) as soon as the trigger becomes low.
-> +				Both start and stop of the counter are controlled.
-> +		- "trigger"   : The counter starts at a rising edge of the trigger TRGI (but it is not
-> +				reset). Only the start of the counter is controlled.
-> +		- "external_clock": Rising edges of the selected trigger (TRGI) clock the counter.
-> +
-> +What:		/sys/bus/iio/devices/iio:deviceX/slave_mode
-> +KernelVersion:	4.10
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Reading returns the current slave mode.
-> +		Writing set the slave mode
-> +
-> +What:		/sys/bus/iio/devices/triggerX/sampling_frequency
-> +KernelVersion:	4.10
-> +Contact:	benjamin.gaignard@st.com
-> +Description:
-> +		Reading returns the current sampling frequency.
-> +		Writing an value different of 0 set and start sampling.
-> +		Writing 0 stop sampling.
-> diff --git a/drivers/iio/Kconfig b/drivers/iio/Kconfig
-> index 6743b18..2de2a80 100644
-> --- a/drivers/iio/Kconfig
-> +++ b/drivers/iio/Kconfig
-> @@ -90,5 +90,5 @@ source "drivers/iio/potentiometer/Kconfig"
->  source "drivers/iio/pressure/Kconfig"
->  source "drivers/iio/proximity/Kconfig"
->  source "drivers/iio/temperature/Kconfig"
-> -
-> +source "drivers/iio/timer/Kconfig"
->  endif # IIO
-> diff --git a/drivers/iio/Makefile b/drivers/iio/Makefile
-> index 87e4c43..b797c08 100644
-> --- a/drivers/iio/Makefile
-> +++ b/drivers/iio/Makefile
-> @@ -32,4 +32,5 @@ obj-y += potentiometer/
->  obj-y += pressure/
->  obj-y += proximity/
->  obj-y += temperature/
-> +obj-y += timer/
->  obj-y += trigger/
-> diff --git a/drivers/iio/timer/Kconfig b/drivers/iio/timer/Kconfig
-> new file mode 100644
-> index 0000000..e3c21f2
-> --- /dev/null
-> +++ b/drivers/iio/timer/Kconfig
-> @@ -0,0 +1,13 @@
-> +#
-> +# Timers drivers
-> +
-> +menu "Timers"
-> +
-> +config IIO_STM32_TIMER_TRIGGER
-> +	tristate "STM32 Timer Trigger"
-> +	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
-> +	select IIO_TRIGGERED_EVENT
-> +	help
-> +	  Select this option to enable STM32 Timer Trigger
-> +
-> +endmenu
-> diff --git a/drivers/iio/timer/Makefile b/drivers/iio/timer/Makefile
-> new file mode 100644
-> index 0000000..4ad95ec9
-> --- /dev/null
-> +++ b/drivers/iio/timer/Makefile
-> @@ -0,0 +1 @@
-> +obj-$(CONFIG_IIO_STM32_TIMER_TRIGGER) += stm32-timer-trigger.o
-> diff --git a/drivers/iio/timer/stm32-timer-trigger.c b/drivers/iio/timer/stm32-timer-trigger.c
-> new file mode 100644
-> index 0000000..8d16e8f
-> --- /dev/null
-> +++ b/drivers/iio/timer/stm32-timer-trigger.c
-> @@ -0,0 +1,466 @@
-> +/*
-> + * Copyright (C) STMicroelectronics 2016
-> + *
-> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-> + *
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/iio/timer/stm32-timer-trigger.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_event.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/mfd/stm32-timers.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +
-> +#define MAX_TRIGGERS 6
-> +#define MAX_VALIDS 5
-> +
-> +/* List the triggers created by each timer */
-> +static const void *triggers_table[][MAX_TRIGGERS] = {
-> +	{ TIM1_TRGO, TIM1_CH1, TIM1_CH2, TIM1_CH3, TIM1_CH4,},
-> +	{ TIM2_TRGO, TIM2_CH1, TIM2_CH2, TIM2_CH3, TIM2_CH4,},
-> +	{ TIM3_TRGO, TIM3_CH1, TIM3_CH2, TIM3_CH3, TIM3_CH4,},
-> +	{ TIM4_TRGO, TIM4_CH1, TIM4_CH2, TIM4_CH3, TIM4_CH4,},
-> +	{ TIM5_TRGO, TIM5_CH1, TIM5_CH2, TIM5_CH3, TIM5_CH4,},
-> +	{ TIM6_TRGO,},
-> +	{ TIM7_TRGO,},
-> +	{ TIM8_TRGO, TIM8_CH1, TIM8_CH2, TIM8_CH3, TIM8_CH4,},
-> +	{ TIM9_TRGO, TIM9_CH1, TIM9_CH2,},
-> +	{ TIM12_TRGO, TIM12_CH1, TIM12_CH2,},
-> +};
-> +
-> +/* List the triggers accepted by each timer */
-> +static const void *valids_table[][MAX_VALIDS] = {
-> +	{ TIM5_TRGO, TIM2_TRGO, TIM4_TRGO, TIM3_TRGO,},
-> +	{ TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
-> +	{ TIM1_TRGO, TIM8_TRGO, TIM5_TRGO, TIM4_TRGO,},
-> +	{ TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
-> +	{ TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO,},
-> +	{ }, /* timer 6 */
-> +	{ }, /* timer 7 */
-> +	{ TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
-> +	{ TIM2_TRGO, TIM3_TRGO,},
-> +	{ TIM4_TRGO, TIM5_TRGO,},
-> +};
-> +
-> +struct stm32_timer_trigger {
-> +	struct device *dev;
-> +	struct regmap *regmap;
-> +	struct clk *clk;
-> +	u32 max_arr;
-> +	const void *triggers;
-> +	const void *valids;
-> +};
-> +
-> +static int stm32_timer_start(struct stm32_timer_trigger *priv,
-> +			     unsigned int frequency)
-> +{
-> +	unsigned long long prd, div;
-> +	int prescaler = 0;
-> +	u32 ccer, cr1;
-> +
-> +	/* Period and prescaler values depends of clock rate */
-> +	div = (unsigned long long)clk_get_rate(priv->clk);
-> +
-> +	do_div(div, frequency);
-> +
-> +	prd = div;
-> +
-> +	/*
-> +	 * Increase prescaler value until we get a result that fit
-> +	 * with auto reload register maximum value.
-> +	 */
-> +	while (div > priv->max_arr) {
-> +		prescaler++;
-> +		div = prd;
-> +		do_div(div, (prescaler + 1));
-> +	}
-> +	prd = div;
-> +
-> +	if (prescaler > MAX_TIM_PSC) {
-> +		dev_err(priv->dev, "prescaler exceeds the maximum value\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Check if nobody else use the timer */
-> +	regmap_read(priv->regmap, TIM_CCER, &ccer);
-> +	if (ccer & TIM_CCER_CCXE)
-> +		return -EBUSY;
-> +
-> +	regmap_read(priv->regmap, TIM_CR1, &cr1);
-> +	if (!(cr1 & TIM_CR1_CEN))
-> +		clk_enable(priv->clk);
-> +
-> +	regmap_write(priv->regmap, TIM_PSC, prescaler);
-> +	regmap_write(priv->regmap, TIM_ARR, prd - 1);
-> +	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
-> +
-> +	/* Force master mode to update mode */
-> +	regmap_update_bits(priv->regmap, TIM_CR2, TIM_CR2_MMS, 0x20);
-> +
-> +	/* Make sure that registers are updated */
-> +	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
-> +
-> +	/* Enable controller */
-> +	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
-> +
-> +	return 0;
-> +}
-> +
-> +static void stm32_timer_stop(struct stm32_timer_trigger *priv)
-> +{
-> +	u32 ccer, cr1;
-> +
-> +	regmap_read(priv->regmap, TIM_CCER, &ccer);
-> +	if (ccer & TIM_CCER_CCXE)
-> +		return;
-> +
-> +	regmap_read(priv->regmap, TIM_CR1, &cr1);
-> +	if (cr1 & TIM_CR1_CEN)
-> +		clk_disable(priv->clk);
-> +
-> +	/* Stop timer */
-> +	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
-> +	regmap_write(priv->regmap, TIM_PSC, 0);
-> +	regmap_write(priv->regmap, TIM_ARR, 0);
-> +}
-> +
-> +static ssize_t stm32_tt_store_frequency(struct device *dev,
-> +					struct device_attribute *attr,
-> +					const char *buf, size_t len)
-> +{
-> +	struct iio_trigger *trig = to_iio_trigger(dev);
-> +	struct stm32_timer_trigger *priv = iio_trigger_get_drvdata(trig);
-> +	unsigned int freq;
-> +	int ret;
-> +
-> +	ret = kstrtouint(buf, 10, &freq);
-> +	if (ret)
-> +		return ret;
-> +
-> +	if (freq == 0) {
-> +		stm32_timer_stop(priv);
-> +	} else {
-> +		ret = stm32_timer_start(priv, freq);
-> +		if (ret)
-> +			return ret;
-> +	}
-> +
-> +	return len;
-> +}
-> +
-> +static ssize_t stm32_tt_read_frequency(struct device *dev,
-> +				       struct device_attribute *attr, char *buf)
-> +{
-> +	struct iio_trigger *trig = to_iio_trigger(dev);
-> +	struct stm32_timer_trigger *priv = iio_trigger_get_drvdata(trig);
-> +	u32 psc, arr, cr1;
-> +	unsigned long long freq = 0;
-> +
-> +	regmap_read(priv->regmap, TIM_CR1, &cr1);
-> +	regmap_read(priv->regmap, TIM_PSC, &psc);
-> +	regmap_read(priv->regmap, TIM_ARR, &arr);
-> +
-> +	if (psc && arr && (cr1 & TIM_CR1_CEN)) {
-> +		freq = (unsigned long long)clk_get_rate(priv->clk);
-> +		do_div(freq, psc);
-> +		do_div(freq, arr);
-> +	}
-> +
-> +	return sprintf(buf, "%d\n", (unsigned int)freq);
-> +}
-> +
-> +static IIO_DEV_ATTR_SAMP_FREQ(0660,
-> +			      stm32_tt_read_frequency,
-> +			      stm32_tt_store_frequency);
-> +
-> +static struct attribute *stm32_trigger_attrs[] = {
-> +	&iio_dev_attr_sampling_frequency.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group stm32_trigger_attr_group = {
-> +	.attrs = stm32_trigger_attrs,
-> +};
-> +
-> +static const struct attribute_group *stm32_trigger_attr_groups[] = {
-> +	&stm32_trigger_attr_group,
-> +	NULL,
-> +};
-> +
-> +static char *master_mode_table[] = {
-> +	"reset",
-> +	"enable",
-> +	"update",
-> +	"compare_pulse",
-> +	"OC1REF",
-> +	"OC2REF",
-> +	"OC3REF",
-> +	"OC4REF"
-> +};
-> +
-> +static ssize_t stm32_tt_show_master_mode(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	u32 cr2;
-> +
-> +	regmap_read(priv->regmap, TIM_CR2, &cr2);
-> +	cr2 = (cr2 & TIM_CR2_MMS) >> TIM_CR2_MMS_SHIFT;
-> +
-> +	return snprintf(buf, PAGE_SIZE, "%s\n", master_mode_table[cr2]);
-> +}
-> +
-> +static ssize_t stm32_tt_store_master_mode(struct device *dev,
-> +					  struct device_attribute *attr,
-> +					  const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(master_mode_table); i++) {
-> +		if (!strncmp(master_mode_table[i], buf,
-> +			     strlen(master_mode_table[i]))) {
-> +			regmap_update_bits(priv->regmap, TIM_CR2,
-> +					   TIM_CR2_MMS, i << TIM_CR2_MMS_SHIFT);
-> +			return len;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static IIO_CONST_ATTR(master_mode_available,
-> +	"reset enable update compare_pulse OC1REF OC2REF OC3REF OC4REF");
-> +
-> +static IIO_DEVICE_ATTR(master_mode, 0660,
-> +		       stm32_tt_show_master_mode,
-> +		       stm32_tt_store_master_mode,
-> +		       0);
-> +
-> +static char *slave_mode_table[] = {
-> +	"disabled",
-> +	"encoder_1",
-> +	"encoder_2",
-> +	"encoder_3",
-> +	"reset",
-> +	"gated",
-> +	"trigger",
-> +	"external_clock",
-> +};
-> +
-> +static ssize_t stm32_tt_show_slave_mode(struct device *dev,
-> +					struct device_attribute *attr,
-> +					char *buf)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	u32 smcr;
-> +
-> +	regmap_read(priv->regmap, TIM_SMCR, &smcr);
-> +	smcr &= TIM_SMCR_SMS;
-> +
-> +	return snprintf(buf, PAGE_SIZE, "%s\n", slave_mode_table[smcr]);
-> +}
-> +
-> +static ssize_t stm32_tt_store_slave_mode(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 const char *buf, size_t len)
-> +{
-> +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	for (i = 0; i < ARRAY_SIZE(slave_mode_table); i++) {
-> +		if (!strncmp(slave_mode_table[i], buf,
-> +			     strlen(slave_mode_table[i]))) {
-> +			regmap_update_bits(priv->regmap,
-> +					   TIM_SMCR, TIM_SMCR_SMS, i);
-> +			return len;
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static IIO_CONST_ATTR(slave_mode_available,
-> +"disabled encoder_1 encoder_2 encoder_3 reset gated trigger external_clock");
-> +
-> +static IIO_DEVICE_ATTR(slave_mode, 0660,
-> +		       stm32_tt_show_slave_mode,
-> +		       stm32_tt_store_slave_mode,
-> +		       0);
-> +
-> +static struct attribute *stm32_timer_attrs[] = {
-> +	&iio_dev_attr_master_mode.dev_attr.attr,
-> +	&iio_const_attr_master_mode_available.dev_attr.attr,
-> +	&iio_dev_attr_slave_mode.dev_attr.attr,
-> +	&iio_const_attr_slave_mode_available.dev_attr.attr,
-> +	NULL,
-> +};
-> +
-> +static const struct attribute_group stm32_timer_attr_group = {
-> +	.attrs = stm32_timer_attrs,
-> +};
-> +
-> +static const struct iio_trigger_ops timer_trigger_ops = {
-> +	.owner = THIS_MODULE,
-> +};
-> +
-> +static int stm32_setup_iio_triggers(struct stm32_timer_trigger *priv)
-> +{
-> +	int ret;
-> +	const char * const *cur = priv->triggers;
-> +
-> +	while (cur && *cur) {
-> +		struct iio_trigger *trig;
-> +
-> +		trig = devm_iio_trigger_alloc(priv->dev, "%s", *cur);
-> +		if  (!trig)
-> +			return -ENOMEM;
-> +
-> +		trig->dev.parent = priv->dev->parent;
-> +		trig->ops = &timer_trigger_ops;
-> +		trig->dev.groups = stm32_trigger_attr_groups;
-> +		iio_trigger_set_drvdata(trig, priv);
-> +
-> +		ret = devm_iio_trigger_register(priv->dev, trig);
-> +		if (ret)
-> +			return ret;
-> +		cur++;
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +/**
-> + * is_stm32_timer_trigger
-> + * @trig: trigger to be checked
-> + *
-> + * return true if the trigger is a valid stm32 iio timer trigger
-> + * either return false
-> + */
-> +bool is_stm32_timer_trigger(struct iio_trigger *trig)
-> +{
-> +	return (trig->ops == &timer_trigger_ops);
-> +}
-> +EXPORT_SYMBOL(is_stm32_timer_trigger);
-> +
-> +static int stm32_validate_trigger(struct iio_dev *indio_dev,
-> +				  struct iio_trigger *trig)
-> +{
-> +	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
-> +	const char * const *cur = priv->valids;
-> +	unsigned int i = 0;
-> +
-> +	if (!is_stm32_timer_trigger(trig))
-> +		return -EINVAL;
-> +
-> +	while (cur && *cur) {
-> +		if (!strncmp(trig->name, *cur, strlen(trig->name))) {
-> +			regmap_update_bits(priv->regmap,
-> +					   TIM_SMCR, TIM_SMCR_TS,
-> +					   i << TIM_SMCR_TS_SHIFT);
-> +			return 0;
-> +		}
-> +		cur++;
-> +		i++;
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static const struct iio_info stm32_trigger_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.validate_trigger = stm32_validate_trigger,
-> +	.attrs = &stm32_timer_attr_group,
-> +};
-> +
-> +static struct stm32_timer_trigger *stm32_setup_iio_device(struct device *dev)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev,
-> +					  sizeof(struct stm32_timer_trigger));
-> +	if (!indio_dev)
-> +		return NULL;
-> +
-> +	indio_dev->name = dev_name(dev);
-> +	indio_dev->dev.parent = dev;
-> +	indio_dev->info = &stm32_trigger_info;
-> +	indio_dev->modes = INDIO_EVENT_TRIGGERED;
-> +	indio_dev->num_channels = 0;
-> +	indio_dev->dev.of_node = dev->of_node;
-> +
-> +	ret = devm_iio_device_register(dev, indio_dev);
-> +	if (ret)
-> +		return NULL;
-> +
-> +	return iio_priv(indio_dev);
-> +}
-> +
-> +static int stm32_timer_trigger_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct stm32_timer_trigger *priv;
-> +	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
-> +	unsigned int index;
-> +	int ret;
-> +
-> +	if (of_property_read_u32(dev->of_node, "reg", &index))
-> +		return -EINVAL;
-> +
-> +	if (index >= ARRAY_SIZE(triggers_table))
-> +		return -EINVAL;
-> +
-> +	/* Create an IIO device only if we have triggers to be validated */
-> +	if (*valids_table[index])
-> +		priv = stm32_setup_iio_device(dev);
+Fixes: 3acddf74f807 ("iio: st-sensors: add support for lis3lv02d accelerometer")
+Cc: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+Cc: Giuseppe Barba <giuseppe.barba@st.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+I wouldn't bother with stable-tagging this, but queueuing for
+fixes would be nice. I plan to phase over the old misc driver
+to this later.
+---
+ drivers/iio/accel/st_accel_core.c               | 12 ++++++++++--
+ drivers/iio/common/st_sensors/st_sensors_core.c |  9 +++++++++
+ include/linux/iio/common/st_sensors.h           | 12 ++++++++++++
+ 3 files changed, 31 insertions(+), 2 deletions(-)
 
-I still don't like this. Really feels like we shouldn't be creating an
-iio device with all the bagage that carries just to allow us to do the
-trigger trees.  We ought to have a much more light weight solution for this
-functionality - we aren't typically even using the interrupt tree stuff
-that the triggers for devices are all really about.
-
-A simpler approach of allowing each trigger the option of a parent seems like
-it would be cleaner.  Could be done entirely within this driver in the first
-instance.  Basically it would just look like your master and slave attributes
-but have those under triggerX not iio:deviceX.
-
-We can work out how to make it more generic later - including perhaps the
-option to trigger from triggers outside this driver, using some parallel
-infrastructure to the device triggering.
-
-
-> +	else
-> +		priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
-> +
-> +	if (!priv)
-> +		return -ENOMEM;
-> +
-> +	priv->dev = dev;
-> +	priv->regmap = ddata->regmap;
-> +	priv->clk = ddata->clk;
-> +	priv->max_arr = ddata->max_arr;
-> +	priv->triggers = triggers_table[index];
-> +	priv->valids = valids_table[index];
-> +
-> +	ret = stm32_setup_iio_triggers(priv);
-> +	if (ret)
-> +		return ret;
-> +
-> +	platform_set_drvdata(pdev, priv);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id stm32_trig_of_match[] = {
-> +	{ .compatible = "st,stm32-timer-trigger", },
-> +	{ /* end node */ },
-> +};
-> +MODULE_DEVICE_TABLE(of, stm32_trig_of_match);
-> +
-> +static struct platform_driver stm32_timer_trigger_driver = {
-> +	.probe = stm32_timer_trigger_probe,
-> +	.driver = {
-> +		.name = "stm32-timer-trigger",
-> +		.of_match_table = stm32_trig_of_match,
-> +	},
-> +};
-> +module_platform_driver(stm32_timer_trigger_driver);
-> +
-> +MODULE_ALIAS("platform: stm32-timer-trigger");
-> +MODULE_DESCRIPTION("STMicroelectronics STM32 Timer Trigger driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/iio/trigger/Kconfig b/drivers/iio/trigger/Kconfig
-> index 809b2e7..f2af4fe 100644
-> --- a/drivers/iio/trigger/Kconfig
-> +++ b/drivers/iio/trigger/Kconfig
-> @@ -46,5 +46,4 @@ config IIO_SYSFS_TRIGGER
->  
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called iio-trig-sysfs.
-> -
-Clean this up.
->  endmenu
-> diff --git a/include/linux/iio/timer/stm32-timer-trigger.h b/include/linux/iio/timer/stm32-timer-trigger.h
-> new file mode 100644
-> index 0000000..55535ae
-> --- /dev/null
-> +++ b/include/linux/iio/timer/stm32-timer-trigger.h
-> @@ -0,0 +1,62 @@
-> +/*
-> + * Copyright (C) STMicroelectronics 2016
-> + *
-> + * Author: Benjamin Gaignard <benjamin.gaignard@st.com>
-> + *
-> + * License terms:  GNU General Public License (GPL), version 2
-> + */
-> +
-> +#ifndef _STM32_TIMER_TRIGGER_H_
-> +#define _STM32_TIMER_TRIGGER_H_
-> +
-> +#define TIM1_TRGO	"tim1_trgo"
-> +#define TIM1_CH1	"tim1_ch1"
-> +#define TIM1_CH2	"tim1_ch2"
-> +#define TIM1_CH3	"tim1_ch3"
-> +#define TIM1_CH4	"tim1_ch4"
-> +
-> +#define TIM2_TRGO	"tim2_trgo"
-> +#define TIM2_CH1	"tim2_ch1"
-> +#define TIM2_CH2	"tim2_ch2"
-> +#define TIM2_CH3	"tim2_ch3"
-> +#define TIM2_CH4	"tim2_ch4"
-> +
-> +#define TIM3_TRGO	"tim3_trgo"
-> +#define TIM3_CH1	"tim3_ch1"
-> +#define TIM3_CH2	"tim3_ch2"
-> +#define TIM3_CH3	"tim3_ch3"
-> +#define TIM3_CH4	"tim3_ch4"
-> +
-> +#define TIM4_TRGO	"tim4_trgo"
-> +#define TIM4_CH1	"tim4_ch1"
-> +#define TIM4_CH2	"tim4_ch2"
-> +#define TIM4_CH3	"tim4_ch3"
-> +#define TIM4_CH4	"tim4_ch4"
-> +
-> +#define TIM5_TRGO	"tim5_trgo"
-> +#define TIM5_CH1	"tim5_ch1"
-> +#define TIM5_CH2	"tim5_ch2"
-> +#define TIM5_CH3	"tim5_ch3"
-> +#define TIM5_CH4	"tim5_ch4"
-> +
-> +#define TIM6_TRGO	"tim6_trgo"
-> +
-> +#define TIM7_TRGO	"tim7_trgo"
-> +
-> +#define TIM8_TRGO	"tim8_trgo"
-> +#define TIM8_CH1	"tim8_ch1"
-> +#define TIM8_CH2	"tim8_ch2"
-> +#define TIM8_CH3	"tim8_ch3"
-> +#define TIM8_CH4	"tim8_ch4"
-> +
-> +#define TIM9_TRGO	"tim9_trgo"
-> +#define TIM9_CH1	"tim9_ch1"
-> +#define TIM9_CH2	"tim9_ch2"
-> +
-> +#define TIM12_TRGO	"tim12_trgo"
-> +#define TIM12_CH1	"tim12_ch1"
-> +#define TIM12_CH2	"tim12_ch2"
-> +
-> +bool is_stm32_timer_trigger(struct iio_trigger *trig);
-> +
-> +#endif
-> 
-
+diff --git a/drivers/iio/accel/st_accel_core.c b/drivers/iio/accel/st_accel_core.c
+index f6b6d42385e1..784670e2736b 100644
+--- a/drivers/iio/accel/st_accel_core.c
++++ b/drivers/iio/accel/st_accel_core.c
+@@ -353,12 +353,12 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 				[0] = {
+ 					.num = ST_ACCEL_FS_AVL_2G,
+ 					.value = 0x00,
+-					.gain = IIO_G_TO_M_S_2(1024),
++					.gain = IIO_G_TO_M_S_2(1000),
+ 				},
+ 				[1] = {
+ 					.num = ST_ACCEL_FS_AVL_6G,
+ 					.value = 0x01,
+-					.gain = IIO_G_TO_M_S_2(340),
++					.gain = IIO_G_TO_M_S_2(3000),
+ 				},
+ 			},
+ 		},
+@@ -366,6 +366,14 @@ static const struct st_sensor_settings st_accel_sensors_settings[] = {
+ 			.addr = 0x21,
+ 			.mask = 0x40,
+ 		},
++		/*
++		 * Data Alignment Setting - needs to be set to get
++		 * left-justified data like all other sensors.
++		 */
++		.das = {
++			.addr = 0x21,
++			.mask = 0x01,
++		},
+ 		.drdy_irq = {
+ 			.addr = 0x21,
+ 			.mask_int1 = 0x04,
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index d5cf7f31eaf9..79c8c7cd70d5 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -401,6 +401,15 @@ int st_sensors_init_sensor(struct iio_dev *indio_dev,
+ 			return err;
+ 	}
+ 
++	/* set DAS */
++	if (sdata->sensor_settings->das.addr) {
++		err = st_sensors_write_data_with_mask(indio_dev,
++					sdata->sensor_settings->das.addr,
++					sdata->sensor_settings->das.mask, 1);
++		if (err < 0)
++			return err;
++	}
++
+ 	if (sdata->int_pin_open_drain) {
+ 		dev_info(&indio_dev->dev,
+ 			 "set interrupt line to open drain mode\n");
+diff --git a/include/linux/iio/common/st_sensors.h b/include/linux/iio/common/st_sensors.h
+index 228bd44efa4c..497f2b3a5a62 100644
+--- a/include/linux/iio/common/st_sensors.h
++++ b/include/linux/iio/common/st_sensors.h
+@@ -116,6 +116,16 @@ struct st_sensor_bdu {
+ };
+ 
+ /**
++ * struct st_sensor_das - ST sensor device data alignment selection
++ * @addr: address of the register.
++ * @mask: mask to write the das flag for left alignment.
++ */
++struct st_sensor_das {
++	u8 addr;
++	u8 mask;
++};
++
++/**
+  * struct st_sensor_data_ready_irq - ST sensor device data-ready interrupt
+  * @addr: address of the register.
+  * @mask_int1: mask to enable/disable IRQ on INT1 pin.
+@@ -185,6 +195,7 @@ struct st_sensor_transfer_function {
+  * @enable_axis: Enable one or more axis of the sensor.
+  * @fs: Full scale register and full scale list available.
+  * @bdu: Block data update register.
++ * @das: Data Alignment Selection register.
+  * @drdy_irq: Data ready register of the sensor.
+  * @multi_read_bit: Use or not particular bit for [I2C/SPI] multi-read.
+  * @bootime: samples to discard when sensor passing from power-down to power-up.
+@@ -200,6 +211,7 @@ struct st_sensor_settings {
+ 	struct st_sensor_axis enable_axis;
+ 	struct st_sensor_fullscale fs;
+ 	struct st_sensor_bdu bdu;
++	struct st_sensor_das das;
+ 	struct st_sensor_data_ready_irq drdy_irq;
+ 	bool multi_read_bit;
+ 	unsigned int bootime;
+-- 
+2.9.3
