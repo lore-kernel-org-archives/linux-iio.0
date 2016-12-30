@@ -1,78 +1,102 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51575 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50535 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754467AbcL3PDS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 10:03:18 -0500
-Subject: Re: [PATCH 1/2] devicetree: power: add bindings for GPIO-driven power
- switches
-To: Lars-Peter Clausen <lars@metafoo.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Rob Herring <robh@kernel.org>
-References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
- <1481494905-18037-2-git-send-email-bgolaszewski@baylibre.com>
- <20161213192712.gbaw4t4awayybnta@rob-hp-laptop>
- <CAMpxmJWw3wCE4ch8TVik+2b3BC8Lvxbi13HGd9GxruSRLu95Mg@mail.gmail.com>
- <CAL_JsqLwS51MhOJQb-Lmo=osHiYKcAcCJaxKJFdSvZBpafz7Gw@mail.gmail.com>
- <CAMuHMdWfAwPE2N-_0WhW5+EEK3bqWoo9HpQZTgLzRRutCg++qg@mail.gmail.com>
- <505b7c02-e7dd-b0a5-8009-dca9101b0dd4@metafoo.de>
-Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
+        with ESMTP id S1752211AbcL3Kt4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 05:49:56 -0500
+Subject: Re: [PATCH v2 5/6] iio: bmi160: Fix time needed to sleep after
+ command execution
+To: Marcin Niestroj <m.niestroj@grinn-global.com>
+References: <20161208142259.26230-1-m.niestroj@grinn-global.com>
+ <20161208142259.26230-6-m.niestroj@grinn-global.com>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        linux-devicetree <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Patrick Titiano <ptitiano@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        linux-gpio <linux-gpio@vger.kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        linux-pm <linux-pm@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Daniel Baluta <daniel.baluta@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sanchayan Maity <maitysanchayan@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5bbedbb7-2391-c927-deab-75fd9fffe7f6@kernel.org>
-Date: Fri, 30 Dec 2016 15:03:06 +0000
+Message-ID: <7668f191-dafd-e616-171a-cafc52791292@kernel.org>
+Date: Fri, 30 Dec 2016 10:49:54 +0000
 MIME-Version: 1.0
-In-Reply-To: <505b7c02-e7dd-b0a5-8009-dca9101b0dd4@metafoo.de>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20161208142259.26230-6-m.niestroj@grinn-global.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/12/16 11:40, Lars-Peter Clausen wrote:
-> On 12/23/2016 10:07 AM, Geert Uytterhoeven wrote:
->> BTW, I'm not an IIO expert, but from my limited knowledge, it looks like "O"
->> support in IIO is limited to DACs?
+On 08/12/16 14:22, Marcin Niestroj wrote:
+> Datasheet specifies typical and maximum execution times for which CMD
+> register is occupied after previous command execution. We took these
+> values as minimum and maximum time for usleep_range() call before making
+> a new command execution.
 > 
-> Depends on what you categorize as DACs. There are also
-> potentiometer/rheostat drivers. They are kind of like DACs but the unit you
-> control are ohm, rather than current or voltage.
-Though they are still in staging there are also things like function generators.
+> To be sure, that the CMD register is no longer occupied we need to wait
+> *at least* the maximum time specified by datasheet.
+> 
+> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
+This looks like a definite bug that we would want to fix in stable as well.
+If possible, could you ensure this is the first patch in the updated series?
 
-I've been mulling doing a driver for the st-powerstep01 parts as well which
-is a smart stepper motor controller.  At that level we'd need to start describing
-the connected stepper motors in DT :) Whole chunk of API to define to do that
-though - might well take longer than writing the driver.
-
-So in practice yeah - dac like things, but then on the input side they are almost
-all really ADCs with some funny analog stuff on the front end ;)
-
-Arguably switches are 1 bit DACs ;)
-
-The distinction here is whether 'what is passing through' the device is knowable.
-So regulators and your power switch are well described.  A relay less so unless
-we know what load it is switching...
-
-+ it's IIO.  We are open to almost anything as long as we aren't stepping on
-any toes!
+Thanks,
 
 Jonathan
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> ---
+> Patch introduced in v2
+> 
+>  drivers/iio/imu/bmi160/bmi160_core.c | 25 ++++++-------------------
+>  1 file changed, 6 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
+> index 095533c..88bcf3f 100644
+> --- a/drivers/iio/imu/bmi160/bmi160_core.c
+> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
+> @@ -67,10 +67,8 @@
+>  
+>  #define BMI160_REG_DUMMY		0x7F
+>  
+> -#define BMI160_ACCEL_PMU_MIN_USLEEP	3200
+> -#define BMI160_ACCEL_PMU_MAX_USLEEP	3800
+> -#define BMI160_GYRO_PMU_MIN_USLEEP	55000
+> -#define BMI160_GYRO_PMU_MAX_USLEEP	80000
+> +#define BMI160_ACCEL_PMU_MIN_USLEEP	3800
+> +#define BMI160_GYRO_PMU_MIN_USLEEP	80000
+>  #define BMI160_SOFTRESET_USLEEP		1000
+>  
+>  #define BMI160_CHANNEL(_type, _axis, _index) {			\
+> @@ -153,20 +151,9 @@ static struct bmi160_regs bmi160_regs[] = {
+>  	},
+>  };
+>  
+> -struct bmi160_pmu_time {
+> -	unsigned long min;
+> -	unsigned long max;
+> -};
+> -
+> -static struct bmi160_pmu_time bmi160_pmu_time[] = {
+> -	[BMI160_ACCEL] = {
+> -		.min = BMI160_ACCEL_PMU_MIN_USLEEP,
+> -		.max = BMI160_ACCEL_PMU_MAX_USLEEP
+> -	},
+> -	[BMI160_GYRO] = {
+> -		.min = BMI160_GYRO_PMU_MIN_USLEEP,
+> -		.max = BMI160_GYRO_PMU_MIN_USLEEP,
+> -	},
+> +static unsigned long bmi160_pmu_time[] = {
+> +	[BMI160_ACCEL] = BMI160_ACCEL_PMU_MIN_USLEEP,
+> +	[BMI160_GYRO] = BMI160_GYRO_PMU_MIN_USLEEP,
+>  };
+>  
+>  struct bmi160_scale {
+> @@ -293,7 +280,7 @@ int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
+>  	if (ret < 0)
+>  		return ret;
+>  
+> -	usleep_range(bmi160_pmu_time[t].min, bmi160_pmu_time[t].max);
+> +	usleep_range(bmi160_pmu_time[t], bmi160_pmu_time[t] + 1000);
+>  
+>  	return 0;
+>  }
 > 
 
