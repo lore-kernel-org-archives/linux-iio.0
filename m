@@ -1,115 +1,104 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50559 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51633 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753638AbcL3Kv4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 05:51:56 -0500
-Subject: Re: [PATCH v2 5/6] iio: bmi160: Fix time needed to sleep after
- command execution
-To: Marcin Niestroj <m.niestroj@grinn-global.com>
-References: <20161208142259.26230-1-m.niestroj@grinn-global.com>
- <20161208142259.26230-6-m.niestroj@grinn-global.com>
- <7668f191-dafd-e616-171a-cafc52791292@kernel.org>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        with ESMTP id S1752407AbcL3PPe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 10:15:34 -0500
+Subject: Re: [PATCH 2/2] iio: misc: add support for GPIO power switches
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Sebastian Reichel <sre@kernel.org>
+References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
+ <1481494905-18037-3-git-send-email-bgolaszewski@baylibre.com>
+ <CACRpkdZ7JrNfCKPuuCmkZd_7+NV0QLUN8ZMukFA0TcqS9SYXcQ@mail.gmail.com>
+ <20161229162919.j2ej2cyeuoqnxykf@earth>
+ <CACRpkdbjbtFwwQCdR3krWG0P4UMhWySTTkzqZFBZ6EGXPS=k8g@mail.gmail.com>
+Cc: Bartosz Golaszewski <bgolaszewski@baylibre.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Daniel Baluta <daniel.baluta@intel.com>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sanchayan Maity <maitysanchayan@gmail.com>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org
+        Mark Rutland <mark.rutland@arm.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Kevin Hilman <khilman@baylibre.com>,
+        Patrick Titiano <ptitiano@baylibre.com>,
+        Neil Armstrong <narmstrong@baylibre.com>,
+        Alexandre Courbot <gnurou@gmail.com>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
+        Mark Brown <broonie@kernel.org>,
+        Liam Girdwood <lgirdwood@gmail.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <275616b9-bd6e-2bbe-2e49-f20a6bdc9b1c@kernel.org>
-Date: Fri, 30 Dec 2016 10:51:53 +0000
+Message-ID: <0c3511be-6a3c-f65c-c562-1c4b9318acb1@kernel.org>
+Date: Fri, 30 Dec 2016 15:15:30 +0000
 MIME-Version: 1.0
-In-Reply-To: <7668f191-dafd-e616-171a-cafc52791292@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CACRpkdbjbtFwwQCdR3krWG0P4UMhWySTTkzqZFBZ6EGXPS=k8g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/12/16 10:49, Jonathan Cameron wrote:
-> On 08/12/16 14:22, Marcin Niestroj wrote:
->> Datasheet specifies typical and maximum execution times for which CMD
->> register is occupied after previous command execution. We took these
->> values as minimum and maximum time for usleep_range() call before making
->> a new command execution.
+On 30/12/16 13:05, Linus Walleij wrote:
+> n Thu, Dec 29, 2016 at 5:29 PM, Sebastian Reichel <sre@kernel.org> wrote:
+>> On Wed, Dec 28, 2016 at 01:50:17PM +0100, Linus Walleij wrote:
+>>> On Sun, Dec 11, 2016 at 11:21 PM, Bartosz Golaszewski
+>>> <bgolaszewski@baylibre.com> wrote:
+>>>
+>>>> Some power-measuring ADCs work together with power load switches which
+>>>> allow to power-cycle measured devices.
+>>>>
+>>>> An example use case would be measuring the power consumption of a
+>>>> development board during boot using a power monitor such as TI INA226
+>>>> and power-cycling the board remotely using a TPS229* power switch.
+>>>>
+>>>> Add an iio driver for simple GPIO power switches and expose a sysfs
+>>>> attribute allowing to toggle their state.
+>>>>
+>>>> Signed-off-by: Bartosz Golaszewski <bgolaszewski@baylibre.com>
+>>>
+>>> I don't get this, isn't this doing the same as
+>>> drivers/power/reset/gpio-poweroff.c
+>>> ?
+>>>
+>>> With the only difference that the latter uses the standard syscall
+>>> from pm_power_off to reboot the system instead of some random
+>>> sysfs file.
 >>
->> To be sure, that the CMD register is no longer occupied we need to wait
->> *at least* the maximum time specified by datasheet.
->>
->> Signed-off-by: Marcin Niestroj <m.niestroj@grinn-global.com>
-> This looks like a definite bug that we would want to fix in stable as well.
-> If possible, could you ensure this is the first patch in the updated series?
-Actually don't worry. It applies cleanly to my fixes-togreg-post-rc1 branch anyway
-so I'll take it that way and send upstream asap.
+>> As far as I understand it, the TPS229 is used by Barzosz to poweroff
+>> a remote system. The gpio-poweroff driver is used to poweroff the
+>> local system.
+> 
+> Thanks yeah I understood this from the context of later patches.
+> 
+> Well if such a property is used it should be the property of the remote
+> system per se, and the remote system should then also be desribed in
+> DT, not half-described by dangling references at random nodes.
+> 
+> So this needs to be re-architected to either describe the remote system
+> in DT and handle it in the kernel, or handle it all from userspace if it
+> is a one-off non-product thing.
+I'm not sure this is always true (though it might be here).  There is always
+a need to describe the edge of the known world.  Be it that we have
+an accelerometer - ultimately we could describe the device generating the
+acceleration but we have no way of knowing what it is or what it will do..
 
-Applied to the fixes-togreg-post-rc1 branch and marked for stable.
+What we have here is a rather simple case, but what about an I/O bank on
+a PLC.  Obviously we can handle that as a bunch of GPIOs but if we know
+more about it we should have means to describe that.  Say we know they are
+always driving relays, we should be able to describe that additional known
+stuff. Relays have characteristics such as bounce times etc that if described
+would allow us to do the relevant filtering on inputs to handle this.
 
-Thanks,
+Here the fact it is a power supply switch should be describable.  Hard to
+get right in a generic way though so in cases like this perhaps you
+are right and it should just be left undescribed and handled in userspace.
+
+Anyhow, here I think leaving it as a gpio interface is probably the way to
+go, but I'm not sure that will always be the case.
 
 Jonathan
 > 
-> Thanks,
-> 
-> Jonathan
->> ---
->> Patch introduced in v2
->>
->>  drivers/iio/imu/bmi160/bmi160_core.c | 25 ++++++-------------------
->>  1 file changed, 6 insertions(+), 19 deletions(-)
->>
->> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
->> index 095533c..88bcf3f 100644
->> --- a/drivers/iio/imu/bmi160/bmi160_core.c
->> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
->> @@ -67,10 +67,8 @@
->>  
->>  #define BMI160_REG_DUMMY		0x7F
->>  
->> -#define BMI160_ACCEL_PMU_MIN_USLEEP	3200
->> -#define BMI160_ACCEL_PMU_MAX_USLEEP	3800
->> -#define BMI160_GYRO_PMU_MIN_USLEEP	55000
->> -#define BMI160_GYRO_PMU_MAX_USLEEP	80000
->> +#define BMI160_ACCEL_PMU_MIN_USLEEP	3800
->> +#define BMI160_GYRO_PMU_MIN_USLEEP	80000
->>  #define BMI160_SOFTRESET_USLEEP		1000
->>  
->>  #define BMI160_CHANNEL(_type, _axis, _index) {			\
->> @@ -153,20 +151,9 @@ static struct bmi160_regs bmi160_regs[] = {
->>  	},
->>  };
->>  
->> -struct bmi160_pmu_time {
->> -	unsigned long min;
->> -	unsigned long max;
->> -};
->> -
->> -static struct bmi160_pmu_time bmi160_pmu_time[] = {
->> -	[BMI160_ACCEL] = {
->> -		.min = BMI160_ACCEL_PMU_MIN_USLEEP,
->> -		.max = BMI160_ACCEL_PMU_MAX_USLEEP
->> -	},
->> -	[BMI160_GYRO] = {
->> -		.min = BMI160_GYRO_PMU_MIN_USLEEP,
->> -		.max = BMI160_GYRO_PMU_MIN_USLEEP,
->> -	},
->> +static unsigned long bmi160_pmu_time[] = {
->> +	[BMI160_ACCEL] = BMI160_ACCEL_PMU_MIN_USLEEP,
->> +	[BMI160_GYRO] = BMI160_GYRO_PMU_MIN_USLEEP,
->>  };
->>  
->>  struct bmi160_scale {
->> @@ -293,7 +280,7 @@ int bmi160_set_mode(struct bmi160_data *data, enum bmi160_sensor_type t,
->>  	if (ret < 0)
->>  		return ret;
->>  
->> -	usleep_range(bmi160_pmu_time[t].min, bmi160_pmu_time[t].max);
->> +	usleep_range(bmi160_pmu_time[t], bmi160_pmu_time[t] + 1000);
->>  
->>  	return 0;
->>  }
->>
-> 
+> Yours,
+> Linus Walleij
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
