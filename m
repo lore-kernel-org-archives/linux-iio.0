@@ -1,148 +1,81 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52601 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52619 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751665AbcL3Sb3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 13:31:29 -0500
-Subject: Re: [PATCH] Revert "iio:st_sensors: align on storagebits boundaries"
-To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <20161230173620.30851-1-linus.walleij@linaro.org>
-Cc: stable@vger.kernel.org, Gregor Boirie <gregor.boirie@parrot.com>,
-        Giuseppe Barba <giuseppe.barba@st.com>,
-        Denis Ciocca <denis.ciocca@st.com>
+        with ESMTP id S1751665AbcL3Sem (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 13:34:42 -0500
+Subject: Re: Problems with using IIO buffers
+To: Matthias Klumpp <matthias@tenstral.net>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+References: <CAKNHny-B-tyZ3GszV-DLxRKzhhCuqELUc6MsiPs=76GYghO58g@mail.gmail.com>
+ <alpine.DEB.2.02.1612201144140.4422@pmeerw.net>
+ <CAKNHny_yV-FV9smGfrX2wR-T7M5uCk9WWG4xNGBMXrAuwVy2ZA@mail.gmail.com>
+ <alpine.DEB.2.02.1612201720550.9386@pmeerw.net>
+ <CAKNHny9M4uQvk_Xg1f0JL5Ob=PzUBFi8=0G1XVwqdkhR1f4P=g@mail.gmail.com>
+Cc: linux-iio@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7ccb6107-d7af-2240-5000-800d3cd64205@kernel.org>
-Date: Fri, 30 Dec 2016 18:31:26 +0000
+Message-ID: <fa3259c5-d76b-bc93-e517-054ef249a861@kernel.org>
+Date: Fri, 30 Dec 2016 18:34:41 +0000
 MIME-Version: 1.0
-In-Reply-To: <20161230173620.30851-1-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <CAKNHny9M4uQvk_Xg1f0JL5Ob=PzUBFi8=0G1XVwqdkhR1f4P=g@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/12/16 17:36, Linus Walleij wrote:
-> This reverts commit e7385de5291e347f5bc85985acdce3a3f5096667.
+On 20/12/16 16:49, Matthias Klumpp wrote:
+> 2016-12-20 17:30 GMT+01:00 Peter Meerwald-Stadler <pmeerw@pmeerw.net>:
+>> [...]
+>>
+>> this is what I use (Ubuntu, Linux 4.4) and it works; maybe the trigger
+>> name you use is incorrect?
+>>
+>> modprobe iio_trig_sysfs
+>> modprobe iio_dummy (make sure CONFIG_IIO_SIMPLE_DUMMY_BUFFER is #defined)
+>> cd /sys/bus/iio/devices/iio_sysfs_trigger
+>> echo 123 > add_trigger
+>> cd /sys/bus/iio/devices/trigger0
+>> cat name # should give sysfstrig123
+>> cd /sys/bus/iio/devices/iio:device0
+>> echo sysfstrig123 > trigger/current_trigger
+>> echo 1 > scan_elements/in_voltage0_en
+>> echo 1 > buffer/enable
 > 
-> This change is bad, because it breaks all 12bit sensors and
-> breaks userspace such as iio_generic_buffer.
+> This works now, I think I messed up setting the trigger last time
+> (selected the wrong name, stupid...).
+> I now trigger the trigger via `echo 1 > trigger0/trigger_now` and try
+> to read data from the character device via
+> `iio_readdev /dev/iio:device0`, with the same result as described in
+> the first post - refilling the buffer doesn't work and I run into a
+> timeout.
+> When trying this with my driver, I see that the data polling function
+> is not called, and when (using the dummy driver) trying to get data
+> from the /dev/iio:device0 device without using iio_readdev, I also get
+> no result.
 > 
-> The commit computes the number of bytes to read out from the
-> hardware like this:
-> 
-> unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
-> 
-> This works fine with 8 or 16 bit channels resulting in 1 or
-> 2 bytes to read respectively.
-> 
-> But when using this with 12bit sensors such as the LIS3LV02
-> this fails since 12 >> 3 = 1 but we need to read 2 bytes!
-> Unless we do this, the DRDY signal does not go low and the
-> status loop just spins.
-> 
-> Further, it packs all bytes in the buffer to make it "dense".
-> Even if I try to fix the above by using DIV_ROUND_UP(),
-> it will result in erroneous data in the buffer for 12bit
-> sensors, since the macro ST_SENSORS_LSM_CHANNELS() used by
-> all sensors defines scan type shift, storagebits and realbits
-> such that the userspace like iio_generic_buffer will read
-> 2 bytes, then shift it by 4. This will not work anymore after
-> this patch.
-> 
-> I do not understand the point of the original commit, I
-> suggest this be reverted for now.
-It's required for 24 bit sensors which were previously broken if
-you had a 24 bit channel with anything much after it.
+> Clearly, it feels like I am missing something obvious here...
 
-We do have a full fix keeping those working as well, but it was stalled
-on getting some actual tests on 24 bit devices (not many people have them).
+Just to check.
 
-It's the last (and infact only fix) in my fixes-togreg branch.
+Triggering is per 'scan'. It's perhaps closer to the trigger on a camera
+that than on an oscilloscope if that helps.
 
-iio: common: st_sensors: fix channel data parsing
+Are you firing the trigger multiple times?
 
-With combination of end of year / xmas plus merge window I haven't gotten it
-out yet. Will fix that in the next day or so.
+It sounds like you are refilling the buffer in your driver so possibly
+we are looking at different problems in the two cases?
 
-Could you test and see if it fixes what you are seeing?
-At least superficially sounds like the same issue.
+Perhaps post an RFC of your driver for us to take a look at?
 
-Thanks,
+Let us know if you got this sorted. I've been rather snowed under and
+out of touch for the last few weeks!
 
 Jonathan
-> Fixes: e7385de5291e ("iio:st_sensors: align on storagebits boundaries")
-> Cc: stable@vger.kernel.org
-> Cc: Gregor Boirie <gregor.boirie@parrot.com>
-> Cc: Giuseppe Barba <giuseppe.barba@st.com>
-> Cc: Denis Ciocca <denis.ciocca@st.com>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-> ---
->  drivers/iio/common/st_sensors/st_sensors_buffer.c | 37 ++++++++++++-----------
->  drivers/iio/common/st_sensors/st_sensors_core.c   |  2 +-
->  2 files changed, 20 insertions(+), 19 deletions(-)
+
 > 
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> index fe7775bb3740..3c964a106afa 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
-> @@ -24,29 +24,30 @@
->  
->  static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
->  {
-> -	int i;
-> +	int i, len;
-> +	int total = 0;
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
->  	unsigned int num_data_channels = sdata->num_data_channels;
->  
-> -	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
-> -		const struct iio_chan_spec *channel = &indio_dev->channels[i];
-> -		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
-> -		unsigned int storage_bytes =
-> -			channel->scan_type.storagebits >> 3;
-> -
-> -		buf = PTR_ALIGN(buf, storage_bytes);
-> -		if (sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
-> -						  channel->address,
-> -						  bytes_to_read, buf,
-> -						  sdata->multiread_bit) <
-> -		    bytes_to_read)
-> -			return -EIO;
-> -
-> -		/* Advance the buffer pointer */
-> -		buf += storage_bytes;
-> +	for (i = 0; i < num_data_channels; i++) {
-> +		unsigned int bytes_to_read;
-> +
-> +		if (test_bit(i, indio_dev->active_scan_mask)) {
-> +			bytes_to_read = indio_dev->channels[i].scan_type.storagebits >> 3;
-> +			len = sdata->tf->read_multiple_byte(&sdata->tb,
-> +				sdata->dev, indio_dev->channels[i].address,
-> +				bytes_to_read,
-> +				buf + total, sdata->multiread_bit);
-> +
-> +			if (len < bytes_to_read)
-> +				return -EIO;
-> +
-> +			/* Advance the buffer pointer */
-> +			total += len;
-> +		}
->  	}
->  
-> -	return 0;
-> +	return total;
->  }
->  
->  irqreturn_t st_sensors_trigger_handler(int irq, void *p)
-> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
-> index 975a1f19f747..4abe8aca1b29 100644
-> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
-> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
-> @@ -483,7 +483,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
->  	int err;
->  	u8 *outdata;
->  	struct st_sensor_data *sdata = iio_priv(indio_dev);
-> -	unsigned int byte_for_channel = ch->scan_type.realbits >> 3;
-> +	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
->  
->  	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
->  	if (!outdata)
+> Regards,
+>     Matthias
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
