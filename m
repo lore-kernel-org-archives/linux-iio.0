@@ -1,67 +1,123 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga01.intel.com ([192.55.52.88]:19059 "EHLO mga01.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751280AbcL3Qxy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 30 Dec 2016 11:53:54 -0500
-Message-ID: <1483116610.27585.51.camel@linux.intel.com>
-Subject: Re: sensor-hub: Move the memset to sensor_hub_get_feature()
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: rrs@researchut.com, linux-iio <linux-iio@vger.kernel.org>
-Date: Fri, 30 Dec 2016 08:50:10 -0800
-In-Reply-To: <1483094837.11693.3.camel@researchut.com>
-References: <1482925101.8484.1.camel@researchut.com>
-         <1482931381.8484.3.camel@researchut.com>
-         <1482943685.4497.19.camel@linux.intel.com>
-         <1482945855.8484.8.camel@researchut.com>
-         <1482946633.12558.1.camel@researchut.com>
-         <1482947598.21657.1.camel@researchut.com>
-         <1483032127.27585.13.camel@linux.intel.com>
-         <1483032694.3173.3.camel@researchut.com>
-         <1483094837.11693.3.camel@researchut.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=gZRN=YN=linaro.org=linus.walleij@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+	stable@vger.kernel.org,
+	Gregor Boirie <gregor.boirie@parrot.com>,
+	Giuseppe Barba <giuseppe.barba@st.com>,
+	Denis Ciocca <denis.ciocca@st.com>
+Subject: [PATCH] Revert "iio:st_sensors: align on storagebits boundaries"
+Date: Fri, 30 Dec 2016 18:36:20 +0100
+Message-Id: <20161230173620.30851-1-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Fri, 2016-12-30 at 16:17 +0530, Ritesh Raj Sarraf wrote:
-> Hello Srini,
-> 
-> On Thu, 2016-12-29 at 23:01 +0530, Ritesh Raj Sarraf wrote:
-> > 
-> > On Thu, 2016-12-29 at 09:22 -0800, Srinivas Pandruvada wrote:
-> > > 
-> > > > 
-> > > > If you need more information, please tell me.
-> > > I tried on couple of systems with the patch. It seems to fix the
-> > > issue.
-> > > It is possible some low level power related changes have impacted
-> > > this.
-> > > Can you do bisect? I suggest just try 4.9-rc1. I think it will
-> > > not work
-> > > there probably.
-> > Okay. Let me do a bisect on it. I'll ping back on this thread soon.
-> Since yesterday's attempts, I haven't been able to reproduce the bug
-> again, so
-> far. Apart from re-building the kernel, I have also blacklisted the
-> particular
-> USB device from power savings (based on your hint). I don't know if
-> disabling
-> the power savings for that USB device is the cause for not seeing the
-> issue, but
-> so far, the device seems to report data.
-> 
-> Do you think power savings mode can impact these devices ? I know of
-> USB plugged
-> keyboard/mice to generally break, when enabling power savings mode.
-> But I had
-> hoped that in-built USB devices were immune to it.
-> 
-This is possible. If your remove from blacklist does it still work? May
-be rebuild of kernel fixed this:-) 
+This reverts commit e7385de5291e347f5bc85985acdce3a3f5096667.
 
-Thanks,
-Srinivas
+This change is bad, because it breaks all 12bit sensors and
+breaks userspace such as iio_generic_buffer.
 
-> Thanks,
-> Ritesh
-> 
+The commit computes the number of bytes to read out from the
+hardware like this:
+
+unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+
+This works fine with 8 or 16 bit channels resulting in 1 or
+2 bytes to read respectively.
+
+But when using this with 12bit sensors such as the LIS3LV02
+this fails since 12 >> 3 = 1 but we need to read 2 bytes!
+Unless we do this, the DRDY signal does not go low and the
+status loop just spins.
+
+Further, it packs all bytes in the buffer to make it "dense".
+Even if I try to fix the above by using DIV_ROUND_UP(),
+it will result in erroneous data in the buffer for 12bit
+sensors, since the macro ST_SENSORS_LSM_CHANNELS() used by
+all sensors defines scan type shift, storagebits and realbits
+such that the userspace like iio_generic_buffer will read
+2 bytes, then shift it by 4. This will not work anymore after
+this patch.
+
+I do not understand the point of the original commit, I
+suggest this be reverted for now.
+
+Fixes: e7385de5291e ("iio:st_sensors: align on storagebits boundaries")
+Cc: stable@vger.kernel.org
+Cc: Gregor Boirie <gregor.boirie@parrot.com>
+Cc: Giuseppe Barba <giuseppe.barba@st.com>
+Cc: Denis Ciocca <denis.ciocca@st.com>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ drivers/iio/common/st_sensors/st_sensors_buffer.c | 37 ++++++++++++-----------
+ drivers/iio/common/st_sensors/st_sensors_core.c   |  2 +-
+ 2 files changed, 20 insertions(+), 19 deletions(-)
+
+diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+index fe7775bb3740..3c964a106afa 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
++++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+@@ -24,29 +24,30 @@
+ 
+ static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+ {
+-	int i;
++	int i, len;
++	int total = 0;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+ 	unsigned int num_data_channels = sdata->num_data_channels;
+ 
+-	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
+-		const struct iio_chan_spec *channel = &indio_dev->channels[i];
+-		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+-		unsigned int storage_bytes =
+-			channel->scan_type.storagebits >> 3;
+-
+-		buf = PTR_ALIGN(buf, storage_bytes);
+-		if (sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+-						  channel->address,
+-						  bytes_to_read, buf,
+-						  sdata->multiread_bit) <
+-		    bytes_to_read)
+-			return -EIO;
+-
+-		/* Advance the buffer pointer */
+-		buf += storage_bytes;
++	for (i = 0; i < num_data_channels; i++) {
++		unsigned int bytes_to_read;
++
++		if (test_bit(i, indio_dev->active_scan_mask)) {
++			bytes_to_read = indio_dev->channels[i].scan_type.storagebits >> 3;
++			len = sdata->tf->read_multiple_byte(&sdata->tb,
++				sdata->dev, indio_dev->channels[i].address,
++				bytes_to_read,
++				buf + total, sdata->multiread_bit);
++
++			if (len < bytes_to_read)
++				return -EIO;
++
++			/* Advance the buffer pointer */
++			total += len;
++		}
+ 	}
+ 
+-	return 0;
++	return total;
+ }
+ 
+ irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+index 975a1f19f747..4abe8aca1b29 100644
+--- a/drivers/iio/common/st_sensors/st_sensors_core.c
++++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+@@ -483,7 +483,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+ 	int err;
+ 	u8 *outdata;
+ 	struct st_sensor_data *sdata = iio_priv(indio_dev);
+-	unsigned int byte_for_channel = ch->scan_type.realbits >> 3;
++	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
+ 
+ 	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
+ 	if (!outdata)
+-- 
+2.9.3
