@@ -1,134 +1,67 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52103 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750720AbcL3QqI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 11:46:08 -0500
-Subject: Re: [PATCH] iio: adc: axp288: Drop bogus AXP288_ADC_TS_PIN_CTRL
- register modifications
-To: Hans de Goede <hdegoede@redhat.com>, Chen-Yu Tsai <wens@csie.org>
-References: <20161214135525.16477-1-hdegoede@redhat.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "russianneuromancer @ ya . ru" <russianneuromancer@ya.ru>,
-        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org,
-        Jacob Pan <jacob.jun.pan@linux.intel.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1f31b2e7-90fa-0fb8-5f6e-a8ee2ddf69f7@kernel.org>
-Date: Fri, 30 Dec 2016 16:46:03 +0000
-MIME-Version: 1.0
-In-Reply-To: <20161214135525.16477-1-hdegoede@redhat.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mga01.intel.com ([192.55.52.88]:19059 "EHLO mga01.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751280AbcL3Qxy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 30 Dec 2016 11:53:54 -0500
+Message-ID: <1483116610.27585.51.camel@linux.intel.com>
+Subject: Re: sensor-hub: Move the memset to sensor_hub_get_feature()
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: rrs@researchut.com, linux-iio <linux-iio@vger.kernel.org>
+Date: Fri, 30 Dec 2016 08:50:10 -0800
+In-Reply-To: <1483094837.11693.3.camel@researchut.com>
+References: <1482925101.8484.1.camel@researchut.com>
+         <1482931381.8484.3.camel@researchut.com>
+         <1482943685.4497.19.camel@linux.intel.com>
+         <1482945855.8484.8.camel@researchut.com>
+         <1482946633.12558.1.camel@researchut.com>
+         <1482947598.21657.1.camel@researchut.com>
+         <1483032127.27585.13.camel@linux.intel.com>
+         <1483032694.3173.3.camel@researchut.com>
+         <1483094837.11693.3.camel@researchut.com>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/12/16 13:55, Hans de Goede wrote:
-> For some reason the axp288_adc driver was modifying the
-> AXP288_ADC_TS_PIN_CTRL register, changing bits 0-1 depending on
-> whether the GP_ADC channel or another channel was written.
+On Fri, 2016-12-30 at 16:17 +0530, Ritesh Raj Sarraf wrote:
+> Hello Srini,
 > 
-> These bits control when a bias current is send to the TS_PIN, the
-> GP_ADC has its own pin and a separate bit in another register to
-> control the bias current.
+> On Thu, 2016-12-29 at 23:01 +0530, Ritesh Raj Sarraf wrote:
+> > 
+> > On Thu, 2016-12-29 at 09:22 -0800, Srinivas Pandruvada wrote:
+> > > 
+> > > > 
+> > > > If you need more information, please tell me.
+> > > I tried on couple of systems with the patch. It seems to fix the
+> > > issue.
+> > > It is possible some low level power related changes have impacted
+> > > this.
+> > > Can you do bisect? I suggest just try 4.9-rc1. I think it will
+> > > not work
+> > > there probably.
+> > Okay. Let me do a bisect on it. I'll ping back on this thread soon.
+> Since yesterday's attempts, I haven't been able to reproduce the bug
+> again, so
+> far. Apart from re-building the kernel, I have also blacklisted the
+> particular
+> USB device from power savings (based on your hint). I don't know if
+> disabling
+> the power savings for that USB device is the cause for not seeing the
+> issue, but
+> so far, the device seems to report data.
 > 
-> Not only does changing when to enable the TS_PIN bias current
-> (always or only when sampling) when reading the GP_ADC make no sense
-> at all, the code is modifying these bits is writing the entire register,
-> assuming that all the other bits have their default value.
+> Do you think power savings mode can impact these devices ? I know of
+> USB plugged
+> keyboard/mice to generally break, when enabling power savings mode.
+> But I had
+> hoped that in-built USB devices were immune to it.
 > 
-> So if the firmware has configured a different bias-current for either
-> pin, then that change gets clobbered by the write, likewise if the
-> firmware has set bit 2 to indicate that the battery has no thermal sensor,
-> this will get clobbered by the write.
-> 
-> This commit fixes all this, by simply removing all writes to the
-> AXP288_ADC_TS_PIN_CTRL register, they are not needed to read the
-> GP_ADC pin, and can actually be harmful.
-> 
-> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
-I guess you probably have more up to date contact details than I do,
-but seems worth trying to cc Jacob Pan on this to see if we can find
-out what the original reasoning behind this was.  Seems a very odd
-thing to do with no purpose!
+This is possible. If your remove from blacklist does it still work? May
+be rebuild of kernel fixed this:-) 
 
-If Jacob isn't contactable we'll fall back to guessing it was just
-an oddity of driver evolution.
+Thanks,
+Srinivas
 
-Jonathan
-> ---
->  drivers/iio/adc/axp288_adc.c | 32 +-------------------------------
->  1 file changed, 1 insertion(+), 31 deletions(-)
+> Thanks,
+> Ritesh
 > 
-> diff --git a/drivers/iio/adc/axp288_adc.c b/drivers/iio/adc/axp288_adc.c
-> index 7fd2494..64799ad 100644
-> --- a/drivers/iio/adc/axp288_adc.c
-> +++ b/drivers/iio/adc/axp288_adc.c
-> @@ -28,8 +28,6 @@
->  #include <linux/iio/driver.h>
->  
->  #define AXP288_ADC_EN_MASK		0xF1
-> -#define AXP288_ADC_TS_PIN_GPADC		0xF2
-> -#define AXP288_ADC_TS_PIN_ON		0xF3
->  
->  enum axp288_adc_id {
->  	AXP288_ADC_TS,
-> @@ -123,16 +121,6 @@ static int axp288_adc_read_channel(int *val, unsigned long address,
->  	return IIO_VAL_INT;
->  }
->  
-> -static int axp288_adc_set_ts(struct regmap *regmap, unsigned int mode,
-> -				unsigned long address)
-> -{
-> -	/* channels other than GPADC do not need to switch TS pin */
-> -	if (address != AXP288_GP_ADC_H)
-> -		return 0;
-> -
-> -	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
-> -}
-> -
->  static int axp288_adc_read_raw(struct iio_dev *indio_dev,
->  			struct iio_chan_spec const *chan,
->  			int *val, int *val2, long mask)
-> @@ -143,16 +131,7 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
->  	mutex_lock(&indio_dev->mlock);
->  	switch (mask) {
->  	case IIO_CHAN_INFO_RAW:
-> -		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_GPADC,
-> -					chan->address)) {
-> -			dev_err(&indio_dev->dev, "GPADC mode\n");
-> -			ret = -EINVAL;
-> -			break;
-> -		}
->  		ret = axp288_adc_read_channel(val, chan->address, info->regmap);
-> -		if (axp288_adc_set_ts(info->regmap, AXP288_ADC_TS_PIN_ON,
-> -						chan->address))
-> -			dev_err(&indio_dev->dev, "TS pin restore\n");
->  		break;
->  	default:
->  		ret = -EINVAL;
-> @@ -162,15 +141,6 @@ static int axp288_adc_read_raw(struct iio_dev *indio_dev,
->  	return ret;
->  }
->  
-> -static int axp288_adc_set_state(struct regmap *regmap)
-> -{
-> -	/* ADC should be always enabled for internal FG to function */
-> -	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, AXP288_ADC_TS_PIN_ON))
-> -		return -EIO;
-> -
-> -	return regmap_write(regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
-> -}
-> -
->  static const struct iio_info axp288_adc_iio_info = {
->  	.read_raw = &axp288_adc_read_raw,
->  	.driver_module = THIS_MODULE,
-> @@ -199,7 +169,7 @@ static int axp288_adc_probe(struct platform_device *pdev)
->  	 * Set ADC to enabled state at all time, including system suspend.
->  	 * otherwise internal fuel gauge functionality may be affected.
->  	 */
-> -	ret = axp288_adc_set_state(axp20x->regmap);
-> +	ret = regmap_write(info->regmap, AXP20X_ADC_EN1, AXP288_ADC_EN_MASK);
->  	if (ret) {
->  		dev_err(&pdev->dev, "unable to enable ADC device\n");
->  		return ret;
-> 
-
