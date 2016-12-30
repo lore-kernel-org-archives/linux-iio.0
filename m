@@ -1,118 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53119 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53157 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752030AbcL3USA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 15:18:00 -0500
-Subject: Re: [PATCH v8 3/8] drivers:input:tsc2007: add iio interface to read
- external ADC input and temperature
-To: "H. Nikolaus Schaller" <hns@goldelico.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>
-References: <cover.1479823354.git.hns@goldelico.com>
- <cover.1479823354.git.hns@goldelico.com>
- <99f236df48b03b3188e12f94a20097f8440db7a5.1479823354.git.hns@goldelico.com>
- <E42B1EF7-222E-46D6-878B-30C789CFBBC5@jic23.retrosnub.co.uk>
- <811B6F6A-2E3D-45B4-A984-74ABE0E37192@goldelico.com>
- <8d3fc752-e69c-f568-4f71-4f1768a3fffe@kernel.org>
- <AC7B3C1C-C05B-45B5-8426-5225F151DC26@goldelico.com>
- <E4E31180-A686-4631-9713-519987C55F06@goldelico.com>
- <20161227215416.GB28140@dtor-ws>
- <FA2666F0-0C5B-458E-97B5-83243F26D0DE@goldelico.com>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexander Stein <alexander.stein@systec-electronic.com>,
-        Eric Engestrom <eric@engestrom.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Petr Cvek <petr.cvek@tul.cz>, linux-input@vger.kernel.org,
-        devicetree <devicetree@vger.kernel.org>,
-        LKML <linux-kernel@vger.kernel.org>,
-        linux-omap <linux-omap@vger.kernel.org>,
-        Discussions about the Letux Kernel
-        <letux-kernel@openphoenux.org>, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com,
-        "Yann E. MORIN" <yann.morin.1998@free.fr>,
-        Linux Kbuild mailing list <linux-kbuild@vger.kernel.org>
+        with ESMTP id S1752859AbcL3UW2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 15:22:28 -0500
+Subject: Re: [PATCH] iio: max44000: correct value in
+ illuminance_integration_time_available
+To: Akinobu Mita <akinobu.mita@gmail.com>, linux-iio@vger.kernel.org
+References: <1482945396-18604-1-git-send-email-akinobu.mita@gmail.com>
+Cc: Crestez Dan Leonard <leonard.crestez@intel.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <422954b1-4ae5-acc1-f98a-f6f71047f4bf@kernel.org>
-Date: Fri, 30 Dec 2016 20:17:53 +0000
+Message-ID: <2c45861e-e813-624f-03f8-88b0bc95e60d@kernel.org>
+Date: Fri, 30 Dec 2016 20:22:26 +0000
 MIME-Version: 1.0
-In-Reply-To: <FA2666F0-0C5B-458E-97B5-83243F26D0DE@goldelico.com>
+In-Reply-To: <1482945396-18604-1-git-send-email-akinobu.mita@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/12/16 14:52, H. Nikolaus Schaller wrote:
-> Hi Dmitry,
+On 28/12/16 17:16, Akinobu Mita wrote:
+> According to the datasheet, the shortest available integration time for
+> ALS ADC conversion is 1.5625ms but illuminance_integration_time_available
+> sysfs file shows wrong value.
 > 
->> Am 27.12.2016 um 22:54 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
->>
->> On Mon, Dec 12, 2016 at 10:21:25PM +0100, H. Nikolaus Schaller wrote:
->>> Hi,
->>>
->>>
->>>> Am 27.11.2016 um 16:47 schrieb H. Nikolaus Schaller <hns@goldelico.com>:
->>>>
->>>> Hi Jonathan,
->>>>
->>>>> Am 27.11.2016 um 12:02 schrieb Jonathan Cameron <jic23@kernel.org>:
->>>>>
->>>>> On 24/11/16 18:05, H. Nikolaus Schaller wrote:
->>>>>>
->>>>>>> Am 24.11.2016 um 18:38 schrieb Jonathan Cameron <jic23@jic23.retrosnub.co.uk>:
->>>>>>>
->>>>>>>
->>>>>>>
->>>>>>> On 22 November 2016 14:02:30 GMT+00:00, "H. Nikolaus Schaller" <hns@goldelico.com> wrote:
->>>
->>>>
->>>>> - hence cc'd Yann and the Kbuild list
->>>>> to see if they can offer some advices.
->>>
->>> no response / advice so far.
->>
->> Since you are saying that IIO stuff is optional, add it to Kconfig
->> explicitly:
->>
->> config "TOUCHSCREEN_TSC2007_IIO"
->> 	bool "IIO interface for external ADC input and temperature"
->> 	depends on TOUCHSCREEN_TSC2007
->> 	depends on IIO=y || IIO=TOUCHSCREEN_TSC2007
->> 	help
->> 	  ...
->>
->> and use this symbols in makefile:
->>
->> and in Makefile:
->>
->> obj-$(CONFIG_TOUCHSCREEN_TSC2007) += tsc2007.o
->> tsc2007-y := tsc2007-core.o ...
->> tsc2007-$(CONFIG_TOUCHSCREEN_TSC2007_IIO) += tsc2007_iio.o
+> Cc: Crestez Dan Leonard <leonard.crestez@intel.com>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Signed-off-by: Akinobu Mita <akinobu.mita@gmail.com>
+Good find.  Applied to the fixes-togreg-post-rc1 branch of iio.git
+and marked for stable with a fixes tag added.  It might apply cleanly
+along the way, but the original bug was quite a few patches back.
+
+Jonathan
+> ---
+>  drivers/iio/light/max44000.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
 > 
-> Ah, ok. Well, we tried to make it without an explicit config option
-> but it does not hurt to have one.
-> 
-> Your proposal works fine for 3 out of the 4 possible combinations.
-> 
-> I think it is unlikely that the combination TOUCHSCREEN_TSC2007=y IIO=m
-> is needed at all (we configure as much as possible as =m in our kernel).
-Indeed - that shouldn't work and is blocked by the above which is good.
-> 
-> Patch v9 will come next (where I have also moved this iio driver
-> patch to be 8/8).
-Wise move ;)
-> 
-> BR and thanks,
-> Nikolaus
+> diff --git a/drivers/iio/light/max44000.c b/drivers/iio/light/max44000.c
+> index a144ca3..81bd8e8 100644
+> --- a/drivers/iio/light/max44000.c
+> +++ b/drivers/iio/light/max44000.c
+> @@ -113,7 +113,7 @@ static const char max44000_int_time_avail_str[] =
+>  	"0.100 "
+>  	"0.025 "
+>  	"0.00625 "
+> -	"0.001625";
+> +	"0.0015625";
+>  
+>  /* Available scales (internal to ulux) with pretty manual alignment: */
+>  static const int max44000_scale_avail_ulux_array[] = {
 > 
 
