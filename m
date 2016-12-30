@@ -1,326 +1,87 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52785 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52315 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752319AbcL3TBI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 14:01:08 -0500
-Subject: Re: [PATCH 2/3 v2] iio: adc: break out common code from SPMI VADC
+        with ESMTP id S1750962AbcL3RSl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 12:18:41 -0500
+Subject: Re: [PATCH 1/2 v2] iio: light: add DT bindings for Capella CM3605
 To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
-References: <1481842105-14047-1-git-send-email-linus.walleij@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org,
-        linux-arm-msm@vger.kernel.org,
-        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
-        Andy Gross <andy.gross@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+References: <1482098155-16148-1-git-send-email-linus.walleij@linaro.org>
+Cc: devicetree@vger.kernel.org,
+        Capella Microsystems <capellamicro@gmail.com>,
+        Kevin Tsai <ktsai@capellamicro.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <717ea1c4-33af-f0ca-e018-5d7ac87506e1@kernel.org>
-Date: Fri, 30 Dec 2016 19:01:06 +0000
+Message-ID: <2d176f85-f5ee-69b1-55a1-404b6eb86a66@kernel.org>
+Date: Fri, 30 Dec 2016 17:18:39 +0000
 MIME-Version: 1.0
-In-Reply-To: <1481842105-14047-1-git-send-email-linus.walleij@linaro.org>
+In-Reply-To: <1482098155-16148-1-git-send-email-linus.walleij@linaro.org>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/12/16 22:48, Linus Walleij wrote:
-> The SPMI VADC and the earlier XOADC share a subset of
-> common code, so to be able to use the same code in both
-> drivers, we break out a separate file with the common code,
-> prefix exported functions that are no longer static with
-> qcom_* and bake an object qcom-vadc.o that contains both
-> files: qcom-vadc-common.o and qcom-spmi-vadc.o.
+On 18/12/16 21:55, Linus Walleij wrote:
+> This adds device tree bindings for the Capella Microsystems CM3605
+> ambient light sensor and short range proximity sensor.
 > 
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-arm-msm@vger.kernel.org
-> Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
-> Cc: Andy Gross <andy.gross@linaro.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Stephen Boyd <sboyd@codeaurora.org>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: devicetree@vger.kernel.org
+> Cc: Capella Microsystems <capellamicro@gmail.com>
+> Cc: Kevin Tsai <ktsai@capellamicro.com>
+> Acked-by: Rob Herring <robh@kernel.org>
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Looks superficially fine, but I'm guessing will need a respin
-as we have a fair bit of new stuff (and a couple of fixes) going
-through this driver at the moment.
-
-All but the two fixes I posted a few mins ago are in my testing
-branch and should go to Greg once I have confirmed testing on
-those two fixes.
-
-Jonathan
+Applied
 > ---
 > ChangeLog v1->v2:
-> - No changes just reposting
+> - Rename aset-resistance to aset-resistance-ohms
 > ---
->  drivers/iio/adc/Makefile           |  3 +-
->  drivers/iio/adc/qcom-spmi-vadc.c   | 95 +++-----------------------------------
->  drivers/iio/adc/qcom-vadc-common.c | 38 +++++++++++++++
->  drivers/iio/adc/qcom-vadc-common.h | 69 +++++++++++++++++++++++++++
->  4 files changed, 116 insertions(+), 89 deletions(-)
->  create mode 100644 drivers/iio/adc/qcom-vadc-common.c
->  create mode 100644 drivers/iio/adc/qcom-vadc-common.h
+>  .../devicetree/bindings/iio/light/cm3605.txt       | 41 ++++++++++++++++++++++
+>  1 file changed, 41 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/light/cm3605.txt
 > 
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index 7a40c04c311f..f9468d228b1e 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -38,7 +38,8 @@ obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
->  obj-$(CONFIG_NAU7802) += nau7802.o
->  obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
->  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-> -obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
-> +qcom-vadc-y := qcom-vadc-common.o
-> +obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-vadc.o qcom-spmi-vadc.o
->  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
->  obj-$(CONFIG_STX104) += stx104.o
->  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
-> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> index c2babe50a0d8..74d21afa34a9 100644
-> --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> @@ -28,6 +28,8 @@
->  
->  #include <dt-bindings/iio/qcom,spmi-vadc.h>
->  
-> +#include "qcom-vadc-common.h"
-> +
->  /* VADC register and bit definitions */
->  #define VADC_REVISION2				0x1
->  #define VADC_REVISION2_SUPPORTED_VADC		1
-> @@ -75,69 +77,9 @@
->  
->  #define VADC_DATA				0x60	/* 16 bits */
->  
-> -#define VADC_CONV_TIME_MIN_US			2000
-> -#define VADC_CONV_TIME_MAX_US			2100
-> -
-> -/* Min ADC code represents 0V */
-> -#define VADC_MIN_ADC_CODE			0x6000
-> -/* Max ADC code represents full-scale range of 1.8V */
-> -#define VADC_MAX_ADC_CODE			0xa800
-> -
-> -#define VADC_ABSOLUTE_RANGE_UV			625000
-> -#define VADC_RATIOMETRIC_RANGE_UV		1800000
-> -
-> -#define VADC_DEF_PRESCALING			0 /* 1:1 */
-> -#define VADC_DEF_DECIMATION			0 /* 512 */
-> -#define VADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
-> -#define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
-> -#define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
-> -
-> -#define VADC_DECIMATION_MIN			512
-> -#define VADC_DECIMATION_MAX			4096
-> -
-> -#define VADC_HW_SETTLE_DELAY_MAX		10000
-> -#define VADC_AVG_SAMPLES_MAX			512
-> -
-> -#define KELVINMIL_CELSIUSMIL			273150
-> -
->  #define VADC_CHAN_MIN			VADC_USBIN
->  #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
->  
-> -/*
-> - * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-> - * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-> - * calibration.
-> - */
-> -enum vadc_calibration {
-> -	VADC_CALIB_ABSOLUTE = 0,
-> -	VADC_CALIB_RATIOMETRIC
-> -};
-> -
-> -/**
-> - * struct vadc_linear_graph - Represent ADC characteristics.
-> - * @dy: numerator slope to calculate the gain.
-> - * @dx: denominator slope to calculate the gain.
-> - * @gnd: A/D word of the ground reference used for the channel.
-> - *
-> - * Each ADC device has different offset and gain parameters which are
-> - * computed to calibrate the device.
-> - */
-> -struct vadc_linear_graph {
-> -	s32 dy;
-> -	s32 dx;
-> -	s32 gnd;
-> -};
-> -
-> -/**
-> - * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-> - * @num: the inverse numerator of the gain applied to the input channel.
-> - * @den: the inverse denominator of the gain applied to the input channel.
-> - */
-> -struct vadc_prescale_ratio {
-> -	u32 num;
-> -	u32 den;
-> -};
-> -
->  /**
->   * struct vadc_channel_prop - VADC channel property.
->   * @channel: channel number, refer to the channel list.
-> @@ -471,33 +413,10 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  static s32 vadc_calibrate(struct vadc_priv *vadc,
->  			  const struct vadc_channel_prop *prop, u16 adc_code)
->  {
-> -	const struct vadc_prescale_ratio *prescale;
-> -	s64 voltage;
-> -
-> -	voltage = adc_code - vadc->graph[prop->calibration].gnd;
-> -	voltage *= vadc->graph[prop->calibration].dx;
-> -	voltage = div64_s64(voltage, vadc->graph[prop->calibration].dy);
-> -
-> -	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> -		voltage += vadc->graph[prop->calibration].dx;
-> -
-> -	if (voltage < 0)
-> -		voltage = 0;
-> -
-> -	prescale = &vadc_prescale_ratios[prop->prescale];
-> -
-> -	voltage = voltage * prescale->den;
-> -
-> -	return div64_s64(voltage, prescale->num);
-> -}
-> -
-> -static int vadc_decimation_from_dt(u32 value)
-> -{
-> -	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
-> -	    value > VADC_DECIMATION_MAX)
-> -		return -EINVAL;
-> -
-> -	return __ffs64(value / VADC_DECIMATION_MIN);
-> +	return qcom_vadc_calibrate(&vadc_prescale_ratios[prop->prescale],
-> +				   &vadc->graph[prop->calibration],
-> +				   (prop->calibration == VADC_CALIB_ABSOLUTE),
-> +				   adc_code);
->  }
->  
->  static int vadc_prescaling_from_dt(u32 num, u32 den)
-> @@ -752,7 +671,7 @@ static int vadc_get_dt_channel_data(struct device *dev,
->  
->  	ret = of_property_read_u32(node, "qcom,decimation", &value);
->  	if (!ret) {
-> -		ret = vadc_decimation_from_dt(value);
-> +		ret = qcom_vadc_decimation_from_dt(value);
->  		if (ret < 0) {
->  			dev_err(dev, "%02x invalid decimation %d\n",
->  				chan, value);
-> diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
+> diff --git a/Documentation/devicetree/bindings/iio/light/cm3605.txt b/Documentation/devicetree/bindings/iio/light/cm3605.txt
 > new file mode 100644
-> index 000000000000..f67fc5e2a702
+> index 000000000000..56331a79f9ab
 > --- /dev/null
-> +++ b/drivers/iio/adc/qcom-vadc-common.c
-> @@ -0,0 +1,38 @@
-> +#include <linux/kernel.h>
-> +#include <linux/bitops.h>
-> +#include <linux/math64.h>
-> +#include <linux/log2.h>
-> +#include <linux/err.h>
+> +++ b/Documentation/devicetree/bindings/iio/light/cm3605.txt
+> @@ -0,0 +1,41 @@
+> +Capella Microsystems CM3605
+> +Ambient Light and Short Distance Proximity Sensor
 > +
-> +#include "qcom-vadc-common.h"
+> +The CM3605 is an entirely analog part which however require quite a bit of
+> +software logic to interface a host operating system.
 > +
-> +s32 qcom_vadc_calibrate(const struct vadc_prescale_ratio *prescale,
-> +			const struct vadc_linear_graph *graph,
-> +			bool absolute,
-> +			u16 adc_code)
-> +{
-> +	s64 voltage;
+> +This ALS and proximity sensor was one of the very first deployed in mobile
+> +handsets, notably it is used in the very first Nexus One Android phone from
+> +2010.
 > +
-> +	voltage = adc_code - graph->gnd;
-> +	voltage *= graph->dx;
-> +	voltage = div64_s64(voltage, graph->dy);
+> +Required properties:
+> +- compatible: must be: "capella,cm3605"
+> +- aset-gpios: GPIO line controlling the ASET line (drive low
+> +  to activate the ALS, should be flagged GPIO_ACTIVE_LOW)
+> +- interrupts: the IRQ line (such as a GPIO) that is connected to
+> +  the POUT (proximity sensor out) line. The edge detection must
+> +  be set to IRQ_TYPE_EDGE_BOTH so as to detect movements toward
+> +  and away from the proximity sensor.
+> +- io-channels: the ADC channel used for converting the voltage from
+> +  AOUT to a digital representation.
+> +- io-channel-names: must be "aout"
 > +
-> +	if (absolute)
-> +		voltage += graph->dx;
+> +Optional properties:
+> +- vdd-supply: regulator supplying VDD power to the component.
+> +- capella,aset-resistance-ohms: the sensitivity calibration resistance,
+> +  in Ohms. Valid values are: 50000, 100000, 300000 and 600000,
+> +  as these are the resistance values that we are supplied with
+> +  calibration curves for. If not supplied, 100 kOhm will be assumed
+> +  but it is strongly recommended to supply this.
 > +
-> +	if (voltage < 0)
-> +		voltage = 0;
+> +Example:
 > +
-> +	voltage = voltage * prescale->den;
-> +
-> +	return div64_s64(voltage, prescale->num);
-> +}
-> +
-> +int qcom_vadc_decimation_from_dt(u32 value)
-> +{
-> +	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
-> +	    value > VADC_DECIMATION_MAX)
-> +		return -EINVAL;
-> +
-> +	return __ffs64(value / VADC_DECIMATION_MIN);
-> +}
-> diff --git a/drivers/iio/adc/qcom-vadc-common.h b/drivers/iio/adc/qcom-vadc-common.h
-> new file mode 100644
-> index 000000000000..b41cb501eef8
-> --- /dev/null
-> +++ b/drivers/iio/adc/qcom-vadc-common.h
-> @@ -0,0 +1,69 @@
-> +/*
-> + * Code shared between the different Qualcomm PMIC voltage ADCs
-> + */
-> +
-> +#define VADC_CONV_TIME_MIN_US			2000
-> +#define VADC_CONV_TIME_MAX_US			2100
-> +
-> +/* Min ADC code represents 0V */
-> +#define VADC_MIN_ADC_CODE			0x6000
-> +/* Max ADC code represents full-scale range of 1.8V */
-> +#define VADC_MAX_ADC_CODE			0xa800
-> +
-> +#define VADC_ABSOLUTE_RANGE_UV			625000
-> +#define VADC_RATIOMETRIC_RANGE_UV		1800000
-> +
-> +#define VADC_DEF_PRESCALING			0 /* 1:1 */
-> +#define VADC_DEF_DECIMATION			0 /* 512 */
-> +#define VADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
-> +#define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
-> +#define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
-> +
-> +#define VADC_DECIMATION_MIN			512
-> +#define VADC_DECIMATION_MAX			4096
-> +
-> +#define VADC_HW_SETTLE_DELAY_MAX		10000
-> +#define VADC_AVG_SAMPLES_MAX			512
-> +
-> +#define KELVINMIL_CELSIUSMIL			273150
-> +
-> +/*
-> + * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-> + * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-> + * calibration.
-> + */
-> +enum vadc_calibration {
-> +	VADC_CALIB_ABSOLUTE = 0,
-> +	VADC_CALIB_RATIOMETRIC
+> +cm3605 {
+> +	compatible = "capella,cm3605";
+> +	vdd-supply = <&foo_reg>;
+> +	aset-gpios = <&foo_gpio 1 GPIO_ACTIVE_LOW>;
+> +	capella,aset-resistance-ohms = <100000>;
+> +	interrupts = <1 IRQ_TYPE_EDGE_BOTH>;
+> +	io-channels = <&adc 0x01>;
+> +	io-channel-names = "aout";
 > +};
-> +
-> +/**
-> + * struct vadc_linear_graph - Represent ADC characteristics.
-> + * @dy: numerator slope to calculate the gain.
-> + * @dx: denominator slope to calculate the gain.
-> + * @gnd: A/D word of the ground reference used for the channel.
-> + *
-> + * Each ADC device has different offset and gain parameters which are
-> + * computed to calibrate the device.
-> + */
-> +struct vadc_linear_graph {
-> +	s32 dy;
-> +	s32 dx;
-> +	s32 gnd;
-> +};
-> +
-> +/**
-> + * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-> + * @num: the inverse numerator of the gain applied to the input channel.
-> + * @den: the inverse denominator of the gain applied to the input channel.
-> + */
-> +struct vadc_prescale_ratio {
-> +	u32 num;
-> +	u32 den;
-> +};
-> +
-> +s32 qcom_vadc_calibrate(const struct vadc_prescale_ratio *prescale,
-> +			const struct vadc_linear_graph *graph,
-> +			bool absolute,
-> +			u16 adc_code);
-> +int qcom_vadc_decimation_from_dt(u32 value);
 > 
 
