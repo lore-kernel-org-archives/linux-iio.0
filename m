@@ -1,178 +1,148 @@
-Return-Path: <SRS0=JYo1=YN=intel.com=srinivas.pandruvada@kernel.org>
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "Song, Hongyan" <hongyan.song@intel.com>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>, "jic23@kernel.org" <jic23@kernel.org>
-CC: "jikos@kernel.org" <jikos@kernel.org>
-Subject: Re: [RFC PATCH 2/2] iio: Add gravity sensor support
-Date: Fri, 30 Dec 2016 17:27:26 +0000
-Message-ID: <1483118623.27585.68.camel@intel.com>
-References: <1481105675-27431-1-git-send-email-hongyan.song@intel.com>
-	 <1481105675-27431-2-git-send-email-hongyan.song@intel.com>
-	 <91153b54-5728-b69d-8e9b-e09825df203b@kernel.org>
-In-Reply-To: <91153b54-5728-b69d-8e9b-e09825df203b@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52601 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751665AbcL3Sb3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 13:31:29 -0500
+Subject: Re: [PATCH] Revert "iio:st_sensors: align on storagebits boundaries"
+To: Linus Walleij <linus.walleij@linaro.org>, linux-iio@vger.kernel.org
+References: <20161230173620.30851-1-linus.walleij@linaro.org>
+Cc: stable@vger.kernel.org, Gregor Boirie <gregor.boirie@parrot.com>,
+        Giuseppe Barba <giuseppe.barba@st.com>,
+        Denis Ciocca <denis.ciocca@st.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <7ccb6107-d7af-2240-5000-800d3cd64205@kernel.org>
+Date: Fri, 30 Dec 2016 18:31:26 +0000
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20161230173620.30851-1-linus.walleij@linaro.org>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gRnJpLCAyMDE2LTEyLTMwIGF0IDEwOjI4ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiAwNy8xMi8xNiAxMDoxNCwgU29uZyBIb25neWFuIHdyb3RlOg0KPiA+IA0KPiA+IEdy
-YXZpdHkgc2Vuc29yIGFuZCBhY2NlbGVyb21ldGVyIGhhdmUgc2ltaWxhciBjaGFubmVscyBhbmQN
-Cj4gPiBzaGFyZSBjaGFubmVsIHVzYWdlIGlkcy4gU28gdGhlIG1vc3Qgb2YgdGhlIGNvZGUgZm9y
-IGFjY2VsXzNkDQo+ID4gY2FuIGJlIHJldXNlZC4NCj4gSSB3b3VsZCBsaWtlIHRvIGhhdmUgc2Vl
-biBhIHJlZmVyZW5jZSB0byB0aGUgc291cmNlIGZvciB0aGUgSURzIGluDQo+IGhlcmUuIFRvb2sN
-Cj4gbWUgYSBsaXR0bGUgd2hpbGUgdG8gY29uZmlybSB0aGVzZSB3ZXJlIG5vIG9mZmljaWFsbHkg
-YXNzaWduZWQNCj4gKHJhdGhlciB0aGFuIGluIHRoZQ0KPiByZXNlcnZlZCBzcGFjZSkuwqDCoEkg
-Zm91bmQgdGhlbSBpbjoNCj4gaHR0cDovL3d3dy51c2Iub3JnL2RldmVsb3BlcnMvaGlkcGFnZS9I
-VVRSUjU5Xy1fVXNhZ2VzX2Zvcl9XZWFyYWJsZXMuDQo+IHBkZg0KPiANCkhvbmd5YW4sIFBsZWFz
-ZSBhZGQgdGhlIGxpbmsgdG8gc3BlYyB3aGVyZSB0aGVzZSBJZHMgYXJlIGRlZmluZWQuDQpBbHNv
-IGV4cGxhaW4gc29tZXRoaW5nIGxpa2UgdGhpcyB0aGF0ICJncmF2aXR5IHNlbnNvciBpcyBhIHNv
-ZnQgc2Vuc29yLA0Kd2hpY2ggwqBkZXJpdmVzIHZhbHVlIGZyb20gc3RhbmRhcmQgYWNjbGVyb21l
-dGVyIGRldmljZSBieSBmaWx0ZXJpbmcgb3V0DQp0aGUgYWNjZWxlcmF0aW9uIHdoaWNoIGlzIG5v
-dCBjYXVzZWQgYnkgZ3Jhdml0eS4iIFlvdSBjYW4gYWRkIG1vcmUNCmluZm9ybWF0aW9uIGhvdyBm
-aWx0ZXJpbmcgaXMgZG9uZSwgaWYgeW91IGNhbi4NCg0KPiBBbHNvLCBwZXJoYXBzIGEgcmVmZXJl
-bmNlIHRvIGEgZGV2aWNlIHRoYXQgc3VwcG9ydHMgdGhpcz/CoMKgV291bGQgYmUNCj4gdXNlZnVs
-IHRvIGdpdmUNCj4gdXMgYW4gaWRlYSBvZiBob3cgbmV3IGl0IGlzIGZvciB0aGUgcHVycG9zZXMg
-b2YgZGlzdHJpYnV0aW9uIGtlcm5lbA0KPiBiYWNrIHBvcnRzIGV0Yy4NCkkgZG9uJ3QgdGhpbmsg
-YW55IGxhcHRvcCB0eXBlcyBvZiBkZXZpY2VzIGhhcyBzdXBwb3J0IGZvciB0aGlzLiBUaGlzIGlz
-DQppbiBJT1Qgc3BhY2Ugc28gZGlmZmljdWx0IHRvIGdldCB3aG8gaXMgYWN0dWFsbHkgdXNpbmcg
-dGhpcy4NCg0KPiANCj4gSSdkIGFsc28gbGlrZSBhbiBBY2sgZm9yIHRoaXMgZnJvbSBTcmluaXZh
-cyBpZiBwb3NzaWJsZS4NCkFmdGVyIGFkZGluZyB0aGUgYWJvdmUgaW5mb3JtYXRpb24geW91IGNh
-biBhZGQgbXnCoA0KQUNLIGluIHRoZSBuZXh0IHBhdGNoc2V0Lg0KDQpUaGFua3MsDQpTcmluaXZh
-cw0KDQoNCj4gDQo+IFRoZXNlIGFyZSBjb21wdXRlZCB2YWx1ZXMgcHJlc3VtYWJseSB1c2luZyB2
-YXJpb3VzIG90aGVyIHNlbnNvcnMgdG8NCj4gc2VwYXJhdGUgb3V0IHRoZQ0KPiBncmF2aXR5IC0g
-SSBndWVzcyBwdXR0aW5nIGl0IGluIHRoZSBhY2NlbGVyYXRpb24gbW9kdWxlcyBtYWtlcyBzZW5z
-ZQ0KPiByYXRoZXIgdGhhbiBhbnl3aGVyZQ0KPiBlbHNlLg0KPiANCj4gU28gbG9va3MgZmluZSB0
-byBtZS4gT25seSByZWFsIHJlcXVlc3QgZm9yIGZ1dHVyZSBvbiB0aGlzIHNvcnQgb2YNCj4gcGF0
-Y2ggaXMgdG8gcHJvdmlkZQ0KPiBhIGxpdHRsZSBtb3JlIGJhY2tncm91bmQgaW5mb3JtYXRpb24u
-DQo+IA0KPiBUaGFua3MsDQo+IA0KPiBKb25hdGhhbg0KPiA+IA0KPiA+IA0KPiA+IFNpZ25lZC1v
-ZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4gPiAtLS0NCj4g
-PiDCoGRyaXZlcnMvaWlvL2FjY2VsL2hpZC1zZW5zb3ItYWNjZWwtM2QuYyB8IDc0DQo+ID4gKysr
-KysrKysrKysrKysrKysrKysrKysrKysrLS0tLS0tDQo+ID4gwqBpbmNsdWRlL2xpbnV4L2hpZC1z
-ZW5zb3ItaWRzLmjCoMKgwqDCoMKgwqDCoMKgwqDCoHzCoMKgMyArKw0KPiA+IMKgMiBmaWxlcyBj
-aGFuZ2VkLCA2NCBpbnNlcnRpb25zKCspLCAxMyBkZWxldGlvbnMoLSkNCj4gPiANCj4gPiBkaWZm
-IC0tZ2l0IGEvZHJpdmVycy9paW8vYWNjZWwvaGlkLXNlbnNvci1hY2NlbC0zZC5jDQo+ID4gYi9k
-cml2ZXJzL2lpby9hY2NlbC9oaWQtc2Vuc29yLWFjY2VsLTNkLmMNCj4gPiBpbmRleCBhYjFlMjM4
-Li45ZWRkNTc0IDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FjY2VsL2hpZC1zZW5zb3It
-YWNjZWwtM2QuYw0KPiA+ICsrKyBiL2RyaXZlcnMvaWlvL2FjY2VsL2hpZC1zZW5zb3ItYWNjZWwt
-M2QuYw0KPiA+IEBAIC05MCw2ICs5MCw0MSBAQCBzdHJ1Y3QgYWNjZWxfM2Rfc3RhdGUgew0KPiA+
-IMKgCX0NCj4gPiDCoH07DQo+ID4gwqANCj4gPiArLyogQ2hhbm5lbCBkZWZpbml0aW9ucyAqLw0K
-PiA+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19jaGFuX3NwZWMgZ3Jhdml0eV9jaGFubmVsc1td
-ID0gew0KPiA+ICsJew0KPiA+ICsJCS50eXBlID0gSUlPX0dSQVZJVFksDQo+ID4gKwkJLm1vZGlm
-aWVkID0gMSwNCj4gPiArCQkuY2hhbm5lbDIgPSBJSU9fTU9EX1gsDQo+ID4gKwkJLmluZm9fbWFz
-a19zZXBhcmF0ZSA9IEJJVChJSU9fQ0hBTl9JTkZPX1JBVyksDQo+ID4gKwkJLmluZm9fbWFza19z
-aGFyZWRfYnlfdHlwZSA9DQo+ID4gQklUKElJT19DSEFOX0lORk9fT0ZGU0VUKSB8DQo+ID4gKwkJ
-QklUKElJT19DSEFOX0lORk9fU0NBTEUpIHwNCj4gPiArCQlCSVQoSUlPX0NIQU5fSU5GT19TQU1Q
-X0ZSRVEpIHwNCj4gPiArCQlCSVQoSUlPX0NIQU5fSU5GT19IWVNURVJFU0lTKSwNCj4gPiArCQku
-c2Nhbl9pbmRleCA9IENIQU5ORUxfU0NBTl9JTkRFWF9YLA0KPiA+ICsJfSwgew0KPiA+ICsJCS50
-eXBlID0gSUlPX0dSQVZJVFksDQo+ID4gKwkJLm1vZGlmaWVkID0gMSwNCj4gPiArCQkuY2hhbm5l
-bDIgPSBJSU9fTU9EX1ksDQo+ID4gKwkJLmluZm9fbWFza19zZXBhcmF0ZSA9IEJJVChJSU9fQ0hB
-Tl9JTkZPX1JBVyksDQo+ID4gKwkJLmluZm9fbWFza19zaGFyZWRfYnlfdHlwZSA9DQo+ID4gQklU
-KElJT19DSEFOX0lORk9fT0ZGU0VUKSB8DQo+ID4gKwkJQklUKElJT19DSEFOX0lORk9fU0NBTEUp
-IHwNCj4gPiArCQlCSVQoSUlPX0NIQU5fSU5GT19TQU1QX0ZSRVEpIHwNCj4gPiArCQlCSVQoSUlP
-X0NIQU5fSU5GT19IWVNURVJFU0lTKSwNCj4gPiArCQkuc2Nhbl9pbmRleCA9IENIQU5ORUxfU0NB
-Tl9JTkRFWF9ZLA0KPiA+ICsJfSwgew0KPiA+ICsJCS50eXBlID0gSUlPX0dSQVZJVFksDQo+ID4g
-KwkJLm1vZGlmaWVkID0gMSwNCj4gPiArCQkuY2hhbm5lbDIgPSBJSU9fTU9EX1osDQo+ID4gKwkJ
-LmluZm9fbWFza19zZXBhcmF0ZSA9IEJJVChJSU9fQ0hBTl9JTkZPX1JBVyksDQo+ID4gKwkJLmlu
-Zm9fbWFza19zaGFyZWRfYnlfdHlwZSA9DQo+ID4gQklUKElJT19DSEFOX0lORk9fT0ZGU0VUKSB8
-DQo+ID4gKwkJQklUKElJT19DSEFOX0lORk9fU0NBTEUpIHwNCj4gPiArCQlCSVQoSUlPX0NIQU5f
-SU5GT19TQU1QX0ZSRVEpIHwNCj4gPiArCQlCSVQoSUlPX0NIQU5fSU5GT19IWVNURVJFU0lTKSwN
-Cj4gPiArCQkuc2Nhbl9pbmRleCA9IENIQU5ORUxfU0NBTl9JTkRFWF9aLA0KPiA+ICsJfQ0KPiA+
-ICt9Ow0KPiA+ICsNCj4gPiDCoC8qIEFkanVzdCBjaGFubmVsIHJlYWwgYml0cyBiYXNlZCBvbiBy
-ZXBvcnQgZGVzY3JpcHRvciAqLw0KPiA+IMKgc3RhdGljIHZvaWQgYWNjZWxfM2RfYWRqdXN0X2No
-YW5uZWxfYml0X21hc2soc3RydWN0IGlpb19jaGFuX3NwZWMNCj4gPiAqY2hhbm5lbHMsDQo+ID4g
-wqAJCQkJCQlpbnQgY2hhbm5lbCwgaW50DQo+ID4gc2l6ZSkNCj4gPiBAQCAtMTExLDYgKzE0Niw4
-IEBAIHN0YXRpYyBpbnQgYWNjZWxfM2RfcmVhZF9yYXcoc3RydWN0IGlpb19kZXYNCj4gPiAqaW5k
-aW9fZGV2LA0KPiA+IMKgCWludCByZXBvcnRfaWQgPSAtMTsNCj4gPiDCoAl1MzIgYWRkcmVzczsN
-Cj4gPiDCoAlpbnQgcmV0X3R5cGU7DQo+ID4gKwlzdHJ1Y3QgaGlkX3NlbnNvcl9odWJfZGV2aWNl
-ICpoc2RldiA9DQo+ID4gKwkJCQkJYWNjZWxfc3RhdGUtDQo+ID4gPmNvbW1vbl9hdHRyaWJ1dGVz
-LmhzZGV2Ow0KPiA+IMKgDQo+ID4gwqAJKnZhbCA9IDA7DQo+ID4gwqAJKnZhbDIgPSAwOw0KPiA+
-IEBAIC0xMjIsOCArMTU5LDcgQEAgc3RhdGljIGludCBhY2NlbF8zZF9yZWFkX3JhdyhzdHJ1Y3Qg
-aWlvX2Rldg0KPiA+ICppbmRpb19kZXYsDQo+ID4gwqAJCWlmIChyZXBvcnRfaWQgPj0gMCkNCj4g
-PiDCoAkJCSp2YWwgPQ0KPiA+IHNlbnNvcl9odWJfaW5wdXRfYXR0cl9nZXRfcmF3X3ZhbHVlKA0K
-PiA+IMKgCQkJCQlhY2NlbF9zdGF0ZS0NCj4gPiA+Y29tbW9uX2F0dHJpYnV0ZXMuaHNkZXYsDQo+
-ID4gLQkJCQkJSElEX1VTQUdFX1NFTlNPUl9BQ0NFTF8zRCwNCj4gPiBhZGRyZXNzLA0KPiA+IC0J
-CQkJCXJlcG9ydF9pZCwNCj4gPiArCQkJCQloc2Rldi0+dXNhZ2UsIGFkZHJlc3MsDQo+ID4gcmVw
-b3J0X2lkLA0KPiA+IMKgCQkJCQlTRU5TT1JfSFVCX1NZTkMpOw0KPiA+IMKgCQllbHNlIHsNCj4g
-PiDCoAkJCSp2YWwgPSAwOw0KPiA+IEBAIC0yNzIsNyArMzA4LDcgQEAgc3RhdGljIGludCBhY2Nl
-bF8zZF9wYXJzZV9yZXBvcnQoc3RydWN0DQo+ID4gcGxhdGZvcm1fZGV2aWNlICpwZGV2LA0KPiA+
-IMKgCQkJc3QtPmFjY2VsWzJdLmluZGV4LCBzdC0NCj4gPiA+YWNjZWxbMl0ucmVwb3J0X2lkKTsN
-Cj4gPiDCoA0KPiA+IMKgCXN0LT5zY2FsZV9wcmVjaXNpb24gPSBoaWRfc2Vuc29yX2Zvcm1hdF9z
-Y2FsZSgNCj4gPiAtCQkJCUhJRF9VU0FHRV9TRU5TT1JfQUNDRUxfM0QsDQo+ID4gKwkJCQloc2Rl
-di0+dXNhZ2UsDQo+ID4gwqAJCQkJJnN0LT5hY2NlbFtDSEFOTkVMX1NDQU5fSU5ERVhfWF0sDQo+
-ID4gwqAJCQkJJnN0LT5zY2FsZV9wcmVfZGVjbWwsICZzdC0NCj4gPiA+c2NhbGVfcG9zdF9kZWNt
-bCk7DQo+ID4gwqANCj4gPiBAQCAtMjk1LDkgKzMzMSwxMiBAQCBzdGF0aWMgaW50IGFjY2VsXzNk
-X3BhcnNlX3JlcG9ydChzdHJ1Y3QNCj4gPiBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYsDQo+ID4gwqBz
-dGF0aWMgaW50IGhpZF9hY2NlbF8zZF9wcm9iZShzdHJ1Y3QgcGxhdGZvcm1fZGV2aWNlICpwZGV2
-KQ0KPiA+IMKgew0KPiA+IMKgCWludCByZXQgPSAwOw0KPiA+IC0Jc3RhdGljIGNvbnN0IGNoYXIg
-Km5hbWUgPSAiYWNjZWxfM2QiOw0KPiA+ICsJc3RhdGljIGNvbnN0IGNoYXIgKm5hbWU7DQo+ID4g
-wqAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldjsNCj4gPiDCoAlzdHJ1Y3QgYWNjZWxfM2Rfc3Rh
-dGUgKmFjY2VsX3N0YXRlOw0KPiA+ICsJY29uc3Qgc3RydWN0IGlpb19jaGFuX3NwZWMgKmNoYW5u
-ZWxfc3BlYzsNCj4gPiArCWludCBjaGFubmVsX3NpemU7DQo+ID4gKw0KPiA+IMKgCXN0cnVjdCBo
-aWRfc2Vuc29yX2h1Yl9kZXZpY2UgKmhzZGV2ID0gcGRldi0NCj4gPiA+ZGV2LnBsYXRmb3JtX2Rh
-dGE7DQo+ID4gwqANCj4gPiDCoAlpbmRpb19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxsb2MoJnBk
-ZXYtPmRldiwNCj4gPiBAQCAtMzExLDI0ICszNTAsMzAgQEAgc3RhdGljIGludCBoaWRfYWNjZWxf
-M2RfcHJvYmUoc3RydWN0DQo+ID4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiA+IMKgCWFjY2Vs
-X3N0YXRlLT5jb21tb25fYXR0cmlidXRlcy5oc2RldiA9IGhzZGV2Ow0KPiA+IMKgCWFjY2VsX3N0
-YXRlLT5jb21tb25fYXR0cmlidXRlcy5wZGV2ID0gcGRldjsNCj4gPiDCoA0KPiA+IC0JcmV0ID0g
-aGlkX3NlbnNvcl9wYXJzZV9jb21tb25fYXR0cmlidXRlcyhoc2RldiwNCj4gPiAtCQkJCQlISURf
-VVNBR0VfU0VOU09SX0FDQ0VMXzNELA0KPiA+ICsJaWYgKGhzZGV2LT51c2FnZSA9PSBISURfVVNB
-R0VfU0VOU09SX0FDQ0VMXzNEKSB7DQo+ID4gKwkJbmFtZSA9ICJhY2NlbF8zZCI7DQo+ID4gKwkJ
-Y2hhbm5lbF9zcGVjID0gYWNjZWxfM2RfY2hhbm5lbHM7DQo+ID4gKwkJY2hhbm5lbF9zaXplID0g
-c2l6ZW9mKGFjY2VsXzNkX2NoYW5uZWxzKTsNCj4gPiArCX0gZWxzZSB7DQo+ID4gKwkJbmFtZSA9
-ICJncmF2aXR5IjsNCj4gPiArCQljaGFubmVsX3NwZWMgPSBncmF2aXR5X2NoYW5uZWxzOw0KPiA+
-ICsJCWNoYW5uZWxfc2l6ZSA9IHNpemVvZihncmF2aXR5X2NoYW5uZWxzKTsNCj4gPiArCX0NCj4g
-PiArCXJldCA9IGhpZF9zZW5zb3JfcGFyc2VfY29tbW9uX2F0dHJpYnV0ZXMoaHNkZXYsIGhzZGV2
-LQ0KPiA+ID51c2FnZSwNCj4gPiDCoAkJCQkJJmFjY2VsX3N0YXRlLQ0KPiA+ID5jb21tb25fYXR0
-cmlidXRlcyk7DQo+ID4gwqAJaWYgKHJldCkgew0KPiA+IMKgCQlkZXZfZXJyKCZwZGV2LT5kZXYs
-ICJmYWlsZWQgdG8gc2V0dXAgY29tbW9uDQo+ID4gYXR0cmlidXRlc1xuIik7DQo+ID4gwqAJCXJl
-dHVybiByZXQ7DQo+ID4gwqAJfQ0KPiA+ICsJaW5kaW9fZGV2LT5jaGFubmVscyA9IGttZW1kdXAo
-Y2hhbm5lbF9zcGVjLCBjaGFubmVsX3NpemUsDQo+ID4gR0ZQX0tFUk5FTCk7DQo+ID4gwqANCj4g
-PiAtCWluZGlvX2Rldi0+Y2hhbm5lbHMgPSBrbWVtZHVwKGFjY2VsXzNkX2NoYW5uZWxzLA0KPiA+
-IC0JCQkJwqDCoMKgwqDCoMKgc2l6ZW9mKGFjY2VsXzNkX2NoYW5uZWxzKSwNCj4gPiBHRlBfS0VS
-TkVMKTsNCj4gPiDCoAlpZiAoIWluZGlvX2Rldi0+Y2hhbm5lbHMpIHsNCj4gPiDCoAkJZGV2X2Vy
-cigmcGRldi0+ZGV2LCAiZmFpbGVkIHRvIGR1cGxpY2F0ZQ0KPiA+IGNoYW5uZWxzXG4iKTsNCj4g
-PiDCoAkJcmV0dXJuIC1FTk9NRU07DQo+ID4gwqAJfQ0KPiA+IC0NCj4gPiDCoAlyZXQgPSBhY2Nl
-bF8zZF9wYXJzZV9yZXBvcnQocGRldiwgaHNkZXYsDQo+ID4gLQkJCQnCoMKgwqDCoChzdHJ1Y3Qg
-aWlvX2NoYW5fc3BlYw0KPiA+ICopaW5kaW9fZGV2LT5jaGFubmVscywNCj4gPiAtCQkJCcKgwqDC
-oMKgSElEX1VTQUdFX1NFTlNPUl9BQ0NFTF8zRCwNCj4gPiBhY2NlbF9zdGF0ZSk7DQo+ID4gKwkJ
-CQkoc3RydWN0IGlpb19jaGFuX3NwZWMgKilpbmRpb19kZXYtDQo+ID4gPmNoYW5uZWxzLA0KPiA+
-ICsJCQkJaHNkZXYtPnVzYWdlLCBhY2NlbF9zdGF0ZSk7DQo+ID4gwqAJaWYgKHJldCkgew0KPiA+
-IMKgCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgdG8gc2V0dXANCj4gPiBhdHRyaWJ1dGVz
-XG4iKTsNCj4gPiDCoAkJZ290byBlcnJvcl9mcmVlX2Rldl9tZW07DQo+ID4gQEAgLTM2Myw3ICs0
-MDgsNyBAQCBzdGF0aWMgaW50IGhpZF9hY2NlbF8zZF9wcm9iZShzdHJ1Y3QNCj4gPiBwbGF0Zm9y
-bV9kZXZpY2UgKnBkZXYpDQo+ID4gwqAJYWNjZWxfc3RhdGUtPmNhbGxiYWNrcy5zZW5kX2V2ZW50
-ID0gYWNjZWxfM2RfcHJvY19ldmVudDsNCj4gPiDCoAlhY2NlbF9zdGF0ZS0+Y2FsbGJhY2tzLmNh
-cHR1cmVfc2FtcGxlID0NCj4gPiBhY2NlbF8zZF9jYXB0dXJlX3NhbXBsZTsNCj4gPiDCoAlhY2Nl
-bF9zdGF0ZS0+Y2FsbGJhY2tzLnBkZXYgPSBwZGV2Ow0KPiA+IC0JcmV0ID0gc2Vuc29yX2h1Yl9y
-ZWdpc3Rlcl9jYWxsYmFjayhoc2RldiwNCj4gPiBISURfVVNBR0VfU0VOU09SX0FDQ0VMXzNELA0K
-PiA+ICsJcmV0ID0gc2Vuc29yX2h1Yl9yZWdpc3Rlcl9jYWxsYmFjayhoc2RldiwgaHNkZXYtPnVz
-YWdlLA0KPiA+IMKgCQkJCQkmYWNjZWxfc3RhdGUtPmNhbGxiYWNrcyk7DQo+ID4gwqAJaWYgKHJl
-dCA8IDApIHsNCj4gPiDCoAkJZGV2X2VycigmcGRldi0+ZGV2LCAiY2FsbGJhY2sgcmVnIGZhaWxl
-ZFxuIik7DQo+ID4gQEAgLTM5MCw3ICs0MzUsNyBAQCBzdGF0aWMgaW50IGhpZF9hY2NlbF8zZF9y
-ZW1vdmUoc3RydWN0DQo+ID4gcGxhdGZvcm1fZGV2aWNlICpwZGV2KQ0KPiA+IMKgCXN0cnVjdCBp
-aW9fZGV2ICppbmRpb19kZXYgPSBwbGF0Zm9ybV9nZXRfZHJ2ZGF0YShwZGV2KTsNCj4gPiDCoAlz
-dHJ1Y3QgYWNjZWxfM2Rfc3RhdGUgKmFjY2VsX3N0YXRlID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsN
-Cj4gPiDCoA0KPiA+IC0Jc2Vuc29yX2h1Yl9yZW1vdmVfY2FsbGJhY2soaHNkZXYsDQo+ID4gSElE
-X1VTQUdFX1NFTlNPUl9BQ0NFTF8zRCk7DQo+ID4gKwlzZW5zb3JfaHViX3JlbW92ZV9jYWxsYmFj
-ayhoc2RldiwgaHNkZXYtPnVzYWdlKTsNCj4gPiDCoAlpaW9fZGV2aWNlX3VucmVnaXN0ZXIoaW5k
-aW9fZGV2KTsNCj4gPiDCoAloaWRfc2Vuc29yX3JlbW92ZV90cmlnZ2VyKCZhY2NlbF9zdGF0ZS0N
-Cj4gPiA+Y29tbW9uX2F0dHJpYnV0ZXMpOw0KPiA+IMKgCWlpb190cmlnZ2VyZWRfYnVmZmVyX2Ns
-ZWFudXAoaW5kaW9fZGV2KTsNCj4gPiBAQCAtNDA0LDYgKzQ0OSw5IEBAIHN0YXRpYyBpbnQgaGlk
-X2FjY2VsXzNkX3JlbW92ZShzdHJ1Y3QNCj4gPiBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ID4g
-wqAJCS8qIEZvcm1hdDogSElELVNFTlNPUi11c2FnZV9pZF9pbl9oZXhfbG93ZXJjYXNlICovDQo+
-ID4gwqAJCS5uYW1lID0gIkhJRC1TRU5TT1ItMjAwMDczIiwNCj4gPiDCoAl9LA0KPiA+ICsJewkv
-KiBncmF2aXR5IHNlbnNvciAqLw0KPiA+ICsJCS5uYW1lID0gIkhJRC1TRU5TT1ItMjAwMDdiIiwN
-Cj4gPiArCX0sDQo+ID4gwqAJeyAvKiBzZW50aW5lbCAqLyB9DQo+ID4gwqB9Ow0KPiA+IMKgTU9E
-VUxFX0RFVklDRV9UQUJMRShwbGF0Zm9ybSwgaGlkX2FjY2VsXzNkX2lkcyk7DQo+ID4gZGlmZiAt
-LWdpdCBhL2luY2x1ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaCBiL2luY2x1ZGUvbGludXgvaGlk
-LQ0KPiA+IHNlbnNvci1pZHMuaA0KPiA+IGluZGV4IGYyZWU5MGEuLmI2Nzc4ZmQyIDEwMDY0NA0K
-PiA+IC0tLSBhL2luY2x1ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaA0KPiA+ICsrKyBiL2luY2x1
-ZGUvbGludXgvaGlkLXNlbnNvci1pZHMuaA0KPiA+IEBAIC01Miw2ICs1Miw5IEBADQo+ID4gwqAj
-ZGVmaW5lIEhJRF9VU0FHRV9TRU5TT1JfQU5HTF9WRUxPQ0lUWV9ZX0FYSVMJCQkNCj4gPiAweDIw
-MDQ1OA0KPiA+IMKgI2RlZmluZSBISURfVVNBR0VfU0VOU09SX0FOR0xfVkVMT0NJVFlfWl9BWElT
-CQkJDQo+ID4gMHgyMDA0NTkNCj4gPiDCoA0KPiA+ICsvKiBHcmF2aXR5IHZlY3RvciAqLw0KPiA+
-ICsjZGVmaW5lIEhJRF9VU0FHRV9TRU5TT1JfR1JBVklUWV9WRUNUT1IJCQkJDQo+ID4gMHgyMDAw
-N0INCj4gPiArDQo+ID4gwqAvKiBPUklFTlRBVElPTjogQ29tcGFzcyAzRDogKDIwMDA4MykgKi8N
-Cj4gPiDCoCNkZWZpbmUgSElEX1VTQUdFX1NFTlNPUl9DT01QQVNTXzNECQkJCQ0KPiA+IDB4MjAw
-MDgzDQo+ID4gwqAjZGVmaW5lIEhJRF9VU0FHRV9TRU5TT1JfREFUQV9PUklFTlRBVElPTgkJCTAN
-Cj4gPiB4MjAwNDcwDQo+ID4g
+On 30/12/16 17:36, Linus Walleij wrote:
+> This reverts commit e7385de5291e347f5bc85985acdce3a3f5096667.
+> 
+> This change is bad, because it breaks all 12bit sensors and
+> breaks userspace such as iio_generic_buffer.
+> 
+> The commit computes the number of bytes to read out from the
+> hardware like this:
+> 
+> unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+> 
+> This works fine with 8 or 16 bit channels resulting in 1 or
+> 2 bytes to read respectively.
+> 
+> But when using this with 12bit sensors such as the LIS3LV02
+> this fails since 12 >> 3 = 1 but we need to read 2 bytes!
+> Unless we do this, the DRDY signal does not go low and the
+> status loop just spins.
+> 
+> Further, it packs all bytes in the buffer to make it "dense".
+> Even if I try to fix the above by using DIV_ROUND_UP(),
+> it will result in erroneous data in the buffer for 12bit
+> sensors, since the macro ST_SENSORS_LSM_CHANNELS() used by
+> all sensors defines scan type shift, storagebits and realbits
+> such that the userspace like iio_generic_buffer will read
+> 2 bytes, then shift it by 4. This will not work anymore after
+> this patch.
+> 
+> I do not understand the point of the original commit, I
+> suggest this be reverted for now.
+It's required for 24 bit sensors which were previously broken if
+you had a 24 bit channel with anything much after it.
+
+We do have a full fix keeping those working as well, but it was stalled
+on getting some actual tests on 24 bit devices (not many people have them).
+
+It's the last (and infact only fix) in my fixes-togreg branch.
+
+iio: common: st_sensors: fix channel data parsing
+
+With combination of end of year / xmas plus merge window I haven't gotten it
+out yet. Will fix that in the next day or so.
+
+Could you test and see if it fixes what you are seeing?
+At least superficially sounds like the same issue.
+
+Thanks,
+
+Jonathan
+> Fixes: e7385de5291e ("iio:st_sensors: align on storagebits boundaries")
+> Cc: stable@vger.kernel.org
+> Cc: Gregor Boirie <gregor.boirie@parrot.com>
+> Cc: Giuseppe Barba <giuseppe.barba@st.com>
+> Cc: Denis Ciocca <denis.ciocca@st.com>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+>  drivers/iio/common/st_sensors/st_sensors_buffer.c | 37 ++++++++++++-----------
+>  drivers/iio/common/st_sensors/st_sensors_core.c   |  2 +-
+>  2 files changed, 20 insertions(+), 19 deletions(-)
+> 
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_buffer.c b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> index fe7775bb3740..3c964a106afa 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_buffer.c
+> @@ -24,29 +24,30 @@
+>  
+>  static int st_sensors_get_buffer_element(struct iio_dev *indio_dev, u8 *buf)
+>  {
+> -	int i;
+> +	int i, len;
+> +	int total = 0;
+>  	struct st_sensor_data *sdata = iio_priv(indio_dev);
+>  	unsigned int num_data_channels = sdata->num_data_channels;
+>  
+> -	for_each_set_bit(i, indio_dev->active_scan_mask, num_data_channels) {
+> -		const struct iio_chan_spec *channel = &indio_dev->channels[i];
+> -		unsigned int bytes_to_read = channel->scan_type.realbits >> 3;
+> -		unsigned int storage_bytes =
+> -			channel->scan_type.storagebits >> 3;
+> -
+> -		buf = PTR_ALIGN(buf, storage_bytes);
+> -		if (sdata->tf->read_multiple_byte(&sdata->tb, sdata->dev,
+> -						  channel->address,
+> -						  bytes_to_read, buf,
+> -						  sdata->multiread_bit) <
+> -		    bytes_to_read)
+> -			return -EIO;
+> -
+> -		/* Advance the buffer pointer */
+> -		buf += storage_bytes;
+> +	for (i = 0; i < num_data_channels; i++) {
+> +		unsigned int bytes_to_read;
+> +
+> +		if (test_bit(i, indio_dev->active_scan_mask)) {
+> +			bytes_to_read = indio_dev->channels[i].scan_type.storagebits >> 3;
+> +			len = sdata->tf->read_multiple_byte(&sdata->tb,
+> +				sdata->dev, indio_dev->channels[i].address,
+> +				bytes_to_read,
+> +				buf + total, sdata->multiread_bit);
+> +
+> +			if (len < bytes_to_read)
+> +				return -EIO;
+> +
+> +			/* Advance the buffer pointer */
+> +			total += len;
+> +		}
+>  	}
+>  
+> -	return 0;
+> +	return total;
+>  }
+>  
+>  irqreturn_t st_sensors_trigger_handler(int irq, void *p)
+> diff --git a/drivers/iio/common/st_sensors/st_sensors_core.c b/drivers/iio/common/st_sensors/st_sensors_core.c
+> index 975a1f19f747..4abe8aca1b29 100644
+> --- a/drivers/iio/common/st_sensors/st_sensors_core.c
+> +++ b/drivers/iio/common/st_sensors/st_sensors_core.c
+> @@ -483,7 +483,7 @@ static int st_sensors_read_axis_data(struct iio_dev *indio_dev,
+>  	int err;
+>  	u8 *outdata;
+>  	struct st_sensor_data *sdata = iio_priv(indio_dev);
+> -	unsigned int byte_for_channel = ch->scan_type.realbits >> 3;
+> +	unsigned int byte_for_channel = ch->scan_type.storagebits >> 3;
+>  
+>  	outdata = kmalloc(byte_for_channel, GFP_KERNEL);
+>  	if (!outdata)
+> 
+
