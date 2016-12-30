@@ -1,1000 +1,568 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:52765 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:53245 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753811AbcL3S4E (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 13:56:04 -0500
-Subject: Re: [PATCHv4 8/8] Fixes style issues due to mis-aligned carry over
- lines
-To: Scott Matheina <scott@matheina.com>, linux-kernel@vger.kernel.org
-References: <1482696216-8013-1-git-send-email-scott@matheina.com>
- <1482696216-8013-9-git-send-email-scott@matheina.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org
+        with ESMTP id S1753374AbcL3Ugh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 30 Dec 2016 15:36:37 -0500
+Subject: Re: [PATCH v9 8/8] drivers:input:tsc2007: add iio interface to read
+ external ADC input and temperature
+To: "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?UTF-8?Q?Beno=c3=aet_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        =?UTF-8?Q?Mika_Penttil=c3=a4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Petr Cvek <petr.cvek@tul.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Michel Verlaan <michel.verl@gmail.com>
+References: <cover.1482936802.git.hns@goldelico.com>
+ <17a94568ffb91abedc9d12896b602022abb5f7e8.1482936802.git.hns@goldelico.com>
+Cc: linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b40d8ee5-6fcc-6e74-ac47-b9af086cd8bf@kernel.org>
-Date: Fri, 30 Dec 2016 18:56:02 +0000
+Message-ID: <230fb5c0-2603-0bd1-a8da-ce5f7c450196@kernel.org>
+Date: Fri, 30 Dec 2016 20:36:30 +0000
 MIME-Version: 1.0
-In-Reply-To: <1482696216-8013-9-git-send-email-scott@matheina.com>
+In-Reply-To: <17a94568ffb91abedc9d12896b602022abb5f7e8.1482936802.git.hns@goldelico.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/12/16 19:56, Scott Matheina wrote:
-> Lines were not aligned with (, this patch simply changes the indention, no substantive
-> changes function of driver.
+On 28/12/16 14:53, H. Nikolaus Schaller wrote:
+> The tsc2007 chip not only has a resistive touch screen controller but
+> also an external AUX adc imput which can be used for an ambient
+> light sensor, battery voltage monitoring or any general purpose.
 > 
-> Signed-Off-By: Scott Matheina <scott@matheina.com>
-Again, this patch is fine. If you respin the good bits of the series, please
-give it a suitable name that indicates what it is effecting such as.
-staging:iio:adt7316: Aligns function parameters with opening bracket.
-
-This could easily be combined with the other patch doing much the same though.
-
-Thanks,
+> Additionally it can measure the chip temperature.
+> 
+> This extension provides an iio interface for these adc channels.
+> 
+> Since it is not wasting much resources and is very straightforward,
+> we simply provide all other adc channels as optional iio interfaces
+> as weel. This can be used for debugging or special applications.
+> 
+> This patch also splits the tsc2007 driver in several source files:
+> tsc2007.h -- constants, structs and stubs
+> tsc2007_core.c -- functional parts of the original driver
+> tsc2007_iio.c -- the optional iio stuff
+> 
+> Makefile magic allows to conditionally link the iio stuff
+> if CONFIG_IIO=y or =m in a way that it works with
+> CONFIG_TOUCHSCREEN_TSC2007=m.
+> 
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
+> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
+Just for the record, I'm happy with the few changes from earlier versions.
 
 Jonathan
 > ---
->  drivers/staging/iio/addac/adt7316.c | 415 ++++++++++++++++++------------------
->  1 file changed, 210 insertions(+), 205 deletions(-)
+>  drivers/input/touchscreen/Kconfig                  |  10 ++
+>  drivers/input/touchscreen/Makefile                 |   2 +
+>  drivers/input/touchscreen/tsc2007.h                | 116 ++++++++++++++++
+>  .../touchscreen/{tsc2007.c => tsc2007_core.c}      |  95 +++----------
+>  drivers/input/touchscreen/tsc2007_iio.c            | 150 +++++++++++++++++++++
+>  5 files changed, 299 insertions(+), 74 deletions(-)
+>  create mode 100644 drivers/input/touchscreen/tsc2007.h
+>  rename drivers/input/touchscreen/{tsc2007.c => tsc2007_core.c} (86%)
+>  create mode 100644 drivers/input/touchscreen/tsc2007_iio.c
 > 
-> diff --git a/drivers/staging/iio/addac/adt7316.c b/drivers/staging/iio/addac/adt7316.c
-> index e8e58d5..8b4a80d 100644
-> --- a/drivers/staging/iio/addac/adt7316.c
-> +++ b/drivers/staging/iio/addac/adt7316.c
-> @@ -217,8 +217,8 @@ struct adt7316_limit_regs {
->  };
->  
->  static ssize_t adt7316_show_enabled(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				    struct device_attribute *attr,
-> +				    char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -227,7 +227,7 @@ static ssize_t adt7316_show_enabled(struct device *dev,
->  }
->  
->  static ssize_t _adt7316_store_enabled(struct adt7316_chip_info *chip,
-> -		int enable)
-> +				      int enable)
->  {
->  	u8 config1;
->  	int ret;
-> @@ -244,13 +244,12 @@ static ssize_t _adt7316_store_enabled(struct adt7316_chip_info *chip,
->  	chip->config1 = config1;
->  
->  	return ret;
-> -
->  }
->  
->  static ssize_t adt7316_store_enabled(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				     struct device_attribute *attr,
-> +				     const char *buf,
-> +				     size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -271,8 +270,8 @@ static iio_device_attr(enabled, 0644, adt7316_show_enabled,
->  		       adt7316_store_enabled, 0);
->  
->  static ssize_t adt7316_show_select_ex_temp(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					   struct device_attribute *attr,
-> +					   char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -284,9 +283,9 @@ static ssize_t adt7316_show_select_ex_temp(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_select_ex_temp(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					    struct device_attribute *attr,
-> +					    const char *buf,
-> +					    size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -326,9 +325,9 @@ static ssize_t adt7316_show_mode(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				  struct device_attribute *attr,
-> +				  const char *buf,
-> +				  size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -398,9 +397,9 @@ static ssize_t adt7316_show_ad_channel(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_ad_channel(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					struct device_attribute *attr,
-> +					const char *buf,
-> +					size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -474,9 +473,9 @@ static ssize_t adt7316_show_disable_averaging(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_disable_averaging(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					       struct device_attribute *attr,
-> +					       const char *buf,
-> +					       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -511,9 +510,9 @@ static ssize_t adt7316_show_enable_smbus_timeout(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_enable_smbus_timeout(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +						  struct device_attribute *attr,
-> +						  const char *buf,
-> +						  size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -548,9 +547,9 @@ static ssize_t adt7316_show_powerdown(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_powerdown(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				       struct device_attribute *attr,
-> +				       const char *buf,
-> +				       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -584,9 +583,9 @@ static ssize_t adt7316_show_fast_ad_clock(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_fast_ad_clock(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					   struct device_attribute *attr,
-> +					   const char *buf,
-> +					   size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -610,8 +609,8 @@ static iio_device_attr(fast_ad_clock, 0644, adt7316_show_fast_ad_clock,
->  		       adt7316_store_fast_ad_clock, 0);
->  
->  static ssize_t adt7316_show_da_high_resolution(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					       struct device_attribute *attr,
-> +					       char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -627,9 +626,9 @@ static ssize_t adt7316_show_da_high_resolution(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_da_high_resolution(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +						struct device_attribute *attr,
-> +						const char *buf,
-> +						size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -661,9 +660,9 @@ static iio_device_attr(da_high_resolution, 0644,
->  		       adt7316_show_da_high_resolution,
->  		       adt7316_store_da_high_resolution, 0);
->  
-> -static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_ain_internal_vref(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -675,10 +674,10 @@ static ssize_t adt7316_show_AIN_internal_Vref(struct device *dev,
->  		!!(chip->config3 & ADT7516_AIN_IN_VREF));
->  }
->  
-> -static ssize_t adt7316_store_AIN_internal_Vref(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_ain_internal_vref(struct device *dev,
-> +					       struct device_attribute *attr,
-> +					       const char *buf,
-> +					       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -706,10 +705,9 @@ static iio_device_attr(ain_internal_vref, 0644,
->  		       adt7316_show_ain_internal_vref,
->  		       adt7316_store_ain_internal_vref, 0);
->  
-> -
-> -static ssize_t adt7316_show_enable_prop_DACA(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_enable_prop_daca(struct device *dev,
-> +					     struct device_attribute *attr,
-> +					     char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -718,10 +716,10 @@ static ssize_t adt7316_show_enable_prop_DACA(struct device *dev,
->  		!!(chip->config3 & ADT7316_EN_IN_TEMP_PROP_DACA));
->  }
->  
-> -static ssize_t adt7316_store_enable_prop_DACA(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_enable_prop_daca(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      const char *buf,
-> +					      size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -745,9 +743,9 @@ static iio_device_attr(enable_proportion_daca, 0644,
->  		       adt7316_show_enable_prop_daca,
->  		       adt7316_store_enable_prop_daca, 0);
->  
-> -static ssize_t adt7316_show_enable_prop_DACB(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_enable_prop_dacb(struct device *dev,
-> +					     struct device_attribute *attr,
-> +					     char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -756,10 +754,10 @@ static ssize_t adt7316_show_enable_prop_DACB(struct device *dev,
->  		!!(chip->config3 & ADT7316_EN_EX_TEMP_PROP_DACB));
->  }
->  
-> -static ssize_t adt7316_store_enable_prop_DACB(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_enable_prop_dacb(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      const char *buf,
-> +					      size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -783,9 +781,9 @@ static iio_device_attr(enable_proportion_dacb, 0644,
->  		       adt7316_show_enable_prop_dacb,
->  		       adt7316_store_enable_prop_dacb, 0);
->  
-> -static ssize_t adt7316_show_DAC_2Vref_ch_mask(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_2vref_ch_mask(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -794,10 +792,10 @@ static ssize_t adt7316_show_DAC_2Vref_ch_mask(struct device *dev,
->  		chip->dac_config & ADT7316_DA_2VREF_CH_MASK);
->  }
->  
-> -static ssize_t adt7316_store_DAC_2Vref_ch_mask(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_2vref_ch_mask(struct device *dev,
-> +					       struct device_attribute *attr,
-> +					       const char *buf,
-> +					       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -825,9 +823,9 @@ static iio_device_attr(dac_2vref_channels_mask, 0644,
->  		       adt7316_show_dac_2vref_ch_mask,
->  		       adt7316_store_dac_2vref_ch_mask, 0);
->  
-> -static ssize_t adt7316_show_DAC_update_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_update_mode(struct device *dev,
-> +					    struct device_attribute *attr,
-> +					    char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -850,10 +848,10 @@ static ssize_t adt7316_show_DAC_update_mode(struct device *dev,
->  	}
->  }
->  
-> -static ssize_t adt7316_store_DAC_update_mode(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_update_mode(struct device *dev,
-> +					     struct device_attribute *attr,
-> +					     const char *buf,
-> +					     size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -883,9 +881,9 @@ static ssize_t adt7316_store_DAC_update_mode(struct device *dev,
->  static iio_device_attr(DAC_update_mode, 0644, adt7316_show_dac_update_mode,
->  		       adt7316_store_dac_update_mode, 0);
->  
-> -static ssize_t adt7316_show_all_DAC_update_modes(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_all_dac_update_modes(struct device *dev,
-> +						 struct device_attribute *attr,
-> +						 char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -901,8 +899,8 @@ static ssize_t adt7316_show_all_DAC_update_modes(struct device *dev,
->  static iio_device_attr(all_dac_update_modes, 0444,
->  		       adt7316_show_all_dac_update_modes, NULL, 0);
->  
-> -static ssize_t adt7316_store_update_DAC(struct device *dev,
-> -		struct device_attribute *attr,
-> +static ssize_t adt7316_store_update_dac(struct device *dev,
-> +					struct device_attribute *attr,
->  		const char *buf,
->  		size_t len)
->  {
-> @@ -938,9 +936,9 @@ static ssize_t adt7316_store_update_DAC(struct device *dev,
->  
->  static iio_device_attr(update_dac, 0644, NULL, adt7316_store_update_dac, 0);
->  
-> -static ssize_t adt7316_show_DA_AB_Vref_bypass(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_da_ab_vref_bypass(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -952,10 +950,10 @@ static ssize_t adt7316_show_DA_AB_Vref_bypass(struct device *dev,
->  		!!(chip->dac_config & ADT7316_VREF_BYPASS_DAC_AB));
->  }
->  
-> -static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_da_ab_vref_bypass(struct device *dev,
-> +					       struct device_attribute *attr,
-> +					       const char *buf,
-> +					       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -981,9 +979,9 @@ static ssize_t adt7316_store_DA_AB_Vref_bypass(struct device *dev,
->  static iio_device_attr(da_ab_vref_bypass, 0644, adt7316_show_da_ab_vref_bypass,
->  		       adt7316_store_da_ab_vref_bypass, 0);
->  
-> -static ssize_t adt7316_show_DA_CD_Vref_bypass(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_da_cd_vref_bypass(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -995,10 +993,10 @@ static ssize_t adt7316_show_DA_CD_Vref_bypass(struct device *dev,
->  		!!(chip->dac_config & ADT7316_VREF_BYPASS_DAC_CD));
->  }
->  
-> -static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_da_cd_vref_bypass(struct device *dev,
-> +					       struct device_attribute *attr,
-> +					       const char *buf,
-> +					       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1024,9 +1022,9 @@ static ssize_t adt7316_store_DA_CD_Vref_bypass(struct device *dev,
->  static iio_device_attr(da_cd_vref_bypass, 0644, adt7316_show_da_cd_vref_bypass,
->  		       adt7316_store_da_cd_vref_bypass, 0);
->  
-> -static ssize_t adt7316_show_DAC_internal_Vref(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_internal_vref(struct device *dev,
-> +					      struct device_attribute *attr,
-> +					      char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1039,10 +1037,10 @@ static ssize_t adt7316_show_DAC_internal_Vref(struct device *dev,
->  		       !!(chip->dac_config & ADT7316_DAC_IN_VREF));
->  }
->  
-> -static ssize_t adt7316_store_DAC_internal_Vref(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_internal_vref(struct device *dev,
-> +					       struct device_attribute *attr,
-> +					       const char *buf,
-> +					       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1084,7 +1082,8 @@ static iio_device_attr(dac_internal_vref, 0644, adt7316_show_dac_internal_vref,
->  		       adt7316_store_dac_internal_vref, 0);
->  
->  static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
-> -		int channel, char *buf)
-> +			       int channel,
-> +			       char *buf)
->  {
->  	u16 data;
->  	u8 msb, lsb;
-> @@ -1092,7 +1091,7 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
->  	int ret;
->  
->  	if ((chip->config2 & ADT7316_AD_SINGLE_CH_MODE) &&
-> -		channel != (chip->config2 & ADT7516_AD_SINGLE_CH_MASK))
-> +	    channel != (chip->config2 & ADT7516_AD_SINGLE_CH_MASK))
->  		return -EPERM;
->  
->  	switch (channel) {
-> @@ -1159,8 +1158,8 @@ static ssize_t adt7316_show_ad(struct adt7316_chip_info *chip,
->  }
->  
->  static ssize_t adt7316_show_VDD(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				struct device_attribute *attr,
-> +				char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1171,8 +1170,8 @@ static ssize_t adt7316_show_VDD(struct device *dev,
->  static iio_device_attr(VDD, 0444, adt7316_show_VDD, NULL, 0);
->  
->  static ssize_t adt7316_show_in_temp(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				    struct device_attribute *attr,
-> +				    char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1182,9 +1181,9 @@ static ssize_t adt7316_show_in_temp(struct device *dev,
->  
->  static iio_device_attr(in_temp, 0444, adt7316_show_in_temp, NULL, 0);
->  
-> -static ssize_t adt7316_show_ex_temp_AIN1(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_ex_temp_ain1(struct device *dev,
-> +					 struct device_attribute *attr,
-> +					 char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1197,8 +1196,8 @@ static iio_device_attr(ex_temp_ain1, 0444, adt7316_show_ex_temp_ain1, NULL, 0);
->  static iio_device_attr(ex_temp, 0444, adt7316_show_ex_temp_ain1, NULL, 0);
->  
->  static ssize_t adt7316_show_AIN2(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				 struct device_attribute *attr,
-> +				 char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1233,7 +1232,8 @@ static ssize_t adt7316_show_ain4(struct device *dev,
->  static iio_device_attr(ain4, 0444, adt7316_show_ain4, NULL, 0);
->  
->  static ssize_t adt7316_show_temp_offset(struct adt7316_chip_info *chip,
-> -		int offset_addr, char *buf)
-> +					int offset_addr,
-> +					char *buf)
->  {
->  	int data;
->  	u8 val;
-> @@ -1251,7 +1251,9 @@ static ssize_t adt7316_show_temp_offset(struct adt7316_chip_info *chip,
->  }
->  
->  static ssize_t adt7316_store_temp_offset(struct adt7316_chip_info *chip,
-> -		int offset_addr, const char *buf, size_t len)
-> +					 int offset_addr,
-> +					 const char *buf,
-> +					 size_t len)
->  {
->  	int data;
->  	u8 val;
-> @@ -1274,8 +1276,8 @@ static ssize_t adt7316_store_temp_offset(struct adt7316_chip_info *chip,
->  }
->  
->  static ssize_t adt7316_show_in_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					   struct device_attribute *attr,
-> +					   char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1284,23 +1286,23 @@ static ssize_t adt7316_show_in_temp_offset(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_in_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					    struct device_attribute *attr,
-> +					    const char *buf,
-> +					    size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
->  	return adt7316_store_temp_offset(chip, ADT7316_IN_TEMP_OFFSET, buf,
-> -			len);
-> +					 len);
->  }
->  
->  static iio_device_attr(in_temp_offset, 0644, adt7316_show_in_temp_offset,
->  		       adt7316_store_in_temp_offset, 0);
->  
->  static ssize_t adt7316_show_ex_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					   struct device_attribute *attr,
-> +					   char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1309,63 +1311,62 @@ static ssize_t adt7316_show_ex_temp_offset(struct device *dev,
->  }
->  
->  static ssize_t adt7316_store_ex_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					    struct device_attribute *attr,
-> +					    const char *buf,
-> +					    size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
->  	return adt7316_store_temp_offset(chip, ADT7316_EX_TEMP_OFFSET, buf,
-> -			len);
-> +					 len);
->  }
->  
-> -static IIO_DEVICE_ATTR(ex_temp_offset, S_IRUGO | S_IWUSR,
-> -		adt7316_show_ex_temp_offset,
-> -		adt7316_store_ex_temp_offset, 0);
-> +static iio_device_attr(ex_temp_offset, 0644, adt7316_show_ex_temp_offset,
-> +		       adt7316_store_ex_temp_offset, 0);
->  
->  static ssize_t adt7316_show_in_analog_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +						  struct device_attribute *attr,
-> +						  char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
->  	return adt7316_show_temp_offset(chip,
-> -			ADT7316_IN_ANALOG_TEMP_OFFSET, buf);
-> +					ADT7316_IN_ANALOG_TEMP_OFFSET, buf);
->  }
->  
->  static ssize_t adt7316_store_in_analog_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +						   struct device_attribute *attr,
-> +						   const char *buf, size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
->  	return adt7316_store_temp_offset(chip,
-> -			ADT7316_IN_ANALOG_TEMP_OFFSET, buf, len);
-> +					 ADT7316_IN_ANALOG_TEMP_OFFSET,
-> +					 buf, len);
->  }
->  
-> -static IIO_DEVICE_ATTR(in_analog_temp_offset, S_IRUGO | S_IWUSR,
-> -		adt7316_show_in_analog_temp_offset,
-> -		adt7316_store_in_analog_temp_offset, 0);
-> +static iio_device_attr(in_analog_temp_offset, 0644,
-> +		       adt7316_show_in_analog_temp_offset,
-> +		       adt7316_store_in_analog_temp_offset, 0);
->  
->  static ssize_t adt7316_show_ex_analog_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +						  struct device_attribute *attr,
-> +						  char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
->  
->  	return adt7316_show_temp_offset(chip,
-> -			ADT7316_EX_ANALOG_TEMP_OFFSET, buf);
-> +					ADT7316_EX_ANALOG_TEMP_OFFSET, buf);
->  }
->  
->  static ssize_t adt7316_store_ex_analog_temp_offset(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +						   struct device_attribute *attr,
-> +						   const char *buf,
-> +						   size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1378,15 +1379,16 @@ static iio_device_attr(ex_analog_temp_offset, 0644,
->  		adt7316_show_ex_analog_temp_offset,
->  		adt7316_store_ex_analog_temp_offset, 0);
->  
-> -static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
-> -		int channel, char *buf)
-> +static ssize_t adt7316_show_dac(struct adt7316_chip_info *chip,
-> +				int channel,
-> +				char *buf)
->  {
->  	u16 data;
->  	u8 msb, lsb, offset;
->  	int ret;
->  
->  	if (channel >= ADT7316_DA_MSB_DATA_REGS ||
-> -		(channel == 0 &&
-> +	    (channel == 0 &&
->  		(chip->config3 & ADT7316_EN_IN_TEMP_PROP_DACA)) ||
->  		(channel == 1 &&
->  		(chip->config3 & ADT7316_EN_EX_TEMP_PROP_DACB)))
-> @@ -1411,15 +1413,17 @@ static ssize_t adt7316_show_DAC(struct adt7316_chip_info *chip,
->  	return sprintf(buf, "%d\n", data);
->  }
->  
-> -static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
-> -		int channel, const char *buf, size_t len)
-> +static ssize_t adt7316_store_dac(struct adt7316_chip_info *chip,
-> +				 int channel,
-> +				 const char *buf,
-> +				 size_t len)
->  {
->  	u8 msb, lsb, offset;
->  	u16 data;
->  	int ret;
->  
->  	if (channel >= ADT7316_DA_MSB_DATA_REGS ||
-> -		(channel == 0 &&
-> +	    (channel == 0 &&
->  		(chip->config3 & ADT7316_EN_IN_TEMP_PROP_DACA)) ||
->  		(channel == 1 &&
->  		(chip->config3 & ADT7316_EN_EX_TEMP_PROP_DACB)))
-> @@ -1448,9 +1452,9 @@ static ssize_t adt7316_store_DAC(struct adt7316_chip_info *chip,
->  	return len;
->  }
->  
-> -static ssize_t adt7316_show_DAC_A(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_a(struct device *dev,
-> +				  struct device_attribute *attr,
-> +				  char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1458,10 +1462,10 @@ static ssize_t adt7316_show_DAC_A(struct device *dev,
->  	return adt7316_show_dac(chip, 0, buf);
->  }
->  
-> -static ssize_t adt7316_store_DAC_A(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_a(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   const char *buf,
-> +				   size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1471,9 +1475,9 @@ static ssize_t adt7316_store_DAC_A(struct device *dev,
->  
->  static iio_device_attr(dac_a, 0644, adt7316_show_dac_a, adt7316_store_dac_a, 0);
->  
-> -static ssize_t adt7316_show_DAC_B(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_b(struct device *dev,
-> +				  struct device_attribute *attr,
-> +				  char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1481,10 +1485,10 @@ static ssize_t adt7316_show_DAC_B(struct device *dev,
->  	return adt7316_show_dac(chip, 1, buf);
->  }
->  
-> -static ssize_t adt7316_store_DAC_B(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_b(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   const char *buf,
-> +				   size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1494,9 +1498,9 @@ static ssize_t adt7316_store_DAC_B(struct device *dev,
->  
->  static iio_device_attr(dac_b, 0644, adt7316_show_dac_b, adt7316_store_dac_b, 0);
->  
-> -static ssize_t adt7316_show_DAC_C(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_c(struct device *dev,
-> +				  struct device_attribute *attr,
-> +				  char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1504,10 +1508,10 @@ static ssize_t adt7316_show_DAC_C(struct device *dev,
->  	return adt7316_show_dac(chip, 2, buf);
->  }
->  
-> -static ssize_t adt7316_store_DAC_C(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_c(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   const char *buf,
-> +				   size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1517,9 +1521,9 @@ static ssize_t adt7316_store_DAC_C(struct device *dev,
->  
->  static iio_device_attr(DAC_C, 0644, adt7316_show_dac_c, adt7316_store_dac_c, 0);
->  
-> -static ssize_t adt7316_show_DAC_D(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +static ssize_t adt7316_show_dac_d(struct device *dev,
-> +				  struct device_attribute *attr,
-> +				  char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1527,10 +1531,10 @@ static ssize_t adt7316_show_DAC_D(struct device *dev,
->  	return adt7316_show_dac(chip, 3, buf);
->  }
->  
-> -static ssize_t adt7316_store_DAC_D(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +static ssize_t adt7316_store_dac_d(struct device *dev,
-> +				   struct device_attribute *attr,
-> +				   const char *buf,
-> +				   size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1541,8 +1545,8 @@ static ssize_t adt7316_store_DAC_D(struct device *dev,
->  static iio_device_attr(DAC_D, 0644, adt7316_show_dac_d, adt7316_store_dac_d, 0);
->  
->  static ssize_t adt7316_show_device_id(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				      struct device_attribute *attr,
-> +				      char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1556,11 +1560,11 @@ static ssize_t adt7316_show_device_id(struct device *dev,
->  	return sprintf(buf, "%d\n", id);
->  }
->  
-> -static IIO_DEVICE_ATTR(device_id, S_IRUGO, adt7316_show_device_id, NULL, 0);
-> +static iio_device_attr(device_id, 0444, adt7316_show_device_id, NULL, 0);
->  
->  static ssize_t adt7316_show_manufactorer_id(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					    struct device_attribute *attr,
-> +					    char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1578,8 +1582,8 @@ static iio_device_attr(manufactorer_id, 0444, adt7316_show_manufactorer_id,
->  		       NULL, 0);
->  
->  static ssize_t adt7316_show_device_rev(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				       struct device_attribute *attr,
-> +				       char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1596,8 +1600,8 @@ static ssize_t adt7316_show_device_rev(struct device *dev,
->  static iio_device_attr(device_rev, 0444, adt7316_show_device_rev, NULL, 0);
->  
->  static ssize_t adt7316_show_bus_type(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				     struct device_attribute *attr,
-> +				     char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1780,8 +1784,8 @@ static irqreturn_t adt7316_event_handler(int irq, void *private)
->   * Show mask of enabled interrupts in Hex.
->   */
->  static ssize_t adt7316_show_int_mask(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +				     struct device_attribute *attr,
-> +				     char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1793,9 +1797,9 @@ static ssize_t adt7316_show_int_mask(struct device *dev,
->   * Set 1 to the mask in Hex to enabled interrupts.
->   */
->  static ssize_t adt7316_set_int_mask(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				    struct device_attribute *attr,
-> +				    const char *buf,
-> +				    size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1832,9 +1836,10 @@ static ssize_t adt7316_set_int_mask(struct device *dev,
->  
->  	return len;
->  }
+> diff --git a/drivers/input/touchscreen/Kconfig b/drivers/input/touchscreen/Kconfig
+> index efca013..1616a8d 100644
+> --- a/drivers/input/touchscreen/Kconfig
+> +++ b/drivers/input/touchscreen/Kconfig
+> @@ -1035,6 +1035,16 @@ config TOUCHSCREEN_TSC2007
+>  	  To compile this driver as a module, choose M here: the
+>  	  module will be called tsc2007.
+>  
+> +config TOUCHSCREEN_TSC2007_IIO
+> +	bool "IIO interface for external ADC input and temperature"
+> +	depends on TOUCHSCREEN_TSC2007
+> +	depends on IIO=y || IIO=TOUCHSCREEN_TSC2007
+> +	help
+> +	  Saying Y here adds an iio interface to the tsc2007 which
+> +	  provides values for the AUX input (used for e.g. battery
+> +	  or ambient light monitoring), temperature and raw input
+> +	  values.
 > +
->  static inline ssize_t adt7316_show_ad_bound(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					    struct device_attribute *attr,
-> +					    char *buf)
+>  config TOUCHSCREEN_W90X900
+>  	tristate "W90P910 touchscreen driver"
+>  	depends on ARCH_W90X900
+> diff --git a/drivers/input/touchscreen/Makefile b/drivers/input/touchscreen/Makefile
+> index 81b8645..05d1cc8 100644
+> --- a/drivers/input/touchscreen/Makefile
+> +++ b/drivers/input/touchscreen/Makefile
+> @@ -80,6 +80,8 @@ obj-$(CONFIG_TOUCHSCREEN_TSC_SERIO)	+= tsc40.o
+>  obj-$(CONFIG_TOUCHSCREEN_TSC200X_CORE)	+= tsc200x-core.o
+>  obj-$(CONFIG_TOUCHSCREEN_TSC2004)	+= tsc2004.o
+>  obj-$(CONFIG_TOUCHSCREEN_TSC2005)	+= tsc2005.o
+> +tsc2007-y := tsc2007_core.o
+> +tsc2007-$(CONFIG_TOUCHSCREEN_TSC2007_IIO)	+= tsc2007_iio.o
+>  obj-$(CONFIG_TOUCHSCREEN_TSC2007)	+= tsc2007.o
+>  obj-$(CONFIG_TOUCHSCREEN_UCB1400)	+= ucb1400_ts.o
+>  obj-$(CONFIG_TOUCHSCREEN_WACOM_W8001)	+= wacom_w8001.o
+> diff --git a/drivers/input/touchscreen/tsc2007.h b/drivers/input/touchscreen/tsc2007.h
+> new file mode 100644
+> index 0000000..16efb60
+> --- /dev/null
+> +++ b/drivers/input/touchscreen/tsc2007.h
+> @@ -0,0 +1,116 @@
+> +/*
+> + * Copyright (c) 2008 MtekVision Co., Ltd.
+> + *	Kwangwoo Lee <kwlee@mtekvision.com>
+> + *
+> + * Using code from:
+> + *  - ads7846.c
+> + *	Copyright (c) 2005 David Brownell
+> + *	Copyright (c) 2006 Nokia Corporation
+> + *  - corgi_ts.c
+> + *	Copyright (C) 2004-2005 Richard Purdie
+> + *  - omap_ts.[hc], ads7846.h, ts_osk.c
+> + *	Copyright (C) 2002 MontaVista Software
+> + *	Copyright (C) 2004 Texas Instruments
+> + *	Copyright (C) 2005 Dirk Behme
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License version 2 as
+> + *  published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/input/touchscreen.h>
+> +
+> +#define TSC2007_MEASURE_TEMP0		(0x0 << 4)
+> +#define TSC2007_MEASURE_AUX		(0x2 << 4)
+> +#define TSC2007_MEASURE_TEMP1		(0x4 << 4)
+> +#define TSC2007_ACTIVATE_XN		(0x8 << 4)
+> +#define TSC2007_ACTIVATE_YN		(0x9 << 4)
+> +#define TSC2007_ACTIVATE_YP_XN		(0xa << 4)
+> +#define TSC2007_SETUP			(0xb << 4)
+> +#define TSC2007_MEASURE_X		(0xc << 4)
+> +#define TSC2007_MEASURE_Y		(0xd << 4)
+> +#define TSC2007_MEASURE_Z1		(0xe << 4)
+> +#define TSC2007_MEASURE_Z2		(0xf << 4)
+> +
+> +#define TSC2007_POWER_OFF_IRQ_EN	(0x0 << 2)
+> +#define TSC2007_ADC_ON_IRQ_DIS0		(0x1 << 2)
+> +#define TSC2007_ADC_OFF_IRQ_EN		(0x2 << 2)
+> +#define TSC2007_ADC_ON_IRQ_DIS1		(0x3 << 2)
+> +
+> +#define TSC2007_12BIT			(0x0 << 1)
+> +#define TSC2007_8BIT			(0x1 << 1)
+> +
+> +#define	MAX_12BIT			((1 << 12) - 1)
+> +
+> +#define ADC_ON_12BIT	(TSC2007_12BIT | TSC2007_ADC_ON_IRQ_DIS0)
+> +
+> +#define READ_Y		(ADC_ON_12BIT | TSC2007_MEASURE_Y)
+> +#define READ_Z1		(ADC_ON_12BIT | TSC2007_MEASURE_Z1)
+> +#define READ_Z2		(ADC_ON_12BIT | TSC2007_MEASURE_Z2)
+> +#define READ_X		(ADC_ON_12BIT | TSC2007_MEASURE_X)
+> +#define PWRDOWN		(TSC2007_12BIT | TSC2007_POWER_OFF_IRQ_EN)
+> +
+> +struct ts_event {
+> +	u16	x;
+> +	u16	y;
+> +	u16	z1, z2;
+> +};
+> +
+> +struct tsc2007 {
+> +	struct input_dev	*input;
+> +	char			phys[32];
+> +
+> +	struct i2c_client	*client;
+> +
+> +	u16			model;
+> +	u16			x_plate_ohms;
+> +
+> +	struct touchscreen_properties prop;
+> +
+> +	bool			report_resistance;
+> +	u16			min_x;
+> +	u16			min_y;
+> +	u16			max_x;
+> +	u16			max_y;
+> +	u16			max_rt;
+> +	unsigned long		poll_period; /* in jiffies */
+> +	int			fuzzx;
+> +	int			fuzzy;
+> +	int			fuzzz;
+> +
+> +	unsigned int		gpio;
+> +	int			irq;
+> +
+> +	wait_queue_head_t	wait;
+> +	bool			stopped;
+> +	bool			pendown;
+> +
+> +	int			(*get_pendown_state)(struct device *);
+> +	void			(*clear_penirq)(void);
+> +
+> +	struct mutex		mlock;
+> +	struct iio_dev		*iio_dev;	/* optional */
+> +};
+> +
+> +int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd);
+> +u32 tsc2007_calculate_resistance(struct tsc2007 *tsc,
+> +					struct ts_event *tc);
+> +bool tsc2007_is_pen_down(struct tsc2007 *ts);
+> +
+> +#if IS_ENABLED(CONFIG_TOUCHSCREEN_TSC2007_IIO)
+> +
+> +/* defined in tsc2007_iio.c */
+> +int tsc2007_iio_configure(struct tsc2007 *ts);
+> +void tsc2007_iio_unconfigure(struct tsc2007 *ts);
+> +
+> +#else /* CONFIG_TOUCHSCREEN_TSC2007_IIO */
+> +
+> +static inline int tsc2007_iio_configure(struct tsc2007 *ts)
+> +{
+> +	return 0;
+> +}
+> +static inline void tsc2007_iio_unconfigure(struct tsc2007 *ts)
+> +{
+> +}
+> +
+> +#endif /* CONFIG_TOUCHSCREEN_TSC2007_IIO */
+> diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007_core.c
+> similarity index 86%
+> rename from drivers/input/touchscreen/tsc2007.c
+> rename to drivers/input/touchscreen/tsc2007_core.c
+> index 76b462b..812ded8 100644
+> --- a/drivers/input/touchscreen/tsc2007.c
+> +++ b/drivers/input/touchscreen/tsc2007_core.c
+> @@ -27,79 +27,11 @@
+>  #include <linux/i2c.h>
+>  #include <linux/i2c/tsc2007.h>
+>  #include <linux/of_device.h>
+> -#include <linux/of.h>
+>  #include <linux/of_gpio.h>
+> -#include <linux/input/touchscreen.h>
+> -
+> -#define TSC2007_MEASURE_TEMP0		(0x0 << 4)
+> -#define TSC2007_MEASURE_AUX		(0x2 << 4)
+> -#define TSC2007_MEASURE_TEMP1		(0x4 << 4)
+> -#define TSC2007_ACTIVATE_XN		(0x8 << 4)
+> -#define TSC2007_ACTIVATE_YN		(0x9 << 4)
+> -#define TSC2007_ACTIVATE_YP_XN		(0xa << 4)
+> -#define TSC2007_SETUP			(0xb << 4)
+> -#define TSC2007_MEASURE_X		(0xc << 4)
+> -#define TSC2007_MEASURE_Y		(0xd << 4)
+> -#define TSC2007_MEASURE_Z1		(0xe << 4)
+> -#define TSC2007_MEASURE_Z2		(0xf << 4)
+> -
+> -#define TSC2007_POWER_OFF_IRQ_EN	(0x0 << 2)
+> -#define TSC2007_ADC_ON_IRQ_DIS0		(0x1 << 2)
+> -#define TSC2007_ADC_OFF_IRQ_EN		(0x2 << 2)
+> -#define TSC2007_ADC_ON_IRQ_DIS1		(0x3 << 2)
+> -
+> -#define TSC2007_12BIT			(0x0 << 1)
+> -#define TSC2007_8BIT			(0x1 << 1)
+> -
+> -#define	MAX_12BIT			((1 << 12) - 1)
+> -
+> -#define ADC_ON_12BIT	(TSC2007_12BIT | TSC2007_ADC_ON_IRQ_DIS0)
+> -
+> -#define READ_Y		(ADC_ON_12BIT | TSC2007_MEASURE_Y)
+> -#define READ_Z1		(ADC_ON_12BIT | TSC2007_MEASURE_Z1)
+> -#define READ_Z2		(ADC_ON_12BIT | TSC2007_MEASURE_Z2)
+> -#define READ_X		(ADC_ON_12BIT | TSC2007_MEASURE_X)
+> -#define PWRDOWN		(TSC2007_12BIT | TSC2007_POWER_OFF_IRQ_EN)
+> -
+> -struct ts_event {
+> -	u16	x;
+> -	u16	y;
+> -	u16	z1, z2;
+> -};
+> -
+> -struct tsc2007 {
+> -	struct input_dev	*input;
+> -	char			phys[32];
+> -
+> -	struct i2c_client	*client;
+> -
+> -	u16			model;
+> -	u16			x_plate_ohms;
+> -
+> -	struct touchscreen_properties prop;
+> -
+> -	bool			report_resistance;
+> -	u16			min_x;
+> -	u16			min_y;
+> -	u16			max_x;
+> -	u16			max_y;
+> -	u16			max_rt;
+> -	unsigned long		poll_period; /* in jiffies */
+> -	int			fuzzx;
+> -	int			fuzzy;
+> -	int			fuzzz;
+> -
+> -	unsigned		gpio;
+> -	int			irq;
+> -
+> -	wait_queue_head_t	wait;
+> -	bool			stopped;
+> +#include "tsc2007.h"
+>  
+> -	int			(*get_pendown_state)(struct device *);
+> -	void			(*clear_penirq)(void);
+> -};
+>  
+> -static inline int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
+> +int tsc2007_xfer(struct tsc2007 *tsc, u8 cmd)
 >  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
-> @@ -1844,7 +1849,7 @@ static inline ssize_t adt7316_show_ad_bound(struct device *dev,
->  	int ret;
+>  	s32 data;
+>  	u16 val;
+> @@ -137,7 +69,7 @@ static void tsc2007_read_values(struct tsc2007 *tsc, struct ts_event *tc)
+>  	tsc2007_xfer(tsc, PWRDOWN);
+>  }
 >  
->  	if ((chip->id & ID_FAMILY_MASK) == ID_ADT73XX &&
-> -		this_attr->address > ADT7316_EX_TEMP_LOW)
-> +	    this_attr->address > ADT7316_EX_TEMP_LOW)
->  		return -EPERM;
+> -static u32 tsc2007_calculate_resistance(struct tsc2007 *tsc,
+> +u32 tsc2007_calculate_resistance(struct tsc2007 *tsc,
+>  					struct ts_event *tc)
+>  {
+>  	u32 rt = 0;
+> @@ -158,7 +90,7 @@ static u32 tsc2007_calculate_resistance(struct tsc2007 *tsc,
+>  	return rt;
+>  }
 >  
->  	ret = chip->bus.read(chip->bus.client, this_attr->address, &val);
-> @@ -1854,7 +1859,7 @@ static inline ssize_t adt7316_show_ad_bound(struct device *dev,
->  	data = (int)val;
+> -static bool tsc2007_is_pen_down(struct tsc2007 *ts)
+> +bool tsc2007_is_pen_down(struct tsc2007 *ts)
+>  {
+>  	/*
+>  	 * NOTE: We can't rely on the pressure to determine the pen down
+> @@ -191,7 +123,10 @@ static irqreturn_t tsc2007_soft_irq(int irq, void *handle)
+>  	while (!ts->stopped && tsc2007_is_pen_down(ts)) {
 >  
->  	if (!((chip->id & ID_FAMILY_MASK) == ID_ADT75XX &&
-> -		(chip->config1 & ADT7516_SEL_AIN1_2_EX_TEMP_MASK) == 0)) {
-> +	      (chip->config1 & ADT7516_SEL_AIN1_2_EX_TEMP_MASK) == 0)) {
->  		if (data & 0x80)
->  			data -= 256;
+>  		/* pen is down, continue with the measurement */
+> +
+> +		mutex_lock(&ts->mlock);
+>  		tsc2007_read_values(ts, &tc);
+> +		mutex_unlock(&ts->mlock);
+>  
+>  		rt = tsc2007_calculate_resistance(ts, &tc);
+>  
+> @@ -441,7 +376,8 @@ static void tsc2007_call_exit_platform_hw(void *data)
+>  static int tsc2007_probe(struct i2c_client *client,
+>  			 const struct i2c_device_id *id)
+>  {
+> -	const struct tsc2007_platform_data *pdata = dev_get_platdata(&client->dev);
+> +	const struct tsc2007_platform_data *pdata =
+> +		dev_get_platdata(&client->dev);
+>  	struct tsc2007 *ts;
+>  	struct input_dev *input_dev;
+>  	int err;
+> @@ -463,7 +399,9 @@ static int tsc2007_probe(struct i2c_client *client,
+>  	ts->client = client;
+>  	ts->irq = client->irq;
+>  	ts->input = input_dev;
+> +
+>  	init_waitqueue_head(&ts->wait);
+> +	mutex_init(&ts->mlock);
+>  
+>  	snprintf(ts->phys, sizeof(ts->phys),
+>  		 "%s/input0", dev_name(&client->dev));
+> @@ -534,7 +472,7 @@ static int tsc2007_probe(struct i2c_client *client,
+>  	if (err < 0) {
+>  		dev_err(&client->dev,
+>  			"Failed to setup chip: %d\n", err);
+> -		return err;	/* usually, chip does not respond */
+> +		return err;	/* chip does not respond */
 >  	}
-> @@ -1863,9 +1868,9 @@ static inline ssize_t adt7316_show_ad_bound(struct device *dev,
->  }
 >  
->  static inline ssize_t adt7316_set_ad_bound(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +					   struct device_attribute *attr,
-> +					   const char *buf,
-> +					   size_t len)
->  {
->  	struct iio_dev_attr *this_attr = to_iio_dev_attr(attr);
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
-> @@ -1875,7 +1880,7 @@ static inline ssize_t adt7316_set_ad_bound(struct device *dev,
->  	int ret;
+>  	err = input_register_device(input_dev);
+> @@ -544,6 +482,14 @@ static int tsc2007_probe(struct i2c_client *client,
+>  		return err;
+>  	}
 >  
->  	if ((chip->id & ID_FAMILY_MASK) == ID_ADT73XX &&
-> -		this_attr->address > ADT7316_EX_TEMP_LOW)
-> +	    this_attr->address > ADT7316_EX_TEMP_LOW)
->  		return -EPERM;
->  
->  	ret = kstrtoint(buf, 10, &data);
-> @@ -1883,7 +1888,7 @@ static inline ssize_t adt7316_set_ad_bound(struct device *dev,
->  		return -EINVAL;
->  
->  	if ((chip->id & ID_FAMILY_MASK) == ID_ADT75XX &&
-> -		(chip->config1 & ADT7516_SEL_AIN1_2_EX_TEMP_MASK) == 0) {
-> +	    (chip->config1 & ADT7516_SEL_AIN1_2_EX_TEMP_MASK) == 0) {
->  		if (data > 255 || data < 0)
->  			return -EINVAL;
->  	} else {
-> @@ -1904,8 +1909,8 @@ static inline ssize_t adt7316_set_ad_bound(struct device *dev,
->  }
->  
->  static ssize_t adt7316_show_int_enabled(struct device *dev,
-> -		struct device_attribute *attr,
-> -		char *buf)
-> +					struct device_attribute *attr,
-> +					char *buf)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -1914,9 +1919,9 @@ static ssize_t adt7316_show_int_enabled(struct device *dev,
->  }
->  
->  static ssize_t adt7316_set_int_enabled(struct device *dev,
-> -		struct device_attribute *attr,
-> -		const char *buf,
-> -		size_t len)
-> +				       struct device_attribute *attr,
-> +				       const char *buf,
-> +				       size_t len)
->  {
->  	struct iio_dev *dev_info = dev_to_iio_dev(dev);
->  	struct adt7316_chip_info *chip = iio_priv(dev_info);
-> @@ -2040,7 +2045,7 @@ static const struct iio_info adt7516_info = {
->   * device probe and remove
->   */
->  int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
-> -		const char *name)
-> +		  const char *name)
->  {
->  	struct adt7316_chip_info *chip;
->  	struct iio_dev *indio_dev;
-> @@ -2112,7 +2117,7 @@ int adt7316_probe(struct device *dev, struct adt7316_bus *bus,
->  		return ret;
->  
->  	dev_info(dev, "%s temperature sensor, ADC and DAC registered.\n",
-> -			indio_dev->name);
-> +		 indio_dev->name);
->  
+> +	return tsc2007_iio_configure(ts);
+> +}
+> +
+> +static int tsc2007_remove(struct i2c_client *client)
+> +{
+> +	struct tsc2007 *ts = i2c_get_clientdata(client);
+> +
+> +	tsc2007_iio_unconfigure(ts);
 >  	return 0;
 >  }
+>  
+> @@ -569,6 +515,7 @@ static struct i2c_driver tsc2007_driver = {
+>  	},
+>  	.id_table	= tsc2007_idtable,
+>  	.probe		= tsc2007_probe,
+> +	.remove		= tsc2007_remove,
+>  };
+>  
+>  module_i2c_driver(tsc2007_driver);
+> diff --git a/drivers/input/touchscreen/tsc2007_iio.c b/drivers/input/touchscreen/tsc2007_iio.c
+> new file mode 100644
+> index 0000000..ed79944
+> --- /dev/null
+> +++ b/drivers/input/touchscreen/tsc2007_iio.c
+> @@ -0,0 +1,150 @@
+> +/*
+> + * Copyright (c) 2016 Golden Delicious Comp. GmbH&Co. KG
+> + *	Nikolaus Schaller <hns@goldelico.com>
+> + *
+> + *  This program is free software; you can redistribute it and/or modify
+> + *  it under the terms of the GNU General Public License version 2 as
+> + *  published by the Free Software Foundation.
+> + */
+> +
+> +#include <linux/i2c.h>
+> +#include <linux/iio/iio.h>
+> +#include "tsc2007.h"
+> +
+> +struct tsc2007_iio {
+> +	struct tsc2007 *ts;
+> +};
+> +
+> +#define TSC2007_CHAN_IIO(_chan, _name, _type, _chan_info) \
+> +{ \
+> +	.datasheet_name = _name, \
+> +	.type = _type, \
+> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |	\
+> +			BIT(_chan_info), \
+> +	.indexed = 1, \
+> +	.channel = _chan, \
+> +}
+> +
+> +static const struct iio_chan_spec tsc2007_iio_channel[] = {
+> +	TSC2007_CHAN_IIO(0, "x", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(1, "y", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(2, "z1", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(3, "z2", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(4, "adc", IIO_VOLTAGE, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(5, "rt", IIO_VOLTAGE, IIO_CHAN_INFO_RAW), /* Ohms? */
+> +	TSC2007_CHAN_IIO(6, "pen", IIO_PRESSURE, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(7, "temp0", IIO_TEMP, IIO_CHAN_INFO_RAW),
+> +	TSC2007_CHAN_IIO(8, "temp1", IIO_TEMP, IIO_CHAN_INFO_RAW),
+> +};
+> +
+> +static int tsc2007_read_raw(struct iio_dev *indio_dev,
+> +	struct iio_chan_spec const *chan, int *val, int *val2, long mask)
+> +{
+> +	struct tsc2007_iio *iio = iio_priv(indio_dev);
+> +	struct tsc2007 *tsc = iio->ts;
+> +	int adc_chan = chan->channel;
+> +	int ret = 0;
+> +
+> +	if (adc_chan >= ARRAY_SIZE(tsc2007_iio_channel))
+> +		return -EINVAL;
+> +
+> +	if (mask != IIO_CHAN_INFO_RAW)
+> +		return -EINVAL;
+> +
+> +	mutex_lock(&tsc->mlock);
+> +
+> +	switch (chan->channel) {
+> +	case 0:
+> +		*val = tsc2007_xfer(tsc, READ_X);
+> +		break;
+> +	case 1:
+> +		*val = tsc2007_xfer(tsc, READ_Y);
+> +		break;
+> +	case 2:
+> +		*val = tsc2007_xfer(tsc, READ_Z1);
+> +		break;
+> +	case 3:
+> +		*val = tsc2007_xfer(tsc, READ_Z2);
+> +		break;
+> +	case 4:
+> +		*val = tsc2007_xfer(tsc, (ADC_ON_12BIT | TSC2007_MEASURE_AUX));
+> +		break;
+> +	case 5: {
+> +		struct ts_event tc;
+> +
+> +		tc.x = tsc2007_xfer(tsc, READ_X);
+> +		tc.z1 = tsc2007_xfer(tsc, READ_Z1);
+> +		tc.z2 = tsc2007_xfer(tsc, READ_Z2);
+> +		*val = tsc2007_calculate_resistance(tsc, &tc);
+> +		break;
+> +	}
+> +	case 6:
+> +		*val = tsc2007_is_pen_down(tsc);
+> +		break;
+> +	case 7:
+> +		*val = tsc2007_xfer(tsc,
+> +				    (ADC_ON_12BIT | TSC2007_MEASURE_TEMP0));
+> +		break;
+> +	case 8:
+> +		*val = tsc2007_xfer(tsc,
+> +				    (ADC_ON_12BIT | TSC2007_MEASURE_TEMP1));
+> +		break;
+> +	}
+> +
+> +	/* Prepare for next touch reading - power down ADC, enable PENIRQ */
+> +	tsc2007_xfer(tsc, PWRDOWN);
+> +
+> +	mutex_unlock(&tsc->mlock);
+> +
+> +	ret = IIO_VAL_INT;
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info tsc2007_iio_info = {
+> +	.read_raw = tsc2007_read_raw,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +int tsc2007_iio_configure(struct tsc2007 *ts)
+> +{
+> +	int err;
+> +	struct iio_dev *indio_dev;
+> +	struct tsc2007_iio *iio;
+> +
+> +	indio_dev = devm_iio_device_alloc(&ts->client->dev,
+> +		sizeof(struct tsc2007_iio));
+> +	if (!indio_dev) {
+> +		dev_err(&ts->client->dev, "iio_device_alloc failed\n");
+> +		return -ENOMEM;
+> +	}
+> +
+> +	iio = iio_priv(indio_dev);
+> +	iio->ts = ts;
+> +	ts->iio_dev = (void *) indio_dev;
+> +
+> +	indio_dev->name = "tsc2007";
+> +	indio_dev->dev.parent = &ts->client->dev;
+> +	indio_dev->info = &tsc2007_iio_info;
+> +	indio_dev->modes = INDIO_DIRECT_MODE;
+> +	indio_dev->channels = tsc2007_iio_channel;
+> +	indio_dev->num_channels = ARRAY_SIZE(tsc2007_iio_channel);
+> +
+> +	err = iio_device_register(indio_dev);
+> +	if (err < 0) {
+> +		dev_err(&ts->client->dev, "iio_device_register() failed: %d\n",
+> +			err);
+> +		return err;
+> +	}
+> +
+> +	return 0;
+> +}
+> +EXPORT_SYMBOL(tsc2007_iio_configure);
+> +
+> +void tsc2007_iio_unconfigure(struct tsc2007 *ts)
+> +{
+> +	struct iio_dev *indio_dev = ts->iio_dev;
+> +
+> +	iio_device_unregister(indio_dev);
+> +}
+> +EXPORT_SYMBOL(tsc2007_iio_unconfigure);
 > 
 
