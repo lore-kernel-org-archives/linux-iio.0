@@ -1,66 +1,272 @@
-Return-Path: <SRS0=0JFy=YN=intel.com=hongyan.song@kernel.org>
-From: Song Hongyan <hongyan.song@intel.com>
-To: linux-iio@vger.kernel.org
-Cc: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@intel.com,
-	Song Hongyan <hongyan.song@intel.com>
-Subject: [PATCH 1/4] iio: Add support for max_sampling_frequency
-Date: Fri, 30 Dec 2016 17:23:09 +0800
-Message-Id: <1483089792-11324-1-git-send-email-hongyan.song@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:57508 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754540AbcLaQKr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 31 Dec 2016 11:10:47 -0500
+Subject: Re: [PATCH v6 1/9] dt-bindings: document devicetree bindings for
+ mux-controllers and mux-gpio
+To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
+References: <1480493823-21462-1-git-send-email-peda@axentia.se>
+ <1480493823-21462-2-git-send-email-peda@axentia.se>
+Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jonathan Corbet <corbet@lwn.net>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <afacafb8-e29f-e9c9-5ade-39660d6cf2d4@kernel.org>
+Date: Sat, 31 Dec 2016 16:10:44 +0000
+MIME-Version: 1.0
+In-Reply-To: <1480493823-21462-2-git-send-email-peda@axentia.se>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Add support for max_sampling_frequency, this will help user to
-set sampling frequency to an acceptable range.
+On 30/11/16 08:16, Peter Rosin wrote:
+> Signed-off-by: Peter Rosin <peda@axentia.se>
+Bindings are still a bit of a black art to me ;)
 
-Signed-off-by: Song Hongyan <hongyan.song@intel.com>
----
- Documentation/ABI/testing/sysfs-bus-iio | 7 +++++++
- drivers/iio/industrialio-core.c         | 1 +
- include/linux/iio/iio.h                 | 1 +
- 3 files changed, 9 insertions(+)
+Other than the naming of the iio-mux as discussed in the other patch
+I'm happy with this. It feels like it has struck the right balance
+between flexibility and complexity.  Which probably means we'll
+have an application it doesn't stretch to before the day is out...
 
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-index 60b7406..cbcd2b8 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio
-+++ b/Documentation/ABI/testing/sysfs-bus-iio
-@@ -54,6 +54,13 @@ Description:
- 		relevant directories.  If it effects all of the above
- 		then it is to be found in the base device directory.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/max_sampling_frequency
-+KernelVersion:	4.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		This parameter shows the max sampling frequency, which can
-+		help user to set sampling frequency to an acceptable range.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/sampling_frequency_available
- What:		/sys/.../iio:deviceX/buffer/sampling_frequency_available
- What:		/sys/bus/iio/devices/triggerX/sampling_frequency_available
-diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
-index 72fc96a..5203e75 100644
---- a/drivers/iio/industrialio-core.c
-+++ b/drivers/iio/industrialio-core.c
-@@ -140,6 +140,7 @@ struct bus_type iio_bus_type = {
- 	[IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY]
- 	= "filter_high_pass_3db_frequency",
- 	[IIO_CHAN_INFO_SAMP_FREQ] = "sampling_frequency",
-+	[IIO_CHAN_INFO_MAX_SAMP_FREQ] = "max_sampling_frequency",
- 	[IIO_CHAN_INFO_FREQUENCY] = "frequency",
- 	[IIO_CHAN_INFO_PHASE] = "phase",
- 	[IIO_CHAN_INFO_HARDWAREGAIN] = "hardwaregain",
-diff --git a/include/linux/iio/iio.h b/include/linux/iio/iio.h
-index b4a0679..f9eba2e 100644
---- a/include/linux/iio/iio.h
-+++ b/include/linux/iio/iio.h
-@@ -34,6 +34,7 @@ enum iio_chan_info_enum {
- 	IIO_CHAN_INFO_LOW_PASS_FILTER_3DB_FREQUENCY,
- 	IIO_CHAN_INFO_HIGH_PASS_FILTER_3DB_FREQUENCY,
- 	IIO_CHAN_INFO_SAMP_FREQ,
-+	IIO_CHAN_INFO_MAX_SAMP_FREQ,
- 	IIO_CHAN_INFO_FREQUENCY,
- 	IIO_CHAN_INFO_PHASE,
- 	IIO_CHAN_INFO_HARDWAREGAIN,
--- 
-1.9.1
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+> ---
+>  .../devicetree/bindings/misc/mux-controller.txt    | 127 +++++++++++++++++++++
+>  .../devicetree/bindings/misc/mux-gpio.txt          |  68 +++++++++++
+>  MAINTAINERS                                        |   5 +
+>  3 files changed, 200 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/misc/mux-controller.txt
+>  create mode 100644 Documentation/devicetree/bindings/misc/mux-gpio.txt
+> 
+> diff --git a/Documentation/devicetree/bindings/misc/mux-controller.txt b/Documentation/devicetree/bindings/misc/mux-controller.txt
+> new file mode 100644
+> index 000000000000..19c36b73173e
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/misc/mux-controller.txt
+> @@ -0,0 +1,127 @@
+> +Common multiplexer controller bindings
+> +======================================
+> +
+> +A multiplexer (or mux) controller will have one, or several, consumer devices
+> +that uses the mux controller. Thus, a mux controller can possibly control
+> +several parallel multiplexers, presumably there will be at least one
+> +multiplexer needed by each consumer..
+> +
+> +A mux controller provides a number of states to its consumers, and the state
+> +space is a simple zero-based enumeration. I.e. 0-1 for a 2-way multiplexer,
+> +0-7 for an 8-way multiplexer, etc.
+> +
+> +
+> +Consumers
+> +---------
+> +
+> +Mux controller consumers should specify a list of mux controllers that they
+> +want to use with a property containing a 'mux-ctrl-list':
+> +
+> +	mux-ctrl-list ::= <single-mux-ctrl> [mux-ctrl-list]
+> +	single-mux-ctrl ::= <mux-ctrl-phandle> [mux-ctrl-specifier]
+> +	mux-ctrl-phandle : phandle to mux controller node
+> +	mux-ctrl-specifier : array of #mux-control-cells specifying the
+> +			     given mux controller (controller specific)
+> +
+> +Mux controller properties should be named "mux-controls". The exact meaning of
+> +each mux controller property must be documented in the device tree binding for
+> +each consumer. An optional property "mux-control-names" may contain a list of
+> +strings to label each of the mux controllers listed in the "mux-controls"
+> +property.
+> +
+> +Drivers for devices that use more than a single mux controller can use the
+> +"mux-control-names" property to map the name of the mux controller requested by
+> +the mux_control_get() call to an index into the list given by the
+> +"mux-controls" property.
+> +
+> +mux-ctrl-specifier typically encodes the chip-relative mux controller number.
+> +If the mux controller chip only provides a single mux controller, the
+> +mux-ctrl-specifier can typically be left out.
+> +
+> +Example:
+> +
+> +	/* One consumer of a 2-way mux controller (one GPIO-line) */
+> +	mux: mux-controller {
+> +		compatible = "mux-gpio";
+> +		#mux-control-cells = <0>;
+> +
+> +		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>;
+> +	};
+> +
+> +	adc-mux {
+> +		compatible = "iio-mux";
+> +		io-channels = <&adc 0>;
+> +		io-channel-names = "parent";
+> +		mux-controls = <&mux>;
+> +		mux-control-names = "adc";
+> +
+> +		channels = "sync", "in";
+> +	};
+> +
+> +Note that in the example above, specifying the "mux-control-names" is redundant
+> +because there is only one mux controller in the list.
+> +
+> +	/*
+> +	 * Two consumers (one for an ADC line and one for an i2c bus) of
+> +	 * parallel 4-way multiplexers controlled by the same two GPIO-lines.
+> +	 */
+> +	mux: mux-controller {
+> +		compatible = "mux-gpio";
+> +		#mux-control-cells = <0>;
+> +
+> +		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
+> +			    <&pioA 1 GPIO_ACTIVE_HIGH>;
+> +	};
+> +
+> +	adc-mux {
+> +		compatible = "iio-mux";
+> +		io-channels = <&adc 0>;
+> +		io-channel-names = "parent";
+> +		mux-controls = <&mux>;
+> +
+> +		channels = "sync-1", "in", "out", "sync-2";
+> +	};
+> +
+> +	i2c-mux {
+> +		compatible = "i2c-mux-simple,mux-locked";
+> +		i2c-parent = <&i2c1>;
+> +		mux-controls = <&mux>;
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		i2c@0 {
+> +			reg = <0>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			ssd1307: oled@3c {
+> +				/* ... */
+> +			};
+> +		};
+> +
+> +		i2c@3 {
+> +			reg = <3>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			pca9555: pca9555@20 {
+> +				/* ... */
+> +			};
+> +		};
+> +	};
+> +
+> +
+> +Mux controller nodes
+> +--------------------
+> +
+> +Mux controller nodes must specify the number of cells used for the
+> +specifier using the '#mux-control-cells' property.
+> +
+> +An example mux controller might look like this:
+> +
+> +	mux: adg792a@50 {
+> +		compatible = "adi,adg792a";
+> +		reg = <0x50>;
+> +		#mux-control-cells = <1>;
+> +	};
+> diff --git a/Documentation/devicetree/bindings/misc/mux-gpio.txt b/Documentation/devicetree/bindings/misc/mux-gpio.txt
+> new file mode 100644
+> index 000000000000..2ff814f082c8
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/misc/mux-gpio.txt
+> @@ -0,0 +1,68 @@
+> +GPIO-based multiplexer controller bindings
+> +
+> +Define what GPIO pins are used to control a multiplexer. Or several
+> +multiplexers, if the same pins control more than one multiplexer.
+> +
+> +Required properties:
+> +- compatible : "mux-gpio"
+> +- mux-gpios : list of gpios used to control the multiplexer, least
+> +	      significant bit first.
+> +- #mux-control-cells : <0>
+> +* Standard mux-controller bindings as decribed in mux-controller.txt
+> +
+> +Optional properties:
+> +- idle-state : if present, the state the mux will have when idle.
+> +
+> +The multiplexer state is defined as the number represented by the
+> +multiplexer GPIO pins, where the first pin is the least significant
+> +bit. An active pin is a binary 1, an inactive pin is a binary 0.
+> +
+> +Example:
+> +
+> +	mux: mux-controller {
+> +		compatible = "mux-gpio";
+> +		#mux-control-cells = <0>;
+> +
+> +		mux-gpios = <&pioA 0 GPIO_ACTIVE_HIGH>,
+> +			    <&pioA 1 GPIO_ACTIVE_HIGH>;
+> +	};
+> +
+> +	adc-mux {
+> +		compatible = "iio-mux";
+> +		io-channels = <&adc 0>;
+> +		io-channel-names = "parent";
+> +
+> +		mux-controls = <&mux>;
+> +
+> +		channels = "sync-1", "in", "out", "sync-2";
+> +	};
+> +
+> +	i2c-mux {
+> +		compatible = "i2c-mux-simple,mux-locked";
+> +		i2c-parent = <&i2c1>;
+> +
+> +		mux-controls = <&mux>;
+> +
+> +		#address-cells = <1>;
+> +		#size-cells = <0>;
+> +
+> +		i2c@0 {
+> +			reg = <0>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			ssd1307: oled@3c {
+> +				/* ... */
+> +			};
+> +		};
+> +
+> +		i2c@3 {
+> +			reg = <3>;
+> +			#address-cells = <1>;
+> +			#size-cells = <0>;
+> +
+> +			pca9555: pca9555@20 {
+> +				/* ... */
+> +			};
+> +		};
+> +	};
+> diff --git a/MAINTAINERS b/MAINTAINERS
+> index d8eb3843dbd4..3d4d0efc2b64 100644
+> --- a/MAINTAINERS
+> +++ b/MAINTAINERS
+> @@ -8403,6 +8403,11 @@ S:	Orphan
+>  F:	drivers/mmc/host/mmc_spi.c
+>  F:	include/linux/spi/mmc_spi.h
+>  
+> +MULTIPLEXER SUBSYSTEM
+> +M:	Peter Rosin <peda@axentia.se>
+> +S:	Maintained
+> +F:	Documentation/devicetree/bindings/misc/mux-*
+> +
+>  MULTISOUND SOUND DRIVER
+>  M:	Andrew Veliath <andrewtv@usa.net>
+>  S:	Maintained
+> 
+
