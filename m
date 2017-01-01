@@ -1,15 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39851 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33109 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933555AbdABSIn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jan 2017 13:08:43 -0500
-Subject: Re: [PATCH v6 9/9] misc: mux-adg792a: add mux controller driver for
- ADG792A/G
+        with ESMTP id S1753338AbdAAL2W (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 1 Jan 2017 06:28:22 -0500
+Subject: Re: [PATCH v6 0/9] mux controller abstraction and iio/i2c muxes
 To: Peter Rosin <peda@axentia.se>, linux-kernel@vger.kernel.org
 References: <1480493823-21462-1-git-send-email-peda@axentia.se>
- <1480493823-21462-10-git-send-email-peda@axentia.se>
- <fb8a7864-a6cf-351f-b9c5-a5036c30474e@kernel.org>
- <df2f2896-8fde-09a9-add5-ded77234a66e@axentia.se>
 Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -21,282 +17,208 @@ Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
         linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
         linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1b614d4e-1b81-3c47-c95d-1b26b29a3d1c@kernel.org>
-Date: Mon, 2 Jan 2017 18:08:40 +0000
+Message-ID: <e2e0abfa-e49a-677b-55ec-61b8e1346d8b@kernel.org>
+Date: Sun, 1 Jan 2017 11:28:19 +0000
 MIME-Version: 1.0
-In-Reply-To: <df2f2896-8fde-09a9-add5-ded77234a66e@axentia.se>
+In-Reply-To: <1480493823-21462-1-git-send-email-peda@axentia.se>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/01/17 11:00, Peter Rosin wrote:
-> On 2017-01-01 12:24, Jonathan Cameron wrote:
->> On 30/11/16 08:17, Peter Rosin wrote:
->>> Analog Devices ADG792A/G is a triple 4:1 mux.
->>>
->>> Signed-off-by: Peter Rosin <peda@axentia.se>
->> Looks pretty good. Some minor suggestions inline.
->>
->> This convinced me of two things:
->> 1. Need a separate subsystem directory for muxes - having them under misc
->> is going to lead to long term mess.
->> 2. Devm alloc and registration functions will make the drivers all simpler.
+On 30/11/16 08:16, Peter Rosin wrote:
+> Hi!
+Just a quick note to encourage people to take a look at this series
+if they have the time (I can't talk as it took me almost exactly a
+month to take a proper look).
+
+It actually ended up a good deal simpler than I expected so I'm falling
+on the side of this making sense rather than pushing all mux complexity
+into a 'card driver'.  Covers a lot of cases without a proliferation of
+code which is nice.
+
+One addition that may make sense is to provide hooks to allow 'card
+drivers' where they are needed. I can certainly conceive of devices
+where the complexity does rise to the point where they make sense.
+However, we can add them when needed.
+
+Peter, don't give up on this set just yet!
+
+Happy New Year,
+
+Jonathan
 > 
-> Ok, I'm making the move to drivers/mux/* for v7 and adding more devm_*
-> functions.
+> v5 -> v6 changes
+> - fix stupidity in mux_chip_priv, mux_gpio_remove and adg792a_remove.
+> - change the devicetree bindings for the iio-mux to use a list of strings
+>   (channels property) instead of a list children.
 > 
->> Also, browsing through ADIs list of muxes and switches it's clear that
->> one classic case will be where an i2c octal or similar switch is used with
->> outputs wired together in weird combinations to act as a mux.  Going to
->> be 'fun' describing that.
->>
->> There are also potentially cross point switches to be described ;)
->> (I had to look up what one of those was ;)
->>
->> Crosspoints aren't implausible as front ends for ADCs as you might
->> want to be able rapidly sample any 2 of say 16 channels coming from
->> for example a max14661.  We'd have to figure out how to add buffered
->> capture support with sensible restrictions to the iio-mux driver
->> to do that - realistically I think we would just not allow buffered
->> capture with the mux having to switch.  Without hardware support
->> (i.e. an ADC with external mux control) it would be too slow.
->>
->> Always good to bury some idle thoughts deep in the review of a random
->> driver ;) I'll never be able to remember where they were let alone
->> anyone else.
+> v4 -> v5 changes
+> - remove support for fancier dt layouts and go back to the phandle
+>   approach from v2 and before, killing the horrible non-working
+>   refcounting crap from v4 and avoiding a bunch of life-time issues
+>   in v3.
+> - introduce the concept of a mux-chip, that can hold one or more
+>   mux-controllers (inspired by the pwm subsystem).
+> - add dt #mux-control-cells property needed to get to the desired
+>   mux controller if a mux chip provides more than one.
+> - take away the option to build the mux-core as a module.
+> - if the mux controller has an idle state, make sure the mux controller
+>   is set up in the idle state initially (when it should be idle).
+> - do not use a variable length array on the stack in mux_gpio_set to
+>   temporarily store the gpio state, preallocate space instead.
+> - fix resource leak on one failure path in mux_gpio_probe.
+> - driver for Analog Devices ADG792A/G, literally the first mux chip
+>   I found on the Internet with an i2c interface (that was not a
+>   dedicated i2c multiplexer like PCA9547) which I used to verify
+>   that the abstractions in the mux core are up to the task. Untested,
+>   just proof of concept that at least looks pretty and compiles...
+> - various touch-ups.
 > 
-> But that's switches, and this is muxes. Switches are way more flexible,
-> so it's only natural that they are on a completely different level when
-> it comes to trying a generic description of them... Intentionally not
-> going there :-)
-A switch is just a load of muxes (one per output) with the inputs
-wired together. All a matter of definition!
+> v3 -> v4 changes
+> - rebased onto next-20161122 (depends on recent _available iio changes).
+> - added support for having the mux-controller in a child node of a
+>   mux-consumer if it is a sole consumer, to hopefully even further satisfy
+>   the complaint from Rob (and later Lars-Peter) about dt complexity.
+> - the above came at the cost of some rather horrible refcounting code,
+>   please review and suggest how it should be done...
+> - changed to register a device class instead of a bus.
+> - pass in the parent device into mux_control_alloc and require less
+>   work from mux-control drivers.
+> - changed device names from mux:control%d to mux%d
+> - move kernel-doc from mux-core.c to mux.h (and add some bits).
+> - give the gpio driver a chance to update all mux pins at once.
+> - factor out iio ext_info lookup into new helper function. /Lars-Peter
+> - use an unsigned type for the iio ext_info count. /Lars-Peter
+> - unified "brag strings" in the file headers.
 > 
->>> ---
->>>  drivers/misc/Kconfig       |  12 ++++
->>>  drivers/misc/Makefile      |   1 +
->>>  drivers/misc/mux-adg792a.c | 154 +++++++++++++++++++++++++++++++++++++++++++++
->>>  3 files changed, 167 insertions(+)
->>>  create mode 100644 drivers/misc/mux-adg792a.c
->>>
->>> diff --git a/drivers/misc/Kconfig b/drivers/misc/Kconfig
->>> index 2ce675e410c5..45567a444bbf 100644
->>> --- a/drivers/misc/Kconfig
->>> +++ b/drivers/misc/Kconfig
->>> @@ -780,6 +780,18 @@ menuconfig MULTIPLEXER
->>>  
->>>  if MULTIPLEXER
->>>  
->>> +config MUX_ADG792A
->>> +	tristate "Analog Devices ADG792A/ADG792G Multiplexers"
->>> +	depends on I2C
->>> +	help
->>> +	  ADG792A and ADG792G Wide Bandwidth Triple 4:1 Multiplexers
->>> +
->>> +	  The driver supports both operating the three multiplexers in
->>> +	  parellel and operating them independently.
->> parallel
->>> +
->>> +	  To compile the driver as a module, choose M here: the module will
->>> +	  be called mux-adg792a.
->>> +
->>>  config MUX_GPIO
->>>  	tristate "GPIO-controlled Multiplexer"
->>>  	depends on OF && GPIOLIB
->>> diff --git a/drivers/misc/Makefile b/drivers/misc/Makefile
->>> index 0befa2bba762..10ab8d34c9e5 100644
->>> --- a/drivers/misc/Makefile
->>> +++ b/drivers/misc/Makefile
->>> @@ -54,6 +54,7 @@ obj-$(CONFIG_VEXPRESS_SYSCFG)	+= vexpress-syscfg.o
->>>  obj-$(CONFIG_CXL_BASE)		+= cxl/
->>>  obj-$(CONFIG_PANEL)             += panel.o
->>>  obj-$(CONFIG_MULTIPLEXER)      	+= mux-core.o
->>> +obj-$(CONFIG_MUX_ADG792A)	+= mux-adg792a.o
->>>  obj-$(CONFIG_MUX_GPIO)		+= mux-gpio.o
->>>  
->>>  lkdtm-$(CONFIG_LKDTM)		+= lkdtm_core.o
->>> diff --git a/drivers/misc/mux-adg792a.c b/drivers/misc/mux-adg792a.c
->>> new file mode 100644
->>> index 000000000000..7d309a78af65
->>> --- /dev/null
->>> +++ b/drivers/misc/mux-adg792a.c
->>> @@ -0,0 +1,154 @@
->>> +/*
->>> + * Multiplexer driver for Analog Devices ADG792A/G Triple 4:1 mux
->>> + *
->>> + * Copyright (C) 2016 Axentia Technologies AB
->>> + *
->>> + * Author: Peter Rosin <peda@axentia.se>
->>> + *
->>> + * This program is free software; you can redistribute it and/or modify
->>> + * it under the terms of the GNU General Public License version 2 as
->>> + * published by the Free Software Foundation.
->>> + */
->>> +
->>> +#include <linux/err.h>
->>> +#include <linux/i2c.h>
->>> +#include <linux/module.h>
->>> +#include <linux/mux.h>
->>> +
->>> +#define ADG792A_LDSW		BIT(0)
->>> +#define ADG792A_RESET		BIT(1)
->>> +#define ADG792A_DISABLE(mux)	(0x50 | (mux))
->>> +#define ADG792A_DISABLE_ALL	(0x5f)
->>> +#define ADG792A_MUX(mux, state)	(0xc0 | (((mux) + 1) << 2) | (state))
->>> +#define ADG792A_MUX_ALL(state)	(0xc0 | (state))
->>> +
->>> +#define ADG792A_DISABLE_STATE	(4)
->>> +#define ADG792A_KEEP_STATE	(5)
->>> +
->>> +static int adg792a_set(struct mux_control *mux, int state)
->>> +{
->>> +	struct i2c_client *i2c = to_i2c_client(mux->chip->dev.parent);
->>> +	u8 cmd;
->>> +
->>> +	if (mux->chip->controllers == 1) {
->>> +		/* parallel mux controller operation */
->>> +		if (state == ADG792A_DISABLE_STATE)
->>> +			cmd = ADG792A_DISABLE_ALL;
->>> +		else
->>> +			cmd = ADG792A_MUX_ALL(state);
->>> +	} else {
->>> +		unsigned int controller = mux_control_get_index(mux);
->>> +
->>> +		if (state == ADG792A_DISABLE_STATE)
->>> +			cmd = ADG792A_DISABLE(controller);
->>> +		else
->>> +			cmd = ADG792A_MUX(controller, state);
->>> +	}
->>> +
->>> +	return i2c_smbus_write_byte_data(i2c, cmd, ADG792A_LDSW);
->>> +}
->>> +
->>> +static const struct mux_control_ops adg792a_ops = {
->>> +	.set = adg792a_set,
->>> +};
->>> +
->>> +static int adg792a_probe(struct i2c_client *i2c,
->>> +			 const struct i2c_device_id *id)
->>> +{
->>> +	struct device *dev = &i2c->dev;
->>> +	struct mux_chip *mux_chip;
->>> +	bool parallel;
->>> +	int ret;
->>> +	int i;
->>> +
->>> +	parallel = of_property_read_bool(i2c->dev.of_node, "adi,parallel");
->>> +
->>> +	mux_chip = mux_chip_alloc(dev, parallel ? 1 : 3, 0);
->> This makes me wonder if we can have a more generic binding.
->> mux-poles = 3 vs mux-poles = 1?
+> v2 -> v3 changes
+> - have the mux-controller in the parent node of any mux-controller consumer,
+>   to hopefully satisfy complaint from Rob about dt complexity.
+> - improve commit message of the mux subsystem commit, making it more
+>   general, as requested by Jonathan.
+> - remove priv member from struct mux_control and calculate it on the
+>   fly. /Jonathan
+> - make the function comments in mux-core.c kernel doc. /Jonathan
+> - add devm_mux_control_* to Documentation/driver.model/devres.txt. /Jonathan
+> - add common dt bindings for mux-controllers, refer to them from the
+>   mux-gpio bindings. /Rob
+> - clarify how the gpio pins map to the mux state. /Rob
+> - separate CONFIG_ variables for the mux core and the mux gpio driver.
+> - improve Kconfig help texts.
+> - make CONFIG_MUX_GPIO depend on CONFIG_GPIOLIB.
+> - keep track of the number of mux states in the mux core.
+> - since the iio channel number is used as mux state, it was possible
+>   to drop the state member from the mux_child struct.
+> - cleanup dt bindings for i2c-mux-simple, it had some of copy-paste
+>   problems from ots origin (i2c-mux-gpio).
+> - select the mux control subsystem in config for the i2c-mux-simple driver.
+> - add entries to MAINTAINERS and my sign-off, I'm now satisfied and know
+>   nothing in this to be ashamed of.
 > 
-> The adg729 in theory allows to create one double pole mux and one single
-> pole mux (three variations, depending on which mux is single pole).
-> However, I did not put all that much effort into this driver. It is
-> mainly a proof of concept, as mentioned in the cover letter, to "prove"
-> that the proposed mux bindings are valid and that it is right to
-> have separate mux nodes in devicetree. I'm not even sure it should
-> be going upstream as it has seen zero testing. (But hey, it builds, what
-> can be wrong?)
+> v1 -> v2 changes
+> - fixup export of mux_control_put reported by kbuild
+> - drop devicetree iio-ext-info property as noted by Lars-Peter,
+>   and replace the functionality by exposing all ext_info
+>   attributes of the parent channel for each of the muxed
+>   channels. A cache on top of that and each muxed channel
+>   gets its own view of the ext_info of the parent channel.
+> - implement idle-state for muxes
+> - clear out the cache on failure in order to force a mux
+>   update on the following use
+> - cleanup the probe of i2c-mux-simple driver
+> - fix a bug in the i2c-mux-simple driver, where failure in
+>   the selection of the mux caused a deadlock when the mux
+>   was later unconditionally deselected.
 > 
->>> +	if (!mux_chip)
->>> +		return -ENOMEM;
->>> +
->>> +	mux_chip->ops = &adg792a_ops;
->>> +	dev_set_drvdata(dev, mux_chip);
->>> +
->>> +	ret = i2c_smbus_write_byte_data(i2c, ADG792A_DISABLE_ALL,
->>> +					ADG792A_RESET | ADG792A_LDSW);
->>> +	if (ret < 0)
->>> +		goto free_mux_chip;
->>> +
->>> +	for (i = 0; i < mux_chip->controllers; ++i) {
->>> +		struct mux_control *mux = &mux_chip->mux[i];
->>> +		u32 idle_state;
->>> +
->>> +		mux->states = 4;
->>> +
->>> +		ret = of_property_read_u32_index(i2c->dev.of_node,
->>> +						 "adi,idle-state", i,
->>> +						 &idle_state);
->>> +		if (ret >= 0) {
->>> +			if (idle_state > ADG792A_KEEP_STATE) {
->>> +				dev_err(dev, "invalid idle-state %u\n",
->>> +					idle_state);
->>> +				ret = -EINVAL;
->>> +				goto free_mux_chip;
->>> +			}
->>> +			if (idle_state != ADG792A_KEEP_STATE)
->>> +				mux->idle_state = idle_state;
->>> +		}
->>> +	}
->>> +
->>> +	ret = mux_chip_register(mux_chip);
->>> +	if (ret < 0) {
->>> +		dev_err(dev, "failed to register mux-chip\n");
->>> +		goto free_mux_chip;
->>> +	}
->>> +
->>> +	if (parallel)
->>> +		dev_info(dev, "1 triple 4-way mux-controller registered\n");
->> I'd use the relay / switch standard description for this so 
->> 'triple pole, quadruple throw mux registered'.
->>> +	else
->>> +		dev_info(dev, "3 4-way mux-controllers registered\n");
->> '3x single pole, quadruple throw muxes registered'.
+> I have a piece of hardware that is using the same 3 GPIO pins
+> to control four 8-way muxes. Three of them control ADC lines
+> to an ADS1015 chip with an iio driver, and the last one
+> controls the SDA line of an i2c bus. We have some deployed
+> code to handle this, but you do not want to see it or ever
+> hear about it. I'm not sure why I even mention it. Anyway,
+> the situation has nagged me to no end for quite some time.
 > 
-> Ok, fine by me.
+> So, after first getting more intimate with the i2c muxing code
+> and later discovering the drivers/iio/inkern.c file and
+> writing a couple of drivers making use of it, I came up with
+> what I think is an acceptable solution; add a generic mux
+> controller driver (and subsystem) that is shared between all
+> instances, and combine that with an iio mux driver and a new
+> generic i2c mux driver. The new i2c mux I called "simple"
+> since it is only hooking the i2c muxing and the new mux
+> controller (much like the alsa simple card driver does for ASoC).
 > 
->>> +
->>> +	return 0;
->>> +
->>> +free_mux_chip:
->>> +	mux_chip_free(mux_chip);
->>> +	return ret;
->>> +}
->>> +
->>> +static int adg792a_remove(struct i2c_client *i2c)
->>> +{
->>> +	struct mux_chip *mux_chip = dev_get_drvdata(&i2c->dev);
->>> +
->> Definitely looking like it's worth managed versions of mux_chip_register and
->> mux_chip_alloc given this is another case where they would let us get rid
->> of the remove function entirely.
->>> +	mux_chip_unregister(mux_chip);
->>> +	mux_chip_free(mux_chip);
->>> +
->>> +	return 0;
->>> +}
->>> +
->>> +static const struct i2c_device_id adg792a_id[] = {
->>> +	{ .name = "adg792a", },
->>> +	{ .name = "adg792g", },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(i2c, adg792a_id);
->>> +
->>> +static const struct of_device_id adg792a_of_match[] = {
->>> +	{ .compatible = "adi,adg792a", },
->>> +	{ .compatible = "adi,adg792g", },
->>> +	{ }
->>> +};
->>> +MODULE_DEVICE_TABLE(of, adg792a_of_match);
->>> +
->>> +static struct i2c_driver adg792a_driver = {
->>> +	.driver		= {
->>> +		.name		= "adg792a",
->>> +		.of_match_table = of_match_ptr(adg792a_of_match),
->>> +	},
->>> +	.probe		= adg792a_probe,
->>> +	.remove		= adg792a_remove,
->>> +	.id_table	= adg792a_id,
->>> +};
->>> +module_i2c_driver(adg792a_driver);
->>> +
->>> +MODULE_DESCRIPTION("Analog Devices ADG792A/G Triple 4:1 mux driver");
->>> +MODULE_AUTHOR("Peter Rosin <peda@axentia.se");
->>> +MODULE_LICENSE("GPL v2");
->>>
->>
+> One thing that I would like to do, but don't see a solution
+> for, is to move the mux control code that is present in
+> various drivers in drivers/i2c/muxes to this new minimalistic
+> muxing subsystem, thus converting all present i2c muxes (but
+> perhaps not gates and arbitrators) to be i2c-mux-simple muxes.
+> 
+> I'm using an rwsem to lock a mux, but that isn't really a
+> perfect fit. Is there a better locking primitive that I don't
+> know about that fits better? I had a mutex at one point, but
+> that didn't allow any concurrent accesses at all. At least
+> the rwsem allows concurrent access as long as all users
+> agree on the mux state, but I suspect that the rwsem will
+> degrade to the mutex situation pretty quickly if there is
+> any contention.
+> 
+> Also, the "mux" name feels a bit ambitious, there are many muxes
+> in the world, and this tiny bit of code is probably not good
+> enough to be a nice fit for all...
+> 
+> Cheers,
+> Peter
+> 
+> Peter Rosin (9):
+>   dt-bindings: document devicetree bindings for mux-controllers and
+>     mux-gpio
+>   misc: minimal mux subsystem and gpio-based mux controller
+>   iio: inkern: api for manipulating ext_info of iio channels
+>   dt-bindings: iio: iio-mux: document iio-mux bindings
+>   iio: multiplexer: new iio category and iio-mux driver
+>   dt-bindings: i2c: i2c-mux-simple: document i2c-mux-simple bindings
+>   i2c: i2c-mux-simple: new driver
+>   dt-bindings: mux-adg792a: document devicetree bindings for ADG792A/G
+>     mux
+>   misc: mux-adg792a: add mux controller driver for ADG792A/G
+> 
+>  .../devicetree/bindings/i2c/i2c-mux-simple.txt     |  81 ++++
+>  .../bindings/iio/multiplexer/iio-mux.txt           |  40 ++
+>  .../devicetree/bindings/misc/mux-adg792a.txt       |  64 +++
+>  .../devicetree/bindings/misc/mux-controller.txt    | 127 ++++++
+>  .../devicetree/bindings/misc/mux-gpio.txt          |  68 +++
+>  Documentation/driver-model/devres.txt              |   6 +-
+>  MAINTAINERS                                        |  14 +
+>  drivers/i2c/muxes/Kconfig                          |  13 +
+>  drivers/i2c/muxes/Makefile                         |   1 +
+>  drivers/i2c/muxes/i2c-mux-simple.c                 | 179 ++++++++
+>  drivers/iio/Kconfig                                |   1 +
+>  drivers/iio/Makefile                               |   1 +
+>  drivers/iio/inkern.c                               |  60 +++
+>  drivers/iio/multiplexer/Kconfig                    |  18 +
+>  drivers/iio/multiplexer/Makefile                   |   6 +
+>  drivers/iio/multiplexer/iio-mux.c                  | 456 +++++++++++++++++++++
+>  drivers/misc/Kconfig                               |  42 ++
+>  drivers/misc/Makefile                              |   3 +
+>  drivers/misc/mux-adg792a.c                         | 154 +++++++
+>  drivers/misc/mux-core.c                            | 311 ++++++++++++++
+>  drivers/misc/mux-gpio.c                            | 138 +++++++
+>  include/linux/iio/consumer.h                       |  37 ++
+>  include/linux/mux.h                                | 197 +++++++++
+>  23 files changed, 2016 insertions(+), 1 deletion(-)
+>  create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
+>  create mode 100644 Documentation/devicetree/bindings/iio/multiplexer/iio-mux.txt
+>  create mode 100644 Documentation/devicetree/bindings/misc/mux-adg792a.txt
+>  create mode 100644 Documentation/devicetree/bindings/misc/mux-controller.txt
+>  create mode 100644 Documentation/devicetree/bindings/misc/mux-gpio.txt
+>  create mode 100644 drivers/i2c/muxes/i2c-mux-simple.c
+>  create mode 100644 drivers/iio/multiplexer/Kconfig
+>  create mode 100644 drivers/iio/multiplexer/Makefile
+>  create mode 100644 drivers/iio/multiplexer/iio-mux.c
+>  create mode 100644 drivers/misc/mux-adg792a.c
+>  create mode 100644 drivers/misc/mux-core.c
+>  create mode 100644 drivers/misc/mux-gpio.c
+>  create mode 100644 include/linux/mux.h
 > 
 
