@@ -1,191 +1,190 @@
-Return-Path: <SRS0=67vE=YR=axentia.se=peda@kernel.org>
-Subject: Re: [PATCH v6 8/9] dt-bindings: mux-adg792a: document devicetree
- bindings for ADG792A/G mux
-To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
- Jonathan Cameron <jic23@kernel.org>, linux-kernel@vger.kernel.org
-References: <1480493823-21462-1-git-send-email-peda@axentia.se>
- <1480493823-21462-9-git-send-email-peda@axentia.se>
- <d4c41153-aebf-be05-a323-1298e8c4ee65@kernel.org>
- <3fa5b6f0-76c1-0ca6-978e-9407a44a2e7e@axentia.se>
- <86bfcc29-df24-d877-915f-d62fc3987c05@kernel.org>
- <cdb3b543-979d-69cc-fb7d-a1d968a75056@axentia.se>
- <90A8A4B3-670B-4409-B7AB-47BF4B2ABDDA@jic23.retrosnub.co.uk>
-Cc: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jonathan Corbet
- <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>,
- Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-i2c@vger.kernel.org,
- devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
- linux-doc@vger.kernel.org
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <82707c88-ffa5-52fd-5b05-bbfa8f876807@axentia.se>
-Date: Tue, 3 Jan 2017 07:44:46 +0100
+Return-Path: <SRS0=0UGi=YP=redhat.com=hdegoede@kernel.org>
+Subject: Re: [PATCH] iio: adc: axp288: Drop bogus AXP288_ADC_TS_PIN_CTRL
+ register modifications
+To: Jacob Pan <jacob.jun.pan@linux.intel.com>,
+        Jonathan Cameron <jic23@kernel.org>
+References: <20161214135525.16477-1-hdegoede@redhat.com>
+ <1f31b2e7-90fa-0fb8-5f6e-a8ee2ddf69f7@kernel.org>
+ <20161230101501.06958c0d@jacob-builder>
+Cc: Chen-Yu Tsai <wens@csie.org>, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "russianneuromancer @ ya . ru" <russianneuromancer@ya.ru>,
+        linux-iio@vger.kernel.org, linux-i2c@vger.kernel.org
+From: Hans de Goede <hdegoede@redhat.com>
+Message-ID: <054b52de-40fd-a879-7b8e-2d25fed18840@redhat.com>
+Date: Sun, 1 Jan 2017 12:19:40 +0100
 MIME-Version: 1.0
-In-Reply-To: <90A8A4B3-670B-4409-B7AB-47BF4B2ABDDA@jic23.retrosnub.co.uk>
-Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20161230101501.06958c0d@jacob-builder>
+Content-Type: text/plain; charset=windows-1252; format=flowed
 List-ID: <linux-iio@vger.kernel.org>
 
-On 2017-01-02 22:13, Jonathan Cameron wrote:
-> 
-> 
-> On 2 January 2017 20:47:58 GMT+00:00, Peter Rosin <peda@axentia.se> wrote:
->> On 2017-01-02 19:05, Jonathan Cameron wrote:
->>> On 02/01/17 16:01, Peter Rosin wrote:
->>>> On 2017-01-01 12:00, Jonathan Cameron wrote:
->>>>> On 30/11/16 08:17, Peter Rosin wrote:
->>>>>> Analog Devices ADG792A/G is a triple 4:1 mux.
->>>>>>
->>>>>> Signed-off-by: Peter Rosin <peda@axentia.se>
->>>>> Few comments inline.  Worth adding anything about the gpio (output pins) to
->>>>> the binding at this stage as well?  Would certainly be nice to support
->>>>> them.
->>>>
->>>> I'll add optional properties "gpio-controller;" and "#gpio-cells = <2>;"
->>>> with the usual interpretation in v7 (but no implementation...) Is that
->>>> enough?
->>>>
->>>>> Jonathan
->>>>>> ---
->>>>>>  .../devicetree/bindings/misc/mux-adg792a.txt       | 64 ++++++++++++++++++++++
->>>>>>  1 file changed, 64 insertions(+)
->>>>>>  create mode 100644 Documentation/devicetree/bindings/misc/mux-adg792a.txt
->>>>>>
->>>>>> diff --git a/Documentation/devicetree/bindings/misc/mux-adg792a.txt b/Documentation/devicetree/bindings/misc/mux-adg792a.txt
->>>>>> new file mode 100644
->>>>>> index 000000000000..4677f9ab1c55
->>>>>> --- /dev/null
->>>>>> +++ b/Documentation/devicetree/bindings/misc/mux-adg792a.txt
->>>>>> @@ -0,0 +1,64 @@
->>>>>> +Bindings for Analog Devices ADG792A/G Triple 4:1 Multiplexers
->>>>>> +
->>>>>> +Required properties:
->>>>>> +- compatible : "adi,adg792a" or "adi,adg792g"
->>>>>> +- #mux-control-cells : <0> if parallel, or <1> if not.
->>>>>> +* Standard mux-controller bindings as decribed in mux-controller.txt
->>>>>> +
->>>>>> +Optional properties:
->>>>>> +- adi,parallel : if present, the three muxes are bound together with a single
->>>>>> +  mux controller, controlling all three muxes in parallel.
->>>>>> +- adi,idle-state : if present, array of states the three mux controllers will
->>>>>> +  have when idle (or, if parallel, a single idle-state).
->>>>> Hmm. These are actually a policy decision.  As only one policy will make
->>>>> sense for a given set of hardware probably fine to have it in here I guess.
->>>>> Might be worth adding a note to say this though.
->>>>
->>>> I don't really know what you want me to add, do you have a suggestion for the
->>>> wording?
->>>>
->>>>>> +
->>>>>> +Mux controller states 0 through 3 correspond to signals A through D in the
->>>>>> +datasheet. Mux controller states 4 and 5 are only available as possible idle
->>>>>> +states. State 4 represents that nothing is connected, and state 5 represents
->>>>>> +that the mux controller keeps the mux in its previously selected state during
->>>>>> +the idle period. State 5 is the default idle state.
->>>>> I'm never a great fan of magic numbers.  Can we represent this more cleanly by
->>>>> breaking it into multiple properties?
->>>>> Optional:
->>>>> adi,idle-switch-to-channel : switch to this channel when idle.
->>>>> adi,idle-high-impedance : <boolean> the nothing connected state?
->>>>>
->>>>> If neither present leaves it in previous state?
->>>>
->>>> It's not that easy. adi,idle-state is an array when there are three single
->>>> pole quadruple throw muxes, so there really needs to be a number for each
->>>> desired idle-behavior. Unless you have a better idea for how to describe
->>>> that?
->>> The above with arrays for each of the two parameters?
->>> Though then you need a priority documented - I'd say high impedance overrides
->>> the channel selection if both are present.
+Hi,
+
+On 30-12-16 19:15, Jacob Pan wrote:
+> On Fri, 30 Dec 2016 16:46:03 +0000
+> Jonathan Cameron <jic23@kernel.org> wrote:
+>
+>> On 14/12/16 13:55, Hans de Goede wrote:
+>>> For some reason the axp288_adc driver was modifying the
+>>> AXP288_ADC_TS_PIN_CTRL register, changing bits 0-1 depending on
+>>> whether the GP_ADC channel or another channel was written.
+>>>
+>>> These bits control when a bias current is send to the TS_PIN, the
+>>> GP_ADC has its own pin and a separate bit in another register to
+>>> control the bias current.
+>>>
+> It has been a while. Just looked at the datasheet, reg 84h is for ADC
+> and TS pin control. IIRC, we had to set the TS bits in order to make
+> ADC read to work.
+
+The bits the code I'm removing are manipulating are bits 0 & 1 of
+reg 84h which are:
+
+1-0 Current source from TS pin on/off enable bit [1:0]
+
+00: off
+01: on when charging battery, off when not charging
+10: on in ADC phase and off when out of the ADC phase, for power saving
+11: always on
+
+And they are being toggled between 10 and 11, so in both
+cases the current source is enabled when reading the adc
+value. Specifically the code this patch removes are setting
+these bits to 10 before reading and back to 11 after reading,
+which makes no sense.
+
+And to make things even funkier, this manipulation is only
+done when reading the GP_ADC, which is the ADC function of
+GPIO0, whereas these bits control the bias current source
+for the TS pin, which is a completely different pin.
+
+So all in all this entire bit of code seems to be big NOP.
+
+> What is the other register?
+
+The register to actually enable / disable the bias current
+source for GPIO0 / the GPADC pin is register 85h, where setting
+bit 2 enables the GPIO0 output current.
+
+Regards,
+
+Hans
+
+
+
+>>> Not only does changing when to enable the TS_PIN bias current
+>>> (always or only when sampling) when reading the GP_ADC make no sense
+>>> at all, the code is modifying these bits is writing the entire
+>>> register, assuming that all the other bits have their default value.
+>>>
+> Agreed, it would be better to do read-modify-write and not to
+> touch the other bits.
+>>> So if the firmware has configured a different bias-current for
+>>> either pin, then that change gets clobbered by the write, likewise
+>>> if the firmware has set bit 2 to indicate that the battery has no
+>>> thermal sensor, this will get clobbered by the write.
+>>>
+>>> This commit fixes all this, by simply removing all writes to the
+>>> AXP288_ADC_TS_PIN_CTRL register, they are not needed to read the
+>>> GP_ADC pin, and can actually be harmful.
+>>>
+>>> Signed-off-by: Hans de Goede <hdegoede@redhat.com>
+>> I guess you probably have more up to date contact details than I do,
+>> but seems worth trying to cc Jacob Pan on this to see if we can find
+>> out what the original reasoning behind this was.  Seems a very odd
+>> thing to do with no purpose!
 >>
->> How would you specify that the first mux should idle in "state 5", the second
->> should idle in "state 4" and the third in "state 0"? (original state numbering)
+>> If Jacob isn't contactable we'll fall back to guessing it was just
+>> an oddity of driver evolution.
 >>
->> You'd still need a magic number for the default idle state (state 5) so that
->> you can skip entries in the arrays. Or am I missing something?
-> Ah I had missed state 5. Hmm would need explicit control for that as well. Not nice...
-> 
-> Perhaps 3 state control (magic number but with channel nums separate)
-> 
-> Idle-state array of <switchtostate, currentstate, highimpedance>
-> 
-> Idle-state array of states to switch to if so set?
-> 
-> Slight nicer than a mess of the two things perhaps?
-
-Perhaps making adi,idle-state an array of tuples <mux-number state> and
-add adi,idle-high-impedance as an array of mux-numbers, so that my example
-above would come out as:
-
-	adi,idle-high-impedance = <1>; /* mux 1 idles with high imp */
-	adi,idle-state = <2 0>;  /* mux 2 idles in state 0 (signal A) */
-
-mux 0 is not mentioned and idles in its previously selected state.
-
-
-If you want mux 0 to idle with high impedance:
-
-	adi,idle-high-impedance = <0 1>;
-	adi,idle-state = <2 0>;
-
-If you want mux 0 to idle with signal C:
-
-	adi,idle-high-impedance = <1>;
-	adi,idle-state = <0 3>, <2 0>;
-
->>>>>> +
->>>>>> +Example:
->>>>>> +
->>>>>> +	/* three independent mux controllers (of which one is used) */
->>>>>> +	&i2c0 {
->>>>>> +		mux: adg792a@50 {
->>>>>> +			compatible = "adi,adg792a";
->>>>>> +			reg = <0x50>;
->>>>>> +			#mux-control-cells = <1>;
->>>>>> +		};
->>>>>> +	};
->>>>>> +
->>>>>> +	adc-mux {
->>>>>> +		compatible = "iio-mux";
->>>>>> +		io-channels = <&adc 0>;
->>>>>> +		io-channel-names = "parent";
->>>>>> +
->>>>>> +		mux-controls = <&mux 1>;
->>>>>> +
->>>>>> +		channels = "sync-1", "", "out";
->>>>>> +	};
->>>>>> +
->>>>>> +
->>>>>> +	/*
->>>>>> +	 * Three parallel muxes with one mux controller, useful e.g. if
->>>>>> +	 * the adc is differential, thus needing two signals to be muxed
->>>>>> +	 * simultaneously for correct operation.
->>>>>> +	 */
->>>>>> +	&i2c0 {
->>>>>> +		pmux: adg792a@50 {
->>>>>> +			compatible = "adi,adg792a";
->>>>>> +			reg = <0x50>;
->>>>>> +			#mux-control-cells = <0>;
->>>>>> +			adi,parallel;
->>>>>> +		};
->>>>>> +	};
->>>>>> +
->>>>>> +	diff-adc-mux {
->>>>>> +		compatible = "iio-mux";
->>>>>> +		io-channels = <&adc 0>;
->>>>>> +		io-channel-names = "parent";
->>>>>> +
->>>>>> +		mux-controls = <&pmux>;
->>>>>> +
->>>>>> +		channels = "sync-1", "", "out";
->>>>>> +	};
->>>>>>
->>>>>
->>>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/adc/axp288_adc.c | 32 +-------------------------------
+>>>  1 file changed, 1 insertion(+), 31 deletions(-)
+>>>
+>>> diff --git a/drivers/iio/adc/axp288_adc.c
+>>> b/drivers/iio/adc/axp288_adc.c index 7fd2494..64799ad 100644
+>>> --- a/drivers/iio/adc/axp288_adc.c
+>>> +++ b/drivers/iio/adc/axp288_adc.c
+>>> @@ -28,8 +28,6 @@
+>>>  #include <linux/iio/driver.h>
+>>>
+>>>  #define AXP288_ADC_EN_MASK		0xF1
+>>> -#define AXP288_ADC_TS_PIN_GPADC		0xF2
+>>> -#define AXP288_ADC_TS_PIN_ON		0xF3
+>>>
+>>>  enum axp288_adc_id {
+>>>  	AXP288_ADC_TS,
+>>> @@ -123,16 +121,6 @@ static int axp288_adc_read_channel(int *val,
+>>> unsigned long address, return IIO_VAL_INT;
+>>>  }
+>>>
+>>> -static int axp288_adc_set_ts(struct regmap *regmap, unsigned int
+>>> mode,
+>>> -				unsigned long address)
+>>> -{
+>>> -	/* channels other than GPADC do not need to switch TS pin
+>>> */
+>>> -	if (address != AXP288_GP_ADC_H)
+>>> -		return 0;
+>>> -
+>>> -	return regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL, mode);
+>>> -}
+>>> -
+>>>  static int axp288_adc_read_raw(struct iio_dev *indio_dev,
+>>>  			struct iio_chan_spec const *chan,
+>>>  			int *val, int *val2, long mask)
+>>> @@ -143,16 +131,7 @@ static int axp288_adc_read_raw(struct iio_dev
+>>> *indio_dev, mutex_lock(&indio_dev->mlock);
+>>>  	switch (mask) {
+>>>  	case IIO_CHAN_INFO_RAW:
+>>> -		if (axp288_adc_set_ts(info->regmap,
+>>> AXP288_ADC_TS_PIN_GPADC,
+>>> -					chan->address)) {
+>>> -			dev_err(&indio_dev->dev, "GPADC mode\n");
+>>> -			ret = -EINVAL;
+>>> -			break;
+>>> -		}
+>>>  		ret = axp288_adc_read_channel(val, chan->address,
+>>> info->regmap);
+>>> -		if (axp288_adc_set_ts(info->regmap,
+>>> AXP288_ADC_TS_PIN_ON,
+>>> -						chan->address))
+>>> -			dev_err(&indio_dev->dev, "TS pin
+>>> restore\n"); break;
+>>>  	default:
+>>>  		ret = -EINVAL;
+>>> @@ -162,15 +141,6 @@ static int axp288_adc_read_raw(struct iio_dev
+>>> *indio_dev, return ret;
+>>>  }
+>>>
+>>> -static int axp288_adc_set_state(struct regmap *regmap)
+>>> -{
+>>> -	/* ADC should be always enabled for internal FG to
+>>> function */
+>>> -	if (regmap_write(regmap, AXP288_ADC_TS_PIN_CTRL,
+>>> AXP288_ADC_TS_PIN_ON))
+>>> -		return -EIO;
+>>> -
+>>> -	return regmap_write(regmap, AXP20X_ADC_EN1,
+>>> AXP288_ADC_EN_MASK); -}
+>>> -
+>>>  static const struct iio_info axp288_adc_iio_info = {
+>>>  	.read_raw = &axp288_adc_read_raw,
+>>>  	.driver_module = THIS_MODULE,
+>>> @@ -199,7 +169,7 @@ static int axp288_adc_probe(struct
+>>> platform_device *pdev)
+>>>  	 * Set ADC to enabled state at all time, including system
+>>> suspend.
+>>>  	 * otherwise internal fuel gauge functionality may be
+>>> affected. */
+>>> -	ret = axp288_adc_set_state(axp20x->regmap);
+>>> +	ret = regmap_write(info->regmap, AXP20X_ADC_EN1,
+>>> AXP288_ADC_EN_MASK); if (ret) {
+>>>  		dev_err(&pdev->dev, "unable to enable ADC
+>>> device\n"); return ret;
 >>>
 >>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+>
+> [Jacob Pan]
+>
