@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:42798 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:42797 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933448AbdABQiE (ORCPT
+        with ESMTP id S933023AbdABQiE (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jan 2017 11:38:04 -0500
 From: Quentin Schulz <quentin.schulz@free-electrons.com>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
@@ -14,39 +14,61 @@ Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
         linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: [PATCH 13/22] ARM: sun5i: chip: enable ACIN power supply subnode
-Date: Mon,  2 Jan 2017 17:37:13 +0100
-Message-Id: <20170102163723.7939-14-quentin.schulz@free-electrons.com>
+Subject: [PATCH 14/22] dt-bindings: power: supply: add AXP20X/AXP22X battery DT binding
+Date: Mon,  2 Jan 2017 17:37:14 +0100
+Message-Id: <20170102163723.7939-15-quentin.schulz@free-electrons.com>
 In-Reply-To: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
 References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The NextThing Co. CHIP has an AXP209 PMIC and can be power-supplied by
-ACIN via the CHG-IN pin.
+The X-Powers AXP20X and AXP22X PMICs can have a battery as power supply.
 
-This enables the ACIN power supply subnode in the DT.
+This patch adds the DT binding documentation for the battery power
+supply which gets various data from the PMIC, such as the battery status
+(charging, discharging, full, dead), current max limit, current current,
+battery capacity (in percentage), voltage max and min limits, current
+voltage and battery capacity (in Ah).
 
 Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 ---
- arch/arm/boot/dts/sun5i-r8-chip.dts | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../bindings/power/supply/axp20x_battery.txt       | 27 ++++++++++++++++++++++
+ 1 file changed, 27 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
 
-diff --git a/arch/arm/boot/dts/sun5i-r8-chip.dts b/arch/arm/boot/dts/sun5i-r8-chip.dts
-index c6da5ad..6011757 100644
---- a/arch/arm/boot/dts/sun5i-r8-chip.dts
-+++ b/arch/arm/boot/dts/sun5i-r8-chip.dts
-@@ -128,6 +128,10 @@
- 
- #include "axp209.dtsi"
- 
-+&ac_power_supply {
-+	status = "okay";
-+};
+diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+new file mode 100644
+index 0000000..5489d0d
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+@@ -0,0 +1,27 @@
++AXP20x and AXP22x battery power supply
 +
- &i2c1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&i2c1_pins_a>;
++Required Properties:
++ - compatible, one of:
++			"x-powers,axp209-battery-power-supply"
++			"x-powers,axp221-battery-power-supply"
++ - io-channels: phandles to battery voltage, charge and discharge
++ currents ADC channels
++ - io-channel-names = "batt_v", "batt_chrg_i", "batt_dischrg_i";
++
++This node is a subnode of the axp20x/axp22x PMIC.
++
++The AXP20X and AXP22X can read the battery voltage, charge and discharge
++currents of the battery by reading ADC channels from the AXP20X/AXP22X
++ADC.
++
++Example:
++
++&axp209 {
++	battery_power_supply: battery_power_supply {
++		compatible = "x-powers,axp209-battery-power-supply";
++		io-channels = <&axp209_adc 7>, <&axp209_adc 8>,
++			<&axp209_adc 9>;
++		io-channel-names = "batt_v", "batt_chrg_i",
++			"batt_dischrg_i";
++	}
++};
 -- 
 2.9.3
 
