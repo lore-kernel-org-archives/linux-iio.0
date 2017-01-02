@@ -1,69 +1,41 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43039 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S938795AbdAHJsn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 04:48:43 -0500
-Subject: Re: [PATCH] iio: adc: imx25-gcq: Fix module autoload
-To: Javier Martinez Canillas <javier@osg.samsung.com>,
-        linux-kernel@vger.kernel.org
-References: <1483361146-913-1-git-send-email-javier@osg.samsung.com>
-Cc: Arnd Bergmann <arnd@arndb.de>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Markus Pargmann <mpa@pengutronix.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Lee Jones <lee.jones@linaro.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Denis Carikli <denis@eukrea.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7184b366-f628-0c21-c459-c53e32fd4946@kernel.org>
-Date: Sat, 7 Jan 2017 22:15:34 +0000
+Received: from mx2.suse.de ([195.135.220.15]:44253 "EHLO mx2.suse.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S932824AbdABNEK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 2 Jan 2017 08:04:10 -0500
+Date: Mon, 2 Jan 2017 14:04:07 +0100 (CET)
+From: Jiri Kosina <jikos@kernel.org>
+To: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+cc: jic23@kernel.org, linux-input@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Subject: Re: [PATCH] HID: sensor-hub: Move the memset to
+ sensor_hub_get_feature()
+In-Reply-To: <1482857879-161873-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+Message-ID: <alpine.LSU.2.20.1701021403570.28985@cbobk.fhfr.pm>
+References: <1482857879-161873-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 MIME-Version: 1.0
-In-Reply-To: <1483361146-913-1-git-send-email-javier@osg.samsung.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 02/01/17 12:45, Javier Martinez Canillas wrote:
-> If the driver is built as a module, autoload won't work because the module
-> alias information is not filled. So user-space can't match the registered
-> device with the corresponding module.
-> 
-> Export the module alias information using the MODULE_DEVICE_TABLE() macro.
-> 
-> Before this patch:
-> 
-> $ modinfo drivers/iio/adc/fsl-imx25-gcq.ko | grep alias
-> $
-> 
-> After this patch:
-> 
-> $ modinfo drivers/iio/adc/fsl-imx25-gcq.ko | grep alias
-> alias:          of:N*T*Cfsl,imx25-gcqC*
-> alias:          of:N*T*Cfsl,imx25-gcq
-> 
-> Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
-Applied to the togreg branch of iio.git. Will push out as testing for
-the autobuilders to play with it.
+On Tue, 27 Dec 2016, Srinivas Pandruvada wrote:
 
-Thanks,
+> While applying patch d443a0aa3a29: "HID: hid-sensor-hub: clear memory to
+> avoid random data", there was some issues in applying correct version of
+> the patch. This resulted in the breakage of sensor functions as all
+> request like power-up will be reset by the memset() in the function
+> sensor_hub_set_feature().
+> The reset of caller buffer should be in the function
+> sensor_hub_get_feature(), not in the sensor_hub_set_feature().
+> 
+> Fixes: d443a0aa3a29 ("HID: hid-sensor-hub: clear memory to avoid random data")
+> Cc: Stable <stable@vger.kernel.org> # 4.9+
+> Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
 
-Jonathan
-> ---
-> 
->  drivers/iio/adc/fsl-imx25-gcq.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/adc/fsl-imx25-gcq.c b/drivers/iio/adc/fsl-imx25-gcq.c
-> index 72b32c1ab257..ea264fa9e567 100644
-> --- a/drivers/iio/adc/fsl-imx25-gcq.c
-> +++ b/drivers/iio/adc/fsl-imx25-gcq.c
-> @@ -401,6 +401,7 @@ static const struct of_device_id mx25_gcq_ids[] = {
->  	{ .compatible = "fsl,imx25-gcq", },
->  	{ /* Sentinel */ }
->  };
-> +MODULE_DEVICE_TABLE(of, mx25_gcq_ids);
->  
->  static struct platform_driver mx25_gcq_driver = {
->  	.driver		= {
-> 
+Applied to for-4.10/upstream-fixes, and I'll be pushing that out to Linus 
+shortly. Thanks for fixing my mistake.
+
+-- 
+Jiri Kosina
+SUSE Labs
 
