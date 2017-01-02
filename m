@@ -1,138 +1,71 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:41978 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750827AbdAQDrO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 16 Jan 2017 22:47:14 -0500
-Date: Tue, 17 Jan 2017 04:46:01 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+Received: from mail.free-electrons.com ([62.4.15.54]:42847 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933491AbdABQiG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jan 2017 11:38:06 -0500
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, lee.jones@linaro.org,
+        wens@csie.org, sre@kernel.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: Re: [PATCH 17/22] power: supply: add battery driver for AXP20X and
- AXP22X PMICs
-Message-ID: <20170117034601.wevqblqiwrerpmal@earth>
+Subject: [PATCH 18/22] mfd: axp20x: add MFD cells for AXP20X and AXP22X battery driver
+Date: Mon,  2 Jan 2017 17:37:18 +0100
+Message-Id: <20170102163723.7939-19-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
 References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
- <20170102163723.7939-18-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="7mjxj5dt3uccvr4c"
-In-Reply-To: <20170102163723.7939-18-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The X-Powers AXP20X and AXP22X PMICs can have a battery as power supply.
 
---7mjxj5dt3uccvr4c
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch adds the AXP20X/AXP22X battery driver to the MFD cells of the
+AXP209, AXP221 and AXP223 MFD.
 
-Hi Quentin,
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+---
+ drivers/mfd/axp20x.c | 9 +++++++++
+ 1 file changed, 9 insertions(+)
 
-Just a couple of small things in this patch.
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index 7f0f05f..8730fc2 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -587,6 +587,9 @@ static struct mfd_cell axp20x_cells[] = {
+ 		.name		= "axp20x-adc",
+ 		.of_compatible	= "x-powers,axp209-adc",
+ 	}, {
++		.name		= "axp20x-battery-power-supply",
++		.of_compatible	= "x-powers,axp209-battery-power-supply",
++	}, {
+ 		.name		= "axp20x-ac-power-supply",
+ 		.of_compatible	= "x-powers,axp202-ac-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp20x_ac_power_supply_resources),
+@@ -615,6 +618,9 @@ static struct mfd_cell axp221_cells[] = {
+ 		.num_resources	= ARRAY_SIZE(axp20x_ac_power_supply_resources),
+ 		.resources	= axp20x_ac_power_supply_resources,
+ 	}, {
++		.name		= "axp20x-battery-power-supply",
++		.of_compatible	= "x-powers,axp221-battery-power-supply",
++	}, {
+ 		.name		= "axp20x-usb-power-supply",
+ 		.of_compatible	= "x-powers,axp221-usb-power-supply",
+ 		.num_resources	= ARRAY_SIZE(axp22x_usb_power_supply_resources),
+@@ -631,6 +637,9 @@ static struct mfd_cell axp223_cells[] = {
+ 		.name		= "axp20x-adc",
+ 		.of_compatible	= "x-powers,axp221-adc"
+ 	}, {
++		.name		= "axp20x-battery-power-supply",
++		.of_compatible	= "x-powers,axp221-battery-power-supply",
++	}, {
+ 		.name			= "axp20x-regulator",
+ 	}, {
+ 		.name		= "axp20x-ac-power-supply",
+-- 
+2.9.3
 
-On Mon, Jan 02, 2017 at 05:37:17PM +0100, Quentin Schulz wrote:
-> [...]
-> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
-> +		ret =3D regmap_read(axp20x_batt->regmap, AXP20X_PWR_INPUT_STATUS,
-> +				  &reg);
-> +		if (ret)
-> +			return ret;
-> +
-> +		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
-> +			chan =3D axp20x_batt->batt_chrg_i;
-> +		else
-> +			chan =3D axp20x_batt->batt_dischrg_i;
-> +
-> +		ret =3D iio_read_channel_processed(chan, &val->intval);
-> +		if (ret)
-> +			return ret;
-> +
-> +		/*
-> +		 * IIO framework gives mV but Power Supply framework gives =B5V.
-> +		 */
-
-Nit: Volt -> Ampere
-
-> +		val->intval *=3D 1000;
-> +		break;
->
-> [...]
->
-> +static int axp20x_power_probe(struct platform_device *pdev)
-> +{
-> +	struct axp20x_dev *axp20x =3D dev_get_drvdata(pdev->dev.parent);
-> +	struct axp20x_batt_ps *axp20x_batt;
-> +	struct power_supply_config psy_cfg =3D {};
-> +
-> +	axp20x_batt =3D devm_kzalloc(&pdev->dev, sizeof(*axp20x_batt),
-> +				   GFP_KERNEL);
-> +	if (!axp20x_batt)
-> +		return -ENOMEM;
-> +
-> +	axp20x_batt->batt_v =3D devm_iio_channel_get(&pdev->dev, "batt_v");
-> +	if (IS_ERR(axp20x_batt->batt_v)) {
-> +		if (PTR_ERR(axp20x_batt->batt_v) =3D=3D -ENODEV)
-> +			return -EPROBE_DEFER;
-> +		return PTR_ERR(axp20x_batt->batt_v);
-> +	}
-> +
-> +	axp20x_batt->batt_chrg_i =3D devm_iio_channel_get(&pdev->dev,
-> +							"batt_chrg_i");
-> +	if (IS_ERR(axp20x_batt->batt_chrg_i)) {
-> +		if (PTR_ERR(axp20x_batt->batt_chrg_i) =3D=3D -ENODEV)
-> +			return -EPROBE_DEFER;
-> +		return PTR_ERR(axp20x_batt->batt_chrg_i);
-> +	}
-> +
-> +	axp20x_batt->batt_dischrg_i =3D devm_iio_channel_get(&pdev->dev,
-> +							   "batt_dischrg_i");
-> +	if (IS_ERR(axp20x_batt->batt_dischrg_i)) {
-> +		if (PTR_ERR(axp20x_batt->batt_dischrg_i) =3D=3D -ENODEV)
-> +			return -EPROBE_DEFER;
-> +		return PTR_ERR(axp20x_batt->batt_dischrg_i);
-> +	}
-> +
-> +	axp20x_batt->regmap =3D axp20x->regmap;
-> +	platform_set_drvdata(pdev, axp20x_batt);
-
-Please use drv_get_regmap(pdev->dev.parent, NULL) instead (and drop
-axp20x).
-
-> +	psy_cfg.drv_data =3D axp20x_batt;
-> +	psy_cfg.of_node =3D pdev->dev.of_node;
-> +
-> +	axp20x_batt->axp_id =3D (int)of_device_get_match_data(&pdev->dev);
-
-use (uintptr_t) to avoid compiler warnings on systems with sizeof
-int !=3D sizeof ptr.
-
--- Sebastian
-
---7mjxj5dt3uccvr4c
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlh9k3YACgkQ2O7X88g7
-+ppitg//TS1PXC2tmqPc/8SQ5gvQCTIrQHnkxw3xyXjKK+kFntQr5qSnczVQAJLS
-YFEcj74yd4T1sI/mYKKGPwJ4/kf5hZlUzEolvE7afAiCjcO+HYCXXE7Im5g055R5
-6QpJBCnEsBZSXxeXPkNgfFGb8enrXtvrr3S1eqnxUXTHBpXxy5zrKx3zZfI2lnLd
-TxsrFlGRMsC9kOn/rzDq3uQiKAySQEMJskO1fai7VNEztDC0n4Fy1MaeCbAmSLbY
-ovBHDWtyODkwAwWPg465qsfEwmB6CXS1ookCTnqRUQLakIQt6juMQ5pgGXkQJbbj
-b3ZpGBKRZ7hBnT5lH2iKXc4P6qag8E5Pq/1YyBpRNBtX1TgFPq4ab5ZEpN3JxuTO
-M08wOqVO7Z/TKUnWB4Qp5qVSU+xMt7WBDsO3mErxTSvsce0RnlZylYi8FYpoqH4V
-0mtRgXn1QLy/rPeVi47OmWCimFuwxxg5dF2POjV9Ogxo2fxpxtLVRPbuM08aYUjk
-GUvPvBfHRhT0koqQ3LuGSZREMENoAdJ47Nieq9Z8AJB3S5HZf0UilSdWc3w7agbP
-y15G4t977idLB0c1EIemc9Exj5dznbPV5znlxYHM5sQ/hzmveBihUQS2Vw/Nd7y7
-DAdAirVXlOy/WpLMCGhqmRiBotfVuJSU9SLUSJgE2oW0x/ukReo=
-=2MEG
------END PGP SIGNATURE-----
-
---7mjxj5dt3uccvr4c--
