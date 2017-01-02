@@ -1,51 +1,64 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:42842 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933495AbdABQiI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jan 2017 11:38:08 -0500
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, sre@kernel.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
-        bonbons@linux-vserver.org
-Subject: [PATCH 22/22] ARM: sun5i: chip: enable battery power supply subnode
-Date: Mon,  2 Jan 2017 17:37:22 +0100
-Message-Id: <20170102163723.7939-23-quentin.schulz@free-electrons.com>
-In-Reply-To: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
-References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=aWTH=YQ=metafoo.de=lars@kernel.org>
+Subject: Re: [PATCH v3 2/2] staging: iio: ad7606: move out of staging
+To: Jonathan Cameron <jic23@kernel.org>,
+ Eva Rachel Retuya <eraretuya@gmail.com>, linux-iio@vger.kernel.org,
+ devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
+References: <cover.1481424136.git.eraretuya@gmail.com>
+ <406fd6f60db88f051b36bf6f28cfe8fc8b1acb32.1481424136.git.eraretuya@gmail.com>
+ <9b5ec6ff-ed6b-f8a5-ea7f-967c00571268@kernel.org>
+Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
+ gregkh@linuxfoundation.org, daniel.baluta@gmail.com, amsfield22@gmail.com
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <7fa7d6b2-541a-ccf8-83e4-10f1fb381fee@metafoo.de>
+Date: Mon, 2 Jan 2017 19:33:07 +0100
+MIME-Version: 1.0
+In-Reply-To: <9b5ec6ff-ed6b-f8a5-ea7f-967c00571268@kernel.org>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-The NextThing Co. CHIP has an AXP209 PMIC with battery connector.
+On 12/30/2016 09:16 PM, Jonathan Cameron wrote:
+> On 11/12/16 02:47, Eva Rachel Retuya wrote:
+>> Move the ad7606 driver from staging/iio/adc to iio/adc. Also, update the
+>> corresponding Makefile and Kconfig associated with the change.
+>>
+>> Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+> Personally (and this is much debated ;) I prefer for the odd case
+> of staging graduations, that git isn't run with the -M parameter so we
+> have the whole driver to comment on.
+> 
+> Anyhow, just casting my eyes over the code so here are some notes:
+> 1. The whole computing scale available values on the fly seems rather over the
+> top as they can be easily precomputed and stored in a static const array.
+> There are only 2 of them!
+> 
+> 2. There are some single line comments still using multiline syntax (now
+> I'm really nitpicking ;)
+> 
+> 3. A slight oddity has crept in with the cleanup of attributes.  We now
+> prevent the appearance of the _scale_available / oversampling_ratio_available
+> attributes if the gpios are attached, but not _scale or _oversampling.
+> (oops).  If we are going to do this dance, then we should also have an
+> alternative set of iio_chan_spec array to reflect this.
+> 
+> 4. I'd drop the 'More devices added in future' comment. It's now the future
+> and they haven't been yet ;)
+> 
 
-This enables the battery power supply subnode.
+I actually have a patch adding more devices, that just waits for the driver
+to be moved out of staging. But still the comment can be removed it is not
+really meaningful.
 
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
----
- arch/arm/boot/dts/sun5i-r8-chip.dts | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm/boot/dts/sun5i-r8-chip.dts b/arch/arm/boot/dts/sun5i-r8-chip.dts
-index 6011757..d4332b1 100644
---- a/arch/arm/boot/dts/sun5i-r8-chip.dts
-+++ b/arch/arm/boot/dts/sun5i-r8-chip.dts
-@@ -132,6 +132,10 @@
- 	status = "okay";
- };
- 
-+&battery_power_supply {
-+	status = "okay";
-+};
-+
- &i2c1 {
- 	pinctrl-names = "default";
- 	pinctrl-0 = <&i2c1_pins_a>;
--- 
-2.9.3
-
+> 5. We can write oversampling ratio, but queries to the write_get_fmt will
+> return an error for that. Probably want to fix that unless I'm missing something.
+> 
+> 6. There are some ancient references to 'ring' buffers in the comments and
+> function naming.  We switched over from my hand rolled ring buffer to the
+> kfifo buffer we now use ages ago.  Would be nice to clear those out.
+> 
+> None of these are really blockers to it moving out of staging
+> (except the bugs we introduced in the cleanup), but might be nice
+> to do one last series pinning those down then get a final review done to
+> see if we missed anything else.
+> 
+> Been a long time since I looked at this one in any depth and it's certainly
+> heading in the right direction!
