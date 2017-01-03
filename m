@@ -1,72 +1,127 @@
-Return-Path: <SRS0=Wv9Z=YS=intel.com=hongyan.song@kernel.org>
-From: "Song, Hongyan" <hongyan.song@intel.com>
-To: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
-	<pmeerw@pmeerw.net>
-CC: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "jikos@kernel.org"
-	<jikos@kernel.org>, "jic23@kernel.org" <jic23@kernel.org>, "Pandruvada,
- Srinivas" <srinivas.pandruvada@intel.com>
-Subject: RE: [PATCH 1/2] iio: Add support for linear accel
-Date: Wed, 4 Jan 2017 02:28:23 +0000
-Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BDBE64@SHSMSX103.ccr.corp.intel.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga14.intel.com ([192.55.52.115]:50546 "EHLO mga14.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1756490AbdACGvW (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 3 Jan 2017 01:51:22 -0500
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH 2/2] iio: Add linear accel sensor hid support
+Date: Tue,  3 Jan 2017 23:13:50 +0800
+Message-Id: <1483456430-6980-2-git-send-email-hongyan.song@intel.com>
+In-Reply-To: <1483456430-6980-1-git-send-email-hongyan.song@intel.com>
 References: <1483456430-6980-1-git-send-email-hongyan.song@intel.com>
- <alpine.DEB.2.02.1701030821450.18919@pmeerw.net>
- <AE3E3DFA698D6144A7445C92D1D41E2F10BDBD57@SHSMSX103.ccr.corp.intel.com>
- <alpine.DEB.2.02.1701030851430.18919@pmeerw.net>
- <be267c7a-9ec3-d86e-2a32-2faef3e0650f@metafoo.de>
-In-Reply-To: <be267c7a-9ec3-d86e-2a32-2faef3e0650f@metafoo.de>
-Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Lars & Peter,
+Linear acceleration is a soft sensor it differs from a standard
+accel sensor, it provides a three-dimensional vector representing
+acceleration along each device axis, excluding gravity.
+The sensor data is derives from standard accelerometer device
+by filtering out the acceleration which is caused by the force
+of Earth’s gravity.
 
------Original Message-----
-From: Lars-Peter Clausen [mailto:lars@metafoo.de]=20
-Sent: Tuesday, January 3, 2017 5:49 PM
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Song, Hongyan <hongyan.song=
-@intel.com>
-Cc: linux-input@vger.kernel.org; linux-iio@vger.kernel.org; jikos@kernel.or=
-g; jic23@kernel.org; Pandruvada, Srinivas <srinivas.pandruvada@intel.com>
-Subject: Re: [PATCH 1/2] iio: Add support for linear accel
+The value can be used to perform gesture detection, it can also
+serve as input to an inertial navigation system, which uses
+dead reckoning.
 
-On 01/03/2017 09:04 AM, Peter Meerwald-Stadler wrote:
-> Hi,
->=20
->> 	 I checked and find that iio device name is usually named to be with un=
-derline if it has more than one word, so I assigned to be " linear_accel_3d=
-".
->>  I think the device property node named to be "in_linear_accel_x_raw" is=
- better than " in_linearaccel_x_raw" Just follow the former coding style.
->> "linearaccel" is only a name which specify IIO type=20
->> [IIO_LINEAR_ACCEL] I name [IIO_LINEAR_ACCEL] to be "linearaccel" just fo=
-llow the history code style in " iio_chan_type_name_spec[]" which do not ha=
-ve any underline.
->=20
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_x_raw
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_y_raw
->>> +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_z_raw
->>
->> I think this would be in_linearaccel_x_raw, etc.?
->=20
->>> @@ -82,6 +82,7 @@ struct bus_type iio_bus_type =3D {
->>>  	[IIO_UVINDEX] =3D "uvindex",
->>>  	[IIO_ELECTRICALCONDUCTIVITY] =3D "electricalconductivity",
->>>  	[IIO_GRAVITY]  =3D "gravity",
->>> +	[IIO_LINEAR_ACCEL] =3D "linearaccel",
->>>  };
->=20
->=20
-> >linearaccel vs. linear_accel is a matter of taste, I have no=20
-> >preference; nevertheless, the documentation should match what IIO=20
->> outputs
+More information can be found in:
+http://www.usb.org/developers/hidpage/HUTRR59_-_Usages_for_Wearables.pdf
 
->We use underscores as the field separator in the channel name. Having a un=
-derscore as part of a field adds ambiguity and makes it a lot  >
->harder to machine parse it. It's already complicated enough as it is. We s=
-hould avoid adding types with underscores in them.
+Linear accel sensor, gravity sensor and accelerometer have similar
+channels and share channel usage ids. So the most of the code for
+accel_3d can be reused.
 
-Thanks for your advice, I will update the patch.
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+---
+ drivers/iio/accel/hid-sensor-accel-3d.c | 42 +++++++++++++++++++++++++++++++++
+ include/linux/hid-sensor-ids.h          |  3 +++
+ 2 files changed, 45 insertions(+)
 
-BR
-Song Hongyan
+diff --git a/drivers/iio/accel/hid-sensor-accel-3d.c b/drivers/iio/accel/hid-sensor-accel-3d.c
+index 9edd574..6ce460f 100644
+--- a/drivers/iio/accel/hid-sensor-accel-3d.c
++++ b/drivers/iio/accel/hid-sensor-accel-3d.c
+@@ -91,6 +91,41 @@ struct accel_3d_state {
+ };
+ 
+ /* Channel definitions */
++static const struct iio_chan_spec linear_accel_3d_channels[] = {
++	{
++		.type = IIO_LINEAR_ACCEL,
++		.modified = 1,
++		.channel2 = IIO_MOD_X,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++		.scan_index = CHANNEL_SCAN_INDEX_X,
++	}, {
++		.type = IIO_LINEAR_ACCEL,
++		.modified = 1,
++		.channel2 = IIO_MOD_Y,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++		.scan_index = CHANNEL_SCAN_INDEX_Y,
++	}, {
++		.type = IIO_LINEAR_ACCEL,
++		.modified = 1,
++		.channel2 = IIO_MOD_Z,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_HYSTERESIS),
++		.scan_index = CHANNEL_SCAN_INDEX_Z,
++	}
++};
++
++/* Channel definitions */
+ static const struct iio_chan_spec gravity_channels[] = {
+ 	{
+ 		.type = IIO_GRAVITY,
+@@ -354,6 +389,10 @@ static int hid_accel_3d_probe(struct platform_device *pdev)
+ 		name = "accel_3d";
+ 		channel_spec = accel_3d_channels;
+ 		channel_size = sizeof(accel_3d_channels);
++	} else if (hsdev->usage == HID_USAGE_SENSOR_LINEAR_ACCEL_3D) {
++		name = "linear_accel_3d";
++		channel_spec = linear_accel_3d_channels;
++		channel_size = sizeof(linear_accel_3d_channels);
+ 	} else {
+ 		name = "gravity";
+ 		channel_spec = gravity_channels;
+@@ -452,6 +491,9 @@ static int hid_accel_3d_remove(struct platform_device *pdev)
+ 	{	/* gravity sensor */
+ 		.name = "HID-SENSOR-20007b",
+ 	},
++	{	/* linear_accel sensor */
++		.name = "HID-SENSOR-20007c",
++	},
+ 	{ /* sentinel */ }
+ };
+ MODULE_DEVICE_TABLE(platform, hid_accel_3d_ids);
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index b6778fd2..b0b26a0 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -55,6 +55,9 @@
+ /* Gravity vector */
+ #define HID_USAGE_SENSOR_GRAVITY_VECTOR				0x20007B
+ 
++/* linear accel */
++#define HID_USAGE_SENSOR_LINEAR_ACCEL_3D			0x20007C
++
+ /* ORIENTATION: Compass 3D: (200083) */
+ #define HID_USAGE_SENSOR_COMPASS_3D				0x200083
+ #define HID_USAGE_SENSOR_DATA_ORIENTATION			0x200470
+-- 
+1.9.1
+
