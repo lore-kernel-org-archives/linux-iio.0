@@ -1,79 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f179.google.com ([209.85.220.179]:36040 "EHLO
-        mail-qk0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934184AbdABVxz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 2 Jan 2017 16:53:55 -0500
-Received: by mail-qk0-f179.google.com with SMTP id n21so354449842qka.3
-        for <linux-iio@vger.kernel.org>; Mon, 02 Jan 2017 13:53:55 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <0c3511be-6a3c-f65c-c562-1c4b9318acb1@kernel.org>
-References: <1481494905-18037-1-git-send-email-bgolaszewski@baylibre.com>
- <1481494905-18037-3-git-send-email-bgolaszewski@baylibre.com>
- <CACRpkdZ7JrNfCKPuuCmkZd_7+NV0QLUN8ZMukFA0TcqS9SYXcQ@mail.gmail.com>
- <20161229162919.j2ej2cyeuoqnxykf@earth> <CACRpkdbjbtFwwQCdR3krWG0P4UMhWySTTkzqZFBZ6EGXPS=k8g@mail.gmail.com>
- <0c3511be-6a3c-f65c-c562-1c4b9318acb1@kernel.org>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Mon, 2 Jan 2017 22:53:54 +0100
-Message-ID: <CACRpkdZRGygeNjK=mujT-veCW+oC_vEED9Z0fSiMxFrDT0hqzA@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: misc: add support for GPIO power switches
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Sebastian Reichel <sre@kernel.org>,
-        Bartosz Golaszewski <bgolaszewski@baylibre.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Kevin Hilman <khilman@baylibre.com>,
-        Patrick Titiano <ptitiano@baylibre.com>,
-        Neil Armstrong <narmstrong@baylibre.com>,
-        Alexandre Courbot <gnurou@gmail.com>,
-        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
-        "linux-pm@vger.kernel.org" <linux-pm@vger.kernel.org>,
-        Mark Brown <broonie@kernel.org>,
-        Liam Girdwood <lgirdwood@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from mga09.intel.com ([134.134.136.24]:25032 "EHLO mga09.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1755610AbdACGFa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 3 Jan 2017 01:05:30 -0500
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH v2 1/2] iio: Add channel for Gravity
+Date: Tue,  3 Jan 2017 22:27:57 +0800
+Message-Id: <1483453678-6015-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Fri, Dec 30, 2016 at 4:15 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 30/12/16 13:05, Linus Walleij wrote:
+Add new channel types support for gravity sensor.
 
->> So this needs to be re-architected to either describe the remote system
->> in DT and handle it in the kernel, or handle it all from userspace if it
->> is a one-off non-product thing.
->
-> I'm not sure this is always true (though it might be here).  There is always
-> a need to describe the edge of the known world.  Be it that we have
-> an accelerometer - ultimately we could describe the device generating the
-> acceleration but we have no way of knowing what it is or what it will do..
->
-> What we have here is a rather simple case, but what about an I/O bank on
-> a PLC.  Obviously we can handle that as a bunch of GPIOs but if we know
-> more about it we should have means to describe that.  Say we know they are
-> always driving relays, we should be able to describe that additional known
-> stuff. Relays have characteristics such as bounce times etc that if described
-> would allow us to do the relevant filtering on inputs to handle this.
->
-> Here the fact it is a power supply switch should be describable.  Hard to
-> get right in a generic way though so in cases like this perhaps you
-> are right and it should just be left undescribed and handled in userspace.
->
-> Anyhow, here I think leaving it as a gpio interface is probably the way to
-> go, but I'm not sure that will always be the case.
+Gravity sensor provides an application-level or physical collection that
+identifies a device that measures exclusively the force of Earth's
+gravity along any number of axes.
 
-No you are right. We are at the fuzzy system perimeter.
+More information can be found in:
+http://www.usb.org/developers/hidpage/HUTRR59_-_Usages_for_Wearables.pdf
 
-For GPIO we currently only have asserted/unasserted, polarity
-of that, open drain/source and debounce time. But we will need the whole
-slew of pin control settings in the future: drive strength, schmitt-trigger
-hysteresis etc etc. And if there is a further component beyond that it
-may need a driver in turn even if it is "only" a relay.
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+---
+ Documentation/ABI/testing/sysfs-bus-iio | 11 +++++++++++
+ drivers/iio/industrialio-core.c         |  1 +
+ include/uapi/linux/iio/types.h          |  1 +
+ tools/iio/iio_event_monitor.c           |  2 ++
+ 4 files changed, 15 insertions(+)
 
-Let's see about this one...
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index fee35c0..60b7406 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -170,6 +170,17 @@ Description:
+ 		Has all of the equivalent parameters as per voltageY. Units
+ 		after application of scale and offset are m/s^2.
+ 
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_x_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_y_raw
++What:		/sys/bus/iio/devices/iio:deviceX/in_gravity_z_raw
++KernelVersion:	4.11
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Gravity in direction x, y or z (may be arbitrarily assigned
++		but should match other such assignments on device).
++		Units after application of scale and offset are m/s^2.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_x_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_y_raw
+ What:		/sys/bus/iio/devices/iio:deviceX/in_anglvel_z_raw
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index fc340ed..72fc96a 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -81,6 +81,7 @@ struct bus_type iio_bus_type = {
+ 	[IIO_PH] = "ph",
+ 	[IIO_UVINDEX] = "uvindex",
+ 	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
++	[IIO_GRAVITY]  = "gravity",
+ };
+ 
+ static const char * const iio_modifier_names[] = {
+diff --git a/include/uapi/linux/iio/types.h b/include/uapi/linux/iio/types.h
+index 22e5e58..d3f7ba7 100644
+--- a/include/uapi/linux/iio/types.h
++++ b/include/uapi/linux/iio/types.h
+@@ -40,6 +40,7 @@ enum iio_chan_type {
+ 	IIO_PH,
+ 	IIO_UVINDEX,
+ 	IIO_ELECTRICALCONDUCTIVITY,
++	IIO_GRAVITY,
+ };
+ 
+ enum iio_modifier {
+diff --git a/tools/iio/iio_event_monitor.c b/tools/iio/iio_event_monitor.c
+index d9b7e0f..b61245e 100644
+--- a/tools/iio/iio_event_monitor.c
++++ b/tools/iio/iio_event_monitor.c
+@@ -57,6 +57,7 @@
+ 	[IIO_RESISTANCE] = "resistance",
+ 	[IIO_PH] = "ph",
+ 	[IIO_UVINDEX] = "uvindex",
++	[IIO_GRAVITY] = "gravity",
+ };
+ 
+ static const char * const iio_ev_type_text[] = {
+@@ -149,6 +150,7 @@ static bool event_is_known(struct iio_event_data *event)
+ 	case IIO_RESISTANCE:
+ 	case IIO_PH:
+ 	case IIO_UVINDEX:
++	case IIO_GRAVITY:
+ 		break;
+ 	default:
+ 		return false;
+-- 
+1.9.1
 
-Yours,
-Linus Walleij
