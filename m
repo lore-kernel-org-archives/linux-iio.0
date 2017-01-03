@@ -1,103 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga06.intel.com ([134.134.136.31]:46794 "EHLO mga06.intel.com"
+Received: from ns.pmeerw.net ([84.19.176.92]:45200 "EHLO pmeerw.net"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756149AbdACHrd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 3 Jan 2017 02:47:33 -0500
-From: "Song, Hongyan" <hongyan.song@intel.com>
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-CC: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        id S1755930AbdACIEV (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 3 Jan 2017 03:04:21 -0500
+Date: Tue, 3 Jan 2017 09:04:19 +0100 (CET)
+From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+To: "Song, Hongyan" <hongyan.song@intel.com>
+cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "jikos@kernel.org" <jikos@kernel.org>,
         "jic23@kernel.org" <jic23@kernel.org>,
         "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
 Subject: RE: [PATCH 1/2] iio: Add support for linear accel
-Date: Tue, 3 Jan 2017 07:47:28 +0000
-Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BDBD57@SHSMSX103.ccr.corp.intel.com>
-References: <1483456430-6980-1-git-send-email-hongyan.song@intel.com>
- <alpine.DEB.2.02.1701030821450.18919@pmeerw.net>
-In-Reply-To: <alpine.DEB.2.02.1701030821450.18919@pmeerw.net>
-Content-Type: text/plain; charset="utf-8"
+In-Reply-To: <AE3E3DFA698D6144A7445C92D1D41E2F10BDBD57@SHSMSX103.ccr.corp.intel.com>
+Message-ID: <alpine.DEB.2.02.1701030851430.18919@pmeerw.net>
+References: <1483456430-6980-1-git-send-email-hongyan.song@intel.com> <alpine.DEB.2.02.1701030821450.18919@pmeerw.net> <AE3E3DFA698D6144A7445C92D1D41E2F10BDBD57@SHSMSX103.ccr.corp.intel.com>
 MIME-Version: 1.0
+Content-Type: TEXT/PLAIN; charset=US-ASCII
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-SGkgcGV0ZXIsDQoJIEkgY2hlY2tlZCBhbmQgZmluZCB0aGF0IGlpbyBkZXZpY2UgbmFtZSBpcyB1
-c3VhbGx5IG5hbWVkIHRvIGJlIHdpdGggdW5kZXJsaW5lIGlmIGl0IGhhcyBtb3JlIHRoYW4gb25l
-IHdvcmQsIHNvIEkgYXNzaWduZWQgdG8gYmUgIiBsaW5lYXJfYWNjZWxfM2QiLg0KIEkgdGhpbmsg
-dGhlIGRldmljZSBwcm9wZXJ0eSBub2RlIG5hbWVkIHRvIGJlICJpbl9saW5lYXJfYWNjZWxfeF9y
-YXciIGlzIGJldHRlciB0aGFuICIgaW5fbGluZWFyYWNjZWxfeF9yYXciIEp1c3QgZm9sbG93IHRo
-ZSBmb3JtZXIgY29kaW5nIHN0eWxlLg0KDQoibGluZWFyYWNjZWwiIGlzIG9ubHkgYSBuYW1lIHdo
-aWNoIHNwZWNpZnkgSUlPIHR5cGUgW0lJT19MSU5FQVJfQUNDRUxdDQpJIG5hbWUgW0lJT19MSU5F
-QVJfQUNDRUxdIHRvIGJlICJsaW5lYXJhY2NlbCIganVzdCBmb2xsb3cgdGhlIGhpc3RvcnkgY29k
-ZSBzdHlsZSBpbiAiIGlpb19jaGFuX3R5cGVfbmFtZV9zcGVjW10iIHdoaWNoIGRvIG5vdCBoYXZl
-IGFueSB1bmRlcmxpbmUuDQoNCldoYXQgZG8geW91IHRoaW5rPw0KDQpCUg0KU29uZyBIb25neWFu
-DQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBQZXRlciBNZWVyd2FsZC1TdGFk
-bGVyIFttYWlsdG86cG1lZXJ3QHBtZWVydy5uZXRdIA0KU2VudDogVHVlc2RheSwgSmFudWFyeSAz
-LCAyMDE3IDM6MjMgUE0NClRvOiBTb25nLCBIb25neWFuIDxob25neWFuLnNvbmdAaW50ZWwuY29t
-Pg0KQ2M6IGxpbnV4LWlucHV0QHZnZXIua2VybmVsLm9yZzsgbGludXgtaWlvQHZnZXIua2VybmVs
-Lm9yZzsgamlrb3NAa2VybmVsLm9yZzsgamljMjNAa2VybmVsLm9yZzsgUGFuZHJ1dmFkYSwgU3Jp
-bml2YXMgPHNyaW5pdmFzLnBhbmRydXZhZGFAaW50ZWwuY29tPg0KU3ViamVjdDogUmU6IFtQQVRD
-SCAxLzJdIGlpbzogQWRkIHN1cHBvcnQgZm9yIGxpbmVhciBhY2NlbA0KDQoNCj4gQWRkIG5ldyBj
-aGFubmVsIHR5cGVzIHN1cHBvcnQgZm9yIGxpbmVhciBhY2NlbCBzZW5zb3IuDQo+IA0KPiBMaW5l
-YXIgYWNjZWxlcmF0aW9uIGRpZmZlcnMgZnJvbSBhIHN0YW5kYXJkIGFjY2VsZXJvbWV0b3IsIGl0
-cyB2YWx1ZSANCj4gZGVwZW5kcyBvbiBzdGFuZGFyZCBhY2NlbCBzZW5zb3IgYW5kIGdyYXZpdHkg
-c2Vuc29yLg0KPiBDb25jZXB0dWFsbHksIHRoaXMgdGhyZWUgc2Vuc29ycyBoYXZlIGZvbGxvd2lu
-ZyByZWxhdGlvbnNoaXA6DQo+IGxpbmVhciBhY2NlbGVyYXRpb24gPSBhY2NlbGVyYXRpb24gLSBh
-Y2NlbGVyYXRpb24gZHVlIHRvIGdyYXZpdHkNCj4gDQo+IEF0IHJlc3QsIHN0YW5kYXJkIGFjY2Vs
-ZXJvbWV0ZXIgZGlzcGxheXMgMWcgZHVlIHRvIGVhcnRo4oCZcyANCj4gZ3Jhdml0YXRpb25hbCBw
-dWxsIHdoaWxlIGEgbGluZXIgYWNjZWxlcm9tZXRlciB3aWxsIHNob3cgMGcuDQoNCmNvbW1lbnQg
-YmVsb3cNCiANCj4gTW9yZSBpbmZvcm1hdGlvbiBjYW4gYmUgZm91bmQgaW46DQo+IGh0dHA6Ly93
-d3cudXNiLm9yZy9kZXZlbG9wZXJzL2hpZHBhZ2UvSFVUUlI1OV8tX1VzYWdlc19mb3JfV2VhcmFi
-bGVzLnANCj4gZGYNCj4gDQo+IFNpZ25lZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lhbi5z
-b25nQGludGVsLmNvbT4NCj4gLS0tDQo+ICBEb2N1bWVudGF0aW9uL0FCSS90ZXN0aW5nL3N5c2Zz
-LWJ1cy1paW8gfCAxMCArKysrKysrKysrDQo+ICBkcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tY29y
-ZS5jICAgICAgICAgfCAgMSArDQo+ICBpbmNsdWRlL3VhcGkvbGludXgvaWlvL3R5cGVzLmggICAg
-ICAgICAgfCAgMSArDQo+ICB0b29scy9paW8vaWlvX2V2ZW50X21vbml0b3IuYyAgICAgICAgICAg
-fCAgMiArKw0KPiAgNCBmaWxlcyBjaGFuZ2VkLCAxNCBpbnNlcnRpb25zKCspDQo+IA0KPiBkaWZm
-IC0tZ2l0IGEvRG9jdW1lbnRhdGlvbi9BQkkvdGVzdGluZy9zeXNmcy1idXMtaWlvIA0KPiBiL0Rv
-Y3VtZW50YXRpb24vQUJJL3Rlc3Rpbmcvc3lzZnMtYnVzLWlpbw0KPiBpbmRleCA2MGI3NDA2Li44
-MDkxZjNkIDEwMDY0NA0KPiAtLS0gYS9Eb2N1bWVudGF0aW9uL0FCSS90ZXN0aW5nL3N5c2ZzLWJ1
-cy1paW8NCj4gKysrIGIvRG9jdW1lbnRhdGlvbi9BQkkvdGVzdGluZy9zeXNmcy1idXMtaWlvDQo+
-IEBAIC0xNzAsNiArMTcwLDE2IEBAIERlc2NyaXB0aW9uOg0KPiAgCQlIYXMgYWxsIG9mIHRoZSBl
-cXVpdmFsZW50IHBhcmFtZXRlcnMgYXMgcGVyIHZvbHRhZ2VZLiBVbml0cw0KPiAgCQlhZnRlciBh
-cHBsaWNhdGlvbiBvZiBzY2FsZSBhbmQgb2Zmc2V0IGFyZSBtL3NeMi4NCj4gIA0KPiArV2hhdDoJ
-CS9zeXMvYnVzL2lpby9kZXZpY2VzL2lpbzpkZXZpY2VYL2luX2xpbmVhcl9hY2NlbF94X3Jhdw0K
-PiArV2hhdDoJCS9zeXMvYnVzL2lpby9kZXZpY2VzL2lpbzpkZXZpY2VYL2luX2xpbmVhcl9hY2Nl
-bF95X3Jhdw0KPiArV2hhdDoJCS9zeXMvYnVzL2lpby9kZXZpY2VzL2lpbzpkZXZpY2VYL2luX2xp
-bmVhcl9hY2NlbF96X3Jhdw0KDQpJIHRoaW5rIHRoaXMgd291bGQgYmUgaW5fbGluZWFyYWNjZWxf
-eF9yYXcsIGV0Yy4/DQoNCj4gK0tlcm5lbFZlcnNpb246CTQuMTENCj4gK0NvbnRhY3Q6CWxpbnV4
-LWlpb0B2Z2VyLmtlcm5lbC5vcmcNCj4gK0Rlc2NyaXB0aW9uOg0KPiArCQlMaW5lYXIgQWNjZWxl
-cmF0aW9uIGluIGRpcmVjdGlvbiB4LCB5IG9yIHogKG1heSBiZSBhcmJpdHJhcmlseSBhc3NpZ25l
-ZA0KPiArCQlidXQgc2hvdWxkIG1hdGNoIG90aGVyIHN1Y2ggYXNzaWdubWVudHMgb24gZGV2aWNl
-KS4NCj4gKwkJSGFzIGFsbCBvZiB0aGUgZXF1aXZhbGVudCBwYXJhbWV0ZXJzIGFzIHBlciB2b2x0
-YWdlWS4gVW5pdHMNCj4gKwkJYWZ0ZXIgYXBwbGljYXRpb24gb2Ygc2NhbGUgYW5kIG9mZnNldCBh
-cmUgbS9zXjIuDQo+ICANCj4gIFdoYXQ6CQkvc3lzL2J1cy9paW8vZGV2aWNlcy9paW86ZGV2aWNl
-WC9pbl9ncmF2aXR5X3hfcmF3DQo+ICBXaGF0OgkJL3N5cy9idXMvaWlvL2RldmljZXMvaWlvOmRl
-dmljZVgvaW5fZ3Jhdml0eV95X3Jhdw0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVycy9paW8vaW5kdXN0
-cmlhbGlvLWNvcmUuYyANCj4gYi9kcml2ZXJzL2lpby9pbmR1c3RyaWFsaW8tY29yZS5jIGluZGV4
-IDcyZmM5NmEuLmRhNzhjMjYgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL2luZHVzdHJpYWxp
-by1jb3JlLmMNCj4gKysrIGIvZHJpdmVycy9paW8vaW5kdXN0cmlhbGlvLWNvcmUuYw0KPiBAQCAt
-ODIsNiArODIsNyBAQCBzdHJ1Y3QgYnVzX3R5cGUgaWlvX2J1c190eXBlID0gew0KPiAgCVtJSU9f
-VVZJTkRFWF0gPSAidXZpbmRleCIsDQo+ICAJW0lJT19FTEVDVFJJQ0FMQ09ORFVDVElWSVRZXSA9
-ICJlbGVjdHJpY2FsY29uZHVjdGl2aXR5IiwNCj4gIAlbSUlPX0dSQVZJVFldICA9ICJncmF2aXR5
-IiwNCj4gKwlbSUlPX0xJTkVBUl9BQ0NFTF0gPSAibGluZWFyYWNjZWwiLA0KPiAgfTsNCj4gIA0K
-PiAgc3RhdGljIGNvbnN0IGNoYXIgKiBjb25zdCBpaW9fbW9kaWZpZXJfbmFtZXNbXSA9IHsgZGlm
-ZiAtLWdpdCANCj4gYS9pbmNsdWRlL3VhcGkvbGludXgvaWlvL3R5cGVzLmggYi9pbmNsdWRlL3Vh
-cGkvbGludXgvaWlvL3R5cGVzLmggDQo+IGluZGV4IGQzZjdiYTcuLmQ2ZGYxMDEgMTAwNjQ0DQo+
-IC0tLSBhL2luY2x1ZGUvdWFwaS9saW51eC9paW8vdHlwZXMuaA0KPiArKysgYi9pbmNsdWRlL3Vh
-cGkvbGludXgvaWlvL3R5cGVzLmgNCj4gQEAgLTQxLDYgKzQxLDcgQEAgZW51bSBpaW9fY2hhbl90
-eXBlIHsNCj4gIAlJSU9fVVZJTkRFWCwNCj4gIAlJSU9fRUxFQ1RSSUNBTENPTkRVQ1RJVklUWSwN
-Cj4gIAlJSU9fR1JBVklUWSwNCj4gKwlJSU9fTElORUFSX0FDQ0VMLA0KPiAgfTsNCj4gIA0KPiAg
-ZW51bSBpaW9fbW9kaWZpZXIgew0KPiBkaWZmIC0tZ2l0IGEvdG9vbHMvaWlvL2lpb19ldmVudF9t
-b25pdG9yLmMgDQo+IGIvdG9vbHMvaWlvL2lpb19ldmVudF9tb25pdG9yLmMgaW5kZXggYjYxMjQ1
-ZS4uMTE2NjQ0YSAxMDA2NDQNCj4gLS0tIGEvdG9vbHMvaWlvL2lpb19ldmVudF9tb25pdG9yLmMN
-Cj4gKysrIGIvdG9vbHMvaWlvL2lpb19ldmVudF9tb25pdG9yLmMNCj4gQEAgLTU4LDYgKzU4LDcg
-QEANCj4gIAlbSUlPX1BIXSA9ICJwaCIsDQo+ICAJW0lJT19VVklOREVYXSA9ICJ1dmluZGV4IiwN
-Cj4gIAlbSUlPX0dSQVZJVFldID0gImdyYXZpdHkiLA0KPiArCVtJSU9fTElORUFSX0FDQ0VMXSA9
-ICJsaW5lYXJhY2NlbCIsDQo+ICB9Ow0KPiAgDQo+ICBzdGF0aWMgY29uc3QgY2hhciAqIGNvbnN0
-IGlpb19ldl90eXBlX3RleHRbXSA9IHsgQEAgLTE1MSw2ICsxNTIsNyBAQCANCj4gc3RhdGljIGJv
-b2wgZXZlbnRfaXNfa25vd24oc3RydWN0IGlpb19ldmVudF9kYXRhICpldmVudCkNCj4gIAljYXNl
-IElJT19QSDoNCj4gIAljYXNlIElJT19VVklOREVYOg0KPiAgCWNhc2UgSUlPX0dSQVZJVFk6DQo+
-ICsJY2FzZSBJSU9fTElORUFSX0FDQ0VMOg0KPiAgCQlicmVhazsNCj4gIAlkZWZhdWx0Og0KPiAg
-CQlyZXR1cm4gZmFsc2U7DQo+IA0KDQotLSANCg0KUGV0ZXIgTWVlcndhbGQtU3RhZGxlcg0KKzQz
-LTY2NC0yNDQ0NDE4IChtb2JpbGUpDQo=
+Hi,
+
+> 	 I checked and find that iio device name is usually named to be with underline if it has more than one word, so I assigned to be " linear_accel_3d".
+>  I think the device property node named to be "in_linear_accel_x_raw" is better than " in_linearaccel_x_raw" Just follow the former coding style.
+> "linearaccel" is only a name which specify IIO type [IIO_LINEAR_ACCEL]
+> I name [IIO_LINEAR_ACCEL] to be "linearaccel" just follow the history code style in " iio_chan_type_name_spec[]" which do not have any underline.
+
+> > +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_x_raw
+> > +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_y_raw
+> > +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_z_raw
+> 
+> I think this would be in_linearaccel_x_raw, etc.?
+
+> > @@ -82,6 +82,7 @@ struct bus_type iio_bus_type = {
+> >  	[IIO_UVINDEX] = "uvindex",
+> >  	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
+> >  	[IIO_GRAVITY]  = "gravity",
+> > +	[IIO_LINEAR_ACCEL] = "linearaccel",
+> >  };
+
+
+linearaccel vs. linear_accel is a matter of taste, I have no preference;
+nevertheless, the documentation should match what IIO outputs
+
+if you have "linearaccel" in iio_bus_type, I think the name of a 
+LINEAR_ACCEL channel will end up as "in_linearaccel_x_raw" and must be 
+documented like that -- i.e. there is a mismatch between 
+documentation and actual code/output
+
+probably your patches should be rebased, iio/testing branch has IIO_COUNT 
+and IIO_INDEX channels
+
+regards, p.
+
+
+-- 
+
+Peter Meerwald-Stadler
++43-664-2444418 (mobile)
