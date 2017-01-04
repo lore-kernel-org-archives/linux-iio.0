@@ -1,56 +1,72 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:49132 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750879AbdACJua (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 3 Jan 2017 04:50:30 -0500
-Subject: Re: [PATCH 1/2] iio: Add support for linear accel
-To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        "Song, Hongyan" <hongyan.song@intel.com>
+Return-Path: <SRS0=Wv9Z=YS=intel.com=hongyan.song@kernel.org>
+From: "Song, Hongyan" <hongyan.song@intel.com>
+To: Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler
+	<pmeerw@pmeerw.net>
+CC: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>, "jikos@kernel.org"
+	<jikos@kernel.org>, "jic23@kernel.org" <jic23@kernel.org>, "Pandruvada,
+ Srinivas" <srinivas.pandruvada@intel.com>
+Subject: RE: [PATCH 1/2] iio: Add support for linear accel
+Date: Wed, 4 Jan 2017 02:28:23 +0000
+Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BDBE64@SHSMSX103.ccr.corp.intel.com>
 References: <1483456430-6980-1-git-send-email-hongyan.song@intel.com>
  <alpine.DEB.2.02.1701030821450.18919@pmeerw.net>
  <AE3E3DFA698D6144A7445C92D1D41E2F10BDBD57@SHSMSX103.ccr.corp.intel.com>
  <alpine.DEB.2.02.1701030851430.18919@pmeerw.net>
-Cc: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "jikos@kernel.org" <jikos@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>,
-        "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <be267c7a-9ec3-d86e-2a32-2faef3e0650f@metafoo.de>
-Date: Tue, 3 Jan 2017 10:49:16 +0100
+ <be267c7a-9ec3-d86e-2a32-2faef3e0650f@metafoo.de>
+In-Reply-To: <be267c7a-9ec3-d86e-2a32-2faef3e0650f@metafoo.de>
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.02.1701030851430.18919@pmeerw.net>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
+
+Hi Lars & Peter,
+
+-----Original Message-----
+From: Lars-Peter Clausen [mailto:lars@metafoo.de]=20
+Sent: Tuesday, January 3, 2017 5:49 PM
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>; Song, Hongyan <hongyan.song=
+@intel.com>
+Cc: linux-input@vger.kernel.org; linux-iio@vger.kernel.org; jikos@kernel.or=
+g; jic23@kernel.org; Pandruvada, Srinivas <srinivas.pandruvada@intel.com>
+Subject: Re: [PATCH 1/2] iio: Add support for linear accel
 
 On 01/03/2017 09:04 AM, Peter Meerwald-Stadler wrote:
 > Hi,
-> 
->> 	 I checked and find that iio device name is usually named to be with underline if it has more than one word, so I assigned to be " linear_accel_3d".
->>  I think the device property node named to be "in_linear_accel_x_raw" is better than " in_linearaccel_x_raw" Just follow the former coding style.
->> "linearaccel" is only a name which specify IIO type [IIO_LINEAR_ACCEL]
->> I name [IIO_LINEAR_ACCEL] to be "linearaccel" just follow the history code style in " iio_chan_type_name_spec[]" which do not have any underline.
-> 
+>=20
+>> 	 I checked and find that iio device name is usually named to be with un=
+derline if it has more than one word, so I assigned to be " linear_accel_3d=
+".
+>>  I think the device property node named to be "in_linear_accel_x_raw" is=
+ better than " in_linearaccel_x_raw" Just follow the former coding style.
+>> "linearaccel" is only a name which specify IIO type=20
+>> [IIO_LINEAR_ACCEL] I name [IIO_LINEAR_ACCEL] to be "linearaccel" just fo=
+llow the history code style in " iio_chan_type_name_spec[]" which do not ha=
+ve any underline.
+>=20
 >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_x_raw
 >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_y_raw
 >>> +What:		/sys/bus/iio/devices/iio:deviceX/in_linear_accel_z_raw
 >>
 >> I think this would be in_linearaccel_x_raw, etc.?
-> 
->>> @@ -82,6 +82,7 @@ struct bus_type iio_bus_type = {
->>>  	[IIO_UVINDEX] = "uvindex",
->>>  	[IIO_ELECTRICALCONDUCTIVITY] = "electricalconductivity",
->>>  	[IIO_GRAVITY]  = "gravity",
->>> +	[IIO_LINEAR_ACCEL] = "linearaccel",
+>=20
+>>> @@ -82,6 +82,7 @@ struct bus_type iio_bus_type =3D {
+>>>  	[IIO_UVINDEX] =3D "uvindex",
+>>>  	[IIO_ELECTRICALCONDUCTIVITY] =3D "electricalconductivity",
+>>>  	[IIO_GRAVITY]  =3D "gravity",
+>>> +	[IIO_LINEAR_ACCEL] =3D "linearaccel",
 >>>  };
-> 
-> 
-> linearaccel vs. linear_accel is a matter of taste, I have no preference;
-> nevertheless, the documentation should match what IIO outputs
+>=20
+>=20
+> >linearaccel vs. linear_accel is a matter of taste, I have no=20
+> >preference; nevertheless, the documentation should match what IIO=20
+>> outputs
 
-We use underscores as the field separator in the channel name. Having a
-underscore as part of a field adds ambiguity and makes it a lot harder
-to machine parse it. It's already complicated enough as it is. We should
-avoid adding types with underscores in them.
+>We use underscores as the field separator in the channel name. Having a un=
+derscore as part of a field adds ambiguity and makes it a lot  >
+>harder to machine parse it. It's already complicated enough as it is. We s=
+hould avoid adding types with underscores in them.
 
+Thanks for your advice, I will update the patch.
+
+BR
+Song Hongyan
