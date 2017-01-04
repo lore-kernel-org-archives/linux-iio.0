@@ -1,62 +1,59 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wj0-f175.google.com ([209.85.210.175]:33993 "EHLO
-        mail-wj0-f175.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757745AbdADKxs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jan 2017 05:53:48 -0500
-Received: by mail-wj0-f175.google.com with SMTP id tn15so7441873wjb.1
-        for <linux-iio@vger.kernel.org>; Wed, 04 Jan 2017 02:53:47 -0800 (PST)
-Date: Wed, 4 Jan 2017 10:57:30 +0000
+Received: from mail-wm0-f54.google.com ([74.125.82.54]:33223 "EHLO
+        mail-wm0-f54.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758416AbdADLE2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jan 2017 06:04:28 -0500
+Received: by mail-wm0-f54.google.com with SMTP id v3so2780339wme.0
+        for <linux-iio@vger.kernel.org>; Wed, 04 Jan 2017 03:04:27 -0800 (PST)
+Date: Wed, 4 Jan 2017 10:58:33 +0000
 From: Lee Jones <lee.jones@linaro.org>
-To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Cc: linux-kernel@vger.kernel.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com
-Subject: Re: [PATCH v11 5/5] mfd: Move binding document
-Message-ID: <20170104105730.GW27589@dell>
-References: <cover.1481234322.git.ksenija.stanojevic@gmail.com>
- <bdf92a9bfc74fc9f9741caf508b1d6e2f45826b0.1481234322.git.ksenija.stanojevic@gmail.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
+        wens@csie.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        antoine.tenart@free-electrons.com,
+        thomas.petazzoni@free-electrons.com
+Subject: Re: [PATCH v9 2/3] mfd: Kconfig: MFD_SUN4I_GPADC depends on
+ !TOUCHSCREN_SUN4I_GPADC
+Message-ID: <20170104105833.GY27589@dell>
+References: <20161213143332.24988-1-quentin.schulz@free-electrons.com>
+ <20161213143332.24988-3-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <bdf92a9bfc74fc9f9741caf508b1d6e2f45826b0.1481234322.git.ksenija.stanojevic@gmail.com>
+In-Reply-To: <20161213143332.24988-3-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, 08 Dec 2016, Ksenija Stanojevic wrote:
+On Tue, 13 Dec 2016, Quentin Schulz wrote:
 
-> The bindings, which are now used in MFD, need also to be
-> documented in the MFD binding document.
+> MFD_SUN4I_GPADC and TOUCHSCREEN_SUN4I are incompatible (both are drivers
+> for Allwinner SoCs' ADC). This makes sure TOUCHSCREEN_SUN4I isn't
+> enabled while MFD_SUN4I_GPADC is enabled.
 > 
-> Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-
-For my own reference:
-  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 > ---
-> Changes in v11:
->  - none
 > 
-> Changes in v10:
->  - none
+> added in v8. I wrongly put the XOR dependance for SUN4I_GPADC and
+> TOUCHSCREEN_SUN4I instead of for MFD_SUN4I_GPADC and TOUCHSCREEN_SUN4I.
 > 
-> Changes in v9:
->  - format patch using -M option
-> 
-> Changes in v8:
->  - rebase onto 4.9-rc1
-> 
-> Changes in v7:
->  - add to the patchset
-> 
->  Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt | 0
->  1 file changed, 0 insertions(+), 0 deletions(-)
->  rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-> similarity index 100%
-> rename from Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-> rename to Documentation/devicetree/bindings/mfd/mxs-lradc.txt
+>  drivers/mfd/Kconfig | 1 +
+>  1 file changed, 1 insertion(+)
+
+Applied, thanks.
+
+> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+> index 443ee50..e803884 100644
+> --- a/drivers/mfd/Kconfig
+> +++ b/drivers/mfd/Kconfig
+> @@ -45,6 +45,7 @@ config MFD_SUN4I_GPADC
+>  	select MFD_CORE
+>  	select REGMAP_MMIO
+>  	depends on ARCH_SUNXI || COMPILE_TEST
+> +	depends on !TOUCHSCREEN_SUN4I
+>  	help
+>  	  Select this to get support for Allwinner SoCs (A10, A13 and A31) ADC.
+>  	  This driver will only map the hardware interrupt and registers, you
 
 -- 
 Lee Jones
