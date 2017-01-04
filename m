@@ -1,25 +1,20 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f43.google.com ([74.125.83.43]:33296 "EHLO
-        mail-pg0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754719AbdADTuc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jan 2017 14:50:32 -0500
-Received: by mail-pg0-f43.google.com with SMTP id g1so191529982pgn.0
-        for <linux-iio@vger.kernel.org>; Wed, 04 Jan 2017 11:50:31 -0800 (PST)
+Received: from mail-pg0-f49.google.com ([74.125.83.49]:36586 "EHLO
+        mail-pg0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1759555AbdADTud (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jan 2017 14:50:33 -0500
+Received: by mail-pg0-f49.google.com with SMTP id f188so230509286pgc.3
+        for <linux-iio@vger.kernel.org>; Wed, 04 Jan 2017 11:50:33 -0800 (PST)
 From: Bjorn Andersson <bjorn.andersson@linaro.org>
-To: Lee Jones <lee.jones@linaro.org>, Jingoo Han <jingoohan1@gmail.com>
-Cc: Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
+To: Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Richard Purdie <rpurdie@rpsys.net>,
-        Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-leds@vger.kernel.org
-Subject: [PATCH v5 3/5] backlight: lm3533: Support initialization from Device Tree
-Date: Wed,  4 Jan 2017 03:50:48 -0800
-Message-Id: <20170104115050.24770-3-bjorn.andersson@linaro.org>
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        Lee Jones <lee.jones@linaro.org>
+Subject: [PATCH v5 4/5] iio: light: lm3533-als: Support initialization from Device Tree
+Date: Wed,  4 Jan 2017 03:50:49 -0800
+Message-Id: <20170104115050.24770-4-bjorn.andersson@linaro.org>
 In-Reply-To: <20170104115050.24770-1-bjorn.andersson@linaro.org>
 References: <20170104115050.24770-1-bjorn.andersson@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
@@ -27,11 +22,9 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Bjorn Andersson <bjorn.andersson@sonymobile.com>
 
-Implement support for initialization of the lm3533 backlight from Device
-Tree.
+Implement support for initialization of the lm3533 als driver from
+Device Tree.
 
-Acked-by: Jingoo Han <jingoohan1@gmail.com>
-Acked-by: Pavel Machek <pavel@ucw.cz>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
 Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 ---
@@ -40,169 +33,90 @@ Note that this patch can be merged independently of the other patches in the
 series, pending approval of the DT binding.
 
 Changes since v4:
-- Acks from Pavel and Jingoo
+- None
 
 Changes since v3:
-- Moved backlight DT parsing from mfd driver
+- Moved als DT parsing from mfd driver
 - Gave driver its own compatible
 
- drivers/video/backlight/lm3533_bl.c | 98 +++++++++++++++++++++++++++++++++++--
- 1 file changed, 95 insertions(+), 3 deletions(-)
+ drivers/iio/light/lm3533-als.c | 40 +++++++++++++++++++++++++++++++++++++++-
+ 1 file changed, 39 insertions(+), 1 deletion(-)
 
-diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
-index 0e2337f367b6..2f132199e604 100644
---- a/drivers/video/backlight/lm3533_bl.c
-+++ b/drivers/video/backlight/lm3533_bl.c
-@@ -22,6 +22,7 @@
+diff --git a/drivers/iio/light/lm3533-als.c b/drivers/iio/light/lm3533-als.c
+index f409c2047c05..eef9f06eb0b1 100644
+--- a/drivers/iio/light/lm3533-als.c
++++ b/drivers/iio/light/lm3533-als.c
+@@ -20,6 +20,7 @@
+ #include <linux/module.h>
+ #include <linux/mutex.h>
+ #include <linux/mfd/core.h>
++#include <linux/of.h>
+ #include <linux/platform_device.h>
+ #include <linux/slab.h>
+ #include <linux/uaccess.h>
+@@ -831,6 +832,32 @@ static const struct iio_info lm3533_als_info = {
+ 	.read_raw	= &lm3533_als_read_raw,
+ };
  
- 
- #define LM3533_HVCTRLBANK_COUNT		2
-+#define LM3533_BL_DEFAULT_BRIGHTNESS	200
- #define LM3533_BL_MAX_BRIGHTNESS	255
- 
- #define LM3533_REG_CTRLBANK_AB_BCONF	0x1a
-@@ -269,6 +270,86 @@ static int lm3533_bl_setup(struct lm3533_bl *bl,
- 	return lm3533_ctrlbank_set_pwm(&bl->cb, pdata->pwm);
- }
- 
-+static int lm3533_of_parse_pwm_zones(struct device_node *node)
++static struct lm3533_als_platform_data *lm3533_als_of_parse(struct device *dev)
 +{
-+	const char *propname = "ti,pwm-zones";
-+	u32 zones[5];
-+	int count;
-+	int ret;
-+	int i;
-+
-+	count = of_property_count_u32_elems(node, propname);
-+	if (count == -EINVAL)
-+		return 0;
-+	if (count <= 0)
-+		return count;
-+	if (count >= ARRAY_SIZE(zones))
-+		return -EINVAL;
-+
-+	ret = of_property_read_u32_array(node, propname, zones, count);
-+	if (ret < 0)
-+		return ret;
-+
-+	/* Enable pwm input, and enable the selected zones */
-+	ret = BIT(0);
-+	for (i = 0; i < count; i++)
-+		ret |= BIT(zones[i] + 1);
-+
-+	return ret;
-+}
-+
-+static struct lm3533_bl_platform_data *lm3533_bl_of_parse(struct device *dev,
-+							  int *id)
-+{
-+	struct lm3533_bl_platform_data *bl_pdata;
++	struct lm3533_als_platform_data *als_pdata;
 +	struct device_node *node = dev->of_node;
 +	int ret;
-+	u32 reg;
 +	u32 val;
 +
-+	bl_pdata = devm_kzalloc(dev, sizeof(*bl_pdata), GFP_KERNEL);
-+	if (!bl_pdata)
++	als_pdata = devm_kzalloc(dev, sizeof(*als_pdata), GFP_KERNEL);
++	if (!als_pdata)
 +		return NULL;
 +
-+	ret = of_property_read_u32(node, "reg", &reg);
-+	if (ret < 0) {
-+		dev_err(dev, "invalid reg property\n");
-+		return NULL;
-+	}
-+	*id = reg;
++	als_pdata->pwm_mode = of_property_read_bool(node, "ti,pwm-mode");
 +
-+	ret = of_property_read_string(node, "label",
-+				      (const char **)&bl_pdata->name);
-+	if (ret < 0) {
-+		dev_err(dev, "unable to parse label\n");
-+		return NULL;
-+	}
-+
-+	ret = of_property_read_u32(node, "led-max-microamp", &val);
-+	if (ret < 0) {
-+		dev_err(dev, "unable to parse led-max-microamp\n");
-+		return NULL;
-+	}
-+	bl_pdata->max_current = val;
-+
-+	val = LM3533_BL_DEFAULT_BRIGHTNESS;
-+	ret = of_property_read_u32(node, "default-brightness", &val);
++	ret = of_property_read_u32(node, "ti,als-resistance-ohm", &val);
 +	if (ret < 0 && ret != -EINVAL) {
-+		dev_err(dev, "unable to parse default-brightness\n");
++		dev_err(dev, "unable to read ti,als-resistance-ohm");
 +		return NULL;
 +	}
-+	bl_pdata->default_brightness = val;
 +
-+	ret = lm3533_of_parse_pwm_zones(node);
-+	if (ret < 0) {
-+		dev_err(dev, "failed to parse ti,pwm-zones\n");
-+		return NULL;
-+	}
-+	bl_pdata->pwm = ret;
++	/* Leave at high-Z, if the property was omitted or specified as 0 */
++	if (!ret && val != 0)
++		als_pdata->r_select = 200000 / val;
 +
-+	return bl_pdata;
++	return als_pdata;
 +}
 +
- static int lm3533_bl_probe(struct platform_device *pdev)
+ static int lm3533_als_probe(struct platform_device *pdev)
  {
  	struct lm3533 *lm3533;
-@@ -277,6 +358,7 @@ static int lm3533_bl_probe(struct platform_device *pdev)
- 	struct backlight_device *bd;
- 	struct backlight_properties props;
- 	int ret;
-+	int id;
- 
- 	dev_dbg(&pdev->dev, "%s\n", __func__);
- 
-@@ -284,14 +366,17 @@ static int lm3533_bl_probe(struct platform_device *pdev)
+@@ -843,7 +870,11 @@ static int lm3533_als_probe(struct platform_device *pdev)
  	if (!lm3533)
  		return -EINVAL;
  
-+	id = pdev->id;
- 	pdata = dev_get_platdata(&pdev->dev);
-+	if (!pdata)
-+		pdata = lm3533_bl_of_parse(&pdev->dev, &id);
+-	pdata = pdev->dev.platform_data;
++	if (pdev->dev.of_node)
++		pdata = lm3533_als_of_parse(&pdev->dev);
++	else
++		pdata = pdev->dev.platform_data;
++
  	if (!pdata) {
  		dev_err(&pdev->dev, "no platform data\n");
  		return -EINVAL;
- 	}
- 
--	if (pdev->id < 0 || pdev->id >= LM3533_HVCTRLBANK_COUNT) {
--		dev_err(&pdev->dev, "illegal backlight id %d\n", pdev->id);
-+	if (id < 0 || id >= LM3533_HVCTRLBANK_COUNT) {
-+		dev_err(&pdev->dev, "illegal backlight id %d\n", id);
- 		return -EINVAL;
- 	}
- 
-@@ -300,7 +385,7 @@ static int lm3533_bl_probe(struct platform_device *pdev)
- 		return -ENOMEM;
- 
- 	bl->lm3533 = lm3533;
--	bl->id = pdev->id;
-+	bl->id = id;
- 
- 	bl->cb.lm3533 = lm3533;
- 	bl->cb.id = lm3533_bl_get_ctrlbank_id(bl);
-@@ -394,10 +479,17 @@ static void lm3533_bl_shutdown(struct platform_device *pdev)
- 	lm3533_ctrlbank_disable(&bl->cb);
+@@ -914,9 +945,16 @@ static int lm3533_als_remove(struct platform_device *pdev)
+ 	return 0;
  }
  
-+static const struct of_device_id lm3533_bl_of_match[] = {
-+	{ .compatible = "ti,lm3533-backlight", },
++static const struct of_device_id lm3533_als_of_match[] = {
++	{ .compatible = "ti,lm3533-als", },
 +	{ },
 +};
-+MODULE_DEVICE_TABLE(of, lm3533_bl_of_match);
++MODULE_DEVICE_TABLE(of, lm3533_als_of_match);
 +
- static struct platform_driver lm3533_bl_driver = {
- 	.driver = {
- 		.name	= "lm3533-backlight",
- 		.pm	= &lm3533_bl_pm_ops,
-+		.of_match_table = lm3533_bl_of_match,
+ static struct platform_driver lm3533_als_driver = {
+ 	.driver	= {
+ 		.name	= "lm3533-als",
++		.of_match_table = lm3533_als_of_match,
  	},
- 	.probe		= lm3533_bl_probe,
- 	.remove		= lm3533_bl_remove,
+ 	.probe		= lm3533_als_probe,
+ 	.remove		= lm3533_als_remove,
 -- 
 2.11.0
 
