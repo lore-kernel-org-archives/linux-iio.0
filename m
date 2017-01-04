@@ -1,65 +1,122 @@
-Return-Path: <SRS0=JnkZ=YW=sang-engineering.com=wsa-dev@kernel.org>
-Date: Sun, 8 Jan 2017 11:44:16 +0100
-From: Wolfram Sang <wsa@the-dreams.de>
-To: Peter Rosin <peda@axentia.se>
-Cc: linux-kernel@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
+Return-Path: <SRS0=tr1Y=YS=axentia.se=peda@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+To: linux-kernel@vger.kernel.org
+Cc: Peter Rosin <peda@axentia.se>,
+	Wolfram Sang <wsa@the-dreams.de>,
+	Rob Herring <robh+dt@kernel.org>,
 	Mark Rutland <mark.rutland@arm.com>,
 	Jonathan Cameron <jic23@kernel.org>,
 	Hartmut Knaack <knaack.h@gmx.de>,
 	Lars-Peter Clausen <lars@metafoo.de>,
 	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jonathan Corbet <corbet@lwn.net>, Arnd Bergmann <arnd@arndb.de>,
+	Jonathan Corbet <corbet@lwn.net>,
+	Arnd Bergmann <arnd@arndb.de>,
 	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-i2c@vger.kernel.org, devicetree@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-doc@vger.kernel.org
-Subject: Re: [PATCH v7 10/12] i2c: i2c-mux-simple: new driver
-Message-ID: <20170108104416.GA1983@katana>
+	linux-i2c@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org
+Subject: [PATCH v7 11/12] dt-bindings: mux-adg792a: document devicetree bindings for ADG792A/G mux
+Date: Wed,  4 Jan 2017 13:16:26 +0100
+Message-Id: <1483532187-28494-12-git-send-email-peda@axentia.se>
+In-Reply-To: <1483532187-28494-1-git-send-email-peda@axentia.se>
 References: <1483532187-28494-1-git-send-email-peda@axentia.se>
- <1483532187-28494-11-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="1yeeQ81UyVL57Vl7"
-In-Reply-To: <1483532187-28494-11-git-send-email-peda@axentia.se>
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
+Analog Devices ADG792A/G is a triple 4:1 mux.
 
---1yeeQ81UyVL57Vl7
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ .../devicetree/bindings/mux/mux-adg792a.txt        | 79 ++++++++++++++++++++++
+ 1 file changed, 79 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mux/mux-adg792a.txt
 
-On Wed, Jan 04, 2017 at 01:16:25PM +0100, Peter Rosin wrote:
-> This is a generic simple i2c mux that uses the generic multiplexer
-> subsystem to do the muxing.
->=20
-> The user can select if the mux is to be mux-locked and parent-locked
-> as described in Documentation/i2c/i2c-topology.
->=20
-> Acked-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Peter Rosin <peda@axentia.se>
-
-Acked-by: Wolfram Sang <wsa@the-dreams.de>
-
-
---1yeeQ81UyVL57Vl7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iQIbBAEBAgAGBQJYchgAAAoJEBQN5MwUoCm2d20P921P3jRs7kz6hOqSBu1u/2s/
-/XSJbY+ag8/zGzM970hcRDyu8t+pKkF356EPhpMka2N9elbIBeeIS0H5tUPVLPTA
-Ii9Y665S19kWtxpTQ9JsK+V8Xg+CQ1RmA5pqbMe9oVScLH6li0A5zbCziQ7eigtB
-GNrZCeoW3EfF1DNQXM38GPYweH2h9iMT5ysDPnSxIvr/nohO+1wM9vRnPLTuDHpS
-ZF/ntBSLE0AFIRDBGJuO6hpN8qibqFiQIpmb+XPBKhwfPg8eHZq+T+9ZqNQc2DjP
-Ch/LvCVL7haNJtYv6woQOrfgcrk2uCK0xupuN9beD8puaamWU5EUJWBRJuFXHJTt
-eibalTmvDNTKAvkZkmgajxlh+ml5zqsUndA4W92b+4zBkVkLl1iBkHYbiyc48waV
-eG97xtfSILPXPP26YmPc9rSjBbsaVB11QfhHXWNlizVO38qKSI2zrbAx4zdvwPdG
-OyVzr8uBRDDWilqEhtuLnsBvNzv7Mfr2mFhuLOfdt4uNcHeYuCJ0slf+mvuyMgth
-HKiflIuItSzqBFsK/KFZf/wh0rghvYKeFnq8pxkKfXsZT4TswwJbGVT25nYoK5k2
-0RfJAqvGZi9UQLlKr//VpHncfQ/Mvu71bX0o8rufV3GGmZGUwZwoD2QPd2Ekpkg2
-P63GtUixrJKQz2ABL0o=
-=d3/+
------END PGP SIGNATURE-----
-
---1yeeQ81UyVL57Vl7--
+diff --git a/Documentation/devicetree/bindings/mux/mux-adg792a.txt b/Documentation/devicetree/bindings/mux/mux-adg792a.txt
+new file mode 100644
+index 000000000000..0b26dd11f070
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mux/mux-adg792a.txt
+@@ -0,0 +1,79 @@
++Bindings for Analog Devices ADG792A/G Triple 4:1 Multiplexers
++
++Required properties:
++- compatible : "adi,adg792a" or "adi,adg792g"
++- #mux-control-cells : <0> if parallel, or <1> if not.
++* Standard mux-controller bindings as decribed in mux-controller.txt
++
++Optional properties for ADG792G:
++- gpio-controller : if present, #gpio-cells below is required.
++- #gpio-cells : should be <2>
++			  - First cell is the GPO line number, i.e. 0 or 1
++			  - Second cell is used to specify active high (0)
++			    or active low (1)
++
++Optional properties:
++- adi,parallel : if present, the three muxes are bound together with a single
++  mux controller, controlling all three muxes in parallel.
++- adi,idle-state : if present, array of 2-tuples with mux controller number
++  and state that mux controllers will have when idle. States 0 through 3
++  correspond to signals A through D in the datasheet.
++- adi,idle-high-impedance : if present, array of mux controller numbers that
++  should be in the disconnected high-impedance state when idle.
++
++Mux controller states 0 through 3 correspond to signals A through D in the
++datasheet. If a mux controller is mentioned in neither adi,idle-state nor
++adi,idle-high-impedance it is left in its previously selected state when idle.
++
++Example:
++
++	/*
++	 * Three independent mux controllers (of which one is used).
++	 * Mux 0 is disconnected when idle, mux 1 idles with signal C
++	 * and mux 2 idles with signal A.
++	 */
++	&i2c0 {
++		mux: adg792a@50 {
++			compatible = "adi,adg792a";
++			reg = <0x50>;
++			#mux-control-cells = <1>;
++
++			adi,idle-high-impedance = <0>;
++			adi,idle-state = <1 2>, <2 0>;
++		};
++	};
++
++	adc-mux {
++		compatible = "io-channel-mux";
++		io-channels = <&adc 0>;
++		io-channel-names = "parent";
++
++		mux-controls = <&mux 1>;
++
++		channels = "sync-1", "", "out";
++	};
++
++
++	/*
++	 * Three parallel muxes with one mux controller, useful e.g. if
++	 * the adc is differential, thus needing two signals to be muxed
++	 * simultaneously for correct operation.
++	 */
++	&i2c0 {
++		pmux: adg792a@50 {
++			compatible = "adi,adg792a";
++			reg = <0x50>;
++			#mux-control-cells = <0>;
++			adi,parallel;
++		};
++	};
++
++	diff-adc-mux {
++		compatible = "io-channel-mux";
++		io-channels = <&adc 0>;
++		io-channel-names = "parent";
++
++		mux-controls = <&pmux>;
++
++		channels = "sync-1", "", "out";
++	};
+-- 
+2.1.4
