@@ -1,522 +1,360 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:44148 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S965899AbdAEJDi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 5 Jan 2017 04:03:38 -0500
-Date: Thu, 5 Jan 2017 10:03:03 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Mani Sadhasivam <manivannanece23@gmail.com>
-cc: jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] iio:temperature: Add support for TI TMP007 sensor
-In-Reply-To: <20170105034904.GA21893@gmail.com>
-Message-ID: <alpine.DEB.2.02.1701050920460.16779@pmeerw.net>
-References: <20170105034904.GA21893@gmail.com>
-MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+Received: from anchovy2.45ru.net.au ([203.30.46.146]:46655 "EHLO
+        anchovy.45ru.net.au" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S968330AbdAEJXO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Jan 2017 04:23:14 -0500
+From: Phil Reid <preid@electromag.com.au>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        preid@electromag.com.au, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org
+Subject: [PATCH 1/1] iio: adc: tlc4541: add support for TI tlc4541 adc
+Date: Thu,  5 Jan 2017 16:55:46 +0800
+Message-Id: <1483606546-13629-1-git-send-email-preid@electromag.com.au>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This adds TI's tlc4541 16-bit ADC driver. Which is a single channel
+ADC. Supports raw and trigger buffer access.
 
-> This patch adds support for TI TMP007 - 16 bit IR thermopile sensor with integrated Math engine.
-> Sensor takes care of calculating the object temperature with the help of calibrated constants stored in non-volatile memory,
-> reducing the calculation overhead.
+Signed-off-by: Phil Reid <preid@electromag.com.au>
+---
+ .../devicetree/bindings/iio/adc/ti-tlc4541.txt     |  16 ++
+ drivers/iio/adc/Kconfig                            |  11 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/ti-tlc4541.c                       | 266 +++++++++++++++++++++
+ 4 files changed, 294 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-tlc4541.txt
+ create mode 100644 drivers/iio/adc/ti-tlc4541.c
 
-comments below
-link to datasheet would be nice
-
-> Signed-off-by: Mani Sadhasivam <manivannanece23@gmail.com>
-> ---
->  .../devicetree/bindings/iio/temperature/tmp007.txt |  14 +
->  drivers/iio/temperature/Kconfig                    |  10 +
->  drivers/iio/temperature/Makefile                   |   1 +
->  drivers/iio/temperature/tmp007.c                   | 357 +++++++++++++++++++++
->  4 files changed, 382 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/temperature/tmp007.txt
->  create mode 100644 drivers/iio/temperature/tmp007.c
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/temperature/tmp007.txt b/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
-> new file mode 100644
-> index 0000000..f4175c7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
-> @@ -0,0 +1,14 @@
-> +* TI TMP007 - IR thermopile sensor with integrated Math engine
-
-math
-
-add devicetree mail list to Cc:
-
-> +
-> +Required properties:
-> +
-> +  - compatible: should be "ti,tmp007"
-> +  - reg: the I2C address of the sensor (changeable via ADR pins)
-> +
-> +Example:
-> +
-> +tmp007@40 {
-> +        compatible = "ti,tmp007";
-> +        reg = <0x40>;
-> +};
-> +
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index c4664e5..538ce9e 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -23,6 +23,16 @@ config TMP006
->  	  This driver can also be built as a module. If so, the module will
->  	  be called tmp006.
->  
-> +config TMP007
-> +        tristate "TMP007 infrared thermopile sensor with Integrated Math Engine"
-> +        depends on I2C
-> +        help
-> +          If you say yes here you get support for the Texas Instruments
-> +          TMP007 infrared thermopile sensor with Integrated Math Engine.
-> +
-> +          This driver can also be built as a module. If so, the module will
-> +          be called tmp007.
-> +
->  config TSYS01
->  	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
->  	depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 02bc79d..f0cf5c5 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -4,5 +4,6 @@
->  
->  obj-$(CONFIG_MLX90614) += mlx90614.o
->  obj-$(CONFIG_TMP006) += tmp006.o
-> +obj-$(CONFIG_TMP007) += tmp007.o
->  obj-$(CONFIG_TSYS01) += tsys01.o
->  obj-$(CONFIG_TSYS02D) += tsys02d.o
-> diff --git a/drivers/iio/temperature/tmp007.c b/drivers/iio/temperature/tmp007.c
-> new file mode 100644
-> index 0000000..5b549cc
-> --- /dev/null
-> +++ b/drivers/iio/temperature/tmp007.c
-> @@ -0,0 +1,357 @@
-> +/*
-> + * tmp007.c - Support for TI TMP007 IR thermopile sensor with Integrated Math Engine
-> + *
-> + * Copyright (c) 2017 Manivannan Sadhasivam <manivannanece23@gmail.com>
-> + *
-> + * This file is subject to the terms and conditions of version 2 of
-> + * the GNU General Public License.  See the file COPYING in the main
-> + * directory of this archive for more details.
-> + *
-> + * Driver for the Texas Instruments I2C 16-bit IR thermopile sensor
-> + *
-> + * (7-bit I2C slave address (0x40 - 0x47), changeable via ADR pins)
-> + *
-> + * Note: This driver assumes that the sensor has been calibrated beforehand
-> + *
-> + * TODO: ALERT irq
-> + *
-> + */
-> +
-> +#include <linux/err.h>
-> +#include <linux/i2c.h>
-> +#include <linux/delay.h>
-> +#include <linux/module.h>
-> +#include <linux/pm.h>
-> +#include <linux/bitops.h>
-> +#include <linux/of.h>
-> +
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +
-> +#define TMP007_VSENSOR 0x00
-> +#define TMP007_TDIE 0x01
-> +#define TMP007_CONFIG 0x02
-> +#define TMP007_TOBJECT 0x03
-> +#define TMP007_STATUS 0x04
-> +#define TMP007_STATUS_MASK 0x05
-
-maybe remove #defines that are not (yet) in use
-since the chip supports limits, one could probably add events lateron
-
-> +#define TMP007_TOBJECT_HIGH_LIMIT 0x06
-> +#define TMP007_TOBJECT_LOW_LIMIT 0x07
-> +#define TMP007_TDIE_HIGH_LIMIT 0x08
-> +#define TMP007_TDIE_LOW_LIMIT 0x09
-> +#define TMP007_S0_COEFFICIENT 0x0a
-> +#define TMP007_A1_COEFFICIENT 0x0b
-> +#define TMP007_A2_COEFFICIENT 0x0c
-> +#define TMP007_B0_COEFFICIENT 0x0d
-> +#define TMP007_B1_COEFFICIENT 0x0e
-> +#define TMP007_B2_COEFFICIENT 0x0f
-> +#define TMP007_C2_COEFFICIENT 0x10
-> +#define TMP007_TC0_COEFFICIENT 0x11
-> +#define TMP007_TC1_COEFFICIENT 0x12
-> +#define TMP007_MANUFACTURER_ID 0x1e
-> +#define TMP007_DEVICE_ID 0x1f
-> +#define TMP007_MEMORY_ACCESS 0x2a
-> +
-> +#define TMP007_CONFIG_CONV_EN BIT(12)
-> +#define TMP007_CONFIG_COMP_EN BIT(5)
-> +#define TMP007_CONFIG_TC_EN BIT(6)
-> +#define TMP007_CONFIG_CR_MASK GENMASK(11, 9)
-> +#define TMP007_CONFIG_CR_SHIFT 9
-> +
-> +#define TMP007_STATUS_CONV_READY BIT(14)
-> +#define TMP007_STATUS_DATA_VALID BIT(9)
-> +
-> +#define TMP007_MANUFACTURER_MAGIC 0x5449
-> +#define TMP007_DEVICE_MAGIC 0x0078
-> +
-> +#define TMP007_TEMP_VALID BIT(0)
-
-only for TOBJ, make add a check for VALID?
-
-> +#define TMP007_TEMP_SHIFT 2
-> +
-> +struct tmp007_data {
-> +	struct i2c_client *client;
-> +	u16 config;
-> +	u16 status_mask;
-> +};
-> +
-> +/* Mode 101, 110, 111 are rarely used. Hence not taken into account */
-
-the comment is not very clear, what does mode 101 relate to?
-
-> +static const int tmp007_avgs[5][2] = { {4, 0}, {2, 0}, {1, 0},
-> +					{0, 500000}, {0, 250000} };
-> +
-> +static int tmp007_read_temperature(struct tmp007_data *data, u8 reg)
-> +{
-> +	s32 ret;
-> +	int tries = 50;
-> +
-> +	while (tries-- > 0) {
-> +		ret = i2c_smbus_read_word_swapped(data->client,
-> +			TMP007_STATUS);
-> +		if (ret < 0)
-> +			return ret;
-> +		if (ret & TMP007_STATUS_CONV_READY)
-> +			break;
-> +		msleep(100);
-> +	}
-> +
-
-this should probably check the DATA_VALID bit?
-
-> +	if (tries < 0)
-> +		return -EIO;
-> +
-> +	return i2c_smbus_read_word_swapped(data->client, reg);
-> +}
-> +
-> +static int tmp007_read_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *channel, int *val,
-> +		int *val2, long mask)
-> +{
-> +	struct tmp007_data *data = iio_priv(indio_dev);
-> +	s32 ret;
-> +	int conv_rate;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		switch (channel->channel2) {
-> +		case IIO_MOD_TEMP_AMBIENT: /* LSB: 0.03125 degree Celsius */
-> +			ret = tmp007_read_temperature(data, TMP007_TDIE);
-> +			if (ret < 0)
-> +			return ret;
-
-indentation
-
-> +			*val = sign_extend32(ret, 15) >> TMP007_TEMP_SHIFT;
-
-could move the two *val = ... lines before 
-return IIO_VAL_INT;
-
-> +			break;
-> +		case IIO_MOD_TEMP_OBJECT:
-> +			ret = tmp007_read_temperature(data, TMP007_TOBJECT);
-> +			if (ret < 0)
-> +				return ret;
-> +			*val = sign_extend32(ret, 15) >> TMP007_TEMP_SHIFT;
-> +			break;
-> +		default:
-> +			return -EINVAL;
-> +		}
-> +
-> +		return IIO_VAL_INT;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = 31;
-> +		*val2 = 250000;
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		conv_rate = (data->config & TMP007_CONFIG_CR_MASK)
-> +				>> TMP007_CONFIG_CR_SHIFT;
-> +		*val = tmp007_avgs[conv_rate][0];
-> +		*val2 = tmp007_avgs[conv_rate][1];
-> +
-> +		return IIO_VAL_INT_PLUS_MICRO;
-> +	default:
-> +		break;
-
-return -EINVAL;
-here and drop it below
-
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static int tmp007_write_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *channel, int val,
-> +		int val2, long mask)
-> +{
-> +	struct tmp007_data *data = iio_priv(indio_dev);
-> +	int i;
-> +
-> +	if (mask == IIO_CHAN_INFO_SAMP_FREQ) {
-> +		for (i = 0; i < ARRAY_SIZE(tmp007_avgs); i++) {
-> +			if ((val == tmp007_avgs[i][0]) &&
-> +			(val2 == tmp007_avgs[i][1])) {
-> +				data->config &= ~TMP007_CONFIG_CR_MASK;
-> +				data->config |= (i << TMP007_CONFIG_CR_SHIFT);
-
-strictly, data->config should be changed after the write;
-so, setup a tmp variable
-tmp = data->config & ~TMP007_CONFIG_CR_MASK;
-tmp |= (i << TMP007_CONFIG_CR_SHIFT);
-
-> +
-> +				return i2c_smbus_write_word_swapped(data->client,
-> +								TMP007_CONFIG,
-> +								data->config);
-
-data->config = tmp;
-
-> +			}
-> +		}
-> +	}
-> +
-> +	return -EINVAL;
-> +}
-> +
-> +static IIO_CONST_ATTR(sampling_frequency_available, "4 2 1 0.5 0.25");
-> +
-> +static struct attribute *tmp007_attributes[] = {
-> +	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
-> +	NULL
-> +};
-> +
-> +static const struct attribute_group tmp007_attribute_group = {
-> +	.attrs = tmp007_attributes,
-> +};
-> +
-
-drop extra newline
-
-> +
-> +static const struct iio_chan_spec tmp007_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.modified = 1,
-> +		.channel2 = IIO_MOD_TEMP_AMBIENT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	},
-> +	{
-> +		.type = IIO_TEMP,
-> +		.modified = 1,
-> +		.channel2 = IIO_MOD_TEMP_OBJECT,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
-> +				BIT(IIO_CHAN_INFO_SCALE),
-> +		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
-> +	}
-> +};
-> +
-> +static const struct iio_info tmp007_info = {
-> +	.read_raw = tmp007_read_raw,
-> +	.write_raw = tmp007_write_raw,
-> +	.attrs = &tmp007_attribute_group,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static bool tmp007_identify(struct i2c_client *client)
-> +{
-> +	int manf_id, dev_id;
-> +
-> +	manf_id = i2c_smbus_read_word_swapped(client, TMP007_MANUFACTURER_ID);
-> +	if (manf_id < 0)
-> +		return false;
-> +
-> +	dev_id = i2c_smbus_read_word_swapped(client, TMP007_DEVICE_ID);
-> +	if (dev_id < 0)
-> +		return false;
-> +
-> +	return (manf_id == TMP007_MANUFACTURER_MAGIC && dev_id == TMP007_DEVICE_MAGIC);
-> +}
-> +
-> +static int tmp007_probe(struct i2c_client *client,
-> +			const struct i2c_device_id *tmp007_id)
-> +{
-> +	struct tmp007_data *data;
-> +	struct iio_dev *indio_dev;
-> +	int ret;
-> +
-> +	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
-> +		return -EOPNOTSUPP;
-> +
-> +	if (!tmp007_identify(client)) {
-> +		dev_err(&client->dev, "TMP007 not found\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	data = iio_priv(indio_dev);
-> +	i2c_set_clientdata(client, indio_dev);
-> +	data->client = client;
-> +
-> +	indio_dev->dev.parent = &client->dev;
-> +	indio_dev->name = dev_name(&client->dev);
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->info = &tmp007_info;
-> +
-> +	indio_dev->channels = tmp007_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(tmp007_channels);
-> +
-> +	/* Set Configuration register:
-> +	 *
-> +	 * 1. Conversion ON
-> +	 * 2. Comparator mode
-> +	 * 3. Transient correction enable
-> +	 *
-
-maybe delete empty lines to make to more concise
-
-> +	 */
-> +
-> +	ret = i2c_smbus_read_word_swapped(data->client, TMP007_CONFIG);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	data->config = ret;
-> +	data->config |= (TMP007_CONFIG_CONV_EN | TMP007_CONFIG_COMP_EN |
-> +				TMP007_CONFIG_TC_EN);
-
-could go into one line
-
-> +
-> +	ret = i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
-> +					data->config);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	/* Set Status Mask register:
-> +	 *
-> +	 * 1. Conversion ready enable
-> +	 *
-
-more concise
-
-> +	 */
-> +
-> +	ret = i2c_smbus_read_word_swapped(data->client, TMP007_STATUS_MASK);
-> +	if (ret < 0)
-
-power down if this fails
-
-> +		return ret;
-> +
-> +	data->status_mask = ret;
-> +	data->status_mask |= TMP007_STATUS_CONV_READY;
-> +
-> +	ret = i2c_smbus_write_word_swapped(data->client, TMP007_STATUS_MASK,
-> +					data->status_mask);
-> +	if (ret < 0)
-
-power down if this fails, add power function
-
-> +		return ret;
-> +
-> +	return iio_device_register(indio_dev);
-> +}
-> +
-> +static int tmp007_remove(struct i2c_client *client)
-> +{
-> +	struct iio_dev *indio_dev = i2c_get_clientdata(client);
-> +	struct tmp007_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-
-call power function
-
-> +	i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
-> +			data->config & ~TMP007_CONFIG_CONV_EN);
-> +
-> +	return 0;
-> +}
-> +
-> +#ifdef CONFIG_PM_SLEEP
-> +static int tmp007_suspend(struct device *dev)
-> +{
-> +	struct tmp007_data *data = iio_priv(i2c_get_clientdata(
-> +			to_i2c_client(dev)));
-> +
-
-call power function
-
-> +	return i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
-> +			data->config & ~TMP007_CONFIG_CONV_EN);
-> +}
-> +
-> +static int tmp007_resume(struct device *dev)
-> +{
-> +	struct tmp007_data *data = iio_priv(i2c_get_clientdata(
-> +			to_i2c_client(dev)));
-> +
-
-call power function
-
-> +	return i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
-> +			data->config | TMP007_CONFIG_CONV_EN);
-> +}
-> +#endif
-> +
-> +static SIMPLE_DEV_PM_OPS(tmp007_pm_ops, tmp007_suspend, tmp007_resume);
-> +
-> +static const struct of_device_id tmp007_of_match[] = {
-> +	{ .compatible = "ti,tmp007", },
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, tmp007_of_match);
-> +
-> +static const struct i2c_device_id tmp007_id[] = {
-> +	{ "tmp007", 0 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(i2c, tmp007_id);
-> +
-> +static struct i2c_driver tmp007_driver = {
-> +	.driver = {
-> +		.name	= "tmp007",
-> +		.of_match_table = of_match_ptr(tmp007_of_match),
-> +		.pm	= &tmp007_pm_ops,
-> +	},
-> +	.probe		= tmp007_probe,
-> +	.remove		= tmp007_remove,
-> +	.id_table	= tmp007_id,
-> +};
-> +module_i2c_driver(tmp007_driver);
-> +
-> +MODULE_AUTHOR("Manivannan Sadhasivam <manivannanece23@gmail.com>");
-> +MODULE_DESCRIPTION("TI TMP007 IR thermopile sensor driver");
-> +MODULE_LICENSE("GPL");
-> 
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/ti-tlc4541.txt b/Documentation/devicetree/bindings/iio/adc/ti-tlc4541.txt
+new file mode 100644
+index 0000000..67caccd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/ti-tlc4541.txt
+@@ -0,0 +1,16 @@
++* Texas Instruments' TLC4541
++
++Required properties:
++ - compatible: Should be one of
++	* "ti,tlc4541"
++ - reg: spi chip select number for the device
++ - vref-supply: The regulator supply for ADC reference voltage
++ - spi-max-frequency: Max SPI frequency to use (<= 200000)
++
++Example:
++adc@0 {
++	compatible = "ti,adc0832";
++	reg = <0>;
++	vref-supply = <&vdd_supply>;
++	spi-max-frequency = <200000>;
++};
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 99c0514..4dda3f0 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -525,6 +525,17 @@ config TI_AM335X_ADC
+ 	  To compile this driver as a module, choose M here: the module will be
+ 	  called ti_am335x_adc.
+ 
++config TI_TLC4541
++	tristate "Texas Instruments TLC4541 ADC driver"
++	depends on SPI
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for Texas Instruments TLC4541 ADC chip.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called ti-tlc4541.
++
+ config TWL4030_MADC
+ 	tristate "TWL4030 MADC (Monitoring A/D Converter)"
+ 	depends on TWL4030_CORE
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 7a40c04..9bf2377 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -49,6 +49,7 @@ obj-$(CONFIG_TI_ADC161S626) += ti-adc161s626.o
+ obj-$(CONFIG_TI_ADS1015) += ti-ads1015.o
+ obj-$(CONFIG_TI_ADS8688) += ti-ads8688.o
+ obj-$(CONFIG_TI_AM335X_ADC) += ti_am335x_adc.o
++obj-$(CONFIG_TI_TLC4541) += ti-tlc4541.o
+ obj-$(CONFIG_TWL4030_MADC) += twl4030-madc.o
+ obj-$(CONFIG_TWL6030_GPADC) += twl6030-gpadc.o
+ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+diff --git a/drivers/iio/adc/ti-tlc4541.c b/drivers/iio/adc/ti-tlc4541.c
+new file mode 100644
+index 0000000..a767707
+--- /dev/null
++++ b/drivers/iio/adc/ti-tlc4541.c
+@@ -0,0 +1,266 @@
++/*
++ * TI tlc4541 ADC Driver
++ *
++ * Copyright (C) 2017 Phil Reid
++ *
++ * Datasheets can be found here:
++ * http://www.ti.com/lit/gpn/tlc4541
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * The tlc4541 requires 24 clock cycles to start a transfer.
++ * Conversion then takes 2.94us to complete before data is ready
++ */
++
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/interrupt.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/regulator/consumer.h>
++#include <linux/slab.h>
++#include <linux/spi/spi.h>
++#include <linux/sysfs.h>
++
++struct tlc4541_state {
++	struct spi_device               *spi;
++	struct regulator                *reg;
++	struct spi_transfer             scan_single_xfer[3];
++	struct spi_message              scan_single_msg;
++
++	/*
++	 * DMA (thus cache coherency maintenance) requires the
++	 * transfer buffers to live in their own cache lines.
++	 */
++	__be16                          rx_buf[2] ____cacheline_aligned;
++};
++
++struct tlc4541_chip_info {
++	const struct iio_chan_spec *channels;
++	unsigned int num_channels;
++};
++
++enum tlc4541_id {
++	TLC4541,
++};
++
++#define TLC4541_V_CHAN(index, bits) {                                 \
++		.type = IIO_VOLTAGE,                                  \
++		.indexed = 1,                                         \
++		.channel = index,                                     \
++		.info_mask_separate       = BIT(IIO_CHAN_INFO_RAW),   \
++		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE), \
++		.address = index,                                     \
++		.scan_index = index,                                  \
++		.scan_type = {                                        \
++			.sign = 'u',                                  \
++			.realbits = (bits),                           \
++			.storagebits = 16,                            \
++			.endianness = IIO_BE,                         \
++		},                                                    \
++	}
++
++#define DECLARE_TLC4541_CHANNELS(name, bits) \
++const struct iio_chan_spec name ## _channels[] = { \
++	TLC4541_V_CHAN(0, bits), \
++	IIO_CHAN_SOFT_TIMESTAMP(1), \
++}
++
++static DECLARE_TLC4541_CHANNELS(tlc4541, 16);
++
++static const struct tlc4541_chip_info tlc4541_chip_info[] = {
++	[TLC4541] = {
++		.channels = tlc4541_channels,
++		.num_channels = ARRAY_SIZE(tlc4541_channels),
++	},
++};
++
++static irqreturn_t tlc4541_trigger_handler(int irq, void *p)
++{
++	struct iio_poll_func *pf = p;
++	struct iio_dev *indio_dev = pf->indio_dev;
++	struct tlc4541_state *st = iio_priv(indio_dev);
++	u16 buf[8]; /* 2 bytes data + 6 bytes padding + 8 bytes timestamp */
++	int ret;
++
++	ret = spi_sync(st->spi, &st->scan_single_msg);
++	if (ret < 0)
++		goto done;
++
++	buf[0] = be16_to_cpu(st->rx_buf[0]);
++	iio_push_to_buffers_with_timestamp(indio_dev, buf,
++					   iio_get_time_ns(indio_dev));
++
++done:
++	iio_trigger_notify_done(indio_dev->trig);
++	return IRQ_HANDLED;
++}
++
++static int tlc4541_get_range(struct tlc4541_state *st)
++{
++	int vref;
++
++	vref = regulator_get_voltage(st->reg);
++	if (vref < 0)
++		return vref;
++
++	vref /= 1000;
++
++	return vref;
++}
++
++static int tlc4541_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val,
++			    int *val2,
++			    long m)
++{
++	int ret = 0;
++	struct tlc4541_state *st = iio_priv(indio_dev);
++
++	switch (m) {
++	case IIO_CHAN_INFO_RAW:
++		ret = iio_device_claim_direct_mode(indio_dev);
++		if (ret)
++			return ret;
++		ret = spi_sync(st->spi, &st->scan_single_msg);
++		iio_device_release_direct_mode(indio_dev);
++		if (ret < 0)
++			return ret;
++		*val = be16_to_cpu(st->rx_buf[0]);
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		ret = tlc4541_get_range(st);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++		*val2 = chan->scan_type.realbits;
++		return IIO_VAL_FRACTIONAL_LOG2;
++	}
++	return -EINVAL;
++}
++
++static const struct iio_info tlc4541_info = {
++	.read_raw = &tlc4541_read_raw,
++	.driver_module = THIS_MODULE,
++};
++
++static int tlc4541_probe(struct spi_device *spi)
++{
++	struct tlc4541_state *st;
++	struct iio_dev *indio_dev;
++	const struct tlc4541_chip_info *info;
++	int ret;
++	int8_t device_init = 0;
++
++	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*st));
++	if (indio_dev == NULL)
++		return -ENOMEM;
++
++	st = iio_priv(indio_dev);
++
++	spi_set_drvdata(spi, indio_dev);
++
++	st->spi = spi;
++
++	info = &tlc4541_chip_info[spi_get_device_id(spi)->driver_data];
++
++	indio_dev->name = spi_get_device_id(spi)->name;
++	indio_dev->dev.parent = &spi->dev;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = info->channels;
++	indio_dev->num_channels = info->num_channels;
++	indio_dev->info = &tlc4541_info;
++
++	/* perform reset */
++	spi_write(spi, &device_init, 1);
++
++	/* Setup default message */
++	st->scan_single_xfer[0].rx_buf = &st->rx_buf[0];
++	st->scan_single_xfer[0].len = 3;
++	st->scan_single_xfer[1].delay_usecs = 3;
++	st->scan_single_xfer[2].rx_buf = &st->rx_buf[0];
++	st->scan_single_xfer[2].len = 2;
++
++	spi_message_init(&st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[0], &st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[1], &st->scan_single_msg);
++	spi_message_add_tail(&st->scan_single_xfer[2], &st->scan_single_msg);
++
++	st->reg = devm_regulator_get(&spi->dev, "vref");
++	if (IS_ERR(st->reg))
++		return PTR_ERR(st->reg);
++
++	ret = regulator_enable(st->reg);
++	if (ret)
++		return ret;
++
++	ret = iio_triggered_buffer_setup(indio_dev, NULL,
++			&tlc4541_trigger_handler, NULL);
++	if (ret)
++		goto error_disable_reg;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto error_cleanup_buffer;
++
++	return 0;
++
++error_cleanup_buffer:
++	iio_triggered_buffer_cleanup(indio_dev);
++error_disable_reg:
++	regulator_disable(st->reg);
++
++	return ret;
++}
++
++static int tlc4541_remove(struct spi_device *spi)
++{
++	struct iio_dev *indio_dev = spi_get_drvdata(spi);
++	struct tlc4541_state *st = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	iio_triggered_buffer_cleanup(indio_dev);
++	regulator_disable(st->reg);
++
++	return 0;
++}
++
++#ifdef CONFIG_OF
++
++static const struct of_device_id tlc4541_dt_ids[] = {
++	{ .compatible = "ti,tlc4541", },
++	{}
++};
++MODULE_DEVICE_TABLE(of, tlc4541_dt_ids);
++
++#endif
++
++static const struct spi_device_id tlc4541_id[] = {
++	{"tlc4541", TLC4541},
++	{}
++};
++MODULE_DEVICE_TABLE(spi, tlc4541_id);
++
++static struct spi_driver tlc4541_driver = {
++	.driver = {
++		.name   = "tlc4541",
++		.of_match_table = of_match_ptr(tlc4541_dt_ids),
++	},
++	.probe          = tlc4541_probe,
++	.remove         = tlc4541_remove,
++	.id_table       = tlc4541_id,
++};
++module_spi_driver(tlc4541_driver);
++
++MODULE_AUTHOR("Phil Reid <preid@electromag.com.au>");
++MODULE_DESCRIPTION("Texas Instruments TLC4541 ADC");
++MODULE_LICENSE("GPL v2");
 -- 
+1.8.3.1
 
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
