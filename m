@@ -1,146 +1,526 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f179.google.com ([209.85.216.179]:35115 "EHLO
-        mail-qt0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752095AbdARJmG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jan 2017 04:42:06 -0500
-Received: by mail-qt0-f179.google.com with SMTP id x49so6566574qtc.2
-        for <linux-iio@vger.kernel.org>; Wed, 18 Jan 2017 01:42:05 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <20170118092021.GE18989@ulmo.ba.sec>
-References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
- <1483608344-9012-4-git-send-email-benjamin.gaignard@st.com> <20170118092021.GE18989@ulmo.ba.sec>
+Received: from mail-wj0-f169.google.com ([209.85.210.169]:34950 "EHLO
+        mail-wj0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1762167AbdAEJ0M (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Jan 2017 04:26:12 -0500
+Received: by mail-wj0-f169.google.com with SMTP id i20so29940399wjn.2
+        for <linux-iio@vger.kernel.org>; Thu, 05 Jan 2017 01:26:07 -0800 (PST)
 From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Date: Wed, 18 Jan 2017 10:42:04 +0100
-Message-ID: <CA+M3ks5t8j8bgyK7iq7oig_7+swiWzhB12=Q4q-umesWk4-m9w@mail.gmail.com>
-Subject: Re: [PATCH v7 3/8] PWM: add pwm-stm32 DT bindings
-To: Thierry Reding <thierry.reding@gmail.com>
-Cc: Lee Jones <lee.jones@linaro.org>, robh+dt@kernel.org,
-        Mark Rutland <mark.rutland@arm.com>,
-        Alexandre Torgue <alexandre.torgue@st.com>,
-        devicetree@vger.kernel.org,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Linux PWM List <linux-pwm@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Gerald Baeza <gerald.baeza@st.com>,
-        Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        Linaro Kernel Mailman List <linaro-kernel@lists.linaro.org>,
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
+        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
+        linaro-kernel@lists.linaro.org, benjamin.gaignard@linaro.org,
         Benjamin Gaignard <benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: [PATCH v7 4/8] PWM: add PWM driver for STM32 plaftorm
+Date: Thu,  5 Jan 2017 10:25:40 +0100
+Message-Id: <1483608344-9012-5-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
+References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-2017-01-18 10:20 GMT+01:00 Thierry Reding <thierry.reding@gmail.com>:
-> On Thu, Jan 05, 2017 at 10:25:39AM +0100, Benjamin Gaignard wrote:
->> Define bindings for pwm-stm32
->>
->> version 6:
->> - change st,breakinput parameter format to make it usuable on stm32f7 to=
-o.
->>
->> version 2:
->> - use parameters instead of compatible of handle the hardware configurat=
-ion
->>
->> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->> ---
->>  .../devicetree/bindings/pwm/pwm-stm32.txt          | 33 +++++++++++++++=
-+++++++
->>  1 file changed, 33 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->>
->> diff --git a/Documentation/devicetree/bindings/pwm/pwm-stm32.txt b/Docum=
-entation/devicetree/bindings/pwm/pwm-stm32.txt
->> new file mode 100644
->> index 0000000..866f222
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/pwm/pwm-stm32.txt
->> @@ -0,0 +1,33 @@
->> +STMicroelectronics STM32 Timers PWM bindings
->> +
->> +Must be a sub-node of an STM32 Timers device tree node.
->> +See ../mfd/stm32-timers.txt for details about the parent node.
->> +
->> +Required parameters:
->> +- compatible:                Must be "st,stm32-pwm".
->> +- pinctrl-names:     Set to "default".
->> +- pinctrl-0:                 List of phandles pointing to pin configura=
-tion nodes for PWM module.
->> +                     For Pinctrl properties see ../pinctrl/pinctrl-bind=
-ings.txt
->> +
->> +Optional parameters:
->> +- st,breakinput:     Arrays of three u32 <index level filter> to descri=
-be break input configurations.
->> +                     "index" indicates on which break input the configu=
-ration should be applied.
->
-> It might be useful to specify what the valid values are for the break
-> input index.
+This driver adds support for PWM driver on STM32 platform.
+The SoC have multiple instances of the hardware IP and each
+of them could have small differences: number of channels,
+complementary output, auto reload register size...
 
-It could 0 and 1, I will add this information.
+version 6:
+- change st,breakinput parameter to make it usuable for stm32f7 too.
 
->
-> Also, u32 is kind of a Linuxism, perhaps "Arrays of three cells"? Also,
-> does this mean there can be multiple entries? Such as 6 cells for two
-> configurations? What's the maximum number of such configurations?
->
-> If it's possible to specify multiple configurations, maybe a slightly
-> clearer wording would be: "One or more <index level filter> triplets to
-> describe..."
->
+version 4:
+- detect at probe time hardware capabilities
+- fix comments done on v2 and v3
+- use PWM atomic ops
 
-You can have one configuration per index so I will rephrase it like that:
-One or two <index level filter> to describe break input configurations.
-"index" indicates on which break input (0 or 1 ) the configuration
-should be applied.
+version 2:
+- only keep one comptatible
+- use DT parameters to discover hardware block configuration
 
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+---
+ drivers/pwm/Kconfig     |   9 +
+ drivers/pwm/Makefile    |   1 +
+ drivers/pwm/pwm-stm32.c | 434 ++++++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 444 insertions(+)
+ create mode 100644 drivers/pwm/pwm-stm32.c
 
->> +                     "level" gives the active level (0=3Dlow or 1=3Dhig=
-h) for this configuration.
->
-> So how does this work exactly? "level" specifies the output level if the
-> filter value is matched?
+diff --git a/drivers/pwm/Kconfig b/drivers/pwm/Kconfig
+index f92dd41..88035c0 100644
+--- a/drivers/pwm/Kconfig
++++ b/drivers/pwm/Kconfig
+@@ -397,6 +397,15 @@ config PWM_STI
+ 	  To compile this driver as a module, choose M here: the module
+ 	  will be called pwm-sti.
+ 
++config PWM_STM32
++	tristate "STMicroelectronics STM32 PWM"
++	depends on (ARCH_STM32 && OF && MFD_STM32_TIMERS) || COMPILE_TEST
++	help
++	  Generic PWM framework driver for STM32 SoCs.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called pwm-stm32.
++
+ config PWM_STMPE
+ 	bool "STMPE expander PWM export"
+ 	depends on MFD_STMPE
+diff --git a/drivers/pwm/Makefile b/drivers/pwm/Makefile
+index a48bdb5..346a83b 100644
+--- a/drivers/pwm/Makefile
++++ b/drivers/pwm/Makefile
+@@ -38,6 +38,7 @@ obj-$(CONFIG_PWM_ROCKCHIP)	+= pwm-rockchip.o
+ obj-$(CONFIG_PWM_SAMSUNG)	+= pwm-samsung.o
+ obj-$(CONFIG_PWM_SPEAR)		+= pwm-spear.o
+ obj-$(CONFIG_PWM_STI)		+= pwm-sti.o
++obj-$(CONFIG_PWM_STM32)		+= pwm-stm32.o
+ obj-$(CONFIG_PWM_STMPE)		+= pwm-stmpe.o
+ obj-$(CONFIG_PWM_SUN4I)		+= pwm-sun4i.o
+ obj-$(CONFIG_PWM_TEGRA)		+= pwm-tegra.o
+diff --git a/drivers/pwm/pwm-stm32.c b/drivers/pwm/pwm-stm32.c
+new file mode 100644
+index 0000000..fcf0a78
+--- /dev/null
++++ b/drivers/pwm/pwm-stm32.c
+@@ -0,0 +1,434 @@
++/*
++ * Copyright (C) STMicroelectronics 2016
++ *
++ * Author: Gerald Baeza <gerald.baeza@st.com>
++ *
++ * License terms: GNU General Public License (GPL), version 2
++ *
++ * Inspired by timer-stm32.c from Maxime Coquelin
++ *             pwm-atmel.c from Bo Shen
++ */
++
++#include <linux/mfd/stm32-timers.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/pwm.h>
++#include <linux/of.h>
++
++#define CCMR_CHANNEL_SHIFT 8
++#define CCMR_CHANNEL_MASK  0xFF
++#define MAX_BREAKINPUT 2
++
++struct stm32_pwm {
++	struct pwm_chip chip;
++	struct device *dev;
++	struct clk *clk;
++	struct regmap *regmap;
++	unsigned int caps;
++	unsigned int npwm;
++	u32 max_arr;
++	bool have_complementary_output;
++};
++
++struct stm32_breakinput {
++	u32 index;
++	u32 level;
++	u32 filter;
++};
++
++static inline struct stm32_pwm *to_stm32_pwm_dev(struct pwm_chip *chip)
++{
++	return container_of(chip, struct stm32_pwm, chip);
++}
++
++static u32 active_channels(struct stm32_pwm *dev)
++{
++	u32 ccer;
++
++	regmap_read(dev->regmap, TIM_CCER, &ccer);
++
++	return ccer & TIM_CCER_CCXE;
++}
++
++static int write_ccrx(struct stm32_pwm *dev, struct pwm_device *pwm,
++		      u32 value)
++{
++	switch (pwm->hwpwm) {
++	case 0:
++		return regmap_write(dev->regmap, TIM_CCR1, value);
++	case 1:
++		return regmap_write(dev->regmap, TIM_CCR2, value);
++	case 2:
++		return regmap_write(dev->regmap, TIM_CCR3, value);
++	case 3:
++		return regmap_write(dev->regmap, TIM_CCR4, value);
++	}
++	return -EINVAL;
++}
++
++static int stm32_pwm_config(struct pwm_chip *chip, struct pwm_device *pwm,
++			    int duty_ns, int period_ns)
++{
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++	unsigned long long prd, div, dty;
++	unsigned int prescaler = 0;
++	u32 ccmr, mask, shift;
++
++	/* Period and prescaler values depends on clock rate */
++	div = (unsigned long long)clk_get_rate(priv->clk) * period_ns;
++
++	do_div(div, NSEC_PER_SEC);
++	prd = div;
++
++	while (div > priv->max_arr) {
++		prescaler++;
++		div = prd;
++		do_div(div, (prescaler + 1));
++	}
++
++	prd = div;
++
++	if (prescaler > MAX_TIM_PSC) {
++		dev_err(chip->dev, "prescaler exceeds the maximum value\n");
++		return -EINVAL;
++	}
++
++	/*
++	 * All channels share the same prescaler and counter so when two
++	 * channels are active at the same we can't change them
++	 */
++	if (active_channels(priv) & ~(1 << pwm->hwpwm * 4)) {
++		u32 psc, arr;
++
++		regmap_read(priv->regmap, TIM_PSC, &psc);
++		regmap_read(priv->regmap, TIM_ARR, &arr);
++
++		if ((psc != prescaler) || (arr != prd - 1))
++			return -EBUSY;
++	}
++
++	regmap_write(priv->regmap, TIM_PSC, prescaler);
++	regmap_write(priv->regmap, TIM_ARR, prd - 1);
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
++
++	/* Calculate the duty cycles */
++	dty = prd * duty_ns;
++	do_div(dty, period_ns);
++
++	write_ccrx(priv, pwm, dty);
++
++	/* Configure output mode */
++	shift = (pwm->hwpwm & 0x1) * CCMR_CHANNEL_SHIFT;
++	ccmr = (TIM_CCMR_PE | TIM_CCMR_M1) << shift;
++	mask = CCMR_CHANNEL_MASK << shift;
++
++	if (pwm->hwpwm < 2)
++		regmap_update_bits(priv->regmap, TIM_CCMR1, mask, ccmr);
++	else
++		regmap_update_bits(priv->regmap, TIM_CCMR2, mask, ccmr);
++
++	regmap_update_bits(priv->regmap, TIM_BDTR,
++			   TIM_BDTR_MOE | TIM_BDTR_AOE,
++			   TIM_BDTR_MOE | TIM_BDTR_AOE);
++
++	return 0;
++}
++
++static int stm32_pwm_set_polarity(struct pwm_chip *chip, struct pwm_device *pwm,
++				  enum pwm_polarity polarity)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	mask = TIM_CCER_CC1P << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NP << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask,
++			   polarity == PWM_POLARITY_NORMAL ? 0 : mask);
++
++	return 0;
++}
++
++static int stm32_pwm_enable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	clk_enable(priv->clk);
++
++	/* Enable channel */
++	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask, mask);
++
++	/* Make sure that registers are updated */
++	regmap_update_bits(priv->regmap, TIM_EGR, TIM_EGR_UG, TIM_EGR_UG);
++
++	/* Enable controller */
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, TIM_CR1_CEN);
++
++	return 0;
++}
++
++static void stm32_pwm_disable(struct pwm_chip *chip, struct pwm_device *pwm)
++{
++	u32 mask;
++	struct stm32_pwm *priv = to_stm32_pwm_dev(chip);
++
++	/* Disable channel */
++	mask = TIM_CCER_CC1E << (pwm->hwpwm * 4);
++	if (priv->have_complementary_output)
++		mask |= TIM_CCER_CC1NE << (pwm->hwpwm * 4);
++
++	regmap_update_bits(priv->regmap, TIM_CCER, mask, 0);
++
++	/* When all channels are disabled, we can disable the controller */
++	if (!active_channels(priv))
++		regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_CEN, 0);
++
++	clk_disable(priv->clk);
++}
++
++static int stm32_pwm_apply(struct pwm_chip *chip, struct pwm_device *pwm,
++			   struct pwm_state *state)
++{
++	struct pwm_state curstate;
++	bool enabled;
++	int ret;
++
++	pwm_get_state(pwm, &curstate);
++	enabled = curstate.enabled;
++
++	if (enabled && !state->enabled) {
++		stm32_pwm_disable(chip, pwm);
++		return 0;
++	}
++
++	if (state->polarity != curstate.polarity && enabled)
++		stm32_pwm_set_polarity(chip, pwm, state->polarity);
++
++	ret = stm32_pwm_config(chip, pwm, state->duty_cycle, state->period);
++	if (ret)
++		return ret;
++
++	if (!enabled && state->enabled)
++		ret = stm32_pwm_enable(chip, pwm);
++
++	return ret;
++}
++
++static const struct pwm_ops stm32pwm_ops = {
++	.owner = THIS_MODULE,
++	.apply = stm32_pwm_apply,
++};
++
++static int stm32_pwm_set_breakinput(struct stm32_pwm *priv,
++				    int level, int filter)
++{
++	u32 bdtr = TIM_BDTR_BKE;
++
++	if (level)
++		bdtr |= TIM_BDTR_BKP;
++
++	bdtr |= (filter & TIM_BDTR_BKF_MASK) << TIM_BDTR_BKF_SHIFT;
++
++	regmap_update_bits(priv->regmap,
++			   TIM_BDTR, TIM_BDTR_BKE | TIM_BDTR_BKP | TIM_BDTR_BKF,
++			   bdtr);
++
++	regmap_read(priv->regmap, TIM_BDTR, &bdtr);
++
++	return (bdtr & TIM_BDTR_BKE) ? 0 : -EINVAL;
++}
++
++static int stm32_pwm_set_breakinput2(struct stm32_pwm *priv,
++				     int level, int filter)
++{
++	u32 bdtr = TIM_BDTR_BK2E;
++
++	if (level)
++		bdtr |= TIM_BDTR_BK2P;
++
++	bdtr |= (filter & TIM_BDTR_BKF_MASK) << TIM_BDTR_BK2F_SHIFT;
++
++	regmap_update_bits(priv->regmap,
++			   TIM_BDTR, TIM_BDTR_BK2E |
++			   TIM_BDTR_BK2P |
++			   TIM_BDTR_BK2F,
++			   bdtr);
++
++	regmap_read(priv->regmap, TIM_BDTR, &bdtr);
++
++	return (bdtr & TIM_BDTR_BK2E) ? 0 : -EINVAL;
++}
++
++static int stm32_pwm_apply_breakinputs(struct stm32_pwm *priv,
++				       struct device_node *np)
++{
++	struct stm32_breakinput breakinput[MAX_BREAKINPUT];
++	int nb, ret, i, array_size;
++
++	nb = of_property_count_elems_of_size(np, "st,breakinput",
++					     sizeof(struct stm32_breakinput));
++
++	/*
++	 * Because "st,breakinput" parameter is optional do not make probe
++	 * failed if it doesn't exist.
++	 */
++	if (nb <= 0)
++		return 0;
++
++	if (nb > MAX_BREAKINPUT)
++		return -EINVAL;
++
++	array_size = nb * sizeof(struct stm32_breakinput) / sizeof(u32);
++	ret = of_property_read_u32_array(np, "st,breakinput",
++					 &breakinput[0].index, array_size);
++	if (ret)
++		return ret;
++
++	for (i = 0; i < nb && !ret; i++) {
++		switch (breakinput[i].index) {
++		case 0:
++		{
++			ret = stm32_pwm_set_breakinput(priv,
++						       breakinput[i].level,
++						       breakinput[i].filter);
++			break;
++		}
++		case 1:
++		{
++			ret = stm32_pwm_set_breakinput2(priv,
++							breakinput[i].level,
++							breakinput[i].filter);
++
++			break;
++		}
++		default:
++		{
++			ret = -EINVAL;
++			break;
++		}
++		}
++	}
++
++	return ret;
++}
++
++static void stm32_pwm_detect_complementary(struct stm32_pwm *priv)
++{
++	u32 ccer;
++
++	/*
++	 * If complementary bit doesn't exist writing 1 will have no
++	 * effect so we can detect it.
++	 */
++	regmap_update_bits(priv->regmap,
++			   TIM_CCER, TIM_CCER_CC1NE, TIM_CCER_CC1NE);
++	regmap_read(priv->regmap, TIM_CCER, &ccer);
++	regmap_update_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE, 0);
++
++	priv->have_complementary_output = (ccer != 0);
++}
++
++static void stm32_pwm_detect_channels(struct stm32_pwm *priv)
++{
++	u32 ccer;
++
++	/*
++	 * If channels enable bits don't exist writing 1 will have no
++	 * effect so we can detect and count them.
++	 */
++	regmap_update_bits(priv->regmap,
++			   TIM_CCER, TIM_CCER_CCXE, TIM_CCER_CCXE);
++	regmap_read(priv->regmap, TIM_CCER, &ccer);
++	regmap_update_bits(priv->regmap, TIM_CCER, TIM_CCER_CCXE, 0);
++
++	if (ccer & TIM_CCER_CC1E)
++		priv->npwm++;
++
++	if (ccer & TIM_CCER_CC2E)
++		priv->npwm++;
++
++	if (ccer & TIM_CCER_CC3E)
++		priv->npwm++;
++
++	if (ccer & TIM_CCER_CC4E)
++		priv->npwm++;
++}
++
++static int stm32_pwm_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct stm32_timers *ddata = dev_get_drvdata(pdev->dev.parent);
++	struct stm32_pwm *priv;
++	int ret;
++
++	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->regmap = ddata->regmap;
++	priv->clk = ddata->clk;
++	priv->max_arr = ddata->max_arr;
++
++	if (!priv->regmap || !priv->clk)
++		return -EINVAL;
++
++	ret = stm32_pwm_apply_breakinputs(priv, np);
++	if (ret)
++		return ret;
++
++	stm32_pwm_detect_complementary(priv);
++	stm32_pwm_detect_channels(priv);
++
++	priv->chip.base = -1;
++	priv->chip.dev = dev;
++	priv->chip.ops = &stm32pwm_ops;
++	priv->chip.npwm = priv->npwm;
++
++	ret = pwmchip_add(&priv->chip);
++	if (ret < 0)
++		return ret;
++
++	platform_set_drvdata(pdev, priv);
++
++	return 0;
++}
++
++static int stm32_pwm_remove(struct platform_device *pdev)
++{
++	struct stm32_pwm *priv = platform_get_drvdata(pdev);
++	unsigned int i;
++
++	for (i = 0; i < priv->npwm; i++)
++		pwm_disable(&priv->chip.pwms[i]);
++
++	pwmchip_remove(&priv->chip);
++
++	return 0;
++}
++
++static const struct of_device_id stm32_pwm_of_match[] = {
++	{ .compatible = "st,stm32-pwm",	},
++	{ /* end node */ },
++};
++MODULE_DEVICE_TABLE(of, stm32_pwm_of_match);
++
++static struct platform_driver stm32_pwm_driver = {
++	.probe	= stm32_pwm_probe,
++	.remove	= stm32_pwm_remove,
++	.driver	= {
++		.name = "stm32-pwm",
++		.of_match_table = stm32_pwm_of_match,
++	},
++};
++module_platform_driver(stm32_pwm_driver);
++
++MODULE_ALIAS("platform: stm32-pwm");
++MODULE_DESCRIPTION("STMicroelectronics STM32 PWM driver");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
-No it specify on which input level the break event is generated
-
->
->> +                     "filter" gives the filtering value to be applied.
->
-> Is this a single value at which "level" will be applied? Or is it an
-> upper/lower bound that can be used to restrict the output to "level" if
-> the signal goes beyond/below a certain threshold?
-
-Very very basically filter is more a debounce value set on the signal
-to avoid glitches.
-The goal of break input feature is to stop PWM generation in hardware
-errors failure case.
-
-For a more completed description you can read "using break input
-function" (starting page 645) in this doc:
-
-http://www.st.com/content/ccc/resource/technical/document/reference_manual/=
-c5/cf/ef/52/c0/f1/4b/fa/DM00124865.pdf/files/DM00124865.pdf/jcr:content/tra=
-nslations/en.DM00124865.pdf
-
->
-> Maybe an example would clarify this. Or perhaps a reference to a manual
-> where a more in-depth description of this functionality can be found.
->
-> Thierry
-
-
-
---=20
-Benjamin Gaignard
-
-Graphic Study Group
-
-Linaro.org =E2=94=82 Open source software for ARM SoCs
-
-Follow Linaro: Facebook | Twitter | Blog
