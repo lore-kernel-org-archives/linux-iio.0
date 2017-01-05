@@ -1,119 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:34793 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1759103AbdAERFV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Jan 2017 12:05:21 -0500
-Date: Thu, 5 Jan 2017 18:02:24 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, sre@kernel.org, linux@armlinux.org.uk,
-        lee.jones@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
-        bonbons@linux-vserver.org
+Received: from mail-wm0-f49.google.com ([74.125.82.49]:36382 "EHLO
+        mail-wm0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752295AbdAERez (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Jan 2017 12:34:55 -0500
+Received: by mail-wm0-f49.google.com with SMTP id c85so255266203wmi.1
+        for <linux-iio@vger.kernel.org>; Thu, 05 Jan 2017 09:34:55 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <20170102163723.7939-18-quentin.schulz@free-electrons.com>
+References: <20170102163723.7939-1-quentin.schulz@free-electrons.com> <20170102163723.7939-18-quentin.schulz@free-electrons.com>
+From: Ezequiel Garcia <ezequiel@vanguardiasur.com.ar>
+Date: Thu, 5 Jan 2017 14:34:48 -0300
+Message-ID: <CAAEAJfBeu7Z_JeM55Tyj4a2ZOxNWhq7qoPDwFyftoO8sCumVQw@mail.gmail.com>
 Subject: Re: [PATCH 17/22] power: supply: add battery driver for AXP20X and
  AXP22X PMICs
-Message-ID: <20170105170224.wq45m3pg6sjnuhyh@lukather>
-References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
- <20170102163723.7939-18-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="4ydonvtwzvx2n2jl"
-In-Reply-To: <20170102163723.7939-18-quentin.schulz@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>, sre@kernel.org,
+        linux@armlinux.org.uk,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Lee Jones <lee.jones@linaro.org>,
+        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        linux-pm@vger.kernel.org, linux-iio@vger.kernel.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        bonbons@linux-vserver.org, icenowy@aosc.xyz,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
---4ydonvtwzvx2n2jl
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-On Mon, Jan 02, 2017 at 05:37:17PM +0100, Quentin Schulz wrote:
-> +		/*
-> +		 * IIO framework gives mV but Power Supply framework gives =B5V.
-> +		 */
-> +		val->intval *=3D 1000;
-
-s/gives/wants/ ?
-
-> +static int axp20x_battery_set_max_voltage(struct axp20x_batt_ps *axp20x_=
-batt,
-> +					  int val)
-> +{
-> +	switch (val) {
-> +	case 4100000:
-> +		return regmap_update_bits(axp20x_batt->regmap,
-> +					  AXP20X_CHRG_CTRL1,
-> +					  AXP20X_CHRG_CTRL1_TGT_VOLT,
-> +					  AXP20X_CHRG_CTRL1_TGT_4_1V);
-> +	case 4150000:
-> +		if (axp20x_batt->axp_id =3D=3D AXP221_ID)
-> +			return -EINVAL;
+On 2 January 2017 at 13:37, Quentin Schulz
+<quentin.schulz@free-electrons.com> wrote:
+[...]
 > +
-> +		return regmap_update_bits(axp20x_batt->regmap,
-> +					  AXP20X_CHRG_CTRL1,
-> +					  AXP20X_CHRG_CTRL1_TGT_VOLT,
-> +					  AXP20X_CHRG_CTRL1_TGT_4_15V);
-> +	case 4200000:
-> +		return regmap_update_bits(axp20x_batt->regmap,
-> +					  AXP20X_CHRG_CTRL1,
-> +					  AXP20X_CHRG_CTRL1_TGT_VOLT,
-> +					  AXP20X_CHRG_CTRL1_TGT_4_2V);
-> +	default:
-> +		/*
-> +		 * AXP20x max voltage can be set to 4.36V and AXP22X max voltage
-> +		 * can be set to 4.22V and 4.24V, but these voltages are too
-> +		 * high for Lithium based batteries (AXP PMICs are supposed to
-> +		 * be used with these kinds of battery).
-> +		 */
-> +		return -EINVAL;
-> +	}
+> +#define AXP20X_PWR_STATUS_BAT_CHARGING BIT(2)
+> +
+> +#define AXP20X_PWR_OP_BATT_PRESENT     BIT(5)
+> +#define AXP20X_PWR_OP_BATT_ACTIVATED   BIT(3)
+> +
+> +#define AXP209_FG_PERCENT              GENMASK(6, 0)
+> +#define AXP22X_FG_VALID                        BIT(7)
+> +
+> +#define AXP20X_CHRG_CTRL1_TGT_VOLT     GENMASK(6, 5)
+> +#define AXP20X_CHRG_CTRL1_TGT_4_1V     (0 << 5)
+> +#define AXP20X_CHRG_CTRL1_TGT_4_15V    BIT(5)
 
-Since all your calls to regmap are the same, something like:
+This is just a silly nit, but I would put (1 << 5) here
+for readability.
 
-case 4100000:
-	val =3D AXP20X_CHRG_CTRL1_TGT_4_1V;
-	break;
+> +#define AXP20X_CHRG_CTRL1_TGT_4_2V     (2 << 5)
+> +#define AXP20X_CHRG_CTRL1_TGT_4_36V    (3 << 5)
+> +#define AXP20X_CHRG_CTRL1_TGT_CURR     GENMASK(3, 0)
+> +
+> +#define AXP22X_CHRG_CTRL1_TGT_4_22V    BIT(5)
 
-case 4150000:
-	val =3D AXP20X_CHRG_CTRL1_TGT_4_15V;
-	break;
+Ditto.
 
-regmap_update_bits(axp20x_batt->regmap, AXP20X_CHRG_CTRL1,
-		   AXP20X_CHRG_CTRL1_TGT_VOLT, val);
+> +#define AXP22X_CHRG_CTRL1_TGT_4_24V    (3 << 5)
+> +
+> +#define AXP20X_V_OFF_MASK              GENMASK(2, 0)
+> +
+> +struct axp20x_batt_ps {
+> +       struct regmap *regmap;
+> +       struct power_supply *batt;
+> +       struct axp20x_dev *axp20x;
+> +       struct iio_channel *batt_chrg_i;
+> +       struct iio_channel *batt_dischrg_i;
+> +       struct iio_channel *batt_v;
+> +       u8 axp_id;
+> +};
+> +
+[..]
+> +static int axp20x_power_probe(struct platform_device *pdev)
+> +{
+> +       struct axp20x_dev *axp20x =3D dev_get_drvdata(pdev->dev.parent);
+> +       struct axp20x_batt_ps *axp20x_batt;
+> +       struct power_supply_config psy_cfg =3D {};
+> +
 
+To be consistent with the AC power supply and USB power supply,
+you might want to call of_device_is_available() here.
+Otherwise, the device probes even if "disabled" in the DTS.
 
-It would also get rid of your warnings in checkpatch.
+> +       axp20x_batt =3D devm_kzalloc(&pdev->dev, sizeof(*axp20x_batt),
+> +                                  GFP_KERNEL);
+> +       if (!axp20x_batt)
+> +               return -ENOMEM;
+> +
 
-Maxime
-
+Thanks for the good work,
 --=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---4ydonvtwzvx2n2jl
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJYbnwbAAoJEBx+YmzsjxAgjkYQALMF1anuaoZC9l++9J6su0Vh
-FgfjsnT7qYWz+qzBFoF42u1ujZSsNrOhlqIKh5lXciCe69Cx6RBxXJgGAkYIxrlO
-kXLcHttap+RU7RYQJ4S4YwKwgksffDw0jx8th5hxZOowBogqG7zDn5H5dz/3wSyf
-qVcyBTwKilIAId6AbUy+T6ptWMMYVt1SPLZVK2bPnQKo+a1f+KScCJ92pfl228vM
-8xGkgHVUgc73a6zePin3oF4d2oRmwYgTdJFiJCXduXwxlfIynwAonDPynu52hdGI
-S7KPI7aIUKWR/fFIQYSU1jFBbBt0h1YXrQFIrGO2f9+Ow2f98vkU9j7Q7mzOOdyc
-33F2VSeSTR3SJarhaQUOsPFScLUo8deNQVE7nv6uBKn8+EId6BvORQ2q3LMEfF2F
-9RZaBBxZ48Qnp14BZrAemiAHccy8bczy465HGqfSVO3hyrHPsEdSL08rF09RaxcU
-9fD56VopraViiomKLKVLYSrHWP8YLXbtAd/vcdDvJNleun1GEk4amLh6xHVI3zE1
-/M6xm4a28vVWOnlW0D4s+PNG7vJp7+mXQ2hAu2ZvaUzhtPIkdHf6w9/y1ytBW2I9
-Kf8CiwFr002dtf3tridrFzoePr9n4ZQvouUGBnMVp2K3cZtYUcxeKbdeH92ZRErw
-cCw+Jgqy3HHTZnG3IoOe
-=ThAR
------END PGP SIGNATURE-----
-
---4ydonvtwzvx2n2jl--
+Ezequiel Garc=C3=ADa, VanguardiaSur
+www.vanguardiasur.com.ar
