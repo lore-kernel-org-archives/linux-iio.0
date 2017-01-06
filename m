@@ -1,649 +1,446 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44865 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1756729AbdAHQnx (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 11:43:53 -0500
-Subject: Re: [PATCH v5 2/2] iio: adc: hx711: Add IIO driver for AVIA HX711
-To: Andreas Klinger <ak@it-klinger.de>, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org
-References: <20170105175156.GA12221@andreas>
- <ca8b33a0-92b1-cf4e-d129-fc6876330a7f@kernel.org>
-Cc: linux-kernel@vger.kernel.org, robh+dt@kernel.org,
-        pawel.moll@arm.com, mark.rutland@arm.com,
-        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <ac79c9b6-9df4-b179-1876-a4d66ee0e88a@kernel.org>
-Date: Sun, 8 Jan 2017 16:43:49 +0000
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:34821 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1032029AbdAFCwI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 5 Jan 2017 21:52:08 -0500
+Date: Fri, 6 Jan 2017 08:20:57 +0530
+From: Mani Sadhasivam <manivannanece23@gmail.com>
+To: jic23@kernel.org, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Subject: [PATCH v3] iio:temperature: Add support for TI TMP007 sensor
+Message-ID: <20170106025006.GA9832@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <ca8b33a0-92b1-cf4e-d129-fc6876330a7f@kernel.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/01/17 11:12, Jonathan Cameron wrote:
-> On 05/01/17 17:51, Andreas Klinger wrote:
->> This is the IIO driver for AVIA HX711 ADC which is mostly used in weighting
->> cells.
->>
->> The protocol is quite simple and using GPIOs:
->> One GPIO is used as clock (SCK) while another GPIO is read (DOUT)
->>
->> The raw value read from the chip is delivered. 
->> To get a weight one needs to subtract the zero offset and scale it.
->>
->> Signed-off-by: Andreas Klinger <ak@it-klinger.de>
-> I think your locking is a little heavy handed, perhaps a follow up patch to
-> relax it a little.
-> 
-> I fixed a trivial typo when applying.
-> 
-> Applied to the togreg branch of iio.git and pushed out as testing for the
-> autobuilders to play with it.
-And I forgot to fix the missing mutex_unlock.  Good thing zeroday caught that.
+This patch adds support for TI TMP007 - 16 bit IR thermopile sensor with integrated Math engine.
+Sensor takes care of calculating the object temperature with the help of calibrated constants stored in non-volatile memory,
+thereby reducing the calculation overhead.
 
-Updated and pushed out again for another round of build tests.
+Signed-off-by: Manivannan Sadhasivam <manivannanece23@gmail.com>
+---
 
-Jonathan
-> 
-> Thanks,
-> 
-> Jonathan
->> ---
->>  drivers/iio/adc/Kconfig  |  19 ++
->>  drivers/iio/adc/Makefile |   1 +
->>  drivers/iio/adc/hx711.c  | 531 +++++++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 551 insertions(+)
->>  create mode 100644 drivers/iio/adc/hx711.c
->>
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
->> index 932de1f9d1e7..1dcf2ace1697 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -205,6 +205,25 @@ config HI8435
->>  	  This driver can also be built as a module. If so, the module will be
->>  	  called hi8435.
->>  
->> +config HX711
->> +	tristate "AVIA HX711 ADC for weight cells"
->> +	depends on GPIOLIB
->> +	help
->> +	  If you say yes here you get support for AVIA HX711 ADC which is used
->> +	  for weigh cells
->> +
->> +	  This driver uses two GPIOs, one acts as the clock and controls the
->> +	  channel selection and gain, the other one is used for the measurement
->> +          data
->> +
->> +	  Currently the raw value is read from the chip and delivered.
->> +	  To get an actual weight one needs to subtract the
->> +	  zero offset and multiply by a scale factor.
->> +	  This should be done in userspace.
->> +
->> +	  This driver can also be built as a module. If so, the module will be
->> +	  called hx711.
->> +
->>  config INA2XX_ADC
->>  	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
->>  	depends on I2C && !SENSORS_INA2XX
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
->> index b1aa456e6af3..d46e289900ef 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -21,6 +21,7 @@ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
->>  obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>  obj-$(CONFIG_HI8435) += hi8435.o
->> +obj-$(CONFIG_HX711) += hx711.o
->>  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->>  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
->>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o
->> diff --git a/drivers/iio/adc/hx711.c b/drivers/iio/adc/hx711.c
->> new file mode 100644
->> index 000000000000..e41414556158
->> --- /dev/null
->> +++ b/drivers/iio/adc/hx711.c
->> @@ -0,0 +1,531 @@
->> +/*
->> + * HX711: analog to digital converter for weight sensor module
->> + *
->> + * Copyright (c) 2016 Andreas Klinger <ak@it-klinger.de>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + */
->> +#include <linux/err.h>
->> +#include <linux/kernel.h>
->> +#include <linux/module.h>
->> +#include <linux/of.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/property.h>
->> +#include <linux/slab.h>
->> +#include <linux/sched.h>
->> +#include <linux/delay.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/sysfs.h>
->> +#include <linux/gpio/consumer.h>
->> +#include <linux/regulator/consumer.h>
->> +
->> +/* gain to pulse and scale conversion */
->> +#define HX711_GAIN_MAX		3
->> +
->> +struct hx711_gain_to_scale {
->> +	int			gain;
->> +	int			gain_pulse;
->> +	int			scale;
->> +	int			channel;
->> +};
->> +
->> +/*
->> + * .scale depends on AVDD which in turn is known as soon as the regulator
->> + * is available
->> + * therefore we set .scale in hx711_probe()
->> + *
->> + * channel A in documentation is channel 0 in source code
->> + * channel B in documentation is channel 1 in source code
->> + */
->> +static struct hx711_gain_to_scale hx711_gain_to_scale[HX711_GAIN_MAX] = {
->> +	{ 128, 1, 0, 0 },
->> +	{  32, 2, 0, 1 },
->> +	{  64, 3, 0, 0 }
->> +};
->> +
->> +static int hx711_get_gain_to_pulse(int gain)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i < HX711_GAIN_MAX; i++)
->> +		if (hx711_gain_to_scale[i].gain == gain)
->> +			return hx711_gain_to_scale[i].gain_pulse;
->> +	return 1;
->> +}
->> +
->> +static int hx711_get_gain_to_scale(int gain)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i < HX711_GAIN_MAX; i++)
->> +		if (hx711_gain_to_scale[i].gain == gain)
->> +			return hx711_gain_to_scale[i].scale;
->> +	return 0;
->> +}
->> +
->> +static int hx711_get_scale_to_gain(int scale)
->> +{
->> +	int i;
->> +
->> +	for (i = 0; i < HX711_GAIN_MAX; i++)
->> +		if (hx711_gain_to_scale[i].scale == scale)
->> +			return hx711_gain_to_scale[i].gain;
->> +	return -EINVAL;
->> +}
->> +
->> +struct hx711_data {
->> +	struct device		*dev;
->> +	struct gpio_desc	*gpiod_pd_sck;
->> +	struct gpio_desc	*gpiod_dout;
->> +	struct regulator	*reg_avdd;
->> +	int			gain_set;	/* gain set on device */
->> +	int			gain_chan_a;	/* gain for channel A */
->> +	struct mutex		lock;
->> +};
->> +
->> +static int hx711_cycle(struct hx711_data *hx711_data)
->> +{
->> +	int val;
->> +
->> +	/*
->> +	 * if preempted for more then 60us while PD_SCK is high:
->> +	 * hx711 is going in reset
->> +	 * ==> measuring is false
->> +	 */
->> +	preempt_disable();
->> +	gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
->> +	val = gpiod_get_value(hx711_data->gpiod_dout);
->> +	/*
->> +	 * here we are not waiting for 0.2 us as suggested by the datasheet,
->> +	 * because the oszilloscope showed in a test scenario
->> +	 * at least 1.15 us for PD_SCK high (T3 in datasheet)
->> +	 * and 0.56 us for PD_SCK low on TI Sitara with 800 MHz
->> +	 */
->> +	gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
->> +	preempt_enable();
->> +
->> +	return val;
->> +}
->> +
->> +static int hx711_read(struct hx711_data *hx711_data)
->> +{
->> +	int i, ret;
->> +	int value = 0;
->> +	int val = gpiod_get_value(hx711_data->gpiod_dout);
->> +
->> +	/* we double check if it's really down */
->> +	if (val)
->> +		return -EIO;
->> +
->> +	for (i = 0; i < 24; i++) {
->> +		value <<= 1;
->> +		ret = hx711_cycle(hx711_data);
->> +		if (ret)
->> +			value++;
->> +	}
->> +
->> +	value ^= 0x800000;
->> +
->> +	for (i = 0; i < hx711_get_gain_to_pulse(hx711_data->gain_set); i++)
->> +		hx711_cycle(hx711_data);
->> +
->> +	return value;
->> +}
->> +
->> +static int hx711_wait_for_ready(struct hx711_data *hx711_data)
->> +{
->> +	int i, val;
->> +
->> +	/*
->> +	 * a maximum reset cycle time of 56 ms was measured.
->> +	 * we round it up to 100 ms
->> +	 */
->> +	for (i = 0; i < 100; i++) {
->> +		val = gpiod_get_value(hx711_data->gpiod_dout);
->> +		if (!val)
->> +			break;
->> +		/* sleep at least 1 ms */
->> +		msleep(1);
->> +	}
->> +	if (val)
->> +		return -EIO;
->> +
->> +	return 0;
->> +}
->> +
->> +static int hx711_reset(struct hx711_data *hx711_data)
->> +{
->> +	int ret;
->> +	int val = gpiod_get_value(hx711_data->gpiod_dout);
->> +
->> +	if (val) {
->> +		/*
->> +		 * an examination with the oszilloscope indicated
-> oscilloscope
->> +		 * that the first value read after the reset is not stable
->> +		 * if we reset too short;
->> +		 * the shorter the reset cycle
->> +		 * the less reliable the first value after reset is;
->> +		 * there were no problems encountered with a value
->> +		 * of 10 ms or higher
->> +		 */
->> +		gpiod_set_value(hx711_data->gpiod_pd_sck, 1);
->> +		msleep(10);
->> +		gpiod_set_value(hx711_data->gpiod_pd_sck, 0);
->> +
->> +		ret = hx711_wait_for_ready(hx711_data);
->> +		if (ret)
->> +			return ret;
->> +		/*
->> +		 * after a reset the gain is 128 so we do a dummy read
->> +		 * to set the gain for the next read
->> +		 */
->> +		ret = hx711_read(hx711_data);
->> +		if (ret < 0)
->> +			return ret;
->> +
->> +		/*
->> +		 * after a dummy read we need to wait vor readiness
->> +		 * for not mixing gain pulses with the clock
->> +		 */
->> +		ret = hx711_wait_for_ready(hx711_data);
->> +		if (ret)
->> +			return ret;
->> +	}
->> +
->> +	return val;
->> +}
->> +
->> +static int hx711_set_gain_for_channel(struct hx711_data *hx711_data, int chan)
->> +{
->> +	int ret;
->> +
->> +	if (chan == 0) {
->> +		if (hx711_data->gain_set == 32) {
->> +			hx711_data->gain_set = hx711_data->gain_chan_a;
->> +
->> +			ret = hx711_read(hx711_data);
->> +			if (ret < 0)
->> +				return ret;
->> +
->> +			ret = hx711_wait_for_ready(hx711_data);
->> +			if (ret)
->> +				return ret;
->> +		}
->> +	} else {
->> +		if (hx711_data->gain_set != 32) {
->> +			hx711_data->gain_set = 32;
->> +
->> +			ret = hx711_read(hx711_data);
->> +			if (ret < 0)
->> +				return ret;
->> +
->> +			ret = hx711_wait_for_ready(hx711_data);
->> +			if (ret)
->> +				return ret;
->> +		}
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int hx711_read_raw(struct iio_dev *indio_dev,
->> +				const struct iio_chan_spec *chan,
->> +				int *val, int *val2, long mask)
->> +{
->> +	struct hx711_data *hx711_data = iio_priv(indio_dev);
->> +	int ret;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		mutex_lock(&hx711_data->lock);
->> +
->> +		/*
->> +		 * hx711_reset() must be called from here
->> +		 * because it could be calling hx711_read() by itself
->> +		 */
->> +		if (hx711_reset(hx711_data)) {
-> No unlock in this error path.
->> +			dev_err(hx711_data->dev, "reset failed!");
->> +			return -EIO;
->> +		}
->> +
->> +		ret = hx711_set_gain_for_channel(hx711_data, chan->channel);
->> +		if (ret < 0) {
->> +			mutex_unlock(&hx711_data->lock);
->> +			return ret;
->> +		}
->> +
->> +		*val = hx711_read(hx711_data);
->> +
->> +		mutex_unlock(&hx711_data->lock);
->> +
->> +		if (*val < 0)
->> +			return *val;
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_SCALE:
->> +		*val = 0;
->> +		mutex_lock(&hx711_data->lock);
->> +
-> Looking feels overly paranoid here as we are only accessing locally stored
-> data.  Still it's not actively doing any harm...
->> +		*val2 = hx711_get_gain_to_scale(hx711_data->gain_set);
->> +
->> +		mutex_unlock(&hx711_data->lock);
->> +
->> +		return IIO_VAL_INT_PLUS_NANO;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static int hx711_write_raw(struct iio_dev *indio_dev,
->> +				struct iio_chan_spec const *chan,
->> +				int val,
->> +				int val2,
->> +				long mask)
->> +{
->> +	struct hx711_data *hx711_data = iio_priv(indio_dev);
->> +	int ret;
->> +	int gain;
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_SCALE:
->> +		/*
->> +		 * a scale greater than 1 mV per LSB is not possible
->> +		 * with the HX711, therefore val must be 0
->> +		 */
->> +		if (val != 0)
->> +			return -EINVAL;
->> +
->> +		mutex_lock(&hx711_data->lock);
->> +
->> +		gain = hx711_get_scale_to_gain(val2);
->> +		if (gain < 0) {
->> +			mutex_unlock(&hx711_data->lock);
->> +			return gain;
->> +		}
->> +
->> +		if (gain != hx711_data->gain_set) {
->> +			hx711_data->gain_set = gain;
->> +			if (gain != 32)
->> +				hx711_data->gain_chan_a = gain;
->> +
->> +			ret = hx711_read(hx711_data);
->> +			if (ret < 0) {
->> +				mutex_unlock(&hx711_data->lock);
->> +				return ret;
->> +			}
->> +		}
->> +
->> +		mutex_unlock(&hx711_data->lock);
->> +		return 0;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static int hx711_write_raw_get_fmt(struct iio_dev *indio_dev,
->> +		struct iio_chan_spec const *chan,
->> +		long mask)
->> +{
->> +	return IIO_VAL_INT_PLUS_NANO;
->> +}
->> +
->> +static ssize_t hx711_scale_available_show(struct device *dev,
->> +				struct device_attribute *attr,
->> +				char *buf)
->> +{
->> +	struct iio_dev_attr *iio_attr = to_iio_dev_attr(attr);
->> +	int channel = iio_attr->address;
->> +	int i, len = 0;
->> +
->> +	for (i = 0; i < HX711_GAIN_MAX; i++)
->> +		if (hx711_gain_to_scale[i].channel == channel)
->> +			len += sprintf(buf + len, "0.%09d ",
->> +					hx711_gain_to_scale[i].scale);
->> +
->> +	len += sprintf(buf + len, "\n");
->> +
->> +	return len;
->> +}
->> +
->> +static IIO_DEVICE_ATTR(in_voltage0_scale_available, S_IRUGO,
->> +	hx711_scale_available_show, NULL, 0);
->> +
->> +static IIO_DEVICE_ATTR(in_voltage1_scale_available, S_IRUGO,
->> +	hx711_scale_available_show, NULL, 1);
->> +
->> +static struct attribute *hx711_attributes[] = {
->> +	&iio_dev_attr_in_voltage0_scale_available.dev_attr.attr,
->> +	&iio_dev_attr_in_voltage1_scale_available.dev_attr.attr,
->> +	NULL,
->> +};
->> +
->> +static struct attribute_group hx711_attribute_group = {
->> +	.attrs = hx711_attributes,
->> +};
->> +
->> +static const struct iio_info hx711_iio_info = {
->> +	.driver_module		= THIS_MODULE,
->> +	.read_raw		= hx711_read_raw,
->> +	.write_raw		= hx711_write_raw,
->> +	.write_raw_get_fmt	= hx711_write_raw_get_fmt,
->> +	.attrs			= &hx711_attribute_group,
->> +};
->> +
->> +static const struct iio_chan_spec hx711_chan_spec[] = {
->> +	{
->> +		.type = IIO_VOLTAGE,
->> +		.channel = 0,
->> +		.indexed = 1,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
->> +	},
->> +	{
->> +		.type = IIO_VOLTAGE,
->> +		.channel = 1,
->> +		.indexed = 1,
->> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
->> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),
->> +	},
->> +};
->> +
->> +static int hx711_probe(struct platform_device *pdev)
->> +{
->> +	struct device *dev = &pdev->dev;
->> +	struct hx711_data *hx711_data;
->> +	struct iio_dev *indio_dev;
->> +	int ret;
->> +	int i;
->> +
->> +	indio_dev = devm_iio_device_alloc(dev, sizeof(struct hx711_data));
->> +	if (!indio_dev) {
->> +		dev_err(dev, "failed to allocate IIO device\n");
->> +		return -ENOMEM;
->> +	}
->> +
->> +	hx711_data = iio_priv(indio_dev);
->> +	hx711_data->dev = dev;
->> +
->> +	mutex_init(&hx711_data->lock);
->> +
->> +	/*
->> +	 * PD_SCK stands for power down and serial clock input of HX711
->> +	 * in the driver it is an output
->> +	 */
->> +	hx711_data->gpiod_pd_sck = devm_gpiod_get(dev, "sck", GPIOD_OUT_LOW);
->> +	if (IS_ERR(hx711_data->gpiod_pd_sck)) {
->> +		dev_err(dev, "failed to get sck-gpiod: err=%ld\n",
->> +					PTR_ERR(hx711_data->gpiod_pd_sck));
->> +		return PTR_ERR(hx711_data->gpiod_pd_sck);
->> +	}
->> +
->> +	/*
->> +	 * DOUT stands for serial data output of HX711
->> +	 * for the driver it is an input
->> +	 */
->> +	hx711_data->gpiod_dout = devm_gpiod_get(dev, "dout", GPIOD_IN);
->> +	if (IS_ERR(hx711_data->gpiod_dout)) {
->> +		dev_err(dev, "failed to get dout-gpiod: err=%ld\n",
->> +					PTR_ERR(hx711_data->gpiod_dout));
->> +		return PTR_ERR(hx711_data->gpiod_dout);
->> +	}
->> +
->> +	hx711_data->reg_avdd = devm_regulator_get(dev, "avdd");
->> +	if (IS_ERR(hx711_data->reg_avdd))
->> +		return PTR_ERR(hx711_data->reg_avdd);
->> +
->> +	ret = regulator_enable(hx711_data->reg_avdd);
->> +	if (ret < 0)
->> +		return ret;
->> +
->> +	/*
->> +	 * with
->> +	 * full scale differential input range: AVDD / GAIN
->> +	 * full scale output data: 2^24
->> +	 * we can say:
->> +	 *     AVDD / GAIN = 2^24
->> +	 * therefore:
->> +	 *     1 LSB = AVDD / GAIN / 2^24
->> +	 * AVDD is in uV, but we need 10^-9 mV
->> +	 * approximately to fit into a 32 bit number:
->> +	 * 1 LSB = (AVDD * 100) / GAIN / 1678 [10^-9 mV]
->> +	 */
->> +	ret = regulator_get_voltage(hx711_data->reg_avdd);
->> +	if (ret < 0) {
->> +		regulator_disable(hx711_data->reg_avdd);
->> +		return ret;
->> +	}
->> +	/* we need 10^-9 mV */
->> +	ret *= 100;
->> +
->> +	for (i = 0; i < HX711_GAIN_MAX; i++)
->> +		hx711_gain_to_scale[i].scale =
->> +			ret / hx711_gain_to_scale[i].gain / 1678;
->> +
->> +	hx711_data->gain_set = 128;
->> +	hx711_data->gain_chan_a = 128;
->> +
->> +	platform_set_drvdata(pdev, indio_dev);
->> +
->> +	indio_dev->name = "hx711";
->> +	indio_dev->dev.parent = &pdev->dev;
->> +	indio_dev->info = &hx711_iio_info;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +	indio_dev->channels = hx711_chan_spec;
->> +	indio_dev->num_channels = ARRAY_SIZE(hx711_chan_spec);
->> +
->> +	ret = iio_device_register(indio_dev);
->> +	if (ret < 0) {
->> +		dev_err(dev, "Couldn't register the device\n");
->> +		regulator_disable(hx711_data->reg_avdd);
->> +	}
->> +
->> +	return ret;
->> +}
->> +
->> +static int hx711_remove(struct platform_device *pdev)
->> +{
->> +	struct hx711_data *hx711_data;
->> +	struct iio_dev *indio_dev;
->> +
->> +	indio_dev = platform_get_drvdata(pdev);
->> +	hx711_data = iio_priv(indio_dev);
->> +
->> +	iio_device_unregister(indio_dev);
->> +
->> +	regulator_disable(hx711_data->reg_avdd);
->> +
->> +	return 0;
->> +}
->> +
->> +static const struct of_device_id of_hx711_match[] = {
->> +	{ .compatible = "avia,hx711", },
->> +	{},
->> +};
->> +
->> +MODULE_DEVICE_TABLE(of, of_hx711_match);
->> +
->> +static struct platform_driver hx711_driver = {
->> +	.probe		= hx711_probe,
->> +	.remove		= hx711_remove,
->> +	.driver		= {
->> +		.name		= "hx711-gpio",
->> +		.of_match_table	= of_hx711_match,
->> +	},
->> +};
->> +
->> +module_platform_driver(hx711_driver);
->> +
->> +MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
->> +MODULE_DESCRIPTION("HX711 bitbanging driver - ADC for weight cells");
->> +MODULE_LICENSE("GPL");
->> +MODULE_ALIAS("platform:hx711-gpio");
->> +
->>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Changes in v3 (based on suggestions from Peter):
+
+1. Added data validity check for TObj
+2. Modified the comment style
+3. Added powerdown function
+4. Some code cleanups
+
+ .../devicetree/bindings/iio/temperature/tmp007.txt |  16 +
+ drivers/iio/temperature/Kconfig                    |  10 +
+ drivers/iio/temperature/Makefile                   |   1 +
+ drivers/iio/temperature/tmp007.c                   | 345 +++++++++++++++++++++
+ 4 files changed, 372 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/temperature/tmp007.txt
+ create mode 100644 drivers/iio/temperature/tmp007.c
+
+diff --git a/Documentation/devicetree/bindings/iio/temperature/tmp007.txt b/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
+new file mode 100644
+index 0000000..9ae0519
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/temperature/tmp007.txt
+@@ -0,0 +1,16 @@
++* TI TMP007 - IR thermopile sensor with integrated math engine
++
++Link to datasheet: http://www.ti.com/lit/ds/symlink/tmp007.pdf
++
++Required properties:
++
++  - compatible: should be "ti,tmp007"
++  - reg: the I2C address of the sensor (changeable via ADR pins)
++
++Example:
++
++tmp007@40 {
++        compatible = "ti,tmp007";
++        reg = <0x40>;
++};
++
+diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
+index c4664e5..538ce9e 100644
+--- a/drivers/iio/temperature/Kconfig
++++ b/drivers/iio/temperature/Kconfig
+@@ -23,6 +23,16 @@ config TMP006
+ 	  This driver can also be built as a module. If so, the module will
+ 	  be called tmp006.
+ 
++config TMP007
++        tristate "TMP007 infrared thermopile sensor with Integrated Math Engine"
++        depends on I2C
++        help
++          If you say yes here you get support for the Texas Instruments
++          TMP007 infrared thermopile sensor with Integrated Math Engine.
++
++          This driver can also be built as a module. If so, the module will
++          be called tmp007.
++
+ config TSYS01
+ 	tristate "Measurement Specialties TSYS01 temperature sensor using I2C bus connection"
+ 	depends on I2C
+diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
+index 02bc79d..f0cf5c5 100644
+--- a/drivers/iio/temperature/Makefile
++++ b/drivers/iio/temperature/Makefile
+@@ -4,5 +4,6 @@
+ 
+ obj-$(CONFIG_MLX90614) += mlx90614.o
+ obj-$(CONFIG_TMP006) += tmp006.o
++obj-$(CONFIG_TMP007) += tmp007.o
+ obj-$(CONFIG_TSYS01) += tsys01.o
+ obj-$(CONFIG_TSYS02D) += tsys02d.o
+diff --git a/drivers/iio/temperature/tmp007.c b/drivers/iio/temperature/tmp007.c
+new file mode 100644
+index 0000000..a385ef5
+--- /dev/null
++++ b/drivers/iio/temperature/tmp007.c
+@@ -0,0 +1,345 @@
++/*
++ * tmp007.c - Support for TI TMP007 IR thermopile sensor with integrated math engine
++ *
++ * Copyright (c) 2017 Manivannan Sadhasivam <manivannanece23@gmail.com>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * Driver for the Texas Instruments I2C 16-bit IR thermopile sensor
++ *
++ * (7-bit I2C slave address (0x40 - 0x47), changeable via ADR pins)
++ *
++ * Note: This driver assumes that the sensor has been calibrated beforehand
++ *
++ * TODO: ALERT irq, limit threshold events
++ *
++ */
++
++#include <linux/err.h>
++#include <linux/i2c.h>
++#include <linux/delay.h>
++#include <linux/module.h>
++#include <linux/pm.h>
++#include <linux/bitops.h>
++#include <linux/of.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define TMP007_TDIE 0x01
++#define TMP007_CONFIG 0x02
++#define TMP007_TOBJECT 0x03
++#define TMP007_STATUS 0x04
++#define TMP007_STATUS_MASK 0x05
++#define TMP007_MANUFACTURER_ID 0x1e
++#define TMP007_DEVICE_ID 0x1f
++
++#define TMP007_CONFIG_CONV_EN BIT(12)
++#define TMP007_CONFIG_COMP_EN BIT(5)
++#define TMP007_CONFIG_TC_EN BIT(6)
++#define TMP007_CONFIG_CR_MASK GENMASK(11, 9)
++#define TMP007_CONFIG_CR_SHIFT 9
++
++#define TMP007_STATUS_CONV_READY BIT(14)
++#define TMP007_STATUS_DATA_VALID BIT(9)
++
++#define TMP007_MANUFACTURER_MAGIC 0x5449
++#define TMP007_DEVICE_MAGIC 0x0078
++
++#define TMP007_TEMP_SHIFT 2
++
++struct tmp007_data {
++	struct i2c_client *client;
++	u16 config;
++	u16 status_mask;
++};
++
++static const int tmp007_avgs[5][2] = { {4, 0}, {2, 0}, {1, 0},
++					{0, 500000}, {0, 250000} };
++
++static int tmp007_read_temperature(struct tmp007_data *data, u8 reg)
++{
++	s32 ret;
++	int tries = 50;
++
++	while (tries-- > 0) {
++		ret = i2c_smbus_read_word_swapped(data->client,
++			TMP007_STATUS);
++		if (ret < 0)
++			return ret;
++		if ((ret & TMP007_STATUS_CONV_READY) &&
++			!(ret & TMP007_STATUS_DATA_VALID))
++				break;
++		msleep(100);
++	}
++
++	if (tries < 0)
++		return -EIO;
++
++	return i2c_smbus_read_word_swapped(data->client, reg);
++}
++
++static int tmp007_powerdown(struct tmp007_data *data)
++{
++	return i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
++			data->config & ~TMP007_CONFIG_CONV_EN);
++}
++
++static int tmp007_read_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *channel, int *val,
++		int *val2, long mask)
++{
++	struct tmp007_data *data = iio_priv(indio_dev);
++	s32 ret;
++	int conv_rate;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		switch (channel->channel2) {
++		case IIO_MOD_TEMP_AMBIENT: /* LSB: 0.03125 degree Celsius */
++			ret = i2c_smbus_read_word_swapped(data->client, TMP007_TDIE);
++			if (ret < 0)
++				return ret;
++			break;
++		case IIO_MOD_TEMP_OBJECT:
++			ret = tmp007_read_temperature(data, TMP007_TOBJECT);
++			if (ret < 0)
++				return ret;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		*val = sign_extend32(ret, 15) >> TMP007_TEMP_SHIFT;
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_SCALE:
++		*val = 31;
++		*val2 = 250000;
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SAMP_FREQ:
++		conv_rate = (data->config & TMP007_CONFIG_CR_MASK)
++				>> TMP007_CONFIG_CR_SHIFT;
++		*val = tmp007_avgs[conv_rate][0];
++		*val2 = tmp007_avgs[conv_rate][1];
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int tmp007_write_raw(struct iio_dev *indio_dev,
++		struct iio_chan_spec const *channel, int val,
++		int val2, long mask)
++{
++	struct tmp007_data *data = iio_priv(indio_dev);
++	int i;
++	u16 tmp;
++
++	if (mask == IIO_CHAN_INFO_SAMP_FREQ) {
++		for (i = 0; i < ARRAY_SIZE(tmp007_avgs); i++) {
++			if ((val == tmp007_avgs[i][0]) &&
++			(val2 == tmp007_avgs[i][1])) {
++				tmp = data->config & ~TMP007_CONFIG_CR_MASK;
++				tmp |= (i << TMP007_CONFIG_CR_SHIFT);
++
++				return i2c_smbus_write_word_swapped(data->client,
++								TMP007_CONFIG,
++								data->config = tmp);
++			}
++		}
++	}
++
++	return -EINVAL;
++}
++
++static IIO_CONST_ATTR(sampling_frequency_available, "4 2 1 0.5 0.25");
++
++static struct attribute *tmp007_attributes[] = {
++	&iio_const_attr_sampling_frequency_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group tmp007_attribute_group = {
++	.attrs = tmp007_attributes,
++};
++
++static const struct iio_chan_spec tmp007_channels[] = {
++	{
++		.type = IIO_TEMP,
++		.modified = 1,
++		.channel2 = IIO_MOD_TEMP_AMBIENT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++	},
++	{
++		.type = IIO_TEMP,
++		.modified = 1,
++		.channel2 = IIO_MOD_TEMP_OBJECT,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++				BIT(IIO_CHAN_INFO_SCALE),
++		.info_mask_shared_by_all = BIT(IIO_CHAN_INFO_SAMP_FREQ),
++	}
++};
++
++static const struct iio_info tmp007_info = {
++	.read_raw = tmp007_read_raw,
++	.write_raw = tmp007_write_raw,
++	.attrs = &tmp007_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static bool tmp007_identify(struct i2c_client *client)
++{
++	int manf_id, dev_id;
++
++	manf_id = i2c_smbus_read_word_swapped(client, TMP007_MANUFACTURER_ID);
++	if (manf_id < 0)
++		return false;
++
++	dev_id = i2c_smbus_read_word_swapped(client, TMP007_DEVICE_ID);
++	if (dev_id < 0)
++		return false;
++
++	return (manf_id == TMP007_MANUFACTURER_MAGIC && dev_id == TMP007_DEVICE_MAGIC);
++}
++
++static int tmp007_probe(struct i2c_client *client,
++			const struct i2c_device_id *tmp007_id)
++{
++	struct tmp007_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	if (!i2c_check_functionality(client->adapter, I2C_FUNC_SMBUS_WORD_DATA))
++		return -EOPNOTSUPP;
++
++	if (!tmp007_identify(client)) {
++		dev_err(&client->dev, "TMP007 not found\n");
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = dev_name(&client->dev);
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &tmp007_info;
++
++	indio_dev->channels = tmp007_channels;
++	indio_dev->num_channels = ARRAY_SIZE(tmp007_channels);
++
++	/*
++	 * Set Configuration register:
++	 * 1. Conversion ON
++	 * 2. Comparator mode
++	 * 3. Transient correction enable
++	 */
++
++	ret = i2c_smbus_read_word_swapped(data->client, TMP007_CONFIG);
++	if (ret < 0)
++		return ret;
++
++	data->config = ret;
++	data->config |= (TMP007_CONFIG_CONV_EN | TMP007_CONFIG_COMP_EN | TMP007_CONFIG_TC_EN);
++
++	ret = i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
++					data->config);
++	if (ret < 0)
++		return ret;
++
++	/*
++	 * Set Status Mask register:
++	 * 1. Conversion ready enable
++	 */
++
++	ret = i2c_smbus_read_word_swapped(data->client, TMP007_STATUS_MASK);
++	if (ret < 0)
++		goto error_powerdown;
++
++	data->status_mask = ret;
++	data->status_mask |= (TMP007_STATUS_CONV_READY | TMP007_STATUS_DATA_VALID);
++
++	ret = i2c_smbus_write_word_swapped(data->client, TMP007_STATUS_MASK,
++					data->status_mask);
++	if (ret < 0)
++		goto error_powerdown;
++
++	return iio_device_register(indio_dev);
++
++error_powerdown:
++	tmp007_powerdown(data);
++
++	return ret;
++}
++
++static int tmp007_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct tmp007_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++	tmp007_powerdown(data);
++
++	return 0;
++}
++
++#ifdef CONFIG_PM_SLEEP
++static int tmp007_suspend(struct device *dev)
++{
++	struct tmp007_data *data = iio_priv(i2c_get_clientdata(
++			to_i2c_client(dev)));
++
++	return tmp007_powerdown(data);
++}
++
++static int tmp007_resume(struct device *dev)
++{
++	struct tmp007_data *data = iio_priv(i2c_get_clientdata(
++			to_i2c_client(dev)));
++
++	return i2c_smbus_write_word_swapped(data->client, TMP007_CONFIG,
++			data->config | TMP007_CONFIG_CONV_EN);
++}
++#endif
++
++static SIMPLE_DEV_PM_OPS(tmp007_pm_ops, tmp007_suspend, tmp007_resume);
++
++static const struct of_device_id tmp007_of_match[] = {
++	{ .compatible = "ti,tmp007", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, tmp007_of_match);
++
++static const struct i2c_device_id tmp007_id[] = {
++	{ "tmp007", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, tmp007_id);
++
++static struct i2c_driver tmp007_driver = {
++	.driver = {
++		.name	= "tmp007",
++		.of_match_table = of_match_ptr(tmp007_of_match),
++		.pm	= &tmp007_pm_ops,
++	},
++	.probe		= tmp007_probe,
++	.remove		= tmp007_remove,
++	.id_table	= tmp007_id,
++};
++module_i2c_driver(tmp007_driver);
++
++MODULE_AUTHOR("Manivannan Sadhasivam <manivannanece23@gmail.com>");
++MODULE_DESCRIPTION("TI TMP007 IR thermopile sensor driver");
++MODULE_LICENSE("GPL");
+-- 
+2.7.4
 
