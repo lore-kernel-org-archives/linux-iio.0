@@ -1,83 +1,92 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f67.google.com ([209.85.218.67]:36562 "EHLO
-        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S935378AbdADNVT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 4 Jan 2017 08:21:19 -0500
-Date: Wed, 4 Jan 2017 07:21:07 -0600
-From: Rob Herring <robh@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, mark.rutland@arm.com, wens@csie.org,
-        sre@kernel.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, lee.jones@linaro.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
-        bonbons@linux-vserver.org
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43027 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S938896AbdAHJsi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 04:48:38 -0500
 Subject: Re: [PATCH 14/22] dt-bindings: power: supply: add AXP20X/AXP22X
  battery DT binding
-Message-ID: <20170104132107.tciklylgqvhftb6f@rob-hp-laptop>
+To: Rob Herring <robh@kernel.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
 References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
  <20170102163723.7939-15-quentin.schulz@free-electrons.com>
+ <20170104132107.tciklylgqvhftb6f@rob-hp-laptop>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        mark.rutland@arm.com, wens@csie.org, sre@kernel.org,
+        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
+        lee.jones@linaro.org, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
+        bonbons@linux-vserver.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3155ba16-b51a-9306-6be4-0bdf4482a679@kernel.org>
+Date: Sat, 7 Jan 2017 14:33:47 -0500
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170102163723.7939-15-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170104132107.tciklylgqvhftb6f@rob-hp-laptop>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jan 02, 2017 at 05:37:14PM +0100, Quentin Schulz wrote:
-> The X-Powers AXP20X and AXP22X PMICs can have a battery as power supply.
+On 04/01/17 08:21, Rob Herring wrote:
+> On Mon, Jan 02, 2017 at 05:37:14PM +0100, Quentin Schulz wrote:
+>> The X-Powers AXP20X and AXP22X PMICs can have a battery as power supply.
+>>
+>> This patch adds the DT binding documentation for the battery power
+>> supply which gets various data from the PMIC, such as the battery status
+>> (charging, discharging, full, dead), current max limit, current current,
+>> battery capacity (in percentage), voltage max and min limits, current
+>> voltage and battery capacity (in Ah).
+>>
+>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>> ---
+>>  .../bindings/power/supply/axp20x_battery.txt       | 27 ++++++++++++++++++++++
+>>  1 file changed, 27 insertions(+)
+>>  create mode 100644 Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+>>
+>> diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+>> new file mode 100644
+>> index 0000000..5489d0d
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+>> @@ -0,0 +1,27 @@
+>> +AXP20x and AXP22x battery power supply
+>> +
+>> +Required Properties:
+>> + - compatible, one of:
+>> +			"x-powers,axp209-battery-power-supply"
+>> +			"x-powers,axp221-battery-power-supply"
+>> + - io-channels: phandles to battery voltage, charge and discharge
+>> + currents ADC channels
+>> + - io-channel-names = "batt_v", "batt_chrg_i", "batt_dischrg_i";
+>> +
+>> +This node is a subnode of the axp20x/axp22x PMIC.
+>> +
+>> +The AXP20X and AXP22X can read the battery voltage, charge and discharge
+>> +currents of the battery by reading ADC channels from the AXP20X/AXP22X
+>> +ADC.
+>> +
+>> +Example:
+>> +
+>> +&axp209 {
+>> +	battery_power_supply: battery_power_supply {
 > 
-> This patch adds the DT binding documentation for the battery power
-> supply which gets various data from the PMIC, such as the battery status
-> (charging, discharging, full, dead), current max limit, current current,
-> battery capacity (in percentage), voltage max and min limits, current
-> voltage and battery capacity (in Ah).
+> Humm, I guess you power-supply is not sufficient, so 
+> 'battery-power-supply' and similar for ac.
 > 
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
->  .../bindings/power/supply/axp20x_battery.txt       | 27 ++++++++++++++++++++++
->  1 file changed, 27 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+>> +		compatible = "x-powers,axp209-battery-power-supply";
+>> +		io-channels = <&axp209_adc 7>, <&axp209_adc 8>,
+>> +			<&axp209_adc 9>;
+>> +		io-channel-names = "batt_v", "batt_chrg_i",
+>> +			"batt_dischrg_i";
+Is this stuff fixed for the device?
+>> +	}
+>> +};
+>> -- 
+>> 2.9.3
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
-> diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
-> new file mode 100644
-> index 0000000..5489d0d
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
-> @@ -0,0 +1,27 @@
-> +AXP20x and AXP22x battery power supply
-> +
-> +Required Properties:
-> + - compatible, one of:
-> +			"x-powers,axp209-battery-power-supply"
-> +			"x-powers,axp221-battery-power-supply"
-> + - io-channels: phandles to battery voltage, charge and discharge
-> + currents ADC channels
-> + - io-channel-names = "batt_v", "batt_chrg_i", "batt_dischrg_i";
-> +
-> +This node is a subnode of the axp20x/axp22x PMIC.
-> +
-> +The AXP20X and AXP22X can read the battery voltage, charge and discharge
-> +currents of the battery by reading ADC channels from the AXP20X/AXP22X
-> +ADC.
-> +
-> +Example:
-> +
-> +&axp209 {
-> +	battery_power_supply: battery_power_supply {
 
-Humm, I guess you power-supply is not sufficient, so 
-'battery-power-supply' and similar for ac.
-
-> +		compatible = "x-powers,axp209-battery-power-supply";
-> +		io-channels = <&axp209_adc 7>, <&axp209_adc 8>,
-> +			<&axp209_adc 9>;
-> +		io-channel-names = "batt_v", "batt_chrg_i",
-> +			"batt_dischrg_i";
-> +	}
-> +};
-> -- 
-> 2.9.3
-> 
