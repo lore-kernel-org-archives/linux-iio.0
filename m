@@ -1,53 +1,60 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:39438 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S941508AbdAGRzN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Jan 2017 12:55:13 -0500
+Return-Path: <SRS0=JsrJ=YV=poczta.fm=sst@kernel.org>
+Date: Sat, 7 Jan 2017 22:58:51 +0100
+From: Slawomir Stepien <sst@poczta.fm>
+To: Matt Weber <matthew.weber@rockwellcollins.com>
+Cc: linux-iio@vger.kernel.org, jic23@kernel.org,
+	cristina.moraru09@gmail.com,
+	Maury Anderson <maury.anderson@rockwellcollins.com>
 Subject: Re: [PATCH] iio: max5481: Add support for Maxim digital
  potentiometers
-To: Slawomir Stepien <sst@poczta.fm>,
-        Matthew Weber <matthew.weber@rockwellcollins.com>
+Message-ID: <20170107215851.GB1845@x220.localdomain>
 References: <1481136052-1660-1-git-send-email-matthew.weber@rockwellcollins.com>
- <alpine.DEB.2.02.1612071958050.32025@pmeerw.net>
- <CANQCQpZdo3KQyTcMx_RPbjkFhj=E7uuaayJr4n1Vh6QTaH1VHw@mail.gmail.com>
- <20170107172815.GA1845@x220.localdomain>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org, cristina.moraru09@gmail.com,
-        Maury Anderson <maury.anderson@rockwellcollins.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <20ca54ce-f6c7-3359-06f4-69f463f52c17@kernel.org>
-Date: Sat, 7 Jan 2017 12:55:10 -0500
 MIME-Version: 1.0
-In-Reply-To: <20170107172815.GA1845@x220.localdomain>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1481136052-1660-1-git-send-email-matthew.weber@rockwellcollins.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/01/17 12:28, Slawomir Stepien wrote:
-> On Jan 03, 2017 11:37, Matthew Weber wrote:
->> Thanks for the review.  At this time we aren't in a position to spend
->> time on updates but just wanted to share what we pulled together for
->> others to start from.  I'll mark this as rejected.
-> 
-> In that case I would like to continue in resubmitting this driver. 
-> I do not have the chip on me, but I will try to do my best to analyze it on my
-> signal analyzer ;)
-Excellent.
-> 
-> Any hints for me regarding resubmitting drivers created by someone else
-> (copyright, authors, etc issues)?
-> 
-Basically you keep the From and initial sign off as per the original submission then
-add your own sign off afterwards.  If the changes you make are significant then it is
-fair enough to add your own copyright notice (maintaining any already in place as well).
+On Dec 07, 2016 12:40, Matt Weber wrote:
+> (...)
+> +static int max5481_probe(struct spi_device *spi)
+> +{
+> +	struct iio_dev *indio_dev;
+> +	struct max5481_data *data;
+> +	const struct spi_device_id *id = spi_get_device_id(spi);
 
-Easiest thing is to apply the original patch then just make changes using git commit --amend
-as that will keep everything correct.
+This id will be null...
 
-Looking forward to updated driver.  I'm could take this into drivers/staging/iio but
-as you are working on it there is probably little point and it would be cleaner to take
-it directly into drivers/iio.
+> +static const struct spi_device_id max5481_id_table[] = {
+> +	{ "MAX5481", max5481 },
+> +	{ "MAX5482", max5482 },
+> +	{ "MAX5483", max5483 },
+> +	{ "MAX5484", max5484 },
 
-Thanks,
+...because case size matter here.
 
-Jonathan
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(spi, max5481_id_table);
+> +
+> +#if defined(CONFIG_OF)
+> +static const struct of_device_id max5481_match[] = {
+> +	{ .compatible = "maxim,max5481", .data = &max5481_cfg[max5481] },
+> +	{ .compatible = "maxim,max5482", .data = &max5481_cfg[max5482] },
+> +	{ .compatible = "maxim,max5483", .data = &max5481_cfg[max5483] },
+> +	{ .compatible = "maxim,max5484", .data = &max5481_cfg[max5484] },
+> +	{ }
+> +};
+> +MODULE_DEVICE_TABLE(of, max5481_match);
+> +#endif
+> +
+> +#if defined(CONFIG_ACPI)
+> +static const struct acpi_device_id max5481_acpi_match[] = {
+> +	{ "MAX5481", max5481 },
+> +	{ "MAX5482", max5482 },
+> +	{ "MAX5483", max5483 },
+> +	{ "MAX5484", max5484 },
+
+I guess the same here, but I am not sure at the moment...
+
+-- 
+Slawomir Stepien
