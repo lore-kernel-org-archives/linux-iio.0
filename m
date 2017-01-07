@@ -1,38 +1,63 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:34374 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754624AbdAFJjj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2017 04:39:39 -0500
-Received: by mail-pg0-f68.google.com with SMTP id b1so43528715pgc.1
-        for <linux-iio@vger.kernel.org>; Fri, 06 Jan 2017 01:39:39 -0800 (PST)
-From: rishabh hardas <rishabheudyptula@gmail.com>
-To: pmeerw@pmeerw.net
-Cc: rishabh hardas <rishabheudyptula@gmail.com>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH] Fixed a coding style issue as a part of Eudyptula Challenge
-Date: Fri,  6 Jan 2017 15:09:30 +0530
-Message-Id: <1483695570-13082-1-git-send-email-rishabheudyptula@gmail.com>
+Received: from mail-it0-f68.google.com ([209.85.214.68]:35972 "EHLO
+        mail-it0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1031909AbdAGJXJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 7 Jan 2017 04:23:09 -0500
+Received: by mail-it0-f68.google.com with SMTP id n68so4365382itn.3
+        for <linux-iio@vger.kernel.org>; Sat, 07 Jan 2017 01:23:09 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <1483695570-13082-1-git-send-email-rishabheudyptula@gmail.com>
+References: <1483695570-13082-1-git-send-email-rishabheudyptula@gmail.com>
+From: Daniel Baluta <daniel.baluta@gmail.com>
+Date: Sat, 7 Jan 2017 11:23:08 +0200
+Message-ID: <CAEnQRZCgiUXEZX8iwJV3MU00KoywaPsNFy32QkuEGRui_itgJw@mail.gmail.com>
+Subject: Re: [PATCH] Fixed a coding style issue as a part of Eudyptula Challenge
+To: rishabh hardas <rishabheudyptula@gmail.com>
+Cc: Peter Meerwald <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: rishabh hardas <rishabheudyptula@gmail.com>
----
- drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 2 +-
- 1 file changed, 1 insertion(+), 1 deletion(-)
+Hi rishabh,
 
-diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-index 38dca69..9658f20 100644
---- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-+++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
-@@ -133,7 +133,7 @@ static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
- 	return sprintf(buf, "%lu\n", val);
- }
- 
--static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR, iio_bfin_tmr_frequency_show,
-+static DEVICE_ATTR(frequency, 0644, iio_bfin_tmr_frequency_show,
- 		   iio_bfin_tmr_frequency_store);
- 
- static struct attribute *iio_bfin_tmr_trigger_attrs[] = {
--- 
-2.7.4
+Congrats on reaching that far on Eudyptula challenge.
+Anyhow, you should write a proper commit message to this patch.
 
+The subject should briefly describe why the patch is needed.
+
+E.g: iio:trigger: Fix coding style
+
+What actually has been fixed and how did you find it. (I assume you
+used checkpatch.pl)
+
+Daniel.
+
+
+On Fri, Jan 6, 2017 at 11:39 AM, rishabh hardas
+<rishabheudyptula@gmail.com> wrote:
+> Signed-off-by: rishabh hardas <rishabheudyptula@gmail.com>
+> ---
+>  drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 2 +-
+>  1 file changed, 1 insertion(+), 1 deletion(-)
+>
+> diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> index 38dca69..9658f20 100644
+> --- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> +++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+> @@ -133,7 +133,7 @@ static ssize_t iio_bfin_tmr_frequency_show(struct device *dev,
+>         return sprintf(buf, "%lu\n", val);
+>  }
+>
+> -static DEVICE_ATTR(frequency, S_IRUGO | S_IWUSR, iio_bfin_tmr_frequency_show,
+> +static DEVICE_ATTR(frequency, 0644, iio_bfin_tmr_frequency_show,
+>                    iio_bfin_tmr_frequency_store);
+>
+>  static struct attribute *iio_bfin_tmr_trigger_attrs[] = {
+> --
+> 2.7.4
+>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
