@@ -1,32 +1,26 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43561 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932795AbdAHLXu (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 8 Jan 2017 06:23:50 -0500
+Return-Path: <SRS0=yjIN=YX=gmail.com=robherring2@kernel.org>
+Date: Mon, 9 Jan 2017 12:04:48 -0600
+From: Rob Herring <robh@kernel.org>
+To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+Cc: lee.jones@linaro.org, mark.rutland@arm.com, alexandre.torgue@st.com,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
+	jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+	pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
+	gerald.baeza@st.com, arnaud.pouliquen@st.com,
+	linus.walleij@linaro.org, linaro-kernel@lists.linaro.org,
+	Benjamin Gaignard <benjamin.gaignard@st.com>
 Subject: Re: [PATCH v7 5/8] IIO: add bindings for STM32 timer trigger driver
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
-        alexandre.torgue@st.com, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
-        linux-pwm@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org
+Message-ID: <20170109180448.f3pcpuarhcddo76b@rob-hp-laptop>
 References: <1483608344-9012-1-git-send-email-benjamin.gaignard@st.com>
  <1483608344-9012-6-git-send-email-benjamin.gaignard@st.com>
-Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
-        arnaud.pouliquen@st.com, linus.walleij@linaro.org,
-        linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <2d564966-f86c-1619-72b7-b5d19e3857e0@kernel.org>
-Date: Sun, 8 Jan 2017 11:23:48 +0000
 MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <1483608344-9012-6-git-send-email-benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 05/01/17 09:25, Benjamin Gaignard wrote:
+On Thu, Jan 05, 2017 at 10:25:41AM +0100, Benjamin Gaignard wrote:
 > Define bindings for STM32 timer trigger
 > 
 > version 4:
@@ -44,7 +38,6 @@ On 05/01/17 09:25, Benjamin Gaignard wrote:
 >   another one give the triggers accepted by the device
 > 
 > Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-Acked-by: Jonathan Cameron <jic23@kernel.org>
 > ---
 >  .../bindings/iio/timer/stm32-timer-trigger.txt     | 23 ++++++++++++++++++++++
 >  1 file changed, 23 insertions(+)
@@ -64,6 +57,10 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 > +Required parameters:
 > +- compatible:	Must be "st,stm32-timer-trigger".
 > +- reg:		Define triggers configuration of the hardware IP.
+
+Valid values? Not sure this makes sense for use of reg. reg should be 
+how you address or id a device.
+
 > +
 > +Example:
 > +	timers@40010000 {
@@ -75,9 +72,13 @@ Acked-by: Jonathan Cameron <jic23@kernel.org>
 > +		clock-names = "clk_int";
 > +
 > +		timer {
+
+This would also need an unit address.
+
 > +			compatible = "st,stm32-timer-trigger";
 > +			reg = <0>;
 > +		};
 > +	};
+> -- 
+> 1.9.1
 > 
-
