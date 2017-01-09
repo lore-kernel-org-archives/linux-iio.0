@@ -1,10 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from www381.your-server.de ([78.46.137.84]:58191 "EHLO
-        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932505AbdAIVCt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jan 2017 16:02:49 -0500
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:32942 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750725AbdAIVzg (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jan 2017 16:55:36 -0500
+Received: by mail-wm0-f67.google.com with SMTP id r144so16550628wme.0
+        for <linux-iio@vger.kernel.org>; Mon, 09 Jan 2017 13:55:35 -0800 (PST)
 Subject: Re: [PATCH V2] iio: adc: Add Renesas GyroADC driver
-To: Marek Vasut <marek.vasut@gmail.com>, linux-iio@vger.kernel.org
+To: Lars-Peter Clausen <lars@metafoo.de>, linux-iio@vger.kernel.org
 References: <20170109000309.22511-1-marek.vasut@gmail.com>
  <94f3e023-03a5-99f0-1810-15b35f3417b9@metafoo.de>
  <1bf1278c-cfbd-bda6-9417-96ea49dd0098@gmail.com>
@@ -13,9 +15,9 @@ References: <20170109000309.22511-1-marek.vasut@gmail.com>
  <df158052-8b1d-102f-2d8d-178cfda09d8b@metafoo.de>
 Cc: Geert Uytterhoeven <geert+renesas@glider.be>,
         Simon Horman <horms+renesas@verge.net.au>
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <9cf18320-8dcb-b06f-4772-09f21ae76347@metafoo.de>
-Date: Mon, 9 Jan 2017 22:02:46 +0100
+From: Marek Vasut <marek.vasut@gmail.com>
+Message-ID: <e73f8953-ed8b-7dc0-ec47-035a03ab1ca7@gmail.com>
+Date: Mon, 9 Jan 2017 22:55:33 +0100
 MIME-Version: 1.0
 In-Reply-To: <df158052-8b1d-102f-2d8d-178cfda09d8b@metafoo.de>
 Content-Type: text/plain; charset=windows-1252
@@ -68,15 +70,20 @@ On 01/09/2017 10:02 PM, Lars-Peter Clausen wrote:
 > We for example have devices that can either work in SPI or I2C mode and both
 > use the same compatible string. Depending on whether the device is a subnode
 > of a SPI or I2S controller it is registered as a SPI or I2C device.
-
-I2C controller
-
 > 
 > This situation is not that different.
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
 
+So in this case, the gyroadc driver would instead iterate over the
+subnodes, check the compatible string and configure the channel mode
+according to the subnode compatible string?
+
+But then, the gyroadc only has one configuration register which applies
+to all channels, which selects how many bits to read from the connected
+SPI-ADC device(s) (sample width). This is not per-channel configurable.
+The driver would then have to check if all the compatible properties in
+the ADC subnodes select the same ADC or at least ADC which has the same
+sample width. This looks like a duplication to me. Thoughts ?
+
+-- 
+Best regards,
+Marek Vasut
