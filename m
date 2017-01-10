@@ -1,83 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-oi0-f68.google.com ([209.85.218.68]:35582 "EHLO
-        mail-oi0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1760723AbdAIRnr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 9 Jan 2017 12:43:47 -0500
-Date: Mon, 9 Jan 2017 11:43:44 -0600
-From: Rob Herring <robh@kernel.org>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Sebastian Reichel <sre@kernel.org>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Alexander Stein <alexander.stein@systec-electronic.com>,
-        Eric Engestrom <eric@engestrom.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Petr Cvek <petr.cvek@tul.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Nick Dyer <nick@shmanahar.org>,
-        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
-        Michel Verlaan <michel.verl@gmail.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com
-Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
- names, pre-calibration, flipping and rotation
-Message-ID: <20170109174344.5kvijgyhusboftx3@rob-hp-laptop>
-References: <cover.1482936802.git.hns@goldelico.com>
- <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
+Received: from mail-qk0-f174.google.com ([209.85.220.174]:33540 "EHLO
+        mail-qk0-f174.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751807AbdAJIyD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jan 2017 03:54:03 -0500
+Received: by mail-qk0-f174.google.com with SMTP id s140so144690699qke.0
+        for <linux-iio@vger.kernel.org>; Tue, 10 Jan 2017 00:54:02 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
+In-Reply-To: <717ea1c4-33af-f0ca-e018-5d7ac87506e1@kernel.org>
+References: <1481842105-14047-1-git-send-email-linus.walleij@linaro.org> <717ea1c4-33af-f0ca-e018-5d7ac87506e1@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue, 10 Jan 2017 09:54:01 +0100
+Message-ID: <CACRpkdZUk6UUN2ACXp0S1RW7k2M5t5X5N_0mJQeo_UTEa4H=9w@mail.gmail.com>
+Subject: Re: [PATCH 2/3 v2] iio: adc: break out common code from SPMI VADC
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
+        Andy Gross <andy.gross@linaro.org>,
+        Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Stephen Boyd <sboyd@codeaurora.org>,
+        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Dec 28, 2016 at 03:53:16PM +0100, H. Nikolaus Schaller wrote:
-> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
-> introduced common DT bindings for touchscreens [1] and a helper function to
-> parse the DT.
-> 
-> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-> added another helper for parsing axis inversion and swapping
-> and applying them to x and y coordinates.
-> 
-> Both helpers have been integrated to accommodate any orientation of the
-> touch panel in relation to the LCD.
-> 
-> A new feature is to introduce scaling the min/max ADC values to the screen
-> size.
-> 
-> This makes it possible to pre-calibrate the touch so that is (almost)
-> exactly matches the LCD pixel coordinates it is glued onto. This allows to
-> well enough operate the touch before a user space calibration step can
-> improve the precision.
-> 
-> Please note that the old ti,fuzz properties have been removed since they
-> are replaced by the common bindings touchscreen-fuzz-x/y/z.
-> 
-> Finally, calculate_pressure has been renamed to calculate_resistance
-> because that is what it is doing.
-> 
-> [1]: Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
-> 
-> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
-> ---
->  .../bindings/input/touchscreen/tsc2007.txt         |  20 ++--
+On Fri, Dec 30, 2016 at 8:01 PM, Jonathan Cameron <jic23@kernel.org> wrote:
+> On 15/12/16 22:48, Linus Walleij wrote:
+>> The SPMI VADC and the earlier XOADC share a subset of
+>> common code, so to be able to use the same code in both
+>> drivers, we break out a separate file with the common code,
+>> prefix exported functions that are no longer static with
+>> qcom_* and bake an object qcom-vadc.o that contains both
+>> files: qcom-vadc-common.o and qcom-spmi-vadc.o.
+>>
+>> Cc: linux-arm-kernel@lists.infradead.org
+>> Cc: linux-arm-msm@vger.kernel.org
+>> Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
+>> Cc: Andy Gross <andy.gross@linaro.org>
+>> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+>> Cc: Stephen Boyd <sboyd@codeaurora.org>
+>> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+>> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+>
+> Looks superficially fine, but I'm guessing will need a respin
+> as we have a fair bit of new stuff (and a couple of fixes) going
+> through this driver at the moment.
+>
+> All but the two fixes I posted a few mins ago are in my testing
+> branch and should go to Greg once I have confirmed testing on
+> those two fixes.
 
-Acked-by: Rob Herring <robh@kernel.org>
+I looked at the git and "testing"
+contains a top commit named "guessing" fixing some 64bit
+artithmetic (which looks correct) in the driver, shall I simply
+rebase on top of that and hope for the best? :)
 
->  drivers/input/touchscreen/tsc2007.c                | 120 +++++++++++++++++----
->  include/linux/i2c/tsc2007.h                        |   8 ++
->  3 files changed, 118 insertions(+), 30 deletions(-)
+Yours,
+Linus Walleij
