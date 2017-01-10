@@ -2,12 +2,16 @@ Return-Path: <SRS0=olOF=YY=linaro.org=linus.walleij@kernel.org>
 From: Linus Walleij <linus.walleij@linaro.org>
 To: Lee Jones <lee.jones@linaro.org>,
 	Jonathan Cameron <jic23@kernel.org>,
-	linux-iio@vger.kernel.org
+	linux-iio@vger.kernel.org,
+	Sebastian Reichel <sre@kernel.org>,
+	Guenter Roeck <linux@roeck-us.net>
 Cc: Mboumba Cedric Madianga <cedric.madianga@gmail.com>,
+	linux-pm@vger.kernel.org,
+	linux-hwmon@vger.kernel.org,
 	Linus Walleij <linus.walleij@linaro.org>
 Subject: [PATCH 0/7] mfd/iio: move the AB8500 GPADC driver to IIO
-Date: Wed, 11 Jan 2017 00:44:35 +0100
-Message-Id: <20170110234442.29558-1-linus.walleij@linaro.org>
+Date: Wed, 11 Jan 2017 00:47:38 +0100
+Message-Id: <20170110234745.29691-1-linus.walleij@linaro.org>
 List-ID: <linux-iio@vger.kernel.org>
 
 The AB8500 GPADC driver in MFD was created and merged before IIO
