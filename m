@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb0-f196.google.com ([209.85.213.196]:33670 "EHLO
-        mail-yb0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932435AbdAJSvO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jan 2017 13:51:14 -0500
+Received: from mail-yb0-f193.google.com ([209.85.213.193]:36528 "EHLO
+        mail-yb0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750792AbdAJSvj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jan 2017 13:51:39 -0500
 From: William Breathitt Gray <vilhelm.gray@gmail.com>
 To: gregkh@linuxfoundation.org
 Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
@@ -10,9 +10,9 @@ Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         linux-kernel@vger.kernel.org, linux-gpio@vger.kernel.org,
         linus.walleij@linaro.org, gnurou@gmail.com,
         William Breathitt Gray <vilhelm.gray@gmail.com>
-Subject: [PATCH 2/3] gpio: pc104: Mask PC/104 drivers via PC104 Kconfig option
-Date: Tue, 10 Jan 2017 13:51:06 -0500
-Message-Id: <d45bf9e0428c7885e37f157f9fe222f82594b87c.1484073325.git.vilhelm.gray@gmail.com>
+Subject: [PATCH 3/3] iio: pc104: Mask PC/104 drivers via the PC104 Kconfig option
+Date: Tue, 10 Jan 2017 13:51:29 -0500
+Message-Id: <512f7f9909c9ff6964b34e0302eeb404e703f033.1484073325.git.vilhelm.gray@gmail.com>
 In-Reply-To: <cover.1484073324.git.vilhelm.gray@gmail.com>
 References: <cover.1484073324.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -22,53 +22,42 @@ PC/104 drivers should be hidden on machines which do not support PC/104
 devices. This patch adds the PC104 Kconfig option as a dependency for
 the relevant PC/104 device driver Kconfig options.
 
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Cc: Alexandre Courbot <gnurou@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>
+Cc: Lars-Peter Clausen <lars@metafoo.de>
+Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 ---
- drivers/gpio/Kconfig | 8 ++++----
- 1 file changed, 4 insertions(+), 4 deletions(-)
+ drivers/iio/adc/Kconfig     | 2 +-
+ drivers/iio/counter/Kconfig | 2 +-
+ 2 files changed, 2 insertions(+), 2 deletions(-)
 
-diff --git a/drivers/gpio/Kconfig b/drivers/gpio/Kconfig
-index d5d36549ecc1..ad7084d98c60 100644
---- a/drivers/gpio/Kconfig
-+++ b/drivers/gpio/Kconfig
-@@ -539,7 +539,7 @@ menu "Port-mapped I/O GPIO drivers"
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 9c8b558ba19e..dc897b443a17 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -465,7 +465,7 @@ config STM32_ADC
  
- config GPIO_104_DIO_48E
- 	tristate "ACCES 104-DIO-48E GPIO support"
--	depends on ISA_BUS_API
-+	depends on PC104 && ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
+ config STX104
+ 	tristate "Apex Embedded Systems STX104 driver"
+-	depends on X86 && ISA_BUS_API
++	depends on PC104 && X86 && ISA_BUS_API
+ 	select GPIOLIB
  	help
- 	  Enables GPIO support for the ACCES 104-DIO-48E series (104-DIO-48E,
-@@ -549,7 +549,7 @@ config GPIO_104_DIO_48E
+ 	  Say yes here to build support for the Apex Embedded Systems STX104
+diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+index 44627f6e4861..b37e5fc03149 100644
+--- a/drivers/iio/counter/Kconfig
++++ b/drivers/iio/counter/Kconfig
+@@ -7,7 +7,7 @@ menu "Counters"
  
- config GPIO_104_IDIO_16
- 	tristate "ACCES 104-IDIO-16 GPIO support"
--	depends on ISA_BUS_API
-+	depends on PC104 && ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
+ config 104_QUAD_8
+ 	tristate "ACCES 104-QUAD-8 driver"
+-	depends on X86 && ISA_BUS_API
++	depends on PC104 && X86 && ISA_BUS_API
  	help
- 	  Enables GPIO support for the ACCES 104-IDIO-16 family (104-IDIO-16,
-@@ -560,7 +560,7 @@ config GPIO_104_IDIO_16
- 
- config GPIO_104_IDI_48
- 	tristate "ACCES 104-IDI-48 GPIO support"
--	depends on ISA_BUS_API
-+	depends on PC104 && ISA_BUS_API
- 	select GPIOLIB_IRQCHIP
- 	help
- 	  Enables GPIO support for the ACCES 104-IDI-48 family (104-IDI-48A,
-@@ -580,7 +580,7 @@ config GPIO_F7188X
- 
- config GPIO_GPIO_MM
- 	tristate "Diamond Systems GPIO-MM GPIO support"
--	depends on ISA_BUS_API
-+	depends on PC104 && ISA_BUS_API
- 	help
- 	  Enables GPIO support for the Diamond Systems GPIO-MM and GPIO-MM-12.
- 
+ 	  Say yes here to build support for the ACCES 104-QUAD-8 quadrature
+ 	  encoder counter/interface device family (104-QUAD-8, 104-QUAD-4).
 -- 
 2.11.0
 
