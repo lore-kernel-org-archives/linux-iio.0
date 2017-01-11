@@ -19,62 +19,59 @@ Cc: carlo@caione.org,
 	narmstrong@baylibre.com,
 	linux-arm-kernel@lists.infradead.org,
 	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH 0/4] Amlogic Meson SAR ADC support
-Date: Wed, 11 Jan 2017 18:43:30 +0100
-Message-Id: <20170111174334.24343-1-martin.blumenstingl@googlemail.com>
+Subject: [PATCH 1/4] Documentation: dt-bindings: add the Amlogic Meson SAR ADC documentation
+Date: Wed, 11 Jan 2017 18:43:31 +0100
+Message-Id: <20170111174334.24343-2-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20170111174334.24343-1-martin.blumenstingl@googlemail.com>
+References: <20170111174334.24343-1-martin.blumenstingl@googlemail.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-This series add support for the SAR ADC on Amlogic Meson GXBB, GXL and
-GXM SoCs.
-The hardware on GXBB provides 10-bit ADC results, while GXL and GXM are
-providing 12-bit results. Support for older SoCs (Meson8b and Meson8)
-can be added with little effort, most of which is testing I guess (I
-don't have any pre-GXBB hardware so I can't say).
+This adds the devicetree binding documentation for the SAR ADC found in
+Amlogic Meson SoCs.
+Currently only the GXBB, GXL and GXM SoCs are supported.
 
-A new set of clocks had to be added to the GXBB clock controller (used
-by the GXBB/GXL/GXM SoCs) which are required to get the ADC working.
-
-The ADC itself can sample multiple channels at the same time and allows
-capturing multiple samples (which can be used for filtering/averaging).
-The ADC results are stored inside a FIFO register. More details on what
-the driver supports (or doesn't) can be found in the description of
-patch #3.
-
-The code is based on the public S805 (Meson8b) and S905 (GXBB)
-datasheets, as well as by reading (various versions of) the vendor
-driver and by inspecting the registers on the vendor kernels of my
-testing-hardware.
-
-Typical use-cases for the ADC on the Meson GX SoCs are:
-- adc-keys ("ADC attached resistor ladder buttons")
-- SoC temperature measurement (not supported by this driver yet as
-  the system firmware does this already and provides the values via the
-  SCPI protocol)
-- "version-strapping" (different resistor values are used to indicate
-  the board-revision)
-- and of course typical ADC measurements
-
-
-Martin Blumenstingl (4):
-  Documentation: dt-bindings: add the Amlogic Meson SAR ADC
-    documentation
-  clk: gxbb: add the SAR ADC clocks and expose them
-  iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs
-  ARM64: dts: meson: meson-gx: add the SAR ADC
-
- .../bindings/iio/adc/amlogic,meson-saradc.txt      |  31 +
- arch/arm64/boot/dts/amlogic/meson-gx.dtsi          |   8 +
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        |  10 +
- arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         |  10 +
- drivers/clk/meson/gxbb.c                           |  48 ++
- drivers/clk/meson/gxbb.h                           |   9 +-
- drivers/iio/adc/Kconfig                            |  12 +
- drivers/iio/adc/Makefile                           |   1 +
- drivers/iio/adc/meson_saradc.c                     | 860 +++++++++++++++++++++
- include/dt-bindings/clock/gxbb-clkc.h              |   4 +
- 10 files changed, 990 insertions(+), 3 deletions(-)
+Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+---
+ .../bindings/iio/adc/amlogic,meson-saradc.txt      | 31 ++++++++++++++++++++++
+ 1 file changed, 31 insertions(+)
  create mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
- create mode 100644 drivers/iio/adc/meson_saradc.c
 
+diff --git a/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+new file mode 100644
+index 000000000000..9a0bec7afc63
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+@@ -0,0 +1,31 @@
++* Amlogic Meson SAR (Successive Approximation Register) A/D converter
++
++Required properties:
++- compatible:	depending on the SoC this should be one of:
++			- "amlogic,meson-gxbb-saradc" for GXBB
++			- "amlogic,meson-gxl-saradc" for GXL and GXM
++		along with the generic "amlogic,meson-saradc"
++- reg:		the physical base address and length of the registers
++- clocks:	phandle and clock identifier (see clock-names)
++- clock-names:	mandatory clocks:
++			- "clkin" for the reference clock (typically XTAL)
++			- "core" for the SAR ADC core clock
++		optional clocks:
++			- "sana" for the analog clock
++			- "adc_clk" for the ADC (sampling) clock
++			- "adc_sel" for the ADC (sampling) clock mux
++- vref-supply:	the regulator supply for the ADC reference voltage
++- #io-channel-cells: must be 1, see ../iio-bindings.txt
++
++Example:
++	saradc: adc@8680 {
++		compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
++		#io-channel-cells = <1>;
++		reg = <0x0 0x8680 0x0 0x34>;
++		clocks = <&xtal>,
++			 <&clkc CLKID_SAR_ADC>,
++			 <&clkc CLKID_SANA>,
++			 <&clkc CLKID_SAR_ADC_CLK>,
++			 <&clkc CLKID_SAR_ADC_SEL>;
++		clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
++	};
 -- 
 2.11.0
