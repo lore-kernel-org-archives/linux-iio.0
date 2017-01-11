@@ -1,142 +1,347 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34585 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34906 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750874AbdAUMhp (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:37:45 -0500
-Subject: Re: [PATCH v3 0/4] Amlogic Meson SAR ADC support
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, khilman@baylibre.com,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org
-References: <20170115224221.15510-1-martin.blumenstingl@googlemail.com>
- <20170119145822.26239-1-martin.blumenstingl@googlemail.com>
-Cc: carlo@caione.org, catalin.marinas@arm.com, will.deacon@arm.com,
-        mturquette@baylibre.com, sboyd@codeaurora.org,
-        narmstrong@baylibre.com, linux-arm-kernel@lists.infradead.org
+        with ESMTP id S1751616AbdAKRr5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 11 Jan 2017 12:47:57 -0500
+To: Greg KH <gregkh@linuxfoundation.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PULL] First set of IIO new device support and cleanups for the 4.11
+ cycle.
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b48c8810-171c-3e05-396b-7c77b0f6e078@kernel.org>
-Date: Sat, 21 Jan 2017 12:37:42 +0000
+Message-ID: <989c2074-b5c4-68ad-36f0-a3c743fdac3d@kernel.org>
+Date: Wed, 11 Jan 2017 17:47:55 +0000
 MIME-Version: 1.0
-In-Reply-To: <20170119145822.26239-1-martin.blumenstingl@googlemail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Martin,
+The following changes since commit af8bc2fb99d4eea2d026d42db18abc5f3876936a:
 
-Quick process point.  Personally I'd much prefer it if new versions
-fo the patch are not posted as replies to earlier versions.  It gets
-awfully deep and hard to follow very quickly!
+  staging: unisys: visorbus: Remove two passthrough postcode macros (2016-12-01 09:58:48 +0100)
 
-Thanks,
+are available in the git repository at:
 
-Jonathan
+  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.11a
 
-On 19/01/17 14:58, Martin Blumenstingl wrote:
-> This series add support for the SAR ADC on Amlogic Meson GXBB, GXL and
-> GXM SoCs.
-> The hardware on GXBB provides 10-bit ADC results, while GXL and GXM are
-> providing 12-bit results. Support for older SoCs (Meson8b and Meson8)
-> can be added with little effort, most of which is testing I guess (I
-> don't have any pre-GXBB hardware so I can't say).
-> 
-> A new set of clocks had to be added to the GXBB clock controller (used
-> by the GXBB/GXL/GXM SoCs) which are required to get the ADC working.
-> 
-> The ADC itself can sample multiple channels at the same time and allows
-> capturing multiple samples (which can be used for filtering/averaging).
-> The ADC results are stored inside a FIFO register. More details on what
-> the driver supports (or doesn't) can be found in the description of
-> patch #3.
-> 
-> The code is based on the public S805 (Meson8b) and S905 (GXBB)
-> datasheets, as well as by reading (various versions of) the vendor
-> driver and by inspecting the registers on the vendor kernels of my
-> testing-hardware.
-> 
-> Typical use-cases for the ADC on the Meson GX SoCs are:
-> - adc-keys ("ADC attached resistor ladder buttons")
-> - SoC temperature measurement (not supported by this driver yet as
->   the system firmware does this already and provides the values via the
->   SCPI protocol)
-> - "version-strapping" (different resistor values are used to indicate
->   the board-revision)
-> - and of course typical ADC measurements
-> 
-> Thanks to Heiner Kallweit, Jonathan Cameron, Lars-Peter Clausen and
-> Peter Meerwald-Stadler for reviewing this series and providing valuable
-> input!
-> 
-> Changes since v2 (all changes are for patch #3, except where noted):
-> - fixed another typo in the interrupt (patch #4, thanks again Heiner
->   Kallweit)
-> - change namespace of all register #defines to MESON_SAR_ADC (I
->   intentionally decided to keep SAR_ADC in it because that's the way
->   registers are named in the datasheet, thus making it easy to match the
->   registers without having to look up the offset all the time)
-> - added additional parenthesis around MACRO parameters  for extra safety
-> - removed unused definition for SAR_ADC_REG3_ADC_CLK_DIV_MASK (as we
->   already have SAR_ADC_REG3_ADC_CLK_DIV_SHIFT and
->   SAR_ADC_REG3_ADC_CLK_DIV_WIDTH which are used instead)
-> - change value of "indexed" from "true" to "1"
-> - remove type parameter from MESON_SAR_ADC_CHAN macro as all channels are
->   currently IIO_VOLTAGE channels
-> - fixed another multi-line comment style violation
-> - added timeout to meson_saradc_lock() (unlikely to be triggered, but
->   better safe then sorry - which would mean that we'd be keeping one core
->   busy infinitely)
-> - fixed meson_saradc_remove() call order (first unregister the iio_dev,
->   then disable the hardware instead of the other way around)
-> - use "consistent prefixing", which means that all #defines now use
->   MESON_SAR_ADC_ as prefix, while all enums, static global variables,
->   structs and functions use meson_sar_adc_ as prefix
-> - rebased .dts and clk patches to apply to khilman's latest v4.11/dt64
->   (a minor  conflict had to be resolved in the clk patch due to
->   "clk: meson-gxbb: Export HDMI clocks")
-> - added Tested-by: Neil Armstrong <narmstrong@baylibre.com> to all
->   patches (thanks for testing!)
-> 
-> Changes since v1 (all changes are for patch #3, except where noted):
-> - fix IRQ number in meson-gx.dtsi (thanks to Heiner Kallweit for
->   providing the correct value), affects patch #4
-> - move the most used members of meson_saradc_priv to the beginning
-> - remove unused struct member "completion" from meson_saradc_priv
-> - use devm_kasprintf() instead of snprintf() + devm_kstrdup()
-> - initialize indio_dev->dev.parent earlier in meson_saradc_probe()
-> - moved meson_saradc_clear_fifo() logic to a separate function
-> - add comment why a do ... while loop is required in
->   meson_saradc_wait_busy_clear()
-> - remove SAR_ADC_NUM_CHANNELS and SAR_ADC_VALUE_MASK macros (each of them
->   was only used once and it's an unneeded level of abstraction)
-> - fixed multiline comment syntax violations
-> - dropped unneeded log messages during initialization
-> - set iio_dev name to "meson-gxbb-saradc" or "meson-gxl-saradc"
-> - use "indio_dev->dev.parent" in all kernel log calls (dev_warn/err/etc)
->   to make it show the OF node name (instead of the iio device name)
-> - introduce struct meson_saradc_data to hold platform-specific
->   information (such as resolution in bits and the iio_dev name)
-> 
-> 
-> Martin Blumenstingl (4):
->   Documentation: dt-bindings: add the Amlogic Meson SAR ADC
->     documentation
->   clk: gxbb: add the SAR ADC clocks and expose them
->   iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs
->   ARM64: dts: meson: meson-gx: add the SAR ADC
-> 
->  .../bindings/iio/adc/amlogic,meson-saradc.txt      |  31 +
->  arch/arm64/boot/dts/amlogic/meson-gx.dtsi          |   8 +
->  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        |  10 +
->  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         |  10 +
->  drivers/clk/meson/gxbb.c                           |  48 ++
->  drivers/clk/meson/gxbb.h                           |   9 +-
->  drivers/iio/adc/Kconfig                            |  12 +
->  drivers/iio/adc/Makefile                           |   1 +
->  drivers/iio/adc/meson_saradc.c                     | 916 +++++++++++++++++++++
->  include/dt-bindings/clock/gxbb-clkc.h              |   4 +
->  10 files changed, 1046 insertions(+), 3 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
->  create mode 100644 drivers/iio/adc/meson_saradc.c
-> 
+for you to fetch changes up to e30eca0e69cb888125b081c96ca761e958fcb5b4:
 
+  iio:adc:qcom-spmi-vadc: use div64_s64 instead of direct 64 bit division. (2017-01-10 21:13:39 +0000)
+
+----------------------------------------------------------------
+First round of new device support, features and cleanups for IIO in the 4.11 cycle.
+
+It's shaping to be another fairly busy cycle. Lots more on the way!
+
+New device support
+* ads7950
+  - new driver supporting ads7950, ads7951, ads7952, ads7953, ads7954,
+  ads7955, ads7956, ads7957, ads7958, ads7959, ads7960, and ads7961 ADCs.
+* cm3605
+  - New driver for this light sensor and proximity sensor  which is an
+  analog part with some additional digital controls.
+* hx711
+  - New driver.
+
+Core new stuff
+* Gravity sensor type.  This is a processed datastream in which the device
+will try to work out which way is down.
+* Split the buffer.h file into two parts. One provides the interface to 'use'
+a buffer, the second provides the internals of the buffer functionality as
+needed by implementations of buffers.
+  - Move documentation inline so as to allow use of private: tag when
+  generating documentation.
+  - Add some utility functions for the few things that are directly done
+  with the buffers.
+  - Stop exporting functions that no-one uses outside of the core code.
+  - Push docs down by the code in the c file where they should have always
+  been.
+  - Fix typo in kernel-doc for buffer.
+  - push down some includes that were previously happening implicitly.
+  - stop enabling the timestamp of the dummy device.
+
+Features and cleanups
+* ad5592r
+  - ACPI support
+* ad5593r
+  -ACPI support.
+* ad5933
+  - Fix a false comment about size of a particular register.
+* ad7150
+  - replace S_IRUGO | S_IWUSR with 0644.  I'm not that keen on these patches
+  in general, but as it was nicely presented I took this one anyway. As a
+  general rule will only take these as part of a larger driver cleanup.
+  - don't eat an error but rather reutnr it in the write_event_config callback.
+* ad7606
+  - replace non standard range attibute with _scale
+* ade7753
+  - use usleep_range for short sleeps
+* ade7754
+  - use usleep_range for short sleeps
+* ade7758
+  - use usleep_range for short sleeps
+* ade7759
+  - use usleep_range for short sleeps
+* ade7854
+  - use usleep_range for short sleeps
+* adis16201
+  - fix description
+* adis16203
+  - fix description
+  - fix copyright year
+* adis16209
+  - fix description
+* adt7316
+  - Add braces to arms of if else statement (for consistency)
+  - Alignment fixes.
+* axp288
+  - Fix up an issue with accidental overwrites of data.
+* bmi160
+  - add deivce tables for i2c and spi to support correctly identifying the
+  full dt name (including manufacturer).
+  - device tree binding.
+* bmp280
+  - use usleep_range for short sleeps.
+* cm3232
+  - return error from cm3232_reg_init rather than eating it if the last write
+  fails.
+* dummy driver
+  - remove a semicolor found at end of a function defintition.
+* exynos-adc
+  - use usleep_range for short sleeps.
+* hid-sensor (accel)
+  - Add timestamp support.  The hardware can provide timestamps so lets support
+  them. If not fall back to timestamps estimated in kernel.
+* hid-sensor (light)
+  - Add a duplicate ID for the light channels so as to keep existing interface
+  whilst also using the more standard IIO interface.
+* hts221
+  - acpi probing
+* imx25-gcq
+  - Add a macro call to allow this driver to be automatically loaded.
+* isl29028
+  - reorganise code to avoid deep nesting of if statements.
+  - move chip test and default regs into a function suitable or sharing with
+  power management code.
+  - tidy up some code alignment.
+* lidar-lite-v3
+  - introduce compatible strings that make it clear Garmin have consideral
+  friends.
+* mma8452
+  - avoid returning signed value when unsigned is appropriate
+* spmi-vadc
+  - Update function for generic voltage conversion to take into account that
+  different channels on this device should be handled differently.
+  - Rework code to allow per channel voltage scaling and support the standard
+  options for this hardware.
+  - Fixup three minor issues with the above patches for this part. These all
+  effect test builds rather than the native builds for the part, but good to
+  clean them up anyway.
+* st_sensors
+  - support device matching from the ACPI DST tables.
+  - acpi based probing for accelerometers
+  - acpi based probing for pressure sensors
+  - Allow pressure sensors to read negative values.
+  - Export sampling frequency for lps25h and lps331ap.
+  - Add support for the old DT bindings from the period when these deivces
+  were often supported through windows.
+
+Docs fixup:
+* typo in sysfs-bus-iio
+
+----------------------------------------------------------------
+Amit Kumar Kushwaha (1):
+      staging: iio: replace symbolic permission
+
+Andreas Klinger (2):
+      iio: adc: hx711: Add DT binding for avia,hx711
+      iio: adc: hx711: Add IIO driver for AVIA HX711
+
+Aniroop Mathur (1):
+      IIO: Change msleep to usleep_range for small msecs
+
+Brian Masney (3):
+      staging: iio: isl29028: remove nested if statements
+      staging: iio: isl29028: remove chip test and defaults from isl29028_chip_init()
+      staging: iio: isl29028: made alignment of #defines consistent
+
+Colin Ian King (1):
+      iio: Documentation: fix spelling mistake: "deactived" -> "deactivated"
+
+David Lechner (1):
+      iio: adc: New driver for TI ADS7950 chips
+
+Eva Rachel Retuya (1):
+      staging: iio: ad7606: replace range/range_available with corresponding scale
+
+Hans de Goede (1):
+      iio: adc: axp288: Drop bogus AXP288_ADC_TS_PIN_CTRL register modifications
+
+Javier Martinez Canillas (1):
+      iio: adc: imx25-gcq: Fix module autoload
+
+Jonathan Cameron (14):
+      iio:buffer: Stop exporting iio_update_demux
+      iio:buffer.h Reformat structure comments to be inline.
+      iio:buffer: Introduced a function to assign the buffer specific attrs.
+      iio:buffer: Stop exporting iio_scan_mask_query
+      iio:buffers: Push some docs down into the .c file.
+      iio:buffer:iio_push_to_buffers_with_timestamp fix kernel-doc.
+      iio:kfifo_buf header include push down.
+      iio:buffer.h include pushdown into buffer implementations
+      iio:buffer: Push implementation of iio_device_attach_buffer into .c file
+      iio:dummy: Stop enabling timestamp by default.
+      iio:buffer.h - split into buffer.h and buffer_impl.h
+      iio:adc:qcom-spmi-vadc : fix undefined __divdi3
+      iio:adc:qcom-spmi-vadc silence a long constant warning.
+      iio:adc:qcom-spmi-vadc: use div64_s64 instead of direct 64 bit division.
+
+Kweh, Hock Leong (1):
+      iio: light: hid-sensor-als: Add duplicate IIO_LIGHT channel
+
+Linus Walleij (3):
+      iio: light: add DT bindings for Capella CM3605
+      iio: light: add driver for Capella CM3605
+      iio: accel: st_accel: handle deprecated bindings
+
+Marcin Niestroj (5):
+      iio: bmi160: Add of device table for i2c
+      iio: bmi160: Add of device table for spi
+      Documentation: DT: Add bmi160 imu binding
+      iio: st_pressure: Fix data sign
+      iio: st_pressure: Export sampling frequency for lps25h and lps331ap
+
+Martin Kepplinger (1):
+      iio: accel: mma8452: define unsigned return values where appropriate
+
+Matt Ranostay (2):
+      devicetree: add Garmin vendor prefix
+      iio: pulsedlight-lidar-lite-v2: add lidar-lite-v3 property
+
+Michael Hennerich (2):
+      iio: dac: ad5592r: Add ACPI support
+      iio: dac: ad5593r: Add ACPI support
+
+Nizam Haider (1):
+      Staging: iio: impedance-analyzer: ad5933: fix wrong comments
+
+Pan Bian (2):
+      iio: light: fix improper return value
+      staging: iio: cdc: fix improper return value
+
+Peter Meerwald-Stadler (1):
+      iio: dummy: No semicolon at end of function definition
+
+Rama Krishna Phani A (2):
+      iio: adc: spmi-vadc: Update function for generic voltage conversion
+      iio: adc: spmi-vadc: Changes to support different scaling
+
+Reto Schneider (2):
+      iio: adis1620x: Fix mixed up device descriptions
+      iio: adis16203: Fix copyright year
+
+Scott Matheina (2):
+      staging:iio:adt7316: Fix braces not present on all arms of if else statement
+      staging:iio:addac:adt7316 Fixes Alignment should match open parenthesis
+
+Shrirang Bagul (4):
+      iio: st_sensors: match sensors using ACPI handle
+      iio: st_accel: Support sensor i2c probe using acpi
+      iio: st_pressure: Support i2c probe using acpi
+      iio: humidity: Support acpi probe for hts211
+
+Song Hongyan (2):
+      iio: Add channel for Gravity
+      iio: Add gravity sensor support
+
+Srinivas Pandruvada (1):
+      iio: accel: hid-sensor-accel-3d: Add timestamp
+
+rishabh hardas (1):
+      iio:trigger: Fix coding style in iio-trig-bfin-timer.c by aligning parameters with opening bracket.
+
+ Documentation/ABI/testing/sysfs-bus-iio            |  12 +-
+ .../devicetree/bindings/iio/accel/lis302.txt       |   2 +-
+ .../devicetree/bindings/iio/adc/avia-hx711.txt     |  18 +
+ .../devicetree/bindings/iio/imu/bmi160.txt         |  36 ++
+ .../devicetree/bindings/iio/light/cm3605.txt       |  41 ++
+ .../devicetree/bindings/iio/st-sensors.txt         |   2 +
+ .../devicetree/bindings/vendor-prefixes.txt        |   2 +
+ drivers/iio/accel/Kconfig                          |   2 +
+ drivers/iio/accel/bmc150-accel-core.c              |   3 +-
+ drivers/iio/accel/hid-sensor-accel-3d.c            | 104 +++-
+ drivers/iio/accel/mma8452.c                        |   4 +-
+ drivers/iio/accel/ssp_accel_sensor.c               |   1 +
+ drivers/iio/accel/st_accel.h                       |  18 +
+ drivers/iio/accel/st_accel_i2c.c                   |  78 ++-
+ drivers/iio/accel/st_accel_spi.c                   |   9 +
+ drivers/iio/adc/Kconfig                            |  32 ++
+ drivers/iio/adc/Makefile                           |   2 +
+ drivers/iio/adc/axp288_adc.c                       |  32 +-
+ drivers/iio/adc/exynos_adc.c                       |   2 +-
+ drivers/iio/adc/fsl-imx25-gcq.c                    |   1 +
+ drivers/iio/adc/hx711.c                            | 532 +++++++++++++++++++++
+ drivers/iio/adc/ina2xx-adc.c                       |   2 +
+ drivers/iio/adc/qcom-spmi-vadc.c                   | 481 ++++++++++++++-----
+ drivers/iio/adc/ti-ads7950.c                       | 490 +++++++++++++++++++
+ drivers/iio/buffer/industrialio-buffer-cb.c        |   3 +-
+ drivers/iio/buffer/kfifo_buf.c                     |   3 +
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |  36 +-
+ drivers/iio/common/ssp_sensors/ssp_iio.c           |   1 +
+ drivers/iio/common/st_sensors/st_sensors_i2c.c     |  20 +
+ drivers/iio/dac/ad5592r.c                          |   8 +
+ drivers/iio/dac/ad5593r.c                          |   8 +
+ drivers/iio/dummy/iio_simple_dummy.h               |   8 +-
+ drivers/iio/dummy/iio_simple_dummy_buffer.c        |   4 +-
+ drivers/iio/gyro/ssp_gyro_sensor.c                 |   1 +
+ drivers/iio/humidity/hts221_i2c.c                  |   8 +
+ drivers/iio/imu/bmi160/bmi160_i2c.c                |  14 +-
+ drivers/iio/imu/bmi160/bmi160_spi.c                |  18 +-
+ drivers/iio/industrialio-buffer.c                  | 321 +++++++------
+ drivers/iio/industrialio-core.c                    |   2 +
+ drivers/iio/light/Kconfig                          |  10 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/cm3232.c                         |   2 +-
+ drivers/iio/light/cm3605.c                         | 330 +++++++++++++
+ drivers/iio/light/hid-sensor-als.c                 |  24 +-
+ drivers/iio/pressure/bmp280-core.c                 |  14 +-
+ drivers/iio/pressure/st_pressure.h                 |   8 +
+ drivers/iio/pressure/st_pressure_core.c            |  12 +-
+ drivers/iio/pressure/st_pressure_i2c.c             |  51 +-
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c  |   2 +
+ drivers/staging/iio/accel/adis16201_core.c         |   4 +-
+ drivers/staging/iio/accel/adis16203_core.c         |   6 +-
+ drivers/staging/iio/accel/adis16209_core.c         |   4 +-
+ drivers/staging/iio/adc/ad7606.c                   |  79 ++-
+ drivers/staging/iio/addac/adt7316-i2c.c            |   2 +-
+ drivers/staging/iio/addac/adt7316.c                |   3 +-
+ drivers/staging/iio/cdc/ad7150.c                   |   4 +-
+ drivers/staging/iio/impedance-analyzer/ad5933.c    |   4 +-
+ drivers/staging/iio/light/isl29028.c               | 114 ++---
+ drivers/staging/iio/meter/ade7753.c                |   2 +-
+ drivers/staging/iio/meter/ade7753.h                |   2 +-
+ drivers/staging/iio/meter/ade7754.c                |   2 +-
+ drivers/staging/iio/meter/ade7754.h                |   2 +-
+ drivers/staging/iio/meter/ade7758.h                |   2 +-
+ drivers/staging/iio/meter/ade7758_core.c           |   2 +-
+ drivers/staging/iio/meter/ade7758_ring.c           |   1 +
+ drivers/staging/iio/meter/ade7759.c                |   2 +-
+ drivers/staging/iio/meter/ade7759.h                |   2 +-
+ drivers/staging/iio/meter/ade7854.c                |   2 +-
+ drivers/staging/iio/meter/ade7854.h                |   2 +-
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c  |   2 +-
+ include/linux/hid-sensor-hub.h                     |   4 +
+ include/linux/hid-sensor-ids.h                     |   4 +
+ include/linux/iio/buffer.h                         | 160 +------
+ include/linux/iio/buffer_impl.h                    | 162 +++++++
+ include/linux/iio/common/st_sensors_i2c.h          |   9 +
+ include/linux/iio/kfifo_buf.h                      |   5 +-
+ include/uapi/linux/iio/types.h                     |   1 +
+ tools/iio/iio_event_monitor.c                      |   2 +
+ 78 files changed, 2725 insertions(+), 680 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/avia-hx711.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/imu/bmi160.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/light/cm3605.txt
+ create mode 100644 drivers/iio/adc/hx711.c
+ create mode 100644 drivers/iio/adc/ti-ads7950.c
+ create mode 100644 drivers/iio/light/cm3605.c
+ create mode 100644 include/linux/iio/buffer_impl.h
