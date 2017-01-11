@@ -1,58 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51361 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750728AbdANM6O (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 Jan 2017 07:58:14 -0500
-Subject: Re: [PATCHv2 1/2] iio: Documentation: Add proximity unit
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-References: <20170111155139.6559-1-enric.balletbo@collabora.com>
-Cc: lars@metafoo.de, Matt Ranostay <mranostay@gmail.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <2571c4a3-8fec-14e1-5fed-072c1f3c7d44@kernel.org>
-Date: Sat, 14 Jan 2017 12:58:12 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170111155139.6559-1-enric.balletbo@collabora.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Fktg=YZ=googlemail.com=martin.blumenstingl@kernel.org>
+From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	robh+dt@kernel.org,
+	mark.rutland@arm.com,
+	khilman@baylibre.com,
+	linux-iio@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	linux-amlogic@lists.infradead.org,
+	linux-clk@vger.kernel.org
+Cc: carlo@caione.org,
+	catalin.marinas@arm.com,
+	will.deacon@arm.com,
+	mturquette@baylibre.com,
+	sboyd@codeaurora.org,
+	narmstrong@baylibre.com,
+	linux-arm-kernel@lists.infradead.org,
+	Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Subject: [PATCH 0/4] Amlogic Meson SAR ADC support
+Date: Wed, 11 Jan 2017 18:43:30 +0100
+Message-Id: <20170111174334.24343-1-martin.blumenstingl@googlemail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 11/01/17 15:51, Enric Balletbo i Serra wrote:
-> To follow iio guidelines Where possible we stick to the raw SI unit, so
-> specify meters for proximity.
-> 
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Please remember to add a change log to later versions of patch sets.
-Saves reviewers who typically have the memory of goldfish (well I do
-anyway) having to read old emails to check what they found last time!
+This series add support for the SAR ADC on Amlogic Meson GXBB, GXL and
+GXM SoCs.
+The hardware on GXBB provides 10-bit ADC results, while GXL and GXM are
+providing 12-bit results. Support for older SoCs (Meson8b and Meson8)
+can be added with little effort, most of which is testing I guess (I
+don't have any pre-GXBB hardware so I can't say).
 
-This patch is fine on it's own.  Effectively allows us to drop the
-custom attribute description in sysfs-bus-iio-proximit-as3935 as well.
-(Matt cc'd)
+A new set of clocks had to be added to the GXBB clock controller (used
+by the GXBB/GXL/GXM SoCs) which are required to get the ADC working.
 
-Applied to the togreg branch of iio.git.
+The ADC itself can sample multiple channels at the same time and allows
+capturing multiple samples (which can be used for filtering/averaging).
+The ADC results are stored inside a FIFO register. More details on what
+the driver supports (or doesn't) can be found in the description of
+patch #3.
 
-Thanks,
+The code is based on the public S805 (Meson8b) and S905 (GXBB)
+datasheets, as well as by reading (various versions of) the vendor
+driver and by inspecting the registers on the vendor kernels of my
+testing-hardware.
 
-Jonathan
+Typical use-cases for the ADC on the Meson GX SoCs are:
+- adc-keys ("ADC attached resistor ladder buttons")
+- SoC temperature measurement (not supported by this driver yet as
+  the system firmware does this already and provides the values via the
+  SCPI protocol)
+- "version-strapping" (different resistor values are used to indicate
+  the board-revision)
+- and of course typical ADC measurements
 
-> ---
->  Documentation/ABI/testing/sysfs-bus-iio | 3 ++-
->  1 file changed, 2 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
-> index b8f220f..1bd8ed1 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio
-> @@ -1245,7 +1245,8 @@ Description:
->  		reflectivity of infrared or ultrasound emitted.
->  		Often these sensors are unit less and as such conversion
->  		to SI units is not possible. Higher proximity measurements
-> -		indicate closer objects, and vice versa.
-> +		indicate closer objects, and vice versa. Units after
-> +		application of scale and offset are meters.
->  
->  What:		/sys/.../iio:deviceX/in_illuminance_input
->  What:		/sys/.../iio:deviceX/in_illuminance_raw
-> 
 
+Martin Blumenstingl (4):
+  Documentation: dt-bindings: add the Amlogic Meson SAR ADC
+    documentation
+  clk: gxbb: add the SAR ADC clocks and expose them
+  iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs
+  ARM64: dts: meson: meson-gx: add the SAR ADC
+
+ .../bindings/iio/adc/amlogic,meson-saradc.txt      |  31 +
+ arch/arm64/boot/dts/amlogic/meson-gx.dtsi          |   8 +
+ arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        |  10 +
+ arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         |  10 +
+ drivers/clk/meson/gxbb.c                           |  48 ++
+ drivers/clk/meson/gxbb.h                           |   9 +-
+ drivers/iio/adc/Kconfig                            |  12 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/meson_saradc.c                     | 860 +++++++++++++++++++++
+ include/dt-bindings/clock/gxbb-clkc.h              |   4 +
+ 10 files changed, 990 insertions(+), 3 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+ create mode 100644 drivers/iio/adc/meson_saradc.c
+
+-- 
+2.11.0
