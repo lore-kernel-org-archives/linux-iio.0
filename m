@@ -1,26 +1,52 @@
-Return-Path: <SRS0=PfZj=ZB=linuxfoundation.org=gregkh@kernel.org>
-Date: Thu, 19 Jan 2017 10:46:23 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] First set of IIO new device support and cleanups for the
- 4.11 cycle.
-Message-ID: <20170119094623.GA26264@kroah.com>
-References: <989c2074-b5c4-68ad-36f0-a3c743fdac3d@kernel.org>
+Return-Path: <SRS0=alez=YZ=canonical.com=colin.king@kernel.org>
+From: Colin King <colin.king@canonical.com>
+To: Linus Walleij <linus.walleij@linaro.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org
+Cc: linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: magnetometer: ak8974: remove redundant zero timeout check
+Date: Wed, 11 Jan 2017 17:49:33 +0000
+Message-Id: <20170111174933.22523-1-colin.king@canonical.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <989c2074-b5c4-68ad-36f0-a3c743fdac3d@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Jan 11, 2017 at 05:47:55PM +0000, Jonathan Cameron wrote:
-> The following changes since commit af8bc2fb99d4eea2d026d42db18abc5f3876936a:
-> 
->   staging: unisys: visorbus: Remove two passthrough postcode macros (2016-12-01 09:58:48 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.11a
+From: Colin Ian King <colin.king@canonical.com>
 
-Pulled and pushed out, thanks.
+At the end of the delay loop timeout will always be zero
+and hence the check for !timeout will always be true. Remove
+the redundant check and the redundant return 0 at the end of
+the function.
 
-greg k-h
+Fixes CoverityScan CID#1357168 ("Logically dead code")
+
+Signed-off-by: Colin Ian King <colin.king@canonical.com>
+---
+ drivers/iio/magnetometer/ak8974.c | 8 ++------
+ 1 file changed, 2 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+index ce09d77..6dd8cbd 100644
+--- a/drivers/iio/magnetometer/ak8974.c
++++ b/drivers/iio/magnetometer/ak8974.c
+@@ -278,13 +278,9 @@ static int ak8974_await_drdy(struct ak8974 *ak8974)
+ 		if (val & AK8974_STATUS_DRDY)
+ 			return 0;
+ 	} while (--timeout);
+-	if (!timeout) {
+-		dev_err(&ak8974->i2c->dev,
+-			"timeout waiting for DRDY\n");
+-		return -ETIMEDOUT;
+-	}
+ 
+-	return 0;
++	dev_err(&ak8974->i2c->dev, "timeout waiting for DRDY\n");
++	return -ETIMEDOUT;
+ }
+ 
+ static int ak8974_getresult(struct ak8974 *ak8974, __le16 *result)
+-- 
+2.10.2
