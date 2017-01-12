@@ -1,179 +1,62 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f43.google.com ([209.85.215.43]:34782 "EHLO
-        mail-lf0-f43.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758564AbdAJXsG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 10 Jan 2017 18:48:06 -0500
-Received: by mail-lf0-f43.google.com with SMTP id v186so71897911lfa.1
-        for <linux-iio@vger.kernel.org>; Tue, 10 Jan 2017 15:48:05 -0800 (PST)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Lee Jones <lee.jones@linaro.org>,
+Received: from mail.kernel.org ([198.145.29.136]:42596 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750823AbdALDEX (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 11 Jan 2017 22:04:23 -0500
+Date: Thu, 12 Jan 2017 04:04:19 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Lee Jones <lee.jones@linaro.org>,
         Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Sebastian Reichel <sre@kernel.org>,
-        Guenter Roeck <linux@roeck-us.net>
-Cc: Mboumba Cedric Madianga <cedric.madianga@gmail.com>,
-        linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org,
-        Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 7/7] ARM: dts: ux500: declare GPADC IIO ADC channels
-Date: Wed, 11 Jan 2017 00:47:45 +0100
-Message-Id: <20170110234745.29691-8-linus.walleij@linaro.org>
-In-Reply-To: <20170110234745.29691-1-linus.walleij@linaro.org>
+        Guenter Roeck <linux@roeck-us.net>,
+        Mboumba Cedric Madianga <cedric.madianga@gmail.com>,
+        linux-pm@vger.kernel.org, linux-hwmon@vger.kernel.org
+Subject: Re: [PATCH 0/7] mfd/iio: move the AB8500 GPADC driver to IIO
+Message-ID: <20170112030419.j7ux7igi54556koc@earth>
 References: <20170110234745.29691-1-linus.walleij@linaro.org>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5e5cejsrhjwdz5tt"
+In-Reply-To: <20170110234745.29691-1-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds the IIO channels for the GPADC after converting it
-to using the standard IIO ADC bindings and moving the driver
-over to the IIO subsystem. We also add IIO hwmon standard
-driver node to support reading channels in a standard manner.
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
----
- arch/arm/boot/dts/ste-dbx5x0.dtsi | 102 +++++++++++++++++++++++++++++++++++++-
- 1 file changed, 101 insertions(+), 1 deletion(-)
+--5e5cejsrhjwdz5tt
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-diff --git a/arch/arm/boot/dts/ste-dbx5x0.dtsi b/arch/arm/boot/dts/ste-dbx5x0.dtsi
-index d309314f3a36..172c81e98ad0 100644
---- a/arch/arm/boot/dts/ste-dbx5x0.dtsi
-+++ b/arch/arm/boot/dts/ste-dbx5x0.dtsi
-@@ -44,6 +44,20 @@
- 		};
- 	};
- 
-+	/* Essential housekeeping hardware monitors */
-+	iio-hwmon {
-+		compatible = "iio-hwmon";
-+		io-channels = <&gpadc 0x02>, /* Battery temperature */
-+			    <&gpadc 0x03>, /* Main charger voltage */
-+			    <&gpadc 0x08>, /* Main battery voltage */
-+			    <&gpadc 0x09>, /* VBUS */
-+			    <&gpadc 0x0a>, /* Main charger current */
-+			    <&gpadc 0x0b>, /* USB charger current *
-+			    <&gpadc 0x0c>, /* Backup battery voltage */
-+			    <&gpadc 0x0d>, /* Die temperature */
-+			    <&gpadc 0x12>; /* Crystal temperature */
-+	};
-+
- 	soc {
- 		#address-cells = <1>;
- 		#size-cells = <1>;
-@@ -616,12 +630,84 @@
- 					interrupt-names = "60S", "ALARM";
- 				};
- 
--				ab8500-gpadc {
-+				gpadc: ab8500-gpadc {
- 					compatible = "stericsson,ab8500-gpadc";
- 					interrupts = <32 IRQ_TYPE_LEVEL_HIGH
- 						      39 IRQ_TYPE_LEVEL_HIGH>;
- 					interrupt-names = "HW_CONV_END", "SW_CONV_END";
- 					vddadc-supply = <&ab8500_ldo_tvout_reg>;
-+					#address-cells = <1>;
-+					#size-cells = <0>;
-+					#io-channel-cells = <1>;
-+
-+					/* GPADC channels */
-+					bat_ctrl: adc-channel@01 {
-+						reg = <0x01>;
-+					};
-+					btemp_ball: adc-channel@02 {
-+						reg = <0x02>;
-+					};
-+					main_charger_v: adc-channel@03 {
-+						reg = <0x03>;
-+					};
-+					acc_detect1: adc-channel@04 {
-+						reg = <0x04>;
-+					};
-+					acc_detect2: adc-channel@05 {
-+						reg = <0x05>;
-+					};
-+					adc_aux1: adc-channel@06 {
-+						reg = <0x06>;
-+					};
-+					adc_aux2: adc-channel@07 {
-+						reg = <0x07>;
-+					};
-+					main_batt_v: adc-channel@08 {
-+						reg = <0x08>;
-+					};
-+					vbus_v: adc-channel@09 {
-+						reg = <0x09>;
-+					};
-+					main_charger_c: adc-channel@0a {
-+						reg = <0x0a>;
-+					};
-+					usb_charger_c: adc-channel@0b {
-+						reg = <0x0b>;
-+					};
-+					bk_bat_v: adc-channel@0c {
-+						reg = <0x0c>;
-+					};
-+					die_temp: adc-channel@0d {
-+						reg = <0x0d>;
-+					};
-+					usb_id: adc-channel@0e {
-+						reg = <0x0e>;
-+					};
-+					xtal_temp: adc-channel@12 {
-+						reg = <0x12>;
-+					};
-+					vbat_true_meas: adc-channel@13 {
-+						reg = <0x13>;
-+					};
-+					bat_ctrl_and_ibat: adc-channel@1c {
-+						reg = <0x1c>;
-+					};
-+					vbat_meas_and_ibat: adc-channel@1d {
-+						reg = <0x1d>;
-+					};
-+					vbat_true_meas_and_ibat: adc-channel@1e {
-+						reg = <0x1e>;
-+					};
-+					bat_temp_and_ibat: adc-channel@1f {
-+						reg = <0x1f>;
-+					};
-+				};
-+
-+				ab8500_temp {
-+					compatible = "stericsson,abx500-temp";
-+					io-channels = <&gpadc 0x06>,
-+						      <&gpadc 0x07>;
-+					io-channel-name = "aux1", "aux2";
- 				};
- 
- 				ab8500_battery: ab8500_battery {
-@@ -632,17 +718,31 @@
- 				ab8500_fg {
- 					compatible = "stericsson,ab8500-fg";
- 					battery	   = <&ab8500_battery>;
-+					io-channels = <&gpadc 0x08>;
-+					io-channel-name = "main_bat_v";
- 				};
- 
- 				ab8500_btemp {
- 					compatible = "stericsson,ab8500-btemp";
- 					battery	   = <&ab8500_battery>;
-+					io-channels = <&gpadc 0x02>,
-+						      <&gpadc 0x01>;
-+					io-channel-name = "btemp_ball",
-+							"bat_ctrl";
- 				};
- 
- 				ab8500_charger {
- 					compatible	= "stericsson,ab8500-charger";
- 					battery		= <&ab8500_battery>;
- 					vddadc-supply	= <&ab8500_ldo_tvout_reg>;
-+					io-channels = <&gpadc 0x03>,
-+						      <&gpadc 0x0a>,
-+						      <&gpadc 0x09>,
-+						      <&gpadc 0x0b>;
-+					io-channel-name = "main_charger_v",
-+							"main_charger_c",
-+							"vbus_v",
-+							"usb_charger_c";
- 				};
- 
- 				ab8500_chargalg {
--- 
-2.9.3
+Hi,
 
+On Wed, Jan 11, 2017 at 12:47:38AM +0100, Linus Walleij wrote:
+> I don't know the best merge path for this but suspect that as
+> usual Lee can merge them all and provide an immutable branch to
+> the other subsystems, which he has lots of routine in handling.
+> The final DTS patch can probably be merged separately through
+> ARM SoC.
+
+I'm fine with that solution.
+
+-- Sebastian
+
+--5e5cejsrhjwdz5tt
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlh28jIACgkQ2O7X88g7
++ppDHQ/7B9bE5PEEFxVo94KH572oJrlA5SF8JANteNANCdcQlJP7kJzj+Ox1FNAm
+Dx8iO0R4AUb+LsSXu01oBG87oQlETaOg0UG3Cf8AvLy48EVDm0TEZpt6dI/3TzZ6
+hfQlCF6B3PPtwVHQcqALPzTrmTb/uh5Y/2Lp09DqNe+Iz6zIpLoQ95+cnNnyPWF2
+K0hwzQne9eGAb2ZA0O9AqY10v07MrAL/tpBzTTKPMJhTY6TPXrfEcn7mIEOJTS/H
+NGFCm3rzc9nn6nTZv8yyxHJmugTgEfEsIyCbZMgdJtwjd5rx90GwI1rSjQ5ESRi0
+IXab1S+bYCeKtphkGFnQBIxV3OyHjEnCq9EPRfAkJ3gqANupgED2b4InhqZyqF0O
+Jk+iQ4CMJ77E8UPVLGftxUSUE9e051tt+GFpIaFr9E27JvPrS0DpFdk2RXpDh5gY
+PvEHELRrnorx9EIq4/DcRxORpkalOslGU1Qi44JKAZ+gDEo6ODN6gv38IDjN7m9q
+/zvNKUARcxZ0Ef6l344IIeaiCyPmM1sT59y/ZkiwXiJpO6PKx625AIn+RwyIc4L3
+gBjJHbM/5LvkD6ZcbDyJyRYCHdq3ULt2mMt8WvU5Q45dABhhtl9BspOpi+jaBxLk
+wr1/XlHtsumnshh/u0kO5l86Byqd8dwEeH1aUzFAeYF/kWVObbc=
+=oHcP
+-----END PGP SIGNATURE-----
+
+--5e5cejsrhjwdz5tt--
