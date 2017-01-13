@@ -1,57 +1,38 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay4-d.mail.gandi.net ([217.70.183.196]:46857 "EHLO
-        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751392AbdAMJvE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 13 Jan 2017 04:51:04 -0500
-From: Jacopo Mondi <jacopo+renesas@jmondi.org>
-To: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, marek.vasut@gmail.com, geert@linux-m68k.org,
-        robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-Subject: [PATCH v4 2/2] dt-bindings: iio: document MAX11100 ADC
-Date: Fri, 13 Jan 2017 10:50:38 +0100
-Message-Id: <1484301038-16386-3-git-send-email-jacopo+renesas@jmondi.org>
-In-Reply-To: <1484301038-16386-1-git-send-email-jacopo+renesas@jmondi.org>
-References: <1484301038-16386-1-git-send-email-jacopo+renesas@jmondi.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Ovnb=Y3=gmail.com=geert.uytterhoeven@kernel.org>
+MIME-Version: 1.0
+Sender: geert.uytterhoeven@gmail.com
+In-Reply-To: <1484301038-16386-3-git-send-email-jacopo+renesas@jmondi.org>
+References: <1484301038-16386-1-git-send-email-jacopo+renesas@jmondi.org> <1484301038-16386-3-git-send-email-jacopo+renesas@jmondi.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Fri, 13 Jan 2017 11:04:29 +0100
+Message-ID: <CAMuHMdVj+RjwcQOPGz=mxQC--k_zGh5wbT7HqW+KZBOtUg5z5Q@mail.gmail.com>
+Subject: Re: [PATCH v4 2/2] dt-bindings: iio: document MAX11100 ADC
+To: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>,
+	Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald <pmeerw@pmeerw.net>, Marek Vasut <marek.vasut@gmail.com>,
+	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Add device tree bindings documentation for Maxim MAX11100 single-channel
-ADC
+On Fri, Jan 13, 2017 at 10:50 AM, Jacopo Mondi
+<jacopo+renesas@jmondi.org> wrote:
+> Add device tree bindings documentation for Maxim MAX11100 single-channel
+> ADC
+>
+> Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
 
-Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
----
- .../devicetree/bindings/iio/adc/max11100.txt          | 19 +++++++++++++++++++
- 1 file changed, 19 insertions(+)
- create mode 100644 Documentation/devicetree/bindings/iio/adc/max11100.txt
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/max11100.txt b/Documentation/devicetree/bindings/iio/adc/max11100.txt
-new file mode 100644
-index 0000000..ad0bc31
---- /dev/null
-+++ b/Documentation/devicetree/bindings/iio/adc/max11100.txt
-@@ -0,0 +1,19 @@
-+* Maxim max11100 Analog to Digital Converter (ADC)
-+
-+Required properties:
-+  - compatible: Should be "maxim,max11100"
-+  - reg: the adc unit address
-+  - vref-supply: phandle to the regulator that provides reference voltage
-+
-+Optional properties:
-+  - spi-max-frequency: SPI maximum frequency
-+
-+Example:
-+
-+max11100: adc@0 {
-+        compatible = "maxim,max11100";
-+        reg = <0>;
-+        vref-supply = <&adc0_vref>;
-+        spi-max-frequency = <240000>;
-+};
-+
--- 
-2.7.4
+Gr{oetje,eeting}s,
 
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
