@@ -1,104 +1,70 @@
-Return-Path: <SRS0=rBwz=Y3=jmondi.org=jacopo@kernel.org>
-Subject: Re: [PATCH v3] iio: adc: Add Maxim MAX11100 driver
-To: Geert Uytterhoeven <geert@linux-m68k.org>,
- Jacopo Mondi <jacopo+renesas@jmondi.org>
-References: <1484261499-7729-1-git-send-email-jacopo+renesas@jmondi.org>
- <CAMuHMdWLkDzdvTpbse2vN++XQtgjs_QzrRZCxG7PKuFR2C2ccA@mail.gmail.com>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>,
- Magnus Damm <magnus.damm@gmail.com>, Jonathan Cameron <jic23@kernel.org>,
- Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald <pmeerw@pmeerw.net>, Marek Vasut <marek.vasut@gmail.com>,
- linux-iio@vger.kernel.org, Linux-Renesas <linux-renesas-soc@vger.kernel.org>
-From: jacopo mondi <jacopo@jmondi.org>
-Message-ID: <8fb92854-815e-39c1-315d-84272d77a3da@jmondi.org>
-Date: Fri, 13 Jan 2017 09:46:52 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAMuHMdWLkDzdvTpbse2vN++XQtgjs_QzrRZCxG7PKuFR2C2ccA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8; format=flowed
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay4-d.mail.gandi.net ([217.70.183.196]:35000 "EHLO
+        relay4-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751456AbdAMJvC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 13 Jan 2017 04:51:02 -0500
+From: Jacopo Mondi <jacopo+renesas@jmondi.org>
+To: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, marek.vasut@gmail.com, geert@linux-m68k.org,
+        robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v4 0/2] iio: adc: Add Maxim MAX11100 driver
+Date: Fri, 13 Jan 2017 10:50:36 +0100
+Message-Id: <1484301038-16386-1-git-send-email-jacopo+renesas@jmondi.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Geert,
+Hello,
+   sending out v4 splitting device tree bindings documentation and actual ADC
+driver.
+No changes in driver code since v3.
 
-On 13/01/2017 09:27, Geert Uytterhoeven wrote:
-> Hi Jacopo,
->
-> On Thu, Jan 12, 2017 at 11:51 PM, Jacopo Mondi
-> <jacopo+renesas@jmondi.org> wrote:
->> From: Jacopo Mondi <jacopo@jmondi.org>
->>
->> Add IIO driver for Maxim MAX11100 single-channel ADC.
->> Add DT bindings documentation.
->>
->> Signed-off-by: Jacopo Mondi <jacopo@jmondi.org>
->> Tested-by: Marek Vasut <marek.vasut@gmail.com>
->
->>  .../devicetree/bindings/iio/adc/max11100.txt       |  17 ++
->>  drivers/iio/adc/Kconfig                            |   9 +
->>  drivers/iio/adc/Makefile                           |   1 +
->>  drivers/iio/adc/max11100.c                         | 187 +++++++++++++++++++++
->>  4 files changed, 214 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/max11100.txt
->>  create mode 100644 drivers/iio/adc/max11100.c
->
-> When submitting a new driver with DT bindings, please split off the
-> DT binding docs in a separate patch, and CC devicetree@vger.kernel.org,
-> Rob Herring, and Mark Rutland.
->
-> scripts/get_maintainer.pl is your friend ;-)
->
-> Reviewing DT binding docs only...
->
+Same question for iio maintainers here:
+I would like to have clarified the measure unit returned by read_raw().
+Currently (value_raw * value_scale) return the ADC input value in mV.
+While testing the patch I've been questioned if that should not actually
+be in uV. This is easily achievable making _scale return a value in uV.
+I have found no mention of this in the ABI documentation as it speaks of
+generic voltage.
+Can we have a final word on this?
 
-Let me send this out again split in 2...
-people reviewing the adc driver can comment here or in v4, as they prefer
+Thanks Marek for having tested this.
 
-Thanks
-    j
+v1 -> v2:
+    - incorporated pmeerw's review comments
+    - retrieve vref from dts and use that to convert read_raw result
+      to mV
+    - add device tree bindings documentation
 
+v2 -> v3:
+    - add _SCALE bit of read_raw function and change _RAW bit accordingly
+    - call regulator_get_voltage when accessing the _SCALE part of read_raw
+      and not during probe
+    - add back remove function as regulator has to be disabled when detaching
+      the module. Do not use devm_ version of iio_register/unregister functions
+      anymore but do unregister in the remove.
+    - remove mutex as access to SPI bus is protected by SPI core. Thanks marex
 
->> new file mode 100644
->> index 0000000..6877c11
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/max11100.txt
->> @@ -0,0 +1,17 @@
->> +* Maxim max11100 Analog to Digital Converter (ADC)
->> +
->> +Required properties:
->> +  - compatible: Should be "maxim,max11100"
->> +  - vref-supply: phandle to the regulator that provides reference voltage
->
-> As this is an SPI slave device, there should be a "reg" property.
->
->> +
->> +Optional properties:
->> +  - spi-max-frequency: SPI maximum frequency
->> +
->> +Example:
->> +
->> +adc0: max11100@0 {
->
-> As per ePAPR Section 2.2.2 "Generic Names Recommendation", node names
-> should be "somewhat generic, reflecting the function of the device and
-> not its precise programming model.".
-> The label property defines a human readable string describing a device.
-> Hence "max11100: adc@0" is more appropriate.
->
->> +        compatible = "maxim,max11100";
->
-> Missing "reg = <0>;" matching the unit-address above.
->
->> +        vref-supply = <&adc0_vref>;
->> +        spi-max-frequency = <240000>;
->> +};
->
-> Gr{oetje,eeting}s,
->
->                         Geert
->
-> --
-> Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
->
-> In personal conversations with technical people, I call myself a hacker. But
-> when I'm talking to journalists I just say "programmer" or something like that.
->                                 -- Linus Torvalds
->
+v3 -> v4:
+    - split device tree binding documentation and actual ADC driver
+    - add "reg" to the list of required properties and use a better
+      namimg for the adc device node in bindings documentation as suggested
+      by Geert.
+
+Jacopo Mondi (2):
+  iio: adc: Add Maxim MAX11100 driver
+  dt-bindings: iio: document MAX11100 ADC
+
+ .../devicetree/bindings/iio/adc/max11100.txt       |  19 +++
+ drivers/iio/adc/Kconfig                            |   9 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/max11100.c                         | 187 +++++++++++++++++++++
+ 4 files changed, 216 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/max11100.txt
+ create mode 100644 drivers/iio/adc/max11100.c
+
+-- 
+2.7.4
+
