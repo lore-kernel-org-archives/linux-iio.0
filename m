@@ -1,58 +1,70 @@
-Return-Path: <SRS0=QGQM=Y6=metafoo.de=lars@kernel.org>
-Subject: Re: Using IIO for high-speed DAQ
-To: Matthias Klumpp <matthias@tenstral.net>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yb0-f194.google.com ([209.85.213.194]:33695 "EHLO
+        mail-yb0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751115AbdANRZ4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 Jan 2017 12:25:56 -0500
+Received: by mail-yb0-f194.google.com with SMTP id 123so2870829ybe.0
+        for <linux-iio@vger.kernel.org>; Sat, 14 Jan 2017 09:25:53 -0800 (PST)
+MIME-Version: 1.0
+In-Reply-To: <d1c324a3-17c9-ed66-3946-ccf9a0bbce5d@kernel.org>
 References: <CAKNHny9CYKzSoyq_-T3q35rq=1y1ekQPXr2Rg1ByhabadMWv9A@mail.gmail.com>
  <d1c324a3-17c9-ed66-3946-ccf9a0bbce5d@kernel.org>
- <07a0ebde-dffe-ba6a-5fac-eade517b5a21@metafoo.de>
- <CAKNHny_oY0bsfTZK7_KDKCm=x=KXiMaGkkGXpDFcUXB9SYkoRg@mail.gmail.com>
- <eb9bf135-9ea3-99b7-6a21-264dceb8a178@metafoo.de>
- <CAKNHny_9FCDfBdTC-=AL3LwdPyqQ0M58rYT22gxULFgB1hA1LA@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <d5af1ec3-383f-9b2a-98d0-01ad421c2f83@metafoo.de>
-Date: Mon, 16 Jan 2017 22:40:07 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAKNHny_9FCDfBdTC-=AL3LwdPyqQ0M58rYT22gxULFgB1hA1LA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+From: Matthias Klumpp <matthias@tenstral.net>
+Date: Sat, 14 Jan 2017 18:25:52 +0100
+Message-ID: <CAKNHny87kWbYW4jqkU2Jfsv2i3mk5bG1dewD548yQ8wV1uPTnA@mail.gmail.com>
+Subject: Re: Using IIO for high-speed DAQ
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-iio@vger.kernel.org, Lars-Peter Clausen <lars@metafoo.de>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 01/16/2017 03:23 PM, Matthias Klumpp wrote:
-> 2017-01-14 18:49 GMT+01:00 Lars-Peter Clausen <lars@metafoo.de>:
->> On 01/14/2017 06:18 PM, Matthias Klumpp wrote:
->>>> The IIO framework itself does not impose a limit on the maximum sampling
->>>> rate. It's all a matter of what the hardware is capable of handling. We have
->>>> systems where we do 3-digit MSPS continuous transfers and GSPS oneshot
->>>> transfers.
->>>
->>> Since this is the first time I touched this area: Is there a group of
->>> chips which you would recommend that samples with 200ksps, has a 16bit
->>> bit-depth and bipolar mode and is accessible at that speed via IIO?
->>> I'll look around a bit to find a solution for this issue.
+2017-01-14 17:12 GMT+01:00 Jonathan Cameron <jic23@kernel.org>:
+> On 13/01/17 14:13, Matthias Klumpp wrote:
+>> Hello!
+>> I would like to use IIO for high-speed data acquisition. In order to
+>> do that I implemented a new IIO driver for the ADC chip I am using
+>> (MAX1133, maximum sampling frequency 200ksps).
 >>
->> Unfortunately this is often as  much about the AP as it is about the
->> converter. In the setups we have we use a AP+FPGA combination where the AP
->> runs Linux with IIO and the FPGA is responsible for handling the SPI flow
->> control during the acquisition phase. For this we've developed the
->> SPI-Engine framework[1]. It is compatible with most ADI single-channel SAR
->> and Sigma-Delta ADCs[2].
+>> The initial approach with triggered buffers was way too slow,
+>> achieving only a maximum sampling frequency of 4ksps.
+> Any idea where the bottle neck was specifically?  I'm guessing it
+> might have been on the userspace side, but not certain.
+
+The userspace side shouldn't be a problem, it is incredibly fast
+(written to meet realtime deadlines even).
+
+> [...]
+>
+> When you say use DMA, this part is an SPI device - so are you hand
+> rolling DMA transfers from the spi controller?
+>
+> We've discussed in the past (long time ago now!) how to use spi
+> controllers that support streaming modes but nothing has really come
+> of it yet. What SPI controller are you using?
+>
+> Last time I was trying to do similar things (was a while ago now)
+> I fairly quickly hit the limitation that the round trip time on SPI
+> transfers even when using DMA was a lot longer than the theoretical.
+> Any idea where you will be limited with that?
+
+This is the problem - for each data acquisition, I make one spi_sync
+call at time and I am really just hand-rolling SPI transfers from the
+controller.
+I think the gain in speed I saw came purely from the fact that I got
+rid of the timer trigger, not so much from the DMA...
+
 >> [...]
-> 
-> Thanks!
-> I was already looking into this, but also tried to access the BCM2835
-> on my Raspberry Pi test device directly (someone wrote a nice helper
-> library for that at [1]).
-> Turns out that using this library, I can easily achieve my desired
-> speed of 200ksps (it also turned out that with a few changes on the
-> setup, 6ksps can be just enough...).
+> Lars would indeed be the person I'd ask about this.  I've cc'd
+> him directly as often emails get buried in the list and missed
+> by people for at least a little while.
+>
+> Keep us informed of how you get on. Will be useful info for others.
 
-This is basically the dedicated CPU approach I described. Your application
-is spinning on the SPI registers and not using interrupts. This means a lot
-of CPU time is used for busy-waiting. If you are issuing one transfer after
-another CPU utilization will go to 100%.
+Thank you a lot for your reply and pointers! This project I am working
+on started quite small and now became way bigger than expected, with
+me touching a lot of areas I have less knowledge of, so any feedback
+has tremendous value.
 
-One issue with doing this in Linux userspace is that your application will
-still get interrupted occasionally, either to run interrupts or potentially
-schedule other applications for a short duration on the CPU. When this
-happens there is a good chance that you'll loose a few sample and have a
-discontinuity in your signal. Which will show itself in strange glitches
-when you are processing the data.
+Kind regards,
+    Matthias
