@@ -1,41 +1,29 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50713 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751733AbdANKXA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 14 Jan 2017 05:23:00 -0500
+Return-Path: <SRS0=joN2=Y5=metafoo.de=lars@kernel.org>
 Subject: Re: [PATCH v4 1/2] iio: adc: Add Maxim MAX11100 driver
 To: Jacopo Mondi <jacopo+renesas@jmondi.org>,
-        wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        marek.vasut@gmail.com, geert@linux-m68k.org, robh+dt@kernel.org,
-        mark.rutland@arm.com
+ wsa+renesas@sang-engineering.com, magnus.damm@gmail.com, jic23@kernel.org,
+ knaack.h@gmx.de, pmeerw@pmeerw.net, marek.vasut@gmail.com,
+ geert@linux-m68k.org, robh+dt@kernel.org, mark.rutland@arm.com
 References: <1484301038-16386-1-git-send-email-jacopo+renesas@jmondi.org>
  <1484301038-16386-2-git-send-email-jacopo+renesas@jmondi.org>
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-renesas-soc@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <138a6eee-a845-89d3-003a-8045c57c56c3@kernel.org>
-Date: Sat, 14 Jan 2017 10:22:54 +0000
+ linux-renesas-soc@vger.kernel.org
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <75132564-be27-809c-2d23-6c49ef10fab3@metafoo.de>
+Date: Sun, 15 Jan 2017 13:18:03 +0100
 MIME-Version: 1.0
 In-Reply-To: <1484301038-16386-2-git-send-email-jacopo+renesas@jmondi.org>
 Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 13/01/17 09:50, Jacopo Mondi wrote:
+On 01/13/2017 10:50 AM, Jacopo Mondi wrote:
 > From: Jacopo Mondi <jacopo@jmondi.org>
 > 
 > Add iio driver for Maxim MAX11100 single-channel ADC.
 > 
 > Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
 > Tested-by: Marek Vasut <marek.vasut@gmail.com>
->
-Small issue with DMA using SPI controllers and the location of buffer
-in your read.
-
-Otherwise looks good to me.
-
-Jonathan
+> 
 > ---
 >  drivers/iio/adc/Kconfig    |   9 +++
 >  drivers/iio/adc/Makefile   |   1 +
@@ -142,15 +130,6 @@ Jonathan
 > +	uint8_t buffer[3];
 > +
 > +	ret = spi_read(state->spi, buffer, sizeof(buffer));
-Buffer needs to be __cacheline_aligned to safely use spi_read on spi
-controllers that use DMA.
-
-Two easy ways of doing this, either allocate buffer using kmalloc or
-take advantage of the fact that spi_priv() is cache line aligned and
-stick you buffer at the end of your private structure and mark it
-__cacheline_aligned to ensure it also appropriately aligned in it's own
-cacheline.
-
 > +	if (ret) {
 > +		dev_err(&indio_dev->dev, "SPI transfer failed\n");
 > +		return ret;
@@ -223,59 +202,6 @@ cacheline.
 > +	indio_dev->modes = INDIO_DIRECT_MODE;
 > +	indio_dev->channels = state->desc->channels;
 > +	indio_dev->num_channels = state->desc->num_chan;
-> +
-> +	state->vref_reg = devm_regulator_get(&spi->dev, "vref");
-> +	if (IS_ERR(state->vref_reg))
-> +		return PTR_ERR(state->vref_reg);
-> +
-> +	ret = regulator_enable(state->vref_reg);
-> +	if (ret)
-> +		return ret;
-> +
-> +	ret = iio_device_register(indio_dev);
-> +	if (ret)
-> +		goto disable_regulator;
-> +
-> +	return 0;
-> +
-> +disable_regulator:
-> +	regulator_disable(state->vref_reg);
-> +
-> +	return ret;
-> +}
-> +
-> +static int max11100_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = spi_get_drvdata(spi);
-> +	struct max11100_state *state = iio_priv(indio_dev);
-> +
-> +	regulator_disable(state->vref_reg);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct of_device_id max11100_ids[] = {
-> +	{.compatible = "maxim,max11100"},
-> +	{ },
-> +};
-> +MODULE_DEVICE_TABLE(of, max11100_ids);
-> +
-> +static struct spi_driver max11100_driver = {
-> +	.driver = {
-> +		.name	= "max11100",
-> +		.owner	= THIS_MODULE,
-> +		.of_match_table = of_match_ptr(max11100_ids),
-> +	},
-> +	.probe		= max11100_probe,
-> +	.remove		= max11100_remove,
-> +};
-> +
-> +module_spi_driver(max11100_driver);
-> +
-> +MODULE_AUTHOR("Jacopo Mondi <jacopo@jmondi.org>");
-> +MODULE_DESCRIPTION("Maxim max11100 ADC Driver");
-> +MODULE_LICENSE("GPL v2");
-> 
 
+Consider setting indio_dev->name= "max11100"; so userspace can identify the
+type of the device.
