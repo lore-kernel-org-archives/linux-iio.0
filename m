@@ -1,77 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35114 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750735AbdAUOUr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 09:20:47 -0500
-Subject: Re: [PATCH] iio: health: max30100: use msleep() for long uncritical
- delays
-To: Matt Ranostay <matt.ranostay@konsulko.com>,
-        Nicholas Mc Guire <hofrat@osadl.org>
-References: <1484580953-29817-1-git-send-email-hofrat@osadl.org>
- <CAJCx=gnjskR22TW1g6w243CKqCA8TmJ4wWeRORG1e7q9=MxKzw@mail.gmail.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:59099
+        "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
+        with ESMTP id S1751130AbdAPPu7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 16 Jan 2017 10:50:59 -0500
+From: Javier Martinez Canillas <javier@osg.samsung.com>
+To: linux-kernel@vger.kernel.org
+Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
+        linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hornung <mhornung.linux@gmail.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Matt Ranostay <mranostay@gmail.com>, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <683569ef-1f8c-02ad-337a-da7da8d6317e@kernel.org>
-Date: Sat, 21 Jan 2017 14:20:44 +0000
-MIME-Version: 1.0
-In-Reply-To: <CAJCx=gnjskR22TW1g6w243CKqCA8TmJ4wWeRORG1e7q9=MxKzw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+        Alexander Koch <mail@alexanderkoch.net>
+Subject: [PATCH 1/3] iio: light: opt3001: Export OF device ID table as module aliases
+Date: Mon, 16 Jan 2017 12:50:43 -0300
+Message-Id: <1484581845-19457-1-git-send-email-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/01/17 02:00, Matt Ranostay wrote:
-> On Mon, Jan 16, 2017 at 7:35 AM, Nicholas Mc Guire <hofrat@osadl.org> wrote:
->> ulseep_range() uses hrtimers and provides no advantage over msleep()
->> for larger delays. Fix up the 35ms delays here to use msleep() and
->> reduce the load on the hrtimer subsystem.
-> 
-> Ok makes sense.  Also long as it guaranteed to be at least 35 milliseconds.
-> 
-> Reviewed-by: Matt Ranostay <matt.ranostay@konsulko.com>
-Fair enough. Applied to the togreg branch of iio.git and pushed out
-as testing for the autobuilders to play with it.
+The I2C core always reports a MODALIAS of the form i2c:<foo> even if the
+device was registered via OF, this means that exporting the OF device ID
+table device aliases in the module is not needed. But in order to change
+how the core reports modaliases to user-space, it's better to export it.
 
-Thanks,
+Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
+---
 
-Jonathan
-> 
->>
->> Fixes: commit 4d33615df58b ("iio: light: add MAX30100 oximeter driver support")
->> Link: http://lkml.org/lkml/2017/1/11/377
->> Signed-off-by: Nicholas Mc Guire <hofrat@osadl.org>
->> ---
->> Problem located with coccinelle script
->>
->> Patch was compile tested with: x86_64_defconfig + CONFIG_IIO=m +
->> CONFIG_MAX30100=m
->>
->> Patch is aginast 4.10-rc3 (localversion-next is next-20170116)
->>
->>  drivers/iio/health/max30100.c | 2 +-
->>  1 file changed, 1 insertion(+), 1 deletion(-)
->>
->> diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
->> index 90ab8a2d..9648c69 100644
->> --- a/drivers/iio/health/max30100.c
->> +++ b/drivers/iio/health/max30100.c
->> @@ -378,7 +378,7 @@ static int max30100_get_temp(struct max30100_data *data, int *val)
->>         if (ret)
->>                 return ret;
->>
->> -       usleep_range(35000, 50000);
->> +       msleep(35);
->>
->>         return max30100_read_temp(data, val);
->>  }
->> --
->> 2.1.4
->>
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+ drivers/iio/light/opt3001.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/light/opt3001.c b/drivers/iio/light/opt3001.c
+index 78c9b3a6453a..b91ebc3483ce 100644
+--- a/drivers/iio/light/opt3001.c
++++ b/drivers/iio/light/opt3001.c
+@@ -840,6 +840,7 @@ static const struct of_device_id opt3001_of_match[] = {
+ 	{ .compatible = "ti,opt3001" },
+ 	{ }
+ };
++MODULE_DEVICE_TABLE(of, opt3001_of_match);
+ 
+ static struct i2c_driver opt3001_driver = {
+ 	.probe = opt3001_probe,
+-- 
+2.7.4
 
