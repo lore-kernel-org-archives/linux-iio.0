@@ -1,65 +1,193 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34746 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750912AbdAUNGd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 08:06:33 -0500
-Subject: Re: [PATCH] iio: bmi160: use variable names for sizeof() operator
-To: Alison Schofield <amsfield22@gmail.com>
-References: <20170116050102.GA6310@d830.WORKGROUP>
-Cc: daniel.baluta@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <888a0b08-59cc-7f0a-86db-abdfd603a968@kernel.org>
-Date: Sat, 21 Jan 2017 13:06:31 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170116050102.GA6310@d830.WORKGROUP>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=r/gY=Y6=goldelico.com=hns@kernel.org>
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v9 0/8] drivers: touchscreen: tsc2007 and ads7846/tsc2046 improvements (use common touchscreen bindings, pre-calibration, spi fix and provide iio raw values)
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <cover.1482936802.git.hns@goldelico.com>
+Date: Mon, 16 Jan 2017 07:34:12 +0100
+Cc: linux-input@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-omap@vger.kernel.org,
+ letux-kernel@openphoenux.org,
+ linux-iio@vger.kernel.org,
+ kernel@pyra-handheld.com
+Message-Id: <BB8421B2-6626-4A95-BCD0-25C4CAF30F61@goldelico.com>
+References: <cover.1482936802.git.hns@goldelico.com>
+To: Sebastian Reichel <sre@kernel.org>,
+ Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+ Mark Rutland <mark.rutland@arm.com>,
+ =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+ Tony Lindgren <tony@atomide.com>,
+ Russell King <linux@armlinux.org.uk>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Michael Welling <mwelling@ieee.org>,
+ =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+ Javier Martinez Canillas <javier@osg.samsung.com>,
+ Igor Grinberg <grinberg@compulab.co.il>,
+ "Andrew F. Davis" <afd@ti.com>,
+ Mark Brown <broonie@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Nikolaus Schaller <hns@goldelico.com>,
+ Alexander Stein <alexander.stein@systec-electronic.com>,
+ Eric Engestrom <eric@engestrom.ch>,
+ Hans de Goede <hdegoede@redhat.com>,
+ Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+ Petr Cvek <petr.cvek@tul.cz>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Hans Verkuil <hans.verkuil@cisco.com>,
+ Nick Dyer <nick@shmanahar.org>,
+ Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+ Michel Verlaan <michel.verl@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 16/01/17 05:01, Alison Schofield wrote:
-> Replace the types with the actual variable names when using the
-> sizeof() operator.  This is kernel preferred style as it protects
-> against future changes to variable type.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-Sensible change from an obviously correct stand point.
-Future changes to the type are a non starter here given this is a feature of
-the hardware!  I've dropped that bit of the commit message and added
-something about readability.
+ping
 
-Jonathan
-> ---
->  drivers/iio/imu/bmi160/bmi160_core.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/bmi160/bmi160_core.c b/drivers/iio/imu/bmi160/bmi160_core.c
-> index 5355507..1e7c88b 100644
-> --- a/drivers/iio/imu/bmi160/bmi160_core.c
-> +++ b/drivers/iio/imu/bmi160/bmi160_core.c
-> @@ -338,9 +338,9 @@ static int bmi160_get_data(struct bmi160_data *data, int chan_type,
->  	__le16 sample;
->  	enum bmi160_sensor_type t = bmi160_to_sensor(chan_type);
->  
-> -	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * sizeof(__le16);
-> +	reg = bmi160_regs[t].data + (axis - IIO_MOD_X) * sizeof(sample);
->  
-> -	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(__le16));
-> +	ret = regmap_bulk_read(data->regmap, reg, &sample, sizeof(sample));
->  	if (ret < 0)
->  		return ret;
->  
-> @@ -405,8 +405,8 @@ static irqreturn_t bmi160_trigger_handler(int irq, void *p)
->  
->  	for_each_set_bit(i, indio_dev->active_scan_mask,
->  			 indio_dev->masklength) {
-> -		ret = regmap_bulk_read(data->regmap, base + i * sizeof(__le16),
-> -				       &sample, sizeof(__le16));
-> +		ret = regmap_bulk_read(data->regmap, base + i * sizeof(sample),
-> +				       &sample, sizeof(sample));
->  		if (ret < 0)
->  			goto done;
->  		buf[j++] = sample;
-> 
-
+> Am 28.12.2016 um 15:53 schrieb H. Nikolaus Schaller =
+<hns@goldelico.com>:
+>=20
+> Changes V9:
+> * added explicit CONFIG for TSC2007_IIO and simplified Makefile =
+(suggested by Dmitry Torokhov <dmitry.torokhov@gmail.com>)
+> * make the tsc2007 iio patch the last one in this sequence
+>=20
+> 2016-11-22 15:02:42: Changes V8:
+> * fix compilation for CONFIG_IIO=3Dm (reported by Jonathan Cameron =
+<jic23@kernel.org>)
+> * add some more Reviewed-by: and Acked-by:
+> * mutiple improvements suggested by Dmitry Torokhov =
+<dmitry.torokhov@gmail.com>:
+> ** drop patch "send pendown and penup only once" (input core does take =
+care of it now)
+> ** remove not necessary EXPORT_SYMBOL
+> ** remove explicit file names from comment header
+> ** move tsc2007_iio_configure() to the end of the probe process and =
+simplify the error path again
+> ** remove unnecessary input_unregister_device()=20
+> ** improvement for compilation with CONFIG_IIO=3Dm and =
+CONFIG_TSC2007=3Dy
+>=20
+> 2016-11-11 20:02:11: Changes V7:
+> * rearranged the include files (asked for by Jonathan Cameron =
+<jic23@kernel.org>)
+> * forward reference struct iio_dev * instead of condition in tsc2007.h =
+(asked for by Jonathan Cameron <jic23@kernel.org>)
+> * add some Acked-by:
+>=20
+> 2016-10-27 10:44:29: Changes V6:
+> * iio patch (no changes elsewhere)
+> 	- tsc2007_iio: fix a missing return 0 for non-iio case (found by =
+kbuid test robot)
+> 	- tsc2007_core: group error return paths so that =
+tsc2007_iio_unconfigure is called at only one place
+> 	- tsc2007_iio: fix copyright (this file is 100% original work)
+>=20
+> 2016-10-25 21:26:46: Changes V5:
+> * ads7846: remove an empty line (suggested by Andrew F. Davis =
+<afd@ti.com>)
+> * ads7846: remove MODULE_ALIAS for SPI (suggested by Andrew F. Davis =
+<afd@ti.com>)
+> * tsc2007: fix a bug from swapping patch 3/n and patch 4/n (found by =
+kbuild test robot)
+> * refactored tsc2007 into tsc2007_core and tsc2007_iio (asked for by =
+Jonathan Cameron <jic23@kernel.org>)
+>=20
+> 2016-10-17 16:00:02: Changes V4:
+> * fix a merge/squash issue resulting in a non-bisectable patch set =
+(suggested by kbuid test robot)
+> * remove some unnecessary #include (suggested by Jonathan Cameron =
+<jic23@kernel.org>)
+> * make the iio extension depend on CONFIG_IIO rather than selecting it =
+(suggested by Jonathan Cameron <jic23@kernel.org>)
+> * swapped patch 3/n and patch 4/n to remove internal dependency
+>=20
+> 2016-09-23 14:41:23: Changes V3:
+> * fix an issue with swapping
+> * remove hard clipping to min/max rectangle - some systems expect to =
+handle negative coordinates
+> * make use of commit ed7c9870c9bc ("Input: of_touchscreen - add =
+support for inverted / swapped axes")
+>=20
+> 2015-11-13 21:36:07: Changes V2:
+> * add a patch to make drivers still recognise the old "ti,swap-xy" =
+property (suggested by Rob Herring)
+>=20
+> 2015-11-06 16:14:53: V1: This patch series improves the drivers for =
+the tsc2007 and
+> ads7846/tsc2046 touchscreen controllers which are e.g. used by the =
+GTA04
+> OpenPandora and Pyra devices.
+>=20
+> New common bindings have been defined by
+> commit b98abe52fa8e ("Input: add common DT binding for touchscreens"):
+>=20
+> 	=
+Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+>=20
+> which also defines a helper function to parse the DT. These new =
+parameters
+> allow to specify the fuzz factors (jitter suppression), inversion of x =
+or y axis and
+> swapping of x and y to achieve inversion and rotation so that the =
+touch
+> coordinate axes match the natural orientation of the display panel.
+>=20
+> Another improvement is to better use the min/max ADC values and
+> scale to the screen size as defined by the DT. This allows to coarsely
+> calibrate the touch to match the LCD to which it is glued on so that =
+the
+> touch can quite precisely be operated before any user-space =
+fine-calibration
+> can be (and needs to be) started.
+>=20
+> For the adc7846 we fix an issue with the spi module table.
+>=20
+> Finally we add an iio interface for the AUX and temperature ADC =
+channels of
+> the tsc2007 and also provide the touch screen raw values. This allows =
+to read
+> an optional ambient light sensor installed on the gta04 board and =
+improves
+> calibration and hardware monitoring.
+>=20
+>=20
+> H. Nikolaus Schaller (8):
+>  drivers:input:tsc2007: add new common binding names, pre-calibration,
+>    flipping and rotation
+>  drivers:input:tsc2007: check for presence and power down tsc2007
+>    during probe
+>  DT:omap3+tsc2007: use new common touchscreen bindings
+>  drivers:input:ads7846(+tsc2046): add new common binding names,
+>    pre-calibration and flipping
+>  dt-bindings: input: move ads7846 bindings to touchscreen subdirectory
+>  drivers:input:ads7846(+tsc2046): fix spi module table
+>  DT:omap3+ads7846: use new common touchscreen bindings
+>  drivers:input:tsc2007: add iio interface to read external ADC input
+>    and temperature
+>=20
+> .../bindings/input/{ =3D> touchscreen}/ads7846.txt   |   9 +-
+> .../bindings/input/touchscreen/tsc2007.txt         |  20 +-
+> arch/arm/boot/dts/omap3-gta04.dtsi                 |  25 ++-
+> arch/arm/boot/dts/omap3-lilly-a83x.dtsi            |   2 +-
+> arch/arm/boot/dts/omap3-pandora-common.dtsi        |  17 +-
+> .../boot/dts/omap3-panel-sharp-ls037v7dw01.dtsi    |   3 +-
+> drivers/input/touchscreen/Kconfig                  |  10 +
+> drivers/input/touchscreen/Makefile                 |   2 +
+> drivers/input/touchscreen/ads7846.c                |  71 ++++++--
+> drivers/input/touchscreen/tsc2007.h                | 116 ++++++++++++
+> .../touchscreen/{tsc2007.c =3D> tsc2007_core.c}      | 201 =
+++++++++++++---------
+> drivers/input/touchscreen/tsc2007_iio.c            | 150 =
++++++++++++++++
+> include/linux/i2c/tsc2007.h                        |   8 +
+> 13 files changed, 520 insertions(+), 114 deletions(-)
+> rename Documentation/devicetree/bindings/input/{ =3D> =
+touchscreen}/ads7846.txt (90%)
+> create mode 100644 drivers/input/touchscreen/tsc2007.h
+> rename drivers/input/touchscreen/{tsc2007.c =3D> tsc2007_core.c} (74%)
+> create mode 100644 drivers/input/touchscreen/tsc2007_iio.c
+>=20
+> --=20
+> 2.7.3
+>=20
