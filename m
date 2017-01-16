@@ -1,103 +1,103 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:33762 "EHLO
-        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751068AbdAOWml (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Jan 2017 17:42:41 -0500
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        khilman@baylibre.com, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-amlogic@lists.infradead.org,
-        linux-clk@vger.kernel.org
-Cc: carlo@caione.org, catalin.marinas@arm.com, will.deacon@arm.com,
-        mturquette@baylibre.com, sboyd@codeaurora.org,
-        narmstrong@baylibre.com, linux-arm-kernel@lists.infradead.org,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Subject: [PATCH v2 4/4] ARM64: dts: meson: meson-gx: add the SAR ADC
-Date: Sun, 15 Jan 2017 23:42:21 +0100
-Message-Id: <20170115224221.15510-5-martin.blumenstingl@googlemail.com>
-In-Reply-To: <20170115224221.15510-1-martin.blumenstingl@googlemail.com>
+Return-Path: <SRS0=evvI=Y6=baylibre.com=narmstrong@kernel.org>
+Subject: Re: [PATCH v2 0/4] Amlogic Meson SAR ADC support
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+ robh+dt@kernel.org, mark.rutland@arm.com, khilman@baylibre.com,
+ linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+ linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org
 References: <20170111174334.24343-1-martin.blumenstingl@googlemail.com>
  <20170115224221.15510-1-martin.blumenstingl@googlemail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: carlo@caione.org, catalin.marinas@arm.com, will.deacon@arm.com,
+ mturquette@baylibre.com, sboyd@codeaurora.org,
+ linux-arm-kernel@lists.infradead.org
+From: Neil Armstrong <narmstrong@baylibre.com>
+Message-ID: <d00b365e-0e12-5679-c295-6c38850cc2b9@baylibre.com>
+Date: Mon, 16 Jan 2017 11:18:04 +0100
+MIME-Version: 1.0
+In-Reply-To: <20170115224221.15510-1-martin.blumenstingl@googlemail.com>
+Content-Type: text/plain; charset=windows-1252
+List-ID: <linux-iio@vger.kernel.org>
 
-Add the SAR ADC to meson-gxbb.dtsi and meson-gxl.dtsi. GXBB provides a
-10-bit ADC while GXL (and GXM, which uses the same ADC as GXL) provides
-a 12-bit ADC.
-Some boards use resistor ladder buttons connected through one of the ADC
-channels. On newer devices (GXL and GXM) some boards use pull-ups/downs
-to change the resistance (and thus the ADC value) on of the ADC channels
-to indicate the board revision.
+On 01/15/2017 11:42 PM, Martin Blumenstingl wrote:
+> This series add support for the SAR ADC on Amlogic Meson GXBB, GXL and
+> GXM SoCs.
+> The hardware on GXBB provides 10-bit ADC results, while GXL and GXM are
+> providing 12-bit results. Support for older SoCs (Meson8b and Meson8)
+> can be added with little effort, most of which is testing I guess (I
+> don't have any pre-GXBB hardware so I can't say).
+> 
+> A new set of clocks had to be added to the GXBB clock controller (used
+> by the GXBB/GXL/GXM SoCs) which are required to get the ADC working.
+> 
+> The ADC itself can sample multiple channels at the same time and allows
+> capturing multiple samples (which can be used for filtering/averaging).
+> The ADC results are stored inside a FIFO register. More details on what
+> the driver supports (or doesn't) can be found in the description of
+> patch #3.
+> 
+> The code is based on the public S805 (Meson8b) and S905 (GXBB)
+> datasheets, as well as by reading (various versions of) the vendor
+> driver and by inspecting the registers on the vendor kernels of my
+> testing-hardware.
+> 
+> Typical use-cases for the ADC on the Meson GX SoCs are:
+> - adc-keys ("ADC attached resistor ladder buttons")
+> - SoC temperature measurement (not supported by this driver yet as
+>   the system firmware does this already and provides the values via the
+>   SCPI protocol)
+> - "version-strapping" (different resistor values are used to indicate
+>   the board-revision)
+> - and of course typical ADC measurements
+> 
+> Thanks to Heiner Kallweit, Jonathan Cameron and Lars-Peter Clausen for
+> reviewing this series and providing valuable input!
+> 
+> Changes since v1 (all changes are for patch #3, except where noted):
+> - fix IRQ number in meson-gx.dtsi (thanks to Heiner Kallweit for
+>   providing the correct value), affects patch #4
+> - move the most used members of meson_saradc_priv to the beginning
+> - remove unused struct member "completion" from meson_saradc_priv
+> - use devm_kasprintf() instead of snprintf() + devm_kstrdup()
+> - initialize indio_dev->dev.parent earlier in meson_saradc_probe()
+> - moved meson_saradc_clear_fifo() logic to a separate function
+> - add comment why a do ... while loop is required in
+>   meson_saradc_wait_busy_clear()
+> - remove SAR_ADC_NUM_CHANNELS and SAR_ADC_VALUE_MASK macros (each of them
+>   was only used once and it's an unneeded level of abstraction)
+> - fixed multiline comment syntax violations
+> - dropped unneeded log messages during initialization
+> - set iio_dev name to "meson-gxbb-saradc" or "meson-gxl-saradc"
+> - use "indio_dev->dev.parent" in all kernel log calls (dev_warn/err/etc)
+>   to make it show the OF node name (instead of the iio device name)
+> - introduce struct meson_saradc_data to hold platform-specific
+>   information (such as resolution in bits and the iio_dev name)
+> 
+> 
+> Martin Blumenstingl (4):
+>   Documentation: dt-bindings: add the Amlogic Meson SAR ADC
+>     documentation
+>   clk: gxbb: add the SAR ADC clocks and expose them
+>   iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs
+>   ARM64: dts: meson: meson-gx: add the SAR ADC
+> 
+>  .../bindings/iio/adc/amlogic,meson-saradc.txt      |  31 +
+>  arch/arm64/boot/dts/amlogic/meson-gx.dtsi          |   8 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        |  10 +
+>  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         |  10 +
+>  drivers/clk/meson/gxbb.c                           |  48 ++
+>  drivers/clk/meson/gxbb.h                           |   9 +-
+>  drivers/iio/adc/Kconfig                            |  12 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/meson_saradc.c                     | 893 +++++++++++++++++++++
+>  include/dt-bindings/clock/gxbb-clkc.h              |   4 +
+>  10 files changed, 1023 insertions(+), 3 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+>  create mode 100644 drivers/iio/adc/meson_saradc.c
+> 
 
-Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
----
- arch/arm64/boot/dts/amlogic/meson-gx.dtsi   |  8 ++++++++
- arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi | 10 ++++++++++
- arch/arm64/boot/dts/amlogic/meson-gxl.dtsi  | 10 ++++++++++
- 3 files changed, 28 insertions(+)
+Good work martin !
 
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-index cddad8c795ec..041e4f0ed7d7 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-@@ -237,6 +237,14 @@
- 				status = "disabled";
- 			};
- 
-+			saradc: adc@8680 {
-+				compatible = "amlogic,meson-saradc";
-+				#io-channel-cells = <1>;
-+				status = "disabled";
-+				reg = <0x0 0x8680 0x0 0x34>;
-+				interrupts = <GIC_SPI 79 IRQ_TYPE_EDGE_RISING>;
-+			};
-+
- 			pwm_ef: pwm@86c0 {
- 				compatible = "amlogic,meson-gx-pwm", "amlogic,meson-gxbb-pwm";
- 				reg = <0x0 0x086c0 0x0 0x10>;
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-index 5d686334f692..114d7e1c9fc0 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-@@ -429,6 +429,16 @@
- 	clocks = <&clkc CLKID_I2C>;
- };
- 
-+&saradc {
-+	compatible = "amlogic,meson-gxbb-saradc", "amlogic,meson-saradc";
-+	clocks = <&xtal>,
-+		 <&clkc CLKID_SAR_ADC>,
-+		 <&clkc CLKID_SANA>,
-+		 <&clkc CLKID_SAR_ADC_CLK>,
-+		 <&clkc CLKID_SAR_ADC_SEL>;
-+	clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
-+};
-+
- &sd_emmc_a {
- 	clocks = <&clkc CLKID_SD_EMMC_A>,
- 		 <&xtal>,
-diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-index bb2842f8a08f..6b63296b6c60 100644
---- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-+++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-@@ -273,6 +273,16 @@
- 	clocks = <&clkc CLKID_I2C>;
- };
- 
-+&saradc {
-+	compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
-+	clocks = <&xtal>,
-+		 <&clkc CLKID_SAR_ADC>,
-+		 <&clkc CLKID_SANA>,
-+		 <&clkc CLKID_SAR_ADC_CLK>,
-+		 <&clkc CLKID_SAR_ADC_SEL>;
-+	clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
-+};
-+
- &sd_emmc_a {
- 	clocks = <&clkc CLKID_SD_EMMC_A>,
- 		 <&xtal>,
--- 
-2.11.0
+Tested on the P200 board with the resistor ladderred key matrix, patch will be posted shortly.
 
+For all the serie :
+Tested-by: Neil Armstrong <narmstrong@baylibre.com>
