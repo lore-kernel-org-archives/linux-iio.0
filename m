@@ -1,63 +1,34 @@
-Return-Path: <SRS0=xjqT=Y7=gmail.com=marek.vasut@kernel.org>
-Subject: Re: [PATCH v2 1/2] devicetree: add Garmin vendor prefix
-To: Matt Ranostay <matt@ranostay.consulting>
-References: <20161229051306.28547-1-matt@ranostay.consulting>
- <06f2cde2-ac7e-d0e5-5e35-a4946d0398f8@gmail.com>
- <CAJ_EiSQ+kfNnoDsed67v_1CLui7Fp2qMsx67bYMvQ0Y98jO+Aw@mail.gmail.com>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- Jonathan Cameron <jic23@kernel.org>, Rob Herring <robh@kernel.org>
-From: Marek Vasut <marek.vasut@gmail.com>
-Message-ID: <70a7c21f-cfe8-bada-fb33-a1d0111c02a9@gmail.com>
-Date: Tue, 17 Jan 2017 02:52:22 +0100
-MIME-Version: 1.0
-In-Reply-To: <CAJ_EiSQ+kfNnoDsed67v_1CLui7Fp2qMsx67bYMvQ0Y98jO+Aw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Return-Path: <SRS0=3s93=Y7=ranostay.consulting=matt@kernel.org>
+From: Matt Ranostay <matt@ranostay.consulting>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Matt Ranostay <matt@ranostay.consulting>
+Subject: [PATCH] iio: health: max30100: fixed parenthesis around FIFO count check
+Date: Mon, 16 Jan 2017 18:04:18 -0800
+Message-Id: <20170117020418.23359-1-matt@ranostay.consulting>
 List-ID: <linux-iio@vger.kernel.org>
 
-On 01/17/2017 02:50 AM, Matt Ranostay wrote:
-> On Mon, Jan 16, 2017 at 5:07 PM, Marek Vasut <marek.vasut@gmail.com> wrote:
->> On 12/29/2016 06:13 AM, Matt Ranostay wrote:
->>
->> Some commit message / description of the company would be useful.
->>
->>> Cc: Rob Herring <robh@kernel.org>
->>> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
->>> ---
->>> Changes from v1:
->>> * switch to stock ticker for Garmin Limited
->>>
->>>  Documentation/devicetree/bindings/vendor-prefixes.txt | 1 +
->>>  1 file changed, 1 insertion(+)
->>>
->>> diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> index 16d3b5e7f5d1..5749bfc5fc5b 100644
->>> --- a/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> +++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
->>> @@ -107,6 +107,7 @@ firefly   Firefly
->>>  focaltech    FocalTech Systems Co.,Ltd
->>>  friendlyarm  Guangzhou FriendlyARM Computer Tech Co., Ltd
->>>  fsl  Freescale Semiconductor
->>> +grmn Garmin Limited
->>
->> Why grmn ? Why not 'garmin' ? Also, the rest uses Ltd. , so make it
->> consistent ?
->>
-> 
-> As already stated GRMN is the US stock ticker...  and is the "correct way" :)
+FIFO was being read every sample after the "almost full" state was
+reached. This was due to an incorrect placement of the parenthesis
+in the while condition check.
 
-So we should use the US stock tickers for DT vendor prefixes now ?
+Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
+---
+ drivers/iio/health/max30100.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
->>>  ge   General Electric Company
->>>  geekbuying   GeekBuying
->>>  gef  GE Fanuc Intelligent Platforms Embedded Systems, Inc.
->>>
->>
->>
->> --
->> Best regards,
->> Marek Vasut
-
-
+diff --git a/drivers/iio/health/max30100.c b/drivers/iio/health/max30100.c
+index 90ab8a2d2846..183c14329d6e 100644
+--- a/drivers/iio/health/max30100.c
++++ b/drivers/iio/health/max30100.c
+@@ -238,7 +238,7 @@ static irqreturn_t max30100_interrupt_handler(int irq, void *private)
+ 
+ 	mutex_lock(&data->lock);
+ 
+-	while (cnt || (cnt = max30100_fifo_count(data) > 0)) {
++	while (cnt || (cnt = max30100_fifo_count(data)) > 0) {
+ 		ret = max30100_read_measurement(data);
+ 		if (ret)
+ 			break;
 -- 
-Best regards,
-Marek Vasut
+2.10.2
