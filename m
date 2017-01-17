@@ -1,111 +1,138 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:48800 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S968402AbdAFI3Z (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 6 Jan 2017 03:29:25 -0500
+Received: from mail.kernel.org ([198.145.29.136]:41978 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750827AbdAQDrO (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 16 Jan 2017 22:47:14 -0500
+Date: Tue, 17 Jan 2017 04:46:01 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
+        wens@csie.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, lee.jones@linaro.org,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
+        bonbons@linux-vserver.org
 Subject: Re: [PATCH 17/22] power: supply: add battery driver for AXP20X and
  AXP22X PMICs
-To: Chen-Yu Tsai <wens@csie.org>
+Message-ID: <20170117034601.wevqblqiwrerpmal@earth>
 References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
  <20170102163723.7939-18-quentin.schulz@free-electrons.com>
- <CAGb2v66XnWOGcaLeRo+cb6NGqfm_cyJVoK+GURUo5iV4pdZzew@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Maxime Ripard <maxime.ripard@free-electrons.com>,
-        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        Icenowy Zheng <icenowy@aosc.xyz>,
-        =?UTF-8?Q?Bruno_Pr=c3=a9mont?= <bonbons@linux-vserver.org>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <b26272cc-d8c9-f213-ab66-a24d7bc30dc4@free-electrons.com>
-Date: Fri, 6 Jan 2017 09:29:07 +0100
 MIME-Version: 1.0
-In-Reply-To: <CAGb2v66XnWOGcaLeRo+cb6NGqfm_cyJVoK+GURUo5iV4pdZzew@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="7mjxj5dt3uccvr4c"
+In-Reply-To: <20170102163723.7939-18-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
 
-On 06/01/2017 04:39, Chen-Yu Tsai wrote:
->  Hi,
-> 
-> On Tue, Jan 3, 2017 at 12:37 AM, Quentin Schulz
-> <quentin.schulz@free-electrons.com> wrote:
-[...]
->> +       case POWER_SUPPLY_PROP_CURRENT_MAX:
->> +               ret = regmap_read(axp20x_batt->regmap, AXP20X_CHRG_CTRL1, &reg);
->> +               if (ret)
->> +                       return ret;
->> +
->> +               reg &= AXP20X_CHRG_CTRL1_TGT_CURR;
->> +               val->intval = reg * 100000 + 300000;
->> +               break;
-> 
-> 
-> This controls the charge current. I believe the correct property to use
-> is CONSTANT_CHARGE_CURRENT. And you should add CONSTANT_CHARGE_CURRENT_MAX
-> which returns the highest possible setting.
-> 
+--7mjxj5dt3uccvr4c
+Content-Type: text/plain; charset=iso-8859-1
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ACK.
+Hi Quentin,
 
-> Also letting the user control this might not always be a good idea.
-> IIUC, LiPo batteries can only be charged at 1C, where C is the
-> rated capacity (X mAh).
-> 
+Just a couple of small things in this patch.
 
-OK. Should I get the charge current from a DT property then?
+On Mon, Jan 02, 2017 at 05:37:17PM +0100, Quentin Schulz wrote:
+> [...]
+> +	case POWER_SUPPLY_PROP_CURRENT_NOW:
+> +		ret =3D regmap_read(axp20x_batt->regmap, AXP20X_PWR_INPUT_STATUS,
+> +				  &reg);
+> +		if (ret)
+> +			return ret;
+> +
+> +		if (reg & AXP20X_PWR_STATUS_BAT_CHARGING)
+> +			chan =3D axp20x_batt->batt_chrg_i;
+> +		else
+> +			chan =3D axp20x_batt->batt_dischrg_i;
+> +
+> +		ret =3D iio_read_channel_processed(chan, &val->intval);
+> +		if (ret)
+> +			return ret;
+> +
+> +		/*
+> +		 * IIO framework gives mV but Power Supply framework gives =B5V.
+> +		 */
 
-Like "x-powers,charge-current = <300000>;"
-It's close to what has been done in bq24257_charger for example.
+Nit: Volt -> Ampere
 
-[...]
->> +static enum power_supply_property axp20x_battery_props[] = {
->> +       POWER_SUPPLY_PROP_PRESENT,
->> +       POWER_SUPPLY_PROP_ONLINE,
->> +       POWER_SUPPLY_PROP_STATUS,
->> +       POWER_SUPPLY_PROP_VOLTAGE_NOW,
->> +       POWER_SUPPLY_PROP_CURRENT_NOW,
->> +       POWER_SUPPLY_PROP_CURRENT_MAX,
->> +       POWER_SUPPLY_PROP_HEALTH,
->> +       POWER_SUPPLY_PROP_VOLTAGE_MAX_DESIGN,
->> +       POWER_SUPPLY_PROP_VOLTAGE_MIN_DESIGN,
->> +       POWER_SUPPLY_PROP_CAPACITY,
-> 
-> You can also add POWER_SUPPLY_PROP_TECHNOLOGY, which would return
-> POWER_SUPPLY_TECHNOLOGY_LIPO.
-> 
+> +		val->intval *=3D 1000;
+> +		break;
+>
+> [...]
+>
+> +static int axp20x_power_probe(struct platform_device *pdev)
+> +{
+> +	struct axp20x_dev *axp20x =3D dev_get_drvdata(pdev->dev.parent);
+> +	struct axp20x_batt_ps *axp20x_batt;
+> +	struct power_supply_config psy_cfg =3D {};
+> +
+> +	axp20x_batt =3D devm_kzalloc(&pdev->dev, sizeof(*axp20x_batt),
+> +				   GFP_KERNEL);
+> +	if (!axp20x_batt)
+> +		return -ENOMEM;
+> +
+> +	axp20x_batt->batt_v =3D devm_iio_channel_get(&pdev->dev, "batt_v");
+> +	if (IS_ERR(axp20x_batt->batt_v)) {
+> +		if (PTR_ERR(axp20x_batt->batt_v) =3D=3D -ENODEV)
+> +			return -EPROBE_DEFER;
+> +		return PTR_ERR(axp20x_batt->batt_v);
+> +	}
+> +
+> +	axp20x_batt->batt_chrg_i =3D devm_iio_channel_get(&pdev->dev,
+> +							"batt_chrg_i");
+> +	if (IS_ERR(axp20x_batt->batt_chrg_i)) {
+> +		if (PTR_ERR(axp20x_batt->batt_chrg_i) =3D=3D -ENODEV)
+> +			return -EPROBE_DEFER;
+> +		return PTR_ERR(axp20x_batt->batt_chrg_i);
+> +	}
+> +
+> +	axp20x_batt->batt_dischrg_i =3D devm_iio_channel_get(&pdev->dev,
+> +							   "batt_dischrg_i");
+> +	if (IS_ERR(axp20x_batt->batt_dischrg_i)) {
+> +		if (PTR_ERR(axp20x_batt->batt_dischrg_i) =3D=3D -ENODEV)
+> +			return -EPROBE_DEFER;
+> +		return PTR_ERR(axp20x_batt->batt_dischrg_i);
+> +	}
+> +
+> +	axp20x_batt->regmap =3D axp20x->regmap;
+> +	platform_set_drvdata(pdev, axp20x_batt);
 
-Hum.. There are also POWER_SUPPLY_TECHNOLOGY_LION,
-POWER_SUPPLY_TECHNOLOGY_LiFe and POWER_SUPPLY_TECHNOLOGY_LiMn which are
-all Lithium-based batteries. From the datasheet, it can take a "single
-cell Li-battery (Li-Ion/Polymer)". So I guess it's either
-POWER_SUPPLY_TECHNOLOGY_LION or POWER_SUPPLY_TECHNOLOGY_LIPO.
+Please use drv_get_regmap(pdev->dev.parent, NULL) instead (and drop
+axp20x).
 
-> It is also possible to do POWER_SUPPLY_PROP_CHARGE_TYPE. According
-> to the manual, if the battery is charging, it is in constant current
-> mode (POWER_SUPPLY_CHARGE_TYPE_FAST) when V_battery < V_target.
-> When V_battery == V_target, it is in constant voltage mode, though
-> I don't think this is the same as POWER_SUPPLY_CHARGE_TYPE_TRICKLE.
-> When it is not charging, you can return POWER_SUPPLY_CHARGE_TYPE_NONE.
-> 
+> +	psy_cfg.drv_data =3D axp20x_batt;
+> +	psy_cfg.of_node =3D pdev->dev.of_node;
+> +
+> +	axp20x_batt->axp_id =3D (int)of_device_get_match_data(&pdev->dev);
 
-ACK, I'll look into that.
+use (uintptr_t) to avoid compiler warnings on systems with sizeof
+int !=3D sizeof ptr.
 
-Thanks,
-Quentin
+-- Sebastian
 
--- 
-Quentin Schulz, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+--7mjxj5dt3uccvr4c
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlh9k3YACgkQ2O7X88g7
++ppitg//TS1PXC2tmqPc/8SQ5gvQCTIrQHnkxw3xyXjKK+kFntQr5qSnczVQAJLS
+YFEcj74yd4T1sI/mYKKGPwJ4/kf5hZlUzEolvE7afAiCjcO+HYCXXE7Im5g055R5
+6QpJBCnEsBZSXxeXPkNgfFGb8enrXtvrr3S1eqnxUXTHBpXxy5zrKx3zZfI2lnLd
+TxsrFlGRMsC9kOn/rzDq3uQiKAySQEMJskO1fai7VNEztDC0n4Fy1MaeCbAmSLbY
+ovBHDWtyODkwAwWPg465qsfEwmB6CXS1ookCTnqRUQLakIQt6juMQ5pgGXkQJbbj
+b3ZpGBKRZ7hBnT5lH2iKXc4P6qag8E5Pq/1YyBpRNBtX1TgFPq4ab5ZEpN3JxuTO
+M08wOqVO7Z/TKUnWB4Qp5qVSU+xMt7WBDsO3mErxTSvsce0RnlZylYi8FYpoqH4V
+0mtRgXn1QLy/rPeVi47OmWCimFuwxxg5dF2POjV9Ogxo2fxpxtLVRPbuM08aYUjk
+GUvPvBfHRhT0koqQ3LuGSZREMENoAdJ47Nieq9Z8AJB3S5HZf0UilSdWc3w7agbP
+y15G4t977idLB0c1EIemc9Exj5dznbPV5znlxYHM5sQ/hzmveBihUQS2Vw/Nd7y7
+DAdAirVXlOy/WpLMCGhqmRiBotfVuJSU9SLUSJgE2oW0x/ukReo=
+=2MEG
+-----END PGP SIGNATURE-----
+
+--7mjxj5dt3uccvr4c--
