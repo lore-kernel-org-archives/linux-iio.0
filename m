@@ -1,108 +1,86 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35240 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750800AbdAUOiA (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 09:38:00 -0500
-Subject: Re: [PATCH v2 06/15] staging: iio: isl29028: move failure logging
- into isl29028_set_proxim_sampling()
-To: Brian Masney <masneyb@onstation.org>, linux-iio@vger.kernel.org
-References: <20170117092502.6951-1-masneyb@onstation.org>
- <20170117092502.6951-7-masneyb@onstation.org>
+Received: from onstation.org ([52.200.56.107]:49066 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751028AbdAQJZU (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 17 Jan 2017 04:25:20 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
 Cc: gregkh@linuxfoundation.org, devel@driverdev.osuosl.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         linux-kernel@vger.kernel.org, ldewangan@nvidia.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c28fddb6-9f02-ed02-7df6-fa235cd32dc0@kernel.org>
-Date: Sat, 21 Jan 2017 14:37:57 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170117092502.6951-7-masneyb@onstation.org>
-Content-Type: text/plain; charset=windows-1252
+Subject: [PATCH v2 07/15] staging: iio: isl29028: move failure logging into isl29028_set_als_scale()
+Date: Tue, 17 Jan 2017 04:24:54 -0500
+Message-Id: <20170117092502.6951-8-masneyb@onstation.org>
+In-Reply-To: <20170117092502.6951-1-masneyb@onstation.org>
+References: <20170117092502.6951-1-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/01/17 09:24, Brian Masney wrote:
-> When isl29028_set_proxim_sampling() fails, it was up to both callers to
-> log the failure message. This patch moves the logging into
-> isl29028_set_proxim_sampling() to reduce the overall amount of code in
-> the driver.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-I'm not 100% convinced of the logic of this as a stand alone patch, but
-it does no harm and is possibly slightly nicer!
+When isl29028_set_als_scale() fails, it was up to both callers to log
+the failure message. This patch moves the logging into
+isl29028_set_als_scale() to reduce the overall amount of code in the
+driver.
 
-Hence applied.
+Signed-off-by: Brian Masney <masneyb@onstation.org>
+---
+ drivers/staging/iio/light/isl29028.c | 27 ++++++++++++++-------------
+ 1 file changed, 14 insertions(+), 13 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/staging/iio/light/isl29028.c | 31 ++++++++++++++++---------------
->  1 file changed, 16 insertions(+), 15 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
-> index 7074e62..bd85ccb 100644
-> --- a/drivers/staging/iio/light/isl29028.c
-> +++ b/drivers/staging/iio/light/isl29028.c
-> @@ -78,18 +78,29 @@ struct isl29028_chip {
->  static int isl29028_set_proxim_sampling(struct isl29028_chip *chip,
->  					unsigned int sampling)
->  {
-> +	struct device *dev = regmap_get_device(chip->regmap);
->  	static unsigned int prox_period[] = {800, 400, 200, 100, 75, 50, 12, 0};
-> -	int sel;
->  	unsigned int period = DIV_ROUND_UP(1000, sampling);
-> +	int sel, ret;
->  
->  	for (sel = 0; sel < ARRAY_SIZE(prox_period); ++sel) {
->  		if (period >= prox_period[sel])
->  			break;
->  	}
->  
-> -	return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
-> -				  ISL29028_CONF_PROX_SLP_MASK,
-> -				  sel << ISL29028_CONF_PROX_SLP_SH);
-> +	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
-> +				 ISL29028_CONF_PROX_SLP_MASK,
-> +				 sel << ISL29028_CONF_PROX_SLP_SH);
-> +
-> +	if (ret < 0) {
-> +		dev_err(dev, "%s(): Error %d setting the proximity sampling\n",
-> +			__func__, ret);
-> +		return ret;
-> +	}
-> +
-> +	chip->prox_sampling = sampling;
-> +
-> +	return ret;
->  }
->  
->  static int isl29028_enable_proximity(struct isl29028_chip *chip, bool enable)
-> @@ -291,14 +302,6 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
->  		}
->  
->  		ret = isl29028_set_proxim_sampling(chip, val);
-> -		if (ret < 0) {
-> -			dev_err(dev,
-> -				"Setting proximity samp_freq fail, err %d\n",
-> -				ret);
-> -			break;
-> -		}
-> -
-> -		chip->prox_sampling = val;
->  		break;
->  	case IIO_LIGHT:
->  		if (mask != IIO_CHAN_INFO_SCALE) {
-> @@ -437,10 +440,8 @@ static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
->  	}
->  
->  	ret = isl29028_set_proxim_sampling(chip, chip->prox_sampling);
-> -	if (ret < 0) {
-> -		dev_err(dev, "setting the proximity, err = %d\n", ret);
-> +	if (ret < 0)
->  		return ret;
-> -	}
->  
->  	ret = isl29028_set_als_scale(chip, chip->lux_scale);
->  	if (ret < 0)
-> 
+diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/staging/iio/light/isl29028.c
+index bd85ccb..8e7b3db 100644
+--- a/drivers/staging/iio/light/isl29028.c
++++ b/drivers/staging/iio/light/isl29028.c
+@@ -123,11 +123,22 @@ static int isl29028_enable_proximity(struct isl29028_chip *chip, bool enable)
+ 
+ static int isl29028_set_als_scale(struct isl29028_chip *chip, int lux_scale)
+ {
++	struct device *dev = regmap_get_device(chip->regmap);
+ 	int val = (lux_scale == 2000) ? ISL29028_CONF_ALS_RANGE_HIGH_LUX :
+ 					ISL29028_CONF_ALS_RANGE_LOW_LUX;
++	int ret;
++
++	ret = regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
++				 ISL29028_CONF_ALS_RANGE_MASK, val);
++	if (ret < 0) {
++		dev_err(dev, "%s(): Error %d setting the ALS scale\n", __func__,
++			ret);
++		return ret;
++	}
+ 
+-	return regmap_update_bits(chip->regmap, ISL29028_REG_CONFIGURE,
+-				  ISL29028_CONF_ALS_RANGE_MASK, val);
++	chip->lux_scale = lux_scale;
++
++	return ret;
+ }
+ 
+ static int isl29028_set_als_ir_mode(struct isl29028_chip *chip,
+@@ -318,13 +329,6 @@ static int isl29028_write_raw(struct iio_dev *indio_dev,
+ 		}
+ 
+ 		ret = isl29028_set_als_scale(chip, val);
+-		if (ret < 0) {
+-			dev_err(dev,
+-				"Setting lux scale fail with error %d\n", ret);
+-			break;
+-		}
+-
+-		chip->lux_scale = val;
+ 		break;
+ 	default:
+ 		dev_err(dev, "Unsupported channel type\n");
+@@ -443,10 +447,7 @@ static int isl29028_chip_init_and_power_on(struct isl29028_chip *chip)
+ 	if (ret < 0)
+ 		return ret;
+ 
+-	ret = isl29028_set_als_scale(chip, chip->lux_scale);
+-	if (ret < 0)
+-		dev_err(dev, "setting als scale failed, err = %d\n", ret);
+-	return ret;
++	return isl29028_set_als_scale(chip, chip->lux_scale);
+ }
+ 
+ static bool isl29028_is_volatile_reg(struct device *dev, unsigned int reg)
+-- 
+2.9.3
 
