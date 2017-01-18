@@ -1,97 +1,35 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:56999 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750859AbdAONwM (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 15 Jan 2017 08:52:12 -0500
-Subject: Re: [PATCH 1/3] DT/bindings: Add bindings for TI ADS7950 A/DC chips
-To: David Lechner <david@lechnology.com>, devicetree@vger.kernel.org,
-        linux-iio@vger.kernel.org
-References: <1484157171-15571-1-git-send-email-david@lechnology.com>
- <1484157171-15571-2-git-send-email-david@lechnology.com>
- <f1e845c4-7db0-c6fe-fbd2-420902110be9@kernel.org>
- <662a48e1-39fc-4fb7-a3b9-b671d2e40029@lechnology.com>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
+Received: from mail-ot0-f195.google.com ([74.125.82.195]:32797 "EHLO
+        mail-ot0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752426AbdARUEH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jan 2017 15:04:07 -0500
+Date: Wed, 18 Jan 2017 13:54:55 -0600
+From: Rob Herring <robh@kernel.org>
+To: David Lechner <david@lechnology.com>
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6afef95f-caed-ed68-ba1f-9f5e80e68d26@kernel.org>
-Date: Sun, 15 Jan 2017 13:52:06 +0000
+Subject: Re: [PATCH 1/3] DT/bindings: Add bindings for TI ADS7950 A/DC chips
+Message-ID: <20170118195455.ckwp677vxgsrqkbp@rob-hp-laptop>
+References: <1484157171-15571-1-git-send-email-david@lechnology.com>
+ <1484157171-15571-2-git-send-email-david@lechnology.com>
 MIME-Version: 1.0
-In-Reply-To: <662a48e1-39fc-4fb7-a3b9-b671d2e40029@lechnology.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1484157171-15571-2-git-send-email-david@lechnology.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 14/01/17 18:00, David Lechner wrote:
-> On 01/14/2017 06:53 AM, Jonathan Cameron wrote:
->> On 11/01/17 17:52, David Lechner wrote:
->>> This adds device tree bindings for the TI ADS7950 family of A/DC chips.
->>>
->>> Signed-off-by: David Lechner <david@lechnology.com>
->> This is in of itself good, but we may need to have some deprecated
->> elements to continue supporting what was implicitly happening with
->> the missnaming so as to avoid accidentally breaking someone's device
->> tree.
->>
+On Wed, Jan 11, 2017 at 11:52:49AM -0600, David Lechner wrote:
+> This adds device tree bindings for the TI ADS7950 family of A/DC chips.
 > 
-> As I mentioned in my cover letter, this driver, as far as I can tell,
-> only exists in your testing branch, so I find it highly unlikely that
-> we would be breaking anyone. It is not in mainline and it is not even
-> in linux-next.
+> Signed-off-by: David Lechner <david@lechnology.com>
+> ---
+>  .../devicetree/bindings/iio/adc/ti-ads7950.txt     | 23 ++++++++++++++++++++++
+>  1 file changed, 23 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt
 
-Oops, I not only have a memory like a goldfish, I clearly didn't read your
-cover letter either.
-
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-The driver will hit next before this does but will get into mainline
-in the same ultimate pull request unless something weird happens so that's
-all fine.
-
-Jonathan
->> Jonathan
->>> ---
->>>  .../devicetree/bindings/iio/adc/ti-ads7950.txt     | 23 ++++++++++++++++++++++
->>>  1 file changed, 23 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt b/Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt
->>> new file mode 100644
->>> index 0000000..e77a6f7
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/ti-ads7950.txt
->>> @@ -0,0 +1,23 @@
->>> +* Texas Instruments ADS7950 family of A/DC chips
->>> +
->>> +Required properties:
->>> + - compatible: Must be one of "ti,ads7950", "ti,ads7951", "ti,ads7952",
->>> +   "ti,ads7953", "ti,ads7954", "ti,ads7955", "ti,ads7956", "ti,ads7957",
->>> +   "ti,ads7958", "ti,ads7959", "ti,ads7960", or "ti,ads7961"
->>> + - reg: SPI chip select number for the device
->>> + - #io-channel-cells: Must be 1 as per ../iio-bindings.txt
->>> + - vref-supply: phandle to a regulator node that supplies the 2.5V or 5V
->>> +   reference voltage
->>> +
->>> +Recommended properties:
->>> + - spi-max-frequency: Definition as per
->>> +        Documentation/devicetree/bindings/spi/spi-bus.txt
->>> +
->>> +Example:
->>> +adc@0 {
->>> +    compatible = "ti,ads7957";
->>> +    reg = <0>;
->>> +    #io-channel-cells = <1>;
->>> +    vref-supply = <&refin_supply>;
->>> +    spi-max-frequency = <10000000>;
->>> +};
->>>
->>
-> 
-> -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-
+Acked-by: Rob Herring <robh@kernel.org>
