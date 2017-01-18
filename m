@@ -1,192 +1,260 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-db5eur01on0106.outbound.protection.outlook.com ([104.47.2.106]:40432
-        "EHLO EUR01-DB5-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1750845AbdAaHg6 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Tue, 31 Jan 2017 02:36:58 -0500
-Subject: Re: [PATCH v8 07/12] dt-bindings: i2c: i2c-mux-simple: document
- i2c-mux-simple bindings
-To: Rob Herring <robh@kernel.org>
-References: <1484755035-25927-1-git-send-email-peda@axentia.se>
- <1484755035-25927-8-git-send-email-peda@axentia.se>
- <20170127193917.6xuunrkjkqh4f2v7@rob-hp-laptop>
- <835415bf-77af-6131-d018-d0bc7d8233b0@axentia.se>
- <CAL_JsqLVrzm4BEv3kpOGRoaRq+cqvSm+A6weZfU8H8i9dc=tcA@mail.gmail.com>
-CC: "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        "linux-i2c@vger.kernel.org" <linux-i2c@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-doc@vger.kernel.org" <linux-doc@vger.kernel.org>
+Return-Path: <SRS0=IcOs=ZA=axentia.se=peda@kernel.org>
 From: Peter Rosin <peda@axentia.se>
-Message-ID: <cdc958c3-2496-be52-6407-bf9aefdfa965@axentia.se>
-Date: Tue, 31 Jan 2017 08:36:48 +0100
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, "Rob
+ Herring" <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, "Jonathan
+ Cameron" <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, "Lars-Peter
+ Clausen" <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Corbet <corbet@lwn.net>, Andrew Morton <akpm@linux-foundation.org>,
+	<linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
+	<linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>
+Subject: [PATCH v8 08/12] i2c: i2c-mux-simple: new driver
+Date: Wed, 18 Jan 2017 16:57:11 +0100
+Message-ID: <1484755035-25927-9-git-send-email-peda@axentia.se>
+In-Reply-To: <1484755035-25927-1-git-send-email-peda@axentia.se>
+References: <1484755035-25927-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <CAL_JsqLVrzm4BEv3kpOGRoaRq+cqvSm+A6weZfU8H8i9dc=tcA@mail.gmail.com>
-Content-Type: text/plain; charset="utf-8"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On 2017-01-30 18:20, Rob Herring wrote:
-> On Sat, Jan 28, 2017 at 4:42 PM, Peter Rosin <peda@axentia.se> wrote:
->> On 2017-01-27 20:39, Rob Herring wrote:
->>> On Wed, Jan 18, 2017 at 04:57:10PM +0100, Peter Rosin wrote:
->>>> Describe how a generic multiplexer controller is used to mux an i2c bus.
->>>>
->>>> Acked-by: Jonathan Cameron <jic23@kernel.org>
->>>> Signed-off-by: Peter Rosin <peda@axentia.se>
->>>> ---
->>>>  .../devicetree/bindings/i2c/i2c-mux-simple.txt     | 81 ++++++++++++++++++++++
->>>>  1 file changed, 81 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
->>>> new file mode 100644
->>>> index 000000000000..253d5027843b
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/i2c/i2c-mux-simple.txt
->>>> @@ -0,0 +1,81 @@
->>>> +Simple I2C Bus Mux
->>>> +
->>>> +This binding describes an I2C bus multiplexer that uses a mux controller
->>>> +from the mux subsystem to route the I2C signals.
->>>> +
->>>> +                                  .-----.  .-----.
->>>> +                                  | dev |  | dev |
->>>> +    .------------.                '-----'  '-----'
->>>> +    | SoC        |                   |        |
->>>> +    |            |          .--------+--------'
->>>> +    |   .------. |  .------+    child bus A, on MUX value set to 0
->>>> +    |   | I2C  |-|--| Mux  |
->>>> +    |   '------' |  '--+---+    child bus B, on MUX value set to 1
->>>> +    |   .------. |     |    '----------+--------+--------.
->>>> +    |   | MUX- | |     |               |        |        |
->>>> +    |   | Ctrl |-|-----+            .-----.  .-----.  .-----.
->>>> +    |   '------' |                  | dev |  | dev |  | dev |
->>>> +    '------------'                  '-----'  '-----'  '-----'
->>>> +
->>>> +Required properties:
->>>> +- compatible: i2c-mux-simple,mux-locked or i2c-mux-simple,parent-locked
->>>
->>> Not a fan of using "simple" nor the ','. Perhaps lock type should be
->>> separate property.
->>
->> How about just i2c-mux for the compatible? Because i2c-mux-mux (which
->> follows the naming of previous i2c muxes) looks really stupid. Or
->> perhaps i2c-mux-generic?
-> 
-> I like "generic" only slightly more than "simple". :)
-> 
-> If the mux is gpio controlled, then it should still be called
-> i2c-gpio-mux. Let's not invent brand new bindings when current ones
-> are easily extended. We already have pretty generic names here, let's
-> not make them more generic.
+This is a generic simple i2c mux that uses the generic multiplexer
+subsystem to do the muxing.
 
-Ahh, but the whole point of this new driver is that it does not know
-if the mux is gpio controlled, if it is controlled by an adg792 chip
-or whatever might appear down the line. So, I think i2c-mux-gpio (and
-i2c-gpio-mux) is actively wrong.
+The user can select if the mux is to be mux-locked and parent-locked
+as described in Documentation/i2c/i2c-topology.
 
-This new driver is in fact an i2c-mux driver that (in this aspect) is more
-generic than any of the existing i2c-mux drivers, hence my suggestion.
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Acked-by: Wolfram Sang <wsa@the-dreams.de>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/i2c/muxes/Kconfig          |  13 +++
+ drivers/i2c/muxes/Makefile         |   1 +
+ drivers/i2c/muxes/i2c-mux-simple.c | 182 +++++++++++++++++++++++++++++++++++++
+ 3 files changed, 196 insertions(+)
+ create mode 100644 drivers/i2c/muxes/i2c-mux-simple.c
 
-If you see this new driver as something that is superseding the existing
-i2c-mux-gpio driver, I'm sad to inform you that the code is not simply
-not there. i2c-mux-gpio has acpi support and users may provide platform
-data from code. The existing i2c-mux-gpio driver also has the below
-mentioned locking heuristic. Adding all those things to the new driver
-would make it big and unwieldy and having even more unwanted tentacles
-into other subsystems. And why should it be only i2c-mux-gpio that is
-merged into this new i2c-mux driver? Why not implement a mux-pinctrl
-driver for the new mux subsustem and then merge i2c-mux-pinctrl as well?
-I say no, that way lies madness.
-
->>
->> I'm also happy to have the lock type as a separate property. One lock
->> type, e.g. parent-locked, could be the default and adding a 'mux-locked'
->> property could change that. Would that be ok?
-> 
-> I prefer this. Then existing bindings can use it.
-> 
->> Or should it be a requirement that one of 'mux-locked'/'parent-locked'
->> is always present?
-> 
-> I would make it boolean and make not present be the more common case.
-> Not present could also mean determined via other means as you have
-> today with existing bindings. Maybe then you need both properties.
-
-Ok. Lets define that every type of i2c-mux have a default locking.
-If no property is found that overrides this default, a heuristic may
-be applied that is only allowed to very defensively use non-default
-locking (like the current heuristics in i2c-mux-gpio/i2c-mux-pinctrl
-attempt to do, they only adjust the locking for impossible cases that
-would invariably lead to a deadlock with the default locking). Then,
-there should never exist a need to enforce the default locking with
-a property.
-
-And given that no current i2c-mux that is mux-locked by default even
-have the ability to be parent-locked, there is (currently) no need
-for more than a bool 'mux-locked' property.
-
->>> I'm not sure I get the mux vs. parent locked fully. How do I determine
->>> what type I have? We already have bindings for several types of i2c
->>> muxes. How does the locking annotation fit into those?
->>
->> We have briefly discussed this before [1] in the context of i2c-mux-gpio
->> and i2c-mux-pinctrl, when I added the mux-locked/parent-locked distinction
->> to the i2c-mux infrastructure (it wasn't named mux-locked/parent-locked
->> way back then though). There is more detail on what the difference is
->> between the two in Documentation/i2c/i2c-topology.
->>
->> Side note regarding your remark "use an I2C controlled mux instead"; it
->> appears that I'm not alone [2] with this kind of requirement...
->>
->> [1] https://lkml.org/lkml/2016/1/6/437
->> [2] http://marc.info/?t=147877959100002&r=1&w=2
->>
->> But, now that I have pondered on this for a year or so, I firmly
->> believe it was a mistake to have the code in i2c-mux-gpio and
->> i2c-mux-pinctrl automatically try to deduce if the mux should be
->> mux-locked or parent-locked. It might be easy to make that call
->> in some trivial cases, but it is not difficult to dream up
->> scenarios where it would be extremely hard for the code to get
->> this decision right. It's just fragile. But now we have code in
->> those two muxes that has unwanted tentacles into the guts of the
->> gpio and pinctrl subsystems. Hopefully those unwanted tentacles
->> can be replaced with something based on device links? However, it
->> is still not hard to come up with scenarios that will require
->> manual intervention in order to select the right kind of i2c mux
->> locking. So, I fear that we have inadequate code trying to make a
->> decision automatically, and that we at some point down the line
->> will have some impossible case needing a binding that trumps the
->> heuristic. Why have a heuristic at all in that case? In short, it
->> should have been a binding from the start, methinks.
->>
->> That was a long rant regarding i2c-mux-gpio and i2c-mux-pinctrl.
->> I obviously think it is bad to have this new i2c mux go in the
->> same direction as those two drivers. I.e. I think a binding that
->> specifies the desired locking is preferable to any attempted
->> heuristic.
-> 
-> Having a separate, common property(ies) for these would solve this then.
-
-Yep, the plan is now to make this new i2c-mux parent-locked by default
-and then look for an optional mux-locked property, thus eliminating the
-comma and the suffix in the compatible string, leaving only whatever is
-eventually picked from 'i2c-mux-simple', 'i2c-mux', 'i2c-mux-generic' and
-'i2c-mux-whatever'.
-
-Do I need to re-document the mux-locked/parent-locked difference? I.e.,
-is it enough to refer to Documentation/i2c/i2c-topology, or does the
-Documentation/devicetree subdir need to self-contained?
-
-Cheers,
-peda
-
+diff --git a/drivers/i2c/muxes/Kconfig b/drivers/i2c/muxes/Kconfig
+index 10b3d17ae3ea..565921e09a96 100644
+--- a/drivers/i2c/muxes/Kconfig
++++ b/drivers/i2c/muxes/Kconfig
+@@ -73,6 +73,19 @@ config I2C_MUX_REG
+ 	  This driver can also be built as a module.  If so, the module
+ 	  will be called i2c-mux-reg.
+ 
++config I2C_MUX_SIMPLE
++	tristate "Simple I2C multiplexer"
++	select MULTIPLEXER
++	depends on OF
++	help
++	  If you say yes to this option, support will be included for a
++	  simple generic I2C multiplexer. This driver provides access to
++	  I2C busses connected through a MUX, which is controlled
++	  by a generic MUX controller.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called i2c-mux-simple.
++
+ config I2C_DEMUX_PINCTRL
+ 	tristate "pinctrl-based I2C demultiplexer"
+ 	depends on PINCTRL && OF
+diff --git a/drivers/i2c/muxes/Makefile b/drivers/i2c/muxes/Makefile
+index 9948fa45037f..6821d95c92a3 100644
+--- a/drivers/i2c/muxes/Makefile
++++ b/drivers/i2c/muxes/Makefile
+@@ -11,5 +11,6 @@ obj-$(CONFIG_I2C_MUX_PCA9541)	+= i2c-mux-pca9541.o
+ obj-$(CONFIG_I2C_MUX_PCA954x)	+= i2c-mux-pca954x.o
+ obj-$(CONFIG_I2C_MUX_PINCTRL)	+= i2c-mux-pinctrl.o
+ obj-$(CONFIG_I2C_MUX_REG)	+= i2c-mux-reg.o
++obj-$(CONFIG_I2C_MUX_SIMPLE)	+= i2c-mux-simple.o
+ 
+ ccflags-$(CONFIG_I2C_DEBUG_BUS) := -DDEBUG
+diff --git a/drivers/i2c/muxes/i2c-mux-simple.c b/drivers/i2c/muxes/i2c-mux-simple.c
+new file mode 100644
+index 000000000000..6a7de6e91ae3
+--- /dev/null
++++ b/drivers/i2c/muxes/i2c-mux-simple.c
+@@ -0,0 +1,182 @@
++/*
++ * Generic simple I2C multiplexer
++ *
++ * Copyright (C) 2017 Axentia Technologies AB
++ *
++ * Author: Peter Rosin <peda@axentia.se>
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ */
++
++#include <linux/i2c.h>
++#include <linux/i2c-mux.h>
++#include <linux/module.h>
++#include <linux/mux.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++
++#define SIMPLE_PARENT_LOCKED (0)
++#define SIMPLE_MUX_LOCKED    (1)
++
++struct mux {
++	struct mux_control *control;
++
++	bool do_not_deselect;
++};
++
++static int i2c_mux_select(struct i2c_mux_core *muxc, u32 chan)
++{
++	struct mux *mux = i2c_mux_priv(muxc);
++	int ret;
++
++	ret = mux_control_select(mux->control, chan);
++	mux->do_not_deselect = ret < 0;
++
++	return ret;
++}
++
++static int i2c_mux_deselect(struct i2c_mux_core *muxc, u32 chan)
++{
++	struct mux *mux = i2c_mux_priv(muxc);
++
++	if (mux->do_not_deselect)
++		return 0;
++
++	return mux_control_deselect(mux->control);
++}
++
++static struct i2c_adapter *mux_parent_adapter(struct device *dev)
++{
++	struct device_node *np = dev->of_node;
++	struct device_node *parent_np;
++	struct i2c_adapter *parent;
++
++	parent_np = of_parse_phandle(np, "i2c-parent", 0);
++	if (!parent_np) {
++		dev_err(dev, "Cannot parse i2c-parent\n");
++		return ERR_PTR(-ENODEV);
++	}
++	parent = of_find_i2c_adapter_by_node(parent_np);
++	of_node_put(parent_np);
++	if (!parent)
++		return ERR_PTR(-EPROBE_DEFER);
++
++	return parent;
++}
++
++static const struct of_device_id i2c_mux_of_match[] = {
++	{ .compatible = "i2c-mux-simple,parent-locked",
++	  .data = (void *)SIMPLE_PARENT_LOCKED, },
++	{ .compatible = "i2c-mux-simple,mux-locked",
++	  .data = (void *)SIMPLE_MUX_LOCKED, },
++	{},
++};
++MODULE_DEVICE_TABLE(of, i2c_mux_of_match);
++
++static int i2c_mux_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct device_node *np = dev->of_node;
++	struct device_node *child;
++	const struct of_device_id *match;
++	struct i2c_mux_core *muxc;
++	struct mux *mux;
++	struct i2c_adapter *parent;
++	int children;
++	int ret;
++
++	if (!np)
++		return -ENODEV;
++
++	mux = devm_kzalloc(dev, sizeof(*mux), GFP_KERNEL);
++	if (!mux)
++		return -ENOMEM;
++
++	mux->control = devm_mux_control_get(dev, NULL);
++	if (IS_ERR(mux->control)) {
++		if (PTR_ERR(mux->control) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get control-mux\n");
++		return PTR_ERR(mux->control);
++	}
++
++	parent = mux_parent_adapter(dev);
++	if (IS_ERR(parent)) {
++		if (PTR_ERR(parent) != -EPROBE_DEFER)
++			dev_err(dev, "failed to get i2c-parent adapter\n");
++		return PTR_ERR(parent);
++	}
++
++	children = of_get_child_count(np);
++
++	muxc = i2c_mux_alloc(parent, dev, children, 0, 0,
++			     i2c_mux_select, i2c_mux_deselect);
++	if (!muxc) {
++		ret = -ENOMEM;
++		goto err_parent;
++	}
++	muxc->priv = mux;
++
++	platform_set_drvdata(pdev, muxc);
++
++	match = of_match_device(of_match_ptr(i2c_mux_of_match), dev);
++	if (match)
++		muxc->mux_locked = !!of_device_get_match_data(dev);
++
++	for_each_child_of_node(np, child) {
++		u32 chan;
++
++		ret = of_property_read_u32(child, "reg", &chan);
++		if (ret < 0) {
++			dev_err(dev, "no reg property for node '%s'\n",
++				child->name);
++			goto err_children;
++		}
++
++		if (chan >= mux->control->states) {
++			dev_err(dev, "invalid reg %u\n", chan);
++			ret = -EINVAL;
++			goto err_children;
++		}
++
++		ret = i2c_mux_add_adapter(muxc, 0, chan, 0);
++		if (ret)
++			goto err_children;
++	}
++
++	dev_info(dev, "%d-port mux on %s adapter\n", children, parent->name);
++
++	return 0;
++
++err_children:
++	i2c_mux_del_adapters(muxc);
++err_parent:
++	i2c_put_adapter(parent);
++
++	return ret;
++}
++
++static int i2c_mux_remove(struct platform_device *pdev)
++{
++	struct i2c_mux_core *muxc = platform_get_drvdata(pdev);
++
++	i2c_mux_del_adapters(muxc);
++	i2c_put_adapter(muxc->parent);
++
++	return 0;
++}
++
++static struct platform_driver i2c_mux_driver = {
++	.probe	= i2c_mux_probe,
++	.remove	= i2c_mux_remove,
++	.driver	= {
++		.name	= "i2c-mux-simple",
++		.of_match_table = i2c_mux_of_match,
++	},
++};
++module_platform_driver(i2c_mux_driver);
++
++MODULE_DESCRIPTION("Simple I2C multiplexer driver");
++MODULE_AUTHOR("Peter Rosin <peda@axentia.se>");
++MODULE_LICENSE("GPL v2");
+-- 
+2.1.4
