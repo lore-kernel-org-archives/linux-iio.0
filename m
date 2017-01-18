@@ -1,185 +1,69 @@
-Return-Path: <SRS0=h0xK=ZM=axentia.se=peda@kernel.org>
-Subject: Re: [PATCH v8 12/12] mux: support simplified bindings for single-user
- gpio mux
-To: Rob Herring <robh@kernel.org>
-References: <1484755035-25927-1-git-send-email-peda@axentia.se>
- <1484755035-25927-13-git-send-email-peda@axentia.se>
- <33b29f7e-3e48-b85d-ccf9-93b1d67ac634@kernel.org>
- <d32f335f-56f2-38c1-e4d9-4629926dbe21@axentia.se>
- <20170127155202.z2ufbq5bdtclk5oo@rob-hp-laptop>
-CC: Jonathan Cameron <jic23@kernel.org>, <linux-kernel@vger.kernel.org>,
-	Wolfram Sang <wsa@the-dreams.de>, Mark Rutland <mark.rutland@arm.com>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter
- Meerwald-Stadler <pmeerw@pmeerw.net>, Jonathan Corbet <corbet@lwn.net>,
-	Andrew Morton <akpm@linux-foundation.org>, <linux-i2c@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <67bc8a1c-7067-700f-2b69-12a76d91b2ba@axentia.se>
-Date: Mon, 30 Jan 2017 09:02:52 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170127155202.z2ufbq5bdtclk5oo@rob-hp-laptop>
-Content-Type: multipart/mixed;
-	boundary="------------E50455DC8AFC88E8331704A6"
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from relay3-d.mail.gandi.net ([217.70.183.195]:37714 "EHLO
+        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752529AbdARQeo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 18 Jan 2017 11:34:44 -0500
+From: Jacopo Mondi <jacopo+renesas@jmondi.org>
+To: wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, marek.vasut@gmail.com, geert@linux-m68k.org,
+        robh+dt@kernel.org, mark.rutland@arm.com
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-renesas-soc@vger.kernel.org
+Subject: [PATCH v5 0/2] iio: adc: Add Maxim MAX11100 driver
+Date: Wed, 18 Jan 2017 17:30:51 +0100
+Message-Id: <1484757053-7102-1-git-send-email-jacopo+renesas@jmondi.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---------------E50455DC8AFC88E8331704A6
-Content-Type: text/plain; charset="windows-1252"
-Content-Transfer-Encoding: 7bit
+Hello everyone,
+  hopefully we have reached last iteration on this simple driver.
 
-On 2017-01-27 16:52, Rob Herring wrote:
-> On Mon, Jan 23, 2017 at 11:24:18AM +0100, Peter Rosin wrote:
->> On 2017-01-22 14:30, Jonathan Cameron wrote:
->>> On 18/01/17 15:57, Peter Rosin wrote:
->>>> Allow bindings for a GPIO controlled mux to be specified in the
->>>> mux consumer node.
->>>>
->>>> Signed-off-by: Peter Rosin <peda@axentia.se>
->>> Code is good as far as I am concerned. Only question is whether this
->>
->> Hmmm, now that I think some more about it, the code supporting the
->> simplified binding (patch 12/12) is a bit fishy in one respect.
->>
->> A driver that calls mux_control_get and gets a mux_control that happens
->> to be backed by an implicit mux chip (i.e. using the simplified binding)
->> will not be able to reverse the resource allocation with less than a
->> complete destruction of itself. Now, this is likely not a problem in
->> most cases, but I bet it will creep up at the most inopportune time. And
->> your remark that I'm the one that has to maintain this makes me dislike
->> this concept...
->>
->> I.e. mux_control_put *should* reverse mux_control_get, but this simply
->> does not happen for the implicit mux chips, as implicit mux chips are
->> not put away until the owning device is put away.
-> 
-> I think this is because you aren't creating a device in this case. Nodes 
-> in DT are not the only way to create devices. Drivers can create a child 
-> device when they find mux-gpios property.
+After having clarified the read_raw() measure unit question, I'm now sending
+out v5 addressing Jonathan's comment on having spi destination aligned to
+their own cache lines to support DMA-capable SPI controllers.
 
-Yes, but even with such a child device, a flag is needed somewhere that
-triggers cleanup when the mux_control is put away. And then it is possible
-to cleanup w/o the help of a child device. I wrote some code for this when
-I realized the problem, and it looks simple enough, but I haven't tested
-it yet, so who knows... It is attached (patch to be applied on top of 12/12)
-if anyone cares.
-
->> Every time I have tried to come up with a way to implement the simplified
->> bindings I seem to hit one of these subtleties.
->>
->>> is worth the hassle given the normal bindings don't give that high
->>> a burden in complexity!
-> 
-> I was going to change my mind here, but we already have "mux-gpios" as a 
-> binding at least for i2c-gpio-mux. So really the question is do we want 
-> to support that here?
-
-I think my preference is to drop the simplified binding, but I can also
-live with it. But as there appears to be no strong feelings, let's just
-drop it. It is always possible to add it later. Ok?
-
->> I am missing an ack from Rob though.
->>
->>> I don't really care either way:)
->>
->> But Rob seems to care, this series just has to find a way to get out of
->> his too-much-churn-will-look-at-it-later list. I sadly don't know how to
->> pull that trick...
-> 
-> By complaining that I'm putting it off... :) I guess I'm okay with this 
-> series in general. I will reply on the specific patches today.
-
-Great, it appears that I'm quite the magician. :-) Thanks!
-
-Cheers,
-peda
+Also, I added indio_dev->name attribute, as suggested by Lars-Peter even if
+the same value can be retrieved from of_node/name.
 
 
---------------E50455DC8AFC88E8331704A6
-Content-Type: text/plain; charset="UTF-8";
-	name="0001-mux-fix-cleanup-for-simplified-bindings.patch"
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename="0001-mux-fix-cleanup-for-simplified-bindings.patch"
+v1 -> v2:
+    - incorporated pmeerw's review comments
+    - retrieve vref from dts and use that to convert read_raw result
+      to mV
+    - add device tree bindings documentation
 
->From 5c448b8dfd831c7bc501d9543d48b2077ee1ba7b Mon Sep 17 00:00:00 2001
-From: Peter Rosin <peda@axentia.se>
-Date: Tue, 24 Jan 2017 16:58:58 +0100
-Subject: [PATCH] mux: fix cleanup for simplified bindings
+v2 -> v3:
+    - add _SCALE bit of read_raw function and change _RAW bit accordingly
+    - call regulator_get_voltage when accessing the _SCALE part of read_raw
+      and not during probe
+    - add back remove function as regulator has to be disabled when detaching
+      the module. Do not use devm_ version of iio_register/unregister functions
+      anymore but do unregister in the remove.
+    - remove mutex as access to SPI bus is protected by SPI core. Thanks marex
 
----
- drivers/mux/mux-core.c | 19 ++++++++++++++++++-
- include/linux/mux.h    |  2 ++
- 2 files changed, 20 insertions(+), 1 deletion(-)
+v3 -> v4:
+    - split device tree binding documentation and actual ADC driver
+    - add "reg" to the list of required properties and use a better
+      namimg for the adc device node in bindings documentation as suggested
+      by Geert.
 
-diff --git a/drivers/mux/mux-core.c b/drivers/mux/mux-core.c
-index 0caafd6f5a77..53954bd12709 100644
---- a/drivers/mux/mux-core.c
-+++ b/drivers/mux/mux-core.c
-@@ -321,9 +321,12 @@ struct mux_control *mux_control_get(struct device *dev, const char *mux_name)
- 	if (ret == -ENOENT && !mux_name) {
- 		mux_chip = mux_gpio_alloc(dev);
- 		if (!IS_ERR(mux_chip)) {
-+			mux_chip->private = true;
- 			ret = devm_mux_chip_register(dev, mux_chip);
--			if (ret < 0)
-+			if (ret < 0) {
-+				devm_mux_chip_free(dev, mux_chip);
- 				return ERR_PTR(ret);
-+			}
- 			get_device(&mux_chip->dev);
- 			return mux_chip->mux;
- 		}
-@@ -344,6 +347,12 @@ struct mux_control *mux_control_get(struct device *dev, const char *mux_name)
- 	if (!mux_chip)
- 		return ERR_PTR(-EPROBE_DEFER);
- 
-+	if (mux_chip->private) {
-+		dev_err(dev, "%s: private mux chip specified in %s\n",
-+			np->full_name, args.np->full_name);
-+		return ERR_PTR(-EBUSY);
-+	}
-+
- 	if (args.args_count > 1 ||
- 	    (!args.args_count && (mux_chip->controllers > 1))) {
- 		dev_err(dev, "%s: wrong #mux-control-cells for %s\n",
-@@ -368,7 +377,15 @@ EXPORT_SYMBOL_GPL(mux_control_get);
- 
- void mux_control_put(struct mux_control *mux)
- {
-+	bool private = mux->chip->private;
-+	struct device *parent = mux->chip->dev.parent;
-+
- 	put_device(&mux->chip->dev);
-+
-+	if (private) {
-+		devm_mux_chip_unregister(parent, mux->chip);
-+		devm_mux_chip_free(parent, mux->chip);
-+	}
- }
- EXPORT_SYMBOL_GPL(mux_control_put);
- 
-diff --git a/include/linux/mux.h b/include/linux/mux.h
-index ec9e605d8acf..3ad2e475c9dd 100644
---- a/include/linux/mux.h
-+++ b/include/linux/mux.h
-@@ -49,6 +49,7 @@ struct mux_control {
-  * @mux:		Array of mux controllers that is handled.
-  * @dev:		Device structure.
-  * @id:			Used to identify the device internally.
-+ * @private:		The mux chip is implicitly allocated by a single user.
-  * @ops:		Mux controller operations.
-  */
- struct mux_chip {
-@@ -56,6 +57,7 @@ struct mux_chip {
- 	struct mux_control *mux;
- 	struct device dev;
- 	int id;
-+	bool private;
- 
- 	const struct mux_control_ops *ops;
- };
+v4 -> v5:
+    - make spi_read() destination buffer cacheline aligned
+    - add indio_dev->name attribute.
+
+Jacopo Mondi (2):
+  iio: adc: Add Maxim MAX11100 driver
+  dt-bindings: iio: document MAX11100 ADC
+
+ .../devicetree/bindings/iio/adc/max11100.txt       |  19 ++
+ drivers/iio/adc/Kconfig                            |   9 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/max11100.c                         | 192 +++++++++++++++++++++
+ 4 files changed, 221 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/max11100.txt
+ create mode 100644 drivers/iio/adc/max11100.c
+
 -- 
-2.1.4
+2.7.4
 
-
---------------E50455DC8AFC88E8331704A6--
