@@ -1,47 +1,86 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35434 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750741AbdAUPEk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 10:04:40 -0500
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: fix typo in gyro sensitivity
- definition
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-References: <20170117183823.11550-1-lorenzo.bianconi@st.com>
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b00738eb-82bf-774d-82cb-92268ae9c8a4@kernel.org>
-Date: Sat, 21 Jan 2017 15:04:37 +0000
+Return-Path: <SRS0=a6Lu=ZA=gmail.com=amsfield22@kernel.org>
+Date: Tue, 17 Jan 2017 19:00:28 -0800
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+	Michael.Hennerich@analog.com, gregkh@linuxfoundation.org,
+	devel@driverdev.osuosl.org
+Subject: [PATCH] iio: trigger: free trigger resource correctly
+Message-ID: <20170118030016.GA23724@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <20170117183823.11550-1-lorenzo.bianconi@st.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On 17/01/17 18:38, Lorenzo Bianconi wrote:
-> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
-Applied.  Thanks,
+Using iio_trigger_put() to free a trigger leads to release of
+a resource we never held.  Replace with iio_trigger_free().
 
-Jonathan
-> ---
->  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 6 +++---
->  1 file changed, 3 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> index 01e002c..f869dfa 100644
-> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-> @@ -82,9 +82,9 @@
->  #define ST_LSM6DSX_ACC_FS_8G_GAIN		IIO_G_TO_M_S_2(244)
->  #define ST_LSM6DSX_ACC_FS_16G_GAIN		IIO_G_TO_M_S_2(488)
->  
-> -#define ST_LSM6DSX_GYRO_FS_245_GAIN		IIO_DEGREE_TO_RAD(4375)
-> -#define ST_LSM6DSX_GYRO_FS_500_GAIN		IIO_DEGREE_TO_RAD(8750)
-> -#define ST_LSM6DSX_GYRO_FS_1000_GAIN		IIO_DEGREE_TO_RAD(17500)
-> +#define ST_LSM6DSX_GYRO_FS_245_GAIN		IIO_DEGREE_TO_RAD(8750)
-> +#define ST_LSM6DSX_GYRO_FS_500_GAIN		IIO_DEGREE_TO_RAD(17500)
-> +#define ST_LSM6DSX_GYRO_FS_1000_GAIN		IIO_DEGREE_TO_RAD(35000)
->  #define ST_LSM6DSX_GYRO_FS_2000_GAIN		IIO_DEGREE_TO_RAD(70000)
->  
->  struct st_lsm6dsx_odr {
-> 
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+Patches to use devm_* funcs are ready to follow this for
+the interrupt & bfin-timer triggers.
 
+ drivers/iio/trigger/iio-trig-interrupt.c          | 4 ++--
+ drivers/iio/trigger/iio-trig-sysfs.c              | 2 +-
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 4 ++--
+ 3 files changed, 5 insertions(+), 5 deletions(-)
+
+diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
+index 572bc6f..b18e50d 100644
+--- a/drivers/iio/trigger/iio-trig-interrupt.c
++++ b/drivers/iio/trigger/iio-trig-interrupt.c
+@@ -84,7 +84,7 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
+ error_free_trig_info:
+ 	kfree(trig_info);
+ error_put_trigger:
+-	iio_trigger_put(trig);
++	iio_trigger_free(trig);
+ error_ret:
+ 	return ret;
+ }
+@@ -99,7 +99,7 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
+ 	iio_trigger_unregister(trig);
+ 	free_irq(trig_info->irq, trig);
+ 	kfree(trig_info);
+-	iio_trigger_put(trig);
++	iio_trigger_free(trig);
+ 
+ 	return 0;
+ }
+diff --git a/drivers/iio/trigger/iio-trig-sysfs.c b/drivers/iio/trigger/iio-trig-sysfs.c
+index 3dfab2b..202e8b8 100644
+--- a/drivers/iio/trigger/iio-trig-sysfs.c
++++ b/drivers/iio/trigger/iio-trig-sysfs.c
+@@ -174,7 +174,7 @@ static int iio_sysfs_trigger_probe(int id)
+ 	return 0;
+ 
+ out2:
+-	iio_trigger_put(t->trig);
++	iio_trigger_free(t->trig);
+ free_t:
+ 	kfree(t);
+ out1:
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+index 9658f20..4e0b4ee 100644
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+@@ -260,7 +260,7 @@ static int iio_bfin_tmr_trigger_probe(struct platform_device *pdev)
+ out1:
+ 	iio_trigger_unregister(st->trig);
+ out:
+-	iio_trigger_put(st->trig);
++	iio_trigger_free(st->trig);
+ 	return ret;
+ }
+ 
+@@ -273,7 +273,7 @@ static int iio_bfin_tmr_trigger_remove(struct platform_device *pdev)
+ 		peripheral_free(st->t->pin);
+ 	free_irq(st->irq, st);
+ 	iio_trigger_unregister(st->trig);
+-	iio_trigger_put(st->trig);
++	iio_trigger_free(st->trig);
+ 
+ 	return 0;
+ }
+-- 
+2.1.4
