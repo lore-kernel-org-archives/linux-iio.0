@@ -1,54 +1,56 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35925 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751680AbdAaR3i (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 12:29:38 -0500
-Date: Tue, 31 Jan 2017 17:20:53 +0000
-In-Reply-To: <CACRpkdYZzPWyyAmr8jTfRQuSADXkFoZpehhEVFLAfVnXmum4aw@mail.gmail.com>
-References: <20170117142515.10578-1-linus.walleij@linaro.org> <20170117142515.10578-3-linus.walleij@linaro.org> <cab36d80-53ba-bc43-cf08-6aafb56c737a@kernel.org> <e9a2162e-65e9-7276-25f9-4597da1125a3@kernel.org> <CACRpkdYZzPWyyAmr8jTfRQuSADXkFoZpehhEVFLAfVnXmum4aw@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain;
- charset=utf-8
-Subject: Re: [PATCH 3/3 v3] iio: adc: add a driver for Qualcomm PM8xxx HK/XOADC
+Received: from mail-oi0-f65.google.com ([209.85.218.65]:34384 "EHLO
+        mail-oi0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754415AbdASTQ6 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2017 14:16:58 -0500
+Date: Thu, 19 Jan 2017 13:16:50 -0600
+From: Rob Herring <robh@kernel.org>
 To: Linus Walleij <linus.walleij@linaro.org>
-CC: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-arm-msm@vger.kernel.org,
         "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
         Andy Gross <andy.gross@linaro.org>,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         Stephen Boyd <sboyd@codeaurora.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Rama Krishna Phani A <rphani@codeaurora.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <787406E0-A1F1-4B86-968C-3925715693FD@kernel.org>
+Subject: Re: [PATCH 1/3 v3] iio: adc: add device tree bindings for Qualcomm
+ PM8xxx ADCs
+Message-ID: <20170119191650.o3ghoysxkhrqw4gw@rob-hp-laptop>
+References: <20170117142515.10578-1-linus.walleij@linaro.org>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170117142515.10578-1-linus.walleij@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Tue, Jan 17, 2017 at 03:25:13PM +0100, Linus Walleij wrote:
+> This adds the device tree bindings for the Qualcomm PM8xxx
+> ADCs. This is based on the existing DT bindings for the
+> SPMI ADC so there are hopefully no controversial features.
+> 
+> Cc: devicetree@vger.kernel.org
+> Cc: linux-arm-kernel@lists.infradead.org
+> Cc: linux-arm-msm@vger.kernel.org
+> Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
+> Cc: Andy Gross <andy.gross@linaro.org>
+> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+> Cc: Stephen Boyd <sboyd@codeaurora.org>
+> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+> Cc: Rama Krishna Phani A <rphani@codeaurora.org>
+> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+> ---
+> ChangeLog v2->v3:
+> - Collapse the ratiometric property into one that enables and
+>   selects a ratiometric reference in one go.
+> - Use foo: adc-channel@X notation consequently
+> - Document that the reference voltage is compulsory.
+> ChangeLog v1->v2:
+> - Spelling fixes
+> ---
+>  .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 149 +++++++++++++++++++++
+>  1 file changed, 149 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/qcom,pm8xxx-xoadc.txt
 
-
-On 31 January 2017 09:48:31 GMT+00:00, Linus Walleij <linus.walleij@linaro.org> wrote:
->On Mon, Jan 30, 2017 at 9:15 PM, Jonathan Cameron <jic23@kernel.org>
->wrote:
->
->> Still outstanding bits and bobs in here so not taking this patch for
->> now.  Will probably do a last sweep of patches that are nearly
->> ready mid week as need to do pull before weekend to be sure of
->> making the next merge window (i.e. ones I've reviewed already but
->> have minor outstanding bits like this one).
->
->Sure, didn't mean you to apply this one, I was planning to respin it.
->Just eager about patches 1&2 so I decrease my patch stack.
-*Laughs*
-
-I wouldn't normally take a big rework like 2 without a patch making use of it.  Anyhow
- should be fine as changes were all trivial in this one.
-
-Thanks
->
->Yours,
->Linus Walleij
-
--- 
-Sent from my Android device with K-9 Mail. Please excuse my brevity.
+Acked-by: Rob Herring <robh@kernel.org>
