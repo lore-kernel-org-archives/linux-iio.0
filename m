@@ -1,91 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:24830 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751686AbdATKh4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 05:37:56 -0500
-Subject: Re: [PATCH 7/7] ARM: dts: stm32: Enable pwm1 and pwm3 for
- stm32f469-eval
-To: Alexandre Torgue <alexandre.torgue@st.com>, <jic23@kernel.org>,
-        <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>,
-        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
-References: <1484832854-6314-1-git-send-email-fabrice.gasnier@st.com>
- <1484832854-6314-8-git-send-email-fabrice.gasnier@st.com>
- <451b28a0-6cf3-d75a-59a2-d4e2f8a7b373@st.com>
-CC: <linux-iio@vger.kernel.org>, <mark.rutland@arm.com>,
-        <mcoquelin.stm32@gmail.com>, <lars@metafoo.de>, <knaack.h@gmx.de>,
-        <pmeerw@pmeerw.net>, <benjamin.gaignard@linaro.org>,
-        <benjamin.gaignard@st.com>
-From: Fabrice Gasnier <fabrice.gasnier@st.com>
-Message-ID: <eb886932-8c63-ac73-44e8-c886e51d07ff@st.com>
-Date: Fri, 20 Jan 2017 11:36:59 +0100
-MIME-Version: 1.0
-In-Reply-To: <451b28a0-6cf3-d75a-59a2-d4e2f8a7b373@st.com>
-Content-Type: text/plain; charset="windows-1252"; format=flowed
+Received: from mail-yw0-f195.google.com ([209.85.161.195]:35612 "EHLO
+        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751530AbdASPGH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2017 10:06:07 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: linus.walleij@linaro.org, gnurou@gmail.com
+Cc: linux-gpio@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org,
+        William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 0/5] Add GPIO set_multiple callback support for ISA_BUS_API drivers
+Date: Thu, 19 Jan 2017 10:05:17 -0500
+Message-Id: <cover.1484838095.git.vilhelm.gray@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/20/2017 11:19 AM, Alexandre Torgue wrote:
-> Hi Fabrice
->
->
-> On 01/19/2017 02:34 PM, Fabrice Gasnier wrote:
->> Define and enable pwm1 and pwm3, timers1 & 3 trigger outputs on
->> stm32f469-eval board.
->>
->> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->> ---
->
-> Typo issue in commit header (stm32f469 --> stm32f429)
-Hi Alexandre,
+Most of the ISA_BUS_API drivers control GPIO via 8-bit ioport registers.
+Since updating any given GPIO line involves writing out all 8 bits for
+the respective register, it makes sense to add support for the GPIO
+set_multiple callback function so that multiple GPIO lines may be set
+more efficiently. This patchset adds such support in each respective
+driver.
 
-I'll fix this in next revision.
-Tanks for reviewing.
+William Breathitt Gray (5):
+  gpio: 104-dio-48e: Add set_multiple callback function support
+  gpio: 104-idio-16: Add set_multiple callback function support
+  gpio: gpio-mm: Add set_multiple callback function support
+  gpio: ws16c48: Add set_multiple callback function support
+  iio: stx104: Add GPIO set_multiple callback function support
 
-BR,
-Fabrice
+ drivers/gpio/gpio-104-dio-48e.c | 39 +++++++++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-104-idio-16.c | 20 ++++++++++++++++++++
+ drivers/gpio/gpio-gpio-mm.c     | 39 +++++++++++++++++++++++++++++++++++++++
+ drivers/gpio/gpio-ws16c48.c     | 41 +++++++++++++++++++++++++++++++++++++++++
+ drivers/iio/adc/stx104.c        | 23 +++++++++++++++++++++++
+ 5 files changed, 162 insertions(+)
 
->
->
->>  arch/arm/boot/dts/stm32429i-eval.dts | 28 ++++++++++++++++++++++++++++
->>  1 file changed, 28 insertions(+)
->>
->> diff --git a/arch/arm/boot/dts/stm32429i-eval.dts 
->> b/arch/arm/boot/dts/stm32429i-eval.dts
->> index 2181220..892100f 100644
->> --- a/arch/arm/boot/dts/stm32429i-eval.dts
->> +++ b/arch/arm/boot/dts/stm32429i-eval.dts
->> @@ -171,3 +171,31 @@
->>      pinctrl-names = "default";
->>      status = "okay";
->>  };
->> +
->> +&timers1 {
->> +    status = "okay";
->> +
->> +    pwm {
->> +        pinctrl-0 = <&pwm1_pins>;
->> +        pinctrl-names = "default";
->> +        status = "okay";
->> +    };
->> +
->> +    timer@0 {
->> +        status = "okay";
->> +    };
->> +};
->> +
->> +&timers3 {
->> +    status = "okay";
->> +
->> +    pwm {
->> +        pinctrl-0 = <&pwm3_pins>;
->> +        pinctrl-names = "default";
->> +        status = "okay";
->> +    };
->> +
->> +    timer@2 {
->> +        status = "okay";
->> +    };
->> +};
->>
+-- 
+2.11.0
 
