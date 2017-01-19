@@ -1,118 +1,75 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.10]:33106 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753398AbdASQpj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2017 11:45:39 -0500
-Subject: Re: [PATCH v2] iio: light: acpi-als: Properly enable on ASUS Zenbooks
-To: atx@atx.name, linux-iio@vger.kernel.org
-References: <7b7f6d47-a0cc-8af5-c68f-da4350d793aa@denx.de>
- <20170119114816.GA12918@rick.lan>
- <8239ef005dee8acc9caf4b979424de52@mail.atx.name>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, maitysanchayan@gmail.com,
-        gregor.boirie@parrot.com, linux-kernel@vger.kernel.org,
-        rui.zhang@intel.com, marxin.liska@gmail.com
-From: Marek Vasut <marex@denx.de>
-Message-ID: <268f87f6-8a0e-530a-f7ca-4e6b1e0531b1@denx.de>
-Date: Thu, 19 Jan 2017 17:27:20 +0100
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:58572 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1752740AbdASNf2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 19 Jan 2017 08:35:28 -0500
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <linux-iio@vger.kernel.org>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>, <benjamin.gaignard@linaro.org>,
+        <benjamin.gaignard@st.com>
+Subject: [PATCH 0/7] Add support for triggered buffer mode to STM32 ADC
+Date: Thu, 19 Jan 2017 14:34:07 +0100
+Message-ID: <1484832854-6314-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-In-Reply-To: <8239ef005dee8acc9caf4b979424de52@mail.atx.name>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/19/2017 05:19 PM, atx@atx.name wrote:
-> January 19 2017 4:49 PM, "Marek Vasut" <marex@denx.de> wrote:
->> On 01/19/2017 12:48 PM, Josef Gajdusek wrote:
->>
->>> ASUS Zenbooks need several special ACPI calls to enable the ALS peripheral.
->>> Otherwise, reads just return 0.
->>>
->>> Signed-off-by: Josef Gajdusek <atx@atx.name>
->>> ---
->>> drivers/iio/light/acpi-als.c | 17 +++++++++++++++++
->>> 1 file changed, 17 insertions(+)
->>>
->>> diff --git a/drivers/iio/light/acpi-als.c b/drivers/iio/light/acpi-als.c
->>> index f0b47c5..ccd5787 100644
->>> --- a/drivers/iio/light/acpi-als.c
->>> +++ b/drivers/iio/light/acpi-als.c
->>> @@ -39,6 +39,9 @@
->>> #define ACPI_ALS_DEVICE_NAME "acpi-als"
->>> #define ACPI_ALS_NOTIFY_ILLUMINANCE 0x80
->>>
->>> +#define ACPI_ALS_ASUS_TALS "\\_SB.PCI0.LPCB.EC0.TALS"
->>> +#define ACPI_ALS_ASUS_ALSC "\\_SB.ATKD.ALSC"
->>> +
->>> ACPI_MODULE_NAME("acpi-als");
->>>
->>> /*
->>> @@ -170,6 +173,16 @@ static int acpi_als_read_raw(struct iio_dev *indio_dev,
->>> return IIO_VAL_INT;
->>> }
->>>
->>> +static void acpi_als_quirk_asus(struct acpi_als *als)
->>> +{
->>> + acpi_execute_simple_method(NULL, ACPI_ALS_ASUS_TALS, 1);
->>> + acpi_execute_simple_method(NULL, ACPI_ALS_ASUS_ALSC, 1);
->>
->> This will run on ALL systems, right ? Also, error checking disappeared ?
->>
-> 
-> Yes, that's intended. Should I add some DMI checks to only run on
-> ASUS/ASUS Zenbooks?
+The following patches add support for triggered buffer mode.
+These are based on top of "Add PWM and IIO timer drivers for STM32"
+series. Reference:
+https://lkml.org/lkml/2017/1/18/588
 
-Definitely, it doesn't seem right to execute random stuff on hardware
-where such stuff is undefined.
+STM32 ADC, can use either interrupts or DMA to collect data.
+Either timer trigger output (TRGO) or PWM can be used as trigger source.
+This patchset has been tested on STM32F429 eval board.
 
-> As for error checking, this code behaves exactly like v1, except
-> that the xor warning is removed, which means that it is not needed
-> to explicitly get the handles. The acpi_exceute_simple_method call just
-> fails if it can't find the object.
+- Example to enable timer1 PWM:
+cd /sys/devices/platform/soc/40010000.timers/40010000.timers:pwm/pwm/pwmchip4/
+echo 0 > export # timer 1 channel 1
+echo 1000000 > pwm0/period # 1000Hz
+echo 500000 > pwm0/duty_cycle
+echo 1 > pwm0/enable
 
-But the driver will register even though the call fails , that's wrong.
-The probe must stop if there is a failure.
+- Example to enable timer3 TRGO:
+cd /sys/bus/iio/devices/
+cat trigger6/name 
+tim1_ch1
+cat trigger0/name 
+tim3_trgo
+echo 1000 > trigger0/sampling_frequency
 
-> Distinguishing between the "object not found" and "failed to call method" scenarios
-> seemed a bit overly verbose to me especially as it would probably be overkill to abort
-> the driver initialization because of that.
+- Example to configure STM32ADC in triggered buffer mode, with timer1 PWM
+  or timer3 TRGO:
+cd /sys/bus/iio/devices/iio\:device0
+echo tim1_ch1 > trigger/current_trigger
+OR: echo tim3_trgo > trigger/current_trigger
+echo 1 > scan_elements/in_voltage8_en
+echo 1 > buffer/enable
 
-If something which should be present (like the acpi method) is not
-present and/or fails, the driver probe should abort.
+Fabrice Gasnier (7):
+  iio: adc: stm32: add support for triggered buffer mode
+  iio: adc: stm32: Enable use of stm32 timer triggers
+  iio: adc: stm32: add trigger polarity extended attribute
+  Documentation: dt: iio: stm32-adc: optional dma support
+  iio: adc: stm32: add optional dma support
+  ARM: dts: stm32: Enable dma by default on stm32f4 adc
+  ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-eval
 
->>> +}
->>> +
->>> +static void (*acpi_als_quirks[])(struct acpi_als *als) = {
->>> + acpi_als_quirk_asus,
->>> +};
->>> +
->>> static const struct iio_info acpi_als_info = {
->>> .driver_module = THIS_MODULE,
->>> .read_raw = acpi_als_read_raw,
->>> @@ -180,6 +193,7 @@ static int acpi_als_add(struct acpi_device *device)
->>> struct acpi_als *als;
->>> struct iio_dev *indio_dev;
->>> struct iio_buffer *buffer;
->>> + int i;
->>>
->>> indio_dev = devm_iio_device_alloc(&device->dev, sizeof(*als));
->>> if (!indio_dev)
->>> @@ -191,6 +205,9 @@ static int acpi_als_add(struct acpi_device *device)
->>> als->device = device;
->>> mutex_init(&als->lock);
->>>
->>> + for (i = 0; i < ARRAY_SIZE(acpi_als_quirks); i++)
->>> + acpi_als_quirks[i](als);
->>> +
->>> indio_dev->name = ACPI_ALS_DEVICE_NAME;
->>> indio_dev->dev.parent = &device->dev;
->>> indio_dev->info = &acpi_als_info;
->>
->> --
->> Best regards,
->> Marek Vasut
-
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |   7 +
+ arch/arm/boot/dts/stm32429i-eval.dts               |  28 +
+ arch/arm/boot/dts/stm32f429.dtsi                   |   6 +
+ drivers/iio/adc/Kconfig                            |   6 +
+ drivers/iio/adc/stm32-adc-core.c                   |   1 +
+ drivers/iio/adc/stm32-adc-core.h                   |   2 +
+ drivers/iio/adc/stm32-adc.c                        | 643 ++++++++++++++++++++-
+ 7 files changed, 690 insertions(+), 3 deletions(-)
 
 -- 
-Best regards,
-Marek Vasut
+1.9.1
+
