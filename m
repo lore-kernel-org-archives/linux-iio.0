@@ -1,88 +1,77 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f44.google.com ([74.125.82.44]:35570 "EHLO
-        mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751536AbdAYQkz (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jan 2017 11:40:55 -0500
-Received: by mail-wm0-f44.google.com with SMTP id r126so34672699wmr.0
-        for <linux-iio@vger.kernel.org>; Wed, 25 Jan 2017 08:40:54 -0800 (PST)
-Date: Wed, 25 Jan 2017 16:40:50 +0000
-From: Lee Jones <lee.jones@linaro.org>
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-Cc: arm@kernel.org, Arnd Bergmann <arnd@arndb.de>, robh+dt@kernel.org,
-        mark.rutland@arm.com, alexandre.torgue@st.com,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        thierry.reding@gmail.com, linux-pwm@vger.kernel.org,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, fabrice.gasnier@st.com,
-        gerald.baeza@st.com, arnaud.pouliquen@st.com,
-        linaro-kernel@lists.linaro.org,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: Re: [GIT PULL] Immutable branch between MFD, ARM, IIO and PWM due
- for the v4.10 merge window
-Message-ID: <20170125164050.GC19242@dell>
-References: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
- <20170123121222.GJ16020@dell>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20170123121222.GJ16020@dell>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=19fQ=ZC=linaro.org=linus.walleij@kernel.org>
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>,
+	linux-iio@vger.kernel.org,
+	Greg KH <greg@kroah.com>
+Cc: Linus Walleij <linus.walleij@linaro.org>
+Subject: [PATCH] iio: accel: fix Kconfig warning
+Date: Fri, 20 Jan 2017 10:46:05 +0100
+Message-Id: <20170120094605.25602-1-linus.walleij@linaro.org>
+List-ID: <linux-iio@vger.kernel.org>
 
-As promised.
+commit 762227721fe6225be5b6d233ef681aea5871f5f3
+"iio: accel: st_accel: handle deprecated bindings"
+attempted to be smart and let users use the old I2C
+driver and the new SPI driver, or the old SPI driver and
+the new I2C driver in combination for the LIS3LV02,
+and put the restrictions on the I2C and SPI subdrivers
+not not be combined with the old subdrivers.
 
-The following changes since commit 7ce7d89f48834cefece7804d38fc5d85382edf77:
+This doesn't work since the IIO ST accel top-level
+component selects the I2C and SPI subdrivers, resulting
+in the following Kconfig noise:
 
-  Linux 4.10-rc1 (2016-12-25 16:13:08 -0800)
+warning: (IIO_ST_ACCEL_3AXIS) selects IIO_ST_ACCEL_I2C_3AXIS
+which has unmet direct dependencies (IIO && !SENSORS_LIS3_I2C
+&& IIO_ST_ACCEL_3AXIS && IIO_ST_SENSORS_I2C)
+warning: (IIO_ST_ACCEL_3AXIS) selects IIO_ST_ACCEL_SPI_3AXIS
+which has unmet direct dependencies (IIO && !SENSORS_LIS3_SPI
+&& IIO_ST_ACCEL_3AXIS && IIO_ST_SENSORS_SPI)
+(...)
 
-are available in the git repository at:
+This fixes the issue by putting the dependencies directly
+in the top-level component instead, so that it never gets
+to select its unselectable subcomponent.
 
-  git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd.git ib-mfd-iio-pwm-4.11
+Cc: Greg KH <greg@kroah.com>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Fixes: 762227721fe6 ("iio: accel: st_accel: handle deprecated bindings")
+Reported-by: Stephen Rothwell <sfr@canb.auug.org.au>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+I guess Greg can apply the patch directly to quickly get
+rid of the Kconfig noise, else Jonathan can funnel it as
+a fix.
+---
+ drivers/iio/accel/Kconfig | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-for you to fetch changes up to 93fbe91b552194af970256ce72934745d01df435:
-
-  iio: Add STM32 timer trigger driver (2017-01-25 16:11:56 +0000)
-
-----------------------------------------------------------------
-Immutable branch between MFD, IIO and PWM due for the v4.11 merge window
-
-----------------------------------------------------------------
-Benjamin Gaignard (6):
-      dt-bindings: mfd: Add bindings for STM32 Timers driver
-      mfd: Add STM32 Timers driver
-      dt-bindings: pwm: Add STM32 bindings
-      pwm: Add driver for STM32 plaftorm
-      iio: Add bindings for STM32 timer trigger driver
-      iio: Add STM32 timer trigger driver
-
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
- .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
- .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
- .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
- drivers/iio/trigger/Kconfig                        |   9 +
- drivers/iio/trigger/Makefile                       |   1 +
- drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
- drivers/mfd/Kconfig                                |  11 +
- drivers/mfd/Makefile                               |   2 +
- drivers/mfd/stm32-timers.c                         |  80 +++++
- drivers/pwm/Kconfig                                |   9 +
- drivers/pwm/Makefile                               |   1 +
- drivers/pwm/pwm-stm32.c                            | 397 +++++++++++++++++++++
- include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
- include/linux/mfd/stm32-timers.h                   |  71 ++++
- 15 files changed, 1118 insertions(+)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
- create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
- create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
- create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
- create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
- create mode 100644 drivers/mfd/stm32-timers.c
- create mode 100644 drivers/pwm/pwm-stm32.c
- create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
- create mode 100644 include/linux/mfd/stm32-timers.h
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index ea295fe0f561..ef8401ac1141 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -120,6 +120,8 @@ config HID_SENSOR_ACCEL_3D
+ config IIO_ST_ACCEL_3AXIS
+ 	tristate "STMicroelectronics accelerometers 3-Axis Driver"
+ 	depends on (I2C || SPI_MASTER) && SYSFS
++	depends on !SENSORS_LIS3_I2C
++	depends on !SENSORS_LIS3_SPI
+ 	select IIO_ST_SENSORS_CORE
+ 	select IIO_ST_ACCEL_I2C_3AXIS if (I2C)
+ 	select IIO_ST_ACCEL_SPI_3AXIS if (SPI_MASTER)
+@@ -140,13 +142,11 @@ config IIO_ST_ACCEL_3AXIS
+ 
+ config IIO_ST_ACCEL_I2C_3AXIS
+ 	tristate
+-	depends on !SENSORS_LIS3_I2C
+ 	depends on IIO_ST_ACCEL_3AXIS
+ 	depends on IIO_ST_SENSORS_I2C
+ 
+ config IIO_ST_ACCEL_SPI_3AXIS
+ 	tristate
+-	depends on !SENSORS_LIS3_SPI
+ 	depends on IIO_ST_ACCEL_3AXIS
+ 	depends on IIO_ST_SENSORS_SPI
  
 -- 
-Lee Jones
-Linaro STMicroelectronics Landing Team Lead
-Linaro.org │ Open source software for ARM SoCs
-Follow Linaro: Facebook | Twitter | Blog
+2.9.3
