@@ -1,52 +1,72 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34560 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750905AbdAUMeg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:34:36 -0500
-Subject: Re: [PATCH] iio: accel: st_accel: add !SENSORS_LIS3LV02D depedency
-To: Arnd Bergmann <arnd@arndb.de>
-References: <20170120162615.3718940-1-arnd@arndb.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <81fbb625-4626-d204-3ade-6640f01ad506@kernel.org>
-Date: Sat, 21 Jan 2017 12:34:34 +0000
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:34696 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753127AbdATUZe (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 15:25:34 -0500
+Date: Fri, 20 Jan 2017 12:22:58 -0800
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: tduszyns@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: pressure: ms5611: claim direct mode during oversampling
+ changes
+Message-ID: <20170120202242.GA2153@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <20170120162615.3718940-1-arnd@arndb.de>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/01/17 16:25, Arnd Bergmann wrote:
-> warning: (IIO_ST_ACCEL_3AXIS) selects IIO_ST_ACCEL_SPI_3AXIS which has unmet direct dependencies (IIO && !SENSORS_LIS3_SPI && IIO_ST_ACCEL_3AXIS && IIO_ST_SENSORS_SPI)
-> 
-> Fixes: 762227721fe6 ("iio: accel: st_accel: handle deprecated bindings")
-> Signed-off-by: Arnd Bergmann <arnd@arndb.de>
-At least at first glance, this is a different approach to fixing the issue
-from the one Linus took.  I think that one has already been picked up
-by Greg (or will be shortly).  Linus, please confirm this is the same issue.
+Driver was checking for direct mode before changing oversampling
+ratios, but was not locking it.  Use the claim/release helper
+functions to guarantee the device stays in direct mode while the
+oversampling ratios are being updated.  Continue to use the drivers
+private state lock to protect against conflicting direct mode access
+of the state data.
 
-thanks,
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+ drivers/iio/pressure/ms5611_core.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/accel/Kconfig | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-> index ea295fe0f561..590ba8835fdc 100644
-> --- a/drivers/iio/accel/Kconfig
-> +++ b/drivers/iio/accel/Kconfig
-> @@ -120,6 +120,7 @@ config HID_SENSOR_ACCEL_3D
->  config IIO_ST_ACCEL_3AXIS
->  	tristate "STMicroelectronics accelerometers 3-Axis Driver"
->  	depends on (I2C || SPI_MASTER) && SYSFS
-> +	depends on !SENSORS_LIS3LV02D
->  	select IIO_ST_SENSORS_CORE
->  	select IIO_ST_ACCEL_I2C_3AXIS if (I2C)
->  	select IIO_ST_ACCEL_SPI_3AXIS if (SPI_MASTER)
-> 
+diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
+index 6bd53e7..2a77a2f 100644
+--- a/drivers/iio/pressure/ms5611_core.c
++++ b/drivers/iio/pressure/ms5611_core.c
+@@ -308,6 +308,7 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
+ {
+ 	struct ms5611_state *st = iio_priv(indio_dev);
+ 	const struct ms5611_osr *osr = NULL;
++	int ret;
+ 
+ 	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
+ 		return -EINVAL;
+@@ -321,12 +322,11 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
+ 	if (!osr)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&st->lock);
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
+ 
+-	if (iio_buffer_enabled(indio_dev)) {
+-		mutex_unlock(&st->lock);
+-		return -EBUSY;
+-	}
++	mutex_lock(&st->lock);
+ 
+ 	if (chan->type == IIO_TEMP)
+ 		st->temp_osr = osr;
+@@ -334,6 +334,8 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
+ 		st->pressure_osr = osr;
+ 
+ 	mutex_unlock(&st->lock);
++	iio_device_release_direct_mode(indio_dev);
++
+ 	return 0;
+ }
+ 
+-- 
+2.1.4
 
