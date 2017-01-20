@@ -1,134 +1,230 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:32995 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753079AbdATUZf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 15:25:35 -0500
-Date: Fri, 20 Jan 2017 21:23:59 +0100
-From: Pavel Machek <pavel@ucw.cz>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Rob Herring <robh@kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        Marcel Holtmann <marcel@holtmann.org>,
-        Jiri Slaby <jslaby@suse.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Arnd Bergmann <arnd@arndb.de>,
-        "Dr . H . Nikolaus Schaller" <hns@goldelico.com>,
-        Peter Hurley <peter@hurleysoftware.com>,
-        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-        Loic Poulain <loic.poulain@intel.com>,
-        NeilBrown <neil@brown.name>,
-        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: Re: GPS drivers (was Re: [PATCH v2 0/9] Serial slave device bus)
-Message-ID: <20170120202359.GB14527@amd>
-References: <20170116225436.17505-1-robh@kernel.org>
- <CACRpkdaf6uy6C6J5mcVF4dDPG7gwJ2vkR4ECLYSsT5-DRNNfcA@mail.gmail.com>
- <20170120142242.GC5241@amd>
- <CACRpkdYi=OQ2fyvOvmo+8b4nAOsSjW_-EdHXyGnYf2PNZB5C9Q@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="K8nIJk4ghYZn606h"
-In-Reply-To: <CACRpkdYi=OQ2fyvOvmo+8b4nAOsSjW_-EdHXyGnYf2PNZB5C9Q@mail.gmail.com>
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:54298 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752689AbdATPwk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 10:52:40 -0500
+Message-ID: <1484927552.21721.17.camel@hadess.net>
+Subject: Why hid-sensor-hub's IIO doesn't work properly in >= 4.3 (possibly
+ badly bisected)
+From: Bastien Nocera <hadess@hadess.net>
+To: linux-acpi@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-input@vger.kernel.org
+Cc: Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
+        Richard Hughes <richard@hughsie.com>
+Date: Fri, 20 Jan 2017 16:52:32 +0100
+Content-Type: multipart/mixed; boundary="=-to9fKU7NSMxaQ3/EFfZt"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---K8nIJk4ghYZn606h
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+--=-to9fKU7NSMxaQ3/EFfZt
+Content-Type: text/plain; charset="UTF-8"
+Content-Transfer-Encoding: 7bit
 
-Hi!
+Hey,
 
-> >> In my simple opinion GPSes shound live in drivers/iio/gps simply by
-> >> usecase association: streaming out a series of accelerometer readings
-> >> periodically through IIOs chardevs and other data about the physical
-> >> world is not any different from the GPS usecase that give you a stream
-> >> of coordinates on where on this planet you are.
-> >
-> > That is... not quite how GPSes work. What interface would you propose?
-> > It would be good to support error estimates in position/velocities and
-> > AGPS data upload.
->=20
-> Sorry for my ignorance. I have not had the opportunity to work
-> directly with a GPS hardware.
+TLDR:
+# first bad commit: [50ba22479c324c0d9dc8134d519dcba92d83a8a7] Merge
+back earlier ACPI PM material for v4.3.
 
-Few people have. It is CDMA corelators at the low level.=20
+hid-sensor-hub devices only start sending events through the IIO
+trigger after a suspend/resume cycle.
 
-> > Now, NMEA knows about some of the complexity (not AGPS), but gets the
-> > details wrong. In particular, it would be good to have error estimates
-> > and velocities from the same moment you get position estimates.
->=20
-> NMEA if it is this:
-> https://en.wikipedia.org/wiki/NMEA_0183
+Other IIO drivers don't seem to exhibit those problems.
 
-Yes.
+The long version:
 
-> Seems to be a high-level format such as XML or CSV or any other
-> $FAVOURITE_ASCII_TRANSPORT format.
->=20
-> What we want to push into the ring buffer is of course the raw data
-> that is produced by the GPS hardware, whatever that may be.
-> If what we have is this text format we should not reverse-translate
-> it back any more than modem AT commands, it doesn't make sense
-> I guess.
+As some of you know, I maintain iio-sensor-proxy[1], which tries to
+read sensor values for a number of sensor types (accelerometer, ambient
+light, compass) for a number of drivers (IIO, input, hwmon).
 
-Umm. Its hairy. Each GPS talks slightly different version of NMEA
-:-(. But yes, we have userland driver called 'gpsd' that understands
-most of them. Many GPSes have additional, non-NMEA protocol you can
-switch them to.
+I've had a lot of bug reports some time after creating the project[2],
+with HID sensor hub devices, which are the most common type of compound
+sensor device types in laptops and more expensive tablets.
 
-> So NMEA processing would be in userspace. And if the GPS is just
-> streaming this text data over to the client, like Marcel says, it is
-> more reasonable to just feed that up to userspace (no policy in the
-> kernel).
+The problem seems to be that IIO devices don't send any events about
+new data, even though there is new data available. A suspend/resume
+cycle corrects this. (Some people have also had some luck making sure
+the iio-sensor-proxy didn't try to poke at the device this early after
+the kernel loaded the driver, I cannot easily test this).
 
-Well -- we normally do hardware abstraction in the kernel :-).
+The problem wasn't there when I started the project (July 2014) and has
+appeared since. I finally got access to a type of device which I can
+use to replicate the problem. I used the ColorHugALS[3] as a test
+device (which uses hid-sensor-hub and is a USB device).
 
-> I am however aware of certain hardware such as the ST
-> Microelectronis STA2062 produced for Garmin, which is *not*
-> connected to any external chip, and is not talking over serial
-> to any RSx port, and does not have an embedded firmware running
-> on another SoC in any special GPS chip. And it is unassisted.
+Testing:
 
-I googled STA2062 but it does not make much sense to me.
+Tested on a Lenovo X1 Carbon from 2014 (the one with the horrible touch
+function keys).
 
-Yes, not everything talks NMEA. Nokia N900 is an example, and it has
-in-tree driver.
+1) Apply the attached patch to iio-sensor-proxy, compile and install it
+in place of the OS-provided one. Running "monitor-sensor" will just
+wait for ALS events for 10 seconds, and can be used for "git bisect
+run".
+2) I used Fedora kernels to pin down which "dot-o" version of the
+kernel first showed the problem. The problems started occurring between
+4.2 and 4.3. I also verified this with "linus" kernel trees to make
+sure a Fedora patch didn't cause the problem.
+3) The kernel configuration is Fedora's "4.2.0-1" kernel config, with
+"make localmodconfig" run on it, to cut down on compile time
+4) For every commit that bisect told me to inspect, I compiled a new
+kernel with "make rpm", installed it, warm rebooted, and ran "monitor-
+sensor".
 
-> Maybe that is an oddity. In the mobile phone business I guess it
-> could be more common to have a separate SoC that by way
-> of standards just stream NMEA data.
+I ran the bisection 3 times, and always ended up on a merge commit.
+I've attached the bisect logs for 2 of those runs.
 
-Sorry, I don't understand. Yes, in mobile phones GPSes that produce
-something else than NMEA are pretty common.
+I'd happily provide iio-sensor-proxy patches if someone only has access
+to a hid-sensor-hub accelerometer.
 
-> Fusing that with other sensor data (accelerometer, compass, etc)
-> is again indeed a userspace task. I hope NMEA includes very good
-> timestamps.
+Cheers
 
-Umm. Timestamps are quite hard to do over serial :-(.
-									Pavel
+[1]: https://github.com/hadess/iio-sensor-proxy
+[2]: https://github.com/hadess/iio-sensor-proxy/issues?utf8=%E2%9C%93&q=is:issue%20label:"driver%20bug"%20
+[3]: http://www.hughski.com/colorhugals.html
+--=-to9fKU7NSMxaQ3/EFfZt
+Content-Disposition: attachment; filename="0001-Test-ALS-for-events-coming-in.patch"
+Content-Type: text/x-patch; name="0001-Test-ALS-for-events-coming-in.patch";
+	charset="UTF-8"
+Content-Transfer-Encoding: base64
 
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+RnJvbSBmYjU5NWFiNDNmMWUyNGEyZjY1Mjk4ZjhlOWY3Y2Q0OWEyZDdkZDI5IE1vbiBTZXAgMTcg
+MDA6MDA6MDAgMjAwMQpGcm9tOiBCYXN0aWVuIE5vY2VyYSA8aGFkZXNzQGhhZGVzcy5uZXQ+CkRh
+dGU6IFRodSwgMTkgSmFuIDIwMTcgMjI6MjA6MjUgKzAxMDAKU3ViamVjdDogW1BBVENIXSBUZXN0
+IEFMUyBmb3IgZXZlbnRzIGNvbWluZyBpbgoKLS0tCiBzcmMvbW9uaXRvci1zZW5zb3IuYyB8IDE5
+ICsrKysrKysrKysrKysrKysrKy0KIDEgZmlsZSBjaGFuZ2VkLCAxOCBpbnNlcnRpb25zKCspLCAx
+IGRlbGV0aW9uKC0pCgpkaWZmIC0tZ2l0IGEvc3JjL21vbml0b3Itc2Vuc29yLmMgYi9zcmMvbW9u
+aXRvci1zZW5zb3IuYwppbmRleCA4ZDFlOTk3Li43MzBlZDRkIDEwMDY0NAotLS0gYS9zcmMvbW9u
+aXRvci1zZW5zb3IuYworKysgYi9zcmMvbW9uaXRvci1zZW5zb3IuYwpAQCAtMTIsNiArMTIsOCBA
+QAogc3RhdGljIEdNYWluTG9vcCAqbG9vcDsKIHN0YXRpYyBndWludCB3YXRjaF9pZDsKIHN0YXRp
+YyBHREJ1c1Byb3h5ICppaW9fcHJveHksICppaW9fcHJveHlfY29tcGFzczsKK3N0YXRpYyBpbnQg
+cmV0dmFsID0gMTsKK3N0YXRpYyBkb3VibGUgbGFzdF9hbHMgPSAwLjA7CiAKIHN0YXRpYyB2b2lk
+CiBwcm9wZXJ0aWVzX2NoYW5nZWQgKEdEQnVzUHJveHkgKnByb3h5LApAQCAtNDksNiArNTEsNyBA
+QCBwcm9wZXJ0aWVzX2NoYW5nZWQgKEdEQnVzUHJveHkgKnByb3h5LAogCQlHVmFyaWFudCAqdW5p
+dDsKIAogCQl2ID0gZ19kYnVzX3Byb3h5X2dldF9jYWNoZWRfcHJvcGVydHkgKGlpb19wcm94eSwg
+IkxpZ2h0TGV2ZWwiKTsKKwkJbGFzdF9hbHMgPSBnX3ZhcmlhbnRfZ2V0X2RvdWJsZSAodik7CiAJ
+CXVuaXQgPSBnX2RidXNfcHJveHlfZ2V0X2NhY2hlZF9wcm9wZXJ0eSAoaWlvX3Byb3h5LCAiTGln
+aHRMZXZlbFVuaXQiKTsKIAkJZ19wcmludCAoIiAgICBMaWdodCBjaGFuZ2VkOiAlbGYgKCVzKVxu
+IiwgZ192YXJpYW50X2dldF9kb3VibGUgKHYpLCBnX3ZhcmlhbnRfZ2V0X3N0cmluZyAodW5pdCwg
+TlVMTCkpOwogCQlnX3ZhcmlhbnRfdW5yZWYgKHYpOwpAQCAtMTk0LDYgKzE5NywxOSBAQCB2YW5p
+c2hlZF9jYiAoR0RCdXNDb25uZWN0aW9uICpjb25uZWN0aW9uLAogCX0KIH0KIAorc3RhdGljIGdi
+b29sZWFuCitjaGVja19hbHMgKGdwb2ludGVyIGRhdGEpCit7CisJaWYgKGxhc3RfYWxzID09IDAu
+MCkKKwkJcmV0dmFsID0gMTsKKwllbHNlCisJCXJldHZhbCA9IDA7CisJZ19tYWluX2xvb3BfcXVp
+dCAobG9vcCk7CisJZ19tZXNzYWdlICgiJXMiLCByZXR2YWwgPT0gMSA/ICJGQUlMRUQiIDogIlNV
+Q0NFU1MiKTsKKworCXJldHVybiBUUlVFOworfQorCiBpbnQgbWFpbiAoaW50IGFyZ2MsIGNoYXIg
+Kiphcmd2KQogewogCXdhdGNoX2lkID0gZ19idXNfd2F0Y2hfbmFtZSAoR19CVVNfVFlQRV9TWVNU
+RU0sCkBAIC0yMDUsNyArMjIxLDggQEAgaW50IG1haW4gKGludCBhcmdjLCBjaGFyICoqYXJndikK
+IAogCWdfcHJpbnQgKCIgICAgV2FpdGluZyBmb3IgaWlvLXNlbnNvci1wcm94eSB0byBhcHBlYXJc
+biIpOwogCWxvb3AgPSBnX21haW5fbG9vcF9uZXcgKE5VTEwsIFRSVUUpOworCWdfdGltZW91dF9h
+ZGRfc2Vjb25kcyAoMTAsIGNoZWNrX2FscywgTlVMTCk7CiAJZ19tYWluX2xvb3BfcnVuIChsb29w
+KTsKIAotCXJldHVybiAwOworCXJldHVybiByZXR2YWw7CiB9Ci0tIAoyLjkuMwoK
 
---K8nIJk4ghYZn606h
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
+--=-to9fKU7NSMxaQ3/EFfZt
+Content-Disposition: attachment; filename="git-bisect-log.txt"
+Content-Type: text/plain; name="git-bisect-log.txt"; charset="UTF-8"
+Content-Transfer-Encoding: base64
 
-iEYEARECAAYFAliCcd8ACgkQMOfwapXb+vIYkQCglVgeV/jx3JexdznHV/uuBHLo
-9dUAoK0cROBcgU3QoYfHogl7kItQ7WKf
-=zV+R
------END PGP SIGNATURE-----
+Z2l0IGJpc2VjdCBzdGFydAojIGJhZDogWzdlODRiMzAzNTU5MmI1ODg3MmY0NzZjZGVmZjYxZDRi
+YmNiYjM0NTJdIE1lcmdlIHRhZyAnbW1jLXY0LjEwLXJjMycgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5v
+cmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3VsZmgvbW1jCmdpdCBiaXNlY3QgYmFkIDdlODRi
+MzAzNTU5MmI1ODg3MmY0NzZjZGVmZjYxZDRiYmNiYjM0NTIKIyBnb29kOiBbMTg2MGUzNzk4NzVk
+ZmU3MjcxYzY0OTA1OGFlZGRmZmU1YWZkOWQwZF0gTGludXggMy4xNQpnaXQgYmlzZWN0IGdvb2Qg
+MTg2MGUzNzk4NzVkZmU3MjcxYzY0OTA1OGFlZGRmZmU1YWZkOWQwZAojIGdvb2Q6IFsxOTU4M2Nh
+NTg0ZDZmNTc0Mzg0ZTE3ZmU3NjEzZGZhZWFkY2RjNGE2XSBMaW51eCAzLjE2CmdpdCBiaXNlY3Qg
+Z29vZCAxOTU4M2NhNTg0ZDZmNTc0Mzg0ZTE3ZmU3NjEzZGZhZWFkY2RjNGE2CiMgZ29vZDogW2Jm
+ZTAxYTViYTI0OTBmMjk5ZTFkMmQ1NTA4Y2JiYmFkZDg5N2JiZTldIExpbnV4IDMuMTcKZ2l0IGJp
+c2VjdCBnb29kIGJmZTAxYTViYTI0OTBmMjk5ZTFkMmQ1NTA4Y2JiYmFkZDg5N2JiZTkKIyBnb29k
+OiBbYjI3NzZiZjcxNDliZGRkMWY0MTYxZjE0Zjc5NTIwZjE3ZmMxZDcxZF0gTGludXggMy4xOApn
+aXQgYmlzZWN0IGdvb2QgYjI3NzZiZjcxNDliZGRkMWY0MTYxZjE0Zjc5NTIwZjE3ZmMxZDcxZAoj
+IGdvb2Q6IFtiZmE3NmQ0OTU3NjU5OWE0YjlmOWI3YTcxZjIzZDczZDZkY2ZmNzM1XSBMaW51eCAz
+LjE5CmdpdCBiaXNlY3QgZ29vZCBiZmE3NmQ0OTU3NjU5OWE0YjlmOWI3YTcxZjIzZDczZDZkY2Zm
+NzM1CiMgZ29vZDogWzM5YTg4MDQ0NTVmYjIzZjA5MTU3MzQxZDNiYTdkYjZkN2FlNmVlNzZdIExp
+bnV4IDQuMApnaXQgYmlzZWN0IGdvb2QgMzlhODgwNDQ1NWZiMjNmMDkxNTczNDFkM2JhN2RiNmQ3
+YWU2ZWU3NgojIGdvb2Q6IFtiOTUzYzBkMjM0YmM3MmU4NDg5ZDNiZjUxYTI3NmM1YzRlYzg1MzQ1
+XSBMaW51eCA0LjEKZ2l0IGJpc2VjdCBnb29kIGI5NTNjMGQyMzRiYzcyZTg0ODlkM2JmNTFhMjc2
+YzVjNGVjODUzNDUKIyBnb29kOiBbNjQyOTFmN2RiNWJkODE1MGE3NGFkMjAzNmYxMDM3ZTZhMDQy
+OGRmMl0gTGludXggNC4yCmdpdCBiaXNlY3QgZ29vZCA2NDI5MWY3ZGI1YmQ4MTUwYTc0YWQyMDM2
+ZjEwMzdlNmEwNDI4ZGYyCiMgYmFkOiBbNmExM2ZlYjljODI4MDNlMmI4MTVlY2E3MmZhN2E5ZjU1
+NjFkNzg2MV0gTGludXggNC4zCmdpdCBiaXNlY3QgYmFkIDZhMTNmZWI5YzgyODAzZTJiODE1ZWNh
+NzJmYTdhOWY1NTYxZDc4NjEKIyBiYWQ6IFs4MDcyNDlkM2FkYTFmZjI4YTQ3YzQwNTRjYTRlZGQ0
+Nzk0MjFiNjcxXSBNZXJnZSBicmFuY2ggJ3Vwc3RyZWFtJyBvZiBnaXQ6Ly9naXQubGludXgtbWlw
+cy5vcmcvcHViL3NjbS9yYWxmL3Vwc3RyZWFtLWxpbnVzCmdpdCBiaXNlY3QgYmFkIDgwNzI0OWQz
+YWRhMWZmMjhhNDdjNDA1NGNhNGVkZDQ3OTQyMWI2NzEKIyBnb29kOiBbMTAyMTc4MTA4ZTIyNDZj
+YjRiMzI5ZDNmYjc4NzJjZDNkNzEyMDIwNV0gTWVyZ2UgdGFnICdhcm1zb2MtZHJpdmVycycgb2Yg
+Z2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L2FybS9hcm0tc29j
+CmdpdCBiaXNlY3QgZ29vZCAxMDIxNzgxMDhlMjI0NmNiNGIzMjlkM2ZiNzg3MmNkM2Q3MTIwMjA1
+CiMgZ29vZDogWzYyZGE5ODY1NmI2MmE1Y2E1N2YyMjI2MzcwNTE3NWFmOGRlZDVhYTFdIG5ldGZp
+bHRlcjogbmZfY29ubnRyYWNrOiBtYWtlIG5mX2N0X3pvbmVfZGZsdCBidWlsdC1pbgpnaXQgYmlz
+ZWN0IGdvb2QgNjJkYTk4NjU2YjYyYTVjYTU3ZjIyMjYzNzA1MTc1YWY4ZGVkNWFhMQojIGdvb2Q6
+IFtmMWEzYzBiOTMzZTdmZjg1NjIyM2Q2ZmNkNzQ1NmQ0MDNlNTRlNGU1XSBNZXJnZSB0YWcgJ2Rl
+dmljZXRyZWUtZm9yLTQuMycgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9r
+ZXJuZWwvZ2l0L3JvYmgvbGludXgKZ2l0IGJpc2VjdCBnb29kIGYxYTNjMGI5MzNlN2ZmODU2MjIz
+ZDZmY2Q3NDU2ZDQwM2U1NGU0ZTUKIyBiYWQ6IFs5Y2JmMjJiMzdhZTA1OTJkZWE4MDljYjhkNDI0
+OTkwNzc0YzIxNzg2XSBNZXJnZSB0YWcgJ2RsbS00LjMnIG9mIGdpdDovL2dpdC5rZXJuZWwub3Jn
+L3B1Yi9zY20vbGludXgva2VybmVsL2dpdC90ZWlnbGFuZC9saW51eC1kbG0KZ2l0IGJpc2VjdCBi
+YWQgOWNiZjIyYjM3YWUwNTkyZGVhODA5Y2I4ZDQyNDk5MDc3NGMyMTc4NgojIGJhZDogWzhiZGM2
+OWI3NjQwMTNhOWI1ZWJlZWY3ZGY4ZjMxNGYxMDY2YzVkNzldIE1lcmdlIGJyYW5jaCAnZm9yLTQu
+Mycgb2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L3RqL2Nn
+cm91cApnaXQgYmlzZWN0IGJhZCA4YmRjNjliNzY0MDEzYTliNWViZWVmN2RmOGYzMTRmMTA2NmM1
+ZDc5CiMgYmFkOiBbNDk4MDEyNTExYTA2MDU3NWE1NjU1MWQyOGExMGJiMzkyYWEzNjFiNV0gTWVy
+Z2UgYnJhbmNoICdkZXZpY2UtcHJvcGVydGllcycKZ2l0IGJpc2VjdCBiYWQgNDk4MDEyNTExYTA2
+MDU3NWE1NjU1MWQyOGExMGJiMzkyYWEzNjFiNQojIGdvb2Q6IFtjOTFjNWIyNzZiYzFlNjBjMGQ2
+NWZmNjllMjliNmVkYzU5NDg0MzBkXSBNZXJnZSBicmFuY2ggJ2FjcGljYScKZ2l0IGJpc2VjdCBn
+b29kIGM5MWM1YjI3NmJjMWU2MGMwZDY1ZmY2OWUyOWI2ZWRjNTk0ODQzMGQKIyBnb29kOiBbNzM5
+OTBmYzgxMGJmODRjNTMzOGQ5NTk2ZjhhZjhkNzBmZTkwYWM3Ml0gTWVyZ2UgYnJhbmNoZXMgJ2Fj
+cGktc2NhbicsICdhY3BpLXByb2Nlc3NvcicgYW5kICdhY3BpLWFzc29ydGVkJwpnaXQgYmlzZWN0
+IGdvb2QgNzM5OTBmYzgxMGJmODRjNTMzOGQ5NTk2ZjhhZjhkNzBmZTkwYWM3MgojIGJhZDogWzUw
+YmEyMjQ3OWMzMjRjMGQ5ZGM4MTM0ZDUxOWRjYmE5MmQ4M2E4YTddIE1lcmdlIGJhY2sgZWFybGll
+ciBBQ1BJIFBNIG1hdGVyaWFsIGZvciB2NC4zLgpnaXQgYmlzZWN0IGJhZCA1MGJhMjI0NzljMzI0
+YzBkOWRjODEzNGQ1MTlkY2JhOTJkODNhOGE3CiMgZ29vZDogW2I5YThhMjcxYzM4ZmNiMTY2NGZk
+NjAzNGZiOTMyNmNjOWEwZGVjOTRdIG1mZDogbWFrZSBtZmRfcmVtb3ZlX2RldmljZXMoKSBpdGVy
+YXRlIGluIHJldmVyc2Ugb3JkZXIKZ2l0IGJpc2VjdCBnb29kIGI5YThhMjcxYzM4ZmNiMTY2NGZk
+NjAzNGZiOTMyNmNjOWEwZGVjOTQKIyBnb29kOiBbNGI0NWVmZTg1MjYzNTlhMTFjYTYwYTI5OWJl
+ZjNhZWJmNDEzZmQ3N10gbWZkOiBBZGQgc3VwcG9ydCBmb3IgSW50ZWwgU3VucmlzZXBvaW50IExQ
+U1MgZGV2aWNlcwpnaXQgYmlzZWN0IGdvb2QgNGI0NWVmZTg1MjYzNTlhMTFjYTYwYTI5OWJlZjNh
+ZWJmNDEzZmQ3NwojIGdvb2Q6IFs1YWYzMTBhOGVlNzBkZDZhNTg4YzhlZTFkNDQ4N2EyMzBhN2I3
+YjY1XSBNZXJnZSB0YWcgJ2liLW1mZC1iYXNlLWFjcGktZG1hLXY0LjMnIG9mIGdpdDovL2dpdC5r
+ZXJuZWwub3JnL3B1Yi9zY20vbGludXgva2VybmVsL2dpdC9sZWUvbWZkIGludG8gYWNwaS1wbQpn
+aXQgYmlzZWN0IGdvb2QgNWFmMzEwYThlZTcwZGQ2YTU4OGM4ZWUxZDQ0ODdhMjMwYTdiN2I2NQoj
+IGdvb2Q6IFszNDMxZTQ5MGI1MDM1NmI1NjA4NDMwNWEyZTkzYjNhOTgwODAyYjIyXSBNZXJnZSBi
+cmFuY2ggJ2FjcGktc2NhbicgaW50byBhY3BpLXBtCmdpdCBiaXNlY3QgZ29vZCAzNDMxZTQ5MGI1
+MDM1NmI1NjA4NDMwNWEyZTkzYjNhOTgwODAyYjIyCiMgZmlyc3QgYmFkIGNvbW1pdDogWzUwYmEy
+MjQ3OWMzMjRjMGQ5ZGM4MTM0ZDUxOWRjYmE5MmQ4M2E4YTddIE1lcmdlIGJhY2sgZWFybGllciBB
+Q1BJIFBNIG1hdGVyaWFsIGZvciB2NC4zLgo=
 
---K8nIJk4ghYZn606h--
+
+--=-to9fKU7NSMxaQ3/EFfZt
+Content-Disposition: attachment; filename="git-bisect-log-2.txt"
+Content-Type: text/plain; name="git-bisect-log-2.txt"; charset="UTF-8"
+Content-Transfer-Encoding: base64
+
+Z2l0IGJpc2VjdCBzdGFydAojIGJhZDogWzUwYmEyMjQ3OWMzMjRjMGQ5ZGM4MTM0ZDUxOWRjYmE5
+MmQ4M2E4YTddIE1lcmdlIGJhY2sgZWFybGllciBBQ1BJIFBNIG1hdGVyaWFsIGZvciB2NC4zLgpn
+aXQgYmlzZWN0IGJhZCA1MGJhMjI0NzljMzI0YzBkOWRjODEzNGQ1MTlkY2JhOTJkODNhOGE3CiMg
+Z29vZDogWzY0MjkxZjdkYjViZDgxNTBhNzRhZDIwMzZmMTAzN2U2YTA0MjhkZjJdIExpbnV4IDQu
+MgpnaXQgYmlzZWN0IGdvb2QgNjQyOTFmN2RiNWJkODE1MGE3NGFkMjAzNmYxMDM3ZTZhMDQyOGRm
+MgojIGdvb2Q6IFs3MWI2NTQ0NWYwZWQwNGMyYWZlMzY2MGY4Mjk3NzlmZGRiMjg5MGMxXSBBQ1BJ
+IC8gUE06IFVzZSB0YXJnZXRfc3RhdGUgdG8gc2V0IHRoZSBkZXZpY2UgcG93ZXIgc3RhdGUKZ2l0
+IGJpc2VjdCBnb29kIDcxYjY1NDQ1ZjBlZDA0YzJhZmUzNjYwZjgyOTc3OWZkZGIyODkwYzEKIyBn
+b29kOiBbNGI0NWVmZTg1MjYzNTlhMTFjYTYwYTI5OWJlZjNhZWJmNDEzZmQ3N10gbWZkOiBBZGQg
+c3VwcG9ydCBmb3IgSW50ZWwgU3VucmlzZXBvaW50IExQU1MgZGV2aWNlcwpnaXQgYmlzZWN0IGdv
+b2QgNGI0NWVmZTg1MjYzNTlhMTFjYTYwYTI5OWJlZjNhZWJmNDEzZmQ3NwojIGdvb2Q6IFsxZGNj
+M2QzMzYyYjBjOTdlNDgyOTBmNzc4NmJlODViNGNlYzJhMTQ3XSBBQ1BJIC8gYnVzOiBNb3ZlIEFD
+UEkgYnVzIHR5cGUgcmVnaXN0cmF0aW9uCmdpdCBiaXNlY3QgZ29vZCAxZGNjM2QzMzYyYjBjOTdl
+NDgyOTBmNzc4NmJlODViNGNlYzJhMTQ3CiMgZ29vZDogWzVhZjMxMGE4ZWU3MGRkNmE1ODhjOGVl
+MWQ0NDg3YTIzMGE3YjdiNjVdIE1lcmdlIHRhZyAnaWItbWZkLWJhc2UtYWNwaS1kbWEtdjQuMycg
+b2YgZ2l0Oi8vZ2l0Lmtlcm5lbC5vcmcvcHViL3NjbS9saW51eC9rZXJuZWwvZ2l0L2xlZS9tZmQg
+aW50byBhY3BpLXBtCmdpdCBiaXNlY3QgZ29vZCA1YWYzMTBhOGVlNzBkZDZhNTg4YzhlZTFkNDQ4
+N2EyMzBhN2I3YjY1CiMgZ29vZDogWzM0MzFlNDkwYjUwMzU2YjU2MDg0MzA1YTJlOTNiM2E5ODA4
+MDJiMjJdIE1lcmdlIGJyYW5jaCAnYWNwaS1zY2FuJyBpbnRvIGFjcGktcG0KZ2l0IGJpc2VjdCBn
+b29kIDM0MzFlNDkwYjUwMzU2YjU2MDg0MzA1YTJlOTNiM2E5ODA4MDJiMjIKIyBmaXJzdCBiYWQg
+Y29tbWl0OiBbNTBiYTIyNDc5YzMyNGMwZDlkYzgxMzRkNTE5ZGNiYTkyZDgzYThhN10gTWVyZ2Ug
+YmFjayBlYXJsaWVyIEFDUEkgUE0gbWF0ZXJpYWwgZm9yIHY0LjMuCg==
+
+
+--=-to9fKU7NSMxaQ3/EFfZt--
+
