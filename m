@@ -1,82 +1,84 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34547 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750874AbdAUMcT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:32:19 -0500
-Subject: Re: [PATCH] iio: pressure: ms5611: claim direct mode during
- oversampling changes
-To: Alison Schofield <amsfield22@gmail.com>
-References: <20170120202242.GA2153@d830.WORKGROUP>
-Cc: tduszyns@gmail.com, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7afaeb60-2bf5-533b-9af2-7ef9c967bfbd@kernel.org>
-Date: Sat, 21 Jan 2017 12:32:14 +0000
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:34203 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753464AbdATUss (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 15:48:48 -0500
+Date: Fri, 20 Jan 2017 12:39:32 -0800
+From: Alison Schofield <amsfield22@gmail.com>
+To: jic23@kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: magnetometer: mag3110: claim direct mode during raw
+ writes
+Message-ID: <20170120203924.GA2196@d830.WORKGROUP>
 MIME-Version: 1.0
-In-Reply-To: <20170120202242.GA2153@d830.WORKGROUP>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/01/17 20:22, Alison Schofield wrote:
-> Driver was checking for direct mode before changing oversampling
-> ratios, but was not locking it.  Use the claim/release helper
-> functions to guarantee the device stays in direct mode while the
-> oversampling ratios are being updated.  Continue to use the drivers
-> private state lock to protect against conflicting direct mode access
-> of the state data.
-> 
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-I think this one is straight forward enough that I'm happy to take it
-without confirmation from Thomaz.  
+Driver was checking for direct mode but not locking it.  Use
+claim/release helper functions to guarantee the device stays
+in direct mode during raw writes.
 
-Anyone feel free to shout if I am missing something.
+Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+---
+ drivers/iio/magnetometer/mag3110.c | 30 ++++++++++++++++++++----------
+ 1 file changed, 20 insertions(+), 10 deletions(-)
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/pressure/ms5611_core.c | 12 +++++++-----
->  1 file changed, 7 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/iio/pressure/ms5611_core.c b/drivers/iio/pressure/ms5611_core.c
-> index 6bd53e7..2a77a2f 100644
-> --- a/drivers/iio/pressure/ms5611_core.c
-> +++ b/drivers/iio/pressure/ms5611_core.c
-> @@ -308,6 +308,7 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
->  {
->  	struct ms5611_state *st = iio_priv(indio_dev);
->  	const struct ms5611_osr *osr = NULL;
-> +	int ret;
->  
->  	if (mask != IIO_CHAN_INFO_OVERSAMPLING_RATIO)
->  		return -EINVAL;
-> @@ -321,12 +322,11 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
->  	if (!osr)
->  		return -EINVAL;
->  
-> -	mutex_lock(&st->lock);
-> +	ret = iio_device_claim_direct_mode(indio_dev);
-> +	if (ret)
-> +		return ret;
->  
-> -	if (iio_buffer_enabled(indio_dev)) {
-> -		mutex_unlock(&st->lock);
-> -		return -EBUSY;
-> -	}
-> +	mutex_lock(&st->lock);
->  
->  	if (chan->type == IIO_TEMP)
->  		st->temp_osr = osr;
-> @@ -334,6 +334,8 @@ static int ms5611_write_raw(struct iio_dev *indio_dev,
->  		st->pressure_osr = osr;
->  
->  	mutex_unlock(&st->lock);
-> +	iio_device_release_direct_mode(indio_dev);
-> +
->  	return 0;
->  }
->  
-> 
+diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+index f2b3bd7..b4f643f 100644
+--- a/drivers/iio/magnetometer/mag3110.c
++++ b/drivers/iio/magnetometer/mag3110.c
+@@ -222,29 +222,39 @@ static int mag3110_write_raw(struct iio_dev *indio_dev,
+ 			     int val, int val2, long mask)
+ {
+ 	struct mag3110_data *data = iio_priv(indio_dev);
+-	int rate;
++	int rate, ret;
+ 
+-	if (iio_buffer_enabled(indio_dev))
+-		return -EBUSY;
++	ret = iio_device_claim_direct_mode(indio_dev);
++	if (ret)
++		return ret;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SAMP_FREQ:
+ 		rate = mag3110_get_samp_freq_index(data, val, val2);
+-		if (rate < 0)
+-			return -EINVAL;
++		if (rate < 0) {
++			ret = -EINVAL;
++			break;
++		}
+ 
+ 		data->ctrl_reg1 &= ~MAG3110_CTRL_DR_MASK;
+ 		data->ctrl_reg1 |= rate << MAG3110_CTRL_DR_SHIFT;
+-		return i2c_smbus_write_byte_data(data->client,
++		ret = i2c_smbus_write_byte_data(data->client,
+ 			MAG3110_CTRL_REG1, data->ctrl_reg1);
++		break;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+-		if (val < -10000 || val > 10000)
+-			return -EINVAL;
+-		return i2c_smbus_write_word_swapped(data->client,
++		if (val < -10000 || val > 10000) {
++			ret = -EINVAL;
++			break;
++		}
++		ret = i2c_smbus_write_word_swapped(data->client,
+ 			MAG3110_OFF_X + 2 * chan->scan_index, val << 1);
++		break;
+ 	default:
+-		return -EINVAL;
++		ret = -EINVAL;
++		break;
+ 	}
++	iio_device_release_direct_mode(indio_dev);
++	return ret;
+ }
+ 
+ static irqreturn_t mag3110_trigger_handler(int irq, void *p)
+-- 
+2.1.4
 
