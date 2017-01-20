@@ -1,660 +1,145 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qt0-f179.google.com ([209.85.216.179]:33242 "EHLO
-        mail-qt0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750705AbdAVVaS (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Jan 2017 16:30:18 -0500
-Received: by mail-qt0-f179.google.com with SMTP id v23so93274449qtb.0
-        for <linux-iio@vger.kernel.org>; Sun, 22 Jan 2017 13:30:17 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <37a77cc9-8ff0-1a46-8664-1ef8cbc48af6@kernel.org>
-References: <20170120054100.902-1-matt@ranostay.consulting>
- <20170120054100.902-3-matt@ranostay.consulting> <alpine.DEB.2.02.1701220928420.30375@pmeerw.net>
- <37a77cc9-8ff0-1a46-8664-1ef8cbc48af6@kernel.org>
-From: Matt Ranostay <matt@ranostay.consulting>
-Date: Sun, 22 Jan 2017 13:30:15 -0800
-Message-ID: <CAJ_EiSRRDrJw9XjNsHxwXggjkgzHAxwUsSofwti+KaCHOp0CPg@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: health: add MAX30102 oximeter driver support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:35031 "EHLO
+        mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751535AbdATJRK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 04:17:10 -0500
+Received: by mail-wm0-f41.google.com with SMTP id r126so29010130wmr.0
+        for <linux-iio@vger.kernel.org>; Fri, 20 Jan 2017 01:16:12 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: lee.jones@linaro.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        alexandre.torgue@st.com, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, thierry.reding@gmail.com,
+        linux-pwm@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, linux-iio@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org
+Cc: fabrice.gasnier@st.com, gerald.baeza@st.com,
+        arnaud.pouliquen@st.com, linaro-kernel@lists.linaro.org,
+        benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v9 0/8] Add PWM and IIO timer drivers for STM32
+Date: Fri, 20 Jan 2017 10:15:01 +0100
+Message-Id: <1484903709-11650-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 22, 2017 at 4:21 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 22/01/17 09:00, Peter Meerwald-Stadler wrote:
->> On Thu, 19 Jan 2017, Matt Ranostay wrote:
->>
->>> MAX30102 is an heart rate and pulse oximeter sensor that works using
->>> two LEDS of different wavelengths, and detecting the light reflected
->>> back.
->>>
->>> This patchset adds support for both IR and RED LED channels which can
->>> be processed in userspace to determine heart rate and blood oxygen
->>> levels. The MAX30102 part isn't completely register and functional
->>> compatible with the existing MAX30100 driver.
->>
->> comments below
->>
->>> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
->>> ---
->>>  drivers/iio/health/Kconfig    |  13 ++
->>>  drivers/iio/health/Makefile   |   1 +
->>>  drivers/iio/health/max30102.c | 478 ++++++++++++++++++++++++++++++++++=
-++++++++
->>>  3 files changed, 492 insertions(+)
->>>  create mode 100644 drivers/iio/health/max30102.c
->>>
->>> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
->>> index c5f004a8e447..a2ecb4c94c2a 100644
->>> --- a/drivers/iio/health/Kconfig
->>> +++ b/drivers/iio/health/Kconfig
->>> @@ -46,6 +46,19 @@ config MAX30100
->>>        To compile this driver as a module, choose M here: the
->>>        module will be called max30100.
->>>
->>> +config MAX30102
->>> +    tristate "MAX30102 heart rate and pulse oximeter sensor"
->>> +    depends on I2C
->>> +    select REGMAP_I2C
->>> +    select IIO_BUFFER
->>> +    select IIO_KFIFO_BUF
->>> +    help
->>> +      Say Y here to build I2C interface support for the Maxim
->>> +      MAX30102 heart rate, and pulse oximeter sensor.
->>> +
->>> +      To compile this driver as a module, choose M here: the
->>> +      module will be called max30102.
->>> +
->>>  endmenu
->>>
->>>  endmenu
->>> diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
->>> index 9955a2ae8df1..3558f9d64954 100644
->>> --- a/drivers/iio/health/Makefile
->>> +++ b/drivers/iio/health/Makefile
->>> @@ -7,3 +7,4 @@
->>>  obj-$(CONFIG_AFE4403)               +=3D afe4403.o
->>>  obj-$(CONFIG_AFE4404)               +=3D afe4404.o
->>>  obj-$(CONFIG_MAX30100)              +=3D max30100.o
->>> +obj-$(CONFIG_MAX30102)              +=3D max30102.o
->>> diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max3010=
-2.c
->>> new file mode 100644
->>> index 000000000000..3d18a63d2280
->>> --- /dev/null
->>> +++ b/drivers/iio/health/max30102.c
->>> @@ -0,0 +1,478 @@
->>> +/*
->>> + * max30102.c - Support for MAX30102 heart rate and pulse oximeter sen=
-sor
->>> + *
->>> + * Copyright (C) 2017 Matt Ranostay <matt@ranostay.consulting>
->>> + *
->>> + * This program is free software; you can redistribute it and/or modif=
-y
->>> + * it under the terms of the GNU General Public License as published b=
-y
->>> + * the Free Software Foundation; either version 2 of the License, or
->>> + * (at your option) any later version.
->>> + *
->>> + * This program is distributed in the hope that it will be useful,
->>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->>> + * GNU General Public License for more details.
->>> + *
->>> + * TODO: proximity power saving feature
->>
->> link to datasheet and i2c address would be nice to have here
->>
->>> + */
->>> +
->>> +#include <linux/module.h>
->>> +#include <linux/init.h>
->>> +#include <linux/interrupt.h>
->>> +#include <linux/delay.h>
->>> +#include <linux/err.h>
->>> +#include <linux/irq.h>
->>> +#include <linux/i2c.h>
->>> +#include <linux/mutex.h>
->>> +#include <linux/of.h>
->>> +#include <linux/regmap.h>
->>> +#include <linux/iio/iio.h>
->>> +#include <linux/iio/buffer.h>
->>> +#include <linux/iio/kfifo_buf.h>
->>> +
->>> +#define MAX30102_REGMAP_NAME        "max30102_regmap"
->>> +#define MAX30102_DRV_NAME   "max30102"
->>> +
->>> +#define MAX30102_REG_INT_STATUS                     0x00
->>> +#define MAX30102_REG_INT_STATUS_PWR_RDY             BIT(0)
->>> +#define MAX30102_REG_INT_STATUS_PROX_INT    BIT(4)
->>> +#define MAX30102_REG_INT_STATUS_ALC_OVF             BIT(5)
->>> +#define MAX30102_REG_INT_STATUS_PPG_RDY             BIT(6)
->>> +#define MAX30102_REG_INT_STATUS_FIFO_RDY    BIT(7)
->>> +
->>> +#define MAX30102_REG_INT_ENABLE                     0x02
->>> +#define MAX30102_REG_INT_ENABLE_PROX_INT_EN BIT(4)
->>> +#define MAX30102_REG_INT_ENABLE_ALC_OVF_EN  BIT(5)
->>> +#define MAX30102_REG_INT_ENABLE_PPG_EN              BIT(6)
->>> +#define MAX30102_REG_INT_ENABLE_FIFO_EN             BIT(7)
->>> +#define MAX30102_REG_INT_ENABLE_MASK                0xf0
->>> +#define MAX30102_REG_INT_ENABLE_MASK_SHIFT  4
->>> +
->>> +#define MAX30102_REG_FIFO_WR_PTR            0x04
->>> +#define MAX30102_REG_FIFO_OVR_CTR           0x05
->>> +#define MAX30102_REG_FIFO_RD_PTR            0x06
->>> +#define MAX30102_REG_FIFO_DATA                      0x07
->>> +#define MAX30102_REG_FIFO_DATA_ENTRY_LEN    6
+version 9:
+- fix pwm commit message header
+- re-oerder nodes in DT file
 
-Actually found out this need to be samples + 1 to work. So will fix in
-next revision
+version 8:
+- rebase on v4.10-rc4
+- fix comments done by Thierry on PWM
+- reword "reg" parameter description
+- change kernel kernel in IIO ABI documentation
 
->>> +
->>> +#define MAX30102_REG_FIFO_CONFIG            0x08
->>> +#define MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES       BIT(1)
->>> +#define MAX30102_REG_FIFO_CONFIG_AVG_SHIFT  5
->>> +#define MAX30102_REG_FIFO_CONFIG_AFULL              BIT(0)
->>> +
->>> +#define MAX30102_REG_MODE_CONFIG            0x09
->>> +#define MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN       BIT(0)
->>> +#define MAX30102_REG_MODE_CONFIG_MODE_HR_EN BIT(1)
->>> +#define MAX30102_REG_MODE_CONFIG_MODE_MASK  0x03
->>> +#define MAX30102_REG_MODE_CONFIG_PWR                BIT(7)
->>> +
->>> +#define MAX30102_REG_SPO2_CONFIG            0x0a
->>> +#define MAX30102_REG_SPO2_CONFIG_PULSE_411_US       0x03
->>> +#define MAX30102_REG_SPO2_CONFIG_SR_400HZ   0x03
->>> +#define MAX30102_REG_SPO2_CONFIG_SR_MASK    0x07
->>> +#define MAX30102_REG_SPO2_CONFIG_SR_MASK_SHIFT      2
->>> +#define MAX30102_REG_SPO2_CONFIG_ADC_4096_STEPS     BIT(0)
->>> +#define MAX30102_REG_SPO2_CONFIG_ADC_MASK_SHIFT     4
->>> +
->>> +#define MAX30102_REG_RED_LED_CONFIG         0x0c
->>> +#define MAX30102_REG_IR_LED_CONFIG          0x0d
->>> +
->>> +#define MAX30102_REG_TEMP_CONFIG            0x21
->>> +#define MAX30102_REG_TEMP_CONFIG_TEMP_EN    BIT(0)
->>> +
->>> +#define MAX30102_REG_TEMP_INTEGER           0x1f
->>> +#define MAX30102_REG_TEMP_FRACTION          0x20
->>
->> keep registers sorted?
->>
->>> +
->>> +struct max30102_data {
->>> +    struct i2c_client *client;
->>> +    struct iio_dev *indio_dev;
->>> +    struct mutex lock;
->>> +    struct regmap *regmap;
->>> +
->>> +    u8 buffer[8]; /* 2 x 18-bit (padded to 24-bits) channels + 2 bytes=
- pad */
->>
->> not sure; is storagebits supposed to be power-of-2?
->> scantype documentation in iio.h doesn't state any requirement (but
->> probably should)
->>
-> Yes - it must be or the demux stuff messes up.  Should add a note about t=
-hat.
-> Patches welcome!  We spent a while unwinding this in the ST drivers after
-> some 24 bit devices turned up there.
->
->> why the padding? could use MAX30102_REG_FIFO_DATA_ENTRY_LEN (=3D=3D 6) i=
-nstead
->> of 8?
->>
->>> +};
->>> +
->>> +static const struct regmap_config max30102_regmap_config =3D {
->>> +    .name =3D MAX30102_REGMAP_NAME,
->>> +
->>> +    .reg_bits =3D 8,
->>> +    .val_bits =3D 8,
->>> +};
->>> +
->>> +static const unsigned long max30102_scan_masks[] =3D {0x3, 0};
->>> +
->>> +static const struct iio_chan_spec max30102_channels[] =3D {
->>> +    {
->>> +            .type =3D IIO_INTENSITY,
->>> +            .channel2 =3D IIO_MOD_LIGHT_RED,
->>> +            .modified =3D 1,
->>> +
->>> +            .scan_index =3D 0,
->>> +            .scan_type =3D {
->>> +                    .sign =3D 'u',
->>> +                    .realbits =3D 18,
->>> +                    .storagebits =3D 24,
->>> +                    .endianness =3D IIO_BE,
->>> +            },
->>> +    },
->>> +    {
->>> +            .type =3D IIO_INTENSITY,
->>> +            .channel2 =3D IIO_MOD_LIGHT_IR,
->>> +            .modified =3D 1,
->>> +
->>> +            .scan_index =3D 1,
->>> +            .scan_type =3D {
->>> +                    .sign =3D 'u',
->>> +                    .realbits =3D 18,
->>> +                    .storagebits =3D 24,
->>> +                    .endianness =3D IIO_BE,
->>> +            },
->>> +    },
->>> +    {
->>> +            .type =3D IIO_TEMP,
->>> +            .info_mask_separate =3D
->>> +                    BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->>> +            .scan_index =3D -1,
->>> +    },
->>> +};
->>> +
->>> +static int max30102_set_powermode(struct max30102_data *data, bool sta=
-te)
->>> +{
->>> +    return regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
->>> +                              MAX30102_REG_MODE_CONFIG_PWR,
->>> +                              state ? 0 : MAX30102_REG_MODE_CONFIG_PWR=
-);
->>> +}
->>> +
->>> +static int max30102_buffer_postenable(struct iio_dev *indio_dev)
->>> +{
->>> +    struct max30102_data *data =3D iio_priv(indio_dev);
->>> +
->>> +    return max30102_set_powermode(data, true);
->>> +}
->>> +
->>> +static int max30102_buffer_predisable(struct iio_dev *indio_dev)
->>> +{
->>> +    struct max30102_data *data =3D iio_priv(indio_dev);
->>> +
->>> +    return max30102_set_powermode(data, false);
->>> +}
->>> +
->>> +static const struct iio_buffer_setup_ops max30102_buffer_setup_ops =3D=
- {
->>> +    .postenable =3D max30102_buffer_postenable,
->>> +    .predisable =3D max30102_buffer_predisable,
->>> +};
->>> +
->>> +static inline int max30102_fifo_count(struct max30102_data *data)
->>
->> no inline please, let the compiler decide (as it does anyways ...)
->>
->>> +{
->>> +    unsigned int val;
->>> +    int ret;
->>> +
->>> +    ret =3D regmap_read(data->regmap, MAX30102_REG_INT_STATUS, &val);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    /* FIFO has one sample slot left */
->>> +    if (val & MAX30102_REG_INT_STATUS_FIFO_RDY)
->>> +            return 1;
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static int max30102_read_measurement(struct max30102_data *data)
->>> +{
->>> +    int ret;
->>> +
->>> +    ret =3D i2c_smbus_read_i2c_block_data(data->client,
->>
->> this mixes regmap with direct i2c, isn't there another way?
-> There was a proposal to do a 'repeated read' regmap operation which
-> is basically what this is doing.  Not sure what happened to it
-> though...
+version 7:
+- rebase on v4.10-rc2
+- remove iio_device code from driver and keep only the trigger part
 
-Yeah not sure.  However regmap_bulk_read() didn't seem to work.
+version 6:
+- rename stm32-gptimer in stm32-timers.
+- change "st,stm32-gptimer" compatible to "st,stm32-timers".
+- modify "st,breakinput" parameter in pwm part.
+- split DT patch in 2
 
->>
->>> +                                        MAX30102_REG_FIFO_DATA,
->>> +                                        MAX30102_REG_FIFO_DATA_ENTRY_L=
-EN,
->>> +                                        (u8 *) &data->buffer);
->>> +
->>
->> what happens when ret is positive, but !=3D MAX30102_REG_FIFO_DATA_ENTRY=
-_LEN?
->>
->>> +    return (ret =3D=3D MAX30102_REG_FIFO_DATA_ENTRY_LEN) ? 0 : ret;
+version 5:
+- fix comments done on version 4
+- rebased on kernel 4.9-rc8
+- change nodes names and re-order then by addresses
 
-Yeah I should make this more error-proof. Noted.
+version 4:
+- fix comments done on version 3
+- don't use interrupts anymore in IIO timer
+- detect hardware capabilities at probe time to simplify binding
 
->>> +}
->>> +
->>> +static irqreturn_t max30102_interrupt_handler(int irq, void *private)
->>> +{
->>> +    struct iio_dev *indio_dev =3D private;
->>> +    struct max30102_data *data =3D iio_priv(indio_dev);
->>> +    int ret, cnt =3D 0;
->>> +
->>> +    mutex_lock(&data->lock);
->>> +
->>> +    while (cnt || (cnt =3D max30102_fifo_count(data)) > 0) {
->>> +            ret =3D max30102_read_measurement(data);
->>> +            if (ret)
->>> +                    break;
->>> +
->>> +            iio_push_to_buffers(data->indio_dev, data->buffer);
->>> +            cnt--;
->>> +    }
->>> +
->>> +    mutex_unlock(&data->lock);
->>> +
->>> +    return IRQ_HANDLED;
->>> +}
->>> +
->>> +static int max30102_get_current_idx(unsigned int val, int *reg)
->>> +{
->>> +    /* each step is 0.200 mA */
->>
->> saying that it is 200 =C2=B5A saves some mental unit conversion effort (=
-as
->> documented in DT and 200 in the code below)
->>
->>> +    *reg =3D val / 200;
->>> +
->>> +    return *reg > 0xff ? -EINVAL : 0;
->>> +}
->>> +
->>> +static int max30102_led_init(struct max30102_data *data)
->>> +{
->>> +    struct device *dev =3D &data->client->dev;
->>> +    struct device_node *np =3D dev->of_node;
->>> +    unsigned int val;
->>> +    int reg, ret;
->>> +
->>> +    ret =3D of_property_read_u32(np, "maxim,red-led-current-microamp",=
- &val);
->>> +    if (ret) {
->>> +            dev_info(dev, "no red-led-current-microamp set");
->>
->> \n missing, here and elsewhere
+version 3:
+- no change on mfd and pwm divers patches
+- add cross reference between bindings
+- change compatible to "st,stm32-timer-trigger"
+- fix attributes access rights
+- use string instead of int for master_mode and slave_mode
+- document device attributes in sysfs-bus-iio-timer-stm32
+- update DT with the new compatible
 
-Noted.
->>
->>> +
->>> +            /* Default to 7 mA RED LED */
->>> +            val =3D 7000;
->>> +    }
->>> +
->>> +    ret =3D max30102_get_current_idx(val, &reg);
->>> +    if (ret) {
->>> +            dev_err(dev, "invalid RED LED current setting %d", val);
->>> +            return ret;
->>> +    }
->>> +
->>> +    ret =3D regmap_write(data->regmap, MAX30102_REG_RED_LED_CONFIG, re=
-g);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    ret =3D of_property_read_u32(np, "maxim,ir-led-current-microamp", =
-&val);
->>> +    if (ret) {
->>> +            dev_info(dev, "no ir-led-current-microamp set");
->>> +
->>> +            /* Default to 7 mA IR LED */
->>> +            val =3D 7000;
->>> +    }
->>> +
->>> +    ret =3D max30102_get_current_idx(val, &reg);
->>> +    if (ret) {
->>> +            dev_err(dev, "invalid IR LED current setting %d", val);
->>> +            return ret;
->>> +    }
->>> +
->>> +    return regmap_write(data->regmap, MAX30102_REG_IR_LED_CONFIG, reg)=
-;
->>> +}
->>> +
->>> +static int max30102_chip_init(struct max30102_data *data)
->>> +{
->>> +    int ret;
->>> +
->>> +    /* setup LED current settings */
->>> +    ret =3D max30102_led_init(data);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    /* enable 18-bit HR + SPO2 readings at 100Hz */
->>> +    ret =3D regmap_write(data->regmap, MAX30102_REG_SPO2_CONFIG,
->>> +                            (MAX30102_REG_SPO2_CONFIG_ADC_4096_STEPS
->>> +                             << MAX30102_REG_SPO2_CONFIG_ADC_MASK_SHIF=
-T) |
->>> +                            (MAX30102_REG_SPO2_CONFIG_SR_400HZ
->>
->> 100Hz in the comment vs 400Hz?
+version 2:
+- keep only one compatible per driver
+- use DT parameters to describe hardware block configuration:
+  - pwm channels, complementary output, counter size, break input
+  - triggers accepted and create by IIO timers
+- change DT to limite use of reference to the node
+- interrupt is now in IIO timer driver
+- rename stm32-mfd-timer to stm32-timers (for general purpose timer)
 
-Should have noted the /* average 4 samples + generate FIFO interrupt
-*/ from below.
-So the sample rate of the part is 400hz but exposed to the FIFO is
-only 100hz because of averaging
+The following patches enable PWM and IIO Timer features for STM32 platforms.
 
->>
->>> +                             << MAX30102_REG_SPO2_CONFIG_SR_MASK_SHIFT=
-) |
->>> +                             MAX30102_REG_SPO2_CONFIG_PULSE_411_US);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    /* enable SPO2 mode */
->>> +    ret =3D regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
->>> +                             MAX30102_REG_MODE_CONFIG_MODE_MASK,
->>> +                             MAX30102_REG_MODE_CONFIG_MODE_HR_EN |
->>> +                             MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    /* average 4 samples + generate FIFO interrupt */
->>> +    ret =3D regmap_write(data->regmap, MAX30102_REG_FIFO_CONFIG,
->>> +                            (MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES
->>> +                             << MAX30102_REG_FIFO_CONFIG_AVG_SHIFT) |
->>> +                             MAX30102_REG_FIFO_CONFIG_AFULL);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    /* enable FIFO interrupt */
->>> +    return regmap_update_bits(data->regmap, MAX30102_REG_INT_ENABLE,
->>> +                             MAX30102_REG_INT_ENABLE_MASK,
->>> +                             MAX30102_REG_INT_ENABLE_FIFO_EN);
->>> +}
->>> +
->>> +static int max30102_read_temp(struct max30102_data *data, int *val)
->>> +{
->>> +    int ret;
->>> +    unsigned int reg;
->>> +
->>> +    ret =3D regmap_read(data->regmap, MAX30102_REG_TEMP_INTEGER, &reg)=
-;
->>> +    if (ret < 0)
->>> +            return ret;
->>> +    *val =3D reg << 4;
->>> +
->>> +    ret =3D regmap_read(data->regmap, MAX30102_REG_TEMP_FRACTION, &reg=
-);
->>> +    if (ret < 0)
->>> +            return ret;
->>> +
->>> +    *val |=3D reg & 0xf;
->>> +    *val =3D sign_extend32(*val, 11);
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static int max30102_get_temp(struct max30102_data *data, int *val)
->>> +{
->>> +    int ret;
->>> +
->>> +    /* start acquisition */
->>> +    ret =3D regmap_update_bits(data->regmap, MAX30102_REG_TEMP_CONFIG,
->>> +                             MAX30102_REG_TEMP_CONFIG_TEMP_EN,
->>> +                             MAX30102_REG_TEMP_CONFIG_TEMP_EN);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    msleep(35);
->>> +
->>> +    return max30102_read_temp(data, val);
->>> +}
->>> +
->>> +static int max30102_read_raw(struct iio_dev *indio_dev,
->>> +                         struct iio_chan_spec const *chan,
->>> +                         int *val, int *val2, long mask)
->>> +{
->>> +    struct max30102_data *data =3D iio_priv(indio_dev);
->>> +    int ret =3D -EINVAL;
->>> +
->>> +    switch (mask) {
->>> +    case IIO_CHAN_INFO_RAW:
->>> +            /*
->>> +             * Temperature reading can only be acquired while engine
->>> +             * is running
->>> +             */
->>> +            mutex_lock(&indio_dev->mlock);
->>> +
->>> +            if (!iio_buffer_enabled(indio_dev))
->>
->> unusual; why not start the engine and make the read work?
-> Or don't support _raw at all.  If there is a need to start the buffer
-> then why is anyone using the sysfs access?
+Those two features are mixed into the registers of the same hardware block
+(named general purpose timer) which lead to introduce a multifunctions driver 
+on the top of them to be able to share the registers.
 
-Problem this takes a lot longer to read  and can't be done in the
-buffer state without caching some value
-But temperate reading is needed roughly every 10-15 seconds to
-compensate the change on the RED led.
+In STM32f4 14 instances of timer hardware block exist, even if they all have
+the same register mapping they could have a different number of pwm channels
+and/or different triggers capabilities. We use various parameters in DT to 
+describe the differences between hardware blocks
 
->>
->>> +                    ret =3D -EAGAIN;
->>> +            else {
->>> +                    ret =3D max30102_get_temp(data, val);
->>> +                    if (!ret)
->>> +                            ret =3D IIO_VAL_INT;
->>> +            }
->>> +
->>> +            mutex_unlock(&indio_dev->mlock);
->>> +            break;
->>> +    case IIO_CHAN_INFO_SCALE:
->>> +            *val =3D 1;  /* 0.0625 */
->>> +            *val2 =3D 16;
->>> +            ret =3D IIO_VAL_FRACTIONAL;
->>> +            break;
->>> +    }
->>> +
->>> +    return ret;
->>> +}
->>> +
->>> +static const struct iio_info max30102_info =3D {
->>> +    .driver_module =3D THIS_MODULE,
->>> +    .read_raw =3D max30102_read_raw,
->>> +};
->>> +
->>> +static int max30102_probe(struct i2c_client *client,
->>> +                      const struct i2c_device_id *id)
->>> +{
->>> +    struct max30102_data *data;
->>> +    struct iio_buffer *buffer;
->>> +    struct iio_dev *indio_dev;
->>> +    int ret;
->>> +
->>> +    indio_dev =3D devm_iio_device_alloc(&client->dev, sizeof(*data));
->>> +    if (!indio_dev)
->>> +            return -ENOMEM;
->>> +
->>> +    buffer =3D devm_iio_kfifo_allocate(&client->dev);
->>> +    if (!buffer)
->>> +            return -ENOMEM;
->>> +
->>> +    iio_device_attach_buffer(indio_dev, buffer);
->>> +
->>> +    indio_dev->name =3D MAX30102_DRV_NAME;
->>> +    indio_dev->channels =3D max30102_channels;
->>> +    indio_dev->info =3D &max30102_info;
->>> +    indio_dev->num_channels =3D ARRAY_SIZE(max30102_channels);
->>> +    indio_dev->available_scan_masks =3D max30102_scan_masks;
->>> +    indio_dev->modes =3D (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
->>> +    indio_dev->setup_ops =3D &max30102_buffer_setup_ops;
->>> +
->>> +    data =3D iio_priv(indio_dev);
->>> +    data->indio_dev =3D indio_dev;
->>> +    data->client =3D client;
->>> +
->>> +    mutex_init(&data->lock);
->>> +    i2c_set_clientdata(client, indio_dev);
->>> +
->>> +    data->regmap =3D devm_regmap_init_i2c(client, &max30102_regmap_con=
-fig);
->>> +    if (IS_ERR(data->regmap)) {
->>> +            dev_err(&client->dev, "regmap initialization failed.\n");
->>> +            return PTR_ERR(data->regmap);
->>> +    }
->>> +    max30102_set_powermode(data, false);
->>> +
->>> +    ret =3D max30102_chip_init(data);
->>> +    if (ret)
->>> +            return ret;
->>> +
->>> +    if (client->irq <=3D 0) {
->>> +            dev_err(&client->dev, "no valid irq defined\n");
->>> +            return -EINVAL;
->>> +    }
->>> +
->>> +    ret =3D devm_request_threaded_irq(&client->dev, client->irq,
->>> +                                    NULL, max30102_interrupt_handler,
->>> +                                    IRQF_TRIGGER_FALLING | IRQF_ONESHO=
-T,
->>> +                                    "max30102_irq", indio_dev);
->>> +    if (ret) {
->>> +            dev_err(&client->dev, "request irq (%d) failed\n", client-=
->irq);
->>> +            return ret;
->>> +    }
->>> +
->>> +    return iio_device_register(indio_dev);
->>> +}
->>> +
->>> +static int max30102_remove(struct i2c_client *client)
->>> +{
->>> +    struct iio_dev *indio_dev =3D i2c_get_clientdata(client);
->>> +    struct max30102_data *data =3D iio_priv(indio_dev);
->>> +
->>> +    iio_device_unregister(indio_dev);
->>> +    max30102_set_powermode(data, false);
->>> +
->>> +    return 0;
->>> +}
->>> +
->>> +static const struct i2c_device_id max30102_id[] =3D {
->>> +    { "max30102", 0 },
->>> +    {}
->>> +};
->>> +MODULE_DEVICE_TABLE(i2c, max30102_id);
->>> +
->>> +static const struct of_device_id max30102_dt_ids[] =3D {
->>> +    { .compatible =3D "maxim,max30102" },
->>> +    { }
->>> +};
->>> +MODULE_DEVICE_TABLE(of, max30102_dt_ids);
->>> +
->>> +static struct i2c_driver max30102_driver =3D {
->>> +    .driver =3D {
->>> +            .name   =3D MAX30102_DRV_NAME,
->>> +            .of_match_table =3D of_match_ptr(max30102_dt_ids),
->>> +    },
->>> +    .probe          =3D max30102_probe,
->>> +    .remove         =3D max30102_remove,
->>> +    .id_table       =3D max30102_id,
->>> +};
->>> +module_i2c_driver(max30102_driver);
->>> +
->>> +MODULE_AUTHOR("Matt Ranostay <matt@ranostay.consulting>");
->>> +MODULE_DESCRIPTION("MAX30102 heart rate and pulse oximeter sensor");
->>> +MODULE_LICENSE("GPL");
->>>
->>
->
+The MFD (stm32-timers.c) takes care of clock and register mapping
+by using regmap. stm32_timers structure is provided to its sub-node to
+share those information.
+
+PWM driver is implemented into pwm-stm32.c. Depending of the instance we may
+have up to 4 channels, sometime with complementary outputs or 32 bits counter
+instead of 16 bits. Some hardware blocks may also have a break input function
+which allows to stop pwm depending of a level, defined in devicetree, on an
+external pin.
+
+IIO timer driver (stm32-timer-trigger.c and stm32-timer-trigger.h) define a list
+of hardware triggers usable by hardware blocks like ADC, DAC or other timers. 
+
+The matrix of possible connections between blocks is quite complex so we use 
+trigger names and is_stm32_iio_timer_trigger() function to be sure that
+triggers are valid and configure the IPs.
+
+At run time IIO timer hardware blocks can configure (through "master_mode" 
+IIO device attribute) which internal signal (counter enable, reset,
+comparison block, etc...) is used to generate the trigger.
+
+Benjamin Gaignard (8):
+  MFD: add bindings for STM32 Timers driver
+  MFD: add STM32 Timers driver
+  dt-bindings: pwm: Add STM32 bindings
+  pwm: add driver for STM32 plaftorm
+  IIO: add bindings for STM32 timer trigger driver
+  IIO: add STM32 timer trigger driver
+  ARM: dts: stm32: add Timers driver for stm32f429 MCU
+  ARM: dts: stm32: Enable pwm1 and pwm3 for stm32f469-disco
+
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  29 ++
+ .../bindings/iio/timer/stm32-timer-trigger.txt     |  23 ++
+ .../devicetree/bindings/mfd/stm32-timers.txt       |  46 +++
+ .../devicetree/bindings/pwm/pwm-stm32.txt          |  35 ++
+ arch/arm/boot/dts/stm32f429.dtsi                   | 275 ++++++++++++++
+ arch/arm/boot/dts/stm32f469-disco.dts              |  28 ++
+ drivers/iio/trigger/Kconfig                        |   9 +
+ drivers/iio/trigger/Makefile                       |   1 +
+ drivers/iio/trigger/stm32-timer-trigger.c          | 342 ++++++++++++++++++
+ drivers/mfd/Kconfig                                |  11 +
+ drivers/mfd/Makefile                               |   2 +
+ drivers/mfd/stm32-timers.c                         |  80 +++++
+ drivers/pwm/Kconfig                                |   9 +
+ drivers/pwm/Makefile                               |   1 +
+ drivers/pwm/pwm-stm32.c                            | 398 +++++++++++++++++++++
+ include/linux/iio/timer/stm32-timer-trigger.h      |  62 ++++
+ include/linux/mfd/stm32-timers.h                   |  71 ++++
+ 17 files changed, 1422 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+ create mode 100644 Documentation/devicetree/bindings/iio/timer/stm32-timer-trigger.txt
+ create mode 100644 Documentation/devicetree/bindings/mfd/stm32-timers.txt
+ create mode 100644 Documentation/devicetree/bindings/pwm/pwm-stm32.txt
+ create mode 100644 drivers/iio/trigger/stm32-timer-trigger.c
+ create mode 100644 drivers/mfd/stm32-timers.c
+ create mode 100644 drivers/pwm/pwm-stm32.c
+ create mode 100644 include/linux/iio/timer/stm32-timer-trigger.h
+ create mode 100644 include/linux/mfd/stm32-timers.h
+
+-- 
+1.9.1
+
