@@ -1,71 +1,58 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:46067 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752177AbdAaNlD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 08:41:03 -0500
-Message-ID: <1485869863.5845.54.camel@hadess.net>
-Subject: Re: Why hid-sensor-hub's IIO doesn't work properly in >= 4.3
- (possibly badly bisected)
-From: Bastien Nocera <hadess@hadess.net>
-To: "Rafael J. Wysocki" <rafael@kernel.org>
-Cc: ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
-        linux-iio@vger.kernel.org, linux-input@vger.kernel.org,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
-        Richard Hughes <richard@hughsie.com>
-Date: Tue, 31 Jan 2017 14:37:43 +0100
-In-Reply-To: <CAJZ5v0hYwyV+j+38rdqo81x0p5jWyLzHijYFY5RmnODzRUK0qg@mail.gmail.com>
-References: <1484927552.21721.17.camel@hadess.net>
-         <1485443735.5845.30.camel@hadess.net>
-         <CAJZ5v0hYwyV+j+38rdqo81x0p5jWyLzHijYFY5RmnODzRUK0qg@mail.gmail.com>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
+Received: from mout.kundenserver.de ([212.227.126.133]:59680 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752615AbdATQ0S (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 11:26:18 -0500
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Arnd Bergmann <arnd@arndb.de>, Kevin Tsai <ktsai@capellamicro.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Linus Walleij <linus.walleij@linaro.org>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: light: cm3605: mark PM functions as __maybe_unused
+Date: Fri, 20 Jan 2017 17:25:15 +0100
+Message-Id: <20170120162530.3704498-1-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hey Rafael,
+When CONFIG_PM_SLEEP is disabled, we get a harmless warning
 
-On Fri, 2017-01-27 at 00:07 +0100, Rafael J. Wysocki wrote:
-> On Thu, Jan 26, 2017 at 4:15 PM, Bastien Nocera <hadess@hadess.net>
-> wrote:
-> > On Fri, 2017-01-20 at 16:52 +0100, Bastien Nocera wrote:
-> > > Hey,
-> > > 
-> > > TLDR:
-> > > # first bad commit: [50ba22479c324c0d9dc8134d519dcba92d83a8a7]
-> > > Merge
-> > > back earlier ACPI PM material for v4.3.
-> > > 
-> > > hid-sensor-hub devices only start sending events through the IIO
-> > > trigger after a suspend/resume cycle.
-> > > 
-> > > Other IIO drivers don't seem to exhibit those problems.
-> > 
-> > I had another go, trying to break into the merge commit, and it's
-> > slightly more precise, but still doesn't make any sense to me.
-> > 
-> > # first bad commit: [3431e490b50356b56084305a2e93b3a980802b22]
-> > Merge
-> > branch 'acpi-scan' into acpi-pm
-> > 
-> > Any ideas? I'm running out of them...
-> 
-> The parents of this merge are 5af310a8ee70 and 1dcc3d3362b0.
-> 
-> Can you please check if the problem is present in any of them alone?
+drivers/iio/light/cm3605.c:292:12: error: 'cm3605_pm_resume' defined but not used [-Werror=unused-function]
+drivers/iio/light/cm3605.c:281:12: error: 'cm3605_pm_suspend' defined but not used [-Werror=unused-function]
 
-Both of those were already in the git bisect output:
-# good: [5af310a8ee70dd6a588c8ee1d4487a230a7b7b65] Merge tag 'ib-mfd-base-acpi-dma-v4.3' of git://git.kernel.org/pub/scm/linux/kernel/git/lee/mfd into acpi-pm
-git bisect good 5af310a8ee70dd6a588c8ee1d4487a230a7b7b65
+Marking the functions as possibly unused avoids the warning without
+needing to add an #ifdef.
 
-# good: [1dcc3d3362b0c97e48290f7786be85b4cec2a147] ACPI / bus: Move ACPI bus type registration
-git bisect good 1dcc3d3362b0c97e48290f7786be85b4cec2a147
+Fixes: 8afa505c1230 ("iio: light: add driver for Capella CM3605")
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/light/cm3605.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Or did I do this wrong?
+diff --git a/drivers/iio/light/cm3605.c b/drivers/iio/light/cm3605.c
+index 2d96543db1ef..980624e9ffb5 100644
+--- a/drivers/iio/light/cm3605.c
++++ b/drivers/iio/light/cm3605.c
+@@ -278,7 +278,7 @@ static int cm3605_remove(struct platform_device *pdev)
+ 	return 0;
+ }
+ 
+-static int cm3605_pm_suspend(struct device *dev)
++static int __maybe_unused cm3605_pm_suspend(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct cm3605 *cm3605 = iio_priv(indio_dev);
+@@ -289,7 +289,7 @@ static int cm3605_pm_suspend(struct device *dev)
+ 	return 0;
+ }
+ 
+-static int cm3605_pm_resume(struct device *dev)
++static int __maybe_unused cm3605_pm_resume(struct device *dev)
+ {
+ 	struct iio_dev *indio_dev = dev_get_drvdata(dev);
+ 	struct cm3605 *cm3605 = iio_priv(indio_dev);
+-- 
+2.9.0
 
-> If not, it is theoretically possible that the merge itself had
-> introduced it (as this is not a trivial merge).
-
-Yeah, I tried diving into the merge, but never managed to do so.
-
-Cheers
