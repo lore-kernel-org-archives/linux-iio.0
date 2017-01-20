@@ -1,95 +1,94 @@
-Return-Path: <SRS0=xt89=ZC=ucw.cz=pavel@kernel.org>
-Date: Fri, 20 Jan 2017 15:22:42 +0100
-From: Pavel Machek <pavel@ucw.cz>
-To: Linus Walleij <linus.walleij@linaro.org>
-Cc: Rob Herring <robh@kernel.org>,
-	"linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	Marcel Holtmann <marcel@holtmann.org>, Jiri Slaby <jslaby@suse.com>,
-	Sebastian Reichel <sre@kernel.org>, Arnd Bergmann <arnd@arndb.de>,
-	"Dr . H . Nikolaus Schaller" <hns@goldelico.com>,
-	Peter Hurley <peter@hurleysoftware.com>,
-	Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
-	Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
-	Loic Poulain <loic.poulain@intel.com>, NeilBrown <neil@brown.name>,
-	"linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
-	"linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
-Subject: GPS drivers (was Re: [PATCH v2 0/9] Serial slave device bus)
-Message-ID: <20170120142242.GC5241@amd>
-References: <20170116225436.17505-1-robh@kernel.org>
- <CACRpkdaf6uy6C6J5mcVF4dDPG7gwJ2vkR4ECLYSsT5-DRNNfcA@mail.gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-io0-f179.google.com ([209.85.223.179]:34680 "EHLO
+        mail-io0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752580AbdATPgc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 20 Jan 2017 10:36:32 -0500
+Received: by mail-io0-f179.google.com with SMTP id l66so64011808ioi.1
+        for <linux-iio@vger.kernel.org>; Fri, 20 Jan 2017 07:36:31 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-	protocol="application/pgp-signature"; boundary="Fig2xvG2VGoz8o/s"
-In-Reply-To: <CACRpkdaf6uy6C6J5mcVF4dDPG7gwJ2vkR4ECLYSsT5-DRNNfcA@mail.gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20170120142242.GC5241@amd>
+References: <20170116225436.17505-1-robh@kernel.org> <CACRpkdaf6uy6C6J5mcVF4dDPG7gwJ2vkR4ECLYSsT5-DRNNfcA@mail.gmail.com>
+ <20170120142242.GC5241@amd>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Fri, 20 Jan 2017 16:26:20 +0100
+Message-ID: <CACRpkdYi=OQ2fyvOvmo+8b4nAOsSjW_-EdHXyGnYf2PNZB5C9Q@mail.gmail.com>
+Subject: Re: GPS drivers (was Re: [PATCH v2 0/9] Serial slave device bus)
+To: Pavel Machek <pavel@ucw.cz>
+Cc: Rob Herring <robh@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Marcel Holtmann <marcel@holtmann.org>,
+        Jiri Slaby <jslaby@suse.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        "Dr . H . Nikolaus Schaller" <hns@goldelico.com>,
+        Peter Hurley <peter@hurleysoftware.com>,
+        Andy Shevchenko <andriy.shevchenko@linux.intel.com>,
+        Alan Cox <gnomes@lxorguk.ukuu.org.uk>,
+        Loic Poulain <loic.poulain@intel.com>,
+        NeilBrown <neil@brown.name>,
+        "linux-bluetooth@vger.kernel.org" <linux-bluetooth@vger.kernel.org>,
+        "linux-serial@vger.kernel.org" <linux-serial@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+oOn Fri, Jan 20, 2017 at 3:22 PM, Pavel Machek <pavel@ucw.cz> wrote:
 
---Fig2xvG2VGoz8o/s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+> Switched subject: Rob's work is great for GPS and bluetooth, but this
+> goes beyond it.
 
-Hi!
+Sure why not talk around a bit.
 
-Switched subject: Rob's work is great for GPS and bluetooth, but this
-goes beyond it.
+>> In my simple opinion GPSes shound live in drivers/iio/gps simply by
+>> usecase association: streaming out a series of accelerometer readings
+>> periodically through IIOs chardevs and other data about the physical
+>> world is not any different from the GPS usecase that give you a stream
+>> of coordinates on where on this planet you are.
+>
+> That is... not quite how GPSes work. What interface would you propose?
+> It would be good to support error estimates in position/velocities and
+> AGPS data upload.
 
-> On Mon, Jan 16, 2017 at 11:54 PM, Rob Herring <robh@kernel.org> wrote:
->=20
-> > There's still some discussion about what to do with devices that pass t=
-hru
-> > data to userspace unmodified like GPS and could still use tty device for
-> > the data path. IMO, we should treat this as a separate problem following
-> > this series. Drivers we want to convert to serdev and already in the
-> > kernel don't need this functionality.
->=20
-> In my simple opinion GPSes shound live in drivers/iio/gps simply by
-> usecase association: streaming out a series of accelerometer readings
-> periodically through IIOs chardevs and other data about the physical
-> world is not any different from the GPS usecase that give you a stream
-> of coordinates on where on this planet you are.
+Sorry for my ignorance. I have not had the opportunity to work
+directly with a GPS hardware.
 
-That is... not quite how GPSes work. What interface would you propose?
-It would be good to support error estimates in position/velocities and
-AGPS data upload.
+> Now, NMEA knows about some of the complexity (not AGPS), but gets the
+> details wrong. In particular, it would be good to have error estimates
+> and velocities from the same moment you get position estimates.
 
-Now, NMEA knows about some of the complexity (not AGPS), but gets the
-details wrong. In particular, it would be good to have error estimates
-and velocities from the same moment you get position estimates.=20
+NMEA if it is this:
+https://en.wikipedia.org/wiki/NMEA_0183
 
-> The fact that vendors like to defer GPS processing to userspace because
-> it is considered "secret sauce" is not the concern of the kernel communit=
-y,
-> though problems like that in general is the great tragedy of our time.
->=20
-> It would be fun to see a pure, reverse-engineered GPS driver in IIO.
+Seems to be a high-level format such as XML or CSV or any other
+$FAVOURITE_ASCII_TRANSPORT format.
 
-Well, many GPSes simply produce NMEA, and we have drivers for some other.
+What we want to push into the ring buffer is of course the raw data
+that is produced by the GPS hardware, whatever that may be.
+If what we have is this text format we should not reverse-translate
+it back any more than modem AT commands, it doesn't make sense
+I guess.
 
-Here's example driver:
+So NMEA processing would be in userspace. And if the GPS is just
+streaming this text data over to the client, like Marcel says, it is
+more reasonable to just feed that up to userspace (no policy in the
+kernel).
 
-https://gitlab.com/tui/tui/blob/master/ofone/gps3.c
+I am however aware of certain hardware such as the ST
+Microelectronis STA2062 produced for Garmin, which is *not*
+connected to any external chip, and is not talking over serial
+to any RSx port, and does not have an embedded firmware running
+on another SoC in any special GPS chip. And it is unassisted.
 
-Best regards,
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+Maybe that is an oddity. In the mobile phone business I guess it
+could be more common to have a separate SoC that by way
+of standards just stream NMEA data.
 
---Fig2xvG2VGoz8o/s
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+Fusing that with other sensor data (accelerometer, compass, etc)
+is again indeed a userspace task. I hope NMEA includes very good
+timestamps.
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAliCHTIACgkQMOfwapXb+vKB8gCeLoxvhC7OnFqX6DyjzWiufmoh
-TpYAn1pJGsd+Wdk04/HbYaoOcIt/Ltqt
-=oRgW
------END PGP SIGNATURE-----
-
---Fig2xvG2VGoz8o/s--
+Thanks,
+Linus Walleij
