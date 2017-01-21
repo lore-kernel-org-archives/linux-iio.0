@@ -1,54 +1,139 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34528 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751017AbdAUM1p (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:27:45 -0500
-Subject: Re: FOSSASIA Industrial IO talk
-To: Matt Ranostay <matt.ranostay@konsulko.com>,
-        linux-iio@vger.kernel.org, matt.porter@konsulko.com,
-        Tom Rini <trini@konsulko.com>, lars@metafoo.de
-References: <38FFF5EC-FE21-4162-920A-17AD7A68CB59@konsulko.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <47b1c7e4-69c8-3dd7-67ca-8a54989ef331@kernel.org>
-Date: Sat, 21 Jan 2017 12:27:43 +0000
-MIME-Version: 1.0
-In-Reply-To: <38FFF5EC-FE21-4162-920A-17AD7A68CB59@konsulko.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-oi0-f66.google.com ([209.85.218.66]:33889 "EHLO
+        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751222AbdAUOmc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 09:42:32 -0500
+From: Marek Vasut <marek.vasut@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Marek Vasut <marek.vasut@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH 1/2] iio: adc: Add Renesas GyroADC bindings
+Date: Sat, 21 Jan 2017 15:42:11 +0100
+Message-Id: <20170121144212.8858-1-marek.vasut@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/01/17 07:52, Matt Ranostay wrote:
-> Jonathan et all,
-> 
-> So the talk I gave at ELCE has been accepted for FOSSASIA Summit in
-> Singapore. It will be slightly different format, much less time slot,
-> and I plan to highlight medical applications of IIO using an oximeter
-> since they are a leader in the world in biotech. Worst case I'll show
-> the LIDAR applications and thermocouples but my MAX30102 patchset
-> works just need userspace applications.
-> 
-> This conference runs March 17th to 19th in the Singapore Science
-> Center which is next to fake ski mountain :).
-> 
-> So if anyone wants to talk IIO after the conference I plan to stick
-> around for a week. Singapore is my favorite place in the world
-> because durians!
-> 
-> Also I'll be attending ELC in Portland... since it is 6 blocks from
-> my flat.
-> 
-> Thanks,
-> 
-> Matt
-> 
-Cool.  Posts links to slides / video if or when they exist.  Why are no decent
-conferences 6 blocks from my house? (actually ELCE was in 2010 but
-that was the week after my now wife submitted her PhD so we shot off on
-holiday!)
+Add DT bindings for the Renesas RCar GyroADC block. This block is
+a simple 4/8-channel ADC which samples 12/15/24 bits of data every
+cycle from all channels.
 
-I have a half written blog post trying to list all the IIO related presentations
-but never seem to finish it!
+Signed-off-by: Marek Vasut <marek.vasut@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Simon Horman <horms+renesas@verge.net.au>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-renesas-soc@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org
+---
+ .../bindings/iio/adc/renesas,gyroadc.txt           | 93 ++++++++++++++++++++++
+ 1 file changed, 93 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
 
-Jonathan
-
+diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+new file mode 100644
+index 000000000000..081947367135
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+@@ -0,0 +1,93 @@
++* Renesas RCar GyroADC device driver
++
++Required properties:
++- compatible:	Should be "renesas,<chip>-gyroadc", "renesas,rcar-gyroadc".
++		Use "renesas,r8a7792-gyroadc" for a GyroADC with interrupt
++		block found in R8A7792.
++- reg:		Address and length of the register set for the device
++- clocks:	References to all the clocks specified in the clock-names
++		property as specified in
++		Documentation/devicetree/bindings/clock/clock-bindings.txt.
++- clock-names:	Shall contain "fck" and "if". The "fck" is the GyroADC block
++		clock, the "if" is the interface clock.
++- power-domains: Must contain a reference to the PM domain, if available.
++- #address-cells: Should be <1> (setting for the subnodes) for all ADCs
++		except for "fujitsu,mb88101a". Should be <0> (setting for
++		only subnode) for "fujitsu,mb88101a".
++- #size-cells:	Should be <0> (setting for the subnodes)
++
++Sub-nodes:
++Optionally you can define subnodes which select the connected ADC type and
++reference voltage for the GyroADC channels.
++
++Required properties for subnodes:
++- compatible:	Should be either of:
++		"fujitsu,mb88101a"
++			- Fujitsu MB88101A compatible mode,
++			  12bit sampling, up to 4 channels can be sampled in
++			  round-robin fashion. One Fujitsu chip supplies four
++			  GyroADC channels with data as it contains four ADCs
++			  on the chip and thus for 4-channel operation, single
++			  MB88101A is required. The Cx chipselect lines of the
++			  MB88101A connect directly to two CHS lines of the
++			  GyroADC, no demuxer is required. The data out line
++			  of each MB88101A connects to a shared input pin of
++			  the GyroADC.
++		"ti,adcs7476" or "ti,adc121" or "adi,ad7476"
++			- TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode,
++			  15bit sampling, up to 8 channels can be sampled in
++			  round-robin fashion. One TI/ADI chip supplies single
++			  ADC channel with data, thus for 8-channel operation,
++			  8 chips are required. A 3:8 chipselect demuxer is
++			  required to connect the nCS line of the TI/ADI chips
++			  to the GyroADC, while MISO line of each TI/ADI ADC
++			  connects to a shared input pin of the GyroADC.
++		"maxim,max1162" or "maxim,max11100"
++			- Maxim MAX1162 / Maxim MAX11100 compatible mode,
++			  16bit sampling, up to 8 channels can be sampled in
++			  round-robin fashion. One Maxim chip supplies single
++			  ADC channel with data, thus for 8-channel operation,
++			  8 chips are required. A 3:8 chipselect demuxer is
++			  required to connect the nCS line of the MAX chips
++			  to the GyroADC, while MISO line of each Maxim ADC
++			  connects to a shared input pin of the GyroADC.
++- reg:		Should be the number of the analog input. Should be present
++		for all ADCs except "fujitsu,mb88101a".
++- vref-supply:	Reference to the channel reference voltage regulator.
++
++Example:
++	vref_max1162: regulator-vref-max1162 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "MAX1162 Vref";
++		regulator-min-microvolt = <4096000>;
++		regulator-max-microvolt = <4096000>;
++	};
++
++	&adc {
++		compatible = "renesas,r8a7791-gyroadc", "renesas,rcar-gyroadc";
++		reg = <0 0xe6e54000 0 64>;
++		clocks = <&mstp9_clks R8A7791_CLK_GYROADC>, <&clk_65m>;
++		clock-names = "fck", "if";
++		power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
++
++		pinctrl-0 = <&adc_pins>;
++		pinctrl-names = "default";
++
++		status = "okay";
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		adc@0 {
++			reg = <0>;
++			compatible = "maxim,max1162";
++			vref-supply = <&vref_max1162>;
++		};
++
++		adc@1 {
++			reg = <1>;
++			compatible = "maxim,max1162";
++			vref-supply = <&vref_max1162>;
++		};
++	};
+-- 
+2.11.0
 
