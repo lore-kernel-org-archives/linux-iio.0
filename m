@@ -1,118 +1,142 @@
-Return-Path: <SRS0=3aYw=ZD=suse.de=afaerber@kernel.org>
-Subject: Re: [PATCH v3 4/4] ARM64: dts: meson: meson-gx: add the SAR ADC
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34585 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750874AbdAUMhp (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:37:45 -0500
+Subject: Re: [PATCH v3 0/4] Amlogic Meson SAR ADC support
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
- jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
- robh+dt@kernel.org, mark.rutland@arm.com, khilman@baylibre.com,
- linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
- linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, khilman@baylibre.com,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-amlogic@lists.infradead.org, linux-clk@vger.kernel.org
 References: <20170115224221.15510-1-martin.blumenstingl@googlemail.com>
  <20170119145822.26239-1-martin.blumenstingl@googlemail.com>
- <20170119145822.26239-5-martin.blumenstingl@googlemail.com>
-Cc: narmstrong@baylibre.com, catalin.marinas@arm.com,
- mturquette@baylibre.com, will.deacon@arm.com, carlo@caione.org,
- sboyd@codeaurora.org, linux-arm-kernel@lists.infradead.org
-From: =?UTF-8?Q?Andreas_F=c3=a4rber?= <afaerber@suse.de>
-Message-ID: <a1c759fb-691c-50a7-f1c4-fd51ad27fa52@suse.de>
-Date: Sat, 21 Jan 2017 14:28:48 +0100
+Cc: carlo@caione.org, catalin.marinas@arm.com, will.deacon@arm.com,
+        mturquette@baylibre.com, sboyd@codeaurora.org,
+        narmstrong@baylibre.com, linux-arm-kernel@lists.infradead.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <b48c8810-171c-3e05-396b-7c77b0f6e078@kernel.org>
+Date: Sat, 21 Jan 2017 12:37:42 +0000
 MIME-Version: 1.0
-In-Reply-To: <20170119145822.26239-5-martin.blumenstingl@googlemail.com>
+In-Reply-To: <20170119145822.26239-1-martin.blumenstingl@googlemail.com>
 Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Am 19.01.2017 um 15:58 schrieb Martin Blumenstingl:
-> Add the SAR ADC to meson-gxbb.dtsi and meson-gxl.dtsi. GXBB provides a
-> 10-bit ADC while GXL (and GXM, which uses the same ADC as GXL) provides
-> a 12-bit ADC.
-> Some boards use resistor ladder buttons connected through one of the ADC
-> channels. On newer devices (GXL and GXM) some boards use pull-ups/downs
-> to change the resistance (and thus the ADC value) on of the ADC channels
+Hi Martin,
 
-"on one of"?
+Quick process point.  Personally I'd much prefer it if new versions
+fo the patch are not posted as replies to earlier versions.  It gets
+awfully deep and hard to follow very quickly!
 
-> to indicate the board revision.
+Thanks,
+
+Jonathan
+
+On 19/01/17 14:58, Martin Blumenstingl wrote:
+> This series add support for the SAR ADC on Amlogic Meson GXBB, GXL and
+> GXM SoCs.
+> The hardware on GXBB provides 10-bit ADC results, while GXL and GXM are
+> providing 12-bit results. Support for older SoCs (Meson8b and Meson8)
+> can be added with little effort, most of which is testing I guess (I
+> don't have any pre-GXBB hardware so I can't say).
 > 
-> Signed-off-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> Tested-by: Neil Armstrong <narmstrong@baylibre.com>
-> ---
->  arch/arm64/boot/dts/amlogic/meson-gx.dtsi   |  8 ++++++++
->  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi | 10 ++++++++++
->  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi  | 10 ++++++++++
->  3 files changed, 28 insertions(+)
+> A new set of clocks had to be added to the GXBB clock controller (used
+> by the GXBB/GXL/GXM SoCs) which are required to get the ADC working.
 > 
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-> index 99e6a8d5cb9e..55abfb74aab2 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-> +++ b/arch/arm64/boot/dts/amlogic/meson-gx.dtsi
-> @@ -255,6 +255,14 @@
->  				status = "disabled";
->  			};
->  
-> +			saradc: adc@8680 {
-> +				compatible = "amlogic,meson-saradc";
-> +				#io-channel-cells = <1>;
+> The ADC itself can sample multiple channels at the same time and allows
+> capturing multiple samples (which can be used for filtering/averaging).
+> The ADC results are stored inside a FIFO register. More details on what
+> the driver supports (or doesn't) can be found in the description of
+> patch #3.
+> 
+> The code is based on the public S805 (Meson8b) and S905 (GXBB)
+> datasheets, as well as by reading (various versions of) the vendor
+> driver and by inspecting the registers on the vendor kernels of my
+> testing-hardware.
+> 
+> Typical use-cases for the ADC on the Meson GX SoCs are:
+> - adc-keys ("ADC attached resistor ladder buttons")
+> - SoC temperature measurement (not supported by this driver yet as
+>   the system firmware does this already and provides the values via the
+>   SCPI protocol)
+> - "version-strapping" (different resistor values are used to indicate
+>   the board-revision)
+> - and of course typical ADC measurements
+> 
+> Thanks to Heiner Kallweit, Jonathan Cameron, Lars-Peter Clausen and
+> Peter Meerwald-Stadler for reviewing this series and providing valuable
+> input!
+> 
+> Changes since v2 (all changes are for patch #3, except where noted):
+> - fixed another typo in the interrupt (patch #4, thanks again Heiner
+>   Kallweit)
+> - change namespace of all register #defines to MESON_SAR_ADC (I
+>   intentionally decided to keep SAR_ADC in it because that's the way
+>   registers are named in the datasheet, thus making it easy to match the
+>   registers without having to look up the offset all the time)
+> - added additional parenthesis around MACRO parameters  for extra safety
+> - removed unused definition for SAR_ADC_REG3_ADC_CLK_DIV_MASK (as we
+>   already have SAR_ADC_REG3_ADC_CLK_DIV_SHIFT and
+>   SAR_ADC_REG3_ADC_CLK_DIV_WIDTH which are used instead)
+> - change value of "indexed" from "true" to "1"
+> - remove type parameter from MESON_SAR_ADC_CHAN macro as all channels are
+>   currently IIO_VOLTAGE channels
+> - fixed another multi-line comment style violation
+> - added timeout to meson_saradc_lock() (unlikely to be triggered, but
+>   better safe then sorry - which would mean that we'd be keeping one core
+>   busy infinitely)
+> - fixed meson_saradc_remove() call order (first unregister the iio_dev,
+>   then disable the hardware instead of the other way around)
+> - use "consistent prefixing", which means that all #defines now use
+>   MESON_SAR_ADC_ as prefix, while all enums, static global variables,
+>   structs and functions use meson_sar_adc_ as prefix
+> - rebased .dts and clk patches to apply to khilman's latest v4.11/dt64
+>   (a minor  conflict had to be resolved in the clk patch due to
+>   "clk: meson-gxbb: Export HDMI clocks")
+> - added Tested-by: Neil Armstrong <narmstrong@baylibre.com> to all
+>   patches (thanks for testing!)
+> 
+> Changes since v1 (all changes are for patch #3, except where noted):
+> - fix IRQ number in meson-gx.dtsi (thanks to Heiner Kallweit for
+>   providing the correct value), affects patch #4
+> - move the most used members of meson_saradc_priv to the beginning
+> - remove unused struct member "completion" from meson_saradc_priv
+> - use devm_kasprintf() instead of snprintf() + devm_kstrdup()
+> - initialize indio_dev->dev.parent earlier in meson_saradc_probe()
+> - moved meson_saradc_clear_fifo() logic to a separate function
+> - add comment why a do ... while loop is required in
+>   meson_saradc_wait_busy_clear()
+> - remove SAR_ADC_NUM_CHANNELS and SAR_ADC_VALUE_MASK macros (each of them
+>   was only used once and it's an unneeded level of abstraction)
+> - fixed multiline comment syntax violations
+> - dropped unneeded log messages during initialization
+> - set iio_dev name to "meson-gxbb-saradc" or "meson-gxl-saradc"
+> - use "indio_dev->dev.parent" in all kernel log calls (dev_warn/err/etc)
+>   to make it show the OF node name (instead of the iio device name)
+> - introduce struct meson_saradc_data to hold platform-specific
+>   information (such as resolution in bits and the iio_dev name)
+> 
+> 
+> Martin Blumenstingl (4):
+>   Documentation: dt-bindings: add the Amlogic Meson SAR ADC
+>     documentation
+>   clk: gxbb: add the SAR ADC clocks and expose them
+>   iio: adc: add a driver for the SAR ADC found in Amlogic Meson SoCs
+>   ARM64: dts: meson: meson-gx: add the SAR ADC
+> 
+>  .../bindings/iio/adc/amlogic,meson-saradc.txt      |  31 +
+>  arch/arm64/boot/dts/amlogic/meson-gx.dtsi          |   8 +
+>  arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi        |  10 +
+>  arch/arm64/boot/dts/amlogic/meson-gxl.dtsi         |  10 +
+>  drivers/clk/meson/gxbb.c                           |  48 ++
+>  drivers/clk/meson/gxbb.h                           |   9 +-
+>  drivers/iio/adc/Kconfig                            |  12 +
+>  drivers/iio/adc/Makefile                           |   1 +
+>  drivers/iio/adc/meson_saradc.c                     | 916 +++++++++++++++++++++
+>  include/dt-bindings/clock/gxbb-clkc.h              |   4 +
+>  10 files changed, 1046 insertions(+), 3 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/adc/amlogic,meson-saradc.txt
+>  create mode 100644 drivers/iio/adc/meson_saradc.c
+> 
 
-Personally I think it makes more sense to keep reg after compatible for
-consistency (same in example) and any #... "output" properties last.
-
-> +				status = "disabled";
-> +				reg = <0x0 0x8680 0x0 0x34>;
-> +				interrupts = <GIC_SPI 73 IRQ_TYPE_EDGE_RISING>;
-> +			};
-> +
->  			pwm_ef: pwm@86c0 {
->  				compatible = "amlogic,meson-gx-pwm", "amlogic,meson-gxbb-pwm";
->  				reg = <0x0 0x086c0 0x0 0x10>;
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-> index 39a774ad83ce..04b3324bc132 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-> +++ b/arch/arm64/boot/dts/amlogic/meson-gxbb.dtsi
-> @@ -490,6 +490,16 @@
->  	clocks = <&clkc CLKID_I2C>;
->  };
->  
-> +&saradc {
-> +	compatible = "amlogic,meson-gxbb-saradc", "amlogic,meson-saradc";
-> +	clocks = <&xtal>,
-> +		 <&clkc CLKID_SAR_ADC>,
-> +		 <&clkc CLKID_SANA>,
-> +		 <&clkc CLKID_SAR_ADC_CLK>,
-> +		 <&clkc CLKID_SAR_ADC_SEL>;
-> +	clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
-> +};
-> +
->  &sd_emmc_a {
->  	clocks = <&clkc CLKID_SD_EMMC_A>,
->  		 <&xtal>,
-> diff --git a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-> index bdf2305a2e25..7c72dbcef1ba 100644
-> --- a/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-> +++ b/arch/arm64/boot/dts/amlogic/meson-gxl.dtsi
-> @@ -340,6 +340,16 @@
->  	clocks = <&clkc CLKID_I2C>;
->  };
->  
-> +&saradc {
-> +	compatible = "amlogic,meson-gxl-saradc", "amlogic,meson-saradc";
-> +	clocks = <&xtal>,
-> +		 <&clkc CLKID_SAR_ADC>,
-> +		 <&clkc CLKID_SANA>,
-> +		 <&clkc CLKID_SAR_ADC_CLK>,
-> +		 <&clkc CLKID_SAR_ADC_SEL>;
-> +	clock-names = "clkin", "core", "sana", "adc_clk", "adc_sel";
-> +};
-> +
->  &sd_emmc_a {
->  	clocks = <&clkc CLKID_SD_EMMC_A>,
->  		 <&xtal>,
-
-Anyway, saradc before sd_emmc_a looks fine,
-
-Reviewed-by: Andreas Färber <afaerber@suse.de>
-
-Regards,
-Andreas
-
--- 
-SUSE Linux GmbH, Maxfeldstr. 5, 90409 Nürnberg, Germany
-GF: Felix Imendörffer, Jane Smithard, Graham Norton
-HRB 21284 (AG Nürnberg)
