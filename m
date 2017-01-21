@@ -1,93 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.92]:43725 "EHLO pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750765AbdAUJne (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sat, 21 Jan 2017 04:43:34 -0500
-Date: Sat, 21 Jan 2017 10:43:31 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Alison Schofield <amsfield22@gmail.com>
-cc: jic23@kernel.org, linux-iio@vger.kernel.org,
-        linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: magnetometer: mag3110: claim direct mode during
- raw writes
-In-Reply-To: <20170120203924.GA2196@d830.WORKGROUP>
-Message-ID: <alpine.DEB.2.02.1701211042580.30223@pmeerw.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34488 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751017AbdAUMVU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:21:20 -0500
+Subject: Re: [PATCH] iio: magnetometer: mag3110: claim direct mode during raw
+ writes
+To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Alison Schofield <amsfield22@gmail.com>
 References: <20170120203924.GA2196@d830.WORKGROUP>
+ <alpine.DEB.2.02.1701211042580.30223@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <8ef429c6-621e-83a3-4991-edaf0bfc8775@kernel.org>
+Date: Sat, 21 Jan 2017 12:21:16 +0000
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
+In-Reply-To: <alpine.DEB.2.02.1701211042580.30223@pmeerw.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
-> Driver was checking for direct mode but not locking it.  Use
-> claim/release helper functions to guarantee the device stays
-> in direct mode during raw writes.
-
-looks good,
-Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-
-> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
-> ---
->  drivers/iio/magnetometer/mag3110.c | 30 ++++++++++++++++++++----------
->  1 file changed, 20 insertions(+), 10 deletions(-)
+On 21/01/17 09:43, Peter Meerwald-Stadler wrote:
 > 
-> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-> index f2b3bd7..b4f643f 100644
-> --- a/drivers/iio/magnetometer/mag3110.c
-> +++ b/drivers/iio/magnetometer/mag3110.c
-> @@ -222,29 +222,39 @@ static int mag3110_write_raw(struct iio_dev *indio_dev,
->  			     int val, int val2, long mask)
->  {
->  	struct mag3110_data *data = iio_priv(indio_dev);
-> -	int rate;
-> +	int rate, ret;
->  
-> -	if (iio_buffer_enabled(indio_dev))
-> -		return -EBUSY;
-> +	ret = iio_device_claim_direct_mode(indio_dev);
-> +	if (ret)
-> +		return ret;
->  
->  	switch (mask) {
->  	case IIO_CHAN_INFO_SAMP_FREQ:
->  		rate = mag3110_get_samp_freq_index(data, val, val2);
-> -		if (rate < 0)
-> -			return -EINVAL;
-> +		if (rate < 0) {
-> +			ret = -EINVAL;
-> +			break;
-> +		}
->  
->  		data->ctrl_reg1 &= ~MAG3110_CTRL_DR_MASK;
->  		data->ctrl_reg1 |= rate << MAG3110_CTRL_DR_SHIFT;
-> -		return i2c_smbus_write_byte_data(data->client,
-> +		ret = i2c_smbus_write_byte_data(data->client,
->  			MAG3110_CTRL_REG1, data->ctrl_reg1);
-> +		break;
->  	case IIO_CHAN_INFO_CALIBBIAS:
-> -		if (val < -10000 || val > 10000)
-> -			return -EINVAL;
-> -		return i2c_smbus_write_word_swapped(data->client,
-> +		if (val < -10000 || val > 10000) {
-> +			ret = -EINVAL;
-> +			break;
-> +		}
-> +		ret = i2c_smbus_write_word_swapped(data->client,
->  			MAG3110_OFF_X + 2 * chan->scan_index, val << 1);
-> +		break;
->  	default:
-> -		return -EINVAL;
-> +		ret = -EINVAL;
-> +		break;
->  	}
-> +	iio_device_release_direct_mode(indio_dev);
-> +	return ret;
->  }
->  
->  static irqreturn_t mag3110_trigger_handler(int irq, void *p)
+>> Driver was checking for direct mode but not locking it.  Use
+>> claim/release helper functions to guarantee the device stays
+>> in direct mode during raw writes.
+> 
+> looks good,
+> Acked-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Applied to the togreg branch of iio.git - initially pushed out as testing etc..
+
+Jonathan
+> 
+>> Signed-off-by: Alison Schofield <amsfield22@gmail.com>
+>> ---
+>>  drivers/iio/magnetometer/mag3110.c | 30 ++++++++++++++++++++----------
+>>  1 file changed, 20 insertions(+), 10 deletions(-)
+>>
+>> diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
+>> index f2b3bd7..b4f643f 100644
+>> --- a/drivers/iio/magnetometer/mag3110.c
+>> +++ b/drivers/iio/magnetometer/mag3110.c
+>> @@ -222,29 +222,39 @@ static int mag3110_write_raw(struct iio_dev *indio_dev,
+>>  			     int val, int val2, long mask)
+>>  {
+>>  	struct mag3110_data *data = iio_priv(indio_dev);
+>> -	int rate;
+>> +	int rate, ret;
+>>  
+>> -	if (iio_buffer_enabled(indio_dev))
+>> -		return -EBUSY;
+>> +	ret = iio_device_claim_direct_mode(indio_dev);
+>> +	if (ret)
+>> +		return ret;
+>>  
+>>  	switch (mask) {
+>>  	case IIO_CHAN_INFO_SAMP_FREQ:
+>>  		rate = mag3110_get_samp_freq_index(data, val, val2);
+>> -		if (rate < 0)
+>> -			return -EINVAL;
+>> +		if (rate < 0) {
+>> +			ret = -EINVAL;
+>> +			break;
+>> +		}
+>>  
+>>  		data->ctrl_reg1 &= ~MAG3110_CTRL_DR_MASK;
+>>  		data->ctrl_reg1 |= rate << MAG3110_CTRL_DR_SHIFT;
+>> -		return i2c_smbus_write_byte_data(data->client,
+>> +		ret = i2c_smbus_write_byte_data(data->client,
+>>  			MAG3110_CTRL_REG1, data->ctrl_reg1);
+>> +		break;
+>>  	case IIO_CHAN_INFO_CALIBBIAS:
+>> -		if (val < -10000 || val > 10000)
+>> -			return -EINVAL;
+>> -		return i2c_smbus_write_word_swapped(data->client,
+>> +		if (val < -10000 || val > 10000) {
+>> +			ret = -EINVAL;
+>> +			break;
+>> +		}
+>> +		ret = i2c_smbus_write_word_swapped(data->client,
+>>  			MAG3110_OFF_X + 2 * chan->scan_index, val << 1);
+>> +		break;
+>>  	default:
+>> -		return -EINVAL;
+>> +		ret = -EINVAL;
+>> +		break;
+>>  	}
+>> +	iio_device_release_direct_mode(indio_dev);
+>> +	return ret;
+>>  }
+>>  
+>>  static irqreturn_t mag3110_trigger_handler(int irq, void *p)
+>>
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
