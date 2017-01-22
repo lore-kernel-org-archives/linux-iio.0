@@ -1,69 +1,147 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34689 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40105 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750905AbdAUM4A (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 21 Jan 2017 07:56:00 -0500
+        with ESMTP id S1750741AbdAVM5H (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Jan 2017 07:57:07 -0500
 Subject: Re: [PATCH 2/7] iio: adc: stm32: Enable use of stm32 timer triggers
-To: kbuild test robot <lkp@intel.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>
-References: <201701200712.zoWuIMA4%fengguang.wu@intel.com>
-Cc: kbuild-all@01.org, linux@armlinux.org.uk, robh+dt@kernel.org,
-        linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        mark.rutland@arm.com, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com, lars@metafoo.de, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, benjamin.gaignard@linaro.org,
-        benjamin.gaignard@st.com
+To: Fabrice Gasnier <fabrice.gasnier@st.com>, linux@armlinux.org.uk,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1484832854-6314-1-git-send-email-fabrice.gasnier@st.com>
+ <1484832854-6314-3-git-send-email-fabrice.gasnier@st.com>
+Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        benjamin.gaignard@linaro.org, benjamin.gaignard@st.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c2042413-c47d-c31c-2890-3b626829f478@kernel.org>
-Date: Sat, 21 Jan 2017 12:55:56 +0000
+Message-ID: <9826347e-d8e4-2386-cc7a-dd2c4909494b@kernel.org>
+Date: Sun, 22 Jan 2017 12:55:38 +0000
 MIME-Version: 1.0
-In-Reply-To: <201701200712.zoWuIMA4%fengguang.wu@intel.com>
+In-Reply-To: <1484832854-6314-3-git-send-email-fabrice.gasnier@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 19/01/17 23:31, kbuild test robot wrote:
-> Hi Fabrice,
+On 19/01/17 13:34, Fabrice Gasnier wrote:
+> STM32 ADC has external timer trigger sources. Use stm32 timer triggers
+> API (e.g. is_stm32_timer_trigger()) with local ADC lookup table to
+> validate a trigger can be used.
+> This also provides correct trigger selection value (e.g. extsel).
 > 
-> [auto build test ERROR on next-20170119]
-> [also build test ERROR on v4.10-rc4]
-> [cannot apply to iio/togreg robh/for-next v4.9-rc8 v4.9-rc7 v4.9-rc6]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/Fabrice-Gasnier/Add-support-for-triggered-buffer-mode-to-STM32-ADC/20170120-062214
-> config: i386-allmodconfig (attached as .config)
-> compiler: gcc-6 (Debian 6.2.0-3) 6.2.0 20160901
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=i386 
-There is a precursor patch set mentioned in the cover letter. Not sure there is
-a sensible automated way to deal with that!
-
-Jonathan
-> 
-> All errors (new ones prefixed by >>):
-> 
->>> drivers/iio/adc/stm32-adc.c:26:49: fatal error: linux/iio/timer/stm32-timer-trigger.h: No such file or directory
->     #include <linux/iio/timer/stm32-timer-trigger.h>
->                                                     ^
->    compilation terminated.
-> 
-> vim +26 drivers/iio/adc/stm32-adc.c
-> 
->     20	 */
->     21	
->     22	#include <linux/clk.h>
->     23	#include <linux/delay.h>
->     24	#include <linux/iio/iio.h>
->     25	#include <linux/iio/buffer.h>
->   > 26	#include <linux/iio/timer/stm32-timer-trigger.h>
->     27	#include <linux/iio/trigger.h>
->     28	#include <linux/iio/trigger_consumer.h>
->     29	#include <linux/iio/triggered_buffer.h>
-> 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Looks good. Observations inline.
 > ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
+>  drivers/iio/adc/Kconfig     |  2 ++
+>  drivers/iio/adc/stm32-adc.c | 60 +++++++++++++++++++++++++++++++++++++++++++++
+>  2 files changed, 62 insertions(+)
+> 
+> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+> index 33341f4..9a7b090 100644
+> --- a/drivers/iio/adc/Kconfig
+> +++ b/drivers/iio/adc/Kconfig
+> @@ -447,6 +447,8 @@ config STM32_ADC_CORE
+>  	depends on OF
+>  	depends on REGULATOR
+>  	select IIO_BUFFER
+> +	select MFD_STM32_TIMERS
+> +	select IIO_STM32_TIMER_TRIGGER
+>  	select IIO_TRIGGERED_BUFFER
+>  	help
+>  	  Select this option to enable the core driver for STMicroelectronics
+> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+> index 8d0b74b..30708bc 100644
+> --- a/drivers/iio/adc/stm32-adc.c
+> +++ b/drivers/iio/adc/stm32-adc.c
+> @@ -23,6 +23,7 @@
+>  #include <linux/delay.h>
+>  #include <linux/iio/iio.h>
+>  #include <linux/iio/buffer.h>
+> +#include <linux/iio/timer/stm32-timer-trigger.h>
+>  #include <linux/iio/trigger.h>
+>  #include <linux/iio/trigger_consumer.h>
+>  #include <linux/iio/triggered_buffer.h>
+> @@ -122,6 +123,35 @@ enum stm32_adc_exten {
+>  	STM32_EXTEN_HWTRIG_BOTH_EDGES,
+>  };
+>  
+> +/* extsel - trigger mux selection value */
+> +enum stm32_adc_extsel {
+> +	STM32_EXT0,
+> +	STM32_EXT1,
+> +	STM32_EXT2,
+> +	STM32_EXT3,
+> +	STM32_EXT4,
+> +	STM32_EXT5,
+> +	STM32_EXT6,
+> +	STM32_EXT7,
+> +	STM32_EXT8,
+> +	STM32_EXT9,
+> +	STM32_EXT10,
+> +	STM32_EXT11,
+> +	STM32_EXT12,
+> +	STM32_EXT13,
+> +	STM32_EXT14,
+> +	STM32_EXT15,
+> +};
+> +
+> +/**
+> + * struct stm32_adc_trig_info - ADC trigger info
+> + * @name:		name of the trigger, corresponding to its source
+> + * @extsel:		trigger selection
+> + */
+> +struct stm32_adc_trig_info {
+> +	const char *name;
+> +	enum stm32_adc_extsel extsel;
+> +};
+>  
+>  /**
+>   * struct stm32_adc - private data of each ADC IIO instance
+> @@ -218,6 +248,26 @@ struct stm32_adc_regs {
+>  	{ STM32F4_ADC_SQR1, STM32F4_SQ16_MASK, STM32F4_SQ16_SHIFT },
+>  };
+>  
+> +/* STM32F4 external trigger sources for all instances */
+> +static struct stm32_adc_trig_info stm32f4_adc_timer_trigs[] = {
+> +	{ TIM1_CH1, STM32_EXT0 },
+> +	{ TIM1_CH2, STM32_EXT1 },
+> +	{ TIM1_CH3, STM32_EXT2 },
+> +	{ TIM2_CH2, STM32_EXT3 },
+> +	{ TIM2_CH3, STM32_EXT4 },
+> +	{ TIM2_CH4, STM32_EXT5 },
+> +	{ TIM2_TRGO, STM32_EXT6 },
+> +	{ TIM3_CH1, STM32_EXT7 },
+> +	{ TIM3_TRGO, STM32_EXT8 },
+> +	{ TIM4_CH4, STM32_EXT9 },
+> +	{ TIM5_CH1, STM32_EXT10 },
+> +	{ TIM5_CH2, STM32_EXT11 },
+> +	{ TIM5_CH3, STM32_EXT12 },
+> +	{ TIM8_CH1, STM32_EXT13 },
+> +	{ TIM8_TRGO, STM32_EXT14 },
+> +	{}, /* sentinel */
+> +};
+> +
+>  /**
+>   * STM32 ADC registers access routines
+>   * @adc: stm32 adc instance
+> @@ -362,6 +412,16 @@ static int stm32_adc_conf_scan_seq(struct iio_dev *indio_dev,
+>  static int stm32_adc_get_trig_extsel(struct iio_dev *indio_dev,
+>  				     struct iio_trigger *trig)
+>  {
+> +	int i;
+Ah. This makes more sense than patch 1 on it's own did.
+> +
+> +	/* lookup triggers registered by stm32 timer trigger driver */
+> +	for (i = 0; stm32f4_adc_timer_trigs[i].name; i++) {
+> +		if (is_stm32_timer_trigger(trig) &&
+> +		    !strcmp(stm32f4_adc_timer_trigs[i].name, trig->name)) {
+> +			return stm32f4_adc_timer_trigs[i].extsel;
+Good. The combination of the first check and the name match should make this safe
+against those triggers that can be assigned arbitrary names.
+> +		}
+> +	}
+> +
+>  	return -EINVAL;
+>  }
+>  
 > 
 
