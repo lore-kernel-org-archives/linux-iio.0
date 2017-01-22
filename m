@@ -1,159 +1,40 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40944 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750741AbdAVQEV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Jan 2017 11:04:21 -0500
-Subject: Re: [PATCH 1/2] iio: imu: st_lsm6dsx: add possibility to select drdy
- pin
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-References: <20170122103052.8769-1-lorenzo.bianconi@st.com>
- <20170122103052.8769-2-lorenzo.bianconi@st.com>
- <3ca71ff6-fa9e-449a-8a21-7607ca2c2c55@kernel.org>
- <20170122152033.o5crgdbsemdmv6rk@lorenzobianconi.net>
+Received: from mail-wm0-f67.google.com ([74.125.82.67]:35175 "EHLO
+        mail-wm0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751000AbdAVKa7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Jan 2017 05:30:59 -0500
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
 Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         lorenzo.bianconi@st.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1291016d-d7a2-99b0-0193-3ddc313a8103@kernel.org>
-Date: Sun, 22 Jan 2017 15:54:01 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170122152033.o5crgdbsemdmv6rk@lorenzobianconi.net>
-Content-Type: text/plain; charset=windows-1252
+Subject: [PATCH 2/2] Documentation: dt: iio: imu: st_lsm6dsx: add st,drdy-int-pin property
+Date: Sun, 22 Jan 2017 11:30:52 +0100
+Message-Id: <20170122103052.8769-3-lorenzo.bianconi@st.com>
+In-Reply-To: <20170122103052.8769-1-lorenzo.bianconi@st.com>
+References: <20170122103052.8769-1-lorenzo.bianconi@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/01/17 15:20, Lorenzo Bianconi wrote:
-> Hi Jonathan,
-> 
-> thanks for the review :)
-> 
->> On 22/01/17 10:30, Lorenzo Bianconi wrote:
->>> Add capability to route data ready signal on pin 1 or pin 2 of the package
->>>
->>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
->>> ---
->>>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 66 +++++++++++++++++++++++++---
->>>  1 file changed, 60 insertions(+), 6 deletions(-)
->>>
->>> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> index f869dfa..bc50164 100644
->>> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> @@ -37,11 +37,14 @@
->>>  #include <linux/iio/iio.h>
->>>  #include <linux/iio/sysfs.h>
->>>  
->>> +#include <linux/platform_data/st_sensors_pdata.h>
->>> +
->>>  #include "st_lsm6dsx.h"
->>>  
->>>  #define ST_LSM6DSX_REG_ACC_DEC_MASK		GENMASK(2, 0)
->>>  #define ST_LSM6DSX_REG_GYRO_DEC_MASK		GENMASK(5, 3)
->>>  #define ST_LSM6DSX_REG_INT1_ADDR		0x0d
->>> +#define ST_LSM6DSX_REG_INT2_ADDR		0x0e
->>>  #define ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK	BIT(3)
->>>  #define ST_LSM6DSX_REG_WHOAMI_ADDR		0x0f
->>>  #define ST_LSM6DSX_REG_RESET_ADDR		0x12
->>> @@ -532,10 +535,63 @@ static const struct iio_info st_lsm6dsx_gyro_info = {
->>>  
->>>  static const unsigned long st_lsm6dsx_available_scan_masks[] = {0x7, 0x0};
->>>  
->>> +#ifdef CONFIG_OF
->> Perhaps rely on the -ENOSYS return from
->> of_property_read_u32 stub instead of having the ifdefs around something so
->> simple.
-> 
-> ack, will do in v2
-> 
->>
->>> +static int st_lsm6dsx_of_get_drdy_pin(struct st_lsm6dsx_hw *hw, int *drdy_pin)
->>> +{
->>> +	struct device_node *np = hw->dev->of_node;
->>> +	int err;
->>> +
->>> +	if (!np)
->>> +		return -EINVAL;
->>> +
->>> +	err = of_property_read_u32(np, "st,drdy-int-pin", drdy_pin);
->>> +	if (err == -ENODATA) {
->>> +		/* if the property has not been specified use default value */
->>> +		*drdy_pin = 1;
->>> +		err = 0;
->>> +	}
->>> +
->>> +	return err;
->>> +}
->>> +#else
->>> +static int st_lsm6dsx_of_get_drdy_pin(struct st_lsm6dsx_hw *hw, int *drdy_pin)
->>> +{
->>> +	return -EINVAL;
->>> +}
->>> +#endif /* CONFIG_OF */
->>> +
->>> +static int st_lsm6dsx_get_drdy_reg(struct st_lsm6dsx_hw *hw, u8 *drdy_reg)
->>> +{
->>> +	int err = 0, drdy_pin;
->>> +
->>> +	if (st_lsm6dsx_of_get_drdy_pin(hw, &drdy_pin) < 0) {
->>> +		struct st_sensors_platform_data *pdata;
->>> +		struct device *dev = hw->dev;
->>> +
->>> +		pdata = (struct st_sensors_platform_data *)dev->platform_data;
->>> +		drdy_pin = pdata ? pdata->drdy_int_pin : 1;
->>> +	}
->>> +
->>> +	switch (drdy_pin) {
->>> +	case 1:
->>> +		*drdy_reg = ST_LSM6DSX_REG_INT1_ADDR;
->>> +		break;
->>> +	case 2:
->>> +		*drdy_reg = ST_LSM6DSX_REG_INT2_ADDR;
->>> +		break;
->>> +	default:
->>> +		dev_err(hw->dev, "unsupported data ready pin\n");
->>> +		err = -EINVAL;
->>> +		break;
->>> +	}
->>> +
->>> +	return err;
->>> +}
->>> +
->>>  static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
->>>  {
->>> +	u8 data, drdy_int_reg;
->>>  	int err;
->>> -	u8 data;
->>>  
->>>  	data = ST_LSM6DSX_REG_RESET_MASK;
->>>  	err = hw->tf->write(hw->dev, ST_LSM6DSX_REG_RESET_ADDR, sizeof(data),
->>> @@ -563,14 +619,12 @@ static int st_lsm6dsx_init_device(struct st_lsm6dsx_hw *hw)
->>>  		return err;
->>>  
->>>  	/* enable FIFO watermak interrupt */
->>> -	err = st_lsm6dsx_write_with_mask(hw, ST_LSM6DSX_REG_INT1_ADDR,
->>> -					 ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK, 1);
->>> +	err = st_lsm6dsx_get_drdy_reg(hw, &drdy_int_reg);
->>>  	if (err < 0)
->>>  		return err;
->>>  
->>> -	/* redirect INT2 on INT1 */
->>> -	return st_lsm6dsx_write_with_mask(hw, ST_LSM6DSX_REG_INT2_ON_INT1_ADDR,
->>> -					  ST_LSM6DSX_REG_INT2_ON_INT1_MASK, 1);
->> Does removing this potentially break existing setups?
->>
-> 
-> No, it doesn't since INT2 was not configured yet
-ah. So this was previously effectively a noop. 
-Thanks.
-> 
->>> +	return st_lsm6dsx_write_with_mask(hw, drdy_int_reg,
->>> +					  ST_LSM6DSX_REG_FIFO_FTH_IRQ_MASK, 1);
->>>  }
->>>  
->>>  static struct iio_dev *st_lsm6dsx_alloc_iiodev(struct st_lsm6dsx_hw *hw,
->>>
->>
-> 
-> Regards,
-> Lorenzo
-> 
+Add st,drdy-int-pin property to select interrupt pin of the package
+
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 2 ++
+ 1 file changed, 2 insertions(+)
+
+diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+index ed3cdac..cf81afd 100644
+--- a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
++++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
+@@ -7,6 +7,8 @@ Required properties:
+ - reg: i2c address of the sensor / spi cs line
+ 
+ Optional properties:
++- st,drdy-int-pin: the pin on the package that will be used to signal
++  "data ready" (valid values: 1 or 2).
+ - interrupt-parent: should be the phandle for the interrupt controller
+ - interrupts: interrupt mapping for IRQ. It should be configured with
+   flags IRQ_TYPE_LEVEL_HIGH or IRQ_TYPE_EDGE_RISING.
+-- 
+2.9.3
 
