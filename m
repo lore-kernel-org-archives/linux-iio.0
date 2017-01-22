@@ -1,41 +1,48 @@
-Return-Path: <SRS0=0Pge=ZN=gmail.com=vilhelm.gray@kernel.org>
-Date: Tue, 31 Jan 2017 15:03:35 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linus.walleij@linaro.org, gnurou@gmail.com, linux-gpio@vger.kernel.org,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH 5/5] iio: stx104: Add GPIO set_multiple callback function
- support
-Message-ID: <20170131200335.GA4355@sophia>
-References: <cover.1484838095.git.vilhelm.gray@gmail.com>
- <53039e49d1421a6f070c691988eb22ef0987eba4.1484838095.git.vilhelm.gray@gmail.com>
- <1690f497-7b6a-f82d-b0d9-c395c42e9694@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-io0-f171.google.com ([209.85.223.171]:34040 "EHLO
+        mail-io0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751660AbdAVNdY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Jan 2017 08:33:24 -0500
+Received: by mail-io0-f171.google.com with SMTP id l66so93213220ioi.1
+        for <linux-iio@vger.kernel.org>; Sun, 22 Jan 2017 05:33:23 -0800 (PST)
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <1690f497-7b6a-f82d-b0d9-c395c42e9694@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <53039e49d1421a6f070c691988eb22ef0987eba4.1484838095.git.vilhelm.gray@gmail.com>
+References: <cover.1484838095.git.vilhelm.gray@gmail.com> <53039e49d1421a6f070c691988eb22ef0987eba4.1484838095.git.vilhelm.gray@gmail.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Sun, 22 Jan 2017 14:26:58 +0100
+Message-ID: <CACRpkdZbstNWvjb3_4Zyh89k637hfgY3GJ7_bt8ePrFF=DjTDw@mail.gmail.com>
+Subject: Re: [PATCH 5/5] iio: stx104: Add GPIO set_multiple callback function support
+To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Cc: Alexandre Courbot <gnurou@gmail.com>,
+        "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Content-Type: text/plain; charset=UTF-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Sun, Jan 22, 2017 at 01:23:07PM +0000, Jonathan Cameron wrote:
->On 19/01/17 15:06, William Breathitt Gray wrote:
->> The Apex Embedded Systems STX104 series provides a digital output
->> register where 4 lines may be set at a time. This patch add support for
->> the set_multiple callback function, thus allowing multiple digital
->> output lines to be set more efficiently in groups.
->> 
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> Cc: Hartmut Knaack <knaack.h@gmx.de>
->> Cc: Lars-Peter Clausen <lars@metafoo.de>
->> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
->> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
->Acked-by: Jonathan Cameron <jic23@kernel.org>
+On Thu, Jan 19, 2017 at 4:06 PM, William Breathitt Gray
+<vilhelm.gray@gmail.com> wrote:
 
-Jonathan Cameron,
+> The Apex Embedded Systems STX104 series provides a digital output
+> register where 4 lines may be set at a time. This patch add support for
+> the set_multiple callback function, thus allowing multiple digital
+> output lines to be set more efficiently in groups.
+>
+> Cc: Jonathan Cameron <jic23@kernel.org>
+> Cc: Hartmut Knaack <knaack.h@gmx.de>
+> Cc: Lars-Peter Clausen <lars@metafoo.de>
+> Cc: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
 
-Would you pick this patch up in one of your iio.git branches?
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
-Thanks,
+Best if Jonathan queues this so the changes reside in the
+IIO tree.
 
-William Breathitt Gray
+Yours,
+Linus Walleij
