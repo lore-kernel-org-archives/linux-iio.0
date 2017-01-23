@@ -1,69 +1,34 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:41018 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750741AbdAVQTU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 22 Jan 2017 11:19:20 -0500
-To: Greg KH <gregkh@linuxfoundation.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PULL] Second set of IIO fixes for the 4.10 cycle.
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <907faf53-6c5a-39bd-e87c-a3ab8d2cf915@kernel.org>
-Date: Sun, 22 Jan 2017 16:12:13 +0000
+Received: from mail.linuxfoundation.org ([140.211.169.12]:52088 "EHLO
+        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750703AbdAWI3r (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jan 2017 03:29:47 -0500
+Date: Mon, 23 Jan 2017 09:29:44 +0100
+From: Greg KH <gregkh@linuxfoundation.org>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: Re: [PULL] Second set of IIO fixes for the 4.10 cycle.
+Message-ID: <20170123082944.GC1381@kroah.com>
+References: <907faf53-6c5a-39bd-e87c-a3ab8d2cf915@kernel.org>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <907faf53-6c5a-39bd-e87c-a3ab8d2cf915@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The following changes since commit a121103c922847ba5010819a3f250f1f7fc84ab8:
+On Sun, Jan 22, 2017 at 04:12:13PM +0000, Jonathan Cameron wrote:
+> The following changes since commit a121103c922847ba5010819a3f250f1f7fc84ab8:
+> 
+>   Linux 4.10-rc3 (2017-01-08 14:18:17 -0800)
+> 
+> are available in the git repository at:
+> 
+>   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.10b
+> 
+> for you to fetch changes up to 5c113b5e0082e90d2e1c7b12e96a7b8cf0623e27:
+> 
+>   iio: dht11: Use usleep_range instead of msleep for start signal (2017-01-22 13:35:40 +0000)
 
-  Linux 4.10-rc3 (2017-01-08 14:18:17 -0800)
+Pulled and pushed out, thanks,
 
-are available in the git repository at:
-
-  git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.10b
-
-for you to fetch changes up to 5c113b5e0082e90d2e1c7b12e96a7b8cf0623e27:
-
-  iio: dht11: Use usleep_range instead of msleep for start signal (2017-01-22 13:35:40 +0000)
-
-----------------------------------------------------------------
-Second set of IIO fixes for the 4.10 cycle.
-* afe4403
-  - retrieve valid iio_dev in suspend / resume. Previously using the wrong
-    dev for a call to dev_to_iio_dev.
-* afe4404
-  - retrieve valid iio_dev in suspend / resume. Previously using the wrong
-    dev for a call to dev_to_iio_dev.
-* dht11
-  - Something seems to have caused a regression in timing on the raspberry pi
-    2B.  However, the bug that it threw up was real. msleep was occasionally
-    resulting in very long sleeps, over the limit possible to read from this
-    chip. Switch to usleep_range to avoid this.  The timing needed by this
-    part is very fiddly.
-* max30100
-  - wrong parenthesis around fifo count check meant it always read after the
-    almost_full state had been reached. I've tagged this with a fixes tag which
-    covers the last patch that it will not need precursor patches.  The bug
-    predates that but will need backporting.
-* palmas_gpadc.
-  - retrieve valid iio_dev in suspend / resume. Previously using the wrong
-    dev for a call to dev_to_iio_dev.
-
-----------------------------------------------------------------
-Alison Schofield (3):
-      iio: health: afe4403: retrieve a valid iio_dev in suspend/resume
-      iio: health: afe4404: retrieve a valid iio_dev in suspend/resume
-      iio: adc: palmas_gpadc: retrieve a valid iio_dev in suspend/resume
-
-John Brooks (1):
-      iio: dht11: Use usleep_range instead of msleep for start signal
-
-Matt Ranostay (1):
-      iio: health: max30100: fixed parenthesis around FIFO count check
-
- drivers/iio/adc/palmas_gpadc.c | 4 ++--
- drivers/iio/health/afe4403.c   | 4 ++--
- drivers/iio/health/afe4404.c   | 4 ++--
- drivers/iio/health/max30100.c  | 2 +-
- drivers/iio/humidity/dht11.c   | 6 ++++--
- 5 files changed, 11 insertions(+), 9 deletions(-)
+greg k-h
