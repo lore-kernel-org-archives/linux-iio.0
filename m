@@ -1,18 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:48087 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1751066AbdA3Rf5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2017 12:35:57 -0500
-Subject: Re: [PATCH 6/7] ASoC: add bindings for STM32 DFSDM driver
-To: Jonathan Cameron <jic23@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:36843 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751082AbdAWQft (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 23 Jan 2017 11:35:49 -0500
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
         Lee Jones <lee.jones@linaro.org>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
@@ -20,172 +18,774 @@ To: Jonathan Cameron <jic23@kernel.org>,
         Takashi Iwai <tiwai@suse.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>
-References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
- <1485189145-29576-7-git-send-email-arnaud.pouliquen@st.com>
- <f0f446ea-97a0-8fef-bec5-aefeed42a85a@kernel.org>
 CC: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <71612ea0-c9d0-a85e-2d58-72609df57e35@st.com>
-Date: Mon, 30 Jan 2017 18:32:16 +0100
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        <arnaud.pouliquen@st.com>
+Subject: [PATCH 7/7] ASoC: add STM32 DFSDM support
+Date: Mon, 23 Jan 2017 17:32:25 +0100
+Message-ID: <1485189145-29576-8-git-send-email-arnaud.pouliquen@st.com>
+In-Reply-To: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
+References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-In-Reply-To: <f0f446ea-97a0-8fef-bec5-aefeed42a85a@kernel.org>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Johan,
+Add driver to handle PDM microphones connected to DFSDM IP.
 
-Please find my comments in-line.
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+---
+ sound/soc/Kconfig            |   1 +
+ sound/soc/Makefile           |   1 +
+ sound/soc/stm/Kconfig        |  10 +
+ sound/soc/stm/Makefile       |   2 +
+ sound/soc/stm/stm32_adfsdm.c | 686 +++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 700 insertions(+)
+ create mode 100644 sound/soc/stm/Kconfig
+ create mode 100644 sound/soc/stm/Makefile
+ create mode 100644 sound/soc/stm/stm32_adfsdm.c
 
-Regards
+diff --git a/sound/soc/Kconfig b/sound/soc/Kconfig
+index 182d92e..3836ebe 100644
+--- a/sound/soc/Kconfig
++++ b/sound/soc/Kconfig
+@@ -63,6 +63,7 @@ source "sound/soc/sh/Kconfig"
+ source "sound/soc/sirf/Kconfig"
+ source "sound/soc/spear/Kconfig"
+ source "sound/soc/sti/Kconfig"
++source "sound/soc/stm/Kconfig"
+ source "sound/soc/sunxi/Kconfig"
+ source "sound/soc/tegra/Kconfig"
+ source "sound/soc/txx9/Kconfig"
+diff --git a/sound/soc/Makefile b/sound/soc/Makefile
+index 9a30f21..5440cf7 100644
+--- a/sound/soc/Makefile
++++ b/sound/soc/Makefile
+@@ -43,6 +43,7 @@ obj-$(CONFIG_SND_SOC)	+= sh/
+ obj-$(CONFIG_SND_SOC)	+= sirf/
+ obj-$(CONFIG_SND_SOC)	+= spear/
+ obj-$(CONFIG_SND_SOC)	+= sti/
++obj-$(CONFIG_SND_SOC)	+= stm/
+ obj-$(CONFIG_SND_SOC)	+= sunxi/
+ obj-$(CONFIG_SND_SOC)	+= tegra/
+ obj-$(CONFIG_SND_SOC)	+= txx9/
+diff --git a/sound/soc/stm/Kconfig b/sound/soc/stm/Kconfig
+new file mode 100644
+index 0000000..79aee4e
+--- /dev/null
++++ b/sound/soc/stm/Kconfig
+@@ -0,0 +1,10 @@
++menuconfig SND_SOC_STM32_DFSDM
++	tristate "SoC Audio support for STM32 DFSDM"
++	depends on (ARCH_STM32 && OF && MFD_STM32_DFSDM) || COMPILE_TEST
++	depends on SND_SOC
++	select SND_SOC_GENERIC_DMAENGINE_PCM
++	select SND_SOC_DMIC
++	help
++	  Select this option to enable the STM32 Digital Filter
++	  for Sigma Delta Modulators (DFSDM) driver used
++	  in various STM32 series for digital microphone capture.
+\ No newline at end of file
+diff --git a/sound/soc/stm/Makefile b/sound/soc/stm/Makefile
+new file mode 100644
+index 0000000..ea90240
+--- /dev/null
++++ b/sound/soc/stm/Makefile
+@@ -0,0 +1,2 @@
++#DFSDM
++obj-$(CONFIG_SND_SOC_STM32_DFSDM) += stm32_adfsdm.o
+diff --git a/sound/soc/stm/stm32_adfsdm.c b/sound/soc/stm/stm32_adfsdm.c
+new file mode 100644
+index 0000000..9d34bb7
+--- /dev/null
++++ b/sound/soc/stm/stm32_adfsdm.c
+@@ -0,0 +1,686 @@
++/*
++ * This file is part of STM32 DFSDM ASoC DAI driver
++ *
++ * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
++ * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
++ *          Olivier Moysan <olivier.moysan@st.com>
++ *
++ * License type: GPLv2
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
++ * or FITNESS FOR A PARTICULAR PURPOSE.
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/clk.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#include <sound/dmaengine_pcm.h>
++
++#include <linux/mfd/stm32-dfsdm.h>
++
++/*
++ * Set data output resolution to 23 bits max to keep 1 extra bit for sign,
++ * as filter output is symmetric +/-2^(n-1).
++ */
++#define STM32_ADFSDM_DATA_RES BIT(23)
++#define STM32_ADFSDM_MAX_RES BIT(31)
++#define STM32_ADFSDM_DATAR_DATA_MASK	GENMASK(31, 8)
++
++struct stm32_adfsdm_data {
++	unsigned int rate;	/* SNDRV_PCM_RATE value */
++	unsigned int freq;	/* frequency in Hz */
++	unsigned int fosr;	/* filter over sampling ratio */
++	unsigned int iosr;	/* integrator over sampling ratio */
++	unsigned int fast;	/* filter fast mode */
++	unsigned long res;	/* output data resolution */
++	int shift;		/* shift on data output */
++	bool h_res_found;	/* preferred resolution higher than expected */
++};
++
++static const struct stm32_adfsdm_data stm32_dfsdm_filter[] = {
++	{ .rate = SNDRV_PCM_RATE_8000,  .freq = 8000 },
++	{ .rate = SNDRV_PCM_RATE_16000, .freq = 16000 },
++	{ .rate = SNDRV_PCM_RATE_32000, .freq = 32000 },
++};
++
++static const unsigned int stm32_dfsdm_sr_val[] = {
++	8000,
++	16000,
++	32000,
++};
++
++struct stm32_adfsdm_priv {
++	struct snd_soc_dai_driver dai;
++	struct snd_dmaengine_dai_dma_data dma_data;
++	struct snd_pcm_substream *substream;
++	struct stm32_dfsdm_sinc_filter fl;
++	struct stm32_dfsdm_channel channel;
++	struct stm32_dfsdm_ch_cfg ch_cfg;
++	struct stm32_dfsdm *dfsdm;
++	struct stm32_adfsdm_data *f_param;
++	struct device *dev;
++	struct snd_pcm_hw_constraint_list rates_const;
++	unsigned long dmic_clk;
++	unsigned int input_id;
++	unsigned int fl_id;
++	unsigned int order; /* filter order */
++	int synchro;
++};
++
++static const struct snd_pcm_hardware stm32_adfsdm_pcm_hw = {
++	.info = SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
++	    SNDRV_PCM_INFO_PAUSE | SNDRV_PCM_INFO_MMAP |
++	    SNDRV_PCM_INFO_MMAP_VALID,
++	.formats = SNDRV_PCM_FMTBIT_S24_LE | SNDRV_PCM_FMTBIT_S32_LE,
++
++	.rate_min = 8000,
++	.rate_max = 48000,
++
++	.channels_min = 1,
++	.channels_max = 1,
++
++	.periods_min = 2,
++	.periods_max = 48,
++
++	.period_bytes_min = 40, /* 8 khz 5 ms */
++	.period_bytes_max = 4 * PAGE_SIZE,
++	.buffer_bytes_max = 16 * PAGE_SIZE
++};
++
++static inline void stm32_adfsdm_get_param(struct stm32_adfsdm_priv *priv,
++					  unsigned int rate,
++					  struct stm32_adfsdm_data **fparam)
++{
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(stm32_dfsdm_filter); i++) {
++		if (rate == priv->f_param[i].freq) {
++			*fparam = &priv->f_param[i];
++			break;
++		}
++	}
++}
++
++static int stm32_adfsdm_compute_shift(struct stm32_adfsdm_priv *priv,
++				      struct stm32_adfsdm_data *param)
++{
++	int shift = 0;
++	u32 r = param->res;
++
++	if (!r) {
++		dev_err(priv->dev, "%s: resolution undefined\n", __func__);
++		return -EINVAL;
++	}
++
++	/*
++	 * If filter resolution is higher than data output resolution
++	 * compute right shift required to match data resolution.
++	 * Otherwise compute left shift to align MSB on data resolution.
++	 */
++	if (r >= STM32_ADFSDM_DATA_RES)
++		while ((r >> -shift) >= STM32_ADFSDM_DATA_RES)
++			shift--;
++	else
++		while ((r << shift) < STM32_ADFSDM_DATA_RES)
++			shift++;
++
++	param->shift = shift;
++	dev_dbg(priv->dev, "%s: output shift: %d\n", __func__, shift);
++
++	return 0;
++}
++
++static int stm32_adfsdm_get_best_osr(struct stm32_adfsdm_priv *priv,
++				     unsigned int decim, bool fast,
++				     struct stm32_adfsdm_data *param)
++{
++	unsigned int i, d, fosr, iosr;
++	u64 res;
++	s64 delta;
++	unsigned int m = 1;	/* multiplication factor */
++	unsigned int p = priv->order;	/* filter order (ford) */
++
++	/*
++	 * Decimation d depends on the filter order and the oversampling ratios.
++	 * ford: filter order
++	 * fosr: filter over sampling ratio
++	 * iosr: integrator over sampling ratio
++	 */
++	dev_dbg(priv->dev, "%s: decim = %d fast = %d\n", __func__, decim, fast);
++	if (priv->order == DFSDM_FASTSINC_ORDER) {
++		m = 2;
++		p = 2;
++	}
++
++	/*
++	 * Looks for filter and integrator oversampling ratios which allow
++	 * to reach 24 bits data output resolution.
++	 * Leave at once if exact resolution if reached.
++	 * Otherwise the higher resolution below 32 bits is kept.
++	 */
++	for (fosr = 1; fosr <= DFSDM_MAX_FL_OVERSAMPLING; fosr++) {
++		for (iosr = 1; iosr <= DFSDM_MAX_INT_OVERSAMPLING; iosr++) {
++			if (fast)
++				d = fosr * iosr;
++			else if (priv->order == DFSDM_FASTSINC_ORDER)
++				d = fosr * (iosr + 3) + 2;
++			else
++				d = fosr * (iosr - 1 + p) + p;
++
++			if (d > decim)
++				break;
++			else if (d != decim)
++				continue;
++			/*
++			 * Check resolution (limited to signed 32 bits)
++			 *   res <= 2^31
++			 * Sincx filters:
++			 *   res = m * fosr^p x iosr (with m=1, p=ford)
++			 * FastSinc filter
++			 *   res = m * fosr^p x iosr (with m=2, p=2)
++			 */
++			res = fosr;
++			for (i = p - 1; i > 0; i--) {
++				res = res * (u64)fosr;
++				if (res > STM32_ADFSDM_MAX_RES)
++					break;
++			}
++			if (res > STM32_ADFSDM_MAX_RES)
++				continue;
++			res = res * (u64)m * (u64)iosr;
++			if (res > STM32_ADFSDM_MAX_RES)
++				continue;
++
++			delta = res - STM32_ADFSDM_DATA_RES;
++
++			if (res >= param->res) {
++				param->res = res;
++				param->fosr = fosr;
++				param->iosr = iosr;
++				param->fast = fast;
++			}
++
++			if (!delta)
++				return 0;
++		}
++	}
++
++	if (!param->fosr)
++		return -EINVAL;
++
++	return 0;
++}
++
++static int stm32_adfsdm_get_supported_rates(struct stm32_adfsdm_priv *priv,
++					    unsigned int *rates)
++{
++	unsigned long fs = priv->dmic_clk;
++	unsigned int i, decim;
++	int ret;
++
++	*rates = 0;
++
++	for (i = 0; i < ARRAY_SIZE(stm32_dfsdm_filter); i++) {
++		/* check that clkout_freq is compatible */
++		if ((fs % priv->f_param[i].freq) != 0)
++			continue;
++
++		decim = fs / priv->f_param[i].freq;
++
++		/*
++		 * Try to find one solution for filter and integrator
++		 * oversampling ratio with fast mode ON or OFF.
++		 * Fast mode on is the preferred solution.
++		 */
++		ret = stm32_adfsdm_get_best_osr(priv, decim, 0,
++						&priv->f_param[i]);
++		ret &= stm32_adfsdm_get_best_osr(priv, decim, 1,
++						 &priv->f_param[i]);
++		if (!ret) {
++			ret = stm32_adfsdm_compute_shift(priv,
++							 &priv->f_param[i]);
++			if (ret)
++				continue;
++
++			*rates |= 1 << i;
++			dev_dbg(priv->dev, "%s: %d rate supported\n", __func__,
++				priv->f_param[i].freq);
++		}
++	}
++
++	if (!*rates) {
++		dev_err(priv->dev, "%s: no matched rate found\n", __func__);
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static void stm32_dfsdm_xrun(struct stm32_dfsdm *dfsdm, int flt_id,
++			     enum stm32_dfsdm_events ev, unsigned int param,
++			     void *context)
++{
++	struct stm32_adfsdm_priv *priv = context;
++
++	snd_pcm_stream_lock(priv->substream);
++	dev_err(priv->dev, "%s:unexpected underrun\n", __func__);
++	/* Stop the player */
++	stm32_dfsdm_unregister_fl_event(priv->dfsdm, priv->fl_id,
++					DFSDM_EVENT_REG_XRUN, 0);
++	snd_pcm_stop(priv->substream, SNDRV_PCM_STATE_XRUN);
++	snd_pcm_stream_unlock(priv->substream);
++}
++
++static int stm32_adfsdm_copy(struct snd_pcm_substream *substream, int channel,
++			     snd_pcm_uframes_t pos,
++			     void __user *buf, snd_pcm_uframes_t count)
++{
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(rtd->cpu_dai);
++	struct stm32_adfsdm_data *f_param;
++	int *ptr = (int *)(runtime->dma_area + frames_to_bytes(runtime, pos));
++	char *hwbuf = runtime->dma_area + frames_to_bytes(runtime, pos);
++	ssize_t bytes = frames_to_bytes(runtime, count);
++	ssize_t sample_cnt = bytes_to_samples(runtime, bytes);
++
++	stm32_adfsdm_get_param(priv, runtime->rate, &f_param);
++
++	/*
++	 * Audio samples are available on 24 MSBs of the DFSDM DATAR register.
++	 * We need to mask 8 LSB control bits...
++	 * Additionnaly precision depends on decimation and can need shift
++	 * to be aligned on 32-bit word MSB.
++	 */
++	if (f_param->shift > 0) {
++		do {
++			*ptr <<= f_param->shift & STM32_ADFSDM_DATAR_DATA_MASK;
++			ptr++;
++		} while (--sample_cnt);
++	} else {
++		do {
++			*ptr &= STM32_ADFSDM_DATAR_DATA_MASK;
++			ptr++;
++		} while (--sample_cnt);
++	}
++
++	return copy_to_user(buf, hwbuf, bytes);
++}
++
++static int stm32_adfsdm_startup(struct snd_pcm_substream *substream,
++				struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++
++	priv->substream = substream;
++
++	/* Fix available rate depending on CLKOUT or CKIN value */
++	return snd_pcm_hw_constraint_list(substream->runtime, 0,
++					  SNDRV_PCM_HW_PARAM_RATE,
++					  &priv->rates_const);
++}
++
++static void stm32_adfsdm_shutdown(struct snd_pcm_substream *substream,
++				  struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++
++	priv->substream = NULL;
++}
++
++static int stm32_adfsdm_dai_hw_params(struct snd_pcm_substream *substream,
++				      struct snd_pcm_hw_params *params,
++				      struct snd_soc_dai *dai)
++{
++	struct snd_dmaengine_dai_dma_data *dma_data;
++
++	dev_dbg(dai->dev, "%s: enter\n", __func__);
++	dma_data = snd_soc_dai_get_dma_data(dai, substream);
++	dma_data->maxburst = 1;
++
++	return 0;
++}
++
++static int stm32_adfsdm_prepare(struct snd_pcm_substream *substream,
++				struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct stm32_adfsdm_data *f_param;
++	struct stm32_dfsdm_filter filter;
++	struct stm32_dfsdm_regular params;
++	int ret;
++
++	dev_dbg(dai->dev, "%s: enter\n", __func__);
++
++	stm32_adfsdm_get_param(priv, runtime->rate, &f_param);
++
++	memset(&filter, 0, sizeof(filter));
++	memset(&params, 0, sizeof(params));
++
++	params.ch_src = priv->channel.id;
++	params.dma_mode = 1;
++	params.cont_mode = 1;
++	params.fast_mode = f_param->fast;
++	params.sync_mode = priv->synchro ?
++	    DFSDM_FILTER_RSYNC_ON : DFSDM_FILTER_RSYNC_OFF;
++	filter.reg_params = &params;
++	filter.sinc_params.order = priv->order;
++	filter.sinc_params.oversampling = f_param->fosr;
++	filter.int_oversampling = f_param->iosr;
++
++	filter.event.cb = stm32_dfsdm_xrun;
++	filter.event.context = priv;
++
++	ret = stm32_dfsdm_configure_filter(priv->dfsdm, priv->fl_id, &filter);
++	if (ret < 0)
++		return ret;
++
++	ret = stm32_dfsdm_register_fl_event(priv->dfsdm, priv->fl_id,
++					    DFSDM_EVENT_REG_XRUN, 0);
++	if (ret < 0)
++		dev_err(priv->dev, "Failed to register xrun event\n");
++
++	return ret;
++}
++
++static int stm32_adfsdm_start(struct snd_pcm_substream *substream,
++			      struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++	struct snd_pcm_runtime *runtime = substream->runtime;
++	struct stm32_adfsdm_data *f_param;
++	int ret;
++
++	dev_dbg(dai->dev, "%s: enter\n", __func__);
++
++	stm32_adfsdm_get_param(priv, runtime->rate, &f_param);
++	if (f_param->shift < 0)
++		priv->ch_cfg.right_bit_shift = -f_param->shift;
++
++	ret = stm32_dfsdm_start_channel(priv->dfsdm, priv->channel.id,
++					&priv->ch_cfg);
++	if (ret < 0)
++		return ret;
++
++	stm32_dfsdm_start_filter(priv->dfsdm, priv->fl_id,
++				 DFSDM_FILTER_REG_CONV);
++
++	return 0;
++}
++
++static void stm32_adfsdm_stop(struct snd_pcm_substream *substream,
++			      struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++
++	dev_dbg(dai->dev, "%s: enter\n", __func__);
++
++	stm32_dfsdm_unregister_fl_event(priv->dfsdm, priv->fl_id,
++					DFSDM_EVENT_REG_XRUN, 0);
++	stm32_dfsdm_stop_filter(priv->dfsdm, priv->fl_id);
++	stm32_dfsdm_stop_channel(priv->dfsdm, priv->channel.id);
++}
++
++static int stm32_adfsdm_trigger(struct snd_pcm_substream *substream, int cmd,
++				struct snd_soc_dai *dai)
++{
++	switch (cmd) {
++	case SNDRV_PCM_TRIGGER_START:
++	case SNDRV_PCM_TRIGGER_RESUME:
++		return stm32_adfsdm_start(substream, dai);
++	case SNDRV_PCM_TRIGGER_SUSPEND:
++	case SNDRV_PCM_TRIGGER_STOP:
++		stm32_adfsdm_stop(substream, dai);
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int stm32_adfsdm_set_dai_fmt(struct snd_soc_dai *dai, unsigned int fmt)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++	unsigned int inv = fmt & SND_SOC_DAIFMT_INV_MASK;
++	unsigned int cb = fmt & SND_SOC_DAIFMT_MASTER_MASK;
++	int ret;
++
++	dev_dbg(dai->dev, "%s: enter\n", __func__);
++
++	/* DAI clock strobing */
++	if ((inv == SND_SOC_DAIFMT_IB_NF) || (inv == SND_SOC_DAIFMT_IB_IF)) {
++		priv->channel.serial_if.type = DFSDM_CHANNEL_SPI_FALLING;
++		priv->channel.serial_if.pins = DFSDM_CHANNEL_NEXT_CHANNEL_PINS;
++		/*
++		 * if data on falling egde SPI connected to channel n - 1.
++		 * if data on rising egde  SPI connected to channel n.
++		 */
++		if (priv->input_id)
++			priv->channel.id = priv->input_id - 1;
++		else
++			priv->channel.id = priv->dfsdm->max_channels - 1;
++	} else {
++		priv->channel.serial_if.type = DFSDM_CHANNEL_SPI_RISING;
++		priv->channel.serial_if.pins = DFSDM_CHANNEL_SAME_CHANNEL_PINS;
++		priv->channel.id = priv->input_id;
++	}
++
++	dev_dbg(dai->dev, "%s: channel %d on input %d\n", __func__,
++		priv->channel.id, priv->input_id);
++
++	if ((cb == SND_SOC_DAIFMT_CBS_CFM) || (cb == SND_SOC_DAIFMT_CBS_CFS)) {
++		/* Digital microphone is clocked by CLKOUT */
++		stm32_dfsdm_get_clk_out_rate(priv->dfsdm, &priv->dmic_clk);
++	} else {
++		/* Digital microphone is clocked by external clock */
++		if (!priv->dmic_clk) {
++			dev_err(priv->dev,
++				"system-clock-frequency not defined\n");
++			return -EINVAL;
++		}
++	}
++
++	priv->rates_const.count = ARRAY_SIZE(stm32_dfsdm_sr_val);
++	priv->rates_const.list = stm32_dfsdm_sr_val;
++	ret = stm32_adfsdm_get_supported_rates(priv, &priv->rates_const.mask);
++	if (ret < 0)
++		return ret;
++
++	return stm32_dfsdm_get_channel(priv->dfsdm, &priv->channel);
++}
++
++static int stm32_adfsdm_set_sysclk(struct snd_soc_dai *dai, int clk_id,
++				   unsigned int freq, int dir)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++
++	dev_dbg(dai->dev, "%s: enter for dai %d\n", __func__, dai->id);
++	if (dir == SND_SOC_CLOCK_IN)
++		priv->dmic_clk = freq;
++
++	return 0;
++}
++
++static const struct snd_soc_dai_ops stm32_adfsdm_dai_ops = {
++	.startup = stm32_adfsdm_startup,
++	.shutdown = stm32_adfsdm_shutdown,
++	.hw_params = stm32_adfsdm_dai_hw_params,
++	.set_fmt = stm32_adfsdm_set_dai_fmt,
++	.set_sysclk = stm32_adfsdm_set_sysclk,
++	.prepare = stm32_adfsdm_prepare,
++	.trigger = stm32_adfsdm_trigger,
++};
++
++static int stm32_adfsdm_dai_probe(struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++	struct snd_dmaengine_dai_dma_data *dma = &priv->dma_data;
++	int ret;
++
++	dev_dbg(dai->dev, "%s: enter for dai %d\n", __func__, dai->id);
++
++	/* filter settings */
++	ret = stm32_dfsdm_get_filter(priv->dfsdm, priv->fl_id);
++	if (ret < 0)
++		return -EBUSY;
++
++	/* DMA settings */
++	snd_soc_dai_init_dma_data(dai, NULL, dma);
++	dma->addr = stm32_dfsdm_get_filter_dma_phy_addr(priv->dfsdm,
++							priv->fl_id,
++							DFSDM_FILTER_REG_CONV);
++	dma->addr_width = DMA_SLAVE_BUSWIDTH_4_BYTES;
++
++	return 0;
++}
++
++static int stm32_adfsdm_dai_remove(struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++
++	dev_dbg(dai->dev, "%s: enter for dai %d\n", __func__, dai->id);
++
++	stm32_dfsdm_release_filter(priv->dfsdm, priv->fl_id);
++	stm32_dfsdm_release_channel(priv->dfsdm, priv->channel.id);
++
++	return 0;
++}
++
++static const struct snd_soc_dai_driver stm32_adfsdm_dai = {
++	.capture = {
++		    .channels_min = 1,
++		    .channels_max = 1,
++		    .formats = SNDRV_PCM_FMTBIT_S24_LE |
++			       SNDRV_PCM_FMTBIT_S32_LE,
++		    .rates = SNDRV_PCM_RATE_8000_48000,
++		    },
++	.probe = stm32_adfsdm_dai_probe,
++	.remove = stm32_adfsdm_dai_remove,
++	.ops = &stm32_adfsdm_dai_ops,
++};
++
++static const struct snd_soc_component_driver stm32_adfsdm_dai_component = {
++	.name = "sti_cpu_dai",
++};
++
++static const struct snd_dmaengine_pcm_config dmaengine_pcm_config = {
++	.pcm_hardware = &stm32_adfsdm_pcm_hw,
++	.prepare_slave_config = snd_dmaengine_pcm_prepare_slave_config,
++	.copy = stm32_adfsdm_copy,
++};
++
++static int stm32_adfsdm_probe(struct platform_device *pdev)
++{
++	struct stm32_adfsdm_priv *priv;
++	struct device_node *np = pdev->dev.of_node;
++	char *_name;
++	int ret;
++
++	dev_dbg(&pdev->dev, "%s: enter for node %s\n", __func__,
++		np->name);
++
++	if (!np) {
++		dev_err(&pdev->dev, "No DT found\n");
++		return -EINVAL;
++	}
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->dev = &pdev->dev;
++	priv->dfsdm = dev_get_drvdata(pdev->dev.parent);
++
++	if (of_property_read_u32(np, "reg", &priv->fl_id)) {
++		dev_err(&pdev->dev, "missing reg property\n");
++		return -EINVAL;
++	}
++
++	ret = of_property_read_u32(np, "st,dai-filter-order", &priv->order);
++	if (ret < 0) {
++		dev_warn(&pdev->dev, "Default filter order selected\n");
++		priv->order = DFSDM_SINC5_ORDER;
++	}
++
++	ret = of_property_read_u32(np, "st,input-id", &priv->input_id);
++	if (ret < 0) {
++		dev_err(&pdev->dev, "st,input-id property missing\n");
++		return ret;
++	}
++
++	ret = of_property_read_u32(np, "st,dai0-synchronized", &priv->synchro);
++	if (ret < 0)
++		/* default case if property not defined */
++		priv->synchro = 0;
++
++	priv->channel.type.DataPacking = DFSDM_CHANNEL_STANDARD_MODE;
++	priv->channel.type.source = DFSDM_CHANNEL_EXTERNAL_INPUTS;
++	priv->channel.serial_if.spi_clk = DFSDM_CHANNEL_SPI_CLOCK_INTERNAL;
++
++	/* DAI settings */
++	_name = devm_kzalloc(&pdev->dev, sizeof("dfsdm_pdm_0"), GFP_KERNEL);
++	if (!_name)
++		return -ENOMEM;
++
++	priv->dai = stm32_adfsdm_dai;
++
++	priv->f_param = devm_kcalloc(&pdev->dev,
++				     ARRAY_SIZE(stm32_dfsdm_filter),
++				     sizeof(stm32_dfsdm_filter[0]), GFP_KERNEL);
++	if (!priv->f_param)
++		return -ENOMEM;
++
++	memcpy(priv->f_param, stm32_dfsdm_filter,
++	       ARRAY_SIZE(stm32_dfsdm_filter) * sizeof(stm32_dfsdm_filter[0]));
++
++	snprintf(_name, sizeof("dfsdm_pdm_0"), "dfsdm_pdm_%i", priv->fl_id);
++	priv->dai.name = _name;
++	priv->dai.capture.stream_name = _name;
++
++	dev_set_drvdata(&pdev->dev, priv);
++
++	ret = devm_snd_soc_register_component(&pdev->dev,
++					      &stm32_adfsdm_dai_component,
++					      &priv->dai, 1);
++	if (ret < 0)
++		return ret;
++
++	ret = devm_snd_dmaengine_pcm_register(&pdev->dev,
++					      &dmaengine_pcm_config, 0);
++	if (ret < 0)
++		dev_err(&pdev->dev, "failed to register dma pcm config\n");
++
++	return ret;
++}
++
++static const struct of_device_id snd_soc_dfsdm_match[] = {
++	{.compatible = "st,stm32-dfsdm-audio"},
++	{},
++};
++
++static struct platform_driver stm32_adfsdm_driver = {
++	.driver = {
++		   .name = "stm32-dfsdm-audio",
++		   .of_match_table = snd_soc_dfsdm_match,
++		   },
++	.probe = stm32_adfsdm_probe,
++};
++
++module_platform_driver(stm32_adfsdm_driver);
++
++MODULE_DESCRIPTION("stm32 DFSDM DAI driver");
++MODULE_AUTHOR("Arnaud Pouliquen <arnaud.pouliquen@st.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
-Arnaud
-
-On 01/29/2017 01:19 PM, Jonathan Cameron wrote:
-> On 23/01/17 16:32, Arnaud Pouliquen wrote:
->> This patch adds documentation of device tree bindings for the
->> STM32 DFSDM ASoC driver.
->>
->> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->> ---
->>  .../devicetree/bindings/sound/st,sm32-adfsdm.txt   | 84 ++++++++++++++++++++++
->>  1 file changed, 84 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
->>
->> diff --git a/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt b/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
->> new file mode 100644
->> index 0000000..a1d27b8
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
->> @@ -0,0 +1,84 @@
->> +STMicroelectronics STM32 ADFSDM ASoC DAI device driver.
->> +
->> +STM32 ADFSDM ASoC is a sigma delta audio interface for digital microphone.
->> +It has to be declared in device-tree as a subnode of the DFSDM mfd node.
->> +
->> +It offers possibility to record several mono microphones, with an option to
->> +synchronize all microphones on a main one (that must be piped to filter 0)
->> +Audio interface can be exposed through the generic ASoC simple card.
->> +
->> +2 Dmics can be connected on one SPI interface instance n.
->> +Convention is that the DMIC that strobes data on rising edge is connected to the
->> +corresponding DFSDM channel n; while the Dmic that strobes data on falling edge
->> +is connected to the channel n-1. Simple card property "bitclock-inversion = <1>"
->> +is used to specify that microphone strobes data on falling edge.
->> +
->> +SPI interface allows to be scheduled by an external SPI clock. To use it
->> +simple card properties "bitclock-master = <&codec>" and "system-clock-frequency"
->> +have to be defined in dai-link node.
->> +
->> +Required properties:
->> +- compatible: 	Must be "st,stm32-dfsdm-audio",
->> +- reg:		Specifies the DFSDM filter instance.
->> +- interrupts: 	DFSDM filter instance interrupt line.
->> +- dma:		DMA controller phandle and DMA request line associated to the
->> +		filter instance ( specified by the field "reg")
->> +- dma-names: 	must be "rx"
->> +
->> +- st,input-id:		Id of the SPI/Manchester interface used.
->> +- st,dai-filter-order:  SinC filter order from 0 to 5.
->> +			0: FastSinC
->> +			[1-5]: order 1 to 5.
->> +			For audio purpose it is recommended to use order 3 to 5.
-> Interesting for audio you consider it feature of the hardware, but for ADC you
-> consider that this should be userspace controlled.
-> Personally I'd like to see more detail on those filters but if this is convention
-> in Asoc then so be it.
-
-Configure filter and integrator is quite tricky. Updating filter and
-integrator parameters have impact on sample resolution and output sample
-rate.
-Sample resolution is the peak to peak data value and depends on
-oversampling parameters and filter order.
-
-Output sample rate depends on SPI input clock frequency oversampling
-parameters and filter order.
-
-High filter order gives a better resolution and a better filter response
-but allows less dynamic to find the good rate...
-
-So it is a compromise between resolution, rate and filtering.
-
-For ADC use case, filter orders 1 to 3 are recommended.
-For audio use case, orders 3 to 5 are recommended.
-
-On IIO side i proposed to expose tuning in ABI, to allows application
-fine tuning.
-Need to document it...
-
-For ASOC it is another story. Application requests a rate and a sample
-format. So filter parameters are computed based on SPI bus clock
-frequency, expected audio sample rate and audio sample format.
-This is done in stm32_adfsdm_get_best_osr in sound/soc/stm/stm32_adfsdm.c.
-
-Now your comment trig a good point. Perhaps a better option in IIO,
-could be to offer same kind of ABI than ASOC interface:
-- standard oversampling-ratio ABI. based on it filter and integrator
-oversampling ratios will be computed to maximize the resolution.
-- a read only resolution ABI:
-/sys/bus/iio/devices/iio:deviceX/in_adc_x_resolution. That give the
-computed resolution.
-
-In this case filter order will be part of the DT for IIO and ASoC.
-This would also match with a redesign of the DFSDM driver in IIO...
-
->> +
->> +Optional properties:
->> + - st,dai0-synchronized: Set to 1 to synchronize DAI with DFSDM instance 0.
->> +
->> +Exemple of a card with 2 Dmics synchronized and connected on SPI interface 1.
-> Example.
->> +
->> +	dfsdm: dfsdm@4400D000 {
->> +		dai_dfsdm0: dfsdm-audio@0 {
->> +			compatible = "st,stm32-dfsdm-audio";
->> +			#sound-dai-cells = <0>;
->> +			reg = <0>;
->> +			dmas = <&dmamux1 101 0x400 0x00>;
->> +			dma-names = "rx";
->> +			st,input-id = <0>;
->> +			st,dai-filter-order = <5>;
->> +		};
->> +		dai_dfsdm1: dfsdm-audio@1 {
->> +			compatible = "st,stm32-dfsdm-audio";
->> +			#sound-dai-cells = <0>;
->> +			reg = <0>;
->> +			dmas = <&dmamux1 102 0x400 0x00>;
->> +			dma-names = "rx";
->> +			st,input-id = <0>;
->> +			st,dai0-synchronized = <1>;
->> +			st,dai-filter-order = <5>;
->> +		};
->> +	};
->> +	sound_dfsdm_pdm {
->> +		compatible = "simple-audio-card";
->> +		simple-audio-card,name = "dfsdm_pdm";
->> +		status = "okay";
->> +
->> +		dfsdm0_mic0: simple-audio-card,dai-link@0 {
->> +			format = "pdm";
->> +			cpu {
->> +				sound-dai = <&dai_dfsdm0>;
->> +			};
->> +			dmic0_codec: codec {
->> +				sound-dai = <&dmic0>;
->> +			};
->> +		};
->> +		dfsdm0_mic1: simple-audio-card,dai-link@1 {
->> +			format = "pdm";
->> +			bitclock-inversion = <1>;
->> +			cpu {
->> +				sound-dai = <&dai_dfsdm1>;
->> +			};
->> +			codec {
->> +				sound-dai = <&dmic1>;
->> +			};
->> +		};
->> +	};
->>
-> Jonathan
-> 
