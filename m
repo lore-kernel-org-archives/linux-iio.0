@@ -1,346 +1,151 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46091 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751651AbdA1PIs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 10:08:48 -0500
-Subject: Re: [PATCH] iio: cros_ec: Add cros_ec barometer driver
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Olof Johansson <olof@lixom.net>,
-        Lee Jones <lee.jones@linaro.org>
-References: <20170124134141.30751-1-enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <12937a3f-f32c-c6db-c17b-8f9715a9fe14@kernel.org>
-Date: Sat, 28 Jan 2017 15:08:24 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170124134141.30751-1-enric.balletbo@collabora.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-ot0-f194.google.com ([74.125.82.194]:36045 "EHLO
+        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750826AbdAXS1L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jan 2017 13:27:11 -0500
+From: Marek Vasut <marek.vasut@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Marek Vasut <marek.vasut@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH V8 1/2] iio: adc: Add Renesas GyroADC bindings
+Date: Tue, 24 Jan 2017 19:26:41 +0100
+Message-Id: <20170124182642.29396-1-marek.vasut@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/01/17 13:41, Enric Balletbo i Serra wrote:
-> From: Gwendal Grignou <gwendal@chromium.org>
-> 
-> Handle the barometer sensor presented by the ChromeOS EC Sensor hub.
-> 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Enric Balletbo Serra <enric.balletbo@collabora.com>
-Some really trivial stuff inline, but I'm happy to take this as is.
-If you would like to pickup implementing the suggested core function
-for the timestamp that would be cool. If not it'll happen one day!
+Add DT bindings for the Renesas RCar GyroADC block. This block is
+a simple 4/8-channel ADC which samples 12/15/24 bits of data every
+cycle from all channels.
 
-So applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Signed-off-by: Marek Vasut <marek.vasut@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Simon Horman <horms+renesas@verge.net.au>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-renesas-soc@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org
+---
+V8: - Sync the version with the 2/2 driver patch
+    - Drop status prop from example
+    - Add GyroADC block description
+    - Enumerate the compatible string values
+    - Make subnodes mandatory
+---
+ .../bindings/iio/adc/renesas,gyroadc.txt           | 99 ++++++++++++++++++++++
+ 1 file changed, 99 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
 
-Thanks,
-
-Jonathan
-> ---
->  drivers/iio/pressure/Kconfig          |  10 ++
->  drivers/iio/pressure/Makefile         |   1 +
->  drivers/iio/pressure/cros_ec_baro.c   | 220 ++++++++++++++++++++++++++++++++++
->  drivers/platform/chrome/cros_ec_dev.c |   3 +
->  include/linux/mfd/cros_ec_commands.h  |   3 +-
->  5 files changed, 236 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/pressure/cros_ec_baro.c
-> 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index bd8d96b..5d16b25 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -42,6 +42,16 @@ config BMP280_SPI
->  	depends on SPI_MASTER
->  	select REGMAP
->  
-> +config IIO_CROS_EC_BARO
-> +	tristate "ChromeOS EC Barometer Sensor"
-> +	depends on IIO_CROS_EC_SENSORS_CORE
-> +	help
-> +	  Say yes here to build support for the Barometer sensor when
-> +	  presented by the ChromeOS EC Sensor hub.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called cros_ec_baro.
-> +
->  config HID_SENSOR_PRESS
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-> index de3dbc8..8386427 100644
-> --- a/drivers/iio/pressure/Makefile
-> +++ b/drivers/iio/pressure/Makefile
-> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMP280) += bmp280.o
->  bmp280-objs := bmp280-core.o bmp280-regmap.o
->  obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
->  obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
-> +obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
->  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
->  obj-$(CONFIG_HP03) += hp03.o
->  obj-$(CONFIG_MPL115) += mpl115.o
-> diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-> new file mode 100644
-> index 0000000..48b2a30
-> --- /dev/null
-> +++ b/drivers/iio/pressure/cros_ec_baro.c
-> @@ -0,0 +1,220 @@
-> +/*
-> + * cros_ec_baro - Driver for barometer sensor behind CrosEC.
-> + *
-> + * Copyright (C) 2017 Google, Inc
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include "../common/cros_ec_sensors/cros_ec_sensors_core.h"
-> +
-> +/*
-> + * One channel for pressure, the other for timestamp.
-> + */
-> +#define CROS_EC_BARO_MAX_CHANNELS (1 + 1)
-> +
-> +/* State data for ec_sensors iio driver. */
-> +struct cros_ec_baro_state {
-> +	/* Shared by all sensors */
-> +	struct cros_ec_sensors_core_state core;
-> +
-> +	struct iio_chan_spec channels[CROS_EC_BARO_MAX_CHANNELS];
-> +};
-> +
-> +static int cros_ec_baro_read(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
-> +{
-> +	struct cros_ec_baro_state *st = iio_priv(indio_dev);
-> +	u16 data = 0;
-> +	int ret = IIO_VAL_INT;
-> +	int idx = chan->scan_index;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
-> +					     (s16 *)&data) < 0)
-> +			ret = -EIO;
-> +		*val = data;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
-> +
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +		*val = st->core.resp->sensor_range.ret;
-> +
-> +		/* scale * in_pressure_raw --> kPa */
-> +		*val2 = 10 << CROS_EC_SENSOR_BITS;
-> +		ret = IIO_VAL_FRACTIONAL;
-> +		break;
-> +	default:
-> +		ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
-> +						mask);
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int cros_ec_baro_write(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val, int val2, long mask)
-> +{
-> +	struct cros_ec_baro_state *st = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = val;
-> +
-> +		/* Always roundup, so caller gets at least what it asks for. */
-> +		st->core.param.sensor_range.roundup = 1;
-> +
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
-> +			ret = -EIO;
-> +		break;
-> +	default:
-> +		ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
-> +						 mask);
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info cros_ec_baro_info = {
-> +	.read_raw = &cros_ec_baro_read,
-> +	.write_raw = &cros_ec_baro_write,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int cros_ec_baro_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-> +	struct cros_ec_device *ec_device;
-> +	struct iio_dev *indio_dev;
-> +	struct cros_ec_baro_state *state;
-> +	struct iio_chan_spec *channel;
-> +	int ret;
-> +
-> +	if (!ec_dev || !ec_dev->ec_dev) {
-> +		dev_warn(dev, "No CROS EC device found.\n");
-> +		return -EINVAL;
-> +	}
-> +	ec_device = ec_dev->ec_dev;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->info = &cros_ec_baro_info;
-> +	state = iio_priv(indio_dev);
-> +	state->core.type = state->core.resp->info.type;
-> +	state->core.loc = state->core.resp->info.location;
-> +	channel = state->channels;
-> +	/* Common part */
-> +	channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> +	channel->info_mask_shared_by_all =
-> +		BIT(IIO_CHAN_INFO_SCALE) |
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +		BIT(IIO_CHAN_INFO_FREQUENCY);
-> +	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.shift = 0;
-If shift is zero, normally we just don't bother setting it as it
-is an obvious default.
-> +	channel->scan_index = 0;
-> +	channel->ext_info = cros_ec_sensors_ext_info;
-> +	channel->scan_type.sign = 'u';
-> +
-> +	state->core.calib[0] = 0;
-> +
-> +	/* Sensor specific */
-> +	switch (state->core.type) {
-> +	case MOTIONSENSE_TYPE_BARO:
-> +		channel->type = IIO_PRESSURE;
-> +		break;
-> +	default:
-> +		dev_warn(dev, "Unknown motion sensor\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Timestamp */
-> +	channel++;
-Hmm. Rather feels like we should have a macro or inline function in the
-core for this given it is increasinly common.
-
-inline void iio_setup_soft_timestamp(struct iio_chan *chan, int index) {
-       chan->type = IIO_TIMESTAMP;
-       etc.
-}
-> +	channel->type = IIO_TIMESTAMP;
-> +	channel->channel = -1;
-> +	channel->scan_index = 1;
-> +	channel->scan_type.sign = 's';
-> +	channel->scan_type.realbits = 64;
-> +	channel->scan_type.storagebits = 64;
-> +
-> +	indio_dev->channels = state->channels;
-> +	indio_dev->num_channels = CROS_EC_BARO_MAX_CHANNELS;
-> +
-> +	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-> +					      cros_ec_sensors_capture, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct platform_device_id cros_ec_baro_ids[] = {
-> +	{
-> +		.name = "cros-ec-baro",
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
-> +
-> +static struct platform_driver cros_ec_baro_platform_driver = {
-> +	.driver = {
-> +		.name	= "cros-ec-baro",
-> +	},
-> +	.probe		= cros_ec_baro_probe,
-> +	.id_table	= cros_ec_baro_ids,
-> +};
-> +module_platform_driver(cros_ec_baro_platform_driver);
-> +
-> +MODULE_DESCRIPTION("ChromeOS EC barometer sensor driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
-> index df5894f..eaa5d1b 100644
-> --- a/drivers/platform/chrome/cros_ec_dev.c
-> +++ b/drivers/platform/chrome/cros_ec_dev.c
-> @@ -329,6 +329,9 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
->  		case MOTIONSENSE_TYPE_ACCEL:
->  			sensor_cells[id].name = "cros-ec-accel";
->  			break;
-> +		case MOTIONSENSE_TYPE_BARO:
-> +			sensor_cells[id].name = "cros-ec-baro";
-> +			break;
->  		case MOTIONSENSE_TYPE_GYRO:
->  			sensor_cells[id].name = "cros-ec-gyro";
->  			break;
-> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-> index 22e5d75..a01dde4 100644
-> --- a/include/linux/mfd/cros_ec_commands.h
-> +++ b/include/linux/mfd/cros_ec_commands.h
-> @@ -1463,7 +1463,8 @@ enum motionsensor_type {
->  	MOTIONSENSE_TYPE_PROX = 3,
->  	MOTIONSENSE_TYPE_LIGHT = 4,
->  	MOTIONSENSE_TYPE_ACTIVITY = 5,
-> -	MOTIONSENSE_TYPE_MAX
-> +	MOTIONSENSE_TYPE_BARO = 6,
-> +	MOTIONSENSE_TYPE_MAX,
->  };
->  
->  /* List of motion sensor locations. */
-> 
+diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+new file mode 100644
+index 000000000000..7f9b3bd120a9
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+@@ -0,0 +1,99 @@
++* Renesas RCar GyroADC device driver
++
++The GyroADC block is a reduced SPI block with up to 8 chipselect lines,
++which supports the SPI protocol of a selected few SPI ADCs. The SPI ADCs
++are sampled by the GyroADC block in a round-robin fashion and the result
++presented in the GyroADC registers.
++
++Required properties:
++- compatible:	Should be "<soc-specific>", "renesas,rcar-gyroadc".
++                The <soc-specific> should be one of:
++		renesas,r8a7791-gyroadc - for the GyroADC block present
++					  in r8a7791 SoC
++		renesas,r8a7792-gyroadc - for the GyroADC with interrupt
++					  block present in r8a7792 SoC
++- reg:		Address and length of the register set for the device
++- clocks:	References to all the clocks specified in the clock-names
++		property as specified in
++		Documentation/devicetree/bindings/clock/clock-bindings.txt.
++- clock-names:	Shall contain "fck" and "if". The "fck" is the GyroADC block
++		clock, the "if" is the interface clock.
++- power-domains: Must contain a reference to the PM domain, if available.
++- #address-cells: Should be <1> (setting for the subnodes) for all ADCs
++		except for "fujitsu,mb88101a". Should be <0> (setting for
++		only subnode) for "fujitsu,mb88101a".
++- #size-cells:	Should be <0> (setting for the subnodes)
++
++Sub-nodes:
++You must define subnode(s) which select the connected ADC type and reference
++voltage for the GyroADC channels.
++
++Required properties for subnodes:
++- compatible:	Should be either of:
++		"fujitsu,mb88101a"
++			- Fujitsu MB88101A compatible mode,
++			  12bit sampling, up to 4 channels can be sampled in
++			  round-robin fashion. One Fujitsu chip supplies four
++			  GyroADC channels with data as it contains four ADCs
++			  on the chip and thus for 4-channel operation, single
++			  MB88101A is required. The Cx chipselect lines of the
++			  MB88101A connect directly to two CHS lines of the
++			  GyroADC, no demuxer is required. The data out line
++			  of each MB88101A connects to a shared input pin of
++			  the GyroADC.
++		"ti,adcs7476" or "ti,adc121" or "adi,ad7476"
++			- TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode,
++			  15bit sampling, up to 8 channels can be sampled in
++			  round-robin fashion. One TI/ADI chip supplies single
++			  ADC channel with data, thus for 8-channel operation,
++			  8 chips are required. A 3:8 chipselect demuxer is
++			  required to connect the nCS line of the TI/ADI chips
++			  to the GyroADC, while MISO line of each TI/ADI ADC
++			  connects to a shared input pin of the GyroADC.
++		"maxim,max1162" or "maxim,max11100"
++			- Maxim MAX1162 / Maxim MAX11100 compatible mode,
++			  16bit sampling, up to 8 channels can be sampled in
++			  round-robin fashion. One Maxim chip supplies single
++			  ADC channel with data, thus for 8-channel operation,
++			  8 chips are required. A 3:8 chipselect demuxer is
++			  required to connect the nCS line of the MAX chips
++			  to the GyroADC, while MISO line of each Maxim ADC
++			  connects to a shared input pin of the GyroADC.
++- reg:		Should be the number of the analog input. Should be present
++		for all ADCs except "fujitsu,mb88101a".
++- vref-supply:	Reference to the channel reference voltage regulator.
++
++Example:
++	vref_max1162: regulator-vref-max1162 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "MAX1162 Vref";
++		regulator-min-microvolt = <4096000>;
++		regulator-max-microvolt = <4096000>;
++	};
++
++	&adc {
++		compatible = "renesas,r8a7791-gyroadc", "renesas,rcar-gyroadc";
++		reg = <0 0xe6e54000 0 64>;
++		clocks = <&mstp9_clks R8A7791_CLK_GYROADC>, <&clk_65m>;
++		clock-names = "fck", "if";
++		power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
++
++		pinctrl-0 = <&adc_pins>;
++		pinctrl-names = "default";
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		adc@0 {
++			reg = <0>;
++			compatible = "maxim,max1162";
++			vref-supply = <&vref_max1162>;
++		};
++
++		adc@1 {
++			reg = <1>;
++			compatible = "maxim,max1162";
++			vref-supply = <&vref_max1162>;
++		};
++	};
+-- 
+2.11.0
 
