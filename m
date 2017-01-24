@@ -1,145 +1,74 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:33996 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750720AbdA0XKc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 18:10:32 -0500
-Subject: Re: [PATCH V8 1/2] iio: adc: Add Renesas GyroADC bindings
-To: Rob Herring <robh@kernel.org>
-References: <20170124182642.29396-1-marek.vasut@gmail.com>
- <20170127222621.vzay3mat37f7v5tm@rob-hp-laptop>
+Return-Path: <SRS0=ho3l=ZG=gmail.com=vilhelm.gray@kernel.org>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
 Cc: linux-iio@vger.kernel.org,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-renesas-soc@vger.kernel.org,
-        Wolfram Sang <wsa@the-dreams.de>, devicetree@vger.kernel.org
-From: Marek Vasut <marek.vasut@gmail.com>
-Message-ID: <63899986-cc9b-de04-a991-81e2493e7920@gmail.com>
-Date: Sat, 28 Jan 2017 00:04:43 +0100
-MIME-Version: 1.0
-In-Reply-To: <20170127222621.vzay3mat37f7v5tm@rob-hp-laptop>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+	linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH] iio: stx104: Utilize devm_ functions in driver probe callback
+Date: Tue, 24 Jan 2017 15:26:17 -0500
+Message-Id: <20170124202617.15512-1-vilhelm.gray@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/27/2017 11:26 PM, Rob Herring wrote:
-> On Tue, Jan 24, 2017 at 07:26:41PM +0100, Marek Vasut wrote:
->> Add DT bindings for the Renesas RCar GyroADC block. This block is
->> a simple 4/8-channel ADC which samples 12/15/24 bits of data every
->> cycle from all channels.
->>
->> Signed-off-by: Marek Vasut <marek.vasut@gmail.com>
->> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
->> Cc: Simon Horman <horms+renesas@verge.net.au>
->> Cc: Jonathan Cameron <jic23@kernel.org>
->> Cc: linux-renesas-soc@vger.kernel.org
->> Cc: Wolfram Sang <wsa@the-dreams.de>
->> Cc: Rob Herring <robh@kernel.org>
->> Cc: devicetree@vger.kernel.org
->> ---
->> V8: - Sync the version with the 2/2 driver patch
->>     - Drop status prop from example
->>     - Add GyroADC block description
->>     - Enumerate the compatible string values
->>     - Make subnodes mandatory
->> ---
->>  .../bindings/iio/adc/renesas,gyroadc.txt           | 99 ++++++++++++++++++++++
->>  1 file changed, 99 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
->> new file mode 100644
->> index 000000000000..7f9b3bd120a9
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
->> @@ -0,0 +1,99 @@
->> +* Renesas RCar GyroADC device driver
->> +
->> +The GyroADC block is a reduced SPI block with up to 8 chipselect lines,
->> +which supports the SPI protocol of a selected few SPI ADCs. The SPI ADCs
->> +are sampled by the GyroADC block in a round-robin fashion and the result
->> +presented in the GyroADC registers.
->> +
->> +Required properties:
->> +- compatible:	Should be "<soc-specific>", "renesas,rcar-gyroadc".
->> +                The <soc-specific> should be one of:
->> +		renesas,r8a7791-gyroadc - for the GyroADC block present
->> +					  in r8a7791 SoC
->> +		renesas,r8a7792-gyroadc - for the GyroADC with interrupt
->> +					  block present in r8a7792 SoC
->> +- reg:		Address and length of the register set for the device
->> +- clocks:	References to all the clocks specified in the clock-names
->> +		property as specified in
->> +		Documentation/devicetree/bindings/clock/clock-bindings.txt.
->> +- clock-names:	Shall contain "fck" and "if". The "fck" is the GyroADC block
->> +		clock, the "if" is the interface clock.
->> +- power-domains: Must contain a reference to the PM domain, if available.
->> +- #address-cells: Should be <1> (setting for the subnodes) for all ADCs
->> +		except for "fujitsu,mb88101a". Should be <0> (setting for
->> +		only subnode) for "fujitsu,mb88101a".
->> +- #size-cells:	Should be <0> (setting for the subnodes)
->> +
->> +Sub-nodes:
->> +You must define subnode(s) which select the connected ADC type and reference
->> +voltage for the GyroADC channels.
->> +
->> +Required properties for subnodes:
->> +- compatible:	Should be either of:
->> +		"fujitsu,mb88101a"
->> +			- Fujitsu MB88101A compatible mode,
->> +			  12bit sampling, up to 4 channels can be sampled in
->> +			  round-robin fashion. One Fujitsu chip supplies four
->> +			  GyroADC channels with data as it contains four ADCs
->> +			  on the chip and thus for 4-channel operation, single
->> +			  MB88101A is required. The Cx chipselect lines of the
->> +			  MB88101A connect directly to two CHS lines of the
->> +			  GyroADC, no demuxer is required. The data out line
->> +			  of each MB88101A connects to a shared input pin of
->> +			  the GyroADC.
->> +		"ti,adcs7476" or "ti,adc121" or "adi,ad7476"
->> +			- TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode,
->> +			  15bit sampling, up to 8 channels can be sampled in
->> +			  round-robin fashion. One TI/ADI chip supplies single
->> +			  ADC channel with data, thus for 8-channel operation,
->> +			  8 chips are required. A 3:8 chipselect demuxer is
->> +			  required to connect the nCS line of the TI/ADI chips
->> +			  to the GyroADC, while MISO line of each TI/ADI ADC
->> +			  connects to a shared input pin of the GyroADC.
->> +		"maxim,max1162" or "maxim,max11100"
->> +			- Maxim MAX1162 / Maxim MAX11100 compatible mode,
->> +			  16bit sampling, up to 8 channels can be sampled in
->> +			  round-robin fashion. One Maxim chip supplies single
->> +			  ADC channel with data, thus for 8-channel operation,
->> +			  8 chips are required. A 3:8 chipselect demuxer is
->> +			  required to connect the nCS line of the MAX chips
->> +			  to the GyroADC, while MISO line of each Maxim ADC
->> +			  connects to a shared input pin of the GyroADC.
->> +- reg:		Should be the number of the analog input. Should be present
->> +		for all ADCs except "fujitsu,mb88101a".
->> +- vref-supply:	Reference to the channel reference voltage regulator.
->> +
->> +Example:
->> +	vref_max1162: regulator-vref-max1162 {
->> +		compatible = "regulator-fixed";
->> +
->> +		regulator-name = "MAX1162 Vref";
->> +		regulator-min-microvolt = <4096000>;
->> +		regulator-max-microvolt = <4096000>;
->> +	};
->> +
->> +	&adc {
-> 
-> This wouldn't actually work unless you include something that defines 
-> '&adc'. Make this adc@e6e54000.
+The devm_ resource manager functions allow memory to be automatically
+released when a device is unbound. This patch takes advantage of the
+resource manager functions and replaces the gpiochip_add_data call and
+iio_device_register call with the devm_gpiochip_add_data call and
+devm_iio_device_register call respectively. In addition, the
+stx104_remove function has been removed as no longer necessary due to
+the use of the relevant devm_ resource manager functions.
 
-Fixed
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/adc/stx104.c | 22 ++--------------------
+ 1 file changed, 2 insertions(+), 20 deletions(-)
 
-> With that,
-> 
-> Acked-by: Rob Herring <robh@kernel.org>
-
-Cool, thanks
-
+diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
+index 7e3645749eaf..c56ff286695d 100644
+--- a/drivers/iio/adc/stx104.c
++++ b/drivers/iio/adc/stx104.c
+@@ -339,30 +339,13 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 	stx104dev->chip = &stx104gpio->chip;
+ 	dev_set_drvdata(dev, stx104dev);
+ 
+-	err = gpiochip_add_data(&stx104gpio->chip, stx104gpio);
++	err = devm_gpiochip_add_data(dev, &stx104gpio->chip, stx104gpio);
+ 	if (err) {
+ 		dev_err(dev, "GPIO registering failed (%d)\n", err);
+ 		return err;
+ 	}
+ 
+-	err = iio_device_register(indio_dev);
+-	if (err) {
+-		dev_err(dev, "IIO device registering failed (%d)\n", err);
+-		gpiochip_remove(&stx104gpio->chip);
+-		return err;
+-	}
+-
+-	return 0;
+-}
+-
+-static int stx104_remove(struct device *dev, unsigned int id)
+-{
+-	struct stx104_dev *const stx104dev = dev_get_drvdata(dev);
+-
+-	iio_device_unregister(stx104dev->indio_dev);
+-	gpiochip_remove(stx104dev->chip);
+-
+-	return 0;
++	return devm_iio_device_register(dev, indio_dev);
+ }
+ 
+ static struct isa_driver stx104_driver = {
+@@ -370,7 +353,6 @@ static struct isa_driver stx104_driver = {
+ 	.driver = {
+ 		.name = "stx104"
+ 	},
+-	.remove = stx104_remove
+ };
+ 
+ module_isa_driver(stx104_driver, num_stx104);
 -- 
-Best regards,
-Marek Vasut
+2.11.0
