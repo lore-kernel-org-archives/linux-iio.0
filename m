@@ -1,93 +1,324 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45288 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751720AbdA1M3g (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 07:29:36 -0500
-Subject: Re: [PATCH] Staging: iio: adc: fix symbolic permissions coding style
- issue
-To: =?UTF-8?Q?Juli=c3=a1n_de_Gortari?= <kiototeko@gmail.com>
-References: <1485194909-12453-1-git-send-email-kiototeko@gmail.com>
-Cc: linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <87c48e6c-dbfb-088b-d200-10fda3818c7c@kernel.org>
-Date: Sat, 28 Jan 2017 12:22:24 +0000
-MIME-Version: 1.0
-In-Reply-To: <1485194909-12453-1-git-send-email-kiototeko@gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from bhuna.collabora.co.uk ([46.235.227.227]:54237 "EHLO
+        bhuna.collabora.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750721AbdAXNl5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 24 Jan 2017 08:41:57 -0500
+From: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Olof Johansson <olof@lixom.net>,
+        Lee Jones <lee.jones@linaro.org>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        Gwendal Grignou <gwendal@chromium.org>,
+        Enric Balletbo Serra <enric.balletbo@collabora.com>
+Subject: [PATCH] iio: cros_ec: Add cros_ec barometer driver
+Date: Tue, 24 Jan 2017 14:41:41 +0100
+Message-Id: <20170124134141.30751-1-enric.balletbo@collabora.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/01/17 18:08, Julián de Gortari wrote:
-> Octal permissions should be used instead of symbolic ones for easier
-> reading.
-> 
-> Signed-off-by: Julián de Gortari <kiototeko@gmail.com>
-While I find it exceptionally hard to care about this one, the driver in question
-doesn't seem to be undergoing much churn so I've applied this. This all came
-from a somewhat throw away comment Linus made rather than anyone caring that
-strongly about it.  He was more saying he disliked patches going the other way
-than anything else.  Anyhow, no way you would necessarily know this and it's
-a nicely presented patch.  Please do put the name of the driver in the
-title though - I've fixed up whilst applying.
+From: Gwendal Grignou <gwendal@chromium.org>
 
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Handle the barometer sensor presented by the ChromeOS EC Sensor hub.
 
-Thanks,
+Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+Signed-off-by: Enric Balletbo Serra <enric.balletbo@collabora.com>
+---
+ drivers/iio/pressure/Kconfig          |  10 ++
+ drivers/iio/pressure/Makefile         |   1 +
+ drivers/iio/pressure/cros_ec_baro.c   | 220 ++++++++++++++++++++++++++++++++++
+ drivers/platform/chrome/cros_ec_dev.c |   3 +
+ include/linux/mfd/cros_ec_commands.h  |   3 +-
+ 5 files changed, 236 insertions(+), 1 deletion(-)
+ create mode 100644 drivers/iio/pressure/cros_ec_baro.c
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7816.c | 10 +++++-----
->  1 file changed, 5 insertions(+), 5 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
-> index 72551f8..17d2805 100644
-> --- a/drivers/staging/iio/adc/ad7816.c
-> +++ b/drivers/staging/iio/adc/ad7816.c
-> @@ -139,7 +139,7 @@ static ssize_t ad7816_store_mode(struct device *dev,
->  	return len;
->  }
->  
-> -static IIO_DEVICE_ATTR(mode, S_IRUGO | S_IWUSR,
-> +static IIO_DEVICE_ATTR(mode, 0644,
->  		ad7816_show_mode,
->  		ad7816_store_mode,
->  		0);
-> @@ -151,7 +151,7 @@ static ssize_t ad7816_show_available_modes(struct device *dev,
->  	return sprintf(buf, "full\npower-save\n");
->  }
->  
-> -static IIO_DEVICE_ATTR(available_modes, S_IRUGO, ad7816_show_available_modes,
-> +static IIO_DEVICE_ATTR(available_modes, 0444, ad7816_show_available_modes,
->  			NULL, 0);
->  
->  static ssize_t ad7816_show_channel(struct device *dev,
-> @@ -197,7 +197,7 @@ static ssize_t ad7816_store_channel(struct device *dev,
->  	return len;
->  }
->  
-> -static IIO_DEVICE_ATTR(channel, S_IRUGO | S_IWUSR,
-> +static IIO_DEVICE_ATTR(channel, 0644,
->  		ad7816_show_channel,
->  		ad7816_store_channel,
->  		0);
-> @@ -228,7 +228,7 @@ static ssize_t ad7816_show_value(struct device *dev,
->  	return sprintf(buf, "%u\n", data);
->  }
->  
-> -static IIO_DEVICE_ATTR(value, S_IRUGO, ad7816_show_value, NULL, 0);
-> +static IIO_DEVICE_ATTR(value, 0444, ad7816_show_value, NULL, 0);
->  
->  static struct attribute *ad7816_attributes[] = {
->  	&iio_dev_attr_available_modes.dev_attr.attr,
-> @@ -319,7 +319,7 @@ static inline ssize_t ad7816_set_oti(struct device *dev,
->  	return len;
->  }
->  
-> -static IIO_DEVICE_ATTR(oti, S_IRUGO | S_IWUSR,
-> +static IIO_DEVICE_ATTR(oti, 0644,
->  		       ad7816_show_oti, ad7816_set_oti, 0);
->  
->  static struct attribute *ad7816_event_attributes[] = {
-> 
+diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+index bd8d96b..5d16b25 100644
+--- a/drivers/iio/pressure/Kconfig
++++ b/drivers/iio/pressure/Kconfig
+@@ -42,6 +42,16 @@ config BMP280_SPI
+ 	depends on SPI_MASTER
+ 	select REGMAP
+ 
++config IIO_CROS_EC_BARO
++	tristate "ChromeOS EC Barometer Sensor"
++	depends on IIO_CROS_EC_SENSORS_CORE
++	help
++	  Say yes here to build support for the Barometer sensor when
++	  presented by the ChromeOS EC Sensor hub.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called cros_ec_baro.
++
+ config HID_SENSOR_PRESS
+ 	depends on HID_SENSOR_HUB
+ 	select IIO_BUFFER
+diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+index de3dbc8..8386427 100644
+--- a/drivers/iio/pressure/Makefile
++++ b/drivers/iio/pressure/Makefile
+@@ -8,6 +8,7 @@ obj-$(CONFIG_BMP280) += bmp280.o
+ bmp280-objs := bmp280-core.o bmp280-regmap.o
+ obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
+ obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
++obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
+ obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+ obj-$(CONFIG_HP03) += hp03.o
+ obj-$(CONFIG_MPL115) += mpl115.o
+diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+new file mode 100644
+index 0000000..48b2a30
+--- /dev/null
++++ b/drivers/iio/pressure/cros_ec_baro.c
+@@ -0,0 +1,220 @@
++/*
++ * cros_ec_baro - Driver for barometer sensor behind CrosEC.
++ *
++ * Copyright (C) 2017 Google, Inc
++ *
++ * This software is licensed under the terms of the GNU General Public
++ * License version 2, as published by the Free Software Foundation, and
++ * may be copied, distributed, and modified under those terms.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/iio/buffer.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/kfifo_buf.h>
++#include <linux/iio/trigger.h>
++#include <linux/iio/triggered_buffer.h>
++#include <linux/iio/trigger_consumer.h>
++#include <linux/kernel.h>
++#include <linux/mfd/cros_ec.h>
++#include <linux/mfd/cros_ec_commands.h>
++#include <linux/module.h>
++#include <linux/slab.h>
++#include <linux/platform_device.h>
++
++#include "../common/cros_ec_sensors/cros_ec_sensors_core.h"
++
++/*
++ * One channel for pressure, the other for timestamp.
++ */
++#define CROS_EC_BARO_MAX_CHANNELS (1 + 1)
++
++/* State data for ec_sensors iio driver. */
++struct cros_ec_baro_state {
++	/* Shared by all sensors */
++	struct cros_ec_sensors_core_state core;
++
++	struct iio_chan_spec channels[CROS_EC_BARO_MAX_CHANNELS];
++};
++
++static int cros_ec_baro_read(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int *val, int *val2, long mask)
++{
++	struct cros_ec_baro_state *st = iio_priv(indio_dev);
++	u16 data = 0;
++	int ret = IIO_VAL_INT;
++	int idx = chan->scan_index;
++
++	mutex_lock(&st->core.cmd_lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
++					     (s16 *)&data) < 0)
++			ret = -EIO;
++		*val = data;
++		break;
++	case IIO_CHAN_INFO_SCALE:
++		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
++		st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
++
++		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
++			ret = -EIO;
++			break;
++		}
++		*val = st->core.resp->sensor_range.ret;
++
++		/* scale * in_pressure_raw --> kPa */
++		*val2 = 10 << CROS_EC_SENSOR_BITS;
++		ret = IIO_VAL_FRACTIONAL;
++		break;
++	default:
++		ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
++						mask);
++		break;
++	}
++
++	mutex_unlock(&st->core.cmd_lock);
++
++	return ret;
++}
++
++static int cros_ec_baro_write(struct iio_dev *indio_dev,
++			      struct iio_chan_spec const *chan,
++			      int val, int val2, long mask)
++{
++	struct cros_ec_baro_state *st = iio_priv(indio_dev);
++	int ret = 0;
++
++	mutex_lock(&st->core.cmd_lock);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_SCALE:
++		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
++		st->core.param.sensor_range.data = val;
++
++		/* Always roundup, so caller gets at least what it asks for. */
++		st->core.param.sensor_range.roundup = 1;
++
++		if (cros_ec_motion_send_host_cmd(&st->core, 0))
++			ret = -EIO;
++		break;
++	default:
++		ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
++						 mask);
++		break;
++	}
++
++	mutex_unlock(&st->core.cmd_lock);
++
++	return ret;
++}
++
++static const struct iio_info cros_ec_baro_info = {
++	.read_raw = &cros_ec_baro_read,
++	.write_raw = &cros_ec_baro_write,
++	.driver_module = THIS_MODULE,
++};
++
++static int cros_ec_baro_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
++	struct cros_ec_device *ec_device;
++	struct iio_dev *indio_dev;
++	struct cros_ec_baro_state *state;
++	struct iio_chan_spec *channel;
++	int ret;
++
++	if (!ec_dev || !ec_dev->ec_dev) {
++		dev_warn(dev, "No CROS EC device found.\n");
++		return -EINVAL;
++	}
++	ec_device = ec_dev->ec_dev;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
++	if (ret)
++		return ret;
++
++	indio_dev->info = &cros_ec_baro_info;
++	state = iio_priv(indio_dev);
++	state->core.type = state->core.resp->info.type;
++	state->core.loc = state->core.resp->info.location;
++	channel = state->channels;
++	/* Common part */
++	channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
++	channel->info_mask_shared_by_all =
++		BIT(IIO_CHAN_INFO_SCALE) |
++		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
++		BIT(IIO_CHAN_INFO_FREQUENCY);
++	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
++	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
++	channel->scan_type.shift = 0;
++	channel->scan_index = 0;
++	channel->ext_info = cros_ec_sensors_ext_info;
++	channel->scan_type.sign = 'u';
++
++	state->core.calib[0] = 0;
++
++	/* Sensor specific */
++	switch (state->core.type) {
++	case MOTIONSENSE_TYPE_BARO:
++		channel->type = IIO_PRESSURE;
++		break;
++	default:
++		dev_warn(dev, "Unknown motion sensor\n");
++		return -EINVAL;
++	}
++
++	/* Timestamp */
++	channel++;
++	channel->type = IIO_TIMESTAMP;
++	channel->channel = -1;
++	channel->scan_index = 1;
++	channel->scan_type.sign = 's';
++	channel->scan_type.realbits = 64;
++	channel->scan_type.storagebits = 64;
++
++	indio_dev->channels = state->channels;
++	indio_dev->num_channels = CROS_EC_BARO_MAX_CHANNELS;
++
++	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
++
++	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
++					      cros_ec_sensors_capture, NULL);
++	if (ret)
++		return ret;
++
++	return devm_iio_device_register(dev, indio_dev);
++}
++
++static const struct platform_device_id cros_ec_baro_ids[] = {
++	{
++		.name = "cros-ec-baro",
++	},
++	{ /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
++
++static struct platform_driver cros_ec_baro_platform_driver = {
++	.driver = {
++		.name	= "cros-ec-baro",
++	},
++	.probe		= cros_ec_baro_probe,
++	.id_table	= cros_ec_baro_ids,
++};
++module_platform_driver(cros_ec_baro_platform_driver);
++
++MODULE_DESCRIPTION("ChromeOS EC barometer sensor driver");
++MODULE_LICENSE("GPL v2");
+diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
+index df5894f..eaa5d1b 100644
+--- a/drivers/platform/chrome/cros_ec_dev.c
++++ b/drivers/platform/chrome/cros_ec_dev.c
+@@ -329,6 +329,9 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
+ 		case MOTIONSENSE_TYPE_ACCEL:
+ 			sensor_cells[id].name = "cros-ec-accel";
+ 			break;
++		case MOTIONSENSE_TYPE_BARO:
++			sensor_cells[id].name = "cros-ec-baro";
++			break;
+ 		case MOTIONSENSE_TYPE_GYRO:
+ 			sensor_cells[id].name = "cros-ec-gyro";
+ 			break;
+diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+index 22e5d75..a01dde4 100644
+--- a/include/linux/mfd/cros_ec_commands.h
++++ b/include/linux/mfd/cros_ec_commands.h
+@@ -1463,7 +1463,8 @@ enum motionsensor_type {
+ 	MOTIONSENSE_TYPE_PROX = 3,
+ 	MOTIONSENSE_TYPE_LIGHT = 4,
+ 	MOTIONSENSE_TYPE_ACTIVITY = 5,
+-	MOTIONSENSE_TYPE_MAX
++	MOTIONSENSE_TYPE_BARO = 6,
++	MOTIONSENSE_TYPE_MAX,
+ };
+ 
+ /* List of motion sensor locations. */
+-- 
+2.9.3
 
