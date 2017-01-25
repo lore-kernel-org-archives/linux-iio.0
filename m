@@ -1,576 +1,253 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f171.google.com ([209.85.220.171]:36498 "EHLO
-        mail-qk0-f171.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751819AbdA2Eb1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 23:31:27 -0500
-Received: by mail-qk0-f171.google.com with SMTP id 11so100407242qkl.3
-        for <linux-iio@vger.kernel.org>; Sat, 28 Jan 2017 20:30:05 -0800 (PST)
-MIME-Version: 1.0
-In-Reply-To: <505ee038-6fa4-fe28-e6e2-c2f8a116c4e7@kernel.org>
-References: <20170125070442.10715-1-matt@ranostay.consulting>
- <20170125070442.10715-3-matt@ranostay.consulting> <505ee038-6fa4-fe28-e6e2-c2f8a116c4e7@kernel.org>
-From: Matt Ranostay <matt@ranostay.consulting>
-Date: Sat, 28 Jan 2017 20:04:54 -0800
-Message-ID: <CAJ_EiSRMNxfSomG1D=54uqvGbbhd9ktCD=rV0rwASDuJQDWK4g@mail.gmail.com>
-Subject: Re: [PATCH v2 2/2] iio: health: add MAX30102 oximeter driver support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:34251 "EHLO
+        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751539AbdAYJ0f (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jan 2017 04:26:35 -0500
+Received: by mail-pf0-f194.google.com with SMTP id y143so14024587pfb.1
+        for <linux-iio@vger.kernel.org>; Wed, 25 Jan 2017 01:26:35 -0800 (PST)
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, Eva Rachel Retuya <eraretuya@gmail.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Daniel Baluta <daniel.baluta@gmail.com>,
+        Alison Schofield <amsfield22@gmail.com>
+Subject: [RFC] iio: accel: Add driver for the Analog Devices ADXL345 3-axis accelerometer
+Date: Wed, 25 Jan 2017 17:25:54 +0800
+Message-Id: <1485336354-26566-1-git-send-email-eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sat, Jan 28, 2017 at 3:51 AM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 25/01/17 07:04, Matt Ranostay wrote:
->> MAX30102 is an heart rate and pulse oximeter sensor that works using
->> two LEDS of different wavelengths, and detecting the light reflected
->> back.
->>
->> This patchset adds support for both IR and RED LED channels which can
->> be processed in userspace to determine heart rate and blood oxygen
->> levels. The MAX30102 part isn't completely register and functional
->> compatible with the existing MAX30100 driver.
->>
->> Signed-off-by: Matt Ranostay <matt@ranostay.consulting>
-> Really minor comment inline from me.  Would guess V3 will do the job
-> on this one ;)
->
-> Jonathan
->> ---
->>  drivers/iio/health/Kconfig    |  13 ++
->>  drivers/iio/health/Makefile   |   1 +
->>  drivers/iio/health/max30102.c | 485 ++++++++++++++++++++++++++++++++++++++++++
->>  3 files changed, 499 insertions(+)
->>  create mode 100644 drivers/iio/health/max30102.c
->>
->> diff --git a/drivers/iio/health/Kconfig b/drivers/iio/health/Kconfig
->> index c5f004a8e447..a2ecb4c94c2a 100644
->> --- a/drivers/iio/health/Kconfig
->> +++ b/drivers/iio/health/Kconfig
->> @@ -46,6 +46,19 @@ config MAX30100
->>         To compile this driver as a module, choose M here: the
->>         module will be called max30100.
->>
->> +config MAX30102
->> +     tristate "MAX30102 heart rate and pulse oximeter sensor"
->> +     depends on I2C
->> +     select REGMAP_I2C
->> +     select IIO_BUFFER
->> +     select IIO_KFIFO_BUF
->> +     help
->> +       Say Y here to build I2C interface support for the Maxim
->> +       MAX30102 heart rate, and pulse oximeter sensor.
->> +
->> +       To compile this driver as a module, choose M here: the
->> +       module will be called max30102.
->> +
->>  endmenu
->>
->>  endmenu
->> diff --git a/drivers/iio/health/Makefile b/drivers/iio/health/Makefile
->> index 9955a2ae8df1..3558f9d64954 100644
->> --- a/drivers/iio/health/Makefile
->> +++ b/drivers/iio/health/Makefile
->> @@ -7,3 +7,4 @@
->>  obj-$(CONFIG_AFE4403)                += afe4403.o
->>  obj-$(CONFIG_AFE4404)                += afe4404.o
->>  obj-$(CONFIG_MAX30100)               += max30100.o
->> +obj-$(CONFIG_MAX30102)               += max30102.o
->> diff --git a/drivers/iio/health/max30102.c b/drivers/iio/health/max30102.c
->> new file mode 100644
->> index 000000000000..87df1e6d712f
->> --- /dev/null
->> +++ b/drivers/iio/health/max30102.c
->> @@ -0,0 +1,485 @@
->> +/*
->> + * max30102.c - Support for MAX30102 heart rate and pulse oximeter sensor
->> + *
->> + * Copyright (C) 2017 Matt Ranostay <matt@ranostay.consulting>
->> + *
->> + * This program is free software; you can redistribute it and/or modify
->> + * it under the terms of the GNU General Public License as published by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
->> + * GNU General Public License for more details.
->> + *
->> + * TODO: proximity power saving feature
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/init.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/delay.h>
->> +#include <linux/err.h>
->> +#include <linux/irq.h>
->> +#include <linux/i2c.h>
->> +#include <linux/mutex.h>
->> +#include <linux/of.h>
->> +#include <linux/regmap.h>
->> +#include <linux/iio/iio.h>
->> +#include <linux/iio/buffer.h>
->> +#include <linux/iio/kfifo_buf.h>
->> +
->> +#define MAX30102_REGMAP_NAME "max30102_regmap"
->> +#define MAX30102_DRV_NAME    "max30102"
->> +
->> +#define MAX30102_REG_INT_STATUS                      0x00
->> +#define MAX30102_REG_INT_STATUS_PWR_RDY              BIT(0)
->> +#define MAX30102_REG_INT_STATUS_PROX_INT     BIT(4)
->> +#define MAX30102_REG_INT_STATUS_ALC_OVF              BIT(5)
->> +#define MAX30102_REG_INT_STATUS_PPG_RDY              BIT(6)
->> +#define MAX30102_REG_INT_STATUS_FIFO_RDY     BIT(7)
->> +
->> +#define MAX30102_REG_INT_ENABLE                      0x02
->> +#define MAX30102_REG_INT_ENABLE_PROX_INT_EN  BIT(4)
->> +#define MAX30102_REG_INT_ENABLE_ALC_OVF_EN   BIT(5)
->> +#define MAX30102_REG_INT_ENABLE_PPG_EN               BIT(6)
->> +#define MAX30102_REG_INT_ENABLE_FIFO_EN              BIT(7)
->> +#define MAX30102_REG_INT_ENABLE_MASK         0xf0
->> +#define MAX30102_REG_INT_ENABLE_MASK_SHIFT   4
->> +
->> +#define MAX30102_REG_FIFO_WR_PTR             0x04
->> +#define MAX30102_REG_FIFO_OVR_CTR            0x05
->> +#define MAX30102_REG_FIFO_RD_PTR             0x06
->> +#define MAX30102_REG_FIFO_DATA                       0x07
->> +#define MAX30102_REG_FIFO_DATA_ENTRY_LEN     6
->> +
->> +#define MAX30102_REG_FIFO_CONFIG             0x08
->> +#define MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES        BIT(1)
->> +#define MAX30102_REG_FIFO_CONFIG_AVG_SHIFT   5
->> +#define MAX30102_REG_FIFO_CONFIG_AFULL               BIT(0)
->> +
->> +#define MAX30102_REG_MODE_CONFIG             0x09
->> +#define MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN        BIT(0)
->> +#define MAX30102_REG_MODE_CONFIG_MODE_HR_EN  BIT(1)
->> +#define MAX30102_REG_MODE_CONFIG_MODE_MASK   0x03
->> +#define MAX30102_REG_MODE_CONFIG_PWR         BIT(7)
->> +
->> +#define MAX30102_REG_SPO2_CONFIG             0x0a
->> +#define MAX30102_REG_SPO2_CONFIG_PULSE_411_US        0x03
->> +#define MAX30102_REG_SPO2_CONFIG_SR_400HZ    0x03
->> +#define MAX30102_REG_SPO2_CONFIG_SR_MASK     0x07
->> +#define MAX30102_REG_SPO2_CONFIG_SR_MASK_SHIFT       2
->> +#define MAX30102_REG_SPO2_CONFIG_ADC_4096_STEPS      BIT(0)
->> +#define MAX30102_REG_SPO2_CONFIG_ADC_MASK_SHIFT      4
->> +
->> +#define MAX30102_REG_RED_LED_CONFIG          0x0c
->> +#define MAX30102_REG_IR_LED_CONFIG           0x0d
->> +
->> +#define MAX30102_REG_TEMP_CONFIG             0x21
->> +#define MAX30102_REG_TEMP_CONFIG_TEMP_EN     BIT(0)
->> +
->> +#define MAX30102_REG_TEMP_INTEGER            0x1f
->> +#define MAX30102_REG_TEMP_FRACTION           0x20
->> +
->> +struct max30102_data {
->> +     struct i2c_client *client;
->> +     struct iio_dev *indio_dev;
->> +     struct mutex lock;
->> +     struct regmap *regmap;
->> +
->> +     u8 buffer[8];
->> +     __be32 processed_buffer[2]; /* 2 x 18-bit (padded to 32-bits) */
->> +};
->> +
->> +static const struct regmap_config max30102_regmap_config = {
->> +     .name = MAX30102_REGMAP_NAME,
->> +
->> +     .reg_bits = 8,
->> +     .val_bits = 8,
->> +};
->> +
->> +static const unsigned long max30102_scan_masks[] = {0x3, 0};
->> +
->> +static const struct iio_chan_spec max30102_channels[] = {
->> +     {
->> +             .type = IIO_INTENSITY,
->> +             .channel2 = IIO_MOD_LIGHT_RED,
->> +             .modified = 1,
->> +
->> +             .scan_index = 0,
->> +             .scan_type = {
->> +                     .sign = 'u',
->> +                     .shift = 14,
->> +                     .realbits = 18,
->> +                     .storagebits = 32,
->> +                     .endianness = IIO_BE,
->> +             },
->> +     },
->> +     {
->> +             .type = IIO_INTENSITY,
->> +             .channel2 = IIO_MOD_LIGHT_IR,
->> +             .modified = 1,
->> +
->> +             .scan_index = 1,
->> +             .scan_type = {
->> +                     .sign = 'u',
->> +                     .shift = 14,
->> +                     .realbits = 18,
->> +                     .storagebits = 32,
->> +                     .endianness = IIO_BE,
->> +             },
->> +     },
->> +     {
->> +             .type = IIO_TEMP,
->> +             .info_mask_separate =
->> +                     BIT(IIO_CHAN_INFO_RAW) | BIT(IIO_CHAN_INFO_SCALE),
->> +             .scan_index = -1,
->> +     },
->> +};
->> +
->> +static int max30102_set_powermode(struct max30102_data *data, bool state)
->> +{
->> +     return regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
->> +                               MAX30102_REG_MODE_CONFIG_PWR,
->> +                               state ? 0 : MAX30102_REG_MODE_CONFIG_PWR);
->> +}
->> +
->> +static int max30102_buffer_postenable(struct iio_dev *indio_dev)
->> +{
->> +     struct max30102_data *data = iio_priv(indio_dev);
->> +
->> +     return max30102_set_powermode(data, true);
->> +}
->> +
->> +static int max30102_buffer_predisable(struct iio_dev *indio_dev)
->> +{
->> +     struct max30102_data *data = iio_priv(indio_dev);
->> +
->> +     return max30102_set_powermode(data, false);
->> +}
->> +
->> +static const struct iio_buffer_setup_ops max30102_buffer_setup_ops = {
->> +     .postenable = max30102_buffer_postenable,
->> +     .predisable = max30102_buffer_predisable,
->> +};
->> +
->> +static inline int max30102_fifo_count(struct max30102_data *data)
->> +{
->> +     unsigned int val;
->> +     int ret;
->> +
->> +     ret = regmap_read(data->regmap, MAX30102_REG_INT_STATUS, &val);
->> +     if (ret)
->> +             return ret;
->> +
->> +     /* FIFO has one sample slot left */
->> +     if (val & MAX30102_REG_INT_STATUS_FIFO_RDY)
->> +             return 1;
->> +
->> +     return 0;
->> +}
->> +
->> +static int max30102_read_measurement(struct max30102_data *data)
->> +{
->> +     int ret;
->> +     u8 *buffer = (u8 *) &data->buffer;
->> +
->> +     ret = i2c_smbus_read_i2c_block_data(data->client,
->> +                                         MAX30102_REG_FIFO_DATA,
->> +                                         MAX30102_REG_FIFO_DATA_ENTRY_LEN,
->> +                                         buffer);
->> +
->> +     memcpy(&data->processed_buffer[0], &buffer[0], 3);
->> +     memcpy(&data->processed_buffer[1], &buffer[3], 3);
->> +
->> +     return (ret == MAX30102_REG_FIFO_DATA_ENTRY_LEN) ? 0 : -EINVAL;
->> +}
->> +
->> +static irqreturn_t max30102_interrupt_handler(int irq, void *private)
->> +{
->> +     struct iio_dev *indio_dev = private;
->> +     struct max30102_data *data = iio_priv(indio_dev);
->> +     int ret, cnt = 0;
->> +
->> +     mutex_lock(&data->lock);
->> +
->> +     while (cnt || (cnt = max30102_fifo_count(data)) > 0) {
->> +             ret = max30102_read_measurement(data);
->> +             if (ret)
->> +                     break;
->> +
->> +             iio_push_to_buffers(data->indio_dev, data->processed_buffer);
->> +             cnt--;
->> +     }
->> +
->> +     mutex_unlock(&data->lock);
->> +
->> +     return IRQ_HANDLED;
->> +}
->> +
->> +static int max30102_get_current_idx(unsigned int val, int *reg)
->> +{
->> +     /* each step is 0.200 mA */
->> +     *reg = val / 200;
->> +
->> +     return *reg > 0xff ? -EINVAL : 0;
->> +}
->> +
->> +static int max30102_led_init(struct max30102_data *data)
->> +{
->> +     struct device *dev = &data->client->dev;
->> +     struct device_node *np = dev->of_node;
->> +     unsigned int val;
->> +     int reg, ret;
->> +
->> +     ret = of_property_read_u32(np, "maxim,red-led-current-microamp", &val);
->> +     if (ret) {
->> +             dev_info(dev, "no red-led-current-microamp set\n");
->> +
->> +             /* Default to 7 mA RED LED */
->> +             val = 7000;
->> +     }
->> +
->> +     ret = max30102_get_current_idx(val, &reg);
->> +     if (ret) {
->> +             dev_err(dev, "invalid RED LED current setting %d\n", val);
->> +             return ret;
->> +     }
->> +
->> +     ret = regmap_write(data->regmap, MAX30102_REG_RED_LED_CONFIG, reg);
->> +     if (ret)
->> +             return ret;
->> +
->> +     ret = of_property_read_u32(np, "maxim,ir-led-current-microamp", &val);
->> +     if (ret) {
->> +             dev_info(dev, "no ir-led-current-microamp set\n");
->> +
->> +             /* Default to 7 mA IR LED */
->> +             val = 7000;
->> +     }
->> +
->> +     ret = max30102_get_current_idx(val, &reg);
->> +     if (ret) {
->> +             dev_err(dev, "invalid IR LED current setting %d", val);
->> +             return ret;
->> +     }
->> +
->> +     return regmap_write(data->regmap, MAX30102_REG_IR_LED_CONFIG, reg);
->> +}
->> +
->> +static int max30102_chip_init(struct max30102_data *data)
->> +{
->> +     int ret;
->> +
->> +     /* setup LED current settings */
->> +     ret = max30102_led_init(data);
->> +     if (ret)
->> +             return ret;
->> +
->> +     /* enable 18-bit HR + SPO2 readings at 400Hz */
->> +     ret = regmap_write(data->regmap, MAX30102_REG_SPO2_CONFIG,
->> +                             (MAX30102_REG_SPO2_CONFIG_ADC_4096_STEPS
->> +                              << MAX30102_REG_SPO2_CONFIG_ADC_MASK_SHIFT) |
->> +                             (MAX30102_REG_SPO2_CONFIG_SR_400HZ
->> +                              << MAX30102_REG_SPO2_CONFIG_SR_MASK_SHIFT) |
->> +                              MAX30102_REG_SPO2_CONFIG_PULSE_411_US);
->> +     if (ret)
->> +             return ret;
->> +
->> +     /* enable SPO2 mode */
->> +     ret = regmap_update_bits(data->regmap, MAX30102_REG_MODE_CONFIG,
->> +                              MAX30102_REG_MODE_CONFIG_MODE_MASK,
->> +                              MAX30102_REG_MODE_CONFIG_MODE_HR_EN |
->> +                              MAX30102_REG_MODE_CONFIG_MODE_SPO2_EN);
->> +     if (ret)
->> +             return ret;
->> +
->> +     /* average 4 samples + generate FIFO interrupt */
->> +     ret = regmap_write(data->regmap, MAX30102_REG_FIFO_CONFIG,
->> +                             (MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES
->> +                              << MAX30102_REG_FIFO_CONFIG_AVG_SHIFT) |
->> +                              MAX30102_REG_FIFO_CONFIG_AFULL);
->> +     if (ret)
->> +             return ret;
->> +
->> +     /* enable FIFO interrupt */
->> +     return regmap_update_bits(data->regmap, MAX30102_REG_INT_ENABLE,
->> +                              MAX30102_REG_INT_ENABLE_MASK,
->> +                              MAX30102_REG_INT_ENABLE_FIFO_EN);
->> +}
->> +
->> +static int max30102_read_temp(struct max30102_data *data, int *val)
->> +{
->> +     int ret;
->> +     unsigned int reg;
->> +
->> +     ret = regmap_read(data->regmap, MAX30102_REG_TEMP_INTEGER, &reg);
->> +     if (ret < 0)
->> +             return ret;
->> +     *val = reg << 4;
->> +
->> +     ret = regmap_read(data->regmap, MAX30102_REG_TEMP_FRACTION, &reg);
->> +     if (ret < 0)
->> +             return ret;
->> +
->> +     *val |= reg & 0xf;
->> +     *val = sign_extend32(*val, 11);
->> +
->> +     return 0;
->> +}
->> +
->> +static int max30102_get_temp(struct max30102_data *data, int *val)
->> +{
->> +     int ret;
->> +
->> +     /* start acquisition */
->> +     ret = regmap_update_bits(data->regmap, MAX30102_REG_TEMP_CONFIG,
->> +                              MAX30102_REG_TEMP_CONFIG_TEMP_EN,
->> +                              MAX30102_REG_TEMP_CONFIG_TEMP_EN);
->> +     if (ret)
->> +             return ret;
->> +
->> +     msleep(35);
->> +
->> +     return max30102_read_temp(data, val);
->> +}
->> +
->> +static int max30102_read_raw(struct iio_dev *indio_dev,
->> +                          struct iio_chan_spec const *chan,
->> +                          int *val, int *val2, long mask)
->> +{
->> +     struct max30102_data *data = iio_priv(indio_dev);
->> +     int ret = -EINVAL;
->> +
->> +     switch (mask) {
->> +     case IIO_CHAN_INFO_RAW:
->> +             /*
->> +              * Temperature reading can only be acquired while engine
->> +              * is running
->> +              */
->> +             mutex_lock(&indio_dev->mlock);
->> +
->> +             if (!iio_buffer_enabled(indio_dev))
->> +                     ret = -EAGAIN;
-> Issue with this is typically userspace will just try having another go
-> immediately.  -EBUSY would be normal way of indicating not in a state
-> where it can do this, but here it's kind of inverted.  Not obvious!
+Add basic IIO support for the Analog Devices ADXL345 3-axis accelerometer.
+The datasheet can be found here:
+http://www.analog.com/media/en/technical-documentation/data-sheets/ADXL345.pdf
 
-Ah good catch.. Now I see your point..
+Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+Cc: Michael Hennerich <michael.hennerich@analog.com>
+Cc: Daniel Baluta <daniel.baluta@gmail.com>
+Cc: Alison Schofield <amsfield22@gmail.com>
+---
+Note that this sensor is already supported in input/misc/adxl34x. This IIO
+driver only supports read_raw on x, y and z axes in full-resolution mode.
 
->> +             else {
->> +                     ret = max30102_get_temp(data, val);
->> +                     if (!ret)
->> +                             ret = IIO_VAL_INT;
->> +             }
->> +
->> +             mutex_unlock(&indio_dev->mlock);
->> +             break;
->> +     case IIO_CHAN_INFO_SCALE:
->> +             *val = 1;  /* 0.0625 */
->> +             *val2 = 16;
->> +             ret = IIO_VAL_FRACTIONAL;
->> +             break;
->> +     }
->> +
->> +     return ret;
->> +}
->> +
->> +static const struct iio_info max30102_info = {
->> +     .driver_module = THIS_MODULE,
->> +     .read_raw = max30102_read_raw,
->> +};
->> +
->> +static int max30102_probe(struct i2c_client *client,
->> +                       const struct i2c_device_id *id)
->> +{
->> +     struct max30102_data *data;
->> +     struct iio_buffer *buffer;
->> +     struct iio_dev *indio_dev;
->> +     int ret;
->> +
->> +     indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
->> +     if (!indio_dev)
->> +             return -ENOMEM;
->> +
->> +     buffer = devm_iio_kfifo_allocate(&client->dev);
->> +     if (!buffer)
->> +             return -ENOMEM;
->> +
->> +     iio_device_attach_buffer(indio_dev, buffer);
->> +
->> +     indio_dev->name = MAX30102_DRV_NAME;
->> +     indio_dev->channels = max30102_channels;
->> +     indio_dev->info = &max30102_info;
->> +     indio_dev->num_channels = ARRAY_SIZE(max30102_channels);
->> +     indio_dev->available_scan_masks = max30102_scan_masks;
->> +     indio_dev->modes = (INDIO_BUFFER_SOFTWARE | INDIO_DIRECT_MODE);
->> +     indio_dev->setup_ops = &max30102_buffer_setup_ops;
->> +
->> +     data = iio_priv(indio_dev);
->> +     data->indio_dev = indio_dev;
->> +     data->client = client;
->> +
->> +     mutex_init(&data->lock);
->> +     i2c_set_clientdata(client, indio_dev);
->> +
->> +     data->regmap = devm_regmap_init_i2c(client, &max30102_regmap_config);
->> +     if (IS_ERR(data->regmap)) {
->> +             dev_err(&client->dev, "regmap initialization failed.\n");
->> +             return PTR_ERR(data->regmap);
->> +     }
->> +     max30102_set_powermode(data, false);
->> +
->> +     ret = max30102_chip_init(data);
->> +     if (ret)
->> +             return ret;
->> +
->> +     if (client->irq <= 0) {
->> +             dev_err(&client->dev, "no valid irq defined\n");
->> +             return -EINVAL;
->> +     }
->> +
->> +     ret = devm_request_threaded_irq(&client->dev, client->irq,
->> +                                     NULL, max30102_interrupt_handler,
->> +                                     IRQF_TRIGGER_FALLING | IRQF_ONESHOT,
->> +                                     "max30102_irq", indio_dev);
->> +     if (ret) {
->> +             dev_err(&client->dev, "request irq (%d) failed\n", client->irq);
->> +             return ret;
->> +     }
->> +
->> +     return iio_device_register(indio_dev);
->> +}
->> +
->> +static int max30102_remove(struct i2c_client *client)
->> +{
->> +     struct iio_dev *indio_dev = i2c_get_clientdata(client);
->> +     struct max30102_data *data = iio_priv(indio_dev);
->> +
->> +     iio_device_unregister(indio_dev);
->> +     max30102_set_powermode(data, false);
->> +
->> +     return 0;
->> +}
->> +
->> +static const struct i2c_device_id max30102_id[] = {
->> +     { "max30102", 0 },
->> +     {}
->> +};
->> +MODULE_DEVICE_TABLE(i2c, max30102_id);
->> +
->> +static const struct of_device_id max30102_dt_ids[] = {
->> +     { .compatible = "maxim,max30102" },
->> +     { }
->> +};
->> +MODULE_DEVICE_TABLE(of, max30102_dt_ids);
->> +
->> +static struct i2c_driver max30102_driver = {
->> +     .driver = {
->> +             .name   = MAX30102_DRV_NAME,
->> +             .of_match_table = of_match_ptr(max30102_dt_ids),
->> +     },
->> +     .probe          = max30102_probe,
->> +     .remove         = max30102_remove,
->> +     .id_table       = max30102_id,
->> +};
->> +module_i2c_driver(max30102_driver);
->> +
->> +MODULE_AUTHOR("Matt Ranostay <matt@ranostay.consulting>");
->> +MODULE_DESCRIPTION("MAX30102 heart rate and pulse oximeter sensor");
->> +MODULE_LICENSE("GPL");
->>
->
+ drivers/iio/accel/Kconfig   |  10 +++
+ drivers/iio/accel/Makefile  |   1 +
+ drivers/iio/accel/adxl345.c | 173 ++++++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 184 insertions(+)
+ create mode 100644 drivers/iio/accel/adxl345.c
+
+diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
+index ea295fe..b73f403 100644
+--- a/drivers/iio/accel/Kconfig
++++ b/drivers/iio/accel/Kconfig
+@@ -5,6 +5,16 @@
+ 
+ menu "Accelerometers"
+ 
++config ADXL345
++	tristate "Analog Devices ADXL345 3-Axis Digital Accelerometer Driver"
++	depends on I2C
++	help
++	  Say Y here if you want to build support for the Analog Devices
++	  ADXL345 3-axis digital accelerometer.
++
++	  To compile this driver as a module, choose M here: the
++	  module will be called adxl345.
++
+ config BMA180
+ 	tristate "Bosch BMA180/BMA250 3-Axis Accelerometer Driver"
+ 	depends on I2C
+diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
+index 69fe8ed..618488d 100644
+--- a/drivers/iio/accel/Makefile
++++ b/drivers/iio/accel/Makefile
+@@ -3,6 +3,7 @@
+ #
+ 
+ # When adding new entries keep the list in alphabetical order
++obj-$(CONFIG_ADXL345) += adxl345.o
+ obj-$(CONFIG_BMA180) += bma180.o
+ obj-$(CONFIG_BMA220) += bma220_spi.o
+ obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
+diff --git a/drivers/iio/accel/adxl345.c b/drivers/iio/accel/adxl345.c
+new file mode 100644
+index 0000000..54ea601
+--- /dev/null
++++ b/drivers/iio/accel/adxl345.c
+@@ -0,0 +1,173 @@
++/*
++ * ADXL345 3-Axis Digital Accelerometer
++ *
++ * Copyright (c) 2017 Eva Rachel Retuya <eraretuya@gmail.com>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License. See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for ADXL345
++ * 7-bit I2C slave address: 0x1D (ALT ADDRESS pin tied to VDDIO) or
++ * 0x53 (ALT ADDRESS pin grounded)
++ */
++
++#include <linux/i2c.h>
++#include <linux/module.h>
++
++#include <linux/iio/iio.h>
++
++#define ADXL345_REG_DEVID		0x00
++#define ADXL345_REG_POWER_CTL		0x2D
++#define ADXL345_REG_DATA_FORMAT		0x31
++#define ADXL345_REG_DATAX0		0x32
++#define ADXL345_REG_DATAY0		0x34
++#define ADXL345_REG_DATAZ0		0x36
++
++#define ADXL345_POWER_CTL_MEASURE	BIT(3)
++#define ADXL345_POWER_CTL_STANDBY	0x00
++
++#define ADXL345_DATA_FORMAT_FULL_RES	BIT(3)
++#define ADXL345_DATA_FORMAT_2G		0
++#define ADXL345_DATA_FORMAT_4G		1
++#define ADXL345_DATA_FORMAT_8G		2
++#define ADXL345_DATA_FORMAT_16G		3
++
++#define ADXL345_DEVID			0xE5
++
++struct adxl345_data {
++	struct i2c_client *client;
++	u8 data_range;
++};
++
++#define ADXL345_CHANNEL(reg, axis) {					\
++	.type = IIO_ACCEL,						\
++	.modified = 1,							\
++	.channel2 = IIO_MOD_##axis,					\
++	.address = reg,							\
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),			\
++}
++
++static const struct iio_chan_spec adxl345_channels[] = {
++	ADXL345_CHANNEL(ADXL345_REG_DATAX0, X),
++	ADXL345_CHANNEL(ADXL345_REG_DATAY0, Y),
++	ADXL345_CHANNEL(ADXL345_REG_DATAZ0, Z),
++};
++
++static int adxl345_read_raw(struct iio_dev *indio_dev,
++			    struct iio_chan_spec const *chan,
++			    int *val, int *val2, long mask)
++{
++	struct adxl345_data *data = iio_priv(indio_dev);
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		/*
++		 * Data is stored in adjacent registers:
++		 * ADXL345_REG_DATA(X0/Y0/Z0) contain the least significant byte
++		 * and ADXL345_REG_DATA(X0/Y0/Z0) + 1 the most significant byte
++		 */
++		ret = i2c_smbus_read_word_data(data->client, chan->address);
++
++		if (ret < 0)
++			return ret;
++
++		*val = sign_extend32(le16_to_cpu(ret), 12);
++		return IIO_VAL_INT;
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info adxl345_info = {
++	.driver_module	= THIS_MODULE,
++	.read_raw	= adxl345_read_raw,
++};
++
++static int adxl345_probe(struct i2c_client *client,
++			 const struct i2c_device_id *id)
++{
++	struct adxl345_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	ret = i2c_smbus_read_byte_data(client, ADXL345_REG_DEVID);
++	if (ret < 0) {
++		dev_err(&client->dev, "Error reading device ID: %d\n", ret);
++		return ret;
++	}
++
++	if (ret != ADXL345_DEVID) {
++		dev_err(&client->dev, "Invalid device ID: %d\n", ret);
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	/* Enable full-resolution mode */
++	data->data_range = ADXL345_DATA_FORMAT_FULL_RES;
++
++	ret = i2c_smbus_write_byte_data(data->client, ADXL345_REG_DATA_FORMAT,
++					data->data_range);
++	if (ret < 0) {
++		dev_err(&client->dev, "Failed to set data range: %d\n", ret);
++		return ret;
++	}
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->name = id->name;
++	indio_dev->info = &adxl345_info;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->channels = adxl345_channels;
++	indio_dev->num_channels = ARRAY_SIZE(adxl345_channels);
++
++	/* Enable measurement mode */
++	ret = i2c_smbus_write_byte_data(data->client, ADXL345_REG_POWER_CTL,
++					ADXL345_POWER_CTL_MEASURE);
++	if (ret < 0) {
++		dev_err(&client->dev, "Failed to enable measurement mode: %d\n",
++			ret);
++		return ret;
++	}
++
++	return iio_device_register(indio_dev);
++}
++
++static int adxl345_remove(struct i2c_client *client)
++{
++	struct iio_dev *indio_dev = i2c_get_clientdata(client);
++	struct adxl345_data *data = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	return i2c_smbus_write_byte_data(data->client, ADXL345_REG_POWER_CTL,
++					 ADXL345_POWER_CTL_STANDBY);
++}
++
++static const struct i2c_device_id adxl345_i2c_id[] = {
++	{ "adxl345", 0 },
++	{ }
++};
++
++MODULE_DEVICE_TABLE(i2c, adxl345_i2c_id);
++
++static struct i2c_driver adxl345_driver = {
++	.driver = {
++		.name	= "adxl345",
++	},
++	.probe		= adxl345_probe,
++	.remove		= adxl345_remove,
++	.id_table	= adxl345_i2c_id,
++};
++
++module_i2c_driver(adxl345_driver);
++
++MODULE_AUTHOR("Eva Rachel Retuya <eraretuya@gmail.com>");
++MODULE_DESCRIPTION("ADXL345 3-Axis Digital Accelerometer driver");
++MODULE_LICENSE("GPL v2");
+-- 
+2.7.4
+
