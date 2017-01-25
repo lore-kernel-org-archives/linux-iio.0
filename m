@@ -1,5 +1,5 @@
 Return-Path: <SRS0=wlXe=ZH=it-klinger.de=ak@kernel.org>
-Date: Wed, 25 Jan 2017 20:06:09 +0100
+Date: Wed, 25 Jan 2017 20:06:48 +0100
 From: Andreas Klinger <ak@it-klinger.de>
 To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
@@ -9,85 +9,49 @@ To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
 	trivial@kernel.org, mranostay@gmail.com, linux-i2c@vger.kernel.org,
 	devicetree@vger.kernel.org
 Cc: ak@it-klinger.de
-Subject: [PATCH v4 0/3] iio: distance: srf08: add IIO driver for us ranger
-Message-ID: <20170125190609.GA9246@andreas>
+Subject: [PATCH v4 1/3] iio: distance: srf08: add trivial DT binding
+Message-ID: <20170125190648.GA9260@andreas>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-This patch series adds IIO driver support for srf08 ultrasonic ranger
-devices.
+ - Add DT binding for devantech,srf08
+ - Add vendor devantech to vendor list
 
-The first patch add a trivial device tree binding for the device together
-with a new vendor devantech.
+Signed-off-by: Andreas Klinger <ak@it-klinger.de>
+Acked-by: Rob Herring <robh@kernel.org>
+---
+ Documentation/devicetree/bindings/i2c/trivial-devices.txt | 1 +
+ Documentation/devicetree/bindings/vendor-prefixes.txt     | 1 +
+ 2 files changed, 2 insertions(+)
 
-The second patch is the IIO driver which in turn is using I2C to talk to
-the device.
-
-The third patch documents the added userspace ABI
-
-Documentation about the sensor can be found here:
-
-http://www.robot-electronics.co.uk/htm/srf08tech.html
-
-Changes in v4:
-Jonathan suggested to use the same units for the max_range attribute as
-used for the distance raw value which is now changed in the driver. Thanks
-for the review and detailed suggestions.
-
-* Patch 2: "iio: distance: srf08: add IIO driver for us ranger"
-  - changed units of max_range attribute to meter
-  - changed max_range_available to print out min-, step- and max-value
-    instead of each single value
-
-* Patch 3: "iio: distance: srf08: add driver ABI documentation"
-  - removed standard elements from documentation
-  - changed documentation of max_range_available attribute
-
-Changes in v3:
-Thanks to the reviews of Jonathan, Rob and Lars.
-Some changes to the driver were made:
-
-* Patch 2: "iio: distance: srf08: add IIO driver for us ranger"
-  - defaults values for sensitivity (gain) and max. range are set in
-    probe()
-  - while waiting for ultrasonic echo first wait as long as the physically
-    measurement need as a function of the max. range and then wait in 
-    smaller steps until the response can be read.
-  - attributes are now called sensor_sensitivity instead of gain and
-    sensor_max_range instead of range_mm
-  - device-name is now "srf08"
-  - config menu is now calles "Proximity and distance sensors" instead of a
-    separate menu
-
-* Patch 3: "iio: distance: srf08: add driver ABI documentation"
-  - newly created to document the driver specific interfaces
-
-Changes in v2:
-Lots of updates thanks to Peters really fast review within 30 minutes 
-after first submission of the driver.
-
-* Patch 2: "iio: distance: srf08: add IIO driver for us ranger"
-  - alphabetic order in Makefile
-  - use of u8 while accessing registers 
-  - avoid endianness problems with 16 bit values
-  - missing return value checks
-  - some explaining documentation added
-
-Andreas Klinger (3):
-  iio: distance: srf08: add trivial DT binding
-  iio: distance: srf08: add IIO driver for us ranger
-  iio: distance: srf08: add driver ABI documentation
-
- .../ABI/testing/sysfs-bus-iio-distance-srf08       |  22 ++
- .../devicetree/bindings/i2c/trivial-devices.txt    |   1 +
- .../devicetree/bindings/vendor-prefixes.txt        |   1 +
- drivers/iio/proximity/Kconfig                      |  13 +-
- drivers/iio/proximity/Makefile                     |   1 +
- drivers/iio/proximity/srf08.c                      | 398 +++++++++++++++++++++
- 6 files changed, 435 insertions(+), 1 deletion(-)
- create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-distance-srf08
- create mode 100644 drivers/iio/proximity/srf08.c
-
--- 
+diff --git a/Documentation/devicetree/bindings/i2c/trivial-devices.txt b/Do=
+cumentation/devicetree/bindings/i2c/trivial-devices.txt
+index 539874490492..86c6930c3c91 100644
+--- a/Documentation/devicetree/bindings/i2c/trivial-devices.txt
++++ b/Documentation/devicetree/bindings/i2c/trivial-devices.txt
+@@ -36,6 +36,7 @@ dallas,ds1775		Tiny Digital Thermometer and Thermostat
+ dallas,ds3232		Extremely Accurate I=C2=B2C RTC with Integrated Crystal and=
+ SRAM
+ dallas,ds4510		CPU Supervisor with Nonvolatile Memory and Programmable I/O
+ dallas,ds75		Digital Thermometer and Thermostat
++devantech,srf08		Devantech SRF08 ultrasonic ranger
+ dlg,da9053		DA9053: flexible system level PMIC with multicore support
+ dlg,da9063		DA9063: system PMIC for quad-core application processors
+ epson,rx8010		I2C-BUS INTERFACE REAL TIME CLOCK MODULE
+diff --git a/Documentation/devicetree/bindings/vendor-prefixes.txt b/Docume=
+ntation/devicetree/bindings/vendor-prefixes.txt
+index 4696bb5c2198..80325e602403 100644
+--- a/Documentation/devicetree/bindings/vendor-prefixes.txt
++++ b/Documentation/devicetree/bindings/vendor-prefixes.txt
+@@ -65,6 +65,7 @@ dallas	Maxim Integrated Products (formerly Dallas Semicon=
+ductor)
+ davicom	DAVICOM Semiconductor, Inc.
+ delta	Delta Electronics, Inc.
+ denx	Denx Software Engineering
++devantech	Devantech, Ltd.
+ digi	Digi International Inc.
+ digilent	Diglent, Inc.
+ dlg	Dialog Semiconductor
+--=20
 2.1.4
