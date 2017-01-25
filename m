@@ -1,16 +1,23 @@
-Return-Path: <SRS0=IBjw=ZH=ranostay.consulting=matt@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-qk0-f180.google.com ([209.85.220.180]:35941 "EHLO
+        mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751476AbdAYJn1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 25 Jan 2017 04:43:27 -0500
+Received: by mail-qk0-f180.google.com with SMTP id 11so69299295qkl.3
+        for <linux-iio@vger.kernel.org>; Wed, 25 Jan 2017 01:43:20 -0800 (PST)
 MIME-Version: 1.0
 In-Reply-To: <alpine.DEB.2.02.1701250822480.5962@pmeerw.net>
 References: <20170125070442.10715-1-matt@ranostay.consulting>
  <20170125070442.10715-3-matt@ranostay.consulting> <alpine.DEB.2.02.1701250822480.5962@pmeerw.net>
 From: Matt Ranostay <matt@ranostay.consulting>
-Date: Wed, 25 Jan 2017 00:24:40 -0800
-Message-ID: <CAJ_EiSRDmLWzpJdhPrk1D3A-b6exFBBWALcktqyo+yoJj4Y9fg@mail.gmail.com>
+Date: Wed, 25 Jan 2017 01:43:19 -0800
+Message-ID: <CAJ_EiSQ4fqdeftJUo7QXuZ5_=-Gq4gvs7Brir_DGM1Mq8JHpyQ@mail.gmail.com>
 Subject: Re: [PATCH v2 2/2] iio: health: add MAX30102 oximeter driver support
 To: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
 Cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>
 Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 On Tue, Jan 24, 2017 at 11:29 PM, Peter Meerwald-Stadler
 <pmeerw@pmeerw.net> wrote:
@@ -30,11 +37,6 @@ On Tue, Jan 24, 2017 at 11:29 PM, Peter Meerwald-Stadler
 >
 > a changelog for v2 would be nice, earlier comments have not all been
 > incorporated
-
-Yeah I have the bad habit of having the cover letter named the same of
-one patchsets.
-But comments below noted for v3.
-
 >
 >>  drivers/iio/health/Kconfig    |  13 ++
 >>  drivers/iio/health/Makefile   |   1 +
@@ -139,6 +141,9 @@ But comments below noted for v3.
 >
 > still 6?
 >
+
+Weirdly after testing even wiht datasheet sample code the  same data
+comes both 6 and 7 bytes reads.
 >> +
 >> +#define MAX30102_REG_FIFO_CONFIG             0x08
 >> +#define MAX30102_REG_FIFO_CONFIG_AVG_4SAMPLES        BIT(1)
