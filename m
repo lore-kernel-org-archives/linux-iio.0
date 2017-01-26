@@ -1,11 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:37430 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750827AbdAQDAo (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 16 Jan 2017 22:00:44 -0500
-Date: Tue, 17 Jan 2017 04:00:13 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Received: from mail.free-electrons.com ([62.4.15.54]:53490 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752315AbdAZNc1 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jan 2017 08:32:27 -0500
+Subject: Re: [PATCH 08/22] power: supply: add AC power supply driver for
+ AXP20X and AXP22X PMICs
+To: Sebastian Reichel <sre@kernel.org>
+References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
+ <20170102163723.7939-9-quentin.schulz@free-electrons.com>
+ <20170117030013.g5xhlmrxpthyfewa@earth>
 Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
         wens@csie.org, linux@armlinux.org.uk,
@@ -15,108 +18,131 @@ Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
         linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: Re: [PATCH 08/22] power: supply: add AC power supply driver for
- AXP20X and AXP22X PMICs
-Message-ID: <20170117030013.g5xhlmrxpthyfewa@earth>
-References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
- <20170102163723.7939-9-quentin.schulz@free-electrons.com>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Message-ID: <6a3edb64-8ea9-cb14-b826-d6e8e2c4c4b7@free-electrons.com>
+Date: Thu, 26 Jan 2017 14:32:21 +0100
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="zxc2sjqngmsewc3s"
-In-Reply-To: <20170102163723.7939-9-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170117030013.g5xhlmrxpthyfewa@earth>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi Sebastian,
 
---zxc2sjqngmsewc3s
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+On 17/01/2017 04:00, Sebastian Reichel wrote:
+> Hi Quentin,
+> 
+> The driver looks mostly fine. I do have a two comments, though.
+> 
+> On Mon, Jan 02, 2017 at 05:37:08PM +0100, Quentin Schulz wrote:
+>> [...]
+>>
+>> +static int axp20x_ac_power_probe(struct platform_device *pdev)
+>> +{
+>> +	static const char * const axp20x_irq_names[] = { "ACIN_PLUGIN",
+>> +		"ACIN_REMOVAL", NULL };
+>>
+>> +	static const char * const *irq_names;
+>> +	const struct power_supply_desc *ac_power_desc;
+>> +	int i, irq, ret;
+>> +
+>> +	if (!of_device_is_available(pdev->dev.of_node))
+>> +		return -ENODEV;
+>> +
+>> +	if (!axp20x) {
+>> +		dev_err(&pdev->dev, "Parent drvdata not set\n");
+>> +		return -EINVAL;
+>> +	}
+> 
+> axp20x will no longer be needed after implementing below
+> comments.
+> 
+>> [...]
+>> +	irq_names = axp20x_irq_names;
+> 
+> Just rename axp20x_irq_names into irq_names, since its only used
+> here.
+> 
+>> [...]
+>>
+>> +	power->np = pdev->dev.of_node;
+> 
+> This can be dropped, it's not used at all.
+> 
+>> +	power->regmap = axp20x->regmap;
+> 
+> power->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+> 
 
-Hi Quentin,
+ACK on everything above.
 
-The driver looks mostly fine. I do have a two comments, though.
+>> [...]
+>> +	/* Request irqs after registering, as irqs may trigger immediately */
+>> +	for (i = 0; irq_names[i]; i++) {
+>> +		irq = platform_get_irq_byname(pdev, irq_names[i]);
+>> +		if (irq < 0) {
+>> +			dev_warn(&pdev->dev, "No IRQ for %s: %d\n",
+>> +				 irq_names[i], irq);
+>> +			continue;
+>> +		}
+>> +		irq = regmap_irq_get_virq(axp20x->regmap_irqc, irq);
+> 
+> The mapping should actually happen in the mfd driver, so that
+> the platform resource contains a valid irq.
+> 
 
-On Mon, Jan 02, 2017 at 05:37:08PM +0100, Quentin Schulz wrote:
-> [...]
->
-> +static int axp20x_ac_power_probe(struct platform_device *pdev)
-> +{
-> +	static const char * const axp20x_irq_names[] = { "ACIN_PLUGIN",
-> +		"ACIN_REMOVAL", NULL };
->
-> +	static const char * const *irq_names;
-> +	const struct power_supply_desc *ac_power_desc;
-> +	int i, irq, ret;
-> +
-> +	if (!of_device_is_available(pdev->dev.of_node))
-> +		return -ENODEV;
-> +
-> +	if (!axp20x) {
-> +		dev_err(&pdev->dev, "Parent drvdata not set\n");
-> +		return -EINVAL;
-> +	}
+I've come with this solution:
 
-axp20x will no longer be needed after implementing below
-comments.
+------------------------------------------------------------------------
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index 012c064..117eacb 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -882,7 +882,7 @@ EXPORT_SYMBOL(axp20x_match_device);
 
-> [...]
-> +	irq_names = axp20x_irq_names;
+ int axp20x_device_probe(struct axp20x_dev *axp20x)
+ {
+-	int ret;
++	int ret, irq_base;
 
-Just rename axp20x_irq_names into irq_names, since its only used
-here.
+ 	ret = regmap_add_irq_chip(axp20x->regmap, axp20x->irq,
+ 				  IRQF_ONESHOT | IRQF_SHARED, -1,
+@@ -893,8 +893,9 @@ int axp20x_device_probe(struct axp20x_dev *axp20x)
+ 		return ret;
+ 	}
 
-> [...]
->
-> +	power->np = pdev->dev.of_node;
++	irq_base = regmap_irq_chip_get_base(axp20x->regmap_irqc);
+ 	ret = mfd_add_devices(axp20x->dev, -1, axp20x->cells,
+-			      axp20x->nr_cells, NULL, 0, NULL);
++			      axp20x->nr_cells, NULL, irq_base, NULL);
 
-This can be dropped, it's not used at all.
+ 	if (ret) {
+ 		dev_err(axp20x->dev, "failed to add MFD devices: %d\n", ret);
+------------------------------------------------------------------------
 
-> +	power->regmap = axp20x->regmap;
+However, this implies that all cells added by the mfd driver which are
+requesting irqs will need to be changed in the same commit to remove the
+regmap_irq_get_virq calls. If we don't modify the drivers, they will
+purely fail to request the irqs.
 
-power->regmap = dev_get_regmap(pdev->dev.parent, NULL);
+The impacted drivers are the following:
 
-> [...]
-> +	/* Request irqs after registering, as irqs may trigger immediately */
-> +	for (i = 0; irq_names[i]; i++) {
-> +		irq = platform_get_irq_byname(pdev, irq_names[i]);
-> +		if (irq < 0) {
-> +			dev_warn(&pdev->dev, "No IRQ for %s: %d\n",
-> +				 irq_names[i], irq);
-> +			continue;
-> +		}
-> +		irq = regmap_irq_get_virq(axp20x->regmap_irqc, irq);
+ - drivers/extcon/extcon-axp288.c
+ - drivers/input/misc/axp20x-pek.c
+ - drivers/power/supply/axp20x_usb_power.c
+ - drivers/power/supply/axp288_charger.c
+ - drivers/power/supply/axp288_fuel_gauge.c
 
-The mapping should actually happen in the mfd driver, so that
-the platform resource contains a valid irq.
+Is it really worth to do such a cleanup? I'm assuming that impacting
+four different subsystems at the same time might require a bit of time
+to make the patch into the kernel. I don't see also another way than
+doing one single patch for all changes since the changes in the mfd
+driver will break all aforementioned drivers.
 
-> +		ret = devm_request_any_context_irq(&pdev->dev, irq,
-> +						   axp20x_ac_power_irq, 0,
-> +						   DRVNAME, power);
-> +		if (ret < 0)
-> +			dev_warn(&pdev->dev, "Error requesting %s IRQ: %d\n",
-> +				 irq_names[i], ret);
-> +	}
+Thanks,
+Quentin
 
--- Sebastian
-
---zxc2sjqngmsewc3s
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlh9iLsACgkQ2O7X88g7
-+ppoow//bhzAGESgVlNyI6XSseMTxEWOMvDT3FvLN0sHG9kRWdzbzXxsdHW6o/xC
-B/Zn16dm5f2XQI1bRJ0bZdf61dDDlSrm/+nrCyD3gIn6md9XhWE3vZdJDFVaUcbh
-Vw0RJpmfFsodmJwqrr+JLgqPuwFlT7n8GR0BK1FGqq1+T37MaXr1+oAjlCusa90E
-7eSB70wW4bYB4OXMliamVw35Z+ysFfloR+JcPYC8pdOhnoJ4YEBfM4+EKOlUONVt
-/+WN9VRakfkS/Hbt2zTjtlTgJ2gCz65bY452efFy74jymJBKYWBwci5BduASeSos
-+ovrTgMttB0QTjDbRbJljI10VmzmUk2bMD+Y1dUalgGfHeM6amHNZKGBw5A+0Ess
-BFJNdjHQp5pHkL0W76+rcbWwzVSpkPRD/aA3vS746yVL8qs7t17LBd75yf1BBTzB
-JDTB+YngSOUpmYthNZtpoVVBAgOrfTzuVU8uQ+AB9NAFRaQwt79DvhiMGdNQ4FGi
-wwc7nDOm9iVHUAQUv08MZzkhczA6L0/B9WepWWWFZ2uqxQvV2zpypuKCZ4ylo9tD
-xXn9yhZzLEUuJg38bupinPIw/JZ9sbxyYkuSsUapl/iNiA98D0HzRb901+NFbe/w
-haY3/TNK2w3WrHYnQsI6SebjhhoCVn1SmSU+JCi0PezAKVe33MA=
-=qgcj
------END PGP SIGNATURE-----
-
---zxc2sjqngmsewc3s--
+-- 
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
