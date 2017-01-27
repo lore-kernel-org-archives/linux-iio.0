@@ -1,40 +1,156 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:35128 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750876AbdA0TBs (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 14:01:48 -0500
-Received: by mail-pf0-f193.google.com with SMTP id f144so19091886pfa.2
-        for <linux-iio@vger.kernel.org>; Fri, 27 Jan 2017 11:01:46 -0800 (PST)
-Date: Sat, 28 Jan 2017 00:23:43 +0530
-From: Mani Sadhasivam <manivannanece23@gmail.com>
-To: matthias@tenstral.net
-Cc: pmeerw@pmeerw.net, jic23@kernel.org, linux-iio@vger.kernel.org
-Subject: Re: Problems with using IIO buffers
-Message-ID: <20170127185343.GA24828@gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: CAKNHny9saYXafENh0EcAvCw8fVtfK5LoiwusSpUMiCh0Fkh_ng@mail.gmail.com
+Received: from mail-oi0-f67.google.com ([209.85.218.67]:35714 "EHLO
+        mail-oi0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750724AbdA0XRE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 18:17:04 -0500
+From: Marek Vasut <marek.vasut@gmail.com>
+To: linux-iio@vger.kernel.org
+Cc: Marek Vasut <marek.vasut+renesas@gmail.com>,
+        Geert Uytterhoeven <geert+renesas@glider.be>,
+        Simon Horman <horms+renesas@verge.net.au>,
+        Jonathan Cameron <jic23@kernel.org>,
+        linux-renesas-soc@vger.kernel.org,
+        Wolfram Sang <wsa@the-dreams.de>,
+        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
+Subject: [PATCH 1/2] iio: adc: Add Renesas GyroADC bindings
+Date: Sat, 28 Jan 2017 00:08:36 +0100
+Message-Id: <20170127230837.9322-1-marek.vasut@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Mathias,
+From: Marek Vasut <marek.vasut+renesas@gmail.com>
 
-For iio_readdev api, the default timeout is 1s that's why you're getting timeout error as the trigger fails to happen within that timeout period.
+Add DT bindings for the Renesas RCar GyroADC block. This block is
+a simple 4/8-channel ADC which samples 12/15/24 bits of data every
+cycle from all channels.
 
-It'd be worth to note that this api is not a blocking call.
+Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
+Cc: Geert Uytterhoeven <geert+renesas@glider.be>
+Cc: Simon Horman <horms+renesas@verge.net.au>
+Cc: Jonathan Cameron <jic23@kernel.org>
+Cc: linux-renesas-soc@vger.kernel.org
+Cc: Wolfram Sang <wsa@the-dreams.de>
+Cc: Rob Herring <robh@kernel.org>
+Acked-by: Rob Herring <robh@kernel.org>
+Cc: devicetree@vger.kernel.org
+---
+V8: - Sync the version with the 2/2 driver patch
+    - Drop status prop from example
+    - Add GyroADC block description
+    - Enumerate the compatible string values
+    - Make subnodes mandatory
+V9: - Replace &adc with adc@e6e54000
+    - Add Rob's ACK
+---
+ .../bindings/iio/adc/renesas,gyroadc.txt           | 99 ++++++++++++++++++++++
+ 1 file changed, 99 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
 
-If you wanna use iio_readddev you can probably increase the timeout in local.c file of libiio source.
+diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+new file mode 100644
+index 000000000000..f5b0adae6010
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+@@ -0,0 +1,99 @@
++* Renesas RCar GyroADC device driver
++
++The GyroADC block is a reduced SPI block with up to 8 chipselect lines,
++which supports the SPI protocol of a selected few SPI ADCs. The SPI ADCs
++are sampled by the GyroADC block in a round-robin fashion and the result
++presented in the GyroADC registers.
++
++Required properties:
++- compatible:	Should be "<soc-specific>", "renesas,rcar-gyroadc".
++                The <soc-specific> should be one of:
++		renesas,r8a7791-gyroadc - for the GyroADC block present
++					  in r8a7791 SoC
++		renesas,r8a7792-gyroadc - for the GyroADC with interrupt
++					  block present in r8a7792 SoC
++- reg:		Address and length of the register set for the device
++- clocks:	References to all the clocks specified in the clock-names
++		property as specified in
++		Documentation/devicetree/bindings/clock/clock-bindings.txt.
++- clock-names:	Shall contain "fck" and "if". The "fck" is the GyroADC block
++		clock, the "if" is the interface clock.
++- power-domains: Must contain a reference to the PM domain, if available.
++- #address-cells: Should be <1> (setting for the subnodes) for all ADCs
++		except for "fujitsu,mb88101a". Should be <0> (setting for
++		only subnode) for "fujitsu,mb88101a".
++- #size-cells:	Should be <0> (setting for the subnodes)
++
++Sub-nodes:
++You must define subnode(s) which select the connected ADC type and reference
++voltage for the GyroADC channels.
++
++Required properties for subnodes:
++- compatible:	Should be either of:
++		"fujitsu,mb88101a"
++			- Fujitsu MB88101A compatible mode,
++			  12bit sampling, up to 4 channels can be sampled in
++			  round-robin fashion. One Fujitsu chip supplies four
++			  GyroADC channels with data as it contains four ADCs
++			  on the chip and thus for 4-channel operation, single
++			  MB88101A is required. The Cx chipselect lines of the
++			  MB88101A connect directly to two CHS lines of the
++			  GyroADC, no demuxer is required. The data out line
++			  of each MB88101A connects to a shared input pin of
++			  the GyroADC.
++		"ti,adcs7476" or "ti,adc121" or "adi,ad7476"
++			- TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode,
++			  15bit sampling, up to 8 channels can be sampled in
++			  round-robin fashion. One TI/ADI chip supplies single
++			  ADC channel with data, thus for 8-channel operation,
++			  8 chips are required. A 3:8 chipselect demuxer is
++			  required to connect the nCS line of the TI/ADI chips
++			  to the GyroADC, while MISO line of each TI/ADI ADC
++			  connects to a shared input pin of the GyroADC.
++		"maxim,max1162" or "maxim,max11100"
++			- Maxim MAX1162 / Maxim MAX11100 compatible mode,
++			  16bit sampling, up to 8 channels can be sampled in
++			  round-robin fashion. One Maxim chip supplies single
++			  ADC channel with data, thus for 8-channel operation,
++			  8 chips are required. A 3:8 chipselect demuxer is
++			  required to connect the nCS line of the MAX chips
++			  to the GyroADC, while MISO line of each Maxim ADC
++			  connects to a shared input pin of the GyroADC.
++- reg:		Should be the number of the analog input. Should be present
++		for all ADCs except "fujitsu,mb88101a".
++- vref-supply:	Reference to the channel reference voltage regulator.
++
++Example:
++	vref_max1162: regulator-vref-max1162 {
++		compatible = "regulator-fixed";
++
++		regulator-name = "MAX1162 Vref";
++		regulator-min-microvolt = <4096000>;
++		regulator-max-microvolt = <4096000>;
++	};
++
++	adc@e6e54000 {
++		compatible = "renesas,r8a7791-gyroadc", "renesas,rcar-gyroadc";
++		reg = <0 0xe6e54000 0 64>;
++		clocks = <&mstp9_clks R8A7791_CLK_GYROADC>, <&clk_65m>;
++		clock-names = "fck", "if";
++		power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
++
++		pinctrl-0 = <&adc_pins>;
++		pinctrl-names = "default";
++
++		#address-cells = <1>;
++		#size-cells = <0>;
++
++		adc@0 {
++			reg = <0>;
++			compatible = "maxim,max1162";
++			vref-supply = <&vref_max1162>;
++		};
++
++		adc@1 {
++			reg = <1>;
++			compatible = "maxim,max1162";
++			vref-supply = <&vref_max1162>;
++		};
++	};
+-- 
+2.11.0
 
-Change the timeout value of DEFAULT_TIMEOUT_MS to 5000 or anything which will let the trigger to happen. Depending upon the buffer and sample
-size you'll require corresponding number of triggers.
-
-For instance, for the buffer length of 2 and you want 2 samples
-
-iio_readdev -t sysfstrig1 -b 2 -s 2 mydev
-
-In this case, if 2 triggers happen within that timeout period, iio_readdev api will successfully return the buffer content.
-
-But for iio_generic_buffer, buffer contents are returned after getting enough triggers (blocking).
-
-Thanks,
-Mani
