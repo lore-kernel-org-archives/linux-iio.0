@@ -1,95 +1,352 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:39504 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751842AbdA2Qbk (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 29 Jan 2017 11:31:40 -0500
-Date: Sun, 29 Jan 2017 17:31:29 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+Received: from mail.free-electrons.com ([62.4.15.54]:46907 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754742AbdA0JIC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 04:08:02 -0500
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-        lee.jones@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        sre@kernel.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: Re: [PATCH v2 09/25] iio: adc: axp20x_adc: map acin_i and acin_v
-Message-ID: <20170129163129.znc563s2prgmwuf2@earth>
+Subject: [PATCH v2 10/25] power: supply: add AC power supply driver for AXP20X and AXP22X PMICs
+Date: Fri, 27 Jan 2017 09:54:43 +0100
+Message-Id: <20170127085458.18270-11-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
 References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
- <20170127085458.18270-10-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="uuavyfprcv5dqexw"
-In-Reply-To: <20170127085458.18270-10-quentin.schulz@free-electrons.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The X-Powers AXP20X and AXP22X PMICs expose the status of AC power
+supply.
 
---uuavyfprcv5dqexw
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Moreover, the AXP20X can also expose the current current and voltage
+values of the AC power supply.
 
-Hi,
+This adds the driver which exposes the status of the AC power supply of
+the AXP20X and AXP22X PMICs.
 
-On Fri, Jan 27, 2017 at 09:54:42AM +0100, Quentin Schulz wrote:
-> This maps the IIO channels acin_i and acin_v (respectively exposing the
-> current current and voltage measures of the AC power supply) to the AC
-> power supply driver.
->=20
-> Only the AXP20X PMICs have these ADC channels and thus they are only
-> mapped for this version of the PMIC.
->=20
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> ---
->=20
-> added in v2
->=20
->  drivers/iio/adc/axp20x_adc.c | 8 ++++++++
->  1 file changed, 8 insertions(+)
->=20
-> diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
-> index bacde92..14f4ec0 100644
-> --- a/drivers/iio/adc/axp20x_adc.c
-> +++ b/drivers/iio/adc/axp20x_adc.c
-> @@ -104,6 +104,14 @@ static struct iio_map axp20x_maps[] =3D {
->  		.consumer_dev_name =3D "axp20x-usb-power-supply",
->  		.consumer_channel =3D "vbus_i",
->  		.adc_channel_label =3D "vbus_i",
-> +	}, {
-> +		.consumer_dev_name =3D "axp20x-ac-power-supply",
-> +		.consumer_channel =3D "acin_v",
-> +		.adc_channel_label =3D "acin_v",
-> +	}, {
-> +		.consumer_dev_name =3D "axp20x-ac-power-supply",
-> +		.consumer_channel =3D "acin_i",
-> +		.adc_channel_label =3D "acin_i",
->  	}, { /* sentinel */ }
->  };
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+---
 
-I suggest to merge this into Patch 4 before resending the series.
+v2:
+ - replaced µ character by a common u for micro units to make checkpatch
+ happy,
+ - use of structure for specific data instead of an ID and if
+ condiftions,
+ - use dev_get_regmap instead of manually looking for it in the parent
+ drvdata,
 
--- Sebastian
+ drivers/power/supply/Kconfig           |  12 ++
+ drivers/power/supply/Makefile          |   1 +
+ drivers/power/supply/axp20x_ac_power.c | 250 +++++++++++++++++++++++++++++++++
+ 3 files changed, 263 insertions(+)
+ create mode 100644 drivers/power/supply/axp20x_ac_power.c
 
---uuavyfprcv5dqexw
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/drivers/power/supply/Kconfig b/drivers/power/supply/Kconfig
+index 76806a0..c552b4b 100644
+--- a/drivers/power/supply/Kconfig
++++ b/drivers/power/supply/Kconfig
+@@ -214,6 +214,18 @@ config BATTERY_DA9150
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called da9150-fg.
+ 
++config CHARGER_AXP20X
++	tristate "X-Powers AXP20X and AXP22X AC power supply driver"
++	depends on MFD_AXP20X
++	depends on AXP20X_ADC
++	depends on IIO
++	help
++	  Say Y here to enable support for X-Powers AXP20X and AXP22X PMICs' AC
++	  power supply.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called axp20x_ac_power.
++
+ config AXP288_CHARGER
+ 	tristate "X-Powers AXP288 Charger"
+ 	depends on MFD_AXP20X && EXTCON_AXP288
+diff --git a/drivers/power/supply/Makefile b/drivers/power/supply/Makefile
+index 36c599d..7d22417 100644
+--- a/drivers/power/supply/Makefile
++++ b/drivers/power/supply/Makefile
+@@ -18,6 +18,7 @@ obj-$(CONFIG_TEST_POWER)	+= test_power.o
+ 
+ obj-$(CONFIG_BATTERY_88PM860X)	+= 88pm860x_battery.o
+ obj-$(CONFIG_BATTERY_ACT8945A)	+= act8945a_charger.o
++obj-$(CONFIG_CHARGER_AXP20X)	+= axp20x_ac_power.o
+ obj-$(CONFIG_BATTERY_DS2760)	+= ds2760_battery.o
+ obj-$(CONFIG_BATTERY_DS2780)	+= ds2780_battery.o
+ obj-$(CONFIG_BATTERY_DS2781)	+= ds2781_battery.o
+diff --git a/drivers/power/supply/axp20x_ac_power.c b/drivers/power/supply/axp20x_ac_power.c
+new file mode 100644
+index 0000000..59ab4f2
+--- /dev/null
++++ b/drivers/power/supply/axp20x_ac_power.c
+@@ -0,0 +1,250 @@
++/*
++ * AXP20X and AXP22X PMICs' ACIN power supply driver
++ *
++ * Copyright (C) 2016 Free Electrons
++ *	Quentin Schulz <quentin.schulz@free-electrons.com>
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under  the terms of the GNU General  Public License as published by the
++ * Free Software Foundation;  either version 2 of the License, or (at your
++ * option) any later version.
++ */
++
++#include <linux/device.h>
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/mfd/axp20x.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/power_supply.h>
++#include <linux/regmap.h>
++#include <linux/slab.h>
++#include <linux/iio/consumer.h>
++
++#define AXP20X_PWR_STATUS_ACIN_PRESENT	BIT(7)
++#define AXP20X_PWR_STATUS_ACIN_AVAIL	BIT(6)
++
++#define DRVNAME "axp20x-ac-power-supply"
++
++struct axp20x_ac_power {
++	struct device_node *np;
++	struct regmap *regmap;
++	struct power_supply *supply;
++	int axp20x_id;
++	struct iio_channel *acin_v;
++	struct iio_channel *acin_i;
++};
++
++static irqreturn_t axp20x_ac_power_irq(int irq, void *devid)
++{
++	struct axp20x_ac_power *power = devid;
++
++	power_supply_changed(power->supply);
++
++	return IRQ_HANDLED;
++}
++
++static int axp20x_ac_power_get_property(struct power_supply *psy,
++					enum power_supply_property psp,
++					union power_supply_propval *val)
++{
++	struct axp20x_ac_power *power = power_supply_get_drvdata(psy);
++	int ret, reg;
++
++	switch (psp) {
++	case POWER_SUPPLY_PROP_HEALTH:
++		ret = regmap_read(power->regmap, AXP20X_PWR_INPUT_STATUS, &reg);
++		if (ret)
++			return ret;
++
++		if (reg & AXP20X_PWR_STATUS_ACIN_PRESENT) {
++			val->intval = POWER_SUPPLY_HEALTH_GOOD;
++			return 0;
++		}
++
++		val->intval = POWER_SUPPLY_HEALTH_UNKNOWN;
++		return 0;
++
++	case POWER_SUPPLY_PROP_PRESENT:
++		ret = regmap_read(power->regmap, AXP20X_PWR_INPUT_STATUS, &reg);
++		if (ret)
++			return ret;
++
++		val->intval = !!(reg & AXP20X_PWR_STATUS_ACIN_PRESENT);
++		return 0;
++
++	case POWER_SUPPLY_PROP_ONLINE:
++		ret = regmap_read(power->regmap, AXP20X_PWR_INPUT_STATUS, &reg);
++		if (ret)
++			return ret;
++
++		val->intval = !!(reg & AXP20X_PWR_STATUS_ACIN_AVAIL);
++		return 0;
++
++	case POWER_SUPPLY_PROP_VOLTAGE_NOW:
++		ret = iio_read_channel_processed(power->acin_v, &val->intval);
++		if (ret)
++			return ret;
++
++		/* IIO framework gives mV but Power Supply framework gives uV */
++		val->intval *= 1000;
++
++		return 0;
++
++	case POWER_SUPPLY_PROP_CURRENT_NOW:
++		ret = iio_read_channel_processed(power->acin_i, &val->intval);
++		if (ret)
++			return ret;
++
++		/* IIO framework gives mA but Power Supply framework gives uA */
++		val->intval *= 1000;
++
++		return 0;
++
++	default:
++		return -EINVAL;
++	}
++
++	return -EINVAL;
++}
++
++static enum power_supply_property axp20x_ac_power_properties[] = {
++	POWER_SUPPLY_PROP_HEALTH,
++	POWER_SUPPLY_PROP_PRESENT,
++	POWER_SUPPLY_PROP_ONLINE,
++	POWER_SUPPLY_PROP_VOLTAGE_NOW,
++	POWER_SUPPLY_PROP_CURRENT_NOW,
++};
++
++static enum power_supply_property axp22x_ac_power_properties[] = {
++	POWER_SUPPLY_PROP_HEALTH,
++	POWER_SUPPLY_PROP_PRESENT,
++	POWER_SUPPLY_PROP_ONLINE,
++};
++
++static const struct power_supply_desc axp20x_ac_power_desc = {
++	.name = "axp20x-ac",
++	.type = POWER_SUPPLY_TYPE_MAINS,
++	.properties = axp20x_ac_power_properties,
++	.num_properties = ARRAY_SIZE(axp20x_ac_power_properties),
++	.get_property = axp20x_ac_power_get_property,
++};
++
++static const struct power_supply_desc axp22x_ac_power_desc = {
++	.name = "axp22x-ac",
++	.type = POWER_SUPPLY_TYPE_MAINS,
++	.properties = axp22x_ac_power_properties,
++	.num_properties = ARRAY_SIZE(axp22x_ac_power_properties),
++	.get_property = axp20x_ac_power_get_property,
++};
++
++struct axp_data {
++	const struct power_supply_desc	*power_desc;
++	bool				acin_adc;
++};
++
++static const struct axp_data axp20x_data = {
++	.power_desc = &axp20x_ac_power_desc,
++	.acin_adc = true,
++};
++
++static const struct axp_data axp22x_data = {
++	.power_desc = &axp22x_ac_power_desc,
++	.acin_adc = false,
++};
++
++static int axp20x_ac_power_probe(struct platform_device *pdev)
++{
++	struct axp20x_dev *axp20x = dev_get_drvdata(pdev->dev.parent);
++	struct power_supply_config psy_cfg = {};
++	struct axp20x_ac_power *power;
++	struct axp_data *axp_data;
++	static const char * const irq_names[] = { "ACIN_PLUGIN", "ACIN_REMOVAL",
++		NULL };
++	int i, irq, ret;
++
++	if (!of_device_is_available(pdev->dev.of_node))
++		return -ENODEV;
++
++	if (!axp20x) {
++		dev_err(&pdev->dev, "Parent drvdata not set\n");
++		return -EINVAL;
++	}
++
++	power = devm_kzalloc(&pdev->dev, sizeof(*power), GFP_KERNEL);
++	if (!power)
++		return -ENOMEM;
++
++	axp_data = (struct axp_data *)of_device_get_match_data(&pdev->dev);
++
++	if (axp_data->acin_adc) {
++		power->acin_v = devm_iio_channel_get(&pdev->dev, "acin_v");
++		if (IS_ERR(power->acin_v)) {
++			if (PTR_ERR(power->acin_v) == -ENODEV)
++				return -EPROBE_DEFER;
++			return PTR_ERR(power->acin_v);
++		}
++
++		power->acin_i = devm_iio_channel_get(&pdev->dev, "acin_i");
++		if (IS_ERR(power->acin_i)) {
++			if (PTR_ERR(power->acin_i) == -ENODEV)
++				return -EPROBE_DEFER;
++			return PTR_ERR(power->acin_i);
++		}
++	}
++
++	power->regmap = dev_get_regmap(pdev->dev.parent, NULL);
++
++	platform_set_drvdata(pdev, power);
++
++	psy_cfg.of_node = pdev->dev.of_node;
++	psy_cfg.drv_data = power;
++
++	power->supply = devm_power_supply_register(&pdev->dev,
++						   axp_data->power_desc,
++						   &psy_cfg);
++	if (IS_ERR(power->supply))
++		return PTR_ERR(power->supply);
++
++	/* Request irqs after registering, as irqs may trigger immediately */
++	for (i = 0; irq_names[i]; i++) {
++		irq = platform_get_irq_byname(pdev, irq_names[i]);
++		if (irq < 0) {
++			dev_warn(&pdev->dev, "No IRQ for %s: %d\n",
++				 irq_names[i], irq);
++			continue;
++		}
++		irq = regmap_irq_get_virq(axp20x->regmap_irqc, irq);
++		ret = devm_request_any_context_irq(&pdev->dev, irq,
++						   axp20x_ac_power_irq, 0,
++						   DRVNAME, power);
++		if (ret < 0)
++			dev_warn(&pdev->dev, "Error requesting %s IRQ: %d\n",
++				 irq_names[i], ret);
++	}
++
++	return 0;
++}
++
++static const struct of_device_id axp20x_ac_power_match[] = {
++	{
++		.compatible = "x-powers,axp202-ac-power-supply",
++		.data = (void *)&axp20x_data,
++	}, {
++		.compatible = "x-powers,axp221-ac-power-supply",
++		.data = (void *)&axp22x_data,
++	}, { /* sentinel */ }
++};
++MODULE_DEVICE_TABLE(of, axp20x_ac_power_match);
++
++static struct platform_driver axp20x_ac_power_driver = {
++	.probe = axp20x_ac_power_probe,
++	.driver = {
++		.name = DRVNAME,
++		.of_match_table = axp20x_ac_power_match,
++	},
++};
++
++module_platform_driver(axp20x_ac_power_driver);
++
++MODULE_AUTHOR("Quentin Schulz <quentin.schulz@free-electrons.com>");
++MODULE_DESCRIPTION("AXP20X and AXP22X PMICs' AC power supply driver");
++MODULE_LICENSE("GPL");
+-- 
+2.9.3
 
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAliOGOAACgkQ2O7X88g7
-+pr4AQ/9FmZ5xB/2bgIzPOsDf4/K4rkCMIec6Wc9M/wrRjBFFfe8eBR6TFBpKhSi
-l1ciLjEZ1iNJ9Lqvq/juoebLpOp8lACKHiQYyilgnhIOVyh9j7WKiP4Owy76b+qh
-BeCPx4uIfR/9en2t0BXbusF8zmzlD6158W/lN2xTE+ot8lqTmAVmTvbpEqWV40Q/
-dqaoPtV1Iq6VioxIzW4TIQNC1c3TI2aIM8oYf5lM/Sr+g1FxuSQIgwyrxCgwqpbh
-EWDjHdj6OwuYk+5ptixVrNLPZ+mL6YEZ32UzpNhxrQuU4EhCl/XTPizfTP+MX0Qv
-dQRJQ/3jXuoE95iZPRBZ+nLQ6fe9+eQwrN+9J7JVyzeSNk66cNmDVrJ+H4sFl/hR
-6LfPi1xRIkVHUljyjN35l7E9rTUCDpmGhwfEFqEuS70tEInMdzuexETeDsToCGZ9
-X7ey+F6hawsOguu96FXZ+2UXY12HOoGjfNprgJTo05I/KIJZ/ZahyiH7+OSx6daI
-tGSx3pD3N6R6tJGOtrkt03ZlyQIvKa98/oDUDTzuVSY6SITYUFAW8RulwTsI7HZ/
-ARc5MWz/n1spB36wRn2OLQoT6h4+OIjrGCipYHuTgTnZmhILZILPvGbPVgzM+Ixc
-FuBDmFx3TZKdxQGuuMtWj9GORr7kGJh/N8ddlQ2WyRcHQI7bYHE=
-=mLHT
------END PGP SIGNATURE-----
-
---uuavyfprcv5dqexw--
