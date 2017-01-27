@@ -1,374 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45211 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751130AbdA1MOZ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 07:14:25 -0500
-Subject: Re: [PATCH v4] iio: max5481: Add support for Maxim digital
- potentiometers
-To: Slawomir Stepien <sst@poczta.fm>, linux-iio@vger.kernel.org
-References: <20170126202615.GA13816@x220.localdomain>
-Cc: matthew.weber@rockwellcollins.com,
-        maury.anderson@rockwellcollins.com, devicetree@vger.kernel.org,
-        Mark Rutland <Mark.Rutland@arm.com>,
-        Rob Herring <robh+dt@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6d951edc-7bb6-496d-1f9c-f651fb3740e1@kernel.org>
-Date: Sat, 28 Jan 2017 12:14:22 +0000
+Received: from mail.free-electrons.com ([62.4.15.54]:46376 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932184AbdA0JB4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 04:01:56 -0500
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
+        sre@kernel.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
+        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
+        bonbons@linux-vserver.org
+Subject: [PATCH v2 00/25] add support for AXP20X and AXP22X power supply drivers
+Date: Fri, 27 Jan 2017 09:54:33 +0100
+Message-Id: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <20170126202615.GA13816@x220.localdomain>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 26/01/17 20:26, Slawomir Stepien wrote:
-> From: Matt Weber <matthew.weber@rockwellcollins.com>
-> 
-> Add implementation for Maxim Integrated 5481, 5482, 5483,
-> and 5484 digital potentiometer devices.
-> 
-> Datasheet:
-> http://datasheets.maximintegrated.com/en/ds/MAX5481-MAX5484.pdf
-> 
-> Signed-off-by: Maury Anderson <maury.anderson@rockwellcollins.com>
-> Signed-off-by: Matthew Weber <matthew.weber@rockwellcollins.com>
-> Signed-off-by: Slawomir Stepien <sst@poczta.fm>
-> Acked-by: Rob Herring <robh@kernel.org>
-Looks good to me.
+The X-Powers AXP20X and AXP22X PMICs have multiple ADCs. They expose
+information and data of the various power supplies they support such as
+ACIN, battery and VBUS. For example, they expose the current battery
+voltage, charge or discharge, as well as ACIN and VBUS current voltages
+and currents, internal PMIC temperature and ADC on 2 different GPIOs
+when in the right mode (for the AXP209 only).
 
-Applied to the togreg branch of iio.git - initially pushed out as
-testing for the magic autobuilders to play with it.
+The ACIN power supply driver is added by this patch. The AXP20X and
+AXP22X can both read the status and the "usability" of the power supply
+but only the AXP209 will be able to tell the current current and voltage
+of the power supply by reading ADC channels. It is simply not supported
+by the AXP22X PMICs.
 
-Thanks for picking this one up and running with it,
+The battery power supply driver is also added by this patch. The AXP20X
+and AXP22X share most of their behaviour but have slight variations. The
+allowed target voltages for battery charging are not the same, the
+AXP22X PMIC are able to tell if the battery percentage computed by the
+PMIC is trustworthy and they have different formulas for computing max
+current for battery power supply. The driver is able to give the current
+voltage and current of the battery (be it charging or discharging), the
+maximal and minimal voltage and maximal current allowed for the battery,
+whether the battery is present and usable and its capacity. It will get
+the battery current current and voltage by reading the ADC channels. The
+PMIC allows maximal voltages (4.36V for AXP20X and 4.22V and 4.24V for
+AXP22X) that should not be used with Lithium-based batteries and since
+this PMIC is supposed to be used with Lithium-based batteries, they have
+been disabled. The values returned by the ADC driver are multipled by
+1000 to scale from the mV returned by the ADC to the uV expected by the
+power supply framework.
 
-Jonathan
-> ---
-> 
-> This is my resubmission of this patch after original authors decided not to
-> pursuit it inclusion into kernel.
-> 
-> Tested using signal analyzer.
-> 
-> Changes since v3:
-> * spi_writes are now using literals for size parameter 
-> * using of_match_device to get the of data pointer if matched
-> * Add Acked-by
-> 
-> Changes since v2:
-> * spi write buffer moved to struct max5481_data and ____cacheline_aligned.
-> * max5481_write_cmd now uses pointer to struct max5481_data as a first argument.
-> 
-> Changes since v1:
-> * removed not needed '``' and 'c' chars
-> * includes are now sorted
-> * added coma to last item in enum max5481_variant
-> * removed maxpos from struct max5481_cfg
-> * max5481_CHANNEL is no MAX5481_CHANNEL and it does not have 'ch' argument
-> * max5481_write_cmd is now based around switch
-> * removed not needed cast in max5481_write_cmd
-> * wpier state is saved after iio_device_unregister
-> * changed names in spi_device_id and acpi_device_id to be equal to names in
-> * of_device_id
-> 
-> ---
->  .../bindings/iio/potentiometer/max5481.txt         |  23 +++
->  drivers/iio/potentiometer/Kconfig                  |  11 +
->  drivers/iio/potentiometer/Makefile                 |   1 +
->  drivers/iio/potentiometer/max5481.c                | 223 +++++++++++++++++++++
->  4 files changed, 258 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
->  create mode 100644 drivers/iio/potentiometer/max5481.c
-> 
-> diff --git a/Documentation/devicetree/bindings/iio/potentiometer/max5481.txt b/Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
-> new file mode 100644
-> index 000000000000..6a91b106e076
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/potentiometer/max5481.txt
-> @@ -0,0 +1,23 @@
-> +* Maxim Linear-Taper Digital Potentiometer MAX5481-MAX5484
-> +
-> +The node for this driver must be a child node of a SPI controller, hence
-> +all mandatory properties described in
-> +
-> +        Documentation/devicetree/bindings/spi/spi-bus.txt
-> +
-> +must be specified.
-> +
-> +Required properties:
-> +	- compatible:  	Must be one of the following, depending on the
-> +			model:
-> +			"maxim,max5481"
-> +			"maxim,max5482"
-> +			"maxim,max5483"
-> +			"maxim,max5484"
-> +
-> +Example:
-> +max548x: max548x@0 {
-> +	compatible = "maxim,max5482";
-> +	spi-max-frequency = <7000000>;
-> +	reg = <0>; /* chip-select */
-> +};
-> diff --git a/drivers/iio/potentiometer/Kconfig b/drivers/iio/potentiometer/Kconfig
-> index 2e9da1cf3297..8bf282510be6 100644
-> --- a/drivers/iio/potentiometer/Kconfig
-> +++ b/drivers/iio/potentiometer/Kconfig
-> @@ -15,6 +15,17 @@ config DS1803
->  	  To compile this driver as a module, choose M here: the
->  	  module will be called ds1803.
->  
-> +config MAX5481
-> +        tristate "Maxim MAX5481-MAX5484 Digital Potentiometer driver"
-> +        depends on SPI
-> +        help
-> +          Say yes here to build support for the Maxim
-> +          MAX5481, MAX5482, MAX5483, MAX5484 digital potentiometer
-> +          chips.
-> +
-> +          To compile this driver as a module, choose M here: the
-> +          module will be called max5481.
-> +
->  config MAX5487
->          tristate "Maxim MAX5487/MAX5488/MAX5489 Digital Potentiometer driver"
->          depends on SPI
-> diff --git a/drivers/iio/potentiometer/Makefile b/drivers/iio/potentiometer/Makefile
-> index 8adb58f38c0b..2260d40e0936 100644
-> --- a/drivers/iio/potentiometer/Makefile
-> +++ b/drivers/iio/potentiometer/Makefile
-> @@ -4,6 +4,7 @@
->  
->  # When adding new entries keep the list in alphabetical order
->  obj-$(CONFIG_DS1803) += ds1803.o
-> +obj-$(CONFIG_MAX5481) += max5481.o
->  obj-$(CONFIG_MAX5487) += max5487.o
->  obj-$(CONFIG_MCP4131) += mcp4131.o
->  obj-$(CONFIG_MCP4531) += mcp4531.o
-> diff --git a/drivers/iio/potentiometer/max5481.c b/drivers/iio/potentiometer/max5481.c
-> new file mode 100644
-> index 000000000000..926554991244
-> --- /dev/null
-> +++ b/drivers/iio/potentiometer/max5481.c
-> @@ -0,0 +1,223 @@
-> +/*
-> + * Maxim Integrated MAX5481-MAX5484 digital potentiometer driver
-> + * Copyright 2016 Rockwell Collins
-> + *
-> + * Datasheet:
-> + * http://datasheets.maximintegrated.com/en/ds/MAX5481-MAX5484.pdf
-> + *
-> + * This program is free software; you can redistribute it and/or modify
-> + * it under the terms of the gnu general public license version 2 as
-> + * published by the free software foundation.
-> + *
-> + */
-> +
-> +#include <linux/acpi.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/sysfs.h>
-> +#include <linux/module.h>
-> +#include <linux/of.h>
-> +#include <linux/of_device.h>
-> +#include <linux/spi/spi.h>
-> +
-> +/* write wiper reg */
-> +#define MAX5481_WRITE_WIPER (0 << 4)
-> +/* copy wiper reg to NV reg */
-> +#define MAX5481_COPY_AB_TO_NV (2 << 4)
-> +/* copy NV reg to wiper reg */
-> +#define MAX5481_COPY_NV_TO_AB (3 << 4)
-> +
-> +#define MAX5481_MAX_POS    1023
-> +
-> +enum max5481_variant {
-> +	max5481,
-> +	max5482,
-> +	max5483,
-> +	max5484,
-> +};
-> +
-> +struct max5481_cfg {
-> +	int kohms;
-> +};
-> +
-> +static const struct max5481_cfg max5481_cfg[] = {
-> +	[max5481] = { .kohms =  10, },
-> +	[max5482] = { .kohms =  50, },
-> +	[max5483] = { .kohms =  10, },
-> +	[max5484] = { .kohms =  50, },
-> +};
-> +
-> +struct max5481_data {
-> +	struct spi_device *spi;
-> +	const struct max5481_cfg *cfg;
-> +	u8 msg[3] ____cacheline_aligned;
-> +};
-> +
-> +#define MAX5481_CHANNEL {					\
-> +	.type = IIO_RESISTANCE,					\
-> +	.indexed = 1,						\
-> +	.output = 1,						\
-> +	.channel = 0,						\
-> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
-> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
-> +}
-> +
-> +static const struct iio_chan_spec max5481_channels[] = {
-> +	MAX5481_CHANNEL,
-> +};
-> +
-> +static int max5481_write_cmd(struct max5481_data *data, u8 cmd, u16 val)
-> +{
-> +	struct spi_device *spi = data->spi;
-> +
-> +	data->msg[0] = cmd;
-> +
-> +	switch (cmd) {
-> +	case MAX5481_WRITE_WIPER:
-> +		data->msg[1] = val >> 2;
-> +		data->msg[2] = (val & 0x3) << 6;
-> +		return spi_write(spi, data->msg, 3);
-> +
-> +	case MAX5481_COPY_AB_TO_NV:
-> +	case MAX5481_COPY_NV_TO_AB:
-> +		return spi_write(spi, data->msg, 1);
-> +
-> +	default:
-> +		return -EIO;
-> +	}
-> +}
-> +
-> +static int max5481_read_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		int *val, int *val2, long mask)
-> +{
-> +	struct max5481_data *data = iio_priv(indio_dev);
-> +
-> +	if (mask != IIO_CHAN_INFO_SCALE)
-> +		return -EINVAL;
-> +
-> +	*val = 1000 * data->cfg->kohms;
-> +	*val2 = MAX5481_MAX_POS;
-> +
-> +	return IIO_VAL_FRACTIONAL;
-> +}
-> +
-> +static int max5481_write_raw(struct iio_dev *indio_dev,
-> +		struct iio_chan_spec const *chan,
-> +		int val, int val2, long mask)
-> +{
-> +	struct max5481_data *data = iio_priv(indio_dev);
-> +
-> +	if (mask != IIO_CHAN_INFO_RAW)
-> +		return -EINVAL;
-> +
-> +	if (val < 0 || val > MAX5481_MAX_POS)
-> +		return -EINVAL;
-> +
-> +	return max5481_write_cmd(data, MAX5481_WRITE_WIPER, val);
-> +}
-> +
-> +static const struct iio_info max5481_info = {
-> +	.read_raw = max5481_read_raw,
-> +	.write_raw = max5481_write_raw,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +#if defined(CONFIG_OF)
-> +static const struct of_device_id max5481_match[] = {
-> +	{ .compatible = "maxim,max5481", .data = &max5481_cfg[max5481] },
-> +	{ .compatible = "maxim,max5482", .data = &max5481_cfg[max5482] },
-> +	{ .compatible = "maxim,max5483", .data = &max5481_cfg[max5483] },
-> +	{ .compatible = "maxim,max5484", .data = &max5481_cfg[max5484] },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, max5481_match);
-> +#endif
-> +
-> +static int max5481_probe(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev;
-> +	struct max5481_data *data;
-> +	const struct spi_device_id *id = spi_get_device_id(spi);
-> +	const struct of_device_id *match;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&spi->dev, sizeof(*data));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	dev_set_drvdata(&spi->dev, indio_dev);
-> +	data = iio_priv(indio_dev);
-> +
-> +	data->spi = spi;
-> +
-> +	match = of_match_device(of_match_ptr(max5481_match), &spi->dev);
-> +	if (match)
-> +		data->cfg = of_device_get_match_data(&spi->dev);
-> +	else
-> +		data->cfg = &max5481_cfg[id->driver_data];
-> +
-> +	indio_dev->name = id->name;
-> +	indio_dev->dev.parent = &spi->dev;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	/* variant specific configuration */
-> +	indio_dev->info = &max5481_info;
-> +	indio_dev->channels = max5481_channels;
-> +	indio_dev->num_channels = ARRAY_SIZE(max5481_channels);
-> +
-> +	/* restore wiper from NV */
-> +	ret = max5481_write_cmd(data, MAX5481_COPY_NV_TO_AB, 0);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	return iio_device_register(indio_dev);
-> +}
-> +
-> +static int max5481_remove(struct spi_device *spi)
-> +{
-> +	struct iio_dev *indio_dev = dev_get_drvdata(&spi->dev);
-> +	struct max5481_data *data = iio_priv(indio_dev);
-> +
-> +	iio_device_unregister(indio_dev);
-> +
-> +	/* save wiper reg to NV reg */
-> +	return max5481_write_cmd(data, MAX5481_COPY_AB_TO_NV, 0);
-> +}
-> +
-> +static const struct spi_device_id max5481_id_table[] = {
-> +	{ "max5481", max5481 },
-> +	{ "max5482", max5482 },
-> +	{ "max5483", max5483 },
-> +	{ "max5484", max5484 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(spi, max5481_id_table);
-> +
-> +#if defined(CONFIG_ACPI)
-> +static const struct acpi_device_id max5481_acpi_match[] = {
-> +	{ "max5481", max5481 },
-> +	{ "max5482", max5482 },
-> +	{ "max5483", max5483 },
-> +	{ "max5484", max5484 },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(acpi, max5481_acpi_match);
-> +#endif
-> +
-> +static struct spi_driver max5481_driver = {
-> +	.driver = {
-> +		.name  = "max5481",
-> +		.owner = THIS_MODULE,
-> +		.of_match_table = of_match_ptr(max5481_match),
-> +		.acpi_match_table = ACPI_PTR(max5481_acpi_match),
-> +	},
-> +	.probe = max5481_probe,
-> +	.remove = max5481_remove,
-> +	.id_table = max5481_id_table,
-> +};
-> +
-> +module_spi_driver(max5481_driver);
-> +
-> +MODULE_AUTHOR("Maury Anderson <maury.anderson@rockwellcollins.com>");
-> +MODULE_DESCRIPTION("max5481 SPI driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+This series of patch adds DT bindings for ACIN power supply, ADC and
+battery power supply drivers for AXP20X and AXP22X PMICs and their
+documentation. It also enables the supported power supplies for the
+Nextthing Co. CHIP and Sinlinx SinA33 boards.
+
+The different drivers are also added to the MFD cells of the AXP20X and
+AXP22X cells and the writeable and volatile regs updated to work with
+the newly added drivers.
+
+VBUS driver has intentionally not been modified to use the ADC channels
+because a DT binding already exists for this driver. Migrating the
+driver would mean to add an iio_map to map the ADC channels to the VBUS
+driver (so we can use iio_channel_get and iio_read_channel_processed
+functions). This slightly complexifies the VBUS driver only for
+"cosmetic" changes. Feel free to give your two cents on the matter.
+
+This series of patch is based on a previous upstreaming attempt done by
+Bruno Prémont few months ago. It differs in three points: the ADC
+driver does not tell the battery temperature (TS_IN) as I do not have a
+board to test it with, it does not tell the instantaneous battery power
+as it returns crazy values for me and finally no support for OCV curves
+for the battery.
+
+You can test these patches from this repo and branch:
+https://github.com/QSchulz/linux/tree/axp2xx_adc_batt_ac_v2
+
+v2:
+ - Some registers' name have been changed to better reflect their
+ purpose,
+ - Make VBUS power supply driver use IIO channels when AXP ADC driver is
+ enabled, but fall back on previous behavior when disabled. This is made
+ to avoid the ADC driver overwritting registers for VBUS power supply
+ ADC when removed,
+ - Removed useless adding of data registers to volatile registers,
+ - Reordered IIO channels, now grouped by same part of the PMIC (e.g.
+ voltage and current of the battery have the same index in different
+ IIO types),
+ - Added structures for specific data instead of matching on IDs,
+ - Switched from DT IIO channels mapping to iio_map structures IIO
+ channels mapping,
+
+Quentin
+
+Quentin Schulz (25):
+  dt-bindings: iio: adc: add AXP20X/AXP22X ADC DT binding
+  mfd: axp20x: correct name of temperature data ADC registers
+  power: supply: axp20x_usb_power: use IIO channels when available
+  iio: adc: add support for X-Powers AXP20X and AXP22X PMICs ADCs
+  mfd: axp20x: add ADC cells for AXP20X and AXP22X PMICs
+  ARM: dtsi: axp209: add AXP209 ADC subnode
+  ARM: dtsi: axp22x: add AXP22X ADC subnode
+  dt-bindings: power: supply: add AXP20X/AXP22X AC power supply
+  iio: adc: axp20x_adc: map acin_i and acin_v
+  power: supply: add AC power supply driver for AXP20X and AXP22X PMICs
+  mfd: axp20x: add AC power supply cells for AXP22X PMICs
+  ARM: dtsi: axp209: add AC power supply subnode
+  ARM: dtsi: axp22x: add AC power supply subnode
+  ARM: dts: sun8i: sina33: enable ACIN power supply subnode
+  ARM: sun5i: chip: enable ACIN power supply subnode
+  dt-bindings: power: supply: add AXP20X/AXP22X battery DT binding
+  mfd: axp20x: add CHRG_CTRL1/2/3 to writeable regs for AXP20X/AXP22X
+  mfd: axp20x: add V_OFF to writeable regs for AXP20X and AXP22X
+  iio: adc: axp20x_adc: map battery IIO channels
+  power: supply: add battery driver for AXP20X and AXP22X PMICs
+  mfd: axp20x: add MFD cells for AXP20X and AXP22X battery driver
+  ARM: dtsi: axp209: add battery power supply subnode
+  ARM: dtsi: axp22x: add battery power supply subnode
+  ARM: dts: sun8i: sina33: enable battery power supply subnode
+  ARM: sun5i: chip: enable battery power supply subnode
+
+ .../devicetree/bindings/iio/adc/axp20x_adc.txt     |  22 +
+ .../bindings/power/supply/axp20x_ac_power.txt      |  22 +
+ .../bindings/power/supply/axp20x_battery.txt       |  25 +
+ arch/arm/boot/dts/axp209.dtsi                      |  14 +
+ arch/arm/boot/dts/axp22x.dtsi                      |  14 +
+ arch/arm/boot/dts/sun5i-r8-chip.dts                |   8 +
+ arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts     |   8 +
+ drivers/iio/adc/Kconfig                            |  10 +
+ drivers/iio/adc/Makefile                           |   1 +
+ drivers/iio/adc/axp20x_adc.c                       | 609 +++++++++++++++++++++
+ drivers/mfd/axp20x.c                               |  36 +-
+ drivers/power/supply/Kconfig                       |  24 +
+ drivers/power/supply/Makefile                      |   2 +
+ drivers/power/supply/axp20x_ac_power.c             | 250 +++++++++
+ drivers/power/supply/axp20x_battery.c              | 477 ++++++++++++++++
+ drivers/power/supply/axp20x_usb_power.c            |  70 ++-
+ include/linux/mfd/axp20x.h                         |   4 +-
+ 17 files changed, 1587 insertions(+), 9 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/axp20x_adc.txt
+ create mode 100644 Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
+ create mode 100644 Documentation/devicetree/bindings/power/supply/axp20x_battery.txt
+ create mode 100644 drivers/iio/adc/axp20x_adc.c
+ create mode 100644 drivers/power/supply/axp20x_ac_power.c
+ create mode 100644 drivers/power/supply/axp20x_battery.c
+
+-- 
+2.9.3
 
