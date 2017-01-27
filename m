@@ -1,148 +1,124 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:53490 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:44872 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752315AbdAZNc1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 26 Jan 2017 08:32:27 -0500
-Subject: Re: [PATCH 08/22] power: supply: add AC power supply driver for
- AXP20X and AXP22X PMICs
-To: Sebastian Reichel <sre@kernel.org>
-References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
- <20170102163723.7939-9-quentin.schulz@free-electrons.com>
- <20170117030013.g5xhlmrxpthyfewa@earth>
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com,
-        wens@csie.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, lee.jones@linaro.org,
+        with ESMTP id S1754264AbdA0Ibv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 03:31:51 -0500
+Date: Fri, 27 Jan 2017 09:20:17 +0100
+From: Maxime Ripard <maxime.ripard@free-electrons.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: Sebastian Reichel <sre@kernel.org>, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
+        linux@armlinux.org.uk, lee.jones@linaro.org,
         linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
         linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <6a3edb64-8ea9-cb14-b826-d6e8e2c4c4b7@free-electrons.com>
-Date: Thu, 26 Jan 2017 14:32:21 +0100
+Subject: Re: [PATCH 08/22] power: supply: add AC power supply driver for
+ AXP20X and AXP22X PMICs
+Message-ID: <20170127082017.ffvybk237ku2n5hu@lukather>
+References: <20170102163723.7939-1-quentin.schulz@free-electrons.com>
+ <20170102163723.7939-9-quentin.schulz@free-electrons.com>
+ <20170117030013.g5xhlmrxpthyfewa@earth>
+ <6a3edb64-8ea9-cb14-b826-d6e8e2c4c4b7@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <20170117030013.g5xhlmrxpthyfewa@earth>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="p6edpgvoug4j3ser"
+In-Reply-To: <6a3edb64-8ea9-cb14-b826-d6e8e2c4c4b7@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Sebastian,
 
-On 17/01/2017 04:00, Sebastian Reichel wrote:
-> Hi Quentin,
-> 
-> The driver looks mostly fine. I do have a two comments, though.
-> 
-> On Mon, Jan 02, 2017 at 05:37:08PM +0100, Quentin Schulz wrote:
->> [...]
->>
->> +static int axp20x_ac_power_probe(struct platform_device *pdev)
->> +{
->> +	static const char * const axp20x_irq_names[] = { "ACIN_PLUGIN",
->> +		"ACIN_REMOVAL", NULL };
->>
->> +	static const char * const *irq_names;
->> +	const struct power_supply_desc *ac_power_desc;
->> +	int i, irq, ret;
->> +
->> +	if (!of_device_is_available(pdev->dev.of_node))
->> +		return -ENODEV;
->> +
->> +	if (!axp20x) {
->> +		dev_err(&pdev->dev, "Parent drvdata not set\n");
->> +		return -EINVAL;
->> +	}
-> 
-> axp20x will no longer be needed after implementing below
-> comments.
-> 
->> [...]
->> +	irq_names = axp20x_irq_names;
-> 
-> Just rename axp20x_irq_names into irq_names, since its only used
-> here.
-> 
->> [...]
->>
->> +	power->np = pdev->dev.of_node;
-> 
-> This can be dropped, it's not used at all.
-> 
->> +	power->regmap = axp20x->regmap;
-> 
-> power->regmap = dev_get_regmap(pdev->dev.parent, NULL);
-> 
+--p6edpgvoug4j3ser
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-ACK on everything above.
+On Thu, Jan 26, 2017 at 02:32:21PM +0100, Quentin Schulz wrote:
+> I've come with this solution:
+>=20
+> ------------------------------------------------------------------------
+> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+> index 012c064..117eacb 100644
+> --- a/drivers/mfd/axp20x.c
+> +++ b/drivers/mfd/axp20x.c
+> @@ -882,7 +882,7 @@ EXPORT_SYMBOL(axp20x_match_device);
+>=20
+>  int axp20x_device_probe(struct axp20x_dev *axp20x)
+>  {
+> -	int ret;
+> +	int ret, irq_base;
+>=20
+>  	ret =3D regmap_add_irq_chip(axp20x->regmap, axp20x->irq,
+>  				  IRQF_ONESHOT | IRQF_SHARED, -1,
+> @@ -893,8 +893,9 @@ int axp20x_device_probe(struct axp20x_dev *axp20x)
+>  		return ret;
+>  	}
+>=20
+> +	irq_base =3D regmap_irq_chip_get_base(axp20x->regmap_irqc);
+>  	ret =3D mfd_add_devices(axp20x->dev, -1, axp20x->cells,
+> -			      axp20x->nr_cells, NULL, 0, NULL);
+> +			      axp20x->nr_cells, NULL, irq_base, NULL);
+>=20
+>  	if (ret) {
+>  		dev_err(axp20x->dev, "failed to add MFD devices: %d\n", ret);
+> ------------------------------------------------------------------------
+>=20
+> However, this implies that all cells added by the mfd driver which are
+> requesting irqs will need to be changed in the same commit to remove the
+> regmap_irq_get_virq calls. If we don't modify the drivers, they will
+> purely fail to request the irqs.
+>=20
+> The impacted drivers are the following:
+>=20
+>  - drivers/extcon/extcon-axp288.c
+>  - drivers/input/misc/axp20x-pek.c
+>  - drivers/power/supply/axp20x_usb_power.c
+>  - drivers/power/supply/axp288_charger.c
+>  - drivers/power/supply/axp288_fuel_gauge.c
+>=20
+> Is it really worth to do such a cleanup?
 
->> [...]
->> +	/* Request irqs after registering, as irqs may trigger immediately */
->> +	for (i = 0; irq_names[i]; i++) {
->> +		irq = platform_get_irq_byname(pdev, irq_names[i]);
->> +		if (irq < 0) {
->> +			dev_warn(&pdev->dev, "No IRQ for %s: %d\n",
->> +				 irq_names[i], irq);
->> +			continue;
->> +		}
->> +		irq = regmap_irq_get_virq(axp20x->regmap_irqc, irq);
-> 
-> The mapping should actually happen in the mfd driver, so that
-> the platform resource contains a valid irq.
-> 
+Yes. The current behaviour goes against what everyone is expecting
+=66rom the API.
 
-I've come with this solution:
+> I'm assuming that impacting four different subsystems at the same
+> time might require a bit of time to make the patch into the
+> kernel. I don't see also another way than doing one single patch for
+> all changes since the changes in the mfd driver will break all
+> aforementioned drivers.
 
-------------------------------------------------------------------------
-diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
-index 012c064..117eacb 100644
---- a/drivers/mfd/axp20x.c
-+++ b/drivers/mfd/axp20x.c
-@@ -882,7 +882,7 @@ EXPORT_SYMBOL(axp20x_match_device);
+However, I think that can be fixed in a later, independant serie. This
+serie is quite big already and this has been long overdue, so I'd
+really like not to delay it once again because of a dependency on a
+cross-tree cleanup.
 
- int axp20x_device_probe(struct axp20x_dev *axp20x)
- {
--	int ret;
-+	int ret, irq_base;
+Maxime
 
- 	ret = regmap_add_irq_chip(axp20x->regmap, axp20x->irq,
- 				  IRQF_ONESHOT | IRQF_SHARED, -1,
-@@ -893,8 +893,9 @@ int axp20x_device_probe(struct axp20x_dev *axp20x)
- 		return ret;
- 	}
-
-+	irq_base = regmap_irq_chip_get_base(axp20x->regmap_irqc);
- 	ret = mfd_add_devices(axp20x->dev, -1, axp20x->cells,
--			      axp20x->nr_cells, NULL, 0, NULL);
-+			      axp20x->nr_cells, NULL, irq_base, NULL);
-
- 	if (ret) {
- 		dev_err(axp20x->dev, "failed to add MFD devices: %d\n", ret);
-------------------------------------------------------------------------
-
-However, this implies that all cells added by the mfd driver which are
-requesting irqs will need to be changed in the same commit to remove the
-regmap_irq_get_virq calls. If we don't modify the drivers, they will
-purely fail to request the irqs.
-
-The impacted drivers are the following:
-
- - drivers/extcon/extcon-axp288.c
- - drivers/input/misc/axp20x-pek.c
- - drivers/power/supply/axp20x_usb_power.c
- - drivers/power/supply/axp288_charger.c
- - drivers/power/supply/axp288_fuel_gauge.c
-
-Is it really worth to do such a cleanup? I'm assuming that impacting
-four different subsystems at the same time might require a bit of time
-to make the patch into the kernel. I don't see also another way than
-doing one single patch for all changes since the changes in the mfd
-driver will break all aforementioned drivers.
-
-Thanks,
-Quentin
-
--- 
-Quentin Schulz, Free Electrons
+--=20
+Maxime Ripard, Free Electrons
 Embedded Linux and Kernel engineering
 http://free-electrons.com
+
+--p6edpgvoug4j3ser
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIcBAEBCAAGBQJYiwLBAAoJEBx+YmzsjxAg7ZsQAKDMjib2vZGpD8DtTS6kXpN5
+5vN2m6Hc5QEUJVsgXPmoYAW9ZZxsi9wwx9zqJiyVqGHYr4Md1b7q5w/4M11RqBt7
+6VCLodDFhOwIKSUumuTVu5jDA+CkNf0MY9aJ4pl07Nr2K3LAXIN8j6wlIc5LqlMg
+IneG0PwveFqOAh9ua8qMA8hwLg+2P7j+Xz4zluzk8+ayPn2EnmEi9RA9buuihOFo
+QvxwWcROcKdlIeBV0JReNgZDN/VF/Nd4t7lBojEfvBHPLVayMouqLkwKQz8vj0sz
+HPtBVEsIrvyw6MJAhETj3nD/lxJAgTkaR0WX0tPWj+vlz58rRrqR7dZ1qb8oexFQ
+H9nSJHmQY3jduahPFnoX56hA7YkJKnc4lY310Oro3Sd7by6T9agQRnpSlImKNI8m
+xesscn/eungfXxJvCs/eKQBQi2O3k9Z88yMdiKtSqwYUKv+jK9wi87J7avG/LQXK
+E/ZCdkbltX4BJyfDxKa0LL5XsQyc4Ue2Jz3HguRh6VgygmeKAtdMafxZh6t4Erjd
+joBFLHwKPp27yp8iyYVKOaHlhVKyrgjVEHZp4aCXCU74PDOCLiLuj7elPTKt/U6C
+9mMVJ4mB7Arl8M2TTzmKEmIDpym8e6JMGDOgUjh56YkySPoEg/PcmUcX+fEaqjzG
+nGr5xoarIJ+19XpIZM9W
+=we+B
+-----END PGP SIGNATURE-----
+
+--p6edpgvoug4j3ser--
