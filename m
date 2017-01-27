@@ -1,71 +1,61 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:38922 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751258AbdA2QYT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 29 Jan 2017 11:24:19 -0500
-Date: Sun, 29 Jan 2017 17:22:55 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+Received: from mail.free-electrons.com ([62.4.15.54]:46901 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754740AbdA0JIC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 04:08:02 -0500
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-        lee.jones@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        sre@kernel.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
+        linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: Re: [PATCH v2 08/25] dt-bindings: power: supply: add AXP20X/AXP22X
- AC power supply
-Message-ID: <20170129162255.if2o2ta4wt2vetad@earth>
+Subject: [PATCH v2 09/25] iio: adc: axp20x_adc: map acin_i and acin_v
+Date: Fri, 27 Jan 2017 09:54:42 +0100
+Message-Id: <20170127085458.18270-10-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
 References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
- <20170127085458.18270-9-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="glly4zgcqyavd4xc"
-In-Reply-To: <20170127085458.18270-9-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This maps the IIO channels acin_i and acin_v (respectively exposing the
+current current and voltage measures of the AC power supply) to the AC
+power supply driver.
 
---glly4zgcqyavd4xc
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Only the AXP20X PMICs have these ADC channels and thus they are only
+mapped for this version of the PMIC.
 
-Hi,
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+---
 
-On Fri, Jan 27, 2017 at 09:54:41AM +0100, Quentin Schulz wrote:
-> The X-Powers AXP20X and AXP22X PMICs have an AC entry to supply power to
-> the board. They have a few registers dedicated to the status of the AC
-> power supply.
->=20
-> This adds the DT binding documentation for the AC power supply for
-> AXP20X and AXP22X PMICs.
->=20
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+added in v2
 
-Thanks, I queued this into power-supply's for-next branch.
+ drivers/iio/adc/axp20x_adc.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
--- Sebastian
+diff --git a/drivers/iio/adc/axp20x_adc.c b/drivers/iio/adc/axp20x_adc.c
+index bacde92..14f4ec0 100644
+--- a/drivers/iio/adc/axp20x_adc.c
++++ b/drivers/iio/adc/axp20x_adc.c
+@@ -104,6 +104,14 @@ static struct iio_map axp20x_maps[] = {
+ 		.consumer_dev_name = "axp20x-usb-power-supply",
+ 		.consumer_channel = "vbus_i",
+ 		.adc_channel_label = "vbus_i",
++	}, {
++		.consumer_dev_name = "axp20x-ac-power-supply",
++		.consumer_channel = "acin_v",
++		.adc_channel_label = "acin_v",
++	}, {
++		.consumer_dev_name = "axp20x-ac-power-supply",
++		.consumer_channel = "acin_i",
++		.adc_channel_label = "acin_i",
+ 	}, { /* sentinel */ }
+ };
+ 
+-- 
+2.9.3
 
---glly4zgcqyavd4xc
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAliOFt8ACgkQ2O7X88g7
-+poOxA//csQTqNEfRMTnV6ZIYYcCy6RntNXATJ2wJ5wbH+X98r7MsrrUYdBP1B30
-Y6/TI64oE3VLdAcG+8XLEWM0YAXeCH3MGRR3YJzP7QsPxWps0SXUHTgimmXNMki5
-9BKvqi5LRwzBYLBRn4uvpJF1P0lDQT1n7lWLSBB6vRETrD9Ztg1bNVYRR7NSmf/P
-3HLOsSGon9ayxl9DfxObcwWW6a4NsvKLlRwYxUmhqmzRkLAjpXnTGrLnI6RZLL5+
-/SItb4k41RQblHOzO1HhfgfmTusKmosuOIt6bnci0VxA8Hip4ZBMwmDZGSP0nLse
-VcWQ8v83zyJx5Z6m1aksNp1XoVbo9lwbSuSRsn2OL4jeuxmD9Fyt91ZT+PySVlvo
-vJD/Feleuu8IhHnGMjSUq/vlqC4rgzU+X6cxmWEiJnP3OxvyYcsw9WLg73b2qWnk
-LQkFypqjsBqDxwghucyubQGsfzHyUf08RymcfFHXE0cRfxa94aOxoCjc1TJR1BGX
-Vm58ZEY29WcVn/DNj9HHdOhJHnWHna/UOnRpBYYfaYche+B/qe3QqWrBuaNM6teA
-EFxX10pPYlIFaKUjAiVT52Mtwc1UefAb/Tgf6zDNPplzk1cKBTz+ZsMTZVvOP7MW
-za9X7zdzdT/qha4e+8RJtjPtGFUJxGj2OFD7seyExa5ihTIvFy8=
-=xeUO
------END PGP SIGNATURE-----
-
---glly4zgcqyavd4xc--
