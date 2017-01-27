@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:48802 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:48804 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932330AbdA0JwU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 04:52:20 -0500
+        with ESMTP id S932382AbdA0Jvw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 04:51:52 -0500
 From: Quentin Schulz <quentin.schulz@free-electrons.com>
 To: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
         robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
@@ -14,44 +14,59 @@ Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
         linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: [PATCH v2 07/25] ARM: dtsi: axp22x: add AXP22X ADC subnode
-Date: Fri, 27 Jan 2017 09:54:40 +0100
-Message-Id: <20170127085458.18270-8-quentin.schulz@free-electrons.com>
+Subject: [PATCH v2 08/25] dt-bindings: power: supply: add AXP20X/AXP22X AC power supply
+Date: Fri, 27 Jan 2017 09:54:41 +0100
+Message-Id: <20170127085458.18270-9-quentin.schulz@free-electrons.com>
 In-Reply-To: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
 References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-X-Powers AXP22X PMIC has multiple ADCs, each one exposing data from the
-different power supplies connected to the PMIC.
+The X-Powers AXP20X and AXP22X PMICs have an AC entry to supply power to
+the board. They have a few registers dedicated to the status of the AC
+power supply.
 
-This adds the ADC subnode for AXP22X PMIC.
+This adds the DT binding documentation for the AC power supply for
+AXP20X and AXP22X PMICs.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 ---
 
 v2:
- - removed #io-channels property (the IIO channels mapping is done by
- using iio_map structure in the ADC driver),
+ - removed #io-channels property,
 
- arch/arm/boot/dts/axp22x.dtsi | 4 ++++
- 1 file changed, 4 insertions(+)
+ .../bindings/power/supply/axp20x_ac_power.txt      | 22 ++++++++++++++++++++++
+ 1 file changed, 22 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
 
-diff --git a/arch/arm/boot/dts/axp22x.dtsi b/arch/arm/boot/dts/axp22x.dtsi
-index 458b668..abeec81 100644
---- a/arch/arm/boot/dts/axp22x.dtsi
-+++ b/arch/arm/boot/dts/axp22x.dtsi
-@@ -52,6 +52,10 @@
- 	interrupt-controller;
- 	#interrupt-cells = <1>;
- 
-+	axp221_adc: adc {
-+		compatible = "x-powers,axp221-adc";
-+	};
+diff --git a/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt b/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
+new file mode 100644
+index 0000000..826e8a8
+--- /dev/null
++++ b/Documentation/devicetree/bindings/power/supply/axp20x_ac_power.txt
+@@ -0,0 +1,22 @@
++AXP20X and AXP22X PMICs' AC power supply
 +
- 	regulators {
- 		/* Default work frequency for buck regulators */
- 		x-powers,dcdc-freq = <3000>;
++Required Properties:
++ - compatible: One of:
++			"x-powers,axp202-ac-power-supply"
++			"x-powers,axp221-ac-power-supply"
++
++This node is a subnode of the axp20x PMIC.
++
++The AXP20X can read the current current and voltage supplied by AC by
++reading ADC channels from the AXP20X ADC.
++
++The AXP22X is only able to tell if an AC power supply is present and
++usable.
++
++Example:
++
++&axp209 {
++	ac_power_supply: ac-power-supply {
++		compatible = "x-powers,axp202-ac-power-supply";
++	};
++};
 -- 
 2.9.3
 
