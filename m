@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47007 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47023 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751856AbdA1SlF (ORCPT
+        with ESMTP id S1751995AbdA1SlF (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 13:41:05 -0500
 Subject: Re: [PATCH v2 5/7] iio: adc: stm32: add optional dma support
 To: Fabrice Gasnier <fabrice.gasnier@st.com>, linux@armlinux.org.uk,
@@ -14,8 +14,8 @@ Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
         lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
         benjamin.gaignard@linaro.org, benjamin.gaignard@st.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7c2e5529-970a-ef4c-1c47-e7d77594e023@kernel.org>
-Date: Sat, 28 Jan 2017 18:40:30 +0000
+Message-ID: <f5732334-4d27-b461-7335-76b0d4967d60@kernel.org>
+Date: Sat, 28 Jan 2017 18:41:01 +0000
 MIME-Version: 1.0
 In-Reply-To: <1485440915-30119-6-git-send-email-fabrice.gasnier@st.com>
 Content-Type: text/plain; charset=windows-1252
@@ -32,12 +32,37 @@ On 26/01/17 14:28, Fabrice Gasnier wrote:
 > fixed to PAGE_SIZE).
 > 
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Applied to the togreg branch of iio.git - pushed out as testing for
-the autobuilders to play with it.
+I am happy with this whole series, except this patch gives me:
+
+drivers/iio/adc/stm32-adc.c:478:23: warning: symbol 'stm32_adc_trig_pol' was not declared. Should it be static?
+drivers/iio/adc/stm32-adc.c:621:21: error: incompatible types in comparison expression (different type sizes)
+  CC [M]  drivers/iio/adc/stm32-adc.o
+In file included from ./include/linux/clk.h:16:0,
+                 from drivers/iio/adc/stm32-adc.c:22:
+drivers/iio/adc/stm32-adc.c: In function ‘stm32_adc_set_watermark’:
+./include/linux/kernel.h:753:16: warning: comparison of distinct pointer types lacks a cast
+  (void) (&min1 == &min2);   \
+                ^
+./include/linux/kernel.h:756:2: note: in expansion of macro ‘__min’
+  __min(typeof(x), typeof(y),   \
+  ^~~~~
+drivers/iio/adc/stm32-adc.c:621:14: note: in expansion of macro ‘min’
+  watermark = min(watermark, val * sizeof(u16));
+              ^~~
+
+The static is obviously fine so I've added that.
+The second looks to be because sizeof(u16) is a size_t which is signed IIRC.
+Anyhow, a cast of that to unsigned should I think be harmless and fixes the
+warning.
+
+Please check I did these right.
+
+They are in the testing branch of iio.git.
 
 Thanks,
 
 Jonathan
+
 > ---
 > Changes in v2:
 > - Use iio_trigger_poll_chained() avoids to bounce back into irq context.
