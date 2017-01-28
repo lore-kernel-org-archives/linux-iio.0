@@ -1,165 +1,94 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45016 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750829AbdA1LiE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 06:38:04 -0500
-Subject: Re: [PATCH 1/2] iio: adc: Add Renesas GyroADC bindings
-To: Marek Vasut <marek.vasut@gmail.com>, linux-iio@vger.kernel.org
-References: <20170127230837.9322-1-marek.vasut@gmail.com>
-Cc: Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Geert Uytterhoeven <geert+renesas@glider.be>,
-        Simon Horman <horms+renesas@verge.net.au>,
-        linux-renesas-soc@vger.kernel.org,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Rob Herring <robh@kernel.org>, devicetree@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b1ee3630-bc07-6321-7eef-e16dc8a5d75a@kernel.org>
-Date: Sat, 28 Jan 2017 11:36:37 +0000
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:36389 "EHLO
+        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751756AbdA1Tdr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 14:33:47 -0500
+Date: Sat, 28 Jan 2017 11:33:42 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Sebastian Reichel <sre@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Petr Cvek <petr.cvek@tul.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Michel Verlaan <michel.verl@gmail.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
+ names, pre-calibration, flipping and rotation
+Message-ID: <20170128193342.GB38136@dtor-ws>
+References: <cover.1482936802.git.hns@goldelico.com>
+ <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
 MIME-Version: 1.0
-In-Reply-To: <20170127230837.9322-1-marek.vasut@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/01/17 23:08, Marek Vasut wrote:
-> From: Marek Vasut <marek.vasut+renesas@gmail.com>
-> 
-> Add DT bindings for the Renesas RCar GyroADC block. This block is
-> a simple 4/8-channel ADC which samples 12/15/24 bits of data every
-> cycle from all channels.
-> 
-> Signed-off-by: Marek Vasut <marek.vasut+renesas@gmail.com>
-> Cc: Geert Uytterhoeven <geert+renesas@glider.be>
-> Cc: Simon Horman <horms+renesas@verge.net.au>
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> Cc: linux-renesas-soc@vger.kernel.org
-> Cc: Wolfram Sang <wsa@the-dreams.de>
-> Cc: Rob Herring <robh@kernel.org>
-> Acked-by: Rob Herring <robh@kernel.org>
-> Cc: devicetree@vger.kernel.org
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Hi Nikolaus,
 
-Thanks,
-
-Jonathan
-> ---
-> V8: - Sync the version with the 2/2 driver patch
->     - Drop status prop from example
->     - Add GyroADC block description
->     - Enumerate the compatible string values
->     - Make subnodes mandatory
-> V9: - Replace &adc with adc@e6e54000
->     - Add Rob's ACK
-> ---
->  .../bindings/iio/adc/renesas,gyroadc.txt           | 99 ++++++++++++++++++++++
->  1 file changed, 99 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
+On Wed, Dec 28, 2016 at 03:53:16PM +0100, H. Nikolaus Schaller wrote:
+> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+> introduced common DT bindings for touchscreens [1] and a helper function to
+> parse the DT.
 > 
-> diff --git a/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
-> new file mode 100644
-> index 000000000000..f5b0adae6010
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/renesas,gyroadc.txt
-> @@ -0,0 +1,99 @@
-> +* Renesas RCar GyroADC device driver
-> +
-> +The GyroADC block is a reduced SPI block with up to 8 chipselect lines,
-> +which supports the SPI protocol of a selected few SPI ADCs. The SPI ADCs
-> +are sampled by the GyroADC block in a round-robin fashion and the result
-> +presented in the GyroADC registers.
-> +
-> +Required properties:
-> +- compatible:	Should be "<soc-specific>", "renesas,rcar-gyroadc".
-> +                The <soc-specific> should be one of:
-> +		renesas,r8a7791-gyroadc - for the GyroADC block present
-> +					  in r8a7791 SoC
-> +		renesas,r8a7792-gyroadc - for the GyroADC with interrupt
-> +					  block present in r8a7792 SoC
-> +- reg:		Address and length of the register set for the device
-> +- clocks:	References to all the clocks specified in the clock-names
-> +		property as specified in
-> +		Documentation/devicetree/bindings/clock/clock-bindings.txt.
-> +- clock-names:	Shall contain "fck" and "if". The "fck" is the GyroADC block
-> +		clock, the "if" is the interface clock.
-> +- power-domains: Must contain a reference to the PM domain, if available.
-> +- #address-cells: Should be <1> (setting for the subnodes) for all ADCs
-> +		except for "fujitsu,mb88101a". Should be <0> (setting for
-> +		only subnode) for "fujitsu,mb88101a".
-> +- #size-cells:	Should be <0> (setting for the subnodes)
-> +
-> +Sub-nodes:
-> +You must define subnode(s) which select the connected ADC type and reference
-> +voltage for the GyroADC channels.
-> +
-> +Required properties for subnodes:
-> +- compatible:	Should be either of:
-> +		"fujitsu,mb88101a"
-> +			- Fujitsu MB88101A compatible mode,
-> +			  12bit sampling, up to 4 channels can be sampled in
-> +			  round-robin fashion. One Fujitsu chip supplies four
-> +			  GyroADC channels with data as it contains four ADCs
-> +			  on the chip and thus for 4-channel operation, single
-> +			  MB88101A is required. The Cx chipselect lines of the
-> +			  MB88101A connect directly to two CHS lines of the
-> +			  GyroADC, no demuxer is required. The data out line
-> +			  of each MB88101A connects to a shared input pin of
-> +			  the GyroADC.
-> +		"ti,adcs7476" or "ti,adc121" or "adi,ad7476"
-> +			- TI ADCS7476 / TI ADC121 / ADI AD7476 compatible mode,
-> +			  15bit sampling, up to 8 channels can be sampled in
-> +			  round-robin fashion. One TI/ADI chip supplies single
-> +			  ADC channel with data, thus for 8-channel operation,
-> +			  8 chips are required. A 3:8 chipselect demuxer is
-> +			  required to connect the nCS line of the TI/ADI chips
-> +			  to the GyroADC, while MISO line of each TI/ADI ADC
-> +			  connects to a shared input pin of the GyroADC.
-> +		"maxim,max1162" or "maxim,max11100"
-> +			- Maxim MAX1162 / Maxim MAX11100 compatible mode,
-> +			  16bit sampling, up to 8 channels can be sampled in
-> +			  round-robin fashion. One Maxim chip supplies single
-> +			  ADC channel with data, thus for 8-channel operation,
-> +			  8 chips are required. A 3:8 chipselect demuxer is
-> +			  required to connect the nCS line of the MAX chips
-> +			  to the GyroADC, while MISO line of each Maxim ADC
-> +			  connects to a shared input pin of the GyroADC.
-> +- reg:		Should be the number of the analog input. Should be present
-> +		for all ADCs except "fujitsu,mb88101a".
-> +- vref-supply:	Reference to the channel reference voltage regulator.
-> +
-> +Example:
-> +	vref_max1162: regulator-vref-max1162 {
-> +		compatible = "regulator-fixed";
-> +
-> +		regulator-name = "MAX1162 Vref";
-> +		regulator-min-microvolt = <4096000>;
-> +		regulator-max-microvolt = <4096000>;
-> +	};
-> +
-> +	adc@e6e54000 {
-> +		compatible = "renesas,r8a7791-gyroadc", "renesas,rcar-gyroadc";
-> +		reg = <0 0xe6e54000 0 64>;
-> +		clocks = <&mstp9_clks R8A7791_CLK_GYROADC>, <&clk_65m>;
-> +		clock-names = "fck", "if";
-> +		power-domains = <&sysc R8A7791_PD_ALWAYS_ON>;
-> +
-> +		pinctrl-0 = <&adc_pins>;
-> +		pinctrl-names = "default";
-> +
-> +		#address-cells = <1>;
-> +		#size-cells = <0>;
-> +
-> +		adc@0 {
-> +			reg = <0>;
-> +			compatible = "maxim,max1162";
-> +			vref-supply = <&vref_max1162>;
-> +		};
-> +
-> +		adc@1 {
-> +			reg = <1>;
-> +			compatible = "maxim,max1162";
-> +			vref-supply = <&vref_max1162>;
-> +		};
-> +	};
+> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+> added another helper for parsing axis inversion and swapping
+> and applying them to x and y coordinates.
 > 
+> Both helpers have been integrated to accommodate any orientation of the
+> touch panel in relation to the LCD.
+> 
+> A new feature is to introduce scaling the min/max ADC values to the screen
+> size.
+> 
+> This makes it possible to pre-calibrate the touch so that is (almost)
+> exactly matches the LCD pixel coordinates it is glued onto. This allows to
+> well enough operate the touch before a user space calibration step can
+> improve the precision.
 
+I question whether doing scaling in kernel is really right solution.
+
+Why do you want this? If your touch resolution is lower than your screen
+then it might be useful, but if it is lower then you are losing data
+that can be very helpful for gesture recognition, and I hope you design
+your userspace so it can handle not only "bad" hardware, but "good" as
+well. And even with "bad" there are a lot of tricks that can be done to
+get "better" touch position in userspace.
+
+> 
+> Please note that the old ti,fuzz properties have been removed since they
+> are replaced by the common bindings touchscreen-fuzz-x/y/z.
+> 
+> Finally, calculate_pressure has been renamed to calculate_resistance
+> because that is what it is doing.
+
+That is not what your patch does though. In the presence of
+"ti,report-resistance" parameter you start reporting resistance through
+ABS_PRESSURE without any indication to the userspace that meaning of
+event changed. This is no better if than reporting it through ABS_X. You
+should not override meaning of input events.
+
+Thanks.
+
+-- 
+Dmitry
