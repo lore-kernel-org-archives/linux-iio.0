@@ -1,122 +1,62 @@
-Return-Path: <SRS0=iLyj=ZL=goldelico.com=hns@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mout.kundenserver.de ([212.227.17.10]:51351 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752164AbdA1X64 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 28 Jan 2017 18:58:56 -0500
+Date: Sun, 29 Jan 2017 00:57:48 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org, dledford@redhat.com,
+        akpm@linux-foundation.org, shraddha.6596@gmail.com, w@1wt.eu,
+        balbi@kernel.org, mtk.manpages@gmail.com, sjenning@redhat.com,
+        ksenija.stanojevic@gmail.com, vilhelm.gray@gmail.com,
+        robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc: ak@it-klinger.de
+Subject: [PATCH 0/2] iio: distance: devantech srf04 us ranger
+Message-ID: <20170128235748.GA4775@andreas>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH v9 6/8] drivers:input:ads7846(+tsc2046): fix spi module table
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20170129180108.GA10743@dtor-ws>
-Date: Sun, 29 Jan 2017 19:25:43 +0100
-Cc: Sebastian Reichel <sre@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>,
- Russell King <linux@armlinux.org.uk>,
- Arnd Bergmann <arnd@arndb.de>,
- Michael Welling <mwelling@ieee.org>,
- =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
- Javier Martinez Canillas <javier@osg.samsung.com>,
- Igor Grinberg <grinberg@compulab.co.il>,
- "Andrew F. Davis" <afd@ti.com>,
- Mark Brown <broonie@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Alexander Stein <alexander.stein@systec-electronic.com>,
- Eric Engestrom <eric@engestrom.ch>,
- Hans de Goede <hdegoede@redhat.com>,
- Benjamin Tissoires <benjamin.tissoires@redhat.com>,
- Petr Cvek <petr.cvek@tul.cz>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Hans Verkuil <hans.verkuil@cisco.com>,
- Nick Dyer <nick@shmanahar.org>,
- Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
- Michel Verlaan <michel.verl@gmail.com>,
- linux-input@vger.kernel.org,
- devicetree <devicetree@vger.kernel.org>,
- linux-kernel@vger.kernel.org,
- linux-omap@vger.kernel.org,
- letux-kernel@openphoenux.org,
- linux-iio@vger.kernel.org,
- kernel@pyra-handheld.com
-Message-Id: <A169CC1E-9EC9-43CA-887B-1382F1903CE1@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com> <c79bdd79a22dab877b8a80136ac253c951698745.1482936802.git.hns@goldelico.com> <20170128193558.GC38136@dtor-ws> <F39E49DD-45AF-4491-A26E-F3A9D86F30F6@goldelico.com> <20170129180108.GA10743@dtor-ws>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Dmitry,
+This patch series adds support for the devantech srf04 ultrasonic ranger as
+IIO device.
 
-> Am 29.01.2017 um 19:01 schrieb Dmitry Torokhov =
-<dmitry.torokhov@gmail.com>:
->=20
-> On Sun, Jan 29, 2017 at 09:39:39AM +0100, H. Nikolaus Schaller wrote:
->> Hi Dmitry,
->>=20
->>> Am 28.01.2017 um 20:35 schrieb Dmitry Torokhov =
-<dmitry.torokhov@gmail.com>:
->>>=20
->>> On Wed, Dec 28, 2016 at 03:53:21PM +0100, H. Nikolaus Schaller =
-wrote:
->>>> Fix module table so that the driver is loaded if compiled
->>>> as module and requested by DT.
->>>>=20
->>>=20
->>> I believe I already replied to a similar patch: we alreadyhave =
-necessary
->>> aliases in this driver, we need to fix module loading to use it.
->>=20
->> Yes, you did comment on [PATCH v6 7/8] (19 Nov 2016):
->>=20
->>>> We really need to fix it between spi/i23c core and module utils =
-instead
->>>> of keeping adding duplicate IDs all over drivers. We already have =
-OF
->>>> module device table containing the same data, we should be able to =
-use
->>>> it.
->>=20
->> And Javier Martinez Canillas replied (23 Nov 2016):
->>=20
->>> Agreed, unfortunately until the I2C and SPI core are changed to =
-properly
->>> report OF modaliases, we will have to keep adding these duplicated =
-IDs.
->>>=20
->>> And changing the I2C and SPI core isn't trivial since it could break =
-a
->>> lot of drivers that rely on a platform modalias being reported (i.e: =
-no
->>> OF device IDs present in the drivers even when are registered via =
-DT).
->>=20
->> Therefore I didn't see a need to change it.
->=20
-> I agree that changing I2C and SPI core is not trivial, however this is
-> no reason for piling up workarounds in all drivers. Are you seriously
-> advocating going though *every* driver and copying OF data into =
-I2C/SPI
-> instead of doing the right thing and fixing the root of the issue?
+The device is able to recognize objects in a range of 1 cm and 3 meters.
+The theoretical resolution is about 3 mm, practically more or less 1 cm.
 
-If you prefer to have this done (and I agree it would be a tiny =
-improvement),
-please do it for us all. But please after merging this workaround.
+Use cases for this device are level metering in tanks or distance measuring
+in robotics.
 
-I can't do it since I have no idea how to and as you say it is =
-non-trivial.
-I am just a poor driver developer who has to use what he finds in core =
-APIs
-but has the task to make the driver work and be accepted upstream.
+This driver works by triggering the device and waiting for the echo, for
+which a GPIO is set when send out and reset when the echo is received. 
+The echo must be an interrupt and the time between rising and falling is
+measured.
 
-What I don't like is if core development tasks are piggybacked on top of =
-a
-driver patch series and used as argument against acceptance of the =
-driver
-patch. IMHO, the core developers should have the task to clean up such
-workarounds after developing a modification for core and it seems to be
-common practise in other subsystems if you follow what Linus is merging
-every week.
+The returned distance is calculated with a ultrasonic speed of 343 m/s
+which is the correct value at 20 degrees celsius.
+For different temperatures one might want to compensate the temperature.
+Look at the source code for details.
 
-Anyways, it piles up only in code. If you do not CONFIG the driver it =
-does
-not even matter that there are 10 more source code lines. And they are
-factored out into a clean patch 6/8 that can easily be reverted.
+Documenation can be found at:
+http://www.robot-electronics.co.uk/htm/srf04tech.htm
 
-BR and thanks,
-Nikolaus
+Andreas Klinger (2):
+  iio: distance: add dt binding for devantech-srf04
+  iio: distance: add devantech us ranger srf04
+
+ .../bindings/iio/proximity/devantech-srf04.txt     |  17 ++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/proximity/Kconfig                      |  11 +
+ drivers/iio/proximity/Makefile                     |   1 +
+ drivers/iio/proximity/srf04.c                      | 269 +++++++++++++++++++++
+ 5 files changed, 304 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
+ create mode 100644 drivers/iio/proximity/srf04.c
+
+-- 
+2.1.4
+
