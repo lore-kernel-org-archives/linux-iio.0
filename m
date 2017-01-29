@@ -1,71 +1,152 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:57783 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1753443AbdA3SQ1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2017 13:16:27 -0500
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50678 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750803AbdA2LaO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2017 06:30:14 -0500
 Subject: Re: [PATCH 2/7] MFD: add STM32 DFSDM support
-To: Mark Brown <broonie@kernel.org>
+To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Lee Jones <lee.jones@linaro.org>
 References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
  <1485189145-29576-3-git-send-email-arnaud.pouliquen@st.com>
  <20170124082249.GR16020@dell> <283c0e48-55e2-6516-369d-91dc72d12f73@st.com>
  <20170124113658.GW16020@dell> <a1aaaa20-ac00-b182-f1c1-63152be41135@st.com>
- <20170127101545.g53uah57vgfu55o5@dell>
- <7b3eb38d-4fd1-2006-7423-94f2a7b38b27@st.com>
- <20170129175005.2u25l7zd2anlc6tw@sirena.org.uk>
-CC: Lee Jones <lee.jones@linaro.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org"
         <linux-arm-kernel@lists.infradead.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
         "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre TORGUE <alexandre.torgue@st.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <9d1233ee-d043-4e74-0915-075bb376d817@st.com>
-Date: Mon, 30 Jan 2017 19:14:54 +0100
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <0bf34853-d0fa-8cb6-29fb-398d6951fdff@kernel.org>
+Date: Sun, 29 Jan 2017 11:20:52 +0000
 MIME-Version: 1.0
-In-Reply-To: <20170129175005.2u25l7zd2anlc6tw@sirena.org.uk>
-Content-Type: text/plain; charset="windows-1252"
+In-Reply-To: <a1aaaa20-ac00-b182-f1c1-63152be41135@st.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Mark,
-
-On 01/29/2017 06:50 PM, Mark Brown wrote:
-> On Fri, Jan 27, 2017 at 02:45:49PM +0100, Arnaud Pouliquen wrote:
+On 24/01/17 13:32, Arnaud Pouliquen wrote:
 > 
->> Jonathan, Mark, Please could you share your opinion on this
->> topic?
 > 
-> I really don't have enough visbility of what the hardware or
-> software is doing to say much and though there's extensive
-> backtrace in here it's not enough to follow.  If it's a generic ADC
-> that happens to have audio applications then some relationship with
-> IIO might make sense but I don't know how separate the audio and
-> general purpose bits of the hardware are.
+> On 01/24/2017 12:36 PM, Lee Jones wrote:
+>> On Tue, 24 Jan 2017, Arnaud Pouliquen wrote:
+>>> On 01/24/2017 09:22 AM, Lee Jones wrote:
+>>>> On Mon, 23 Jan 2017, Arnaud Pouliquen wrote:
+>>>>
+>>>>> DFSDM hardware IP can be used at the same time for ADC sigma delta
+>>>>
+>>>> Same time as what?
+>>> DFSDM is used for ADC acquisition (through IIO) but also PDM microphone
+>>> capture (through ASOC).
+>>>>
+>>>>> conversion and audio PDM microphone.
+>>>>> MFD driver is in charge of configuring IP registers and managing IP clocks.
+>>>>> For this it exports an API to handles filters and channels resources.
+>>>>
+>>>> This looks like an ADC driver?  What is it that makes it an MFD?
+>>> Yes it a kind of ADC but that supports 2 features audio and iio.
+>>> So it has to support 2 features based on 2 separate Frameworks.
+>>
+>> I'm still unsure why it needs to live in MFD.
+>>
+>> By the looks of it, this driver needs to move into IIO and you need to
+>> call into it from ASoC.
+>>
 > 
-> Please understand that I get copied in on *lots* of threads about
-> MFDs with drivers getting posted repeatedly for whatever revisions
-> are needed with little relevance to me so it's very random if I
-> even look at these things, much less read them with detail.
+> I think i introduce confusion by speaking about ADC for audio...
+> 
+> 1) IIO handles sigma delta ADCs that can be used as example for motor
+> controls. the aim is to get value based on an application request or
+> using some triggers.
+> example: http://www.ti.com/lit/ds/symlink/ads1202.pdf
+> 
+> 2) For audio part, we speak about Digital mems microphones that generate
+> PDM format stream. PDM is a continuous real time stream dedicated to
+> audio record and must be handled in ASOC ( codec Dmic part driver is
+> /sound/soc/codec/dmic.c).
+> DMIC example:
+> http://www.st.com/content/ccc/resource/technical/document/datasheet/47/bd/d2/13/8d/fd/48/26/DM00121815.pdf/files/DM00121815.pdf/jcr:content/translations/en.DM00121815.pdf
+> 
+> Form my point of view it very strange to handle DMICs in IIO, as it is
+> not designed to support audio streams.it is two separate features that
+> are not compatible.
+> 
+> Now, from software point of view
+> That would means that IIO declares ADCs that it can not expose, because
+> DMIC is not IIO standard. But IIO inkern API needs that device is
+> declared... So i should define a specific API in IIO for ASOC driver.
+IIO isn't designed specifically to support audio streams, but it does
+have high bandwidth continuous sampling support via the dma buffer
+side of things.  Analog devices use this stuff for software defined
+radio applications.
+
+What we don't currently have is an in kernel consumer interface for this.
+I'm not really sure how difficult it would be to do this, but it is
+certainly sounding like there is demand for it.
+
+Probably the best person to comment is Lars who wrote the dma stuff
+in the first place and also has a more than passing familiarity with
+ASOC.
+
+I've sent Lars a PM to highlight this thread.
+
+Jonathan
+
+> 
+> 
+>>>>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+>>>>> ---
+>>>>>  drivers/mfd/Kconfig             |   11 +
+>>>>>  drivers/mfd/Makefile            |    2 +
+>>>>>  drivers/mfd/stm32-dfsdm-reg.h   |  220 +++++++++
+>>>>>  drivers/mfd/stm32-dfsdm.c       | 1044 +++++++++++++++++++++++++++++++++++++++
+>>>>>  include/linux/mfd/stm32-dfsdm.h |  324 ++++++++++++
+>>>>>  5 files changed, 1601 insertions(+)
+>>>>>  create mode 100644 drivers/mfd/stm32-dfsdm-reg.h
+>>>>>  create mode 100644 drivers/mfd/stm32-dfsdm.c
+>>>>>  create mode 100644 include/linux/mfd/stm32-dfsdm.h
+>>>>>
+>>>>> diff --git a/drivers/mfd/Kconfig b/drivers/mfd/Kconfig
+>>>>> index c6df644..4bb660b 100644
+>>>>> --- a/drivers/mfd/Kconfig
+>>>>> +++ b/drivers/mfd/Kconfig
+>>>>> @@ -1607,6 +1607,17 @@ config MFD_STW481X
+>>>>>  	  in various ST Microelectronics and ST-Ericsson embedded
+>>>>>  	  Nomadik series.
+>>>>>  
+>>>>> +config MFD_STM32_DFSDM
+>>>>> +	tristate "ST Microelectronics STM32 DFSDM"
+>>>>> +	depends on (ARCH_STM32 && OF) || COMPILE_TEST
+>>>>> +	select MFD_CORE
+>>>>> +	select REGMAP
+>>>>> +	select REGMAP_MMIO
+>>>>> +	help
+>>>>> +	  Select this option to enable the STM32 Digital Filter
+>>>>> +	  for Sigma Delta Modulators (DFSDM) driver used
+>>>>> +	  in various STM32 series.
+>>>>> +
+>>>>>  menu "Multimedia Capabilities Port drivers"
+>>>>>  	depends on ARCH_SA1100
+>>>>
+>>>> [...]
+>>>>
+>>>
+>>> Regards
+>>> Arnaud
+>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
 > 
 
-In a first step, your comment is enough from my point of view as you
-are not disagree with the concept of a relationship between ASOC an IIO.
-This confirms that the MFD driver have to be abandoned.
-
-Then details on how to do it is another story, that should trigs some
-other discussions...
-
-Thanks and Regards,
-
-Arnaud
