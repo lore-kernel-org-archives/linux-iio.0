@@ -1,25 +1,48 @@
-Return-Path: <SRS0=exSk=ZF=pmeerw.net=pmeerw@kernel.org>
-Date: Mon, 23 Jan 2017 20:40:46 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-cc: linux-iio@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-    Lars-Peter Clausen <lars@metafoo.de>
-Subject: Re: [alsa-devel] [PATCH 4/7] IIO: add STM32 DFSDM ADC support
-In-Reply-To: <1485189145-29576-5-git-send-email-arnaud.pouliquen@st.com>
-Message-ID: <alpine.DEB.2.02.1701232007140.3611@pmeerw.net>
-References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com> <1485189145-29576-5-git-send-email-arnaud.pouliquen@st.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:51022 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750843AbdA2Mkv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2017 07:40:51 -0500
+Subject: Re: [PATCH 4/7] IIO: add STM32 DFSDM ADC support
+To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        Lee Jones <lee.jones@linaro.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
+ <1485189145-29576-5-git-send-email-arnaud.pouliquen@st.com>
+Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <14320aef-7956-74bf-e4c3-5f2354cc5493@kernel.org>
+Date: Sun, 29 Jan 2017 12:15:42 +0000
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1485189145-29576-5-git-send-email-arnaud.pouliquen@st.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 23 Jan 2017, Arnaud Pouliquen wrote:
-
+On 23/01/17 16:32, Arnaud Pouliquen wrote:
 > Add driver to handle Sigma Delta ADC conversion for ADC
 > connected to DFSDM IP.
-
-mostly trivial comments below
- 
+> 
 > Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+Various comments inline.  Again mostly reading this to grasp how the whole
+lot fits together.
+
+At the moment, other than some new ABI, this is a fairly simple sysfs or in
+kernel polled ADC driver.  The hardware seems to support a whole lot more
+but fair enough to present this as a starting point!
+
+Jonathan
 > ---
 >  drivers/iio/adc/Kconfig           |   9 +
 >  drivers/iio/adc/Makefile          |   1 +
@@ -104,19 +127,9 @@ mostly trivial comments below
 > +#define DFSDM_MAX_CH_SHIFT 24
 > +
 > +#define DFSDM_TIMEOUT_US 100000
-
-this only use of the constant is in the line below where it is divided by 
-1000
-
 > +#define DFSDM_TIMEOUT (msecs_to_jiffies(DFSDM_TIMEOUT_US / 1000))
 > +
 > +#define CH_ID_FROM_IDX(i) (adc->inputs[i].id)
-
-in IIO we like consistent prefixes for macros and all declarations
-
-e.g. STM32_DFSDM_ or just DFSDM_
-
-
 > +#define CH_CFG_FROM_IDX(i) (&adc->inputs_cfg[i])
 > +
 > +struct stm32_dfsdm_adc {
@@ -149,20 +162,12 @@ e.g. STM32_DFSDM_ or just DFSDM_
 > +};
 > +
 > +static inline const struct iio_chan_spec *get_ch_from_id(
-
-no inline, let the compiler decide, here and elsewhere
-consistent prefix please
-
 > +					struct iio_dev *indio_dev, int ch_id)
 > +{
 > +	int i;
 > +
 > +	for (i = 0; i < indio_dev->num_channels; i++) {
 > +		if (ch_id == indio_dev->channels[i].channel)
-
-channel is a channel number, not an id; the parameter chould be more 
-appropriately named
-
 > +			return &indio_dev->channels[i];
 > +	}
 > +
@@ -171,9 +176,6 @@ appropriately named
 > +
 > +/*
 > + * Filter attributes
-
-single line comment style? here and elsewhere, matter of taste
-
 > + */
 > +
 > +static int stm32_dfsdm_adc_set_sinc(struct iio_dev *indio_dev,
@@ -227,21 +229,12 @@ single line comment style? here and elsewhere, matter of taste
 > +	int ret, val;
 > +
 > +	ret = kstrtoint(buf, 0, &val);
-
-we want an uint here for val?
-
 > +	if (ret)
 > +		return ret;
 > +
 > +	if ((!val) || (val > DFSDM_MAX_INT_OVERSAMPLING)) {
-
-what if val is negative?
-
 > +		dev_err(&indio_dev->dev, "invalid oversampling (0 or > %#x)",
 > +			DFSDM_MAX_INT_OVERSAMPLING);
-
-\n missing
-
 > +		return -EINVAL;
 > +	}
 > +	adc->int_oversampling = val;
@@ -272,9 +265,6 @@ what if val is negative?
 > +		return ret;
 > +
 > +	if ((!val) || (val > DFSDM_MAX_FL_OVERSAMPLING)) {
-
-parenthesis not strictly needed, matter of taste
-
 > +		dev_err(&indio_dev->dev, "invalid oversampling (0 or > %#x)",
 > +			DFSDM_MAX_FL_OVERSAMPLING);
 > +		return -EINVAL;
@@ -325,6 +315,10 @@ parenthesis not strictly needed, matter of taste
 > +	/* sinc_filter_order: Configure Sinc filter order */
 > +	IIO_ENUM("sinc_filter_order", IIO_SHARED_BY_TYPE,
 > +		 &stm32_dfsdm_adc_fl_sinc_order),
+Documentation?  This is new ABI. Plus I'd like to see a generic description
+of the filters rather than a name out of the datasheet.
+Docs under Documentation/ABI/testing/sysfs-bus-iio-*
+
 > +	IIO_ENUM_AVAILABLE("sinc_filter_order", &stm32_dfsdm_adc_fl_sinc_order),
 > +	/* filter oversampling: Post filter oversampling ratio */
 > +	{
@@ -334,11 +328,9 @@ parenthesis not strictly needed, matter of taste
 > +		.write = stm32_dfsdm_adc_set_fl_os,
 > +	},
 > +	/* data_right_bit_shift : Filter output data shifting */
-
-no space before :, here and elsewhere
-
 > +	{
 > +		.name = "data_right_bit_shift",
+Well this is a simple scaling I think?  Should be supported as such.
 > +		.shared = IIO_SEPARATE,
 > +		.read = stm32_dfsdm_adc_get_shift,
 > +		.write = stm32_dfsdm_adc_set_shift,
@@ -348,6 +340,9 @@ no space before :, here and elsewhere
 > +	 * averaging_length : Mean windows of data from filter.
 > +	 * Defines how many filter data will be summed to one data output
 > +	 */
+This probably corresponds to the conventional oversampling_ratio that
+we already have as standard ABI (be it with some magic having occured before
+hand).
 > +	{
 > +		.name = "integrator_oversampling",
 > +		.shared = IIO_SHARED_BY_TYPE,
@@ -359,6 +354,8 @@ no space before :, here and elsewhere
 > +
 > +/*
 > + * Filter event routine called under IRQ context
+Again, keep to kernel comment style please.  Either do proper kernel-doc
+or just simple single line comments where appropriate.
 > + */
 > +static void stm32_dfsdm_event_cb(struct stm32_dfsdm *dfsdm, int flt_id,
 > +				 enum stm32_dfsdm_events ev, unsigned int param,
@@ -419,6 +416,8 @@ no space before :, here and elsewhere
 > +	filter.reg_params->ch_src = ch_id;
 > +
 > +	stm32_dfsdm_adc_fl_config(adc, BIT(ch_id), &filter);
+A lot of this seems to run every time.  Can we not leave some of this
+stuff configured for all conversions on a given channel?
 > +
 > +	ret = stm32_dfsdm_configure_filter(adc->dfsdm, adc->fl_id, &filter);
 > +	if (ret < 0) {
@@ -509,9 +508,6 @@ no space before :, here and elsewhere
 > +		ret = stm32_dfsdm_single_conv(indio_dev, chan, val);
 > +		if (!ret)
 > +			ret = IIO_VAL_INT;
-
-_single_conv() already returns IIO_VAL_INT on success?
-
 > +		break;
 > +	case IIO_CHAN_INFO_OFFSET:
 > +		*val = ch_cfg->offset;
@@ -540,9 +536,6 @@ _single_conv() already returns IIO_VAL_INT on success?
 > +		}
 > +		ch_cfg->offset = val;
 > +		break;
-
-maybe return 0; directly here
-
 > +	default:
 > +		return -EINVAL;
 > +	}
@@ -565,9 +558,6 @@ maybe return 0; directly here
 > +	struct iio_chan_spec *ch = &chan[chan_idx];
 > +	int ret;
 > +	unsigned int alt_ch = 0;
-
-initialization needed?
-
 > +
 > +	ret = of_property_read_u32_index(indio_dev->dev.of_node,
 > +					 "st,adc-channels", chan_idx,
@@ -575,9 +565,6 @@ initialization needed?
 > +	if (ret < 0) {
 > +		dev_err(&indio_dev->dev,
 > +			" error parsing 'st,adc-channels' for idx %d\n",
-
-remove extra space at beginning
-
 > +			chan_idx);
 > +		return ret;
 > +	}
@@ -593,6 +580,9 @@ remove extra space at beginning
 > +	}
 > +
 > +	ch->extend_name = ch->datasheet_name;
+This is not what extend_name is for, don't do it - it just makes it
+really difficult to have standard userspace code.  With hindsight I should
+probably never have introduced it in the first place.
 > +	ch->type = IIO_VOLTAGE;
 > +	ch->indexed = 1;
 > +	ch->scan_index = chan_idx;
@@ -601,22 +591,19 @@ remove extra space at beginning
 > +	ch->scan_type.sign = 'u';
 > +	ch->scan_type.realbits = DFSDM_ADC_MAX_RESOLUTION;
 > +	ch->scan_type.storagebits = DFSDM_ADC_STORAGE_BITS;
+Unless these are used elsehwere, given they are 'real numbers' it would
+actually be easier to read the code if you just put the numbers in here
+directly.
+
 > +	ch->scan_type.shift = 8;
-
-could compute _STORAGE_BITS - _MAX_RESOLUTION?
-
 > +
 > +	ch->ext_info = stm32_dfsdm_adc_ext_info;
 > +
 > +	of_property_read_u32_index(indio_dev->dev.of_node, "st,adc-alt-channel",
 > +				   chan_idx, &alt_ch);
-
-check retval?
-
 > +	/* Select the previous channel if alternate field is defined*/
-
-add space before */
-
+space before */  Please check throughout as patches to fix this sort of
+thing are really boring  :)
 > +	if (alt_ch) {
 > +		if (!ch->channel)
 > +			ch->channel = adc->dfsdm->max_channels;
@@ -643,9 +630,6 @@ add space before */
 > +
 > +	if ((dfsdm_ch->serial_if.type == DFSDM_CHANNEL_MANCHESTER_RISING)  ||
 > +	    (dfsdm_ch->serial_if.type == DFSDM_CHANNEL_MANCHESTER_FALLING) ||
-
-inconsistent indentation
-
 > +	    (ret < 0))
 > +		dfsdm_ch->serial_if.spi_clk = DFSDM_CHANNEL_SPI_CLOCK_INTERNAL;
 > +
@@ -676,6 +660,10 @@ inconsistent indentation
 > +				       sizeof(*adc->inputs_cfg), GFP_KERNEL);
 > +	if (!adc->inputs_cfg)
 > +		return -ENOMEM;
+There are a lot of small allocs here. I'm not sure how many channels there
+can be, but it may be more efficient (and cleaner) to just put arrays
+of sufficient size to take all possible channels directly in your adc
+structure.
 > +
 > +	for (chan_idx = 0; chan_idx < num_ch; chan_idx++) {
 > +		ret = stm32_dfsdm_adc_chan_init_one(indio_dev, channels,
@@ -711,9 +699,6 @@ inconsistent indentation
 > +	indio_dev = devm_iio_device_alloc(dev, sizeof(*adc));
 > +	if (IS_ERR(indio_dev)) {
 > +		dev_err(dev, "%s: failed to allocate iio", __func__);
-
-\n
-
 > +		return PTR_ERR(indio_dev);
 > +	}
 > +
@@ -753,6 +738,12 @@ inconsistent indentation
 > +	init_completion(&adc->completion);
 > +
 > +	ret = devm_iio_device_register(dev, indio_dev);
+Probe order must be reversed in remove to make it obvious there are no
+weird and wonderful race conditions.  The moment you have anything in probe
+that needs unwinding before a devm call that rule is broken.
+
+Upshot, you can't use the devm version of iio_device_register.
+
 > +	if (ret) {
 > +		dev_err(adc->dev, "failed to register iio device\n");
 > +		goto register_err;
@@ -806,7 +797,3 @@ inconsistent indentation
 > +MODULE_LICENSE("GPL v2");
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
