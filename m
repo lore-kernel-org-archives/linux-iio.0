@@ -1,18 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:55011 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1751408AbdA3LZk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2017 06:25:40 -0500
-Subject: Re: [PATCH 2/7] MFD: add STM32 DFSDM support
-To: Lee Jones <lee.jones@linaro.org>
-References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
- <1485189145-29576-3-git-send-email-arnaud.pouliquen@st.com>
- <20170124082249.GR16020@dell> <283c0e48-55e2-6516-369d-91dc72d12f73@st.com>
- <20170124113658.GW16020@dell> <a1aaaa20-ac00-b182-f1c1-63152be41135@st.com>
- <20170127101545.g53uah57vgfu55o5@dell>
- <7b3eb38d-4fd1-2006-7423-94f2a7b38b27@st.com>
- <20170127171746.lf2nbpsaqs3dmy44@dell>
-CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:36304 "EHLO
+        mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751394AbdA2Rua (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2017 12:50:30 -0500
+Date: Sun, 29 Jan 2017 17:50:05 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+Cc: Lee Jones <lee.jones@linaro.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org"
         <linux-arm-kernel@lists.infradead.org>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
@@ -26,129 +21,59 @@ CC: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre TORGUE <alexandre.torgue@st.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <9bcb9bab-9404-a91b-2a06-0530c284b9e3@st.com>
-Date: Mon, 30 Jan 2017 12:23:09 +0100
+Message-ID: <20170129175005.2u25l7zd2anlc6tw@sirena.org.uk>
+References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
+ <1485189145-29576-3-git-send-email-arnaud.pouliquen@st.com>
+ <20170124082249.GR16020@dell>
+ <283c0e48-55e2-6516-369d-91dc72d12f73@st.com>
+ <20170124113658.GW16020@dell>
+ <a1aaaa20-ac00-b182-f1c1-63152be41135@st.com>
+ <20170127101545.g53uah57vgfu55o5@dell>
+ <7b3eb38d-4fd1-2006-7423-94f2a7b38b27@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20170127171746.lf2nbpsaqs3dmy44@dell>
-Content-Type: text/plain; charset="utf-8"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="hapx4fny3zdvi7ik"
+In-Reply-To: <7b3eb38d-4fd1-2006-7423-94f2a7b38b27@st.com>
+Subject: Re: [PATCH 2/7] MFD: add STM32 DFSDM support
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
+--hapx4fny3zdvi7ik
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 01/27/2017 06:17 PM, Lee Jones wrote:
-> On Fri, 27 Jan 2017, Arnaud Pouliquen wrote:
->> On 01/27/2017 11:15 AM, Lee Jones wrote:
->>> On Tue, 24 Jan 2017, Arnaud Pouliquen wrote:
->>>> On 01/24/2017 12:36 PM, Lee Jones wrote:
->>>>> On Tue, 24 Jan 2017, Arnaud Pouliquen wrote:
->>>>>> On 01/24/2017 09:22 AM, Lee Jones wrote:
->>>>>>> On Mon, 23 Jan 2017, Arnaud Pouliquen wrote:
->>>>>>>
->>>>>>>> DFSDM hardware IP can be used at the same time for ADC sigma delta
->>>>>>>
->>>>>>> Same time as what?
->>>>>> DFSDM is used for ADC acquisition (through IIO) but also PDM microphone
->>>>>> capture (through ASOC).
->>>>>>>
->>>>>>>> conversion and audio PDM microphone.
->>>>>>>> MFD driver is in charge of configuring IP registers and managing IP clocks.
->>>>>>>> For this it exports an API to handles filters and channels resources.
->>>>>>>
->>>>>>> This looks like an ADC driver?  What is it that makes it an MFD?
->>>>>> Yes it a kind of ADC but that supports 2 features audio and iio.
->>>>>> So it has to support 2 features based on 2 separate Frameworks.
->>>>>
->>>>> I'm still unsure why it needs to live in MFD.
->>>>>
->>>>> By the looks of it, this driver needs to move into IIO and you need to
->>>>> call into it from ASoC.
->>>>>
->>>>
->>>> I think i introduce confusion by speaking about ADC for audio...
->>>>
->>>> 1) IIO handles sigma delta ADCs that can be used as example for motor
->>>> controls. the aim is to get value based on an application request or
->>>> using some triggers.
->>>> example: http://www.ti.com/lit/ds/symlink/ads1202.pdf
->>>>
->>>> 2) For audio part, we speak about Digital mems microphones that generate
->>>> PDM format stream. PDM is a continuous real time stream dedicated to
->>>> audio record and must be handled in ASOC ( codec Dmic part driver is
->>>> /sound/soc/codec/dmic.c).
->>>> DMIC example:
->>>> http://www.st.com/content/ccc/resource/technical/document/datasheet/47/bd/d2/13/8d/fd/48/26/DM00121815.pdf/files/DM00121815.pdf/jcr:content/translations/en.DM00121815.pdf
->>>>
->>>> Form my point of view it very strange to handle DMICs in IIO, as it is
->>>> not designed to support audio streams.it is two separate features that
->>>> are not compatible.
->>>>
->>>> Now, from software point of view
->>>> That would means that IIO declares ADCs that it can not expose, because
->>>> DMIC is not IIO standard. But IIO inkern API needs that device is
->>>> declared
->>>
->>>> So i should define a specific API in IIO for ASOC driver.
->>>
->>> Yes, this is what I think you should do.
->>>
->>> MFD is not a dumping ground for devices that do not fit anywhere else.
->>
->> I fully understand that you don't want to create unnecessary MFD devices.
->> But In case of DFSDM ,it is really a device that supports 2 features.
->> The main evidence is that "ADC acquisition" and "digital microphone"
->> features are handled by two separate frameworks.
->> So this corresponds to two features that share the same device resources
->> (registers, IRQs, clocks).
->> Seems that this match with MFD definition.
->>
->> Now, if IIO and ASOC maintainers are aligned with you proposal, i will
->> move MFD part in IIO.
->> But in this case, i can not see another way to do it, except a MFD
->> driver hidden in IIO?
->>
->> Here is my analysis of a design in IIO:
->>
->> Natural way to do this is to consider that ASOC is a customer of IIO so
->> use the customer.h API.
->> 1) As Digital microphone can not be handled by IIO dev interface, i can
->> not expose them as an IIO channel, that would be visible by applications
->> in /sys/bus/iio/devices/iio
->> 2) ASOC needs to configure DFSDM filter to match to specific frequencies
->> and sample formats requested by users. Not standard IIO interface to do
->> this. (on IIO side this is done by attribute file)
->> 3) audio stream is a real time stream. So for audio quality best is to
->> minimize latencies and Xrun. That why transfer as done from HW to
->> application using LLI DMA transfers with a minimum of copy. This does
->> not match with the IIO inkern API.
->>  => So seems not possible to use IIO inkern API.
->>
->> That's means that i would need to create a ST specific include file to
->> offer an API to ASoC to handle DFSDM resources linked to the DMIC.
->> and to probe ASOc device in IIO one.
->> So the solution would be to create something like a sub IIO driver That
->> probe and handle some IIO and ASOC devices.
->> Ultimately This would correspond to a MFD driver integrated in IIO...
-> 
-> The issue is not the creation of an MFD driver to create shared
-> resources and probe the child devices.  That's what MFD *is* for.
-> What I do take exception to is having lots of code in MFD which
-> should clearly live in a different subsystem.
-> 
-> Since this device only serves a couple of functions, I expect it to be
-> a few hundred lines, maximum.  Everything else should be farmed out.
-> MFD knows nothing of "channels" or "filters" so anything related to
-> them (init, get, start, stop, release, etc) needs to find another
-> home.  Whether that's in IIO is a separate discussion, but it
-> certainly doesn't live in MFD.
+On Fri, Jan 27, 2017 at 02:45:49PM +0100, Arnaud Pouliquen wrote:
 
-Thanks for your time and explanations Lee.
-As you recommended, I will try to integrate it in IIO. And i notice for
-the next time that i can not expose such "high level" interface in MFD.
+> Jonathan, Mark, Please could you share your opinion on this topic?
 
-Regards
-Arnaud
+I really don't have enough visbility of what the hardware or software is
+doing to say much and though there's extensive backtrace in here it's
+not enough to follow.  If it's a generic ADC that happens to have audio
+applications then some relationship with IIO might make sense but I
+don't know how separate the audio and general purpose bits of the
+hardware are.
+
+Please understand that I get copied in on *lots* of threads about MFDs
+with drivers getting posted repeatedly for whatever revisions are needed
+with little relevance to me so it's very random if I even look at these
+things, much less read them with detail.
+
+--hapx4fny3zdvi7ik
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAliOK0wACgkQJNaLcl1U
+h9A1MQf/TRDyJvQa1AT0k+9ghr8Uix9BthcokasfxQBM/I6jauAq7hp3HEPpcTYf
+AZ88MjZdxhS8iNgmmZzllGStvUIqgFRkAt++yH0jc0s+KyTRRcM6cZal5Zcii8NE
+e3Pui/XMpuoSuaAaS7UKUcy6nnUf43M7QZ4mW866NJvQ1qJSmvJrWqnOODO+IaoC
+geSt5v4jGnDOyxhP60llrspideFGs7SpXfHtOK/6G1kRQOslvBGLHtlNwjvr40oa
+pRzjZk/loAJ2x0YAq7bA9TkgT7Jjb9yWdd4bTngnmlbHI4b531yjqiPdtRBlQhw3
++O62U1yyrvN9CLGIoQBfG80o9ytlJQ==
+=Mbpq
+-----END PGP SIGNATURE-----
+
+--hapx4fny3zdvi7ik--
