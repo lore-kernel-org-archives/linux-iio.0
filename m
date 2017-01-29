@@ -1,37 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f65.google.com ([74.125.82.65]:33843 "EHLO
-        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751019AbdA2Ktl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2017 05:49:41 -0500
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-Subject: [PATCH 5/5] Documentation: dt: iio: imu: st_lsm6dsx: add lsm6ds3h sensor device binding
-Date: Sun, 29 Jan 2017 11:49:28 +0100
-Message-Id: <20170129104928.15533-6-lorenzo.bianconi@st.com>
-In-Reply-To: <20170129104928.15533-1-lorenzo.bianconi@st.com>
-References: <20170129104928.15533-1-lorenzo.bianconi@st.com>
+Received: from mail-wm0-f66.google.com ([74.125.82.66]:34654 "EHLO
+        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751258AbdA2SEX (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 29 Jan 2017 13:04:23 -0500
+From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+To: linux-kernel@vger.kernel.org
+Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
+        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
+        linux-iio@vger.kernel.org, harald@ccbib.org,
+        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
+        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Subject: [PATCH v13 0/5] mxs-lradc: Split driver into MFD
+Date: Sun, 29 Jan 2017 19:04:00 +0100
+Message-Id: <cover.1485711797.git.ksenija.stanojevic@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
- Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 1 +
- 1 file changed, 1 insertion(+)
+Split existing driver mxs-lradc into MFD with touchscreen and
+IIO part.
 
-diff --git a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-index 048eca7..8305fb0 100644
---- a/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-+++ b/Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt
-@@ -3,6 +3,7 @@
- Required properties:
- - compatible: must be one of:
-   "st,lsm6ds3"
-+  "st,lsm6ds3h"
-   "st,lsm6dsl"
-   "st,lsm6dsm"
- - reg: i2c address of the sensor / spi cs line
+Tested on I.MX28
+
+Ksenija Stanojevic (5):
+  mfd: mxs-lradc: Add support for mxs-lradc MFD
+  iio: adc: mxs-lradc: Add support for adc driver
+  input: touchscreen: mxs-lradc: Add support for touchscreen
+  iio: adc: mxs-lradc: Remove driver
+  mfd: Move binding document
+
+ .../bindings/{iio/adc => mfd}/mxs-lradc.txt        |    0
+ drivers/iio/adc/Kconfig                            |   27 +-
+ drivers/iio/adc/Makefile                           |    2 +-
+ drivers/iio/adc/mxs-lradc-adc.c                    |  843 ++++++++++
+ drivers/iio/adc/mxs-lradc.c                        | 1750 --------------------
+ drivers/input/touchscreen/Kconfig                  |   10 +
+ drivers/input/touchscreen/Makefile                 |    1 +
+ drivers/input/touchscreen/mxs-lradc-ts.c           |  718 ++++++++
+ drivers/mfd/Kconfig                                |   17 +
+ drivers/mfd/Makefile                               |    1 +
+ drivers/mfd/mxs-lradc.c                            |  264 +++
+ include/linux/mfd/mxs-lradc.h                      |  187 +++
+ 12 files changed, 2055 insertions(+), 1765 deletions(-)
+ rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
+ create mode 100644 drivers/iio/adc/mxs-lradc-adc.c
+ delete mode 100644 drivers/iio/adc/mxs-lradc.c
+ create mode 100644 drivers/input/touchscreen/mxs-lradc-ts.c
+ create mode 100644 drivers/mfd/mxs-lradc.c
+ create mode 100644 include/linux/mfd/mxs-lradc.h
+
 -- 
-2.9.3
+1.9.1
 
