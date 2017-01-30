@@ -1,98 +1,108 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-out.m-online.net ([212.18.0.9]:37562 "EHLO
-        mail-out.m-online.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752776AbdA3MOH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2017 07:14:07 -0500
-Subject: Re: [PATCH] iio: adc - Fix possible NULL derefrence.
-To: Shailendra Verma <shailendra.v@samsung.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Heiko Stuebner <heiko@sntech.de>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>,
-        linux-iio@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        p.shailesh@samsung.com, ashish.kalra@samsung.com,
-        Shailendra Verma <shailendra.capricorn@gmail.com>
-References: <CGME20170130044724epcas3p444b23d43fed213511e6994ecb4ed0ef3@epcas3p4.samsung.com>
- <1485751634-28963-1-git-send-email-shailendra.v@samsung.com>
-From: Marek Vasut <marex@denx.de>
-Message-ID: <a4f4f5fc-5a00-5a39-8c2a-999686196a45@denx.de>
-Date: Mon, 30 Jan 2017 13:13:22 +0100
+Received: from mout.kundenserver.de ([212.227.126.187]:64088 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753506AbdA3MvN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2017 07:51:13 -0500
+Date: Mon, 30 Jan 2017 13:49:40 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org, dledford@redhat.com,
+        akpm@linux-foundation.org, shraddha.6596@gmail.com, w@1wt.eu,
+        balbi@kernel.org, mtk.manpages@gmail.com, sjenning@redhat.com,
+        ksenija.stanojevic@gmail.com, vilhelm.gray@gmail.com,
+        robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc: ak@it-klinger.de
+Subject: [PATCH v2 0/2] iio: distance: devantech srf04 us ranger
+Message-ID: <20170130124940.GA9703@andreas>
 MIME-Version: 1.0
-In-Reply-To: <1485751634-28963-1-git-send-email-shailendra.v@samsung.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 01/30/2017 05:47 AM, Shailendra Verma wrote:
-> of_match_device could return NULL, and so can cause a NULL
-> pointer dereference later.
-> 
-> Signed-off-by: Shailendra Verma <shailendra.v@samsung.com>
+This patch series adds support for the devantech srf04 ultrasonic ranger as
+IIO device.
 
-a) this should be two patches
-b) same question as in case of the mmc patch -- The probe won't be
-called if OF match doesn't happen in the first place, so this check is
-redundant, no ?
+The device is able to recognize objects in a range of 1 cm and 3 meters.
+The theoretical resolution is about 3 mm, practically more or less 1 cm.
 
-> ---
->  drivers/iio/adc/mxs-lradc.c       |   14 ++++++++++----
->  drivers/iio/adc/rockchip_saradc.c |    4 ++++
->  2 files changed, 14 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/iio/adc/mxs-lradc.c b/drivers/iio/adc/mxs-lradc.c
-> index b84d37c..4308a59 100644
-> --- a/drivers/iio/adc/mxs-lradc.c
-> +++ b/drivers/iio/adc/mxs-lradc.c
-> @@ -1570,10 +1570,8 @@ static int mxs_lradc_probe_touchscreen(struct mxs_lradc *lradc,
->  
->  static int mxs_lradc_probe(struct platform_device *pdev)
->  {
-> -	const struct of_device_id *of_id =
-> -		of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> -	const struct mxs_lradc_of_config *of_cfg =
-> -		&mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
-> +	const struct of_device_id *of_id;
-> +	const struct mxs_lradc_of_config *of_cfg;
->  	struct device *dev = &pdev->dev;
->  	struct device_node *node = dev->of_node;
->  	struct mxs_lradc *lradc;
-> @@ -1583,6 +1581,14 @@ static int mxs_lradc_probe(struct platform_device *pdev)
->  	int i, s;
->  	u64 scale_uv;
->  
-> +	of_id = of_match_device(mxs_lradc_dt_ids, &pdev->dev);
-> +	if (!of_id) {
-> +		dev_err(&pdev->dev, "Error: No device match found\n");
-> +		return -ENODEV;
-> +	}
-> +
-> +	of_cfg = &mxs_lradc_of_config[(enum mxs_lradc_id)of_id->data];
-> +
->  	/* Allocate the IIO device. */
->  	iio = devm_iio_device_alloc(dev, sizeof(*lradc));
->  	if (!iio) {
-> diff --git a/drivers/iio/adc/rockchip_saradc.c b/drivers/iio/adc/rockchip_saradc.c
-> index 85d7012..08dfb43 100644
-> --- a/drivers/iio/adc/rockchip_saradc.c
-> +++ b/drivers/iio/adc/rockchip_saradc.c
-> @@ -224,6 +224,10 @@ static int rockchip_saradc_probe(struct platform_device *pdev)
->  	info = iio_priv(indio_dev);
->  
->  	match = of_match_device(rockchip_saradc_match, &pdev->dev);
-> +	if (!match) {
-> +		dev_err(&pdev->dev, "Error: No device match found\n");
-> +		return -ENODEV;
-> +	}
->  	info->data = match->data;
->  
->  	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
-> 
+Use cases for this device are level metering in tanks or distance measuring
+in robotics.
 
+This driver works by triggering the device and waiting for the echo, for
+which a GPIO is set when send out and reset when the echo is received. 
+The echo must be an interrupt and the time between rising and falling is
+measured.
+
+The returned distance is calculated with a ultrasonic speed of 343 m/s
+which is the correct value at 20 degrees celsius.
+For different temperatures one might want to compensate the temperature.
+Look at the source code for a more detailed explanation of the calculation
+and bounds.
+
+The measurement cycle as timing diagram looks like: (taken from the source
+code to illustrate here)
+
+         +---+
+GPIO     |   |
+trig:  --+   +------------------------------------------------------
+         ^   ^
+         |<->|
+        udelay(10)
+
+ultra           +-+ +-+ +-+
+sonic           | | | | | |
+burst: ---------+ +-+ +-+ +-----------------------------------------
+                          .
+ultra                     .              +-+ +-+ +-+
+sonic                     .              | | | | | |
+echo:  ----------------------------------+ +-+ +-+ +----------------
+                          .                        .
+                          +------------------------+
+GPIO                      |                        |
+echo:  -------------------+                        +---------------
+                          ^                        ^
+                          interrupt                interrupt
+                          (ts_rising)              (ts_falling)
+                          |<---------------------->|
+                             pulse time measured
+                             --> one round trip of ultra sonic waves
+
+Documenation can be found at:
+http://www.robot-electronics.co.uk/htm/srf04tech.htm
+
+Changes in v2:
+Many thanks to the thorough reviews of Peter and Lars-Peter. Many
+improvements have been identified and are now implemented in the driver.
+
+* Patch 1: iio: distance: add dt binding for devantech-srf04
+  - add more explanation about the GPIOs and there usage
+
+* Patch 2: iio: distance: add devantech us ranger srf04
+  - add documentation about how the driver is supposed to work together
+    with a small timing diagram
+  - improved locking: mutex is hold during the measurement cycle to ensure
+    only one tasks set the output and waits for the response
+  - documentation about maximum time accepted as valid ultrasonic response
+  - removed dev_info(); it was there for debugging reasons and is no longer
+    needed
+  - usage of devm_request_irq() and iio_device_register()
+
+Andreas Klinger (2):
+  iio: distance: add dt binding for devantech-srf04
+  iio: distance: add devantech us ranger srf04
+
+ .../bindings/iio/proximity/devantech-srf04.txt     |  28 ++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/proximity/Kconfig                      |  11 +
+ drivers/iio/proximity/Makefile                     |   1 +
+ drivers/iio/proximity/srf04.c                      | 313 +++++++++++++++++++++
+ 5 files changed, 359 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
+ create mode 100644 drivers/iio/proximity/srf04.c
 
 -- 
-Best regards,
-Marek Vasut
+2.1.4
+
