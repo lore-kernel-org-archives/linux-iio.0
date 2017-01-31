@@ -1,111 +1,406 @@
-Return-Path: <SRS0=iLVB=ZN=axentia.se=peda@kernel.org>
-Subject: Re: kernel 4.10-rcx iio helper question
-To: Ken.Lin <ken.lin@advantech.com>, "jic23@kernel.org" <jic23@kernel.org>
-References: <03B5A3CA1724CE4EAC32B27E39292A677FC7512D3A@AUSMAIL1.AUS.ADVANTECH.CORP>
- <WM!0e191e8021de721ce26bb7af83b55064556944dd1ba4a4c5ffd0cf5fa2a60dcb49d0a6722934d893c1817b0383068e28!@dgg.advantech.com>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "pmeerw@pmeerw.net"
-	<pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-	"linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>, Akshay Bhat
-	<akshay.bhat@timesys.com>, Peter.Stretz <peter.stretz@advantech.com>,
-	Peter.Chiang <peter.chiang@advantech.com>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <273c851c-4623-652e-097b-5a3827205ebc@axentia.se>
-Date: Tue, 31 Jan 2017 22:09:52 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-yb0-f195.google.com ([209.85.213.195]:33685 "EHLO
+        mail-yb0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751148AbdAaVGO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 16:06:14 -0500
+Date: Tue, 31 Jan 2017 16:06:01 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
+Subject: [PATCH v2] iio: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
+Message-ID: <20170131210601.GA8301@sophia>
 MIME-Version: 1.0
-In-Reply-To: <WM!0e191e8021de721ce26bb7af83b55064556944dd1ba4a4c5ffd0cf5fa2a60dcb49d0a6722934d893c1817b0383068e28!@dgg.advantech.com>
-Content-Type: text/plain; charset="windows-1252"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 2017-01-31 19:19, Ken.Lin wrote:
-> Hi,
-> 
-> I find the latest kernel introduces new iio sys attributes.
-> https://patchwork.kernel.org/patch/9391771/
-> https://patchwork.kernel.org/patch/9391259/
->  
-> Is there anyone has some ideas about how the new iio sys attribute - in_pressure_scale_available works?
-> I'm not sure if it's the regression issue or it's just the usage issue or something when I tried to read in_pressure_scale_available attribute.
+The LSI/CSI LS7266R1 chip provides programmable output via the FLG pins.
+When interrupts are enabled on the ACCES 104-QUAD-8, they occur whenever
+FLG1 is active. Four functions are available for the FLG1 signal:
+/Carry, /Compare, /Carry/Borrow, and Index.
 
-> # cat /sys/bus/iio/devices/iio\:device1/in_pressure_scale_available
-> Segmentation fault
+	/Carry:
+		Interrupt generated on active low Carry signal. Carry
+		signal toggles every time the respective channel's
+		counter overflows.
 
-What driver is providing iio:device1?
+	/Compare:
+		Interrupt generated on active low Compare signal.
+		Compare signal toggles every time respective channel's
+		preset register is equal to the respective channel's
+		counter.
 
-> [ 3785.077014] Unable to handle kernel NULL pointer dereference at virtual address 00000000
-> [ 3785.085138] pgd = ecc3c000
-> [ 3785.087929] [00000000] *pgd=87f91831
-> [ 3785.091563] Internal error: Oops: 80000007 [#1] SMP ARM
-> [ 3785.096806] Modules linked in:
-> [ 3785.099892] CPU: 1 PID: 1051 Comm: cat Not tainted 4.10.0-rc5-00009-gffd8858-dirty #3
+	/Carry/Borrow:
+		Interrupt generated on active low Carry signal and
+		active low Borrow signal. Carry signal toggles every
+		time the respective channel's counter overflows. Borrow
+		signal toggles every time the respective channel's
+		counter underflows.
 
-Looks like you have a couple of local changes? What are those?
+	Index:
+		Interrupt generated on active high Index signal.
 
-My WAG is that you added the IIO_CHAN_INFO_SCALE bit to one of
-the .info_mask_*_available fields in the channel spec but failed
-to provide a .read_avail operation in the driver. Am I close?
+The irq_trig_func sysfs attribute is introduced to allow the selection
+of the desired IRQ trigger function per channel. Interrupts push events
+via the thresh_en event sysfs attribute.
 
-Cheers,
-peda
+This patch adds IRQ support for the ACCES 104-QUAD-8. The interrupt line
+numbers for the devices may be configured via the irq array module
+parameter.
 
-> [ 3785.107740] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
-> [ 3785.114285] task: ed54ec00 task.stack: ee2bc000
-> [ 3785.118834] PC is at 0x0
-> [ 3785.121397] LR is at iio_read_channel_info_avail+0x40/0x280
-> [ 3785.126992] pc : [<00000000>]    lr : [<c06fbc1c>]    psr: a0070013
-> [ 3785.126992] sp : ee2bdda8  ip : 00000000  fp : ee2bddf4
-> [ 3785.138490] r10: c0a53c74  r9 : ed79f000  r8 : ee8d1018
-> [ 3785.143733] r7 : 00001000  r6 : 00000fff  r5 : ee8b9a00  r4 : ed79f000
-> [ 3785.150276] r3 : ee2bddc4  r2 : ee2bddbc  r1 : c0a86dcc  r0 : ee8d1000
-> [ 3785.156820] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
-> [ 3785.163971] Control: 10c5387d  Table: 3cc3c04a  DAC: 00000051
-> [ 3785.169734] Process cat (pid: 1051, stack limit = 0xee2bc210)
-> [ 3785.175497] Stack: (0xee2bdda8 to 0xee2be000)
-> [ 3785.179880] dda0:                   ee2bddc0 00000002 c016d720 c016d394 ed54ec00 00000000
-> [ 3785.188084] ddc0: 60070013 ed413780 00000001 edffd480 ee8b9a00 00000fff 00001000 ee8d1018
-> [ 3785.196286] dde0: ed79f000 c0a53c74 ee2bde0c ee2bddf8 c0513c58 c06fbbe8 edffd480 edffd540
-> [ 3785.204488] de00: ee2bde3c ee2bde10 c0293474 c0513c40 c02933e4 ee2bde60 00000001 ed413780
-> [ 3785.212688] de20: 00000001 ed413780 00000000 edffd480 ee2bde4c ee2bde40 c0291d00 c02933f0
-> [ 3785.220889] de40: ee2bde9c ee2bde50 c024679c c0291ce0 edffd4b0 b6e37000 00020000 ee2bdf78
-> [ 3785.229089] de60: 00000000 00000000 ed54ec00 ed013200 00000817 c0a111fc edffd540 ed413780
-> [ 3785.237289] de80: b6e37000 00020000 00020000 ee2bdf78 ee2bded4 ee2bdea0 c0292890 c0246604
-> [ 3785.245491] dea0: c0117940 c016ba50 00000025 c0a111fc b6e37000 ed413780 ee2bdf78 00020000
-> [ 3785.253691] dec0: ee2bc000 b6e37000 ee2bdf44 ee2bded8 c021d158 c0292770 c0117764 b6e36004
-> [ 3785.261893] dee0: c0f0d7c4 ee2bdfb0 b6f89228 00021008 ee2bdfac ee2bdf00 c0101374 c0117770
-> [ 3785.270093] df00: 00000000 00000000 ee2bc000 00000000 ee2bdf34 ee2bdf20 c016ba04 c0171080
-> [ 3785.278292] df20: 00000000 00020000 ed413780 b6e37000 00000000 ee2bdf78 ee2bdf74 ee2bdf48
-> [ 3785.286493] df40: c021e7a0 c021d130 c023e300 c023e280 ee2bdf74 00000000 00000000 ed413780
-> [ 3785.294693] df60: ed413780 00020000 ee2bdfa4 ee2bdf78 c021e870 c021e71c 00000000 00000000
-> [ 3785.302892] df80: 00020000 00020000 b6e37000 00000003 c0108084 00000000 00000000 ee2bdfa8
-> [ 3785.311092] dfa0: c0107ee0 c021e838 00020000 00020000 00000003 b6e37000 00020000 0001a2b4
-> [ 3785.319292] dfc0: 00020000 00020000 b6e37000 00000003 7fffe000 00000000 00000000 00020000
-> [ 3785.327492] dfe0: 00000000 be98eb4c 0000c740 b6f1985c 60070010 00000003 00000000 00000000
-> [ 3785.335679] Backtrace:
-> [ 3785.338175] [<c06fbbdc>] (iio_read_channel_info_avail) from [<c0513c58>] (dev_attr_show+0x24/0x50)
-> [ 3785.347162]  r10:c0a53c74 r9:ed79f000 r8:ee8d1018 r7:00001000 r6:00000fff r5:ee8b9a00
-> [ 3785.355005]  r4:edffd480
-> [ 3785.357571] [<c0513c34>] (dev_attr_show) from [<c0293474>] (sysfs_kf_seq_show+0x90/0x110)
-> [ 3785.365764]  r5:edffd540 r4:edffd480
-> [ 3785.369365] [<c02933e4>] (sysfs_kf_seq_show) from [<c0291d00>] (kernfs_seq_show+0x2c/0x30)
-> [ 3785.377652]  r10:edffd480 r9:00000000 r8:ed413780 r7:00000001 r6:ed413780 r5:00000001
-> [ 3785.385498]  r4:ee2bde60 r3:c02933e4
-> [ 3785.389101] [<c0291cd4>] (kernfs_seq_show) from [<c024679c>] (seq_read+0x1a4/0x4e0)
-> [ 3785.396780] [<c02465f8>] (seq_read) from [<c0292890>] (kernfs_fop_read+0x12c/0x1cc)
-> [ 3785.404460]  r10:ee2bdf78 r9:00020000 r8:00020000 r7:b6e37000 r6:ed413780 r5:edffd540
-> [ 3785.412303]  r4:c0a111fc
-> [ 3785.414862] [<c0292764>] (kernfs_fop_read) from [<c021d158>] (__vfs_read+0x34/0x118)
-> [ 3785.422627]  r10:b6e37000 r9:ee2bc000 r8:00020000 r7:ee2bdf78 r6:ed413780 r5:b6e37000
-> [ 3785.430470]  r4:c0a111fc
-> [ 3785.433029] [<c021d124>] (__vfs_read) from [<c021e7a0>] (vfs_read+0x90/0x11c)
-> [ 3785.440185]  r8:ee2bdf78 r7:00000000 r6:b6e37000 r5:ed413780 r4:00020000
-> [ 3785.446909] [<c021e710>] (vfs_read) from [<c021e870>] (SyS_read+0x44/0x90)
-> [ 3785.453804]  r8:00020000 r7:ed413780 r6:ed413780 r5:00000000 r4:00000000
-> [ 3785.460537] [<c021e82c>] (SyS_read) from [<c0107ee0>] (ret_fast_syscall+0x0/0x1c)
-> [ 3785.468042]  r10:00000000 r8:c0108084 r7:00000003 r6:b6e37000 r5:00020000 r4:00020000
-> [ 3785.476238] Code: bad PC value
-> [ 3785.490358] ---[ end trace 9c4938ccd0389004 ]---
-> 
-> Thank you
-> 
-> Cheers,
-> Ken Lin
-> 
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+Changes in v2:
+  - Rebased to merge in bug fix updates to 104-quad-8.c
+  - Changed mag_en to thresh_en to match nature of attribute
+  - Updated kernel version number in documentation for new attributes
+
+I apologize for the delay in response to the original patch submission;
+for some reason my mail server never received Jonathan's original reply.
+
+Jonathan, have you given some thought about how events should be
+supported in this case? I agree that the interface right now is very
+device specific, so it would be very nice get it more general for the
+benefit of future drivers. Let me know what you have planned and I can
+make changes accordingly.
+
+I went ahead and changed the mag_en attribute to a thresh_en (direction
+left as IIO_EV_DIR_NONE). Would it be better to have direction set to
+IIO_EV_DIR_EITHER for this attribute? As you could tell, the direction
+of the event depends on the configuration chosen (/Carry, /Compare,
+/Carry/Borrow, or Index).
+
+By the way, the forward slashes in front of the FLG1 signal function
+names are suppose to represent inversion bars on top of the signal names
+(in order to point out that the signals are active low). I can remove
+those forward slashes from the documentation if they are confusing.
+
+William Breathitt Gray
+
+ .../ABI/testing/sysfs-bus-iio-counter-104-quad-8   |  37 +++++-
+ drivers/iio/counter/104-quad-8.c                   | 129 ++++++++++++++++++++-
+ drivers/iio/counter/Kconfig                        |   6 +-
+ 3 files changed, 163 insertions(+), 9 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+index ba676520b953..7d4599ae253b 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
++++ b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
+@@ -51,6 +51,31 @@ Description:
+ 			not freeze at the bundary points, but counts
+ 			continuously throughout.
+ 
++What:		/sys/bus/iio/devices/iio:deviceX/in_countY_irq_trig_func
++KernelVersion:	4.11
++Contact:	linux-iio@vger.kernel.org
++Description:
++		IRQ trigger function for channel Y. Four IRQ trigger functions
++		are available: /Carry, /Compare, /Carry/Borrow, and Index.
++
++		/Carry:
++			Interrupt generated on active low Carry signal. Carry
++			signal toggles every time channel Y counter overflows.
++
++		/Compare:
++			Interrupt generated on active low Compare signal.
++			Compare signal toggles every time channel Y preset
++			register is equal to channel Y counter.
++
++		/Carry/Borrow:
++			Interrupt generated on active low Carry signal and
++			active low Borrow signal. Carry signal toggles every
++			time channel Y counter overflows. Borrow signal toggles
++			every time channel Y counter underflows.
++
++		Index:
++			Interrupt generated on active high Index signal.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/in_countY_noise_error
+ KernelVersion:	4.9
+ Contact:	linux-iio@vger.kernel.org
+@@ -93,7 +118,17 @@ Contact:	linux-iio@vger.kernel.org
+ Description:
+ 		Whether to set channel Y counter with channel Y preset value
+ 		when channel Y index input is active, or continuously count.
+-		Valid attribute values are boolean.
++		Valid attribute values are boolean. This attribute is ignored
++		when channel Y IRQs are disabled.
++
++What:		/sys/bus/iio/devices/iio:deviceX/events/in_countY_thresh_en
++KernelVersion:	4.11
++Contact:	linux-iio@vger.kernel.org
++Description:
++		Event generated when a channel Y IRQ occurs. Channel Y IRQs are
++		triggered as configured by the channel Y irq_trig_func
++		attribute. Channel Y IRQs are disabled when this attribute is
++		set to 0.
+ 
+ What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_index_polarity
+ KernelVersion:	4.9
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+index a5913e97945e..ccfd952b8fd9 100644
+--- a/drivers/iio/counter/104-quad-8.c
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -16,10 +16,12 @@
+ #include <linux/bitops.h>
+ #include <linux/device.h>
+ #include <linux/errno.h>
++#include <linux/iio/events.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/types.h>
+ #include <linux/io.h>
+ #include <linux/ioport.h>
++#include <linux/interrupt.h>
+ #include <linux/isa.h>
+ #include <linux/kernel.h>
+ #include <linux/module.h>
+@@ -33,6 +35,10 @@ static unsigned int num_quad8;
+ module_param_array(base, uint, &num_quad8, 0);
+ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+ 
++static unsigned int irq[max_num_isa_dev(QUAD8_EXTENT)];
++module_param_array(irq, uint, NULL, 0000);
++MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 interrupt line numbers");
++
+ #define QUAD8_NUM_COUNTERS 8
+ 
+ /**
+@@ -43,6 +49,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
+  * @quadrature_scale:	array of quadrature mode scale configurations
+  * @ab_enable:		array of A and B inputs enable configurations
+  * @preset_enable:	array of set_to_preset_on_index attribute configurations
++ * @irq_trig_func:	array of IRQ trigger function attribute configurations
+  * @synchronous_mode:	array of index function synchronous mode configurations
+  * @index_polarity:	array of index function polarity configurations
+  * @base:		base port address of the IIO device
+@@ -54,6 +61,7 @@ struct quad8_iio {
+ 	unsigned int quadrature_scale[QUAD8_NUM_COUNTERS];
+ 	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
+ 	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
++	unsigned int irq_trig_func[QUAD8_NUM_COUNTERS];
+ 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
+ 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
+ 	unsigned int base;
+@@ -150,7 +158,8 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ 
+ 		priv->ab_enable[chan->channel] = val;
+ 
+-		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
++		ior_cfg = val | priv->preset_enable[chan->channel] << 1 |
++			priv->irq_trig_func[chan->channel] << 3;
+ 
+ 		/* Load I/O control configuration */
+ 		outb(0x40 | ior_cfg, base_offset + 1);
+@@ -184,10 +193,39 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
+ 	return -EINVAL;
+ }
+ 
++static int quad8_read_event_config(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, enum iio_event_type type,
++	enum iio_event_direction dir)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++	const unsigned int irq_enabled = inb(priv->base + 0x12);
++
++	return !!(irq_enabled & BIT(chan->channel));
++}
++
++static int quad8_write_event_config(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, enum iio_event_type type,
++	enum iio_event_direction dir, int state)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++	unsigned int irq_enabled = inb(priv->base + 0x12);
++
++	if (state)
++		irq_enabled |= BIT(chan->channel);
++	else
++		irq_enabled &= ~BIT(chan->channel);
++
++	outb(irq_enabled, priv->base + 0x12);
++
++	return 0;
++}
++
+ static const struct iio_info quad8_info = {
+ 	.driver_module = THIS_MODULE,
+ 	.read_raw = quad8_read_raw,
+-	.write_raw = quad8_write_raw
++	.write_raw = quad8_write_raw,
++	.read_event_config = quad8_read_event_config,
++	.write_event_config = quad8_write_event_config
+ };
+ 
+ static ssize_t quad8_read_preset(struct iio_dev *indio_dev, uintptr_t private,
+@@ -256,7 +294,8 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+ 	priv->preset_enable[chan->channel] = preset_enable;
+ 
+ 	ior_cfg = priv->ab_enable[chan->channel] |
+-		(unsigned int)preset_enable << 1;
++		(unsigned int)preset_enable << 1 |
++		priv->irq_trig_func[chan->channel] << 3;
+ 
+ 	/* Load I/O control configuration to Input / Output Control Register */
+ 	outb(0x40 | ior_cfg, base_offset);
+@@ -264,6 +303,44 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
+ 	return len;
+ }
+ 
++static const char *const quad8_irq_trig_func_modes[] = {
++	"/Carry",
++	"/Compare",
++	"/Carry/Borrow",
++	"Index"
++};
++
++static int quad8_set_irq_trig_func(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan, unsigned int irq_trig_func)
++{
++	struct quad8_iio *const priv = iio_priv(indio_dev);
++	const unsigned int ior_cfg = priv->ab_enable[chan->channel] |
++		priv->preset_enable[chan->channel] << 1 | irq_trig_func << 3;
++	const int base_offset = priv->base + 2 * chan->channel + 1;
++
++	priv->irq_trig_func[chan->channel] = irq_trig_func;
++
++	/* Load I/O control configuration to Input/Output Control Register */
++	outb(0x40 | ior_cfg, base_offset);
++
++	return 0;
++}
++
++static int quad8_get_irq_trig_func(struct iio_dev *indio_dev,
++	const struct iio_chan_spec *chan)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++
++	return priv->irq_trig_func[chan->channel];
++}
++
++static const struct iio_enum quad8_irq_trig_func_enum = {
++	.items = quad8_irq_trig_func_modes,
++	.num_items = ARRAY_SIZE(quad8_irq_trig_func_modes),
++	.set = quad8_set_irq_trig_func,
++	.get = quad8_get_irq_trig_func
++};
++
+ static const char *const quad8_noise_error_states[] = {
+ 	"No excessive noise is present at the count inputs",
+ 	"Excessive noise is present at the count inputs"
+@@ -480,6 +557,8 @@ static const struct iio_chan_spec_ext_info quad8_count_ext_info[] = {
+ 		.read = quad8_read_set_to_preset_on_index,
+ 		.write = quad8_write_set_to_preset_on_index
+ 	},
++	IIO_ENUM("irq_trig_func", IIO_SEPARATE, &quad8_irq_trig_func_enum),
++	IIO_ENUM_AVAILABLE("irq_trig_func", &quad8_irq_trig_func_enum),
+ 	IIO_ENUM("noise_error", IIO_SEPARATE, &quad8_noise_error_enum),
+ 	IIO_ENUM_AVAILABLE("noise_error", &quad8_noise_error_enum),
+ 	IIO_ENUM("count_direction", IIO_SEPARATE, &quad8_count_direction_enum),
+@@ -500,12 +579,22 @@ static const struct iio_chan_spec_ext_info quad8_index_ext_info[] = {
+ 	{}
+ };
+ 
++static const struct iio_event_spec quad8_event[] = {
++	{
++		.type = IIO_EV_TYPE_THRESH,
++		.dir = IIO_EV_DIR_NONE,
++		.mask_separate = BIT(IIO_EV_INFO_ENABLE)
++	}
++};
++
+ #define QUAD8_COUNT_CHAN(_chan) {					\
+ 	.type = IIO_COUNT,						\
+ 	.channel = (_chan),						\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+ 		BIT(IIO_CHAN_INFO_ENABLE) | BIT(IIO_CHAN_INFO_SCALE),	\
+ 	.ext_info = quad8_count_ext_info,				\
++	.event_spec = quad8_event,					\
++	.num_event_specs = ARRAY_SIZE(quad8_event),			\
+ 	.indexed = 1							\
+ }
+ 
+@@ -528,12 +617,35 @@ static const struct iio_chan_spec quad8_channels[] = {
+ 	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
+ };
+ 
++static irqreturn_t quad8_irq_handler(int irq, void *indio_dev)
++{
++	const struct quad8_iio *const priv = iio_priv(indio_dev);
++	unsigned long irq_status;
++	unsigned long channel;
++
++	irq_status = inb(priv->base + 0x10);
++	if (!irq_status)
++		return IRQ_NONE;
++
++	for_each_set_bit(channel, &irq_status, QUAD8_NUM_COUNTERS)
++		iio_push_event(indio_dev,
++			IIO_UNMOD_EVENT_CODE(IIO_COUNT, channel,
++				IIO_EV_TYPE_THRESH, IIO_EV_DIR_NONE),
++			iio_get_time_ns(indio_dev));
++
++	/* Clear pending interrupts on device */
++	outb(0x10, priv->base + 0x11);
++
++	return IRQ_HANDLED;
++}
++
+ static int quad8_probe(struct device *dev, unsigned int id)
+ {
+ 	struct iio_dev *indio_dev;
+ 	struct quad8_iio *priv;
+ 	int i, j;
+ 	unsigned int base_offset;
++	int err;
+ 
+ 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
+ 	if (!indio_dev)
+@@ -555,6 +667,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 	priv = iio_priv(indio_dev);
+ 	priv->base = base[id];
+ 
++	/* Reset Index/Interrupt Register */
++	outb(0x00, base[id] + 0x12);
+ 	/* Reset all counters and disable interrupt function */
+ 	outb(0x01, base[id] + 0x11);
+ 	/* Set initial configuration for all counters */
+@@ -576,8 +690,13 @@ static int quad8_probe(struct device *dev, unsigned int id)
+ 		/* Disable index function; negative index polarity */
+ 		outb(0x60, base_offset + 1);
+ 	}
+-	/* Enable all counters */
+-	outb(0x00, base[id] + 0x11);
++	/* Enable all counters and enable interrupt function */
++	outb(0x10, base[id] + 0x11);
++
++	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
++		dev_name(dev), indio_dev);
++	if (err)
++		return err;
+ 
+ 	return devm_iio_device_register(dev, indio_dev);
+ }
+diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
+index 44627f6e4861..2cea823126fe 100644
+--- a/drivers/iio/counter/Kconfig
++++ b/drivers/iio/counter/Kconfig
+@@ -15,10 +15,10 @@ config 104_QUAD_8
+ 	  Performing a write to a counter's IIO_CHAN_INFO_RAW sets the counter and
+ 	  also clears the counter's respective error flag. Although the counters
+ 	  have a 25-bit range, only the lower 24 bits may be set, either directly
+-	  or via a counter's preset attribute. Interrupts are not supported by
+-	  this driver.
++	  or via a counter's preset attribute.
+ 
+ 	  The base port addresses for the devices may be configured via the base
+-	  array module parameter.
++	  array module parameter. The interrupt line numbers for the devices may
++	  be configured via the irq array module parameter.
+ 
+ endmenu
+-- 
+2.11.0
+
