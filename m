@@ -1,50 +1,42 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:46902 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754739AbdA0JIC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 27 Jan 2017 04:08:02 -0500
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        sre@kernel.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, lee.jones@linaro.org
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-pm@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
-        bonbons@linux-vserver.org
-Subject: [PATCH v2 14/25] ARM: dts: sun8i: sina33: enable ACIN power supply subnode
-Date: Fri, 27 Jan 2017 09:54:47 +0100
-Message-Id: <20170127085458.18270-15-quentin.schulz@free-electrons.com>
-In-Reply-To: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
-References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:41158 "EHLO
+        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751667AbdAaFDi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 00:03:38 -0500
+MIME-Version: 1.0
+In-Reply-To: <20170127085458.18270-15-quentin.schulz@free-electrons.com>
+References: <20170127085458.18270-1-quentin.schulz@free-electrons.com> <20170127085458.18270-15-quentin.schulz@free-electrons.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Tue, 31 Jan 2017 13:03:13 +0800
+Message-ID: <CAGb2v6780BSrvPkp9B62E9doJBxi96165R8coEraRc_dJSLxuQ@mail.gmail.com>
+Subject: Re: [PATCH v2 14/25] ARM: dts: sun8i: sina33: enable ACIN power
+ supply subnode
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Sebastian Reichel <sre@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+        Icenowy Zheng <icenowy@aosc.xyz>,
+        =?UTF-8?Q?Bruno_Pr=C3=A9mont?= <bonbons@linux-vserver.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The Sinlinx SinA33 has an AXP223 PMIC and an ACIN connector, thus, we
-enable the ACIN power supply in its Device Tree.
+On Fri, Jan 27, 2017 at 4:54 PM, Quentin Schulz
+<quentin.schulz@free-electrons.com> wrote:
+> The Sinlinx SinA33 has an AXP223 PMIC and an ACIN connector, thus, we
+> enable the ACIN power supply in its Device Tree.
+>
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
----
- arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts b/arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts
-index 28c58c5..bf53408 100644
---- a/arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts
-+++ b/arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts
-@@ -147,6 +147,10 @@
- 
- #include "axp223.dtsi"
- 
-+&ac_power_supply {
-+	status = "okay";
-+};
-+
- &reg_aldo1 {
- 	regulator-always-on;
- 	regulator-min-microvolt = <3000000>;
--- 
-2.9.3
-
+Acked-by: Chen-Yu Tsai <wens@csie.org>
