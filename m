@@ -1,71 +1,51 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:39684 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751826AbdA2Qhi (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 29 Jan 2017 11:37:38 -0500
-Date: Sun, 29 Jan 2017 17:35:13 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
-        lee.jones@linaro.org, linux-iio@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
-        bonbons@linux-vserver.org
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:40960 "EHLO
+        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750799AbdAaEMV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 30 Jan 2017 23:12:21 -0500
+MIME-Version: 1.0
+In-Reply-To: <20170129163513.m7y4vbjgthh2esg4@earth>
+References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
+ <20170127085458.18270-12-quentin.schulz@free-electrons.com> <20170129163513.m7y4vbjgthh2esg4@earth>
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Tue, 31 Jan 2017 12:11:06 +0800
+Message-ID: <CAGb2v67P8fnDtAa15BprbDqBH62zb6LEpvwLj1O=UoGMnO2p5Q@mail.gmail.com>
 Subject: Re: [PATCH v2 11/25] mfd: axp20x: add AC power supply cells for
  AXP22X PMICs
-Message-ID: <20170129163513.m7y4vbjgthh2esg4@earth>
-References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
- <20170127085458.18270-12-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="h6fucybx25xk66zu"
-In-Reply-To: <20170127085458.18270-12-quentin.schulz@free-electrons.com>
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        knaack.h@gmx.de, Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Chen-Yu Tsai <wens@csie.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Lee Jones <lee.jones@linaro.org>, linux-iio@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        "open list:THERMAL" <linux-pm@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+        Icenowy Zheng <icenowy@aosc.xyz>,
+        =?UTF-8?Q?Bruno_Pr=C3=A9mont?= <bonbons@linux-vserver.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Mon, Jan 30, 2017 at 12:35 AM, Sebastian Reichel <sre@kernel.org> wrote:
+> Hi,
+>
+> On Fri, Jan 27, 2017 at 09:54:44AM +0100, Quentin Schulz wrote:
+>> The X-Powers AXP20X and AXP22X PMICs expose the status of AC power
+>> supply.
+>>
+>> This adds the AC power supply driver to the MFD cells of the AXP22X
+>> PMICs.
+>>
+>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+>
+> Acked-By: Sebastian Reichel <sre@kernel.org>
 
---h6fucybx25xk66zu
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi,
-
-On Fri, Jan 27, 2017 at 09:54:44AM +0100, Quentin Schulz wrote:
-> The X-Powers AXP20X and AXP22X PMICs expose the status of AC power
-> supply.
->=20
-> This adds the AC power supply driver to the MFD cells of the AXP22X
-> PMICs.
->=20
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
-
-Acked-By: Sebastian Reichel <sre@kernel.org>
-
--- Sebastian
-
---h6fucybx25xk66zu
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAliOGcEACgkQ2O7X88g7
-+pq+KBAAkiHvlTehr7ZGKWmsEU9V3uChOGDwUz2LFmtXJxv2Vl+E0mDH3ADmYNtp
-tdn9UW/ywBkLr+CIUVe9jRTccJQ0+9xgLRaxzl2XPnEG1ALfWTFk0eUG4Aa2SSdf
-Dgwh9HspOOGFERVVp75uGsftxmPGWL3SCuwm7m4AyPy07i5iO8cjTr9ixsXO9Bk7
-764+VFTMaKttsE0EnzeV/iWwS5/RmK5cHZwUiEi9FJbhwxg6NTbwVw8J60+p5ARn
-gSMkzjS0sydnCv/UBrkE5hUh745vG2cfeGGEDXDqkeaxmX+CSsgU5CmSGKX/d9ek
-beqnT+9hYTuSWYzWmfIHgCuRED/L/F6q7IS2gyWCzccFQAoZjW0kX67bkHYEFMEd
-BzM+5j4rF/qrt04taDknkeuBOxgRvQR/2dwJGFyScfF5PQESEQ4st9/lK6THjtWp
-tgGJldkW8OH70Gyh1DnQ7njLYCFaX4KHqV1PrC8+J6IzphSf+y9PcDzxWK+nF/yU
-mv4Kk3mULcWGye+PF2il0G3qxR7mjbHBHcYbJI+5m2ty78YcnU2hsfe+SEuykkLp
-5ISkELjxmNCU9qlgNcjyV8BfdzNveZhnqdQOPFEwnAm5MVdY6KxqCgXa2QG2WEtQ
-Xas9UsSeLOhCCxEpWqJ0MN/eQhnLWUS/7n+DlgYcxRZi3I3u85A=
-=o1z+
------END PGP SIGNATURE-----
-
---h6fucybx25xk66zu--
+Acked-by: Chen-Yu Tsai <wens@csie.org>
