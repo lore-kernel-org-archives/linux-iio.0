@@ -1,412 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mout.kundenserver.de ([212.227.17.13]:62178 "EHLO
-        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751921AbdAaSFa (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 13:05:30 -0500
-Date: Tue, 31 Jan 2017 19:03:45 +0100
-From: Andreas Klinger <ak@it-klinger.de>
-To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org, dledford@redhat.com,
-        akpm@linux-foundation.org, shraddha.6596@gmail.com, w@1wt.eu,
-        balbi@kernel.org, mtk.manpages@gmail.com, sjenning@redhat.com,
-        ksenija.stanojevic@gmail.com, vilhelm.gray@gmail.com,
-        robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
-        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org
-Cc: ak@it-klinger.de
-Subject: [PATCH v3 2/2] iio: distance: add devantech us ranger srf04
-Message-ID: <20170131180345.GA12892@andreas>
+Received: from dgg.advantech.com ([12.0.123.2]:42859 "EHLO dgg.advantech.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750801AbdAaUsj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 31 Jan 2017 15:48:39 -0500
+From: "Ken.Lin" <ken.lin@advantech.com>
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: "peda@axentia.se" <peda@axentia.se>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Akshay Bhat <akshay.bhat@timesys.com>,
+        "Peter.Stretz" <peter.stretz@advantech.com>,
+        "Peter.Chiang" <peter.chiang@advantech.com>
+Date: Tue, 31 Jan 2017 10:19:12 -0800
+Subject: kernel 4.10-rcx iio helper question
+Content-Type: text/plain; charset="us-ascii"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
+References: <03B5A3CA1724CE4EAC32B27E39292A677FC7512D3A@AUSMAIL1.AUS.ADVANTECH.CORP>
+Message-Id: <WM!0e191e8021de721ce26bb7af83b55064556944dd1ba4a4c5ffd0cf5fa2a60dcb49d0a6722934d893c1817b0383068e28!@dgg.advantech.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch adds support for the ultrasonic ranger srf04 of devantech.
+Hi,
 
-This device is measuring the distance of objects in a range between 1 cm
-and 3 meters and a theoretical resolution of 3 mm.
-
-There are two GPIOs used:
-  - trigger: set as output to the device when the measurement should start
-  - echo: set by the device when the ultrasonic wave is sent out and reset
-    when the echo is recognized; this needs to be an interrupt input
-
-The time between setting and resetting the echo pin is the time the
-waveform needed for one round trip. This time is recorded in the interrupt
-handler.
-
-The distance is calculated in the read function by using the ultrasonic
-speed at 20 degrees celsius which is about 343 m/s.
-
-Signed-off-by: Andreas Klinger <ak@it-klinger.de>
----
- MAINTAINERS                    |   6 +
- drivers/iio/proximity/Kconfig  |  11 ++
- drivers/iio/proximity/Makefile |   1 +
- drivers/iio/proximity/srf04.c  | 304 +++++++++++++++++++++++++++++++++++++++++
- 4 files changed, 322 insertions(+)
- create mode 100644 drivers/iio/proximity/srf04.c
-
-diff --git a/MAINTAINERS b/MAINTAINERS
-index fa6af014fd72..ba979cc48fd8 100644
---- a/MAINTAINERS
-+++ b/MAINTAINERS
-@@ -3469,6 +3469,12 @@ T:	git git://git.kernel.org/pub/scm/linux/kernel/git/balbi/usb.git
- S:	Maintained
- F:	drivers/usb/dwc3/
+I find the latest kernel introduces new iio sys attributes.
+https://patchwork.kernel.org/patch/9391771/
+https://patchwork.kernel.org/patch/9391259/
  
-+DEVANTECH SRF ULTRASONIC RANGER IIO DRIVER
-+M:	Andreas Klinger <ak@it-klinger.de>
-+L:	linux-iio@vger.kernel.org
-+S:	Maintained
-+F:	drivers/iio/proximity/srf*.c
-+
- DEVICE COREDUMP (DEV_COREDUMP)
- M:	Johannes Berg <johannes@sipsolutions.net>
- L:	linux-kernel@vger.kernel.org
-diff --git a/drivers/iio/proximity/Kconfig b/drivers/iio/proximity/Kconfig
-index ef4c73db5b53..0bcbc66eae6e 100644
---- a/drivers/iio/proximity/Kconfig
-+++ b/drivers/iio/proximity/Kconfig
-@@ -32,6 +32,17 @@ config LIDAR_LITE_V2
- 	  To compile this driver as a module, choose M here: the
- 	  module will be called pulsedlight-lite-v2
+Is there anyone has some ideas about how the new iio sys attribute - in_pressure_scale_available works?
+I'm not sure if it's the regression issue or it's just the usage issue or something when I tried to read in_pressure_scale_available attribute.
  
-+config SRF04
-+	tristate "Devantech SRF04 ultrasonic ranger sensor"
-+	depends on GPIOLIB
-+	help
-+	  Say Y here to build a driver for Devantech SRF04 ultrasonic
-+	  ranger sensor. This driver can be used to measure the distance
-+	  of objects. It is using two GPIOs.
-+
-+	  To compile this driver as a module, choose M here: the
-+	  module will be called srf04.
-+
- config SX9500
- 	tristate "SX9500 Semtech proximity sensor"
- 	select IIO_BUFFER
-diff --git a/drivers/iio/proximity/Makefile b/drivers/iio/proximity/Makefile
-index 9aadd9a8ee99..97c046c1dfc5 100644
---- a/drivers/iio/proximity/Makefile
-+++ b/drivers/iio/proximity/Makefile
-@@ -5,4 +5,5 @@
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_AS3935)		+= as3935.o
- obj-$(CONFIG_LIDAR_LITE_V2)	+= pulsedlight-lidar-lite-v2.o
-+obj-$(CONFIG_SRF04)		+= srf04.o
- obj-$(CONFIG_SX9500)		+= sx9500.o
-diff --git a/drivers/iio/proximity/srf04.c b/drivers/iio/proximity/srf04.c
-new file mode 100644
-index 000000000000..e37667f933b3
---- /dev/null
-+++ b/drivers/iio/proximity/srf04.c
-@@ -0,0 +1,304 @@
-+/*
-+ * SRF04: ultrasonic sensor for distance measuring by using GPIOs
-+ *
-+ * Copyright (c) 2017 Andreas Klinger <ak@it-klinger.de>
-+ *
-+ * This program is free software; you can redistribute it and/or modify
-+ * it under the terms of the GNU General Public License as published by
-+ * the Free Software Foundation; either version 2 of the License, or
-+ * (at your option) any later version.
-+ *
-+ * This program is distributed in the hope that it will be useful,
-+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-+ * GNU General Public License for more details.
-+ *
-+ * For details about the device see:
-+ * http://www.robot-electronics.co.uk/htm/srf04tech.htm
-+ *
-+ * the measurement cycle as timing diagram looks like:
-+ *
-+ *          +---+
-+ * GPIO     |   |
-+ * trig:  --+   +------------------------------------------------------
-+ *          ^   ^
-+ *          |<->|
-+ *         udelay(10)
-+ *
-+ * ultra           +-+ +-+ +-+
-+ * sonic           | | | | | |
-+ * burst: ---------+ +-+ +-+ +-----------------------------------------
-+ *                           .
-+ * ultra                     .              +-+ +-+ +-+
-+ * sonic                     .              | | | | | |
-+ * echo:  ----------------------------------+ +-+ +-+ +----------------
-+ *                           .                        .
-+ *                           +------------------------+
-+ * GPIO                      |                        |
-+ * echo:  -------------------+                        +---------------
-+ *                           ^                        ^
-+ *                           interrupt                interrupt
-+ *                           (ts_rising)              (ts_falling)
-+ *                           |<---------------------->|
-+ *                              pulse time measured
-+ *                              --> one round trip of ultra sonic waves
-+ */
-+#include <linux/err.h>
-+#include <linux/gpio/consumer.h>
-+#include <linux/kernel.h>
-+#include <linux/module.h>
-+#include <linux/of.h>
-+#include <linux/platform_device.h>
-+#include <linux/property.h>
-+#include <linux/sched.h>
-+#include <linux/interrupt.h>
-+#include <linux/delay.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/sysfs.h>
-+
-+struct srf04_data {
-+	struct device		*dev;
-+	struct gpio_desc	*gpiod_trig;
-+	struct gpio_desc	*gpiod_echo;
-+	struct mutex		lock;
-+	int			irqnr;
-+	ktime_t			ts_rising;
-+	ktime_t			ts_falling;
-+	struct completion	rising;
-+	struct completion	falling;
-+};
-+
-+static irqreturn_t srf04_handle_irq(int irq, void *dev_id)
-+{
-+	struct iio_dev *indio_dev = dev_id;
-+	struct srf04_data *data = iio_priv(indio_dev);
-+	ktime_t now = ktime_get();
-+
-+	if (gpiod_get_value(data->gpiod_echo)) {
-+		data->ts_rising = now;
-+		complete(&data->rising);
-+	} else {
-+		data->ts_falling = now;
-+		complete(&data->falling);
-+	}
-+
-+	return IRQ_HANDLED;
-+}
-+
-+static int srf04_read(struct srf04_data *data)
-+{
-+	int ret;
-+	ktime_t ktime_dt;
-+	u64 dt_ns;
-+	u32 time_ns, distance_mm;
-+
-+	/*
-+	 * just one read-echo-cycle can take place at a time
-+	 * ==> lock against concurrent reading calls
-+	 */
-+	mutex_lock(&data->lock);
-+
-+	reinit_completion(&data->rising);
-+	reinit_completion(&data->falling);
-+
-+	gpiod_set_value(data->gpiod_trig, 1);
-+	udelay(10);
-+	gpiod_set_value(data->gpiod_trig, 0);
-+
-+	/* it cannot take more than 20 ms */
-+	ret = wait_for_completion_killable_timeout(&data->rising, HZ/50);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	} else if (ret == 0) {
-+		mutex_unlock(&data->lock);
-+		return -ETIMEDOUT;
-+	}
-+
-+	ret = wait_for_completion_killable_timeout(&data->falling, HZ/50);
-+	if (ret < 0) {
-+		mutex_unlock(&data->lock);
-+		return ret;
-+	} else if (ret == 0) {
-+		mutex_unlock(&data->lock);
-+		return -ETIMEDOUT;
-+	}
-+
-+	ktime_dt = ktime_sub(data->ts_falling, data->ts_rising);
-+
-+	mutex_unlock(&data->lock);
-+
-+	dt_ns = ktime_to_ns(ktime_dt);
-+	/*
-+	 * measuring more than 3 meters is beyond the capabilities of
-+	 * the sensor
-+	 * ==> filter out invalid results for not measuring echos of
-+	 *     another us sensor
-+	 *
-+	 * formula:
-+	 *         distance       3 m
-+	 * time = ---------- = --------- = 9404389 ns
-+	 *          speed       319 m/s
-+	 *
-+	 * using a minimum speed at -20 °C of 319 m/s
-+	 */
-+	if (dt_ns > 9404389)
-+		return -EIO;
-+
-+	time_ns = dt_ns;
-+
-+	/*
-+	 * the speed as function of the temperature is approximately:
-+	 *
-+	 * speed = 331,5 + 0,6 * Temp
-+	 *   with Temp in °C
-+	 *   and speed in m/s
-+	 *
-+	 * use 343 m/s as ultrasonic speed at 20 °C here in absence of the
-+	 * temperature
-+	 *
-+	 * therefore:
-+	 *             time     343
-+	 * distance = ------ * -----
-+	 *             10^6       2
-+	 *   with time in ns
-+	 *   and distance in mm (one way)
-+	 *
-+	 * because we limit to 3 meters the multiplication with 343 just
-+	 * fits into 32 bit
-+	 */
-+	distance_mm = time_ns * 343 / 2000000;
-+
-+	return distance_mm;
-+}
-+
-+static int srf04_read_raw(struct iio_dev *indio_dev,
-+			    struct iio_chan_spec const *channel, int *val,
-+			    int *val2, long info)
-+{
-+	struct srf04_data *data = iio_priv(indio_dev);
-+	int ret;
-+
-+	if (channel->type != IIO_DISTANCE)
-+		return -EINVAL;
-+
-+	switch (info) {
-+	case IIO_CHAN_INFO_RAW:
-+		ret = srf04_read(data);
-+		if (ret < 0)
-+			return ret;
-+		*val = ret;
-+		return IIO_VAL_INT;
-+	case IIO_CHAN_INFO_SCALE:
-+		/*
-+		 * theoretical maximum resolution is 3 mm
-+		 * 1 LSB is 1 mm
-+		 */
-+		*val = 0;
-+		*val2 = 1000;
-+		return IIO_VAL_INT_PLUS_MICRO;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+static const struct iio_info srf04_iio_info = {
-+	.driver_module		= THIS_MODULE,
-+	.read_raw		= srf04_read_raw,
-+};
-+
-+static const struct iio_chan_spec srf04_chan_spec[] = {
-+	{
-+		.type = IIO_DISTANCE,
-+		.info_mask_separate =
-+				BIT(IIO_CHAN_INFO_RAW) |
-+				BIT(IIO_CHAN_INFO_SCALE),
-+	},
-+};
-+
-+static int srf04_probe(struct platform_device *pdev)
-+{
-+	struct device *dev = &pdev->dev;
-+	struct srf04_data *data;
-+	struct iio_dev *indio_dev;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(dev, sizeof(struct srf04_data));
-+	if (!indio_dev) {
-+		dev_err(dev, "failed to allocate IIO device\n");
-+		return -ENOMEM;
-+	}
-+
-+	data = iio_priv(indio_dev);
-+	data->dev = dev;
-+
-+	mutex_init(&data->lock);
-+	init_completion(&data->rising);
-+	init_completion(&data->falling);
-+
-+	data->gpiod_trig = devm_gpiod_get(dev, "trig", GPIOD_OUT_LOW);
-+	if (IS_ERR(data->gpiod_trig)) {
-+		dev_err(dev, "failed to get trig-gpios: err=%ld\n",
-+					PTR_ERR(data->gpiod_trig));
-+		return PTR_ERR(data->gpiod_trig);
-+	}
-+
-+	data->gpiod_echo = devm_gpiod_get(dev, "echo", GPIOD_IN);
-+	if (IS_ERR(data->gpiod_echo)) {
-+		dev_err(dev, "failed to get echo-gpios: err=%ld\n",
-+					PTR_ERR(data->gpiod_echo));
-+		return PTR_ERR(data->gpiod_echo);
-+	}
-+
-+	if (gpiod_cansleep(data->gpiod_echo)) {
-+		dev_err(data->dev, "cansleep-GPIOs not supported\n");
-+		return -ENODEV;
-+	}
-+
-+	data->irqnr = gpiod_to_irq(data->gpiod_echo);
-+	if (data->irqnr < 0) {
-+		dev_err(data->dev, "gpiod_to_irq: %d\n", data->irqnr);
-+		return data->irqnr;
-+	}
-+
-+	ret = devm_request_irq(dev, data->irqnr, srf04_handle_irq,
-+			IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING,
-+			pdev->name, indio_dev);
-+	if (ret < 0) {
-+		dev_err(data->dev, "request_irq: %d\n", ret);
-+		return ret;
-+	}
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	indio_dev->name = "srf04";
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &srf04_iio_info;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+	indio_dev->channels = srf04_chan_spec;
-+	indio_dev->num_channels = ARRAY_SIZE(srf04_chan_spec);
-+
-+	return devm_iio_device_register(dev, indio_dev);
-+}
-+
-+static const struct of_device_id of_srf04_match[] = {
-+	{ .compatible = "devantech,srf04", },
-+	{},
-+};
-+
-+MODULE_DEVICE_TABLE(of, of_srf04_match);
-+
-+static struct platform_driver srf04_driver = {
-+	.probe		= srf04_probe,
-+	.driver		= {
-+		.name		= "srf04-gpio",
-+		.of_match_table	= of_srf04_match,
-+	},
-+};
-+
-+module_platform_driver(srf04_driver);
-+
-+MODULE_AUTHOR("Andreas Klinger <ak@it-klinger.de>");
-+MODULE_DESCRIPTION("SRF04 ultrasonic sensor for distance measuring using GPIOs");
-+MODULE_LICENSE("GPL");
-+MODULE_ALIAS("platform:srf04");
+# cat /sys/bus/iio/devices/iio\:device1/in_pressure_scale_available
+Segmentation fault
+ 
+[ 3785.077014] Unable to handle kernel NULL pointer dereference at virtual address 00000000
+[ 3785.085138] pgd = ecc3c000
+[ 3785.087929] [00000000] *pgd=87f91831
+[ 3785.091563] Internal error: Oops: 80000007 [#1] SMP ARM
+[ 3785.096806] Modules linked in:
+[ 3785.099892] CPU: 1 PID: 1051 Comm: cat Not tainted 4.10.0-rc5-00009-gffd8858-dirty #3
+[ 3785.107740] Hardware name: Freescale i.MX6 Quad/DualLite (Device Tree)
+[ 3785.114285] task: ed54ec00 task.stack: ee2bc000
+[ 3785.118834] PC is at 0x0
+[ 3785.121397] LR is at iio_read_channel_info_avail+0x40/0x280
+[ 3785.126992] pc : [<00000000>]    lr : [<c06fbc1c>]    psr: a0070013
+[ 3785.126992] sp : ee2bdda8  ip : 00000000  fp : ee2bddf4
+[ 3785.138490] r10: c0a53c74  r9 : ed79f000  r8 : ee8d1018
+[ 3785.143733] r7 : 00001000  r6 : 00000fff  r5 : ee8b9a00  r4 : ed79f000
+[ 3785.150276] r3 : ee2bddc4  r2 : ee2bddbc  r1 : c0a86dcc  r0 : ee8d1000
+[ 3785.156820] Flags: NzCv  IRQs on  FIQs on  Mode SVC_32  ISA ARM  Segment none
+[ 3785.163971] Control: 10c5387d  Table: 3cc3c04a  DAC: 00000051
+[ 3785.169734] Process cat (pid: 1051, stack limit = 0xee2bc210)
+[ 3785.175497] Stack: (0xee2bdda8 to 0xee2be000)
+[ 3785.179880] dda0:                   ee2bddc0 00000002 c016d720 c016d394 ed54ec00 00000000
+[ 3785.188084] ddc0: 60070013 ed413780 00000001 edffd480 ee8b9a00 00000fff 00001000 ee8d1018
+[ 3785.196286] dde0: ed79f000 c0a53c74 ee2bde0c ee2bddf8 c0513c58 c06fbbe8 edffd480 edffd540
+[ 3785.204488] de00: ee2bde3c ee2bde10 c0293474 c0513c40 c02933e4 ee2bde60 00000001 ed413780
+[ 3785.212688] de20: 00000001 ed413780 00000000 edffd480 ee2bde4c ee2bde40 c0291d00 c02933f0
+[ 3785.220889] de40: ee2bde9c ee2bde50 c024679c c0291ce0 edffd4b0 b6e37000 00020000 ee2bdf78
+[ 3785.229089] de60: 00000000 00000000 ed54ec00 ed013200 00000817 c0a111fc edffd540 ed413780
+[ 3785.237289] de80: b6e37000 00020000 00020000 ee2bdf78 ee2bded4 ee2bdea0 c0292890 c0246604
+[ 3785.245491] dea0: c0117940 c016ba50 00000025 c0a111fc b6e37000 ed413780 ee2bdf78 00020000
+[ 3785.253691] dec0: ee2bc000 b6e37000 ee2bdf44 ee2bded8 c021d158 c0292770 c0117764 b6e36004
+[ 3785.261893] dee0: c0f0d7c4 ee2bdfb0 b6f89228 00021008 ee2bdfac ee2bdf00 c0101374 c0117770
+[ 3785.270093] df00: 00000000 00000000 ee2bc000 00000000 ee2bdf34 ee2bdf20 c016ba04 c0171080
+[ 3785.278292] df20: 00000000 00020000 ed413780 b6e37000 00000000 ee2bdf78 ee2bdf74 ee2bdf48
+[ 3785.286493] df40: c021e7a0 c021d130 c023e300 c023e280 ee2bdf74 00000000 00000000 ed413780
+[ 3785.294693] df60: ed413780 00020000 ee2bdfa4 ee2bdf78 c021e870 c021e71c 00000000 00000000
+[ 3785.302892] df80: 00020000 00020000 b6e37000 00000003 c0108084 00000000 00000000 ee2bdfa8
+[ 3785.311092] dfa0: c0107ee0 c021e838 00020000 00020000 00000003 b6e37000 00020000 0001a2b4
+[ 3785.319292] dfc0: 00020000 00020000 b6e37000 00000003 7fffe000 00000000 00000000 00020000
+[ 3785.327492] dfe0: 00000000 be98eb4c 0000c740 b6f1985c 60070010 00000003 00000000 00000000
+[ 3785.335679] Backtrace:
+[ 3785.338175] [<c06fbbdc>] (iio_read_channel_info_avail) from [<c0513c58>] (dev_attr_show+0x24/0x50)
+[ 3785.347162]  r10:c0a53c74 r9:ed79f000 r8:ee8d1018 r7:00001000 r6:00000fff r5:ee8b9a00
+[ 3785.355005]  r4:edffd480
+[ 3785.357571] [<c0513c34>] (dev_attr_show) from [<c0293474>] (sysfs_kf_seq_show+0x90/0x110)
+[ 3785.365764]  r5:edffd540 r4:edffd480
+[ 3785.369365] [<c02933e4>] (sysfs_kf_seq_show) from [<c0291d00>] (kernfs_seq_show+0x2c/0x30)
+[ 3785.377652]  r10:edffd480 r9:00000000 r8:ed413780 r7:00000001 r6:ed413780 r5:00000001
+[ 3785.385498]  r4:ee2bde60 r3:c02933e4
+[ 3785.389101] [<c0291cd4>] (kernfs_seq_show) from [<c024679c>] (seq_read+0x1a4/0x4e0)
+[ 3785.396780] [<c02465f8>] (seq_read) from [<c0292890>] (kernfs_fop_read+0x12c/0x1cc)
+[ 3785.404460]  r10:ee2bdf78 r9:00020000 r8:00020000 r7:b6e37000 r6:ed413780 r5:edffd540
+[ 3785.412303]  r4:c0a111fc
+[ 3785.414862] [<c0292764>] (kernfs_fop_read) from [<c021d158>] (__vfs_read+0x34/0x118)
+[ 3785.422627]  r10:b6e37000 r9:ee2bc000 r8:00020000 r7:ee2bdf78 r6:ed413780 r5:b6e37000
+[ 3785.430470]  r4:c0a111fc
+[ 3785.433029] [<c021d124>] (__vfs_read) from [<c021e7a0>] (vfs_read+0x90/0x11c)
+[ 3785.440185]  r8:ee2bdf78 r7:00000000 r6:b6e37000 r5:ed413780 r4:00020000
+[ 3785.446909] [<c021e710>] (vfs_read) from [<c021e870>] (SyS_read+0x44/0x90)
+[ 3785.453804]  r8:00020000 r7:ed413780 r6:ed413780 r5:00000000 r4:00000000
+[ 3785.460537] [<c021e82c>] (SyS_read) from [<c0107ee0>] (ret_fast_syscall+0x0/0x1c)
+[ 3785.468042]  r10:00000000 r8:c0108084 r7:00000003 r6:b6e37000 r5:00020000 r4:00020000
+[ 3785.476238] Code: bad PC value
+[ 3785.490358] ---[ end trace 9c4938ccd0389004 ]---
+
+Thank you
+
+Cheers,
+Ken Lin
+
 -- 
-2.1.4
+This message has been scanned for viruses and
+dangerous content by MailScanner, and is
+believed to be clean.
 
