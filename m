@@ -1,90 +1,116 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36625 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751994AbdAaTy3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 14:54:29 -0500
-Subject: Re: [PATCH 3/3 v4] iio: adc: add a driver for Qualcomm PM8xxx
- HK/XOADC
-To: Linus Walleij <linus.walleij@linaro.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-References: <20170131100938.23660-1-linus.walleij@linaro.org>
- <CACRpkdYDMH9A=ezPkANRQXcqceEqn-A+oL2TxHyNkjmSms5AOA@mail.gmail.com>
-Cc: "linux-arm-kernel@lists.infradead.org"
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-arm-msm@vger.kernel.org" <linux-arm-msm@vger.kernel.org>,
-        "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
-        Andy Gross <andy.gross@linaro.org>,
-        Bjorn Andersson <bjorn.andersson@linaro.org>,
-        Stephen Boyd <sboyd@codeaurora.org>,
-        Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
-        Rama Krishna Phani A <rphani@codeaurora.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <0c54c4d8-265c-112e-60f1-af21b73148ec@kernel.org>
-Date: Tue, 31 Jan 2017 19:54:10 +0000
+Received: from mout.kundenserver.de ([217.72.192.75]:50317 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751486AbdAaSDl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 13:03:41 -0500
+Date: Tue, 31 Jan 2017 19:02:32 +0100
+From: Andreas Klinger <ak@it-klinger.de>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org, dledford@redhat.com,
+        akpm@linux-foundation.org, shraddha.6596@gmail.com, w@1wt.eu,
+        balbi@kernel.org, mtk.manpages@gmail.com, sjenning@redhat.com,
+        ksenija.stanojevic@gmail.com, vilhelm.gray@gmail.com,
+        robh+dt@kernel.org, pawel.moll@arm.com, mark.rutland@arm.com,
+        ijc+devicetree@hellion.org.uk, galak@codeaurora.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org
+Cc: ak@it-klinger.de
+Subject: [PATCH v3 0/2] iio: distance: devantech srf04 us ranger
+Message-ID: <20170131180232.GA12868@andreas>
 MIME-Version: 1.0
-In-Reply-To: <CACRpkdYDMH9A=ezPkANRQXcqceEqn-A+oL2TxHyNkjmSms5AOA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/01/17 10:16, Linus Walleij wrote:
-> On Tue, Jan 31, 2017 at 11:09 AM, Linus Walleij
-> <linus.walleij@linaro.org> wrote:
-> 
->> ChangeLog v3->v4:
-> 
-> Oh and I didn't remove the dev_info() where the driver brags about being
-> present.
-> 
-> I usually like to have those positive affirmations from my drivers so I know
-> they are there. Otherwise I can't tell the state when I for some reason
-> forgot to compile it in because of some Kconfig issue from the state
-> where it is silently present. This is especially helpful in mailed bug
-> reports where people post dmesg logs. Then I can see "aha at least it
-> probed".
-> 
-> It's not super-important, feel free to edit it out when applying if you
-> totally hate it, I won't hold it against you :)
-Meh.  I'm not that fussed ;)
+This patch series adds support for the devantech srf04 ultrasonic ranger as
+IIO device.
 
-Anyhow I clearly did something crazy last night as the first two patches had
-disappeared from my local tree anyway, so I've tried again and now hopefully
-all is in order.
+The device is able to recognize objects in a range of 1 cm and 3 meters.
+The theoretical resolution is about 3 mm, practically more or less 1 cm.
 
-Applied this one as well with a spot of fuzz but all obvious stuff in the
-Makefile.
+Use cases for this device are level metering in tanks or distance measuring
+in robotics.
 
-However...
+This driver works by triggering the device and waiting for the echo, for
+which a GPIO is set when send out and reset when the echo is received. 
+The echo must be an interrupt and the time between rising and falling is
+measured.
 
-ERROR: "qcom_vadc_decimation_from_dt" [drivers/iio/adc/qcom-spmi-vadc.ko] undefined!
-ERROR: "qcom_vadc_scale" [drivers/iio/adc/qcom-spmi-vadc.ko] undefined!
-make[1]: *** [scripts/Makefile.modpost:91: __modpost] Error 1
-make: *** [Makefile:1198: modules] Error 2
+The returned distance is calculated with a ultrasonic speed of 343 m/s
+which is the correct value at 20 degrees celsius.
+For different temperatures one might want to compensate the temperature.
+Look at the source code for a more detailed explanation of the calculation
+and bounds.
 
-I've fixed that up and some static declaration issue.
+The measurement cycle as timing diagram looks like: (taken from the source
+code to illustrate here)
 
-Please do sanity check builds as modules!  It all needs to be one one object file
-when added to the $(magic)-m
+         +---+
+GPIO     |   |
+trig:  --+   +------------------------------------------------------
+         ^   ^
+         |<->|
+        udelay(10)
 
-However, I can't see any way of keeping them module name as was (qcom-smpi-vadc.ko)
-without renaming one of the c files out of the way. Please check I haven't messed
-anything up.  The new naming is a bit naff, but I couldn't think of anything better
-off the top of my head!
+ultra           +-+ +-+ +-+
+sonic           | | | | | |
+burst: ---------+ +-+ +-+ +-----------------------------------------
+                          .
+ultra                     .              +-+ +-+ +-+
+sonic                     .              | | | | | |
+echo:  ----------------------------------+ +-+ +-+ +----------------
+                          .                        .
+                          +------------------------+
+GPIO                      |                        |
+echo:  -------------------+                        +---------------
+                          ^                        ^
+                          interrupt                interrupt
+                          (ts_rising)              (ts_falling)
+                          |<---------------------->|
+                             pulse time measured
+                             --> one round trip of ultra sonic waves
 
-Actually this is enough of a mess I'm pulling these last two patches for now.
-Will push them out in a special testing2 branch for you to take a look at though.
+Documenation can be found at:
+http://www.robot-electronics.co.uk/htm/srf04tech.htm
 
-I also temporarily changed the mfd dependencies to add COMPILE_TEST.
-Seems fine, so if you could do a patch adding that we'll get better build coverage.
+Changes in v3:
+Thanks to the review of Jonathan who pointed out two improvements.
 
-Jonathan
+* Patch 2: iio: distance: add devantech us ranger srf04
+  - first get the time and then ask value of gpio pin to be more exactly in
+    the interrupt_handler
+  - use devm_iio_device_register() and remove srf04_remove()
 
-> 
-> Yours,
-> Linus Walleij
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Changes in v2:
+Many thanks to the thorough reviews of Peter and Lars-Peter. Many
+improvements have been identified and are now implemented in the driver.
+
+* Patch 1: iio: distance: add dt binding for devantech-srf04
+  - add more explanation about the GPIOs and there usage
+
+* Patch 2: iio: distance: add devantech us ranger srf04
+  - add documentation about how the driver is supposed to work together
+    with a small timing diagram
+  - improved locking: mutex is hold during the measurement cycle to ensure
+    only one tasks set the output and waits for the response
+  - documentation about maximum time accepted as valid ultrasonic response
+  - removed dev_info(); it was there for debugging reasons and is no longer
+    needed
+  - usage of devm_request_irq() and iio_device_register()
+
+Andreas Klinger (2):
+  iio: distance: add dt binding for devantech-srf04
+  iio: distance: add devantech us ranger srf04
+
+ .../bindings/iio/proximity/devantech-srf04.txt     |  28 ++
+ MAINTAINERS                                        |   6 +
+ drivers/iio/proximity/Kconfig                      |  11 +
+ drivers/iio/proximity/Makefile                     |   1 +
+ drivers/iio/proximity/srf04.c                      | 304 +++++++++++++++++++++
+ 5 files changed, 350 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/proximity/devantech-srf04.txt
+ create mode 100644 drivers/iio/proximity/srf04.c
+
+-- 
+2.1.4
 
