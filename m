@@ -1,51 +1,80 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58910 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750828AbdBDM1e (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Feb 2017 07:27:34 -0500
-Subject: Re: [PATCH 5/5] Documentation: dt: iio: imu: st_lsm6dsx: add lsm6ds3h
- sensor device binding
-To: Rob Herring <robh@kernel.org>,
-        Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-References: <20170129104928.15533-1-lorenzo.bianconi@st.com>
- <20170129104928.15533-6-lorenzo.bianconi@st.com>
- <20170201160604.4vlnxdiot6by5wxd@rob-hp-laptop>
-Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        lorenzo.bianconi@st.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <9e16f2c9-936c-a1b9-a36e-dabe5fc89909@kernel.org>
-Date: Sat, 4 Feb 2017 12:27:32 +0000
+Return-Path: <SRS0=6w9m=ZO=gmail.com=robherring2@kernel.org>
+Date: Wed, 1 Feb 2017 10:35:00 -0600
+From: Rob Herring <robh@kernel.org>
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: jic23@kernel.org, linux@armlinux.org.uk,
+	linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
+	linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+	mark.rutland@arm.com, mcoquelin.stm32@gmail.com,
+	alexandre.torgue@st.com, lars@metafoo.de, knaack.h@gmx.de,
+	pmeerw@pmeerw.net, benjamin.gaignard@linaro.org,
+	benjamin.gaignard@st.com
+Subject: Re: [PATCH 3/5] Documentation: dt: iio: document stm32 exti trigger
+Message-ID: <20170201163500.ivxnxejurhzzoctl@rob-hp-laptop>
+References: <1485784663-19505-1-git-send-email-fabrice.gasnier@st.com>
+ <1485784663-19505-4-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20170201160604.4vlnxdiot6by5wxd@rob-hp-laptop>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1485784663-19505-4-git-send-email-fabrice.gasnier@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 01/02/17 16:06, Rob Herring wrote:
-> On Sun, Jan 29, 2017 at 11:49:28AM +0100, Lorenzo Bianconi wrote:
->> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
->> ---
->>  Documentation/devicetree/bindings/iio/imu/st_lsm6dsx.txt | 1 +
->>  1 file changed, 1 insertion(+)
+On Mon, Jan 30, 2017 at 02:57:41PM +0100, Fabrice Gasnier wrote:
+> Add dt documentation for st,stm32-exti-trigger.
+> EXTi gpio signal can be routed internally as trigger source for various
+
+s/gpio/GPIO/
+
+> IPs (e.g. for ADC or DAC conversions).
+
+Please use "dt-bindings: iio:" for the subject prefix.
+
 > 
-> This could be combined with patch 3.
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+> ---
+>  .../bindings/iio/trigger/st,stm32-exti-trigger.txt      | 17 +++++++++++++++++
+>  1 file changed, 17 insertions(+)
+>  create mode 100644 Documentation/devicetree/bindings/iio/trigger/st,stm32-exti-trigger.txt
 > 
-> Acked-by: Rob Herring <robh@kernel.org>
+> diff --git a/Documentation/devicetree/bindings/iio/trigger/st,stm32-exti-trigger.txt b/Documentation/devicetree/bindings/iio/trigger/st,stm32-exti-trigger.txt
+> new file mode 100644
+> index 0000000..ebf2645
+> --- /dev/null
+> +++ b/Documentation/devicetree/bindings/iio/trigger/st,stm32-exti-trigger.txt
+> @@ -0,0 +1,17 @@
+> +STMicroelectronics STM32 EXTI trigger bindings
+> +
+> +EXTi gpio signal can be routed internally as trigger source for various
+
+s/gpio/GPIO/
+
+> +IPs (e.g. for ADC or DAC conversions).
+> +
+> +Contents of a stm32 exti trigger root node:
+
+Drop "root"
+
+> +-------------------------------------------
+> +Required properties:
+> +- compatible: Should be "st,stm32-exti-trigger"
+
+This whole binding looks a bit suspicious. Is this actually a h/w block? 
+What makes it stm32 specific? Seems like the gpio properties should just 
+be part of the ADC or DAC that they trigger.
+
+> +- extiN-gpio: optional gpio line that may be used as external trigger source
+
+-gpios is the preferred form.
+
+> +  (e.g. N may be 0..15. For example, exti11-gpio can trig ADC on stm32f4).
+> +
+> +Example:
+> +	triggers {
+> +		compatible = "st,stm32-exti-trigger";
+> +		exti11-gpio=<&gpioa 11 0>;
+
+spaces around the "=".
+
+> +	};
+> -- 
+> 1.9.1
 > 
-Yeah, whilst it's normally one change one patch, this series did
-seem to break things up a little excessively!  Perhaps 3 patches would
-have be ideal.
-
-1) Supporting refactor of code
-2) New device support
-3) DT for new devices.
-
-Meh however.  Good easy series for me to handle so I'm happy
-anyway ;)
-
-Applied to the togreg branch of iio.git and pushed out as testing.
-
-Chances are high that this is too late for the coming merge windows - all depends
-on how fed up Linus is feeling tomorrow!
-
-Jonathan
