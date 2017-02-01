@@ -1,31 +1,43 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:38688 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751019AbdBBLoX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Feb 2017 06:44:23 -0500
-Date: Thu, 2 Feb 2017 12:44:24 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] 3rd set of IIO new device support, features and cleanups
- for the 4.11 cycle.
-Message-ID: <20170202114424.GA28650@kroah.com>
-References: <e3c14701-02ba-b05c-f090-34f36bb9c9dc@kernel.org>
+Return-Path: <SRS0=GBpQ=ZO=axentia.se=peda@kernel.org>
+From: Peter Rosin <peda@axentia.se>
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
+	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Sanchayan Maity
+	<maitysanchayan@gmail.com>, Gregor Boirie <gregor.boirie@parrot.com>, "Alison
+ Schofield" <amsfield22@gmail.com>, Ken Lin <ken.lin@advantech.com>,
+	<linux-iio@vger.kernel.org>
+Subject: [PATCH v2 0/2] iio: pressure: do not rely on structure field ordering
+Date: Wed, 1 Feb 2017 21:40:55 +0100
+Message-ID: <1485981657-14586-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <e3c14701-02ba-b05c-f090-34f36bb9c9dc@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Feb 01, 2017 at 07:19:30PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 63d8d50ce356687e0cac575335a9068ddc229b76:
-> 
->   staging: lustre: lnet: Fix coding style errors (2017-01-27 21:09:33 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.11c
+Hi!
 
-Pulled and pushed out, thanks.
+v1 -> v2 changes:
 
-greg k-h
+- improved commit messages
+- added tested-by tag
+
+These two patches are needed to fix some fallout from adding the
+available attribute.
+
+Jonathan, it was a bitch to rebase with that line starting with a #. Please
+make sure that it stays where it should be in case you decide to fixup
+anything...
+
+Cheers,
+peda
+
+Peter Rosin (2):
+  iio: pressure: mpl3115: do not rely on structure field ordering
+  iio: pressure: mpl115: do not rely on structure field ordering
+
+ drivers/iio/pressure/mpl115.c  | 1 +
+ drivers/iio/pressure/mpl3115.c | 4 ++--
+ 2 files changed, 3 insertions(+), 2 deletions(-)
+
+-- 
+2.1.4
