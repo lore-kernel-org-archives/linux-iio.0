@@ -1,116 +1,117 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:36632 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752116AbdBULHh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Feb 2017 06:07:37 -0500
-Date: Tue, 21 Feb 2017 12:07:34 +0100
-From: Pavel Machek <pavel@ucw.cz>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.223]:21992 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751364AbdBAUYN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Feb 2017 15:24:13 -0500
+Content-Type: text/plain; charset=us-ascii
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Subject: Re: [PATCH v9 6/8] drivers:input:ads7846(+tsc2046): fix spi module table
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <A169CC1E-9EC9-43CA-887B-1382F1903CE1@goldelico.com>
+Date: Wed, 1 Feb 2017 21:20:37 +0100
+Cc: Mark Rutland <mark.rutland@arm.com>,
+        Michel Verlaan <michel.verl@gmail.com>,
+        Nick Dyer <nick@shmanahar.org>,
         Tony Lindgren <tony@atomide.com>,
+        LKML <linux-kernel@vger.kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        linux-omap <linux-omap@vger.kernel.org>,
         Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
         Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        linux-input@vger.kernel.org,
+        devicetree <devicetree@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
         Eric Engestrom <eric@engestrom.ch>,
         Hans de Goede <hdegoede@redhat.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Petr Cvek <petr.cvek@tul.cz>,
+        Rob Herring <robh+dt@kernel.org>,
+        =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
         Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Nick Dyer <nick@shmanahar.org>,
+        Petr Cvek <petr.cvek@tul.cz>,
         Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
-        Michel Verlaan <michel.verl@gmail.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com, Aaro Koskinen <aaro.koskinen@nokia.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>,
-        Andrey Gelman <andrey.gelman@compulab.co.il>,
-        Haibo Chen <haibo.chen@freescale.com>
-Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
- names, pre-calibration, flipping and rotation
-Message-ID: <20170221110734.GG5021@amd>
-References: <cover.1482936802.git.hns@goldelico.com>
- <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
- <20170128193342.GB38136@dtor-ws>
- <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com>
- <20170217204041.GE13050@dtor-ws>
- <558407EE-4884-4CC3-9098-79DC4B222868@goldelico.com>
- <20170220010714.GB8358@dtor-ws>
- <B30D00D0-1967-4BD5-A304-E2ADC815A805@goldelico.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="MrRUTeZlqqNo1jQ9"
-In-Reply-To: <B30D00D0-1967-4BD5-A304-E2ADC815A805@goldelico.com>
+        Sebastian Reichel <sre@kernel.org>, linux-iio@vger.kernel.org,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        kernel@pyra-handheld.com, Michael Welling <mwelling@ieee.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Discussions about the Letux Kernel
+        <letux-kernel@openphoenux.org>
+Message-Id: <B64DBFB0-62E8-4B4C-957F-C90C33BEF693@goldelico.com>
+References: <cover.1482936802.git.hns@goldelico.com> <c79bdd79a22dab877b8a80136ac253c951698745.1482936802.git.hns@goldelico.com> <20170128193558.GC38136@dtor-ws> <F39E49DD-45AF-4491-A26E-F3A9D86F30F6@goldelico.com> <20170129180108.GA10743@dtor-ws> <A169CC1E-9EC9-43CA-887B-1382F1903CE1@goldelico.com>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi Dmitry, Javier,
 
---MrRUTeZlqqNo1jQ9
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
-
-Hi!
-
-> > They are "pixels" or the touch controller, i.e. native unites in which
-> > device reports coordinates, as opposed to points per inch, or
-> > millimeters, or whatever. These "pixels" do not have to have 1:1
-> > relation to the LCD pixels; in fact they rarely do.
+> Am 29.01.2017 um 19:25 schrieb H. Nikolaus Schaller =
+<hns@goldelico.com>:
 >=20
-> I wouldn't call this "pixels". Rather "ADC steps" or something.
-
-Submit a patch.
-
-> > Why? Nothing stops you from querying the device and figure out scaling.
+> Hi Dmitry,
 >=20
-> What stops me is that I have no (and do not want to have) that level of c=
-ontrol over
-> user-space code.
-
-Umm. Then perhaps you should not be submitting kernel patches.
-
-> > And still, according to DT folks, device tree forms an ABI and thus we
-> > are not to change it, even if it is easy.
+>> Am 29.01.2017 um 19:01 schrieb Dmitry Torokhov =
+<dmitry.torokhov@gmail.com>:
+>>=20
+>> On Sun, Jan 29, 2017 at 09:39:39AM +0100, H. Nikolaus Schaller wrote:
+>>> Hi Dmitry,
+>>>=20
+>>>> Am 28.01.2017 um 20:35 schrieb Dmitry Torokhov =
+<dmitry.torokhov@gmail.com>:
+>>>>=20
+>>>> On Wed, Dec 28, 2016 at 03:53:21PM +0100, H. Nikolaus Schaller =
+wrote:
+>>>>> Fix module table so that the driver is loaded if compiled
+>>>>> as module and requested by DT.
+>>>>>=20
+>>>>=20
+>>>> I believe I already replied to a similar patch: we alreadyhave =
+necessary
+>>>> aliases in this driver, we need to fix module loading to use it.
+>>>=20
+>>> Yes, you did comment on [PATCH v6 7/8] (19 Nov 2016):
+>>>=20
+>>>>> We really need to fix it between spi/i23c core and module utils =
+instead
+>>>>> of keeping adding duplicate IDs all over drivers. We already have =
+OF
+>>>>> module device table containing the same data, we should be able to =
+use
+>>>>> it.
+>>>=20
+>>> And Javier Martinez Canillas replied (23 Nov 2016):
+>>>=20
+>>>> Agreed, unfortunately until the I2C and SPI core are changed to =
+properly
+>>>> report OF modaliases, we will have to keep adding these duplicated =
+IDs.
+>>>>=20
+>>>> And changing the I2C and SPI core isn't trivial since it could =
+break a
+>>>> lot of drivers that rely on a platform modalias being reported =
+(i.e: no
+>>>> OF device IDs present in the drivers even when are registered via =
+DT).
+>>>=20
+>>> Therefore I didn't see a need to change it.
+>>=20
+>> I agree that changing I2C and SPI core is not trivial, however this =
+is
+>> no reason for piling up workarounds in all drivers. Are you seriously
+>> advocating going though *every* driver and copying OF data into =
+I2C/SPI
+>> instead of doing the right thing and fixing the root of the issue?
 >=20
-> I think this needs a more differentiated view.
->=20
-> In my view the names of the binding properties and what they influence fo=
-rm indeed
-> an ABI. It should be stable and interpreted in the same way.
->=20
-> But it allows to load different firmware for different requirements. Like=
- the user
-> application ABI is stable but you can still load different software.
+> If you prefer to have this done (and I agree it would be a tiny =
+improvement),
+> please do it for us all. But please after merging this workaround.
 
-No. You can't expect people to konfigure kernel by modifying dts.
-									Pavel
+Have we been lucky to find someone who is able and willing to work on =
+this?
 
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+If not, I'd recommend to stay with the current level of optimality.
 
---MrRUTeZlqqNo1jQ9
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+BR and thanks,
+Nikolaus
 
------BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
-
-iEYEARECAAYFAlisH3YACgkQMOfwapXb+vIflACfaCUEkSACXYmas7YaWcAwaQfo
-cQUAnRDU2/2iFdZbvX6NjlXHTp9id+2G
-=78Vh
------END PGP SIGNATURE-----
-
---MrRUTeZlqqNo1jQ9--
