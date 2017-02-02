@@ -1,10 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from cloudserver094114.home.net.pl ([79.96.170.134]:61530 "EHLO
-        cloudserver094114.home.net.pl" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751019AbdBBLiY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Feb 2017 06:38:24 -0500
-From: "Rafael J. Wysocki" <rjw@rjwysocki.net>
-To: Bastien Nocera <hadess@hadess.net>
+Received: from relay2-d.mail.gandi.net ([217.70.183.194]:58581 "EHLO
+        relay2-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751452AbdBBMmb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Feb 2017 07:42:31 -0500
+Message-ID: <1486039342.2316.1.camel@hadess.net>
+Subject: Re: Why hid-sensor-hub's IIO doesn't work properly in >= 4.3
+ (possibly badly bisected)
+From: Bastien Nocera <hadess@hadess.net>
+To: "Rafael J. Wysocki" <rjw@rjwysocki.net>
 Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         "Rafael J. Wysocki" <rafael@kernel.org>,
         ACPI Devel Maling List <linux-acpi@vger.kernel.org>,
@@ -12,84 +15,100 @@ Cc: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>,
         Benjamin Tissoires <benjamin.tissoires@redhat.com>,
         "Rafael J. Wysocki" <rafael.j.wysocki@intel.com>,
         Richard Hughes <richard@hughsie.com>
-Subject: Re: Why hid-sensor-hub's IIO doesn't work properly in >= 4.3 (possibly badly bisected)
-Date: Thu, 02 Feb 2017 12:33:42 +0100
-Message-ID: <2492725.VHRXfnWZmy@aspire.rjw.lan>
-In-Reply-To: <1486031705.16399.1.camel@hadess.net>
-References: <1484927552.21721.17.camel@hadess.net> <1485993472.18380.73.camel@linux.intel.com> <1486031705.16399.1.camel@hadess.net>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="us-ascii"
+Date: Thu, 02 Feb 2017 13:42:22 +0100
+In-Reply-To: <2492725.VHRXfnWZmy@aspire.rjw.lan>
+References: <1484927552.21721.17.camel@hadess.net>
+         <1485993472.18380.73.camel@linux.intel.com>
+         <1486031705.16399.1.camel@hadess.net> <2492725.VHRXfnWZmy@aspire.rjw.lan>
+Content-Type: text/plain; charset="UTF-8"
+Mime-Version: 1.0
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thursday, February 02, 2017 11:35:05 AM Bastien Nocera wrote:
-> On Wed, 2017-02-01 at 15:57 -0800, Srinivas Pandruvada wrote:
-> > On Thu, 2017-02-02 at 00:38 +0100, Rafael J. Wysocki wrote:
-> > > + Srinivas
-> > > 
-> > > On Tuesday, January 31, 2017 02:37:43 PM Bastien Nocera wrote:
+On Thu, 2017-02-02 at 12:33 +0100, Rafael J. Wysocki wrote:
+> On Thursday, February 02, 2017 11:35:05 AM Bastien Nocera wrote:
+> > On Wed, 2017-02-01 at 15:57 -0800, Srinivas Pandruvada wrote:
+> > > On Thu, 2017-02-02 at 00:38 +0100, Rafael J. Wysocki wrote:
+> > > > + Srinivas
 > > > > 
-> > > > Hey Rafael,
-> > > > 
-> > > > On Fri, 2017-01-27 at 00:07 +0100, Rafael J. Wysocki wrote:
+> > > > On Tuesday, January 31, 2017 02:37:43 PM Bastien Nocera wrote:
 > > > > > 
-> > > > > On Thu, Jan 26, 2017 at 4:15 PM, Bastien Nocera <hadess@hadess.
-> > > > > ne
-> > > > > t>
-> > > > > wrote:
+> > > > > Hey Rafael,
+> > > > > 
+> > > > > On Fri, 2017-01-27 at 00:07 +0100, Rafael J. Wysocki wrote:
 > > > > > > 
-> > > > > > On Fri, 2017-01-20 at 16:52 +0100, Bastien Nocera wrote:
+> > > > > > On Thu, Jan 26, 2017 at 4:15 PM, Bastien Nocera <hadess@had
+> > > > > > ess.
+> > > > > > ne
+> > > > > > t>
+> > > > > > wrote:
 > > > > > > > 
-> > > > > > > Hey,
-> > > > > > > 
-> > > > > > > TLDR:
-> > > > > > > # first bad commit:
-> > > > > > > [50ba22479c324c0d9dc8134d519dcba92d83a8a7]
-> > > > > > > Merge
-> > > > > > > back earlier ACPI PM material for v4.3.
-> > > > > > > 
-> > > > > > > hid-sensor-hub devices only start sending events through
-> > > > > > > the
-> > > > > > > IIO
-> > > > > > > trigger after a suspend/resume cycle.
+> > > > > > > On Fri, 2017-01-20 at 16:52 +0100, Bastien Nocera wrote:
+> > > > > > > > 
+> > > > > > > > Hey,
+> > > > > > > > 
+> > > > > > > > TLDR:
+> > > > > > > > # first bad commit:
+> > > > > > > > [50ba22479c324c0d9dc8134d519dcba92d83a8a7]
+> > > > > > > > Merge
+> > > > > > > > back earlier ACPI PM material for v4.3.
+> > > > > > > > 
+> > > > > > > > hid-sensor-hub devices only start sending events
+> > > > > > > > through
+> > > > > > > > the
+> > > > > > > > IIO
+> > > > > > > > trigger after a suspend/resume cycle.
+> > > 
+> > > 
+> > > > Srinivas, does it sound like anything familiar to you?
+> > > 
+> > > I guess this is related to
+> > > https://github.com/hadess/iio-sensor-proxy/issues/82
+> > > 
+> > > There is some race between user space and iio. So the driver
+> > > powerup
+> > > never gets called back to power a hub during system boot. So the
+> > > workaround was to add to systemd unit file for iio-sensor-proxy 
+> > > [Unit]
+> > > After=multi-user.target
+> > > 
+> > > Something changed timings in the kernel, which triggered this
+> > > issue.
 > > 
+> > I don't think it's simply "timings", or at least it's a big enough
+> > window of opportunity that I can reproduce the bug 100% of the time
+> > when not adding timeouts to iio-sensor-proxy's timeout.
 > > 
-> > > Srinivas, does it sound like anything familiar to you?
+> > Putting the machine on suspend and resuming it also fixes the
+> > problem
+> > (for a machine I've been testing that can be suspended, it's not an
+> > option for all of them).
 > > 
-> > I guess this is related to
-> > https://github.com/hadess/iio-sensor-proxy/issues/82
+> > > I never got chance to root cause this.
 > > 
-> > There is some race between user space and iio. So the driver powerup
-> > never gets called back to power a hub during system boot. So the
-> > workaround was to add to systemd unit file for iio-sensor-proxy 
-> > [Unit]
-> > After=multi-user.target
-> > 
-> > Something changed timings in the kernel, which triggered this issue.
+> > Well, at least the root cause is limited to a single commit, shame
+> > it's
+> > a merge one.
 > 
-> I don't think it's simply "timings", or at least it's a big enough
-> window of opportunity that I can reproduce the bug 100% of the time
-> when not adding timeouts to iio-sensor-proxy's timeout.
+> In fact this is a merge that doesn't change any code by itself (I
+> thought it
+> did, but that was not correct), so if that had been more than
+> timings, you'd
+> have seen breakage on at least one of the merged branches.
 > 
-> Putting the machine on suspend and resuming it also fixes the problem
-> (for a machine I've been testing that can be suspended, it's not an
-> option for all of them).
+> Moreover, it merges the commits under 3431e490b503 back on top of
+> material
+> that went into 4.2, so if you only see the problem in 4.3 and later,
+> this has to
+> be the 3431e490b503 branch.
 > 
-> > I never got chance to root cause this.
-> 
-> Well, at least the root cause is limited to a single commit, shame it's
-> a merge one.
+> Can you double check 3431e490b503 alone, please?
 
-In fact this is a merge that doesn't change any code by itself (I thought it
-did, but that was not correct), so if that had been more than timings, you'd
-have seen breakage on at least one of the merged branches.
+I don't understand what you're asking of me. I'm not a git master, and
+I've never had to deal with merge commits.
 
-Moreover, it merges the commits under 3431e490b503 back on top of material
-that went into 4.2, so if you only see the problem in 4.3 and later, this has to
-be the 3431e490b503 branch.
+Did you want me to run "git reset --hard 3431e490b503" and test the
+resulting kernel? I'm pretty sure that's equivalent what my 3 runs of
+bisection have done, and it failed.
 
-Can you double check 3431e490b503 alone, please?
-
-Thanks,
-Rafael
-
+Cheers
