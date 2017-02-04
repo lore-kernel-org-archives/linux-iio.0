@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58770 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58808 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752858AbdBDMJh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Feb 2017 07:09:37 -0500
-Subject: Re: [PATCH 3/7] IIO: add bindings for STM32 DFSDM ADC driver
+        with ESMTP id S1752261AbdBDMOC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Feb 2017 07:14:02 -0500
+Subject: Re: [PATCH 6/7] ASoC: add bindings for STM32 DFSDM driver
 To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org"
@@ -21,167 +21,189 @@ To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>
 References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
- <1485189145-29576-4-git-send-email-arnaud.pouliquen@st.com>
- <fa6b541d-2818-afa7-82fa-eb19806e9f4d@kernel.org>
- <36426523-c59f-4010-b341-acb60ebdcbb5@kernel.org>
- <d9747aa9-e3c2-f280-7dca-8862e8e74e6e@st.com>
+ <1485189145-29576-7-git-send-email-arnaud.pouliquen@st.com>
+ <f0f446ea-97a0-8fef-bec5-aefeed42a85a@kernel.org>
+ <71612ea0-c9d0-a85e-2d58-72609df57e35@st.com>
 Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre TORGUE <alexandre.torgue@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <701672ca-9888-7d86-d41a-d457b1739b9a@kernel.org>
-Date: Sat, 4 Feb 2017 12:09:33 +0000
+Message-ID: <325ec27f-f13d-c561-d4cf-b50cd9a3eadb@kernel.org>
+Date: Sat, 4 Feb 2017 12:13:58 +0000
 MIME-Version: 1.0
-In-Reply-To: <d9747aa9-e3c2-f280-7dca-8862e8e74e6e@st.com>
+In-Reply-To: <71612ea0-c9d0-a85e-2d58-72609df57e35@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 31/01/17 14:10, Arnaud Pouliquen wrote:
-> Hi Jonathan,
+On 30/01/17 17:32, Arnaud Pouliquen wrote:
+> Hello Johan,
 > 
-> On 01/29/2017 01:42 PM, Jonathan Cameron wrote:
->> On 29/01/17 11:58, Jonathan Cameron wrote:
->>> On 23/01/17 16:32, Arnaud Pouliquen wrote:
->>>> This patch adds documentation of device tree bindings for the
->>>> STM32 DFSDM ADC.
->>>>
->>>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->>> Trivial bits inline.
->>>> ---
->>>>  .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        | 60 ++++++++++++++++++++++
->>>>  1 file changed, 60 insertions(+)
->>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt 
->>>>
->>>> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt  b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt 
->>>> new file mode 100644
->>>> index 0000000..c156bcb
->>>> --- /dev/null
->>>> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt 	
->>>> @@ -0,0 +1,60 @@
->>>> +STMicroelectronics STM32 DFSDM ADC device driver
->>>> +
->>>> +STM32 DFSDM ADC is a sigma delta analog-to-digital converter.
->>>> +It has to be declared in device-tree as a subnode of the DFSDM mfd node.
->>>> +
->>>> +It has several multiplexed input channels. Conversions can be performed
->>>> +in single, scan or discontinuous mode. Conversions can be launched in software
->>>> +or using hardware triggers.
->>>> +Each instance of the driver uses one filter instance handle by the DFSDM mfd
->>>> +driver.
->>>> +
->>>> +DFSDM also offers extra features:
->>>> +-The analog watchdog feature allows the application to detect if the
->>>> + input voltage goes beyond the user-defined, higher or lower thresholds.
->>>> +-The short circuit detection allows allows the application to detect if the
->>>> + input is in CC.
->>>> +-The clock absence detection allows application to detect if SPI input is clocked.
->>>> +
->>>> +Required properties:
->>>> +- compatible:	Must be "st,stm32-dfsdm-adc".
->>>> +- reg:		Specifies the DFSDM filter instance.
->>>> +- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
->>>> +- st,adc-channels:	List of single-ended channels muxed for this ADC.
->>>> +- st,adc-channel-names:	List of single-ended channels Name.
->>>> +
->>>> +Optional properties:
->>>> +- st,adc-channel-types:	Single-ended channel input type. Default value is 0.
->>>> +			- 0: SPI with data on rising edge (default)
->>>> +			- 1: SPI with data on falling edge
->>> This is an element that can be described without magic numbers so I'd
->>> prefer that you do so.
->>>
->>> Also spell check edage -> edge.
->>>
->>>> +			- 2: manchester codec, rising edage = logic 0
->>>> +			- 3: manchester codec, rising edage = logic 1
->>>> +- st,adc-channel-clk-src: Conversion clock source. default value is 1.
->>>> +			  - 0: External SPI clocl (CLKIN x)
->>>> +			  - 1: internal SPI clock (CLKOUT) (default)
->>>> +			  - 2: internal SPI clock divided by 2 (falling edge).
->>>> +			  - 2: internal SPI clock divided by 2 (rising edge).
->>> 3?
->>>> +- st,adc-alt-channel: 	  must be defined if Two ADCs are connected on same SPI
->>>> +			  input.
->>>> +			  If not set channel n is connected to SPI input n.
->>>> +			  If set channel n is connected to SPI input n + 1.
->>> ? Two data inputs with shared clock?
->>>> +
->>>> +Example:
->>>> +	dfsdm: dfsdm@4400D000 {
->> I'd like to actually see the ADCs on the end of these explicitly
->> described as well.  It's entirely possible we'll have something
->> that isn't simply a dumb sigma delta modulator that will need
->> it's own driver.
->>
->> In some senses what we actually have here is a data bus so we
->> should be able to describe things on it in that fashion
->> rather than just describing the data that is in coming.
->> Our boundary of knowledge isn't at the edge of this device!
->>
->> A quick example google fed me would be the gain control on a
->> maxim ds8102.
->>
->> Tricky bit here will be defining this nice and generally when we
->> currently only have the one piece of hardware to do it with ;)
->>
->> That's what makes kernel development fun!
->>
-> 
-> What you describe here seems similar to audio codecs device defined in
-> ASoC. An Audio codec is an external chip that is connected to SoC
-> through an audio bus.
-> ASoC allows to bind this codec with the SOC DAI (digital Audio Interface).
-Yes, that was exactly what I was thinking of.  Was a while back but
-I once mainlined a codec so had this at the back of my mind.
-> 
-> FYI we should have this kind of feature to support on STM32 uin second step:
-> DSFDM input can also process stm32 ADC output through an hardware pipe
-> (stm32-adc IIO driver that has been recently integrated in kernel).
-> Internally, to pipe the ADC with DFSDM, we use an extension of inkern
-> interface that is very similar with the one mentioned by Lars:
-> 
-> https://github.com/analogdevicesinc/linux/blob/xcomm_zynq/drivers
-> /iio/buffer/hw_consumer.c
-> 
-> Don't know if this is what Lars has in mind... but a solution could be
-> to define a new type of IIO that would be something like
-> "postprocessing" or "filter". This new iio device type could be piped to
-> a frontend IIO device to export a new one (through hw_consumer.c interface).
-> In this case for simple device like PDM audio microphone that does not
-> required control a kind of dummy frontend device could be defined...
-That could work.  We already have stacked IIO devices - only difference
-here is that we can't actually see the data flowing between the levels
-of stack (or pipeline).
-
-J
+> Please find my comments in-line.
 > 
 > Regards
+> 
 > Arnaud
 > 
->>>> +		iio_dfsdm0: iio-dfsdm@0 {
->>>> +			compatible = "st,stm32-dfsdm-adc";
->>>> +			#io-channel-cells = <1>;
->>>> +			reg = <0>;
->>>> +			st,adc-channels = <1>;
->>>> +			st,adc-channel-names = "in0";
->>>> +		};
->>>> +		iio_dfsdm1: iio-dfsdm@1 {
->>>> +			compatible = "st,stm32-dfsdm-adc";
->>>> +			#io-channel-cells = <1>;
->>>> +			reg = <1>;
->>>> +			st,adc-channels = <1>;
->>>> +			st,adc-channel-names = "in1";
->>>> +			st,adc-channel-types = <1>;
->>>> +			st,adc-alt-channel = <1>;
->>>> +		};
->>>> +	};
->>>>
+> On 01/29/2017 01:19 PM, Jonathan Cameron wrote:
+>> On 23/01/17 16:32, Arnaud Pouliquen wrote:
+>>> This patch adds documentation of device tree bindings for the
+>>> STM32 DFSDM ASoC driver.
 >>>
->>> --
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+>>> ---
+>>>  .../devicetree/bindings/sound/st,sm32-adfsdm.txt   | 84 ++++++++++++++++++++++
+>>>  1 file changed, 84 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
 >>>
+>>> diff --git a/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt b/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
+>>> new file mode 100644
+>>> index 0000000..a1d27b8
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
+>>> @@ -0,0 +1,84 @@
+>>> +STMicroelectronics STM32 ADFSDM ASoC DAI device driver.
+>>> +
+>>> +STM32 ADFSDM ASoC is a sigma delta audio interface for digital microphone.
+>>> +It has to be declared in device-tree as a subnode of the DFSDM mfd node.
+>>> +
+>>> +It offers possibility to record several mono microphones, with an option to
+>>> +synchronize all microphones on a main one (that must be piped to filter 0)
+>>> +Audio interface can be exposed through the generic ASoC simple card.
+>>> +
+>>> +2 Dmics can be connected on one SPI interface instance n.
+>>> +Convention is that the DMIC that strobes data on rising edge is connected to the
+>>> +corresponding DFSDM channel n; while the Dmic that strobes data on falling edge
+>>> +is connected to the channel n-1. Simple card property "bitclock-inversion = <1>"
+>>> +is used to specify that microphone strobes data on falling edge.
+>>> +
+>>> +SPI interface allows to be scheduled by an external SPI clock. To use it
+>>> +simple card properties "bitclock-master = <&codec>" and "system-clock-frequency"
+>>> +have to be defined in dai-link node.
+>>> +
+>>> +Required properties:
+>>> +- compatible: 	Must be "st,stm32-dfsdm-audio",
+>>> +- reg:		Specifies the DFSDM filter instance.
+>>> +- interrupts: 	DFSDM filter instance interrupt line.
+>>> +- dma:		DMA controller phandle and DMA request line associated to the
+>>> +		filter instance ( specified by the field "reg")
+>>> +- dma-names: 	must be "rx"
+>>> +
+>>> +- st,input-id:		Id of the SPI/Manchester interface used.
+>>> +- st,dai-filter-order:  SinC filter order from 0 to 5.
+>>> +			0: FastSinC
+>>> +			[1-5]: order 1 to 5.
+>>> +			For audio purpose it is recommended to use order 3 to 5.
+>> Interesting for audio you consider it feature of the hardware, but for ADC you
+>> consider that this should be userspace controlled.
+>> Personally I'd like to see more detail on those filters but if this is convention
+>> in Asoc then so be it.
+> 
+> Configure filter and integrator is quite tricky. Updating filter and
+> integrator parameters have impact on sample resolution and output sample
+> rate.
+> Sample resolution is the peak to peak data value and depends on
+> oversampling parameters and filter order.
+> 
+> Output sample rate depends on SPI input clock frequency oversampling
+> parameters and filter order.
+> 
+> High filter order gives a better resolution and a better filter response
+> but allows less dynamic to find the good rate...
+> 
+> So it is a compromise between resolution, rate and filtering.
+> 
+> For ADC use case, filter orders 1 to 3 are recommended.
+> For audio use case, orders 3 to 5 are recommended.
+I'm never against allowing users enough rope to hang themselves
+as long as the defaults are sensible :)
+> 
+> On IIO side i proposed to expose tuning in ABI, to allows application
+> fine tuning.
+> Need to document it...
+> 
+> For ASOC it is another story. Application requests a rate and a sample
+> format. So filter parameters are computed based on SPI bus clock
+> frequency, expected audio sample rate and audio sample format.
+> This is done in stm32_adfsdm_get_best_osr in sound/soc/stm/stm32_adfsdm.c.
+If there is only ever one sensible answer, fair enough on not being
+able to pick and choose.
+> 
+> Now your comment trig a good point. Perhaps a better option in IIO,
+> could be to offer same kind of ABI than ASOC interface:
+> - standard oversampling-ratio ABI. based on it filter and integrator
+> oversampling ratios will be computed to maximize the resolution.
+> - a read only resolution ABI:
+> /sys/bus/iio/devices/iio:deviceX/in_adc_x_resolution. That give the
+> computed resolution.
+Would this be directly exposed in terms of the 'maximum value' that
+could come out?  If so we could use the existing range description
+callbacks (called _available though that's somewhat missleading in
+this case).
+> 
+> In this case filter order will be part of the DT for IIO and ASoC.
+> This would also match with a redesign of the DFSDM driver in IIO...
+Sounds to me like it would be sensible to do restrict things somewhat
+in the first instance, and perhaps rename them as 'defaults' in the
+future if we decide that userspace control does make sense.
+Basically do it the first time someone bashes us over the head with
+a usecase we aren't supporting well.
+
+> 
+>>> +
+>>> +Optional properties:
+>>> + - st,dai0-synchronized: Set to 1 to synchronize DAI with DFSDM instance 0.
+>>> +
+>>> +Exemple of a card with 2 Dmics synchronized and connected on SPI interface 1.
+>> Example.
+>>> +
+>>> +	dfsdm: dfsdm@4400D000 {
+>>> +		dai_dfsdm0: dfsdm-audio@0 {
+>>> +			compatible = "st,stm32-dfsdm-audio";
+>>> +			#sound-dai-cells = <0>;
+>>> +			reg = <0>;
+>>> +			dmas = <&dmamux1 101 0x400 0x00>;
+>>> +			dma-names = "rx";
+>>> +			st,input-id = <0>;
+>>> +			st,dai-filter-order = <5>;
+>>> +		};
+>>> +		dai_dfsdm1: dfsdm-audio@1 {
+>>> +			compatible = "st,stm32-dfsdm-audio";
+>>> +			#sound-dai-cells = <0>;
+>>> +			reg = <0>;
+>>> +			dmas = <&dmamux1 102 0x400 0x00>;
+>>> +			dma-names = "rx";
+>>> +			st,input-id = <0>;
+>>> +			st,dai0-synchronized = <1>;
+>>> +			st,dai-filter-order = <5>;
+>>> +		};
+>>> +	};
+>>> +	sound_dfsdm_pdm {
+>>> +		compatible = "simple-audio-card";
+>>> +		simple-audio-card,name = "dfsdm_pdm";
+>>> +		status = "okay";
+>>> +
+>>> +		dfsdm0_mic0: simple-audio-card,dai-link@0 {
+>>> +			format = "pdm";
+>>> +			cpu {
+>>> +				sound-dai = <&dai_dfsdm0>;
+>>> +			};
+>>> +			dmic0_codec: codec {
+>>> +				sound-dai = <&dmic0>;
+>>> +			};
+>>> +		};
+>>> +		dfsdm0_mic1: simple-audio-card,dai-link@1 {
+>>> +			format = "pdm";
+>>> +			bitclock-inversion = <1>;
+>>> +			cpu {
+>>> +				sound-dai = <&dai_dfsdm1>;
+>>> +			};
+>>> +			codec {
+>>> +				sound-dai = <&dmic1>;
+>>> +			};
+>>> +		};
+>>> +	};
+>>>
+>> Jonathan
 >>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
