@@ -1,69 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f47.google.com ([209.85.214.47]:38254 "EHLO
-        mail-it0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751366AbdBCTLf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Feb 2017 14:11:35 -0500
-Received: by mail-it0-f47.google.com with SMTP id c7so18797880itd.1
-        for <linux-iio@vger.kernel.org>; Fri, 03 Feb 2017 11:11:35 -0800 (PST)
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35502 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751774AbdBEJ4Y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Feb 2017 04:56:24 -0500
+Subject: Re: [PATCH v2 1/5] Documentation: dt: iio: document stm32 adc trigger
+ polarity
+To: Fabrice Gasnier <fabrice.gasnier@st.com>, linux@armlinux.org.uk,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1485786840-4557-1-git-send-email-fabrice.gasnier@st.com>
+ <1485786840-4557-2-git-send-email-fabrice.gasnier@st.com>
+Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        benjamin.gaignard@linaro.org, benjamin.gaignard@st.com,
+        Thomas Gleixner <tglx@linutronix.de>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <1b326a3d-522f-b76e-0bc3-656b5fd2a8ae@kernel.org>
+Date: Sun, 5 Feb 2017 09:56:18 +0000
 MIME-Version: 1.0
-In-Reply-To: <1485784663-19505-4-git-send-email-fabrice.gasnier@st.com>
-References: <1485784663-19505-1-git-send-email-fabrice.gasnier@st.com> <1485784663-19505-4-git-send-email-fabrice.gasnier@st.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Fri, 3 Feb 2017 20:11:33 +0100
-Message-ID: <CACRpkdZLFKQbDjDXo+ir=8d8gEd=9dLicuVLEXAF2OoWefKJcA@mail.gmail.com>
-Subject: Re: [PATCH 3/5] Documentation: dt: iio: document stm32 exti trigger
-To: Fabrice Gasnier <fabrice.gasnier@st.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Rob Herring <robh+dt@kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-        <linux-arm-kernel@lists.infradead.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Benjamin Gaignard <benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=UTF-8
+In-Reply-To: <1485786840-4557-2-git-send-email-fabrice.gasnier@st.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Jan 30, 2017 at 2:57 PM, Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+On 30/01/17 14:33, Fabrice Gasnier wrote:
+> STM32 ADC trigger polarity can be set to either rising, falling
+> or both edges. Allow to configure it from dt.
+> 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+This falls into the same question of whether this is really an interrupt
+(be it one that linux can't see) or not.
 
-> Add dt documentation for st,stm32-exti-trigger.
-> EXTi gpio signal can be routed internally as trigger source for various
-> IPs (e.g. for ADC or DAC conversions).
+It certainly similar enough I'd like to see us use as much of the
+interrupt bindings as possible rather than reinventing the wheel.
 
-And you say this is done using pin control, elsewhere in the conversation
-if I understand it correctly?
+cc'd Thomas Gleixner.
 
-> +Contents of a stm32 exti trigger root node:
-> +-------------------------------------------
-> +Required properties:
-> +- compatible: Should be "st,stm32-exti-trigger"
-> +- extiN-gpio: optional gpio line that may be used as external trigger source
-> +  (e.g. N may be 0..15. For example, exti11-gpio can trig ADC on stm32f4).
-> +
-> +Example:
-> +       triggers {
-> +               compatible = "st,stm32-exti-trigger";
-> +               exti11-gpio=<&gpioa 11 0>;
-> +       };
+Thomas, what we have here effectively an interrupt that we have the option
+to directly route to the hardware block to initialize an ADC sample
+(rather than bouncing through the kernel).  It can also be directly
+exposed as a real interrupt and the chances are we are going to end
+up with a mixture of the two depending on who is interesting in the
+'interrupt'.
 
-So what I do not understand i if this has any stm32-specific behaviour at all,
-so that compatible-string has any meaning.
+Any thoughts?
 
-Should we not rather define compatible = "gpio-trigger"; to be used by
-everyone? Especially for the device tree?
+Jonathan
+> ---
+>  Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt | 3 +++
+>  1 file changed, 3 insertions(+)
+> 
+> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+> index 5dfc88e..6c6d968 100644
+> --- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+> @@ -57,6 +57,8 @@ Optional properties:
+>  - dmas: Phandle to dma channel for this ADC instance.
+>    See ../../dma/dma.txt for details.
+>  - dma-names: Must be "rx" when dmas property is being used.
+> +- st,trigger-polarity: Must be 0 (default), 1 or 2 to set default trigger
+> +  polarity to respectively "rising-edge", "falling-edge" or "both-edges".
+>  
+>  Example:
+>  	adc: adc@40012000 {
+> @@ -84,6 +86,7 @@ Example:
+>  			st,adc-channels = <8>;
+>  			dmas = <&dma2 0 0 0x400 0x0>;
+>  			dma-names = "rx";
+> +			st,trigger-polarity = <1>;
+>  		};
+>  		...
+>  		other adc child nodes follow...
+> 
 
-If it's "mostly generic, a bit specific too" it should likely be:
-
-compatible = "gpio-trigger", "st,stm32-exit-trigger";
-
-Yours,
-Linus Walleij
