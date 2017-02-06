@@ -1,584 +1,966 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43702 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751966AbdBFSvC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2017 13:51:02 -0500
-Subject: =?UTF-8?Q?Re:_=e7=ad=94=e5=a4=8d:_[PATCH]_adc:_add_adc_driver_for_H?=
- =?UTF-8?Q?isilicon_BVT_SOCs?=
-To: liurenzhong <liurenzhong@hisilicon.com>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
-        "lars@metafoo.de" <lars@metafoo.de>,
-        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
-        "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com" <mark.rutland@arm.com>
-References: <1483784170-228765-1-git-send-email-liurenzhong@hisilicon.com>
- <41fbfc45-9f9a-c2cf-9c27-c4d5a39a400a@kernel.org>
- <FF07FAC5C99FCA42AD8E3824334A86E0DCC408@DGGEMA503-MBS.china.huawei.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Cc: "akinobu.mita@gmail.com" <akinobu.mita@gmail.com>,
-        "ludovic.desroches@atmel.com" <ludovic.desroches@atmel.com>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "vilhelm.gray@gmail.com" <vilhelm.gray@gmail.com>,
-        "ksenija.stanojevic@gmail.com" <ksenija.stanojevic@gmail.com>,
-        "zhiyong.tao@mediatek.com" <zhiyong.tao@mediatek.com>,
-        "daniel.baluta@intel.com" <daniel.baluta@intel.com>,
-        "leonard.crestez@intel.com" <leonard.crestez@intel.com>,
-        "ray.jui@broadcom.com" <ray.jui@broadcom.com>,
-        "raveendra.padasalagi@broadcom.com"
-        <raveendra.padasalagi@broadcom.com>,
-        "mranostay@gmail.com" <mranostay@gmail.com>,
-        "amsfield22@gmail.com" <amsfield22@gmail.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Xuejiancheng <xuejiancheng@hisilicon.com>,
-        "Lixu (kevin)" <kevin.lixu@hisilicon.com>
-Message-ID: <27ea1d7c-160c-0acc-98b8-1928687e6ff6@kernel.org>
-Date: Mon, 6 Feb 2017 18:50:56 +0000
+Return-Path: <quentin.schulz@free-electrons.com>
+Subject: Re: [PATCH v9 3/3] iio: adc: add support for Allwinner SoCs ADC
+To: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+ Jonathan Cameron <jic23@kernel.org>, linux@armlinux.org.uk,
+ maxime.ripard@free-electrons.com, wens@csie.org, knaack.h@gmx.de,
+ lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org
+References: <20161213143332.24988-1-quentin.schulz@free-electrons.com>
+ <20161213143332.24988-4-quentin.schulz@free-electrons.com>
+ <8132b799-6c6e-fc74-ebac-6959ac4c97a7@kernel.org>
+ <f8285a90-656f-0da4-ee81-47b79ce4cd2c@kernel.org>
+ <9e1d1e4d-84e6-ba9d-f1da-4d2bb81c2d40@free-electrons.com>
+ <6C7E1B31-9758-4BB2-A47E-648CA53AAC72@jic23.retrosnub.co.uk>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+ linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
+ thomas.petazzoni@free-electrons.com, Zhang Rui <rui.zhang@intel.com>,
+ "edubezval@gmail.com" <edubezval@gmail.com>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Message-ID: <ca104163-e9ef-0e8f-0c0e-2339ce7da6d3@free-electrons.com>
+Date: Mon, 6 Feb 2017 08:37:46 +0100
 MIME-Version: 1.0
-In-Reply-To: <FF07FAC5C99FCA42AD8E3824334A86E0DCC408@DGGEMA503-MBS.china.huawei.com>
-Content-Type: text/plain; charset=gbk
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+In-Reply-To: <6C7E1B31-9758-4BB2-A47E-648CA53AAC72@jic23.retrosnub.co.uk>
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/02/17 12:19, liurenzhong wrote:
-> Hi Jonathan,
-Hi Allen,
+Hi Jonathan,
+
+On 14/01/2017 20:28, Jonathan Cameron wrote:
 > 
-> Thanks for your suggestion,  I'm sorry to reply after a long time .
-> This is some problems ask for your advice:
-Not to worry on time, we are all busy people. I've had patches that have
-taken me literally years to reply to reviews on ;) (there's one I posted
-just yesterday after 3 years.)
-
-One small procedural point. It's always helpful to reply inline within
-the patch.  To be honest I couldn't remember what we were referring to in
-quite a bit of this, so the context is helpful! (easy enough to follow
-here, but it's good practice that helps a lot when things get more complex).
 > 
-> 1, It's nice to use just "reset/reset.txt" or ".../reset/reset.txt"
-> from Rob's suggestion, but in the filtered DT tree,
-> "../reset/reset.txt" is used more times, which one we should get,
-> "../" or ".../"?
-Go with Rob's view on this. Device tree bindings are his (and Mark's)
-domain.  If he changes his mind then that's fine as well.
-
-> 
-> 2, The ADC on hisilicon BVT socs can work in single scanning mode or
-> continuous scanning mode. The single mode get conversion value one
-> time after start the configure, while the continuous scanning mode
-> will get conversion value each scan time after start the configure
-> while stopping the adc configure. For more expansibility, the ADC
-> driver use the continuous scanning mode and stop the adc configure
-> after get one time conversion value. Is it necessary to change our
-> driver to single scanning mode or just add a short description?
-
-I think a short description would be fine. Perhaps as short as:
-'A single cycle of continuous mode capture is used for polled operation.
- This stops continuous mode after the cycle is complete.'
-or something like that.
-
-It sounds like this continuous sampling functionality will lend itself
-nicely to the addition of a streaming (called buffered in iio) mode
-in the driver as a possible future addition - but that certainly isn't
-necessary to have a useful driver.
-
-> 3, This drvier is only support ADC IF found on hi3516cv300 and
-> hi3519v101 now , and future SoCs from Hisilicon BVT would get some
-> changes on channel number or getting data ways and so on, so the
-> driver use "V1" on match table and add other version while any change
-> happens. Which match table can we provide and is't OK like this?
->> +static const struct of_device_id hibvt_lsadc_match[] = {
->> +	{
->> +		.compatible = "hisilicon,hi3516cv300-lsadc",
->> +		.data = &lsadc_data_v1,
->> +	},
->> +	{
->> +		.compatible = "hisilicon,hi3519v101-lsadc",
->> +		.data = &lsadc_data_v1,
->> +	},
->> +	{},
->> +};
-That's absolutely fine though I would like a prefix on the lsadc part as
-it is generic enough that it's just possible it'll clash with a name in
-some header in the future.  The hibvt prefix you have used elsewhere
-would be good for this.
-.data = &hibvt_lsadc_data_v1,
-
-Also remember that you can always change internal naming in future if a
-different naming scheme makes more sense at that time.
-
-You could (for now) drop the data_v1 structure entirely and leave
-allowing for other variants as an exercise to be done when they show up.
-
-e.g.:
-
-1) Patch with no variant support is applied.
-... some time passes...
-2) Patch to add variant support
-3) Patch to add new variants.
-2, 3 in a series together as nice simple steps with the use of patch 2
-becoming clear in patch 3.
-
-This is a common thing to have with drivers as the hardware evolves.
-
-Thanks and looking forward to v2,
-
-Jonathan
-
-> 
-> Awaiting for your reply Thank you very much!
-> 
-> Best regards
-> /Allen
-> 
-> -----邮件原件-----
-> 发件人: Jonathan Cameron [mailto:jic23@kernel.org] 
-> 发送时间: 2017年1月8日 1:52
-> 收件人: liurenzhong <liurenzhong@hisilicon.com>; knaack.h@gmx.de; lars@metafoo.de; pmeerw@pmeerw.net; robh+dt@kernel.org; mark.rutland@arm.com
-> 抄送: akinobu.mita@gmail.com; ludovic.desroches@atmel.com; krzk@kernel.org; vilhelm.gray@gmail.com; ksenija.stanojevic@gmail.com; zhiyong.tao@mediatek.com; daniel.baluta@intel.com; leonard.crestez@intel.com; ray.jui@broadcom.com; raveendra.padasalagi@broadcom.com; mranostay@gmail.com; amsfield22@gmail.com; linux-iio@vger.kernel.org; devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Xuejiancheng <xuejiancheng@hisilicon.com>; Lixu (kevin) <kevin.lixu@hisilicon.com>
-> 主题: Re: [PATCH] adc: add adc driver for Hisilicon BVT SOCs
-> 
-> On 07/01/17 05:16, Allen Liu wrote:
->> Add ADC driver for the ADC controller found on HiSilicon BVT SOCs, like Hi3516CV300, etc.
->> The ADC controller is primarily in charge of detecting voltage.
+> On 14 January 2017 19:19:58 GMT+00:00, Quentin Schulz <quentin.schulz@free-electrons.com> wrote:
+>> Hi Jonathan,
 >>
->> Reviewed-by: Kevin Li <kevin.lixu@hisilicon.com>
->> Signed-off-by: Allen Liu <liurenzhong@hisilicon.com>
-> Hi Allen,
-> 
-> One quick submission process note first.  It is very important to clearly identify new versions of a patch and what changes have occurred since the previous posting.
-> 
-> So the email title should have been [PATCH V2] adc...
-> 
-> Also, below the --- please add a brief change log.
-> 
-> The driver is coming together nicely.  A few minor points inline.
-> 
-> Jonathan
->> ---
->>  .../devicetree/bindings/iio/adc/hibvt-lsadc.txt    |  23 ++
->>  drivers/iio/adc/Kconfig                            |  10 +
->>  drivers/iio/adc/Makefile                           |   1 +
->>  drivers/iio/adc/hibvt_lsadc.c                      | 335 +++++++++++++++++++++
->>  4 files changed, 369 insertions(+)
->>  create mode 100644 
->> Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
->>  create mode 100644 drivers/iio/adc/hibvt_lsadc.c
+>> On 08/01/2017 12:17, Jonathan Cameron wrote:
+>>> On 30/12/16 14:40, Jonathan Cameron wrote:
+>>>> On 13/12/16 14:33, Quentin Schulz wrote:
+>>>>> The Allwinner SoCs all have an ADC that can also act as a
+>> touchscreen
+>>>>> controller and a thermal sensor. This patch adds the ADC driver
+>> which is
+>>>>> based on the MFD for the same SoCs ADC.
+>>>>>
+>>>>> This also registers the thermal adc channel in the iio map array so
+>>>>> iio_hwmon could use it without modifying the Device Tree. This
+>> registers
+>>>>> the driver in the thermal framework.
+>>>>>
+>>>>> The thermal sensor requires the IP to be in touchscreen mode to
+>> return
+>>>>> correct values. Therefore, if the user is continuously reading the
+>> ADC
+>>>>> channel(s), the thermal framework in which the thermal sensor is
+>>>>> registered will switch the IP in touchscreen mode to get a
+>> temperature
+>>>>> value and requires a delay of 100ms (because of the mode
+>> switching),
+>>>>> then the ADC will switch back to ADC mode and requires also a delay
+>> of
+>>>>> 100ms. If the ADC readings are critical to user and the SoC
+>> temperature
+>>>>> is not, this driver is capable of not registering the thermal
+>> sensor in
+>>>>> the thermal framework and thus, "quicken" the ADC readings.
+>>>>>
+>>>>> This driver probes on three different platform_device_id to take
+>> into
+>>>>> account slight differences (registers bit and temperature
+>> computation)
+>>>>> between Allwinner SoCs ADCs.
+>>>>>
+>>>>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>>>>> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>>>>> Acked-by: Jonathan Cameron <jic23@kernel.org>
+>>>>> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+>>>> One comment inline but not a blocker.
+>>>>
+>>>> I would ideally like an ack from the thermal side.  The relevant
+>> code
+>>>> is small, but best to be sure and keep them in the loop as well.
+>>>>
+>>>> It does feel a little convoluted to have both this directly
+>> providing
+>>>> a thermal zone and being able to create one indirectly through hwmon
+>> as
+>>>> well but this solution works for me I think...
+>>>>
+>>>> Cc'd Zang and Eduardo.
+>>> Nothing seems to have come through on that front.
+>>>
+>>> I need to get a pull request out to Greg and rebase my tree before I
+>> have
+>>> the precursor patch in place. Give me a bump if you haven't heard
+>> anything by
+>>> the time next week.
+>>>
 >>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt 
->> b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
->> new file mode 100644
->> index 0000000..fce1ff4
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
->> @@ -0,0 +1,23 @@
->> +Hisilicon BVT Low Speed (LS) A/D Converter bindings
->> +
->> +Required properties:
->> +- compatible: should be "hisilicon,<name>-lsadc"
->> +   - "hisilicon,hi3516cv300-lsadc": for hi3516cv300
->> +
->> +- reg: physical base address of the controller and length of memory mapped 
->> +	   region.
->> +- interrupts: The interrupt number for the ADC device.
-> Ideally refer to the standard interrupt binding document.
-> Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+>> Kindly "giving you a bump" you as requested since I haven't heard from
+>> you for a week.
+> Greg hasn't pulled yet, so may be a few more days.
 > 
->> +
->> +Optional properties:
->> +- resets: Must contain an entry for each entry in reset-names if need support
->> +		  this option. See ../../reset/reset.txt for details.
-> Don't use a relative path in a binding document. It's far too likely to be broken by a reorganization of the docs and cannot be grepped for.
->> +- reset-names: Must include the name "lsadc-crg".
->> +
->> +Example:
->> +	adc: adc@120e0000 {
->> +			compatible = "hisilicon,hi3516cv300-lsadc";
->> +			reg = <0x120e0000 0x1000>;
->> +			interrupts = <19>;
->> +			resets = <&crg 0x7c 3>;
->> +			reset-names = "lsadc-crg";
->> +	};
->> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig index 
->> 99c0514..0443f51 100644
->> --- a/drivers/iio/adc/Kconfig
->> +++ b/drivers/iio/adc/Kconfig
->> @@ -225,6 +225,16 @@ config HI8435
->>  	  This driver can also be built as a module. If so, the module will be
->>  	  called hi8435.
->>  
->> +config HIBVT_LSADC
->> +	tristate "HIBVT LSADC driver"
->> +	depends on ARCH_HISI || COMPILE_TEST
->> +	help
->> +	  Say yes here to build support for the LSADC found in SoCs from
->> +	  hisilicon BVT chip.
->> +
->> +	  To compile this driver as a module, choose M here: the
->> +	  module will be called hibvt_lsadc.
->> +
->>  config INA2XX_ADC
->>  	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
->>  	depends on I2C && !SENSORS_INA2XX
->> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile index 
->> 7a40c04..6554d92 100644
->> --- a/drivers/iio/adc/Makefile
->> +++ b/drivers/iio/adc/Makefile
->> @@ -23,6 +23,7 @@ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
->>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
->>  obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
->>  obj-$(CONFIG_HI8435) += hi8435.o
->> +obj-$(CONFIG_HIBVT_LSADC) += hibvt_lsadc.o
->>  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
->>  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
->>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o diff --git 
->> a/drivers/iio/adc/hibvt_lsadc.c b/drivers/iio/adc/hibvt_lsadc.c new 
->> file mode 100644 index 0000000..aaf2024
->> --- /dev/null
->> +++ b/drivers/iio/adc/hibvt_lsadc.c
->> @@ -0,0 +1,335 @@
->> +/*
->> + * Hisilicon BVT Low Speed (LS) A/D Converter
->> + * Copyright (C) 2016 HiSilicon Technologies Co., Ltd.
->> + *
->> + * This program is free software; you can redistribute it and/or 
->> +modify
->> + * it under the terms of the GNU General Public License as published 
->> +by
->> + * the Free Software Foundation; either version 2 of the License, or
->> + * (at your option) any later version.
->> + *
->> + * This program is distributed in the hope that it will be useful,
->> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
->> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
->> + * GNU General Public License for more details.
->> + */
->> +
->> +#include <linux/module.h>
->> +#include <linux/platform_device.h>
->> +#include <linux/interrupt.h>
->> +#include <linux/io.h>
->> +#include <linux/of.h>
->> +#include <linux/of_device.h>
->> +#include <linux/clk.h>
->> +#include <linux/completion.h>
->> +#include <linux/delay.h>
->> +#include <linux/reset.h>
->> +#include <linux/regulator/consumer.h> #include <linux/iio/iio.h>
->> +
->> +/* hisilicon bvt adc registers definitions */
->> +#define HIBVT_LSADC_CONFIG		0x00
->> +#define HIBVT_CONFIG_DEGLITCH	BIT(17)
->> +#define HIBVT_CONFIG_RESET		BIT(15)
->> +#define HIBVT_CONFIG_POWERDOWN	BIT(14)
->> +#define HIBVT_CONFIG_MODE		BIT(13)
->> +#define HIBVT_CONFIG_CHNC		BIT(10)
->> +#define HIBVT_CONFIG_CHNB		BIT(9)
->> +#define HIBVT_CONFIG_CHNA		BIT(8)
->> +
->> +#define HIBVT_LSADC_TIMESCAN	0x08
->> +#define HIBVT_LSADC_INTEN		0x10
->> +#define HIBVT_LSADC_INTSTATUS	0x14
->> +#define HIBVT_LSADC_INTCLR		0x18
->> +#define HIBVT_LSADC_START		0x1C
->> +#define HIBVT_LSADC_STOP		0x20
->> +#define HIBVT_LSADC_ACTBIT		0x24
->> +#define HIBVT_LSADC_CHNDATA		0x2C
->> +
->> +#define HIBVT_LSADC_CON_EN		(1u << 0)
->> +#define HIBVT_LSADC_CON_DEN		(0u << 0)
->> +
->> +#define HIBVT_LSADC_NUM_BITS_V1	10
->> +#define HIBVT_LSADC_CHN_MASK_v1	0x7
->> +
->> +/* fix clk:3000000, default tscan set 10ms */
->> +#define HIBVT_LSADC_TSCAN_MS	(10*3000)
->> +
->> +#define HIBVT_LSADC_TIMEOUT		msecs_to_jiffies(100)
->> +
->> +/* default voltage scale for every channel <mv> */ static int 
->> +g_hibvt_lsadc_voltage[] = {
->> +	3300, 3300, 3300
-> Is default due to an external reference voltage or is there an internal regulator?  If it is external it should really be described using the regulator framework.
-> 
-> Const? 
->> +};
->> +
->> +struct hibvt_lsadc {
->> +	void __iomem		*regs;
->> +	struct completion	completion;
->> +	struct reset_control	*reset;
->> +	const struct hibvt_lsadc_data	*data;
->> +	unsigned int		cur_chn;
->> +	unsigned int		value;
->> +};
->> +
->> +struct hibvt_lsadc_data {
->> +	int				num_bits;
->> +	const struct iio_chan_spec	*channels;
->> +	int				num_channels;
->> +
->> +	void (*clear_irq)(struct hibvt_lsadc *info, int mask);
->> +	void (*start_conv)(struct hibvt_lsadc *info);
->> +	void (*stop_conv)(struct hibvt_lsadc *info); };
->> +
->> +static int hibvt_lsadc_read_raw(struct iio_dev *indio_dev,
->> +				    struct iio_chan_spec const *chan,
->> +				    int *val, int *val2, long mask) {
->> +	struct hibvt_lsadc *info = iio_priv(indio_dev);
->> +
->> +	switch (mask) {
->> +	case IIO_CHAN_INFO_RAW:
->> +		mutex_lock(&indio_dev->mlock);
->> +
->> +		reinit_completion(&info->completion);
->> +
->> +		/* Select the channel to be used */
->> +		info->cur_chn = chan->channel;
->> +
->> +		if (info->data->start_conv)
->> +			info->data->start_conv(info);
->> +
->> +		if (!wait_for_completion_timeout(&info->completion,
->> +							HIBVT_LSADC_TIMEOUT)) {
->> +			if (info->data->stop_conv)
->> +				info->data->stop_conv(info);
->> +			mutex_unlock(&indio_dev->mlock);
->> +			return -ETIMEDOUT;
->> +		}
->> +
->> +		*val = info->value;
->> +		mutex_unlock(&indio_dev->mlock);
->> +		return IIO_VAL_INT;
->> +	case IIO_CHAN_INFO_SCALE:
->> +		*val = g_hibvt_lsadc_voltage[chan->channel];
->> +		*val2 = info->data->num_bits;
->> +		return IIO_VAL_FRACTIONAL_LOG2;
->> +	default:
->> +		return -EINVAL;
->> +	}
->> +}
->> +
->> +static irqreturn_t hibvt_lsadc_isr(int irq, void *dev_id) {
->> +	struct hibvt_lsadc *info = (struct hibvt_lsadc *)dev_id;
->> +	int mask;
->> +
->> +	mask = readl(info->regs + HIBVT_LSADC_INTSTATUS);
->> +	if ((mask & HIBVT_LSADC_CHN_MASK_v1) == 0)
->> +		return IRQ_NONE;
->> +
->> +	/* Clear irq */
->> +	mask &= HIBVT_LSADC_CHN_MASK_v1;
->> +	if (info->data->clear_irq)
->> +		info->data->clear_irq(info, mask);
->> +
->> +	/* Read value */
->> +	info->value = readl(info->regs +
->> +		HIBVT_LSADC_CHNDATA + (info->cur_chn << 2));
->> +	info->value &= GENMASK(info->data->num_bits - 1, 0);
->> +
->> +	/* stop adc */
->> +	if (info->data->stop_conv)
->> +		info->data->stop_conv(info);
->> +
->> +	complete(&info->completion);
->> +
->> +	return IRQ_HANDLED;
->> +}
->> +
->> +static const struct iio_info hibvt_lsadc_iio_info = {
->> +	.read_raw = hibvt_lsadc_read_raw,
->> +	.driver_module = THIS_MODULE,
->> +};
->> +
->> +#define HIBVT_LSADC_CHANNEL(_index, _id) {      \
->> +	.type = IIO_VOLTAGE,                \
->> +	.indexed = 1,						\
->> +	.channel = _index,					\
->> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
->> +			BIT(IIO_CHAN_INFO_SCALE),   \
->> +	.datasheet_name = _id,              \
->> +}
->> +
->> +static const struct iio_chan_spec hibvt_lsadc_iio_channels[] = {
->> +	HIBVT_LSADC_CHANNEL(0, "adc0"),
->> +	HIBVT_LSADC_CHANNEL(1, "adc1"),
->> +	HIBVT_LSADC_CHANNEL(2, "adc2"),
->> +};
->> +
->> +static void hibvt_lsadc_v1_clear_irq(struct hibvt_lsadc *info, int 
->> +mask) {
->> +	writel(mask, info->regs + HIBVT_LSADC_INTCLR); }
->> +
->> +static void hibvt_lsadc_v1_start_conv(struct hibvt_lsadc *info) {
->> +	unsigned int con;
->> +
->> +	/* set number bit */
-> set number of bits?
->> +	con = GENMASK(info->data->num_bits - 1, 0);
->> +	writel(con, (info->regs + HIBVT_LSADC_ACTBIT));
->> +
->> +	/* config */
->> +	con = readl(info->regs + HIBVT_LSADC_CONFIG);
->> +	con &= ~HIBVT_CONFIG_RESET;
->> +	con |= (HIBVT_CONFIG_POWERDOWN | HIBVT_CONFIG_DEGLITCH |
->> +		HIBVT_CONFIG_MODE);
->> +	con &= ~(HIBVT_CONFIG_CHNA | HIBVT_CONFIG_CHNB | HIBVT_CONFIG_CHNC);
->> +	con |= (HIBVT_CONFIG_CHNA << info->cur_chn);
->> +	writel(con, (info->regs + HIBVT_LSADC_CONFIG));
->> +
->> +	/* set timescan */
->> +	writel(HIBVT_LSADC_TSCAN_MS, (info->regs + HIBVT_LSADC_TIMESCAN));
->> +
->> +	/* clear interrupt */
->> +	writel(HIBVT_LSADC_CHN_MASK_v1, info->regs + HIBVT_LSADC_INTCLR);
->> +
->> +	/* enable interrupt */
->> +	writel(HIBVT_LSADC_CON_EN, (info->regs + HIBVT_LSADC_INTEN));
->> +
->> +	/* start scan */
->> +	writel(HIBVT_LSADC_CON_EN, (info->regs + HIBVT_LSADC_START)); }
->> +
->> +static void hibvt_lsadc_v1_stop_conv(struct hibvt_lsadc *info) {
->> +	/* reset the timescan */
-> This isn't a particularly common pice of terminology, perhaps a short
-> description here of what timescan is and why we should reset it would
-> make the code easier to follow.
-> 
->> +	writel(HIBVT_LSADC_CON_DEN, (info->regs + HIBVT_LSADC_TIMESCAN));
->> +
->> +	/* disable interrupt */
->> +	writel(HIBVT_LSADC_CON_DEN, (info->regs + HIBVT_LSADC_INTEN));
->> +
->> +	/* stop scan */
->> +	writel(HIBVT_LSADC_CON_EN, (info->regs + HIBVT_LSADC_STOP)); }
->> +
->> +static const struct hibvt_lsadc_data lsadc_data_v1 = {
->> +	.num_bits = HIBVT_LSADC_NUM_BITS_V1,
->> +	.channels = hibvt_lsadc_iio_channels,
->> +	.num_channels = ARRAY_SIZE(hibvt_lsadc_iio_channels),
->> +
->> +	.clear_irq = hibvt_lsadc_v1_clear_irq,
->> +	.start_conv = hibvt_lsadc_v1_start_conv,
->> +	.stop_conv = hibvt_lsadc_v1_stop_conv, };
->> +
->> +static const struct of_device_id hibvt_lsadc_match[] = {
->> +	{
->> +		.compatible = "hisilicon,hi3516cv300-lsadc",
->> +		.data = &lsadc_data_v1,
-> The usual convention is to only introduce 'variant' type data as a precursor patch to a series including the support of new parts.
-> 
-> It is acceptable to post a version with this in if you are shortly to submit the follow up that adds other device support.  If you are doing this, please put a note in the patch description to that effect.  Note that if the additional support doesn't turn up, the driver may we get 'simplified'
-> by someone else.
-> 
-> I'd also generally expect to see this match table further down - directly above where it is used.  Makes for ever so slightly easier reviewing!
->> +	},
->> +	{},
->> +};
->> +MODULE_DEVICE_TABLE(of, hibvt_lsadc_match);
->> +
->> +/* Reset LSADC Controller */
->> +static void hibvt_lsadc_reset_controller(struct reset_control *reset) 
->> +{
->> +	reset_control_assert(reset);
->> +	usleep_range(10, 20);
->> +	reset_control_deassert(reset);
->> +}
->> +
->> +static int hibvt_lsadc_probe(struct platform_device *pdev) {
->> +	struct hibvt_lsadc *info = NULL;
->> +	struct device_node *np = pdev->dev.of_node;
->> +	struct iio_dev *indio_dev = NULL;
->> +	struct resource	*mem;
->> +	const struct of_device_id *match;
->> +	int ret;
->> +	int irq;
->> +
->> +	if (!np)
->> +		return -ENODEV;
->> +
->> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
->> +	if (!indio_dev) {
->> +		dev_err(&pdev->dev, "failed allocating iio device\n");
->> +		return -ENOMEM;
->> +	}
->> +	info = iio_priv(indio_dev);
->> +
->> +	match = of_match_device(hibvt_lsadc_match, &pdev->dev);
->> +	info->data = match->data;
->> +
->> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
->> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
->> +	if (IS_ERR(info->regs))
->> +		return PTR_ERR(info->regs);
->> +
->> +	/*
->> +	 * The reset should be an optional property, as it should work
->> +	 * with old devicetrees as well
->> +	 */
->> +	info->reset = devm_reset_control_get(&pdev->dev, "lsadc-crg");
->> +	if (IS_ERR(info->reset)) {
->> +		ret = PTR_ERR(info->reset);
->> +		if (ret != -ENOENT)
->> +			return ret;
->> +
->> +		dev_dbg(&pdev->dev, "no reset control found\n");
->> +		info->reset = NULL;
->> +	}
->> +
->> +	init_completion(&info->completion);
->> +
->> +	irq = platform_get_irq(pdev, 0);
->> +	if (irq < 0) {
->> +		dev_err(&pdev->dev, "no irq resource?\n");
->> +		return irq;
->> +	}
->> +
->> +	ret = devm_request_irq(&pdev->dev, irq, hibvt_lsadc_isr,
->> +			       0, dev_name(&pdev->dev), info);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "failed requesting irq %d\n", irq);
->> +		return ret;
->> +	}
->> +
->> +	if (info->reset)
->> +		hibvt_lsadc_reset_controller(info->reset);
->> +
->> +	platform_set_drvdata(pdev, indio_dev);
->> +
->> +	indio_dev->name = dev_name(&pdev->dev);
->> +	indio_dev->dev.parent = &pdev->dev;
->> +	indio_dev->dev.of_node = pdev->dev.of_node;
->> +	indio_dev->info = &hibvt_lsadc_iio_info;
->> +	indio_dev->modes = INDIO_DIRECT_MODE;
->> +
->> +	indio_dev->channels = info->data->channels;
->> +	indio_dev->num_channels = info->data->num_channels;
->> +
->> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
->> +	if (ret < 0) {
->> +		dev_err(&pdev->dev, "failed register iio device\n");
->> +		return ret;
-> Drop this return ret and just return ret instead of the return 0 below.
->> +	}
->> +
->> +	return 0;
->> +}
->> +
->> +static struct platform_driver hibvt_lsadc_driver = {
->> +	.probe		= hibvt_lsadc_probe,
->> +	.driver		= {
->> +		.name	= "hibvt-lsadc",
->> +		.of_match_table = hibvt_lsadc_match,
->> +	},
->> +};
->> +
->> +module_platform_driver(hibvt_lsadc_driver);
->> +
->> +MODULE_AUTHOR("Allen Liu <liurenzhong@hisilicon.com>"); 
->> +MODULE_DESCRIPTION("hisilicon BVT LSADC driver"); MODULE_LICENSE("GPL 
->> +v2");
+> J
+
+I haven't received any news from you on the merging of this patch series
+for a month, so kindly pinging.
+
+Thanks,
+Quentin
+
 >>
+>> Thanks,
+>> Quentin
+>>
+>>> Thanks,
+>>>
+>>> Jonathan
+>>>>
+>>>> Jonathan
+>>>>> ---
+>>>>>
+>>>>> v9:
+>>>>>  - clarify comment on why we have to use the parent node as node
+>> for
+>>>>>  registering in thermal framework, (backward compatibility)
+>>>>>  - clarify comment on why we can disable CONFIG_THERMAL_OF,
+>>>>>  - clarify Kconfig help to say that CONFIG_THERMAL_OF can be
+>> disabled
+>>>>>  but should not in most cases,
+>>>>>  - make return value of devm_thermal_zone_of_sensor_register a
+>> local
+>>>>>  variable of the condition block,
+>>>>>  - correct scale from _PLUS_MICRO to _PLUS_NANO for ADC raw
+>> readings
+>>>>>  scale,
+>>>>>
+>>>>> v8:
+>>>>>  - remove Kconfig depends on !TOUCHSCREEN_SUN4I (moved to
+>>>>> MFD_SUN4I_GPADC),
+>>>>>  - fix return values of regmap_irq_get_virq and
+>> platform_get_irq_byname
+>>>>> stored in an unsigned int and then check if negative,
+>>>>>  - fix uninitialized ret value when an error occurs while
+>> registering
+>>>>> the thermal sensor in the framework,
+>>>>>
+>>>>> v7:
+>>>>>  - add Kconfig depends on !TOUCHSCREEN_SUN4I,
+>>>>>  - remove Kconfig selects THERMAL_OF,
+>>>>>  - do not register thermal sensor if CONFIG_THERMAL_OF is disabled,
+>>>>>  - disable irq in irq_handler rather than in read_raw,
+>>>>>  - add delay when switching the IP's mode or channel (delay
+>> empirically found),
+>>>>>  - quicken thermal sensor interrupt period,
+>>>>>  - add masks for channel bits,
+>>>>>  - fix deadlock in sun4i_gpadc_read if regmap_read/write fails,
+>>>>>  - move some logic from sun4i_gpadc_read to sun4i_prepare_for_irq,
+>>>>>  - mark last busy for runtime_pm only on success in
+>> sun4i_gpadc_read,
+>>>>>  - remove cached values,
+>>>>>  - increase wait_for_completion_timeout timeout to 1s to be sure to
+>> not miss the
+>>>>>  thermal interrupt,
+>>>>>  - add voltage scale,
+>>>>>  - use devm_iio_device_register,
+>>>>>
+>>>>> v6:
+>>>>>  - remove "-mfd" from filenames and variables inside MFD driver,
+>>>>>  - use DEFINE_RES_IRQ_NAMED instead of setting resources manually,
+>>>>>  - cosmetic changes,
+>>>>>  - use IDs and switch over ID to get cells specific to an
+>> architecture, instead
+>>>>>  of using cells direclty, in of_device_id.data,
+>>>>>  - compute size of mfd_cells array instead of hardcoded one,
+>>>>>
+>>>>> v5:
+>>>>>  - correct mail address,
+>>>>>
+>>>>> v4:
+>>>>>  - rename files and variables from sunxi* to sun4i*,
+>>>>>  - rename defines from SUNXI_* to SUN4I_* or SUN6I_*,
+>>>>>  - remove TP in defines name,
+>>>>>  - rename SUNXI_IRQ_* to SUN4I_GPADC_IRQ_* for consistency,
+>>>>>  - use devm functions for regmap_add_irq_chip and mfd_add_devices,
+>>>>>  - remove remove functions (now empty thanks to devm functions),
+>>>>>
+>>>>> v3:
+>>>>>  - use defines in regmap_irq instead of hard coded BITs,
+>>>>>  - use of_device_id data field to chose which MFD cells to add
+>> considering
+>>>>>    the compatible responsible of the MFD probe,
+>>>>>  - remove useless initializations,
+>>>>>  - disable all interrupts before adding them to regmap_irqchip,
+>>>>>  - add goto error label in probe,
+>>>>>  - correct wrapping in header license,
+>>>>>  - move defines from IIO driver to header,
+>>>>>  - use GENMASK to limit the size of the variable passed to a macro,
+>>>>>  - prefix register BIT defines with the name of the register,
+>>>>>  - reorder defines,
+>>>>>
+>>>>> v2:
+>>>>>  - add license headers,
+>>>>>  - reorder alphabetically includes,
+>>>>>  - add SUNXI_GPADC_ prefixes for defines,
+>>>>>
+>>>>>  drivers/iio/adc/Kconfig           |  17 ++
+>>>>>  drivers/iio/adc/Makefile          |   1 +
+>>>>>  drivers/iio/adc/sun4i-gpadc-iio.c | 613
+>> ++++++++++++++++++++++++++++++++++++++
+>>>>>  include/linux/mfd/sun4i-gpadc.h   |   2 +
+>>>>>  4 files changed, 633 insertions(+)
+>>>>>  create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
+>>>>>
+>>>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>>>> index 99c0514..6a6d369 100644
+>>>>> --- a/drivers/iio/adc/Kconfig
+>>>>> +++ b/drivers/iio/adc/Kconfig
+>>>>> @@ -434,6 +434,23 @@ config STX104
+>>>>>  	  The base port addresses for the devices may be configured via
+>> the base
+>>>>>  	  array module parameter.
+>>>>>  
+>>>>> +config SUN4I_GPADC
+>>>>> +	tristate "Support for the Allwinner SoCs GPADC"
+>>>>> +	depends on IIO
+>>>>> +	depends on MFD_SUN4I_GPADC
+>>>>> +	help
+>>>>> +	  Say yes here to build support for Allwinner (A10, A13 and A31)
+>> SoCs
+>>>>> +	  GPADC. This ADC provides 4 channels which can be used as an ADC
+>> or as
+>>>>> +	  a touchscreen input and one channel for thermal sensor.
+>>>>> +
+>>>>> +	  The thermal sensor slows down ADC readings and can be disabled
+>> by
+>>>>> +	  disabling CONFIG_THERMAL_OF. However, the thermal sensor should
+>> be
+>>>>> +	  enabled by default since the SoC temperature is usually more
+>> critical
+>>>>> +	  than ADC readings.
+>>>>> +
+>>>>> +	  To compile this driver as a module, choose M here: the module
+>> will be
+>>>>> +	  called sun4i-gpadc-iio.
+>>>>> +
+>>>>>  config TI_ADC081C
+>>>>>  	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+>>>>>  	depends on I2C
+>>>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>>>>> index 7a40c04..18ce8d6 100644
+>>>>> --- a/drivers/iio/adc/Makefile
+>>>>> +++ b/drivers/iio/adc/Makefile
+>>>>> @@ -41,6 +41,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
+>>>>>  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>>>>>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>>>>>  obj-$(CONFIG_STX104) += stx104.o
+>>>>> +obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
+>>>>>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>>>>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+>>>>>  obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+>>>>> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c
+>> b/drivers/iio/adc/sun4i-gpadc-iio.c
+>>>>> new file mode 100644
+>>>>> index 0000000..a8e134f
+>>>>> --- /dev/null
+>>>>> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+>>>>> @@ -0,0 +1,613 @@
+>>>>> +/* ADC driver for sunxi platforms' (A10, A13 and A31) GPADC
+>>>>> + *
+>>>>> + * Copyright (c) 2016 Quentin Schulz
+>> <quentin.schulz@free-electrons.com>
+>>>>> + *
+>>>>> + * This program is free software; you can redistribute it and/or
+>> modify it under
+>>>>> + * the terms of the GNU General Public License version 2 as
+>> published by the
+>>>>> + * Free Software Foundation.
+>>>>> + *
+>>>>> + * The Allwinner SoCs all have an ADC that can also act as a
+>> touchscreen
+>>>>> + * controller and a thermal sensor.
+>>>>> + * The thermal sensor works only when the ADC acts as a
+>> touchscreen controller
+>>>>> + * and is configured to throw an interrupt every fixed periods of
+>> time (let say
+>>>>> + * every X seconds).
+>>>>> + * One would be tempted to disable the IP on the hardware side
+>> rather than
+>>>>> + * disabling interrupts to save some power but that resets the
+>> internal clock of
+>>>>> + * the IP, resulting in having to wait X seconds every time we
+>> want to read the
+>>>>> + * value of the thermal sensor.
+>>>>> + * This is also the reason of using autosuspend in pm_runtime. If
+>> there was no
+>>>>> + * autosuspend, the thermal sensor would need X seconds after
+>> every
+>>>>> + * pm_runtime_get_sync to get a value from the ADC. The
+>> autosuspend allows the
+>>>>> + * thermal sensor to be requested again in a certain time span
+>> before it gets
+>>>>> + * shutdown for not being used.
+>>>>> + */
+>>>>> +
+>>>>> +#include <linux/completion.h>
+>>>>> +#include <linux/interrupt.h>
+>>>>> +#include <linux/io.h>
+>>>>> +#include <linux/module.h>
+>>>>> +#include <linux/of.h>
+>>>>> +#include <linux/of_device.h>
+>>>>> +#include <linux/platform_device.h>
+>>>>> +#include <linux/pm_runtime.h>
+>>>>> +#include <linux/regmap.h>
+>>>>> +#include <linux/thermal.h>
+>>>>> +#include <linux/delay.h>
+>>>>> +
+>>>>> +#include <linux/iio/iio.h>
+>>>>> +#include <linux/iio/driver.h>
+>>>>> +#include <linux/iio/machine.h>
+>>>>> +#include <linux/mfd/sun4i-gpadc.h>
+>>>>> +
+>>>>> +static unsigned int sun4i_gpadc_chan_select(unsigned int chan)
+>>>>> +{
+>>>>> +	return SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
+>>>>> +}
+>>>>> +
+>>>>> +static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
+>>>>> +{
+>>>>> +	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
+>>>>> +}
+>>>>> +
+>>>>> +struct gpadc_data {
+>>>>> +	int		temp_offset;
+>>>>> +	int		temp_scale;
+>>>>> +	unsigned int	tp_mode_en;
+>>>>> +	unsigned int	tp_adc_select;
+>>>>> +	unsigned int	(*adc_chan_select)(unsigned int chan);
+>>>>> +	unsigned int	adc_chan_mask;
+>>>>> +};
+>>>>> +
+>>>>> +static const struct gpadc_data sun4i_gpadc_data = {
+>>>>> +	.temp_offset = -1932,
+>>>>> +	.temp_scale = 133,
+>>>>> +	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
+>>>>> +	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
+>>>>> +	.adc_chan_select = &sun4i_gpadc_chan_select,
+>>>>> +	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct gpadc_data sun5i_gpadc_data = {
+>>>>> +	.temp_offset = -1447,
+>>>>> +	.temp_scale = 100,
+>>>>> +	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
+>>>>> +	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
+>>>>> +	.adc_chan_select = &sun4i_gpadc_chan_select,
+>>>>> +	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct gpadc_data sun6i_gpadc_data = {
+>>>>> +	.temp_offset = -1623,
+>>>>> +	.temp_scale = 167,
+>>>>> +	.tp_mode_en = SUN6I_GPADC_CTRL1_TP_MODE_EN,
+>>>>> +	.tp_adc_select = SUN6I_GPADC_CTRL1_TP_ADC_SELECT,
+>>>>> +	.adc_chan_select = &sun6i_gpadc_chan_select,
+>>>>> +	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
+>>>>> +};
+>>>>> +
+>>>>> +struct sun4i_gpadc_iio {
+>>>>> +	struct iio_dev			*indio_dev;
+>>>>> +	struct completion		completion;
+>>>>> +	int				temp_data;
+>>>>> +	u32				adc_data;
+>>>>> +	struct regmap			*regmap;
+>>>>> +	unsigned int			fifo_data_irq;
+>>>>> +	atomic_t			ignore_fifo_data_irq;
+>>>>> +	unsigned int			temp_data_irq;
+>>>>> +	atomic_t			ignore_temp_data_irq;
+>>>>> +	const struct gpadc_data		*data;
+>>>>> +	/* prevents concurrent reads of temperature and ADC */
+>>>>> +	struct mutex			mutex;
+>>>>> +};
+>>>>> +
+>>>>> +#define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
+>>>>> +	.type = IIO_VOLTAGE,					\
+>>>>> +	.indexed = 1,						\
+>>>>> +	.channel = _channel,					\
+>>>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>>>>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>>>>> +	.datasheet_name = _name,				\
+>>>>> +}
+>>>>> +
+>>>>> +static struct iio_map sun4i_gpadc_hwmon_maps[] = {
+>>>>> +	{
+>>>>> +		.adc_channel_label = "temp_adc",
+>>>>> +		.consumer_dev_name = "iio_hwmon.0",
+>>>> It's theoretically possible we have another one of these which will
+>> make
+>>>> life interesting.  Oh well, no easy way around that at the mo...
+>>>>> +	},
+>>>>> +	{ /* sentinel */ },
+>>>>> +};
+>>>>> +
+>>>>> +static const struct iio_chan_spec sun4i_gpadc_channels[] = {
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
+>>>>> +	{
+>>>>> +		.type = IIO_TEMP,
+>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>>>> +				      BIT(IIO_CHAN_INFO_SCALE) |
+>>>>> +				      BIT(IIO_CHAN_INFO_OFFSET),
+>>>>> +		.datasheet_name = "temp_adc",
+>>>>> +	},
+>>>>> +};
+>>>>> +
+>>>>> +static const struct iio_chan_spec sun4i_gpadc_channels_no_temp[] =
+>> {
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
+>>>>> +	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
+>>>>> +};
+>>>>> +
+>>>>> +static int sun4i_prepare_for_irq(struct iio_dev *indio_dev, int
+>> channel,
+>>>>> +				 unsigned int irq)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>> +	int ret;
+>>>>> +	u32 reg;
+>>>>> +
+>>>>> +	pm_runtime_get_sync(indio_dev->dev.parent);
+>>>>> +
+>>>>> +	reinit_completion(&info->completion);
+>>>>> +
+>>>>> +	ret = regmap_write(info->regmap, SUN4I_GPADC_INT_FIFOC,
+>>>>> +			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(1) |
+>>>>> +			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH);
+>>>>> +	if (ret)
+>>>>> +		return ret;
+>>>>> +
+>>>>> +	ret = regmap_read(info->regmap, SUN4I_GPADC_CTRL1, &reg);
+>>>>> +	if (ret)
+>>>>> +		return ret;
+>>>>> +
+>>>>> +	if (irq == info->fifo_data_irq) {
+>>>>> +		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
+>>>>> +				   info->data->tp_mode_en |
+>>>>> +				   info->data->tp_adc_select |
+>>>>> +				   info->data->adc_chan_select(channel));
+>>>>> +		/*
+>>>>> +		 * When the IP changes channel, it needs a bit of time to get
+>>>>> +		 * correct values.
+>>>>> +		 */
+>>>>> +		if ((reg & info->data->adc_chan_mask) !=
+>>>>> +			 info->data->adc_chan_select(channel))
+>>>>> +			mdelay(10);
+>>>>> +
+>>>>> +	} else {
+>>>>> +		/*
+>>>>> +		 * The temperature sensor returns valid data only when the ADC
+>>>>> +		 * operates in touchscreen mode.
+>>>>> +		 */
+>>>>> +		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
+>>>>> +				   info->data->tp_mode_en);
+>>>>> +	}
+>>>>> +
+>>>>> +	if (ret)
+>>>>> +		return ret;
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * When the IP changes mode between ADC or touchscreen, it
+>>>>> +	 * needs a bit of time to get correct values.
+>>>>> +	 */
+>>>>> +	if ((reg & info->data->tp_adc_select) !=
+>> info->data->tp_adc_select)
+>>>>> +		mdelay(100);
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_read(struct iio_dev *indio_dev, int
+>> channel, int *val,
+>>>>> +			    unsigned int irq)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>> +	int ret;
+>>>>> +
+>>>>> +	mutex_lock(&info->mutex);
+>>>>> +
+>>>>> +	ret = sun4i_prepare_for_irq(indio_dev, channel, irq);
+>>>>> +	if (ret)
+>>>>> +		goto err;
+>>>>> +
+>>>>> +	enable_irq(irq);
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * The temperature sensor throws an interruption periodically
+>> (currently
+>>>>> +	 * set at periods of ~0.6s in sun4i_gpadc_runtime_resume). A 1s
+>> delay
+>>>>> +	 * makes sure an interruption occurs in normal conditions. If it
+>> doesn't
+>>>>> +	 * occur, then there is a timeout.
+>>>>> +	 */
+>>>>> +	if (!wait_for_completion_timeout(&info->completion,
+>>>>> +					 msecs_to_jiffies(1000))) {
+>>>>> +		ret = -ETIMEDOUT;
+>>>>> +		goto err;
+>>>>> +	}
+>>>>> +
+>>>>> +	if (irq == info->fifo_data_irq)
+>>>>> +		*val = info->adc_data;
+>>>>> +	else
+>>>>> +		*val = info->temp_data;
+>>>>> +
+>>>>> +	ret = 0;
+>>>>> +	pm_runtime_mark_last_busy(indio_dev->dev.parent);
+>>>>> +
+>>>>> +err:
+>>>>> +	pm_runtime_put_autosuspend(indio_dev->dev.parent);
+>>>>> +	mutex_unlock(&info->mutex);
+>>>>> +
+>>>>> +	return ret;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_adc_read(struct iio_dev *indio_dev, int
+>> channel,
+>>>>> +				int *val)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>> +
+>>>>> +	return sun4i_gpadc_read(indio_dev, channel, val,
+>> info->fifo_data_irq);
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int
+>> *val)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>> +
+>>>>> +	return sun4i_gpadc_read(indio_dev, 0, val, info->temp_data_irq);
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_temp_offset(struct iio_dev *indio_dev, int
+>> *val)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>> +
+>>>>> +	*val = info->data->temp_offset;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_temp_scale(struct iio_dev *indio_dev, int
+>> *val)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>> +
+>>>>> +	*val = info->data->temp_scale;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
+>>>>> +				struct iio_chan_spec const *chan, int *val,
+>>>>> +				int *val2, long mask)
+>>>>> +{
+>>>>> +	int ret;
+>>>>> +
+>>>>> +	switch (mask) {
+>>>>> +	case IIO_CHAN_INFO_OFFSET:
+>>>>> +		ret = sun4i_gpadc_temp_offset(indio_dev, val);
+>>>>> +		if (ret)
+>>>>> +			return ret;
+>>>>> +
+>>>>> +		return IIO_VAL_INT;
+>>>>> +	case IIO_CHAN_INFO_RAW:
+>>>>> +		if (chan->type == IIO_VOLTAGE)
+>>>>> +			ret = sun4i_gpadc_adc_read(indio_dev, chan->channel,
+>>>>> +						   val);
+>>>>> +		else
+>>>>> +			ret = sun4i_gpadc_temp_read(indio_dev, val);
+>>>>> +
+>>>>> +		if (ret)
+>>>>> +			return ret;
+>>>>> +
+>>>>> +		return IIO_VAL_INT;
+>>>>> +	case IIO_CHAN_INFO_SCALE:
+>>>>> +		if (chan->type == IIO_VOLTAGE) {
+>>>>> +			/* 3000mV / 4096 * raw */
+>>>>> +			*val = 0;
+>>>>> +			*val2 = 732421875;
+>>>>> +			return IIO_VAL_INT_PLUS_NANO;
+>>>>> +		}
+>>>>> +
+>>>>> +		ret = sun4i_gpadc_temp_scale(indio_dev, val);
+>>>>> +		if (ret)
+>>>>> +			return ret;
+>>>>> +
+>>>>> +		return IIO_VAL_INT;
+>>>>> +	default:
+>>>>> +		return -EINVAL;
+>>>>> +	}
+>>>>> +
+>>>>> +	return -EINVAL;
+>>>>> +}
+>>>>> +
+>>>>> +static const struct iio_info sun4i_gpadc_iio_info = {
+>>>>> +	.read_raw = sun4i_gpadc_read_raw,
+>>>>> +	.driver_module = THIS_MODULE,
+>>>>> +};
+>>>>> +
+>>>>> +static irqreturn_t sun4i_gpadc_temp_data_irq_handler(int irq, void
+>> *dev_id)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = dev_id;
+>>>>> +
+>>>>> +	if (atomic_read(&info->ignore_temp_data_irq))
+>>>>> +		goto out;
+>>>>> +
+>>>>> +	if (!regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA,
+>> &info->temp_data))
+>>>>> +		complete(&info->completion);
+>>>>> +
+>>>>> +out:
+>>>>> +	disable_irq_nosync(info->temp_data_irq);
+>>>>> +	return IRQ_HANDLED;
+>>>>> +}
+>>>>> +
+>>>>> +static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void
+>> *dev_id)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = dev_id;
+>>>>> +
+>>>>> +	if (atomic_read(&info->ignore_fifo_data_irq))
+>>>>> +		goto out;
+>>>>> +
+>>>>> +	if (!regmap_read(info->regmap, SUN4I_GPADC_DATA,
+>> &info->adc_data))
+>>>>> +		complete(&info->completion);
+>>>>> +
+>>>>> +out:
+>>>>> +	disable_irq_nosync(info->fifo_data_irq);
+>>>>> +	return IRQ_HANDLED;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_runtime_suspend(struct device *dev)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+>>>>> +
+>>>>> +	/* Disable the ADC on IP */
+>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
+>>>>> +	/* Disable temperature sensor on IP */
+>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_runtime_resume(struct device *dev)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+>>>>> +
+>>>>> +	/* clkin = 6MHz */
+>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
+>>>>> +		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
+>>>>> +		     SUN4I_GPADC_CTRL0_FS_DIV(7) |
+>>>>> +		     SUN4I_GPADC_CTRL0_T_ACQ(63));
+>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
+>> info->data->tp_mode_en);
+>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
+>>>>> +		     SUN4I_GPADC_CTRL3_FILTER_EN |
+>>>>> +		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
+>>>>> +	/* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s
+>> */
+>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_TPR,
+>>>>> +		     SUN4I_GPADC_TPR_TEMP_ENABLE |
+>>>>> +		     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_get_temp(void *data, int *temp)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info = (struct sun4i_gpadc_iio *)data;
+>>>>> +	int val, scale, offset;
+>>>>> +
+>>>>> +	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
+>>>>> +		return -ETIMEDOUT;
+>>>>> +
+>>>>> +	sun4i_gpadc_temp_scale(info->indio_dev, &scale);
+>>>>> +	sun4i_gpadc_temp_offset(info->indio_dev, &offset);
+>>>>> +
+>>>>> +	*temp = (val + offset) * scale;
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
+>>>>> +	.get_temp = &sun4i_gpadc_get_temp,
+>>>>> +};
+>>>>> +
+>>>>> +static const struct dev_pm_ops sun4i_gpadc_pm_ops = {
+>>>>> +	.runtime_suspend = &sun4i_gpadc_runtime_suspend,
+>>>>> +	.runtime_resume = &sun4i_gpadc_runtime_resume,
+>>>>> +};
+>>>>> +
+>>>>> +static int sun4i_irq_init(struct platform_device *pdev, const char
+>> *name,
+>>>>> +			  irq_handler_t handler, const char *devname,
+>>>>> +			  unsigned int *irq, atomic_t *atomic)
+>>>>> +{
+>>>>> +	int ret;
+>>>>> +	struct sun4i_gpadc_dev *mfd_dev =
+>> dev_get_drvdata(pdev->dev.parent);
+>>>>> +	struct sun4i_gpadc_iio *info =
+>> iio_priv(dev_get_drvdata(&pdev->dev));
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * Once the interrupt is activated, the IP continuously performs
+>>>>> +	 * conversions thus throws interrupts. The interrupt is activated
+>> right
+>>>>> +	 * after being requested but we want to control when these
+>> interrupts
+>>>>> +	 * occur thus we disable it right after being requested. However,
+>> an
+>>>>> +	 * interrupt might occur between these two instructions and we
+>> have to
+>>>>> +	 * make sure that does not happen, by using atomic flags. We set
+>> the
+>>>>> +	 * flag before requesting the interrupt and unset it right after
+>>>>> +	 * disabling the interrupt. When an interrupt occurs between
+>> these two
+>>>>> +	 * instructions, reading the atomic flag will tell us to ignore
+>> the
+>>>>> +	 * interrupt.
+>>>>> +	 */
+>>>>> +	atomic_set(atomic, 1);
+>>>>> +
+>>>>> +	ret = platform_get_irq_byname(pdev, name);
+>>>>> +	if (ret < 0) {
+>>>>> +		dev_err(&pdev->dev, "no %s interrupt registered\n", name);
+>>>>> +		return ret;
+>>>>> +	}
+>>>>> +
+>>>>> +	ret = regmap_irq_get_virq(mfd_dev->regmap_irqc, ret);
+>>>>> +	if (ret < 0) {
+>>>>> +		dev_err(&pdev->dev, "failed to get virq for irq %s\n", name);
+>>>>> +		return ret;
+>>>>> +	}
+>>>>> +
+>>>>> +	*irq = ret;
+>>>>> +	ret = devm_request_any_context_irq(&pdev->dev, *irq, handler, 0,
+>>>>> +					   devname, info);
+>>>>> +	if (ret < 0) {
+>>>>> +		dev_err(&pdev->dev, "could not request %s interrupt: %d\n",
+>>>>> +			name, ret);
+>>>>> +		return ret;
+>>>>> +	}
+>>>>> +
+>>>>> +	disable_irq(*irq);
+>>>>> +	atomic_set(atomic, 0);
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_probe(struct platform_device *pdev)
+>>>>> +{
+>>>>> +	struct sun4i_gpadc_iio *info;
+>>>>> +	struct iio_dev *indio_dev;
+>>>>> +	int ret;
+>>>>> +	struct sun4i_gpadc_dev *sun4i_gpadc_dev;
+>>>>> +
+>>>>> +	sun4i_gpadc_dev = dev_get_drvdata(pdev->dev.parent);
+>>>>> +
+>>>>> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+>>>>> +	if (!indio_dev)
+>>>>> +		return -ENOMEM;
+>>>>> +
+>>>>> +	info = iio_priv(indio_dev);
+>>>>> +	platform_set_drvdata(pdev, indio_dev);
+>>>>> +
+>>>>> +	mutex_init(&info->mutex);
+>>>>> +	info->regmap = sun4i_gpadc_dev->regmap;
+>>>>> +	info->indio_dev = indio_dev;
+>>>>> +	init_completion(&info->completion);
+>>>>> +	indio_dev->name = dev_name(&pdev->dev);
+>>>>> +	indio_dev->dev.parent = &pdev->dev;
+>>>>> +	indio_dev->dev.of_node = pdev->dev.of_node;
+>>>>> +	indio_dev->info = &sun4i_gpadc_iio_info;
+>>>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>>>> +	indio_dev->num_channels = ARRAY_SIZE(sun4i_gpadc_channels);
+>>>>> +	indio_dev->channels = sun4i_gpadc_channels;
+>>>>> +
+>>>>> +	info->data = (struct gpadc_data
+>> *)platform_get_device_id(pdev)->driver_data;
+>>>>> +
+>>>>> +	/*
+>>>>> +	 * Since the controller needs to be in touchscreen mode for its
+>> thermal
+>>>>> +	 * sensor to operate properly, and that switching between the two
+>> modes
+>>>>> +	 * needs a delay, always registering in the thermal framework
+>> will
+>>>>> +	 * significantly slow down the conversion rate of the ADCs.
+>>>>> +	 *
+>>>>> +	 * Therefore, instead of depending on THERMAL_OF in Kconfig, we
+>> only
+>>>>> +	 * register the sensor if that option is enabled, eventually
+>> leaving
+>>>>> +	 * that choice to the user.
+>>>>> +	 */
+>>>>> +
+>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+>>>>> +		/*
+>>>>> +		 * This driver is a child of an MFD which has a node in the DT
+>>>>> +		 * but not its children, because of DT backward compatibility
+>>>>> +		 * for A10, A13 and A31 SoCs. Therefore, the resulting devices
+>>>>> +		 * of this driver do not have an of_node variable.
+>>>>> +		 * However, its parent (the MFD driver) has an of_node variable
+>>>>> +		 * and since devm_thermal_zone_of_sensor_register uses its first
+>>>>> +		 * argument to match the phandle defined in the node of the
+>>>>> +		 * thermal driver with the of_node of the device passed as first
+>>>>> +		 * argument and the third argument to call ops from
+>>>>> +		 * thermal_zone_of_device_ops, the solution is to use the parent
+>>>>> +		 * device as first argument to match the phandle with its
+>>>>> +		 * of_node, and the device from this driver as third argument to
+>>>>> +		 * return the temperature.
+>>>>> +		 */
+>>>>> +		struct thermal_zone_device *tzd;
+>>>>> +		tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0,
+>>>>> +							   info,
+>>>>> +							   &sun4i_ts_tz_ops);
+>>>>> +		if (IS_ERR(tzd)) {
+>>>>> +			dev_err(&pdev->dev,
+>>>>> +				"could not register thermal sensor: %ld\n",
+>>>>> +				PTR_ERR(tzd));
+>>>>> +			ret = PTR_ERR(tzd);
+>>>>> +			goto err;
+>>>>> +		}
+>>>>> +	} else {
+>>>>> +		indio_dev->num_channels =
+>>>>> +			ARRAY_SIZE(sun4i_gpadc_channels_no_temp);
+>>>>> +		indio_dev->channels = sun4i_gpadc_channels_no_temp;
+>>>>> +	}
+>>>>> +
+>>>>> +	pm_runtime_set_autosuspend_delay(&pdev->dev,
+>>>>> +					 SUN4I_GPADC_AUTOSUSPEND_DELAY);
+>>>>> +	pm_runtime_use_autosuspend(&pdev->dev);
+>>>>> +	pm_runtime_set_suspended(&pdev->dev);
+>>>>> +	pm_runtime_enable(&pdev->dev);
+>>>>> +
+>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+>>>>> +		ret = sun4i_irq_init(pdev, "TEMP_DATA_PENDING",
+>>>>> +				     sun4i_gpadc_temp_data_irq_handler,
+>>>>> +				     "temp_data", &info->temp_data_irq,
+>>>>> +				     &info->ignore_temp_data_irq);
+>>>>> +		if (ret < 0)
+>>>>> +			goto err;
+>>>>> +	}
+>>>>> +
+>>>>> +	ret = sun4i_irq_init(pdev, "FIFO_DATA_PENDING",
+>>>>> +			     sun4i_gpadc_fifo_data_irq_handler, "fifo_data",
+>>>>> +			     &info->fifo_data_irq, &info->ignore_fifo_data_irq);
+>>>>> +	if (ret < 0)
+>>>>> +		goto err;
+>>>>> +
+>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+>>>>> +		ret = iio_map_array_register(indio_dev, sun4i_gpadc_hwmon_maps);
+>>>>> +		if (ret < 0) {
+>>>>> +			dev_err(&pdev->dev,
+>>>>> +				"failed to register iio map array\n");
+>>>>> +			goto err;
+>>>>> +		}
+>>>>> +	}
+>>>>> +
+>>>>> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+>>>>> +	if (ret < 0) {
+>>>>> +		dev_err(&pdev->dev, "could not register the device\n");
+>>>>> +		goto err_map;
+>>>>> +	}
+>>>>> +
+>>>>> +	return 0;
+>>>>> +
+>>>>> +err_map:
+>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF))
+>>>>> +		iio_map_array_unregister(indio_dev);
+>>>>> +
+>>>>> +err:
+>>>>> +	pm_runtime_put(&pdev->dev);
+>>>>> +	pm_runtime_disable(&pdev->dev);
+>>>>> +
+>>>>> +	return ret;
+>>>>> +}
+>>>>> +
+>>>>> +static int sun4i_gpadc_remove(struct platform_device *pdev)
+>>>>> +{
+>>>>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>>>> +
+>>>>> +	pm_runtime_put(&pdev->dev);
+>>>>> +	pm_runtime_disable(&pdev->dev);
+>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF))
+>>>>> +		iio_map_array_unregister(indio_dev);
+>>>>> +
+>>>>> +	return 0;
+>>>>> +}
+>>>>> +
+>>>>> +static const struct platform_device_id sun4i_gpadc_id[] = {
+>>>>> +	{ "sun4i-a10-gpadc-iio", (kernel_ulong_t)&sun4i_gpadc_data },
+>>>>> +	{ "sun5i-a13-gpadc-iio", (kernel_ulong_t)&sun5i_gpadc_data },
+>>>>> +	{ "sun6i-a31-gpadc-iio", (kernel_ulong_t)&sun6i_gpadc_data },
+>>>>> +	{ /* sentinel */ },
+>>>>> +};
+>>>>> +
+>>>>> +static struct platform_driver sun4i_gpadc_driver = {
+>>>>> +	.driver = {
+>>>>> +		.name = "sun4i-gpadc-iio",
+>>>>> +		.pm = &sun4i_gpadc_pm_ops,
+>>>>> +	},
+>>>>> +	.id_table = sun4i_gpadc_id,
+>>>>> +	.probe = sun4i_gpadc_probe,
+>>>>> +	.remove = sun4i_gpadc_remove,
+>>>>> +};
+>>>>> +
+>>>>> +module_platform_driver(sun4i_gpadc_driver);
+>>>>> +
+>>>>> +MODULE_DESCRIPTION("ADC driver for sunxi platforms");
+>>>>> +MODULE_AUTHOR("Quentin Schulz
+>> <quentin.schulz@free-electrons.com>");
+>>>>> +MODULE_LICENSE("GPL v2");
+>>>>> diff --git a/include/linux/mfd/sun4i-gpadc.h
+>> b/include/linux/mfd/sun4i-gpadc.h
+>>>>> index d7a29f2..509e736 100644
+>>>>> --- a/include/linux/mfd/sun4i-gpadc.h
+>>>>> +++ b/include/linux/mfd/sun4i-gpadc.h
+>>>>> @@ -28,6 +28,7 @@
+>>>>>  #define SUN4I_GPADC_CTRL1_TP_MODE_EN			BIT(4)
+>>>>>  #define SUN4I_GPADC_CTRL1_TP_ADC_SELECT			BIT(3)
+>>>>>  #define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) &
+>> (x))
+>>>>> +#define SUN4I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(2, 0)
+>>>>>  
+>>>>>  /* TP_CTRL1 bits for sun6i SOCs */
+>>>>>  #define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
+>>>>> @@ -35,6 +36,7 @@
+>>>>>  #define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
+>>>>>  #define SUN6I_GPADC_CTRL1_TP_ADC_SELECT			BIT(4)
+>>>>>  #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) &
+>> BIT(x))
+>>>>> +#define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
+>>>>>  
+>>>>>  #define SUN4I_GPADC_CTRL2				0x08
+>>>>>  
+>>>>>
+>>>>
+>>>> --
+>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>> in
+>>>> the body of a message to majordomo@vger.kernel.org
+>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>
+>>>
 > 
 
+-- 
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
