@@ -1,200 +1,227 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45319 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753030AbdBKKyk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Feb 2017 05:54:40 -0500
-Subject: Re: [PATCH v1 1/2] iio: Allow triggers to be used as parent of others
- triggers
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-References: <1486390912-24362-1-git-send-email-benjamin.gaignard@st.com>
- <1486390912-24362-2-git-send-email-benjamin.gaignard@st.com>
+Received: from mail-wr0-f179.google.com ([209.85.128.179]:36197 "EHLO
+        mail-wr0-f179.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752590AbdBFOWJ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2017 09:22:09 -0500
+Received: by mail-wr0-f179.google.com with SMTP id k90so23210546wrc.3
+        for <linux-iio@vger.kernel.org>; Mon, 06 Feb 2017 06:22:09 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: linux-kernel@vger.kernel.org, jic23@kernel.org,
+        linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
 Cc: fabrice.gasnier@st.com, linaro-kernel@lists.linaro.org,
+        benjamin.gaignard@linaro.org,
         Benjamin Gaignard <benjamin.gaignard@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a7ed02f7-1196-17da-0088-a5f32f32b1fc@kernel.org>
-Date: Sat, 11 Feb 2017 10:54:34 +0000
-MIME-Version: 1.0
-In-Reply-To: <1486390912-24362-2-git-send-email-benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=windows-1252
+Subject: [PATCH v1 2/2] iio: stm32 trigger: Implement validate_trigger function
+Date: Mon,  6 Feb 2017 15:21:52 +0100
+Message-Id: <1486390912-24362-3-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1486390912-24362-1-git-send-email-benjamin.gaignard@st.com>
+References: <1486390912-24362-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 06/02/17 14:21, Benjamin Gaignard wrote:
-> Add "parent_trigger" sysfs attribute to iio trigger to be able
-> to set a parent to the current trigger.
-> Introduce validate_trigger function in iio_trigger_ops which does
-> the same than validate_device but with a trigger as second parameter.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-Two minor issues,
+Add validate_trigger function in iio_trigger_ops to be able to accept
+triggers as parents.
 
-1) needs more docs.  Us two both know what is going on here with these
-parent triggers based on the fact we came up with the approach from your
-earlier patches.  However, people new to this code will have no idea!
+Because the hardware have 8 different ways to use parent levels and
+edges, this patch introduce "slave_mode" sysfs attribute for stm32
+triggers.
 
-2) inflicting a parent trigger attribute on triggers that don't support
-it (most of them right now) seems like a bad idea from a confusion
-point of view.  I think for now we need an 'opt in' flag for this.
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+---
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  26 ++++++
+ drivers/iio/trigger/stm32-timer-trigger.c          | 104 +++++++++++++++++++++
+ 2 files changed, 130 insertions(+)
 
-J
-> ---
->  .../ABI/testing/sysfs-bus-iio-trigger-sysfs        |  8 +++
->  drivers/iio/industrialio-trigger.c                 | 68 ++++++++++++++++++++++
->  include/linux/iio/trigger.h                        |  6 +-
->  3 files changed, 81 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-> index 04ac623..179fc0c 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-> @@ -40,3 +40,11 @@ Description:
->  		associated file, representing the id of the trigger that needs
->  		to be removed. If the trigger can't be found, an invalid
->  		argument message will be returned to the user.
-> +
-> +What:		/sys/bus/iio/devices/triggerX/parent_trigger
-> +KernelVersion:	4.12
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This attribute is used to set a trigger as parent for the
-> +		current trigger. If the trigger can't use the parent an
-> +		invalid argument message will be returned.
-We need more description somewhere of what a parent trigger is.
-Probably the ideal would be to flesh out the docs in
-Documentation/driver-api/iio (should hit mainline in the coming merge
-window).
-
-Remember to cc the documentation list and maintainer if you do it that way.
-
-Otherwise I guess we could start with just some more info here.
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 978729f..5eda996 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -58,8 +58,76 @@ static ssize_t iio_trigger_read_name(struct device *dev,
->  
->  static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
->  
-> +/**
-> + * iio_trigger_read_parent() - trigger consumer sysfs query parent trigger
-> + * @dev:	device associated with an industrial I/O trigger
-> + * @attr:	pointer to the device_attribute structure that
-> + *		is being processed
-> + * @buf:	buffer where the current trigger name will be printed into
-> + *
-> + * Return: a negative number on failure, the number of characters written
-> + *	   on success or 0 if no trigger is available
-> + */
-> +static ssize_t iio_trigger_read_parent(struct device *dev,
-> +				       struct device_attribute *attr,
-> +				       char *buf)
-> +{
-> +	struct iio_trigger *trig = to_iio_trigger(dev);
-> +
-> +	if (trig->parent_trigger)
-> +		return sprintf(buf, "%s\n", trig->parent_trigger->name);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct iio_trigger *iio_trigger_find_by_name(const char *name,
-> +						    size_t len);
-> +
-> +/**
-> + * iio_trigger_write_parent() - trigger consumer sysfs set parent trigger
-> + * @dev:	device associated with an industrial I/O trigger
-> + * @attr:	device attribute that is being processed
-> + * @buf:	string buffer that holds the name of the trigger
-> + * @len:	length of the trigger name held by buf
-> + *
-> + * Return: negative error code on failure or length of the buffer
-> + *	   on success
-> + */
-> +static ssize_t iio_trigger_write_parent(struct device *dev,
-> +					struct device_attribute *attr,
-> +					const char *buf,
-> +					size_t len)
-> +{
-> +	struct iio_trigger *parent;
-> +	struct iio_trigger *child = to_iio_trigger(dev);
-> +	int ret;
-> +
-> +	if (!child->ops->validate_trigger)
-> +		return -EINVAL;
-> +
-> +	if (atomic_read(&child->use_count))
-> +		return -EBUSY;
-> +
-> +	parent = iio_trigger_find_by_name(buf, len);
-> +
-> +	if (parent == child->parent_trigger)
-> +		return len;
-> +
-> +	ret = child->ops->validate_trigger(child, parent);
-> +	if (ret)
-> +		return ret;
-> +
-> +	child->parent_trigger = parent;
-> +
-> +	return len;
-> +}
-> +static DEVICE_ATTR(parent_trigger, S_IRUGO | S_IWUSR,
-> +		   iio_trigger_read_parent,
-> +		   iio_trigger_write_parent);
-> +
->  static struct attribute *iio_trig_dev_attrs[] = {
->  	&dev_attr_name.attr,
-> +	&dev_attr_parent_trigger.attr,
-Adds it to all triggers when right now only one supports it.
-
-Perhaps should be initially added for just the relevant driver
-or perhaps we should add a 'parent supported' bool to the
-trigger ops?
-
->  	NULL,
->  };
->  ATTRIBUTE_GROUPS(iio_trig_dev);
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index ea08302..16e39ee 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -29,6 +29,7 @@ struct iio_subirq {
->   *			use count is zero (may be NULL)
->   * @validate_device:	function to validate the device when the
->   *			current trigger gets changed.
-> + * @validate_trigger:	function to validate the parent trigger (may be NULL)
->   *
->   * This is typically static const within a driver and shared by
->   * instances of a given device.
-> @@ -39,9 +40,10 @@ struct iio_trigger_ops {
->  	int (*try_reenable)(struct iio_trigger *trig);
->  	int (*validate_device)(struct iio_trigger *trig,
->  			       struct iio_dev *indio_dev);
-> +	int (*validate_trigger)(struct iio_trigger *trig,
-> +				struct iio_trigger *parent);
->  };
->  
-> -
->  /**
->   * struct iio_trigger - industrial I/O trigger device
->   * @ops:		[DRIVER] operations structure
-> @@ -59,6 +61,7 @@ struct iio_trigger_ops {
->   * @attached_own_device:[INTERN] if we are using our own device as trigger,
->   *			i.e. if we registered a poll function to the same
->   *			device as the one providing the trigger.
-> + * @parent_trigger:	[INTERN] parent trigger
->   **/
->  struct iio_trigger {
->  	const struct iio_trigger_ops	*ops;
-> @@ -77,6 +80,7 @@ struct iio_trigger {
->  	unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
->  	struct mutex			pool_lock;
->  	bool				attached_own_device;
-> +	struct iio_trigger		*parent_trigger;
->  };
->  
->  
-> 
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+index 6534a60..ce974f7 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
++++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+@@ -27,3 +27,29 @@ Description:
+ 		Reading returns the current sampling frequency.
+ 		Writing an value different of 0 set and start sampling.
+ 		Writing 0 stop sampling.
++
++What:		/sys/bus/iio/devices/iio:deviceX/slave_mode_available
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the list possible slave modes which are:
++		- "disabled"  : The prescaler is clocked directly by the internal clock.
++		- "encoder_1" : Counter counts up/down on TI2FP1 edge depending on TI1FP2 level.
++		- "encoder_2" : Counter counts up/down on TI1FP2 edge depending on TI2FP1 level.
++		- "encoder_3" : Counter counts up/down on both TI1FP1 and TI2FP2 edges depending
++				on the level of the other input.
++		- "reset"     : Rising edge of the selected trigger input reinitializes the counter
++				and generates an update of the registers.
++		- "gated"     : The counter clock is enabled when the trigger input is high.
++				The counter stops (but is not reset) as soon as the trigger becomes low.
++				Both start and stop of the counter are controlled.
++		- "trigger"   : The counter starts at a rising edge of the trigger TRGI (but it is not
++				reset). Only the start of the counter is controlled.
++		- "external_clock": Rising edges of the selected trigger (TRGI) clock the counter.
++
++What:		/sys/bus/iio/devices/iio:deviceX/slave_mode
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the current slave mode.
++		Writing set the slave mode
+diff --git a/drivers/iio/trigger/stm32-timer-trigger.c b/drivers/iio/trigger/stm32-timer-trigger.c
+index 994b96d..d1ffe49 100644
+--- a/drivers/iio/trigger/stm32-timer-trigger.c
++++ b/drivers/iio/trigger/stm32-timer-trigger.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_device.h>
+ 
+ #define MAX_TRIGGERS 6
++#define MAX_VALIDS 5
+ 
+ /* List the triggers created by each timer */
+ static const void *triggers_table[][MAX_TRIGGERS] = {
+@@ -32,12 +33,29 @@
+ 	{ TIM12_TRGO, TIM12_CH1, TIM12_CH2,},
+ };
+ 
++/* List the triggers accepted by each timer */
++static const void *valids_table[][MAX_VALIDS] = {
++	{ TIM5_TRGO, TIM2_TRGO, TIM4_TRGO, TIM3_TRGO,},
++	{ TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
++	{ TIM1_TRGO, TIM8_TRGO, TIM5_TRGO, TIM4_TRGO,},
++	{ TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
++	{ TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO,},
++	{ }, /* timer 6 */
++	{ }, /* timer 7 */
++	{ TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
++	{ TIM2_TRGO, TIM3_TRGO,},
++	{ }, /* timer 10 */
++	{ }, /* timer 11 */
++	{ TIM4_TRGO, TIM5_TRGO,},
++};
++
+ struct stm32_timer_trigger {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+ 	struct clk *clk;
+ 	u32 max_arr;
+ 	const void *triggers;
++	const void *valids;
+ };
+ 
+ static int stm32_timer_start(struct stm32_timer_trigger *priv,
+@@ -221,10 +239,65 @@ static IIO_DEVICE_ATTR(master_mode, 0660,
+ 		       stm32_tt_store_master_mode,
+ 		       0);
+ 
++static char *slave_mode_table[] = {
++	"disabled",
++	"encoder_1",
++	"encoder_2",
++	"encoder_3",
++	"reset",
++	"gated",
++	"trigger",
++	"external_clock",
++};
++
++static ssize_t stm32_tt_show_slave_mode(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	u32 smcr;
++
++	regmap_read(priv->regmap, TIM_SMCR, &smcr);
++	smcr &= TIM_SMCR_SMS;
++
++	return snprintf(buf, PAGE_SIZE, "%s\n", slave_mode_table[smcr]);
++}
++
++static ssize_t stm32_tt_store_slave_mode(struct device *dev,
++					 struct device_attribute *attr,
++					 const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	int i;
++
++	for (i = 0; i < ARRAY_SIZE(slave_mode_table); i++) {
++		if (!strncmp(slave_mode_table[i], buf,
++			     strlen(slave_mode_table[i]))) {
++			regmap_update_bits(priv->regmap,
++					   TIM_SMCR, TIM_SMCR_SMS, i);
++			return len;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static IIO_CONST_ATTR(slave_mode_available,
++"disabled encoder_1 encoder_2 encoder_3 reset gated trigger external_clock");
++
++static IIO_DEVICE_ATTR(slave_mode, 0660,
++		       stm32_tt_show_slave_mode,
++		       stm32_tt_store_slave_mode,
++		       0);
++
+ static struct attribute *stm32_trigger_attrs[] = {
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_dev_attr_master_mode.dev_attr.attr,
+ 	&iio_const_attr_master_mode_available.dev_attr.attr,
++	&iio_dev_attr_slave_mode.dev_attr.attr,
++	&iio_const_attr_slave_mode_available.dev_attr.attr,
+ 	NULL,
+ };
+ 
+@@ -237,8 +310,38 @@ static IIO_DEVICE_ATTR(master_mode, 0660,
+ 	NULL,
+ };
+ 
++static int stm32_validate_trigger(struct iio_trigger *trig,
++				  struct iio_trigger *parent)
++{
++	struct stm32_timer_trigger *priv = iio_trigger_get_drvdata(trig);
++	const char * const *cur = priv->valids;
++	unsigned int i = 0;
++
++	if (!parent) {
++		regmap_update_bits(priv->regmap, TIM_SMCR, TIM_SMCR_TS, 0);
++		return 0;
++	}
++
++	if (!is_stm32_timer_trigger(parent))
++		return -EINVAL;
++
++	while (cur && *cur) {
++		if (!strncmp(parent->name, *cur, strlen(parent->name))) {
++			regmap_update_bits(priv->regmap,
++					   TIM_SMCR, TIM_SMCR_TS,
++					   i << TIM_SMCR_TS_SHIFT);
++			return 0;
++		}
++		cur++;
++		i++;
++	}
++
++	return -EINVAL;
++}
++
+ static const struct iio_trigger_ops timer_trigger_ops = {
+ 	.owner = THIS_MODULE,
++	.validate_trigger = stm32_validate_trigger,
+ };
+ 
+ static int stm32_setup_iio_triggers(struct stm32_timer_trigger *priv)
+@@ -312,6 +415,7 @@ static int stm32_timer_trigger_probe(struct platform_device *pdev)
+ 	priv->clk = ddata->clk;
+ 	priv->max_arr = ddata->max_arr;
+ 	priv->triggers = triggers_table[index];
++	priv->valids = valids_table[index];
+ 
+ 	ret = stm32_setup_iio_triggers(priv);
+ 	if (ret)
+-- 
+1.9.1
 
