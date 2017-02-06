@@ -1,354 +1,584 @@
-Return-Path: <SRS0=TTA6=ZT=hisilicon.com=liurenzhong@kernel.org>
-From: liurenzhong <liurenzhong@hisilicon.com>
-To: Jonathan Cameron <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43702 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751966AbdBFSvC (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2017 13:51:02 -0500
+Subject: =?UTF-8?Q?Re:_=e7=ad=94=e5=a4=8d:_[PATCH]_adc:_add_adc_driver_for_H?=
+ =?UTF-8?Q?isilicon_BVT_SOCs?=
+To: liurenzhong <liurenzhong@hisilicon.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
         "lars@metafoo.de" <lars@metafoo.de>,
         "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
         "robh+dt@kernel.org" <robh+dt@kernel.org>,
-        "mark.rutland@arm.com"
-	<mark.rutland@arm.com>
-CC: "akinobu.mita@gmail.com" <akinobu.mita@gmail.com>,
-        "ludovic.desroches@atmel.com" <ludovic.desroches@atmel.com>,
-        "krzk@kernel.org" <krzk@kernel.org>,
-        "vilhelm.gray@gmail.com"
-	<vilhelm.gray@gmail.com>,
-        "ksenija.stanojevic@gmail.com"
-	<ksenija.stanojevic@gmail.com>,
-        "zhiyong.tao@mediatek.com"
-	<zhiyong.tao@mediatek.com>,
-        "daniel.baluta@intel.com"
-	<daniel.baluta@intel.com>,
-        "leonard.crestez@intel.com"
-	<leonard.crestez@intel.com>,
-        "ray.jui@broadcom.com" <ray.jui@broadcom.com>,
-        "raveendra.padasalagi@broadcom.com" <raveendra.padasalagi@broadcom.com>,
-        "mranostay@gmail.com" <mranostay@gmail.com>,
-        "amsfield22@gmail.com"
-	<amsfield22@gmail.com>,
-        "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>,
-        "devicetree@vger.kernel.org"
-	<devicetree@vger.kernel.org>,
-        "linux-kernel@vger.kernel.org"
-	<linux-kernel@vger.kernel.org>,
-        Xuejiancheng <xuejiancheng@hisilicon.com>,
-        "Lixu (kevin)" <kevin.lixu@hisilicon.com>
-Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBhZGM6IGFkZCBhZGMgZHJpdmVyIGZvciBIaXNpbGlj?=
- =?gb2312?Q?on_BVT_SOCs?=
-Date: Mon, 6 Feb 2017 12:19:05 +0000
-Message-ID: <FF07FAC5C99FCA42AD8E3824334A86E0DCC408@DGGEMA503-MBS.china.huawei.com>
+        "mark.rutland@arm.com" <mark.rutland@arm.com>
 References: <1483784170-228765-1-git-send-email-liurenzhong@hisilicon.com>
  <41fbfc45-9f9a-c2cf-9c27-c4d5a39a400a@kernel.org>
-In-Reply-To: <41fbfc45-9f9a-c2cf-9c27-c4d5a39a400a@kernel.org>
-Content-Type: text/plain; charset="gb2312"
+ <FF07FAC5C99FCA42AD8E3824334A86E0DCC408@DGGEMA503-MBS.china.huawei.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Cc: "akinobu.mita@gmail.com" <akinobu.mita@gmail.com>,
+        "ludovic.desroches@atmel.com" <ludovic.desroches@atmel.com>,
+        "krzk@kernel.org" <krzk@kernel.org>,
+        "vilhelm.gray@gmail.com" <vilhelm.gray@gmail.com>,
+        "ksenija.stanojevic@gmail.com" <ksenija.stanojevic@gmail.com>,
+        "zhiyong.tao@mediatek.com" <zhiyong.tao@mediatek.com>,
+        "daniel.baluta@intel.com" <daniel.baluta@intel.com>,
+        "leonard.crestez@intel.com" <leonard.crestez@intel.com>,
+        "ray.jui@broadcom.com" <ray.jui@broadcom.com>,
+        "raveendra.padasalagi@broadcom.com"
+        <raveendra.padasalagi@broadcom.com>,
+        "mranostay@gmail.com" <mranostay@gmail.com>,
+        "amsfield22@gmail.com" <amsfield22@gmail.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Xuejiancheng <xuejiancheng@hisilicon.com>,
+        "Lixu (kevin)" <kevin.lixu@hisilicon.com>
+Message-ID: <27ea1d7c-160c-0acc-98b8-1928687e6ff6@kernel.org>
+Date: Mon, 6 Feb 2017 18:50:56 +0000
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <FF07FAC5C99FCA42AD8E3824334A86E0DCC408@DGGEMA503-MBS.china.huawei.com>
+Content-Type: text/plain; charset=gbk
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-SGkgSm9uYXRoYW4sDQoNClRoYW5rcyBmb3IgeW91ciBzdWdnZXN0aW9uLCAgSSdtIHNvcnJ5IHRv
-IHJlcGx5IGFmdGVyIGEgbG9uZyB0aW1lIC4gVGhpcyBpcyBzb21lIHByb2JsZW1zIGFzayBmb3Ig
-eW91ciBhZHZpY2U6DQoNCjEsIEl0J3MgbmljZSB0byB1c2UganVzdCAicmVzZXQvcmVzZXQudHh0
-IiBvciAiLi4uL3Jlc2V0L3Jlc2V0LnR4dCIgZnJvbSBSb2IncyBzdWdnZXN0aW9uLCBidXQgaW4g
-dGhlIGZpbHRlcmVkIERUIHRyZWUsICIuLi9yZXNldC9yZXNldC50eHQiIGlzIHVzZWQgbW9yZSB0
-aW1lcywgd2hpY2ggb25lIHdlIHNob3VsZCBnZXQsICIuLi8iIG9yICIuLi4vIj8gDQoNCjIsIFRo
-ZSBBREMgb24gaGlzaWxpY29uIEJWVCBzb2NzIGNhbiB3b3JrIGluIHNpbmdsZSBzY2FubmluZyBt
-b2RlIG9yIGNvbnRpbnVvdXMgc2Nhbm5pbmcgbW9kZS4gVGhlIHNpbmdsZSBtb2RlIGdldCBjb252
-ZXJzaW9uIHZhbHVlIG9uZSB0aW1lIGFmdGVyIHN0YXJ0IHRoZSBjb25maWd1cmUsIHdoaWxlIHRo
-ZSBjb250aW51b3VzIHNjYW5uaW5nIG1vZGUgd2lsbCBnZXQgY29udmVyc2lvbiB2YWx1ZSBlYWNo
-IHNjYW4gdGltZSBhZnRlciBzdGFydCB0aGUgY29uZmlndXJlIHdoaWxlIHN0b3BwaW5nIHRoZSBh
-ZGMgY29uZmlndXJlLiBGb3IgbW9yZSBleHBhbnNpYmlsaXR5LCAgdGhlIEFEQyBkcml2ZXIgdXNl
-IHRoZSBjb250aW51b3VzIHNjYW5uaW5nIG1vZGUgYW5kICBzdG9wIHRoZSBhZGMgY29uZmlndXJl
-IGFmdGVyIGdldCBvbmUgdGltZSBjb252ZXJzaW9uIHZhbHVlLiAgSXMgaXQgbmVjZXNzYXJ5IHRv
-IGNoYW5nZSBvdXIgZHJpdmVyIHRvIHNpbmdsZSBzY2FubmluZyBtb2RlIG9yIGp1c3QgYWRkIGEg
-c2hvcnQgZGVzY3JpcHRpb24/DQoNCjMsIFRoaXMgZHJ2aWVyIGlzIG9ubHkgc3VwcG9ydCBBREMg
-SUYgZm91bmQgb24gaGkzNTE2Y3YzMDAgYW5kIGhpMzUxOXYxMDEgbm93ICwgYW5kIGZ1dHVyZSBT
-b0NzIGZyb20gSGlzaWxpY29uIEJWVCB3b3VsZCBnZXQgc29tZSBjaGFuZ2VzIG9uIGNoYW5uZWwg
-bnVtYmVyIG9yIGdldHRpbmcgZGF0YSB3YXlzIGFuZCBzbyBvbiwgIHNvIHRoZSBkcml2ZXIgdXNl
-ICJWMSIgb24gbWF0Y2ggdGFibGUgYW5kIGFkZCBvdGhlciB2ZXJzaW9uIHdoaWxlIGFueSBjaGFu
-Z2UgaGFwcGVucy4gIFdoaWNoIG1hdGNoIHRhYmxlIGNhbiB3ZSBwcm92aWRlIGFuZCAgaXMndCBP
-SyBsaWtlIHRoaXM/DQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBoaWJ2dF9s
-c2FkY19tYXRjaFtdID0gew0KPiArCXsNCj4gKwkJLmNvbXBhdGlibGUgPSAiaGlzaWxpY29uLGhp
-MzUxNmN2MzAwLWxzYWRjIiwNCj4gKwkJLmRhdGEgPSAmbHNhZGNfZGF0YV92MSwNCj4gKwl9LA0K
-PiArCXsNCj4gKwkJLmNvbXBhdGlibGUgPSAiaGlzaWxpY29uLGhpMzUxOXYxMDEtbHNhZGMiLA0K
-PiArCQkuZGF0YSA9ICZsc2FkY19kYXRhX3YxLA0KPiArCX0sDQo+ICsJe30sDQo+ICt9Ow0KDQpB
-d2FpdGluZyBmb3IgeW91ciByZXBseSBUaGFuayB5b3UgdmVyeSBtdWNoIQ0KDQpCZXN0IHJlZ2Fy
-ZHMNCi9BbGxlbg0KDQotLS0tLdPKvP7Urbz+LS0tLS0NCreivP7IyzogSm9uYXRoYW4gQ2FtZXJv
-biBbbWFpbHRvOmppYzIzQGtlcm5lbC5vcmddIA0Kt6LLzcqxvOQ6IDIwMTfE6jHUwjjI1SAxOjUy
-DQrK1bz+yMs6IGxpdXJlbnpob25nIDxsaXVyZW56aG9uZ0BoaXNpbGljb24uY29tPjsga25hYWNr
-LmhAZ214LmRlOyBsYXJzQG1ldGFmb28uZGU7IHBtZWVyd0BwbWVlcncubmV0OyByb2JoK2R0QGtl
-cm5lbC5vcmc7IG1hcmsucnV0bGFuZEBhcm0uY29tDQqzrcvNOiBha2lub2J1Lm1pdGFAZ21haWwu
-Y29tOyBsdWRvdmljLmRlc3JvY2hlc0BhdG1lbC5jb207IGtyemtAa2VybmVsLm9yZzsgdmlsaGVs
-bS5ncmF5QGdtYWlsLmNvbTsga3NlbmlqYS5zdGFub2pldmljQGdtYWlsLmNvbTsgemhpeW9uZy50
-YW9AbWVkaWF0ZWsuY29tOyBkYW5pZWwuYmFsdXRhQGludGVsLmNvbTsgbGVvbmFyZC5jcmVzdGV6
-QGludGVsLmNvbTsgcmF5Lmp1aUBicm9hZGNvbS5jb207IHJhdmVlbmRyYS5wYWRhc2FsYWdpQGJy
-b2FkY29tLmNvbTsgbXJhbm9zdGF5QGdtYWlsLmNvbTsgYW1zZmllbGQyMkBnbWFpbC5jb207IGxp
-bnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51
-eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBYdWVqaWFuY2hlbmcgPHh1ZWppYW5jaGVuZ0BoaXNp
-bGljb24uY29tPjsgTGl4dSAoa2V2aW4pIDxrZXZpbi5saXh1QGhpc2lsaWNvbi5jb20+DQrW98zi
-OiBSZTogW1BBVENIXSBhZGM6IGFkZCBhZGMgZHJpdmVyIGZvciBIaXNpbGljb24gQlZUIFNPQ3MN
-Cg0KT24gMDcvMDEvMTcgMDU6MTYsIEFsbGVuIExpdSB3cm90ZToNCj4gQWRkIEFEQyBkcml2ZXIg
-Zm9yIHRoZSBBREMgY29udHJvbGxlciBmb3VuZCBvbiBIaVNpbGljb24gQlZUIFNPQ3MsIGxpa2Ug
-SGkzNTE2Q1YzMDAsIGV0Yy4NCj4gVGhlIEFEQyBjb250cm9sbGVyIGlzIHByaW1hcmlseSBpbiBj
-aGFyZ2Ugb2YgZGV0ZWN0aW5nIHZvbHRhZ2UuDQo+IA0KPiBSZXZpZXdlZC1ieTogS2V2aW4gTGkg
-PGtldmluLmxpeHVAaGlzaWxpY29uLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogQWxsZW4gTGl1IDxs
-aXVyZW56aG9uZ0BoaXNpbGljb24uY29tPg0KSGkgQWxsZW4sDQoNCk9uZSBxdWljayBzdWJtaXNz
-aW9uIHByb2Nlc3Mgbm90ZSBmaXJzdC4gIEl0IGlzIHZlcnkgaW1wb3J0YW50IHRvIGNsZWFybHkg
-aWRlbnRpZnkgbmV3IHZlcnNpb25zIG9mIGEgcGF0Y2ggYW5kIHdoYXQgY2hhbmdlcyBoYXZlIG9j
-Y3VycmVkIHNpbmNlIHRoZSBwcmV2aW91cyBwb3N0aW5nLg0KDQpTbyB0aGUgZW1haWwgdGl0bGUg
-c2hvdWxkIGhhdmUgYmVlbiBbUEFUQ0ggVjJdIGFkYy4uLg0KDQpBbHNvLCBiZWxvdyB0aGUgLS0t
-IHBsZWFzZSBhZGQgYSBicmllZiBjaGFuZ2UgbG9nLg0KDQpUaGUgZHJpdmVyIGlzIGNvbWluZyB0
-b2dldGhlciBuaWNlbHkuICBBIGZldyBtaW5vciBwb2ludHMgaW5saW5lLg0KDQpKb25hdGhhbg0K
-PiAtLS0NCj4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby9hZGMvaGlidnQtbHNhZGMudHh0
-ICAgIHwgIDIzICsrDQo+ICBkcml2ZXJzL2lpby9hZGMvS2NvbmZpZyAgICAgICAgICAgICAgICAg
-ICAgICAgICAgICB8ICAxMCArDQo+ICBkcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUgICAgICAgICAg
-ICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ICBkcml2ZXJzL2lpby9hZGMvaGlidnRfbHNhZGMu
-YyAgICAgICAgICAgICAgICAgICAgICB8IDMzNSArKysrKysrKysrKysrKysrKysrKysNCj4gIDQg
-ZmlsZXMgY2hhbmdlZCwgMzY5IGluc2VydGlvbnMoKykNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCAN
-Cj4gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby9hZGMvaGlidnQtbHNhZGMu
-dHh0DQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vYWRjL2hpYnZ0X2xzYWRjLmMN
-Cj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlv
-L2FkYy9oaWJ2dC1sc2FkYy50eHQgDQo+IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL2lpby9hZGMvaGlidnQtbHNhZGMudHh0DQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGlu
-ZGV4IDAwMDAwMDAuLmZjZTFmZjQNCj4gLS0tIC9kZXYvbnVsbA0KPiArKysgYi9Eb2N1bWVudGF0
-aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9oaWJ2dC1sc2FkYy50eHQNCj4gQEAgLTAs
-MCArMSwyMyBAQA0KPiArSGlzaWxpY29uIEJWVCBMb3cgU3BlZWQgKExTKSBBL0QgQ29udmVydGVy
-IGJpbmRpbmdzDQo+ICsNCj4gK1JlcXVpcmVkIHByb3BlcnRpZXM6DQo+ICstIGNvbXBhdGlibGU6
-IHNob3VsZCBiZSAiaGlzaWxpY29uLDxuYW1lPi1sc2FkYyINCj4gKyAgIC0gImhpc2lsaWNvbixo
-aTM1MTZjdjMwMC1sc2FkYyI6IGZvciBoaTM1MTZjdjMwMA0KPiArDQo+ICstIHJlZzogcGh5c2lj
-YWwgYmFzZSBhZGRyZXNzIG9mIHRoZSBjb250cm9sbGVyIGFuZCBsZW5ndGggb2YgbWVtb3J5IG1h
-cHBlZCANCj4gKwkgICByZWdpb24uDQo+ICstIGludGVycnVwdHM6IFRoZSBpbnRlcnJ1cHQgbnVt
-YmVyIGZvciB0aGUgQURDIGRldmljZS4NCklkZWFsbHkgcmVmZXIgdG8gdGhlIHN0YW5kYXJkIGlu
-dGVycnVwdCBiaW5kaW5nIGRvY3VtZW50Lg0KRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
-bmdzL2ludGVycnVwdC1jb250cm9sbGVyL2ludGVycnVwdHMudHh0DQoNCj4gKw0KPiArT3B0aW9u
-YWwgcHJvcGVydGllczoNCj4gKy0gcmVzZXRzOiBNdXN0IGNvbnRhaW4gYW4gZW50cnkgZm9yIGVh
-Y2ggZW50cnkgaW4gcmVzZXQtbmFtZXMgaWYgbmVlZCBzdXBwb3J0DQo+ICsJCSAgdGhpcyBvcHRp
-b24uIFNlZSAuLi8uLi9yZXNldC9yZXNldC50eHQgZm9yIGRldGFpbHMuDQpEb24ndCB1c2UgYSBy
-ZWxhdGl2ZSBwYXRoIGluIGEgYmluZGluZyBkb2N1bWVudC4gSXQncyBmYXIgdG9vIGxpa2VseSB0
-byBiZSBicm9rZW4gYnkgYSByZW9yZ2FuaXphdGlvbiBvZiB0aGUgZG9jcyBhbmQgY2Fubm90IGJl
-IGdyZXBwZWQgZm9yLg0KPiArLSByZXNldC1uYW1lczogTXVzdCBpbmNsdWRlIHRoZSBuYW1lICJs
-c2FkYy1jcmciLg0KPiArDQo+ICtFeGFtcGxlOg0KPiArCWFkYzogYWRjQDEyMGUwMDAwIHsNCj4g
-KwkJCWNvbXBhdGlibGUgPSAiaGlzaWxpY29uLGhpMzUxNmN2MzAwLWxzYWRjIjsNCj4gKwkJCXJl
-ZyA9IDwweDEyMGUwMDAwIDB4MTAwMD47DQo+ICsJCQlpbnRlcnJ1cHRzID0gPDE5PjsNCj4gKwkJ
-CXJlc2V0cyA9IDwmY3JnIDB4N2MgMz47DQo+ICsJCQlyZXNldC1uYW1lcyA9ICJsc2FkYy1jcmci
-Ow0KPiArCX07DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMvS2NvbmZpZyBiL2RyaXZl
-cnMvaWlvL2FkYy9LY29uZmlnIGluZGV4IA0KPiA5OWMwNTE0Li4wNDQzZjUxIDEwMDY0NA0KPiAt
-LS0gYS9kcml2ZXJzL2lpby9hZGMvS2NvbmZpZw0KPiArKysgYi9kcml2ZXJzL2lpby9hZGMvS2Nv
-bmZpZw0KPiBAQCAtMjI1LDYgKzIyNSwxNiBAQCBjb25maWcgSEk4NDM1DQo+ICAJICBUaGlzIGRy
-aXZlciBjYW4gYWxzbyBiZSBidWlsdCBhcyBhIG1vZHVsZS4gSWYgc28sIHRoZSBtb2R1bGUgd2ls
-bCBiZQ0KPiAgCSAgY2FsbGVkIGhpODQzNS4NCj4gIA0KPiArY29uZmlnIEhJQlZUX0xTQURDDQo+
-ICsJdHJpc3RhdGUgIkhJQlZUIExTQURDIGRyaXZlciINCj4gKwlkZXBlbmRzIG9uIEFSQ0hfSElT
-SSB8fCBDT01QSUxFX1RFU1QNCj4gKwloZWxwDQo+ICsJICBTYXkgeWVzIGhlcmUgdG8gYnVpbGQg
-c3VwcG9ydCBmb3IgdGhlIExTQURDIGZvdW5kIGluIFNvQ3MgZnJvbQ0KPiArCSAgaGlzaWxpY29u
-IEJWVCBjaGlwLg0KPiArDQo+ICsJICBUbyBjb21waWxlIHRoaXMgZHJpdmVyIGFzIGEgbW9kdWxl
-LCBjaG9vc2UgTSBoZXJlOiB0aGUNCj4gKwkgIG1vZHVsZSB3aWxsIGJlIGNhbGxlZCBoaWJ2dF9s
-c2FkYy4NCj4gKw0KPiAgY29uZmlnIElOQTJYWF9BREMNCj4gIAl0cmlzdGF0ZSAiVGV4YXMgSW5z
-dHJ1bWVudHMgSU5BMnh4IFBvd2VyIE1vbml0b3JzIElJTyBkcml2ZXIiDQo+ICAJZGVwZW5kcyBv
-biBJMkMgJiYgIVNFTlNPUlNfSU5BMlhYDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMv
-TWFrZWZpbGUgYi9kcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUgaW5kZXggDQo+IDdhNDBjMDQuLjY1
-NTRkOTIgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9NYWtlZmlsZQ0KPiArKysgYi9k
-cml2ZXJzL2lpby9hZGMvTWFrZWZpbGUNCj4gQEAgLTIzLDYgKzIzLDcgQEAgb2JqLSQoQ09ORklH
-X0RBOTE1MF9HUEFEQykgKz0gZGE5MTUwLWdwYWRjLm8NCj4gIG9iai0kKENPTkZJR19FWFlOT1Nf
-QURDKSArPSBleHlub3NfYWRjLm8NCj4gIG9iai0kKENPTkZJR19GU0xfTVgyNV9BREMpICs9IGZz
-bC1pbXgyNS1nY3Eubw0KPiAgb2JqLSQoQ09ORklHX0hJODQzNSkgKz0gaGk4NDM1Lm8NCj4gK29i
-ai0kKENPTkZJR19ISUJWVF9MU0FEQykgKz0gaGlidnRfbHNhZGMubw0KPiAgb2JqLSQoQ09ORklH
-X0lNWDdEX0FEQykgKz0gaW14N2RfYWRjLm8NCj4gIG9iai0kKENPTkZJR19JTkEyWFhfQURDKSAr
-PSBpbmEyeHgtYWRjLm8NCj4gIG9iai0kKENPTkZJR19MUDg3ODhfQURDKSArPSBscDg3ODhfYWRj
-Lm8gZGlmZiAtLWdpdCANCj4gYS9kcml2ZXJzL2lpby9hZGMvaGlidnRfbHNhZGMuYyBiL2RyaXZl
-cnMvaWlvL2FkYy9oaWJ2dF9sc2FkYy5jIG5ldyANCj4gZmlsZSBtb2RlIDEwMDY0NCBpbmRleCAw
-MDAwMDAwLi5hYWYyMDI0DQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJpdmVycy9paW8vYWRj
-L2hpYnZ0X2xzYWRjLmMNCj4gQEAgLTAsMCArMSwzMzUgQEANCj4gKy8qDQo+ICsgKiBIaXNpbGlj
-b24gQlZUIExvdyBTcGVlZCAoTFMpIEEvRCBDb252ZXJ0ZXINCj4gKyAqIENvcHlyaWdodCAoQykg
-MjAxNiBIaVNpbGljb24gVGVjaG5vbG9naWVzIENvLiwgTHRkLg0KPiArICoNCj4gKyAqIFRoaXMg
-cHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3Ig
-DQo+ICttb2RpZnkNCj4gKyAqIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwg
-UHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIA0KPiArYnkNCj4gKyAqIHRoZSBGcmVlIFNvZnR3
-YXJlIEZvdW5kYXRpb247IGVpdGhlciB2ZXJzaW9uIDIgb2YgdGhlIExpY2Vuc2UsIG9yDQo+ICsg
-KiAoYXQgeW91ciBvcHRpb24pIGFueSBsYXRlciB2ZXJzaW9uLg0KPiArICoNCj4gKyAqIFRoaXMg
-cHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVs
-LA0KPiArICogYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0IGV2ZW4gdGhlIGltcGxp
-ZWQgd2FycmFudHkgb2YNCj4gKyAqIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBB
-UlRJQ1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUNCj4gKyAqIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNl
-bnNlIGZvciBtb3JlIGRldGFpbHMuDQo+ICsgKi8NCj4gKw0KPiArI2luY2x1ZGUgPGxpbnV4L21v
-ZHVsZS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPg0KPiArI2luY2x1
-ZGUgPGxpbnV4L2ludGVycnVwdC5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2lvLmg+DQo+ICsjaW5j
-bHVkZSA8bGludXgvb2YuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9vZl9kZXZpY2UuaD4NCj4gKyNp
-bmNsdWRlIDxsaW51eC9jbGsuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9jb21wbGV0aW9uLmg+DQo+
-ICsjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9yZXNldC5oPg0K
-PiArI2luY2x1ZGUgPGxpbnV4L3JlZ3VsYXRvci9jb25zdW1lci5oPiAjaW5jbHVkZSA8bGludXgv
-aWlvL2lpby5oPg0KPiArDQo+ICsvKiBoaXNpbGljb24gYnZ0IGFkYyByZWdpc3RlcnMgZGVmaW5p
-dGlvbnMgKi8NCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfQ09ORklHCQkweDAwDQo+ICsjZGVmaW5l
-IEhJQlZUX0NPTkZJR19ERUdMSVRDSAlCSVQoMTcpDQo+ICsjZGVmaW5lIEhJQlZUX0NPTkZJR19S
-RVNFVAkJQklUKDE1KQ0KPiArI2RlZmluZSBISUJWVF9DT05GSUdfUE9XRVJET1dOCUJJVCgxNCkN
-Cj4gKyNkZWZpbmUgSElCVlRfQ09ORklHX01PREUJCUJJVCgxMykNCj4gKyNkZWZpbmUgSElCVlRf
-Q09ORklHX0NITkMJCUJJVCgxMCkNCj4gKyNkZWZpbmUgSElCVlRfQ09ORklHX0NITkIJCUJJVCg5
-KQ0KPiArI2RlZmluZSBISUJWVF9DT05GSUdfQ0hOQQkJQklUKDgpDQo+ICsNCj4gKyNkZWZpbmUg
-SElCVlRfTFNBRENfVElNRVNDQU4JMHgwOA0KPiArI2RlZmluZSBISUJWVF9MU0FEQ19JTlRFTgkJ
-MHgxMA0KPiArI2RlZmluZSBISUJWVF9MU0FEQ19JTlRTVEFUVVMJMHgxNA0KPiArI2RlZmluZSBI
-SUJWVF9MU0FEQ19JTlRDTFIJCTB4MTgNCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfU1RBUlQJCTB4
-MUMNCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfU1RPUAkJMHgyMA0KPiArI2RlZmluZSBISUJWVF9M
-U0FEQ19BQ1RCSVQJCTB4MjQNCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfQ0hOREFUQQkJMHgyQw0K
-PiArDQo+ICsjZGVmaW5lIEhJQlZUX0xTQURDX0NPTl9FTgkJKDF1IDw8IDApDQo+ICsjZGVmaW5l
-IEhJQlZUX0xTQURDX0NPTl9ERU4JCSgwdSA8PCAwKQ0KPiArDQo+ICsjZGVmaW5lIEhJQlZUX0xT
-QURDX05VTV9CSVRTX1YxCTEwDQo+ICsjZGVmaW5lIEhJQlZUX0xTQURDX0NITl9NQVNLX3YxCTB4
-Nw0KPiArDQo+ICsvKiBmaXggY2xrOjMwMDAwMDAsIGRlZmF1bHQgdHNjYW4gc2V0IDEwbXMgKi8N
-Cj4gKyNkZWZpbmUgSElCVlRfTFNBRENfVFNDQU5fTVMJKDEwKjMwMDApDQo+ICsNCj4gKyNkZWZp
-bmUgSElCVlRfTFNBRENfVElNRU9VVAkJbXNlY3NfdG9famlmZmllcygxMDApDQo+ICsNCj4gKy8q
-IGRlZmF1bHQgdm9sdGFnZSBzY2FsZSBmb3IgZXZlcnkgY2hhbm5lbCA8bXY+ICovIHN0YXRpYyBp
-bnQgDQo+ICtnX2hpYnZ0X2xzYWRjX3ZvbHRhZ2VbXSA9IHsNCj4gKwkzMzAwLCAzMzAwLCAzMzAw
-DQpJcyBkZWZhdWx0IGR1ZSB0byBhbiBleHRlcm5hbCByZWZlcmVuY2Ugdm9sdGFnZSBvciBpcyB0
-aGVyZSBhbiBpbnRlcm5hbCByZWd1bGF0b3I/ICBJZiBpdCBpcyBleHRlcm5hbCBpdCBzaG91bGQg
-cmVhbGx5IGJlIGRlc2NyaWJlZCB1c2luZyB0aGUgcmVndWxhdG9yIGZyYW1ld29yay4NCg0KQ29u
-c3Q/IA0KPiArfTsNCj4gKw0KPiArc3RydWN0IGhpYnZ0X2xzYWRjIHsNCj4gKwl2b2lkIF9faW9t
-ZW0JCSpyZWdzOw0KPiArCXN0cnVjdCBjb21wbGV0aW9uCWNvbXBsZXRpb247DQo+ICsJc3RydWN0
-IHJlc2V0X2NvbnRyb2wJKnJlc2V0Ow0KPiArCWNvbnN0IHN0cnVjdCBoaWJ2dF9sc2FkY19kYXRh
-CSpkYXRhOw0KPiArCXVuc2lnbmVkIGludAkJY3VyX2NobjsNCj4gKwl1bnNpZ25lZCBpbnQJCXZh
-bHVlOw0KPiArfTsNCj4gKw0KPiArc3RydWN0IGhpYnZ0X2xzYWRjX2RhdGEgew0KPiArCWludAkJ
-CQludW1fYml0czsNCj4gKwljb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYwkqY2hhbm5lbHM7DQo+
-ICsJaW50CQkJCW51bV9jaGFubmVsczsNCj4gKw0KPiArCXZvaWQgKCpjbGVhcl9pcnEpKHN0cnVj
-dCBoaWJ2dF9sc2FkYyAqaW5mbywgaW50IG1hc2spOw0KPiArCXZvaWQgKCpzdGFydF9jb252KShz
-dHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8pOw0KPiArCXZvaWQgKCpzdG9wX2NvbnYpKHN0cnVjdCBo
-aWJ2dF9sc2FkYyAqaW5mbyk7IH07DQo+ICsNCj4gK3N0YXRpYyBpbnQgaGlidnRfbHNhZGNfcmVh
-ZF9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4gKwkJCQkgICAgc3RydWN0IGlpb19j
-aGFuX3NwZWMgY29uc3QgKmNoYW4sDQo+ICsJCQkJICAgIGludCAqdmFsLCBpbnQgKnZhbDIsIGxv
-bmcgbWFzaykgew0KPiArCXN0cnVjdCBoaWJ2dF9sc2FkYyAqaW5mbyA9IGlpb19wcml2KGluZGlv
-X2Rldik7DQo+ICsNCj4gKwlzd2l0Y2ggKG1hc2spIHsNCj4gKwljYXNlIElJT19DSEFOX0lORk9f
-UkFXOg0KPiArCQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gKw0KPiArCQlyZWlu
-aXRfY29tcGxldGlvbigmaW5mby0+Y29tcGxldGlvbik7DQo+ICsNCj4gKwkJLyogU2VsZWN0IHRo
-ZSBjaGFubmVsIHRvIGJlIHVzZWQgKi8NCj4gKwkJaW5mby0+Y3VyX2NobiA9IGNoYW4tPmNoYW5u
-ZWw7DQo+ICsNCj4gKwkJaWYgKGluZm8tPmRhdGEtPnN0YXJ0X2NvbnYpDQo+ICsJCQlpbmZvLT5k
-YXRhLT5zdGFydF9jb252KGluZm8pOw0KPiArDQo+ICsJCWlmICghd2FpdF9mb3JfY29tcGxldGlv
-bl90aW1lb3V0KCZpbmZvLT5jb21wbGV0aW9uLA0KPiArCQkJCQkJCUhJQlZUX0xTQURDX1RJTUVP
-VVQpKSB7DQo+ICsJCQlpZiAoaW5mby0+ZGF0YS0+c3RvcF9jb252KQ0KPiArCQkJCWluZm8tPmRh
-dGEtPnN0b3BfY29udihpbmZvKTsNCj4gKwkJCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5tbG9j
-ayk7DQo+ICsJCQlyZXR1cm4gLUVUSU1FRE9VVDsNCj4gKwkJfQ0KPiArDQo+ICsJCSp2YWwgPSBp
-bmZvLT52YWx1ZTsNCj4gKwkJbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gKwkJ
-cmV0dXJuIElJT19WQUxfSU5UOw0KPiArCWNhc2UgSUlPX0NIQU5fSU5GT19TQ0FMRToNCj4gKwkJ
-KnZhbCA9IGdfaGlidnRfbHNhZGNfdm9sdGFnZVtjaGFuLT5jaGFubmVsXTsNCj4gKwkJKnZhbDIg
-PSBpbmZvLT5kYXRhLT5udW1fYml0czsNCj4gKwkJcmV0dXJuIElJT19WQUxfRlJBQ1RJT05BTF9M
-T0cyOw0KPiArCWRlZmF1bHQ6DQo+ICsJCXJldHVybiAtRUlOVkFMOw0KPiArCX0NCj4gK30NCj4g
-Kw0KPiArc3RhdGljIGlycXJldHVybl90IGhpYnZ0X2xzYWRjX2lzcihpbnQgaXJxLCB2b2lkICpk
-ZXZfaWQpIHsNCj4gKwlzdHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8gPSAoc3RydWN0IGhpYnZ0X2xz
-YWRjICopZGV2X2lkOw0KPiArCWludCBtYXNrOw0KPiArDQo+ICsJbWFzayA9IHJlYWRsKGluZm8t
-PnJlZ3MgKyBISUJWVF9MU0FEQ19JTlRTVEFUVVMpOw0KPiArCWlmICgobWFzayAmIEhJQlZUX0xT
-QURDX0NITl9NQVNLX3YxKSA9PSAwKQ0KPiArCQlyZXR1cm4gSVJRX05PTkU7DQo+ICsNCj4gKwkv
-KiBDbGVhciBpcnEgKi8NCj4gKwltYXNrICY9IEhJQlZUX0xTQURDX0NITl9NQVNLX3YxOw0KPiAr
-CWlmIChpbmZvLT5kYXRhLT5jbGVhcl9pcnEpDQo+ICsJCWluZm8tPmRhdGEtPmNsZWFyX2lycShp
-bmZvLCBtYXNrKTsNCj4gKw0KPiArCS8qIFJlYWQgdmFsdWUgKi8NCj4gKwlpbmZvLT52YWx1ZSA9
-IHJlYWRsKGluZm8tPnJlZ3MgKw0KPiArCQlISUJWVF9MU0FEQ19DSE5EQVRBICsgKGluZm8tPmN1
-cl9jaG4gPDwgMikpOw0KPiArCWluZm8tPnZhbHVlICY9IEdFTk1BU0soaW5mby0+ZGF0YS0+bnVt
-X2JpdHMgLSAxLCAwKTsNCj4gKw0KPiArCS8qIHN0b3AgYWRjICovDQo+ICsJaWYgKGluZm8tPmRh
-dGEtPnN0b3BfY29udikNCj4gKwkJaW5mby0+ZGF0YS0+c3RvcF9jb252KGluZm8pOw0KPiArDQo+
-ICsJY29tcGxldGUoJmluZm8tPmNvbXBsZXRpb24pOw0KPiArDQo+ICsJcmV0dXJuIElSUV9IQU5E
-TEVEOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19pbmZvIGhpYnZ0X2xz
-YWRjX2lpb19pbmZvID0gew0KPiArCS5yZWFkX3JhdyA9IGhpYnZ0X2xzYWRjX3JlYWRfcmF3LA0K
-PiArCS5kcml2ZXJfbW9kdWxlID0gVEhJU19NT0RVTEUsDQo+ICt9Ow0KPiArDQo+ICsjZGVmaW5l
-IEhJQlZUX0xTQURDX0NIQU5ORUwoX2luZGV4LCBfaWQpIHsgICAgICBcDQo+ICsJLnR5cGUgPSBJ
-SU9fVk9MVEFHRSwgICAgICAgICAgICAgICAgXA0KPiArCS5pbmRleGVkID0gMSwJCQkJCQlcDQo+
-ICsJLmNoYW5uZWwgPSBfaW5kZXgsCQkJCQlcDQo+ICsJLmluZm9fbWFza19zZXBhcmF0ZSA9IEJJ
-VChJSU9fQ0hBTl9JTkZPX1JBVykgfCAgXA0KPiArCQkJQklUKElJT19DSEFOX0lORk9fU0NBTEUp
-LCAgIFwNCj4gKwkuZGF0YXNoZWV0X25hbWUgPSBfaWQsICAgICAgICAgICAgICBcDQo+ICt9DQo+
-ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBoaWJ2dF9sc2FkY19paW9f
-Y2hhbm5lbHNbXSA9IHsNCj4gKwlISUJWVF9MU0FEQ19DSEFOTkVMKDAsICJhZGMwIiksDQo+ICsJ
-SElCVlRfTFNBRENfQ0hBTk5FTCgxLCAiYWRjMSIpLA0KPiArCUhJQlZUX0xTQURDX0NIQU5ORUwo
-MiwgImFkYzIiKSwNCj4gK307DQo+ICsNCj4gK3N0YXRpYyB2b2lkIGhpYnZ0X2xzYWRjX3YxX2Ns
-ZWFyX2lycShzdHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8sIGludCANCj4gK21hc2spIHsNCj4gKwl3
-cml0ZWwobWFzaywgaW5mby0+cmVncyArIEhJQlZUX0xTQURDX0lOVENMUik7IH0NCj4gKw0KPiAr
-c3RhdGljIHZvaWQgaGlidnRfbHNhZGNfdjFfc3RhcnRfY29udihzdHJ1Y3QgaGlidnRfbHNhZGMg
-KmluZm8pIHsNCj4gKwl1bnNpZ25lZCBpbnQgY29uOw0KPiArDQo+ICsJLyogc2V0IG51bWJlciBi
-aXQgKi8NCnNldCBudW1iZXIgb2YgYml0cz8NCj4gKwljb24gPSBHRU5NQVNLKGluZm8tPmRhdGEt
-Pm51bV9iaXRzIC0gMSwgMCk7DQo+ICsJd3JpdGVsKGNvbiwgKGluZm8tPnJlZ3MgKyBISUJWVF9M
-U0FEQ19BQ1RCSVQpKTsNCj4gKw0KPiArCS8qIGNvbmZpZyAqLw0KPiArCWNvbiA9IHJlYWRsKGlu
-Zm8tPnJlZ3MgKyBISUJWVF9MU0FEQ19DT05GSUcpOw0KPiArCWNvbiAmPSB+SElCVlRfQ09ORklH
-X1JFU0VUOw0KPiArCWNvbiB8PSAoSElCVlRfQ09ORklHX1BPV0VSRE9XTiB8IEhJQlZUX0NPTkZJ
-R19ERUdMSVRDSCB8DQo+ICsJCUhJQlZUX0NPTkZJR19NT0RFKTsNCj4gKwljb24gJj0gfihISUJW
-VF9DT05GSUdfQ0hOQSB8IEhJQlZUX0NPTkZJR19DSE5CIHwgSElCVlRfQ09ORklHX0NITkMpOw0K
-PiArCWNvbiB8PSAoSElCVlRfQ09ORklHX0NITkEgPDwgaW5mby0+Y3VyX2Nobik7DQo+ICsJd3Jp
-dGVsKGNvbiwgKGluZm8tPnJlZ3MgKyBISUJWVF9MU0FEQ19DT05GSUcpKTsNCj4gKw0KPiArCS8q
-IHNldCB0aW1lc2NhbiAqLw0KPiArCXdyaXRlbChISUJWVF9MU0FEQ19UU0NBTl9NUywgKGluZm8t
-PnJlZ3MgKyBISUJWVF9MU0FEQ19USU1FU0NBTikpOw0KPiArDQo+ICsJLyogY2xlYXIgaW50ZXJy
-dXB0ICovDQo+ICsJd3JpdGVsKEhJQlZUX0xTQURDX0NITl9NQVNLX3YxLCBpbmZvLT5yZWdzICsg
-SElCVlRfTFNBRENfSU5UQ0xSKTsNCj4gKw0KPiArCS8qIGVuYWJsZSBpbnRlcnJ1cHQgKi8NCj4g
-Kwl3cml0ZWwoSElCVlRfTFNBRENfQ09OX0VOLCAoaW5mby0+cmVncyArIEhJQlZUX0xTQURDX0lO
-VEVOKSk7DQo+ICsNCj4gKwkvKiBzdGFydCBzY2FuICovDQo+ICsJd3JpdGVsKEhJQlZUX0xTQURD
-X0NPTl9FTiwgKGluZm8tPnJlZ3MgKyBISUJWVF9MU0FEQ19TVEFSVCkpOyB9DQo+ICsNCj4gK3N0
-YXRpYyB2b2lkIGhpYnZ0X2xzYWRjX3YxX3N0b3BfY29udihzdHJ1Y3QgaGlidnRfbHNhZGMgKmlu
-Zm8pIHsNCj4gKwkvKiByZXNldCB0aGUgdGltZXNjYW4gKi8NClRoaXMgaXNuJ3QgYSBwYXJ0aWN1
-bGFybHkgY29tbW9uIHBpY2Ugb2YgdGVybWlub2xvZ3ksIHBlcmhhcHMgYSBzaG9ydCBkZXNjcmlw
-dGlvbiBoZXJlIG9mIHdoYXQgdGltZXNjYW4gaXMgYW5kIHdoeSB3ZSBzaG91bGQgcmVzZXQgaXQg
-d291bGQgbWFrZSB0aGUgY29kZSBlYXNpZXIgdG8gZm9sbG93Lg0KDQo+ICsJd3JpdGVsKEhJQlZU
-X0xTQURDX0NPTl9ERU4sIChpbmZvLT5yZWdzICsgSElCVlRfTFNBRENfVElNRVNDQU4pKTsNCj4g
-Kw0KPiArCS8qIGRpc2FibGUgaW50ZXJydXB0ICovDQo+ICsJd3JpdGVsKEhJQlZUX0xTQURDX0NP
-Tl9ERU4sIChpbmZvLT5yZWdzICsgSElCVlRfTFNBRENfSU5URU4pKTsNCj4gKw0KPiArCS8qIHN0
-b3Agc2NhbiAqLw0KPiArCXdyaXRlbChISUJWVF9MU0FEQ19DT05fRU4sIChpbmZvLT5yZWdzICsg
-SElCVlRfTFNBRENfU1RPUCkpOyB9DQo+ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaGlidnRf
-bHNhZGNfZGF0YSBsc2FkY19kYXRhX3YxID0gew0KPiArCS5udW1fYml0cyA9IEhJQlZUX0xTQURD
-X05VTV9CSVRTX1YxLA0KPiArCS5jaGFubmVscyA9IGhpYnZ0X2xzYWRjX2lpb19jaGFubmVscywN
-Cj4gKwkubnVtX2NoYW5uZWxzID0gQVJSQVlfU0laRShoaWJ2dF9sc2FkY19paW9fY2hhbm5lbHMp
-LA0KPiArDQo+ICsJLmNsZWFyX2lycSA9IGhpYnZ0X2xzYWRjX3YxX2NsZWFyX2lycSwNCj4gKwku
-c3RhcnRfY29udiA9IGhpYnZ0X2xzYWRjX3YxX3N0YXJ0X2NvbnYsDQo+ICsJLnN0b3BfY29udiA9
-IGhpYnZ0X2xzYWRjX3YxX3N0b3BfY29udiwgfTsNCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVj
-dCBvZl9kZXZpY2VfaWQgaGlidnRfbHNhZGNfbWF0Y2hbXSA9IHsNCj4gKwl7DQo+ICsJCS5jb21w
-YXRpYmxlID0gImhpc2lsaWNvbixoaTM1MTZjdjMwMC1sc2FkYyIsDQo+ICsJCS5kYXRhID0gJmxz
-YWRjX2RhdGFfdjEsDQpUaGUgdXN1YWwgY29udmVudGlvbiBpcyB0byBvbmx5IGludHJvZHVjZSAn
-dmFyaWFudCcgdHlwZSBkYXRhIGFzIGEgcHJlY3Vyc29yIHBhdGNoIHRvIGEgc2VyaWVzIGluY2x1
-ZGluZyB0aGUgc3VwcG9ydCBvZiBuZXcgcGFydHMuDQoNCkl0IGlzIGFjY2VwdGFibGUgdG8gcG9z
-dCBhIHZlcnNpb24gd2l0aCB0aGlzIGluIGlmIHlvdSBhcmUgc2hvcnRseSB0byBzdWJtaXQgdGhl
-IGZvbGxvdyB1cCB0aGF0IGFkZHMgb3RoZXIgZGV2aWNlIHN1cHBvcnQuICBJZiB5b3UgYXJlIGRv
-aW5nIHRoaXMsIHBsZWFzZSBwdXQgYSBub3RlIGluIHRoZSBwYXRjaCBkZXNjcmlwdGlvbiB0byB0
-aGF0IGVmZmVjdC4gIE5vdGUgdGhhdCBpZiB0aGUgYWRkaXRpb25hbCBzdXBwb3J0IGRvZXNuJ3Qg
-dHVybiB1cCwgdGhlIGRyaXZlciBtYXkgd2UgZ2V0ICdzaW1wbGlmaWVkJw0KYnkgc29tZW9uZSBl
-bHNlLg0KDQpJJ2QgYWxzbyBnZW5lcmFsbHkgZXhwZWN0IHRvIHNlZSB0aGlzIG1hdGNoIHRhYmxl
-IGZ1cnRoZXIgZG93biAtIGRpcmVjdGx5IGFib3ZlIHdoZXJlIGl0IGlzIHVzZWQuICBNYWtlcyBm
-b3IgZXZlciBzbyBzbGlnaHRseSBlYXNpZXIgcmV2aWV3aW5nIQ0KPiArCX0sDQo+ICsJe30sDQo+
-ICt9Ow0KPiArTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgaGlidnRfbHNhZGNfbWF0Y2gpOw0KPiAr
-DQo+ICsvKiBSZXNldCBMU0FEQyBDb250cm9sbGVyICovDQo+ICtzdGF0aWMgdm9pZCBoaWJ2dF9s
-c2FkY19yZXNldF9jb250cm9sbGVyKHN0cnVjdCByZXNldF9jb250cm9sICpyZXNldCkgDQo+ICt7
-DQo+ICsJcmVzZXRfY29udHJvbF9hc3NlcnQocmVzZXQpOw0KPiArCXVzbGVlcF9yYW5nZSgxMCwg
-MjApOw0KPiArCXJlc2V0X2NvbnRyb2xfZGVhc3NlcnQocmVzZXQpOw0KPiArfQ0KPiArDQo+ICtz
-dGF0aWMgaW50IGhpYnZ0X2xzYWRjX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
-IHsNCj4gKwlzdHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8gPSBOVUxMOw0KPiArCXN0cnVjdCBkZXZp
-Y2Vfbm9kZSAqbnAgPSBwZGV2LT5kZXYub2Zfbm9kZTsNCj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5k
-aW9fZGV2ID0gTlVMTDsNCj4gKwlzdHJ1Y3QgcmVzb3VyY2UJKm1lbTsNCj4gKwljb25zdCBzdHJ1
-Y3Qgb2ZfZGV2aWNlX2lkICptYXRjaDsNCj4gKwlpbnQgcmV0Ow0KPiArCWludCBpcnE7DQo+ICsN
-Cj4gKwlpZiAoIW5wKQ0KPiArCQlyZXR1cm4gLUVOT0RFVjsNCj4gKw0KPiArCWluZGlvX2RldiA9
-IGRldm1faWlvX2RldmljZV9hbGxvYygmcGRldi0+ZGV2LCBzaXplb2YoKmluZm8pKTsNCj4gKwlp
-ZiAoIWluZGlvX2Rldikgew0KPiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgYWxsb2Nh
-dGluZyBpaW8gZGV2aWNlXG4iKTsNCj4gKwkJcmV0dXJuIC1FTk9NRU07DQo+ICsJfQ0KPiArCWlu
-Zm8gPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiArDQo+ICsJbWF0Y2ggPSBvZl9tYXRjaF9kZXZp
-Y2UoaGlidnRfbHNhZGNfbWF0Y2gsICZwZGV2LT5kZXYpOw0KPiArCWluZm8tPmRhdGEgPSBtYXRj
-aC0+ZGF0YTsNCj4gKw0KPiArCW1lbSA9IHBsYXRmb3JtX2dldF9yZXNvdXJjZShwZGV2LCBJT1JF
-U09VUkNFX01FTSwgMCk7DQo+ICsJaW5mby0+cmVncyA9IGRldm1faW9yZW1hcF9yZXNvdXJjZSgm
-cGRldi0+ZGV2LCBtZW0pOw0KPiArCWlmIChJU19FUlIoaW5mby0+cmVncykpDQo+ICsJCXJldHVy
-biBQVFJfRVJSKGluZm8tPnJlZ3MpOw0KPiArDQo+ICsJLyoNCj4gKwkgKiBUaGUgcmVzZXQgc2hv
-dWxkIGJlIGFuIG9wdGlvbmFsIHByb3BlcnR5LCBhcyBpdCBzaG91bGQgd29yaw0KPiArCSAqIHdp
-dGggb2xkIGRldmljZXRyZWVzIGFzIHdlbGwNCj4gKwkgKi8NCj4gKwlpbmZvLT5yZXNldCA9IGRl
-dm1fcmVzZXRfY29udHJvbF9nZXQoJnBkZXYtPmRldiwgImxzYWRjLWNyZyIpOw0KPiArCWlmIChJ
-U19FUlIoaW5mby0+cmVzZXQpKSB7DQo+ICsJCXJldCA9IFBUUl9FUlIoaW5mby0+cmVzZXQpOw0K
-PiArCQlpZiAocmV0ICE9IC1FTk9FTlQpDQo+ICsJCQlyZXR1cm4gcmV0Ow0KPiArDQo+ICsJCWRl
-dl9kYmcoJnBkZXYtPmRldiwgIm5vIHJlc2V0IGNvbnRyb2wgZm91bmRcbiIpOw0KPiArCQlpbmZv
-LT5yZXNldCA9IE5VTEw7DQo+ICsJfQ0KPiArDQo+ICsJaW5pdF9jb21wbGV0aW9uKCZpbmZvLT5j
-b21wbGV0aW9uKTsNCj4gKw0KPiArCWlycSA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwgMCk7DQo+
-ICsJaWYgKGlycSA8IDApIHsNCj4gKwkJZGV2X2VycigmcGRldi0+ZGV2LCAibm8gaXJxIHJlc291
-cmNlP1xuIik7DQo+ICsJCXJldHVybiBpcnE7DQo+ICsJfQ0KPiArDQo+ICsJcmV0ID0gZGV2bV9y
-ZXF1ZXN0X2lycSgmcGRldi0+ZGV2LCBpcnEsIGhpYnZ0X2xzYWRjX2lzciwNCj4gKwkJCSAgICAg
-ICAwLCBkZXZfbmFtZSgmcGRldi0+ZGV2KSwgaW5mbyk7DQo+ICsJaWYgKHJldCA8IDApIHsNCj4g
-KwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHJlcXVlc3RpbmcgaXJxICVkXG4iLCBpcnEp
-Ow0KPiArCQlyZXR1cm4gcmV0Ow0KPiArCX0NCj4gKw0KPiArCWlmIChpbmZvLT5yZXNldCkNCj4g
-KwkJaGlidnRfbHNhZGNfcmVzZXRfY29udHJvbGxlcihpbmZvLT5yZXNldCk7DQo+ICsNCj4gKwlw
-bGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBpbmRpb19kZXYpOw0KPiArDQo+ICsJaW5kaW9fZGV2
-LT5uYW1lID0gZGV2X25hbWUoJnBkZXYtPmRldik7DQo+ICsJaW5kaW9fZGV2LT5kZXYucGFyZW50
-ID0gJnBkZXYtPmRldjsNCj4gKwlpbmRpb19kZXYtPmRldi5vZl9ub2RlID0gcGRldi0+ZGV2Lm9m
-X25vZGU7DQo+ICsJaW5kaW9fZGV2LT5pbmZvID0gJmhpYnZ0X2xzYWRjX2lpb19pbmZvOw0KPiAr
-CWluZGlvX2Rldi0+bW9kZXMgPSBJTkRJT19ESVJFQ1RfTU9ERTsNCj4gKw0KPiArCWluZGlvX2Rl
-di0+Y2hhbm5lbHMgPSBpbmZvLT5kYXRhLT5jaGFubmVsczsNCj4gKwlpbmRpb19kZXYtPm51bV9j
-aGFubmVscyA9IGluZm8tPmRhdGEtPm51bV9jaGFubmVsczsNCj4gKw0KPiArCXJldCA9IGRldm1f
-aWlvX2RldmljZV9yZWdpc3RlcigmcGRldi0+ZGV2LCBpbmRpb19kZXYpOw0KPiArCWlmIChyZXQg
-PCAwKSB7DQo+ICsJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCByZWdpc3RlciBpaW8gZGV2
-aWNlXG4iKTsNCj4gKwkJcmV0dXJuIHJldDsNCkRyb3AgdGhpcyByZXR1cm4gcmV0IGFuZCBqdXN0
-IHJldHVybiByZXQgaW5zdGVhZCBvZiB0aGUgcmV0dXJuIDAgYmVsb3cuDQo+ICsJfQ0KPiArDQo+
-ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgcGxhdGZvcm1fZHJpdmVy
-IGhpYnZ0X2xzYWRjX2RyaXZlciA9IHsNCj4gKwkucHJvYmUJCT0gaGlidnRfbHNhZGNfcHJvYmUs
-DQo+ICsJLmRyaXZlcgkJPSB7DQo+ICsJCS5uYW1lCT0gImhpYnZ0LWxzYWRjIiwNCj4gKwkJLm9m
-X21hdGNoX3RhYmxlID0gaGlidnRfbHNhZGNfbWF0Y2gsDQo+ICsJfSwNCj4gK307DQo+ICsNCj4g
-K21vZHVsZV9wbGF0Zm9ybV9kcml2ZXIoaGlidnRfbHNhZGNfZHJpdmVyKTsNCj4gKw0KPiArTU9E
-VUxFX0FVVEhPUigiQWxsZW4gTGl1IDxsaXVyZW56aG9uZ0BoaXNpbGljb24uY29tPiIpOyANCj4g
-K01PRFVMRV9ERVNDUklQVElPTigiaGlzaWxpY29uIEJWVCBMU0FEQyBkcml2ZXIiKTsgTU9EVUxF
-X0xJQ0VOU0UoIkdQTCANCj4gK3YyIik7DQo+IA0KDQo=
+On 06/02/17 12:19, liurenzhong wrote:
+> Hi Jonathan,
+Hi Allen,
+> 
+> Thanks for your suggestion,  I'm sorry to reply after a long time .
+> This is some problems ask for your advice:
+Not to worry on time, we are all busy people. I've had patches that have
+taken me literally years to reply to reviews on ;) (there's one I posted
+just yesterday after 3 years.)
+
+One small procedural point. It's always helpful to reply inline within
+the patch.  To be honest I couldn't remember what we were referring to in
+quite a bit of this, so the context is helpful! (easy enough to follow
+here, but it's good practice that helps a lot when things get more complex).
+> 
+> 1, It's nice to use just "reset/reset.txt" or ".../reset/reset.txt"
+> from Rob's suggestion, but in the filtered DT tree,
+> "../reset/reset.txt" is used more times, which one we should get,
+> "../" or ".../"?
+Go with Rob's view on this. Device tree bindings are his (and Mark's)
+domain.  If he changes his mind then that's fine as well.
+
+> 
+> 2, The ADC on hisilicon BVT socs can work in single scanning mode or
+> continuous scanning mode. The single mode get conversion value one
+> time after start the configure, while the continuous scanning mode
+> will get conversion value each scan time after start the configure
+> while stopping the adc configure. For more expansibility, the ADC
+> driver use the continuous scanning mode and stop the adc configure
+> after get one time conversion value. Is it necessary to change our
+> driver to single scanning mode or just add a short description?
+
+I think a short description would be fine. Perhaps as short as:
+'A single cycle of continuous mode capture is used for polled operation.
+ This stops continuous mode after the cycle is complete.'
+or something like that.
+
+It sounds like this continuous sampling functionality will lend itself
+nicely to the addition of a streaming (called buffered in iio) mode
+in the driver as a possible future addition - but that certainly isn't
+necessary to have a useful driver.
+
+> 3, This drvier is only support ADC IF found on hi3516cv300 and
+> hi3519v101 now , and future SoCs from Hisilicon BVT would get some
+> changes on channel number or getting data ways and so on, so the
+> driver use "V1" on match table and add other version while any change
+> happens. Which match table can we provide and is't OK like this?
+>> +static const struct of_device_id hibvt_lsadc_match[] = {
+>> +	{
+>> +		.compatible = "hisilicon,hi3516cv300-lsadc",
+>> +		.data = &lsadc_data_v1,
+>> +	},
+>> +	{
+>> +		.compatible = "hisilicon,hi3519v101-lsadc",
+>> +		.data = &lsadc_data_v1,
+>> +	},
+>> +	{},
+>> +};
+That's absolutely fine though I would like a prefix on the lsadc part as
+it is generic enough that it's just possible it'll clash with a name in
+some header in the future.  The hibvt prefix you have used elsewhere
+would be good for this.
+.data = &hibvt_lsadc_data_v1,
+
+Also remember that you can always change internal naming in future if a
+different naming scheme makes more sense at that time.
+
+You could (for now) drop the data_v1 structure entirely and leave
+allowing for other variants as an exercise to be done when they show up.
+
+e.g.:
+
+1) Patch with no variant support is applied.
+... some time passes...
+2) Patch to add variant support
+3) Patch to add new variants.
+2, 3 in a series together as nice simple steps with the use of patch 2
+becoming clear in patch 3.
+
+This is a common thing to have with drivers as the hardware evolves.
+
+Thanks and looking forward to v2,
+
+Jonathan
+
+> 
+> Awaiting for your reply Thank you very much!
+> 
+> Best regards
+> /Allen
+> 
+> -----邮件原件-----
+> 发件人: Jonathan Cameron [mailto:jic23@kernel.org] 
+> 发送时间: 2017年1月8日 1:52
+> 收件人: liurenzhong <liurenzhong@hisilicon.com>; knaack.h@gmx.de; lars@metafoo.de; pmeerw@pmeerw.net; robh+dt@kernel.org; mark.rutland@arm.com
+> 抄送: akinobu.mita@gmail.com; ludovic.desroches@atmel.com; krzk@kernel.org; vilhelm.gray@gmail.com; ksenija.stanojevic@gmail.com; zhiyong.tao@mediatek.com; daniel.baluta@intel.com; leonard.crestez@intel.com; ray.jui@broadcom.com; raveendra.padasalagi@broadcom.com; mranostay@gmail.com; amsfield22@gmail.com; linux-iio@vger.kernel.org; devicetree@vger.kernel.org; linux-kernel@vger.kernel.org; Xuejiancheng <xuejiancheng@hisilicon.com>; Lixu (kevin) <kevin.lixu@hisilicon.com>
+> 主题: Re: [PATCH] adc: add adc driver for Hisilicon BVT SOCs
+> 
+> On 07/01/17 05:16, Allen Liu wrote:
+>> Add ADC driver for the ADC controller found on HiSilicon BVT SOCs, like Hi3516CV300, etc.
+>> The ADC controller is primarily in charge of detecting voltage.
+>>
+>> Reviewed-by: Kevin Li <kevin.lixu@hisilicon.com>
+>> Signed-off-by: Allen Liu <liurenzhong@hisilicon.com>
+> Hi Allen,
+> 
+> One quick submission process note first.  It is very important to clearly identify new versions of a patch and what changes have occurred since the previous posting.
+> 
+> So the email title should have been [PATCH V2] adc...
+> 
+> Also, below the --- please add a brief change log.
+> 
+> The driver is coming together nicely.  A few minor points inline.
+> 
+> Jonathan
+>> ---
+>>  .../devicetree/bindings/iio/adc/hibvt-lsadc.txt    |  23 ++
+>>  drivers/iio/adc/Kconfig                            |  10 +
+>>  drivers/iio/adc/Makefile                           |   1 +
+>>  drivers/iio/adc/hibvt_lsadc.c                      | 335 +++++++++++++++++++++
+>>  4 files changed, 369 insertions(+)
+>>  create mode 100644 
+>> Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>>  create mode 100644 drivers/iio/adc/hibvt_lsadc.c
+>>
+>> diff --git a/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt 
+>> b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>> new file mode 100644
+>> index 0000000..fce1ff4
+>> --- /dev/null
+>> +++ b/Documentation/devicetree/bindings/iio/adc/hibvt-lsadc.txt
+>> @@ -0,0 +1,23 @@
+>> +Hisilicon BVT Low Speed (LS) A/D Converter bindings
+>> +
+>> +Required properties:
+>> +- compatible: should be "hisilicon,<name>-lsadc"
+>> +   - "hisilicon,hi3516cv300-lsadc": for hi3516cv300
+>> +
+>> +- reg: physical base address of the controller and length of memory mapped 
+>> +	   region.
+>> +- interrupts: The interrupt number for the ADC device.
+> Ideally refer to the standard interrupt binding document.
+> Documentation/devicetree/bindings/interrupt-controller/interrupts.txt
+> 
+>> +
+>> +Optional properties:
+>> +- resets: Must contain an entry for each entry in reset-names if need support
+>> +		  this option. See ../../reset/reset.txt for details.
+> Don't use a relative path in a binding document. It's far too likely to be broken by a reorganization of the docs and cannot be grepped for.
+>> +- reset-names: Must include the name "lsadc-crg".
+>> +
+>> +Example:
+>> +	adc: adc@120e0000 {
+>> +			compatible = "hisilicon,hi3516cv300-lsadc";
+>> +			reg = <0x120e0000 0x1000>;
+>> +			interrupts = <19>;
+>> +			resets = <&crg 0x7c 3>;
+>> +			reset-names = "lsadc-crg";
+>> +	};
+>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig index 
+>> 99c0514..0443f51 100644
+>> --- a/drivers/iio/adc/Kconfig
+>> +++ b/drivers/iio/adc/Kconfig
+>> @@ -225,6 +225,16 @@ config HI8435
+>>  	  This driver can also be built as a module. If so, the module will be
+>>  	  called hi8435.
+>>  
+>> +config HIBVT_LSADC
+>> +	tristate "HIBVT LSADC driver"
+>> +	depends on ARCH_HISI || COMPILE_TEST
+>> +	help
+>> +	  Say yes here to build support for the LSADC found in SoCs from
+>> +	  hisilicon BVT chip.
+>> +
+>> +	  To compile this driver as a module, choose M here: the
+>> +	  module will be called hibvt_lsadc.
+>> +
+>>  config INA2XX_ADC
+>>  	tristate "Texas Instruments INA2xx Power Monitors IIO driver"
+>>  	depends on I2C && !SENSORS_INA2XX
+>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile index 
+>> 7a40c04..6554d92 100644
+>> --- a/drivers/iio/adc/Makefile
+>> +++ b/drivers/iio/adc/Makefile
+>> @@ -23,6 +23,7 @@ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+>>  obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+>>  obj-$(CONFIG_FSL_MX25_ADC) += fsl-imx25-gcq.o
+>>  obj-$(CONFIG_HI8435) += hi8435.o
+>> +obj-$(CONFIG_HIBVT_LSADC) += hibvt_lsadc.o
+>>  obj-$(CONFIG_IMX7D_ADC) += imx7d_adc.o
+>>  obj-$(CONFIG_INA2XX_ADC) += ina2xx-adc.o
+>>  obj-$(CONFIG_LP8788_ADC) += lp8788_adc.o diff --git 
+>> a/drivers/iio/adc/hibvt_lsadc.c b/drivers/iio/adc/hibvt_lsadc.c new 
+>> file mode 100644 index 0000000..aaf2024
+>> --- /dev/null
+>> +++ b/drivers/iio/adc/hibvt_lsadc.c
+>> @@ -0,0 +1,335 @@
+>> +/*
+>> + * Hisilicon BVT Low Speed (LS) A/D Converter
+>> + * Copyright (C) 2016 HiSilicon Technologies Co., Ltd.
+>> + *
+>> + * This program is free software; you can redistribute it and/or 
+>> +modify
+>> + * it under the terms of the GNU General Public License as published 
+>> +by
+>> + * the Free Software Foundation; either version 2 of the License, or
+>> + * (at your option) any later version.
+>> + *
+>> + * This program is distributed in the hope that it will be useful,
+>> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + * GNU General Public License for more details.
+>> + */
+>> +
+>> +#include <linux/module.h>
+>> +#include <linux/platform_device.h>
+>> +#include <linux/interrupt.h>
+>> +#include <linux/io.h>
+>> +#include <linux/of.h>
+>> +#include <linux/of_device.h>
+>> +#include <linux/clk.h>
+>> +#include <linux/completion.h>
+>> +#include <linux/delay.h>
+>> +#include <linux/reset.h>
+>> +#include <linux/regulator/consumer.h> #include <linux/iio/iio.h>
+>> +
+>> +/* hisilicon bvt adc registers definitions */
+>> +#define HIBVT_LSADC_CONFIG		0x00
+>> +#define HIBVT_CONFIG_DEGLITCH	BIT(17)
+>> +#define HIBVT_CONFIG_RESET		BIT(15)
+>> +#define HIBVT_CONFIG_POWERDOWN	BIT(14)
+>> +#define HIBVT_CONFIG_MODE		BIT(13)
+>> +#define HIBVT_CONFIG_CHNC		BIT(10)
+>> +#define HIBVT_CONFIG_CHNB		BIT(9)
+>> +#define HIBVT_CONFIG_CHNA		BIT(8)
+>> +
+>> +#define HIBVT_LSADC_TIMESCAN	0x08
+>> +#define HIBVT_LSADC_INTEN		0x10
+>> +#define HIBVT_LSADC_INTSTATUS	0x14
+>> +#define HIBVT_LSADC_INTCLR		0x18
+>> +#define HIBVT_LSADC_START		0x1C
+>> +#define HIBVT_LSADC_STOP		0x20
+>> +#define HIBVT_LSADC_ACTBIT		0x24
+>> +#define HIBVT_LSADC_CHNDATA		0x2C
+>> +
+>> +#define HIBVT_LSADC_CON_EN		(1u << 0)
+>> +#define HIBVT_LSADC_CON_DEN		(0u << 0)
+>> +
+>> +#define HIBVT_LSADC_NUM_BITS_V1	10
+>> +#define HIBVT_LSADC_CHN_MASK_v1	0x7
+>> +
+>> +/* fix clk:3000000, default tscan set 10ms */
+>> +#define HIBVT_LSADC_TSCAN_MS	(10*3000)
+>> +
+>> +#define HIBVT_LSADC_TIMEOUT		msecs_to_jiffies(100)
+>> +
+>> +/* default voltage scale for every channel <mv> */ static int 
+>> +g_hibvt_lsadc_voltage[] = {
+>> +	3300, 3300, 3300
+> Is default due to an external reference voltage or is there an internal regulator?  If it is external it should really be described using the regulator framework.
+> 
+> Const? 
+>> +};
+>> +
+>> +struct hibvt_lsadc {
+>> +	void __iomem		*regs;
+>> +	struct completion	completion;
+>> +	struct reset_control	*reset;
+>> +	const struct hibvt_lsadc_data	*data;
+>> +	unsigned int		cur_chn;
+>> +	unsigned int		value;
+>> +};
+>> +
+>> +struct hibvt_lsadc_data {
+>> +	int				num_bits;
+>> +	const struct iio_chan_spec	*channels;
+>> +	int				num_channels;
+>> +
+>> +	void (*clear_irq)(struct hibvt_lsadc *info, int mask);
+>> +	void (*start_conv)(struct hibvt_lsadc *info);
+>> +	void (*stop_conv)(struct hibvt_lsadc *info); };
+>> +
+>> +static int hibvt_lsadc_read_raw(struct iio_dev *indio_dev,
+>> +				    struct iio_chan_spec const *chan,
+>> +				    int *val, int *val2, long mask) {
+>> +	struct hibvt_lsadc *info = iio_priv(indio_dev);
+>> +
+>> +	switch (mask) {
+>> +	case IIO_CHAN_INFO_RAW:
+>> +		mutex_lock(&indio_dev->mlock);
+>> +
+>> +		reinit_completion(&info->completion);
+>> +
+>> +		/* Select the channel to be used */
+>> +		info->cur_chn = chan->channel;
+>> +
+>> +		if (info->data->start_conv)
+>> +			info->data->start_conv(info);
+>> +
+>> +		if (!wait_for_completion_timeout(&info->completion,
+>> +							HIBVT_LSADC_TIMEOUT)) {
+>> +			if (info->data->stop_conv)
+>> +				info->data->stop_conv(info);
+>> +			mutex_unlock(&indio_dev->mlock);
+>> +			return -ETIMEDOUT;
+>> +		}
+>> +
+>> +		*val = info->value;
+>> +		mutex_unlock(&indio_dev->mlock);
+>> +		return IIO_VAL_INT;
+>> +	case IIO_CHAN_INFO_SCALE:
+>> +		*val = g_hibvt_lsadc_voltage[chan->channel];
+>> +		*val2 = info->data->num_bits;
+>> +		return IIO_VAL_FRACTIONAL_LOG2;
+>> +	default:
+>> +		return -EINVAL;
+>> +	}
+>> +}
+>> +
+>> +static irqreturn_t hibvt_lsadc_isr(int irq, void *dev_id) {
+>> +	struct hibvt_lsadc *info = (struct hibvt_lsadc *)dev_id;
+>> +	int mask;
+>> +
+>> +	mask = readl(info->regs + HIBVT_LSADC_INTSTATUS);
+>> +	if ((mask & HIBVT_LSADC_CHN_MASK_v1) == 0)
+>> +		return IRQ_NONE;
+>> +
+>> +	/* Clear irq */
+>> +	mask &= HIBVT_LSADC_CHN_MASK_v1;
+>> +	if (info->data->clear_irq)
+>> +		info->data->clear_irq(info, mask);
+>> +
+>> +	/* Read value */
+>> +	info->value = readl(info->regs +
+>> +		HIBVT_LSADC_CHNDATA + (info->cur_chn << 2));
+>> +	info->value &= GENMASK(info->data->num_bits - 1, 0);
+>> +
+>> +	/* stop adc */
+>> +	if (info->data->stop_conv)
+>> +		info->data->stop_conv(info);
+>> +
+>> +	complete(&info->completion);
+>> +
+>> +	return IRQ_HANDLED;
+>> +}
+>> +
+>> +static const struct iio_info hibvt_lsadc_iio_info = {
+>> +	.read_raw = hibvt_lsadc_read_raw,
+>> +	.driver_module = THIS_MODULE,
+>> +};
+>> +
+>> +#define HIBVT_LSADC_CHANNEL(_index, _id) {      \
+>> +	.type = IIO_VOLTAGE,                \
+>> +	.indexed = 1,						\
+>> +	.channel = _index,					\
+>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |  \
+>> +			BIT(IIO_CHAN_INFO_SCALE),   \
+>> +	.datasheet_name = _id,              \
+>> +}
+>> +
+>> +static const struct iio_chan_spec hibvt_lsadc_iio_channels[] = {
+>> +	HIBVT_LSADC_CHANNEL(0, "adc0"),
+>> +	HIBVT_LSADC_CHANNEL(1, "adc1"),
+>> +	HIBVT_LSADC_CHANNEL(2, "adc2"),
+>> +};
+>> +
+>> +static void hibvt_lsadc_v1_clear_irq(struct hibvt_lsadc *info, int 
+>> +mask) {
+>> +	writel(mask, info->regs + HIBVT_LSADC_INTCLR); }
+>> +
+>> +static void hibvt_lsadc_v1_start_conv(struct hibvt_lsadc *info) {
+>> +	unsigned int con;
+>> +
+>> +	/* set number bit */
+> set number of bits?
+>> +	con = GENMASK(info->data->num_bits - 1, 0);
+>> +	writel(con, (info->regs + HIBVT_LSADC_ACTBIT));
+>> +
+>> +	/* config */
+>> +	con = readl(info->regs + HIBVT_LSADC_CONFIG);
+>> +	con &= ~HIBVT_CONFIG_RESET;
+>> +	con |= (HIBVT_CONFIG_POWERDOWN | HIBVT_CONFIG_DEGLITCH |
+>> +		HIBVT_CONFIG_MODE);
+>> +	con &= ~(HIBVT_CONFIG_CHNA | HIBVT_CONFIG_CHNB | HIBVT_CONFIG_CHNC);
+>> +	con |= (HIBVT_CONFIG_CHNA << info->cur_chn);
+>> +	writel(con, (info->regs + HIBVT_LSADC_CONFIG));
+>> +
+>> +	/* set timescan */
+>> +	writel(HIBVT_LSADC_TSCAN_MS, (info->regs + HIBVT_LSADC_TIMESCAN));
+>> +
+>> +	/* clear interrupt */
+>> +	writel(HIBVT_LSADC_CHN_MASK_v1, info->regs + HIBVT_LSADC_INTCLR);
+>> +
+>> +	/* enable interrupt */
+>> +	writel(HIBVT_LSADC_CON_EN, (info->regs + HIBVT_LSADC_INTEN));
+>> +
+>> +	/* start scan */
+>> +	writel(HIBVT_LSADC_CON_EN, (info->regs + HIBVT_LSADC_START)); }
+>> +
+>> +static void hibvt_lsadc_v1_stop_conv(struct hibvt_lsadc *info) {
+>> +	/* reset the timescan */
+> This isn't a particularly common pice of terminology, perhaps a short
+> description here of what timescan is and why we should reset it would
+> make the code easier to follow.
+> 
+>> +	writel(HIBVT_LSADC_CON_DEN, (info->regs + HIBVT_LSADC_TIMESCAN));
+>> +
+>> +	/* disable interrupt */
+>> +	writel(HIBVT_LSADC_CON_DEN, (info->regs + HIBVT_LSADC_INTEN));
+>> +
+>> +	/* stop scan */
+>> +	writel(HIBVT_LSADC_CON_EN, (info->regs + HIBVT_LSADC_STOP)); }
+>> +
+>> +static const struct hibvt_lsadc_data lsadc_data_v1 = {
+>> +	.num_bits = HIBVT_LSADC_NUM_BITS_V1,
+>> +	.channels = hibvt_lsadc_iio_channels,
+>> +	.num_channels = ARRAY_SIZE(hibvt_lsadc_iio_channels),
+>> +
+>> +	.clear_irq = hibvt_lsadc_v1_clear_irq,
+>> +	.start_conv = hibvt_lsadc_v1_start_conv,
+>> +	.stop_conv = hibvt_lsadc_v1_stop_conv, };
+>> +
+>> +static const struct of_device_id hibvt_lsadc_match[] = {
+>> +	{
+>> +		.compatible = "hisilicon,hi3516cv300-lsadc",
+>> +		.data = &lsadc_data_v1,
+> The usual convention is to only introduce 'variant' type data as a precursor patch to a series including the support of new parts.
+> 
+> It is acceptable to post a version with this in if you are shortly to submit the follow up that adds other device support.  If you are doing this, please put a note in the patch description to that effect.  Note that if the additional support doesn't turn up, the driver may we get 'simplified'
+> by someone else.
+> 
+> I'd also generally expect to see this match table further down - directly above where it is used.  Makes for ever so slightly easier reviewing!
+>> +	},
+>> +	{},
+>> +};
+>> +MODULE_DEVICE_TABLE(of, hibvt_lsadc_match);
+>> +
+>> +/* Reset LSADC Controller */
+>> +static void hibvt_lsadc_reset_controller(struct reset_control *reset) 
+>> +{
+>> +	reset_control_assert(reset);
+>> +	usleep_range(10, 20);
+>> +	reset_control_deassert(reset);
+>> +}
+>> +
+>> +static int hibvt_lsadc_probe(struct platform_device *pdev) {
+>> +	struct hibvt_lsadc *info = NULL;
+>> +	struct device_node *np = pdev->dev.of_node;
+>> +	struct iio_dev *indio_dev = NULL;
+>> +	struct resource	*mem;
+>> +	const struct of_device_id *match;
+>> +	int ret;
+>> +	int irq;
+>> +
+>> +	if (!np)
+>> +		return -ENODEV;
+>> +
+>> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+>> +	if (!indio_dev) {
+>> +		dev_err(&pdev->dev, "failed allocating iio device\n");
+>> +		return -ENOMEM;
+>> +	}
+>> +	info = iio_priv(indio_dev);
+>> +
+>> +	match = of_match_device(hibvt_lsadc_match, &pdev->dev);
+>> +	info->data = match->data;
+>> +
+>> +	mem = platform_get_resource(pdev, IORESOURCE_MEM, 0);
+>> +	info->regs = devm_ioremap_resource(&pdev->dev, mem);
+>> +	if (IS_ERR(info->regs))
+>> +		return PTR_ERR(info->regs);
+>> +
+>> +	/*
+>> +	 * The reset should be an optional property, as it should work
+>> +	 * with old devicetrees as well
+>> +	 */
+>> +	info->reset = devm_reset_control_get(&pdev->dev, "lsadc-crg");
+>> +	if (IS_ERR(info->reset)) {
+>> +		ret = PTR_ERR(info->reset);
+>> +		if (ret != -ENOENT)
+>> +			return ret;
+>> +
+>> +		dev_dbg(&pdev->dev, "no reset control found\n");
+>> +		info->reset = NULL;
+>> +	}
+>> +
+>> +	init_completion(&info->completion);
+>> +
+>> +	irq = platform_get_irq(pdev, 0);
+>> +	if (irq < 0) {
+>> +		dev_err(&pdev->dev, "no irq resource?\n");
+>> +		return irq;
+>> +	}
+>> +
+>> +	ret = devm_request_irq(&pdev->dev, irq, hibvt_lsadc_isr,
+>> +			       0, dev_name(&pdev->dev), info);
+>> +	if (ret < 0) {
+>> +		dev_err(&pdev->dev, "failed requesting irq %d\n", irq);
+>> +		return ret;
+>> +	}
+>> +
+>> +	if (info->reset)
+>> +		hibvt_lsadc_reset_controller(info->reset);
+>> +
+>> +	platform_set_drvdata(pdev, indio_dev);
+>> +
+>> +	indio_dev->name = dev_name(&pdev->dev);
+>> +	indio_dev->dev.parent = &pdev->dev;
+>> +	indio_dev->dev.of_node = pdev->dev.of_node;
+>> +	indio_dev->info = &hibvt_lsadc_iio_info;
+>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>> +
+>> +	indio_dev->channels = info->data->channels;
+>> +	indio_dev->num_channels = info->data->num_channels;
+>> +
+>> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+>> +	if (ret < 0) {
+>> +		dev_err(&pdev->dev, "failed register iio device\n");
+>> +		return ret;
+> Drop this return ret and just return ret instead of the return 0 below.
+>> +	}
+>> +
+>> +	return 0;
+>> +}
+>> +
+>> +static struct platform_driver hibvt_lsadc_driver = {
+>> +	.probe		= hibvt_lsadc_probe,
+>> +	.driver		= {
+>> +		.name	= "hibvt-lsadc",
+>> +		.of_match_table = hibvt_lsadc_match,
+>> +	},
+>> +};
+>> +
+>> +module_platform_driver(hibvt_lsadc_driver);
+>> +
+>> +MODULE_AUTHOR("Allen Liu <liurenzhong@hisilicon.com>"); 
+>> +MODULE_DESCRIPTION("hisilicon BVT LSADC driver"); MODULE_LICENSE("GPL 
+>> +v2");
+>>
+> 
+
