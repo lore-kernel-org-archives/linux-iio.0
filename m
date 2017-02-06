@@ -1,16 +1,16 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:35530 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751774AbdBEKAX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Feb 2017 05:00:23 -0500
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:25738 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751372AbdBFQDY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2017 11:03:24 -0500
 Subject: Re: [PATCH v2 4/5] iio: trigger: add support for STM32 EXTI triggers
-To: Linus Walleij <linus.walleij@linaro.org>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Linus Walleij <linus.walleij@linaro.org>
 References: <1485786840-4557-1-git-send-email-fabrice.gasnier@st.com>
  <1485786840-4557-5-git-send-email-fabrice.gasnier@st.com>
  <CACRpkdZeiFYFdRWCEgYWDWh4Wn2gT29KAFao9mgj7sTi768kFQ@mail.gmail.com>
  <1236cee4-41bf-b3b9-51e4-7e585234b0c7@kernel.org>
-Cc: Russell King <linux@armlinux.org.uk>,
+CC: Russell King <linux@armlinux.org.uk>,
         Rob Herring <robh+dt@kernel.org>,
         "linux-arm-kernel@lists.infradead.org"
         <linux-arm-kernel@lists.infradead.org>,
@@ -25,24 +25,17 @@ Cc: Russell King <linux@armlinux.org.uk>,
         Peter Meerwald <pmeerw@pmeerw.net>,
         Benjamin Gaignard <benjamin.gaignard@linaro.org>,
         Benjamin Gaignard <benjamin.gaignard@st.com>,
-        Thomas Gleixner <tglx@linutronix.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b7f9373f-a466-9332-c866-c7f836efba32@kernel.org>
-Date: Sun, 5 Feb 2017 10:00:20 +0000
+        <tglx@linutronix.de>
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+Message-ID: <b035b596-6b48-2671-93af-24b52b1ffab8@st.com>
+Date: Mon, 6 Feb 2017 17:01:58 +0100
 MIME-Version: 1.0
 In-Reply-To: <1236cee4-41bf-b3b9-51e4-7e585234b0c7@kernel.org>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset="utf-8"; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-cc'd Thomas in at this point in the thread to give as much info as possible.
-
-This is the driver effectively (ab)using an irq to hook up internal connections
-in the hardware.
-
-Anything similar out there we could look at for ideas on this?
-
-On 04/02/17 11:39, Jonathan Cameron wrote:
+On 02/04/2017 12:39 PM, Jonathan Cameron wrote:
 > On 03/02/17 19:40, Linus Walleij wrote:
 >> On Mon, Jan 30, 2017 at 3:33 PM, Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
 >>
@@ -68,33 +61,53 @@ On 04/02/17 11:39, Jonathan Cameron wrote:
 > part provided a non gpio interrupt pin and hence drove that
 > change.  Was quite a while back!
 > d4fd73bf25c3aafc891ef4443fc744d427ec1df0 specifically in 2013
-> 
+>
 > Handling of the gpio stuff should be handled in the interrupt
 > description itself.
-> 
+>
 > However, it's a bit different - in that in the below it
 > would be the equivalent of triggering on the unused exti
 > interrupt rather than on the end of conversion.
-> 
+>
 > In this case, because of the hardware linkage we can effectively
 > skip the first interrupt.
-> 
+>
 > Arguably to make this a general purpose trigger we should enable
 > that interrupt if anything other than the STM devices that can
 > use it in hardware are hooked on to it.
-> 
+>
 > So this is an interrupt trigger without the interrupt ever
 > being visible to software.
-> 
+>
 > It might be easy enough to add that support to the generic version
 > except that linking said trigger requires some register changes
 > in the STM side. + there is a kicker in the various last bit
 > of this patch - we need a way to find out if it's the interrupt
 > we think it is (i.e. an exti interrupt)
+
+Hi Jonathan, Linus, all,
+
+First, many thanks for reviewing.
+
+In this patch-set, I choose to implement this hardware trigger line
+into separate driver... Thinking out loud:
+If I try to summarize, as you perfectly describe here before, I see two 
+items to address:
+- this is pure HW line, that can either generate interrupts, and/or 
+start conversions in HW. This may be hard to combine both, an interrupt 
+handler to call iio_trigger_poll() from there, for generic devices, but 
+not for stm devices (not sure if this can benefit to others?).
+- there is need to do some register changes on stm device side (ADC) as 
+well, when choosing a particular trigger (EXTI line for instance) e.g. 
+in validate_trigger().
+
+I'm starting to wonder if this can be separate driver. Maybe this
+should be part of device driver (e.g. ADC), at least for the time being.
+
 >>
 >> Let's see what Jonathan says.
-> 
-> 
+>
+>
 >>
 >>> +config IIO_STM32_EXTI_TRIGGER
 >>> +       tristate "STM32 EXTI Trigger"
@@ -179,10 +192,10 @@ On 04/02/17 11:39, Jonathan Cameron wrote:
 >>> +                                      0, dev_name(&pdev->dev), pdev);
 > Hmm. So this is a trick to set the interrupt mapping up inside the device.
 > The whole thing doesn't really exist.
-> 
+>
 > Rather feels like there ought to be some generic interface for
 > 'I want to pretend I want a particular interrupt but not actually get one'.
-> 
+>
 > But that would only work in this weird case where there is also a real interrupt
 > associated with it - just one we elect not to use.
 >>> +               if (ret) {
@@ -246,10 +259,24 @@ On 04/02/17 11:39, Jonathan Cameron wrote:
 > is downstream.  We should be providing this interrupt like normal if
 > we have other devices triggering off it.  In that case it becomes a standard
 > interrupt trigger.
-> 
+
+Hmm, in case stm device is using this trigger, iio_trigger_poll() will
+be called. If I understand your point here, this interrupt should be 
+enabled, when stm device isn't using this trigger (for generic devices).
+May validate_device()/set_trigger_state() be used to enable or disable 
+this interrupt ? Then, what criteria may be used for that purpose ?
+
+>
 > Polling off the back of the dataready interrupt is fine if there is nothing
 > earlier available. Here there is so we should really be triggering other
 > devices off this earlier interrupt.
+
+I fear it can add complexity, because it will depend on user choice to
+select this trigger for an stm32 adc, or another device, or both ?
+Not sure how to distinguish both from within this trigger driver.
+In the end, best maybe to implement this closer in stm32 adc/dac
+driver, and limit trigger usage with .validate_device().
+
 >>
 >>> +static const struct of_device_id stm32_exti_trigger_of_match[] = {
 >>> +       { .compatible = "st,stm32-exti-trigger" },
@@ -272,7 +299,31 @@ On 04/02/17 11:39, Jonathan Cameron wrote:
 > This one section is the only really non generic element that
 > isn't supported by the existing interrupt trigger.
 > Mind you that doesn't have device tree bindings yet :(
-> 
+
+Yes, then I suppose simple approach is to rework this, and put it
+inside stm32 adc core driver ?
+Then, register trigger from there, and read from dt child node.
+Is something like the following suitable ?
+adc@0xhhhh {
+	compatible = "st,stm32f4-adc-core"
+	...
+	adc1 {
+		...
+	}
+
+	trigger {
+		gpios = <...>;
+		st,trigger-value = <11>; /* e.g. EXTI nb */
+		st,trigger-polarity = <1>;
+	}
+}
+
+Please let me know your opinion.
+
+Best regards,
+Fabrice
+
+>
 > I wonder if we can add some sort of flag in there to identify hardware
 > blocks for tricks like this. Or at a push provide the interrupt
 > to both bits of kit so they can compare and see if they are looking
@@ -283,10 +334,4 @@ On 04/02/17 11:39, Jonathan Cameron wrote:
 >> Yours,
 >> Linus Walleij
 >>
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
-
+>
