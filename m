@@ -1,406 +1,354 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yb0-f195.google.com ([209.85.213.195]:33685 "EHLO
-        mail-yb0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751148AbdAaVGO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 31 Jan 2017 16:06:14 -0500
-Date: Tue, 31 Jan 2017 16:06:01 -0500
-From: William Breathitt Gray <vilhelm.gray@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org
-Subject: [PATCH v2] iio: 104-quad-8: Add IRQ support for the ACCES 104-QUAD-8
-Message-ID: <20170131210601.GA8301@sophia>
+Return-Path: <SRS0=TTA6=ZT=hisilicon.com=liurenzhong@kernel.org>
+From: liurenzhong <liurenzhong@hisilicon.com>
+To: Jonathan Cameron <jic23@kernel.org>, "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "robh+dt@kernel.org" <robh+dt@kernel.org>,
+        "mark.rutland@arm.com"
+	<mark.rutland@arm.com>
+CC: "akinobu.mita@gmail.com" <akinobu.mita@gmail.com>,
+        "ludovic.desroches@atmel.com" <ludovic.desroches@atmel.com>,
+        "krzk@kernel.org" <krzk@kernel.org>,
+        "vilhelm.gray@gmail.com"
+	<vilhelm.gray@gmail.com>,
+        "ksenija.stanojevic@gmail.com"
+	<ksenija.stanojevic@gmail.com>,
+        "zhiyong.tao@mediatek.com"
+	<zhiyong.tao@mediatek.com>,
+        "daniel.baluta@intel.com"
+	<daniel.baluta@intel.com>,
+        "leonard.crestez@intel.com"
+	<leonard.crestez@intel.com>,
+        "ray.jui@broadcom.com" <ray.jui@broadcom.com>,
+        "raveendra.padasalagi@broadcom.com" <raveendra.padasalagi@broadcom.com>,
+        "mranostay@gmail.com" <mranostay@gmail.com>,
+        "amsfield22@gmail.com"
+	<amsfield22@gmail.com>,
+        "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>,
+        "devicetree@vger.kernel.org"
+	<devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org"
+	<linux-kernel@vger.kernel.org>,
+        Xuejiancheng <xuejiancheng@hisilicon.com>,
+        "Lixu (kevin)" <kevin.lixu@hisilicon.com>
+Subject: =?gb2312?B?tPC4tDogW1BBVENIXSBhZGM6IGFkZCBhZGMgZHJpdmVyIGZvciBIaXNpbGlj?=
+ =?gb2312?Q?on_BVT_SOCs?=
+Date: Mon, 6 Feb 2017 12:19:05 +0000
+Message-ID: <FF07FAC5C99FCA42AD8E3824334A86E0DCC408@DGGEMA503-MBS.china.huawei.com>
+References: <1483784170-228765-1-git-send-email-liurenzhong@hisilicon.com>
+ <41fbfc45-9f9a-c2cf-9c27-c4d5a39a400a@kernel.org>
+In-Reply-To: <41fbfc45-9f9a-c2cf-9c27-c4d5a39a400a@kernel.org>
+Content-Type: text/plain; charset="gb2312"
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-The LSI/CSI LS7266R1 chip provides programmable output via the FLG pins.
-When interrupts are enabled on the ACCES 104-QUAD-8, they occur whenever
-FLG1 is active. Four functions are available for the FLG1 signal:
-/Carry, /Compare, /Carry/Borrow, and Index.
-
-	/Carry:
-		Interrupt generated on active low Carry signal. Carry
-		signal toggles every time the respective channel's
-		counter overflows.
-
-	/Compare:
-		Interrupt generated on active low Compare signal.
-		Compare signal toggles every time respective channel's
-		preset register is equal to the respective channel's
-		counter.
-
-	/Carry/Borrow:
-		Interrupt generated on active low Carry signal and
-		active low Borrow signal. Carry signal toggles every
-		time the respective channel's counter overflows. Borrow
-		signal toggles every time the respective channel's
-		counter underflows.
-
-	Index:
-		Interrupt generated on active high Index signal.
-
-The irq_trig_func sysfs attribute is introduced to allow the selection
-of the desired IRQ trigger function per channel. Interrupts push events
-via the thresh_en event sysfs attribute.
-
-This patch adds IRQ support for the ACCES 104-QUAD-8. The interrupt line
-numbers for the devices may be configured via the irq array module
-parameter.
-
-Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
----
-Changes in v2:
-  - Rebased to merge in bug fix updates to 104-quad-8.c
-  - Changed mag_en to thresh_en to match nature of attribute
-  - Updated kernel version number in documentation for new attributes
-
-I apologize for the delay in response to the original patch submission;
-for some reason my mail server never received Jonathan's original reply.
-
-Jonathan, have you given some thought about how events should be
-supported in this case? I agree that the interface right now is very
-device specific, so it would be very nice get it more general for the
-benefit of future drivers. Let me know what you have planned and I can
-make changes accordingly.
-
-I went ahead and changed the mag_en attribute to a thresh_en (direction
-left as IIO_EV_DIR_NONE). Would it be better to have direction set to
-IIO_EV_DIR_EITHER for this attribute? As you could tell, the direction
-of the event depends on the configuration chosen (/Carry, /Compare,
-/Carry/Borrow, or Index).
-
-By the way, the forward slashes in front of the FLG1 signal function
-names are suppose to represent inversion bars on top of the signal names
-(in order to point out that the signals are active low). I can remove
-those forward slashes from the documentation if they are confusing.
-
-William Breathitt Gray
-
- .../ABI/testing/sysfs-bus-iio-counter-104-quad-8   |  37 +++++-
- drivers/iio/counter/104-quad-8.c                   | 129 ++++++++++++++++++++-
- drivers/iio/counter/Kconfig                        |   6 +-
- 3 files changed, 163 insertions(+), 9 deletions(-)
-
-diff --git a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8 b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
-index ba676520b953..7d4599ae253b 100644
---- a/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
-+++ b/Documentation/ABI/testing/sysfs-bus-iio-counter-104-quad-8
-@@ -51,6 +51,31 @@ Description:
- 			not freeze at the bundary points, but counts
- 			continuously throughout.
- 
-+What:		/sys/bus/iio/devices/iio:deviceX/in_countY_irq_trig_func
-+KernelVersion:	4.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		IRQ trigger function for channel Y. Four IRQ trigger functions
-+		are available: /Carry, /Compare, /Carry/Borrow, and Index.
-+
-+		/Carry:
-+			Interrupt generated on active low Carry signal. Carry
-+			signal toggles every time channel Y counter overflows.
-+
-+		/Compare:
-+			Interrupt generated on active low Compare signal.
-+			Compare signal toggles every time channel Y preset
-+			register is equal to channel Y counter.
-+
-+		/Carry/Borrow:
-+			Interrupt generated on active low Carry signal and
-+			active low Borrow signal. Carry signal toggles every
-+			time channel Y counter overflows. Borrow signal toggles
-+			every time channel Y counter underflows.
-+
-+		Index:
-+			Interrupt generated on active high Index signal.
-+
- What:		/sys/bus/iio/devices/iio:deviceX/in_countY_noise_error
- KernelVersion:	4.9
- Contact:	linux-iio@vger.kernel.org
-@@ -93,7 +118,17 @@ Contact:	linux-iio@vger.kernel.org
- Description:
- 		Whether to set channel Y counter with channel Y preset value
- 		when channel Y index input is active, or continuously count.
--		Valid attribute values are boolean.
-+		Valid attribute values are boolean. This attribute is ignored
-+		when channel Y IRQs are disabled.
-+
-+What:		/sys/bus/iio/devices/iio:deviceX/events/in_countY_thresh_en
-+KernelVersion:	4.11
-+Contact:	linux-iio@vger.kernel.org
-+Description:
-+		Event generated when a channel Y IRQ occurs. Channel Y IRQs are
-+		triggered as configured by the channel Y irq_trig_func
-+		attribute. Channel Y IRQs are disabled when this attribute is
-+		set to 0.
- 
- What:		/sys/bus/iio/devices/iio:deviceX/in_indexY_index_polarity
- KernelVersion:	4.9
-diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
-index a5913e97945e..ccfd952b8fd9 100644
---- a/drivers/iio/counter/104-quad-8.c
-+++ b/drivers/iio/counter/104-quad-8.c
-@@ -16,10 +16,12 @@
- #include <linux/bitops.h>
- #include <linux/device.h>
- #include <linux/errno.h>
-+#include <linux/iio/events.h>
- #include <linux/iio/iio.h>
- #include <linux/iio/types.h>
- #include <linux/io.h>
- #include <linux/ioport.h>
-+#include <linux/interrupt.h>
- #include <linux/isa.h>
- #include <linux/kernel.h>
- #include <linux/module.h>
-@@ -33,6 +35,10 @@ static unsigned int num_quad8;
- module_param_array(base, uint, &num_quad8, 0);
- MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
- 
-+static unsigned int irq[max_num_isa_dev(QUAD8_EXTENT)];
-+module_param_array(irq, uint, NULL, 0000);
-+MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 interrupt line numbers");
-+
- #define QUAD8_NUM_COUNTERS 8
- 
- /**
-@@ -43,6 +49,7 @@ MODULE_PARM_DESC(base, "ACCES 104-QUAD-8 base addresses");
-  * @quadrature_scale:	array of quadrature mode scale configurations
-  * @ab_enable:		array of A and B inputs enable configurations
-  * @preset_enable:	array of set_to_preset_on_index attribute configurations
-+ * @irq_trig_func:	array of IRQ trigger function attribute configurations
-  * @synchronous_mode:	array of index function synchronous mode configurations
-  * @index_polarity:	array of index function polarity configurations
-  * @base:		base port address of the IIO device
-@@ -54,6 +61,7 @@ struct quad8_iio {
- 	unsigned int quadrature_scale[QUAD8_NUM_COUNTERS];
- 	unsigned int ab_enable[QUAD8_NUM_COUNTERS];
- 	unsigned int preset_enable[QUAD8_NUM_COUNTERS];
-+	unsigned int irq_trig_func[QUAD8_NUM_COUNTERS];
- 	unsigned int synchronous_mode[QUAD8_NUM_COUNTERS];
- 	unsigned int index_polarity[QUAD8_NUM_COUNTERS];
- 	unsigned int base;
-@@ -150,7 +158,8 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
- 
- 		priv->ab_enable[chan->channel] = val;
- 
--		ior_cfg = val | priv->preset_enable[chan->channel] << 1;
-+		ior_cfg = val | priv->preset_enable[chan->channel] << 1 |
-+			priv->irq_trig_func[chan->channel] << 3;
- 
- 		/* Load I/O control configuration */
- 		outb(0x40 | ior_cfg, base_offset + 1);
-@@ -184,10 +193,39 @@ static int quad8_write_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
- }
- 
-+static int quad8_read_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+	const unsigned int irq_enabled = inb(priv->base + 0x12);
-+
-+	return !!(irq_enabled & BIT(chan->channel));
-+}
-+
-+static int quad8_write_event_config(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, enum iio_event_type type,
-+	enum iio_event_direction dir, int state)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+	unsigned int irq_enabled = inb(priv->base + 0x12);
-+
-+	if (state)
-+		irq_enabled |= BIT(chan->channel);
-+	else
-+		irq_enabled &= ~BIT(chan->channel);
-+
-+	outb(irq_enabled, priv->base + 0x12);
-+
-+	return 0;
-+}
-+
- static const struct iio_info quad8_info = {
- 	.driver_module = THIS_MODULE,
- 	.read_raw = quad8_read_raw,
--	.write_raw = quad8_write_raw
-+	.write_raw = quad8_write_raw,
-+	.read_event_config = quad8_read_event_config,
-+	.write_event_config = quad8_write_event_config
- };
- 
- static ssize_t quad8_read_preset(struct iio_dev *indio_dev, uintptr_t private,
-@@ -256,7 +294,8 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
- 	priv->preset_enable[chan->channel] = preset_enable;
- 
- 	ior_cfg = priv->ab_enable[chan->channel] |
--		(unsigned int)preset_enable << 1;
-+		(unsigned int)preset_enable << 1 |
-+		priv->irq_trig_func[chan->channel] << 3;
- 
- 	/* Load I/O control configuration to Input / Output Control Register */
- 	outb(0x40 | ior_cfg, base_offset);
-@@ -264,6 +303,44 @@ static ssize_t quad8_write_set_to_preset_on_index(struct iio_dev *indio_dev,
- 	return len;
- }
- 
-+static const char *const quad8_irq_trig_func_modes[] = {
-+	"/Carry",
-+	"/Compare",
-+	"/Carry/Borrow",
-+	"Index"
-+};
-+
-+static int quad8_set_irq_trig_func(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan, unsigned int irq_trig_func)
-+{
-+	struct quad8_iio *const priv = iio_priv(indio_dev);
-+	const unsigned int ior_cfg = priv->ab_enable[chan->channel] |
-+		priv->preset_enable[chan->channel] << 1 | irq_trig_func << 3;
-+	const int base_offset = priv->base + 2 * chan->channel + 1;
-+
-+	priv->irq_trig_func[chan->channel] = irq_trig_func;
-+
-+	/* Load I/O control configuration to Input/Output Control Register */
-+	outb(0x40 | ior_cfg, base_offset);
-+
-+	return 0;
-+}
-+
-+static int quad8_get_irq_trig_func(struct iio_dev *indio_dev,
-+	const struct iio_chan_spec *chan)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+
-+	return priv->irq_trig_func[chan->channel];
-+}
-+
-+static const struct iio_enum quad8_irq_trig_func_enum = {
-+	.items = quad8_irq_trig_func_modes,
-+	.num_items = ARRAY_SIZE(quad8_irq_trig_func_modes),
-+	.set = quad8_set_irq_trig_func,
-+	.get = quad8_get_irq_trig_func
-+};
-+
- static const char *const quad8_noise_error_states[] = {
- 	"No excessive noise is present at the count inputs",
- 	"Excessive noise is present at the count inputs"
-@@ -480,6 +557,8 @@ static const struct iio_chan_spec_ext_info quad8_count_ext_info[] = {
- 		.read = quad8_read_set_to_preset_on_index,
- 		.write = quad8_write_set_to_preset_on_index
- 	},
-+	IIO_ENUM("irq_trig_func", IIO_SEPARATE, &quad8_irq_trig_func_enum),
-+	IIO_ENUM_AVAILABLE("irq_trig_func", &quad8_irq_trig_func_enum),
- 	IIO_ENUM("noise_error", IIO_SEPARATE, &quad8_noise_error_enum),
- 	IIO_ENUM_AVAILABLE("noise_error", &quad8_noise_error_enum),
- 	IIO_ENUM("count_direction", IIO_SEPARATE, &quad8_count_direction_enum),
-@@ -500,12 +579,22 @@ static const struct iio_chan_spec_ext_info quad8_index_ext_info[] = {
- 	{}
- };
- 
-+static const struct iio_event_spec quad8_event[] = {
-+	{
-+		.type = IIO_EV_TYPE_THRESH,
-+		.dir = IIO_EV_DIR_NONE,
-+		.mask_separate = BIT(IIO_EV_INFO_ENABLE)
-+	}
-+};
-+
- #define QUAD8_COUNT_CHAN(_chan) {					\
- 	.type = IIO_COUNT,						\
- 	.channel = (_chan),						\
- 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
- 		BIT(IIO_CHAN_INFO_ENABLE) | BIT(IIO_CHAN_INFO_SCALE),	\
- 	.ext_info = quad8_count_ext_info,				\
-+	.event_spec = quad8_event,					\
-+	.num_event_specs = ARRAY_SIZE(quad8_event),			\
- 	.indexed = 1							\
- }
- 
-@@ -528,12 +617,35 @@ static const struct iio_chan_spec quad8_channels[] = {
- 	QUAD8_COUNT_CHAN(7), QUAD8_INDEX_CHAN(7)
- };
- 
-+static irqreturn_t quad8_irq_handler(int irq, void *indio_dev)
-+{
-+	const struct quad8_iio *const priv = iio_priv(indio_dev);
-+	unsigned long irq_status;
-+	unsigned long channel;
-+
-+	irq_status = inb(priv->base + 0x10);
-+	if (!irq_status)
-+		return IRQ_NONE;
-+
-+	for_each_set_bit(channel, &irq_status, QUAD8_NUM_COUNTERS)
-+		iio_push_event(indio_dev,
-+			IIO_UNMOD_EVENT_CODE(IIO_COUNT, channel,
-+				IIO_EV_TYPE_THRESH, IIO_EV_DIR_NONE),
-+			iio_get_time_ns(indio_dev));
-+
-+	/* Clear pending interrupts on device */
-+	outb(0x10, priv->base + 0x11);
-+
-+	return IRQ_HANDLED;
-+}
-+
- static int quad8_probe(struct device *dev, unsigned int id)
- {
- 	struct iio_dev *indio_dev;
- 	struct quad8_iio *priv;
- 	int i, j;
- 	unsigned int base_offset;
-+	int err;
- 
- 	indio_dev = devm_iio_device_alloc(dev, sizeof(*priv));
- 	if (!indio_dev)
-@@ -555,6 +667,8 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 	priv = iio_priv(indio_dev);
- 	priv->base = base[id];
- 
-+	/* Reset Index/Interrupt Register */
-+	outb(0x00, base[id] + 0x12);
- 	/* Reset all counters and disable interrupt function */
- 	outb(0x01, base[id] + 0x11);
- 	/* Set initial configuration for all counters */
-@@ -576,8 +690,13 @@ static int quad8_probe(struct device *dev, unsigned int id)
- 		/* Disable index function; negative index polarity */
- 		outb(0x60, base_offset + 1);
- 	}
--	/* Enable all counters */
--	outb(0x00, base[id] + 0x11);
-+	/* Enable all counters and enable interrupt function */
-+	outb(0x10, base[id] + 0x11);
-+
-+	err = devm_request_irq(dev, irq[id], quad8_irq_handler, IRQF_SHARED,
-+		dev_name(dev), indio_dev);
-+	if (err)
-+		return err;
- 
- 	return devm_iio_device_register(dev, indio_dev);
- }
-diff --git a/drivers/iio/counter/Kconfig b/drivers/iio/counter/Kconfig
-index 44627f6e4861..2cea823126fe 100644
---- a/drivers/iio/counter/Kconfig
-+++ b/drivers/iio/counter/Kconfig
-@@ -15,10 +15,10 @@ config 104_QUAD_8
- 	  Performing a write to a counter's IIO_CHAN_INFO_RAW sets the counter and
- 	  also clears the counter's respective error flag. Although the counters
- 	  have a 25-bit range, only the lower 24 bits may be set, either directly
--	  or via a counter's preset attribute. Interrupts are not supported by
--	  this driver.
-+	  or via a counter's preset attribute.
- 
- 	  The base port addresses for the devices may be configured via the base
--	  array module parameter.
-+	  array module parameter. The interrupt line numbers for the devices may
-+	  be configured via the irq array module parameter.
- 
- endmenu
--- 
-2.11.0
-
+SGkgSm9uYXRoYW4sDQoNClRoYW5rcyBmb3IgeW91ciBzdWdnZXN0aW9uLCAgSSdtIHNvcnJ5IHRv
+IHJlcGx5IGFmdGVyIGEgbG9uZyB0aW1lIC4gVGhpcyBpcyBzb21lIHByb2JsZW1zIGFzayBmb3Ig
+eW91ciBhZHZpY2U6DQoNCjEsIEl0J3MgbmljZSB0byB1c2UganVzdCAicmVzZXQvcmVzZXQudHh0
+IiBvciAiLi4uL3Jlc2V0L3Jlc2V0LnR4dCIgZnJvbSBSb2IncyBzdWdnZXN0aW9uLCBidXQgaW4g
+dGhlIGZpbHRlcmVkIERUIHRyZWUsICIuLi9yZXNldC9yZXNldC50eHQiIGlzIHVzZWQgbW9yZSB0
+aW1lcywgd2hpY2ggb25lIHdlIHNob3VsZCBnZXQsICIuLi8iIG9yICIuLi4vIj8gDQoNCjIsIFRo
+ZSBBREMgb24gaGlzaWxpY29uIEJWVCBzb2NzIGNhbiB3b3JrIGluIHNpbmdsZSBzY2FubmluZyBt
+b2RlIG9yIGNvbnRpbnVvdXMgc2Nhbm5pbmcgbW9kZS4gVGhlIHNpbmdsZSBtb2RlIGdldCBjb252
+ZXJzaW9uIHZhbHVlIG9uZSB0aW1lIGFmdGVyIHN0YXJ0IHRoZSBjb25maWd1cmUsIHdoaWxlIHRo
+ZSBjb250aW51b3VzIHNjYW5uaW5nIG1vZGUgd2lsbCBnZXQgY29udmVyc2lvbiB2YWx1ZSBlYWNo
+IHNjYW4gdGltZSBhZnRlciBzdGFydCB0aGUgY29uZmlndXJlIHdoaWxlIHN0b3BwaW5nIHRoZSBh
+ZGMgY29uZmlndXJlLiBGb3IgbW9yZSBleHBhbnNpYmlsaXR5LCAgdGhlIEFEQyBkcml2ZXIgdXNl
+IHRoZSBjb250aW51b3VzIHNjYW5uaW5nIG1vZGUgYW5kICBzdG9wIHRoZSBhZGMgY29uZmlndXJl
+IGFmdGVyIGdldCBvbmUgdGltZSBjb252ZXJzaW9uIHZhbHVlLiAgSXMgaXQgbmVjZXNzYXJ5IHRv
+IGNoYW5nZSBvdXIgZHJpdmVyIHRvIHNpbmdsZSBzY2FubmluZyBtb2RlIG9yIGp1c3QgYWRkIGEg
+c2hvcnQgZGVzY3JpcHRpb24/DQoNCjMsIFRoaXMgZHJ2aWVyIGlzIG9ubHkgc3VwcG9ydCBBREMg
+SUYgZm91bmQgb24gaGkzNTE2Y3YzMDAgYW5kIGhpMzUxOXYxMDEgbm93ICwgYW5kIGZ1dHVyZSBT
+b0NzIGZyb20gSGlzaWxpY29uIEJWVCB3b3VsZCBnZXQgc29tZSBjaGFuZ2VzIG9uIGNoYW5uZWwg
+bnVtYmVyIG9yIGdldHRpbmcgZGF0YSB3YXlzIGFuZCBzbyBvbiwgIHNvIHRoZSBkcml2ZXIgdXNl
+ICJWMSIgb24gbWF0Y2ggdGFibGUgYW5kIGFkZCBvdGhlciB2ZXJzaW9uIHdoaWxlIGFueSBjaGFu
+Z2UgaGFwcGVucy4gIFdoaWNoIG1hdGNoIHRhYmxlIGNhbiB3ZSBwcm92aWRlIGFuZCAgaXMndCBP
+SyBsaWtlIHRoaXM/DQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IG9mX2RldmljZV9pZCBoaWJ2dF9s
+c2FkY19tYXRjaFtdID0gew0KPiArCXsNCj4gKwkJLmNvbXBhdGlibGUgPSAiaGlzaWxpY29uLGhp
+MzUxNmN2MzAwLWxzYWRjIiwNCj4gKwkJLmRhdGEgPSAmbHNhZGNfZGF0YV92MSwNCj4gKwl9LA0K
+PiArCXsNCj4gKwkJLmNvbXBhdGlibGUgPSAiaGlzaWxpY29uLGhpMzUxOXYxMDEtbHNhZGMiLA0K
+PiArCQkuZGF0YSA9ICZsc2FkY19kYXRhX3YxLA0KPiArCX0sDQo+ICsJe30sDQo+ICt9Ow0KDQpB
+d2FpdGluZyBmb3IgeW91ciByZXBseSBUaGFuayB5b3UgdmVyeSBtdWNoIQ0KDQpCZXN0IHJlZ2Fy
+ZHMNCi9BbGxlbg0KDQotLS0tLdPKvP7Urbz+LS0tLS0NCreivP7IyzogSm9uYXRoYW4gQ2FtZXJv
+biBbbWFpbHRvOmppYzIzQGtlcm5lbC5vcmddIA0Kt6LLzcqxvOQ6IDIwMTfE6jHUwjjI1SAxOjUy
+DQrK1bz+yMs6IGxpdXJlbnpob25nIDxsaXVyZW56aG9uZ0BoaXNpbGljb24uY29tPjsga25hYWNr
+LmhAZ214LmRlOyBsYXJzQG1ldGFmb28uZGU7IHBtZWVyd0BwbWVlcncubmV0OyByb2JoK2R0QGtl
+cm5lbC5vcmc7IG1hcmsucnV0bGFuZEBhcm0uY29tDQqzrcvNOiBha2lub2J1Lm1pdGFAZ21haWwu
+Y29tOyBsdWRvdmljLmRlc3JvY2hlc0BhdG1lbC5jb207IGtyemtAa2VybmVsLm9yZzsgdmlsaGVs
+bS5ncmF5QGdtYWlsLmNvbTsga3NlbmlqYS5zdGFub2pldmljQGdtYWlsLmNvbTsgemhpeW9uZy50
+YW9AbWVkaWF0ZWsuY29tOyBkYW5pZWwuYmFsdXRhQGludGVsLmNvbTsgbGVvbmFyZC5jcmVzdGV6
+QGludGVsLmNvbTsgcmF5Lmp1aUBicm9hZGNvbS5jb207IHJhdmVlbmRyYS5wYWRhc2FsYWdpQGJy
+b2FkY29tLmNvbTsgbXJhbm9zdGF5QGdtYWlsLmNvbTsgYW1zZmllbGQyMkBnbWFpbC5jb207IGxp
+bnV4LWlpb0B2Z2VyLmtlcm5lbC5vcmc7IGRldmljZXRyZWVAdmdlci5rZXJuZWwub3JnOyBsaW51
+eC1rZXJuZWxAdmdlci5rZXJuZWwub3JnOyBYdWVqaWFuY2hlbmcgPHh1ZWppYW5jaGVuZ0BoaXNp
+bGljb24uY29tPjsgTGl4dSAoa2V2aW4pIDxrZXZpbi5saXh1QGhpc2lsaWNvbi5jb20+DQrW98zi
+OiBSZTogW1BBVENIXSBhZGM6IGFkZCBhZGMgZHJpdmVyIGZvciBIaXNpbGljb24gQlZUIFNPQ3MN
+Cg0KT24gMDcvMDEvMTcgMDU6MTYsIEFsbGVuIExpdSB3cm90ZToNCj4gQWRkIEFEQyBkcml2ZXIg
+Zm9yIHRoZSBBREMgY29udHJvbGxlciBmb3VuZCBvbiBIaVNpbGljb24gQlZUIFNPQ3MsIGxpa2Ug
+SGkzNTE2Q1YzMDAsIGV0Yy4NCj4gVGhlIEFEQyBjb250cm9sbGVyIGlzIHByaW1hcmlseSBpbiBj
+aGFyZ2Ugb2YgZGV0ZWN0aW5nIHZvbHRhZ2UuDQo+IA0KPiBSZXZpZXdlZC1ieTogS2V2aW4gTGkg
+PGtldmluLmxpeHVAaGlzaWxpY29uLmNvbT4NCj4gU2lnbmVkLW9mZi1ieTogQWxsZW4gTGl1IDxs
+aXVyZW56aG9uZ0BoaXNpbGljb24uY29tPg0KSGkgQWxsZW4sDQoNCk9uZSBxdWljayBzdWJtaXNz
+aW9uIHByb2Nlc3Mgbm90ZSBmaXJzdC4gIEl0IGlzIHZlcnkgaW1wb3J0YW50IHRvIGNsZWFybHkg
+aWRlbnRpZnkgbmV3IHZlcnNpb25zIG9mIGEgcGF0Y2ggYW5kIHdoYXQgY2hhbmdlcyBoYXZlIG9j
+Y3VycmVkIHNpbmNlIHRoZSBwcmV2aW91cyBwb3N0aW5nLg0KDQpTbyB0aGUgZW1haWwgdGl0bGUg
+c2hvdWxkIGhhdmUgYmVlbiBbUEFUQ0ggVjJdIGFkYy4uLg0KDQpBbHNvLCBiZWxvdyB0aGUgLS0t
+IHBsZWFzZSBhZGQgYSBicmllZiBjaGFuZ2UgbG9nLg0KDQpUaGUgZHJpdmVyIGlzIGNvbWluZyB0
+b2dldGhlciBuaWNlbHkuICBBIGZldyBtaW5vciBwb2ludHMgaW5saW5lLg0KDQpKb25hdGhhbg0K
+PiAtLS0NCj4gIC4uLi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby9hZGMvaGlidnQtbHNhZGMudHh0
+ICAgIHwgIDIzICsrDQo+ICBkcml2ZXJzL2lpby9hZGMvS2NvbmZpZyAgICAgICAgICAgICAgICAg
+ICAgICAgICAgICB8ICAxMCArDQo+ICBkcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUgICAgICAgICAg
+ICAgICAgICAgICAgICAgICB8ICAgMSArDQo+ICBkcml2ZXJzL2lpby9hZGMvaGlidnRfbHNhZGMu
+YyAgICAgICAgICAgICAgICAgICAgICB8IDMzNSArKysrKysrKysrKysrKysrKysrKysNCj4gIDQg
+ZmlsZXMgY2hhbmdlZCwgMzY5IGluc2VydGlvbnMoKykNCj4gIGNyZWF0ZSBtb2RlIDEwMDY0NCAN
+Cj4gRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRpbmdzL2lpby9hZGMvaGlidnQtbHNhZGMu
+dHh0DQo+ICBjcmVhdGUgbW9kZSAxMDA2NDQgZHJpdmVycy9paW8vYWRjL2hpYnZ0X2xzYWRjLmMN
+Cj4gDQo+IGRpZmYgLS1naXQgYS9Eb2N1bWVudGF0aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlv
+L2FkYy9oaWJ2dC1sc2FkYy50eHQgDQo+IGIvRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL2lpby9hZGMvaGlidnQtbHNhZGMudHh0DQo+IG5ldyBmaWxlIG1vZGUgMTAwNjQ0DQo+IGlu
+ZGV4IDAwMDAwMDAuLmZjZTFmZjQNCj4gLS0tIC9kZXYvbnVsbA0KPiArKysgYi9Eb2N1bWVudGF0
+aW9uL2RldmljZXRyZWUvYmluZGluZ3MvaWlvL2FkYy9oaWJ2dC1sc2FkYy50eHQNCj4gQEAgLTAs
+MCArMSwyMyBAQA0KPiArSGlzaWxpY29uIEJWVCBMb3cgU3BlZWQgKExTKSBBL0QgQ29udmVydGVy
+IGJpbmRpbmdzDQo+ICsNCj4gK1JlcXVpcmVkIHByb3BlcnRpZXM6DQo+ICstIGNvbXBhdGlibGU6
+IHNob3VsZCBiZSAiaGlzaWxpY29uLDxuYW1lPi1sc2FkYyINCj4gKyAgIC0gImhpc2lsaWNvbixo
+aTM1MTZjdjMwMC1sc2FkYyI6IGZvciBoaTM1MTZjdjMwMA0KPiArDQo+ICstIHJlZzogcGh5c2lj
+YWwgYmFzZSBhZGRyZXNzIG9mIHRoZSBjb250cm9sbGVyIGFuZCBsZW5ndGggb2YgbWVtb3J5IG1h
+cHBlZCANCj4gKwkgICByZWdpb24uDQo+ICstIGludGVycnVwdHM6IFRoZSBpbnRlcnJ1cHQgbnVt
+YmVyIGZvciB0aGUgQURDIGRldmljZS4NCklkZWFsbHkgcmVmZXIgdG8gdGhlIHN0YW5kYXJkIGlu
+dGVycnVwdCBiaW5kaW5nIGRvY3VtZW50Lg0KRG9jdW1lbnRhdGlvbi9kZXZpY2V0cmVlL2JpbmRp
+bmdzL2ludGVycnVwdC1jb250cm9sbGVyL2ludGVycnVwdHMudHh0DQoNCj4gKw0KPiArT3B0aW9u
+YWwgcHJvcGVydGllczoNCj4gKy0gcmVzZXRzOiBNdXN0IGNvbnRhaW4gYW4gZW50cnkgZm9yIGVh
+Y2ggZW50cnkgaW4gcmVzZXQtbmFtZXMgaWYgbmVlZCBzdXBwb3J0DQo+ICsJCSAgdGhpcyBvcHRp
+b24uIFNlZSAuLi8uLi9yZXNldC9yZXNldC50eHQgZm9yIGRldGFpbHMuDQpEb24ndCB1c2UgYSBy
+ZWxhdGl2ZSBwYXRoIGluIGEgYmluZGluZyBkb2N1bWVudC4gSXQncyBmYXIgdG9vIGxpa2VseSB0
+byBiZSBicm9rZW4gYnkgYSByZW9yZ2FuaXphdGlvbiBvZiB0aGUgZG9jcyBhbmQgY2Fubm90IGJl
+IGdyZXBwZWQgZm9yLg0KPiArLSByZXNldC1uYW1lczogTXVzdCBpbmNsdWRlIHRoZSBuYW1lICJs
+c2FkYy1jcmciLg0KPiArDQo+ICtFeGFtcGxlOg0KPiArCWFkYzogYWRjQDEyMGUwMDAwIHsNCj4g
+KwkJCWNvbXBhdGlibGUgPSAiaGlzaWxpY29uLGhpMzUxNmN2MzAwLWxzYWRjIjsNCj4gKwkJCXJl
+ZyA9IDwweDEyMGUwMDAwIDB4MTAwMD47DQo+ICsJCQlpbnRlcnJ1cHRzID0gPDE5PjsNCj4gKwkJ
+CXJlc2V0cyA9IDwmY3JnIDB4N2MgMz47DQo+ICsJCQlyZXNldC1uYW1lcyA9ICJsc2FkYy1jcmci
+Ow0KPiArCX07DQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMvS2NvbmZpZyBiL2RyaXZl
+cnMvaWlvL2FkYy9LY29uZmlnIGluZGV4IA0KPiA5OWMwNTE0Li4wNDQzZjUxIDEwMDY0NA0KPiAt
+LS0gYS9kcml2ZXJzL2lpby9hZGMvS2NvbmZpZw0KPiArKysgYi9kcml2ZXJzL2lpby9hZGMvS2Nv
+bmZpZw0KPiBAQCAtMjI1LDYgKzIyNSwxNiBAQCBjb25maWcgSEk4NDM1DQo+ICAJICBUaGlzIGRy
+aXZlciBjYW4gYWxzbyBiZSBidWlsdCBhcyBhIG1vZHVsZS4gSWYgc28sIHRoZSBtb2R1bGUgd2ls
+bCBiZQ0KPiAgCSAgY2FsbGVkIGhpODQzNS4NCj4gIA0KPiArY29uZmlnIEhJQlZUX0xTQURDDQo+
+ICsJdHJpc3RhdGUgIkhJQlZUIExTQURDIGRyaXZlciINCj4gKwlkZXBlbmRzIG9uIEFSQ0hfSElT
+SSB8fCBDT01QSUxFX1RFU1QNCj4gKwloZWxwDQo+ICsJICBTYXkgeWVzIGhlcmUgdG8gYnVpbGQg
+c3VwcG9ydCBmb3IgdGhlIExTQURDIGZvdW5kIGluIFNvQ3MgZnJvbQ0KPiArCSAgaGlzaWxpY29u
+IEJWVCBjaGlwLg0KPiArDQo+ICsJICBUbyBjb21waWxlIHRoaXMgZHJpdmVyIGFzIGEgbW9kdWxl
+LCBjaG9vc2UgTSBoZXJlOiB0aGUNCj4gKwkgIG1vZHVsZSB3aWxsIGJlIGNhbGxlZCBoaWJ2dF9s
+c2FkYy4NCj4gKw0KPiAgY29uZmlnIElOQTJYWF9BREMNCj4gIAl0cmlzdGF0ZSAiVGV4YXMgSW5z
+dHJ1bWVudHMgSU5BMnh4IFBvd2VyIE1vbml0b3JzIElJTyBkcml2ZXIiDQo+ICAJZGVwZW5kcyBv
+biBJMkMgJiYgIVNFTlNPUlNfSU5BMlhYDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9hZGMv
+TWFrZWZpbGUgYi9kcml2ZXJzL2lpby9hZGMvTWFrZWZpbGUgaW5kZXggDQo+IDdhNDBjMDQuLjY1
+NTRkOTIgMTAwNjQ0DQo+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy9NYWtlZmlsZQ0KPiArKysgYi9k
+cml2ZXJzL2lpby9hZGMvTWFrZWZpbGUNCj4gQEAgLTIzLDYgKzIzLDcgQEAgb2JqLSQoQ09ORklH
+X0RBOTE1MF9HUEFEQykgKz0gZGE5MTUwLWdwYWRjLm8NCj4gIG9iai0kKENPTkZJR19FWFlOT1Nf
+QURDKSArPSBleHlub3NfYWRjLm8NCj4gIG9iai0kKENPTkZJR19GU0xfTVgyNV9BREMpICs9IGZz
+bC1pbXgyNS1nY3Eubw0KPiAgb2JqLSQoQ09ORklHX0hJODQzNSkgKz0gaGk4NDM1Lm8NCj4gK29i
+ai0kKENPTkZJR19ISUJWVF9MU0FEQykgKz0gaGlidnRfbHNhZGMubw0KPiAgb2JqLSQoQ09ORklH
+X0lNWDdEX0FEQykgKz0gaW14N2RfYWRjLm8NCj4gIG9iai0kKENPTkZJR19JTkEyWFhfQURDKSAr
+PSBpbmEyeHgtYWRjLm8NCj4gIG9iai0kKENPTkZJR19MUDg3ODhfQURDKSArPSBscDg3ODhfYWRj
+Lm8gZGlmZiAtLWdpdCANCj4gYS9kcml2ZXJzL2lpby9hZGMvaGlidnRfbHNhZGMuYyBiL2RyaXZl
+cnMvaWlvL2FkYy9oaWJ2dF9sc2FkYy5jIG5ldyANCj4gZmlsZSBtb2RlIDEwMDY0NCBpbmRleCAw
+MDAwMDAwLi5hYWYyMDI0DQo+IC0tLSAvZGV2L251bGwNCj4gKysrIGIvZHJpdmVycy9paW8vYWRj
+L2hpYnZ0X2xzYWRjLmMNCj4gQEAgLTAsMCArMSwzMzUgQEANCj4gKy8qDQo+ICsgKiBIaXNpbGlj
+b24gQlZUIExvdyBTcGVlZCAoTFMpIEEvRCBDb252ZXJ0ZXINCj4gKyAqIENvcHlyaWdodCAoQykg
+MjAxNiBIaVNpbGljb24gVGVjaG5vbG9naWVzIENvLiwgTHRkLg0KPiArICoNCj4gKyAqIFRoaXMg
+cHJvZ3JhbSBpcyBmcmVlIHNvZnR3YXJlOyB5b3UgY2FuIHJlZGlzdHJpYnV0ZSBpdCBhbmQvb3Ig
+DQo+ICttb2RpZnkNCj4gKyAqIGl0IHVuZGVyIHRoZSB0ZXJtcyBvZiB0aGUgR05VIEdlbmVyYWwg
+UHVibGljIExpY2Vuc2UgYXMgcHVibGlzaGVkIA0KPiArYnkNCj4gKyAqIHRoZSBGcmVlIFNvZnR3
+YXJlIEZvdW5kYXRpb247IGVpdGhlciB2ZXJzaW9uIDIgb2YgdGhlIExpY2Vuc2UsIG9yDQo+ICsg
+KiAoYXQgeW91ciBvcHRpb24pIGFueSBsYXRlciB2ZXJzaW9uLg0KPiArICoNCj4gKyAqIFRoaXMg
+cHJvZ3JhbSBpcyBkaXN0cmlidXRlZCBpbiB0aGUgaG9wZSB0aGF0IGl0IHdpbGwgYmUgdXNlZnVs
+LA0KPiArICogYnV0IFdJVEhPVVQgQU5ZIFdBUlJBTlRZOyB3aXRob3V0IGV2ZW4gdGhlIGltcGxp
+ZWQgd2FycmFudHkgb2YNCj4gKyAqIE1FUkNIQU5UQUJJTElUWSBvciBGSVRORVNTIEZPUiBBIFBB
+UlRJQ1VMQVIgUFVSUE9TRS4gIFNlZSB0aGUNCj4gKyAqIEdOVSBHZW5lcmFsIFB1YmxpYyBMaWNl
+bnNlIGZvciBtb3JlIGRldGFpbHMuDQo+ICsgKi8NCj4gKw0KPiArI2luY2x1ZGUgPGxpbnV4L21v
+ZHVsZS5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L3BsYXRmb3JtX2RldmljZS5oPg0KPiArI2luY2x1
+ZGUgPGxpbnV4L2ludGVycnVwdC5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2lvLmg+DQo+ICsjaW5j
+bHVkZSA8bGludXgvb2YuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9vZl9kZXZpY2UuaD4NCj4gKyNp
+bmNsdWRlIDxsaW51eC9jbGsuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9jb21wbGV0aW9uLmg+DQo+
+ICsjaW5jbHVkZSA8bGludXgvZGVsYXkuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9yZXNldC5oPg0K
+PiArI2luY2x1ZGUgPGxpbnV4L3JlZ3VsYXRvci9jb25zdW1lci5oPiAjaW5jbHVkZSA8bGludXgv
+aWlvL2lpby5oPg0KPiArDQo+ICsvKiBoaXNpbGljb24gYnZ0IGFkYyByZWdpc3RlcnMgZGVmaW5p
+dGlvbnMgKi8NCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfQ09ORklHCQkweDAwDQo+ICsjZGVmaW5l
+IEhJQlZUX0NPTkZJR19ERUdMSVRDSAlCSVQoMTcpDQo+ICsjZGVmaW5lIEhJQlZUX0NPTkZJR19S
+RVNFVAkJQklUKDE1KQ0KPiArI2RlZmluZSBISUJWVF9DT05GSUdfUE9XRVJET1dOCUJJVCgxNCkN
+Cj4gKyNkZWZpbmUgSElCVlRfQ09ORklHX01PREUJCUJJVCgxMykNCj4gKyNkZWZpbmUgSElCVlRf
+Q09ORklHX0NITkMJCUJJVCgxMCkNCj4gKyNkZWZpbmUgSElCVlRfQ09ORklHX0NITkIJCUJJVCg5
+KQ0KPiArI2RlZmluZSBISUJWVF9DT05GSUdfQ0hOQQkJQklUKDgpDQo+ICsNCj4gKyNkZWZpbmUg
+SElCVlRfTFNBRENfVElNRVNDQU4JMHgwOA0KPiArI2RlZmluZSBISUJWVF9MU0FEQ19JTlRFTgkJ
+MHgxMA0KPiArI2RlZmluZSBISUJWVF9MU0FEQ19JTlRTVEFUVVMJMHgxNA0KPiArI2RlZmluZSBI
+SUJWVF9MU0FEQ19JTlRDTFIJCTB4MTgNCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfU1RBUlQJCTB4
+MUMNCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfU1RPUAkJMHgyMA0KPiArI2RlZmluZSBISUJWVF9M
+U0FEQ19BQ1RCSVQJCTB4MjQNCj4gKyNkZWZpbmUgSElCVlRfTFNBRENfQ0hOREFUQQkJMHgyQw0K
+PiArDQo+ICsjZGVmaW5lIEhJQlZUX0xTQURDX0NPTl9FTgkJKDF1IDw8IDApDQo+ICsjZGVmaW5l
+IEhJQlZUX0xTQURDX0NPTl9ERU4JCSgwdSA8PCAwKQ0KPiArDQo+ICsjZGVmaW5lIEhJQlZUX0xT
+QURDX05VTV9CSVRTX1YxCTEwDQo+ICsjZGVmaW5lIEhJQlZUX0xTQURDX0NITl9NQVNLX3YxCTB4
+Nw0KPiArDQo+ICsvKiBmaXggY2xrOjMwMDAwMDAsIGRlZmF1bHQgdHNjYW4gc2V0IDEwbXMgKi8N
+Cj4gKyNkZWZpbmUgSElCVlRfTFNBRENfVFNDQU5fTVMJKDEwKjMwMDApDQo+ICsNCj4gKyNkZWZp
+bmUgSElCVlRfTFNBRENfVElNRU9VVAkJbXNlY3NfdG9famlmZmllcygxMDApDQo+ICsNCj4gKy8q
+IGRlZmF1bHQgdm9sdGFnZSBzY2FsZSBmb3IgZXZlcnkgY2hhbm5lbCA8bXY+ICovIHN0YXRpYyBp
+bnQgDQo+ICtnX2hpYnZ0X2xzYWRjX3ZvbHRhZ2VbXSA9IHsNCj4gKwkzMzAwLCAzMzAwLCAzMzAw
+DQpJcyBkZWZhdWx0IGR1ZSB0byBhbiBleHRlcm5hbCByZWZlcmVuY2Ugdm9sdGFnZSBvciBpcyB0
+aGVyZSBhbiBpbnRlcm5hbCByZWd1bGF0b3I/ICBJZiBpdCBpcyBleHRlcm5hbCBpdCBzaG91bGQg
+cmVhbGx5IGJlIGRlc2NyaWJlZCB1c2luZyB0aGUgcmVndWxhdG9yIGZyYW1ld29yay4NCg0KQ29u
+c3Q/IA0KPiArfTsNCj4gKw0KPiArc3RydWN0IGhpYnZ0X2xzYWRjIHsNCj4gKwl2b2lkIF9faW9t
+ZW0JCSpyZWdzOw0KPiArCXN0cnVjdCBjb21wbGV0aW9uCWNvbXBsZXRpb247DQo+ICsJc3RydWN0
+IHJlc2V0X2NvbnRyb2wJKnJlc2V0Ow0KPiArCWNvbnN0IHN0cnVjdCBoaWJ2dF9sc2FkY19kYXRh
+CSpkYXRhOw0KPiArCXVuc2lnbmVkIGludAkJY3VyX2NobjsNCj4gKwl1bnNpZ25lZCBpbnQJCXZh
+bHVlOw0KPiArfTsNCj4gKw0KPiArc3RydWN0IGhpYnZ0X2xzYWRjX2RhdGEgew0KPiArCWludAkJ
+CQludW1fYml0czsNCj4gKwljb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYwkqY2hhbm5lbHM7DQo+
+ICsJaW50CQkJCW51bV9jaGFubmVsczsNCj4gKw0KPiArCXZvaWQgKCpjbGVhcl9pcnEpKHN0cnVj
+dCBoaWJ2dF9sc2FkYyAqaW5mbywgaW50IG1hc2spOw0KPiArCXZvaWQgKCpzdGFydF9jb252KShz
+dHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8pOw0KPiArCXZvaWQgKCpzdG9wX2NvbnYpKHN0cnVjdCBo
+aWJ2dF9sc2FkYyAqaW5mbyk7IH07DQo+ICsNCj4gK3N0YXRpYyBpbnQgaGlidnRfbHNhZGNfcmVh
+ZF9yYXcoc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiwNCj4gKwkJCQkgICAgc3RydWN0IGlpb19j
+aGFuX3NwZWMgY29uc3QgKmNoYW4sDQo+ICsJCQkJICAgIGludCAqdmFsLCBpbnQgKnZhbDIsIGxv
+bmcgbWFzaykgew0KPiArCXN0cnVjdCBoaWJ2dF9sc2FkYyAqaW5mbyA9IGlpb19wcml2KGluZGlv
+X2Rldik7DQo+ICsNCj4gKwlzd2l0Y2ggKG1hc2spIHsNCj4gKwljYXNlIElJT19DSEFOX0lORk9f
+UkFXOg0KPiArCQltdXRleF9sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gKw0KPiArCQlyZWlu
+aXRfY29tcGxldGlvbigmaW5mby0+Y29tcGxldGlvbik7DQo+ICsNCj4gKwkJLyogU2VsZWN0IHRo
+ZSBjaGFubmVsIHRvIGJlIHVzZWQgKi8NCj4gKwkJaW5mby0+Y3VyX2NobiA9IGNoYW4tPmNoYW5u
+ZWw7DQo+ICsNCj4gKwkJaWYgKGluZm8tPmRhdGEtPnN0YXJ0X2NvbnYpDQo+ICsJCQlpbmZvLT5k
+YXRhLT5zdGFydF9jb252KGluZm8pOw0KPiArDQo+ICsJCWlmICghd2FpdF9mb3JfY29tcGxldGlv
+bl90aW1lb3V0KCZpbmZvLT5jb21wbGV0aW9uLA0KPiArCQkJCQkJCUhJQlZUX0xTQURDX1RJTUVP
+VVQpKSB7DQo+ICsJCQlpZiAoaW5mby0+ZGF0YS0+c3RvcF9jb252KQ0KPiArCQkJCWluZm8tPmRh
+dGEtPnN0b3BfY29udihpbmZvKTsNCj4gKwkJCW11dGV4X3VubG9jaygmaW5kaW9fZGV2LT5tbG9j
+ayk7DQo+ICsJCQlyZXR1cm4gLUVUSU1FRE9VVDsNCj4gKwkJfQ0KPiArDQo+ICsJCSp2YWwgPSBp
+bmZvLT52YWx1ZTsNCj4gKwkJbXV0ZXhfdW5sb2NrKCZpbmRpb19kZXYtPm1sb2NrKTsNCj4gKwkJ
+cmV0dXJuIElJT19WQUxfSU5UOw0KPiArCWNhc2UgSUlPX0NIQU5fSU5GT19TQ0FMRToNCj4gKwkJ
+KnZhbCA9IGdfaGlidnRfbHNhZGNfdm9sdGFnZVtjaGFuLT5jaGFubmVsXTsNCj4gKwkJKnZhbDIg
+PSBpbmZvLT5kYXRhLT5udW1fYml0czsNCj4gKwkJcmV0dXJuIElJT19WQUxfRlJBQ1RJT05BTF9M
+T0cyOw0KPiArCWRlZmF1bHQ6DQo+ICsJCXJldHVybiAtRUlOVkFMOw0KPiArCX0NCj4gK30NCj4g
+Kw0KPiArc3RhdGljIGlycXJldHVybl90IGhpYnZ0X2xzYWRjX2lzcihpbnQgaXJxLCB2b2lkICpk
+ZXZfaWQpIHsNCj4gKwlzdHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8gPSAoc3RydWN0IGhpYnZ0X2xz
+YWRjICopZGV2X2lkOw0KPiArCWludCBtYXNrOw0KPiArDQo+ICsJbWFzayA9IHJlYWRsKGluZm8t
+PnJlZ3MgKyBISUJWVF9MU0FEQ19JTlRTVEFUVVMpOw0KPiArCWlmICgobWFzayAmIEhJQlZUX0xT
+QURDX0NITl9NQVNLX3YxKSA9PSAwKQ0KPiArCQlyZXR1cm4gSVJRX05PTkU7DQo+ICsNCj4gKwkv
+KiBDbGVhciBpcnEgKi8NCj4gKwltYXNrICY9IEhJQlZUX0xTQURDX0NITl9NQVNLX3YxOw0KPiAr
+CWlmIChpbmZvLT5kYXRhLT5jbGVhcl9pcnEpDQo+ICsJCWluZm8tPmRhdGEtPmNsZWFyX2lycShp
+bmZvLCBtYXNrKTsNCj4gKw0KPiArCS8qIFJlYWQgdmFsdWUgKi8NCj4gKwlpbmZvLT52YWx1ZSA9
+IHJlYWRsKGluZm8tPnJlZ3MgKw0KPiArCQlISUJWVF9MU0FEQ19DSE5EQVRBICsgKGluZm8tPmN1
+cl9jaG4gPDwgMikpOw0KPiArCWluZm8tPnZhbHVlICY9IEdFTk1BU0soaW5mby0+ZGF0YS0+bnVt
+X2JpdHMgLSAxLCAwKTsNCj4gKw0KPiArCS8qIHN0b3AgYWRjICovDQo+ICsJaWYgKGluZm8tPmRh
+dGEtPnN0b3BfY29udikNCj4gKwkJaW5mby0+ZGF0YS0+c3RvcF9jb252KGluZm8pOw0KPiArDQo+
+ICsJY29tcGxldGUoJmluZm8tPmNvbXBsZXRpb24pOw0KPiArDQo+ICsJcmV0dXJuIElSUV9IQU5E
+TEVEOw0KPiArfQ0KPiArDQo+ICtzdGF0aWMgY29uc3Qgc3RydWN0IGlpb19pbmZvIGhpYnZ0X2xz
+YWRjX2lpb19pbmZvID0gew0KPiArCS5yZWFkX3JhdyA9IGhpYnZ0X2xzYWRjX3JlYWRfcmF3LA0K
+PiArCS5kcml2ZXJfbW9kdWxlID0gVEhJU19NT0RVTEUsDQo+ICt9Ow0KPiArDQo+ICsjZGVmaW5l
+IEhJQlZUX0xTQURDX0NIQU5ORUwoX2luZGV4LCBfaWQpIHsgICAgICBcDQo+ICsJLnR5cGUgPSBJ
+SU9fVk9MVEFHRSwgICAgICAgICAgICAgICAgXA0KPiArCS5pbmRleGVkID0gMSwJCQkJCQlcDQo+
+ICsJLmNoYW5uZWwgPSBfaW5kZXgsCQkJCQlcDQo+ICsJLmluZm9fbWFza19zZXBhcmF0ZSA9IEJJ
+VChJSU9fQ0hBTl9JTkZPX1JBVykgfCAgXA0KPiArCQkJQklUKElJT19DSEFOX0lORk9fU0NBTEUp
+LCAgIFwNCj4gKwkuZGF0YXNoZWV0X25hbWUgPSBfaWQsICAgICAgICAgICAgICBcDQo+ICt9DQo+
+ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaWlvX2NoYW5fc3BlYyBoaWJ2dF9sc2FkY19paW9f
+Y2hhbm5lbHNbXSA9IHsNCj4gKwlISUJWVF9MU0FEQ19DSEFOTkVMKDAsICJhZGMwIiksDQo+ICsJ
+SElCVlRfTFNBRENfQ0hBTk5FTCgxLCAiYWRjMSIpLA0KPiArCUhJQlZUX0xTQURDX0NIQU5ORUwo
+MiwgImFkYzIiKSwNCj4gK307DQo+ICsNCj4gK3N0YXRpYyB2b2lkIGhpYnZ0X2xzYWRjX3YxX2Ns
+ZWFyX2lycShzdHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8sIGludCANCj4gK21hc2spIHsNCj4gKwl3
+cml0ZWwobWFzaywgaW5mby0+cmVncyArIEhJQlZUX0xTQURDX0lOVENMUik7IH0NCj4gKw0KPiAr
+c3RhdGljIHZvaWQgaGlidnRfbHNhZGNfdjFfc3RhcnRfY29udihzdHJ1Y3QgaGlidnRfbHNhZGMg
+KmluZm8pIHsNCj4gKwl1bnNpZ25lZCBpbnQgY29uOw0KPiArDQo+ICsJLyogc2V0IG51bWJlciBi
+aXQgKi8NCnNldCBudW1iZXIgb2YgYml0cz8NCj4gKwljb24gPSBHRU5NQVNLKGluZm8tPmRhdGEt
+Pm51bV9iaXRzIC0gMSwgMCk7DQo+ICsJd3JpdGVsKGNvbiwgKGluZm8tPnJlZ3MgKyBISUJWVF9M
+U0FEQ19BQ1RCSVQpKTsNCj4gKw0KPiArCS8qIGNvbmZpZyAqLw0KPiArCWNvbiA9IHJlYWRsKGlu
+Zm8tPnJlZ3MgKyBISUJWVF9MU0FEQ19DT05GSUcpOw0KPiArCWNvbiAmPSB+SElCVlRfQ09ORklH
+X1JFU0VUOw0KPiArCWNvbiB8PSAoSElCVlRfQ09ORklHX1BPV0VSRE9XTiB8IEhJQlZUX0NPTkZJ
+R19ERUdMSVRDSCB8DQo+ICsJCUhJQlZUX0NPTkZJR19NT0RFKTsNCj4gKwljb24gJj0gfihISUJW
+VF9DT05GSUdfQ0hOQSB8IEhJQlZUX0NPTkZJR19DSE5CIHwgSElCVlRfQ09ORklHX0NITkMpOw0K
+PiArCWNvbiB8PSAoSElCVlRfQ09ORklHX0NITkEgPDwgaW5mby0+Y3VyX2Nobik7DQo+ICsJd3Jp
+dGVsKGNvbiwgKGluZm8tPnJlZ3MgKyBISUJWVF9MU0FEQ19DT05GSUcpKTsNCj4gKw0KPiArCS8q
+IHNldCB0aW1lc2NhbiAqLw0KPiArCXdyaXRlbChISUJWVF9MU0FEQ19UU0NBTl9NUywgKGluZm8t
+PnJlZ3MgKyBISUJWVF9MU0FEQ19USU1FU0NBTikpOw0KPiArDQo+ICsJLyogY2xlYXIgaW50ZXJy
+dXB0ICovDQo+ICsJd3JpdGVsKEhJQlZUX0xTQURDX0NITl9NQVNLX3YxLCBpbmZvLT5yZWdzICsg
+SElCVlRfTFNBRENfSU5UQ0xSKTsNCj4gKw0KPiArCS8qIGVuYWJsZSBpbnRlcnJ1cHQgKi8NCj4g
+Kwl3cml0ZWwoSElCVlRfTFNBRENfQ09OX0VOLCAoaW5mby0+cmVncyArIEhJQlZUX0xTQURDX0lO
+VEVOKSk7DQo+ICsNCj4gKwkvKiBzdGFydCBzY2FuICovDQo+ICsJd3JpdGVsKEhJQlZUX0xTQURD
+X0NPTl9FTiwgKGluZm8tPnJlZ3MgKyBISUJWVF9MU0FEQ19TVEFSVCkpOyB9DQo+ICsNCj4gK3N0
+YXRpYyB2b2lkIGhpYnZ0X2xzYWRjX3YxX3N0b3BfY29udihzdHJ1Y3QgaGlidnRfbHNhZGMgKmlu
+Zm8pIHsNCj4gKwkvKiByZXNldCB0aGUgdGltZXNjYW4gKi8NClRoaXMgaXNuJ3QgYSBwYXJ0aWN1
+bGFybHkgY29tbW9uIHBpY2Ugb2YgdGVybWlub2xvZ3ksIHBlcmhhcHMgYSBzaG9ydCBkZXNjcmlw
+dGlvbiBoZXJlIG9mIHdoYXQgdGltZXNjYW4gaXMgYW5kIHdoeSB3ZSBzaG91bGQgcmVzZXQgaXQg
+d291bGQgbWFrZSB0aGUgY29kZSBlYXNpZXIgdG8gZm9sbG93Lg0KDQo+ICsJd3JpdGVsKEhJQlZU
+X0xTQURDX0NPTl9ERU4sIChpbmZvLT5yZWdzICsgSElCVlRfTFNBRENfVElNRVNDQU4pKTsNCj4g
+Kw0KPiArCS8qIGRpc2FibGUgaW50ZXJydXB0ICovDQo+ICsJd3JpdGVsKEhJQlZUX0xTQURDX0NP
+Tl9ERU4sIChpbmZvLT5yZWdzICsgSElCVlRfTFNBRENfSU5URU4pKTsNCj4gKw0KPiArCS8qIHN0
+b3Agc2NhbiAqLw0KPiArCXdyaXRlbChISUJWVF9MU0FEQ19DT05fRU4sIChpbmZvLT5yZWdzICsg
+SElCVlRfTFNBRENfU1RPUCkpOyB9DQo+ICsNCj4gK3N0YXRpYyBjb25zdCBzdHJ1Y3QgaGlidnRf
+bHNhZGNfZGF0YSBsc2FkY19kYXRhX3YxID0gew0KPiArCS5udW1fYml0cyA9IEhJQlZUX0xTQURD
+X05VTV9CSVRTX1YxLA0KPiArCS5jaGFubmVscyA9IGhpYnZ0X2xzYWRjX2lpb19jaGFubmVscywN
+Cj4gKwkubnVtX2NoYW5uZWxzID0gQVJSQVlfU0laRShoaWJ2dF9sc2FkY19paW9fY2hhbm5lbHMp
+LA0KPiArDQo+ICsJLmNsZWFyX2lycSA9IGhpYnZ0X2xzYWRjX3YxX2NsZWFyX2lycSwNCj4gKwku
+c3RhcnRfY29udiA9IGhpYnZ0X2xzYWRjX3YxX3N0YXJ0X2NvbnYsDQo+ICsJLnN0b3BfY29udiA9
+IGhpYnZ0X2xzYWRjX3YxX3N0b3BfY29udiwgfTsNCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVj
+dCBvZl9kZXZpY2VfaWQgaGlidnRfbHNhZGNfbWF0Y2hbXSA9IHsNCj4gKwl7DQo+ICsJCS5jb21w
+YXRpYmxlID0gImhpc2lsaWNvbixoaTM1MTZjdjMwMC1sc2FkYyIsDQo+ICsJCS5kYXRhID0gJmxz
+YWRjX2RhdGFfdjEsDQpUaGUgdXN1YWwgY29udmVudGlvbiBpcyB0byBvbmx5IGludHJvZHVjZSAn
+dmFyaWFudCcgdHlwZSBkYXRhIGFzIGEgcHJlY3Vyc29yIHBhdGNoIHRvIGEgc2VyaWVzIGluY2x1
+ZGluZyB0aGUgc3VwcG9ydCBvZiBuZXcgcGFydHMuDQoNCkl0IGlzIGFjY2VwdGFibGUgdG8gcG9z
+dCBhIHZlcnNpb24gd2l0aCB0aGlzIGluIGlmIHlvdSBhcmUgc2hvcnRseSB0byBzdWJtaXQgdGhl
+IGZvbGxvdyB1cCB0aGF0IGFkZHMgb3RoZXIgZGV2aWNlIHN1cHBvcnQuICBJZiB5b3UgYXJlIGRv
+aW5nIHRoaXMsIHBsZWFzZSBwdXQgYSBub3RlIGluIHRoZSBwYXRjaCBkZXNjcmlwdGlvbiB0byB0
+aGF0IGVmZmVjdC4gIE5vdGUgdGhhdCBpZiB0aGUgYWRkaXRpb25hbCBzdXBwb3J0IGRvZXNuJ3Qg
+dHVybiB1cCwgdGhlIGRyaXZlciBtYXkgd2UgZ2V0ICdzaW1wbGlmaWVkJw0KYnkgc29tZW9uZSBl
+bHNlLg0KDQpJJ2QgYWxzbyBnZW5lcmFsbHkgZXhwZWN0IHRvIHNlZSB0aGlzIG1hdGNoIHRhYmxl
+IGZ1cnRoZXIgZG93biAtIGRpcmVjdGx5IGFib3ZlIHdoZXJlIGl0IGlzIHVzZWQuICBNYWtlcyBm
+b3IgZXZlciBzbyBzbGlnaHRseSBlYXNpZXIgcmV2aWV3aW5nIQ0KPiArCX0sDQo+ICsJe30sDQo+
+ICt9Ow0KPiArTU9EVUxFX0RFVklDRV9UQUJMRShvZiwgaGlidnRfbHNhZGNfbWF0Y2gpOw0KPiAr
+DQo+ICsvKiBSZXNldCBMU0FEQyBDb250cm9sbGVyICovDQo+ICtzdGF0aWMgdm9pZCBoaWJ2dF9s
+c2FkY19yZXNldF9jb250cm9sbGVyKHN0cnVjdCByZXNldF9jb250cm9sICpyZXNldCkgDQo+ICt7
+DQo+ICsJcmVzZXRfY29udHJvbF9hc3NlcnQocmVzZXQpOw0KPiArCXVzbGVlcF9yYW5nZSgxMCwg
+MjApOw0KPiArCXJlc2V0X2NvbnRyb2xfZGVhc3NlcnQocmVzZXQpOw0KPiArfQ0KPiArDQo+ICtz
+dGF0aWMgaW50IGhpYnZ0X2xzYWRjX3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYp
+IHsNCj4gKwlzdHJ1Y3QgaGlidnRfbHNhZGMgKmluZm8gPSBOVUxMOw0KPiArCXN0cnVjdCBkZXZp
+Y2Vfbm9kZSAqbnAgPSBwZGV2LT5kZXYub2Zfbm9kZTsNCj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5k
+aW9fZGV2ID0gTlVMTDsNCj4gKwlzdHJ1Y3QgcmVzb3VyY2UJKm1lbTsNCj4gKwljb25zdCBzdHJ1
+Y3Qgb2ZfZGV2aWNlX2lkICptYXRjaDsNCj4gKwlpbnQgcmV0Ow0KPiArCWludCBpcnE7DQo+ICsN
+Cj4gKwlpZiAoIW5wKQ0KPiArCQlyZXR1cm4gLUVOT0RFVjsNCj4gKw0KPiArCWluZGlvX2RldiA9
+IGRldm1faWlvX2RldmljZV9hbGxvYygmcGRldi0+ZGV2LCBzaXplb2YoKmluZm8pKTsNCj4gKwlp
+ZiAoIWluZGlvX2Rldikgew0KPiArCQlkZXZfZXJyKCZwZGV2LT5kZXYsICJmYWlsZWQgYWxsb2Nh
+dGluZyBpaW8gZGV2aWNlXG4iKTsNCj4gKwkJcmV0dXJuIC1FTk9NRU07DQo+ICsJfQ0KPiArCWlu
+Zm8gPSBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiArDQo+ICsJbWF0Y2ggPSBvZl9tYXRjaF9kZXZp
+Y2UoaGlidnRfbHNhZGNfbWF0Y2gsICZwZGV2LT5kZXYpOw0KPiArCWluZm8tPmRhdGEgPSBtYXRj
+aC0+ZGF0YTsNCj4gKw0KPiArCW1lbSA9IHBsYXRmb3JtX2dldF9yZXNvdXJjZShwZGV2LCBJT1JF
+U09VUkNFX01FTSwgMCk7DQo+ICsJaW5mby0+cmVncyA9IGRldm1faW9yZW1hcF9yZXNvdXJjZSgm
+cGRldi0+ZGV2LCBtZW0pOw0KPiArCWlmIChJU19FUlIoaW5mby0+cmVncykpDQo+ICsJCXJldHVy
+biBQVFJfRVJSKGluZm8tPnJlZ3MpOw0KPiArDQo+ICsJLyoNCj4gKwkgKiBUaGUgcmVzZXQgc2hv
+dWxkIGJlIGFuIG9wdGlvbmFsIHByb3BlcnR5LCBhcyBpdCBzaG91bGQgd29yaw0KPiArCSAqIHdp
+dGggb2xkIGRldmljZXRyZWVzIGFzIHdlbGwNCj4gKwkgKi8NCj4gKwlpbmZvLT5yZXNldCA9IGRl
+dm1fcmVzZXRfY29udHJvbF9nZXQoJnBkZXYtPmRldiwgImxzYWRjLWNyZyIpOw0KPiArCWlmIChJ
+U19FUlIoaW5mby0+cmVzZXQpKSB7DQo+ICsJCXJldCA9IFBUUl9FUlIoaW5mby0+cmVzZXQpOw0K
+PiArCQlpZiAocmV0ICE9IC1FTk9FTlQpDQo+ICsJCQlyZXR1cm4gcmV0Ow0KPiArDQo+ICsJCWRl
+dl9kYmcoJnBkZXYtPmRldiwgIm5vIHJlc2V0IGNvbnRyb2wgZm91bmRcbiIpOw0KPiArCQlpbmZv
+LT5yZXNldCA9IE5VTEw7DQo+ICsJfQ0KPiArDQo+ICsJaW5pdF9jb21wbGV0aW9uKCZpbmZvLT5j
+b21wbGV0aW9uKTsNCj4gKw0KPiArCWlycSA9IHBsYXRmb3JtX2dldF9pcnEocGRldiwgMCk7DQo+
+ICsJaWYgKGlycSA8IDApIHsNCj4gKwkJZGV2X2VycigmcGRldi0+ZGV2LCAibm8gaXJxIHJlc291
+cmNlP1xuIik7DQo+ICsJCXJldHVybiBpcnE7DQo+ICsJfQ0KPiArDQo+ICsJcmV0ID0gZGV2bV9y
+ZXF1ZXN0X2lycSgmcGRldi0+ZGV2LCBpcnEsIGhpYnZ0X2xzYWRjX2lzciwNCj4gKwkJCSAgICAg
+ICAwLCBkZXZfbmFtZSgmcGRldi0+ZGV2KSwgaW5mbyk7DQo+ICsJaWYgKHJldCA8IDApIHsNCj4g
+KwkJZGV2X2VycigmcGRldi0+ZGV2LCAiZmFpbGVkIHJlcXVlc3RpbmcgaXJxICVkXG4iLCBpcnEp
+Ow0KPiArCQlyZXR1cm4gcmV0Ow0KPiArCX0NCj4gKw0KPiArCWlmIChpbmZvLT5yZXNldCkNCj4g
+KwkJaGlidnRfbHNhZGNfcmVzZXRfY29udHJvbGxlcihpbmZvLT5yZXNldCk7DQo+ICsNCj4gKwlw
+bGF0Zm9ybV9zZXRfZHJ2ZGF0YShwZGV2LCBpbmRpb19kZXYpOw0KPiArDQo+ICsJaW5kaW9fZGV2
+LT5uYW1lID0gZGV2X25hbWUoJnBkZXYtPmRldik7DQo+ICsJaW5kaW9fZGV2LT5kZXYucGFyZW50
+ID0gJnBkZXYtPmRldjsNCj4gKwlpbmRpb19kZXYtPmRldi5vZl9ub2RlID0gcGRldi0+ZGV2Lm9m
+X25vZGU7DQo+ICsJaW5kaW9fZGV2LT5pbmZvID0gJmhpYnZ0X2xzYWRjX2lpb19pbmZvOw0KPiAr
+CWluZGlvX2Rldi0+bW9kZXMgPSBJTkRJT19ESVJFQ1RfTU9ERTsNCj4gKw0KPiArCWluZGlvX2Rl
+di0+Y2hhbm5lbHMgPSBpbmZvLT5kYXRhLT5jaGFubmVsczsNCj4gKwlpbmRpb19kZXYtPm51bV9j
+aGFubmVscyA9IGluZm8tPmRhdGEtPm51bV9jaGFubmVsczsNCj4gKw0KPiArCXJldCA9IGRldm1f
+aWlvX2RldmljZV9yZWdpc3RlcigmcGRldi0+ZGV2LCBpbmRpb19kZXYpOw0KPiArCWlmIChyZXQg
+PCAwKSB7DQo+ICsJCWRldl9lcnIoJnBkZXYtPmRldiwgImZhaWxlZCByZWdpc3RlciBpaW8gZGV2
+aWNlXG4iKTsNCj4gKwkJcmV0dXJuIHJldDsNCkRyb3AgdGhpcyByZXR1cm4gcmV0IGFuZCBqdXN0
+IHJldHVybiByZXQgaW5zdGVhZCBvZiB0aGUgcmV0dXJuIDAgYmVsb3cuDQo+ICsJfQ0KPiArDQo+
+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgcGxhdGZvcm1fZHJpdmVy
+IGhpYnZ0X2xzYWRjX2RyaXZlciA9IHsNCj4gKwkucHJvYmUJCT0gaGlidnRfbHNhZGNfcHJvYmUs
+DQo+ICsJLmRyaXZlcgkJPSB7DQo+ICsJCS5uYW1lCT0gImhpYnZ0LWxzYWRjIiwNCj4gKwkJLm9m
+X21hdGNoX3RhYmxlID0gaGlidnRfbHNhZGNfbWF0Y2gsDQo+ICsJfSwNCj4gK307DQo+ICsNCj4g
+K21vZHVsZV9wbGF0Zm9ybV9kcml2ZXIoaGlidnRfbHNhZGNfZHJpdmVyKTsNCj4gKw0KPiArTU9E
+VUxFX0FVVEhPUigiQWxsZW4gTGl1IDxsaXVyZW56aG9uZ0BoaXNpbGljb24uY29tPiIpOyANCj4g
+K01PRFVMRV9ERVNDUklQVElPTigiaGlzaWxpY29uIEJWVCBMU0FEQyBkcml2ZXIiKTsgTU9EVUxF
+X0xJQ0VOU0UoIkdQTCANCj4gK3YyIik7DQo+IA0KDQo=
