@@ -1,213 +1,332 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58808 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752261AbdBDMOC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Feb 2017 07:14:02 -0500
-Subject: Re: [PATCH 6/7] ASoC: add bindings for STM32 DFSDM driver
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
-        <linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jaroslav Kysela <perex@perex.cz>,
-        Takashi Iwai <tiwai@suse.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>
-References: <1485189145-29576-1-git-send-email-arnaud.pouliquen@st.com>
- <1485189145-29576-7-git-send-email-arnaud.pouliquen@st.com>
- <f0f446ea-97a0-8fef-bec5-aefeed42a85a@kernel.org>
- <71612ea0-c9d0-a85e-2d58-72609df57e35@st.com>
-Cc: Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <325ec27f-f13d-c561-d4cf-b50cd9a3eadb@kernel.org>
-Date: Sat, 4 Feb 2017 12:13:58 +0000
+Return-Path: <SRS0=p6Vt=ZU=linaro.org=lee.jones@kernel.org>
+Date: Tue, 7 Feb 2017 16:58:43 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
+Subject: Re: [PATCH] iio: cros_ec: Add cros_ec barometer driver
+Message-ID: <20170207165843.a7y63326hz6vtypu@dell>
+References: <20170124134141.30751-1-enric.balletbo@collabora.com>
 MIME-Version: 1.0
-In-Reply-To: <71612ea0-c9d0-a85e-2d58-72609df57e35@st.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20170124134141.30751-1-enric.balletbo@collabora.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 30/01/17 17:32, Arnaud Pouliquen wrote:
-> Hello Johan,
-> 
-> Please find my comments in-line.
-> 
-> Regards
-> 
-> Arnaud
-> 
-> On 01/29/2017 01:19 PM, Jonathan Cameron wrote:
->> On 23/01/17 16:32, Arnaud Pouliquen wrote:
->>> This patch adds documentation of device tree bindings for the
->>> STM32 DFSDM ASoC driver.
->>>
->>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->>> ---
->>>  .../devicetree/bindings/sound/st,sm32-adfsdm.txt   | 84 ++++++++++++++++++++++
->>>  1 file changed, 84 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt b/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
->>> new file mode 100644
->>> index 0000000..a1d27b8
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/sound/st,sm32-adfsdm.txt
->>> @@ -0,0 +1,84 @@
->>> +STMicroelectronics STM32 ADFSDM ASoC DAI device driver.
->>> +
->>> +STM32 ADFSDM ASoC is a sigma delta audio interface for digital microphone.
->>> +It has to be declared in device-tree as a subnode of the DFSDM mfd node.
->>> +
->>> +It offers possibility to record several mono microphones, with an option to
->>> +synchronize all microphones on a main one (that must be piped to filter 0)
->>> +Audio interface can be exposed through the generic ASoC simple card.
->>> +
->>> +2 Dmics can be connected on one SPI interface instance n.
->>> +Convention is that the DMIC that strobes data on rising edge is connected to the
->>> +corresponding DFSDM channel n; while the Dmic that strobes data on falling edge
->>> +is connected to the channel n-1. Simple card property "bitclock-inversion = <1>"
->>> +is used to specify that microphone strobes data on falling edge.
->>> +
->>> +SPI interface allows to be scheduled by an external SPI clock. To use it
->>> +simple card properties "bitclock-master = <&codec>" and "system-clock-frequency"
->>> +have to be defined in dai-link node.
->>> +
->>> +Required properties:
->>> +- compatible: 	Must be "st,stm32-dfsdm-audio",
->>> +- reg:		Specifies the DFSDM filter instance.
->>> +- interrupts: 	DFSDM filter instance interrupt line.
->>> +- dma:		DMA controller phandle and DMA request line associated to the
->>> +		filter instance ( specified by the field "reg")
->>> +- dma-names: 	must be "rx"
->>> +
->>> +- st,input-id:		Id of the SPI/Manchester interface used.
->>> +- st,dai-filter-order:  SinC filter order from 0 to 5.
->>> +			0: FastSinC
->>> +			[1-5]: order 1 to 5.
->>> +			For audio purpose it is recommended to use order 3 to 5.
->> Interesting for audio you consider it feature of the hardware, but for ADC you
->> consider that this should be userspace controlled.
->> Personally I'd like to see more detail on those filters but if this is convention
->> in Asoc then so be it.
-> 
-> Configure filter and integrator is quite tricky. Updating filter and
-> integrator parameters have impact on sample resolution and output sample
-> rate.
-> Sample resolution is the peak to peak data value and depends on
-> oversampling parameters and filter order.
-> 
-> Output sample rate depends on SPI input clock frequency oversampling
-> parameters and filter order.
-> 
-> High filter order gives a better resolution and a better filter response
-> but allows less dynamic to find the good rate...
-> 
-> So it is a compromise between resolution, rate and filtering.
-> 
-> For ADC use case, filter orders 1 to 3 are recommended.
-> For audio use case, orders 3 to 5 are recommended.
-I'm never against allowing users enough rope to hang themselves
-as long as the defaults are sensible :)
-> 
-> On IIO side i proposed to expose tuning in ABI, to allows application
-> fine tuning.
-> Need to document it...
-> 
-> For ASOC it is another story. Application requests a rate and a sample
-> format. So filter parameters are computed based on SPI bus clock
-> frequency, expected audio sample rate and audio sample format.
-> This is done in stm32_adfsdm_get_best_osr in sound/soc/stm/stm32_adfsdm.c.
-If there is only ever one sensible answer, fair enough on not being
-able to pick and choose.
-> 
-> Now your comment trig a good point. Perhaps a better option in IIO,
-> could be to offer same kind of ABI than ASOC interface:
-> - standard oversampling-ratio ABI. based on it filter and integrator
-> oversampling ratios will be computed to maximize the resolution.
-> - a read only resolution ABI:
-> /sys/bus/iio/devices/iio:deviceX/in_adc_x_resolution. That give the
-> computed resolution.
-Would this be directly exposed in terms of the 'maximum value' that
-could come out?  If so we could use the existing range description
-callbacks (called _available though that's somewhat missleading in
-this case).
-> 
-> In this case filter order will be part of the DT for IIO and ASoC.
-> This would also match with a redesign of the DFSDM driver in IIO...
-Sounds to me like it would be sensible to do restrict things somewhat
-in the first instance, and perhaps rename them as 'defaults' in the
-future if we decide that userspace control does make sense.
-Basically do it the first time someone bashes us over the head with
-a usecase we aren't supporting well.
+On Tue, 24 Jan 2017, Enric Balletbo i Serra wrote:
 
+> From: Gwendal Grignou <gwendal@chromium.org>
 > 
->>> +
->>> +Optional properties:
->>> + - st,dai0-synchronized: Set to 1 to synchronize DAI with DFSDM instance 0.
->>> +
->>> +Exemple of a card with 2 Dmics synchronized and connected on SPI interface 1.
->> Example.
->>> +
->>> +	dfsdm: dfsdm@4400D000 {
->>> +		dai_dfsdm0: dfsdm-audio@0 {
->>> +			compatible = "st,stm32-dfsdm-audio";
->>> +			#sound-dai-cells = <0>;
->>> +			reg = <0>;
->>> +			dmas = <&dmamux1 101 0x400 0x00>;
->>> +			dma-names = "rx";
->>> +			st,input-id = <0>;
->>> +			st,dai-filter-order = <5>;
->>> +		};
->>> +		dai_dfsdm1: dfsdm-audio@1 {
->>> +			compatible = "st,stm32-dfsdm-audio";
->>> +			#sound-dai-cells = <0>;
->>> +			reg = <0>;
->>> +			dmas = <&dmamux1 102 0x400 0x00>;
->>> +			dma-names = "rx";
->>> +			st,input-id = <0>;
->>> +			st,dai0-synchronized = <1>;
->>> +			st,dai-filter-order = <5>;
->>> +		};
->>> +	};
->>> +	sound_dfsdm_pdm {
->>> +		compatible = "simple-audio-card";
->>> +		simple-audio-card,name = "dfsdm_pdm";
->>> +		status = "okay";
->>> +
->>> +		dfsdm0_mic0: simple-audio-card,dai-link@0 {
->>> +			format = "pdm";
->>> +			cpu {
->>> +				sound-dai = <&dai_dfsdm0>;
->>> +			};
->>> +			dmic0_codec: codec {
->>> +				sound-dai = <&dmic0>;
->>> +			};
->>> +		};
->>> +		dfsdm0_mic1: simple-audio-card,dai-link@1 {
->>> +			format = "pdm";
->>> +			bitclock-inversion = <1>;
->>> +			cpu {
->>> +				sound-dai = <&dai_dfsdm1>;
->>> +			};
->>> +			codec {
->>> +				sound-dai = <&dmic1>;
->>> +			};
->>> +		};
->>> +	};
->>>
->> Jonathan
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Handle the barometer sensor presented by the ChromeOS EC Sensor hub.
 > 
+> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
+> Signed-off-by: Enric Balletbo Serra <enric.balletbo@collabora.com>
+> ---
+>  drivers/iio/pressure/Kconfig          |  10 ++
+>  drivers/iio/pressure/Makefile         |   1 +
+>  drivers/iio/pressure/cros_ec_baro.c   | 220 ++++++++++++++++++++++++++++++++++
+>  drivers/platform/chrome/cros_ec_dev.c |   3 +
 
+[...]
+
+>  include/linux/mfd/cros_ec_commands.h  |   3 +-
+
+Acked-by: Lee Jones <lee.jones@linaro.org>
+
+>  5 files changed, 236 insertions(+), 1 deletion(-)
+>  create mode 100644 drivers/iio/pressure/cros_ec_baro.c
+> 
+> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
+> index bd8d96b..5d16b25 100644
+> --- a/drivers/iio/pressure/Kconfig
+> +++ b/drivers/iio/pressure/Kconfig
+> @@ -42,6 +42,16 @@ config BMP280_SPI
+>  	depends on SPI_MASTER
+>  	select REGMAP
+>  
+> +config IIO_CROS_EC_BARO
+> +	tristate "ChromeOS EC Barometer Sensor"
+> +	depends on IIO_CROS_EC_SENSORS_CORE
+> +	help
+> +	  Say yes here to build support for the Barometer sensor when
+> +	  presented by the ChromeOS EC Sensor hub.
+> +
+> +	  To compile this driver as a module, choose M here: the module
+> +	  will be called cros_ec_baro.
+> +
+>  config HID_SENSOR_PRESS
+>  	depends on HID_SENSOR_HUB
+>  	select IIO_BUFFER
+> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
+> index de3dbc8..8386427 100644
+> --- a/drivers/iio/pressure/Makefile
+> +++ b/drivers/iio/pressure/Makefile
+> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMP280) += bmp280.o
+>  bmp280-objs := bmp280-core.o bmp280-regmap.o
+>  obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
+>  obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
+> +obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
+>  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
+>  obj-$(CONFIG_HP03) += hp03.o
+>  obj-$(CONFIG_MPL115) += mpl115.o
+> diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
+> new file mode 100644
+> index 0000000..48b2a30
+> --- /dev/null
+> +++ b/drivers/iio/pressure/cros_ec_baro.c
+> @@ -0,0 +1,220 @@
+> +/*
+> + * cros_ec_baro - Driver for barometer sensor behind CrosEC.
+> + *
+> + * Copyright (C) 2017 Google, Inc
+> + *
+> + * This software is licensed under the terms of the GNU General Public
+> + * License version 2, as published by the Free Software Foundation, and
+> + * may be copied, distributed, and modified under those terms.
+> + *
+> + * This program is distributed in the hope that it will be useful,
+> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
+> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+> + * GNU General Public License for more details.
+> + */
+> +
+> +#include <linux/delay.h>
+> +#include <linux/device.h>
+> +#include <linux/iio/buffer.h>
+> +#include <linux/iio/iio.h>
+> +#include <linux/iio/kfifo_buf.h>
+> +#include <linux/iio/trigger.h>
+> +#include <linux/iio/triggered_buffer.h>
+> +#include <linux/iio/trigger_consumer.h>
+> +#include <linux/kernel.h>
+> +#include <linux/mfd/cros_ec.h>
+> +#include <linux/mfd/cros_ec_commands.h>
+> +#include <linux/module.h>
+> +#include <linux/slab.h>
+> +#include <linux/platform_device.h>
+> +
+> +#include "../common/cros_ec_sensors/cros_ec_sensors_core.h"
+> +
+> +/*
+> + * One channel for pressure, the other for timestamp.
+> + */
+> +#define CROS_EC_BARO_MAX_CHANNELS (1 + 1)
+> +
+> +/* State data for ec_sensors iio driver. */
+> +struct cros_ec_baro_state {
+> +	/* Shared by all sensors */
+> +	struct cros_ec_sensors_core_state core;
+> +
+> +	struct iio_chan_spec channels[CROS_EC_BARO_MAX_CHANNELS];
+> +};
+> +
+> +static int cros_ec_baro_read(struct iio_dev *indio_dev,
+> +			     struct iio_chan_spec const *chan,
+> +			     int *val, int *val2, long mask)
+> +{
+> +	struct cros_ec_baro_state *st = iio_priv(indio_dev);
+> +	u16 data = 0;
+> +	int ret = IIO_VAL_INT;
+> +	int idx = chan->scan_index;
+> +
+> +	mutex_lock(&st->core.cmd_lock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_RAW:
+> +		if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
+> +					     (s16 *)&data) < 0)
+> +			ret = -EIO;
+> +		*val = data;
+> +		break;
+> +	case IIO_CHAN_INFO_SCALE:
+> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
+> +		st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
+> +
+> +		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
+> +			ret = -EIO;
+> +			break;
+> +		}
+> +		*val = st->core.resp->sensor_range.ret;
+> +
+> +		/* scale * in_pressure_raw --> kPa */
+> +		*val2 = 10 << CROS_EC_SENSOR_BITS;
+> +		ret = IIO_VAL_FRACTIONAL;
+> +		break;
+> +	default:
+> +		ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
+> +						mask);
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&st->core.cmd_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static int cros_ec_baro_write(struct iio_dev *indio_dev,
+> +			      struct iio_chan_spec const *chan,
+> +			      int val, int val2, long mask)
+> +{
+> +	struct cros_ec_baro_state *st = iio_priv(indio_dev);
+> +	int ret = 0;
+> +
+> +	mutex_lock(&st->core.cmd_lock);
+> +
+> +	switch (mask) {
+> +	case IIO_CHAN_INFO_SCALE:
+> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
+> +		st->core.param.sensor_range.data = val;
+> +
+> +		/* Always roundup, so caller gets at least what it asks for. */
+> +		st->core.param.sensor_range.roundup = 1;
+> +
+> +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
+> +			ret = -EIO;
+> +		break;
+> +	default:
+> +		ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
+> +						 mask);
+> +		break;
+> +	}
+> +
+> +	mutex_unlock(&st->core.cmd_lock);
+> +
+> +	return ret;
+> +}
+> +
+> +static const struct iio_info cros_ec_baro_info = {
+> +	.read_raw = &cros_ec_baro_read,
+> +	.write_raw = &cros_ec_baro_write,
+> +	.driver_module = THIS_MODULE,
+> +};
+> +
+> +static int cros_ec_baro_probe(struct platform_device *pdev)
+> +{
+> +	struct device *dev = &pdev->dev;
+> +	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
+> +	struct cros_ec_device *ec_device;
+> +	struct iio_dev *indio_dev;
+> +	struct cros_ec_baro_state *state;
+> +	struct iio_chan_spec *channel;
+> +	int ret;
+> +
+> +	if (!ec_dev || !ec_dev->ec_dev) {
+> +		dev_warn(dev, "No CROS EC device found.\n");
+> +		return -EINVAL;
+> +	}
+> +	ec_device = ec_dev->ec_dev;
+> +
+> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
+> +	if (!indio_dev)
+> +		return -ENOMEM;
+> +
+> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
+> +	if (ret)
+> +		return ret;
+> +
+> +	indio_dev->info = &cros_ec_baro_info;
+> +	state = iio_priv(indio_dev);
+> +	state->core.type = state->core.resp->info.type;
+> +	state->core.loc = state->core.resp->info.location;
+> +	channel = state->channels;
+> +	/* Common part */
+> +	channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
+> +	channel->info_mask_shared_by_all =
+> +		BIT(IIO_CHAN_INFO_SCALE) |
+> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+> +		BIT(IIO_CHAN_INFO_FREQUENCY);
+> +	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
+> +	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
+> +	channel->scan_type.shift = 0;
+> +	channel->scan_index = 0;
+> +	channel->ext_info = cros_ec_sensors_ext_info;
+> +	channel->scan_type.sign = 'u';
+> +
+> +	state->core.calib[0] = 0;
+> +
+> +	/* Sensor specific */
+> +	switch (state->core.type) {
+> +	case MOTIONSENSE_TYPE_BARO:
+> +		channel->type = IIO_PRESSURE;
+> +		break;
+> +	default:
+> +		dev_warn(dev, "Unknown motion sensor\n");
+> +		return -EINVAL;
+> +	}
+> +
+> +	/* Timestamp */
+> +	channel++;
+> +	channel->type = IIO_TIMESTAMP;
+> +	channel->channel = -1;
+> +	channel->scan_index = 1;
+> +	channel->scan_type.sign = 's';
+> +	channel->scan_type.realbits = 64;
+> +	channel->scan_type.storagebits = 64;
+> +
+> +	indio_dev->channels = state->channels;
+> +	indio_dev->num_channels = CROS_EC_BARO_MAX_CHANNELS;
+> +
+> +	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
+> +
+> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
+> +					      cros_ec_sensors_capture, NULL);
+> +	if (ret)
+> +		return ret;
+> +
+> +	return devm_iio_device_register(dev, indio_dev);
+> +}
+> +
+> +static const struct platform_device_id cros_ec_baro_ids[] = {
+> +	{
+> +		.name = "cros-ec-baro",
+> +	},
+> +	{ /* sentinel */ }
+> +};
+> +MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
+> +
+> +static struct platform_driver cros_ec_baro_platform_driver = {
+> +	.driver = {
+> +		.name	= "cros-ec-baro",
+> +	},
+> +	.probe		= cros_ec_baro_probe,
+> +	.id_table	= cros_ec_baro_ids,
+> +};
+> +module_platform_driver(cros_ec_baro_platform_driver);
+> +
+> +MODULE_DESCRIPTION("ChromeOS EC barometer sensor driver");
+> +MODULE_LICENSE("GPL v2");
+> diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
+> index df5894f..eaa5d1b 100644
+> --- a/drivers/platform/chrome/cros_ec_dev.c
+> +++ b/drivers/platform/chrome/cros_ec_dev.c
+> @@ -329,6 +329,9 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
+>  		case MOTIONSENSE_TYPE_ACCEL:
+>  			sensor_cells[id].name = "cros-ec-accel";
+>  			break;
+> +		case MOTIONSENSE_TYPE_BARO:
+> +			sensor_cells[id].name = "cros-ec-baro";
+> +			break;
+>  		case MOTIONSENSE_TYPE_GYRO:
+>  			sensor_cells[id].name = "cros-ec-gyro";
+>  			break;
+> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
+> index 22e5d75..a01dde4 100644
+> --- a/include/linux/mfd/cros_ec_commands.h
+> +++ b/include/linux/mfd/cros_ec_commands.h
+> @@ -1463,7 +1463,8 @@ enum motionsensor_type {
+>  	MOTIONSENSE_TYPE_PROX = 3,
+>  	MOTIONSENSE_TYPE_LIGHT = 4,
+>  	MOTIONSENSE_TYPE_ACTIVITY = 5,
+> -	MOTIONSENSE_TYPE_MAX
+> +	MOTIONSENSE_TYPE_BARO = 6,
+> +	MOTIONSENSE_TYPE_MAX,
+>  };
+>  
+>  /* List of motion sensor locations. */
+
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
