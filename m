@@ -1,463 +1,116 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58735 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753923AbdBDMCW (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Feb 2017 07:02:22 -0500
+Return-Path: <SRS0=ipC+=ZU=intel.com=srinivas.pandruvada@kernel.org>
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>, "Song,
+ Hongyan" <hongyan.song@intel.com>, "linux-iio@vger.kernel.org"
+	<linux-iio@vger.kernel.org>, "jic23@kernel.org" <jic23@kernel.org>
+CC: "jikos@kernel.org" <jikos@kernel.org>
 Subject: Re: [PATCH] iio: hid: Add temperature sensor support
-To: Song Hongyan <hongyan.song@intel.com>, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org
+Date: Tue, 7 Feb 2017 00:48:57 +0000
+Message-ID: <1486428534.18380.148.camel@intel.com>
 References: <1486216059-9310-1-git-send-email-hongyan.song@intel.com>
-Cc: jikos@kernel.org, srinivas.pandruvada@intel.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d458401a-1025-ca17-11dd-2f13963ac63d@kernel.org>
-Date: Sat, 4 Feb 2017 12:02:16 +0000
+	 <d458401a-1025-ca17-11dd-2f13963ac63d@kernel.org>
+In-Reply-To: <d458401a-1025-ca17-11dd-2f13963ac63d@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <1486216059-9310-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
-On 04/02/17 13:47, Song Hongyan wrote:
-> Environmental temperature sensor is a hid defined sensor,
-> it measures temperature.
-> 
-> More information can be found in:
-> http://www.usb.org/developers/hidpage/HUTRR39b.pdf
-> 
-> According to IIO ABI definition, IIO_TEMP data output unit is
-> milli degrees Celsius. Add the unit convert from degree to milli degree.
-> 
-> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
-A few bits and bobs inline.  Clearly I'll want Srinivas to comment on this
-one as well!
-
-Jonathan
-> ---
->  .../iio/common/hid-sensors/hid-sensor-attributes.c |   3 +
->  drivers/iio/temperature/Kconfig                    |  14 +
->  drivers/iio/temperature/Makefile                   |   1 +
->  drivers/iio/temperature/hid-sensor-temperature.c   | 332 +++++++++++++++++++++
->  include/linux/hid-sensor-ids.h                     |   4 +
->  5 files changed, 354 insertions(+)
->  create mode 100644 drivers/iio/temperature/hid-sensor-temperature.c
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index 7ef94a9..68c2bb0 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -58,6 +58,9 @@
->  
->  	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
->  	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000000},
-> +
-> +	{HID_USAGE_SENSOR_TEMPERATURE, 0, 1000, 0},
-> +	{HID_USAGE_SENSOR_TEMPERATURE, HID_USAGE_SENSOR_UNITS_DEGREES, 1000, 0},
->  };
->  
->  static int pow_10(unsigned power)
-> diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-> index 5ea77a7..5f7b9f7 100644
-> --- a/drivers/iio/temperature/Kconfig
-> +++ b/drivers/iio/temperature/Kconfig
-> @@ -19,6 +19,20 @@ config MAXIM_THERMOCOUPLE
->  	  This driver can also be built as a module. If so, the module will
->  	  be called maxim_thermocouple.
->  
-> +config HID_SENSOR_TEMP
-> +	tristate "HID Environmental temperature sensor"
-> +	depends on HID_SENSOR_HUB
-> +	select IIO_BUFFER
-> +	select IIO_TRIGGERED_BUFFER
-> +	select HID_SENSOR_IIO_COMMON
-> +	select HID_SENSOR_IIO_TRIGGER
-> +	help
-> +	  Say yes here to build support for the HID SENSOR
-> +	  temperature driver
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called hid-sensor-temperature.
-> +
->  config MLX90614
->  	tristate "MLX90614 contact-less infrared sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-> index 78c3de0..e157eda 100644
-> --- a/drivers/iio/temperature/Makefile
-> +++ b/drivers/iio/temperature/Makefile
-> @@ -7,3 +7,4 @@ obj-$(CONFIG_MLX90614) += mlx90614.o
->  obj-$(CONFIG_TMP006) += tmp006.o
->  obj-$(CONFIG_TSYS01) += tsys01.o
->  obj-$(CONFIG_TSYS02D) += tsys02d.o
-> +obj-$(CONFIG_HID_SENSOR_TEMP)   += hid-sensor-temperature.o
-> diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-> new file mode 100644
-> index 0000000..3b64c73
-> --- /dev/null
-> +++ b/drivers/iio/temperature/hid-sensor-temperature.c
-> @@ -0,0 +1,332 @@
-> +/* HID Sensors Driver
-> + * Copyright (c) 2017, Intel Corporation.
-> + *
-> + * This program is free software; you can redistribute it and/or modify it
-> + * under the terms and conditions of the GNU General Public License,
-> + * version 2, as published by the Free Software Foundation.
-> + *
-> + * This program is distributed in the hope it will be useful, but WITHOUT
-> + * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-> + * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-> + * more details.
-> + *
-> + * You should have received a copy of the GNU General Public License along with
-> + * this program.
-> + *
-> + */
-> +#include <linux/device.h>
-> +#include <linux/hid-sensor-hub.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include "../common/hid-sensors/hid-sensor-trigger.h"
-> +
-> +#define CHANNEL_SCAN_INDEX_TEMPERATURE 0
-This adds nothing useful so just put the variable inline.
-> +
-> +struct temperature_state {
-> +	struct hid_sensor_hub_callbacks callbacks;
-Random asside whilst I'm here.  I'd like ideally to see the callbacks
-structure split into constant function pointers and data that actually
-changes (such as the priv field passed as a parameter to the callbacks).
-Would lead to slightly neater and safter code.
-
-> +	struct hid_sensor_common common_attributes;
-> +	struct hid_sensor_hub_attribute_info temperature_attr;
-> +	s32 temperature_data;
-> +	int scale_pre_decml;
-> +	int scale_post_decml;
-> +	int scale_precision;
-> +	int value_offset;
-> +};
-> +
-> +/* Channel definitions */
-> +static const struct iio_chan_spec temperature_channels[] = {
-> +	{
-> +		.type = IIO_TEMP,
-> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-> +		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-> +			BIT(IIO_CHAN_INFO_SCALE) |
-> +			BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +			BIT(IIO_CHAN_INFO_HYSTERESIS),
-> +		.scan_index = CHANNEL_SCAN_INDEX_TEMPERATURE,
-> +	}
-> +};
-> +
-> +/* Adjust channel real bits based on report descriptor */
-> +static void temperature_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-> +					int channel, int size)
-> +{
-> +	channels[channel].scan_type.sign = 's';
-> +	/* Real storage bits will change based on the report desc. */
-> +	channels[channel].scan_type.realbits = size * 8;
-> +	/* Maximum size of a sample to capture is s32 */
-> +	channels[channel].scan_type.storagebits = sizeof(s32) * 8;
-> +}
-> +
-> +/* Channel read_raw handler */
-> +static int temperature_read_raw(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int *val, int *val2,
-> +			      long mask)
-> +{
-> +	struct temperature_state *temperature_state = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (chan->type == IIO_TEMP) {
-> +			hid_sensor_power_state(
-> +				&temperature_state->common_attributes, true);
-> +			*val = sensor_hub_input_attr_get_raw_value(
-> +				temperature_state->common_attributes.hsdev,
-> +				HID_USAGE_SENSOR_TEMPERATURE,
-> +				HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
-> +				temperature_state->temperature_attr.report_id,
-> +				SENSOR_HUB_SYNC);
-> +			hid_sensor_power_state(
-> +					&temperature_state->common_attributes,
-> +					false);
-> +		}
-> +		ret = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		*val = temperature_state->scale_pre_decml;
-> +		*val2 = temperature_state->scale_post_decml;
-> +		ret = temperature_state->scale_precision;
-> +		break;
-> +	case IIO_CHAN_INFO_OFFSET:
-> +		*val = temperature_state->value_offset;
-> +		ret = IIO_VAL_INT;
-> +		break;
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = hid_sensor_read_samp_freq_value(
-> +				&temperature_state->common_attributes,
-> +				val, val2);
-> +		break;
-> +	case IIO_CHAN_INFO_HYSTERESIS:
-> +		ret = hid_sensor_read_raw_hyst_value(
-> +				&temperature_state->common_attributes,
-> +				val, val2);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +/* Channel write_raw handler */
-> +static int temperature_write_raw(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val,
-> +			       int val2,
-> +			       long mask)
-> +{
-> +	struct temperature_state *temperature_state = iio_priv(indio_dev);
-> +	int ret;
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SAMP_FREQ:
-> +		ret = hid_sensor_write_samp_freq_value(
-> +				&temperature_state->common_attributes, val,
-> +				val2);
-> +		break;
-> +	case IIO_CHAN_INFO_HYSTERESIS:
-> +		ret = hid_sensor_write_raw_hyst_value(
-> +				&temperature_state->common_attributes, val,
-> +				val2);
-> +		break;
-> +	default:
-> +		ret = -EINVAL;
-> +	}
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info temperature_info = {
-> +	.driver_module = THIS_MODULE,
-> +	.read_raw = &temperature_read_raw,
-> +	.write_raw = &temperature_write_raw,
-> +};
-> +
-> +/* Function to push data to buffer */
-> +static void hid_sensor_push_data(struct iio_dev *indio_dev, const void *data,
-> +					int len)
-> +{
-> +	iio_push_to_buffers(indio_dev, data);
-This wrapper does seem somewhat pointless...
-> +}
-> +
-> +/* Callback handler to send event after all samples are received and captured */
-> +static int temperature_proc_event(struct hid_sensor_hub_device *hsdev,
-> +				unsigned int usage_id,
-> +				void *priv)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-> +	struct temperature_state *temperature_state = iio_priv(indio_dev);
-> +
-> +	if (atomic_read(&temperature_state->common_attributes.data_ready))
-> +		hid_sensor_push_data(indio_dev,
-> +				&temperature_state->temperature_data,
-> +				sizeof(temperature_state->temperature_data));
-> +
-> +	return 0;
-> +}
-> +
-> +/* Capture samples in local storage */
-> +static int temperature_capture_sample(struct hid_sensor_hub_device *hsdev,
-> +				unsigned int usage_id,
-> +				size_t raw_len, char *raw_data,
-> +				void *priv)
-> +{
-> +	struct iio_dev *indio_dev = platform_get_drvdata(priv);
-Why not make priv the indio_dev directly? I would imagine it's the pdev
-passed in when registering the callbacks below.
-
-> +	struct temperature_state *temperature_state = iio_priv(indio_dev);
-> +
-> +	switch (usage_id) {
-> +	case HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE:
-> +		temperature_state->temperature_data = *(s32 *)raw_data;
-> +		return 0;
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +
-> +/* Parse report which is specific to an usage id*/
-> +static int temperature_parse_report(struct platform_device *pdev,
-> +				struct hid_sensor_hub_device *hsdev,
-> +				struct iio_chan_spec *channels,
-> +				unsigned int usage_id,
-> +				struct temperature_state *st)
-> +{
-> +	int ret;
-> +
-> +	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
-> +			usage_id,
-> +			HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
-> +			&st->temperature_attr);
-> +	if (ret < 0)
-> +		return ret;
-> +
-> +	temperature_adjust_channel_bit_mask(channels,
-> +					CHANNEL_SCAN_INDEX_TEMPERATURE,
-> +					st->temperature_attr.size);
-> +
-> +	st->scale_precision = hid_sensor_format_scale(
-> +				HID_USAGE_SENSOR_TEMPERATURE,
-> +				&st->temperature_attr,
-> +				&st->scale_pre_decml, &st->scale_post_decml);
-> +
-> +	/* Set Sensitivity field ids, when there is no individual modifier */
-> +	if (st->common_attributes.sensitivity.index < 0)
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-> +			HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
-> +			&st->common_attributes.sensitivity);
-blank line here.
-> +	return ret;
-> +}
-> +
-> +/* Function to initialize the processing for usage id */
-> +static int hid_temperature_probe(struct platform_device *pdev)
-> +{
-> +	static const char *name = "temperature";
-> +	struct iio_dev *indio_dev;
-> +	struct temperature_state *temperature_state;
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +	int ret;
-> +
-> +	indio_dev = devm_iio_device_alloc(&pdev->dev,
-> +				sizeof(struct temperature_state));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	temperature_state = iio_priv(indio_dev);
-> +	temperature_state->common_attributes.hsdev = hsdev;
-> +	temperature_state->common_attributes.pdev = pdev;
-> +
-> +	ret = hid_sensor_parse_common_attributes(hsdev,
-> +					HID_USAGE_SENSOR_TEMPERATURE,
-> +					&temperature_state->common_attributes);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->channels = devm_kmemdup(&indio_dev->dev,
-> +					temperature_channels,
-> +					sizeof(temperature_channels),
-> +					GFP_KERNEL);
-> +	if (!indio_dev->channels)
-> +		return -ENOMEM;
-> +
-> +	ret = temperature_parse_report(pdev, hsdev,
-> +				(struct iio_chan_spec *)indio_dev->channels,
-> +				HID_USAGE_SENSOR_TEMPERATURE,
-> +				temperature_state);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->num_channels = ARRAY_SIZE(temperature_channels);
-> +	indio_dev->dev.parent = &pdev->dev;
-> +	indio_dev->info = &temperature_info;
-> +	indio_dev->name = name;
-> +	indio_dev->modes = INDIO_DIRECT_MODE;
-> +
-> +	ret = iio_triggered_buffer_setup(indio_dev, &iio_pollfunc_store_time,
-> +					NULL, NULL);
-> +	if (ret)
-> +		return ret;
-If you are going all devm (which is fine) then use
-devm_iio_triggered_buffer_setup.
-
-> +
-> +	atomic_set(&temperature_state->common_attributes.data_ready, 0);
-> +	ret = hid_sensor_setup_trigger(indio_dev, name,
-> +				&temperature_state->common_attributes);
-I'd expect to see this unwound somewhere as well..
-> +	if (ret)
-> +		goto error_unreg_buffer_funcs;
-> +
-> +	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-> +	if (ret)
-> +		goto error_unreg_buffer_funcs;
-Is there a race here in that userspace interfaces are exposed, but the
-hid system has no way to send answers to any queries?
-> +
-> +	platform_set_drvdata(pdev, indio_dev);
-> +
-> +	temperature_state->callbacks.send_event = temperature_proc_event;
-> +	temperature_state->callbacks.capture_sample =
-> +						temperature_capture_sample;
-> +	temperature_state->callbacks.pdev = pdev;
-> +	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE,
-> +					&temperature_state->callbacks); 
-> +	return ret;
-> +
-> +error_unreg_buffer_funcs:
-> +	iio_triggered_buffer_cleanup(indio_dev);
-> +	return ret;
-> +}
-> +
-> +/* Function to deinitialize the processing for usage id */
-> +static int hid_temperature_remove(struct platform_device *pdev)
-> +{
-> +	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-> +
-> +	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE);
-> +
-> +	return 0;
-> +}
-> +
-> +static const struct platform_device_id hid_temperature_ids[] = {
-> +	{
-> +		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
-> +		.name = "HID-SENSOR-200033",
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, hid_temperature_ids);
-> +
-> +static struct platform_driver hid_temperature_platform_driver = {
-> +	.id_table = hid_temperature_ids,
-> +	.driver = {
-> +		.name	= KBUILD_MODNAME,
-> +		.pm	= &hid_sensor_pm_ops,
-> +	},
-> +	.probe		= hid_temperature_probe,
-> +	.remove		= hid_temperature_remove,
-> +};
-> +module_platform_driver(hid_temperature_platform_driver);
-> +
-> +MODULE_DESCRIPTION("HID Environmental temperature sensor");
-> +MODULE_AUTHOR("Song Hongyan <hongyan.song@intel.com>");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-> index bab8375..ecec978 100644
-> --- a/include/linux/hid-sensor-ids.h
-> +++ b/include/linux/hid-sensor-ids.h
-> @@ -45,6 +45,10 @@
->  #define HID_USAGE_SENSOR_DATA_ATMOSPHERIC_PRESSURE              0x200430
->  #define HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE                   0x200431
->  
-> +/* Tempreture (200033) */
-> +#define	HID_USAGE_SENSOR_TEMPERATURE				0x200033
-> +#define	HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE		0x200434
-> +
->  /* Gyro 3D: (200076) */
->  #define HID_USAGE_SENSOR_GYRO_3D				0x200076
->  #define HID_USAGE_SENSOR_DATA_ANGL_VELOCITY			0x200456
-> 
-
+T24gU2F0LCAyMDE3LTAyLTA0IGF0IDEyOjAyICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
+Og0KPiBPbiAwNC8wMi8xNyAxMzo0NywgU29uZyBIb25neWFuIHdyb3RlOg0KPiA+IA0KPiA+IEVu
+dmlyb25tZW50YWwgdGVtcGVyYXR1cmUgc2Vuc29yIGlzIGEgaGlkIGRlZmluZWQgc2Vuc29yLA0K
+PiA+IGl0IG1lYXN1cmVzIHRlbXBlcmF0dXJlLg0KPiA+IA0KPiA+IE1vcmUgaW5mb3JtYXRpb24g
+Y2FuIGJlIGZvdW5kIGluOg0KPiA+IGh0dHA6Ly93d3cudXNiLm9yZy9kZXZlbG9wZXJzL2hpZHBh
+Z2UvSFVUUlIzOWIucGRmDQo+ID4gDQo+ID4gQWNjb3JkaW5nIHRvIElJTyBBQkkgZGVmaW5pdGlv
+biwgSUlPX1RFTVAgZGF0YSBvdXRwdXQgdW5pdCBpcw0KPiA+IG1pbGxpIGRlZ3JlZXMgQ2Vsc2l1
+cy4gQWRkIHRoZSB1bml0IGNvbnZlcnQgZnJvbSBkZWdyZWUgdG8gbWlsbGkNCj4gPiBkZWdyZWUu
+DQo+ID4gDQo+ID4gU2lnbmVkLW9mZi1ieTogU29uZyBIb25neWFuIDxob25neWFuLnNvbmdAaW50
+ZWwuY29tPg0KPiBBIGZldyBiaXRzIGFuZCBib2JzIGlubGluZS7CoMKgQ2xlYXJseSBJJ2xsIHdh
+bnQgU3Jpbml2YXMgdG8gY29tbWVudCBvbg0KPiB0aGlzDQo+IG9uZSBhcyB3ZWxsIQ0KDQoNClsu
+Li5dDQoNCj4gDQorLyogQ2FwdHVyZSBzYW1wbGVzIGluIGxvY2FsIHN0b3JhZ2UgKi8NCj4gPiAr
+c3RhdGljIGludCB0ZW1wZXJhdHVyZV9jYXB0dXJlX3NhbXBsZShzdHJ1Y3QgaGlkX3NlbnNvcl9o
+dWJfZGV2aWNlDQo+ID4gKmhzZGV2LA0KPiA+ICsJCQkJdW5zaWduZWQgaW50IHVzYWdlX2lkLA0K
+PiA+ICsJCQkJc2l6ZV90IHJhd19sZW4sIGNoYXIgKnJhd19kYXRhLA0KPiA+ICsJCQkJdm9pZCAq
+cHJpdikNCj4gPiArew0KPiA+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IHBsYXRmb3Jt
+X2dldF9kcnZkYXRhKHByaXYpOw0KPiBXaHkgbm90IG1ha2UgcHJpdiB0aGUgaW5kaW9fZGV2IGRp
+cmVjdGx5PyBJIHdvdWxkIGltYWdpbmUgaXQncyB0aGUNCj4gcGRldg0KPiBwYXNzZWQgaW4gd2hl
+biByZWdpc3RlcmluZyB0aGUgY2FsbGJhY2tzIGJlbG93Lg0KDQpBY3R1YWxseSB0aGlzIHByaXYg
+Y2FuIGJlIHJlbmFtZWQgdG8gcGRldi4gVGhlIGNhbGxiYWNrIHdpbGwgYmUgY2FsbGVkDQp3aXRo
+IHBsYXRmb3JtX2RldmljZSAqIG9mIHRoZSBtZmQgZGV2aWNlLg0KDQo+ID4gDQo+ID4gKwlzdHJ1
+Y3QgdGVtcGVyYXR1cmVfc3RhdGUgKnRlbXBlcmF0dXJlX3N0YXRlID0NCj4gPiBpaW9fcHJpdihp
+bmRpb19kZXYpOw0KPiA+ICsNCj4gPiArCXN3aXRjaCAodXNhZ2VfaWQpIHsNCj4gPiArCWNhc2Ug
+SElEX1VTQUdFX1NFTlNPUl9EQVRBX0VOVklST05NRU5UQUxfVEVNUEVSQVRVUkU6DQo+ID4gKwkJ
+dGVtcGVyYXR1cmVfc3RhdGUtPnRlbXBlcmF0dXJlX2RhdGEgPSAqKHMzMg0KPiA+ICopcmF3X2Rh
+dGE7DQo+ID4gKwkJcmV0dXJuIDA7DQo+ID4gKwlkZWZhdWx0Og0KPiA+ICsJCXJldHVybiAtRUlO
+VkFMOw0KPiA+ICsJfQ0KPiA+ICt9DQo+ID4gDQoNClsuLi5dDQoNCj4gPiArLyogRnVuY3Rpb24g
+dG8gaW5pdGlhbGl6ZSB0aGUgcHJvY2Vzc2luZyBmb3IgdXNhZ2UgaWQgKi8NCj4gPiArc3RhdGlj
+IGludCBoaWRfdGVtcGVyYXR1cmVfcHJvYmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikN
+Cj4gPiArew0KPiA+ICsJc3RhdGljIGNvbnN0IGNoYXIgKm5hbWUgPSAidGVtcGVyYXR1cmUiOw0K
+PiA+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldjsNCj4gPiArCXN0cnVjdCB0ZW1wZXJhdHVy
+ZV9zdGF0ZSAqdGVtcGVyYXR1cmVfc3RhdGU7DQo+ID4gKwlzdHJ1Y3QgaGlkX3NlbnNvcl9odWJf
+ZGV2aWNlICpoc2RldiA9IHBkZXYtDQo+ID4gPmRldi5wbGF0Zm9ybV9kYXRhOw0KPiA+ICsJaW50
+IHJldDsNCj4gPiArDQo+ID4gKwlpbmRpb19kZXYgPSBkZXZtX2lpb19kZXZpY2VfYWxsb2MoJnBk
+ZXYtPmRldiwNCj4gPiArCQkJCXNpemVvZihzdHJ1Y3QgdGVtcGVyYXR1cmVfc3RhdGUpKTsNCj4g
+PiArCWlmICghaW5kaW9fZGV2KQ0KPiA+ICsJCXJldHVybiAtRU5PTUVNOw0KPiA+ICsNCj4gPiAr
+CXRlbXBlcmF0dXJlX3N0YXRlID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gPiArCXRlbXBlcmF0
+dXJlX3N0YXRlLT5jb21tb25fYXR0cmlidXRlcy5oc2RldiA9IGhzZGV2Ow0KPiA+ICsJdGVtcGVy
+YXR1cmVfc3RhdGUtPmNvbW1vbl9hdHRyaWJ1dGVzLnBkZXYgPSBwZGV2Ow0KPiA+ICsNCj4gPiAr
+CXJldCA9IGhpZF9zZW5zb3JfcGFyc2VfY29tbW9uX2F0dHJpYnV0ZXMoaHNkZXYsDQo+ID4gKwkJ
+CQkJSElEX1VTQUdFX1NFTlNPUl9URU1QRVJBVFUNCj4gPiBSRSwNCj4gPiArCQkJCQkmdGVtcGVy
+YXR1cmVfc3RhdGUtDQo+ID4gPmNvbW1vbl9hdHRyaWJ1dGVzKTsNCj4gPiArCWlmIChyZXQpDQo+
+ID4gKwkJcmV0dXJuIHJldDsNCj4gPiArDQo+ID4gKwlpbmRpb19kZXYtPmNoYW5uZWxzID0gZGV2
+bV9rbWVtZHVwKCZpbmRpb19kZXYtPmRldiwNCj4gPiArCQkJCQl0ZW1wZXJhdHVyZV9jaGFubmVs
+cywNCj4gPiArCQkJCQlzaXplb2YodGVtcGVyYXR1cmVfY2hhbm5lbA0KPiA+IHMpLA0KPiA+ICsJ
+CQkJCUdGUF9LRVJORUwpOw0KPiA+ICsJaWYgKCFpbmRpb19kZXYtPmNoYW5uZWxzKQ0KPiA+ICsJ
+CXJldHVybiAtRU5PTUVNOw0KPiA+ICsNCj4gPiArCXJldCA9IHRlbXBlcmF0dXJlX3BhcnNlX3Jl
+cG9ydChwZGV2LCBoc2RldiwNCj4gPiArCQkJCShzdHJ1Y3QgaWlvX2NoYW5fc3BlYyAqKWluZGlv
+X2Rldi0NCj4gPiA+Y2hhbm5lbHMsDQo+ID4gKwkJCQlISURfVVNBR0VfU0VOU09SX1RFTVBFUkFU
+VVJFLA0KPiA+ICsJCQkJdGVtcGVyYXR1cmVfc3RhdGUpOw0KPiA+ICsJaWYgKHJldCkNCj4gPiAr
+CQlyZXR1cm4gcmV0Ow0KPiA+ICsNCj4gPiArCWluZGlvX2Rldi0+bnVtX2NoYW5uZWxzID0NCj4g
+PiBBUlJBWV9TSVpFKHRlbXBlcmF0dXJlX2NoYW5uZWxzKTsNCj4gPiArCWluZGlvX2Rldi0+ZGV2
+LnBhcmVudCA9ICZwZGV2LT5kZXY7DQo+ID4gKwlpbmRpb19kZXYtPmluZm8gPSAmdGVtcGVyYXR1
+cmVfaW5mbzsNCj4gPiArCWluZGlvX2Rldi0+bmFtZSA9IG5hbWU7DQo+ID4gKwlpbmRpb19kZXYt
+Pm1vZGVzID0gSU5ESU9fRElSRUNUX01PREU7DQo+ID4gKw0KPiA+ICsJcmV0ID0gaWlvX3RyaWdn
+ZXJlZF9idWZmZXJfc2V0dXAoaW5kaW9fZGV2LA0KPiA+ICZpaW9fcG9sbGZ1bmNfc3RvcmVfdGlt
+ZSwNCj4gPiArCQkJCQlOVUxMLCBOVUxMKTsNCj4gPiArCWlmIChyZXQpDQo+ID4gKwkJcmV0dXJu
+IHJldDsNCj4gSWYgeW91IGFyZSBnb2luZyBhbGwgZGV2bSAod2hpY2ggaXMgZmluZSkgdGhlbiB1
+c2UNCj4gZGV2bV9paW9fdHJpZ2dlcmVkX2J1ZmZlcl9zZXR1cC4NCj4gDQo+ID4gDQo+ID4gKw0K
+PiA+ICsJYXRvbWljX3NldCgmdGVtcGVyYXR1cmVfc3RhdGUtDQo+ID4gPmNvbW1vbl9hdHRyaWJ1
+dGVzLmRhdGFfcmVhZHksIDApOw0KPiA+ICsJcmV0ID0gaGlkX3NlbnNvcl9zZXR1cF90cmlnZ2Vy
+KGluZGlvX2RldiwgbmFtZSwNCj4gPiArCQkJCSZ0ZW1wZXJhdHVyZV9zdGF0ZS0NCj4gPiA+Y29t
+bW9uX2F0dHJpYnV0ZXMpOw0KPiBJJ2QgZXhwZWN0IHRvIHNlZSB0aGlzIHVud291bmQgc29tZXdo
+ZXJlIGFzIHdlbGwuLg0KDQpJIG1pc3NlZCB0aGlzIGR1cmluZyBteSByZXZpZXcuIFRoZXJlIGhh
+cyB0byBiZSBjYWxsDQp0b8KgwqBoaWRfc2Vuc29yX3JlbW92ZV90cmlnZ2VyKCkgdG8gZG8gb3Bw
+b3NpdGUuDQoNCj4gPiANCj4gPiArCWlmIChyZXQpDQo+ID4gKwkJZ290byBlcnJvcl91bnJlZ19i
+dWZmZXJfZnVuY3M7DQo+ID4gKw0KPiA+ICsJcmV0ID0gZGV2bV9paW9fZGV2aWNlX3JlZ2lzdGVy
+KGluZGlvX2Rldi0+ZGV2LnBhcmVudCwNCj4gPiBpbmRpb19kZXYpOw0KPiA+ICsJaWYgKHJldCkN
+Cj4gPiArCQlnb3RvIGVycm9yX3VucmVnX2J1ZmZlcl9mdW5jczsNCj4gSXMgdGhlcmUgYSByYWNl
+IGhlcmUgaW4gdGhhdCB1c2Vyc3BhY2UgaW50ZXJmYWNlcyBhcmUgZXhwb3NlZCwgYnV0DQo+IHRo
+ZQ0KPiBoaWQgc3lzdGVtIGhhcyBubyB3YXkgdG8gc2VuZCBhbnN3ZXJzIHRvIGFueSBxdWVyaWVz
+Pw0KVHdvIHNjZW5hcmlvcyBwb3NzaWJsZToNCi0gSWYgc29tZWhvdyB1c2VyIHNwYWNlIGNhbGxz
+IHRoZSByYXcgcmVhZCBiZWZvcmUgdGhlwqANCnNlbnNvcl9odWJfcmVnaXN0ZXJfY2FsbGJhY2so
+KSBpcyBjYWxsZWQsIHRoZW4gdGhlcmUgc2hvdWxkIG5vdCBiZSBhbnkNCmlzc3VlIGFzIHRoZcKg
+c2Vuc29yX2h1Yl9pbnB1dF9hdHRyX2dldF9yYXdfdmFsdWUgaXMgY2FsbGVkIHdpdGgNCiJTRU5T
+T1JfSFVCX1NZTkMiIHNvIHdhaXQgdGlsbCByZXNwb25zZSBhcnJpdmVzIG9yIHRpbWVvdXQuIFNv
+IGRvZXNuJ3QNCmRlcGVuZCBvbiB0aGUgY2FsbGJhY2suDQoNCi0gSWYgdXNlciBpcyBhY3RpdmF0
+aW5nIHRoZSBidWZmZXIgbW9kZSBiZWZvcmUgdGhlIGNhbGxiYWNrIHVzDQpyZWdpc3RlcmVkLCB3
+b3JzdCBjYXNlIGl0IHdpbGwgbWlzcyBldmVudCB0aWxsIHRoZSBjYWxsYmFjayBpcw0KcmVnaXN0
+ZXJlZC4NCg0KQnV0IHdlIGNhbiBjYWxswqBzZW5zb3JfaHViX3JlZ2lzdGVyX2NhbGxiYWNrKCkN
+CmJlZm9yZcKgZGV2bV9paW9fZGV2aWNlX3JlZ2lzdGVyKCksIGJ1dCB0aGUgd2UgbmVlZCB0byBt
+YWtlIHN1cmUgdGhhdA0KdGhlwqBzZW5zb3JfaHViX3JlbW92ZV9jYWxsYmFjaygpIGlzIGNhbGxl
+ZA0KaWbCoGRldm1faWlvX2RldmljZV9yZWdpc3RlcigpIGZhaWxzLg0KDQo+ID4gDQo+ID4gKw0K
+PiA+ICsJcGxhdGZvcm1fc2V0X2RydmRhdGEocGRldiwgaW5kaW9fZGV2KTsNCj4gPiArDQo+ID4g
+Kwl0ZW1wZXJhdHVyZV9zdGF0ZS0+Y2FsbGJhY2tzLnNlbmRfZXZlbnQgPQ0KPiA+IHRlbXBlcmF0
+dXJlX3Byb2NfZXZlbnQ7DQo+ID4gKwl0ZW1wZXJhdHVyZV9zdGF0ZS0+Y2FsbGJhY2tzLmNhcHR1
+cmVfc2FtcGxlID0NCj4gPiArCQkJCQkJdGVtcGVyYXR1cmVfY2FwdHVyDQo+ID4gZV9zYW1wbGU7
+DQo+ID4gKwl0ZW1wZXJhdHVyZV9zdGF0ZS0+Y2FsbGJhY2tzLnBkZXYgPSBwZGV2Ow0KPiA+ICsJ
+cmV0ID0gc2Vuc29yX2h1Yl9yZWdpc3Rlcl9jYWxsYmFjayhoc2RldiwNCj4gPiBISURfVVNBR0Vf
+U0VOU09SX1RFTVBFUkFUVVJFLA0KPiA+ICsJCQkJCSZ0ZW1wZXJhdHVyZV9zdGF0ZS0NCj4gPiA+
+Y2FsbGJhY2tzKTvCoA0KPiA+ICsJcmV0dXJuIHJldDsNCj4gPiArDQo+ID4gK2Vycm9yX3VucmVn
+X2J1ZmZlcl9mdW5jczoNCj4gPiArCWlpb190cmlnZ2VyZWRfYnVmZmVyX2NsZWFudXAoaW5kaW9f
+ZGV2KTsNCj4gPiArCXJldHVybiByZXQ7DQo+ID4gK30NCj4gPiArDQo+ID4gKy8qIEZ1bmN0aW9u
+IHRvIGRlaW5pdGlhbGl6ZSB0aGUgcHJvY2Vzc2luZyBmb3IgdXNhZ2UgaWQgKi8NCj4gPiArc3Rh
+dGljIGludCBoaWRfdGVtcGVyYXR1cmVfcmVtb3ZlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBk
+ZXYpDQo+ID4gK3sNCj4gPiArCXN0cnVjdCBoaWRfc2Vuc29yX2h1Yl9kZXZpY2UgKmhzZGV2ID0g
+cGRldi0NCj4gPiA+ZGV2LnBsYXRmb3JtX2RhdGE7DQo+ID4gKw0KPiA+ICsJc2Vuc29yX2h1Yl9y
+ZW1vdmVfY2FsbGJhY2soaHNkZXYsDQo+ID4gSElEX1VTQUdFX1NFTlNPUl9URU1QRVJBVFVSRSk7
+DQoNCmhpZF9zZW5zb3JfcmVtb3ZlX3RyaWdnZXIoKQ0KDQo+ID4gKw0KPiA+ICsJcmV0dXJuIDA7
+DQo+ID4gK30NCj4gPiArDQo+ID7CoA0KVGhhbmtzLA0KU3Jpbml2YXM=
