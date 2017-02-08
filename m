@@ -1,54 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43525 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750997AbdBFS0f (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Feb 2017 13:26:35 -0500
-Subject: Re: [PATCH] MAINTAINERS: drop broken reference to i2c/trivial-devices
-To: Wolfram Sang <wsa@the-dreams.de>, linux-iio@vger.kernel.org
-References: <20170206165411.4796-1-wsa@the-dreams.de>
-Cc: linux-kernel@vger.kernel.org,
-        Mauro Carvalho Chehab <mchehab@s-opensource.com>,
-        Kevin Tsai <ktsai@capellamicro.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <5f80e863-6738-d9dd-e8ce-8606fd858447@kernel.org>
-Date: Mon, 6 Feb 2017 18:26:29 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170206165411.4796-1-wsa@the-dreams.de>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=/TkE=ZV=gmail.com=vilhelm.gray@kernel.org>
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org,
+	linux-kernel@vger.kernel.org,
+	William Breathitt Gray <vilhelm.gray@gmail.com>
+Subject: [PATCH 0/2] Documentation: iio: Fix KernelVersion lines in counter sysfs ABI documentation
+Date: Wed,  8 Feb 2017 09:01:27 -0500
+Message-Id: <cover.1486562053.git.vilhelm.gray@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 06/02/17 16:54, Wolfram Sang wrote:
-> Due to RST rework, the reference to i2c/trivial-devices was changed, but the
-> result is broken. However, let's just drop the whole reference, since it
-> doesn't make sense in the first place to reference this "global" file
-> for a single driver.
-> 
-> Fixes: 8c27ceff3604b2 ("docs: fix locations of several documents that got moved")
-> Signed-off-by: Wolfram Sang <wsa@the-dreams.de>
-> Cc: Mauro Carvalho Chehab <mchehab@s-opensource.com>
-> Cc: Kevin Tsai <ktsai@capellamicro.com>
-Applied to the togreg branch of iio.git.
+The IIO counter driver support did not appear in the 4.9 version of the
+Linux kernel. The sysfs ABI documentation merged had incorrectly
+anticipated a version 4.9 release. However, the relevant patches ended
+up in the 4.10 merge instead. This patchset fixes the KernelVersion
+lines of the relevant IIO counter and 104-QUAD-8 IIO driver sysfs ABI
+documentation.
 
-Thanks,
+William Breathitt Gray (2):
+  Documentation: iio: Fix KernelVersion in counter sysfs ABI
+    documentation
+  Documentation: iio: 104-quad-8: Fix KernelVersion in sysfs ABI
+    documentation
 
-Jonathan
-> Cc: Jonathan Cameron <jic23@kernel.org>
-> ---
->  MAINTAINERS | 1 -
->  1 file changed, 1 deletion(-)
-> 
-> diff --git a/MAINTAINERS b/MAINTAINERS
-> index 023e4a8c3d104d..3c67142f17e913 100644
-> --- a/MAINTAINERS
-> +++ b/MAINTAINERS
-> @@ -2974,7 +2974,6 @@ CAPELLA MICROSYSTEMS LIGHT SENSOR DRIVER
->  M:	Kevin Tsai <ktsai@capellamicro.com>
->  S:	Maintained
->  F:	drivers/iio/light/cm*
-> -F:	Documentation/devicetree/bindings/i2c/trivial-admin-guide/devices.rst
->  
->  CAVIUM I2C DRIVER
->  M:	Jan Glauber <jglauber@cavium.com>
-> 
+ Documentation/ABI/testing/sysfs-bus-iio                |  4 ++--
+ .../ABI/testing/sysfs-bus-iio-counter-104-quad-8       | 18 +++++++++---------
+ 2 files changed, 11 insertions(+), 11 deletions(-)
 
+-- 
+2.11.1
