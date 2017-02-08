@@ -1,386 +1,192 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58924 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750944AbdBDMah (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Feb 2017 07:30:37 -0500
-Subject: Re: [PATCH v3] iio: cros_ec_light_prox: add ChromeOS EC Light and
- Proximity Sensors
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-References: <20170130170753.19022-1-enric.balletbo@collabora.com>
-Cc: linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        Gwendal Grignou <gwendal@chromium.org>,
-        Guenter Roeck <groeck@chromium.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <857495bb-c637-9925-acad-2d0b4dbdeeef@kernel.org>
-Date: Sat, 4 Feb 2017 12:30:34 +0000
+Received: from mail-wm0-f52.google.com ([74.125.82.52]:38227 "EHLO
+        mail-wm0-f52.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752382AbdBHKmE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Feb 2017 05:42:04 -0500
+Received: by mail-wm0-f52.google.com with SMTP id r141so181843065wmg.1
+        for <linux-iio@vger.kernel.org>; Wed, 08 Feb 2017 02:41:44 -0800 (PST)
+Date: Wed, 8 Feb 2017 10:41:41 +0000
+From: Lee Jones <lee.jones@linaro.org>
+To: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Richard Purdie <rpurdie@rpsys.net>,
+        Pavel Machek <pavel@ucw.cz>, Jingoo Han <jingoohan1@gmail.com>,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, linux-leds@vger.kernel.org
+Subject: Re: [PATCH v6 2/5] mfd: lm3533: Support initialization from Device
+ Tree
+Message-ID: <20170208104141.nv56qgbxzxa52k56@dell>
+References: <20170130211719.31017-1-bjorn.andersson@linaro.org>
+ <20170130211719.31017-2-bjorn.andersson@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20170130170753.19022-1-enric.balletbo@collabora.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <20170130211719.31017-2-bjorn.andersson@linaro.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 30/01/17 17:07, Enric Balletbo i Serra wrote:
-> From: Gwendal Grignou <gwendal@chromium.org>
+On Mon, 30 Jan 2017, Bjorn Andersson wrote:
+
+> From: Bjorn Andersson <bjorn.andersson@sonymobile.com>
 > 
-> Handle Light and Proximity sensors presented by the ChromeOS EC Sensor hub.
-> Creates an IIO device for each functions.
+> Implement support for initialization of the lm3533 driver core and
+> probing child devices from Device Tree.
 > 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Guenter Roeck <groeck@chromium.org>
-> Signed-off-by: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
-
-Probably just missed up coming merge window.
-
-Thanks,
-
-Jonathan
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
 > ---
+>  drivers/mfd/lm3533-core.c | 82 +++++++++++++++++++++++++++++++++++++++++++++++
+>  1 file changed, 82 insertions(+)
+> 
+> Note that this patch can be merged independently of the other patches in the
+> series.
+> 
+> Changes since v5:
+> - Added comment re of_platform_populate()
+> 
+> Changes since v4:
+> - Moved of_node check into lm3533_pdata_from_of_node()
+> 
 > Changes since v3:
->  - Move to iio/light directory.
->  - Revert a change made in v2. Use PROCESSED for light and RAW for proximity
->    as discussed.
->  - Removed BIT(IIO_CHAN_INFO_SCALE) (Jonathan: 'For the proximity it's normal
->    to provide raw with no known scale')
-> Changes since v2:
->  - Depends on IIO_CROS_EC_SENSORS_CORE instead of select
->  - Use PROCESSED for light and proximity, remove SCALE
+> - Moved parsing of child of nodes into each child driver
+> - Use of_platform_populate() to instanciate child devices
 > 
->  drivers/iio/light/Kconfig              |  10 ++
->  drivers/iio/light/Makefile             |   1 +
->  drivers/iio/light/cros_ec_light_prox.c | 289 +++++++++++++++++++++++++++++++++
->  3 files changed, 300 insertions(+)
->  create mode 100644 drivers/iio/light/cros_ec_light_prox.c
 > 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 298ea50..71c93b5e 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -126,6 +126,16 @@ config CM36651
->  	 To compile this driver as a module, choose M here:
->  	 the module will be called cm36651.
+> diff --git a/drivers/mfd/lm3533-core.c b/drivers/mfd/lm3533-core.c
+> index 5abcbb2e8849..89c79328c78e 100644
+> --- a/drivers/mfd/lm3533-core.c
+> +++ b/drivers/mfd/lm3533-core.c
+> @@ -18,6 +18,8 @@
+>  #include <linux/gpio.h>
+>  #include <linux/i2c.h>
+>  #include <linux/mfd/core.h>
+> +#include <linux/of_gpio.h>
+> +#include <linux/of_platform.h>
+>  #include <linux/regmap.h>
+>  #include <linux/seq_file.h>
+>  #include <linux/slab.h>
+> @@ -512,6 +514,16 @@ static int lm3533_device_init(struct lm3533 *lm3533)
+>  	lm3533_device_bl_init(lm3533);
+>  	lm3533_device_led_init(lm3533);
 >  
-> +config IIO_CROS_EC_LIGHT_PROX
-> +	tristate "ChromeOS EC Light and Proximity Sensors"
-> +	depends on IIO_CROS_EC_SENSORS_CORE
-> +	help
-> +	  Say Y here if you use the light and proximity sensors
-> +	  presented by the ChromeOS EC Sensor hub.
-> +
-> +	  To compile this driver as a module, choose M here:
-> +	  the module will be called cros_ec_light_prox.
-> +
->  config GP2AP020A00F
->  	tristate "Sharp GP2AP020A00F Proximity/ALS sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index 4de5200..844deeb 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -14,6 +14,7 @@ obj-$(CONFIG_CM32181)		+= cm32181.o
->  obj-$(CONFIG_CM3232)		+= cm3232.o
->  obj-$(CONFIG_CM3323)		+= cm3323.o
->  obj-$(CONFIG_CM36651)		+= cm36651.o
-> +obj-$(CONFIG_IIO_CROS_EC_LIGHT_PROX) += cros_ec_light_prox.o
->  obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
->  obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
-> diff --git a/drivers/iio/light/cros_ec_light_prox.c b/drivers/iio/light/cros_ec_light_prox.c
-> new file mode 100644
-> index 0000000..7217223
-> --- /dev/null
-> +++ b/drivers/iio/light/cros_ec_light_prox.c
-> @@ -0,0 +1,289 @@
-> +/*
-> + * cros_ec_light_prox - Driver for light and prox sensors behing CrosEC.
-> + *
-> + * Copyright (C) 2017 Google, Inc
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
-> +#include <linux/module.h>
-> +#include <linux/platform_device.h>
-> +#include <linux/slab.h>
-> +#include <linux/sysfs.h>
-> +
-> +#include "../common/cros_ec_sensors/cros_ec_sensors_core.h"
-> +
-> +/*
-> + * We only represent one entry for light or proximity. EC is merging different
-> + * light sensors to return the what the eye would see. For proximity, we
-> + * currently support only one light source.
-> + */
-> +#define CROS_EC_LIGHT_PROX_MAX_CHANNELS (1 + 1)
-> +
-> +/* State data for ec_sensors iio driver. */
-> +struct cros_ec_light_prox_state {
-> +	/* Shared by all sensors */
-> +	struct cros_ec_sensors_core_state core;
-> +
-> +	struct iio_chan_spec channels[CROS_EC_LIGHT_PROX_MAX_CHANNELS];
-> +};
-> +
-> +static int cros_ec_light_prox_read(struct iio_dev *indio_dev,
-> +				   struct iio_chan_spec const *chan,
-> +				   int *val, int *val2, long mask)
-> +{
-> +	struct cros_ec_light_prox_state *st = iio_priv(indio_dev);
-> +	u16 data = 0;
-> +	s64 val64;
-> +	int ret = IIO_VAL_INT;
-> +	int idx = chan->scan_index;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (chan->type == IIO_PROXIMITY) {
-> +			if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
-> +						     (s16 *)&data) < 0) {
-> +				ret = -EIO;
-> +				break;
-> +			}
-> +			*val = data;
-> +		} else {
-> +			ret = -EINVAL;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_PROCESSED:
-> +		if (chan->type == IIO_LIGHT) {
-> +			if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
-> +						     (s16 *)&data) < 0) {
-> +				ret = -EIO;
-> +				break;
-> +			}
-> +			/*
-> +			 * The data coming from the light sensor is
-> +			 * pre-processed and represents the ambient light
-> +			 * illuminance reading expressed in lux.
-> +			 */
-> +			*val = data;
-> +			ret = IIO_VAL_INT;
-> +		} else {
-> +			ret = -EINVAL;
-> +		}
-> +		break;
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
-> +		st->core.param.sensor_offset.flags = 0;
-> +
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +
-> +		/* Save values */
-> +		st->core.calib[0] = st->core.resp->sensor_offset.offset[0];
-> +
-> +		*val = st->core.calib[idx];
-> +		break;
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		/*
-> +		 * RANGE is used for calibration
-> +		 * scale is a number x.y, where x is coded on 16 bits,
-> +		 * y coded on 16 bits, between 0 and 9999.
-> +		 */
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
-> +
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +
-> +		val64 = st->core.resp->sensor_range.ret;
-> +		*val = val64 >> 16;
-> +		*val2 = (val64 & 0xffff) * 100;
-> +		ret = IIO_VAL_INT_PLUS_MICRO;
-> +		break;
-> +	default:
-> +		ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
-> +						mask);
-> +		break;
+> +	/*
+> +	 * Check of_node as of_platform_populate treats NULL as the root node,
+> +	 * which would cause side effects in certain unlikely DT/non-DT hybrid
+> +	 * solutions.
+> +	 */
+> +	if (lm3533->dev->of_node) {
+> +		of_platform_populate(lm3533->dev->of_node, NULL, NULL,
+> +				     lm3533->dev);
 > +	}
 > +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int cros_ec_light_prox_write(struct iio_dev *indio_dev,
-> +			       struct iio_chan_spec const *chan,
-> +			       int val, int val2, long mask)
+>  	ret = sysfs_create_group(&lm3533->dev->kobj, &lm3533_attribute_group);
+>  	if (ret < 0) {
+>  		dev_err(lm3533->dev, "failed to create sysfs attributes\n");
+> @@ -588,10 +600,76 @@ static const struct regmap_config regmap_config = {
+>  	.precious_reg	= lm3533_precious_register,
+>  };
+>  
+> +static int lm3533_of_parse_enum(struct device *dev, const char *propname,
+> +				const unsigned int *match, size_t num_matches)
 > +{
-> +	struct cros_ec_light_prox_state *st = iio_priv(indio_dev);
-> +	int ret = 0;
-> +	int idx = chan->scan_index;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_CALIBBIAS:
-> +		st->core.calib[idx] = val;
-> +		/* Send to EC for each axis, even if not complete */
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_OFFSET;
-> +		st->core.param.sensor_offset.flags = MOTION_SENSE_SET_OFFSET;
-> +		st->core.param.sensor_offset.offset[0] = st->core.calib[0];
-> +		st->core.param.sensor_offset.temp =
-> +					EC_MOTION_SENSE_INVALID_CALIB_TEMP;
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
-> +			ret = -EIO;
-> +		break;
-> +	case IIO_CHAN_INFO_CALIBSCALE:
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = (val << 16) | (val2 / 100);
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
-> +			ret = -EIO;
-> +		break;
-> +	default:
-> +		ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
-> +						 mask);
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info cros_ec_light_prox_info = {
-> +	.read_raw = &cros_ec_light_prox_read,
-> +	.write_raw = &cros_ec_light_prox_write,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int cros_ec_light_prox_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-> +	struct cros_ec_device *ec_device;
-> +	struct iio_dev *indio_dev;
-> +	struct cros_ec_light_prox_state *state;
-> +	struct iio_chan_spec *channel;
+> +	size_t i;
 > +	int ret;
+> +	u32 val;
 > +
-> +	if (!ec_dev || !ec_dev->ec_dev) {
-> +		dev_warn(dev, "No CROS EC device found.\n");
-> +		return -EINVAL;
+> +	ret = of_property_read_u32(dev->of_node, propname, &val);
+> +	if (ret < 0) {
+
+If you do a fix-up of this driver please:
+
+  s/(ret < 0)/(ret)/
+
+If not, it's not enough of an issue for non-acceptance:
+
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+  
+> +		dev_err(dev, "failed to parse %s\n", propname);
+> +		return ret;
 > +	}
-> +	ec_device = ec_dev->ec_dev;
 > +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
-> +	if (!indio_dev)
+> +	for (i = 0; i < num_matches; i++) {
+> +		if (val == match[i])
+> +			return i;
+> +	}
+> +
+> +	dev_err(dev, "unsupported value of %s\n", propname);
+> +	return -EINVAL;
+> +}
+> +
+> +static int lm3533_pdata_from_of_node(struct device *dev)
+> +{
+> +	struct lm3533_platform_data *pdata;
+> +	int ret;
+> +	const unsigned int freqs[] = {
+> +		[LM3533_BOOST_FREQ_500KHZ] = 500000,
+> +		[LM3533_BOOST_FREQ_1000KHZ] = 1000000,
+> +	};
+> +	const unsigned int ovps[] = {
+> +		[LM3533_BOOST_OVP_16V] = 16000,
+> +		[LM3533_BOOST_OVP_24V] = 24000,
+> +		[LM3533_BOOST_OVP_32V] = 32000,
+> +		[LM3533_BOOST_OVP_40V] = 40000,
+> +	};
+> +
+> +	if (!dev->of_node)
+> +		return 0;
+> +
+> +	pdata = devm_kzalloc(dev, sizeof(*pdata), GFP_KERNEL);
+> +	if (!pdata)
 > +		return -ENOMEM;
 > +
-> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-> +	if (ret)
+> +	pdata->gpio_hwen = of_get_named_gpio(dev->of_node, "hwen-gpios", 0);
+> +	if (pdata->gpio_hwen < 0)
+> +		return pdata->gpio_hwen;
+> +
+> +	ret = lm3533_of_parse_enum(dev, "ti,boost-freq-hz",
+> +				   freqs, ARRAY_SIZE(freqs));
+> +	if (ret < 0)
 > +		return ret;
+> +	pdata->boost_freq = ret;
 > +
-> +	indio_dev->info = &cros_ec_light_prox_info;
-> +	state = iio_priv(indio_dev);
-> +	state->core.type = state->core.resp->info.type;
-> +	state->core.loc = state->core.resp->info.location;
-> +	channel = state->channels;
-> +
-> +	/* Common part */
-> +	channel->info_mask_shared_by_all =
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +		BIT(IIO_CHAN_INFO_FREQUENCY);
-> +	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.shift = 0;
-> +	channel->scan_index = 0;
-> +	channel->ext_info = cros_ec_sensors_ext_info;
-> +	channel->scan_type.sign = 'u';
-> +
-> +	state->core.calib[0] = 0;
-> +
-> +	/* Sensor specific */
-> +	switch (state->core.type) {
-> +	case MOTIONSENSE_TYPE_LIGHT:
-> +		channel->type = IIO_LIGHT;
-> +		channel->info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_PROCESSED) |
-> +			BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> +			BIT(IIO_CHAN_INFO_CALIBSCALE);
-> +		break;
-> +	case MOTIONSENSE_TYPE_PROX:
-> +		channel->type = IIO_PROXIMITY;
-> +		channel->info_mask_separate =
-> +			BIT(IIO_CHAN_INFO_RAW) |
-> +			BIT(IIO_CHAN_INFO_CALIBBIAS) |
-> +			BIT(IIO_CHAN_INFO_CALIBSCALE);
-> +		break;
-> +	default:
-> +		dev_warn(dev, "Unknown motion sensor\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Timestamp */
-> +	channel++;
-> +	channel->type = IIO_TIMESTAMP;
-> +	channel->channel = -1;
-> +	channel->scan_index = 1;
-> +	channel->scan_type.sign = 's';
-> +	channel->scan_type.realbits = 64;
-> +	channel->scan_type.storagebits = 64;
-> +
-> +	indio_dev->channels = state->channels;
-> +
-> +	indio_dev->num_channels = CROS_EC_LIGHT_PROX_MAX_CHANNELS;
-> +
-> +	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-> +					      cros_ec_sensors_capture, NULL);
-> +	if (ret)
+> +	ret = lm3533_of_parse_enum(dev, "ti,boost-ovp-mv",
+> +				   ovps, ARRAY_SIZE(ovps));
+> +	if (ret < 0)
 > +		return ret;
+> +	pdata->boost_ovp = ret;
 > +
-> +	return devm_iio_device_register(dev, indio_dev);
+> +	dev->platform_data = pdata;
+> +
+> +	return 0;
 > +}
 > +
-> +static const struct platform_device_id cros_ec_light_prox_ids[] = {
-> +	{
-> +		.name = "cros-ec-prox",
-> +	},
-> +	{
-> +		.name = "cros-ec-light",
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, cros_ec_light_prox_ids);
+>  static int lm3533_i2c_probe(struct i2c_client *i2c,
+>  					const struct i2c_device_id *id)
+>  {
+>  	struct lm3533 *lm3533;
+> +	int ret;
+>  
+>  	dev_dbg(&i2c->dev, "%s\n", __func__);
+>  
+> @@ -608,6 +686,10 @@ static int lm3533_i2c_probe(struct i2c_client *i2c,
+>  	lm3533->dev = &i2c->dev;
+>  	lm3533->irq = i2c->irq;
+>  
+> +	ret = lm3533_pdata_from_of_node(lm3533->dev);
+> +	if (ret < 0)
+> +		return ret;
 > +
-> +static struct platform_driver cros_ec_light_prox_platform_driver = {
-> +	.driver = {
-> +		.name	= "cros-ec-light-prox",
-> +	},
-> +	.probe		= cros_ec_light_prox_probe,
-> +	.id_table	= cros_ec_light_prox_ids,
-> +};
-> +module_platform_driver(cros_ec_light_prox_platform_driver);
-> +
-> +MODULE_DESCRIPTION("ChromeOS EC light/proximity sensors driver");
-> +MODULE_LICENSE("GPL v2");
-> 
+>  	return lm3533_device_init(lm3533);
+>  }
+>  
 
+-- 
+Lee Jones
+Linaro STMicroelectronics Landing Team Lead
+Linaro.org │ Open source software for ARM SoCs
+Follow Linaro: Facebook | Twitter | Blog
