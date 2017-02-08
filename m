@@ -1,329 +1,80 @@
-Return-Path: <SRS0=p6Vt=ZU=linaro.org=lee.jones@kernel.org>
-Date: Tue, 7 Feb 2017 16:58:43 +0000
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:35325 "EHLO
+        mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932940AbdBHJ0L (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Feb 2017 04:26:11 -0500
+Received: by mail-wm0-f41.google.com with SMTP id v186so39722694wmd.0
+        for <linux-iio@vger.kernel.org>; Wed, 08 Feb 2017 01:26:10 -0800 (PST)
+Date: Wed, 8 Feb 2017 09:26:07 +0000
 From: Lee Jones <lee.jones@linaro.org>
-To: Enric Balletbo i Serra <enric.balletbo@collabora.com>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Olof Johansson <olof@lixom.net>, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org, Gwendal Grignou <gwendal@chromium.org>
-Subject: Re: [PATCH] iio: cros_ec: Add cros_ec barometer driver
-Message-ID: <20170207165843.a7y63326hz6vtypu@dell>
-References: <20170124134141.30751-1-enric.balletbo@collabora.com>
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
+        sre@kernel.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, linux-iio@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+        linux-pm@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
+        bonbons@linux-vserver.org
+Subject: Re: [PATCH v2 02/25] mfd: axp20x: correct name of temperature data
+ ADC registers
+Message-ID: <20170208092607.qlzm7pt4w3wqempf@dell>
+References: <20170127085458.18270-1-quentin.schulz@free-electrons.com>
+ <20170127085458.18270-3-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=utf-8
-In-Reply-To: <20170124134141.30751-1-enric.balletbo@collabora.com>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20170127085458.18270-3-quentin.schulz@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, 24 Jan 2017, Enric Balletbo i Serra wrote:
+On Fri, 27 Jan 2017, Quentin Schulz wrote:
 
-> From: Gwendal Grignou <gwendal@chromium.org>
+> The registers 0x56 and 0x57 of AXP22X PMIC store the value of the
+> internal temperature of the PMIC.
 > 
-> Handle the barometer sensor presented by the ChromeOS EC Sensor hub.
+> This patch modifies the name of these registers from AXP22X_PMIC_ADC_H/L
+> to AXP22X_PMIC_TEMP_H/L so their purpose is clearer.
 > 
-> Signed-off-by: Gwendal Grignou <gwendal@chromium.org>
-> Signed-off-by: Enric Balletbo Serra <enric.balletbo@collabora.com>
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 > ---
->  drivers/iio/pressure/Kconfig          |  10 ++
->  drivers/iio/pressure/Makefile         |   1 +
->  drivers/iio/pressure/cros_ec_baro.c   | 220 ++++++++++++++++++++++++++++++++++
->  drivers/platform/chrome/cros_ec_dev.c |   3 +
-
-[...]
-
->  include/linux/mfd/cros_ec_commands.h  |   3 +-
-
-Acked-by: Lee Jones <lee.jones@linaro.org>
-
->  5 files changed, 236 insertions(+), 1 deletion(-)
->  create mode 100644 drivers/iio/pressure/cros_ec_baro.c
 > 
-> diff --git a/drivers/iio/pressure/Kconfig b/drivers/iio/pressure/Kconfig
-> index bd8d96b..5d16b25 100644
-> --- a/drivers/iio/pressure/Kconfig
-> +++ b/drivers/iio/pressure/Kconfig
-> @@ -42,6 +42,16 @@ config BMP280_SPI
->  	depends on SPI_MASTER
->  	select REGMAP
->  
-> +config IIO_CROS_EC_BARO
-> +	tristate "ChromeOS EC Barometer Sensor"
-> +	depends on IIO_CROS_EC_SENSORS_CORE
-> +	help
-> +	  Say yes here to build support for the Barometer sensor when
-> +	  presented by the ChromeOS EC Sensor hub.
-> +
-> +	  To compile this driver as a module, choose M here: the module
-> +	  will be called cros_ec_baro.
-> +
->  config HID_SENSOR_PRESS
->  	depends on HID_SENSOR_HUB
->  	select IIO_BUFFER
-> diff --git a/drivers/iio/pressure/Makefile b/drivers/iio/pressure/Makefile
-> index de3dbc8..8386427 100644
-> --- a/drivers/iio/pressure/Makefile
-> +++ b/drivers/iio/pressure/Makefile
-> @@ -8,6 +8,7 @@ obj-$(CONFIG_BMP280) += bmp280.o
->  bmp280-objs := bmp280-core.o bmp280-regmap.o
->  obj-$(CONFIG_BMP280_I2C) += bmp280-i2c.o
->  obj-$(CONFIG_BMP280_SPI) += bmp280-spi.o
-> +obj-$(CONFIG_IIO_CROS_EC_BARO) += cros_ec_baro.o
->  obj-$(CONFIG_HID_SENSOR_PRESS)   += hid-sensor-press.o
->  obj-$(CONFIG_HP03) += hp03.o
->  obj-$(CONFIG_MPL115) += mpl115.o
-> diff --git a/drivers/iio/pressure/cros_ec_baro.c b/drivers/iio/pressure/cros_ec_baro.c
-> new file mode 100644
-> index 0000000..48b2a30
-> --- /dev/null
-> +++ b/drivers/iio/pressure/cros_ec_baro.c
-> @@ -0,0 +1,220 @@
-> +/*
-> + * cros_ec_baro - Driver for barometer sensor behind CrosEC.
-> + *
-> + * Copyright (C) 2017 Google, Inc
-> + *
-> + * This software is licensed under the terms of the GNU General Public
-> + * License version 2, as published by the Free Software Foundation, and
-> + * may be copied, distributed, and modified under those terms.
-> + *
-> + * This program is distributed in the hope that it will be useful,
-> + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-> + * GNU General Public License for more details.
-> + */
-> +
-> +#include <linux/delay.h>
-> +#include <linux/device.h>
-> +#include <linux/iio/buffer.h>
-> +#include <linux/iio/iio.h>
-> +#include <linux/iio/kfifo_buf.h>
-> +#include <linux/iio/trigger.h>
-> +#include <linux/iio/triggered_buffer.h>
-> +#include <linux/iio/trigger_consumer.h>
-> +#include <linux/kernel.h>
-> +#include <linux/mfd/cros_ec.h>
-> +#include <linux/mfd/cros_ec_commands.h>
-> +#include <linux/module.h>
-> +#include <linux/slab.h>
-> +#include <linux/platform_device.h>
-> +
-> +#include "../common/cros_ec_sensors/cros_ec_sensors_core.h"
-> +
-> +/*
-> + * One channel for pressure, the other for timestamp.
-> + */
-> +#define CROS_EC_BARO_MAX_CHANNELS (1 + 1)
-> +
-> +/* State data for ec_sensors iio driver. */
-> +struct cros_ec_baro_state {
-> +	/* Shared by all sensors */
-> +	struct cros_ec_sensors_core_state core;
-> +
-> +	struct iio_chan_spec channels[CROS_EC_BARO_MAX_CHANNELS];
-> +};
-> +
-> +static int cros_ec_baro_read(struct iio_dev *indio_dev,
-> +			     struct iio_chan_spec const *chan,
-> +			     int *val, int *val2, long mask)
-> +{
-> +	struct cros_ec_baro_state *st = iio_priv(indio_dev);
-> +	u16 data = 0;
-> +	int ret = IIO_VAL_INT;
-> +	int idx = chan->scan_index;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_RAW:
-> +		if (cros_ec_sensors_read_cmd(indio_dev, 1 << idx,
-> +					     (s16 *)&data) < 0)
-> +			ret = -EIO;
-> +		*val = data;
-> +		break;
-> +	case IIO_CHAN_INFO_SCALE:
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = EC_MOTION_SENSE_NO_VALUE;
-> +
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0)) {
-> +			ret = -EIO;
-> +			break;
-> +		}
-> +		*val = st->core.resp->sensor_range.ret;
-> +
-> +		/* scale * in_pressure_raw --> kPa */
-> +		*val2 = 10 << CROS_EC_SENSOR_BITS;
-> +		ret = IIO_VAL_FRACTIONAL;
-> +		break;
-> +	default:
-> +		ret = cros_ec_sensors_core_read(&st->core, chan, val, val2,
-> +						mask);
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static int cros_ec_baro_write(struct iio_dev *indio_dev,
-> +			      struct iio_chan_spec const *chan,
-> +			      int val, int val2, long mask)
-> +{
-> +	struct cros_ec_baro_state *st = iio_priv(indio_dev);
-> +	int ret = 0;
-> +
-> +	mutex_lock(&st->core.cmd_lock);
-> +
-> +	switch (mask) {
-> +	case IIO_CHAN_INFO_SCALE:
-> +		st->core.param.cmd = MOTIONSENSE_CMD_SENSOR_RANGE;
-> +		st->core.param.sensor_range.data = val;
-> +
-> +		/* Always roundup, so caller gets at least what it asks for. */
-> +		st->core.param.sensor_range.roundup = 1;
-> +
-> +		if (cros_ec_motion_send_host_cmd(&st->core, 0))
-> +			ret = -EIO;
-> +		break;
-> +	default:
-> +		ret = cros_ec_sensors_core_write(&st->core, chan, val, val2,
-> +						 mask);
-> +		break;
-> +	}
-> +
-> +	mutex_unlock(&st->core.cmd_lock);
-> +
-> +	return ret;
-> +}
-> +
-> +static const struct iio_info cros_ec_baro_info = {
-> +	.read_raw = &cros_ec_baro_read,
-> +	.write_raw = &cros_ec_baro_write,
-> +	.driver_module = THIS_MODULE,
-> +};
-> +
-> +static int cros_ec_baro_probe(struct platform_device *pdev)
-> +{
-> +	struct device *dev = &pdev->dev;
-> +	struct cros_ec_dev *ec_dev = dev_get_drvdata(dev->parent);
-> +	struct cros_ec_device *ec_device;
-> +	struct iio_dev *indio_dev;
-> +	struct cros_ec_baro_state *state;
-> +	struct iio_chan_spec *channel;
-> +	int ret;
-> +
-> +	if (!ec_dev || !ec_dev->ec_dev) {
-> +		dev_warn(dev, "No CROS EC device found.\n");
-> +		return -EINVAL;
-> +	}
-> +	ec_device = ec_dev->ec_dev;
-> +
-> +	indio_dev = devm_iio_device_alloc(dev, sizeof(*state));
-> +	if (!indio_dev)
-> +		return -ENOMEM;
-> +
-> +	ret = cros_ec_sensors_core_init(pdev, indio_dev, true);
-> +	if (ret)
-> +		return ret;
-> +
-> +	indio_dev->info = &cros_ec_baro_info;
-> +	state = iio_priv(indio_dev);
-> +	state->core.type = state->core.resp->info.type;
-> +	state->core.loc = state->core.resp->info.location;
-> +	channel = state->channels;
-> +	/* Common part */
-> +	channel->info_mask_separate = BIT(IIO_CHAN_INFO_RAW);
-> +	channel->info_mask_shared_by_all =
-> +		BIT(IIO_CHAN_INFO_SCALE) |
-> +		BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-> +		BIT(IIO_CHAN_INFO_FREQUENCY);
-> +	channel->scan_type.realbits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.storagebits = CROS_EC_SENSOR_BITS;
-> +	channel->scan_type.shift = 0;
-> +	channel->scan_index = 0;
-> +	channel->ext_info = cros_ec_sensors_ext_info;
-> +	channel->scan_type.sign = 'u';
-> +
-> +	state->core.calib[0] = 0;
-> +
-> +	/* Sensor specific */
-> +	switch (state->core.type) {
-> +	case MOTIONSENSE_TYPE_BARO:
-> +		channel->type = IIO_PRESSURE;
-> +		break;
-> +	default:
-> +		dev_warn(dev, "Unknown motion sensor\n");
-> +		return -EINVAL;
-> +	}
-> +
-> +	/* Timestamp */
-> +	channel++;
-> +	channel->type = IIO_TIMESTAMP;
-> +	channel->channel = -1;
-> +	channel->scan_index = 1;
-> +	channel->scan_type.sign = 's';
-> +	channel->scan_type.realbits = 64;
-> +	channel->scan_type.storagebits = 64;
-> +
-> +	indio_dev->channels = state->channels;
-> +	indio_dev->num_channels = CROS_EC_BARO_MAX_CHANNELS;
-> +
-> +	state->core.read_ec_sensors_data = cros_ec_sensors_read_cmd;
-> +
-> +	ret = devm_iio_triggered_buffer_setup(dev, indio_dev, NULL,
-> +					      cros_ec_sensors_capture, NULL);
-> +	if (ret)
-> +		return ret;
-> +
-> +	return devm_iio_device_register(dev, indio_dev);
-> +}
-> +
-> +static const struct platform_device_id cros_ec_baro_ids[] = {
-> +	{
-> +		.name = "cros-ec-baro",
-> +	},
-> +	{ /* sentinel */ }
-> +};
-> +MODULE_DEVICE_TABLE(platform, cros_ec_baro_ids);
-> +
-> +static struct platform_driver cros_ec_baro_platform_driver = {
-> +	.driver = {
-> +		.name	= "cros-ec-baro",
-> +	},
-> +	.probe		= cros_ec_baro_probe,
-> +	.id_table	= cros_ec_baro_ids,
-> +};
-> +module_platform_driver(cros_ec_baro_platform_driver);
-> +
-> +MODULE_DESCRIPTION("ChromeOS EC barometer sensor driver");
-> +MODULE_LICENSE("GPL v2");
-> diff --git a/drivers/platform/chrome/cros_ec_dev.c b/drivers/platform/chrome/cros_ec_dev.c
-> index df5894f..eaa5d1b 100644
-> --- a/drivers/platform/chrome/cros_ec_dev.c
-> +++ b/drivers/platform/chrome/cros_ec_dev.c
-> @@ -329,6 +329,9 @@ static void cros_ec_sensors_register(struct cros_ec_dev *ec)
->  		case MOTIONSENSE_TYPE_ACCEL:
->  			sensor_cells[id].name = "cros-ec-accel";
->  			break;
-> +		case MOTIONSENSE_TYPE_BARO:
-> +			sensor_cells[id].name = "cros-ec-baro";
-> +			break;
->  		case MOTIONSENSE_TYPE_GYRO:
->  			sensor_cells[id].name = "cros-ec-gyro";
->  			break;
-> diff --git a/include/linux/mfd/cros_ec_commands.h b/include/linux/mfd/cros_ec_commands.h
-> index 22e5d75..a01dde4 100644
-> --- a/include/linux/mfd/cros_ec_commands.h
-> +++ b/include/linux/mfd/cros_ec_commands.h
-> @@ -1463,7 +1463,8 @@ enum motionsensor_type {
->  	MOTIONSENSE_TYPE_PROX = 3,
->  	MOTIONSENSE_TYPE_LIGHT = 4,
->  	MOTIONSENSE_TYPE_ACTIVITY = 5,
-> -	MOTIONSENSE_TYPE_MAX
-> +	MOTIONSENSE_TYPE_BARO = 6,
-> +	MOTIONSENSE_TYPE_MAX,
+> added in v2
+> 
+>  drivers/mfd/axp20x.c       | 2 +-
+>  include/linux/mfd/axp20x.h | 4 ++--
+>  2 files changed, 3 insertions(+), 3 deletions(-)
+
+For my own reference:
+  Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+  
+> diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+> index 619a83e..9c2fd37 100644
+> --- a/drivers/mfd/axp20x.c
+> +++ b/drivers/mfd/axp20x.c
+> @@ -102,7 +102,7 @@ static const struct regmap_range axp22x_volatile_ranges[] = {
+>  	regmap_reg_range(AXP20X_VBUS_IPSOUT_MGMT, AXP20X_VBUS_IPSOUT_MGMT),
+>  	regmap_reg_range(AXP20X_IRQ1_EN, AXP20X_IRQ5_STATE),
+>  	regmap_reg_range(AXP22X_GPIO_STATE, AXP22X_GPIO_STATE),
+> -	regmap_reg_range(AXP22X_PMIC_ADC_H, AXP20X_IPSOUT_V_HIGH_L),
+> +	regmap_reg_range(AXP22X_PMIC_TEMP_H, AXP20X_IPSOUT_V_HIGH_L),
+>  	regmap_reg_range(AXP20X_FG_RES, AXP20X_FG_RES),
 >  };
 >  
->  /* List of motion sensor locations. */
+> diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+> index a4860bc..5ecadbb 100644
+> --- a/include/linux/mfd/axp20x.h
+> +++ b/include/linux/mfd/axp20x.h
+> @@ -228,8 +228,8 @@ enum {
+>  #define AXP20X_OCV_MAX			0xf
+>  
+>  /* AXP22X specific registers */
+> -#define AXP22X_PMIC_ADC_H		0x56
+> -#define AXP22X_PMIC_ADC_L		0x57
+> +#define AXP22X_PMIC_TEMP_H		0x56
+> +#define AXP22X_PMIC_TEMP_L		0x57
+>  #define AXP22X_TS_ADC_H			0x58
+>  #define AXP22X_TS_ADC_L			0x59
+>  #define AXP22X_BATLOW_THRES1		0xe6
 
 -- 
 Lee Jones
