@@ -1,76 +1,53 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:35140 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751135AbdB1RTF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2017 12:19:05 -0500
-Date: Tue, 28 Feb 2017 18:18:42 +0100
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
-To: Peter Rosin <peda@axentia.se>
-Cc: linux-kernel@vger.kernel.org,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>, linux-i2c@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-doc@vger.kernel.org
-Subject: Re: [PATCH v9 00/10] mux controller abstraction and iio/i2c muxes
-Message-ID: <20170228171842.GA11127@kroah.com>
-References: <1486568517-6997-1-git-send-email-peda@axentia.se>
- <6d87465f-b983-3f62-c7cf-41ed4e50170d@axentia.se>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <6d87465f-b983-3f62-c7cf-41ed4e50170d@axentia.se>
+Received: from onstation.org ([52.200.56.107]:39954 "EHLO onstation.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751266AbdBICN1 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 8 Feb 2017 21:13:27 -0500
+From: Brian Masney <masneyb@onstation.org>
+To: jic23@kernel.org
+Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
+        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
+        ldewangan@nvidia.com
+Subject: [PATCH 0/7] iio: isl29028: move out of staging
+Date: Wed,  8 Feb 2017 20:54:24 -0500
+Message-Id: <20170209015431.17380-1-masneyb@onstation.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Feb 28, 2017 at 04:17:52PM +0100, Peter Rosin wrote:
-> Hi!
-> 
-> The status of this series [1] is that Rob Herring has acked/reviewed all
-> devicetree changes, so I suppose that's ok. Jonathan Cameron has acked
-> the additions to the iio subsystem and reviewed the new iio driver.
-> Wolfram Sang has acked the i2c-mux driver. That's acks or reviews from
-> the maintainers for all changes to the maintained areas.
-> 
-> What's not covered by the above is the mux subsystem itself. Jonathan
-> has also acked or reviewed those changes, but I get the feeling that
-> more tags are desired? So, please review the core of the mux subsystem
-> and the two drivers! It's small. Really. And much of it is boilerplate
-> devm functions. The relevant patches are:
-> 
->  3/10 "mux: minimal mux subsystem and gpio-based mux controller"
-> 10/10 "mux: adg792a: add mux controller driver for ADG792A/G"
-> 
-> I also wonder how I should proceed next. Jonathan kindly provided some
-> hints. I have created a project on gitlab [2] to track future mux
-> changes and where this series is also available (in the "mux" branch,
-> of course subject to rebases, at least for now). I intend to create a
-> for-next branch that I hope Stephen Rothwell will be happy to add to
-> linux-next at some point after v4.11-rc1. Whomever I will feed future
-> changes to will also pull from that tree. Etc. At least that's my
-> picture of how this is going to work.
-> 
-> The question then becomes to whom I will send pull requests? My guess is
-> that the plausible candidates are Greg K-H, Linus Torvalds and Andrew
-> Morton. Any taker? Are there other candidates? I don't have any particular
-> preference. If I don't hear anything I'll probably just send a pull
-> request to Linus for the next merge window (i.e. targeting 4.12-rc1).
-> 
-> Or am I perhaps getting ahead of myself? Is a new tree overkill? I
-> don't expect it to be exactly busy...
+This is my last series of staging cleanups for the ISL29028 driver.
+Highlights of this patch series include some cleanups to the timing
+code, a fix for runtime power management support, and documentation.
 
-I pull in lots of semi-random driver subsystems into my char-misc driver
-tree, and I can do that here for you as well if you want me to, to
-forward things on to Linus at the proper times.
+I mentioned in one of my earlier patch series that I was having issues
+getting the proximity sensing portion of the sensor working. This
+appears to be an issue with my sensor since I was able to get the
+proximity sensor working intermittenly by tapping the chip. It is
+likely an issue with the way that the chip was mounted on my breakout
+board. I've also verified with a cell phone screen that the IR LED
+turns on for two seconds when the proximity sensing feature is enabled.
 
-Just let me know.
+Brian Masney (7):
+  staging: iio: isl29028: change mdelay() to msleep()
+  staging: iio: isl29028: fix incorrect sleep time when taking proximity
+    reading
+  staging: iio: isl29028: fix incorrect sampling frequency value
+  staging: iio: isl29028: use the runtime power management for system
+    sleep
+  staging: iio: isl29028: add copyright
+  iio: Documentation: add ABI documentation for
+    in_proximity_sampling_frequency_available
+  staging: iio: isl29028: move out of staging
 
-thanks,
+ Documentation/ABI/testing/sysfs-bus-iio    |  1 +
+ drivers/iio/light/Kconfig                  | 10 ++++++++
+ drivers/iio/light/Makefile                 |  1 +
+ drivers/{staging => }/iio/light/isl29028.c | 39 ++++++++++++++++++++----------
+ drivers/staging/iio/light/Kconfig          | 10 --------
+ drivers/staging/iio/light/Makefile         |  1 -
+ 6 files changed, 38 insertions(+), 24 deletions(-)
+ rename drivers/{staging => }/iio/light/isl29028.c (95%)
 
-greg k-h
+-- 
+2.9.3
+
