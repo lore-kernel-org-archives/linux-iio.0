@@ -1,433 +1,293 @@
-Return-Path: <SRS0=Tkht=ZW=intel.com=hongyan.song@kernel.org>
-From: Song Hongyan <hongyan.song@intel.com>
-To: linux-input@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Cc: jikos@kernel.org,
-	jic23@kernel.org,
-	srinivas.pandruvada@intel.com,
-	Song Hongyan <hongyan.song@intel.com>
-Subject: [PATCH v2] iio: hid: Add temperature sensor support
-Date: Fri, 10 Feb 2017 01:09:42 +0800
-Message-Id: <1486660182-22899-1-git-send-email-hongyan.song@intel.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mga06.intel.com ([134.134.136.31]:26996 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752974AbdBIRPt (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 9 Feb 2017 12:15:49 -0500
+From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
+To: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "jikos@kernel.org" <jikos@kernel.org>,
+        "jic23@kernel.org" <jic23@kernel.org>
+Subject: Re: [PATCH v2] iio: hid: Add temperature sensor support
+Date: Thu, 9 Feb 2017 17:15:36 +0000
+Message-ID: <1486660499.17250.4.camel@intel.com>
+References: <1486660182-22899-1-git-send-email-hongyan.song@intel.com>
+In-Reply-To: <1486660182-22899-1-git-send-email-hongyan.song@intel.com>
+Content-Type: text/plain; charset="utf-8"
+MIME-Version: 1.0
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Environmental temperature sensor is a hid defined sensor,
-it measures temperature.
-
-More information can be found in:
-http://www.usb.org/developers/hidpage/HUTRR39b.pdf
-
-According to IIO ABI definition, IIO_TEMP data output unit is
-milli degrees Celsius. Add the unit convert from degree to milli degree.
-
-Signed-off-by: Song Hongyan <hongyan.song@intel.com>
----
-changes note: capture_sample and proc_event parameter "priv" only renamed to
-"pdev". Since the callback will be called with platform_device * of the
-mfd device.
-
- .../iio/common/hid-sensors/hid-sensor-attributes.c |   3 +
- drivers/iio/temperature/Kconfig                    |  14 +
- drivers/iio/temperature/Makefile                   |   1 +
- drivers/iio/temperature/hid-sensor-temperature.c   | 326 +++++++++++++++++++++
- include/linux/hid-sensor-ids.h                     |   4 +
- 5 files changed, 348 insertions(+)
- create mode 100644 drivers/iio/temperature/hid-sensor-temperature.c
-
-diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-index 7ef94a9..68c2bb0 100644
---- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-+++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-@@ -58,6 +58,9 @@
- 
- 	{HID_USAGE_SENSOR_PRESSURE, 0, 100, 0},
- 	{HID_USAGE_SENSOR_PRESSURE, HID_USAGE_SENSOR_UNITS_PASCAL, 0, 1000000},
-+
-+	{HID_USAGE_SENSOR_TEMPERATURE, 0, 1000, 0},
-+	{HID_USAGE_SENSOR_TEMPERATURE, HID_USAGE_SENSOR_UNITS_DEGREES, 1000, 0},
- };
- 
- static int pow_10(unsigned power)
-diff --git a/drivers/iio/temperature/Kconfig b/drivers/iio/temperature/Kconfig
-index 5ea77a7..5f7b9f7 100644
---- a/drivers/iio/temperature/Kconfig
-+++ b/drivers/iio/temperature/Kconfig
-@@ -19,6 +19,20 @@ config MAXIM_THERMOCOUPLE
- 	  This driver can also be built as a module. If so, the module will
- 	  be called maxim_thermocouple.
- 
-+config HID_SENSOR_TEMP
-+	tristate "HID Environmental temperature sensor"
-+	depends on HID_SENSOR_HUB
-+	select IIO_BUFFER
-+	select IIO_TRIGGERED_BUFFER
-+	select HID_SENSOR_IIO_COMMON
-+	select HID_SENSOR_IIO_TRIGGER
-+	help
-+	  Say yes here to build support for the HID SENSOR
-+	  temperature driver
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called hid-sensor-temperature.
-+
- config MLX90614
- 	tristate "MLX90614 contact-less infrared sensor"
- 	depends on I2C
-diff --git a/drivers/iio/temperature/Makefile b/drivers/iio/temperature/Makefile
-index 78c3de0..e157eda 100644
---- a/drivers/iio/temperature/Makefile
-+++ b/drivers/iio/temperature/Makefile
-@@ -7,3 +7,4 @@ obj-$(CONFIG_MLX90614) += mlx90614.o
- obj-$(CONFIG_TMP006) += tmp006.o
- obj-$(CONFIG_TSYS01) += tsys01.o
- obj-$(CONFIG_TSYS02D) += tsys02d.o
-+obj-$(CONFIG_HID_SENSOR_TEMP)   += hid-sensor-temperature.o
-diff --git a/drivers/iio/temperature/hid-sensor-temperature.c b/drivers/iio/temperature/hid-sensor-temperature.c
-new file mode 100644
-index 0000000..9777053
---- /dev/null
-+++ b/drivers/iio/temperature/hid-sensor-temperature.c
-@@ -0,0 +1,326 @@
-+/* HID Sensors Driver
-+ * Copyright (c) 2017, Intel Corporation.
-+ *
-+ * This program is free software; you can redistribute it and/or modify it
-+ * under the terms and conditions of the GNU General Public License,
-+ * version 2, as published by the Free Software Foundation.
-+ *
-+ * This program is distributed in the hope it will be useful, but WITHOUT
-+ * ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or
-+ * FITNESS FOR A PARTICULAR PURPOSE.  See the GNU General Public License for
-+ * more details.
-+ *
-+ * You should have received a copy of the GNU General Public License along with
-+ * this program.
-+ *
-+ */
-+#include <linux/device.h>
-+#include <linux/hid-sensor-hub.h>
-+#include <linux/iio/buffer.h>
-+#include <linux/iio/iio.h>
-+#include <linux/iio/triggered_buffer.h>
-+#include <linux/iio/trigger_consumer.h>
-+#include <linux/module.h>
-+#include <linux/platform_device.h>
-+#include "../common/hid-sensors/hid-sensor-trigger.h"
-+
-+struct temperature_state {
-+	struct hid_sensor_common common_attributes;
-+	struct hid_sensor_hub_attribute_info temperature_attr;
-+	s32 temperature_data;
-+	int scale_pre_decml;
-+	int scale_post_decml;
-+	int scale_precision;
-+	int value_offset;
-+};
-+
-+/* Channel definitions */
-+static const struct iio_chan_spec temperature_channels[] = {
-+	{
-+		.type = IIO_TEMP,
-+		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
-+		.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_OFFSET) |
-+			BIT(IIO_CHAN_INFO_SCALE) |
-+			BIT(IIO_CHAN_INFO_SAMP_FREQ) |
-+			BIT(IIO_CHAN_INFO_HYSTERESIS),
-+		.scan_index = 0,
-+	}
-+};
-+
-+/* Adjust channel real bits based on report descriptor */
-+static void temperature_adjust_channel_bit_mask(struct iio_chan_spec *channels,
-+					int channel, int size)
-+{
-+	channels[channel].scan_type.sign = 's';
-+	/* Real storage bits will change based on the report desc. */
-+	channels[channel].scan_type.realbits = size * 8;
-+	/* Maximum size of a sample to capture is s32 */
-+	channels[channel].scan_type.storagebits = sizeof(s32) * 8;
-+}
-+
-+/* Channel read_raw handler */
-+static int temperature_read_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int *val, int *val2, long mask)
-+{
-+	struct temperature_state *temperature_state = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_RAW:
-+		if (chan->type == IIO_TEMP) {
-+			hid_sensor_power_state(
-+				&temperature_state->common_attributes, true);
-+			*val = sensor_hub_input_attr_get_raw_value(
-+				temperature_state->common_attributes.hsdev,
-+				HID_USAGE_SENSOR_TEMPERATURE,
-+				HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
-+				temperature_state->temperature_attr.report_id,
-+				SENSOR_HUB_SYNC);
-+			hid_sensor_power_state(
-+					&temperature_state->common_attributes,
-+					false);
-+		}
-+		ret = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SCALE:
-+		*val = temperature_state->scale_pre_decml;
-+		*val2 = temperature_state->scale_post_decml;
-+		ret = temperature_state->scale_precision;
-+		break;
-+	case IIO_CHAN_INFO_OFFSET:
-+		*val = temperature_state->value_offset;
-+		ret = IIO_VAL_INT;
-+		break;
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = hid_sensor_read_samp_freq_value(
-+				&temperature_state->common_attributes,
-+				val, val2);
-+		break;
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		ret = hid_sensor_read_raw_hyst_value(
-+				&temperature_state->common_attributes,
-+				val, val2);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+/* Channel write_raw handler */
-+static int temperature_write_raw(struct iio_dev *indio_dev,
-+				struct iio_chan_spec const *chan,
-+				int val, int val2, long mask)
-+{
-+	struct temperature_state *temperature_state = iio_priv(indio_dev);
-+	int ret;
-+
-+	switch (mask) {
-+	case IIO_CHAN_INFO_SAMP_FREQ:
-+		ret = hid_sensor_write_samp_freq_value(
-+				&temperature_state->common_attributes, val,
-+				val2);
-+		break;
-+	case IIO_CHAN_INFO_HYSTERESIS:
-+		ret = hid_sensor_write_raw_hyst_value(
-+				&temperature_state->common_attributes, val,
-+				val2);
-+		break;
-+	default:
-+		ret = -EINVAL;
-+	}
-+
-+	return ret;
-+}
-+
-+static const struct iio_info temperature_info = {
-+	.driver_module = THIS_MODULE,
-+	.read_raw = &temperature_read_raw,
-+	.write_raw = &temperature_write_raw,
-+};
-+
-+/* Callback handler to send event after all samples are received and captured */
-+static int temperature_proc_event(struct hid_sensor_hub_device *hsdev,
-+				unsigned int usage_id, void *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct temperature_state *temperature_state = iio_priv(indio_dev);
-+
-+	if (atomic_read(&temperature_state->common_attributes.data_ready))
-+		iio_push_to_buffers(indio_dev,
-+					&temperature_state->temperature_data);
-+	return 0;
-+}
-+
-+/* Capture samples in local storage */
-+static int temperature_capture_sample(struct hid_sensor_hub_device *hsdev,
-+				unsigned int usage_id, size_t raw_len,
-+				char *raw_data, void *pdev)
-+{
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct temperature_state *temperature_state = iio_priv(indio_dev);
-+
-+	switch (usage_id) {
-+	case HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE:
-+		temperature_state->temperature_data = *(s32 *)raw_data;
-+		return 0;
-+	default:
-+		return -EINVAL;
-+	}
-+}
-+
-+/* Parse report which is specific to an usage id*/
-+static int temperature_parse_report(struct platform_device *pdev,
-+				struct hid_sensor_hub_device *hsdev,
-+				struct iio_chan_spec *channels,
-+				unsigned int usage_id,
-+				struct temperature_state *st)
-+{
-+	int ret;
-+
-+	ret = sensor_hub_input_get_attribute_info(hsdev, HID_INPUT_REPORT,
-+			usage_id,
-+			HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
-+			&st->temperature_attr);
-+	if (ret < 0)
-+		return ret;
-+
-+	temperature_adjust_channel_bit_mask(channels, 0,
-+					st->temperature_attr.size);
-+
-+	st->scale_precision = hid_sensor_format_scale(
-+				HID_USAGE_SENSOR_TEMPERATURE,
-+				&st->temperature_attr,
-+				&st->scale_pre_decml, &st->scale_post_decml);
-+
-+	/* Set Sensitivity field ids, when there is no individual modifier */
-+	if (st->common_attributes.sensitivity.index < 0)
-+		sensor_hub_input_get_attribute_info(hsdev,
-+			HID_FEATURE_REPORT, usage_id,
-+			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-+			HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE,
-+			&st->common_attributes.sensitivity);
-+
-+	return ret;
-+}
-+
-+static  struct hid_sensor_hub_callbacks temperature_callbacks = {
-+	.send_event = &temperature_proc_event,
-+	.capture_sample = &temperature_capture_sample,
-+};
-+
-+/* Function to initialize the processing for usage id */
-+static int hid_temperature_probe(struct platform_device *pdev)
-+{
-+	static const char *name = "temperature";
-+	struct iio_dev *indio_dev;
-+	struct temperature_state *temperature_state;
-+	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	int ret;
-+
-+	indio_dev = devm_iio_device_alloc(&pdev->dev,
-+				sizeof(struct temperature_state));
-+	if (!indio_dev)
-+		return -ENOMEM;
-+
-+	temperature_state = iio_priv(indio_dev);
-+	temperature_state->common_attributes.hsdev = hsdev;
-+	temperature_state->common_attributes.pdev = pdev;
-+
-+	ret = hid_sensor_parse_common_attributes(hsdev,
-+					HID_USAGE_SENSOR_TEMPERATURE,
-+					&temperature_state->common_attributes);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->channels = devm_kmemdup(&indio_dev->dev,
-+					temperature_channels,
-+					sizeof(temperature_channels),
-+					GFP_KERNEL);
-+	if (!indio_dev->channels)
-+		return -ENOMEM;
-+
-+	ret = temperature_parse_report(pdev, hsdev,
-+				(struct iio_chan_spec *)indio_dev->channels,
-+				HID_USAGE_SENSOR_TEMPERATURE,
-+				temperature_state);
-+	if (ret)
-+		return ret;
-+
-+	indio_dev->num_channels = ARRAY_SIZE(temperature_channels);
-+	indio_dev->dev.parent = &pdev->dev;
-+	indio_dev->info = &temperature_info;
-+	indio_dev->name = name;
-+	indio_dev->modes = INDIO_DIRECT_MODE;
-+
-+	ret = devm_iio_triggered_buffer_setup(&pdev->dev, indio_dev,
-+					&iio_pollfunc_store_time,
-+					NULL, NULL);
-+	if (ret)
-+		return ret;
-+
-+	atomic_set(&temperature_state->common_attributes.data_ready, 0);
-+	ret = hid_sensor_setup_trigger(indio_dev, name,
-+				&temperature_state->common_attributes);
-+	if (ret)
-+		goto error_unreg_buffer;
-+
-+	platform_set_drvdata(pdev, indio_dev);
-+
-+	temperature_callbacks.pdev = pdev;
-+	ret = sensor_hub_register_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE,
-+					&temperature_callbacks);
-+	if (ret)
-+		goto error_unreg_buffer;
-+
-+	ret = devm_iio_device_register(indio_dev->dev.parent, indio_dev);
-+	if (ret)
-+		goto error_unreg_buffer_and_callback;
-+
-+	return ret;
-+
-+error_unreg_buffer_and_callback:
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE);
-+error_unreg_buffer:
-+	iio_triggered_buffer_cleanup(indio_dev);
-+	return ret;
-+}
-+
-+/* Function to deinitialize the processing for usage id */
-+static int hid_temperature_remove(struct platform_device *pdev)
-+{
-+	struct hid_sensor_hub_device *hsdev = pdev->dev.platform_data;
-+	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
-+	struct temperature_state *temperature_state = iio_priv(indio_dev);
-+
-+	sensor_hub_remove_callback(hsdev, HID_USAGE_SENSOR_TEMPERATURE);
-+	hid_sensor_remove_trigger(&temperature_state->common_attributes);
-+
-+	return 0;
-+}
-+
-+static const struct platform_device_id hid_temperature_ids[] = {
-+	{
-+		/* Format: HID-SENSOR-usage_id_in_hex_lowercase */
-+		.name = "HID-SENSOR-200033",
-+	},
-+	{ /* sentinel */ }
-+};
-+MODULE_DEVICE_TABLE(platform, hid_temperature_ids);
-+
-+static struct platform_driver hid_temperature_platform_driver = {
-+	.id_table = hid_temperature_ids,
-+	.driver = {
-+		.name	= KBUILD_MODNAME,
-+		.pm	= &hid_sensor_pm_ops,
-+	},
-+	.probe		= hid_temperature_probe,
-+	.remove		= hid_temperature_remove,
-+};
-+module_platform_driver(hid_temperature_platform_driver);
-+
-+MODULE_DESCRIPTION("HID Environmental temperature sensor");
-+MODULE_AUTHOR("Song Hongyan <hongyan.song@intel.com>");
-+MODULE_LICENSE("GPL v2");
-diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
-index bab8375..ecec978 100644
---- a/include/linux/hid-sensor-ids.h
-+++ b/include/linux/hid-sensor-ids.h
-@@ -45,6 +45,10 @@
- #define HID_USAGE_SENSOR_DATA_ATMOSPHERIC_PRESSURE              0x200430
- #define HID_USAGE_SENSOR_ATMOSPHERIC_PRESSURE                   0x200431
- 
-+/* Tempreture (200033) */
-+#define	HID_USAGE_SENSOR_TEMPERATURE				0x200033
-+#define	HID_USAGE_SENSOR_DATA_ENVIRONMENTAL_TEMPERATURE		0x200434
-+
- /* Gyro 3D: (200076) */
- #define HID_USAGE_SENSOR_GYRO_3D				0x200076
- #define HID_USAGE_SENSOR_DATA_ANGL_VELOCITY			0x200456
--- 
-1.9.1
+T24gRnJpLCAyMDE3LTAyLTEwIGF0IDAxOjA5ICswODAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
+IEVudmlyb25tZW50YWwgdGVtcGVyYXR1cmUgc2Vuc29yIGlzIGEgaGlkIGRlZmluZWQgc2Vuc29y
+LA0KPiBpdCBtZWFzdXJlcyB0ZW1wZXJhdHVyZS4NCj4gDQo+IE1vcmUgaW5mb3JtYXRpb24gY2Fu
+IGJlIGZvdW5kIGluOg0KPiBodHRwOi8vd3d3LnVzYi5vcmcvZGV2ZWxvcGVycy9oaWRwYWdlL0hV
+VFJSMzliLnBkZg0KPiANCj4gQWNjb3JkaW5nIHRvIElJTyBBQkkgZGVmaW5pdGlvbiwgSUlPX1RF
+TVAgZGF0YSBvdXRwdXQgdW5pdCBpcw0KPiBtaWxsaSBkZWdyZWVzIENlbHNpdXMuIEFkZCB0aGUg
+dW5pdCBjb252ZXJ0IGZyb20gZGVncmVlIHRvIG1pbGxpDQo+IGRlZ3JlZS4NCj4gDQo+IFNpZ25l
+ZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lhbi5zb25nQGludGVsLmNvbT4NCj4gLS0tDQo+
+IGNoYW5nZXMgbm90ZTogY2FwdHVyZV9zYW1wbGUgYW5kIHByb2NfZXZlbnQgcGFyYW1ldGVyICJw
+cml2IiBvbmx5DQo+IHJlbmFtZWQgdG8NCj4gInBkZXYiLiBTaW5jZSB0aGUgY2FsbGJhY2sgd2ls
+bCBiZSBjYWxsZWQgd2l0aCBwbGF0Zm9ybV9kZXZpY2UgKiBvZg0KPiB0aGUNCj4gbWZkIGRldmlj
+ZS4NCj4gDQo+IMKgLi4uL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1
+dGVzLmMgfMKgwqDCoDMgKw0KPiDCoGRyaXZlcnMvaWlvL3RlbXBlcmF0dXJlL0tjb25maWfCoMKg
+wqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgfMKgwqAxNCArDQo+IMKgZHJpdmVy
+cy9paW8vdGVtcGVyYXR1cmUvTWFrZWZpbGXCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoHzCoMKgwqAxICsNCj4gwqBkcml2ZXJzL2lpby90ZW1wZXJhdHVyZS9oaWQtc2Vuc29y
+LXRlbXBlcmF0dXJlLmPCoMKgwqB8IDMyNg0KPiArKysrKysrKysrKysrKysrKysrKysNCj4gwqBp
+bmNsdWRlL2xpbnV4L2hpZC1zZW5zb3ItaWRzLmjCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKg
+wqDCoMKgwqDCoMKgwqB8wqDCoMKgNCArDQo+IMKgNSBmaWxlcyBjaGFuZ2VkLCAzNDggaW5zZXJ0
+aW9ucygrKQ0KPiDCoGNyZWF0ZSBtb2RlIDEwMDY0NCBkcml2ZXJzL2lpby90ZW1wZXJhdHVyZS9o
+aWQtc2Vuc29yLXRlbXBlcmF0dXJlLmMNCj4gDQo+IGRpZmYgLS1naXQgYS9kcml2ZXJzL2lpby9j
+b21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gYi9kcml2ZXJzL2lp
+by9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci1hdHRyaWJ1dGVzLmMNCj4gaW5kZXggN2Vm
+OTRhOS4uNjhjMmJiMCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5z
+b3JzL2hpZC1zZW5zb3ItYXR0cmlidXRlcy5jDQo+ICsrKyBiL2RyaXZlcnMvaWlvL2NvbW1vbi9o
+aWQtc2Vuc29ycy9oaWQtc2Vuc29yLWF0dHJpYnV0ZXMuYw0KPiBAQCAtNTgsNiArNTgsOSBAQA0K
+PiDCoA0KPiDCoAl7SElEX1VTQUdFX1NFTlNPUl9QUkVTU1VSRSwgMCwgMTAwLCAwfSwNCj4gwqAJ
+e0hJRF9VU0FHRV9TRU5TT1JfUFJFU1NVUkUsIEhJRF9VU0FHRV9TRU5TT1JfVU5JVFNfUEFTQ0FM
+LA0KPiAwLCAxMDAwMDAwfSwNCj4gKw0KPiArCXtISURfVVNBR0VfU0VOU09SX1RFTVBFUkFUVVJF
+LCAwLCAxMDAwLCAwfSwNCj4gKwl7SElEX1VTQUdFX1NFTlNPUl9URU1QRVJBVFVSRSwNCj4gSElE
+X1VTQUdFX1NFTlNPUl9VTklUU19ERUdSRUVTLCAxMDAwLCAwfSwNCj4gwqB9Ow0KPiDCoA0KPiDC
+oHN0YXRpYyBpbnQgcG93XzEwKHVuc2lnbmVkIHBvd2VyKQ0KPiBkaWZmIC0tZ2l0IGEvZHJpdmVy
+cy9paW8vdGVtcGVyYXR1cmUvS2NvbmZpZw0KPiBiL2RyaXZlcnMvaWlvL3RlbXBlcmF0dXJlL0tj
+b25maWcNCj4gaW5kZXggNWVhNzdhNy4uNWY3YjlmNyAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9p
+aW8vdGVtcGVyYXR1cmUvS2NvbmZpZw0KPiArKysgYi9kcml2ZXJzL2lpby90ZW1wZXJhdHVyZS9L
+Y29uZmlnDQo+IEBAIC0xOSw2ICsxOSwyMCBAQCBjb25maWcgTUFYSU1fVEhFUk1PQ09VUExFDQo+
+IMKgCcKgwqBUaGlzIGRyaXZlciBjYW4gYWxzbyBiZSBidWlsdCBhcyBhIG1vZHVsZS4gSWYgc28s
+IHRoZQ0KPiBtb2R1bGUgd2lsbA0KPiDCoAnCoMKgYmUgY2FsbGVkIG1heGltX3RoZXJtb2NvdXBs
+ZS4NCj4gwqANCj4gK2NvbmZpZyBISURfU0VOU09SX1RFTVANCj4gKwl0cmlzdGF0ZSAiSElEIEVu
+dmlyb25tZW50YWwgdGVtcGVyYXR1cmUgc2Vuc29yIg0KPiArCWRlcGVuZHMgb24gSElEX1NFTlNP
+Ul9IVUINCj4gKwlzZWxlY3QgSUlPX0JVRkZFUg0KPiArCXNlbGVjdCBJSU9fVFJJR0dFUkVEX0JV
+RkZFUg0KPiArCXNlbGVjdCBISURfU0VOU09SX0lJT19DT01NT04NCj4gKwlzZWxlY3QgSElEX1NF
+TlNPUl9JSU9fVFJJR0dFUg0KPiArCWhlbHANCj4gKwnCoMKgU2F5IHllcyBoZXJlIHRvIGJ1aWxk
+IHN1cHBvcnQgZm9yIHRoZSBISUQgU0VOU09SDQo+ICsJwqDCoHRlbXBlcmF0dXJlIGRyaXZlcg0K
+PiArDQo+ICsJwqDCoFRvIGNvbXBpbGUgdGhpcyBkcml2ZXIgYXMgYSBtb2R1bGUsIGNob29zZSBN
+IGhlcmU6IHRoZQ0KPiBtb2R1bGUNCj4gKwnCoMKgd2lsbCBiZSBjYWxsZWQgaGlkLXNlbnNvci10
+ZW1wZXJhdHVyZS4NCj4gKw0KPiDCoGNvbmZpZyBNTFg5MDYxNA0KPiDCoAl0cmlzdGF0ZSAiTUxY
+OTA2MTQgY29udGFjdC1sZXNzIGluZnJhcmVkIHNlbnNvciINCj4gwqAJZGVwZW5kcyBvbiBJMkMN
+Cj4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL3RlbXBlcmF0dXJlL01ha2VmaWxlDQo+IGIvZHJp
+dmVycy9paW8vdGVtcGVyYXR1cmUvTWFrZWZpbGUNCj4gaW5kZXggNzhjM2RlMC4uZTE1N2VkYSAx
+MDA2NDQNCj4gLS0tIGEvZHJpdmVycy9paW8vdGVtcGVyYXR1cmUvTWFrZWZpbGUNCj4gKysrIGIv
+ZHJpdmVycy9paW8vdGVtcGVyYXR1cmUvTWFrZWZpbGUNCj4gQEAgLTcsMyArNyw0IEBAIG9iai0k
+KENPTkZJR19NTFg5MDYxNCkgKz0gbWx4OTA2MTQubw0KPiDCoG9iai0kKENPTkZJR19UTVAwMDYp
+ICs9IHRtcDAwNi5vDQo+IMKgb2JqLSQoQ09ORklHX1RTWVMwMSkgKz0gdHN5czAxLm8NCj4gwqBv
+YmotJChDT05GSUdfVFNZUzAyRCkgKz0gdHN5czAyZC5vDQo+ICtvYmotJChDT05GSUdfSElEX1NF
+TlNPUl9URU1QKcKgwqDCoCs9IGhpZC1zZW5zb3ItdGVtcGVyYXR1cmUubw0KPiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9paW8vdGVtcGVyYXR1cmUvaGlkLXNlbnNvci10ZW1wZXJhdHVyZS5jDQo+IGIv
+ZHJpdmVycy9paW8vdGVtcGVyYXR1cmUvaGlkLXNlbnNvci10ZW1wZXJhdHVyZS5jDQo+IG5ldyBm
+aWxlIG1vZGUgMTAwNjQ0DQo+IGluZGV4IDAwMDAwMDAuLjk3NzcwNTMNCj4gLS0tIC9kZXYvbnVs
+bA0KPiArKysgYi9kcml2ZXJzL2lpby90ZW1wZXJhdHVyZS9oaWQtc2Vuc29yLXRlbXBlcmF0dXJl
+LmMNCj4gQEAgLTAsMCArMSwzMjYgQEANCj4gKy8qIEhJRCBTZW5zb3JzIERyaXZlcg0KPiArICog
+Q29weXJpZ2h0IChjKSAyMDE3LCBJbnRlbCBDb3Jwb3JhdGlvbi4NCj4gKyAqDQo+ICsgKiBUaGlz
+IHByb2dyYW0gaXMgZnJlZSBzb2Z0d2FyZTsgeW91IGNhbiByZWRpc3RyaWJ1dGUgaXQgYW5kL29y
+DQo+IG1vZGlmeSBpdA0KPiArICogdW5kZXIgdGhlIHRlcm1zIGFuZCBjb25kaXRpb25zIG9mIHRo
+ZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZSwNCj4gKyAqIHZlcnNpb24gMiwgYXMgcHVibGlz
+aGVkIGJ5IHRoZSBGcmVlIFNvZnR3YXJlIEZvdW5kYXRpb24uDQo+ICsgKg0KPiArICogVGhpcyBw
+cm9ncmFtIGlzIGRpc3RyaWJ1dGVkIGluIHRoZSBob3BlIGl0IHdpbGwgYmUgdXNlZnVsLCBidXQN
+Cj4gV0lUSE9VVA0KPiArICogQU5ZIFdBUlJBTlRZOyB3aXRob3V0IGV2ZW4gdGhlIGltcGxpZWQg
+d2FycmFudHkgb2YNCj4gTUVSQ0hBTlRBQklMSVRZIG9yDQo+ICsgKiBGSVRORVNTIEZPUiBBIFBB
+UlRJQ1VMQVIgUFVSUE9TRS7CoMKgU2VlIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMNCj4gTGljZW5z
+ZSBmb3INCj4gKyAqIG1vcmUgZGV0YWlscy4NCj4gKyAqDQo+ICsgKiBZb3Ugc2hvdWxkIGhhdmUg
+cmVjZWl2ZWQgYSBjb3B5IG9mIHRoZSBHTlUgR2VuZXJhbCBQdWJsaWMgTGljZW5zZQ0KPiBhbG9u
+ZyB3aXRoDQo+ICsgKiB0aGlzIHByb2dyYW0uDQo+ICsgKg0KPiArICovDQo+ICsjaW5jbHVkZSA8
+bGludXgvZGV2aWNlLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvaGlkLXNlbnNvci1odWIuaD4NCj4g
+KyNpbmNsdWRlIDxsaW51eC9paW8vYnVmZmVyLmg+DQo+ICsjaW5jbHVkZSA8bGludXgvaWlvL2lp
+by5oPg0KPiArI2luY2x1ZGUgPGxpbnV4L2lpby90cmlnZ2VyZWRfYnVmZmVyLmg+DQo+ICsjaW5j
+bHVkZSA8bGludXgvaWlvL3RyaWdnZXJfY29uc3VtZXIuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9t
+b2R1bGUuaD4NCj4gKyNpbmNsdWRlIDxsaW51eC9wbGF0Zm9ybV9kZXZpY2UuaD4NCj4gKyNpbmNs
+dWRlICIuLi9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci10cmlnZ2VyLmgiDQo+ICsNCj4g
+K3N0cnVjdCB0ZW1wZXJhdHVyZV9zdGF0ZSB7DQo+ICsJc3RydWN0IGhpZF9zZW5zb3JfY29tbW9u
+IGNvbW1vbl9hdHRyaWJ1dGVzOw0KPiArCXN0cnVjdCBoaWRfc2Vuc29yX2h1Yl9hdHRyaWJ1dGVf
+aW5mbyB0ZW1wZXJhdHVyZV9hdHRyOw0KPiArCXMzMiB0ZW1wZXJhdHVyZV9kYXRhOw0KPiArCWlu
+dCBzY2FsZV9wcmVfZGVjbWw7DQo+ICsJaW50IHNjYWxlX3Bvc3RfZGVjbWw7DQo+ICsJaW50IHNj
+YWxlX3ByZWNpc2lvbjsNCj4gKwlpbnQgdmFsdWVfb2Zmc2V0Ow0KPiArfTsNCj4gKw0KPiArLyog
+Q2hhbm5lbCBkZWZpbml0aW9ucyAqLw0KPiArc3RhdGljIGNvbnN0IHN0cnVjdCBpaW9fY2hhbl9z
+cGVjIHRlbXBlcmF0dXJlX2NoYW5uZWxzW10gPSB7DQo+ICsJew0KPiArCQkudHlwZSA9IElJT19U
+RU1QLA0KPiArCQkuaW5mb19tYXNrX3NlcGFyYXRlID0gQklUKElJT19DSEFOX0lORk9fUkFXKSwN
+Cj4gKwkJLmluZm9fbWFza19zaGFyZWRfYnlfdHlwZSA9DQo+IEJJVChJSU9fQ0hBTl9JTkZPX09G
+RlNFVCkgfA0KPiArCQkJQklUKElJT19DSEFOX0lORk9fU0NBTEUpIHwNCj4gKwkJCUJJVChJSU9f
+Q0hBTl9JTkZPX1NBTVBfRlJFUSkgfA0KPiArCQkJQklUKElJT19DSEFOX0lORk9fSFlTVEVSRVNJ
+UyksDQo+ICsJCS5zY2FuX2luZGV4ID0gMCwNCj4gKwl9DQo+ICt9Ow0KPiArDQo+ICsvKiBBZGp1
+c3QgY2hhbm5lbCByZWFsIGJpdHMgYmFzZWQgb24gcmVwb3J0IGRlc2NyaXB0b3IgKi8NCj4gK3N0
+YXRpYyB2b2lkIHRlbXBlcmF0dXJlX2FkanVzdF9jaGFubmVsX2JpdF9tYXNrKHN0cnVjdCBpaW9f
+Y2hhbl9zcGVjDQo+ICpjaGFubmVscywNCj4gKwkJCQkJaW50IGNoYW5uZWwsIGludCBzaXplKQ0K
+PiArew0KPiArCWNoYW5uZWxzW2NoYW5uZWxdLnNjYW5fdHlwZS5zaWduID0gJ3MnOw0KPiArCS8q
+IFJlYWwgc3RvcmFnZSBiaXRzIHdpbGwgY2hhbmdlIGJhc2VkIG9uIHRoZSByZXBvcnQgZGVzYy4N
+Cj4gKi8NCj4gKwljaGFubmVsc1tjaGFubmVsXS5zY2FuX3R5cGUucmVhbGJpdHMgPSBzaXplICog
+ODsNCj4gKwkvKiBNYXhpbXVtIHNpemUgb2YgYSBzYW1wbGUgdG8gY2FwdHVyZSBpcyBzMzIgKi8N
+Cj4gKwljaGFubmVsc1tjaGFubmVsXS5zY2FuX3R5cGUuc3RvcmFnZWJpdHMgPSBzaXplb2YoczMy
+KSAqIDg7DQo+ICt9DQo+ICsNCj4gKy8qIENoYW5uZWwgcmVhZF9yYXcgaGFuZGxlciAqLw0KPiAr
+c3RhdGljIGludCB0ZW1wZXJhdHVyZV9yZWFkX3JhdyhzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2
+LA0KPiArCQkJCXN0cnVjdCBpaW9fY2hhbl9zcGVjIGNvbnN0ICpjaGFuLA0KPiArCQkJCWludCAq
+dmFsLCBpbnQgKnZhbDIsIGxvbmcgbWFzaykNCj4gK3sNCj4gKwlzdHJ1Y3QgdGVtcGVyYXR1cmVf
+c3RhdGUgKnRlbXBlcmF0dXJlX3N0YXRlID0NCj4gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gKwlp
+bnQgcmV0Ow0KPiArDQo+ICsJc3dpdGNoIChtYXNrKSB7DQo+ICsJY2FzZSBJSU9fQ0hBTl9JTkZP
+X1JBVzoNCj4gKwkJaWYgKGNoYW4tPnR5cGUgPT0gSUlPX1RFTVApIHsNCj4gKwkJCWhpZF9zZW5z
+b3JfcG93ZXJfc3RhdGUoDQo+ICsJCQkJJnRlbXBlcmF0dXJlX3N0YXRlLQ0KPiA+Y29tbW9uX2F0
+dHJpYnV0ZXMsIHRydWUpOw0KPiArCQkJKnZhbCA9IHNlbnNvcl9odWJfaW5wdXRfYXR0cl9nZXRf
+cmF3X3ZhbHVlKA0KPiArCQkJCXRlbXBlcmF0dXJlX3N0YXRlLQ0KPiA+Y29tbW9uX2F0dHJpYnV0
+ZXMuaHNkZXYsDQo+ICsJCQkJSElEX1VTQUdFX1NFTlNPUl9URU1QRVJBVFVSRSwNCj4gKwkJCQlI
+SURfVVNBR0VfU0VOU09SX0RBVEFfRU5WSVJPTk1FTlRBTF8NCj4gVEVNUEVSQVRVUkUsDQo+ICsJ
+CQkJdGVtcGVyYXR1cmVfc3RhdGUtDQo+ID50ZW1wZXJhdHVyZV9hdHRyLnJlcG9ydF9pZCwNCj4g
+KwkJCQlTRU5TT1JfSFVCX1NZTkMpOw0KPiArCQkJaGlkX3NlbnNvcl9wb3dlcl9zdGF0ZSgNCj4g
+KwkJCQkJJnRlbXBlcmF0dXJlX3N0YXRlLQ0KPiA+Y29tbW9uX2F0dHJpYnV0ZXMsDQo+ICsJCQkJ
+CWZhbHNlKTsNCj4gKwkJfQ0KPiArCQlyZXQgPSBJSU9fVkFMX0lOVDsNCj4gKwkJYnJlYWs7DQo+
+ICsJY2FzZSBJSU9fQ0hBTl9JTkZPX1NDQUxFOg0KPiArCQkqdmFsID0gdGVtcGVyYXR1cmVfc3Rh
+dGUtPnNjYWxlX3ByZV9kZWNtbDsNCj4gKwkJKnZhbDIgPSB0ZW1wZXJhdHVyZV9zdGF0ZS0+c2Nh
+bGVfcG9zdF9kZWNtbDsNCj4gKwkJcmV0ID0gdGVtcGVyYXR1cmVfc3RhdGUtPnNjYWxlX3ByZWNp
+c2lvbjsNCj4gKwkJYnJlYWs7DQo+ICsJY2FzZSBJSU9fQ0hBTl9JTkZPX09GRlNFVDoNCj4gKwkJ
+KnZhbCA9IHRlbXBlcmF0dXJlX3N0YXRlLT52YWx1ZV9vZmZzZXQ7DQo+ICsJCXJldCA9IElJT19W
+QUxfSU5UOw0KPiArCQlicmVhazsNCj4gKwljYXNlIElJT19DSEFOX0lORk9fU0FNUF9GUkVROg0K
+PiArCQlyZXQgPSBoaWRfc2Vuc29yX3JlYWRfc2FtcF9mcmVxX3ZhbHVlKA0KPiArCQkJCSZ0ZW1w
+ZXJhdHVyZV9zdGF0ZS0NCj4gPmNvbW1vbl9hdHRyaWJ1dGVzLA0KPiArCQkJCXZhbCwgdmFsMik7
+DQo+ICsJCWJyZWFrOw0KPiArCWNhc2UgSUlPX0NIQU5fSU5GT19IWVNURVJFU0lTOg0KPiArCQly
+ZXQgPSBoaWRfc2Vuc29yX3JlYWRfcmF3X2h5c3RfdmFsdWUoDQo+ICsJCQkJJnRlbXBlcmF0dXJl
+X3N0YXRlLQ0KPiA+Y29tbW9uX2F0dHJpYnV0ZXMsDQo+ICsJCQkJdmFsLCB2YWwyKTsNCj4gKwkJ
+YnJlYWs7DQo+ICsJZGVmYXVsdDoNCj4gKwkJcmV0ID0gLUVJTlZBTDsNCj4gKwl9DQo+ICsNCj4g
+KwlyZXR1cm4gcmV0Ow0KPiArfQ0KPiArDQo+ICsvKiBDaGFubmVsIHdyaXRlX3JhdyBoYW5kbGVy
+ICovDQo+ICtzdGF0aWMgaW50IHRlbXBlcmF0dXJlX3dyaXRlX3JhdyhzdHJ1Y3QgaWlvX2RldiAq
+aW5kaW9fZGV2LA0KPiArCQkJCXN0cnVjdCBpaW9fY2hhbl9zcGVjIGNvbnN0ICpjaGFuLA0KPiAr
+CQkJCWludCB2YWwsIGludCB2YWwyLCBsb25nIG1hc2spDQo+ICt7DQo+ICsJc3RydWN0IHRlbXBl
+cmF0dXJlX3N0YXRlICp0ZW1wZXJhdHVyZV9zdGF0ZSA9DQo+IGlpb19wcml2KGluZGlvX2Rldik7
+DQo+ICsJaW50IHJldDsNCj4gKw0KPiArCXN3aXRjaCAobWFzaykgew0KPiArCWNhc2UgSUlPX0NI
+QU5fSU5GT19TQU1QX0ZSRVE6DQo+ICsJCXJldCA9IGhpZF9zZW5zb3Jfd3JpdGVfc2FtcF9mcmVx
+X3ZhbHVlKA0KPiArCQkJCSZ0ZW1wZXJhdHVyZV9zdGF0ZS0NCj4gPmNvbW1vbl9hdHRyaWJ1dGVz
+LCB2YWwsDQo+ICsJCQkJdmFsMik7DQo+ICsJCWJyZWFrOw0KPiArCWNhc2UgSUlPX0NIQU5fSU5G
+T19IWVNURVJFU0lTOg0KPiArCQlyZXQgPSBoaWRfc2Vuc29yX3dyaXRlX3Jhd19oeXN0X3ZhbHVl
+KA0KPiArCQkJCSZ0ZW1wZXJhdHVyZV9zdGF0ZS0NCj4gPmNvbW1vbl9hdHRyaWJ1dGVzLCB2YWws
+DQo+ICsJCQkJdmFsMik7DQo+ICsJCWJyZWFrOw0KPiArCWRlZmF1bHQ6DQo+ICsJCXJldCA9IC1F
+SU5WQUw7DQo+ICsJfQ0KPiArDQo+ICsJcmV0dXJuIHJldDsNCj4gK30NCj4gKw0KPiArc3RhdGlj
+IGNvbnN0IHN0cnVjdCBpaW9faW5mbyB0ZW1wZXJhdHVyZV9pbmZvID0gew0KPiArCS5kcml2ZXJf
+bW9kdWxlID0gVEhJU19NT0RVTEUsDQo+ICsJLnJlYWRfcmF3ID0gJnRlbXBlcmF0dXJlX3JlYWRf
+cmF3LA0KPiArCS53cml0ZV9yYXcgPSAmdGVtcGVyYXR1cmVfd3JpdGVfcmF3LA0KPiArfTsNCj4g
+Kw0KPiArLyogQ2FsbGJhY2sgaGFuZGxlciB0byBzZW5kIGV2ZW50IGFmdGVyIGFsbCBzYW1wbGVz
+IGFyZSByZWNlaXZlZCBhbmQNCj4gY2FwdHVyZWQgKi8NCj4gK3N0YXRpYyBpbnQgdGVtcGVyYXR1
+cmVfcHJvY19ldmVudChzdHJ1Y3QgaGlkX3NlbnNvcl9odWJfZGV2aWNlDQo+ICpoc2RldiwNCj4g
+KwkJCQl1bnNpZ25lZCBpbnQgdXNhZ2VfaWQsIHZvaWQgKnBkZXYpDQo+ICt7DQo+ICsJc3RydWN0
+IGlpb19kZXYgKmluZGlvX2RldiA9IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOw0KPiArCXN0
+cnVjdCB0ZW1wZXJhdHVyZV9zdGF0ZSAqdGVtcGVyYXR1cmVfc3RhdGUgPQ0KPiBpaW9fcHJpdihp
+bmRpb19kZXYpOw0KPiArDQo+ICsJaWYgKGF0b21pY19yZWFkKCZ0ZW1wZXJhdHVyZV9zdGF0ZS0N
+Cj4gPmNvbW1vbl9hdHRyaWJ1dGVzLmRhdGFfcmVhZHkpKQ0KPiArCQlpaW9fcHVzaF90b19idWZm
+ZXJzKGluZGlvX2RldiwNCj4gKwkJCQkJJnRlbXBlcmF0dXJlX3N0YXRlLQ0KPiA+dGVtcGVyYXR1
+cmVfZGF0YSk7DQo+ICsJcmV0dXJuIDA7DQo+ICt9DQo+ICsNCj4gKy8qIENhcHR1cmUgc2FtcGxl
+cyBpbiBsb2NhbCBzdG9yYWdlICovDQo+ICtzdGF0aWMgaW50IHRlbXBlcmF0dXJlX2NhcHR1cmVf
+c2FtcGxlKHN0cnVjdCBoaWRfc2Vuc29yX2h1Yl9kZXZpY2UNCj4gKmhzZGV2LA0KPiArCQkJCXVu
+c2lnbmVkIGludCB1c2FnZV9pZCwgc2l6ZV90DQo+IHJhd19sZW4sDQo+ICsJCQkJY2hhciAqcmF3
+X2RhdGEsIHZvaWQgKnBkZXYpDQo+ICt7DQo+ICsJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9
+IHBsYXRmb3JtX2dldF9kcnZkYXRhKHBkZXYpOw0KPiArCXN0cnVjdCB0ZW1wZXJhdHVyZV9zdGF0
+ZSAqdGVtcGVyYXR1cmVfc3RhdGUgPQ0KPiBpaW9fcHJpdihpbmRpb19kZXYpOw0KPiArDQo+ICsJ
+c3dpdGNoICh1c2FnZV9pZCkgew0KPiArCWNhc2UgSElEX1VTQUdFX1NFTlNPUl9EQVRBX0VOVklS
+T05NRU5UQUxfVEVNUEVSQVRVUkU6DQo+ICsJCXRlbXBlcmF0dXJlX3N0YXRlLT50ZW1wZXJhdHVy
+ZV9kYXRhID0gKihzMzINCj4gKilyYXdfZGF0YTsNCj4gKwkJcmV0dXJuIDA7DQo+ICsJZGVmYXVs
+dDoNCj4gKwkJcmV0dXJuIC1FSU5WQUw7DQo+ICsJfQ0KPiArfQ0KPiArDQo+ICsvKiBQYXJzZSBy
+ZXBvcnQgd2hpY2ggaXMgc3BlY2lmaWMgdG8gYW4gdXNhZ2UgaWQqLw0KPiArc3RhdGljIGludCB0
+ZW1wZXJhdHVyZV9wYXJzZV9yZXBvcnQoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldiwNCj4g
+KwkJCQlzdHJ1Y3QgaGlkX3NlbnNvcl9odWJfZGV2aWNlICpoc2RldiwNCj4gKwkJCQlzdHJ1Y3Qg
+aWlvX2NoYW5fc3BlYyAqY2hhbm5lbHMsDQo+ICsJCQkJdW5zaWduZWQgaW50IHVzYWdlX2lkLA0K
+PiArCQkJCXN0cnVjdCB0ZW1wZXJhdHVyZV9zdGF0ZSAqc3QpDQo+ICt7DQo+ICsJaW50IHJldDsN
+Cj4gKw0KPiArCXJldCA9IHNlbnNvcl9odWJfaW5wdXRfZ2V0X2F0dHJpYnV0ZV9pbmZvKGhzZGV2
+LA0KPiBISURfSU5QVVRfUkVQT1JULA0KPiArCQkJdXNhZ2VfaWQsDQo+ICsJCQlISURfVVNBR0Vf
+U0VOU09SX0RBVEFfRU5WSVJPTk1FTlRBTF9URU1QRVJBVA0KPiBVUkUsDQo+ICsJCQkmc3QtPnRl
+bXBlcmF0dXJlX2F0dHIpOw0KPiArCWlmIChyZXQgPCAwKQ0KPiArCQlyZXR1cm4gcmV0Ow0KPiAr
+DQo+ICsJdGVtcGVyYXR1cmVfYWRqdXN0X2NoYW5uZWxfYml0X21hc2soY2hhbm5lbHMsIDAsDQo+
+ICsJCQkJCXN0LT50ZW1wZXJhdHVyZV9hdHRyLnNpemUpOw0KPiArDQo+ICsJc3QtPnNjYWxlX3By
+ZWNpc2lvbiA9IGhpZF9zZW5zb3JfZm9ybWF0X3NjYWxlKA0KPiArCQkJCUhJRF9VU0FHRV9TRU5T
+T1JfVEVNUEVSQVRVUkUsDQo+ICsJCQkJJnN0LT50ZW1wZXJhdHVyZV9hdHRyLA0KPiArCQkJCSZz
+dC0+c2NhbGVfcHJlX2RlY21sLCAmc3QtDQo+ID5zY2FsZV9wb3N0X2RlY21sKTsNCj4gKw0KPiAr
+CS8qIFNldCBTZW5zaXRpdml0eSBmaWVsZCBpZHMsIHdoZW4gdGhlcmUgaXMgbm8gaW5kaXZpZHVh
+bA0KPiBtb2RpZmllciAqLw0KPiArCWlmIChzdC0+Y29tbW9uX2F0dHJpYnV0ZXMuc2Vuc2l0aXZp
+dHkuaW5kZXggPCAwKQ0KPiArCQlzZW5zb3JfaHViX2lucHV0X2dldF9hdHRyaWJ1dGVfaW5mbyho
+c2RldiwNCj4gKwkJCUhJRF9GRUFUVVJFX1JFUE9SVCwgdXNhZ2VfaWQsDQo+ICsJCQlISURfVVNB
+R0VfU0VOU09SX0RBVEFfTU9EX0NIQU5HRV9TRU5TSVRJVklUWQ0KPiBfQUJTIHwNCj4gKwkJCUhJ
+RF9VU0FHRV9TRU5TT1JfREFUQV9FTlZJUk9OTUVOVEFMX1RFTVBFUkFUDQo+IFVSRSwNCj4gKwkJ
+CSZzdC0+Y29tbW9uX2F0dHJpYnV0ZXMuc2Vuc2l0aXZpdHkpOw0KPiArDQo+ICsJcmV0dXJuIHJl
+dDsNCj4gK30NCj4gKw0KPiArc3RhdGljwqDCoHN0cnVjdCBoaWRfc2Vuc29yX2h1Yl9jYWxsYmFj
+a3MgdGVtcGVyYXR1cmVfY2FsbGJhY2tzID0gew0KPiArCS5zZW5kX2V2ZW50ID0gJnRlbXBlcmF0
+dXJlX3Byb2NfZXZlbnQsDQo+ICsJLmNhcHR1cmVfc2FtcGxlID0gJnRlbXBlcmF0dXJlX2NhcHR1
+cmVfc2FtcGxlLA0KPiArfTsNCj4gKw0KPiArLyogRnVuY3Rpb24gdG8gaW5pdGlhbGl6ZSB0aGUg
+cHJvY2Vzc2luZyBmb3IgdXNhZ2UgaWQgKi8NCj4gK3N0YXRpYyBpbnQgaGlkX3RlbXBlcmF0dXJl
+X3Byb2JlKHN0cnVjdCBwbGF0Zm9ybV9kZXZpY2UgKnBkZXYpDQo+ICt7DQo+ICsJc3RhdGljIGNv
+bnN0IGNoYXIgKm5hbWUgPSAidGVtcGVyYXR1cmUiOw0KPiArCXN0cnVjdCBpaW9fZGV2ICppbmRp
+b19kZXY7DQo+ICsJc3RydWN0IHRlbXBlcmF0dXJlX3N0YXRlICp0ZW1wZXJhdHVyZV9zdGF0ZTsN
+Cj4gKwlzdHJ1Y3QgaGlkX3NlbnNvcl9odWJfZGV2aWNlICpoc2RldiA9IHBkZXYtDQo+ID5kZXYu
+cGxhdGZvcm1fZGF0YTsNCj4gKwlpbnQgcmV0Ow0KPiArDQo+ICsJaW5kaW9fZGV2ID0gZGV2bV9p
+aW9fZGV2aWNlX2FsbG9jKCZwZGV2LT5kZXYsDQo+ICsJCQkJc2l6ZW9mKHN0cnVjdCB0ZW1wZXJh
+dHVyZV9zdGF0ZSkpOw0KPiArCWlmICghaW5kaW9fZGV2KQ0KPiArCQlyZXR1cm4gLUVOT01FTTsN
+Cj4gKw0KPiArCXRlbXBlcmF0dXJlX3N0YXRlID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCj4gKwl0
+ZW1wZXJhdHVyZV9zdGF0ZS0+Y29tbW9uX2F0dHJpYnV0ZXMuaHNkZXYgPSBoc2RldjsNCj4gKwl0
+ZW1wZXJhdHVyZV9zdGF0ZS0+Y29tbW9uX2F0dHJpYnV0ZXMucGRldiA9IHBkZXY7DQo+ICsNCj4g
+KwlyZXQgPSBoaWRfc2Vuc29yX3BhcnNlX2NvbW1vbl9hdHRyaWJ1dGVzKGhzZGV2LA0KPiArCQkJ
+CQlISURfVVNBR0VfU0VOU09SX1RFTVBFUkFUVVJFDQo+ICwNCj4gKwkJCQkJJnRlbXBlcmF0dXJl
+X3N0YXRlLQ0KPiA+Y29tbW9uX2F0dHJpYnV0ZXMpOw0KPiArCWlmIChyZXQpDQo+ICsJCXJldHVy
+biByZXQ7DQo+ICsNCj4gKwlpbmRpb19kZXYtPmNoYW5uZWxzID0gZGV2bV9rbWVtZHVwKCZpbmRp
+b19kZXYtPmRldiwNCj4gKwkJCQkJdGVtcGVyYXR1cmVfY2hhbm5lbHMsDQo+ICsJCQkJCXNpemVv
+Zih0ZW1wZXJhdHVyZV9jaGFubmVscykNCj4gLA0KPiArCQkJCQlHRlBfS0VSTkVMKTsNCj4gKwlp
+ZiAoIWluZGlvX2Rldi0+Y2hhbm5lbHMpDQo+ICsJCXJldHVybiAtRU5PTUVNOw0KPiArDQo+ICsJ
+cmV0ID0gdGVtcGVyYXR1cmVfcGFyc2VfcmVwb3J0KHBkZXYsIGhzZGV2LA0KPiArCQkJCShzdHJ1
+Y3QgaWlvX2NoYW5fc3BlYyAqKWluZGlvX2Rldi0NCj4gPmNoYW5uZWxzLA0KPiArCQkJCUhJRF9V
+U0FHRV9TRU5TT1JfVEVNUEVSQVRVUkUsDQo+ICsJCQkJdGVtcGVyYXR1cmVfc3RhdGUpOw0KPiAr
+CWlmIChyZXQpDQo+ICsJCXJldHVybiByZXQ7DQo+ICsNCj4gKwlpbmRpb19kZXYtPm51bV9jaGFu
+bmVscyA9IEFSUkFZX1NJWkUodGVtcGVyYXR1cmVfY2hhbm5lbHMpOw0KPiArCWluZGlvX2Rldi0+
+ZGV2LnBhcmVudCA9ICZwZGV2LT5kZXY7DQo+ICsJaW5kaW9fZGV2LT5pbmZvID0gJnRlbXBlcmF0
+dXJlX2luZm87DQo+ICsJaW5kaW9fZGV2LT5uYW1lID0gbmFtZTsNCj4gKwlpbmRpb19kZXYtPm1v
+ZGVzID0gSU5ESU9fRElSRUNUX01PREU7DQo+ICsNCj4gKwlyZXQgPSBkZXZtX2lpb190cmlnZ2Vy
+ZWRfYnVmZmVyX3NldHVwKCZwZGV2LT5kZXYsIGluZGlvX2RldiwNCj4gKwkJCQkJJmlpb19wb2xs
+ZnVuY19zdG9yZV90aW1lLA0KPiArCQkJCQlOVUxMLCBOVUxMKTsNCj4gKwlpZiAocmV0KQ0KPiAr
+CQlyZXR1cm4gcmV0Ow0KPiArDQo+ICsJYXRvbWljX3NldCgmdGVtcGVyYXR1cmVfc3RhdGUtPmNv
+bW1vbl9hdHRyaWJ1dGVzLmRhdGFfcmVhZHksIA0KPiAwKTsNCj4gKwlyZXQgPSBoaWRfc2Vuc29y
+X3NldHVwX3RyaWdnZXIoaW5kaW9fZGV2LCBuYW1lLA0KPiArCQkJCSZ0ZW1wZXJhdHVyZV9zdGF0
+ZS0NCj4gPmNvbW1vbl9hdHRyaWJ1dGVzKTsNCj4gKwlpZiAocmV0KQ0KcmV0dXJuIHJldDsNCkJl
+bG93IGlzIG5vdCByZXF1aXJlZC4NCj4gKwkJZ290byBlcnJvcl91bnJlZ19idWZmZXI7DQoNCj4g
+Kw0KPiArCXBsYXRmb3JtX3NldF9kcnZkYXRhKHBkZXYsIGluZGlvX2Rldik7DQo+ICsNCj4gKwl0
+ZW1wZXJhdHVyZV9jYWxsYmFja3MucGRldiA9IHBkZXY7DQo+ICsJcmV0ID0gc2Vuc29yX2h1Yl9y
+ZWdpc3Rlcl9jYWxsYmFjayhoc2RldiwNCj4gSElEX1VTQUdFX1NFTlNPUl9URU1QRVJBVFVSRSwN
+Cj4gKwkJCQkJJnRlbXBlcmF0dXJlX2NhbGxiYWNrcyk7DQo+ICsJaWYgKHJldCkNCj4gKwkJZ290
+byBlcnJvcl91bnJlZ19idWZmZXI7DQpnb3RvIGVycm9yX3JlbW92ZV90cmlnZ2VyOw0KDQoNCj4g
+Kw0KPiArCXJldCA9IGRldm1faWlvX2RldmljZV9yZWdpc3RlcihpbmRpb19kZXYtPmRldi5wYXJl
+bnQsDQo+IGluZGlvX2Rldik7DQo+ICsJaWYgKHJldCkNCj4gKwkJZ290byBlcnJvcl91bnJlZ19i
+dWZmZXJfYW5kX2NhbGxiYWNrOw0KCQlnb3RvIGVycm9yX3JlbW92ZV9jYWxsYmFjazsNCj4gKw0K
+PiArCXJldHVybiByZXQ7DQo+ICsNCg0KPiArZXJyb3JfdW5yZWdfYnVmZmVyX2FuZF9jYWxsYmFj
+azoNCmVycm9yX3JlbW92ZV9jYWxsYmFjazoNCg0KDQo+ICsJc2Vuc29yX2h1Yl9yZW1vdmVfY2Fs
+bGJhY2soaHNkZXYsDQo+IEhJRF9VU0FHRV9TRU5TT1JfVEVNUEVSQVRVUkUpOw0KDQoNCkJlbG93
+IHR3byBsaW5lcyBhcmUgbm90IHJlcXVpcmVkDQo+ICtlcnJvcl91bnJlZ19idWZmZXI6DQo+ICsJ
+aWlvX3RyaWdnZXJlZF9idWZmZXJfY2xlYW51cChpbmRpb19kZXYpOw0KDQplcnJvcl9yZW1vdmVf
+dHJpZ2dlcjoNCgloaWRfc2Vuc29yX3JlbW92ZV90cmlnZ2VyKC4uKTsNCg0KDQo+ICsJcmV0dXJu
+IHJldDsNCg0KPiArfQ0KPiArDQo+ICsvKiBGdW5jdGlvbiB0byBkZWluaXRpYWxpemUgdGhlIHBy
+b2Nlc3NpbmcgZm9yIHVzYWdlIGlkICovDQo+ICtzdGF0aWMgaW50IGhpZF90ZW1wZXJhdHVyZV9y
+ZW1vdmUoc3RydWN0IHBsYXRmb3JtX2RldmljZSAqcGRldikNCj4gK3sNCj4gKwlzdHJ1Y3QgaGlk
+X3NlbnNvcl9odWJfZGV2aWNlICpoc2RldiA9IHBkZXYtDQo+ID5kZXYucGxhdGZvcm1fZGF0YTsN
+Cj4gKwlzdHJ1Y3QgaWlvX2RldiAqaW5kaW9fZGV2ID0gcGxhdGZvcm1fZ2V0X2RydmRhdGEocGRl
+dik7DQo+ICsJc3RydWN0IHRlbXBlcmF0dXJlX3N0YXRlICp0ZW1wZXJhdHVyZV9zdGF0ZSA9DQo+
+IGlpb19wcml2KGluZGlvX2Rldik7DQo+ICsNCj4gKwlzZW5zb3JfaHViX3JlbW92ZV9jYWxsYmFj
+ayhoc2RldiwNCj4gSElEX1VTQUdFX1NFTlNPUl9URU1QRVJBVFVSRSk7DQo+ICsJaGlkX3NlbnNv
+cl9yZW1vdmVfdHJpZ2dlcigmdGVtcGVyYXR1cmVfc3RhdGUtDQo+ID5jb21tb25fYXR0cmlidXRl
+cyk7DQo+ICsNCj4gKwlyZXR1cm4gMDsNCj4gK30NCj4gKw0KPiArc3RhdGljIGNvbnN0IHN0cnVj
+dCBwbGF0Zm9ybV9kZXZpY2VfaWQgaGlkX3RlbXBlcmF0dXJlX2lkc1tdID0gew0KPiArCXsNCj4g
+KwkJLyogRm9ybWF0OiBISUQtU0VOU09SLXVzYWdlX2lkX2luX2hleF9sb3dlcmNhc2UgKi8NCj4g
+KwkJLm5hbWUgPSAiSElELVNFTlNPUi0yMDAwMzMiLA0KPiArCX0sDQo+ICsJeyAvKiBzZW50aW5l
+bCAqLyB9DQo+ICt9Ow0KPiArTU9EVUxFX0RFVklDRV9UQUJMRShwbGF0Zm9ybSwgaGlkX3RlbXBl
+cmF0dXJlX2lkcyk7DQo+ICsNCj4gK3N0YXRpYyBzdHJ1Y3QgcGxhdGZvcm1fZHJpdmVyIGhpZF90
+ZW1wZXJhdHVyZV9wbGF0Zm9ybV9kcml2ZXIgPSB7DQo+ICsJLmlkX3RhYmxlID0gaGlkX3RlbXBl
+cmF0dXJlX2lkcywNCj4gKwkuZHJpdmVyID0gew0KPiArCQkubmFtZQk9IEtCVUlMRF9NT0ROQU1F
+LA0KPiArCQkucG0JPSAmaGlkX3NlbnNvcl9wbV9vcHMsDQo+ICsJfSwNCj4gKwkucHJvYmUJCT0g
+aGlkX3RlbXBlcmF0dXJlX3Byb2JlLA0KPiArCS5yZW1vdmUJCT0gaGlkX3RlbXBlcmF0dXJlX3Jl
+bW92ZSwNCj4gK307DQo+ICttb2R1bGVfcGxhdGZvcm1fZHJpdmVyKGhpZF90ZW1wZXJhdHVyZV9w
+bGF0Zm9ybV9kcml2ZXIpOw0KPiArDQo+ICtNT0RVTEVfREVTQ1JJUFRJT04oIkhJRCBFbnZpcm9u
+bWVudGFsIHRlbXBlcmF0dXJlIHNlbnNvciIpOw0KPiArTU9EVUxFX0FVVEhPUigiU29uZyBIb25n
+eWFuIDxob25neWFuLnNvbmdAaW50ZWwuY29tPiIpOw0KPiArTU9EVUxFX0xJQ0VOU0UoIkdQTCB2
+MiIpOw0KPiBkaWZmIC0tZ2l0IGEvaW5jbHVkZS9saW51eC9oaWQtc2Vuc29yLWlkcy5oIGIvaW5j
+bHVkZS9saW51eC9oaWQtDQo+IHNlbnNvci1pZHMuaA0KPiBpbmRleCBiYWI4Mzc1Li5lY2VjOTc4
+IDEwMDY0NA0KPiAtLS0gYS9pbmNsdWRlL2xpbnV4L2hpZC1zZW5zb3ItaWRzLmgNCj4gKysrIGIv
+aW5jbHVkZS9saW51eC9oaWQtc2Vuc29yLWlkcy5oDQo+IEBAIC00NSw2ICs0NSwxMCBAQA0KPiDC
+oCNkZWZpbmUNCj4gSElEX1VTQUdFX1NFTlNPUl9EQVRBX0FUTU9TUEhFUklDX1BSRVNTVVJFwqDC
+oMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDCoDB4MjAwNDMwDQo+IMKgI2RlZmluZQ0KPiBISURfVVNB
+R0VfU0VOU09SX0FUTU9TUEhFUklDX1BSRVNTVVJFwqDCoMKgwqDCoMKgwqDCoMKgwqDCoMKgwqDC
+oMKgwqDCoMKgwqAweDIwMDQzMQ0KPiDCoA0KPiArLyogVGVtcHJldHVyZSAoMjAwMDMzKSAqLw0K
+PiArI2RlZmluZQlISURfVVNBR0VfU0VOU09SX1RFTVBFUkFUVVJFCQkJCQ0KPiAweDIwMDAzMw0K
+PiArI2RlZmluZQlISURfVVNBR0VfU0VOU09SX0RBVEFfRU5WSVJPTk1FTlRBTF9URU1QRVJBVFVS
+RQkNCj4gCTB4MjAwNDM0DQo+ICsNCj4gwqAvKiBHeXJvIDNEOiAoMjAwMDc2KSAqLw0KPiDCoCNk
+ZWZpbmUgSElEX1VTQUdFX1NFTlNPUl9HWVJPXzNECQkJCTB4MjANCj4gMDA3Ng0KPiDCoCNkZWZp
+bmUgSElEX1VTQUdFX1NFTlNPUl9EQVRBX0FOR0xfVkVMT0NJVFkJCQkwDQo+IHgyMDA0NTYNCg0K
+VGhhbmtzLA0KU3Jpbml2YXM=
