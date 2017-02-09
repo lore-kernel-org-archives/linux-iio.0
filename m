@@ -1,109 +1,46 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45013 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753600AbdBKJyd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Feb 2017 04:54:33 -0500
-Subject: Re: [PATCH 7/7] staging: iio: isl29028: move out of staging
-To: Brian Masney <masneyb@onstation.org>
-References: <20170209015431.17380-1-masneyb@onstation.org>
- <20170209015431.17380-8-masneyb@onstation.org>
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, linux-kernel@vger.kernel.org,
-        ldewangan@nvidia.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e22c82d0-568f-1699-0847-e04b22b15822@kernel.org>
-Date: Sat, 11 Feb 2017 09:54:12 +0000
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:36806 "EHLO
+        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752348AbdBIPEf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Feb 2017 10:04:35 -0500
+Date: Thu, 9 Feb 2017 10:03:41 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Cc: linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: 104-quad-8: Fix off-by-one error when addressing flag
+ register
+Message-ID: <20170209150341.GA29292@sophia>
 MIME-Version: 1.0
-In-Reply-To: <20170209015431.17380-8-masneyb@onstation.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 09/02/17 01:54, Brian Masney wrote:
-> Move ISL29028 ALS / Proximity Sensor out of staging and into mainline.
-> 
-> Signed-off-by: Brian Masney <masneyb@onstation.org>
-I've taken another quick look at the driver and think this will be fine once
-we have cleaned up that small question on the sampling frequencies.
+The flag register is offset by 1 from the respective channel data
+register. This patch fixes an off-by-one error when attempting to read a
+channel flag register where the base address was not properly offset.
 
-Jonathan
-> ---
->  drivers/iio/light/Kconfig                  | 10 ++++++++++
->  drivers/iio/light/Makefile                 |  1 +
->  drivers/{staging => }/iio/light/isl29028.c |  0
->  drivers/staging/iio/light/Kconfig          | 10 ----------
->  drivers/staging/iio/light/Makefile         |  1 -
->  5 files changed, 11 insertions(+), 11 deletions(-)
->  rename drivers/{staging => }/iio/light/isl29028.c (100%)
-> 
-> diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
-> index 2afcbac..8b8c9e2 100644
-> --- a/drivers/iio/light/Kconfig
-> +++ b/drivers/iio/light/Kconfig
-> @@ -172,6 +172,16 @@ config SENSORS_ISL29018
->  	 in lux, proximity infrared sensing and normal infrared sensing.
->  	 Data from sensor is accessible via sysfs.
->  
-> +config SENSORS_ISL29028
-> +	tristate "Intersil ISL29028 Concurrent Light and Proximity Sensor"
-> +	depends on I2C
-> +	select REGMAP_I2C
-> +	help
-> +	 Provides driver for the Intersil's ISL29028 device.
-> +	 This driver supports the sysfs interface to get the ALS, IR intensity,
-> +	 Proximity value via iio. The ISL29028 provides the concurrent sensing
-> +	 of ambient light and proximity.
-> +
->  config ISL29125
->  	tristate "Intersil ISL29125 digital color light sensor"
->  	depends on I2C
-> diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
-> index edfd69b..2e730af 100644
-> --- a/drivers/iio/light/Makefile
-> +++ b/drivers/iio/light/Makefile
-> @@ -20,6 +20,7 @@ obj-$(CONFIG_GP2AP020A00F)	+= gp2ap020a00f.o
->  obj-$(CONFIG_HID_SENSOR_ALS)	+= hid-sensor-als.o
->  obj-$(CONFIG_HID_SENSOR_PROX)	+= hid-sensor-prox.o
->  obj-$(CONFIG_SENSORS_ISL29018)	+= isl29018.o
-> +obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->  obj-$(CONFIG_ISL29125)		+= isl29125.o
->  obj-$(CONFIG_JSA1212)		+= jsa1212.o
->  obj-$(CONFIG_SENSORS_LM3533)	+= lm3533-als.o
-> diff --git a/drivers/staging/iio/light/isl29028.c b/drivers/iio/light/isl29028.c
-> similarity index 100%
-> rename from drivers/staging/iio/light/isl29028.c
-> rename to drivers/iio/light/isl29028.c
-> diff --git a/drivers/staging/iio/light/Kconfig b/drivers/staging/iio/light/Kconfig
-> index 4fbf629..aacb0ae 100644
-> --- a/drivers/staging/iio/light/Kconfig
-> +++ b/drivers/staging/iio/light/Kconfig
-> @@ -3,16 +3,6 @@
->  #
->  menu "Light sensors"
->  
-> -config SENSORS_ISL29028
-> -	tristate "Intersil ISL29028 Concurrent Light and Proximity Sensor"
-> -	depends on I2C
-> -	select REGMAP_I2C
-> -	help
-> -	 Provides driver for the Intersil's ISL29028 device.
-> -	 This driver supports the sysfs interface to get the ALS, IR intensity,
-> -	 Proximity value via iio. The ISL29028 provides the concurrent sensing
-> -	 of ambient light and proximity.
-> -
->  config TSL2x7x
->  	tristate "TAOS TSL/TMD2x71 and TSL/TMD2x72 Family of light and proximity sensors"
->  	depends on I2C
-> diff --git a/drivers/staging/iio/light/Makefile b/drivers/staging/iio/light/Makefile
-> index f8693e9..10286c3 100644
-> --- a/drivers/staging/iio/light/Makefile
-> +++ b/drivers/staging/iio/light/Makefile
-> @@ -2,5 +2,4 @@
->  # Makefile for industrial I/O Light sensors
->  #
->  
-> -obj-$(CONFIG_SENSORS_ISL29028)	+= isl29028.o
->  obj-$(CONFIG_TSL2x7x)	+= tsl2x7x_core.o
-> 
+Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8")
+Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+---
+ drivers/iio/counter/104-quad-8.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/counter/104-quad-8.c b/drivers/iio/counter/104-quad-8.c
+index a5913e97945e..f9b8fc9ae13f 100644
+--- a/drivers/iio/counter/104-quad-8.c
++++ b/drivers/iio/counter/104-quad-8.c
+@@ -76,7 +76,7 @@ static int quad8_read_raw(struct iio_dev *indio_dev,
+ 			return IIO_VAL_INT;
+ 		}
+ 
+-		flags = inb(base_offset);
++		flags = inb(base_offset + 1);
+ 		borrow = flags & BIT(0);
+ 		carry = !!(flags & BIT(1));
+ 
+-- 
+2.11.1
 
