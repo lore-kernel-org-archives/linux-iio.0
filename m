@@ -1,365 +1,155 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f68.google.com ([209.85.215.68]:36579 "EHLO
-        mail-lf0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751073AbdBKUBU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Feb 2017 15:01:20 -0500
-Date: Sat, 11 Feb 2017 21:00:21 +0100
-From: Tomasz Duszynski <tduszyns@gmail.com>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Tomasz Duszynski <tduszyns@gmail.com>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-Subject: Re: [PATCH v3 2/4] iio: chemical: add driver for dsm501/ppd42ns
- particle sensors
-Message-ID: <20170211200020.GA1305@Arch.lan>
-References: <20170209171306.4864-1-tduszyns@gmail.com>
- <04dc4f93-2d6f-036c-9976-daf3c82e73e9@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <04dc4f93-2d6f-036c-9976-daf3c82e73e9@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=Gu6/=ZX=gmail.com=robsonde@kernel.org>
+From: Derek Robson <robsonde@gmail.com>
+To: jic23@kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net,
+	gregkh@linuxfoundation.org,
+	robsonde@gmail.com
+Cc: linux-iio@vger.kernel.org,
+	devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org
+Subject: [PATCH] Staging: iio: meter: meter.h - style fix
+Date: Fri, 10 Feb 2017 20:00:08 +1300
+Message-Id: <20170210070008.14843-1-robsonde@gmail.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Feb 11, 2017 at 10:45:38AM +0000, Jonathan Cameron wrote:
-> On 09/02/17 17:13, Tomasz Duszynski wrote:
-> > This patch adds support for dsm501 and ppd42ns particle sensors.
-> >
-> > Both sensors work on the same principle. Heater (resistor) heats up air
-> > in sensor chamber which induces upward flow. Particles convect up through
-> > a light beam provided by internal infra-red LED. Light scattered by
-> > particles is picked by photodiode and internal electronics outputs PWM
-> > signal.
-> >
-> > Measuring low time occupancy of the signal during 30s measurement period
-> > particles number in cubic meter can be computed.
-> >
-> > Signed-off-by: Tomasz Duszynski <tduszyns@gmail.com>
-> Hi Tomasz,
->
-> Please always resend the whole series.  Otherwise it gets awfully confusing
-> when one tries to find the relevant set of patches making up the latest
-> version.  At least I'm guessing that is what has happened as I can't find
-> the rest of this v3 series.
-Ah. I totally messed up. Will repost the whole series soon.
->
-> As such I'm going to comment on this one alone.
->
->
-> I'm currious, how consistent is the data you get off this device?
-> Are we getting something that looks close to what you'd get measuring the
-> pulses with a logic analyser or scope for example?
-I've done this sort of tests using logic analyzer and errors were
-negligible. So yes, consistency is more than enough for this kind of
-sensor.
->
-> Rather feels like this should be piped into a pulse width capture unit or
-> similar if you have hardware support.  I guess you don't though on your
-> particular board! (I'm thinking of something like the TI ECAP, though
-> magic with latching counters would probably work on other boards.
->
-> Anyhow, coming together nicely.  A few minor points inline.
->
-> Thanks,
->
-> Jonathan
-> > ---
-> >  Changes in v3:
-> >   o use devm_gpiod_get() instead of indexed version. This is due to bindings
-> >     change.
-> >
-> >  Changes in v2:
-> >   o whitespace fix
-> >   o drop excessive comments about conversion to pcs/0.01cf
-> >   o fix 'concentartion' typo in dsm501_number_concentartion handler name
-> >
-> >  drivers/iio/chemical/Kconfig  |  10 ++
-> >  drivers/iio/chemical/Makefile |   1 +
-> >  drivers/iio/chemical/dsm501.c | 225 ++++++++++++++++++++++++++++++++++++++++++
-> >  3 files changed, 236 insertions(+)
-> >  create mode 100644 drivers/iio/chemical/dsm501.c
-> >
-> > diff --git a/drivers/iio/chemical/Kconfig b/drivers/iio/chemical/Kconfig
-> > index cea7f9857a1f..986d612aa77f 100644
-> > --- a/drivers/iio/chemical/Kconfig
-> > +++ b/drivers/iio/chemical/Kconfig
-> > @@ -21,6 +21,16 @@ config ATLAS_PH_SENSOR
-> >  	 To compile this driver as module, choose M here: the
-> >  	 module will be called atlas-ph-sensor.
-> >
-> > +config DSM501
-> > +	tristate "Samyoung DSM501 particle sensor"
-> > +	depends on GPIOLIB
-> > +	help
-> > +	 Say yes here to build support for the Samyoung DSM501
-> > +	 particle sensor.
-> In this help text, all supported parts should be listed.
-Ack
-> > +
-> > +	 To compile this driver as a module, choose M here: the module
-> > +	 will be called dsm501.
-> > +
-> >  config IAQCORE
-> >  	tristate "AMS iAQ-Core VOC sensors"
-> >  	depends on I2C
-> > diff --git a/drivers/iio/chemical/Makefile b/drivers/iio/chemical/Makefile
-> > index b02202b41289..76f50ff8ba7d 100644
-> > --- a/drivers/iio/chemical/Makefile
-> > +++ b/drivers/iio/chemical/Makefile
-> > @@ -4,5 +4,6 @@
-> >
-> >  # When adding new entries keep the list in alphabetical order
-> >  obj-$(CONFIG_ATLAS_PH_SENSOR)	+= atlas-ph-sensor.o
-> > +obj-$(CONFIG_DSM501)		+= dsm501.o
-> >  obj-$(CONFIG_IAQCORE)		+= ams-iaq-core.o
-> >  obj-$(CONFIG_VZ89X)		+= vz89x.o
-> > diff --git a/drivers/iio/chemical/dsm501.c b/drivers/iio/chemical/dsm501.c
-> > new file mode 100644
-> > index 000000000000..7c53b8305508
-> > --- /dev/null
-> > +++ b/drivers/iio/chemical/dsm501.c
-> > @@ -0,0 +1,225 @@
-> > +/*
-> > + * Samyoung DSM501 particle sensor driver
-> > + *
-> > + * Copyright (C) 2017 Tomasz Duszynski <tduszyns@gmail.com>
-> > + *
-> > + * Datasheets:
-> > + *  http://www.samyoungsnc.com/products/3-1%20Specification%20DSM501.pdf
-> > + *  http://wiki.timelab.org/images/f/f9/PPD42NS.pdf
-> > + *
-> > + * This program is free software; you can redistribute it and/or modify
-> > + * it under the terms of the GNU General Public License as published by
-> > + * the Free Software Foundation; either version 2 of the License, or
-> > + * (at your option) any later version.
-> > + *
-> > + * This program is distributed in the hope that it will be useful,
-> > + * but WITHOUT ANY WARRANTY; without even the implied warranty of
-> > + * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
-> > + * GNU General Public License for more details.
-> My pet hate ;) Drop the empty line.
-Ack
-> > + *
-> > + */
-> > +
-> > +#include <linux/delay.h>
-> > +#include <linux/gpio/consumer.h>
-> > +#include <linux/iio/iio.h>
-> > +#include <linux/init.h>
-> > +#include <linux/interrupt.h>
-> > +#include <linux/module.h>
-> > +#include <linux/mutex.h>
-> > +#include <linux/of_device.h>
-> > +#include <linux/platform_device.h>
-> > +#include <linux/timekeeping.h>
-> > +
-> > +#define DSM501_DRV_NAME "dsm501"
-> > +#define DSM501_IRQ_NAME "dsm501_irq"
-> > +
-> > +#define DSM501_DEFAULT_MEASUREMENT_TIME 30 /* seconds */
-> > +
-> > +struct dsm501_data {
-> > +	ktime_t ts;
-> > +	ktime_t low_time;
-> > +	ktime_t meas_time;
-> > +
-> > +	int irq;
-> > +	struct gpio_desc *gpio;
-> > +
-> > +	struct mutex lock;
-> > +
-> > +	int (*number_concentration)(struct dsm501_data *data);
-> > +};
-> > +
-> > +/*
-> > + * Series of data points in Fig. 8-3 (Low Ratio vs Particle)
-> > + * can be approximated by following polynomials:
-> > + *
-> > + * p(r) = 0 (undefined) for r < 4
-> > + * p(r) = 2353564.2r - 4373814.7 for 4 <= r < 20
-> > + * p(r) = 4788112.4r - 53581390 for r >= 20
-> > + */
-> > +static int dsm501_number_concentration(struct dsm501_data *data)
-> > +{
-> > +	s64 retval = 0, r = div64_s64(ktime_to_ns(data->low_time) * 100,
-> > +				      ktime_to_ns(data->meas_time));
-> > +
-> > +	if (r >= 4 && r < 20)
-> > +		retval = 23535642 * r - 43738147;
-> > +	else if (r >= 20)
-> > +		retval = 47881124 * r - 535813900;
-> > +
-> > +	return div_s64(retval, 10);
-> > +}
-> > +
-> > +/*
-> > + * Series of data points in Fig. 2 (Lo Pulse Occupancy Time vs Concentration)
-> > + * can be approximated by following polynomial:
-> > + *
-> > + * p(r) = 3844.2r^3 - 16201.3r^2 + 1848746.1r + 52497.2
-> > + */
-> > +static int ppd42ns_number_concentration(struct dsm501_data *data)
-> > +{
-> > +	s64 retval, r3, r2, r = div64_s64(ktime_to_ns(data->low_time) * 100,
-> > +					  ktime_to_ns(data->meas_time));
-> > +
-> > +	r2 = r * r;
-> > +	r3 = r2 * r;
-> > +
-> > +	retval = 38442 * r3;
-> > +	retval -= 162013 * r2;
-> > +	retval += 18487461 * r;
-> > +	retval += 524972;
-> > +
-> > +	return div_s64(retval, 10);
-> > +}
-> > +
-> > +static irqreturn_t dsm501_irq(int irq, void *dev_id)
-> > +{
-> > +	struct dsm501_data *data = iio_priv(dev_id);
-> > +	int val = gpiod_get_value(data->gpio);
-> > +	ktime_t dt, ts = ktime_get();
-> > +
-> > +	if (ktime_to_ns(data->ts) == 0) {
-> > +		data->ts = ts;
-> > +		data->low_time = ktime_set(0, 0);
-> > +	}
-> > +
-> > +	if (val) {
-> > +		dt = ktime_sub(ts, data->ts);
-> > +		data->low_time = ktime_add(data->low_time, dt);
-> > +	} else {
-> > +		data->ts = ts;
-> > +	}
-> > +
-> > +	return IRQ_HANDLED;
-> > +}
-> > +
-> > +static int dsm501_read_raw(struct iio_dev *indio_dev,
-> > +			   struct iio_chan_spec const *chan, int *val,
-> > +			   int *val2, long mask)
-> > +{
-> > +	struct dsm501_data *data = iio_priv(indio_dev);
-> > +	struct device *dev = indio_dev->dev.parent;
-> > +	unsigned long irqflags = IRQF_TRIGGER_RISING | IRQF_TRIGGER_FALLING;
-> > +	int ret;
-> > +
-> > +
-> > +	switch (mask) {
-> > +	case IIO_CHAN_INFO_PROCESSED:
-> > +		mutex_lock(&data->lock);
-> > +		data->ts = ktime_set(0, 0);
-> > +
-> > +		ret = request_irq(data->irq, dsm501_irq, irqflags,
-> > +				  DSM501_IRQ_NAME, indio_dev);
-> Hmm. I can see why you are doing this, but I think masking and unmasking
-> (enable_irq / disable_irq) would be preferable to requesting it every
-> time in terms of overhead etc.
-Ack
-> > +		if (ret) {
-> > +			dev_err(dev, "Failed to request interrupt %d\n", data->irq);
-> > +			mutex_unlock(&data->lock);
-> > +			return ret;
-> > +		}
-> > +
-> > +		msleep_interruptible(ktime_to_ms(data->meas_time));
-> > +		free_irq(data->irq, indio_dev);
-> > +
-> > +		*val = data->number_concentration(data);
-> > +		mutex_unlock(&data->lock);
-> > +
-> > +		return IIO_VAL_INT;
-> > +	default:
-> > +		return -EINVAL;
-> > +	}
-> > +}
-> > +
-> > +static const struct iio_info dsm501_info = {
-> > +	.driver_module	= THIS_MODULE,
-> > +	.read_raw = dsm501_read_raw,
-> > +};
-> > +
-> > +static const struct iio_chan_spec dsm501_channels[] = {
-> > +	{
-> > +		.type = IIO_NUMBERCONCENTRATION,
-> > +		.info_mask_separate = BIT(IIO_CHAN_INFO_PROCESSED),
-> > +	},
-> > +};
-> > +
-> > +static int dsm501_probe(struct platform_device *pdev)
-> > +{
-> > +	struct dsm501_data *data;
-> > +	struct iio_dev *indio_dev;
-> > +	struct device *dev = &pdev->dev;
-> > +
-> > +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*data));
-> > +	if (!indio_dev)
-> > +		return -ENOMEM;
-> > +
-> > +	data = iio_priv(indio_dev);
-> > +	platform_set_drvdata(pdev, indio_dev);
-> > +
-> > +	data->gpio = devm_gpiod_get(dev, "data", GPIOD_IN);
-> > +	if (IS_ERR(data->gpio)) {
-> > +		dev_err(dev, "Failed to get GPIO\n");
-> > +		return PTR_ERR(data->gpio);
-> > +	}
-> > +
-> > +	data->irq = gpiod_to_irq(data->gpio);
-> > +	if (data->irq < 0) {
-> > +		dev_err(dev, "GPIO has no interrupt\n");
-> > +		return data->irq;
-> > +	}
-> > +
-> > +	data->meas_time = ktime_set(DSM501_DEFAULT_MEASUREMENT_TIME, 0);
-> > +	data->number_concentration = of_device_get_match_data(dev);
-> > +	mutex_init(&data->lock);
-> > +
-> > +	indio_dev->name = DSM501_DRV_NAME;
-> Given you support two different parts, I would expect this name to reflect
-> which one you actually have on a given system
-Ah, you are right.
->
-> > +	indio_dev->dev.parent = dev;
-> > +	indio_dev->info = &dsm501_info;
-> > +	indio_dev->modes = INDIO_DIRECT_MODE;
-> > +	indio_dev->channels = dsm501_channels;
-> > +	indio_dev->num_channels = ARRAY_SIZE(dsm501_channels);
-> > +
-> > +	return devm_iio_device_register(&pdev->dev, indio_dev);
-> > +}
-> > +
-> > +static const struct of_device_id dsm501_id[] = {
-> > +	{
-> > +		.compatible = "samyoung,dsm501",
-> > +		.data = dsm501_number_concentration,
-> > +	},
-> > +	{
-> > +		.compatible = "shinyei,ppd42ns",
-> > +		.data = ppd42ns_number_concentration,
-> > +	},
-> > +	{ }
-> > +};
-> > +MODULE_DEVICE_TABLE(of, dsm501_id);
-> > +
-> > +static struct platform_driver dsm501_driver = {
-> > +	.driver	= {
-> > +		.name = DSM501_DRV_NAME,
-> > +		.of_match_table = of_match_ptr(dsm501_id)
-> > +	},
-> > +	.probe = dsm501_probe
-> > +};
-> > +module_platform_driver(dsm501_driver);
-> > +
-> > +MODULE_AUTHOR("Tomasz Duszynski <tduszyns@gmail.com>");
-> > +MODULE_DESCRIPTION("Samyoung DSM501 particle sensor driver");
-> > +MODULE_LICENSE("GPL v2");
-> > --
-> > 2.11.1
-> >
-> > --
-> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> > the body of a message to majordomo@vger.kernel.org
-> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> >
->
-Thanks for review.
+Changed file permissions to octal.
+Found with checkpatch.
+
+Signed-off-by: Derek Robson <robsonde@gmail.com>
+---
+ drivers/staging/iio/meter/meter.h | 60 +++++++++++++++++++--------------------
+ 1 file changed, 30 insertions(+), 30 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/meter.h b/drivers/staging/iio/meter/meter.h
+index dfba510f29be..0e37f23853f1 100644
+--- a/drivers/staging/iio/meter/meter.h
++++ b/drivers/staging/iio/meter/meter.h
+@@ -81,94 +81,94 @@
+ 	IIO_DEVICE_ATTR(reactive_power_c_gain, _mode, _show, _store, _addr)
+ 
+ #define IIO_DEV_ATTR_CURRENT_A(_show, _addr)			\
+-	IIO_DEVICE_ATTR(current_a, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(current_a, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CURRENT_B(_show, _addr)			\
+-	IIO_DEVICE_ATTR(current_b, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(current_b, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CURRENT_C(_show, _addr)			\
+-	IIO_DEVICE_ATTR(current_c, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(current_c, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_VOLT_A(_show, _addr)			\
+-	IIO_DEVICE_ATTR(volt_a, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(volt_a, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_VOLT_B(_show, _addr)			\
+-	IIO_DEVICE_ATTR(volt_b, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(volt_b, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_VOLT_C(_show, _addr)			\
+-	IIO_DEVICE_ATTR(volt_c, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(volt_c, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_AENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(aenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(aenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_LENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(lenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(lenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_RAENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(raenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(raenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_LAENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(laenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(laenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_VAENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(vaenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(vaenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_LVAENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(lvaenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(lvaenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_RVAENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(rvaenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(rvaenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_LVARENERGY(_show, _addr)			\
+-	IIO_DEVICE_ATTR(lvarenergy, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(lvarenergy, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CHKSUM(_show, _addr)                       \
+-	IIO_DEVICE_ATTR(chksum, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(chksum, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_ANGLE0(_show, _addr)                       \
+-	IIO_DEVICE_ATTR(angle0, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(angle0, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_ANGLE1(_show, _addr)                       \
+-	IIO_DEVICE_ATTR(angle1, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(angle1, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_ANGLE2(_show, _addr)                       \
+-	IIO_DEVICE_ATTR(angle2, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(angle2, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_AWATTHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(awatthr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(awatthr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_BWATTHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(bwatthr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(bwatthr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CWATTHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(cwatthr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(cwatthr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_AFWATTHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(afwatthr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(afwatthr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_BFWATTHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(bfwatthr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(bfwatthr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CFWATTHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(cfwatthr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(cfwatthr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_AVARHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(avarhr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(avarhr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_BVARHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(bvarhr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(bvarhr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CVARHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(cvarhr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(cvarhr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_AVAHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(avahr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(avahr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_BVAHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(bvahr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(bvahr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_CVAHR(_show, _addr)			\
+-	IIO_DEVICE_ATTR(cvahr, S_IRUGO, _show, NULL, _addr)
++	IIO_DEVICE_ATTR(cvahr, 0444, _show, NULL, _addr)
+ 
+ #define IIO_DEV_ATTR_IOS(_mode, _show, _store, _addr)                \
+ 	IIO_DEVICE_ATTR(ios, _mode, _show, _store, _addr)
+-- 
+2.11.1
