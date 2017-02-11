@@ -1,32 +1,68 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:45926 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750713AbdBKPrF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Feb 2017 10:47:05 -0500
-Date: Sat, 11 Feb 2017 16:46:53 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
+Return-Path: <SRS0=+lUA=ZY=metafoo.de=lars@kernel.org>
+From: Lars-Peter Clausen <lars@metafoo.de>
 To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Peter Rosin <peda@axentia.se>
-Subject: Re: [PULL] IIO fixes for 4.11 set 1 - a couple of regression fixes
- (resend as missed 4.10)
-Message-ID: <20170211154653.GA12004@kroah.com>
-References: <a8b4c6b5-b452-b10e-d0dd-85db54bdbb4b@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <a8b4c6b5-b452-b10e-d0dd-85db54bdbb4b@kernel.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	William Breathitt Gray <vilhelm.gray@gmail.com>,
+	Matt Ranostay <matt.ranostay@konsulko.com>,
+	linux-iio@vger.kernel.org,
+	Lars-Peter Clausen <lars@metafoo.de>
+Subject: [PATCH 0/8] iio: Fix missing parent device initalization
+Date: Sat, 11 Feb 2017 13:34:13 +0100
+Message-Id: <1486816461-28618-1-git-send-email-lars@metafoo.de>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, Feb 11, 2017 at 09:14:35AM +0000, Jonathan Cameron wrote:
-> The following changes since commit 5c113b5e0082e90d2e1c7b12e96a7b8cf0623e27:
-> 
->   iio: dht11: Use usleep_range instead of msleep for start signal (2017-01-22 13:35:40 +0000)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-fixes-for-4.11a
+Add parent device initialization to drivers that are currently missing it.
+Setting the parent device makes sure that the IIO device shows up at the
+right level in the device hierachy.
 
-Pulled and pushed out, thanks.
+The following coccinelle semantic patch was used to find the offending
+drivers:
+// <smpl>
+@r1@
+identifier indio_dev;
+position p;
+@@
+indio_dev->dev.parent = ...;
+...
+(
+iio_device_register@p(indio_dev)
+|
+devm_iio_device_register@p(..., indio_dev)
+)
 
-greg k-h
+@@
+position p != r1.p;
+identifier indio_dev;
+@@
+(
+*iio_device_register@p(indio_dev)
+|
+*devm_iio_device_register@p(..., indio_dev)
+)
+// </smpl>
+
+- Lars
+
+Lars-Peter Clausen (8):
+  iio: stx104: Set parent device
+  iio: quad-8: Set parent device
+  iio: cio-dac: Set parent device
+  iio: max30100: Set parent device
+  iio: max30102: Set parent device
+  iio: lmp91000: Set parent device
+  iio: pulsedlight-lidar-lite-v2: Set parent device
+  iio: maxim_thermocouple: Set parent device
+
+ drivers/iio/adc/stx104.c                          | 1 +
+ drivers/iio/counter/104-quad-8.c                  | 1 +
+ drivers/iio/dac/cio-dac.c                         | 1 +
+ drivers/iio/health/max30100.c                     | 1 +
+ drivers/iio/health/max30102.c                     | 1 +
+ drivers/iio/potentiostat/lmp91000.c               | 1 +
+ drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 1 +
+ drivers/iio/temperature/maxim_thermocouple.c      | 1 +
+ 8 files changed, 8 insertions(+)
+
+-- 
+2.1.4
