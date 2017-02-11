@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:44867 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:45281 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751009AbdBKJeb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Feb 2017 04:34:31 -0500
+        with ESMTP id S1753030AbdBKKqd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Feb 2017 05:46:33 -0500
 Subject: Re: [PATCH] Staging: iio: meter: meter.h - style fix
 To: Derek Robson <robsonde@gmail.com>, knaack.h@gmx.de,
         lars@metafoo.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
@@ -10,8 +10,8 @@ References: <20170210070008.14843-1-robsonde@gmail.com>
 Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <25251dc0-4a6b-2284-52d4-8813704850a5@kernel.org>
-Date: Sat, 11 Feb 2017 09:34:26 +0000
+Message-ID: <8378b19d-2e2f-9e64-d237-cb6d93ac8d6c@kernel.org>
+Date: Sat, 11 Feb 2017 10:46:30 +0000
 MIME-Version: 1.0
 In-Reply-To: <20170210070008.14843-1-robsonde@gmail.com>
 Content-Type: text/plain; charset=windows-1252
@@ -23,12 +23,7 @@ On 10/02/17 07:00, Derek Robson wrote:
 > Found with checkpatch.
 > 
 > Signed-off-by: Derek Robson <robsonde@gmail.com>
-Applied to the togreg branch of iio.git - pushed out as testing for the
-autobuilders to play with it.
-
-Thanks,
-
-Jonathan
+Applied - thanks,
 > ---
 >  drivers/staging/iio/meter/meter.h | 60 +++++++++++++++++++--------------------
 >  1 file changed, 30 insertions(+), 30 deletions(-)
