@@ -7,62 +7,33 @@ Cc: Hartmut Knaack <knaack.h@gmx.de>,
 	Matt Ranostay <matt.ranostay@konsulko.com>,
 	linux-iio@vger.kernel.org,
 	Lars-Peter Clausen <lars@metafoo.de>
-Subject: [PATCH 0/8] iio: Fix missing parent device initalization
-Date: Sat, 11 Feb 2017 13:34:13 +0100
-Message-Id: <1486816461-28618-1-git-send-email-lars@metafoo.de>
+Subject: [PATCH 1/8] iio: stx104: Set parent device
+Date: Sat, 11 Feb 2017 13:34:14 +0100
+Message-Id: <1486816461-28618-2-git-send-email-lars@metafoo.de>
+In-Reply-To: <1486816461-28618-1-git-send-email-lars@metafoo.de>
+References: <1486816461-28618-1-git-send-email-lars@metafoo.de>
 List-ID: <linux-iio@vger.kernel.org>
 
-Add parent device initialization to drivers that are currently missing it.
-Setting the parent device makes sure that the IIO device shows up at the
-right level in the device hierachy.
+Initialize the parent of the IIO device to the device that registered it.
+This makes sure that the IIO device appears the right level in the device
+hierarchy.
 
-The following coccinelle semantic patch was used to find the offending
-drivers:
-// <smpl>
-@r1@
-identifier indio_dev;
-position p;
-@@
-indio_dev->dev.parent = ...;
-...
-(
-iio_device_register@p(indio_dev)
-|
-devm_iio_device_register@p(..., indio_dev)
-)
+Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
+---
+ drivers/iio/adc/stx104.c | 1 +
+ 1 file changed, 1 insertion(+)
 
-@@
-position p != r1.p;
-identifier indio_dev;
-@@
-(
-*iio_device_register@p(indio_dev)
-|
-*devm_iio_device_register@p(..., indio_dev)
-)
-// </smpl>
-
-- Lars
-
-Lars-Peter Clausen (8):
-  iio: stx104: Set parent device
-  iio: quad-8: Set parent device
-  iio: cio-dac: Set parent device
-  iio: max30100: Set parent device
-  iio: max30102: Set parent device
-  iio: lmp91000: Set parent device
-  iio: pulsedlight-lidar-lite-v2: Set parent device
-  iio: maxim_thermocouple: Set parent device
-
- drivers/iio/adc/stx104.c                          | 1 +
- drivers/iio/counter/104-quad-8.c                  | 1 +
- drivers/iio/dac/cio-dac.c                         | 1 +
- drivers/iio/health/max30100.c                     | 1 +
- drivers/iio/health/max30102.c                     | 1 +
- drivers/iio/potentiostat/lmp91000.c               | 1 +
- drivers/iio/proximity/pulsedlight-lidar-lite-v2.c | 1 +
- drivers/iio/temperature/maxim_thermocouple.c      | 1 +
- 8 files changed, 8 insertions(+)
-
+diff --git a/drivers/iio/adc/stx104.c b/drivers/iio/adc/stx104.c
+index be2de48..2df84fa5 100644
+--- a/drivers/iio/adc/stx104.c
++++ b/drivers/iio/adc/stx104.c
+@@ -318,6 +318,7 @@ static int stx104_probe(struct device *dev, unsigned int id)
+ 	}
+ 
+ 	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
+ 
+ 	priv = iio_priv(indio_dev);
+ 	priv->base = base[id];
 -- 
 2.1.4
