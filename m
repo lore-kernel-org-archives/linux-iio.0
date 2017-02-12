@@ -1,53 +1,85 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:37374 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751405AbdBSMEE (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Feb 2017 07:04:04 -0500
-Subject: Re: [PATCH 8/8] iio: maxim_thermocouple: Set parent device
-To: Lars-Peter Clausen <lars@metafoo.de>
-References: <1486816461-28618-1-git-send-email-lars@metafoo.de>
- <1486816461-28618-9-git-send-email-lars@metafoo.de>
-Cc: Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        William Breathitt Gray <vilhelm.gray@gmail.com>,
-        Matt Ranostay <matt.ranostay@konsulko.com>,
-        linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <59df1f71-dfbd-45ec-9a34-5a849afca079@kernel.org>
-Date: Sun, 19 Feb 2017 12:04:02 +0000
-MIME-Version: 1.0
-In-Reply-To: <1486816461-28618-9-git-send-email-lars@metafoo.de>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:33251 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750780AbdBLHWy (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Feb 2017 02:22:54 -0500
+From: Derek Robson <robsonde@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc: linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, Derek Robson <robsonde@gmail.com>
+Subject: [PATCH] Staging: iio: impedance-analyzer: ad5933.c - style fix
+Date: Sun, 12 Feb 2017 20:22:40 +1300
+Message-Id: <20170212072240.30147-1-robsonde@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 11/02/17 12:34, Lars-Peter Clausen wrote:
-> Initialize the parent of the IIO device to the device that registered it.
-> This makes sure that the IIO device appears the right level in the device
-> hierarchy.
-> 
-> Signed-off-by: Lars-Peter Clausen <lars@metafoo.de>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+Change permissions to octal style.
+Found using checkpatch
 
-Thanks for cleaning these up Lars,
+Signed-off-by: Derek Robson <robsonde@gmail.com>
+---
+ drivers/staging/iio/impedance-analyzer/ad5933.c | 16 ++++++++--------
+ 1 file changed, 8 insertions(+), 8 deletions(-)
 
-Jonathan
-> ---
->  drivers/iio/temperature/maxim_thermocouple.c | 1 +
->  1 file changed, 1 insertion(+)
-> 
-> diff --git a/drivers/iio/temperature/maxim_thermocouple.c b/drivers/iio/temperature/maxim_thermocouple.c
-> index f962f31..5572142 100644
-> --- a/drivers/iio/temperature/maxim_thermocouple.c
-> +++ b/drivers/iio/temperature/maxim_thermocouple.c
-> @@ -231,6 +231,7 @@ static int maxim_thermocouple_probe(struct spi_device *spi)
->  	indio_dev->available_scan_masks = chip->scan_masks;
->  	indio_dev->num_channels = chip->num_channels;
->  	indio_dev->modes = INDIO_DIRECT_MODE;
-> +	indio_dev->dev.parent = &spi->dev;
->  
->  	data = iio_priv(indio_dev);
->  	data->spi = spi;
-> 
+diff --git a/drivers/staging/iio/impedance-analyzer/ad5933.c b/drivers/staging/iio/impedance-analyzer/ad5933.c
+index 5e96352fa4ac..297665d3fe11 100644
+--- a/drivers/staging/iio/impedance-analyzer/ad5933.c
++++ b/drivers/staging/iio/impedance-analyzer/ad5933.c
+@@ -345,12 +345,12 @@ static ssize_t ad5933_store_frequency(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static IIO_DEVICE_ATTR(out_voltage0_freq_start, S_IRUGO | S_IWUSR,
++static IIO_DEVICE_ATTR(out_voltage0_freq_start, 0644,
+ 			ad5933_show_frequency,
+ 			ad5933_store_frequency,
+ 			AD5933_REG_FREQ_START);
+ 
+-static IIO_DEVICE_ATTR(out_voltage0_freq_increment, S_IRUGO | S_IWUSR,
++static IIO_DEVICE_ATTR(out_voltage0_freq_increment, 0644,
+ 			ad5933_show_frequency,
+ 			ad5933_store_frequency,
+ 			AD5933_REG_FREQ_INC);
+@@ -469,32 +469,32 @@ static ssize_t ad5933_store(struct device *dev,
+ 	return ret ? ret : len;
+ }
+ 
+-static IIO_DEVICE_ATTR(out_voltage0_scale, S_IRUGO | S_IWUSR,
++static IIO_DEVICE_ATTR(out_voltage0_scale, 0644,
+ 			ad5933_show,
+ 			ad5933_store,
+ 			AD5933_OUT_RANGE);
+ 
+-static IIO_DEVICE_ATTR(out_voltage0_scale_available, S_IRUGO,
++static IIO_DEVICE_ATTR(out_voltage0_scale_available, 0444,
+ 			ad5933_show,
+ 			NULL,
+ 			AD5933_OUT_RANGE_AVAIL);
+ 
+-static IIO_DEVICE_ATTR(in_voltage0_scale, S_IRUGO | S_IWUSR,
++static IIO_DEVICE_ATTR(in_voltage0_scale, 0644,
+ 			ad5933_show,
+ 			ad5933_store,
+ 			AD5933_IN_PGA_GAIN);
+ 
+-static IIO_DEVICE_ATTR(in_voltage0_scale_available, S_IRUGO,
++static IIO_DEVICE_ATTR(in_voltage0_scale_available, 0444,
+ 			ad5933_show,
+ 			NULL,
+ 			AD5933_IN_PGA_GAIN_AVAIL);
+ 
+-static IIO_DEVICE_ATTR(out_voltage0_freq_points, S_IRUGO | S_IWUSR,
++static IIO_DEVICE_ATTR(out_voltage0_freq_points, 0644,
+ 			ad5933_show,
+ 			ad5933_store,
+ 			AD5933_FREQ_POINTS);
+ 
+-static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, S_IRUGO | S_IWUSR,
++static IIO_DEVICE_ATTR(out_voltage0_settling_cycles, 0644,
+ 			ad5933_show,
+ 			ad5933_store,
+ 			AD5933_OUT_SETTLING_CYCLES);
+-- 
+2.11.1
 
