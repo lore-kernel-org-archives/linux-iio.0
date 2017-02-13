@@ -1,14 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx07-00178001.pphosted.com ([62.209.51.94]:31318 "EHLO
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:63883 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
-        by vger.kernel.org with ESMTP id S1751620AbdB0LRw (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2017 06:17:52 -0500
-Subject: Re: [RFC v2 2/7] IIO: Add bindings for simple sigma delta adc
-To: Rob Herring <robh@kernel.org>
-References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
- <1487003909-11710-3-git-send-email-arnaud.pouliquen@st.com>
- <20170222151750.h5d7gycltwnk7b4t@rob-hp-laptop>
-CC: Mark Rutland <mark.rutland@arm.com>,
+        by vger.kernel.org with ESMTP id S1752962AbdBMQko (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Feb 2017 11:40:44 -0500
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -16,87 +13,182 @@ CC: Mark Rutland <mark.rutland@arm.com>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
+        Mark Brown <broonie@kernel.org>
+CC: <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "kernel@stlinux.com" <kernel@stlinux.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Olivier MOYSAN <olivier.moysan@st.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <6943aaf5-b580-0fd1-7a2e-b99f7a266388@st.com>
-Date: Mon, 27 Feb 2017 12:15:47 +0100
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <kernel@stlinux.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        <arnaud.pouliquen@st.com>, olivier moysan <olivier.moysan@st.com>
+Subject: [RFC v2 3/7] IIO: ADC: add sigma delta modulator support
+Date: Mon, 13 Feb 2017 17:38:25 +0100
+Message-ID: <1487003909-11710-4-git-send-email-arnaud.pouliquen@st.com>
+In-Reply-To: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
+References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20170222151750.h5d7gycltwnk7b4t@rob-hp-laptop>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Rob,
+Add dummy driver to support sigma delta modulators.
 
-Please find my answers in-line
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+---
+ drivers/iio/adc/Kconfig         |  11 ++++
+ drivers/iio/adc/Makefile        |   1 +
+ drivers/iio/adc/simple_sd_adc.c | 112 ++++++++++++++++++++++++++++++++++++++++
+ 3 files changed, 124 insertions(+)
+ create mode 100644 drivers/iio/adc/simple_sd_adc.c
 
-Regards,
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index e0b3c09..d4366ac 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -419,6 +419,17 @@ config ROCKCHIP_SARADC
+ 	  To compile this driver as a module, choose M here: the
+ 	  module will be called rockchip_saradc.
+ 
++config SIMPLE_SD_ADC
++	tristate "Simple sigma delta modulator"
++	depends on OF
++        select IIO_BUFFER
++        select IIO_TRIGGERED_BUFFER
++	help
++	  Select this option to enables generic sigma delta modulator.
++
++	  This driver can also be built as a module.  If so, the module
++	  will be called simple-sd-adc.
++
+ config STM32_ADC_CORE
+ 	tristate "STMicroelectronics STM32 adc core"
+ 	depends on ARCH_STM32 || COMPILE_TEST
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 8e02a94..bd67144 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -57,3 +57,4 @@ obj-$(CONFIG_VF610_ADC) += vf610_adc.o
+ obj-$(CONFIG_VIPERBOARD_ADC) += viperboard_adc.o
+ xilinx-xadc-y := xilinx-xadc-core.o xilinx-xadc-events.o
+ obj-$(CONFIG_XILINX_XADC) += xilinx-xadc.o
++obj-$(CONFIG_SIMPLE_SD_ADC) += simple_sd_adc.o
+diff --git a/drivers/iio/adc/simple_sd_adc.c b/drivers/iio/adc/simple_sd_adc.c
+new file mode 100644
+index 0000000..4bc8b3c
+--- /dev/null
++++ b/drivers/iio/adc/simple_sd_adc.c
+@@ -0,0 +1,112 @@
++/*
++ * simple sigma delta modulator driver
++ *
++ * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
++ * Author: Arnaud Pouliquen <arnaud.pouliquen@st.com>.
++ *
++ * License type: GPLv2
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
++ * or FITNESS FOR A PARTICULAR PURPOSE.
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/iio/iio.h>
++#include <linux/module.h>
++#include <linux/of_device.h>
++
++#include <linux/iio/triggered_buffer.h>
++
++static int simple_sd_of_xlate(struct iio_dev *iio,
++			      const struct of_phandle_args *iiospec)
++{
++	dev_dbg(&iio->dev, "%s:\n", __func__);
++	if (iiospec->args[0] != 0) {
++		dev_err(&iio->dev, "Only one channel supported\n");
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static const struct iio_info simple_sd_iio_info = {
++	.of_xlate = simple_sd_of_xlate,
++};
++
++static const struct iio_buffer_setup_ops simple_sd_buffer_ops;
++
++static int simple_sd_probe(struct platform_device *pdev)
++{
++	struct device *dev = &pdev->dev;
++	struct iio_dev *iio;
++	struct iio_chan_spec *ch;
++
++	dev_dbg(&pdev->dev, "%s:\n", __func__);
++	iio = devm_iio_device_alloc(dev, 0);
++	if (!iio)
++		return -ENOMEM;
++
++	/* Define one channel */
++	ch = devm_kzalloc(&iio->dev, sizeof(*ch), GFP_KERNEL);
++	if (!ch)
++		return -ENOMEM;
++
++	iio->dev.parent = dev;
++	iio->dev.of_node = dev->of_node;
++	iio->name = dev_name(dev);
++	iio->info = &simple_sd_iio_info;
++	iio->modes = INDIO_BUFFER_HARDWARE;
++
++	ch->type = IIO_VOLTAGE;
++	ch->indexed = 1;
++	ch->scan_index = 0;
++	ch->scan_type.sign = 'u';
++	ch->scan_type.realbits = 1;
++	ch->scan_type.storagebits = 1;
++	ch->scan_type.shift = 0;
++
++	iio->num_channels = 1;
++	iio->channels = ch;
++
++	platform_set_drvdata(pdev, iio);
++
++	return iio_device_register(iio);
++}
++
++static int simple_sd_remove(struct platform_device *pdev)
++{
++	struct iio_dev *iio = platform_get_drvdata(pdev);
++
++	iio_device_unregister(iio);
++
++	return 0;
++}
++
++static const struct of_device_id sd_adc_of_match[] = {
++	{ .compatible = "sd-modulator" },
++	{ }
++};
++MODULE_DEVICE_TABLE(of, adc081c_of_match);
++
++static struct platform_driver simple_sd_adc = {
++	.driver = {
++		.name = "simple_sd_adc",
++		.of_match_table = of_match_ptr(sd_adc_of_match),
++	},
++	.probe = simple_sd_probe,
++	.remove = simple_sd_remove,
++};
++
++module_platform_driver(simple_sd_adc);
++
++MODULE_DESCRIPTION("simple signma delta modulator");
++MODULE_AUTHOR("Arnaud Pouliquen <arnaud.pouliquen@st.com>");
++MODULE_LICENSE("GPL v2");
+-- 
+1.9.1
 
-Arnaud
-
-On 02/22/2017 04:17 PM, Rob Herring wrote:
-> On Mon, Feb 13, 2017 at 05:38:24PM +0100, Arnaud Pouliquen wrote:
->> Add documentation of device tree bindings to support
->> sigma delta modulator in IIO framework.
->>
->> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->> ---
->>  Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt | 13 +++++++++++++
->>  1 file changed, 13 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
->>
->> diff --git a/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt b/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
->> new file mode 100644
->> index 0000000..2b3968a
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
->> @@ -0,0 +1,13 @@
->> +Device-Tree bindings for simple sigma delta adc
-> 
-> What makes it "simple"?
-"simple" sigma delta modulator are external chip that just converts
-analog signal in sigma delta modulation. No configuration needs.
-"Simple" is use to differentiate SD ADC that offers interfaces to
-activate some internal processing ( gain, offset compensation...)
-
-> 
->> +
->> +Required properties:
->> +- compatible: should be "sd-modulator".
->> +- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
->> +
->> +Example node:
->> +
->> +	ads1202: simple_sd_adc@0 {
-> 
-> Is ads1202 the actual chip? Then it should be in the compatible list.
-I tried to define a generic device to support several SD modulator
-chips, inspired by ALSA "dmic-codec" device.
-I have none exhaustive list of chip that can be handled by the driver,
-but i found several devices that could match...
-That why i did not use chip name in compatible list.
-What should be the best way to do it?
-
-> 
-> unit address without a reg prop is an error. The node name should be 
-> "adc".
-> 
->> +		compatible = "sd-modulator";
->> +		#io-channel-cells = <1>;
->> +		status = "okay";
-> 
-> Drop status from examples.
-> 
->> +	};
->> -- 
->> 1.9.1
->>
