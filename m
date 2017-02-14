@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:42988 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:43003 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753107AbdBNJls (ORCPT
+        with ESMTP id S1753108AbdBNJls (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Feb 2017 04:41:48 -0500
 From: Quentin Schulz <quentin.schulz@free-electrons.com>
 To: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
@@ -14,62 +14,60 @@ Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
         linux-arm-kernel@lists.infradead.org,
         thomas.petazzoni@free-electrons.com, icenowy@aosc.xyz,
         bonbons@linux-vserver.org
-Subject: [PATCH v3 02/18] power: supply: power_supply_core: add constant-current-charge optional property
-Date: Tue, 14 Feb 2017 10:40:56 +0100
-Message-Id: <20170214094112.27426-3-quentin.schulz@free-electrons.com>
+Subject: [PATCH v3 03/18] mfd: axp20x: correct name of temperature data ADC registers
+Date: Tue, 14 Feb 2017 10:40:57 +0100
+Message-Id: <20170214094112.27426-4-quentin.schulz@free-electrons.com>
 In-Reply-To: <20170214094112.27426-1-quentin.schulz@free-electrons.com>
 References: <20170214094112.27426-1-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This adds the constant-current-charge property to the list of optional
-properties for the battery.
+The registers 0x56 and 0x57 of AXP22X PMIC store the value of the
+internal temperature of the PMIC.
 
-The constant charge current is critical for batteries as they can't
-handle all charge currents.
+This patch modifies the name of these registers from AXP22X_PMIC_ADC_H/L
+to AXP22X_PMIC_TEMP_H/L so their purpose is clearer.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
 ---
 
-added in v3
+added in v2
 
- drivers/power/supply/power_supply_core.c | 3 +++
- include/linux/power_supply.h             | 1 +
- 2 files changed, 4 insertions(+)
+ drivers/mfd/axp20x.c       | 2 +-
+ include/linux/mfd/axp20x.h | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
-diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
-index ced8fef..c844def 100644
---- a/drivers/power/supply/power_supply_core.c
-+++ b/drivers/power/supply/power_supply_core.c
-@@ -498,6 +498,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
- 	info->energy_full_design_uwh = -EINVAL;
- 	info->charge_full_design_uah = -EINVAL;
- 	info->voltage_min_design_uv  = -EINVAL;
-+	info->constant_charge_current_ua  = -EINVAL;
- 
- 	if (!psy->of_node) {
- 		dev_warn(&psy->dev, "%s currently only supports devicetree\n",
-@@ -522,6 +523,8 @@ int power_supply_get_battery_info(struct power_supply *psy,
- 			     &info->charge_full_design_uah);
- 	of_property_read_u32(battery_np, "voltage-min-design-microvolt",
- 			     &info->voltage_min_design_uv);
-+	of_property_read_u32(battery_np, "constant-charge-current-microamp",
-+			     &info->constant_charge_current_ua);
- 
- 	return 0;
- }
-diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
-index e84f1d3..f723a8e 100644
---- a/include/linux/power_supply.h
-+++ b/include/linux/power_supply.h
-@@ -301,6 +301,7 @@ struct power_supply_battery_info {
- 	int energy_full_design_uwh;	/* microWatt-hours */
- 	int charge_full_design_uah;	/* microAmp-hours */
- 	int voltage_min_design_uv;	/* microVolts */
-+	int constant_charge_current_ua; /* microAmps */
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index 619a83e..9c2fd37 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -102,7 +102,7 @@ static const struct regmap_range axp22x_volatile_ranges[] = {
+ 	regmap_reg_range(AXP20X_VBUS_IPSOUT_MGMT, AXP20X_VBUS_IPSOUT_MGMT),
+ 	regmap_reg_range(AXP20X_IRQ1_EN, AXP20X_IRQ5_STATE),
+ 	regmap_reg_range(AXP22X_GPIO_STATE, AXP22X_GPIO_STATE),
+-	regmap_reg_range(AXP22X_PMIC_ADC_H, AXP20X_IPSOUT_V_HIGH_L),
++	regmap_reg_range(AXP22X_PMIC_TEMP_H, AXP20X_IPSOUT_V_HIGH_L),
+ 	regmap_reg_range(AXP20X_FG_RES, AXP20X_FG_RES),
  };
  
- extern struct atomic_notifier_head power_supply_notifier;
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index a4860bc..5ecadbb 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -228,8 +228,8 @@ enum {
+ #define AXP20X_OCV_MAX			0xf
+ 
+ /* AXP22X specific registers */
+-#define AXP22X_PMIC_ADC_H		0x56
+-#define AXP22X_PMIC_ADC_L		0x57
++#define AXP22X_PMIC_TEMP_H		0x56
++#define AXP22X_PMIC_TEMP_L		0x57
+ #define AXP22X_TS_ADC_H			0x58
+ #define AXP22X_TS_ADC_L			0x59
+ #define AXP22X_BATLOW_THRES1		0xe6
 -- 
 2.9.3
 
