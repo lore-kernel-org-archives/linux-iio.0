@@ -1,96 +1,105 @@
-Return-Path: <SRS0=u7vp=Z3=googlemail.com=martin.blumenstingl@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <3419d25d-cecc-0e00-9c60-578553221784@gmail.com>
-References: <eae2ac11-867f-d471-7430-963906746d29@gmail.com> <3419d25d-cecc-0e00-9c60-578553221784@gmail.com>
-From: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-Date: Wed, 15 Feb 2017 00:03:29 +0100
-Message-ID: <CAFBinCDVT1mhN0AexeWvQdnnVaW3q_DvOAzibq0gZeB27Wapqw@mail.gmail.com>
-Subject: Re: [PATCH 2/2] iio: adc: meson-saradc: improve meson_sar_adc_read_raw_sample
-To: Heiner Kallweit <hkallweit1@gmail.com>
+Return-Path: <SRS0=zQWI=Z4=gmail.com=hkallweit1@kernel.org>
+Subject: Re: [PATCH 2/2] iio: adc: meson-saradc: improve
+ meson_sar_adc_read_raw_sample
+To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+References: <eae2ac11-867f-d471-7430-963906746d29@gmail.com>
+ <3419d25d-cecc-0e00-9c60-578553221784@gmail.com>
+ <CAFBinCDVT1mhN0AexeWvQdnnVaW3q_DvOAzibq0gZeB27Wapqw@mail.gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-Content-Type: text/plain; charset=UTF-8
+ Lars-Peter Clausen <lars@metafoo.de>,
+ Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Message-ID: <66183865-c45e-0750-54c9-72f3dc2bebd6@gmail.com>
+Date: Wed, 15 Feb 2017 20:30:18 +0100
+MIME-Version: 1.0
+In-Reply-To: <CAFBinCDVT1mhN0AexeWvQdnnVaW3q_DvOAzibq0gZeB27Wapqw@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 List-ID: <linux-iio@vger.kernel.org>
 
-On Tue, Feb 14, 2017 at 10:58 PM, Heiner Kallweit <hkallweit1@gmail.com> wrote:
-> After sampling there should always be only one value in the FIFO.
-> This also applies to averaging mode as the averaging is done
-> chip-internally. So we don't have to loop and let the driver
-> complain if there's not exactly one value in the FIFO.
->
-> If the value belongs to a different channel then don't silently
-> swallow the value but complain.
->
-> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Am 15.02.2017 um 00:03 schrieb Martin Blumenstingl:
+> On Tue, Feb 14, 2017 at 10:58 PM, Heiner Kallweit <hkallweit1@gmail.com> wrote:
+>> After sampling there should always be only one value in the FIFO.
+>> This also applies to averaging mode as the averaging is done
+>> chip-internally. So we don't have to loop and let the driver
+>> complain if there's not exactly one value in the FIFO.
+>>
+>> If the value belongs to a different channel then don't silently
+>> swallow the value but complain.
+>>
+>> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+> Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+> 
+>> ---
+>>  drivers/iio/adc/meson_saradc.c | 36 +++++++++++++++++-------------------
+>>  1 file changed, 17 insertions(+), 19 deletions(-)
+>>
+>> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+>> index dbd56bcc..d39711c0 100644
+>> --- a/drivers/iio/adc/meson_saradc.c
+>> +++ b/drivers/iio/adc/meson_saradc.c
+>> @@ -278,33 +278,31 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+>>                                          int *val)
+>>  {
+>>         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+>> -       int regval, fifo_chan, fifo_val, sum = 0, count = 0;
+>> +       int regval, fifo_chan, fifo_val, count;
+>>
+>>         if(!wait_for_completion_timeout(&priv->done,
+>>                                 msecs_to_jiffies(MESON_SAR_ADC_TIMEOUT)))
+>>                 return -ETIMEDOUT;
+>>
+> 
+> I thought I had changed the following loop when I introduced
+> meson_sar_adc_clear_fifo() but it seems that I didn't do it - so
+> thanks for cleaning this up!
+>> -       while (meson_sar_adc_get_fifo_count(indio_dev) > 0 &&
+>> -              count < MESON_SAR_ADC_MAX_FIFO_SIZE) {
+>> -               regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
+>> -
+>> -               fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK,
+>> -                                     regval);
+>> -               if (fifo_chan != chan->channel)
+>> -                       continue;
+>> -
+>> -               fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK,
+>> -                                    regval);
+>> -               fifo_val &= (BIT(priv->data->resolution) - 1);
+>> -
+>> -               sum += fifo_val;
+>> -               count++;
+>> +       count = meson_sar_adc_get_fifo_count(indio_dev);
+>> +       if (count != 1) {
+>> +               dev_err(&indio_dev->dev,
+>> +                       "ADC FIFO has %d elements instead of one\n", count);
+>> +               return -EINVAL;
+>>         }
+>>
+>> -       if (!count)
+>> -               return -ENOENT;
+>> +       regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
+>> +       fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK, regval);
+>> +       if (fifo_chan != chan->channel) {
+>> +               dev_err(&indio_dev->dev,
+>> +                       "ADC FIFO entry belongs to channel %d instead of %d\n",
+>> +                       fifo_chan, chan->channel);
+>> +               return -EINVAL;
+>> +       }
+>>
+>> -       *val = sum / count;
+>> +       fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK, regval);
+>> +       fifo_val &= GENMASK(priv->data->resolution - 1, 0);
+> my code used "BIT(priv->data->resolution) - 1" instead of GENMASK. it
+> shouldn't make a difference so I don't see an issue with that change
+> 
+Functionally it's the same. I just think that using GENMASK is more
+intuitive here as the statement is about applying a bitmask to a value.
 
-> ---
->  drivers/iio/adc/meson_saradc.c | 36 +++++++++++++++++-------------------
->  1 file changed, 17 insertions(+), 19 deletions(-)
->
-> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
-> index dbd56bcc..d39711c0 100644
-> --- a/drivers/iio/adc/meson_saradc.c
-> +++ b/drivers/iio/adc/meson_saradc.c
-> @@ -278,33 +278,31 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
->                                          int *val)
->  {
->         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
-> -       int regval, fifo_chan, fifo_val, sum = 0, count = 0;
-> +       int regval, fifo_chan, fifo_val, count;
->
->         if(!wait_for_completion_timeout(&priv->done,
->                                 msecs_to_jiffies(MESON_SAR_ADC_TIMEOUT)))
->                 return -ETIMEDOUT;
->
-
-I thought I had changed the following loop when I introduced
-meson_sar_adc_clear_fifo() but it seems that I didn't do it - so
-thanks for cleaning this up!
-> -       while (meson_sar_adc_get_fifo_count(indio_dev) > 0 &&
-> -              count < MESON_SAR_ADC_MAX_FIFO_SIZE) {
-> -               regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
-> -
-> -               fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK,
-> -                                     regval);
-> -               if (fifo_chan != chan->channel)
-> -                       continue;
-> -
-> -               fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK,
-> -                                    regval);
-> -               fifo_val &= (BIT(priv->data->resolution) - 1);
-> -
-> -               sum += fifo_val;
-> -               count++;
-> +       count = meson_sar_adc_get_fifo_count(indio_dev);
-> +       if (count != 1) {
-> +               dev_err(&indio_dev->dev,
-> +                       "ADC FIFO has %d elements instead of one\n", count);
-> +               return -EINVAL;
->         }
->
-> -       if (!count)
-> -               return -ENOENT;
-> +       regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
-> +       fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK, regval);
-> +       if (fifo_chan != chan->channel) {
-> +               dev_err(&indio_dev->dev,
-> +                       "ADC FIFO entry belongs to channel %d instead of %d\n",
-> +                       fifo_chan, chan->channel);
-> +               return -EINVAL;
-> +       }
->
-> -       *val = sum / count;
-> +       fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK, regval);
-> +       fifo_val &= GENMASK(priv->data->resolution - 1, 0);
-my code used "BIT(priv->data->resolution) - 1" instead of GENMASK. it
-shouldn't make a difference so I don't see an issue with that change
-
-> +       *val = fifo_val;
->
->         return 0;
->  }
-> --
-> 2.11.1
->
->
+>> +       *val = fifo_val;
+>>
+>>         return 0;
+>>  }
+>> --
+>> 2.11.1
+>>
+>>
+> 
