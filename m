@@ -1,105 +1,36 @@
-Return-Path: <SRS0=zQWI=Z4=gmail.com=hkallweit1@kernel.org>
-Subject: Re: [PATCH 2/2] iio: adc: meson-saradc: improve
- meson_sar_adc_read_raw_sample
-To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-References: <eae2ac11-867f-d471-7430-963906746d29@gmail.com>
- <3419d25d-cecc-0e00-9c60-578553221784@gmail.com>
- <CAFBinCDVT1mhN0AexeWvQdnnVaW3q_DvOAzibq0gZeB27Wapqw@mail.gmail.com>
-Cc: Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
- Lars-Peter Clausen <lars@metafoo.de>,
- Peter Meerwald-Stadler <pmeerw@pmeerw.net>, linux-iio@vger.kernel.org
-From: Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <66183865-c45e-0750-54c9-72f3dc2bebd6@gmail.com>
-Date: Wed, 15 Feb 2017 20:30:18 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:17079 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1752279AbdBOQ5P (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Feb 2017 11:57:15 -0500
+From: Fabrice Gasnier <fabrice.gasnier@st.com>
+To: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
+CC: <linux-iio@vger.kernel.org>, <mark.rutland@arm.com>,
+        <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
+        <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
+        <fabrice.gasnier@st.com>
+Subject: [PATCH 0/2] iio: allow to set STM32 ADC resolution 
+Date: Wed, 15 Feb 2017 17:55:55 +0100
+Message-ID: <1487177757-19427-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-In-Reply-To: <CAFBinCDVT1mhN0AexeWvQdnnVaW3q_DvOAzibq0gZeB27Wapqw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Am 15.02.2017 um 00:03 schrieb Martin Blumenstingl:
-> On Tue, Feb 14, 2017 at 10:58 PM, Heiner Kallweit <hkallweit1@gmail.com> wrote:
->> After sampling there should always be only one value in the FIFO.
->> This also applies to averaging mode as the averaging is done
->> chip-internally. So we don't have to loop and let the driver
->> complain if there's not exactly one value in the FIFO.
->>
->> If the value belongs to a different channel then don't silently
->> swallow the value but complain.
->>
->> Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
-> Acked-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
-> 
->> ---
->>  drivers/iio/adc/meson_saradc.c | 36 +++++++++++++++++-------------------
->>  1 file changed, 17 insertions(+), 19 deletions(-)
->>
->> diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
->> index dbd56bcc..d39711c0 100644
->> --- a/drivers/iio/adc/meson_saradc.c
->> +++ b/drivers/iio/adc/meson_saradc.c
->> @@ -278,33 +278,31 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
->>                                          int *val)
->>  {
->>         struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
->> -       int regval, fifo_chan, fifo_val, sum = 0, count = 0;
->> +       int regval, fifo_chan, fifo_val, count;
->>
->>         if(!wait_for_completion_timeout(&priv->done,
->>                                 msecs_to_jiffies(MESON_SAR_ADC_TIMEOUT)))
->>                 return -ETIMEDOUT;
->>
-> 
-> I thought I had changed the following loop when I introduced
-> meson_sar_adc_clear_fifo() but it seems that I didn't do it - so
-> thanks for cleaning this up!
->> -       while (meson_sar_adc_get_fifo_count(indio_dev) > 0 &&
->> -              count < MESON_SAR_ADC_MAX_FIFO_SIZE) {
->> -               regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
->> -
->> -               fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK,
->> -                                     regval);
->> -               if (fifo_chan != chan->channel)
->> -                       continue;
->> -
->> -               fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK,
->> -                                    regval);
->> -               fifo_val &= (BIT(priv->data->resolution) - 1);
->> -
->> -               sum += fifo_val;
->> -               count++;
->> +       count = meson_sar_adc_get_fifo_count(indio_dev);
->> +       if (count != 1) {
->> +               dev_err(&indio_dev->dev,
->> +                       "ADC FIFO has %d elements instead of one\n", count);
->> +               return -EINVAL;
->>         }
->>
->> -       if (!count)
->> -               return -ENOENT;
->> +       regmap_read(priv->regmap, MESON_SAR_ADC_FIFO_RD, &regval);
->> +       fifo_chan = FIELD_GET(MESON_SAR_ADC_FIFO_RD_CHAN_ID_MASK, regval);
->> +       if (fifo_chan != chan->channel) {
->> +               dev_err(&indio_dev->dev,
->> +                       "ADC FIFO entry belongs to channel %d instead of %d\n",
->> +                       fifo_chan, chan->channel);
->> +               return -EINVAL;
->> +       }
->>
->> -       *val = sum / count;
->> +       fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK, regval);
->> +       fifo_val &= GENMASK(priv->data->resolution - 1, 0);
-> my code used "BIT(priv->data->resolution) - 1" instead of GENMASK. it
-> shouldn't make a difference so I don't see an issue with that change
-> 
-Functionally it's the same. I just think that using GENMASK is more
-intuitive here as the statement is about applying a bitmask to a value.
+STM32 ADC supports several resolution. Add dt option so resolution
+can be tuned at probe time. By default, maximum resolution is used
+when it isn't set.
 
->> +       *val = fifo_val;
->>
->>         return 0;
->>  }
->> --
->> 2.11.1
->>
->>
-> 
+Fabrice Gasnier (2):
+  dt-bindings: iio: stm32-adc: add option to set resolution
+  iio: adc: stm32: add dt option to set resolution
+
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt   |  4 ++
+ drivers/iio/adc/stm32-adc.c                        | 50 +++++++++++++++++++++-
+ 2 files changed, 53 insertions(+), 1 deletion(-)
+
+-- 
+1.9.1
+
