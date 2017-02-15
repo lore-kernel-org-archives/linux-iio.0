@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wm0-f66.google.com ([74.125.82.66]:36239 "EHLO
-        mail-wm0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750810AbdBOGbe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Feb 2017 01:31:34 -0500
-Received: by mail-wm0-f66.google.com with SMTP id r18so6581387wmd.3
-        for <linux-iio@vger.kernel.org>; Tue, 14 Feb 2017 22:31:34 -0800 (PST)
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:33927 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751298AbdBOTUP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Feb 2017 14:20:15 -0500
+Received: by mail-wm0-f65.google.com with SMTP id c85so9758466wmi.1
+        for <linux-iio@vger.kernel.org>; Wed, 15 Feb 2017 11:20:14 -0800 (PST)
 Subject: Re: [PATCH 1/2] iio: adc: meson-saradc: switch from polling to
  interrupt mode
 To: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
@@ -16,8 +16,8 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         linux-iio@vger.kernel.org
 From: Heiner Kallweit <hkallweit1@gmail.com>
-Message-ID: <bcc5d5a5-79ec-977e-d2e5-ab9f7da955dd@gmail.com>
-Date: Wed, 15 Feb 2017 07:31:24 +0100
+Message-ID: <3b3abf52-180e-ffb6-a1e7-7806d6bc39b4@gmail.com>
+Date: Wed, 15 Feb 2017 20:20:04 +0100
 MIME-Version: 1.0
 In-Reply-To: <CAFBinCCZhTnqBTRrtYZnQWcOgQe7h8vTmOhD0OGceiHw5iMdhQ@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
@@ -136,6 +136,16 @@ Am 15.02.2017 um 00:16 schrieb Martin Blumenstingl:
 > please note that this is an actual question, not some kind of
 > suggestion in question form
 > 
+At a first glance I couldn't see that in uboot saradc_enable is used
+somewhere in the boot process. There seems to be a uboot command line
+command triggering saradc_enable.
+But I'm no expert at all to which extent uboot is involved in system
+suspend / resume, so I might miss something.
+
+Moving this register initialization to meson_sar_adc_hw_enable()
+doesn't hurt and we're safe in case the scenario you described
+can actually occur. So I'd go for it.
+
 >>         /*
 >>          * leave sampling delay and the input clocks as configured by BL30 to
 >>          * make sure BL30 gets the values it expects when reading the
@@ -206,8 +216,4 @@ Am 15.02.2017 um 00:16 schrieb Martin Blumenstingl:
 > 
 > [0] https://github.com/khadas/u-boot/blob/d09ed9f0c69054e46af45a7aed2b3cb0f6eaa3bc/drivers/adc/saradc.c#L191
 > 
-All valid points and thanks for the link to the saradc vendor uboot driver.
-I'll come up with a v2.
-
-Rgds, Heiner
 
