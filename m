@@ -1,89 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f66.google.com ([74.125.83.66]:36495 "EHLO
-        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755319AbdBQEaO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Feb 2017 23:30:14 -0500
-Received: by mail-pg0-f66.google.com with SMTP id a123so1012013pgc.3
-        for <linux-iio@vger.kernel.org>; Thu, 16 Feb 2017 20:30:14 -0800 (PST)
-Date: Thu, 16 Feb 2017 20:30:10 -0800
-From: Alison Schofield <amsfield22@gmail.com>
-To: Daniel Baluta <daniel.baluta@gmail.com>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Julia Lawall <julia.lawall@lip6.fr>
-Subject: Re: Outreachy IIO - mentor wanted
-Message-ID: <20170217043009.GA1943@d830.WORKGROUP>
-References: <CAEnQRZBNC1bj75V0YN-Q0TPmGayzbQbQrvRW46hdfPWimTjNrA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <CAEnQRZBNC1bj75V0YN-Q0TPmGayzbQbQrvRW46hdfPWimTjNrA@mail.gmail.com>
+Received: from mail-wm0-f44.google.com ([74.125.82.44]:35857 "EHLO
+        mail-wm0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932158AbdBPOXP (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Feb 2017 09:23:15 -0500
+Received: by mail-wm0-f44.google.com with SMTP id c85so67654783wmi.1
+        for <linux-iio@vger.kernel.org>; Thu, 16 Feb 2017 06:23:14 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: linux-kernel@vger.kernel.org, jic23@kernel.org,
+        linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: fabrice.gasnier@st.com, linaro-kernel@lists.linaro.org,
+        benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v2 0/2] iio: Add parent_trigger attribute to triggers
+Date: Thu, 16 Feb 2017 15:23:01 +0100
+Message-Id: <1487254984-20122-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Feb 16, 2017 at 03:24:03PM +0200, Daniel Baluta wrote:
-> Hi all,
-> 
-> Does anyone want to mentor an intern for the Outreachy program?
-> https://kernelnewbies.org/OutreachyIntro
-> 
-> IIO drivers are very good tasks for such an intern, I have been a mentor
-> for the last 4 or 5 editions while working on:
-> 
-> * cleaning up drivers and moving them out of staging
-> * enhancing the IIO dummy driver and moving it out of staging
-> * creating drivers from scratch for simple devices
-> 
-> and it was a nice experience.
-> 
-> What a mentor should do?
-> 
-> In the pre-internship phase (14 February - 16 to March 30)
-> 
-> * review patches and guide applicants on how to find small kernel fixes
-> * create small tasks for IIO [this can be mostly borrowed from last years] [1]
-> * create a small description for the project and find a small
-> device(s) for the project.
-> 
-> In the internship phase [ 3 months starting around May ]
-> * help the intern with the setup and hardware
-> * (bi)weekly meetings for guidance or just answer interns questions on email.
-> * provide feedback to Outreachy on how the intern is doing.
-> 
-> Please let me know or Julia (Cc-ed) if you are interested.
-> 
-> The project doesn't necessary to be IIO related but it must be doable
-> by a 3rd/4th
-> year CS student with light kernel knowledge and good understanding of C.
-> 
-> thanks,
-> Daniel.
+version 2:
+- Do not automatically set parent_trigger attribute on all triggers.
+  Let driver decide to use it.
+- Improve documentation of parent_trigger
+- Improve slave modes documentation
 
+Thoses patches add parent_trigger attribute to IIO triggers.
+Parent trigger edges or levels could be used to control current
+trigger for example to start, stop or reset it.
 
-I'd be interested in driving this but I don't have an actual project 
-lined up to offer the applicants.  If someone has a project in mind
-and wants to hand it off or co-mentor, let's chat.
+Similary to what already exist to validate a device, a new (optional) 
+validate_trigger function is added in iio_trigger structure and should be
+filled by drivers.
 
-I can do the tasks updates and have some small coding tasks queued
-for the application period also.
+For STM32 triggers parent trigger edges or levels could used in various ways.
+To be able to select them "slave_mode" attribute is added to STM32 triggers.
+For example the combinaison of parent_trigger and slave_mode allows to start
+a trigger only when parent trigger level is high or to reset it on parent
+trigger rising edge.
 
-As Daniel and I have experienced, working with the hardware is
-the fun part for the intern, but getting the hardware can be a
-challenge.  It would be good if you have a sensor in mind, that
-you know is obtainable and the work will be applicable in the 
-May-August timeframe.  That is - we don't want to plan for a sensor
-and someone else submits support for it prior to the internship.
+Benjamin Gaignard (2):
+  iio: Allow triggers to be used as parent of others triggers
+  iio: stm32 trigger: Implement parent trigger feature
 
-Other safer ideas (instead of brand new sensor) might be...
- - adding new features to an existing class of drivers where the
-	intern may only need to verify it with one sensor. 
- - migrating another driver out of input/misc such as Eva is going
-	right now with adxl345.
- - what else has been lingering on your todo/wish list ???
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  43 +++++++++
+ .../ABI/testing/sysfs-bus-iio-trigger-sysfs        |  10 ++
+ drivers/iio/industrialio-trigger.c                 |  68 +++++++++++++
+ drivers/iio/trigger/stm32-timer-trigger.c          | 105 +++++++++++++++++++++
+ include/linux/iio/trigger.h                        |   7 +-
+ 5 files changed, 232 insertions(+), 1 deletion(-)
 
-alisons
+-- 
+1.9.1
 
-> 
-> [1] https://kernelnewbies.org/IIO_tasks
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
