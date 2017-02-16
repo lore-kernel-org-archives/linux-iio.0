@@ -1,16 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:60184 "EHLO
-        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1751161AbdBOPsq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Feb 2017 10:48:46 -0500
-Subject: Re: [RFC v2 4/7] ASoC: dmaengine_pcm: add copy support
-To: Mark Brown <broonie@kernel.org>
-References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
- <1487003909-11710-5-git-send-email-arnaud.pouliquen@st.com>
- <20170214171630.qgkyoymxyqjiiblh@sirena.org.uk>
- <40633f7c-a2ac-1658-cc9d-b30eaff8a95a@st.com>
- <20170215145341.sntwx7oqyqmw6azv@sirena.org.uk>
-CC: Rob Herring <robh+dt@kernel.org>,
+Received: from mezzanine.sirena.org.uk ([106.187.55.193]:35926 "EHLO
+        mezzanine.sirena.org.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932740AbdBPUPf (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Feb 2017 15:15:35 -0500
+Date: Thu, 16 Feb 2017 20:14:27 +0000
+From: Mark Brown <broonie@kernel.org>
+To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+Cc: Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
@@ -28,54 +24,64 @@ CC: Rob Herring <robh+dt@kernel.org>,
         Maxime Coquelin <mcoquelin.stm32@gmail.com>,
         Alexandre TORGUE <alexandre.torgue@st.com>,
         Olivier MOYSAN <olivier.moysan@st.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <338f8db7-2077-626f-986b-b4e3df40469c@st.com>
-Date: Wed, 15 Feb 2017 16:46:44 +0100
+Message-ID: <20170216201427.z7ixcwbuyvb7ajgn@sirena.org.uk>
+References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
+ <1487003909-11710-5-git-send-email-arnaud.pouliquen@st.com>
+ <20170214171630.qgkyoymxyqjiiblh@sirena.org.uk>
+ <40633f7c-a2ac-1658-cc9d-b30eaff8a95a@st.com>
+ <20170215145341.sntwx7oqyqmw6azv@sirena.org.uk>
+ <338f8db7-2077-626f-986b-b4e3df40469c@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20170215145341.sntwx7oqyqmw6azv@sirena.org.uk>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: multipart/signed; micalg=pgp-sha256;
+        protocol="application/pgp-signature"; boundary="7tmmzmmcxmah5mqc"
+In-Reply-To: <338f8db7-2077-626f-986b-b4e3df40469c@st.com>
+Subject: Re: [RFC v2 4/7] ASoC: dmaengine_pcm: add copy support
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
+--7tmmzmmcxmah5mqc
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 
-On 02/15/2017 03:53 PM, Mark Brown wrote:
-> On Wed, Feb 15, 2017 at 02:59:18PM +0100, Arnaud Pouliquen wrote:
-> 
->> For DFSDM we need to re-arrange samples after DMA transfer,
->> before sending them to application. For this, a copy ops(called
->> in snd_pcm_lib_read_transfer) alreday exists in snd_pcm_ops
->> struct.
-> 
-> No, copy() is an alternative to doing DMA rather than something
-> that works with DMA.  If you want to have some sort of post
-> processing operation it shoudn't be called copy().  It's probably
-> worth considering just making a new format and letting userspace
-> convert things here.
-> 
-You mean using a plug-in alsa to do it? this seems not possible with
-tiny-alsa...
-Without a plug-in, driver will not be compatible with standard audio
-application.
+On Wed, Feb 15, 2017 at 04:46:44PM +0100, Arnaud Pouliquen wrote:
+> On 02/15/2017 03:53 PM, Mark Brown wrote:
+> > On Wed, Feb 15, 2017 at 02:59:18PM +0100, Arnaud Pouliquen wrote:
 
-I'm newbies in alsa plugin But it seems quite tricky to do it. This
-solution means that userspace has to be aware on hardware constraint.
-Processing to do is a mask on 8 LSB + a left shift on bits. T shift
-value depends on several parameters: the SPI frequency, the sampling
-rate and the filter parameters.
-That means an alsa control to get scaling, handled by the plugin.
+> > No, copy() is an alternative to doing DMA rather than something
+> > that works with DMA.  If you want to have some sort of post
+> > processing operation it shoudn't be called copy().  It's probably
+> > worth considering just making a new format and letting userspace
+> > convert things here.
 
-So i would prefer to find a way to do it in driver...
+> You mean using a plug-in alsa to do it? this seems not possible with
+> tiny-alsa...
+> Without a plug-in, driver will not be compatible with standard audio
+> application.
 
-I saw that blackfin driver implements this kind of mechanism
-(bf5xx_pcm_copy) to support the TDM mode. if i well understood the code
-they process the TDM buffer filled by DMA. Samples are extracted from
-the good TDM slots and copied in buffer that will be sent to userland.
+Right.  But if you're using tinyalsa you've got some open coded system
+specific stuff anyway!
 
-Do you think this would be reasonable if i implement something similar
-in my driver, without using the soc generic DMA engine?
+> Do you think this would be reasonable if i implement something similar
+> in my driver, without using the soc generic DMA engine?
 
-Regards
-Arnaud
+Probably.  It might even be possible to fit it elegently into the
+generic dmaengine code, just don't say it's a copy() operation since
+that's a specific thing in ALSA.
 
+--7tmmzmmcxmah5mqc
+Content-Type: application/pgp-signature; name="signature.asc"
 
+-----BEGIN PGP SIGNATURE-----
+
+iQEzBAABCAAdFiEEreZoqmdXGLWf4p/qJNaLcl1Uh9AFAlimCCIACgkQJNaLcl1U
+h9Cklgf6A8OM/wvcw9Pgv95z65Oh1spkmE78Oc9GpTsn19JugWb9tbmN4sj7XoU0
+2dQgGD/SdYjwd9gnt1S8z7BzRg8xQV8uVkl7tgeJY2hlIxdrSOYsI0zJOfABuC3M
+It+6DdGnpYTCyBCsa388Uhtyc02XI5Wnhg8MFevU/Lqq4kaNqdsA4451ufbejXdV
+NB5JDmFv2nxCS2NYXt/D/eazCZqEJVHUyOW9+3nplJcekrKhRGiAjd68p640kWp3
+OCU0wbUb84G5/M00pl4DzlsLrS1AgztfDP1CJrtJvlsheNzPPUDaqIhlBQVGn/aM
+lxCG+tfZ47koyc0Iz7azf3qxJMfILw==
+=c56f
+-----END PGP SIGNATURE-----
+
+--7tmmzmmcxmah5mqc--
