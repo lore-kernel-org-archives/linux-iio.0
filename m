@@ -1,72 +1,83 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:33882 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753412AbdBRTQD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Feb 2017 14:16:03 -0500
-Subject: Re: [RFC 0/4] iio: trigger: Add OF support and GPIO based trigger
-To: Daniel Baluta <daniel.baluta@gmail.com>,
-        Fabrice Gasnier <fabrice.gasnier@st.com>
-References: <1487347429-31761-1-git-send-email-fabrice.gasnier@st.com>
- <CAEnQRZDey70TR=nU4rpFyVMqDuUFAGc2SpNCmraUO5x29n1+ow@mail.gmail.com>
-Cc: linux@armlinux.org.uk, Rob Herring <robh+dt@kernel.org>,
-        linux-arm-kernel@lists.infradead.org,
-        Devicetree List <devicetree@vger.kernel.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>, mcoquelin.stm32@gmail.com,
-        alexandre.torgue@st.com, Lars-Peter Clausen <lars@metafoo.de>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald <pmeerw@pmeerw.net>,
-        benjamin.gaignard@linaro.org, benjamin.gaignard@st.com,
-        Linus Walleij <linus.walleij@linaro.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <3a2d79be-d39d-10d8-6ff4-d8aea9560263@kernel.org>
-Date: Sat, 18 Feb 2017 19:07:12 +0000
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:34361 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932467AbdBQUwt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2017 15:52:49 -0500
+Date: Fri, 17 Feb 2017 12:52:44 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Sebastian Reichel <sre@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Petr Cvek <petr.cvek@tul.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Michel Verlaan <michel.verl@gmail.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com
+Subject: Re: [PATCH v9 2/8] drivers:input:tsc2007: check for presence and
+ power down tsc2007 during probe
+Message-ID: <20170217205244.GG13050@dtor-ws>
+References: <cover.1482936802.git.hns@goldelico.com>
+ <f39f47ebef2224bd73e114ee529768756bb8972a.1482936802.git.hns@goldelico.com>
 MIME-Version: 1.0
-In-Reply-To: <CAEnQRZDey70TR=nU4rpFyVMqDuUFAGc2SpNCmraUO5x29n1+ow@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <f39f47ebef2224bd73e114ee529768756bb8972a.1482936802.git.hns@goldelico.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/02/17 16:23, Daniel Baluta wrote:
-> On Fri, Feb 17, 2017 at 6:03 PM, Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
->> Hi,
->>
->> I send this as an RFC, as I'm digging to try to get as generic
->> as possible GPIO based trigger support, as discussed earlier in
->> other patchset "Add EXTI GPIO trigger support to STM32 ADC":
->> https://www.spinics.net/lists/arm-kernel/msg559091.html
->>
->> Following various comments on this, I sent this RFC to address two
->> topics, that I see as possible prerequisite:
->> - Add trigger OF support
->> - GPIO based trigger
+On Wed, Dec 28, 2016 at 03:53:17PM +0100, H. Nikolaus Schaller wrote:
+> 1. check if chip is really present and don't succeed if it isn't.
+> 2. if it succeeds, power down the chip until accessed
 > 
-> I wonder if we could use configfs to create and configure
-> a GPIO based trigger.
-> 
-> You should just create another trigger type (look into
-> drivers/iio/trigger/iio-trig-hrtimer.c)
-> the userspace API will look like this:
-> 
-> # cd /config/iio/triggers
-> # insert your iio-trig-gpio
-> # setup the global parameters for the GPIO (the local params can be
-> set via dts/acpi)
-> # cd /config/iio/trigers/gpios/
-> 
-> #mkdir t1
-> 
-> And this will create an io-gpio-trigger named t1.
-> 
-> Not sure this fits your usecase but would be nice to consider.
-> 
-It might potentially make sense to support both DT or similar instantiation and
-instantiation from userspace. Primary route seems to me to always be DT based
-though as we are dealing with wiring...
+> Signed-off-by: H. Nikolaus Schaller <hns@goldelico.com>
 
-So I'm unconvinced on the configfs option, but might be talked round.
-> thanks,
-> Daniel.
+Applied, thank you.
+
+> ---
+>  drivers/input/touchscreen/tsc2007.c | 8 ++++++++
+>  1 file changed, 8 insertions(+)
+> 
+> diff --git a/drivers/input/touchscreen/tsc2007.c b/drivers/input/touchscreen/tsc2007.c
+> index c1d9593..76b462b 100644
+> --- a/drivers/input/touchscreen/tsc2007.c
+> +++ b/drivers/input/touchscreen/tsc2007.c
+> @@ -529,6 +529,14 @@ static int tsc2007_probe(struct i2c_client *client,
+>  
+>  	tsc2007_stop(ts);
+>  
+> +	/* power down the chip (TSC2007_SETUP does not ACK on I2C) */
+> +	err = tsc2007_xfer(ts, PWRDOWN);
+> +	if (err < 0) {
+> +		dev_err(&client->dev,
+> +			"Failed to setup chip: %d\n", err);
+> +		return err;	/* usually, chip does not respond */
+> +	}
+> +
+>  	err = input_register_device(input_dev);
+>  	if (err) {
+>  		dev_err(&client->dev,
+> -- 
+> 2.7.3
 > 
 
+-- 
+Dmitry
