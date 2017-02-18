@@ -1,12 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f194.google.com ([209.85.192.194]:34589 "EHLO
-        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934090AbdBQUkq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Feb 2017 15:40:46 -0500
-Date: Fri, 17 Feb 2017 12:40:41 -0800
-From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Sebastian Reichel <sre@kernel.org>,
+Received: from mail.kernel.org ([198.145.29.136]:39388 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751305AbdBRDWj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Fri, 17 Feb 2017 22:22:39 -0500
+Date: Sat, 18 Feb 2017 04:22:33 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+Cc: "H. Nikolaus Schaller" <hns@goldelico.com>,
         Mark Rutland <mark.rutland@arm.com>,
         =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
         Tony Lindgren <tony@atomide.com>,
@@ -39,205 +39,114 @@ Cc: Sebastian Reichel <sre@kernel.org>,
         Haibo Chen <haibo.chen@freescale.com>
 Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
  names, pre-calibration, flipping and rotation
-Message-ID: <20170217204041.GE13050@dtor-ws>
+Message-ID: <20170218032233.3qh5xdjbx5kkq5hm@earth>
 References: <cover.1482936802.git.hns@goldelico.com>
  <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
  <20170128193342.GB38136@dtor-ws>
  <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com>
+ <20170217204041.GE13050@dtor-ws>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com>
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="5d3kcryff2vvmr7k"
+In-Reply-To: <20170217204041.GE13050@dtor-ws>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Nikolaus,
 
-On Sat, Jan 28, 2017 at 10:44:35PM +0100, H. Nikolaus Schaller wrote:
-> Hi Dmitry,
-> 
-> > Am 28.01.2017 um 20:33 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
-> > 
-> > Hi Nikolaus,
-> > 
-> > On Wed, Dec 28, 2016 at 03:53:16PM +0100, H. Nikolaus Schaller wrote:
-> >> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
-> >> introduced common DT bindings for touchscreens [1] and a helper function to
-> >> parse the DT.
-> >> 
-> >> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
-> >> added another helper for parsing axis inversion and swapping
-> >> and applying them to x and y coordinates.
-> >> 
-> >> Both helpers have been integrated to accommodate any orientation of the
-> >> touch panel in relation to the LCD.
-> >> 
-> >> A new feature is to introduce scaling the min/max ADC values to the screen
-> >> size.
-> >> 
-> >> This makes it possible to pre-calibrate the touch so that is (almost)
-> >> exactly matches the LCD pixel coordinates it is glued onto. This allows to
-> >> well enough operate the touch before a user space calibration step can
-> >> improve the precision.
-> > 
-> > I question whether doing scaling in kernel is really right solution.
-> 
-> Since lower left corner does not exactly report [0 0] and upper right corner
-> does not report [4095 4095] from the ADC we need offset and steepness correction
-> of the ADC values.
-> 
-> This steepness is the scaling that must happen in kernel and I don't understand
-> why you want to propagate this ADC errors to user-space by avoiding scaling.
-> 
-> Let me iterate what we want to achieve:
-> * use new common bindings
-> * offset and steepness calibration of the ADC (called pre-calibration).
->   This makes a real device much more reliable to operate with factory installed
->   scaling factors.
-> * flipping and rotation
-> 
-> (note that touch pixel to LCD pixel scaling is not explicitly on this list!)
+--5d3kcryff2vvmr7k
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-That was explicitly called out in the patch:
+Hi,
 
-"A new feature is to introduce scaling the min/max ADC values to the
-screen size."
+On Fri, Feb 17, 2017 at 12:40:41PM -0800, Dmitry Torokhov wrote:
+> > AFAIK there is no mainline board using the DT except ours (and the upco=
+ming
+> > OMAP5-Pyra), so we shouldn't care too much. If you prefer, you can remo=
+ve this
+> > compatibility property. We don't need it for our devices.
 
-> 
-> Now to achieve the ADC pre-calibration we must calculate
-> 
-> 	x' = (x - ti,min-x) / (ti,max-x-ti,min-x) giving a rante from 0.0 ... 1.0
-> 
-> This is scaled up to what is defined by touchscreen-size-x, i.e.
-> 
-> 	x' = (touchscreen-size-x * (x - ti,min-x)) / (ti,max-x-ti,min-x)
-> 
-> How do you want to avoid this scaling to take place? It happens automatically.
-> It is not even an additional line of code. And is necessary for compensating ADC
-> offsets and steepness.
-> 
-> So the only way to avoid the scaling option is to eliminate the precalibration/ADC
-> compensation which is essential for a device which has no means to properly
-> calibrate before operating the device through touch.
-> 
-> The other option would be to avoid common bindings and set
-> 
-> 	touchscreen-size-x = (ti,max-x-ti,min-x)
-> 
-> This is heavily dependent on specific ADC offsets forwarded to user-space.
-> IMHO the worst we can do (and the current tsc2007 driver does it that way!).
-> 
-> > 
-> > Why do you want this?
-> 
-> It seems that you assume that we want to enforce 1:1 scaling between touch pixels
-> and LCD pixels and have designed code to achieve exactly that.
-> 
-> This is not the case. It is just a byproduct that you can do it.
-> 
-> And since it is easier to understand we have made the examples this way.
-> 
-> > If your touch resolution is lower than your screen
-> > then it might be useful, but if it is lower then you are losing data
-> > that can be very helpful for gesture recognition, and I hope you design
-> > your userspace so it can handle not only "bad" hardware, but "good" as
-> > well. And even with "bad" there are a lot of tricks that can be done to
-> > get "better" touch position in userspace.
-> 
-> You can just *choose* DT parameters touchscreen-size-x to match the LCD size.
-> This of course reduces the touch precision to full LCD pixels. For finger-
-> touch operated devices, subpixel precision is rarely needed.
-> 
-> Also, some user-spaces (e.g. older Replicant for GTA04) assume that there is
-> such an 1:1 mapping and they will be perfectly happy about this. 
-> 
-> But, if you can modify your user-space easily, you can also choose a different
-> factor.
-> 
-> You can for example define touchscreen-size-x=<4096> and then you get almost
-> the highest precision of the ADC and won't loose any bits. Or even define a
-> bigger range and get steps >1 bit.
-> 
-> LCD driver (e.g. X11 calibration matrix) can scale it down again to LCD pixels.
-> 
-> So effectively we get for LCD pixels when the touch sets a mouse pointer:
-> 
-> 	x'' = user-space-scale * <<input-event<< ((touchscreen-size-x * (x - ti,min-x)) / (ti,max-x-ti,min-x))
-> 
-> The most simple setup would then be but others are possible:
-> 
-> 	user-space-scale = 1
-> 	touchscreen-size-x = LCD-size-x
-> 
-> Let me cite myself:
-> 
-> >> This makes it possible to pre-calibrate the touch so that is (almost)
+$ cd linux.git/arch
+$ git grep -l tsc2004
+arm/boot/dts/imx6qdl-nit6xlite.dtsi
+arm/boot/dts/imx7d-nitrogen7.dts
+arm/boot/dts/logicpd-torpedo-37xx-devkit.dts
+arm/boot/dts/omap4-var-som-om44.dtsi
+$ git grep -l tsc2005
+arm/boot/dts/omap3-n900.dts
+$ git grep -l tsc2007
+arm/boot/dts/imx28-tx28.dts
+arm/boot/dts/imx35-eukrea-cpuimx35.dtsi
+arm/boot/dts/imx51-eukrea-cpuimx51.dtsi
+arm/boot/dts/imx53-tx53-x03x.dts
+arm/boot/dts/imx6qdl-tx6.dtsi
+arm/boot/dts/imx6ul-tx6ul.dtsi
+arm/boot/dts/omap3-gta04.dtsi
+sh/boards/mach-ecovec24/setup.c
 
-Yes, it allows you to pre-calibrate, I get it. But you still do properly
-calibrate later, right? So you are doing double work here, once in
-kernel, and second time in userspace.
+> You seem to be treating DT data as something very fluid, which is wrong.
+> You need to treat it as a firmware, unlikely to change once device is
+> shipped. Unlike legacy platform data, the fact that DTS files are not
+> present in mainline does not mean that we can ignore such users and
+> change behavior at will.
+>=20
+> That said, if driver behavior is out of line from the subsystem
+> expectations, we need to fix it.
+>=20
+> =20
+> > That the function name is wrong is a second issue and this double negat=
+ion might
+> > confuse a litte.
+> >=20
+> > Please test on a real device if the patched driver reports pressure now=
+ (unless
+> > ti,report-resistance is specified).
+>=20
+> I unfortunately can not test this driver as I do not have the hardware.
+> So all my observations are from code and data sheets.
+>=20
+> That said, what is the values emitted as ABS_PRESSURE when finger is not
+> touching the device, barely touching the device, or pressing firmly?
+> It seems that between TSC2007, TSC2004, TSC2005, and ADS7846, we have
+> confusion as to what is being reported.
 
-I'd be more open to allowing setting the "min-axis" values to allow
-reporting typical range for given device, and let userspace scale as it
-sees fit.
+As far as I can see all calculate Rtouch and ADS7846 reports
+(Rmax - Rtouch), which looks sensible.
 
-> 
-> > 
-> >> 
-> >> Please note that the old ti,fuzz properties have been removed since they
-> >> are replaced by the common bindings touchscreen-fuzz-x/y/z.
-> >> 
-> >> Finally, calculate_pressure has been renamed to calculate_resistance
-> >> because that is what it is doing.
-> > 
-> > That is not what your patch does though. In the presence of
-> > "ti,report-resistance" parameter you start reporting resistance through
-> > ABS_PRESSURE
-> 
-> Well, there is some historic confusion wether this driver reports resistance
-> or pressure.
-> 
-> The unpatched tsc2007 driver does it wrong (please test!) and we fix it on
-> the fly (because a separate patch is much more complex than doing it right
-> immediately).
-> 
-> This ti,report-resistance property is a means to get the old (wrong) meaning back
-> in case someone urgently needs it and can't fix the user-space workaround which
-> he must be using.
->
-> 
-> AFAIK there is no mainline board using the DT except ours (and the upcoming
-> OMAP5-Pyra), so we shouldn't care too much. If you prefer, you can remove this
-> compatibility property. We don't need it for our devices.
->
+> I am adding a few more folks to the CC so we can try and soft this out.
+> Sebastian, Pali, Pavel, any input here?
 
-You seem to be treating DT data as something very fluid, which is wrong.
-You need to treat it as a firmware, unlikely to change once device is
-shipped. Unlike legacy platform data, the fact that DTS files are not
-present in mainline does not mean that we can ignore such users and
-change behavior at will.
+I think tsc200x works, since usually userspace is Xorg and I think
+it only cares for x/y coordinates + boolean pressure. Since
+no-pressure is correctly reported as 0, everything works as
+expected. I currently don't have X running on my N900 due some
+omapdrm bug, so I can't test this, sorry.
 
-That said, if driver behavior is out of line from the subsystem
-expectations, we need to fix it.
+I suggest to put the resistance vs pressure thing in its own patch,
+that also fixes tsc200x-core and merge it to linux-next after the
+merge window.
 
- 
-> That the function name is wrong is a second issue and this double negation might
-> confuse a litte.
-> 
-> Please test on a real device if the patched driver reports pressure now (unless
-> ti,report-resistance is specified).
+-- Sebastian
 
-I unfortunately can not test this driver as I do not have the hardware.
-So all my observations are from code and data sheets.
+--5d3kcryff2vvmr7k
+Content-Type: application/pgp-signature; name="signature.asc"
 
-That said, what is the values emitted as ABS_PRESSURE when finger is not
-touching the device, barely touching the device, or pressing firmly?
-It seems that between TSC2007, TSC2004, TSC2005, and ADS7846, we have
-confusion as to what is being reported.
+-----BEGIN PGP SIGNATURE-----
 
-I am adding a few more folks to the CC so we can try and soft this out.
-Sebastian, Pali, Pavel, any input here?
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlinvfYACgkQ2O7X88g7
++pr1VQ/+NMIi+Md4Bn6yVkswG/Sd+KFLDtCDYylEoaaYxyP4uy+NcmJfBfDyUKeI
+UBjuvPAE+Aav6oLbYCIaN+uHw1eyG2Z43wPIb1xe9P0jYImcPGcqhXZzrS7CVeQH
+CjoKbt/0gv17YAZHSO/mqNKBiu8n1kUB7rY25AkVesLPKm9vnTA6mucn9o1I/BWF
+iPkfKoyfg0hWraR0ZL7YLu8Ha9Juu0aeDOWhd2Mk5Bjz5/7B1qnXAwEhzTQzmcW7
+Edzvp28ag8aPKGIzNL+kw5H8FHnPYEg5IdFN/Apwa+MUhJVCP+ghY5m3W3JiqDuO
+CW6oCDDxO1PDHEZoULyY/+00u1BbrdQi297nRrzgcX2RUEXpQIwBEtmLfbNikkAE
+lC0n4ovQo6Mh53ni0STh9Yo6AzPzr8COyRWRt59fg4Oti+mlNq5o3cMCAn09BgqR
+f1Szb8ix5BzVJdXFP49tjAl2wOKvdMmOeMfy0Rw6ZE8xb2K5+A9T4Q4jEZQy+NLA
+zW5iGwjCx5ZT/IutMqeMYDQgYSLEztaK617nCInFgNeCNx0IvYax5cnNfy4FXPVI
+j885zZisWtVoU7OPqH+0gwkXDO0CYwdkFWhL3iRV6GZiBoRIp48mWdy3A77saslJ
+lm+tMqm6Vd6/Dmy/YIV3M/U5jQh529MQVfuPI+3XbDgaNbQGX4c=
+=dLlo
+-----END PGP SIGNATURE-----
 
-Thanks.
-
--- 
-Dmitry
+--5d3kcryff2vvmr7k--
