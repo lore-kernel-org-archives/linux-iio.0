@@ -1,200 +1,223 @@
-Return-Path: <SRS0=HQNo=Z7=goldelico.com=hns@kernel.org>
-Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Content-Type: multipart/signed; boundary="Apple-Mail=_BC19EF0D-16D4-415E-A21E-28DCB585420D"; protocol="application/pgp-signature"; micalg=pgp-sha256
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20170218032233.3qh5xdjbx5kkq5hm@earth>
-Date: Sat, 18 Feb 2017 12:33:34 +0100
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.kernel.org ([198.145.29.136]:52210 "EHLO mail.kernel.org"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1750785AbdBRXoa (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sat, 18 Feb 2017 18:44:30 -0500
+Date: Sun, 19 Feb 2017 00:44:22 +0100
+From: Sebastian Reichel <sre@kernel.org>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
 Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
- Mark Rutland <mark.rutland@arm.com>,
- =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>,
- Russell King <linux@armlinux.org.uk>,
- Arnd Bergmann <arnd@arndb.de>,
- Michael Welling <mwelling@ieee.org>,
- =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
- Javier Martinez Canillas <javier@osg.samsung.com>,
- Igor Grinberg <grinberg@compulab.co.il>,
- "Andrew F. Davis" <afd@ti.com>,
- Mark Brown <broonie@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Alexander Stein <alexander.stein@systec-electronic.com>,
- Eric Engestrom <eric@engestrom.ch>,
- Hans de Goede <hdegoede@redhat.com>,
- Benjamin Tissoires <benjamin.tissoires@redhat.com>,
- Petr Cvek <petr.cvek@tul.cz>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Hans Verkuil <hans.verkuil@cisco.com>,
- Nick Dyer <nick@shmanahar.org>,
- Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
- Michel Verlaan <michel.verl@gmail.com>,
- linux-input@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-omap@vger.kernel.org,
- letux-kernel@openphoenux.org,
- linux-iio@vger.kernel.org,
- kernel@pyra-handheld.com,
- Aaro Koskinen <aaro.koskinen@nokia.com>,
- =?utf-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>,
- Pavel Machek <pavel@ucw.cz>,
- Andrey Gelman <andrey.gelman@compulab.co.il>,
- Haibo Chen <haibo.chen@freescale.com>
-Message-Id: <95E59EB0-6F96-40BB-B74C-9CD56DDD7783@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com> <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com> <20170128193342.GB38136@dtor-ws> <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com> <20170217204041.GE13050@dtor-ws> <20170218032233.3qh5xdjbx5kkq5hm@earth>
-To: Sebastian Reichel <sre@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+        Mark Rutland <mark.rutland@arm.com>,
+        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Petr Cvek <petr.cvek@tul.cz>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Michel Verlaan <michel.verl@gmail.com>,
+        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
+        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com, Aaro Koskinen <aaro.koskinen@nokia.com>,
+        Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Andrey Gelman <andrey.gelman@compulab.co.il>,
+        Haibo Chen <haibo.chen@freescale.com>
+Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
+ names, pre-calibration, flipping and rotation
+Message-ID: <20170218234422.vza3toc3bphixsdn@earth>
+References: <cover.1482936802.git.hns@goldelico.com>
+ <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
+ <20170128193342.GB38136@dtor-ws>
+ <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com>
+ <20170217204041.GE13050@dtor-ws>
+ <20170218032233.3qh5xdjbx5kkq5hm@earth>
+ <95E59EB0-6F96-40BB-B74C-9CD56DDD7783@goldelico.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed; micalg=pgp-sha512;
+        protocol="application/pgp-signature"; boundary="wo7bf5vztuwop3mq"
+In-Reply-To: <95E59EB0-6F96-40BB-B74C-9CD56DDD7783@goldelico.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
 
---Apple-Mail=_BC19EF0D-16D4-415E-A21E-28DCB585420D
+--wo7bf5vztuwop3mq
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=us-ascii
 
-Hi Sebastian,
+Hi,
 
-> Am 18.02.2017 um 04:22 schrieb Sebastian Reichel <sre@kernel.org>:
+On Sat, Feb 18, 2017 at 12:33:34PM +0100, H. Nikolaus Schaller wrote:
+> Hi Sebastian,
 >=20
-> Hi,
+> > Am 18.02.2017 um 04:22 schrieb Sebastian Reichel <sre@kernel.org>:
+> >=20
+> > Hi,
+> >=20
+> > On Fri, Feb 17, 2017 at 12:40:41PM -0800, Dmitry Torokhov wrote:
+> >>> AFAIK there is no mainline board using the DT except ours (and the up=
+coming
+> >>> OMAP5-Pyra), so we shouldn't care too much. If you prefer, you can re=
+move this
+> >>> compatibility property. We don't need it for our devices.
+> >=20
+> > $ cd linux.git/arch
+> > $ git grep -l tsc2004
+> > arm/boot/dts/imx6qdl-nit6xlite.dtsi
+> > arm/boot/dts/imx7d-nitrogen7.dts
+> > arm/boot/dts/logicpd-torpedo-37xx-devkit.dts
+> > arm/boot/dts/omap4-var-som-om44.dtsi
+> > $ git grep -l tsc2005
+> > arm/boot/dts/omap3-n900.dts
 >=20
-> On Fri, Feb 17, 2017 at 12:40:41PM -0800, Dmitry Torokhov wrote:
->>> AFAIK there is no mainline board using the DT except ours (and the =
-upcoming
->>> OMAP5-Pyra), so we shouldn't care too much. If you prefer, you can =
-remove this
->>> compatibility property. We don't need it for our devices.
+> Those are not relevant since tsc2004/5 and tsc2007 are independent driver=
+s and don't
+> share code.
+
+Yes, I'm aware.
+
+> Hence the N900 is not influenced by this patch series.
+> If it has a similar issue, it should be fixed of course.
+
+Right. I added them to see every board affect by the patch suggested
+by me in my last paragraph.
+
+> > $ git grep -l tsc2007
+> > arm/boot/dts/imx28-tx28.dts
+> > arm/boot/dts/imx35-eukrea-cpuimx35.dtsi
+> > arm/boot/dts/imx51-eukrea-cpuimx51.dtsi
+> > arm/boot/dts/imx53-tx53-x03x.dts
+> > arm/boot/dts/imx6qdl-tx6.dtsi
+> > arm/boot/dts/imx6ul-tx6ul.dtsi
+> > arm/boot/dts/omap3-gta04.dtsi
+> > sh/boards/mach-ecovec24/setup.c
 >=20
-> $ cd linux.git/arch
-> $ git grep -l tsc2004
-> arm/boot/dts/imx6qdl-nit6xlite.dtsi
-> arm/boot/dts/imx7d-nitrogen7.dts
-> arm/boot/dts/logicpd-torpedo-37xx-devkit.dts
-> arm/boot/dts/omap4-var-som-om44.dtsi
-> $ git grep -l tsc2005
-> arm/boot/dts/omap3-n900.dts
+> Sorry, I was a little imprecise here, because I looked for the min/max pr=
+operties.
+> Of course, the imx devices use the tsc2007 as well.
+>
+> Maybe we should edit all these DTS and set the "ti,report-resistance" pro=
+perty
+> by default. Then, no user should notice a difference.
 
-Those are not relevant since tsc2004/5 and tsc2007 are independent =
-drivers and don't
-share code. Hence the N900 is not influenced by this patch series.
+I suggest to create a patch without the report-reistance stuff and
+add it early after the merge window and see what happens. If no
+users notices anything the change is not an ABI break from kernel's
+PoV.
 
-If it has a similar issue, it should be fixed of course.
-
-> $ git grep -l tsc2007
-> arm/boot/dts/imx28-tx28.dts
-> arm/boot/dts/imx35-eukrea-cpuimx35.dtsi
-> arm/boot/dts/imx51-eukrea-cpuimx51.dtsi
-> arm/boot/dts/imx53-tx53-x03x.dts
-> arm/boot/dts/imx6qdl-tx6.dtsi
-> arm/boot/dts/imx6ul-tx6ul.dtsi
-> arm/boot/dts/omap3-gta04.dtsi
-> sh/boards/mach-ecovec24/setup.c
-
-Sorry, I was a little imprecise here, because I looked for the min/max =
-properties.
-Of course, the imx devices use the tsc2007 as well.
-
-Maybe we should edit all these DTS and set the "ti,report-resistance" =
-property
-by default. Then, no user should notice a difference.
-
-Is any user/maintainer of these devices following this discussion and =
-can comment?
-
+> Is any user/maintainer of these devices following this discussion and can=
+ comment?
+>
+> >=20
+> >> You seem to be treating DT data as something very fluid, which is wron=
+g.
+> >> You need to treat it as a firmware, unlikely to change once device is
+> >> shipped. Unlike legacy platform data, the fact that DTS files are not
+> >> present in mainline does not mean that we can ignore such users and
+> >> change behavior at will.
+> >>=20
+> >> That said, if driver behavior is out of line from the subsystem
+> >> expectations, we need to fix it.
+> >>=20
+> >>=20
+> >>> That the function name is wrong is a second issue and this double neg=
+ation might
+> >>> confuse a litte.
+> >>>=20
+> >>> Please test on a real device if the patched driver reports pressure n=
+ow (unless
+> >>> ti,report-resistance is specified).
+> >>=20
+> >> I unfortunately can not test this driver as I do not have the hardware.
+> >> So all my observations are from code and data sheets.
+> >>=20
+> >> That said, what is the values emitted as ABS_PRESSURE when finger is n=
+ot
+> >> touching the device, barely touching the device, or pressing firmly?
+> >> It seems that between TSC2007, TSC2004, TSC2005, and ADS7846, we have
+> >> confusion as to what is being reported.
+> >=20
+> > As far as I can see all calculate Rtouch and ADS7846 reports
+> > (Rmax - Rtouch), which looks sensible.
 >=20
->> You seem to be treating DT data as something very fluid, which is =
-wrong.
->> You need to treat it as a firmware, unlikely to change once device is
->> shipped. Unlike legacy platform data, the fact that DTS files are not
->> present in mainline does not mean that we can ignore such users and
->> change behavior at will.
->>=20
->> That said, if driver behavior is out of line from the subsystem
->> expectations, we need to fix it.
->>=20
->>=20
->>> That the function name is wrong is a second issue and this double =
-negation might
->>> confuse a litte.
->>>=20
->>> Please test on a real device if the patched driver reports pressure =
-now (unless
->>> ti,report-resistance is specified).
->>=20
->> I unfortunately can not test this driver as I do not have the =
-hardware.
->> So all my observations are from code and data sheets.
->>=20
->> That said, what is the values emitted as ABS_PRESSURE when finger is =
-not
->> touching the device, barely touching the device, or pressing firmly?
->> It seems that between TSC2007, TSC2004, TSC2005, and ADS7846, we have
->> confusion as to what is being reported.
+> I don't see where this subtraction from Rmax takes place for the tsc2007:
 >=20
-> As far as I can see all calculate Rtouch and ADS7846 reports
-> (Rmax - Rtouch), which looks sensible.
+> http://lxr.free-electrons.com/source/drivers/input/touchscreen/tsc2007.c#=
+L131
 
-I don't see where this subtraction from Rmax takes place for the =
-tsc2007:
+sorry if I wrote this ambiguous, let me split my sentence
 
-=
-http://lxr.free-electrons.com/source/drivers/input/touchscreen/tsc2007.c#L=
-131
+1. tsc200x & ads7846 calculate Rtouch
+2. ads7846 reports Rmax - Rtouch
+(3. tsc200x does not, it reports Rtouch instead)
+4. ads7846 behaviour looks sensible to me
 
+> >> I am adding a few more folks to the CC so we can try and soft this out.
+> >> Sebastian, Pali, Pavel, any input here?
+> >=20
+> > I think tsc200x works, since usually userspace is Xorg and I think
+> > it only cares for x/y coordinates + boolean pressure. Since
+> > no-pressure is correctly reported as 0, everything works as
+> > expected.
 >=20
->> I am adding a few more folks to the CC so we can try and soft this =
-out.
->> Sebastian, Pali, Pavel, any input here?
+> No pressure is usually treated as a special case in these drivers,
+> so reduction to "boolean" in user-space works well by accident and
+> might still hide a bug.
+
+That's what I assumed.
+
+Btw. how did you notice that tsc2007 sends "inverted" pressure values?
+Just in evtest or in some non-development application? (Just asking because
+the behavour obviously changes at least for that usecase)
+
+> > I currently don't have X running on my N900 due some
+> > omapdrm bug, so I can't test this, sorry.
 >=20
-> I think tsc200x works, since usually userspace is Xorg and I think
-> it only cares for x/y coordinates + boolean pressure. Since
-> no-pressure is correctly reported as 0, everything works as
-> expected.
+> I usually look with evtest if ABS_PRESSURE is monotonic.
 
-No pressure is usually treated as a special case in these drivers,
-so reduction to "boolean" in user-space works well by accident and
-might still hide a bug.
+That would not have helped to check if X handles the touchscreen in
+a boolean way. I can provide some N900 evtest data, though (tomorrow,
+I don't have my dev N900 with me at the moment).
 
-> I currently don't have X running on my N900 due some
-> omapdrm bug, so I can't test this, sorry.
+> > I suggest to put the resistance vs pressure thing in its own patch,
+> > that also fixes tsc200x-core and merge it to linux-next after the
+> > merge window.
 
-I usually look with evtest if ABS_PRESSURE is monotonic.
+-- Sebastian
 
->=20
-> I suggest to put the resistance vs pressure thing in its own patch,
-> that also fixes tsc200x-core and merge it to linux-next after the
-> merge window.
->=20
-> -- Sebastian
-
-BR and thanks,
-Nikolaus
-
-
-
---Apple-Mail=_BC19EF0D-16D4-415E-A21E-28DCB585420D
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP using GPGMail
+--wo7bf5vztuwop3mq
+Content-Type: application/pgp-signature; name="signature.asc"
 
 -----BEGIN PGP SIGNATURE-----
 
-iQIcBAEBCAAGBQJYqDEPAAoJEIl79TGLgAm6IL8P+wc56KLeLJL+O8Ep2m1TEx9O
-x6SN1rWB76lOvGcF1bSxG7z/pR97JPvDFwjRkMScXUCkDUfraU/c5RafVupDIDWN
-JWTYYv6jLLHX5GTLlNvg7ponMUgY1fXqjQsZXzuBF2IdwX/ETsG2mM/sveFe446L
-58FYlsCMjiF1/bLc1HoTMDp3rTo3HfPTnb4/BS0jCWaTSH+JyZrhO2SiRr3mcXyu
-m8IOaInGPMMRA2fOe9krcXpawlM8JlxLiVbHysx2lVaiA/KEGBEvVQhYdldV5jWa
-9w0u4av3eYnoEgLs6TMtHl6OF0dVFJXGsCGLbuLAUUvDj6hWDSKC97wQMcnYkOhN
-qeJpy5/bz3J/lkjwwaddiYwctMGtwhP9pUUtuUqSFMOxsYFlgIOgGyMuE+3IQm9B
-JFqGAEec2blcS87gCpYY4/GaL5J9Uoowtol9ZMdsWP66L2p7ZJlnFH0D+Bbpy1j8
-YfH7Tp0J67GPkLzRAX7ycrEgVE0mA9ho5eKH7tZmWcIXWii8qROAQ4hKgUF6Do0N
-1TG8DotUYpps6etsCe3fh5sxkdigQy79XDKnLf8GHTAe1luaTLUUTgKlwnHBFhzd
-3ptTql2xX25EM7zBtQBsv1MCovEVH++I+5kHU6WxRpoPIOOEt3Te1M1sQ7wkJdxJ
-Ozj4sN3bxfLwYHQYL2uH
-=mpmc
+iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAlio3EQACgkQ2O7X88g7
++pqHlxAAl/kIQI2eouKGk8du0Q6+26i2tSor7Hk+GZe1/cFNzfk/C8NFi5mUvXRg
+dsWFgebfOOpU7OVRwpLssE6O9u/LaCCnXYfh2yVWsfrvqAaGhRkvRo2X9GDa3kMk
+66SfFdNptI2qpZZhM5n9HMohNv51cGKrCNC+RUX3lZLENYDrdBS1F2cy4BNLmvET
+E8O//6/0jvDRK1hXsbvUsW/pNI4XZrOWTsId88RgUD7hrUvAotjkIkGesVbNyeCO
+VgcADhNUjLeyG2f+9tvgoU8X6gZngSelOzP9oNPp9hmLQ3Rh7YWgI34vqFoSQ/Oe
+3WHLTGYC0J2Kj8pbpRVmbXv4F75B9pJ3BG9Tub9ZEMtiDvUcq7pgRNeiRoSg0HQ8
+J00PY7MZr3O09WLaP+RcRBOxmGWOTeM93rOmoaCSXWbp0Z+2iD3iR3BezbVvF7E6
+9/bQZkKhbaNgq7r482GAIpkeDe+nukraNG1aVvYR8aJ3jo3+dwpSos+qNkvIn0tM
+HELnKlBDWTvfELouMq8WgqPyYRqHaDCKkAsbguxvosxM5dE9SI2HxACd3H59G9D2
+8ko9t58cVBsw+uKPogv/nOn7rv5+Omu4+O5KDvlGAtJsLNfPlGuq4mWKEzAFNMBS
+GW6S4eOQJnTylRJg6vVzMv0HY2oZpMfpgT4Sdb+1mcBWhdgeVTk=
+=duEK
 -----END PGP SIGNATURE-----
 
---Apple-Mail=_BC19EF0D-16D4-415E-A21E-28DCB585420D--
+--wo7bf5vztuwop3mq--
