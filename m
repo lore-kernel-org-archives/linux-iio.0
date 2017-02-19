@@ -1,25 +1,40 @@
-Return-Path: <SRS0=Em/k=Z2=pmeerw.net=pmeerw@kernel.org>
-Date: Mon, 13 Feb 2017 19:05:33 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-cc: Rob Herring <robh+dt@kernel.org>, Jonathan Cameron <jic23@kernel.org>,
-    devicetree@vger.kernel.org, linux-iio@vger.kernel.org
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:38251 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750862AbdBSPBU (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Feb 2017 10:01:20 -0500
 Subject: Re: [RFC v2 6/7] IIO: add bindings for stm32 DFSDM filter
-In-Reply-To: <1487003909-11710-7-git-send-email-arnaud.pouliquen@st.com>
-Message-ID: <alpine.DEB.2.02.1702131854560.25127@pmeerw.net>
-References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com> <1487003909-11710-7-git-send-email-arnaud.pouliquen@st.com>
+To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
+ <1487003909-11710-7-git-send-email-arnaud.pouliquen@st.com>
+Cc: devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, alsa-devel@alsa-project.org,
+        kernel@stlinux.com, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        olivier moysan <olivier.moysan@st.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <328b9448-2125-07a0-9011-8fd01d06f271@kernel.org>
+Date: Sun, 19 Feb 2017 15:00:44 +0000
 MIME-Version: 1.0
-Content-Type: TEXT/PLAIN; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1487003909-11710-7-git-send-email-arnaud.pouliquen@st.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Mon, 13 Feb 2017, Arnaud Pouliquen wrote:
-
+On 13/02/17 16:38, Arnaud Pouliquen wrote:
 > Add bindings that describe Digital Filter for Sigma Delta
 > Modulators. DFSDM allows to connect sigma delta
 > modulators and/or PDM microphones.
-
-nitpicking on typos below
- 
+> 
 > Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
 > ---
 >  .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        | 125 +++++++++++++++++++++
@@ -37,34 +52,16 @@ nitpicking on typos below
 > +
 > +STM32 DFSDM ADC is a sigma delta analog-to-digital converter dedicted to
 > +interface external sigma delta modulators to stm32 micro controlers.
-
-controllers
-
 > +it is mainly targeted for:
-
-It
-
 > +- Sigma delta modulators ( motor control, metering...)
-
-(motor
-
 > +- PDM microphones ( audio digital microphone)
-
-(audio
-
 > +
 > +It featured with up to 8 serial digital interface (SPI or Manchester) and
-
-It features up
-
 > +up to 4 filters.
 > +
 > +Each instance of the sub-drivers uses one filter instance.
 > +
 > +Contents of a stm32 dfsdmc root node:
-
-what is the c in dfsdmc?
-
 > +-------------------------------------
 > +Required properties:
 > +- compatible: Should be "st,stm32-dfsdm-adc".
@@ -80,9 +77,6 @@ what is the c in dfsdmc?
 > +Optional properties:
 > +- st,clkout-freq: needed for SPI master mode
 > +		  SPI clock OUT frequency (Hz).This clock must be set according
-
-. This
-
 > +		  to "clock" property. Frequency must be a multiple of the rcc
 > +		  clock frequency. If not, clkout frequency will not be
 > +		  accurate.
@@ -98,9 +92,6 @@ what is the c in dfsdmc?
 > +- interrupts: IRQ lines connected to each DFSDM filter instance.
 > +- st,adc-channels:	List of single-ended channels muxed for this ADC.
 > +- st,adc-channel-names:	List of single-ended channels Name.
-
-channel names
-
 > +- st,dai-filter-order:  SinC filter order from 0 to 5.
 > +			0: FastSinC
 > +			[1-5]: order 1 to 5.
@@ -115,9 +106,6 @@ channel names
 > +- #sound-dai-cells: must be set to 0.
 > +- dma: DMA controller phandle and DMA request line associated to the
 > +		filter instance ( specified by the field "reg")
-
-(specified
-
 > +- dma-names: must be "rx"
 > +
 > +Optional properties:
@@ -127,40 +115,26 @@ channel names
 > +			- "MANCH_R": manchester codec, rising edge = logic 0
 > +			- "MANCH_F": manchester codec, falling edge = logic 1
 > +- st,adc-channel-clk-src: Conversion clock source. default value is 1.
-
-Default
-
 > +			  - "CLKIN": External SPI clock (CLKIN x)
-
-external
-
 > +			  - "CLKOUT": internal SPI clock (CLKOUT) (default)
 > +			  - "CLKOUT_F": internal SPI clock divided by 2 (falling edge).
 > +			  - "CLKOUT_R": internal SPI clock divided by 2 (rising edge).
 > +
 > +- st,adc-alt-channel: Must be defined if Two sigma delta modulator are
-
-two
-
 > +			  connected on same SPI input.
 > +			  If not set channel n is connected to SPI input n.
-
-If not set, 
-
 > +			  If set channel n is connected to SPI input n + 1.
-
-If set, 
-
 > +
 > +- st,filter0-sync: Set to 1 to synchronize with DFSDM filter instance 0.
 > +		   to used for multi microphone synchronization.
-
-Used for
-
 > +
 > +Example of a sigma delta adc purpose:
 > +	ads1202: simple_sd_adc@0 {
 > +		compatible = "sd-modulator";
+This suggests to me that we ought to have a primary compatible of the actual part
+number.  Down the line I suspect we will want to distinguish between the different
+ADCs and it's kind of easier if we do it from the start.  May not be obvious
+later which the 'default sd-modulator' is.
 > +		#io-channel-cells = <1>;
 > +		status = "okay";
 > +	};
@@ -183,6 +157,9 @@ Used for
 > +	};
 > +
 > +Example of a pdm microphone purpose:
+Is there nothing about the particular pdm microphone that is
+worth giving it an explicit representation in the device
+tree?  I've no idea having never used one!
 > +	dfsdm: dfsdm@40017000 {
 > +		compatible = "st,stm32h7-dfsdm";
 > +		reg = <0x40017000 0x400>;
@@ -204,7 +181,3 @@ Used for
 > +	}
 > 
 
--- 
-
-Peter Meerwald-Stadler
-+43-664-2444418 (mobile)
