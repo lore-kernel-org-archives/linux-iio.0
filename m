@@ -1,20 +1,23 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from atrey.karlin.mff.cuni.cz ([195.113.26.193]:45873 "EHLO
-        atrey.karlin.mff.cuni.cz" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751889AbdBTT3k (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Feb 2017 14:29:40 -0500
-Date: Mon, 20 Feb 2017 20:29:33 +0100
-From: Pavel Machek <pavel@ucw.cz>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.177]:19118 "EHLO
+        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751240AbdBTUVl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Feb 2017 15:21:41 -0500
+Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
+Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Content-Type: multipart/signed; boundary="Apple-Mail=_28AF0B62-F4B0-4262-8F9D-40CF710C821B"; protocol="application/pgp-signature"; micalg=pgp-sha256
+From: "H. Nikolaus Schaller" <hns@goldelico.com>
+In-Reply-To: <20170220192933.GA23745@amd>
+Date: Mon, 20 Feb 2017 21:20:20 +0100
 Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Sebastian Reichel <sre@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
-        =?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+        =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
         Tony Lindgren <tony@atomide.com>,
         Russell King <linux@armlinux.org.uk>,
         Arnd Bergmann <arnd@arndb.de>,
         Michael Welling <mwelling@ieee.org>,
-        Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+        =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
         Javier Martinez Canillas <javier@osg.samsung.com>,
         Igor Grinberg <grinberg@compulab.co.il>,
         "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
@@ -37,131 +40,182 @@ Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
         Discussions about the Letux Kernel
         <letux-kernel@openphoenux.org>, linux-iio@vger.kernel.org,
         kernel@pyra-handheld.com, Aaro Koskinen <aaro.koskinen@nokia.com>,
-        Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>,
+        =?utf-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>,
         Andrey Gelman <andrey.gelman@compulab.co.il>,
         Haibo Chen <haibo.chen@freescale.com>
-Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
- names, pre-calibration, flipping and rotation
-Message-ID: <20170220192933.GA23745@amd>
-References: <20170219141715.GA7159@amd>
- <05F3816F-46E6-4BC2-9E2E-F20E645F7197@goldelico.com>
- <20170219171518.GA12833@amd>
- <B41253A6-95D5-4E0F-ABD6-6909362843C4@goldelico.com>
- <20170219190547.GA17292@amd>
- <EB41EEED-0D94-473F-944F-757B25350A4C@goldelico.com>
- <20170219205708.GA9641@amd>
- <6DF7B03A-8B63-422C-9561-69A34A7FBF35@goldelico.com>
- <20170219221930.GA1568@amd>
- <6610D852-4717-47A7-BFDE-52C8E9E614BB@goldelico.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha1;
-        protocol="application/pgp-signature"; boundary="OXfL5xGRrasGEqWY"
-In-Reply-To: <6610D852-4717-47A7-BFDE-52C8E9E614BB@goldelico.com>
+Message-Id: <49742A64-7392-4DEB-898E-F8EBCC72317C@goldelico.com>
+References: <20170219141715.GA7159@amd> <05F3816F-46E6-4BC2-9E2E-F20E645F7197@goldelico.com> <20170219171518.GA12833@amd> <B41253A6-95D5-4E0F-ABD6-6909362843C4@goldelico.com> <20170219190547.GA17292@amd> <EB41EEED-0D94-473F-944F-757B25350A4C@goldelico.com> <20170219205708.GA9641@amd> <6DF7B03A-8B63-422C-9561-69A34A7FBF35@goldelico.com> <20170219221930.GA1568@amd> <6610D852-4717-47A7-BFDE-52C8E9E614BB@goldelico.com> <20170220192933.GA23745@amd>
+To: Pavel Machek <pavel@ucw.cz>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 
---OXfL5xGRrasGEqWY
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+--Apple-Mail=_28AF0B62-F4B0-4262-8F9D-40CF710C821B
 Content-Transfer-Encoding: quoted-printable
+Content-Type: text/plain;
+	charset=us-ascii
 
-Hi!
+HI Pavel,
 
-> As long as it is small (I expect <1.01 =3D 1% error in scale) it is
-> barely noticeable.
+> Am 20.02.2017 um 20:29 schrieb Pavel Machek <pavel@ucw.cz>:
 >=20
-> Therefore, I asked before: how big in pixels is your finger or stylus?
-> Does this effect matter?
-
-If I draw a line in gimp, I don't expect it to have steps because of
-"barely noticeable" errors.
-
-> A resistive touch is a man-machine-interface where people press buttons o=
-f at
-> least 12x12 pixels size (or they are no longer visually recognizable).
-
-Resistive touch is used for drawing, too.
-=20
-> So the discussion boils down to "what gives the better usability?":
-> a) getting rid of the nasty user-space calibration step (and plethora of =
-different tools)
-> b) getting highest theoretical precision which has a low practical releva=
-nce
+> Hi!
 >=20
-> I am in favor of a). Like most users we ask. A minority is in favor of b).
-> Since we don't exclude b) users from reconfiguring their system to get it=
- done
-> as they like. I think this is the best we can achieve.
-
-Do you even read what I wrote?
-
-Because I presented way to have both a) _and_ b).
-
-> >>> No. You have to design interface such that they _can_ be improved, and
-> >>> what you propose does not work that way.
-> >>=20
-> >> It works. Please do real world tests...
-> >=20
-> > You do a real world test on N900, and propose upgrade path.
+>> As long as it is small (I expect <1.01 =3D 1% error in scale) it is
+>> barely noticeable.
+>>=20
+>> Therefore, I asked before: how big in pixels is your finger or =
+stylus?
+>> Does this effect matter?
 >=20
-> I have no N900 running. But since it uses a tsc2004/5 controller which se=
-ems
-> to be quite similar, you can likely copy&paste some code or add the algor=
-ithm:
+> If I draw a line in gimp, I don't expect it to have steps because of
+> "barely noticeable" errors.
+
+You can't draw a line with exactly 1 pixel distance on such a touch =
+screen.
+
 >=20
-> ABS_X =3D (touchscreen-size-x * (adc_x - adc_min_x)) / (adc_max_x - adc_m=
-in_x)
+>> A resistive touch is a man-machine-interface where people press =
+buttons of at
+>> least 12x12 pixels size (or they are no longer visually =
+recognizable).
 >=20
-> Thats it.
+> Resistive touch is used for drawing, too.
+
+Yes, for taking handwritten notes but not for high-precision graphics =
+design.
+For that you take a bigger screen and zoom the relevant areas.
+
 >=20
-> If you set touchscreen-size-x =3D (adc_max_x - adc_min_x) you get maximum=
- precision
-> you can achieve with integer arithmetic. And if you set adc_min_x =3D 0 y=
-our
-> user-space gets what it would have got before adding such a formula and t=
-hen you
-> can and must do calibration there.
+>> So the discussion boils down to "what gives the better usability?":
+>> a) getting rid of the nasty user-space calibration step (and plethora =
+of different tools)
+>> b) getting highest theoretical precision which has a low practical =
+relevance
+>>=20
+>> I am in favor of a). Like most users we ask. A minority is in favor =
+of b).
+>> Since we don't exclude b) users from reconfiguring their system to =
+get it done
+>> as they like. I think this is the best we can achieve.
 >=20
-> Taking this as the defaults if none of the new properties is specified, m=
-akes
-> the scaling feature completely disappear. And I don't care about 2 additi=
-onal
-> subtractions, one multiplication and one division per axis.
+> Do you even read what I wrote?
 >=20
-> So the upgrade path is:
-> 1. introduce new optional properties, parse and store them in the struct
-> 2. set defaults for the optional properties as described above
-> 3. add the formula to the code (1 line for each axis)
-> 4. deploy - nobody will notice
+> Because I presented way to have both a) _and_ b).
 
-Good so far.
+I am not aware that you did this. You made a proposal for the X system =
+but not
+for others, e.g. Replicant.
 
-> 5. update the DT and remove user-space calibration - people will be happy
->    that they do not have to calibrate first any more
+>=20
+>>>>> No. You have to design interface such that they _can_ be improved, =
+and
+>>>>> what you propose does not work that way.
+>>>>=20
+>>>> It works. Please do real world tests...
+>>>=20
+>>> You do a real world test on N900, and propose upgrade path.
+>>=20
+>> I have no N900 running. But since it uses a tsc2004/5 controller =
+which seems
+>> to be quite similar, you can likely copy&paste some code or add the =
+algorithm:
+>>=20
+>> ABS_X =3D (touchscreen-size-x * (adc_x - adc_min_x)) / (adc_max_x - =
+adc_min_x)
+>>=20
+>> Thats it.
+>>=20
+>> If you set touchscreen-size-x =3D (adc_max_x - adc_min_x) you get =
+maximum precision
+>> you can achieve with integer arithmetic. And if you set adc_min_x =3D =
+0 your
+>> user-space gets what it would have got before adding such a formula =
+and then you
+>> can and must do calibration there.
+>>=20
+>> Taking this as the defaults if none of the new properties is =
+specified, makes
+>> the scaling feature completely disappear. And I don't care about 2 =
+additional
+>> subtractions, one multiplication and one division per axis.
+>>=20
+>> So the upgrade path is:
+>> 1. introduce new optional properties, parse and store them in the =
+struct
+>> 2. set defaults for the optional properties as described above
+>> 3. add the formula to the code (1 line for each axis)
+>> 4. deploy - nobody will notice
+>=20
+> Good so far.
 
-You can't do this. And this is fatal problem with your proposal.
+Ok!
 
-If I update the DT in the kernel, my users will be very unhappy,
-because their screens will now be miscalibrated. New kernel must not
-force users to update their userland at the same time.
+>=20
+>> 5. update the DT and remove user-space calibration - people will be =
+happy
+>>   that they do not have to calibrate first any more
+>=20
+> You can't do this. And this is fatal problem with your proposal.
 
-									Pavel
---=20
-(english) http://www.livejournal.com/~pavelmachek
-(cesky, pictures) http://atrey.karlin.mff.cuni.cz/~pavel/picture/horses/blo=
-g.html
+>=20
+> If I update the DT in the kernel, my users will be very unhappy,
+> because their screens will now be miscalibrated.
 
---OXfL5xGRrasGEqWY
-Content-Type: application/pgp-signature; name="signature.asc"
-Content-Description: Digital signature
+If you tell them that they should recalibrate once, after they upgrade
+to Linux 4.12 because they no longer need it I doubt they will not be =
+very
+unhappy.
+
+And as said I do not expect or force you to take step 5 for the N900 =
+touch
+screen. Not even step 1.
+
+I would take this more sensitive if you would use the same chip.
+
+> New kernel must not
+> force users to update their userland at the same time.
+
+Yes, it shouldn't. But to be honest, this is not my experience. I have =
+to
+tweak userland a little almost every time a new kernel merge window is =
+done.
+Admittedly not in the input system. And I may be using the wrong =
+distribution.
+
+But if you ever want to deploy better features it is really difficult to =
+avoid.
+
+Nevertheless, what problem do you have to implement steps 1-4 in kernel
+and step 5 outside?
+
+BR and thanks,
+Nikolaus
+
+
+--Apple-Mail=_28AF0B62-F4B0-4262-8F9D-40CF710C821B
+Content-Transfer-Encoding: 7bit
+Content-Disposition: attachment;
+	filename=signature.asc
+Content-Type: application/pgp-signature;
+	name=signature.asc
+Content-Description: Message signed with OpenPGP using GPGMail
 
 -----BEGIN PGP SIGNATURE-----
-Version: GnuPG v1
 
-iEYEARECAAYFAlirQ50ACgkQMOfwapXb+vIxkgCbBxSCXYcHQU2dmf+rOXH1IXtb
-qSEAn1/Mx6g3aCnFQoiupB5xJ/yrCLxP
-=uePT
+iQIcBAEBCAAGBQJYq0+FAAoJEIl79TGLgAm648oP/3tar4MTnmH4NtOttrH4m7+2
+x7ADuwCv+TXmbcvNFQ+a3hVUvmFlOkkLrpkBUijRbV40rRCn/HiBeDbdsQ6N+z0p
+jl3mDrDAwo76Po8JoijmwJAzLBkSKtkkmSmZK+KN98JDSLVyNmsTugzZLJHTTIEW
+yJdQsA2+uTrqqLTUpXenVTfpM6p9eytQ1BBut4FuevcIgDbnnu9l8cwkpn7vAJvJ
+a66KjwFiC8T1g7gD08YhCnsBNwgoCpb7fY9luzv1IP4hLhJ3iPl3ErA180Zphtgd
+82MskhquCUQx+ghZTkzTqX2XKN+18bdKs5gBPPE7oKrxemtvRuP5VJs6qqsb+bMK
+XX5m7ucVE/sBCGwKGjZ+4JBK6qXJSbb1VKRaZ3IQS1q523wTyMPbA/xQ6dMP2EvC
+1NEjleJMLRN9b5A0vqvKQbHI59054w0NKFLwierAKKxyrZzDu+4eGRhcVZSVcpb0
+VPeTCRonukpLGFhEgpg7mwzOOrqkDnByDFSKqeDCtx4sc2+o9fUbtmBb14EFitQw
+ge6lCsMSdTuQnT1uUT1/coH/0BxNSh6xqKFJSwQKeWwe2qrfPe084FhksXVkYQ98
+Y9oE4Re3rzZNj7EfKTmkr1AyId7aNfNtYP9VCAWGPKDzGgT00AGO0eiVG94w3gBI
+BnB/olupPH10W8s0LUOc
+=gYKJ
 -----END PGP SIGNATURE-----
 
---OXfL5xGRrasGEqWY--
+--Apple-Mail=_28AF0B62-F4B0-4262-8F9D-40CF710C821B--
