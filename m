@@ -1,155 +1,186 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mo4-p04-ob.smtp.rzone.de ([81.169.146.176]:29768 "EHLO
-        mo4-p04-ob.smtp.rzone.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751282AbdBTUgU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Feb 2017 15:36:20 -0500
+Return-Path: <SRS0=Xdeo=2B=gmail.com=pali.rohar@kernel.org>
+From: Pali =?utf-8?q?Roh=C3=A1r?= <pali.rohar@gmail.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
 Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Content-Type: multipart/signed; boundary="Apple-Mail=_3076C7D0-340F-4FBE-BF31-0C222EC248F8"; protocol="application/pgp-signature"; micalg=pgp-sha256
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <201702202042.15878@pali>
-Date: Mon, 20 Feb 2017 21:35:18 +0100
+Date: Mon, 20 Feb 2017 22:07:38 +0100
 Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Sebastian Reichel <sre@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
-        Tony Lindgren <tony@atomide.com>,
-        Russell King <linux@armlinux.org.uk>,
-        Arnd Bergmann <arnd@arndb.de>,
-        Michael Welling <mwelling@ieee.org>,
-        =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
-        Javier Martinez Canillas <javier@osg.samsung.com>,
-        Igor Grinberg <grinberg@compulab.co.il>,
-        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Alexander Stein <alexander.stein@systec-electronic.com>,
-        Eric Engestrom <eric@engestrom.ch>,
-        Hans de Goede <hdegoede@redhat.com>,
-        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-        Petr Cvek <petr.cvek@tul.cz>,
-        Mauro Carvalho Chehab <mchehab@kernel.org>,
-        Hans Verkuil <hans.verkuil@cisco.com>,
-        Nick Dyer <nick@shmanahar.org>,
-        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
-        Michel Verlaan <michel.verl@gmail.com>,
-        linux-input@vger.kernel.org, devicetree@vger.kernel.org,
-        linux-kernel@vger.kernel.org, linux-omap@vger.kernel.org,
-        letux-kernel@openphoenux.org, linux-iio@vger.kernel.org,
-        kernel@pyra-handheld.com, Aaro Koskinen <aaro.koskinen@nokia.com>,
-        Pavel Machek <pavel@ucw.cz>,
-        Andrey Gelman <andrey.gelman@compulab.co.il>,
-        Haibo Chen <haibo.chen@freescale.com>
-Message-Id: <53529A9D-E2AA-405C-A12A-716984D2CDBC@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com> <20170220010714.GB8358@dtor-ws> <B30D00D0-1967-4BD5-A304-E2ADC815A805@goldelico.com> <201702202042.15878@pali>
-To: =?utf-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+ Sebastian Reichel <sre@kernel.org>,
+ Mark Rutland <mark.rutland@arm.com>,
+ =?utf-8?q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+ Tony Lindgren <tony@atomide.com>,
+ Russell King <linux@armlinux.org.uk>,
+ Arnd Bergmann <arnd@arndb.de>,
+ Michael Welling <mwelling@ieee.org>,
+ Mika
+ =?utf-8?q?Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+ Javier Martinez Canillas <javier@osg.samsung.com>,
+ Igor Grinberg <grinberg@compulab.co.il>,
+ "Andrew F. Davis" <afd@ti.com>,
+ Mark Brown <broonie@kernel.org>,
+ Jonathan Cameron <jic23@kernel.org>,
+ Rob Herring <robh+dt@kernel.org>,
+ Alexander Stein <alexander.stein@systec-electronic.com>,
+ Eric Engestrom <eric@engestrom.ch>,
+ Hans de Goede <hdegoede@redhat.com>,
+ Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+ Petr Cvek <petr.cvek@tul.cz>,
+ Mauro Carvalho Chehab <mchehab@kernel.org>,
+ Hans Verkuil <hans.verkuil@cisco.com>,
+ Nick Dyer <nick@shmanahar.org>,
+ Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+ Michel Verlaan <michel.verl@gmail.com>,
+ linux-input@vger.kernel.org,
+ devicetree@vger.kernel.org,
+ linux-kernel@vger.kernel.org,
+ linux-omap@vger.kernel.org,
+ letux-kernel@openphoenux.org,
+ linux-iio@vger.kernel.org,
+ kernel@pyra-handheld.com,
+ Aaro Koskinen <aaro.koskinen@nokia.com>,
+ Pavel Machek <pavel@ucw.cz>,
+ Andrey Gelman <andrey.gelman@compulab.co.il>,
+ Haibo Chen <haibo.chen@freescale.com>
+References: <cover.1482936802.git.hns@goldelico.com> <201702202042.15878@pali> <53529A9D-E2AA-405C-A12A-716984D2CDBC@goldelico.com>
+In-Reply-To: <53529A9D-E2AA-405C-A12A-716984D2CDBC@goldelico.com>
+MIME-Version: 1.0
+Content-Type: multipart/signed;
+  boundary="nextPart3297778.tM1pNtk2eR";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
+Message-Id: <201702202207.38582@pali>
+List-ID: <linux-iio@vger.kernel.org>
 
-
---Apple-Mail=_3076C7D0-340F-4FBE-BF31-0C222EC248F8
+--nextPart3297778.tM1pNtk2eR
+Content-Type: Text/Plain;
+  charset="utf-8"
 Content-Transfer-Encoding: quoted-printable
-Content-Type: text/plain;
-	charset=utf-8
 
-Hi Pali,
-
-> Am 20.02.2017 um 20:42 schrieb Pali Roh=C3=A1r <pali.rohar@gmail.com>:
+On Monday 20 February 2017 21:35:18 H. Nikolaus Schaller wrote:
+> Hi Pali,
 >=20
-> Hi Nikolaus!
+> > Am 20.02.2017 um 20:42 schrieb Pali Roh=C3=A1r <pali.rohar@gmail.com>:
+> >=20
+> > Hi Nikolaus!
+> >=20
+> > On Monday 20 February 2017 17:50:04 H. Nikolaus Schaller wrote:
+> >> Hi Dmitry,
+> >>=20
+> >>> Input driver may set resolution for given axis in units per mm
+> >>> (or units per radian for rotational axis ABS_RX, ABS_RY,
+> >>> ABS_RZ), and if you check the binding, you can use
+> >>> "touchscreen-x-mm" and "touchscreen-y-mm" to specify the size of
+> >>> entire touch surface and set resolution from it so that
+> >>> userspace can calculate the proper scaling factor.
+> >>=20
+> >> How is this information exposed by the kernel to user-space? By
+> >> scanning the DT file or tree?
+> >=20
+> > Set input_abs_set_res() from kernel. And in userspace call
+> > EVIOCGABS ioctl() on input device. Look at struct input_absinfo,
+> > you should have all needed information here. This is generic input
+> > interface, no DT is needed.
 >=20
-> On Monday 20 February 2017 17:50:04 H. Nikolaus Schaller wrote:
->> Hi Dmitry,
->>=20
->>> Input driver may set resolution for given axis in units per mm (or
->>> units per radian for rotational axis ABS_RX, ABS_RY, ABS_RZ), and
->>> if you check the binding, you can use "touchscreen-x-mm" and
->>> "touchscreen-y-mm" to specify the size of entire touch surface and
->>> set resolution from it so that userspace can calculate the proper
->>> scaling factor.
->>=20
->> How is this information exposed by the kernel to user-space? By
->> scanning the DT file or tree?
+> This assumes that I can and want to write a graphics system myself.
+
+Not only. There are already existing graphics systems. And you need to=20
+provide needed information from kernel, so they can start using it.
+
+So input_abs_set_res() is needed to use in your kernel driver.
+
+> > I hope that XServer is already using it for evdev devices...
 >=20
-> Set input_abs_set_res() from kernel. And in userspace call EVIOCGABS
-> ioctl() on input device. Look at struct input_absinfo, you should have
-> all needed information here. This is generic input interface, no DT is
-> needed.
+> No idea if it does. It is a black box for me out of our control.
 
-This assumes that I can and want to write a graphics system myself.
+https://cgit.freedesktop.org/xorg/driver/xf86-input-evdev/tree/src/evdev.c#=
+n1479
 
+So yes, it does.
+
+> > For whole implementation look at evtest program. That should be
+> > good starting point for your userspace implementation.
 >=20
-> I hope that XServer is already using it for evdev devices...
-
-No idea if it does. It is a black box for me out of our control.
-
+> The problem I have is that *I* have no userspace implementation and
+> the GTA04 project does not want to enforce one. We have several
+> different ones: X11 based (LXDE and others), Qt (fb based),
+> Replicant to name some.
 >=20
-> For whole implementation look at evtest program. That should be good
-> starting point for your userspace implementation.
+> All have the same problem to be solved once. The common denominator
+> for a solution are 2 lines of code in the kernel plus some DT
+> properties you need anyways if calibration should be automated in
+> userland.
 
-The problem I have is that *I* have no userspace implementation and
-the GTA04 project does not want to enforce one. We have several =
-different
-ones: X11 based (LXDE and others), Qt (fb based), Replicant to name =
-some.
+As I wrote above part of linux input API is resolution value. And from=20
+all information I understood that having current value, minimal value,=20
+maximal value and resolution is enough for correct calculation of pixel=20
+coordinates in userspace.
 
-All have the same problem to be solved once. The common denominator for
-a solution are 2 lines of code in the kernel plus some DT properties
-you need anyways if calibration should be automated in userland.
+And Xserver evdev driver is using it.
 
+If other non-X11 application (which you want/need to use) use resolution=20
+information incorrectly (or calculate positions incorrectly), then this=20
+is bug that application. Not in Linux kernel, that is important.
+
+And I would rather see fixes of such bugs in that (broken) application=20
+as doing workarounds in kernel, just because of bugs in application.
+
+More important, are those applications really broken?
+
+=46rom my point of view: Reporting size of input device is already part of=
+=20
+stable kernel <--> userspace API/ABI and it should be used instead of=20
+inventing new way...
+
+> > While I'm watching this discussion... in my opinion kernel should
+> > just invert input axes (when needed) and should not do any other
+> > normalization or integer/floating-point
+> > re-calibration/re-calculation. If it correctly exports minimum
+> > value, maximum value and resolution then userspace can correctly
+> > re-scale input events to units which userspace needs (e.g. mapping
+> > into LCD screen pixels or whatever is needed).
 >=20
-> While I'm watching this discussion... in my opinion kernel should just
-> invert input axes (when needed) and should not do any other
-> normalization or integer/floating-point re-calibration/re-calculation.
-> If it correctly exports minimum value, maximum value and resolution =
-then
-> userspace can correctly re-scale input events to units which userspace
-> needs (e.g. mapping into LCD screen pixels or whatever is needed).
+> It can, but afaik it does not yet.
 
-It can, but afaik it does not yet. And if it does, it does it in a =
-plethora
-of different implementation states. That is the reason why we want to =
-solve
-it once for all userlands in the kernel and not rely on user-space help.
+I did not tested it, but code is in xf86-input-evdev already there.
 
-Surely, userland can do a lot of things. It could also do the whole
-file system stuff (FUSE).
+So please try to implement input_abs_set_res() in kernel driver and test=20
+userspace.
 
-A more input device related example comes to my mind: userland could do
-keyboard mapping completely. It would suffice if the kernel presents
-some x/y coordinates or gpio-numbers for buttons and user-space could =
-map.
-Still there is a (pre-)mapping to Key-Codes. And yes, they are mapped a =
-second
-time in userland if needed, but it works sufficiently well if not done.
+> And if it does, it does it in a
+> plethora of different implementation states. That is the reason why
+> we want to solve it once for all userlands in the kernel and not
+> rely on user-space help.
 
-BR and thanks,
-Nikolaus
+=46or me this looks like "we are going to fix userspace bugs in kernel".=20
+Really! Not a good idea. Plus I still see this as abusing kernel API/ABI=20
+as resolution should be handled differently as you are proposing.
 
+> Surely, userland can do a lot of things. It could also do the whole
+> file system stuff (FUSE).
+>=20
+> A more input device related example comes to my mind: userland could
+> do keyboard mapping completely. It would suffice if the kernel
+> presents some x/y coordinates or gpio-numbers for buttons and
+> user-space could map. Still there is a (pre-)mapping to Key-Codes.
+> And yes, they are mapped a second time in userland if needed, but it
+> works sufficiently well if not done.
+>=20
+> BR and thanks,
+> Nikolaus
 
---Apple-Mail=_3076C7D0-340F-4FBE-BF31-0C222EC248F8
-Content-Transfer-Encoding: 7bit
-Content-Disposition: attachment;
-	filename=signature.asc
-Content-Type: application/pgp-signature;
-	name=signature.asc
-Content-Description: Message signed with OpenPGP using GPGMail
+=2D-=20
+Pali Roh=C3=A1r
+pali.rohar@gmail.com
+
+--nextPart3297778.tM1pNtk2eR
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
 
 -----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
 
-iQIcBAEBCAAGBQJYq1MHAAoJEIl79TGLgAm6zQoP/3Mmh4igsM256TfpcmJDzboq
-esmCr1bqJCD0qOkoGioRBSpUT1/u4bZmbkbQL7j0FLYoFZlciNo+K8ilV1fyxyxi
-KaDZwiLWuexhVb1qsgPmhK+qimstoCC5w0xFwYpG7hqoWzHbppH/fb96EIn0GBNV
-D0J5uylPe0M0+UbymqZbZLGSAddOm+xaItWfgvHgkF1xPMJi0BjHnxXcVbYoof/7
-jNI/fPhuzPlPK3kgbQupfsy/2+w2OGUi2q5jK211kENIuiaqDfN1EHiGRvpdQCDP
-+gcUtrltcU6OI+++k0Pop9PPlDW2s5gwVDLpsnOFTxoPsDCC+TenbebQEQlW86hF
-8feGKF+9vGq4xGNsrlw5VgWA65Ou9g3UVRmjn9n28P/7Lm5YzXdvZJlhceCNJam4
-a9zFTEFqjko+wE6SvolAihgvlErjNuHQ+lGEcUs5k+4zRLN1t9fQL60oM0o/CW6j
-4QqpB8tePm5QMsp4r/SR6zqpFo2DbbwB9wkHW7eLfeHGVHe4iPVVDRCqmVcmzEC2
-QMhM5VMVDMq7BI4p0a97G+zYgyBxa5ic7+D6jeCJliME7Ubv0JhtlORiBF6+KazV
-j42RZTE8ckR6UxrhvyxUYmM+6hRXZS8fnExieW7Eow0G9+F/9lZEv0RUT36xRVXZ
-4VcsoaulG1KC5ZccyecF
-=drRa
+iEYEABECAAYFAlirWpoACgkQi/DJPQPkQ1Ik3QCfdBf6q0xhG5k/RiIhUiGltVj2
+2QkAoJRdwSZUZRQBXQRCroBKUknMjRE2
+=HjFQ
 -----END PGP SIGNATURE-----
 
---Apple-Mail=_3076C7D0-340F-4FBE-BF31-0C222EC248F8--
+--nextPart3297778.tM1pNtk2eR--
