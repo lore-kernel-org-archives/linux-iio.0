@@ -1,136 +1,140 @@
-Return-Path: <SRS0=Xqrh=2C=goldelico.com=hns@kernel.org>
-Content-Type: text/plain; charset=utf-8
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:36019 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750922AbdBTWpx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Feb 2017 17:45:53 -0500
+From: Pali =?utf-8?q?Roh=C3=A1r?= <pali.rohar@gmail.com>
+To: Petr Cvek <petr.cvek@tul.cz>
 Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <CAKdAkRT2nHC_hdQko46MVdbnjahz65zpBvAWmHFfK72pL2uyiw@mail.gmail.com>
-Date: Tue, 21 Feb 2017 07:56:14 +0100
-Cc: Petr Cvek <petr.cvek@tul.cz>,
- =?utf-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>,
- Sebastian Reichel <sre@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>,
- Russell King <linux@armlinux.org.uk>,
- Arnd Bergmann <arnd@arndb.de>,
- Michael Welling <mwelling@ieee.org>,
- =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
- Javier Martinez Canillas <javier@osg.samsung.com>,
- Igor Grinberg <grinberg@compulab.co.il>,
- "Andrew F. Davis" <afd@ti.com>,
- Mark Brown <broonie@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Alexander Stein <alexander.stein@systec-electronic.com>,
- Eric Engestrom <eric@engestrom.ch>,
- Hans de Goede <hdegoede@redhat.com>,
- Benjamin Tissoires <benjamin.tissoires@redhat.com>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Hans Verkuil <hans.verkuil@cisco.com>,
- Nick Dyer <nick@shmanahar.org>,
- Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
- Michel Verlaan <michel.verl@gmail.com>,
- "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
- "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
- lkml <linux-kernel@vger.kernel.org>,
- Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
- Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
- linux-iio@vger.kernel.org,
- kernel@pyra-handheld.com,
- Aaro Koskinen <aaro.koskinen@nokia.com>,
- Pavel Machek <pavel@ucw.cz>,
- Andrey Gelman <andrey.gelman@compulab.co.il>,
- Haibo Chen <haibo.chen@freescale.com>
-Message-Id: <2FB9BB18-C84F-453B-8002-71A9CC8A253D@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com> <B30D00D0-1967-4BD5-A304-E2ADC815A805@goldelico.com> <201702202042.15878@pali> <201702202208.50498@pali> <C2E7AC24-75AB-442F-94A2-84904723EE41@goldelico.com> <CAKdAkRRZa-fpv_TKRdY=hFV3GdKxQ3muQORquvV_bTrDzQAhCw@mail.gmail.com> <15339314-8696-f603-d0da-beefe54f0653@tul.cz> <CAKdAkRT2nHC_hdQko46MVdbnjahz65zpBvAWmHFfK72pL2uyiw@mail.gmail.com>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Date: Mon, 20 Feb 2017 23:45:49 +0100
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Sebastian Reichel <sre@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        =?utf-8?q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
+        Tony Lindgren <tony@atomide.com>,
+        Russell King <linux@armlinux.org.uk>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Michael Welling <mwelling@ieee.org>,
+        Mika =?utf-8?q?Penttil=C3=A4?= <mika.penttila@nextfour.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Michel Verlaan <michel.verl@gmail.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        Discussions about the Letux Kernel
+        <letux-kernel@openphoenux.org>, linux-iio@vger.kernel.org,
+        kernel@pyra-handheld.com, Aaro Koskinen <aaro.koskinen@nokia.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Andrey Gelman <andrey.gelman@compulab.co.il>,
+        Haibo Chen <haibo.chen@freescale.com>
+References: <cover.1482936802.git.hns@goldelico.com> <CAKdAkRRZa-fpv_TKRdY=hFV3GdKxQ3muQORquvV_bTrDzQAhCw@mail.gmail.com> <15339314-8696-f603-d0da-beefe54f0653@tul.cz>
+In-Reply-To: <15339314-8696-f603-d0da-beefe54f0653@tul.cz>
+MIME-Version: 1.0
+Content-Type: multipart/signed;
+  boundary="nextPart4208919.Hg0nChBCbv";
+  protocol="application/pgp-signature";
+  micalg=pgp-sha1
+Message-Id: <201702202345.49231@pali>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Dmitry,
+--nextPart4208919.Hg0nChBCbv
+Content-Type: Text/Plain;
+  charset="utf-8"
+Content-Transfer-Encoding: quoted-printable
 
-> Am 20.02.2017 um 23:24 schrieb Dmitry Torokhov =
-<dmitry.torokhov@gmail.com>:
+On Monday 20 February 2017 23:21:37 Petr Cvek wrote:
+> Hi,
 >=20
-> On Mon, Feb 20, 2017 at 2:21 PM, Petr Cvek <petr.cvek@tul.cz> wrote:
->> Hi,
->>=20
->> Dne 20.2.2017 v 22:50 Dmitry Torokhov napsal(a):
->>> On Mon, Feb 20, 2017 at 1:27 PM, H. Nikolaus Schaller =
-<hns@goldelico.com> wrote:
->>>>=20
->>>>> Am 20.02.2017 um 22:08 schrieb Pali Roh=C3=A1r =
-<pali.rohar@gmail.com>:
->>>>>=20
->>>>> On Monday 20 February 2017 20:42:15 Pali Roh=C3=A1r wrote:
->>>>>> Hi Nikolaus!
->>>>>>=20
->>>>>> On Monday 20 February 2017 17:50:04 H. Nikolaus Schaller wrote:
->>>>>>> Hi Dmitry,
->>>>>>>=20
->>>>>>>> Input driver may set resolution for given axis in units per mm
->>>>>>>> (or units per radian for rotational axis ABS_RX, ABS_RY,
->>>>>>>> ABS_RZ), and if you check the binding, you can use
->>>>>>>> "touchscreen-x-mm" and "touchscreen-y-mm" to specify the size =
-of
->>>>>>>> entire touch surface and set resolution from it so that
->>>>>>>> userspace can calculate the proper scaling factor.
->>>>>>>=20
->>>>>>> How is this information exposed by the kernel to user-space? By
->>>>>>> scanning the DT file or tree?
->>>>>>=20
->>>>>> Set input_abs_set_res() from kernel. And in userspace call =
-EVIOCGABS
->>>>>> ioctl() on input device. Look at struct input_absinfo, you should
->>>>>> have all needed information here. This is generic input =
-interface,
->>>>>> no DT is needed.
->>>>>=20
->>>>> Looking at kernel code... via EVIOCSABS ioctl() you can even set
->>>>> resolution from userspace for specified input device.
->>>>>=20
->>>>> So this could be potentially used for calibrating input device =
-from
->>>>> userspace? (In case DT data will not fully match current HW)
->>>>>=20
->>>>>> I hope that XServer is already using it for evdev devices...
->>>>>>=20
->>>>>> For whole implementation look at evtest program. That should be =
-good
->>>>>> starting point for your userspace implementation.
->>>>>>=20
->>>>>> While I'm watching this discussion... in my opinion kernel should
->>>>>> just invert input axes (when needed)
->>>>=20
->>>> It is questionable why it should do that at all then.
->>>=20
->>> Because the task of the kernel is to provide unified view of the
->>> hardware. Axis swapping and inversion is needed to that "up" is =
-always
->>> "up" and "right" is always "right".
->>=20
->> Actually my Xorg calibration 3x3 matrix is fine with both axis =
-inverted (on TSC2046).
+> Dne 20.2.2017 v 22:50 Dmitry Torokhov napsal(a):
+> > On Mon, Feb 20, 2017 at 1:27 PM, H. Nikolaus Schaller
+> > <hns@goldelico.com> wrote:
+> >>> Am 20.02.2017 um 22:08 schrieb Pali Roh=C3=A1r <pali.rohar@gmail.com>:
+> >>>=20
+> >>> On Monday 20 February 2017 20:42:15 Pali Roh=C3=A1r wrote:
+> >>>> Hi Nikolaus!
+> >>>>=20
+> >>>> On Monday 20 February 2017 17:50:04 H. Nikolaus Schaller wrote:
+> >>>>> Hi Dmitry,
+> >>>>>=20
+> >>>>>> Input driver may set resolution for given axis in units per mm
+> >>>>>> (or units per radian for rotational axis ABS_RX, ABS_RY,
+> >>>>>> ABS_RZ), and if you check the binding, you can use
+> >>>>>> "touchscreen-x-mm" and "touchscreen-y-mm" to specify the size
+> >>>>>> of entire touch surface and set resolution from it so that
+> >>>>>> userspace can calculate the proper scaling factor.
+> >>>>>=20
+> >>>>> How is this information exposed by the kernel to user-space? By
+> >>>>> scanning the DT file or tree?
+> >>>>=20
+> >>>> Set input_abs_set_res() from kernel. And in userspace call
+> >>>> EVIOCGABS ioctl() on input device. Look at struct
+> >>>> input_absinfo, you should have all needed information here.
+> >>>> This is generic input interface, no DT is needed.
+> >>>=20
+> >>> Looking at kernel code... via EVIOCSABS ioctl() you can even set
+> >>> resolution from userspace for specified input device.
+> >>>=20
+> >>> So this could be potentially used for calibrating input device
+> >>> from userspace? (In case DT data will not fully match current
+> >>> HW)
+> >>>=20
+> >>>> I hope that XServer is already using it for evdev devices...
+> >>>>=20
+> >>>> For whole implementation look at evtest program. That should be
+> >>>> good starting point for your userspace implementation.
+> >>>>=20
+> >>>> While I'm watching this discussion... in my opinion kernel
+> >>>> should just invert input axes (when needed)
+> >>=20
+> >> It is questionable why it should do that at all then.
+> >=20
+> > Because the task of the kernel is to provide unified view of the
+> > hardware. Axis swapping and inversion is needed to that "up" is
+> > always "up" and "right" is always "right".
 >=20
-> Yes, you can make it work for your touchscreen as long as you know
-> that it inverted somehow. How you gain this knowledge is the question.
+> Actually my Xorg calibration 3x3 matrix is fine with both axis
+> inverted (on TSC2046).
 
-I think by letting the user calibrate the touch (calib tools can detect
-inversion and rotation by the tap gesture sequence). I got the =
-impression
-that this step is wanted anyways for getting maximum precision.
+Yes, 3x3 matrix which represent affine transformation can code inverted=20
+axis. This is IIRC what Xorg is doing.
 
-Or the user-space configuration for a specific device model knows that =
-because
-the developer has gained this knowledge once and predefined the rotation =
-matrix
-for e.g. X11 correctly. If he didn't e.g. for Replicant it is =
-Replicant's bug...
+But with information of min, max and current values plus resolution you=20
+cannot code information that axes are inverted (unless you misuse fact=20
+what is minimal and what maximal value). And this is what kernel=20
+provides for input device.
 
-So you do not need this knowledge passed to user-space at all. Hence my =
-proposal
-to get rid of touch inversion and flipping properties and code from the =
-touch
-screen drivers.
+Affine transformation supported by Xorg is "stronger" as resolution=20
+provided by kernel.
 
-BR and thanks,
-Nikolaus
+=2D-=20
+Pali Roh=C3=A1r
+pali.rohar@gmail.com
+
+--nextPart4208919.Hg0nChBCbv
+Content-Type: application/pgp-signature; name=signature.asc 
+Content-Description: This is a digitally signed message part.
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v1.4.11 (GNU/Linux)
+
+iEYEABECAAYFAlircZ0ACgkQi/DJPQPkQ1JoegCePhuUAGrh81cz8cSnxEn+PARP
+sIAAoKD+hIk48K8MArDfkVffaX1q8/2N
+=EWUC
+-----END PGP SIGNATURE-----
+
+--nextPart4208919.Hg0nChBCbv--
