@@ -1,479 +1,420 @@
-Return-Path: <SRS0=HQNo=Z7=goldelico.com=hns@kernel.org>
+Return-Path: <SRS0=Fs6U=2B=gmail.com=dmitry.torokhov@kernel.org>
+Date: Sun, 19 Feb 2017 17:07:14 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: "H. Nikolaus Schaller" <hns@goldelico.com>
+Cc: Sebastian Reichel <sre@kernel.org>, Mark Rutland <mark.rutland@arm.com>,
+	=?iso-8859-1?Q?Beno=EEt?= Cousson <bcousson@baylibre.com>,
+	Tony Lindgren <tony@atomide.com>,
+	Russell King <linux@armlinux.org.uk>, Arnd Bergmann <arnd@arndb.de>,
+	Michael Welling <mwelling@ieee.org>,
+	Mika =?iso-8859-1?Q?Penttil=E4?= <mika.penttila@nextfour.com>,
+	Javier Martinez Canillas <javier@osg.samsung.com>,
+	Igor Grinberg <grinberg@compulab.co.il>,
+	"Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Alexander Stein <alexander.stein@systec-electronic.com>,
+	Eric Engestrom <eric@engestrom.ch>,
+	Hans de Goede <hdegoede@redhat.com>,
+	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+	Petr Cvek <petr.cvek@tul.cz>,
+	Mauro Carvalho Chehab <mchehab@kernel.org>,
+	Hans Verkuil <hans.verkuil@cisco.com>,
+	Nick Dyer <nick@shmanahar.org>,
+	Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+	Michel Verlaan <michel.verl@gmail.com>, linux-input@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
+	linux-omap@vger.kernel.org, letux-kernel@openphoenux.org,
+	linux-iio@vger.kernel.org, kernel@pyra-handheld.com,
+	Aaro Koskinen <aaro.koskinen@nokia.com>,
+	Pali =?iso-8859-1?Q?Roh=E1r?= <pali.rohar@gmail.com>,
+	Pavel Machek <pavel@ucw.cz>,
+	Andrey Gelman <andrey.gelman@compulab.co.il>,
+	Haibo Chen <haibo.chen@freescale.com>
+Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
+ names, pre-calibration, flipping and rotation
+Message-ID: <20170220010714.GB8358@dtor-ws>
+References: <cover.1482936802.git.hns@goldelico.com>
+ <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com>
+ <20170128193342.GB38136@dtor-ws>
+ <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com>
+ <20170217204041.GE13050@dtor-ws>
+ <558407EE-4884-4CC3-9098-79DC4B222868@goldelico.com>
+MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-Mime-Version: 1.0 (Mac OS X Mail 9.3 \(3124\))
-Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding names, pre-calibration, flipping and rotation
-From: "H. Nikolaus Schaller" <hns@goldelico.com>
-In-Reply-To: <20170217204041.GE13050@dtor-ws>
-Date: Sat, 18 Feb 2017 12:32:48 +0100
-Cc: Sebastian Reichel <sre@kernel.org>,
- Mark Rutland <mark.rutland@arm.com>,
- =?utf-8?Q?Beno=C3=AEt_Cousson?= <bcousson@baylibre.com>,
- Tony Lindgren <tony@atomide.com>,
- Russell King <linux@armlinux.org.uk>,
- Arnd Bergmann <arnd@arndb.de>,
- Michael Welling <mwelling@ieee.org>,
- =?utf-8?Q?Mika_Penttil=C3=A4?= <mika.penttila@nextfour.com>,
- Javier Martinez Canillas <javier@osg.samsung.com>,
- Igor Grinberg <grinberg@compulab.co.il>,
- "Andrew F. Davis" <afd@ti.com>,
- Mark Brown <broonie@kernel.org>,
- Jonathan Cameron <jic23@kernel.org>,
- Rob Herring <robh+dt@kernel.org>,
- Alexander Stein <alexander.stein@systec-electronic.com>,
- Eric Engestrom <eric@engestrom.ch>,
- Hans de Goede <hdegoede@redhat.com>,
- Benjamin Tissoires <benjamin.tissoires@redhat.com>,
- Petr Cvek <petr.cvek@tul.cz>,
- Mauro Carvalho Chehab <mchehab@kernel.org>,
- Hans Verkuil <hans.verkuil@cisco.com>,
- Nick Dyer <nick@shmanahar.org>,
- Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
- Michel Verlaan <michel.verl@gmail.com>,
- linux-input@vger.kernel.org,
- devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org,
- linux-omap@vger.kernel.org,
- letux-kernel@openphoenux.org,
- linux-iio@vger.kernel.org,
- kernel@pyra-handheld.com,
- Aaro Koskinen <aaro.koskinen@nokia.com>,
- =?utf-8?Q?Pali_Roh=C3=A1r?= <pali.rohar@gmail.com>,
- Pavel Machek <pavel@ucw.cz>,
- Andrey Gelman <andrey.gelman@compulab.co.il>,
- Haibo Chen <haibo.chen@freescale.com>
-Message-Id: <558407EE-4884-4CC3-9098-79DC4B222868@goldelico.com>
-References: <cover.1482936802.git.hns@goldelico.com> <9830dd21e6425e3a866fac6ed4cc73ddd58b719f.1482936802.git.hns@goldelico.com> <20170128193342.GB38136@dtor-ws> <1F6355E1-A5E3-41A6-908F-619A15581BEF@goldelico.com> <20170217204041.GE13050@dtor-ws>
-To: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+In-Reply-To: <558407EE-4884-4CC3-9098-79DC4B222868@goldelico.com>
 List-ID: <linux-iio@vger.kernel.org>
 
-Hi Dmitry,
+Hi Nikolaus,
 
-> Am 17.02.2017 um 21:40 schrieb Dmitry Torokhov =
-<dmitry.torokhov@gmail.com>:
->=20
-> Hi Nikolaus,
->=20
-> On Sat, Jan 28, 2017 at 10:44:35PM +0100, H. Nikolaus Schaller wrote:
->> Hi Dmitry,
->>=20
->>> Am 28.01.2017 um 20:33 schrieb Dmitry Torokhov =
-<dmitry.torokhov@gmail.com>:
->>>=20
->>> Hi Nikolaus,
->>>=20
->>> On Wed, Dec 28, 2016 at 03:53:16PM +0100, H. Nikolaus Schaller =
-wrote:
->>>> commit b98abe52fa8e ("Input: add common DT binding for =
-touchscreens")
->>>> introduced common DT bindings for touchscreens [1] and a helper =
-function to
->>>> parse the DT.
->>>>=20
->>>> commit ed7c9870c9bc ("Input: of_touchscreen - add support for =
-inverted / swapped axes")
->>>> added another helper for parsing axis inversion and swapping
->>>> and applying them to x and y coordinates.
->>>>=20
->>>> Both helpers have been integrated to accommodate any orientation of =
-the
->>>> touch panel in relation to the LCD.
->>>>=20
->>>> A new feature is to introduce scaling the min/max ADC values to the =
-screen
->>>> size.
->>>>=20
->>>> This makes it possible to pre-calibrate the touch so that is =
-(almost)
->>>> exactly matches the LCD pixel coordinates it is glued onto. This =
-allows to
->>>> well enough operate the touch before a user space calibration step =
-can
->>>> improve the precision.
->>>=20
->>> I question whether doing scaling in kernel is really right solution.
->>=20
->> Since lower left corner does not exactly report [0 0] and upper right =
-corner
->> does not report [4095 4095] from the ADC we need offset and steepness =
-correction
->> of the ADC values.
->>=20
->> This steepness is the scaling that must happen in kernel and I don't =
-understand
->> why you want to propagate this ADC errors to user-space by avoiding =
-scaling.
->>=20
->> Let me iterate what we want to achieve:
->> * use new common bindings
->> * offset and steepness calibration of the ADC (called =
-pre-calibration).
->>  This makes a real device much more reliable to operate with factory =
-installed
->>  scaling factors.
->> * flipping and rotation
->>=20
->> (note that touch pixel to LCD pixel scaling is not explicitly on this =
-list!)
->=20
-> That was explicitly called out in the patch:
->=20
-> "A new feature is to introduce scaling the min/max ADC values to the
-> screen size."
+On Sat, Feb 18, 2017 at 12:32:48PM +0100, H. Nikolaus Schaller wrote:
+> Hi Dmitry,
+> 
+> > Am 17.02.2017 um 21:40 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
+> > 
+> > Hi Nikolaus,
+> > 
+> > On Sat, Jan 28, 2017 at 10:44:35PM +0100, H. Nikolaus Schaller wrote:
+> >> Hi Dmitry,
+> >> 
+> >>> Am 28.01.2017 um 20:33 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
+> >>> 
+> >>> Hi Nikolaus,
+> >>> 
+> >>> On Wed, Dec 28, 2016 at 03:53:16PM +0100, H. Nikolaus Schaller wrote:
+> >>>> commit b98abe52fa8e ("Input: add common DT binding for touchscreens")
+> >>>> introduced common DT bindings for touchscreens [1] and a helper function to
+> >>>> parse the DT.
+> >>>> 
+> >>>> commit ed7c9870c9bc ("Input: of_touchscreen - add support for inverted / swapped axes")
+> >>>> added another helper for parsing axis inversion and swapping
+> >>>> and applying them to x and y coordinates.
+> >>>> 
+> >>>> Both helpers have been integrated to accommodate any orientation of the
+> >>>> touch panel in relation to the LCD.
+> >>>> 
+> >>>> A new feature is to introduce scaling the min/max ADC values to the screen
+> >>>> size.
+> >>>> 
+> >>>> This makes it possible to pre-calibrate the touch so that is (almost)
+> >>>> exactly matches the LCD pixel coordinates it is glued onto. This allows to
+> >>>> well enough operate the touch before a user space calibration step can
+> >>>> improve the precision.
+> >>> 
+> >>> I question whether doing scaling in kernel is really right solution.
+> >> 
+> >> Since lower left corner does not exactly report [0 0] and upper right corner
+> >> does not report [4095 4095] from the ADC we need offset and steepness correction
+> >> of the ADC values.
+> >> 
+> >> This steepness is the scaling that must happen in kernel and I don't understand
+> >> why you want to propagate this ADC errors to user-space by avoiding scaling.
+> >> 
+> >> Let me iterate what we want to achieve:
+> >> * use new common bindings
+> >> * offset and steepness calibration of the ADC (called pre-calibration).
+> >>  This makes a real device much more reliable to operate with factory installed
+> >>  scaling factors.
+> >> * flipping and rotation
+> >> 
+> >> (note that touch pixel to LCD pixel scaling is not explicitly on this list!)
+> > 
+> > That was explicitly called out in the patch:
+> > 
+> > "A new feature is to introduce scaling the min/max ADC values to the
+> > screen size."
+> 
 
-Because it is a feature that was not planned nor required, but is there. =
-So it came
-into the description of what can be done. If this is the key problem I =
-am happy with
-removing it from the commit messages.
+> Because it is a feature that was not planned nor required, but is
+> there. So it came into the description of what can be done. If this is
+> the key problem I am happy with removing it from the commit messages.
+> 
+> Anyways, scaling to screen coordinates is not my invention. It is
+> based on
+> 
+> 	http://lxr.free-electrons.com/source/Documentation/devicetree/bindings/input/touchscreen/touchscreen.txt
+> 
+> which defines the size to be in pixels. Well, a resistive touch screen
+> does not have pixels.  It might have a resolution/precision given by
+> the ADC conversion steps but I assume this is not meant here.
+> 
+> So this scaling to screen size was also stimulated by this DT
+> bindings.
+> 
 
-Anyways, scaling to screen coordinates is not my invention. It is based =
-on
+OK, now I see where you are coming from. You assume that pixels
+mentioned in the DT binding are LCD pixels, however this is incorrect.
+They are "pixels" or the touch controller, i.e. native unites in which
+device reports coordinates, as opposed to points per inch, or
+millimeters, or whatever. These "pixels" do not have to have 1:1
+relation to the LCD pixels; in fact they rarely do.
 
-	=
-http://lxr.free-electrons.com/source/Documentation/devicetree/bindings/inp=
-ut/touchscreen/touchscreen.txt
+Input driver may set resolution for given axis in units per mm (or units
+per radian for rotational axis ABS_RX, ABS_RY, ABS_RZ), and if you
+check the binding, you can use "touchscreen-x-mm" and "touchscreen-y-mm"
+to specify the size of entire touch surface and set resolution from it
+so that userspace can calculate the proper scaling factor.
 
-which defines the size to be in pixels. Well, a resistive touch screen =
-does not have pixels.
-It might have a resolution/precision given by the ADC conversion steps =
-but I assume
-this is not meant here.
+> > 
+> >> 
+> >> Now to achieve the ADC pre-calibration we must calculate
+> >> 
+> >> 	x' = (x - ti,min-x) / (ti,max-x-ti,min-x) giving a rante from 0.0 ... 1.0
+> >> 
+> >> This is scaled up to what is defined by touchscreen-size-x, i.e.
+> >> 
+> >> 	x' = (touchscreen-size-x * (x - ti,min-x)) / (ti,max-x-ti,min-x)
+> >> 
+> >> How do you want to avoid this scaling to take place? It happens automatically.
+> >> It is not even an additional line of code. And is necessary for compensating ADC
+> >> offsets and steepness.
+> >> 
+> >> So the only way to avoid the scaling option is to eliminate the precalibration/ADC
+> >> compensation which is essential for a device which has no means to properly
+> >> calibrate before operating the device through touch.
+> >> 
+> >> The other option would be to avoid common bindings and set
+> >> 
+> >> 	touchscreen-size-x = (ti,max-x-ti,min-x)
+> >> 
+> >> This is heavily dependent on specific ADC offsets forwarded to user-space.
+> >> IMHO the worst we can do (and the current tsc2007 driver does it that way!).
+> >> 
+> >>> 
+> >>> Why do you want this?
+> >> 
+> >> It seems that you assume that we want to enforce 1:1 scaling between touch pixels
+> >> and LCD pixels and have designed code to achieve exactly that.
+> >> 
+> >> This is not the case. It is just a byproduct that you can do it.
+> >> 
+> >> And since it is easier to understand we have made the examples this way.
+> >> 
+> >>> If your touch resolution is lower than your screen
+> >>> then it might be useful, but if it is lower then you are losing data
+> >>> that can be very helpful for gesture recognition, and I hope you design
+> >>> your userspace so it can handle not only "bad" hardware, but "good" as
+> >>> well. And even with "bad" there are a lot of tricks that can be done to
+> >>> get "better" touch position in userspace.
+> >> 
+> >> You can just *choose* DT parameters touchscreen-size-x to match the LCD size.
+> >> This of course reduces the touch precision to full LCD pixels. For finger-
+> >> touch operated devices, subpixel precision is rarely needed.
+> >> 
+> >> Also, some user-spaces (e.g. older Replicant for GTA04) assume that there is
+> >> such an 1:1 mapping and they will be perfectly happy about this. 
+> >> 
+> >> But, if you can modify your user-space easily, you can also choose a different
+> >> factor.
+> >> 
+> >> You can for example define touchscreen-size-x=<4096> and then you get almost
+> >> the highest precision of the ADC and won't loose any bits. Or even define a
+> >> bigger range and get steps >1 bit.
+> >> 
+> >> LCD driver (e.g. X11 calibration matrix) can scale it down again to LCD pixels.
+> >> 
+> >> So effectively we get for LCD pixels when the touch sets a mouse pointer:
+> >> 
+> >> 	x'' = user-space-scale * <<input-event<< ((touchscreen-size-x * (x - ti,min-x)) / (ti,max-x-ti,min-x))
+> >> 
+> >> The most simple setup would then be but others are possible:
+> >> 
+> >> 	user-space-scale = 1
+> >> 	touchscreen-size-x = LCD-size-x
+> >> 
+> >> Let me cite myself:
+> >> 
+> >>>> This makes it possible to pre-calibrate the touch so that is (almost)
+> > 
+> > Yes, it allows you to pre-calibrate, I get it. But you still do properly
+> > calibrate later, right?
+> 
+> No. We want to get rid of this step unless we need to improve the precision by
+> some tiny %.
+> 
+> Why do we want to get rid of it?
+> 
+> This needs a longer explanation.
+> 
+> First of all we are working on the Letux distribution which aims at supporting
+> multiple devices in the same way and with a single SD card image that contains
+> one or multiple rootfs (Debian X11, QtMoko, Replicant etc.) the kernel uImage
+> and DTB files for each supported device.
+> 
+> One of the ideas is to allow users to swap the SD card from one device to the
+> other. This means that the touch screen calibration must magically be carried
+> along - or we enforce to recalibrate every time the sd card is swapped back or
+> forth.
+> 
+> The same is true for prebuilt SD-images. To have a single (no longer device specific)
+> download requires to have a well defined default calibration. Especially on
+> devices where you have no keyboard where you can ask the user to manually fine-tune
+> something.
+> 
+> Our challenge is to make it work well without asking for explicit calibration.
+> This is where pre-calibration comes into the game.
+> 
+> It turns out to be related to the touch screen properties and how it is glued onto
+> the specific LCD panel, i.e. hardware and its description.
+> 
+> So the natural location of defining this relation is the DTB for each device
+> and not the user-space. And it happens that we already have one per device
+> (touch screen, lcd, tsc variant) on the SD card.
+> 
+> > So you are doing double work here, once in
+> > kernel, and second time in userspace.
+> 
+> This is no longer required, as long as we can use the default 1:1 coordinate mapping
+> of e.g. framebuffer or X11 based GUI toolkits.
+> 
+> If we don't have the 1:1 mapping of touch screen input event coordinates
+> to LCD pixels we have a mess of different scaling factors back in user-space
+> again. And the problem is setting them up properly in an installable .tbz
+> or .dd image.
 
-So this scaling to screen size was also stimulated by this DT bindings.
+Why? Nothing stops you from querying the device and figure out scaling.
+We do that, for example, on Chrome OS, where we do not have 1:1 matching
+between LCDs and touch controllers, and still we do not have static
+transformation matrices on the file system either.
 
->=20
->>=20
->> Now to achieve the ADC pre-calibration we must calculate
->>=20
->> 	x' =3D (x - ti,min-x) / (ti,max-x-ti,min-x) giving a rante from =
-0.0 ... 1.0
->>=20
->> This is scaled up to what is defined by touchscreen-size-x, i.e.
->>=20
->> 	x' =3D (touchscreen-size-x * (x - ti,min-x)) / =
-(ti,max-x-ti,min-x)
->>=20
->> How do you want to avoid this scaling to take place? It happens =
-automatically.
->> It is not even an additional line of code. And is necessary for =
-compensating ADC
->> offsets and steepness.
->>=20
->> So the only way to avoid the scaling option is to eliminate the =
-precalibration/ADC
->> compensation which is essential for a device which has no means to =
-properly
->> calibrate before operating the device through touch.
->>=20
->> The other option would be to avoid common bindings and set
->>=20
->> 	touchscreen-size-x =3D (ti,max-x-ti,min-x)
->>=20
->> This is heavily dependent on specific ADC offsets forwarded to =
-user-space.
->> IMHO the worst we can do (and the current tsc2007 driver does it that =
-way!).
->>=20
->>>=20
->>> Why do you want this?
->>=20
->> It seems that you assume that we want to enforce 1:1 scaling between =
-touch pixels
->> and LCD pixels and have designed code to achieve exactly that.
->>=20
->> This is not the case. It is just a byproduct that you can do it.
->>=20
->> And since it is easier to understand we have made the examples this =
-way.
->>=20
->>> If your touch resolution is lower than your screen
->>> then it might be useful, but if it is lower then you are losing data
->>> that can be very helpful for gesture recognition, and I hope you =
-design
->>> your userspace so it can handle not only "bad" hardware, but "good" =
-as
->>> well. And even with "bad" there are a lot of tricks that can be done =
-to
->>> get "better" touch position in userspace.
->>=20
->> You can just *choose* DT parameters touchscreen-size-x to match the =
-LCD size.
->> This of course reduces the touch precision to full LCD pixels. For =
-finger-
->> touch operated devices, subpixel precision is rarely needed.
->>=20
->> Also, some user-spaces (e.g. older Replicant for GTA04) assume that =
-there is
->> such an 1:1 mapping and they will be perfectly happy about this.=20
->>=20
->> But, if you can modify your user-space easily, you can also choose a =
-different
->> factor.
->>=20
->> You can for example define touchscreen-size-x=3D<4096> and then you =
-get almost
->> the highest precision of the ADC and won't loose any bits. Or even =
-define a
->> bigger range and get steps >1 bit.
->>=20
->> LCD driver (e.g. X11 calibration matrix) can scale it down again to =
-LCD pixels.
->>=20
->> So effectively we get for LCD pixels when the touch sets a mouse =
-pointer:
->>=20
->> 	x'' =3D user-space-scale * <<input-event<< ((touchscreen-size-x =
-* (x - ti,min-x)) / (ti,max-x-ti,min-x))
->>=20
->> The most simple setup would then be but others are possible:
->>=20
->> 	user-space-scale =3D 1
->> 	touchscreen-size-x =3D LCD-size-x
->>=20
->> Let me cite myself:
->>=20
->>>> This makes it possible to pre-calibrate the touch so that is =
-(almost)
->=20
-> Yes, it allows you to pre-calibrate, I get it. But you still do =
-properly
-> calibrate later, right?
+> 
+> Recently, you have raised another topic I had indeed not thought abut, which is
+> the potential subpixel precision of a resistive touch. You get approx. 12
+> bit from the ADC but the x coordinate of the 480 pixel wide screen is just 9
+> bit. So scaling the input event coordinates to pixels throws away 3 bits.
+> 
+> But there are two things to consider.
+> 
+> One is that we could set the pre-calibration to keep as much resolution as
+> possible, ca. 12 pixels and make the user-space scale down to screen coordinates.
+> 
+> Unfortunately that differs between devices and hence we need not only
+> different DTBs (which we already have) but different scale factors in user-space.
+> 
+> Next, one could argue that subpixel coordinates should not be handled by
+> scaling input event coordinates up and then down again in user-space. The
+> correct solution would be that input events could report fixed or floating
+> point coordinates, but this is probably beyond what we all want to do.
+> 
+> The other thing is noise. No resistive touch screen I have seen in the wild with
+> the tsc2007 or tsc2046 controller has the precision to really report subpixels.
+> Rather we have to set the fuzz between 3 or 10 or so. Which means that those
+> bits we cut off by scaling to screen coordinates are already lost in noise.
 
-No. We want to get rid of this step unless we need to improve the =
-precision by
-some tiny %.
+I really do not care what exactly tsc2007 or any other particular
+touchscreen controller does. Please design your software so that it can
+use wide range of devices, from noisy to noiseless. If there is noise,
+filter it out. It there is a nice touch controller with a lot of
+precision - use it, do not dumb it down to the lowest common
+denominator.
 
-Why do we want to get rid of it?
+> 
+> > 
+> > I'd be more open to allowing setting the "min-axis" values to allow
+> > reporting typical range for given device, and let userspace scale as it
+> > sees fit.
+> 
+> The problem is: what is "typical range"? It turns out to be a completely
+> arbitrary definition.
+> 
+> I see a choice between:
+> a) full theoretical ADC range
+> b) millimeters
+> c) pixels of the LCD the touch is glued to
 
-This needs a longer explanation.
+d) Native reporting units for the touch controller. You will have the
+touch controller output range, you will have your LCD screen size, and
+you scale one into another.
 
-First of all we are working on the Letux distribution which aims at =
-supporting
-multiple devices in the same way and with a single SD card image that =
-contains
-one or multiple rootfs (Debian X11, QtMoko, Replicant etc.) the kernel =
-uImage
-and DTB files for each supported device.
+> 
+> For me, the most natural and practical "typical range" still seems to be the
+> pixels of the lcd panel the touch is glued onto.
+> 
+> The reason why I see it as superior to the others is that only this leads to
+> a stable 1:1 mapping in user-space avoiding to adjust any factors there.
+> 
+> And this 1:1 saves a lot of configuration hassle if you swap GUI systems
+> (X, Wayland, Android, DirectFB, fb based Qt, ...).
 
-One of the ideas is to allow users to swap the SD card from one device =
-to the
-other. This means that the touch screen calibration must magically be =
-carried
-along - or we enforce to recalibrate every time the sd card is swapped =
-back or
-forth.
+Yes, they will need to do that, if they want to use "nice" hardware and
+not lose precision. And since they need to do that anyway, there is no
+point in doing it in kernel, not with per driver code, and not even in
+input core.
 
-The same is true for prebuilt SD-images. To have a single (no longer =
-device specific)
-download requires to have a well defined default calibration. Especially =
-on
-devices where you have no keyboard where you can ask the user to =
-manually fine-tune
-something.
+You are getting this feedback from several people, please consider topic
+of adding scaling to the drivers closed. The only transformations that I
+think make sense is to "normalize" output with axis swaps and
+inversions, so that kernel uses the same notion of coordinates for all
+devices, regardless of how the device was mounted.
 
-Our challenge is to make it work well without asking for explicit =
-calibration.
-This is where pre-calibration comes into the game.
+> 
+> > 
+> >> 
+> >>> 
+> >>>> 
+> >>>> Please note that the old ti,fuzz properties have been removed since they
+> >>>> are replaced by the common bindings touchscreen-fuzz-x/y/z.
+> >>>> 
+> >>>> Finally, calculate_pressure has been renamed to calculate_resistance
+> >>>> because that is what it is doing.
+> >>> 
+> >>> That is not what your patch does though. In the presence of
+> >>> "ti,report-resistance" parameter you start reporting resistance through
+> >>> ABS_PRESSURE
+> >> 
+> >> Well, there is some historic confusion wether this driver reports resistance
+> >> or pressure.
+> >> 
+> >> The unpatched tsc2007 driver does it wrong (please test!) and we fix it on
+> >> the fly (because a separate patch is much more complex than doing it right
+> >> immediately).
+> >> 
+> >> This ti,report-resistance property is a means to get the old (wrong) meaning back
+> >> in case someone urgently needs it and can't fix the user-space workaround which
+> >> he must be using.
+> >> 
+> >> 
+> >> AFAIK there is no mainline board using the DT except ours (and the upcoming
+> >> OMAP5-Pyra), so we shouldn't care too much. If you prefer, you can remove this
+> >> compatibility property. We don't need it for our devices.
+> >> 
+> > 
+> > You seem to be treating DT data as something very fluid, which is wrong.
+> 
+> No,only sometimes.
+> 
+> Of course it should be done right once. Of course there is long discussion about
+> what is right...
+> 
+> > You need to treat it as a firmware, unlikely to change once device is
+> > shipped. Unlike legacy platform data, the fact that DTS files are not
+> > present in mainline does not mean that we can ignore such users and
+> > change behavior at will.
+> 
+> Well, it happens to me as maintainer of a 99.5% mainline device every
+> now and then. Of course this should not be an argument to do it equally bad here.
+> 
+> One more thought: for some devices it is easier to modify the DTB "firmware"
+> than the user space (e.g. if you have no access to it because it is maintained
+> by somebody else).
 
-It turns out to be related to the touch screen properties and how it is =
-glued onto
-the specific LCD panel, i.e. hardware and its description.
+And still, according to DT folks, device tree forms an ABI and thus we
+are not to change it, even if it is easy.
 
-So the natural location of defining this relation is the DTB for each =
-device
-and not the user-space. And it happens that we already have one per =
-device
-(touch screen, lcd, tsc variant) on the SD card.
+> 
+> > 
+> > That said, if driver behavior is out of line from the subsystem
+> > expectations, we need to fix it.
+> > 
+> > 
+> >> That the function name is wrong is a second issue and this double negation might
+> >> confuse a litte.
+> >> 
+> >> Please test on a real device if the patched driver reports pressure now (unless
+> >> ti,report-resistance is specified).
+> > 
+> > I unfortunately can not test this driver as I do not have the hardware.
+> 
+> Ah, ok. This is indeed a road block.
+> 
+> Maybe someone else with a real tsc2007 hardware is reading this discussion and can comment?
+> 
+> > So all my observations are from code and data sheets.
+> 
+> > That said, what is the values emitted as ABS_PRESSURE when finger is not
+> > touching the device, barely touching the device, or pressing firmly?
+> 
+> > It seems that between TSC2007, TSC2004, TSC2005, and ADS7846, we have
+> > confusion as to what is being reported.
+> 
+> Indeed. The original tsc2007 jumps from 0 to a maximum value and goes down when
+> pressing more firmly. This is not "pressure". The other drivers (I have tested
+> the OpenPandora with tsc2046) are doing it in a monotonic curve.
 
-> So you are doing double work here, once in
-> kernel, and second time in userspace.
+OK, then this is clearly wrong and we need to fix it (without any funky
+flags).
 
-This is no longer required, as long as we can use the default 1:1 =
-coordinate mapping
-of e.g. framebuffer or X11 based GUI toolkits.
+Thanks.
 
-If we don't have the 1:1 mapping of touch screen input event coordinates
-to LCD pixels we have a mess of different scaling factors back in =
-user-space
-again. And the problem is setting them up properly in an installable =
-.tbz
-or .dd image.
-
-Recently, you have raised another topic I had indeed not thought abut, =
-which is
-the potential subpixel precision of a resistive touch. You get approx. =
-12
-bit from the ADC but the x coordinate of the 480 pixel wide screen is =
-just 9
-bit. So scaling the input event coordinates to pixels throws away 3 =
-bits.
-
-But there are two things to consider.
-
-One is that we could set the pre-calibration to keep as much resolution =
-as
-possible, ca. 12 pixels and make the user-space scale down to screen =
-coordinates.
-
-Unfortunately that differs between devices and hence we need not only
-different DTBs (which we already have) but different scale factors in =
-user-space.
-
-Next, one could argue that subpixel coordinates should not be handled by
-scaling input event coordinates up and then down again in user-space. =
-The
-correct solution would be that input events could report fixed or =
-floating
-point coordinates, but this is probably beyond what we all want to do.
-
-The other thing is noise. No resistive touch screen I have seen in the =
-wild with
-the tsc2007 or tsc2046 controller has the precision to really report =
-subpixels.
-Rather we have to set the fuzz between 3 or 10 or so. Which means that =
-those
-bits we cut off by scaling to screen coordinates are already lost in =
-noise.
-
->=20
-> I'd be more open to allowing setting the "min-axis" values to allow
-> reporting typical range for given device, and let userspace scale as =
-it
-> sees fit.
-
-The problem is: what is "typical range"? It turns out to be a completely
-arbitrary definition.
-
-I see a choice between:
-a) full theoretical ADC range
-b) millimeters
-c) pixels of the LCD the touch is glued to
-
-For me, the most natural and practical "typical range" still seems to be =
-the
-pixels of the lcd panel the touch is glued onto.
-
-The reason why I see it as superior to the others is that only this =
-leads to
-a stable 1:1 mapping in user-space avoiding to adjust any factors there.
-
-And this 1:1 saves a lot of configuration hassle if you swap GUI systems
-(X, Wayland, Android, DirectFB, fb based Qt, ...).
-
->=20
->>=20
->>>=20
->>>>=20
->>>> Please note that the old ti,fuzz properties have been removed since =
-they
->>>> are replaced by the common bindings touchscreen-fuzz-x/y/z.
->>>>=20
->>>> Finally, calculate_pressure has been renamed to =
-calculate_resistance
->>>> because that is what it is doing.
->>>=20
->>> That is not what your patch does though. In the presence of
->>> "ti,report-resistance" parameter you start reporting resistance =
-through
->>> ABS_PRESSURE
->>=20
->> Well, there is some historic confusion wether this driver reports =
-resistance
->> or pressure.
->>=20
->> The unpatched tsc2007 driver does it wrong (please test!) and we fix =
-it on
->> the fly (because a separate patch is much more complex than doing it =
-right
->> immediately).
->>=20
->> This ti,report-resistance property is a means to get the old (wrong) =
-meaning back
->> in case someone urgently needs it and can't fix the user-space =
-workaround which
->> he must be using.
->>=20
->>=20
->> AFAIK there is no mainline board using the DT except ours (and the =
-upcoming
->> OMAP5-Pyra), so we shouldn't care too much. If you prefer, you can =
-remove this
->> compatibility property. We don't need it for our devices.
->>=20
->=20
-> You seem to be treating DT data as something very fluid, which is =
-wrong.
-
-No,only sometimes.
-
-Of course it should be done right once. Of course there is long =
-discussion about
-what is right...
-
-> You need to treat it as a firmware, unlikely to change once device is
-> shipped. Unlike legacy platform data, the fact that DTS files are not
-> present in mainline does not mean that we can ignore such users and
-> change behavior at will.
-
-Well, it happens to me as maintainer of a 99.5% mainline device every
-now and then. Of course this should not be an argument to do it equally =
-bad here.
-
-One more thought: for some devices it is easier to modify the DTB =
-"firmware"
-than the user space (e.g. if you have no access to it because it is =
-maintained
-by somebody else).
-
->=20
-> That said, if driver behavior is out of line from the subsystem
-> expectations, we need to fix it.
->=20
->=20
->> That the function name is wrong is a second issue and this double =
-negation might
->> confuse a litte.
->>=20
->> Please test on a real device if the patched driver reports pressure =
-now (unless
->> ti,report-resistance is specified).
->=20
-> I unfortunately can not test this driver as I do not have the =
-hardware.
-
-Ah, ok. This is indeed a road block.
-
-Maybe someone else with a real tsc2007 hardware is reading this =
-discussion and can comment?
-
-> So all my observations are from code and data sheets.
-
-> That said, what is the values emitted as ABS_PRESSURE when finger is =
-not
-> touching the device, barely touching the device, or pressing firmly?
-
-> It seems that between TSC2007, TSC2004, TSC2005, and ADS7846, we have
-> confusion as to what is being reported.
-
-Indeed. The original tsc2007 jumps from 0 to a maximum value and goes =
-down when
-pressing more firmly. This is not "pressure". The other drivers (I have =
-tested
-the OpenPandora with tsc2046) are doing it in a monotonic curve.
-
-Hence I suggested to fix it for the tsc2007 (any perhaps others showing =
-the same bug).
-And allow a mechanism for those people who can more easily touch the DTB =
-file than
-the user space to turn it back to the old but wrong situation by setting =
-a DT
-property (maybe even in their boot.scr).
-
-> I am adding a few more folks to the CC so we can try and soft this =
-out.
-> Sebastian, Pali, Pavel, any input here?
-
-Fine!
-
-BR and thanks,
-Nikolaus
+-- 
+Dmitry
