@@ -1,143 +1,126 @@
-Return-Path: <SRS0=V3L2=2C=gmail.com=pali.rohar@kernel.org>
-Date: Tue, 21 Feb 2017 10:09:40 +0100
-From: Pali =?utf-8?B?Um9ow6Fy?= <pali.rohar@gmail.com>
-To: "H. Nikolaus Schaller" <hns@goldelico.com>
-Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-	Sebastian Reichel <sre@kernel.org>,
-	Mark Rutland <mark.rutland@arm.com>,
-	=?utf-8?Q?Beno=C3=AEt?= Cousson <bcousson@baylibre.com>,
-	Tony Lindgren <tony@atomide.com>,
-	Russell King <linux@armlinux.org.uk>, Arnd Bergmann <arnd@arndb.de>,
-	Michael Welling <mwelling@ieee.org>,
-	Mika =?utf-8?B?UGVudHRpbMOk?= <mika.penttila@nextfour.com>,
-	Javier Martinez Canillas <javier@osg.samsung.com>,
-	Igor Grinberg <grinberg@compulab.co.il>,
-	"Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Rob Herring <robh+dt@kernel.org>,
-	Alexander Stein <alexander.stein@systec-electronic.com>,
-	Eric Engestrom <eric@engestrom.ch>,
-	Hans de Goede <hdegoede@redhat.com>,
-	Benjamin Tissoires <benjamin.tissoires@redhat.com>,
-	Petr Cvek <petr.cvek@tul.cz>,
-	Mauro Carvalho Chehab <mchehab@kernel.org>,
-	Hans Verkuil <hans.verkuil@cisco.com>,
-	Nick Dyer <nick@shmanahar.org>,
-	Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
-	Michel Verlaan <michel.verl@gmail.com>,
-	"linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-	lkml <linux-kernel@vger.kernel.org>,
-	Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
-	Discussions about the Letux Kernel <letux-kernel@openphoenux.org>,
-	linux-iio@vger.kernel.org, kernel@pyra-handheld.com,
-	Aaro Koskinen <aaro.koskinen@nokia.com>,
-	Pavel Machek <pavel@ucw.cz>,
-	Andrey Gelman <andrey.gelman@compulab.co.il>,
-	Haibo Chen <haibo.chen@freescale.com>
-Subject: Re: [PATCH v9 1/8] drivers:input:tsc2007: add new common binding
- names, pre-calibration, flipping and rotation
-Message-ID: <20170221090940.GD9795@pali>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.andi.de1.cc ([85.214.239.24]:51688 "EHLO
+        h2641619.stratoserver.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753497AbdBURKO (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Feb 2017 12:10:14 -0500
+Date: Tue, 21 Feb 2017 18:07:55 +0100
+From: Andreas Kemnade <andreas@kemnade.info>
+To: Pali =?UTF-8?B?Um9ow6Fy?= <pali.rohar@gmail.com>
+Cc: "H. Nikolaus Schaller" <hns@goldelico.com>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Andrey Gelman <andrey.gelman@compulab.co.il>,
+        Michel Verlaan <michel.verl@gmail.com>,
+        Nick Dyer <nick@shmanahar.org>,
+        Tony Lindgren <tony@atomide.com>,
+        lkml <linux-kernel@vger.kernel.org>,
+        Benjamin Tissoires <benjamin.tissoires@redhat.com>,
+        Pavel Machek <pavel@ucw.cz>,
+        Linux OMAP Mailing List <linux-omap@vger.kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Aaro Koskinen <aaro.koskinen@nokia.com>,
+        Javier Martinez Canillas <javier@osg.samsung.com>,
+        Igor Grinberg <grinberg@compulab.co.il>,
+        Hans Verkuil <hans.verkuil@cisco.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        Arnd Bergmann <arnd@arndb.de>,
+        Eric Engestrom <eric@engestrom.ch>,
+        Hans de Goede <hdegoede@redhat.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mika =?UTF-8?B?UGVudHRpbMOk?= <mika.penttila@nextfour.com>,
+        Mauro Carvalho Chehab <mchehab@kernel.org>,
+        Petr Cvek <petr.cvek@tul.cz>,
+        Siebren Vroegindeweij <siebren.vroegindeweij@hotmail.com>,
+        Haibo Chen <haibo.chen@freescale.com>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Sebastian Reichel <sre@kernel.org>, linux-iio@vger.kernel.org,
+        "Andrew F. Davis" <afd@ti.com>, Mark Brown <broonie@kernel.org>,
+        =?UTF-8?B?QmVub8OudA==?= Cousson <bcousson@baylibre.com>,
+        kernel@pyra-handheld.com, Michael Welling <mwelling@ieee.org>,
+        Discussions about the Letux Kernel
+        <letux-kernel@openphoenux.org>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Alexander Stein <alexander.stein@systec-electronic.com>
+Subject: Re: [Letux-kernel] [PATCH v9 1/8] drivers:input:tsc2007: add new
+ common binding names, pre-calibration, flipping and rotation
+Message-ID: <20170221180755.48946fc5@aktux>
+In-Reply-To: <20170221090940.GD9795@pali>
 References: <cover.1482936802.git.hns@goldelico.com>
- <B30D00D0-1967-4BD5-A304-E2ADC815A805@goldelico.com>
- <201702202042.15878@pali>
- <201702202208.50498@pali>
- <C2E7AC24-75AB-442F-94A2-84904723EE41@goldelico.com>
- <CAKdAkRRZa-fpv_TKRdY=hFV3GdKxQ3muQORquvV_bTrDzQAhCw@mail.gmail.com>
- <0A33CCEA-448C-4C1D-9563-FDA54743BD01@goldelico.com>
+        <B30D00D0-1967-4BD5-A304-E2ADC815A805@goldelico.com>
+        <201702202042.15878@pali>
+        <201702202208.50498@pali>
+        <C2E7AC24-75AB-442F-94A2-84904723EE41@goldelico.com>
+        <CAKdAkRRZa-fpv_TKRdY=hFV3GdKxQ3muQORquvV_bTrDzQAhCw@mail.gmail.com>
+        <0A33CCEA-448C-4C1D-9563-FDA54743BD01@goldelico.com>
+        <20170221090940.GD9795@pali>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=utf-8
-In-Reply-To: <0A33CCEA-448C-4C1D-9563-FDA54743BD01@goldelico.com>
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: multipart/signed; micalg=pgp-sha256;
+ boundary="Sig_/QBvnUSHLCRUNlOXqJdFJkXU"; protocol="application/pgp-signature"
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tuesday 21 February 2017 07:36:17 H. Nikolaus Schaller wrote:
-> Hi,
-> 
-> > Am 20.02.2017 um 22:50 schrieb Dmitry Torokhov <dmitry.torokhov@gmail.com>:
-> > 
-> > On Mon, Feb 20, 2017 at 1:27 PM, H. Nikolaus Schaller <hns@goldelico.com> wrote:
-> >> 
-> >>> Am 20.02.2017 um 22:08 schrieb Pali Rohár <pali.rohar@gmail.com>:
-> >>> 
-> >>> On Monday 20 February 2017 20:42:15 Pali Rohár wrote:
-> >>>> Hi Nikolaus!
-> >>>> 
-> >>>> On Monday 20 February 2017 17:50:04 H. Nikolaus Schaller wrote:
-> >>>>> Hi Dmitry,
-> >>>>> 
-> >>>>>> Input driver may set resolution for given axis in units per mm
-> >>>>>> (or units per radian for rotational axis ABS_RX, ABS_RY,
-> >>>>>> ABS_RZ), and if you check the binding, you can use
-> >>>>>> "touchscreen-x-mm" and "touchscreen-y-mm" to specify the size of
-> >>>>>> entire touch surface and set resolution from it so that
-> >>>>>> userspace can calculate the proper scaling factor.
-> >>>>> 
-> >>>>> How is this information exposed by the kernel to user-space? By
-> >>>>> scanning the DT file or tree?
-> >>>> 
-> >>>> Set input_abs_set_res() from kernel. And in userspace call EVIOCGABS
-> >>>> ioctl() on input device. Look at struct input_absinfo, you should
-> >>>> have all needed information here. This is generic input interface,
-> >>>> no DT is needed.
-> >>> 
-> >>> Looking at kernel code... via EVIOCSABS ioctl() you can even set
-> >>> resolution from userspace for specified input device.
-> >>> 
-> >>> So this could be potentially used for calibrating input device from
-> >>> userspace? (In case DT data will not fully match current HW)
-> >>> 
-> >>>> I hope that XServer is already using it for evdev devices...
-> >>>> 
-> >>>> For whole implementation look at evtest program. That should be good
-> >>>> starting point for your userspace implementation.
-> >>>> 
-> >>>> While I'm watching this discussion... in my opinion kernel should
-> >>>> just invert input axes (when needed)
-> >> 
-> >> It is questionable why it should do that at all then.
-> > 
-> > Because the task of the kernel is to provide unified view of the
-> > hardware. Axis swapping and inversion is needed to that "up" is always
-> > "up" and "right" is always "right".
-> 
-> Hm. Why not touching pixel (0,0) on the touch is always pixel (0,0) on the
-> screen and touching pixel (639,479) is always (639,479)?
+--Sig_/QBvnUSHLCRUNlOXqJdFJkXU
+Content-Type: text/plain; charset=US-ASCII
+Content-Transfer-Encoding: quoted-printable
 
-Important is that there is no 1:1 mapping between input evdev device and
-drm/fb output device. These are two independent devices. There is no
-connection between screen and touch. So such presumption should not be
-done in kernel. You can do that in userspace.
+Hi,
 
-Lets take e.g. touchpad. It acts similarly as touchscreen input device
-(both reports absolute positioned touch events), but touchpad is not
-connected with screen. And from kernel point of view these devices are
-both input and absolute positioned.
+[...]
+> > Hm. Why not touching pixel (0,0) on the touch is always pixel (0,0)
+> > on the screen and touching pixel (639,479) is always (639,479)?
+>=20
+> Important is that there is no 1:1 mapping between input evdev device
+> and drm/fb output device. These are two independent devices. There is
+> no connection between screen and touch. So such presumption should
+> not be done in kernel. You can do that in userspace.
+>=20
+But at least it can be told to userspace that these two devices are
+connected. That information should be specified in devicetree because
+it is not auto-detectable.
 
-It looks like the whole problem is there that you wanted to do this
-mapping for your hardware in kernel. And this is not what is kernel
-doing or should do. Moreover I know people who are using integrated
-touchscreen on laptop as (touch) input device for external monitor. And
-in this configuration it does not make any sense to map touchscreen
-input to pixels of integrated LCD touchscreen (as external monitor could
-have different resolution as integrated LCD touchcreen).
+> Lets take e.g. touchpad. It acts similarly as touchscreen input device
+> (both reports absolute positioned touch events), but touchpad is not
+> connected with screen. And from kernel point of view these devices are
+> both input and absolute positioned.
+>=20
+> It looks like the whole problem is there that you wanted to do this
+> mapping for your hardware in kernel. And this is not what is kernel
+> doing or should do. Moreover I know people who are using integrated
+> touchscreen on laptop as (touch) input device for external monitor.
+> And in this configuration it does not make any sense to map
+> touchscreen input to pixels of integrated LCD touchscreen (as
+> external monitor could have different resolution as integrated LCD
+> touchcreen).
+>  =20
+Interesting example. But then you also do not need flipping/rotation
+because the angle between your screen and your absolute position device
+is not fixed.
 
-> I think it is time to end this discussion.
-> 
-> It has show me how much a mess and half-baked area this is, which I did
-> not expect. I read contradicting messages from different people:
-> 
-> * don't break user space because it is carved in stone
-> * fix users space if you want to do it properly
-> * scaling by +/-1 and shifting by full range is ok
-> * scaling by ts-size/adc-range and shifting by adc_min is not ok
-> * full numeric ADC resolution is required but subpixel coordinates is not acceptable
-> 
-> I will monitor this to see if this becomes sorted out before submitting anything
-> new.
-> 
-> BR and thanks,
-> Nikolaus
+Regards,
+Andreas
 
--- 
-Pali Rohár
-pali.rohar@gmail.com
+>
+
+--Sig_/QBvnUSHLCRUNlOXqJdFJkXU
+Content-Type: application/pgp-signature
+Content-Description: OpenPGP digital signature
+
+-----BEGIN PGP SIGNATURE-----
+Version: GnuPG v2
+
+iQIbBAEBCAAGBQJYrHQKAAoJEInxNTv1CwY0vlUP9ArqFcdZQ5ZzJURV5SSdM0j3
+c13vY/QJvdBZKmMSKlWaL2ino87ITpbemmrFzknLL5o2FEDBa2jcylOesVyTTZwy
+AoFgU6mg+oxjB2xzjgoqFmvlAFxnVdhUlepkPyvZoqyWUnVAY26VGWwq5Hy5pwZG
+SS8O05ZTztKMc3PS+teXM3q82lpxMDxoxXH/f1faQpo1f5o90MDj4hiDO68gS9fW
+15usLoj+cdoBGxKwCsAc5EJ7HcavBhUW3uodwASZG0CwZtvEpPCkfpCcZgqrJel1
+xc96A2Yh75HnBs4z4S5UGVDHbzUBPq94VGKAd9MzFC43T19vXz3kHEseLmYZDgmZ
+PexyDxoaVOswMH3tthDnchTOCdKTY0MqmR+xvuycp6njkckU+coyH9UJfN9B9QgT
+0a2xSzUmOjRikr4B7dpgFqOSl2cS3KCqG4SGpUUajtyty8b/rwF7oU300tfTPZwU
+BqOKgdBPitKhZfVq/WWlnDCtmcJifiHtU0N8krn+ZW08gSOzNdUpvOzq/MosXRTV
+xSLkiA+WagMFeAWeu4nzZ4WojeovydME1RLVAYFz7Ayru3oVr4MFbbS7zEK8TiEt
+Pamdxz/0mBVXWOMhFXHC5ym66w7BUgHwemvb4L5DntL+JvPhoRUOD22q0HtSR0aG
+2gbFTegr0KpYYExRCf0=
+=osTl
+-----END PGP SIGNATURE-----
+
+--Sig_/QBvnUSHLCRUNlOXqJdFJkXU--
