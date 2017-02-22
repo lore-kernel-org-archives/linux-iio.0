@@ -1,131 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga11.intel.com ([192.55.52.93]:10892 "EHLO mga11.intel.com"
+Received: from mga07.intel.com ([134.134.136.100]:29021 "EHLO mga07.intel.com"
         rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751118AbdB0BhT (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 26 Feb 2017 20:37:19 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "Song, Hongyan" <hongyan.song@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
-CC: "jikos@kernel.org" <jikos@kernel.org>
-Subject: Re: [PATCH] iio: hid-sensor-trigger: Change get poll value function
- order to avoid sensor properties losing after resume from S3
-Date: Mon, 27 Feb 2017 01:37:17 +0000
-Message-ID: <1488159432.3489.1.camel@intel.com>
-References: <1487755058-31310-1-git-send-email-hongyan.song@intel.com>
-         <1487741996.19408.0.camel@intel.com>
-         <1f73506c-2bdd-c527-cd13-76594a1a7375@kernel.org>
-         <AE3E3DFA698D6144A7445C92D1D41E2F10BE0440@SHSMSX103.ccr.corp.intel.com>
-In-Reply-To: <AE3E3DFA698D6144A7445C92D1D41E2F10BE0440@SHSMSX103.ccr.corp.intel.com>
-Content-Type: text/plain; charset="utf-8"
-MIME-Version: 1.0
+        id S1753114AbdBVBA4 (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 21 Feb 2017 20:00:56 -0500
+From: Song Hongyan <hongyan.song@intel.com>
+To: linux-input@vger.kernel.org, linux-iio@vger.kernel.org
+Cc: jikos@kernel.org, jic23@kernel.org, srinivas.pandruvada@intel.com,
+        Song Hongyan <hongyan.song@intel.com>
+Subject: [PATCH v2] hid: hid-sensor-prox: Add more data field for hysteresis parsing
+Date: Wed, 22 Feb 2017 17:23:33 +0800
+Message-Id: <1487755413-31421-1-git-send-email-hongyan.song@intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gTW9uLCAyMDE3LTAyLTI3IGF0IDAxOjAwICswMDAwLCBTb25nLCBIb25neWFuIHdyb3RlOg0K
-PiBIaSBKb25hdGhhbiwNCj4gCUkgYWRkIG1vcmUgaW5mb3JtYXRpb24gYWJvdXQgdGhlIHBhdGNo
-Og0KPiAJDQo+IEJ1ZyBmb3VuZDrCoA0KPiBXaGVuIHdlIGNhdCBzZW5zb3IgaW5jbGkgc2Vuc29y
-IGRhdGEgd2l0aCBoeXN0ZXJlc2lzIHZhbHVlIGlzIDAsDQo+IHRoZXJlIGFsd2F5cyBoYXZlIHN0
-cmVhbWVkIHNlbnNvciBkYXRhIG91dHB1dCwNCj4gQnV0IHdoZW4gc3lzdGVtIGVudGVyIFMzIGFu
-ZCByZXN1bWUgYmFjaywgdGhlIHN0cmVhbWluZyB0aHJlYWQgaXMNCj4gc3RpbGwgb24gYnV0IHRo
-ZXJlIGlzIG5vdCBzdHJlYW1pbmcgc2Vuc29yIGRhdGEgb3V0cHV0Lg0KPiBUZXN0IGRhdGEgYXMg
-YmVsb3c6DQo+IDI3OTogMjAxNy0wMS0yNCAwMToxNjowMC4yNzkzODUgKjUqIGluY2xpXzNkOiBN
-aW4gRGVsdGE6IDk5Ljc3OW1zLA0KPiBNYXggRGVsdGE6IDEwMC4zMTZtcywgUmVjZWl2ZWQ6IDEw
-L3MsIE92ZXJhbGw6IDE3MC8xNnM7IFNhbXBsZSB2YWx1ZXMNCj4gLDAuMDEwNTQ2LC0wLjAwNjcx
-MiwyLjc5NzU3OQ0KPiAyODA6IDIwMTctMDEtMjQgMDE6MTY6NDEuMjExMzg1ICo1KiBpbmNsaV8z
-ZDogTWluIERlbHRhOiAxMDAuMTZtcywNCj4gTWF4IERlbHRhOiA0MDkyNC42bXMsIFJlY2VpdmVk
-OiAyL3MsIE92ZXJhbGw6IDE3Mi8xOXM7IFNhbXBsZSB2YWx1ZXMNCj4gLDAuMDEwNTQ2LC0wLjAw
-NjcxMiwyLjc5NzU3OQ0KPiAyODE6IDIwMTctMDEtMjQgMDE6MTY6NDIuMjE5ODkyICo1KiBpbmNs
-aV8zZDogTWluIERlbHRhOiAwLjAyM21zLCBNYXgNCj4gRGVsdGE6IDU0My4yOG1zLCBSZWNlaXZl
-ZDogMi9zLCBPdmVyYWxsOiAxNzQvMjBzOyBTYW1wbGUgdmFsdWVzDQo+ICwwLjAxMDU0NiwtMC4w
-MDY3MTIsMi43OTc1NzkNCj4gMjgyOiAyMDE3LTAxLTI0IDAxOjE2OjQyLjc1NTU0OCAqNCoNCj4g
-Q0lJT1NlbnNvckluZm9ybTo6c2Vuc29yX3dhaXRfZXZlbnQgcG9sbCB0aW1lb3V0DQo+IDI4Mzog
-MjAxNy0wMS0yNCAwMToxNjo0My4yMjMwNjIgKjUqIGluY2xpXzNkOiBNaW4gRGVsdGE6IC0tLCBN
-YXgNCj4gRGVsdGE6IC0tLCBSZWNlaXZlZDogMC9zLCBPdmVyYWxsOiAxNzQvMjFzDQo+IDI4NDog
-MjAxNy0wMS0yNCAwMToxNjo0My43NTY5ODAgKjQqDQo+IENJSU9TZW5zb3JJbmZvcm06OnNlbnNv
-cl93YWl0X2V2ZW50IHBvbGwgdGltZW91dA0KPiAyODU6IDIwMTctMDEtMjQgMDE6MTY6NDQuMjI1
-NTI3ICo1KiBpbmNsaV8zZDogTWluIERlbHRhOiAtLSwgTWF4DQo+IERlbHRhOiAtLSwgUmVjZWl2
-ZWQ6IDAvcywgT3ZlcmFsbDogMTc0LzIycw0KPiAyODY6IDIwMTctMDEtMjQgMDE6MTY6NDQuNzU4
-NDY3ICo0Kg0KPiBDSUlPU2Vuc29ySW5mb3JtOjpzZW5zb3Jfd2FpdF9ldmVudCBwb2xsIHRpbWVv
-dXQNCj4gMjg3OiAyMDE3LTAxLTI0IDAxOjE2OjQ1LjIyODA4MiAqNSogaW5jbGlfM2Q6IE1pbiBE
-ZWx0YTogLS0sIE1heA0KPiBEZWx0YTogLS0sIFJlY2VpdmVkOiAwL3MsIE92ZXJhbGw6IDE3NC8y
-M3MNCj4gMjg4OiAyMDE3LTAxLTI0IDAxOjE2OjQ1Ljc1OTk1OCAqNCoNCj4gQ0lJT1NlbnNvcklu
-Zm9ybTo6c2Vuc29yX3dhaXRfZXZlbnQgcG9sbCB0aW1lb3V0DQo+IA0KPiBSb290IGNhdXNlOsKg
-DQo+IHdoZW4gc2Vuc29yIHJlc3VtZSBiYWNrIGZyb20gUzMsIHRoZSBzZW5zb3IgcHJvcGVydHkg
-dXNlciBzZXQgaXMNCj4gbG9zdC4NCj4gRm9yIGV4YW1wbGUsIGlmIHdlIHNldCBzZW5zb3IgaHlz
-dGVyZXNpcyB2YWx1ZSB0byBiZSAwLCB0aGVuIGxldA0KPiBzeXN0ZW0gZW50ZXIgUzMsIHdoZW4g
-cmVzdW1lIGJhY2ssIHRoZSBoeXN0ZXJlc2lzIHZhbHVlIHdpbGwgYmUgbm90IDANCj4gYnV0IHRo
-ZSBkZWZhdWx0IHZhbHVlIDEuDQo+IA0KPiB0aGlzIGlzIG5vdCB3aGF0IHdlIHdhbnQsIHJlc3Vt
-ZSBiYWNrIGZyb20gUzMgc2hvdWxkIG5vdCBsb3NlIHRoZQ0KPiBwcm9wZXJ0aWVzIHdoaWNoIGlz
-IHNldCBiZWZvcmUgUzMsIGp1c3QgYmVjYXVzZSB0aGUgcHJvcGVydHkgc2V0dGluZw0KPiBzZXF1
-ZW5jZSBsZWFkIHRvIHRoaXMgbG9zZS4NCj4gDQo+IFRoaXMgaXMgcGF0Y2ggaXMgYSBmaXggcGF0
-Y2ggYW5kIG5lZWRlZCBmb3Igc3RhYmxlLg0KQnV0IG5vdCB1cmdlbnQuDQoNClRoYW5rcywNClNy
-aW5pdmFzDQoNCj4gDQo+IFRoYW5rcyBhIGxvdCENCj4gDQo+IEJSDQo+IFNvbmcgSG9uZ3lhbg0K
-PiANCj4gDQo+IC0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQo+IEZyb206IEpvbmF0aGFuIENh
-bWVyb24gW21haWx0bzpqaWMyM0BrZXJuZWwub3JnXcKgDQo+IFNlbnQ6IFN1bmRheSwgRmVicnVh
-cnkgMjYsIDIwMTcgMTI6NTIgQU0NCj4gVG86IFBhbmRydXZhZGEsIFNyaW5pdmFzIDxzcmluaXZh
-cy5wYW5kcnV2YWRhQGludGVsLmNvbT47IGxpbnV4LWlucHV0DQo+IEB2Z2VyLmtlcm5lbC5vcmc7
-IFNvbmcsIEhvbmd5YW4gPGhvbmd5YW4uc29uZ0BpbnRlbC5jb20+OyBsaW51eC1paW9Adg0KPiBn
-ZXIua2VybmVsLm9yZw0KPiBDYzogamlrb3NAa2VybmVsLm9yZw0KPiBTdWJqZWN0OiBSZTogW1BB
-VENIXSBpaW86IGhpZC1zZW5zb3ItdHJpZ2dlcjogQ2hhbmdlIGdldCBwb2xsIHZhbHVlDQo+IGZ1
-bmN0aW9uIG9yZGVyIHRvIGF2b2lkIHNlbnNvciBwcm9wZXJ0aWVzIGxvc2luZyBhZnRlciByZXN1
-bWUgZnJvbSBTMw0KPiANCj4gT24gMjIvMDIvMTcgMDU6NDAsIFBhbmRydXZhZGEsIFNyaW5pdmFz
-IHdyb3RlOg0KPiA+IE9uIFdlZCwgMjAxNy0wMi0yMiBhdCAxNzoxNyArMDgwMCwgU29uZyBIb25n
-eWFuIHdyb3RlOg0KPiA+ID4gSW4gZnVuY3Rpb24gX2hpZF9zZW5zb3JfcG93ZXJfc3RhdGUoKSwg
-d2hlbg0KPiA+ID4gaGlkX3NlbnNvcl9yZWFkX3BvbGxfdmFsdWUoKQ0KPiA+ID4gaXMgY2FsbGVk
-LCBzZW5zb3IncyBhbGwgcHJvcGVydGllcyB3aWxsIGJlIHVwZGF0ZWQgYnkgdGhlIHZhbHVlDQo+
-ID4gPiBmcm9twqANCj4gPiA+IHNlbnNvciBoYXJkd2FyZS9maXJtd2FyZS4NCj4gPiA+IEluIHNv
-bWUgaW1wbGVtZW50YXRpb24sIHNlbnNvciBoYXJkd2FyZS9maXJtd2FyZSB3aWxsIGRvIGEgcG93
-ZXLCoA0KPiA+ID4gY3ljbGUgZHVyaW5nIFMzLiBJbiB0aGlzIGNhc2UsIGFmdGVyIHJlc3VtZSwg
-b25jZQ0KPiA+ID4gaGlkX3NlbnNvcl9yZWFkX3BvbGxfdmFsdWUoKQ0KPiA+ID4gaXMgY2FsbGVk
-LCBzZW5zb3IncyBhbGwgcHJvcGVydGllcyB3aGljaCBhcmUga2VwdCBieSBkcml2ZXINCj4gPiA+
-IGR1cmluZyBTM8KgDQo+ID4gPiB3aWxsIGJlIGNoYW5nZWQgdG8gZGVmYXVsdCB2YWx1ZS4NCj4g
-PiA+IEJ1dCBpbnN0ZWFkLCBpZiBhIHNldCBmZWF0dXJlIGZ1bmN0aW9uIGlzIGNhbGxlZCBmaXJz
-dCwgc2Vuc29ywqANCj4gPiA+IGhhcmR3YXJlL2Zpcm13YXJlIHdpbGwgYmUgcmVjb3ZlcmVkIHRv
-IHRoZSBsYXN0IHN0YXR1cy4gU28gY2hhbmdlDQo+ID4gPiB0aGUNCj4gPiA+IHNlbnNvcl9odWJf
-c2V0X2ZlYXR1cmUoKSBjYWxsaW5nIG9yZGVyIHRvIGJlaGluZCBvZiBzZXQgZmVhdHVyZcKgDQo+
-ID4gPiBmdW5jdGlvbiB0byBhdm9pZCBzZW5zb3IgcHJvcGVydGllcyBsb3NlLg0KPiA+ID4gDQo+
-ID4gPiBTaWduZWQtb2ZmLWJ5OiBTb25nIEhvbmd5YW4gPGhvbmd5YW4uc29uZ0BpbnRlbC5jb20+
-DQo+ID4gDQo+ID4gQWNrZWQtYnk6IFNyaW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFzLnBhbmRy
-dXZhZGFAbGludXguaW50ZWwuY29tPg0KPiANCj4gSGkgU29uZywNCj4gDQo+IFRoZSBwYXRjaCBt
-ZXNzYWdlLCB3aGlsc3QgZXhjZWxsZW50IG9uIHRoZSB0ZWNobmljYWwgZGV0YWlsLCBnaXZlcyBt
-ZQ0KPiBubyBzZW5zZSBvZiB1cmdlbmN5IG9uIHRoaXMuIElzIHRoaXMgYSBmaXggd2Ugd2FudCB0
-byBoYXZlIGhlYWRpbmcNCj4gZm9yIHN0YWJsZSBBU0FQIG9yIGFyZSB3ZSBsb29raW5nIGF0IHNv
-bWV0aGluZyBzZWVuIGluIHNvbWUNCj4gZGV2ZWxvcG1lbnRhbCBoYXJkd2FyZSBmb3IgZXhhbXBs
-ZT8NCj4gTGlua3MgdG8gYnVnIHJlcG9ydHMsIG9yIGV4YW1wbGVzIG9mIGhhcmR3YXJlIHN1ZmZl
-cmluZyBmcm9tIHRoZQ0KPiBpc3N1ZSBhcmUgYWx3YXlzIGhlbHBmdWwgYXMgd2VsbC4NCj4gDQo+
-IEFsc28gZm9yIHNvbWV0aGluZyBsaWtlIHRoaXMgYSAnZml4ZXMnIHRhZyBpcyB2ZXJ5IGhlbHBm
-dWwgd2hlbg0KPiBwZW9wbGUgYXJlIGxvb2tpbmcgdG8gYmFjayBwb3J0IGl0Lg0KPiANCj4gQW55
-aG93LCBJJ20gZ29pbmcgdG8gaG9sZCBvZmYgb24gdGFraW5nIHRoaXMgb25lIHVudGlsIEkgaGF2
-ZSBtb3JlDQo+IGluZm9ybWF0aW9uLiBSaWdodCBub3cgaXQgbWFrZXMgbGl0dGxlIGRpZmZlcmVu
-Y2UgYXMgdGhlIG5leHQgZml4ZXMNCj4gcHVsbCByZXF1ZXN0IGZyb20gbWUgd2lsbCBwcm9iYWJs
-eSBub3QgYmUgdW50aWwgbmV4dCB3ZWVrZW5kLg0KPiANCj4gVGhhbmtzLA0KPiANCj4gSm9uYXRo
-YW4NCj4gPiANCj4gPiA+IC0tLQ0KPiA+ID4gwqBkcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNv
-cnMvaGlkLXNlbnNvci10cmlnZ2VyLmMgfCA2ICsrKy0tLQ0KPiA+ID4gwqAxIGZpbGUgY2hhbmdl
-ZCwgMyBpbnNlcnRpb25zKCspLCAzIGRlbGV0aW9ucygtKQ0KPiA+ID4gDQo+ID4gPiBkaWZmIC0t
-Z2l0IGEvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5j
-DQo+ID4gPiBiL2RyaXZlcnMvaWlvL2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdn
-ZXIuYw0KPiA+ID4gaW5kZXggYTNjY2UzYS4uZWNmNTkyZCAxMDA2NDQNCj4gPiA+IC0tLSBhL2Ry
-aXZlcnMvaWlvL2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdnZXIuYw0KPiA+ID4g
-KysrIGIvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5j
-DQo+ID4gPiBAQCAtNTEsOCArNTEsNiBAQCBzdGF0aWMgaW50IF9oaWRfc2Vuc29yX3Bvd2VyX3N0
-YXRlKHN0cnVjdMKgDQo+ID4gPiBoaWRfc2Vuc29yX2NvbW1vbiAqc3QsIGJvb2wgc3RhdGUpDQo+
-ID4gPiDCoAkJCXN0LT5yZXBvcnRfc3RhdGUucmVwb3J0X2lkLA0KPiA+ID4gwqAJCQlzdC0+cmVw
-b3J0X3N0YXRlLmluZGV4LA0KPiA+ID4gwqAJCQlISURfVVNBR0VfU0VOU09SX1BST1BfUkVQT1JU
-SU5HX1NUQVRFX0FMDQo+ID4gPiBMX0VWDQo+ID4gPiBFTlRTX0VOVU0pOw0KPiA+ID4gLQ0KPiA+
-ID4gLQkJcG9sbF92YWx1ZSA9IGhpZF9zZW5zb3JfcmVhZF9wb2xsX3ZhbHVlKHN0KTsNCj4gPiA+
-IMKgCX0gZWxzZSB7DQo+ID4gPiDCoAkJaW50IHZhbDsNCj4gPiA+IMKgDQo+ID4gPiBAQCAtODks
-NyArODcsOSBAQCBzdGF0aWMgaW50IF9oaWRfc2Vuc29yX3Bvd2VyX3N0YXRlKHN0cnVjdMKgDQo+
-ID4gPiBoaWRfc2Vuc29yX2NvbW1vbiAqc3QsIGJvb2wgc3RhdGUpDQo+ID4gPiDCoAlzZW5zb3Jf
-aHViX2dldF9mZWF0dXJlKHN0LT5oc2Rldiwgc3QtDQo+ID4gPiA+cG93ZXJfc3RhdGUucmVwb3J0
-X2lkLA0KPiA+ID4gwqAJCQnCoMKgwqDCoMKgwqDCoHN0LT5wb3dlcl9zdGF0ZS5pbmRleCwNCj4g
-PiA+IMKgCQkJwqDCoMKgwqDCoMKgwqBzaXplb2Yoc3RhdGVfdmFsKSwgJnN0YXRlX3ZhbCk7DQo+
-ID4gPiAtCWlmIChzdGF0ZSAmJiBwb2xsX3ZhbHVlKQ0KPiA+ID4gKwlpZiAoc3RhdGUpDQo+ID4g
-PiArCQlwb2xsX3ZhbHVlID0gaGlkX3NlbnNvcl9yZWFkX3BvbGxfdmFsdWUoc3QpOw0KPiA+ID4g
-KwlpZiAocG9sbF92YWx1ZSA+IDApDQo+ID4gPiDCoAkJbXNsZWVwX2ludGVycnVwdGlibGUocG9s
-bF92YWx1ZSAqIDIpOw0KPiA+ID4gwqANCj4gPiA+IMKgCXJldHVybsKgDQo+ID4gPiAwO07CoMKg
-wqDCoMKgcsKgwqB5wqDCoMKgYiBYwqDCoMendiBeICneunsubiArwqDCoMKgwqB7wqDCoCoiwqDC
-oF5uIHLCoMKgwqB6IBrCoMKgaMKgwqDCoMKgJsKgwqAeDQo+ID4gPiBHwqDCoMKgDQo+ID4gPiBo
-IAMoIOmajiDdomoiwqDCoBogG23CoMKgwqDCoMKgeiDelsKgwqDCoGbCoMKgwqBowqDCoMKgfiBt
-bWw9PQ0KPiANCj4g
+Add HID_USAGE_SENSOR_HUMAN_PRESENCE support for Human Presence sensitivity
+parsing, in case some implementation uses it as sensitivity modifier.
+
+Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+change: adding Srinivas ack
+
+ drivers/iio/light/hid-sensor-prox.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
+
+diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
+index 45ca056..73fced8 100644
+--- a/drivers/iio/light/hid-sensor-prox.c
++++ b/drivers/iio/light/hid-sensor-prox.c
+@@ -240,6 +240,13 @@ static int prox_parse_report(struct platform_device *pdev,
+ 			st->common_attributes.sensitivity.index,
+ 			st->common_attributes.sensitivity.report_id);
+ 	}
++	if (st->common_attributes.sensitivity.index < 0)
++		sensor_hub_input_get_attribute_info(hsdev,
++			HID_FEATURE_REPORT, usage_id,
++			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
++			HID_USAGE_SENSOR_HUMAN_PRESENCE,
++			&st->common_attributes.sensitivity);
++
+ 	return ret;
+ }
+ 
+-- 
+1.9.1
+
