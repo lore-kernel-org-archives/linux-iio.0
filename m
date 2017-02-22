@@ -1,60 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46695 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751356AbdBYQyo (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Feb 2017 11:54:44 -0500
-Subject: Re: [PATCH v2] hid: hid-sensor-prox: Add more data field for
- hysteresis parsing
-To: Song Hongyan <hongyan.song@intel.com>, linux-input@vger.kernel.org,
-        linux-iio@vger.kernel.org
-References: <1487755413-31421-1-git-send-email-hongyan.song@intel.com>
-Cc: jikos@kernel.org, srinivas.pandruvada@intel.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <433426f5-28c2-80eb-74d2-5c980774a1ca@kernel.org>
-Date: Sat, 25 Feb 2017 16:44:33 +0000
-MIME-Version: 1.0
-In-Reply-To: <1487755413-31421-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:33035 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750933AbdBVKYB (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Feb 2017 05:24:01 -0500
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        dmitry.torokhov@gmail.com, michael.hennerich@analog.com,
+        daniel.baluta@gmail.com, amsfield22@gmail.com,
+        florian.vaussard@heig-vd.ch, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v3 0/4] iio: accel: adxl345: Split driver into core and I2C then add SPI support
+Date: Wed, 22 Feb 2017 18:22:57 +0800
+Message-Id: <cover.1487757223.git.eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/02/17 09:23, Song Hongyan wrote:
-> Add HID_USAGE_SENSOR_HUMAN_PRESENCE support for Human Presence sensitivity
-> parsing, in case some implementation uses it as sensitivity modifier.
-> 
-> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Applied to the togreg branch of iio.git which will be initially pushed out as
-testing for the autobuilders to play with it.
-> ---
-> change: adding Srinivas ack
-No actual need to post a new version to add an Ack. I'll generally pick them
-up directly from the thread whilst applying.
+This patchset modifies the adxl345 to use regmap. In doing so, we can
+easily introduce SPI support and let regmap handle the rest.
 
-Thanks,
+Recap of basic features: read_raw for x, y and z axes, scale. After
+applying this series, driver now supports the SPI protocol and enumeration
+of device via device tree.
 
-Jonathan
-> 
->  drivers/iio/light/hid-sensor-prox.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iio/light/hid-sensor-prox.c b/drivers/iio/light/hid-sensor-prox.c
-> index 45ca056..73fced8 100644
-> --- a/drivers/iio/light/hid-sensor-prox.c
-> +++ b/drivers/iio/light/hid-sensor-prox.c
-> @@ -240,6 +240,13 @@ static int prox_parse_report(struct platform_device *pdev,
->  			st->common_attributes.sensitivity.index,
->  			st->common_attributes.sensitivity.report_id);
->  	}
-> +	if (st->common_attributes.sensitivity.index < 0)
-> +		sensor_hub_input_get_attribute_info(hsdev,
-> +			HID_FEATURE_REPORT, usage_id,
-> +			HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS |
-> +			HID_USAGE_SENSOR_HUMAN_PRESENCE,
-> +			&st->common_attributes.sensitivity);
-> +
->  	return ret;
->  }
->  
-> 
+Changes from v2:
+* Drop PATCH 4 iio: accel: adxl345: Add ACPI support
+* Add OF match table on both I2C and SPI files and document them
+
+Changes from v1:
+iio: accel: adxl345: Use I2C regmap instead of direct I2C access
+* Move other deletions from patch 2 in here -- make it clear what got deleted
+  and/or modified that is hard to see previously
+* Introduce the driver header file "adxl345.h" here instead of doing it in the
+  next patch
+* Completely omit traces of i2c_client and let this file (adxl345.c) mirror the
+  core file on the next patch.
+* Improve debugging print about invalid device ID in probe.
+iio: accel: adxl345: Split driver into core and I2C
+* Update Kconfig to Jonathan's preferred style
+* Improve similarity index from 78% to 100% (rename detection)
+iio: accel: adxl345: Add ACPI support
+* Correct acpi_device_id: ADX0345 -> ADS0345
+
+Eva Rachel Retuya (4):
+  Documentation: dt-bindings: Document ADXL345 accelerometer binding
+  iio: accel: adxl345: Use I2C regmap instead of direct I2C access
+  iio: accel: adxl345: Split driver into core and I2C
+  iio: accel: adxl345: Add SPI support
+
+ .../devicetree/bindings/iio/accel/adxl345.txt      |  38 ++++
+ drivers/iio/accel/Kconfig                          |  18 +-
+ drivers/iio/accel/Makefile                         |   4 +-
+ drivers/iio/accel/adxl345.c                        | 194 ---------------------
+ drivers/iio/accel/adxl345.h                        |  18 ++
+ drivers/iio/accel/adxl345_core.c                   | 182 +++++++++++++++++++
+ drivers/iio/accel/adxl345_i2c.c                    |  81 +++++++++
+ drivers/iio/accel/adxl345_spi.c                    |  86 +++++++++
+ 8 files changed, 423 insertions(+), 198 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adxl345.txt
+ delete mode 100644 drivers/iio/accel/adxl345.c
+ create mode 100644 drivers/iio/accel/adxl345.h
+ create mode 100644 drivers/iio/accel/adxl345_core.c
+ create mode 100644 drivers/iio/accel/adxl345_i2c.c
+ create mode 100644 drivers/iio/accel/adxl345_spi.c
+
+-- 
+2.7.4
 
