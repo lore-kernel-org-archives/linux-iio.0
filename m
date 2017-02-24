@@ -1,50 +1,62 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ot0-f194.google.com ([74.125.82.194]:36621 "EHLO
-        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751419AbdB1AQe (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2017 19:16:34 -0500
-Date: Mon, 27 Feb 2017 18:09:00 -0600
-From: Rob Herring <robh@kernel.org>
-To: Harald Geyer <harald@ccbib.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org
-Subject: Re: [PATCH 2/2] [RFC] iio: dht11: Add optional support for supply
- control via regulator framework
-Message-ID: <20170228000900.sn2wnpzbtjup3wz5@rob-hp-laptop>
-References: <1487869613-11927-1-git-send-email-harald@ccbib.org>
- <1487869613-11927-2-git-send-email-harald@ccbib.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <1487869613-11927-2-git-send-email-harald@ccbib.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=QEF/=2F=linaro.org=benjamin.gaignard@kernel.org>
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: linux-kernel@vger.kernel.org,
+	jic23@kernel.org,
+	linux-iio@vger.kernel.org,
+	knaack.h@gmx.de,
+	lars@metafoo.de,
+	pmeerw@pmeerw.net
+Cc: fabrice.gasnier@st.com,
+	linaro-kernel@lists.linaro.org,
+	benjamin.gaignard@linaro.org,
+	Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v3 0/2] Add parent_trigger attribute to triggers
+Date: Fri, 24 Feb 2017 15:48:13 +0100
+Message-Id: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Thu, Feb 23, 2017 at 05:06:53PM +0000, Harald Geyer wrote:
-> If a supply is provided via DT, release the supply whenever we don't read
-> the sensor. Also use notifications to track the actual status of the
-> supply to ensure that we meet the timing requirements stated in the
-> datasheet.
-> 
-> This change is motivated by the hope that these sensors will work more
-> reliably if power-cycled regularly.
-> 
-> Signed-off-by: Harald Geyer <harald@ccbib.org>
-> ---
-> This is an RFC this time, because I want to run extensive long term tests
-> with DHT11 and DHT22 before officially proposing this for inclusion. I
-> have learned my lessons with this quirky bits of HW... :(
-> 
-> However since this will take a lot of time (mostly physical, but also
-> man hours), I'd like to get review comments now instead of risking a
-> second iteration of long term tests.
-> 
->  .../devicetree/bindings/iio/humidity/dht11.txt     | 10 ++++
+version 3:
+- try to provide better description of parent_trigger usages
+- add one channel to get counter raw value
 
-Acked-by: Rob Herring <robh@kernel.org>
+version 2:
+- Do not automatically set parent_trigger attribute on all triggers.
+  Let driver decide to use it.
+- Improve documentation of parent_trigger
+- Improve slave modes documentation
 
->  drivers/iio/humidity/dht11.c                       | 57 ++++++++++++++++++++--
->  2 files changed, 64 insertions(+), 3 deletions(-)
+Thoses patches add parent_trigger attribute to IIO triggers.
+Parent trigger edges or levels could be used to control current
+trigger. For example current trigger could be started on parent
+rising edges or be enabled only when parent trigger level is high.
+
+Since there is many ways to use parent edges and levels to
+control current trigger behavoir an additional custom sysfs
+attribute may be needed to describe those control modes.
+
+Similary to what already exist to validate a device, a new (optional) 
+validate_trigger function is added in iio_trigger structure and should be
+filled by drivers.
+
+For STM32 triggers parent trigger edges or levels could used in various ways.
+To be able to select them "in_count0_count_mode" attribute is added to STM32
+triggers.
+
+When setting a parent trigger on STM32 trigger "trigger_rising_edges" mode
+is automatically set so current trigger is clock by the rising edges of it
+parent.
+
+Benjamin Gaignard (2):
+  iio: Allow triggers to be used as parent of others triggers
+  iio: stm32 trigger: Implement parent trigger feature
+
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  63 +++++
+ .../ABI/testing/sysfs-bus-iio-trigger-sysfs        |  15 ++
+ drivers/iio/industrialio-trigger.c                 |  69 ++++++
+ drivers/iio/trigger/stm32-timer-trigger.c          | 256 ++++++++++++++++++++-
+ include/linux/iio/trigger.h                        |   7 +-
+ include/linux/mfd/stm32-timers.h                   |   2 +
+ 6 files changed, 405 insertions(+), 7 deletions(-)
+
+-- 
+1.9.1
