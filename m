@@ -1,225 +1,480 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47000 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751885AbdBYR6J (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Feb 2017 12:58:09 -0500
-Subject: Re: [PATCH v3 1/2] iio: Allow triggers to be used as parent of others
- triggers
-To: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net
-References: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
- <1487947695-9305-2-git-send-email-benjamin.gaignard@st.com>
+Received: from mail-wm0-f47.google.com ([74.125.82.47]:35090 "EHLO
+        mail-wm0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751320AbdBXOtT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Feb 2017 09:49:19 -0500
+Received: by mail-wm0-f47.google.com with SMTP id v186so16338616wmd.0
+        for <linux-iio@vger.kernel.org>; Fri, 24 Feb 2017 06:49:18 -0800 (PST)
+From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
+To: linux-kernel@vger.kernel.org, jic23@kernel.org,
+        linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
 Cc: fabrice.gasnier@st.com, linaro-kernel@lists.linaro.org,
+        benjamin.gaignard@linaro.org,
         Benjamin Gaignard <benjamin.gaignard@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <dd1574ca-cedf-08c3-c8c3-7ee7a701c2ec@kernel.org>
-Date: Sat, 25 Feb 2017 17:57:38 +0000
-MIME-Version: 1.0
-In-Reply-To: <1487947695-9305-2-git-send-email-benjamin.gaignard@st.com>
-Content-Type: text/plain; charset=windows-1252
+Subject: [PATCH v3 2/2] iio: stm32 trigger: Implement parent trigger feature
+Date: Fri, 24 Feb 2017 15:48:15 +0100
+Message-Id: <1487947695-9305-3-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
+References: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 24/02/17 14:48, Benjamin Gaignard wrote:
-> Add "parent_trigger" sysfs attribute to iio trigger to be able
-> to set a parent to the current trigger.
-> Parent trigger edges or levels could be used to control current
-> trigger status for example to start, stop or reset it.
-> 
-> Introduce validate_trigger function in iio_trigger_ops which does
-> the same than validate_device but with a trigger as second parameter.
-> Driver must implement this function and add dev_attr_parent_trigger
-> in their trigger attribute group to be able to use parent trigger
-> feature.
-> 
-> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
-It might be worth a cover letter for this series with even more detail,
-or perhaps even a proposed page for the sphinx docs.
+Add validate_trigger function in iio_trigger_ops and
+dev_attr_parent_trigger into trigger attribute group to be able
+to accept triggers as parents.
 
-It's interesting stuff, but not necessarily obvious to a newcomer
-to this discussion.
+Introduce an IIO device with one IIO_COUNT channel to get access
+to counter value. Counter directions can be set/get when writing/reading
+/sys/bus/iio/devices/iio:deviceX/in_count0_count_direction.
 
-We really need to expand those sphinx docs anyway.
-I was thinking of a whole series of pages on 'weird / sophiscated'
-usage of IIO, touching on stuff like Peter Rosin's analog front
-ends and Matt Ranostay's more novel health and chemical sensors.
-i.e. the stuff that 'stretches' us ;)
+The hardware have multiple way to use inputs edges and levels to
+performing counting, those different modes are exposed in:
+/sys/bus/iio/devices/iio:deviceX/in_count_count_mode_available.
 
-Jonathan
-> 
-> version 3:
-> - try to provide better description of parent_trigger usages
-> 
-> version 2:
-> - add comment about parent trigger usage
-> - parent trigger attribute must be set the driver no more by IIO core
-> ---
->  .../ABI/testing/sysfs-bus-iio-trigger-sysfs        | 15 +++++
->  drivers/iio/industrialio-trigger.c                 | 69 ++++++++++++++++++++++
->  include/linux/iio/trigger.h                        |  7 ++-
->  3 files changed, 90 insertions(+), 1 deletion(-)
-> 
-> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-> index 04ac623..1e7fc40 100644
-> --- a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-> +++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
-> @@ -40,3 +40,18 @@ Description:
->  		associated file, representing the id of the trigger that needs
->  		to be removed. If the trigger can't be found, an invalid
->  		argument message will be returned to the user.
-> +
-> +What:		/sys/bus/iio/devices/triggerX/parent_trigger
-> +KernelVersion:	4.12
-> +Contact:	linux-iio@vger.kernel.org
-> +Description:
-> +		This attribute is used to set a trigger as parent for the
-> +		current trigger. If the trigger can't use the parent an
-> +		invalid argument message will be returned.
-> +		Parent trigger edges or levels could be used to control current
-> +		trigger. For example current trigger could be started on parent
-> +		rising edges or be enabled only when parent trigger level is
-> +		high.
-> +		Since there is many ways to use parent edges and levels to
-> +		control current trigger behavoir an additional custom sysfs
-> +		attribute may be needed to describe those control modes.
-The only bit I'd change in here is dropping the word custom.
+"trigger_rising_edges" mode is automatically set when a valid
+parent trigger is set.
 
-I'm an optimist: We may yet figure out a nice generic interface!
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 978729f..9891fb2 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -58,6 +58,74 @@ static ssize_t iio_trigger_read_name(struct device *dev,
->  
->  static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
->  
-> +/**
-> + * iio_trigger_read_parent() - trigger consumer sysfs query parent trigger
-> + * @dev:	device associated with an industrial I/O trigger
-> + * @attr:	pointer to the device_attribute structure that
-> + *		is being processed
-> + * @buf:	buffer where the current trigger name will be printed into
-> + *
-> + * Return: a negative number on failure, the number of characters written
-> + *	   on success or 0 if no trigger is available
-> + */
-> +static ssize_t iio_trigger_read_parent(struct device *dev,
-> +				       struct device_attribute *attr,
-> +				       char *buf)
-> +{
-> +	struct iio_trigger *trig = to_iio_trigger(dev);
-> +
-> +	if (trig->parent_trigger)
-> +		return sprintf(buf, "%s\n", trig->parent_trigger->name);
-> +
-> +	return 0;
-> +}
-> +
-> +static struct iio_trigger *iio_trigger_find_by_name(const char *name,
-> +						    size_t len);
-> +
-> +/**
-> + * iio_trigger_write_parent() - trigger consumer sysfs set parent trigger
-> + * @dev:	device associated with an industrial I/O trigger
-> + * @attr:	device attribute that is being processed
-> + * @buf:	string buffer that holds the name of the trigger
-> + * @len:	length of the trigger name held by buf
-> + *
-> + * Return: negative error code on failure or length of the buffer
-> + *	   on success
-> + */
-> +static ssize_t iio_trigger_write_parent(struct device *dev,
-> +					struct device_attribute *attr,
-> +					const char *buf,
-> +					size_t len)
-> +{
-> +	struct iio_trigger *parent;
-> +	struct iio_trigger *child = to_iio_trigger(dev);
-> +	int ret;
-> +
-> +	if (!child->ops->validate_trigger)
-> +		return -EINVAL;
-> +
-> +	if (atomic_read(&child->use_count))
-> +		return -EBUSY;
-> +
-> +	parent = iio_trigger_find_by_name(buf, len);
-> +
-> +	if (parent == child->parent_trigger)
-> +		return len;
-> +
-> +	ret = child->ops->validate_trigger(child, parent);
-> +	if (ret)
-> +		return ret;
-> +
-> +	child->parent_trigger = parent;
-> +
-> +	return len;
-> +}
-> +
-> +DEVICE_ATTR(parent_trigger, S_IRUGO | S_IWUSR,
-> +	    iio_trigger_read_parent, iio_trigger_write_parent);
-> +EXPORT_SYMBOL_GPL(dev_attr_parent_trigger);
-> +
->  static struct attribute *iio_trig_dev_attrs[] = {
->  	&dev_attr_name.attr,
->  	NULL,
-> @@ -440,6 +508,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
->  						     indio_dev->pollfunc_event);
->  		iio_trigger_put(oldtrig);
->  	}
-> +
->  	if (indio_dev->trig) {
->  		iio_trigger_get(indio_dev->trig);
->  		if (indio_dev->modes & INDIO_EVENT_TRIGGERED)
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index ea08302..efa2983 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -20,6 +20,7 @@ struct iio_subirq {
->  
->  struct iio_dev;
->  struct iio_trigger;
-> +extern struct device_attribute dev_attr_parent_trigger;
->  
->  /**
->   * struct iio_trigger_ops - operations structure for an iio_trigger.
-> @@ -29,6 +30,7 @@ struct iio_subirq {
->   *			use count is zero (may be NULL)
->   * @validate_device:	function to validate the device when the
->   *			current trigger gets changed.
-> + * @validate_trigger:	function to validate the parent trigger (may be NULL)
->   *
->   * This is typically static const within a driver and shared by
->   * instances of a given device.
-> @@ -39,9 +41,10 @@ struct iio_trigger_ops {
->  	int (*try_reenable)(struct iio_trigger *trig);
->  	int (*validate_device)(struct iio_trigger *trig,
->  			       struct iio_dev *indio_dev);
-> +	int (*validate_trigger)(struct iio_trigger *trig,
-> +				struct iio_trigger *parent);
->  };
->  
-> -
->  /**
->   * struct iio_trigger - industrial I/O trigger device
->   * @ops:		[DRIVER] operations structure
-> @@ -59,6 +62,7 @@ struct iio_trigger_ops {
->   * @attached_own_device:[INTERN] if we are using our own device as trigger,
->   *			i.e. if we registered a poll function to the same
->   *			device as the one providing the trigger.
-> + * @parent_trigger:	[INTERN] parent trigger
->   **/
->  struct iio_trigger {
->  	const struct iio_trigger_ops	*ops;
-> @@ -77,6 +81,7 @@ struct iio_trigger {
->  	unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
->  	struct mutex			pool_lock;
->  	bool				attached_own_device;
-> +	struct iio_trigger		*parent_trigger;
->  };
->  
->  
-> 
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+
+version 2:
+- use dev_attr_parent_trigger
+- improve slave modes documentation
+
+version 3:
+- add one channel to get counter raw value
+---
+ .../ABI/testing/sysfs-bus-iio-timer-stm32          |  63 +++++
+ drivers/iio/trigger/stm32-timer-trigger.c          | 256 ++++++++++++++++++++-
+ include/linux/mfd/stm32-timers.h                   |   2 +
+ 3 files changed, 315 insertions(+), 6 deletions(-)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32 b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+index 6534a60..63852a9 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
++++ b/Documentation/ABI/testing/sysfs-bus-iio-timer-stm32
+@@ -27,3 +27,66 @@ Description:
+ 		Reading returns the current sampling frequency.
+ 		Writing an value different of 0 set and start sampling.
+ 		Writing 0 stop sampling.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_count0_raw
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns counter current value.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_count_count_direction_available
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the list of possible counting directions which
++		are:
++		- "up"	: counter is increasing.
++		- "down": counter is decreasing.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_count0_count_direction
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the counting directions:
++		- "up"	: counter is increasing.
++		- "down": counter is decreasing.
++		Writing set the counting direction.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_count_count_mode_available
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the list of possible counting modes which are:
++		- "internal_clock": Counter is clocked by the internal clock rising edges.
++		- "encoder_1" : Counter counts up/down on channel 2 edge depending on channel 1 level.
++		- "encoder_2" : Counter counts up/down on channel 1 edge depending on channel 2 level.
++		- "encoder_3" : Counter counts up/down on channels 1 & 2 edge depending on channel 1 & 2 level.
++		- "reset"     : Rising edges on parent trigger reinitializes the counter value to preset value.
++		- "gated"     : Counter counts when the parent trigger input is high.
++				Counter stops (but is not reset) as soon as the parent trigger becomes low.
++		- "trigger"   : Counter starts at a rising edge of the parent trigger (but it is not reset).
++		- "trigger_rising_edges": Rising edges of the parent trigger are used as clock by the counter.
++
++		Encoder modes are used to automatically handle the counting direction of the internal counter.
++		Those modes are typically used for high-accuracy rotor position sensing in electrical motors
++		or for digital potentiometers. From the two outputs of a quadrature encoder sensor the timer
++		extracts a clock on each and every active edge and adjusts the counting direction depending on
++		the relative phase-shift between the two incomings signals. The timer counter thus directly
++		holds the angular position of the motor.
++
++		"trigger_rising_edges" mode is automatically set when a valid parent trigger is set.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_count0_count_mode
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the current counting mode.
++
++What:		/sys/bus/iio/devices/iio:deviceX/in_count0_preset
++KernelVersion:	4.12
++Contact:	benjamin.gaignard@st.com
++Description:
++		Reading returns the current preset value.
++		Writing set the preset value.
++		When counting up the counter start from 0 and fire an event when reach preset value.
++		When counting down the counter start from preset value and fire event when reach 0.
+diff --git a/drivers/iio/trigger/stm32-timer-trigger.c b/drivers/iio/trigger/stm32-timer-trigger.c
+index 994b96d..04f5f05 100644
+--- a/drivers/iio/trigger/stm32-timer-trigger.c
++++ b/drivers/iio/trigger/stm32-timer-trigger.c
+@@ -15,6 +15,7 @@
+ #include <linux/platform_device.h>
+ 
+ #define MAX_TRIGGERS 6
++#define MAX_VALIDS 5
+ 
+ /* List the triggers created by each timer */
+ static const void *triggers_table[][MAX_TRIGGERS] = {
+@@ -32,12 +33,29 @@
+ 	{ TIM12_TRGO, TIM12_CH1, TIM12_CH2,},
+ };
+ 
++/* List the triggers accepted by each timer */
++static const void *valids_table[][MAX_VALIDS] = {
++	{ TIM5_TRGO, TIM2_TRGO, TIM3_TRGO, TIM4_TRGO,},
++	{ TIM1_TRGO, TIM8_TRGO, TIM3_TRGO, TIM4_TRGO,},
++	{ TIM1_TRGO, TIM2_TRGO, TIM5_TRGO, TIM4_TRGO,},
++	{ TIM1_TRGO, TIM2_TRGO, TIM3_TRGO, TIM8_TRGO,},
++	{ TIM2_TRGO, TIM3_TRGO, TIM4_TRGO, TIM8_TRGO,},
++	{ }, /* timer 6 */
++	{ }, /* timer 7 */
++	{ TIM1_TRGO, TIM2_TRGO, TIM4_TRGO, TIM5_TRGO,},
++	{ TIM2_TRGO, TIM3_TRGO,},
++	{ }, /* timer 10 */
++	{ }, /* timer 11 */
++	{ TIM4_TRGO, TIM5_TRGO,},
++};
++
+ struct stm32_timer_trigger {
+ 	struct device *dev;
+ 	struct regmap *regmap;
+ 	struct clk *clk;
+ 	u32 max_arr;
+ 	const void *triggers;
++	const void *valids;
+ };
+ 
+ static int stm32_timer_start(struct stm32_timer_trigger *priv,
+@@ -180,8 +198,7 @@ static ssize_t stm32_tt_show_master_mode(struct device *dev,
+ 					 struct device_attribute *attr,
+ 					 char *buf)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	struct stm32_timer_trigger *priv = dev_get_drvdata(dev);
+ 	u32 cr2;
+ 
+ 	regmap_read(priv->regmap, TIM_CR2, &cr2);
+@@ -194,10 +211,10 @@ static ssize_t stm32_tt_store_master_mode(struct device *dev,
+ 					  struct device_attribute *attr,
+ 					  const char *buf, size_t len)
+ {
+-	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+-	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	struct stm32_timer_trigger *priv = dev_get_drvdata(dev);
+ 	int i;
+ 
++
+ 	for (i = 0; i < ARRAY_SIZE(master_mode_table); i++) {
+ 		if (!strncmp(master_mode_table[i], buf,
+ 			     strlen(master_mode_table[i]))) {
+@@ -225,6 +242,7 @@ static IIO_DEVICE_ATTR(master_mode, 0660,
+ 	&iio_dev_attr_sampling_frequency.dev_attr.attr,
+ 	&iio_dev_attr_master_mode.dev_attr.attr,
+ 	&iio_const_attr_master_mode_available.dev_attr.attr,
++	&dev_attr_parent_trigger.attr,
+ 	NULL,
+ };
+ 
+@@ -237,8 +255,49 @@ static IIO_DEVICE_ATTR(master_mode, 0660,
+ 	NULL,
+ };
+ 
++static int stm32_validate_trigger(struct iio_trigger *trig,
++				  struct iio_trigger *parent)
++{
++	struct stm32_timer_trigger *priv = iio_trigger_get_drvdata(trig);
++	const char * const *cur = priv->valids;
++	unsigned int i = 0;
++
++	if (!parent) {
++		regmap_update_bits(priv->regmap, TIM_SMCR, TIM_SMCR_TS, 0);
++		return 0;
++	}
++
++	if (!is_stm32_timer_trigger(parent))
++		return -EINVAL;
++
++	while (cur && *cur) {
++		if (!strncmp(parent->name, *cur, strlen(parent->name))) {
++			regmap_update_bits(priv->regmap,
++					   TIM_SMCR, TIM_SMCR_TS,
++					   i << TIM_SMCR_TS_SHIFT);
++
++			/*
++			 * By default make parent trigger rising edges
++			 * use as clock for the counter
++			 */
++			regmap_update_bits(priv->regmap, TIM_SMCR,
++					   TIM_SMCR_SMS, TIM_SMCR_SMS);
++
++			/* Enable controller */
++			regmap_update_bits(priv->regmap, TIM_CR1,
++					   TIM_CR1_CEN, TIM_CR1_CEN);
++			return 0;
++		}
++		cur++;
++		i++;
++	}
++
++	return -EINVAL;
++}
++
+ static const struct iio_trigger_ops timer_trigger_ops = {
+ 	.owner = THIS_MODULE,
++	.validate_trigger = stm32_validate_trigger,
+ };
+ 
+ static int stm32_setup_iio_triggers(struct stm32_timer_trigger *priv)
+@@ -275,6 +334,185 @@ static int stm32_setup_iio_triggers(struct stm32_timer_trigger *priv)
+ 	return 0;
+ }
+ 
++static int stm32_trigger_read_raw(struct iio_dev *indio_dev,
++				  struct iio_chan_spec const *chan,
++				  int *val, int *val2, long mask)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++	{
++		u32 cnt;
++
++		regmap_read(priv->regmap, TIM_CNT, &cnt);
++		*val = cnt;
++
++		return IIO_VAL_INT;
++	}
++	}
++
++	return -EINVAL;
++}
++
++static const struct iio_info stm32_trigger_info = {
++	.driver_module = THIS_MODULE,
++	.read_raw = stm32_trigger_read_raw,
++};
++
++static const char *const stm32_count_modes[] = {
++	"internal_clock",
++	"encoder_1",
++	"encoder_2",
++	"encoder_3",
++	"reset",
++	"gated",
++	"trigger",
++	"trigger_rising_edges"
++};
++
++static int stm32_set_count_mode(struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan,
++				unsigned int mode)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++
++	regmap_update_bits(priv->regmap, TIM_SMCR, TIM_SMCR_SMS, mode);
++
++	return 0;
++}
++
++static int stm32_get_count_mode(struct iio_dev *indio_dev,
++				const struct iio_chan_spec *chan)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	u32 smcr;
++
++	regmap_read(priv->regmap, TIM_SMCR, &smcr);
++	smcr &= TIM_SMCR_SMS;
++
++	return smcr;
++}
++
++static const struct iio_enum stm32_count_mode_enum = {
++	.items = stm32_count_modes,
++	.num_items = ARRAY_SIZE(stm32_count_modes),
++	.set = stm32_set_count_mode,
++	.get = stm32_get_count_mode
++};
++
++static const char *const stm32_count_direction_states[] = {
++	"up",
++	"down"
++};
++
++static int stm32_set_count_direction(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan,
++				     unsigned int mode)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_DIR, mode);
++
++	return 0;
++}
++
++static int stm32_get_count_direction(struct iio_dev *indio_dev,
++				     const struct iio_chan_spec *chan)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	u32 cr1;
++
++	regmap_read(priv->regmap, TIM_CR1, &cr1);
++
++	return (cr1 & TIM_CR1_DIR);
++}
++
++static const struct iio_enum stm32_count_direction_enum = {
++	.items = stm32_count_direction_states,
++	.num_items = ARRAY_SIZE(stm32_count_direction_states),
++	.set = stm32_set_count_direction,
++	.get = stm32_get_count_direction
++};
++
++static ssize_t stm32_count_get_preset(struct iio_dev *indio_dev,
++				      uintptr_t private,
++				      const struct iio_chan_spec *chan,
++				      char *buf)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	u32 arr;
++
++	regmap_read(priv->regmap, TIM_ARR, &arr);
++
++	return snprintf(buf, PAGE_SIZE, "%u\n", arr);
++}
++
++static ssize_t stm32_count_set_preset(struct iio_dev *indio_dev,
++				      uintptr_t private,
++				      const struct iio_chan_spec *chan,
++				      const char *buf, size_t len)
++{
++	struct stm32_timer_trigger *priv = iio_priv(indio_dev);
++	unsigned int preset;
++	int ret;
++
++	ret = kstrtouint(buf, 0, &preset);
++	if (ret)
++		return ret;
++
++	regmap_write(priv->regmap, TIM_ARR, preset);
++	regmap_update_bits(priv->regmap, TIM_CR1, TIM_CR1_ARPE, TIM_CR1_ARPE);
++
++	return len;
++}
++
++static const struct iio_chan_spec_ext_info stm32_trigger_count_info[] = {
++	{
++		.name = "preset",
++		.shared = IIO_SEPARATE,
++		.read = stm32_count_get_preset,
++		.write = stm32_count_set_preset
++	},
++	IIO_ENUM("count_direction", IIO_SEPARATE, &stm32_count_direction_enum),
++	IIO_ENUM_AVAILABLE("count_direction", &stm32_count_direction_enum),
++	IIO_ENUM("count_mode", IIO_SEPARATE, &stm32_count_mode_enum),
++	IIO_ENUM_AVAILABLE("count_mode", &stm32_count_mode_enum),
++	{}
++};
++
++static const struct iio_chan_spec stm32_trigger_channel = {
++	.type = IIO_COUNT,
++	.channel = 0,
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	.ext_info = stm32_trigger_count_info,
++	.indexed = 1
++};
++
++static struct stm32_timer_trigger *stm32_setup_iio_device(struct device *dev)
++{
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(dev,
++					  sizeof(struct stm32_timer_trigger));
++	if (!indio_dev)
++		return NULL;
++
++	indio_dev->name = dev_name(dev);
++	indio_dev->dev.parent = dev;
++	indio_dev->info = &stm32_trigger_info;
++	indio_dev->num_channels = 1;
++	indio_dev->channels = &stm32_trigger_channel;
++	indio_dev->dev.of_node = dev->of_node;
++
++	ret = devm_iio_device_register(dev, indio_dev);
++	if (ret)
++		return NULL;
++
++	return iio_priv(indio_dev);
++}
++
+ /**
+  * is_stm32_timer_trigger
+  * @trig: trigger to be checked
+@@ -299,10 +537,15 @@ static int stm32_timer_trigger_probe(struct platform_device *pdev)
+ 	if (of_property_read_u32(dev->of_node, "reg", &index))
+ 		return -EINVAL;
+ 
+-	if (index >= ARRAY_SIZE(triggers_table))
++	if (index >= ARRAY_SIZE(triggers_table)
++	    || index >= ARRAY_SIZE(valids_table))
+ 		return -EINVAL;
+ 
+-	priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
++	/* Create an IIO device only if we have triggers to be validated */
++	if (*valids_table[index])
++		priv = stm32_setup_iio_device(dev);
++	else
++		priv = devm_kzalloc(dev, sizeof(*priv), GFP_KERNEL);
+ 
+ 	if (!priv)
+ 		return -ENOMEM;
+@@ -312,6 +555,7 @@ static int stm32_timer_trigger_probe(struct platform_device *pdev)
+ 	priv->clk = ddata->clk;
+ 	priv->max_arr = ddata->max_arr;
+ 	priv->triggers = triggers_table[index];
++	priv->valids = valids_table[index];
+ 
+ 	ret = stm32_setup_iio_triggers(priv);
+ 	if (ret)
+diff --git a/include/linux/mfd/stm32-timers.h b/include/linux/mfd/stm32-timers.h
+index d030004..4a0abbc 100644
+--- a/include/linux/mfd/stm32-timers.h
++++ b/include/linux/mfd/stm32-timers.h
+@@ -21,6 +21,7 @@
+ #define TIM_CCMR1	0x18	/* Capt/Comp 1 Mode Reg    */
+ #define TIM_CCMR2	0x1C	/* Capt/Comp 2 Mode Reg    */
+ #define TIM_CCER	0x20	/* Capt/Comp Enable Reg    */
++#define TIM_CNT		0x24	/* Counter		   */
+ #define TIM_PSC		0x28	/* Prescaler               */
+ #define TIM_ARR		0x2c	/* Auto-Reload Register    */
+ #define TIM_CCR1	0x34	/* Capt/Comp Register 1    */
+@@ -30,6 +31,7 @@
+ #define TIM_BDTR	0x44	/* Break and Dead-Time Reg */
+ 
+ #define TIM_CR1_CEN	BIT(0)	/* Counter Enable	   */
++#define TIM_CR1_DIR	BIT(4)  /* Counter Direction	   */
+ #define TIM_CR1_ARPE	BIT(7)	/* Auto-reload Preload Ena */
+ #define TIM_CR2_MMS	(BIT(4) | BIT(5) | BIT(6)) /* Master mode selection */
+ #define TIM_SMCR_SMS	(BIT(0) | BIT(1) | BIT(2)) /* Slave mode selection */
+-- 
+1.9.1
 
