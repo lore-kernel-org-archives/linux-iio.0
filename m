@@ -1,62 +1,208 @@
-Return-Path: <SRS0=QEF/=2F=linaro.org=benjamin.gaignard@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f42.google.com ([74.125.82.42]:37332 "EHLO
+        mail-wm0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751296AbdBXOtQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Feb 2017 09:49:16 -0500
+Received: by mail-wm0-f42.google.com with SMTP id v77so16222677wmv.0
+        for <linux-iio@vger.kernel.org>; Fri, 24 Feb 2017 06:49:15 -0800 (PST)
 From: Benjamin Gaignard <benjamin.gaignard@linaro.org>
-To: linux-kernel@vger.kernel.org,
-	jic23@kernel.org,
-	linux-iio@vger.kernel.org,
-	knaack.h@gmx.de,
-	lars@metafoo.de,
-	pmeerw@pmeerw.net
-Cc: fabrice.gasnier@st.com,
-	linaro-kernel@lists.linaro.org,
-	benjamin.gaignard@linaro.org,
-	Benjamin Gaignard <benjamin.gaignard@st.com>
-Subject: [PATCH v3 0/2] Add parent_trigger attribute to triggers
-Date: Fri, 24 Feb 2017 15:48:13 +0100
-Message-Id: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
-List-ID: <linux-iio@vger.kernel.org>
+To: linux-kernel@vger.kernel.org, jic23@kernel.org,
+        linux-iio@vger.kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: fabrice.gasnier@st.com, linaro-kernel@lists.linaro.org,
+        benjamin.gaignard@linaro.org,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Subject: [PATCH v3 1/2] iio: Allow triggers to be used as parent of others triggers
+Date: Fri, 24 Feb 2017 15:48:14 +0100
+Message-Id: <1487947695-9305-2-git-send-email-benjamin.gaignard@st.com>
+In-Reply-To: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
+References: <1487947695-9305-1-git-send-email-benjamin.gaignard@st.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
+
+Add "parent_trigger" sysfs attribute to iio trigger to be able
+to set a parent to the current trigger.
+Parent trigger edges or levels could be used to control current
+trigger status for example to start, stop or reset it.
+
+Introduce validate_trigger function in iio_trigger_ops which does
+the same than validate_device but with a trigger as second parameter.
+Driver must implement this function and add dev_attr_parent_trigger
+in their trigger attribute group to be able to use parent trigger
+feature.
+
+Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
 
 version 3:
 - try to provide better description of parent_trigger usages
-- add one channel to get counter raw value
 
 version 2:
-- Do not automatically set parent_trigger attribute on all triggers.
-  Let driver decide to use it.
-- Improve documentation of parent_trigger
-- Improve slave modes documentation
+- add comment about parent trigger usage
+- parent trigger attribute must be set the driver no more by IIO core
+---
+ .../ABI/testing/sysfs-bus-iio-trigger-sysfs        | 15 +++++
+ drivers/iio/industrialio-trigger.c                 | 69 ++++++++++++++++++++++
+ include/linux/iio/trigger.h                        |  7 ++-
+ 3 files changed, 90 insertions(+), 1 deletion(-)
 
-Thoses patches add parent_trigger attribute to IIO triggers.
-Parent trigger edges or levels could be used to control current
-trigger. For example current trigger could be started on parent
-rising edges or be enabled only when parent trigger level is high.
-
-Since there is many ways to use parent edges and levels to
-control current trigger behavoir an additional custom sysfs
-attribute may be needed to describe those control modes.
-
-Similary to what already exist to validate a device, a new (optional) 
-validate_trigger function is added in iio_trigger structure and should be
-filled by drivers.
-
-For STM32 triggers parent trigger edges or levels could used in various ways.
-To be able to select them "in_count0_count_mode" attribute is added to STM32
-triggers.
-
-When setting a parent trigger on STM32 trigger "trigger_rising_edges" mode
-is automatically set so current trigger is clock by the rising edges of it
-parent.
-
-Benjamin Gaignard (2):
-  iio: Allow triggers to be used as parent of others triggers
-  iio: stm32 trigger: Implement parent trigger feature
-
- .../ABI/testing/sysfs-bus-iio-timer-stm32          |  63 +++++
- .../ABI/testing/sysfs-bus-iio-trigger-sysfs        |  15 ++
- drivers/iio/industrialio-trigger.c                 |  69 ++++++
- drivers/iio/trigger/stm32-timer-trigger.c          | 256 ++++++++++++++++++++-
- include/linux/iio/trigger.h                        |   7 +-
- include/linux/mfd/stm32-timers.h                   |   2 +
- 6 files changed, 405 insertions(+), 7 deletions(-)
-
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+index 04ac623..1e7fc40 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
++++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+@@ -40,3 +40,18 @@ Description:
+ 		associated file, representing the id of the trigger that needs
+ 		to be removed. If the trigger can't be found, an invalid
+ 		argument message will be returned to the user.
++
++What:		/sys/bus/iio/devices/triggerX/parent_trigger
++KernelVersion:	4.12
++Contact:	linux-iio@vger.kernel.org
++Description:
++		This attribute is used to set a trigger as parent for the
++		current trigger. If the trigger can't use the parent an
++		invalid argument message will be returned.
++		Parent trigger edges or levels could be used to control current
++		trigger. For example current trigger could be started on parent
++		rising edges or be enabled only when parent trigger level is
++		high.
++		Since there is many ways to use parent edges and levels to
++		control current trigger behavoir an additional custom sysfs
++		attribute may be needed to describe those control modes.
+diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+index 978729f..9891fb2 100644
+--- a/drivers/iio/industrialio-trigger.c
++++ b/drivers/iio/industrialio-trigger.c
+@@ -58,6 +58,74 @@ static ssize_t iio_trigger_read_name(struct device *dev,
+ 
+ static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
+ 
++/**
++ * iio_trigger_read_parent() - trigger consumer sysfs query parent trigger
++ * @dev:	device associated with an industrial I/O trigger
++ * @attr:	pointer to the device_attribute structure that
++ *		is being processed
++ * @buf:	buffer where the current trigger name will be printed into
++ *
++ * Return: a negative number on failure, the number of characters written
++ *	   on success or 0 if no trigger is available
++ */
++static ssize_t iio_trigger_read_parent(struct device *dev,
++				       struct device_attribute *attr,
++				       char *buf)
++{
++	struct iio_trigger *trig = to_iio_trigger(dev);
++
++	if (trig->parent_trigger)
++		return sprintf(buf, "%s\n", trig->parent_trigger->name);
++
++	return 0;
++}
++
++static struct iio_trigger *iio_trigger_find_by_name(const char *name,
++						    size_t len);
++
++/**
++ * iio_trigger_write_parent() - trigger consumer sysfs set parent trigger
++ * @dev:	device associated with an industrial I/O trigger
++ * @attr:	device attribute that is being processed
++ * @buf:	string buffer that holds the name of the trigger
++ * @len:	length of the trigger name held by buf
++ *
++ * Return: negative error code on failure or length of the buffer
++ *	   on success
++ */
++static ssize_t iio_trigger_write_parent(struct device *dev,
++					struct device_attribute *attr,
++					const char *buf,
++					size_t len)
++{
++	struct iio_trigger *parent;
++	struct iio_trigger *child = to_iio_trigger(dev);
++	int ret;
++
++	if (!child->ops->validate_trigger)
++		return -EINVAL;
++
++	if (atomic_read(&child->use_count))
++		return -EBUSY;
++
++	parent = iio_trigger_find_by_name(buf, len);
++
++	if (parent == child->parent_trigger)
++		return len;
++
++	ret = child->ops->validate_trigger(child, parent);
++	if (ret)
++		return ret;
++
++	child->parent_trigger = parent;
++
++	return len;
++}
++
++DEVICE_ATTR(parent_trigger, S_IRUGO | S_IWUSR,
++	    iio_trigger_read_parent, iio_trigger_write_parent);
++EXPORT_SYMBOL_GPL(dev_attr_parent_trigger);
++
+ static struct attribute *iio_trig_dev_attrs[] = {
+ 	&dev_attr_name.attr,
+ 	NULL,
+@@ -440,6 +508,7 @@ static ssize_t iio_trigger_write_current(struct device *dev,
+ 						     indio_dev->pollfunc_event);
+ 		iio_trigger_put(oldtrig);
+ 	}
++
+ 	if (indio_dev->trig) {
+ 		iio_trigger_get(indio_dev->trig);
+ 		if (indio_dev->modes & INDIO_EVENT_TRIGGERED)
+diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+index ea08302..efa2983 100644
+--- a/include/linux/iio/trigger.h
++++ b/include/linux/iio/trigger.h
+@@ -20,6 +20,7 @@ struct iio_subirq {
+ 
+ struct iio_dev;
+ struct iio_trigger;
++extern struct device_attribute dev_attr_parent_trigger;
+ 
+ /**
+  * struct iio_trigger_ops - operations structure for an iio_trigger.
+@@ -29,6 +30,7 @@ struct iio_subirq {
+  *			use count is zero (may be NULL)
+  * @validate_device:	function to validate the device when the
+  *			current trigger gets changed.
++ * @validate_trigger:	function to validate the parent trigger (may be NULL)
+  *
+  * This is typically static const within a driver and shared by
+  * instances of a given device.
+@@ -39,9 +41,10 @@ struct iio_trigger_ops {
+ 	int (*try_reenable)(struct iio_trigger *trig);
+ 	int (*validate_device)(struct iio_trigger *trig,
+ 			       struct iio_dev *indio_dev);
++	int (*validate_trigger)(struct iio_trigger *trig,
++				struct iio_trigger *parent);
+ };
+ 
+-
+ /**
+  * struct iio_trigger - industrial I/O trigger device
+  * @ops:		[DRIVER] operations structure
+@@ -59,6 +62,7 @@ struct iio_trigger_ops {
+  * @attached_own_device:[INTERN] if we are using our own device as trigger,
+  *			i.e. if we registered a poll function to the same
+  *			device as the one providing the trigger.
++ * @parent_trigger:	[INTERN] parent trigger
+  **/
+ struct iio_trigger {
+ 	const struct iio_trigger_ops	*ops;
+@@ -77,6 +81,7 @@ struct iio_trigger {
+ 	unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
+ 	struct mutex			pool_lock;
+ 	bool				attached_own_device;
++	struct iio_trigger		*parent_trigger;
+ };
+ 
+ 
 -- 
 1.9.1
+
