@@ -1,59 +1,96 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga07.intel.com ([134.134.136.100]:15063 "EHLO mga07.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1750878AbdBVFkF (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Feb 2017 00:40:05 -0500
-From: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>
-To: "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "Song, Hongyan" <hongyan.song@intel.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-CC: "jikos@kernel.org" <jikos@kernel.org>,
-        "jic23@kernel.org" <jic23@kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46677 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751873AbdBYQvh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Feb 2017 11:51:37 -0500
 Subject: Re: [PATCH] iio: hid-sensor-trigger: Change get poll value function
  order to avoid sensor properties losing after resume from S3
-Date: Wed, 22 Feb 2017 05:40:04 +0000
-Message-ID: <1487741996.19408.0.camel@intel.com>
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
 References: <1487755058-31310-1-git-send-email-hongyan.song@intel.com>
-In-Reply-To: <1487755058-31310-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset="utf-8"
+ <1487741996.19408.0.camel@intel.com>
+Cc: "jikos@kernel.org" <jikos@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <1f73506c-2bdd-c527-cd13-76594a1a7375@kernel.org>
+Date: Sat, 25 Feb 2017 16:51:33 +0000
 MIME-Version: 1.0
+In-Reply-To: <1487741996.19408.0.camel@intel.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-T24gV2VkLCAyMDE3LTAyLTIyIGF0IDE3OjE3ICswODAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+
-IEluIGZ1bmN0aW9uIF9oaWRfc2Vuc29yX3Bvd2VyX3N0YXRlKCksIHdoZW4NCj4gaGlkX3NlbnNv
-cl9yZWFkX3BvbGxfdmFsdWUoKQ0KPiBpcyBjYWxsZWQsIHNlbnNvcidzIGFsbCBwcm9wZXJ0aWVz
-IHdpbGwgYmUgdXBkYXRlZCBieSB0aGUgdmFsdWUgZnJvbQ0KPiBzZW5zb3IgaGFyZHdhcmUvZmly
-bXdhcmUuDQo+IEluIHNvbWUgaW1wbGVtZW50YXRpb24sIHNlbnNvciBoYXJkd2FyZS9maXJtd2Fy
-ZSB3aWxsIGRvIGEgcG93ZXINCj4gY3ljbGUNCj4gZHVyaW5nIFMzLiBJbiB0aGlzIGNhc2UsIGFm
-dGVyIHJlc3VtZSwgb25jZQ0KPiBoaWRfc2Vuc29yX3JlYWRfcG9sbF92YWx1ZSgpDQo+IGlzIGNh
-bGxlZCwgc2Vuc29yJ3MgYWxsIHByb3BlcnRpZXMgd2hpY2ggYXJlIGtlcHQgYnkgZHJpdmVyIGR1
-cmluZyBTMw0KPiB3aWxsIGJlIGNoYW5nZWQgdG8gZGVmYXVsdCB2YWx1ZS4NCj4gQnV0IGluc3Rl
-YWQsIGlmIGEgc2V0IGZlYXR1cmUgZnVuY3Rpb24gaXMgY2FsbGVkIGZpcnN0LCBzZW5zb3INCj4g
-aGFyZHdhcmUvZmlybXdhcmUgd2lsbCBiZSByZWNvdmVyZWQgdG8gdGhlIGxhc3Qgc3RhdHVzLiBT
-byBjaGFuZ2UgdGhlDQo+IHNlbnNvcl9odWJfc2V0X2ZlYXR1cmUoKSBjYWxsaW5nIG9yZGVyIHRv
-IGJlaGluZCBvZiBzZXQgZmVhdHVyZQ0KPiBmdW5jdGlvbg0KPiB0byBhdm9pZCBzZW5zb3IgcHJv
-cGVydGllcyBsb3NlLg0KPiANCj4gU2lnbmVkLW9mZi1ieTogU29uZyBIb25neWFuIDxob25neWFu
-LnNvbmdAaW50ZWwuY29tPg0KQWNrZWQtYnk6IFNyaW5pdmFzIFBhbmRydXZhZGEgPHNyaW5pdmFz
-LnBhbmRydXZhZGFAbGludXguaW50ZWwuY29tPg0KDQo+IC0tLQ0KPiDCoGRyaXZlcnMvaWlvL2Nv
-bW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdnZXIuYyB8IDYgKysrLS0tDQo+IMKgMSBm
-aWxlIGNoYW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4gDQo+IGRpZmYg
-LS1naXQgYS9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci10cmlnZ2Vy
-LmMNCj4gYi9kcml2ZXJzL2lpby9jb21tb24vaGlkLXNlbnNvcnMvaGlkLXNlbnNvci10cmlnZ2Vy
-LmMNCj4gaW5kZXggYTNjY2UzYS4uZWNmNTkyZCAxMDA2NDQNCj4gLS0tIGEvZHJpdmVycy9paW8v
-Y29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5jDQo+ICsrKyBiL2RyaXZlcnMv
-aWlvL2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdnZXIuYw0KPiBAQCAtNTEsOCAr
-NTEsNiBAQCBzdGF0aWMgaW50IF9oaWRfc2Vuc29yX3Bvd2VyX3N0YXRlKHN0cnVjdA0KPiBoaWRf
-c2Vuc29yX2NvbW1vbiAqc3QsIGJvb2wgc3RhdGUpDQo+IMKgCQkJc3QtPnJlcG9ydF9zdGF0ZS5y
-ZXBvcnRfaWQsDQo+IMKgCQkJc3QtPnJlcG9ydF9zdGF0ZS5pbmRleCwNCj4gwqAJCQlISURfVVNB
-R0VfU0VOU09SX1BST1BfUkVQT1JUSU5HX1NUQVRFX0FMTF9FVg0KPiBFTlRTX0VOVU0pOw0KPiAt
-DQo+IC0JCXBvbGxfdmFsdWUgPSBoaWRfc2Vuc29yX3JlYWRfcG9sbF92YWx1ZShzdCk7DQo+IMKg
-CX0gZWxzZSB7DQo+IMKgCQlpbnQgdmFsOw0KPiDCoA0KPiBAQCAtODksNyArODcsOSBAQCBzdGF0
-aWMgaW50IF9oaWRfc2Vuc29yX3Bvd2VyX3N0YXRlKHN0cnVjdA0KPiBoaWRfc2Vuc29yX2NvbW1v
-biAqc3QsIGJvb2wgc3RhdGUpDQo+IMKgCXNlbnNvcl9odWJfZ2V0X2ZlYXR1cmUoc3QtPmhzZGV2
-LCBzdC0+cG93ZXJfc3RhdGUucmVwb3J0X2lkLA0KPiDCoAkJCcKgwqDCoMKgwqDCoMKgc3QtPnBv
-d2VyX3N0YXRlLmluZGV4LA0KPiDCoAkJCcKgwqDCoMKgwqDCoMKgc2l6ZW9mKHN0YXRlX3ZhbCks
-ICZzdGF0ZV92YWwpOw0KPiAtCWlmIChzdGF0ZSAmJiBwb2xsX3ZhbHVlKQ0KPiArCWlmIChzdGF0
-ZSkNCj4gKwkJcG9sbF92YWx1ZSA9IGhpZF9zZW5zb3JfcmVhZF9wb2xsX3ZhbHVlKHN0KTsNCj4g
-KwlpZiAocG9sbF92YWx1ZSA+IDApDQo+IMKgCQltc2xlZXBfaW50ZXJydXB0aWJsZShwb2xsX3Zh
-bHVlICogMik7DQo+IMKgDQo+IMKgCXJldHVybiAwOw==
+On 22/02/17 05:40, Pandruvada, Srinivas wrote:
+> On Wed, 2017-02-22 at 17:17 +0800, Song Hongyan wrote:
+>> In function _hid_sensor_power_state(), when
+>> hid_sensor_read_poll_value()
+>> is called, sensor's all properties will be updated by the value from
+>> sensor hardware/firmware.
+>> In some implementation, sensor hardware/firmware will do a power
+>> cycle
+>> during S3. In this case, after resume, once
+>> hid_sensor_read_poll_value()
+>> is called, sensor's all properties which are kept by driver during S3
+>> will be changed to default value.
+>> But instead, if a set feature function is called first, sensor
+>> hardware/firmware will be recovered to the last status. So change the
+>> sensor_hub_set_feature() calling order to behind of set feature
+>> function
+>> to avoid sensor properties lose.
+>>
+>> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Hi Song,
+
+The patch message, whilst excellent on the technical detail, gives me
+no sense of urgency on this. Is this a fix we want to have heading for
+stable ASAP or are we looking at something seen in some developmental
+hardware for example?
+Links to bug reports, or examples of hardware suffering from the issue
+are always helpful as well.
+
+Also for something like this a 'fixes' tag is very helpful when people
+are looking to back port it.
+
+Anyhow, I'm going to hold off on taking this one until I have more
+information. Right now it makes little difference as the next fixes
+pull request from me will probably not be until next weekend.
+
+Thanks,
+
+Jonathan
+> 
+>> ---
+>>  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 6 +++---
+>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>
+>> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>> b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>> index a3cce3a..ecf592d 100644
+>> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>> @@ -51,8 +51,6 @@ static int _hid_sensor_power_state(struct
+>> hid_sensor_common *st, bool state)
+>>  			st->report_state.report_id,
+>>  			st->report_state.index,
+>>  			HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EV
+>> ENTS_ENUM);
+>> -
+>> -		poll_value = hid_sensor_read_poll_value(st);
+>>  	} else {
+>>  		int val;
+>>  
+>> @@ -89,7 +87,9 @@ static int _hid_sensor_power_state(struct
+>> hid_sensor_common *st, bool state)
+>>  	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
+>>  			       st->power_state.index,
+>>  			       sizeof(state_val), &state_val);
+>> -	if (state && poll_value)
+>> +	if (state)
+>> +		poll_value = hid_sensor_read_poll_value(st);
+>> +	if (poll_value > 0)
+>>  		msleep_interruptible(poll_value * 2);
+>>  
+>>  	return 0;N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
+
