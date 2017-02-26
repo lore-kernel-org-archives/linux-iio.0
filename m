@@ -1,63 +1,99 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f68.google.com ([74.125.83.68]:35084 "EHLO
-        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751214AbdBZS5q (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Feb 2017 13:57:46 -0500
-Received: by mail-pg0-f68.google.com with SMTP id 1so10146780pgz.2
-        for <linux-iio@vger.kernel.org>; Sun, 26 Feb 2017 10:57:46 -0800 (PST)
-Date: Sun, 26 Feb 2017 10:48:07 -0800
-From: Katie Dunne <kdunne@mail.ccsf.edu>
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:33728 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751291AbdBZVGv (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Feb 2017 16:06:51 -0500
+Received: by mail-pg0-f65.google.com with SMTP id 5so10421690pgj.0
+        for <linux-iio@vger.kernel.org>; Sun, 26 Feb 2017 13:05:35 -0800 (PST)
+Date: Mon, 27 Feb 2017 02:35:17 +0530
+From: sayli karnik <karniksayli1995@gmail.com>
 To: outreachy-kernel@googlegroups.com
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org
-Subject: [RFC 3/3] staging: iio: meter: Clean up #includes
-Message-ID: <e3ddd60060761d6b581e4a9d54ff2a3b7daf8add.1488133199.git.kdunne@mail.ccsf.edu>
-References: <cover.1488133199.git.kdunne@mail.ccsf.edu>
+Subject: [PATCH] staging: iio: iio-trig-bfin-timer: Move contents of header
+ file to source file
+Message-ID: <20170226210516.GA20649@sayli-HP-15-Notebook-PC>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1488133199.git.kdunne@mail.ccsf.edu>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Alphabetize and separate kernel and subsystem headers.
+The contents of the header file are used only by this single
+source file. Move content into .c and delete .h.
 
-Signed-off-by: Katie Dunne <kdunne@mail.ccsf.edu>
+Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
 ---
- drivers/staging/iio/meter/ade7753.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.c | 21 +++++++++++++++++++-
+ drivers/staging/iio/trigger/iio-trig-bfin-timer.h | 24 -----------------------
+ 2 files changed, 20 insertions(+), 25 deletions(-)
+ delete mode 100644 drivers/staging/iio/trigger/iio-trig-bfin-timer.h
 
-diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-index f855c60..5ea3ea2 100644
---- a/drivers/staging/iio/meter/ade7753.c
-+++ b/drivers/staging/iio/meter/ade7753.c
-@@ -6,20 +6,21 @@
-  * Licensed under the GPL-2 or later.
-  */
- 
--#include <linux/interrupt.h>
--#include <linux/irq.h>
- #include <linux/delay.h>
--#include <linux/mutex.h>
- #include <linux/device.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
- #include <linux/kernel.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
--#include <linux/list.h>
--#include <linux/module.h>
- 
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+index 4e0b4ee..5708247 100644
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
++++ b/drivers/staging/iio/trigger/iio-trig-bfin-timer.c
+@@ -19,7 +19,26 @@
  #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+
- #include "meter.h"
+ #include <linux/iio/trigger.h>
  
- #define ADE7753_READ_REG(a)    a
+-#include "iio-trig-bfin-timer.h"
++/**
++ * struct iio_bfin_timer_trigger_pdata - timer trigger platform data
++ * @output_enable: Enable external trigger pulse generation.
++ * @active_low: Whether the trigger pulse is active low.
++ * @duty_ns: Length of the trigger pulse in nanoseconds.
++ *
++ * This struct is used to configure the output pulse generation of the blackfin
++ * timer trigger. If output_enable is set to true an external trigger signal
++ * will generated on the pin corresponding to the timer. This is useful for
++ * converters which needs an external signal to start conversion. active_low and
++ * duty_ns are used to configure the type of the trigger pulse. If output_enable
++ * is set to false no external trigger pulse will be generated and active_low
++ * and duty_ns are ignored.
++ **/
++
++struct iio_bfin_timer_trigger_pdata {
++	bool output_enable;
++	bool active_low;
++	unsigned int duty_ns;
++};
+ 
+ struct bfin_timer {
+ 	unsigned short id, bit;
+diff --git a/drivers/staging/iio/trigger/iio-trig-bfin-timer.h b/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
+deleted file mode 100644
+index c07321f..0000000
+--- a/drivers/staging/iio/trigger/iio-trig-bfin-timer.h
++++ /dev/null
+@@ -1,24 +0,0 @@
+-#ifndef __IIO_BFIN_TIMER_TRIGGER_H__
+-#define __IIO_BFIN_TIMER_TRIGGER_H__
+-
+-/**
+- * struct iio_bfin_timer_trigger_pdata - timer trigger platform data
+- * @output_enable: Enable external trigger pulse generation.
+- * @active_low: Whether the trigger pulse is active low.
+- * @duty_ns: Length of the trigger pulse in nanoseconds.
+- *
+- * This struct is used to configure the output pulse generation of the blackfin
+- * timer trigger. If output_enable is set to true an external trigger signal
+- * will generated on the pin corresponding to the timer. This is useful for
+- * converters which needs an external signal to start conversion. active_low and
+- * duty_ns are used to configure the type of the trigger pulse. If output_enable
+- * is set to false no external trigger pulse will be generated and active_low
+- * and duty_ns are ignored.
+- **/
+-struct iio_bfin_timer_trigger_pdata {
+-	bool output_enable;
+-	bool active_low;
+-	unsigned int duty_ns;
+-};
+-
+-#endif
 -- 
 2.7.4
 
