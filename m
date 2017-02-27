@@ -1,96 +1,119 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46677 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751873AbdBYQvh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Feb 2017 11:51:37 -0500
-Subject: Re: [PATCH] iio: hid-sensor-trigger: Change get poll value function
- order to avoid sensor properties losing after resume from S3
-To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+Received: from mga11.intel.com ([192.55.52.93]:60698 "EHLO mga11.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1751284AbdB0BDj (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Sun, 26 Feb 2017 20:03:39 -0500
+From: "Song, Hongyan" <hongyan.song@intel.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
         "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        "Song, Hongyan" <hongyan.song@intel.com>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+CC: "jikos@kernel.org" <jikos@kernel.org>
+Subject: RE: [PATCH] iio: hid-sensor-trigger: Change get poll value function
+ order to avoid sensor properties losing after resume from S3
+Date: Mon, 27 Feb 2017 01:00:31 +0000
+Message-ID: <AE3E3DFA698D6144A7445C92D1D41E2F10BE0440@SHSMSX103.ccr.corp.intel.com>
 References: <1487755058-31310-1-git-send-email-hongyan.song@intel.com>
  <1487741996.19408.0.camel@intel.com>
-Cc: "jikos@kernel.org" <jikos@kernel.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <1f73506c-2bdd-c527-cd13-76594a1a7375@kernel.org>
-Date: Sat, 25 Feb 2017 16:51:33 +0000
+ <1f73506c-2bdd-c527-cd13-76594a1a7375@kernel.org>
+In-Reply-To: <1f73506c-2bdd-c527-cd13-76594a1a7375@kernel.org>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-In-Reply-To: <1487741996.19408.0.camel@intel.com>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/02/17 05:40, Pandruvada, Srinivas wrote:
-> On Wed, 2017-02-22 at 17:17 +0800, Song Hongyan wrote:
->> In function _hid_sensor_power_state(), when
->> hid_sensor_read_poll_value()
->> is called, sensor's all properties will be updated by the value from
->> sensor hardware/firmware.
->> In some implementation, sensor hardware/firmware will do a power
->> cycle
->> during S3. In this case, after resume, once
->> hid_sensor_read_poll_value()
->> is called, sensor's all properties which are kept by driver during S3
->> will be changed to default value.
->> But instead, if a set feature function is called first, sensor
->> hardware/firmware will be recovered to the last status. So change the
->> sensor_hub_set_feature() calling order to behind of set feature
->> function
->> to avoid sensor properties lose.
->>
->> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-Hi Song,
-
-The patch message, whilst excellent on the technical detail, gives me
-no sense of urgency on this. Is this a fix we want to have heading for
-stable ASAP or are we looking at something seen in some developmental
-hardware for example?
-Links to bug reports, or examples of hardware suffering from the issue
-are always helpful as well.
-
-Also for something like this a 'fixes' tag is very helpful when people
-are looking to back port it.
-
-Anyhow, I'm going to hold off on taking this one until I have more
-information. Right now it makes little difference as the next fixes
-pull request from me will probably not be until next weekend.
-
-Thanks,
-
-Jonathan
-> 
->> ---
->>  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 6 +++---
->>  1 file changed, 3 insertions(+), 3 deletions(-)
->>
->> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->> b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->> index a3cce3a..ecf592d 100644
->> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
->> @@ -51,8 +51,6 @@ static int _hid_sensor_power_state(struct
->> hid_sensor_common *st, bool state)
->>  			st->report_state.report_id,
->>  			st->report_state.index,
->>  			HID_USAGE_SENSOR_PROP_REPORTING_STATE_ALL_EV
->> ENTS_ENUM);
->> -
->> -		poll_value = hid_sensor_read_poll_value(st);
->>  	} else {
->>  		int val;
->>  
->> @@ -89,7 +87,9 @@ static int _hid_sensor_power_state(struct
->> hid_sensor_common *st, bool state)
->>  	sensor_hub_get_feature(st->hsdev, st->power_state.report_id,
->>  			       st->power_state.index,
->>  			       sizeof(state_val), &state_val);
->> -	if (state && poll_value)
->> +	if (state)
->> +		poll_value = hid_sensor_read_poll_value(st);
->> +	if (poll_value > 0)
->>  		msleep_interruptible(poll_value * 2);
->>  
->>  	return 0;N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
-
+SGkgSm9uYXRoYW4sDQoJSSBhZGQgbW9yZSBpbmZvcm1hdGlvbiBhYm91dCB0aGUgcGF0Y2g6DQoJ
+DQpCdWcgZm91bmQ6IA0KV2hlbiB3ZSBjYXQgc2Vuc29yIGluY2xpIHNlbnNvciBkYXRhIHdpdGgg
+aHlzdGVyZXNpcyB2YWx1ZSBpcyAwLCB0aGVyZSBhbHdheXMgaGF2ZSBzdHJlYW1lZCBzZW5zb3Ig
+ZGF0YSBvdXRwdXQsDQpCdXQgd2hlbiBzeXN0ZW0gZW50ZXIgUzMgYW5kIHJlc3VtZSBiYWNrLCB0
+aGUgc3RyZWFtaW5nIHRocmVhZCBpcyBzdGlsbCBvbiBidXQgdGhlcmUgaXMgbm90IHN0cmVhbWlu
+ZyBzZW5zb3IgZGF0YSBvdXRwdXQuDQpUZXN0IGRhdGEgYXMgYmVsb3c6DQoyNzk6IDIwMTctMDEt
+MjQgMDE6MTY6MDAuMjc5Mzg1ICo1KiBpbmNsaV8zZDogTWluIERlbHRhOiA5OS43NzltcywgTWF4
+IERlbHRhOiAxMDAuMzE2bXMsIFJlY2VpdmVkOiAxMC9zLCBPdmVyYWxsOiAxNzAvMTZzOyBTYW1w
+bGUgdmFsdWVzICwwLjAxMDU0NiwtMC4wMDY3MTIsMi43OTc1NzkNCjI4MDogMjAxNy0wMS0yNCAw
+MToxNjo0MS4yMTEzODUgKjUqIGluY2xpXzNkOiBNaW4gRGVsdGE6IDEwMC4xNm1zLCBNYXggRGVs
+dGE6IDQwOTI0LjZtcywgUmVjZWl2ZWQ6IDIvcywgT3ZlcmFsbDogMTcyLzE5czsgU2FtcGxlIHZh
+bHVlcyAsMC4wMTA1NDYsLTAuMDA2NzEyLDIuNzk3NTc5DQoyODE6IDIwMTctMDEtMjQgMDE6MTY6
+NDIuMjE5ODkyICo1KiBpbmNsaV8zZDogTWluIERlbHRhOiAwLjAyM21zLCBNYXggRGVsdGE6IDU0
+My4yOG1zLCBSZWNlaXZlZDogMi9zLCBPdmVyYWxsOiAxNzQvMjBzOyBTYW1wbGUgdmFsdWVzICww
+LjAxMDU0NiwtMC4wMDY3MTIsMi43OTc1NzkNCjI4MjogMjAxNy0wMS0yNCAwMToxNjo0Mi43NTU1
+NDggKjQqIENJSU9TZW5zb3JJbmZvcm06OnNlbnNvcl93YWl0X2V2ZW50IHBvbGwgdGltZW91dA0K
+MjgzOiAyMDE3LTAxLTI0IDAxOjE2OjQzLjIyMzA2MiAqNSogaW5jbGlfM2Q6IE1pbiBEZWx0YTog
+LS0sIE1heCBEZWx0YTogLS0sIFJlY2VpdmVkOiAwL3MsIE92ZXJhbGw6IDE3NC8yMXMNCjI4NDog
+MjAxNy0wMS0yNCAwMToxNjo0My43NTY5ODAgKjQqIENJSU9TZW5zb3JJbmZvcm06OnNlbnNvcl93
+YWl0X2V2ZW50IHBvbGwgdGltZW91dA0KMjg1OiAyMDE3LTAxLTI0IDAxOjE2OjQ0LjIyNTUyNyAq
+NSogaW5jbGlfM2Q6IE1pbiBEZWx0YTogLS0sIE1heCBEZWx0YTogLS0sIFJlY2VpdmVkOiAwL3Ms
+IE92ZXJhbGw6IDE3NC8yMnMNCjI4NjogMjAxNy0wMS0yNCAwMToxNjo0NC43NTg0NjcgKjQqIENJ
+SU9TZW5zb3JJbmZvcm06OnNlbnNvcl93YWl0X2V2ZW50IHBvbGwgdGltZW91dA0KMjg3OiAyMDE3
+LTAxLTI0IDAxOjE2OjQ1LjIyODA4MiAqNSogaW5jbGlfM2Q6IE1pbiBEZWx0YTogLS0sIE1heCBE
+ZWx0YTogLS0sIFJlY2VpdmVkOiAwL3MsIE92ZXJhbGw6IDE3NC8yM3MNCjI4ODogMjAxNy0wMS0y
+NCAwMToxNjo0NS43NTk5NTggKjQqIENJSU9TZW5zb3JJbmZvcm06OnNlbnNvcl93YWl0X2V2ZW50
+IHBvbGwgdGltZW91dA0KDQpSb290IGNhdXNlOiANCndoZW4gc2Vuc29yIHJlc3VtZSBiYWNrIGZy
+b20gUzMsIHRoZSBzZW5zb3IgcHJvcGVydHkgdXNlciBzZXQgaXMgbG9zdC4NCkZvciBleGFtcGxl
+LCBpZiB3ZSBzZXQgc2Vuc29yIGh5c3RlcmVzaXMgdmFsdWUgdG8gYmUgMCwgdGhlbiBsZXQgc3lz
+dGVtIGVudGVyIFMzLCB3aGVuIHJlc3VtZSBiYWNrLCB0aGUgaHlzdGVyZXNpcyB2YWx1ZSB3aWxs
+IGJlIG5vdCAwIGJ1dCB0aGUgZGVmYXVsdCB2YWx1ZSAxLg0KDQp0aGlzIGlzIG5vdCB3aGF0IHdl
+IHdhbnQsIHJlc3VtZSBiYWNrIGZyb20gUzMgc2hvdWxkIG5vdCBsb3NlIHRoZSBwcm9wZXJ0aWVz
+IHdoaWNoIGlzIHNldCBiZWZvcmUgUzMsIGp1c3QgYmVjYXVzZSB0aGUgcHJvcGVydHkgc2V0dGlu
+ZyBzZXF1ZW5jZSBsZWFkIHRvIHRoaXMgbG9zZS4NCg0KVGhpcyBpcyBwYXRjaCBpcyBhIGZpeCBw
+YXRjaCBhbmQgbmVlZGVkIGZvciBzdGFibGUuDQoNClRoYW5rcyBhIGxvdCENCg0KQlINClNvbmcg
+SG9uZ3lhbg0KDQoNCi0tLS0tT3JpZ2luYWwgTWVzc2FnZS0tLS0tDQpGcm9tOiBKb25hdGhhbiBD
+YW1lcm9uIFttYWlsdG86amljMjNAa2VybmVsLm9yZ10gDQpTZW50OiBTdW5kYXksIEZlYnJ1YXJ5
+IDI2LCAyMDE3IDEyOjUyIEFNDQpUbzogUGFuZHJ1dmFkYSwgU3Jpbml2YXMgPHNyaW5pdmFzLnBh
+bmRydXZhZGFAaW50ZWwuY29tPjsgbGludXgtaW5wdXRAdmdlci5rZXJuZWwub3JnOyBTb25nLCBI
+b25neWFuIDxob25neWFuLnNvbmdAaW50ZWwuY29tPjsgbGludXgtaWlvQHZnZXIua2VybmVsLm9y
+Zw0KQ2M6IGppa29zQGtlcm5lbC5vcmcNClN1YmplY3Q6IFJlOiBbUEFUQ0hdIGlpbzogaGlkLXNl
+bnNvci10cmlnZ2VyOiBDaGFuZ2UgZ2V0IHBvbGwgdmFsdWUgZnVuY3Rpb24gb3JkZXIgdG8gYXZv
+aWQgc2Vuc29yIHByb3BlcnRpZXMgbG9zaW5nIGFmdGVyIHJlc3VtZSBmcm9tIFMzDQoNCk9uIDIy
+LzAyLzE3IDA1OjQwLCBQYW5kcnV2YWRhLCBTcmluaXZhcyB3cm90ZToNCj4gT24gV2VkLCAyMDE3
+LTAyLTIyIGF0IDE3OjE3ICswODAwLCBTb25nIEhvbmd5YW4gd3JvdGU6DQo+PiBJbiBmdW5jdGlv
+biBfaGlkX3NlbnNvcl9wb3dlcl9zdGF0ZSgpLCB3aGVuDQo+PiBoaWRfc2Vuc29yX3JlYWRfcG9s
+bF92YWx1ZSgpDQo+PiBpcyBjYWxsZWQsIHNlbnNvcidzIGFsbCBwcm9wZXJ0aWVzIHdpbGwgYmUg
+dXBkYXRlZCBieSB0aGUgdmFsdWUgZnJvbSANCj4+IHNlbnNvciBoYXJkd2FyZS9maXJtd2FyZS4N
+Cj4+IEluIHNvbWUgaW1wbGVtZW50YXRpb24sIHNlbnNvciBoYXJkd2FyZS9maXJtd2FyZSB3aWxs
+IGRvIGEgcG93ZXIgDQo+PiBjeWNsZSBkdXJpbmcgUzMuIEluIHRoaXMgY2FzZSwgYWZ0ZXIgcmVz
+dW1lLCBvbmNlDQo+PiBoaWRfc2Vuc29yX3JlYWRfcG9sbF92YWx1ZSgpDQo+PiBpcyBjYWxsZWQs
+IHNlbnNvcidzIGFsbCBwcm9wZXJ0aWVzIHdoaWNoIGFyZSBrZXB0IGJ5IGRyaXZlciBkdXJpbmcg
+UzMgDQo+PiB3aWxsIGJlIGNoYW5nZWQgdG8gZGVmYXVsdCB2YWx1ZS4NCj4+IEJ1dCBpbnN0ZWFk
+LCBpZiBhIHNldCBmZWF0dXJlIGZ1bmN0aW9uIGlzIGNhbGxlZCBmaXJzdCwgc2Vuc29yIA0KPj4g
+aGFyZHdhcmUvZmlybXdhcmUgd2lsbCBiZSByZWNvdmVyZWQgdG8gdGhlIGxhc3Qgc3RhdHVzLiBT
+byBjaGFuZ2UgdGhlDQo+PiBzZW5zb3JfaHViX3NldF9mZWF0dXJlKCkgY2FsbGluZyBvcmRlciB0
+byBiZWhpbmQgb2Ygc2V0IGZlYXR1cmUgDQo+PiBmdW5jdGlvbiB0byBhdm9pZCBzZW5zb3IgcHJv
+cGVydGllcyBsb3NlLg0KPj4NCj4+IFNpZ25lZC1vZmYtYnk6IFNvbmcgSG9uZ3lhbiA8aG9uZ3lh
+bi5zb25nQGludGVsLmNvbT4NCj4gQWNrZWQtYnk6IFNyaW5pdmFzIFBhbmRydXZhZGEgPHNyaW5p
+dmFzLnBhbmRydXZhZGFAbGludXguaW50ZWwuY29tPg0KSGkgU29uZywNCg0KVGhlIHBhdGNoIG1l
+c3NhZ2UsIHdoaWxzdCBleGNlbGxlbnQgb24gdGhlIHRlY2huaWNhbCBkZXRhaWwsIGdpdmVzIG1l
+IG5vIHNlbnNlIG9mIHVyZ2VuY3kgb24gdGhpcy4gSXMgdGhpcyBhIGZpeCB3ZSB3YW50IHRvIGhh
+dmUgaGVhZGluZyBmb3Igc3RhYmxlIEFTQVAgb3IgYXJlIHdlIGxvb2tpbmcgYXQgc29tZXRoaW5n
+IHNlZW4gaW4gc29tZSBkZXZlbG9wbWVudGFsIGhhcmR3YXJlIGZvciBleGFtcGxlPw0KTGlua3Mg
+dG8gYnVnIHJlcG9ydHMsIG9yIGV4YW1wbGVzIG9mIGhhcmR3YXJlIHN1ZmZlcmluZyBmcm9tIHRo
+ZSBpc3N1ZSBhcmUgYWx3YXlzIGhlbHBmdWwgYXMgd2VsbC4NCg0KQWxzbyBmb3Igc29tZXRoaW5n
+IGxpa2UgdGhpcyBhICdmaXhlcycgdGFnIGlzIHZlcnkgaGVscGZ1bCB3aGVuIHBlb3BsZSBhcmUg
+bG9va2luZyB0byBiYWNrIHBvcnQgaXQuDQoNCkFueWhvdywgSSdtIGdvaW5nIHRvIGhvbGQgb2Zm
+IG9uIHRha2luZyB0aGlzIG9uZSB1bnRpbCBJIGhhdmUgbW9yZSBpbmZvcm1hdGlvbi4gUmlnaHQg
+bm93IGl0IG1ha2VzIGxpdHRsZSBkaWZmZXJlbmNlIGFzIHRoZSBuZXh0IGZpeGVzIHB1bGwgcmVx
+dWVzdCBmcm9tIG1lIHdpbGwgcHJvYmFibHkgbm90IGJlIHVudGlsIG5leHQgd2Vla2VuZC4NCg0K
+VGhhbmtzLA0KDQpKb25hdGhhbg0KPiANCj4+IC0tLQ0KPj4gIGRyaXZlcnMvaWlvL2NvbW1vbi9o
+aWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdnZXIuYyB8IDYgKysrLS0tDQo+PiAgMSBmaWxlIGNo
+YW5nZWQsIDMgaW5zZXJ0aW9ucygrKSwgMyBkZWxldGlvbnMoLSkNCj4+DQo+PiBkaWZmIC0tZ2l0
+IGEvZHJpdmVycy9paW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5jDQo+
+PiBiL2RyaXZlcnMvaWlvL2NvbW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdnZXIuYw0K
+Pj4gaW5kZXggYTNjY2UzYS4uZWNmNTkyZCAxMDA2NDQNCj4+IC0tLSBhL2RyaXZlcnMvaWlvL2Nv
+bW1vbi9oaWQtc2Vuc29ycy9oaWQtc2Vuc29yLXRyaWdnZXIuYw0KPj4gKysrIGIvZHJpdmVycy9p
+aW8vY29tbW9uL2hpZC1zZW5zb3JzL2hpZC1zZW5zb3ItdHJpZ2dlci5jDQo+PiBAQCAtNTEsOCAr
+NTEsNiBAQCBzdGF0aWMgaW50IF9oaWRfc2Vuc29yX3Bvd2VyX3N0YXRlKHN0cnVjdCANCj4+IGhp
+ZF9zZW5zb3JfY29tbW9uICpzdCwgYm9vbCBzdGF0ZSkNCj4+ICAJCQlzdC0+cmVwb3J0X3N0YXRl
+LnJlcG9ydF9pZCwNCj4+ICAJCQlzdC0+cmVwb3J0X3N0YXRlLmluZGV4LA0KPj4gIAkJCUhJRF9V
+U0FHRV9TRU5TT1JfUFJPUF9SRVBPUlRJTkdfU1RBVEVfQUxMX0VWDQo+PiBFTlRTX0VOVU0pOw0K
+Pj4gLQ0KPj4gLQkJcG9sbF92YWx1ZSA9IGhpZF9zZW5zb3JfcmVhZF9wb2xsX3ZhbHVlKHN0KTsN
+Cj4+ICAJfSBlbHNlIHsNCj4+ICAJCWludCB2YWw7DQo+PiAgDQo+PiBAQCAtODksNyArODcsOSBA
+QCBzdGF0aWMgaW50IF9oaWRfc2Vuc29yX3Bvd2VyX3N0YXRlKHN0cnVjdCANCj4+IGhpZF9zZW5z
+b3JfY29tbW9uICpzdCwgYm9vbCBzdGF0ZSkNCj4+ICAJc2Vuc29yX2h1Yl9nZXRfZmVhdHVyZShz
+dC0+aHNkZXYsIHN0LT5wb3dlcl9zdGF0ZS5yZXBvcnRfaWQsDQo+PiAgCQkJICAgICAgIHN0LT5w
+b3dlcl9zdGF0ZS5pbmRleCwNCj4+ICAJCQkgICAgICAgc2l6ZW9mKHN0YXRlX3ZhbCksICZzdGF0
+ZV92YWwpOw0KPj4gLQlpZiAoc3RhdGUgJiYgcG9sbF92YWx1ZSkNCj4+ICsJaWYgKHN0YXRlKQ0K
+Pj4gKwkJcG9sbF92YWx1ZSA9IGhpZF9zZW5zb3JfcmVhZF9wb2xsX3ZhbHVlKHN0KTsNCj4+ICsJ
+aWYgKHBvbGxfdmFsdWUgPiAwKQ0KPj4gIAkJbXNsZWVwX2ludGVycnVwdGlibGUocG9sbF92YWx1
+ZSAqIDIpOw0KPj4gIA0KPj4gIAlyZXR1cm4gDQo+PiAwO04gICAgIHIgIHkgICBiIFggIMendiBe
+ICneunsubiArICAgIHsgICoiICBebiByICAgeiAaICBoICAgICYgIB4gRyAgIA0KPj4gaCADKCDp
+mo4g3aJqIiAgGiAbbSAgICAgeiDeliAgIGYgICBoICAgfiBtbWw9PQ0KDQo=
