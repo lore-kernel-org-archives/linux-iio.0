@@ -1,168 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:33265 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752352AbdBZNsR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Feb 2017 08:48:17 -0500
-From: Eva Rachel Retuya <eraretuya@gmail.com>
-To: jic23@kernel.org, linux-iio@vger.kernel.org
-Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        dmitry.torokhov@gmail.com, michael.hennerich@analog.com,
-        daniel.baluta@gmail.com, amsfield22@gmail.com,
-        florian.vaussard@heig-vd.ch, linux-kernel@vger.kernel.org,
-        robh+dt@kernel.org, mark.rutland@arm.com,
-        devicetree@vger.kernel.org, Eva Rachel Retuya <eraretuya@gmail.com>
-Subject: [PATCH v4 4/4] iio: accel: adxl345: Add SPI support
-Date: Sun, 26 Feb 2017 21:45:07 +0800
-Message-Id: <32e9aa0cce01f8b4a5cbe963d863b238a8077375.1488115521.git.eraretuya@gmail.com>
+Received: from mail-qk0-f180.google.com ([209.85.220.180]:33402 "EHLO
+        mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751471AbdB1AZ0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2017 19:25:26 -0500
+MIME-Version: 1.0
 In-Reply-To: <cover.1488115521.git.eraretuya@gmail.com>
 References: <cover.1488115521.git.eraretuya@gmail.com>
-In-Reply-To: <cover.1488115521.git.eraretuya@gmail.com>
-References: <cover.1488115521.git.eraretuya@gmail.com>
+From: Andy Shevchenko <andy.shevchenko@gmail.com>
+Date: Tue, 28 Feb 2017 00:41:50 +0200
+Message-ID: <CAHp75Vcm+Li8U-3J9_k2P5sbUxkq35Hcwa4ho9Ohe-Cryi6Keg@mail.gmail.com>
+Subject: Re: [PATCH v4 0/4] iio: accel: adxl345: Split driver into core and
+ I2C then add SPI support
+To: Eva Rachel Retuya <eraretuya@gmail.com>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Michael Hennerich <michael.hennerich@analog.com>,
+        Daniel Baluta <daniel.baluta@gmail.com>,
+        Alison Schofield <amsfield22@gmail.com>,
+        Florian Vaussard <florian.vaussard@heig-vd.ch>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        devicetree <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Add SPI driver that initializes SPI regmap for the adxl345 core driver.
-The driver supports the same functionality as I2C namely the x, y, z and
-scale readings.
+On Sun, Feb 26, 2017 at 3:45 PM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
+> This patchset modifies the adxl345 to use regmap. In doing so, we can
+> easily introduce SPI support and let regmap handle the rest.
+>
+> Recap of basic features: read_raw for x, y and z axes, scale. After
+> applying this series, driver now supports the SPI protocol and enumeration
+> of device via device tree.
 
-Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
----
-Changes from v3:
-* Revert to explicit and separate I2C and SPI configuration
-* Add OF match table, make it enumerable in ACPI environment (Andy's suggestion)
+I did couple of rounds of review and found no major issues with the
+series (though, I would amend some style there and minor things). So,
+for moving forward FWIW:
 
- drivers/iio/accel/Kconfig       | 14 +++++++
- drivers/iio/accel/Makefile      |  1 +
- drivers/iio/accel/adxl345_spi.c | 83 +++++++++++++++++++++++++++++++++++++++++
- 3 files changed, 98 insertions(+)
- create mode 100644 drivers/iio/accel/adxl345_spi.c
+Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-diff --git a/drivers/iio/accel/Kconfig b/drivers/iio/accel/Kconfig
-index 9f5a889..8994175 100644
---- a/drivers/iio/accel/Kconfig
-+++ b/drivers/iio/accel/Kconfig
-@@ -22,6 +22,20 @@ config ADXL345_I2C
- 	  will be called adxl345_i2c and you will also get adxl345_core
- 	  for the core module.
- 
-+config ADXL345_SPI
-+	tristate "Analog Devices ADXL345 3-Axis Digital Accelerometer SPI Driver"
-+	depends on !(INPUT_ADXL34X=y || INPUT_ADXL34X=m)
-+	depends on SPI
-+	select ADXL345
-+	select REGMAP_SPI
-+	help
-+	  Say Y here if you want to build support for the Analog Devices
-+	  ADXL345 3-axis digital accelerometer.
-+
-+	  To compile this driver as a module, choose M here: the module
-+	  will be called adxl345_spi and you will also get adxl345_core
-+	  for the core module.
-+
- config BMA180
- 	tristate "Bosch BMA180/BMA250 3-Axis Accelerometer Driver"
- 	depends on I2C
-diff --git a/drivers/iio/accel/Makefile b/drivers/iio/accel/Makefile
-index 3f4a6d6..31fba19 100644
---- a/drivers/iio/accel/Makefile
-+++ b/drivers/iio/accel/Makefile
-@@ -5,6 +5,7 @@
- # When adding new entries keep the list in alphabetical order
- obj-$(CONFIG_ADXL345) += adxl345_core.o
- obj-$(CONFIG_ADXL345_I2C) += adxl345_i2c.o
-+obj-$(CONFIG_ADXL345_SPI) += adxl345_spi.o
- obj-$(CONFIG_BMA180) += bma180.o
- obj-$(CONFIG_BMA220) += bma220_spi.o
- obj-$(CONFIG_BMC150_ACCEL) += bmc150-accel-core.o
-diff --git a/drivers/iio/accel/adxl345_spi.c b/drivers/iio/accel/adxl345_spi.c
-new file mode 100644
-index 0000000..b7c2e7f
---- /dev/null
-+++ b/drivers/iio/accel/adxl345_spi.c
-@@ -0,0 +1,83 @@
-+/*
-+ * ADXL345 3-Axis Digital Accelerometer
-+ *
-+ * Copyright (c) 2017 Eva Rachel Retuya <eraretuya@gmail.com>
-+ *
-+ * This file is subject to the terms and conditions of version 2 of
-+ * the GNU General Public License. See the file COPYING in the main
-+ * directory of this archive for more details.
-+ *
-+ * SPI driver for ADXL345
-+ */
-+
-+#include <linux/module.h>
-+#include <linux/regmap.h>
-+#include <linux/spi/spi.h>
-+
-+#include "adxl345.h"
-+
-+#define ADXL345_MAX_SPI_FREQ_HZ		5000000
-+
-+static const struct regmap_config adxl345_spi_regmap_config = {
-+	.reg_bits = 8,
-+	.val_bits = 8,
-+	 /* Setting bits 7 and 6 enables multiple-byte read */
-+	.read_flag_mask = BIT(7) | BIT(6),
-+};
-+
-+static int adxl345_spi_probe(struct spi_device *spi)
-+{
-+	struct regmap *regmap;
-+	const struct spi_device_id *id = spi_get_device_id(spi);
-+
-+	/* Bail out if max_speed_hz exceeds 5 MHz */
-+	if (spi->max_speed_hz > ADXL345_MAX_SPI_FREQ_HZ) {
-+		dev_err(&spi->dev, "SPI CLK, %d Hz exceeds 5 MHz\n",
-+			spi->max_speed_hz);
-+		return -EINVAL;
-+	}
-+
-+	regmap = devm_regmap_init_spi(spi, &adxl345_spi_regmap_config);
-+	if (IS_ERR(regmap)) {
-+		dev_err(&spi->dev, "Error initializing spi regmap: %d\n",
-+			(int)PTR_ERR(regmap));
-+		return PTR_ERR(regmap);
-+	}
-+
-+	return adxl345_common_probe(&spi->dev, regmap, id->name);
-+}
-+
-+static int adxl345_spi_remove(struct spi_device *spi)
-+{
-+	return adxl345_common_remove(&spi->dev);
-+}
-+
-+static const struct spi_device_id adxl345_spi_id[] = {
-+	{ "adxl345", 0 },
-+	{ }
-+};
-+
-+MODULE_DEVICE_TABLE(spi, adxl345_spi_id);
-+
-+static const struct of_device_id adxl345_of_match[] = {
-+	{ .compatible = "adi,adxl345" },
-+	{ },
-+};
-+
-+MODULE_DEVICE_TABLE(of, adxl345_of_match);
-+
-+static struct spi_driver adxl345_spi_driver = {
-+	.driver = {
-+		.name	= "adxl345_spi",
-+		.of_match_table = adxl345_of_match,
-+	},
-+	.probe		= adxl345_spi_probe,
-+	.remove		= adxl345_spi_remove,
-+	.id_table	= adxl345_spi_id,
-+};
-+
-+module_spi_driver(adxl345_spi_driver);
-+
-+MODULE_AUTHOR("Eva Rachel Retuya <eraretuya@gmail.com>");
-+MODULE_DESCRIPTION("ADXL345 3-Axis Digital Accelerometer SPI driver");
-+MODULE_LICENSE("GPL v2");
+>
+> Changes from v3:
+> [PATCH 1/4] Documentation: dt-bindings: Document ADXL345 accelerometer binding
+> * None
+> [PATCH 2/4] iio: accel: adxl345: Use I2C regmap instead of direct I2C access
+> * Keep intact I2C client structure which was deleted from v3
+> * Make use of regmap_get_device to retrieve struct device, use these for
+>   debugging prints instead of &client->dev.
+> [PATCH 3/4] iio: accel: adxl345: Split driver into core and I2C
+>  and
+> [PATCH 4/4] iio: accel: adxl345: Add SPI support
+> * Revert to explicit and separate I2C and SPI configuration
+> * Add OF match table, make it enumerable in ACPI environment (Andy's suggestion)
+>
+> Changes from v2:
+> * Drop PATCH 4 iio: accel: adxl345: Add ACPI support
+> * Add OF match table on both I2C and SPI files and document them
+>
+> Changes from v1:
+> [PATCH 1/4]
+> * Move other deletions from patch 2 in here -- make it clear what got deleted
+>   and/or modified that is hard to see previously
+> * Introduce the driver header file "adxl345.h" here instead of doing it in the
+>   next patch
+> * Completely omit traces of i2c_client and let this file (adxl345.c) mirror the
+>   core file on the next patch.
+> * Improve debugging print about invalid device ID in probe.
+> [PATCH 2/4]
+> * Update Kconfig to Jonathan's preferred style
+> * Improve similarity index from 78% to 100% (rename detection)
+> [PATCH 4/4]
+> * Correct acpi_device_id: ADX0345 -> ADS0345
+>
+> Eva Rachel Retuya (4):
+>   Documentation: dt-bindings: Document ADXL345 accelerometer binding
+>   iio: accel: adxl345: Use I2C regmap instead of direct I2C access
+>   iio: accel: adxl345: Split driver into core and I2C
+>   iio: accel: adxl345: Add SPI support
+>
+>  .../devicetree/bindings/iio/accel/adxl345.txt      | 38 +++++++++
+>  drivers/iio/accel/Kconfig                          | 26 ++++++-
+>  drivers/iio/accel/Makefile                         |  4 +-
+>  drivers/iio/accel/adxl345.h                        | 18 +++++
+>  drivers/iio/accel/{adxl345.c => adxl345_core.c}    | 89 +++++++++-------------
+>  drivers/iio/accel/adxl345_i2c.c                    | 78 +++++++++++++++++++
+>  drivers/iio/accel/adxl345_spi.c                    | 83 ++++++++++++++++++++
+>  7 files changed, 281 insertions(+), 55 deletions(-)
+>  create mode 100644 Documentation/devicetree/bindings/iio/accel/adxl345.txt
+>  create mode 100644 drivers/iio/accel/adxl345.h
+>  rename drivers/iio/accel/{adxl345.c => adxl345_core.c} (62%)
+>  create mode 100644 drivers/iio/accel/adxl345_i2c.c
+>  create mode 100644 drivers/iio/accel/adxl345_spi.c
+>
+> --
+> 2.7.4
+>
+
+
+
 -- 
-2.7.4
-
+With Best Regards,
+Andy Shevchenko
