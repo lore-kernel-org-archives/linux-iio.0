@@ -1,89 +1,357 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:34421 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751122AbdB1UY7 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2017 15:24:59 -0500
-Received: by mail-pg0-f65.google.com with SMTP id s67so2829695pgb.1
-        for <linux-iio@vger.kernel.org>; Tue, 28 Feb 2017 12:23:39 -0800 (PST)
-Date: Tue, 28 Feb 2017 23:56:30 +0530
-From: sayli karnik <karniksayli1995@gmail.com>
-To: outreachy-kernel@googlegroups.com
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:34787 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751774AbdB1Tfn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2017 14:35:43 -0500
+Subject: Re: [Outreachy kernel] [PATCH v2] staging: iio: adis16203: Move
+ header file content to source file.
+To: Julia Lawall <julia.lawall@lip6.fr>,
+        Varsha Rao <rvarsha016@gmail.com>
+References: <58b5c28f.4a44620a.8f50f.a6b6@mx.google.com>
+ <alpine.DEB.2.20.1702281937470.2171@hadrien>
 Cc: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org
-Subject: [PATCH] staging: iio: ad7280a: Move contents of header file to
- source file
-Message-ID: <20170228182630.GA10423@sayli-HP-15-Notebook-PC>
+        outreachy-kernel@googlegroups.com,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <94389eae-1bde-de58-0f92-fb004a155fe4@kernel.org>
+Date: Tue, 28 Feb 2017 19:25:11 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <alpine.DEB.2.20.1702281937470.2171@hadrien>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The contents of the header file are used only by this single
-source file.  Move content into .c and remove .h.
+On 28/02/17 18:38, Julia Lawall wrote:
+> On Wed, 1 Mar 2017, Varsha Rao wrote:
+> 
+>> The contents of the header file are used only by this single source
+>> file. Moved content into adis16203_core.c file and removed adis16203.h
+>> file. Arranged #include files in alphabetical order.
+> 
+> I don't remember the previous commit message, but this one seems quite
+> nice.  Concise, to the point, and gives a good overview of what is done.
+Indeed. Very nice.
 
-Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
----
- drivers/staging/iio/adc/ad7280a.c | 15 +++++++++++++++
- drivers/staging/iio/adc/ad7280a.h | 15 ---------------
- 2 files changed, 15 insertions(+), 15 deletions(-)
+Applied to the togreg branch of iio.git and pushed out as testing for
+the autobuilders to play with it.
 
-diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-index ee679ac..44d13dc 100644
---- a/drivers/staging/iio/adc/ad7280a.c
-+++ b/drivers/staging/iio/adc/ad7280a.c
-@@ -22,6 +22,21 @@
- 
- #include "ad7280a.h"
- 
-+#define AD7280A_ACQ_TIME_400ns			0
-+#define AD7280A_ACQ_TIME_800ns			1
-+#define AD7280A_ACQ_TIME_1200ns			2
-+#define AD7280A_ACQ_TIME_1600ns			3
-+
-+#define AD7280A_CONV_AVG_DIS			0
-+#define AD7280A_CONV_AVG_2			1
-+#define AD7280A_CONV_AVG_4			2
-+#define AD7280A_CONV_AVG_8			3
-+
-+#define AD7280A_ALERT_REMOVE_VIN5		BIT(2)
-+#define AD7280A_ALERT_REMOVE_VIN4_VIN5		BIT(3)
-+#define AD7280A_ALERT_REMOVE_AUX5		BIT(0)
-+#define AD7280A_ALERT_REMOVE_AUX4_AUX5		BIT(1)
-+
- /* Registers */
- #define AD7280A_CELL_VOLTAGE_1		0x0  /* D11 to D0, Read only */
- #define AD7280A_CELL_VOLTAGE_2		0x1  /* D11 to D0, Read only */
-diff --git a/drivers/staging/iio/adc/ad7280a.h b/drivers/staging/iio/adc/ad7280a.h
-index ccfb90d..1b50dd8 100644
---- a/drivers/staging/iio/adc/ad7280a.h
-+++ b/drivers/staging/iio/adc/ad7280a.h
-@@ -13,21 +13,6 @@
-  * TODO: struct ad7280_platform_data needs to go into include/linux/iio
-  */
- 
--#define AD7280A_ACQ_TIME_400ns			0
--#define AD7280A_ACQ_TIME_800ns			1
--#define AD7280A_ACQ_TIME_1200ns			2
--#define AD7280A_ACQ_TIME_1600ns			3
--
--#define AD7280A_CONV_AVG_DIS			0
--#define AD7280A_CONV_AVG_2			1
--#define AD7280A_CONV_AVG_4			2
--#define AD7280A_CONV_AVG_8			3
--
--#define AD7280A_ALERT_REMOVE_VIN5		BIT(2)
--#define AD7280A_ALERT_REMOVE_VIN4_VIN5		BIT(3)
--#define AD7280A_ALERT_REMOVE_AUX5		BIT(0)
--#define AD7280A_ALERT_REMOVE_AUX4_AUX5		BIT(1)
--
- struct ad7280_platform_data {
- 	unsigned int		acquisition_time;
- 	unsigned int		conversion_averaging;
--- 
-2.7.4
+One note though, please cc linux-iio@vger.kernel.org for IIO patches
+including those effecting drivers in staging.
+
+Thanks,
+
+Jonathan
+> 
+> julia
+> 
+>>
+>> Signed-off-by: Varsha Rao <rvarsha016@gmail.com>
+>> ---
+>> Changes in v2:
+>> - Modified commit message.
+>> - #include files ordered alphabetically.
+>>
+>>  drivers/staging/iio/accel/adis16203.h      | 125 --------------------------
+>>  drivers/staging/iio/accel/adis16203_core.c | 136 +++++++++++++++++++++++++++--
+>>  2 files changed, 128 insertions(+), 133 deletions(-)
+>>  delete mode 100644 drivers/staging/iio/accel/adis16203.h
+>>
+>> diff --git a/drivers/staging/iio/accel/adis16203.h b/drivers/staging/iio/accel/adis16203.h
+>> deleted file mode 100644
+>> index b483e4e..0000000
+>> --- a/drivers/staging/iio/accel/adis16203.h
+>> +++ /dev/null
+>> @@ -1,125 +0,0 @@
+>> -#ifndef SPI_ADIS16203_H_
+>> -#define SPI_ADIS16203_H_
+>> -
+>> -#define ADIS16203_STARTUP_DELAY	220 /* ms */
+>> -
+>> -/* Flash memory write count */
+>> -#define ADIS16203_FLASH_CNT      0x00
+>> -
+>> -/* Output, power supply */
+>> -#define ADIS16203_SUPPLY_OUT     0x02
+>> -
+>> -/* Output, auxiliary ADC input */
+>> -#define ADIS16203_AUX_ADC        0x08
+>> -
+>> -/* Output, temperature */
+>> -#define ADIS16203_TEMP_OUT       0x0A
+>> -
+>> -/* Output, x-axis inclination */
+>> -#define ADIS16203_XINCL_OUT      0x0C
+>> -
+>> -/* Output, y-axis inclination */
+>> -#define ADIS16203_YINCL_OUT      0x0E
+>> -
+>> -/* Incline null calibration */
+>> -#define ADIS16203_INCL_NULL      0x18
+>> -
+>> -/* Alarm 1 amplitude threshold */
+>> -#define ADIS16203_ALM_MAG1       0x20
+>> -
+>> -/* Alarm 2 amplitude threshold */
+>> -#define ADIS16203_ALM_MAG2       0x22
+>> -
+>> -/* Alarm 1, sample period */
+>> -#define ADIS16203_ALM_SMPL1      0x24
+>> -
+>> -/* Alarm 2, sample period */
+>> -#define ADIS16203_ALM_SMPL2      0x26
+>> -
+>> -/* Alarm control */
+>> -#define ADIS16203_ALM_CTRL       0x28
+>> -
+>> -/* Auxiliary DAC data */
+>> -#define ADIS16203_AUX_DAC        0x30
+>> -
+>> -/* General-purpose digital input/output control */
+>> -#define ADIS16203_GPIO_CTRL      0x32
+>> -
+>> -/* Miscellaneous control */
+>> -#define ADIS16203_MSC_CTRL       0x34
+>> -
+>> -/* Internal sample period (rate) control */
+>> -#define ADIS16203_SMPL_PRD       0x36
+>> -
+>> -/* Operation, filter configuration */
+>> -#define ADIS16203_AVG_CNT        0x38
+>> -
+>> -/* Operation, sleep mode control */
+>> -#define ADIS16203_SLP_CNT        0x3A
+>> -
+>> -/* Diagnostics, system status register */
+>> -#define ADIS16203_DIAG_STAT      0x3C
+>> -
+>> -/* Operation, system command register */
+>> -#define ADIS16203_GLOB_CMD       0x3E
+>> -
+>> -/* MSC_CTRL */
+>> -
+>> -/* Self-test at power-on: 1 = disabled, 0 = enabled */
+>> -#define ADIS16203_MSC_CTRL_PWRUP_SELF_TEST	BIT(10)
+>> -
+>> -/* Reverses rotation of both inclination outputs */
+>> -#define ADIS16203_MSC_CTRL_REVERSE_ROT_EN	BIT(9)
+>> -
+>> -/* Self-test enable */
+>> -#define ADIS16203_MSC_CTRL_SELF_TEST_EN	        BIT(8)
+>> -
+>> -/* Data-ready enable: 1 = enabled, 0 = disabled */
+>> -#define ADIS16203_MSC_CTRL_DATA_RDY_EN	        BIT(2)
+>> -
+>> -/* Data-ready polarity: 1 = active high, 0 = active low */
+>> -#define ADIS16203_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
+>> -
+>> -/* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
+>> -#define ADIS16203_MSC_CTRL_DATA_RDY_DIO1	BIT(0)
+>> -
+>> -/* DIAG_STAT */
+>> -
+>> -/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
+>> -#define ADIS16203_DIAG_STAT_ALARM2        BIT(9)
+>> -
+>> -/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
+>> -#define ADIS16203_DIAG_STAT_ALARM1        BIT(8)
+>> -
+>> -/* Self-test diagnostic error flag */
+>> -#define ADIS16203_DIAG_STAT_SELFTEST_FAIL_BIT 5
+>> -
+>> -/* SPI communications failure */
+>> -#define ADIS16203_DIAG_STAT_SPI_FAIL_BIT      3
+>> -
+>> -/* Flash update failure */
+>> -#define ADIS16203_DIAG_STAT_FLASH_UPT_BIT     2
+>> -
+>> -/* Power supply above 3.625 V */
+>> -#define ADIS16203_DIAG_STAT_POWER_HIGH_BIT    1
+>> -
+>> -/* Power supply below 3.15 V */
+>> -#define ADIS16203_DIAG_STAT_POWER_LOW_BIT     0
+>> -
+>> -/* GLOB_CMD */
+>> -
+>> -#define ADIS16203_GLOB_CMD_SW_RESET	BIT(7)
+>> -#define ADIS16203_GLOB_CMD_CLEAR_STAT	BIT(4)
+>> -#define ADIS16203_GLOB_CMD_FACTORY_CAL	BIT(1)
+>> -
+>> -#define ADIS16203_ERROR_ACTIVE          BIT(14)
+>> -
+>> -enum adis16203_scan {
+>> -	ADIS16203_SCAN_INCLI_X,
+>> -	ADIS16203_SCAN_INCLI_Y,
+>> -	ADIS16203_SCAN_SUPPLY,
+>> -	ADIS16203_SCAN_AUX_ADC,
+>> -	ADIS16203_SCAN_TEMP,
+>> -};
+>> -
+>> -#endif /* SPI_ADIS16203_H_ */
+>> diff --git a/drivers/staging/iio/accel/adis16203_core.c b/drivers/staging/iio/accel/adis16203_core.c
+>> index bd8119a..68189ad 100644
+>> --- a/drivers/staging/iio/accel/adis16203_core.c
+>> +++ b/drivers/staging/iio/accel/adis16203_core.c
+>> @@ -7,20 +7,140 @@
+>>   */
+>>
+>>  #include <linux/delay.h>
+>> -#include <linux/mutex.h>
+>>  #include <linux/device.h>
+>> +
+>> +#include <linux/iio/buffer.h>
+>> +#include <linux/iio/iio.h>
+>> +#include <linux/iio/imu/adis.h>
+>> +#include <linux/iio/sysfs.h>
+>> +
+>>  #include <linux/kernel.h>
+>> -#include <linux/spi/spi.h>
+>> +#include <linux/module.h>
+>> +#include <linux/mutex.h>
+>>  #include <linux/slab.h>
+>> +#include <linux/spi/spi.h>
+>>  #include <linux/sysfs.h>
+>> -#include <linux/module.h>
+>>
+>> -#include <linux/iio/iio.h>
+>> -#include <linux/iio/sysfs.h>
+>> -#include <linux/iio/buffer.h>
+>> -#include <linux/iio/imu/adis.h>
+>> +#define ADIS16203_STARTUP_DELAY 220 /* ms */
+>> +
+>> +/* Flash memory write count */
+>> +#define ADIS16203_FLASH_CNT      0x00
+>> +
+>> +/* Output, power supply */
+>> +#define ADIS16203_SUPPLY_OUT     0x02
+>> +
+>> +/* Output, auxiliary ADC input */
+>> +#define ADIS16203_AUX_ADC        0x08
+>> +
+>> +/* Output, temperature */
+>> +#define ADIS16203_TEMP_OUT       0x0A
+>> +
+>> +/* Output, x-axis inclination */
+>> +#define ADIS16203_XINCL_OUT      0x0C
+>> +
+>> +/* Output, y-axis inclination */
+>> +#define ADIS16203_YINCL_OUT      0x0E
+>> +
+>> +/* Incline null calibration */
+>> +#define ADIS16203_INCL_NULL      0x18
+>> +
+>> +/* Alarm 1 amplitude threshold */
+>> +#define ADIS16203_ALM_MAG1       0x20
+>> +
+>> +/* Alarm 2 amplitude threshold */
+>> +#define ADIS16203_ALM_MAG2       0x22
+>> +
+>> +/* Alarm 1, sample period */
+>> +#define ADIS16203_ALM_SMPL1      0x24
+>> +
+>> +/* Alarm 2, sample period */
+>> +#define ADIS16203_ALM_SMPL2      0x26
+>> +
+>> +/* Alarm control */
+>> +#define ADIS16203_ALM_CTRL       0x28
+>>
+>> -#include "adis16203.h"
+>> +/* Auxiliary DAC data */
+>> +#define ADIS16203_AUX_DAC        0x30
+>> +
+>> +/* General-purpose digital input/output control */
+>> +#define ADIS16203_GPIO_CTRL      0x32
+>> +
+>> +/* Miscellaneous control */
+>> +#define ADIS16203_MSC_CTRL       0x34
+>> +
+>> +/* Internal sample period (rate) control */
+>> +#define ADIS16203_SMPL_PRD       0x36
+>> +
+>> +/* Operation, filter configuration */
+>> +#define ADIS16203_AVG_CNT        0x38
+>> +
+>> +/* Operation, sleep mode control */
+>> +#define ADIS16203_SLP_CNT        0x3A
+>> +
+>> +/* Diagnostics, system status register */
+>> +#define ADIS16203_DIAG_STAT      0x3C
+>> +
+>> +/* Operation, system command register */
+>> +#define ADIS16203_GLOB_CMD       0x3E
+>> +
+>> +/* MSC_CTRL */
+>> +
+>> +/* Self-test at power-on: 1 = disabled, 0 = enabled */
+>> +#define ADIS16203_MSC_CTRL_PWRUP_SELF_TEST      BIT(10)
+>> +
+>> +/* Reverses rotation of both inclination outputs */
+>> +#define ADIS16203_MSC_CTRL_REVERSE_ROT_EN       BIT(9)
+>> +
+>> +/* Self-test enable */
+>> +#define ADIS16203_MSC_CTRL_SELF_TEST_EN         BIT(8)
+>> +
+>> +/* Data-ready enable: 1 = enabled, 0 = disabled */
+>> +#define ADIS16203_MSC_CTRL_DATA_RDY_EN          BIT(2)
+>> +
+>> +/* Data-ready polarity: 1 = active high, 0 = active low */
+>> +#define ADIS16203_MSC_CTRL_ACTIVE_HIGH          BIT(1)
+>> +
+>> +/* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
+>> +#define ADIS16203_MSC_CTRL_DATA_RDY_DIO1        BIT(0)
+>> +
+>> +/* DIAG_STAT */
+>> +
+>> +/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
+>> +#define ADIS16203_DIAG_STAT_ALARM2        BIT(9)
+>> +
+>> +/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
+>> +#define ADIS16203_DIAG_STAT_ALARM1        BIT(8)
+>> +
+>> +/* Self-test diagnostic error flag */
+>> +#define ADIS16203_DIAG_STAT_SELFTEST_FAIL_BIT 5
+>> +
+>> +/* SPI communications failure */
+>> +#define ADIS16203_DIAG_STAT_SPI_FAIL_BIT      3
+>> +
+>> +/* Flash update failure */
+>> +#define ADIS16203_DIAG_STAT_FLASH_UPT_BIT     2
+>> +
+>> +/* Power supply above 3.625 V */
+>> +#define ADIS16203_DIAG_STAT_POWER_HIGH_BIT    1
+>> +
+>> +/* Power supply below 3.15 V */
+>> +#define ADIS16203_DIAG_STAT_POWER_LOW_BIT     0
+>> +
+>> +/* GLOB_CMD */
+>> +
+>> +#define ADIS16203_GLOB_CMD_SW_RESET     BIT(7)
+>> +#define ADIS16203_GLOB_CMD_CLEAR_STAT   BIT(4)
+>> +#define ADIS16203_GLOB_CMD_FACTORY_CAL  BIT(1)
+>> +
+>> +#define ADIS16203_ERROR_ACTIVE          BIT(14)
+>> +
+>> +enum adis16203_scan {
+>> +	 ADIS16203_SCAN_INCLI_X,
+>> +	 ADIS16203_SCAN_INCLI_Y,
+>> +	 ADIS16203_SCAN_SUPPLY,
+>> +	 ADIS16203_SCAN_AUX_ADC,
+>> +	 ADIS16203_SCAN_TEMP,
+>> +};
+>>
+>>  #define DRIVER_NAME		"adis16203"
+>>
+>> --
+>> 2.9.3
+>>
+>> --
+>> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
+>> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
+>> To post to this group, send email to outreachy-kernel@googlegroups.com.
+>> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/58b5c28f.4a44620a.8f50f.a6b6%40mx.google.com.
+>> For more options, visit https://groups.google.com/d/optout.
+>>
 
