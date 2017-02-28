@@ -1,74 +1,71 @@
-Return-Path: <SRS0=u7RT=2J=st.com=fabrice.gasnier@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mx07-00178001.pphosted.com ([62.209.51.94]:27162 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-OK)
+        by vger.kernel.org with ESMTP id S1751555AbdB1SmZ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2017 13:42:25 -0500
 From: Fabrice Gasnier <fabrice.gasnier@st.com>
 To: <jic23@kernel.org>, <linux@armlinux.org.uk>, <robh+dt@kernel.org>,
-        <linux-arm-kernel@lists.infradead.org>, <devicetree@vger.kernel.org>,
-        <linux-kernel@vger.kernel.org>
+        <linux-arm-kernel@lists.infradead.org>,
+        <devicetree@vger.kernel.org>, <linux-kernel@vger.kernel.org>
 CC: <linux-iio@vger.kernel.org>, <mark.rutland@arm.com>,
         <mcoquelin.stm32@gmail.com>, <alexandre.torgue@st.com>,
         <lars@metafoo.de>, <knaack.h@gmx.de>, <pmeerw@pmeerw.net>,
         <fabrice.gasnier@st.com>, <benjamin.gaignard@linaro.org>,
-        <benjamin.gaignard@st.com>, <linus.walleij@linaro.org>,
-        =?UTF-8?q?Gr=C3=A9gor=20Boirie?=
-	<gregor.boirie@parrot.com>
-Subject: [PATCH v3 4/6] iio: iio-interrupt-trigger: device-tree support
-Date: Tue, 28 Feb 2017 17:51:17 +0100
-Message-ID: <1488300679-3259-5-git-send-email-fabrice.gasnier@st.com>
+        <benjamin.gaignard@st.com>, <linus.walleij@linaro.org>
+Subject: [PATCH v3 5/6] dt-bindings: iio: stm32-adc: add external interrupt trigger
+Date: Tue, 28 Feb 2017 17:51:18 +0100
+Message-ID: <1488300679-3259-6-git-send-email-fabrice.gasnier@st.com>
 In-Reply-To: <1488300679-3259-1-git-send-email-fabrice.gasnier@st.com>
 References: <1488300679-3259-1-git-send-email-fabrice.gasnier@st.com>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-From: Grégor Boirie <gregor.boirie@parrot.com>
+Document support for EXTI trigger. STM32 ADC can use external interrupt
+line as trigger source for conversions.
 
-Add compatible string that should be used in DT.
-Also cascade of_node to newly allocated trigger device.
-
-Signed-off-by: Gregor Boirie <gregor.boirie@parrot.com>
 Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
 ---
-Original PATCH from Gregor Boirie:
-https://marc.info/?l=linux-iio&m=145590953607905&w=4
+ .../devicetree/bindings/iio/adc/st,stm32-adc.txt    | 21 +++++++++++++++++++++
+ 1 file changed, 21 insertions(+)
 
-Updates:
-- compatible string changed to "interrupt-trigger"
-- cascade of_node down to iio trigger device
----
- drivers/iio/trigger/iio-trig-interrupt.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
-
-diff --git a/drivers/iio/trigger/iio-trig-interrupt.c b/drivers/iio/trigger/iio-trig-interrupt.c
-index e18f12b..6ee1f7e 100644
---- a/drivers/iio/trigger/iio-trig-interrupt.c
-+++ b/drivers/iio/trigger/iio-trig-interrupt.c
-@@ -62,6 +62,7 @@ static int iio_interrupt_trigger_probe(struct platform_device *pdev)
- 	}
- 	iio_trigger_set_drvdata(trig, trig_info);
- 	trig_info->irq = irq;
-+	trig->dev.of_node = pdev->dev.of_node;
- 	trig->ops = &iio_interrupt_trigger_ops;
- 	ret = request_irq(irq, iio_interrupt_trigger_poll,
- 			  irqflags, trig->name, trig);
-@@ -104,11 +105,20 @@ static int iio_interrupt_trigger_remove(struct platform_device *pdev)
- 	return 0;
- }
+diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+index 5dfc88e..9e4af7f 100644
+--- a/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-adc.txt
+@@ -57,6 +57,10 @@ Optional properties:
+ - dmas: Phandle to dma channel for this ADC instance.
+   See ../../dma/dma.txt for details.
+ - dma-names: Must be "rx" when dmas property is being used.
++- io-triggers: Phandle to external interrupt trigger (e.g. EXTI). Must be
++  phandle to EXTI11 on stm32f4. See ../iio-bindings.txt for details on trigger
++  consumer.
++- io-trigger-names: Must be "exti" when io-triggers property is being used.
  
-+#ifdef CONFIG_OF
-+static const struct of_device_id iio_interrupt_trigger_of_match[] = {
-+	{ .compatible = "interrupt-trigger" },
-+	{},
-+};
-+MODULE_DEVICE_TABLE(of, iio_interrupt_trigger_of_match);
-+#endif
+ Example:
+ 	adc: adc@40012000 {
+@@ -88,3 +92,20 @@ Example:
+ 		...
+ 		other adc child nodes follow...
+ 	};
 +
- static struct platform_driver iio_interrupt_trigger_driver = {
- 	.probe = iio_interrupt_trigger_probe,
- 	.remove = iio_interrupt_trigger_remove,
- 	.driver = {
- 		.name = "iio_interrupt_trigger",
-+		.of_match_table = of_match_ptr(iio_interrupt_trigger_of_match),
- 	},
- };
- 
++Example with EXTI11 trigger:
++	trig: interrupt-trigger {
++		#io-trigger-cells = <0>;
++		compatible = "interrupt-trigger";
++		interrupts = <11 0>;
++		interrupt-parent = <&gpioa>;
++	}
++
++	adc: adc@40012000 {
++		...
++		adc@0 {
++			...
++			io-triggers = <&trig>;
++			io-trigger-names = "exti";
++		};
++	};
 -- 
 1.9.1
+
