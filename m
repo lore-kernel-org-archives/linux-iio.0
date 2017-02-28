@@ -1,63 +1,44 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f66.google.com ([74.125.83.66]:33646 "EHLO
-        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751497AbdB1EaX (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2017 23:30:23 -0500
-Received: by mail-pg0-f66.google.com with SMTP id x17so181911pgi.0
-        for <linux-iio@vger.kernel.org>; Mon, 27 Feb 2017 20:30:18 -0800 (PST)
-Date: Mon, 27 Feb 2017 19:21:28 -0800
-From: Katie Dunne <kdunne@mail.ccsf.edu>
-To: outreachy-kernel@googlegroups.com
-Cc: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-iio@vger.kernel.org
-Subject: [PATCH 3/3] staging: iio: meter: Clean up #includes
-Message-ID: <e3ddd60060761d6b581e4a9d54ff2a3b7daf8add.1488250885.git.kdunne@mail.ccsf.edu>
-References: <cover.1488250884.git.kdunne@mail.ccsf.edu>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1488250884.git.kdunne@mail.ccsf.edu>
+Received: from mail-wr0-f195.google.com ([209.85.128.195]:33484 "EHLO
+        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751647AbdB1Qes (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2017 11:34:48 -0500
+Received: by mail-wr0-f195.google.com with SMTP id g10so2286769wrg.0
+        for <linux-iio@vger.kernel.org>; Tue, 28 Feb 2017 08:34:47 -0800 (PST)
+From: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+To: jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+        Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH] staging: iio: Deleted TODO file which contained redundant information
+Date: Tue, 28 Feb 2017 18:34:29 +0200
+Message-Id: <1488299669-22372-1-git-send-email-narcisaanamaria12@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Alphabetize and separate kernel and subsystem headers.
+The TODO file contained redundant information which can be obtained
+using ./scripts/get_maintainer.pl.
 
-Signed-off-by: Katie Dunne <kdunne@mail.ccsf.edu>
+Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
 ---
- drivers/staging/iio/meter/ade7753.c | 11 ++++++-----
- 1 file changed, 6 insertions(+), 5 deletions(-)
+ drivers/staging/iio/TODO | 8 --------
+ 1 file changed, 8 deletions(-)
+ delete mode 100644 drivers/staging/iio/TODO
 
-diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-index f855c60..5ea3ea2 100644
---- a/drivers/staging/iio/meter/ade7753.c
-+++ b/drivers/staging/iio/meter/ade7753.c
-@@ -6,20 +6,21 @@
-  * Licensed under the GPL-2 or later.
-  */
- 
--#include <linux/interrupt.h>
--#include <linux/irq.h>
- #include <linux/delay.h>
--#include <linux/mutex.h>
- #include <linux/device.h>
-+#include <linux/interrupt.h>
-+#include <linux/irq.h>
- #include <linux/kernel.h>
-+#include <linux/list.h>
-+#include <linux/module.h>
-+#include <linux/mutex.h>
- #include <linux/spi/spi.h>
- #include <linux/slab.h>
- #include <linux/sysfs.h>
--#include <linux/list.h>
--#include <linux/module.h>
- 
- #include <linux/iio/iio.h>
- #include <linux/iio/sysfs.h>
-+
- #include "meter.h"
- 
- #define ADE7753_READ_REG(a)    a
+diff --git a/drivers/staging/iio/TODO b/drivers/staging/iio/TODO
+deleted file mode 100644
+index 4922402..0000000
+--- a/drivers/staging/iio/TODO
++++ /dev/null
+@@ -1,8 +0,0 @@
+-2016 10/09
+-
+-ADI Drivers:
+-CC the device-drivers-devel@blackfin.uclinux.org mailing list when
+-e-mailing the normal IIO list (see below).
+-
+-Contact: Jonathan Cameron <jic23@kernel.org>.
+-Mailing list: linux-iio@vger.kernel.org
 -- 
-2.7.4
+1.9.1
 
