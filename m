@@ -1,17 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f180.google.com ([209.85.220.180]:33402 "EHLO
-        mail-qk0-f180.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751471AbdB1AZ0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2017 19:25:26 -0500
-MIME-Version: 1.0
-In-Reply-To: <cover.1488115521.git.eraretuya@gmail.com>
-References: <cover.1488115521.git.eraretuya@gmail.com>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Tue, 28 Feb 2017 00:41:50 +0200
-Message-ID: <CAHp75Vcm+Li8U-3J9_k2P5sbUxkq35Hcwa4ho9Ohe-Cryi6Keg@mail.gmail.com>
-Subject: Re: [PATCH v4 0/4] iio: accel: adxl345: Split driver into core and
- I2C then add SPI support
-To: Eva Rachel Retuya <eraretuya@gmail.com>
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:33090 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751556AbdB1Co3 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Feb 2017 21:44:29 -0500
+Date: Tue, 28 Feb 2017 10:44:07 +0800
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: Andy Shevchenko <andy.shevchenko@gmail.com>
 Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -25,83 +19,27 @@ Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH v4 0/4] iio: accel: adxl345: Split driver into core and
+ I2C then add SPI support
+Message-ID: <20170228024406.GA3792@Socrates-UM>
+References: <cover.1488115521.git.eraretuya@gmail.com>
+ <CAHp75Vcm+Li8U-3J9_k2P5sbUxkq35Hcwa4ho9Ohe-Cryi6Keg@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <CAHp75Vcm+Li8U-3J9_k2P5sbUxkq35Hcwa4ho9Ohe-Cryi6Keg@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Feb 26, 2017 at 3:45 PM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
-> This patchset modifies the adxl345 to use regmap. In doing so, we can
-> easily introduce SPI support and let regmap handle the rest.
->
-> Recap of basic features: read_raw for x, y and z axes, scale. After
-> applying this series, driver now supports the SPI protocol and enumeration
-> of device via device tree.
+On Tue, Feb 28, 2017 at 12:41:50AM +0200, Andy Shevchenko wrote:
+[...]
+> I did couple of rounds of review and found no major issues with the
+> series (though, I would amend some style there and minor things). So,
+> for moving forward FWIW:
+> 
+> Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
 
-I did couple of rounds of review and found no major issues with the
-series (though, I would amend some style there and minor things). So,
-for moving forward FWIW:
+Hello Andy, thank you for the previous feedback and for reviewing this series.
 
-Reviewed-by: Andy Shevchenko <andy.shevchenko@gmail.com>
+Eva
 
->
-> Changes from v3:
-> [PATCH 1/4] Documentation: dt-bindings: Document ADXL345 accelerometer binding
-> * None
-> [PATCH 2/4] iio: accel: adxl345: Use I2C regmap instead of direct I2C access
-> * Keep intact I2C client structure which was deleted from v3
-> * Make use of regmap_get_device to retrieve struct device, use these for
->   debugging prints instead of &client->dev.
-> [PATCH 3/4] iio: accel: adxl345: Split driver into core and I2C
->  and
-> [PATCH 4/4] iio: accel: adxl345: Add SPI support
-> * Revert to explicit and separate I2C and SPI configuration
-> * Add OF match table, make it enumerable in ACPI environment (Andy's suggestion)
->
-> Changes from v2:
-> * Drop PATCH 4 iio: accel: adxl345: Add ACPI support
-> * Add OF match table on both I2C and SPI files and document them
->
-> Changes from v1:
-> [PATCH 1/4]
-> * Move other deletions from patch 2 in here -- make it clear what got deleted
->   and/or modified that is hard to see previously
-> * Introduce the driver header file "adxl345.h" here instead of doing it in the
->   next patch
-> * Completely omit traces of i2c_client and let this file (adxl345.c) mirror the
->   core file on the next patch.
-> * Improve debugging print about invalid device ID in probe.
-> [PATCH 2/4]
-> * Update Kconfig to Jonathan's preferred style
-> * Improve similarity index from 78% to 100% (rename detection)
-> [PATCH 4/4]
-> * Correct acpi_device_id: ADX0345 -> ADS0345
->
-> Eva Rachel Retuya (4):
->   Documentation: dt-bindings: Document ADXL345 accelerometer binding
->   iio: accel: adxl345: Use I2C regmap instead of direct I2C access
->   iio: accel: adxl345: Split driver into core and I2C
->   iio: accel: adxl345: Add SPI support
->
->  .../devicetree/bindings/iio/accel/adxl345.txt      | 38 +++++++++
->  drivers/iio/accel/Kconfig                          | 26 ++++++-
->  drivers/iio/accel/Makefile                         |  4 +-
->  drivers/iio/accel/adxl345.h                        | 18 +++++
->  drivers/iio/accel/{adxl345.c => adxl345_core.c}    | 89 +++++++++-------------
->  drivers/iio/accel/adxl345_i2c.c                    | 78 +++++++++++++++++++
->  drivers/iio/accel/adxl345_spi.c                    | 83 ++++++++++++++++++++
->  7 files changed, 281 insertions(+), 55 deletions(-)
->  create mode 100644 Documentation/devicetree/bindings/iio/accel/adxl345.txt
->  create mode 100644 drivers/iio/accel/adxl345.h
->  rename drivers/iio/accel/{adxl345.c => adxl345_core.c} (62%)
->  create mode 100644 drivers/iio/accel/adxl345_i2c.c
->  create mode 100644 drivers/iio/accel/adxl345_spi.c
->
-> --
-> 2.7.4
->
-
-
-
--- 
-With Best Regards,
-Andy Shevchenko
+[...]
