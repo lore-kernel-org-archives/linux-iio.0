@@ -1,20 +1,13 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f49.google.com ([209.85.214.49]:38120 "EHLO
-        mail-it0-f49.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752773AbdCNPZ4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Mar 2017 11:25:56 -0400
-Received: by mail-it0-f49.google.com with SMTP id m27so1592421iti.1
-        for <linux-iio@vger.kernel.org>; Tue, 14 Mar 2017 08:25:55 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <d45bf9e0428c7885e37f157f9fe222f82594b87c.1484073325.git.vilhelm.gray@gmail.com>
-References: <cover.1484073324.git.vilhelm.gray@gmail.com> <d45bf9e0428c7885e37f157f9fe222f82594b87c.1484073325.git.vilhelm.gray@gmail.com>
-From: Linus Walleij <linus.walleij@linaro.org>
-Date: Tue, 14 Mar 2017 16:25:54 +0100
-Message-ID: <CACRpkdYEd3fKvU1G4N8Qbs_DFXyanKnOzxcy26aZe1kA74ZtJg@mail.gmail.com>
-Subject: Re: [PATCH 2/3] gpio: pc104: Mask PC/104 drivers via PC104 Kconfig option
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
+Received: from mail-yw0-f194.google.com ([209.85.161.194]:34853 "EHLO
+        mail-yw0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750707AbdCAUyr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Mar 2017 15:54:47 -0500
+Date: Wed, 1 Mar 2017 15:46:52 -0500
+From: William Breathitt Gray <vilhelm.gray@gmail.com>
+To: Linus Walleij <linus.walleij@linaro.org>,
+        Jonathan Cameron <jic23@kernel.org>
 Cc: Greg KH <gregkh@linuxfoundation.org>,
-        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
@@ -22,22 +15,42 @@ Cc: Greg KH <gregkh@linuxfoundation.org>,
         "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
         "linux-gpio@vger.kernel.org" <linux-gpio@vger.kernel.org>,
         Alexandre Courbot <gnurou@gmail.com>
-Content-Type: text/plain; charset=UTF-8
+Subject: Re: [PATCH 0/3] pc104: Mask PC/104 Kconfig options
+Message-ID: <20170301204652.GA31812@sophia>
+References: <cover.1484073324.git.vilhelm.gray@gmail.com>
+ <CACRpkdaqeLktgqmd6qcdGmruxABS0fWQacPOTYf0V24cKyiSRA@mail.gmail.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+In-Reply-To: <CACRpkdaqeLktgqmd6qcdGmruxABS0fWQacPOTYf0V24cKyiSRA@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Jan 10, 2017 at 7:51 PM, William Breathitt Gray
-<vilhelm.gray@gmail.com> wrote:
-
-> PC/104 drivers should be hidden on machines which do not support PC/104
-> devices. This patch adds the PC104 Kconfig option as a dependency for
-> the relevant PC/104 device driver Kconfig options.
+On Wed, Jan 11, 2017 at 04:26:19PM +0100, Linus Walleij wrote:
+>On Tue, Jan 10, 2017 at 7:50 PM, William Breathitt Gray
+><vilhelm.gray@gmail.com> wrote:
 >
-> Cc: Linus Walleij <linus.walleij@linaro.org>
-> Cc: Alexandre Courbot <gnurou@gmail.com>
-> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
+>> PC/104 form factor devices serve a specific niche of embedded system
+>> users. Since PC/104 devices and hardware are typically used by just a
+>> subset of Linux users, it would be appropriate to filter PC/104 related
+>> Kconfig options for those uninterested.
+>>
+>> This patchset introduces the PC104 Kconfig option, and uses it to mask
+>> PC/104 specific device drivers and options, so that only those users
+>> interested in PC/104 related Kconfig options are exposed to them.
+>
+>Tell me when/if the PC104 option is merged and I can merge the GPIO
+>patch.
+>
+>Yours,
+>Linus Walleij
 
-Patch applied.
+Jonathan and Linus,
 
-Yours,
-Linus Walleij
+Now that the PC104 option is merged for 4.11, it should be all right to
+merge in the GPIO and IIO patches without worry of warnings. Please
+merge the relevant patch to your respective tree after you pull in the
+PC104 option.
+
+Thank you,
+
+William Breathitt Gray
