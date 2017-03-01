@@ -1,39 +1,59 @@
-Return-Path: <SRS0=zSF+=2L=perches.com=joe@kernel.org>
-Message-ID: <1488437696.2179.3.camel@perches.com>
-Subject: Re: [PATCH 2/2] HID: Remove unnecessary OOM messages
-From: Joe Perches <joe@perches.com>
-To: Michel Hermier <michel.hermier@gmail.com>, Jiri Kosina
- <jikos@kernel.org>,  Benjamin Tissoires <benjamin.tissoires@redhat.com>,
- Bruno =?ISO-8859-1?Q?Pr=E9mont?= <bonbons@linux-vserver.org>,  Stefan
- Achatz <erazor_de@users.sourceforge.net>, Jonathan Cameron
- <jic23@kernel.org>, Srinivas Pandruvada
- <srinivas.pandruvada@linux.intel.com>
-Cc: linux-input@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-iio@vger.kernel.org
-Date: Wed, 01 Mar 2017 22:54:56 -0800
-In-Reply-To: <a52260a5-921c-53f9-8709-ae7189395cee@gmail.com>
-References: <cover.1488395879.git.joe@perches.com>
-	 <0fbe692283802d36df389af7cbda9a4bff44db5e.1488395879.git.joe@perches.com>
-	 <a52260a5-921c-53f9-8709-ae7189395cee@gmail.com>
-Content-Type: text/plain; charset="ISO-8859-1"
-Mime-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:33278 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753448AbdCAXpt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 1 Mar 2017 18:45:49 -0500
+Date: Wed, 1 Mar 2017 15:37:57 -0800
+From: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: magnetometer: ak8974: remove incorrect __exit markups
+Message-ID: <20170301233757.GA10606@dtor-ws>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Thu, 2017-03-02 at 07:51 +0100, Michel Hermier wrote:
-> Le 01/03/2017 à 20:19, Joe Perches a écrit :
-> > diff --git a/drivers/hid/hid-asus.c b/drivers/hid/hid-asus.c
-[]
-> > @@ -224,7 +224,6 @@ static int asus_start_multitouch(struct hid_device *hdev)
-> >   
-> >   	if (!dmabuf) {
-> >   		ret = -ENOMEM;
-> > -		hid_err(hdev, "Asus failed to alloc dma buf: %d\n", ret);
-> >   		return ret;
-> >   	}
-> 
-> Trivial set and return value missed.
+Even if bus is not hot-pluggable, devices can be unbound from the
+driver via sysfs, so we should not be using __exit annotations on
+remove() methods. The only exception is drivers registered with
+platform_driver_probe() which specifically disables sysfs bind/unbind
+attributes.
 
-You're welcome to submit a follow-on patch.
+Signed-off-by: Dmitry Torokhov <dmitry.torokhov@gmail.com>
+---
+ drivers/iio/magnetometer/ak8974.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-The compiler should produce the same code
-in any case.
+diff --git a/drivers/iio/magnetometer/ak8974.c b/drivers/iio/magnetometer/ak8974.c
+index ce09d771c1fb..75f83424903b 100644
+--- a/drivers/iio/magnetometer/ak8974.c
++++ b/drivers/iio/magnetometer/ak8974.c
+@@ -767,7 +767,7 @@ static int ak8974_probe(struct i2c_client *i2c,
+ 	return ret;
+ }
+ 
+-static int __exit ak8974_remove(struct i2c_client *i2c)
++static int ak8974_remove(struct i2c_client *i2c)
+ {
+ 	struct iio_dev *indio_dev = i2c_get_clientdata(i2c);
+ 	struct ak8974 *ak8974 = iio_priv(indio_dev);
+@@ -849,7 +849,7 @@ static struct i2c_driver ak8974_driver = {
+ 		.of_match_table = of_match_ptr(ak8974_of_match),
+ 	},
+ 	.probe	  = ak8974_probe,
+-	.remove	  = __exit_p(ak8974_remove),
++	.remove	  = ak8974_remove,
+ 	.id_table = ak8974_id,
+ };
+ module_i2c_driver(ak8974_driver);
+-- 
+2.12.0.rc1.440.g5b76565f74-goog
+
+
+-- 
+Dmitry
