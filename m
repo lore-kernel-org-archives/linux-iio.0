@@ -1,234 +1,712 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48040 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752605AbdCMUlg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:41:36 -0400
-Subject: Re: [PATCH 0/4] iio: adc: Maxim max961x driver
-To: jacopo mondi <jacopo@jmondi.org>,
-        Jacopo Mondi <jacopo+renesas@jmondi.org>, geert@linux-m68k.org,
-        wsa+renesas@sang-engineering.com, magnus.damm@gmail.com,
-        laurent.pinchart@ideasonboard.com, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, robh+dt@kernel.org,
-        mark.rutland@arm.com
-References: <1487948756-25172-1-git-send-email-jacopo+renesas@jmondi.org>
- <f6b94b05-c0f8-239e-733d-dc93a7683184@kernel.org>
- <9a1d0108-8508-adc5-8985-d1133a3317fd@jmondi.org>
- <3e4b368b-102b-e626-3777-97e49bb5ae56@kernel.org>
- <4a8af859-7fe8-3ef9-21b5-42cbb41eb36b@jmondi.org>
-Cc: linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org,
-        Neil Armstrong <narmstrong@baylibre.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <175f5c43-a71f-5cf6-6e2a-ecd71a769871@kernel.org>
-Date: Mon, 13 Mar 2017 20:41:33 +0000
+Return-Path: <SRS0=6ezP=2K=gmail.com=narcisaanamaria12@kernel.org>
+Date: Wed, 1 Mar 2017 09:12:24 -0800 (PST)
+From: Narcisa Vasile <narcisaanamaria12@gmail.com>
+To: outreachy-kernel <outreachy-kernel@googlegroups.com>
+Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+	linux-iio@vger.kernel.org, narcisaanamaria12@gmail.com
+Message-Id: <c5b95296-f346-4e7e-9248-0d68d7a51339@googlegroups.com>
+In-Reply-To: <1488216496-16969-1-git-send-email-narcisaanamaria12@gmail.com>
+References: <1488145439-32728-1-git-send-email-narcisaanamaria12@gmail.com>
+ <1488145439-32728-1-git-send-email-narcisaanamaria12@gmail.com>
+ <1488216496-16969-1-git-send-email-narcisaanamaria12@gmail.com>
+Subject: Re: [PATCH v3] staging: iio: ad9832: Moved contents of the header
+ to the source file
 MIME-Version: 1.0
-In-Reply-To: <4a8af859-7fe8-3ef9-21b5-42cbb41eb36b@jmondi.org>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/mixed;
+	boundary="----=_Part_1878_1840619384.1488388344152"
+List-ID: <linux-iio@vger.kernel.org>
 
-On 07/03/17 19:12, jacopo mondi wrote:
-> Hi Jonathan,
-> 
->    + Neil Amstrong from Baylibre
-> 
-> On 05/03/2017 11:49, Jonathan Cameron wrote:
->> On 27/02/17 09:09, jacopo mondi wrote:
->>> Hi Jonathan,
->>> On 25/02/2017 17:09, Jonathan Cameron wrote:
->>>> On 24/02/17 15:05, Jacopo Mondi wrote:
->>>>> Hello!
->>>>>
->>>>> This series adds driver and documentation for Maxim max9611/max9612
->>>>> high-side current sense amplifier with 12-bit ADC and I2c interface.
->>>>> It also registers two devices installed on VDD_0.8V and DVFS_0.8V lines
->>>>> in Renesas r87796 Salvator-X board.
->>>>>
->>>>> The device provides several functionalities, and only some of them are
->>>>> currently supported by this driver.
->>>>> Particularly, the on-board op-amp and analog comparator are not currently
->>>>> supported.
->>>> More fun to come ;)
->>>>>
->>>>> A simplified integration schematic drawing is here reported:
->>>>>
->>>>>  ----o----/\/\/-----o-------|LOAD|---
->>>>>      |    shunt     |
->>>>>  ____|______________|___
->>>>>  |  RS+            RS-  |
->>>>>  |   |-----gain-----|   |
->>>>>  |          |           |
->>>>>  |          |           |
->>>>>  |max961x   |->| ADC |===== I2c
->>>>>  |______________________|
->>>>>
->>>>>
->>>>> The device provides though its 12-bits ADC the following informations:
->>>> information is it's own plural (silly English quirk of the day!)
->>>>
->>>>> - Common input voltage on RS+
->>>>> - Voltage drop between RS+ and RS- ends
->>>>> - Die temperature
->>>>>
->>>>> All of the above ones are exposed though IIO with _raw and _scale values
->>>>> (plus _input for milli degree Celsius die temperature).
->>>>>
->>>>> From the above values the driver calculates the current flowing between
->>>>> RS+ and RS- ends, using the shunt resistor value provided by device tree, and
->>>>> the power load. Again this values are exposed through _raw and _scale
->>>>> attributes, which I'm not completely sure it's acceptables as they are
->>>>> calculated values and not natively provided by the current sense amplifier.
->>>>> I would like to hear IIO people opinions on this, if they should be better
->>>>> exposed though some other attributes which are not _raw and _scale, or if
->>>>> their calculation should be completely left to userspace tools.
->>>> So one element of the implementation is a problem.
->>>> Because of the dynamic gain adjustment you are doing in the driver (which I
->>>> rather like BTW) there will be instabilities in the computed values that
->>>> userspace comes up with when we are near a transition for in the current
->>>> sense amplifier gain.  We can't do that as crazy outputs will result
->>>> (read offset and scale for possible different values of that gain then
->>>> read the actual ADC value for a possible 3rd choice resulting in complete
->>>> garbage).
->>>>
->>>> So there are two ways to avoid this:
->>>> 1. Move all that magic into the original reads and apply the gain and offset
->>>> before they get to userspace.
->>>> 2. Provide enough information for userspace to be able to compute everything
->>>> iff it is using buffered mode with a 'scan' covering all the channels in one
->>>> go.  Even then we'd have to explicitly allow reading of the PGA gain as a
->>>> channel, or make userspace responsible for doing your autogain stuff.
->>>>
->>>> 1 is probably easier but will make implementing 2 as a follow up will be tricky
->>>> and would be needed if you want to read this stuff faster than sysfs will
->>>> allow.
->>>>
->>>> It's a shame, but my gut feeling is you want to drop the autogain stuff
->>>> as then it all becomes straight forward.
->>>>
->>>> What do others think?
->>>>
->>>
->>> Just to add the following element to the discussion.
->>>
->>> The device supports cycling between channels by itself, sequentially cycling between them every 2 msec.
->>> At the same time, gain setting is not involved in this procedure, and last applied is used on current sense voltage channel.
->>>
->>> Still this does not help with un-synchronized reads of gain-dependent values, as offset and scale are.
->>>
->>> Also, removing auto-gain setting routine will simplify stuff, but I don't see how all becomes straight forward then. I mean, if we keep gain at a fixed value, yes everything's easier, but it will work under a much more limited pre-conditions set...
->>
->> You'd be moving the issue to userspace.  This would be beneficial if you
->> were looking to use the buffered interfaces (through a kfifo).  In those
->> cases processed values are often a non starter as they don't have well
->> defined 'sizes' in the same way that a reading directly from the chip does.
->>
->> So under those circumstances, your userspace code might elect to modify
->> the gain to get in the 'right' region only at startup, or after some initial
->> 'calibration data capture'.  Then it could merily stream data out without
->> caring about it.  To run remotely fast and consistenty you'd have to stop
->> doing the multiple passes needed for autogain.
->>
->> However, if that interface never makes sense for this device anyway then
->> it the approach of doing it all in kernel makes more sense.
->>
->> With a 500sps device like this it's on the boundary to my mind...
->>
->> Quick enough that using the chardev access makes sense, but the usecase
->> is perhaps such that we should leave this all in kernel space.
->>
->> It's slightly horrible but there is a path forward eventually if we
->> were to add buffered support having gone with the do it all in the kernel:
->> * Add a 'autorange_enable' attribute to allow us to turn it off or implicitly
->> assume that it is turned off if we are doing buffered capture (which is a bit
->> nasty from a 'doing what you'd expect' viewpoint).
->> * Add scale attributes at that stage.
->>
->> Now, if the auto range stuff was done on the actual chip we could figure
->> out how to export that as pseudo channels alongside the real ones but
->> that might get uggly and isn't the case here anyway.
->>
->> Jonathan
->>
-> 
-> Let me summarize this a bit, so to make sure we're on the same page.
-> 
-> - No buffered reads:
-> -- current and power are processed only channels.
-> -- processed channels do not live well with buffered reads.
-> -- no scale and offset attributes are exposed to userland
-> -- kernel takes care of autogain (introducing a little delay in each read)
-> 
-> - Buffered reads:
-> -- userspace needs to "calibrate" the autogain
-> -- scale and offset depends on gain settings and shall be created after gain selection
-spot on.
-> 
-> Now, I'm under the impression what really makes a difference here is
-> the use case this driver has to address, and sincerely, I cannot
-> define a precise one right now, at least not in terms of typical
-> sampling frequency of power monitoring tools.
-> 
-> That's why I have now copied Neil Armstrong, as Baylibre's ACME is a
-> sort-of-standard out there, and they may have faced the same issues
-> when implementing ina2x driver (which is used for power sensing in
-> ACME cape if I'm not wrong). I hope he may be able to follow here,
-> and provide some wisdom on required data access speed.
-> 
-> imho, if no strict speed requirements are present, and we can live
-> with chrdev access only, exposing 2 processed channels, and let
-That would be sysfs only, buffered reads are the chrdev ones (confusing
-terminology :()
-> kernel deal with gain configuration is a more desirable solutions in
-> terms of interface clearness. But again, let's wait for more people
-> to comment here!
-Agreed, guess we give it a little longer!
+------=_Part_1878_1840619384.1488388344152
+Content-Type: multipart/alternative;
+	boundary="----=_Part_1879_1243307067.1488388344153"
 
-Jonathan
-> 
-Thanks
->    j
-> 
-> 
-> 
-> 
->>
->>>
->>> Thanks
->>>    j
->>>
->>>
->>>> Jonathan
->>>>>
->>>>> Thanks
->>>>>    j
->>>>>
->>>>> Jacopo Mondi (4):
->>>>>   Documentation: dt-bindings: iio: Add max961x
->>>>>   iio: Documentation: Add max961x sysfs documentation
->>>>>   iio: adc: Add max9611/9612 ADC driver
->>>>>   arm64: dts: salvator-x: Add current sense amplifiers
->>>>>
->>>>>  .../ABI/testing/sysfs-bus-iio-adc-max961x          |   5 +
->>>>>  .../devicetree/bindings/iio/adc/max961x.txt        |  27 +
->>>>>  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts |  17 +
->>>>>  drivers/iio/adc/Kconfig                            |  10 +
->>>>>  drivers/iio/adc/Makefile                           |   1 +
->>>>>  drivers/iio/adc/max961x.c                          | 648 +++++++++++++++++++++
->>>>>  6 files changed, 708 insertions(+)
->>>>>  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-adc-max961x
->>>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/max961x.txt
->>>>>  create mode 100644 drivers/iio/adc/max961x.c
->>>>>
->>>>
->>>
->>> -- 
->>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->>> the body of a message to majordomo@vger.kernel.org
->>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>
-> 
+------=_Part_1879_1243307067.1488388344153
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 7bit
+
+Hi,
+Is this patch correct now or should I improve it ?
+
+Narcisa
+
+On Monday, February 27, 2017 at 7:28:46 PM UTC+2, Narcisa Vasile wrote:
+>
+> Moved the contents of the header(ad9832.h) into the corresponding source 
+> file 
+> with the exception of the platform data struct which is supposed to be 
+> used from somewhere else other than the driver. 
+>
+> Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com> 
+> --- 
+> Changes in v3: 
+>    -The changes are now made against the original code 
+> --- 
+>  drivers/staging/iio/frequency/ad9832.c | 92 
+> ++++++++++++++++++++++++++++++++++ 
+>  drivers/staging/iio/frequency/ad9832.h | 92 
+> ---------------------------------- 
+>  2 files changed, 92 insertions(+), 92 deletions(-) 
+>
+> diff --git a/drivers/staging/iio/frequency/ad9832.c 
+> b/drivers/staging/iio/frequency/ad9832.c 
+> index a5b2f06..8d40c8e 100644 
+> --- a/drivers/staging/iio/frequency/ad9832.c 
+> +++ b/drivers/staging/iio/frequency/ad9832.c 
+> @@ -22,6 +22,98 @@ 
+>   
+>  #include "ad9832.h" 
+>   
+> +/* Registers */ 
+> + 
+> +#define AD9832_FREQ0LL                0x0 
+> +#define AD9832_FREQ0HL                0x1 
+> +#define AD9832_FREQ0LM                0x2 
+> +#define AD9832_FREQ0HM                0x3 
+> +#define AD9832_FREQ1LL                0x4 
+> +#define AD9832_FREQ1HL                0x5 
+> +#define AD9832_FREQ1LM                0x6 
+> +#define AD9832_FREQ1HM                0x7 
+> +#define AD9832_PHASE0L                0x8 
+> +#define AD9832_PHASE0H                0x9 
+> +#define AD9832_PHASE1L                0xA 
+> +#define AD9832_PHASE1H                0xB 
+> +#define AD9832_PHASE2L                0xC 
+> +#define AD9832_PHASE2H                0xD 
+> +#define AD9832_PHASE3L                0xE 
+> +#define AD9832_PHASE3H                0xF 
+> + 
+> +#define AD9832_PHASE_SYM        0x10 
+> +#define AD9832_FREQ_SYM                0x11 
+> +#define AD9832_PINCTRL_EN        0x12 
+> +#define AD9832_OUTPUT_EN        0x13 
+> + 
+> +/* Command Control Bits */ 
+> + 
+> +#define AD9832_CMD_PHA8BITSW        0x1 
+> +#define AD9832_CMD_PHA16BITSW        0x0 
+> +#define AD9832_CMD_FRE8BITSW        0x3 
+> +#define AD9832_CMD_FRE16BITSW        0x2 
+> +#define AD9832_CMD_FPSELECT        0x6 
+> +#define AD9832_CMD_SYNCSELSRC        0x8 
+> +#define AD9832_CMD_SLEEPRESCLR        0xC 
+> + 
+> +#define AD9832_FREQ                BIT(11) 
+> +#define AD9832_PHASE(x)                (((x) & 3) << 9) 
+> +#define AD9832_SYNC                BIT(13) 
+> +#define AD9832_SELSRC                BIT(12) 
+> +#define AD9832_SLEEP                BIT(13) 
+> +#define AD9832_RESET                BIT(12) 
+> +#define AD9832_CLR                BIT(11) 
+> +#define CMD_SHIFT                12 
+> +#define ADD_SHIFT                8 
+> +#define AD9832_FREQ_BITS        32 
+> +#define AD9832_PHASE_BITS        12 
+> +#define RES_MASK(bits)                ((1 << (bits)) - 1) 
+> + 
+> +/** 
+> + * struct ad9832_state - driver instance specific data 
+> + * @spi:                spi_device 
+> + * @avdd:                supply regulator for the analog section 
+> + * @dvdd:                supply regulator for the digital section 
+> + * @mclk:                external master clock 
+> + * @ctrl_fp:                cached frequency/phase control word 
+> + * @ctrl_ss:                cached sync/selsrc control word 
+> + * @ctrl_src:                cached sleep/reset/clr word 
+> + * @xfer:                default spi transfer 
+> + * @msg:                default spi message 
+> + * @freq_xfer:                tuning word spi transfer 
+> + * @freq_msg:                tuning word spi message 
+> + * @phase_xfer:                tuning word spi transfer 
+> + * @phase_msg:                tuning word spi message 
+> + * @data:                spi transmit buffer 
+> + * @phase_data:                tuning word spi transmit buffer 
+> + * @freq_data:                tuning word spi transmit buffer 
+> + */ 
+> + 
+> +struct ad9832_state { 
+> +        struct spi_device                *spi; 
+> +        struct regulator                *avdd; 
+> +        struct regulator                *dvdd; 
+> +        unsigned long                        mclk; 
+> +        unsigned short                        ctrl_fp; 
+> +        unsigned short                        ctrl_ss; 
+> +        unsigned short                        ctrl_src; 
+> +        struct spi_transfer                xfer; 
+> +        struct spi_message                msg; 
+> +        struct spi_transfer                freq_xfer[4]; 
+> +        struct spi_message                freq_msg; 
+> +        struct spi_transfer                phase_xfer[2]; 
+> +        struct spi_message                phase_msg; 
+> +        /* 
+> +         * DMA (thus cache coherency maintenance) requires the 
+> +         * transfer buffers to live in their own cache lines. 
+> +         */ 
+> +        union { 
+> +                __be16                        freq_data[4]____cacheline_aligned; 
+>
+> +                __be16                        phase_data[2]; 
+> +                __be16                        data; 
+> +        }; 
+> +}; 
+> + 
+>  static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsigned 
+> long fout) 
+>  { 
+>          unsigned long long freqreg = (u64)fout * 
+> diff --git a/drivers/staging/iio/frequency/ad9832.h 
+> b/drivers/staging/iio/frequency/ad9832.h 
+> index 1b08b04..39d326c 100644 
+> --- a/drivers/staging/iio/frequency/ad9832.h 
+> +++ b/drivers/staging/iio/frequency/ad9832.h 
+> @@ -8,98 +8,6 @@ 
+>  #ifndef IIO_DDS_AD9832_H_ 
+>  #define IIO_DDS_AD9832_H_ 
+>   
+> -/* Registers */ 
+> - 
+> -#define AD9832_FREQ0LL                0x0 
+> -#define AD9832_FREQ0HL                0x1 
+> -#define AD9832_FREQ0LM                0x2 
+> -#define AD9832_FREQ0HM                0x3 
+> -#define AD9832_FREQ1LL                0x4 
+> -#define AD9832_FREQ1HL                0x5 
+> -#define AD9832_FREQ1LM                0x6 
+> -#define AD9832_FREQ1HM                0x7 
+> -#define AD9832_PHASE0L                0x8 
+> -#define AD9832_PHASE0H                0x9 
+> -#define AD9832_PHASE1L                0xA 
+> -#define AD9832_PHASE1H                0xB 
+> -#define AD9832_PHASE2L                0xC 
+> -#define AD9832_PHASE2H                0xD 
+> -#define AD9832_PHASE3L                0xE 
+> -#define AD9832_PHASE3H                0xF 
+> - 
+> -#define AD9832_PHASE_SYM        0x10 
+> -#define AD9832_FREQ_SYM                0x11 
+> -#define AD9832_PINCTRL_EN        0x12 
+> -#define AD9832_OUTPUT_EN        0x13 
+> - 
+> -/* Command Control Bits */ 
+> - 
+> -#define AD9832_CMD_PHA8BITSW        0x1 
+> -#define AD9832_CMD_PHA16BITSW        0x0 
+> -#define AD9832_CMD_FRE8BITSW        0x3 
+> -#define AD9832_CMD_FRE16BITSW        0x2 
+> -#define AD9832_CMD_FPSELECT        0x6 
+> -#define AD9832_CMD_SYNCSELSRC        0x8 
+> -#define AD9832_CMD_SLEEPRESCLR        0xC 
+> - 
+> -#define AD9832_FREQ                BIT(11) 
+> -#define AD9832_PHASE(x)                (((x) & 3) << 9) 
+> -#define AD9832_SYNC                BIT(13) 
+> -#define AD9832_SELSRC                BIT(12) 
+> -#define AD9832_SLEEP                BIT(13) 
+> -#define AD9832_RESET                BIT(12) 
+> -#define AD9832_CLR                BIT(11) 
+> -#define CMD_SHIFT                12 
+> -#define ADD_SHIFT                8 
+> -#define AD9832_FREQ_BITS        32 
+> -#define AD9832_PHASE_BITS        12 
+> -#define RES_MASK(bits)                ((1 << (bits)) - 1) 
+> - 
+> -/** 
+> - * struct ad9832_state - driver instance specific data 
+> - * @spi:                spi_device 
+> - * @avdd:                supply regulator for the analog section 
+> - * @dvdd:                supply regulator for the digital section 
+> - * @mclk:                external master clock 
+> - * @ctrl_fp:                cached frequency/phase control word 
+> - * @ctrl_ss:                cached sync/selsrc control word 
+> - * @ctrl_src:                cached sleep/reset/clr word 
+> - * @xfer:                default spi transfer 
+> - * @msg:                default spi message 
+> - * @freq_xfer:                tuning word spi transfer 
+> - * @freq_msg:                tuning word spi message 
+> - * @phase_xfer:                tuning word spi transfer 
+> - * @phase_msg:                tuning word spi message 
+> - * @data:                spi transmit buffer 
+> - * @phase_data:                tuning word spi transmit buffer 
+> - * @freq_data:                tuning word spi transmit buffer 
+> - */ 
+> - 
+> -struct ad9832_state { 
+> -        struct spi_device                *spi; 
+> -        struct regulator                *avdd; 
+> -        struct regulator                *dvdd; 
+> -        unsigned long                        mclk; 
+> -        unsigned short                        ctrl_fp; 
+> -        unsigned short                        ctrl_ss; 
+> -        unsigned short                        ctrl_src; 
+> -        struct spi_transfer                xfer; 
+> -        struct spi_message                msg; 
+> -        struct spi_transfer                freq_xfer[4]; 
+> -        struct spi_message                freq_msg; 
+> -        struct spi_transfer                phase_xfer[2]; 
+> -        struct spi_message                phase_msg; 
+> -        /* 
+> -         * DMA (thus cache coherency maintenance) requires the 
+> -         * transfer buffers to live in their own cache lines. 
+> -         */ 
+> -        union { 
+> -                __be16                        freq_data[4]____cacheline_aligned; 
+>
+> -                __be16                        phase_data[2]; 
+> -                __be16                        data; 
+> -        }; 
+> -}; 
+> - 
+>  /* 
+>   * TODO: struct ad9832_platform_data needs to go into include/linux/iio 
+>   */ 
 > -- 
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 1.9.1 
+>
+>
+------=_Part_1879_1243307067.1488388344153
+Content-Type: text/html; charset=utf-8
+Content-Transfer-Encoding: quoted-printable
 
+<div dir=3D"ltr">Hi,<br>Is this patch correct now or should I improve it ?<=
+br><br>Narcisa<br><br>On Monday, February 27, 2017 at 7:28:46 PM UTC+2, Nar=
+cisa Vasile wrote:<blockquote class=3D"gmail_quote" style=3D"margin: 0;marg=
+in-left: 0.8ex;border-left: 1px #ccc solid;padding-left: 1ex;">Moved the co=
+ntents of the header(ad9832.h) into the corresponding source file
+<br>with the exception of the platform data struct which is supposed to be
+<br>used from somewhere else other than the driver.
+<br>
+<br>Signed-off-by: Narcisa Ana Maria Vasile &lt;<a href=3D"mailto:narcisaan=
+amaria12@gmail.com" target=3D"_blank" rel=3D"nofollow" onmousedown=3D"this.=
+href=3D&#39;mailto:narcisaanamaria12@gmail.com&#39;;return true;" onclick=
+=3D"this.href=3D&#39;mailto:narcisaanamaria12@gmail.com&#39;;return true;">=
+narcisaanamaria12@gmail.com</a>&gt;
+<br>---
+<br>Changes in v3:
+<br>=C2=A0 =C2=A0-The changes are now made against the original code
+<br>---
+<br>=C2=A0drivers/staging/iio/<wbr>frequency/ad9832.c | 92 ++++++++++++++++=
+++++++++++++++<wbr>++++
+<br>=C2=A0drivers/staging/iio/<wbr>frequency/ad9832.h | 92 ----------------=
+--------------<wbr>----
+<br>=C2=A02 files changed, 92 insertions(+), 92 deletions(-)
+<br>
+<br>diff --git a/drivers/staging/iio/<wbr>frequency/ad9832.c b/drivers/stag=
+ing/iio/<wbr>frequency/ad9832.c
+<br>index a5b2f06..8d40c8e 100644
+<br>--- a/drivers/staging/iio/<wbr>frequency/ad9832.c
+<br>+++ b/drivers/staging/iio/<wbr>frequency/ad9832.c
+<br>@@ -22,6 +22,98 @@
+<br>=C2=A0
+<br>=C2=A0#include &quot;ad9832.h&quot;
+<br>=C2=A0
+<br>+/* Registers */
+<br>+
+<br>+#define AD9832_FREQ0LL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x0
+<br>+#define AD9832_FREQ0HL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x1
+<br>+#define AD9832_FREQ0LM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x2
+<br>+#define AD9832_FREQ0HM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x3
+<br>+#define AD9832_FREQ1LL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x4
+<br>+#define AD9832_FREQ1HL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x5
+<br>+#define AD9832_FREQ1LM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x6
+<br>+#define AD9832_FREQ1HM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x7
+<br>+#define AD9832_PHASE0L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x8
+<br>+#define AD9832_PHASE0H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x9
+<br>+#define AD9832_PHASE1L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xA
+<br>+#define AD9832_PHASE1H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xB
+<br>+#define AD9832_PHASE2L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xC
+<br>+#define AD9832_PHASE2H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xD
+<br>+#define AD9832_PHASE3L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xE
+<br>+#define AD9832_PHASE3H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xF
+<br>+
+<br>+#define AD9832_PHASE_SYM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A00x10
+<br>+#define AD9832_FREQ_SYM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>=C2=A00x11
+<br>+#define AD9832_PINCTRL_EN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A00x12
+<br>+#define AD9832_OUTPUT_EN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A00x13
+<br>+
+<br>+/* Command Control Bits */
+<br>+
+<br>+#define AD9832_CMD_PHA8BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0<wbr>0x1
+<br>+#define AD9832_CMD_PHA16BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0x0
+<br>+#define AD9832_CMD_FRE8BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0<wbr>0x3
+<br>+#define AD9832_CMD_FRE16BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0x2
+<br>+#define AD9832_CMD_FPSELECT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A00x6
+<br>+#define AD9832_CMD_SYNCSELSRC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0x8
+<br>+#define AD9832_CMD_SLEEPRESCLR=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0xC
+<br>+
+<br>+#define AD9832_FREQ=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(11)
+<br>+#define AD9832_PHASE(x)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>=C2=A0(((x) &amp; 3) &lt;=
+&lt; 9)
+<br>+#define AD9832_SYNC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(13)
+<br>+#define AD9832_SELSRC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(12)
+<br>+#define AD9832_SLEEP=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(13)
+<br>+#define AD9832_RESET=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(12)
+<br>+#define AD9832_CLR=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0BIT(<wbr>11)
+<br>+#define CMD_SHIFT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A012
+<br>+#define ADD_SHIFT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08
+<br>+#define AD9832_FREQ_BITS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A032
+<br>+#define AD9832_PHASE_BITS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A012
+<br>+#define RES_MASK(bits)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>((1 &lt;&lt; (bits)) -=
+ 1)
+<br>+
+<br>+/**
+<br>+ * struct ad9832_state - driver instance specific data
+<br>+ * @spi:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spi_<wbr>device
+<br>+ * @avdd:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0supply regulator for the analog section
+<br>+ * @dvdd:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0supply regulator for the digital sectio=
+n
+<br>+ * @mclk:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0external master clock
+<br>+ * @ctrl_fp:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>cached frequency/phase control =
+word
+<br>+ * @ctrl_ss:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>cached sync/selsrc control word
+<br>+ * @ctrl_src:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>cached sleep/reset/clr word
+<br>+ * @xfer:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0default spi transfer
+<br>+ * @msg:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0default spi message
+<br>+ * @freq_xfer:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transfer
+<br>+ * @freq_msg:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi message
+<br>+ * @phase_xfer:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transfer
+<br>+ * @phase_msg:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi message
+<br>+ * @data:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spi transmit buffer
+<br>+ * @phase_data:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transmit buf=
+fer
+<br>+ * @freq_data:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transmit buf=
+fer
+<br>+ */
+<br>+
+<br>+struct ad9832_state {
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_device=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0*<wbr>spi;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct regulator=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0*<wbr>avdd;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct regulator=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0*<wbr>dvdd;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned long=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>mclk;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned short=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>ctrl_fp=
+;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned short=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>ctrl_ss=
+;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned short=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>ctrl_sr=
+c;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_transfer=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>xfer;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_message=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>msg;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_transfer=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>freq_xfer[4];
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_message=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>freq_msg;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_transfer=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>phase_xfer[2];
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_message=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>phase_msg;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/*
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * DMA (thus cache coh=
+erency maintenance) requires the
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * transfer buffers to=
+ live in their own cache lines.
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0union {
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0__be16=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+<wbr>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0freq_data[4]_<wbr>___cacheline_aligned;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0__be16=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+<wbr>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0phase_data[2]<wbr>;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0__be16=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+<wbr>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0data;
+<br>+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
+<br>+};
+<br>+
+<br>=C2=A0static unsigned long ad9832_calc_freqreg(unsigned long mclk, unsi=
+gned long fout)
+<br>=C2=A0{
+<br>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned long lon=
+g freqreg =3D (u64)fout *
+<br>diff --git a/drivers/staging/iio/<wbr>frequency/ad9832.h b/drivers/stag=
+ing/iio/<wbr>frequency/ad9832.h
+<br>index 1b08b04..39d326c 100644
+<br>--- a/drivers/staging/iio/<wbr>frequency/ad9832.h
+<br>+++ b/drivers/staging/iio/<wbr>frequency/ad9832.h
+<br>@@ -8,98 +8,6 @@
+<br>=C2=A0#ifndef IIO_DDS_AD9832_H_
+<br>=C2=A0#define IIO_DDS_AD9832_H_
+<br>=C2=A0
+<br>-/* Registers */
+<br>-
+<br>-#define AD9832_FREQ0LL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x0
+<br>-#define AD9832_FREQ0HL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x1
+<br>-#define AD9832_FREQ0LM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x2
+<br>-#define AD9832_FREQ0HM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x3
+<br>-#define AD9832_FREQ1LL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x4
+<br>-#define AD9832_FREQ1HL=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x5
+<br>-#define AD9832_FREQ1LM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x6
+<br>-#define AD9832_FREQ1HM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x7
+<br>-#define AD9832_PHASE0L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x8
+<br>-#define AD9832_PHASE0H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0x9
+<br>-#define AD9832_PHASE1L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xA
+<br>-#define AD9832_PHASE1H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xB
+<br>-#define AD9832_PHASE2L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xC
+<br>-#define AD9832_PHASE2H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xD
+<br>-#define AD9832_PHASE3L=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xE
+<br>-#define AD9832_PHASE3H=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>0xF
+<br>-
+<br>-#define AD9832_PHASE_SYM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A00x10
+<br>-#define AD9832_FREQ_SYM=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>=C2=A00x11
+<br>-#define AD9832_PINCTRL_EN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A00x12
+<br>-#define AD9832_OUTPUT_EN=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A00x13
+<br>-
+<br>-/* Command Control Bits */
+<br>-
+<br>-#define AD9832_CMD_PHA8BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0<wbr>0x1
+<br>-#define AD9832_CMD_PHA16BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0x0
+<br>-#define AD9832_CMD_FRE8BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0<wbr>0x3
+<br>-#define AD9832_CMD_FRE16BITSW=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0x2
+<br>-#define AD9832_CMD_FPSELECT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A00x6
+<br>-#define AD9832_CMD_SYNCSELSRC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0x8
+<br>-#define AD9832_CMD_SLEEPRESCLR=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0<wbr>0xC
+<br>-
+<br>-#define AD9832_FREQ=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(11)
+<br>-#define AD9832_PHASE(x)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>=C2=A0(((x) &amp; 3) &lt;=
+&lt; 9)
+<br>-#define AD9832_SYNC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(13)
+<br>-#define AD9832_SELSRC=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(12)
+<br>-#define AD9832_SLEEP=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(13)
+<br>-#define AD9832_RESET=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>BIT(12)
+<br>-#define AD9832_CLR=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0BIT(<wbr>11)
+<br>-#define CMD_SHIFT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A012
+<br>-#define ADD_SHIFT=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A08
+<br>-#define AD9832_FREQ_BITS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A032
+<br>-#define AD9832_PHASE_BITS=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A012
+<br>-#define RES_MASK(bits)=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>((1 &lt;&lt; (bits)) -=
+ 1)
+<br>-
+<br>-/**
+<br>- * struct ad9832_state - driver instance specific data
+<br>- * @spi:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spi_<wbr>device
+<br>- * @avdd:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0supply regulator for the analog section
+<br>- * @dvdd:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0supply regulator for the digital sectio=
+n
+<br>- * @mclk:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0external master clock
+<br>- * @ctrl_fp:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>cached frequency/phase control =
+word
+<br>- * @ctrl_ss:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>cached sync/selsrc control word
+<br>- * @ctrl_src:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>cached sleep/reset/clr word
+<br>- * @xfer:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0default spi transfer
+<br>- * @msg:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0default spi message
+<br>- * @freq_xfer:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transfer
+<br>- * @freq_msg:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi message
+<br>- * @phase_xfer:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transfer
+<br>- * @phase_msg:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi message
+<br>- * @data:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0spi transmit buffer
+<br>- * @phase_data:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transmit buf=
+fer
+<br>- * @freq_data:=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>tuning word spi transmit buf=
+fer
+<br>- */
+<br>-
+<br>-struct ad9832_state {
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_device=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0*<wbr>spi;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct regulator=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0*<wbr>avdd;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct regulator=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0*<wbr>dvdd;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned long=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>mclk;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned short=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>ctrl_fp=
+;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned short=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>ctrl_ss=
+;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0unsigned short=C2=A0=
+=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0<wbr>ctrl_sr=
+c;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_transfer=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>xfer;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_message=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>msg;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_transfer=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>freq_xfer[4];
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_message=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>freq_msg;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_transfer=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>phase_xfer[2];
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct spi_message=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+=C2=A0=C2=A0=C2=A0<wbr>phase_msg;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/*
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * DMA (thus cache coh=
+erency maintenance) requires the
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 * transfer buffers to=
+ live in their own cache lines.
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0 */
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0union {
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0__be16=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+<wbr>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0freq_data[4]_<wbr>___cacheline_aligned;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0__be16=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+<wbr>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0phase_data[2]<wbr>;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0__be16=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=
+<wbr>=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=
+=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0data;
+<br>-=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0};
+<br>-};
+<br>-
+<br>=C2=A0/*
+<br>=C2=A0 * TODO: struct ad9832_platform_data needs to go into include/lin=
+ux/iio
+<br>=C2=A0 */
+<br>--=20
+<br>1.9.1
+<br>
+<br></blockquote></div>
+------=_Part_1879_1243307067.1488388344153--
+
+------=_Part_1878_1840619384.1488388344152--
