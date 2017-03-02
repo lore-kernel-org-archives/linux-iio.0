@@ -1,51 +1,57 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-qk0-f172.google.com ([209.85.220.172]:33488 "EHLO
-        mail-qk0-f172.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751593AbdCCR1y (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 3 Mar 2017 12:27:54 -0500
-MIME-Version: 1.0
-In-Reply-To: <2f9264bc-98a2-acfc-918a-a6cec0ad33c7@kernel.org>
-References: <cover.1488248485.git.eraretuya@gmail.com> <CAHp75VdtqNAf_PaWBL=YPc9iz=E-0tAz2=Fk-mDYSeBvtU+KYg@mail.gmail.com>
- <20170302030221.GA4026@Socrates-UM> <2f9264bc-98a2-acfc-918a-a6cec0ad33c7@kernel.org>
-From: Andy Shevchenko <andy.shevchenko@gmail.com>
-Date: Fri, 3 Mar 2017 18:57:20 +0200
-Message-ID: <CAHp75Vc4tRNnftwtN_DfG9TM19SaMiQxS1p4G+MoTZoNb1+1PQ@mail.gmail.com>
-Subject: Re: [PATCH v5 0/4] iio: accel: adxl345: Split driver into core and
- I2C then add SPI support
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46249 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751598AbdCBUKY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2017 15:10:24 -0500
+Subject: Re: [Outreachy kernel] [PATCH 1/3] staging: iio: meter: Remove unused
+ definitions
+To: Daniel Baluta <daniel.baluta@gmail.com>,
+        Julia Lawall <julia.lawall@lip6.fr>,
+        Katie Dunne <kdunne@mail.ccsf.edu>
+References: <cover.1488250884.git.kdunne@mail.ccsf.edu>
+ <972438f1c7bc46153df933c5861fac91f6793e92.1488250885.git.kdunne@mail.ccsf.edu>
+ <alpine.DEB.2.20.1702280746000.2078@hadrien>
+ <CAEnQRZCeK0L4vbpTHOk78QP1iJYMrZSRmJvG=XNL_jo4OkRgZA@mail.gmail.com>
+Cc: outreachy-kernel <outreachy-kernel@googlegroups.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald <pmeerw@pmeerw.net>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Michael Hennerich <michael.hennerich@analog.com>,
-        Daniel Baluta <daniel.baluta@gmail.com>,
-        Alison Schofield <amsfield22@gmail.com>,
-        Florian Vaussard <florian.vaussard@heig-vd.ch>,
-        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        devicetree <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <e3410f97-3328-ad78-883a-d996d768dcfc@kernel.org>
+Date: Thu, 2 Mar 2017 19:14:56 +0000
+MIME-Version: 1.0
+In-Reply-To: <CAEnQRZCeK0L4vbpTHOk78QP1iJYMrZSRmJvG=XNL_jo4OkRgZA@mail.gmail.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Mar 2, 2017 at 9:59 PM, Jonathan Cameron <jic23@kernel.org> wrote:
-> On 02/03/17 03:02, Eva Rachel Retuya wrote:
->> On Thu, Mar 02, 2017 at 01:22:11AM +0200, Andy Shevchenko wrote:
->>> On Tue, Feb 28, 2017 at 4:37 AM, Eva Rachel Retuya <eraretuya@gmail.com> wrote:
->>>> This patchset modifies the adxl345 to use regmap. In doing so, we can
->>>> easily introduce SPI support and let regmap handle the rest.
+On 28/02/17 08:13, Daniel Baluta wrote:
+> On Tue, Feb 28, 2017 at 8:47 AM, Julia Lawall <julia.lawall@lip6.fr> wrote:
+>>
+>>
+>> On Mon, 27 Feb 2017, Katie Dunne wrote:
+>>
+>>> Remove definitions not used in kernel code.
+>>
+>> Did Alison ask for this?  Normally these kinds of constant definitions are
+>> kept, because they describe the device in some way.  If you see macros
+>> that perform more complex computations that are not used, you can get rid
+>> of those.
+> 
+> Agree with Julia, lets keep this because they could be good documentation.
+Agreed. Katie, would you mind posting a V2 of the series with just the other
+two patches updated to account for this one not being there?
 
->> Please state your comments and I will submit a new revision.
+Thanks,
 
-Just did.
+Jonathan
+> 
+> Daniel.
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
-> Looks good to me so I'll probably pick this up over the weekend unless you want
-> to make a V6 with anything from Andy.  Can always send follow up patches later
-> for any issues highlighted.
-
-Yep, feel free incorporate now, or fix later (though I prefer now :-) )
-
--- 
-With Best Regards,
-Andy Shevchenko
