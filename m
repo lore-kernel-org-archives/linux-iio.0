@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46068 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:46613 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751262AbdCBTbC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2017 14:31:02 -0500
+        with ESMTP id S1751862AbdCBVpV (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 2 Mar 2017 16:45:21 -0500
 Subject: Re: [PATCH] staging: iio: ad9832: Move header file content to source
  file
 To: Arushi Singhal <arushisinghal19971997@gmail.com>, lars@metafoo.de
@@ -14,8 +14,8 @@ Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
         linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, outreachy-kernel@googlegroups.com
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <bf37bb74-c41a-251b-b5df-30dece6962f2@kernel.org>
-Date: Thu, 2 Mar 2017 19:06:36 +0000
+Message-ID: <dc04507b-adc8-73b6-a124-c4078a7cba8c@kernel.org>
+Date: Thu, 2 Mar 2017 19:07:38 +0000
 MIME-Version: 1.0
 In-Reply-To: <20170301183741.GA20038@arushi-HP-Pavilion-Notebook>
 Content-Type: text/plain; charset=windows-1252
@@ -27,6 +27,13 @@ On 01/03/17 18:37, Arushi Singhal wrote:
 > source file. Move content into .c and remove .h.
 > 
 > Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+Just noticed that I have another series doing this change waiting for
+review so probably going to have already been fixed before you can post
+a V2.
+
+Thanks,
+
+Jonathan
 > ---
 >  drivers/staging/iio/frequency/ad9832.c | 100 +++++++++++++++++++++++++-
 >  drivers/staging/iio/frequency/ad9832.h | 128 ---------------------------------
@@ -132,23 +139,6 @@ On 01/03/17 18:37, Arushi Singhal wrote:
 > +	};
 > +};
 > +
-This has come up a few times whilst people have been doing these patches.
-
-Just because the stuff isn't used anywhere else doesn't necessarily mean it
-isn't intended to be used elsewhere.  In this particular case, platform data
-would be provided by a board file (pre device tree method of providing
-info to a driver when device is being instantiated).  Thus when this driver
-moves out of staging, this element will need to go in include/linux/platform_data/*
-
-Superficially it looks like all the above register definitions are suitable for moving
-into the C file, but I haven't absolutely checked they aren't used in as values in
-this structure (naming makes it unlikely though!)
-
-So, lets have a V2 with just those moved.
-
-Otherwise, a nice little cleanup.
-
-Jonathan
 > +struct ad9832_platform_data {
 > +	unsigned long		mclk;
 > +	unsigned long		freq0;
