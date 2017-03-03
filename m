@@ -1,90 +1,75 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ve1eur01on0096.outbound.protection.outlook.com ([104.47.1.96]:45087
-        "EHLO EUR01-VE1-obe.outbound.protection.outlook.com"
-        rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org with ESMTP
-        id S1751459AbdCCPvL (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 3 Mar 2017 10:51:11 -0500
+Return-Path: <SRS0=KCKz=2M=the-dreams.de=wsa@kernel.org>
+Date: Fri, 3 Mar 2017 17:52:47 +0100
+From: Wolfram Sang <wsa@the-dreams.de>
+To: Peter Rosin <peda@axentia.se>
+Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-kernel@vger.kernel.org,
+	Linus Torvalds <torvalds@linux-foundation.org>,
+	Andrew Morton <akpm@linux-foundation.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Mark Rutland <mark.rutland@arm.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Corbet <corbet@lwn.net>, linux-i2c@vger.kernel.org,
+	devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+	linux-doc@vger.kernel.org
 Subject: Re: [PATCH v9 00/10] mux controller abstraction and iio/i2c muxes
-To: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Message-ID: <20170303165247.el4mcsmo4fbnkjir@ninjato>
 References: <1486568517-6997-1-git-send-email-peda@axentia.se>
  <6d87465f-b983-3f62-c7cf-41ed4e50170d@axentia.se>
  <20170228171842.GA11127@kroah.com>
-CC: <linux-kernel@vger.kernel.org>,
-        Linus Torvalds <torvalds@linux-foundation.org>,
-        Andrew Morton <akpm@linux-foundation.org>,
-        Wolfram Sang <wsa@the-dreams.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Jonathan Corbet <corbet@lwn.net>, <linux-i2c@vger.kernel.org>,
-        <devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-        <linux-doc@vger.kernel.org>
-From: Peter Rosin <peda@axentia.se>
-Message-ID: <569c18b3-b1d8-f2e6-7fc4-897aa7df6775@axentia.se>
-Date: Fri, 3 Mar 2017 16:30:45 +0100
+ <569c18b3-b1d8-f2e6-7fc4-897aa7df6775@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <20170228171842.GA11127@kroah.com>
-Content-Type: text/plain; charset="windows-1252"
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: multipart/signed; micalg=pgp-sha256;
+	protocol="application/pgp-signature"; boundary="vvu4op7gukyogeiw"
+In-Reply-To: <569c18b3-b1d8-f2e6-7fc4-897aa7df6775@axentia.se>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 2017-02-28 18:18, Greg Kroah-Hartman wrote:
-> On Tue, Feb 28, 2017 at 04:17:52PM +0100, Peter Rosin wrote:
->> Hi!
->>
->> The status of this series [1] is that Rob Herring has acked/reviewed all
->> devicetree changes, so I suppose that's ok. Jonathan Cameron has acked
->> the additions to the iio subsystem and reviewed the new iio driver.
->> Wolfram Sang has acked the i2c-mux driver. That's acks or reviews from
->> the maintainers for all changes to the maintained areas.
->>
->> What's not covered by the above is the mux subsystem itself. Jonathan
->> has also acked or reviewed those changes, but I get the feeling that
->> more tags are desired? So, please review the core of the mux subsystem
->> and the two drivers! It's small. Really. And much of it is boilerplate
->> devm functions. The relevant patches are:
->>
->>  3/10 "mux: minimal mux subsystem and gpio-based mux controller"
->> 10/10 "mux: adg792a: add mux controller driver for ADG792A/G"
->>
->> I also wonder how I should proceed next. Jonathan kindly provided some
->> hints. I have created a project on gitlab [2] to track future mux
->> changes and where this series is also available (in the "mux" branch,
->> of course subject to rebases, at least for now). I intend to create a
->> for-next branch that I hope Stephen Rothwell will be happy to add to
->> linux-next at some point after v4.11-rc1. Whomever I will feed future
->> changes to will also pull from that tree. Etc. At least that's my
->> picture of how this is going to work.
->>
->> The question then becomes to whom I will send pull requests? My guess is
->> that the plausible candidates are Greg K-H, Linus Torvalds and Andrew
->> Morton. Any taker? Are there other candidates? I don't have any particular
->> preference. If I don't hear anything I'll probably just send a pull
->> request to Linus for the next merge window (i.e. targeting 4.12-rc1).
->>
->> Or am I perhaps getting ahead of myself? Is a new tree overkill? I
->> don't expect it to be exactly busy...
-> 
-> I pull in lots of semi-random driver subsystems into my char-misc driver
-> tree, and I can do that here for you as well if you want me to, to
-> forward things on to Linus at the proper times.
-> 
-> Just let me know.
 
-Ok, works for me. I'll send you the pull request when the time comes.
+--vvu4op7gukyogeiw
+Content-Type: text/plain; charset=us-ascii
+Content-Disposition: inline
+Content-Transfer-Encoding: quoted-printable
 
-Jonathan, Wolfram, do you have any preferences on how this should be
-coordinated regarding the new iio and i2c drivers (and iio changes)?
 
-My plan is to at some point declare the branch immutable. Then both of
-you can pull it in. Or? 
+> Jonathan, Wolfram, do you have any preferences on how this should be
+> coordinated regarding the new iio and i2c drivers (and iio changes)?
 
-But now that I think about it I wonder what the point is of having
-Greg pull it in also? Sure, third time's a charm and all that, but...
+You got the acks, all is fine, I think.
 
-Cheers,
-peda
+> My plan is to at some point declare the branch immutable. Then both of
+> you can pull it in. Or?=20
 
+Yup, sounds good.
+
+> But now that I think about it I wonder what the point is of having
+> Greg pull it in also? Sure, third time's a charm and all that, but...
+
+AFAIU, Greg will be your "upstream", so he should definately pull the
+branch. I will just pull it in to avoid merge conflicts in my tree.
+Or did I misunderstand your question?
+
+
+--vvu4op7gukyogeiw
+Content-Type: application/pgp-signature; name="signature.asc"
+
+-----BEGIN PGP SIGNATURE-----
+
+iQIzBAABCAAdFiEEOZGx6rniZ1Gk92RdFA3kzBSgKbYFAli5n1AACgkQFA3kzBSg
+KbY6Aw/9EwKWYKXpfLhfHTMt0GlzEO7d/msK1aPqQ7+r23Lm4UoVaDTjlf+f5TnU
+zOCwwSb21oRcaRwlhJNNjcC9C5r4kRnv+wGTF34quGj0bmxgQbZrhynVNVulLclX
+8S+WOqugjF9pi8B3UkURl5LX30zv0tfJUg7Ebv7Yhk1dXeVM9tCxjqD6Rkjy8NH3
+WL1zS9aaDgiNAJz2tMOPdQnPilK216UPFdo+9UaUOFAVu0O2SiEciErTVaTQngL+
+uag9m1Yx6V0kh9k8HpfjRUMuVIu/EFboTR+abpGRWvKc9C/Tqt5x5tVMlpRRVVr3
+v3ZBBMiyheH9JAF9hkbTGhKm3VZ53gLM3mwRYMg7fecDP/QKceo4ITqqlElWHDVo
+9dreH4ZFhROY7G+B11zdu/Ba/8sQud9x/jRrj0IxYHrF38jA/fWLsDuCvBPSFC5s
+ZI5Sb54kF6Y9XrUICDX7neWUHWBU/5O+HKQA9tlq4eP1O8T1EFjJjkIqJrNRLBDR
+lfihsKOErAV4R+UkeDa/qmGLWQeC00zehbdNBB1NDC94bydHcsG6fcY8l4ZzVPYh
+TyvnQYjkVEUgVWBzxxWRAAru7h0MeHPX3n5UxddusKJqSuL6FOSyfzcfNzaSMN4h
+VHEbhUIlK36gJAD20/R5l7/nPUxboBaLMgOduD9MhJc+TSiclcE=
+=qJWE
+-----END PGP SIGNATURE-----
+
+--vvu4op7gukyogeiw--
