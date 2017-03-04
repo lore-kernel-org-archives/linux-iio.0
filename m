@@ -1,86 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60183 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752425AbdCEMrg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 07:47:36 -0500
-Subject: Re: mma8425 driver: scan_elements name error
- in_accel_(null)_mag_falling_en
-To: "Schaefer, Brandon" <brandon.schaefer@flukenetworks.com>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        Martin Kepplinger <martink@posteo.de>
-References: <BN6PR12MB144204BCF6906BC9B3D6C7AD902A0@BN6PR12MB1442.namprd12.prod.outlook.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <de8848e2-133c-5f9a-90b4-b9c247a3ba6d@kernel.org>
-Date: Sun, 5 Mar 2017 12:47:30 +0000
-MIME-Version: 1.0
-In-Reply-To: <BN6PR12MB144204BCF6906BC9B3D6C7AD902A0@BN6PR12MB1442.namprd12.prod.outlook.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:35962 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751765AbdCDIkE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Mar 2017 03:40:04 -0500
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        dmitry.torokhov@gmail.com, michael.hennerich@analog.com,
+        daniel.baluta@gmail.com, amsfield22@gmail.com,
+        florian.vaussard@heig-vd.ch, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, andy.shevchenko@gmail.com,
+        Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH v6 0/4] iio: accel: adxl345: Split driver into core and I2C then add SPI support
+Date: Sat,  4 Mar 2017 16:31:22 +0800
+Message-Id: <cover.1488615230.git.eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/03/17 01:08, Schaefer, Brandon wrote:
-> Kernel version: 4.1.15
-> Part: mma8652
-we have some slightly random version issues here, I'm going to guess you
-are talking about the mma8452 driver..
-> 
+This patchset modifies the adxl345 to use regmap. In doing so, we can
+easily introduce SPI support and let regmap handle the rest.
 
-> The sysfs node for what I think should be
-> in_accel_x&y&z_mag_falling_en is output incorrectly and displayed as
-> in_accel_(null)_mag_falling_en. Any suggestions on a fix for this?
-Hi Brandon,
+Recap of basic features: read_raw for x, y and z axes, scale. After
+applying this series, driver now supports the SPI protocol and enumeration
+of device via device tree.
 
-I thought the fix for this issue was older than that, but perhaps not:
-https://git.kernel.org/cgit/linux/kernel/git/torvalds/linux.git/commit/?id=4b8d80157e5d9
-iio: Add missing modifier names to core
+Changes from v5:
+[PATCH 1/4]
+* Add Rob's Acked-by tag
+[PATCH 2/4]
+* Re-order local variable declarations from longest to shortest line
+* Remove explicit casting to int in handling devm_regmap_init_i2c() error,
+  use %ld instead
+[PATCH 3/4]
+* Simplify configuration dependency to "depends on INPUT_ADXL34X=n"
+* Rename functions from *_common_* to *_core_*
+* Modify header comment: place indication at the beginning
+* Remove explicit casting to int in handling devm_regmap_init_i2c() error,
+  use %ld instead
+* Remove temporary variable 'name'
+[PATCH 4/4]
+* Simplify configuration dependency to "depends on INPUT_ADXL34X=n"
+* Modify header comment: place indication at the beginning
+* Re-order local variable declarations from longest to shortest line
+* Remove explicit casting to int in handling devm_regmap_init_spi() error,
+  use %ld instead
+* Rename functions calls from *_common_* to *_core_*
 
-I am guessing you have a backported driver as the mma8452 driver back then
-didn't support free fall detection and hence wasn't using that modifier.
+Changes from v4:
+* Update subject-prefix of [PATCH 1/4]
+* Update node name from "adxl345@unit-address" to "accelerometer@unit-address"
+* Add Andy's Reviewed-by tag
 
-So pick up that patch above and you should be fine.
-> 
-> Also, in an unrelated question for a novice with the iio subsystem.
-> I've verified that I can read x/y/z raw values, setup thresholds, and
-> interrupts are generated. What's the proper way for userspace to poll
-> for these interrupts? I can't seem to find documentation on the sysfs
-> node to poll. There is no character device node /dev/iio:deviceX
-> which I've seen documentation on.
-The lack of /dev/iio:deviceX is odd. Are you on a some embedded platform?
-Some of the cut down udev equivalents don't always create the nodes
-automatically.  You can do it manually if needed using the details available
-under sysfs.
+Changes from v3:
+[PATCH 1/4]
+* None
+[PATCH 2/4]
+* Keep intact I2C client structure which was deleted from v3
+* Make use of regmap_get_device to retrieve struct device, use these for
+  debugging prints instead of &client->dev.
+[PATCH 3/4] and [PATCH 4/4]
+* Revert to explicit and separate I2C and SPI configuration
+* Add OF match table, make it enumerable in ACPI environment (Andy's suggestion)
 
-Events are handled through an anonymous chardev that can be retrieved
-from the main data one via an IOCTL.  Best bet is to look at the demo
-code either under staging/iio/documentation or Documentation/tools/iio
-if looking at newer kernel source.
-> 
-> One last question that someone may be able to answer (activity on
-> this driver dates back to a year?). A commit removed "TODO:
-> autosleep" and opted for runtime pm, but this runtime PM will disable
-> interrupts that can be generated by the accelerometer that the system
-> can use to wake from a suspended state. The datasheet for the mma8652
-> clearly specifies that the accelerometer sleep state is intended to
-> be used to wake up a suspended system. Was this not considered when
-> opting for runtime pm of the accelerometer?
-I suspect the answer to that is no but will have to leave it to the
-author of that patch to address.
+Changes from v2:
+* Drop PATCH 4 iio: accel: adxl345: Add ACPI support
+* Add OF match table on both I2C and SPI files and document them
 
-Martin Cc'd.
+Changes from v1:
+[PATCH 1/4]
+* Move other deletions from patch 2 in here -- make it clear what got deleted
+  and/or modified that is hard to see previously
+* Introduce the driver header file "adxl345.h" here instead of doing it in the
+  next patch
+* Completely omit traces of i2c_client and let this file (adxl345.c) mirror the
+  core file on the next patch.
+* Improve debugging print about invalid device ID in probe.
+[PATCH 2/4]
+* Update Kconfig to Jonathan's preferred style
+* Improve similarity index from 78% to 100% (rename detection)
+[PATCH 4/4]
+* Correct acpi_device_id: ADX0345 -> ADS0345
 
-Jonathan
-> 
-> Thanks for any and all help!
-> 
-> Brandon
-> ________________________________
-> ________________________________
-> 
-> 
-> Please be advised that this email may contain confidential information. If you are not the intended recipient, please notify us by email by replying to the sender and delete this message. The sender disclaims that the content of this email constitutes an offer to enter into, or the acceptance of, any agreement; provided that the foregoing does not invalidate the binding effect of any digital or other electronic reproduction of a manual signature that is included in any attachment.
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Eva Rachel Retuya (4):
+  dt-bindings: iio: accel: Document ADXL345 accelerometer binding
+  iio: accel: adxl345: Use I2C regmap instead of direct I2C access
+  iio: accel: adxl345: Split driver into core and I2C
+  iio: accel: adxl345: Add SPI support
+
+ .../devicetree/bindings/iio/accel/adxl345.txt      | 38 +++++++++
+ drivers/iio/accel/Kconfig                          | 28 ++++++-
+ drivers/iio/accel/Makefile                         |  4 +-
+ drivers/iio/accel/adxl345.h                        | 18 +++++
+ drivers/iio/accel/{adxl345.c => adxl345_core.c}    | 91 +++++++++-------------
+ drivers/iio/accel/adxl345_i2c.c                    | 73 +++++++++++++++++
+ drivers/iio/accel/adxl345_spi.c                    | 81 +++++++++++++++++++
+ 7 files changed, 275 insertions(+), 58 deletions(-)
+ create mode 100644 Documentation/devicetree/bindings/iio/accel/adxl345.txt
+ create mode 100644 drivers/iio/accel/adxl345.h
+ rename drivers/iio/accel/{adxl345.c => adxl345_core.c} (61%)
+ create mode 100644 drivers/iio/accel/adxl345_i2c.c
+ create mode 100644 drivers/iio/accel/adxl345_spi.c
+
+-- 
+2.7.4
 
