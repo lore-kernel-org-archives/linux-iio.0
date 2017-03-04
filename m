@@ -1,414 +1,174 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:55835 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751945AbdCDRVU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Mar 2017 12:21:20 -0500
-Subject: Re: [PATCH 4/4] staging: iio: adis16240: Move contents of the header
- to the source file
-To: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
-        lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
-References: <cover.1488634510.git.narcisaanamaria12@gmail.com>
- <9eccea6d8e170545a40e4c1a106049477dabed38.1488634510.git.narcisaanamaria12@gmail.com>
-Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <fabe92ad-c58a-9ee3-cff5-60c7f321947d@kernel.org>
-Date: Sat, 4 Mar 2017 16:37:58 +0000
+Received: from mail-wr0-f194.google.com ([209.85.128.194]:35924 "EHLO
+        mail-wr0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752049AbdCDQaj (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 4 Mar 2017 11:30:39 -0500
+Received: by mail-wr0-f194.google.com with SMTP id l37so16671135wrc.3
+        for <linux-iio@vger.kernel.org>; Sat, 04 Mar 2017 08:30:07 -0800 (PST)
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH v2] iio: adc: meson-saradc: add calibration for meson gxbb
+To: Jonathan Cameron <jic23@kernel.org>,
+        Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-iio@vger.kernel.org
+Message-ID: <89a21983-b722-cbb8-42db-13c447f2e527@gmail.com>
+Date: Sat, 4 Mar 2017 17:29:53 +0100
 MIME-Version: 1.0
-In-Reply-To: <9eccea6d8e170545a40e4c1a106049477dabed38.1488634510.git.narcisaanamaria12@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 04/03/17 13:47, Narcisa Ana Maria Vasile wrote:
-> The contents of the header file are used only by this single
-> source file. Move content into .c file and remove header.
-> 
-> Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
-Another good patch.
+The calibration on Meson GXBB is different from the one on GXM/GXL.
+This patch only supports GXBB as I don't have other spec and test hw.
+Points 25% vref and 75% vref are used for calibration.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Adding a calibration scale resulted in no improvement, therefore
+only a simple calibration bias is supported.
 
-Thanks,
+Successfully tested on a Odroid C2.  Calibbias is 8 on my system.
 
-Jonathan
-> ---
->  drivers/staging/iio/accel/adis16240.h      | 179 -----------------------------
->  drivers/staging/iio/accel/adis16240_core.c | 175 +++++++++++++++++++++++++++-
->  2 files changed, 174 insertions(+), 180 deletions(-)
->  delete mode 100644 drivers/staging/iio/accel/adis16240.h
-> 
-> diff --git a/drivers/staging/iio/accel/adis16240.h b/drivers/staging/iio/accel/adis16240.h
-> deleted file mode 100644
-> index b2cb37b..0000000
-> --- a/drivers/staging/iio/accel/adis16240.h
-> +++ /dev/null
-> @@ -1,179 +0,0 @@
-> -#ifndef SPI_ADIS16240_H_
-> -#define SPI_ADIS16240_H_
-> -
-> -#define ADIS16240_STARTUP_DELAY	220 /* ms */
-> -
-> -/* Flash memory write count */
-> -#define ADIS16240_FLASH_CNT      0x00
-> -
-> -/* Output, power supply */
-> -#define ADIS16240_SUPPLY_OUT     0x02
-> -
-> -/* Output, x-axis accelerometer */
-> -#define ADIS16240_XACCL_OUT      0x04
-> -
-> -/* Output, y-axis accelerometer */
-> -#define ADIS16240_YACCL_OUT      0x06
-> -
-> -/* Output, z-axis accelerometer */
-> -#define ADIS16240_ZACCL_OUT      0x08
-> -
-> -/* Output, auxiliary ADC input */
-> -#define ADIS16240_AUX_ADC        0x0A
-> -
-> -/* Output, temperature */
-> -#define ADIS16240_TEMP_OUT       0x0C
-> -
-> -/* Output, x-axis acceleration peak */
-> -#define ADIS16240_XPEAK_OUT      0x0E
-> -
-> -/* Output, y-axis acceleration peak */
-> -#define ADIS16240_YPEAK_OUT      0x10
-> -
-> -/* Output, z-axis acceleration peak */
-> -#define ADIS16240_ZPEAK_OUT      0x12
-> -
-> -/* Output, sum-of-squares acceleration peak */
-> -#define ADIS16240_XYZPEAK_OUT    0x14
-> -
-> -/* Output, Capture Buffer 1, X and Y acceleration */
-> -#define ADIS16240_CAPT_BUF1      0x16
-> -
-> -/* Output, Capture Buffer 2, Z acceleration */
-> -#define ADIS16240_CAPT_BUF2      0x18
-> -
-> -/* Diagnostic, error flags */
-> -#define ADIS16240_DIAG_STAT      0x1A
-> -
-> -/* Diagnostic, event counter */
-> -#define ADIS16240_EVNT_CNTR      0x1C
-> -
-> -/* Diagnostic, check sum value from firmware test */
-> -#define ADIS16240_CHK_SUM        0x1E
-> -
-> -/* Calibration, x-axis acceleration offset adjustment */
-> -#define ADIS16240_XACCL_OFF      0x20
-> -
-> -/* Calibration, y-axis acceleration offset adjustment */
-> -#define ADIS16240_YACCL_OFF      0x22
-> -
-> -/* Calibration, z-axis acceleration offset adjustment */
-> -#define ADIS16240_ZACCL_OFF      0x24
-> -
-> -/* Clock, hour and minute */
-> -#define ADIS16240_CLK_TIME       0x2E
-> -
-> -/* Clock, month and day */
-> -#define ADIS16240_CLK_DATE       0x30
-> -
-> -/* Clock, year */
-> -#define ADIS16240_CLK_YEAR       0x32
-> -
-> -/* Wake-up setting, hour and minute */
-> -#define ADIS16240_WAKE_TIME      0x34
-> -
-> -/* Wake-up setting, month and day */
-> -#define ADIS16240_WAKE_DATE      0x36
-> -
-> -/* Alarm 1 amplitude threshold */
-> -#define ADIS16240_ALM_MAG1       0x38
-> -
-> -/* Alarm 2 amplitude threshold */
-> -#define ADIS16240_ALM_MAG2       0x3A
-> -
-> -/* Alarm control */
-> -#define ADIS16240_ALM_CTRL       0x3C
-> -
-> -/* Capture, external trigger control */
-> -#define ADIS16240_XTRIG_CTRL     0x3E
-> -
-> -/* Capture, address pointer */
-> -#define ADIS16240_CAPT_PNTR      0x40
-> -
-> -/* Capture, configuration and control */
-> -#define ADIS16240_CAPT_CTRL      0x42
-> -
-> -/* General-purpose digital input/output control */
-> -#define ADIS16240_GPIO_CTRL      0x44
-> -
-> -/* Miscellaneous control */
-> -#define ADIS16240_MSC_CTRL       0x46
-> -
-> -/* Internal sample period (rate) control */
-> -#define ADIS16240_SMPL_PRD       0x48
-> -
-> -/* System command */
-> -#define ADIS16240_GLOB_CMD       0x4A
-> -
-> -/* MSC_CTRL */
-> -
-> -/* Enables sum-of-squares output (XYZPEAK_OUT) */
-> -#define ADIS16240_MSC_CTRL_XYZPEAK_OUT_EN	BIT(15)
-> -
-> -/* Enables peak tracking output (XPEAK_OUT, YPEAK_OUT, and ZPEAK_OUT) */
-> -#define ADIS16240_MSC_CTRL_X_Y_ZPEAK_OUT_EN	BIT(14)
-> -
-> -/* Self-test enable: 1 = apply electrostatic force, 0 = disabled */
-> -#define ADIS16240_MSC_CTRL_SELF_TEST_EN	        BIT(8)
-> -
-> -/* Data-ready enable: 1 = enabled, 0 = disabled */
-> -#define ADIS16240_MSC_CTRL_DATA_RDY_EN	        BIT(2)
-> -
-> -/* Data-ready polarity: 1 = active high, 0 = active low */
-> -#define ADIS16240_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
-> -
-> -/* Data-ready line selection: 1 = DIO2, 0 = DIO1 */
-> -#define ADIS16240_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
-> -
-> -/* DIAG_STAT */
-> -
-> -/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
-> -#define ADIS16240_DIAG_STAT_ALARM2      BIT(9)
-> -
-> -/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
-> -#define ADIS16240_DIAG_STAT_ALARM1      BIT(8)
-> -
-> -/* Capture buffer full: 1 = capture buffer is full */
-> -#define ADIS16240_DIAG_STAT_CPT_BUF_FUL BIT(7)
-> -
-> -/* Flash test, checksum flag: 1 = mismatch, 0 = match */
-> -#define ADIS16240_DIAG_STAT_CHKSUM      BIT(6)
-> -
-> -/* Power-on, self-test flag: 1 = failure, 0 = pass */
-> -#define ADIS16240_DIAG_STAT_PWRON_FAIL_BIT  5
-> -
-> -/* Power-on self-test: 1 = in-progress, 0 = complete */
-> -#define ADIS16240_DIAG_STAT_PWRON_BUSY  BIT(4)
-> -
-> -/* SPI communications failure */
-> -#define ADIS16240_DIAG_STAT_SPI_FAIL_BIT	3
-> -
-> -/* Flash update failure */
-> -#define ADIS16240_DIAG_STAT_FLASH_UPT_BIT	2
-> -
-> -/* Power supply above 3.625 V */
-> -#define ADIS16240_DIAG_STAT_POWER_HIGH_BIT	1
-> -
-> - /* Power supply below 3.15 V */
-> -#define ADIS16240_DIAG_STAT_POWER_LOW_BIT	0
-> -
-> -/* GLOB_CMD */
-> -
-> -#define ADIS16240_GLOB_CMD_RESUME	BIT(8)
-> -#define ADIS16240_GLOB_CMD_SW_RESET	BIT(7)
-> -#define ADIS16240_GLOB_CMD_STANDBY	BIT(2)
-> -
-> -#define ADIS16240_ERROR_ACTIVE          BIT(14)
-> -
-> -/* At the moment triggers are only used for ring buffer
-> - * filling. This may change!
-> - */
-> -
-> -#define ADIS16240_SCAN_ACC_X	0
-> -#define ADIS16240_SCAN_ACC_Y	1
-> -#define ADIS16240_SCAN_ACC_Z	2
-> -#define ADIS16240_SCAN_SUPPLY	3
-> -#define ADIS16240_SCAN_AUX_ADC	4
-> -#define ADIS16240_SCAN_TEMP	5
-> -
-> -#endif /* SPI_ADIS16240_H_ */
-> diff --git a/drivers/staging/iio/accel/adis16240_core.c b/drivers/staging/iio/accel/adis16240_core.c
-> index d5b99e6..9690e46 100644
-> --- a/drivers/staging/iio/accel/adis16240_core.c
-> +++ b/drivers/staging/iio/accel/adis16240_core.c
-> @@ -24,7 +24,180 @@
->  #include <linux/iio/buffer.h>
->  #include <linux/iio/imu/adis.h>
->  
-> -#include "adis16240.h"
-> +#define ADIS16240_STARTUP_DELAY	220 /* ms */
-> +
-> +/* Flash memory write count */
-> +#define ADIS16240_FLASH_CNT      0x00
-> +
-> +/* Output, power supply */
-> +#define ADIS16240_SUPPLY_OUT     0x02
-> +
-> +/* Output, x-axis accelerometer */
-> +#define ADIS16240_XACCL_OUT      0x04
-> +
-> +/* Output, y-axis accelerometer */
-> +#define ADIS16240_YACCL_OUT      0x06
-> +
-> +/* Output, z-axis accelerometer */
-> +#define ADIS16240_ZACCL_OUT      0x08
-> +
-> +/* Output, auxiliary ADC input */
-> +#define ADIS16240_AUX_ADC        0x0A
-> +
-> +/* Output, temperature */
-> +#define ADIS16240_TEMP_OUT       0x0C
-> +
-> +/* Output, x-axis acceleration peak */
-> +#define ADIS16240_XPEAK_OUT      0x0E
-> +
-> +/* Output, y-axis acceleration peak */
-> +#define ADIS16240_YPEAK_OUT      0x10
-> +
-> +/* Output, z-axis acceleration peak */
-> +#define ADIS16240_ZPEAK_OUT      0x12
-> +
-> +/* Output, sum-of-squares acceleration peak */
-> +#define ADIS16240_XYZPEAK_OUT    0x14
-> +
-> +/* Output, Capture Buffer 1, X and Y acceleration */
-> +#define ADIS16240_CAPT_BUF1      0x16
-> +
-> +/* Output, Capture Buffer 2, Z acceleration */
-> +#define ADIS16240_CAPT_BUF2      0x18
-> +
-> +/* Diagnostic, error flags */
-> +#define ADIS16240_DIAG_STAT      0x1A
-> +
-> +/* Diagnostic, event counter */
-> +#define ADIS16240_EVNT_CNTR      0x1C
-> +
-> +/* Diagnostic, check sum value from firmware test */
-> +#define ADIS16240_CHK_SUM        0x1E
-> +
-> +/* Calibration, x-axis acceleration offset adjustment */
-> +#define ADIS16240_XACCL_OFF      0x20
-> +
-> +/* Calibration, y-axis acceleration offset adjustment */
-> +#define ADIS16240_YACCL_OFF      0x22
-> +
-> +/* Calibration, z-axis acceleration offset adjustment */
-> +#define ADIS16240_ZACCL_OFF      0x24
-> +
-> +/* Clock, hour and minute */
-> +#define ADIS16240_CLK_TIME       0x2E
-> +
-> +/* Clock, month and day */
-> +#define ADIS16240_CLK_DATE       0x30
-> +
-> +/* Clock, year */
-> +#define ADIS16240_CLK_YEAR       0x32
-> +
-> +/* Wake-up setting, hour and minute */
-> +#define ADIS16240_WAKE_TIME      0x34
-> +
-> +/* Wake-up setting, month and day */
-> +#define ADIS16240_WAKE_DATE      0x36
-> +
-> +/* Alarm 1 amplitude threshold */
-> +#define ADIS16240_ALM_MAG1       0x38
-> +
-> +/* Alarm 2 amplitude threshold */
-> +#define ADIS16240_ALM_MAG2       0x3A
-> +
-> +/* Alarm control */
-> +#define ADIS16240_ALM_CTRL       0x3C
-> +
-> +/* Capture, external trigger control */
-> +#define ADIS16240_XTRIG_CTRL     0x3E
-> +
-> +/* Capture, address pointer */
-> +#define ADIS16240_CAPT_PNTR      0x40
-> +
-> +/* Capture, configuration and control */
-> +#define ADIS16240_CAPT_CTRL      0x42
-> +
-> +/* General-purpose digital input/output control */
-> +#define ADIS16240_GPIO_CTRL      0x44
-> +
-> +/* Miscellaneous control */
-> +#define ADIS16240_MSC_CTRL       0x46
-> +
-> +/* Internal sample period (rate) control */
-> +#define ADIS16240_SMPL_PRD       0x48
-> +
-> +/* System command */
-> +#define ADIS16240_GLOB_CMD       0x4A
-> +
-> +/* MSC_CTRL */
-> +
-> +/* Enables sum-of-squares output (XYZPEAK_OUT) */
-> +#define ADIS16240_MSC_CTRL_XYZPEAK_OUT_EN	BIT(15)
-> +
-> +/* Enables peak tracking output (XPEAK_OUT, YPEAK_OUT, and ZPEAK_OUT) */
-> +#define ADIS16240_MSC_CTRL_X_Y_ZPEAK_OUT_EN	BIT(14)
-> +
-> +/* Self-test enable: 1 = apply electrostatic force, 0 = disabled */
-> +#define ADIS16240_MSC_CTRL_SELF_TEST_EN	        BIT(8)
-> +
-> +/* Data-ready enable: 1 = enabled, 0 = disabled */
-> +#define ADIS16240_MSC_CTRL_DATA_RDY_EN	        BIT(2)
-> +
-> +/* Data-ready polarity: 1 = active high, 0 = active low */
-> +#define ADIS16240_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
-> +
-> +/* Data-ready line selection: 1 = DIO2, 0 = DIO1 */
-> +#define ADIS16240_MSC_CTRL_DATA_RDY_DIO2	BIT(0)
-> +
-> +/* DIAG_STAT */
-> +
-> +/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
-> +#define ADIS16240_DIAG_STAT_ALARM2      BIT(9)
-> +
-> +/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
-> +#define ADIS16240_DIAG_STAT_ALARM1      BIT(8)
-> +
-> +/* Capture buffer full: 1 = capture buffer is full */
-> +#define ADIS16240_DIAG_STAT_CPT_BUF_FUL BIT(7)
-> +
-> +/* Flash test, checksum flag: 1 = mismatch, 0 = match */
-> +#define ADIS16240_DIAG_STAT_CHKSUM      BIT(6)
-> +
-> +/* Power-on, self-test flag: 1 = failure, 0 = pass */
-> +#define ADIS16240_DIAG_STAT_PWRON_FAIL_BIT  5
-> +
-> +/* Power-on self-test: 1 = in-progress, 0 = complete */
-> +#define ADIS16240_DIAG_STAT_PWRON_BUSY  BIT(4)
-> +
-> +/* SPI communications failure */
-> +#define ADIS16240_DIAG_STAT_SPI_FAIL_BIT	3
-> +
-> +/* Flash update failure */
-> +#define ADIS16240_DIAG_STAT_FLASH_UPT_BIT	2
-> +
-> +/* Power supply above 3.625 V */
-> +#define ADIS16240_DIAG_STAT_POWER_HIGH_BIT	1
-> +
-> + /* Power supply below 3.15 V */
-> +#define ADIS16240_DIAG_STAT_POWER_LOW_BIT	0
-> +
-> +/* GLOB_CMD */
-> +
-> +#define ADIS16240_GLOB_CMD_RESUME	BIT(8)
-> +#define ADIS16240_GLOB_CMD_SW_RESET	BIT(7)
-> +#define ADIS16240_GLOB_CMD_STANDBY	BIT(2)
-> +
-> +#define ADIS16240_ERROR_ACTIVE          BIT(14)
-> +
-> +/* At the moment triggers are only used for ring buffer
-> + * filling. This may change!
-> + */
-> +
-> +#define ADIS16240_SCAN_ACC_X	0
-> +#define ADIS16240_SCAN_ACC_Y	1
-> +#define ADIS16240_SCAN_ACC_Z	2
-> +#define ADIS16240_SCAN_SUPPLY	3
-> +#define ADIS16240_SCAN_AUX_ADC	4
-> +#define ADIS16240_SCAN_TEMP	5
->  
->  static ssize_t adis16240_spi_read_signed(struct device *dev,
->  					 struct device_attribute *attr,
-> 
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+---
+v2:
+- added calibration scale
+---
+ drivers/iio/adc/meson_saradc.c | 74 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 72 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index 23710088..d5aa0d04 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -173,7 +173,9 @@
+ 	.channel = _chan,						\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+ 				BIT(IIO_CHAN_INFO_AVERAGE_RAW),		\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++				BIT(IIO_CHAN_INFO_CALIBBIAS) |		\
++				BIT(IIO_CHAN_INFO_CALIBSCALE),		\
+ 	.datasheet_name = "SAR_ADC_CH"#_chan,				\
+ }
+ 
+@@ -233,6 +235,8 @@ struct meson_sar_adc_priv {
+ 	struct clk				*adc_div_clk;
+ 	struct clk_divider			clk_div;
+ 	struct completion			done;
++	int					calibbias;
++	int					calibscale;
+ };
+ 
+ static const struct regmap_config meson_sar_adc_regmap_config = {
+@@ -252,6 +256,16 @@ static unsigned int meson_sar_adc_get_fifo_count(struct iio_dev *indio_dev)
+ 	return FIELD_GET(MESON_SAR_ADC_REG0_FIFO_COUNT_MASK, regval);
+ }
+ 
++static int meson_sar_adc_calib_val(struct iio_dev *indio_dev, int val)
++{
++	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
++	int tmp;
++
++	tmp = div_s64((s64)val * priv->calibscale, 1000000) + priv->calibbias;
++
++	return clamp(tmp, 0, (1 << priv->data->resolution) - 1);
++}
++
+ static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
+ {
+ 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+@@ -303,7 +317,7 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+ 	fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK,
+ 			     regval);
+ 	fifo_val &= GENMASK(priv->data->resolution - 1, 0);
+-	*val = fifo_val;
++	*val = meson_sar_adc_calib_val(indio_dev, fifo_val);
+ 
+ 	return 0;
+ }
+@@ -529,6 +543,15 @@ static int meson_sar_adc_iio_info_read_raw(struct iio_dev *indio_dev,
+ 		*val2 = priv->data->resolution;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 
++	case IIO_CHAN_INFO_CALIBBIAS:
++		*val = priv->calibbias;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_CALIBSCALE:
++		*val = priv->calibscale / 1000000;
++		*val2 = priv->calibscale % 1000000;
++		return IIO_VAL_INT_PLUS_MICRO;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -754,6 +777,47 @@ static irqreturn_t meson_sar_adc_irq(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int meson_sar_adc_calib(struct iio_dev *indio_dev)
++{
++	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
++	int ret, nominal0, nominal1, value0, value1;
++
++	/* use points 25% and 75% for calibration */
++	nominal0 = (1 << priv->data->resolution) / 4;
++	nominal1 = (1 << priv->data->resolution) * 3 / 4;
++
++	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_VDD_DIV4);
++	usleep_range(10, 20);
++	ret = meson_sar_adc_get_sample(indio_dev,
++				       &meson_sar_adc_iio_channels[7],
++				       MEAN_AVERAGING, EIGHT_SAMPLES, &value0);
++	if (ret < 0)
++		goto out;
++
++	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_VDD_MUL3_DIV4);
++	usleep_range(10, 20);
++	ret = meson_sar_adc_get_sample(indio_dev,
++				       &meson_sar_adc_iio_channels[7],
++				       MEAN_AVERAGING, EIGHT_SAMPLES, &value1);
++	if (ret < 0)
++		goto out;
++
++	if (value1 <= value0) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	priv->calibscale = div_s64((nominal1 - nominal0) * 1000000LL,
++				   value1 - value0);
++	priv->calibbias = nominal0 - div_s64((s64)value0 * priv->calibscale,
++					     1000000);
++	ret = 0;
++out:
++	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_CH7_INPUT);
++
++	return ret;
++}
++
+ static const struct iio_info meson_sar_adc_iio_info = {
+ 	.read_raw = meson_sar_adc_iio_info_read_raw,
+ 	.driver_module = THIS_MODULE,
+@@ -893,6 +957,8 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 		return PTR_ERR(priv->vref);
+ 	}
+ 
++	priv->calibscale = 1000000;
++
+ 	ret = meson_sar_adc_init(indio_dev);
+ 	if (ret)
+ 		goto err;
+@@ -901,6 +967,10 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err;
+ 
++	ret = meson_sar_adc_calib(indio_dev);
++	if (ret)
++		goto err_hw;
++
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	ret = iio_device_register(indio_dev);
+-- 
+2.12.0
+
 
