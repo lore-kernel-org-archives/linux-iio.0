@@ -1,295 +1,185 @@
-Return-Path: <SRS0=UCx2=2V=gmail.com=jkridner@kernel.org>
-Content-Type: text/plain;
-	charset=us-ascii
-Mime-Version: 1.0 (1.0)
-Subject: Re: [PATCH v2 1/2] iio: Allow triggers to be used as parent of others triggers
-From: Jason Kridner <jkridner@gmail.com>
-In-Reply-To: <e85b66c3-fd4c-43f7-4ea1-db3d20e95f43@kernel.org>
-Date: Sun, 12 Mar 2017 18:41:38 -0400
-Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
- linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org, knaack.h@gmx.de,
- lars@metafoo.de, pmeerw@pmeerw.net, fabrice.gasnier@st.com,
- Benjamin Gaignard <benjamin.gaignard@st.com>,
- linaro-kernel@lists.linaro.org
-Message-Id: <93F2CF05-9352-4D4B-A925-2AB3AF4B3A7D@gmail.com>
-References: <1487254984-20122-1-git-send-email-benjamin.gaignard@st.com> <1487254984-20122-2-git-send-email-benjamin.gaignard@st.com> <e1602065-2817-d380-7f7a-3961070c384f@kernel.org> <3946A931-3146-47C4-BA21-0D382F526326@gmail.com> <60fd2423-b150-c543-9e12-aa66596a0c93@kernel.org> <69B3E027-9723-41FB-A89A-D8190A25490F@gmail.com> <e85b66c3-fd4c-43f7-4ea1-db3d20e95f43@kernel.org>
-To: Jonathan Cameron <jic23@kernel.org>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59477 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751359AbdCEKkl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 05:40:41 -0500
+Subject: Re: [PATCH] iio: hid-sensor-trigger: Change get poll value function
+ order to avoid sensor properties losing after resume from S3
+To: "Pandruvada, Srinivas" <srinivas.pandruvada@intel.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        "Song, Hongyan" <hongyan.song@intel.com>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+References: <1487755058-31310-1-git-send-email-hongyan.song@intel.com>
+ <1487741996.19408.0.camel@intel.com>
+ <1f73506c-2bdd-c527-cd13-76594a1a7375@kernel.org>
+ <AE3E3DFA698D6144A7445C92D1D41E2F10BE0440@SHSMSX103.ccr.corp.intel.com>
+ <1488159432.3489.1.camel@intel.com>
+Cc: "jikos@kernel.org" <jikos@kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <0145ac74-b788-e8d1-1bcc-2385f7c6b68e@kernel.org>
+Date: Sun, 5 Mar 2017 10:29:38 +0000
+MIME-Version: 1.0
+In-Reply-To: <1488159432.3489.1.camel@intel.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+On 27/02/17 01:37, Pandruvada, Srinivas wrote:
+> On Mon, 2017-02-27 at 01:00 +0000, Song, Hongyan wrote:
+>> Hi Jonathan,
+>> 	I add more information about the patch:
+>> 	
+>> Bug found: 
+>> When we cat sensor incli sensor data with hysteresis value is 0,
+>> there always have streamed sensor data output,
+>> But when system enter S3 and resume back, the streaming thread is
+>> still on but there is not streaming sensor data output.
+>> Test data as below:
+>> 279: 2017-01-24 01:16:00.279385 *5* incli_3d: Min Delta: 99.779ms,
+>> Max Delta: 100.316ms, Received: 10/s, Overall: 170/16s; Sample values
+>> ,0.010546,-0.006712,2.797579
+>> 280: 2017-01-24 01:16:41.211385 *5* incli_3d: Min Delta: 100.16ms,
+>> Max Delta: 40924.6ms, Received: 2/s, Overall: 172/19s; Sample values
+>> ,0.010546,-0.006712,2.797579
+>> 281: 2017-01-24 01:16:42.219892 *5* incli_3d: Min Delta: 0.023ms, Max
+>> Delta: 543.28ms, Received: 2/s, Overall: 174/20s; Sample values
+>> ,0.010546,-0.006712,2.797579
+>> 282: 2017-01-24 01:16:42.755548 *4*
+>> CIIOSensorInform::sensor_wait_event poll timeout
+>> 283: 2017-01-24 01:16:43.223062 *5* incli_3d: Min Delta: --, Max
+>> Delta: --, Received: 0/s, Overall: 174/21s
+>> 284: 2017-01-24 01:16:43.756980 *4*
+>> CIIOSensorInform::sensor_wait_event poll timeout
+>> 285: 2017-01-24 01:16:44.225527 *5* incli_3d: Min Delta: --, Max
+>> Delta: --, Received: 0/s, Overall: 174/22s
+>> 286: 2017-01-24 01:16:44.758467 *4*
+>> CIIOSensorInform::sensor_wait_event poll timeout
+>> 287: 2017-01-24 01:16:45.228082 *5* incli_3d: Min Delta: --, Max
+>> Delta: --, Received: 0/s, Overall: 174/23s
+>> 288: 2017-01-24 01:16:45.759958 *4*
+>> CIIOSensorInform::sensor_wait_event poll timeout
+>>
+>> Root cause: 
+>> when sensor resume back from S3, the sensor property user set is
+>> lost.
+>> For example, if we set sensor hysteresis value to be 0, then let
+>> system enter S3, when resume back, the hysteresis value will be not 0
+>> but the default value 1.
+>>
+>> this is not what we want, resume back from S3 should not lose the
+>> properties which is set before S3, just because the property setting
+>> sequence lead to this lose.
+>>
+>> This is patch is a fix patch and needed for stable.
+> But not urgent.
+Thanks for the info.
 
+Applied to the fixes-togreg branch of iio.git.
 
-> On Mar 12, 2017, at 4:02 PM, Jonathan Cameron <jic23@kernel.org> wrote:
->=20
->> On 05/03/17 15:29, Jason Kridner wrote:
->>=20
->>=20
->>>> On Mar 5, 2017, at 5:11 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->>>>=20
->>>> On 25/02/17 21:12, Jason Kridner wrote:
->>>>=20
->>>>=20
->>>>>> On Feb 19, 2017, at 10:08 AM, Jonathan Cameron <jic23@kernel.org> wro=
-te:
->>>>>>=20
->>>>>> On 16/02/17 14:23, Benjamin Gaignard wrote:
->>>>>> Add "parent_trigger" sysfs attribute to iio trigger to be able
->>>>>> to set a parent to the current trigger.
->>>>>> Parent trigger edges or levels could be used to control current
->>>>>> trigger status for example to start, stop or reset it.
->>>>> Reset needs a description as well. In this case I think it boils
->>>>> down to syncing a periodic timer driven trigger.
->>>>>>=20
->>>>>> Introduce validate_trigger function in iio_trigger_ops which does
->>>>>> the same than validate_device but with a trigger as second parameter.=
+Thanks,
 
->>>>>> Driver must implement this function and add dev_attr_parent_trigger
->>>>>> in their trigger attribute group to be able to use parent trigger
->>>>>> feature.
->>>>>>=20
->>>>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
->>>>> I think I'm fine with this but it's 'unusual' enough that I want
->>>>> to get to the point where we have some more people involved in
->>>>> the discussion.
->>>>=20
->>>> I like the idea of enabling triggers to set triggers, but I'd love to
->>>> see something more generic. I've got the problem of trying to add
->>>> some state control to IIO triggers to reduce userspace intractions,
->>>> preferably without requiring users to create kernel drivers.
->>>>=20
->>>> To provide a more generic state machine, would injecting something
->>>> like BPF to connect triggers be better?
->>>=20
->>> In the simple case that sounds over engineered to me.
->>> Now for the more complex usecases (I guessing you are thinking
->>> about trying to move control loop control in kernel) then
->>> BPF or similar is certainly interesting.
->>=20
->> That's certainly the idea. I'd like for systems like robots to be
->> able to be made secure. Not that userspace can't be made secure, but
->> the extra eyeballs, lower overhead and controlled access to hardware
->> makes sense to think about kernel land.
-> I'll buy that it 'might' make sense.  Will be interesting to see how
-> this pans out.
->>>=20
->>> I've been thinking about it for more simple stuff such as
->>> filtering data before passing to userspace but maybe there are
->>> more general usecases.
->>=20
->> My concern is if there's a complex coverage of several small use
->> cases for filtering, etc, it'll just take us a lot longer to realize
->> we ultimately need to solve the general case. I think filtering
->> network traffic looks very similar and has lots of previous focus.
->> We'd be leveraging an already existing infrastructure and can take
->> steps to make the simple use cases easier to solve using the general
->> infrastructure.
-> Whilst I'm happy with this in principle, it's still a pipe dream at
-> the moment and I'm not happy to hold up existing work on the basis
-> something better might come along.
->=20
-> Ultimately we need to cover all these simple cases as well with the
-> general system and I don't have particular issues with supporting
-> legacy systems along side something better.
->=20
-> So, I'm happy to support and work with you and others on a better
-> solution, but don't want to be in the position of telling people
-> who are doing good work within the existing constraints to back off
-> for an unknown time period.  The new stuff has to be in parallel.
+Jonathan
+> 
+> Thanks,
+> Srinivas
+> 
+>>
+>> Thanks a lot!
+>>
+>> BR
+>> Song Hongyan
+>>
+>>
+>> -----Original Message-----
+>> From: Jonathan Cameron [mailto:jic23@kernel.org] 
+>> Sent: Sunday, February 26, 2017 12:52 AM
+>> To: Pandruvada, Srinivas <srinivas.pandruvada@intel.com>; linux-input
+>> @vger.kernel.org; Song, Hongyan <hongyan.song@intel.com>; linux-iio@v
+>> ger.kernel.org
+>> Cc: jikos@kernel.org
+>> Subject: Re: [PATCH] iio: hid-sensor-trigger: Change get poll value
+>> function order to avoid sensor properties losing after resume from S3
+>>
+>> On 22/02/17 05:40, Pandruvada, Srinivas wrote:
+>>> On Wed, 2017-02-22 at 17:17 +0800, Song Hongyan wrote:
+>>>> In function _hid_sensor_power_state(), when
+>>>> hid_sensor_read_poll_value()
+>>>> is called, sensor's all properties will be updated by the value
+>>>> from 
+>>>> sensor hardware/firmware.
+>>>> In some implementation, sensor hardware/firmware will do a power 
+>>>> cycle during S3. In this case, after resume, once
+>>>> hid_sensor_read_poll_value()
+>>>> is called, sensor's all properties which are kept by driver
+>>>> during S3 
+>>>> will be changed to default value.
+>>>> But instead, if a set feature function is called first, sensor 
+>>>> hardware/firmware will be recovered to the last status. So change
+>>>> the
+>>>> sensor_hub_set_feature() calling order to behind of set feature 
+>>>> function to avoid sensor properties lose.
+>>>>
+>>>> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
+>>>
+>>> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+>>
+>> Hi Song,
+>>
+>> The patch message, whilst excellent on the technical detail, gives me
+>> no sense of urgency on this. Is this a fix we want to have heading
+>> for stable ASAP or are we looking at something seen in some
+>> developmental hardware for example?
+>> Links to bug reports, or examples of hardware suffering from the
+>> issue are always helpful as well.
+>>
+>> Also for something like this a 'fixes' tag is very helpful when
+>> people are looking to back port it.
+>>
+>> Anyhow, I'm going to hold off on taking this one until I have more
+>> information. Right now it makes little difference as the next fixes
+>> pull request from me will probably not be until next weekend.
+>>
+>> Thanks,
+>>
+>> Jonathan
+>>>
+>>>> ---
+>>>>  drivers/iio/common/hid-sensors/hid-sensor-trigger.c | 6 +++---
+>>>>  1 file changed, 3 insertions(+), 3 deletions(-)
+>>>>
+>>>> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>>>> b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>>>> index a3cce3a..ecf592d 100644
+>>>> --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>>>> +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+>>>> @@ -51,8 +51,6 @@ static int _hid_sensor_power_state(struct 
+>>>> hid_sensor_common *st, bool state)
+>>>>  			st->report_state.report_id,
+>>>>  			st->report_state.index,
+>>>>  			HID_USAGE_SENSOR_PROP_REPORTING_STATE_AL
+>>>> L_EV
+>>>> ENTS_ENUM);
+>>>> -
+>>>> -		poll_value = hid_sensor_read_poll_value(st);
+>>>>  	} else {
+>>>>  		int val;
+>>>>  
+>>>> @@ -89,7 +87,9 @@ static int _hid_sensor_power_state(struct 
+>>>> hid_sensor_common *st, bool state)
+>>>>  	sensor_hub_get_feature(st->hsdev, st-
+>>>>> power_state.report_id,
+>>>>  			       st->power_state.index,
+>>>>  			       sizeof(state_val), &state_val);
+>>>> -	if (state && poll_value)
+>>>> +	if (state)
+>>>> +		poll_value = hid_sensor_read_poll_value(st);
+>>>> +	if (poll_value > 0)
+>>>>  		msleep_interruptible(poll_value * 2);
+>>>>  
+>>>>  	return 
+>>>> 0;N     r  y   b X  ǧv ^ )޺{.n +    {  *"  ^n r   z   h    &  
+>>>> G   
+>>>> h ( 階 ݢj"   m     z ޖ   f   h   ~ mml==
+>>
+>> N�����r��y���b�X��ǧv�^�)޺{.n�+����{��*"��^n�r���z���h����&���G���h�(�階�ݢj"���m�����z�ޖ���f���h���~�mml==
 
-Good with me. Just like having an end goal in mind.=20
-
->=20
-> Jonathan
->>=20
->=20
->>> Jonathan
->>>>>=20
->>>>> Jonathan
->>>>>>=20
->>>>>> version 2:
->>>>>> - add comment about parent trigger usage
->>>>>> - parent trigger attribute must be set the driver no more by IIO core=
-
->>>>>> ---
->>>>>> .../ABI/testing/sysfs-bus-iio-trigger-sysfs        | 10 ++++
->>>>>> drivers/iio/industrialio-trigger.c                 | 68 +++++++++++++=
-+++++++++
->>>>>> include/linux/iio/trigger.h                        |  7 ++-
->>>>>> 3 files changed, 84 insertions(+), 1 deletion(-)
->>>>>>=20
->>>>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/=
-Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
->>>>>> index 04ac623..9862562 100644
->>>>>> --- a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
->>>>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
->>>>>> @@ -40,3 +40,13 @@ Description:
->>>>>>      associated file, representing the id of the trigger that needs
->>>>>>      to be removed. If the trigger can't be found, an invalid
->>>>>>      argument message will be returned to the user.
->>>>>> +
->>>>>> +What:        /sys/bus/iio/devices/triggerX/parent_trigger
->>>>>> +KernelVersion:    4.12
->>>>>> +Contact:    linux-iio@vger.kernel.org
->>>>>> +Description:
->>>>>> +        This attribute is used to set a trigger as parent for the
->>>>>> +        current trigger. If the trigger can't use the parent an
->>>>>> +        invalid argument message will be returned.
->>>>>> +        Parent trigger edges or levels could be used to control curr=
-ent
->>>>>> +        trigger for example to start, stop or reset it.
->>>>>> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industr=
-ialio-trigger.c
->>>>>> index 978729f..238aa1a 100644
->>>>>> --- a/drivers/iio/industrialio-trigger.c
->>>>>> +++ b/drivers/iio/industrialio-trigger.c
->>>>>> @@ -58,6 +58,74 @@ static ssize_t iio_trigger_read_name(struct device=
- *dev,
->>>>>>=20
->>>>>> static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
->>>>>>=20
->>>>>> +/**
->>>>>> + * iio_trigger_read_parent() - trigger consumer sysfs query parent t=
-rigger
->>>>>> + * @dev:    device associated with an industrial I/O trigger
->>>>>> + * @attr:    pointer to the device_attribute structure that
->>>>>> + *        is being processed
->>>>>> + * @buf:    buffer where the current trigger name will be printed in=
-to
->>>>>> + *
->>>>>> + * Return: a negative number on failure, the number of characters wr=
-itten
->>>>>> + *       on success or 0 if no trigger is available
->>>>>> + */
->>>>>> +static ssize_t iio_trigger_read_parent(struct device *dev,
->>>>>> +                       struct device_attribute *attr,
->>>>>> +                       char *buf)
->>>>>> +{
->>>>>> +    struct iio_trigger *trig =3D to_iio_trigger(dev);
->>>>>> +
->>>>>> +    if (trig->parent_trigger)
->>>>>> +        return sprintf(buf, "%s\n", trig->parent_trigger->name);
->>>>>> +
->>>>>> +    return 0;
->>>>>> +}
->>>>>> +
->>>>>> +static struct iio_trigger *iio_trigger_find_by_name(const char *name=
-,
->>>>>> +                            size_t len);
->>>>>> +
->>>>>> +/**
->>>>>> + * iio_trigger_write_parent() - trigger consumer sysfs set parent tr=
-igger
->>>>>> + * @dev:    device associated with an industrial I/O trigger
->>>>>> + * @attr:    device attribute that is being processed
->>>>>> + * @buf:    string buffer that holds the name of the trigger
->>>>>> + * @len:    length of the trigger name held by buf
->>>>>> + *
->>>>>> + * Return: negative error code on failure or length of the buffer
->>>>>> + *       on success
->>>>>> + */
->>>>>> +static ssize_t iio_trigger_write_parent(struct device *dev,
->>>>>> +                    struct device_attribute *attr,
->>>>>> +                    const char *buf,
->>>>>> +                    size_t len)
->>>>>> +{
->>>>>> +    struct iio_trigger *parent;
->>>>>> +    struct iio_trigger *child =3D to_iio_trigger(dev);
->>>>>> +    int ret;
->>>>>> +
->>>>>> +    if (!child->ops->validate_trigger)
->>>>>> +        return -EINVAL;
->>>>>> +
->>>>>> +    if (atomic_read(&child->use_count))
->>>>>> +        return -EBUSY;
->>>>>> +
->>>>>> +    parent =3D iio_trigger_find_by_name(buf, len);
->>>>>> +
->>>>>> +    if (parent =3D=3D child->parent_trigger)
->>>>>> +        return len;
->>>>>> +
->>>>>> +    ret =3D child->ops->validate_trigger(child, parent);
->>>>>> +    if (ret)
->>>>>> +        return ret;
->>>>>> +
->>>>>> +    child->parent_trigger =3D parent;
->>>>>> +
->>>>>> +    return len;
->>>>>> +}
->>>>>> +
->>>>>> +DEVICE_ATTR(parent_trigger, S_IRUGO | S_IWUSR,
->>>>>> +        iio_trigger_read_parent, iio_trigger_write_parent);
->>>>>> +EXPORT_SYMBOL_GPL(dev_attr_parent_trigger);
->>>>>> +
->>>>>> static struct attribute *iio_trig_dev_attrs[] =3D {
->>>>>>  &dev_attr_name.attr,
->>>>>>  NULL,
->>>>>> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.=
-h
->>>>>> index ea08302..efa2983 100644
->>>>>> --- a/include/linux/iio/trigger.h
->>>>>> +++ b/include/linux/iio/trigger.h
->>>>>> @@ -20,6 +20,7 @@ struct iio_subirq {
->>>>>>=20
->>>>>> struct iio_dev;
->>>>>> struct iio_trigger;
->>>>>> +extern struct device_attribute dev_attr_parent_trigger;
->>>>>>=20
->>>>>> /**
->>>>>> * struct iio_trigger_ops - operations structure for an iio_trigger.
->>>>>> @@ -29,6 +30,7 @@ struct iio_subirq {
->>>>>> *            use count is zero (may be NULL)
->>>>>> * @validate_device:    function to validate the device when the
->>>>>> *            current trigger gets changed.
->>>>>> + * @validate_trigger:    function to validate the parent trigger (ma=
-y be NULL)
->>>>>> *
->>>>>> * This is typically static const within a driver and shared by
->>>>>> * instances of a given device.
->>>>>> @@ -39,9 +41,10 @@ struct iio_trigger_ops {
->>>>>>  int (*try_reenable)(struct iio_trigger *trig);
->>>>>>  int (*validate_device)(struct iio_trigger *trig,
->>>>>>                 struct iio_dev *indio_dev);
->>>>>> +    int (*validate_trigger)(struct iio_trigger *trig,
->>>>>> +                struct iio_trigger *parent);
->>>>>> };
->>>>>>=20
->>>>>> -
->>>>>> /**
->>>>>> * struct iio_trigger - industrial I/O trigger device
->>>>>> * @ops:        [DRIVER] operations structure
->>>>>> @@ -59,6 +62,7 @@ struct iio_trigger_ops {
->>>>>> * @attached_own_device:[INTERN] if we are using our own device as tri=
-gger,
->>>>>> *            i.e. if we registered a poll function to the same
->>>>>> *            device as the one providing the trigger.
->>>>>> + * @parent_trigger:    [INTERN] parent trigger
->>>>>> **/
->>>>>> struct iio_trigger {
->>>>>>  const struct iio_trigger_ops    *ops;
->>>>>> @@ -77,6 +81,7 @@ struct iio_trigger {
->>>>>>  unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];=
-
->>>>>>  struct mutex            pool_lock;
->>>>>>  bool                attached_own_device;
->>>>>> +    struct iio_trigger        *parent_trigger;
->>>>>> };
->>>>>>=20
->>>>>>=20
->>>>>>=20
->>>>>=20
->>>>> _______________________________________________
->>>>> linaro-kernel mailing list
->>>>> linaro-kernel@lists.linaro.org
->>>>> https://lists.linaro.org/mailman/listinfo/linaro-kernel
->>>> --
->>>> To unsubscribe from this list: send the line "unsubscribe linux-iio" in=
-
->>>> the body of a message to majordomo@vger.kernel.org
->>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>>>=20
->>>=20
->> --
->> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
->> the body of a message to majordomo@vger.kernel.org
->> More majordomo info at  http://vger.kernel.org/majordomo-info.html
->>=20
->=20
