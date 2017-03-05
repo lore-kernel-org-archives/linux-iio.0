@@ -1,71 +1,120 @@
-Return-Path: <SRS0=A3nn=2Y=linuxfoundation.org=gregkh@kernel.org>
-Date: Wed, 15 Mar 2017 13:33:13 +0800
-From: Greg KH <gregkh@linuxfoundation.org>
-To: William Breathitt Gray <vilhelm.gray@gmail.com>
-Cc: stable@vger.kernel.org, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
-Subject: Re: [PATCH] iio: 104-quad-8: Fix off-by-one error when addressing
- flag register
-Message-ID: <20170315053313.GA12066@kroah.com>
-References: <20170209150341.GA29292@sophia>
- <d89a328a-4873-021e-a92b-f0498cb49d03@kernel.org>
- <20170313133319.GA3607@sophia>
- <d4955577-9524-78b7-9afb-e1ebf1438ef7@kernel.org>
- <20170314150043.GA24126@sophia>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59679 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752444AbdCELPl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 06:15:41 -0500
+Subject: Re: [RFC v2 2/7] IIO: Add bindings for simple sigma delta adc
+To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
+        Rob Herring <robh@kernel.org>
+References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
+ <1487003909-11710-3-git-send-email-arnaud.pouliquen@st.com>
+ <20170222151750.h5d7gycltwnk7b4t@rob-hp-laptop>
+ <6943aaf5-b580-0fd1-7a2e-b99f7a266388@st.com>
+Cc: Mark Rutland <mark.rutland@arm.com>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+        <linux-arm-kernel@lists.infradead.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
+        "kernel@stlinux.com" <kernel@stlinux.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Olivier MOYSAN <olivier.moysan@st.com>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <dbf92596-d7b7-5bb0-2e59-cd54ffc78f4e@kernel.org>
+Date: Sun, 5 Mar 2017 11:04:06 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170314150043.GA24126@sophia>
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <6943aaf5-b580-0fd1-7a2e-b99f7a266388@st.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 14, 2017 at 11:00:43AM -0400, William Breathitt Gray wrote:
-> On Mon, Mar 13, 2017 at 09:33:45PM +0000, Jonathan Cameron wrote:
-> >On 13/03/17 13:33, William Breathitt Gray wrote:
-> >> On Sat, Feb 11, 2017 at 09:37:35AM +0000, Jonathan Cameron wrote:
-> >>> On 09/02/17 15:03, William Breathitt Gray wrote:
-> >>>> The flag register is offset by 1 from the respective channel data
-> >>>> register. This patch fixes an off-by-one error when attempting to read a
-> >>>> channel flag register where the base address was not properly offset.
-> >>>>
-> >>>> Fixes: 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support for the ACCES 104-QUAD-8")
-> >>>> Signed-off-by: William Breathitt Gray <vilhelm.gray@gmail.com>
-> >>> Applied to the fixes-togreg-post-rc1 branch of iio.git
-> >>> Clue to when this will go upstream is in the name ;)
-> >>>
-> >>> Thanks,
-> >>>
-> >>> Jonathan
-> >> 
-> >> Hi Jonathan,
-> >> 
-> >> I see that this fix made it into 4.11-rc1 but not the 4.10.2 release.
-> >> Is this patch on track to appear in stable, or should I explicitly CC
-> >> stable@vger.kernel.org to pick this up?
-> >I was half asleep and failed to tag this in the first place.
-> >
-> >Send an email to stable@vger.kernel.org with the commit ID and a request
-> >that it is picked up.  Cc me.
-> >
-> >Jonathan
-> >> 
-> >> Thanks,
-> >> 
-> >> William Breathitt Gray
-> >> 
+On 27/02/17 11:15, Arnaud Pouliquen wrote:
+> Hello Rob,
 > 
-> Hello,
+> Please find my answers in-line
 > 
-> This patch was merged into Linus' tree as commit ca8d8e03b4c9 ("iio:
-> 104-quad-8: Fix off-by-one error when addressing flag register"). This
-> fix should be merged into the 4.10 stable tree as well to fix an
-> off-by-one error which causes garbage data to be read as count values --
-> effectively preventing proper usage of the driver.
+> Regards,
 > 
-> This patch fixes commit 28e5d3bb0325 ("iio: 104-quad-8: Add IIO support
-> for the ACCES 104-QUAD-8").
+> Arnaud
+> 
+> On 02/22/2017 04:17 PM, Rob Herring wrote:
+>> On Mon, Feb 13, 2017 at 05:38:24PM +0100, Arnaud Pouliquen wrote:
+>>> Add documentation of device tree bindings to support
+>>> sigma delta modulator in IIO framework.
+>>>
+>>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+>>> ---
+>>>  Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt | 13 +++++++++++++
+>>>  1 file changed, 13 insertions(+)
+>>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
+>>>
+>>> diff --git a/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt b/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
+>>> new file mode 100644
+>>> index 0000000..2b3968a
+>>> --- /dev/null
+>>> +++ b/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
+>>> @@ -0,0 +1,13 @@
+>>> +Device-Tree bindings for simple sigma delta adc
+>>
+>> What makes it "simple"?
+> "simple" sigma delta modulator are external chip that just converts
+> analog signal in sigma delta modulation. No configuration needs.
+> "Simple" is use to differentiate SD ADC that offers interfaces to
+> activate some internal processing ( gain, offset compensation...)
+My gut feeling would be to drop the term simple.  If device is more complex
+it needs to be explicitly supported, hence will be named whatever!
+> 
+>>
+>>> +
+>>> +Required properties:
+>>> +- compatible: should be "sd-modulator".
+>>> +- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
+>>> +
+>>> +Example node:
+>>> +
+>>> +	ads1202: simple_sd_adc@0 {
+>>
+>> Is ads1202 the actual chip? Then it should be in the compatible list.
+> I tried to define a generic device to support several SD modulator
+> chips, inspired by ALSA "dmic-codec" device.
+> I have none exhaustive list of chip that can be handled by the driver,
+> but i found several devices that could match...
+> That why i did not use chip name in compatible list.
+> What should be the best way to do it?
+Rob, would the fallback approach (I brought this up in  another branch of
+this discussion) work here,
 
-Now queued up, thanks.
+compatible = "ads1201", "sd-modulator'?
 
-greg k-h
+Main advantage is that people won't then lie in their board files just to
+avoid changing the driver to introduce their new part.  They'll just
+be less specific than would be ideal.
+> 
+>>
+>> unit address without a reg prop is an error. The node name should be 
+>> "adc".
+>>
+>>> +		compatible = "sd-modulator";
+>>> +		#io-channel-cells = <1>;
+>>> +		status = "okay";
+>>
+>> Drop status from examples.
+>>
+>>> +	};
+>>> -- 
+>>> 1.9.1
+>>>
+> --
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+
