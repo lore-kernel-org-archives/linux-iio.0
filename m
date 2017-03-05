@@ -1,56 +1,127 @@
-Return-Path: <SRS0=FQXd=2M=metafoo.de=lars@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60069 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752383AbdCEMVx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 07:21:53 -0500
 Subject: Re: [PATCH v3 6/6] iio: adc: stm32: add support for EXTI trigger
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, jic23@kernel.org,
- linux@armlinux.org.uk, robh+dt@kernel.org,
- linux-arm-kernel@lists.infradead.org, devicetree@vger.kernel.org,
- linux-kernel@vger.kernel.org
+To: Fabrice Gasnier <fabrice.gasnier@st.com>, linux@armlinux.org.uk,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
 References: <1488300679-3259-1-git-send-email-fabrice.gasnier@st.com>
  <1488300679-3259-7-git-send-email-fabrice.gasnier@st.com>
- <5be44ed9-2c86-ac51-d964-d231d5ca62fa@metafoo.de>
- <abeb2ef6-8bc8-bbea-e8e1-4b2ebe72b5f9@st.com>
- <9f39b0ac-a6fb-8a9f-7280-c6718b56aabe@metafoo.de>
 Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
- mcoquelin.stm32@gmail.com, alexandre.torgue@st.com, knaack.h@gmx.de,
- pmeerw@pmeerw.net, benjamin.gaignard@linaro.org, benjamin.gaignard@st.com,
- linus.walleij@linaro.org
-From: Lars-Peter Clausen <lars@metafoo.de>
-Message-ID: <b6bef4d0-31d3-ea63-65ab-acfd0459489a@metafoo.de>
-Date: Fri, 3 Mar 2017 16:47:10 +0100
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
+        benjamin.gaignard@linaro.org, benjamin.gaignard@st.com,
+        linus.walleij@linaro.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <d2f25e67-a598-3d28-01d2-f6aa277e2f67@kernel.org>
+Date: Sun, 5 Mar 2017 12:21:50 +0000
 MIME-Version: 1.0
-In-Reply-To: <9f39b0ac-a6fb-8a9f-7280-c6718b56aabe@metafoo.de>
+In-Reply-To: <1488300679-3259-7-git-send-email-fabrice.gasnier@st.com>
 Content-Type: text/plain; charset=windows-1252
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-On 03/03/2017 04:46 PM, Lars-Peter Clausen wrote:
-> On 03/03/2017 02:00 PM, Fabrice Gasnier wrote:
->> On 03/03/2017 12:45 PM, Lars-Peter Clausen wrote:
->>> On 02/28/2017 05:51 PM, Fabrice Gasnier wrote:
->>>> EXTi (external interrupt) signal can be routed internally as trigger
->>>> source for ADC conversions: STM32F4 ADC can use EXTI11.
->>>>
->>>> Retrieve interrupt trigger from DT, so it can be muxed into ADC IP,
->>>> via extsel.
->>>
->>> Hi,
->>>
->>> Sorry, I have some trouble understanding the specifics of this. Is EXTI a
->>> hardware input signal into the ADC that automatically triggers a conversion
->>> when asserted? If yes how is it configured which external signal is used
->>> here. Your bindings suggest that any GPIO can be used, but the driver only
->>> differentiates between EXTI on or EXTI off.
->> Hi Lars,
->>
->> Yes, STM32 EXTI is external interrupt/event line. In case of STM32 ADC,
->> EXTI11 signal can be used to start a conversion. In this case, it must
->> be selected inside ADC IP using extsel bitfield. This EXTI11 line can
->> mapped from any GPIO bank A,B... line 11 (e.g. PA11 or PB11...) by using
->> interrupt binding.
->> This is why I expose this in DT.
+On 28/02/17 16:51, Fabrice Gasnier wrote:
+> EXTi (external interrupt) signal can be routed internally as trigger
+> source for ADC conversions: STM32F4 ADC can use EXTI11.
 > 
-> How is the mapping? That's the part I don't understand. How does requesting
-
-How is the mapping done?
-
-> the IRQ for the GPIO as a generic software IRQ establish the hardware
-> connection between the GPIO block and the ADC?
+> Retrieve interrupt trigger from DT, so it can be muxed into ADC IP,
+> via extsel.
 > 
+> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+Minor question inline.
+J
+> ---
+>  drivers/iio/adc/stm32-adc.c | 27 ++++++++++++++++++++++++---
+>  1 file changed, 24 insertions(+), 3 deletions(-)
+> 
+> diff --git a/drivers/iio/adc/stm32-adc.c b/drivers/iio/adc/stm32-adc.c
+> index 9b49a6ad..4d9040d 100644
+> --- a/drivers/iio/adc/stm32-adc.c
+> +++ b/drivers/iio/adc/stm32-adc.c
+> @@ -108,6 +108,9 @@ enum stm32_adc_extsel {
+>  	STM32_EXT15,
+>  };
+>  
+> +/* EXTI 11 trigger selection on STM32F4 */
+> +#define STM32F4_EXTI11_EXTSEL		STM32_EXT15
+> +
+>  /**
+>   * struct stm32_adc_trig_info - ADC trigger info
+>   * @name:		name of the trigger, corresponding to its source
+> @@ -146,6 +149,7 @@ struct stm32_adc_regs {
+>   * @rx_buf:		dma rx buffer cpu address
+>   * @rx_dma_buf:		dma rx buffer bus address
+>   * @rx_buf_sz:		dma rx buffer size
+> + * @exti_trig		EXTI trigger
+>   */
+>  struct stm32_adc {
+>  	struct stm32_adc_common	*common;
+> @@ -162,6 +166,7 @@ struct stm32_adc {
+>  	u8			*rx_buf;
+>  	dma_addr_t		rx_dma_buf;
+>  	unsigned int		rx_buf_sz;
+> +	struct iio_trigger	*exti_trig;
+>  };
+>  
+>  /**
+> @@ -395,10 +400,15 @@ static int stm32_adc_conf_scan_seq(struct iio_dev *indio_dev,
+>   *
+>   * Returns trigger extsel value, if trig matches, -EINVAL otherwise.
+>   */
+> -static int stm32_adc_get_trig_extsel(struct iio_trigger *trig)
+> +static int stm32_adc_get_trig_extsel(struct iio_dev *indio_dev,
+> +				     struct iio_trigger *trig)
+>  {
+> +	struct stm32_adc *adc = iio_priv(indio_dev);
+>  	int i;
+>  
+> +	if (trig == adc->exti_trig)
+> +		return STM32F4_EXTI11_EXTSEL;
+> +
+>  	/* lookup triggers registered by stm32 timer trigger driver */
+>  	for (i = 0; stm32f4_adc_trigs[i].name; i++) {
+>  		/**
+> @@ -432,7 +442,7 @@ static int stm32_adc_set_trig(struct iio_dev *indio_dev,
+>  	int ret;
+>  
+>  	if (trig) {
+> -		ret = stm32_adc_get_trig_extsel(trig);
+> +		ret = stm32_adc_get_trig_extsel(indio_dev, trig);
+>  		if (ret < 0)
+>  			return ret;
+>  
+> @@ -604,7 +614,7 @@ static irqreturn_t stm32_adc_isr(int irq, void *data)
+>  static int stm32_adc_validate_trigger(struct iio_dev *indio_dev,
+>  				      struct iio_trigger *trig)
+>  {
+> -	return stm32_adc_get_trig_extsel(trig) < 0 ? -EINVAL : 0;
+> +	return stm32_adc_get_trig_extsel(indio_dev, trig) < 0 ? -EINVAL : 0;
+>  }
+>  
+>  static int stm32_adc_set_watermark(struct iio_dev *indio_dev, unsigned int val)
+> @@ -1030,6 +1040,17 @@ static int stm32_adc_probe(struct platform_device *pdev)
+>  	if (ret < 0)
+>  		goto err_clk_disable;
+>  
+> +	adc->exti_trig = devm_iio_trigger_get_by_name(&pdev->dev, "exti");
+Can we tighten this in any way? If not I guess we'll have to rely on no
+one messing up the devicetree to put the wrong trigger in there with this name.
+
+> +	if (IS_ERR(adc->exti_trig)) {
+> +		ret = PTR_ERR(adc->exti_trig);
+> +		if (ret == -EPROBE_DEFER)
+> +			goto err_dma_disable;
+> +		dev_dbg(&pdev->dev, "No exti trigger found (%d)\n", ret);
+> +		adc->exti_trig = NULL;
+> +	} else {
+> +		dev_info(&pdev->dev, "Can use %s\n", adc->exti_trig->name);
+> +	}
+> +
+>  	ret = iio_triggered_buffer_setup(indio_dev,
+>  					 &iio_pollfunc_store_time,
+>  					 &stm32_adc_trigger_handler,
+> 
+
