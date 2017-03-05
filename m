@@ -1,31 +1,31 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:46734 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752807AbdCFMay (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2017 07:30:54 -0500
-Date: Mon, 6 Mar 2017 13:18:02 +0100
-From: Greg KH <gregkh@linuxfoundation.org>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: Re: [PULL] First round of IIO new device support, features and
- cleanups for the 4.12 cycle.
-Message-ID: <20170306121802.GA23755@kroah.com>
-References: <0ea4ab1f-0e64-a7ab-b31a-4fc51ecee2ee@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <0ea4ab1f-0e64-a7ab-b31a-4fc51ecee2ee@kernel.org>
+Received: from mail-wm0-f68.google.com ([74.125.82.68]:34761 "EHLO
+        mail-wm0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750773AbdCEQeN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 11:34:13 -0500
+Received: by mail-wm0-f68.google.com with SMTP id u132so2185187wmg.1
+        for <linux-iio@vger.kernel.org>; Sun, 05 Mar 2017 08:34:12 -0800 (PST)
+From: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+        Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH 0/2] staging: iio: accel: Group similar macros into enums
+Date: Sun,  5 Mar 2017 18:26:03 +0200
+Message-Id: <cover.1488730643.git.narcisaanamaria12@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Mar 05, 2017 at 03:20:00PM +0000, Jonathan Cameron wrote:
-> The following changes since commit 0f06feba91580df799c48bed753a7400a43d05f7:
-> 
->   staging: bcm2835: cleanup: remove deprecated <asm/uaccess.h> include (2017-02-03 13:01:39 +0100)
-> 
-> are available in the git repository at:
-> 
->   git://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git tags/iio-for-4.12a
+Group related macros into enums, for clarity.
 
-Pulled and pushed out, thanks.
+Narcisa Ana Maria Vasile (2):
+  staging: iio: adis16209: Group similar macros into enums
+  staging: iio: adis16240: Group similar macros into enums
 
-greg k-h
+ drivers/staging/iio/accel/adis16209.c | 18 ++++++++++--------
+ drivers/staging/iio/accel/adis16240.c | 14 ++++++++------
+ 2 files changed, 18 insertions(+), 14 deletions(-)
+
+-- 
+1.9.1
+
