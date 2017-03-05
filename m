@@ -1,134 +1,134 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:60197 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751389AbdCNNoY (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Mar 2017 09:44:24 -0400
-Subject: Re: [PATCH v3 01/18] dt-bindings: power: battery: add
- constant-charge-current property
-To: Chen-Yu Tsai <wens@csie.org>
-References: <20170215004646.23607-1-liam@networkimprov.net>
- <6a678b03-124a-76b3-066e-858731fc6c80@free-electrons.com>
- <CAGb2v67913XnRNv9bYty5WcGLAWHYMM6=M9BVmTZ3wjReh_UBg@mail.gmail.com>
-Cc: Mark Rutland <mark.rutland@arm.com>,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        devicetree <devicetree@vger.kernel.org>,
-        Liam Breck <liam@networkimprov.net>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        "open list:THERMAL" <linux-pm@vger.kernel.org>,
-        Sebastian Reichel <sre@kernel.org>,
-        Russell King <linux@armlinux.org.uk>,
-        linux-iio@vger.kernel.org, Rob Herring <robh+dt@kernel.org>,
-        Icenowy Zheng <icenowy@aosc.xyz>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>, knaack.h@gmx.de,
-        Maxime Ripard <maxime.ripard@free-electrons.com>,
-        =?UTF-8?Q?Bruno_Pr=c3=a9mont?= <bonbons@linux-vserver.org>,
-        Lee Jones <lee.jones@linaro.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-Message-ID: <5f4f8212-e071-9e20-542d-f6557eead260@free-electrons.com>
-Date: Tue, 14 Mar 2017 14:44:21 +0100
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59673 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751003AbdCELOh (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 06:14:37 -0500
+Subject: Re: [PATCH 1/2] dt-bindings: iio: stm32-adc: add option to set
+ resolution
+To: Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Lars-Peter Clausen <lars@metafoo.de>, linux@armlinux.org.uk,
+        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
+        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
+References: <1487177757-19427-1-git-send-email-fabrice.gasnier@st.com>
+ <1487177757-19427-2-git-send-email-fabrice.gasnier@st.com>
+ <c2b73482-ae01-34b5-3c16-b7e63893259e@kernel.org>
+ <b9f59559-c7a8-f575-0868-bd3b149a35c9@st.com>
+ <d64bd76d-a2c6-6148-c126-fa73e96019a1@kernel.org>
+ <79e01c5c-d27c-89ea-4d8f-9e66a6c091e6@st.com>
+ <f486bd08-b562-5101-01ba-c8e36ac0d83b@metafoo.de>
+ <84b7cbab-1342-7f80-cab6-132324e002a4@st.com>
+Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
+        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
+        knaack.h@gmx.de, pmeerw@pmeerw.net
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <c306b51a-da1f-2e92-afb5-1bd2c19484a0@kernel.org>
+Date: Sun, 5 Mar 2017 11:14:30 +0000
 MIME-Version: 1.0
-In-Reply-To: <CAGb2v67913XnRNv9bYty5WcGLAWHYMM6=M9BVmTZ3wjReh_UBg@mail.gmail.com>
+In-Reply-To: <84b7cbab-1342-7f80-cab6-132324e002a4@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi Chen-Yu,
-
-Sorry for the late reply.
-
-On 21/02/2017 05:55, Chen-Yu Tsai wrote:
-> On Wed, Feb 15, 2017 at 4:53 PM, Quentin Schulz
-> <quentin.schulz@free-electrons.com> wrote:
->> Hi,
+On 28/02/17 10:14, Fabrice Gasnier wrote:
+> On 02/28/2017 09:34 AM, Lars-Peter Clausen wrote:
+>> On 02/28/2017 09:21 AM, Fabrice Gasnier wrote:
+>>> On 02/25/2017 04:11 PM, Jonathan Cameron wrote:
+>>>> On 24/02/17 16:04, Fabrice Gasnier wrote:
+>>>>> On 02/19/2017 01:09 PM, Jonathan Cameron wrote:
+>>>>>> On 15/02/17 16:55, Fabrice Gasnier wrote:
+>>>>>>> Add documentation for 'st,adc-res' dt optional property.
+>>>>>>>
+>>>>>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
+>>>>>> I'm happy with this, but would like to leave time for a device tree review.
+>>>>>>
+>>>>>> Ultimately we may well want to make this a generic property and call it
+>>>>>> something
+>>>>>> like adc-resolution but perhaps we need to wait until we have a few more
+>>>>>> devices
+>>>>>> supporting setting it via device tree to figure out what the best
+>>>>>> interface is.
+>>>>>> It would exactly be a problem to support this as a deprecated binding at
+>>>>>> that
+>>>>>> point.
+>>>>>
+>>>>> Hi Jonathan,
+>>>>>
+>>>>> I agree with you on this... It may be better to have generic property
+>>>>> for this, especially if you see that it will come in the near future.
+>>>>> May I suggest this prop to be less restrictive, e.g. like
+>>>>> resolution-bits as is may also be worth for other device types, e.g.
+>>>>> DAC as an example ?>
+>>>> Sure, why not - no loss of meaning here.  We may never use it for anything
+>>>> else but that doesn't matter.
+>>>
+>>> Hi Jonathan,
+>>>
+>>> Following Rob's comment, how you see such a common property can be
+>>> integrated. Currently I don't see much devices are doing this.
+>>> Do you have ideas or preferences on this ?
+>>>
+>>> - Do you think replacing 'st,adc-res' by 'resolution-bits' in current
+>>> patchset is enough for now ?
 >>
->> On 15/02/2017 01:46, Liam Breck wrote:
->>>
->>> On Tue, 14 Feb 2017 10:40:55 +0100 Quentin Schulz wrote:
->>>> This adds the constant-charge-current property to the list of optional
->>>> properties of the battery.
->>>>
->>>> The constant charge current is critical for batteries as they can't
->>>> handle all charge currents.
->>>>
->>>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
->>>> ---
->>>>
->>>> added in v3
->>>>
->>>>  Documentation/devicetree/bindings/power/supply/battery.txt | 2 ++
->>>
->>> Is constant-charge-current dependent on the battery (e.g. capacity, nominal voltage, etc) or the
->>> system (charger chip, input current/voltage, etc)?
->>>
->>> It belongs in Doc.../power/supply/battery.txt if it's a characteristic of the battery.
->>>
->>> Note, this page asserts that constant-current charging applies to NiMH batteries:
->>> http://power-topics.blogspot.com/2016/05/constant-voltage-constant-current.html
->>>
->>> Related properties to be added to battery.txt near-future in a patchset for the BQ24190
->>> charger are as follows. These are not currently in enum power_supply_property, so the actual names
->>> are still to be decided.
->>>
->>> precharge-current-microamp:
->>>    maximum charge current during precharge phase (typically 20% of battery capacity)
->>>
->>> termination-current-microamp (or endcharge-current):
->>>    a charge cycle terminates when the battery voltage is above recharge threshold,
->>>    and the current is below this setting (typically 10% of battery capacity)
->>>
+>> That name would be a bit confusing. Considering that the devicetree
+>> describes th capabilities of the hardware this name would suggest that this
+>> is the resolution supported by the device.
 >>
->> We have a client with a board whose battery accepts a maximum of 300mA
->> for charging. So depending on the battery, we cannot have any charging
->> current we want. The AXP PmMICs set constant charge current in a range
->> of 300mA-1800mA, so it is enforced by the charger but needs to be
->> adapted depending on the battery present in the system.
+>> If we want to allow selecting runtime configuration parameters for IIO
+>> devices from the devicetree we should probably follow the precedence set by
+>> the clock framework and use properties with the 'assigned-' prefix.
 > 
-> May I ask the capacity of the battery in question?
+> Hi Lars,
 > 
+> This makes sense. Then, do you see 'assigned-resolution-bits' as a
+> better candidate ?
+> Also, do you think listing all devices caps in property like 'resolutions-bits', e.g. 'resolutions-bits = <6 8 10 12>', is
+> suitable/necessary ?
+Only suitable / necessary if what the options are is dependent on the hardware
+in some way that is not adequately described by the compatibility element.
+> 
+>>
+>> But to be honest I'm not convinced yet that the whole approach of allowing
+>> runtime configuration parameters to be configured via the devicetree is the
+>> right approach. Converters and sensors often have a lot of runtime
+>> configurable parameters, typically we expose them to the application layer
+>> to allow maximum flexibility. Why is the resolution special in this case and
+>> should be pre-configured via the devicetree instead?
+> 
+To be cynical because it is PITA to change the assumption of it being
+fixed :)  Oh well, another design decision that we got wrong a long time
+back.
 
-It is a 400mAh battery.
+> As I understand it, currently lots of devices have hard-coded 
+> (maximum?) resolution, then exposed to application layer as read only
+> data format. Then resolution depends on HW used (e.g. sensor,
+> converter). Depending on the application board, it may be worth to
+> offer pre-configured intermediate/lower resolution depending on
+> analog sources. Is it ok to offer devicetree pre-configuration ?
+> 
+Hmm.  It is in theory acceptable to put default values that make sense
+for a given set of hardware in device tree.  They are kind of a 
+'well this will work' state.  Make sense if there are states that
+don't make sense for a given hardware setup.
 
-Quentin
+If all states make equally good sense, then perhaps we should look at
+fixing up the IIO core to handle variable resolution devices.
+That strikes me as a non trivial exercise, but could probably be
+done.  We'd need to keep the simplicity of the current code
+for the vast majority of devices, but provide some relatively clean
+way of changing it when needed.
 
-> Typically one charges LiPo batteries at no more than 1C. So if it's
-> a 1800 mAh battery, the charge current should be no more than 1800 mA.
-> 
-> ChenYu
-> 
->> The AXP PMICs charge battery with constant current (Ichrg) between the
->> trickle voltage (Vtrkl which is ~3.0V) and the targeted voltage (Vtrgt;
->> which seems to be the voltage telling the battery is fully charged).
->>
->> So if I understand correctly, "my" constant-charge-current would be
->> located in the charging cycle between your precharge-current-microamp
->> and the termination-current-microamp as it is the current for the
->> charging process as a whole.
->>
->> See here[1] for the explanation in the datasheet (page 20).
->>
->> That would definitely match what is explained in your link for constant
->> current.
->>
->> [1] http://dl.linux-sunxi.org/AXP/AXP209_Datasheet_v1.0en.pdf
->>
->> Let me know if something seems odd,
->> Thanks,
->> Quentin
->>
->> --
->> Quentin Schulz, Free Electrons
->> Embedded Linux and Kernel engineering
->> http://free-electrons.com
-> 
-> _______________________________________________
-> linux-arm-kernel mailing list
-> linux-arm-kernel@lists.infradead.org
-> http://lists.infradead.org/mailman/listinfo/linux-arm-kernel
-> 
+Whilst I'm happy if someone else wants to look at this, it is
+nowhere near the top of my list!
 
--- 
-Quentin Schulz, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+Jonathan
+> Best Regards,
+> Fabrice
+>>
+>> - Lars
+>>
+> -- 
+> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> the body of a message to majordomo@vger.kernel.org
+> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+
