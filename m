@@ -1,9 +1,9 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59604 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59555 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752019AbdCELA1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 06:00:27 -0500
-Subject: Re: [RFC v2 6/7] IIO: add bindings for stm32 DFSDM filter
+        with ESMTP id S1752364AbdCEKzI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 05:55:08 -0500
+Subject: Re: [RFC v2 7/7] IIO: ADC: add stm32 DFSDM support
 To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -15,9 +15,9 @@ To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
         Mark Brown <broonie@kernel.org>
 References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
- <1487003909-11710-7-git-send-email-arnaud.pouliquen@st.com>
- <328b9448-2125-07a0-9011-8fd01d06f271@kernel.org>
- <7fbfc694-3685-ec90-6292-5a5157a8a0d2@st.com>
+ <1487003909-11710-8-git-send-email-arnaud.pouliquen@st.com>
+ <0fa13efc-6842-3a61-fa3c-433a93ebcf10@kernel.org>
+ <fe86eca5-5dca-efb3-45d2-46e193f60dc9@st.com>
 Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org"
         <linux-arm-kernel@lists.infradead.org>,
@@ -28,221 +28,508 @@ Cc: "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         Alexandre TORGUE <alexandre.torgue@st.com>,
         Olivier MOYSAN <olivier.moysan@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <bfabb5c4-fdd3-efe9-08f2-f42a0dd30166@kernel.org>
-Date: Sun, 5 Mar 2017 11:00:23 +0000
+Message-ID: <72e20af3-74d6-5efb-d3a7-7c108e59884f@kernel.org>
+Date: Sun, 5 Mar 2017 10:55:02 +0000
 MIME-Version: 1.0
-In-Reply-To: <7fbfc694-3685-ec90-6292-5a5157a8a0d2@st.com>
+In-Reply-To: <fe86eca5-5dca-efb3-45d2-46e193f60dc9@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/02/17 10:47, Arnaud Pouliquen wrote:
+On 27/02/17 10:09, Arnaud Pouliquen wrote:
+> Hello Jonathan,
 > 
+> Late answer... sorry for this.
 > 
-> On 02/19/2017 04:00 PM, Jonathan Cameron wrote:
+> I will integrate your remark in V2.
+> Please find my answers in-line
+> 
+> Regards
+> Arnaud
+> 
+> On 02/19/2017 03:46 PM, Jonathan Cameron wrote:
 >> On 13/02/17 16:38, Arnaud Pouliquen wrote:
->>> Add bindings that describe Digital Filter for Sigma Delta
->>> Modulators. DFSDM allows to connect sigma delta
->>> modulators and/or PDM microphones.
+>>> Add driver for stm32 DFSDM IP. This IP converts a sigma delta stream in
+>>> n bit samples through a low pass filter and an integrator.
 >>>
 >>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->>> ---
->>>  .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        | 125 +++++++++++++++++++++
->>>  1 file changed, 125 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
->>> new file mode 100644
->>> index 0000000..83937cb
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
->>> @@ -0,0 +1,125 @@
->>> +STMicroelectronics STM32 DFSDM ADC device driver
->>> +
->>> +
->>> +STM32 DFSDM ADC is a sigma delta analog-to-digital converter dedicted to
->>> +interface external sigma delta modulators to stm32 micro controlers.
->>> +it is mainly targeted for:
->>> +- Sigma delta modulators ( motor control, metering...)
->>> +- PDM microphones ( audio digital microphone)
->>> +
->>> +It featured with up to 8 serial digital interface (SPI or Manchester) and
->>> +up to 4 filters.
->>> +
->>> +Each instance of the sub-drivers uses one filter instance.
->>> +
->>> +Contents of a stm32 dfsdmc root node:
->>> +-------------------------------------
->>> +Required properties:
->>> +- compatible: Should be "st,stm32-dfsdm-adc".
->>> +- reg: Offset and length of the DFSDM block register set.
->>> +- clocks: IP and serial interfaces clocking. Should be set according
->>> +		to rcc clock ID and "clock-names".
->>> +- clock-names: Input clock name "dfsdm" must be defined,
->>> +		"audio" is optional. If defined CLKOUT is based on the audio
->>> +		clock, else "dfsdm" is used.
->>> +- clocks: Clock for the analog circuitry (common to all ADCs).
->>> +- clock-names: Must be "adc".
->>> +
->>> +Optional properties:
->>> +- st,clkout-freq: needed for SPI master mode
->>> +		  SPI clock OUT frequency (Hz).This clock must be set according
->>> +		  to "clock" property. Frequency must be a multiple of the rcc
->>> +		  clock frequency. If not, clkout frequency will not be
->>> +		  accurate.
->>> +
->>> +Contents of a stm32 DFSDM child nodes:
->>> +----------------------------------------
->>> +
->>> +Required properties:
->>> +- compatible: Must be:
->>> +	"st,stm32-dfsdm-adc" for sigma delta ADCs
->>> +	"st,stm32-dfsdm-pdm" for audio digital microphone.
->>> +- reg: Specifies the DFSDM filter instance.
->>> +- interrupts: IRQ lines connected to each DFSDM filter instance.
->>> +- st,adc-channels:	List of single-ended channels muxed for this ADC.
->>> +- st,adc-channel-names:	List of single-ended channels Name.
->>> +- st,dai-filter-order:  SinC filter order from 0 to 5.
->>> +			0: FastSinC
->>> +			[1-5]: order 1 to 5.
->>> +			For audio purpose it is recommended to use order 3 to 5.
->>> +
->>> +Required properties for "st,stm32-dfsdm-adc" compatibility:
->>> +- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
->>> +- io-channels: from common iio binding. use to pipe external sigma delta
->>> +		modulator or internal ADC output to dfsdm channel.
->>> +
->>> +Required properties for "st,stm32-dfsdm-pdm" compatibility:
->>> +- #sound-dai-cells: must be set to 0.
->>> +- dma: DMA controller phandle and DMA request line associated to the
->>> +		filter instance ( specified by the field "reg")
->>> +- dma-names: must be "rx"
->>> +
->>> +Optional properties:
->>> +- st,adc-channel-types:	Single-ended channel input type. Default value is 0.
->>> +			- "SPI_R": SPI with data on rising edge (default)
->>> +			- "SPI_F": SPI with data on falling edge
->>> +			- "MANCH_R": manchester codec, rising edge = logic 0
->>> +			- "MANCH_F": manchester codec, falling edge = logic 1
->>> +- st,adc-channel-clk-src: Conversion clock source. default value is 1.
->>> +			  - "CLKIN": External SPI clock (CLKIN x)
->>> +			  - "CLKOUT": internal SPI clock (CLKOUT) (default)
->>> +			  - "CLKOUT_F": internal SPI clock divided by 2 (falling edge).
->>> +			  - "CLKOUT_R": internal SPI clock divided by 2 (rising edge).
->>> +
->>> +- st,adc-alt-channel: Must be defined if Two sigma delta modulator are
->>> +			  connected on same SPI input.
->>> +			  If not set channel n is connected to SPI input n.
->>> +			  If set channel n is connected to SPI input n + 1.
->>> +
->>> +- st,filter0-sync: Set to 1 to synchronize with DFSDM filter instance 0.
->>> +		   to used for multi microphone synchronization.
->>> +
->>> +Example of a sigma delta adc purpose:
->>> +	ads1202: simple_sd_adc@0 {
->>> +		compatible = "sd-modulator";
->> This suggests to me that we ought to have a primary compatible of the actual part
->> number.  Down the line I suspect we will want to distinguish between the different
->> ADCs and it's kind of easier if we do it from the start.  May not be obvious
->> later which the 'default sd-modulator' is.
-> Not sure to understand your point... you mean use ADC name instead, for
-> compatibility as suggested by Rob?
-Yes, though you can do it as (and I may have the syntax wrong)
-compatible = "ads1202", "sd-modulator" perhaps giving a fallback.
-Better than having people 'lie' about the connected part in device trees
-because they don't want to push the change upstream to add their part to those
-supported.
-
-This is similar to what we do for SoC ADCs where they are in theory compatible
-across all supported parts, but in reality there are sometimes errata etc.
-Allows people to be as specific as possible in their device trees, without
-precluding use in the generic form if the part isn't explicitly supported.
-
-Up to Rob though on whether he's happy with that trick here...
-
-> 
->>> +		#io-channel-cells = <1>;
->>> +		status = "okay";
->>> +	};
->>> +	dfsdm: dfsdm@40017000 {
->>> +		compatible = "st,stm32h7-dfsdm";
->>> +		reg = <0x40017000 0x400>;
->>> +		clocks = <&timer_clk>;
->>> +		clock-names = "dfsdm";
->>> +
->>> +		dfsdm_adc0: dfsdm-adc0@0 {
->>> +			compatible = "st,stm32-dfsdm-adc";
->>> +			#io-channel-cells = <1>;
->>> +			reg = <0>;
->>> +			interrupts = <110>;
->>> +			st,adc-channels = <0>;
->>> +			st,adc-channel-names = "in0";
->>> +			st,adc-channel-types = "SPI_R";
->>> +			st,adc-channel-clk-src = "CLKOUT";
->>> +			io-channels = <&ads1202 0>;
->>> +	};
->>> +
->>> +Example of a pdm microphone purpose:
->> Is there nothing about the particular pdm microphone that is
->> worth giving it an explicit representation in the device
->> tree?  I've no idea having never used one!
->>> +	dfsdm: dfsdm@40017000 {
->>> +		compatible = "st,stm32h7-dfsdm";
->>> +		reg = <0x40017000 0x400>;
->>> +		clocks = <&timer_clk>;
->>> +		clock-names = "dfsdm";
->>> +
->>> +		dfsdm_pdm0: dfsdm-pdm@0 {
->>> +			compatible = "st,stm32-dfsdm-pdm";
->>> +			#sound-dai-cells = <0>;
->>> +			reg = <0>;
->>> +			interrupts = <110>;
->>> +			dmas = <&dmamux1 102 0x400 0x00>;
->>> +			dma-names = "rx";
->>> +			st,adc-channels = <0>;
->>> +			st,adc-channel-names = "pdm1";
->>> +			st,adc-channel-types = "SPI_R";
->>> +			st,adc-channel-clk-src = "CLKOUT";
->>> +		};
->>> +	}
->>>
+>> I think this fits together rather nicely.  As before, various comments that
+>> are irrelevant to an RFC (I just couldn't stop myself ;) and a few more
+>> relevant ones.
 >>
-> Here is a way to use it in device tree.
-> - dmic_0 is an ASOC generic device that handles the PDM microphone
-> - dai-link allows to bind the DFSDM with the SD-modulator in ALSA card
-> declaration.
+>> So as far as I'm concerned: Looking forward to the full version!
+>> (as long as Mark and others are happy of course)
+>>
+>> I definitely want to ultimately see buffered and dma support on the
+>> ADC driver side of things as well but that can come later.
+> Ok, I suppose that DMA in cyclic mode should also be required for some
+> other IIO driver...
+>>
+>> Jonathan
+>>> ---
+>>>  drivers/iio/adc/Kconfig            |  13 +
+>>>  drivers/iio/adc/Makefile           |   1 +
+>>>  drivers/iio/adc/stm32-dfsdm-adc.c  | 483 +++++++++++++++++++++++++++++++++++++
+>>>  drivers/iio/adc/stm32-dfsdm-core.c | 273 +++++++++++++++++++++
+>>>  drivers/iio/adc/stm32-dfsdm.h      | 141 +++++++++++
+>>>  5 files changed, 911 insertions(+)
+>>>  create mode 100644 drivers/iio/adc/stm32-dfsdm-adc.c
+>>>  create mode 100644 drivers/iio/adc/stm32-dfsdm-core.c
+>>>  create mode 100644 drivers/iio/adc/stm32-dfsdm.h
+>>>
+>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>> index d4366ac..ab917b6 100644
+>>> --- a/drivers/iio/adc/Kconfig
+>>> +++ b/drivers/iio/adc/Kconfig
+>>> @@ -452,6 +452,19 @@ config STM32_ADC
+>>>  	  This driver can also be built as a module.  If so, the module
+>>>  	  will be called stm32-adc.
+>>>  
+>>> +config STM32_DFSDM_ADC
+>>> +	tristate "STMicroelectronics STM32 dfsdm adc"
+>>> +	depends on (ARCH_STM32 && OF) || COMPILE_TEST
+>>> +	select REGMAP
+>>> +	select REGMAP_MMIO
+>>> +	select IIO_HW_CONSUMER
+>>> +	help
+>>> +	  Select this option to enable the  driver for STMicroelectronics
+>>> +	  STM32 digital filter for sigma delta converter (ADC).
+>>> +
+>>> +	  This driver can also be built as a module.  If so, the module
+>>> +	  will be called stm32-adc-dfsdm-adc.
+>>> +
+>>>  config STX104
+>>>  	tristate "Apex Embedded Systems STX104 driver"
+>>>  	depends on X86 && ISA_BUS_API
+>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>>> index bd67144..5bcad23 100644
+>>> --- a/drivers/iio/adc/Makefile
+>>> +++ b/drivers/iio/adc/Makefile
+>>> @@ -43,6 +43,7 @@ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>>>  obj-$(CONFIG_STX104) += stx104.o
+>>>  obj-$(CONFIG_STM32_ADC_CORE) += stm32-adc-core.o
+>>>  obj-$(CONFIG_STM32_ADC) += stm32-adc.o
+>>> +obj-$(CONFIG_STM32_DFSDM_ADC) += stm32-dfsdm-adc.o stm32-dfsdm-core.o
+>>>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+>>>  obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+>>> diff --git a/drivers/iio/adc/stm32-dfsdm-adc.c b/drivers/iio/adc/stm32-dfsdm-adc.c
+>>> new file mode 100644
+>>> index 0000000..8f9c3263
+>>> --- /dev/null
+>>> +++ b/drivers/iio/adc/stm32-dfsdm-adc.c
+>>> @@ -0,0 +1,483 @@
+>>> +/*
+>>> + * This file is part of STM32 DFSDM ADC driver
+>>> + *
+>>> + * Copyright (C) 2016, STMicroelectronics - All Rights Reserved
+>>> + * Author: Arnaud Pouliquen <arnaud.pouliquen@st.com>.
+>>> + *
+>>> + * License type: GPLv2
+>>> + *
+>>> + * This program is free software; you can redistribute it and/or modify it
+>>> + * under the terms of the GNU General Public License version 2 as published by
+>>> + * the Free Software Foundation.
+>>> + *
+>>> + * This program is distributed in the hope that it will be useful, but
+>>> + * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
+>>> + * or FITNESS FOR A PARTICULAR PURPOSE.
+>>> + * See the GNU General Public License for more details.
+>>> + *
+>>> + * You should have received a copy of the GNU General Public License along with
+>>> + * this program. If not, see <http://www.gnu.org/licenses/>.
+>>> + */
+>>> +
+>>> +#include <linux/interrupt.h>
+>>> +#include <linux/io.h>
+>>> +#include <linux/module.h>
+>>> +#include <linux/of.h>
+>>> +#include <linux/platform_device.h>
+>>> +#include <linux/slab.h>
+>>> +
+>>> +#include <linux/iio/hw_consumer.h>
+>>> +#include <linux/iio/iio.h>
+>>> +#include <linux/iio/sysfs.h>
+>>> +
+>>> +#include <sound/stm32-adfsdm.h>
+>>> +
+>>> +#include "stm32-dfsdm.h"
+>>> +
+>>> +enum stm32_dfsdm_mode {
+>>> +	DFSDM_ADC, /* ADC mode, access through IIO ABI */
+>>> +	DFSDM_AUDIO /* Audio mode, access through ASoC ABI */
+>>> +};
+>>> +
+>>> +struct stm32_dfsdm_adc {
+>>> +	struct stm32_dfsdm *common;
+>>> +
+>>> +	unsigned int fl_id;
+>>> +	unsigned int oversamp;
+>>> +	unsigned int clk_freq;
+>>> +
+>>> +	enum stm32_dfsdm_mode mode;
+>>> +	struct platform_device *audio_pdev;
+>>> +
+>>> +	void (*overrun_cb)(void *context);
+>>> +	void *cb_context;
+>>> +
+>>> +	/* Hardware consumer structure for Front End iio */
+>> IIO
+>>> +	struct iio_hw_consumer *hwc;
+>>> +};
+>>> +
+>>> +static const enum stm32_dfsdm_mode stm32_dfsdm_data_adc = DFSDM_ADC;
+>>> +static const enum stm32_dfsdm_mode stm32_dfsdm_data_audio = DFSDM_AUDIO;
+>>> +
+>>> +struct stm32_dfsdm_adc_devdata {
+>>> +	enum stm32_dfsdm_mode mode;
+>>> +	const struct iio_info *info;
+>>> +};
+>>> +
+>>> +static int stm32_dfsdm_set_osrs(struct stm32_dfsdm_adc *adc, bool fast,
+>>> +				unsigned int oversamp)
+>>> +{
+>>> +	/*
+>>> +	 * TODO
+>>> +	 * This function tries to compute filter oversampling and integrator
+>>> +	 * oversampling, base on oversampling ratio requested by user.
+>>> +	 */
+>>> +
+>>> +	return 0;
+>>> +};
+>>> +
+>>> +static int stm32_dfsdm_single_conv(struct iio_dev *indio_dev,
+>>> +				   const struct iio_chan_spec *chan, int *res)
+>>> +{
+>>> +	/* TODO: Perform conversion instead of sending fake value */
+>>> +	dev_dbg(&indio_dev->dev, "%s\n", __func__);
+>> :( Definitely an RFC
+>>> +
+>>> +	*res = chan->channel + 0xFFFF00;
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int stm32_dfsdm_write_raw(struct iio_dev *indio_dev,
+>>> +				 struct iio_chan_spec const *chan,
+>>> +				 int val, int val2, long mask)
+>>> +{
+>>> +	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>>> +		ret = stm32_dfsdm_set_osrs(adc, 0, val);
+>>> +		if (!ret)
+>>> +			adc->oversamp = val;
+>> If no reason to carry on,(i.e. nothing to unwind) return directly from within
+>> the switch statement.
+>>> +		break;
+>>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +		if (adc->mode == DFSDM_AUDIO)
+>>> +			ret = stm32_dfsdm_set_osrs(adc, 0, val);
+>>> +		else
+>>> +			ret = -EINVAL;
+>>> +		break;
+>>> +
+>>> +	default:
+>>> +		ret = -EINVAL;
+>>> +	}
+>>> +
+>>> +	return ret;
+>>> +}
+>>> +
+>>> +static int stm32_dfsdm_read_raw(struct iio_dev *indio_dev,
+>>> +				struct iio_chan_spec const *chan, int *val,
+>>> +				int *val2, long mask)
+>>> +{
+>>> +	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	dev_dbg(&indio_dev->dev, "%s\n", __func__);
+>>> +	switch (mask) {
+>>> +	case IIO_CHAN_INFO_RAW:
+>>> +		if (adc->hwc) {
+>>> +			ret = iio_hw_consumer_enable(adc->hwc);
+>>> +			if (ret < 0) {
+>>> +				dev_err(&indio_dev->dev,
+>>> +					"%s: iio enable failed (channel %d)\n",
+>>> +					__func__, chan->channel);
+>>> +				return ret;
+>>> +			}
+>> Not an error if hwc not available?
+> ASoC framework requests to handle a codec driver. So in case of PDM
+> usecase, no IIO SD modulator device is used, instead an ASoC generic
+> dmic-codec device is probed. In other words the link between the DFSDM
+> and the external SD-modulator has to be done in ASOC for PDMs and in
+> IIO for ADCs.
+Fair enough.  Please add a comment in the code to that effect so others
+in future know what is going on (and for when I inevitably forget!)
 > 
-> 	dmic0: dmic_0@0 {
-> 		compatible = "dmic-codec";
-> 		#sound-dai-cells = <0>;
-> 
-> 		status = "okay";
-> 	};
-> 
-> 	sound_dfsdm_pdm {
-> 		compatible = "simple-audio-card";
-> 		simple-audio-card,name = "dfsdm_pdm";
-> 		status = "okay";
-> 
-> 		dfsdm0_mic0: simple-audio-card,dai-link@0 {
-> 			format = "pdm";
-> 			bitclock-master = <&dmic0_codec>;
-> 			cpu {
-> 				system-clock-frequency= <2480000>;
-> 				sound-dai = <&dfsdm_pdm0>;
-> 			};
-> 			dmic0_codec: codec {
-> 				sound-dai = <&dmic0>;
-> 			};
-> 		};
-> 	};
-> };
-That's fine.  I was just wondering if they ever had an 'smarts' 
-that might make it sensible to provide an explicit description like
-we are doing for the ADC part being used.
+>>> +		}
+>>> +		ret = stm32_dfsdm_single_conv(indio_dev, chan, val);
+>>> +		if (ret < 0) {
+>>> +			dev_err(&indio_dev->dev,
+>>> +				"%s: conversion failed (channel %d)\n",
+>>> +				__func__, chan->channel);
+>>> +			return ret;
+>>> +		}
+>>> +
+>>> +		if (adc->hwc)
+>>> +			iio_hw_consumer_disable(adc->hwc);
+>>> +
+>>> +		return IIO_VAL_INT;
+>>> +
+>>> +	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+>>> +		*val = adc->oversamp;
+>>> +
+>>> +		return IIO_VAL_INT;
+>>> +
+>>> +	case IIO_CHAN_INFO_SAMP_FREQ:
+>>> +		*val = DIV_ROUND_CLOSEST(adc->clk_freq, adc->oversamp);
+>>> +
+>>> +		return IIO_VAL_INT;
+>>> +	}
+>>> +
+>>> +	return -EINVAL;
+>>> +}
+>>> +
+>>> +static const struct iio_info stm32_dfsdm_info_adc = {
+>>> +	.read_raw = stm32_dfsdm_read_raw,
+>>> +	.write_raw = stm32_dfsdm_write_raw,
+>>> +	.driver_module = THIS_MODULE,
+>>> +};
+>>> +
+>>> +static const struct iio_info stm32_dfsdm_info_audio = {
+>>> +	.read_raw = stm32_dfsdm_read_raw,
+>>> +	.write_raw = stm32_dfsdm_write_raw,
+>>> +	.driver_module = THIS_MODULE,
+>>> +};
+>> Hohum. These two are the same, why two copies?  Mind you for the audio
+>> you can't write or read anything so you could drop the callbacks.
+> yes to rework.
+>>> +
+>>> +const struct stm32_dfsdm_adc_devdata stm32_dfsdm_devdata_adc = {
+>>> +	.mode = DFSDM_ADC,
+>>> +	.info = &stm32_dfsdm_info_adc,
+>>> +};
+>>> +
+>>> +const struct stm32_dfsdm_adc_devdata stm32_dfsdm_devdata_audio = {
+>>> +	.mode = DFSDM_AUDIO,
+>>> +	.info = &stm32_dfsdm_info_audio,
+>>> +};
+>>> +
+>>> +static irqreturn_t stm32_dfsdm_irq(int irq, void *arg)
+>>> +{
+>>> +	/* TODO */
+>>> +	return IRQ_HANDLED;
+>>> +}
+>>> +
+>>> +static void stm32_dfsdm_set_sysclk(struct stm32_dfsdm_adc *adc,
+>>> +				   unsigned int freq)
+>>> +{
+>>> +	struct iio_dev *iio = iio_priv_to_dev(adc);
+>>> +
+>>> +	dev_dbg(&iio->dev, "%s:\n", __func__);
+>>> +
+>>> +	adc->clk_freq = freq;
+>>> +};
+>>> +
+>>> +	/* Set expected audio sampling rate */
+>>> +static int stm32_dfsdm_set_hwparam(struct stm32_dfsdm_adc *adc,
+>>> +				   struct stm32_dfsdm_hw_param *params)
+>>> +{
+>>> +	struct iio_dev *iio = iio_priv_to_dev(adc);
+>>> +
+>>> +	dev_dbg(&iio->dev, "%s for rate %d\n", __func__, params->rate);
+>>> +
+>>> +	return stm32_dfsdm_set_osrs(adc, 0, params->rate);
+>>> +};
+>>> +
+>>> +	/* Called when ASoC starts an audio stream setup. */
+>>> +static int stm32_dfsdm_audio_startup(struct stm32_dfsdm_adc *adc)
+>>> +{
+>>> +	struct iio_dev *iio = iio_priv_to_dev(adc);
+>>> +
+>>> +	dev_dbg(&iio->dev, "%s\n", __func__);
+>>> +
+>>> +	return 0;
+>>> +};
+>>> +
+>>> +	/* Shuts down the audio stream. */
+>> Odd indenting.
+>>> +static void stm32_dfsdm_audio_shutdown(struct stm32_dfsdm_adc *adc)
+>>> +{
+>>> +	struct iio_dev *iio = iio_priv_to_dev(adc);
+>>> +
+>>> +	dev_dbg(&iio->dev, "%s\n", __func__);
+>>> +};
+>>> +
+>>> +	/*
+>>> +	 * Provides DMA source physicla addr to allow ALsa to handle DMA
+>>> +	 * transfers.
+>> physical - please run a spell checker over the comments.
+>>> +	 */
+>>> +static dma_addr_t stm32_dfsdm_get_dma_source(struct stm32_dfsdm_adc *adc)
+>>> +{
+>>> +	struct iio_dev *iio = iio_priv_to_dev(adc);
+>>> +
+>>> +	dev_dbg(&iio->dev, "%s\n", __func__);
+>>> +
+>>> +	return (dma_addr_t)(adc->common->phys_base + DFSDM_RDATAR(adc->fl_id));
+>>> +};
+>>> +
+>>> +/* Register callback to treat underrun and overrun issues */
+>>> +static void stm32_dfsdm_register_xrun_cb(struct stm32_dfsdm_adc *adc,
+>>> +					 void (*overrun_cb)(void *context),
+>>> +					 void *context)
+>>> +{
+>>> +	struct iio_dev *iio = iio_priv_to_dev(adc);
+>>> +
+>>> +	dev_dbg(&iio->dev, "%s\n", __func__);
+>>> +	adc->overrun_cb = overrun_cb;
+>>> +	adc->cb_context = context;
+>>> +};
+>>> +
+>>> +const struct stm32_adfsdm_codec_ops stm32_dfsdm_audio_ops = {
+>>> +	.set_sysclk = stm32_dfsdm_set_sysclk,
+>>> +	.set_hwparam = stm32_dfsdm_set_hwparam,
+>>> +	.audio_startup = stm32_dfsdm_audio_startup,
+>>> +	.audio_shutdown = stm32_dfsdm_audio_shutdown,
+>>> +	.register_xrun_cb = stm32_dfsdm_register_xrun_cb,
+>>> +	.get_dma_source = stm32_dfsdm_get_dma_source
+>>> +};
+>> Hmm. I'm wondering if it might make sense to farm the audio stuff off
+>> to a separate file.  Potentially we'll have systems that are built with
+>> no audio support at all, so would be odd to have this stuff still provided.
+> Ok, this make sense if the API become generic.
+Probably worth doing even if we don't get more generic. Which is not to say
+I'm not in favour of more generic!
+>>
+>> What do you think?  Also provides an obvious clean bit to be Mark's problem
+>> (even if it's in the IIO directory ;)
+> I can't answer instead of Mark,( and perhaps i misunderstood...) but
+> regarding HDMI story (drivers shared between ASoC and DRM), not sure
+> that Mark accepts to have an ASoC drivers in IIO directory. So need a
+> part in ASoC that is customer of IIO driver...
+Sure.  That makes sense. Not sure exactly where the divide occurs.
 
-Sounds like no!
+If we end up with some non trivial audio specific code left behind in
+the IIO driver (to facilitate the bridge) then I'd still like that
+to be in a separate file within IIO with build magic to drop it if
+audio support isn't configured.
 > 
+>>> +
+>>> +static int stm32_dfsdm_adc_chan_init_one(struct iio_dev *indio_dev,
+>>> +					 struct iio_chan_spec *chan,
+>>> +					 int chan_idx)
+>>> +{
+>>> +	struct iio_chan_spec *ch = &chan[chan_idx];
+>>> +	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+>>> +	int ret;
+>>> +
+>>> +	dev_dbg(&indio_dev->dev, "%s:\n", __func__);
+>>> +	ret = of_property_read_u32_index(indio_dev->dev.of_node,
+>>> +					 "st,adc-channels", chan_idx,
+>>> +					 &ch->channel);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&indio_dev->dev,
+>>> +			" error parsing 'st,adc-channels' for idx %d\n",
+>>> +			chan_idx);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	ret = of_property_read_string_index(indio_dev->dev.of_node,
+>>> +					    "st,adc-channel-names", chan_idx,
+>>> +					    &ch->datasheet_name);
+>>> +	if (ret < 0) {
+>>> +		dev_err(&indio_dev->dev,
+>>> +			" error parsing 'st,adc-channel-names' for idx %d\n",
+>>> +			chan_idx);
+>>> +		return ret;
+>>> +	}
+>>> +
+>>> +	ch->type = IIO_VOLTAGE;
+>>> +	ch->indexed = 1;
+>>> +	ch->scan_index = chan_idx;
+>>> +	if (adc->mode == DFSDM_ADC) {
+>>> +		/*
+>>> +		 * IIO_CHAN_INFO_RAW: used to compute regular conversion
+>>> +		 * IIO_CHAN_INFO_SAMP_FREQ: used to indicate sampling frequency
+>>> +		 * IIO_CHAN_INFO_OVERSAMPLING_RATIO: used set oversampling
+>>> +		 */
+>>> +		ch->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>> +					 BIT(IIO_CHAN_INFO_SAMP_FREQ) |
+>>> +					 BIT(IIO_CHAN_INFO_OVERSAMPLING_RATIO);
+>> Very nice.  I was just thinking you should do this before I got here.
+>> Channels with no properties but still with an existence from the point of
+>> view of consumers using the buffered interface.  Potentially you 'could'
+>> provide some of the info as read only but why bother...
+>>> +	}
+>>> +
+>>> +	ch->scan_type.sign = 'u';
+>>> +	ch->scan_type.realbits = 24;
+>>> +	ch->scan_type.storagebits = 32;
+>>> +
+>>> +	return 0;
+>>> +}
+>>> +
+>>> +static int stm32_dfsdm_adc_chan_init(struct iio_dev *indio_dev)
+>>> +{
+>>> +	struct iio_chan_spec *channels;
+>>> +	struct stm32_dfsdm_adc *adc = iio_priv(indio_dev);
+>>> +	unsigned int num_ch;
+>>> +	int ret, chan_idx;
+>>> +
+>>> +	num_ch = of_property_count_u32_elems(indio_dev->dev.of_node,
+>>> +					     "st,adc-channels");
+>>> +	if (num_ch < 0 || num_ch >= adc->common->num_chs) {
+>>> +		dev_err(&indio_dev->dev, "Bad st,adc-channels?\n");
+>>> +		return num_ch < 0 ? num_ch : -EINVAL;
+>>> +	}
+>>> +
+>>> +	channels = devm_kcalloc(&indio_dev->dev, num_ch, sizeof(*channels),
+>>> +				GFP_KERNEL);
+>>> +	if (!channels)
+>>> +		return -ENOMEM;
+>>> +
+>>> +	if (adc->mode == DFSDM_ADC) {
+>>> +		/*
+>>> +		 * Bind to sd modulator iio device for ADC only.
+>>> +		 * For Audio the PDM microphone will be handled by ASoC
+>>> +		 */
+>>> +		adc->hwc = iio_hw_consumer_alloc(&indio_dev->dev);
+>>> +		if (IS_ERR(adc->hwc)) {
+>>> +			dev_err(&indio_dev->dev, "no backend found\n");
+>> Deferred probing a possibility? I'm not quite sure and you know what is going
+>> on here better than me ;)
+> Reading your comment i have a doubt... i will cross check
+> Idea here is that there is a customer-provider relationchip with the
+> sd-modulator driver. So need that sd-modulator driver is probed first.
+Should be fine, I hadn't thought that through.
+> 
+>>> +			return PTR_ERR(adc->hwc);
+>>> +		}
+>>> +	}
+>>> +
+>>> +	for (chan_idx = 0; chan_idx < num_ch; chan_idx++) {
+>>> +		ret = stm32_dfsdm_adc_chan_init_one(indio_dev, channels,
+>>> +						    chan_idx);
+>>> +		if (ret < 0)
+>>> +			goto free_hwc;
+>>> +	}
+>>> +
+>>> +	indio_dev->num_channels = num_ch;
+>>> +	indio_dev->channels = channels;
+>>> +
+>>> +	return 0;
+>>> +
+>>> +free_hwc:
+>>> +	if (adc->hwc)
+>>> +		iio_hw_consumer_free(adc->hwc);
+>>> +	return ret;
+>>> +}
+>>> +
+> [...]
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
