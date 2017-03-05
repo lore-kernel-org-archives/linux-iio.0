@@ -1,23 +1,24 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59679 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59570 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752444AbdCELPl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 06:15:41 -0500
-Subject: Re: [RFC v2 2/7] IIO: Add bindings for simple sigma delta adc
+        with ESMTP id S1752308AbdCEKzs (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 05:55:48 -0500
+Subject: Re: [RFC v2 5/7] ASoC: stm32: add DFSDM DAI support
 To: Arnaud Pouliquen <arnaud.pouliquen@st.com>,
-        Rob Herring <robh@kernel.org>
+        Mark Brown <broonie@kernel.org>
 References: <1487003909-11710-1-git-send-email-arnaud.pouliquen@st.com>
- <1487003909-11710-3-git-send-email-arnaud.pouliquen@st.com>
- <20170222151750.h5d7gycltwnk7b4t@rob-hp-laptop>
- <6943aaf5-b580-0fd1-7a2e-b99f7a266388@st.com>
-Cc: Mark Rutland <mark.rutland@arm.com>,
+ <1487003909-11710-6-git-send-email-arnaud.pouliquen@st.com>
+ <20170214174534.35ytbpax75mxcayg@sirena.org.uk>
+ <a9cf136c-2c8c-eafc-d175-4977c7ea4925@kernel.org>
+ <84f330ab-48a2-6e0b-ab95-6aab5b34c241@st.com>
+Cc: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
         "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
         "linux-arm-kernel@lists.infradead.org"
         <linux-arm-kernel@lists.infradead.org>,
@@ -28,90 +29,99 @@ Cc: Mark Rutland <mark.rutland@arm.com>,
         Alexandre TORGUE <alexandre.torgue@st.com>,
         Olivier MOYSAN <olivier.moysan@st.com>
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <dbf92596-d7b7-5bb0-2e59-cd54ffc78f4e@kernel.org>
-Date: Sun, 5 Mar 2017 11:04:06 +0000
+Message-ID: <08603733-2ff4-fe7d-46a5-b682215a6072@kernel.org>
+Date: Sun, 5 Mar 2017 10:55:45 +0000
 MIME-Version: 1.0
-In-Reply-To: <6943aaf5-b580-0fd1-7a2e-b99f7a266388@st.com>
+In-Reply-To: <84f330ab-48a2-6e0b-ab95-6aab5b34c241@st.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 27/02/17 11:15, Arnaud Pouliquen wrote:
-> Hello Rob,
+On 27/02/17 10:31, Arnaud Pouliquen wrote:
 > 
-> Please find my answers in-line
 > 
-> Regards,
-> 
-> Arnaud
-> 
-> On 02/22/2017 04:17 PM, Rob Herring wrote:
->> On Mon, Feb 13, 2017 at 05:38:24PM +0100, Arnaud Pouliquen wrote:
->>> Add documentation of device tree bindings to support
->>> sigma delta modulator in IIO framework.
+> On 02/19/2017 03:56 PM, Jonathan Cameron wrote:
+>> On 14/02/17 17:45, Mark Brown wrote:
+>>> On Mon, Feb 13, 2017 at 05:38:27PM +0100, Arnaud Pouliquen wrote:
 >>>
->>> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->>> ---
->>>  Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt | 13 +++++++++++++
->>>  1 file changed, 13 insertions(+)
->>>  create mode 100644 Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
->>>
->>> diff --git a/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt b/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
->>> new file mode 100644
->>> index 0000000..2b3968a
->>> --- /dev/null
->>> +++ b/Documentation/devicetree/bindings/iio/adc/simple_sd_adc.txt
->>> @@ -0,0 +1,13 @@
->>> +Device-Tree bindings for simple sigma delta adc
->>
->> What makes it "simple"?
-> "simple" sigma delta modulator are external chip that just converts
-> analog signal in sigma delta modulation. No configuration needs.
-> "Simple" is use to differentiate SD ADC that offers interfaces to
-> activate some internal processing ( gain, offset compensation...)
-My gut feeling would be to drop the term simple.  If device is more complex
-it needs to be explicitly supported, hence will be named whatever!
+>>> This looks basically fine as a system specific driver but as some of the
+>>> comments in here say there's bits of it could perhaps be genericised but
+>>> I'm not sure we need to do that right now.  I'm not sure the abstraction
+>>> is exactly comfortable but having another bit of hardware doing a bridge
+>>> to IIO might be the best way to figure out something better.
+>> Agreed.  To an extent we are fishing around in the dark at the moment.
+>> Lets wait until we have a few more cases of similar hardware before trying
+>> too much generalization.  This is acting as a good exploration of what
+>> is needed.
+> 
+> So for now i keep like this the API between ASOC and IIO, means not
+> generic API, and DMA handled in ASOC?
+> 
+> Then when some other hardwares come with same kind of requirements, we
+> will re-discuss a more generic way to do it...
+Exactly what I was thinking.
 > 
 >>
->>> +
->>> +Required properties:
->>> +- compatible: should be "sd-modulator".
->>> +- #io-channel-cells = <1>: See the IIO bindings section "IIO consumers".
->>> +
->>> +Example node:
->>> +
->>> +	ads1202: simple_sd_adc@0 {
+>> Ideally Lars might upstream some of the other bits he has in his tree
+>> to do with DSP processing on ADC streams and that might provide us with
+>> more clues on generality (at least at the lowest layers)
+>> (Apparently he's busy - though he always makes that excuse :)
+>> Joking aside, the exploration Analog and in particular Lars does around
+>> pushing the limits of how things interact is always useful!)
 >>
->> Is ads1202 the actual chip? Then it should be in the compatible list.
-> I tried to define a generic device to support several SD modulator
-> chips, inspired by ALSA "dmic-codec" device.
-> I have none exhaustive list of chip that can be handled by the driver,
-> but i found several devices that could match...
-> That why i did not use chip name in compatible list.
-> What should be the best way to do it?
-Rob, would the fallback approach (I brought this up in  another branch of
-this discussion) work here,
-
-compatible = "ads1201", "sd-modulator'?
-
-Main advantage is that people won't then lie in their board files just to
-avoid changing the driver to introduce their new part.  They'll just
-be less specific than would be ideal.
-> 
->>
->> unit address without a reg prop is an error. The node name should be 
->> "adc".
->>
->>> +		compatible = "sd-modulator";
->>> +		#io-channel-cells = <1>;
->>> +		status = "okay";
->>
->> Drop status from examples.
->>
->>> +	};
->>> -- 
->>> 1.9.1
 >>>
+>>>> +	.period_bytes_min = 40, /* 8 khz 5 ms */
+>>>> +	.period_bytes_max = 4 * PAGE_SIZE,
+>>>> +	.buffer_bytes_max = 16 * PAGE_SIZE
+>>>
+>>> What's the physical minimum period limit?  The comment makes this sound
+>>> like it's just made up.
+>>>
+>>>> +	unsigned int shift = 24 -priv->max_scaling;
+>>>> +	
+>>>
+>>> Missing space after -.
+>>>
+>>>> +	dev_dbg(dai->dev, "%s: enter\n", __func__);
+>>>> +	return 0;
+>>>> +	return snd_pcm_hw_constraint_list(substream->runtime, 0,
+>>>> +					  SNDRV_PCM_HW_PARAM_RATE,
+>>>> +					  &priv->rates_const);
+>>>
+>>> Looks like debug changes got left in?
+>>>
+>>>> +static int stm32_adfsdm_set_sysclk(struct snd_soc_dai *dai, int clk_id,
+>>>> +				   unsigned int freq, int dir)
+>>>> +{
+>>>> +	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
+>>>> +	struct stm32_adfsdm_pdata *pdata = priv->pdata;
+>>>> +
+>>>> +	dev_dbg(dai->dev, "%s: enter for dai %d\n", __func__, dai->id);
+>>>> +	if (dir == SND_SOC_CLOCK_IN) {
+>>>> +		pdata->ops->set_sysclk(pdata->adc, freq);
+>>>> +		priv->dmic_clk = freq;
+>>>> +	}
+>>>> +
+>>>> +	/* Determine supported rate which depends on SPI/manchester clock */
+>>>> +	return stm32_adfsdm_get_supported_rates(dai, &priv->rates_const.mask);
+>>>
+>>> Since the DAI is unidirectional it doesn't matter but obviously if it
+>>> weren't then the fact that getting the supported rates involves setting
+>>> the hwparams means this could become disruptive.  If we're going to
+>>> genericise this to be a more general IIO/ASoC bridge that could matter.
+>>>
+>>>> +static int stm32_adfsdm_dai_remove(struct snd_soc_dai *dai)
+>>>> +{
+>>>> +	dev_dbg(dai->dev, "%s: enter for dai %d\n", __func__, dai->id);
+>>>> +
+>>>> +	return 0;
+>>>> +}
+>>>
+>>> Remove empty functions, though in this case I think you want to add
+>>> something to disconnect the XRUN callback just in order to be sure it
+>>> can't be mistakenly called.
+>>>
+>>
 > --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
