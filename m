@@ -1,67 +1,55 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47861 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751621AbdCMUHF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:07:05 -0400
-Subject: Re: [PATCH 1/2] staging: iio: adis16209: Group similar macros into
- enums
-To: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
-        lars@metafoo.de, Michael.Hennerich@analog.com, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:35135 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750814AbdCEQhD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 11:37:03 -0500
+Received: by mail-wm0-f65.google.com with SMTP id z63so8023959wmg.2
+        for <linux-iio@vger.kernel.org>; Sun, 05 Mar 2017 08:37:02 -0800 (PST)
+From: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+To: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
+        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org
+Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
+        Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+Subject: [PATCH 2/2] staging: iio: adis16240: Group similar macros into enums
+Date: Sun,  5 Mar 2017 18:26:54 +0200
+Message-Id: <0124358fa11efba9989ed7a7158e5fbcb63df835.1488730643.git.narcisaanamaria12@gmail.com>
+In-Reply-To: <cover.1488730643.git.narcisaanamaria12@gmail.com>
 References: <cover.1488730643.git.narcisaanamaria12@gmail.com>
- <50dc46612578fa9cf84d1b8243c86dbf0aace3a4.1488730643.git.narcisaanamaria12@gmail.com>
-Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <0fbfe447-8f1f-2f01-b45a-6ace780af12f@kernel.org>
-Date: Mon, 13 Mar 2017 20:06:56 +0000
-MIME-Version: 1.0
-In-Reply-To: <50dc46612578fa9cf84d1b8243c86dbf0aace3a4.1488730643.git.narcisaanamaria12@gmail.com>
-Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 05/03/17 16:26, Narcisa Ana Maria Vasile wrote:
-> Group the scan indexes into an enum.
-> 
-> Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Group the scan indexes into an enum.
 
-Thanks,
+Signed-off-by: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>
+---
+ drivers/staging/iio/accel/adis16240.c | 14 ++++++++------
+ 1 file changed, 8 insertions(+), 6 deletions(-)
 
-Jonathan
-> ---
->  drivers/staging/iio/accel/adis16209.c | 18 ++++++++++--------
->  1 file changed, 10 insertions(+), 8 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
-> index 8ff537f..c28a099 100644
-> --- a/drivers/staging/iio/accel/adis16209.c
-> +++ b/drivers/staging/iio/accel/adis16209.c
-> @@ -152,14 +152,16 @@
->  
->  #define ADIS16209_ERROR_ACTIVE          BIT(14)
->  
-> -#define ADIS16209_SCAN_SUPPLY	0
-> -#define ADIS16209_SCAN_ACC_X	1
-> -#define ADIS16209_SCAN_ACC_Y	2
-> -#define ADIS16209_SCAN_AUX_ADC	3
-> -#define ADIS16209_SCAN_TEMP	4
-> -#define ADIS16209_SCAN_INCLI_X	5
-> -#define ADIS16209_SCAN_INCLI_Y	6
-> -#define ADIS16209_SCAN_ROT	7
-> +enum adis16209_scan {
-> +	ADIS16209_SCAN_SUPPLY,
-> +	ADIS16209_SCAN_ACC_X,
-> +	ADIS16209_SCAN_ACC_Y,
-> +	ADIS16209_SCAN_AUX_ADC,
-> +	ADIS16209_SCAN_TEMP,
-> +	ADIS16209_SCAN_INCLI_X,
-> +	ADIS16209_SCAN_INCLI_Y,
-> +	ADIS16209_SCAN_ROT,
-> +};
->  
->  static const u8 adis16209_addresses[8][1] = {
->  	[ADIS16209_SCAN_SUPPLY] = { },
-> 
+diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+index 9690e46..4d8ee37 100644
+--- a/drivers/staging/iio/accel/adis16240.c
++++ b/drivers/staging/iio/accel/adis16240.c
+@@ -192,12 +192,14 @@
+  * filling. This may change!
+  */
+ 
+-#define ADIS16240_SCAN_ACC_X	0
+-#define ADIS16240_SCAN_ACC_Y	1
+-#define ADIS16240_SCAN_ACC_Z	2
+-#define ADIS16240_SCAN_SUPPLY	3
+-#define ADIS16240_SCAN_AUX_ADC	4
+-#define ADIS16240_SCAN_TEMP	5
++enum adis16240_scan {
++	ADIS16240_SCAN_ACC_X,
++	ADIS16240_SCAN_ACC_Y,
++	ADIS16240_SCAN_ACC_Z,
++	ADIS16240_SCAN_SUPPLY,
++	ADIS16240_SCAN_AUX_ADC,
++	ADIS16240_SCAN_TEMP,
++};
+ 
+ static ssize_t adis16240_spi_read_signed(struct device *dev,
+ 					 struct device_attribute *attr,
+-- 
+1.9.1
 
