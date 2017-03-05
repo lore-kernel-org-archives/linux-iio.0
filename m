@@ -1,134 +1,238 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59673 "EHLO
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:59318 "EHLO
         saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751003AbdCELOh (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 06:14:37 -0500
-Subject: Re: [PATCH 1/2] dt-bindings: iio: stm32-adc: add option to set
- resolution
-To: Fabrice Gasnier <fabrice.gasnier@st.com>,
-        Lars-Peter Clausen <lars@metafoo.de>, linux@armlinux.org.uk,
-        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1487177757-19427-1-git-send-email-fabrice.gasnier@st.com>
- <1487177757-19427-2-git-send-email-fabrice.gasnier@st.com>
- <c2b73482-ae01-34b5-3c16-b7e63893259e@kernel.org>
- <b9f59559-c7a8-f575-0868-bd3b149a35c9@st.com>
- <d64bd76d-a2c6-6148-c126-fa73e96019a1@kernel.org>
- <79e01c5c-d27c-89ea-4d8f-9e66a6c091e6@st.com>
- <f486bd08-b562-5101-01ba-c8e36ac0d83b@metafoo.de>
- <84b7cbab-1342-7f80-cab6-132324e002a4@st.com>
-Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        knaack.h@gmx.de, pmeerw@pmeerw.net
+        with ESMTP id S1751539AbdCEKMD (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 05:12:03 -0500
+Subject: Re: [PATCH v2 1/2] iio: Allow triggers to be used as parent of others
+ triggers
+To: Jason Kridner <jkridner@gmail.com>
+References: <1487254984-20122-1-git-send-email-benjamin.gaignard@st.com>
+ <1487254984-20122-2-git-send-email-benjamin.gaignard@st.com>
+ <e1602065-2817-d380-7f7a-3961070c384f@kernel.org>
+ <3946A931-3146-47C4-BA21-0D382F526326@gmail.com>
+Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        fabrice.gasnier@st.com,
+        Benjamin Gaignard <benjamin.gaignard@st.com>,
+        linaro-kernel@lists.linaro.org
 From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <c306b51a-da1f-2e92-afb5-1bd2c19484a0@kernel.org>
-Date: Sun, 5 Mar 2017 11:14:30 +0000
+Message-ID: <60fd2423-b150-c543-9e12-aa66596a0c93@kernel.org>
+Date: Sun, 5 Mar 2017 10:11:58 +0000
 MIME-Version: 1.0
-In-Reply-To: <84b7cbab-1342-7f80-cab6-132324e002a4@st.com>
+In-Reply-To: <3946A931-3146-47C4-BA21-0D382F526326@gmail.com>
 Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/02/17 10:14, Fabrice Gasnier wrote:
-> On 02/28/2017 09:34 AM, Lars-Peter Clausen wrote:
->> On 02/28/2017 09:21 AM, Fabrice Gasnier wrote:
->>> On 02/25/2017 04:11 PM, Jonathan Cameron wrote:
->>>> On 24/02/17 16:04, Fabrice Gasnier wrote:
->>>>> On 02/19/2017 01:09 PM, Jonathan Cameron wrote:
->>>>>> On 15/02/17 16:55, Fabrice Gasnier wrote:
->>>>>>> Add documentation for 'st,adc-res' dt optional property.
->>>>>>>
->>>>>>> Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
->>>>>> I'm happy with this, but would like to leave time for a device tree review.
->>>>>>
->>>>>> Ultimately we may well want to make this a generic property and call it
->>>>>> something
->>>>>> like adc-resolution but perhaps we need to wait until we have a few more
->>>>>> devices
->>>>>> supporting setting it via device tree to figure out what the best
->>>>>> interface is.
->>>>>> It would exactly be a problem to support this as a deprecated binding at
->>>>>> that
->>>>>> point.
->>>>>
->>>>> Hi Jonathan,
->>>>>
->>>>> I agree with you on this... It may be better to have generic property
->>>>> for this, especially if you see that it will come in the near future.
->>>>> May I suggest this prop to be less restrictive, e.g. like
->>>>> resolution-bits as is may also be worth for other device types, e.g.
->>>>> DAC as an example ?>
->>>> Sure, why not - no loss of meaning here.  We may never use it for anything
->>>> else but that doesn't matter.
->>>
->>> Hi Jonathan,
->>>
->>> Following Rob's comment, how you see such a common property can be
->>> integrated. Currently I don't see much devices are doing this.
->>> Do you have ideas or preferences on this ?
->>>
->>> - Do you think replacing 'st,adc-res' by 'resolution-bits' in current
->>> patchset is enough for now ?
+On 25/02/17 21:12, Jason Kridner wrote:
+> 
+> 
+>> On Feb 19, 2017, at 10:08 AM, Jonathan Cameron <jic23@kernel.org> wrote:
 >>
->> That name would be a bit confusing. Considering that the devicetree
->> describes th capabilities of the hardware this name would suggest that this
->> is the resolution supported by the device.
->>
->> If we want to allow selecting runtime configuration parameters for IIO
->> devices from the devicetree we should probably follow the precedence set by
->> the clock framework and use properties with the 'assigned-' prefix.
+>>> On 16/02/17 14:23, Benjamin Gaignard wrote:
+>>> Add "parent_trigger" sysfs attribute to iio trigger to be able
+>>> to set a parent to the current trigger.
+>>> Parent trigger edges or levels could be used to control current
+>>> trigger status for example to start, stop or reset it.
+>> Reset needs a description as well. In this case I think it boils
+>> down to syncing a periodic timer driven trigger.
+>>>
+>>> Introduce validate_trigger function in iio_trigger_ops which does
+>>> the same than validate_device but with a trigger as second parameter.
+>>> Driver must implement this function and add dev_attr_parent_trigger
+>>> in their trigger attribute group to be able to use parent trigger
+>>> feature.
+>>>
+>>> Signed-off-by: Benjamin Gaignard <benjamin.gaignard@st.com>
+>> I think I'm fine with this but it's 'unusual' enough that I want
+>> to get to the point where we have some more people involved in
+>> the discussion.
 > 
-> Hi Lars,
+> I like the idea of enabling triggers to set triggers, but I'd love to
+> see something more generic. I've got the problem of trying to add
+> some state control to IIO triggers to reduce userspace intractions,
+> preferably without requiring users to create kernel drivers.
 > 
-> This makes sense. Then, do you see 'assigned-resolution-bits' as a
-> better candidate ?
-> Also, do you think listing all devices caps in property like 'resolutions-bits', e.g. 'resolutions-bits = <6 8 10 12>', is
-> suitable/necessary ?
-Only suitable / necessary if what the options are is dependent on the hardware
-in some way that is not adequately described by the compatibility element.
-> 
->>
->> But to be honest I'm not convinced yet that the whole approach of allowing
->> runtime configuration parameters to be configured via the devicetree is the
->> right approach. Converters and sensors often have a lot of runtime
->> configurable parameters, typically we expose them to the application layer
->> to allow maximum flexibility. Why is the resolution special in this case and
->> should be pre-configured via the devicetree instead?
-> 
-To be cynical because it is PITA to change the assumption of it being
-fixed :)  Oh well, another design decision that we got wrong a long time
-back.
+> To provide a more generic state machine, would injecting something
+> like BPF to connect triggers be better?
 
-> As I understand it, currently lots of devices have hard-coded 
-> (maximum?) resolution, then exposed to application layer as read only
-> data format. Then resolution depends on HW used (e.g. sensor,
-> converter). Depending on the application board, it may be worth to
-> offer pre-configured intermediate/lower resolution depending on
-> analog sources. Is it ok to offer devicetree pre-configuration ?
-> 
-Hmm.  It is in theory acceptable to put default values that make sense
-for a given set of hardware in device tree.  They are kind of a 
-'well this will work' state.  Make sense if there are states that
-don't make sense for a given hardware setup.
+In the simple case that sounds over engineered to me.
+Now for the more complex usecases (I guessing you are thinking
+about trying to move control loop control in kernel) then
+BPF or similar is certainly interesting.
 
-If all states make equally good sense, then perhaps we should look at
-fixing up the IIO core to handle variable resolution devices.
-That strikes me as a non trivial exercise, but could probably be
-done.  We'd need to keep the simplicity of the current code
-for the vast majority of devices, but provide some relatively clean
-way of changing it when needed.
-
-Whilst I'm happy if someone else wants to look at this, it is
-nowhere near the top of my list!
+I've been thinking about it for more simple stuff such as
+filtering data before passing to userspace but maybe there are
+more general usecases.
 
 Jonathan
-> Best Regards,
-> Fabrice
 >>
->> - Lars
+>> Jonathan
+>>>
+>>> version 2:
+>>> - add comment about parent trigger usage
+>>> - parent trigger attribute must be set the driver no more by IIO core
+>>> ---
+>>> .../ABI/testing/sysfs-bus-iio-trigger-sysfs        | 10 ++++
+>>> drivers/iio/industrialio-trigger.c                 | 68 ++++++++++++++++++++++
+>>> include/linux/iio/trigger.h                        |  7 ++-
+>>> 3 files changed, 84 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+>>> index 04ac623..9862562 100644
+>>> --- a/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+>>> +++ b/Documentation/ABI/testing/sysfs-bus-iio-trigger-sysfs
+>>> @@ -40,3 +40,13 @@ Description:
+>>>        associated file, representing the id of the trigger that needs
+>>>        to be removed. If the trigger can't be found, an invalid
+>>>        argument message will be returned to the user.
+>>> +
+>>> +What:        /sys/bus/iio/devices/triggerX/parent_trigger
+>>> +KernelVersion:    4.12
+>>> +Contact:    linux-iio@vger.kernel.org
+>>> +Description:
+>>> +        This attribute is used to set a trigger as parent for the
+>>> +        current trigger. If the trigger can't use the parent an
+>>> +        invalid argument message will be returned.
+>>> +        Parent trigger edges or levels could be used to control current
+>>> +        trigger for example to start, stop or reset it.
+>>> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
+>>> index 978729f..238aa1a 100644
+>>> --- a/drivers/iio/industrialio-trigger.c
+>>> +++ b/drivers/iio/industrialio-trigger.c
+>>> @@ -58,6 +58,74 @@ static ssize_t iio_trigger_read_name(struct device *dev,
+>>>
+>>> static DEVICE_ATTR(name, S_IRUGO, iio_trigger_read_name, NULL);
+>>>
+>>> +/**
+>>> + * iio_trigger_read_parent() - trigger consumer sysfs query parent trigger
+>>> + * @dev:    device associated with an industrial I/O trigger
+>>> + * @attr:    pointer to the device_attribute structure that
+>>> + *        is being processed
+>>> + * @buf:    buffer where the current trigger name will be printed into
+>>> + *
+>>> + * Return: a negative number on failure, the number of characters written
+>>> + *       on success or 0 if no trigger is available
+>>> + */
+>>> +static ssize_t iio_trigger_read_parent(struct device *dev,
+>>> +                       struct device_attribute *attr,
+>>> +                       char *buf)
+>>> +{
+>>> +    struct iio_trigger *trig = to_iio_trigger(dev);
+>>> +
+>>> +    if (trig->parent_trigger)
+>>> +        return sprintf(buf, "%s\n", trig->parent_trigger->name);
+>>> +
+>>> +    return 0;
+>>> +}
+>>> +
+>>> +static struct iio_trigger *iio_trigger_find_by_name(const char *name,
+>>> +                            size_t len);
+>>> +
+>>> +/**
+>>> + * iio_trigger_write_parent() - trigger consumer sysfs set parent trigger
+>>> + * @dev:    device associated with an industrial I/O trigger
+>>> + * @attr:    device attribute that is being processed
+>>> + * @buf:    string buffer that holds the name of the trigger
+>>> + * @len:    length of the trigger name held by buf
+>>> + *
+>>> + * Return: negative error code on failure or length of the buffer
+>>> + *       on success
+>>> + */
+>>> +static ssize_t iio_trigger_write_parent(struct device *dev,
+>>> +                    struct device_attribute *attr,
+>>> +                    const char *buf,
+>>> +                    size_t len)
+>>> +{
+>>> +    struct iio_trigger *parent;
+>>> +    struct iio_trigger *child = to_iio_trigger(dev);
+>>> +    int ret;
+>>> +
+>>> +    if (!child->ops->validate_trigger)
+>>> +        return -EINVAL;
+>>> +
+>>> +    if (atomic_read(&child->use_count))
+>>> +        return -EBUSY;
+>>> +
+>>> +    parent = iio_trigger_find_by_name(buf, len);
+>>> +
+>>> +    if (parent == child->parent_trigger)
+>>> +        return len;
+>>> +
+>>> +    ret = child->ops->validate_trigger(child, parent);
+>>> +    if (ret)
+>>> +        return ret;
+>>> +
+>>> +    child->parent_trigger = parent;
+>>> +
+>>> +    return len;
+>>> +}
+>>> +
+>>> +DEVICE_ATTR(parent_trigger, S_IRUGO | S_IWUSR,
+>>> +        iio_trigger_read_parent, iio_trigger_write_parent);
+>>> +EXPORT_SYMBOL_GPL(dev_attr_parent_trigger);
+>>> +
+>>> static struct attribute *iio_trig_dev_attrs[] = {
+>>>    &dev_attr_name.attr,
+>>>    NULL,
+>>> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
+>>> index ea08302..efa2983 100644
+>>> --- a/include/linux/iio/trigger.h
+>>> +++ b/include/linux/iio/trigger.h
+>>> @@ -20,6 +20,7 @@ struct iio_subirq {
+>>>
+>>> struct iio_dev;
+>>> struct iio_trigger;
+>>> +extern struct device_attribute dev_attr_parent_trigger;
+>>>
+>>> /**
+>>>  * struct iio_trigger_ops - operations structure for an iio_trigger.
+>>> @@ -29,6 +30,7 @@ struct iio_subirq {
+>>>  *            use count is zero (may be NULL)
+>>>  * @validate_device:    function to validate the device when the
+>>>  *            current trigger gets changed.
+>>> + * @validate_trigger:    function to validate the parent trigger (may be NULL)
+>>>  *
+>>>  * This is typically static const within a driver and shared by
+>>>  * instances of a given device.
+>>> @@ -39,9 +41,10 @@ struct iio_trigger_ops {
+>>>    int (*try_reenable)(struct iio_trigger *trig);
+>>>    int (*validate_device)(struct iio_trigger *trig,
+>>>                   struct iio_dev *indio_dev);
+>>> +    int (*validate_trigger)(struct iio_trigger *trig,
+>>> +                struct iio_trigger *parent);
+>>> };
+>>>
+>>> -
+>>> /**
+>>>  * struct iio_trigger - industrial I/O trigger device
+>>>  * @ops:        [DRIVER] operations structure
+>>> @@ -59,6 +62,7 @@ struct iio_trigger_ops {
+>>>  * @attached_own_device:[INTERN] if we are using our own device as trigger,
+>>>  *            i.e. if we registered a poll function to the same
+>>>  *            device as the one providing the trigger.
+>>> + * @parent_trigger:    [INTERN] parent trigger
+>>>  **/
+>>> struct iio_trigger {
+>>>    const struct iio_trigger_ops    *ops;
+>>> @@ -77,6 +81,7 @@ struct iio_trigger {
+>>>    unsigned long pool[BITS_TO_LONGS(CONFIG_IIO_CONSUMERS_PER_TRIGGER)];
+>>>    struct mutex            pool_lock;
+>>>    bool                attached_own_device;
+>>> +    struct iio_trigger        *parent_trigger;
+>>> };
+>>>
+>>>
+>>>
 >>
-> -- 
+>> _______________________________________________
+>> linaro-kernel mailing list
+>> linaro-kernel@lists.linaro.org
+>> https://lists.linaro.org/mailman/listinfo/linaro-kernel
+> --
 > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
 > the body of a message to majordomo@vger.kernel.org
 > More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
 
