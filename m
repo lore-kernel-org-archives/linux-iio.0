@@ -1,166 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:36151 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752377AbdCEV5I (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 16:57:08 -0500
-Received: by mail-pf0-f193.google.com with SMTP id j5so15516506pfb.3
-        for <linux-iio@vger.kernel.org>; Sun, 05 Mar 2017 13:57:08 -0800 (PST)
-Date: Sun, 5 Mar 2017 13:57:04 -0800
+Received: from mail-pg0-f47.google.com ([74.125.83.47]:33325 "EHLO
+        mail-pg0-f47.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752442AbdCEX7E (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 18:59:04 -0500
+Received: by mail-pg0-f47.google.com with SMTP id 25so59747973pgy.0
+        for <linux-iio@vger.kernel.org>; Sun, 05 Mar 2017 15:59:03 -0800 (PST)
+Received: from d830 (or-67-232-66-135.dhcp.embarqhsd.net. [67.232.66.135])
+        by smtp.gmail.com with ESMTPSA id 23sm11176262pfz.127.2017.03.05.15.52.06
+        for <linux-iio@vger.kernel.org>
+        (version=TLS1 cipher=ECDHE-RSA-AES128-SHA bits=128/128);
+        Sun, 05 Mar 2017 15:52:07 -0800 (PST)
+Date: Sun, 5 Mar 2017 15:52:04 -0800
 From: Alison Schofield <amsfield22@gmail.com>
-To: Julia Lawall <julia.lawall@lip6.fr>
-Cc: Narcisa Ana Maria Vasile <narcisaanamaria12@gmail.com>,
-        lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
-Subject: Re: [Outreachy kernel] [PATCH 0/2] staging: iio: accel: Group
- similar macros into enums
-Message-ID: <20170305215703.GA4910@d830.WORKGROUP>
-References: <cover.1488730643.git.narcisaanamaria12@gmail.com>
- <20170305185828.GA3380@d830.WORKGROUP>
- <20170305191459.GA20822@nati-X550JK>
- <alpine.DEB.2.20.1703052017040.3052@hadrien>
- <20170305192840.GA12508@nati-X550JK>
- <alpine.DEB.2.20.1703052031200.3052@hadrien>
- <20170305194845.GA27902@nati-X550JK>
- <alpine.DEB.2.20.1703052154590.2074@hadrien>
+To: linux-iio@vger.kernel.org
+Subject: Linux ELC & OpenIoT Report
+Message-ID: <20170305235202.GA6202@d830.WORKGROUP>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <alpine.DEB.2.20.1703052154590.2074@hadrien>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Mar 05, 2017 at 09:56:22PM +0100, Julia Lawall wrote:
-> 
-> 
-> On Sun, 5 Mar 2017, Narcisa Ana Maria Vasile wrote:
-> 
-> > On Sun, Mar 05, 2017 at 08:31:42PM +0100, Julia Lawall wrote:
-> > >
-> > >
-> > > On Sun, 5 Mar 2017, Narcisa Ana Maria Vasile wrote:
-> > >
-> > > > On Sun, Mar 05, 2017 at 08:17:45PM +0100, Julia Lawall wrote:
-> > > > >
-> > > > >
-> > > > > On Sun, 5 Mar 2017, Narcisa Ana Maria Vasile wrote:
-> > > > >
-> > > > > > On Sun, Mar 05, 2017 at 10:58:29AM -0800, Alison Schofield wrote:
-> > > > > > > On Sun, Mar 05, 2017 at 06:26:03PM +0200, Narcisa Ana Maria Vasile wrote:
-> > > > > > > > Group related macros into enums, for clarity.
-> > > > > > >
-> > > > > > > Hi Narcisa,
-> > > > > > >
-> > > > > > > Is this enum then used in a type declaration?
-> > > > > > >
-> > > > > > > BTW - I can see Jonathan is following right along and sweeping these up,
-> > > > > > > but for future reference, this patch depended on a previous patch sent hours
-> > > > > > > earlier, that was not yet in staging-testing.  When this happens, one option
-> > > > > > > is to give a note below the --- (as you would for version comments) stating the
-> > > > > > > dependency.  This way someone reviewing the patch doesn't simply reject
-> > > > > > > it as not applying to my tree.
-> > > > > > >
-> > > > > > > alisons
-> > > > > > >
-> > > > > >   Hi,
-> > > > > >
-> > > > > >   Do you mean whether there are any type declarations where I could
-> > > > > >   now replace the type with the enum type ? If so, I searched for
-> > > > > >   these type of situations, but didn't find any. If I missed one of
-> > > > > >   these cases, please let me know and I'll send a new patch.
-> > > > >
-> > > > > Typically the constant would be stored in something, compared to
-> > > > > something, etc.  Are these constants not used at all?
-> > > > >
-> > > > > julia
-> > > > >
-> > > > >
-> > > >   Yes, they are used, they are stored. I thought she was asking
-> > > >   if I encountered any situations like in adc/ad7280a.h file
-> > > >   where you could define an enum for conversion averaging
-> > > >   macros and replace the 'unsigned int' field in the
-> > > >   ad7280_platform_data with the enum type.
-> > >
-> > > If they are stored in something, I guess you could change the type of that
-> > > thing?
-> > >
-> > > julia
-> > >
-> >   The scan indexes(si) are given to macros such as:
-> >
-> >   #define ADIS_ACCEL_CHAN(mod, addr, si, info_sep, info_all, bits) \
-> >     ADIS_MOD_CHAN(IIO_ACCEL, mod, addr, si, info_sep, info_all, bits)
-> >
-> >   (defined in the linux/iio/imu/adis.h header).
-> >   which are used to initialize the adis162xx_channels[].
-> 
-> OK, if the values are going in the si argument, then they end up in the
-> scan_index field of the iio_chan_spec structure.  That structure is much
-> more general then your driver, so indeed, there seems to be no types that
-> can be improved.
-> 
-> julia
+Hi IIO Community,
 
-Hey Narcisa,
-Great to see you traced it all the way through!
+I attended the Linux Foundation's Embedded Linux and OpenIoT Summit in
+Portland, Oregon recently.
+
+I've appended a few excerpts from my blog write-up below and the full
+text of my report is available here:
+https://outreachyiio.blogspot.com/2017/03/embedded-linux-conference-openiot.html
+
 alisons
-> 
-> >
-> >   Since they are used like this, I don't see anything I can
-> >   replace/improve here.
-> >   Am I missing something?
-> >
-> >   Narcisa.
-> >
-> >
-> >
-> >
-> > > >
-> > > >   Narcisa
-> > > > > >
-> > > > > >   Thank you for the note about the patch dependencies. I was just about
-> > > > > >   to ask about this, cause I realized there might be a problem.
-> > > > > >   I'll keep in mind to make a note next time.
-> > > > > >
-> > > > > >   Narcisa
-> > > > > >
-> > > > > > > > Narcisa Ana Maria Vasile (2):
-> > > > > > > >   staging: iio: adis16209: Group similar macros into enums
-> > > > > > > >   staging: iio: adis16240: Group similar macros into enums
-> > > > > > > >
-> > > > > > > >  drivers/staging/iio/accel/adis16209.c | 18 ++++++++++--------
-> > > > > > > >  drivers/staging/iio/accel/adis16240.c | 14 ++++++++------
-> > > > > > > >  2 files changed, 18 insertions(+), 14 deletions(-)
-> > > > > > > >
-> > > > > > > > --
-> > > > > > > > 1.9.1
-> > > > > > > >
-> > > > > > > > --
-> > > > > > > > You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> > > > > > > > To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> > > > > > > > To post to this group, send email to outreachy-kernel@googlegroups.com.
-> > > > > > > > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/cover.1488730643.git.narcisaanamaria12%40gmail.com.
-> > > > > > > > For more options, visit https://groups.google.com/d/optout.
-> > > > > >
-> > > > > > --
-> > > > > > You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> > > > > > To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> > > > > > To post to this group, send email to outreachy-kernel@googlegroups.com.
-> > > > > > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170305191459.GA20822%40nati-X550JK.
-> > > > > > For more options, visit https://groups.google.com/d/optout.
-> > > > > >
-> > > >
-> > > > --
-> > > > You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> > > > To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> > > > To post to this group, send email to outreachy-kernel@googlegroups.com.
-> > > > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170305192840.GA12508%40nati-X550JK.
-> > > > For more options, visit https://groups.google.com/d/optout.
-> > > >
-> >
-> > --
-> > You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> > To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> > To post to this group, send email to outreachy-kernel@googlegroups.com.
-> > To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170305194845.GA27902%40nati-X550JK.
-> > For more options, visit https://groups.google.com/d/optout.
-> >
+
+
+2 Things that made me go hmmm:
+
+1) There are developers who believe that user space drivers are more
+efficient than kernel drivers. They don't mean more efficient as in they
+don't want to bother upstreaming the driver. They actually mean more
+efficient in that they think the user space driver performs better.  I
+didn't meet one of those developers...they were only whispered about ;)
+
+2) Android Things (Intel & Google product) will not use our lovely IIO
+drivers. They will not include any non-essential drivers in the kernel
+image and there will not be a way to rebuild it. They have set up a git
+repository for the world to share user space drivers for sensors. 
+
+IIO Community Sightings: Matt Ranostay 
+Matt gave a great IIO Subsystem presentation!!! It contained a live demo
+of one of his more recent driver additions: heart rate and pulse
+oximeter. When Matt's hear rate only measured 42, he wrote it off to a
+loose connection, but I'm not convinced. I may go look for a bug in that
+driver ;)
+
+IIO Community Hindsight: David Lechner 
+When I met David displaying his ev3 devices at the technical showcase, I
+didn't know of him from the IIO community. David has some drivers he
+wants upstreamed to IIO.  Potential Outreachy projects?  I'm fuzzy on
+this. Can we add support for sensors that basically have no datasheet,
+but that David has reverse engineered?
+
+IIO Community Hindsight: Jason Kridner 
+Jason gave a presentation and also showed off some beaglebone devices at
+the technical showcase. Jason noted in his presentation that he'd like
+to see additional sensor support in IIO.
