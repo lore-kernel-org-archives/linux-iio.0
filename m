@@ -1,338 +1,997 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:33549 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751461AbdB1Tvk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Feb 2017 14:51:40 -0500
-Date: Wed, 1 Mar 2017 01:19:35 +0530
-From: simran singhal <singhalsimran0@gmail.com>
-To: lars@metafoo.de
-Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
-        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, outreachy-kernel@googlegroups.com
-Subject: [PATCH v3] staging: iio: adis16201: Move header file content to
- source file
-Message-ID: <20170228194935.GA30367@singhal-Inspiron-5558>
+Received: from mail.free-electrons.com ([62.4.15.54]:54055 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753170AbdCFMXo (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2017 07:23:44 -0500
+Subject: Re: [PATCH v9 3/3] iio: adc: add support for Allwinner SoCs ADC
+To: Jonathan Cameron <jic23@kernel.org>,
+        Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
+        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
+        wens@csie.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lee.jones@linaro.org
+References: <20161213143332.24988-1-quentin.schulz@free-electrons.com>
+ <20161213143332.24988-4-quentin.schulz@free-electrons.com>
+ <8132b799-6c6e-fc74-ebac-6959ac4c97a7@kernel.org>
+ <f8285a90-656f-0da4-ee81-47b79ce4cd2c@kernel.org>
+ <9e1d1e4d-84e6-ba9d-f1da-4d2bb81c2d40@free-electrons.com>
+ <6C7E1B31-9758-4BB2-A47E-648CA53AAC72@jic23.retrosnub.co.uk>
+ <ca104163-e9ef-0e8f-0c0e-2339ce7da6d3@free-electrons.com>
+ <ddc0090a-2778-8643-2cc1-5f1590aeb72b@kernel.org>
+Cc: linux-arm-kernel@lists.infradead.org, linux-kernel@vger.kernel.org,
+        linux-iio@vger.kernel.org, antoine.tenart@free-electrons.com,
+        thomas.petazzoni@free-electrons.com,
+        Zhang Rui <rui.zhang@intel.com>,
+        "edubezval@gmail.com" <edubezval@gmail.com>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Message-ID: <e6059e7c-c6c2-8d28-9b7e-0af23ab5ace0@free-electrons.com>
+Date: Mon, 6 Mar 2017 13:16:01 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <ddc0090a-2778-8643-2cc1-5f1590aeb72b@kernel.org>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The contents of the header file are used only by this single
-source file. Move content into .c and remove .h.
+Hi Jonathan,
 
-Signed-off-by: simran singhal <singhalsimran0@gmail.com>
----
- v3:
-   -Removing endif as it is not needed
-   -Changing subject  
+On 06/02/2017 19:35, Jonathan Cameron wrote:
+> On 06/02/17 07:37, Quentin Schulz wrote:
+>> Hi Jonathan,
+>>
+>> On 14/01/2017 20:28, Jonathan Cameron wrote:
+>>>
+>>>
+>>> On 14 January 2017 19:19:58 GMT+00:00, Quentin Schulz <quentin.schulz@free-electrons.com> wrote:
+>>>> Hi Jonathan,
+>>>>
+>>>> On 08/01/2017 12:17, Jonathan Cameron wrote:
+>>>>> On 30/12/16 14:40, Jonathan Cameron wrote:
+>>>>>> On 13/12/16 14:33, Quentin Schulz wrote:
+>>>>>>> The Allwinner SoCs all have an ADC that can also act as a
+>>>> touchscreen
+>>>>>>> controller and a thermal sensor. This patch adds the ADC driver
+>>>> which is
+>>>>>>> based on the MFD for the same SoCs ADC.
+>>>>>>>
+>>>>>>> This also registers the thermal adc channel in the iio map array so
+>>>>>>> iio_hwmon could use it without modifying the Device Tree. This
+>>>> registers
+>>>>>>> the driver in the thermal framework.
+>>>>>>>
+>>>>>>> The thermal sensor requires the IP to be in touchscreen mode to
+>>>> return
+>>>>>>> correct values. Therefore, if the user is continuously reading the
+>>>> ADC
+>>>>>>> channel(s), the thermal framework in which the thermal sensor is
+>>>>>>> registered will switch the IP in touchscreen mode to get a
+>>>> temperature
+>>>>>>> value and requires a delay of 100ms (because of the mode
+>>>> switching),
+>>>>>>> then the ADC will switch back to ADC mode and requires also a delay
+>>>> of
+>>>>>>> 100ms. If the ADC readings are critical to user and the SoC
+>>>> temperature
+>>>>>>> is not, this driver is capable of not registering the thermal
+>>>> sensor in
+>>>>>>> the thermal framework and thus, "quicken" the ADC readings.
+>>>>>>>
+>>>>>>> This driver probes on three different platform_device_id to take
+>>>> into
+>>>>>>> account slight differences (registers bit and temperature
+>>>> computation)
+>>>>>>> between Allwinner SoCs ADCs.
+>>>>>>>
+>>>>>>> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+>>>>>>> Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+>>>>>>> Acked-by: Jonathan Cameron <jic23@kernel.org>
+>>>>>>> Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+>>>>>> One comment inline but not a blocker.
+>>>>>>
+>>>>>> I would ideally like an ack from the thermal side.  The relevant
+>>>> code
+>>>>>> is small, but best to be sure and keep them in the loop as well.
+>>>>>>
+>>>>>> It does feel a little convoluted to have both this directly
+>>>> providing
+>>>>>> a thermal zone and being able to create one indirectly through hwmon
+>>>> as
+>>>>>> well but this solution works for me I think...
+>>>>>>
+>>>>>> Cc'd Zang and Eduardo.
+>>>>> Nothing seems to have come through on that front.
+>>>>>
+>>>>> I need to get a pull request out to Greg and rebase my tree before I
+>>>> have
+>>>>> the precursor patch in place. Give me a bump if you haven't heard
+>>>> anything by
+>>>>> the time next week.
+>>>>>
+>>>>
+>>>> Kindly "giving you a bump" you as requested since I haven't heard from
+>>>> you for a week.
+>>> Greg hasn't pulled yet, so may be a few more days.
+>>>
+>>> J
+>>
+>> I haven't received any news from you on the merging of this patch series
+>> for a month, so kindly pinging.
+> Gah!  Sorry, I completely lost this one in my patch queue. Thanks for the
+> reminder.
+> 
+> Applied to the togreg branch of iio.git and pushed out as testing for the
+> autobuilders to play with it.
+> 
+> I'm afraid due to my tardiness it's missed the coming merge window, but
+> I'll make sure it goes in my first pull request for the next cycle.
+> 
 
- drivers/staging/iio/accel/adis16201.h      | 144 -----------------------------
- drivers/staging/iio/accel/adis16201_core.c | 140 +++++++++++++++++++++++++++-
- 2 files changed, 139 insertions(+), 145 deletions(-)
- delete mode 100644 drivers/staging/iio/accel/adis16201.h
+I haven't received any news from you on the merging of this patch series
+for a month, so kindly pinging.
 
-diff --git a/drivers/staging/iio/accel/adis16201.h b/drivers/staging/iio/accel/adis16201.h
-deleted file mode 100644
-index 64844ad..0000000
---- a/drivers/staging/iio/accel/adis16201.h
-+++ /dev/null
-@@ -1,144 +0,0 @@
--#ifndef SPI_ADIS16201_H_
--#define SPI_ADIS16201_H_
--
--#define ADIS16201_STARTUP_DELAY	220 /* ms */
--
--/* Flash memory write count */
--#define ADIS16201_FLASH_CNT      0x00
--
--/* Output, power supply */
--#define ADIS16201_SUPPLY_OUT     0x02
--
--/* Output, x-axis accelerometer */
--#define ADIS16201_XACCL_OUT      0x04
--
--/* Output, y-axis accelerometer */
--#define ADIS16201_YACCL_OUT      0x06
--
--/* Output, auxiliary ADC input */
--#define ADIS16201_AUX_ADC        0x08
--
--/* Output, temperature */
--#define ADIS16201_TEMP_OUT       0x0A
--
--/* Output, x-axis inclination */
--#define ADIS16201_XINCL_OUT      0x0C
--
--/* Output, y-axis inclination */
--#define ADIS16201_YINCL_OUT      0x0E
--
--/* Calibration, x-axis acceleration offset */
--#define ADIS16201_XACCL_OFFS     0x10
--
--/* Calibration, y-axis acceleration offset */
--#define ADIS16201_YACCL_OFFS     0x12
--
--/* x-axis acceleration scale factor */
--#define ADIS16201_XACCL_SCALE    0x14
--
--/* y-axis acceleration scale factor */
--#define ADIS16201_YACCL_SCALE    0x16
--
--/* Calibration, x-axis inclination offset */
--#define ADIS16201_XINCL_OFFS     0x18
--
--/* Calibration, y-axis inclination offset */
--#define ADIS16201_YINCL_OFFS     0x1A
--
--/* x-axis inclination scale factor */
--#define ADIS16201_XINCL_SCALE    0x1C
--
--/* y-axis inclination scale factor */
--#define ADIS16201_YINCL_SCALE    0x1E
--
--/* Alarm 1 amplitude threshold */
--#define ADIS16201_ALM_MAG1       0x20
--
--/* Alarm 2 amplitude threshold */
--#define ADIS16201_ALM_MAG2       0x22
--
--/* Alarm 1, sample period */
--#define ADIS16201_ALM_SMPL1      0x24
--
--/* Alarm 2, sample period */
--#define ADIS16201_ALM_SMPL2      0x26
--
--/* Alarm control */
--#define ADIS16201_ALM_CTRL       0x28
--
--/* Auxiliary DAC data */
--#define ADIS16201_AUX_DAC        0x30
--
--/* General-purpose digital input/output control */
--#define ADIS16201_GPIO_CTRL      0x32
--
--/* Miscellaneous control */
--#define ADIS16201_MSC_CTRL       0x34
--
--/* Internal sample period (rate) control */
--#define ADIS16201_SMPL_PRD       0x36
--
--/* Operation, filter configuration */
--#define ADIS16201_AVG_CNT        0x38
--
--/* Operation, sleep mode control */
--#define ADIS16201_SLP_CNT        0x3A
--
--/* Diagnostics, system status register */
--#define ADIS16201_DIAG_STAT      0x3C
--
--/* Operation, system command register */
--#define ADIS16201_GLOB_CMD       0x3E
--
--/* MSC_CTRL */
--
--/* Self-test enable */
--#define ADIS16201_MSC_CTRL_SELF_TEST_EN	        BIT(8)
--
--/* Data-ready enable: 1 = enabled, 0 = disabled */
--#define ADIS16201_MSC_CTRL_DATA_RDY_EN	        BIT(2)
--
--/* Data-ready polarity: 1 = active high, 0 = active low */
--#define ADIS16201_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
--
--/* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
--#define ADIS16201_MSC_CTRL_DATA_RDY_DIO1	BIT(0)
--
--/* DIAG_STAT */
--
--/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
--#define ADIS16201_DIAG_STAT_ALARM2        BIT(9)
--
--/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
--#define ADIS16201_DIAG_STAT_ALARM1        BIT(8)
--
--/* SPI communications failure */
--#define ADIS16201_DIAG_STAT_SPI_FAIL_BIT   3
--
--/* Flash update failure */
--#define ADIS16201_DIAG_STAT_FLASH_UPT_BIT  2
--
--/* Power supply above 3.625 V */
--#define ADIS16201_DIAG_STAT_POWER_HIGH_BIT 1
--
--/* Power supply below 3.15 V */
--#define ADIS16201_DIAG_STAT_POWER_LOW_BIT  0
--
--/* GLOB_CMD */
--
--#define ADIS16201_GLOB_CMD_SW_RESET	BIT(7)
--#define ADIS16201_GLOB_CMD_FACTORY_CAL	BIT(1)
--
--#define ADIS16201_ERROR_ACTIVE          BIT(14)
--
--enum adis16201_scan {
--	ADIS16201_SCAN_ACC_X,
--	ADIS16201_SCAN_ACC_Y,
--	ADIS16201_SCAN_INCLI_X,
--	ADIS16201_SCAN_INCLI_Y,
--	ADIS16201_SCAN_SUPPLY,
--	ADIS16201_SCAN_AUX_ADC,
--	ADIS16201_SCAN_TEMP,
--};
--
--#endif /* SPI_ADIS16201_H_ */
-diff --git a/drivers/staging/iio/accel/adis16201_core.c b/drivers/staging/iio/accel/adis16201_core.c
-index 7963d4a..d6c8658 100644
---- a/drivers/staging/iio/accel/adis16201_core.c
-+++ b/drivers/staging/iio/accel/adis16201_core.c
-@@ -20,7 +20,145 @@
- #include <linux/iio/buffer.h>
- #include <linux/iio/imu/adis.h>
- 
--#include "adis16201.h"
-+#define ADIS16201_STARTUP_DELAY	220 /* ms */
-+
-+/* Flash memory write count */
-+#define ADIS16201_FLASH_CNT      0x00
-+
-+/* Output, power supply */
-+#define ADIS16201_SUPPLY_OUT     0x02
-+
-+/* Output, x-axis accelerometer */
-+#define ADIS16201_XACCL_OUT      0x04
-+
-+/* Output, y-axis accelerometer */
-+#define ADIS16201_YACCL_OUT      0x06
-+
-+/* Output, auxiliary ADC input */
-+#define ADIS16201_AUX_ADC        0x08
-+
-+/* Output, temperature */
-+#define ADIS16201_TEMP_OUT       0x0A
-+
-+/* Output, x-axis inclination */
-+#define ADIS16201_XINCL_OUT      0x0C
-+
-+/* Output, y-axis inclination */
-+#define ADIS16201_YINCL_OUT      0x0E
-+
-+/* Calibration, x-axis acceleration offset */
-+#define ADIS16201_XACCL_OFFS     0x10
-+
-+/* Calibration, y-axis acceleration offset */
-+#define ADIS16201_YACCL_OFFS     0x12
-+
-+/* x-axis acceleration scale factor */
-+#define ADIS16201_XACCL_SCALE    0x14
-+
-+/* y-axis acceleration scale factor */
-+#define ADIS16201_YACCL_SCALE    0x16
-+
-+/* Calibration, x-axis inclination offset */
-+#define ADIS16201_XINCL_OFFS     0x18
-+
-+/* Calibration, y-axis inclination offset */
-+#define ADIS16201_YINCL_OFFS     0x1A
-+
-+/* x-axis inclination scale factor */
-+#define ADIS16201_XINCL_SCALE    0x1C
-+
-+/* y-axis inclination scale factor */
-+#define ADIS16201_YINCL_SCALE    0x1E
-+
-+/* Alarm 1 amplitude threshold */
-+#define ADIS16201_ALM_MAG1       0x20
-+
-+/* Alarm 2 amplitude threshold */
-+#define ADIS16201_ALM_MAG2       0x22
-+
-+/* Alarm 1, sample period */
-+#define ADIS16201_ALM_SMPL1      0x24
-+
-+/* Alarm 2, sample period */
-+#define ADIS16201_ALM_SMPL2      0x26
-+
-+/* Alarm control */
-+#define ADIS16201_ALM_CTRL       0x28
-+
-+/* Auxiliary DAC data */
-+#define ADIS16201_AUX_DAC        0x30
-+
-+/* General-purpose digital input/output control */
-+#define ADIS16201_GPIO_CTRL      0x32
-+
-+/* Miscellaneous control */
-+#define ADIS16201_MSC_CTRL       0x34
-+
-+/* Internal sample period (rate) control */
-+#define ADIS16201_SMPL_PRD       0x36
-+
-+/* Operation, filter configuration */
-+#define ADIS16201_AVG_CNT        0x38
-+
-+/* Operation, sleep mode control */
-+#define ADIS16201_SLP_CNT        0x3A
-+
-+/* Diagnostics, system status register */
-+#define ADIS16201_DIAG_STAT      0x3C
-+
-+/* Operation, system command register */
-+#define ADIS16201_GLOB_CMD       0x3E
-+
-+/* MSC_CTRL */
-+
-+/* Self-test enable */
-+#define ADIS16201_MSC_CTRL_SELF_TEST_EN	        BIT(8)
-+
-+/* Data-ready enable: 1 = enabled, 0 = disabled */
-+#define ADIS16201_MSC_CTRL_DATA_RDY_EN	        BIT(2)
-+
-+/* Data-ready polarity: 1 = active high, 0 = active low */
-+#define ADIS16201_MSC_CTRL_ACTIVE_HIGH	        BIT(1)
-+
-+/* Data-ready line selection: 1 = DIO1, 0 = DIO0 */
-+#define ADIS16201_MSC_CTRL_DATA_RDY_DIO1	BIT(0)
-+
-+/* DIAG_STAT */
-+
-+/* Alarm 2 status: 1 = alarm active, 0 = alarm inactive */
-+#define ADIS16201_DIAG_STAT_ALARM2        BIT(9)
-+
-+/* Alarm 1 status: 1 = alarm active, 0 = alarm inactive */
-+#define ADIS16201_DIAG_STAT_ALARM1        BIT(8)
-+
-+/* SPI communications failure */
-+#define ADIS16201_DIAG_STAT_SPI_FAIL_BIT   3
-+
-+/* Flash update failure */
-+#define ADIS16201_DIAG_STAT_FLASH_UPT_BIT  2
-+
-+/* Power supply above 3.625 V */
-+#define ADIS16201_DIAG_STAT_POWER_HIGH_BIT 1
-+
-+/* Power supply below 3.15 V */
-+#define ADIS16201_DIAG_STAT_POWER_LOW_BIT  0
-+
-+/* GLOB_CMD */
-+
-+#define ADIS16201_GLOB_CMD_SW_RESET	BIT(7)
-+#define ADIS16201_GLOB_CMD_FACTORY_CAL	BIT(1)
-+
-+#define ADIS16201_ERROR_ACTIVE          BIT(14)
-+
-+enum adis16201_scan {
-+	ADIS16201_SCAN_ACC_X,
-+	ADIS16201_SCAN_ACC_Y,
-+	ADIS16201_SCAN_INCLI_X,
-+	ADIS16201_SCAN_INCLI_Y,
-+	ADIS16201_SCAN_SUPPLY,
-+	ADIS16201_SCAN_AUX_ADC,
-+	ADIS16201_SCAN_TEMP,
-+};
- 
- static const u8 adis16201_addresses[] = {
- 	[ADIS16201_SCAN_ACC_X] = ADIS16201_XACCL_OFFS,
+Thanks,
+Quentin
+
+>>
+>> Thanks,
+>> Quentin
+>>
+>>>>
+>>>> Thanks,
+>>>> Quentin
+>>>>
+>>>>> Thanks,
+>>>>>
+>>>>> Jonathan
+>>>>>>
+>>>>>> Jonathan
+>>>>>>> ---
+>>>>>>>
+>>>>>>> v9:
+>>>>>>>  - clarify comment on why we have to use the parent node as node
+>>>> for
+>>>>>>>  registering in thermal framework, (backward compatibility)
+>>>>>>>  - clarify comment on why we can disable CONFIG_THERMAL_OF,
+>>>>>>>  - clarify Kconfig help to say that CONFIG_THERMAL_OF can be
+>>>> disabled
+>>>>>>>  but should not in most cases,
+>>>>>>>  - make return value of devm_thermal_zone_of_sensor_register a
+>>>> local
+>>>>>>>  variable of the condition block,
+>>>>>>>  - correct scale from _PLUS_MICRO to _PLUS_NANO for ADC raw
+>>>> readings
+>>>>>>>  scale,
+>>>>>>>
+>>>>>>> v8:
+>>>>>>>  - remove Kconfig depends on !TOUCHSCREEN_SUN4I (moved to
+>>>>>>> MFD_SUN4I_GPADC),
+>>>>>>>  - fix return values of regmap_irq_get_virq and
+>>>> platform_get_irq_byname
+>>>>>>> stored in an unsigned int and then check if negative,
+>>>>>>>  - fix uninitialized ret value when an error occurs while
+>>>> registering
+>>>>>>> the thermal sensor in the framework,
+>>>>>>>
+>>>>>>> v7:
+>>>>>>>  - add Kconfig depends on !TOUCHSCREEN_SUN4I,
+>>>>>>>  - remove Kconfig selects THERMAL_OF,
+>>>>>>>  - do not register thermal sensor if CONFIG_THERMAL_OF is disabled,
+>>>>>>>  - disable irq in irq_handler rather than in read_raw,
+>>>>>>>  - add delay when switching the IP's mode or channel (delay
+>>>> empirically found),
+>>>>>>>  - quicken thermal sensor interrupt period,
+>>>>>>>  - add masks for channel bits,
+>>>>>>>  - fix deadlock in sun4i_gpadc_read if regmap_read/write fails,
+>>>>>>>  - move some logic from sun4i_gpadc_read to sun4i_prepare_for_irq,
+>>>>>>>  - mark last busy for runtime_pm only on success in
+>>>> sun4i_gpadc_read,
+>>>>>>>  - remove cached values,
+>>>>>>>  - increase wait_for_completion_timeout timeout to 1s to be sure to
+>>>> not miss the
+>>>>>>>  thermal interrupt,
+>>>>>>>  - add voltage scale,
+>>>>>>>  - use devm_iio_device_register,
+>>>>>>>
+>>>>>>> v6:
+>>>>>>>  - remove "-mfd" from filenames and variables inside MFD driver,
+>>>>>>>  - use DEFINE_RES_IRQ_NAMED instead of setting resources manually,
+>>>>>>>  - cosmetic changes,
+>>>>>>>  - use IDs and switch over ID to get cells specific to an
+>>>> architecture, instead
+>>>>>>>  of using cells direclty, in of_device_id.data,
+>>>>>>>  - compute size of mfd_cells array instead of hardcoded one,
+>>>>>>>
+>>>>>>> v5:
+>>>>>>>  - correct mail address,
+>>>>>>>
+>>>>>>> v4:
+>>>>>>>  - rename files and variables from sunxi* to sun4i*,
+>>>>>>>  - rename defines from SUNXI_* to SUN4I_* or SUN6I_*,
+>>>>>>>  - remove TP in defines name,
+>>>>>>>  - rename SUNXI_IRQ_* to SUN4I_GPADC_IRQ_* for consistency,
+>>>>>>>  - use devm functions for regmap_add_irq_chip and mfd_add_devices,
+>>>>>>>  - remove remove functions (now empty thanks to devm functions),
+>>>>>>>
+>>>>>>> v3:
+>>>>>>>  - use defines in regmap_irq instead of hard coded BITs,
+>>>>>>>  - use of_device_id data field to chose which MFD cells to add
+>>>> considering
+>>>>>>>    the compatible responsible of the MFD probe,
+>>>>>>>  - remove useless initializations,
+>>>>>>>  - disable all interrupts before adding them to regmap_irqchip,
+>>>>>>>  - add goto error label in probe,
+>>>>>>>  - correct wrapping in header license,
+>>>>>>>  - move defines from IIO driver to header,
+>>>>>>>  - use GENMASK to limit the size of the variable passed to a macro,
+>>>>>>>  - prefix register BIT defines with the name of the register,
+>>>>>>>  - reorder defines,
+>>>>>>>
+>>>>>>> v2:
+>>>>>>>  - add license headers,
+>>>>>>>  - reorder alphabetically includes,
+>>>>>>>  - add SUNXI_GPADC_ prefixes for defines,
+>>>>>>>
+>>>>>>>  drivers/iio/adc/Kconfig           |  17 ++
+>>>>>>>  drivers/iio/adc/Makefile          |   1 +
+>>>>>>>  drivers/iio/adc/sun4i-gpadc-iio.c | 613
+>>>> ++++++++++++++++++++++++++++++++++++++
+>>>>>>>  include/linux/mfd/sun4i-gpadc.h   |   2 +
+>>>>>>>  4 files changed, 633 insertions(+)
+>>>>>>>  create mode 100644 drivers/iio/adc/sun4i-gpadc-iio.c
+>>>>>>>
+>>>>>>> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+>>>>>>> index 99c0514..6a6d369 100644
+>>>>>>> --- a/drivers/iio/adc/Kconfig
+>>>>>>> +++ b/drivers/iio/adc/Kconfig
+>>>>>>> @@ -434,6 +434,23 @@ config STX104
+>>>>>>>  	  The base port addresses for the devices may be configured via
+>>>> the base
+>>>>>>>  	  array module parameter.
+>>>>>>>  
+>>>>>>> +config SUN4I_GPADC
+>>>>>>> +	tristate "Support for the Allwinner SoCs GPADC"
+>>>>>>> +	depends on IIO
+>>>>>>> +	depends on MFD_SUN4I_GPADC
+>>>>>>> +	help
+>>>>>>> +	  Say yes here to build support for Allwinner (A10, A13 and A31)
+>>>> SoCs
+>>>>>>> +	  GPADC. This ADC provides 4 channels which can be used as an ADC
+>>>> or as
+>>>>>>> +	  a touchscreen input and one channel for thermal sensor.
+>>>>>>> +
+>>>>>>> +	  The thermal sensor slows down ADC readings and can be disabled
+>>>> by
+>>>>>>> +	  disabling CONFIG_THERMAL_OF. However, the thermal sensor should
+>>>> be
+>>>>>>> +	  enabled by default since the SoC temperature is usually more
+>>>> critical
+>>>>>>> +	  than ADC readings.
+>>>>>>> +
+>>>>>>> +	  To compile this driver as a module, choose M here: the module
+>>>> will be
+>>>>>>> +	  called sun4i-gpadc-iio.
+>>>>>>> +
+>>>>>>>  config TI_ADC081C
+>>>>>>>  	tristate "Texas Instruments ADC081C/ADC101C/ADC121C family"
+>>>>>>>  	depends on I2C
+>>>>>>> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+>>>>>>> index 7a40c04..18ce8d6 100644
+>>>>>>> --- a/drivers/iio/adc/Makefile
+>>>>>>> +++ b/drivers/iio/adc/Makefile
+>>>>>>> @@ -41,6 +41,7 @@ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
+>>>>>>>  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
+>>>>>>>  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+>>>>>>>  obj-$(CONFIG_STX104) += stx104.o
+>>>>>>> +obj-$(CONFIG_SUN4I_GPADC) += sun4i-gpadc-iio.o
+>>>>>>>  obj-$(CONFIG_TI_ADC081C) += ti-adc081c.o
+>>>>>>>  obj-$(CONFIG_TI_ADC0832) += ti-adc0832.o
+>>>>>>>  obj-$(CONFIG_TI_ADC12138) += ti-adc12138.o
+>>>>>>> diff --git a/drivers/iio/adc/sun4i-gpadc-iio.c
+>>>> b/drivers/iio/adc/sun4i-gpadc-iio.c
+>>>>>>> new file mode 100644
+>>>>>>> index 0000000..a8e134f
+>>>>>>> --- /dev/null
+>>>>>>> +++ b/drivers/iio/adc/sun4i-gpadc-iio.c
+>>>>>>> @@ -0,0 +1,613 @@
+>>>>>>> +/* ADC driver for sunxi platforms' (A10, A13 and A31) GPADC
+>>>>>>> + *
+>>>>>>> + * Copyright (c) 2016 Quentin Schulz
+>>>> <quentin.schulz@free-electrons.com>
+>>>>>>> + *
+>>>>>>> + * This program is free software; you can redistribute it and/or
+>>>> modify it under
+>>>>>>> + * the terms of the GNU General Public License version 2 as
+>>>> published by the
+>>>>>>> + * Free Software Foundation.
+>>>>>>> + *
+>>>>>>> + * The Allwinner SoCs all have an ADC that can also act as a
+>>>> touchscreen
+>>>>>>> + * controller and a thermal sensor.
+>>>>>>> + * The thermal sensor works only when the ADC acts as a
+>>>> touchscreen controller
+>>>>>>> + * and is configured to throw an interrupt every fixed periods of
+>>>> time (let say
+>>>>>>> + * every X seconds).
+>>>>>>> + * One would be tempted to disable the IP on the hardware side
+>>>> rather than
+>>>>>>> + * disabling interrupts to save some power but that resets the
+>>>> internal clock of
+>>>>>>> + * the IP, resulting in having to wait X seconds every time we
+>>>> want to read the
+>>>>>>> + * value of the thermal sensor.
+>>>>>>> + * This is also the reason of using autosuspend in pm_runtime. If
+>>>> there was no
+>>>>>>> + * autosuspend, the thermal sensor would need X seconds after
+>>>> every
+>>>>>>> + * pm_runtime_get_sync to get a value from the ADC. The
+>>>> autosuspend allows the
+>>>>>>> + * thermal sensor to be requested again in a certain time span
+>>>> before it gets
+>>>>>>> + * shutdown for not being used.
+>>>>>>> + */
+>>>>>>> +
+>>>>>>> +#include <linux/completion.h>
+>>>>>>> +#include <linux/interrupt.h>
+>>>>>>> +#include <linux/io.h>
+>>>>>>> +#include <linux/module.h>
+>>>>>>> +#include <linux/of.h>
+>>>>>>> +#include <linux/of_device.h>
+>>>>>>> +#include <linux/platform_device.h>
+>>>>>>> +#include <linux/pm_runtime.h>
+>>>>>>> +#include <linux/regmap.h>
+>>>>>>> +#include <linux/thermal.h>
+>>>>>>> +#include <linux/delay.h>
+>>>>>>> +
+>>>>>>> +#include <linux/iio/iio.h>
+>>>>>>> +#include <linux/iio/driver.h>
+>>>>>>> +#include <linux/iio/machine.h>
+>>>>>>> +#include <linux/mfd/sun4i-gpadc.h>
+>>>>>>> +
+>>>>>>> +static unsigned int sun4i_gpadc_chan_select(unsigned int chan)
+>>>>>>> +{
+>>>>>>> +	return SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static unsigned int sun6i_gpadc_chan_select(unsigned int chan)
+>>>>>>> +{
+>>>>>>> +	return SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(chan);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +struct gpadc_data {
+>>>>>>> +	int		temp_offset;
+>>>>>>> +	int		temp_scale;
+>>>>>>> +	unsigned int	tp_mode_en;
+>>>>>>> +	unsigned int	tp_adc_select;
+>>>>>>> +	unsigned int	(*adc_chan_select)(unsigned int chan);
+>>>>>>> +	unsigned int	adc_chan_mask;
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static const struct gpadc_data sun4i_gpadc_data = {
+>>>>>>> +	.temp_offset = -1932,
+>>>>>>> +	.temp_scale = 133,
+>>>>>>> +	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
+>>>>>>> +	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
+>>>>>>> +	.adc_chan_select = &sun4i_gpadc_chan_select,
+>>>>>>> +	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static const struct gpadc_data sun5i_gpadc_data = {
+>>>>>>> +	.temp_offset = -1447,
+>>>>>>> +	.temp_scale = 100,
+>>>>>>> +	.tp_mode_en = SUN4I_GPADC_CTRL1_TP_MODE_EN,
+>>>>>>> +	.tp_adc_select = SUN4I_GPADC_CTRL1_TP_ADC_SELECT,
+>>>>>>> +	.adc_chan_select = &sun4i_gpadc_chan_select,
+>>>>>>> +	.adc_chan_mask = SUN4I_GPADC_CTRL1_ADC_CHAN_MASK,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static const struct gpadc_data sun6i_gpadc_data = {
+>>>>>>> +	.temp_offset = -1623,
+>>>>>>> +	.temp_scale = 167,
+>>>>>>> +	.tp_mode_en = SUN6I_GPADC_CTRL1_TP_MODE_EN,
+>>>>>>> +	.tp_adc_select = SUN6I_GPADC_CTRL1_TP_ADC_SELECT,
+>>>>>>> +	.adc_chan_select = &sun6i_gpadc_chan_select,
+>>>>>>> +	.adc_chan_mask = SUN6I_GPADC_CTRL1_ADC_CHAN_MASK,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +struct sun4i_gpadc_iio {
+>>>>>>> +	struct iio_dev			*indio_dev;
+>>>>>>> +	struct completion		completion;
+>>>>>>> +	int				temp_data;
+>>>>>>> +	u32				adc_data;
+>>>>>>> +	struct regmap			*regmap;
+>>>>>>> +	unsigned int			fifo_data_irq;
+>>>>>>> +	atomic_t			ignore_fifo_data_irq;
+>>>>>>> +	unsigned int			temp_data_irq;
+>>>>>>> +	atomic_t			ignore_temp_data_irq;
+>>>>>>> +	const struct gpadc_data		*data;
+>>>>>>> +	/* prevents concurrent reads of temperature and ADC */
+>>>>>>> +	struct mutex			mutex;
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +#define SUN4I_GPADC_ADC_CHANNEL(_channel, _name) {		\
+>>>>>>> +	.type = IIO_VOLTAGE,					\
+>>>>>>> +	.indexed = 1,						\
+>>>>>>> +	.channel = _channel,					\
+>>>>>>> +	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),		\
+>>>>>>> +	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),	\
+>>>>>>> +	.datasheet_name = _name,				\
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static struct iio_map sun4i_gpadc_hwmon_maps[] = {
+>>>>>>> +	{
+>>>>>>> +		.adc_channel_label = "temp_adc",
+>>>>>>> +		.consumer_dev_name = "iio_hwmon.0",
+>>>>>> It's theoretically possible we have another one of these which will
+>>>> make
+>>>>>> life interesting.  Oh well, no easy way around that at the mo...
+>>>>>>> +	},
+>>>>>>> +	{ /* sentinel */ },
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static const struct iio_chan_spec sun4i_gpadc_channels[] = {
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
+>>>>>>> +	{
+>>>>>>> +		.type = IIO_TEMP,
+>>>>>>> +		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
+>>>>>>> +				      BIT(IIO_CHAN_INFO_SCALE) |
+>>>>>>> +				      BIT(IIO_CHAN_INFO_OFFSET),
+>>>>>>> +		.datasheet_name = "temp_adc",
+>>>>>>> +	},
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static const struct iio_chan_spec sun4i_gpadc_channels_no_temp[] =
+>>>> {
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(0, "adc_chan0"),
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(1, "adc_chan1"),
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(2, "adc_chan2"),
+>>>>>>> +	SUN4I_GPADC_ADC_CHANNEL(3, "adc_chan3"),
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static int sun4i_prepare_for_irq(struct iio_dev *indio_dev, int
+>>>> channel,
+>>>>>>> +				 unsigned int irq)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>>>> +	int ret;
+>>>>>>> +	u32 reg;
+>>>>>>> +
+>>>>>>> +	pm_runtime_get_sync(indio_dev->dev.parent);
+>>>>>>> +
+>>>>>>> +	reinit_completion(&info->completion);
+>>>>>>> +
+>>>>>>> +	ret = regmap_write(info->regmap, SUN4I_GPADC_INT_FIFOC,
+>>>>>>> +			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_TRIG_LEVEL(1) |
+>>>>>>> +			   SUN4I_GPADC_INT_FIFOC_TP_FIFO_FLUSH);
+>>>>>>> +	if (ret)
+>>>>>>> +		return ret;
+>>>>>>> +
+>>>>>>> +	ret = regmap_read(info->regmap, SUN4I_GPADC_CTRL1, &reg);
+>>>>>>> +	if (ret)
+>>>>>>> +		return ret;
+>>>>>>> +
+>>>>>>> +	if (irq == info->fifo_data_irq) {
+>>>>>>> +		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
+>>>>>>> +				   info->data->tp_mode_en |
+>>>>>>> +				   info->data->tp_adc_select |
+>>>>>>> +				   info->data->adc_chan_select(channel));
+>>>>>>> +		/*
+>>>>>>> +		 * When the IP changes channel, it needs a bit of time to get
+>>>>>>> +		 * correct values.
+>>>>>>> +		 */
+>>>>>>> +		if ((reg & info->data->adc_chan_mask) !=
+>>>>>>> +			 info->data->adc_chan_select(channel))
+>>>>>>> +			mdelay(10);
+>>>>>>> +
+>>>>>>> +	} else {
+>>>>>>> +		/*
+>>>>>>> +		 * The temperature sensor returns valid data only when the ADC
+>>>>>>> +		 * operates in touchscreen mode.
+>>>>>>> +		 */
+>>>>>>> +		ret = regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
+>>>>>>> +				   info->data->tp_mode_en);
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	if (ret)
+>>>>>>> +		return ret;
+>>>>>>> +
+>>>>>>> +	/*
+>>>>>>> +	 * When the IP changes mode between ADC or touchscreen, it
+>>>>>>> +	 * needs a bit of time to get correct values.
+>>>>>>> +	 */
+>>>>>>> +	if ((reg & info->data->tp_adc_select) !=
+>>>> info->data->tp_adc_select)
+>>>>>>> +		mdelay(100);
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_read(struct iio_dev *indio_dev, int
+>>>> channel, int *val,
+>>>>>>> +			    unsigned int irq)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>>>> +	int ret;
+>>>>>>> +
+>>>>>>> +	mutex_lock(&info->mutex);
+>>>>>>> +
+>>>>>>> +	ret = sun4i_prepare_for_irq(indio_dev, channel, irq);
+>>>>>>> +	if (ret)
+>>>>>>> +		goto err;
+>>>>>>> +
+>>>>>>> +	enable_irq(irq);
+>>>>>>> +
+>>>>>>> +	/*
+>>>>>>> +	 * The temperature sensor throws an interruption periodically
+>>>> (currently
+>>>>>>> +	 * set at periods of ~0.6s in sun4i_gpadc_runtime_resume). A 1s
+>>>> delay
+>>>>>>> +	 * makes sure an interruption occurs in normal conditions. If it
+>>>> doesn't
+>>>>>>> +	 * occur, then there is a timeout.
+>>>>>>> +	 */
+>>>>>>> +	if (!wait_for_completion_timeout(&info->completion,
+>>>>>>> +					 msecs_to_jiffies(1000))) {
+>>>>>>> +		ret = -ETIMEDOUT;
+>>>>>>> +		goto err;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	if (irq == info->fifo_data_irq)
+>>>>>>> +		*val = info->adc_data;
+>>>>>>> +	else
+>>>>>>> +		*val = info->temp_data;
+>>>>>>> +
+>>>>>>> +	ret = 0;
+>>>>>>> +	pm_runtime_mark_last_busy(indio_dev->dev.parent);
+>>>>>>> +
+>>>>>>> +err:
+>>>>>>> +	pm_runtime_put_autosuspend(indio_dev->dev.parent);
+>>>>>>> +	mutex_unlock(&info->mutex);
+>>>>>>> +
+>>>>>>> +	return ret;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_adc_read(struct iio_dev *indio_dev, int
+>>>> channel,
+>>>>>>> +				int *val)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>>>> +
+>>>>>>> +	return sun4i_gpadc_read(indio_dev, channel, val,
+>>>> info->fifo_data_irq);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_temp_read(struct iio_dev *indio_dev, int
+>>>> *val)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>>>> +
+>>>>>>> +	return sun4i_gpadc_read(indio_dev, 0, val, info->temp_data_irq);
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_temp_offset(struct iio_dev *indio_dev, int
+>>>> *val)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>>>> +
+>>>>>>> +	*val = info->data->temp_offset;
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_temp_scale(struct iio_dev *indio_dev, int
+>>>> *val)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(indio_dev);
+>>>>>>> +
+>>>>>>> +	*val = info->data->temp_scale;
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_read_raw(struct iio_dev *indio_dev,
+>>>>>>> +				struct iio_chan_spec const *chan, int *val,
+>>>>>>> +				int *val2, long mask)
+>>>>>>> +{
+>>>>>>> +	int ret;
+>>>>>>> +
+>>>>>>> +	switch (mask) {
+>>>>>>> +	case IIO_CHAN_INFO_OFFSET:
+>>>>>>> +		ret = sun4i_gpadc_temp_offset(indio_dev, val);
+>>>>>>> +		if (ret)
+>>>>>>> +			return ret;
+>>>>>>> +
+>>>>>>> +		return IIO_VAL_INT;
+>>>>>>> +	case IIO_CHAN_INFO_RAW:
+>>>>>>> +		if (chan->type == IIO_VOLTAGE)
+>>>>>>> +			ret = sun4i_gpadc_adc_read(indio_dev, chan->channel,
+>>>>>>> +						   val);
+>>>>>>> +		else
+>>>>>>> +			ret = sun4i_gpadc_temp_read(indio_dev, val);
+>>>>>>> +
+>>>>>>> +		if (ret)
+>>>>>>> +			return ret;
+>>>>>>> +
+>>>>>>> +		return IIO_VAL_INT;
+>>>>>>> +	case IIO_CHAN_INFO_SCALE:
+>>>>>>> +		if (chan->type == IIO_VOLTAGE) {
+>>>>>>> +			/* 3000mV / 4096 * raw */
+>>>>>>> +			*val = 0;
+>>>>>>> +			*val2 = 732421875;
+>>>>>>> +			return IIO_VAL_INT_PLUS_NANO;
+>>>>>>> +		}
+>>>>>>> +
+>>>>>>> +		ret = sun4i_gpadc_temp_scale(indio_dev, val);
+>>>>>>> +		if (ret)
+>>>>>>> +			return ret;
+>>>>>>> +
+>>>>>>> +		return IIO_VAL_INT;
+>>>>>>> +	default:
+>>>>>>> +		return -EINVAL;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	return -EINVAL;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static const struct iio_info sun4i_gpadc_iio_info = {
+>>>>>>> +	.read_raw = sun4i_gpadc_read_raw,
+>>>>>>> +	.driver_module = THIS_MODULE,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static irqreturn_t sun4i_gpadc_temp_data_irq_handler(int irq, void
+>>>> *dev_id)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = dev_id;
+>>>>>>> +
+>>>>>>> +	if (atomic_read(&info->ignore_temp_data_irq))
+>>>>>>> +		goto out;
+>>>>>>> +
+>>>>>>> +	if (!regmap_read(info->regmap, SUN4I_GPADC_TEMP_DATA,
+>>>> &info->temp_data))
+>>>>>>> +		complete(&info->completion);
+>>>>>>> +
+>>>>>>> +out:
+>>>>>>> +	disable_irq_nosync(info->temp_data_irq);
+>>>>>>> +	return IRQ_HANDLED;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static irqreturn_t sun4i_gpadc_fifo_data_irq_handler(int irq, void
+>>>> *dev_id)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = dev_id;
+>>>>>>> +
+>>>>>>> +	if (atomic_read(&info->ignore_fifo_data_irq))
+>>>>>>> +		goto out;
+>>>>>>> +
+>>>>>>> +	if (!regmap_read(info->regmap, SUN4I_GPADC_DATA,
+>>>> &info->adc_data))
+>>>>>>> +		complete(&info->completion);
+>>>>>>> +
+>>>>>>> +out:
+>>>>>>> +	disable_irq_nosync(info->fifo_data_irq);
+>>>>>>> +	return IRQ_HANDLED;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_runtime_suspend(struct device *dev)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+>>>>>>> +
+>>>>>>> +	/* Disable the ADC on IP */
+>>>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL1, 0);
+>>>>>>> +	/* Disable temperature sensor on IP */
+>>>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_TPR, 0);
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_runtime_resume(struct device *dev)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = iio_priv(dev_get_drvdata(dev));
+>>>>>>> +
+>>>>>>> +	/* clkin = 6MHz */
+>>>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL0,
+>>>>>>> +		     SUN4I_GPADC_CTRL0_ADC_CLK_DIVIDER(2) |
+>>>>>>> +		     SUN4I_GPADC_CTRL0_FS_DIV(7) |
+>>>>>>> +		     SUN4I_GPADC_CTRL0_T_ACQ(63));
+>>>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL1,
+>>>> info->data->tp_mode_en);
+>>>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_CTRL3,
+>>>>>>> +		     SUN4I_GPADC_CTRL3_FILTER_EN |
+>>>>>>> +		     SUN4I_GPADC_CTRL3_FILTER_TYPE(1));
+>>>>>>> +	/* period = SUN4I_GPADC_TPR_TEMP_PERIOD * 256 * 16 / clkin; ~0.6s
+>>>> */
+>>>>>>> +	regmap_write(info->regmap, SUN4I_GPADC_TPR,
+>>>>>>> +		     SUN4I_GPADC_TPR_TEMP_ENABLE |
+>>>>>>> +		     SUN4I_GPADC_TPR_TEMP_PERIOD(800));
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_get_temp(void *data, int *temp)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info = (struct sun4i_gpadc_iio *)data;
+>>>>>>> +	int val, scale, offset;
+>>>>>>> +
+>>>>>>> +	if (sun4i_gpadc_temp_read(info->indio_dev, &val))
+>>>>>>> +		return -ETIMEDOUT;
+>>>>>>> +
+>>>>>>> +	sun4i_gpadc_temp_scale(info->indio_dev, &scale);
+>>>>>>> +	sun4i_gpadc_temp_offset(info->indio_dev, &offset);
+>>>>>>> +
+>>>>>>> +	*temp = (val + offset) * scale;
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static const struct thermal_zone_of_device_ops sun4i_ts_tz_ops = {
+>>>>>>> +	.get_temp = &sun4i_gpadc_get_temp,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static const struct dev_pm_ops sun4i_gpadc_pm_ops = {
+>>>>>>> +	.runtime_suspend = &sun4i_gpadc_runtime_suspend,
+>>>>>>> +	.runtime_resume = &sun4i_gpadc_runtime_resume,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static int sun4i_irq_init(struct platform_device *pdev, const char
+>>>> *name,
+>>>>>>> +			  irq_handler_t handler, const char *devname,
+>>>>>>> +			  unsigned int *irq, atomic_t *atomic)
+>>>>>>> +{
+>>>>>>> +	int ret;
+>>>>>>> +	struct sun4i_gpadc_dev *mfd_dev =
+>>>> dev_get_drvdata(pdev->dev.parent);
+>>>>>>> +	struct sun4i_gpadc_iio *info =
+>>>> iio_priv(dev_get_drvdata(&pdev->dev));
+>>>>>>> +
+>>>>>>> +	/*
+>>>>>>> +	 * Once the interrupt is activated, the IP continuously performs
+>>>>>>> +	 * conversions thus throws interrupts. The interrupt is activated
+>>>> right
+>>>>>>> +	 * after being requested but we want to control when these
+>>>> interrupts
+>>>>>>> +	 * occur thus we disable it right after being requested. However,
+>>>> an
+>>>>>>> +	 * interrupt might occur between these two instructions and we
+>>>> have to
+>>>>>>> +	 * make sure that does not happen, by using atomic flags. We set
+>>>> the
+>>>>>>> +	 * flag before requesting the interrupt and unset it right after
+>>>>>>> +	 * disabling the interrupt. When an interrupt occurs between
+>>>> these two
+>>>>>>> +	 * instructions, reading the atomic flag will tell us to ignore
+>>>> the
+>>>>>>> +	 * interrupt.
+>>>>>>> +	 */
+>>>>>>> +	atomic_set(atomic, 1);
+>>>>>>> +
+>>>>>>> +	ret = platform_get_irq_byname(pdev, name);
+>>>>>>> +	if (ret < 0) {
+>>>>>>> +		dev_err(&pdev->dev, "no %s interrupt registered\n", name);
+>>>>>>> +		return ret;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	ret = regmap_irq_get_virq(mfd_dev->regmap_irqc, ret);
+>>>>>>> +	if (ret < 0) {
+>>>>>>> +		dev_err(&pdev->dev, "failed to get virq for irq %s\n", name);
+>>>>>>> +		return ret;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	*irq = ret;
+>>>>>>> +	ret = devm_request_any_context_irq(&pdev->dev, *irq, handler, 0,
+>>>>>>> +					   devname, info);
+>>>>>>> +	if (ret < 0) {
+>>>>>>> +		dev_err(&pdev->dev, "could not request %s interrupt: %d\n",
+>>>>>>> +			name, ret);
+>>>>>>> +		return ret;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	disable_irq(*irq);
+>>>>>>> +	atomic_set(atomic, 0);
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_probe(struct platform_device *pdev)
+>>>>>>> +{
+>>>>>>> +	struct sun4i_gpadc_iio *info;
+>>>>>>> +	struct iio_dev *indio_dev;
+>>>>>>> +	int ret;
+>>>>>>> +	struct sun4i_gpadc_dev *sun4i_gpadc_dev;
+>>>>>>> +
+>>>>>>> +	sun4i_gpadc_dev = dev_get_drvdata(pdev->dev.parent);
+>>>>>>> +
+>>>>>>> +	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*info));
+>>>>>>> +	if (!indio_dev)
+>>>>>>> +		return -ENOMEM;
+>>>>>>> +
+>>>>>>> +	info = iio_priv(indio_dev);
+>>>>>>> +	platform_set_drvdata(pdev, indio_dev);
+>>>>>>> +
+>>>>>>> +	mutex_init(&info->mutex);
+>>>>>>> +	info->regmap = sun4i_gpadc_dev->regmap;
+>>>>>>> +	info->indio_dev = indio_dev;
+>>>>>>> +	init_completion(&info->completion);
+>>>>>>> +	indio_dev->name = dev_name(&pdev->dev);
+>>>>>>> +	indio_dev->dev.parent = &pdev->dev;
+>>>>>>> +	indio_dev->dev.of_node = pdev->dev.of_node;
+>>>>>>> +	indio_dev->info = &sun4i_gpadc_iio_info;
+>>>>>>> +	indio_dev->modes = INDIO_DIRECT_MODE;
+>>>>>>> +	indio_dev->num_channels = ARRAY_SIZE(sun4i_gpadc_channels);
+>>>>>>> +	indio_dev->channels = sun4i_gpadc_channels;
+>>>>>>> +
+>>>>>>> +	info->data = (struct gpadc_data
+>>>> *)platform_get_device_id(pdev)->driver_data;
+>>>>>>> +
+>>>>>>> +	/*
+>>>>>>> +	 * Since the controller needs to be in touchscreen mode for its
+>>>> thermal
+>>>>>>> +	 * sensor to operate properly, and that switching between the two
+>>>> modes
+>>>>>>> +	 * needs a delay, always registering in the thermal framework
+>>>> will
+>>>>>>> +	 * significantly slow down the conversion rate of the ADCs.
+>>>>>>> +	 *
+>>>>>>> +	 * Therefore, instead of depending on THERMAL_OF in Kconfig, we
+>>>> only
+>>>>>>> +	 * register the sensor if that option is enabled, eventually
+>>>> leaving
+>>>>>>> +	 * that choice to the user.
+>>>>>>> +	 */
+>>>>>>> +
+>>>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+>>>>>>> +		/*
+>>>>>>> +		 * This driver is a child of an MFD which has a node in the DT
+>>>>>>> +		 * but not its children, because of DT backward compatibility
+>>>>>>> +		 * for A10, A13 and A31 SoCs. Therefore, the resulting devices
+>>>>>>> +		 * of this driver do not have an of_node variable.
+>>>>>>> +		 * However, its parent (the MFD driver) has an of_node variable
+>>>>>>> +		 * and since devm_thermal_zone_of_sensor_register uses its first
+>>>>>>> +		 * argument to match the phandle defined in the node of the
+>>>>>>> +		 * thermal driver with the of_node of the device passed as first
+>>>>>>> +		 * argument and the third argument to call ops from
+>>>>>>> +		 * thermal_zone_of_device_ops, the solution is to use the parent
+>>>>>>> +		 * device as first argument to match the phandle with its
+>>>>>>> +		 * of_node, and the device from this driver as third argument to
+>>>>>>> +		 * return the temperature.
+>>>>>>> +		 */
+>>>>>>> +		struct thermal_zone_device *tzd;
+>>>>>>> +		tzd = devm_thermal_zone_of_sensor_register(pdev->dev.parent, 0,
+>>>>>>> +							   info,
+>>>>>>> +							   &sun4i_ts_tz_ops);
+>>>>>>> +		if (IS_ERR(tzd)) {
+>>>>>>> +			dev_err(&pdev->dev,
+>>>>>>> +				"could not register thermal sensor: %ld\n",
+>>>>>>> +				PTR_ERR(tzd));
+>>>>>>> +			ret = PTR_ERR(tzd);
+>>>>>>> +			goto err;
+>>>>>>> +		}
+>>>>>>> +	} else {
+>>>>>>> +		indio_dev->num_channels =
+>>>>>>> +			ARRAY_SIZE(sun4i_gpadc_channels_no_temp);
+>>>>>>> +		indio_dev->channels = sun4i_gpadc_channels_no_temp;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	pm_runtime_set_autosuspend_delay(&pdev->dev,
+>>>>>>> +					 SUN4I_GPADC_AUTOSUSPEND_DELAY);
+>>>>>>> +	pm_runtime_use_autosuspend(&pdev->dev);
+>>>>>>> +	pm_runtime_set_suspended(&pdev->dev);
+>>>>>>> +	pm_runtime_enable(&pdev->dev);
+>>>>>>> +
+>>>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+>>>>>>> +		ret = sun4i_irq_init(pdev, "TEMP_DATA_PENDING",
+>>>>>>> +				     sun4i_gpadc_temp_data_irq_handler,
+>>>>>>> +				     "temp_data", &info->temp_data_irq,
+>>>>>>> +				     &info->ignore_temp_data_irq);
+>>>>>>> +		if (ret < 0)
+>>>>>>> +			goto err;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	ret = sun4i_irq_init(pdev, "FIFO_DATA_PENDING",
+>>>>>>> +			     sun4i_gpadc_fifo_data_irq_handler, "fifo_data",
+>>>>>>> +			     &info->fifo_data_irq, &info->ignore_fifo_data_irq);
+>>>>>>> +	if (ret < 0)
+>>>>>>> +		goto err;
+>>>>>>> +
+>>>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF)) {
+>>>>>>> +		ret = iio_map_array_register(indio_dev, sun4i_gpadc_hwmon_maps);
+>>>>>>> +		if (ret < 0) {
+>>>>>>> +			dev_err(&pdev->dev,
+>>>>>>> +				"failed to register iio map array\n");
+>>>>>>> +			goto err;
+>>>>>>> +		}
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	ret = devm_iio_device_register(&pdev->dev, indio_dev);
+>>>>>>> +	if (ret < 0) {
+>>>>>>> +		dev_err(&pdev->dev, "could not register the device\n");
+>>>>>>> +		goto err_map;
+>>>>>>> +	}
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +
+>>>>>>> +err_map:
+>>>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF))
+>>>>>>> +		iio_map_array_unregister(indio_dev);
+>>>>>>> +
+>>>>>>> +err:
+>>>>>>> +	pm_runtime_put(&pdev->dev);
+>>>>>>> +	pm_runtime_disable(&pdev->dev);
+>>>>>>> +
+>>>>>>> +	return ret;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static int sun4i_gpadc_remove(struct platform_device *pdev)
+>>>>>>> +{
+>>>>>>> +	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
+>>>>>>> +
+>>>>>>> +	pm_runtime_put(&pdev->dev);
+>>>>>>> +	pm_runtime_disable(&pdev->dev);
+>>>>>>> +	if (IS_ENABLED(CONFIG_THERMAL_OF))
+>>>>>>> +		iio_map_array_unregister(indio_dev);
+>>>>>>> +
+>>>>>>> +	return 0;
+>>>>>>> +}
+>>>>>>> +
+>>>>>>> +static const struct platform_device_id sun4i_gpadc_id[] = {
+>>>>>>> +	{ "sun4i-a10-gpadc-iio", (kernel_ulong_t)&sun4i_gpadc_data },
+>>>>>>> +	{ "sun5i-a13-gpadc-iio", (kernel_ulong_t)&sun5i_gpadc_data },
+>>>>>>> +	{ "sun6i-a31-gpadc-iio", (kernel_ulong_t)&sun6i_gpadc_data },
+>>>>>>> +	{ /* sentinel */ },
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +static struct platform_driver sun4i_gpadc_driver = {
+>>>>>>> +	.driver = {
+>>>>>>> +		.name = "sun4i-gpadc-iio",
+>>>>>>> +		.pm = &sun4i_gpadc_pm_ops,
+>>>>>>> +	},
+>>>>>>> +	.id_table = sun4i_gpadc_id,
+>>>>>>> +	.probe = sun4i_gpadc_probe,
+>>>>>>> +	.remove = sun4i_gpadc_remove,
+>>>>>>> +};
+>>>>>>> +
+>>>>>>> +module_platform_driver(sun4i_gpadc_driver);
+>>>>>>> +
+>>>>>>> +MODULE_DESCRIPTION("ADC driver for sunxi platforms");
+>>>>>>> +MODULE_AUTHOR("Quentin Schulz
+>>>> <quentin.schulz@free-electrons.com>");
+>>>>>>> +MODULE_LICENSE("GPL v2");
+>>>>>>> diff --git a/include/linux/mfd/sun4i-gpadc.h
+>>>> b/include/linux/mfd/sun4i-gpadc.h
+>>>>>>> index d7a29f2..509e736 100644
+>>>>>>> --- a/include/linux/mfd/sun4i-gpadc.h
+>>>>>>> +++ b/include/linux/mfd/sun4i-gpadc.h
+>>>>>>> @@ -28,6 +28,7 @@
+>>>>>>>  #define SUN4I_GPADC_CTRL1_TP_MODE_EN			BIT(4)
+>>>>>>>  #define SUN4I_GPADC_CTRL1_TP_ADC_SELECT			BIT(3)
+>>>>>>>  #define SUN4I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(2, 0) &
+>>>> (x))
+>>>>>>> +#define SUN4I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(2, 0)
+>>>>>>>  
+>>>>>>>  /* TP_CTRL1 bits for sun6i SOCs */
+>>>>>>>  #define SUN6I_GPADC_CTRL1_TOUCH_PAN_CALI_EN		BIT(7)
+>>>>>>> @@ -35,6 +36,7 @@
+>>>>>>>  #define SUN6I_GPADC_CTRL1_TP_MODE_EN			BIT(5)
+>>>>>>>  #define SUN6I_GPADC_CTRL1_TP_ADC_SELECT			BIT(4)
+>>>>>>>  #define SUN6I_GPADC_CTRL1_ADC_CHAN_SELECT(x)		(GENMASK(3, 0) &
+>>>> BIT(x))
+>>>>>>> +#define SUN6I_GPADC_CTRL1_ADC_CHAN_MASK			GENMASK(3, 0)
+>>>>>>>  
+>>>>>>>  #define SUN4I_GPADC_CTRL2				0x08
+>>>>>>>  
+>>>>>>>
+>>>>>>
+>>>>>> --
+>>>>>> To unsubscribe from this list: send the line "unsubscribe linux-iio"
+>>>> in
+>>>>>> the body of a message to majordomo@vger.kernel.org
+>>>>>> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+>>>>>>
+>>>>>
+>>>
+>>
+> 
+
 -- 
-2.7.4
-
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
