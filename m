@@ -1,25 +1,24 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ns.pmeerw.net ([84.19.176.117]:42150 "EHLO vps.pmeerw.net"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752443AbdCEWrg (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Sun, 5 Mar 2017 17:47:36 -0500
-Date: Sun, 5 Mar 2017 23:47:34 +0100 (CET)
-From: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-To: Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
-cc: linux-iio@vger.kernel.org
+Received: from www381.your-server.de ([78.46.137.84]:43121 "EHLO
+        www381.your-server.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753887AbdCFKZH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 6 Mar 2017 05:25:07 -0500
 Subject: Re: [PATCH] iio: dac: Add support for ltc2632 DACs
-In-Reply-To: <20170302190127.23157-1-maxime.roussinbelanger@gmail.com>
-Message-ID: <alpine.DEB.2.20.1703052337480.8980@vps.pmeerw.net>
+To: Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>,
+        linux-iio@vger.kernel.org
 References: <20170302190127.23157-1-maxime.roussinbelanger@gmail.com>
+From: Lars-Peter Clausen <lars@metafoo.de>
+Message-ID: <4cc58721-aca3-f8ef-4ad3-97983f71f264@metafoo.de>
+Date: Mon, 6 Mar 2017 11:24:58 +0100
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
+In-Reply-To: <20170302190127.23157-1-maxime.roussinbelanger@gmail.com>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-
+On 03/02/2017 08:01 PM, Maxime Roussin-Belanger wrote:
 > Signed-off-by: Maxime Roussin-Belanger <maxime.roussinbelanger@gmail.com>
 
-comments below
 
 > ---
 >  .../devicetree/bindings/iio/dac/ltc2632.txt        |  23 ++
@@ -55,9 +54,6 @@ comments below
 > +	spi_master {
 > +		dac: ltc2632@0 {
 > +			compatible = "lltc,ltc2632";
-
-ltc2632 should have a suffix as per the list above?
-
 > +			reg = <0>; /* CS0 */
 > +			spi-max-frequency = <1000000>;
 > +		};
@@ -121,10 +117,13 @@ ltc2632 should have a suffix as per the list above?
 > +#define LTC2632_CMD_POWERDOWN_CHIP              0x5
 > +#define LTC2632_CMD_INTERNAL_REFER              0x6
 > +#define LTC2632_CMD_EXTERNAL_REFER              0x7
+
+Looks like the SPI versions of the  LTC I2C DACs already supported in
+ad5064.c. Since that driver has SPI support, we could support them there
+instead of a separate driver. Should be a lot less code.
+
+
 > +
-
-drop newline
-
 > +
 > +static ssize_t ltc2632_read_dac_powerdown(struct iio_dev *indio_dev,
 > +					  uintptr_t private,
@@ -140,9 +139,6 @@ drop newline
 > +/**
 > + * struct ltc2632_chip_info - chip specific information
 > + * @channels:		channel spec for the DAC
-
-vref_mv missing
-
 > + */
 > +struct ltc2632_chip_info {
 > +	const struct iio_chan_spec *channels;
@@ -258,9 +254,6 @@ vref_mv missing
 > +	msg[2] = data;
 > +
 > +	return spi_write(spi, msg, 3);
-
-sizeof(msg)
-
 > +}
 > +
 > +static int ltc2632_read_raw(struct iio_dev *indio_dev,
@@ -434,7 +427,3 @@ sizeof(msg)
 > +MODULE_LICENSE("GPL v2");
 > 
 
--- 
-
-Peter Meerwald-Stadler
-Mobile: +43 664 24 44 418
