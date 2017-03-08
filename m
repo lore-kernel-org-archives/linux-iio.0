@@ -1,157 +1,232 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48015 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751201AbdCMUje (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:39:34 -0400
-Subject: Re: [Outreachy kernel] Re: [PATCH v2] staging: iio: ad7280a: Group
- similar macros into enums
-To: Julia Lawall <julia.lawall@lip6.fr>,
-        sayli karnik <karniksayli1995@gmail.com>
-References: <20170307191112.GA29306@sayli-HP-15-Notebook-PC>
- <20170307191746.GA22068@kroah.com>
- <CAKG5xWiuKm2VboRAR2ALz+SnHPbcBTQvH2Hw+Rpkfm2P+GK2Qg@mail.gmail.com>
- <alpine.DEB.2.20.1703080736250.2108@hadrien>
-Cc: Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        outreachy-kernel <outreachy-kernel@googlegroups.com>,
-        Lars-Peter Clausen <lars@metafoo.de>,
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:33891 "EHLO
+        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756573AbdCHHOt (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 8 Mar 2017 02:14:49 -0500
+Received: by mail-pf0-f194.google.com with SMTP id o126so2819070pfb.1
+        for <linux-iio@vger.kernel.org>; Tue, 07 Mar 2017 23:14:34 -0800 (PST)
+Date: Wed, 8 Mar 2017 12:44:08 +0530
+From: sayli karnik <karniksayli1995@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: Lars-Peter Clausen <lars@metafoo.de>,
         Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <f52ff321-649f-d90b-6d17-58c4905866b2@kernel.org>
-Date: Mon, 13 Mar 2017 20:39:31 +0000
+Subject: [PATCH] staging: iio: ade7754: Move contents of header file to
+ source file
+Message-ID: <20170308071408.GA9173@sayli-HP-15-Notebook-PC>
 MIME-Version: 1.0
-In-Reply-To: <alpine.DEB.2.20.1703080736250.2108@hadrien>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 08/03/17 06:47, Julia Lawall wrote:
-> 
-> 
-> On Wed, 8 Mar 2017, sayli karnik wrote:
-> 
->>
->>
->> On Wed, Mar 8, 2017 at 12:47 AM, Greg Kroah-Hartman
->> <gregkh@linuxfoundation.org> wrote:
->>> On Wed, Mar 08, 2017 at 12:41:12AM +0530, sayli karnik wrote:
->>>> The patch groups similar macros into enum data types.
->>>
->>> Why?
->>>
->>> What benefit does this provide?
->> As suggested by Lars, I converted the macros to an enum data type, so that
->> it is clear what their function is-
->> https://groups.google.com/d/msg/outreachy-kernel/VM6Wu-fJVfQ/VngpohNBAwAJ
->>
->>>
->>>>
->>>> Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
->>>> ---
->>>> Changes in v2:
->>>> Corrected the order of both the enums.
->>>> Used enum data type names instead of unsigned int inside struct
->>>> ad7280_platform_data.
->>>>
->>>>  drivers/staging/iio/adc/ad7280a.h | 24 ++++++++++++++----------
->>>>  1 file changed, 14 insertions(+), 10 deletions(-)
->>>>
->>>> diff --git a/drivers/staging/iio/adc/ad7280a.h
->> b/drivers/staging/iio/adc/ad7280a.h
->>>> index ccfb90d..e22694f 100644
->>>> --- a/drivers/staging/iio/adc/ad7280a.h
->>>> +++ b/drivers/staging/iio/adc/ad7280a.h
->>>> @@ -13,15 +13,19 @@
->>>>   * TODO: struct ad7280_platform_data needs to go into include/linux/iio
->>>>   */
->>>>
->>>> -#define AD7280A_ACQ_TIME_400ns                       0
->>>> -#define AD7280A_ACQ_TIME_800ns                       1
->>>> -#define AD7280A_ACQ_TIME_1200ns                      2
->>>> -#define AD7280A_ACQ_TIME_1600ns                      3
->>>> +enum ad7280a_acq_time {
->>>> +     AD7280A_ACQ_TIME_400ns = 0,
->>>> +     AD7280A_ACQ_TIME_800ns,
->>>> +     AD7280A_ACQ_TIME_1200ns,
->>>> +     AD7280A_ACQ_TIME_1600ns,
->>>
->>> Before your change, you instantly knew that the 1600ns value needed to
->>> be 3.  Now I need to count an enum.  Does this seem like a better
->>> change?
->>
->> Hmm we do need to count.
->> But,
->> -I feel grouping into an enum organizes similar #defines in a better way.
->>
->> -You get free compile time checking of valid values using enums. For example
->>
->> public static int VALUE_ONE = 0;
->> public static int VALUE_TWO = 1;
->>
->> does not ensure,
->>
->> void selectOption(int value) {
->> ...
->> }
->> will only accept 0 or 1 as a parameter value. Using an enum, that is
->> guaranteed.
-> 
-> Regrettably in C it is not.
-> 
-> Still, using enums does make it possible to design tools that do such
-> checking.  With a random bunch of defines it is less clear what goes with
-> what.
-> 
->>
->> -Also it avoids the repetitive #defines.
->>
->>> Are you _sure_ the compiler sets the values properly?
-> 
-> Page 105 of this document
-> 
-> WG14/N1256 Committee Draft — Septermber 7, 2007 ISO/IEC 9899:TC3
-> http://www.open-std.org/jtc1/sc22/wg14/www/docs/n1256.pdf
-> 
-> says:
-> 
-> An enumerator with = defines its enumeration constant as the value of the
-> constant expression.  If the first enumerator has no =, the value of its
-> enumeration constant is 0. Each subsequent enumerator with no = defines
-> its enumeration constant as the value of the constant expression obtained
-> by adding 1 to the value of the previous enumeration constant.
-> 
-> 
-> One could also check whether the actual value is important, eg the
-> constant is passed to a device, or if it is just used as an internal flag.
-This is the key element to my mind.   Scan indexes are just a software
-construction.  We want them to be consistent, but don't really care exactly
-what they are as long as the are monotonic.
+The contents of ade7754.h are only used in ade7754.c. Move the header
+contents to the source file and delete the header file.
 
-For register values like these ones it gets less obvious.  Personally I
-prefer the consistency of just having them as defines, even though you
-loose the checking of type, which can be useful.
+Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
+---
+ drivers/staging/iio/meter/ade7754.c | 87 ++++++++++++++++++++++++++++++++++-
+ drivers/staging/iio/meter/ade7754.h | 90 -------------------------------------
+ 2 files changed, 86 insertions(+), 91 deletions(-)
+ delete mode 100644 drivers/staging/iio/meter/ade7754.h
 
-Jonathan
-> 
-> julia
-> 
->>>
->>> thanks,
->>>
->>> greg k-h
->>
->> --
->> You received this message because you are subscribed to the Google Groups
->> "outreachy-kernel" group.
->> To unsubscribe from this group and stop receiving emails from it, send an
->> email to outreachy-kernel+unsubscribe@googlegroups.com.
->> To post to this group, send email to outreachy-kernel@googlegroups.com.
->> To view this discussion on the web visithttps://groups.google.com/d/msgid/outreachy-kernel/CAKG5xWiuKm2VboRAR2ALz%2
->> BSnHPbcBTQvH2Hw%2BRpkfm2P%2BGK2Qg%40mail.gmail.com.
->> For more options, visit https://groups.google.com/d/optout.
->>
->>
-> 
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index 024463a..42f7b06 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -21,7 +21,92 @@
+ #include <linux/iio/iio.h>
+ #include <linux/iio/sysfs.h>
+ #include "meter.h"
+-#include "ade7754.h"
++
++#define ADE7754_AENERGY   0x01
++#define ADE7754_RAENERGY  0x02
++#define ADE7754_LAENERGY  0x03
++#define ADE7754_VAENERGY  0x04
++#define ADE7754_RVAENERGY 0x05
++#define ADE7754_LVAENERGY 0x06
++#define ADE7754_PERIOD    0x07
++#define ADE7754_TEMP      0x08
++#define ADE7754_WFORM     0x09
++#define ADE7754_OPMODE    0x0A
++#define ADE7754_MMODE     0x0B
++#define ADE7754_WAVMODE   0x0C
++#define ADE7754_WATMODE   0x0D
++#define ADE7754_VAMODE    0x0E
++#define ADE7754_IRQEN     0x0F
++#define ADE7754_STATUS    0x10
++#define ADE7754_RSTATUS   0x11
++#define ADE7754_ZXTOUT    0x12
++#define ADE7754_LINCYC    0x13
++#define ADE7754_SAGCYC    0x14
++#define ADE7754_SAGLVL    0x15
++#define ADE7754_VPEAK     0x16
++#define ADE7754_IPEAK     0x17
++#define ADE7754_GAIN      0x18
++#define ADE7754_AWG       0x19
++#define ADE7754_BWG       0x1A
++#define ADE7754_CWG       0x1B
++#define ADE7754_AVAG      0x1C
++#define ADE7754_BVAG      0x1D
++#define ADE7754_CVAG      0x1E
++#define ADE7754_APHCAL    0x1F
++#define ADE7754_BPHCAL    0x20
++#define ADE7754_CPHCAL    0x21
++#define ADE7754_AAPOS     0x22
++#define ADE7754_BAPOS     0x23
++#define ADE7754_CAPOS     0x24
++#define ADE7754_CFNUM     0x25
++#define ADE7754_CFDEN     0x26
++#define ADE7754_WDIV      0x27
++#define ADE7754_VADIV     0x28
++#define ADE7754_AIRMS     0x29
++#define ADE7754_BIRMS     0x2A
++#define ADE7754_CIRMS     0x2B
++#define ADE7754_AVRMS     0x2C
++#define ADE7754_BVRMS     0x2D
++#define ADE7754_CVRMS     0x2E
++#define ADE7754_AIRMSOS   0x2F
++#define ADE7754_BIRMSOS   0x30
++#define ADE7754_CIRMSOS   0x31
++#define ADE7754_AVRMSOS   0x32
++#define ADE7754_BVRMSOS   0x33
++#define ADE7754_CVRMSOS   0x34
++#define ADE7754_AAPGAIN   0x35
++#define ADE7754_BAPGAIN   0x36
++#define ADE7754_CAPGAIN   0x37
++#define ADE7754_AVGAIN    0x38
++#define ADE7754_BVGAIN    0x39
++#define ADE7754_CVGAIN    0x3A
++#define ADE7754_CHKSUM    0x3E
++#define ADE7754_VERSION   0x3F
++
++#define ADE7754_READ_REG(a)    a
++#define ADE7754_WRITE_REG(a) ((a) | 0x80)
++
++#define ADE7754_MAX_TX    4
++#define ADE7754_MAX_RX    4
++#define ADE7754_STARTUP_DELAY 1000
++
++#define ADE7754_SPI_SLOW	(u32)(300 * 1000)
++#define ADE7754_SPI_BURST	(u32)(1000 * 1000)
++#define ADE7754_SPI_FAST	(u32)(2000 * 1000)
++
++/**
++ * struct ade7754_state - device instance specific data
++ * @us:			actual spi_device
++ * @buf_lock:		mutex to protect tx and rx
++ * @tx:			transmit buffer
++ * @rx:			receive buffer
++ **/
++struct ade7754_state {
++	struct spi_device	*us;
++	struct mutex		buf_lock;
++	u8			tx[ADE7754_MAX_TX] ____cacheline_aligned;
++	u8			rx[ADE7754_MAX_RX];
++};
+ 
+ static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
+ {
+diff --git a/drivers/staging/iio/meter/ade7754.h b/drivers/staging/iio/meter/ade7754.h
+deleted file mode 100644
+index 28f71c2..0000000
+--- a/drivers/staging/iio/meter/ade7754.h
++++ /dev/null
+@@ -1,90 +0,0 @@
+-#ifndef _ADE7754_H
+-#define _ADE7754_H
+-
+-#define ADE7754_AENERGY   0x01
+-#define ADE7754_RAENERGY  0x02
+-#define ADE7754_LAENERGY  0x03
+-#define ADE7754_VAENERGY  0x04
+-#define ADE7754_RVAENERGY 0x05
+-#define ADE7754_LVAENERGY 0x06
+-#define ADE7754_PERIOD    0x07
+-#define ADE7754_TEMP      0x08
+-#define ADE7754_WFORM     0x09
+-#define ADE7754_OPMODE    0x0A
+-#define ADE7754_MMODE     0x0B
+-#define ADE7754_WAVMODE   0x0C
+-#define ADE7754_WATMODE   0x0D
+-#define ADE7754_VAMODE    0x0E
+-#define ADE7754_IRQEN     0x0F
+-#define ADE7754_STATUS    0x10
+-#define ADE7754_RSTATUS   0x11
+-#define ADE7754_ZXTOUT    0x12
+-#define ADE7754_LINCYC    0x13
+-#define ADE7754_SAGCYC    0x14
+-#define ADE7754_SAGLVL    0x15
+-#define ADE7754_VPEAK     0x16
+-#define ADE7754_IPEAK     0x17
+-#define ADE7754_GAIN      0x18
+-#define ADE7754_AWG       0x19
+-#define ADE7754_BWG       0x1A
+-#define ADE7754_CWG       0x1B
+-#define ADE7754_AVAG      0x1C
+-#define ADE7754_BVAG      0x1D
+-#define ADE7754_CVAG      0x1E
+-#define ADE7754_APHCAL    0x1F
+-#define ADE7754_BPHCAL    0x20
+-#define ADE7754_CPHCAL    0x21
+-#define ADE7754_AAPOS     0x22
+-#define ADE7754_BAPOS     0x23
+-#define ADE7754_CAPOS     0x24
+-#define ADE7754_CFNUM     0x25
+-#define ADE7754_CFDEN     0x26
+-#define ADE7754_WDIV      0x27
+-#define ADE7754_VADIV     0x28
+-#define ADE7754_AIRMS     0x29
+-#define ADE7754_BIRMS     0x2A
+-#define ADE7754_CIRMS     0x2B
+-#define ADE7754_AVRMS     0x2C
+-#define ADE7754_BVRMS     0x2D
+-#define ADE7754_CVRMS     0x2E
+-#define ADE7754_AIRMSOS   0x2F
+-#define ADE7754_BIRMSOS   0x30
+-#define ADE7754_CIRMSOS   0x31
+-#define ADE7754_AVRMSOS   0x32
+-#define ADE7754_BVRMSOS   0x33
+-#define ADE7754_CVRMSOS   0x34
+-#define ADE7754_AAPGAIN   0x35
+-#define ADE7754_BAPGAIN   0x36
+-#define ADE7754_CAPGAIN   0x37
+-#define ADE7754_AVGAIN    0x38
+-#define ADE7754_BVGAIN    0x39
+-#define ADE7754_CVGAIN    0x3A
+-#define ADE7754_CHKSUM    0x3E
+-#define ADE7754_VERSION   0x3F
+-
+-#define ADE7754_READ_REG(a)    a
+-#define ADE7754_WRITE_REG(a) ((a) | 0x80)
+-
+-#define ADE7754_MAX_TX    4
+-#define ADE7754_MAX_RX    4
+-#define ADE7754_STARTUP_DELAY 1000
+-
+-#define ADE7754_SPI_SLOW	(u32)(300 * 1000)
+-#define ADE7754_SPI_BURST	(u32)(1000 * 1000)
+-#define ADE7754_SPI_FAST	(u32)(2000 * 1000)
+-
+-/**
+- * struct ade7754_state - device instance specific data
+- * @us:			actual spi_device
+- * @buf_lock:		mutex to protect tx and rx
+- * @tx:			transmit buffer
+- * @rx:			receive buffer
+- **/
+-struct ade7754_state {
+-	struct spi_device	*us;
+-	struct mutex		buf_lock;
+-	u8			tx[ADE7754_MAX_TX] ____cacheline_aligned;
+-	u8			rx[ADE7754_MAX_RX];
+-};
+-
+-#endif
+-- 
+2.7.4
 
