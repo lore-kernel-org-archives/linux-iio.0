@@ -1,100 +1,107 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f67.google.com ([74.125.83.67]:34921 "EHLO
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:36176 "EHLO
         mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932433AbdCIRhc (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Mar 2017 12:37:32 -0500
-Date: Thu, 9 Mar 2017 09:36:54 -0800
+        with ESMTP id S932093AbdCIRkw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 9 Mar 2017 12:40:52 -0500
+Date: Thu, 9 Mar 2017 09:40:49 -0800
 From: Alison Schofield <amsfield22@gmail.com>
 To: miguel.robles@farole.net
 Cc: Daniel Baluta <daniel.baluta@gmail.com>, linux-iio@vger.kernel.org,
         linux-iio-owner@vger.kernel.org
 Subject: Re: PROBLEM: iio: dummy: Oops after mkdir
-Message-ID: <20170309173653.GA3675@d830.WORKGROUP>
+Message-ID: <20170309174049.GB3675@d830.WORKGROUP>
 References: <20170309143421.GA4623@miguel-Z170X-UD5-TH>
  <CAEnQRZAO0X9hW=kykM5wZrweO6Xukts-XUWWyQNJM0D3fJXh4Q@mail.gmail.com>
  <592203dd4ed4ded678778294008728bc@farole.net>
+ <20170309173653.GA3675@d830.WORKGROUP>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <592203dd4ed4ded678778294008728bc@farole.net>
+In-Reply-To: <20170309173653.GA3675@d830.WORKGROUP>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Thu, Mar 09, 2017 at 04:59:39PM +0100, miguel.robles@farole.net wrote:
-> On 2017-03-09 16:41, Daniel Baluta wrote:
-> >On Thu, Mar 9, 2017 at 4:34 PM, Miguel Robles <miguel.robles@farole.net>
-> >wrote:
-> >>Hello all,
-> >>
-> >>I am beginning with Linux Kernel development. So I am trying to make
-> >>the IIO tasks posted on kernelnewbies DOT org.
-> >>But I got stuck with this problem that I am describing you hereafter
-> >>hoping that someone could bring me any feedback.
-> >>
-> >>Many thanks,
-> >>Miguel ROBLES
-> >>
-> >>----------
-> >>DESCRIPTION
-> >>-----------
-> >>
-> >>After loading the corresponding IIO modules and mountig the configfs
-> >>filesystem
-> >>I can not create an instance device with mkdir using the command:
-> >>
-> >>$ sudo mkdir /config/iio/devices/dummy/my_dummy_device
-> >>Killed
-> >>
-> >>I get the "Killed" message and looking at my syslog file, I got the
-> >>warning
-> >>"refcount_t: increment on 0; use-after-free" followed by an "Oops"
-> >>message.
-> >>When trying to execute the command one more time, the execution never
-> >>finishes.
-> >>
-> >>
-> >>------
-> >>CONTEXT
-> >>-------
-> >>
-> >>- Tried on 2 linux kernel releases:
-> >>      - kernel: 4.10 (commit: 4977ab6)
-> >>      - Kernel: 4.11 (commit: ec3b93a)
-> >>
-> >>- Compiled with config file including the following options for IIO:
-> >>
-> >>#
-> >># IIO dummy driver
-> >>#
-> >>CONFIG_IIO_DUMMY_EVGEN=m
-> >>CONFIG_IIO_SIMPLE_DUMMY=m
-> >>CONFIG_IIO_SIMPLE_DUMMY_EVENTS=y
-> >>CONFIG_IIO_SIMPLE_DUMMY_BUFFER=y
-> >>
-> >>CONFIG_IIO_CONFIGFS=m
-> >
-> >Do you also have CONFIG_IIO_SW_DEVICE right?
+On Thu, Mar 09, 2017 at 09:36:54AM -0800, Alison Schofield wrote:
+> On Thu, Mar 09, 2017 at 04:59:39PM +0100, miguel.robles@farole.net wrote:
+> > On 2017-03-09 16:41, Daniel Baluta wrote:
+> > >On Thu, Mar 9, 2017 at 4:34 PM, Miguel Robles <miguel.robles@farole.net>
+> > >wrote:
+> > >>Hello all,
+> > >>
+> > >>I am beginning with Linux Kernel development. So I am trying to make
+> > >>the IIO tasks posted on kernelnewbies DOT org.
+> > >>But I got stuck with this problem that I am describing you hereafter
+> > >>hoping that someone could bring me any feedback.
+> > >>
+> > >>Many thanks,
+> > >>Miguel ROBLES
+> > >>
+> > >>----------
+> > >>DESCRIPTION
+> > >>-----------
+> > >>
+> > >>After loading the corresponding IIO modules and mountig the configfs
+> > >>filesystem
+> > >>I can not create an instance device with mkdir using the command:
+> > >>
+> > >>$ sudo mkdir /config/iio/devices/dummy/my_dummy_device
+> > >>Killed
+> > >>
+> > >>I get the "Killed" message and looking at my syslog file, I got the
+> > >>warning
+> > >>"refcount_t: increment on 0; use-after-free" followed by an "Oops"
+> > >>message.
+> > >>When trying to execute the command one more time, the execution never
+> > >>finishes.
+> > >>
+> > >>
+> > >>------
+> > >>CONTEXT
+> > >>-------
+> > >>
+> > >>- Tried on 2 linux kernel releases:
+> > >>      - kernel: 4.10 (commit: 4977ab6)
+> > >>      - Kernel: 4.11 (commit: ec3b93a)
+> > >>
+> > >>- Compiled with config file including the following options for IIO:
+> > >>
+> > >>#
+> > >># IIO dummy driver
+> > >>#
+> > >>CONFIG_IIO_DUMMY_EVGEN=m
+> > >>CONFIG_IIO_SIMPLE_DUMMY=m
+> > >>CONFIG_IIO_SIMPLE_DUMMY_EVENTS=y
+> > >>CONFIG_IIO_SIMPLE_DUMMY_BUFFER=y
+> > >>
+> > >>CONFIG_IIO_CONFIGFS=m
+> > >
+> > >Do you also have CONFIG_IIO_SW_DEVICE right?
+> > 
+> > Yes, and the value is:  CONFIG_IIO_SW_DEVICE=m.
+> > 
+> > Thank you,
+> > Miguel
+> > >
+> > >Will try to have a look at this asap.
+> > >
+> > >
+> > >thanks,
+> > >Daniel.
 > 
-> Yes, and the value is:  CONFIG_IIO_SW_DEVICE=m.
-> 
-> Thank you,
-> Miguel
-> >
-> >Will try to have a look at this asap.
-> >
-> >
-> >thanks,
-> >Daniel.
+> Daniel,
+> You probably saw, but just in case...
+> I verified that the process, including the above mkdir, is working on
+> 4.10-rc3.  (So, I'm relieved the Outreachy applicants won't start
+> hitting it.)
+> alisons
 
-Daniel,
-You probably saw, but just in case...
-I verified that the process, including the above mkdir, is working on
-4.10-rc3.  (So, I'm relieved the Outreachy applicants won't start
-hitting it.)
+I see Lars' patch! 
+It worked for me because I used CONFIG_IIO_CONFIGFS built-in.
 alisons
 
-
-
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> 
+> 
+> 
+> > --
+> > To unsubscribe from this list: send the line "unsubscribe linux-iio" in
+> > the body of a message to majordomo@vger.kernel.org
+> > More majordomo info at  http://vger.kernel.org/majordomo-info.html
