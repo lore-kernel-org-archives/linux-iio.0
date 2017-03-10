@@ -1,60 +1,62 @@
-Return-Path: <SRS0=hI5c=2T=axentia.se=peda@kernel.org>
-From: Peter Rosin <peda@axentia.se>
-To: <linux-kernel@vger.kernel.org>
-CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Rob
- Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan
- Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
- Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Jonathan Corbet <corbet@lwn.net>, <linux-i2c@vger.kernel.org>,
-	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
-	<linux-doc@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Colin
- Ian King <colin.king@canonical.com>, Paul Gortmaker
-	<paul.gortmaker@windriver.com>
-Subject: [PATCH v10 11/11] iio: multiplexer: fix unsigned check with less than zero
-Date: Fri, 10 Mar 2017 12:10:05 +0100
-Message-ID: <1489144205-17427-12-git-send-email-peda@axentia.se>
-In-Reply-To: <1489144205-17427-1-git-send-email-peda@axentia.se>
-References: <1489144205-17427-1-git-send-email-peda@axentia.se>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.wjw-solutions.com ([193.194.104.162]:63529 "EHLO
+        mail.wjw-solutions.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933076AbdCJODT (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Mar 2017 09:03:19 -0500
+From: Michael Engl <michael.engl@wjw-solutions.com>
+To: "jic23@kernel.org" <jic23@kernel.org>
+CC: Michael Engl <michael.engl@wjw-solutions.com>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+Subject: [PATCH] iio: adc: ti_am335x_adc: fix fifo overrun recovery
+Date: Fri, 10 Mar 2017 13:57:16 +0000
+Message-ID: <1489154347.20665.9.camel@wjw-solutions.com>
+Content-Type: text/plain; charset="utf-8"
 MIME-Version: 1.0
-Content-Type: text/plain
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Comparing a size_t with less than zero is always false as size_t
-is unsigned. So, change the type of the variable to ssize_t and
-replicate the size check from mux_configure_channel() into
-mux_write_ext_info() thus ensuring that the size will fit in the
-ssize_t variable.
-
-Detected by CoverityScan, CID#1415278 ("Unsigned compared against 0")
-
-Reported-by: Colin Ian King <colin.king@canonical.com>
-Signed-off-by: Peter Rosin <peda@axentia.se>
----
- drivers/iio/multiplexer/iio-mux.c | 5 ++++-
- 1 file changed, 4 insertions(+), 1 deletion(-)
-
-diff --git a/drivers/iio/multiplexer/iio-mux.c b/drivers/iio/multiplexer/iio-mux.c
-index 94d40f9bef4c..bab9e6902090 100644
---- a/drivers/iio/multiplexer/iio-mux.c
-+++ b/drivers/iio/multiplexer/iio-mux.c
-@@ -21,7 +21,7 @@
- 
- struct mux_ext_info_cache {
- 	char *data;
--	size_t size;
-+	ssize_t size;
- };
- 
- struct mux_child {
-@@ -206,6 +206,9 @@ static ssize_t mux_write_ext_info(struct iio_dev *indio_dev, uintptr_t private,
- 	char *new;
- 	ssize_t ret;
- 
-+	if (len >= PAGE_SIZE)
-+		return -EINVAL;
-+
- 	ret = iio_mux_select(mux, idx);
- 	if (ret < 0)
- 		return ret;
--- 
-2.1.4
+VGhlIHRpYWRjX2lycV9oKGludCBpcnEsIHZvaWQgKnByaXZhdGUpIGZ1bmN0aW9uIGlzIGhhbmRs
+aW5nIEZJRk8NCm92ZXJydW5zIGJ5IGNsZWFyaW5nIGZsYWdzLCBkaXNhYmxpbmcgYW5kIGVuYWJs
+aW5nIHRoZSBBREMgdG8NCnJlY292ZXIuDQoNCklmIHRoZSBBREMgaXMgcnVubmluZyBpbiBjb250
+aW51b3VzIG1vZGUgYSBGSUZPIG92ZXJydW4gaGFwcGVucw0KcmVndWxhcmx5LiBJZiB0aGUgZGlz
+YWJsaW5nIG9mIHRoZSBBREMgaGFwcGVucyBjb25jdXJyZW50bHkgd2l0aA0KYSBuZXcgY29udmVy
+c2lvbi4gSXQgbWlnaHQgaGFwcGVuIHRoYXQgdGhlIGVuYWJsaW5nIG9mIHRoZSBBREMNCmlzIGln
+bm9yZWQgYnkgdGhlIGhhcmR3YXJlLiBUaGlzIHN0b3BzIHRoZSBBREMgcGVybWFuZW50bHkuIE5v
+DQptb3JlIGludGVycnVwdHMgYXJlIHRyaWdnZXJlZC4NCg0KQWNjb3JkaW5nIHRvIHRoZSBBTTMz
+NXggUmVmZXJlbmNlIE1hbnVhbCAoU1BSVUg3M0ggT2N0b2JlciAyMDExIC0NClJldmlzZWQgQXBy
+aWwgMjAxMyAtIENoYXB0ZXIgMTIuNCBhbmQgMTIuNSkgaXQgaXMgbmVjZXNzYXJ5IHRvDQpjaGVj
+ayB0aGUgQURDIEZTTSBiaXRzIGluIFJFR19BRENGU00gYmVmb3JlIGVuYWJsaW5nIHRoZSBBREMN
+CmFnYWluLiBCZWNhdXNlIHRoZSBkaXNhYmxpbmcgb2YgdGhlIEFEQyBpcyBkb25lIHJpZ2h0IGFm
+dGVyIHRoZQ0KY3VycmVudCBjb252ZXJzaW9uIGhhcyBiZWVuIGZpbmlzaGVkLg0KDQpUbyB0cmln
+Z2VyIHRoaXMgYnVnIGl0IGlzIG5lY2Vzc2FyeSB0byBydW4gdGhlIEFEQyBpbiBjb250aW51b3Vz
+DQptb2RlLiBUaGUgQURDIHZhbHVlcyBvZiBhbGwgY2hhbm5lbHMgbmVlZCB0byBiZSByZWFkIGlu
+IGFuIGVuZGxlc3MNCmxvb3AuIFRoZSBidWcgYXBwZWFycyB3aXRoaW4gdGhlIGZpcnN0IDYgaG91
+cnMgKH41LjQgbWlsbGlvbg0KaGFuZGxlZCBGSUZPIG92ZXJydW5zKS4gVGhlIHVzZXIgc3BhY2Ug
+YXBwbGljYXRpb24gd2lsbCBoYW5nIG9uDQpyZWFkaW5nIG5ldyB2YWx1ZXMgZnJvbSB0aGUgY2hh
+cmFjdGVyIGRldmljZS4NCg0KU2lnbmVkLW9mZi1ieTogTWljaGFlbCBFbmdsIDxtaWNoYWVsLmVu
+Z2xAd2p3LXNvbHV0aW9ucy5jb20+DQotLS0NCsKgZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9h
+ZGMuYyB8IDEzICsrKysrKysrKysrKy0NCsKgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMo
+KyksIDEgZGVsZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy90aV9hbTMz
+NXhfYWRjLmMgYi9kcml2ZXJzL2lpby9hZGMvdGlfYW0zMzV4X2FkYy5jDQppbmRleCBhZDlkZWMz
+Li40MjgyY2VjIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9hZGMuYw0K
+KysrIGIvZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9hZGMuYw0KQEAgLTE2OSw3ICsxNjksOSBA
+QCBzdGF0aWMgaXJxcmV0dXJuX3QgdGlhZGNfaXJxX2goaW50IGlycSwgdm9pZCAqcHJpdmF0ZSkN
+CsKgew0KwqAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IHByaXZhdGU7DQrCoAlzdHJ1Y3Qg
+dGlhZGNfZGV2aWNlICphZGNfZGV2ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCi0JdW5zaWduZWQg
+aW50IHN0YXR1cywgY29uZmlnOw0KKwl1bnNpZ25lZCBpbnQgc3RhdHVzLCBjb25maWcsIGFkY19m
+c207DQorCXVuc2lnbmVkIHNob3J0IGNvdW50ID0gMDsNCisNCsKgCXN0YXR1cyA9IHRpYWRjX3Jl
+YWRsKGFkY19kZXYsIFJFR19JUlFTVEFUVVMpOw0KwqANCsKgCS8qDQpAQCAtMTgzLDYgKzE4NSwx
+NSBAQCBzdGF0aWMgaXJxcmV0dXJuX3QgdGlhZGNfaXJxX2goaW50IGlycSwgdm9pZCAqcHJpdmF0
+ZSkNCsKgCQl0aWFkY193cml0ZWwoYWRjX2RldiwgUkVHX0NUUkwsIGNvbmZpZyk7DQrCoAkJdGlh
+ZGNfd3JpdGVsKGFkY19kZXYsIFJFR19JUlFTVEFUVVMsIElSUUVOQl9GSUZPMU9WUlJVTg0KwqAJ
+CQkJfCBJUlFFTkJfRklGTzFVTkRSRkxXIHwgSVJRRU5CX0ZJRk8xVEhSRVMpOw0KKw0KKwkJLyog
+d2FpdCBmb3IgaWRsZSBzdGF0ZS4NCisJCcKgKiBBREMgbmVlZHMgdG8gZmluaXNoIHRoZSBjdXJy
+ZW50IGNvbnZlcnNpb24NCisJCcKgKiBiZWZvcmUgZGlzYWJsaW5nIHRoZSBtb2R1bGUNCisJCcKg
+Ki8NCisJCWRvIHsNCisJCQlhZGNfZnNtID0gdGlhZGNfcmVhZGwoYWRjX2RldiwgUkVHX0FEQ0ZT
+TSk7DQorCQl9IHdoaWxlIChhZGNfZnNtICE9IDB4MTAgJiYgY291bnQrKyA8IDEwMCk7DQorDQrC
+oAkJdGlhZGNfd3JpdGVsKGFkY19kZXYsIFJFR19DVFJMLCAoY29uZmlnIHwgQ05UUkxSRUdfVFND
+U1NFTkIpKTsNCsKgCQlyZXR1cm4gSVJRX0hBTkRMRUQ7DQrCoAl9IGVsc2UgaWYgKHN0YXR1cyAm
+IElSUUVOQl9GSUZPMVRIUkVTKSB7DQotLcKgDQoyLjcuNA0K
