@@ -1,109 +1,147 @@
-Return-Path: <SRS0=O5so=2Y=axentia.se=peda@kernel.org>
-Subject: Re: [PATCH v10 03/11] mux: minimal mux subsystem and gpio-based mux
- controller
-To: <linux-kernel@vger.kernel.org>
-References: <1489144205-17427-1-git-send-email-peda@axentia.se>
- <1489144205-17427-4-git-send-email-peda@axentia.se>
-CC: Wolfram Sang <wsa@the-dreams.de>, Rob Herring <robh+dt@kernel.org>, "Mark
- Rutland" <mark.rutland@arm.com>, Jonathan Cameron <jic23@kernel.org>,
-	"Hartmut Knaack" <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>,
-	"Peter Meerwald-Stadler" <pmeerw@pmeerw.net>, Jonathan Corbet
-	<corbet@lwn.net>, <linux-i2c@vger.kernel.org>, <devicetree@vger.kernel.org>,
-	<linux-iio@vger.kernel.org>, <linux-doc@vger.kernel.org>, Andrew Morton
-	<akpm@linux-foundation.org>, Colin Ian King <colin.king@canonical.com>, "Paul
- Gortmaker" <paul.gortmaker@windriver.com>
+Return-Path: <SRS0=hI5c=2T=axentia.se=peda@kernel.org>
 From: Peter Rosin <peda@axentia.se>
-Message-ID: <43afcbb6-5e28-2399-95e2-10b568547c3b@axentia.se>
-Date: Wed, 15 Mar 2017 23:16:22 +0100
+To: <linux-kernel@vger.kernel.org>
+CC: Peter Rosin <peda@axentia.se>, Wolfram Sang <wsa@the-dreams.de>, Rob
+ Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, Jonathan
+ Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter
+ Clausen <lars@metafoo.de>, Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Jonathan Corbet <corbet@lwn.net>, <linux-i2c@vger.kernel.org>,
+	<devicetree@vger.kernel.org>, <linux-iio@vger.kernel.org>,
+	<linux-doc@vger.kernel.org>, Andrew Morton <akpm@linux-foundation.org>, Colin
+ Ian King <colin.king@canonical.com>, Paul Gortmaker
+	<paul.gortmaker@windriver.com>
+Subject: [PATCH v10 04/11] iio: inkern: api for manipulating ext_info of iio channels
+Date: Fri, 10 Mar 2017 12:09:58 +0100
+Message-ID: <1489144205-17427-5-git-send-email-peda@axentia.se>
+In-Reply-To: <1489144205-17427-1-git-send-email-peda@axentia.se>
+References: <1489144205-17427-1-git-send-email-peda@axentia.se>
 MIME-Version: 1.0
-In-Reply-To: <1489144205-17427-4-git-send-email-peda@axentia.se>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain
 List-ID: <linux-iio@vger.kernel.org>
 
-On 2017-03-10 12:09, Peter Rosin wrote:
-> Add a new minimalistic subsystem that handles multiplexer controllers.
-> When multiplexers are used in various places in the kernel, and the
-> same multiplexer controller can be used for several independent things,
-> there should be one place to implement support for said multiplexer
-> controller.
-> 
-> A single multiplexer controller can also be used to control several
-> parallel multiplexers, that are in turn used by different subsystems
-> in the kernel, leading to a need to coordinate multiplexer accesses.
-> The multiplexer subsystem handles this coordination.
-> 
-> This new mux controller subsystem initially comes with a single backend
-> driver that controls gpio based multiplexers. Even though not needed by
-> this initial driver, the mux controller subsystem is prepared to handle
-> chips with multiple (independent) mux controllers.
-> 
-> Reviewed-by: Jonathan Cameron <jic23@kernel.org>
-> Signed-off-by: Peter Rosin <peda@axentia.se>
+Extend the inkern api with functions for reading and writing ext_info
+of iio channels.
 
-I would like to mention a bugfix patch that I have added to the end of
-the series in response to feedback from Dan Carpenter. Can be found
-here: https://lkml.org/lkml/2017/3/14/700
+Acked-by: Jonathan Cameron <jic23@kernel.org>
+Signed-off-by: Peter Rosin <peda@axentia.se>
+---
+ drivers/iio/inkern.c         | 60 ++++++++++++++++++++++++++++++++++++++++++++
+ include/linux/iio/consumer.h | 37 +++++++++++++++++++++++++++
+ 2 files changed, 97 insertions(+)
 
-And I have also amended the below editorials to this patch.
-
-Cheers,
-peda
-
-diff --git a/include/linux/mux.h b/include/linux/mux.h
-index 7ef0864c8f38..febdde4246df 100644
---- a/include/linux/mux.h
-+++ b/include/linux/mux.h
-@@ -20,6 +20,10 @@ struct mux_chip;
- struct mux_control;
- struct platform_device;
-
+diff --git a/drivers/iio/inkern.c b/drivers/iio/inkern.c
+index 7a13535dc3e9..8292ad4435ea 100644
+--- a/drivers/iio/inkern.c
++++ b/drivers/iio/inkern.c
+@@ -869,3 +869,63 @@ int iio_write_channel_raw(struct iio_channel *chan, int val)
+ 	return ret;
+ }
+ EXPORT_SYMBOL_GPL(iio_write_channel_raw);
++
++unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++	unsigned int i = 0;
++
++	if (!chan->channel->ext_info)
++		return i;
++
++	for (ext_info = chan->channel->ext_info; ext_info->name; ext_info++)
++		++i;
++
++	return i;
++}
++EXPORT_SYMBOL_GPL(iio_get_channel_ext_info_count);
++
++static const struct iio_chan_spec_ext_info *iio_lookup_ext_info(
++						const struct iio_channel *chan,
++						const char *attr)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	if (!chan->channel->ext_info)
++		return NULL;
++
++	for (ext_info = chan->channel->ext_info; ext_info->name; ++ext_info) {
++		if (!strcmp(attr, ext_info->name))
++			return ext_info;
++	}
++
++	return NULL;
++}
++
++ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
++				  const char *attr, char *buf)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	ext_info = iio_lookup_ext_info(chan, attr);
++	if (!ext_info)
++		return -EINVAL;
++
++	return ext_info->read(chan->indio_dev, ext_info->private,
++			      chan->channel, buf);
++}
++EXPORT_SYMBOL_GPL(iio_read_channel_ext_info);
++
++ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
++				   const char *buf, size_t len)
++{
++	const struct iio_chan_spec_ext_info *ext_info;
++
++	ext_info = iio_lookup_ext_info(chan, attr);
++	if (!ext_info)
++		return -EINVAL;
++
++	return ext_info->write(chan->indio_dev, ext_info->private,
++			       chan->channel, buf, len);
++}
++EXPORT_SYMBOL_GPL(iio_write_channel_ext_info);
+diff --git a/include/linux/iio/consumer.h b/include/linux/iio/consumer.h
+index 47eeec3218b5..5e347a9805fd 100644
+--- a/include/linux/iio/consumer.h
++++ b/include/linux/iio/consumer.h
+@@ -312,4 +312,41 @@ int iio_read_channel_scale(struct iio_channel *chan, int *val,
+ int iio_convert_raw_to_processed(struct iio_channel *chan, int raw,
+ 	int *processed, unsigned int scale);
+ 
 +/**
-+ * struct mux_control_ops -    Mux controller operations for a mux chip.
-+ * @set:                       Set the state of the given mux controller.
++ * iio_get_channel_ext_info_count() - get number of ext_info attributes
++ *				      connected to the channel.
++ * @chan:		The channel being queried
++ *
++ * Returns the number of ext_info attributes
 + */
- struct mux_control_ops {
-        int (*set)(struct mux_control *mux, int state);
- };
-@@ -29,7 +33,7 @@ struct mux_control_ops {
- #define MUX_IDLE_DISCONNECT (-2)
-
- /**
-- * struct mux_control - Represents a mux controller.
-+ * struct mux_control -        Represents a mux controller.
-  * @lock:              Protects the mux controller state.
-  * @chip:              The mux chip that is handling this mux controller.
-  * @states:            The number of mux controller states.
-@@ -50,7 +54,7 @@ struct mux_control {
- /**
-  * struct mux_chip -   Represents a chip holding mux controllers.
-  * @controllers:       Number of mux controllers handled by the chip.
-- * @mux:               Array of mux controllers that is handled.
-+ * @mux:               Array of mux controllers that are handled.
-  * @dev:               Device structure.
-  * @id:                        Used to identify the device internally.
-  * @ops:               Mux controller operations.
-@@ -176,7 +180,7 @@ void devm_mux_chip_free(struct device *dev, struct mux_chip *mux_chip);
-  * mux_control_deselect() if mux_control_select() fails.
-  *
-  * Return: 0 if the requested state was already active, or 1 it the
-- * mux-control state was changed to the requested state. Or a negavive
-+ * mux-control state was changed to the requested state. Or a negative
-  * errno on error.
-  *
-  * Note that the difference in return value of zero or one is of
-@@ -192,13 +196,13 @@ int mux_control_select(struct mux_control *mux, int state);
-  *
-  * Return: 0 on success and a negative errno on error. An error can only
-  * occur if the mux has an idle state. Note that even if an error occurs, the
-- * mux-control is unlocked for others to access.
-+ * mux-control is unlocked and is thus free for the next access.
-  */
- int mux_control_deselect(struct mux_control *mux);
-
- /**
-  * mux_control_get_index() - Get the index of the given mux controller
-- * @mux: The mux-control to the the index for.
-+ * @mux: The mux-control to get the index for.
-  *
-  * Return: The index of the mux controller within the mux chip the mux
-  * controller is a part of.
++unsigned int iio_get_channel_ext_info_count(struct iio_channel *chan);
++
++/**
++ * iio_read_channel_ext_info() - read ext_info attribute from a given channel
++ * @chan:		The channel being queried.
++ * @attr:		The ext_info attribute to read.
++ * @buf:		Where to store the attribute value. Assumed to hold
++ *			at least PAGE_SIZE bytes.
++ *
++ * Returns the number of bytes written to buf (perhaps w/o zero termination;
++ * it need not even be a string), or an error code.
++ */
++ssize_t iio_read_channel_ext_info(struct iio_channel *chan,
++				  const char *attr, char *buf);
++
++/**
++ * iio_write_channel_ext_info() - write ext_info attribute from a given channel
++ * @chan:		The channel being queried.
++ * @attr:		The ext_info attribute to read.
++ * @buf:		The new attribute value. Strings needs to be zero-
++ *			terminated, but the terminator should not be included
++ *			in the below len.
++ * @len:		The size of the new attribute value.
++ *
++ * Returns the number of accepted bytes, which should be the same as len.
++ * An error code can also be returned.
++ */
++ssize_t iio_write_channel_ext_info(struct iio_channel *chan, const char *attr,
++				   const char *buf, size_t len);
++
+ #endif
+-- 
+2.1.4
