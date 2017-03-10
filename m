@@ -1,118 +1,220 @@
-Return-Path: <SRS0=b79K=2K=gmail.com=ksenija.stanojevic@kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-wm0-f41.google.com ([74.125.82.41]:35901 "EHLO
+        mail-wm0-f41.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S937427AbdCJNpk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Mar 2017 08:45:40 -0500
+Received: by mail-wm0-f41.google.com with SMTP id n11so10839469wma.1
+        for <linux-iio@vger.kernel.org>; Fri, 10 Mar 2017 05:45:33 -0800 (PST)
+Subject: Re: [PATCH v6 3/5] backlight: lm3533: Support initialization from
+ Device Tree
+To: Bjorn Andersson <bjorn.andersson@linaro.org>,
+        Lee Jones <lee.jones@linaro.org>,
+        Jingoo Han <jingoohan1@gmail.com>
+References: <20170130211719.31017-1-bjorn.andersson@linaro.org>
+ <20170130211719.31017-3-bjorn.andersson@linaro.org>
+Cc: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Richard Purdie <rpurdie@rpsys.net>,
+        Pavel Machek <pavel@ucw.cz>, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-leds@vger.kernel.org
+From: Daniel Thompson <daniel.thompson@linaro.org>
+Message-ID: <5ba1150c-aad1-7f86-6c9f-b3d426390ca2@linaro.org>
+Date: Fri, 10 Mar 2017 14:45:31 +0100
 MIME-Version: 1.0
-In-Reply-To: <1332233362.76422.1485734109212@email.1und1.de>
-References: <cover.1485711797.git.ksenija.stanojevic@gmail.com>
- <d18975ff97a8855e9221b0a180b3664a0d04348c.1485711797.git.ksenija.stanojevic@gmail.com>
- <1332233362.76422.1485734109212@email.1und1.de>
-From: =?UTF-8?Q?Ksenija_Stanojevi=C4=87?= <ksenija.stanojevic@gmail.com>
-Date: Wed, 1 Mar 2017 15:42:42 +0100
-Message-ID: <CAL7P5jKqY_4CAzvw2BiCbAPW7QEs6XNY7Qaec8GMp7Nxzp_71Q@mail.gmail.com>
-Subject: Re: [PATCH v13 3/5] input: touchscreen: mxs-lradc: Add support for touchscreen
-To: Stefan Wahren <stefan.wahren@i2se.com>
-Cc: Lee Jones <lee.jones@linaro.org>, linux-input@vger.kernel.org,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>, Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-	Lars-Peter Clausen <lars@metafoo.de>, linux-kernel <linux-kernel@vger.kernel.org>,
-	Dmitry Torokhov <dmitry.torokhov@gmail.com>, Harald Geyer <harald@ccbib.org>,
-	Fabio Estevam <fabio.estevam@freescale.com>, linux-iio@vger.kernel.org,
-	Marek Vasut <marex@denx.de>
-Content-Type: multipart/alternative; boundary=001a1149a2f43cc7cb0549ac53f0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <20170130211719.31017-3-bjorn.andersson@linaro.org>
+Content-Type: text/plain; charset=windows-1252; format=flowed
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---001a1149a2f43cc7cb0549ac53f0
-Content-Type: text/plain; charset=UTF-8
-
-Hi,
-
-On Mon, Jan 30, 2017 at 12:55 AM, Stefan Wahren <stefan.wahren@i2se.com>
-wrote:
-> Hi Ksenija,
+On 30/01/17 22:17, Bjorn Andersson wrote:
+> From: Bjorn Andersson <bjorn.andersson@sonymobile.com>
 >
->> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 29. Januar 2017
-um 19:04 geschrieben:
->>
->>
->> Add 4-wire/5-wire touchscreen controller.
+> Implement support for initialization of the lm3533 backlight from Device
+> Tree.
 >
-> i compiled all 3 driver as a module and kept the devicetree for the
-Olinuxino iMX233 [1] as it is (no touchscreen). After booting all 3 driver
-are loaded:
-> where
-> Module                  Size  Used by
-> mxs_lradc_adc          11000  0
-> industrialio_triggered_buffer     2628  1 mxs_lradc_adc
-> kfifo_buf               3337  1 industrialio_triggered_buffer
-> mxs_lradc_ts            4192  0
-> mxs_lradc               4402  0
-> mfd_core                4612  1 mxs_lradc
+> Acked-by: Jingoo Han <jingoohan1@gmail.com>
+> Acked-by: Pavel Machek <pavel@ucw.cz>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@sonymobile.com>
+> Signed-off-by: Bjorn Andersson <bjorn.andersson@linaro.org>
+
+Acked-by: Daniel Thompson <daniel.thompson@linaro.org>
+
+> ---
 >
-> But the touchscreen driver threw this error:
+> Note that this patch can be merged independently of the other patches in the
+> series.
 >
-> [  427.230000] mxs-lradc-ts: probe of mxs-lradc-ts failed with error -22
-
-I think it should be like that. In earlier versions module wouldn't load if
-there was no touchscreen device (it was done in the mfd part). But Lee
-suggested that it there is no device it should fail in the touchscreen
-driver.
-
-> I didn't expect this behavior. I expect that the touchscreen driver
-notice that there isn't a touchscreen property and abort probing silently.
-Also i didn't expected that the driver is still loaded in case of a probe
-error.
-
-Well module can be loaded if probe fails see __driver_attach [1] . But in
-order that driver won't load in case of probe error I think init function
-should be changed somehow, unregistered driver in case of error but I'm not
-sure how...
-
-> Btw shouldn't be the mxs_lradc_adc "Used by" mxs_lradc?
+> Changes since v5:
+> - None
 >
-> Because "modprobe -r mxs_lradc" doesn't unload mxs_lradc_adc.
+> Changes since v4:
+> - Acks from Pavel and Jingoo
+>
+> Changes since v3:
+> - Moved backlight DT parsing from mfd driver
+> - Gave driver its own compatible
+>
+>  drivers/video/backlight/lm3533_bl.c | 98 +++++++++++++++++++++++++++++++++++--
+>  1 file changed, 95 insertions(+), 3 deletions(-)
+>
+> diff --git a/drivers/video/backlight/lm3533_bl.c b/drivers/video/backlight/lm3533_bl.c
+> index 0e2337f367b6..2f132199e604 100644
+> --- a/drivers/video/backlight/lm3533_bl.c
+> +++ b/drivers/video/backlight/lm3533_bl.c
+> @@ -22,6 +22,7 @@
+>
+>
+>  #define LM3533_HVCTRLBANK_COUNT		2
+> +#define LM3533_BL_DEFAULT_BRIGHTNESS	200
+>  #define LM3533_BL_MAX_BRIGHTNESS	255
+>
+>  #define LM3533_REG_CTRLBANK_AB_BCONF	0x1a
+> @@ -269,6 +270,86 @@ static int lm3533_bl_setup(struct lm3533_bl *bl,
+>  	return lm3533_ctrlbank_set_pwm(&bl->cb, pdata->pwm);
+>  }
+>
+> +static int lm3533_of_parse_pwm_zones(struct device_node *node)
+> +{
+> +	const char *propname = "ti,pwm-zones";
+> +	u32 zones[5];
+> +	int count;
+> +	int ret;
+> +	int i;
+> +
+> +	count = of_property_count_u32_elems(node, propname);
+> +	if (count == -EINVAL)
+> +		return 0;
+> +	if (count <= 0)
+> +		return count;
+> +	if (count >= ARRAY_SIZE(zones))
+> +		return -EINVAL;
+> +
+> +	ret = of_property_read_u32_array(node, propname, zones, count);
+> +	if (ret < 0)
+> +		return ret;
+> +
+> +	/* Enable pwm input, and enable the selected zones */
+> +	ret = BIT(0);
+> +	for (i = 0; i < count; i++)
+> +		ret |= BIT(zones[i] + 1);
+> +
+> +	return ret;
+> +}
+> +
+> +static struct lm3533_bl_platform_data *lm3533_bl_of_parse(struct device *dev,
+> +							  int *id)
+> +{
+> +	struct lm3533_bl_platform_data *bl_pdata;
+> +	struct device_node *node = dev->of_node;
+> +	int ret;
+> +	u32 reg;
+> +	u32 val;
+> +
+> +	bl_pdata = devm_kzalloc(dev, sizeof(*bl_pdata), GFP_KERNEL);
+> +	if (!bl_pdata)
+> +		return NULL;
+> +
+> +	ret = of_property_read_u32(node, "reg", &reg);
+> +	if (ret < 0) {
+> +		dev_err(dev, "invalid reg property\n");
+> +		return NULL;
+> +	}
+> +	*id = reg;
+> +
+> +	ret = of_property_read_string(node, "label",
+> +				      (const char **)&bl_pdata->name);
+> +	if (ret < 0) {
+> +		dev_err(dev, "unable to parse label\n");
+> +		return NULL;
+> +	}
+> +
+> +	ret = of_property_read_u32(node, "led-max-microamp", &val);
+> +	if (ret < 0) {
+> +		dev_err(dev, "unable to parse led-max-microamp\n");
+> +		return NULL;
+> +	}
+> +	bl_pdata->max_current = val;
+> +
+> +	val = LM3533_BL_DEFAULT_BRIGHTNESS;
+> +	ret = of_property_read_u32(node, "default-brightness", &val);
+> +	if (ret < 0 && ret != -EINVAL) {
+> +		dev_err(dev, "unable to parse default-brightness\n");
+> +		return NULL;
+> +	}
+> +	bl_pdata->default_brightness = val;
+> +
+> +	ret = lm3533_of_parse_pwm_zones(node);
+> +	if (ret < 0) {
+> +		dev_err(dev, "failed to parse ti,pwm-zones\n");
+> +		return NULL;
+> +	}
+> +	bl_pdata->pwm = ret;
+> +
+> +	return bl_pdata;
+> +}
+> +
+>  static int lm3533_bl_probe(struct platform_device *pdev)
+>  {
+>  	struct lm3533 *lm3533;
+> @@ -277,6 +358,7 @@ static int lm3533_bl_probe(struct platform_device *pdev)
+>  	struct backlight_device *bd;
+>  	struct backlight_properties props;
+>  	int ret;
+> +	int id;
+>
+>  	dev_dbg(&pdev->dev, "%s\n", __func__);
+>
+> @@ -284,14 +366,17 @@ static int lm3533_bl_probe(struct platform_device *pdev)
+>  	if (!lm3533)
+>  		return -EINVAL;
+>
+> +	id = pdev->id;
+>  	pdata = dev_get_platdata(&pdev->dev);
+> +	if (!pdata)
+> +		pdata = lm3533_bl_of_parse(&pdev->dev, &id);
+>  	if (!pdata) {
+>  		dev_err(&pdev->dev, "no platform data\n");
+>  		return -EINVAL;
+>  	}
+>
+> -	if (pdev->id < 0 || pdev->id >= LM3533_HVCTRLBANK_COUNT) {
+> -		dev_err(&pdev->dev, "illegal backlight id %d\n", pdev->id);
+> +	if (id < 0 || id >= LM3533_HVCTRLBANK_COUNT) {
+> +		dev_err(&pdev->dev, "illegal backlight id %d\n", id);
+>  		return -EINVAL;
+>  	}
+>
+> @@ -300,7 +385,7 @@ static int lm3533_bl_probe(struct platform_device *pdev)
+>  		return -ENOMEM;
+>
+>  	bl->lm3533 = lm3533;
+> -	bl->id = pdev->id;
+> +	bl->id = id;
+>
+>  	bl->cb.lm3533 = lm3533;
+>  	bl->cb.id = lm3533_bl_get_ctrlbank_id(bl);
+> @@ -394,10 +479,17 @@ static void lm3533_bl_shutdown(struct platform_device *pdev)
+>  	lm3533_ctrlbank_disable(&bl->cb);
+>  }
+>
+> +static const struct of_device_id lm3533_bl_of_match[] = {
+> +	{ .compatible = "ti,lm3533-backlight", },
+> +	{ },
+> +};
+> +MODULE_DEVICE_TABLE(of, lm3533_bl_of_match);
+> +
+>  static struct platform_driver lm3533_bl_driver = {
+>  	.driver = {
+>  		.name	= "lm3533-backlight",
+>  		.pm	= &lm3533_bl_pm_ops,
+> +		.of_match_table = lm3533_bl_of_match,
+>  	},
+>  	.probe		= lm3533_bl_probe,
+>  	.remove		= lm3533_bl_remove,
+>
 
-both adc and touchscreen driver can't load if mfd part is not loaded but in
-order to be listed in Used by column and unload if mfd part is unloaded I
-think that they need to use symbols from the mfd part.
-
-[1] http://lxr.free-electrons.com/source/drivers/base/dd.c#L731
-
---001a1149a2f43cc7cb0549ac53f0
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
-
-<div dir=3D"ltr"><div>Hi,<br><br>On Mon, Jan 30, 2017 at 12:55 AM, Stefan W=
-ahren &lt;<a href=3D"mailto:stefan.wahren@i2se.com">stefan.wahren@i2se.com<=
-/a>&gt; wrote:<br>&gt; Hi Ksenija,<br>&gt;<br>&gt;&gt; Ksenija Stanojevic &=
-lt;<a href=3D"mailto:ksenija.stanojevic@gmail.com">ksenija.stanojevic@gmail=
-.com</a>&gt; hat am 29. Januar 2017 um 19:04 geschrieben:<br>&gt;&gt;<br>&g=
-t;&gt;<br>&gt;&gt; Add 4-wire/5-wire touchscreen controller.<br>&gt;<br>&gt=
-; i compiled all 3 driver as a module and kept the devicetree for the Olinu=
-xino iMX233 [1] as it is (no touchscreen). After booting all 3 driver are l=
-oaded:<br></div>&gt; where <br><div>&gt; Module =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0Size =C2=A0Used by<br>&gt; mxs_lradc_adc=
- =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A011000 =C2=A00<br>&gt; industrialio_trigg=
-ered_buffer =C2=A0 =C2=A0 2628 =C2=A01 mxs_lradc_adc<br>&gt; kfifo_buf =C2=
-=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 3337 =C2=A01 industrialio_tri=
-ggered_buffer<br>&gt; mxs_lradc_ts =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=
-=A04192 =C2=A00<br>&gt; mxs_lradc =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0=
- =C2=A0 4402 =C2=A00<br>&gt; mfd_core =C2=A0 =C2=A0 =C2=A0 =C2=A0 =C2=A0 =
-=C2=A0 =C2=A0 =C2=A04612 =C2=A01 mxs_lradc<br>&gt;<br>&gt; But the touchscr=
-een driver threw this error:<br>&gt;<br>&gt; [ =C2=A0427.230000] mxs-lradc-=
-ts: probe of mxs-lradc-ts failed with error -22<br><br>I think it should be=
- like that. In earlier versions module wouldn&#39;t load if there was no to=
-uchscreen device (it was done in the mfd part). But Lee suggested that it t=
-here is no device it should fail in the touchscreen driver.<br><br>&gt; I d=
-idn&#39;t expect this behavior. I expect that the touchscreen driver notice=
- that there isn&#39;t a touchscreen property and abort probing silently. Al=
-so i didn&#39;t expected that the driver is still loaded in case of a probe=
- error.<br><br>Well module can be loaded if probe fails see __driver_attach=
- [1] . But in order that driver won&#39;t load in case of probe error I thi=
-nk init function should be changed somehow, unregistered driver in case of =
-error but I&#39;m not sure how... <br><br>&gt; Btw shouldn&#39;t be the mxs=
-_lradc_adc &quot;Used by&quot; mxs_lradc?<br>&gt;<br>&gt; Because &quot;mod=
-probe -r mxs_lradc&quot; doesn&#39;t unload mxs_lradc_adc.<br><br>both adc =
-and touchscreen driver can&#39;t load if mfd part is not loaded but in orde=
-r to be listed in Used by column and unload if mfd part is unloaded I think=
- that they need to use symbols from the mfd part.<br><br>[1]<a href=3D"http=
-://lxr.free-electrons.com/source/drivers/base/dd.c#L731"> http://lxr.free-e=
-lectrons.com/source/drivers/base/dd.c#L731</a></div></div>
-
---001a1149a2f43cc7cb0549ac53f0--
