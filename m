@@ -1,62 +1,112 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.wjw-solutions.com ([193.194.104.162]:63529 "EHLO
-        mail.wjw-solutions.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933076AbdCJODT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 10 Mar 2017 09:03:19 -0500
-From: Michael Engl <michael.engl@wjw-solutions.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: Michael Engl <michael.engl@wjw-solutions.com>,
-        "knaack.h@gmx.de" <knaack.h@gmx.de>,
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:36903 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754075AbdCKSH4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Mar 2017 13:07:56 -0500
+Subject: Re: [PATCH] iio: adc: ti_am335x_adc: fix fifo overrun recovery
+To: Michael Engl <michael.engl@wjw-solutions.com>
+References: <1489154347.20665.9.camel@wjw-solutions.com>
+Cc: "knaack.h@gmx.de" <knaack.h@gmx.de>,
         "lars@metafoo.de" <lars@metafoo.de>,
         "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
         "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
-Subject: [PATCH] iio: adc: ti_am335x_adc: fix fifo overrun recovery
-Date: Fri, 10 Mar 2017 13:57:16 +0000
-Message-ID: <1489154347.20665.9.camel@wjw-solutions.com>
-Content-Type: text/plain; charset="utf-8"
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <d76e4b85-6f8f-eae7-41be-de2a15d928cd@kernel.org>
+Date: Sat, 11 Mar 2017 18:07:53 +0000
 MIME-Version: 1.0
+In-Reply-To: <1489154347.20665.9.camel@wjw-solutions.com>
+Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-VGhlIHRpYWRjX2lycV9oKGludCBpcnEsIHZvaWQgKnByaXZhdGUpIGZ1bmN0aW9uIGlzIGhhbmRs
-aW5nIEZJRk8NCm92ZXJydW5zIGJ5IGNsZWFyaW5nIGZsYWdzLCBkaXNhYmxpbmcgYW5kIGVuYWJs
-aW5nIHRoZSBBREMgdG8NCnJlY292ZXIuDQoNCklmIHRoZSBBREMgaXMgcnVubmluZyBpbiBjb250
-aW51b3VzIG1vZGUgYSBGSUZPIG92ZXJydW4gaGFwcGVucw0KcmVndWxhcmx5LiBJZiB0aGUgZGlz
-YWJsaW5nIG9mIHRoZSBBREMgaGFwcGVucyBjb25jdXJyZW50bHkgd2l0aA0KYSBuZXcgY29udmVy
-c2lvbi4gSXQgbWlnaHQgaGFwcGVuIHRoYXQgdGhlIGVuYWJsaW5nIG9mIHRoZSBBREMNCmlzIGln
-bm9yZWQgYnkgdGhlIGhhcmR3YXJlLiBUaGlzIHN0b3BzIHRoZSBBREMgcGVybWFuZW50bHkuIE5v
-DQptb3JlIGludGVycnVwdHMgYXJlIHRyaWdnZXJlZC4NCg0KQWNjb3JkaW5nIHRvIHRoZSBBTTMz
-NXggUmVmZXJlbmNlIE1hbnVhbCAoU1BSVUg3M0ggT2N0b2JlciAyMDExIC0NClJldmlzZWQgQXBy
-aWwgMjAxMyAtIENoYXB0ZXIgMTIuNCBhbmQgMTIuNSkgaXQgaXMgbmVjZXNzYXJ5IHRvDQpjaGVj
-ayB0aGUgQURDIEZTTSBiaXRzIGluIFJFR19BRENGU00gYmVmb3JlIGVuYWJsaW5nIHRoZSBBREMN
-CmFnYWluLiBCZWNhdXNlIHRoZSBkaXNhYmxpbmcgb2YgdGhlIEFEQyBpcyBkb25lIHJpZ2h0IGFm
-dGVyIHRoZQ0KY3VycmVudCBjb252ZXJzaW9uIGhhcyBiZWVuIGZpbmlzaGVkLg0KDQpUbyB0cmln
-Z2VyIHRoaXMgYnVnIGl0IGlzIG5lY2Vzc2FyeSB0byBydW4gdGhlIEFEQyBpbiBjb250aW51b3Vz
-DQptb2RlLiBUaGUgQURDIHZhbHVlcyBvZiBhbGwgY2hhbm5lbHMgbmVlZCB0byBiZSByZWFkIGlu
-IGFuIGVuZGxlc3MNCmxvb3AuIFRoZSBidWcgYXBwZWFycyB3aXRoaW4gdGhlIGZpcnN0IDYgaG91
-cnMgKH41LjQgbWlsbGlvbg0KaGFuZGxlZCBGSUZPIG92ZXJydW5zKS4gVGhlIHVzZXIgc3BhY2Ug
-YXBwbGljYXRpb24gd2lsbCBoYW5nIG9uDQpyZWFkaW5nIG5ldyB2YWx1ZXMgZnJvbSB0aGUgY2hh
-cmFjdGVyIGRldmljZS4NCg0KU2lnbmVkLW9mZi1ieTogTWljaGFlbCBFbmdsIDxtaWNoYWVsLmVu
-Z2xAd2p3LXNvbHV0aW9ucy5jb20+DQotLS0NCsKgZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9h
-ZGMuYyB8IDEzICsrKysrKysrKysrKy0NCsKgMSBmaWxlIGNoYW5nZWQsIDEyIGluc2VydGlvbnMo
-KyksIDEgZGVsZXRpb24oLSkNCg0KZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy90aV9hbTMz
-NXhfYWRjLmMgYi9kcml2ZXJzL2lpby9hZGMvdGlfYW0zMzV4X2FkYy5jDQppbmRleCBhZDlkZWMz
-Li40MjgyY2VjIDEwMDY0NA0KLS0tIGEvZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9hZGMuYw0K
-KysrIGIvZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9hZGMuYw0KQEAgLTE2OSw3ICsxNjksOSBA
-QCBzdGF0aWMgaXJxcmV0dXJuX3QgdGlhZGNfaXJxX2goaW50IGlycSwgdm9pZCAqcHJpdmF0ZSkN
-CsKgew0KwqAJc3RydWN0IGlpb19kZXYgKmluZGlvX2RldiA9IHByaXZhdGU7DQrCoAlzdHJ1Y3Qg
-dGlhZGNfZGV2aWNlICphZGNfZGV2ID0gaWlvX3ByaXYoaW5kaW9fZGV2KTsNCi0JdW5zaWduZWQg
-aW50IHN0YXR1cywgY29uZmlnOw0KKwl1bnNpZ25lZCBpbnQgc3RhdHVzLCBjb25maWcsIGFkY19m
-c207DQorCXVuc2lnbmVkIHNob3J0IGNvdW50ID0gMDsNCisNCsKgCXN0YXR1cyA9IHRpYWRjX3Jl
-YWRsKGFkY19kZXYsIFJFR19JUlFTVEFUVVMpOw0KwqANCsKgCS8qDQpAQCAtMTgzLDYgKzE4NSwx
-NSBAQCBzdGF0aWMgaXJxcmV0dXJuX3QgdGlhZGNfaXJxX2goaW50IGlycSwgdm9pZCAqcHJpdmF0
-ZSkNCsKgCQl0aWFkY193cml0ZWwoYWRjX2RldiwgUkVHX0NUUkwsIGNvbmZpZyk7DQrCoAkJdGlh
-ZGNfd3JpdGVsKGFkY19kZXYsIFJFR19JUlFTVEFUVVMsIElSUUVOQl9GSUZPMU9WUlJVTg0KwqAJ
-CQkJfCBJUlFFTkJfRklGTzFVTkRSRkxXIHwgSVJRRU5CX0ZJRk8xVEhSRVMpOw0KKw0KKwkJLyog
-d2FpdCBmb3IgaWRsZSBzdGF0ZS4NCisJCcKgKiBBREMgbmVlZHMgdG8gZmluaXNoIHRoZSBjdXJy
-ZW50IGNvbnZlcnNpb24NCisJCcKgKiBiZWZvcmUgZGlzYWJsaW5nIHRoZSBtb2R1bGUNCisJCcKg
-Ki8NCisJCWRvIHsNCisJCQlhZGNfZnNtID0gdGlhZGNfcmVhZGwoYWRjX2RldiwgUkVHX0FEQ0ZT
-TSk7DQorCQl9IHdoaWxlIChhZGNfZnNtICE9IDB4MTAgJiYgY291bnQrKyA8IDEwMCk7DQorDQrC
-oAkJdGlhZGNfd3JpdGVsKGFkY19kZXYsIFJFR19DVFJMLCAoY29uZmlnIHwgQ05UUkxSRUdfVFND
-U1NFTkIpKTsNCsKgCQlyZXR1cm4gSVJRX0hBTkRMRUQ7DQrCoAl9IGVsc2UgaWYgKHN0YXR1cyAm
-IElSUUVOQl9GSUZPMVRIUkVTKSB7DQotLcKgDQoyLjcuNA0K
+On 10/03/17 13:57, Michael Engl wrote:
+> The tiadc_irq_h(int irq, void *private) function is handling FIFO
+> overruns by clearing flags, disabling and enabling the ADC to
+> recover.
+> 
+> If the ADC is running in continuous mode a FIFO overrun happens
+> regularly. If the disabling of the ADC happens concurrently with
+> a new conversion. It might happen that the enabling of the ADC
+> is ignored by the hardware. This stops the ADC permanently. No
+> more interrupts are triggered.
+> 
+> According to the AM335x Reference Manual (SPRUH73H October 2011 -
+> Revised April 2013 - Chapter 12.4 and 12.5) it is necessary to
+> check the ADC FSM bits in REG_ADCFSM before enabling the ADC
+> again. Because the disabling of the ADC is done right after the
+> current conversion has been finished.
+
+The relevant comment in the latest version of that manual (rev O)
+is at the end of 12.3.5
+"The FIFO can also generate FIFOx_OVERRUN and FIFOx_UNDERFLOW interrupts. The user can mask
+these events by programming the IRQENABLE_CLR register. To clear a FIFO underflow or FIFO overrun
+interrupt, the user should write a ‘1’ to the status bit in the IRQSTS register. The TSC_ADC_SS does not
+recover from these conditions automatically. Therefore, the software will need to disable and then again
+enable the TSC_ADC_SS. Before the user can turn the module back on, the user must read the
+ADCSTAT register to check if the status of the ADC FSM is idle and the current step is the idle step."
+
+
+
+> 
+> To trigger this bug it is necessary to run the ADC in continuous
+> mode. The ADC values of all channels need to be read in an endless
+> loop. The bug appears within the first 6 hours (~5.4 million
+> handled FIFO overruns). The user space application will hang on
+> reading new values from the character device.
+Impressive to track this one down, but it's the sort of nasty
+hardware race that we need to be very careful with when trying
+to get a fix in place.
+> 
+> Signed-off-by: Michael Engl <michael.engl@wjw-solutions.com>
+> ---
+>  drivers/iio/adc/ti_am335x_adc.c | 13 ++++++++++++-
+>  1 file changed, 12 insertions(+), 1 deletion(-)
+> 
+> diff --git a/drivers/iio/adc/ti_am335x_adc.c b/drivers/iio/adc/ti_am335x_adc.c
+> index ad9dec3..4282cec 100644
+> --- a/drivers/iio/adc/ti_am335x_adc.c
+> +++ b/drivers/iio/adc/ti_am335x_adc.c
+> @@ -169,7 +169,9 @@ static irqreturn_t tiadc_irq_h(int irq, void *private)
+>  {
+>  	struct iio_dev *indio_dev = private;
+>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+> -	unsigned int status, config;
+> +	unsigned int status, config, adc_fsm;
+> +	unsigned short count = 0;
+> +
+>  	status = tiadc_readl(adc_dev, REG_IRQSTATUS);
+>  
+>  	/*
+> @@ -183,6 +185,15 @@ static irqreturn_t tiadc_irq_h(int irq, void *private)
+>  		tiadc_writel(adc_dev, REG_CTRL, config);
+>  		tiadc_writel(adc_dev, REG_IRQSTATUS, IRQENB_FIFO1OVRRUN
+>  				| IRQENB_FIFO1UNDRFLW | IRQENB_FIFO1THRES);
+> +
+> +		/* wait for idle state.
+Standard multiline comment syntax preferred.
+> +		 * ADC needs to finish the current conversion
+> +		 * before disabling the module
+> +		 */
+> +		do {
+> +			adc_fsm = tiadc_readl(adc_dev, REG_ADCFSM);
+> +		} while (adc_fsm != 0x10 && count++ < 100);
+What slightly bothers me is that we are papering over the problem,  yet
+this is far from guaranteed to fix it (I think!) as we might get a race
+as it starts the next conversion after we have checked, but before we
+disable...
+
+Note I'm only looking at this fairly superficially so please point
+out if I have missed something!
+
+We could look for a transition, which would potentially reduce the chance
+of problems, but that's nasty as well and we'd need to disable interrupts
+probably to avoid any potential of a clash (for a non trivial amount of
+time...)
+> +
+>  		tiadc_writel(adc_dev, REG_CTRL, (config | CNTRLREG_TSCSSENB));
+>  		return IRQ_HANDLED;
+>  	} else if (status & IRQENB_FIFO1THRES) {
+> -- 
+> 2.7.4
+> 
+
