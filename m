@@ -1,50 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f193.google.com ([209.85.192.193]:36334 "EHLO
-        mail-pf0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755662AbdCKO0u (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Mar 2017 09:26:50 -0500
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:36356 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755666AbdCKO0y (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 11 Mar 2017 09:26:54 -0500
 From: simran singhal <singhalsimran0@gmail.com>
 To: lars@metafoo.de
 Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
         gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
         devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
         outreachy-kernel@googlegroups.com
-Subject: [PATCH v1 00/10] staging: iio: Remove exceptional & on functions name
-Date: Sat, 11 Mar 2017 19:56:34 +0530
-Message-Id: <1489242404-12352-1-git-send-email-singhalsimran0@gmail.com>
+Subject: [PATCH v1 01/10] staging: iio: ad7192: Remove exceptional & on function name
+Date: Sat, 11 Mar 2017 19:56:35 +0530
+Message-Id: <1489242404-12352-2-git-send-email-singhalsimran0@gmail.com>
+In-Reply-To: <1489242404-12352-1-git-send-email-singhalsimran0@gmail.com>
+References: <1489242404-12352-1-git-send-email-singhalsimran0@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch-series removes exceptional & on functions name.
+Remove & from function pointers to conform to the style found elsewhere
+in the file.  Done using the following semantic patch
 
-v1:
-  -Change the commit message of all the patches of the patch-series
+// <smpl>
+@r@
+identifier f;
+@@
 
-simran singhal (10):
-  staging: iio: ad7192: Remove exceptional & on function name
-  staging: iio: ad7780: Remove exceptional & on function name
-  staging: iio: cdc: ad7746: Remove exceptional & on function name
-  staging: iio: cdc: ad7152: Remove exceptional & on function name
-  staging: iio: adis16240: Remove exceptional & on function name
-  staging: iio: adis16201: Remove exceptional & on function name
-  staging: iio: adis16209: Remove exceptional & on function name
-  staging: iio: adis16203: Remove exceptional & on function name
-  staging: iio: resolver: Remove exceptional & on function name
-  staging: iio: gyro: Remove exceptional & on function name
+f(...) { ... }
+@@
+identifier r.f;
+@@
 
- drivers/staging/iio/accel/adis16201.c     |  4 ++--
- drivers/staging/iio/accel/adis16203.c     |  4 ++--
- drivers/staging/iio/accel/adis16209.c     |  4 ++--
- drivers/staging/iio/accel/adis16240.c     |  4 ++--
- drivers/staging/iio/adc/ad7192.c          | 12 ++++++------
- drivers/staging/iio/adc/ad7780.c          |  2 +-
- drivers/staging/iio/cdc/ad7152.c          |  6 +++---
- drivers/staging/iio/cdc/ad7746.c          |  4 ++--
- drivers/staging/iio/gyro/adis16060_core.c |  2 +-
- drivers/staging/iio/resolver/ad2s1200.c   |  2 +-
- drivers/staging/iio/resolver/ad2s90.c     |  2 +-
- 11 files changed, 23 insertions(+), 23 deletions(-)
+- &f
++ f
+// </smpl>
 
+Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+---
+ drivers/staging/iio/adc/ad7192.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
+index 4fc8588..d11c6de 100644
+--- a/drivers/staging/iio/adc/ad7192.c
++++ b/drivers/staging/iio/adc/ad7192.c
+@@ -564,18 +564,18 @@ static int ad7192_write_raw_get_fmt(struct iio_dev *indio_dev,
+ }
+ 
+ static const struct iio_info ad7192_info = {
+-	.read_raw = &ad7192_read_raw,
+-	.write_raw = &ad7192_write_raw,
+-	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
++	.read_raw = ad7192_read_raw,
++	.write_raw = ad7192_write_raw,
++	.write_raw_get_fmt = ad7192_write_raw_get_fmt,
+ 	.attrs = &ad7192_attribute_group,
+ 	.validate_trigger = ad_sd_validate_trigger,
+ 	.driver_module = THIS_MODULE,
+ };
+ 
+ static const struct iio_info ad7195_info = {
+-	.read_raw = &ad7192_read_raw,
+-	.write_raw = &ad7192_write_raw,
+-	.write_raw_get_fmt = &ad7192_write_raw_get_fmt,
++	.read_raw = ad7192_read_raw,
++	.write_raw = ad7192_write_raw,
++	.write_raw_get_fmt = ad7192_write_raw_get_fmt,
+ 	.attrs = &ad7195_attribute_group,
+ 	.validate_trigger = ad_sd_validate_trigger,
+ 	.driver_module = THIS_MODULE,
 -- 
 2.7.4
 
