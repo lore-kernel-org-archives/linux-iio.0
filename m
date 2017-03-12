@@ -1,26 +1,21 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f65.google.com ([74.125.83.65]:35547 "EHLO
-        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933935AbdCLQYD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 12 Mar 2017 12:24:03 -0400
-Date: Sun, 12 Mar 2017 09:24:00 -0700
+Return-Path: <SRS0=Wx2m=2V=gmail.com=amsfield22@kernel.org>
+Date: Sun, 12 Mar 2017 11:31:22 -0700
 From: Alison Schofield <amsfield22@gmail.com>
 To: simran singhal <singhalsimran0@gmail.com>
 Cc: lars@metafoo.de, Michael.Hennerich@analog.com, jic23@kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+	linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
 Subject: Re: [Outreachy kernel] [PATCH] staging: adis16060_core: Use private
  driver lock instead of mlock
-Message-ID: <20170312162359.GB2873@d830.WORKGROUP>
+Message-ID: <20170312183121.GA7728@d830.WORKGROUP>
 References: <20170312131052.GA21816@singhal-Inspiron-5558>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <20170312131052.GA21816@singhal-Inspiron-5558>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 On Sun, Mar 12, 2017 at 06:40:52PM +0530, simran singhal wrote:
 > The IIO subsystem is redefining iio_dev->mlock to be used by
@@ -32,11 +27,7 @@ On Sun, Mar 12, 2017 at 06:40:52PM +0530, simran singhal wrote:
 > 
 > Signed-off-by: simran singhal <singhalsimran0@gmail.com>
 
-Hi Simran,
-These are now IIO tasks for this round of Outreachy.  Please
-follow the directions on the IIO task page w.r.t. claiming,
-sending, and all.
-Thanks,
+This does not compile.
 alisons
 
 > ---
