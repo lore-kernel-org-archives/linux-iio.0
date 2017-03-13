@@ -1,20 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37166
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37177
         "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1754164AbdCMUAf (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:00:35 -0400
+        with ESMTP id S1753309AbdCMUAd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:00:33 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
         linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Alison Schofield <amsfield22@gmail.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 13/17] iio: magnetometer: mag3110: Add OF device ID table
-Date: Mon, 13 Mar 2017 16:59:13 -0300
-Message-Id: <20170313195917.12190-14-javier@osg.samsung.com>
+Subject: [PATCH 14/17] iio: accel: mma7455_i2c: Add OF device ID table
+Date: Mon, 13 Mar 2017 16:59:14 -0300
+Message-Id: <20170313195917.12190-15-javier@osg.samsung.com>
 In-Reply-To: <20170313195917.12190-1-javier@osg.samsung.com>
 References: <20170313195917.12190-1-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -31,30 +29,34 @@ OF device ID table if the devices are registered via OF.
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 ---
 
- drivers/iio/magnetometer/mag3110.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iio/accel/mma7455_i2c.c | 8 ++++++++
+ 1 file changed, 8 insertions(+)
 
-diff --git a/drivers/iio/magnetometer/mag3110.c b/drivers/iio/magnetometer/mag3110.c
-index b4f643fb3b1e..06830358a175 100644
---- a/drivers/iio/magnetometer/mag3110.c
-+++ b/drivers/iio/magnetometer/mag3110.c
-@@ -441,9 +441,16 @@ static const struct i2c_device_id mag3110_id[] = {
+diff --git a/drivers/iio/accel/mma7455_i2c.c b/drivers/iio/accel/mma7455_i2c.c
+index 3cab5fb4a3c4..00913a7a99e1 100644
+--- a/drivers/iio/accel/mma7455_i2c.c
++++ b/drivers/iio/accel/mma7455_i2c.c
+@@ -41,12 +41,20 @@ static const struct i2c_device_id mma7455_i2c_ids[] = {
  };
- MODULE_DEVICE_TABLE(i2c, mag3110_id);
+ MODULE_DEVICE_TABLE(i2c, mma7455_i2c_ids);
  
-+static const struct of_device_id mag3110_of_match[] = {
-+	{ .compatible = "fsl,mag3110" },
++static const struct of_device_id mma7455_of_match[] = {
++	{ .compatible = "fsl,mma7455" },
++	{ .compatible = "fsl,mma7456" },
 +	{ }
 +};
-+MODULE_DEVICE_TABLE(of, mag3110_of_match);
++MODULE_DEVICE_TABLE(of, mma7455_of_match);
 +
- static struct i2c_driver mag3110_driver = {
+ static struct i2c_driver mma7455_i2c_driver = {
+ 	.probe = mma7455_i2c_probe,
+ 	.remove = mma7455_i2c_remove,
+ 	.id_table = mma7455_i2c_ids,
  	.driver = {
- 		.name	= "mag3110",
-+		.of_match_table = of_match_ptr(mag3110_of_match),
- 		.pm	= MAG3110_PM_OPS,
+ 		.name	= "mma7455-i2c",
++		.of_match_table = of_match_ptr(mma7455_of_match),
  	},
- 	.probe = mag3110_probe,
+ };
+ module_i2c_driver(mma7455_i2c_driver);
 -- 
 2.9.3
 
