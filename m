@@ -1,21 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37081
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37094
         "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1753607AbdCMT77 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 15:59:59 -0400
+        with ESMTP id S1753717AbdCMUAI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:00:08 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
-        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
         Gregor Boirie <gregor.boirie@parrot.com>,
         Sanchayan Maity <maitysanchayan@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
+        Amitoj Kaur Chawla <amitoj1606@gmail.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 05/17] iio: light: us5182d: Add OF device ID table
-Date: Mon, 13 Mar 2017 16:59:05 -0300
-Message-Id: <20170313195917.12190-6-javier@osg.samsung.com>
+Subject: [PATCH 06/17] iio: light: tsl2563: Add OF device ID table
+Date: Mon, 13 Mar 2017 16:59:06 -0300
+Message-Id: <20170313195917.12190-7-javier@osg.samsung.com>
 In-Reply-To: <20170313195917.12190-1-javier@osg.samsung.com>
 References: <20170313195917.12190-1-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -32,31 +32,33 @@ OF device ID table if the devices are registered via OF.
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 ---
 
- drivers/iio/light/us5182d.c | 7 +++++++
- 1 file changed, 7 insertions(+)
+ drivers/iio/light/tsl2563.c | 10 ++++++++++
+ 1 file changed, 10 insertions(+)
 
-diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
-index 18cf2e29e4d5..eefdbf4a6495 100644
---- a/drivers/iio/light/us5182d.c
-+++ b/drivers/iio/light/us5182d.c
-@@ -972,10 +972,17 @@ static const struct i2c_device_id us5182d_id[] = {
+diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
+index 04598ae993d4..9e5cd09a329f 100644
+--- a/drivers/iio/light/tsl2563.c
++++ b/drivers/iio/light/tsl2563.c
+@@ -884,9 +884,19 @@ static const struct i2c_device_id tsl2563_id[] = {
+ };
+ MODULE_DEVICE_TABLE(i2c, tsl2563_id);
  
- MODULE_DEVICE_TABLE(i2c, us5182d_id);
- 
-+static const struct of_device_id us5182d_of_match[] = {
-+	{ .compatible = "upisemi,usd5182" },
++static const struct of_device_id tsl2563_of_match[] = {
++	{ .compatible = "amstaos,tsl2560" },
++	{ .compatible = "amstaos,tsl2561" },
++	{ .compatible = "amstaos,tsl2562" },
++	{ .compatible = "amstaos,tsl2563" },
 +	{}
 +};
-+MODULE_DEVICE_TABLE(of, us5182d_of_match);
++MODULE_DEVICE_TABLE(of, tsl2563_of_match);
 +
- static struct i2c_driver us5182d_driver = {
+ static struct i2c_driver tsl2563_i2c_driver = {
  	.driver = {
- 		.name = US5182D_DRV_NAME,
- 		.pm = &us5182d_pm_ops,
-+		.of_match_table = of_match_ptr(us5182d_of_match),
- 		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
+ 		.name	 = "tsl2563",
++		.of_match_table = of_match_ptr(tsl2563_of_match),
+ 		.pm	= TSL2563_PM_OPS,
  	},
- 	.probe = us5182d_probe,
+ 	.probe		= tsl2563_probe,
 -- 
 2.9.3
 
