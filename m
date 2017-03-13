@@ -1,106 +1,164 @@
-Return-Path: <SRS0=6ssA=2U=wjw-solutions.com=michael.engl@kernel.org>
-From: Michael Engl <michael.engl@wjw-solutions.com>
-To: "jic23@kernel.org" <jic23@kernel.org>
-CC: "knaack.h@gmx.de" <knaack.h@gmx.de>, "lars@metafoo.de" <lars@metafoo.de>,
-	"pmeerw@pmeerw.net" <pmeerw@pmeerw.net>, "linux-iio@vger.kernel.org"
-	<linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48269 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751262AbdCMVWn (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 17:22:43 -0400
 Subject: Re: [PATCH] iio: adc: ti_am335x_adc: fix fifo overrun recovery
-Date: Sat, 11 Mar 2017 19:32:50 +0000
-Message-ID: <1489260881.20665.28.camel@wjw-solutions.com>
+To: Michael Engl <michael.engl@wjw-solutions.com>
 References: <1489154347.20665.9.camel@wjw-solutions.com>
-	 <d76e4b85-6f8f-eae7-41be-de2a15d928cd@kernel.org>
-In-Reply-To: <d76e4b85-6f8f-eae7-41be-de2a15d928cd@kernel.org>
-Content-Type: text/plain; charset="utf-8"
+ <d76e4b85-6f8f-eae7-41be-de2a15d928cd@kernel.org>
+ <1489260881.20665.28.camel@wjw-solutions.com>
+Cc: "knaack.h@gmx.de" <knaack.h@gmx.de>,
+        "lars@metafoo.de" <lars@metafoo.de>,
+        "pmeerw@pmeerw.net" <pmeerw@pmeerw.net>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <3bf88afd-3f37-cb8e-7320-97fc652832dc@kernel.org>
+Date: Mon, 13 Mar 2017 21:22:40 +0000
 MIME-Version: 1.0
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1489260881.20665.28.camel@wjw-solutions.com>
+Content-Type: text/plain; charset=utf-8
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-T24gU2FtLCAyMDE3LTAzLTExIGF0IDE4OjA3ICswMDAwLCBKb25hdGhhbiBDYW1lcm9uIHdyb3Rl
-Og0KPiBPbiAxMC8wMy8xNyAxMzo1NywgTWljaGFlbCBFbmdsIHdyb3RlOg0KPiA+IA0KPiA+IFRo
-ZSB0aWFkY19pcnFfaChpbnQgaXJxLCB2b2lkICpwcml2YXRlKSBmdW5jdGlvbiBpcyBoYW5kbGlu
-ZyBGSUZPDQo+ID4gb3ZlcnJ1bnMgYnkgY2xlYXJpbmcgZmxhZ3MsIGRpc2FibGluZyBhbmQgZW5h
-YmxpbmcgdGhlIEFEQyB0bw0KPiA+IHJlY292ZXIuDQo+ID4gDQo+ID4gSWYgdGhlIEFEQyBpcyBy
-dW5uaW5nIGluIGNvbnRpbnVvdXMgbW9kZSBhIEZJRk8gb3ZlcnJ1biBoYXBwZW5zDQo+ID4gcmVn
-dWxhcmx5LiBJZiB0aGUgZGlzYWJsaW5nIG9mIHRoZSBBREMgaGFwcGVucyBjb25jdXJyZW50bHkg
-d2l0aA0KPiA+IGEgbmV3IGNvbnZlcnNpb24uIEl0IG1pZ2h0IGhhcHBlbiB0aGF0IHRoZSBlbmFi
-bGluZyBvZiB0aGUgQURDDQo+ID4gaXMgaWdub3JlZCBieSB0aGUgaGFyZHdhcmUuIFRoaXMgc3Rv
-cHMgdGhlIEFEQyBwZXJtYW5lbnRseS4gTm8NCj4gPiBtb3JlIGludGVycnVwdHMgYXJlIHRyaWdn
-ZXJlZC4NCj4gPiANCj4gPiBBY2NvcmRpbmcgdG8gdGhlIEFNMzM1eCBSZWZlcmVuY2UgTWFudWFs
-IChTUFJVSDczSCBPY3RvYmVyIDIwMTEgLQ0KPiA+IFJldmlzZWQgQXByaWwgMjAxMyAtIENoYXB0
-ZXIgMTIuNCBhbmQgMTIuNSkgaXQgaXMgbmVjZXNzYXJ5IHRvDQo+ID4gY2hlY2sgdGhlIEFEQyBG
-U00gYml0cyBpbiBSRUdfQURDRlNNIGJlZm9yZSBlbmFibGluZyB0aGUgQURDDQo+ID4gYWdhaW4u
-IEJlY2F1c2UgdGhlIGRpc2FibGluZyBvZiB0aGUgQURDIGlzIGRvbmUgcmlnaHQgYWZ0ZXIgdGhl
-DQo+ID4gY3VycmVudCBjb252ZXJzaW9uIGhhcyBiZWVuIGZpbmlzaGVkLg0KPiBUaGUgcmVsZXZh
-bnQgY29tbWVudCBpbiB0aGUgbGF0ZXN0IHZlcnNpb24gb2YgdGhhdCBtYW51YWwgKHJldiBPKQ0K
-PiBpcyBhdCB0aGUgZW5kIG9mIDEyLjMuNQ0KPiAiVGhlIEZJRk8gY2FuIGFsc28gZ2VuZXJhdGUg
-RklGT3hfT1ZFUlJVTiBhbmQgRklGT3hfVU5ERVJGTE9XDQo+IGludGVycnVwdHMuIFRoZSB1c2Vy
-IGNhbiBtYXNrDQo+IHRoZXNlIGV2ZW50cyBieSBwcm9ncmFtbWluZyB0aGUgSVJRRU5BQkxFX0NM
-UiByZWdpc3Rlci4gVG8gY2xlYXIgYQ0KPiBGSUZPIHVuZGVyZmxvdyBvciBGSUZPIG92ZXJydW4N
-Cj4gaW50ZXJydXB0LCB0aGUgdXNlciBzaG91bGQgd3JpdGUgYSDigJgx4oCZIHRvIHRoZSBzdGF0
-dXMgYml0IGluIHRoZQ0KPiBJUlFTVFMgcmVnaXN0ZXIuIFRoZSBUU0NfQURDX1NTIGRvZXMgbm90
-DQo+IHJlY292ZXIgZnJvbSB0aGVzZSBjb25kaXRpb25zIGF1dG9tYXRpY2FsbHkuIFRoZXJlZm9y
-ZSwgdGhlIHNvZnR3YXJlDQo+IHdpbGwgbmVlZCB0byBkaXNhYmxlIGFuZCB0aGVuIGFnYWluDQo+
-IGVuYWJsZSB0aGUgVFNDX0FEQ19TUy4gQmVmb3JlIHRoZSB1c2VyIGNhbiB0dXJuIHRoZSBtb2R1
-bGUgYmFjayBvbiwNCj4gdGhlIHVzZXIgbXVzdCByZWFkIHRoZQ0KPiBBRENTVEFUIHJlZ2lzdGVy
-IHRvIGNoZWNrIGlmIHRoZSBzdGF0dXMgb2YgdGhlIEFEQyBGU00gaXMgaWRsZSBhbmQNCj4gdGhl
-IGN1cnJlbnQgc3RlcCBpcyB0aGUgaWRsZSBzdGVwLiINCj4gDQo+IA0KPiANCj4gPiANCj4gPiAN
-Cj4gPiBUbyB0cmlnZ2VyIHRoaXMgYnVnIGl0IGlzIG5lY2Vzc2FyeSB0byBydW4gdGhlIEFEQyBp
-biBjb250aW51b3VzDQo+ID4gbW9kZS4gVGhlIEFEQyB2YWx1ZXMgb2YgYWxsIGNoYW5uZWxzIG5l
-ZWQgdG8gYmUgcmVhZCBpbiBhbiBlbmRsZXNzDQo+ID4gbG9vcC4gVGhlIGJ1ZyBhcHBlYXJzIHdp
-dGhpbiB0aGUgZmlyc3QgNiBob3VycyAofjUuNCBtaWxsaW9uDQo+ID4gaGFuZGxlZCBGSUZPIG92
-ZXJydW5zKS4gVGhlIHVzZXIgc3BhY2UgYXBwbGljYXRpb24gd2lsbCBoYW5nIG9uDQo+ID4gcmVh
-ZGluZyBuZXcgdmFsdWVzIGZyb20gdGhlIGNoYXJhY3RlciBkZXZpY2UuDQo+IEltcHJlc3NpdmUg
-dG8gdHJhY2sgdGhpcyBvbmUgZG93biwgYnV0IGl0J3MgdGhlIHNvcnQgb2YgbmFzdHkNCj4gaGFy
-ZHdhcmUgcmFjZSB0aGF0IHdlIG5lZWQgdG8gYmUgdmVyeSBjYXJlZnVsIHdpdGggd2hlbiB0cnlp
-bmcNCj4gdG8gZ2V0IGEgZml4IGluIHBsYWNlLg0KPiA+IA0KPiA+IA0KPiA+IFNpZ25lZC1vZmYt
-Ynk6IE1pY2hhZWwgRW5nbCA8bWljaGFlbC5lbmdsQHdqdy1zb2x1dGlvbnMuY29tPg0KPiA+IC0t
-LQ0KPiA+IMKgZHJpdmVycy9paW8vYWRjL3RpX2FtMzM1eF9hZGMuYyB8IDEzICsrKysrKysrKysr
-Ky0NCj4gPiDCoDEgZmlsZSBjaGFuZ2VkLCAxMiBpbnNlcnRpb25zKCspLCAxIGRlbGV0aW9uKC0p
-DQo+ID4gDQo+ID4gZGlmZiAtLWdpdCBhL2RyaXZlcnMvaWlvL2FkYy90aV9hbTMzNXhfYWRjLmMN
-Cj4gPiBiL2RyaXZlcnMvaWlvL2FkYy90aV9hbTMzNXhfYWRjLmMNCj4gPiBpbmRleCBhZDlkZWMz
-Li40MjgyY2VjIDEwMDY0NA0KPiA+IC0tLSBhL2RyaXZlcnMvaWlvL2FkYy90aV9hbTMzNXhfYWRj
-LmMNCj4gPiArKysgYi9kcml2ZXJzL2lpby9hZGMvdGlfYW0zMzV4X2FkYy5jDQo+ID4gQEAgLTE2
-OSw3ICsxNjksOSBAQCBzdGF0aWMgaXJxcmV0dXJuX3QgdGlhZGNfaXJxX2goaW50IGlycSwgdm9p
-ZA0KPiA+ICpwcml2YXRlKQ0KPiA+IMKgew0KPiA+IMKgCXN0cnVjdCBpaW9fZGV2ICppbmRpb19k
-ZXYgPSBwcml2YXRlOw0KPiA+IMKgCXN0cnVjdCB0aWFkY19kZXZpY2UgKmFkY19kZXYgPSBpaW9f
-cHJpdihpbmRpb19kZXYpOw0KPiA+IC0JdW5zaWduZWQgaW50IHN0YXR1cywgY29uZmlnOw0KPiA+
-ICsJdW5zaWduZWQgaW50IHN0YXR1cywgY29uZmlnLCBhZGNfZnNtOw0KPiA+ICsJdW5zaWduZWQg
-c2hvcnQgY291bnQgPSAwOw0KPiA+ICsNCj4gPiDCoAlzdGF0dXMgPSB0aWFkY19yZWFkbChhZGNf
-ZGV2LCBSRUdfSVJRU1RBVFVTKTsNCj4gPiDCoA0KPiA+IMKgCS8qDQo+ID4gQEAgLTE4Myw2ICsx
-ODUsMTUgQEAgc3RhdGljIGlycXJldHVybl90IHRpYWRjX2lycV9oKGludCBpcnEsIHZvaWQNCj4g
-PiAqcHJpdmF0ZSkNCj4gPiDCoAkJdGlhZGNfd3JpdGVsKGFkY19kZXYsIFJFR19DVFJMLCBjb25m
-aWcpOw0KPiA+IMKgCQl0aWFkY193cml0ZWwoYWRjX2RldiwgUkVHX0lSUVNUQVRVUywNCj4gPiBJ
-UlFFTkJfRklGTzFPVlJSVU4NCj4gPiDCoAkJCQl8IElSUUVOQl9GSUZPMVVORFJGTFcgfA0KPiA+
-IElSUUVOQl9GSUZPMVRIUkVTKTsNCj4gPiArDQo+ID4gKwkJLyogd2FpdCBmb3IgaWRsZSBzdGF0
-ZS4NCj4gU3RhbmRhcmQgbXVsdGlsaW5lIGNvbW1lbnQgc3ludGF4IHByZWZlcnJlZC4NCj4gPiAN
-Cj4gPiArCQnCoCogQURDIG5lZWRzIHRvIGZpbmlzaCB0aGUgY3VycmVudCBjb252ZXJzaW9uDQo+
-ID4gKwkJwqAqIGJlZm9yZSBkaXNhYmxpbmcgdGhlIG1vZHVsZQ0KPiA+ICsJCcKgKi8NCj4gPiAr
-CQlkbyB7DQo+ID4gKwkJCWFkY19mc20gPSB0aWFkY19yZWFkbChhZGNfZGV2LA0KPiA+IFJFR19B
-RENGU00pOw0KPiA+ICsJCX0gd2hpbGUgKGFkY19mc20gIT0gMHgxMCAmJiBjb3VudCsrIDwgMTAw
-KTsNCj4gV2hhdCBzbGlnaHRseSBib3RoZXJzIG1lIGlzIHRoYXQgd2UgYXJlIHBhcGVyaW5nIG92
-ZXIgdGhlDQo+IHByb2JsZW0swqDCoHlldA0KPiB0aGlzIGlzIGZhciBmcm9tIGd1YXJhbnRlZWQg
-dG8gZml4IGl0IChJIHRoaW5rISkgYXMgd2UgbWlnaHQgZ2V0IGENCj4gcmFjZQ0KPiBhcyBpdCBz
-dGFydHMgdGhlIG5leHQgY29udmVyc2lvbiBhZnRlciB3ZSBoYXZlIGNoZWNrZWQsIGJ1dCBiZWZv
-cmUgd2UNCj4gZGlzYWJsZS4uLg0KPiANCj4gTm90ZSBJJ20gb25seSBsb29raW5nIGF0IHRoaXMg
-ZmFpcmx5IHN1cGVyZmljaWFsbHkgc28gcGxlYXNlIHBvaW50DQo+IG91dCBpZiBJIGhhdmUgbWlz
-c2VkIHNvbWV0aGluZyENCg0KUHJvYmFibHkgbXkgY29tbWVudCBpcyBhIGJpdCBjb25mdXNpbmcu
-IFRoZSBBREMgaGFzIGFscmVhZHkgYmVlbg0KZGlzYWJsZWQgYnkgd3JpdGluZyB0aGUgY29uZmln
-IHNvbWUgbGluZXMgYWJvdmUgdGhlIHdoaWxlIGxvb3AuwqANCg0KIg0KY29uZmlnICY9IH4oQ05U
-UkxSRUdfVFNDU1NFTkIpOw0KdGlhZGNfd3JpdGVsKGFkY19kZXYsIFJFR19DVFJMLCBjb25maWcp
-Ow0KIg0KQnV0IGFzIHN0YXRlZCBpbiB0aGUgUmVmZXJlbmNlIE1hbnVhbCB0aGUgQURDIG5lZWRz
-IHNvbWUgdGltZSB0byBmaW5pc2gNCnRoZSBjdXJyZW50IGNvbnZlcnNpb24gdG8gZmluYWxseSBk
-aXNhYmxlIHRoZSBBREMuwqANCg0KRGVzY3JpcHRpb24gb2YgIkVuYWJsZSIgQml0IGluIHRoZSBD
-VFJMIFJlZ2lzdGVyICh0YWJsZSAxMi0xNCk6DQoiVFNDX0FEQ19TUyBtb2R1bGUgZW5hYmxlIGJp
-dC4NCkFmdGVyIHByb2dyYW1taW5nIGFsbCB0aGUgc3RlcHMgYW5kIGNvbmZpZ3VyYXRpb24gcmVn
-aXN0ZXJzLCB3cml0ZSBhDQoxdG8gdGhpcyBiaXQgdG8gdHVybiBvbiBUU0NfQURDX1NTLg0KV3Jp
-dGluZyBhIDAgd2lsbCBkaXNhYmxlIHRoZSBtb2R1bGUgKGFmdGVyIHRoZSBjdXJyZW50IGNvbnZl
-cnNpb24pLiINCg0KVGhhdCBtZWFucyBvbmNlIHRoZSBhZGNfZnNtIGlzIGVxdWFsIHRvIDB4MTAg
-KGlkbGUgc3RhdGUpIHRoZSBBREMgc3RheXMNCmRpc2FibGVkIGFzIGxvbmcgYXMgd2UgZW5hYmxl
-IHRoZSBBREMgYWdhaW4uIFdoaWNoIGlzIGRvbmUgYnkgdGhlDQpvcmlnaW5hbCBjb2RlIG9uZSBs
-aW5lIGJlbG93IG9mIHRoaXMgcGF0Y2guDQoNCj4gDQo+IFdlIGNvdWxkIGxvb2sgZm9yIGEgdHJh
-bnNpdGlvbiwgd2hpY2ggd291bGQgcG90ZW50aWFsbHkgcmVkdWNlIHRoZQ0KPiBjaGFuY2UNCj4g
-b2YgcHJvYmxlbXMsIGJ1dCB0aGF0J3MgbmFzdHkgYXMgd2VsbCBhbmQgd2UnZCBuZWVkIHRvIGRp
-c2FibGUNCj4gaW50ZXJydXB0cw0KPiBwcm9iYWJseSB0byBhdm9pZCBhbnkgcG90ZW50aWFsIG9m
-IGEgY2xhc2ggKGZvciBhIG5vbiB0cml2aWFsIGFtb3VudA0KPiBvZg0KPiB0aW1lLi4uKQ0KPiA+
-IA0KPiA+ICsNCj4gPiDCoAkJdGlhZGNfd3JpdGVsKGFkY19kZXYsIFJFR19DVFJMLCAoY29uZmln
-IHwNCj4gPiBDTlRSTFJFR19UU0NTU0VOQikpOw0KPiA+IMKgCQlyZXR1cm4gSVJRX0hBTkRMRUQ7
-DQo+ID4gwqAJfSBlbHNlIGlmIChzdGF0dXMgJiBJUlFFTkJfRklGTzFUSFJFUykgew==
+On 11/03/17 19:32, Michael Engl wrote:
+> On Sam, 2017-03-11 at 18:07 +0000, Jonathan Cameron wrote:
+>> On 10/03/17 13:57, Michael Engl wrote:
+>>>
+>>> The tiadc_irq_h(int irq, void *private) function is handling FIFO
+>>> overruns by clearing flags, disabling and enabling the ADC to
+>>> recover.
+>>>
+>>> If the ADC is running in continuous mode a FIFO overrun happens
+>>> regularly. If the disabling of the ADC happens concurrently with
+>>> a new conversion. It might happen that the enabling of the ADC
+>>> is ignored by the hardware. This stops the ADC permanently. No
+>>> more interrupts are triggered.
+>>>
+>>> According to the AM335x Reference Manual (SPRUH73H October 2011 -
+>>> Revised April 2013 - Chapter 12.4 and 12.5) it is necessary to
+>>> check the ADC FSM bits in REG_ADCFSM before enabling the ADC
+>>> again. Because the disabling of the ADC is done right after the
+>>> current conversion has been finished.
+>> The relevant comment in the latest version of that manual (rev O)
+>> is at the end of 12.3.5
+>> "The FIFO can also generate FIFOx_OVERRUN and FIFOx_UNDERFLOW
+>> interrupts. The user can mask
+>> these events by programming the IRQENABLE_CLR register. To clear a
+>> FIFO underflow or FIFO overrun
+>> interrupt, the user should write a ‘1’ to the status bit in the
+>> IRQSTS register. The TSC_ADC_SS does not
+>> recover from these conditions automatically. Therefore, the software
+>> will need to disable and then again
+>> enable the TSC_ADC_SS. Before the user can turn the module back on,
+>> the user must read the
+>> ADCSTAT register to check if the status of the ADC FSM is idle and
+>> the current step is the idle step."
+>>
+>>
+>>
+>>>
+>>>
+>>> To trigger this bug it is necessary to run the ADC in continuous
+>>> mode. The ADC values of all channels need to be read in an endless
+>>> loop. The bug appears within the first 6 hours (~5.4 million
+>>> handled FIFO overruns). The user space application will hang on
+>>> reading new values from the character device.
+>> Impressive to track this one down, but it's the sort of nasty
+>> hardware race that we need to be very careful with when trying
+>> to get a fix in place.
+>>>
+>>>
+>>> Signed-off-by: Michael Engl <michael.engl@wjw-solutions.com>
+>>> ---
+>>>  drivers/iio/adc/ti_am335x_adc.c | 13 ++++++++++++-
+>>>  1 file changed, 12 insertions(+), 1 deletion(-)
+>>>
+>>> diff --git a/drivers/iio/adc/ti_am335x_adc.c
+>>> b/drivers/iio/adc/ti_am335x_adc.c
+>>> index ad9dec3..4282cec 100644
+>>> --- a/drivers/iio/adc/ti_am335x_adc.c
+>>> +++ b/drivers/iio/adc/ti_am335x_adc.c
+>>> @@ -169,7 +169,9 @@ static irqreturn_t tiadc_irq_h(int irq, void
+>>> *private)
+>>>  {
+>>>  	struct iio_dev *indio_dev = private;
+>>>  	struct tiadc_device *adc_dev = iio_priv(indio_dev);
+>>> -	unsigned int status, config;
+>>> +	unsigned int status, config, adc_fsm;
+>>> +	unsigned short count = 0;
+>>> +
+>>>  	status = tiadc_readl(adc_dev, REG_IRQSTATUS);
+>>>  
+>>>  	/*
+>>> @@ -183,6 +185,15 @@ static irqreturn_t tiadc_irq_h(int irq, void
+>>> *private)
+>>>  		tiadc_writel(adc_dev, REG_CTRL, config);
+>>>  		tiadc_writel(adc_dev, REG_IRQSTATUS,
+>>> IRQENB_FIFO1OVRRUN
+>>>  				| IRQENB_FIFO1UNDRFLW |
+>>> IRQENB_FIFO1THRES);
+>>> +
+>>> +		/* wait for idle state.
+>> Standard multiline comment syntax preferred.
+>>>
+>>> +		 * ADC needs to finish the current conversion
+>>> +		 * before disabling the module
+>>> +		 */
+>>> +		do {
+>>> +			adc_fsm = tiadc_readl(adc_dev,
+>>> REG_ADCFSM);
+>>> +		} while (adc_fsm != 0x10 && count++ < 100);
+>> What slightly bothers me is that we are papering over the
+>> problem,  yet
+>> this is far from guaranteed to fix it (I think!) as we might get a
+>> race
+>> as it starts the next conversion after we have checked, but before we
+>> disable...
+>>
+>> Note I'm only looking at this fairly superficially so please point
+>> out if I have missed something!
+> 
+> Probably my comment is a bit confusing. The ADC has already been
+> disabled by writing the config some lines above the while loop. 
+> 
+> "
+> config &= ~(CNTRLREG_TSCSSENB);
+> tiadc_writel(adc_dev, REG_CTRL, config);
+> "
+> But as stated in the Reference Manual the ADC needs some time to finish
+> the current conversion to finally disable the ADC. 
+> 
+> Description of "Enable" Bit in the CTRL Register (table 12-14):
+> "TSC_ADC_SS module enable bit.
+> After programming all the steps and configuration registers, write a
+> 1to this bit to turn on TSC_ADC_SS.
+> Writing a 0 will disable the module (after the current conversion)."
+> 
+> That means once the adc_fsm is equal to 0x10 (idle state) the ADC stays
+> disabled as long as we enable the ADC again. Which is done by the
+> original code one line below of this patch.
+Cool. Thanks for the clarification.  I got lost in the datahsheet ;)
+
+Would you mind figuring out a fixes tag for this one as I want it to
+go for stable?
+
+Thanks,
+
+Jonathan
+> 
+>>
+>> We could look for a transition, which would potentially reduce the
+>> chance
+>> of problems, but that's nasty as well and we'd need to disable
+>> interrupts
+>> probably to avoid any potential of a clash (for a non trivial amount
+>> of
+>> time...)
+>>>
+>>> +
+>>>  		tiadc_writel(adc_dev, REG_CTRL, (config |
+>>> CNTRLREG_TSCSSENB));
+>>>  		return IRQ_HANDLED;
+>>>  	} else if (status & IRQENB_FIFO1THRES) {
+
