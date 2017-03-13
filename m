@@ -1,21 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37072
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37081
         "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1753402AbdCMT74 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 15:59:56 -0400
+        with ESMTP id S1753607AbdCMT77 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 15:59:59 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
+        Christophe JAILLET <christophe.jaillet@wanadoo.fr>,
         linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Tomas Novotny <tomas@novotny.cz>,
-        Fengguang Wu <fengguang.wu@intel.com>,
+        Gregor Boirie <gregor.boirie@parrot.com>,
+        Sanchayan Maity <maitysanchayan@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Julia Lawall <julia.lawall@lip6.fr>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 04/17] iio: dac: mcp4725: Add OF device ID table
-Date: Mon, 13 Mar 2017 16:59:04 -0300
-Message-Id: <20170313195917.12190-5-javier@osg.samsung.com>
+Subject: [PATCH 05/17] iio: light: us5182d: Add OF device ID table
+Date: Mon, 13 Mar 2017 16:59:05 -0300
+Message-Id: <20170313195917.12190-6-javier@osg.samsung.com>
 In-Reply-To: <20170313195917.12190-1-javier@osg.samsung.com>
 References: <20170313195917.12190-1-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -32,68 +32,31 @@ OF device ID table if the devices are registered via OF.
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 ---
 
- drivers/iio/dac/mcp4725.c | 24 ++++++++++++++++++++++--
- 1 file changed, 22 insertions(+), 2 deletions(-)
+ drivers/iio/light/us5182d.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/dac/mcp4725.c b/drivers/iio/dac/mcp4725.c
-index db109f0cdd8c..6ab1f23e5a79 100644
---- a/drivers/iio/dac/mcp4725.c
-+++ b/drivers/iio/dac/mcp4725.c
-@@ -19,6 +19,7 @@
- #include <linux/err.h>
- #include <linux/delay.h>
- #include <linux/regulator/consumer.h>
-+#include <linux/of_device.h>
- #include <linux/of.h>
+diff --git a/drivers/iio/light/us5182d.c b/drivers/iio/light/us5182d.c
+index 18cf2e29e4d5..eefdbf4a6495 100644
+--- a/drivers/iio/light/us5182d.c
++++ b/drivers/iio/light/us5182d.c
+@@ -972,10 +972,17 @@ static const struct i2c_device_id us5182d_id[] = {
  
- #include <linux/iio/iio.h>
-@@ -199,7 +200,7 @@ static ssize_t mcp4725_write_powerdown(struct iio_dev *indio_dev,
- 	return len;
- }
+ MODULE_DEVICE_TABLE(i2c, us5182d_id);
  
--enum {
-+enum chip_id {
- 	MCP4725,
- 	MCP4726,
- };
-@@ -406,7 +407,10 @@ static int mcp4725_probe(struct i2c_client *client,
- 	data = iio_priv(indio_dev);
- 	i2c_set_clientdata(client, indio_dev);
- 	data->client = client;
--	data->id = id->driver_data;
-+	if (client->dev.of_node)
-+		data->id = (enum chip_id)of_device_get_match_data(&client->dev);
-+	else
-+		data->id = id->driver_data;
- 	pdata = dev_get_platdata(&client->dev);
- 
- 	if (!pdata) {
-@@ -525,9 +529,25 @@ static const struct i2c_device_id mcp4725_id[] = {
- };
- MODULE_DEVICE_TABLE(i2c, mcp4725_id);
- 
-+#ifdef CONFIG_OF
-+static const struct of_device_id mcp4725_of_match[] = {
-+	{
-+		.compatible = "microchip,mcp4725",
-+		.data = (void *)MCP4725
-+	},
-+	{
-+		.compatible = "microchip,mcp4726",
-+		.data = (void *)MCP4726
-+	},
-+	{ }
++static const struct of_device_id us5182d_of_match[] = {
++	{ .compatible = "upisemi,usd5182" },
++	{}
 +};
-+MODULE_DEVICE_TABLE(of, mcp4725_of_match);
-+#endif
++MODULE_DEVICE_TABLE(of, us5182d_of_match);
 +
- static struct i2c_driver mcp4725_driver = {
+ static struct i2c_driver us5182d_driver = {
  	.driver = {
- 		.name	= MCP4725_DRV_NAME,
-+		.of_match_table = of_match_ptr(mcp4725_of_match),
- 		.pm	= MCP4725_PM_OPS,
+ 		.name = US5182D_DRV_NAME,
+ 		.pm = &us5182d_pm_ops,
++		.of_match_table = of_match_ptr(us5182d_of_match),
+ 		.acpi_match_table = ACPI_PTR(us5182d_acpi_match),
  	},
- 	.probe		= mcp4725_probe,
+ 	.probe = us5182d_probe,
 -- 
 2.9.3
 
