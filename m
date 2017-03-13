@@ -1,107 +1,50 @@
-Return-Path: <SRS0=TkIA=2W=gmail.com=rvarsha016@kernel.org>
-Date: Mon, 13 Mar 2017 07:39:41 -0700 (PDT)
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:36542 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751335AbdCMJYK (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 05:24:10 -0400
+Received: by mail-pg0-f66.google.com with SMTP id 25so17513604pgy.3
+        for <linux-iio@vger.kernel.org>; Mon, 13 Mar 2017 02:24:09 -0700 (PDT)
+Message-ID: <58c66533.42d5620a.3e22a.3a06@mx.google.com>
+Date: Mon, 13 Mar 2017 14:53:57 +0530
 From: Varsha Rao <rvarsha016@gmail.com>
-To: outreachy-kernel <outreachy-kernel@googlegroups.com>
-Cc: rvarsha016@gmail.com, Michael.Hennerich@analog.com, jic23@kernel.org,
-	knaack.h@gmx.de, pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
-	21cnbao@gmail.com, linux-iio@vger.kernel.org, lars@metafoo.de
-Message-Id: <677299aa-1a1c-412c-85cf-b9117be3e4be@googlegroups.com>
-In-Reply-To: <45f0ef85-3753-946f-4956-6cba4e8a6859@metafoo.de>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Barry Song <21cnbao@gmail.com>, linux-iio@vger.kernel.org
+Cc: outreachy-kernel@googlegroups.com
+Subject: [PATCH 2/2] staging: iio: adis16240: Modify existing comment.
 References: <cover.1489395260.git.rvarsha016@gmail.com>
- <58c6652a.467d630a.1c92b.3bea@mx.google.com>
- <45f0ef85-3753-946f-4956-6cba4e8a6859@metafoo.de>
-Subject: Re: [PATCH 1/2] staging: iio: adis16240: Replace mlock with driver
- private lock.
 MIME-Version: 1.0
-Content-Type: multipart/mixed;
-	boundary="----=_Part_9832_29465237.1489415981517"
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <cover.1489395260.git.rvarsha016@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-------=_Part_9832_29465237.1489415981517
-Content-Type: multipart/alternative;
-	boundary="----=_Part_9833_855109335.1489415981517"
+Modify the existing comment to reflect the changes from mlock to
+txrx_lock.
 
-------=_Part_9833_855109335.1489415981517
-Content-Type: text/plain; charset=UTF-8
-Content-Transfer-Encoding: 7bit
+Signed-off-by: Varsha Rao <rvarsha016@gmail.com>
+---
+ drivers/staging/iio/accel/adis16240.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-
-
-> > +++ b/drivers/staging/iio/accel/adis16240.c 
-> > @@ -229,11 +229,12 @@ static ssize_t adis16240_read_12bit_signed(struct 
-> device *dev, 
-> >  { 
-> >          ssize_t ret; 
-> >          struct iio_dev *indio_dev = dev_to_iio_dev(dev); 
-> > +        struct adis *st = iio_priv(indio_dev); 
-> >   
-> >          /* Take the iio_dev status lock */ 
-> > -        mutex_lock(&indio_dev->mlock); 
-> > +        mutex_lock(&st->txrx_lock); 
->
-> This unfortunately wont work. The adis_read_reg()/adis_write_reg() 
-> functions 
-> take the txrx_lock. So this change causes a deadlock, trying to take a 
-> lock 
-> that is already locked. 
->
->    Yes, it would cause deadlock. Can the lock be placed within the 
-   adis_read_reg() function and removing locks from other place?
+diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
+index c182b2d..aa3030c 100644
+--- a/drivers/staging/iio/accel/adis16240.c
++++ b/drivers/staging/iio/accel/adis16240.c
+@@ -231,7 +231,7 @@ static ssize_t adis16240_read_12bit_signed(struct device *dev,
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct adis *st = iio_priv(indio_dev);
  
+-	/* Take the iio_dev status lock */
++	/* Take adis txrx_lock to protect sensor state */
+ 	mutex_lock(&st->txrx_lock);
+ 	ret =  adis16240_spi_read_signed(dev, attr, buf, 12);
+ 	mutex_unlock(&st->txrx_lock);
+-- 
+2.9.3
 
-> But this lock can probably be removed. It should be safe to run the 
-> function 
-> multiple times in parallel. 
->
-> Same for the other changes in this patch. 
->
-   
-   Then should I remove all the locks in this file?
-    
-   Thanks,
-   Varsha
-
-------=_Part_9833_855109335.1489415981517
-Content-Type: text/html; charset=utf-8
-Content-Transfer-Encoding: quoted-printable
-
-<br><blockquote class=3D"gmail_quote" style=3D"margin: 0;margin-left: 0.8ex=
-;border-left: 1px #ccc solid;padding-left: 1ex;">&gt; +++ b/drivers/staging=
-/iio/accel/<wbr>adis16240.c
-<br>&gt; @@ -229,11 +229,12 @@ static ssize_t adis16240_read_12bit_signed(<=
-wbr>struct device *dev,
-<br>&gt; =C2=A0{
-<br>&gt; =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0ssize_t ret;
-<br>&gt; =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct iio_d=
-ev *indio_dev =3D dev_to_iio_dev(dev);
-<br>&gt; +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0struct adis *st =
-=3D iio_priv(indio_dev);
-<br>&gt; =C2=A0
-<br>&gt; =C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0/* Take the =
-iio_dev status lock */
-<br>&gt; -=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mutex_lock(&amp;i=
-ndio_<wbr>dev-&gt;mlock);
-<br>&gt; +=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0=C2=A0mutex_lock(&amp;s=
-t-&gt;txrx_<wbr>lock);
-<br>
-<br>This unfortunately wont work. The adis_read_reg()/adis_write_<wbr>reg()=
- functions
-<br>take the txrx_lock. So this change causes a deadlock, trying to take a =
-lock
-<br>that is already locked.
-<br>
-<br></blockquote><div>=C2=A0=C2=A0 Yes, it would cause deadlock. Can the lo=
-ck be placed within the <br>=C2=A0=C2=A0 adis_read_reg() function and remov=
-ing locks from other place?<br>=C2=A0</div><blockquote class=3D"gmail_quote=
-" style=3D"margin: 0;margin-left: 0.8ex;border-left: 1px #ccc solid;padding=
--left: 1ex;">But this lock can probably be removed. It should be safe to ru=
-n the function
-<br>multiple times in parallel.
-<br>
-<br>Same for the other changes in this patch.
-<br></blockquote><div>=C2=A0=C2=A0 <br>=C2=A0=C2=A0 Then should I remove al=
-l the locks in this file?<br>=C2=A0=C2=A0=C2=A0 <br>=C2=A0=C2=A0 Thanks,<br=
->=C2=A0=C2=A0 Varsha<br></div>
-------=_Part_9833_855109335.1489415981517--
-
-------=_Part_9832_29465237.1489415981517--
