@@ -1,83 +1,100 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48221 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752799AbdCMVOU (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 17:14:20 -0400
-Subject: Re: [PATCH] staging: iio: ad7192: Replace mlock with private driver
- lock
-To: sayli karnik <karniksayli1995@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
-References: <20170313104307.GA12480@sayli-HP-15-Notebook-PC>
- <a81ede74-f294-7ccc-5e0d-431eae058128@metafoo.de>
- <CAKG5xWg7-wifwSp3j-PmS20puo=BkOYrs0i3J9o2YFSsL2h=_g@mail.gmail.com>
-Cc: outreachy-kernel <outreachy-kernel@googlegroups.com>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <cb686d86-b73c-55b7-3607-268b3b91f9f1@kernel.org>
-Date: Mon, 13 Mar 2017 21:14:17 +0000
-MIME-Version: 1.0
-In-Reply-To: <CAKG5xWg7-wifwSp3j-PmS20puo=BkOYrs0i3J9o2YFSsL2h=_g@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:34236 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751956AbdCMLL5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 07:11:57 -0400
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: jic23@kernel.org, linux-iio@vger.kernel.org
+Cc: knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        dmitry.torokhov@gmail.com, michael.hennerich@analog.com,
+        daniel.baluta@gmail.com, amsfield22@gmail.com,
+        florian.vaussard@heig-vd.ch, linux-kernel@vger.kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com,
+        devicetree@vger.kernel.org, Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH 0/4] iio: accel: adxl345: Add support for buffered readings
+Date: Mon, 13 Mar 2017 19:11:33 +0800
+Message-Id: <1489403497-27849-1-git-send-email-eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 13/03/17 14:12, sayli karnik wrote:
-> On Mon, Mar 13, 2017 at 5:22 PM, Lars-Peter Clausen <lars@metafoo.de> wrote:
->> On 03/13/2017 11:43 AM, sayli karnik wrote:
->>> indio_dev->mlock should be used by the IIO core only for protecting
->>> device operating mode changes. ie. Changes between INDIO_DIRECT_MODE,
->>> INDIO_BUFFER_* modes.
->>> Replace mlock with a lock in the device's global data to protect
->>> hardware state changes.
->>>
->>> Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
->>> ---
->>>  drivers/staging/iio/adc/ad7192.c | 5 +++--
->>>  1 file changed, 3 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/adc/ad7192.c b/drivers/staging/iio/adc/ad7192.c
->>> index 4fc8588..bed48e7 100644
->>> --- a/drivers/staging/iio/adc/ad7192.c
->>> +++ b/drivers/staging/iio/adc/ad7192.c
->>> @@ -162,6 +162,7 @@ struct ad7192_state {
->>>       u32                             scale_avail[8][2];
->>>       u8                              gpocon;
->>>       u8                              devid;
->>> +     struct mutex                    lock;   /* protect sensor state */
->>>
->>>       struct ad_sigma_delta           sd;
->>>  };
->>> @@ -463,10 +464,10 @@ static int ad7192_read_raw(struct iio_dev *indio_dev,
->>>       case IIO_CHAN_INFO_SCALE:
->>>               switch (chan->type) {
->>>               case IIO_VOLTAGE:
->>> -                     mutex_lock(&indio_dev->mlock);
->>> +                     mutex_lock(&st->lock);
->>>                       *val = st->scale_avail[AD7192_CONF_GAIN(st->conf)][0];
->>>                       *val2 = st->scale_avail[AD7192_CONF_GAIN(st->conf)][1];
->>> -                     mutex_unlock(&indio_dev->mlock);
->>> +                     mutex_unlock(&st->lock);
->>
->> Sorry, but this does not make too much sense. If this is the only place
->> where the lock is used there isn't really any mutual exclusion going on
->> since it doesn't prevent any other code from running concurrently.
->>
->> The purpose of taking the lock here is that st->conf is in a consistent
->> state and is not in the process of being changed.
->>
-> So you mean indio_dev->mlock is good to go here?
-Not as such.  Issue here is the current locking is ineffective.  It's buggy!
-So you want to take what Lars has said and think about how to fix it.
+Introduce the DATA_READY trigger and enable triggered buffering. Additional
+changes include introduction of functions set_mode, drdy and get_triple,
+allow either INT1/INT2 pin be used by specifying interrupt-names.
 
-Jonathan
-> 
->>>                       return IIO_VAL_INT_PLUS_NANO;
->>>               case IIO_TEMP:
->>>                       *val = 0;
->>>
->>
+Triggered buffer was tested on both DATA_READY trigger and the hrtimer software
+trigger.
+
+~ # ls /sys/bus/iio/devices/
+iio:device0  trigger0     trigger1
+~ # ls /config/iio/triggers/hrtimer/
+t1
+~ # cat /sys/bus/iio/devices/trigger0/name
+t1
+~ # cat /sys/bus/iio/devices/trigger1/name
+adxl345-dev0
+~ # iio_generic_buffer -n adxl345 -t t1 -c 10 -l 20 -a
+iio device number being used is 0
+iio trigger number being used is 0
+Enabling all channels
+Enabling: in_accel_y_en
+Enabling: in_accel_x_en
+Enabling: in_timestamp_en
+Enabling: in_accel_z_en
+/sys/bus/iio/devices/iio:device0 t1
+0.421300 1.034100 9.613300 1489394979215985178 
+0.421300 0.995800 9.230300 1489394979226027141 
+0.421300 1.034100 9.575000 1489394979236031983 
+0.383000 1.072400 9.575000 1489394979245992337 
+0.421300 1.072400 9.575000 1489394979256031062 
+0.383000 1.110700 9.498400 1489394979266012473 
+0.421300 1.072400 9.460100 1489394979276021743 
+0.421300 1.034100 9.575000 1489394979286025189 
+0.383000 1.072400 9.536700 1489394979295988380 
+0.421300 1.072400 9.613300 1489394979306036861 
+Disabling: in_accel_y_en
+Disabling: in_accel_x_en
+Disabling: in_timestamp_en
+Disabling: in_accel_z_en
+~ # iio_generic_buffer -n adxl345 -t adxl345-dev0 -c 10 -l 20 -a
+iio device number being used is 0
+iio trigger number being used is 1
+Enabling all channels
+Enabling: in_accel_y_en
+Enabling: in_accel_x_en
+Enabling: in_timestamp_en
+Enabling: in_accel_z_en
+/sys/bus/iio/devices/iio:device0 adxl345-dev0
+0.383000 1.072400 9.575000 1489395043824672808 
+0.459600 1.072400 9.575000 1489395043864264458 
+0.421300 0.995800 9.575000 1489395043883851974 
+0.383000 1.072400 9.536700 1489395043905000622 
+0.459600 1.034100 9.575000 1489395043929645868 
+0.421300 1.072400 9.498400 1489395043946881648 
+0.459600 1.034100 9.613300 1489395043967234777 
+0.459600 1.034100 9.575000 1489395043987596905 
+0.383000 1.034100 9.613300 1489395044005969376 
+0.383000 1.110700 9.575000 1489395044026535007 
+Disabling: in_accel_y_en
+Disabling: in_accel_x_en
+Disabling: in_timestamp_en
+Disabling: in_accel_z_en
+~ # 
+
+Eva Rachel Retuya (4):
+  dt-bindings: iio: accel: adxl345: Add optional interrupt-names support
+  iio: accel: adxl345_core: Introduce set_mode, drdy & get_triple
+    functions
+  iio: accel: adxl345: Setup DATA_READY trigger
+  iio: accel: adxl345: Add support for triggered buffer
+
+ .../devicetree/bindings/iio/accel/adxl345.txt      |   4 +
+ drivers/iio/accel/Kconfig                          |   2 +
+ drivers/iio/accel/adxl345.h                        |   4 +-
+ drivers/iio/accel/adxl345_core.c                   | 313 +++++++++++++++++++--
+ drivers/iio/accel/adxl345_i2c.c                    |  14 +-
+ drivers/iio/accel/adxl345_spi.c                    |  10 +-
+ 6 files changed, 321 insertions(+), 26 deletions(-)
+
+-- 
+2.7.4
 
