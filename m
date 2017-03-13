@@ -1,20 +1,21 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f67.google.com ([74.125.83.67]:35960 "EHLO
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:35231 "EHLO
         mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751612AbdCMPgT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 11:36:19 -0400
-Date: Mon, 13 Mar 2017 21:08:11 +0530
+        with ESMTP id S1752615AbdCMQ25 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 12:28:57 -0400
+Date: Mon, 13 Mar 2017 22:01:07 +0530
 From: simran singhal <singhalsimran0@gmail.com>
 To: lars@metafoo.de
-Cc: Michael.Hennerich@analog.com, jic23@kernel.org,
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Pete Meerwald-Stadler <pmeerw@pmeerw.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
-Subject: [PATCH v2] staging: adis16060_core: Use private driver lock instead
- of mlock
-Message-ID: <20170313153811.GA11378@singhal-Inspiron-5558>
+Subject: [PATCH v2] staging: iio: ade7753: replace mlock with driver private
+ lock
+Message-ID: <20170313163107.GA31496@singhal-Inspiron-5558>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
@@ -27,65 +28,54 @@ ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 In this driver, mlock was being used to protect hardware state
 changes.  Replace it with a lock in the devices global data.
 
+Fix some coding style issues related to white space also.
+
 Signed-off-by: simran singhal <singhalsimran0@gmail.com>
 ---
- 
+
  v2:
-   -Fixed compilation error
+   -Removed new lock to reuse the existing lock
 
- drivers/staging/iio/gyro/adis16060_core.c | 9 ++++++---
- 1 file changed, 6 insertions(+), 3 deletions(-)
+ drivers/staging/iio/meter/ade7753.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-diff --git a/drivers/staging/iio/gyro/adis16060_core.c b/drivers/staging/iio/gyro/adis16060_core.c
-index c9d46e7..0f1bc8a 100644
---- a/drivers/staging/iio/gyro/adis16060_core.c
-+++ b/drivers/staging/iio/gyro/adis16060_core.c
-@@ -29,11 +29,13 @@
-  * @us_r:		actual spi_device to read back data
-  * @buf:		transmit or receive buffer
-  * @buf_lock:		mutex to protect tx and rx
-+ * @lock:		protect sensor state
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index dfd8b71..d88eaa3 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -83,10 +83,10 @@
+  * @buf_lock:       mutex to protect tx and rx
   **/
- struct adis16060_state {
- 	struct spi_device		*us_w;
- 	struct spi_device		*us_r;
- 	struct mutex			buf_lock;
-+	struct mutex			lock;	 /* protect sensor state */
- 
- 	u8 buf[3] ____cacheline_aligned;
+ struct ade7753_state {
+-	    struct spi_device   *us;
+-		    struct mutex        buf_lock;
+-			    u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
+-				    u8          rx[ADE7753_MAX_RX];
++	struct spi_device   *us;
++	struct mutex        buf_lock;
++	u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
++	u8          rx[ADE7753_MAX_RX];
  };
-@@ -83,11 +85,12 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
- {
- 	u16 tval = 0;
- 	int ret;
-+	struct adis16060_state *st = iio_priv(indio_dev);
  
- 	switch (mask) {
- 	case IIO_CHAN_INFO_RAW:
- 		/* Take the iio_dev status lock */
--		mutex_lock(&indio_dev->mlock);
-+		mutex_lock(&st->lock);
- 		ret = adis16060_spi_write(indio_dev, chan->address);
- 		if (ret < 0)
- 			goto out_unlock;
-@@ -96,7 +99,7 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
- 		if (ret < 0)
- 			goto out_unlock;
+ static int ade7753_spi_write_reg_8(struct device *dev,
+@@ -484,7 +484,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
+ 	if (!val)
+ 		return -EINVAL;
  
--		mutex_unlock(&indio_dev->mlock);
-+		mutex_unlock(&st->lock);
- 		*val = tval;
- 		return IIO_VAL_INT;
- 	case IIO_CHAN_INFO_OFFSET:
-@@ -112,7 +115,7 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
- 	return -EINVAL;
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->buf_lock);
  
- out_unlock:
+ 	t = 27900 / val;
+ 	if (t > 0)
+@@ -505,7 +505,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
+ 	ret = ade7753_spi_write_reg_16(dev, ADE7753_MODE, reg);
+ 
+ out:
 -	mutex_unlock(&indio_dev->mlock);
-+	mutex_unlock(&st->lock);
- 	return ret;
- }
++	mutex_unlock(&st->buf_lock);
  
+ 	return ret ? ret : len;
+ }
 -- 
 2.7.4
 
