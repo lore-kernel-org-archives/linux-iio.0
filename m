@@ -1,53 +1,38 @@
-Return-Path: <SRS0=+A5L=2W=gmail.com=karniksayli1995@kernel.org>
-Date: Mon, 13 Mar 2017 13:12:10 +0530
-From: sayli karnik <karniksayli1995@gmail.com>
-To: outreachy-kernel@googlegroups.com
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-	Michael Hennerich <Michael.Hennerich@analog.com>,
-	Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>,
-	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-	linux-iio@vger.kernel.org
-Subject: [PATCH v3 2/2] staging: iio: ad9834: Remove unnecessary goto
- statement
-Message-ID: <50b408330bbebaf55bcbf5ad163e24452475764f.1489389770.git.karniksayli1995@gmail.com>
-References: <cover.1489389769.git.karniksayli1995@gmail.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:35791 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750978AbdCMJX7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 05:23:59 -0400
+Received: by mail-pg0-f66.google.com with SMTP id g2so13027264pge.2
+        for <linux-iio@vger.kernel.org>; Mon, 13 Mar 2017 02:23:53 -0700 (PDT)
+Message-ID: <58c66523.d638620a.5414c.30b9@mx.google.com>
+Date: Mon, 13 Mar 2017 14:53:35 +0530
+From: Varsha Rao <rvarsha016@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Barry Song <21cnbao@gmail.com>
+Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
+Subject: [PATCH 0/2] staging: iio: adis16240: Replace mlock with private lock
+ and modify comment.
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <cover.1489389769.git.karniksayli1995@gmail.com>
-List-ID: <linux-iio@vger.kernel.org>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-The patch removes unnecessary use of goto statement.
+This patchset replaces mlock with private lock and modifies existing
+comment in iio driver.
 
-Signed-off-by: sayli karnik <karniksayli1995@gmail.com>
----
-v3:
-Uncompressed return logic to avoid calling the function twice
+Varsha Rao (2):
+  staging: iio: adis16240: Replace mlock with driver private lock.
+  staging: iio: adis16240: Modify existing comment.
 
- drivers/staging/iio/frequency/ad9834.c | 3 +--
- 1 file changed, 1 insertion(+), 2 deletions(-)
+ drivers/staging/iio/accel/adis16240.c | 19 ++++++++++---------
+ 1 file changed, 10 insertions(+), 9 deletions(-)
 
-diff --git a/drivers/staging/iio/frequency/ad9834.c b/drivers/staging/iio/frequency/ad9834.c
-index 60461a6..e18e0f2 100644
---- a/drivers/staging/iio/frequency/ad9834.c
-+++ b/drivers/staging/iio/frequency/ad9834.c
-@@ -149,7 +149,7 @@ static ssize_t ad9834_write(struct device *dev,
- 
- 	ret = kstrtoul(buf, 10, &val);
- 	if (ret)
--		goto error_ret;
-+		return ret;
- 
- 	mutex_lock(&st->lock);
- 	switch ((u32)this_attr->address) {
-@@ -211,7 +211,6 @@ static ssize_t ad9834_write(struct device *dev,
- 	}
- 	mutex_unlock(&st->lock);
- 
--error_ret:
- 	return ret ? ret : len;
- }
- 
 -- 
-2.7.4
+2.9.3
+
