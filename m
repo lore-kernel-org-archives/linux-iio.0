@@ -1,21 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37094
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37101
         "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1753717AbdCMUAI (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:00:08 -0400
+        with ESMTP id S1753661AbdCMUAG (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 16:00:06 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
         linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
-        Sanchayan Maity <maitysanchayan@gmail.com>,
+        Marek Vasut <marex@denx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Amitoj Kaur Chawla <amitoj1606@gmail.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: [PATCH 06/17] iio: light: tsl2563: Add OF device ID table
-Date: Mon, 13 Mar 2017 16:59:06 -0300
-Message-Id: <20170313195917.12190-7-javier@osg.samsung.com>
+Subject: [PATCH 07/17] iio: pressure: hp03: Add OF device ID table
+Date: Mon, 13 Mar 2017 16:59:07 -0300
+Message-Id: <20170313195917.12190-8-javier@osg.samsung.com>
 In-Reply-To: <20170313195917.12190-1-javier@osg.samsung.com>
 References: <20170313195917.12190-1-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -32,33 +30,30 @@ OF device ID table if the devices are registered via OF.
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 ---
 
- drivers/iio/light/tsl2563.c | 10 ++++++++++
- 1 file changed, 10 insertions(+)
+ drivers/iio/pressure/hp03.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/light/tsl2563.c b/drivers/iio/light/tsl2563.c
-index 04598ae993d4..9e5cd09a329f 100644
---- a/drivers/iio/light/tsl2563.c
-+++ b/drivers/iio/light/tsl2563.c
-@@ -884,9 +884,19 @@ static const struct i2c_device_id tsl2563_id[] = {
+diff --git a/drivers/iio/pressure/hp03.c b/drivers/iio/pressure/hp03.c
+index ac76515d5d49..0f3824cf1278 100644
+--- a/drivers/iio/pressure/hp03.c
++++ b/drivers/iio/pressure/hp03.c
+@@ -297,9 +297,16 @@ static const struct i2c_device_id hp03_id[] = {
  };
- MODULE_DEVICE_TABLE(i2c, tsl2563_id);
+ MODULE_DEVICE_TABLE(i2c, hp03_id);
  
-+static const struct of_device_id tsl2563_of_match[] = {
-+	{ .compatible = "amstaos,tsl2560" },
-+	{ .compatible = "amstaos,tsl2561" },
-+	{ .compatible = "amstaos,tsl2562" },
-+	{ .compatible = "amstaos,tsl2563" },
-+	{}
++static const struct of_device_id hp03_of_match[] = {
++	{ .compatible = "hoperf,hp03" },
++	{ },
 +};
-+MODULE_DEVICE_TABLE(of, tsl2563_of_match);
++MODULE_DEVICE_TABLE(of, hp03_of_match);
 +
- static struct i2c_driver tsl2563_i2c_driver = {
+ static struct i2c_driver hp03_driver = {
  	.driver = {
- 		.name	 = "tsl2563",
-+		.of_match_table = of_match_ptr(tsl2563_of_match),
- 		.pm	= TSL2563_PM_OPS,
+ 		.name	= "hp03",
++		.of_match_table = of_match_ptr(hp03_of_match),
  	},
- 	.probe		= tsl2563_probe,
+ 	.probe		= hp03_probe,
+ 	.remove		= hp03_remove,
 -- 
 2.9.3
 
