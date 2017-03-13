@@ -1,21 +1,19 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37033
+Received: from ec2-52-27-115-49.us-west-2.compute.amazonaws.com ([52.27.115.49]:37048
         "EHLO osg.samsung.com" rhost-flags-OK-OK-OK-FAIL) by vger.kernel.org
-        with ESMTP id S1752664AbdCMT7q (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 15:59:46 -0400
+        with ESMTP id S1753090AbdCMT7s (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 13 Mar 2017 15:59:48 -0400
 From: Javier Martinez Canillas <javier@osg.samsung.com>
 To: linux-kernel@vger.kernel.org
 Cc: Javier Martinez Canillas <javier@osg.samsung.com>,
         linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Gregor Boirie <gregor.boirie@parrot.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Alison Schofield <amsfield22@gmail.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Marc Titinger <mtitinger@baylibre.com>
-Subject: [PATCH 01/17] iio: adc: ina2xx: Add OF device ID table
-Date: Mon, 13 Mar 2017 16:59:01 -0300
-Message-Id: <20170313195917.12190-2-javier@osg.samsung.com>
+        Crt Mori <cmo@melexis.com>
+Subject: [PATCH 02/17] iio: mlx96014: Add OF device ID table
+Date: Mon, 13 Mar 2017 16:59:02 -0300
+Message-Id: <20170313195917.12190-3-javier@osg.samsung.com>
 In-Reply-To: <20170313195917.12190-1-javier@osg.samsung.com>
 References: <20170313195917.12190-1-javier@osg.samsung.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -32,78 +30,34 @@ OF device ID table if the devices are registered via OF.
 Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
 ---
 
- drivers/iio/adc/ina2xx-adc.c | 34 +++++++++++++++++++++++++++++++++-
- 1 file changed, 33 insertions(+), 1 deletion(-)
+ drivers/iio/temperature/mlx90614.c | 7 +++++++
+ 1 file changed, 7 insertions(+)
 
-diff --git a/drivers/iio/adc/ina2xx-adc.c b/drivers/iio/adc/ina2xx-adc.c
-index 3263231276ca..9affc8e95f1d 100644
---- a/drivers/iio/adc/ina2xx-adc.c
-+++ b/drivers/iio/adc/ina2xx-adc.c
-@@ -28,6 +28,7 @@
- #include <linux/iio/sysfs.h>
- #include <linux/kthread.h>
- #include <linux/module.h>
-+#include <linux/of_device.h>
- #include <linux/regmap.h>
- #include <linux/util_macros.h>
- 
-@@ -635,6 +636,7 @@ static int ina2xx_probe(struct i2c_client *client,
- 	struct iio_dev *indio_dev;
- 	struct iio_buffer *buffer;
- 	unsigned int val;
-+	enum ina2xx_ids type;
- 	int ret;
- 
- 	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*chip));
-@@ -652,7 +654,11 @@ static int ina2xx_probe(struct i2c_client *client,
- 		return PTR_ERR(chip->regmap);
- 	}
- 
--	chip->config = &ina2xx_config[id->driver_data];
-+	if (client->dev.of_node)
-+		type = (enum ina2xx_ids)of_device_get_match_data(&client->dev);
-+	else
-+		type = id->driver_data;
-+	chip->config = &ina2xx_config[type];
- 
- 	mutex_init(&chip->state_lock);
- 
-@@ -726,9 +732,35 @@ static const struct i2c_device_id ina2xx_id[] = {
+diff --git a/drivers/iio/temperature/mlx90614.c b/drivers/iio/temperature/mlx90614.c
+index 4b645fc672aa..c82d49b85cdc 100644
+--- a/drivers/iio/temperature/mlx90614.c
++++ b/drivers/iio/temperature/mlx90614.c
+@@ -585,6 +585,12 @@ static const struct i2c_device_id mlx90614_id[] = {
  };
- MODULE_DEVICE_TABLE(i2c, ina2xx_id);
+ MODULE_DEVICE_TABLE(i2c, mlx90614_id);
  
-+static const struct of_device_id ina2xx_of_match[] = {
-+	{
-+		.compatible = "ti,ina219",
-+		.data = (void *)ina219
-+	},
-+	{
-+		.compatible = "ti,ina220",
-+		.data = (void *)ina219
-+	},
-+	{
-+		.compatible = "ti,ina226",
-+		.data = (void *)ina226
-+	},
-+	{
-+		.compatible = "ti,ina230",
-+		.data = (void *)ina226
-+	},
-+	{
-+		.compatible = "ti,ina231",
-+		.data = (void *)ina226
-+	},
-+	{},
++static const struct of_device_id mlx90614_of_match[] = {
++	{ .compatible = "melexis,mlx90614" },
++	{ }
 +};
-+MODULE_DEVICE_TABLE(of, ina2xx_of_match);
++MODULE_DEVICE_TABLE(of, mlx90614_of_match);
 +
- static struct i2c_driver ina2xx_driver = {
+ #ifdef CONFIG_PM_SLEEP
+ static int mlx90614_pm_suspend(struct device *dev)
+ {
+@@ -644,6 +650,7 @@ static const struct dev_pm_ops mlx90614_pm_ops = {
+ static struct i2c_driver mlx90614_driver = {
  	.driver = {
- 		   .name = KBUILD_MODNAME,
-+		   .of_match_table = of_match_ptr(ina2xx_of_match),
+ 		.name	= "mlx90614",
++		.of_match_table = of_match_ptr(mlx90614_of_match),
+ 		.pm	= &mlx90614_pm_ops,
  	},
- 	.probe = ina2xx_probe,
- 	.remove = ina2xx_remove,
+ 	.probe = mlx90614_probe,
 -- 
 2.9.3
 
