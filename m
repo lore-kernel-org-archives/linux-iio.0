@@ -1,59 +1,33 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:58204 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751277AbdCOWFV (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Mar 2017 18:05:21 -0400
-Subject: Re: [PATCH v2] Staging: iio: cdc: ad7152.c, use octal permissions
- instead of symbolic
-To: Miguel Robles <miguel.robles@farole.net>,
-        gregkh@linuxfoundation.org
-References: <1489509221-12547-1-git-send-email-miguel.robles@farole.net>
-Cc: linux-iio@vger.kernel.org, kernel-janitors@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <870c4b6a-3de0-5c6d-b617-cd52b039f62b@kernel.org>
-Date: Wed, 15 Mar 2017 22:04:22 +0000
-MIME-Version: 1.0
-In-Reply-To: <1489509221-12547-1-git-send-email-miguel.robles@farole.net>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=XBWy=2X=gmail.com=lorenzo.bianconi83@kernel.org>
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	lorenzo.bianconi@st.com
+Subject: [PATCH] iio: imu: st_lsm6dsx: fix FIFO_CTRL2 overwrite during watermark configuration
+Date: Tue, 14 Mar 2017 22:05:20 +0100
+Message-Id: <20170314210520.28665-1-lorenzo.bianconi@st.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On 14/03/17 16:33, Miguel Robles wrote:
-> Fix checkpatch warnings:
-> Symbolic permissions are not preferred. Consider using octal permissions.
-> 
-> Signed-off-by: Miguel Robles <miguel.robles@farole.net>
-> ---
-> Changes in v2:
-> - Remove "[Patch]" from the subject.
-While true, probably not worth the repost!
+Fixes: 290a6ce11d93 (iio: imu: add support to lsm6dsx driver)
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
-Jonathan
-> 
->  drivers/staging/iio/cdc/ad7152.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/cdc/ad7152.c b/drivers/staging/iio/cdc/ad7152.c
-> index e8609b8..dd0c24c 100644
-> --- a/drivers/staging/iio/cdc/ad7152.c
-> +++ b/drivers/staging/iio/cdc/ad7152.c
-> @@ -155,13 +155,13 @@ static ssize_t ad7152_start_gain_calib(struct device *dev,
->  }
->  
->  static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
-> -		       S_IWUSR, NULL, ad7152_start_offset_calib, 0);
-> +		       0200, NULL, ad7152_start_offset_calib, 0);
->  static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
-> -		       S_IWUSR, NULL, ad7152_start_offset_calib, 1);
-> +		       0200, NULL, ad7152_start_offset_calib, 1);
->  static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
-> -		       S_IWUSR, NULL, ad7152_start_gain_calib, 0);
-> +		       0200, NULL, ad7152_start_gain_calib, 0);
->  static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
-> -		       S_IWUSR, NULL, ad7152_start_gain_calib, 1);
-> +		       0200, NULL, ad7152_start_gain_calib, 1);
->  
->  /* Values are Update Rate (Hz), Conversion Time (ms) + 1*/
->  static const unsigned char ad7152_filter_rate_table[][2] = {
-> 
-
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+index e71ecce..e959825 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_buffer.c
+@@ -194,8 +194,8 @@ int st_lsm6dsx_update_watermark(struct st_lsm6dsx_sensor *sensor, u16 watermark)
+ 	if (err < 0)
+ 		goto out;
+ 
+-	fifo_watermark = ((data & ~ST_LSM6DSX_FIFO_TH_MASK) << 8) |
+-			  (fifo_watermark & ST_LSM6DSX_FIFO_TH_MASK);
++	fifo_watermark = ((data << 8) & ~ST_LSM6DSX_FIFO_TH_MASK) |
++			 (fifo_watermark & ST_LSM6DSX_FIFO_TH_MASK);
+ 
+ 	wdata = cpu_to_le16(fifo_watermark);
+ 	err = hw->tf->write(hw->dev, ST_LSM6DSX_REG_FIFO_THL_ADDR,
+-- 
+2.9.3
