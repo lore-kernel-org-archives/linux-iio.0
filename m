@@ -1,167 +1,52 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:60053 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752402AbdCEMUl (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 5 Mar 2017 07:20:41 -0500
-Subject: Re: [PATCH v3 2/6] iio: trigger: add OF support
-To: Fabrice Gasnier <fabrice.gasnier@st.com>, linux@armlinux.org.uk,
-        robh+dt@kernel.org, linux-arm-kernel@lists.infradead.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org
-References: <1488300679-3259-1-git-send-email-fabrice.gasnier@st.com>
- <1488300679-3259-3-git-send-email-fabrice.gasnier@st.com>
-Cc: linux-iio@vger.kernel.org, mark.rutland@arm.com,
-        mcoquelin.stm32@gmail.com, alexandre.torgue@st.com,
-        lars@metafoo.de, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        benjamin.gaignard@linaro.org, benjamin.gaignard@st.com,
-        linus.walleij@linaro.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4584aa2d-8cab-9708-4cfa-a1f1ed4f02b8@kernel.org>
-Date: Sun, 5 Mar 2017 12:11:20 +0000
+Received: from mail-io0-f169.google.com ([209.85.223.169]:32939 "EHLO
+        mail-io0-f169.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750949AbdCNPW5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 14 Mar 2017 11:22:57 -0400
+Received: by mail-io0-f169.google.com with SMTP id f84so1605701ioj.0
+        for <linux-iio@vger.kernel.org>; Tue, 14 Mar 2017 08:22:56 -0700 (PDT)
 MIME-Version: 1.0
 In-Reply-To: <1488300679-3259-3-git-send-email-fabrice.gasnier@st.com>
-Content-Type: text/plain; charset=windows-1252
+References: <1488300679-3259-1-git-send-email-fabrice.gasnier@st.com> <1488300679-3259-3-git-send-email-fabrice.gasnier@st.com>
+From: Linus Walleij <linus.walleij@linaro.org>
+Date: Tue, 14 Mar 2017 16:22:54 +0100
+Message-ID: <CACRpkdY9Xh8+Fe61ZQf6pa_ptNVaXj7DeTgtat4ZRNs3qzyGVA@mail.gmail.com>
+Subject: Re: [PATCH v3 2/6] iio: trigger: add OF support
+To: Fabrice Gasnier <fabrice.gasnier@st.com>
+Cc: Jonathan Cameron <jic23@kernel.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Rob Herring <robh+dt@kernel.org>,
+        "linux-arm-kernel@lists.infradead.org"
+        <linux-arm-kernel@lists.infradead.org>,
+        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre TORGUE <alexandre.torgue@st.com>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald <pmeerw@pmeerw.net>,
+        Benjamin Gaignard <benjamin.gaignard@linaro.org>,
+        Benjamin Gaignard <benjamin.gaignard@st.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/02/17 16:51, Fabrice Gasnier wrote:
+On Tue, Feb 28, 2017 at 5:51 PM, Fabrice Gasnier <fabrice.gasnier@st.com> wrote:
+
 > Provide OF support. Device drivers can get IIO triggers from dt.
 > Introduce IIO trigger specifiers, so there are:
 > - IIO trigger providers, e.g. dt nodes designated with
 >   #io-trigger-cells=<num of cells>
 > - IIO trigger consumers, e.g. phandles listed in io-triggers = <...>.
 >   Those can be identified by names by using 'io-trigger-names'.
-> 
+>
 > Signed-off-by: Fabrice Gasnier <fabrice.gasnier@st.com>
-Subject to binding discussion this looks fine to me.
 
-Jonathan
-> ---
->  drivers/iio/industrialio-trigger.c | 100 +++++++++++++++++++++++++++++++++++++
->  include/linux/iio/trigger.h        |   4 ++
->  2 files changed, 104 insertions(+)
-> 
-> diff --git a/drivers/iio/industrialio-trigger.c b/drivers/iio/industrialio-trigger.c
-> index 978e1592..00ee3a7 100644
-> --- a/drivers/iio/industrialio-trigger.c
-> +++ b/drivers/iio/industrialio-trigger.c
-> @@ -768,3 +768,103 @@ int iio_triggered_buffer_predisable(struct iio_dev *indio_dev)
->  					     indio_dev->pollfunc);
->  }
->  EXPORT_SYMBOL(iio_triggered_buffer_predisable);
-> +
-> +#ifdef CONFIG_OF
-> +static int iio_trig_node_match(struct device *dev, void *data)
-> +{
-> +	return dev->of_node == data && dev->type == &iio_trig_type;
-> +}
-> +
-> +static struct iio_trigger *__of_iio_trig_get(struct device_node *np, int index)
-> +{
-> +	struct of_phandle_args trigspec;
-> +	struct device *dev;
-> +	int err;
-> +
-> +	err = of_parse_phandle_with_args(np, "io-triggers",
-> +					 "#io-trigger-cells",
-> +					 index, &trigspec);
-> +	if (err)
-> +		return ERR_PTR(err);
-> +
-> +	dev = bus_find_device(&iio_bus_type, NULL, trigspec.np,
-> +			      iio_trig_node_match);
-> +	of_node_put(trigspec.np);
-> +	if (!dev)
-> +		return ERR_PTR(-EPROBE_DEFER);
-> +
-> +	return to_iio_trigger(dev);
-> +}
-> +
-> +static struct iio_trigger *__of_iio_trig_get_by_name(struct device_node *np,
-> +						     const char *name)
-> +{
-> +	struct iio_trigger *trig;
-> +	int index = 0;
-> +
-> +	if (!np)
-> +		return ERR_PTR(-EINVAL);
-> +	if (name)
-> +		index = of_property_match_string(np, "io-trigger-names", name);
-> +	if (index < 0)
-> +		return ERR_PTR(index);
-> +	trig = __of_iio_trig_get(np, index);
-> +	if (!IS_ERR(trig) || PTR_ERR(trig) == -EPROBE_DEFER)
-> +		return trig;
-> +
-> +	if (name && index >= 0)
-> +		pr_err("ERROR: could not get IIO trigger %s:%s(%i)\n",
-> +		       np->full_name, name ? name : "", index);
-> +
-> +	return ERR_PTR(-ENOENT);
-> +}
-> +#else /* CONFIG_OF */
-> +static inline struct iio_trigger *
-> +__of_iio_trig_get_by_name(struct device_node *np, const char *name)
-> +{
-> +	return ERR_PTR(-ENOENT);
-> +}
-> +#endif
-> +
-> +struct iio_trigger *iio_trigger_get_by_name(struct device *dev,
-> +					    const char *name)
-> +{
-> +	struct iio_trigger *trig;
-> +
-> +	if (!dev)
-> +		return ERR_PTR(-EINVAL);
-> +
-> +	trig = __of_iio_trig_get_by_name(dev->of_node, name);
-> +	if (!IS_ERR(trig))
-> +		return iio_trigger_get(trig);
-> +
-> +	return trig;
-> +}
-> +EXPORT_SYMBOL_GPL(iio_trigger_get_by_name);
-> +
-> +static void devm_iio_trigger_put(struct device *dev, void *res)
-> +{
-> +	iio_trigger_put(*(struct iio_trigger **)res);
-> +}
-> +
-> +struct iio_trigger *devm_iio_trigger_get_by_name(struct device *dev,
-> +						 const char *name)
-> +{
-> +	struct iio_trigger **ptr, *trig;
-> +
-> +	ptr = devres_alloc(devm_iio_trigger_put, sizeof(*ptr), GFP_KERNEL);
-> +	if (!ptr)
-> +		return ERR_PTR(-ENOMEM);
-> +
-> +	trig = iio_trigger_get_by_name(dev, name);
-> +	if (IS_ERR(trig)) {
-> +		devres_free(ptr);
-> +		return trig;
-> +	}
-> +
-> +	*ptr = trig;
-> +	devres_add(dev, ptr);
-> +
-> +	return trig;
-> +}
-> +EXPORT_SYMBOL_GPL(devm_iio_trigger_get_by_name);
-> diff --git a/include/linux/iio/trigger.h b/include/linux/iio/trigger.h
-> index ea08302..1f1ec20 100644
-> --- a/include/linux/iio/trigger.h
-> +++ b/include/linux/iio/trigger.h
-> @@ -173,6 +173,10 @@ void devm_iio_trigger_unregister(struct device *dev,
->  int iio_trigger_validate_own_device(struct iio_trigger *trig,
->  				     struct iio_dev *indio_dev);
->  
-> +struct iio_trigger *iio_trigger_get_by_name(struct device *dev,
-> +					    const char *name);
-> +struct iio_trigger *devm_iio_trigger_get_by_name(struct device *dev,
-> +						 const char *name);
->  #else
->  struct iio_trigger;
->  struct iio_trigger_ops;
-> 
+Reviewed-by: Linus Walleij <linus.walleij@linaro.org>
 
+This is very elegant.
+
+Yours,
+Linus Walleij
