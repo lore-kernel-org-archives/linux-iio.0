@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:59462 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1751702AbdCPIDK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 16 Mar 2017 04:03:10 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: cl@rock-chips.com
+Received: from regular1.263xmail.com ([211.150.99.140]:56214 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751962AbdCOKDE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Mar 2017 06:03:04 -0400
+From: <cl@rock-chips.com>
+To: heiko@sntech.de
 Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         andy.yan@rock-chips.com, jay.xu@rock-chips.com,
         matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
@@ -20,49 +20,38 @@ Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
         zhangqing@rock-chips.com, kever.yang@rock-chips.com,
         tony.xie@rock-chips.com, huangtao@rock-chips.com,
-        yhx@rock-chips.com, rocky.hao@rock-chips.com
-Subject: Re: [PATCH v1 1/7] include: dt-bindings: Add pin function index definition for rockchip pinctrl
-Date: Thu, 16 Mar 2017 09:02:47 +0100
-Message-ID: <3841077.a8qRkotiEM@diego>
-In-Reply-To: <1489572237-6649-2-git-send-email-cl@rock-chips.com>
-References: <1489572237-6649-1-git-send-email-cl@rock-chips.com> <1489572237-6649-2-git-send-email-cl@rock-chips.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+        yhx@rock-chips.com, rocky.hao@rock-chips.com,
+        Chen Liang <cl@rock-chips.com>
+Subject: [PATCH v1 2/7] dt-bindings: iio: rockchip-saradc: add support for rk3328
+Date: Wed, 15 Mar 2017 18:03:52 +0800
+Message-Id: <1489572237-6649-3-git-send-email-cl@rock-chips.com>
+In-Reply-To: <1489572237-6649-1-git-send-email-cl@rock-chips.com>
+References: <1489572237-6649-1-git-send-email-cl@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+From: Chen Liang <cl@rock-chips.com>
 
-Am Mittwoch, 15. März 2017, 18:03:51 CET schrieb cl@rock-chips.com:
-> From: Chen Liang <cl@rock-chips.com>
-> 
-> The rk3328 soc need more pin function index for pinctrl.
-> 
-> Signed-off-by: Chen Liang <cl@rock-chips.com>
-> ---
->  include/dt-bindings/pinctrl/rockchip.h | 3 +++
->  1 file changed, 3 insertions(+)
-> 
-> diff --git a/include/dt-bindings/pinctrl/rockchip.h
-> b/include/dt-bindings/pinctrl/rockchip.h index aaec8ba..bc2b6af 100644
-> --- a/include/dt-bindings/pinctrl/rockchip.h
-> +++ b/include/dt-bindings/pinctrl/rockchip.h
-> @@ -63,5 +63,8 @@
->  #define RK_FUNC_2	2
->  #define RK_FUNC_3	3
->  #define RK_FUNC_4	4
-> +#define RK_FUNC_5	5
-> +#define RK_FUNC_6	6
-> +#define RK_FUNC_7	7
+The rk3328 saradc is the same as rk3399.
 
-please don't amend that function list anymore.
+Signed-off-by: Chen Liang <cl@rock-chips.com>
+---
+ Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt | 1 +
+ 1 file changed, 1 insertion(+)
 
-Only RK_FUNC_GPIO serves a real purpose but having constants FUNC_7 mapping 
-simply to 7 does not help understand things better, so it's way easier to just 
-have "7" as function in pinctrl entries in the devicetree.
-
-That list is mainly a remnant to keep compatibility with old devicetrees and I 
-guess I should add a deprecated notice at some point :-) .
+diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+index 205593f..f81bc20 100644
+--- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
++++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
+@@ -5,6 +5,7 @@ Required properties:
+    - "rockchip,saradc": for rk3188, rk3288
+    - "rockchip,rk3066-tsadc": for rk3036
+    - "rockchip,rk3399-saradc": for rk3399
++   - "rockchip,rk3328-saradc", "rockchip,rk3399-saradc": for rk3328
+ 
+ - reg: physical base address of the controller and length of memory mapped
+        region.
+-- 
+1.9.1
 
 
-Heiko
