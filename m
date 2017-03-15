@@ -1,7 +1,7 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:58657 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:58673 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751672AbdCOK4c (ORCPT
+        with ESMTP id S1751866AbdCOK4c (ORCPT
         <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Mar 2017 06:56:32 -0400
 From: Quentin Schulz <quentin.schulz@free-electrons.com>
 To: icenowy@aosc.xyz, bonbons@linux-vserver.org, sre@kernel.org,
@@ -14,22 +14,21 @@ Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
         linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
         linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
-Subject: [PATCH v4 01/18] dt-bindings: power: battery: add constant-charge-current property
-Date: Wed, 15 Mar 2017 11:55:20 +0100
-Message-Id: <20170315105537.22349-2-quentin.schulz@free-electrons.com>
+Subject: [PATCH v4 02/18] power: supply: power_supply_core: add constant-charge-current optional property
+Date: Wed, 15 Mar 2017 11:55:21 +0100
+Message-Id: <20170315105537.22349-3-quentin.schulz@free-electrons.com>
 In-Reply-To: <20170315105537.22349-1-quentin.schulz@free-electrons.com>
 References: <20170315105537.22349-1-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
 This adds the constant-charge-current property to the list of optional
-properties of the battery.
+properties for the battery.
 
 The constant charge current is critical for batteries as they can't
 handle all charge currents.
 
 Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
-Acked-by: Rob Herring <robh@kernel.org>
 ---
 
 v4:
@@ -37,29 +36,43 @@ v4:
 
 added in v3
 
- Documentation/devicetree/bindings/power/supply/battery.txt | 2 ++
- 1 file changed, 2 insertions(+)
+ drivers/power/supply/power_supply_core.c | 3 +++
+ include/linux/power_supply.h             | 1 +
+ 2 files changed, 4 insertions(+)
 
-diff --git a/Documentation/devicetree/bindings/power/supply/battery.txt b/Documentation/devicetree/bindings/power/supply/battery.txt
-index 0278617..9594e1e 100644
---- a/Documentation/devicetree/bindings/power/supply/battery.txt
-+++ b/Documentation/devicetree/bindings/power/supply/battery.txt
-@@ -7,6 +7,7 @@ Optional Properties:
-  - voltage-min-design-microvolt: drained battery voltage
-  - energy-full-design-microwatt-hours: battery design energy
-  - charge-full-design-microamp-hours: battery design capacity
-+ - constant-charge-microamp: battery constant charge current
+diff --git a/drivers/power/supply/power_supply_core.c b/drivers/power/supply/power_supply_core.c
+index ced8fef..5be5615 100644
+--- a/drivers/power/supply/power_supply_core.c
++++ b/drivers/power/supply/power_supply_core.c
+@@ -498,6 +498,7 @@ int power_supply_get_battery_info(struct power_supply *psy,
+ 	info->energy_full_design_uwh = -EINVAL;
+ 	info->charge_full_design_uah = -EINVAL;
+ 	info->voltage_min_design_uv  = -EINVAL;
++	info->constant_charge_ua  = -EINVAL;
  
- Because drivers surface properties in sysfs using names derived
- from enum power_supply_property, e.g.
-@@ -30,6 +31,7 @@ Example:
- 		voltage-min-design-microvolt = <3200000>;
- 		energy-full-design-microwatt-hours = <5290000>;
- 		charge-full-design-microamp-hours = <1430000>;
-+		constant-charge-microamp = <300000>;
- 	};
+ 	if (!psy->of_node) {
+ 		dev_warn(&psy->dev, "%s currently only supports devicetree\n",
+@@ -522,6 +523,8 @@ int power_supply_get_battery_info(struct power_supply *psy,
+ 			     &info->charge_full_design_uah);
+ 	of_property_read_u32(battery_np, "voltage-min-design-microvolt",
+ 			     &info->voltage_min_design_uv);
++	of_property_read_u32(battery_np, "constant-charge-microamp",
++			     &info->constant_charge_ua);
  
- 	charger: charger@11 {
+ 	return 0;
+ }
+diff --git a/include/linux/power_supply.h b/include/linux/power_supply.h
+index e84f1d3..13bff00 100644
+--- a/include/linux/power_supply.h
++++ b/include/linux/power_supply.h
+@@ -301,6 +301,7 @@ struct power_supply_battery_info {
+ 	int energy_full_design_uwh;	/* microWatt-hours */
+ 	int charge_full_design_uah;	/* microAmp-hours */
+ 	int voltage_min_design_uv;	/* microVolts */
++	int constant_charge_ua;		/* microAmps */
+ };
+ 
+ extern struct atomic_notifier_head power_supply_notifier;
 -- 
 2.9.3
 
