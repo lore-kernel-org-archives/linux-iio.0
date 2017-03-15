@@ -1,71 +1,73 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:40758 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752027AbdCOWYz (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 15 Mar 2017 18:24:55 -0400
-Date: Wed, 15 Mar 2017 23:24:49 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: icenowy@aosc.xyz, bonbons@linux-vserver.org, robh+dt@kernel.org,
-        mark.rutland@arm.com, wens@csie.org, linux@armlinux.org.uk,
-        maxime.ripard@free-electrons.com, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        lee.jones@linaro.org, liam@networkimprov.net,
-        thomas.petazzoni@free-electrons.com, linux-pm@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-        linux-sunxi@googlegroups.com
-Subject: Re: [PATCH v4 02/18] power: supply: power_supply_core: add
- constant-charge-current optional property
-Message-ID: <20170315222449.bvca6r3zoaxoedlb@earth>
+Received: from mail.free-electrons.com ([62.4.15.54]:58689 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751848AbdCOK4c (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Mar 2017 06:56:32 -0400
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: icenowy@aosc.xyz, bonbons@linux-vserver.org, sre@kernel.org,
+        robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
+        linux@armlinux.org.uk, maxime.ripard@free-electrons.com,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net, lee.jones@linaro.org
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        liam@networkimprov.net, thomas.petazzoni@free-electrons.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: [PATCH v4 03/18] mfd: axp20x: correct name of temperature data ADC registers
+Date: Wed, 15 Mar 2017 11:55:22 +0100
+Message-Id: <20170315105537.22349-4-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170315105537.22349-1-quentin.schulz@free-electrons.com>
 References: <20170315105537.22349-1-quentin.schulz@free-electrons.com>
- <20170315105537.22349-3-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="mfu3i4m4q7qphzht"
-In-Reply-To: <20170315105537.22349-3-quentin.schulz@free-electrons.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+The registers 0x56 and 0x57 of AXP22X PMIC store the value of the
+internal temperature of the PMIC.
 
---mfu3i4m4q7qphzht
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+This patch modifies the name of these registers from AXP22X_PMIC_ADC_H/L
+to AXP22X_PMIC_TEMP_H/L so their purpose is clearer.
 
-Hi,
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+Acked-by: Chen-Yu Tsai <wens@csie.org>
+Acked-by: Maxime Ripard <maxime.ripard@free-electrons.com>
+Acked-for-MFD-by: Lee Jones <lee.jones@linaro.org>
+---
 
-On Wed, Mar 15, 2017 at 11:55:21AM +0100, Quentin Schulz wrote:
-> This adds the constant-charge-current property to the list of optional
-> properties for the battery.
->=20
-> The constant charge current is critical for batteries as they can't
-> handle all charge currents.
->=20
-> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+added in v2
 
-Acked-By: Sebastian Reichel <sre@kernel.org>
+ drivers/mfd/axp20x.c       | 2 +-
+ include/linux/mfd/axp20x.h | 4 ++--
+ 2 files changed, 3 insertions(+), 3 deletions(-)
 
--- Sebastian
+diff --git a/drivers/mfd/axp20x.c b/drivers/mfd/axp20x.c
+index 25115fe..56472c2 100644
+--- a/drivers/mfd/axp20x.c
++++ b/drivers/mfd/axp20x.c
+@@ -100,7 +100,7 @@ static const struct regmap_range axp22x_volatile_ranges[] = {
+ 	regmap_reg_range(AXP20X_PWR_INPUT_STATUS, AXP20X_PWR_OP_MODE),
+ 	regmap_reg_range(AXP20X_IRQ1_EN, AXP20X_IRQ5_STATE),
+ 	regmap_reg_range(AXP22X_GPIO_STATE, AXP22X_GPIO_STATE),
+-	regmap_reg_range(AXP22X_PMIC_ADC_H, AXP20X_IPSOUT_V_HIGH_L),
++	regmap_reg_range(AXP22X_PMIC_TEMP_H, AXP20X_IPSOUT_V_HIGH_L),
+ 	regmap_reg_range(AXP20X_FG_RES, AXP20X_FG_RES),
+ };
+ 
+diff --git a/include/linux/mfd/axp20x.h b/include/linux/mfd/axp20x.h
+index 0d9a1ff..dc8798c 100644
+--- a/include/linux/mfd/axp20x.h
++++ b/include/linux/mfd/axp20x.h
+@@ -228,8 +228,8 @@ enum axp20x_variants {
+ #define AXP20X_OCV_MAX			0xf
+ 
+ /* AXP22X specific registers */
+-#define AXP22X_PMIC_ADC_H		0x56
+-#define AXP22X_PMIC_ADC_L		0x57
++#define AXP22X_PMIC_TEMP_H		0x56
++#define AXP22X_PMIC_TEMP_L		0x57
+ #define AXP22X_TS_ADC_H			0x58
+ #define AXP22X_TS_ADC_L			0x59
+ #define AXP22X_BATLOW_THRES1		0xe6
+-- 
+2.9.3
 
---mfu3i4m4q7qphzht
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAljJvzEACgkQ2O7X88g7
-+ppz/A/+JW+xIVSH/6yHIF9RILRW/MkrkOCixASpeMcA/Ud1kuVcUYD+0vBCDP9N
-BoUmKcXwj8Kn0B25bjjdPh6kGyMQJ2P4sPhl2lvJFv4whaHRInOAhOlIelZ9MqiU
-Ib61PzYGQoV1H2vLoCCasAgFLgH2lXDGnfjhvIuvC/k1tx6zoX3oK1jx9Vzcwvdm
-G7UysQVyRL2X6XPXKRhg+AgsDJSt4ft3VPKXe7L26rLSuHscApPpqWJUhUUINRg2
-v5o/qGrY5wUbw/T39ONGQvv0q+UuHDB7YOJP/5mw8sLYT48OGbM2YMsmUzSACVqr
-AYeBHWg8Ir5v7qJyLsfHl2JfnpQZ/ctk6L75IlTccfyqxVhnU3XOL22GvvmY5Xof
-DzVxlOnAxKB22d3zBmW+lBG5Xko0CmcWC6Hljtz7uSEBgDyQesmjFYuTRkXPXxR+
-MmqMf+BWIWkVAZn/cDyXNh9mr/dYMEpuc6pXudDosWYX3Hv/lJfnzbMyvgciA13R
-yvSc/lduSN/LSrSL5zm6p2qqJSGqHz+WUg2ZzB5RhyJx3Xmzn7hspKAFDV8Rh+SO
-NMYdv+4XeGy8hD0cYZOQBRY717kdTxSQchBf4FKV9tPj3IYmADlNFnlKI9k+JcLh
-6eAxeWYmm4HrQsu76zW7aRGQMqn7j1lumcEmWQfDTM3M7uBDAVs=
-=2psX
------END PGP SIGNATURE-----
-
---mfu3i4m4q7qphzht--
