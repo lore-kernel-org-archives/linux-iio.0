@@ -1,67 +1,64 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48542 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751300AbdCSK7w (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2017 06:59:52 -0400
-Subject: Re: [PATCH v2 17/17] iio: gyro: itg3200: Add OF device ID table
-To: Javier Martinez Canillas <javier@osg.samsung.com>,
-        linux-kernel@vger.kernel.org
-References: <20170315044505.20660-1-javier@osg.samsung.com>
- <20170315044505.20660-18-javier@osg.samsung.com>
-Cc: linux-iio@vger.kernel.org, Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4cefd496-9a87-f6da-58cd-c0310bd4e4eb@kernel.org>
-Date: Sun, 19 Mar 2017 10:59:49 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170315044505.20660-18-javier@osg.samsung.com>
-Content-Type: text/plain; charset=windows-1252
+Received: from regular1.263xmail.com ([211.150.99.141]:46829 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752666AbdCOKCi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 15 Mar 2017 06:02:38 -0400
+From: <cl@rock-chips.com>
+To: heiko@sntech.de
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
+        andy.yan@rock-chips.com, jay.xu@rock-chips.com,
+        matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wsa@the-dreams.de, linux-i2c@vger.kernel.org, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        wxt@rock-chips.com, david.wu@rock-chips.com,
+        linux-iio@vger.kernel.org, shawn.lin@rock-chips.com,
+        akpm@linux-foundation.org, dianders@chromium.org,
+        yamada.masahiro@socionext.com, catalin.marinas@arm.com,
+        will.deacon@arm.com, afaerber@suse.de, shawnguo@kernel.org,
+        khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
+        zhangqing@rock-chips.com, kever.yang@rock-chips.com,
+        tony.xie@rock-chips.com, huangtao@rock-chips.com,
+        yhx@rock-chips.com, rocky.hao@rock-chips.com,
+        Liang Chen <cl@rock-chips.com>
+Subject: [PATCH v1 0/7] initialize dtsi file and dts file for RK3328 SoCs
+Date: Wed, 15 Mar 2017 18:03:50 +0800
+Message-Id: <1489572237-6649-1-git-send-email-cl@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 15/03/17 04:45, Javier Martinez Canillas wrote:
-> The driver doesn't have a struct of_device_id table but supported devices
-> are registered via Device Trees. This is working on the assumption that a
-> I2C device registered via OF will always match a legacy I2C device ID and
-> that the MODALIAS reported will always be of the form i2c:<device>.
-> 
-> But this could change in the future so the correct approach is to have an
-> OF device ID table if the devices are registered via OF.
-> 
-> Signed-off-by: Javier Martinez Canillas <javier@osg.samsung.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+From: Liang Chen <cl@rock-chips.com>
 
-Thanks,
+These patchs depend on pinctrl patchs as below:
 
-Jonathan
-> 
-> ---
-> 
->  drivers/iio/gyro/itg3200_core.c | 7 +++++++
->  1 file changed, 7 insertions(+)
-> 
-> diff --git a/drivers/iio/gyro/itg3200_core.c b/drivers/iio/gyro/itg3200_core.c
-> index c102a6325bb0..cfa2db04a8ab 100644
-> --- a/drivers/iio/gyro/itg3200_core.c
-> +++ b/drivers/iio/gyro/itg3200_core.c
-> @@ -377,9 +377,16 @@ static const struct i2c_device_id itg3200_id[] = {
->  };
->  MODULE_DEVICE_TABLE(i2c, itg3200_id);
->  
-> +static const struct of_device_id itg3200_of_match[] = {
-> +	{ .compatible = "invensense,itg3200" },
-> +	{ }
-> +};
-> +MODULE_DEVICE_TABLE(of, itg3200_of_match);
-> +
->  static struct i2c_driver itg3200_driver = {
->  	.driver = {
->  		.name	= "itg3200",
-> +		.of_match_table = itg3200_of_match,
->  		.pm	= &itg3200_pm_ops,
->  	},
->  	.id_table	= itg3200_id,
-> 
+https://patchwork.kernel.org/patch/9566427/
+https://patchwork.kernel.org/patch/9566425/
+https://patchwork.kernel.org/patch/9566431/
+
+Chen Liang (7):
+  include: dt-bindings: Add pin function index definition for rockchip
+    pinctrl
+  dt-bindings: iio: rockchip-saradc: add support for rk3328
+  dt-bindings: i2c: rk3x: add support for rk3328
+  dt-bindings: soc: rockchip: grf: add support for rk3328
+  arm64: dts: rockchip: add core dtsi file for RK3328 SoCs
+  arm64: dts: rockchip: add dts file for RK3328 evaluation board
+  dt-bindings: document rockchip rk3328-evb board
+
+ Documentation/devicetree/bindings/arm/rockchip.txt |    4 +
+ Documentation/devicetree/bindings/i2c/i2c-rk3x.txt |    1 +
+ .../bindings/iio/adc/rockchip-saradc.txt           |    1 +
+ .../devicetree/bindings/soc/rockchip/grf.txt       |    1 +
+ arch/arm64/boot/dts/rockchip/Makefile              |    1 +
+ arch/arm64/boot/dts/rockchip/rk3328-evb.dts        |   57 +
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi           | 1362 ++++++++++++++++++++
+ include/dt-bindings/pinctrl/rockchip.h             |    3 +
+ 8 files changed, 1430 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-evb.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3328.dtsi
+
+-- 
+1.9.1
+
 
