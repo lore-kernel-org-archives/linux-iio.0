@@ -1,74 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpauth-dc2.online.net ([62.210.16.40]:50080 "EHLO
-        smtpauth-dc2-1.online.net" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1754481AbdCTKvk (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 06:51:40 -0400
-Date: Mon, 20 Mar 2017 11:51:31 +0100
-From: Miguel Robles <miguel.robles@farole.net>
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org
-Subject: Re: [PATCH] Staging: iio: cdc: use octal permissions instead of
- symbolic
-Message-ID: <20170320105130.GA2538@miguel-Z170X-UD5-TH>
-References: <1489669339-6412-1-git-send-email-miguel.robles@farole.net>
- <e1a6a3a2-3246-7ac3-81d7-6fff42947584@kernel.org>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <e1a6a3a2-3246-7ac3-81d7-6fff42947584@kernel.org>
+Received: from regular1.263xmail.com ([211.150.99.135]:36370 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751524AbdCPNRY (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 09:17:24 -0400
+From: <cl@rock-chips.com>
+To: heiko@sntech.de
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
+        andy.yan@rock-chips.com, jay.xu@rock-chips.com,
+        matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
+        wsa@the-dreams.de, linux-i2c@vger.kernel.org, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        wxt@rock-chips.com, david.wu@rock-chips.com,
+        linux-iio@vger.kernel.org, shawn.lin@rock-chips.com,
+        akpm@linux-foundation.org, dianders@chromium.org,
+        yamada.masahiro@socionext.com, catalin.marinas@arm.com,
+        will.deacon@arm.com, afaerber@suse.de, shawnguo@kernel.org,
+        khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
+        zhangqing@rock-chips.com, kever.yang@rock-chips.com,
+        tony.xie@rock-chips.com, huangtao@rock-chips.com,
+        yhx@rock-chips.com, rocky.hao@rock-chips.com,
+        Liang Chen <cl@rock-chips.com>
+Subject: [PATCH v2 0/6] initialize dtsi file and dts file for RK3328 SoCs
+Date: Thu, 16 Mar 2017 21:17:18 +0800
+Message-Id: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Sun, Mar 19, 2017 at 11:06:17AM +0000, Jonathan Cameron wrote:
-> On 16/03/17 13:02, Miguel Robles wrote:
-> > Fix checkpatch warnings:
-> > Symbolic permissions 'S_IWUSR' are not preferred.
-> > 
-> > Signed-off-by: Miguel Robles <miguel.robles@farole.net>
-> Fine, with the exception that I'd like to see the name of the driver in the
-> description.
->
-Thank you, I have taken note of your return for the next patchs.
+From: Liang Chen <cl@rock-chips.com>
 
-Miguel
+Changes in v2:
+    Remove RK_FUNC_* in dtsi as it dose not help understand things better.
+    Adjust the order of description in dt-bindings.
 
-> Applied with that added to the togreg branch of iio.git and pushed out as
-> testing for the autobuilders to play with it.
-> 
-> Thanks,
-> 
-> Jonathan
-> > ---
-> >  drivers/staging/iio/cdc/ad7746.c | 10 +++++-----
-> >  1 file changed, 5 insertions(+), 5 deletions(-)
-> > 
-> > diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> > index 81f8b9e..6c688bd 100644
-> > --- a/drivers/staging/iio/cdc/ad7746.c
-> > +++ b/drivers/staging/iio/cdc/ad7746.c
-> > @@ -351,15 +351,15 @@ static ssize_t ad7746_start_gain_calib(struct device *dev,
-> >  }
-> >  
-> >  static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
-> > -		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN1);
-> > +		       0200, NULL, ad7746_start_offset_calib, CIN1);
-> >  static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
-> > -		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN2);
-> > +		       0200, NULL, ad7746_start_offset_calib, CIN2);
-> >  static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
-> > -		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN1);
-> > +		       0200, NULL, ad7746_start_gain_calib, CIN1);
-> >  static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
-> > -		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN2);
-> > +		       0200, NULL, ad7746_start_gain_calib, CIN2);
-> >  static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
-> > -		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
-> > +		       0200, NULL, ad7746_start_gain_calib, VIN);
-> >  
-> >  static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
-> >  					      int val)
-> > 
-> 
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+These patchs depend on pinctrl patchs as below:
+
+https://patchwork.kernel.org/patch/9566427/
+https://patchwork.kernel.org/patch/9566425/
+https://patchwork.kernel.org/patch/9566431/
+
+Liang Chen (6):
+  dt-bindings: iio: rockchip-saradc: add support for rk3328
+  dt-bindings: i2c: rk3x: add support for rk3328
+  dt-bindings: soc: rockchip: grf: add support for rk3328
+  arm64: dts: rockchip: add core dtsi file for RK3328 SoCs
+  arm64: dts: rockchip: add dts file for RK3328
+  dt-bindings: document rockchip rk3328-evb board
+
+ Documentation/devicetree/bindings/arm/rockchip.txt |    4 +
+ Documentation/devicetree/bindings/i2c/i2c-rk3x.txt |    1 +
+ .../bindings/iio/adc/rockchip-saradc.txt           |    1 +
+ .../devicetree/bindings/soc/rockchip/grf.txt       |    1 +
+ arch/arm64/boot/dts/rockchip/Makefile              |    1 +
+ arch/arm64/boot/dts/rockchip/rk3328-evb.dts        |   57 +
+ arch/arm64/boot/dts/rockchip/rk3328.dtsi           | 1362 ++++++++++++++++++++
+ 7 files changed, 1427 insertions(+)
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-evb.dts
+ create mode 100644 arch/arm64/boot/dts/rockchip/rk3328.dtsi
+
+-- 
+1.9.1
+
+
