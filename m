@@ -1,10 +1,10 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from regular1.263xmail.com ([211.150.99.130]:53520 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751842AbdCPNRd (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 09:17:33 -0400
-From: <cl@rock-chips.com>
-To: heiko@sntech.de
+Received: from gloria.sntech.de ([95.129.55.99]:36648 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752383AbdCPNhD (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Thu, 16 Mar 2017 09:37:03 -0400
+From: Heiko Stuebner <heiko@sntech.de>
+To: cl@rock-chips.com
 Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         andy.yan@rock-chips.com, jay.xu@rock-chips.com,
         matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
@@ -20,38 +20,24 @@ Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
         zhangqing@rock-chips.com, kever.yang@rock-chips.com,
         tony.xie@rock-chips.com, huangtao@rock-chips.com,
-        yhx@rock-chips.com, rocky.hao@rock-chips.com,
-        Liang Chen <cl@rock-chips.com>
-Subject: [PATCH v2 1/6] dt-bindings: iio: rockchip-saradc: add support for rk3328
-Date: Thu, 16 Mar 2017 21:17:19 +0800
-Message-Id: <1489670244-13328-2-git-send-email-cl@rock-chips.com>
-In-Reply-To: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
-References: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
+        yhx@rock-chips.com, rocky.hao@rock-chips.com
+Subject: Re: [PATCH v2 1/6] dt-bindings: iio: rockchip-saradc: add support for rk3328
+Date: Thu, 16 Mar 2017 14:36:41 +0100
+Message-ID: <10877116.XTHsEZHMj3@phil>
+In-Reply-To: <1489670244-13328-2-git-send-email-cl@rock-chips.com>
+References: <1489670244-13328-1-git-send-email-cl@rock-chips.com> <1489670244-13328-2-git-send-email-cl@rock-chips.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Liang Chen <cl@rock-chips.com>
+Am Donnerstag, 16. März 2017, 21:17:19 CET schrieb cl@rock-chips.com:
+> From: Liang Chen <cl@rock-chips.com>
+> 
+> The rk3328 saradc is the same as rk3399.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
 
-The rk3328 saradc is the same as rk3399.
-
-Signed-off-by: Liang Chen <cl@rock-chips.com>
----
- Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt | 1 +
- 1 file changed, 1 insertion(+)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-index 205593f..e0a9b9d 100644
---- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-@@ -4,6 +4,7 @@ Required properties:
- - compatible: should be "rockchip,<name>-saradc" or "rockchip,rk3066-tsadc"
-    - "rockchip,saradc": for rk3188, rk3288
-    - "rockchip,rk3066-tsadc": for rk3036
-+   - "rockchip,rk3328-saradc", "rockchip,rk3399-saradc": for rk3328
-    - "rockchip,rk3399-saradc": for rk3399
- 
- - reg: physical base address of the controller and length of memory mapped
--- 
-1.9.1
+Reviewed-by: Heiko Stuebner <heiko@sntech.de>
 
 
