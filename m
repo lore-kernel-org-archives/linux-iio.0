@@ -1,8 +1,8 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from regular1.263xmail.com ([211.150.99.131]:41542 "EHLO
+Received: from regular1.263xmail.com ([211.150.99.136]:33616 "EHLO
         regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751054AbdCPNVO (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 09:21:14 -0400
+        with ESMTP id S1751054AbdCPNV0 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 09:21:26 -0400
 From: <cl@rock-chips.com>
 To: heiko@sntech.de
 Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
@@ -22,9 +22,9 @@ Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         tony.xie@rock-chips.com, huangtao@rock-chips.com,
         yhx@rock-chips.com, rocky.hao@rock-chips.com,
         Liang Chen <cl@rock-chips.com>
-Subject: [PATCH v2 5/6] arm64: dts: rockchip: add dts file for RK3328
-Date: Thu, 16 Mar 2017 21:22:45 +0800
-Message-Id: <1489670565-14796-1-git-send-email-cl@rock-chips.com>
+Subject: [PATCH v2 6/6] dt-bindings: document rockchip rk3328-evb board
+Date: Thu, 16 Mar 2017 21:23:06 +0800
+Message-Id: <1489670586-16120-1-git-send-email-cl@rock-chips.com>
 In-Reply-To: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
 References: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
@@ -32,91 +32,26 @@ List-Id: linux-iio@vger.kernel.org
 
 From: Liang Chen <cl@rock-chips.com>
 
-This patch add rk3328-evb.dts for RK3328 evaluation board.
-Tested on RK3328 evb.
+Use "rockchip,rk3328-evb" compatible string for Rockchip RK3328
+evaluation board.
 
 Signed-off-by: Liang Chen <cl@rock-chips.com>
 ---
- arch/arm64/boot/dts/rockchip/Makefile       |  1 +
- arch/arm64/boot/dts/rockchip/rk3328-evb.dts | 57 +++++++++++++++++++++++++++++
- 2 files changed, 58 insertions(+)
- create mode 100644 arch/arm64/boot/dts/rockchip/rk3328-evb.dts
+ Documentation/devicetree/bindings/arm/rockchip.txt | 4 ++++
+ 1 file changed, 4 insertions(+)
 
-diff --git a/arch/arm64/boot/dts/rockchip/Makefile b/arch/arm64/boot/dts/rockchip/Makefile
-index 3a86289..853fc7d 100644
---- a/arch/arm64/boot/dts/rockchip/Makefile
-+++ b/arch/arm64/boot/dts/rockchip/Makefile
-@@ -4,6 +4,7 @@ dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-orion-r68-meta.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-px5-evb.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3368-r88.dtb
- dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3399-evb.dtb
-+dtb-$(CONFIG_ARCH_ROCKCHIP) += rk3328-evb.dtb
- 
- always		:= $(dtb-y)
- subdir-y	:= $(dts-dirs)
-diff --git a/arch/arm64/boot/dts/rockchip/rk3328-evb.dts b/arch/arm64/boot/dts/rockchip/rk3328-evb.dts
-new file mode 100644
-index 0000000..cf27239
---- /dev/null
-+++ b/arch/arm64/boot/dts/rockchip/rk3328-evb.dts
-@@ -0,0 +1,57 @@
-+/*
-+ * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
-+ *
-+ * This file is dual-licensed: you can use it either under the terms
-+ * of the GPL or the X11 license, at your option. Note that this dual
-+ * licensing only applies to this file, and not this project as a
-+ * whole.
-+ *
-+ *  a) This library is free software; you can redistribute it and/or
-+ *     modify it under the terms of the GNU General Public License as
-+ *     published by the Free Software Foundation; either version 2 of the
-+ *     License, or (at your option) any later version.
-+ *
-+ *     This library is distributed in the hope that it will be useful,
-+ *     but WITHOUT ANY WARRANTY; without even the implied warranty of
-+ *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-+ *     GNU General Public License for more details.
-+ *
-+ * Or, alternatively,
-+ *
-+ *  b) Permission is hereby granted, free of charge, to any person
-+ *     obtaining a copy of this software and associated documentation
-+ *     files (the "Software"), to deal in the Software without
-+ *     restriction, including without limitation the rights to use,
-+ *     copy, modify, merge, publish, distribute, sublicense, and/or
-+ *     sell copies of the Software, and to permit persons to whom the
-+ *     Software is furnished to do so, subject to the following
-+ *     conditions:
-+ *
-+ *     The above copyright notice and this permission notice shall be
-+ *     included in all copies or substantial portions of the Software.
-+ *
-+ *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
-+ *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
-+ *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
-+ *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
-+ *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
-+ *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-+ *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
-+ *     OTHER DEALINGS IN THE SOFTWARE.
-+ */
+diff --git a/Documentation/devicetree/bindings/arm/rockchip.txt b/Documentation/devicetree/bindings/arm/rockchip.txt
+index cc4ace6..17611cd 100644
+--- a/Documentation/devicetree/bindings/arm/rockchip.txt
++++ b/Documentation/devicetree/bindings/arm/rockchip.txt
+@@ -141,3 +141,7 @@ Rockchip platforms device tree bindings
+ - Tronsmart Orion R68 Meta
+     Required root node properties:
+       - compatible = "tronsmart,orion-r68-meta", "rockchip,rk3368";
 +
-+/dts-v1/;
-+#include "rk3328.dtsi"
-+
-+/ {
-+	model = "Rockchip RK3328 EVB";
-+	compatible = "rockchip,rk3328-evb", "rockchip,rk3328";
-+
-+	chosen {
-+		stdout-path = "serial2:1500000n8";
-+	};
-+};
-+
-+&uart2 {
-+	status = "okay";
-+};
++- Rockchip RK3328 evb:
++    Required root node properties:
++      - compatible = "rockchip,rk3328-evb", "rockchip,rk3328";
 -- 
 1.9.1
 
