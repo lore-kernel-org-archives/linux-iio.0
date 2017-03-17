@@ -1,148 +1,162 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48675 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751286AbdCSLWQ (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2017 07:22:16 -0400
-Subject: Re: [PATCH v3] staging: iio: ad7280: Replace mlock with driver
- private lock
-To: Gargi Sharma <gs051095@gmail.com>,
-        outreachy-kernel@googlegroups.com
-References: <1489737570-2491-1-git-send-email-gs051095@gmail.com>
-Cc: linux-iio@vger.kernel.org, lars@metafoo.de,
-        Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <3c4496fb-9ac8-db04-6292-2326f64a4523@kernel.org>
-Date: Sun, 19 Mar 2017 11:12:06 +0000
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:12987 "EHLO
+        mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
+        by vger.kernel.org with ESMTP id S1751029AbdCQQQ7 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Mar 2017 12:16:59 -0400
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Jaroslav Kysela <perex@perex.cz>,
+        Takashi Iwai <tiwai@suse.com>,
+        Liam Girdwood <lgirdwood@gmail.com>,
+        Mark Brown <broonie@kernel.org>
+CC: <devicetree@vger.kernel.org>,
+        <linux-arm-kernel@lists.infradead.org>,
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <kernel@stlinux.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        <arnaud.pouliquen@st.com>, olivier moysan <olivier.moysan@st.com>
+Subject: [PATCH v3 00/11] Add STM32 DFSDM support
+Date: Fri, 17 Mar 2017 15:08:13 +0100
+Message-ID: <1489759704-30217-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-In-Reply-To: <1489737570-2491-1-git-send-email-gs051095@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 17/03/17 07:59, Gargi Sharma wrote:
-> The IIO subsystem is redefining iio_dev->mlock to be used by
-> the IIO core only for protecting device operating mode changes.
-> ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
-> 
-> In this driver, mlock was being used to protect hardware state
-> changes.  Replace it with a lock in the devices global data.
-> 
-> Signed-off-by: Gargi Sharma <gs051095@gmail.com>
-Applied to the togreg branch of iio.git. Will push out as testing
-later today.
+Hello,
 
-Thanks,
+I kept it as RFC as i reworked the global design (but also because not full validated...).
+Regarding Mark and Jonathan's comments, I decided to  try an implementation 
+with DMA support in IIO instead of handling it in ASOC.
+Solution seems more straightforward but as DMA cyclic mode and associated buffer
+block API is not part of IIO today, I still need some hacks...
+To be honest, I tried to integrate DMA cyclic management and associated buffer block 
+Consumer API. but no enough expertise on IIO to success... :(
 
-Jonathan
-> ---
-> Changes in v3:
-> 	- Added mutex_init(&st->lock) inside probe function.
-> 	- Added driver name in subject line.
-> Changes in v2:
->         - Made the commit log clearer.
-> ---
->  drivers/staging/iio/adc/ad7280a.c | 22 ++++++++++++----------
->  1 file changed, 12 insertions(+), 10 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index ee679ac..6a85e28 100644
-> --- a/drivers/staging/iio/adc/ad7280a.c
-> +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -134,6 +134,7 @@ struct ad7280_state {
->  	unsigned char			aux_threshhigh;
->  	unsigned char			aux_threshlow;
->  	unsigned char			cb_mask[AD7280A_MAX_CHAIN];
-> +	struct mutex			lock; /* protect sensor state */
->  
->  	__be32				buf[2] ____cacheline_aligned;
->  };
-> @@ -410,7 +411,7 @@ static ssize_t ad7280_store_balance_sw(struct device *dev,
->  	devaddr = this_attr->address >> 8;
->  	ch = this_attr->address & 0xFF;
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->lock);
->  	if (readin)
->  		st->cb_mask[devaddr] |= 1 << (ch + 2);
->  	else
-> @@ -418,7 +419,7 @@ static ssize_t ad7280_store_balance_sw(struct device *dev,
->  
->  	ret = ad7280_write(st, devaddr, AD7280A_CELL_BALANCE,
->  			   0, st->cb_mask[devaddr]);
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->lock);
->  
->  	return ret ? ret : len;
->  }
-> @@ -433,10 +434,10 @@ static ssize_t ad7280_show_balance_timer(struct device *dev,
->  	int ret;
->  	unsigned int msecs;
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->lock);
->  	ret = ad7280_read(st, this_attr->address >> 8,
->  			  this_attr->address & 0xFF);
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->lock);
->  
->  	if (ret < 0)
->  		return ret;
-> @@ -466,11 +467,11 @@ static ssize_t ad7280_store_balance_timer(struct device *dev,
->  	if (val > 31)
->  		return -EINVAL;
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->lock);
->  	ret = ad7280_write(st, this_attr->address >> 8,
->  			   this_attr->address & 0xFF,
->  			   0, (val & 0x1F) << 3);
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->lock);
->  
->  	return ret ? ret : len;
->  }
-> @@ -655,7 +656,7 @@ static ssize_t ad7280_write_channel_config(struct device *dev,
->  
->  	val = clamp(val, 0L, 0xFFL);
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->lock);
->  	switch ((u32)this_attr->address) {
->  	case AD7280A_CELL_OVERVOLTAGE:
->  		st->cell_threshhigh = val;
-> @@ -674,7 +675,7 @@ static ssize_t ad7280_write_channel_config(struct device *dev,
->  	ret = ad7280_write(st, AD7280A_DEVADDR_MASTER,
->  			   this_attr->address, 1, val);
->  
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->lock);
->  
->  	return ret ? ret : len;
->  }
-> @@ -792,13 +793,13 @@ static int ad7280_read_raw(struct iio_dev *indio_dev,
->  
->  	switch (m) {
->  	case IIO_CHAN_INFO_RAW:
-> -		mutex_lock(&indio_dev->mlock);
-> +		mutex_lock(&st->lock);
->  		if (chan->address == AD7280A_ALL_CELLS)
->  			ret = ad7280_read_all_channels(st, st->scan_cnt, NULL);
->  		else
->  			ret = ad7280_read_channel(st, chan->address >> 8,
->  						  chan->address & 0xFF);
-> -		mutex_unlock(&indio_dev->mlock);
-> +		mutex_unlock(&st->lock);
->  
->  		if (ret < 0)
->  			return ret;
-> @@ -847,6 +848,7 @@ static int ad7280_probe(struct spi_device *spi)
->  	st = iio_priv(indio_dev);
->  	spi_set_drvdata(spi, indio_dev);
->  	st->spi = spi;
-> +	mutex_init(&st->lock);
->  
->  	if (!pdata)
->  		pdata = &ad7793_default_pdata;
-> 
+Advantage vs V2:
+	- No more data processing need in ASoC , done in IIO
+        - ASoC uses IIO consumer interface ( except for buffer callback)
+Drawback :
+	- Need to create a "SPI bus" trigger to allo to use Buffer consumer API
+        	=> Need to find a solution to set this trigger by default in IIO audio driver
+        - No standard buffer management
+        	- Implement DMA cyclic in DFSDM IIO driver.
+                - Define specific API to handle  buffer callback per period instead of 
+                  callback per samples generated by iio_push_to_buffers_with_timestamp.
+ 
+V2-V3 delta:
+	- New patches to support ASoC DMA codec in DT 
+  		- ASoC: Add Bindins for DMIC codec driver.
+  		- ASoC: codec: add DT support in dmic codec.
+        - New patches to allow in-kernel set of IIO buffer size and watermark   
+  		- IIO: consumer: allow to set buffer sizes.
+	- IIO DFSDM drivers
+        	- Split audio and ADC support in 2 drivers.
+                - Implement DMA cyclic mode.
+                - Add SPI bus Trigger for buffer management.
+                
+	- IIO sigma delta adc drivers
+        	-  Suppress "simple and rename driver.
+         
+         - ASoC driver
+         	- Suppress DMA engine.
+                - Suppress copy ops.
+                - Use IIO consmumer interface to enable/Disable DFSDM.        
+
+Regards,
+
+Arnaud
+
+Arnaud Pouliquen (11):
+  iio: Add hardware consumer support
+  IIO: Add DT bindings for sigma delta adc modulator
+  IIO: ADC: add sigma delta modulator support
+  IIO: add DT bindings for stm32 DFSDM filter
+  IIO: ADC: add stm32 DFSDM support for Sigma delta ADC
+  IIO: ADC: add stm32 DFSDM support for PDM microphone
+  IIO: consumer: allow to set buffer sizes
+  ASoC: Add Bindins for DMIC codec driver
+  ASoC: codec: add DT support in dmic codec
+  ASoC: add bindings for stm32 DFSDM filter
+  ASoC: stm32: add DFSDM DAI support
+
+ .../bindings/iio/adc/sigma-delta-modulator.txt     |  13 +
+ .../bindings/iio/adc/st,stm32-dfsdm-adc.txt        | 120 ++++
+ Documentation/devicetree/bindings/sound/dmic.txt   |  11 +
+ .../devicetree/bindings/sound/st,stm32-adfsdm.txt  |  41 ++
+ drivers/iio/Kconfig                                |   6 +
+ drivers/iio/Makefile                               |   1 +
+ drivers/iio/adc/Kconfig                            |  50 ++
+ drivers/iio/adc/Makefile                           |   4 +
+ drivers/iio/adc/sd_adc_modulator.c                 |  98 +++
+ drivers/iio/adc/stm32-dfsdm-adc.c                  | 419 ++++++++++++
+ drivers/iio/adc/stm32-dfsdm-audio.c                | 720 +++++++++++++++++++++
+ drivers/iio/adc/stm32-dfsdm-core.c                 | 658 +++++++++++++++++++
+ drivers/iio/adc/stm32-dfsdm.h                      | 372 +++++++++++
+ drivers/iio/buffer/industrialio-buffer-cb.c        |  12 +
+ drivers/iio/hw_consumer.c                          | 156 +++++
+ include/linux/iio/adc/stm32-dfsdm-audio.h          |  41 ++
+ include/linux/iio/consumer.h                       |  13 +
+ include/linux/iio/hw_consumer.h                    |  12 +
+ sound/soc/Kconfig                                  |   1 +
+ sound/soc/Makefile                                 |   1 +
+ sound/soc/codecs/dmic.c                            |   8 +
+ sound/soc/stm/Kconfig                              |  10 +
+ sound/soc/stm/Makefile                             |   2 +
+ sound/soc/stm/stm32_adfsdm.c                       | 362 +++++++++++
+ 24 files changed, 3131 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/sigma-delta-modulator.txt
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/st,stm32-dfsdm-adc.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/dmic.txt
+ create mode 100644 Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
+ create mode 100644 drivers/iio/adc/sd_adc_modulator.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-adc.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-audio.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm-core.c
+ create mode 100644 drivers/iio/adc/stm32-dfsdm.h
+ create mode 100644 drivers/iio/hw_consumer.c
+ create mode 100644 include/linux/iio/adc/stm32-dfsdm-audio.h
+ create mode 100644 include/linux/iio/hw_consumer.h
+ create mode 100644 sound/soc/stm/Kconfig
+ create mode 100644 sound/soc/stm/Makefile
+ create mode 100644 sound/soc/stm/stm32_adfsdm.c
+
+V2:
+
+Patch-set associated to this RFC proposes an implementation of the
+DFSDM features shared between ASoC and IIO frameworks.
+
+Patch-set is only a Skeleton of the drivers, so a base to discuss and validate a design. 
+It contains minimum code to allow probing (with DT) and to expose the ASoC and IIO ABI.
+Hope that is sufficent in a first step to allow to focus on APIs.
+
+In this patch-set there are two new APIs used:
+	- IIO in-kern API: based on hw_customer API proposed by Lars
+ 	- ASOC <-> IIO API inspired by API defined for hdmi-codec for ASoC/DRM interconnect. 
+   	  API is dedicated to DFSDM only.
+
+Notice also that this design is based on following assumption:
+	- Audio stream ABI interface is ASoC, no access to data through IIO ABI for PDM. 
+	- ASoC DMA should be used for audio transfer as designed for real time stream.
+	- Need some runtime parameters exchange between ASoC and IIO
+	  due to the correlation between the sample frequency, the DFSDM decimation 
+          factor and the associated scaling.
+
+- "ASoC: dmaengine_pcm: add copy support" patch:
+ I added a patch in ASoC that allows to implement a copy function to process data 
+ after DMA transfer. Requested, as DFSDM samples captured contain channel ID 
+ on 8-LSB bits and need also a potential rescale to present DAT on 24-bits.  	
+
+- "IIO: ADC: add sigma delta modulator support" patch:
+Simple dummy driver created to support external Sigma delta modulator. 
+It is binded to DFSDM driver through hw_customer API.
+
+
+- 
+1.9.1
 
