@@ -1,68 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f193.google.com ([209.85.128.193]:36406 "EHLO
-        mail-wr0-f193.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752375AbdCPM1r (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 08:27:47 -0400
-From: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-To: linux-kernel@vger.kernel.org
-Cc: lee.jones@linaro.org, dmitry.torokhov@gmail.com,
-        linux-input@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de,
-        lars@metafoo.de, pmeerw@pmeerw.net, marex@denx.de,
-        linux-iio@vger.kernel.org, harald@ccbib.org,
-        stefan.wahren@i2se.com, fabio.estevam@freescale.com,
-        Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Subject: [PATCH v15 5/5] mfd: Move binding document
-Date: Thu, 16 Mar 2017 13:27:13 +0100
-Message-Id: <edd8c5266b9d2cdac81ee1ec8e511fef1ed160af.1489666428.git.ksenija.stanojevic@gmail.com>
+Received: from mout.kundenserver.de ([212.227.126.131]:51938 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1750885AbdCQHA4 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Mar 2017 03:00:56 -0400
+Date: Fri, 17 Mar 2017 08:00:28 +0100 (CET)
+From: Stefan Wahren <stefan.wahren@i2se.com>
+To: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
+Cc: lee.jones@linaro.org, linux-input@vger.kernel.org,
+        pmeerw@pmeerw.net, jic23@kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, linux-kernel@vger.kernel.org,
+        dmitry.torokhov@gmail.com, harald@ccbib.org,
+        fabio.estevam@freescale.com, linux-iio@vger.kernel.org,
+        marex@denx.de
+Message-ID: <1477647400.119703.1489734029091@email.1und1.de>
 In-Reply-To: <cover.1489666428.git.ksenija.stanojevic@gmail.com>
 References: <cover.1489666428.git.ksenija.stanojevic@gmail.com>
-In-Reply-To: <cover.1489666428.git.ksenija.stanojevic@gmail.com>
-References: <cover.1489666428.git.ksenija.stanojevic@gmail.com>
+Subject: Re: [PATCH v15 0/5] mxs-lradc: Split driver into MFD
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The bindings, which are now used in MFD, need also to be
-documented in the MFD binding document.
 
-Signed-off-by: Ksenija Stanojevic <ksenija.stanojevic@gmail.com>
-Reviewed-by: Marek Vasut <marex@denx.de>
-Acked-by: Lee Jones <lee.jones@linaro.org>
----
-Changes in v15:
- - none
+> Ksenija Stanojevic <ksenija.stanojevic@gmail.com> hat am 16. März 2017 um 13:27 geschrieben:
+> 
+> 
+> Split existing driver mxs-lradc into MFD with touchscreen and
+> IIO part.
+> 
+> Tested on I.MX28
+> 
+> Ksenija Stanojevic (5):
+>   mfd: mxs-lradc: Add support for mxs-lradc MFD
+>   iio: adc: mxs-lradc: Add support for adc driver
+>   input: touchscreen: mxs-lradc: Add support for touchscreen
+>   iio: adc: mxs-lradc: Remove driver
+>   mfd: Move binding document
+> 
 
-Changes in v14:
- - none
+Please add my
 
-Changes in v13:
- - none
+Tested-by: Stefan Wahren <stefan.wahren@i2se.com>
 
-Changes in v12:
- - none
+for Patch 1 and 2 :)
 
-Changes in v11:
- - none
-
-Changes in v10:
- - none
-
-Changes in v9:
- - format patch using -M option
-
-Changes in v8:
- - rebase onto 4.9-rc1
-
-Changes in v7:
- - add to the patchset
-
- Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt | 0
- 1 file changed, 0 insertions(+), 0 deletions(-)
- rename Documentation/devicetree/bindings/{iio/adc => mfd}/mxs-lradc.txt (100%)
-
-diff --git a/Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt b/Documentation/devicetree/bindings/mfd/mxs-lradc.txt
-similarity index 100%
-rename from Documentation/devicetree/bindings/iio/adc/mxs-lradc.txt
-rename to Documentation/devicetree/bindings/mfd/mxs-lradc.txt
--- 
-1.9.1
-
+Regarding to patch 5 i'm not sure. Shouldn't this go through the DT instead of the mfd tree? Unfortunately the DT maintainers aren't in CC and their ACKs are still missing.
