@@ -1,14 +1,11 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mx08-00178001.pphosted.com ([91.207.212.93]:39429 "EHLO
+Received: from mx08-00178001.pphosted.com ([91.207.212.93]:38175 "EHLO
         mx07-00178001.pphosted.com" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S932308AbdC2Mpn (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 08:45:43 -0400
-Subject: Re: [PATCH v3 10/11] ASoC: add bindings for stm32 DFSDM filter
-To: Rob Herring <robh@kernel.org>
-References: <1489759704-30217-1-git-send-email-arnaud.pouliquen@st.com>
- <1489759704-30217-11-git-send-email-arnaud.pouliquen@st.com>
- <20170324145208.6tj5swol5du5lkyc@rob-hp-laptop>
-CC: Mark Rutland <mark.rutland@arm.com>,
+        by vger.kernel.org with ESMTP id S1750999AbdCQPuS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 17 Mar 2017 11:50:18 -0400
+From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+To: Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
         Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Lars-Peter Clausen <lars@metafoo.de>,
@@ -16,135 +13,460 @@ CC: Mark Rutland <mark.rutland@arm.com>,
         Jaroslav Kysela <perex@perex.cz>,
         Takashi Iwai <tiwai@suse.com>,
         Liam Girdwood <lgirdwood@gmail.com>,
-        Mark Brown <broonie@kernel.org>,
-        "devicetree@vger.kernel.org" <devicetree@vger.kernel.org>,
-        "linux-arm-kernel@lists.infradead.org"
+        Mark Brown <broonie@kernel.org>
+CC: <devicetree@vger.kernel.org>,
         <linux-arm-kernel@lists.infradead.org>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        "alsa-devel@alsa-project.org" <alsa-devel@alsa-project.org>,
-        "kernel@stlinux.com" <kernel@stlinux.com>,
-        Maxime Coquelin <mcoquelin.stm32@gmail.com>,
-        Alexandre TORGUE <alexandre.torgue@st.com>,
-        Olivier MOYSAN <olivier.moysan@st.com>
-From: Arnaud Pouliquen <arnaud.pouliquen@st.com>
-Message-ID: <473f36db-0c0e-00d2-3610-c24bf3f1d541@st.com>
-Date: Wed, 29 Mar 2017 14:42:38 +0200
+        <linux-iio@vger.kernel.org>, <alsa-devel@alsa-project.org>,
+        <kernel@stlinux.com>, Maxime Coquelin <mcoquelin.stm32@gmail.com>,
+        Alexandre Torgue <alexandre.torgue@st.com>,
+        <arnaud.pouliquen@st.com>, olivier moysan <olivier.moysan@st.com>
+Subject: [PATCH v3 11/11] ASoC: stm32: add DFSDM DAI support
+Date: Fri, 17 Mar 2017 15:08:24 +0100
+Message-ID: <1489759704-30217-12-git-send-email-arnaud.pouliquen@st.com>
+In-Reply-To: <1489759704-30217-1-git-send-email-arnaud.pouliquen@st.com>
+References: <1489759704-30217-1-git-send-email-arnaud.pouliquen@st.com>
 MIME-Version: 1.0
-In-Reply-To: <20170324145208.6tj5swol5du5lkyc@rob-hp-laptop>
-Content-Type: text/plain; charset="windows-1252"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hello Rob,
+Add driver to handle DAI interface for PDM microphones connected
+to Digital Filter for Sigma Delta mModulators IP.
 
-Sorry for this dirty/crappy patch...
-Please find answers below
+Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
+---
+V2->V3:
+       	- Suppress DMA engine
+        - Suppress copy ops
+        - Use IIO consmumer interface to enable/Disable DFSDM         
+---
+ sound/soc/Kconfig            |   1 +
+ sound/soc/Makefile           |   1 +
+ sound/soc/stm/Kconfig        |  10 ++
+ sound/soc/stm/Makefile       |   2 +
+ sound/soc/stm/stm32_adfsdm.c | 362 +++++++++++++++++++++++++++++++++++++++++++
+ 5 files changed, 376 insertions(+)
+ create mode 100644 sound/soc/stm/Kconfig
+ create mode 100644 sound/soc/stm/Makefile
+ create mode 100644 sound/soc/stm/stm32_adfsdm.c
 
-Thanks
+diff --git a/sound/soc/Kconfig b/sound/soc/Kconfig
+index 182d92e..3836ebe 100644
+--- a/sound/soc/Kconfig
++++ b/sound/soc/Kconfig
+@@ -63,6 +63,7 @@ source "sound/soc/sh/Kconfig"
+ source "sound/soc/sirf/Kconfig"
+ source "sound/soc/spear/Kconfig"
+ source "sound/soc/sti/Kconfig"
++source "sound/soc/stm/Kconfig"
+ source "sound/soc/sunxi/Kconfig"
+ source "sound/soc/tegra/Kconfig"
+ source "sound/soc/txx9/Kconfig"
+diff --git a/sound/soc/Makefile b/sound/soc/Makefile
+index 9a30f21..5440cf7 100644
+--- a/sound/soc/Makefile
++++ b/sound/soc/Makefile
+@@ -43,6 +43,7 @@ obj-$(CONFIG_SND_SOC)	+= sh/
+ obj-$(CONFIG_SND_SOC)	+= sirf/
+ obj-$(CONFIG_SND_SOC)	+= spear/
+ obj-$(CONFIG_SND_SOC)	+= sti/
++obj-$(CONFIG_SND_SOC)	+= stm/
+ obj-$(CONFIG_SND_SOC)	+= sunxi/
+ obj-$(CONFIG_SND_SOC)	+= tegra/
+ obj-$(CONFIG_SND_SOC)	+= txx9/
+diff --git a/sound/soc/stm/Kconfig b/sound/soc/stm/Kconfig
+new file mode 100644
+index 0000000..041ddb9
+--- /dev/null
++++ b/sound/soc/stm/Kconfig
+@@ -0,0 +1,10 @@
++menuconfig SND_SOC_STM32_DFSDM
++	tristate "SoC Audio support for STM32 DFSDM"
++	depends on (ARCH_STM32 && OF && STM32_DFSDM_ADC) || COMPILE_TEST
++	depends on SND_SOC
++	select SND_SOC_GENERIC_DMAENGINE_PCM
++	select SND_SOC_DMIC
++	help
++	  Select this option to enable the STM32 Digital Filter
++	  for Sigma Delta Modulators (DFSDM) driver used
++	  in various STM32 series for digital microphone capture.
+\ No newline at end of file
+diff --git a/sound/soc/stm/Makefile b/sound/soc/stm/Makefile
+new file mode 100644
+index 0000000..ea90240
+--- /dev/null
++++ b/sound/soc/stm/Makefile
+@@ -0,0 +1,2 @@
++#DFSDM
++obj-$(CONFIG_SND_SOC_STM32_DFSDM) += stm32_adfsdm.o
+diff --git a/sound/soc/stm/stm32_adfsdm.c b/sound/soc/stm/stm32_adfsdm.c
+new file mode 100644
+index 0000000..05c4186
+--- /dev/null
++++ b/sound/soc/stm/stm32_adfsdm.c
+@@ -0,0 +1,362 @@
++/*
++ * This file is part of STM32 DFSDM ASoC DAI driver
++ *
++ * Copyright (C) 2017, STMicroelectronics - All Rights Reserved
++ * Authors: Arnaud Pouliquen <arnaud.pouliquen@st.com>
++ *          Olivier Moysan <olivier.moysan@st.com>
++ *
++ * License type: GPLv2
++ *
++ * This program is free software; you can redistribute it and/or modify it
++ * under the terms of the GNU General Public License version 2 as published by
++ * the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful, but
++ * WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY
++ * or FITNESS FOR A PARTICULAR PURPOSE.
++ * See the GNU General Public License for more details.
++ *
++ * You should have received a copy of the GNU General Public License along with
++ * this program. If not, see <http://www.gnu.org/licenses/>.
++ */
++
++#include <linux/clk.h>
++#include <linux/module.h>
++#include <linux/platform_device.h>
++#include <linux/slab.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/consumer.h>
++#include <linux/iio/adc/stm32-dfsdm-audio.h>
++
++#include <sound/pcm.h>
++#include <sound/soc.h>
++
++#define STM32_ADFSDM_DRV_NAME "stm32-adfsdm"
++
++#define DFSDM_MAX_PERIOD_SIZE	(PAGE_SIZE / 2)
++#define DFSDM_MAX_PERIODS	6
++
++struct stm32_adfsdm_priv {
++	struct snd_soc_dai_driver dai_drv;
++	struct snd_pcm_substream *substream;
++
++	/* IIO */
++	struct iio_channel *iio_ch;
++	struct iio_cb_buffer *iio_cb;
++	bool iio_active;
++
++	/* PCM buffer */
++	unsigned char *pcm_buff;
++	unsigned int pos;
++};
++
++struct stm32_adfsdm_data {
++	unsigned int rate;	/* SNDRV_PCM_RATE value */
++	unsigned int freq;	/* frequency in Hz */
++};
++
++static const struct snd_pcm_hardware stm32_adfsdm_pcm_hw = {
++	.info = SNDRV_PCM_INFO_INTERLEAVED | SNDRV_PCM_INFO_BLOCK_TRANSFER |
++	    SNDRV_PCM_INFO_PAUSE,
++	.formats = SNDRV_PCM_FMTBIT_S32_LE,
++
++	.rate_min = 8000,
++	.rate_max = 32000,
++
++	.channels_min = 1,
++	.channels_max = 1,
++
++	.periods_min = 2,
++	.periods_max = DFSDM_MAX_PERIODS,
++
++	.period_bytes_min = 1,
++	.period_bytes_max = DFSDM_MAX_PERIOD_SIZE,
++	.buffer_bytes_max = DFSDM_MAX_PERIODS * DFSDM_MAX_PERIOD_SIZE
++};
++
++static void stm32_adfsdm_shutdown(struct snd_pcm_substream *substream,
++				  struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++
++	if (priv->iio_active) {
++		iio_channel_stop_all_cb(priv->iio_cb);
++		priv->iio_active = false;
++	}
++}
++
++int stm32_adfsdm_dai_prepare(struct snd_pcm_substream *substream,
++			     struct snd_soc_dai *dai)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++	char str_rate[10];
++	ssize_t size;
++	int ret = 0;
++
++	dev_dbg(dai->dev, "%s: rate :%d\n", __func__,
++		substream->runtime->rate);
++
++	snprintf(str_rate, sizeof(str_rate), "%d\n", substream->runtime->rate);
++	size = iio_write_channel_ext_info(priv->iio_ch, "audio_sampling_rate",
++					  str_rate, sizeof(str_rate));
++	if (size != sizeof(str_rate)) {
++		dev_err(dai->dev, "%s: Failed to set %s sampling rate\n",
++			__func__, str_rate);
++		return -EINVAL;
++	}
++
++	if (!priv->iio_active) {
++		ret = iio_channel_start_all_cb(priv->iio_cb);
++		if (!ret)
++			priv->iio_active = true;
++		else
++		dev_err(dai->dev, "%s: Failed to start IIO channel (%d)\n",
++			__func__, ret);
++	}
++
++	return ret;
++}
++
++static int stm32_adfsdm_set_sysclk(struct snd_soc_dai *dai, int clk_id,
++				   unsigned int freq, int dir)
++{
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(dai);
++	ssize_t size;
++
++	dev_dbg(dai->dev, "%s: Enter for freq %d\n", __func__, freq);
++
++	/* Set IIO frequency if CODEC is master as clock comes from SPI_IN*/
++	if (dir == SND_SOC_CLOCK_IN) {
++		char str_freq[10];
++
++		snprintf(str_freq, sizeof(str_freq), "%d\n", freq);
++		size = iio_write_channel_ext_info(priv->iio_ch, "spi_clk_freq",
++						  str_freq, sizeof(str_freq));
++		if (size != sizeof(str_freq)) {
++			dev_err(dai->dev, "%s: Failed to set SPI clock\n",
++				__func__);
++			return -EINVAL;
++		}
++	}
++	return 0;
++}
++
++static const struct snd_soc_dai_ops stm32_adfsdm_dai_ops = {
++	.shutdown = stm32_adfsdm_shutdown,
++	.prepare = stm32_adfsdm_dai_prepare,
++	.set_sysclk = stm32_adfsdm_set_sysclk,
++};
++
++static const struct snd_soc_dai_driver stm32_adfsdm_dai = {
++	.capture = {
++		    .channels_min = 1,
++		    .channels_max = 1,
++		    .formats = SNDRV_PCM_FMTBIT_S32_LE,
++		    .rates = (SNDRV_PCM_RATE_8000 | SNDRV_PCM_RATE_16000 |
++			      SNDRV_PCM_RATE_32000),
++		    },
++	.ops = &stm32_adfsdm_dai_ops,
++};
++
++static const struct snd_soc_component_driver stm32_adfsdm_dai_component = {
++	.name = "stm32_dfsdm_audio",
++};
++
++static int stm32_afsdm_pcm_cb(const void *data, size_t size, void *private)
++{
++	struct stm32_adfsdm_priv *priv = private;
++	struct snd_soc_pcm_runtime *rtd = priv->substream->private_data;
++	u8 *pcm_buff = priv->pcm_buff;
++	u8 *src_buff = (u8 *)data;
++	unsigned int buff_size = snd_pcm_lib_buffer_bytes(priv->substream);
++	unsigned int period_size = snd_pcm_lib_period_bytes(priv->substream);
++	unsigned int old_pos = priv->pos;
++	unsigned int cur_size = size;
++
++	dev_dbg(rtd->dev, "%s: buff_add :%p, pos = %d, size = %d\n",
++		__func__, &pcm_buff[priv->pos], priv->pos, size);
++
++	if ((priv->pos + size) > buff_size) {
++		memcpy(&pcm_buff[priv->pos], src_buff, buff_size - priv->pos);
++		cur_size -= buff_size - priv->pos;
++		priv->pos = 0;
++	}
++
++	memcpy(&pcm_buff[priv->pos], &src_buff[size - cur_size], cur_size);
++	priv->pos = (priv->pos + cur_size) % buff_size;
++
++	if ((cur_size != size) || (old_pos && (old_pos % period_size < size)))
++		snd_pcm_period_elapsed(priv->substream);
++
++	return 0;
++}
++
++static int stm32_adfsdm_trigger(struct snd_pcm_substream *substream, int cmd)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct stm32_adfsdm_priv *priv =
++		snd_soc_dai_get_drvdata(rtd->cpu_dai);
++
++	switch (cmd) {
++	case SNDRV_PCM_TRIGGER_START:
++	case SNDRV_PCM_TRIGGER_RESUME:
++		priv->pos = 0;
++		return stm32_dfsdm_get_buff_cb(priv->iio_ch->indio_dev,
++					stm32_afsdm_pcm_cb, priv);
++	case SNDRV_PCM_TRIGGER_SUSPEND:
++	case SNDRV_PCM_TRIGGER_STOP:
++		return stm32_dfsdm_release_buff_cb(priv->iio_ch->indio_dev);
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int stm32_adfsdm_pcm_open(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct stm32_adfsdm_priv *priv = snd_soc_dai_get_drvdata(rtd->cpu_dai);
++	int ret;
++
++	ret =  snd_soc_set_runtime_hwparams(substream, &stm32_adfsdm_pcm_hw);
++	if (!ret)
++		priv->substream = substream;
++
++	return ret;
++}
++
++static int stm32_adfsdm_pcm_close(struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct stm32_adfsdm_priv *priv =
++		snd_soc_dai_get_drvdata(rtd->cpu_dai);
++
++	snd_pcm_lib_free_pages(substream);
++	priv->substream = NULL;
++
++	return 0;
++}
++
++static snd_pcm_uframes_t stm32_adfsdm_pcm_pointer(
++					    struct snd_pcm_substream *substream)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct stm32_adfsdm_priv *priv =
++		snd_soc_dai_get_drvdata(rtd->cpu_dai);
++
++	return bytes_to_frames(substream->runtime, priv->pos);
++}
++
++static int stm32_adfsdm_pcm_hw_params(struct snd_pcm_substream *substream,
++				      struct snd_pcm_hw_params *params)
++{
++	struct snd_soc_pcm_runtime *rtd = substream->private_data;
++	struct stm32_adfsdm_priv *priv =
++		snd_soc_dai_get_drvdata(rtd->cpu_dai);
++	unsigned int period_bytes;
++	int ret;
++
++	period_bytes = params_buffer_bytes(params) / params_periods(params);
++	ret =  snd_pcm_lib_malloc_pages(substream, params_buffer_bytes(params));
++	if (ret < 0)
++		return ret;
++	priv->pcm_buff = substream->runtime->dma_area;
++
++	return iio_channel_cb_set_buffer_params(priv->iio_cb,
++						params_buffer_size(params),
++						params_period_size(params));
++}
++
++static int stm32_adfsdm_pcm_hw_free(struct snd_pcm_substream *substream)
++{
++	snd_pcm_lib_free_pages(substream);
++
++	return 0;
++}
++
++static struct snd_pcm_ops stm32_adfsdm_pcm_ops = {
++	.open		= stm32_adfsdm_pcm_open,
++	.close		= stm32_adfsdm_pcm_close,
++	.hw_params	= stm32_adfsdm_pcm_hw_params,
++	.hw_free	= stm32_adfsdm_pcm_hw_free,
++	.trigger	= stm32_adfsdm_trigger,
++	.pointer	= stm32_adfsdm_pcm_pointer,
++};
++
++static int stm32_adfsdm_pcm_new(struct snd_soc_pcm_runtime *rtd)
++{
++	struct snd_card *card = rtd->card->snd_card;
++	struct snd_pcm *pcm = rtd->pcm;
++	unsigned int size = DFSDM_MAX_PERIODS * DFSDM_MAX_PERIOD_SIZE;
++
++	return snd_pcm_lib_preallocate_pages_for_all(pcm, SNDRV_DMA_TYPE_DEV,
++						     card->dev, size, size);
++}
++
++static struct snd_soc_platform_driver stm32_adfsdm_soc_platform = {
++	.ops		= &stm32_adfsdm_pcm_ops,
++	.pcm_new	= stm32_adfsdm_pcm_new,
++};
++
++static const struct of_device_id stm32_adfsdm_of_match[] = {
++	{.compatible = "st,stm32h7-adfsdm"},
++	{}
++};
++MODULE_DEVICE_TABLE(of, stm32_adfsdm_of_match);
++
++static int stm32_adfsdm_probe(struct platform_device *pdev)
++{
++	struct stm32_adfsdm_priv *priv;
++	int ret;
++
++	priv = devm_kzalloc(&pdev->dev, sizeof(*priv), GFP_KERNEL);
++	if (!priv)
++		return -ENOMEM;
++
++	priv->dai_drv = stm32_adfsdm_dai;
++	priv->dai_drv.name = pdev->dev.of_node->name;
++	priv->dai_drv.capture.stream_name = pdev->dev.of_node->name;
++
++	dev_set_drvdata(&pdev->dev, priv);
++
++	ret = devm_snd_soc_register_component(&pdev->dev,
++					      &stm32_adfsdm_dai_component,
++					      &priv->dai_drv, 1);
++	if (ret < 0)
++		return ret;
++
++	/* Associate iio channel */
++	priv->iio_ch  = devm_iio_channel_get_all(&pdev->dev);
++	if (IS_ERR(priv->iio_ch))
++		return -ENODEV;
++
++	priv->iio_cb = iio_channel_get_all_cb(&pdev->dev, NULL, NULL);
++	if (IS_ERR(priv->iio_cb))
++		return -ENODEV;
++
++	ret = devm_snd_soc_register_platform(&pdev->dev,
++					     &stm32_adfsdm_soc_platform);
++	if (ret < 0)
++		dev_err(&pdev->dev, "%s: Failed to register PCM platform\n",
++			__func__);
++
++	return 0;
++}
++
++static struct platform_driver stm32_adfsdm_driver = {
++	.probe = stm32_adfsdm_probe,
++	.driver = {
++		   .name = STM32_ADFSDM_DRV_NAME,
++		   .of_match_table = stm32_adfsdm_of_match,
++		   },
++	.probe = stm32_adfsdm_probe,
++};
++
++module_platform_driver(stm32_adfsdm_driver);
++
++MODULE_DESCRIPTION("stm32 DFSDM DAI driver");
++MODULE_AUTHOR("Arnaud Pouliquen <arnaud.pouliquen@st.com>");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:" STM32_ADFSDM_DRV_NAME);
+-- 
+1.9.1
 
-Arnaud
-
-
-On 03/24/2017 03:52 PM, Rob Herring wrote:
-> On Fri, Mar 17, 2017 at 03:08:23PM +0100, Arnaud Pouliquen wrote:
->> Add bindings that describes audio settings to support
->> Digital Filter for pulse density modulation(PDM) microphone.
->>
->> Signed-off-by: Arnaud Pouliquen <arnaud.pouliquen@st.com>
->> ---
->> V2->V3:
->>    Fixes based on V2 comments
->>
->>  .../devicetree/bindings/sound/st,stm32-adfsdm.txt  | 41 ++++++++++++++++++++++
->>  1 file changed, 41 insertions(+)
->>  create mode 100644 Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
->>
->> diff --git a/Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt b/Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
->> new file mode 100644
->> index 0000000..ab610bc
->> --- /dev/null
->> +++ b/Documentation/devicetree/bindings/sound/st,stm32-adfsdm.txt
->> @@ -0,0 +1,40 @@
->> +STMicroelectronics audio DFSDM DT bindings
->> +
->> +This driver supports audio PDM microphone capture through Digital Filter format
->> +Sigma Delta modulators (DFSDM).
->> +
->> +Required properties:
->> +  - compatible: "st,stm32h7-adfsdm".
->> +
->> +  - #sound-dai-cells : Must be equal to 0
->> +
->> +  - io-channels : phandle to iio dfsdm instance node.
->> +
->> +
->> +Example of a simple sound card using audio DFSDM node.
->> +
->> +	dmic0: dmic_@0 {
-> 
-> Drop the '_' and unit address.
-> 
->> +		compatible = "dmic-codec";
->> +		#sound-dai-cells = <0>;
->> +	};
->> +
->> +	asoc-pdm@0 {
-> 
-> asoc is a Linux term. Drop the unit address.
-> 
->> +		compatible = "st,stm32h7-adfsdm";
-> 
-> Is this a separate block from the ADC? A drawing of the h/w blocks and 
-> connections would help.
-I don't know how to explain it...So don't hesitate is still not clear.
-On DFSDM we can connect 2 ADC types:
-- Generic Sigma delta(SD) ADC for analog to digital conversion
-- Digital microphones for audio capture.
-
-In both cases, an SPI or Manchester bus is used to transfer 1-bit stream
- to DFSDM.
-1) In case of SD ADC, The link is described in IIO declaration using
-"io-channels" property ( [04/11] IIO: add DT bindings for stm32 DFSDM
-filter)
-2) For audio purpose, the link is done by the simple or the graph card
-So this device exposes the Digital audio interface (DAI) associated to
-the DFSDM ADC.
-Link between the DFSDM DAI and the DFSDM IIO device is done through the
-"io-channels" property.
-
-> 
->> +		#sound-dai-cells = <0>;
->> +		io-channels = <&dfsdm_adc0 0>;
->> +	};
->> +
->> +	sound_dfsdm_pdm {
-> 
-> sound-card {
-> 
->> + 		compatible = "simple-audio-card";
->> + 		simple-audio-card,name = "dfsdm_pdm";
->> +
->> + 		dfsdm0_mic0: simple-audio-card,dai-link@0 {
-> 
-> I'd suggest moving to the graph card.
-yes should be in V4
-> 
->> + 			format = "pdm";
->> + 			cpu {
->> + 				sound-dai = <&asoc_pdm1>;
-> 
-> This phandle doesn't point to anything.
-> 
->> + 			};
->> + 			dmic0_codec: codec {
->> + 				sound-dai = <&dmic0>;
->> + 			};
->> + 		};
->> +	};
->> \ No newline at end of file
-> 
-> ^^^
-> 
->> -- 
->> 1.9.1
->>
