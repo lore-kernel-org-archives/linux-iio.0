@@ -1,925 +1,1185 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48012 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751181AbdCSJjN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2017 05:39:13 -0400
-Subject: Re: [PATCH 2/5] iio: adc: break out common code from SPMI VADC
-To: Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org,
+Received: from mail-lf0-f42.google.com ([209.85.215.42]:35918 "EHLO
+        mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751007AbdCRP2l (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2017 11:28:41 -0400
+Received: by mail-lf0-f42.google.com with SMTP id y193so42484941lfd.3
+        for <linux-iio@vger.kernel.org>; Sat, 18 Mar 2017 08:28:39 -0700 (PDT)
+From: Linus Walleij <linus.walleij@linaro.org>
+To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Bjorn Andersson <bjorn.andersson@linaro.org>
-References: <20170318133415.22365-1-linus.walleij@linaro.org>
-Cc: linux-arm-kernel@lists.infradead.org,
+Cc: Linus Walleij <linus.walleij@linaro.org>,
+        linux-arm-kernel@lists.infradead.org,
         linux-arm-msm@vger.kernel.org,
         "Ivan T . Ivanov" <iivanov.xz@gmail.com>,
         Andy Gross <andy.gross@linaro.org>,
         Stephen Boyd <sboyd@codeaurora.org>,
         Srinivas Kandagatla <srinivas.kandagatla@linaro.org>,
         Rama Krishna Phani A <rphani@codeaurora.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6c2c3fd9-867a-ac3c-38a9-07e8f0e2c16f@kernel.org>
-Date: Sun, 19 Mar 2017 09:36:35 +0000
+Subject: [PATCH 3/5] iio: adc: add a driver for Qualcomm PM8xxx HK/XOADC
+Date: Sat, 18 Mar 2017 14:34:25 +0100
+Message-Id: <20170318133425.22418-1-linus.walleij@linaro.org>
 MIME-Version: 1.0
-In-Reply-To: <20170318133415.22365-1-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/03/17 13:34, Linus Walleij wrote:
-> The SPMI VADC and the earlier XOADC share a subset of
-> common code, so to be able to use the same code in both
-> drivers, we break out a separate file with the common code,
-> prefix exported functions that are no longer static with
-> qcom_* and bake an object qcom-spmi-vadc.o that contains both
-> files: qcom-vadc-common.o and qcom-spmi-vadc-core.o.
-> 
-> As we need to follow the procedure for making a kernel module
-> or compiled in object from several files, but still want to
-> produce the same module name, rename the qcom-spmi-vadc.c
-> file to qcom-spmi-vadc-core.c so we can bake the two objects
-> into qcom-spmi-vadc.o
-> 
-> Cc: linux-arm-kernel@lists.infradead.org
-> Cc: linux-arm-msm@vger.kernel.org
-> Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
-> Cc: Andy Gross <andy.gross@linaro.org>
-> Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
-> Cc: Stephen Boyd <sboyd@codeaurora.org>
-> Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
-> Cc: Rama Krishna Phani A <rphani@codeaurora.org>
-> Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Looks fine to me (nearly was last time ;)  Will pickup once the
-bindings discussion is complete.
+The Qualcomm PM8xxx PMICs contain a simpler ADC than its
+successors (already in the kernel as qcom-spmi-vadc.c):
+the HK/XO ADC (Housekeeping/Chrystal oscillator ADC).
 
-Jonathan
-> ---
-> ChangeLog v4->v5:
-> - Fix kernel build again. Give up and create a helper module
->   with EXPORT_SYMBOL() functions. It works for allyes and allmod,
->   finally. YES I TESTED IT THOROUGHLY:
-:)
-> 
->   x86_64 allmodconfig:
->   CC [M]  kernel/configs.o
->   CC [M]  drivers/iio/adc/qcom-vadc-common.o
->   CC [M]  drivers/iio/adc/qcom-spmi-vadc.o
->   CC [M]  drivers/iio/adc/qcom-pm8xxx-xoadc.o
->   Building modules, stage 2.
->   MODPOST 6247 modules
->   CC      drivers/iio/adc/qcom-pm8xxx-xoadc.mod.o
->   CC      drivers/iio/adc/qcom-vadc-common.mod.o
->   CC      drivers/iio/adc/qcom-spmi-vadc.mod.o
->   CC      kernel/configs.mod.o
->   LD [M]  drivers/iio/adc/qcom-pm8xxx-xoadc.ko
->   LD [M]  drivers/iio/adc/qcom-spmi-vadc.ko
->   LD [M]  drivers/iio/adc/qcom-vadc-common.ko
->   LD [M]  kernel/configs.ko
-> 
->   x86_64 allyesconfig:
->   CC      drivers/iio/adc/qcom-vadc-common.o
->   CC      drivers/iio/adc/qcom-spmi-vadc.o
->   CC      drivers/iio/adc/qcom-pm8xxx-xoadc.o
->   LD      drivers/iio/adc/built-in.o
->   LD      drivers/iio/built-in.o
->   LD      vmlinux.o
->   MODPOST vmlinux.o
->   KSYM    .tmp_kallsyms1.o
->   KSYM    .tmp_kallsyms2.o
->   LD      vmlinux
-> 
->   So help me God. And sorry for wasting so much of your time with
->   these build issues. :( :( :(
-> 
-> - Missing inclusion guard in the .h file.
-> ChangeLog v3->v4:
-> - Fix up the kernel build, tested with allyes and allmod.
-> ChangeLog v2->v3:
-> - Rewrite on top of Rama Krishna's changes. Now we use the
->   generic channel properties, calibration graph and prescale
->   settings in all VADC drivers. I did away with the vtable
->   indirection which I just don't see the point of, it's
->   better to just pass the type of conversion function around
->   and have a switch case select the conversion. It was done like
->   that in the vendor tree but it's not a good idea.
-> ChangeLog v1->v2:
-> - No changes just reposting
-> ---
->  drivers/iio/adc/Kconfig            |   4 +
->  drivers/iio/adc/Makefile           |   1 +
->  drivers/iio/adc/qcom-spmi-vadc.c   | 325 ++-----------------------------------
->  drivers/iio/adc/qcom-vadc-common.c | 230 ++++++++++++++++++++++++++
->  drivers/iio/adc/qcom-vadc-common.h | 108 ++++++++++++
->  5 files changed, 358 insertions(+), 310 deletions(-)
->  create mode 100644 drivers/iio/adc/qcom-vadc-common.c
->  create mode 100644 drivers/iio/adc/qcom-vadc-common.h
-> 
-> diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
-> index dedae7adbce9..8720e1c706fe 100644
-> --- a/drivers/iio/adc/Kconfig
-> +++ b/drivers/iio/adc/Kconfig
-> @@ -442,6 +442,9 @@ config PALMAS_GPADC
->  	  is used in smartphones and tablets and supports a 16 channel
->  	  general purpose ADC.
->  
-> +config QCOM_VADC_COMMON
-> +	tristate
-> +
->  config QCOM_SPMI_IADC
->  	tristate "Qualcomm SPMI PMIC current ADC"
->  	depends on SPMI
-> @@ -460,6 +463,7 @@ config QCOM_SPMI_VADC
->  	tristate "Qualcomm SPMI PMIC voltage ADC"
->  	depends on SPMI
->  	select REGMAP_SPMI
-> +	select QCOM_VADC_COMMON
->  	help
->  	  This is the IIO Voltage ADC driver for Qualcomm QPNP VADC Chip.
->  
-> diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
-> index d0012620cd1c..8c2e294042ae 100644
-> --- a/drivers/iio/adc/Makefile
-> +++ b/drivers/iio/adc/Makefile
-> @@ -43,6 +43,7 @@ obj-$(CONFIG_MXS_LRADC) += mxs-lradc.o
->  obj-$(CONFIG_NAU7802) += nau7802.o
->  obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
->  obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
-> +obj-$(CONFIG_QCOM_VADC_COMMON) += qcom-vadc-common.o
->  obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
->  obj-$(CONFIG_RCAR_GYRO_ADC) += rcar-gyroadc.o
->  obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
-> diff --git a/drivers/iio/adc/qcom-spmi-vadc.c b/drivers/iio/adc/qcom-spmi-vadc.c
-> index 0a19761d656c..9e600bfd1765 100644
-> --- a/drivers/iio/adc/qcom-spmi-vadc.c
-> +++ b/drivers/iio/adc/qcom-spmi-vadc.c
-> @@ -28,6 +28,8 @@
->  
->  #include <dt-bindings/iio/qcom,spmi-vadc.h>
->  
-> +#include "qcom-vadc-common.h"
-> +
->  /* VADC register and bit definitions */
->  #define VADC_REVISION2				0x1
->  #define VADC_REVISION2_SUPPORTED_VADC		1
-> @@ -75,84 +77,10 @@
->  
->  #define VADC_DATA				0x60	/* 16 bits */
->  
-> -#define VADC_CONV_TIME_MIN_US			2000
-> -#define VADC_CONV_TIME_MAX_US			2100
-> -
-> -/* Min ADC code represents 0V */
-> -#define VADC_MIN_ADC_CODE			0x6000
-> -/* Max ADC code represents full-scale range of 1.8V */
-> -#define VADC_MAX_ADC_CODE			0xa800
-> -
-> -#define VADC_ABSOLUTE_RANGE_UV			625000
-> -#define VADC_RATIOMETRIC_RANGE			1800
-> -
-> -#define VADC_DEF_PRESCALING			0 /* 1:1 */
-> -#define VADC_DEF_DECIMATION			0 /* 512 */
-> -#define VADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
-> -#define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
-> -#define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
-> -
-> -#define VADC_DECIMATION_MIN			512
-> -#define VADC_DECIMATION_MAX			4096
-> -
-> -#define VADC_HW_SETTLE_DELAY_MAX		10000
-> -#define VADC_AVG_SAMPLES_MAX			512
-> -
-> -#define KELVINMIL_CELSIUSMIL			273150
-> -
-> -#define PMI_CHG_SCALE_1				-138890
-> -#define PMI_CHG_SCALE_2				391750000000LL
-> -
->  #define VADC_CHAN_MIN			VADC_USBIN
->  #define VADC_CHAN_MAX			VADC_LR_MUX3_BUF_PU1_PU2_XO_THERM
->  
->  /**
-> - * struct vadc_map_pt - Map the graph representation for ADC channel
-> - * @x: Represent the ADC digitized code.
-> - * @y: Represent the physical data which can be temperature, voltage,
-> - *     resistance.
-> - */
-> -struct vadc_map_pt {
-> -	s32 x;
-> -	s32 y;
-> -};
-> -
-> -/*
-> - * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-> - * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-> - * calibration.
-> - */
-> -enum vadc_calibration {
-> -	VADC_CALIB_ABSOLUTE = 0,
-> -	VADC_CALIB_RATIOMETRIC
-> -};
-> -
-> -/**
-> - * struct vadc_linear_graph - Represent ADC characteristics.
-> - * @dy: numerator slope to calculate the gain.
-> - * @dx: denominator slope to calculate the gain.
-> - * @gnd: A/D word of the ground reference used for the channel.
-> - *
-> - * Each ADC device has different offset and gain parameters which are
-> - * computed to calibrate the device.
-> - */
-> -struct vadc_linear_graph {
-> -	s32 dy;
-> -	s32 dx;
-> -	s32 gnd;
-> -};
-> -
-> -/**
-> - * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-> - * @num: the inverse numerator of the gain applied to the input channel.
-> - * @den: the inverse denominator of the gain applied to the input channel.
-> - */
-> -struct vadc_prescale_ratio {
-> -	u32 num;
-> -	u32 den;
-> -};
-> -
-> -/**
->   * struct vadc_channel_prop - VADC channel property.
->   * @channel: channel number, refer to the channel list.
->   * @calibration: calibration type.
-> @@ -162,9 +90,8 @@ struct vadc_prescale_ratio {
->   *	start of conversion.
->   * @avg_samples: ability to provide single result from the ADC
->   *	that is an average of multiple measurements.
-> - * @scale_fn: Represents the scaling function to convert voltage
-> + * @scale_fn_type: Represents the scaling function to convert voltage
->   *	physical units desired by the client for the channel.
-> - *	Referenced from enum vadc_scale_fn_type.
->   */
->  struct vadc_channel_prop {
->  	unsigned int channel;
-> @@ -173,7 +100,7 @@ struct vadc_channel_prop {
->  	unsigned int prescale;
->  	unsigned int hw_settle_time;
->  	unsigned int avg_samples;
-> -	unsigned int scale_fn;
-> +	enum vadc_scale_fn_type scale_fn_type;
->  };
->  
->  /**
-> @@ -204,35 +131,6 @@ struct vadc_priv {
->  	struct mutex		 lock;
->  };
->  
-> -/**
-> - * struct vadc_scale_fn - Scaling function prototype
-> - * @scale: Function pointer to one of the scaling functions
-> - *	which takes the adc properties, channel properties,
-> - *	and returns the physical result.
-> - */
-> -struct vadc_scale_fn {
-> -	int (*scale)(struct vadc_priv *, const struct vadc_channel_prop *,
-> -		     u16, int *);
-> -};
-> -
-> -/**
-> - * enum vadc_scale_fn_type - Scaling function to convert ADC code to
-> - *				physical scaled units for the channel.
-> - * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
-> - * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
-> - *				 Uses a mapping table with 100K pullup.
-> - * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
-> - * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
-> - * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
-> - */
-> -enum vadc_scale_fn_type {
-> -	SCALE_DEFAULT = 0,
-> -	SCALE_THERM_100K_PULLUP,
-> -	SCALE_PMIC_THERM,
-> -	SCALE_XOTHERM,
-> -	SCALE_PMI_CHG_TEMP,
-> -};
-> -
->  static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
->  	{.num =  1, .den =  1},
->  	{.num =  1, .den =  3},
-> @@ -244,44 +142,6 @@ static const struct vadc_prescale_ratio vadc_prescale_ratios[] = {
->  	{.num =  1, .den = 10}
->  };
->  
-> -/* Voltage to temperature */
-> -static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
-> -	{1758,	-40},
-> -	{1742,	-35},
-> -	{1719,	-30},
-> -	{1691,	-25},
-> -	{1654,	-20},
-> -	{1608,	-15},
-> -	{1551,	-10},
-> -	{1483,	-5},
-> -	{1404,	0},
-> -	{1315,	5},
-> -	{1218,	10},
-> -	{1114,	15},
-> -	{1007,	20},
-> -	{900,	25},
-> -	{795,	30},
-> -	{696,	35},
-> -	{605,	40},
-> -	{522,	45},
-> -	{448,	50},
-> -	{383,	55},
-> -	{327,	60},
-> -	{278,	65},
-> -	{237,	70},
-> -	{202,	75},
-> -	{172,	80},
-> -	{146,	85},
-> -	{125,	90},
-> -	{107,	95},
-> -	{92,	100},
-> -	{79,	105},
-> -	{68,	110},
-> -	{59,	115},
-> -	{51,	120},
-> -	{44,	125}
-> -};
-> -
->  static int vadc_read(struct vadc_priv *vadc, u16 offset, u8 *data)
->  {
->  	return regmap_bulk_read(vadc->regmap, vadc->base + offset, data, 1);
-> @@ -553,159 +413,6 @@ static int vadc_measure_ref_points(struct vadc_priv *vadc)
->  	return ret;
->  }
->  
-> -static int vadc_map_voltage_temp(const struct vadc_map_pt *pts,
-> -				 u32 tablesize, s32 input, s64 *output)
-> -{
-> -	bool descending = 1;
-> -	u32 i = 0;
-> -
-> -	if (!pts)
-> -		return -EINVAL;
-> -
-> -	/* Check if table is descending or ascending */
-> -	if (tablesize > 1) {
-> -		if (pts[0].x < pts[1].x)
-> -			descending = 0;
-> -	}
-> -
-> -	while (i < tablesize) {
-> -		if ((descending) && (pts[i].x < input)) {
-> -			/* table entry is less than measured*/
-> -			 /* value and table is descending, stop */
-> -			break;
-> -		} else if ((!descending) &&
-> -				(pts[i].x > input)) {
-> -			/* table entry is greater than measured*/
-> -			/*value and table is ascending, stop */
-> -			break;
-> -		}
-> -		i++;
-> -	}
-> -
-> -	if (i == 0) {
-> -		*output = pts[0].y;
-> -	} else if (i == tablesize) {
-> -		*output = pts[tablesize - 1].y;
-> -	} else {
-> -		/* result is between search_index and search_index-1 */
-> -		/* interpolate linearly */
-> -		*output = (((s32)((pts[i].y - pts[i - 1].y) *
-> -			(input - pts[i - 1].x)) /
-> -			(pts[i].x - pts[i - 1].x)) +
-> -			pts[i - 1].y);
-> -	}
-> -
-> -	return 0;
-> -}
-> -
-> -static void vadc_scale_calib(struct vadc_priv *vadc, u16 adc_code,
-> -			     const struct vadc_channel_prop *prop,
-> -			     s64 *scale_voltage)
-> -{
-> -	*scale_voltage = (adc_code -
-> -		vadc->graph[prop->calibration].gnd);
-> -	*scale_voltage *= vadc->graph[prop->calibration].dx;
-> -	*scale_voltage = div64_s64(*scale_voltage,
-> -		vadc->graph[prop->calibration].dy);
-> -	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> -		*scale_voltage +=
-> -		vadc->graph[prop->calibration].dx;
-> -
-> -	if (*scale_voltage < 0)
-> -		*scale_voltage = 0;
-> -}
-> -
-> -static int vadc_scale_volt(struct vadc_priv *vadc,
-> -			   const struct vadc_channel_prop *prop, u16 adc_code,
-> -			   int *result_uv)
-> -{
-> -	const struct vadc_prescale_ratio *prescale;
-> -	s64 voltage = 0, result = 0;
-> -
-> -	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-> -
-> -	prescale = &vadc_prescale_ratios[prop->prescale];
-> -	voltage = voltage * prescale->den;
-> -	result = div64_s64(voltage, prescale->num);
-> -	*result_uv = result;
-> -
-> -	return 0;
-> -}
-> -
-> -static int vadc_scale_therm(struct vadc_priv *vadc,
-> -			    const struct vadc_channel_prop *prop, u16 adc_code,
-> -			    int *result_mdec)
-> -{
-> -	s64 voltage = 0, result = 0;
-> -
-> -	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-> -
-> -	if (prop->calibration == VADC_CALIB_ABSOLUTE)
-> -		voltage = div64_s64(voltage, 1000);
-> -
-> -	vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
-> -			      ARRAY_SIZE(adcmap_100k_104ef_104fb),
-> -			      voltage, &result);
-> -	result *= 1000;
-> -	*result_mdec = result;
-> -
-> -	return 0;
-> -}
-> -
-> -static int vadc_scale_die_temp(struct vadc_priv *vadc,
-> -			       const struct vadc_channel_prop *prop,
-> -			       u16 adc_code, int *result_mdec)
-> -{
-> -	const struct vadc_prescale_ratio *prescale;
-> -	s64 voltage = 0;
-> -	u64 temp; /* Temporary variable for do_div */
-> -
-> -	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-> -
-> -	if (voltage > 0) {
-> -		prescale = &vadc_prescale_ratios[prop->prescale];
-> -		temp = voltage * prescale->den;
-> -		do_div(temp, prescale->num * 2);
-> -		voltage = temp;
-> -	} else {
-> -		voltage = 0;
-> -	}
-> -
-> -	voltage -= KELVINMIL_CELSIUSMIL;
-> -	*result_mdec = voltage;
-> -
-> -	return 0;
-> -}
-> -
-> -static int vadc_scale_chg_temp(struct vadc_priv *vadc,
-> -			       const struct vadc_channel_prop *prop,
-> -			       u16 adc_code, int *result_mdec)
-> -{
-> -	const struct vadc_prescale_ratio *prescale;
-> -	s64 voltage = 0, result = 0;
-> -
-> -	vadc_scale_calib(vadc, adc_code, prop, &voltage);
-> -
-> -	prescale = &vadc_prescale_ratios[prop->prescale];
-> -	voltage = voltage * prescale->den;
-> -	voltage = div64_s64(voltage, prescale->num);
-> -	voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
-> -	voltage = (voltage + PMI_CHG_SCALE_2);
-> -	result =  div64_s64(voltage, 1000000);
-> -	*result_mdec = result;
-> -
-> -	return 0;
-> -}
-> -
-> -static int vadc_decimation_from_dt(u32 value)
-> -{
-> -	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
-> -	    value > VADC_DECIMATION_MAX)
-> -		return -EINVAL;
-> -
-> -	return __ffs64(value / VADC_DECIMATION_MIN);
-> -}
-> -
->  static int vadc_prescaling_from_dt(u32 num, u32 den)
->  {
->  	unsigned int pre;
-> @@ -742,14 +449,6 @@ static int vadc_avg_samples_from_dt(u32 value)
->  	return __ffs64(value);
->  }
->  
-> -static struct vadc_scale_fn scale_fn[] = {
-> -	[SCALE_DEFAULT] = {vadc_scale_volt},
-> -	[SCALE_THERM_100K_PULLUP] = {vadc_scale_therm},
-> -	[SCALE_PMIC_THERM] = {vadc_scale_die_temp},
-> -	[SCALE_XOTHERM] = {vadc_scale_therm},
-> -	[SCALE_PMI_CHG_TEMP] = {vadc_scale_chg_temp},
-> -};
-> -
->  static int vadc_read_raw(struct iio_dev *indio_dev,
->  			 struct iio_chan_spec const *chan, int *val, int *val2,
->  			 long mask)
-> @@ -766,7 +465,13 @@ static int vadc_read_raw(struct iio_dev *indio_dev,
->  		if (ret)
->  			break;
->  
-> -		scale_fn[prop->scale_fn].scale(vadc, prop, adc_code, val);
-> +		ret = qcom_vadc_scale(prop->scale_fn_type,
-> +				&vadc->graph[prop->calibration],
-> +				&vadc_prescale_ratios[prop->prescale],
-> +				(prop->calibration == VADC_CALIB_ABSOLUTE),
-> +				adc_code, val);
-> +		if (ret)
-> +			break;
->  
->  		return IIO_VAL_INT;
->  	case IIO_CHAN_INFO_RAW:
-> @@ -809,7 +514,7 @@ struct vadc_channels {
->  	unsigned int prescale_index;
->  	enum iio_chan_type type;
->  	long info_mask;
-> -	unsigned int scale_fn;
-> +	enum vadc_scale_fn_type scale_fn_type;
->  };
->  
->  #define VADC_CHAN(_dname, _type, _mask, _pre, _scale)			\
-> @@ -818,7 +523,7 @@ struct vadc_channels {
->  		.prescale_index = _pre,					\
->  		.type = _type,						\
->  		.info_mask = _mask,					\
-> -		.scale_fn = _scale					\
-> +		.scale_fn_type = _scale					\
->  	},								\
->  
->  #define VADC_NO_CHAN(_dname, _type, _mask, _pre)			\
-> @@ -976,7 +681,7 @@ static int vadc_get_dt_channel_data(struct device *dev,
->  
->  	ret = of_property_read_u32(node, "qcom,decimation", &value);
->  	if (!ret) {
-> -		ret = vadc_decimation_from_dt(value);
-> +		ret = qcom_vadc_decimation_from_dt(value);
->  		if (ret < 0) {
->  			dev_err(dev, "%02x invalid decimation %d\n",
->  				chan, value);
-> @@ -1068,7 +773,7 @@ static int vadc_get_dt_data(struct vadc_priv *vadc, struct device_node *node)
->  			return ret;
->  		}
->  
-> -		prop.scale_fn = vadc_chans[prop.channel].scale_fn;
-> +		prop.scale_fn_type = vadc_chans[prop.channel].scale_fn_type;
->  		vadc->chan_props[index] = prop;
->  
->  		vadc_chan = &vadc_chans[prop.channel];
-> diff --git a/drivers/iio/adc/qcom-vadc-common.c b/drivers/iio/adc/qcom-vadc-common.c
-> new file mode 100644
-> index 000000000000..102fc51b10aa
-> --- /dev/null
-> +++ b/drivers/iio/adc/qcom-vadc-common.c
-> @@ -0,0 +1,230 @@
-> +#include <linux/bug.h>
-> +#include <linux/kernel.h>
-> +#include <linux/bitops.h>
-> +#include <linux/math64.h>
-> +#include <linux/log2.h>
-> +#include <linux/err.h>
-> +
-> +#include "qcom-vadc-common.h"
-> +
-> +/* Voltage to temperature */
-> +static const struct vadc_map_pt adcmap_100k_104ef_104fb[] = {
-> +	{1758,	-40},
-> +	{1742,	-35},
-> +	{1719,	-30},
-> +	{1691,	-25},
-> +	{1654,	-20},
-> +	{1608,	-15},
-> +	{1551,	-10},
-> +	{1483,	-5},
-> +	{1404,	0},
-> +	{1315,	5},
-> +	{1218,	10},
-> +	{1114,	15},
-> +	{1007,	20},
-> +	{900,	25},
-> +	{795,	30},
-> +	{696,	35},
-> +	{605,	40},
-> +	{522,	45},
-> +	{448,	50},
-> +	{383,	55},
-> +	{327,	60},
-> +	{278,	65},
-> +	{237,	70},
-> +	{202,	75},
-> +	{172,	80},
-> +	{146,	85},
-> +	{125,	90},
-> +	{107,	95},
-> +	{92,	100},
-> +	{79,	105},
-> +	{68,	110},
-> +	{59,	115},
-> +	{51,	120},
-> +	{44,	125}
-> +};
-> +
-> +static int qcom_vadc_map_voltage_temp(const struct vadc_map_pt *pts,
-> +				      u32 tablesize, s32 input, s64 *output)
-> +{
-> +	bool descending = 1;
-> +	u32 i = 0;
-> +
-> +	if (!pts)
-> +		return -EINVAL;
-> +
-> +	/* Check if table is descending or ascending */
-> +	if (tablesize > 1) {
-> +		if (pts[0].x < pts[1].x)
-> +			descending = 0;
-> +	}
-> +
-> +	while (i < tablesize) {
-> +		if ((descending) && (pts[i].x < input)) {
-> +			/* table entry is less than measured*/
-> +			 /* value and table is descending, stop */
-> +			break;
-> +		} else if ((!descending) &&
-> +				(pts[i].x > input)) {
-> +			/* table entry is greater than measured*/
-> +			/*value and table is ascending, stop */
-> +			break;
-> +		}
-> +		i++;
-> +	}
-> +
-> +	if (i == 0) {
-> +		*output = pts[0].y;
-> +	} else if (i == tablesize) {
-> +		*output = pts[tablesize - 1].y;
-> +	} else {
-> +		/* result is between search_index and search_index-1 */
-> +		/* interpolate linearly */
-> +		*output = (((s32)((pts[i].y - pts[i - 1].y) *
-> +			(input - pts[i - 1].x)) /
-> +			(pts[i].x - pts[i - 1].x)) +
-> +			pts[i - 1].y);
-> +	}
-> +
-> +	return 0;
-> +}
-> +
-> +static void qcom_vadc_scale_calib(const struct vadc_linear_graph *calib_graph,
-> +				  u16 adc_code,
-> +				  bool absolute,
-> +				  s64 *scale_voltage)
-> +{
-> +	*scale_voltage = (adc_code - calib_graph->gnd);
-> +	*scale_voltage *= calib_graph->dx;
-> +	*scale_voltage = div64_s64(*scale_voltage, calib_graph->dy);
-> +	if (absolute)
-> +		*scale_voltage += calib_graph->dx;
-> +
-> +	if (*scale_voltage < 0)
-> +		*scale_voltage = 0;
-> +}
-> +
-> +static int qcom_vadc_scale_volt(const struct vadc_linear_graph *calib_graph,
-> +				const struct vadc_prescale_ratio *prescale,
-> +				bool absolute, u16 adc_code,
-> +				int *result_uv)
-> +{
-> +	s64 voltage = 0, result = 0;
-> +
-> +	qcom_vadc_scale_calib(calib_graph, adc_code, absolute, &voltage);
-> +
-> +	voltage = voltage * prescale->den;
-> +	result = div64_s64(voltage, prescale->num);
-> +	*result_uv = result;
-> +
-> +	return 0;
-> +}
-> +
-> +static int qcom_vadc_scale_therm(const struct vadc_linear_graph *calib_graph,
-> +				 const struct vadc_prescale_ratio *prescale,
-> +				 bool absolute, u16 adc_code,
-> +				 int *result_mdec)
-> +{
-> +	s64 voltage = 0, result = 0;
-> +	int ret;
-> +
-> +	qcom_vadc_scale_calib(calib_graph, adc_code, absolute, &voltage);
-> +
-> +	if (absolute)
-> +		voltage = div64_s64(voltage, 1000);
-> +
-> +	ret = qcom_vadc_map_voltage_temp(adcmap_100k_104ef_104fb,
-> +					 ARRAY_SIZE(adcmap_100k_104ef_104fb),
-> +					 voltage, &result);
-> +	if (ret)
-> +		return ret;
-> +
-> +	result *= 1000;
-> +	*result_mdec = result;
-> +
-> +	return 0;
-> +}
-> +
-> +static int qcom_vadc_scale_die_temp(const struct vadc_linear_graph *calib_graph,
-> +				    const struct vadc_prescale_ratio *prescale,
-> +				    bool absolute,
-> +				    u16 adc_code, int *result_mdec)
-> +{
-> +	s64 voltage = 0;
-> +	u64 temp; /* Temporary variable for do_div */
-> +
-> +	qcom_vadc_scale_calib(calib_graph, adc_code, absolute, &voltage);
-> +
-> +	if (voltage > 0) {
-> +		temp = voltage * prescale->den;
-> +		do_div(temp, prescale->num * 2);
-> +		voltage = temp;
-> +	} else {
-> +		voltage = 0;
-> +	}
-> +
-> +	voltage -= KELVINMIL_CELSIUSMIL;
-> +	*result_mdec = voltage;
-> +
-> +	return 0;
-> +}
-> +
-> +static int qcom_vadc_scale_chg_temp(const struct vadc_linear_graph *calib_graph,
-> +				    const struct vadc_prescale_ratio *prescale,
-> +				    bool absolute,
-> +				    u16 adc_code, int *result_mdec)
-> +{
-> +	s64 voltage = 0, result = 0;
-> +
-> +	qcom_vadc_scale_calib(calib_graph, adc_code, absolute, &voltage);
-> +
-> +	voltage = voltage * prescale->den;
-> +	voltage = div64_s64(voltage, prescale->num);
-> +	voltage = ((PMI_CHG_SCALE_1) * (voltage * 2));
-> +	voltage = (voltage + PMI_CHG_SCALE_2);
-> +	result =  div64_s64(voltage, 1000000);
-> +	*result_mdec = result;
-> +
-> +	return 0;
-> +}
-> +
-> +int qcom_vadc_scale(enum vadc_scale_fn_type scaletype,
-> +		    const struct vadc_linear_graph *calib_graph,
-> +		    const struct vadc_prescale_ratio *prescale,
-> +		    bool absolute,
-> +		    u16 adc_code, int *result)
-> +{
-> +	switch (scaletype) {
-> +	case SCALE_DEFAULT:
-> +		return qcom_vadc_scale_volt(calib_graph, prescale,
-> +					    absolute, adc_code,
-> +					    result);
-> +	case SCALE_THERM_100K_PULLUP:
-> +	case SCALE_XOTHERM:
-> +		return qcom_vadc_scale_therm(calib_graph, prescale,
-> +					     absolute, adc_code,
-> +					     result);
-> +	case SCALE_PMIC_THERM:
-> +		return qcom_vadc_scale_die_temp(calib_graph, prescale,
-> +						absolute, adc_code,
-> +						result);
-> +	case SCALE_PMI_CHG_TEMP:
-> +		return qcom_vadc_scale_chg_temp(calib_graph, prescale,
-> +						absolute, adc_code,
-> +						result);
-> +	default:
-> +		return -EINVAL;
-> +	}
-> +}
-> +EXPORT_SYMBOL(qcom_vadc_scale);
-> +
-> +int qcom_vadc_decimation_from_dt(u32 value)
-> +{
-> +	if (!is_power_of_2(value) || value < VADC_DECIMATION_MIN ||
-> +	    value > VADC_DECIMATION_MAX)
-> +		return -EINVAL;
-> +
-> +	return __ffs64(value / VADC_DECIMATION_MIN);
-> +}
-> +EXPORT_SYMBOL(qcom_vadc_decimation_from_dt);
-> diff --git a/drivers/iio/adc/qcom-vadc-common.h b/drivers/iio/adc/qcom-vadc-common.h
-> new file mode 100644
-> index 000000000000..63c872a70adc
-> --- /dev/null
-> +++ b/drivers/iio/adc/qcom-vadc-common.h
-> @@ -0,0 +1,108 @@
-> +/*
-> + * Code shared between the different Qualcomm PMIC voltage ADCs
-> + */
-> +
-> +#ifndef QCOM_VADC_COMMON_H
-> +#define QCOM_VADC_COMMON_H
-> +
-> +#define VADC_CONV_TIME_MIN_US			2000
-> +#define VADC_CONV_TIME_MAX_US			2100
-> +
-> +/* Min ADC code represents 0V */
-> +#define VADC_MIN_ADC_CODE			0x6000
-> +/* Max ADC code represents full-scale range of 1.8V */
-> +#define VADC_MAX_ADC_CODE			0xa800
-> +
-> +#define VADC_ABSOLUTE_RANGE_UV			625000
-> +#define VADC_RATIOMETRIC_RANGE			1800
-> +
-> +#define VADC_DEF_PRESCALING			0 /* 1:1 */
-> +#define VADC_DEF_DECIMATION			0 /* 512 */
-> +#define VADC_DEF_HW_SETTLE_TIME			0 /* 0 us */
-> +#define VADC_DEF_AVG_SAMPLES			0 /* 1 sample */
-> +#define VADC_DEF_CALIB_TYPE			VADC_CALIB_ABSOLUTE
-> +
-> +#define VADC_DECIMATION_MIN			512
-> +#define VADC_DECIMATION_MAX			4096
-> +
-> +#define VADC_HW_SETTLE_DELAY_MAX		10000
-> +#define VADC_AVG_SAMPLES_MAX			512
-> +
-> +#define KELVINMIL_CELSIUSMIL			273150
-> +
-> +#define PMI_CHG_SCALE_1				-138890
-> +#define PMI_CHG_SCALE_2				391750000000LL
-> +
-> +/**
-> + * struct vadc_map_pt - Map the graph representation for ADC channel
-> + * @x: Represent the ADC digitized code.
-> + * @y: Represent the physical data which can be temperature, voltage,
-> + *     resistance.
-> + */
-> +struct vadc_map_pt {
-> +	s32 x;
-> +	s32 y;
-> +};
-> +
-> +/*
-> + * VADC_CALIB_ABSOLUTE: uses the 625mV and 1.25V as reference channels.
-> + * VADC_CALIB_RATIOMETRIC: uses the reference voltage (1.8V) and GND for
-> + * calibration.
-> + */
-> +enum vadc_calibration {
-> +	VADC_CALIB_ABSOLUTE = 0,
-> +	VADC_CALIB_RATIOMETRIC
-> +};
-> +
-> +/**
-> + * struct vadc_linear_graph - Represent ADC characteristics.
-> + * @dy: numerator slope to calculate the gain.
-> + * @dx: denominator slope to calculate the gain.
-> + * @gnd: A/D word of the ground reference used for the channel.
-> + *
-> + * Each ADC device has different offset and gain parameters which are
-> + * computed to calibrate the device.
-> + */
-> +struct vadc_linear_graph {
-> +	s32 dy;
-> +	s32 dx;
-> +	s32 gnd;
-> +};
-> +
-> +/**
-> + * struct vadc_prescale_ratio - Represent scaling ratio for ADC input.
-> + * @num: the inverse numerator of the gain applied to the input channel.
-> + * @den: the inverse denominator of the gain applied to the input channel.
-> + */
-> +struct vadc_prescale_ratio {
-> +	u32 num;
-> +	u32 den;
-> +};
-> +
-> +/**
-> + * enum vadc_scale_fn_type - Scaling function to convert ADC code to
-> + *				physical scaled units for the channel.
-> + * SCALE_DEFAULT: Default scaling to convert raw adc code to voltage (uV).
-> + * SCALE_THERM_100K_PULLUP: Returns temperature in millidegC.
-> + *				 Uses a mapping table with 100K pullup.
-> + * SCALE_PMIC_THERM: Returns result in milli degree's Centigrade.
-> + * SCALE_XOTHERM: Returns XO thermistor voltage in millidegC.
-> + * SCALE_PMI_CHG_TEMP: Conversion for PMI CHG temp
-> + */
-> +enum vadc_scale_fn_type {
-> +	SCALE_DEFAULT = 0,
-> +	SCALE_THERM_100K_PULLUP,
-> +	SCALE_PMIC_THERM,
-> +	SCALE_XOTHERM,
-> +	SCALE_PMI_CHG_TEMP,
-> +};
-> +
-> +int qcom_vadc_scale(enum vadc_scale_fn_type scaletype,
-> +		    const struct vadc_linear_graph *calib_graph,
-> +		    const struct vadc_prescale_ratio *prescale,
-> +		    bool absolute,
-> +		    u16 adc_code, int *result_mdec);
-> +
-> +int qcom_vadc_decimation_from_dt(u32 value);
-> +
-> +#endif /* QCOM_VADC_COMMON_H */
-> 
+As far as I can understand this is equal to the PMICs
+using SSBI transport and encompass PM8018, PM8038,
+PM8058, and PM8921, so this is shortly named PM8xxx.
+
+This ADC monitors a bunch of on-board voltages and the die
+temperature of the PMIC itself, but it can also be routed
+to convert a few external MPPs (multi-purpose pins). On
+the APQ8060 DragonBoard this feature is used to let this
+ADC convert an analog ALS (Ambient Light Sensor) voltage
+signal from a Capella CM3605 ALS into a LUX value.
+
+Developed and tested with APQ8060 DragonBoard based on
+Ivan's driver and Rama Krishna's patches. The SPMI VADC
+driver is quite different, but share enough minor
+functionality that I have split out to the common file
+in a previous patch.
+
+Cc: linux-arm-kernel@lists.infradead.org
+Cc: linux-arm-msm@vger.kernel.org
+Cc: Ivan T. Ivanov <iivanov.xz@gmail.com>
+Cc: Andy Gross <andy.gross@linaro.org>
+Cc: Bjorn Andersson <bjorn.andersson@linaro.org>
+Cc: Stephen Boyd <sboyd@codeaurora.org>
+Cc: Srinivas Kandagatla <srinivas.kandagatla@linaro.org>
+Cc: Rama Krishna Phani A <rphani@codeaurora.org>
+Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+---
+ChangeLog v4->v5:
+- Fix the kbuild for allmod and allyes as described earlier.
+- Add a per-variant information container instead of just adding
+  a list of channels to the match data. Use this variant
+  information throughout the code to support the variations.
+- Incorporate new information from Björn and Stephen about how the
+  channels actually work on the different variants. PM8058 has 16
+  channels that can be muxed to different sources, so an AMUX
+  setting each. The PM8921 is more complex because it has a premux
+  instead of a prescaler.
+- To deal with the premux addressing scheme we turn all channel
+  specifiers into twocell, where the first cell is prescaler or
+  premux and the second one is the analog mux.
+- Rebase on build fixes.
+ChangeLog v3->v4:
+- Only reposting this patch as the DT bindings and refactorings
+  are merged.
+- Prefix all channel names with PM8XXX_* to avoid namespace clashes.
+- Use the compatible string to name the IIO device for greater
+  model precision.
+- Fix up a few excess newlines.
+ChangeLog v2->v3:
+- Rebase using Rama Krishna's improvements, set up defaults for
+  scaling function and prescaler for each channel, per ASIC variant.
+- Also set up RSV per-variant as the vendor tree does this and
+  it seems necessary to set RSV0 on the muxoff channel to get
+  readings from the XO thermistor.
+- Encode default IIO type in the default per-PMIC channel table.
+- Fixed a bug in ratiometric calibration (needed to force ratiometric
+  mode).
+- Dropped PM8917: that doesn't have any XOADC.
+- Added a special flag for the PM8058: it apparently needs special
+  RSV muxing due to being necessarily different.
+- Augmented to handle altered ratiometric DT property.
+- Do not hardcode that the reference voltage must be 2.2V, just fetch
+  and enable the regulator. Different PMICs use different reference
+  voltages.
+ChangeLog v1->v2:
+- Introduce a mutex to avoid different clients stepping on each others'
+  toes
+- Add an of_xlate function to be sure to match the right ADC
+- Add all compatible strings, not just PM8058
+---
+ drivers/iio/adc/Kconfig             |   11 +
+ drivers/iio/adc/Makefile            |    1 +
+ drivers/iio/adc/qcom-pm8xxx-xoadc.c | 1036 +++++++++++++++++++++++++++++++++++
+ 3 files changed, 1048 insertions(+)
+ create mode 100644 drivers/iio/adc/qcom-pm8xxx-xoadc.c
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index 8720e1c706fe..24c97add7f2f 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -445,6 +445,17 @@ config PALMAS_GPADC
+ config QCOM_VADC_COMMON
+ 	tristate
+ 
++config QCOM_PM8XXX_XOADC
++	tristate "Qualcomm SSBI PM8xxx PMIC XOADCs"
++	depends on MFD_PM8XXX
++	select QCOM_VADC_COMMON
++	help
++	  ADC driver for the XOADC portions of the Qualcomm PM8xxx PMICs
++	  using SSBI transport: PM8018, PM8038, PM8058, PM8921.
++
++	  To compile this driver as a module, choose M here: the module
++	  will be called qcom-pm8xxx-xoadc.
++
+ config QCOM_SPMI_IADC
+ 	tristate "Qualcomm SPMI PMIC current ADC"
+ 	depends on SPMI
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+index 8c2e294042ae..0394bc740bdc 100644
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -45,6 +45,7 @@ obj-$(CONFIG_PALMAS_GPADC) += palmas_gpadc.o
+ obj-$(CONFIG_QCOM_SPMI_IADC) += qcom-spmi-iadc.o
+ obj-$(CONFIG_QCOM_VADC_COMMON) += qcom-vadc-common.o
+ obj-$(CONFIG_QCOM_SPMI_VADC) += qcom-spmi-vadc.o
++obj-$(CONFIG_QCOM_PM8XXX_XOADC) += qcom-pm8xxx-xoadc.o
+ obj-$(CONFIG_RCAR_GYRO_ADC) += rcar-gyroadc.o
+ obj-$(CONFIG_ROCKCHIP_SARADC) += rockchip_saradc.o
+ obj-$(CONFIG_STX104) += stx104.o
+diff --git a/drivers/iio/adc/qcom-pm8xxx-xoadc.c b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+new file mode 100644
+index 000000000000..cea8f1fb444a
+--- /dev/null
++++ b/drivers/iio/adc/qcom-pm8xxx-xoadc.c
+@@ -0,0 +1,1036 @@
++/*
++ * Qualcomm PM8xxx PMIC XOADC driver
++ *
++ * These ADCs are known as HK/XO (house keeping / chrystal oscillator)
++ * "XO" in "XOADC" means Chrystal Oscillator. It's a bunch of
++ * specific-purpose and general purpose ADC converters and channels.
++ *
++ * Copyright (C) 2017 Linaro Ltd.
++ * Author: Linus Walleij <linus.walleij@linaro.org>
++ */
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_device.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/regulator/consumer.h>
++
++#include "qcom-vadc-common.h"
++
++/*
++ * Definitions for the "user processor" registers lifted from the v3.4
++ * Qualcomm tree. Their kernel has two out-of-tree drivers for the ADC:
++ * drivers/misc/pmic8058-xoadc.c
++ * drivers/hwmon/pm8xxx-adc.c
++ * None of them contain any complete register specification, so this is
++ * a best effort of combining the information.
++ */
++
++/* These appear to be "battery monitor" registers */
++#define ADC_ARB_BTM_CNTRL1			0x17e
++#define ADC_ARB_BTM_CNTRL1_EN_BTM		BIT(0)
++#define ADC_ARB_BTM_CNTRL1_SEL_OP_MODE		BIT(1)
++#define ADC_ARB_BTM_CNTRL1_MEAS_INTERVAL1	BIT(2)
++#define ADC_ARB_BTM_CNTRL1_MEAS_INTERVAL2	BIT(3)
++#define ADC_ARB_BTM_CNTRL1_MEAS_INTERVAL3	BIT(4)
++#define ADC_ARB_BTM_CNTRL1_MEAS_INTERVAL4	BIT(5)
++#define ADC_ARB_BTM_CNTRL1_EOC			BIT(6)
++#define ADC_ARB_BTM_CNTRL1_REQ			BIT(7)
++
++#define ADC_ARB_BTM_AMUX_CNTRL			0x17f
++#define ADC_ARB_BTM_ANA_PARAM			0x180
++#define ADC_ARB_BTM_DIG_PARAM			0x181
++#define ADC_ARB_BTM_RSV				0x182
++#define ADC_ARB_BTM_DATA1			0x183
++#define ADC_ARB_BTM_DATA0			0x184
++#define ADC_ARB_BTM_BAT_COOL_THR1		0x185
++#define ADC_ARB_BTM_BAT_COOL_THR0		0x186
++#define ADC_ARB_BTM_BAT_WARM_THR1		0x187
++#define ADC_ARB_BTM_BAT_WARM_THR0		0x188
++#define ADC_ARB_BTM_CNTRL2			0x18c
++
++/* Proper ADC registers */
++
++#define ADC_ARB_USRP_CNTRL			0x197
++#define ADC_ARB_USRP_CNTRL_EN_ARB		BIT(0)
++#define ADC_ARB_USRP_CNTRL_RSV1			BIT(1)
++#define ADC_ARB_USRP_CNTRL_RSV2			BIT(2)
++#define ADC_ARB_USRP_CNTRL_RSV3			BIT(3)
++#define ADC_ARB_USRP_CNTRL_RSV4			BIT(4)
++#define ADC_ARB_USRP_CNTRL_RSV5			BIT(5)
++#define ADC_ARB_USRP_CNTRL_EOC			BIT(6)
++#define ADC_ARB_USRP_CNTRL_REQ			BIT(7)
++
++#define ADC_ARB_USRP_AMUX_CNTRL			0x198
++/*
++ * The channel mask includes the bits selecting channel mux and prescaler
++ * on PM8058, or channel mux and premux on PM8921.
++ */
++#define ADC_ARB_USRP_AMUX_CNTRL_CHAN_MASK	0xfc
++#define ADC_ARB_USRP_AMUX_CNTRL_RSV0		BIT(0)
++#define ADC_ARB_USRP_AMUX_CNTRL_RSV1		BIT(1)
++/* On PM8058 this is prescaling, on PM8921 this is premux */
++#define ADC_ARB_USRP_AMUX_CNTRL_PRESCALEMUX0	BIT(2)
++#define ADC_ARB_USRP_AMUX_CNTRL_PRESCALEMUX1	BIT(3)
++#define ADC_ARB_USRP_AMUX_CNTRL_SEL0		BIT(4)
++#define ADC_ARB_USRP_AMUX_CNTRL_SEL1		BIT(5)
++#define ADC_ARB_USRP_AMUX_CNTRL_SEL2		BIT(6)
++#define ADC_ARB_USRP_AMUX_CNTRL_SEL3		BIT(7)
++#define ADC_AMUX_PREMUX_SHIFT			2
++#define ADC_AMUX_SEL_SHIFT			4
++
++/* We know very little about the bits in this register */
++#define ADC_ARB_USRP_ANA_PARAM			0x199
++#define ADC_ARB_USRP_ANA_PARAM_DIS		0xFE
++#define ADC_ARB_USRP_ANA_PARAM_EN		0xFF
++
++#define ADC_ARB_USRP_DIG_PARAM			0x19A
++#define ADC_ARB_USRP_DIG_PARAM_SEL_SHIFT0	BIT(0)
++#define ADC_ARB_USRP_DIG_PARAM_SEL_SHIFT1	BIT(1)
++#define ADC_ARB_USRP_DIG_PARAM_CLK_RATE0	BIT(2)
++#define ADC_ARB_USRP_DIG_PARAM_CLK_RATE1	BIT(3)
++#define ADC_ARB_USRP_DIG_PARAM_EOC		BIT(4)
++/*
++ * On a later ADC the decimation factors are defined as
++ * 00 = 512, 01 = 1024, 10 = 2048, 11 = 4096 so assume this
++ * holds also for this older XOADC.
++ */
++#define ADC_ARB_USRP_DIG_PARAM_DEC_RATE0	BIT(5)
++#define ADC_ARB_USRP_DIG_PARAM_DEC_RATE1	BIT(6)
++#define ADC_ARB_USRP_DIG_PARAM_EN		BIT(7)
++#define ADC_DIG_PARAM_DEC_SHIFT			5
++
++#define ADC_ARB_USRP_RSV			0x19B
++#define ADC_ARB_USRP_RSV_RST			BIT(0)
++#define ADC_ARB_USRP_RSV_DTEST0			BIT(1)
++#define ADC_ARB_USRP_RSV_DTEST1			BIT(2)
++#define ADC_ARB_USRP_RSV_OP			BIT(3)
++#define ADC_ARB_USRP_RSV_IP_SEL0		BIT(4)
++#define ADC_ARB_USRP_RSV_IP_SEL1		BIT(5)
++#define ADC_ARB_USRP_RSV_IP_SEL2		BIT(6)
++#define ADC_ARB_USRP_RSV_TRM			BIT(7)
++#define ADC_RSV_IP_SEL_SHIFT			4
++
++#define ADC_ARB_USRP_DATA0			0x19D
++#define ADC_ARB_USRP_DATA1			0x19C
++
++/**
++ * Physical channels which MUST exist on all PM variants in order to provide
++ * proper reference points for calibration.
++ *
++ * @PM8XXX_CHANNEL_INTERNAL: 625mV reference channel
++ * @PM8XXX_CHANNEL_125V: 1250mV reference channel
++ * @PM8XXX_CHANNEL_INTERNAL_2: 325mV reference channel
++ * @PM8XXX_CHANNEL_MUXOFF: channel to reduce input load on mux, apparently also
++ * measures XO temperature
++ */
++#define PM8XXX_CHANNEL_INTERNAL		0x0c
++#define PM8XXX_CHANNEL_125V		0x0d
++#define PM8XXX_CHANNEL_INTERNAL_2	0x0e
++#define PM8XXX_CHANNEL_MUXOFF		0x0f
++
++/*
++ * PM8058 AMUX premux scaling, two bits. This is done of the channel before
++ * reaching the AMUX.
++ */
++#define PM8058_AMUX_PRESCALE_0 0x0 /* No scaling on the signal */
++#define PM8058_AMUX_PRESCALE_1 0x1 /* Unity scaling selected by the user */
++#define PM8058_AMUX_PRESCALE_1_DIV3 0x2 /* 1/3 prescaler on the input */
++
++/* Defines reference voltage for the XOADC */
++#define AMUX_RSV0 0x0 /* XO_IN/XOADC_GND, special selection to read XO temp */
++#define AMUX_RSV1 0x1 /* PMIC_IN/XOADC_GND */
++#define AMUX_RSV2 0x2 /* PMIC_IN/BMS_CSP */
++#define AMUX_RSV3 0x3 /* not used */
++#define AMUX_RSV4 0x4 /* XOADC_GND/XOADC_GND */
++#define AMUX_RSV5 0x5 /* XOADC_VREF/XOADC_GND */
++#define XOADC_RSV_MAX 5 /* 3 bits 0..7, 3 and 6,7 are invalid */
++
++/**
++ * struct xoadc_channel - encodes channel properties and defaults
++ * @datasheet_name: the hardwarename of this channel
++ * @pre_scale_mux: prescale (PM8058) or premux (PM8921) for selecting
++ * this channel. Both this and the amux channel is needed to uniquely
++ * identify a channel. Values 0..3.
++ * @amux_channel: value of the ADC_ARB_USRP_AMUX_CNTRL register for this
++ * channel, bits 4..7, selects the amux, values 0..f
++ * @prescale: the channels have hard-coded prescale ratios defined
++ * by the hardware, this tells us what it is
++ * @type: corresponding IIO channel type, usually IIO_VOLTAGE or
++ * IIO_TEMP
++ * @scale_fn_type: the liner interpolation etc to convert the
++ * ADC code to the value that IIO expects, in uV or millicelsius
++ * etc. This scale function can be pretty elaborate if different
++ * thermistors are connected or other hardware characteristics are
++ * deployed.
++ * @amux_ip_rsv: ratiometric scale value used by the analog muxer: this
++ * selects the reference voltage for ratiometric scaling
++ */
++struct xoadc_channel {
++	const char *datasheet_name;
++	u8 pre_scale_mux:2;
++	u8 amux_channel:4;
++	const struct vadc_prescale_ratio prescale;
++	enum iio_chan_type type;
++	enum vadc_scale_fn_type scale_fn_type;
++	u8 amux_ip_rsv:3;
++};
++
++/**
++ * struct xoadc_variant - encodes the XOADC variant characteristics
++ * @name: name of this PMIC variant
++ * @channels: the hardware channels and respective settings and defaults
++ * @broken_ratiometric: if the PMIC has broken ratiometric scaling (this
++ * is a known problem on PM8058)
++ * @prescaling: this variant uses AMUX bits 2 & 3 for prescaling (PM8058)
++ * @second_level_mux: this variant uses AMUX bits 2 & 3 for a second level
++ * mux
++ */
++struct xoadc_variant {
++	const char name[16];
++	const struct xoadc_channel *channels;
++	bool broken_ratiometric;
++	bool prescaling;
++	bool second_level_mux;
++};
++
++/*
++ * XOADC_CHAN macro parameters:
++ * _dname: the name of the channel
++ * _presmux: prescaler (PM8058) or premux (PM8921) setting for this channel
++ * _amux: the value in bits 2..7 of the ADC_ARB_USRP_AMUX_CNTRL register
++ * for this channel. On some PMICs some of the bits select a prescaler, and
++ * on some PMICs some of the bits select various complex multiplex settings.
++ * _type: IIO channel type
++ * _prenum: prescaler numerator (dividend)
++ * _preden: prescaler denominator (divisor)
++ * _scale: scaling function type, this selects how the raw valued is mangled
++ * to output the actual processed measurement
++ * _amip: analog mux input parent when using ratiometric measurements
++ */
++#define XOADC_CHAN(_dname, _presmux, _amux, _type, _prenum, _preden, _scale, _amip) \
++	{								\
++		.datasheet_name = __stringify(_dname),			\
++		.pre_scale_mux = _presmux,				\
++		.amux_channel = _amux,					\
++		.prescale = { .num = _prenum, .den = _preden },		\
++		.type = _type,						\
++		.scale_fn_type = _scale,				\
++		.amux_ip_rsv = _amip,					\
++	}
++
++/*
++ * Taken from arch/arm/mach-msm/board-9615.c in the vendor tree:
++ * TODO: incomplete, needs testing.
++ */
++static const struct xoadc_channel pm8018_xoadc_channels[] = {
++	XOADC_CHAN(VCOIN, 0x00, 0x00, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VBAT, 0x00, 0x01, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VPH_PWR, 0x00, 0x02, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DIE_TEMP, 0x00, 0x0b, IIO_TEMP, 1, 1, SCALE_PMIC_THERM, AMUX_RSV1),
++	/* Used for battery ID or battery temperature */
++	XOADC_CHAN(AMUX8, 0x00, 0x08, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV2),
++	XOADC_CHAN(INTERNAL, 0x00, 0x0c, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(125V, 0x00, 0x0d, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(MUXOFF, 0x00, 0x0f, IIO_TEMP, 1, 1, SCALE_XOTHERM, AMUX_RSV0),
++	{ }, /* Sentinel */
++};
++
++/*
++ * Taken from arch/arm/mach-msm/board-8930-pmic.c in the vendor tree:
++ * TODO: needs testing.
++ */
++static const struct xoadc_channel pm8038_xoadc_channels[] = {
++	XOADC_CHAN(VCOIN, 0x00, 0x00, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VBAT, 0x00, 0x01, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DCIN, 0x00, 0x02, IIO_VOLTAGE, 1, 6, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ICHG, 0x00, 0x03, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VPH_PWR, 0x00, 0x04, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX5, 0x00, 0x05, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX6, 0x00, 0x06, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX7, 0x00, 0x07, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	/* AMUX8 used for battery temperature in most cases */
++	XOADC_CHAN(AMUX8, 0x00, 0x08, IIO_TEMP, 1, 1, SCALE_THERM_100K_PULLUP, AMUX_RSV2),
++	XOADC_CHAN(AMUX9, 0x00, 0x09, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(USB_VBUS, 0x00, 0x0a, IIO_VOLTAGE, 1, 4, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DIE_TEMP, 0x00, 0x0b, IIO_TEMP, 1, 1, SCALE_PMIC_THERM, AMUX_RSV1),
++	XOADC_CHAN(INTERNAL, 0x00, 0x0c, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(125V, 0x00, 0x0d, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(INTERNAL_2, 0x00, 0x0e, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(MUXOFF, 0x00, 0x0f, IIO_TEMP, 1, 1, SCALE_XOTHERM, AMUX_RSV0),
++	{ }, /* Sentinel */
++};
++
++/*
++ * This was created by cross-referencing the vendor tree
++ * arch/arm/mach-msm/board-msm8x60.c msm_adc_channels_data[]
++ * with the "channel types" (first field) to find the right
++ * configuration for these channels on an MSM8x60 i.e. PM8058
++ * setup.
++ */
++static const struct xoadc_channel pm8058_xoadc_channels[] = {
++	XOADC_CHAN(VCOIN, 0x00, 0x00, IIO_VOLTAGE, 1, 2, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VBAT, 0x00, 0x01, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DCIN, 0x00, 0x02, IIO_VOLTAGE, 1, 10, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ICHG, 0x00, 0x03, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VPH_PWR, 0x00, 0x04, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	/*
++	 * AMUX channels 5 thru 9 are referred to as MPP5 thru MPP9 in
++	 * some code and documentation. But they are really just 5
++	 * channels just like any other. They are connected to a switching
++	 * matrix where they can be routed to any of the MPPs, not just
++	 * 1-to-1 onto MPP5 thru 9, so naming them MPP5 thru MPP9 is
++	 * very confusing.
++	 */
++	XOADC_CHAN(AMUX5, 0x00, 0x05, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX6, 0x00, 0x06, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX7, 0x00, 0x07, IIO_VOLTAGE, 1, 2, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX8, 0x00, 0x08, IIO_VOLTAGE, 1, 2, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX9, 0x00, 0x09, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(USB_VBUS, 0x00, 0x0a, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DIE_TEMP, 0x00, 0x0b, IIO_TEMP, 1, 1, SCALE_PMIC_THERM, AMUX_RSV1),
++	XOADC_CHAN(INTERNAL, 0x00, 0x0c, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(125V, 0x00, 0x0d, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(INTERNAL_2, 0x00, 0x0e, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(MUXOFF, 0x00, 0x0f, IIO_TEMP, 1, 1, SCALE_XOTHERM, AMUX_RSV0),
++	/* There are also "unity" and divided by 3 channels (prescaler) but noone is using them */
++	{ }, /* Sentinel */
++};
++
++/*
++ * The PM8921 has some pre-muxing on its channels, this comes from the vendor tree
++ * include/linux/mfd/pm8xxx/pm8xxx-adc.h
++ * board-flo-pmic.c (Nexus 7) and board-8064-pmic.c
++ */
++static const struct xoadc_channel pm8921_xoadc_channels[] = {
++	XOADC_CHAN(VCOIN, 0x00, 0x00, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(VBAT, 0x00, 0x01, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DCIN, 0x00, 0x02, IIO_VOLTAGE, 1, 6, SCALE_DEFAULT, AMUX_RSV1),
++	/* channel "ICHG" is reserved and not used on PM8921 */
++	XOADC_CHAN(VPH_PWR, 0x00, 0x04, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(IBAT, 0x00, 0x05, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	/* CHAN 6 & 7 (MPP1 & MPP2) are reserved for MPP channels on PM8921 */
++	XOADC_CHAN(BATT_THERM, 0x00, 0x08, IIO_TEMP, 1, 1, SCALE_THERM_100K_PULLUP, AMUX_RSV1),
++	XOADC_CHAN(BATT_ID, 0x00, 0x09, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(USB_VBUS, 0x00, 0x0a, IIO_VOLTAGE, 1, 4, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DIE_TEMP, 0x00, 0x0b, IIO_TEMP, 1, 1, SCALE_PMIC_THERM, AMUX_RSV1),
++	XOADC_CHAN(INTERNAL, 0x00, 0x0c, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(125V, 0x00, 0x0d, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	/* FIXME: look into the scaling of this temperature */
++	XOADC_CHAN(CHG_TEMP, 0x00, 0x0e, IIO_TEMP, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(MUXOFF, 0x00, 0x0f, IIO_TEMP, 1, 1, SCALE_XOTHERM, AMUX_RSV0),
++	/* The following channels have premux bit 0 set to 1 (all end in 4) */
++	XOADC_CHAN(ATEST_8, 0x01, 0x00, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	/* Set scaling to 1/2 based on the name for these two */
++	XOADC_CHAN(USB_SNS_DIV20, 0x01, 0x01, IIO_VOLTAGE, 1, 2, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DCIN_SNS_DIV20, 0x01, 0x02, IIO_VOLTAGE, 1, 2, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX3, 0x01, 0x03, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX4, 0x01, 0x04, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX5, 0x01, 0x05, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX6, 0x01, 0x06, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX7, 0x01, 0x07, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX8, 0x01, 0x08, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	/* Internal test signals, I think */
++	XOADC_CHAN(ATEST_1, 0x01, 0x09, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_2, 0x01, 0x0a, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_3, 0x01, 0x0b, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_4, 0x01, 0x0c, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_5, 0x01, 0x0d, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_6, 0x01, 0x0e, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_7, 0x01, 0x0f, IIO_VOLTAGE, 1, 1, SCALE_DEFAULT, AMUX_RSV1),
++	/* The following channels have premux bit 1 set to 1 (all end in 8) */
++	/* I guess even ATEST8 will be divided by 3 here */
++	XOADC_CHAN(ATEST_8, 0x02, 0x00, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	/* I guess div 2 div 3 becomes div 6 */
++	XOADC_CHAN(USB_SNS_DIV20_DIV3, 0x02, 0x01, IIO_VOLTAGE, 1, 6, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(DCIN_SNS_DIV20_DIV3, 0x02, 0x02, IIO_VOLTAGE, 1, 6, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX3_DIV3, 0x02, 0x03, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX4_DIV3, 0x02, 0x04, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX5_DIV3, 0x02, 0x05, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX6_DIV3, 0x02, 0x06, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX7_DIV3, 0x02, 0x07, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(AMUX8_DIV3, 0x02, 0x08, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_1_DIV3, 0x02, 0x09, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_2_DIV3, 0x02, 0x0a, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_3_DIV3, 0x02, 0x0b, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_4_DIV3, 0x02, 0x0c, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_5_DIV3, 0x02, 0x0d, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_6_DIV3, 0x02, 0x0e, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	XOADC_CHAN(ATEST_7_DIV3, 0x02, 0x0f, IIO_VOLTAGE, 1, 3, SCALE_DEFAULT, AMUX_RSV1),
++	{ }, /* Sentinel */
++};
++
++/**
++ * struct pm8xxx_chan_info - ADC channel information
++ * @name: name of this channel
++ * @hwchan: pointer to hardware channel information (muxing & scaling settings)
++ * @calibration: whether to use absolute or ratiometric calibration
++ * @scale_fn_type: scaling function type
++ * @decimation: 0,1,2,3
++ * @amux_ip_rsv: ratiometric scale value if using ratiometric
++ * calibration: 0, 1, 2, 4, 5.
++ */
++struct pm8xxx_chan_info {
++	const char *name;
++	const struct xoadc_channel *hwchan;
++	enum vadc_calibration calibration;
++	u8 decimation:2;
++	u8 amux_ip_rsv:3;
++};
++
++/**
++ * struct pm8xxx_xoadc - state container for the XOADC
++ * @dev: pointer to device
++ * @map: regmap to access registers
++ * @vref: reference voltage regulator
++ * characteristics of the channels, and sensible default settings
++ * @nchans: number of channels, configured by the device tree
++ * @chans: the channel information per-channel, configured by the device tree
++ * @iio_chans: IIO channel specifiers
++ * @graph: linear calibration parameters for absolute and
++ * ratiometric measurements
++ * @complete: completion to indicate end of conversion
++ * @lock: lock to restrict access to the hardware to one client at the time
++ */
++struct pm8xxx_xoadc {
++	struct device *dev;
++	struct regmap *map;
++	const struct xoadc_variant *variant;
++	struct regulator *vref;
++	unsigned int nchans;
++	struct pm8xxx_chan_info *chans;
++	struct iio_chan_spec *iio_chans;
++	struct vadc_linear_graph graph[2];
++	struct completion complete;
++	struct mutex lock;
++};
++
++static irqreturn_t pm8xxx_eoc_irq(int irq, void *d)
++{
++	struct iio_dev *indio_dev = d;
++	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
++
++	complete(&adc->complete);
++
++	return IRQ_HANDLED;
++}
++
++static struct pm8xxx_chan_info *
++pm8xxx_get_channel(struct pm8xxx_xoadc *adc, u8 chan)
++{
++	struct pm8xxx_chan_info *ch;
++	int i;
++
++	for (i = 0; i < adc->nchans; i++) {
++		ch = &adc->chans[i];
++		if (ch->hwchan->amux_channel == chan)
++			break;
++	}
++	if (i == adc->nchans)
++		return NULL;
++
++	return ch;
++}
++
++static int pm8xxx_read_channel_rsv(struct pm8xxx_xoadc *adc,
++				   const struct pm8xxx_chan_info *ch,
++				   u8 rsv, u16 *adc_code,
++				   bool force_ratiometric)
++{
++	int ret;
++	unsigned int val;
++	u8 rsvmask, rsvval;
++	u8 lsb, msb;
++
++	dev_dbg(adc->dev, "read channel \"%s\", amux %d, prescale/mux: %d, rsv %d\n",
++		ch->name, ch->hwchan->amux_channel, ch->hwchan->pre_scale_mux, rsv);
++
++	mutex_lock(&adc->lock);
++
++	/* Mux in this channel */
++	val = ch->hwchan->amux_channel << ADC_AMUX_SEL_SHIFT;
++	val |= ch->hwchan->pre_scale_mux << ADC_AMUX_PREMUX_SHIFT;
++	ret = regmap_write(adc->map, ADC_ARB_USRP_AMUX_CNTRL, val);
++	if (ret)
++		goto unlock;
++
++	/* Set up ratiometric scale value, mask off all bits except these */
++	rsvmask = (ADC_ARB_USRP_RSV_RST | ADC_ARB_USRP_RSV_DTEST0 |
++		   ADC_ARB_USRP_RSV_DTEST1 | ADC_ARB_USRP_RSV_OP);
++	if (adc->variant->broken_ratiometric && !force_ratiometric) {
++		/*
++		 * Apparently the PM8058 has some kind of bug which is
++		 * reflected in the vendor tree drivers/misc/pmix8058-xoadc.c
++		 * which just hardcodes the RSV selector to SEL1 (0x20) for
++		 * most cases and SEL0 (0x10) for the MUXOFF channel only.
++		 * If we force ratiometric (currently only done when attempting
++		 * to do ratiometric calibration) this doesn't seem to work
++		 * very well and I suspect ratiometric conversion is simply
++		 * broken or not supported on the PM8058.
++		 *
++		 * Maybe IO_SEL2 doesn't exist on PM8058 and bits 4 & 5 select
++		 * the mode alone.
++		 *
++		 * Some PM8058 register documentation would be nice to get
++		 * this right.
++		 */
++		if (ch->hwchan->amux_channel == PM8XXX_CHANNEL_MUXOFF)
++			rsvval = ADC_ARB_USRP_RSV_IP_SEL0;
++		else
++			rsvval = ADC_ARB_USRP_RSV_IP_SEL1;
++	} else {
++		if (rsv == 0xff)
++			rsvval = (ch->amux_ip_rsv << ADC_RSV_IP_SEL_SHIFT) |
++				ADC_ARB_USRP_RSV_TRM;
++		else
++			rsvval = (rsv << ADC_RSV_IP_SEL_SHIFT) |
++				ADC_ARB_USRP_RSV_TRM;
++	}
++
++	ret = regmap_update_bits(adc->map,
++				 ADC_ARB_USRP_RSV,
++				 ~rsvmask,
++				 rsvval);
++	if (ret)
++		goto unlock;
++
++	ret = regmap_write(adc->map, ADC_ARB_USRP_ANA_PARAM,
++			   ADC_ARB_USRP_ANA_PARAM_DIS);
++	if (ret)
++		goto unlock;
++
++	/* Decimation factor */
++	ret = regmap_write(adc->map, ADC_ARB_USRP_DIG_PARAM,
++			   ADC_ARB_USRP_DIG_PARAM_SEL_SHIFT0 |
++			   ADC_ARB_USRP_DIG_PARAM_SEL_SHIFT1 |
++			   ch->decimation << ADC_DIG_PARAM_DEC_SHIFT);
++	if (ret)
++		goto unlock;
++
++	ret = regmap_write(adc->map, ADC_ARB_USRP_ANA_PARAM,
++			   ADC_ARB_USRP_ANA_PARAM_EN);
++	if (ret)
++		goto unlock;
++
++	/* Enable the arbiter, the Qualcomm code does it twice like this */
++	ret = regmap_write(adc->map, ADC_ARB_USRP_CNTRL,
++			   ADC_ARB_USRP_CNTRL_EN_ARB);
++	if (ret)
++		goto unlock;
++	ret = regmap_write(adc->map, ADC_ARB_USRP_CNTRL,
++			   ADC_ARB_USRP_CNTRL_EN_ARB);
++	if (ret)
++		goto unlock;
++
++
++	/* Fire a request! */
++	reinit_completion(&adc->complete);
++	ret = regmap_write(adc->map, ADC_ARB_USRP_CNTRL,
++			   ADC_ARB_USRP_CNTRL_EN_ARB |
++			   ADC_ARB_USRP_CNTRL_REQ);
++	if (ret)
++		goto unlock;
++
++	/* Next the interrupt occurs */
++	ret = wait_for_completion_timeout(&adc->complete,
++					  VADC_CONV_TIME_MAX_US);
++	if (!ret) {
++		dev_err(adc->dev, "conversion timed out\n");
++		ret = -ETIMEDOUT;
++		goto unlock;
++	}
++
++	ret = regmap_read(adc->map, ADC_ARB_USRP_DATA0, &val);
++	if (ret)
++		goto unlock;
++	lsb = val;
++	ret = regmap_read(adc->map, ADC_ARB_USRP_DATA1, &val);
++	if (ret)
++		goto unlock;
++	msb = val;
++	*adc_code = (msb << 8) | lsb;
++
++	/* Turn off the ADC by setting the arbiter to 0 twice */
++	ret = regmap_write(adc->map, ADC_ARB_USRP_CNTRL, 0);
++	if (ret)
++		goto unlock;
++	ret = regmap_write(adc->map, ADC_ARB_USRP_CNTRL, 0);
++	if (ret)
++		goto unlock;
++
++unlock:
++	mutex_unlock(&adc->lock);
++	return ret;
++}
++
++static int pm8xxx_read_channel(struct pm8xxx_xoadc *adc,
++			       const struct pm8xxx_chan_info *ch,
++			       u16 *adc_code)
++{
++	/*
++	 * Normally we just use the ratiometric scale value (RSV) predefined
++	 * for the channel, but during calibration we need to modify this
++	 * so this wrapper is a helper hiding the more complex version.
++	 */
++	return pm8xxx_read_channel_rsv(adc, ch, 0xff, adc_code, false);
++}
++
++static int pm8xxx_calibrate_device(struct pm8xxx_xoadc *adc)
++{
++	const struct pm8xxx_chan_info *ch;
++	u16 read_1250v;
++	u16 read_0625v;
++	u16 read_nomux_rsv5;
++	u16 read_nomux_rsv4;
++	int ret;
++
++	adc->graph[VADC_CALIB_ABSOLUTE].dx = VADC_ABSOLUTE_RANGE_UV;
++	adc->graph[VADC_CALIB_RATIOMETRIC].dx = VADC_RATIOMETRIC_RANGE;
++
++	/* Common reference channel calibration */
++	ch = pm8xxx_get_channel(adc, PM8XXX_CHANNEL_125V);
++	if (!ch)
++		return -ENODEV;
++	ret = pm8xxx_read_channel(adc, ch, &read_1250v);
++	if (ret) {
++		dev_err(adc->dev, "could not read 1.25V reference channel\n");
++		return -ENODEV;
++	}
++	ch = pm8xxx_get_channel(adc, PM8XXX_CHANNEL_INTERNAL);
++	if (!ch)
++		return -ENODEV;
++	ret = pm8xxx_read_channel(adc, ch, &read_0625v);
++	if (ret) {
++		dev_err(adc->dev, "could not read 0.625V reference channel\n");
++		return -ENODEV;
++	}
++	if (read_1250v == read_0625v) {
++		dev_err(adc->dev, "read same ADC code for 1.25V and 0.625V\n");
++		return -ENODEV;
++	}
++
++	adc->graph[VADC_CALIB_ABSOLUTE].dy = read_1250v - read_0625v;
++	adc->graph[VADC_CALIB_ABSOLUTE].gnd = read_0625v;
++
++	dev_info(adc->dev, "absolute calibration dx = %d uV, dy = %d units\n",
++		 VADC_ABSOLUTE_RANGE_UV, adc->graph[VADC_CALIB_ABSOLUTE].dy);
++
++	/* Ratiometric calibration */
++	ch = pm8xxx_get_channel(adc, PM8XXX_CHANNEL_MUXOFF);
++	if (!ch)
++		return -ENODEV;
++	ret = pm8xxx_read_channel_rsv(adc, ch, AMUX_RSV5,
++				      &read_nomux_rsv5, true);
++	if (ret) {
++		dev_err(adc->dev, "could not read MUXOFF reference channel\n");
++		return -ENODEV;
++	}
++	ret = pm8xxx_read_channel_rsv(adc, ch, AMUX_RSV4,
++				      &read_nomux_rsv4, true);
++	if (ret) {
++		dev_err(adc->dev, "could not read MUXOFF reference channel\n");
++		return -ENODEV;
++	}
++	adc->graph[VADC_CALIB_RATIOMETRIC].dy =
++		read_nomux_rsv5 - read_nomux_rsv4;
++	adc->graph[VADC_CALIB_RATIOMETRIC].gnd = read_nomux_rsv4;
++
++	dev_info(adc->dev, "ratiometric calibration dx = %d, dy = %d units\n",
++		 VADC_RATIOMETRIC_RANGE,
++		 adc->graph[VADC_CALIB_RATIOMETRIC].dy);
++
++	return 0;
++}
++
++static int pm8xxx_read_raw(struct iio_dev *indio_dev,
++			   struct iio_chan_spec const *chan,
++			   int *val, int *val2, long mask)
++{
++	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
++	const struct pm8xxx_chan_info *ch;
++	u16 adc_code;
++	int ret;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_PROCESSED:
++		ch = pm8xxx_get_channel(adc, chan->address);
++		if (!ch) {
++			dev_err(adc->dev, "no such channel %lu\n",
++				chan->address);
++			return -EINVAL;
++		}
++		ret = pm8xxx_read_channel(adc, ch, &adc_code);
++		if (ret)
++			return ret;
++
++		ret = qcom_vadc_scale(ch->hwchan->scale_fn_type,
++				      &adc->graph[ch->calibration],
++				      &ch->hwchan->prescale,
++				      (ch->calibration == VADC_CALIB_ABSOLUTE),
++				      adc_code, val);
++		if (ret)
++			return ret;
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_RAW:
++		ch = pm8xxx_get_channel(adc, chan->address);
++		if (!ch) {
++			dev_err(adc->dev, "no such channel %lu\n",
++				chan->address);
++			return -EINVAL;
++		}
++		ret = pm8xxx_read_channel(adc, ch, &adc_code);
++		if (ret)
++			return ret;
++
++		*val = (int)adc_code;
++		return IIO_VAL_INT;
++	default:
++		return -EINVAL;
++	}
++}
++
++static int pm8xxx_of_xlate(struct iio_dev *indio_dev,
++			   const struct of_phandle_args *iiospec)
++{
++	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
++	u8 pre_scale_mux;
++	u8 amux_channel;
++	unsigned int i;
++
++	/*
++	 * First cell is prescaler or premux, second cell is analog
++	 * mux.
++	 */
++	if (iiospec->args_count != 2) {
++		dev_err(&indio_dev->dev, "wrong number of arguments for %s need 2 got %d\n",
++			iiospec->np->name,
++			iiospec->args_count);
++		return -EINVAL;
++	}
++	pre_scale_mux = (u8)iiospec->args[0];
++	amux_channel = (u8)iiospec->args[1];
++	dev_dbg(&indio_dev->dev, "pre scale/mux: %02x, amux: %02x\n",
++		pre_scale_mux, amux_channel);
++
++	/* We need to match exactly on the prescale/premux and channel */
++	for (i = 0; i < adc->nchans; i++)
++		if (adc->chans[i].hwchan->pre_scale_mux == pre_scale_mux &&
++		    adc->chans[i].hwchan->amux_channel == amux_channel)
++			return i;
++
++	return -EINVAL;
++}
++
++static const struct iio_info pm8xxx_xoadc_info = {
++	.driver_module = THIS_MODULE,
++	.of_xlate = pm8xxx_of_xlate,
++	.read_raw = pm8xxx_read_raw,
++};
++
++static int pm8xxx_xoadc_parse_channel(struct device *dev,
++				      struct device_node *np,
++				      const struct xoadc_channel *hw_channels,
++				      struct iio_chan_spec *iio_chan,
++				      struct pm8xxx_chan_info *ch)
++{
++	const char *name = np->name;
++	const struct xoadc_channel *hwchan;
++	u32 pre_scale_mux, amux_channel;
++	u32 rsv, dec;
++	int ret;
++	int chid;
++
++	ret = of_property_read_u32_index(np, "reg", 0, &pre_scale_mux);
++	if (ret) {
++		dev_err(dev, "invalid pre scale/mux number %s\n", name);
++		return ret;
++	}
++	ret = of_property_read_u32_index(np, "reg", 1, &amux_channel);
++	if (ret) {
++		dev_err(dev, "invalid amux channel number %s\n", name);
++		return ret;
++	}
++
++	/* Find the right channel setting */
++	chid = 0;
++	hwchan = &hw_channels[0];
++	while (hwchan && hwchan->datasheet_name) {
++		if (hwchan->pre_scale_mux == pre_scale_mux &&
++		    hwchan->amux_channel == amux_channel)
++			break;
++		hwchan++;
++		chid++;
++	}
++	/* The sentinel does not have a name assigned */
++	if (!hwchan->datasheet_name) {
++		dev_err(dev, "could not locate channel %02x/%02x\n",
++			pre_scale_mux, amux_channel);
++		return -EINVAL;
++	}
++	ch->name = name;
++	ch->hwchan = hwchan;
++	/* Everyone seems to use absolute calibration except in special cases */
++	ch->calibration = VADC_CALIB_ABSOLUTE;
++	/* Everyone seems to use default ("type 2") decimation */
++	ch->decimation = VADC_DEF_DECIMATION;
++
++	if (!of_property_read_u32(np, "qcom,ratiometric", &rsv)) {
++		ch->calibration = VADC_CALIB_RATIOMETRIC;
++		if (rsv > XOADC_RSV_MAX) {
++			dev_err(dev, "%s too large RSV value %d\n", name, rsv);
++			return -EINVAL;
++		}
++		if (rsv == AMUX_RSV3) {
++			dev_err(dev, "%s invalid RSV value %d\n", name, rsv);
++			return -EINVAL;
++		}
++	}
++
++	/* Optional decimation, if omitted we use the default */
++	ret = of_property_read_u32(np, "qcom,decimation", &dec);
++	if (!ret) {
++		ret = qcom_vadc_decimation_from_dt(dec);
++		if (ret < 0) {
++			dev_err(dev, "%s invalid decimation %d\n",
++				name, dec);
++			return ret;
++		}
++		ch->decimation = ret;
++	}
++
++	iio_chan->channel = chid;
++	iio_chan->address = hwchan->amux_channel;
++	iio_chan->datasheet_name = hwchan->datasheet_name;
++	iio_chan->type = hwchan->type;
++	/* All channels are raw or processed */
++	iio_chan->info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++		BIT(IIO_CHAN_INFO_PROCESSED);
++	iio_chan->indexed = 1;
++
++	dev_dbg(dev, "channel [PRESCALE/MUX: %02x AMUX: %02x] \"%s\" "
++		"ref voltage: %d, decimation %d "
++		"prescale %d/%d, scale function %d\n",
++		hwchan->pre_scale_mux, hwchan->amux_channel, ch->name,
++		ch->amux_ip_rsv, ch->decimation, hwchan->prescale.num,
++		hwchan->prescale.den, hwchan->scale_fn_type);
++
++	return 0;
++}
++
++static int pm8xxx_xoadc_parse_channels(struct pm8xxx_xoadc *adc,
++				       struct device_node *np)
++{
++	struct device_node *child;
++	struct pm8xxx_chan_info *ch;
++	int ret;
++	int i;
++
++	adc->nchans = of_get_available_child_count(np);
++	if (!adc->nchans) {
++		dev_err(adc->dev, "no channel children\n");
++		return -ENODEV;
++	}
++	dev_dbg(adc->dev, "found %d ADC channels\n", adc->nchans);
++
++	adc->iio_chans = devm_kcalloc(adc->dev, adc->nchans,
++				      sizeof(*adc->iio_chans), GFP_KERNEL);
++	if (!adc->iio_chans)
++		return -ENOMEM;
++
++	adc->chans = devm_kcalloc(adc->dev, adc->nchans,
++				  sizeof(*adc->chans), GFP_KERNEL);
++	if (!adc->chans)
++		return -ENOMEM;
++
++	i = 0;
++	for_each_available_child_of_node(np, child) {
++		ch = &adc->chans[i];
++		ret = pm8xxx_xoadc_parse_channel(adc->dev, child,
++						 adc->variant->channels,
++						 &adc->iio_chans[i],
++						 ch);
++		if (ret) {
++			of_node_put(child);
++			return ret;
++		}
++		i++;
++	}
++
++	/* Check for required channels */
++	ch = pm8xxx_get_channel(adc, PM8XXX_CHANNEL_125V);
++	if (!ch) {
++		dev_err(adc->dev, "missing 1.25V reference channel\n");
++		return -ENODEV;
++	}
++	ch = pm8xxx_get_channel(adc, PM8XXX_CHANNEL_INTERNAL);
++	if (!ch) {
++		dev_err(adc->dev, "missing 0.625V reference channel\n");
++		return -ENODEV;
++	}
++	ch = pm8xxx_get_channel(adc, PM8XXX_CHANNEL_MUXOFF);
++	if (!ch) {
++		dev_err(adc->dev, "missing MUXOFF reference channel\n");
++		return -ENODEV;
++	}
++
++	return 0;
++}
++
++static int pm8xxx_xoadc_probe(struct platform_device *pdev)
++{
++	const struct xoadc_variant *variant;
++	struct pm8xxx_xoadc *adc;
++	struct iio_dev *indio_dev;
++	struct device_node *np = pdev->dev.of_node;
++	struct regmap *map;
++	struct device *dev = &pdev->dev;
++	int ret;
++
++	variant = of_device_get_match_data(dev);
++	if (!variant)
++		return -ENODEV;
++
++	indio_dev = devm_iio_device_alloc(dev, sizeof(*adc));
++	if (!indio_dev)
++		return -ENOMEM;
++	platform_set_drvdata(pdev, indio_dev);
++
++	adc = iio_priv(indio_dev);
++	adc->dev = dev;
++	adc->variant = variant;
++	init_completion(&adc->complete);
++	mutex_init(&adc->lock);
++
++	ret = pm8xxx_xoadc_parse_channels(adc, np);
++	if (ret)
++		return ret;
++
++	map = dev_get_regmap(dev->parent, NULL);
++	if (!map) {
++		dev_err(dev, "parent regmap unavailable.\n");
++		return -ENXIO;
++	}
++	adc->map = map;
++
++	/* Bring up regulator */
++	adc->vref = devm_regulator_get(dev, "xoadc-ref");
++	if (IS_ERR(adc->vref)) {
++		dev_err(dev, "failed to get XOADC VREF regulator\n");
++		return PTR_ERR(adc->vref);
++	}
++	ret = regulator_enable(adc->vref);
++	if (ret) {
++		dev_err(dev, "failed to enable XOADC VREF regulator\n");
++		return ret;
++	}
++
++	ret = devm_request_threaded_irq(dev, platform_get_irq(pdev, 0),
++			pm8xxx_eoc_irq, NULL, 0, variant->name, indio_dev);
++	if (ret) {
++		dev_err(dev, "unable to request IRQ\n");
++		goto out_disable_vref;
++	}
++
++	indio_dev->dev.parent = dev;
++	indio_dev->dev.of_node = np;
++	indio_dev->name = variant->name;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++	indio_dev->info = &pm8xxx_xoadc_info;
++	indio_dev->channels = adc->iio_chans;
++	indio_dev->num_channels = adc->nchans;
++
++	ret = iio_device_register(indio_dev);
++	if (ret)
++		goto out_disable_vref;
++
++	ret = pm8xxx_calibrate_device(adc);
++	if (ret)
++		goto out_unreg_device;
++
++	dev_info(dev, "%s XOADC driver enabled\n", variant->name);
++
++	return 0;
++
++out_unreg_device:
++	iio_device_unregister(indio_dev);
++out_disable_vref:
++	regulator_disable(adc->vref);
++
++	return ret;
++}
++
++static int pm8xxx_xoadc_remove(struct platform_device *pdev)
++{
++	struct iio_dev *indio_dev = platform_get_drvdata(pdev);
++	struct pm8xxx_xoadc *adc = iio_priv(indio_dev);
++
++	iio_device_unregister(indio_dev);
++
++	regulator_disable(adc->vref);
++
++	return 0;
++}
++
++static const struct xoadc_variant pm8018_variant = {
++	.name = "PM8018-XOADC",
++	.channels = pm8018_xoadc_channels,
++};
++
++static const struct xoadc_variant pm8038_variant = {
++	.name = "PM8038-XOADC",
++	.channels = pm8038_xoadc_channels,
++};
++
++static const struct xoadc_variant pm8058_variant = {
++	.name = "PM8058-XOADC",
++	.channels = pm8058_xoadc_channels,
++	.broken_ratiometric = true,
++	.prescaling = true,
++};
++
++static const struct xoadc_variant pm8921_variant = {
++	.name = "PM8921-XOADC",
++	.channels = pm8921_xoadc_channels,
++	.second_level_mux = true,
++};
++
++static const struct of_device_id pm8xxx_xoadc_id_table[] = {
++	{
++		.compatible = "qcom,pm8018-adc",
++		.data = &pm8018_variant,
++	},
++	{
++		.compatible = "qcom,pm8038-adc",
++		.data = &pm8038_variant,
++	},
++	{
++		.compatible = "qcom,pm8058-adc",
++		.data = &pm8058_variant,
++	},
++	{
++		.compatible = "qcom,pm8921-adc",
++		.data = &pm8921_variant,
++	},
++	{ },
++};
++MODULE_DEVICE_TABLE(of, pm8xxx_xoadc_id_table);
++
++static struct platform_driver pm8xxx_xoadc_driver = {
++	.driver		= {
++		.name	= "pm8xxx-adc",
++		.of_match_table = pm8xxx_xoadc_id_table,
++	},
++	.probe		= pm8xxx_xoadc_probe,
++	.remove		= pm8xxx_xoadc_remove,
++};
++module_platform_driver(pm8xxx_xoadc_driver);
++
++MODULE_DESCRIPTION("PM8xxx XOADC driver");
++MODULE_LICENSE("GPL v2");
++MODULE_ALIAS("platform:pm8xxx-xoadc");
+-- 
+2.9.3
 
