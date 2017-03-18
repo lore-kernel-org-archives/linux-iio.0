@@ -1,155 +1,176 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-lf0-f42.google.com ([209.85.215.42]:34079 "EHLO
-        mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751087AbdCRQ0F (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 18 Mar 2017 12:26:05 -0400
-Received: by mail-lf0-f42.google.com with SMTP id z15so42859724lfd.1
-        for <linux-iio@vger.kernel.org>; Sat, 18 Mar 2017 09:25:04 -0700 (PDT)
-From: Linus Walleij <linus.walleij@linaro.org>
-To: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
-        Bjorn Andersson <bjorn.andersson@linaro.org>
-Cc: Linus Walleij <linus.walleij@linaro.org>
-Subject: [PATCH 5/5] ARM: dts: Qualcomm APQ8060 DragonBoard ALS sensor
-Date: Sat, 18 Mar 2017 14:34:43 +0100
-Message-Id: <20170318133443.22519-1-linus.walleij@linaro.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=vZ7W=23=gmail.com=hkallweit1@kernel.org>
+From: Heiner Kallweit <hkallweit1@gmail.com>
+Subject: [PATCH v3] iio: adc: meson-saradc: add calibration
+To: Jonathan Cameron <jic23@kernel.org>,
+ Martin Blumenstingl <martin.blumenstingl@googlemail.com>
+Cc: linux-iio@vger.kernel.org
+Message-ID: <f89d2909-9044-242c-fbfa-b18d8887d1d6@gmail.com>
+Date: Sat, 18 Mar 2017 19:38:19 +0100
+MIME-Version: 1.0
+Content-Type: text/plain; charset=utf-8
+List-ID: <linux-iio@vger.kernel.org>
 
-This adds the Capella CM3605 ambient light and proximity sensor
-to the APQ8060 DragonBoard device tree. Notice that we also set
-up pin config for the AOUT line and GPIO lines, and that we set
-the default trigger on the infrared LED to associate with the
-"cm3605" trigger so the IR LED is controlled by this the CM3605
-driver.
+This patch adds calibration for the Meson SAR ADC.
+Points 25% vref and 75% vref are used for calibration.
+It usesa simple linear calibration function: SCALE * val + BIAS
 
-Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
+Successfully tested on a Odroid C2.
+
+Signed-off-by: Heiner Kallweit <hkallweit1@gmail.com>
+Tested-by: Martin Blumenstingl <martin.blumenstingl@googlemail.com>
 ---
-ChangeLog v1->v5:
-- Switch to the twocell addressing scheme specified in the new
-  bindings.
+v2:
+- added calibration scale
+v3:
+- added define MILLION
+- don't bail out if calibration fails
 ---
- arch/arm/boot/dts/qcom-apq8060-dragonboard.dts | 80 ++++++++++++++++++++++++++
- 1 file changed, 80 insertions(+)
+ drivers/iio/adc/meson_saradc.c | 77 ++++++++++++++++++++++++++++++++++++++++--
+ 1 file changed, 75 insertions(+), 2 deletions(-)
 
-diff --git a/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts b/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts
-index 39d9e6ddefed..355b3b9c31bc 100644
---- a/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts
-+++ b/arch/arm/boot/dts/qcom-apq8060-dragonboard.dts
-@@ -23,6 +23,7 @@
- #include <dt-bindings/input/input.h>
- #include <dt-bindings/gpio/gpio.h>
- #include <dt-bindings/pinctrl/qcom,pmic-gpio.h>
-+#include <dt-bindings/pinctrl/qcom,pmic-mpp.h>
- #include "qcom-msm8660.dtsi"
+diff --git a/drivers/iio/adc/meson_saradc.c b/drivers/iio/adc/meson_saradc.c
+index cde9ca7a..dd4190b5 100644
+--- a/drivers/iio/adc/meson_saradc.c
++++ b/drivers/iio/adc/meson_saradc.c
+@@ -166,6 +166,8 @@
  
- / {
-@@ -83,6 +84,25 @@
- 		};
- 	};
+ #define MESON_SAR_ADC_MAX_FIFO_SIZE				32
+ #define MESON_SAR_ADC_TIMEOUT					100 /* ms */
++/* for use with IIO_VAL_INT_PLUS_MICRO */
++#define MILLION							1000000
  
-+	/*
-+	 * Capella CM3605 light and proximity sensor mounted directly
-+	 * on the sensor board.
-+	 */
-+	cm3605 {
-+		compatible = "capella,cm3605";
-+		vdd-supply = <&pm8058_l14>; // 2.85V
-+		aset-gpios = <&pm8058_gpio 35 GPIO_ACTIVE_LOW>;
-+		capella,aset-resistance-ohms = <100000>;
-+		/* GPIO34 has interrupt 225 on the PM8058 */
-+		/* Trig on both edges - getting close or far away */
-+		interrupts-extended = <&pm8058 225 IRQ_TYPE_EDGE_BOTH>;
-+		/* MPP05 analog input to the XOADC */
-+		io-channels = <&xoadc 0x00 0x05>;
-+		io-channel-names = "aout";
-+		pinctrl-names = "default";
-+		pinctrl-0 = <&dragon_cm3605_gpios>, <&dragon_cm3605_mpps>;
-+	};
-+
- 	soc {
- 		pinctrl@800000 {
- 			/* eMMMC pins, all 8 data lines connected */
-@@ -317,6 +337,24 @@
- 							power-source = <PM8058_GPIO_S3>;
- 						};
- 					};
-+					dragon_cm3605_gpios: cm3605-gpios {
-+						/* Pin 34 connected to the proxy IRQ */
-+						pinconf_gpio34 {
-+							pins = "gpio34";
-+							function = "normal";
-+							input-enable;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+						/* Pin 35 connected to ASET */
-+						pinconf_gpio35 {
-+							pins = "gpio35";
-+							function = "normal";
-+							output-high;
-+							bias-disable;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
- 					dragon_veth_gpios: veth-gpios {
- 						pinconf {
- 							pins = "gpio40";
-@@ -327,6 +365,47 @@
- 					};
- 				};
+ #define MESON_SAR_ADC_CHAN(_chan) {					\
+ 	.type = IIO_VOLTAGE,						\
+@@ -173,7 +175,9 @@
+ 	.channel = _chan,						\
+ 	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |			\
+ 				BIT(IIO_CHAN_INFO_AVERAGE_RAW),		\
+-	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE),		\
++	.info_mask_shared_by_type = BIT(IIO_CHAN_INFO_SCALE) |		\
++				BIT(IIO_CHAN_INFO_CALIBBIAS) |		\
++				BIT(IIO_CHAN_INFO_CALIBSCALE),		\
+ 	.datasheet_name = "SAR_ADC_CH"#_chan,				\
+ }
  
-+				mpps@50 {
-+					dragon_cm3605_mpps: cm3605-mpps {
-+						pinconf {
-+							pins = "mpp5";
-+							function = "analog";
-+							input-enable;
-+							bias-high-impedance;
-+							/* Let's use channel 5 */
-+							qcom,amux-route = <PMIC_MPP_AMUX_ROUTE_CH5>;
-+							power-source = <PM8058_GPIO_S3>;
-+						};
-+					};
-+				};
+@@ -233,6 +237,8 @@ struct meson_sar_adc_priv {
+ 	struct clk				*adc_div_clk;
+ 	struct clk_divider			clk_div;
+ 	struct completion			done;
++	int					calibbias;
++	int					calibscale;
+ };
+ 
+ static const struct regmap_config meson_sar_adc_regmap_config = {
+@@ -252,6 +258,17 @@ static unsigned int meson_sar_adc_get_fifo_count(struct iio_dev *indio_dev)
+ 	return FIELD_GET(MESON_SAR_ADC_REG0_FIFO_COUNT_MASK, regval);
+ }
+ 
++static int meson_sar_adc_calib_val(struct iio_dev *indio_dev, int val)
++{
++	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
++	int tmp;
 +
-+				xoadc@197 {
-+					/* Reference voltage 2.2 V */
-+					xoadc-ref-supply = <&pm8058_l18>;
++	/* use val_calib = scale * val_raw + offset calibration function */
++	tmp = div_s64((s64)val * priv->calibscale, MILLION) + priv->calibbias;
 +
-+					/* Board-specific channels */
-+					mpp5@05 {
-+						/* Connected to AOUT of ALS sensor */
-+						reg = <0x00 0x05>;
-+					};
-+					mpp6@06 {
-+						/* Connected to test point TP43 */
-+						reg = <0x00 0x06>;
-+					};
-+					mpp7@07 {
-+						/* Connected to battery thermistor */
-+						reg = <0x00 0x07>;
-+					};
-+					mpp8@08 {
-+						/* Connected to battery ID detector */
-+						reg = <0x00 0x08>;
-+					};
-+					mpp9@09 {
-+						/* Connected to XO thermistor */
-+						reg = <0x00 0x09>;
-+					};
-+				};
++	return clamp(tmp, 0, (1 << priv->data->resolution) - 1);
++}
 +
- 				led@48 {
- 					/*
- 					 * The keypad LED @0x48 is routed to
-@@ -340,6 +419,7 @@
- 					reg = <0x48>;
- 					label = "pm8058:infrared:proximitysensor";
- 					default-state = "off";
-+					linux,default-trigger = "cm3605";
- 				};
- 				led@131 {
- 					compatible = "qcom,pm8058-led";
+ static int meson_sar_adc_wait_busy_clear(struct iio_dev *indio_dev)
+ {
+ 	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
+@@ -302,7 +319,7 @@ static int meson_sar_adc_read_raw_sample(struct iio_dev *indio_dev,
+ 
+ 	fifo_val = FIELD_GET(MESON_SAR_ADC_FIFO_RD_SAMPLE_VALUE_MASK, regval);
+ 	fifo_val &= GENMASK(priv->data->resolution - 1, 0);
+-	*val = fifo_val;
++	*val = meson_sar_adc_calib_val(indio_dev, fifo_val);
+ 
+ 	return 0;
+ }
+@@ -527,6 +544,15 @@ static int meson_sar_adc_iio_info_read_raw(struct iio_dev *indio_dev,
+ 		*val2 = priv->data->resolution;
+ 		return IIO_VAL_FRACTIONAL_LOG2;
+ 
++	case IIO_CHAN_INFO_CALIBBIAS:
++		*val = priv->calibbias;
++		return IIO_VAL_INT;
++
++	case IIO_CHAN_INFO_CALIBSCALE:
++		*val = priv->calibscale / MILLION;
++		*val2 = priv->calibscale % MILLION;
++		return IIO_VAL_INT_PLUS_MICRO;
++
+ 	default:
+ 		return -EINVAL;
+ 	}
+@@ -762,6 +788,47 @@ static irqreturn_t meson_sar_adc_irq(int irq, void *data)
+ 	return IRQ_HANDLED;
+ }
+ 
++static int meson_sar_adc_calib(struct iio_dev *indio_dev)
++{
++	struct meson_sar_adc_priv *priv = iio_priv(indio_dev);
++	int ret, nominal0, nominal1, value0, value1;
++
++	/* use points 25% and 75% for calibration */
++	nominal0 = (1 << priv->data->resolution) / 4;
++	nominal1 = (1 << priv->data->resolution) * 3 / 4;
++
++	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_VDD_DIV4);
++	usleep_range(10, 20);
++	ret = meson_sar_adc_get_sample(indio_dev,
++				       &meson_sar_adc_iio_channels[7],
++				       MEAN_AVERAGING, EIGHT_SAMPLES, &value0);
++	if (ret < 0)
++		goto out;
++
++	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_VDD_MUL3_DIV4);
++	usleep_range(10, 20);
++	ret = meson_sar_adc_get_sample(indio_dev,
++				       &meson_sar_adc_iio_channels[7],
++				       MEAN_AVERAGING, EIGHT_SAMPLES, &value1);
++	if (ret < 0)
++		goto out;
++
++	if (value1 <= value0) {
++		ret = -EINVAL;
++		goto out;
++	}
++
++	priv->calibscale = div_s64((nominal1 - nominal0) * (s64)MILLION,
++				   value1 - value0);
++	priv->calibbias = nominal0 - div_s64((s64)value0 * priv->calibscale,
++					     MILLION);
++	ret = 0;
++out:
++	meson_sar_adc_set_chan7_mux(indio_dev, CHAN7_MUX_CH7_INPUT);
++
++	return ret;
++}
++
+ static const struct iio_info meson_sar_adc_iio_info = {
+ 	.read_raw = meson_sar_adc_iio_info_read_raw,
+ 	.driver_module = THIS_MODULE,
+@@ -901,6 +968,8 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 		return PTR_ERR(priv->vref);
+ 	}
+ 
++	priv->calibscale = MILLION;
++
+ 	ret = meson_sar_adc_init(indio_dev);
+ 	if (ret)
+ 		goto err;
+@@ -909,6 +978,10 @@ static int meson_sar_adc_probe(struct platform_device *pdev)
+ 	if (ret)
+ 		goto err;
+ 
++	ret = meson_sar_adc_calib(indio_dev);
++	if (ret)
++		dev_warn(&pdev->dev, "calibration failed\n");
++
+ 	platform_set_drvdata(pdev, indio_dev);
+ 
+ 	ret = iio_device_register(indio_dev);
 -- 
-2.9.3
-
+2.12.0
