@@ -1,197 +1,636 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:40790 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S934042AbdCUTc5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 15:32:57 -0400
-Subject: Re: [PATCH v5] staging: Use buf_lock instead of mlock and Refactor
- code
-To: SIMRAN SINGHAL <singhalsimran0@gmail.com>,
-        kbuild test robot <lkp@intel.com>
-References: <20170319125039.GA23385@singhal-Inspiron-5558>
- <201703212205.WEm2baAJ%fengguang.wu@intel.com>
- <CALrZqyMGtbOYUnXATQ5zpfgtg26+Ld=Go-5tG-Aneyxe8=cKdw@mail.gmail.com>
-Cc: kbuild-all@01.org, Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        outreachy-kernel <outreachy-kernel@googlegroups.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <48bceda7-916e-8e0d-e84c-2a6c66a73a49@kernel.org>
-Date: Tue, 21 Mar 2017 19:32:53 +0000
+Return-Path: <SRS0=zS6r=24=gmail.com=manivannanece23@kernel.org>
+Date: Sun, 19 Mar 2017 20:23:12 +0530
+From: Manivannan Sadhasivam <manivannanece23@gmail.com>
+To: jic23@kernel.org, pmeerw@pmeerw.net
+Cc: linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
+	manivannanece23@gmail.com
+Subject: [PATCH v3] iio:light: Add support for STMicro VL6180 sensor
+Message-ID: <20170319145312.GA10949@gmail.com>
 MIME-Version: 1.0
-In-Reply-To: <CALrZqyMGtbOYUnXATQ5zpfgtg26+Ld=Go-5tG-Aneyxe8=cKdw@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On 21/03/17 15:05, SIMRAN SINGHAL wrote:
-> On Tue, Mar 21, 2017 at 8:01 PM, kbuild test robot <lkp@intel.com> wrote:
->> Hi simran,
->>
->> [auto build test WARNING on iio/togreg]
->> [also build test WARNING on v4.11-rc3 next-20170321]
->> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
->>
->> url:    https://github.com/0day-ci/linux/commits/simran-singhal/staging-Use-buf_lock-instead-of-mlock-and-Refactor-code/20170321-213956
->> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
->> config: x86_64-randconfig-x016-201712 (attached as .config)
->> compiler: gcc-6 (Debian 6.2.0-3) 6.2.0 20160901
->> reproduce:
->>         # save the attached .config to linux build tree
->>         make ARCH=x86_64
->>
->> All warnings (new ones prefixed by >>):
->>
-> I am not getting any error, and I have already sent the v7 of this patch
-> please check out that:
-> https://groups.google.com/forum/#!topic/outreachy-kernel/5uz6IpcOpMA
-> 
-> 
->>    In file included from include/uapi/linux/stddef.h:1:0,
->>                     from include/linux/stddef.h:4,
->>                     from include/uapi/linux/posix_types.h:4,
->>                     from include/uapi/linux/types.h:13,
->>                     from include/linux/types.h:5,
->>                     from include/linux/list.h:4,
->>                     from include/linux/module.h:9,
->>                     from drivers/staging/iio/gyro/adis16060_core.c:9:
->>    drivers/staging/iio/gyro/adis16060_core.c: In function 'adis16060_read_raw':
->>    include/linux/compiler.h:149:2: warning: this 'if' clause does not guard... [-Wmisleading-indentation]
->>      if (__builtin_constant_p(!!(cond)) ? !!(cond) :   \
->>      ^
->>    include/linux/compiler.h:147:23: note: in expansion of macro '__trace_if'
->>     #define if(cond, ...) __trace_if( (cond , ## __VA_ARGS__) )
->>                           ^~~~~~~~~~
->>>> drivers/staging/iio/gyro/adis16060_core.c:89:3: note: in expansion of macro 'if'
->>       if (ret < 0)
->>       ^~
->>    drivers/staging/iio/gyro/adis16060_core.c:91:4: note: ...this statement, but the latter is misleadingly indented as if it is guarded by the 'if'
->>        return ret;
->>        ^~~~~~
-All this rather complex bit of magic is saying, is that the indenting on the return
-is probably wrong.  Which it isn't, but there is something else wrong that
-would make the autobuilder think so.  No brackets around the two lines that
-should run if the if statement is true!
+This patch adds support for STMicro VL6180 - ALS, range and proximity sensor. Sensor is capable of measuring the light
+intensity as well as object distance using TOF (Time of Flight) technology.
 
-This is the autobuilder magic running directly on patches on the mailing list.
-I force the equivalent tests by pushing patches out first in a testing branch,
-so that this stuff can be fixed before patches go into a non rebasing branch
-(fixing them there makes for a very messy history).
+Signed-off-by: Manivannan Sadhasivam <manivannanece23@gmail.com>
+Signed-off-by: Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Acked-by: Rob Herring <robh@kernel.org>
+---
 
-If the autobuilder bots have spare cycles, they tend to start running patches
-off the mailing list - hence magic like this one, though the results can be
-hard to read sometimes!
+Changes in v3:
 
-Jonathan
->>
->> vim +/if +89 drivers/staging/iio/gyro/adis16060_core.c
->>
->> e071f6b8 Barry Song       2010-10-27   3   *
->> e071f6b8 Barry Song       2010-10-27   4   * Copyright 2010 Analog Devices Inc.
->> e071f6b8 Barry Song       2010-10-27   5   *
->> e071f6b8 Barry Song       2010-10-27   6   * Licensed under the GPL-2 or later.
->> e071f6b8 Barry Song       2010-10-27   7   */
->> e071f6b8 Barry Song       2010-10-27   8
->> 45296236 Paul Gortmaker   2011-08-30  @9  #include <linux/module.h>
->> e071f6b8 Barry Song       2010-10-27  10  #include <linux/delay.h>
->> e071f6b8 Barry Song       2010-10-27  11  #include <linux/mutex.h>
->> e071f6b8 Barry Song       2010-10-27  12  #include <linux/device.h>
->> e071f6b8 Barry Song       2010-10-27  13  #include <linux/kernel.h>
->> e071f6b8 Barry Song       2010-10-27  14  #include <linux/spi/spi.h>
->> e071f6b8 Barry Song       2010-10-27  15  #include <linux/slab.h>
->> e071f6b8 Barry Song       2010-10-27  16  #include <linux/sysfs.h>
->> 14f98326 Jonathan Cameron 2011-02-28  17
->> 06458e27 Jonathan Cameron 2012-04-25  18  #include <linux/iio/iio.h>
->> 06458e27 Jonathan Cameron 2012-04-25  19  #include <linux/iio/sysfs.h>
->> e071f6b8 Barry Song       2010-10-27  20
->> 14f98326 Jonathan Cameron 2011-02-28  21  #define ADIS16060_GYRO                0x20 /* Measure Angular Rate (Gyro) */
->> 14f98326 Jonathan Cameron 2011-02-28  22  #define ADIS16060_TEMP_OUT    0x10 /* Measure Temperature */
->> 14f98326 Jonathan Cameron 2011-02-28  23  #define ADIS16060_AIN2                0x80 /* Measure AIN2 */
->> 14f98326 Jonathan Cameron 2011-02-28  24  #define ADIS16060_AIN1                0x40 /* Measure AIN1 */
->> 14f98326 Jonathan Cameron 2011-02-28  25
->> 14f98326 Jonathan Cameron 2011-02-28  26  /**
->> 14f98326 Jonathan Cameron 2011-02-28  27   * struct adis16060_state - device instance specific data
->> 14f98326 Jonathan Cameron 2011-02-28  28   * @us_w:             actual spi_device to write config
->> 14f98326 Jonathan Cameron 2011-02-28  29   * @us_r:             actual spi_device to read back data
->> 25985edc Lucas De Marchi  2011-03-30  30   * @buf:              transmit or receive buffer
->> 14f98326 Jonathan Cameron 2011-02-28  31   * @buf_lock:         mutex to protect tx and rx
->> 14f98326 Jonathan Cameron 2011-02-28  32   **/
->> 14f98326 Jonathan Cameron 2011-02-28  33  struct adis16060_state {
->> 14f98326 Jonathan Cameron 2011-02-28  34        struct spi_device               *us_w;
->> 14f98326 Jonathan Cameron 2011-02-28  35        struct spi_device               *us_r;
->> 14f98326 Jonathan Cameron 2011-02-28  36        struct mutex                    buf_lock;
->> 14f98326 Jonathan Cameron 2011-02-28  37
->> 14f98326 Jonathan Cameron 2011-02-28  38        u8 buf[3] ____cacheline_aligned;
->> 14f98326 Jonathan Cameron 2011-02-28  39  };
->> e071f6b8 Barry Song       2010-10-27  40
->> 3a5952f9 Jonathan Cameron 2011-06-27  41  static struct iio_dev *adis16060_iio_dev;
->> e071f6b8 Barry Song       2010-10-27  42
->> 71db16e5 simran singhal   2017-03-19  43  static int adis16060_spi_write_than_read(struct iio_dev *indio_dev,
->> 71db16e5 simran singhal   2017-03-19  44                                         u8 conf, u16 *val)
->> e071f6b8 Barry Song       2010-10-27  45  {
->> e071f6b8 Barry Song       2010-10-27  46        int ret;
->> 3a5952f9 Jonathan Cameron 2011-06-27  47        struct adis16060_state *st = iio_priv(indio_dev);
->> e071f6b8 Barry Song       2010-10-27  48
->> e071f6b8 Barry Song       2010-10-27  49        mutex_lock(&st->buf_lock);
->> 71db16e5 simran singhal   2017-03-19  50        st->buf[2] = conf; /* The last 8 bits clocked in are latched */
->> 14f98326 Jonathan Cameron 2011-02-28  51        ret = spi_write(st->us_w, st->buf, 3);
->> e071f6b8 Barry Song       2010-10-27  52
->> 71db16e5 simran singhal   2017-03-19  53        if (ret < 0) {
->> 71db16e5 simran singhal   2017-03-19  54                mutex_unlock(&st->buf_lock);
->> e071f6b8 Barry Song       2010-10-27  55                return ret;
->> e071f6b8 Barry Song       2010-10-27  56        }
->> e071f6b8 Barry Song       2010-10-27  57
->> 14f98326 Jonathan Cameron 2011-02-28  58        ret = spi_read(st->us_r, st->buf, 3);
->> e071f6b8 Barry Song       2010-10-27  59
->> d14ae859 Jonathan Cameron 2011-02-11  60        /* The internal successive approximation ADC begins the
->> d14ae859 Jonathan Cameron 2011-02-11  61         * conversion process on the falling edge of MSEL1 and
->> d14ae859 Jonathan Cameron 2011-02-11  62         * starts to place data MSB first on the DOUT line at
->> d14ae859 Jonathan Cameron 2011-02-11  63         * the 6th falling edge of SCLK
->> e071f6b8 Barry Song       2010-10-27  64         */
->> 05824120 Cristina Moraru  2015-10-20  65        if (!ret)
->> 14f98326 Jonathan Cameron 2011-02-28  66                *val = ((st->buf[0] & 0x3) << 12) |
->> 14f98326 Jonathan Cameron 2011-02-28  67                         (st->buf[1] << 4) |
->> 14f98326 Jonathan Cameron 2011-02-28  68                         ((st->buf[2] >> 4) & 0xF);
->> e071f6b8 Barry Song       2010-10-27  69        mutex_unlock(&st->buf_lock);
->> e071f6b8 Barry Song       2010-10-27  70
->> e071f6b8 Barry Song       2010-10-27  71        return ret;
->> e071f6b8 Barry Song       2010-10-27  72  }
->> e071f6b8 Barry Song       2010-10-27  73
->> 4f2ca080 Jonathan Cameron 2011-08-12  74  static int adis16060_read_raw(struct iio_dev *indio_dev,
->> 4f2ca080 Jonathan Cameron 2011-08-12  75                              struct iio_chan_spec const *chan,
->> 4f2ca080 Jonathan Cameron 2011-08-12  76                              int *val, int *val2,
->> 4f2ca080 Jonathan Cameron 2011-08-12  77                              long mask)
->> e071f6b8 Barry Song       2010-10-27  78  {
->> 4f2ca080 Jonathan Cameron 2011-08-12  79        u16 tval = 0;
->> 4f2ca080 Jonathan Cameron 2011-08-12  80        int ret;
->> 71db16e5 simran singhal   2017-03-19  81        struct adis16060_state *st = iio_priv(indio_dev);
->> e071f6b8 Barry Song       2010-10-27  82
->> 4f2ca080 Jonathan Cameron 2011-08-12  83        switch (mask) {
->> fbaff213 Jonathan Cameron 2012-04-15  84        case IIO_CHAN_INFO_RAW:
->> e071f6b8 Barry Song       2010-10-27  85                /* Take the iio_dev status lock */
->> 71db16e5 simran singhal   2017-03-19  86                mutex_lock(&st->buf_lock);
->> 71db16e5 simran singhal   2017-03-19  87                ret = adis16060_spi_write_than_read(indio_dev,
->> 71db16e5 simran singhal   2017-03-19  88                                                    chan->address, &tval);
->> 31a99443 Cristina Moraru  2015-10-25 @89                if (ret < 0)
->> 71db16e5 simran singhal   2017-03-19  90                        mutex_unlock(&st->buf_lock);
->> 71db16e5 simran singhal   2017-03-19  91                        return ret;
->> 31a99443 Cristina Moraru  2015-10-25  92
->>
->> :::::: The code at line 89 was first introduced by commit
->> :::::: 31a99443a53aa65cdaaaaa3bcd5ed685eec87419 staging: iio: adis16060_core: Fix error handling
->>
->> :::::: TO: Cristina Moraru <cristina.moraru09@gmail.com>
->> :::::: CC: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
->>
->> ---
->> 0-DAY kernel test infrastructure                Open Source Technology Center
->> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+1. Changed the false reset handling. Instead of error out, logging is adapted
 
+Changes in v2:
+
+1. Specified range in comments and Kconfig
+2. Used cpu_to_be16 for endianess conversion
+3. Fixed typos
+4. Added necessary comments
+5. Added Peter's signed-off-by:
+
+ .../devicetree/bindings/iio/light/vl6180.txt       |  16 +
+ drivers/iio/light/Kconfig                          |  10 +
+ drivers/iio/light/Makefile                         |   1 +
+ drivers/iio/light/vl6180.c                         | 538 +++++++++++++++++++++
+ 4 files changed, 565 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/light/vl6180.txt
+ create mode 100644 drivers/iio/light/vl6180.c
+
+diff --git a/Documentation/devicetree/bindings/iio/light/vl6180.txt b/Documentation/devicetree/bindings/iio/light/vl6180.txt
+new file mode 100644
+index 0000000..8f77ccd
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/light/vl6180.txt
+@@ -0,0 +1,16 @@
++STMicro VL6180 -  ALS, range and proximity sensor
++
++Link to datasheet: http://www.st.com/resource/en/datasheet/vl6180x.pdf
++
++Required properties:
++
++	-compatible: should be "st,vl6180"
++	-reg: the I2C address of the sensor
++
++Example:
++
++vl6180@29 {
++	compatible = "st,vl6180";
++	reg = <0x29>;
++};
++	
+diff --git a/drivers/iio/light/Kconfig b/drivers/iio/light/Kconfig
+index 7c566f5..aec04ef 100644
+--- a/drivers/iio/light/Kconfig
++++ b/drivers/iio/light/Kconfig
+@@ -352,4 +352,14 @@ config VEML6070
+ 	 To compile this driver as a module, choose M here: the
+ 	 module will be called veml6070.
+ 
++config VL6180
++	tristate "VL6180 ALS, range and proximity sensor"
++	depends on I2C
++	help
++	 Say Y here if you want to build a driver for the STMicroelectronics
++	 VL6180 combined ambient light, range and proximity sensor.
++
++	 To compile this driver as a module, choose M here: the
++	 module will be called vl6180.
++
+ endmenu
+diff --git a/drivers/iio/light/Makefile b/drivers/iio/light/Makefile
+index 6f2a3c6..24a8d72 100644
+--- a/drivers/iio/light/Makefile
++++ b/drivers/iio/light/Makefile
+@@ -33,3 +33,4 @@ obj-$(CONFIG_TSL4531)		+= tsl4531.o
+ obj-$(CONFIG_US5182D)		+= us5182d.o
+ obj-$(CONFIG_VCNL4000)		+= vcnl4000.o
+ obj-$(CONFIG_VEML6070)		+= veml6070.o
++obj-$(CONFIG_VL6180)		+= vl6180.o
+diff --git a/drivers/iio/light/vl6180.c b/drivers/iio/light/vl6180.c
+new file mode 100644
+index 0000000..6bfdca3
+--- /dev/null
++++ b/drivers/iio/light/vl6180.c
+@@ -0,0 +1,538 @@
++/*
++ * vl6180.c - Support for STMicroelectronics VL6180 ALS, range and proximity sensor
++ *
++ * Copyright 2017 Peter Meerwald-Stadler <pmeerw@pmeerw.net>
++ * Copyright 2017 Manivannan Sadhasivam <manivannanece23@gmail.com>
++ *
++ * This file is subject to the terms and conditions of version 2 of
++ * the GNU General Public License.  See the file COPYING in the main
++ * directory of this archive for more details.
++ *
++ * IIO driver for VL6180 (7-bit I2C slave address 0x29)
++ *
++ * Range: 0 to 100mm
++ * ALS: < 1 Lux up to 100 kLux
++ * IR: 850nm
++ *
++ * TODO: irq, threshold events, continuous mode, hardware buffer
++ */
++
++#include <linux/module.h>
++#include <linux/i2c.h>
++#include <linux/mutex.h>
++#include <linux/err.h>
++#include <linux/of.h>
++#include <linux/delay.h>
++
++#include <linux/iio/iio.h>
++#include <linux/iio/sysfs.h>
++
++#define VL6180_DRV_NAME "vl6180"
++
++/* Device identification register and value */
++#define VL6180_MODEL_ID	0x000
++#define VL6180_MODEL_ID_VAL 0xb4
++
++/* Configuration registers */
++#define VL6180_INTR_CONFIG 0x014
++#define VL6180_INTR_CLEAR 0x015
++#define VL6180_OUT_OF_RESET 0x016
++#define VL6180_HOLD 0x017
++#define VL6180_RANGE_START 0x018
++#define VL6180_ALS_START 0x038
++#define VL6180_ALS_GAIN 0x03f
++#define VL6180_ALS_IT 0x040
++
++/* Status registers */
++#define VL6180_RANGE_STATUS 0x04d
++#define VL6180_ALS_STATUS 0x04e
++#define VL6180_INTR_STATUS 0x04f
++
++/* Result value registers */
++#define VL6180_ALS_VALUE 0x050
++#define VL6180_RANGE_VALUE 0x062
++#define VL6180_RANGE_RATE 0x066
++
++/* bits of the RANGE_START and ALS_START register */
++#define VL6180_MODE_CONT BIT(1) /* continuous mode */
++#define VL6180_STARTSTOP BIT(0) /* start measurement, auto-reset */
++
++/* bits of the INTR_STATUS and INTR_CONFIG register */
++#define VL6180_ALS_READY BIT(5)
++#define VL6180_RANGE_READY BIT(2)
++
++/* bits of the INTR_CLEAR register */
++#define VL6180_CLEAR_ERROR BIT(2)
++#define VL6180_CLEAR_ALS BIT(1)
++#define VL6180_CLEAR_RANGE BIT(0)
++
++/* bits of the HOLD register */
++#define VL6180_HOLD_ON BIT(0)
++
++/* default value for the ALS_IT register */
++#define VL6180_ALS_IT_100 0x63 /* 100 ms */
++
++/* values for the ALS_GAIN register */
++#define VL6180_ALS_GAIN_1 0x46
++#define VL6180_ALS_GAIN_1_25 0x45
++#define VL6180_ALS_GAIN_1_67 0x44
++#define VL6180_ALS_GAIN_2_5 0x43
++#define VL6180_ALS_GAIN_5 0x42
++#define VL6180_ALS_GAIN_10 0x41
++#define VL6180_ALS_GAIN_20 0x40
++#define VL6180_ALS_GAIN_40 0x47
++
++struct vl6180_data {
++	struct i2c_client *client;
++	struct mutex lock;
++};
++
++enum { VL6180_ALS, VL6180_RANGE, VL6180_PROX };
++
++/**
++ * struct vl6180_chan_regs - Registers for accessing channels
++ * @drdy_mask:			Data ready bit in status register
++ * @start_reg:			Conversion start register
++ * @value_reg:			Result value register
++ * @word:			Register word length
++ */
++struct vl6180_chan_regs {
++	u8 drdy_mask;
++	u16 start_reg, value_reg;
++	bool word;
++};
++
++static const struct vl6180_chan_regs vl6180_chan_regs_table[] = {
++	[VL6180_ALS] = {
++		.drdy_mask = VL6180_ALS_READY,
++		.start_reg = VL6180_ALS_START,
++		.value_reg = VL6180_ALS_VALUE,
++		.word = true,
++	},
++	[VL6180_RANGE] = {
++		.drdy_mask = VL6180_RANGE_READY,
++		.start_reg = VL6180_RANGE_START,
++		.value_reg = VL6180_RANGE_VALUE,
++		.word = false,
++	},
++	[VL6180_PROX] = {
++		.drdy_mask = VL6180_RANGE_READY,
++		.start_reg = VL6180_RANGE_START,
++		.value_reg = VL6180_RANGE_RATE,
++		.word = true,
++	},
++};
++
++static int vl6180_read(struct i2c_client *client, u16 cmd, void *databuf,
++		       u8 len)
++{
++	__be16 cmdbuf = cpu_to_be16(cmd);
++	struct i2c_msg msgs[2] = {
++		{ .addr = client->addr, .len = sizeof(cmdbuf), .buf = (u8 *) &cmdbuf },
++		{ .addr = client->addr, .len = len, .buf = databuf,
++		  .flags = I2C_M_RD } };
++	int ret;
++
++	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
++	if (ret < 0)
++		dev_err(&client->dev, "failed reading register 0x%04x\n", cmd);
++
++	return ret;
++}
++
++static int vl6180_read_byte(struct i2c_client *client, u16 cmd)
++{
++	u8 data;
++	int ret;
++
++	ret = vl6180_read(client, cmd, &data, sizeof(data));
++	if (ret < 0)
++		return ret;
++
++	return data;
++}
++
++static int vl6180_read_word(struct i2c_client *client, u16 cmd)
++{
++	__be16 data;
++	int ret;
++
++	ret = vl6180_read(client, cmd, &data, sizeof(data));
++	if (ret < 0)
++		return ret;
++
++	return be16_to_cpu(data);
++}
++
++static int vl6180_write_byte(struct i2c_client *client, u16 cmd, u8 val)
++{
++	u8 buf[3];
++	struct i2c_msg msgs[1] = {
++		{ .addr = client->addr, .len = sizeof(buf), .buf = (u8 *) &buf } };
++	int ret;
++
++	buf[0] = cmd >> 8;
++	buf[1] = cmd & 0xff;
++	buf[2] = val;
++
++	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
++	if (ret < 0) {
++		dev_err(&client->dev, "failed writing register 0x%04x\n", cmd);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int vl6180_write_word(struct i2c_client *client, u16 cmd, u16 val)
++{
++	__be16 buf[2];
++	struct i2c_msg msgs[1] = {
++		{ .addr = client->addr, .len = sizeof(buf), .buf = (u8 *) &buf } };
++	int ret;
++
++	buf[0] = cpu_to_be16(cmd);
++	buf[1] = cpu_to_be16(val);
++
++	ret = i2c_transfer(client->adapter, msgs, ARRAY_SIZE(msgs));
++	if (ret < 0) {
++		dev_err(&client->dev, "failed writing register 0x%04x\n", cmd);
++		return ret;
++	}
++
++	return 0;
++}
++
++static int vl6180_measure(struct vl6180_data *data, int addr)
++{
++	struct i2c_client *client = data->client;
++	int tries = 20, ret;
++	u16 value;
++
++	mutex_lock(&data->lock);
++	/* Start single shot measurement */
++	ret = vl6180_write_byte(client,
++		vl6180_chan_regs_table[addr].start_reg, VL6180_STARTSTOP);
++	if (ret < 0)
++		goto fail;
++
++	while (tries--) {
++		ret = vl6180_read_byte(client, VL6180_INTR_STATUS);
++		if (ret < 0)
++			goto fail;
++
++		if (ret & vl6180_chan_regs_table[addr].drdy_mask)
++			break;
++		msleep(20);
++	}
++
++	if (tries < 0) {
++		ret = -EIO;
++		goto fail;
++	}
++
++	/* Read result value from appropriate registers */
++	ret = vl6180_chan_regs_table[addr].word ?
++		vl6180_read_word(client, vl6180_chan_regs_table[addr].value_reg) :
++		vl6180_read_byte(client, vl6180_chan_regs_table[addr].value_reg);
++	if (ret < 0)
++		goto fail;
++	value = ret;
++
++	/* Clear the interrupt flag after data read */
++	ret = vl6180_write_byte(client, VL6180_INTR_CLEAR,
++		VL6180_CLEAR_ERROR | VL6180_CLEAR_ALS | VL6180_CLEAR_RANGE);
++	if (ret < 0)
++		goto fail;
++
++	ret = value;
++
++fail:
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static const struct iio_chan_spec vl6180_channels[] = {
++	{
++		.type = IIO_LIGHT,
++		.address = VL6180_ALS,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_INT_TIME) |
++			BIT(IIO_CHAN_INFO_SCALE) |
++			BIT(IIO_CHAN_INFO_HARDWAREGAIN),
++	}, {
++		.type = IIO_DISTANCE,
++		.address = VL6180_RANGE,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) |
++			BIT(IIO_CHAN_INFO_SCALE),
++	}, {
++		.type = IIO_PROXIMITY,
++		.address = VL6180_PROX,
++		.info_mask_separate = BIT(IIO_CHAN_INFO_RAW),
++	}
++};
++
++/* Columns 3 & 4 represent the same value in decimal and hex notations.
++ * Kept in order to avoid the datatype conversion while reading the
++ * hardware_gain */
++static const int vl6180_als_gain[8][4] = {
++	{ 1,	0,	70,	VL6180_ALS_GAIN_1 },
++	{ 1,    250000, 69,	VL6180_ALS_GAIN_1_25 },
++	{ 1,    670000, 68,	VL6180_ALS_GAIN_1_67 },
++	{ 2,    500000, 67,	VL6180_ALS_GAIN_2_5 },
++	{ 5,    0,      66,	VL6180_ALS_GAIN_5 },
++	{ 10,   0,      65,	VL6180_ALS_GAIN_10 },
++	{ 20,   0,      64,	VL6180_ALS_GAIN_20 },
++	{ 40,   0,      71,	VL6180_ALS_GAIN_40 }
++};
++
++static int vl6180_read_raw(struct iio_dev *indio_dev,
++				struct iio_chan_spec const *chan,
++				int *val, int *val2, long mask)
++{
++	struct vl6180_data *data = iio_priv(indio_dev);
++	int ret, i;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		ret = vl6180_measure(data, chan->address);
++		if (ret < 0)
++			return ret;
++		*val = ret;
++
++		return IIO_VAL_INT;
++	case IIO_CHAN_INFO_INT_TIME:
++		ret = vl6180_read_word(data->client, VL6180_ALS_IT);
++		if (ret < 0)
++			return ret;
++		*val = 0; /* 1 count = 1ms (0 = 1ms) */
++		*val2 = (ret + 1) * 1000; /* convert to seconds */
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_SCALE:
++		switch (chan->type) {
++		case IIO_LIGHT:
++			*val = 0; /* one ALS count is 0.32 Lux */
++			*val2 = 320000;
++			break;
++		case IIO_DISTANCE:
++			*val = 0; /* sensor reports mm, scale to meter */
++			*val2 = 1000;
++			break;
++		default:
++			return -EINVAL;
++		}
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		ret = vl6180_read_byte(data->client, VL6180_ALS_GAIN);
++		if (ret < 0)
++			return -EINVAL;
++		for (i = 0; i < ARRAY_SIZE(vl6180_als_gain); i++) {
++			if (ret == vl6180_als_gain[i][2]) {
++				*val = vl6180_als_gain[i][0];
++				*val2 = vl6180_als_gain[i][1];
++			}
++		}
++
++		return IIO_VAL_INT_PLUS_MICRO;
++	default:
++		return -EINVAL;
++	}
++}
++
++static IIO_CONST_ATTR(als_gain_available, "1 1.25 1.67 2.5 5 10 20 40");
++
++static struct attribute *vl6180_attributes[] = {
++	&iio_const_attr_als_gain_available.dev_attr.attr,
++	NULL
++};
++
++static const struct attribute_group vl6180_attribute_group = {
++	.attrs = vl6180_attributes,
++};
++
++/* HOLD is needed before updating any config registers */
++static int vl6180_hold(struct vl6180_data *data, bool hold)
++{
++	return vl6180_write_byte(data->client, VL6180_HOLD,
++		hold ? VL6180_HOLD_ON : 0);
++}
++
++static int vl6180_set_als_gain(struct vl6180_data *data, int val, int val2)
++{
++	int i, ret;
++
++	for (i = 0; i < ARRAY_SIZE(vl6180_als_gain); i++) {
++		if (val == vl6180_als_gain[i][0] &&
++			val2 == vl6180_als_gain[i][1]) {
++			mutex_lock(&data->lock);
++			ret = vl6180_hold(data, true);
++			if (ret < 0)
++				goto fail;
++			ret = vl6180_write_byte(data->client, VL6180_ALS_GAIN,
++				vl6180_als_gain[i][3]);
++fail:
++			vl6180_hold(data, false);
++			mutex_unlock(&data->lock);
++			return ret;
++		}
++	}
++
++	return -EINVAL;
++}
++
++static int vl6180_set_it(struct vl6180_data *data, int val2)
++{
++	int ret;
++
++	mutex_lock(&data->lock);
++	ret = vl6180_hold(data, true);
++	if (ret < 0)
++		goto fail;
++	ret = vl6180_write_word(data->client, VL6180_ALS_IT,
++		(val2 - 500) / 1000); /* write value in ms */
++fail:
++	vl6180_hold(data, false);
++	mutex_unlock(&data->lock);
++
++	return ret;
++}
++
++static int vl6180_write_raw(struct iio_dev *indio_dev,
++			     struct iio_chan_spec const *chan,
++			     int val, int val2, long mask)
++{
++	struct vl6180_data *data = iio_priv(indio_dev);
++
++	switch (mask) {
++	case IIO_CHAN_INFO_INT_TIME:
++		if (val != 0 || val2 < 500 || val2 >= 512500)
++			return -EINVAL;
++
++		return vl6180_set_it(data, val2);
++	case IIO_CHAN_INFO_HARDWAREGAIN:
++		if (chan->type != IIO_LIGHT)
++			return -EINVAL;
++
++		return vl6180_set_als_gain(data, val, val2);
++	default:
++		return -EINVAL;
++	}
++}
++
++static const struct iio_info vl6180_info = {
++	.read_raw = vl6180_read_raw,
++	.write_raw = vl6180_write_raw,
++	.attrs = &vl6180_attribute_group,
++	.driver_module = THIS_MODULE,
++};
++
++static int vl6180_init(struct vl6180_data *data)
++{
++	struct i2c_client *client = data->client;
++	int ret;
++
++	ret = vl6180_read_byte(client, VL6180_MODEL_ID);
++	if (ret < 0)
++		return ret;
++
++	if (ret != VL6180_MODEL_ID_VAL) {
++		dev_err(&client->dev, "invalid model ID %02x\n", ret);
++		return -ENODEV;
++	}
++
++	ret = vl6180_hold(data, true);
++	if (ret < 0)
++		return ret;
++
++	ret = vl6180_read_byte(client, VL6180_OUT_OF_RESET);
++	if (ret < 0)
++		return ret;
++
++	/* Detect false reset condition here. This bit is always set when the system comes
++	 * out of reset */
++	if (ret != 0x01)
++		dev_info(&client->dev, "device is not fresh out of reset\n");
++
++	/* Enable ALS and Range ready interrupts */
++	ret = vl6180_write_byte(client, VL6180_INTR_CONFIG,
++				VL6180_ALS_READY | VL6180_RANGE_READY);
++	if (ret < 0)
++		return ret;
++
++	/* ALS integration time: 100ms */
++	ret = vl6180_write_word(client, VL6180_ALS_IT, VL6180_ALS_IT_100);
++	if (ret < 0)
++		return ret;
++
++	/* ALS gain: 1 */
++	ret = vl6180_write_byte(client, VL6180_ALS_GAIN, VL6180_ALS_GAIN_1);
++	if (ret < 0)
++		return ret;
++
++	ret = vl6180_write_byte(client, VL6180_OUT_OF_RESET, 0x00);
++	if (ret < 0)
++		return ret;
++
++	return vl6180_hold(data, false);
++}
++
++static int vl6180_probe(struct i2c_client *client,
++			  const struct i2c_device_id *id)
++{
++	struct vl6180_data *data;
++	struct iio_dev *indio_dev;
++	int ret;
++
++	indio_dev = devm_iio_device_alloc(&client->dev, sizeof(*data));
++	if (!indio_dev)
++		return -ENOMEM;
++
++	data = iio_priv(indio_dev);
++	i2c_set_clientdata(client, indio_dev);
++	data->client = client;
++	mutex_init(&data->lock);
++
++	indio_dev->dev.parent = &client->dev;
++	indio_dev->info = &vl6180_info;
++	indio_dev->channels = vl6180_channels;
++	indio_dev->num_channels = ARRAY_SIZE(vl6180_channels);
++	indio_dev->name = VL6180_DRV_NAME;
++	indio_dev->modes = INDIO_DIRECT_MODE;
++
++	ret = vl6180_init(data);
++	if (ret < 0)
++		return ret;
++
++	return devm_iio_device_register(&client->dev, indio_dev);
++}
++
++static const struct of_device_id vl6180_of_match[] = {
++	{ .compatible = "st,vl6180", },
++	{ },
++};
++MODULE_DEVICE_TABLE(of, vl6180_of_match);
++
++static const struct i2c_device_id vl6180_id[] = {
++	{ "vl6180", 0 },
++	{ }
++};
++MODULE_DEVICE_TABLE(i2c, vl6180_id);
++
++static struct i2c_driver vl6180_driver = {
++	.driver = {
++		.name   = VL6180_DRV_NAME,
++		.of_match_table = of_match_ptr(vl6180_of_match),
++	},
++	.probe  = vl6180_probe,
++	.id_table = vl6180_id,
++};
++
++module_i2c_driver(vl6180_driver);
++
++MODULE_AUTHOR("Peter Meerwald-Stadler <pmeerw@pmeerw.net>");
++MODULE_AUTHOR("Manivannan Sadhasivam <manivannanece23@gmail.com>");
++MODULE_DESCRIPTION("STMicro VL6180 ALS, range and proximity sensor driver");
++MODULE_LICENSE("GPL");
+-- 
+2.7.4
