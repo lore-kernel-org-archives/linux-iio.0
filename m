@@ -1,50 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from smtpauth-dc2.online.net ([62.210.16.40]:37596 "EHLO
-        smtpauth-dc2-1.online.net" rhost-flags-OK-OK-OK-FAIL)
-        by vger.kernel.org with ESMTP id S1751818AbdCPNDD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 09:03:03 -0400
-From: Miguel Robles <miguel.robles@farole.net>
-To: jic23@kernel.org, gregkh@linuxfoundation.org
-Cc: linux-iio@vger.kernel.org, Miguel Robles <miguel.robles@farole.net>
-Subject: [PATCH] Staging: iio: cdc: use octal permissions instead of symbolic
-Date: Thu, 16 Mar 2017 14:02:19 +0100
-Message-Id: <1489669339-6412-1-git-send-email-miguel.robles@farole.net>
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48585 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751297AbdCSLHa (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2017 07:07:30 -0400
+Subject: Re: [PATCH] Staging: iio: cdc: use octal permissions instead of
+ symbolic
+To: Miguel Robles <miguel.robles@farole.net>,
+        gregkh@linuxfoundation.org
+References: <1489669339-6412-1-git-send-email-miguel.robles@farole.net>
+Cc: linux-iio@vger.kernel.org
+From: Jonathan Cameron <jic23@kernel.org>
+Message-ID: <e1a6a3a2-3246-7ac3-81d7-6fff42947584@kernel.org>
+Date: Sun, 19 Mar 2017 11:06:17 +0000
+MIME-Version: 1.0
+In-Reply-To: <1489669339-6412-1-git-send-email-miguel.robles@farole.net>
+Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Fix checkpatch warnings:
-Symbolic permissions 'S_IWUSR' are not preferred.
+On 16/03/17 13:02, Miguel Robles wrote:
+> Fix checkpatch warnings:
+> Symbolic permissions 'S_IWUSR' are not preferred.
+> 
+> Signed-off-by: Miguel Robles <miguel.robles@farole.net>
+Fine, with the exception that I'd like to see the name of the driver in the
+description.
 
-Signed-off-by: Miguel Robles <miguel.robles@farole.net>
----
- drivers/staging/iio/cdc/ad7746.c | 10 +++++-----
- 1 file changed, 5 insertions(+), 5 deletions(-)
+Applied with that added to the togreg branch of iio.git and pushed out as
+testing for the autobuilders to play with it.
 
-diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-index 81f8b9e..6c688bd 100644
---- a/drivers/staging/iio/cdc/ad7746.c
-+++ b/drivers/staging/iio/cdc/ad7746.c
-@@ -351,15 +351,15 @@ static ssize_t ad7746_start_gain_calib(struct device *dev,
- }
- 
- static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
--		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN1);
-+		       0200, NULL, ad7746_start_offset_calib, CIN1);
- static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
--		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN2);
-+		       0200, NULL, ad7746_start_offset_calib, CIN2);
- static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
--		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN1);
-+		       0200, NULL, ad7746_start_gain_calib, CIN1);
- static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
--		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN2);
-+		       0200, NULL, ad7746_start_gain_calib, CIN2);
- static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
--		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
-+		       0200, NULL, ad7746_start_gain_calib, VIN);
- 
- static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
- 					      int val)
--- 
-2.7.4
+Thanks,
+
+Jonathan
+> ---
+>  drivers/staging/iio/cdc/ad7746.c | 10 +++++-----
+>  1 file changed, 5 insertions(+), 5 deletions(-)
+> 
+> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+> index 81f8b9e..6c688bd 100644
+> --- a/drivers/staging/iio/cdc/ad7746.c
+> +++ b/drivers/staging/iio/cdc/ad7746.c
+> @@ -351,15 +351,15 @@ static ssize_t ad7746_start_gain_calib(struct device *dev,
+>  }
+>  
+>  static IIO_DEVICE_ATTR(in_capacitance0_calibbias_calibration,
+> -		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN1);
+> +		       0200, NULL, ad7746_start_offset_calib, CIN1);
+>  static IIO_DEVICE_ATTR(in_capacitance1_calibbias_calibration,
+> -		       S_IWUSR, NULL, ad7746_start_offset_calib, CIN2);
+> +		       0200, NULL, ad7746_start_offset_calib, CIN2);
+>  static IIO_DEVICE_ATTR(in_capacitance0_calibscale_calibration,
+> -		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN1);
+> +		       0200, NULL, ad7746_start_gain_calib, CIN1);
+>  static IIO_DEVICE_ATTR(in_capacitance1_calibscale_calibration,
+> -		       S_IWUSR, NULL, ad7746_start_gain_calib, CIN2);
+> +		       0200, NULL, ad7746_start_gain_calib, CIN2);
+>  static IIO_DEVICE_ATTR(in_voltage0_calibscale_calibration,
+> -		       S_IWUSR, NULL, ad7746_start_gain_calib, VIN);
+> +		       0200, NULL, ad7746_start_gain_calib, VIN);
+>  
+>  static int ad7746_store_cap_filter_rate_setup(struct ad7746_chip_info *chip,
+>  					      int val)
+> 
 
