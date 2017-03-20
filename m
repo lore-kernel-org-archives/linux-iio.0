@@ -1,174 +1,76 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-vk0-f67.google.com ([209.85.213.67]:34056 "EHLO
-        mail-vk0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757976AbdCUSew (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 14:34:52 -0400
-MIME-Version: 1.0
-In-Reply-To: <20170321164812.GA2793@d830.WORKGROUP>
-References: <20170319200621.GA21295@singhal-Inspiron-5558> <20170321164812.GA2793@d830.WORKGROUP>
-From: SIMRAN SINGHAL <singhalsimran0@gmail.com>
-Date: Wed, 22 Mar 2017 00:03:58 +0530
-Message-ID: <CALrZqyP-_Rv4M7Q2Do+pWLzywxW8PkMFgGZ7Ve2==wmjKPwW2A@mail.gmail.com>
-Subject: Re: [Outreachy kernel] [PATCH v6] staging: Use buf_lock instead of
- mlock and Refactor code
-To: Alison Schofield <amsfield22@gmail.com>
-Cc: Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org,
-        outreachy-kernel <outreachy-kernel@googlegroups.com>
-Content-Type: text/plain; charset=UTF-8
+Received: from mail-pg0-f67.google.com ([74.125.83.67]:33847 "EHLO
+        mail-pg0-f67.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751467AbdCTHoE (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 03:44:04 -0400
+Received: by mail-pg0-f67.google.com with SMTP id b5so18425961pgg.1
+        for <linux-iio@vger.kernel.org>; Mon, 20 Mar 2017 00:43:07 -0700 (PDT)
+From: Gargi Sharma <gs051095@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: linux-iio@vger.kernel.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        Gargi Sharma <gs051095@gmail.com>
+Subject: [PATCH] staging: ade7754: Replace mlock with buf_lock and refactor code
+Date: Mon, 20 Mar 2017 13:09:21 +0530
+Message-Id: <1489995561-6988-1-git-send-email-gs051095@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 21, 2017 at 10:18 PM, Alison Schofield <amsfield22@gmail.com> wrote:
-> On Mon, Mar 20, 2017 at 01:36:21AM +0530, simran singhal wrote:
->
-> Hi Simran,
->
-> I going to ask for a v7 without looking at the code ;)
-> Subject line needs subsystem and driver.
-> Subject and log message can be improved.
->
->> The IIO subsystem is redefining iio_dev->mlock to be used by
->> the IIO core only for protecting device operating mode changes.
->> ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
->>
->> In this driver, mlock was being used to protect hardware state
->> changes. Replace it with buf_lock in the devices global data.
->            ^^^^^^^^^^^ this was not done
->>
->> As buf_lock protects both the adis16060_spi_write() and
->> adis16060_spi_read() functions and both are always called in
->> pair. First write, then read. Thus, refactor the code to have
->> one single function adis16060_spi_write_than_read() which is
->> protected by the existing buf_lock.
-> This was done.  So, you were able to obsolete the need for mlock
-> by creating the paired function.
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-I am still using mlock but now locking it and performing both write and
-read and than unlocking.
+In this driver, mlock was being used to protect hardware state
+changes. Replace it with buf_lock in the devices global data.
 
-So, now have a single safe function.
+As buf_lock already protects operations in ade7754_write_frequency,
+there isn't a need to acquire the lock inside ade7754_spi_write_reg_8
+when writing to the register.
 
->
->>
->> Removed nested locks as the function adis16060_read_raw call
->> a lock on &st->buf_lock and then calls the function
->> adis16060_spi_write which again tries to get hold
->> of the same lock.
-> ^^^^ this was not done.  Yes, you avoided nested locks through
-> proper coding, but we don't want to give the impression in the
-> log message that there was a pre-existing nested lock issue.
->
-> I did checkpatch & compile it...but looked no further yet.
->
-> alisons
->>
->> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
->> ---
->>
->>  v6:
->>    -Change commit message
->>    -Remove nested lock
->>
->>  drivers/staging/iio/gyro/adis16060_core.c | 40 ++++++++++---------------------
->>  1 file changed, 13 insertions(+), 27 deletions(-)
->>
->> diff --git a/drivers/staging/iio/gyro/adis16060_core.c b/drivers/staging/iio/gyro/adis16060_core.c
->> index c9d46e7..1c6de46 100644
->> --- a/drivers/staging/iio/gyro/adis16060_core.c
->> +++ b/drivers/staging/iio/gyro/adis16060_core.c
->> @@ -40,25 +40,17 @@ struct adis16060_state {
->>
->>  static struct iio_dev *adis16060_iio_dev;
->>
->> -static int adis16060_spi_write(struct iio_dev *indio_dev, u8 val)
->> +static int adis16060_spi_write_than_read(struct iio_dev *indio_dev,
->> +                                      u8 conf, u16 *val)
->>  {
->>       int ret;
->>       struct adis16060_state *st = iio_priv(indio_dev);
->>
->> -     mutex_lock(&st->buf_lock);
->> -     st->buf[2] = val; /* The last 8 bits clocked in are latched */
->> +     st->buf[2] = conf; /* The last 8 bits clocked in are latched */
->>       ret = spi_write(st->us_w, st->buf, 3);
->> -     mutex_unlock(&st->buf_lock);
->> -
->> -     return ret;
->> -}
->> -
->> -static int adis16060_spi_read(struct iio_dev *indio_dev, u16 *val)
->> -{
->> -     int ret;
->> -     struct adis16060_state *st = iio_priv(indio_dev);
->>
->> -     mutex_lock(&st->buf_lock);
->> +     if (ret < 0)
->> +             return ret;
->>
->>       ret = spi_read(st->us_r, st->buf, 3);
->>
->> @@ -69,8 +61,8 @@ static int adis16060_spi_read(struct iio_dev *indio_dev, u16 *val)
->>        */
->>       if (!ret)
->>               *val = ((st->buf[0] & 0x3) << 12) |
->> -                     (st->buf[1] << 4) |
->> -                     ((st->buf[2] >> 4) & 0xF);
->> +                      (st->buf[1] << 4) |
->> +                      ((st->buf[2] >> 4) & 0xF);
->>       mutex_unlock(&st->buf_lock);
->>
->>       return ret;
->> @@ -83,20 +75,18 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
->>  {
->>       u16 tval = 0;
->>       int ret;
->> +     struct adis16060_state *st = iio_priv(indio_dev);
->>
->>       switch (mask) {
->>       case IIO_CHAN_INFO_RAW:
->>               /* Take the iio_dev status lock */
->> -             mutex_lock(&indio_dev->mlock);
->> -             ret = adis16060_spi_write(indio_dev, chan->address);
->> +             mutex_lock(&st->buf_lock);
->> +             ret = adis16060_spi_write_than_read(indio_dev,
->> +                                                 chan->address, &tval);
->> +             mutex_unlock(&st->buf_lock);
->>               if (ret < 0)
->> -                     goto out_unlock;
->> +                     return ret;
->>
->> -             ret = adis16060_spi_read(indio_dev, &tval);
->> -             if (ret < 0)
->> -                     goto out_unlock;
->> -
->> -             mutex_unlock(&indio_dev->mlock);
->>               *val = tval;
->>               return IIO_VAL_INT;
->>       case IIO_CHAN_INFO_OFFSET:
->> @@ -110,10 +100,6 @@ static int adis16060_read_raw(struct iio_dev *indio_dev,
->>       }
->>
->>       return -EINVAL;
->> -
->> -out_unlock:
->> -     mutex_unlock(&indio_dev->mlock);
->> -     return ret;
->>  }
->>
->>  static const struct iio_info adis16060_info = {
->> --
->> 2.7.4
->>
->> --
->> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
->> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
->> To post to this group, send email to outreachy-kernel@googlegroups.com.
->> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170319200621.GA21295%40singhal-Inspiron-5558.
->> For more options, visit https://groups.google.com/d/optout.
+Signed-off-by: Gargi Sharma <gs051095@gmail.com>
+---
+ drivers/staging/iio/meter/ade7754.c | 13 +++++++++++--
+ 1 file changed, 11 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
+index 024463a..eb03469 100644
+--- a/drivers/staging/iio/meter/ade7754.c
++++ b/drivers/staging/iio/meter/ade7754.c
+@@ -29,6 +29,15 @@ static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
+ 	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
+ 	struct ade7754_state *st = iio_priv(indio_dev);
+ 
++	if (reg_address == ADE7754_WAVMODE) {
++		st->tx[0] = ADE7754_WRITE_REG(reg_address);
++		st->tx[1] = val;
++
++		ret = spi_write(st->us, st->tx, 2);
++
++		return ret;
++	}
++
+ 	mutex_lock(&st->buf_lock);
+ 	st->tx[0] = ADE7754_WRITE_REG(reg_address);
+ 	st->tx[1] = val;
+@@ -430,7 +439,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
+ 	if (!val)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->buf_lock);
+ 
+ 	t = 26000 / val;
+ 	if (t > 0)
+@@ -451,7 +460,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
+ 	ret = ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
+ 
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->buf_lock);
+ 
+ 	return ret ? ret : len;
+ }
+-- 
+2.7.4
+
