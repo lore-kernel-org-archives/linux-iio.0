@@ -1,66 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48472 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753502AbdCVUWq (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 16:22:46 -0400
-Subject: Re: [PATCH 2/2] staging: ade7754: Clean up #includes
-To: simran singhal <singhalsimran0@gmail.com>, lars@metafoo.de
-References: <1490022905-18422-1-git-send-email-singhalsimran0@gmail.com>
- <1490022905-18422-3-git-send-email-singhalsimran0@gmail.com>
-Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        outreachy-kernel@googlegroups.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <d89c2e2f-cfe7-9696-f765-bce71cc46dd6@kernel.org>
-Date: Wed, 22 Mar 2017 20:22:38 +0000
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:34775 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752912AbdCTPW5 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 11:22:57 -0400
+Date: Mon, 20 Mar 2017 20:52:47 +0530
+From: Arushi Singhal <arushisinghal19971997@gmail.com>
+To: lars@metafoo.de
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: [RESEND PATCH] staging: ad7606: Replace mlock with driver private
+ lock
+Message-ID: <20170320152247.GA6760@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-In-Reply-To: <1490022905-18422-3-git-send-email-singhalsimran0@gmail.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/03/17 15:15, simran singhal wrote:
-> Alphabetize and separate kernel and subsystem headers.
-> 
-> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
-Applied to the togreg branch of iio.git and pushed out as testing for the
-autobuilders to play with it.
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-Thanks,
+In this driver, mlock was being used to protect hardware state
+changes.  Replace it with a lock in the devices global data.
 
-Jonathan
-> ---
->  drivers/staging/iio/meter/ade7754.c | 11 +++++------
->  1 file changed, 5 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
-> index 42f7b06..fea93d7 100644
-> --- a/drivers/staging/iio/meter/ade7754.c
-> +++ b/drivers/staging/iio/meter/ade7754.c
-> @@ -6,18 +6,17 @@
->   * Licensed under the GPL-2 or later.
->   */
->  
-> -#include <linux/interrupt.h>
-> -#include <linux/irq.h>
->  #include <linux/delay.h>
-> -#include <linux/mutex.h>
->  #include <linux/device.h>
-> +#include <linux/interrupt.h>
-> +#include <linux/irq.h>
->  #include <linux/kernel.h>
-> +#include <linux/list.h>
-> +#include <linux/module.h>
-> +#include <linux/mutex.h>
->  #include <linux/spi/spi.h>
->  #include <linux/slab.h>
->  #include <linux/sysfs.h>
-> -#include <linux/list.h>
-> -#include <linux/module.h>
-> -
->  #include <linux/iio/iio.h>
->  #include <linux/iio/sysfs.h>
->  #include "meter.h"
-> 
+Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+---
+ drivers/staging/iio/adc/ad7606.c | 8 ++++----
+ drivers/staging/iio/adc/ad7606.h | 2 ++
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+index 9dbfa64b1e53..9f529b34e018 100644
+--- a/drivers/staging/iio/adc/ad7606.c
++++ b/drivers/staging/iio/adc/ad7606.c
+@@ -208,7 +208,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = -EINVAL;
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		for (i = 0; i < ARRAY_SIZE(scale_avail); i++)
+ 			if (val2 == scale_avail[i][1]) {
+ 				gpiod_set_value(st->gpio_range, i);
+@@ -217,7 +217,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 				ret = 0;
+ 				break;
+ 			}
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return ret;
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+@@ -231,11 +231,11 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 		values[1] = (ret >> 1) & 1;
+ 		values[2] = (ret >> 2) & 1;
+ 
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		gpiod_set_array_value(ARRAY_SIZE(values), st->gpio_os->desc,
+ 				      values);
+ 		st->oversampling = val;
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return 0;
+ 	default:
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 746f9553d2ba..5d59bdd78727 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -14,6 +14,7 @@
+  * @name:		identification string for chip
+  * @channels:		channel specification
+  * @num_channels:	number of channels
++ * @lock		protect sensor state
+  */
+ 
+ struct ad7606_chip_info {
+@@ -37,6 +38,7 @@ struct ad7606_state {
+ 	bool				done;
+ 	void __iomem			*base_address;
+ 
++	struct mutex			lock; /* protect sensor state */
+ 	struct gpio_desc		*gpio_convst;
+ 	struct gpio_desc		*gpio_reset;
+ 	struct gpio_desc		*gpio_range;
+-- 
+2.11.0
 
