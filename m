@@ -1,67 +1,53 @@
-Return-Path: <SRS0=zMGS=27=free-electrons.com=maxime.ripard@kernel.org>
-Date: Wed, 22 Mar 2017 08:11:34 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Quentin Schulz <quentin.schulz@free-electrons.com>
-Cc: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com, wens@csie.org,
-	linux@armlinux.org.uk, jic23@kernel.org, knaack.h@gmx.de,
-	lars@metafoo.de, pmeerw@pmeerw.net, lee.jones@linaro.org,
-	icenowy@aosc.xyz, liam@networkimprov.net,
-	thomas.petazzoni@free-electrons.com, linux-pm@vger.kernel.org,
-	devicetree@vger.kernel.org, linux-kernel@vger.kernel.org,
-	linux-arm-kernel@lists.infradead.org, linux-iio@vger.kernel.org,
-	linux-sunxi@googlegroups.com
-Subject: Re: [RESEND PATCH v4 0/9] add support for AXP20X and AXP22X power
- supply drivers
-Message-ID: <20170322071134.mbd3x3ncllje2ovs@lukather>
-References: <20170320081653.8884-1-quentin.schulz@free-electrons.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-	protocol="application/pgp-signature"; boundary="brzsmkykpecuwfmh"
-In-Reply-To: <20170320081653.8884-1-quentin.schulz@free-electrons.com>
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:32990 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752936AbdCTIdx (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 04:33:53 -0400
+Received: by mail-pg0-f65.google.com with SMTP id 79so9803200pgf.0
+        for <linux-iio@vger.kernel.org>; Mon, 20 Mar 2017 01:33:17 -0700 (PDT)
+From: Gargi Sharma <gs051095@gmail.com>
+To: outreachy-kernel@googlegroups.com
+Cc: linux-iio@vger.kernel.org, lars@metafoo.de,
+        Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        Gargi Sharma <gs051095@gmail.com>
+Subject: [PATCH] staging: adis16203: Remove locking on raw reads of IIO_CHAN_INFO_CALIBBIAS
+Date: Mon, 20 Mar 2017 14:00:42 +0530
+Message-Id: <1489998642-13796-1-git-send-email-gs051095@gmail.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
+adis16203_read_raw does not need lock for IIO_CHAN_INFO_CALIBBIAS
+since adis_read_reg_16 is already atomic and nothing else needs to be
+protected.
 
---brzsmkykpecuwfmh
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Gargi Sharma <gs051095@gmail.com>
+---
+ drivers/staging/iio/accel/adis16203.c | 3 ---
+ 1 file changed, 3 deletions(-)
 
-On Mon, Mar 20, 2017 at 09:16:44AM +0100, Quentin Schulz wrote:
-> These patches haven't changed since v4. The goal is to split the series in
-> two series, one (this one) with patches ready to be merged and the other
-> one (everything impacting the battery power supply) which depends on an
-> ongoing series by Liam Breck to be merged once the ongoing series has a
-> consensus.
->=20
-> Therefore, this series of patch is ready to be merged. I don't see any
-> dependency between subsystems.
+diff --git a/drivers/staging/iio/accel/adis16203.c b/drivers/staging/iio/accel/adis16203.c
+index 68189ad..14fe2d3 100644
+--- a/drivers/staging/iio/accel/adis16203.c
++++ b/drivers/staging/iio/accel/adis16203.c
+@@ -203,17 +203,14 @@ static int adis16203_read_raw(struct iio_dev *indio_dev,
+ 		return IIO_VAL_INT;
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+ 		bits = 14;
+-		mutex_lock(&indio_dev->mlock);
+ 		addr = adis16203_addresses[chan->scan_index];
+ 		ret = adis_read_reg_16(st, addr, &val16);
+ 		if (ret) {
+-			mutex_unlock(&indio_dev->mlock);
+ 			return ret;
+ 		}
+ 		val16 &= (1 << bits) - 1;
+ 		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
+ 		*val = val16;
+-		mutex_unlock(&indio_dev->mlock);
+ 		return IIO_VAL_INT;
+ 	default:
+ 		return -EINVAL;
+-- 
+2.7.4
 
-Merged the patches 5-8, thanks!
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---brzsmkykpecuwfmh
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJY0iOiAAoJEBx+YmzsjxAgbRgQAIMAGwu3mtMj+umdjjwQ/ABj
-5z9jUULAkFQD9gYvDbjPY19JGs8eYX0g0UH4HBvKTZGbJGBHRndxvtWlaoT8aC9z
-6AE+/QTHL1te2Yfh/NV/1HrdYpsCA8Jhwj+38i8GtB5Knr2nrG23/CQkBbSv6itq
-njO7Vr9Os/usQ6FnByUjaKdEkpNRZl/MivRuXebKI1Kx4jy1xbKRGWhqQYpNC+IX
-HD5x81MVUs9IAfSeEt7/FBqb9YJbdzeicSLv3YFq7xHUJA2/oCwch0mCa//Sf8MQ
-fTEU1GRXhNCAn1RAdBB5EGwGCZrQkCAhfGYKNCbjdwEmID5ZUCi52NVbvVgyD/4M
-Lor+SFnYkXVaZDU1gk2tUfaObhi0Leut5CHeL7DSFXm4e/d4bBObeOEBt/ogja55
-r04gpnSn+c+lPEE2DzRpP6a0C+A3l0QqnI2yu+LAi55nydyVBpNTACx2Fl2nS5KG
-InKjlt1uwgPLUcA/9cBr82sUVbWyGKRzmTSeNIUSDtw7q9bG9WoRQQx/2PQjZunV
-b5UaL4n+uAX1bvUNNdpauTQH+InZwtM5fjt7xersBqxQYkxpaqhvA75O6h/GPBiN
-cPJKXATdeVUIQS8vnIXARYw9s7D5utXSQImV8UiYLFOJquP0/YhBqqYgXbOvzpVh
-CKgVFl8h7UUM9Lzip4oi
-=DkF7
------END PGP SIGNATURE-----
-
---brzsmkykpecuwfmh--
