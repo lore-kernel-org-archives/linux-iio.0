@@ -1,106 +1,154 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48439 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752868AbdCVUTT (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 16:19:19 -0400
-Subject: Re: [PATCH] staging: ade7754: Replace mlock with buf_lock and
- refactor code
-To: Gargi Sharma <gs051095@gmail.com>
-References: <1489995561-6988-1-git-send-email-gs051095@gmail.com>
- <087b03c7-9480-67b8-4c95-4248a1381500@kernel.org>
- <CAOCi2DGWWBNNqtE8+C1tAuXLct_5EJcjpx64WEmn1d-3qaw0zQ@mail.gmail.com>
-Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg KH <gregkh@linuxfoundation.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <0175e940-d3eb-5662-2e1a-234cf7a12530@kernel.org>
-Date: Wed, 22 Mar 2017 20:19:10 +0000
+Received: from mail.free-electrons.com ([62.4.15.54]:38521 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753232AbdCTIRQ (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 04:17:16 -0400
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: sre@kernel.org, robh+dt@kernel.org, mark.rutland@arm.com,
+        wens@csie.org, linux@armlinux.org.uk,
+        maxime.ripard@free-electrons.com, jic23@kernel.org,
+        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
+        lee.jones@linaro.org, icenowy@aosc.xyz
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        liam@networkimprov.net, thomas.petazzoni@free-electrons.com,
+        linux-pm@vger.kernel.org, devicetree@vger.kernel.org,
+        linux-kernel@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-iio@vger.kernel.org, linux-sunxi@googlegroups.com
+Subject: [RESEND PATCH v4 0/9] add support for AXP20X and AXP22X power supply drivers
+Date: Mon, 20 Mar 2017 09:16:44 +0100
+Message-Id: <20170320081653.8884-1-quentin.schulz@free-electrons.com>
 MIME-Version: 1.0
-In-Reply-To: <CAOCi2DGWWBNNqtE8+C1tAuXLct_5EJcjpx64WEmn1d-3qaw0zQ@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/03/17 19:52, Gargi Sharma wrote:
-> On Wed, Mar 22, 2017 at 1:15 AM, Jonathan Cameron <jic23@kernel.org> wrote:
->> On 20/03/17 07:39, Gargi Sharma wrote:
->>> The IIO subsystem is redefining iio_dev->mlock to be used by
->>> the IIO core only for protecting device operating mode changes.
->>> ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
->>>
->>> In this driver, mlock was being used to protect hardware state
->>> changes. Replace it with buf_lock in the devices global data.
->>>
->>> As buf_lock already protects operations in ade7754_write_frequency,
->>> there isn't a need to acquire the lock inside ade7754_spi_write_reg_8
->>> when writing to the register.
->>>
->>> Signed-off-by: Gargi Sharma <gs051095@gmail.com>
->> Question inline.
->>> ---
->>>  drivers/staging/iio/meter/ade7754.c | 13 +++++++++++--
->>>  1 file changed, 11 insertions(+), 2 deletions(-)
->>>
->>> diff --git a/drivers/staging/iio/meter/ade7754.c b/drivers/staging/iio/meter/ade7754.c
->>> index 024463a..eb03469 100644
->>> --- a/drivers/staging/iio/meter/ade7754.c
->>> +++ b/drivers/staging/iio/meter/ade7754.c
->>> @@ -29,6 +29,15 @@ static int ade7754_spi_write_reg_8(struct device *dev, u8 reg_address, u8 val)
->>>       struct iio_dev *indio_dev = dev_to_iio_dev(dev);
->>>       struct ade7754_state *st = iio_priv(indio_dev);
->>>
->>> +     if (reg_address == ADE7754_WAVMODE) {
->>> +             st->tx[0] = ADE7754_WRITE_REG(reg_address);
->>> +             st->tx[1] = val;
->>> +
->>> +             ret = spi_write(st->us, st->tx, 2);
->>> +
->>> +             return ret;
->>> +     }
-> 
->> This block doesn't fit with the description.  What's going on here?
-> 
-> When the function ade_spi_write_reg_8() is called inside
-> ade7754_write_frequency(), we are writing to this( ADE7754_WAVMODE)
-> register. When writing to this register we don’t need to hold the
-> buf_lock since ade7754_write_frequency() already takes care of that.
-> This block of code does not use the buf_lock since that is taken care
-> of by ade7754_write_frequency().
-This strikes me as a very fragile way of coding this.
+These patches haven't changed since v4. The goal is to split the series in
+two series, one (this one) with patches ready to be merged and the other
+one (everything impacting the battery power supply) which depends on an
+ongoing series by Liam Breck to be merged once the ongoing series has a
+consensus.
 
-Also, unless I'm missing something, the lock taken there is still mlock...
-> 
-> Gargi
->>> +
->>>       mutex_lock(&st->buf_lock);
->>>       st->tx[0] = ADE7754_WRITE_REG(reg_address);
->>>       st->tx[1] = val;
->>> @@ -430,7 +439,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->>>       if (!val)
->>>               return -EINVAL;
->>>
->>> -     mutex_lock(&indio_dev->mlock);
->>> +     mutex_lock(&st->buf_lock);
->>>
->>>       t = 26000 / val;
->>>       if (t > 0)
->>> @@ -451,7 +460,7 @@ static ssize_t ade7754_write_frequency(struct device *dev,
->>>       ret = ade7754_spi_write_reg_8(dev, ADE7754_WAVMODE, reg);
->>>
->>>  out:
->>> -     mutex_unlock(&indio_dev->mlock);
->>> +     mutex_unlock(&st->buf_lock);
->>>
->>>       return ret ? ret : len;
->>>  }
->>>
->>
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
-> 
+Therefore, this series of patch is ready to be merged. I don't see any
+dependency between subsystems.
+
+Thanks,
+Quentin
+
+Quote from v4 cover letter:
+
+The X-Powers AXP20X and AXP22X PMICs have multiple ADCs. They expose
+information and data of the various power supplies they support such as
+ACIN, battery and VBUS. For example, they expose the current battery
+voltage, charge or discharge, as well as ACIN and VBUS current voltages
+and currents, internal PMIC temperature and ADC on 2 different GPIOs
+when in the right mode (for the AXP209 only).
+
+The ACIN power supply driver is added by this patch. The AXP20X and
+AXP22X can both read the status and the "usability" of the power supply
+but only the AXP209 will be able to tell the current current and voltage
+of the power supply by reading ADC channels. It is simply not supported
+by the AXP22X PMICs.
+
+The battery power supply driver is also added by this patch. The AXP20X
+and AXP22X share most of their behaviour but have slight variations. The
+allowed target voltages for battery charging are not the same, the
+AXP22X PMIC are able to tell if the battery percentage computed by the
+PMIC is trustworthy and they have different formulas for computing max
+current for battery power supply. The driver is able to give the current
+voltage and current of the battery (be it charging or discharging), the
+maximal and minimal voltage and maximal current allowed for the battery,
+whether the battery is present and usable and its capacity. It will get
+the battery current current and voltage by reading the ADC channels. The
+PMIC allows maximal voltages (4.36V for AXP20X and 4.22V and 4.24V for
+AXP22X) that should not be used with Lithium-based batteries and since
+this PMIC is supposed to be used with Lithium-based batteries, they have
+been disabled. The values returned by the ADC driver are multipled by
+1000 to scale from the mV returned by the ADC to the uV expected by the
+power supply framework.
+
+This series of patch adds DT bindings for ACIN power supply, ADC and
+battery power supply drivers for AXP20X and AXP22X PMICs and their
+documentation. It also enables the supported power supplies for the
+Nextthing Co. CHIP and Sinlinx SinA33 boards.
+
+The different drivers are also added to the MFD cells of the AXP20X and
+AXP22X cells and the writeable and volatile regs updated to work with
+the newly added drivers.
+
+This series of patch is based on a previous upstreaming attempt done by
+Bruno Prémont few months ago. It differs in three points: the ADC
+driver does not tell the battery temperature (TS_IN) as I do not have a
+board to test it with, it does not tell the instantaneous battery power
+as it returns crazy values for me and finally no support for OCV curves
+for the battery.
+
+You can test these patches from this repo and branch:
+https://github.com/QSchulz/linux/tree/axp2xx_adc_batt_ac_v4
+
+v4:
+ - added the ability to set maximum constant charge current from sysfs,
+ - added a warning when setting a higher than current maximum constant charge
+ current,
+ - set default to minimum possible value for current and maximum constant charge
+ current when no battery DT is present or invalid battery DT,
+ - fixed a forgotten custom formula to compute maximum constant charge current
+ for AXP22X,
+ - automatically lower the current constant charge current when it is higher
+ than the maximum constant charge current about to be set,
+
+v3:
+ - Removed DT property for constant charge current in favor of the WIP
+ battery framework as requested by Sebastian Reichel,
+ - Using a simple if condition instead of a switch in the ADC driver,
+ - Fixed error handling in ADC driver's probe,
+ - Fixed missing call to iio_map_array_unregister in the ADC driver's
+ remove,
+ - Removed ADC driver's DT node and documentation,
+ - Merged IIO channel mapping patches into the original ADC driver
+ patch,
+ - Removed `adding V-OFF to writeable reg' patch as it's already in
+ writeable reg range,
+
+v2:
+ - Some registers' name have been changed to better reflect their
+ purpose,
+ - Make VBUS power supply driver use IIO channels when AXP ADC driver is
+ enabled, but fall back on previous behavior when disabled. This is made
+ to avoid the ADC driver overwritting registers for VBUS power supply
+ ADC when removed,
+ - Removed useless adding of data registers to volatile registers,
+ - Reordered IIO channels, now grouped by same part of the PMIC (e.g.
+ voltage and current of the battery have the same index in different
+ IIO types),
+ - Added structures for specific data instead of matching on IDs,
+ - Switched from DT IIO channels mapping to iio_map structures IIO
+ channels mapping,
+
+Quentin
+
+Quentin Schulz (9):
+  mfd: axp20x: correct name of temperature data ADC registers
+  iio: adc: add support for X-Powers AXP20X and AXP22X PMICs ADCs
+  mfd: axp20x: add ADC cells for AXP20X and AXP22X PMICs
+  mfd: axp20x: add AC power supply cells for AXP22X PMICs
+  ARM: dtsi: axp209: add AC power supply subnode
+  ARM: dtsi: axp22x: add AC power supply subnode
+  ARM: dts: sun8i: sina33: enable ACIN power supply subnode
+  ARM: sun5i: chip: enable ACIN power supply subnode
+  mfd: axp20x: add CHRG_CTRL1/2/3 to writeable regs for AXP20X/AXP22X
+
+ arch/arm/boot/dts/axp209.dtsi                  |   5 +
+ arch/arm/boot/dts/axp22x.dtsi                  |   5 +
+ arch/arm/boot/dts/sun5i-r8-chip.dts            |   4 +
+ arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts |   4 +
+ drivers/iio/adc/Kconfig                        |  10 +
+ drivers/iio/adc/Makefile                       |   1 +
+ drivers/iio/adc/axp20x_adc.c                   | 617 +++++++++++++++++++++++++
+ drivers/mfd/axp20x.c                           |  20 +-
+ include/linux/mfd/axp20x.h                     |   4 +-
+ 9 files changed, 667 insertions(+), 3 deletions(-)
+ create mode 100644 drivers/iio/adc/axp20x_adc.c
+
+-- 
+2.9.3
 
