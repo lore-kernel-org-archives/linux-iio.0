@@ -1,50 +1,114 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pg0-f50.google.com ([74.125.83.50]:34490 "EHLO
-        mail-pg0-f50.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1755327AbdCTTX1 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 15:23:27 -0400
-Received: by mail-pg0-f50.google.com with SMTP id 21so48789828pgg.1
-        for <linux-iio@vger.kernel.org>; Mon, 20 Mar 2017 12:23:26 -0700 (PDT)
-Date: Mon, 20 Mar 2017 12:23:20 -0700
-From: Alison Schofield <amsfield22@gmail.com>
-To: "De Vos, Bart (EXT - BE/Antwerp)" <bart.de_vos.ext@nokia.com>
-Cc: matt.ranostay@konsulko.com, linux-iio@vger.kernel.org
-Subject: Re: hdc100x driver backport
-Message-ID: <20170320192319.GA4543@d830.WORKGROUP>
-References: <AMSPR07MB129D24949977B4D40F31C338F3A0@AMSPR07MB129.eurprd07.prod.outlook.com>
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:36231 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1756300AbdCTTvk (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 15:51:40 -0400
+Date: Tue, 21 Mar 2017 01:21:34 +0530
+From: Arushi Singhal <arushisinghal19971997@gmail.com>
+To: lars@metafoo.de
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: [PATCH v3] staging: ad7606: Replace mlock with driver private lock
+Message-ID: <20170320195134.GA18556@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <AMSPR07MB129D24949977B4D40F31C338F3A0@AMSPR07MB129.eurprd07.prod.outlook.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Mon, Mar 20, 2017 at 04:54:07PM +0000, De Vos, Bart (EXT - BE/Antwerp) wrote:
-> Hi,
-> 
-> I'm trying to backport the hdc100x driver to v3.10.
-> 
-> Can you elaborate on the temperature offset, especially here:
-> http://lxr.linux.no/linux+v4.10/drivers/iio/humidity/hdc100x.c#L239
-> 
-> I see the goal is to have millidegrees, and as such I would expect an offset of -40000. I don't understand the numbers used here and the relationship between the two.
-> If I read out the offset in runtime I got the value specified to 'val' on line 240.
-> 
-> Thanks for your feedback.
-> 
-> Kr,
-> Bart.
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-Hi Bart,
+In this driver, mlock was being used to protect hardware state
+changes.  Replace it with a lock in the devices global data.
 
-Copying Matt Ranostay as he is the author/expert on this driver.
+Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+---
+ changes in v3
+ - Add mutex_init.
+ - correct the Documentation.
 
-hdc100x temperature is calculated as:
-(raw + offset) * scale / 1000
+ drivers/staging/iio/adc/ad7606.c | 9 +++++----
+ drivers/staging/iio/adc/ad7606.h | 3 +++
+ 2 files changed, 8 insertions(+), 4 deletions(-)
 
-Here's a sample reading:
-raw: 25443 scale: 2.517700195 offset: -15887.515151 resolution: 0.006350
-Temperature 24057.846068
-
-Hope that helps,
-alisons
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+index 9dbfa64b1e53..18f5f139117e 100644
+--- a/drivers/staging/iio/adc/ad7606.c
++++ b/drivers/staging/iio/adc/ad7606.c
+@@ -208,7 +208,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = -EINVAL;
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		for (i = 0; i < ARRAY_SIZE(scale_avail); i++)
+ 			if (val2 == scale_avail[i][1]) {
+ 				gpiod_set_value(st->gpio_range, i);
+@@ -217,7 +217,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 				ret = 0;
+ 				break;
+ 			}
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return ret;
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+@@ -231,11 +231,11 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 		values[1] = (ret >> 1) & 1;
+ 		values[2] = (ret >> 2) & 1;
+ 
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		gpiod_set_array_value(ARRAY_SIZE(values), st->gpio_os->desc,
+ 				      values);
+ 		st->oversampling = val;
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return 0;
+ 	default:
+@@ -413,6 +413,7 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	st = iio_priv(indio_dev);
+ 
+ 	st->dev = dev;
++	mutex_init(&st->lock);
+ 	st->bops = bops;
+ 	st->base_address = base_address;
+ 	/* tied to logic low, analog input range is +/- 5V */
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 746f9553d2ba..acaed8d5379c 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -14,6 +14,7 @@
+  * @name:		identification string for chip
+  * @channels:		channel specification
+  * @num_channels:	number of channels
++ * @lock		protect sensor state
+  */
+ 
+ struct ad7606_chip_info {
+@@ -23,6 +24,7 @@ struct ad7606_chip_info {
+ 
+ /**
+  * struct ad7606_state - driver instance specific data
++ * @lock		protect sensor state
+  */
+ 
+ struct ad7606_state {
+@@ -37,6 +39,7 @@ struct ad7606_state {
+ 	bool				done;
+ 	void __iomem			*base_address;
+ 
++	struct mutex			lock; /* protect sensor state */
+ 	struct gpio_desc		*gpio_convst;
+ 	struct gpio_desc		*gpio_reset;
+ 	struct gpio_desc		*gpio_range;
+-- 
+2.11.0
 
