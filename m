@@ -1,77 +1,105 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48575 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1753768AbdCVUdD (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 16:33:03 -0400
-Subject: Re: [PATCH] staging: ad7759: Replace mlock with driver private lock
-To: Arushi Singhal <arushisinghal19971997@gmail.com>, lars@metafoo.de
-References: <20170320160926.GA7088@arushi-HP-Pavilion-Notebook>
+Received: from mail-pf0-f195.google.com ([209.85.192.195]:36230 "EHLO
+        mail-pf0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755892AbdCTSup (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 14:50:45 -0400
+Date: Tue, 21 Mar 2017 00:20:37 +0530
+From: Arushi Singhal <arushisinghal19971997@gmail.com>
+To: lars@metafoo.de
 Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
         linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <28e4d9ae-9159-0ab7-1958-1ea9f996646e@kernel.org>
-Date: Wed, 22 Mar 2017 20:33:00 +0000
+Subject: [PATCH v2] staging: ad7606: Replace mlock with driver private lock
+Message-ID: <20170320185037.GA17345@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-In-Reply-To: <20170320160926.GA7088@arushi-HP-Pavilion-Notebook>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/03/17 16:09, Arushi Singhal wrote:
-> The IIO subsystem is redefining iio_dev->mlock to be used by
-> the IIO core only for protecting device operating mode changes.
-> ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
-> 
-> In this driver, mlock was being used to protect hardware state
-> changes.  Replace it with a lock in the devices global data.
-> 
-> Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
-> ---
->  drivers/staging/iio/meter/ade7759.c | 4 ++--
->  drivers/staging/iio/meter/ade7759.h | 1 +
->  2 files changed, 3 insertions(+), 2 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index 944ee3401029..1d1e0b33021f 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -381,7 +381,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->  	if (!val)
->  		return -EINVAL;
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->buf_lock);
->  
->  	t = 27900 / val;
->  	if (t > 0)
-> @@ -402,7 +402,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
-Deadlock as this call also take the buf_lock mutex..
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
+In this driver, mlock was being used to protect hardware state
+changes.  Replace it with a lock in the devices global data.
 
->  	ret = ade7759_spi_write_reg_16(dev, ADE7759_MODE, reg);
->  
->  out:
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->buf_lock);
->  
->  	return ret ? ret : len;
->  }
-> diff --git a/drivers/staging/iio/meter/ade7759.h b/drivers/staging/iio/meter/ade7759.h
-> index f0716d2fdf8e..4f69bb93cc45 100644
-> --- a/drivers/staging/iio/meter/ade7759.h
-> +++ b/drivers/staging/iio/meter/ade7759.h
-> @@ -42,6 +42,7 @@
->   * @buf_lock:		mutex to protect tx and rx
->   * @tx:			transmit buffer
->   * @rx:			receive buffer
-> + * @lock		protect sensor state
-?
->   **/
->  struct ade7759_state {
->  	struct spi_device	*us;
-> 
+Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+---
+ changes in v2
+ - add mutex_init.
+
+ drivers/staging/iio/adc/ad7606.c | 9 +++++----
+ drivers/staging/iio/adc/ad7606.h | 2 ++
+ 2 files changed, 7 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+index 9dbfa64b1e53..b58641369596 100644
+--- a/drivers/staging/iio/adc/ad7606.c
++++ b/drivers/staging/iio/adc/ad7606.c
+@@ -208,7 +208,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = -EINVAL;
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		for (i = 0; i < ARRAY_SIZE(scale_avail); i++)
+ 			if (val2 == scale_avail[i][1]) {
+ 				gpiod_set_value(st->gpio_range, i);
+@@ -217,7 +217,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 				ret = 0;
+ 				break;
+ 			}
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return ret;
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+@@ -231,11 +231,11 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 		values[1] = (ret >> 1) & 1;
+ 		values[2] = (ret >> 2) & 1;
+ 
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		gpiod_set_array_value(ARRAY_SIZE(values), st->gpio_os->desc,
+ 				      values);
+ 		st->oversampling = val;
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return 0;
+ 	default:
+@@ -413,6 +413,7 @@ int ad7606_probe(struct device *dev, int irq, void __iomem *base_address,
+ 	st = iio_priv(indio_dev);
+ 
+ 	st->dev = dev;
++	mutex_init(&chip->state_lock);
+ 	st->bops = bops;
+ 	st->base_address = base_address;
+ 	/* tied to logic low, analog input range is +/- 5V */
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 746f9553d2ba..5d59bdd78727 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -14,6 +14,7 @@
+  * @name:		identification string for chip
+  * @channels:		channel specification
+  * @num_channels:	number of channels
++ * @lock		protect sensor state
+  */
+ 
+ struct ad7606_chip_info {
+@@ -37,6 +38,7 @@ struct ad7606_state {
+ 	bool				done;
+ 	void __iomem			*base_address;
+ 
++	struct mutex			lock; /* protect sensor state */
+ 	struct gpio_desc		*gpio_convst;
+ 	struct gpio_desc		*gpio_reset;
+ 	struct gpio_desc		*gpio_range;
+-- 
+2.11.0
 
