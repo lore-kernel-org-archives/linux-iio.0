@@ -1,82 +1,95 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48408 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751441AbdCVUOR (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 16:14:17 -0400
-Subject: Re: [PATCH v7] staging: adis16060_core: Replace mlock with buf_lock
- and refactor code
-To: kbuild test robot <lkp@intel.com>,
-        simran singhal <singhalsimran0@gmail.com>
-References: <201703230313.COe3PSCe%fengguang.wu@intel.com>
-Cc: kbuild-all@01.org, lars@metafoo.de, devel@driverdev.osuosl.org,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com,
+Received: from mail-pg0-f66.google.com ([74.125.83.66]:36545 "EHLO
+        mail-pg0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753923AbdCTOM2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 10:12:28 -0400
+Date: Mon, 20 Mar 2017 19:42:07 +0530
+From: Arushi Singhal <arushisinghal19971997@gmail.com>
+To: lars@metafoo.de
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <6b8ee8a9-c147-64ad-bcf9-c126f21145fc@kernel.org>
-Date: Wed, 22 Mar 2017 20:14:07 +0000
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com,
+        lars@metafoo.de
+Subject: [PATCH] staging: iio: adc: Replace mlock with driver private lock
+Message-ID: <20170320141207.GA5908@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-In-Reply-To: <201703230313.COe3PSCe%fengguang.wu@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/03/17 20:00, kbuild test robot wrote:
-> Hi simran,
-> 
-> [auto build test WARNING on iio/togreg]
-> [also build test WARNING on v4.11-rc3 next-20170322]
-> [if your patch is applied to the wrong git tree, please drop us a note to help improve the system]
-> 
-> url:    https://github.com/0day-ci/linux/commits/simran-singhal/staging-adis16060_core-Replace-mlock-with-buf_lock-and-refactor-code/20170323-031726
-> base:   https://git.kernel.org/pub/scm/linux/kernel/git/jic23/iio.git togreg
-> config: x86_64-randconfig-s0-03230201 (attached as .config)
-> compiler: gcc-4.4 (Debian 4.4.7-8) 4.4.7
-> reproduce:
->         # save the attached .config to linux build tree
->         make ARCH=x86_64 
-> 
-> All warnings (new ones prefixed by >>):
-> 
->    drivers/staging/iio/gyro/adis16060_core.c: In function 'adis16060_read_raw':
->>> drivers/staging/iio/gyro/adis16060_core.c:79: warning: unused variable 'st'
-Already fixed in V8 which has been applied to the togreg branch of iio.git.
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-Thanks,
-Jonathan
-> 
-> vim +/st +79 drivers/staging/iio/gyro/adis16060_core.c
-> 
->     63		if (!ret)
->     64			*val = ((st->buf[0] & 0x3) << 12) |
->     65				 (st->buf[1] << 4) |
->     66				 ((st->buf[2] >> 4) & 0xF);
->     67		mutex_unlock(&st->buf_lock);
->     68	
->     69		return ret;
->     70	}
->     71	
->     72	static int adis16060_read_raw(struct iio_dev *indio_dev,
->     73				      struct iio_chan_spec const *chan,
->     74				      int *val, int *val2,
->     75				      long mask)
->     76	{
->     77		u16 tval = 0;
->     78		int ret;
->   > 79		struct adis16060_state *st = iio_priv(indio_dev);
->     80	
->     81		switch (mask) {
->     82		case IIO_CHAN_INFO_RAW:
->     83			ret = adis16060_spi_write_than_read(indio_dev,
->     84							    chan->address, &tval);
->     85			if (ret < 0)
->     86				return ret;
->     87	
-> 
-> ---
-> 0-DAY kernel test infrastructure                Open Source Technology Center
-> https://lists.01.org/pipermail/kbuild-all                   Intel Corporation
-> 
+In this driver, mlock was being used to protect hardware state
+changes.  Replace it with a lock in the devices global data.
+
+Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+---
+ drivers/staging/iio/adc/ad7606.c | 8 ++++----
+ drivers/staging/iio/adc/ad7606.h | 2 ++
+ 2 files changed, 6 insertions(+), 4 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7606.c b/drivers/staging/iio/adc/ad7606.c
+index 9dbfa64b1e53..9f529b34e018 100644
+--- a/drivers/staging/iio/adc/ad7606.c
++++ b/drivers/staging/iio/adc/ad7606.c
+@@ -208,7 +208,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_SCALE:
+ 		ret = -EINVAL;
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		for (i = 0; i < ARRAY_SIZE(scale_avail); i++)
+ 			if (val2 == scale_avail[i][1]) {
+ 				gpiod_set_value(st->gpio_range, i);
+@@ -217,7 +217,7 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 				ret = 0;
+ 				break;
+ 			}
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return ret;
+ 	case IIO_CHAN_INFO_OVERSAMPLING_RATIO:
+@@ -231,11 +231,11 @@ static int ad7606_write_raw(struct iio_dev *indio_dev,
+ 		values[1] = (ret >> 1) & 1;
+ 		values[2] = (ret >> 2) & 1;
+ 
+-		mutex_lock(&indio_dev->mlock);
++		mutex_lock(&st->lock);
+ 		gpiod_set_array_value(ARRAY_SIZE(values), st->gpio_os->desc,
+ 				      values);
+ 		st->oversampling = val;
+-		mutex_unlock(&indio_dev->mlock);
++		mutex_unlock(&st->lock);
+ 
+ 		return 0;
+ 	default:
+diff --git a/drivers/staging/iio/adc/ad7606.h b/drivers/staging/iio/adc/ad7606.h
+index 746f9553d2ba..5d59bdd78727 100644
+--- a/drivers/staging/iio/adc/ad7606.h
++++ b/drivers/staging/iio/adc/ad7606.h
+@@ -14,6 +14,7 @@
+  * @name:		identification string for chip
+  * @channels:		channel specification
+  * @num_channels:	number of channels
++ * @lock		protect sensor state
+  */
+ 
+ struct ad7606_chip_info {
+@@ -37,6 +38,7 @@ struct ad7606_state {
+ 	bool				done;
+ 	void __iomem			*base_address;
+ 
++	struct mutex			lock; /* protect sensor state */
+ 	struct gpio_desc		*gpio_convst;
+ 	struct gpio_desc		*gpio_reset;
+ 	struct gpio_desc		*gpio_range;
+-- 
+2.11.0
 
