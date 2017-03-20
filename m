@@ -1,60 +1,47 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43246 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751374AbdCYQYt (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Mar 2017 12:24:49 -0400
-Subject: Re: [PATCH] iio: hid-sensor-attributes: Fix gravity sensor scale
- value not right issue
-To: Song Hongyan <hongyan.song@intel.com>, linux-input@vger.kernel.org,
+Received: from mail-pf0-f196.google.com ([209.85.192.196]:32883 "EHLO
+        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753688AbdCTLfH (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 20 Mar 2017 07:35:07 -0400
+From: Eva Rachel Retuya <eraretuya@gmail.com>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
         linux-iio@vger.kernel.org
-References: <1490001174-897-1-git-send-email-hongyan.song@intel.com>
-Cc: jikos@kernel.org, srinivas.pandruvada@intel.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <a34ce134-4aa1-9ca9-ca73-d924fa7e9036@kernel.org>
-Date: Sat, 25 Mar 2017 16:24:47 +0000
-MIME-Version: 1.0
-In-Reply-To: <1490001174-897-1-git-send-email-hongyan.song@intel.com>
-Content-Type: text/plain; charset=windows-1252
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        linux-kernel@vger.kernel.org, abhiram@cs.utah.edu,
+        Eva Rachel Retuya <eraretuya@gmail.com>
+Subject: [PATCH] staging: iio: tsl2x7x_core: Fix standard deviation calculation
+Date: Mon, 20 Mar 2017 19:27:05 +0800
+Message-Id: <1490009225-10268-1-git-send-email-eraretuya@gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 20/03/17 09:12, Song Hongyan wrote:
-> Scale value include two parts: unit conversion and exponent conversion.
-> Add gravity unit convert table to fix gravity sensor scale value not
-> right issue.
-> 
-> Signed-off-by: Song Hongyan <hongyan.song@intel.com>
-> Acked-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-I guess this only effects the recently added gravity driver, but
-would have been good to have a fixes tag.
+Standard deviation is calculated as the square root of the variance
+where variance is the mean of sample_sum and length. Correct the
+computation of statP->stddev in accordance to the proper calculation.
 
-Applied to the togreg branch of iio.git and pushed out as testing for
-the autobuilders to play with it.
+Fixes: 3c97c08b5735 ("staging: iio: add TAOS tsl2x7x driver")
+Reported-by: Abhiram Balasubramanian <abhiram@cs.utah.edu>
+Signed-off-by: Eva Rachel Retuya <eraretuya@gmail.com>
+---
+ drivers/staging/iio/light/tsl2x7x_core.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
 
-Thanks,
-
-Jonathan
-
-> ---
->  drivers/iio/common/hid-sensors/hid-sensor-attributes.c | 6 ++++++
->  1 file changed, 6 insertions(+)
-> 
-> diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> index cc2ce2a..2884783 100644
-> --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> @@ -38,6 +38,12 @@
->  	{HID_USAGE_SENSOR_ACCEL_3D,
->  		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
->  
-> +	{HID_USAGE_SENSOR_GRAVITY_VECTOR, 0, 9, 806650000},
-> +	{HID_USAGE_SENSOR_GRAVITY_VECTOR,
-> +		HID_USAGE_SENSOR_UNITS_METERS_PER_SEC_SQRD, 1, 0},
-> +	{HID_USAGE_SENSOR_GRAVITY_VECTOR,
-> +		HID_USAGE_SENSOR_UNITS_G, 9, 806650000},
-> +
->  	{HID_USAGE_SENSOR_GYRO_3D, 0, 0, 17453293},
->  	{HID_USAGE_SENSOR_GYRO_3D,
->  		HID_USAGE_SENSOR_UNITS_RADIANS_PER_SECOND, 1, 0},
-> 
+diff --git a/drivers/staging/iio/light/tsl2x7x_core.c b/drivers/staging/iio/light/tsl2x7x_core.c
+index ea15bc1..197201a 100644
+--- a/drivers/staging/iio/light/tsl2x7x_core.c
++++ b/drivers/staging/iio/light/tsl2x7x_core.c
+@@ -854,7 +854,7 @@ void tsl2x7x_prox_calculate(int *data, int length,
+ 		tmp = data[i] - statP->mean;
+ 		sample_sum += tmp * tmp;
+ 	}
+-	statP->stddev = int_sqrt((long)sample_sum) / length;
++	statP->stddev = int_sqrt((long)sample_sum / length);
+ }
+ 
+ /**
+-- 
+2.7.4
 
