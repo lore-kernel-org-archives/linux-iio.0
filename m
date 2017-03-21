@@ -1,55 +1,70 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:48499 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1750952AbdCVUZG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 16:25:06 -0400
-Subject: Re: [PATCH v3 1/2] staging: iio: ade7753: Remove trailing whitespaces
-To: simran singhal <singhalsimran0@gmail.com>, lars@metafoo.de
+Received: from mail-pg0-f65.google.com ([74.125.83.65]:36635 "EHLO
+        mail-pg0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1757400AbdCUSEI (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 14:04:08 -0400
+From: simran singhal <singhalsimran0@gmail.com>
+To: lars@metafoo.de
+Cc: Michael.Hennerich@analog.com, jic23@kernel.org, knaack.h@gmx.de,
+        pmeerw@pmeerw.net, gregkh@linuxfoundation.org,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
+Subject: [PATCH v3 2/2] staging: iio: ade7753: Replace mlock with driver private lock
+Date: Tue, 21 Mar 2017 23:33:56 +0530
+Message-Id: <1490119436-20042-3-git-send-email-singhalsimran0@gmail.com>
+In-Reply-To: <1490119436-20042-1-git-send-email-singhalsimran0@gmail.com>
 References: <1490119436-20042-1-git-send-email-singhalsimran0@gmail.com>
- <1490119436-20042-2-git-send-email-singhalsimran0@gmail.com>
-Cc: Michael.Hennerich@analog.com, knaack.h@gmx.de, pmeerw@pmeerw.net,
-        gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-        outreachy-kernel@googlegroups.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <e178a4f4-de4e-315c-c1d6-21c190b0db18@kernel.org>
-Date: Wed, 22 Mar 2017 20:25:03 +0000
-MIME-Version: 1.0
-In-Reply-To: <1490119436-20042-2-git-send-email-singhalsimran0@gmail.com>
-Content-Type: text/plain; charset=windows-1252
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 21/03/17 18:03, simran singhal wrote:
-> This patch removes trailing whitespaces in order to follow the Linux
-> coding style.
-> 
-> Signed-off-by: simran singhal <singhalsimran0@gmail.com>
-Applied and pushed out as testing...
+The IIO subsystem is redefining iio_dev->mlock to be used by
+the IIO core only for protecting device operating mode changes.
+ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
 
-Jonathan
-> ---
->  drivers/staging/iio/meter/ade7753.c | 8 ++++----
->  1 file changed, 4 insertions(+), 4 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
-> index dfd8b71..b71fbd3 100644
-> --- a/drivers/staging/iio/meter/ade7753.c
-> +++ b/drivers/staging/iio/meter/ade7753.c
-> @@ -83,10 +83,10 @@
->   * @buf_lock:       mutex to protect tx and rx
->   **/
->  struct ade7753_state {
-> -	    struct spi_device   *us;
-> -		    struct mutex        buf_lock;
-> -			    u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
-> -				    u8          rx[ADE7753_MAX_RX];
-> +	struct spi_device   *us;
-> +	struct mutex        buf_lock;
-> +	u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
-> +	u8          rx[ADE7753_MAX_RX];
->  };
->  
->  static int ade7753_spi_write_reg_8(struct device *dev,
-> 
+In this driver, mlock was being used to protect hardware state
+changes.  Replace it with a lock in the devices global data.
+
+Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+---
+ drivers/staging/iio/meter/ade7753.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/drivers/staging/iio/meter/ade7753.c b/drivers/staging/iio/meter/ade7753.c
+index b71fbd3..9674e05 100644
+--- a/drivers/staging/iio/meter/ade7753.c
++++ b/drivers/staging/iio/meter/ade7753.c
+@@ -80,11 +80,13 @@
+  * @us:         actual spi_device
+  * @tx:         transmit buffer
+  * @rx:         receive buffer
++ * @lock:       protect sensor state
+  * @buf_lock:       mutex to protect tx and rx
+  **/
+ struct ade7753_state {
+ 	struct spi_device   *us;
+ 	struct mutex        buf_lock;
++	struct mutex	    lock;  /* protect sensor state */
+ 	u8          tx[ADE7753_MAX_TX] ____cacheline_aligned;
+ 	u8          rx[ADE7753_MAX_RX];
+ };
+@@ -484,7 +486,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
+ 	if (!val)
+ 		return -EINVAL;
+ 
+-	mutex_lock(&indio_dev->mlock);
++	mutex_lock(&st->lock);
+ 
+ 	t = 27900 / val;
+ 	if (t > 0)
+@@ -505,7 +507,7 @@ static ssize_t ade7753_write_frequency(struct device *dev,
+ 	ret = ade7753_spi_write_reg_16(dev, ADE7753_MODE, reg);
+ 
+ out:
+-	mutex_unlock(&indio_dev->mlock);
++	mutex_unlock(&st->lock);
+ 
+ 	return ret ? ret : len;
+ }
+-- 
+2.7.4
 
