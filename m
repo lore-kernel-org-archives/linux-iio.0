@@ -1,83 +1,109 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:48831 "EHLO
+Received: from mail.free-electrons.com ([62.4.15.54]:60442 "EHLO
         mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1758523AbdCVHSF (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 03:18:05 -0400
-Date: Wed, 22 Mar 2017 08:17:06 +0100
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Chen-Yu Tsai <wens@csie.org>
+        with ESMTP id S1757976AbdCUPgi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 11:36:38 -0400
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: dmitry.torokhov@gmail.com, robh+dt@kernel.org,
+        mark.rutland@arm.com, maxime.ripard@free-electrons.com,
+        wens@csie.org, lee.jones@linaro.org, linux@armlinux.org.uk,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
 Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        Dmitry Torokhov <dmitry.torokhov@gmail.com>,
-        Rob Herring <robh+dt@kernel.org>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Lee Jones <lee.jones@linaro.org>,
-        Russell King <linux@armlinux.org.uk>,
-        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
-        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
-        devicetree <devicetree@vger.kernel.org>,
-        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
-        linux-kernel <linux-kernel@vger.kernel.org>,
-        linux-iio@vger.kernel.org,
-        linux-sunxi <linux-sunxi@googlegroups.com>,
-        Icenowy Zheng <icenowy@aosc.xyz>
-Subject: Re: [PATCH v3 03/11] ARM: dts: sun8i: sina33: add cpu-supply
-Message-ID: <20170322071706.kzkw65653ivl4qcd@lukather>
+        thomas.petazzoni@free-electrons.com, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-sunxi@googlegroups.com, icenowy@aosc.xyz
+Subject: [PATCH v3 04/11] Documentation: DT: bindings: mfd: add A33 GPADC binding
+Date: Tue, 21 Mar 2017 16:36:04 +0100
+Message-Id: <20170321153611.16228-5-quentin.schulz@free-electrons.com>
+In-Reply-To: <20170321153611.16228-1-quentin.schulz@free-electrons.com>
 References: <20170321153611.16228-1-quentin.schulz@free-electrons.com>
- <20170321153611.16228-4-quentin.schulz@free-electrons.com>
- <CAGb2v67mihMMMqEpWSiuXXn6evXcquStGqQHRK2KdQzQ+EubNA@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="ohghizlbmng4de4l"
-In-Reply-To: <CAGb2v67mihMMMqEpWSiuXXn6evXcquStGqQHRK2KdQzQ+EubNA@mail.gmail.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+This patch adds documentation for the A33 GPADC binding.
 
---ohghizlbmng4de4l
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
+---
 
-On Wed, Mar 22, 2017 at 11:33:15AM +0800, Chen-Yu Tsai wrote:
-> On Tue, Mar 21, 2017 at 11:36 PM, Quentin Schulz
-> <quentin.schulz@free-electrons.com> wrote:
-> > This adds the cpu-supply DT property to the cpu0 DT node needed by
-> > the board to adapt the regulator voltage depending on the currently used
-> > OPP.
-> >
-> > Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
->=20
-> Acked-by: Chen-Yu Tsai <wens@csie.org>
+v3:
+  - fixed missing allwinner in front of compatible,
+  - updated compatible to allwinner,sun8i-a33-ths to better reflect the
+  datasheet's name,
+  - updated example's DT node name and label to ths,
 
-Applied, thanks!
-Maxime
+added in v2
 
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
+ .../devicetree/bindings/mfd/sun4i-gpadc.txt        | 59 ++++++++++++++++++++++
+ 1 file changed, 59 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
 
---ohghizlbmng4de4l
-Content-Type: application/pgp-signature; name="signature.asc"
+diff --git a/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt b/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
+new file mode 100644
+index 0000000..badff36
+--- /dev/null
++++ b/Documentation/devicetree/bindings/mfd/sun4i-gpadc.txt
+@@ -0,0 +1,59 @@
++Allwinner SoCs' GPADC Device Tree bindings
++------------------------------------------
++The Allwinner SoCs all have an ADC that can also act as a thermal sensor
++and sometimes as a touchscreen controller.
++
++Required properties:
++  - compatible: "allwinner,sun8i-a33-ths",
++  - reg: mmio address range of the chip,
++  - #thermal-sensor-cells: shall be 0,
++  - #io-channel-cells: shall be 0,
++
++Example:
++	ths: ths@01c25000 {
++		compatible = "allwinner,sun8i-a33-ths";
++		reg = <0x01c25000 0x100>;
++		#thermal-sensor-cells = <0>;
++		#io-channel-cells = <0>;
++	};
++
++sun4i, sun5i and sun6i SoCs are also supported via the older binding:
++
++sun4i resistive touchscreen controller
++--------------------------------------
++
++Required properties:
++ - compatible: "allwinner,sun4i-a10-ts", "allwinner,sun5i-a13-ts" or
++   "allwinner,sun6i-a31-ts"
++ - reg: mmio address range of the chip
++ - interrupts: interrupt to which the chip is connected
++ - #thermal-sensor-cells: shall be 0
++
++Optional properties:
++ - allwinner,ts-attached	 : boolean indicating that an actual touchscreen
++				   is attached to the controller
++ - allwinner,tp-sensitive-adjust : integer (4 bits)
++				   adjust sensitivity of pen down detection
++				   between 0 (least sensitive) and 15
++				   (defaults to 15)
++ - allwinner,filter-type	 : integer (2 bits)
++				   select median and averaging filter
++				   samples used for median / averaging filter
++				   0: 4/2
++				   1: 5/3
++				   2: 8/4
++				   3: 16/8
++				   (defaults to 1)
++
++Example:
++
++	rtp: rtp@01c25000 {
++		compatible = "allwinner,sun4i-a10-ts";
++		reg = <0x01c25000 0x100>;
++		interrupts = <29>;
++		allwinner,ts-attached;
++		#thermal-sensor-cells = <0>;
++		/* sensitive/noisy touch panel */
++		allwinner,tp-sensitive-adjust = <0>;
++		allwinner,filter-type = <3>;
++	};
+-- 
+2.9.3
 
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJY0iTyAAoJEBx+YmzsjxAgqh0QALLq4ukjQHS9igDB6kSZ8qUv
-K86oN7MCpND8cI1g9QY1cIZNIhmsJY2RfHWH5Ky5UkJuWv0IchTGfnNxLkZfURLs
-UDONWLsHvIuLvk2K5tBQVkZagUWuzjcVSF2Bmf4sfg3KUhVDYVR8CP4xOhEIHT0I
-8Njy4rOpTLLDPjWVYR0vjQKHx38NAhZ0NxN58ikqdgqA/cZSzXyU8bGHtWC6/JQ+
-WwrkOwPmnX1Y0LIwTJbDq/vzRMjqvoTR4uW7jTWWbmnZRf7uGyV/bEOgLwwOdrFm
-SjDWFaSUQTq9JuDzPw3Yi312vrmiyDemzpsdke/QYU8GHCRP0Loi1XCl9wX5t5LE
-6+vPEiR3nvBIw35TH56a0myXo7EPdjpGL7CPEiauIsjhz/aT1lCT+O+OWM6nmmh5
-dKeHWQt/2bZm4CeHdWRBZ76wXgdeEGNKS4CDl3VRwBd2qnpEnu2p4Nzdpfy1AxbS
-rMrltMlacp3gqHkxNqsvhvxcat9CVqVH4gtR8drQOAIoP0vz6mgEP8LDREYwnsKi
-89C6mUwTuygNQdk0bS2ol3g3ali/hG0gzH9vQvNp5WoNSPja+cFu8sUkuFHqof7e
-XwXxOUHyfHfT2rUvLf+7aAGcuNVu+H9s9kG5auBF53RONuk+JU4xaWVYg/pMqyE1
-0zRsoSc1o0OHiEDAGMzP
-=4DoB
------END PGP SIGNATURE-----
-
---ohghizlbmng4de4l--
