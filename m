@@ -1,74 +1,91 @@
-Return-Path: <SRS0=83Rr=26=gmail.com=arushisinghal19971997@kernel.org>
-MIME-Version: 1.0
-In-Reply-To: <52786ce4-e783-0ea4-c6cb-1deb63e91b53@kernel.org>
-References: <20170321150638.9175-1-arushisinghal19971997@gmail.com> <52786ce4-e783-0ea4-c6cb-1deb63e91b53@kernel.org>
-From: Arushi Singhal <arushisinghal19971997@gmail.com>
-Date: Wed, 22 Mar 2017 01:07:35 +0530
-Message-ID: <CA+XqjF-be3KN3VYMwdnK8uqc5SvgP6Ue__YhbenCx-nu=MjX4w@mail.gmail.com>
-Subject: Re: [PATCH v2 0/2] Remove Typedefs.
-To: Jonathan Cameron <jic23@kernel.org>
-Cc: Linux Fbdev development list <linux-fbdev@vger.kernel.org>, outreachy-kernel@googlegroups.com,
-	Michael Hennerich <Michael.Hennerich@analog.com>, Teddy Wang <teddy.wang@siliconmotion.com>,
-	Greg KH <gregkh@linuxfoundation.org>, speakup@linux-speakup.org,
-	driverdevel <devel@driverdev.osuosl.org>, linux-kernel@vger.kernel.org,
-	Sudip Mukherjee <sudipm.mukherjee@gmail.com>, linux-iio@vger.kernel.org
-Content-Type: multipart/alternative; boundary=001a1140379e9e0452054b42c6b7
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from mail.free-electrons.com ([62.4.15.54]:60384 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758093AbdCUPgl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 11:36:41 -0400
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+To: dmitry.torokhov@gmail.com, robh+dt@kernel.org,
+        mark.rutland@arm.com, maxime.ripard@free-electrons.com,
+        wens@csie.org, lee.jones@linaro.org, linux@armlinux.org.uk,
+        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
+        pmeerw@pmeerw.net
+Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
+        thomas.petazzoni@free-electrons.com, linux-input@vger.kernel.org,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
+        linux-sunxi@googlegroups.com, icenowy@aosc.xyz
+Subject: [PATCH v3 00/11] add thermal throttling to Allwinner A33 SoC
+Date: Tue, 21 Mar 2017 16:36:00 +0100
+Message-Id: <20170321153611.16228-1-quentin.schulz@free-electrons.com>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
---001a1140379e9e0452054b42c6b7
-Content-Type: text/plain; charset=UTF-8
+The Allwinner SoCs all have an ADC that can also act as a touchscreen
+controller and a thermal sensor. The first four channels can be used
+either for the ADC or the touchscreen and the fifth channel is used for
+the thermal sensor. We currently have a driver for the two latter
+functions in drivers/input/touchscreen/sun4i-ts.c but we don't have
+access to the ADC feature at all. It is meant to replace the current
+driver by using MFD and subdrivers for existing bindings.
 
-On Wed, Mar 22, 2017 at 1:04 AM, Jonathan Cameron <jic23@kernel.org> wrote:
+The Allwinner A33 only has a thermal sensor present in the GPADC. In
+addition, there is not an existing DT binding for the GPADC. Thus, we do
+not need the sun4i-gpadc MFD driver which was made to keep DT compatibility
+and probe subdrivers without the need to add DT subnodes.
 
-> On 21/03/17 15:06, Arushi Singhal wrote:
-> > Typedefs are removed in sm750fb driver.
-> >
-> > Arushi Singhal (2):
-> >   staging: sm750fb: Remove typedef from "typedef struct
-> _mode_parameter_t"
-> >   staging: sm750fb: Remove typedef from "typedef enum _spolarity_t"
-> >
-> >  drivers/staging/sm750fb/ddk750_mode.c |  8 +++++---
-> >  drivers/staging/sm750fb/ddk750_mode.h | 19 ++++++++-----------
-> >  drivers/staging/sm750fb/sm750_hw.c    |  2 +-
-> >  3 files changed, 14 insertions(+), 15 deletions(-)
-> >
-> Please be careful to only cc linux-iio for patches with an IIO component...
->
-Sorry
->From  next I will not repeat the same.
-Thanks
-Arushi
+This series of patch adds the thermal sensor for the A33 and GPU/CPU
+thermal throttling. It also adds the cpu-supply property to the CPU node
+needed by the Sinlinx SinA33 and Olinuxino A33 to adapt their CPU regulator
+voltage depending on the currently used OPP. The other A33 boards all have
+their cpu-supply property set.
 
---001a1140379e9e0452054b42c6b7
-Content-Type: text/html; charset=UTF-8
-Content-Transfer-Encoding: quoted-printable
+This series also fixes the missing operating-points-v2 property in cpu DT
+nodes. Finally, it also adds all remaining OPPs which can be found in
+Allwinner 3.4 linux and fex files of all A33 boards.
 
-<div dir=3D"ltr"><br><div class=3D"gmail_extra"><br><div class=3D"gmail_quo=
-te">On Wed, Mar 22, 2017 at 1:04 AM, Jonathan Cameron <span dir=3D"ltr">&lt=
-;<a href=3D"mailto:jic23@kernel.org" target=3D"_blank">jic23@kernel.org</a>=
-&gt;</span> wrote:<br><blockquote class=3D"gmail_quote" style=3D"margin:0 0=
- 0 .8ex;border-left:1px #ccc solid;padding-left:1ex"><span class=3D"">On 21=
-/03/17 15:06, Arushi Singhal wrote:<br>
-&gt; Typedefs are removed in sm750fb driver.<br>
-&gt;<br>
-&gt; Arushi Singhal (2):<br>
-&gt;=C2=A0 =C2=A0staging: sm750fb: Remove typedef from &quot;typedef struct=
- _mode_parameter_t&quot;<br>
-&gt;=C2=A0 =C2=A0staging: sm750fb: Remove typedef from &quot;typedef enum _=
-spolarity_t&quot;<br>
-&gt;<br>
-&gt;=C2=A0 drivers/staging/sm750fb/<wbr>ddk750_mode.c |=C2=A0 8 +++++---<br=
->
-&gt;=C2=A0 drivers/staging/sm750fb/<wbr>ddk750_mode.h | 19 ++++++++--------=
----<br>
-&gt;=C2=A0 drivers/staging/sm750fb/sm750_<wbr>hw.c=C2=A0 =C2=A0 |=C2=A0 2 +=
--<br>
-&gt;=C2=A0 3 files changed, 14 insertions(+), 15 deletions(-)<br>
-&gt;<br>
-</span>Please be careful to only cc linux-iio for patches with an IIO compo=
-nent...<br></blockquote><div>Sorry<br></div><div>From=C2=A0 next I will not=
- repeat the same.<br></div><div>Thanks<br></div><div>Arushi <br></div></div=
-><br></div></div>
+This series of patch is based on this[1] series of patch.
 
---001a1140379e9e0452054b42c6b7--
+v3:
+  - fixed compatible name in DT and in documentation,
+  - fixed DT node name and label,
+  - added explanations in commit logs,
+  - moved frequencies that need overvolting to board DTS instead of A33 DTSI,
+  - fixed a typo in if is_enabled condition,
+  - removed all patches concerning Olimex Olinuxino (no HW to test on),
+
+[1] https://lkml.org/lkml/2016/12/13/298 : "[PATCH v9] add support for Allwinner
+SoCs ADC"
+
+Thanks,
+Quentin
+
+Maxime Ripard (1):
+  ARM: sun8i: a33: Add devfreq-based GPU cooling
+
+Quentin Schulz (10):
+  ARM: sun8i: a33: add operating-points-v2 property to all nodes
+  ARM: sun8i: a33: add all operating points
+  ARM: dts: sun8i: sina33: add cpu-supply
+  Documentation: DT: bindings: mfd: add A33 GPADC binding
+  Documentation: DT: bindings: input: touschcreen: remove sun4i
+    documentation
+  iio: adc: sun4i-gpadc-iio: move code used in MFD probing to new
+    function
+  iio: adc: sun4i-gpadc-iio: add support for A33 thermal sensor
+  ARM: dtsi: sun8i: a33: add thermal sensor
+  ARM: dtsi: sun8i: a33: add CPU thermal throttling
+  ARM: sun8i: sina33: add highest OPP of CPUs
+
+ .../touchscreen/sun4i.txt => mfd/sun4i-gpadc.txt}  |  21 +++
+ arch/arm/boot/dts/sun8i-a23-a33.dtsi               |   1 +
+ arch/arm/boot/dts/sun8i-a33-sinlinx-sina33.dts     |  18 +++
+ arch/arm/boot/dts/sun8i-a33.dtsi                   | 141 +++++++++++++++++
+ drivers/iio/adc/Kconfig                            |   2 +-
+ drivers/iio/adc/sun4i-gpadc-iio.c                  | 170 +++++++++++++++++----
+ include/linux/mfd/sun4i-gpadc.h                    |   4 +
+ 7 files changed, 324 insertions(+), 33 deletions(-)
+ rename Documentation/devicetree/bindings/{input/touchscreen/sun4i.txt => mfd/sun4i-gpadc.txt} (64%)
+
+-- 
+2.9.3
+
