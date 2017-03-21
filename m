@@ -1,23 +1,17 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-pf0-f196.google.com ([209.85.192.196]:33149 "EHLO
-        mail-pf0-f196.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S933021AbdCUSyH (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 14:54:07 -0400
-Received: by mail-pf0-f196.google.com with SMTP id p189so17825629pfp.0
-        for <linux-iio@vger.kernel.org>; Tue, 21 Mar 2017 11:54:06 -0700 (PDT)
-Date: Tue, 21 Mar 2017 11:54:04 -0700
+Return-Path: <SRS0=iUfh=26=gmail.com=amsfield22@kernel.org>
+Date: Tue, 21 Mar 2017 13:12:58 -0700
 From: Alison Schofield <amsfield22@gmail.com>
-To: Gargi Sharma <gs051095@gmail.com>,
-        Lars-Peter Clausen <lars@metafoo.de>
+To: Gargi Sharma <gs051095@gmail.com>
 Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg KH <gregkh@linuxfoundation.org>
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg KH <gregkh@linuxfoundation.org>
 Subject: Re: [Outreachy kernel] [PATCH] staging: ade7754: Replace mlock with
  buf_lock and refactor code
-Message-ID: <20170321185404.GB11324@d830.WORKGROUP>
+Message-ID: <20170321201257.GA12475@d830.WORKGROUP>
 References: <1489995561-6988-1-git-send-email-gs051095@gmail.com>
  <20170321172438.GC2793@d830.WORKGROUP>
  <CAOCi2DFEbuKpTFhcYiabJjkY3rAWF4LjnG1DWqLPejQLvK1heg@mail.gmail.com>
@@ -26,8 +20,7 @@ References: <1489995561-6988-1-git-send-email-gs051095@gmail.com>
 MIME-Version: 1.0
 Content-Type: text/plain; charset=us-ascii
 In-Reply-To: <CAOCi2DF0nhFpNsWKm5oJc7v_W59GzhaEOWGhTEPDWp3jbs8F+A@mail.gmail.com>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+List-ID: <linux-iio@vger.kernel.org>
 
 On Tue, Mar 21, 2017 at 11:48:27PM +0530, Gargi Sharma wrote:
 > On Tue, Mar 21, 2017 at 11:42 PM, Alison Schofield <amsfield22@gmail.com> wrote:
@@ -105,12 +98,24 @@ On Tue, Mar 21, 2017 at 11:48:27PM +0530, Gargi Sharma wrote:
 > 
 > Gargi
 
-Gargi - That's a great, specific question! Let's pop that back to Lars.
+Hi Gargi,
+The mlock wasn't really protecting the read followed by write.
+You'll introduce a new func that does that.  It'll use the
+existing transaction lock so that an spi_write can't sneak
+in between your spi_read and write.  
 
-Lars - Can you explain further or perhaps point to a driver that does
-something similar?
+This is going to be the same change in all the meter drivers.
+3 are exactly the same,  a 4th is very close.  
 
 alisons
+
+
+
+
+
+
+
+
 
 > > alisons
 > >
