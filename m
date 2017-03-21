@@ -1,37 +1,101 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-ot0-f194.google.com ([74.125.82.194]:33164 "EHLO
-        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932760AbdC2Ad3 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2017 20:33:29 -0400
-Date: Tue, 28 Mar 2017 19:33:26 -0500
-From: Rob Herring <robh@kernel.org>
-To: Rick Altherr <raltherr@google.com>
-Cc: openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Subject: Re: [PATCH v2 1/2] Documentation: dt-bindings: Document bindings for
- Aspeed AST2400/AST2500 ADC
-Message-ID: <20170329003326.hhz6qz4o5vorugnh@rob-hp-laptop>
-References: <20170321204828.31303-1-raltherr@google.com>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170321204828.31303-1-raltherr@google.com>
+Received: from mail-wm0-f65.google.com ([74.125.82.65]:33028 "EHLO
+        mail-wm0-f65.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758181AbdCUWfS (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 18:35:18 -0400
+Received: by mail-wm0-f65.google.com with SMTP id n11so5679849wma.0
+        for <linux-iio@vger.kernel.org>; Tue, 21 Mar 2017 15:35:12 -0700 (PDT)
+From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
+To: jic23@kernel.org
+Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
+Subject: [PATCH] iio: imu: st_lsm6dsx: do not apply ODR configuration in write_raw handler
+Date: Tue, 21 Mar 2017 23:27:47 +0100
+Message-Id: <20170321222747.5863-1-lorenzo.bianconi@st.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Tue, Mar 21, 2017 at 01:48:27PM -0700, Rick Altherr wrote:
-> Signed-off-by: Rick Altherr <raltherr@google.com>
-> ---
-> 
-> Changes in v2:
-> - Rewritten as an IIO ADC device
-> 
->  .../devicetree/bindings/iio/adc/aspeed_adc.txt       | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
+introduce st_lsm6dsx_get_odr_val() routine to check ODR consistency in
+write_raw hablder in order to apply frequency configuration just in
+st_lsm6dsx_set_odr()
 
-Acked-by: Rob Herring <robh@kernel.org>
+Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
+---
+ drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 41 ++++++++++++++++++----------
+ 1 file changed, 26 insertions(+), 15 deletions(-)
+
+diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+index c433223..70096f4 100644
+--- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
++++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
+@@ -308,32 +308,40 @@ static int st_lsm6dsx_set_full_scale(struct st_lsm6dsx_sensor *sensor,
+ 	return 0;
+ }
+ 
+-static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
++static int st_lsm6dsx_get_odr_val(struct st_lsm6dsx_sensor *sensor, u16 odr,
++				  u8 *val)
+ {
+-	enum st_lsm6dsx_sensor_id id = sensor->id;
+-	int i, err;
+-	u8 val;
++	int i;
+ 
+ 	for (i = 0; i < ST_LSM6DSX_ODR_LIST_SIZE; i++)
+-		if (st_lsm6dsx_odr_table[id].odr_avl[i].hz == odr)
++		if (st_lsm6dsx_odr_table[sensor->id].odr_avl[i].hz == odr)
+ 			break;
+ 
+ 	if (i == ST_LSM6DSX_ODR_LIST_SIZE)
+ 		return -EINVAL;
+ 
+-	val = st_lsm6dsx_odr_table[id].odr_avl[i].val;
+-	err = st_lsm6dsx_write_with_mask(sensor->hw,
+-					 st_lsm6dsx_odr_table[id].reg.addr,
+-					 st_lsm6dsx_odr_table[id].reg.mask,
+-					 val);
+-	if (err < 0)
+-		return err;
+-
++	*val = st_lsm6dsx_odr_table[sensor->id].odr_avl[i].val;
+ 	sensor->odr = odr;
+ 
+ 	return 0;
+ }
+ 
++static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
++{
++	enum st_lsm6dsx_sensor_id id = sensor->id;
++	int err;
++	u8 val;
++
++	err = st_lsm6dsx_get_odr_val(sensor, odr, &val);
++	if (err < 0)
++		return err;
++
++	return st_lsm6dsx_write_with_mask(sensor->hw,
++					  st_lsm6dsx_odr_table[id].reg.addr,
++					  st_lsm6dsx_odr_table[id].reg.mask,
++					  val);
++}
++
+ int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor)
+ {
+ 	int err;
+@@ -436,9 +444,12 @@ static int st_lsm6dsx_write_raw(struct iio_dev *iio_dev,
+ 	case IIO_CHAN_INFO_SCALE:
+ 		err = st_lsm6dsx_set_full_scale(sensor, val2);
+ 		break;
+-	case IIO_CHAN_INFO_SAMP_FREQ:
+-		err = st_lsm6dsx_set_odr(sensor, val);
++	case IIO_CHAN_INFO_SAMP_FREQ: {
++		u8 data;
++
++		err = st_lsm6dsx_get_odr_val(sensor, val, &data);
+ 		break;
++	}
+ 	default:
+ 		err = -EINVAL;
+ 		break;
+-- 
+2.9.3
+
