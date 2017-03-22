@@ -1,514 +1,1147 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mga09.intel.com ([134.134.136.24]:61226 "EHLO mga09.intel.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1752292AbdC0PsS (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Mon, 27 Mar 2017 11:48:18 -0400
-Message-ID: <1490629558.9822.37.camel@linux.intel.com>
-Subject: Re: [RFC PATCH] iio: hid-sensor-hub: Implement batch mode
-From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
-To: Jonathan Cameron <jic23@kernel.org>, jikos@kernel.org
-Cc: linux-iio@vger.kernel.org
-Date: Mon, 27 Mar 2017 08:45:58 -0700
-In-Reply-To: <abbc5695-eac9-117b-4a47-c54b89154d03@kernel.org>
-References: <1490220945-39624-1-git-send-email-srinivas.pandruvada@linux.intel.com>
-         <abbc5695-eac9-117b-4a47-c54b89154d03@kernel.org>
-Content-Type: text/plain; charset="UTF-8"
-Mime-Version: 1.0
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=ivTJ=27=atomide.com=tony@kernel.org>
+From: Tony Lindgren <tony@atomide.com>
+To: Jonathan Cameron <jic23@kernel.org>
+Cc: Hartmut Knaack <knaack.h@gmx.de>,
+	Lars-Peter Clausen <lars@metafoo.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	linux-iio@vger.kernel.org,
+	linux-omap@vger.kernel.org,
+	devicetree@vger.kernel.org,
+	Marcel Partap <mpartap@gmx.net>,
+	Michael Scott <michael.scott@linaro.org>,
+	Sebastian Reichel <sre@kernel.org>
+Subject: [PATCHv2] iio: adc: cpcap: Add minimal support for CPCAP PMIC ADC
+Date: Wed, 22 Mar 2017 16:37:26 -0700
+Message-Id: <20170322233726.5391-1-tony@atomide.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Sat, 2017-03-25 at 17:01 +0000, Jonathan Cameron wrote:
-> On 22/03/17 22:15, Srinivas Pandruvada wrote:
-> > 
-> > HID sensor hubs using Integrated Senor Hub (ISH) has added
-> > capability to
-> > support batch mode. This allows host processor to go to sleep for
-> > extended
-> > duration, while sensor hub is storing samples in its internal
-> > buffers.
-> > 
-> > 'Commit f4f4673b7535 ("iio: add support for hardware fifo")'
-> > implements feature in IIO core to implement such feature. This
-> > feature
-> > is used bmc150-accel-core.c to implement batch mode. This
-> > implementation
-> > is similar with one major exception.
-> > 
-> > The above commit allows sofware device buffer watermark to be used
-> > as a
-> software
-> > 
-> > hint to adjust hardware FIFO as it is done for bmc150-accel-core.c, 
-> > by
-> > introducing a new callback.
-> > 
-> > But HID sensor hubs don't allows to change internal buffer size of
-> > FIFOs.
-> allow
-> > 
-> > Instead an additional usage id to set "maximum report latency" is
-> > defined.
-> > This allows host to go to sleep upto this latency period without
-> > getting
-> > any report. Since there is no ABI to set this latency, a new
-> > attribute
-> > "hwfifo_timeout" is added so that user mode can specify a latency.
-> Arguably you could sometimes backtrack to make this use the above
-> interface,
-> as long as the sample rate can be read. Still a reasonable new
-> interface
-> to my mind.
-The sensor hub buffer storing samples is common to all sensors to
-provide more room only when few sensors are used. So we need to look at
-the sample rate of all currently active sensors to map the sysfs fifo
-size settings. We don't have method to read what is the effective
-sample rate.
+On Motorola phones like droid 4 there is a custom CPCAP PMIC. This PMIC
+has ADCs that are used for battery charging and USB PHY VBUS and ID pin
+detection.
 
-> > 
-> > 
-> > Similar to bmc150-accel-core, callback for flushing fifo is added
-> > only
-> > when usage id for flush request is present. This usage id is
-> > otional.
-> > 
-> > For specifying software buffer length and watermark the min/max
-> > fifo size
-> > is also presented via  hwfifo_watermark_min and
-> > hwfifo_watermark_max
-> odd spacing after via
-> > 
-> > respectively.
-> Huh?  Why introduce min and max for something these sensors don't
-> provide?
-I will remove them. it will make patch simpler.
+Unfortunately the only documentation for this ADC seems to be the
+Motorola mapphone Linux kernel tree. I have tested that reading raw and
+scaled values works, but I have not used the timed sampling that the ADC
+seems to support.
 
-> 
-> I guess this means some hid devices do provide direct access to the
-> fifo
-> settings, but not all?
-> > 
-> > 
-> > Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel
-> > .com>
-> Anyhow, it's a nice bit of logical functionality so I would be
-> suprised
-> if it doesn't spread beyond hid devices going forward.
-> 
-> A few minor bits and bobs inline, but basically concept is sound and
-> how you implement it makes sense to me.
-I will update the patch based on the comments.
+Let's add a minimal support for it so we can eventually provide IIO
+channels for the related battery charging and USB PHY drivers.
 
-Thanks,
-Srinivas
+Cc: devicetree@vger.kernel.org
+Cc: Marcel Partap <mpartap@gmx.net>
+Cc: Michael Scott <michael.scott@linaro.org>
+Cc: Sebastian Reichel <sre@kernel.org>
+Signed-off-by: Tony Lindgren <tony@atomide.com>
+---
 
+Changes since v1:
 
-> 
-> Jonathan
-> > 
-> > ---
-> >  .../ABI/testing/sysfs-bus-iio-hid-sensor-hub       |  10 ++
-> >  .../iio/common/hid-sensors/hid-sensor-attributes.c |  83
-> > +++++++++++++++
-> >  .../iio/common/hid-sensors/hid-sensor-trigger.c    | 118
-> > +++++++++++++++++++++
-> >  include/linux/hid-sensor-hub.h                     |   8 ++
-> >  include/linux/hid-sensor-ids.h                     |   5 +
-> >  5 files changed, 224 insertions(+)
-> >  create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-hid-
-> > sensor-hub
-> > 
-> > diff --git a/Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub 
-> > b/Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub
-> > new file mode 100644
-> > index 0000000..00950bb
-> > --- /dev/null
-> > +++ b/Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub
-> > @@ -0,0 +1,10 @@
-> > +What:		/sys/bus/iio/devices/iio:device*/buffer/hwfif
-> > o_timeout
-> > +KernelVersion:	4.12
-> > +Contact:	linux-iio@vger.kernel.org
-> > +Description:
-> > +		The HID Sensor Hub provides capability to delay
-> > reporting of
-> > +		samples till a timeout is reached. This allows
-> > host processor
-> > +		to sleep while sensor hub is storing samples in
-> > its internal
-> > +		buffers. The maximum timeout in milli seconds can
-> > be specified
-> > +		by setting hwfifo_timeout.
-> Hmm. Seconds preferred.  That would line up with the other timing
-> based
-> elements in the ABI.
-> 
-> This seems generic enough to me that it'll soon turn up in some other
-> sensor hubs, so put it directly in sysfs-bus-iio
-> > 
-> > +
-> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c 
-> > b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > index 7afdac42..8f1e85e 100644
-> > --- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
-> > @@ -373,6 +373,87 @@ int hid_sensor_get_reporting_interval(struct
-> > hid_sensor_hub_device *hsdev,
-> >  
-> >  }
-> >  
-> > +static void hid_sensor_get_fifo_info(struct hid_sensor_hub_device
-> > *hsdev,
-> > +				     u32 usage_id,
-> > +				     struct hid_sensor_common *st)
-> > +{
-> > +	sensor_hub_input_get_attribute_info(hsdev,
-> > HID_FEATURE_REPORT,
-> > +					usage_id,
-> > +					HID_USAGE_SENSOR_PROP_MAX_
-> > FIFO_EVENTS,
-> > +					&st->max_fifo_events);
-> > +	sensor_hub_input_get_attribute_info(hsdev,
-> > HID_FEATURE_REPORT,
-> > +					usage_id,
-> > +					HID_USAGE_SENSOR_PROP_REPO
-> > RT_LATENCY,
-> > +					&st->report_latency);
-> > +
-> > +	sensor_hub_input_get_attribute_info(hsdev,
-> > HID_FEATURE_REPORT,
-> > +					usage_id,
-> > +					HID_USAGE_SENSOR_PROP_FLUS
-> > H_FIFO_EVENTS,
-> > +					&st->flush_fifo);
-> > +	hid_dbg(hsdev->hdev, "Fifo attributes: %x:%x, %x:%x,
-> > %x:%x\n",
-> > +		st->max_fifo_events.index, st-
-> > >max_fifo_events.report_id,
-> > +		st->report_latency.index, st-
-> > >report_latency.report_id,
-> > +		st->flush_fifo.index, st->flush_fifo.report_id);
-> > +}
-> > +
-> > +int hid_sensor_flush_fifo(struct hid_sensor_common *st)
-> > +{
-> > +	int flush = 1;
-> > +
-> > +	return sensor_hub_set_feature(st->hsdev, st-
-> > >flush_fifo.report_id,
-> > +				      st->flush_fifo.index, st-
-> > >flush_fifo.size,
-> > +				      &flush);
-> > +}
-> > +EXPORT_SYMBOL(hid_sensor_flush_fifo);
-> > +
-> > +int hid_sensor_get_max_fifo(struct hid_sensor_common *st)
-> > +{
-> > +	int ret;
-> > +	int value;
-> > +
-> > +	ret = sensor_hub_get_feature(st->hsdev, st-
-> > >max_fifo_events.report_id,
-> > +				     st->max_fifo_events.index,
-> > sizeof(value),
-> > +				     &value);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return value;
-> > +}
-> > +EXPORT_SYMBOL(hid_sensor_get_max_fifo);
-> > +
-> > +int hid_sensor_get_report_latency(struct hid_sensor_common *st)
-> > +{
-> > +	int ret;
-> > +	int value;
-> > +
-> > +	ret = sensor_hub_get_feature(st->hsdev, st-
-> > >report_latency.report_id,
-> > +				     st->report_latency.index,
-> > sizeof(value),
-> > +				     &value);
-> > +	if (ret < 0)
-> > +		return ret;
-> > +
-> > +	return value;
-> > +}
-> > +EXPORT_SYMBOL(hid_sensor_get_report_latency);
-> > +
-> > +int hid_sensor_set_report_latency(struct hid_sensor_common *st,
-> > int latency_ms)
-> > +{
-> > +
-> > +	return sensor_hub_set_feature(st->hsdev, st-
-> > >report_latency.report_id,
-> > +				      st->report_latency.index,
-> > +				      sizeof(latency_ms),
-> > &latency_ms);
-> > +}
-> > +EXPORT_SYMBOL(hid_sensor_set_report_latency);
-> > +
-> > +bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st)
-> > +{
-> > +	if (st->report_latency.index > 0 && st-
-> > >report_latency.report_id > 0)
-> > +		return true;
-> > +
-> > +	return false;
-> > +}
-> > +EXPORT_SYMBOL(hid_sensor_batch_mode_supported);
-> > +
-> >  int hid_sensor_parse_common_attributes(struct
-> > hid_sensor_hub_device *hsdev,
-> >  					u32 usage_id,
-> >  					struct hid_sensor_common
-> > *st)
-> > @@ -410,6 +491,8 @@ int hid_sensor_parse_common_attributes(struct
-> > hid_sensor_hub_device *hsdev,
-> >  	} else
-> >  		st->timestamp_ns_scale = 1000000000;
-> >  
-> > +	hid_sensor_get_fifo_info(hsdev, usage_id, st);
-> > +
-> >  	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x,
-> > %x:%x %x:%x %x:%x\n",
-> >  		st->poll.index, st->poll.report_id,
-> >  		st->report_state.index, st-
-> > >report_state.report_id,
-> > diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > index a3cce3a..d03b013 100644
-> > --- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > +++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
-> > @@ -26,9 +26,125 @@
-> >  #include <linux/hid-sensor-hub.h>
-> >  #include <linux/iio/iio.h>
-> >  #include <linux/iio/trigger.h>
-> > +#include <linux/iio/buffer.h>
-> >  #include <linux/iio/sysfs.h>
-> >  #include "hid-sensor-trigger.h"
-> >  
-> > +static ssize_t _hid_sensor_set_report_latency(struct device *dev,
-> > +					      struct
-> > device_attribute *attr,
-> > +					      const char *buf,
-> > size_t len)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	int latency, ret;
-> > +
-> > +	if (kstrtoint(buf, 10, &latency))
-> > +		return -EINVAL;
-> > +
-> > +	ret =
-> > hid_sensor_set_report_latency(iio_trigger_get_drvdata(
-> > +						    indio_dev-
-> > >trig), latency);
-> That line break is really ugly. Just go over 80 chars in the
-> interests of
-> readability.
-> > 
-> > +	if (ret < 0)
-> > +		return len;
-> > +
-> > +	return len;
-> > +}
-> > +
-> > +static ssize_t _hid_sensor_get_report_latency(struct device *dev,
-> > +					      struct
-> > device_attribute *attr,
-> > +					      char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	int latency;
-> > +
-> > +	latency =
-> > hid_sensor_get_report_latency(iio_trigger_get_drvdata(
-> > +							indio_dev-
-> > >trig));
-> > +	if (latency < 0)
-> > +		return latency;
-> > +
-> > +	return sprintf(buf, "%d\n", latency);
-> > +}
-> > +
-> > +static int _hid_sensor_fifo_flush(struct iio_dev *indio_dev,
-> > +				  unsigned int samples)
-> > +{
-> > +	return
-> > hid_sensor_flush_fifo(iio_trigger_get_drvdata(indio_dev->trig));
-> > +}
-> > +
-> > +static ssize_t _hid_sensor_get_max_fifo(struct device *dev,
-> > +					struct device_attribute
-> > *attr,
-> > +					char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	int max_fifo;
-> > +
-> > +	max_fifo =
-> > hid_sensor_get_max_fifo(iio_trigger_get_drvdata(
-> > +						   indio_dev-
-> > >trig));
-> > +	if (max_fifo < 0)
-> > +		return max_fifo;
-> > +
-> > +	return sprintf(buf, "%d\n", max_fifo);
-> > +}
-> > +
-> > +static ssize_t _hid_sensor_get_fifo_state(struct device *dev,
-> > +					struct device_attribute
-> > *attr,
-> > +					char *buf)
-> > +{
-> > +	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
-> > +	int latency;
-> > +
-> > +	latency =
-> > hid_sensor_get_report_latency(iio_trigger_get_drvdata(
-> > +							indio_dev-
-> > >trig));
-> > +	if (latency < 0)
-> > +		return latency;
-> > +
-> > +	return sprintf(buf, "%d\n", latency > 0 ? 1:0);
-> > +}
-> > +
-> > +static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
-> > +static IIO_DEVICE_ATTR(hwfifo_watermark_max, 0444,
-> > +		       _hid_sensor_get_max_fifo, NULL, 0);
-> > +static IIO_DEVICE_ATTR(hwfifo_timeout, 0644,
-> > +		       _hid_sensor_get_report_latency,
-> > +		       _hid_sensor_set_report_latency, 0);
-> > +static IIO_DEVICE_ATTR(hwfifo_enabled, 0444,
-> > +		       _hid_sensor_get_fifo_state, NULL, 0);
-> > +
-> > +static const struct attribute *hid_sensor_fifo_attributes[] = {
-> > +	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
-> > +	&iio_dev_attr_hwfifo_watermark_max.dev_attr.attr,
-> > +	&iio_dev_attr_hwfifo_timeout.dev_attr.attr,
-> > +	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
-> > +	NULL,
-> Hmm. It strikes me that we may well want to have in kernel consumer
-> access to these fairly soon.  To do that we'll probably need to
-> move over to callbacks for each of these.  Ah well, will tackle that
-> when someone first cares.
-> > 
-> > +};
-> one blank line please.
-> > 
-> > +
-> > +
-> > +static void hid_sensor_setup_batch_mode(struct iio_dev *indio_dev,
-> > +				       struct hid_sensor_common
-> > *st)
-> > +{
-> > +	struct iio_info *iio_info;
-> > +
-> > +	if (!hid_sensor_batch_mode_supported(st))
-> > +		return;
-> > +
-> > +	/* Not all implementation has Flush implemented, so check
-> > */
-> > +	if (st->flush_fifo.index > 0 && st->flush_fifo.report_id >
-> > 0) {
-> > +		/*
-> > +		 * Each sensor type defines their own callbacks,
-> > which are
-> > +		 * specified via indio_dev->info. So instead of
-> > modifying
-> > +		 * every driver, change it when we need to add
-> > additional
-> > +		 * callback by reassigning the indio_dev->info.
-> > +		 */
-> This is somewhat ugly.  I suspect it'll come back to bite at
-> somepoint,
-> but fair enough on the basis it saves a fair bit of churn...
-> 
-> > 
-> > +		iio_info = devm_kmemdup(&st->pdev->dev, indio_dev-
-> > >info,
-> > +					sizeof(struct iio_info),
-> > GFP_KERNEL);
-> > +		if (!iio_info)
-> > +			return;
-> > +
-> > +		iio_info->hwfifo_flush_to_buffer =
-> > _hid_sensor_fifo_flush;
-> > +		indio_dev->info = (const struct iio_info
-> > *)iio_info;
-> > +	}
-> > +
-> > +	iio_buffer_set_attrs(indio_dev->buffer,
-> > hid_sensor_fifo_attributes);
-> > +}
-> > +
-> >  static int _hid_sensor_power_state(struct hid_sensor_common *st,
-> > bool state)
-> >  {
-> >  	int state_val;
-> > @@ -174,6 +290,8 @@ int hid_sensor_setup_trigger(struct iio_dev
-> > *indio_dev, const char *name,
-> >  	attrb->trigger = trig;
-> >  	indio_dev->trig = iio_trigger_get(trig);
-> >  
-> > +	hid_sensor_setup_batch_mode(indio_dev, attrb);
-> > +
-> >  	ret = pm_runtime_set_active(&indio_dev->dev);
-> >  	if (ret)
-> >  		goto error_unreg_trigger;
-> > diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-
-> > sensor-hub.h
-> > index 7ef111d..a790960 100644
-> > --- a/include/linux/hid-sensor-hub.h
-> > +++ b/include/linux/hid-sensor-hub.h
-> > @@ -237,6 +237,9 @@ struct hid_sensor_common {
-> >  	struct hid_sensor_hub_attribute_info report_state;
-> >  	struct hid_sensor_hub_attribute_info power_state;
-> >  	struct hid_sensor_hub_attribute_info sensitivity;
-> > +	struct hid_sensor_hub_attribute_info max_fifo_events;
-> > +	struct hid_sensor_hub_attribute_info report_latency;
-> > +	struct hid_sensor_hub_attribute_info flush_fifo;
-> >  	struct work_struct work;
-> >  };
-> >  
-> > @@ -274,5 +277,10 @@ s32 hid_sensor_read_poll_value(struct
-> > hid_sensor_common *st);
-> >  
-> >  int64_t hid_sensor_convert_timestamp(struct hid_sensor_common *st,
-> >  				     int64_t raw_value);
-> > +bool hid_sensor_batch_mode_supported(struct hid_sensor_common
-> > *st);
-> > +int hid_sensor_get_max_fifo(struct hid_sensor_common *st);
-> > +int hid_sensor_set_report_latency(struct hid_sensor_common *st,
-> > int latency);
-> > +int hid_sensor_flush_fifo(struct hid_sensor_common *st);
-> > +int hid_sensor_get_report_latency(struct hid_sensor_common *st);
-> >  
-> >  #endif
-> > diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-
-> > sensor-ids.h
-> > index 30c7dc4..22374e1 100644
-> > --- a/include/linux/hid-sensor-ids.h
-> > +++ b/include/linux/hid-sensor-ids.h
-> > @@ -142,6 +142,11 @@
-> >  #define HID_USAGE_SENSOR_PROP_REPORT_STATE			
-> > 0x200316
-> >  #define HID_USAGE_SENSOR_PROY_POWER_STATE			0
-> > x200319
-> >  
-> > +/* Batch mode selectors */
-> > +#define HID_USAGE_SENSOR_PROP_MAX_FIFO_EVENTS			
-> > 0x20031A
-> > +#define HID_USAGE_SENSOR_PROP_REPORT_LATENCY			
-> > 0x20031B
-> > +#define HID_USAGE_SENSOR_PROP_FLUSH_FIFO_EVENTS			
-> > 0x20031C
-> > +
-> >  /* Per data field properties */
-> >  #define HID_USAGE_SENSOR_DATA_MOD_NONE				
-> > 	0x00
-> >  #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		
-> > 0x1000
-> > 
-> 
+- Fix numerous issues pointed out by Peter Meerwald-Stadler
+  <pmeerw@pmeerw.net> and Jonathan Cameron <jic23@kernel.org>
+
+- Simplify things further by limiting read functions to a
+  single channel instead of a bank and got rid of the driver
+  specific cpcap_adc_conv_type in favor of IIO generic types
+
+---
+ .../devicetree/bindings/iio/adc/cpcap-adc.txt      |   18 +
+ drivers/iio/adc/Kconfig                            |   11 +
+ drivers/iio/adc/Makefile                           |    1 +
+ drivers/iio/adc/cpcap-adc.c                        | 1031 ++++++++++++++++++++
+ 4 files changed, 1061 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt
+ create mode 100644 drivers/iio/adc/cpcap-adc.c
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt b/Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt
+new file mode 100644
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/cpcap-adc.txt
+@@ -0,0 +1,18 @@
++Motorola CPCAP PMIC ADC binding
++
++Required properties:
++- compatible: Should be "motorola,cpcap-adc" or "motorola,mapphone-cpcap-adc"
++- interrupt-parent: The interrupt controller
++- interrupts: The interrupt number for the ADC device
++- interrupt-names: Should be "adcdone"
++- #io-channel-cells: Number of cells in an IIO specifier
++
++Example:
++
++cpcap_adc: adc {
++	compatible = "motorola,mapphone-cpcap-adc";
++	interrupt-parent = <&cpcap>;
++	interrupts = <8 IRQ_TYPE_NONE>;
++	interrupt-names = "adcdone";
++	#io-channel-cells = <1>;
++};
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -195,6 +195,17 @@ config CC10001_ADC
+ 	  This driver can also be built as a module. If so, the module will be
+ 	  called cc10001_adc.
+ 
++config CPCAP_ADC
++	tristate "Motorola CPCAP PMIC ADC driver"
++	depends on MFD_CPCAP
++	select IIO_BUFFER
++	select IIO_TRIGGERED_BUFFER
++	help
++	  Say yes here to build support for Motorola CPCAP PMIC ADC.
++
++	  This driver can also be built as a module. If so, the module will be
++	  called cpcap-adc.
++
+ config DA9150_GPADC
+ 	tristate "Dialog DA9150 GPADC driver support"
+ 	depends on MFD_DA9150
+diff --git a/drivers/iio/adc/Makefile b/drivers/iio/adc/Makefile
+--- a/drivers/iio/adc/Makefile
++++ b/drivers/iio/adc/Makefile
+@@ -20,6 +20,7 @@ obj-$(CONFIG_AXP288_ADC) += axp288_adc.o
+ obj-$(CONFIG_BCM_IPROC_ADC) += bcm_iproc_adc.o
+ obj-$(CONFIG_BERLIN2_ADC) += berlin2-adc.o
+ obj-$(CONFIG_CC10001_ADC) += cc10001_adc.o
++obj-$(CONFIG_CPCAP_ADC) += cpcap-adc.o
+ obj-$(CONFIG_DA9150_GPADC) += da9150-gpadc.o
+ obj-$(CONFIG_ENVELOPE_DETECTOR) += envelope-detector.o
+ obj-$(CONFIG_EXYNOS_ADC) += exynos_adc.o
+diff --git a/drivers/iio/adc/cpcap-adc.c b/drivers/iio/adc/cpcap-adc.c
+new file mode 100644
+--- /dev/null
++++ b/drivers/iio/adc/cpcap-adc.c
+@@ -0,0 +1,1031 @@
++/*
++ * Copyright (C) 2017 Tony Lindgren <tony@atomide.com>
++ *
++ * Rewritten for Linux IIO framework with register managing functions
++ * based on earlier driver found in the Motorola Linux kernel:
++ *
++ * Copyright (C) 2009-2010 Motorola, Inc.
++ *
++ * This program is free software; you can redistribute it and/or modify
++ * it under the terms of the GNU General Public License version 2 as
++ * published by the Free Software Foundation.
++ *
++ * This program is distributed in the hope that it will be useful,
++ * but WITHOUT ANY WARRANTY; without even the implied warranty of
++ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
++ * GNU General Public License for more details.
++ */
++
++#include <linux/delay.h>
++#include <linux/device.h>
++#include <linux/err.h>
++#include <linux/init.h>
++#include <linux/interrupt.h>
++#include <linux/kernel.h>
++#include <linux/module.h>
++#include <linux/of.h>
++#include <linux/of_platform.h>
++#include <linux/platform_device.h>
++#include <linux/regmap.h>
++
++#include <linux/iio/buffer.h>
++#include <linux/iio/driver.h>
++#include <linux/iio/iio.h>
++#include <linux/iio/kfifo_buf.h>
++#include <linux/mfd/motorola-cpcap.h>
++
++/* Register CPCAP_REG_ADCC1 bits */
++#define CPCAP_BIT_ADEN_AUTO_CLR		BIT(15)	/* Currently unused */
++#define CPCAP_BIT_CAL_MODE		BIT(14) /* Set with BIT_RAND0 */
++#define CPCAP_BIT_ADC_CLK_SEL1		BIT(13)	/* Currently unused */
++#define CPCAP_BIT_ADC_CLK_SEL0		BIT(12)	/* Currently unused */
++#define CPCAP_BIT_ATOX			BIT(11)
++#define CPCAP_BIT_ATO3			BIT(10)
++#define CPCAP_BIT_ATO2			BIT(9)
++#define CPCAP_BIT_ATO1			BIT(8)
++#define CPCAP_BIT_ATO0			BIT(7)
++#define CPCAP_BIT_ADA2			BIT(6)
++#define CPCAP_BIT_ADA1			BIT(5)
++#define CPCAP_BIT_ADA0			BIT(4)
++#define CPCAP_BIT_AD_SEL1		BIT(3)	/* Set for ADC_TYPE_BANK_1 */
++#define CPCAP_BIT_RAND1			BIT(2)	/* Set for ADC_TYPE_BATT_PI */
++#define CPCAP_BIT_RAND0			BIT(1)	/* Set with CAL_MODE */
++#define CPCAP_BIT_ADEN			BIT(0)	/* Currently unused */
++
++/* Register CPCAP_REG_ADCC2 bits */
++#define CPCAP_BIT_CAL_FACTOR_ENABLE	BIT(15)	/* Currently unused */
++#define CPCAP_BIT_BATDETB_EN		BIT(14)	/* Currently unused */
++#define CPCAP_BIT_ADTRIG_ONESHOT	BIT(13)	/* Set for !TIMING_IMM */
++#define CPCAP_BIT_ASC			BIT(12)	/* Set for TIMING_IMM */
++#define CPCAP_BIT_ATOX_PS_FACTOR	BIT(11)
++#define CPCAP_BIT_ADC_PS_FACTOR1	BIT(10)
++#define CPCAP_BIT_ADC_PS_FACTOR0	BIT(9)
++#define CPCAP_BIT_AD4_SELECT		BIT(8)	/* Currently unused */
++#define CPCAP_BIT_ADC_BUSY		BIT(7)	/* Currently unused */
++#define CPCAP_BIT_THERMBIAS_EN		BIT(6)	/* Currently unused */
++#define CPCAP_BIT_ADTRIG_DIS		BIT(5)	/* Disable interrupt */
++#define CPCAP_BIT_LIADC			BIT(4)	/* Currently unused */
++#define CPCAP_BIT_TS_REFEN		BIT(3)	/* Currently unused */
++#define CPCAP_BIT_TS_M2			BIT(2)	/* Currently unused */
++#define CPCAP_BIT_TS_M1			BIT(1)	/* Currently unused */
++#define CPCAP_BIT_TS_M0			BIT(0)	/* Currently unused */
++
++#define CPCAP_MAX_TEMP_LVL		27
++#define CPCAP_FOUR_POINT_TWO_ADC	801
++#define ST_ADC_CAL_CHRGI_UPPER_THRESHOLD 530
++#define ST_ADC_CAL_CHRGI_LOWER_THRESHOLD 494
++#define ST_ADC_CAL_BATTI_UPPER_THRESHOLD 530
++#define ST_ADC_CAL_BATTI_LOWER_THRESHOLD 494
++#define ST_ADC_CALIBRATE_DIFF_THRESHOLD	3
++
++#define CPCAP_ADC_MAX_RETRIES		5	/* Calibration and quirk */
++
++/**
++ * struct cpcap_adc_ato - timing settings for cpcap adc
++ *
++ * Unfortunately no cpcap documentation available, please document when
++ * using these.
++ */
++struct cpcap_adc_ato {
++	unsigned short ato_in;
++	unsigned short atox_in;
++	unsigned short adc_ps_factor_in;
++	unsigned short atox_ps_factor_in;
++	unsigned short ato_out;
++	unsigned short atox_out;
++	unsigned short adc_ps_factor_out;
++	unsigned short atox_ps_factor_out;
++};
++
++/**
++ * struct cpcap-adc - cpcap adc device driver data
++ * @reg: cpcap regmap
++ * @dev: struct device
++ * @vendor: cpcap vendor
++ * @irq: interrupt
++ * @lock: mutex
++ * @ato: request timings
++ * @wq_data_avail: work queue
++ * @done: work done
++ */
++struct cpcap_adc {
++	struct regmap *reg;
++	struct device *dev;
++	u16 vendor;
++	int irq;
++	struct mutex lock;	/* ADC register access lock */
++	const struct cpcap_adc_ato *ato;
++	wait_queue_head_t wq_data_avail;
++	bool done;
++};
++
++/**
++ * enum cpcap_adc_bank0 - cpcap adc bank0 channels
++ */
++enum cpcap_adc_bank0 {
++	CPCAP_ADC_AD0_BATTDETB,	/* Battery detection */
++	CPCAP_ADC_BATTP,	/* Battery voltage */
++	CPCAP_ADC_VBUS,		/* USB VBUS voltage */
++	CPCAP_ADC_AD3,		/* Battery temperature when charging */
++	CPCAP_ADC_BPLUS_AD4,	/* Another battery or system voltage */
++	CPCAP_ADC_CHG_ISENSE,	/* Calibrated charge current */
++	CPCAP_ADC_BATTI,	/* Calibrated system current */
++	CPCAP_ADC_USB_ID,	/* USB OTG ID, unused on droid 4? */
++	CPCAP_ADC_BANK0_NUM,
++};
++
++/**
++ * enum cpcap_adc_bank1 - cpcap adc bank1 channels
++ */
++enum cpcap_adc_bank1 {
++	CPCAP_ADC_AD8,		/* Seems unused */
++	CPCAP_ADC_AD9,		/* Seems unused */
++	CPCAP_ADC_LICELL,	/* Maybe system voltage? Always 3V */
++	CPCAP_ADC_HV_BATTP,	/* Another battery detection? */
++	CPCAP_ADC_TSX1_AD12,	/* Seems unused, for touchscreen? */
++	CPCAP_ADC_TSX2_AD13,	/* Seems unused, for touchscreen? */
++	CPCAP_ADC_TSY1_AD14,	/* Seems unused, for touchscreen? */
++	CPCAP_ADC_TSY2_AD15,	/* Seems unused, for touchscreen? */
++	CPCAP_ADC_BANK1_NUM,
++};
++
++/**
++ * enum cpcap_adc_timing - cpcap adc timing options
++ *
++ * CPCAP_ADC_TIMING_IMM seems to be immediate with no timings.
++ * Please document when using.
++ */
++enum cpcap_adc_timing {
++	CPCAP_ADC_TIMING_IMM,
++	CPCAP_ADC_TIMING_IN,
++	CPCAP_ADC_TIMING_OUT,
++};
++
++/**
++ * enum cpcap_adc_type - cpcap adc types
++ *
++ * Two banks of channels with eight channels in each. The first two channels
++ * in bank0 can be muxed for other functionality with CPCAP_ADC_TYPE_BATT_PI.
++ */
++enum cpcap_adc_type {
++	CPCAP_ADC_TYPE_BANK_0,
++	CPCAP_ADC_TYPE_BANK_1,
++	CPCAP_ADC_TYPE_BATT_PI,
++};
++
++/**
++ * struct cpcap_adc_request - cpcap adc request
++ * @bank_index: channel index in the bank
++ * @type: bank type, bank0, 1 or remuxed bank0
++ * @timing: timing settings
++ * @result: result
++ */
++struct cpcap_adc_request {
++	int bank_index;
++	enum cpcap_adc_type type;
++	enum cpcap_adc_timing timing;
++	int result;
++};
++
++/**
++ * struct cpcap_adc_phasing_tbl - cpcap phasing table
++ * @offset: offset in the phasing table
++ * @multiplier: multiplier in the phasing table
++ * @divider: divider in the phasing table
++ * @min: minimum value
++ * @max: maximum value
++ */
++struct cpcap_adc_phasing_tbl {
++	short offset;
++	unsigned short multiplier;
++	unsigned short divider;
++	short min;
++	short max;
++};
++
++/**
++ * struct cpcap_adc_conversion_tbl - cpcap conversion table
++ * @conv_type: conversion type
++ * @align_offset: align offset
++ * @conv_offset: conversion offset
++ * @cal_offset: calibration offset
++ * @multiplier: conversion multiplier
++ * @divider: conversion divider
++ */
++struct cpcap_adc_conversion_tbl {
++	enum iio_chan_info_enum conv_type;
++	int align_offset;
++	int conv_offset;
++	int cal_offset;
++	int multiplier;
++	int divider;
++};
++
++/* Phasing table for bank0 */
++static const struct cpcap_adc_phasing_tbl bank0_phasing[CPCAP_ADC_BANK0_NUM] = {
++	[CPCAP_ADC_AD0_BATTDETB] = {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_BATTP] =        {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_VBUS] =         {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_AD3] =          {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_BPLUS_AD4] =    {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_CHG_ISENSE] =   {0, 0x80, 0x80, -512,  511},
++	[CPCAP_ADC_BATTI] =        {0, 0x80, 0x80, -512,  511},
++	[CPCAP_ADC_USB_ID] =       {0, 0x80, 0x80,    0, 1023},
++};
++
++/* Phasing table for bank1 */
++static const struct cpcap_adc_phasing_tbl bank1_phasing[CPCAP_ADC_BANK1_NUM] = {
++	[CPCAP_ADC_AD8] =          {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_AD9] =          {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_LICELL] =       {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_HV_BATTP] =     {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_TSX1_AD12] =    {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_TSX2_AD13] =    {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_TSY1_AD14] =    {0, 0x80, 0x80,    0, 1023},
++	[CPCAP_ADC_TSY2_AD15] =    {0, 0x80, 0x80,    0, 1023},
++};
++
++/* Conversion table for bank0. Updated during init based on calibration */
++static struct cpcap_adc_conversion_tbl bank0_conversion[CPCAP_ADC_BANK0_NUM] = {
++	[CPCAP_ADC_AD0_BATTDETB] = {
++		IIO_CHAN_INFO_PROCESSED,    0,    0, 0,     1,    1,
++	},
++	[CPCAP_ADC_BATTP] = {
++		IIO_CHAN_INFO_PROCESSED,    0, 2400, 0,  2300, 1023,
++	},
++	[CPCAP_ADC_VBUS] = {
++		IIO_CHAN_INFO_PROCESSED,    0,    0, 0, 10000, 1023,
++	},
++	[CPCAP_ADC_AD3] = {
++		IIO_CHAN_INFO_PROCESSED,    0,    0, 0,     1,    1,
++		},
++	[CPCAP_ADC_BPLUS_AD4] = {
++		IIO_CHAN_INFO_PROCESSED,    0, 2400, 0,  2300, 1023,
++	},
++	[CPCAP_ADC_CHG_ISENSE] = {
++		IIO_CHAN_INFO_PROCESSED, -512,    2, 0,  5000, 1023,
++	},
++	[CPCAP_ADC_BATTI] = {
++		IIO_CHAN_INFO_PROCESSED, -512,    2, 0,  5000, 1023,
++	},
++	[CPCAP_ADC_USB_ID] = {
++		IIO_CHAN_INFO_RAW,          0,    0, 0,     1,    1,
++	},
++};
++
++/* Conversion table for bank1 */
++static const struct
++cpcap_adc_conversion_tbl bank1_conversion[CPCAP_ADC_BANK1_NUM] = {
++	[CPCAP_ADC_AD8] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++	[CPCAP_ADC_AD9] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++	[CPCAP_ADC_LICELL] = {
++		IIO_CHAN_INFO_PROCESSED,    0,  0,  0, 3400, 1023
++	},
++	[CPCAP_ADC_HV_BATTP] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++	[CPCAP_ADC_TSX1_AD12] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++	[CPCAP_ADC_TSX2_AD13] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++	[CPCAP_ADC_TSY1_AD14] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++	[CPCAP_ADC_TSY2_AD15] = {
++		IIO_CHAN_INFO_RAW,          0,  0,  0,    1,    1
++	},
++};
++
++/*
++ * Temperature lookup table of register values to milliCelcius.
++ * REVISIT: Check the duplicate 0x3ff entry in a freezer
++ */
++static const int temp_map[CPCAP_MAX_TEMP_LVL][2] = {
++	{ 0x03ff, -40000 },
++	{ 0x03ff, -35000 },
++	{ 0x03ef, -30000 },
++	{ 0x03b2, -25000 },
++	{ 0x036c, -20000 },
++	{ 0x0320, -15000 },
++	{ 0x02d0, -10000 },
++	{ 0x027f, -5000 },
++	{ 0x022f, 0 },
++	{ 0x01e4, 5000 },
++	{ 0x019f, 10000 },
++	{ 0x0161, 15000 },
++	{ 0x012b, 20000 },
++	{ 0x00fc, 25000 },
++	{ 0x00d4, 30000 },
++	{ 0x00b2, 35000 },
++	{ 0x0095, 40000 },
++	{ 0x007d, 45000 },
++	{ 0x0069, 50000 },
++	{ 0x0059, 55000 },
++	{ 0x004b, 60000 },
++	{ 0x003f, 65000 },
++	{ 0x0036, 70000 },
++	{ 0x002e, 75000 },
++	{ 0x0027, 80000 },
++	{ 0x0022, 85000 },
++	{ 0x001d, 90000 },
++};
++
++static irqreturn_t cpcap_adc_irq_thread(int irq, void *data)
++{
++	struct iio_dev *indio_dev = data;
++	struct cpcap_adc *ddata = iio_priv(indio_dev);
++	int error;
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++				   CPCAP_BIT_ADTRIG_DIS,
++				   CPCAP_BIT_ADTRIG_DIS);
++	if (error)
++		return IRQ_NONE;
++
++	ddata->done = true;
++	wake_up_interruptible(&ddata->wq_data_avail);
++
++	return IRQ_HANDLED;
++}
++
++#define CPCAP_CHAN(_type, _index, _address, _datasheet_name) {	\
++	.type = (_type), \
++	.address = (_address), \
++	.indexed = 1, \
++	.channel = (_index), \
++	.info_mask_separate = BIT(IIO_CHAN_INFO_RAW) | \
++			      BIT(IIO_CHAN_INFO_PROCESSED), \
++	.scan_index = (_index), \
++	.scan_type = { \
++		.sign = 'u', \
++		.realbits = 10, \
++		.storagebits = 16, \
++		.endianness = IIO_CPU, \
++	}, \
++	.datasheet_name = (_datasheet_name), \
++}
++
++/*
++ * The datasheet names are from Motorola mapphone Linux kernel except
++ * for the last two which might be uncalibrated charge voltage and
++ * current.
++ */
++static const struct iio_chan_spec cpcap_adc_channels[] = {
++	CPCAP_CHAN(IIO_TEMP, 0, CPCAP_REG_ADCD0, "battdetb"),
++	CPCAP_CHAN(IIO_VOLTAGE, 1, CPCAP_REG_ADCD1, "battp"),
++	CPCAP_CHAN(IIO_VOLTAGE, 2, CPCAP_REG_ADCD2, "vbus"),
++	CPCAP_CHAN(IIO_TEMP, 3, CPCAP_REG_ADCD3, "ad3"),
++	CPCAP_CHAN(IIO_VOLTAGE, 4, CPCAP_REG_ADCD4, "ad4"),
++	CPCAP_CHAN(IIO_CURRENT, 5, CPCAP_REG_ADCD5, "chg_isense"),
++	CPCAP_CHAN(IIO_CURRENT, 6, CPCAP_REG_ADCD6, "batti"),
++	CPCAP_CHAN(IIO_VOLTAGE, 7, CPCAP_REG_ADCD7, "usb_id"),
++
++	CPCAP_CHAN(IIO_CURRENT, 8, CPCAP_REG_ADCD0, "ad8"),
++	CPCAP_CHAN(IIO_VOLTAGE, 9, CPCAP_REG_ADCD1, "ad9"),
++	CPCAP_CHAN(IIO_VOLTAGE, 10, CPCAP_REG_ADCD2, "licell"),
++	CPCAP_CHAN(IIO_VOLTAGE, 11, CPCAP_REG_ADCD3, "hv_battp"),
++	CPCAP_CHAN(IIO_VOLTAGE, 12, CPCAP_REG_ADCD4, "tsx1_ad12"),
++	CPCAP_CHAN(IIO_VOLTAGE, 13, CPCAP_REG_ADCD5, "tsx2_ad13"),
++	CPCAP_CHAN(IIO_VOLTAGE, 14, CPCAP_REG_ADCD6, "tsy1_ad14"),
++	CPCAP_CHAN(IIO_VOLTAGE, 15, CPCAP_REG_ADCD7, "tsy2_ad15"),
++
++	/* There are two registers with multiplexed functionality */
++	CPCAP_CHAN(IIO_VOLTAGE, 16, CPCAP_REG_ADCD0, "chg_vsense"),
++	CPCAP_CHAN(IIO_CURRENT, 17, CPCAP_REG_ADCD1, "batti2"),
++};
++
++/* ADC calibration functions */
++static void cpcap_adc_setup_calibrate(struct cpcap_adc *ddata,
++				      enum cpcap_adc_bank0 chan)
++{
++	unsigned int value = 0;
++	unsigned long timeout = jiffies + msecs_to_jiffies(3000);
++	int error;
++
++	if ((chan != CPCAP_ADC_CHG_ISENSE) &&
++	    (chan != CPCAP_ADC_BATTI))
++		return;
++
++	value |= CPCAP_BIT_CAL_MODE | CPCAP_BIT_RAND0;
++	value |= ((chan << 4) &
++		  (CPCAP_BIT_ADA2 | CPCAP_BIT_ADA1 | CPCAP_BIT_ADA0));
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC1,
++				   CPCAP_BIT_CAL_MODE | CPCAP_BIT_ATOX |
++				   CPCAP_BIT_ATO3 | CPCAP_BIT_ATO2 |
++				   CPCAP_BIT_ATO1 | CPCAP_BIT_ATO0 |
++				   CPCAP_BIT_ADA2 | CPCAP_BIT_ADA1 |
++				   CPCAP_BIT_ADA0 | CPCAP_BIT_AD_SEL1 |
++				   CPCAP_BIT_RAND1 | CPCAP_BIT_RAND0,
++				   value);
++	if (error)
++		return;
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++				   CPCAP_BIT_ATOX_PS_FACTOR |
++				   CPCAP_BIT_ADC_PS_FACTOR1 |
++				   CPCAP_BIT_ADC_PS_FACTOR0,
++				   0);
++	if (error)
++		return;
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++				   CPCAP_BIT_ADTRIG_DIS,
++				   CPCAP_BIT_ADTRIG_DIS);
++	if (error)
++		return;
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++				   CPCAP_BIT_ASC,
++				   CPCAP_BIT_ASC);
++	if (error)
++		return;
++
++	do {
++		schedule_timeout_uninterruptible(1);
++		error = regmap_read(ddata->reg, CPCAP_REG_ADCC2, &value);
++		if (error)
++			return;
++	} while ((value & CPCAP_BIT_ASC) && time_before(jiffies, timeout));
++
++	if (value & CPCAP_BIT_ASC)
++		dev_err(ddata->dev,
++			"Timeout waiting for calibration to complete\n");
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC1,
++				   CPCAP_BIT_CAL_MODE, 0);
++	if (error)
++		return;
++}
++
++static int cpcap_adc_calibrate_one(struct cpcap_adc *ddata,
++				   int channel,
++				   u16 calibration_register,
++				   int lower_threshold,
++				   int upper_threshold)
++{
++	unsigned int calibration_data[2];
++	unsigned short cal_data_diff;
++	int i, error;
++
++	for (i = 0; i < CPCAP_ADC_MAX_RETRIES; i++) {
++		calibration_data[0]  = 0;
++		calibration_data[1]  = 0;
++		cal_data_diff = 0;
++		cpcap_adc_setup_calibrate(ddata, channel);
++		error = regmap_read(ddata->reg, calibration_register,
++				    &calibration_data[0]);
++		if (error)
++			return error;
++		cpcap_adc_setup_calibrate(ddata, channel);
++		error = regmap_read(ddata->reg, calibration_register,
++				    &calibration_data[1]);
++		if (error)
++			return error;
++
++		if (calibration_data[0] > calibration_data[1])
++			cal_data_diff =
++				calibration_data[0] - calibration_data[1];
++		else
++			cal_data_diff =
++				calibration_data[1] - calibration_data[0];
++
++		if (((calibration_data[1] >= lower_threshold) &&
++		     (calibration_data[1] <= upper_threshold) &&
++		     (cal_data_diff <= ST_ADC_CALIBRATE_DIFF_THRESHOLD)) ||
++		    (ddata->vendor == CPCAP_VENDOR_TI)) {
++			bank0_conversion[channel].cal_offset =
++				((short)calibration_data[1] * -1) + 512;
++			dev_dbg(ddata->dev, "ch%i calibration complete: %i\n",
++				channel, bank0_conversion[channel].cal_offset);
++			break;
++		}
++		usleep_range(5000, 10000);
++	}
++
++	return 0;
++}
++
++static int cpcap_adc_calibrate(struct cpcap_adc *ddata)
++{
++	int error;
++
++	error = cpcap_adc_calibrate_one(ddata, CPCAP_ADC_CHG_ISENSE,
++					CPCAP_REG_ADCAL1,
++					ST_ADC_CAL_CHRGI_LOWER_THRESHOLD,
++					ST_ADC_CAL_CHRGI_UPPER_THRESHOLD);
++	if (error)
++		return error;
++
++	error = cpcap_adc_calibrate_one(ddata, CPCAP_ADC_BATTI,
++					CPCAP_REG_ADCAL2,
++					ST_ADC_CAL_BATTI_LOWER_THRESHOLD,
++					ST_ADC_CAL_BATTI_UPPER_THRESHOLD);
++	if (error)
++		return error;
++
++	return 0;
++}
++
++/* ADC setup, read and scale functions */
++static void cpcap_adc_setup_bank(struct cpcap_adc *ddata,
++				 struct cpcap_adc_request *req)
++{
++	const struct cpcap_adc_ato *ato = ddata->ato;
++	unsigned short value1 = 0;
++	unsigned short value2 = 0;
++	int error;
++
++	if (!ato)
++		return;
++
++	switch (req->type) {
++	case CPCAP_ADC_TYPE_BANK_1:
++		value1 |= CPCAP_BIT_AD_SEL1;
++		break;
++	case CPCAP_ADC_TYPE_BATT_PI:
++		value1 |= CPCAP_BIT_RAND1;
++		break;
++	default:
++		break;
++	}
++
++	switch (req->timing) {
++	case CPCAP_ADC_TIMING_IN:
++		value1 |= ato->ato_in;
++		value1 |= ato->atox_in;
++		value2 |= ato->adc_ps_factor_in;
++		value2 |= ato->atox_ps_factor_in;
++		break;
++
++	case CPCAP_ADC_TIMING_OUT:
++		value1 |= ato->ato_out;
++		value1 |= ato->atox_out;
++		value2 |= ato->adc_ps_factor_out;
++		value2 |= ato->atox_ps_factor_out;
++		break;
++
++	case CPCAP_ADC_TIMING_IMM:
++	default:
++		break;
++	}
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC1,
++				   CPCAP_BIT_CAL_MODE | CPCAP_BIT_ATOX |
++				   CPCAP_BIT_ATO3 | CPCAP_BIT_ATO2 |
++				   CPCAP_BIT_ATO1 | CPCAP_BIT_ATO0 |
++				   CPCAP_BIT_ADA2 | CPCAP_BIT_ADA1 |
++				   CPCAP_BIT_ADA0 | CPCAP_BIT_AD_SEL1 |
++				   CPCAP_BIT_RAND1 | CPCAP_BIT_RAND0,
++				   value1);
++	if (error)
++		return;
++
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++				   CPCAP_BIT_ATOX_PS_FACTOR |
++				   CPCAP_BIT_ADC_PS_FACTOR1 |
++				   CPCAP_BIT_ADC_PS_FACTOR0,
++				   value2);
++	if (error)
++		return;
++
++	if (req->timing == CPCAP_ADC_TIMING_IMM) {
++		error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++					   CPCAP_BIT_ADTRIG_DIS,
++					   CPCAP_BIT_ADTRIG_DIS);
++		if (error)
++			return;
++
++		error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++					   CPCAP_BIT_ASC,
++					   CPCAP_BIT_ASC);
++		if (error)
++			return;
++	} else {
++		error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++					   CPCAP_BIT_ADTRIG_ONESHOT,
++					   CPCAP_BIT_ADTRIG_ONESHOT);
++		if (error)
++			return;
++
++		error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++					   CPCAP_BIT_ADTRIG_DIS, 0);
++		if (error)
++			return;
++	}
++}
++
++/*
++ * Occasionally the ADC does not seem to start and there will be no
++ * interrupt. Let's re-init interrupt to prevent the ADC from hanging
++ * for the next request. It is unclear why this happens, but the next
++ * request will usually work after doing this.
++ */
++static void cpcap_adc_quirk_reset_lost_irq(struct cpcap_adc *ddata)
++{
++	int error;
++
++	dev_info(ddata->dev, "lost ADC irq, attempting to reinit\n");
++	disable_irq(ddata->irq);
++	error = regmap_update_bits(ddata->reg, CPCAP_REG_ADCC2,
++				   CPCAP_BIT_ADTRIG_DIS,
++				   CPCAP_BIT_ADTRIG_DIS);
++	if (error)
++		dev_warn(ddata->dev, "%s reset failed: %i\n",
++			 __func__, error);
++	enable_irq(ddata->irq);
++}
++
++static int cpcap_adc_start_bank(struct cpcap_adc *ddata,
++				struct cpcap_adc_request *req)
++{
++	int i, error;
++
++	req->timing = CPCAP_ADC_TIMING_IMM;
++	ddata->done = false;
++
++	for (i = 0; i < CPCAP_ADC_MAX_RETRIES; i++) {
++		cpcap_adc_setup_bank(ddata, req);
++		error = wait_event_interruptible_timeout(ddata->wq_data_avail,
++							 ddata->done,
++							 msecs_to_jiffies(50));
++		if (error > 0)
++			return 0;
++
++		if (error == 0) {
++			cpcap_adc_quirk_reset_lost_irq(ddata);
++			error = -ETIMEDOUT;
++			continue;
++		}
++
++		if (error < 0)
++			return error;
++	}
++
++	return error;
++}
++
++static void cpcap_adc_phase(struct cpcap_adc_request *req, int index)
++{
++	const struct cpcap_adc_conversion_tbl *conv_tbl;
++	const struct cpcap_adc_phasing_tbl *phase_tbl;
++	int tbl_index;
++
++	switch (req->type) {
++	case CPCAP_ADC_TYPE_BANK_0:
++		conv_tbl = bank0_conversion;
++		phase_tbl = bank0_phasing;
++		tbl_index = index;
++		break;
++	case CPCAP_ADC_TYPE_BANK_1:
++		conv_tbl = bank1_conversion;
++		phase_tbl = bank1_phasing;
++		tbl_index = index;
++		break;
++	case CPCAP_ADC_TYPE_BATT_PI:
++		conv_tbl = bank0_conversion;
++		phase_tbl = bank0_phasing;
++		tbl_index = (index % 2) ? CPCAP_ADC_BATTI :
++			CPCAP_ADC_BATTP;
++		break;
++	default:
++		return;
++	}
++
++	if (((req->type == CPCAP_ADC_TYPE_BANK_0) ||
++	     (req->type == CPCAP_ADC_TYPE_BATT_PI)) &&
++	    (tbl_index == CPCAP_ADC_BATTP)) {
++		req->result -= phase_tbl[tbl_index].offset;
++		req->result -= CPCAP_FOUR_POINT_TWO_ADC;
++		req->result *= phase_tbl[tbl_index].multiplier;
++		if (phase_tbl[tbl_index].divider == 0)
++			return;
++		req->result /= phase_tbl[tbl_index].divider;
++		req->result += CPCAP_FOUR_POINT_TWO_ADC;
++	} else {
++		req->result += conv_tbl[tbl_index].cal_offset;
++		req->result += conv_tbl[tbl_index].align_offset;
++		req->result *= phase_tbl[tbl_index].multiplier;
++		if (phase_tbl[tbl_index].divider == 0)
++			return;
++		req->result /= phase_tbl[tbl_index].divider;
++		req->result += phase_tbl[tbl_index].offset;
++	}
++
++	if (req->result < phase_tbl[tbl_index].min)
++		req->result = phase_tbl[tbl_index].min;
++	else if (req->result > phase_tbl[tbl_index].max)
++		req->result = phase_tbl[tbl_index].max;
++}
++
++/* Looks up temperatures in a table and calculates averages if needed */
++static int cpcap_adc_table_to_millicelcius(unsigned short value)
++{
++	int i, result = 0, alpha;
++
++	if (value <= temp_map[CPCAP_MAX_TEMP_LVL - 1][0])
++		return temp_map[CPCAP_MAX_TEMP_LVL - 1][1];
++
++	if (value >= temp_map[0][0])
++		return temp_map[0][1];
++
++	for (i = 0; i < CPCAP_MAX_TEMP_LVL - 1; i++) {
++		if ((value <= temp_map[i][0]) &&
++		    (value >= temp_map[i + 1][0])) {
++			if (value == temp_map[i][0]) {
++				result = temp_map[i][1];
++			} else if (value == temp_map[i + 1][0]) {
++				result = temp_map[i + 1][1];
++			} else {
++				alpha = ((value - temp_map[i][0]) * 1000) /
++					(temp_map[i + 1][0] - temp_map[i][0]);
++
++				result = temp_map[i][1] +
++					((alpha * (temp_map[i + 1][1] -
++						 temp_map[i][1])) / 1000);
++			}
++			break;
++		}
++	}
++
++	return result;
++}
++
++static void cpcap_adc_convert(struct cpcap_adc_request *req, int index)
++{
++	const struct cpcap_adc_conversion_tbl *conv_tbl;
++	int tbl_index;
++
++	switch (req->type) {
++	case CPCAP_ADC_TYPE_BANK_0:
++		conv_tbl = bank0_conversion;
++		tbl_index = index;
++		break;
++	case CPCAP_ADC_TYPE_BANK_1:
++		conv_tbl = bank1_conversion;
++		tbl_index = index;
++		break;
++	case CPCAP_ADC_TYPE_BATT_PI:
++		conv_tbl = bank0_conversion;
++		tbl_index = (index % 2) ?
++			CPCAP_ADC_BATTI : CPCAP_ADC_BATTP;
++		break;
++	default:
++		return;
++	}
++
++	/* No conversion for raw channels */
++	if (conv_tbl[tbl_index].conv_type == IIO_CHAN_INFO_RAW)
++		return;
++
++	/* Temperatures use a lookup table instead of conversion table */
++	if ((conv_tbl == bank0_conversion) &&
++	    (req->type != CPCAP_ADC_TYPE_BATT_PI) &&
++	    ((index == CPCAP_ADC_AD0_BATTDETB) || (index == CPCAP_ADC_AD3))) {
++		req->result =
++			cpcap_adc_table_to_millicelcius(req->result);
++
++		return;
++	}
++
++	/* All processed channels use a conversion table */
++	req->result *= conv_tbl[tbl_index].multiplier;
++	if (conv_tbl[tbl_index].divider == 0)
++		return;
++	req->result /= conv_tbl[tbl_index].divider;
++	req->result += conv_tbl[tbl_index].conv_offset;
++}
++
++/*
++ * REVISIT: Check if timed sampling can use multiple channels at the
++ * same time. If not, replace channel_mask with just channel.
++ */
++static int cpcap_adc_read_bank_scaled(struct cpcap_adc *ddata,
++				      struct cpcap_adc_request *req)
++{
++	int calibration_data, error, addr;
++
++	if (ddata->vendor == CPCAP_VENDOR_TI) {
++		error = regmap_read(ddata->reg, CPCAP_REG_ADCAL1,
++				    &calibration_data);
++		if (error)
++			return error;
++		bank0_conversion[CPCAP_ADC_CHG_ISENSE].cal_offset =
++			((short)calibration_data * -1) + 512;
++
++		error = regmap_read(ddata->reg, CPCAP_REG_ADCAL2,
++				    &calibration_data);
++		if (error)
++			return error;
++		bank0_conversion[CPCAP_ADC_BATTI].cal_offset =
++			((short)calibration_data * -1) + 512;
++	}
++
++	addr = CPCAP_REG_ADCD0 + req->bank_index * 4;
++
++	error = regmap_read(ddata->reg, addr, &req->result);
++	if (error)
++		return error;
++
++	req->result &= 0x3ff;
++	cpcap_adc_phase(req, req->bank_index);
++	cpcap_adc_convert(req, req->bank_index);
++
++	return 0;
++}
++
++static int cpcap_adc_init_request(struct cpcap_adc_request *req,
++				  int channel)
++{
++	switch (channel) {
++	case 0 ... 7:
++		req->bank_index = channel;
++		req->type = CPCAP_ADC_TYPE_BANK_0;
++		break;
++	case 8 ... 15:
++		req->bank_index = channel - 8;
++		req->type = CPCAP_ADC_TYPE_BANK_1;
++		break;
++	case 16 ... 17:
++		req->bank_index = channel - 16;
++		req->type = CPCAP_ADC_TYPE_BATT_PI;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return 0;
++}
++
++static int cpcap_adc_read(struct iio_dev *indio_dev,
++			  struct iio_chan_spec const *chan,
++			  int *val, int *val2, long mask)
++{
++	struct cpcap_adc *ddata = iio_priv(indio_dev);
++	struct cpcap_adc_request req;
++	int error;
++
++	error = cpcap_adc_init_request(&req, chan->channel);
++	if (error)
++		return error;
++
++	switch (mask) {
++	case IIO_CHAN_INFO_RAW:
++		mutex_lock(&ddata->lock);
++		error = cpcap_adc_start_bank(ddata, &req);
++		if (error)
++			goto err_unlock;
++		error = regmap_read(ddata->reg, chan->address, val);
++		if (error)
++			goto err_unlock;
++		mutex_unlock(&ddata->lock);
++		break;
++	case IIO_CHAN_INFO_PROCESSED:
++		mutex_lock(&ddata->lock);
++		error = cpcap_adc_start_bank(ddata, &req);
++		if (error)
++			goto err_unlock;
++		error = cpcap_adc_read_bank_scaled(ddata, &req);
++		if (error)
++			goto err_unlock;
++		mutex_unlock(&ddata->lock);
++		*val = req.result;
++		break;
++	default:
++		return -EINVAL;
++	}
++
++	return IIO_VAL_INT;
++
++err_unlock:
++	mutex_unlock(&ddata->lock);
++	dev_err(ddata->dev, "error reading ADC: %i\n", error);
++
++	return error;
++}
++
++static const struct iio_info cpcap_adc_info = {
++	.read_raw = &cpcap_adc_read,
++	.driver_module = THIS_MODULE,
++};
++
++/*
++ * Configuration for Motorola mapphone series such as droid 4.
++ * Copied from the Motorola mapphone kernel tree.
++ */
++static const struct cpcap_adc_ato mapphone_adc = {
++	.ato_in = 0x0480,
++	.atox_in = 0,
++	.adc_ps_factor_in = 0x0200,
++	.atox_ps_factor_in = 0,
++	.ato_out = 0,
++	.atox_out = 0,
++	.adc_ps_factor_out = 0,
++	.atox_ps_factor_out = 0,
++};
++
++static const struct of_device_id cpcap_adc_id_table[] = {
++	{
++		.compatible = "motorola,cpcap-adc",
++	},
++	{
++		.compatible = "motorola,mapphone-cpcap-adc",
++		.data = &mapphone_adc,
++	},
++	{ /* sentinel */ },
++};
++MODULE_DEVICE_TABLE(of, cpcap_adc_id_table);
++
++static int cpcap_adc_probe(struct platform_device *pdev)
++{
++	const struct of_device_id *match;
++	struct cpcap_adc *ddata;
++	struct iio_dev *indio_dev;
++	int error;
++
++	match = of_match_device(of_match_ptr(cpcap_adc_id_table),
++				&pdev->dev);
++	if (!match)
++		return -EINVAL;
++
++	if (!match->data) {
++		dev_err(&pdev->dev, "no configuration data found\n");
++
++		return -ENODEV;
++	}
++
++	indio_dev = devm_iio_device_alloc(&pdev->dev, sizeof(*ddata));
++	if (!indio_dev) {
++		dev_err(&pdev->dev, "failed to allocate iio device\n");
++
++		return -ENOMEM;
++	}
++	ddata = iio_priv(indio_dev);
++	ddata->ato = match->data;
++	ddata->dev = &pdev->dev;
++
++	mutex_init(&ddata->lock);
++	init_waitqueue_head(&ddata->wq_data_avail);
++
++	indio_dev->modes = INDIO_DIRECT_MODE | INDIO_BUFFER_SOFTWARE;
++	indio_dev->dev.parent = &pdev->dev;
++	indio_dev->dev.of_node = pdev->dev.of_node;
++	indio_dev->channels = cpcap_adc_channels;
++	indio_dev->num_channels = ARRAY_SIZE(cpcap_adc_channels);
++	indio_dev->name = dev_name(&pdev->dev);
++	indio_dev->info = &cpcap_adc_info;
++
++	ddata->reg = dev_get_regmap(pdev->dev.parent, NULL);
++	if (!ddata->reg)
++		return -ENODEV;
++
++	error = cpcap_get_vendor(ddata->dev, ddata->reg, &ddata->vendor);
++	if (error)
++		return error;
++
++	platform_set_drvdata(pdev, indio_dev);
++
++	ddata->irq = platform_get_irq_byname(pdev, "adcdone");
++	if (!ddata->irq)
++		return -ENODEV;
++
++	error = devm_request_threaded_irq(&pdev->dev, ddata->irq, NULL,
++					  cpcap_adc_irq_thread,
++					  IRQF_TRIGGER_NONE,
++					  "cpcap-adc", indio_dev);
++	if (error) {
++		dev_err(&pdev->dev, "could not get irq: %i\n",
++			error);
++
++		return error;
++	}
++
++	error = cpcap_adc_calibrate(ddata);
++	if (error)
++		return error;
++
++	dev_info(&pdev->dev, "CPCAP ADC device probed\n");
++
++	return devm_iio_device_register(&pdev->dev, indio_dev);
++}
++
++static struct platform_driver cpcap_adc_driver = {
++	.driver = {
++		.name = "cpcap_adc",
++		.of_match_table = of_match_ptr(cpcap_adc_id_table),
++	},
++	.probe = cpcap_adc_probe,
++};
++
++module_platform_driver(cpcap_adc_driver);
++
++MODULE_ALIAS("platform:cpcap_adc");
++MODULE_DESCRIPTION("CPCAP ADC driver");
++MODULE_AUTHOR("Motorola and Tony Lindgren <tony@atomide.com");
++MODULE_LICENSE("GPL v2");
+-- 
+2.11.1
