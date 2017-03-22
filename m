@@ -1,71 +1,73 @@
-Return-Path: <SRS0=dFfS=3B=sntech.de=heiko@kernel.org>
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: =?utf-8?B?6ZmI5Lqu?= <cl@rock-chips.com>
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com, andy.yan@rock-chips.com, jay.xu@rock-chips.com, matthias.bgg@gmail.com, paweljarosz3691@gmail.com, devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org, linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org, wsa@the-dreams.de, linux-i2c@vger.kernel.org, jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net, wxt@rock-chips.com, david.wu@rock-chips.com, linux-iio@vger.kernel.org, shawn.lin@rock-chips.com, akpm@linux-foundation.org, dianders@chromium.org, yamada.masahiro@socionext.com, catalin.marinas@arm.com, will.deacon@arm.com, afaerber@suse.de, shawnguo@kernel.org, khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com, zhangqing@rock-chips.com, kever.yang@rock-chips.com, tony.xie@rock-chips.com, huangtao@rock-chips.com, yhx@rock-chips.com, rocky.hao@rock-chips.com
-Subject: Re: [PATCH v2 4/6] arm64: dts: rockchip: add core dtsi file for RK3328 SoCs
-Date: Fri, 24 Mar 2017 08:12:07 +0100
-Message-ID: <3271639.DkaRJdVeCG@diego>
-In-Reply-To: <58D4BD40.5090900@rock-chips.com>
-References: <1489670244-13328-1-git-send-email-cl@rock-chips.com> <58D34208.6090509@rock-chips.com> <58D4BD40.5090900@rock-chips.com>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from foss.arm.com ([217.140.101.70]:47952 "EHLO foss.arm.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S934813AbdCVSJy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Wed, 22 Mar 2017 14:09:54 -0400
+Subject: Re: [PATCH v2 4/6] arm64: dts: rockchip: add core dtsi file for
+ RK3328 SoCs
+To: cl@rock-chips.com, heiko@sntech.de
+References: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
+ <1489670244-13328-5-git-send-email-cl@rock-chips.com>
+Cc: Sudeep Holla <sudeep.holla@arm.com>, mark.rutland@arm.com,
+        wsa@the-dreams.de, linux-iio@vger.kernel.org,
+        catalin.marinas@arm.com, shawn.lin@rock-chips.com,
+        will.deacon@arm.com, kever.yang@rock-chips.com,
+        dianders@chromium.org, yamada.masahiro@socionext.com,
+        tony.xie@rock-chips.com, linux-i2c@vger.kernel.org,
+        pmeerw@pmeerw.net, lars@metafoo.de, zhengxing@rock-chips.com,
+        khilman@baylibre.com, linux-rockchip@lists.infradead.org,
+        jay.xu@rock-chips.com, wxt@rock-chips.com, huangtao@rock-chips.com,
+        devicetree@vger.kernel.org, zhangqing@rock-chips.com,
+        paweljarosz3691@gmail.com, arnd@arndb.de, yhx@rock-chips.com,
+        knaack.h@gmx.de, robh+dt@kernel.org, matthias.bgg@gmail.com,
+        rocky.hao@rock-chips.com, linux-arm-kernel@lists.infradead.org,
+        linux-kernel@vger.kernel.org, david.wu@rock-chips.com,
+        fabio.estevam@nxp.com, andy.yan@rock-chips.com,
+        akpm@linux-foundation.org, shawnguo@kernel.org, afaerber@suse.de,
+        jic23@kernel.org
+From: Sudeep Holla <sudeep.holla@arm.com>
+Message-ID: <7240249b-690a-5800-0b46-fb93a49e2af1@arm.com>
+Date: Wed, 22 Mar 2017 18:09:42 +0000
 MIME-Version: 1.0
-Content-Type: text/plain; charset="UTF-8"
-List-ID: <linux-iio@vger.kernel.org>
+In-Reply-To: <1489670244-13328-5-git-send-email-cl@rock-chips.com>
+Content-Type: text/plain; charset=windows-1252
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Am Freitag, 24. M=C3=A4rz 2017, 14:31:28 CET schrieb =E9=99=88=E4=BA=AE:
-> Hi, Heiko:
->=20
-> =E5=9C=A8 2017=E5=B9=B403=E6=9C=8823=E6=97=A5 11:33, =E9=99=88=E4=BA=AE =
-=E5=86=99=E9=81=93:
-> > Hi, Heiko
-> >=20
-> > =E5=9C=A8 2017=E5=B9=B403=E6=9C=8821=E6=97=A5 16:55, Heiko St=C3=BCbner=
- =E5=86=99=E9=81=93:
-> >> Hi,
-> >>=20
-> >> Am Donnerstag, 16. M=C3=A4rz 2017, 21:17:22 CET schrieb cl@rock-chips.=
-com:
-> >>> +        assigned-clock-parents =3D
-> >>> +            <&cru HDMIPHY>, <&cru PLL_APLL>,
-> >>> +            <&cru PLL_GPLL>, <&xin24m>,
-> >>> +            <&xin24m>, <&xin24m>;
-> >>> +        assigned-clock-rates =3D
-> >>> +            <0>, <61440000>,
-> >>> +            <0>, <24000000>,
-> >>> +            <24000000>, <24000000>,
-> >>> +            <15000000>, <15000000>,
-> >>> +            <100000000>, <100000000>,
-> >>> +            <100000000>, <100000000>,
-> >>> +            <50000000>, <100000000>,
-> >>> +            <100000000>, <100000000>,
-> >>> +            <50000000>, <50000000>,
-> >>> +            <50000000>, <50000000>,
-> >>> +            <24000000>, <600000000>,
-> >>> +            <491520000>, <1200000000>,
-> >>> +            <150000000>, <75000000>,
-> >>> +            <75000000>, <150000000>,
-> >>> +            <75000000>, <75000000>,
-> >>> +            <300000000>, <100000000>,
-> >>> +            <300000000>, <200000000>,
-> >>> +            <400000000>, <500000000>,
-> >>> +            <200000000>, <300000000>,
-> >>> +            <300000000>, <250000000>,
-> >>> +            <200000000>, <100000000>,
-> >>> +            <24000000>, <100000000>,
-> >>> +            <150000000>, <50000000>,
-> >>> +            <32768>, <32768>;
-> >>> +    };
-> >>> +
-> >>> +    gmac2io: eth@ff540000 {
-> >>=20
-> >> phandle should be gmac instead?
-> >> Node name, ethernet@ff540000
-> >=20
-> > RK3328 have another gmac channel with PHY in the soc, so gmac2io mean
-> > the channel with the PHY outside, and it is also called gmac2io in the
-> > TRM.
->=20
-> So we remain gmac2io, or you have other idea?
 
-No, that is ok in that case.
 
-Heiko
+On 16/03/17 13:17, cl@rock-chips.com wrote:
+> From: Liang Chen <cl@rock-chips.com>
+> 
+> This patch adds core dtsi file for Rockchip RK3328 SoCs.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
+> ---
+>  arch/arm64/boot/dts/rockchip/rk3328.dtsi | 1362 ++++++++++++++++++++++++++++++
+>  1 file changed, 1362 insertions(+)
+>  create mode 100644 arch/arm64/boot/dts/rockchip/rk3328.dtsi
+> 
+> diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+> new file mode 100644
+> index 0000000..a92955c
+> --- /dev/null
+> +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+
+[...]
+
+> +	cpus {
+> +		#address-cells = <2>;
+> +		#size-cells = <0>;
+> +
+> +		cpu0: cpu@0 {
+> +			device_type = "cpu";
+> +			compatible = "arm,cortex-a53", "arm,armv8";
+> +			reg = <0x0 0x0>;
+> +			enable-method = "psci";
+> +			clocks = <&cru ARMCLK>;
+
+Why "clocks" property is present only for cpu0 ?
+
+-- 
+Regards,
+Sudeep
