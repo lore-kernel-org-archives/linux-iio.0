@@ -1,138 +1,121 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43872 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751467AbdCYRtj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Mar 2017 13:49:39 -0400
-Subject: Re: [PATCH] iio: imu: st_lsm6dsx: do not apply ODR configuration in
- write_raw handler
-To: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-References: <20170321222747.5863-1-lorenzo.bianconi@st.com>
- <e74afe9c-2312-2e83-e851-0a348f20c616@kernel.org>
- <CAA2SeN+WiPx2+YM+kV1TuTh7U1JB2Ay3_9K7C9y7JNgDhiQvNA@mail.gmail.com>
-Cc: linux-iio@vger.kernel.org,
-        Lorenzo BIANCONI <lorenzo.bianconi@st.com>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <0983f22f-3255-8fd0-e2cc-26ea865a143e@kernel.org>
-Date: Sat, 25 Mar 2017 17:39:22 +0000
+Received: from mail-pf0-f194.google.com ([209.85.192.194]:33399 "EHLO
+        mail-pf0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758850AbdCVIid (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 04:38:33 -0400
+Date: Wed, 22 Mar 2017 14:08:24 +0530
+From: Arushi Singhal <arushisinghal19971997@gmail.com>
+To: lars@metafoo.de
+Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
+        linux-kernel@vger.kernel.org
+Subject: [PATCH v2] staging: iio: Replace a bit shift by a use of BIT.
+Message-ID: <20170322083824.GA26432@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-In-Reply-To: <CAA2SeN+WiPx2+YM+kV1TuTh7U1JB2Ay3_9K7C9y7JNgDhiQvNA@mail.gmail.com>
-Content-Type: text/plain; charset=utf-8
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 25/03/17 17:00, Lorenzo Bianconi wrote:
-> Hi Jonathan,
-> 
->> On 21/03/17 22:27, Lorenzo Bianconi wrote:
->>> introduce st_lsm6dsx_get_odr_val() routine to check ODR consistency in
->>> write_raw hablder in order to apply frequency configuration just in
->>> st_lsm6dsx_set_odr()
->> handler.
->>>
->>> Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
->> So the advantage of this one is that it saves a pointless double write?
-> 
-> Right. Moreover this patch allows to avoid a transitory that occurs
-> when a given sensor has been already enabled (i.e. gyroscope) and the
-> user is configuring the sample frequency of the other one (i.e.
-> accel).
-> Until the accel is enabled ODR of gyro is modified as well. I will add
-> this comment in v2.
-> 
->>> ---
->>>  drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 41 ++++++++++++++++++----------
->>>  1 file changed, 26 insertions(+), 15 deletions(-)
->>>
->>> diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> index c433223..70096f4 100644
->>> --- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> +++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
->>> @@ -308,32 +308,40 @@ static int st_lsm6dsx_set_full_scale(struct st_lsm6dsx_sensor *sensor,
->>>       return 0;
->>>  }
->>>
->>> -static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
->>> +static int st_lsm6dsx_get_odr_val(struct st_lsm6dsx_sensor *sensor, u16 odr,
->>> +                               u8 *val)
->> Odd naming.., this sounds like it is reading the value back, whereas it's just
->> checking for validity.
-> 
-> Right, it checks the validity of requested odr and return back the
-> corresponding hw value.
-> Maybe it is better to split it in two separate routines, what do you think?
-Fine as is, just rename.
-> 
->>>  {
->>> -     enum st_lsm6dsx_sensor_id id = sensor->id;
->>> -     int i, err;
->>> -     u8 val;
->>> +     int i;
->>>
->>>       for (i = 0; i < ST_LSM6DSX_ODR_LIST_SIZE; i++)
->>> -             if (st_lsm6dsx_odr_table[id].odr_avl[i].hz == odr)
->>> +             if (st_lsm6dsx_odr_table[sensor->id].odr_avl[i].hz == odr)
->>>                       break;
->>>
->>>       if (i == ST_LSM6DSX_ODR_LIST_SIZE)
->>>               return -EINVAL;
->>>
->>> -     val = st_lsm6dsx_odr_table[id].odr_avl[i].val;
->>> -     err = st_lsm6dsx_write_with_mask(sensor->hw,
->>> -                                      st_lsm6dsx_odr_table[id].reg.addr,
->>> -                                      st_lsm6dsx_odr_table[id].reg.mask,
->>> -                                      val);
->>> -     if (err < 0)
->>> -             return err;
->>> -
->>> +     *val = st_lsm6dsx_odr_table[sensor->id].odr_avl[i].val;
->> Nothing ever looks at the value in *val after this call so why update?
-> 
-> it is used in st_lsm6dsx_set_odr()
-oops, so it is ;)
-> 
->>>       sensor->odr = odr;
->>>
->>>       return 0;
->>>  }
->>>
->>> +static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
->>> +{
->>> +     enum st_lsm6dsx_sensor_id id = sensor->id;
->>> +     int err;
->>> +     u8 val;
->>> +
->>> +     err = st_lsm6dsx_get_odr_val(sensor, odr, &val);
->>> +     if (err < 0)
->>> +             return err;
->>> +
->>> +     return st_lsm6dsx_write_with_mask(sensor->hw,
->>> +                                       st_lsm6dsx_odr_table[id].reg.addr,
->>> +                                       st_lsm6dsx_odr_table[id].reg.mask,
->>> +                                       val);
->>> +}
->>> +
->>>  int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor)
->>>  {
->>>       int err;
->>> @@ -436,9 +444,12 @@ static int st_lsm6dsx_write_raw(struct iio_dev *iio_dev,
->>>       case IIO_CHAN_INFO_SCALE:
->>>               err = st_lsm6dsx_set_full_scale(sensor, val2);
->>>               break;
->>> -     case IIO_CHAN_INFO_SAMP_FREQ:
->>> -             err = st_lsm6dsx_set_odr(sensor, val);
->>> +     case IIO_CHAN_INFO_SAMP_FREQ: {
->>> +             u8 data;
->>> +
->>> +             err = st_lsm6dsx_get_odr_val(sensor, val, &data);
->>>               break;
->>> +     }
->>>       default:
->>>               err = -EINVAL;
->>>               break;
->>>
->>
-> 
-> Regards,
-> Lorenzo
-> 
+This patch replaces bit shifting on 1 with the BIT(x) macro.
+This was done with coccinelle:
+@@
+constant c;
+@@
+
+-1 << c
++BIT(c)
+
+Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
+---
+changes in v2
+ -change the cc list
+
+ drivers/staging/iio/adc/ad7816.c |  2 +-
+ drivers/staging/iio/cdc/ad7150.c |  2 +-
+ drivers/staging/iio/cdc/ad7746.c | 22 +++++++++++-----------
+ 3 files changed, 13 insertions(+), 13 deletions(-)
+
+diff --git a/drivers/staging/iio/adc/ad7816.c b/drivers/staging/iio/adc/ad7816.c
+index 17d280581e24..42f637ca0251 100644
+--- a/drivers/staging/iio/adc/ad7816.c
++++ b/drivers/staging/iio/adc/ad7816.c
+@@ -222,7 +222,7 @@ static ssize_t ad7816_show_value(struct device *dev,
+ 		value = (s8)((data >> AD7816_TEMP_FLOAT_OFFSET) - 103);
+ 		data &= AD7816_TEMP_FLOAT_MASK;
+ 		if (value < 0)
+-			data = (1 << AD7816_TEMP_FLOAT_OFFSET) - data;
++			data = (BIT(AD7816_TEMP_FLOAT_OFFSET)) - data;
+ 		return sprintf(buf, "%d.%.2d\n", value, data * 25);
+ 	}
+ 	return sprintf(buf, "%u\n", data);
+diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
+index ca72af3e9d4b..c5574b3ee939 100644
+--- a/drivers/staging/iio/cdc/ad7150.c
++++ b/drivers/staging/iio/cdc/ad7150.c
+@@ -232,7 +232,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
+ 	if (ret < 0)
+ 		goto error_ret;
+ 
+-	cfg = ret & ~((0x03 << 5) | (0x1 << 7));
++	cfg = ret & ~((0x03 << 5) | (BIT(7)));
+ 
+ 	switch (type) {
+ 	case IIO_EV_TYPE_MAG_ADAPTIVE:
+diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
+index 81f8b9ee1120..8c573817826f 100644
+--- a/drivers/staging/iio/cdc/ad7746.c
++++ b/drivers/staging/iio/cdc/ad7746.c
+@@ -45,20 +45,20 @@
+ #define AD7746_STATUS_RDYCAP		BIT(0)
+ 
+ /* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
+-#define AD7746_CAPSETUP_CAPEN		(1 << 7)
+-#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
+-#define AD7746_CAPSETUP_CAPDIFF		(1 << 5)
+-#define AD7746_CAPSETUP_CACHOP		(1 << 0)
++#define AD7746_CAPSETUP_CAPEN		(BIT(7))
++#define AD7746_CAPSETUP_CIN2		(BIT(6)) /* AD7746 only */
++#define AD7746_CAPSETUP_CAPDIFF		(BIT(5))
++#define AD7746_CAPSETUP_CACHOP		(BIT(0))
+ 
+ /* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
+-#define AD7746_VTSETUP_VTEN		(1 << 7)
++#define AD7746_VTSETUP_VTEN		(BIT(7))
+ #define AD7746_VTSETUP_VTMD_INT_TEMP	(0 << 5)
+-#define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
++#define AD7746_VTSETUP_VTMD_EXT_TEMP	(BIT(5))
+ #define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
+ #define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
+-#define AD7746_VTSETUP_EXTREF		(1 << 4)
+-#define AD7746_VTSETUP_VTSHORT		(1 << 1)
+-#define AD7746_VTSETUP_VTCHOP		(1 << 0)
++#define AD7746_VTSETUP_EXTREF		(BIT(4))
++#define AD7746_VTSETUP_VTSHORT		(BIT(1))
++#define AD7746_VTSETUP_VTCHOP		(BIT(0))
+ 
+ /* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
+ #define AD7746_EXCSETUP_CLKCTRL		BIT(7)
+@@ -75,14 +75,14 @@
+ #define AD7746_CONF_VTFS_MASK		GENMASK(7, 6)
+ #define AD7746_CONF_CAPFS_MASK		GENMASK(5, 3)
+ #define AD7746_CONF_MODE_IDLE		(0 << 0)
+-#define AD7746_CONF_MODE_CONT_CONV	(1 << 0)
++#define AD7746_CONF_MODE_CONT_CONV	(BIT(0))
+ #define AD7746_CONF_MODE_SINGLE_CONV	(2 << 0)
+ #define AD7746_CONF_MODE_PWRDN		(3 << 0)
+ #define AD7746_CONF_MODE_OFFS_CAL	(5 << 0)
+ #define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
+ 
+ /* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
+-#define AD7746_CAPDAC_DACEN		(1 << 7)
++#define AD7746_CAPDAC_DACEN		(BIT(7))
+ #define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
+ 
+ /*
+-- 
+2.11.0
 
