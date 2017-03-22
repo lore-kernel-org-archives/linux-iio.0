@@ -1,69 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:60395 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757929AbdCUPgg (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 11:36:36 -0400
-From: Quentin Schulz <quentin.schulz@free-electrons.com>
-To: dmitry.torokhov@gmail.com, robh+dt@kernel.org,
-        mark.rutland@arm.com, maxime.ripard@free-electrons.com,
-        wens@csie.org, lee.jones@linaro.org, linux@armlinux.org.uk,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        thomas.petazzoni@free-electrons.com, linux-input@vger.kernel.org,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-kernel@vger.kernel.org, linux-iio@vger.kernel.org,
-        linux-sunxi@googlegroups.com, icenowy@aosc.xyz
-Subject: [PATCH v3 01/11] ARM: sun8i: a33: add operating-points-v2 property to all nodes
-Date: Tue, 21 Mar 2017 16:36:01 +0100
-Message-Id: <20170321153611.16228-2-quentin.schulz@free-electrons.com>
-In-Reply-To: <20170321153611.16228-1-quentin.schulz@free-electrons.com>
-References: <20170321153611.16228-1-quentin.schulz@free-electrons.com>
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:39866 "EHLO
+        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1758764AbdCVDcz (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 21 Mar 2017 23:32:55 -0400
+MIME-Version: 1.0
+In-Reply-To: <20170321153611.16228-2-quentin.schulz@free-electrons.com>
+References: <20170321153611.16228-1-quentin.schulz@free-electrons.com> <20170321153611.16228-2-quentin.schulz@free-electrons.com>
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Wed, 22 Mar 2017 11:32:28 +0800
+Message-ID: <CAGb2v65qMod+k5Uo-Z4qG=7kMx_FiHhR_01XS+Bn+m3T=JH6bg@mail.gmail.com>
+Subject: Re: [PATCH v3 01/11] ARM: sun8i: a33: add operating-points-v2
+ property to all nodes
+To: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: Dmitry Torokhov <dmitry.torokhov@gmail.com>,
+        Rob Herring <robh+dt@kernel.org>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Maxime Ripard <maxime.ripard@free-electrons.com>,
+        Chen-Yu Tsai <wens@csie.org>, Lee Jones <lee.jones@linaro.org>,
+        Russell King <linux@armlinux.org.uk>,
+        Jonathan Cameron <jic23@kernel.org>, knaack.h@gmx.de,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Thomas Petazzoni <thomas.petazzoni@free-electrons.com>,
+        "linux-input@vger.kernel.org" <linux-input@vger.kernel.org>,
+        devicetree <devicetree@vger.kernel.org>,
+        linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
+        linux-kernel <linux-kernel@vger.kernel.org>,
+        linux-iio@vger.kernel.org,
+        linux-sunxi <linux-sunxi@googlegroups.com>,
+        Icenowy Zheng <icenowy@aosc.xyz>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-The OPP are declared as shared but no operating points are declared for
-cpu1, 2 and 3. Thus, the following error happens during the boot:
+On Tue, Mar 21, 2017 at 11:36 PM, Quentin Schulz
+<quentin.schulz@free-electrons.com> wrote:
+> The OPP are declared as shared but no operating points are declared for
+> cpu1, 2 and 3. Thus, the following error happens during the boot:
+>
+> cpu cpu1: dev_pm_opp_of_get_sharing_cpus: Couldn't find tcpu_dev node.
+>
+> This patch applies the operating points to each cpu of the A33.
+>
 
-cpu cpu1: dev_pm_opp_of_get_sharing_cpus: Couldn't find tcpu_dev node.
+This should have
 
-This patch applies the operating points to each cpu of the A33.
+Fixes: 03749eb88e63 ("ARM: dts: sun8i: add opp-v2 table for A33")
 
-Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
----
+and be merged as fixes for 4.11.
 
-added in v2
+> Signed-off-by: Quentin Schulz <quentin.schulz@free-electrons.com>
 
- arch/arm/boot/dts/sun8i-a33.dtsi | 6 ++++++
- 1 file changed, 6 insertions(+)
-
-diff --git a/arch/arm/boot/dts/sun8i-a33.dtsi b/arch/arm/boot/dts/sun8i-a33.dtsi
-index e1e74b8..39b2d78 100644
---- a/arch/arm/boot/dts/sun8i-a33.dtsi
-+++ b/arch/arm/boot/dts/sun8i-a33.dtsi
-@@ -75,16 +75,22 @@
- 			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 
-+		cpu@1 {
-+			operating-points-v2 = <&cpu0_opp_table>;
-+		};
-+
- 		cpu@2 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <2>;
-+			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 
- 		cpu@3 {
- 			compatible = "arm,cortex-a7";
- 			device_type = "cpu";
- 			reg = <3>;
-+			operating-points-v2 = <&cpu0_opp_table>;
- 		};
- 	};
- 
--- 
-2.9.3
-
+Acked-by: Chen-Yu Tsai <wens@csie.org>
