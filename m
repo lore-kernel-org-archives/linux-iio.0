@@ -1,41 +1,346 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from userp1050.oracle.com ([156.151.31.82]:47490 "EHLO
-        userp1050.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1754465AbdCWJdb (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 05:33:31 -0400
-Date: Thu, 23 Mar 2017 12:31:46 +0300
-From: Dan Carpenter <dan.carpenter@oracle.com>
-To: Arushi Singhal <arushisinghal19971997@gmail.com>
-Cc: lars@metafoo.de, devel@driverdev.osuosl.org,
-        Michael Hennerich <Michael.Hennerich@analog.com>,
-        linux-iio@vger.kernel.org,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Jonathan Cameron <jic23@kernel.org>
-Subject: Re: [PATCH v2] staging: iio: Replace a bit shift by a use of BIT.
-Message-ID: <20170323093146.GM32449@mwanda>
-References: <20170322164234.GA18805@arushi-HP-Pavilion-Notebook>
-MIME-Version: 1.0
-Content-Type: text/plain; charset=us-ascii
-In-Reply-To: <20170322164234.GA18805@arushi-HP-Pavilion-Notebook>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=fWcy=27=linux.intel.com=srinivas.pandruvada@kernel.org>
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org,
+	jikos@kernel.org
+Cc: linux-iio@vger.kernel.org,
+	Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [RFC PATCH] iio: hid-sensor-hub: Implement batch mode
+Date: Wed, 22 Mar 2017 15:15:45 -0700
+Message-Id: <1490220945-39624-1-git-send-email-srinivas.pandruvada@linux.intel.com>
+List-ID: <linux-iio@vger.kernel.org>
 
-On Wed, Mar 22, 2017 at 10:12:34PM +0530, Arushi Singhal wrote:
->  /* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
-> -#define AD7746_CAPSETUP_CAPEN		(1 << 7)
-> -#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
-> -#define AD7746_CAPSETUP_CAPDIFF		(1 << 5)
-> -#define AD7746_CAPSETUP_CACHOP		(1 << 0)
-> +#define AD7746_CAPSETUP_CAPEN		(BIT(7))
-> +#define AD7746_CAPSETUP_CIN2		(BIT(6)) /* AD7746 only */
-> +#define AD7746_CAPSETUP_CAPDIFF		(BIT(5))
-> +#define AD7746_CAPSETUP_CACHOP		(BIT(0))
+HID sensor hubs using Integrated Senor Hub (ISH) has added capability to
+support batch mode. This allows host processor to go to sleep for extended
+duration, while sensor hub is storing samples in its internal buffers.
 
-Extra parens.
+'Commit f4f4673b7535 ("iio: add support for hardware fifo")'
+implements feature in IIO core to implement such feature. This feature
+is used bmc150-accel-core.c to implement batch mode. This implementation
+is similar with one major exception.
 
-regards,
-dan carpenter
+The above commit allows sofware device buffer watermark to be used as a
+hint to adjust hardware FIFO as it is done for bmc150-accel-core.c, by
+introducing a new callback.
 
+But HID sensor hubs don't allows to change internal buffer size of FIFOs.
+Instead an additional usage id to set "maximum report latency" is defined.
+This allows host to go to sleep upto this latency period without getting
+any report. Since there is no ABI to set this latency, a new attribute
+"hwfifo_timeout" is added so that user mode can specify a latency.
+
+Similar to bmc150-accel-core, callback for flushing fifo is added only
+when usage id for flush request is present. This usage id is otional.
+
+For specifying software buffer length and watermark the min/max fifo size
+is also presented via  hwfifo_watermark_min and hwfifo_watermark_max
+respectively.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+ .../ABI/testing/sysfs-bus-iio-hid-sensor-hub       |  10 ++
+ .../iio/common/hid-sensors/hid-sensor-attributes.c |  83 +++++++++++++++
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 118 +++++++++++++++++++++
+ include/linux/hid-sensor-hub.h                     |   8 ++
+ include/linux/hid-sensor-ids.h                     |   5 +
+ 5 files changed, 224 insertions(+)
+ create mode 100644 Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub b/Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub
+new file mode 100644
+index 0000000..00950bb
+--- /dev/null
++++ b/Documentation/ABI/testing/sysfs-bus-iio-hid-sensor-hub
+@@ -0,0 +1,10 @@
++What:		/sys/bus/iio/devices/iio:device*/buffer/hwfifo_timeout
++KernelVersion:	4.12
++Contact:	linux-iio@vger.kernel.org
++Description:
++		The HID Sensor Hub provides capability to delay reporting of
++		samples till a timeout is reached. This allows host processor
++		to sleep while sensor hub is storing samples in its internal
++		buffers. The maximum timeout in milli seconds can be specified
++		by setting hwfifo_timeout.
++
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 7afdac42..8f1e85e 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -373,6 +373,87 @@ int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
+ 
+ }
+ 
++static void hid_sensor_get_fifo_info(struct hid_sensor_hub_device *hsdev,
++				     u32 usage_id,
++				     struct hid_sensor_common *st)
++{
++	sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
++					usage_id,
++					HID_USAGE_SENSOR_PROP_MAX_FIFO_EVENTS,
++					&st->max_fifo_events);
++	sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
++					usage_id,
++					HID_USAGE_SENSOR_PROP_REPORT_LATENCY,
++					&st->report_latency);
++
++	sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
++					usage_id,
++					HID_USAGE_SENSOR_PROP_FLUSH_FIFO_EVENTS,
++					&st->flush_fifo);
++	hid_dbg(hsdev->hdev, "Fifo attributes: %x:%x, %x:%x, %x:%x\n",
++		st->max_fifo_events.index, st->max_fifo_events.report_id,
++		st->report_latency.index, st->report_latency.report_id,
++		st->flush_fifo.index, st->flush_fifo.report_id);
++}
++
++int hid_sensor_flush_fifo(struct hid_sensor_common *st)
++{
++	int flush = 1;
++
++	return sensor_hub_set_feature(st->hsdev, st->flush_fifo.report_id,
++				      st->flush_fifo.index, st->flush_fifo.size,
++				      &flush);
++}
++EXPORT_SYMBOL(hid_sensor_flush_fifo);
++
++int hid_sensor_get_max_fifo(struct hid_sensor_common *st)
++{
++	int ret;
++	int value;
++
++	ret = sensor_hub_get_feature(st->hsdev, st->max_fifo_events.report_id,
++				     st->max_fifo_events.index, sizeof(value),
++				     &value);
++	if (ret < 0)
++		return ret;
++
++	return value;
++}
++EXPORT_SYMBOL(hid_sensor_get_max_fifo);
++
++int hid_sensor_get_report_latency(struct hid_sensor_common *st)
++{
++	int ret;
++	int value;
++
++	ret = sensor_hub_get_feature(st->hsdev, st->report_latency.report_id,
++				     st->report_latency.index, sizeof(value),
++				     &value);
++	if (ret < 0)
++		return ret;
++
++	return value;
++}
++EXPORT_SYMBOL(hid_sensor_get_report_latency);
++
++int hid_sensor_set_report_latency(struct hid_sensor_common *st, int latency_ms)
++{
++
++	return sensor_hub_set_feature(st->hsdev, st->report_latency.report_id,
++				      st->report_latency.index,
++				      sizeof(latency_ms), &latency_ms);
++}
++EXPORT_SYMBOL(hid_sensor_set_report_latency);
++
++bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st)
++{
++	if (st->report_latency.index > 0 && st->report_latency.report_id > 0)
++		return true;
++
++	return false;
++}
++EXPORT_SYMBOL(hid_sensor_batch_mode_supported);
++
+ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+ 					struct hid_sensor_common *st)
+@@ -410,6 +491,8 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 	} else
+ 		st->timestamp_ns_scale = 1000000000;
+ 
++	hid_sensor_get_fifo_info(hsdev, usage_id, st);
++
+ 	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x %x:%x\n",
+ 		st->poll.index, st->poll.report_id,
+ 		st->report_state.index, st->report_state.report_id,
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index a3cce3a..d03b013 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -26,9 +26,125 @@
+ #include <linux/hid-sensor-hub.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/sysfs.h>
+ #include "hid-sensor-trigger.h"
+ 
++static ssize_t _hid_sensor_set_report_latency(struct device *dev,
++					      struct device_attribute *attr,
++					      const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int latency, ret;
++
++	if (kstrtoint(buf, 10, &latency))
++		return -EINVAL;
++
++	ret = hid_sensor_set_report_latency(iio_trigger_get_drvdata(
++						    indio_dev->trig), latency);
++	if (ret < 0)
++		return len;
++
++	return len;
++}
++
++static ssize_t _hid_sensor_get_report_latency(struct device *dev,
++					      struct device_attribute *attr,
++					      char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int latency;
++
++	latency = hid_sensor_get_report_latency(iio_trigger_get_drvdata(
++							indio_dev->trig));
++	if (latency < 0)
++		return latency;
++
++	return sprintf(buf, "%d\n", latency);
++}
++
++static int _hid_sensor_fifo_flush(struct iio_dev *indio_dev,
++				  unsigned int samples)
++{
++	return hid_sensor_flush_fifo(iio_trigger_get_drvdata(indio_dev->trig));
++}
++
++static ssize_t _hid_sensor_get_max_fifo(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int max_fifo;
++
++	max_fifo = hid_sensor_get_max_fifo(iio_trigger_get_drvdata(
++						   indio_dev->trig));
++	if (max_fifo < 0)
++		return max_fifo;
++
++	return sprintf(buf, "%d\n", max_fifo);
++}
++
++static ssize_t _hid_sensor_get_fifo_state(struct device *dev,
++					struct device_attribute *attr,
++					char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int latency;
++
++	latency = hid_sensor_get_report_latency(iio_trigger_get_drvdata(
++							indio_dev->trig));
++	if (latency < 0)
++		return latency;
++
++	return sprintf(buf, "%d\n", latency > 0 ? 1:0);
++}
++
++static IIO_CONST_ATTR(hwfifo_watermark_min, "1");
++static IIO_DEVICE_ATTR(hwfifo_watermark_max, 0444,
++		       _hid_sensor_get_max_fifo, NULL, 0);
++static IIO_DEVICE_ATTR(hwfifo_timeout, 0644,
++		       _hid_sensor_get_report_latency,
++		       _hid_sensor_set_report_latency, 0);
++static IIO_DEVICE_ATTR(hwfifo_enabled, 0444,
++		       _hid_sensor_get_fifo_state, NULL, 0);
++
++static const struct attribute *hid_sensor_fifo_attributes[] = {
++	&iio_const_attr_hwfifo_watermark_min.dev_attr.attr,
++	&iio_dev_attr_hwfifo_watermark_max.dev_attr.attr,
++	&iio_dev_attr_hwfifo_timeout.dev_attr.attr,
++	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
++	NULL,
++};
++
++
++static void hid_sensor_setup_batch_mode(struct iio_dev *indio_dev,
++				       struct hid_sensor_common *st)
++{
++	struct iio_info *iio_info;
++
++	if (!hid_sensor_batch_mode_supported(st))
++		return;
++
++	/* Not all implementation has Flush implemented, so check */
++	if (st->flush_fifo.index > 0 && st->flush_fifo.report_id > 0) {
++		/*
++		 * Each sensor type defines their own callbacks, which are
++		 * specified via indio_dev->info. So instead of modifying
++		 * every driver, change it when we need to add additional
++		 * callback by reassigning the indio_dev->info.
++		 */
++		iio_info = devm_kmemdup(&st->pdev->dev, indio_dev->info,
++					sizeof(struct iio_info), GFP_KERNEL);
++		if (!iio_info)
++			return;
++
++		iio_info->hwfifo_flush_to_buffer = _hid_sensor_fifo_flush;
++		indio_dev->info = (const struct iio_info *)iio_info;
++	}
++
++	iio_buffer_set_attrs(indio_dev->buffer, hid_sensor_fifo_attributes);
++}
++
+ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ {
+ 	int state_val;
+@@ -174,6 +290,8 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+ 	attrb->trigger = trig;
+ 	indio_dev->trig = iio_trigger_get(trig);
+ 
++	hid_sensor_setup_batch_mode(indio_dev, attrb);
++
+ 	ret = pm_runtime_set_active(&indio_dev->dev);
+ 	if (ret)
+ 		goto error_unreg_trigger;
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 7ef111d..a790960 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -237,6 +237,9 @@ struct hid_sensor_common {
+ 	struct hid_sensor_hub_attribute_info report_state;
+ 	struct hid_sensor_hub_attribute_info power_state;
+ 	struct hid_sensor_hub_attribute_info sensitivity;
++	struct hid_sensor_hub_attribute_info max_fifo_events;
++	struct hid_sensor_hub_attribute_info report_latency;
++	struct hid_sensor_hub_attribute_info flush_fifo;
+ 	struct work_struct work;
+ };
+ 
+@@ -274,5 +277,10 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+ 
+ int64_t hid_sensor_convert_timestamp(struct hid_sensor_common *st,
+ 				     int64_t raw_value);
++bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st);
++int hid_sensor_get_max_fifo(struct hid_sensor_common *st);
++int hid_sensor_set_report_latency(struct hid_sensor_common *st, int latency);
++int hid_sensor_flush_fifo(struct hid_sensor_common *st);
++int hid_sensor_get_report_latency(struct hid_sensor_common *st);
+ 
+ #endif
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 30c7dc4..22374e1 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -142,6 +142,11 @@
+ #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
+ #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
+ 
++/* Batch mode selectors */
++#define HID_USAGE_SENSOR_PROP_MAX_FIFO_EVENTS			0x20031A
++#define HID_USAGE_SENSOR_PROP_REPORT_LATENCY			0x20031B
++#define HID_USAGE_SENSOR_PROP_FLUSH_FIFO_EVENTS			0x20031C
++
+ /* Per data field properties */
+ #define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
+ #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		0x1000
+-- 
+2.7.4
