@@ -1,79 +1,65 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43517 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751258AbdCYRDN (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Mar 2017 13:03:13 -0400
-Subject: Re: [PATCH] staging: iio: accel: remove unneeded braces around single
- statements
-To: Mark Stenglein <mark@stengle.in>, lars@metafoo.de
-References: <20170323061812.7316-1-mark@stengle.in>
-Cc: gregkh@linuxfoundation.org, linux-iio@vger.kernel.org,
-        devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <7be79d2b-fd27-e495-aa8f-710dfb5019f7@kernel.org>
-Date: Sat, 25 Mar 2017 17:02:56 +0000
-MIME-Version: 1.0
-In-Reply-To: <20170323061812.7316-1-mark@stengle.in>
-Content-Type: text/plain; charset=windows-1252
+Received: from mail-pg0-f44.google.com ([74.125.83.44]:34613 "EHLO
+        mail-pg0-f44.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S932117AbdCWIBw (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 04:01:52 -0400
+Received: by mail-pg0-f44.google.com with SMTP id 21so86394435pgg.1
+        for <linux-iio@vger.kernel.org>; Thu, 23 Mar 2017 01:01:51 -0700 (PDT)
+From: Rick Altherr <raltherr@google.com>
+To: openbmc@lists.ozlabs.org, linux-kernel@vger.kernel.org
+Cc: devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Rob Herring <robh+dt@kernel.org>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Mark Rutland <mark.rutland@arm.com>,
+        Jonathan Cameron <jic23@kernel.org>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
+Subject: [PATCH v3 1/2] Documentation: dt-bindings: Document bindings for Aspeed ADC
+Date: Wed, 22 Mar 2017 23:27:34 -0700
+Message-Id: <20170323062735.7317-1-raltherr@google.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 23/03/17 06:18, Mark Stenglein wrote:
-> Fixes three checkpatch warnings due to braces used when single
-> statements are sufficient.
-> 
-> Signed-off-by: Mark Stenglein <mark@stengle.in>
-Applied to the togreg branch of iio.git - initially pushed
-out as testing for the autobuilders to play with it.
+Signed-off-by: Rick Altherr <raltherr@google.com>
+---
 
-Thanks,
+Changes in v3:
+- Consistently write hex contstants with lowercase letters
+- Drop model numbers from description as same IP is used in every generation
 
-Jonathan
-> ---
->  drivers/staging/iio/accel/adis16209.c | 3 +--
->  drivers/staging/iio/accel/adis16240.c | 6 ++----
->  2 files changed, 3 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/accel/adis16209.c b/drivers/staging/iio/accel/adis16209.c
-> index 52fa2e0511be..8485c024e3f5 100644
-> --- a/drivers/staging/iio/accel/adis16209.c
-> +++ b/drivers/staging/iio/accel/adis16209.c
-> @@ -255,9 +255,8 @@ static int adis16209_read_raw(struct iio_dev *indio_dev,
->  		}
->  		addr = adis16209_addresses[chan->scan_index][0];
->  		ret = adis_read_reg_16(st, addr, &val16);
-> -		if (ret) {
-> +		if (ret)
->  			return ret;
-> -		}
->  		val16 &= (1 << bits) - 1;
->  		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
->  		*val = val16;
-> diff --git a/drivers/staging/iio/accel/adis16240.c b/drivers/staging/iio/accel/adis16240.c
-> index 6e3c95c9c3f6..109cd94b5ac3 100644
-> --- a/drivers/staging/iio/accel/adis16240.c
-> +++ b/drivers/staging/iio/accel/adis16240.c
-> @@ -290,9 +290,8 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
->  		bits = 10;
->  		addr = adis16240_addresses[chan->scan_index][0];
->  		ret = adis_read_reg_16(st, addr, &val16);
-> -		if (ret) {
-> +		if (ret)
->  			return ret;
-> -		}
->  		val16 &= (1 << bits) - 1;
->  		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
->  		*val = val16;
-> @@ -301,9 +300,8 @@ static int adis16240_read_raw(struct iio_dev *indio_dev,
->  		bits = 10;
->  		addr = adis16240_addresses[chan->scan_index][1];
->  		ret = adis_read_reg_16(st, addr, &val16);
-> -		if (ret) {
-> +		if (ret)
->  			return ret;
-> -		}
->  		val16 &= (1 << bits) - 1;
->  		val16 = (s16)(val16 << (16 - bits)) >> (16 - bits);
->  		*val = val16;
-> 
+Changes in v2:
+- Rewritten as an IIO ADC device
+
+ .../devicetree/bindings/iio/adc/aspeed_adc.txt       | 20 ++++++++++++++++++++
+ 1 file changed, 20 insertions(+)
+ create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
+
+diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
+new file mode 100644
+index 000000000000..674e133b7cd7
+--- /dev/null
++++ b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
+@@ -0,0 +1,20 @@
++Aspeed ADC
++
++This device is a 10-bit converter for 16 voltage channels.  All inputs are
++single ended.
++
++Required properties:
++- compatible: Should be "aspeed,ast2400-adc" or "aspeed,ast2500-adc"
++- reg: memory window mapping address and length
++- clocks: Input clock used to derive the sample clock. Expected to be the
++          SoC's APB clock.
++- #io-channel-cells: Must be set to <1> to indicate channels are selected
++                     by index.
++
++Example:
++	adc@1e6e9000 {
++		compatible = "aspeed,ast2400-adc";
++		reg = <0x1e6e9000 0xb0>;
++		clocks = <&clk_apb>;
++		#io-channel-cells = <1>;
++	};
+-- 
+2.12.1.500.gab5fba24ee-goog
 
