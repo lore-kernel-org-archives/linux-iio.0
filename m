@@ -1,15 +1,15 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from foss.arm.com ([217.140.101.70]:47952 "EHLO foss.arm.com"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S934813AbdCVSJy (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Mar 2017 14:09:54 -0400
+Received: from regular1.263xmail.com ([211.150.99.134]:44408 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752778AbdCWCQ2 (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 22:16:28 -0400
 Subject: Re: [PATCH v2 4/6] arm64: dts: rockchip: add core dtsi file for
  RK3328 SoCs
-To: cl@rock-chips.com, heiko@sntech.de
+To: Sudeep Holla <sudeep.holla@arm.com>, heiko@sntech.de
 References: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
  <1489670244-13328-5-git-send-email-cl@rock-chips.com>
-Cc: Sudeep Holla <sudeep.holla@arm.com>, mark.rutland@arm.com,
-        wsa@the-dreams.de, linux-iio@vger.kernel.org,
+ <7240249b-690a-5800-0b46-fb93a49e2af1@arm.com>
+Cc: mark.rutland@arm.com, wsa@the-dreams.de, linux-iio@vger.kernel.org,
         catalin.marinas@arm.com, shawn.lin@rock-chips.com,
         will.deacon@arm.com, kever.yang@rock-chips.com,
         dianders@chromium.org, yamada.masahiro@socionext.com,
@@ -25,49 +25,50 @@ Cc: Sudeep Holla <sudeep.holla@arm.com>, mark.rutland@arm.com,
         fabio.estevam@nxp.com, andy.yan@rock-chips.com,
         akpm@linux-foundation.org, shawnguo@kernel.org, afaerber@suse.de,
         jic23@kernel.org
-From: Sudeep Holla <sudeep.holla@arm.com>
-Message-ID: <7240249b-690a-5800-0b46-fb93a49e2af1@arm.com>
-Date: Wed, 22 Mar 2017 18:09:42 +0000
+From: =?UTF-8?B?6ZmI5Lqu?= <cl@rock-chips.com>
+Message-ID: <58D32FB8.9070909@rock-chips.com>
+Date: Thu, 23 Mar 2017 10:15:20 +0800
 MIME-Version: 1.0
-In-Reply-To: <1489670244-13328-5-git-send-email-cl@rock-chips.com>
-Content-Type: text/plain; charset=windows-1252
+In-Reply-To: <7240249b-690a-5800-0b46-fb93a49e2af1@arm.com>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+Hi,
+
+在 2017年03月23日 02:09, Sudeep Holla 写道:
+>
+> On 16/03/17 13:17, cl@rock-chips.com wrote:
+>> From: Liang Chen <cl@rock-chips.com>
+>>
+>> This patch adds core dtsi file for Rockchip RK3328 SoCs.
+>>
+>> Signed-off-by: Liang Chen <cl@rock-chips.com>
+>> ---
+>>   arch/arm64/boot/dts/rockchip/rk3328.dtsi | 1362 ++++++++++++++++++++++++++++++
+>>   1 file changed, 1362 insertions(+)
+>>   create mode 100644 arch/arm64/boot/dts/rockchip/rk3328.dtsi
+>>
+>> diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+>> new file mode 100644
+>> index 0000000..a92955c
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+> [...]
+>
+>> +	cpus {
+>> +		#address-cells = <2>;
+>> +		#size-cells = <0>;
+>> +
+>> +		cpu0: cpu@0 {
+>> +			device_type = "cpu";
+>> +			compatible = "arm,cortex-a53", "arm,armv8";
+>> +			reg = <0x0 0x0>;
+>> +			enable-method = "psci";
+>> +			clocks = <&cru ARMCLK>;
+> Why "clocks" property is present only for cpu0 ?
+>
+I will add "clocks" property for each cpu node next version, thanks for 
+the comment.
 
 
-On 16/03/17 13:17, cl@rock-chips.com wrote:
-> From: Liang Chen <cl@rock-chips.com>
-> 
-> This patch adds core dtsi file for Rockchip RK3328 SoCs.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
-> ---
->  arch/arm64/boot/dts/rockchip/rk3328.dtsi | 1362 ++++++++++++++++++++++++++++++
->  1 file changed, 1362 insertions(+)
->  create mode 100644 arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> 
-> diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-> new file mode 100644
-> index 0000000..a92955c
-> --- /dev/null
-> +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
-
-[...]
-
-> +	cpus {
-> +		#address-cells = <2>;
-> +		#size-cells = <0>;
-> +
-> +		cpu0: cpu@0 {
-> +			device_type = "cpu";
-> +			compatible = "arm,cortex-a53", "arm,armv8";
-> +			reg = <0x0 0x0>;
-> +			enable-method = "psci";
-> +			clocks = <&cru ARMCLK>;
-
-Why "clocks" property is present only for cpu0 ?
-
--- 
-Regards,
-Sudeep
