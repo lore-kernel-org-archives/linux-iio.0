@@ -1,64 +1,29 @@
-Return-Path: <SRS0=SbRS=27=lip6.fr=julia.lawall@kernel.org>
-Date: Wed, 22 Mar 2017 22:44:28 +0100 (CET)
-From: Julia Lawall <julia.lawall@lip6.fr>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from userp1050.oracle.com ([156.151.31.82]:47490 "EHLO
+        userp1050.oracle.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1754465AbdCWJdb (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 05:33:31 -0400
+Date: Thu, 23 Mar 2017 12:31:46 +0300
+From: Dan Carpenter <dan.carpenter@oracle.com>
 To: Arushi Singhal <arushisinghal19971997@gmail.com>
-cc: lars@metafoo.de, Michael Hennerich <Michael.Hennerich@analog.com>,
-    Jonathan Cameron <jic23@kernel.org>, Hartmut Knaack <knaack.h@gmx.de>,
-    Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-    Greg Kroah-Hartman <gregkh@linuxfoundation.org>, linux-iio@vger.kernel.org,
-    devel@driverdev.osuosl.org, linux-kernel@vger.kernel.org,
-    outreachy-kernel@googlegroups.com
-Subject: Re: [Outreachy kernel] [PATCH v2] staging: iio: Replace a bit shift
- by a use of BIT.
-In-Reply-To: <20170322164234.GA18805@arushi-HP-Pavilion-Notebook>
-Message-ID: <alpine.DEB.2.20.1703222243450.2132@hadrien>
+Cc: lars@metafoo.de, devel@driverdev.osuosl.org,
+        Michael Hennerich <Michael.Hennerich@analog.com>,
+        linux-iio@vger.kernel.org,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: Re: [PATCH v2] staging: iio: Replace a bit shift by a use of BIT.
+Message-ID: <20170323093146.GM32449@mwanda>
 References: <20170322164234.GA18805@arushi-HP-Pavilion-Notebook>
 MIME-Version: 1.0
-Content-Type: text/plain; charset=US-ASCII
-List-ID: <linux-iio@vger.kernel.org>
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <20170322164234.GA18805@arushi-HP-Pavilion-Notebook>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-
-
-On Wed, 22 Mar 2017, Arushi Singhal wrote:
-
-> This patch replaces bit shifting on 1 with the BIT(x) macro.
-> This was done with coccinelle:
-> @@
-> constant c;
-> @@
->
-> -1 << c
-> +BIT(c)
->
-> Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
-> ---
-> changes in v2
->  -remove/correct the wrong code.
->
->  drivers/staging/iio/cdc/ad7150.c |  2 +-
->  drivers/staging/iio/cdc/ad7746.c | 16 ++++++++--------
->  2 files changed, 9 insertions(+), 9 deletions(-)
->
-> diff --git a/drivers/staging/iio/cdc/ad7150.c b/drivers/staging/iio/cdc/ad7150.c
-> index ca72af3e9d4b..a6f249e9c1e1 100644
-> --- a/drivers/staging/iio/cdc/ad7150.c
-> +++ b/drivers/staging/iio/cdc/ad7150.c
-> @@ -232,7 +232,7 @@ static int ad7150_write_event_config(struct iio_dev *indio_dev,
->  	if (ret < 0)
->  		goto error_ret;
->
-> -	cfg = ret & ~((0x03 << 5) | (0x1 << 7));
-> +	cfg = ret & ~((0x03 << 5) | BIT(7));
->
->  	switch (type) {
->  	case IIO_EV_TYPE_MAG_ADAPTIVE:
-> diff --git a/drivers/staging/iio/cdc/ad7746.c b/drivers/staging/iio/cdc/ad7746.c
-> index 81f8b9ee1120..453d3978879d 100644
-> --- a/drivers/staging/iio/cdc/ad7746.c
-> +++ b/drivers/staging/iio/cdc/ad7746.c
-> @@ -45,10 +45,10 @@
->  #define AD7746_STATUS_RDYCAP		BIT(0)
->
+On Wed, Mar 22, 2017 at 10:12:34PM +0530, Arushi Singhal wrote:
 >  /* Capacitive Channel Setup Register Bit Designations (AD7746_REG_CAP_SETUP) */
 > -#define AD7746_CAPSETUP_CAPEN		(1 << 7)
 > -#define AD7746_CAPSETUP_CIN2		(1 << 6) /* AD7746 only */
@@ -69,48 +34,8 @@ On Wed, 22 Mar 2017, Arushi Singhal wrote:
 > +#define AD7746_CAPSETUP_CAPDIFF		(BIT(5))
 > +#define AD7746_CAPSETUP_CACHOP		(BIT(0))
 
-The parentheses here are not needed.
+Extra parens.
 
->
->  /* Voltage/Temperature Setup Register Bit Designations (AD7746_REG_VT_SETUP) */
->  #define AD7746_VTSETUP_VTEN		(1 << 7)
-> @@ -56,9 +56,9 @@
->  #define AD7746_VTSETUP_VTMD_EXT_TEMP	(1 << 5)
->  #define AD7746_VTSETUP_VTMD_VDD_MON	(2 << 5)
->  #define AD7746_VTSETUP_VTMD_EXT_VIN	(3 << 5)
-> -#define AD7746_VTSETUP_EXTREF		(1 << 4)
-> -#define AD7746_VTSETUP_VTSHORT		(1 << 1)
-> -#define AD7746_VTSETUP_VTCHOP		(1 << 0)
-> +#define AD7746_VTSETUP_EXTREF		(BIT(4))
-> +#define AD7746_VTSETUP_VTSHORT		(BIT(1))
-> +#define AD7746_VTSETUP_VTCHOP		(BIT(0))
->
+regards,
+dan carpenter
 
-Same here.
-
->  /* Excitation Setup Register Bit Designations (AD7746_REG_EXC_SETUP) */
->  #define AD7746_EXCSETUP_CLKCTRL		BIT(7)
-> @@ -82,7 +82,7 @@
->  #define AD7746_CONF_MODE_GAIN_CAL	(6 << 0)
->
->  /* CAPDAC Register Bit Designations (AD7746_REG_CAPDACx) */
-> -#define AD7746_CAPDAC_DACEN		(1 << 7)
-> +#define AD7746_CAPDAC_DACEN		(BIT(7))
-
-Here too.
-
-julia
-
->  #define AD7746_CAPDAC_DACP(x)		((x) & 0x7F)
->
->  /*
-> --
-> 2.11.0
->
-> --
-> You received this message because you are subscribed to the Google Groups "outreachy-kernel" group.
-> To unsubscribe from this group and stop receiving emails from it, send an email to outreachy-kernel+unsubscribe@googlegroups.com.
-> To post to this group, send email to outreachy-kernel@googlegroups.com.
-> To view this discussion on the web visit https://groups.google.com/d/msgid/outreachy-kernel/20170322164234.GA18805%40arushi-HP-Pavilion-Notebook.
-> For more options, visit https://groups.google.com/d/optout.
->
