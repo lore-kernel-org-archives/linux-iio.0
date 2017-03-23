@@ -1,49 +1,60 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43636 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751242AbdCYRTj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Mar 2017 13:19:39 -0400
+Received: from mail.free-electrons.com ([62.4.15.54]:57974 "EHLO
+        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751661AbdCWHwl (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 03:52:41 -0400
 Subject: Re: [PATCH v2 2/2] iio: Aspeed AST2400/AST2500 ADC
-To: Joel Stanley <joel@jms.id.au>,
-        Quentin Schulz <quentin.schulz@free-electrons.com>
+To: Rick Altherr <raltherr@google.com>, openbmc@lists.ozlabs.org,
+        "linux-kernel@vger.kernel.org" <linux-kernel@vger.kernel.org>
 References: <20170321204828.31303-1-raltherr@google.com>
  <20170321204828.31303-2-raltherr@google.com>
  <5f245e55-4d4a-b744-3351-e8215432c315@free-electrons.com>
- <CACPK8XcoQGo4uErK71aeUhmcJ-6Yt0k41q8N7wsemz6HLRSL4w@mail.gmail.com>
-Cc: Rick Altherr <raltherr@google.com>,
-        OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
+ <CAPLgG=kVsNake71fFLc2NsoMtrtG0_6Fb6XHep3dQKVuRgOmbA@mail.gmail.com>
+From: Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: Martin Blumenstingl <martin.blumenstingl@googlemail.com>,
         William Breathitt Gray <vilhelm.gray@gmail.com>,
         Andreas Klinger <ak@it-klinger.de>,
-        Rob Herring <robh@kernel.org>, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Geert Uytterhoeven <geert@linux-m68k.org>,
-        Marek Vasut <marek.vasut+renesas@gmail.com>,
-        Matt Ranostay <mranostay@gmail.com>,
+        Rob Herring <robh@kernel.org>,
+        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
+        "knaack.h@gmx.de" <knaack.h@gmx.de>, geert@linux-m68k.org,
+        marek.vasut+renesas@gmail.com, Matt Ranostay <mranostay@gmail.com>,
         Lars-Peter Clausen <lars@metafoo.de>,
-        Crestez Dan Leonard <leonard.crestez@intel.com>,
-        Akinobu Mita <akinobu.mita@gmail.com>,
+        leonard.crestez@intel.com, Akinobu Mita <akinobu.mita@gmail.com>,
         Fabrice Gasnier <fabrice.gasnier@st.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
         Maxime Ripard <maxime.ripard@free-electrons.com>,
         Jacopo Mondi <jacopo@jmondi.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <866cabad-d151-a54f-e316-201aa05cbbf5@kernel.org>
-Date: Sat, 25 Mar 2017 17:11:48 +0000
+Message-ID: <aee01198-3af6-6218-7f3e-9558adcdf526@free-electrons.com>
+Date: Thu, 23 Mar 2017 08:52:38 +0100
 MIME-Version: 1.0
-In-Reply-To: <CACPK8XcoQGo4uErK71aeUhmcJ-6Yt0k41q8N7wsemz6HLRSL4w@mail.gmail.com>
+In-Reply-To: <CAPLgG=kVsNake71fFLc2NsoMtrtG0_6Fb6XHep3dQKVuRgOmbA@mail.gmail.com>
 Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 22/03/17 10:08, Joel Stanley wrote:
-> Hello Quentin,
-> 
-> On Wed, Mar 22, 2017 at 5:51 PM, Quentin Schulz
+Hi,
+
+On 22/03/2017 21:46, Rick Altherr wrote:
+> On Wed, Mar 22, 2017 at 12:21 AM, Quentin Schulz
 > <quentin.schulz@free-electrons.com> wrote:
-> 
->>> +
+>> Hi,
+>>
+>> On 21/03/2017 21:48, Rick Altherr wrote:
+>>> Aspeed AST2400/AST2500 BMC SoCs include a 16 channel, 10-bit ADC. Low
+>>> and high threshold interrupts are supported by the hardware but are not
+>>> currently implemented.
+>>>
+>>> Signed-off-by: Rick Altherr <raltherr@google.com>
+>>> ---
+>>>
+>>> Changes in v2:
+>>> - Rewritten as an IIO device
+>>> - Renamed register macros to describe the register's purpose
+>>> - Replaced awkward reading of 16-bit data registers with readw()
+>>> - Added Kconfig dependency on COMPILE_TEST
+>>>
+[...]
 >>> +#define ASPEED_ADC_CHAN(_idx, _addr) {                               \
 >>> +     .type = IIO_VOLTAGE,                                    \
 >>> +     .indexed = 1,                                           \
@@ -74,55 +85,37 @@ On 22/03/17 10:08, Joel Stanley wrote:
 >>
 >> It would make sense to name the registers (the _addr parameter of your
 >> macro) so it's easier to understand what it refers to.
+>>
 > 
-> I appreciate the desire to not have magic values. However, I think
-> these are okay. We don't use them anywhere else, and it is obvious
-> from reading that they are the registers containing the ADC values for
-> each channel.
+> I agree with Joel on this.  There isn't really a better name than
+> ADC_CHAN_0_DATA.  I'll change the macro parameter to _data_reg_addr to
+> make that clearer.
 > 
-> The alternative would look like this:
-> 
-> +     ASPEED_ADC_CHAN(14, ASPEED_ADC_CHAN_14_DATA),
-> +     ASPEED_ADC_CHAN(15, ASPEED_ADC_CHAN_15_DATA),
-> 
-> Which doesn't really help me as someone reading the code.
-> 
->>> +     /* Start all channels in normal mode. */
->>> +     clk_prepare_enable(data->clk_scaler->clk);
->>> +     adc_engine_control_reg_val = GENMASK(31, 16) |
->>> +             ASPEED_ADC_OPERATION_MODE_NORMAL | ASPEED_ADC_ENGINE_ENABLE;
->>> +     writel(adc_engine_control_reg_val,
->>> +             data->base + ASPEED_ADC_REG_ENGINE_CONTROL);
->>> +
+
+Is it the name in the datasheet?
+
+[...]
 >>> +     indio_dev->name = dev_name(&pdev->dev);
 >>
 >> This isn't good practice (cf.: https://lkml.org/lkml/2017/1/28/145 end
 >> of the mail in the probe function). Better name it aspeed-adc or even
 >> better to have a different name per compatible: ast2400-adc or ast2500-adc.
 > 
-> The label comes out as "adc.1e6e9000". This is the reg property and
-> the node name from the device tree, which seems sensible, even if it
-> is a bit strange to be grabbing the name of the parent device for it
-The intent is this provides the part number rather than a device tree
-handle.  The devicetree handle is available via other routes if desired.
-
-.
-> 
-> Could the iio core fill in a sensible name for us here? Rick is the
-> 31st person to make this mistake, so it would be nice to fix properly.
-It's not easy to actually generate it.  Quite a few drivers do it by
-querying the hardware to get precise model numbers.  Manufacturers
-of certain devices have an irritating habit of switching 'compatiblish'
-chips without bothering to update device tree blobs.
-
-Jonathan
-> 
-> Cheers,
-> 
-> Joel
-> --
-> To unsubscribe from this list: send the line "unsubscribe linux-iio" in
-> the body of a message to majordomo@vger.kernel.org
-> More majordomo info at  http://vger.kernel.org/majordomo-info.html
+> Ack.  Will use aspeed-adc to avoid parsing the compatible match and
+> stripping the 'aspeed,' prefix.
 > 
 
+You don't need to parse the compatible match. You could use the data
+void pointer in your struct of_device_id
+(http://lxr.free-electrons.com/source/include/linux/mod_devicetable.h#L234)
+like it's done here: https://lkml.org/lkml/2017/3/21/675
+(sun4i_gpadc_of_id).
+
+Note: please reply to all :)
+
+Quentin
+
+-- 
+Quentin Schulz, Free Electrons
+Embedded Linux and Kernel engineering
+http://free-electrons.com
