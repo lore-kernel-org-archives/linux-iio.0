@@ -1,75 +1,79 @@
-Return-Path: <SRS0=EWyR=3A=gmail.com=geert.uytterhoeven@kernel.org>
-MIME-Version: 1.0
-Sender: geert.uytterhoeven@gmail.com
-In-Reply-To: <1490272873-2532-5-git-send-email-jacopo+renesas@jmondi.org>
-References: <1490272873-2532-1-git-send-email-jacopo+renesas@jmondi.org> <1490272873-2532-5-git-send-email-jacopo+renesas@jmondi.org>
-From: Geert Uytterhoeven <geert@linux-m68k.org>
-Date: Thu, 23 Mar 2017 13:50:39 +0100
-Message-ID: <CAMuHMdWtHd7LwP_ChGj4BR6Hmq20hik+yrkhAJfRh0G-auiDQg@mail.gmail.com>
-Subject: Re: [PATCH v2 4/4] arm64: dts: salvator-x: Add current sense amplifiers
-To: Jacopo Mondi <jacopo+renesas@jmondi.org>
-Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>,
-	Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Jonathan Cameron <jic23@kernel.org>,
-	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
-	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
-	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
-	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
-Content-Type: text/plain; charset=UTF-8
-List-ID: <linux-iio@vger.kernel.org>
+Return-Path: <linux-iio-owner@vger.kernel.org>
+Received: from smtp04.smtpout.orange.fr ([80.12.242.126]:18076 "EHLO
+        smtp.smtpout.orange.fr" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1755527AbdCWNSr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 09:18:47 -0400
+From: Olivier Leveque <o_leveque@orange.fr>
+To: lars@metafoo.de, Michael.Hennerich@analog.com,
+        linux-iio@vger.kernel.org
+Cc: Olivier Leveque <o_leveque@orange.fr>
+Subject: [PATCH] staging: iio: adc: ad7280a: fix permission coding style issue
+Date: Thu, 23 Mar 2017 14:18:09 +0100
+Message-Id: <1490275089-2737-1-git-send-email-o_leveque@orange.fr>
+Sender: linux-iio-owner@vger.kernel.org
+List-Id: linux-iio@vger.kernel.org
 
-Hi Jacopo,
+Symbolic permissions 'S_IWUSR | S_IRUGO' are not preferred. Consider using
+octal permissions '0644'. Found running checkpatch.
 
-On Thu, Mar 23, 2017 at 1:41 PM, Jacopo Mondi <jacopo+renesas@jmondi.org> wrote:
-> Add device nodes for two Maxim max961x current sense amplifiers
-> sensing VDD_08 and DVFS_08 lines.
->
-> Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
-> ---
->  arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 18 ++++++++++++++++++
->  1 file changed, 18 insertions(+)
->
-> diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-> index fd05c2b..ef8b723 100644
-> --- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-> +++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-> @@ -261,6 +261,24 @@
->         status = "okay";
->  };
->
-> +&i2c4 {
-> +       status = "okay";
-> +
-> +       csa_vdd: max9611_vdd@7c {
+Signed-off-by: Olivier Leveque <o_leveque@orange.fr>
+---
+ drivers/staging/iio/adc/ad7280a.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-csa_vdd: adc@7c {
+diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
+index 6a85e28..d5ab83f 100644
+--- a/drivers/staging/iio/adc/ad7280a.c
++++ b/drivers/staging/iio/adc/ad7280a.c
+@@ -560,7 +560,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ 			st->iio_attr[cnt].address =
+ 				AD7280A_DEVADDR(dev) << 8 | ch;
+ 			st->iio_attr[cnt].dev_attr.attr.mode =
+-				S_IWUSR | S_IRUGO;
++				0644;
+ 			st->iio_attr[cnt].dev_attr.show =
+ 				ad7280_show_balance_sw;
+ 			st->iio_attr[cnt].dev_attr.store =
+@@ -577,7 +577,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
+ 				AD7280A_DEVADDR(dev) << 8 |
+ 				(AD7280A_CB1_TIMER + ch);
+ 			st->iio_attr[cnt].dev_attr.attr.mode =
+-				S_IWUSR | S_IRUGO;
++				0644;
+ 			st->iio_attr[cnt].dev_attr.show =
+ 				ad7280_show_balance_timer;
+ 			st->iio_attr[cnt].dev_attr.store =
+@@ -746,26 +746,26 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
+ 
+ static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
+ 		in_voltage-voltage_thresh_low_value,
+-		S_IRUGO | S_IWUSR,
++		0644,
+ 		ad7280_read_channel_config,
+ 		ad7280_write_channel_config,
+ 		AD7280A_CELL_UNDERVOLTAGE);
+ 
+ static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
+ 		in_voltage-voltage_thresh_high_value,
+-		S_IRUGO | S_IWUSR,
++		0644,
+ 		ad7280_read_channel_config,
+ 		ad7280_write_channel_config,
+ 		AD7280A_CELL_OVERVOLTAGE);
+ 
+ static IIO_DEVICE_ATTR(in_temp_thresh_low_value,
+-		S_IRUGO | S_IWUSR,
++		0644,
+ 		ad7280_read_channel_config,
+ 		ad7280_write_channel_config,
+ 		AD7280A_AUX_ADC_UNDERVOLTAGE);
+ 
+ static IIO_DEVICE_ATTR(in_temp_thresh_high_value,
+-		S_IRUGO | S_IWUSR,
++		0644,
+ 		ad7280_read_channel_config,
+ 		ad7280_write_channel_config,
+ 		AD7280A_AUX_ADC_OVERVOLTAGE);
+-- 
+1.9.1
 
-Node names should be generic, i.e. "adc" instead of "max9611_vdd"
-(also in the DT binding example).
-
-> +               compatible = "maxim,max9611";
-> +               reg = <0x7c>;
-> +
-> +               maxim,shunt-resistor-uohm = <5000>;
-> +       };
-> +
-> +       csa_dvfs: max9611_dvfs@7f {
-
-csa_dvfs: adc@7f {
-
-> +               compatible = "maxim,max9611";
-> +               reg = <0x7f>;
-> +
-> +               maxim,shunt-resistor-uohm = <5000>;
-> +       };
-> +};
-
-Gr{oetje,eeting}s,
-
-                        Geert
-
---
-Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
-
-In personal conversations with technical people, I call myself a hacker. But
-when I'm talking to journalists I just say "programmer" or something like that.
-                                -- Linus Torvalds
