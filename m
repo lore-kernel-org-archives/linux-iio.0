@@ -1,15 +1,18 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:38670 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1759033AbdCVLHK (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Wed, 22 Mar 2017 07:07:10 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: Elaine Zhang <zhangqing@rock-chips.com>
-Cc: cl@rock-chips.com, robh+dt@kernel.org, mark.rutland@arm.com,
-        zhengxing@rock-chips.com, andy.yan@rock-chips.com,
-        jay.xu@rock-chips.com, matthias.bgg@gmail.com,
-        paweljarosz3691@gmail.com, devicetree@vger.kernel.org,
-        linux-arm-kernel@lists.infradead.org,
+Received: from regular1.263xmail.com ([211.150.99.132]:50897 "EHLO
+        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752715AbdCWCIc (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Wed, 22 Mar 2017 22:08:32 -0400
+Subject: Re: [PATCH v2 4/6] arm64: dts: rockchip: add core dtsi file for
+ RK3328 SoCs
+To: =?UTF-8?Q?Heiko_St=c3=bcbner?= <heiko@sntech.de>
+References: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
+ <1489670244-13328-5-git-send-email-cl@rock-chips.com>
+ <14610453.rKm3MBREMz@diego>
+Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
+        andy.yan@rock-chips.com, jay.xu@rock-chips.com,
+        matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
+        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
         wsa@the-dreams.de, linux-i2c@vger.kernel.org, jic23@kernel.org,
         knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
@@ -19,65 +22,112 @@ Cc: cl@rock-chips.com, robh+dt@kernel.org, mark.rutland@arm.com,
         yamada.masahiro@socionext.com, catalin.marinas@arm.com,
         will.deacon@arm.com, afaerber@suse.de, shawnguo@kernel.org,
         khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
-        kever.yang@rock-chips.com, tony.xie@rock-chips.com,
-        huangtao@rock-chips.com, yhx@rock-chips.com,
-        rocky.hao@rock-chips.com
-Subject: Re: [PATCH v2 4/6] arm64: dts: rockchip: add core dtsi file for RK3328 SoCs
-Date: Wed, 22 Mar 2017 12:06:46 +0100
-Message-ID: <1536448.abPucmTQ1N@diego>
-In-Reply-To: <58D250BC.4040609@rock-chips.com>
-References: <1489670244-13328-1-git-send-email-cl@rock-chips.com> <14610453.rKm3MBREMz@diego> <58D250BC.4040609@rock-chips.com>
+        zhangqing@rock-chips.com, kever.yang@rock-chips.com,
+        tony.xie@rock-chips.com, huangtao@rock-chips.com,
+        yhx@rock-chips.com, rocky.hao@rock-chips.com
+From: =?UTF-8?B?6ZmI5Lqu?= <cl@rock-chips.com>
+Message-ID: <58D32D8A.1030506@rock-chips.com>
+Date: Thu, 23 Mar 2017 10:06:02 +0800
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+In-Reply-To: <14610453.rKm3MBREMz@diego>
+Content-Type: text/plain; charset=UTF-8; format=flowed
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am Mittwoch, 22. M�rz 2017, 18:23:56 CET schrieb Elaine Zhang:
-> On 03/21/2017 04:55 PM, Heiko St�bner wrote:
-> > Am Donnerstag, 16. M�rz 2017, 21:17:22 CET schrieb cl@rock-chips.com:
-> >> +	cru: clock-controller@ff440000 {
-> >> +		compatible = "rockchip,rk3328-cru", "rockchip,cru", "syscon";
-> >> +		reg = <0x0 0xff440000 0x0 0x1000>;
-> >> +		rockchip,grf = <&grf>;
-> >> +		#clock-cells = <1>;
-> >> +		#reset-cells = <1>;
-> >> +		assigned-clocks =
-> >> +			<&cru DCLK_LCDC>, <&cru SCLK_PDM>,
-> >> +			<&cru SCLK_RTC32K>, <&cru SCLK_UART0>,
-> >> +			<&cru SCLK_UART1>, <&cru SCLK_UART2>,
-> >> +			<&cru ACLK_BUS_PRE>, <&cru ACLK_PERI_PRE>,
-> >> +			<&cru ACLK_VIO_PRE>, <&cru ACLK_RGA_PRE>,
-> >> +			<&cru ACLK_VOP_PRE>, <&cru ACLK_RKVDEC_PRE>,
-> >> +			<&cru ACLK_RKVENC>, <&cru ACLK_VPU_PRE>,
-> >> +			<&cru SCLK_VDEC_CABAC>, <&cru SCLK_VDEC_CORE>,
-> >> +			<&cru SCLK_VENC_CORE>, <&cru SCLK_VENC_DSP>,
-> >> +			<&cru SCLK_SDIO>, <&cru SCLK_TSP>,
-> >> +			<&cru SCLK_WIFI>, <&cru ARMCLK>,
-> >> +			<&cru PLL_GPLL>, <&cru PLL_CPLL>,
-> >> +			<&cru ACLK_BUS_PRE>, <&cru HCLK_BUS_PRE>,
-> >> +			<&cru PCLK_BUS_PRE>, <&cru ACLK_PERI_PRE>,
-> >> +			<&cru HCLK_PERI>, <&cru PCLK_PERI>,
-> >> +			<&cru ACLK_VIO_PRE>, <&cru HCLK_VIO_PRE>,
-> >> +			<&cru ACLK_RGA_PRE>, <&cru SCLK_RGA>,
-> >> +			<&cru ACLK_VOP_PRE>, <&cru ACLK_RKVDEC_PRE>,
-> >> +			<&cru ACLK_RKVENC>, <&cru ACLK_VPU_PRE>,
-> >> +			<&cru SCLK_VDEC_CABAC>, <&cru SCLK_VDEC_CORE>,
-> >> +			<&cru SCLK_VENC_CORE>, <&cru SCLK_VENC_DSP>,
-> >> +			<&cru SCLK_EFUSE>, <&cru PCLK_DDR>,
-> >> +			<&cru ACLK_GMAC>, <&cru PCLK_GMAC>,
-> >> +			<&cru SCLK_RTC32K>, <&cru SCLK_USB3OTG_SUSPEND>;
-> > 
-> > that list is way to long.
-> > Device-specific clocks should be inited in their respective device nodes.
-> 
-> Cpll init freq is 1200M, is too high. we need set cpll child clk div
-> first,and then set cpll freq.
-> After pll init, others clk init freq can inited in their device node.
+Hi， Heiko
+在 2017年03月21日 16:55, Heiko Stübner 写道:
+> Hi,
+>
+> Am Donnerstag, 16. März 2017, 21:17:22 CET schrieb cl@rock-chips.com:
+>> From: Liang Chen <cl@rock-chips.com>
+>>
+>> This patch adds core dtsi file for Rockchip RK3328 SoCs.
+>>
+>> Signed-off-by: Liang Chen <cl@rock-chips.com>
+>> ---
+>>   arch/arm64/boot/dts/rockchip/rk3328.dtsi | 1362
+>> ++++++++++++++++++++++++++++++ 1 file changed, 1362 insertions(+)
+>>   create mode 100644 arch/arm64/boot/dts/rockchip/rk3328.dtsi
+>>
+>> diff --git a/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+>> b/arch/arm64/boot/dts/rockchip/rk3328.dtsi new file mode 100644
+>> index 0000000..a92955c
+>> --- /dev/null
+>> +++ b/arch/arm64/boot/dts/rockchip/rk3328.dtsi
+>> @@ -0,0 +1,1362 @@
+>> +/*
+>> + * Copyright (c) 2017 Fuzhou Rockchip Electronics Co., Ltd
+>> + *
+>> + * This file is dual-licensed: you can use it either under the terms
+>> + * of the GPL or the X11 license, at your option. Note that this dual
+>> + * licensing only applies to this file, and not this project as a
+>> + * whole.
+>> + *
+>> + *  a) This library is free software; you can redistribute it and/or
+>> + *     modify it under the terms of the GNU General Public License as
+>> + *     published by the Free Software Foundation; either version 2 of the
+>> + *     License, or (at your option) any later version.
+>> + *
+>> + *     This library is distributed in the hope that it will be useful,
+>> + *     but WITHOUT ANY WARRANTY; without even the implied warranty of
+>> + *     MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+>> + *     GNU General Public License for more details.
+>> + *
+>> + * Or, alternatively,
+>> + *
+>> + *  b) Permission is hereby granted, free of charge, to any person
+>> + *     obtaining a copy of this software and associated documentation
+>> + *     files (the "Software"), to deal in the Software without
+>> + *     restriction, including without limitation the rights to use,
+>> + *     copy, modify, merge, publish, distribute, sublicense, and/or
+>> + *     sell copies of the Software, and to permit persons to whom the
+>> + *     Software is furnished to do so, subject to the following
+>> + *     conditions:
+>> + *
+>> + *     The above copyright notice and this permission notice shall be
+>> + *     included in all copies or substantial portions of the Software.
+>> + *
+>> + *     THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+>> + *     EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES
+>> + *     OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND
+>> + *     NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT
+>> + *     HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY,
+>> + *     WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+>> + *     FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+>> + *     OTHER DEALINGS IN THE SOFTWARE.
+>> + */
+>> +
+>> +#include <dt-bindings/clock/rk3328-cru.h>
+>> +#include <dt-bindings/gpio/gpio.h>
+>> +#include <dt-bindings/interrupt-controller/arm-gic.h>
+>> +#include <dt-bindings/interrupt-controller/irq.h>
+>> +#include <dt-bindings/pinctrl/rockchip.h>
+>> +#include <dt-bindings/soc/rockchip,boot-mode.h>
+>> +#include <dt-bindings/power/rk3328-power.h>
+>> +
+>> +/ {
+>> +	compatible = "rockchip,rk3328";
+>> +
+>> +	interrupt-parent = <&gic>;
+>> +	#address-cells = <2>;
+>> +	#size-cells = <2>;
+>> +
+>> +	aliases {
+>> +		serial0 = &uart0;
+>> +		serial1 = &uart1;
+>> +		serial2 = &uart2;
+>> +		i2c0 = &i2c0;
+>> +		i2c1 = &i2c1;
+>> +		i2c2 = &i2c2;
+>> +		i2c3 = &i2c3;
+>> +	};
+>> +
+>> +	cpus {
+>> +		#address-cells = <2>;
+> #address-cells = <1>? You most likely don't need the 2 field cpu regs?
 
-thanks, that is a nice explanation. Please put it into a comment above the 
-assigned-clocks property, so that we can keep that knowledge around for later 
-times :-) .
+This is likely copy from juno board of arm, and i find that #address-cells = <1> in some  boards and  #address-cells = <2> in the other boards.
+All of ROCKCHIP Socs set  #address-cells = <2>, so we set #address-cells = <2> to keep compatibility?
 
 
-Thanks
-Heiko
+
