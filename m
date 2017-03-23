@@ -1,12 +1,20 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.kernel.org ([198.145.29.136]:40324 "EHLO mail.kernel.org"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1753190AbdCWJfd (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Thu, 23 Mar 2017 05:35:33 -0400
-Date: Thu, 23 Mar 2017 10:35:27 +0100
-From: Sebastian Reichel <sre@kernel.org>
-To: Chen-Yu Tsai <wens@csie.org>
-Cc: Jonathan Cameron <jic23@kernel.org>,
+Received: from smtp.csie.ntu.edu.tw ([140.112.30.61]:45286 "EHLO
+        smtp.csie.ntu.edu.tw" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751807AbdCWJxN (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 05:53:13 -0400
+MIME-Version: 1.0
+In-Reply-To: <20170323093527.ojcdpvruzqnhvysq@earth>
+References: <20170320081653.8884-1-quentin.schulz@free-electrons.com>
+ <20170320081653.8884-3-quentin.schulz@free-electrons.com> <CAGb2v66JC65=9WiMy-Nu+9tTFRLsJL2Eyb0wfJV_K=65ABc6Zg@mail.gmail.com>
+ <20170323093527.ojcdpvruzqnhvysq@earth>
+From: Chen-Yu Tsai <wens@csie.org>
+Date: Thu, 23 Mar 2017 17:52:47 +0800
+Message-ID: <CAGb2v655AfEavMqVV-XTyYzHWt5qFsMnoMsTVd8HRDkCgjiTeQ@mail.gmail.com>
+Subject: Re: [RESEND PATCH v4 2/9] iio: adc: add support for X-Powers AXP20X
+ and AXP22X PMICs ADCs
+To: Sebastian Reichel <sre@kernel.org>
+Cc: Chen-Yu Tsai <wens@csie.org>, Jonathan Cameron <jic23@kernel.org>,
         Quentin Schulz <quentin.schulz@free-electrons.com>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
@@ -24,53 +32,22 @@ Cc: Jonathan Cameron <jic23@kernel.org>,
         linux-arm-kernel <linux-arm-kernel@lists.infradead.org>,
         linux-iio@vger.kernel.org,
         linux-sunxi <linux-sunxi@googlegroups.com>
-Subject: Re: [RESEND PATCH v4 2/9] iio: adc: add support for X-Powers AXP20X
- and AXP22X PMICs ADCs
-Message-ID: <20170323093527.ojcdpvruzqnhvysq@earth>
-References: <20170320081653.8884-1-quentin.schulz@free-electrons.com>
- <20170320081653.8884-3-quentin.schulz@free-electrons.com>
- <CAGb2v66JC65=9WiMy-Nu+9tTFRLsJL2Eyb0wfJV_K=65ABc6Zg@mail.gmail.com>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha512;
-        protocol="application/pgp-signature"; boundary="f2zy62zyq673h3xo"
-In-Reply-To: <CAGb2v66JC65=9WiMy-Nu+9tTFRLsJL2Eyb0wfJV_K=65ABc6Zg@mail.gmail.com>
+Content-Type: text/plain; charset=UTF-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
+On Thu, Mar 23, 2017 at 5:35 PM, Sebastian Reichel <sre@kernel.org> wrote:
+> Hi,
+>
+> On Wed, Mar 22, 2017 at 12:34:45PM +0800, Chen-Yu Tsai wrote:
+>> P.S. I'm thinking about having MFD_AXP20X imply its various sub-drivers.
+>> Not sure if that was the intended usage of the new imply syntax though.
+>
+> I think adding "default MFD_AXP20X" to the sub-drivers is cleaner,
+> as you will not end up with a long list.
 
---f2zy62zyq673h3xo
-Content-Type: text/plain; charset=us-ascii
-Content-Disposition: inline
+I'd still need to add imply statements for the various subsystems though,
+like regulators, power supplies, extcon, etc..
+But I suppose that's cleaner, and fits the original intent of the syntax.
 
-Hi,
-
-On Wed, Mar 22, 2017 at 12:34:45PM +0800, Chen-Yu Tsai wrote:
-> P.S. I'm thinking about having MFD_AXP20X imply its various sub-drivers.
-> Not sure if that was the intended usage of the new imply syntax though.
-
-I think adding "default MFD_AXP20X" to the sub-drivers is cleaner,
-as you will not end up with a long list.
-
--- Sebastian
-
---f2zy62zyq673h3xo
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIzBAABCgAdFiEE72YNB0Y/i3JqeVQT2O7X88g7+poFAljTlt0ACgkQ2O7X88g7
-+prc1Q/+J88aQ3Uzq9IdwTWnsE6Kjq9Ky3DaVIbb0hp6HIfwB/XjQdT73aLp/AaY
-ivOfI6riLIbpmKHo3hptDQK72+tu2BXldpwB/JFgUoxzdPg5NkUYdRO2W8lm6A2o
-A6JfSq4AmlQ7urgk2E+Y4jmryG0g2vJ4dwF8SVziSZ/GvKSMitIOZ6ob3DOCc/ZD
-/1MiIdssv2+/8Qwc8F5IV6Hthj8dMB99fKyZ9nbIMAq/tB4ECW6ObMHI0kru3GNj
-I45RPNotX7kBbl67D2cGpcKXMn5d+9+sWEhbGIL5ZVWrgdOYHxxM+YafiisiNUW+
-QT8SgR+SNTd2O0VgjEQpAkKpFBCMxPXSfwWQNbFVZn/R9ewaNoGFg4ONzWRjYZAW
-I8XFPzrDENv99QdANxMVTzmC1x8jTNqF74u9NTh5cRdmOhvrFhsyixL6BmfXQ4J3
-GEez+NH91IPMqQfjuMCIluwIefbdVswnZG7OWtnjXUCzCelkIzaXn6zcE7Wf6Nvp
-z/z1wm1skCuH09UDJvwFqfR150kH5bqpGDXF8gKMZCyFPegRftsWI1OikVV8/ken
-QXuMspnjemN3igZ0haFaY5KBkkK3Oa5kqbxMDUraPnps1ZIIHkpvaHW/uo9t0z66
-GY+oiOPdmmaM+UdQtPFeRvxP5JxdHF7sA/YBAVmlelFGYwktURg=
-=B520
------END PGP SIGNATURE-----
-
---f2zy62zyq673h3xo--
+ChenYu
