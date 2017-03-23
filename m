@@ -1,89 +1,71 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:43602 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751242AbdCYROi (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sat, 25 Mar 2017 13:14:38 -0400
-Subject: Re: [PATCH] staging: iio: adc: ad7280a: fix permission coding style
- issue
-To: Olivier Leveque <o_leveque@orange.fr>, lars@metafoo.de,
-        Michael.Hennerich@analog.com, linux-iio@vger.kernel.org
-References: <1490275089-2737-1-git-send-email-o_leveque@orange.fr>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <b3ddef00-5a0a-cc1e-3776-53142cbca7a2@kernel.org>
-Date: Sat, 25 Mar 2017 17:07:53 +0000
+Return-Path: <SRS0=9Une=3A=gmail.com=aishpant@kernel.org>
+Date: Thu, 23 Mar 2017 20:14:53 +0530
+From: Aishwarya Pant <aishpant@gmail.com>
+To: Lars-Peter Clausen <lars@metafoo.de>,
+	Michael Hennerich <Michael.Hennerich@analog.com>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>,
+	Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+	Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+	Barry Song <21cnbao@gmail.com>
+Cc: outreachy-kernel@googlegroups.com, linux-iio@vger.kernel.org
+Subject: [PATCH] staging: iio: accel: adis16201: remove local variable addr
+Message-ID: <20170323144453.GA7093@aishwarya>
 MIME-Version: 1.0
-In-Reply-To: <1490275089-2737-1-git-send-email-o_leveque@orange.fr>
-Content-Type: text/plain; charset=windows-1252
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Content-Type: text/plain; charset=us-ascii
+List-ID: <linux-iio@vger.kernel.org>
 
-On 23/03/17 13:18, Olivier Leveque wrote:
-> Symbolic permissions 'S_IWUSR | S_IRUGO' are not preferred. Consider using
-> octal permissions '0644'. Found running checkpatch.
-> 
-> Signed-off-by: Olivier Leveque <o_leveque@orange.fr>
-Applied to the togreg branch of iio.git and pushed out as testing
-for the autobuilders to play with it.
+Remove local variable addr from adis_read_reg_16() and adis_write_reg_16()
+as it is used only once.
 
-Thanks,
+Signed-off-by: Aishwarya Pant <aishpant@gmail.com>
+---
+ drivers/staging/iio/accel/adis16201.c | 12 ++++++------
+ 1 file changed, 6 insertions(+), 6 deletions(-)
 
-Jonathan
-> ---
->  drivers/staging/iio/adc/ad7280a.c | 12 ++++++------
->  1 file changed, 6 insertions(+), 6 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/adc/ad7280a.c b/drivers/staging/iio/adc/ad7280a.c
-> index 6a85e28..d5ab83f 100644
-> --- a/drivers/staging/iio/adc/ad7280a.c
-> +++ b/drivers/staging/iio/adc/ad7280a.c
-> @@ -560,7 +560,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
->  			st->iio_attr[cnt].address =
->  				AD7280A_DEVADDR(dev) << 8 | ch;
->  			st->iio_attr[cnt].dev_attr.attr.mode =
-> -				S_IWUSR | S_IRUGO;
-> +				0644;
->  			st->iio_attr[cnt].dev_attr.show =
->  				ad7280_show_balance_sw;
->  			st->iio_attr[cnt].dev_attr.store =
-> @@ -577,7 +577,7 @@ static int ad7280_attr_init(struct ad7280_state *st)
->  				AD7280A_DEVADDR(dev) << 8 |
->  				(AD7280A_CB1_TIMER + ch);
->  			st->iio_attr[cnt].dev_attr.attr.mode =
-> -				S_IWUSR | S_IRUGO;
-> +				0644;
->  			st->iio_attr[cnt].dev_attr.show =
->  				ad7280_show_balance_timer;
->  			st->iio_attr[cnt].dev_attr.store =
-> @@ -746,26 +746,26 @@ static irqreturn_t ad7280_event_handler(int irq, void *private)
->  
->  static IIO_DEVICE_ATTR_NAMED(in_thresh_low_value,
->  		in_voltage-voltage_thresh_low_value,
-> -		S_IRUGO | S_IWUSR,
-> +		0644,
->  		ad7280_read_channel_config,
->  		ad7280_write_channel_config,
->  		AD7280A_CELL_UNDERVOLTAGE);
->  
->  static IIO_DEVICE_ATTR_NAMED(in_thresh_high_value,
->  		in_voltage-voltage_thresh_high_value,
-> -		S_IRUGO | S_IWUSR,
-> +		0644,
->  		ad7280_read_channel_config,
->  		ad7280_write_channel_config,
->  		AD7280A_CELL_OVERVOLTAGE);
->  
->  static IIO_DEVICE_ATTR(in_temp_thresh_low_value,
-> -		S_IRUGO | S_IWUSR,
-> +		0644,
->  		ad7280_read_channel_config,
->  		ad7280_write_channel_config,
->  		AD7280A_AUX_ADC_UNDERVOLTAGE);
->  
->  static IIO_DEVICE_ATTR(in_temp_thresh_high_value,
-> -		S_IRUGO | S_IWUSR,
-> +		0644,
->  		ad7280_read_channel_config,
->  		ad7280_write_channel_config,
->  		AD7280A_AUX_ADC_OVERVOLTAGE);
-> 
-
+diff --git a/drivers/staging/iio/accel/adis16201.c b/drivers/staging/iio/accel/adis16201.c
+index fbc2406..b03c4f3 100644
+--- a/drivers/staging/iio/accel/adis16201.c
++++ b/drivers/staging/iio/accel/adis16201.c
+@@ -175,7 +175,6 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+ 	struct adis *st = iio_priv(indio_dev);
+ 	int ret;
+ 	int bits;
+-	u8 addr;
+ 	s16 val16;
+ 
+ 	switch (mask) {
+@@ -223,8 +222,9 @@ static int adis16201_read_raw(struct iio_dev *indio_dev,
+ 		default:
+ 			return -EINVAL;
+ 		}
+-		addr = adis16201_addresses[chan->scan_index];
+-		ret = adis_read_reg_16(st, addr, &val16);
++		ret = adis_read_reg_16(st,
++				       adis16201_addresses[chan->scan_index],
++				       &val16);
+ 		if (ret)
+ 			return ret;
+ 		val16 &= (1 << bits) - 1;
+@@ -244,7 +244,6 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
+ 	struct adis *st = iio_priv(indio_dev);
+ 	int bits;
+ 	s16 val16;
+-	u8 addr;
+ 
+ 	switch (mask) {
+ 	case IIO_CHAN_INFO_CALIBBIAS:
+@@ -259,8 +258,9 @@ static int adis16201_write_raw(struct iio_dev *indio_dev,
+ 			return -EINVAL;
+ 		}
+ 		val16 = val & ((1 << bits) - 1);
+-		addr = adis16201_addresses[chan->scan_index];
+-		return adis_write_reg_16(st, addr, val16);
++		return adis_write_reg_16(st,
++					 adis16201_addresses[chan->scan_index],
++					 val16);
+ 	}
+ 	return -EINVAL;
+ }
+-- 
+2.7.4
