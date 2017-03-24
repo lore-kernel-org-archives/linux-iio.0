@@ -1,47 +1,54 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from gloria.sntech.de ([95.129.55.99]:47220 "EHLO gloria.sntech.de"
-        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
-        id S1756371AbdCXLWM (ORCPT <rfc822;linux-iio@vger.kernel.org>);
-        Fri, 24 Mar 2017 07:22:12 -0400
-From: Heiko =?ISO-8859-1?Q?St=FCbner?= <heiko@sntech.de>
-To: cl@rock-chips.com
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
-        andy.yan@rock-chips.com, jay.xu@rock-chips.com,
-        matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
-        devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
-        linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wsa@the-dreams.de, linux-i2c@vger.kernel.org, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        wxt@rock-chips.com, david.wu@rock-chips.com,
-        linux-iio@vger.kernel.org, shawn.lin@rock-chips.com,
-        akpm@linux-foundation.org, dianders@chromium.org,
-        yamada.masahiro@socionext.com, catalin.marinas@arm.com,
-        will.deacon@arm.com, afaerber@suse.de, shawnguo@kernel.org,
-        khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
-        zhangqing@rock-chips.com, kever.yang@rock-chips.com,
-        tony.xie@rock-chips.com, huangtao@rock-chips.com,
-        yhx@rock-chips.com, rocky.hao@rock-chips.com
-Subject: Re: [PATCH v3 6/6] dt-bindings: document rockchip rk3328-evb board
-Date: Fri, 24 Mar 2017 12:21:53 +0100
-Message-ID: <5424547.dpJZWSQO2g@diego>
-In-Reply-To: <1490353460-25231-1-git-send-email-cl@rock-chips.com>
-References: <1490353287-25122-1-git-send-email-cl@rock-chips.com> <1490353460-25231-1-git-send-email-cl@rock-chips.com>
+Received: from mail.avionic-design.de ([87.253.173.79]:28929 "EHLO
+        mail.avionic-design.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751663AbdCXM5G (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Mar 2017 08:57:06 -0400
+From: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        "open list:IIO SUBSYSTEM AND DRIVERS" <linux-iio@vger.kernel.org>,
+        open list <linux-kernel@vger.kernel.org>
+CC: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>,
+        <stable@vger.kernel.org>
+Subject: [PATCH] iio: core: Fix IIO_VAL_FRACTIONAL_LOG2 for negative values
+Date: Fri, 24 Mar 2017 13:41:51 +0100
+Message-ID: <1490359311-21042-1-git-send-email-nikolaus.schulz@avionic-design.de>
 MIME-Version: 1.0
-Content-Type: text/plain; charset="iso-8859-1"
+Content-Type: text/plain
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Am Freitag, 24. März 2017, 19:04:20 CET schrieb cl@rock-chips.com:
-> From: Liang Chen <cl@rock-chips.com>
-> 
-> Use "rockchip,rk3328-evb" compatible string for Rockchip RK3328
-> evaluation board.
-> 
-> Signed-off-by: Liang Chen <cl@rock-chips.com>
+Fix formatting of negative values of type IIO_VAL_FRACTIONAL_LOG2 by
+switching from do_div(), which can't handle negative numbers, to
+div_s64_rem().  Also use shift_right for shifting, which is safe with
+negative values.
 
-when sending future version of patchseries, please _always_ also append 
-already received tags if a patch didn't undergo major changes.
+Signed-off-by: Nikolaus Schulz <nikolaus.schulz@avionic-design.de>
+Cc: stable@vger.kernel.org
+---
+ drivers/iio/industrialio-core.c | 7 +++----
+ 1 file changed, 3 insertions(+), 4 deletions(-)
 
-This one already got:
-Acked-by: Rob Herring <robh@kernel.org>
+diff --git a/drivers/iio/industrialio-core.c b/drivers/iio/industrialio-core.c
+index d18ded4..3ff91e0 100644
+--- a/drivers/iio/industrialio-core.c
++++ b/drivers/iio/industrialio-core.c
+@@ -610,10 +610,9 @@ static ssize_t __iio_format_value(char *buf, size_t len, unsigned int type,
+ 		tmp0 = (int)div_s64_rem(tmp, 1000000000, &tmp1);
+ 		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+ 	case IIO_VAL_FRACTIONAL_LOG2:
+-		tmp = (s64)vals[0] * 1000000000LL >> vals[1];
+-		tmp1 = do_div(tmp, 1000000000LL);
+-		tmp0 = tmp;
+-		return snprintf(buf, len, "%d.%09u", tmp0, tmp1);
++		tmp = shift_right((s64)vals[0] * 1000000000LL, vals[1]);
++		tmp0 = (int)div_s64_rem(tmp, 1000000000LL, &tmp1);
++		return snprintf(buf, len, "%d.%09u", tmp0, abs(tmp1));
+ 	case IIO_VAL_INT_MULTIPLE:
+ 	{
+ 		int i;
+-- 
+2.1.4
 
