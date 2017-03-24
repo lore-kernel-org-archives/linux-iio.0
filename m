@@ -1,11 +1,12 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from regular1.263xmail.com ([211.150.99.136]:33616 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751054AbdCPNV0 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Thu, 16 Mar 2017 09:21:26 -0400
-From: <cl@rock-chips.com>
-To: heiko@sntech.de
-Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
+Received: from mail-oi0-f66.google.com ([209.85.218.66]:33462 "EHLO
+        mail-oi0-f66.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S933053AbdCXCPR (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Thu, 23 Mar 2017 22:15:17 -0400
+Date: Thu, 23 Mar 2017 21:15:10 -0500
+From: Rob Herring <robh@kernel.org>
+To: cl@rock-chips.com
+Cc: heiko@sntech.de, mark.rutland@arm.com, zhengxing@rock-chips.com,
         andy.yan@rock-chips.com, jay.xu@rock-chips.com,
         matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
@@ -20,39 +21,26 @@ Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
         zhangqing@rock-chips.com, kever.yang@rock-chips.com,
         tony.xie@rock-chips.com, huangtao@rock-chips.com,
-        yhx@rock-chips.com, rocky.hao@rock-chips.com,
-        Liang Chen <cl@rock-chips.com>
-Subject: [PATCH v2 6/6] dt-bindings: document rockchip rk3328-evb board
-Date: Thu, 16 Mar 2017 21:23:06 +0800
-Message-Id: <1489670586-16120-1-git-send-email-cl@rock-chips.com>
-In-Reply-To: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
+        yhx@rock-chips.com, rocky.hao@rock-chips.com
+Subject: Re: [PATCH v2 6/6] dt-bindings: document rockchip rk3328-evb board
+Message-ID: <20170324021510.obhfykuxlhyznozv@rob-hp-laptop>
 References: <1489670244-13328-1-git-send-email-cl@rock-chips.com>
+ <1489670586-16120-1-git-send-email-cl@rock-chips.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset=us-ascii
+In-Reply-To: <1489670586-16120-1-git-send-email-cl@rock-chips.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Liang Chen <cl@rock-chips.com>
+On Thu, Mar 16, 2017 at 09:23:06PM +0800, cl@rock-chips.com wrote:
+> From: Liang Chen <cl@rock-chips.com>
+> 
+> Use "rockchip,rk3328-evb" compatible string for Rockchip RK3328
+> evaluation board.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
+> ---
+>  Documentation/devicetree/bindings/arm/rockchip.txt | 4 ++++
+>  1 file changed, 4 insertions(+)
 
-Use "rockchip,rk3328-evb" compatible string for Rockchip RK3328
-evaluation board.
-
-Signed-off-by: Liang Chen <cl@rock-chips.com>
----
- Documentation/devicetree/bindings/arm/rockchip.txt | 4 ++++
- 1 file changed, 4 insertions(+)
-
-diff --git a/Documentation/devicetree/bindings/arm/rockchip.txt b/Documentation/devicetree/bindings/arm/rockchip.txt
-index cc4ace6..17611cd 100644
---- a/Documentation/devicetree/bindings/arm/rockchip.txt
-+++ b/Documentation/devicetree/bindings/arm/rockchip.txt
-@@ -141,3 +141,7 @@ Rockchip platforms device tree bindings
- - Tronsmart Orion R68 Meta
-     Required root node properties:
-       - compatible = "tronsmart,orion-r68-meta", "rockchip,rk3368";
-+
-+- Rockchip RK3328 evb:
-+    Required root node properties:
-+      - compatible = "rockchip,rk3328-evb", "rockchip,rk3328";
--- 
-1.9.1
-
-
+Acked-by: Rob Herring <robh@kernel.org>
