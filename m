@@ -1,24 +1,24 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:47996 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751181AbdCSJex (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Sun, 19 Mar 2017 05:34:53 -0400
-Subject: Re: [PATCH 1/5] iio: xoadc: augment DT bindings a bit
-To: Linus Walleij <linus.walleij@linaro.org>,
-        linux-iio@vger.kernel.org,
+Received: from mail-ot0-f194.google.com ([74.125.82.194]:36795 "EHLO
+        mail-ot0-f194.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751926AbdCXPMi (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Mar 2017 11:12:38 -0400
+Date: Fri, 24 Mar 2017 10:12:35 -0500
+From: Rob Herring <robh@kernel.org>
+To: Linus Walleij <linus.walleij@linaro.org>
+Cc: Jonathan Cameron <jic23@kernel.org>, linux-iio@vger.kernel.org,
         Bjorn Andersson <bjorn.andersson@linaro.org>,
         devicetree@vger.kernel.org
+Subject: Re: [PATCH 1/5] iio: xoadc: augment DT bindings a bit
+Message-ID: <20170324151235.cb73gokg26qy7fvc@rob-hp-laptop>
 References: <20170318133358.22314-1-linus.walleij@linaro.org>
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <8d1e7f89-bc55-f9bc-2891-08c211e05e55@kernel.org>
-Date: Sun, 19 Mar 2017 09:34:48 +0000
 MIME-Version: 1.0
+Content-Type: text/plain; charset=iso-8859-1
 In-Reply-To: <20170318133358.22314-1-linus.walleij@linaro.org>
-Content-Type: text/plain; charset=utf-8
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 18/03/17 13:33, Linus Walleij wrote:
+On Sat, Mar 18, 2017 at 02:33:58PM +0100, Linus Walleij wrote:
 > In order to accommodate in a logical manner for the premuxed channels
 > in PM8921 and the similarly addressed channels in later PMICs, we
 > need a twocell arrangement with premux and analog mux setting as
@@ -30,18 +30,8 @@ On 18/03/17 13:33, Linus Walleij wrote:
 > This scheme came out of lengthy discussions and reverse-engineering
 > and reading of the few information sources we have.
 > 
-> Suggested-by: BjÃ¶rn Andersson <bjorn.andersson@linaro.org>
+> Suggested-by: Björn Andersson <bjorn.andersson@linaro.org>
 > Signed-off-by: Linus Walleij <linus.walleij@linaro.org>
-Hmm.. It kind of feels like the relationships between the different mux
-inputs could be nicely described explicitly rather than via describing the
-magic mux settings...
-
-But fair enough if not, I guess this isn't that much of a stretch on the
-current binding.
-
-A typo inline.
-
-Jonathan
 > ---
 >  .../bindings/iio/adc/qcom,pm8xxx-xoadc.txt         | 117 ++++++++++++---------
 >  1 file changed, 69 insertions(+), 48 deletions(-)
@@ -56,7 +46,6 @@ Jonathan
 >  The following required properties are standard for IO channels, see
 > -iio-bindings.txt for more details:
 > +iio-bindings.txt for more details, but noitice that this particular
-noitice -> notice (or perhaps note would be better)
 > +ADC has a special adressing scheme that require two cells for
 > +identifying each ADC channel:
 >  
@@ -67,7 +56,10 @@ noitice -> notice (or perhaps note would be better)
 > +  is the main analog mux setting (0x00..0x0f). The combination
 > +  of prescaler/premux and analog mux uniquely addresses a hardware
 > +  channel on all systems.
->  
+
+64-bits to describe 48 possible combinations... I'd just combine these 
+into 1 cell.
+
 >  - #size-cells: should be set to <0>
 >  
 > -- #io-channel-cells: should be set to <1>
@@ -132,99 +124,7 @@ noitice -> notice (or perhaps note would be better)
 > +  and again some of the same channels appear again divided down by 3
 > +  in 08, 18, 28 .. f8. Again bits 0 and 1 of the channel index should
 > +  always be 0.
->  
->  Optional channel node properties:
->  
-> @@ -94,56 +117,54 @@ Example:
->  xoadc: xoadc@197 {
->  	compatible = "qcom,pm8058-adc";
->  	reg = <0x197>;
-> -	interrupt-parent = <&pm8058>;
-> -	interrupts = <76 1>;
-> -	#address-cells = <1>;
-> +	interrupts-extended = <&pm8058 76 IRQ_TYPE_EDGE_RISING>;
-What has the above got to do with this patch?
 
-> +	#address-cells = <2>;
->  	#size-cells = <0>;
-> -	#io-channel-cells = <1>;
-> +	#io-channel-cells = <2>;
->  
-> -	vcoin: adc-channel@0 {
-> -		reg = <0x00>;
-> +	vcoin: adc-channel@00 {
-> +		reg = <0x00 0x00>;
->  	};
-> -	vbat: adc-channel@1 {
-> -		reg = <0x01>;
-> +	vbat: adc-channel@01 {
-> +		reg = <0x00 0x01>;
->  	};
-> -	dcin: adc-channel@2 {
-> -		reg = <0x02>;
-> +	dcin: adc-channel@02 {
-> +		reg = <0x00 0x02>;
->  	};
-> -	ichg: adc-channel@3 {
-> -		reg = <0x03>;
-> +	ichg: adc-channel@30 {
-> +		reg = <0x00 0x03>;
->  	};
-> -	vph_pwr: adc-channel@4 {
-> -		reg = <0x04>;
-> +	vph_pwr: adc-channel@04 {
-> +		reg = <0x00 0x04>;
->  	};
-> -	usb_vbus: adc-channel@a {
-> -		reg = <0x0a>;
-> +	usb_vbus: adc-channel@0a {
-> +		reg = <0x00 0x0a>;
->  	};
-> -	die_temp: adc-channel@b {
-> -		reg = <0x0b>;
-> +	die_temp: adc-channel@0b {
-> +		reg = <0x00 0x0b>;
->  	};
-> -	ref_625mv: adc-channel@c {
-> -		reg = <0x0c>;
-> +	ref_625mv: adc-channel@0c {
-> +		reg = <0x00 0x0c>;
->  	};
-> -	ref_1250mv: adc-channel@d {
-> -		reg = <0x0d>;
-> +	ref_1250mv: adc-channel@0d {
-> +		reg = <0x00 0x0d>;
->  	};
-> -	ref_325mv: adc-channel@e {
-> -		reg = <0x0e>;
-> +	ref_325mv: adc-channel@0e {
-> +		reg = <0x00 0x0e>;
->  	};
-> -	ref_muxoff: adc-channel@f {
-> -		reg = <0x0f>;
-> +	ref_muxoff: adc-channel@0f {
-> +		reg = <0x00 0x0f>;
->  	};
->  };
->  
-> -
->  /* IIO client node */
->  iio-hwmon {
->  	compatible = "iio-hwmon";
-> -	io-channels = <&xoadc 0x01>, /* Battery */
-> -		    <&xoadc 0x02>, /* DC in (charger) */
-> -		    <&xoadc 0x04>, /* VPH the main system voltage */
-> -		    <&xoadc 0x0b>, /* Die temperature */
-> -		    <&xoadc 0x0c>, /* Reference voltage 1.25V */
-> -		    <&xoadc 0x0d>, /* Reference voltage 0.625V */
-> -		    <&xoadc 0x0e>; /* Reference voltage 0.325V */
-> +	io-channels = <&xoadc 0x00 0x01>, /* Battery */
-> +		    <&xoadc 0x00 0x02>, /* DC in (charger) */
-> +		    <&xoadc 0x00 0x04>, /* VPH the main system voltage */
-> +		    <&xoadc 0x00 0x0b>, /* Die temperature */
-> +		    <&xoadc 0x00 0x0c>, /* Reference voltage 1.25V */
-> +		    <&xoadc 0x00 0x0d>, /* Reference voltage 0.625V */
-> +		    <&xoadc 0x00 0x0e>; /* Reference voltage 0.325V */
->  };
-> 
+Now I'm lost...
 
+Rob
