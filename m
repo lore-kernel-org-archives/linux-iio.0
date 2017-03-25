@@ -1,6 +1,6 @@
 Return-Path: <SRS0=uidn=3C=gmail.com=mwelling79@kernel.org>
 Sender: Michael Welling <mwelling79@gmail.com>
-Date: Sat, 25 Mar 2017 18:12:51 -0500
+Date: Sat, 25 Mar 2017 18:23:34 -0500
 From: Michael Welling <mwelling@ieee.org>
 To: Jonathan Cameron <jic23@kernel.org>
 Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
@@ -10,7 +10,7 @@ Cc: Benjamin Gaignard <benjamin.gaignard@linaro.org>,
 	linaro-kernel@lists.linaro.org,
 	Benjamin Gaignard <benjamin.gaignard@st.com>
 Subject: Re: [PATCH v2 1/2] iio: stm32 trigger: Add quadrature encoder device
-Message-ID: <20170325231251.GA21607@deathstar>
+Message-ID: <20170325232333.GA22488@deathstar>
 References: <1490364043-16339-1-git-send-email-benjamin.gaignard@st.com>
  <1490364043-16339-2-git-send-email-benjamin.gaignard@st.com>
  <1b997763-6df8-a4cb-eeb1-7ee270b781b5@kernel.org>
@@ -43,7 +43,13 @@ On Sat, Mar 25, 2017 at 06:26:05PM +0000, Jonathan Cameron wrote:
 > to help the beaglebone lot upstream some drivers, including the
 > eqep quadrature encoder drivers - so he can poke the right people
 > to get some review of the ABI from their point of view as well.
-> 
+>
+
+BTW here is the out of tree module that will be converted to IIO eventually.
+https://github.com/Teknoman117/beaglebot/tree/master/encoders
+
+There are probably more requirements to encapsulate all of the features of the eQEP.
+ 
 > Thanks
 > 
 > Jonathan 
@@ -68,13 +74,7 @@ On Sat, Mar 25, 2017 at 06:26:05PM +0000, Jonathan Cameron wrote:
 > > +Description:
 > > +		Reading returns the current preset value.
 > > +		Writing set the preset value.
-
-Writing sets the preset value.
-
 > > +		When counting up the counter start from 0 and fire an event when reach preset value.
-
-... the counter starts from 0 and fires an event ...
-
 > > +		When counting down the counter start from preset value and fire event when reach 0.
 > We'll want to generalize that description at some point as it's most often used as a place to reset
 > too on an event (homing switch or similar)
@@ -92,16 +92,10 @@ Writing sets the preset value.
 > > +		Configure the device counter quadrature modes:
 > > +		channel_A:
 > > +			Encoder A input severs as the count input and B as
-
-Encoder A input serves ...
-
 > > +			the UP/DOWN direction control input.
 > > +
 > > +		channel_B:
 > > +			Encoder B input severs as the count input and A as
-
-Encoder B input serves ...
-
 > > +			the UP/DOWN direction control input.
 > > +
 > > +		quadrature:
