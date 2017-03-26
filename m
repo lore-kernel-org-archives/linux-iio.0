@@ -1,93 +1,45 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-it0-f46.google.com ([209.85.214.46]:36597 "EHLO
-        mail-it0-f46.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751465AbdC0HqC (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2017 03:46:02 -0400
-Received: by mail-it0-f46.google.com with SMTP id e75so11910298itd.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Mar 2017 00:45:56 -0700 (PDT)
-MIME-Version: 1.0
-In-Reply-To: <CALrZqyMAmsxn9rFmaG_k0TmOrz5yG+=n-40AcchPdcZ9K_0A7w@mail.gmail.com>
-References: <CALrZqyPPCGE0zZwrEcwBbOX75d7ZnA8E1in=6nJfN9xCf4rTvA@mail.gmail.com>
- <846DA1B1-BDAB-4CA3-8132-AC5594CC7019@jic23.retrosnub.co.uk> <CALrZqyMAmsxn9rFmaG_k0TmOrz5yG+=n-40AcchPdcZ9K_0A7w@mail.gmail.com>
-From: Daniel Baluta <daniel.baluta@gmail.com>
-Date: Mon, 27 Mar 2017 10:38:17 +0300
-Message-ID: <CAEnQRZAmF3K+FnqVsSUGnH6v6_CFXaX+2edYSz__esJVgDyzyg@mail.gmail.com>
-Subject: Re: Problem in loading module of Software trigger
-To: SIMRAN SINGHAL <singhalsimran0@gmail.com>
-Cc: Jonathan Cameron <jic23@jic23.retrosnub.co.uk>,
-        "linux-iio@vger.kernel.org" <linux-iio@vger.kernel.org>,
-        kernelnewbies <kernelnewbies@kernelnewbies.org>
-Content-Type: text/plain; charset=UTF-8
+Received: from saturn.retrosnub.co.uk ([178.18.118.26]:49606 "EHLO
+        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751264AbdCZLLd (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Sun, 26 Mar 2017 07:11:33 -0400
+From: Jonathan Cameron <jic23@kernel.org>
+To: linux-iio@vger.kernel.org, devicetree@vger.kernel.org
+Cc: Mark.Rutland@arm.com, robh+dt@kernel.org,
+        Jonathan Cameron <jic23@kernel.org>
+Subject: [PATCH 0/2] iio:imu:mpu6050 update bindings and add mpu9250 support.
+Date: Sun, 26 Mar 2017 12:10:58 +0100
+Message-Id: <20170326111100.2571-1-jic23@kernel.org>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-Hi,
+The bindings for this driver are somewhat lagging the current situation.
+I have update the existing binding for i2c parts, but not added the spi
+binding as yet.  That can follow later.
 
-On Sun, Mar 26, 2017 at 9:51 PM, SIMRAN SINGHAL
-<singhalsimran0@gmail.com> wrote:
-> On Sun, Mar 26, 2017 at 1:47 PM, Jonathan Cameron
-> <jic23@jic23.retrosnub.co.uk> wrote:
->> Insmod will not pick up dependencies in the same way modprobe will.
->>
->> Make sure to also insmod industrialio.ko and iio-sw-trigger.ko before the sw trigger module. I
->>  think those are the only ones you will need.
->
-> Thanks
->
-> modprobe works for me as it's depended on industrialio-sw-trigger.ko
->
-> But now I am facing one more probem with iio_generic_buffer in tools/iio
->
-> I am trying to execute iio_generic_buffer:
-> as given I can use -N <num>  -t <trigger_name>
->
-> I create trigger with name trig-sample present in
-> /config/iio/triggers/trig-sample.
+The main purpose of this series was to add explicit support for the mpu9250,
+mostly to avoid the log message that the whoami value does match.
+It's also more inituitive to support the part explicitly than to rely on
+people reading the datasheet to see they actually have an mpu6500 and ak8975 in
+a SIP.
 
-How did you create the trigger here?
+If no one else does the SPI binding doc in the near future I'll get to it
+eventually.
 
-The trigger must be created according to its type. So far
-we have only hrtimer trigger type, so creating a trigger
-implies creating a directory in:
+Jonathan
 
-/config/iio/triggers/hrtimer
+Jonathan Cameron (2):
+  iio:imu:mpu6050 update i2c bindings to reflect i2c-gate and supported
+    parts
+  iio:imu:mpu6050 add explicit mpu9250 support
 
-See:
+ .../devicetree/bindings/iio/imu/inv_mpu6050.txt    | 23 ++++++++++++++++++++--
+ drivers/iio/imu/inv_mpu6050/inv_mpu_core.c         |  6 ++++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_i2c.c          |  5 +++++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_iio.h          |  2 ++
+ drivers/iio/imu/inv_mpu6050/inv_mpu_spi.c          |  1 +
+ 5 files changed, 35 insertions(+), 2 deletions(-)
 
-http://lxr.free-electrons.com/source/Documentation/iio/iio_configfs.txt#L83
->
-> $./iio_generic_buffer -N iio_dummy_part_no
-> iio device number being used is 0
-> Failed to find the trigger my_dummy_device-trigger
->
-> Its giving me ^ this error:
->
-> What wrong I am doing?
->
-> I have loaded all the modules including iio_dummy_evgen, iio_dummy.
->
-> How I will be pass trig-sample as an argument to it?
-> and one more question how can I find Trigger-number of a trigger.
->
-> I am facing same problem with iio_event_monitor:-
->
-> $ ./iio_event_monitor /sys/bus/iio/devices/iio_evgen/poke_ev0
->
-Here you should use the device node. It is usually /dev/iio:device0.
+-- 
+2.12.0
 
-If there is not already created by a daemon there, create it using
-
-mknod /dev/iio:device0 c major minor.
-
-The major and minor can be found in /sys/bus/iio/devices/iio:device0/dev file/
-
-> getting following error:-
-> Failed to retrieve event fd
->
-> Same with all other events.
->
-> This is working fine for me:
-> echo 1 > /sys/bus/iio/devices/iio_evgen/poke_ev0
-
-thanks,
-Daniel.
