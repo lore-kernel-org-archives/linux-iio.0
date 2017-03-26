@@ -1,60 +1,39 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from relay3-d.mail.gandi.net ([217.70.183.195]:48433 "EHLO
-        relay3-d.mail.gandi.net" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1757380AbdCXP3b (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Fri, 24 Mar 2017 11:29:31 -0400
-From: Jacopo Mondi <jacopo+renesas@jmondi.org>
-To: geert@linux-m68k.org, wsa+renesas@sang-engineering.com,
-        magnus.damm@gmail.com, laurent.pinchart@ideasonboard.com,
-        jic23@kernel.org, knaack.h@gmx.de, lars@metafoo.de,
-        pmeerw@pmeerw.net, robh+dt@kernel.org, mark.rutland@arm.com
-Cc: linux-iio@vger.kernel.org, linux-renesas-soc@vger.kernel.org,
-        devicetree@vger.kernel.org
-Subject: [PATCH v3 4/4] arm64: dts: salvator-x: Add current sense amplifiers
-Date: Fri, 24 Mar 2017 16:28:43 +0100
-Message-Id: <1490369323-13866-5-git-send-email-jacopo+renesas@jmondi.org>
-In-Reply-To: <1490369323-13866-1-git-send-email-jacopo+renesas@jmondi.org>
-References: <1490369323-13866-1-git-send-email-jacopo+renesas@jmondi.org>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=mVIe=3D=gmail.com=geert.uytterhoeven@kernel.org>
+MIME-Version: 1.0
+Sender: geert.uytterhoeven@gmail.com
+In-Reply-To: <1490369323-13866-5-git-send-email-jacopo+renesas@jmondi.org>
+References: <1490369323-13866-1-git-send-email-jacopo+renesas@jmondi.org> <1490369323-13866-5-git-send-email-jacopo+renesas@jmondi.org>
+From: Geert Uytterhoeven <geert@linux-m68k.org>
+Date: Sun, 26 Mar 2017 10:49:50 +0200
+Message-ID: <CAMuHMdUA2FVaSnNo=jELEKe=ON4g2TuLV=GjhrqvBR33rr5ovQ@mail.gmail.com>
+Subject: Re: [PATCH v3 4/4] arm64: dts: salvator-x: Add current sense amplifiers
+To: Jacopo Mondi <jacopo+renesas@jmondi.org>
+Cc: Wolfram Sang <wsa+renesas@sang-engineering.com>, Magnus Damm <magnus.damm@gmail.com>,
+	Laurent Pinchart <laurent.pinchart@ideasonboard.com>, Jonathan Cameron <jic23@kernel.org>,
+	Hartmut Knaack <knaack.h@gmx.de>, Lars-Peter Clausen <lars@metafoo.de>, Peter Meerwald <pmeerw@pmeerw.net>,
+	Rob Herring <robh+dt@kernel.org>, Mark Rutland <mark.rutland@arm.com>, linux-iio@vger.kernel.org,
+	Linux-Renesas <linux-renesas-soc@vger.kernel.org>,
+	"devicetree@vger.kernel.org" <devicetree@vger.kernel.org>
+Content-Type: text/plain; charset=UTF-8
+List-ID: <linux-iio@vger.kernel.org>
 
-Add device nodes for two Maxim max961x current sense amplifiers
-sensing VDD_08 and DVFS_08 lines.
+Hi Jacopo,
 
-Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
----
- arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts | 18 ++++++++++++++++++
- 1 file changed, 18 insertions(+)
+On Fri, Mar 24, 2017 at 4:28 PM, Jacopo Mondi <jacopo+renesas@jmondi.org> wrote:
+> Add device nodes for two Maxim max961x current sense amplifiers
+> sensing VDD_08 and DVFS_08 lines.
+>
+> Signed-off-by: Jacopo Mondi <jacopo+renesas@jmondi.org>
 
-diff --git a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-index c7f40f8..389a177 100644
---- a/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-+++ b/arch/arm64/boot/dts/renesas/r8a7796-salvator-x.dts
-@@ -257,6 +257,24 @@
- 	status = "okay";
- };
- 
-+&i2c4 {
-+	status = "okay";
-+
-+	csa_vdd: adc@7c {
-+		compatible = "maxim,max9611";
-+		reg = <0x7c>;
-+
-+		shunt-resistor-uohm = <5000>;
-+	};
-+
-+	csa_dvfs: adc@7f {
-+		compatible = "maxim,max9611";
-+		reg = <0x7f>;
-+
-+		shunt-resistor-uohm = <5000>;
-+	};
-+};
-+
- &wdt0 {
- 	timeout-sec = <60>;
- 	status = "okay";
--- 
-2.7.4
+Reviewed-by: Geert Uytterhoeven <geert+renesas@glider.be>
 
+Gr{oetje,eeting}s,
+
+                        Geert
+
+--
+Geert Uytterhoeven -- There's lots of Linux beyond ia32 -- geert@linux-m68k.org
+
+In personal conversations with technical people, I call myself a hacker. But
+when I'm talking to journalists I just say "programmer" or something like that.
+                                -- Linus Torvalds
