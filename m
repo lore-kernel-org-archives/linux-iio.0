@@ -1,12 +1,14 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.linuxfoundation.org ([140.211.169.12]:49626 "EHLO
-        mail.linuxfoundation.org" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1752812AbdC0OD4 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2017 10:03:56 -0400
-Date: Mon, 27 Mar 2017 16:03:12 +0200
-From: Greg Kroah-Hartman <gregkh@linuxfoundation.org>
+Received: from mail-lf0-f42.google.com ([209.85.215.42]:33484 "EHLO
+        mail-lf0-f42.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1752336AbdC0Odr (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2017 10:33:47 -0400
+Date: Mon, 27 Mar 2017 16:33:33 +0200
+From: Johan Hovold <johan@kernel.org>
 To: Peter Rosin <peda@axentia.se>
-Cc: Johan Hovold <johan@kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
+Cc: Johan Hovold <johan@kernel.org>,
+        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
+        Wolfram Sang <wsa@the-dreams.de>,
         Rob Herring <robh+dt@kernel.org>,
         Mark Rutland <mark.rutland@arm.com>,
         Jonathan Cameron <jic23@kernel.org>,
@@ -21,7 +23,7 @@ Cc: Johan Hovold <johan@kernel.org>, Wolfram Sang <wsa@the-dreams.de>,
         Paul Gortmaker <paul.gortmaker@windriver.com>
 Subject: Re: [PATCH v11 11/12] iio: multiplexer: fix unsigned check with less
  than zero
-Message-ID: <20170327140312.GA28431@kroah.com>
+Message-ID: <20170327143333.GB15708@localhost>
 References: <1490617069-13119-1-git-send-email-peda@axentia.se>
  <1490617069-13119-12-git-send-email-peda@axentia.se>
  <20170327130653.GA15708@localhost>
@@ -48,19 +50,11 @@ On Mon, Mar 27, 2017 at 03:46:47PM +0200, Peter Rosin wrote:
 > > You should fold this one and the next patch into the patches that they
 > > fix up instead fixing stuff that's not yet merged incrementally like you
 > > do here (specifically, the SHA id above will have no matching commit).
-> > 
-> > Johan
-> 
+
 > I forgot about that. And similar for the next patch. But how do you
-> propose that I attribute the reporters and CoverityScan? Crap, it
-> would have been so much easier if the series was just pulled they
-> way I expected it...
-> 
-> Greg, how do you want to play this? Can you perhaps update the fixes
-> tag here and in 12/12 if/when you apply the series?
+> propose that I attribute the reporters and CoverityScan?
 
-Please fix this up and resend the patches properly.
+You can mention it in the cover letter and/or commit messages as you
+would for other kinds of review feedback.
 
-thanks,
-
-greg k-h
+Johan
