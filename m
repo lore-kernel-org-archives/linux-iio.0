@@ -1,59 +1,49 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from regular1.263xmail.com ([211.150.99.139]:33554 "EHLO
-        regular1.263xmail.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751751AbdC0JkG (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2017 05:40:06 -0400
-From: <cl@rock-chips.com>
-To: heiko@sntech.de
+Received: from gloria.sntech.de ([95.129.55.99]:51974 "EHLO gloria.sntech.de"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1752827AbdC0N0m (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Mon, 27 Mar 2017 09:26:42 -0400
+From: Heiko Stuebner <heiko@sntech.de>
+To: cl@rock-chips.com, jic23@kernel.org
 Cc: robh+dt@kernel.org, mark.rutland@arm.com, zhengxing@rock-chips.com,
         andy.yan@rock-chips.com, jay.xu@rock-chips.com,
         matthias.bgg@gmail.com, paweljarosz3691@gmail.com,
         devicetree@vger.kernel.org, linux-arm-kernel@lists.infradead.org,
         linux-rockchip@lists.infradead.org, linux-kernel@vger.kernel.org,
-        wsa@the-dreams.de, linux-i2c@vger.kernel.org, jic23@kernel.org,
-        knaack.h@gmx.de, lars@metafoo.de, pmeerw@pmeerw.net,
-        wxt@rock-chips.com, david.wu@rock-chips.com,
-        linux-iio@vger.kernel.org, shawn.lin@rock-chips.com,
-        akpm@linux-foundation.org, dianders@chromium.org,
-        yamada.masahiro@socionext.com, catalin.marinas@arm.com,
-        will.deacon@arm.com, afaerber@suse.de, shawnguo@kernel.org,
-        khilman@baylibre.com, arnd@arndb.de, fabio.estevam@nxp.com,
-        zhangqing@rock-chips.com, kever.yang@rock-chips.com,
-        tony.xie@rock-chips.com, huangtao@rock-chips.com,
-        yhx@rock-chips.com, rocky.hao@rock-chips.com,
-        Liang Chen <cl@rock-chips.com>
-Subject: [PATCH v4 1/6] dt-bindings: iio: rockchip-saradc: add support for rk3328
-Date: Mon, 27 Mar 2017 17:40:46 +0800
-Message-Id: <1490607650-18650-2-git-send-email-cl@rock-chips.com>
-In-Reply-To: <1490607650-18650-1-git-send-email-cl@rock-chips.com>
-References: <1490607650-18650-1-git-send-email-cl@rock-chips.com>
+        wsa@the-dreams.de, linux-i2c@vger.kernel.org, knaack.h@gmx.de,
+        lars@metafoo.de, pmeerw@pmeerw.net, wxt@rock-chips.com,
+        david.wu@rock-chips.com, linux-iio@vger.kernel.org,
+        shawn.lin@rock-chips.com, akpm@linux-foundation.org,
+        dianders@chromium.org, yamada.masahiro@socionext.com,
+        catalin.marinas@arm.com, will.deacon@arm.com, afaerber@suse.de,
+        shawnguo@kernel.org, khilman@baylibre.com, arnd@arndb.de,
+        fabio.estevam@nxp.com, zhangqing@rock-chips.com,
+        kever.yang@rock-chips.com, tony.xie@rock-chips.com,
+        huangtao@rock-chips.com, yhx@rock-chips.com,
+        rocky.hao@rock-chips.com
+Subject: Re: [PATCH v4 1/6] dt-bindings: iio: rockchip-saradc: add support for rk3328
+Date: Mon, 27 Mar 2017 15:25:52 +0200
+Message-ID: <1940747.DLKBel529v@phil>
+In-Reply-To: <1490607650-18650-2-git-send-email-cl@rock-chips.com>
+References: <1490607650-18650-1-git-send-email-cl@rock-chips.com> <1490607650-18650-2-git-send-email-cl@rock-chips.com>
+MIME-Version: 1.0
+Content-Type: text/plain; charset="iso-8859-1"
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-From: Liang Chen <cl@rock-chips.com>
+Hi Jonathan,
 
-The rk3328 saradc is the same as rk3399.
+Am Montag, 27. März 2017, 17:40:46 CEST schrieb cl@rock-chips.com:
+> From: Liang Chen <cl@rock-chips.com>
+> 
+> The rk3328 saradc is the same as rk3399.
+> 
+> Signed-off-by: Liang Chen <cl@rock-chips.com>
+> Reviewed-by: Heiko Stuebner <heiko@sntech.de>
+> Acked-by: Rob Herring <robh@kernel.org>
 
-Signed-off-by: Liang Chen <cl@rock-chips.com>
-Reviewed-by: Heiko Stuebner <heiko@sntech.de>
-Acked-by: Rob Herring <robh@kernel.org>
----
- Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt | 1 +
- 1 file changed, 1 insertion(+)
+just for planning purposes, do you plan on picking this up or do you
+want me to queue it with the rest of the changes (Ack needed).
 
-diff --git a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-index 205593f..e0a9b9d 100644
---- a/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-+++ b/Documentation/devicetree/bindings/iio/adc/rockchip-saradc.txt
-@@ -4,6 +4,7 @@ Required properties:
- - compatible: should be "rockchip,<name>-saradc" or "rockchip,rk3066-tsadc"
-    - "rockchip,saradc": for rk3188, rk3288
-    - "rockchip,rk3066-tsadc": for rk3036
-+   - "rockchip,rk3328-saradc", "rockchip,rk3399-saradc": for rk3328
-    - "rockchip,rk3399-saradc": for rk3399
- 
- - reg: physical base address of the controller and length of memory mapped
--- 
-1.9.1
-
+Heiko
 
