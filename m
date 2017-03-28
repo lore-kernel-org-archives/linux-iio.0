@@ -1,81 +1,88 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from saturn.retrosnub.co.uk ([178.18.118.26]:50284 "EHLO
-        saturn.retrosnub.co.uk" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932689AbdC2VQj (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 17:16:39 -0400
-Subject: Re: [RFC] staging: iio: ad7759: Replace mlock with driver private
- buf_lock
-To: Arushi Singhal <arushisinghal19971997@gmail.com>, lars@metafoo.de
-References: <20170328173721.GA12157@arushi-HP-Pavilion-Notebook>
+Received: from mail-pg0-f68.google.com ([74.125.83.68]:35161 "EHLO
+        mail-pg0-f68.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1751943AbdC1UID (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2017 16:08:03 -0400
+Date: Wed, 29 Mar 2017 01:37:45 +0530
+From: simran singhal <singhalsimran0@gmail.com>
+To: lars@metafoo.de
 Cc: Michael Hennerich <Michael.Hennerich@analog.com>,
+        Jonathan Cameron <jic23@kernel.org>,
         Hartmut Knaack <knaack.h@gmx.de>,
         Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
-        Greg Kroah-Hartman <gregkh@linuxfoundation.org>,
-        linux-iio@vger.kernel.org, devel@driverdev.osuosl.org,
-        linux-kernel@vger.kernel.org, outreachy-kernel@googlegroups.com
-From: Jonathan Cameron <jic23@kernel.org>
-Message-ID: <4fd5df27-288b-f544-8860-4516ef52888f@kernel.org>
-Date: Wed, 29 Mar 2017 22:16:36 +0100
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org,
+        outreachy-kernel@googlegroups.com
+Subject: [PATCH] iio: adc: ad799x: constify attribute_group structures
+Message-ID: <20170328200745.GA8033@singhal-Inspiron-5558>
 MIME-Version: 1.0
-In-Reply-To: <20170328173721.GA12157@arushi-HP-Pavilion-Notebook>
-Content-Type: text/plain; charset=windows-1252
+Content-Type: text/plain; charset=us-ascii
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On 28/03/17 18:37, Arushi Singhal wrote:
-> The IIO subsystem is redefining iio_dev->mlock to be used by
-> the IIO core only for protecting device operating mode changes.
-> ie. Changes between INDIO_DIRECT_MODE, INDIO_BUFFER_* modes.
-> 
-> In this driver, mlock was being used to protect hardware state
-> changes.  Replace it with a buf_lock in the devices global data.
-> 
-> Signed-off-by: Arushi Singhal <arushisinghal19971997@gmail.com>
-Rule 1 of an RFC.  Explain why it is an RFC rather than simply a
-patch.  What needs comment here in particular?
+Check for attribute_group structures that are only stored in the
+event_attrs filed of iio_info structure. As the event_attrs field of
+iio_info structures is constant, so these attribute_group structures can
+also be declared constant.
+Done using coccinelle:
 
-One thing that needs doing is a documentation update to reflect
-the additional elements buf_lock is now protecting.
+@r1 disable optional_qualifier @
+identifier i;
+position p;
+@@
+static struct attribute_group i@p = {...};
 
-I think the use is sensible and can't otherwise see any issue with
-this patch.
+@ok1@
+identifier r1.i;
+position p;
+struct iio_info x;
+@@
+x.event_attrs=&i@p;
 
-Thanks,
+@bad@
+position p!={r1.p,ok1.p};
+identifier r1.i;
+@@
+i@p
 
-Jonathan
-> ---
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
+static
++const
+struct attribute_group i={...};
 
->  drivers/staging/iio/meter/ade7759.c | 9 ++++++---
->  1 file changed, 6 insertions(+), 3 deletions(-)
-> 
-> diff --git a/drivers/staging/iio/meter/ade7759.c b/drivers/staging/iio/meter/ade7759.c
-> index 0b65f1847510..514a4f6bb8f9 100644
-> --- a/drivers/staging/iio/meter/ade7759.c
-> +++ b/drivers/staging/iio/meter/ade7759.c
-> @@ -429,7 +429,7 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->  	if (!val)
->  		return -EINVAL;
->  
-> -	mutex_lock(&indio_dev->mlock);
-> +	mutex_lock(&st->buf_lock);
->  
->  	t = 27900 / val;
->  	if (t > 0)
-> @@ -447,10 +447,13 @@ static ssize_t ade7759_write_frequency(struct device *dev,
->  	reg &= ~(3 << 13);
->  	reg |= t << 13;
->  
-> -	ret = ade7759_spi_write_reg_16(dev, ADE7759_MODE, reg);
-> +	st->tx[0] = ADE7754_WRITE_REG(ADE7754_WAVMODE);
-> +	st->tx[1] = reg;
-> +
-> +	ret = spi_write(st->us, st->tx, 2);
->  
->  out:
-> -	mutex_unlock(&indio_dev->mlock);
-> +	mutex_unlock(&st->buf_lock);
->  
->  	return ret ? ret : len;
->  }
-> 
+@depends on !bad disable optional_qualifier@
+identifier r1.i;
+@@
++const
+struct attribute_group i;
+
+File size before:
+   text    data     bss     dec     hex filename
+  26051     464       0   26515    6793 drivers/iio/adc/ad799x.o
+
+File size after:
+   text	   data	    bss	    dec	    hex	filename
+  26115	    400	      0	  26515	   6793	drivers/iio/adc/ad799x.o
+
+Signed-off-by: simran singhal <singhalsimran0@gmail.com>
+---
+ drivers/iio/adc/ad799x.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/drivers/iio/adc/ad799x.c b/drivers/iio/adc/ad799x.c
+index 9704090..22426ae 100644
+--- a/drivers/iio/adc/ad799x.c
++++ b/drivers/iio/adc/ad799x.c
+@@ -520,7 +520,7 @@ static struct attribute *ad799x_event_attributes[] = {
+ 	NULL,
+ };
+ 
+-static struct attribute_group ad799x_event_attrs_group = {
++static const struct attribute_group ad799x_event_attrs_group = {
+ 	.attrs = ad799x_event_attributes,
+ };
+ 
+-- 
+2.7.4
 
