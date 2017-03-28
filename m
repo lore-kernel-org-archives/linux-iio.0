@@ -1,108 +1,50 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-wr0-f195.google.com ([209.85.128.195]:34612 "EHLO
-        mail-wr0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751898AbdC0Vm5 (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Mon, 27 Mar 2017 17:42:57 -0400
-Received: by mail-wr0-f195.google.com with SMTP id w43so14296181wrb.1
-        for <linux-iio@vger.kernel.org>; Mon, 27 Mar 2017 14:42:12 -0700 (PDT)
-From: Lorenzo Bianconi <lorenzo.bianconi83@gmail.com>
-To: jic23@kernel.org
-Cc: linux-iio@vger.kernel.org, lorenzo.bianconi@st.com
-Subject: [PATCH v2] iio: imu: st_lsm6dsx: do not apply ODR configuration in write_raw handler
-Date: Mon, 27 Mar 2017 23:42:07 +0200
-Message-Id: <20170327214207.30966-1-lorenzo.bianconi@st.com>
+Received: from mout.kundenserver.de ([212.227.126.133]:51421 "EHLO
+        mout.kundenserver.de" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
+        with ESMTP id S1753845AbdC1KKm (ORCPT
+        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2017 06:10:42 -0400
+From: Arnd Bergmann <arnd@arndb.de>
+To: Jonathan Cameron <jic23@kernel.org>,
+        Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: Arnd Bergmann <arnd@arndb.de>, Hartmut Knaack <knaack.h@gmx.de>,
+        Lars-Peter Clausen <lars@metafoo.de>,
+        Peter Meerwald-Stadler <pmeerw@pmeerw.net>,
+        Fabrice Gasnier <fabrice.gasnier@st.com>,
+        linux-iio@vger.kernel.org, linux-kernel@vger.kernel.org
+Subject: [PATCH] iio: adc: sun4i: add THERMAL dependency
+Date: Tue, 28 Mar 2017 12:07:23 +0200
+Message-Id: <20170328100855.3982514-1-arnd@arndb.de>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-This patch allows to avoid a transitory that occurs when a given sensor
-has been already enabled (e.g. gyroscope) and the user is configuring
-the sample frequency of the other one (e.g. accelerometer).
-Until the accelerometer is enabled gyroscope ODR is modified as well.
-Fix it introducing st_lsm6dsx_check_odr() routine to check ODR consistency
-in write_raw handler in order to apply frequency configuration just
-in st_lsm6dsx_set_odr()
+With CONFIG_THERMAL=m and CONFIG_SUN4I_GPADC=y, we get a link error
+from calling devm_thermal_zone_of_sensor_register:
 
-Signed-off-by: Lorenzo Bianconi <lorenzo.bianconi@st.com>
----
-Changes since v1:
-- Rename st_lsm6dsx_get_odr_val() in st_lsm6dsx_check_odr()
----
- drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c | 41 ++++++++++++++++++----------
- 1 file changed, 26 insertions(+), 15 deletions(-)
+drivers/iio/built-in.o: In function `sun4i_gpadc_probe':
+:(.text+0x1c284): undefined reference to `devm_thermal_zone_of_sensor_register'
 
-diff --git a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-index c433223..f80a3d4 100644
---- a/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-+++ b/drivers/iio/imu/st_lsm6dsx/st_lsm6dsx_core.c
-@@ -308,32 +308,40 @@ static int st_lsm6dsx_set_full_scale(struct st_lsm6dsx_sensor *sensor,
- 	return 0;
- }
- 
--static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
-+static int st_lsm6dsx_check_odr(struct st_lsm6dsx_sensor *sensor, u16 odr,
-+				u8 *val)
- {
--	enum st_lsm6dsx_sensor_id id = sensor->id;
--	int i, err;
--	u8 val;
-+	int i;
- 
- 	for (i = 0; i < ST_LSM6DSX_ODR_LIST_SIZE; i++)
--		if (st_lsm6dsx_odr_table[id].odr_avl[i].hz == odr)
-+		if (st_lsm6dsx_odr_table[sensor->id].odr_avl[i].hz == odr)
- 			break;
- 
- 	if (i == ST_LSM6DSX_ODR_LIST_SIZE)
- 		return -EINVAL;
- 
--	val = st_lsm6dsx_odr_table[id].odr_avl[i].val;
--	err = st_lsm6dsx_write_with_mask(sensor->hw,
--					 st_lsm6dsx_odr_table[id].reg.addr,
--					 st_lsm6dsx_odr_table[id].reg.mask,
--					 val);
--	if (err < 0)
--		return err;
--
-+	*val = st_lsm6dsx_odr_table[sensor->id].odr_avl[i].val;
- 	sensor->odr = odr;
- 
- 	return 0;
- }
- 
-+static int st_lsm6dsx_set_odr(struct st_lsm6dsx_sensor *sensor, u16 odr)
-+{
-+	enum st_lsm6dsx_sensor_id id = sensor->id;
-+	int err;
-+	u8 val;
-+
-+	err = st_lsm6dsx_check_odr(sensor, odr, &val);
-+	if (err < 0)
-+		return err;
-+
-+	return st_lsm6dsx_write_with_mask(sensor->hw,
-+					  st_lsm6dsx_odr_table[id].reg.addr,
-+					  st_lsm6dsx_odr_table[id].reg.mask,
-+					  val);
-+}
-+
- int st_lsm6dsx_sensor_enable(struct st_lsm6dsx_sensor *sensor)
- {
- 	int err;
-@@ -436,9 +444,12 @@ static int st_lsm6dsx_write_raw(struct iio_dev *iio_dev,
- 	case IIO_CHAN_INFO_SCALE:
- 		err = st_lsm6dsx_set_full_scale(sensor, val2);
- 		break;
--	case IIO_CHAN_INFO_SAMP_FREQ:
--		err = st_lsm6dsx_set_odr(sensor, val);
-+	case IIO_CHAN_INFO_SAMP_FREQ: {
-+		u8 data;
-+
-+		err = st_lsm6dsx_check_odr(sensor, val, &data);
- 		break;
-+	}
- 	default:
- 		err = -EINVAL;
- 		break;
+This adds a Kconfig dependency to ensure we can only have the ADC
+driver as built-in when this function is also built-in, or when
+we see the empty stub implementation. When the thermal code is
+a module, we can still build the adc driver as a module, too.
+
+Signed-off-by: Arnd Bergmann <arnd@arndb.de>
+---
+ drivers/iio/adc/Kconfig | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/drivers/iio/adc/Kconfig b/drivers/iio/adc/Kconfig
+index d0af51d7bcac..7ccbad70a617 100644
+--- a/drivers/iio/adc/Kconfig
++++ b/drivers/iio/adc/Kconfig
+@@ -562,6 +562,7 @@ config SUN4I_GPADC
+ 	tristate "Support for the Allwinner SoCs GPADC"
+ 	depends on IIO
+ 	depends on MFD_SUN4I_GPADC
++	depends on THERMAL || !THERMAL_OF
+ 	help
+ 	  Say yes here to build support for Allwinner (A10, A13 and A31) SoCs
+ 	  GPADC. This ADC provides 4 channels which can be used as an ADC or as
 -- 
-2.9.3
+2.9.0
 
