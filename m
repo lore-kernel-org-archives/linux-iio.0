@@ -1,91 +1,73 @@
-Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail.free-electrons.com ([62.4.15.54]:35683 "EHLO
-        mail.free-electrons.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S932111AbdC2M2c (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Wed, 29 Mar 2017 08:28:32 -0400
-Date: Wed, 29 Mar 2017 14:28:29 +0200
-From: Maxime Ripard <maxime.ripard@free-electrons.com>
-To: Icenowy Zheng <icenowy@aosc.io>
-Cc: Quentin Schulz <quentin.schulz@free-electrons.com>,
-        Zhang Rui <rui.zhang@intel.com>, linux-pm@vger.kernel.org,
-        Rob Herring <robh+dt@kernel.org>, linux-kernel@vger.kernel.org,
-        linux-iio@vger.kernel.org, devicetree@vger.kernel.org,
-        Lee Jones <lee.jones@linaro.org>,
-        Jonathan Cameron <jic23@kernel.org>,
-        linux-arm-kernel@lists.infradead.org, Chen-Yu Tsai <wens@csie.org>
-Subject: Re: [RFC PATCH 2/3] iio: adc: sun4i-gpadc-iio: add support for H3
- thermal sensor
-Message-ID: <20170329122829.23bezwgdywigxshh@lukather>
-References: <20170329065717.D0AF37C1EFF@relay.mailchannels.net>
-MIME-Version: 1.0
-Content-Type: multipart/signed; micalg=pgp-sha256;
-        protocol="application/pgp-signature"; boundary="eqclnj4teheii7g7"
-In-Reply-To: <20170329065717.D0AF37C1EFF@relay.mailchannels.net>
-Sender: linux-iio-owner@vger.kernel.org
-List-Id: linux-iio@vger.kernel.org
+Return-Path: <SRS0=AFNH=3F=aosc.io=icenowy@kernel.org>
+From: Icenowy Zheng <icenowy@aosc.io>
+To: Lee Jones <lee.jones@linaro.org>,
+	Rob Herring <robh+dt@kernel.org>,
+	Maxime Ripard <maxime.ripard@free-electrons.com>,
+	Chen-Yu Tsai <wens@csie.org>,
+	Jonathan Cameron <jic23@kernel.org>,
+	Zhang Rui <rui.zhang@intel.com>,
+	Quentin Schulz <quentin.schulz@free-electrons.com>
+Cc: devicetree@vger.kernel.org,
+	linux-arm-kernel@lists.infradead.org,
+	linux-kernel@vger.kernel.org,
+	linux-iio@vger.kernel.org,
+	linux-pm@vger.kernel.org,
+	Icenowy Zheng <icenowy@aosc.io>
+Subject: [RFC PATCH 3/3] ARM: sun8i: h3: add support for the thermal sensor in H3
+Date: Wed, 29 Mar 2017 01:30:13 +0800
+Message-Id: <20170328173013.16539-4-icenowy@aosc.io>
+In-Reply-To: <20170328173013.16539-1-icenowy@aosc.io>
+References: <20170328173013.16539-1-icenowy@aosc.io>
+List-ID: <linux-iio@vger.kernel.org>
 
+As we have gained the support for the thermal sensor in H3, we can now
+add its device nodes to the device tree.
 
---eqclnj4teheii7g7
-Content-Type: text/plain; charset=iso-8859-1
-Content-Disposition: inline
-Content-Transfer-Encoding: quoted-printable
+Add them to the H3 device tree.
 
-On Wed, Mar 29, 2017 at 02:57:02PM +0800, Icenowy Zheng wrote:
-> > > @@ -691,6 +777,12 @@ static int sun4i_gpadc_remove(struct platform_de=
-vice *pdev)=20
-> > >=A0 if (!info->no_irq && IS_ENABLED(CONFIG_THERMAL_OF))=20
-> > >=A0 iio_map_array_unregister(indio_dev);=20
-> > >=A0=20
-> > > + if (info->data->gen2_ths) {=20
-> > > + clk_disable_unprepare(info->ths_clk);=20
-> > > + clk_disable_unprepare(info->ths_bus_clk);=20
-> > > + reset_control_deassert(info->reset);=20
-> > > + }=20
-> > > +=20
-> >
-> > I'm not really fond of using this boolean as I don't see it being=20
-> > possibly reused for any other SoCs that has a GPADC or THS.=20
->=20
-> Because you didn't care new SoCs :-)
->=20
-> All SoCs after H3 (A64, H5, R40) uses the same THS architecture with
-> H3.
+The H5 thermal sensor has some differences, and will be added furtherly.
 
-That's not really Quentin's point. His point is that having things
-like flags and/or variables to identify various behaviours that might
-differ from one SoC to the other usually works better when you want to
-support several of them.
+Signed-off-by: Icenowy Zheng <icenowy@aosc.io>
+---
+ arch/arm/boot/dts/sun8i-h3.dtsi | 26 ++++++++++++++++++++++++++
+ 1 file changed, 26 insertions(+)
 
-For example, replacing the gen2_ths by one variable with the number of
-clocks, one with the number of channels, a bool to say it has a reset,
-etc. definitely works better for us when Allwinner does some mix and
-match between each SoC. And this happen most of the time.
-
-Maxime
-
---=20
-Maxime Ripard, Free Electrons
-Embedded Linux and Kernel engineering
-http://free-electrons.com
-
---eqclnj4teheii7g7
-Content-Type: application/pgp-signature; name="signature.asc"
-
------BEGIN PGP SIGNATURE-----
-
-iQIcBAEBCAAGBQJY26hpAAoJEBx+YmzsjxAg54QP/3RoDQzmzpPlWUvTR00t+vK3
-eIhkg+iWCr2gfqEKRQMx6KC7xQUh39vIpa6u16eOkIg06SWY032srY4lk7q7929K
-bv+Hvj7VztFV/gcH6TizW/TyWwXqXxWV2LFc/GvFIZsRqUd3vdxvtfDdN1Xu45TE
-w1nVGcz09LtZGdKy24iO8Q5E8cA9OHOy9SFidBURJZ7/U8bu7ApB+CKgXb685B3o
-6NTzPZiQN2OLkCIqWpyzOPQgn6uHTj7kg1n6bOJypMY/t5oIQwhn+0PRxu8Jyprg
-oQOj4N991ChuKi1LLMJDAqC4rcsupinMqFhsUlC6WM6bNjUMlDZl8vyhe/G1WTdY
-ZUtDHPtTh8AhBrLoaKgvVAslS5DAA3r/VvjSmt7Fvip55N7BAop2L7Zu0DI5G+gZ
-x6tg/gSazzdKvnhlef1Ipj5JITGot6xcUybUVprPMWVpzmvPvlbnB3n93DYxzKwJ
-7yqqn53qimyBWULWRoPumUrtSdYfj1SysDmrlZ46nxW7PeuSxL5CYsfC5jPZRlH5
-9QQG2Bl9vXdldn1yrGPKZWb9Pd7cuZxKiObq0yU5DyNYNufG/2BgENa9Vj8ITvUZ
-JFjTqvB7ersA9pyKAHCaPkt6ykYh+QrjvWd2brHjiOKQTCO55AXwatvxPTBN2WXQ
-ganghCIWcecj2qgDa6oR
-=mudX
------END PGP SIGNATURE-----
-
---eqclnj4teheii7g7--
+diff --git a/arch/arm/boot/dts/sun8i-h3.dtsi b/arch/arm/boot/dts/sun8i-h3.dtsi
+index b36f9f423c39..552217bb9266 100644
+--- a/arch/arm/boot/dts/sun8i-h3.dtsi
++++ b/arch/arm/boot/dts/sun8i-h3.dtsi
+@@ -72,6 +72,32 @@
+ 		};
+ 	};
+ 
++	iio-hwmon {
++		compatible = "iio-hwmon";
++		io-channels = <&ths>;
++	};
++
++	soc {
++		ths: ths@01c25000 {
++			compatible = "allwinner,sun8i-h3-ths";
++			reg = <0x01c25000 0x100>;
++			clocks = <&ccu CLK_BUS_THS>, <&ccu CLK_THS>;
++			clock-names = "bus", "ths";
++			resets = <&ccu RST_BUS_THS>;
++			#thermal-sensor-cells = <0>;
++			#io-channel-cells = <0>;
++		};
++	};
++
++	thermal-zones {
++		cpu_thermal {
++			/* milliseconds */
++			polling-delay-passive = <250>;
++			polling-delay = <1000>;
++			thermal-sensors = <&ths>;
++		};
++	};
++
+ 	timer {
+ 		compatible = "arm,armv7-timer";
+ 		interrupts = <GIC_PPI 13 (GIC_CPU_MASK_SIMPLE(4) | IRQ_TYPE_LEVEL_LOW)>,
+-- 
+2.12.0
