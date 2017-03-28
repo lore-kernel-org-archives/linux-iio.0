@@ -1,76 +1,267 @@
 Return-Path: <linux-iio-owner@vger.kernel.org>
-Received: from mail-yw0-f195.google.com ([209.85.161.195]:32769 "EHLO
-        mail-yw0-f195.google.com" rhost-flags-OK-OK-OK-OK) by vger.kernel.org
-        with ESMTP id S1751738AbdC2Cdr (ORCPT
-        <rfc822;linux-iio@vger.kernel.org>); Tue, 28 Mar 2017 22:33:47 -0400
-MIME-Version: 1.0
-In-Reply-To: <20170328215259.31622-1-raltherr@google.com>
-References: <20170328215259.31622-1-raltherr@google.com>
-From: Joel Stanley <joel@jms.id.au>
-Date: Wed, 29 Mar 2017 13:03:25 +1030
-Message-ID: <CACPK8Xcf2A8RMy7cthJrdi2CA0L_Hfi+2Hy3JBCzLTsofjhEuA@mail.gmail.com>
-Subject: Re: [PATCH v5 1/2] Documentation: dt-bindings: Document bindings for
- Aspeed ADC
-To: Rick Altherr <raltherr@google.com>
-Cc: OpenBMC Maillist <openbmc@lists.ozlabs.org>,
-        Linux Kernel Mailing List <linux-kernel@vger.kernel.org>,
-        devicetree@vger.kernel.org, linux-iio@vger.kernel.org,
-        Hartmut Knaack <knaack.h@gmx.de>,
-        Rob Herring <robh+dt@kernel.org>,
-        Lars-Peter Clausen <lars@metafoo.de>,
-        Mark Rutland <mark.rutland@arm.com>,
-        Jonathan Cameron <jic23@kernel.org>,
-        Peter Meerwald-Stadler <pmeerw@pmeerw.net>
-Content-Type: text/plain; charset=UTF-8
+Received: from mga06.intel.com ([134.134.136.31]:58515 "EHLO mga06.intel.com"
+        rhost-flags-OK-OK-OK-OK) by vger.kernel.org with ESMTP
+        id S1753379AbdC1V4l (ORCPT <rfc822;linux-iio@vger.kernel.org>);
+        Tue, 28 Mar 2017 17:56:41 -0400
+From: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+To: jic23@kernel.org, jikos@kernel.org
+Cc: linux-iio@vger.kernel.org,
+        Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+Subject: [PATCH] iio: hid-sensor-hub: Implement batch mode
+Date: Tue, 28 Mar 2017 14:55:30 -0700
+Message-Id: <1490738130-54272-1-git-send-email-srinivas.pandruvada@linux.intel.com>
 Sender: linux-iio-owner@vger.kernel.org
 List-Id: linux-iio@vger.kernel.org
 
-On Wed, Mar 29, 2017 at 8:22 AM, Rick Altherr <raltherr@google.com> wrote:
-> Signed-off-by: Rick Altherr <raltherr@google.com>
-> ---
+HID sensor hubs using Integrated Senor Hub (ISH) has added capability to
+support batch mode. This allows host processor to go to sleep for extended
+duration, while the sensor hub is storing samples in its internal buffers.
 
-Acked-by: Joel Stanley <joel@jms.id.au>
+'Commit f4f4673b7535 ("iio: add support for hardware fifo")' implements
+feature in IIO core to implement such feature. This feature is used in
+bmc150-accel-core.c to implement batch mode. This implementation allows
+software device buffer watermark to be used as a hint to adjust hardware
+FIFO.
 
->
-> Changes in v5: None
-> Changes in v4: None
-> Changes in v3:
-> - Consistently write hex contstants with lowercase letters
-> - Drop model numbers from description as same IP is used in every generation
->
-> Changes in v2:
-> - Rewritten as an IIO ADC device
->
->  .../devicetree/bindings/iio/adc/aspeed_adc.txt       | 20 ++++++++++++++++++++
->  1 file changed, 20 insertions(+)
->  create mode 100644 Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
->
-> diff --git a/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> new file mode 100644
-> index 000000000000..674e133b7cd7
-> --- /dev/null
-> +++ b/Documentation/devicetree/bindings/iio/adc/aspeed_adc.txt
-> @@ -0,0 +1,20 @@
-> +Aspeed ADC
-> +
-> +This device is a 10-bit converter for 16 voltage channels.  All inputs are
-> +single ended.
-> +
-> +Required properties:
-> +- compatible: Should be "aspeed,ast2400-adc" or "aspeed,ast2500-adc"
-> +- reg: memory window mapping address and length
-> +- clocks: Input clock used to derive the sample clock. Expected to be the
-> +          SoC's APB clock.
-> +- #io-channel-cells: Must be set to <1> to indicate channels are selected
-> +                     by index.
-> +
-> +Example:
-> +       adc@1e6e9000 {
-> +               compatible = "aspeed,ast2400-adc";
-> +               reg = <0x1e6e9000 0xb0>;
-> +               clocks = <&clk_apb>;
-> +               #io-channel-cells = <1>;
-> +       };
-> --
-> 2.12.2.564.g063fe858b8-goog
->
+But HID sensor hubs don't allow to change internal buffer size of FIFOs.
+Instead an additional usage id to set "maximum report latency" is defined.
+This allows host to go to sleep upto this latency period without getting
+any report. Since there is no ABI to set this latency, a new attribute
+"hwfifo_timeout" is added so that user mode can specify a latency.
+
+This change checks presence of usage id to get/set maximum report latency
+and if present, it will expose hwfifo_timeout.
+
+Signed-off-by: Srinivas Pandruvada <srinivas.pandruvada@linux.intel.com>
+---
+Changed compared to RFC:
+- Removed min/max Fifo size attributes
+- Removed flush callback. Since this usage id is not present in any hubs,
+we can add later when we have some HW to test. This was causing some
+ugliness.
+- Moved the hwfifo_timout documentation to sysfs-bus-iio
+
+ Documentation/ABI/testing/sysfs-bus-iio            | 11 ++++
+ .../iio/common/hid-sensors/hid-sensor-attributes.c | 48 +++++++++++++++
+ .../iio/common/hid-sensors/hid-sensor-trigger.c    | 70 ++++++++++++++++++++++
+ include/linux/hid-sensor-hub.h                     |  4 ++
+ include/linux/hid-sensor-ids.h                     |  3 +
+ 5 files changed, 136 insertions(+)
+
+diff --git a/Documentation/ABI/testing/sysfs-bus-iio b/Documentation/ABI/testing/sysfs-bus-iio
+index 530809c..b09f373 100644
+--- a/Documentation/ABI/testing/sysfs-bus-iio
++++ b/Documentation/ABI/testing/sysfs-bus-iio
+@@ -1424,6 +1424,17 @@ Description:
+ 		guarantees that the hardware fifo is flushed to the device
+ 		buffer.
+ 
++What:		/sys/bus/iio/devices/iio:device*/buffer/hwfifo_timeout
++KernelVersion:	4.12
++Contact:	linux-iio@vger.kernel.org
++Description:
++		A read/write property to provide capability to delay reporting of
++		samples till a timeout is reached. This allows host processors to
++		sleep, while the sensor is storing samples in its internal fifo.
++		The maximum timeout in seconds can be specified by setting
++		hwfifo_timeout.The current delay can be read by reading
++		hwfifo_timeout. A value of 0 means that there is no timout.
++
+ What:		/sys/bus/iio/devices/iio:deviceX/buffer/hwfifo_watermark
+ KernelVersion: 4.2
+ Contact:	linux-iio@vger.kernel.org
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+index 7afdac42..e4d335c 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-attributes.c
+@@ -373,6 +373,52 @@ int hid_sensor_get_reporting_interval(struct hid_sensor_hub_device *hsdev,
+ 
+ }
+ 
++static void hid_sensor_get_report_latency_info(struct hid_sensor_hub_device *hsdev,
++					       u32 usage_id,
++					       struct hid_sensor_common *st)
++{
++	sensor_hub_input_get_attribute_info(hsdev, HID_FEATURE_REPORT,
++					    usage_id,
++					    HID_USAGE_SENSOR_PROP_REPORT_LATENCY,
++					    &st->report_latency);
++
++	hid_dbg(hsdev->hdev, "Report latency attributes: %x:%x \n",
++		st->report_latency.index, st->report_latency.report_id);
++}
++
++int hid_sensor_get_report_latency(struct hid_sensor_common *st)
++{
++	int ret;
++	int value;
++
++	ret = sensor_hub_get_feature(st->hsdev, st->report_latency.report_id,
++				     st->report_latency.index, sizeof(value),
++				     &value);
++	if (ret < 0)
++		return ret;
++
++	return value;
++}
++EXPORT_SYMBOL(hid_sensor_get_report_latency);
++
++int hid_sensor_set_report_latency(struct hid_sensor_common *st, int latency_ms)
++{
++
++	return sensor_hub_set_feature(st->hsdev, st->report_latency.report_id,
++				      st->report_latency.index,
++				      sizeof(latency_ms), &latency_ms);
++}
++EXPORT_SYMBOL(hid_sensor_set_report_latency);
++
++bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st)
++{
++	if (st->report_latency.index > 0 && st->report_latency.report_id > 0)
++		return true;
++
++	return false;
++}
++EXPORT_SYMBOL(hid_sensor_batch_mode_supported);
++
+ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 					u32 usage_id,
+ 					struct hid_sensor_common *st)
+@@ -410,6 +456,8 @@ int hid_sensor_parse_common_attributes(struct hid_sensor_hub_device *hsdev,
+ 	} else
+ 		st->timestamp_ns_scale = 1000000000;
+ 
++	hid_sensor_get_report_latency_info(hsdev, usage_id, st);
++
+ 	hid_dbg(hsdev->hdev, "common attributes: %x:%x, %x:%x, %x:%x %x:%x %x:%x\n",
+ 		st->poll.index, st->poll.report_id,
+ 		st->report_state.index, st->report_state.report_id,
+diff --git a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+index a3cce3a..ef06541 100644
+--- a/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
++++ b/drivers/iio/common/hid-sensors/hid-sensor-trigger.c
+@@ -26,9 +26,77 @@
+ #include <linux/hid-sensor-hub.h>
+ #include <linux/iio/iio.h>
+ #include <linux/iio/trigger.h>
++#include <linux/iio/buffer.h>
+ #include <linux/iio/sysfs.h>
+ #include "hid-sensor-trigger.h"
+ 
++static ssize_t _hid_sensor_set_report_latency(struct device *dev,
++					      struct device_attribute *attr,
++					      const char *buf, size_t len)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int latency, ret;
++
++	if (kstrtoint(buf, 10, &latency))
++		return -EINVAL;
++
++	ret = hid_sensor_set_report_latency(iio_trigger_get_drvdata(indio_dev->trig),
++					    latency * 1000);
++	if (ret < 0)
++		return len;
++
++	return len;
++}
++
++static ssize_t _hid_sensor_get_report_latency(struct device *dev,
++					      struct device_attribute *attr,
++					      char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int latency;
++
++	latency = hid_sensor_get_report_latency(iio_trigger_get_drvdata(indio_dev->trig));
++	if (latency < 0)
++		return latency;
++
++	return sprintf(buf, "%d\n", latency / 1000);
++}
++
++static ssize_t _hid_sensor_get_fifo_state(struct device *dev,
++					  struct device_attribute *attr,
++					  char *buf)
++{
++	struct iio_dev *indio_dev = dev_to_iio_dev(dev);
++	int latency;
++
++	latency = hid_sensor_get_report_latency(iio_trigger_get_drvdata(indio_dev->trig));
++	if (latency < 0)
++		return latency;
++
++	return sprintf(buf, "%d\n", latency > 0 ? 1:0);
++}
++
++static IIO_DEVICE_ATTR(hwfifo_timeout, 0644,
++		       _hid_sensor_get_report_latency,
++		       _hid_sensor_set_report_latency, 0);
++static IIO_DEVICE_ATTR(hwfifo_enabled, 0444,
++		       _hid_sensor_get_fifo_state, NULL, 0);
++
++static const struct attribute *hid_sensor_fifo_attributes[] = {
++	&iio_dev_attr_hwfifo_timeout.dev_attr.attr,
++	&iio_dev_attr_hwfifo_enabled.dev_attr.attr,
++	NULL,
++};
++
++static void hid_sensor_setup_batch_mode(struct iio_dev *indio_dev,
++					struct hid_sensor_common *st)
++{
++	if (!hid_sensor_batch_mode_supported(st))
++		return;
++
++	iio_buffer_set_attrs(indio_dev->buffer, hid_sensor_fifo_attributes);
++}
++
+ static int _hid_sensor_power_state(struct hid_sensor_common *st, bool state)
+ {
+ 	int state_val;
+@@ -174,6 +242,8 @@ int hid_sensor_setup_trigger(struct iio_dev *indio_dev, const char *name,
+ 	attrb->trigger = trig;
+ 	indio_dev->trig = iio_trigger_get(trig);
+ 
++	hid_sensor_setup_batch_mode(indio_dev, attrb);
++
+ 	ret = pm_runtime_set_active(&indio_dev->dev);
+ 	if (ret)
+ 		goto error_unreg_trigger;
+diff --git a/include/linux/hid-sensor-hub.h b/include/linux/hid-sensor-hub.h
+index 7ef111d..a045940 100644
+--- a/include/linux/hid-sensor-hub.h
++++ b/include/linux/hid-sensor-hub.h
+@@ -237,6 +237,7 @@ struct hid_sensor_common {
+ 	struct hid_sensor_hub_attribute_info report_state;
+ 	struct hid_sensor_hub_attribute_info power_state;
+ 	struct hid_sensor_hub_attribute_info sensitivity;
++	struct hid_sensor_hub_attribute_info report_latency;
+ 	struct work_struct work;
+ };
+ 
+@@ -274,5 +275,8 @@ s32 hid_sensor_read_poll_value(struct hid_sensor_common *st);
+ 
+ int64_t hid_sensor_convert_timestamp(struct hid_sensor_common *st,
+ 				     int64_t raw_value);
++bool hid_sensor_batch_mode_supported(struct hid_sensor_common *st);
++int hid_sensor_set_report_latency(struct hid_sensor_common *st, int latency);
++int hid_sensor_get_report_latency(struct hid_sensor_common *st);
+ 
+ #endif
+diff --git a/include/linux/hid-sensor-ids.h b/include/linux/hid-sensor-ids.h
+index 30c7dc4..d7caf8c 100644
+--- a/include/linux/hid-sensor-ids.h
++++ b/include/linux/hid-sensor-ids.h
+@@ -142,6 +142,9 @@
+ #define HID_USAGE_SENSOR_PROP_REPORT_STATE			0x200316
+ #define HID_USAGE_SENSOR_PROY_POWER_STATE			0x200319
+ 
++/* Batch mode selectors */
++#define HID_USAGE_SENSOR_PROP_REPORT_LATENCY			0x20031B
++
+ /* Per data field properties */
+ #define HID_USAGE_SENSOR_DATA_MOD_NONE					0x00
+ #define HID_USAGE_SENSOR_DATA_MOD_CHANGE_SENSITIVITY_ABS		0x1000
+-- 
+2.7.4
+
